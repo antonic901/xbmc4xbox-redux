@@ -889,7 +889,7 @@ namespace VIDEO
         myEpisode.cDate.SetValid(FALSE);
         free(season);
         free(episode);
-        CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new season %u, multipart episode %u", episode.iSeason, episode.iEpisode);
+        CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new season %u, multipart episode %u", myEpisode.iSeason, myEpisode.iEpisode);
         episodeList.push_back(myEpisode);
         free(remainder);
         remainder = reg.GetReplaceString("\\3");
@@ -901,7 +901,7 @@ namespace VIDEO
         episode = reg2.GetReplaceString("\\1");
         myEpisode.iEpisode = atoi(episode);
         free(episode);
-        CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding multipart episode %u", episode.iEpisode);
+        CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding multipart episode %u", myEpisode.iEpisode);
         episodeList.push_back(myEpisode);
         offset += regexp2pos + reg2.GetFindLen();
       }
@@ -978,8 +978,9 @@ namespace VIDEO
     {
       CLog::Log(LOGERROR, "%s - failed to open database", __FUNCTION__);
       return -1;
-
-    CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new item to %s:%s", TranslateContent(content).c_str(), pItem->m_strPath.c_str());
+    }
+    
+    CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new item to %s:%s", content.c_str(), pItem->m_strPath.c_str());
     long lResult = -1;
 
     // add to all movies in the stacked set
