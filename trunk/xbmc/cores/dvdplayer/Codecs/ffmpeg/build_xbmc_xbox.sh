@@ -7,34 +7,58 @@ rm -r .libs
 make distclean
 
 ./configure \
---extra-cflags="-D_XBOX -fno-common" \
+--extra-cflags="-D_XBOX -fno-common -mtune=pentium3 -msse -ffast-math -mfpmath=sse -pipe -Wno-unused-function" \
 --cpu=pentium3 \
---enable-shared \
---enable-memalign-hack \
 --enable-gpl \
---enable-w32threads \
---enable-postproc \
---enable-swscale \
---enable-zlib \
+--enable-shared \
 --disable-static \
---disable-altivec \
+--enable-w32threads \
+--enable-memalign-hack \
+--enable-small \
+--enable-zlib \
+--disable-debug \
+--disable-network \
+\
+--disable-ffmpeg \
+--disable-ffplay \
+--disable-ffserver \
+\
+--enable-swscale \
 --disable-vhook \
 --disable-muxers \
---disable-aandct \
---disable-fft \
---disable-golomb \
---disable-mdct \
---disable-rdft \
 --disable-encoders \
---disable-ipv6 \
---disable-debug && 
+\
+--enable-postproc \
+\
+--disable-filters \
+--enable-filter=buffer \
+\
+--disable-protocols \
+--enable-protocol=file \
+\
+--disable-bsfs \
+--disable-indevs \
+--disable-vdpau \
+\
+--disable-altivec \
+--disable-amd3dnow \
+--disable-amd3dnowext \
+--disable-ssse3 \
+--disable-armv5te \
+--disable-armv6 \
+--disable-armv6t2 \
+--disable-armvfp \
+--disable-iwmmxt \
+--disable-neon \
+--disable-altivec \
+--disable-vis &&
  
 make -j3 && 
 mkdir .libs &&
 cp lib*/*.dll .libs/ &&
 mv .libs/swscale-0.dll .libs/swscale-0.6.1.dll &&
-cp .libs/avcodec-52.dll ../../../../../system/players/dvdplayer/ &&
-cp .libs/avformat-52.dll ../../../../../system/players/dvdplayer/ &&
-cp .libs/avutil-49.dll ../../../../../system/players/dvdplayer/ &&
-cp .libs/postproc-51.dll ../../../../../system/players/dvdplayer/ &&
-cp .libs/swscale-0.6.1.dll ../../../../../system/players/dvdplayer/
+cp -v .libs/avcodec-52.dll ../../../../../system/players/dvdplayer/ &&
+cp -v .libs/avformat-52.dll ../../../../../system/players/dvdplayer/ &&
+cp -v .libs/avutil-49.dll ../../../../../system/players/dvdplayer/ &&
+cp -v .libs/postproc-51.dll ../../../../../system/players/dvdplayer/ &&
+cp -v .libs/swscale-0.6.1.dll ../../../../../system/players/dvdplayer/
