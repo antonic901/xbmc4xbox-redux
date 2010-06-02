@@ -30,7 +30,7 @@
 
 #include <stdint.h>
 
-#include "Codecs/ffmpeg/libavutil/common.h"
+#include "libavutil/common.h"
 
 /* unbuffered I/O */
 
