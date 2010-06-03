@@ -40,7 +40,6 @@ make distclean
 --disable-indevs \
 --disable-vdpau \
 \
---disable-altivec \
 --disable-amd3dnow \
 --disable-amd3dnowext \
 --disable-ssse3 \
