@@ -17,7 +17,7 @@ make distclean
 --enable-small \
 --enable-zlib \
 --disable-debug \
---disable-network \
+--disable-ipv6 \
 \
 --disable-ffmpeg \
 --disable-ffplay \
@@ -33,13 +33,11 @@ make distclean
 --disable-filters \
 --enable-filter=buffer \
 \
---disable-protocols \
---enable-protocol=file \
-\
 --disable-bsfs \
 --disable-indevs \
 --disable-vdpau \
 \
+--disable-altivec \
 --disable-amd3dnow \
 --disable-amd3dnowext \
 --disable-ssse3 \
@@ -49,7 +47,6 @@ make distclean
 --disable-armvfp \
 --disable-iwmmxt \
 --disable-neon \
---disable-altivec \
 --disable-vis &&
  
 make -j3 && 
