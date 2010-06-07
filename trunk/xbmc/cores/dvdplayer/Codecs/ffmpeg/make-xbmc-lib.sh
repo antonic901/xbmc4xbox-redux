@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-# This script should be could from eg. an MSYS/MinGW (compile) environment
+# This script should be called from eg. an MSYS/MinGW (compile) environment
 # Don't forget to setup msys.bat properly!
 
 rm -r .libs
