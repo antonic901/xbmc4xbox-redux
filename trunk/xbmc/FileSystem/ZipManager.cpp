@@ -24,6 +24,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "FileSystem/File.h"
+#include "SpecialProtocol.h"
 
 // All values are stored in little-endian byte order in .zip file
 // Use SDL macros to perform byte swapping on big-endian systems
@@ -78,9 +79,9 @@ bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items
   }
 
   CFile mFile;
-  if (!mFile.Open(strFile))
+  if (!mFile.Open(_P(strFile)))
   {
-    CLog::Log(LOGDEBUG,"ZipManager: unable to open file %s!",strFile.c_str());
+    CLog::Log(LOGDEBUG,"ZipManager: unable to open file %s!",_P(strFile).c_str());
     return false;
   }
 

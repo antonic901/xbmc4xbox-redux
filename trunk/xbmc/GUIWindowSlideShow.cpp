@@ -777,7 +777,9 @@ int CGUIWindowSlideShow::CurrentSlide() const
   return m_iCurrentSlide + 1;
 }
 
-void CGUIWindowSlideShow::AddFromPath(const CStdString &strPath, bool bRecursive)
+void CGUIWindowSlideShow::AddFromPath(const CStdString &strPath,
+                                      bool bRecursive, 
+                                      SORT_METHOD method, SORT_ORDER order)
 {
   if (strPath!="")
   {
@@ -786,20 +788,20 @@ void CGUIWindowSlideShow::AddFromPath(const CStdString &strPath, bool bRecursive
     if (bRecursive)
     {
       path_set recursivePaths;
-      AddItems(strPath, &recursivePaths);
+      AddItems(strPath, &recursivePaths, method, order);
     }
     else
-      AddItems(strPath, NULL);
+      AddItems(strPath, NULL, method, order);
   }
 }
 
-void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursive /* = false */, bool bRandom /* = false */, bool bNotRandom /* = false */)
+void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursive /* = false */, bool bRandom /* = false */, bool bNotRandom /* = false */, SORT_METHOD method /* = SORT_METHOD_LABEL */, SORT_ORDER order /* = SORT_ORDER_ASC */)
 {
   // stop any video
   if (g_application.IsPlayingVideo())
     g_application.StopPlaying();
 
-  AddFromPath(strPath, bRecursive);
+  AddFromPath(strPath, bRecursive, method, order);
 
   // mutually exclusive options
   // if both are set, clear both and use the gui setting
@@ -815,7 +817,7 @@ void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursiv
     g_windowManager.ActivateWindow(WINDOW_SLIDESHOW);
 }
 
-void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursivePaths)
+void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursivePaths, SORT_METHOD method, SORT_ORDER order)
 {
   // check whether we've already added this path
   if (recursivePaths)
@@ -831,7 +833,8 @@ void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursiv
   CFileItemList items;
   if (!CDirectory::GetDirectory(strPath, items, g_stSettings.m_pictureExtensions))
     return;
-  items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
+
+  items.Sort(method, order);
 
   // need to go into all subdirs
   for (int i = 0; i < items.Size(); i++)

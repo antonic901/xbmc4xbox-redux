@@ -1,3 +1,24 @@
+/*
+ *      Copyright (C) 2005-2010 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
+ *
+ */
+
 #include "stdafx.h"
 #include "URL.h"
 #include "PlayerSelectionRule.h"
@@ -36,7 +57,7 @@ void CPlayerSelectionRule::Initialize(TiXmlElement* pRule)
   m_playerCoreId = 0;
 
   TiXmlElement* pSubRule = pRule->FirstChildElement("rule");
-  while (pSubRule) 
+  while (pSubRule)
   {
     vecSubRules.push_back(new CPlayerSelectionRule(pSubRule));
     pSubRule = pSubRule->NextSiblingElement("rule");
@@ -75,7 +96,7 @@ void CPlayerSelectionRule::GetPlayers(const CFileItem& item, VECPLAYERCORES &vec
       regExp.RegFind(url.GetProtocol(), 0) != 0) return;
   
   if (m_mimeTypes && m_mimeTypes.length() > 0 && regExp.RegComp(m_mimeTypes.c_str()) &&
-      regExp.RegFind(item.GetContentType(), 0) != 0) return;
+      regExp.RegFind(item.GetMimeType(), 0) != 0) return;
 
   if (m_fileName && m_fileName.length() > 0 && regExp.RegComp(m_fileName.c_str()) &&
       regExp.RegFind(item.m_strPath, 0) != 0) return;
@@ -84,7 +105,7 @@ void CPlayerSelectionRule::GetPlayers(const CFileItem& item, VECPLAYERCORES &vec
 
   for (unsigned int i = 0; i < vecSubRules.size(); i++)
     vecSubRules[i]->GetPlayers(item, vecCores);
-  
+
   PLAYERCOREID playerCoreId = GetPlayerCore();
   if (playerCoreId != EPC_NONE)
   {

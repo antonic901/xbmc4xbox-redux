@@ -174,6 +174,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryCleanOnUpdate = false;
   m_bVideoLibraryExportAutoThumbs = false;
   m_bVideoLibraryMyMoviesCategoriesToGenres = false;
+  m_bVideoLibraryImportWatchedState = false;
 
   m_bUseEvilB = true;
 
@@ -351,6 +352,7 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bVideoLibraryCleanOnUpdate);
     XMLUtils::GetString(pElement, "itemseparator", m_videoItemSeparator);
     XMLUtils::GetBoolean(pElement, "exportautothumbs", m_bVideoLibraryExportAutoThumbs);
+    XMLUtils::GetBoolean(pElement, "importwatchedstate", m_bVideoLibraryImportWatchedState);
 
     TiXmlElement* pMyMovies = pElement->FirstChildElement("mymovies");
     if (pMyMovies)

@@ -28,6 +28,7 @@
 #include "FileItem.h"
 
 class CIMDB;
+class CRegExp;
 
 namespace VIDEO
 {
@@ -100,6 +101,13 @@ namespace VIDEO
   protected:
     virtual void Process();
     bool DoScan(const CStdString& strDirectory, SScanSettings settings);
+
+    /*! \brief Extract episode and season numbers from a processed regexp
+     \param reg Regular expression object with at least 2 matches
+     \param episodeInfo Episode information to fill in.
+     \return true on success (2 matches), false on failure (fewer than 2 matches)
+     */
+    bool GetEpisodeAndSeasonFromRegExp(CRegExp &reg, SEpisode &episodeInfo);
 
     virtual void Run();
     int CountFiles(const CStdString& strPath);

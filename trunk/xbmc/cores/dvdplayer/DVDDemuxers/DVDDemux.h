@@ -63,7 +63,7 @@ public:
     pPrivate = NULL;
     ExtraData = NULL;
     ExtraSize = 0;
-    language[0] = 0;
+    memset(language, 0, sizeof(language));
     disabled = false;
   }
 

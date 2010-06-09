@@ -98,7 +98,7 @@ bool CDatabase::Open()
   m_pDS.reset(m_pDB->CreateDataset());
   m_pDS2.reset(m_pDB->CreateDataset());
 
-  if ( m_pDB->connect() != DB_CONNECTION_OK)
+  if (m_pDB->connect() != DB_CONNECTION_OK)
   {
     CLog::Log(LOGERROR, "Unable to open %s (old version?)", strDatabase.c_str());
     return false;

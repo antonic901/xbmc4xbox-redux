@@ -160,7 +160,7 @@ bool CRssFeed::ReadFeed()
         const char * content_type = item_child->Attribute("type");
         if (content_type)
 		{
-          item->SetContentType(content_type);
+          item->SetMimeType(content_type);
           CStdString strContentType(content_type);
           if (url && item->m_strPath.IsEmpty() &&  
             (strContentType.Left(6).Equals("video/") ||
@@ -181,7 +181,7 @@ bool CRssFeed::ReadFeed()
         const char * content_type = item_child->Attribute("type");
         if (content_type)
 		{
-          item->SetContentType(content_type);
+          item->SetMimeType(content_type);
           CStdString strContentType(content_type);
           if (url && item->m_strPath.IsEmpty() &&  
             (strContentType.Left(6).Equals("video/") ||

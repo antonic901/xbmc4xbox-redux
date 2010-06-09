@@ -260,7 +260,7 @@ bool CFileShoutcast::Open(const CURL& url)
   }
 
   /* store content type of stream */
-  m_contenttype = m_ripInfo.contenttype;
+  m_mimetype = m_ripInfo.contenttype;
 
   //CHANGED CODE: Don't reset timer anymore.
 
@@ -398,5 +398,5 @@ bool CFileShoutcast::GetMusicInfoTag(CMusicInfoTag& tag)
 
 CStdString CFileShoutcast::GetContent()
 {
-  return m_contenttype;
+  return m_mimetype;
 }
