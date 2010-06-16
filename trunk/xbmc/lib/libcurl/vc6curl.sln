@@ -1,0 +1,110 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curllib", "lib\vc6libcurl.vcproj", "{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF} = {E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "polarssl", "..\polarssl\visualc\polarssl.vcproj", "{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug Win32 = Debug Win32
+		Debug Xbox = Debug Xbox
+		DLL Debug = DLL Debug
+		DLL Release = DLL Release
+		LIB Debug = LIB Debug
+		LIB Release = LIB Release
+		Profile Win32 = Profile Win32
+		Profile Xbox = Profile Xbox
+		Profile_FastCap Win32 = Profile_FastCap Win32
+		Profile_FastCap Xbox = Profile_FastCap Xbox
+		Release Win32 = Release Win32
+		Release Xbox = Release Xbox
+		Release_LTCG Win32 = Release_LTCG Win32
+		Release_LTCG Xbox = Release_LTCG Xbox
+		using libcurl DLL Debug = using libcurl DLL Debug
+		using libcurl DLL Release = using libcurl DLL Release
+		using libcurl LIB Debug = using libcurl LIB Debug
+		using libcurl LIB Release = using libcurl LIB Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Debug Win32.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Debug Win32.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Debug Xbox.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Debug Xbox.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.DLL Debug.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.DLL Debug.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.DLL Release.ActiveCfg = DLL Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.DLL Release.Build.0 = DLL Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.LIB Debug.ActiveCfg = LIB Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.LIB Debug.Build.0 = LIB Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.LIB Release.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.LIB Release.Build.0 = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile Win32.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile Win32.Build.0 = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile Xbox.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile Xbox.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile_FastCap Win32.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile_FastCap Win32.Build.0 = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile_FastCap Xbox.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Profile_FastCap Xbox.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release Win32.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release Win32.Build.0 = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release Xbox.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release Xbox.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release_LTCG Win32.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release_LTCG Win32.Build.0 = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release_LTCG Xbox.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.Release_LTCG Xbox.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl DLL Debug.ActiveCfg = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl DLL Debug.Build.0 = DLL Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl DLL Release.ActiveCfg = DLL Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl DLL Release.Build.0 = DLL Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl LIB Debug.ActiveCfg = LIB Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl LIB Debug.Build.0 = LIB Debug|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl LIB Release.ActiveCfg = LIB Release|Win32
+		{E6BDFD63-5570-481B-9E6D-2234A4CD76F3}.using libcurl LIB Release.Build.0 = LIB Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Debug Win32.ActiveCfg = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Debug Win32.Build.0 = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Debug Xbox.ActiveCfg = Debug|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Debug Xbox.Build.0 = Debug|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.DLL Debug.ActiveCfg = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.DLL Debug.Build.0 = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.DLL Release.ActiveCfg = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.DLL Release.Build.0 = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.LIB Debug.ActiveCfg = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.LIB Debug.Build.0 = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.LIB Release.ActiveCfg = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.LIB Release.Build.0 = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile Win32.ActiveCfg = Profile|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile Win32.Build.0 = Profile|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile Xbox.ActiveCfg = Profile|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile Xbox.Build.0 = Profile|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile_FastCap Win32.ActiveCfg = Profile_FastCap|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile_FastCap Win32.Build.0 = Profile_FastCap|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile_FastCap Xbox.ActiveCfg = Profile_FastCap|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Profile_FastCap Xbox.Build.0 = Profile_FastCap|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release Win32.ActiveCfg = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release Win32.Build.0 = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release Xbox.ActiveCfg = Release|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release Xbox.Build.0 = Release|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release_LTCG Win32.ActiveCfg = Release_LTCG|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release_LTCG Win32.Build.0 = Release_LTCG|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release_LTCG Xbox.ActiveCfg = Release_LTCG|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.Release_LTCG Xbox.Build.0 = Release_LTCG|Xbox
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl DLL Debug.ActiveCfg = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl DLL Debug.Build.0 = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl DLL Release.ActiveCfg = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl DLL Release.Build.0 = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl LIB Debug.ActiveCfg = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl LIB Debug.Build.0 = Debug|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl LIB Release.ActiveCfg = Release|Win32
+		{E2A55138-9CEC-4D0B-9D35-C0FFBF36AFDF}.using libcurl LIB Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

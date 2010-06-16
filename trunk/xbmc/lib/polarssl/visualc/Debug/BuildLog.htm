@@ -1,0 +1,113 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=Windows-1252">
+</head>
+<body>
+<pre>
+<table width=100% bgcolor=#CFCFE5><tr> <td> <font face=arial size=+3>
+Build Log
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+<h3>------- Build started: Project: polarssl, Configuration: Debug|Win32 -------
+</h3>
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Command Lines
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\polarssl\visualc\Debug\RSP000008.rsp" with contents
+[
+/O2 /I "..\include" /FD /EHsc /Fo"Debug/" /Fd"Debug/vc70.pdb" /c /TC
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\xtea.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\x509parse.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\timing.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\ssl_tls.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\ssl_srv.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\ssl_cli.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\sha4.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\sha2.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\sha1.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\rsa.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\padlock.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\net.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\md5.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\md4.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\md2.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\havege.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\dhm.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\des.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\debug.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\certs.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\camellia.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\bignum.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\base64.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\arc4.c
+\xbmc\xbmc4xbox\xbmc\lib\polarssl\library\aes.c
+]
+Creating command line "cl.exe @c:\xbmc\xbmc4xbox\xbmc\lib\polarssl\visualc\Debug\RSP000008.rsp /nologo"
+Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\polarssl\visualc\Debug\RSP000009.rsp" with contents
+[
+/OUT:"C:\xbmc\xbmc4xbox\xbmc\lib\libcurl\Debug/polarssl.exe" /NOLOGO  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+.\Debug\aes.obj
+.\Debug\arc4.obj
+.\Debug\base64.obj
+.\Debug\bignum.obj
+.\Debug\camellia.obj
+.\Debug\certs.obj
+.\Debug\debug.obj
+.\Debug\des.obj
+.\Debug\dhm.obj
+.\Debug\havege.obj
+.\Debug\md2.obj
+.\Debug\md4.obj
+.\Debug\md5.obj
+.\Debug\net.obj
+.\Debug\padlock.obj
+.\Debug\rsa.obj
+.\Debug\sha1.obj
+.\Debug\sha2.obj
+.\Debug\sha4.obj
+.\Debug\ssl_cli.obj
+.\Debug\ssl_srv.obj
+.\Debug\ssl_tls.obj
+.\Debug\timing.obj
+.\Debug\x509parse.obj
+.\Debug\xtea.obj
+]
+Creating command line "link.exe @c:\xbmc\xbmc4xbox\xbmc\lib\polarssl\visualc\Debug\RSP000009.rsp"
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Output Window
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Compiling...
+xtea.c
+x509parse.c
+timing.c
+ssl_tls.c
+ssl_srv.c
+ssl_cli.c
+sha4.c
+sha2.c
+sha1.c
+rsa.c
+padlock.c
+net.c
+md5.c
+md4.c
+md2.c
+havege.c
+dhm.c
+des.c
+debug.c
+certs.c
+Generating Code...
+Compiling...
+camellia.c
+bignum.c
+base64.c
+arc4.c
+aes.c
+Generating Code...
+Linking...
+LIBC.lib(crt0.obj) : error LNK2019: unresolved external symbol _main referenced in function _mainCRTStartup
+C:\xbmc\xbmc4xbox\xbmc\lib\libcurl\Debug/polarssl.exe : fatal error LNK1120: 1 unresolved externals
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Results
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+Build log was saved at "file://c:\xbmc\xbmc4xbox\xbmc\lib\polarssl\visualc\Debug\BuildLog.htm"
+polarssl - 2 error(s), 0 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
+</font></table></body></html>
