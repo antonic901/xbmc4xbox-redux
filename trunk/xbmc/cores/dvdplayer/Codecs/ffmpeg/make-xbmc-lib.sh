@@ -7,7 +7,7 @@ rm -r .libs
 make distclean
 
 ./configure \
---extra-cflags="-D_XBOX -fno-common -mtune=pentium3 -msse -ffast-math -mfpmath=sse -pipe -Wno-unused-function" \
+--extra-cflags="-D_XBOX -fno-common -mtune=pentium3 -msse -mfpmath=sse -pipe -Wno-unused-function" \
 --cpu=pentium3 \
 --enable-gpl \
 --enable-shared \
