@@ -202,10 +202,10 @@ namespace VIDEO
       bSkip = true;
 
     CStdString hash, dbHash;
-    if (m_info.strContent.Equals("movies") && !settings.noupdate)
+    if ((m_info.strContent.Equals("movies") || m_info.strContent.Equals("musicvideos")) && !settings.noupdate)
     {
       if (m_pObserver)
-        m_pObserver->OnStateChanged(FETCHING_MOVIE_INFO);
+        m_pObserver->OnStateChanged(m_info.strContent.Equals("movies") ? FETCHING_MOVIE_INFO : FETCHING_MUSICVIDEO_INFO);
 
       CStdString fastHash = GetFastHash(strDirectory);
       if (m_database.GetPathHash(strDirectory, dbHash) && !fastHash.IsEmpty() && fastHash == dbHash)
@@ -217,7 +217,8 @@ namespace VIDEO
       if (!bSkip)
       { // need to fetch the folder
         CDirectory::GetDirectory(strDirectory, items, g_stSettings.m_videoExtensions);
-        items.Stack();
+        if (m_info.strContent.Equals("movies"))
+          items.Stack();
         // compute hash
         GetPathHash(items, hash);
         if (hash != dbHash && !hash.IsEmpty())
@@ -267,37 +268,6 @@ namespace VIDEO
         CUtil::GetParentPath(item->m_strPath, items.m_strPath);
       }
     }
-    else if (m_info.strContent.Equals("musicvideos") && !settings.noupdate)
-    {
-      if (m_pObserver)
-        m_pObserver->OnStateChanged(FETCHING_MUSICVIDEO_INFO);
-
-      CDirectory::GetDirectory(strDirectory, items, g_stSettings.m_videoExtensions);
-      items.m_strPath = strDirectory;
-
-      int numFilesInFolder = GetPathHash(items, hash);
-      if (!m_database.GetPathHash(strDirectory, dbHash) || dbHash != hash)
-      { // path has changed - rescan
-        if (dbHash.IsEmpty())
-          CLog::Log(LOGDEBUG, "VideoInfoScanner: Scanning dir '%s' as not in the database", strDirectory.c_str());
-        else
-          CLog::Log(LOGDEBUG, "VideoInfoScanner: Rescanning dir '%s' due to change", strDirectory.c_str());
-      }
-      else
-      {
-        CLog::Log(LOGDEBUG, "VideoInfoScanner: Skipping dir '%s' due to no change", strDirectory.c_str());
-        m_currentItem += numFilesInFolder;
-
-        // notify our observer of our progress
-        if (m_pObserver)
-        {
-          if (m_itemCount>0)
-            m_pObserver->OnSetProgress(m_currentItem, m_itemCount);
-          m_pObserver->OnDirectoryScanned(strDirectory);
-        }
-        bSkip = true;
-      }
-    }
 
     CLog::Log(LOGDEBUG,"VideoInfoScanner: Hash[%s,%s]:DB=[%s],Computed=[%s]",
       m_info.strContent.c_str(),strDirectory.c_str(),dbHash.c_str(),hash.c_str());
@@ -331,7 +301,7 @@ namespace VIDEO
         CLog::Log(LOGDEBUG, "VideoInfoScanner: Not adding item to library as no info was found :(");
       }
     }
-    else if (hash != dbHash && m_info.strContent.Equals("movies"))
+    else if (hash != dbHash && (m_info.strContent.Equals("movies") || m_info.strContent.Equals("musicvideos")))
     { // update the hash either way - we may have changed the hash to a fast version
       m_database.SetPathHash(strDirectory, hash);
     }
