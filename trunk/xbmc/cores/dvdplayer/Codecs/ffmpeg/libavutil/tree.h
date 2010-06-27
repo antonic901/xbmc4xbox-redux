@@ -19,7 +19,7 @@
  */
 
 /**
- * @file libavutil/tree.h
+ * @file
  * A tree container.
  * Insertion, removal, finding equal, largest which is smaller than and
  * smallest which is larger than, all have O(log n) worst case complexity.
@@ -61,6 +61,7 @@ void *av_tree_find(const struct AVTreeNode *root, void *key, int (*cmp)(void *ke
  *             This allows the use of flat arrays, which have
  *             lower overhead compared to many malloced elements.
  *             You might want to define a function like:
+ *             @code
  *             void *tree_insert(struct AVTreeNode **rootp, void *key, int (*cmp)(void *key, const void *b), AVTreeNode **next){
  *                 if(!*next) *next= av_mallocz(av_tree_node_size);
  *                 return av_tree_insert(rootp, key, cmp, next);
@@ -69,13 +70,26 @@ void *av_tree_find(const struct AVTreeNode *root, void *key, int (*cmp)(void *ke
  *                 if(*next) av_freep(next);
  *                 return av_tree_insert(rootp, key, cmp, next);
  *             }
- *
+ *             @endcode
  * @return If no insertion happened, the found element; if an insertion or
-           removal happened, then either key or NULL will be returned.
+ *         removal happened, then either key or NULL will be returned.
  *         Which one it is depends on the tree state and the implementation. You
  *         should make no assumptions that it's one or the other in the code.
  */
 void *av_tree_insert(struct AVTreeNode **rootp, void *key, int (*cmp)(void *key, const void *b), struct AVTreeNode **next);
 void av_tree_destroy(struct AVTreeNode *t);
+
+/**
+ * Applies enu(opaque, &elem) to all the elements in the tree in a given range.
+ *
+ * @param cmp a comparison function that returns < 0 for a element below the
+ *            range, > 0 for a element above the range and == 0 for a
+ *            element inside the range
+ *
+ * @note The cmp function should use the same ordering used to construct the
+ *       tree.
+ */
+void av_tree_enumerate(struct AVTreeNode *t, void *opaque, int (*cmp)(void *opaque, void *elem), int (*enu)(void *opaque, void *elem));
+
 
 #endif /* AVUTIL_TREE_H */

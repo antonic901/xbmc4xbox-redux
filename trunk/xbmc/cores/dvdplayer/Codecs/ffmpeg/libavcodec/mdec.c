@@ -22,7 +22,7 @@
  */
 
 /**
- * @file libavcodec/mdec.c
+ * @file
  * Sony PlayStation MDEC (Motion DECoder)
  * This is very similar to intra-only MPEG-1.
  */
@@ -44,9 +44,7 @@ typedef struct MDECContext{
     int mb_width;
     int mb_height;
     int mb_x, mb_y;
-    DECLARE_ALIGNED_16(DCTELEM, block[6][64]);
-    DECLARE_ALIGNED_8(uint16_t, intra_matrix[64]);
-    DECLARE_ALIGNED_8(int, q_intra_matrix[64]);
+    DECLARE_ALIGNED(16, DCTELEM, block)[6][64];
     uint8_t *bitstream_buffer;
     unsigned int bitstream_buffer_size;
     int block_last_index[6];
@@ -154,8 +152,10 @@ static inline void idct_put(MDECContext *a, int mb_x, int mb_y){
 
 static int decode_frame(AVCodecContext *avctx,
                         void *data, int *data_size,
-                        const uint8_t *buf, int buf_size)
+                        AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     MDECContext * const a = avctx->priv_data;
     AVFrame *picture = data;
     AVFrame * const p= &a->picture;
@@ -172,7 +172,9 @@ static int decode_frame(AVCodecContext *avctx,
     p->pict_type= FF_I_TYPE;
     p->key_frame= 1;
 
-    a->bitstream_buffer= av_fast_realloc(a->bitstream_buffer, &a->bitstream_buffer_size, buf_size + FF_INPUT_BUFFER_PADDING_SIZE);
+    av_fast_malloc(&a->bitstream_buffer, &a->bitstream_buffer_size, buf_size + FF_INPUT_BUFFER_PADDING_SIZE);
+    if (!a->bitstream_buffer)
+        return AVERROR(ENOMEM);
     for(i=0; i<buf_size; i+=2){
         a->bitstream_buffer[i]  = buf[i+1];
         a->bitstream_buffer[i+1]= buf[i  ];
@@ -199,7 +201,7 @@ static int decode_frame(AVCodecContext *avctx,
     }
 
     p->quality= a->qscale * FF_QP2LAMBDA;
-    memset(p->qscale_table, a->qscale, p->qstride*a->mb_height);
+    memset(p->qscale_table, a->qscale, a->mb_width);
 
     *picture   = a->picture;
     *data_size = sizeof(AVPicture);
@@ -227,8 +229,8 @@ static av_cold int decode_init(AVCodecContext *avctx){
     ff_mpeg12_init_vlcs();
     ff_init_scantable(a->dsp.idct_permutation, &a->scantable, ff_zigzag_direct);
 
-    p->qstride= a->mb_width;
-    p->qscale_table= av_mallocz( p->qstride * a->mb_height);
+    p->qstride= 0;
+    p->qscale_table= av_mallocz(a->mb_width);
     avctx->pix_fmt= PIX_FMT_YUV420P;
 
     return 0;
@@ -237,6 +239,8 @@ static av_cold int decode_init(AVCodecContext *avctx){
 static av_cold int decode_end(AVCodecContext *avctx){
     MDECContext * const a = avctx->priv_data;
 
+    if(a->picture.data[0])
+        avctx->release_buffer(avctx, &a->picture);
     av_freep(&a->bitstream_buffer);
     av_freep(&a->picture.qscale_table);
     a->bitstream_buffer_size=0;
@@ -246,7 +250,7 @@ static av_cold int decode_end(AVCodecContext *avctx){
 
 AVCodec mdec_decoder = {
     "mdec",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_MDEC,
     sizeof(MDECContext),
     decode_init,

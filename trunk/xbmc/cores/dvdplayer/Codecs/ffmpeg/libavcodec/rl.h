@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavcodec/rl.h
+ * @file
  * rl header.
  */
 
@@ -28,7 +28,7 @@
 #define AVCODEC_RL_H
 
 #include <stdint.h>
-#include "bitstream.h"
+#include "get_bits.h"
 
 /* run length table */
 #define MAX_RUN    64

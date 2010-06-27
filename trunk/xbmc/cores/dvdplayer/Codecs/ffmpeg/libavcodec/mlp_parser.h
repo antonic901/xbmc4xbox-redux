@@ -20,14 +20,14 @@
  */
 
 /**
- * @file libavcodec/mlp_parser.h
+ * @file
  * MLP parser prototypes
  */
 
 #ifndef AVCODEC_MLP_PARSER_H
 #define AVCODEC_MLP_PARSER_H
 
-#include "bitstream.h"
+#include "get_bits.h"
 
 typedef struct MLPHeaderInfo
 {

@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavcodec/idcinvideo.c
+ * @file
  * id Quake II Cin Video Decoder by Dr. Tim Ferguson
  * For more information about the id CIN format, visit:
  *   http://www.csse.monash.edu.au/~timf/
@@ -47,7 +47,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "avcodec.h"
 
@@ -209,8 +208,10 @@ static void idcin_decode_vlcs(IdcinContext *s)
 
 static int idcin_decode_frame(AVCodecContext *avctx,
                               void *data, int *data_size,
-                              const uint8_t *buf, int buf_size)
+                              AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     IdcinContext *s = avctx->priv_data;
     AVPaletteControl *palette_control = avctx->palctrl;
 
@@ -254,7 +255,7 @@ static av_cold int idcin_decode_end(AVCodecContext *avctx)
 
 AVCodec idcin_decoder = {
     "idcinvideo",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_IDCIN,
     sizeof(IdcinContext),
     idcin_decode_init,

@@ -2115,6 +2115,14 @@ CStdString CSettings::GetProfilesThumbFolder() const
   return folder;
 }
 
+CStdString CSettings::GetFFmpegDllFolder() const
+{
+  CStdString folder = "Q:\\system\\players\\dvdplayer\\";
+  if (g_guiSettings.GetBool("videoplayer.allcodecs"))
+    folder += "full\\";
+  return folder;
+}
+
 CStdString CSettings::GetSourcesFile() const
 {
   CStdString folder;

@@ -24,22 +24,18 @@
 
 #include "libavutil/common.h"
 
-#if   ARCH_X86
-
-#include "x86/mathops.h"
-
-#elif ARCH_ARM
-
-#include "arm/mathops.h"
-
-#elif ARCH_PPC
-
-#include "ppc/mathops.h"
-
+#if   ARCH_ARM
+#   include "arm/mathops.h"
+#elif ARCH_AVR32
+#   include "avr32/mathops.h"
 #elif ARCH_BFIN
-
-#include "bfin/mathops.h"
-
+#   include "bfin/mathops.h"
+#elif ARCH_MIPS
+#   include "mips/mathops.h"
+#elif ARCH_PPC
+#   include "ppc/mathops.h"
+#elif ARCH_X86
+#   include "x86/mathops.h"
 #endif
 
 /* generic implementation */
@@ -54,6 +50,12 @@
 
 static av_always_inline int MULH(int a, int b){
     return ((int64_t)(a) * (int64_t)(b))>>32;
+}
+#endif
+
+#ifndef UMULH
+static av_always_inline unsigned UMULH(unsigned a, unsigned b){
+    return ((uint64_t)(a) * (uint64_t)(b))>>32;
 }
 #endif
 
@@ -111,6 +113,37 @@ static inline av_const int mid_pred(int a, int b, int c)
     return b;
 #endif
 }
+#endif
+
+#ifndef sign_extend
+static inline av_const int sign_extend(int val, unsigned bits)
+{
+    return (val << ((8 * sizeof(int)) - bits)) >> ((8 * sizeof(int)) - bits);
+}
+#endif
+
+#ifndef zero_extend
+static inline av_const unsigned zero_extend(unsigned val, unsigned bits)
+{
+    return (val << ((8 * sizeof(int)) - bits)) >> ((8 * sizeof(int)) - bits);
+}
+#endif
+
+#ifndef COPY3_IF_LT
+#define COPY3_IF_LT(x, y, a, b, c, d)\
+if ((y) < (x)) {\
+    (x) = (y);\
+    (a) = (b);\
+    (c) = (d);\
+}
+#endif
+
+#ifndef NEG_SSR32
+#   define NEG_SSR32(a,s) ((( int32_t)(a))>>(32-(s)))
+#endif
+
+#ifndef NEG_USR32
+#   define NEG_USR32(a,s) (((uint32_t)(a))>>(32-(s)))
 #endif
 
 #endif /* AVCODEC_MATHOPS_H */

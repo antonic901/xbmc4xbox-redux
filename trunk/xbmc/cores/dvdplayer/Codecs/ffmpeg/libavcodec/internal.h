@@ -17,7 +17,7 @@
  */
 
 /**
- * @file libavcodec/internal.h
+ * @file
  * common internal api header.
  */
 
@@ -28,38 +28,26 @@
 #include "avcodec.h"
 
 /**
- * Logs a generic warning message about a missing feature.
- * @param[in] avc a pointer to an arbitrary struct of which the first field is
- * a pointer to an AVClass struct
- * @param[in] feature string containing the name of the missing feature
- * @param[in] want_sample indicates if samples are wanted which exhibit this feature.
- * If \p want_sample is non-zero, additional verbage will be added to the log
- * message which tells the user how to report samples to the development
- * mailing list.
- */
-void ff_log_missing_feature(void *avc, const char *feature, int want_sample);
-
-/**
- * Logs a generic warning message asking for a sample.
- * @param[in] avc a pointer to an arbitrary struct of which the first field is
- * a pointer to an AVClass struct
- * @param[in] msg string containing an optional message, or NULL if no message
- */
-void ff_log_ask_for_sample(void *avc, const char *msg);
-
-/**
- * Determines whether \p pix_fmt is a hardware accelerated format.
+ * Determines whether pix_fmt is a hardware accelerated format.
  */
 int ff_is_hwaccel_pix_fmt(enum PixelFormat pix_fmt);
 
 /**
- * Returns the hardware accelerated codec for codec \p codec_id and
- * pixel format \p pix_fmt.
+ * Returns the hardware accelerated codec for codec codec_id and
+ * pixel format pix_fmt.
  *
  * @param codec_id the codec to match
  * @param pix_fmt the pixel format to match
  * @return the hardware accelerated codec, or NULL if none was found.
  */
 AVHWAccel *ff_find_hwaccel(enum CodecID codec_id, enum PixelFormat pix_fmt);
+
+/**
+ * Return the index into tab at which {a,b} match elements {[0],[1]} of tab.
+ * If there is no such matching pair then size is returned.
+ */
+int ff_match_2uint16(const uint16_t (*tab)[2], int size, int a, int b);
+
+unsigned int ff_toupper4(unsigned int x);
 
 #endif /* AVCODEC_INTERNAL_H */

@@ -24,7 +24,7 @@
 #define AVCODEC_AUDIOCONVERT_H
 
 /**
- * @file libavcodec/audioconvert.h
+ * @file
  * Audio format conversion routines
  */
 
@@ -73,6 +73,10 @@ void avcodec_get_channel_layout_string(char *buf, int buf_size, int nb_channels,
  */
 int64_t avcodec_guess_channel_layout(int nb_channels, enum CodecID codec_id, const char *fmt_name);
 
+/**
+ * @return the number of channels in the channel layout.
+ */
+int avcodec_channel_layout_num_channels(int64_t channel_layout);
 
 struct AVAudioConvert;
 typedef struct AVAudioConvert AVAudioConvert;
@@ -99,9 +103,9 @@ void av_audio_convert_free(AVAudioConvert *ctx);
 /**
  * Convert between audio sample formats
  * @param[in] out array of output buffers for each channel. set to NULL to ignore processing of the given channel.
- * @param[in] out_stride distance between consecutive input samples (measured in bytes)
+ * @param[in] out_stride distance between consecutive output samples (measured in bytes)
  * @param[in] in array of input buffers for each channel
- * @param[in] in_stride distance between consecutive output samples (measured in bytes)
+ * @param[in] in_stride distance between consecutive input samples (measured in bytes)
  * @param len length of audio frame size (measured in samples)
  */
 int av_audio_convert(AVAudioConvert *ctx,

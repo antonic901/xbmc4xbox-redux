@@ -23,7 +23,7 @@
  */
 
 /**
- * @file libavcodec/roqvideoenc.c
+ * @file
  * id RoQ encoder by Vitor. Based on the Switchblade3 library and the
  * Switchblade3 FFmpeg glue by Eric Lasota.
  */
@@ -55,7 +55,6 @@
  */
 
 #include <string.h>
-#include <unistd.h>
 
 #include "roqvideo.h"
 #include "bytestream.h"
@@ -796,7 +795,7 @@ static void generate_codebook(RoqContext *enc, RoqTempdata *tempdata,
 {
     int i, j, k;
     int c_size = size*size/4;
-    int *buf = points;
+    int *buf;
     int *codebook = av_malloc(6*c_size*cbsize*sizeof(int));
     int *closest_cb;
 
@@ -929,7 +928,7 @@ static int roq_encode_init(AVCodecContext *avctx)
 {
     RoqContext *enc = avctx->priv_data;
 
-    av_random_init(&enc->randctx, 1);
+    av_lfg_init(&enc->randctx, 1);
 
     enc->framesSinceKeyframe = 0;
     if ((avctx->width & 0xf) || (avctx->height & 0xf)) {
@@ -939,12 +938,6 @@ static int roq_encode_init(AVCodecContext *avctx)
 
     if (((avctx->width)&(avctx->width-1))||((avctx->height)&(avctx->height-1)))
         av_log(avctx, AV_LOG_ERROR, "Warning: dimensions not power of two\n");
-
-    if (avcodec_check_dimensions(avctx, avctx->width, avctx->height)) {
-        av_log(avctx, AV_LOG_ERROR, "Invalid dimensions (%dx%d)\n",
-               avctx->width, avctx->height);
-        return -1;
-    }
 
     enc->width = avctx->width;
     enc->height = avctx->height;
@@ -1064,13 +1057,13 @@ static int roq_encode_end(AVCodecContext *avctx)
 AVCodec roq_encoder =
 {
     "roqvideo",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_ROQ,
     sizeof(RoqContext),
     roq_encode_init,
     roq_encode_frame,
     roq_encode_end,
-    .supported_framerates = (AVRational[]){{30,1}, {0,0}},
-    .pix_fmts = (enum PixelFormat[]){PIX_FMT_YUV444P, PIX_FMT_NONE},
+    .supported_framerates = (const AVRational[]){{30,1}, {0,0}},
+    .pix_fmts = (const enum PixelFormat[]){PIX_FMT_YUV444P, PIX_FMT_NONE},
     .long_name = NULL_IF_CONFIG_SMALL("id RoQ video"),
 };

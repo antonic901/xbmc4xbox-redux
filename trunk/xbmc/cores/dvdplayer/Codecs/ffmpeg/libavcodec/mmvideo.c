@@ -20,9 +20,9 @@
  */
 
 /**
- * @file libavcodec/mmvideo.c
+ * @file
  * American Laser Games MM Video Decoder
- * by Peter Ross (suxen_drol at hotmail dot com)
+ * by Peter Ross (pross@xvid.org)
  *
  * The MM format was used by IBM-PC ports of ALG's "arcade shooter" games,
  * including Mad Dog McCree and Crime Patrol.
@@ -58,12 +58,9 @@ static av_cold int mm_decode_init(AVCodecContext *avctx)
 
     avctx->pix_fmt = PIX_FMT_PAL8;
 
-    if (avcodec_check_dimensions(avctx, avctx->width, avctx->height))
-        return -1;
-
     s->frame.reference = 1;
     if (avctx->get_buffer(avctx, &s->frame)) {
-        av_log(s->avctx, AV_LOG_ERROR, "mmvideo: get_buffer() failed\n");
+        av_log(s->avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
     }
 
@@ -159,8 +156,10 @@ static void mm_decode_inter(MmContext * s, int half_horiz, int half_vert, const 
 
 static int mm_decode_frame(AVCodecContext *avctx,
                             void *data, int *data_size,
-                            const uint8_t *buf, int buf_size)
+                            AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     MmContext *s = avctx->priv_data;
     const uint8_t *buf_end = buf+buf_size;
     int type;
@@ -201,7 +200,7 @@ static av_cold int mm_decode_end(AVCodecContext *avctx)
 
 AVCodec mmvideo_decoder = {
     "mmvideo",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_MMVIDEO,
     sizeof(MmContext),
     mm_decode_init,

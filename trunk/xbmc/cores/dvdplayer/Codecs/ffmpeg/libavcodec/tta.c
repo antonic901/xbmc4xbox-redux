@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavcodec/tta.c
+ * @file
  * TTA (The Lossless True Audio) decoder
  * (www.true-audio.com or tta.corecodec.org)
  * @author Alex Beregszaszi
@@ -31,7 +31,7 @@
 //#define DEBUG
 #include <limits.h>
 #include "avcodec.h"
-#include "bitstream.h"
+#include "get_bits.h"
 
 #define FORMAT_INT 1
 #define FORMAT_FLOAT 3
@@ -287,8 +287,10 @@ static av_cold int tta_decode_init(AVCodecContext * avctx)
 
 static int tta_decode_frame(AVCodecContext *avctx,
         void *data, int *data_size,
-        const uint8_t *buf, int buf_size)
+        AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     TTAContext *s = avctx->priv_data;
     int i;
 
@@ -300,6 +302,10 @@ static int tta_decode_frame(AVCodecContext *avctx,
         int cur_chan = 0, framelen = s->frame_length;
         int32_t *p;
 
+        if (*data_size < (framelen * s->channels * 2)) {
+            av_log(avctx, AV_LOG_ERROR, "Output buffer size is too small.\n");
+            return -1;
+        }
         // FIXME: seeking
         s->total_frames--;
         if (!s->total_frames && s->last_frame_length)
@@ -330,9 +336,14 @@ static int tta_decode_frame(AVCodecContext *avctx,
                 unary--;
             }
 
-            if (k)
+            if (get_bits_left(&s->gb) < k)
+                return -1;
+
+            if (k) {
+                if (k > MIN_CACHE_BITS)
+                    return -1;
                 value = (unary << k) + get_bits(&s->gb, k);
-            else
+            } else
                 value = unary;
 
             // FIXME: copy paste from original
@@ -402,6 +413,8 @@ static int tta_decode_frame(AVCodecContext *avctx,
             }
         }
 
+        if (get_bits_left(&s->gb) < 32)
+            return -1;
         skip_bits(&s->gb, 32); // frame crc
 
         // convert to output buffer
@@ -436,7 +449,7 @@ static av_cold int tta_decode_close(AVCodecContext *avctx) {
 
 AVCodec tta_decoder = {
     "tta",
-    CODEC_TYPE_AUDIO,
+    AVMEDIA_TYPE_AUDIO,
     CODEC_ID_TTA,
     sizeof(TTAContext),
     tta_decode_init,

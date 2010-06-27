@@ -24,6 +24,9 @@
 #include "DVDInputStreamRTMP.h"
 #include "VideoInfoTag.h"
 #include "FileSystem/IFile.h"
+#include "AdvancedSettings.h"
+#include "utils/log.h"
+#include "lib/libRTMP/log.h"
 
 #ifdef _LINUX
   #include <sys/types.h>
@@ -38,17 +41,45 @@
 
 using namespace XFILE;
 
+extern "C" {
+static void CDVDInputStreamRTMP_Log(int level, const char *fmt, va_list args)
+{
+  char buf[2048];
+
+  if (level > RTMP_LogGetLevel())
+    return;
+
+    switch(level) {
+    default:
+    case RTMP_LOGCRIT:    level = LOGFATAL;   break;
+    case RTMP_LOGERROR:   level = LOGERROR;   break;
+    case RTMP_LOGWARNING: level = LOGWARNING; break;
+    case RTMP_LOGINFO:    level = LOGNOTICE;  break;
+    case RTMP_LOGDEBUG:   level = LOGINFO;    break;
+    case RTMP_LOGDEBUG2:  level = LOGDEBUG;   break;
+    }
+
+  _vsnprintf(buf, sizeof(buf), fmt, args);
+  CLog::Log(level, "%s", buf);
+}
+};
+
 CDVDInputStreamRTMP::CDVDInputStreamRTMP() : CDVDInputStream(DVDSTREAM_TYPE_RTMP)
 {
-  m_rtmp = NULL;
-  m_rtmp = new RTMP_LIB::CRTMP;
+  RTMP_LogLevel level;
+
+  RTMP_LogSetCallback(CDVDInputStreamRTMP_Log);
+  switch (g_advancedSettings.m_logLevel) {
+  case LOG_LEVEL_DEBUG_SAMBA: level = RTMP_LOGDEBUG2; break;
+  case LOG_LEVEL_DEBUG_FREEMEM:
+  case LOG_LEVEL_DEBUG: level = RTMP_LOGDEBUG; break;
+  case LOG_LEVEL_NORMAL: level = RTMP_LOGINFO; break;
+  default: level = RTMP_LOGCRIT; break;
+  }
+  RTMP_LogSetLevel(level);
+  RTMP_Init(&m_rtmp);
   m_eof = true;
   m_bPaused = false;
-  m_prevTagSize = 0;
-  m_bSentHeader = false;
-  m_leftOver = NULL;
-  m_leftOverSize = 0;
-  m_leftOverConsumed = 0;
   m_sStreamPlaying = NULL;
 }
 
@@ -61,16 +92,6 @@ CDVDInputStreamRTMP::~CDVDInputStreamRTMP()
   }
 
   Close();
-
-  CSingleLock lock(m_RTMPSection);
-  if (m_rtmp)
-  {
-    CLog::Log(LOGNOTICE,"Deleted CRTMP");
-    delete m_rtmp;
-    m_rtmp = NULL;
-  }
-
-  m_bPaused = false;
 }
 
 bool CDVDInputStreamRTMP::IsEOF()
@@ -78,8 +99,26 @@ bool CDVDInputStreamRTMP::IsEOF()
   return m_eof;
 }
 
+#define SetAVal(av, cstr) av.av_val = (char *)cstr.c_str(); av.av_len = cstr.length()
+#undef AVC
+#define AVC(str) {(char *)str,sizeof(str)-1}
+
+/* librtmp option names are slightly different */
+static const struct {
+  const char *name;
+  AVal key;
+} options[] = {
+  { "SWFPlayer", AVC("swfUrl") },
+  { "PageURL",   AVC("pageUrl") },
+  { "PlayPath",  AVC("playpath") },
+  { "TcUrl",     AVC("tcUrl") },
+  { "IsLive",    AVC("live") },
+  { NULL }
+};
+
 bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
 {
+  int i;
   if (m_sStreamPlaying)
   {
     free(m_sStreamPlaying);
@@ -88,22 +127,28 @@ bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
 
   if (!CDVDInputStream::Open(strFile, "video/x-flv")) return false;
 
+  i = strlen(strFile);
+  m_sStreamPlaying = (char*)malloc(i+1);
+  memcpy(m_sStreamPlaying,strFile,i);
+  m_sStreamPlaying[i] = '\0';
+  if (!RTMP_SetupURL(&m_rtmp, m_sStreamPlaying)) return false;
+
+  for (i=0; options[i].name; i++)
+  {
+    std::string tmp = m_item.GetProperty(options[i].name);
+    if (tmp.length())
+    {
+      AVal av_tmp;
+      SetAVal(av_tmp, tmp);
+      RTMP_SetOpt(&m_rtmp, &options[i].key, &av_tmp);
+    }
+  }
+
   CSingleLock lock(m_RTMPSection);
-  if (!m_rtmp) return false;
 
-  m_rtmp->SetPlayer(m_item.GetProperty("SWFPlayer"));
-  m_rtmp->SetPageUrl(m_item.GetProperty("PageURL"));
-  m_rtmp->SetPlayPath(m_item.GetProperty("PlayPath"));
-  m_rtmp->SetTcUrl(m_item.GetProperty("TcUrl"));
-  if (!m_item.GetProperty("IsLive").compare("true"))
-    m_rtmp->SetLive();
-  m_rtmp->SetBufferMS(20000);
-
-  if (!m_rtmp->Connect(strFile))
+  if (!RTMP_Connect(&m_rtmp, NULL) || !RTMP_ConnectStream(&m_rtmp, 0))
     return false;
 
-  m_sStreamPlaying = (char*)calloc(strlen(strFile)+1,sizeof(char));
-  strncpy(m_sStreamPlaying,strFile,strlen(strFile));
   m_eof = false;
   return true;
 }
@@ -113,136 +158,19 @@ void CDVDInputStreamRTMP::Close()
 {
   CSingleLock lock(m_RTMPSection);
   CDVDInputStream::Close();
-  if (m_rtmp) m_rtmp->Close();
+  RTMP_Close(&m_rtmp);
   m_eof = true;
+  m_bPaused = false;
 }
 
 int CDVDInputStreamRTMP::Read(BYTE* buf, int buf_size)
 {
-  int nRead = 0;
-  if (m_leftOver)
-  {
-    int nToConsume = m_leftOverSize - m_leftOverConsumed;
-    if (nToConsume > buf_size)
-      nToConsume = buf_size;
-
-    memcpy(buf, m_leftOver + m_leftOverConsumed, nToConsume);
-    buf_size -= nToConsume;
-    m_leftOverConsumed += nToConsume;
-    nRead += nToConsume;
-
-    if (m_leftOverConsumed == m_leftOverSize)
-    {
-      m_leftOverConsumed = m_leftOverSize = 0;
-      delete [] m_leftOver;
-      m_leftOver = NULL;
-    }
-
-    if (buf_size == 0)
-      return nRead;
-  }
-
-  RTMP_LIB::RTMPPacket packet;
-
+  int i;
   CSingleLock lock(m_RTMPSection);
-  while (buf_size > nRead && m_rtmp && m_rtmp->GetNextMediaPacket(packet))
-  {
-
-    if (!m_bSentHeader)
-    {
-      if (buf_size < 9)
-        return -1;
-
-      char header[] = { 'F', 'L', 'V', 0x01, 
-                      0x05, // video + audio
-                      0x00, 0x00, 0x00, 0x09};
-      memcpy(buf, header, 9);
-      buf_size -= 9;
-      nRead += 9;
-      m_bSentHeader = true;
-    }
-
-    if (buf_size < 4)
-      return nRead;
-
-    // skip video info/command packets
-    // if we keep these it chokes the dvdplayer
-    if ( packet.m_packetType == 0x09 && 
-         packet.m_nBodySize == 2 &&
-         ( (*packet.m_body & 0xf0) == 0x50) )
-    {
-      continue;
-    }
-
-    // write footer of previous FLV tag
-    if ( m_prevTagSize != -1 )
-    {
-      RTMP_LIB::CRTMP::EncodeInt32((char*)buf + nRead, m_prevTagSize);
-      nRead += 4;
-      buf_size -= 4;
-    }
-
-    char *ptr = (char*)buf + nRead;
-
-    // audio (0x08), video (0x09) or metadata (0x12) packets :
-    // construct 11 byte header then add rtmp packet's data
-    if ( packet.m_packetType == 0x08 || packet.m_packetType == 0x09 || packet.m_packetType == 0x12 )
-    {
-      m_prevTagSize = 11 + packet.m_nBodySize;
-
-      if (buf_size < 11)
-        return nRead;
-
-      *ptr = packet.m_packetType;
-      ptr++;
-      ptr += RTMP_LIB::CRTMP::EncodeInt24(ptr, packet.m_nBodySize);
-      
-      ptr += RTMP_LIB::CRTMP::EncodeInt24(ptr, packet.m_nInfoField1);
-      *ptr = (char)((packet.m_nInfoField1 & 0xFF000000) >> 24);
-      ptr++;
-
-      ptr += RTMP_LIB::CRTMP::EncodeInt24(ptr, 0);
-
-      nRead += 11;
-      buf_size -= 11;
-
-      if (buf_size == 0)
-        return nRead;
-
-    }
-    else if (packet.m_packetType == 0x16)
-    {
-      // FLV tag(s) packet 
-      // contains it's own tagsize footer, don't write another
-      m_prevTagSize = -1; 
-    }
-
-    int nBodyLen = packet.m_nBodySize;
-    if (nBodyLen > buf_size)
-    {
-      memcpy(ptr, packet.m_body, buf_size);
-      nRead += buf_size;
-    
-      m_leftOver = new char[packet.m_nBodySize - buf_size];
-      memcpy(m_leftOver, packet.m_body + buf_size, packet.m_nBodySize - buf_size);
-      m_leftOverSize =  packet.m_nBodySize - buf_size;
-      m_leftOverConsumed = 0;
-      break;
-    }
-    else 
-    {
-      memcpy(ptr, packet.m_body, nBodyLen);
-      nRead += nBodyLen;
-      buf_size -= nBodyLen; 
-    }
-
-  }
-
-
-  if (m_rtmp && m_rtmp->IsConnected())
-    return nRead;
-
-  return -1;  
+  i = RTMP_Read(&m_rtmp, (char *)buf, buf_size);
+  if (i < 0)
+    m_eof = true;
+  return i;
 }
 
 __int64 CDVDInputStreamRTMP::Seek(__int64 offset, int whence)
@@ -256,7 +184,8 @@ __int64 CDVDInputStreamRTMP::Seek(__int64 offset, int whence)
 bool CDVDInputStreamRTMP::SeekTime(int iTimeInMsec)
 {
   CLog::Log(LOGNOTICE, "RTMP Seek to %i requested", iTimeInMsec);
-  if (m_rtmp->Seek((double)iTimeInMsec))
+  CSingleLock lock(m_RTMPSection);
+  if (RTMP_SendSeek(&m_rtmp, iTimeInMsec))
   {
     return true;
   }
@@ -276,27 +205,11 @@ bool CDVDInputStreamRTMP::NextStream()
 
 bool CDVDInputStreamRTMP::Pause(double dTime)
 {
-  if (m_bPaused)
-  {
-    CSingleLock lock(m_RTMPSection);
-    /*m_rtmp = new RTMP_LIB::CRTMP;
-    m_rtmp->Connect(m_sStreamPlaying, dTime);
-    m_bPaused = false;
-    CLog::Log(LOGNOTICE,"Created new CRTMP - %s : %f ms", m_sStreamPlaying, dTime);*/
-    m_bPaused = false;
-    m_rtmp->SendPause(m_bPaused, dTime);
-  }
-  else
-  {
-    CSingleLock lock(m_RTMPSection);
-    /*Close();
-    delete m_rtmp;
-    m_bPaused = true;
-    CLog::Log(LOGNOTICE,"Deleted CRTMP");*/
-    m_bPaused = true;
-    m_rtmp->SendPause(m_bPaused, dTime);
-  }
-
+  CSingleLock lock(m_RTMPSection);
+  if (!m_bPaused)
+    m_rtmp.m_pauseStamp = m_rtmp.m_channelTimestamp[m_rtmp.m_mediaChannel];
+  m_bPaused = !m_bPaused;
+  RTMP_SendPause(&m_rtmp, m_bPaused, m_rtmp.m_pauseStamp);
   return true;
 }
 

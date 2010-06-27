@@ -22,7 +22,7 @@
  */
 
 /**
- * @file libavformat/oma.c
+ * @file
  * This is a demuxer for Sony OpenMG Music files
  *
  * Known file extensions: ".oma", "aa3"
@@ -78,18 +78,23 @@ static int oma_read_header(AVFormatContext *s,
     if (ret != 10)
         return -1;
 
-    ea3_taglen = ((buf[6] & 0x7f) << 21) | ((buf[7] & 0x7f) << 14) | ((buf[8] & 0x7f) << 7) | (buf[9] & 0x7f);
+    if(!memcmp(buf, "ea3", 3)) {
+        ea3_taglen = ((buf[6] & 0x7f) << 21) | ((buf[7] & 0x7f) << 14) | ((buf[8] & 0x7f) << 7) | (buf[9] & 0x7f);
 
-    EA3_pos = ea3_taglen + 10;
-    if (buf[5] & 0x10)
-        EA3_pos += 10;
+        EA3_pos = ea3_taglen + 10;
+        if (buf[5] & 0x10)
+            EA3_pos += 10;
 
-    url_fseek(s->pb, EA3_pos, SEEK_SET);
-    ret = get_buffer(s->pb, buf, EA3_HEADER_SIZE);
-    if (ret != EA3_HEADER_SIZE)
-        return -1;
+        url_fseek(s->pb, EA3_pos, SEEK_SET);
+        ret = get_buffer(s->pb, buf, EA3_HEADER_SIZE);
+        if (ret != EA3_HEADER_SIZE)
+            return -1;
+    } else {
+        ret = get_buffer(s->pb, buf + 10, EA3_HEADER_SIZE - 10);
+        EA3_pos = 0;
+    }
 
-    if (memcmp(buf, (const uint8_t[]){'E', 'A', '3'},3) || buf[4] != 0 || buf[5] != EA3_HEADER_SIZE) {
+    if (memcmp(buf, ((const uint8_t[]){'E', 'A', '3'}),3) || buf[4] != 0 || buf[5] != EA3_HEADER_SIZE) {
         av_log(s, AV_LOG_ERROR, "Couldn't find the EA3 header !\n");
         return -1;
     }
@@ -107,9 +112,9 @@ static int oma_read_header(AVFormatContext *s,
         return AVERROR(ENOMEM);
 
     st->start_time = 0;
-    st->codec->codec_type  = CODEC_TYPE_AUDIO;
+    st->codec->codec_type  = AVMEDIA_TYPE_AUDIO;
     st->codec->codec_tag   = buf[32];
-    st->codec->codec_id    = codec_get_id(codec_oma_tags, st->codec->codec_tag);
+    st->codec->codec_id    = ff_codec_get_id(codec_oma_tags, st->codec->codec_tag);
 
     switch (buf[32]) {
         case OMA_CODECID_ATRAC3:
@@ -177,7 +182,9 @@ static int oma_read_packet(AVFormatContext *s, AVPacket *pkt)
 
 static int oma_read_probe(AVProbeData *p)
 {
-    if (!memcmp(p->buf, (const uint8_t[]){'e', 'a', '3', 3, 0},5))
+    if (!memcmp(p->buf, ((const uint8_t[]){'e', 'a', '3', 3, 0}), 5) ||
+        (!memcmp(p->buf, "EA3", 3) &&
+         !p->buf[4] && p->buf[5] == EA3_HEADER_SIZE))
         return AVPROBE_SCORE_MAX;
     else
         return 0;

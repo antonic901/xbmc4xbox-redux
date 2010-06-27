@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavcodec/tscc.c
+ * @file
  * TechSmith Camtasia decoder
  *
  * Fourcc: TSCC
@@ -67,8 +67,10 @@ typedef struct TsccContext {
  * Decode a frame
  *
  */
-static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, const uint8_t *buf, int buf_size)
+static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     CamtasiaContext * const c = avctx->priv_data;
     const unsigned char *encoded = buf;
     unsigned char *outptr;
@@ -105,7 +107,7 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, const
 
 
     if(zret != Z_DATA_ERROR)
-        ff_msrle_decode(avctx, (AVPicture*)&c->pic, c->bpp, c->decomp_buf, c->zstream.avail_out);
+        ff_msrle_decode(avctx, (AVPicture*)&c->pic, c->bpp, c->decomp_buf, c->decomp_size - c->zstream.avail_out);
 
     /* make the palette available on the way out */
     if (c->avctx->pix_fmt == PIX_FMT_PAL8) {
@@ -137,12 +139,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     c->avctx = avctx;
 
-    c->pic.data[0] = NULL;
     c->height = avctx->height;
-
-    if (avcodec_check_dimensions(avctx, avctx->width, avctx->height) < 0) {
-        return 1;
-    }
 
     // Needed if zlib unused or init aborted before inflateInit
     memset(&(c->zstream), 0, sizeof(z_stream));
@@ -157,7 +154,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
              return -1;
     }
     c->bpp = avctx->bits_per_coded_sample;
-    c->decomp_size = (avctx->width * c->bpp + (avctx->width + 254) / 255 + 2) * avctx->height + 2;//RLE in the 'best' case
+    // buffer size for RLE 'best' case when 2-byte code preceeds each pixel and there may be padding after it too
+    c->decomp_size = (((avctx->width * c->bpp + 7) >> 3) + 3 * avctx->width + 2) * avctx->height + 2;
 
     /* Allocate decompression buffer */
     if (c->decomp_size) {
@@ -201,7 +199,7 @@ static av_cold int decode_end(AVCodecContext *avctx)
 
 AVCodec tscc_decoder = {
         "camtasia",
-        CODEC_TYPE_VIDEO,
+        AVMEDIA_TYPE_VIDEO,
         CODEC_ID_TSCC,
         sizeof(CamtasiaContext),
         decode_init,

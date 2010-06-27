@@ -72,7 +72,7 @@ static int mmf_write_header(AVFormatContext *s)
 
     put_tag(pb, "MMMD");
     put_be32(pb, 0);
-    pos = start_tag(pb, "CNTI");
+    pos = ff_start_tag(pb, "CNTI");
     put_byte(pb, 0); /* class */
     put_byte(pb, 0); /* type */
     put_byte(pb, 0); /* code type */
@@ -97,7 +97,7 @@ static int mmf_write_header(AVFormatContext *s)
     /* Will be filled on close */
     put_buffer(pb, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 16);
 
-    mmf->awapos = start_tag(pb, "Awa\x01");
+    mmf->awapos = ff_start_tag(pb, "Awa\x01");
 
     av_set_pts_info(s->streams[0], 64, 1, s->streams[0]->codec->sample_rate);
 
@@ -244,7 +244,7 @@ static int mmf_read_header(AVFormatContext *s,
     if (!st)
         return AVERROR(ENOMEM);
 
-    st->codec->codec_type = CODEC_TYPE_AUDIO;
+    st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
     st->codec->codec_id = CODEC_ID_ADPCM_YAMAHA;
     st->codec->sample_rate = rate;
     st->codec->channels = 1;

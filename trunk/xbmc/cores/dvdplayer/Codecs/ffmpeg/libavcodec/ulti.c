@@ -20,14 +20,13 @@
  */
 
 /**
- * @file libavcodec/ulti.c
+ * @file
  * IBM Ultimotion Video Decoder.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "avcodec.h"
 #include "bytestream.h"
@@ -52,6 +51,16 @@ static av_cold int ulti_decode_init(AVCodecContext *avctx)
     avctx->pix_fmt = PIX_FMT_YUV410P;
     avctx->coded_frame = (AVFrame*) &s->frame;
     s->ulti_codebook = ulti_codebook;
+
+    return 0;
+}
+
+static av_cold int ulti_decode_end(AVCodecContext *avctx){
+    UltimotionDecodeContext *s = avctx->priv_data;
+    AVFrame *pic = &s->frame;
+
+    if (pic->data[0])
+        avctx->release_buffer(avctx, pic);
 
     return 0;
 }
@@ -200,8 +209,10 @@ static void ulti_grad(AVFrame *frame, int x, int y, uint8_t *Y, int chroma, int 
 
 static int ulti_decode_frame(AVCodecContext *avctx,
                              void *data, int *data_size,
-                             const uint8_t *buf, int buf_size)
+                             AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     UltimotionDecodeContext *s=avctx->priv_data;
     int modifier = 0;
     int uniq = 0;
@@ -393,16 +404,9 @@ static int ulti_decode_frame(AVCodecContext *avctx,
     return buf_size;
 }
 
-static av_cold int ulti_decode_end(AVCodecContext *avctx)
-{
-/*    UltimotionDecodeContext *s = avctx->priv_data;*/
-
-    return 0;
-}
-
 AVCodec ulti_decoder = {
     "ultimotion",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_ULTI,
     sizeof(UltimotionDecodeContext),
     ulti_decode_init,

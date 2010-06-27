@@ -19,7 +19,7 @@
  */
 
 /**
- * @file libavcodec/roqvideodec.c
+ * @file
  * id RoQ Video Decoder by Dr. Tim Ferguson
  * For more information about the id RoQ format, visit:
  *   http://www.csse.monash.edu.au/~timf/
@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "avcodec.h"
 #include "bytestream.h"
@@ -169,8 +168,10 @@ static av_cold int roq_decode_init(AVCodecContext *avctx)
 
 static int roq_decode_frame(AVCodecContext *avctx,
                             void *data, int *data_size,
-                            const uint8_t *buf, int buf_size)
+                            AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     RoqContext *s = avctx->priv_data;
     int copy= !s->current_frame->data[0];
 
@@ -211,7 +212,7 @@ static av_cold int roq_decode_end(AVCodecContext *avctx)
 
 AVCodec roq_decoder = {
     "roqvideo",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_ROQ,
     sizeof(RoqContext),
     roq_decode_init,

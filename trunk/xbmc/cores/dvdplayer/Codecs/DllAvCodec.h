@@ -20,9 +20,12 @@ extern "C" {
 #pragma warning(disable:4244)
 #endif
 
-#include "Codecs/ffmpeg/libavcodec/avcodec.h"
-#include "Codecs/ffmpeg/libavcodec/audioconvert.h"
+#include "libavcodec/avcodec.h"
+#include "libavcodec/audioconvert.h"
+#include "libavutil/crc.h"
 }
+
+#include "settings.h"
 
 class DllAvCodecInterface
 {
@@ -62,7 +65,9 @@ public:
   virtual int av_audio_convert(AVAudioConvert *ctx,
                                      void * const out[6], const int out_stride[6],
                                const void * const  in[6], const int  in_stride[6], int len)=0;
-
+  virtual int av_dup_packet(AVPacket *pkt)=0;
+  virtual void av_destruct_packet_nofree(AVPacket *pkt)=0;
+  virtual void av_free_packet(AVPacket *pkt)=0;
 };
 
 #if (defined USE_EXTERNAL_FFMPEG)
@@ -128,7 +133,11 @@ public:
                                const void * const  in[6], const int  in_stride[6], int len)
           { return ::av_audio_convert(ctx, out, out_stride, in, in_stride, len); }
 
-  
+  virtual void av_packet_free(AVPacket *pkt) { ::av_free_packet(pkt); )
+  virtual void av_destruct_packet_nofree(AVPacket *pkt) { ::av_destruct_packet_nofree(pkt); }
+  virtual int av_dup_packet(AVPacket *pkt) { return ::av_dup_packet(pkt); }
+  virtual int av_init_packet(AVPacket *pkt) { return ::av_init_packet(pkt); }
+
   // DLL faking.
   virtual bool ResolveExports() { return true; }
   virtual bool Load() {
@@ -140,7 +149,8 @@ public:
 #else
 class DllAvCodec : public DllDynamic, DllAvCodecInterface
 {
-  DECLARE_DLL_WRAPPER(DllAvCodec, Q:\\system\\players\\dvdplayer\\avcodec-52.dll)
+public:
+  DllAvCodec() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avcodec-52.dll") {}
 #ifndef _LINUX
   DEFINE_FUNC_ALIGNED1(void, __cdecl, avcodec_flush_buffers, AVCodecContext*)
   DEFINE_FUNC_ALIGNED2(int, __cdecl, avcodec_open_dont_call, AVCodecContext*, AVCodec *)
@@ -183,10 +193,13 @@ class DllAvCodec : public DllDynamic, DllAvCodecInterface
   DEFINE_METHOD6(AVAudioConvert*, av_audio_convert_alloc, (enum SampleFormat p1, int p2,
                                                            enum SampleFormat p3, int p4,
                                                            const float *p5, int p6))
-  DEFINE_METHOD1(void, av_audio_convert_free, (AVAudioConvert *p1));
+  DEFINE_METHOD1(void, av_audio_convert_free, (AVAudioConvert *p1))
   DEFINE_METHOD6(int,  av_audio_convert,      (AVAudioConvert *p1,
                                                      void * const p2[6], const int p3[6],
                                                const void * const p4[6], const int p5[6], int p6))
+  DEFINE_METHOD1(int, av_dup_packet, (AVPacket *p1))
+  DEFINE_METHOD1(void, av_destruct_packet_nofree, (AVPacket *p1))
+  DEFINE_METHOD1(void, av_free_packet,        (AVPacket *p1))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(avcodec_flush_buffers)
     RESOLVE_METHOD_RENAME(avcodec_open,avcodec_open_dont_call)
@@ -216,6 +229,9 @@ class DllAvCodec : public DllDynamic, DllAvCodecInterface
     RESOLVE_METHOD(av_audio_convert_alloc)
     RESOLVE_METHOD(av_audio_convert_free)
     RESOLVE_METHOD(av_audio_convert)
+    RESOLVE_METHOD(av_dup_packet)
+    RESOLVE_METHOD(av_destruct_packet_nofree)
+    RESOLVE_METHOD(av_free_packet)
   END_METHOD_RESOLVE()
 public:
     static CCriticalSection m_critSection;
@@ -252,6 +268,8 @@ public:
   virtual void av_free(void *ptr)=0;
   virtual void av_freep(void *ptr)=0;
   virtual int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, enum AVRounding)=0;
+  virtual const AVCRC* av_crc_get_table(AVCRCId crc_id)=0;
+  virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length)=0;
 };
 
 #if (defined USE_EXTERNAL_FFMPEG)
@@ -269,7 +287,9 @@ public:
    virtual void av_free(void *ptr) { ::av_free(ptr); }
    virtual void av_freep(void *ptr) { ::av_freep(ptr); }
    virtual int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, enum AVRounding d) { return ::av_rescale_rnd(a, b, c, d); }
-   
+   virtual const AVCRC* av_crc_get_table(AVCRCId crc_id) { return ::av_crc_get_table(crc_id); }
+   virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length) { return ::av_crc(ctx, crc, buffer); }
+
    // DLL faking.
    virtual bool ResolveExports() { return true; }
    virtual bool Load() {
@@ -283,7 +303,8 @@ public:
 
 class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
 {
-  DECLARE_DLL_WRAPPER(DllAvUtilBase, Q:\\system\\players\\dvdplayer\\avutil-49.dll)
+public:
+  DllAvUtilBase() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avutil-50.dll") {}
 
   LOAD_SYMBOLS()
 
@@ -294,6 +315,9 @@ class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
   DEFINE_METHOD1(void, av_free, (void *p1))
   DEFINE_METHOD1(void, av_freep, (void *p1))
   DEFINE_METHOD4(int64_t, av_rescale_rnd, (int64_t p1, int64_t p2, int64_t p3, enum AVRounding p4));
+  DEFINE_METHOD1(const AVCRC*, av_crc_get_table, (AVCRCId p1))
+  DEFINE_METHOD4(uint32_t, av_crc, (const AVCRC *p1, uint32_t p2, const uint8_t *p3, size_t p4));
+
   public:
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(av_log_set_callback)
@@ -303,6 +327,8 @@ class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
     RESOLVE_METHOD(av_free)
     RESOLVE_METHOD(av_freep)
     RESOLVE_METHOD(av_rescale_rnd)
+    RESOLVE_METHOD(av_crc_get_table)
+    RESOLVE_METHOD(av_crc)
   END_METHOD_RESOLVE()
 };
 

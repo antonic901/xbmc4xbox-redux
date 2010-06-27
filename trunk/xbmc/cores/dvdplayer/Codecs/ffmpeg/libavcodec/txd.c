@@ -39,7 +39,8 @@ static av_cold int txd_init(AVCodecContext *avctx) {
 }
 
 static int txd_decode_frame(AVCodecContext *avctx, void *data, int *data_size,
-                            const uint8_t *buf, int buf_size) {
+                            AVPacket *avpkt) {
+    const uint8_t *buf = avpkt->data;
     TXDContext * const s = avctx->priv_data;
     AVFrame *picture = data;
     AVFrame * const p = &s->picture;
@@ -155,14 +156,14 @@ static av_cold int txd_end(AVCodecContext *avctx) {
 
 AVCodec txd_decoder = {
     "txd",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_TXD,
     sizeof(TXDContext),
     txd_init,
     NULL,
     txd_end,
     txd_decode_frame,
-    0,
+    CODEC_CAP_DR1,
     NULL,
     .long_name = NULL_IF_CONFIG_SMALL("Renderware TXD (TeXture Dictionary) image"),
 };

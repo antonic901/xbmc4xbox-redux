@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#include "common.h"
+#include "config.h"
 #include "adler32.h"
 
 #define BASE 65521L /* largest prime smaller than 65536 */
@@ -53,12 +53,13 @@ unsigned long av_adler32_update(unsigned long adler, const uint8_t *buf, unsigne
 
 #ifdef TEST
 #include "log.h"
+#include "timer.h"
 #define LEN 7001
 volatile int checksum;
 int main(void){
     int i;
     char data[LEN];
-    av_log_level = AV_LOG_DEBUG;
+    av_log_set_level(AV_LOG_DEBUG);
     for(i=0; i<LEN; i++)
         data[i]= ((i*i)>>3) + 123*i;
     for(i=0; i<1000; i++){

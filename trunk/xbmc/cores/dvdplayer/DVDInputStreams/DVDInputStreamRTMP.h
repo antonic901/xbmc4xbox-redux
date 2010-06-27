@@ -44,12 +44,7 @@ public:
 protected:
   bool   m_eof;
   bool   m_bPaused;
-  RTMP_LIB::CRTMP  *m_rtmp;
-  int          m_prevTagSize;
-  bool         m_bSentHeader;
-  char         *m_leftOver;
+  RTMP   m_rtmp;
   char*        m_sStreamPlaying;
-  unsigned int m_leftOverSize;
-  unsigned int m_leftOverConsumed;
 };
 

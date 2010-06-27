@@ -85,7 +85,7 @@ static int avisynth_read_header(AVFormatContext *s, AVFormatParameters *ap)
                     continue;
 
                   st = av_new_stream(s, id);
-                  st->codec->codec_type = CODEC_TYPE_AUDIO;
+                  st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
 
                   st->codec->block_align = wvfmt.nBlockAlign;
                   st->codec->channels = wvfmt.nChannels;
@@ -97,7 +97,7 @@ static int avisynth_read_header(AVFormatContext *s, AVFormatParameters *ap)
                   stream->chunck_size = stream->chunck_samples * wvfmt.nChannels * wvfmt.wBitsPerSample / 8;
 
                   st->codec->codec_tag = wvfmt.wFormatTag;
-                  st->codec->codec_id = wav_codec_get_id(wvfmt.wFormatTag, st->codec->bits_per_coded_sample);
+                  st->codec->codec_id = ff_wav_codec_get_id(wvfmt.wFormatTag, st->codec->bits_per_coded_sample);
                 }
               else if (stream->info.fccType == streamtypeVIDEO)
                 {
@@ -111,7 +111,7 @@ static int avisynth_read_header(AVFormatContext *s, AVFormatParameters *ap)
                     continue;
 
                   st = av_new_stream(s, id);
-                  st->codec->codec_type = CODEC_TYPE_VIDEO;
+                  st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
                   st->r_frame_rate.num = stream->info.dwRate;
                   st->r_frame_rate.den = stream->info.dwScale;
 
@@ -121,7 +121,7 @@ static int avisynth_read_header(AVFormatContext *s, AVFormatParameters *ap)
                   st->codec->bits_per_coded_sample = imgfmt.bmiHeader.biBitCount;
                   st->codec->bit_rate = (uint64_t)stream->info.dwSampleSize * (uint64_t)stream->info.dwRate * 8 / (uint64_t)stream->info.dwScale;
                   st->codec->codec_tag = imgfmt.bmiHeader.biCompression;
-                  st->codec->codec_id = codec_get_id(codec_bmp_tags, imgfmt.bmiHeader.biCompression);
+                  st->codec->codec_id = ff_codec_get_id(ff_codec_bmp_tags, imgfmt.bmiHeader.biCompression);
 
                   st->duration = stream->info.dwLength;
                 }

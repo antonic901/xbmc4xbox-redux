@@ -78,6 +78,9 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   if (pCodec->capabilities & CODEC_CAP_DR1)
     m_pCodecContext->flags |= CODEC_FLAG_EMU_EDGE;
 
+  // Allow non spec compliant speedup tricks.
+  m_pCodecContext->flags |= CODEC_FLAG2_FAST;
+
   // if we don't do this, then some codecs seem to fail.
   m_pCodecContext->coded_height = hints.height;
   m_pCodecContext->coded_width = hints.width;
@@ -90,13 +93,15 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   }
 
   // set acceleration
-  m_pCodecContext->dsp_mask = FF_MM_FORCE | FF_MM_MMX | FF_MM_MMXEXT | FF_MM_SSE;
+  m_pCodecContext->dsp_mask = FF_MM_FORCE | FF_MM_MMX | FF_MM_MMX2 | FF_MM_SSE;
   
   // advanced setting override for skip loop filter (see avcodec.h for valid options)
   // TODO: allow per video setting?
   if (g_advancedSettings.m_iSkipLoopFilter != 0)
   {
     m_pCodecContext->skip_loop_filter = (AVDiscard)g_advancedSettings.m_iSkipLoopFilter;
+  } else {
+    m_pCodecContext->skip_loop_filter = AVDISCARD_NONREF;
   }
 
   // set any special options
@@ -156,27 +161,15 @@ void CDVDVideoCodecFFmpeg::SetDropState(bool bDrop)
 {
   if( m_pCodecContext )
   {
-    // i don't know exactly how high this should be set
-    // couldn't find any good docs on it. think it varies
-    // from codec to codec on what it does
-
-    //  2 seem to be to high.. it causes video to be ruined on following images
     if( bDrop )
     {
-      // TODO: 'hurry_up' has been deprecated in favor of the skip_* variables
-      // Use those instead.
-
-      m_pCodecContext->hurry_up = 1;
-      //m_pCodecContext->skip_frame = AVDISCARD_NONREF;
-      //m_pCodecContext->skip_idct = AVDISCARD_NONREF;
-      //m_pCodecContext->skip_loop_filter = AVDISCARD_NONREF;
+      m_pCodecContext->skip_frame = AVDISCARD_NONREF;
+      m_pCodecContext->skip_idct = AVDISCARD_NONREF;
     }
     else
     {
-      m_pCodecContext->hurry_up = 0;
-      //m_pCodecContext->skip_frame = AVDISCARD_DEFAULT;
-      //m_pCodecContext->skip_idct = AVDISCARD_DEFAULT;
-      //m_pCodecContext->skip_loop_filter = AVDISCARD_DEFAULT;
+      m_pCodecContext->skip_frame = AVDISCARD_DEFAULT;
+      m_pCodecContext->skip_idct = AVDISCARD_DEFAULT;
     }
   }
 }

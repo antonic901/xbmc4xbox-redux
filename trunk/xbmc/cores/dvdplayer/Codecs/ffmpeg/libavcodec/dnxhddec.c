@@ -23,7 +23,7 @@
 //#define DEBUG
 
 #include "avcodec.h"
-#include "bitstream.h"
+#include "get_bits.h"
 #include "dnxhddata.h"
 #include "dsputil.h"
 
@@ -39,8 +39,8 @@ typedef struct {
     VLC ac_vlc, dc_vlc, run_vlc;
     int last_dc[3];
     DSPContext dsp;
-    DECLARE_ALIGNED_16(DCTELEM, blocks[8][64]);
-    DECLARE_ALIGNED_8(ScanTable, scantable);
+    DECLARE_ALIGNED(16, DCTELEM, blocks)[8][64];
+    ScanTable scantable;
     const CIDEntry *cid_table;
 } DNXHDContext;
 
@@ -126,12 +126,17 @@ static int dnxhd_decode_header(DNXHDContext *ctx, const uint8_t *buf, int buf_si
     ctx->mb_width = ctx->width>>4;
     ctx->mb_height = buf[0x16d];
 
-    if (ctx->mb_height > 68) {
-        av_log(ctx->avctx, AV_LOG_ERROR, "mb height too big\n");
+    dprintf(ctx->avctx, "mb width %d, mb height %d\n", ctx->mb_width, ctx->mb_height);
+
+    if ((ctx->height+15)>>4 == ctx->mb_height && ctx->picture.interlaced_frame)
+        ctx->height <<= 1;
+
+    if (ctx->mb_height > 68 ||
+        (ctx->mb_height<<ctx->picture.interlaced_frame) > (ctx->height+15)>>4) {
+        av_log(ctx->avctx, AV_LOG_ERROR, "mb height too big: %d\n", ctx->mb_height);
         return -1;
     }
 
-    dprintf(ctx->avctx, "mb width %d, mb height %d\n", ctx->mb_width, ctx->mb_height);
     for (i = 0; i < ctx->mb_height; i++) {
         ctx->mb_scan_index[i] = AV_RB32(buf + 0x170 + (i<<2));
         dprintf(ctx->avctx, "mb scan index %d\n", ctx->mb_scan_index[i]);
@@ -278,8 +283,10 @@ static int dnxhd_decode_macroblocks(DNXHDContext *ctx, const uint8_t *buf, int b
 }
 
 static int dnxhd_decode_frame(AVCodecContext *avctx, void *data, int *data_size,
-                              const uint8_t *buf, int buf_size)
+                              AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     DNXHDContext *ctx = avctx->priv_data;
     AVFrame *picture = data;
     int first_field = 1;
@@ -289,6 +296,13 @@ static int dnxhd_decode_frame(AVCodecContext *avctx, void *data, int *data_size,
  decode_coding_unit:
     if (dnxhd_decode_header(ctx, buf, buf_size, first_field) < 0)
         return -1;
+
+    if ((avctx->width || avctx->height) &&
+        (ctx->width != avctx->width || ctx->height != avctx->height)) {
+        av_log(avctx, AV_LOG_WARNING, "frame size changed: %dx%d -> %dx%d\n",
+               avctx->width, avctx->height, ctx->width, ctx->height);
+        first_field = 1;
+    }
 
     avctx->pix_fmt = PIX_FMT_YUV422P;
     if (avcodec_check_dimensions(avctx, ctx->width, ctx->height))
@@ -332,7 +346,7 @@ static av_cold int dnxhd_decode_close(AVCodecContext *avctx)
 
 AVCodec dnxhd_decoder = {
     "dnxhd",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_DNXHD,
     sizeof(DNXHDContext),
     dnxhd_decode_init,

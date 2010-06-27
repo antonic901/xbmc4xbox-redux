@@ -435,6 +435,7 @@ public:
   CStdString GetScriptsFolder() const;
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
+  CStdString GetFFmpegDllFolder() const;
 
   CStdString GetSettingsFile() const;
   CStdString GetAvpackSettingsFile() const;

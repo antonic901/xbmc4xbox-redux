@@ -19,7 +19,7 @@
  */
 
 /**
- * @file libavcodec/libvorbis.c
+ * @file
  * Ogg Vorbis codec support via libvorbisenc.
  * @author Mark Hills <mark@pogo.org.uk>
  */
@@ -60,16 +60,18 @@ static av_cold int oggvorbis_init_encoder(vorbis_info *vi, AVCodecContext *avcco
                 avccontext->global_quality / (float)FF_QP2LAMBDA / 10.0))
             return -1;
     } else {
+        int minrate = avccontext->rc_min_rate > 0 ? avccontext->rc_min_rate : -1;
+        int maxrate = avccontext->rc_min_rate > 0 ? avccontext->rc_max_rate : -1;
+
         /* constant bitrate */
         if(vorbis_encode_setup_managed(vi, avccontext->channels,
-                avccontext->sample_rate, -1, avccontext->bit_rate, -1))
+                avccontext->sample_rate, minrate, avccontext->bit_rate, maxrate))
             return -1;
 
-#ifdef OGGVORBIS_VBR_BY_ESTIMATE
-        /* variable bitrate by estimate */
-        if(vorbis_encode_ctl(vi, OV_ECTL_RATEMANAGE_AVG, NULL))
-            return -1;
-#endif
+        /* variable bitrate by estimate, disable slow rate management */
+        if(minrate == -1 && maxrate == -1)
+            if(vorbis_encode_ctl(vi, OV_ECTL_RATEMANAGE2_SET, NULL))
+                return -1;
     }
 
     /* cutoff frequency */
@@ -90,7 +92,7 @@ static av_cold int oggvorbis_encode_init(AVCodecContext *avccontext) {
 
     vorbis_info_init(&context->vi) ;
     if(oggvorbis_init_encoder(&context->vi, avccontext) < 0) {
-        av_log(avccontext, AV_LOG_ERROR, "oggvorbis_encode_init: init_encoder failed") ;
+        av_log(avccontext, AV_LOG_ERROR, "oggvorbis_encode_init: init_encoder failed\n") ;
         return -1 ;
     }
     vorbis_analysis_init(&context->vd, &context->vi) ;
@@ -217,13 +219,13 @@ static av_cold int oggvorbis_encode_close(AVCodecContext *avccontext) {
 
 AVCodec libvorbis_encoder = {
     "libvorbis",
-    CODEC_TYPE_AUDIO,
+    AVMEDIA_TYPE_AUDIO,
     CODEC_ID_VORBIS,
     sizeof(OggVorbisContext),
     oggvorbis_encode_init,
     oggvorbis_encode_frame,
     oggvorbis_encode_close,
     .capabilities= CODEC_CAP_DELAY,
-    .sample_fmts = (enum SampleFormat[]){SAMPLE_FMT_S16,SAMPLE_FMT_NONE},
+    .sample_fmts = (const enum SampleFormat[]){SAMPLE_FMT_S16,SAMPLE_FMT_NONE},
     .long_name= NULL_IF_CONFIG_SMALL("libvorbis Vorbis"),
 } ;

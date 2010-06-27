@@ -21,6 +21,7 @@
 
 #include "libavutil/intreadwrite.h"
 #include "voc.h"
+#include "internal.h"
 
 
 static int voc_probe(AVProbeData *p)
@@ -54,7 +55,7 @@ static int voc_read_header(AVFormatContext *s, AVFormatParameters *ap)
     st = av_new_stream(s, 0);
     if (!st)
         return AVERROR(ENOMEM);
-    st->codec->codec_type = CODEC_TYPE_AUDIO;
+    st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
 
     voc->remaining_size = 0;
     return 0;
@@ -76,6 +77,11 @@ voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
         if (type == VOC_TYPE_EOF)
             return AVERROR(EIO);
         voc->remaining_size = get_le24(pb);
+        if (!voc->remaining_size) {
+            if (url_is_streamed(s->pb))
+                return AVERROR(EIO);
+            voc->remaining_size = url_fsize(pb) - url_ftell(pb);
+        }
         max_size -= 4;
 
         switch (type) {
@@ -84,7 +90,7 @@ voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
             if (sample_rate)
                 dec->sample_rate = sample_rate;
             dec->channels = channels;
-            dec->codec_id = codec_get_id(ff_voc_codec_tags, get_byte(pb));
+            dec->codec_id = ff_codec_get_id(ff_voc_codec_tags, get_byte(pb));
             dec->bits_per_coded_sample = av_get_bits_per_sample(dec->codec_id);
             voc->remaining_size -= 2;
             max_size -= 2;
@@ -107,7 +113,7 @@ voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
             dec->sample_rate = get_le32(pb);
             dec->bits_per_coded_sample = get_byte(pb);
             dec->channels = get_byte(pb);
-            dec->codec_id = codec_get_id(ff_voc_codec_tags, get_le16(pb));
+            dec->codec_id = ff_codec_get_id(ff_voc_codec_tags, get_le16(pb));
             url_fskip(pb, 4);
             voc->remaining_size -= 12;
             max_size -= 12;

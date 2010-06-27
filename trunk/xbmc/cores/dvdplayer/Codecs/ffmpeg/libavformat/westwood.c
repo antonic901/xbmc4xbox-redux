@@ -20,7 +20,7 @@
  */
 
 /**
- * @file libavformat/westwood.c
+ * @file
  * Westwood Studios VQA & AUD file demuxers
  * by Mike Melanson (melanson@pcisys.net)
  * for more information on the Westwood file formats, visit:
@@ -60,7 +60,6 @@
 
 #define VQA_HEADER_SIZE 0x2A
 #define VQA_FRAMERATE 15
-#define VQA_VIDEO_PTS_INC (90000 / VQA_FRAMERATE)
 #define VQA_PREAMBLE_SIZE 8
 
 typedef struct WsAudDemuxContext {
@@ -81,7 +80,6 @@ typedef struct WsVqaDemuxContext {
     int video_stream_index;
 
     int64_t audio_frame_counter;
-    int64_t video_pts;
 } WsVqaDemuxContext;
 
 static int wsaud_probe(AVProbeData *p)
@@ -150,7 +148,7 @@ static int wsaud_read_header(AVFormatContext *s,
     if (!st)
         return AVERROR(ENOMEM);
     av_set_pts_info(st, 33, 1, wsaud->audio_samplerate);
-    st->codec->codec_type = CODEC_TYPE_AUDIO;
+    st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
     st->codec->codec_id = wsaud->audio_type;
     st->codec->codec_tag = 0;  /* no tag */
     st->codec->channels = wsaud->audio_channels;
@@ -228,7 +226,7 @@ static int wsvqa_read_header(AVFormatContext *s,
         return AVERROR(ENOMEM);
     av_set_pts_info(st, 33, 1, VQA_FRAMERATE);
     wsvqa->video_stream_index = st->index;
-    st->codec->codec_type = CODEC_TYPE_VIDEO;
+    st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codec->codec_id = CODEC_ID_WS_VQA;
     st->codec->codec_tag = 0;  /* no fourcc */
 
@@ -253,7 +251,7 @@ static int wsvqa_read_header(AVFormatContext *s,
         if (!st)
             return AVERROR(ENOMEM);
         av_set_pts_info(st, 33, 1, VQA_FRAMERATE);
-        st->codec->codec_type = CODEC_TYPE_AUDIO;
+        st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         if (AV_RL16(&header[0]) == 1)
             st->codec->codec_id = CODEC_ID_WESTWOOD_SND1;
         else
@@ -308,8 +306,6 @@ static int wsvqa_read_header(AVFormatContext *s,
         url_fseek(pb, chunk_size, SEEK_CUR);
     } while (chunk_tag != FINF_TAG);
 
-    wsvqa->video_pts = wsvqa->audio_frame_counter = 0;
-
     return 0;
 }
 
@@ -349,7 +345,6 @@ static int wsvqa_read_packet(AVFormatContext *s,
                 wsvqa->audio_frame_counter += AV_RL16(pkt->data) / wsvqa->audio_channels;
             } else {
                 pkt->stream_index = wsvqa->video_stream_index;
-                wsvqa->video_pts += VQA_VIDEO_PTS_INC;
             }
             /* stay on 16-bit alignment */
             if (skip_byte)

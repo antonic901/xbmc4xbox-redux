@@ -31,8 +31,6 @@
 #include "Audio/DVDAudioCodecFFmpeg.h"
 #include "Audio/DVDAudioCodecLiba52.h"
 #include "Audio/DVDAudioCodecLibDts.h"
-#include "Audio/DVDAudioCodecLibMad.h"
-#include "Audio/DVDAudioCodecLibFaad.h"
 #include "Audio/DVDAudioCodecPcm.h"
 #include "Audio/DVDAudioCodecLPcm.h"
 #include "Audio/DVDAudioCodecPassthrough.h"
@@ -115,6 +113,12 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
   CDVDVideoCodec* pCodec = NULL;
   CDVDCodecOptions options;
 
+  // dvd's have weird still-frames in it, which is not fully supported in ffmpeg
+  if(hint.stills && (hint.codec == CODEC_ID_MPEG2VIDEO || hint.codec == CODEC_ID_MPEG1VIDEO))
+  {
+    if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
+  }
+
   // try to decide if we want to try halfres decoding
   float pixelrate = (float)hint.width*hint.height*hint.fpsrate/hint.fpsscale;
   if( pixelrate > 1400.0f*720.0f*30.0f )
@@ -122,18 +126,8 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
     CLog::Log(LOGINFO, "CDVDFactoryCodec - High video resolution detected %dx%d, trying half resolution decoding ", hint.width, hint.height);    
     options.push_back(CDVDCodecOption("lowres","1"));    
   }
-  else 
-  { // non halfres mode, we can use other decoders
-    if (hint.codec == CODEC_ID_MPEG2VIDEO || hint.codec == CODEC_ID_MPEG1VIDEO)
-    {
-      CDVDCodecOptions dvdOptions;
 
-      if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, dvdOptions)) ) return pCodec;
-    }
-  }
-
-  CDVDCodecOptions dvdOptions;
-  if( (pCodec = OpenCodec(new CDVDVideoCodecFFmpeg(), hint, dvdOptions)) ) return pCodec;
+  if( (pCodec = OpenCodec(new CDVDVideoCodecFFmpeg(), hint, options)) ) return pCodec;
 
   return NULL;
 }
@@ -157,20 +151,6 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint )
   case CODEC_ID_DTS:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLibDts(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-  case CODEC_ID_MP2:
-  case CODEC_ID_MP3:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLibMad(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-  case CODEC_ID_AAC:
-  //case CODEC_ID_MPEG4AAC:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLibFaad(), hint, options );
       if( pCodec ) return pCodec;
       break;
     }

@@ -284,14 +284,6 @@ static uint64_t des_encdec(uint64_t in, uint64_t K[16], int decrypt) {
     return in;
 }
 
-#if LIBAVUTIL_VERSION_MAJOR < 50
-uint64_t ff_des_encdec(uint64_t in, uint64_t key, int decrypt) {
-    uint64_t K[16];
-    gen_roundkeys(K, key);
-    return des_encdec(in, K, decrypt);
-}
-#endif
-
 int av_des_init(AVDES *d, const uint8_t *key, int key_bits, int decrypt) {
     if (key_bits != 64 && key_bits != 192)
         return -1;
@@ -347,17 +339,17 @@ static uint64_t rand64(void) {
 }
 
 static const uint8_t test_key[] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
-static const DECLARE_ALIGNED(8, uint8_t, plain[]) = {0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
-static const DECLARE_ALIGNED(8, uint8_t, crypt[]) = {0x4a, 0xb6, 0x5b, 0x3d, 0x4b, 0x06, 0x15, 0x18};
-static DECLARE_ALIGNED(8, uint8_t, tmp[8]);
-static DECLARE_ALIGNED(8, uint8_t, large_buffer[10002][8]);
+static const DECLARE_ALIGNED(8, uint8_t, plain)[] = {0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
+static const DECLARE_ALIGNED(8, uint8_t, crypt)[] = {0x4a, 0xb6, 0x5b, 0x3d, 0x4b, 0x06, 0x15, 0x18};
+static DECLARE_ALIGNED(8, uint8_t, tmp)[8];
+static DECLARE_ALIGNED(8, uint8_t, large_buffer)[10002][8];
 static const uint8_t cbc_key[] = {
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
     0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x01,
     0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x01, 0x23
 };
 
-int run_test(int cbc, int decrypt) {
+static int run_test(int cbc, int decrypt) {
     AVDES d;
     int delay = cbc && !decrypt ? 2 : 1;
     uint64_t res;
@@ -390,16 +382,16 @@ int main(void) {
     uint64_t key[3];
     uint64_t data;
     uint64_t ct;
+    uint64_t roundkeys[16];
     gettimeofday(&tv, NULL);
     srand(tv.tv_sec * 1000 * 1000 + tv.tv_usec);
-#if LIBAVUTIL_VERSION_MAJOR < 50
     key[0] = AV_RB64(test_key);
     data = AV_RB64(plain);
-    if (ff_des_encdec(data, key[0], 0) != AV_RB64(crypt)) {
+    gen_roundkeys(roundkeys, key[0]);
+    if (des_encdec(data, roundkeys, 0) != AV_RB64(crypt)) {
         printf("Test 1 failed\n");
         return 1;
     }
-#endif
     av_des_init(&d, test_key, 64, 0);
     av_des_crypt(&d, tmp, plain, 1, NULL, 0);
     if (memcmp(tmp, crypt, sizeof(crypt))) {

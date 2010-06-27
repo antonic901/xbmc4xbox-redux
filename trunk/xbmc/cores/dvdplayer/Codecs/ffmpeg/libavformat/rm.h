@@ -23,8 +23,11 @@
 #define AVFORMAT_RM_H
 
 #include "avformat.h"
+#include "internal.h"
 
-extern const char *ff_rm_metadata[4];
+extern const char * const ff_rm_metadata[4];
+extern const unsigned char ff_sipr_subpk_size[4];
+extern const AVCodecTag ff_rm_codec_tags[];
 
 typedef struct RMStream RMStream;
 
@@ -61,16 +64,15 @@ int ff_rm_read_mdpr_codecdata (AVFormatContext *s, ByteIOContext *pb,
  * @param pkt packet location to store the parsed packet data
  * @param seq pointer to an integer containing the sequence number, may be
  *            updated
- * @param flags pointer to an integer containing the packet flags, may be
-                updated
- * @param ts pointer to timestamp, may be updated
- * @return >=0 on success (where >0 indicates there are cached samples that
- *         can be retrieved with subsequent calls to ff_rm_retrieve_cache()),
- *         errno codes on error
+ * @param flags the packet flags
+ * @param ts timestamp of the current packet
+ * @return <0 on error, 0 if a packet was placed in the pkt pointer. A
+ *         value >0 means that no data was placed in pkt, but that cached
+ *         data is available by calling ff_rm_retrieve_cache().
  */
 int ff_rm_parse_packet (AVFormatContext *s, ByteIOContext *pb,
                         AVStream *st, RMStream *rst, int len,
-                        AVPacket *pkt, int *seq, int *flags, int64_t *ts);
+                        AVPacket *pkt, int *seq, int flags, int64_t ts);
 
 /**
  * Retrieve one cached packet from the rm-context. The real container can
@@ -85,10 +87,17 @@ int ff_rm_parse_packet (AVFormatContext *s, ByteIOContext *pb,
  * @param st stream that this packet belongs to
  * @param rst Real-specific stream information
  * @param pkt location to store the packet data
- * @returns the number of samples left for subsequent calls to this same
+ * @return the number of samples left for subsequent calls to this same
  *          function, or 0 if all samples have been retrieved.
  */
 int ff_rm_retrieve_cache (AVFormatContext *s, ByteIOContext *pb,
                           AVStream *st, RMStream *rst, AVPacket *pkt);
+
+/**
+ * Perform 4-bit block reordering for SIPR data.
+ *
+ * @param buf SIPR data
+ */
+void ff_rm_reorder_sipr_data(uint8_t *buf, int sub_packet_h, int framesize);
 
 #endif /* AVFORMAT_RM_H */

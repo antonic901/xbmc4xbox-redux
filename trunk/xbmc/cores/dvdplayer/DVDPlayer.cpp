@@ -2346,6 +2346,7 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
     float aspect = static_cast<CDVDInputStreamNavigator*>(m_pInputStream)->GetVideoAspectRatio();
     if(aspect != 0.0)
       hint.aspect = aspect;
+    hint.stills   = true;
   }
 
   if(m_CurrentVideo.id    < 0

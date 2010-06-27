@@ -20,13 +20,13 @@
  */
 
 /**
- * @file libavcodec/cljr.c
+ * @file
  * Cirrus Logic AccuPak codec.
  */
 
 #include "avcodec.h"
 #include "dsputil.h"
-#include "bitstream.h"
+#include "get_bits.h"
 
 /* Disable the encoder. */
 #undef CONFIG_CLJR_ENCODER
@@ -42,8 +42,10 @@ typedef struct CLJRContext{
 
 static int decode_frame(AVCodecContext *avctx,
                         void *data, int *data_size,
-                        const uint8_t *buf, int buf_size)
+                        AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     CLJRContext * const a = avctx->priv_data;
     AVFrame *picture = data;
     AVFrame * const p= (AVFrame*)&a->picture;
@@ -135,7 +137,7 @@ static av_cold int encode_init(AVCodecContext *avctx){
 
 AVCodec cljr_decoder = {
     "cljr",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_CLJR,
     sizeof(CLJRContext),
     decode_init,
@@ -149,7 +151,7 @@ AVCodec cljr_decoder = {
 #if CONFIG_CLJR_ENCODER
 AVCodec cljr_encoder = {
     "cljr",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_CLJR,
     sizeof(CLJRContext),
     encode_init,

@@ -214,18 +214,17 @@ static int mxf_get_stream_index(AVFormatContext *s, KLVPacket *klv)
 /* XXX: use AVBitStreamFilter */
 static int mxf_get_d10_aes3_packet(ByteIOContext *pb, AVStream *st, AVPacket *pkt, int64_t length)
 {
-    uint8_t buffer[61444];
     const uint8_t *buf_ptr, *end_ptr;
     uint8_t *data_ptr;
     int i;
 
     if (length > 61444) /* worst case PAL 1920 samples 8 channels */
         return -1;
-    get_buffer(pb, buffer, length);
     av_new_packet(pkt, length);
+    get_buffer(pb, pkt->data, length);
     data_ptr = pkt->data;
-    end_ptr = buffer + length;
-    buf_ptr = buffer + 4; /* skip SMPTE 331M header */
+    end_ptr = pkt->data + length;
+    buf_ptr = pkt->data + 4; /* skip SMPTE 331M header */
     for (; buf_ptr < end_ptr; ) {
         for (i = 0; i < st->codec->channels; i++) {
             uint32_t sample = bytestream_get_le32(&buf_ptr);
@@ -339,7 +338,7 @@ static int mxf_read_packet(AVFormatContext *s, AVPacket *pkt)
         skip:
             url_fskip(s->pb, klv.length);
     }
-    return AVERROR(EIO);
+    return AVERROR_EOF;
 }
 
 static int mxf_read_primer_pack(MXFContext *mxf)
@@ -364,6 +363,8 @@ static int mxf_read_primer_pack(MXFContext *mxf)
 
 static int mxf_add_metadata_set(MXFContext *mxf, void *metadata_set)
 {
+    if (mxf->metadata_sets_count+1 >= UINT_MAX / sizeof(*mxf->metadata_sets))
+        return AVERROR(ENOMEM);
     mxf->metadata_sets = av_realloc(mxf->metadata_sets, (mxf->metadata_sets_count + 1) * sizeof(*mxf->metadata_sets));
     if (!mxf->metadata_sets)
         return -1;
@@ -688,7 +689,7 @@ static int mxf_parse_structural_metadata(MXFContext *mxf)
 
         if (!(material_track->sequence = mxf_resolve_strong_ref(mxf, &material_track->sequence_ref, Sequence))) {
             av_log(mxf->fc, AV_LOG_ERROR, "could not resolve material track sequence strong ref\n");
-            return -1;
+            continue;
         }
 
         /* TODO: handle multiple source clips */
@@ -794,7 +795,7 @@ static int mxf_parse_structural_metadata(MXFContext *mxf)
             st->codec->extradata = descriptor->extradata;
             st->codec->extradata_size = descriptor->extradata_size;
         }
-        if (st->codec->codec_type == CODEC_TYPE_VIDEO) {
+        if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
             container_ul = mxf_get_codec_ul(mxf_essence_container_uls, essence_container_ul);
             if (st->codec->codec_id == CODEC_ID_NONE)
                 st->codec->codec_id = container_ul->id;
@@ -802,7 +803,7 @@ static int mxf_parse_structural_metadata(MXFContext *mxf)
             st->codec->height = descriptor->height;
             st->codec->bits_per_coded_sample = descriptor->bits_per_sample; /* Uncompressed */
             st->need_parsing = AVSTREAM_PARSE_HEADERS;
-        } else if (st->codec->codec_type == CODEC_TYPE_AUDIO) {
+        } else if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
             container_ul = mxf_get_codec_ul(mxf_essence_container_uls, essence_container_ul);
             if (st->codec->codec_id == CODEC_ID_NONE)
                 st->codec->codec_id = container_ul->id;
@@ -824,7 +825,7 @@ static int mxf_parse_structural_metadata(MXFContext *mxf)
                 st->need_parsing = AVSTREAM_PARSE_FULL;
             }
         }
-        if (st->codec->codec_type != CODEC_TYPE_DATA && (*essence_container_ul)[15] > 0x01) {
+        if (st->codec->codec_type != AVMEDIA_TYPE_DATA && (*essence_container_ul)[15] > 0x01) {
             av_log(mxf->fc, AV_LOG_WARNING, "only frame wrapped mappings are correctly supported\n");
             st->need_parsing = AVSTREAM_PARSE_FULL;
         }
@@ -941,6 +942,10 @@ static int mxf_read_close(AVFormatContext *s)
     int i;
 
     av_freep(&mxf->packages_refs);
+
+    for (i = 0; i < s->nb_streams; i++)
+        s->streams[i]->priv_data = NULL;
+
     for (i = 0; i < mxf->metadata_sets_count; i++) {
         switch (mxf->metadata_sets[i]->type) {
         case MultipleDescriptor:
@@ -952,9 +957,6 @@ static int mxf_read_close(AVFormatContext *s)
         case SourcePackage:
         case MaterialPackage:
             av_freep(&((MXFPackage *)mxf->metadata_sets[i])->tracks_refs);
-            break;
-        case Track:
-            mxf->metadata_sets[i] = NULL; /* will be freed later */
             break;
         default:
             break;

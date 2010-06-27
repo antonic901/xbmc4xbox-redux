@@ -23,6 +23,8 @@ extern "C" {
 #include "Codecs/ffmpeg/libswscale/rgb2rgb.h"
 }
 
+#include "settings.h"
+
 class DllSwScaleInterface
 {
 public:
@@ -75,7 +77,8 @@ public:
 
 class DllSwScale : public DllDynamic, public DllSwScaleInterface
 {
-  DECLARE_DLL_WRAPPER(DllSwScale, Q:\\system\\players\\dvdplayer\\swscale-0.6.1.dll)
+public:
+  DllSwScale() : DllDynamic( g_settings.GetFFmpegDllFolder() + "swscale-0.6.1.dll") {}
   DEFINE_METHOD10(struct SwsContext *, sws_getContext, ( int p1, int p2, int p3, int p4, int p5, int p6, int p7, 
 							 SwsFilter * p8, SwsFilter * p9, double * p10))
   DEFINE_METHOD7(int, sws_scale, (struct SwsContext *p1, uint8_t** p2, int *p3, int p4, int p5, uint8_t **p6, int *p7))

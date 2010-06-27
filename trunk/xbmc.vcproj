@@ -22,7 +22,7 @@
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="_XBOX;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
@@ -82,12 +82,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
-				Optimization="1"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;HAVE_MSWINDOWS"
 				StringPooling="FALSE"
 				ExceptionHandling="FALSE"
@@ -151,7 +153,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;FASTCAP;HAVE_MSWINDOWS"
 				StringPooling="FALSE"
 				ExceptionHandling="FALSE"
@@ -209,14 +211,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
-				Optimization="3"
-				GlobalOptimizations="TRUE"
+				Optimization="1"
 				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="_XBOX;NDEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
@@ -283,10 +283,11 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Optimization="1"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="FALSE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="_XBOX;NDEBUG;HAVE_MSWINDOWS;LTCG;NOMINMAX"
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
@@ -342,7 +343,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg/;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/lib/libcurl/include;./xbmc/xbox"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include"
 				PreprocessorDefinitions="_XBOX;_DEBUG;HAVE_MSWINDOWS"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="FALSE"
@@ -3459,12 +3460,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibDts.h">
 						</File>
 						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibFaad.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibMad.h">
-						</File>
-						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodec.h">
 						</File>
 						<File
@@ -3484,18 +3479,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibDts.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.h">
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLPcm.cpp">
@@ -4015,6 +3998,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\NSFCodec.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\cores\paplayer\OggCallback.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\cores\paplayer\OggCallback.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\cores\paplayer\OGGcodec.cpp">
 				</File>
 				<File
@@ -4329,91 +4318,25 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="ffmpeg"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\adler32.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\ffmpeg\libavcodec\avcodec.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\avcodec.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\ffmpeg\libavutil\avutil.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\avformat.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\ffmpeg\libavutil\common.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\avio.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllAvCodec.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\avutil.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllAvFormat.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\common.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllPostProc.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\ffmpeg\DllAvCodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\DllAvFormat.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\DllPostProc.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\DllSwScale.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\ffmpeg.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\fifo.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\integer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\intfloat_readwrite.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\inttypes.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\log.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\lzo.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\mathematics.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\mem.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\opt.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\postprocess.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\random.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\rational.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\rgb2rgb.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\rtp.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\rtsp.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\rtspcodes.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\stdint.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\ffmpeg\swscale.h">
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllSwScale.h">
 				</File>
 			</Filter>
 			<Filter
@@ -4941,27 +4864,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\lib\sqLite\sqlitedataset.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="libRTMP">
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\AMFObject.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\AMFObject.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\rtmp.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\rtmp.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\rtmppacket.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\libRTMP\rtmppacket.h">
 				</File>
 			</Filter>
 		</Filter>

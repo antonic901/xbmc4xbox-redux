@@ -20,7 +20,7 @@
  */
 
 #include "avcodec.h"
-#include "bitstream.h"
+#include "get_bits.h"
 
 
 typedef struct {
@@ -44,8 +44,10 @@ typedef enum {
 
 static int
 avs_decode_frame(AVCodecContext * avctx,
-                 void *data, int *data_size, const uint8_t * buf, int buf_size)
+                 void *data, int *data_size, AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     AvsContext *const avs = avctx->priv_data;
     AVFrame *picture = data;
     AVFrame *const p = (AVFrame *) & avs->picture;
@@ -150,7 +152,7 @@ static av_cold int avs_decode_init(AVCodecContext * avctx)
 
 AVCodec avs_decoder = {
     "avs",
-    CODEC_TYPE_VIDEO,
+    AVMEDIA_TYPE_VIDEO,
     CODEC_ID_AVS,
     sizeof(AvsContext),
     avs_decode_init,

@@ -50,8 +50,10 @@ void av_register_all(void)
     REGISTER_DEMUXER  (AAC, aac);
     REGISTER_MUXDEMUX (AC3, ac3);
     REGISTER_MUXER    (ADTS, adts);
+    REGISTER_DEMUXER  (AEA, aea);
     REGISTER_MUXDEMUX (AIFF, aiff);
     REGISTER_MUXDEMUX (AMR, amr);
+    REGISTER_DEMUXER  (ANM, anm);
     REGISTER_DEMUXER  (APC, apc);
     REGISTER_DEMUXER  (APE, ape);
     REGISTER_MUXDEMUX (ASF, asf);
@@ -64,8 +66,11 @@ void av_register_all(void)
     REGISTER_DEMUXER  (AVS, avs);
     REGISTER_DEMUXER  (BETHSOFTVID, bethsoftvid);
     REGISTER_DEMUXER  (BFI, bfi);
+    REGISTER_DEMUXER  (BINK, bink);
     REGISTER_DEMUXER  (C93, c93);
+    REGISTER_DEMUXER  (CAF, caf);
     REGISTER_DEMUXER  (CAVSVIDEO, cavsvideo);
+    REGISTER_DEMUXER  (CDG, cdg);
     REGISTER_MUXER    (CRC, crc);
     REGISTER_MUXDEMUX (DAUD, daud);
     REGISTER_MUXDEMUX (DIRAC, dirac);
@@ -78,11 +83,13 @@ void av_register_all(void)
     REGISTER_DEMUXER  (EA_CDATA, ea_cdata);
     REGISTER_MUXDEMUX (EAC3, eac3);
     REGISTER_MUXDEMUX (FFM, ffm);
+    REGISTER_MUXDEMUX (FILMSTRIP, filmstrip);
     REGISTER_MUXDEMUX (FLAC, flac);
     REGISTER_DEMUXER  (FLIC, flic);
     REGISTER_MUXDEMUX (FLV, flv);
     REGISTER_DEMUXER  (FOURXM, fourxm);
     REGISTER_MUXER    (FRAMECRC, framecrc);
+    REGISTER_MUXER    (FRAMEMD5, framemd5);
     REGISTER_MUXER    (GIF, gif);
     REGISTER_DEMUXER  (GSM, gsm);
     REGISTER_MUXDEMUX (GXF, gxf);
@@ -97,12 +104,15 @@ void av_register_all(void)
     REGISTER_DEMUXER  (IPMOVIE, ipmovie);
     REGISTER_MUXER    (IPOD, ipod);
     REGISTER_DEMUXER  (ISS, iss);
+    REGISTER_DEMUXER  (IV8, iv8);
+    REGISTER_DEMUXER  (IVF, ivf);
     REGISTER_DEMUXER  (LMLM4, lmlm4);
     REGISTER_MUXDEMUX (M4V, m4v);
+    REGISTER_MUXER    (MD5, md5);
     REGISTER_MUXDEMUX (MATROSKA, matroska);
     REGISTER_MUXER    (MATROSKA_AUDIO, matroska_audio);
     REGISTER_MUXDEMUX (MJPEG, mjpeg);
-    REGISTER_DEMUXER  (MLP, mlp);
+    REGISTER_MUXDEMUX (MLP, mlp);
     REGISTER_DEMUXER  (MM, mm);
     REGISTER_MUXDEMUX (MMF, mmf);
     REGISTER_MUXDEMUX (MOV, mov);
@@ -157,15 +167,15 @@ void av_register_all(void)
     REGISTER_MUXDEMUX (PCM_U8,    pcm_u8);
     REGISTER_MUXER    (PSP, psp);
     REGISTER_DEMUXER  (PVA, pva);
+    REGISTER_DEMUXER  (QCP, qcp);
     REGISTER_DEMUXER  (R3D, r3d);
     REGISTER_MUXDEMUX (RAWVIDEO, rawvideo);
-    REGISTER_DEMUXER  (REDIR, redir);
     REGISTER_DEMUXER  (RL2, rl2);
     REGISTER_MUXDEMUX (RM, rm);
     REGISTER_MUXDEMUX (ROQ, roq);
     REGISTER_DEMUXER  (RPL, rpl);
     REGISTER_MUXER    (RTP, rtp);
-    REGISTER_DEMUXER  (RTSP, rtsp);
+    REGISTER_MUXDEMUX (RTSP, rtsp);
     REGISTER_DEMUXER  (SDP, sdp);
 #if CONFIG_SDP_DEMUXER
     av_register_rtp_dynamic_payload_handlers();
@@ -176,24 +186,32 @@ void av_register_all(void)
     REGISTER_DEMUXER  (SIFF, siff);
     REGISTER_DEMUXER  (SMACKER, smacker);
     REGISTER_DEMUXER  (SOL, sol);
+    REGISTER_MUXDEMUX (SOX, sox);
+    REGISTER_MUXER    (SPDIF, spdif);
     REGISTER_DEMUXER  (STR, str);
     REGISTER_MUXDEMUX (SWF, swf);
     REGISTER_MUXER    (TG2, tg2);
     REGISTER_MUXER    (TGP, tgp);
     REGISTER_DEMUXER  (THP, thp);
     REGISTER_DEMUXER  (TIERTEXSEQ, tiertexseq);
+    REGISTER_DEMUXER  (TMV, tmv);
+    REGISTER_MUXDEMUX (TRUEHD, truehd);
     REGISTER_DEMUXER  (TTA, tta);
     REGISTER_DEMUXER  (TXD, txd);
     REGISTER_DEMUXER  (VC1, vc1);
     REGISTER_MUXDEMUX (VC1T, vc1t);
     REGISTER_DEMUXER  (VMD, vmd);
     REGISTER_MUXDEMUX (VOC, voc);
+    REGISTER_DEMUXER  (VQF, vqf);
+    REGISTER_DEMUXER  (W64, w64);
     REGISTER_MUXDEMUX (WAV, wav);
     REGISTER_DEMUXER  (WC3, wc3);
+    REGISTER_MUXER    (WEBM, webm);
     REGISTER_DEMUXER  (WSAUD, wsaud);
     REGISTER_DEMUXER  (WSVQA, wsvqa);
     REGISTER_DEMUXER  (WV, wv);
     REGISTER_DEMUXER  (XA, xa);
+    REGISTER_DEMUXER  (YOP, yop);
     REGISTER_MUXDEMUX (YUV4MPEGPIPE, yuv4mpegpipe);
 
     /* external libraries */
@@ -203,8 +221,17 @@ void av_register_all(void)
     REGISTER_PROTOCOL (FILE, file);
     REGISTER_PROTOCOL (GOPHER, gopher);
     REGISTER_PROTOCOL (HTTP, http);
+    REGISTER_PROTOCOL (MMST, mmst);
     REGISTER_PROTOCOL (PIPE, pipe);
+    REGISTER_PROTOCOL (RTMP, rtmp);
+#if CONFIG_LIBRTMP
+    REGISTER_PROTOCOL (RTMP, rtmpt);
+    REGISTER_PROTOCOL (RTMP, rtmpe);
+    REGISTER_PROTOCOL (RTMP, rtmpte);
+    REGISTER_PROTOCOL (RTMP, rtmps);
+#endif
     REGISTER_PROTOCOL (RTP, rtp);
     REGISTER_PROTOCOL (TCP, tcp);
     REGISTER_PROTOCOL (UDP, udp);
+    REGISTER_PROTOCOL (CONCAT, concat);
 }

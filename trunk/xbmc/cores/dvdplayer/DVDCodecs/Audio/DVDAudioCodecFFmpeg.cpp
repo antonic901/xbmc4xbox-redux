@@ -53,6 +53,7 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
 
   if (!m_dllAvUtil.Load() || !m_dllAvCodec.Load()) return false;
 
+  m_dllAvCodec.avcodec_register_all();    
   m_pCodecContext = m_dllAvCodec.avcodec_alloc_context();
   m_dllAvCodec.avcodec_get_context_defaults(m_pCodecContext);
 
@@ -87,7 +88,7 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   }
   
   // set acceleration
-  m_pCodecContext->dsp_mask = FF_MM_FORCE | FF_MM_MMX | FF_MM_MMXEXT | FF_MM_SSE;
+  m_pCodecContext->dsp_mask = FF_MM_FORCE | FF_MM_MMX | FF_MM_MMX2 | FF_MM_SSE;
 
   if (m_dllAvCodec.avcodec_open(m_pCodecContext, pCodec) < 0)
   {

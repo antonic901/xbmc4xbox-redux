@@ -29,8 +29,7 @@
  * arbitrary struct of which the first field is a pointer to an
  * AVClass struct (e.g. AVCodecContext, AVFormatContext etc.).
  */
-typedef struct AVCLASS AVClass;
-struct AVCLASS {
+typedef struct {
     /**
      * The name of the class; usually it is the same name as the
      * context structure type to which the AVClass is associated.
@@ -39,7 +38,7 @@ struct AVCLASS {
 
     /**
      * A pointer to a function which returns the name of a context
-     * instance \p ctx associated with the class.
+     * instance ctx associated with the class.
      */
     const char* (*item_name)(void* ctx);
 
@@ -49,19 +48,32 @@ struct AVCLASS {
      * @see av_set_default_options()
      */
     const struct AVOption *option;
-};
+
+    /**
+     * LIBAVUTIL_VERSION with which this structure was created.
+     * This is used to allow fields to be added without requiring major
+     * version bumps everywhere.
+     */
+
+    int version;
+
+    /**
+     * Offset in the structure where log_level_offset is stored.
+     * 0 means there is no such variable
+     */
+    int log_level_offset_offset;
+
+    /**
+     * Offset in the structure where a pointer to the parent context for loging is stored.
+     * for example a decoder that uses eval.c could pass its AVCodecContext to eval as such
+     * parent context. And a av_log() implementation could then display the parent context
+     * can be NULL of course
+     */
+    int parent_log_context_offset;
+} AVClass;
 
 /* av_log API */
 
-#if LIBAVUTIL_VERSION_INT < (50<<16)
-#define AV_LOG_QUIET -1
-#define AV_LOG_FATAL 0
-#define AV_LOG_ERROR 0
-#define AV_LOG_WARNING 1
-#define AV_LOG_INFO 1
-#define AV_LOG_VERBOSE 1
-#define AV_LOG_DEBUG 2
-#else
 #define AV_LOG_QUIET    -8
 
 /**
@@ -95,11 +107,6 @@ struct AVCLASS {
  * Stuff which is only useful for libav* developers.
  */
 #define AV_LOG_DEBUG    48
-#endif
-
-#if LIBAVUTIL_VERSION_INT < (50<<16)
-extern int av_log_level;
-#endif
 
 /**
  * Sends the specified message to the log if the level is less than or equal
@@ -126,5 +133,6 @@ int av_log_get_level(void);
 void av_log_set_level(int);
 void av_log_set_callback(void (*)(void*, int, const char*, va_list));
 void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl);
+const char* av_default_item_name(void* ctx);
 
 #endif /* AVUTIL_LOG_H */

@@ -55,6 +55,7 @@ void CDVDStreamInfo::Clear()
   width    = 0;
   aspect   = 0.0;
   vfr      = false;
+  stills   = false;
 
   channels   = 0;
   samplerate = 0;
@@ -84,6 +85,7 @@ bool CDVDStreamInfo::Equal(const CDVDStreamInfo& right, bool withextradata)
   ||  fpsrate  != right.fpsrate
   ||  height   != right.height
   ||  width    != right.width
+  ||  stills   != right.stills
   ||  vfr      != right.vfr) return false;
 
   // AUDIO
@@ -133,6 +135,7 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
   height   = right.height;
   width    = right.width;
   aspect   = right.aspect;
+  stills   = right.stills;
 
   // AUDIO
   channels      = right.channels;

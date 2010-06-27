@@ -21,7 +21,7 @@
 
 #include "avcodec.h"
 #define ALT_BITSTREAM_READER_LE
-#include "bitstream.h"
+#include "get_bits.h"
 #include "ra288.h"
 #include "lpc.h"
 #include "celp_math.h"
@@ -102,10 +102,6 @@ static void decode(RA288Context *ractx, float gain, int cb_coef)
     gain_block[9] = 10 * log10(sum) - 32;
 
     ff_celp_lp_synthesis_filterf(block, ractx->sp_lpc, buffer, 5, 36);
-
-    /* output */
-    for (i=0; i < 5; i++)
-        block[i] = av_clipf(block[i], -4095./4096., 4095./4096.);
 }
 
 /**
@@ -160,9 +156,10 @@ static void backward_filter(float *hist, float *rec, const float *window,
 }
 
 static int ra288_decode_frame(AVCodecContext * avctx, void *data,
-                              int *data_size, const uint8_t * buf,
-                              int buf_size)
+                              int *data_size, AVPacket *avpkt)
 {
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
     float *out = data;
     int i, j;
     RA288Context *ractx = avctx->priv_data;
@@ -205,7 +202,7 @@ static int ra288_decode_frame(AVCodecContext * avctx, void *data,
 AVCodec ra_288_decoder =
 {
     "real_288",
-    CODEC_TYPE_AUDIO,
+    AVMEDIA_TYPE_AUDIO,
     CODEC_ID_RA_288,
     sizeof(RA288Context),
     ra288_decode_init,
