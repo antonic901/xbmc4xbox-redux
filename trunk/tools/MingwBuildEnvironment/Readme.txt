@@ -1,7 +1,7 @@
 Mingw build environment to build ffmpeg and other libraries
 
 Installation:
-extract msys.zip to c:\
+svn export or copy msys to c:\
 edit c:\msys\etc\fstab if you installed it in a different directory
 optionally edit c:\msys\msys.bat and change the path to vcvars32.bat
 
