@@ -2755,6 +2755,7 @@ elif enabled gcc; then
     check_cflags -fno-tree-vectorize
     check_cflags -Werror=implicit
     check_cflags -Werror=missing-prototypes
+    check_cflags -Wno-unused
 elif enabled clang; then
     check_cflags -Qunused-arguments
 elif enabled armcc; then
