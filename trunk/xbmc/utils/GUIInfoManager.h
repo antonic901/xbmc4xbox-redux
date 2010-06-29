@@ -434,9 +434,9 @@ class CDateTime;
 // Version string MUST NOT contain spaces.  It is used
 // in the HTTP request user agent.
 #ifdef SVN_REV
-#define VERSION_STRING "r"SVN_REV
+#define VERSION_STRING "pre-3.0-r"SVN_REV
 #else
-#define VERSION_STRING ""
+#define VERSION_STRING "pre-3.0"
 #endif
 
 #define LISTITEM_START              35000
