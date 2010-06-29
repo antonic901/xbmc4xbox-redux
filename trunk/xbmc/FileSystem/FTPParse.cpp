@@ -133,12 +133,20 @@ static long getlong(char *buf,int len)
   return u;
 }
 
+static __int64 getint64(char *buf,int len)
+{
+  __int64 u = 0;
+  while (len-- > 0)
+    u = u * 10 + (*buf++ - '0');
+  return u;
+}
+
 int ftpparse(struct ftpparse *fp,char *buf,int len)
 {
   int i;
   int j;
   int state;
-  long size;
+  __int64 size;
   long year;
   long month;
   long mday;
@@ -186,7 +194,7 @@ int ftpparse(struct ftpparse *fp,char *buf,int len)
               break;
             case 's':
               fp->sizetype = FTPPARSE_SIZE_BINARY;
-              fp->size = getlong(buf + i + 1,j - i - 1);
+              fp->size = getint64(buf + i + 1,j - i - 1);
               break;
             case 'm':
               fp->mtimetype = FTPPARSE_MTIME_LOCAL;
@@ -248,7 +256,7 @@ int ftpparse(struct ftpparse *fp,char *buf,int len)
               state = 4;
               break;
             case 4: /* getting tentative size */
-              size = getlong(buf + i,j - i);
+              size = getint64(buf + i,j - i);
               state = 5;
               break;
             case 5: /* searching for month, otherwise getting tentative size */
@@ -256,7 +264,7 @@ int ftpparse(struct ftpparse *fp,char *buf,int len)
               if (month >= 0)
                 state = 6;
               else
-                size = getlong(buf + i,j - i);
+                size = getint64(buf + i,j - i);
               break;
             case 6: /* have size and month */
               mday = getlong(buf + i,j - i);
@@ -424,7 +432,7 @@ int ftpparse(struct ftpparse *fp,char *buf,int len)
     else {
       i = j;
       while (buf[j] != ' ') if (++j == len) return 0;
-      fp->size = getlong(buf + i,j - i);
+      fp->size = getint64(buf + i,j - i);
       fp->sizetype = FTPPARSE_SIZE_BINARY;
       fp->flagtryretr = 1;
     }
