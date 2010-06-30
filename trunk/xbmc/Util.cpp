@@ -3522,6 +3522,8 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
   SplitExecFunction(execString, execute, params);
   execute.ToLower();
   CStdString parameter = params.size() ? params[0] : "";
+  CStdString strParameterCaseIntact = parameter;
+  
   if (execute.Equals("reboot") || execute.Equals("restart"))  //Will reboot the xbox, aka cold reboot
   {
     g_applicationMessenger.Restart();
@@ -3743,20 +3745,6 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
     }
 
     CFileItem item(params[0], false);
-    if (item.IsVideoDb())
-    {
-      CVideoDatabase database;
-      database.Open();
-      DIRECTORY::VIDEODATABASEDIRECTORY::CQueryParams query;
-      DIRECTORY::CVideoDatabaseDirectory::GetQueryParams(item.m_strPath,query);
-      if (query.GetContentType() == VIDEODB_CONTENT_MOVIES)
-        database.GetMovieInfo("",*item.GetVideoInfoTag(),query.GetMovieId());
-      if (query.GetContentType() == VIDEODB_CONTENT_TVSHOWS)
-        database.GetEpisodeInfo("",*item.GetVideoInfoTag(),query.GetEpisodeId());
-      if (query.GetContentType() == VIDEODB_CONTENT_MUSICVIDEOS)
-        database.GetMusicVideoInfo("",*item.GetVideoInfoTag(),query.GetMVideoId());
-      item.m_strPath = item.GetVideoInfoTag()->m_strFileNameAndPath;
-    }
 
     // restore to previous window if needed
     if( g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW ||
@@ -3767,6 +3755,10 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
     // reset screensaver
     g_application.ResetScreenSaver();
     g_application.ResetScreenSaverWindow();
+
+    // set fullscreen or windowed
+    if (params.size() >= 2 && params[1] == "1")
+      g_stSettings.m_bStartVideoWindowed = true;
 
     // ask if we need to check guisettings to resume
     bool askToResume = true;

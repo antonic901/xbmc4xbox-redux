@@ -105,7 +105,7 @@ namespace PYXBMC
   {
     PyObject *pObject = NULL;
     PyObject *pObjectListItem = NULL;
-    char bWindowed = false;
+    bool bWindowed = false;
     static const char *keywords[] = { "item", "listitem", "windowed", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(
@@ -119,6 +119,9 @@ namespace PYXBMC
     {
       return NULL;
     }
+
+    // set fullscreen or windowed
+    g_stSettings.m_bStartVideoWindowed = bWindowed;
 
     // force a playercore before playing
     g_application.m_eForcedNextPlayer = self->playerCore;

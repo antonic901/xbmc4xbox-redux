@@ -99,6 +99,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_logLevel = LOG_LEVEL_NORMAL;
   m_cddbAddress = "freedb.freedb.org";
   m_usePCDVDROM = false;
+  m_fullScreenOnMovieStart = true;
   m_noDVDROM = false;
   m_cachePath = "Z:\\";
   m_displayRemoteCodes = false;
@@ -289,6 +290,7 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetFloat(pElement, "audiodelayrange", m_videoAudioDelayRange, 10, 600);
     XMLUtils::GetInt(pElement, "blackbarcolour", m_videoBlackBarColour, 0, 255);
     XMLUtils::GetString(pElement, "defaultplayer", m_videoDefaultPlayer);
+    XMLUtils::GetBoolean(pElement, "fullscreenonmoviestart", m_fullScreenOnMovieStart);
     XMLUtils::GetFloat(pElement, "playcountminimumpercent", m_videoPlayCountMinimumPercent, 0.0f, 100.0f);
     XMLUtils::GetInt(pElement, "ignoreatstart", m_videoIgnoreAtStart, 0, 900);
     XMLUtils::GetInt(pElement, "ignoreatend", m_videoIgnoreAtEnd, 0, 900);

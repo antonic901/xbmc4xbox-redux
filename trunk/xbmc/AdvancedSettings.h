@@ -118,6 +118,7 @@ class CAdvancedSettings
     int m_logLevel;
     CStdString m_cddbAddress;
     bool m_usePCDVDROM;
+    bool m_fullScreenOnMovieStart;
     bool m_noDVDROM;
     CStdString m_cachePath;
     bool m_displayRemoteCodes;
