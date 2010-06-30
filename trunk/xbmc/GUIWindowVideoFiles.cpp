@@ -550,14 +550,8 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
           else
           {
             // single file
-            if ((info.strContent.Equals("movies") && (iFound > 0 ||
-                 m_database.HasMovieInfo(item->m_strPath)))      ||
-                 m_database.HasEpisodeInfo(item->m_strPath)      ||
-                 info.strContent.Equals("livetv")                ||
-                 info.strContent.Equals("musicvideos"))
-            {
-              buttons.Add(CONTEXT_BUTTON_INFO, infoString);
-            }
+            buttons.Add(CONTEXT_BUTTON_INFO, infoString);
+
             m_database.Open();
             if (!item->IsParentFolder())
             {

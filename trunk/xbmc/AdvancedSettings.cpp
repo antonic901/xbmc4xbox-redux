@@ -110,8 +110,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_videoCleanStringRegExps.push_back("(\\[.*\\])");
 
   m_moviesExcludeFromScanRegExps.push_back("-trailer");
-  m_moviesExcludeFromScanRegExps.push_back("[-._ ]sample");
-  m_tvshowExcludeFromScanRegExps.push_back("[-._ ]sample[-._ ]");
+  m_moviesExcludeFromScanRegExps.push_back("[-._ \\/]sample[-._ \\/]");
+  m_tvshowExcludeFromScanRegExps.push_back("[-._ \\/]sample[-._ \\/]");
 
   m_videoStackRegExps.push_back("(.*?)([ _.-]*(?:cd|dvd|p(?:(?:ar)?t)|dis[ck]|d)[ _.-]*[0-9]+)(.*?)(\\.[^.]+)$");
   m_videoStackRegExps.push_back("(.*?)([ _.-]*(?:cd|dvd|p(?:(?:ar)?t)|dis[ck]|d)[ _.-]*[a-d])(.*?)(\\.[^.]+)$");
@@ -153,7 +153,7 @@ CAdvancedSettings::CAdvancedSettings()
 
   m_bFTPThumbs = false;
 
-  m_musicThumbs = "folder.jpg|Folder.jpg|folder.JPG|Folder.JPG|cover.jpg|Cover.jpg|cover.jpeg";
+  m_musicThumbs = "folder.jpg|Folder.jpg|folder.JPG|Folder.JPG|cover.jpg|Cover.jpg|cover.jpeg|thumb.jpg|Thumb.jpg|thumb.JPG|Thumb.JPG";
   m_dvdThumbs = "folder.jpg|Folder.jpg|folder.JPG|Folder.JPG";
   m_fanartImages = "fanart.jpg|fanart.png";
 

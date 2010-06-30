@@ -323,5 +323,7 @@ void CNfoFile::Close()
     m_doc = 0;
   }
 
+  m_strImDbUrl = "";
+  m_strImDbNr = "";
   m_size = 0;
 }
