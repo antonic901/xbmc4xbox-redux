@@ -123,7 +123,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
     if (CUtil::IsInternetStream(sourceUrl, true))
     {
       CFileCurl stream;
-      CStdString tempFile = "special://temp/image_download.jpg";
+      CStdString tempFile = "special://temp/" + CUtil::GetFileName(sourceUrl);
       if (stream.Download(sourceUrl, tempFile))
       {
         if (!m_dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
