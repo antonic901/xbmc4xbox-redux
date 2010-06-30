@@ -379,9 +379,7 @@ bool CCDDARipper::RipCD()
     if (!Rip(item->m_strPath, strFile.c_str(), *item->GetMusicInfoTag())) return false;
 
     dwTick = timeGetTime() - dwTick;
-    CStdString strTmp;
-    StringUtils::SecondsToTimeString(dwTick / 1000, strTmp);
-    CLog::Log(LOGINFO, "Ripping Track %d took %s", iTrack, strTmp.c_str());
+    CLog::Log(LOGINFO, "Ripping Track %d took %s", iTrack, StringUtils::SecondsToTimeString(dwTick / 1000).c_str());
   }
   CLog::Log(LOGINFO, "Ripped CD succesfull");
   return true;

@@ -478,7 +478,8 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
 
     bHasInfo = true;
   }
-
+  
+  bool needsRefresh = false;
   m_database.Close();
   if (bHasInfo)
   {
@@ -487,7 +488,8 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
     *item->GetVideoInfoTag() = movieDetails;
     pDlgInfo->SetMovie(item);
     pDlgInfo->DoModal();
-    if ( !pDlgInfo->NeedRefresh() )
+    needsRefresh = pDlgInfo->NeedRefresh();
+    if (!needsRefresh)
       return pDlgInfo->HasUpdatedThumb();
   }
 
@@ -524,26 +526,40 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
     }
   }
 
-  bool ignoreNfo(false);
-  CNfoFile::NFOResult nfoResult = scanner.CheckForNFOFile(item,settings.parent_name_root,info,scrUrl);
-  if (nfoResult == CNfoFile::ERROR_NFO)
-    ignoreNfo = true;
-  else
-  if (nfoResult != CNfoFile::NO_NFO)
-  {
-    hasDetails = true;
-    if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO)
-      scanner.m_IMDB.SetScraperInfo(info);
-  }
-
   // Get the correct movie title
   CStdString movieName = item->GetMovieName(settings.parent_name);
 
   // 3. Run a loop so that if we Refresh we re-run this block
   bool listNeedsUpdating(false);
-  bool needsRefresh(false);
   do
   {
+    bool ignoreNfo = false;
+    CNfoFile::NFOResult nfoResult = scanner.CheckForNFOFile(item,settings.parent_name_root,info,scrUrl);
+    if (nfoResult == CNfoFile::ERROR_NFO)
+      ignoreNfo = true;
+    else
+    if (nfoResult != CNfoFile::NO_NFO)
+    {
+      hasDetails = true;
+      if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO)
+        scanner.m_IMDB.SetScraperInfo(info);
+    }
+
+    if (needsRefresh)
+    {
+      bHasInfo = true;
+      if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO || nfoResult == CNfoFile::FULL_NFO)
+      {
+        if (CGUIDialogYesNo::ShowAndGetInput(13346,20446,20447,20022))
+        {
+          hasDetails = false;
+          ignoreNfo = true;
+          scrUrl.Clear();
+          info = info2;
+        }
+      }
+    }
+
     // 4. if we don't have an url, or need to refresh the search
     //    then do the web search
     IMDB_MOVIELIST movielist;
@@ -720,20 +736,6 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
         pDlgInfo->DoModal();
         item->SetThumbnailImage(pDlgInfo->GetThumbnail());
         needsRefresh = pDlgInfo->NeedRefresh();
-        if (needsRefresh)
-        {
-          bHasInfo = true;
-          if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO || nfoResult == CNfoFile::FULL_NFO)
-          {
-            if (CGUIDialogYesNo::ShowAndGetInput(13346,20446,20447,20022))
-            {
-              hasDetails = false;
-              ignoreNfo = true;
-              scrUrl.Clear();
-              info = info2;
-            }
-          }
-        }
         listNeedsUpdating = true;
       }
       else
@@ -1025,9 +1027,8 @@ bool CGUIWindowVideoBase::OnResumeShowMenu(CFileItem &item)
       if (db.GetResumeBookMark(itemPath, bookmark) )
       { // prompt user whether they wish to resume
         vector<CStdString> choices;
-        CStdString resumeString, time;
-        StringUtils::SecondsToTimeString(lrint(bookmark.timeInSeconds), time);
-        resumeString.Format(g_localizeStrings.Get(12022).c_str(), time.c_str());
+        CStdString resumeString;
+        resumeString.Format(g_localizeStrings.Get(12022).c_str(), StringUtils::SecondsToTimeString(lrint(bookmark.timeInSeconds)).c_str());
         choices.push_back(resumeString);
         choices.push_back(g_localizeStrings.Get(12021)); // start from the beginning
         int retVal = CGUIDialogContextMenu::ShowAndGetChoice(choices);
@@ -1490,7 +1491,7 @@ void CGUIWindowVideoBase::OnDeleteItem(CFileItemPtr item)
   CGUIWindowFileManager::DeleteItem(item.get());
 }
 
-void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool mark)
+void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
 {
   // dont allow update while scanning
   CGUIDialogVideoScan* pDialogScan = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
@@ -1506,11 +1507,18 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool mark)
     CFileItemList items;
     if (item->m_bIsFolder)
     {
-      CVideoDatabaseDirectory dir;
       CStdString strPath = item->m_strPath;
-      if (dir.GetDirectoryChildType(item->m_strPath) == NODE_TYPE_SEASONS)
-        strPath += "-1/";
-      dir.GetDirectory(strPath,items);
+      if (g_windowManager.GetActiveWindow() == WINDOW_VIDEO_FILES)
+      {
+        CDirectory::GetDirectory(strPath, items);
+      }
+      else
+      {
+        CVideoDatabaseDirectory dir;
+        if (dir.GetDirectoryChildType(strPath) == NODE_TYPE_SEASONS)
+          strPath += "-1/";
+        dir.GetDirectory(strPath,items);
+      }
     }
     else
       items.Add(item);
@@ -1521,12 +1529,12 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool mark)
       if (pItem->IsVideoDb())
       {
         if (pItem->HasVideoInfoTag() &&
-            (( mark && pItem->GetVideoInfoTag()->m_playCount) ||
-             (!mark && !(pItem->GetVideoInfoTag()->m_playCount))))
+            (( bMark && pItem->GetVideoInfoTag()->m_playCount) ||
+             (!bMark && !(pItem->GetVideoInfoTag()->m_playCount))))
           continue;
       }
 
-      database.SetPlayCount(*pItem, mark ? 1 : 0);
+      database.SetPlayCount(*pItem, bMark ? 1 : 0);
     }
     
     database.Close(); 

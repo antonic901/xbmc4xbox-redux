@@ -1955,9 +1955,7 @@ int CXbmcHttp::xbmcGetPlayListContents(int numParas, CStdString paras[])
       strInfo += ';' + tagVal->GetTitle();
     if (bShowDuration && tagVal)
     {
-      CStdString duration;
-      StringUtils::SecondsToTimeString(tagVal->GetDuration(), duration, TIME_FORMAT_GUESS);
-      strInfo += ';' + duration;
+      strInfo += ';' + StringUtils::SecondsToTimeString(tagVal->GetDuration(), TIME_FORMAT_GUESS);
     }
     list += closeTag + openTag + strInfo;
   }

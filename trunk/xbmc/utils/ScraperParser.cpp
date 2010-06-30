@@ -259,6 +259,9 @@ void CScraperParser::ParseExpression(const CStdString& input, CStdString& dest, 
     bool bTrim[MAX_SCRAPER_BUFFERS];
     GetBufferParams(bTrim,pExpression->Attribute("trim"),false);
 
+    bool bFixChars[MAX_SCRAPER_BUFFERS];
+    GetBufferParams(bFixChars,pExpression->Attribute("fixchars"),false);
+
     bool bEncode[MAX_SCRAPER_BUFFERS];
     GetBufferParams(bEncode,pExpression->Attribute("encode"),false);
 
@@ -276,6 +279,8 @@ void CScraperParser::ParseExpression(const CStdString& input, CStdString& dest, 
         InsertToken(strOutput,iBuf+1,"!!!CLEAN!!!");
       if (bTrim[iBuf])
         InsertToken(strOutput,iBuf+1,"!!!TRIM!!!");
+      if (bFixChars[iBuf])
+        InsertToken(strOutput,iBuf+1,"!!!FIXCHARS!!!");
       if (bEncode[iBuf])
         InsertToken(strOutput,iBuf+1,"!!!ENCODE!!!");
     }
@@ -474,9 +479,26 @@ void CScraperParser::Clean(CStdString& strDirty)
       break;
   }
   i=0;
+  while ((i=strDirty.Find("!!!FIXCHARS!!!",i)) != -1)
+  {
+    int i2;
+    if ((i2=strDirty.Find("!!!FIXCHARS!!!",i+14)) != -1)
+    {
+      strBuffer = strDirty.substr(i+14,i2-i-14);
+      CStdString strConverted;
+      HTML::CHTMLUtil::ConvertHTMLToAnsi(strBuffer,strConverted);
+      const char* szTrimmed = RemoveWhiteSpace(strConverted.c_str());
+      strDirty.erase(i,i2-i+14);
+      strDirty.Insert(i,szTrimmed);
+      i += strlen(szTrimmed);
+    }
+    else
+      break;
+  }
+  i=0;
   while ((i=strDirty.Find("!!!ENCODE!!!",i)) != -1)
   {
-    size_t i2;
+    int i2;
     if ((i2=strDirty.Find("!!!ENCODE!!!",i+12)) != -1)
     {
       strBuffer = strDirty.substr(i+12,i2-i-12);
@@ -495,9 +517,10 @@ char* CScraperParser::RemoveWhiteSpace(const char *string2)
   if (!string2) return (char*)"";
   char* string = (char*)string2;
   size_t pos = strlen(string)-1;
-  while ((string[pos] == ' ' || string[pos] == '\n') && string[pos] && pos)
+  while ((string[pos] == ' ' || string[pos] == '\n' || string[pos] == '\t') 
+         && string[pos] && pos)
     string[pos--] = '\0';
-  while ((*string == ' ' || *string == '\n') && *string != '\0')
+  while ((*string == ' ' || *string == '\n' || *string == '\t') && *string != '\0')
     string++;
   return string;
 }

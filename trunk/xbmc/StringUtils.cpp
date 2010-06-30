@@ -224,7 +224,7 @@ long StringUtils::TimeStringToSeconds(const CStdString &timeString)
   }
 }
 
-void StringUtils::SecondsToTimeString(long lSeconds, CStdString& strHMS, TIME_FORMAT format)
+CStdString StringUtils::SecondsToTimeString(long lSeconds, TIME_FORMAT format)
 {
   int hh = lSeconds / 3600;
   lSeconds = lSeconds % 3600;
@@ -233,13 +233,14 @@ void StringUtils::SecondsToTimeString(long lSeconds, CStdString& strHMS, TIME_FO
 
   if (format == TIME_FORMAT_GUESS)
     format = (hh >= 1) ? TIME_FORMAT_HH_MM_SS : TIME_FORMAT_MM_SS;
-  strHMS.Empty();
+  CStdString strHMS;
   if (format & TIME_FORMAT_HH)
     strHMS.AppendFormat("%02.2i", hh);
   if (format & TIME_FORMAT_MM)
     strHMS.AppendFormat(strHMS.IsEmpty() ? "%02.2i" : ":%02.2i", mm);
   if (format & TIME_FORMAT_SS)
     strHMS.AppendFormat(strHMS.IsEmpty() ? "%02.2i" : ":%02.2i", ss);
+  return strHMS;
 }
 
 bool StringUtils::IsNaturalNumber(const CStdString& str)
@@ -264,52 +265,21 @@ void StringUtils::RemoveCRLF(CStdString& strLine)
 CStdString StringUtils::SizeToString(__int64 size)
 {
   CStdString strLabel;
-  if (size == 0)
+  const char prefixes[] = {' ','k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
+  int i = 0;
+  double s = size;
+  while (i < sizeof(prefixes)/sizeof(prefixes[0]) && s >= 1000.0)
   {
-    strLabel.Format("0.0 KB");
-    return strLabel;
+    s /= 1024.0;
+    i++;
   }
 
-  // file < 1 kbyte?
-  if (size < 1024)
-  {
-    //  substract the integer part of the float value
-    float fRemainder = (((float)size) / 1024.0f) - floor(((float)size) / 1024.0f);
-    float fToAdd = 0.0f;
-    if (fRemainder < 0.01f)
-      fToAdd = 0.1f;
-    strLabel.Format("%2.1f KB", (((float)size) / 1024.0f) + fToAdd);
-    return strLabel;
-  }
-  const __int64 iOneMeg = 1024 * 1024;
-
-  // file < 1 megabyte?
-  if (size < iOneMeg)
-  {
-    strLabel.Format("%02.1f KB", ((float)size) / 1024.0f);
-    return strLabel;
-  }
-
-  // file < 1 GByte?
-  __int64 iOneGigabyte = iOneMeg;
-  iOneGigabyte *= (__int64)1000;
-  if (size < iOneGigabyte)
-  {
-    strLabel.Format("%02.1f MB", ((float)size) / ((float)iOneMeg));
-    return strLabel;
-  }
-  //file > 1 GByte
-  int iGigs = 0;
-  __int64 dwFileSize = size;
-  while (dwFileSize >= iOneGigabyte)
-  {
-    dwFileSize -= iOneGigabyte;
-    iGigs++;
-  }
-  float fMegs = ((float)dwFileSize) / ((float)iOneMeg);
-  fMegs /= 1000.0f;
-  fMegs += iGigs;
-  strLabel.Format("%02.1f GB", fMegs);
+  if (!i)
+    strLabel.Format("%.0lf %cB ", s, prefixes[i]);
+  else if (s >= 100.0)
+    strLabel.Format("%.1lf %cB", s, prefixes[i]);
+  else
+    strLabel.Format("%.2lf %cB", s, prefixes[i]);
 
   return strLabel;
 }

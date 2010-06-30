@@ -80,11 +80,7 @@ namespace VIDEO
       m_currentItem = 0;
       m_itemCount = -1;
 
-      // Create the thread to count all files to be scanned
       SetPriority(THREAD_PRIORITY_IDLE);
-      CThread fileCountReader(this);
-      if (m_pObserver)
-        fileCountReader.Create();
 
       // Database operations should not be canceled
       // using Interupt() while scanning as it could
@@ -113,14 +109,10 @@ namespace VIDEO
         }
       }
 
-      fileCountReader.StopThread();
-
       m_database.Close();
 
       tick = CTimeUtils::GetTimeMS() - tick;
-      CStdString strTime;
-      StringUtils::SecondsToTimeString(tick / 1000, strTime);
-      CLog::Log(LOGNOTICE, "VideoInfoScanner: Finished scan. Scanning for video info took %s", strTime.c_str());
+      CLog::Log(LOGNOTICE, "VideoInfoScanner: Finished scan. Scanning for video info took %s", StringUtils::SecondsToTimeString(tick / 1000).c_str());
 
       m_bRunning = false;
       if (m_pObserver)
@@ -226,7 +218,7 @@ namespace VIDEO
           if (dbHash.IsEmpty())
             CLog::Log(LOGDEBUG, "VideoInfoScanner: Scanning dir '%s' as not in the database", strDirectory.c_str());
           else
-            CLog::Log(LOGDEBUG, "VideoInfoScanner: Rescanning dir '%s' due to change", strDirectory.c_str());
+            CLog::Log(LOGDEBUG, "VideoInfoScanner: Rescanning dir '%s' due to change (%s != %s)", strDirectory.c_str(), dbHash.c_str(), hash.c_str());
         }
         else
         { // they're the same
@@ -269,9 +261,6 @@ namespace VIDEO
       }
     }
 
-    CLog::Log(LOGDEBUG,"VideoInfoScanner: Hash[%s,%s]:DB=[%s],Computed=[%s]",
-      m_info.strContent.c_str(),strDirectory.c_str(),dbHash.c_str(),hash.c_str());
-
     if (!m_info.settings.GetPluginRoot() && m_info.settings.GetSettings().IsEmpty()) // check for settings, if they are around load defaults - to workaround the nastyness
     {
       CScraperParser parser;
@@ -293,12 +282,13 @@ namespace VIDEO
         {
           m_database.SetPathHash(strDirectory, hash);
           m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
+          CLog::Log(LOGDEBUG, "VideoInfoScanner: Finished adding information from dir %s", strDirectory.c_str());
         }
       } 
       else
       {
         m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
-        CLog::Log(LOGDEBUG, "VideoInfoScanner: Not adding item to library as no info was found :(");
+        CLog::Log(LOGDEBUG, "VideoInfoScanner: No (new) information was found in dir %s", strDirectory.c_str());
       }
     }
     else if (hash != dbHash && (m_info.strContent.Equals("movies") || m_info.strContent.Equals("musicvideos")))
@@ -308,7 +298,6 @@ namespace VIDEO
 
     if (m_pObserver)
       m_pObserver->OnDirectoryScanned(strDirectory);
-    CLog::Log(LOGDEBUG, "VIdeoInfoScanner: Finished dir: %s", strDirectory.c_str());
 
     // exclude folders that match our exclude regexps
     CStdStringArray regexps = m_info.strContent.Equals("tvshows") ? g_advancedSettings.m_tvshowExcludeFromScanRegExps
@@ -635,42 +624,6 @@ namespace VIDEO
     g_infoManager.ResetPersistentCache();
     m_database.Close();
     return Return;
-  }
-
-  // This function is run by another thread
-  void CVideoInfoScanner::Run()
-  {
-    int count = 0;
-    while (!m_bStop && m_pathsToCount.size())
-      count+=CountFiles(*m_pathsToCount.begin());
-    m_itemCount = count;
-  }
-
-  // Recurse through all folders we scan and count files
-  int CVideoInfoScanner::CountFiles(const CStdString& strPath)
-  {
-    int count=0;
-    // load subfolder
-    CFileItemList items;
-    CLog::Log(LOGDEBUG, "%s - processing dir: %s", __FUNCTION__, strPath.c_str());
-    CDirectory::GetDirectory(strPath, items, g_stSettings.m_videoExtensions, true);
-    if (m_info.strContent.Equals("movies"))
-      items.Stack();
-
-    for (int i=0; i<items.Size(); ++i)
-    {
-      CFileItemPtr pItem=items[i];
-
-      if (m_bStop)
-        return 0;
-
-      if (pItem->m_bIsFolder)
-        count+=CountFiles(pItem->m_strPath);
-      else if (pItem->IsVideo() && !pItem->IsPlayList() && !pItem->IsNFO())
-        count++;
-    }
-    CLog::Log(LOGDEBUG, "%s - finished processing dir: %s", __FUNCTION__, strPath.c_str());
-    return count;
   }
 
   void CVideoInfoScanner::EnumerateSeriesFolder(CFileItem* item, EPISODES& episodeList)
@@ -1251,12 +1204,6 @@ namespace VIDEO
         return GetnfoFile(&item2,bGrabAny);
       }
 
-      CStdString strPath;
-      CUtil::GetDirectory(item->m_strPath,strPath);
-      nfoFile = CUtil::AddFileToFolder(strPath,"movie.nfo");
-      if (CFile::Exists(nfoFile))
-        return nfoFile;
-
       // already an .nfo file?
       if ( strcmpi(strExtension.c_str(), ".nfo") == 0 )
         nfoFile = item->m_strPath;
@@ -1298,6 +1245,11 @@ namespace VIDEO
           CUtil::AddFileToFolder(strPath,CUtil::GetFileName(item->m_strPath),item2.m_strPath);
           return GetnfoFile(&item2,bGrabAny);
         }
+
+        // try movie.nfo
+        nfoFile = CUtil::AddFileToFolder(strPath, "movie.nfo");
+        if (CFile::Exists(nfoFile))
+          return nfoFile;
 
         // finally try mymovies.xml
         nfoFile = CUtil::AddFileToFolder(strPath,"mymovies.xml");

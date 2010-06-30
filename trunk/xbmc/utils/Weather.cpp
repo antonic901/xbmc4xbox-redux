@@ -292,7 +292,7 @@ bool CWeather::LoadWeather(const CStdString &weatherXML)
 
   // load the xml file
   TiXmlDocument xmlDoc;
-  if (!xmlDoc.Parse(weatherXML.c_str()))
+  if (!xmlDoc.Parse(weatherXML))
   {
     CLog::Log(LOGERROR, "WEATHER: Unable to get data - invalid XML");
     return false;

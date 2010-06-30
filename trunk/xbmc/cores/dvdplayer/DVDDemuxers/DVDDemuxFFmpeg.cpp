@@ -960,6 +960,20 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         else 
           st->fAspect = av_q2d(pStream->sample_aspect_ratio) * pStream->codec->width / pStream->codec->height;
 
+        if ( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
+        {
+          if (pStream->codec->codec_id == CODEC_ID_PROBE)
+          {
+            // fix MPEG-1/MPEG-2 video stream probe returning CODEC_ID_PROBE for still frames.
+            // ffmpeg issue 1871, regression from ffmpeg r22831.
+            if ((pStream->id & 0xF0) == 0xE0)
+            {
+              pStream->codec->codec_id = CODEC_ID_MPEG2VIDEO;
+              pStream->codec->codec_tag = MKTAG('M','P','2','V');
+              CLog::Log(LOGERROR, "%s - CODEC_ID_PROBE detected, forcing CODEC_ID_MPEG2VIDEO", __FUNCTION__);
+            }
+          }
+        }
         break;
       }
     case CODEC_TYPE_DATA:

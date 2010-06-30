@@ -65,7 +65,7 @@ namespace VIDEO
     virtual void OnFinished() = 0;
   };
 
-  class CVideoInfoScanner : CThread, public IRunnable
+  class CVideoInfoScanner : CThread
   {
   public:
     CVideoInfoScanner();
@@ -109,10 +109,8 @@ namespace VIDEO
      */
     bool GetEpisodeAndSeasonFromRegExp(CRegExp &reg, SEpisode &episodeInfo);
 
-    virtual void Run();
-    int CountFiles(const CStdString& strPath);
     void FetchActorThumbs(const std::vector<SActorInfo>& actors, const CStdString& strPath);
-    
+
     /*! \brief Retrieve a "fast" hash of the given directory (if available)
      Performs a stat() on the directory, and uses modified time to create a "fast"
      hash of the folder. If no modified time is available, the create time is used,

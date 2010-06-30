@@ -4118,9 +4118,9 @@ void CApplication::OnPlayBackSpeedChanged(int iSpeed)
   CLog::Log(LOGDEBUG, "%s - Playback speed changed", __FUNCTION__);
 }
 
-void CApplication::OnPlayBackSeek(int iTime)
+void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
 {
-  g_pythonParser.OnPlayBackSeek(iTime);
+  g_pythonParser.OnPlayBackSeek(iTime, seekOffset);
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_stSettings.m_HttpApiBroadcastLevel>=1)
@@ -4131,6 +4131,7 @@ void CApplication::OnPlayBackSeek(int iTime)
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
+  g_infoManager.SetDisplayAfterSeek(2500, seekOffset/1000);
 }
 
 void CApplication::OnPlayBackSeekChapter(int iChapter)

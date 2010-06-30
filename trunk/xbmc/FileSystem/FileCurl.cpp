@@ -1019,6 +1019,7 @@ int CFileCurl::Stat(const CURL& url, struct __stat64* buffer)
     CLog::Log(LOGWARNING, "%s - Stat called on open file", __FUNCTION__);
     if (buffer)
     {
+      memset(buffer, 0, sizeof(struct __stat64));
       buffer->st_size = GetLength();
       buffer->st_mode = _S_IFREG;
     }
@@ -1098,6 +1099,7 @@ int CFileCurl::Stat(const CURL& url, struct __stat64* buffer)
     }
     else
     {
+      memset(buffer, 0, sizeof(struct __stat64));
       buffer->st_size = (int64_t)length;
       if(strstr(content, "text/html")) //consider html files directories
         buffer->st_mode = _S_IFDIR;

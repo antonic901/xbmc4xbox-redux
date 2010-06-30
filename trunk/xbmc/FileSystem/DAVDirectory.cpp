@@ -202,6 +202,8 @@ bool CDAVDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
   {
     if (strstr(buffer, "<D:response") != NULL)
     {
+      // The header should contain the xml version/utf encoding line
+      // followed by the <multistatus> tag
       if (strHeader.IsEmpty())
         strHeader = strResponse;
       
@@ -211,9 +213,13 @@ bool CDAVDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
     if (strstr(buffer, "</D:response") != NULL)
     {
+      // Close the multistatus tag from the header
+      if (strHeader.Find("<D:multistatus"))
+        strResponse+="</D:multistatus>\n";
+      
       TiXmlDocument davResponse;
 
-      if (davResponse.Parse(strResponse.c_str()) != 0)
+      if (!davResponse.Parse(strResponse))
       {
         CLog::Log(LOGERROR, "%s - Unable to process dav directory (%s)", __FUNCTION__, strPath.c_str());
         dav.Close();

@@ -1921,7 +1921,8 @@ bool CMPlayer::CanSeek()
 void CMPlayer::SeekTime(__int64 iTime)
 {
   // Use relative seeking for short seeks as TimeSeek doesn't work properly for that
-  int seek_delta = (int) ((iTime-GetTime())/1000);
+  int seekOffset = (int)(iTime - GetTime());
+  int seek_delta = (seekOffset/1000);
   if (abs(seek_delta)<30)
   {
     SeekRelativeTime(seek_delta);
@@ -1942,7 +1943,7 @@ void CMPlayer::SeekTime(__int64 iTime)
   }
   g_infoManager.m_performingSeek = false;
   WaitOnCommand();
-  m_callback.OnPlayBackSeek((int)iTime);
+  m_callback.OnPlayBackSeek((int)iTime, seekOffset);
 }
 
 //Time in milliseconds

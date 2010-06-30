@@ -162,8 +162,6 @@ void CGUIDialogSeekBar::Render()
 CStdString CGUIDialogSeekBar::GetSeekTimeLabel(TIME_FORMAT format)
 {
   int time = (int)(g_infoManager.GetTotalPlayTime() * m_fSeekPercentage * 0.01f);
-  CStdString strHMS;
-  StringUtils::SecondsToTimeString(time, strHMS, format);
-  return strHMS;
+  return StringUtils::SecondsToTimeString(time, format);
 }
 
