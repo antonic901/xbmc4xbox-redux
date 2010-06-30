@@ -418,7 +418,11 @@ void CScraperParser::ParseNext(TiXmlElement* element)
 const CStdString CScraperParser::Parse(const CStdString& strTag, const CScraperSettings* pSettings)
 {
   TiXmlElement* pChildElement = m_pRootElement->FirstChildElement(strTag.c_str());
-  if(pChildElement == NULL) return "";
+  if(pChildElement == NULL)
+  {
+    CLog::Log(LOGERROR,"%s: Could not find scraper function %s",__FUNCTION__,strTag.c_str());
+    return "";
+  }
   int iResult = 1; // default to param 1
   pChildElement->QueryIntAttribute("dest",&iResult);
   TiXmlElement* pChildStart = pChildElement->FirstChildElement("RegExp");

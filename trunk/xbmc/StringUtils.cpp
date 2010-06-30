@@ -258,16 +258,16 @@ void StringUtils::RemoveCRLF(CStdString& strLine)
 {
   while ( strLine.size() && (strLine.Right(1) == "\n" || strLine.Right(1) == "\r") )
   {
-    strLine = strLine.Left((int)strLine.size() - 1);
+    strLine = strLine.Left(std::max(0, (int)strLine.size() - 1));
   }
 }
 
-CStdString StringUtils::SizeToString(__int64 size)
+CStdString StringUtils::SizeToString(int64_t size)
 {
   CStdString strLabel;
   const char prefixes[] = {' ','k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
-  int i = 0;
-  double s = size;
+  unsigned int i = 0;
+  double s = (double)size;
   while (i < sizeof(prefixes)/sizeof(prefixes[0]) && s >= 1000.0)
   {
     s /= 1024.0;
