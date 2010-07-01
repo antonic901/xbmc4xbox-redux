@@ -197,6 +197,7 @@ public:
   virtual CStdString GetAudioCodecName();
   virtual CStdString GetVideoCodecName();
   virtual int GetPictureWidth();
+  virtual int GetPictureHeight();
   virtual bool GetStreamDetails(CStreamDetails &details);
 
   virtual bool GetCurrentSubtitle(CStdString& strSubtitle);

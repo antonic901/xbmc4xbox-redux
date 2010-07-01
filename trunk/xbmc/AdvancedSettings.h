@@ -181,6 +181,7 @@ class CAdvancedSettings
     bool m_bUseEvilB;
     std::vector<CStdString> m_vecTokens; // cleaning strings tied to language
     //TuxBox
+    int m_iTuxBoxStreamtsPort;
     bool m_bTuxBoxSubMenuSelection;
     int m_iTuxBoxDefaultSubMenu;
     int m_iTuxBoxDefaultRootMenu;
@@ -189,6 +190,8 @@ class CAdvancedSettings
     int m_iTuxBoxEpgRequestTime;
     int m_iTuxBoxZapWaitTime;
     bool m_bTuxBoxSendAllAPids;
+    bool m_bTuxBoxZapstream;
+    int m_iTuxBoxZapstreamPort;
 
     int m_iMythMovieLength;         // minutes
 

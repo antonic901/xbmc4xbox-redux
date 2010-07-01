@@ -349,6 +349,10 @@ void CGUIWindowVideoBase::OnInfo(CFileItem* pItem, const SScraperInfo& info)
     }
   }
 
+  // we need to also request any thumbs be applied to the folder item
+  if (pItem->m_bIsFolder)
+    item.SetProperty("set_folder_thumb", pItem->m_strPath);
+
   bool modified = ShowIMDB(&item, info);
   if (modified && !info.strContent.Equals("plugin") && !info.strContent.Equals("livetv") &&
      (g_windowManager.GetActiveWindow() == WINDOW_VIDEO_FILES ||
