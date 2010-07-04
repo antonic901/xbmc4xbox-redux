@@ -37,16 +37,10 @@ int64_t CurrentHostFrequency(void)
   return( (int64_t)Frequency.QuadPart );
 }
 
-unsigned int CTimeUtils::frameTime = 0;
-
-void CTimeUtils::UpdateFrameTime()
-{
-  frameTime = GetTimeMS();
-}
-
 unsigned int CTimeUtils::GetFrameTime()
 {
-  return frameTime;
+  // we don't have an actual frametime on Xbox so just return timeGetTime()
+  return timeGetTime();
 }
 
 unsigned int CTimeUtils::GetTimeMS()
