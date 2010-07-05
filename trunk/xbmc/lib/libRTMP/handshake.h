@@ -426,7 +426,7 @@ HandShake(RTMP * r, int FP9HandShake)
 #else
   ip = (int32_t *)(clientsig+8);
   for (i = 2; i < RTMP_SIG_SIZE/4; i++)
-    *ip++ = (rand()<<16) & rand();
+    *ip++ = rand();
 #endif
 
   /* set handshake digest */

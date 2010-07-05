@@ -24,22 +24,14 @@
 
 #ifdef _WIN32
 
-#ifdef _XBOX
-#include <xtl.h>
-#include <winsockx.h>
-#include "..\..\cores\DllLoader\exports\emu_socket\emu_socket.h"
-struct mphostent* __stdcall dllgethostbyname(const char* name);
-#define gethostbyname(name) dllgethostbyname(name)
-#define hostent mphostent
-#define h_addr h_addr_list[0]
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#ifdef _MSC_VER	/* MSVC */
 #define snprintf _snprintf
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 #define vsnprintf _vsnprintf
-
-#else /* !_XBOX */
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #endif
 
 #define GetSockError()	WSAGetLastError()

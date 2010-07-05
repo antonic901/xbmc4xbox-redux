@@ -40,7 +40,7 @@ extern "C"
 {
 #endif
 
-#define RTMP_LIB_VERSION	0x020206	/* 2.2f */
+#define RTMP_LIB_VERSION	0x020300	/* 2.3 */
 
 #define RTMP_FEATURE_HTTP	0x01
 #define RTMP_FEATURE_ENC	0x02
@@ -147,6 +147,7 @@ extern "C"
 #define RTMP_LF_SWFV	0x0004	/* do SWF verification */
 #define RTMP_LF_PLST	0x0008	/* send playlist before play */
 #define RTMP_LF_BUFX	0x0010	/* toggle stream on BufferEmpty msg */
+#define RTMP_LF_FTCU	0x0020	/* free tcUrl on close */
     int lFlags;
 
     int swfAge;

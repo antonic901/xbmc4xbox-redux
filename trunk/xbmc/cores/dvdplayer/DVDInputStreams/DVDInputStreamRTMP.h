@@ -21,7 +21,7 @@
  */
 
 #include "DVDInputStream.h"
-#include "lib/libRTMP/rtmp.h"
+#include "DllLibRTMP.h"
 
 class CDVDInputStreamRTMP : public CDVDInputStream
 {
@@ -42,9 +42,10 @@ public:
   CCriticalSection m_RTMPSection;
 
 protected:
-  bool   m_eof;
-  bool   m_bPaused;
-  RTMP   m_rtmp;
-  char*        m_sStreamPlaying;
-};
+  bool       m_eof;
+  bool       m_bPaused;
+  char*      m_sStreamPlaying;
 
+  RTMP       m_rtmp;
+  DllLibRTMP m_libRTMP;
+};

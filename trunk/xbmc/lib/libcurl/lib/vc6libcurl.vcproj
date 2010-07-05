@@ -23,9 +23,6 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="1"
-				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\..\zlib\;.;..\include;..\..\polarssl\include"
@@ -49,7 +46,7 @@
 				OutputFile="DLL-Release/libcurl.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="libcmt"
+				IgnoreDefaultLibraryNames=""
 				ImportLibrary="DLL-Release/libcurl_imp.lib"
 				TargetMachine="1"/>
 			<Tool

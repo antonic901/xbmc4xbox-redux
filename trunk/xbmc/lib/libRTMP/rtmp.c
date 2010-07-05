@@ -654,12 +654,13 @@ int RTMP_SetupURL(RTMP *r, char *url)
 {
   AVal opt, arg;
   char *p1, *p2, *ptr = strchr(url, ' ');
-  int ret;
+  int ret, len;
   unsigned int port = 0;
 
   if (ptr)
     *ptr = '\0';
 
+  len = strlen(url);
   ret = RTMP_ParseURL(url, &r->Link.protocol, &r->Link.hostname,
   	&port, &r->Link.playpath0, &r->Link.app);
   if (!ret)
@@ -681,6 +682,9 @@ int RTMP_SetupURL(RTMP *r, char *url)
     if (ptr) {
       *ptr = '\0';
       arg.av_len = ptr - p2;
+      /* skip repeated spaces */
+      while(ptr[1] == ' ')
+      	*ptr++ = '\0';
     } else {
       arg.av_len = strlen(p2);
     }
@@ -710,12 +714,33 @@ int RTMP_SetupURL(RTMP *r, char *url)
 
   if (!r->Link.tcUrl.av_len)
     {
-	  r->Link.tcUrl.av_val = url;
-	  if (r->Link.app.av_len)
-	    r->Link.tcUrl.av_len = r->Link.app.av_len + (r->Link.app.av_val - url);
-	  else
-	    r->Link.tcUrl.av_len = strlen(url);
+      r->Link.tcUrl.av_val = url;
+      if (r->Link.app.av_len)
+        {
+          if (r->Link.app.av_val < url + len)
+    	    {
+    	      /* if app is part of original url, just use it */
+              r->Link.tcUrl.av_len = r->Link.app.av_len + (r->Link.app.av_val - url);
+    	    }
+    	  else
+    	    {
+    	      len = r->Link.hostname.av_len + r->Link.app.av_len +
+    		  sizeof("rtmpte://:65535/");
+	      r->Link.tcUrl.av_val = malloc(len);
+	      r->Link.tcUrl.av_len = snprintf(r->Link.tcUrl.av_val, len,
+		"%s://%.*s:%d/%.*s",
+		RTMPProtocolStringsLower[r->Link.protocol],
+		r->Link.hostname.av_len, r->Link.hostname.av_val,
+		r->Link.port,
+		r->Link.app.av_len, r->Link.app.av_val);
+	      r->Link.lFlags |= RTMP_LF_FTCU;
+	    }
+        }
+      else
+        {
+	  r->Link.tcUrl.av_len = strlen(url);
 	}
+    }
 
 #ifdef CRYPTO
   if ((r->Link.lFlags & RTMP_LF_SWFV) && r->Link.swfUrl.av_len)
@@ -2352,7 +2377,8 @@ HandleInvoke(RTMP *r, const char *body, unsigned int nBodySize)
     }
   else if (AVMATCH(&method, &av_onBWDone))
     {
-      SendCheckBW(r);
+	  if (!r->m_nBWCheckCounter)
+        SendCheckBW(r);
     }
   else if (AVMATCH(&method, &av_onFCSubscribe))
     {
@@ -3424,6 +3450,13 @@ RTMP_Close(RTMP *r)
 
   free(r->Link.playpath0.av_val);
   r->Link.playpath0.av_val = NULL;
+
+  if (r->Link.lFlags & RTMP_LF_FTCU)
+    {
+      free(r->Link.tcUrl.av_val);
+      r->Link.tcUrl.av_val = NULL;
+      r->Link.lFlags ^= RTMP_LF_FTCU;
+    }
 
 #ifdef CRYPTO
   if (r->Link.dh)
