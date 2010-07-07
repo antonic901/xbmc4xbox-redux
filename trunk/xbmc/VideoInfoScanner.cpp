@@ -970,7 +970,6 @@ namespace VIDEO
     if (g_advancedSettings.m_bVideoLibraryImportWatchedState)
       m_database.SetPlayCount(*pItem, movieDetails.m_playCount, movieDetails.m_lastPlayed);
 
-    m_database.Close();
     return lResult;
   }
 
@@ -1377,10 +1376,6 @@ namespace VIDEO
 
   void CVideoInfoScanner::FetchSeasonThumbs(int idTvShow, const CStdString &folderToCheck, bool download, bool overwrite)
   {
-    // ensure our database is open (this can get called via other classes)
-    if (!m_database.Open())
-      return;
-
     CVideoInfoTag movie;
     m_database.GetTvShowInfo("",movie,idTvShow);
     CStdString showDir(folderToCheck.IsEmpty() ? movie.m_strPath : folderToCheck);
@@ -1432,7 +1427,6 @@ namespace VIDEO
           CScraperUrl::DownloadThumbnail(items[i]->GetCachedSeasonThumb(),movie.m_strPictureURL.GetSeasonThumb(items[i]->GetVideoInfoTag()->m_iSeason));
       }
     }
-    m_database.Close();
   }
 
   void CVideoInfoScanner::FetchActorThumbs(const vector<SActorInfo>& actors, const CStdString& strPath)
