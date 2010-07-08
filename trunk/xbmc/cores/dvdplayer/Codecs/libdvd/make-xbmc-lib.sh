@@ -1,7 +1,5 @@
 #!/bin/sh
 
-rm -rf bin/xbox
-
 #libdvdcss
 cd libdvdcss
 echo "***** Cleaning libdvdcss *****"
@@ -16,9 +14,8 @@ make
 strip -S src/.libs/libdvdcss-2.dll
 cd ..
 mkdir -p includes/dvdcss
-cp libdvdcss/src/dvdcss/dvdcss.h includes/dvdcss  
-mkdir -p bin/xbox
-cp libdvdcss/src/.libs/libdvdcss-2.dll bin/xbox
+cp libdvdcss/src/dvdcss/dvdcss.h includes/dvdcss
+cp libdvdcss/src/.libs/libdvdcss-2.dll ../../../../../system/players/dvdplayer/
 
 #libdvdread
 cd libdvdread
@@ -57,5 +54,5 @@ gcc \
 
 strip -S obj/libdvdnav.dll
 cd ..
-cp libdvdnav/obj/libdvdnav.dll bin/xbox
+cp libdvdnav/obj/libdvdnav.dll ../../../../../system/players/dvdplayer/
 echo "***** Done *****"
