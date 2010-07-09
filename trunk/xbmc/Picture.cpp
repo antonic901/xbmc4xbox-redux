@@ -28,6 +28,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FileCurl.h"
 #include "Util.h"
+#include "Crc32.h"
 
 using namespace XFILE;
 
@@ -122,8 +123,12 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
   
     if (CUtil::IsInternetStream(sourceUrl, true))
     {
+      Crc32 crc;
+      crc.ComputeFromLowerCase(sourceUrl);
+      CStdString tempFile;
+      tempFile.Format("special://temp/%08x.%s", (unsigned __int32)crc, CUtil::GetExtension(sourceUrl).c_str());
+
       CFileCurl stream;
-      CStdString tempFile = "special://temp/image_download.jpg";
       if (stream.Download(sourceUrl, tempFile))
       {
         if (!m_dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
