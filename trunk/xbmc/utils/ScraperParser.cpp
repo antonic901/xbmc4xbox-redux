@@ -420,7 +420,7 @@ const CStdString CScraperParser::Parse(const CStdString& strTag, const CScraperS
   TiXmlElement* pChildElement = m_pRootElement->FirstChildElement(strTag.c_str());
   if(pChildElement == NULL)
   {
-    CLog::Log(LOGERROR,"%s: Could not find scraper function %s",__FUNCTION__,strTag.c_str());
+    CLog::Log(LOGNOTICE,"%s: Could not find scraper function %s",__FUNCTION__,strTag.c_str());
     return "";
   }
   int iResult = 1; // default to param 1
