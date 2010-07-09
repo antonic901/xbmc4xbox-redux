@@ -126,7 +126,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       Crc32 crc;
       crc.ComputeFromLowerCase(sourceUrl);
       CStdString tempFile;
-      tempFile.Format("special://temp/%08x.%s", (unsigned __int32)crc, CUtil::GetExtension(sourceUrl).c_str());
+      tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, CUtil::GetExtension(sourceUrl).c_str());
 
       CFileCurl stream;
       if (stream.Download(sourceUrl, tempFile))
