@@ -1247,7 +1247,7 @@ bool CFileCurl::CReadState::FillBuffer(unsigned int want)
       {
         // hack for broken curl, that thinks there is data all the time
         // happens especially on ftp during initial connection
-        SwitchToThread();
+//        SwitchToThread();
 
         int maxfd = -1;
         FD_ZERO(&fdread);
