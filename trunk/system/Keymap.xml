@@ -1961,6 +1961,7 @@
     </joystick>
 
     <remote>
+      <info>Close</info>
       <back>Close</back>
     </remote>
 
