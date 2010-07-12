@@ -175,6 +175,8 @@ static int read_braindead_odml_indx(AVFormatContext *s, int frame_num){
 
             if(ast->sample_size)
                 ast->cum_len += len;
+            else if (st->codec->block_align)
+                ast->cum_len += (len + st->codec->block_align - 1)/st->codec->block_align;
             else
                 ast->cum_len ++;
             last_pos= pos;
@@ -814,6 +816,8 @@ resync:
             }
             if(ast->sample_size)
                 ast->frame_offset += pkt->size;
+            else if (st->codec->block_align)
+                ast->frame_offset += (size + st->codec->block_align - 1)/st->codec->block_align;
             else
                 ast->frame_offset++;
         }
@@ -898,6 +902,7 @@ resync:
                /*|| (st->discard >= AVDISCARD_NONKEY && !(pkt->flags & AV_PKT_FLAG_KEY))*/ //FIXME needs a little reordering
                || st->discard >= AVDISCARD_ALL){
                 if(ast->sample_size) ast->frame_offset += size;
+                else if (st->codec->block_align) ast->frame_offset += (pkt->size + st->codec->block_align - 1)/st->codec->block_align;
                 else                 ast->frame_offset++;
                 url_fskip(pb, size);
                 goto resync;
@@ -993,6 +998,8 @@ static int avi_read_idx1(AVFormatContext *s, int size)
             av_add_index_entry(st, pos, ast->cum_len, len, 0, (flags&AVIIF_INDEX) ? AVINDEX_KEYFRAME : 0);
         if(ast->sample_size)
             ast->cum_len += len;
+        else if (st->codec->block_align)
+            ast->cum_len += (len + st->codec->block_align - 1)/st->codec->block_align;
         else
             ast->cum_len ++;
         last_pos= pos;
