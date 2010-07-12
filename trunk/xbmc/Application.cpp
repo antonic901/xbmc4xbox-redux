@@ -4131,7 +4131,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
-  g_infoManager.SetDisplayAfterSeek(2500, seekOffset/1000);
+//  g_infoManager.SetDisplayAfterSeek(2500, seekOffset/1000);
 }
 
 void CApplication::OnPlayBackSeekChapter(int iChapter)
