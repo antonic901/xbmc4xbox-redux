@@ -1626,7 +1626,7 @@ bool CUtil::IsSpecial(const CStdString& strFile)
 bool CUtil::IsPlugin(const CStdString& strFile)
 {
   CURL url(strFile);
-  return url.GetProtocol().Equals("plugin");
+  return url.GetProtocol().Equals("plugin") && !url.GetFileName().IsEmpty();
 }
 
 bool CUtil::IsPluginRoot(const CStdString& strFile)
