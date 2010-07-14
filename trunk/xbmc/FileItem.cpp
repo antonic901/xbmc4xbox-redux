@@ -2032,7 +2032,7 @@ void CFileItemList::Stack()
 
     // set property
     item1->SetProperty("isstacked", "1");
-    
+
     // skip folders, nfo files, playlists
     if (item1->m_bIsFolder
       || item1->IsParentFolder()
@@ -2064,7 +2064,7 @@ void CFileItemList::Stack()
     VECCREGEXP::iterator  expr        = stackRegExps.begin();
 
     CUtil::Split(item1->m_strPath, filePath, file1);
-    int j; 
+    int j;
     while (expr != stackRegExps.end())
     {
       if (expr->RegFind(file1, offset) != -1)
@@ -2173,13 +2173,15 @@ void CFileItemList::Stack()
       if (stack.size() > 1)
       {
         // have a stack, remove the items and add the stacked item
-        CStackDirectory dir;
         // dont actually stack a multipart rar set, just remove all items but the first
         CStdString stackPath;
         if (Get(stack[0])->IsRAR())
           stackPath = Get(stack[0])->m_strPath;
         else
+        {
+          CStackDirectory dir;
           stackPath = dir.ConstructStackPath(*this, stack);
+        }
         item1->m_strPath = stackPath;
         // clean up list
         for (unsigned k = 1; k < stack.size(); k++)
