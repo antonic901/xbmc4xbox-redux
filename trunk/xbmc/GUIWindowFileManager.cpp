@@ -288,7 +288,7 @@ void CGUIWindowFileManager::OnSort(int iList)
   for (int i = 0; i < m_vecItems[iList]->Size(); i++)
   {
     CFileItemPtr pItem = m_vecItems[iList]->Get(i);
-    if (pItem->m_bIsFolder && !pItem->m_dwSize || pItem->m_strPath.Equals("add")) 
+    if (pItem->m_bIsFolder && !pItem->m_dwSize || pItem->m_strPath.Equals("add"))
       pItem->SetLabel2("");
     else
       pItem->SetFileSizeLabel();
@@ -463,13 +463,13 @@ bool CGUIWindowFileManager::Update(int iList, const CStdString &strDirectory)
   else if (items.IsEmpty() || g_guiSettings.GetBool("filelists.showparentdiritems"))
   {
     CFileItemPtr pItem(new CFileItem(".."));
-    pItem->m_strPath = strParentPath;
+    pItem->m_strPath = (m_rootDir.IsSource(strDirectory)?"":strParentPath);
     pItem->m_bIsFolder = true;
     pItem->m_bIsShareOrDrive = false;
     m_vecItems[iList]->AddFront(pItem, 0);
   }
 
-  m_strParentPath[iList] = strParentPath;
+  m_strParentPath[iList] = (m_rootDir.IsSource(strDirectory)?"":strParentPath);
 
   if (strDirectory.IsEmpty())
   {
@@ -1653,7 +1653,7 @@ bool CGUIWindowFileManager::MoveItem(const CFileItem *pItem, const CStdString& s
   return true;
 }
 
-const CFileItem& CGUIWindowFileManager::CurrentDirectory(int indx) const 
-{ 
+const CFileItem& CGUIWindowFileManager::CurrentDirectory(int indx) const
+{
   return *m_Directory[indx];
 }
