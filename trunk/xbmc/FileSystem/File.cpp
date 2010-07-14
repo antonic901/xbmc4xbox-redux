@@ -296,7 +296,7 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
         return false;
     }
 
-    if ( (flags & READ_NO_CACHE) == 0 && CUtil::IsInternetStream(strFileName, true) && !CUtil::IsPicture(strFileName))
+    if ( (flags & READ_NO_CACHE) == 0 && CUtil::IsInternetStream(strFileName, true) && !CUtil::IsPicture(strFileName) )
       m_flags |= READ_CACHED;
 
     CURL url(strFileName);
@@ -401,13 +401,13 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
   {
     if (strFileName.IsEmpty()) return false;
 
-    bool bPathInCache;
     if (bUseCache)
     {
-    if (g_directoryCache.FileExists(strFileName, bPathInCache) )
-      return true;
-    if (bPathInCache)
-      return false;
+      bool bPathInCache;
+      if (g_directoryCache.FileExists(strFileName, bPathInCache) )
+        return true;
+      if (bPathInCache)
+        return false;
     }
 
     CURL url(strFileName);
