@@ -147,7 +147,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
     if (strProtocol == "htsp") return new CHTSPDirectory();
   }
 
-  CLog::Log(LOGWARNING, "CFactoryDirectory::Create - Unsupported protocol %s", strProtocol.c_str());
+  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, strProtocol.c_str(), url.Get().c_str() );
   return NULL;
 }
 
