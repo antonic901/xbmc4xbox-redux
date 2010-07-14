@@ -277,8 +277,7 @@ bool CGUIWindowVideoFiles::GetDirectory(const CStdString &strDirectory, CFileIte
   m_stackingAvailable = true;
   m_cleaningAvailable = true;
 
-
-  if ((m_database.GetScraperForPath(strDirectory,info2) && info2.strContent.Equals("tvshows")) || items.IsTuxBox())
+  if ((m_database.GetScraperForPath(strDirectory,info2) && info2.strContent.Equals("tvshows")) || items.IsTuxBox() || items.IsPlugin() )
   { // dont stack or clean strings in tv dirs
     m_stackingAvailable = false;
     m_cleaningAvailable = false;
@@ -308,7 +307,7 @@ void CGUIWindowVideoFiles::OnPrepareFileItems(CFileItemList &items)
       if ((item->m_bIsFolder && !CUtil::IsInArchive(item->m_strPath)) || m_cleaningAvailable)
         item->CleanString();
     }
-}
+  }
 }
 
 bool CGUIWindowVideoFiles::OnClick(int iItem)

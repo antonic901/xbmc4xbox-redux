@@ -2393,6 +2393,7 @@ CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */) co
    || m_bIsShareOrDrive
    || IsInternetStream()
    || CUtil::IsUPnP(m_strPath)
+   || IsPlugin()
    || (CUtil::IsFTP(m_strPath) && !g_advancedSettings.m_bFTPThumbs)
    || IsParentFolder()
    || IsMusicDb())
@@ -2546,6 +2547,7 @@ CStdString CFileItem::GetUserVideoThumb() const
    || m_bIsShareOrDrive
    || IsInternetStream()
    || CUtil::IsUPnP(m_strPath)
+   || IsPlugin()
    || (CUtil::IsFTP(m_strPath) && !g_advancedSettings.m_bFTPThumbs)
    || IsParentFolder()
    || IsLiveTV())
