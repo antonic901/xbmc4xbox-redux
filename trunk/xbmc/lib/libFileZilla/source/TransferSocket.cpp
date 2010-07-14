@@ -25,7 +25,7 @@
 #include "options.h"
 #if defined(_XBOX)
 #include "util.h"
-#include "GUISettings.h"
+#include "AdvancedSettings.h"
 #endif
 #include "ServerThread.h"
 #ifndef NOLAYERS
@@ -498,7 +498,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			ASSERT(m_Filename!="");
 #if defined(_XBOX)
       // this to handle fat-x limitations
-      if (g_guiSettings.GetBool("services.ftpautofatx"))
+      if (g_advancedSettings.m_bAutoFatX)
       {
         /*CUtil::ShortenFileName(m_Filename); // change! addme to new ports
         CStdString strFilename = CUtil::GetFileName(m_Filename);

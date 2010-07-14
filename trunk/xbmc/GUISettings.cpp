@@ -482,7 +482,6 @@ void CGUISettings::Initialize()
   AddBool(12,  "services.ftpserver",        167, true);
   AddString(13,"services.ftpserveruser",    1245, "xbox", SPIN_CONTROL_TEXT);
   AddString(14,"services.ftpserverpassword",1246, "xbox", EDIT_CONTROL_HIDDEN_INPUT, true, 1246);
-  AddBool(15,  "services.ftpautofatx",      771, true);
 
   AddCategory(6,"autodetect",           1250  );
   AddBool(1,    "autodetect.onoff",     1251, true);

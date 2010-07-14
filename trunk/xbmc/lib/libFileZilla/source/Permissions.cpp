@@ -25,7 +25,7 @@
 #include "Permissions.h"
 #include "misc\MarkupSTL.h"
 #include "options.h"
-#include "GUISettings.h"
+#include "AdvancedSettings.h"
 #include "Util.h"
 
 #ifdef _DEBUG
@@ -509,7 +509,7 @@ int CPermissions::GetDirName(LPCTSTR user, CStdString dirname, CStdString curren
       if(pos<0) pos = dirname.size();
       CStdString tmp = dirname.Left(pos);
 
-      if (g_guiSettings.GetBool("services.ftpautofatx"))
+      if (g_advancedSettings.m_bAutoFatX)
 			{
         if(tmp.length() > 42)
           tmp = tmp.Left(42);
