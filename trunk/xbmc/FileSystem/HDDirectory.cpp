@@ -133,7 +133,7 @@ bool CHDDirectory::Create(const char* strPath)
 
   // okey this is really evil, since the create will succeed
   // the caller will have no idea that a different directory was created
-  if (g_advancedSettings.m_bAutoFatX)
+  if (g_advancedSettings.m_bAutoFatxLimit)
   {
     CStdString strPath2(strPath1);
     CUtil::GetFatXQualifiedPath(strPath1);

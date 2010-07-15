@@ -216,7 +216,7 @@ class CAdvancedSettings
     bool m_bNavVKeyboard; // if true we navigate the virtual keyboard using cursor keys
     
     bool m_bPythonVerbose;
-    bool m_bAutoFatX;
+    bool m_bAutoFatxLimit;
     int m_bgInfoLoaderMaxThreads;
 };
 

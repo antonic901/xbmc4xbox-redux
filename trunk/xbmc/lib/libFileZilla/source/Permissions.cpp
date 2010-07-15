@@ -509,7 +509,7 @@ int CPermissions::GetDirName(LPCTSTR user, CStdString dirname, CStdString curren
       if(pos<0) pos = dirname.size();
       CStdString tmp = dirname.Left(pos);
 
-      if (g_advancedSettings.m_bAutoFatX)
+      if (g_advancedSettings.m_bAutoFatxLimit)
 			{
         if(tmp.length() > 42)
           tmp = tmp.Left(42);

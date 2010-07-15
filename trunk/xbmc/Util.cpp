@@ -870,7 +870,7 @@ void CUtil::GetQualifiedFilename(const CStdString &strBasePath, CStdString &strF
     // This routine is only called from the playlist loaders,
     // where the filepath is in UTF-8 anyway, so we don't need
     // to do checking for FatX characters.
-    //if (g_guiSettings.GetBool("services.ftpautofatx") && (CUtil::IsHD(strFilename)))
+    //if (g_advancedSettings.m_bAutoFatxLimit && (CUtil::IsHD(strFilename)))
     //  CUtil::GetFatXQualifiedPath(strFilename);
   }
   else //Base is remote
