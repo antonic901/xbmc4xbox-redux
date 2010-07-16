@@ -2159,6 +2159,7 @@
   <string id="22023">DirectX vendor</string>
   <string id="22024">Direct3D version</string>
   <string id="22025">Enable DVDPlayer full codec support</string>
+  <string id="22026">Fast Mode (MPEG-2, MPEG-4, and H.264 only)</string>
 
   <!-- strings 22030 thru 22060 reserved for karaoke -->
   <string id="22030">Font</string>

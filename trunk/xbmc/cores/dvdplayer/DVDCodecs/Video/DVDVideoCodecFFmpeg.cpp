@@ -79,8 +79,9 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   if (pCodec->capabilities & CODEC_CAP_DR1)
     m_pCodecContext->flags |= CODEC_FLAG_EMU_EDGE;
 
-  // Allow non spec compliant speedup tricks.
-  m_pCodecContext->flags |= CODEC_FLAG2_FAST;
+  // allow non spec compliant speedup tricks
+  if (g_guiSettings.GetBool("videoplayer.fast"))
+    m_pCodecContext->flags |= CODEC_FLAG2_FAST;
 
   // if we don't do this, then some codecs seem to fail.
   m_pCodecContext->coded_height = hints.height;
@@ -99,11 +100,9 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   // advanced setting override for skip loop filter (see avcodec.h for valid options)
   // TODO: allow per video setting?
   if (g_advancedSettings.m_iSkipLoopFilter != 0)
-  {
     m_pCodecContext->skip_loop_filter = (AVDiscard)g_advancedSettings.m_iSkipLoopFilter;
-  } else {
+  else
     m_pCodecContext->skip_loop_filter = AVDISCARD_NONREF;
-  }
 
   // set any special options
   for(CDVDCodecOptions::iterator it = options.begin(); it != options.end(); it++)

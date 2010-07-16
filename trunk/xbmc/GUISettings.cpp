@@ -414,6 +414,7 @@ void CGUISettings::Initialize()
   AddSeparator(9, "videoplayer.sep2");
   AddFloat(10, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
   AddBool(11, "videoplayer.allcodecs", 22025, false);
+  AddBool(12, "videoplayer.fast", 22026, false);
 
   AddCategory(5, "myvideos", 14081);
   AddBool(0, "myvideos.treatstackasfile", 20051, true);
