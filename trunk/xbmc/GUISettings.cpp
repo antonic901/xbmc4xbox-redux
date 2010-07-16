@@ -234,7 +234,7 @@ void CGUISettings::Initialize()
   // My Music Settings
   AddGroup(3, 2);
   AddCategory(3,"musiclibrary",14022);
-  AddBool(0, "musiclibrary.enabled", 418, true);
+  AddBool(1, "musiclibrary.enabled", 418, true);
   AddBool(2, "musiclibrary.showcompilationartists", 13414, true);
   AddSeparator(3,"musiclibrary.sep1");
   AddBool(4,"musiclibrary.downloadinfo", 20192, false);
@@ -390,7 +390,7 @@ void CGUISettings::Initialize()
   // video settings
   AddGroup(5, 3);
   AddCategory(5, "videolibrary", 14022);
-  AddBool(0, "videolibrary.enabled", 418, true);
+  AddBool(2, "videolibrary.enabled", 418, true);
   AddBool(3, "videolibrary.showunwatchedplots", 20369, true);
   AddBool(4, "videolibrary.seasonthumbs", 20382, true);
   AddBool(5, "videolibrary.actorthumbs", 20402, false);
