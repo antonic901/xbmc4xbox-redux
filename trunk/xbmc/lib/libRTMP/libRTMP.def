@@ -1,0 +1,14 @@
+EXPORTS
+    RTMP_LogSetLevel
+    RTMP_LogSetCallback
+    RTMP_Alloc
+    RTMP_Free
+    RTMP_Init
+    RTMP_Close
+    RTMP_SetupURL
+    RTMP_SetOpt
+    RTMP_Connect
+    RTMP_ConnectStream
+    RTMP_Read
+    RTMP_SendSeek
+    RTMP_Pause

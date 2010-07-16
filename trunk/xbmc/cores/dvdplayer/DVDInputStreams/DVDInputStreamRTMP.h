@@ -46,6 +46,6 @@ protected:
   bool       m_bPaused;
   char*      m_sStreamPlaying;
 
-  RTMP       m_rtmp;
+  RTMP       *m_rtmp;
   DllLibRTMP m_libRTMP;
 };
