@@ -43,6 +43,7 @@ void CDVDStreamInfo::Clear()
 {
   codec = CODEC_ID_NONE;
   type = STREAM_NONE;
+  codec_tag = 0;
 
   if( extradata && extrasize ) free(extradata);
 
@@ -68,8 +69,10 @@ void CDVDStreamInfo::Clear()
 
 bool CDVDStreamInfo::Equal(const CDVDStreamInfo& right, bool withextradata)
 {
-  if( codec != right.codec
-  ||  type != right.type ) return false;
+  if( codec     != right.codec
+  ||  type      != right.type
+  ||  codec_tag != right.codec_tag)
+    return false;
 
   if( withextradata )
   {
@@ -114,6 +117,7 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
 {
   codec = right.codec;
   type = right.type;
+  codec_tag = right.codec_tag;
 
   if( extradata && extrasize ) free(extradata);
 
@@ -154,6 +158,7 @@ void CDVDStreamInfo::Assign(const CDemuxStream& right, bool withextradata)
 
   codec = right.codec;
   type = right.type;
+  codec_tag = right.codec_fourcc;
 
   if( withextradata && right.ExtraSize )
   {
