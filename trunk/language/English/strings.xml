@@ -591,6 +591,7 @@
   <string id="662">This file is no longer available.</string>
   <string id="663">Would you like to remove it from the library?</string>
   <string id="664">Browse for Script</string>
+  <string id="665">Compression level</string>
 
   <string id="700">Cleaning up library</string>
   <string id="701">Removing old songs from the library</string>
@@ -2278,4 +2279,6 @@
   <string id="33081">This file is stacked, select the part you want to play from.</string>
   <string id="33082">Path to script</string>
   <string id="33083">Enable custom script button</string>
+
+  <string id="34005">Flac</string>
 </strings>

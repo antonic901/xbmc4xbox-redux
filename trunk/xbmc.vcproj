@@ -2510,6 +2510,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cdrip\CDDARipper.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\cdrip\DllFlacEnc.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\cdrip\DllLameenc.h">
 				</File>
 				<File
@@ -2526,6 +2529,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cdrip\Encoder.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\cdrip\EncoderFlac.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\cdrip\EncoderFlac.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cdrip\EncoderLame.cpp">

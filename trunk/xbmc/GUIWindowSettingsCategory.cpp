@@ -505,6 +505,7 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel("Lame", CDDARIP_ENCODER_LAME);
       pControl->AddLabel("Vorbis", CDDARIP_ENCODER_VORBIS);
       pControl->AddLabel("Wav", CDDARIP_ENCODER_WAV);
+      pControl->AddLabel("Flac", CDDARIP_ENCODER_FLAC);
       pControl->SetValue(pSettingInt->GetData());
     }
     else if (strSetting.Equals("audiocds.quality"))
@@ -844,15 +845,22 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("services.esenabled"));
     }
     else if (strSetting.Equals("audiocds.quality"))
-    { // only visible if we are doing non-WAV ripping
+    { // only visible if we are not ripping as WAV or FLAC
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_WAV);
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_WAV &&
+                                         g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_FLAC);
     }
     else if (strSetting.Equals("audiocds.bitrate"))
     { // only visible if we are ripping to CBR
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled((g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_WAV) &&
-                                           (g_guiSettings.GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR));
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_WAV && 
+                                         g_guiSettings.GetInt("audiocds.encoder") != CDDARIP_ENCODER_FLAC &&
+                                         g_guiSettings.GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR);
+    }
+    else if (strSetting.Equals("audiocds.compressionlevel"))
+    { // only visible if we are doing FLAC ripping
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiocds.encoder") == CDDARIP_ENCODER_FLAC);
     }
     else if (strSetting.Equals("musicplayer.outputtoallspeakers") || strSetting.Equals("audiooutput.ac3passthrough") || strSetting.Equals("audiooutput.dtspassthrough"))
     { // only visible if we are in digital mode
