@@ -480,6 +480,10 @@ void CGUISettings::Initialize()
   AddInt(0,   "services.esinitialdelay",    795, 750, 5, 5, 10000, SPIN_CONTROL_INT);
   AddInt(0,   "services.escontinuousdelay", 796, 25, 5, 5, 10000, SPIN_CONTROL_INT);
 #endif
+  // (Temporary) hack. Some applications (eg. The Official XBMC remote) look for these settings:
+  AddInt(0,   "remoteevents.initialdelay",    795, 750, 5, 5, 10000, SPIN_CONTROL_INT);
+  AddInt(0,   "remoteevents.continuousdelay", 796, 25, 5, 5, 10000, SPIN_CONTROL_INT);
+
   AddSeparator(11, "services.sep2");
   AddBool(12,  "services.ftpserver",        167, true);
   AddString(13,"services.ftpserveruser",    1245, "xbox", SPIN_CONTROL_TEXT);
