@@ -320,7 +320,6 @@ CApplication::CApplication(void) : m_ctrDpad(220, 220), m_itemCurrentFile(new CF
   m_pCdgParser = new CCdgParser();
 #endif
   m_currentStack = new CFileItemList;
-  m_lastActionCode = 0;
 }
 
 CApplication::~CApplication(void)
@@ -2442,12 +2441,6 @@ bool CApplication::OnAction(CAction &action)
     g_applicationMessenger.HttpApi("broadcastlevel; OnAction:"+tmp+";2");
   }
 
-  if (action.id == m_lastActionCode)
-    action.holdTime = (unsigned int)m_lastActionTimer.GetElapsedMilliseconds();
-  else
-    m_lastActionTimer.StartZero();
-  m_lastActionCode = action.id;
-
   // special case for switching between GUI & fullscreen mode.
   if (action.id == ACTION_SHOW_GUI)
   { // Switch to fullscreen mode if we can
@@ -2816,15 +2809,12 @@ void CApplication::FrameMove()
   // read raw input from controller, remote control, mouse and keyboard
   ReadInput();
   // process input actions
-  bool didSomething = ProcessMouse();
-  didSomething |= ProcessHTTPApiButtons();
-  didSomething |= ProcessKeyboard();
-  didSomething |= ProcessRemote(frameTime);
-  didSomething |= ProcessGamepad(frameTime);
-  didSomething |= ProcessEventServer(frameTime);
-  // reset our previous action code
-  if (!didSomething)
-    m_lastActionCode = 0;
+  ProcessMouse();
+  ProcessHTTPApiButtons();
+  ProcessKeyboard();
+  ProcessRemote(frameTime);
+  ProcessGamepad(frameTime);
+  ProcessEventServer(frameTime);
 }
 
 bool CApplication::ProcessGamepad(float frameTime)
