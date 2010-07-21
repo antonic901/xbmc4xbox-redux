@@ -84,7 +84,7 @@ int CIMDB::InternalFindMovie(const CStdString &strMovie, IMDB_MOVIELIST& movieli
     else if (m_info.strContent.Equals("musicvideos"))
     {
     if (!m_parser.HasFunction("FileNameScrape"))
-       return false;
+       return 0;
 
       CScraperUrl scrURL("filenamescrape");
       CUtil::RemoveExtension(strName);
@@ -96,7 +96,7 @@ int CIMDB::InternalFindMovie(const CStdString &strMovie, IMDB_MOVIELIST& movieli
       return 0;
   }
   else
-    scrURL = *pUrl;  
+    scrURL = *pUrl;
   
   vector<CStdString> strHTML;
   for (unsigned int i=0;i<scrURL.m_url.size();++i)
