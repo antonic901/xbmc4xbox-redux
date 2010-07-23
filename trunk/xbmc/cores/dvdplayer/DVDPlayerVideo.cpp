@@ -835,7 +835,9 @@ int CDVDPlayerVideo::OutputPicture(DVDVideoPicture* pPicture, double pts)
 
   // present the current pts of this frame to user, and include the actual
   // presentation delay, to allow him to adjust for it
-  if( !m_stalled )
+  if( m_stalled )
+    m_iCurrentPts = DVD_NOPTS_VALUE;
+  else
     m_iCurrentPts = pts - max(0.0, iSleepTime);
 
   // timestamp when we think next picture should be displayed based on current duration
@@ -843,7 +845,7 @@ int CDVDPlayerVideo::OutputPicture(DVDVideoPicture* pPicture, double pts)
   m_FlipTimeStamp += max(0.0, iSleepTime);
   m_FlipTimeStamp += iFrameDuration;
 
-  if (iClockSleep <= 0 && m_speed)
+  if (iSleepTime <= 0 && m_speed)
     m_iLateFrames++;
   else
     m_iLateFrames = 0;

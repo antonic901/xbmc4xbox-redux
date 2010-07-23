@@ -2547,6 +2547,9 @@ void CDVDPlayer::FlushBuffers(bool queued)
     msg->Wait(&m_bStop, 0);
     msg->Release();
 
+    // purge any pending PLAYER_STARTED messages
+    m_messenger.Flush(CDVDMsg::PLAYER_STARTED);
+
     // we should now wait for init cache
     SetCaching(CACHESTATE_INIT);
     m_CurrentAudio.started    = false;
@@ -2604,14 +2607,11 @@ int CDVDPlayer::OnDVDNavResult(void* pData, int iMessage)
       break;
     case DVDNAV_SPU_CLUT_CHANGE:
       {
-        CLog::Log(LOGDEBUG, "DVDNAV_SPU_CLUT_CHANGE");
         m_dvdPlayerSubtitle.SendMessage(new CDVDMsgSubtitleClutChange((BYTE*)pData));
       }
       break;
     case DVDNAV_SPU_STREAM_CHANGE:
       {
-        CLog::Log(LOGDEBUG, "DVDNAV_SPU_STREAM_CHANGE");
-
         dvdnav_spu_stream_change_event_t* event = (dvdnav_spu_stream_change_event_t*)pData;
 
         int iStream = event->physical_wide;
@@ -2629,8 +2629,6 @@ int CDVDPlayer::OnDVDNavResult(void* pData, int iMessage)
       break;
     case DVDNAV_AUDIO_STREAM_CHANGE:
       {
-        CLog::Log(LOGDEBUG, "DVDNAV_AUDIO_STREAM_CHANGE");
-
         // This should be the correct way i think, however we don't have any streams right now
         // since the demuxer hasn't started so it doesn't change. not sure how to do this.
         dvdnav_audio_stream_change_event_t* event = (dvdnav_audio_stream_change_event_t*)pData;
