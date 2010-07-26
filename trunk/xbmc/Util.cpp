@@ -1915,6 +1915,11 @@ void CUtil::URLEncode(CStdString& strURLData)
   strURLData = strResult;
 }
 
+bool CUtil::IsURLEncoded(const CStdString& strPath)
+{
+  return IsInternetStream(strPath, true) && strPath.Find('%') && !strPath.Find(' ');
+}
+
 bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon)
 {
   bool success(false);
