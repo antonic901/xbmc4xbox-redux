@@ -521,9 +521,10 @@ namespace VIDEO
           CScraperUrl scrUrl;
           // handle .nfo files
           if (!ignoreNfo)
-          result = CheckForNFOFile(pItem.get(),bDirNames,info2,scrUrl);
+            result = CheckForNFOFile(pItem.get(),bDirNames,info2,scrUrl);
           if (result == CNfoFile::ERROR_NFO)
             continue;
+          
           if (info2.strContent.Equals("tvshows") && result != CNfoFile::NO_NFO)
           {
             SScraperInfo info3(info2);
