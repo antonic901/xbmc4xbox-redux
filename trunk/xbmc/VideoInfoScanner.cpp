@@ -1478,25 +1478,29 @@ namespace VIDEO
         case CNfoFile::URL_NFO:
           type = "URL";
           break;
+        case CNfoFile::NO_NFO:
+          type = "";
+          break;
         default:
           type = "malformed";
       }
-      CLog::Log(LOGDEBUG, "VideoInfoScanner: Found matching %s NFO file: %s", type.c_str(), strNfoFile.c_str());
+      if (result != CNfoFile::NO_NFO)
+        CLog::Log(LOGDEBUG, "VideoInfoScanner: Found matching %s NFO file: %s", type.c_str(), strNfoFile.c_str());
       if (result == CNfoFile::FULL_NFO)
       {
         if (info.strContent.Equals("tvshows"))
           info.strPath = m_nfoReader.m_strScraper;
       }
-      else if (result != CNfoFile::NO_NFO)
+      else if (result != CNfoFile::NO_NFO && result != CNfoFile::ERROR_NFO)
       {
         CScraperUrl url(m_nfoReader.m_strImDbUrl);
         scrUrl = url;
 
-        CLog::Log(LOGDEBUG, "VideoInfoScanner: Fetching url '%s' using %s scraper (file: '%s', content: '%s', language: '%s', date: '%s', framework: '%s')",
-          scrUrl.m_url[0].m_url.c_str(), info.strTitle.c_str(), info.strPath.c_str(), info.strContent.c_str(), info.strLanguage.c_str(), info.strDate.c_str(), info.strFramework.c_str());
-
         scrUrl.strId  = m_nfoReader.m_strImDbNr;
         info.strPath = m_nfoReader.m_strScraper;
+
+        CLog::Log(LOGDEBUG, "VideoInfoScanner: Fetching url '%s' using %s scraper (file: '%s', content: '%s', language: '%s', date: '%s', framework: '%s')",
+          scrUrl.m_url[0].m_url.c_str(), info.strTitle.c_str(), info.strPath.c_str(), info.strContent.c_str(), info.strLanguage.c_str(), info.strDate.c_str(), info.strFramework.c_str());
         if (result == CNfoFile::COMBINED_NFO)
           m_nfoReader.GetDetails(*pItem->GetVideoInfoTag());
       }
