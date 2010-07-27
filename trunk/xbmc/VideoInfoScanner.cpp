@@ -718,19 +718,19 @@ namespace VIDEO
     {
       if (items[i]->m_bIsFolder)
         continue;
+      
+      if (CUtil::IsURLEncoded(items[i]->m_strPath))
+        CUtil::URLDecode(items[i]->m_strPath);
+      
       CStdString strPath;
-      CUtil::GetDirectory(items[i]->m_strPath,strPath);
+      CUtil::GetDirectory(items[i]->m_strPath, strPath);
+      CUtil::RemoveSlashAtEnd(strPath); // want no slash for the test that follows
+
+      if (CUtil::GetFileName(strPath).Equals("sample"))
+        continue;
 
       // Discard all exclude files defined by regExExcludes
       if (CUtil::ExcludeFileOrFolder(items[i]->m_strPath, regexps))
-        continue;
-
-      if (CUtil::IsInternetStream(strPath,true) && strPath.Find('%'))
-        CUtil::URLDecode(strPath);
-      
-      CUtil::RemoveSlashAtEnd(strPath); // want no slash for the test that follows
-        
-      if (CUtil::GetFileName(strPath).Equals("sample"))
         continue;
 
       bool bMatched=false;
@@ -738,11 +738,11 @@ namespace VIDEO
       {
         if (expression[j].byDate)
         {
-          bMatched = ProcessItemByDate(items[i],episodeList,expression[j].regexp);
+          bMatched = ProcessItemByDate(items[i], episodeList, expression[j].regexp);
         }
         else
         {
-          bMatched = ProcessItemNormal(items[i],episodeList,expression[j].regexp);
+          bMatched = ProcessItemNormal(items[i], episodeList, expression[j].regexp);
         }
         if (bMatched)
           break;
