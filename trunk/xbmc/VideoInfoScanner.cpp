@@ -719,8 +719,8 @@ namespace VIDEO
       if (items[i]->m_bIsFolder)
         continue;
       
-      if (CUtil::IsURLEncoded(items[i]->m_strPath))
-        CUtil::URLDecode(items[i]->m_strPath);
+      // URLDecode just in case, since the path maybe encoded
+      CUtil::URLDecode(items[i]->m_strPath);
       
       CStdString strPath;
       CUtil::GetDirectory(items[i]->m_strPath, strPath);
@@ -1208,6 +1208,20 @@ namespace VIDEO
         return GetnfoFile(&item2,bGrabAny);
       }
 
+      // grab the folder path
+      CStdString strPath;
+      CUtil::GetDirectory(item->m_strPath, strPath);
+
+      if (bGrabAny)
+      { // looking up by folder name - movie.nfo and mymovies.xml take priority
+        nfoFile = CUtil::AddFileToFolder(strPath, "movie.nfo");
+        if (CFile::Exists(nfoFile))
+          return nfoFile;
+        nfoFile = CUtil::AddFileToFolder(strPath, "mymovies.xml");
+        if (CFile::Exists(nfoFile))
+          return nfoFile;
+      }
+
       // already an .nfo file?
       if ( strcmpi(strExtension.c_str(), ".nfo") == 0 )
         nfoFile = item->m_strPath;
@@ -1239,8 +1253,6 @@ namespace VIDEO
 
       if (nfoFile.IsEmpty()) // final attempt - strip off any cd1 folders
       {
-        CStdString strPath;
-        CUtil::GetDirectory(item->m_strPath,strPath);
         CUtil::RemoveSlashAtEnd(strPath); // need no slash for the check that follows
         CFileItem item2;
         if (strPath.Mid(strPath.size()-3).Equals("cd1"))
@@ -1249,18 +1261,6 @@ namespace VIDEO
           CUtil::AddFileToFolder(strPath,CUtil::GetFileName(item->m_strPath),item2.m_strPath);
           return GetnfoFile(&item2,bGrabAny);
         }
-
-        // try movie.nfo
-        nfoFile = CUtil::AddFileToFolder(strPath, "movie.nfo");
-        if (CFile::Exists(nfoFile))
-          return nfoFile;
-
-        // finally try mymovies.xml
-        nfoFile = CUtil::AddFileToFolder(strPath,"mymovies.xml");
-        if (CFile::Exists(nfoFile))
-          return nfoFile;
-        else
-          nfoFile.clear();
       }
     }
     if (item->m_bIsFolder || (bGrabAny && nfoFile.IsEmpty()))

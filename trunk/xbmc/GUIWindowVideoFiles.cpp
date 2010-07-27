@@ -227,6 +227,8 @@ bool CGUIWindowVideoFiles::OnAction(const CAction &action)
   if (action.id == ACTION_TOGGLE_WATCHED)
   {
     CFileItemPtr pItem = m_vecItems->Get(m_viewControl.GetSelectedItem());
+    if (pItem->IsParentFolder())
+      return false;
 
     if (pItem && pItem->GetOverlayImage().Equals("OverlayWatched.png"))
       return OnContextButton(m_viewControl.GetSelectedItem(),CONTEXT_BUTTON_MARK_UNWATCHED);
@@ -576,6 +578,13 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
       if (m_vecItems->IsPlugin() && item->HasVideoInfoTag() && !item->GetPropertyBOOL("pluginreplacecontextitems"))
         buttons.Add(CONTEXT_BUTTON_INFO,13346); // only movie information for now
 
+      if (item->m_bIsFolder)
+      {
+        // Have both options for folders since we don't know whether all childs are watched/unwatched
+        buttons.Add(CONTEXT_BUTTON_MARK_UNWATCHED, 16104); //Mark as UnWatched
+        buttons.Add(CONTEXT_BUTTON_MARK_WATCHED, 16103);   //Mark as Watched
+      }
+      else
       if (item->GetOverlayImage().Equals("OverlayWatched.png"))
         buttons.Add(CONTEXT_BUTTON_MARK_UNWATCHED, 16104); //Mark as UnWatched
       else

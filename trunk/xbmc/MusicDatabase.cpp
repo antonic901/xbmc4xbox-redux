@@ -2831,7 +2831,7 @@ bool CMusicDatabase::GetAlbumsNav(const CStdString& strBaseDir, CFileItemList& i
   }
 
   bool bResult = GetAlbumsByWhere(strBaseDir, strWhere, "", items);
-  if (bResult)
+  if (bResult && idArtist != -1)
   {
     CStdString strArtist;
     GetArtistById(idArtist,strArtist);
@@ -3027,7 +3027,7 @@ bool CMusicDatabase::GetSongsNav(const CStdString& strBaseDir, CFileItemList& it
 #endif
   // run query
   bool bResult = GetSongsByWhere(strBaseDir, strWhere, items);
-  if (bResult)
+  if (bResult && idArtist != -1)
   {
     CStdString strArtist;
     GetArtistById(idArtist,strArtist);
