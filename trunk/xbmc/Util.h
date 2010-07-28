@@ -152,7 +152,6 @@ public:
   static int GetDVDIfoTitle(const CStdString& strPathFile);
   static void URLDecode(CStdString& strURLData);
   static void URLEncode(CStdString& strURLData);
-  static bool IsURLEncoded(const CStdString& strPath);
   static bool CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon);
   static bool GetXBEDescription(const CStdString& strFileName, CStdString& strDescription);
   static bool SetXBEDescription(const CStdString& strFileName, const CStdString& strDescription);
