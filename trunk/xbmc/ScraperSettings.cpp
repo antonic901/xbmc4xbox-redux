@@ -131,8 +131,7 @@ bool CScraperSettings::LoadSettingsXML(const CStdString& strScraper, const CStdS
     if (szFunction)
     {      
       CScraperUrl scrURL(xurl);
-      if (!LoadSettingsXML(strScraper,szFunction,&scrURL))
-        return false;
+      LoadSettingsXML(strScraper,szFunction,&scrURL);
     }
     xurl = xurl->NextSiblingElement("url");
   }

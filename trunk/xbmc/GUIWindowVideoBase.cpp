@@ -614,7 +614,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
           }
         }
       }
-      else if (returncode == -1 || !CVideoInfoScanner::DownloadFailed(pDlgProgress))
+      if (returncode == -1)
       {
         pDlgProgress->Close();
         return false;
