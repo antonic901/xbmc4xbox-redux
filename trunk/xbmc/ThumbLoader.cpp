@@ -20,7 +20,6 @@
  */
 
 #include "stdafx.h"
-#include "FileSystem/StackDirectory.h"
 #include "ThumbLoader.h"
 #include "Util.h"
 #include "URL.h"
@@ -35,7 +34,6 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CThumbLoader::CThumbLoader(int nThreads) :
   CBackgroundInfoLoader(nThreads)
