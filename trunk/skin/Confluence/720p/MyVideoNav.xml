@@ -25,7 +25,6 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
 				<visible>Container.Content(TVShows) | [Container.Content(Episodes) + substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -37,7 +36,6 @@
 				<texture background="true">$INFO[Fanart.Image]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
 				<visible>Container.Content(Seasons) | [Container.Content(Episodes) + !substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -155,6 +153,7 @@
 		<include>ScrollOffsetLabel</include>
 <!-- MISC OPTIONS -->
 		<control type="group">
+		<visible>!Skin.HasSetting(kioskmode)</visible>
 			<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | ControlGroup(9002).HasFocus | Control.HasFocus(8999)">Conditional</animation>
 			<animation effect="slide" start="0,0" end="-250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | ControlGroup(9002).HasFocus">WindowClose</animation>
 			<control type="group">
@@ -450,8 +449,7 @@
 					</control>
 				</control>		
 			</control>
-<!-- END -->				
-			
+<!-- END -->					
 			<control type="button" id="8999">
 				<description>Fake button for mouse control</description>
 				<posx>-250</posx>
@@ -560,7 +558,7 @@
 					<ondown>97</ondown>
 				</control>
 				<control type="radiobutton" id="97">
-					<description>Video Library Options</description>
+					<description>Videos - Library</description>
 					<hitrect x="0" y="200" w="265" h="40" />
 					<posx>0</posx>
 					<posy>200</posy>
@@ -571,7 +569,7 @@
 					<radioposy>12</radioposy>
 					<textureradiofocus>HomeHasSub.png</textureradiofocus>
 					<textureradionofocus>HomeHasSub.png</textureradionofocus>
-					<label>Video - Library</label>
+					<label>20314</label>
 					<onleft>50</onleft>
 					<onright>9011</onright>
 					<onup>98</onup>
@@ -725,5 +723,16 @@
 		</control>
 		<include>WindowTitleHomeButton</include>
 		<include>Clock</include>
+		
+		<!-- Left HomeBlade for Kiosk mode -->
+		<control type="image">
+				<posx>-820</posx>
+				<posy>0</posy>
+				<width>846</width>
+				<height>720</height>
+				<texture>HomeBlade.png</texture>
+				<visible>Skin.HasSetting(kioskmode)</visible>
+		</control>
+		
 	</controls>
 </window>

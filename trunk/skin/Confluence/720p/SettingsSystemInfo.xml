@@ -265,7 +265,7 @@
 				<control type="label" id="52">
 					<description>XBMC XBE BUILD Version</description>
 					<posx>750</posx>
-					<posy>400</posy>
+					<posy>380</posy>
 					<width>700</width>
 					<label>144</label>
 					<align>right</align>
@@ -273,6 +273,21 @@
 					<shadowcolor>black</shadowcolor>
 					<font>font13_title</font>
 				</control>
+				
+				<!-- id="53" displays mplayer revison -->
+				
+				<control type="label" id="54">
+					<description>Skin Version</description>
+					<posx>750</posx>
+					<posy>410</posy>
+					<width>700</width>
+					<label>xbs' Confluence XBOX V1.04 (Jul 2010)</label>
+					<align>right</align>
+					<textcolor>blue</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<font>font12_title</font>
+				</control>
+				
 				<control type="label" id="52">
 					<description>CPU Text</description>
 					<posx>420</posx>

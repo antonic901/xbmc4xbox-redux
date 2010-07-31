@@ -107,12 +107,11 @@
 						<onclick>ActivateWindow(PicturesSettings)</onclick>
 						<icon>special://skin/backgrounds/pictures.jpg</icon>
 					</item>
-
 					<item id="9">
 						<label>0</label>
 						<label2>31408</label2>
 						<onclick>ActivateWindow(ProgramsSettings)</onclick>
-						<icon>special://skin/backgrounds/programsettings.jpg</icon>
+						<icon>special://skin/backgrounds/programsetting.jpg</icon>
 						<visible>System.Platform.Xbox</visible>
 					</item>
 					<item id="5">

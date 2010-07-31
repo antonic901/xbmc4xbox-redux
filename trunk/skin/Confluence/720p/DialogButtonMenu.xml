@@ -201,6 +201,7 @@
 						<visible>Control.HasFocus(15) | Control.HasFocus(16) | Control.HasFocus(17)</visible>
 					</control>
 				</control>
+				
 				<control type="button" id="12">
 					<description>Suspend xbmc</description>
 					<width>90</width>
@@ -213,7 +214,6 @@
 					<label>$LOCALIZE[13011]</label>
 					<visible>!System.Platform.Xbox</visible>
 				</control>
-				
 				<control type="button" id="14">
 					<description>Reboot button</description>
 					<width>90</width>

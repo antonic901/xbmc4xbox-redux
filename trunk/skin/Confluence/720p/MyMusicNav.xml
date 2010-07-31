@@ -110,6 +110,7 @@
 		<include>BehindDialogFadeOut</include>
 		<include>ScrollOffsetLabel</include>
 		<control type="group">
+		<visible>!Skin.HasSetting(kioskmode)</visible>
 			<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | Control.HasFocus(8999)">Conditional</animation>
 			<animation effect="slide" start="0,0" end="-250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus">WindowClose</animation>
 			<control type="group">
@@ -435,5 +436,16 @@
 		</control>
 		<include>WindowTitleHomeButton</include>
 		<include>Clock</include>
+		
+		<!-- Left HomeBlade for Kiosk mode -->
+		<control type="image">
+				<posx>-820</posx>
+				<posy>0</posy>
+				<width>846</width>
+				<height>720</height>
+				<texture>HomeBlade.png</texture>
+				<visible>Skin.HasSetting(kioskmode)</visible>
+		</control>
+		
 	</controls>
 </window>

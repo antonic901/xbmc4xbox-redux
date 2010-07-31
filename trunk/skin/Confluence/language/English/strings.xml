@@ -56,7 +56,7 @@
   <string id="31104">Play Trailers in a window [COLOR=grey3](Video Information Dialog Only)[/COLOR]</string>
   <string id="31105">Show media titles in background scanner</string>
   <string id="31106">Miscellaneous options</string>
-  <string id="31107"></string>
+  <string id="31107">Hide media flags</string>
   <string id="31108">Hide Main Menu Buttons</string>
   <string id="31109">Home screen backgrounds</string>
   <string id="31110">Edit Background for Home Button</string>
@@ -89,6 +89,10 @@
 
   <string id="31140">Music OSD</string>
   <string id="31141">Video OSD</string>
+  
+  <string id="31145">Enable Kiosk mode [COLOR=grey3](Disable slide menu)[/COLOR]</string>
+  
+
 
   <!-- Script labels -->
   <string id="31200">Shortcuts</string>

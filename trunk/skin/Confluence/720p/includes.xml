@@ -17,21 +17,21 @@
 			<width>1280</width>
 			<height>720</height>
 			<texture>special://skin/backgrounds/media-overlay.png</texture>
-			<visible>Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)</visible>
+			<visible>Player.HasVideo + Skin.HasSetting(ShowBackgroundVideo)</visible>
 		</control>
 		<control type="visualisation">
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>1280</width>
 			<height>720</height>
-			<visible>Player.HasAudio + !Skin.HasSetting(ShowBackgroundVis)</visible>
+			<visible>Player.HasAudio + Skin.HasSetting(ShowBackgroundVis)</visible>
 		</control>
 		<control type="videowindow">
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>1280</width>
 			<height>720</height>
-			<visible>Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)</visible>
+			<visible>Player.HasVideo + Skin.HasSetting(ShowBackgroundVideo)</visible>
 		</control>
 	</include>
 	<include name="CommonVideoBackground">
@@ -46,7 +46,6 @@
 			<fadetime>1000</fadetime>
 		</control>
 		<control type="multiimage">
-			<visible>!Skin.HasSetting(VideoLibraryMovieFanart)</visible>
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>1280</width>
@@ -57,8 +56,7 @@
 			<fadetime>1000</fadetime>
 			<visible>Container.Content(Movies) + [!IsEmpty(Skin.String(Home_Custom_Back_Movies_Folder)) + Skin.HasSetting(HomeMenuNoMoviesButton)]</visible>
 		</control>
-		<control type="multiimage">
-			<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible> 
+		<control type="multiimage"> 
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>1280</width>

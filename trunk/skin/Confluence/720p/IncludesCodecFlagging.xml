@@ -1,7 +1,8 @@
 <includes>
 	<include name="VideoCodecFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
 		<control type="image">
-			<description>Video rez Image</description>
+			<description>Video resolution Image</description>
 			<width>90</width>
 			<height>33</height>
 			<aspectratio>keep</aspectratio>
@@ -65,6 +66,7 @@
 		</control>
 	</include>
 	<include name="VideoTypeHackFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
 		<control type="image">
 			<description>Bluray Image</description>
 			<width>90</width>
@@ -83,6 +85,7 @@
 		</control>
 	</include>
 	<include name="VideoMPAAFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
 		<control type="image">
 			<description>Rated G</description>
 			<width>90</width>
@@ -125,6 +128,7 @@
 		</control>
 	</include>
 	<include name="AudioCodecFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
 		<control type="image">
 			<description>mp3 Codec Image</description>
 			<width>90</width>
@@ -182,6 +186,7 @@
 		</control>
 	</include>
 	<include name="AspectCodecFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
 		<control type="image">
 			<description>Aspectratio Image</description>
 			<width>60</width>

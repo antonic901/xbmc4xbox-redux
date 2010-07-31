@@ -430,7 +430,7 @@
 				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
 				<onup>508</onup>
 				<ondown>2</ondown>
-				<showonepage>false</showonepage>
+				<showonepage>true</showonepage>
 				<orientation>horizontal</orientation>
 				<visible>Control.IsVisible(508)</visible>
 			</control>
@@ -438,9 +438,9 @@
 <!-- toggle info -->
 			<control type="label">
 				<description>show info</description>
-				<posx>540</posx>
+				<posx>520</posx>
 				<posy>258</posy>
-				<width>200</width>
+				<width>240</width>
 				<height>10</height>
 				<font>font11caps</font>
 				<textcolor>grey3</textcolor>
@@ -452,9 +452,9 @@
 
 			<control type="label">
 				<description>hide info</description>
-				<posx>540</posx>
+				<posx>520</posx>
 				<posy>258</posy>
-				<width>200</width>
+				<width>240</width>
 				<height>10</height>
 				<font>font11caps</font>
 				<textcolor>grey3</textcolor>
@@ -466,8 +466,8 @@
 			
 			<control type="button" id="111">
 				<description>Fake button to open video nav in file mode</description>
-				<posx>410</posx>
-				<posy>220</posy>
+				<posx>0</posx>
+				<posy>0</posy>
 				<width>1</width>
 				<height>1</height>
 				<onup>-</onup>
@@ -480,8 +480,8 @@
 
 			<control type="button" id="111">
 				<description>Fake button for hidding info</description>
-				<posx>410</posx>
-				<posy>220</posy>
+				<posx>0</posx>
+				<posy>0</posy>
 				<width>1</width>
 				<height>1</height>
 				<onup>-</onup>
@@ -788,7 +788,7 @@
 					<align>justify</align>
 					<textcolor>white</textcolor>
 					<label>$INFO[ListItem.Plot]</label>
-					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 				</control>
 			</control>
 			<control type="grouplist">
@@ -1079,7 +1079,7 @@
 					<align>justify</align>
 					<textcolor>white</textcolor>
 					<label>$INFO[ListItem.Plot]</label>
-					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 				</control>
 			</control>
 			<control type="group">
@@ -1359,7 +1359,7 @@
 					<align>justify</align>
 					<textcolor>white</textcolor>
 					<label>$INFO[ListItem.Plot]</label>
-					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 				</control>
 			</control>
 			<control type="group">
@@ -1423,7 +1423,7 @@
 					<align>justify</align>
 					<textcolor>white</textcolor>
 					<label>$INFO[ListItem.Plot]</label>
-					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 				</control>
 			</control>
 		</control>
@@ -1708,7 +1708,7 @@
 						<align>justify</align>
 						<textcolor>white</textcolor>
 						<label>$INFO[ListItem.Plot]</label>
-						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+						<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 					</control>
 				</control>
 				<control type="group">
@@ -1803,7 +1803,7 @@
 						<align>justify</align>
 						<textcolor>white</textcolor>
 						<label>$INFO[ListItem.Plot]</label>
-						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+						<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 					</control>
 				</control>
 				<control type="group">
@@ -1874,7 +1874,7 @@
 						<align>justify</align>
 						<textcolor>white</textcolor>
 						<label>$INFO[ListItem.Plot]</label>
-						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+						<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 					</control>
 				</control>
 			</control>
@@ -2018,7 +2018,7 @@
 						<align>justify</align>
 						<textcolor>white</textcolor>
 						<label>$INFO[ListItem.Plot]</label>
-						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+						<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 					</control>
 				</control>
 				<control type="group">
@@ -2286,10 +2286,11 @@
 						<align>justify</align>
 						<textcolor>white</textcolor>
 						<label>$INFO[ListItem.Plot]</label>
-						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+						<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 					</control>
 				</control>
-			</control>
+			</control>	
 		</control>
+		
 	</include>
 </includes>

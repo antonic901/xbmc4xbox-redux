@@ -424,6 +424,18 @@
 						<onclick>ActivateWindow(VideoLibrary,MovieTitles,return)</onclick>
 						<visible>Library.HasContent(Movies)</visible>
 					</control>
+					<control type="button" id="90105">
+						<include>ButtonHomeSubCommonValues</include>
+						<label>20343</label>
+						<onclick>ActivateWindow(VideoLibrary,TvShowTitles,return)</onclick>
+						<visible>Library.HasContent(TVShows)</visible>
+					</control>
+					<control type="button" id="90106">
+						<include>ButtonHomeSubCommonValues</include>
+						<label>20389</label>
+						<onclick>ActivateWindow(VideoLibrary,MusicVideoTitles,return)</onclick>
+						<visible>Library.HasContent(MusicVideos)</visible>
+					</control>
 					<control type="button" id="90102">
 						<description>Button1</description>
 						<include>ButtonHomeSubCommonValues</include>
@@ -447,18 +459,6 @@
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.ActivateWindow(MyVideoLibrary,$INFO[Skin.String(HomeVideoSubmenuButton3_Path)],return)</onclick>
 						<visible>Skin.HasSetting(HomeVideoSubmenuButton3) + !IsEmpty(Skin.String(HomeVideoSubmenuButton3_label))</visible>
-					</control>
-					<control type="button" id="90105">
-						<include>ButtonHomeSubCommonValues</include>
-						<label>20343</label>
-						<onclick>ActivateWindow(VideoLibrary,TvShowTitles,return)</onclick>
-						<visible>Library.HasContent(TVShows)</visible>
-					</control>
-					<control type="button" id="90106">
-						<include>ButtonHomeSubCommonValues</include>
-						<label>20389</label>
-						<onclick>ActivateWindow(VideoLibrary,MusicVideoTitles,return)</onclick>
-						<visible>Library.HasContent(MusicVideos)</visible>
 					</control>
 					<control type="button" id="90107">
 						<include>ButtonHomeSubCommonValues</include>
@@ -553,6 +553,12 @@
 						<include>ButtonHomeSubCommonValues</include>
 						<label>13200</label>
 						<onclick>ActivateWindow(Profiles)</onclick>
+					</control>
+					<control type="button" id="90147">
+						<include>ButtonHomeSubCommonValues</include>
+						<label>20183</label>
+						<onclick>XBMC.ReloadSkin()</onclick>
+						<visible>!System.Platform.Xbox</visible>
 					</control>
 					<control type="button" id="90144">
 						<include>ButtonHomeSubCommonValues</include>
@@ -708,6 +714,11 @@
 						<onclick>ActivateWindow(VideoLibrary,TVShowActors,return)</onclick>
 					</control>
 					<control type="button" id="90175">
+						<include>ButtonMediaSubCommonValues</include>
+						<label>20388</label>
+						<onclick>ActivateWindow(VideoLibrary,TVShowStudios,return)</onclick>
+					</control>
+					<control type="button" id="90176">
 						<include>ButtonHomeSubCommonValues</include>
 						<label>31328</label>
 						<onclick>ActivateWindow(VideoLibrary,RecentlyAddedEpisodes,return)</onclick>
@@ -726,7 +737,6 @@
 					<ondown>9018</ondown>
 					<itemgap>0</itemgap>
 					<visible>[Container(9000).HasFocus(1) + System.Platform.Xbox]</visible>
-
 					<control type="button" id="90181">
 						<include>ButtonHomeSubCommonValues</include>
 						<label>15016</label>
@@ -757,13 +767,6 @@
 						<label>20315</label>
 						<onclick>ActivateWindow(GameSaves)</onclick>
 					</control>
-					<!--
-					<control type="button" id="90187">
-						<include>ButtonHomeSubCommonValues</include>
-						<label>5</label>
-						<onclick>ActivateWindow(ProgramsSettings)</onclick>
-					</control>
-					-->
 				</control>
 
 			</control>
