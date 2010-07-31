@@ -113,7 +113,11 @@
 #define DSSPEAKER_USE_DEFAULT DSSPEAKER_STEREO
 #define LPDIRECTSOUND8 LPDIRECTSOUND
 #undef GetFreeSpace
+
 #endif
+
+#define USE_LIBMAD
+#undef USE_LIBFAAD
 
 #include "../xbmc/xbox/PlatformInclude.h"
 
