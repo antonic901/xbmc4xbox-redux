@@ -266,6 +266,17 @@
 					<textcolor>grey2</textcolor>
 					<shadowcolor>black</shadowcolor>
 				</control>
+				<control type="image"> 
+ 	                <description>Live TV Channel Logo image</description> 
+ 	                <posx>30</posx> 
+ 	                <posy>290r</posy> 
+ 	                <width>280</width> 
+                    <height>260</height> 
+ 	                <fadetime>200</fadetime> 
+ 	                <texture background="true">$INFO[VideoPlayer.Cover]</texture> 
+ 	                <aspectratio aligny="bottom">keep</aspectratio> 
+ 	                <visible>VideoPlayer.Content(LiveTV)</visible> 
+ 	            </control> 
 				<control type="progress">
 					<description>Progressbar</description>
 					<posx>0</posx>
@@ -341,7 +352,7 @@
 						<height>28</height>
 						<aspectratio>keep</aspectratio>
 						<texture>flagging/video/divx.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,divx) | substring(VideoPlayer.VideoCodec,div3) |substring(VideoPlayer.VideoCodec,div4) | substring(VideoPlayer.VideoCodec,div5)</visible>
+						<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image">
 						<description>h264 Codec Image</description>

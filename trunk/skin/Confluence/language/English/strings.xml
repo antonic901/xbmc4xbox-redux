@@ -56,7 +56,7 @@
   <string id="31104">Play Trailers in a window [COLOR=grey3](Video Information Dialog Only)[/COLOR]</string>
   <string id="31105">Show media titles in background scanner</string>
   <string id="31106">Miscellaneous options</string>
-  <string id="31107">Hide media flags</string>
+  <string id="31107">Hide Flagging read from video filenames [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]</string> 
   <string id="31108">Hide Main Menu Buttons</string>
   <string id="31109">Home screen backgrounds</string>
   <string id="31110">Edit Background for Home Button</string>
@@ -75,7 +75,6 @@
   <string id="31123">Use "Posters" instead of "Banners" for TV Shows</string>
   <string id="31124">Show Background "Now Playing" Video</string>
   <string id="31125">Show Background "Now Playing" Visualization</string>
-
   <string id="31126">Enable Lyrics in Music OSD</string>
   <string id="31127">PATH TO LYRICS SCRIPT</string>
   <string id="31128">XBMC Lyrics</string>
@@ -92,7 +91,7 @@
   
   <string id="31145">Enable Kiosk mode [COLOR=grey3](Disable slide menu)[/COLOR]</string>
   
-
+  <string id="31147">Hide Media Flags</string>
 
   <!-- Script labels -->
   <string id="31200">Shortcuts</string>
@@ -149,7 +148,7 @@
   <string id="31336">Program</string>
  
   <string id="31341">Emulators</string>
-  <string id="31342">Apps</string>
+  <string id="31342">Applications</string>
   <string id="31343">Homebrews</string>
   <string id="31344">Dashboards</string>
 

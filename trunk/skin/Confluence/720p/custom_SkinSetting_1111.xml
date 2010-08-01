@@ -255,11 +255,12 @@
 						<onclick>Skin.ToggleSetting(WindowedTrailer)</onclick>
 						<selected>Skin.HasSetting(WindowedTrailer)</selected>
 					</control>
+					<!-- extra hiding options (flags, filename flags & kiosk mode) -->
 					<control type="radiobutton" id="113">
 						<width>750</width>
 						<height>40</height>
 						<font>font13</font>
-						<label>31107</label>
+						<label>31147</label>
 						<textcolor>grey2</textcolor>
 						<focusedcolor>white</focusedcolor>
 						<texturefocus>MenuItemFO.png</texturefocus>
@@ -267,8 +268,20 @@
 						<onclick>Skin.ToggleSetting(HideMediaFlags)</onclick>
 						<selected>Skin.HasSetting(HideMediaFlags)</selected>
 					</control>
-					
 					<control type="radiobutton" id="114">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label> - $LOCALIZE[31107]</label>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.ToggleSetting(HideFilenameFlagging)</onclick>
+						<selected>Skin.HasSetting(HideFilenameFlagging)</selected>
+						<enable>!Skin.HasSetting(HideMediaFlags)</enable>
+					</control>
+					<control type="radiobutton" id="115">
 						<width>750</width>
 						<height>40</height>
 						<font>font13</font>

@@ -281,14 +281,14 @@
 					<posx>750</posx>
 					<posy>410</posy>
 					<width>700</width>
-					<label>xbs' Confluence XBOX V1.04 (Jul 2010)</label>
+					<label>xbs' Confluence XBOX V1.05 (Jul 2010)</label>
 					<align>right</align>
 					<textcolor>blue</textcolor>
 					<shadowcolor>black</shadowcolor>
 					<font>font12_title</font>
 				</control>
 				
-				<control type="label" id="52">
+				<control type="label">
 					<description>CPU Text</description>
 					<posx>420</posx>
 					<posy>450</posy>
@@ -309,7 +309,7 @@
 					<height>16</height>
 					<info>System.CPUUsage</info>
 				</control>
-				<control type="label" id="52">
+				<control type="label">
 					<description>Memory Text</description>
 					<posx>420</posx>
 					<posy>480</posy>

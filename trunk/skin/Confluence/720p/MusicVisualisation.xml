@@ -308,7 +308,7 @@
 					<control type="label">
 						<posx>920</posx>
 						<posy>100</posy>
-						<width>370</width>
+						<width>500</width>
 						<height>25</height>
 						<label>$INFO[Player.Duration]</label>
 						<align>right</align>

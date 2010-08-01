@@ -228,11 +228,13 @@
 					</control>
 					<control type="radiobutton" id="17">
 						<description>Flatten</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>20411</label>
 					</control>
 					<control type="radiobutton" id="11">
 						<description>Unlock Shares</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>20336</label>
 						<onclick>xbmc.mastermode</onclick>
@@ -251,6 +253,7 @@
 					</control>
 					<control type="radiobutton" id="201">
 						<description>Toggle MoviesFanart</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>31307</label>
 						<onclick>Skin.ToggleSetting(VideoLibraryMovieFanart)</onclick>
@@ -259,6 +262,7 @@
 					</control>
 					<control type="radiobutton" id="202">
 						<description>Toggle TVShow Fanart</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>31307</label>
 						<onclick>Skin.ToggleSetting(VideoLibraryTVFanart)</onclick>
@@ -267,6 +271,7 @@
 					</control>
 					<control type="radiobutton" id="203">
 						<description>Toggle MusicVideo Fanart</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>31307</label>
 						<onclick>Skin.ToggleSetting(VideoLibraryMusicVideoFanart)</onclick>
@@ -283,6 +288,7 @@
 					</control>
 					<control type="radiobutton" id="205">
 						<description>Toggle Fanart View Media Info</description>
+						<textwidth>170</textwidth>
 						<include>ButtonMediaSubCommonValues</include>
 						<label>31005</label>
 						<onclick>Skin.ToggleSetting(View508HideInfo)</onclick>

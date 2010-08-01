@@ -1,0 +1,40 @@
+*Confluence XBOX (V1.05)*
+Merged several changes from XBMC SVN skin.confluence, since R26858 until changeset R32212, by bulkzooi - BIG Thanks! :)
+(http://www.xbmc4xbox.org/forum/viewtopic.php?p=5200#p5200 for additional info)
+Updated IncludesCodecFlagging.xml to XBMC SVN (the first merge wasn't working correctly)
+Reverted 32179, xbmc4xbox still fetch "min"
+Merged new images from XBMC SVN skin.confluence/media/textures.xbt textures.xpr
+Moved the flagging folder from textures.xpr to media folder
+Added/Changed the Reboot/Restart XBMC4Xbox button in shutdownmenu
+Added options hide flagging read from video filename
+Changed Programs submenu label Apps to Applications
+Changed volume dB text color
+Changed settings window so that all items are visible
+Fixed Home Screen Videos duplicate when filemode was enabled (tks [b]Meez[/b])
+
+*Confluence XBOX (V1.04)*
+Fixed "Videos - Library" label in slidemenu
+Fixed Vid/Viz settings (was reversed)
+Fixed Autoscroll (was reversed)
+Added Studios to TV Shows home screen submenu
+
+*Confluence XBOX (V1.03)*
+Changed skin folder name to the original name
+Changed autoscroll plot to ON by default
+Changed Background Vid/Viz OFF by default
+Added Kiosk mode (Video Library, Music Library & Pics)
+Added a fontset for PAL/NTSC 16x9 users
+Changed fanart view scrollbar to be visible even if only one page
+Added skin version to system info
+
+*Other changes prior to v1.03*
+Specific programs submenu for the Xbox
+Programs settings on the Xbox
+Specific shutdown menu for the Xbox
+Video Library slideout entry
+Fantart info toggle
+Custom Video playlists shortcut in video submenu
+Hide media flags option
+Resized backgrounds
+
+

@@ -39,7 +39,7 @@
 					<height>23</height>
 					<info>Player.Volume</info>
 					<font>font12</font>
-					<textcolor>white</textcolor>
+					<textcolor>selected</textcolor>
 					<shadowcolor>black</shadowcolor>
 					<align>center</align>
 					<aligny>center</aligny>
