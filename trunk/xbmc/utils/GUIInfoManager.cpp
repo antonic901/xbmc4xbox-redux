@@ -3652,10 +3652,10 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
       return track;
     }
   case LISTITEM_ARTIST:
-    if (item->HasMusicInfoTag())
-      return item->GetMusicInfoTag()->GetArtist();
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strArtist;
+    if (item->HasMusicInfoTag())
+      return item->GetMusicInfoTag()->GetArtist();
     break;
   case LISTITEM_ALBUM_ARTIST:
     if (item->HasMusicInfoTag())
@@ -3665,14 +3665,12 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strDirector;
   case LISTITEM_ALBUM:
-    if (item->HasMusicInfoTag())
-      return item->GetMusicInfoTag()->GetAlbum();
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strAlbum;
+    if (item->HasMusicInfoTag())
+      return item->GetMusicInfoTag()->GetAlbum();
     break;
   case LISTITEM_YEAR:
-    if (item->HasMusicInfoTag())
-      return item->GetMusicInfoTag()->GetYearString();
     if (item->HasVideoInfoTag())
     {
       CStdString strResult;
@@ -3680,6 +3678,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
         strResult.Format("%i",item->GetVideoInfoTag()->m_iYear);
       return strResult;
     }
+    if (item->HasMusicInfoTag())
+      return item->GetMusicInfoTag()->GetYearString();
     break;
   case LISTITEM_PREMIERED:
     if (item->HasVideoInfoTag())
@@ -3693,10 +3693,10 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
     }
     break;
   case LISTITEM_GENRE:
-    if (item->HasMusicInfoTag())
-      return item->GetMusicInfoTag()->GetGenre();
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strGenre;
+    if (item->HasMusicInfoTag())
+      return item->GetMusicInfoTag()->GetGenre();
     break;
   case LISTITEM_FILENAME:
     if (item->IsMusicDb() && item->HasMusicInfoTag())
@@ -3715,12 +3715,12 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
   case LISTITEM_RATING:
     {
       CStdString rating;
-      if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetRating() > '0')
+      if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_fRating > 0.f) // movie rating
+        rating.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
+      else if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetRating() > '0')
       { // song rating.  Images will probably be better than numbers for this in the long run
         rating = item->GetMusicInfoTag()->GetRating();
       }
-      else if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_fRating > 0.f) // movie rating
-        rating.Format("%2.2f", item->GetVideoInfoTag()->m_fRating);
       return rating;
     }
   case LISTITEM_RATING_AND_VOTES:
@@ -3745,16 +3745,15 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
   case LISTITEM_DURATION:
     {
       CStdString duration;
+      if (item->HasVideoInfoTag())
+      {
+        duration = item->GetVideoInfoTag()->m_strRuntime;
+      }
       if (item->HasMusicInfoTag())
       {
         if (item->GetMusicInfoTag()->GetDuration() > 0)
           duration = StringUtils::SecondsToTimeString(item->GetMusicInfoTag()->GetDuration());
       }
-      if (item->HasVideoInfoTag())
-      {
-        duration = item->GetVideoInfoTag()->m_strRuntime;
-      }
-
       return duration;
     }
   case LISTITEM_PLOT:

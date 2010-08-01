@@ -259,7 +259,7 @@ bool CVideoDatabase::CreateTables()
 
     CLog::Log(LOGINFO, "create streaminfo table");
     m_pDS->exec("CREATE TABLE streamdetails (idFile integer, iStreamType integer, "
-      "strVideoCodec text, fVideoAspect real, iVideoWidth integer, iVideoHeight integer, "
+      "strVideoCodec text, fVideoAspect float, iVideoWidth integer, iVideoHeight integer, "
       "strAudioCodec text, iAudioChannels integer, strAudioLanguage text, strSubtitleLanguage text)");
     m_pDS->exec("CREATE INDEX ix_streamdetails ON streamdetails (idFile)");
 
@@ -567,6 +567,8 @@ int CVideoDatabase::AddFile(const CStdString& strFileNameAndPath)
 
 int CVideoDatabase::AddFile(const CFileItem& item)
 {
+  if (item.IsVideoDb() && item.HasVideoInfoTag())
+    return AddFile(item.GetVideoInfoTag()->m_strFileNameAndPath);
   return AddFile(item.m_strPath);
 }
 
@@ -692,17 +694,17 @@ int CVideoDatabase::GetFileId(const CStdString& strFilenameAndPath)
     SplitPath(strFilenameAndPath,strPath,strFileName);
 
     int idPath = GetPathId(strPath);
-    if (idPath < 0)
-      return -1;
-
-    CStdString strSQL;
-    strSQL=FormatSQL("select idFile from files where strFileName like '%s' and idPath=%i", strFileName.c_str(),idPath);
-    m_pDS->query(strSQL.c_str());
-    if (m_pDS->num_rows() > 0)
+    if (idPath >= 0)
     {
-      int idFile = m_pDS->fv("files.idFile").get_asInt();
-      m_pDS->close();
-      return idFile;
+      CStdString strSQL;
+      strSQL=FormatSQL("select idFile from files where strFileName like '%s' and idPath=%i", strFileName.c_str(),idPath);
+      m_pDS->query(strSQL.c_str());
+      if (m_pDS->num_rows() > 0)
+      {
+        int idFile = m_pDS->fv("files.idFile").get_asInt();
+        m_pDS->close();
+        return idFile;
+      }
     }
   }
   catch (...)
@@ -714,10 +716,9 @@ int CVideoDatabase::GetFileId(const CStdString& strFilenameAndPath)
 
 int CVideoDatabase::GetFileId(const CFileItem &item)
 {
-  CStdString path = item.m_strPath;
   if (item.IsVideoDb() && item.HasVideoInfoTag())
-    path = item.GetVideoInfoTag()->m_strFileNameAndPath;
-  return GetFileId(path);
+    return GetFileId(item.GetVideoInfoTag()->m_strFileNameAndPath);
+  return GetFileId(item.m_strPath);
 }
 
 //********************************************************************************************************************************
@@ -910,14 +911,12 @@ int CVideoDatabase::AddMovie(const CStdString& strFilenameAndPath)
     if (NULL == m_pDB.get()) return -1;
     if (NULL == m_pDS.get()) return -1;
 
-    int idFile, idMovie=-1;
-    idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      idFile = AddFile(strFilenameAndPath);
-    else
-      idMovie = GetMovieId(strFilenameAndPath);
+    int idMovie = GetMovieId(strFilenameAndPath);
     if (idMovie < 0)
     {
+      int idFile = AddFile(strFilenameAndPath);
+      if (idFile < 0)
+        return -1;
       CStdString strSQL=FormatSQL("insert into movie (idMovie, idFile) values (NULL, %i)", idFile);
       m_pDS->exec(strSQL.c_str());
       idMovie = (int)m_pDS->lastinsertid();
@@ -974,14 +973,13 @@ int CVideoDatabase::AddEpisode(int idShow, const CStdString& strFilenameAndPath)
     if (NULL == m_pDB.get()) return -1;
     if (NULL == m_pDS.get()) return -1;
 
-    int idFile, idEpisode=-1;
-    idFile = GetFileId(strFilenameAndPath);
+    int idFile = AddFile(strFilenameAndPath);
     if (idFile < 0)
-      idFile = AddFile(strFilenameAndPath);
+      return -1;
 
     CStdString strSQL=FormatSQL("insert into episode (idEpisode, idFile) values (NULL, %i)", idFile);
     m_pDS->exec(strSQL.c_str());
-    idEpisode = (int)m_pDS->lastinsertid();
+    int idEpisode = (int)m_pDS->lastinsertid();
 
     strSQL=FormatSQL("insert into tvshowlinkepisode (idShow,idEpisode) values (%i,%i)",idShow,idEpisode);
     m_pDS->exec(strSQL.c_str());
@@ -1003,14 +1001,12 @@ int CVideoDatabase::AddMusicVideo(const CStdString& strFilenameAndPath)
     if (NULL == m_pDB.get()) return -1;
     if (NULL == m_pDS.get()) return -1;
 
-    int idFile, idMVideo=-11;
-    idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      idFile = AddFile(strFilenameAndPath);
-    else
-      idMVideo = GetMusicVideoId(strFilenameAndPath);
+    int idMVideo = GetMusicVideoId(strFilenameAndPath);
     if (idMVideo < 0)
     {
+      int idFile = AddFile(strFilenameAndPath);
+      if (idFile < 0)
+        return -1;
       CStdString strSQL=FormatSQL("insert into musicvideo (idMVideo, idFile) values (NULL, %i)", idFile);
       m_pDS->exec(strSQL.c_str());
       idMVideo = (int)m_pDS->lastinsertid();
@@ -1628,13 +1624,7 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
   {
     CVideoInfoTag info = details;
 
-    int idFile = GetFileId(strFilenameAndPath);
-
-    if (idFile < 0)
-      idFile = AddFile(strFilenameAndPath);
-
     int idMovie = GetMovieId(strFilenameAndPath);
-
     if (idMovie > -1)
       DeleteMovie(strFilenameAndPath, true); // true to keep the table entry
 
@@ -1697,7 +1687,7 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
     }
     
     if (details.HasStreamDetails())
-      SetStreamDetailsForFileId(details.m_streamDetails, idFile);
+      SetStreamDetailsForFileId(details.m_streamDetails, GetFileId(strFilenameAndPath));
 
     // update our movie table (we know it was added already above)
     // and insert the new row
@@ -1851,9 +1841,6 @@ void CVideoDatabase::SetDetailsForMusicVideo(const CStdString& strFilenameAndPat
   {
     BeginTransaction();
 
-    int idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      idFile = AddFile(strFilenameAndPath);
     int idMVideo = GetMusicVideoId(strFilenameAndPath);
     if (idMVideo > -1)
     {
@@ -1902,7 +1889,7 @@ void CVideoDatabase::SetDetailsForMusicVideo(const CStdString& strFilenameAndPat
     }
 
     if (details.HasStreamDetails())
-      SetStreamDetailsForFileId(details.m_streamDetails, idFile);
+      SetStreamDetailsForFileId(details.m_streamDetails, GetFileId(strFilenameAndPath));
 
     // update our movie table (we know it was added already above)
     // and insert the new row
@@ -2110,16 +2097,9 @@ void CVideoDatabase::AddBookMarkToFile(const CStdString& strFilenameAndPath, con
 {
   try
   {
-    int idFile = GetFileId(strFilenameAndPath);
+    int idFile = AddFile(strFilenameAndPath);
     if (idFile < 0)
-    {
-      // Doesn't exist in the database yet - add it.
-      // TODO: It doesn't appear to me that the CDLabel parameter or the subtitles
-      // parameter is anywhere in use in XBMC.
-      idFile = AddFile(strFilenameAndPath);
-      if (idFile < 0)
         return;
-    }
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
 
@@ -2298,10 +2278,6 @@ void CVideoDatabase::DeleteMovie(const CStdString& strFilenameAndPath, bool bKee
       return ;
     }
 
-    int idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      return ;
-
     BeginTransaction();
 
     CStdString strSQL;
@@ -2323,7 +2299,7 @@ void CVideoDatabase::DeleteMovie(const CStdString& strFilenameAndPath, bool bKee
     if (!bKeepThumb)
       DeleteThumbForItem(strFilenameAndPath,false);
 
-    DeleteStreamDetails(idFile);
+    DeleteStreamDetails(GetFileId(strFilenameAndPath));
 
     // keep the movie table entry, linking to tv shows, and bookmarks
     // so we can update the data in place
@@ -2439,10 +2415,6 @@ void CVideoDatabase::DeleteEpisode(const CStdString& strFilenameAndPath, int idE
       }
     }
 
-    int idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      return ;
-
     CStdString strSQL;
     strSQL=FormatSQL("delete from actorlinkepisode where idepisode=%i", idEpisode);
     m_pDS->exec(strSQL.c_str());
@@ -2459,7 +2431,7 @@ void CVideoDatabase::DeleteEpisode(const CStdString& strFilenameAndPath, int idE
     if (!bKeepThumb)
       DeleteThumbForItem(strFilenameAndPath, false, idEpisode);
 
-    DeleteStreamDetails(idFile);
+    DeleteStreamDetails(GetFileId(strFilenameAndPath));
 
     // keep episode table entry and bookmarks so we can update the data in place
     // the ancilliary tables are still purged
@@ -2490,10 +2462,6 @@ void CVideoDatabase::DeleteMusicVideo(const CStdString& strFilenameAndPath, bool
       return ;
     }
 
-    int idFile = GetFileId(strFilenameAndPath);
-    if (idFile < 0)
-      return ;
-
     BeginTransaction();
 
     CStdString strSQL;
@@ -2512,7 +2480,7 @@ void CVideoDatabase::DeleteMusicVideo(const CStdString& strFilenameAndPath, bool
     if (!bKeepThumb)
       DeleteThumbForItem(strFilenameAndPath,false);
 
-    DeleteStreamDetails(idFile);
+    DeleteStreamDetails(GetFileId(strFilenameAndPath));
 
     // keep the music video table entry and bookmarks so we can update data in place
     // the ancilliary tables are still purged
@@ -2802,19 +2770,29 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
 
   if (needsCast)
   {
+    set<int> actors;
+    set<int>::iterator it;
+
     // create cast string
-    CStdString strSQL = FormatSQL("select actors.strActor,actorlinkepisode.strRole,actors.strThumb from actorlinkepisode,actors where actorlinkepisode.idEpisode=%i and actorlinkepisode.idActor = actors.idActor",idEpisode);
+    CStdString strSQL = FormatSQL("select actors.idActor,actors.strActor,actorlinkepisode.strRole,actors.strThumb from actorlinkepisode,actors where actorlinkepisode.idEpisode=%i and actorlinkepisode.idActor = actors.idActor",idEpisode);
     m_pDS2->query(strSQL.c_str());
     bool showCast=false;
     while (!m_pDS2->eof() || !showCast)
     {
       if (!m_pDS2->eof())
       {
-        SActorInfo info;
-        info.strName = m_pDS2->fv("actors.strActor").get_asString();
-        info.strRole = m_pDS2->fv("actorlinkepisode.strRole").get_asString();
-        info.thumbUrl.ParseString(m_pDS2->fv("actors.strThumb").get_asString());
-        details.m_cast.push_back(info);
+        int idActor = m_pDS2->fv("actors.idActor").get_asInt();
+        it = actors.find(idActor);
+
+        if (it == actors.end())
+        {
+          SActorInfo info;
+          info.strName = m_pDS2->fv("actors.strActor").get_asString();
+          info.strRole = m_pDS2->fv("actorlinkepisode.strRole").get_asString();
+          info.thumbUrl.ParseString(m_pDS2->fv("actors.strThumb").get_asString());
+          details.m_cast.push_back(info);
+          actors.insert(idActor);
+        }
         m_pDS2->next();
       }
       if (m_pDS2->eof() && !showCast)
@@ -2823,7 +2801,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
         int idShow = GetTvShowForEpisode(details.m_iDbId);
         if (idShow > -1)
         {
-          strSQL = FormatSQL("select actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor",idShow);
+          strSQL = FormatSQL("select actors.idActor,actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor",idShow);
           m_pDS2->query(strSQL.c_str());
         }
       }
@@ -2936,12 +2914,9 @@ void CVideoDatabase::SetVideoSettings(const CStdString& strFilenameAndPath, cons
   {
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
-    int idFile = GetFileId(strFilenameAndPath);
+    int idFile = AddFile(strFilenameAndPath);
     if (idFile < 0)
-    { // no files found - we have to add one
-      idFile = AddFile(strFilenameAndPath);
-      if (idFile < 0) return ;
-    }
+      return;
     CStdString strSQL;
     strSQL.Format("select * from settings where idFile=%i", idFile);
     m_pDS->query( strSQL.c_str() );
@@ -3029,12 +3004,9 @@ void CVideoDatabase::SetStackTimes(const CStdString& filePath, vector<int> &time
   {
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
-    int idFile = GetFileId(filePath);
+    int idFile = AddFile(filePath);
     if (idFile < 0)
-    { // no files found - we have to add one
-      idFile = AddFile(filePath);
-      if (idFile < 0) return ;
-    }
+      return;
 
     // delete any existing items
     m_pDS->exec( FormatSQL("delete from stacktimes where idFile=%i", idFile) );
@@ -3653,7 +3625,7 @@ int CVideoDatabase::GetPlayCount(const CFileItem &item)
 {
   int id = GetFileId(item);
   if (id < 0)
-    return -1;  // not in db
+    return 0;  // not in db, so not watched
 
   try
   {
@@ -3662,7 +3634,7 @@ int CVideoDatabase::GetPlayCount(const CFileItem &item)
     if (NULL == m_pDS.get()) return -1;
 
     CStdString strSQL = FormatSQL("select playCount from files WHERE idFile=%i", id);
-    int count = -1;
+    int count = 0;
     if (m_pDS->query(strSQL.c_str()))
     {
       // there should only ever be one row returned
@@ -3703,13 +3675,9 @@ void CVideoDatabase::UpdateFanart(const CFileItem &item, VIDEODB_CONTENT_TYPE ty
 
 void CVideoDatabase::SetPlayCount(const CFileItem &item, int count, const CStdString &date)
 {
-  int id = GetFileId(item);
-  
+  int id = AddFile(item);
   if (id < 0)
-  { // no files found - we have to add one
-    id = AddFile(item);
-    if (id < 0) return;
-  }
+    return;
 
   // and mark as watched
   try
@@ -3721,12 +3689,17 @@ void CVideoDatabase::SetPlayCount(const CFileItem &item, int count, const CStdSt
     if (count)
     {
       if (date.IsEmpty())
-        strSQL = FormatSQL("update files set playCount=%i,lastPlayed=CURRENT_TIMESTAMP where idFile=%i", count, id);
+        strSQL = FormatSQL("update files set playCount=%i,lastPlayed='%s' where idFile=%i", count, CDateTime::GetCurrentDateTime().GetAsDBDateTime().c_str(), id);
       else
         strSQL = FormatSQL("update files set playCount=%i,lastPlayed='%s' where idFile=%i", count, date.c_str(), id);
     }
     else
-      strSQL = FormatSQL("update files set playCount=NULL,lastPlayed=NULL where idFile=%i", id);
+    {
+      if (date.IsEmpty())
+        strSQL = FormatSQL("update files set playCount=NULL,lastPlayed=NULL where idFile=%i", id);
+      else
+        strSQL = FormatSQL("update files set playCount=NULL,lastPlayed='%s' where idFile=%i", date.c_str(), id);
+    }
 
     m_pDS->exec(strSQL.c_str());
   }
@@ -3739,6 +3712,11 @@ void CVideoDatabase::SetPlayCount(const CFileItem &item, int count, const CStdSt
 void CVideoDatabase::IncrementPlayCount(const CFileItem &item)
 {
   SetPlayCount(item, GetPlayCount(item) + 1);
+}
+
+void CVideoDatabase::UpdateLastPlayed(const CFileItem &item)
+{
+  SetPlayCount(item, GetPlayCount(item), CDateTime::GetCurrentDateTime().GetAsDBDateTime());
 }
 
 void CVideoDatabase::UpdateMovieTitle(int idMovie, const CStdString& strNewMovieTitle, VIDEODB_CONTENT_TYPE iType)
