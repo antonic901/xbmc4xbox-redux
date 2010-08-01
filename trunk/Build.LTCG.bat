@@ -94,6 +94,11 @@ goto COMPILE
   cd ..\..
   xcopy "skin\PM3.HD\BUILD\PM3.HD" "BUILD\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
 
+  cd "skin\Confluence"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence\BUILD\Confluence" "BUILD\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
+
   xcopy credits BUILD\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language BUILD\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers BUILD\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt

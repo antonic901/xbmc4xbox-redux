@@ -202,6 +202,11 @@ rem	CONFIG START
   cd ..\..
   xcopy "skin\PM3.HD\BUILD\PM3.HD" "BUILD\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
 
+  cd "skin\Confluence"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence\BUILD\Confluence" "BUILD\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
+
   xcopy credits BUILD\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language BUILD\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers BUILD\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
@@ -258,6 +263,11 @@ rem	CONFIG START
   cd ..\..
   xcopy "skin\PM3.HD\BUILD\PM3.HD" "BUILD_WIN32\Xbmc_pc\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
 
+  cd "skin\Confluence"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence\BUILD\Confluence" "BUILD_WIN32\Xbmc_pc\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
+  
   xcopy credits BUILD_WIN32\Xbmc_pc\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language BUILD_WIN32\Xbmc_pc\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers BUILD_WIN32\Xbmc_pc\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
