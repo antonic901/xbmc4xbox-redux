@@ -24,18 +24,21 @@
 #include <share.h>
 #include "CriticalSection.h"
 #include "SingleLock.h"
-#include "StdString.h"
 #include "Settings.h"
 #include "AdvancedSettings.h"
 #include "Util.h"
 
 FILE* CLog::fd = NULL;
+int         CLog::m_repeatCount     = 0;
+int         CLog::m_repeatLogLevel  = -1;
+CStdString  CLog::m_repeatLine      = "";
 
 static CCriticalSection critSec;
 
 static char levelNames[][8] =
 {"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "SEVERE", "FATAL", "NONE"};
 
+#define LINE_ENDING "\r\n"
 
 CLog::CLog()
 {}
@@ -91,6 +94,27 @@ void CLog::Log(int loglevel, const char *format, ... )
     strData.FormatV(format,va);
     va_end(va);
 
+    if (m_repeatLogLevel == loglevel && m_repeatLine == strData)
+    {
+      m_repeatCount++;
+      return;
+    }
+    else if (m_repeatCount)
+    {
+      CStdString strPrefix2, strData2;
+      strPrefix.Format("%02.2d:%02.2d:%02.2d M:%9u %7s: ", time.wHour, time.wMinute, time.wSecond, stat.dwAvailPhys, levelNames[m_repeatLogLevel]);
+
+      strData2.Format("Previous line repeats %d times." LINE_ENDING, m_repeatCount);
+      fwrite(strPrefix2.c_str(), strPrefix2.size(), 1, fd);
+      fwrite(strData2.c_str(), strData2.size(), 1, fd);
+#if !defined(_LINUX) && (defined(_DEBUG) || defined(PROFILE))
+      OutputDebugString(strData2.c_str());
+#endif
+      m_repeatCount = 0;
+    }
+    
+    m_repeatLine      = strData;
+    m_repeatLogLevel  = loglevel;
 
     unsigned int length = 0;
     while ( length != strData.length() )
@@ -110,8 +134,8 @@ void CLog::Log(int loglevel, const char *format, ... )
 #endif
 
     /* fixup newline alignment, number of spaces should equal prefix length */
-    strData.Replace("\n", "\n                                            ");
-    strData += "\n";
+    strData.Replace("\n", LINE_ENDING"                                            ");
+    strData += LINE_ENDING;
 
     fwrite(strPrefix.c_str(), strPrefix.size(), 1, fd);
     fwrite(strData.c_str(), strData.size(), 1, fd);
