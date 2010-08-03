@@ -38,7 +38,7 @@ static CCriticalSection critSec;
 static char levelNames[][8] =
 {"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "SEVERE", "FATAL", "NONE"};
 
-#define LINE_ENDING "\r\n"
+#define LINE_ENDING "\n"
 
 CLog::CLog()
 {}
