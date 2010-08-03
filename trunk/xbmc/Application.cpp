@@ -4200,6 +4200,7 @@ void CApplication::SaveFileState()
       CVideoDatabase videodatabase;
       if (videodatabase.Open())
       {
+        bool updateListing = false;
         // No resume & watched status for livetv
         if (!m_progressTrackingItem->IsLiveTV())
         {
@@ -4209,9 +4210,7 @@ void CApplication::SaveFileState()
 
             // consider this item as played
             videodatabase.IncrementPlayCount(*m_progressTrackingItem);
-            CUtil::DeleteVideoDatabaseDirectoryCache();
-            CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE, 0);
-            g_windowManager.SendMessage(message);
+            updateListing = true;
           }
 
           if (m_progressTrackingVideoResumeBookmark.timeInSeconds < 0.0f)
@@ -4235,12 +4234,17 @@ void CApplication::SaveFileState()
              m_progressTrackingItem->GetVideoInfoTag()->HasStreamDetails())
         {
           videodatabase.SetStreamDetailsForFile(m_progressTrackingItem->GetVideoInfoTag()->m_streamDetails,progressTrackingFile);
-          CUtil::DeleteVideoDatabaseDirectoryCache();
-          CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE, 0);
-          g_windowManager.SendMessage(message);
+          updateListing = true;
         }
-
         videodatabase.Close();
+        
+        if (updateListing)
+        {
+          CUtil::DeleteVideoDatabaseDirectoryCache();
+          CFileItemPtr msgItem(new CFileItem(*m_progressTrackingItem));
+          CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE_ITEM, 1, msgItem); // 1 to update the listing as well 
+          g_windowManager.SendThreadMessage(message);
+        }
       }
     }
 
