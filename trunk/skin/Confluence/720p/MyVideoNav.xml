@@ -25,6 +25,7 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
+				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
 				<visible>Container.Content(TVShows) | [Container.Content(Episodes) + substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -36,6 +37,7 @@
 				<texture background="true">$INFO[Fanart.Image]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
+				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
 				<visible>Container.Content(Seasons) | [Container.Content(Episodes) + !substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -580,6 +582,7 @@
 					<onright>9011</onright>
 					<onup>98</onup>
 					<ondown>610</ondown>
+					<visible>Container.Content(Movies) | Container.Content(TVShows)</visible>
 				</control>
 				<control type="button" id="610">
 					<description>Fake Button to fix Player Controls Navigation</description>
@@ -742,3 +745,5 @@
 		
 	</controls>
 </window>
+
+ 	  	 
