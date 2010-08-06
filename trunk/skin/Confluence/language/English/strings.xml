@@ -163,15 +163,16 @@
   <string id="31357"></string>
 
   <!-- Description Labels  -->
-  <string id="31400">[B]CONFIGURE APPEARANCE SETTINGS[/B][CR][CR]Change the skin · Set language and region · Change file listing options[CR]Set up a screensaver</string>
-  <string id="31401">[B]CONFIGURE VIDEO SETTINGS[/B][CR][CR]Manage your video library · Set video playback options · Change video listing options[CR]Set subtitle fonts</string>
-  <string id="31402">[B]CONFIGURE MUSIC SETTINGS[/B][CR][CR]Manage your music library · Set music playback options · Change music listing options[CR]Setup song submission · Set karaoke options</string>
+  <string id="31400">[B]CONFIGURE APPEARANCE SETTINGS[/B][CR][CR]Change the skin · Set language and region · Change file listing options · Set up a screensaver</string>
+  <string id="31401">[B]CONFIGURE VIDEO SETTINGS[/B][CR][CR]Manage your video library · Set video playback options · Change video listing options · Set subtitle fonts</string>
+  <string id="31402">[B]CONFIGURE MUSIC SETTINGS[/B][CR][CR]Manage your music library · Set music playback options · Change music listing options · Setup song submission · Set karaoke options</string>
   <string id="31403">[B]CONFIGURE PICTURE SETTINGS[/B][CR][CR]Set picture listing options · Configure slideshows</string>
   <string id="31404">[B]CONFIGURE WEATHER SETTINGS[/B][CR][CR]Set three cities to collect weather information</string>
-  <string id="31405">[B]CONFIGURE NETWORK SETTINGS[/B][CR][CR]Setup control of XBMC via UPnP and HTTP · Configure file sharing[CR]Set internet access options</string>
-  <string id="31406">[B]CONFIGURE SYSTEM SETTINGS[/B][CR][CR]Setup and calibrate displays · Configure audio output · Setup remote controls[CR]Set power saving options · Enable debugging · Setup master lock</string>
-  <string id="31407">[B]CONFIGURE SKIN SETTINGS[/B][CR][CR]Setup the Confluence skin · Add and remove home menu items[CR]Change skin backgrounds</string>
-  <string id="31408">[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Enable/Configure Video mode Switching[CR]Choose your Trainers folder · Set a Custom Dashboard path</string> 
+  <string id="31405">[B]CONFIGURE NETWORK SETTINGS[/B][CR][CR]Setup control of XBMC via UPnP and HTTP · Configure file sharing · Set internet access options</string>
+  <string id="31406">[B]CONFIGURE SYSTEM SETTINGS[/B][CR][CR]Set fan speed override · Configure audio output · Setup remote controls · Set power saving options · Enable debugging · Setup master lock</string>
+  <string id="31407">[B]CONFIGURE SKIN SETTINGS[/B][CR][CR]Setup the Confluence skin · Add and remove home menu items · Change skin backgrounds</string>
+  <string id="31408">[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Enable/Configure Video mode Switching · Choose your Trainers folder · Set a Custom Dashboard path</string> 
 
   <string id="31421">Select your XBMC user Profile[CR]to login and continue</string>
 </strings>
+ 	  	 

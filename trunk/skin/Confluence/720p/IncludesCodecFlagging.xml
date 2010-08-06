@@ -131,6 +131,13 @@
 			<!-- Don't show if I want the Dolby Digital Logo -->
 			<visible>![stringcompare(ListItem.AudioCodec,ac3) + stringcompare(ListItem.AudioChannels,6)]</visible>
 		</control>
+		<control type="image">
+			<description>Audio Channels Image</description>
+			<width>45</width>
+			<height>33</height>
+			<aspectratio>keep</aspectratio>
+			<texture>$INFO[ListItem.AudioChannels,flagging/audio/,.png]</texture>
+		</control>
 	</include>
 	<include name="AspectCodecFlaggingConditions">
 	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
@@ -143,3 +150,4 @@
 		</control>
 	</include>
 </includes>
+ 	  	 
