@@ -169,10 +169,9 @@
   <string id="31403">[B]CONFIGURE PICTURE SETTINGS[/B][CR][CR]Set picture listing options · Configure slideshows</string>
   <string id="31404">[B]CONFIGURE WEATHER SETTINGS[/B][CR][CR]Set three cities to collect weather information</string>
   <string id="31405">[B]CONFIGURE NETWORK SETTINGS[/B][CR][CR]Setup control of XBMC via UPnP and HTTP · Configure file sharing · Set internet access options</string>
-  <string id="31406">[B]CONFIGURE SYSTEM SETTINGS[/B][CR][CR]Set fan speed override · Configure audio output · Setup remote controls · Set power saving options · Enable debugging · Setup master lock</string>
+  <string id="31406">[B]CONFIGURE SYSTEM SETTINGS[/B][CR][CR]Set fan speed override · Configure audio and video output · Set power saving options · Enable debugging · Setup master lock · Change Cache sizes</string>
   <string id="31407">[B]CONFIGURE SKIN SETTINGS[/B][CR][CR]Setup the Confluence skin · Add and remove home menu items · Change skin backgrounds</string>
   <string id="31408">[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Enable/Configure Video mode Switching · Choose your Trainers folder · Set a Custom Dashboard path</string> 
 
   <string id="31421">Select your XBMC user Profile[CR]to login and continue</string>
 </strings>
- 	  	 

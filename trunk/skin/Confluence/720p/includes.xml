@@ -67,9 +67,21 @@
 			<timeperimage>10000</timeperimage>
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
-			<visible>[Container.Content(TVShows) | Container.Content(Seasons) |Container.Content(Episodes)] + [!IsEmpty(Skin.String(Home_Custom_Back_TVShow_Folder) + Skin.HasSetting(HomeMenuNoTVShowsButton)])</visible>
+			<visible>[Container.Content(TVShows) | Container.Content(Seasons) | Container.Content(Episodes)] + [!IsEmpty(Skin.String(Home_Custom_Back_TVShow_Folder) + Skin.HasSetting(HomeMenuNoTVShowsButton)]</visible>
 			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | Skin.HasSetting(VideoLibraryTVFanart)</visible>
 		</control>		
+	</include>
+	<include name="CommonMusicBackground">
+		<control type="multiimage">
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>720</height>
+			<imagepath fallback="special://skin/backgrounds/music.jpg" background="true">$INFO[Skin.String(Home_Custom_Back_Music_Folder)]</imagepath>
+			<timeperimage>10000</timeperimage>
+			<randomize>true</randomize>
+			<fadetime>1000</fadetime>
+		</control>
 	</include>
 	<include name="CommonPictureBackground">
 		<control type="multiimage">
@@ -891,4 +903,3 @@
 		<animation effect="fade" time="300">Hidden</animation>
 	</include>
 </includes>
- 	  	 

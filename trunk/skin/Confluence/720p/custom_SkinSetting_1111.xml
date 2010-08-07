@@ -1784,8 +1784,8 @@
 						<pagecontrol>62</pagecontrol>
 						<onleft>9000</onleft>
 						<onright>61</onright>
-						<onup>9004</onup>
-						<ondown>9004</ondown>
+						<onup>9005</onup>
+						<ondown>9005</ondown>
 						<control type="label" id="500">
 							<width>750</width>
 							<height>45</height>
