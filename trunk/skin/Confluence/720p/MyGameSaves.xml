@@ -128,7 +128,7 @@
 					<onleft>50</onleft>
 					<onright>4</onright>
 					<onup>2</onup>
-					<ondown>98</ondown>
+					<ondown>610</ondown>
 				</control>
 				<control type="togglebutton" id="4">
 					<description>Sort asc</description>
@@ -138,24 +138,11 @@
 					<onleft>3</onleft>
 					<onright>50</onright>
 					<onup>2</onup>
-					<ondown>98</ondown>
-				</control>
-				<control type="button" id="98">
-					<description>Gamesaves Button</description>
-					<posx>0</posx>
-					<posy>80</posy>
-					<include>ButtonCommonValues</include>
-					<label>20323</label>
-					<onclick>ActivateWindow(35)</onclick>
-					<onleft>50</onleft>
-					<onright>50</onright>
-					<onup>3</onup>
 					<ondown>610</ondown>
-					<visible>System.Platform.Xbox</visible>
 				</control>
 				<control type="button" id="610">
 					<description>Fake Button to fix Player Controls Navigation</description>
-					<onup>98</onup>
+					<onup>3</onup>
 					<ondown>603</ondown>
 					<visible>false</visible>
 				</control>

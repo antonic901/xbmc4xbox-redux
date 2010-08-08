@@ -339,12 +339,13 @@
 						<texture>$INFO[VideoPlayer.VideoResolution,flagging/video/,.png]</texture>
 					</control>
 					<control type="image">
-						<description>Xvid Codec Image</description>
+						<description>Common Codec Image</description>
 						<width>80</width>
 						<height>28</height>
 						<aspectratio>keep</aspectratio>
-						<texture>flagging/video/xvid.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,xvid)</visible>
+						<texture>$INFO[VideoPlayer.VideoCodec,flagging/video/,.png]</texture>
+						<!-- Don't show if its one of the 500 divx codecs -->
+						<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image">
 						<description>Divx Codec Image</description>
@@ -352,7 +353,7 @@
 						<height>28</height>
 						<aspectratio>keep</aspectratio>
 						<texture>flagging/video/divx.png</texture>
-						<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
+						<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image">
 						<description>h264 Codec Image</description>
