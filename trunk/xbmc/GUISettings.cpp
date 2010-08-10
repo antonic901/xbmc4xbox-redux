@@ -414,7 +414,7 @@ void CGUISettings::Initialize()
   AddBool(8, "videoplayer.soften", 215, false);
   AddSeparator(9, "videoplayer.sep2");
   AddFloat(10, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
-  AddSeparator(11, "videoplayer.sep2");
+  AddSeparator(11, "videoplayer.sep3");
   AddBool(12, "videoplayer.allcodecs", 22025, false);
   AddBool(13, "videoplayer.fast", 22026, false);
 
