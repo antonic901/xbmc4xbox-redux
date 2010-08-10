@@ -60,7 +60,6 @@ class CAdvancedSettings
     int m_audioHeadRoom;
     float m_karaokeSyncDelay;
     float m_ac3Gain;
-    CStdString m_audioDefaultPlayer;
     float m_audioPlayCountMinimumPercent;
 
     float m_videoSubsDelayRange;
@@ -93,8 +92,6 @@ class CAdvancedSettings
     int m_videoIgnoreAtStart;
     int m_videoIgnoreAtEnd;
     bool m_audioApplyDrc;
-
-    CStdString m_videoDefaultPlayer;
 
     float m_videoPlayCountMinimumPercent;
 

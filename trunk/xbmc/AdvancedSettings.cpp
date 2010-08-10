@@ -44,7 +44,6 @@ CAdvancedSettings::CAdvancedSettings()
   m_ac3Gain = 12.0f;
   m_audioApplyDrc = true;
 
-  m_audioDefaultPlayer = "paplayer";
   m_audioPlayCountMinimumPercent = 90.0f;
 
   m_videoSubsDelayRange = 10;
@@ -63,7 +62,6 @@ CAdvancedSettings::CAdvancedSettings()
   m_videoPercentSeekBackwardBig = -10;
   m_videoBlackBarColour = 0;
   m_videoPPFFmpegType = "linblenddeint";
-  m_videoDefaultPlayer = "mplayer";
   m_videoIgnoreAtStart = 15;
   m_videoIgnoreAtEnd = 5;
   m_videoPlayCountMinimumPercent = 90.0f;
@@ -262,7 +260,6 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetFloat(pElement, "ac3downmixgain", m_ac3Gain, -96.0f, 96.0f);
     XMLUtils::GetInt(pElement, "headroom", m_audioHeadRoom, 0, 12);
     XMLUtils::GetFloat(pElement, "karaokesyncdelay", m_karaokeSyncDelay, -3.0f, 3.0f);
-    XMLUtils::GetString(pElement, "defaultplayer", m_audioDefaultPlayer);
     XMLUtils::GetFloat(pElement, "playcountminimumpercent", m_audioPlayCountMinimumPercent, 0.0f, 100.0f);
 
     XMLUtils::GetBoolean(pElement, "usetimeseeking", m_musicUseTimeSeeking);
@@ -295,7 +292,6 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetFloat(pElement, "subsdelayrange", m_videoSubsDelayRange, 10, 600);
     XMLUtils::GetFloat(pElement, "audiodelayrange", m_videoAudioDelayRange, 10, 600);
     XMLUtils::GetInt(pElement, "blackbarcolour", m_videoBlackBarColour, 0, 255);
-    XMLUtils::GetString(pElement, "defaultplayer", m_videoDefaultPlayer);
     XMLUtils::GetBoolean(pElement, "fullscreenonmoviestart", m_fullScreenOnMovieStart);
     XMLUtils::GetFloat(pElement, "playcountminimumpercent", m_videoPlayCountMinimumPercent, 0.0f, 100.0f);
     XMLUtils::GetInt(pElement, "ignoreatstart", m_videoIgnoreAtStart, 0, 900);

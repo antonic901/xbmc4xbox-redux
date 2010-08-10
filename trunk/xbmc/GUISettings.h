@@ -33,7 +33,6 @@
 #define RENDER_HQ_RGB_SHADERV2   3
 
 // Subtitle colours
-
 #define SUBTITLE_COLOR_START  0
 #define SUBTITLE_COLOR_END    7
 
@@ -128,6 +127,11 @@
 #define REPLAY_GAIN_NONE 0
 #define REPLAY_GAIN_ALBUM 1
 #define REPLAY_GAIN_TRACK 2
+
+// Player types
+#define PLAYER_MPLAYER    0
+#define PLAYER_DVDPLAYER  1
+#define PLAYER_PAPLAYER   2
 
 // replay gain settings struct for quick access by the player multiple
 // times per second (saves doing settings lookup)

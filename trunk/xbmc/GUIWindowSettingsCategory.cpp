@@ -765,6 +765,15 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(640), REPLAY_GAIN_ALBUM);
       pControl->SetValue(pSettingInt->GetData());
     }
+    else if (strSetting.Equals("musicplayer.defaultplayer"))
+    {
+      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
+      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
+      pControl->AddLabel(g_localizeStrings.Get(22027), PLAYER_PAPLAYER);
+      pControl->AddLabel(g_localizeStrings.Get(22029), PLAYER_MPLAYER);
+      pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
+      pControl->SetValue(pSettingInt->GetData());
+    }
     else if (strSetting.Equals("lookandfeel.startupwindow"))
     {
       FillInStartupWindow(pSetting);
@@ -799,6 +808,14 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(106), RESUME_NO);
       pControl->AddLabel(g_localizeStrings.Get(107), RESUME_YES);
       pControl->AddLabel(g_localizeStrings.Get(12020), RESUME_ASK);
+      pControl->SetValue(pSettingInt->GetData());
+    }
+    else if (strSetting.Equals("videoplayer.defaultplayer"))
+    {
+      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
+      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
+      pControl->AddLabel(g_localizeStrings.Get(22029), PLAYER_MPLAYER);
+      pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
       pControl->SetValue(pSettingInt->GetData());
     }
     else if (strSetting.Equals("weather.plugin"))
@@ -874,6 +891,16 @@ void CGUIWindowSettingsCategory::UpdateSettings()
 #ifdef HAS_XBOX_HARDWARE
       if (pControl) pControl->SetEnabled(g_videoConfig.HasNTSC() && g_videoConfig.HasHDPack());
 #endif
+    }
+    else if (strSetting.Equals("musicplayer.replaygaintype"))
+    {
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("musicplayer.defaultplayer") == PLAYER_PAPLAYER);
+    }
+    else if (strSetting.Equals("musicplayer.crossfade"))
+    {
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("musicplayer.defaultplayer") == PLAYER_PAPLAYER);
     }
     else if (strSetting.Equals("musicplayer.crossfadealbumtracks"))
     {

@@ -845,8 +845,8 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   g_advancedSettings.Load();
 
   // Default players?
-  CLog::Log(LOGNOTICE, "Default Video Player: %s", g_advancedSettings.m_videoDefaultPlayer.c_str());
-  CLog::Log(LOGNOTICE, "Default Audio Player: %s", g_advancedSettings.m_audioDefaultPlayer.c_str());
+  CLog::Log(LOGNOTICE, "Default Video Player: %s", g_settings.GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Audio Player: %s", g_settings.GetDefaultAudioPlayerName().c_str());
 
   // setup logging...
   if (g_guiSettings.GetBool("debug.showloginfo") && g_advancedSettings.m_logLevel < LOG_LEVEL_DEBUG_FREEMEM)
@@ -2122,6 +2122,32 @@ CStdString CSettings::GetFFmpegDllFolder() const
   if (g_guiSettings.GetBool("videoplayer.allcodecs"))
     folder += "full\\";
   return folder;
+}
+
+CStdString CSettings::GetDefaultPlayerName(const int& player) const
+{
+  CStdString strPlayer;
+  
+  if (player == PLAYER_PAPLAYER)
+    strPlayer = "paplayer";
+  else
+  if (player == PLAYER_MPLAYER)
+    strPlayer = "mplayer";
+  else
+  if (player == PLAYER_DVDPLAYER)
+    strPlayer = "dvdplayer";
+
+  return strPlayer;
+}
+
+CStdString CSettings::GetDefaultVideoPlayerName() const
+{
+  return GetDefaultPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
+}
+
+CStdString CSettings::GetDefaultAudioPlayerName() const
+{
+  return GetDefaultPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
 }
 
 CStdString CSettings::GetSourcesFile() const

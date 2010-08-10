@@ -437,6 +437,9 @@ public:
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
   CStdString GetFFmpegDllFolder() const;
+  CStdString GetDefaultPlayerName(const int& player) const;
+  CStdString GetDefaultVideoPlayerName() const;
+  CStdString GetDefaultAudioPlayerName() const;
 
   CStdString GetSettingsFile() const;
   CStdString GetAvpackSettingsFile() const;

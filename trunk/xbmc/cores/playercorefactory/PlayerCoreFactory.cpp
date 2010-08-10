@@ -36,11 +36,10 @@
 #include "XBAudioConfig.h"
 #include "FileSystem/FileCurl.h"
 #include "utils/HttpHeader.h"
-#include "GUISettings.h"
+#include "Settings.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
 
@@ -87,8 +86,8 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName)
   {
     // Dereference "*default*player" aliases
     CStdString strRealCoreName;
-    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = g_advancedSettings.m_audioDefaultPlayer;
-    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = g_advancedSettings.m_videoDefaultPlayer;
+    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = g_settings.GetDefaultAudioPlayerName();
+    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = g_settings.GetDefaultVideoPlayerName();
     else strRealCoreName = strCoreName;
 
     for(PLAYERCOREID i = 0; i < s_vecCoreConfigs.size(); i++)
