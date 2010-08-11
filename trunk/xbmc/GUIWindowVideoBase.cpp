@@ -1372,6 +1372,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   {
     item = CFileItem(*pItem->GetVideoInfoTag());
     item.m_lStartOffset = pItem->m_lStartOffset;
+    item.SetProperty("original_listitem_url", pItem->m_strPath);
   }
 
   PlayMovie(&item);

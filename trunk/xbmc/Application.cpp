@@ -3757,7 +3757,10 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
   { // we modify the item so that it becomes a real URL
     CFileItem item_new;
     if (DIRECTORY::CPluginDirectory::GetPluginResult(item.m_strPath, item_new))
+    {
+      item_new.SetProperty("original_listitem_url", item.HasProperty("original_listitem_url") ? item.GetProperty("original_listitem_url") : item.m_strPath);
       return PlayFile(item_new, false);
+    }
     return false;
   }
 
@@ -4210,6 +4213,8 @@ void CApplication::SaveFileState()
 
             // consider this item as played
             videodatabase.IncrementPlayCount(*m_progressTrackingItem);
+            m_progressTrackingItem->GetVideoInfoTag()->m_playCount++;
+            m_progressTrackingItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, true);
             updateListing = true;
           }
 
@@ -4242,6 +4247,8 @@ void CApplication::SaveFileState()
         {
           CUtil::DeleteVideoDatabaseDirectoryCache();
           CFileItemPtr msgItem(new CFileItem(*m_progressTrackingItem));
+          if (m_progressTrackingItem->HasProperty("original_listitem_url"))
+            msgItem->m_strPath = m_progressTrackingItem->GetProperty("original_listitem_url");
           CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE_ITEM, 1, msgItem); // 1 to update the listing as well 
           g_windowManager.SendThreadMessage(message);
         }
