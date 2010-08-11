@@ -76,10 +76,11 @@ bool CFileHD::Open(const CURL& url)
   if (!m_hFile.isValid()) return false;
 
   m_i64FilePos = 0;
+  m_i64FileLen = 0;
+
   LARGE_INTEGER i64Size;
   GetFileSizeEx((HANDLE)m_hFile, &i64Size);
   m_i64FileLength = i64Size.QuadPart;
-  Seek(0, SEEK_SET);
 
   return true;
 }
@@ -167,22 +168,14 @@ __int64 CFileHD::Seek(__int64 iFilePosition, int iWhence)
   lPos.QuadPart = iFilePosition;
   int bSuccess;
 
-  __int64 length = GetLength();
-
   switch (iWhence)
   {
   case SEEK_SET:
-    if (iFilePosition <= length || length == 0)
-      bSuccess = SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_BEGIN);
-    else
-      bSuccess = false;
+    bSuccess = SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_BEGIN);
     break;
 
   case SEEK_CUR:
-    if ((GetPosition()+iFilePosition) <= length || length == 0)
-      bSuccess = SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_CURRENT);
-    else
-      bSuccess = false;
+    bSuccess = SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_CURRENT);
     break;
 
   case SEEK_END:
@@ -204,9 +197,15 @@ __int64 CFileHD::Seek(__int64 iFilePosition, int iWhence)
 //*********************************************************************************************
 __int64 CFileHD::GetLength()
 {
-  LARGE_INTEGER i64Size;
-  GetFileSizeEx((HANDLE)m_hFile, &i64Size);
-  return i64Size.QuadPart;
+  if(m_i64FileLen <= m_i64FilePos || m_i64FileLen == 0)
+  {
+    LARGE_INTEGER i64Size;
+    if(GetFileSizeEx((HANDLE)m_hFile, &i64Size))
+      m_i64FileLen = i64Size.QuadPart;
+    else
+      CLog::Log(LOGERROR, "CFileHD::GetLength - GetFileSizeEx failed with error %d", GetLastError());
+  }
+  return m_i64FileLen;
 }
 
 //*********************************************************************************************

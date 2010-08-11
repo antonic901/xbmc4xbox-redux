@@ -99,6 +99,7 @@ CFile::CFile()
   m_pFile = NULL;
   m_pBuffer = NULL;
   m_flags = 0;
+  m_bitStreamStats = NULL;
 }
 
 //*********************************************************************************************
@@ -108,6 +109,8 @@ CFile::~CFile()
     SAFE_DELETE(m_pFile);
   if (m_pBuffer)
     SAFE_DELETE(m_pBuffer);
+  if (m_bitStreamStats)
+    SAFE_DELETE(m_bitStreamStats);
 }
 
 //*********************************************************************************************
@@ -325,7 +328,12 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
       }
     }
 
-    m_bitStreamStats.Start();
+    if (m_flags & READ_BITRATE)
+    {
+      m_bitStreamStats = new BitstreamStats();
+      m_bitStreamStats->Start();
+    }
+
     return true;
   }
 #ifndef _LINUX
@@ -473,15 +481,15 @@ unsigned int CFile::Read(void *lpBuf, __int64 uiBufSize)
       unsigned int nBytes = m_pBuffer->sgetn(
         (char *)lpBuf, min<streamsize>((streamsize)uiBufSize,
                                                   m_pBuffer->in_avail()));
-      if (nBytes>0)
-        m_bitStreamStats.AddSampleBytes(nBytes);
+      if (m_bitStreamStats && nBytes>0)
+        m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
     else
     {
       unsigned int nBytes = m_pBuffer->sgetn((char*)lpBuf, uiBufSize);
-      if (nBytes>0)
-        m_bitStreamStats.AddSampleBytes(nBytes);
+      if (m_bitStreamStats && nBytes>0)
+        m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
   }
@@ -491,8 +499,8 @@ unsigned int CFile::Read(void *lpBuf, __int64 uiBufSize)
     if(m_flags & READ_TRUNCATED)
     {
       unsigned int nBytes = m_pFile->Read(lpBuf, uiBufSize);
-      if (nBytes>0)
-        m_bitStreamStats.AddSampleBytes(nBytes);
+      if (m_bitStreamStats && nBytes>0)
+        m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
     else
@@ -506,8 +514,8 @@ unsigned int CFile::Read(void *lpBuf, __int64 uiBufSize)
 
         done+=curr;
       }
-      if (done > 0)
-        m_bitStreamStats.AddSampleBytes(done);
+      if (m_bitStreamStats && done > 0)
+        m_bitStreamStats->AddSampleBytes(done);
       return done;
     }
   }

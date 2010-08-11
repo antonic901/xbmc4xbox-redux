@@ -1489,6 +1489,10 @@ bool CUtil::IsOnLAN(const CStdString& strPath)
     return CUtil::IsOnLAN(CSpecialProtocol::TranslatePath(strPath));
   if(IsDAAP(strPath))
     return true;
+  
+  if(IsPlugin(strPath))
+    return false;
+
   if(IsTuxBox(strPath))
     return true;
   if(IsUPnP(strPath))

@@ -2489,6 +2489,9 @@ bool CDVDPlayer::CloseAudioStream(bool bWaitForBuffers)
 
   CLog::Log(LOGNOTICE, "Closing audio stream");
 
+  if(bWaitForBuffers)
+    SetCaching(CACHESTATE_DONE);
+
   m_dvdPlayerAudio.CloseStream(bWaitForBuffers);
 
   m_CurrentAudio.Clear();
@@ -2501,6 +2504,9 @@ bool CDVDPlayer::CloseVideoStream(bool bWaitForBuffers)
     return false;
 
   CLog::Log(LOGNOTICE, "Closing video stream");
+
+  if(bWaitForBuffers)
+    SetCaching(CACHESTATE_DONE);
 
   m_dvdPlayerVideo.CloseStream(bWaitForBuffers);
 
@@ -2523,7 +2529,7 @@ bool CDVDPlayer::CloseSubtitleStream(bool bKeepOverlays)
 
 void CDVDPlayer::FlushBuffers(bool queued)
 {
-  if(queued) 
+  if(queued)
   {
     m_dvdPlayerAudio.SendMessage(new CDVDMsg(CDVDMsg::GENERAL_RESET));
     m_dvdPlayerVideo.SendMessage(new CDVDMsg(CDVDMsg::GENERAL_RESET));

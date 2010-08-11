@@ -68,9 +68,10 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
   if (m_windowLoaded)
     return true;      // no point loading if it's already there
     
+#ifdef _DEBUG
   int64_t start;
   start = CurrentHostCounter();
-
+#endif
   RESOLUTION resToUse = INVALID;
   CLog::Log(LOGINFO, "Loading skin file: %s", strFileName.c_str());
   TiXmlDocument xmlDoc;
@@ -87,11 +88,12 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
 
   bool ret = LoadXML(strPath.c_str(), strLowerPath.c_str());
 
+#ifdef _DEBUG
   int64_t end, freq;
   end = CurrentHostCounter();
   freq = CurrentHostFrequency();
   CLog::Log(LOGDEBUG,"Load %s: %.2fms", GetProperty("xmlfile").c_str(), 1000.f * (end - start) / freq);
-
+#endif
   return ret;
 }
 
@@ -628,9 +630,10 @@ void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
 {
   CSingleLock lock(g_graphicsContext);
 
+#ifdef _DEBUG
   LARGE_INTEGER start;
   QueryPerformanceCounter(&start);
-
+#endif
   // load skin xml fil
   CStdString xmlFile = GetProperty("xmlfile");
   bool bHasPath=false;
@@ -653,12 +656,12 @@ void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
   CGUIControlGroup::AllocResources();
 
   g_TextureManager.FlushPreLoad();
-
+#ifdef _DEBUG
   LARGE_INTEGER end, freq;
   QueryPerformanceCounter(&end);
   QueryPerformanceFrequency(&freq);
   CLog::Log(LOGDEBUG,"Alloc resources: %.2fms (%.2f ms skin load, %.2f ms preload)", 1000.f * (end.QuadPart - start.QuadPart) / freq.QuadPart, 1000.f * (slend.QuadPart - start.QuadPart) / freq.QuadPart, 1000.f * (plend.QuadPart - slend.QuadPart) / freq.QuadPart);
-
+#endif
   m_bAllocated = true;
 }
 

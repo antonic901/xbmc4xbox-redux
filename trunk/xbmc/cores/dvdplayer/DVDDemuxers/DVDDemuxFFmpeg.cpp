@@ -253,6 +253,8 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       iformat = m_dllAvFormat.av_find_input_format("mpeg");
     else if( content.compare("video/x-dvd-mpeg") == 0 )
       iformat = m_dllAvFormat.av_find_input_format("mpeg");
+    else if( content.compare("video/x-mpegts") == 0 )
+      iformat = m_dllAvFormat.av_find_input_format("mpegts");
   }
 
   if( m_pInput->IsStreamType(DVDSTREAM_TYPE_FFMPEG) )
@@ -901,11 +903,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
   AVStream* pStream = m_pFormatContext->streams[iId];
   if (pStream)
   {
-    if (m_streams[iId]) 
-    {
-      if( m_streams[iId]->ExtraData ) delete[] (BYTE*)(m_streams[iId]->ExtraData);
-      delete m_streams[iId];
-    }
+    CDemuxStream* old = m_streams[iId];
 
     switch (pStream->codec->codec_type)
     {
@@ -1010,6 +1008,15 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         m_streams[iId]->type = STREAM_NONE;
         break;
       }
+    }
+
+    // delete old stream after new is created
+    // since dvdplayer uses the pointer to know
+    // if something changed in the demuxer
+    if (old)
+    {
+      if( old->ExtraData ) delete[] (BYTE*)(old->ExtraData);
+      delete old;
     }
 
     // generic stuff

@@ -2594,23 +2594,6 @@ bool CApplication::OnAction(CAction &action)
 
   if ( IsPlaying())
   {
-    // OSD toggling
-    if (action.id == ACTION_SHOW_OSD)
-    {
-      if (IsPlayingVideo() && IsPlayingFullScreenVideo())
-      {
-        CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
-        if (pOSD)
-        {
-          if (pOSD->IsDialogRunning())
-            pOSD->Close();
-          else
-            pOSD->DoModal();
-          return true;
-        }
-      }
-    }
-
     // pause : pauses current audio song
     if (action.id == ACTION_PAUSE)
     {
@@ -3933,9 +3916,18 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
       SetPlaySpeed(iSpeed);
     }
 
+    if( IsPlayingAudio() )
+    {
+      if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
+        g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
+    }
+
 #ifdef HAS_VIDEO_PLAYBACK
     if( IsPlayingVideo() )
     {
+      if (g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION)
+        g_windowManager.ActivateWindow(WINDOW_FULLSCREEN_VIDEO);
+
       // if player didn't manange to switch to fullscreen by itself do it here
       if( options.fullscreen && g_renderManager.IsStarted()
        && g_windowManager.GetActiveWindow() != WINDOW_FULLSCREEN_VIDEO )

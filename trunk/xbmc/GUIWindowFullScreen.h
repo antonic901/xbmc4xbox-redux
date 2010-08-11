@@ -54,6 +54,7 @@ private:
   void SeekChapter(int iChapter);
   void PreloadDialog(unsigned int windowID);
   void UnloadDialog(unsigned int windowID);
+  void ToggleOSD();
 
   bool m_bShowViewModeInfo;
   DWORD m_dwShowViewModeTimeout;

@@ -184,6 +184,9 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
   switch (action.id)
   {
+  case ACTION_SHOW_OSD:
+    ToggleOSD();
+    return true;
 
   case ACTION_SHOW_GUI:
     {
@@ -882,5 +885,17 @@ void CGUIWindowFullScreen::OnSliderChange(void *data, CGUISliderControl *slider)
       g_stSettings.m_currentVideoSettings.m_SubtitleDelay = slider->GetFloatValue();
       g_application.m_pPlayer->SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
     }
+  }
+}
+
+void CGUIWindowFullScreen::ToggleOSD()
+{
+  CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
+  if (pOSD)
+  {
+    if (pOSD->IsDialogRunning())
+      pOSD->Close();
+    else
+      pOSD->DoModal();
   }
 }
