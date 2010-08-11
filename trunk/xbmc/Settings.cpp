@@ -2124,7 +2124,7 @@ CStdString CSettings::GetFFmpegDllFolder() const
   return folder;
 }
 
-CStdString CSettings::GetDefaultPlayerName(const int& player) const
+CStdString CSettings::GetPlayerName(const int& player) const
 {
   CStdString strPlayer;
   
@@ -2142,12 +2142,12 @@ CStdString CSettings::GetDefaultPlayerName(const int& player) const
 
 CStdString CSettings::GetDefaultVideoPlayerName() const
 {
-  return GetDefaultPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
+  return GetPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
 }
 
 CStdString CSettings::GetDefaultAudioPlayerName() const
 {
-  return GetDefaultPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
+  return GetPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
 }
 
 CStdString CSettings::GetSourcesFile() const

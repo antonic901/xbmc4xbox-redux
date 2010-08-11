@@ -251,17 +251,17 @@ void CGUISettings::Initialize()
   AddBool(1, "musicplayer.autoplaynextitem", 489, true);
   AddBool(2, "musicplayer.queuebydefault", 14084, false);
   AddSeparator(3, "musicplayer.sep1");
-  AddInt(4, "musicplayer.defaultplayer", 22030, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
-  AddInt(5, "musicplayer.replaygaintype", 638, REPLAY_GAIN_ALBUM, REPLAY_GAIN_NONE, 1, REPLAY_GAIN_TRACK, SPIN_CONTROL_TEXT);
+  AddInt(4, "musicplayer.replaygaintype", 638, REPLAY_GAIN_ALBUM, REPLAY_GAIN_NONE, 1, REPLAY_GAIN_TRACK, SPIN_CONTROL_TEXT);
   AddInt(0, "musicplayer.replaygainpreamp", 641, 89, 77, 1, 101, SPIN_CONTROL_INT_PLUS, MASK_DB);
   AddInt(0, "musicplayer.replaygainnogainpreamp", 642, 89, 77, 1, 101, SPIN_CONTROL_INT_PLUS, MASK_DB);
   AddBool(0, "musicplayer.replaygainavoidclipping", 643, false);
-  AddInt(6, "musicplayer.crossfade", 13314, 0, 0, 1, 15, SPIN_CONTROL_INT_PLUS, MASK_SECS, TEXT_OFF);
-  AddBool(7, "musicplayer.crossfadealbumtracks", 13400, true);
-  AddSeparator(8, "musicplayer.sep3");
-  AddString(9, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, SPIN_CONTROL_TEXT);
+  AddInt(5, "musicplayer.crossfade", 13314, 0, 0, 1, 15, SPIN_CONTROL_INT_PLUS, MASK_SECS, TEXT_OFF);
+  AddBool(6, "musicplayer.crossfadealbumtracks", 13400, true);
+  AddSeparator(7, "musicplayer.sep2");
+  AddString(8, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, SPIN_CONTROL_TEXT);
+  AddSeparator(9, "musicplayer.sep3");
+  AddInt(10, "musicplayer.defaultplayer", 22030, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
 #ifdef _XBOX
-  AddSeparator(10, "musicplayer.sep4");
   AddBool(11, "musicplayer.outputtoallspeakers", 252, false);
 #endif
 
@@ -408,17 +408,16 @@ void CGUISettings::Initialize()
   AddInt(1, "videoplayer.resumeautomatically", 12017, RESUME_ASK, RESUME_NO, 1, RESUME_ASK, SPIN_CONTROL_TEXT);
   AddString(2, "videoplayer.calibrate", 214, "", BUTTON_CONTROL_STANDARD);
   AddSeparator(3, "videoplayer.sep1");
-  AddInt(4, "videoplayer.defaultplayer", 22030, PLAYER_MPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
-  AddInt(5, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, RENDER_LQ_RGB_SHADER, 1, RENDER_HQ_RGB_SHADERV2, SPIN_CONTROL_TEXT);
-  AddInt(6, "videoplayer.displayresolution", 169, (int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
-  AddInt(7, "videoplayer.framerateconversions", 336, FRAME_RATE_LEAVE_AS_IS, FRAME_RATE_LEAVE_AS_IS, 1, FRAME_RATE_USE_PAL60, SPIN_CONTROL_TEXT);
-  AddInt(8, "videoplayer.flicker", 13100, 1, 0, 1, 5, SPIN_CONTROL_INT_PLUS, -1, TEXT_OFF);
-  AddBool(9, "videoplayer.soften", 215, false);
+  AddInt(4, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, RENDER_LQ_RGB_SHADER, 1, RENDER_HQ_RGB_SHADERV2, SPIN_CONTROL_TEXT);
+  AddInt(5, "videoplayer.displayresolution", 169, (int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
+  AddInt(6, "videoplayer.framerateconversions", 336, FRAME_RATE_LEAVE_AS_IS, FRAME_RATE_LEAVE_AS_IS, 1, FRAME_RATE_USE_PAL60, SPIN_CONTROL_TEXT);
+  AddInt(7, "videoplayer.flicker", 13100, 1, 0, 1, 5, SPIN_CONTROL_INT_PLUS, -1, TEXT_OFF);
+  AddBool(8, "videoplayer.soften", 215, false);
+  AddFloat(9, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
   AddSeparator(10, "videoplayer.sep2");
-  AddFloat(11, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
-  AddSeparator(12, "videoplayer.sep3");
-  AddBool(13, "videoplayer.allcodecs", 22025, false);
-  AddBool(14, "videoplayer.fast", 22026, false);
+  AddInt(11, "videoplayer.defaultplayer", 22030, PLAYER_MPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
+  AddBool(12, "videoplayer.allcodecs", 22025, false);
+  AddBool(13, "videoplayer.fast", 22026, false);
 
   AddCategory(5, "myvideos", 14081);
   AddBool(0, "myvideos.treatstackasfile", 20051, true);
