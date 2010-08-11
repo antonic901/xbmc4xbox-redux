@@ -1845,7 +1845,6 @@ void CGUIWindowVideoBase::OnSearch()
     CGUIDialogSelect* pDlgSelect = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
     pDlgSelect->Reset();
     pDlgSelect->SetHeading(283);
-    items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
 
     for (int i = 0; i < (int)items.Size(); i++)
     {
@@ -1967,4 +1966,17 @@ void CGUIWindowVideoBase::OnScan(const CStdString& strPath, const SScraperInfo& 
   CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
   if (pDialog)
     pDialog->StartScanning(strPath,info,settings,false);
+}
+
+void CGUIWindowVideoBase::AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results)
+{
+  if (!searchItems.Size())
+    return;
+
+  searchItems.Sort(g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SORT_METHOD_LABEL_IGNORE_THE : SORT_METHOD_LABEL, SORT_ORDER_ASC);
+  for (int i = 0; i < searchItems.Size(); i++)
+    searchItems[i]->SetLabel(prependLabel + searchItems[i]->GetLabel());
+  results.Append(searchItems);
+
+  searchItems.Clear();
 }

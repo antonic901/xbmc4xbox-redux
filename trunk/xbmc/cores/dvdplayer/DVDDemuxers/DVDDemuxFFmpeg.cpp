@@ -23,7 +23,6 @@
 #include "DVDDemuxFFmpeg.h"
 #include "DVDInputStreams/DVDInputStream.h"
 #include "DVDInputStreams/DVDInputStreamNavigator.h"
-#include "DVDInputStreams/DVDInputStreamRTMP.h"
 #include "DVDDemuxUtils.h"
 #include "DVDClock.h" // for DVD_TIME_BASE
 #include "utils/Win32Exception.h"
@@ -785,26 +784,18 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
   if(time < 0)
     time = 0;
 
-  if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
+  CDVDInputStream::ISeekTime* ist = dynamic_cast<CDVDInputStream::ISeekTime*>(m_pInput);
+  if (ist)
   {
-    if (!((CDVDInputStreamNavigator*)m_pInput)->SeekTime(time))
+    if (!ist->SeekTime(time))
       return false;
 
     if(startpts)
       *startpts = DVD_NOPTS_VALUE;
 
     Flush();
-    return true;
-  }
-
-  if (m_pInput->IsStreamType(DVDSTREAM_TYPE_RTMP))
-  {
-    if (!((CDVDInputStreamRTMP*)m_pInput)->SeekTime(time))
-      return false;
-
-    Flush();
-    m_ioContext->buf_ptr = m_ioContext->buf_end;
-
+    //RTMP did this for some reason
+    //m_ioContext->buf_ptr = m_ioContext->buf_end;
     return true;
   }
 

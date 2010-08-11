@@ -49,6 +49,16 @@ public:
   //! If the user cancels the operation on the menu "false" is returned
   static bool OnResumeShowMenu(CFileItem &item);
 
+  /*! \brief Append a set of search items to a results list using a specific prepend label
+   Sorts the search items first, then appends with the given prependLabel to the results list.
+   Then empty the search item list so it can be refilled.
+   \param searchItems The search items to append.
+   \param prependLabel the label that should be prepended to all search results.
+   \param results the fileitemlist to append the search results to.
+   \sa DoSearch
+   */
+  static void AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results);
+
 private:
   bool IsCorrectDiskInDrive(const CStdString& strFileName, const CStdString& strDVDLabel);
 protected:

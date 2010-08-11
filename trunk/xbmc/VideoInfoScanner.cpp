@@ -135,14 +135,13 @@ namespace VIDEO
       // we go.
       m_database.Open();
       m_database.GetPaths(m_pathsToScan);
-      m_bClean = g_advancedSettings.m_bVideoLibraryCleanOnUpdate;
       m_database.Close();
     }
     else
     {
       m_pathsToScan.insert(pair<CStdString,SScanSettings>(strDirectory,settings));
-      m_bClean = false;
     }
+    m_bClean = g_advancedSettings.m_bVideoLibraryCleanOnUpdate;
 
     StopThread();
     Create();

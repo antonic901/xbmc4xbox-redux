@@ -23,6 +23,9 @@
 #include "window.h"
 #pragma once
 
+
+class CGUIDialogProgress;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,6 +42,7 @@ namespace PYXBMC
 
   typedef struct {
     PyObject_HEAD
+    CGUIDialogProgress* dlg;
   } DialogProgress;
 
   extern PyTypeObject WindowDialog_Type;

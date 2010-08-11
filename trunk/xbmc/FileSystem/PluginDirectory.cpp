@@ -536,6 +536,14 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, const CS
     if (!progressBar && timeGetTime() - startTime > timeBeforeProgressBar)
     { // loading takes more then 1.5 secs, show a progress dialog
       progressBar = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+
+      // if script has shown progressbar don't override it
+      if (progressBar && progressBar->IsActive())
+      {
+        startTime = timeGetTime();
+        progressBar = NULL;
+      }
+
       if (progressBar)
       {
         progressBar->SetHeading(scriptName);

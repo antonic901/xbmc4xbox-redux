@@ -942,11 +942,6 @@ void CGUIWindowSettingsCategory::UpdateSettings()
         pControl->SetEnabled(g_guiSettings.GetBool("services.webserver"));
       }
     }
-    else if (strSetting.Equals("services.webserverport"))
-    {
-      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("services.webserver"));
-    }
     else if (strSetting.Equals("network.ipaddress") || strSetting.Equals("network.subnet") || strSetting.Equals("network.gateway") || strSetting.Equals("network.dns"))
     {
       CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(pSettingControl->GetID());

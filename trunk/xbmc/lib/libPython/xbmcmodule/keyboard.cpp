@@ -71,10 +71,12 @@ namespace PYXBMC
 
   // doModal() Method
   PyDoc_STRVAR(doModal__doc__,
-    "doModal() -- Show keyboard and wait for user action.\n"
+    "doModal([autoclose]) -- Show keyboard and wait for user action.\n"
+    "\n"
+    "autoclose      : [opt] integer - milliseconds to autoclose dialog. (default=do not autoclose)\n"
     "\n"
     "example:\n"
-    "  - kb.doModal()");
+    "  - kb.doModal(30000)");
 
   PyObject* Keyboard_DoModal(Keyboard *self, PyObject *args)
   {
@@ -84,6 +86,9 @@ namespace PYXBMC
       PyErr_SetString(PyExc_SystemError, "Unable to load virtual keyboard");
       return NULL;
     }
+    int autoClose = 0;
+
+    if (!PyArg_ParseTuple(args, (char*)"|i", &autoClose)) return NULL;
 
     pKeyboard->Initialize();
     pKeyboard->CenterWindow();
@@ -91,6 +96,8 @@ namespace PYXBMC
     CStdString strDefault(self->strDefault);
     pKeyboard->SetText(strDefault);
     pKeyboard->SetHiddenInput(self->bHidden);
+    if (autoClose > 0)
+      pKeyboard->SetAutoClose(autoClose);
 
     // do modal of dialog
     ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_KEYBOARD, g_windowManager.GetActiveWindow()};

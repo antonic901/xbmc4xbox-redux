@@ -3082,7 +3082,7 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
       {
         CStdString strRating;
         if (m_currentFile->GetVideoInfoTag()->m_fRating > 0.f)
-          strRating.Format("%2.2f", m_currentFile->GetVideoInfoTag()->m_fRating);
+          strRating.Format("%.1f", m_currentFile->GetVideoInfoTag()->m_fRating);
         return strRating;
       }
       break;
@@ -3092,9 +3092,9 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
         if (m_currentFile->GetVideoInfoTag()->m_fRating > 0.f)
         {
           if (m_currentFile->GetVideoInfoTag()->m_strVotes.IsEmpty())
-            strRatingAndVotes.Format("%2.2f", m_currentFile->GetVideoInfoTag()->m_fRating);
+            strRatingAndVotes.Format("%.1f", m_currentFile->GetVideoInfoTag()->m_fRating);
           else
-            strRatingAndVotes.Format("%2.2f (%s %s)", m_currentFile->GetVideoInfoTag()->m_fRating, m_currentFile->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
+            strRatingAndVotes.Format("%.1f (%s %s)", m_currentFile->GetVideoInfoTag()->m_fRating, m_currentFile->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
         }
         return strRatingAndVotes;
       }
@@ -3309,6 +3309,16 @@ void CGUIInfoManager::SetCurrentMovie(CFileItem &item)
   }
   // Find a thumb for this file.
   item.SetVideoThumb();
+  if (!item.HasThumbnail())
+  {
+    CStdString strPath, strFileName;
+    CUtil::Split(item.GetCachedVideoThumb(), strPath, strFileName);
+
+    // create unique thumb for auto generated thumbs
+    CStdString cachedThumb = strPath + "auto-" + strFileName;
+    if (CFile::Exists(cachedThumb))
+      item.SetThumbnailImage(cachedThumb);
+  }
 
   // find a thumb for this stream
   if (item.IsInternetStream())
@@ -3729,9 +3739,9 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
       {
         CStdString strRatingAndVotes;
         if (item->GetVideoInfoTag()->m_strVotes.IsEmpty())
-          strRatingAndVotes.Format("%2.2f", item->GetVideoInfoTag()->m_fRating);
+          strRatingAndVotes.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
         else
-          strRatingAndVotes.Format("%2.2f (%s %s)", item->GetVideoInfoTag()->m_fRating, item->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
+          strRatingAndVotes.Format("%.1f (%s %s)", item->GetVideoInfoTag()->m_fRating, item->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
         return strRatingAndVotes;
       }
     }

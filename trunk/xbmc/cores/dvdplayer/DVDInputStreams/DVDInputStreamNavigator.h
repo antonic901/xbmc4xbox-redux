@@ -57,6 +57,7 @@ public:
 class CDVDInputStreamNavigator 
   : public CDVDInputStream
   , public CDVDInputStream::IDisplayTime
+  , public CDVDInputStream::ISeekTime
 {
 public:
   CDVDInputStreamNavigator(IDVDPlayer* player);
