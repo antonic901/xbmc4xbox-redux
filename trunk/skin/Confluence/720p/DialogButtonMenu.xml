@@ -274,17 +274,17 @@
 						<visible>Control.HasFocus(19) | Control.HasFocus(20)</visible>
 					</control>
 				</control>
-				<!-- System Info XBOX -->
+				<!-- Favourites XBMC4Xbox -->
 				<control type="button" id="21">
 					<description>System Info</description>
 					<width>90</width>
 					<height>90</height>
-					<texturefocus>ButtonMenuSystemFO.png</texturefocus>
-					<texturenofocus>ButtonMenuSystemNF.png</texturenofocus>
-					<onclick>ActivateWindow(SystemInfo)</onclick>
+					<texturefocus>ButtonMenuFavouritesFO.png</texturefocus>
+					<texturenofocus>ButtonMenuFavouritesNF.png</texturenofocus>
+					<onclick>ActivateWindow(Favourites)</onclick>
 					<pulseonselect>no</pulseonselect>
 					<font>-</font>
-					<label>$LOCALIZE[130]</label>
+					<label>$LOCALIZE[1036]</label>
 					<visible>System.Platform.Xbox</visible>
 				</control>			
 			</control>

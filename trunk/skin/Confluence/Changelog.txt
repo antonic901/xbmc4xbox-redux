@@ -1,3 +1,14 @@
+*Confluence XBOX (V1.06)*
+Changed the way Background & Fanart load (improves free RAM)
+Added Audio Channels Flags to Library views
+Added Game Saves button to Programs sidemenu
+Added MyGameSaves.xml
+Fixed Skin Settings - Video Playlists Shortcut screen
+Fixed Fullscreen Info Video Codec
+Fixed Video Library sidemenu navigation
+Updated System Settings description
+Replaced System Info in shutdownmenu with Favourites
+
 *Confluence XBOX (V1.05)*
 Merged several changes from XBMC SVN skin.confluence, since R26858 until changeset R32212, by bulkzooi - BIG Thanks! :)
 (http://www.xbmc4xbox.org/forum/viewtopic.php?p=5200#p5200 for additional info)
