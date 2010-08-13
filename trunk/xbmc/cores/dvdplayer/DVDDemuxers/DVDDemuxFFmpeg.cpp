@@ -796,8 +796,10 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
       *startpts = DVD_NOPTS_VALUE;
 
     Flush();
-    //RTMP did this for some reason
-    //m_ioContext->buf_ptr = m_ioContext->buf_end;
+
+    if (m_pInput->IsStreamType(DVDSTREAM_TYPE_RTMP))
+      m_ioContext->buf_ptr = m_ioContext->buf_end;
+
     return true;
   }
 
