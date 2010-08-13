@@ -52,7 +52,7 @@ public:
   virtual bool CanFocus() const;
   virtual void PreAllocResources();
   virtual void AllocResources();
-  virtual void FreeResources();
+  virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void SetPosition(float posX, float posY);

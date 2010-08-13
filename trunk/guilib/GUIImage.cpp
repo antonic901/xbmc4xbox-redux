@@ -209,10 +209,10 @@ void CGUIImage::FreeTextures(bool immediately /* = false */)
   m_fadingTextures.clear();
 }
 
-void CGUIImage::FreeResources()
+void CGUIImage::FreeResources(bool immediately)
 {
-  FreeTextures();
-  CGUIControl::FreeResources();
+  FreeTextures(immediately);
+  CGUIControl::FreeResources(immediately);
 }
 
 // WORKAROUND - we are currently resetting all animations when this is called, which shouldn't be the case

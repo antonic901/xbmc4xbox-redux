@@ -102,7 +102,7 @@ void CGUIControl::AllocResources()
   m_bAllocated=true;
 }
 
-void CGUIControl::FreeResources()
+void CGUIControl::FreeResources(bool immediately)
 {
   if (m_bAllocated)
   {

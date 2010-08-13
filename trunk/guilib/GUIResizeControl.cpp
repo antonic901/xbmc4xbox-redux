@@ -174,11 +174,11 @@ void CGUIResizeControl::AllocResources()
   m_height = m_imgFocus.GetHeight();
 }
 
-void CGUIResizeControl::FreeResources()
+void CGUIResizeControl::FreeResources(bool immediately)
 {
-  CGUIControl::FreeResources();
-  m_imgFocus.FreeResources();
-  m_imgNoFocus.FreeResources();
+  CGUIControl::FreeResources(immediately);
+  m_imgFocus.FreeResources(immediately);
+  m_imgNoFocus.FreeResources(immediately);
 }
 
 void CGUIResizeControl::DynamicResourceAlloc(bool bOnOff)

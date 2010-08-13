@@ -54,7 +54,7 @@ public:
 
   virtual void Render();
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual void FreeResources();
+  virtual void FreeResources(bool immediately = false);
   virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample);
   virtual void OnAudioData(const unsigned char* pAudioData, int iAudioDataLength);
   virtual bool OnAction(const CAction &action);

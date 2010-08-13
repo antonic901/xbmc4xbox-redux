@@ -459,10 +459,10 @@ void CGUIVisualisationControl::ClearBuffers()
   }
 }
 
-void CGUIVisualisationControl::FreeResources()
+void CGUIVisualisationControl::FreeResources(bool immediately)
 {
   FreeVisualisation();
-  CGUIControl::FreeResources();
+  CGUIControl::FreeResources(immediately);
 }
 
 CVisualisation *CGUIVisualisationControl::GetVisualisation()
