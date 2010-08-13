@@ -345,14 +345,14 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       if (!iformat)
       {
         // av_probe_input_format failed, re-probe the ffmpeg/ffplay method.
-        // av_open_input_file uses av_probe_input_format2 for probing format, 
-        // starting at 2048, up to max buffer size of 1048576. We just probe to 
-        // the buffer size allocated above so as to avoid seeks on content that 
+        // av_open_input_file uses av_probe_input_format2 for probing format,
+        // starting at 2048, up to max buffer size of 1048576. We just probe to
+        // the buffer size allocated above so as to avoid seeks on content that
         // might not be seekable.
         int max_buf_size = pd.buf_size;
-        for (int probe_size=std::min(2048, pd.buf_size); probe_size <= max_buf_size && !iformat; probe_size<<=1) 
+        for (int probe_size=std::min(2048, pd.buf_size); probe_size <= max_buf_size && !iformat; probe_size<<=1)
         {
-          CLog::Log(LOGDEBUG, "%s - probing failed, re-probing with probe size [%d]", __FUNCTION__, probe_size); 
+          CLog::Log(LOGDEBUG, "%s - probing failed, re-probing with probe size [%d]", __FUNCTION__, probe_size);
           int score= probe_size < max_buf_size ? AVPROBE_SCORE_MAX/4 : 0;
           pd.buf_size = probe_size;
           iformat = m_dllAvFormat.av_probe_input_format2(&pd, 1, &score);
@@ -381,7 +381,7 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       return false;
     }
   }
-  
+
   // we need to know if this is matroska or avi later
   m_bMatroska = strcmp(m_pFormatContext->iformat->name, "matroska") == 0;
   m_bAVI = strcmp(m_pFormatContext->iformat->name, "avi") == 0;
@@ -478,17 +478,17 @@ void CDVDDemuxFFmpeg::Dispose()
   m_speed = DVD_PLAYSPEED_NORMAL;
 
   for (int i = 0; i < MAX_STREAMS; i++)
-  {    
-    if (m_streams[i]) 
+  {
+    if (m_streams[i])
     {
       if (m_streams[i]->ExtraData)
         delete[] (BYTE*)(m_streams[i]->ExtraData);
       delete m_streams[i];
     }
     m_streams[i] = NULL;
-  }  
+  }
   m_pInput = NULL;
-  
+
   m_dllAvFormat.Unload();
   m_dllAvCodec.Unload();
   m_dllAvUtil.Unload();
@@ -585,7 +585,7 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
 
   AVPacket pkt;
   DemuxPacket* pPacket = NULL;
-  // on some cases where the received packet is invalid we will need to return an empty packet (0 length) otherwise the main loop (in CDVDPlayer) 
+  // on some cases where the received packet is invalid we will need to return an empty packet (0 length) otherwise the main loop (in CDVDPlayer)
   // would consider this the end of stream and stop.
   bool bReturnEmpty = false;
   Lock();
@@ -947,7 +947,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         st->iHeight = pStream->codec->height;
         if (pStream->sample_aspect_ratio.num == 0)
           st->fAspect = 0.0;
-        else 
+        else
           st->fAspect = av_q2d(pStream->sample_aspect_ratio) * pStream->codec->width / pStream->codec->height;
 
         if ( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
@@ -1046,7 +1046,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
     if( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
     {
       // this stuff is really only valid for dvd's.
-      // this is so that the physicalid matches the 
+      // this is so that the physicalid matches the
       // id's reported from libdvdnav
       switch(m_streams[iId]->codec)
       {
@@ -1078,9 +1078,9 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
 std::string CDVDDemuxFFmpeg::GetFileName()
 {
   if(m_pInput && m_pInput)
-    return m_pInput->GetFileName(); 
-  else 
-    return ""; 
+    return m_pInput->GetFileName();
+  else
+    return "";
 }
 
 int CDVDDemuxFFmpeg::GetChapterCount()
