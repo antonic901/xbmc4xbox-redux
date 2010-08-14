@@ -221,7 +221,7 @@ bool CDVDInputStreamRTMP::Pause(double dTime)
   {
     m_bPaused = !m_bPaused;
     // currently this causes freeze on XBMC4XBOX when pausing/unpausing/pausing again. Have also seen similar issues on mainline xbmc when pausing/unpausing multiple times.
-    m_libRTMP.Pause(m_rtmp, m_bPaused);
+    //m_libRTMP.Pause(m_rtmp, m_bPaused);
   }
 
   return true;
