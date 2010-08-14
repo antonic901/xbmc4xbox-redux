@@ -132,9 +132,13 @@ bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
     return false;
 
   CSingleLock lock(m_RTMPSection);
-  
+
+  // libRTMP can and will alter strFile, so take a copy of it
+  m_sStreamPlaying = (char*)calloc(strlen(strFile)+1,sizeof(char));
+  strcpy(m_sStreamPlaying,strFile);
+
   {
-    if (!m_libRTMP.SetupURL(m_rtmp, (char*)strFile))
+    if (!m_libRTMP.SetupURL(m_rtmp, m_sStreamPlaying))
       return false;
 
     for (int i=0; options[i].name; i++)
@@ -152,8 +156,6 @@ bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
       return false;
   }
 
-  m_sStreamPlaying = (char*)calloc(strlen(strFile)+1,sizeof(char));
-  strcpy(m_sStreamPlaying,strFile);
   m_eof = false;
 
   return true;
@@ -219,7 +221,7 @@ bool CDVDInputStreamRTMP::Pause(double dTime)
   {
     m_bPaused = !m_bPaused;
     // currently this causes freeze on XBMC4XBOX when pausing/unpausing/pausing again. Have also seen similar issues on mainline xbmc when pausing/unpausing multiple times.
-    // m_libRTMP.Pause(m_rtmp, m_bPaused);
+    m_libRTMP.Pause(m_rtmp, m_bPaused);
   }
 
   return true;
