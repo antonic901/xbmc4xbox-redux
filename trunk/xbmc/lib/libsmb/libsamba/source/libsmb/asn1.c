@@ -222,22 +222,34 @@ BOOL asn1_load(ASN1_DATA *data, DATA_BLOB blob)
 	return True;
 }
 
-/* read from a ASN1 buffer, advancing the buffer pointer */
-BOOL asn1_read(ASN1_DATA *data, void *p, int len)
+/* Peek into an ASN1 buffer, not advancing the pointer */
+BOOL asn1_peek(ASN1_DATA *data, void *p, int len)
 {
 	if (data->has_error)
 		return False;
 
-	if (len < 0 || data->ofs + len < data->ofs || data->ofs + len < len) {
+	if (len < 0 || data->ofs + len < data->ofs || data->ofs + len < len)
+		return False;
+
+	if (data->ofs + len > data->length) {
+		/* we need to mark the buffer as consumed, so the caller knows
+		   this was an out of data error, and not a decode error */
+		data->ofs = data->length;
+		return False;
+	}
+
+	memcpy(p, data->data + data->ofs, len);
+	return True;
+}
+
+/* read from a ASN1 buffer, advancing the buffer pointer */
+BOOL asn1_read(ASN1_DATA *data, void *p, int len)
+{
+	if (!asn1_peek(data, p, len)) {
 		data->has_error = True;
 		return False;
 	}
 
-	if (data->ofs + len > data->length) {
-		data->has_error = True;
-		return False;
-	}
-	memcpy(p, data->data + data->ofs, len);
 	data->ofs += len;
 	return True;
 }
@@ -246,6 +258,25 @@ BOOL asn1_read(ASN1_DATA *data, void *p, int len)
 BOOL asn1_read_uint8(ASN1_DATA *data, uint8 *v)
 {
 	return asn1_read(data, v, 1);
+}
+
+BOOL asn1_peek_uint8(ASN1_DATA *data, uint8_t *v)
+{
+	return asn1_peek(data, v, 1);
+}
+
+BOOL asn1_peek_tag(ASN1_DATA *data, uint8_t tag)
+{
+	uint8_t b;
+
+	if (asn1_tag_remaining(data) <= 0) {
+		return False;
+	}
+
+	if (!asn1_peek_uint8(data, &b))
+		return False;
+
+	return (b == tag);
 }
 
 /* start reading a nested asn1 structure */
