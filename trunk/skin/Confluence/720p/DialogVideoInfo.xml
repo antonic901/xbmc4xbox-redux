@@ -1106,6 +1106,7 @@
 						<include>ButtonInfoDialogsCommonValues</include>
 						<label>20410</label>
 						<visible>!IsEmpty(ListItem.Trailer) + !Skin.HasSetting(WindowedTrailer)</visible>
+						<visible>!Skin.HasSetting(TheaterScript_Enable)</visible>
 					</control>
 					<control type="button" id="15">
 						<description>Play Trailer Windowed</description>
@@ -1113,6 +1114,16 @@
 						<label>20410</label>
 						<onclick>PlayMedia($INFO[ListItem.Trailer],1)</onclick>
 						<visible>!IsEmpty(ListItem.Trailer) + Skin.HasSetting(WindowedTrailer)</visible>
+						<visible>!Skin.HasSetting(TheaterScript_Enable)</visible>
+					</control>
+					<control type="button" id="13">
+						<description>Home Theater Experience</description>
+						<include>ButtonInfoDialogsCommonValues</include>
+						<label>31160</label>
+						<onclick>Dialog.Close(MovieInformation)</onclick>
+						<onclick>Playlist.Clear</onclick>
+						<onclick>XBMC.RunScript($INFO[Skin.String(TheaterScript_Path)])</onclick>
+						<visible>Skin.HasSetting(TheaterScript_Enable)</visible>						
 					</control>
 				</control>
 			</control>

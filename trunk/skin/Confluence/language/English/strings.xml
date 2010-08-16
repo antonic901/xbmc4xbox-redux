@@ -106,6 +106,12 @@
   <string id="31251">Forecast</string>
   <string id="31252">TWC Script</string>
 
+  <!-- Theater Script labels -->
+  <string id="31160">Theater</string>
+  <string id="31161">Video Info</string>
+  <string id="31162">Enable Theater in Video Info [COLOR=grey3](Disable Trailer button)[/COLOR]</string>
+  <string id="31163">PATH TO THEATER SCRIPT</string>
+  
   <!-- Extra labels -->
   <string id="31300">Current Temp</string>
   <string id="31301">Last Updated</string>
