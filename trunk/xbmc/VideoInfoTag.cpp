@@ -22,6 +22,7 @@
 #include "VideoInfoTag.h"
 #include "XMLUtils.h"
 #include "LocalizeStrings.h"
+#include "GUISettings.h"
 #include "AdvancedSettings.h"
 #include "utils/log.h"
 #include "utils/CharsetConverter.h"
@@ -172,6 +173,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
       XMLUtils::SetFloat(&stream, "aspect", m_streamDetails.GetVideoAspect(iStream));
       XMLUtils::SetInt(&stream, "width", m_streamDetails.GetVideoWidth(iStream));
       XMLUtils::SetInt(&stream, "height", m_streamDetails.GetVideoHeight(iStream));
+      XMLUtils::SetInt(&stream, "duration", m_streamDetails.GetVideoDuration(iStream));
       streamdetails.InsertEndChild(stream);
     }
     for (int iStream=1; iStream<=m_streamDetails.GetAudioStreamCount(); iStream++)
@@ -507,6 +509,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
         XMLUtils::GetFloat(nodeDetail, "aspect", p->m_fAspect);
         XMLUtils::GetInt(nodeDetail, "width", p->m_iWidth);
         XMLUtils::GetInt(nodeDetail, "height", p->m_iHeight);
+        XMLUtils::GetInt(nodeDetail, "duration", p->m_iDuration);
         p->m_strCodec.MakeLower();
         m_streamDetails.AddStream(p);
       }

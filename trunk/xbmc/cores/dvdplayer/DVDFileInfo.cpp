@@ -71,30 +71,24 @@ bool CDVDFileInfo::GetFileDuration(const CStdString &path, int& duration)
 
 bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &strTarget, CStreamDetails *pStreamDetails)
 {
-  CStdString strFile;
-  if (CUtil::IsStack(strPath))
-    strFile = DIRECTORY::CStackDirectory::GetFirstStackedFile(strPath);
-  else
-    strFile = strPath;
-
   int nTime = timeGetTime();
-  CDVDInputStream *pInputStream = CDVDFactoryInputStream::CreateInputStream(NULL, strFile, "");
+  CDVDInputStream *pInputStream = CDVDFactoryInputStream::CreateInputStream(NULL, strPath, "");
   if (!pInputStream)
   {
-    CLog::Log(LOGERROR, "InputStream: Error creating stream for %s", strFile.c_str());
+    CLog::Log(LOGERROR, "InputStream: Error creating stream for %s", strPath.c_str());
     return false;
   }
 
   if (pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
   {
-    CLog::Log(LOGERROR, "InputStream: dvd streams not supported for thumb extraction, file: %s", strFile.c_str());
+    CLog::Log(LOGERROR, "InputStream: dvd streams not supported for thumb extraction, file: %s", strPath.c_str());
     delete pInputStream;
     return false;
   }
 
-  if (!pInputStream->Open(strFile.c_str(), ""))
+  if (!pInputStream->Open(strPath.c_str(), ""))
   {
-    CLog::Log(LOGERROR, "InputStream: Error opening, %s", strFile.c_str());
+    CLog::Log(LOGERROR, "InputStream: Error opening, %s", strPath.c_str());
     if (pInputStream)
       delete pInputStream;
     return false;
@@ -122,7 +116,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &str
   }
 
   if (pStreamDetails)
-    DemuxerToStreamDetails(pDemuxer, *pStreamDetails);
+    DemuxerToStreamDetails(pDemuxer, *pStreamDetails, strPath);
 
   CDemuxStream* pStream = NULL;
   int nVideoStream = -1;
@@ -161,7 +155,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &str
       int nTotalLen = pDemuxer->GetStreamLength();
       int nSeekTo = nTotalLen / 3;
 
-      CLog::Log(LOGDEBUG,"%s - seeking to pos %dms (total: %dms) in %s", __FUNCTION__, nSeekTo, nTotalLen, strFile.c_str());
+      CLog::Log(LOGDEBUG,"%s - seeking to pos %dms (total: %dms) in %s", __FUNCTION__, nSeekTo, nTotalLen, strPath.c_str());
       if (pDemuxer->SeekTime(nSeekTo, true))
       {
         DemuxPacket* pPacket = NULL;
@@ -234,7 +228,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &str
         }
         else
         {
-          CLog::Log(LOGDEBUG,"%s - decode failed in %s", __FUNCTION__, strFile.c_str());
+          CLog::Log(LOGDEBUG,"%s - decode failed in %s", __FUNCTION__, strPath.c_str());
         }
       }
       delete pVideoCodec;
@@ -254,7 +248,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &str
   }
 
   int nTotalTime = CTimeUtils::GetTimeMS() - nTime;
-  CLog::Log(LOGDEBUG,"%s - measured %d ms to extract thumb from file <%s> ", __FUNCTION__, nTotalTime, strFile.c_str());
+  CLog::Log(LOGDEBUG,"%s - measured %d ms to extract thumb from file <%s> ", __FUNCTION__, nTotalTime, strPath.c_str());
   return bOk;
 }
 
@@ -340,11 +334,7 @@ bool CDVDFileInfo::GetFileStreamDetails(CFileItem *pItem)
 
   CStdString strFileNameAndPath;
   if (pItem->HasVideoInfoTag())
-  {
     strFileNameAndPath = pItem->GetVideoInfoTag()->m_strFileNameAndPath;
-    if (CUtil::IsStack(strFileNameAndPath))
-      strFileNameAndPath = DIRECTORY::CStackDirectory::GetFirstStackedFile(strFileNameAndPath);
-  }
   else
     return false;
 
@@ -365,7 +355,7 @@ bool CDVDFileInfo::GetFileStreamDetails(CFileItem *pItem)
   CDVDDemux *pDemuxer = CDVDFactoryDemuxer::CreateDemuxer(pInputStream);
   if (pDemuxer)
   {
-    bool retVal = DemuxerToStreamDetails(pDemuxer, pItem->GetVideoInfoTag()->m_streamDetails);
+    bool retVal = DemuxerToStreamDetails(pDemuxer, pItem->GetVideoInfoTag()->m_streamDetails, strFileNameAndPath);
     delete pDemuxer;
     delete pInputStream;
     return retVal;
@@ -378,7 +368,7 @@ bool CDVDFileInfo::GetFileStreamDetails(CFileItem *pItem)
 }
 
 /* returns true if details have been added */
-bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &details)
+bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &details, const CStdString &path)
 {
   bool retVal = false;
   details.Reset();
@@ -395,6 +385,28 @@ bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &det
       if (p->m_fAspect == 0.0f)
         p->m_fAspect = (float)p->m_iWidth / p->m_iHeight;
       pDemux->GetStreamCodecName(iStream, p->m_strCodec);
+      p->m_iDuration = pDemux->GetStreamLength();
+
+      // stack handling
+      if (CUtil::IsStack(path))
+      {
+        CFileItemList files;
+        DIRECTORY::CStackDirectory stack;
+        stack.GetDirectory(path, files);
+
+        // skip first path as we already know the duration
+        for (int i = 1; i < files.Size(); i++)
+        {
+           int duration = 0;
+           if (CDVDFileInfo::GetFileDuration(files[i]->m_strPath, duration))
+             p->m_iDuration = p->m_iDuration + duration;
+        }
+      }
+
+      // finally, calculate minutes
+      if (p->m_iDuration > 0)
+        p->m_iDuration = p->m_iDuration / 1000 / 60;
+
       details.AddStream(p);
       retVal = true;
     }

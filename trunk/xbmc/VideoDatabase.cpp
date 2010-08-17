@@ -260,7 +260,7 @@ bool CVideoDatabase::CreateTables()
     CLog::Log(LOGINFO, "create streaminfo table");
     m_pDS->exec("CREATE TABLE streamdetails (idFile integer, iStreamType integer, "
       "strVideoCodec text, fVideoAspect float, iVideoWidth integer, iVideoHeight integer, "
-      "strAudioCodec text, iAudioChannels integer, strAudioLanguage text, strSubtitleLanguage text)");
+      "strAudioCodec text, iAudioChannels integer, strAudioLanguage text, strSubtitleLanguage text, iVideoDuration integer)");
     m_pDS->exec("CREATE INDEX ix_streamdetails ON streamdetails (idFile)");
 
     CLog::Log(LOGINFO, "create tvshowview");
@@ -1926,11 +1926,11 @@ void CVideoDatabase::SetStreamDetailsForFileId(const CStreamDetails& details, in
     for (int i=1; i<=details.GetVideoStreamCount(); i++)
     {
       m_pDS->exec(FormatSQL("INSERT INTO streamdetails "
-        "(idFile, iStreamType, strVideoCodec, fVideoAspect, iVideoWidth, iVideoHeight) "
-        "VALUES (%i,%i,'%s',%f,%i,%i)",
+        "(idFile, iStreamType, strVideoCodec, fVideoAspect, iVideoWidth, iVideoHeight, iVideoDuration) "
+        "VALUES (%i,%i,'%s',%f,%i,%i,%i)",
         idFile, (int)CStreamDetail::VIDEO,
         details.GetVideoCodec(i).c_str(), details.GetVideoAspect(i),
-        details.GetVideoWidth(i), details.GetVideoHeight(i)));
+        details.GetVideoWidth(i), details.GetVideoHeight(i), details.GetVideoDuration(i)));
     }
     for (int i=1; i<=details.GetAudioStreamCount(); i++)
     {
@@ -2611,6 +2611,7 @@ bool CVideoDatabase::GetStreamDetailsForFileId(CStreamDetails& details, int idFi
         p->m_fAspect = pDS->fv(3).get_asFloat();
         p->m_iWidth = pDS->fv(4).get_asInt();
         p->m_iHeight = pDS->fv(5).get_asInt();
+        p->m_iDuration = pDS->fv(10).get_asInt();
         details.AddStream(p);
         retVal = true;
         break;
@@ -3609,6 +3610,12 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("CREATE TABLE setlinkmovie ( idSet integer, idMovie integer)\n");
       m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_1 ON setlinkmovie ( idSet, idMovie)\n");
       m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_2 ON setlinkmovie ( idMovie, idSet)\n");
+    }
+    
+    if (iVersion < 34)
+    {
+      m_pDS->exec("DELETE FROM streamdetails");
+      m_pDS->exec("ALTER table streamdetails add iVideoDuration integer");
     }
   }
   catch (...)
