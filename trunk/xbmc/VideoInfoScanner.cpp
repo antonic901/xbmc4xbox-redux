@@ -273,7 +273,7 @@ namespace VIDEO
 
     if (!bSkip)
     {
-      if (RetrieveVideoInfo(items,settings.parent_name_root,m_info))
+      if (RetrieveVideoInfo(items, settings.parent_name, m_info))
       {
         if (!m_bStop && (m_info.strContent.Equals("movies") || m_info.strContent.Equals("musicvideos")))
         {
