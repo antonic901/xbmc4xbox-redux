@@ -1,3 +1,19 @@
+*Confluence XBOX (V1.07)*
+Fixed playlists label in Music submenu
+Removed Top 100 from Music submenu
+Added Home Theater script support in video info
+Fixed double flags in video full screen info
+Fixed skin setting and OSD subtitle scrips
+Renamed home screen Scripts button Add-ons
+Renamed Scripts.jpg Addons.jpg
+Removed non Xbox items from Shutdown Menu
+Added plugin support to Add-ons button
+Added Studio flag in fanart view
+      - (studios flags must be in [skinfolder]/media/flagging/studios)
+Added System Info in Home Screen (Home.xml / custom_SkinSetting_1111.xml)
+Deleted SystemInfo, Suspend and skin icons
+Changed skin version to 1.07
+
 *Confluence XBOX (V1.06)*
 Changed the way Background & Fanart load (improves free RAM)
 Added Audio Channels Flags to Library views

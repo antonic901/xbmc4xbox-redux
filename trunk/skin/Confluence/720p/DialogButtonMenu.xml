@@ -201,37 +201,12 @@
 						<visible>Control.HasFocus(15) | Control.HasFocus(16) | Control.HasFocus(17)</visible>
 					</control>
 				</control>
-				<control type="button" id="12">
-					<description>Suspend xbmc</description>
+				<!-- Reboot/Restart -->
+				<control type="group" id="14">
 					<width>90</width>
-					<height>90</height>
-					<texturefocus>ButtonMenuSleepFO.png</texturefocus>
-					<texturenofocus>ButtonMenuSleepNF.png</texturenofocus>
-					<onclick>XBMC.Suspend()</onclick>
-					<pulseonselect>no</pulseonselect>
-					<font>-</font>
-					<label>$LOCALIZE[13011]</label>
-					<visible>!System.Platform.Xbox</visible>
-				</control>
-				<control type="button" id="14">
-					<description>Reboot button</description>
-					<width>90</width>
-					<height>90</height>
-					<texturefocus>ButtonMenuRestartFO.png</texturefocus>
-					<texturenofocus>ButtonMenuRestartNF.png</texturenofocus>
-					<onclick>XBMC.Reset()</onclick>
-					<pulseonselect>no</pulseonselect>
-					<font>-</font>
-					<label>13013</label>
-					<visible>!System.Platform.Xbox</visible>
-				</control>
-				<!-- Reboot/Restart XBMC4Xbox -->
-				<control type="group" id="18">
-					<visible>System.Platform.Xbox</visible>
-					<width>90</width>
-					<defaultcontrol always="true">19</defaultcontrol>
-					<control type="button" id="20">
-						<description>Restart XBMC4Xbox button</description>
+					<defaultcontrol always="true">18</defaultcontrol>
+					<control type="button" id="19">
+						<description>Restart button</description>
 						<posx>0</posx>
 						<posy>0</posy>
 						<width>90</width>
@@ -247,7 +222,7 @@
 						<onup>19</onup>
 						<ondown>19</ondown>
 					</control>
-					<control type="button" id="19">
+					<control type="button" id="18">
 						<description>Reboot button</description>
 						<posx>0</posx>
 						<posy>0</posy>
@@ -265,18 +240,18 @@
 						<ondown>20</ondown>
 					</control>
 					<control type="image">
-						<description>Reboot/Restart XBMC4Xbox focus image</description>
+						<description>Reboot/Restart focus image</description>
 						<posx>0</posx>
 						<posy>0</posy>
 						<width>90</width>
 						<height>90</height>
 						<texture>ButtonMenuRestartFO.png</texture>
-						<visible>Control.HasFocus(19) | Control.HasFocus(20)</visible>
+						<visible>Control.HasFocus(18) | Control.HasFocus(19)</visible>
 					</control>
 				</control>
-				<!-- Favourites XBMC4Xbox -->
-				<control type="button" id="21">
-					<description>System Info</description>
+				<!-- Favourites -->
+				<control type="button" id="20">
+					<description>Favourites</description>
 					<width>90</width>
 					<height>90</height>
 					<texturefocus>ButtonMenuFavouritesFO.png</texturefocus>
@@ -285,10 +260,9 @@
 					<pulseonselect>no</pulseonselect>
 					<font>-</font>
 					<label>$LOCALIZE[1036]</label>
-					<visible>System.Platform.Xbox</visible>
 				</control>			
 			</control>
-
+			
 			<control type="group">
 				<posx>270</posx>
 				<posy>70</posy>
@@ -313,11 +287,11 @@
 					<texture>ArrowDown.png</texture>
 				</control>
 			</control>
-			<!-- Arrow Up/Down Reboot/Restart XBMC4Xbox> -->
+			<!-- Arrow Up/Down Reboot/Restart -->
 			<control type="group">
 				<posx>380</posx>
 				<posy>70</posy>
-				<visible>ControlGroup(18).HasFocus</visible>
+				<visible>ControlGroup(14).HasFocus</visible>
 				<include>VisibleFadeEffect</include>
 				<animation effect="slide" start="0,0" end="55,0" time="0" condition="System.HasLocks">Conditional</animation>
 				<animation effect="slide" start="0,0" end="55,0" time="0" condition="System.HasLoginScreen + System.LoggedOn">Conditional</animation>

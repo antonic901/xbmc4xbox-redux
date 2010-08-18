@@ -214,7 +214,7 @@
 					<visible>Player.Rewinding32x</visible>
 				</control>
 				<!-- End Stuff to fill in for seekbar not being visible -->
-
+				
 				<control type="label">
 					<posx>0</posx>
 					<posy>30</posy>
@@ -334,14 +334,14 @@
 					<control type="image">
 						<description>Video rez Image</description>
 						<width>80</width>
-						<height>28</height>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[VideoPlayer.VideoResolution,flagging/video/,.png]</texture>
 					</control>
 					<control type="image">
-						<description>Common Codec Image</description>
+						<description>Common Video Codec Image</description>
 						<width>80</width>
-						<height>28</height>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[VideoPlayer.VideoCodec,flagging/video/,.png]</texture>
 						<!-- Don't show if its one of the 500 divx codecs -->
@@ -350,95 +350,32 @@
 					<control type="image">
 						<description>Divx Codec Image</description>
 						<width>80</width>
-						<height>28</height>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
 						<texture>flagging/video/divx.png</texture>
 						<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image">
-						<description>h264 Codec Image</description>
+						<description>Common Audio Codec Image</description>
 						<width>80</width>
-						<height>28</height>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
-						<texture>flagging/video/h264.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,h264)</visible>
-					</control>
-					<control type="image">
-						<description>avc1 Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/video/avc1.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,avc1)</visible>
-					</control>
-					<control type="image">
-						<description>wvc1 Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/video/wvc1.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,wvc1)</visible>
-					</control>
-					<control type="image">
-						<description>mpeg1video Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/video/mpeg1video.png</texture>
-						<visible>substring(VideoPlayer.VideoCodec,mpeg1video)</visible>
-					</control>
-					<control type="image">
-						<description>mp3 Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/audio/mp3.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,mp3)</visible>
-					</control>
-					<control type="image">
-						<description>dts Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/audio/dts.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,dca)</visible>
-					</control>
-					<control type="image">
-						<description>ac3 Image</description>
-						<width>35</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/audio/ac3.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,ac3) + !substring(VideoPlayer.AudioChannels,6)</visible>
-					</control>
-					<control type="image">
-						<description>aac Image</description>
-						<width>35</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/audio/aac.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,aac)</visible>
+						<texture>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</texture>
+						<!-- Don't show if I want the Dolby Digital Logo -->
+						<visible>![stringcompare(VideoPlayer.AudioCodec,ac3) + stringcompare(VideoPlayer.AudioChannels,6)]</visible>
 					</control>
 					<control type="image">
 						<description>Dolby Digital Image</description>
 						<width>80</width>
-						<height>28</height>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
 						<texture>flagging/audio/dolbydigital.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,ac3) + substring(VideoPlayer.AudioChannels,6)</visible>
-					</control>
-					<control type="image">
-						<description>WMA Pro Codec Image</description>
-						<width>80</width>
-						<height>28</height>
-						<aspectratio>keep</aspectratio>
-						<texture>flagging/audio/wmapro.png</texture>
-						<visible>substring(VideoPlayer.AudioCodec,wmapro)</visible>
+						<visible>[stringcompare(VideoPlayer.AudioCodec,ac3) + stringcompare(VideoPlayer.AudioChannels,6)]</visible>
 					</control>
 					<control type="image">
 						<description>Audio Channels Image</description>
-						<width>35</width>
-						<height>28</height>
+						<width>60</width>
+						<height>40</height>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[VideoPlayer.AudioChannels,flagging/audio/,.png]</texture>
 					</control>

@@ -14,7 +14,39 @@
 		</control>
 		<include>CommonMediaPlayingBackground</include>
 		<include condition="Skin.HasSetting(homepageHideRecentlyAdded)">HomeRecentlyAddedInfo</include>
-		<!-- weather Info -->
+		<!-- System Info -->
+		<control type="group">
+			<posx>840r</posx>
+			<posy>0</posy>
+			<include>VisibleFadeEffect</include>
+			<visible>Skin.HasSetting(homepageSysteminfo) + Container(9000).HasFocus(5)</visible>
+			<animation effect="slide" start="0,0" end="-60,0" delay="0" time="300" condition="Window.IsVisible(MuteBug)">conditional</animation>
+			<animation effect="slide" start="0,0" end="130,0" delay="0" time="300" condition="Skin.HasSetting(homepageWeatherinfo) | !Weather.IsFetched">conditional</animation>
+			<animation effect="slide" start="0,0" end="840,0" delay="0" time="300">WindowClose</animation>
+			<animation effect="slide" start="840,0" end="0,0" delay="0" time="300">WindowOpen</animation>
+			<control type="image">
+				<description>system info background</description>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>440</width>
+				<height>35</height>
+				<texture flipx="true" border="32,0,0,0">header.png</texture>
+			</control>
+			<control type="label">
+				<description>system info label</description>
+				<posx>30</posx>
+				<posy>0</posy>
+				<width>400</width>
+				<height>28</height>
+				<align>left</align>
+				<aligny>center</aligny>
+				<font>font12</font>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<label>[COLOR=grey]$LOCALIZE[140] $INFO[System.cputemperature] $LOCALIZE[141] $INFO[System.gputemperature][/COLOR] | $INFO[System.FreeMemory]</label>
+			</control>
+		</control>	
+		<!-- Weather Info -->
 		<control type="group">
 			<posx>510r</posx>
 			<posy>0</posy>
@@ -471,8 +503,7 @@
 						<onclick>ActivateWindow(VideoLibrary)</onclick>
 						<visible>Library.HasContent(Video)</visible>
 					</control>
-				</control>
-				
+				</control>				
 				<control type="grouplist" id="9011">
 					<posx>10</posx>
 					<posy>0</posy>
@@ -520,8 +551,7 @@
 						<onclick>ActivateWindow(MusicLibrary)</onclick>
 						<visible>Library.HasContent(Music)</visible>
 					</control>
-
-				</control>
+				</control>			
 				<control type="grouplist" id="9014">
 					<posx>10</posx>
 					<posy>0</posy>
@@ -572,6 +602,7 @@
 						<visible>False</visible>
 					</control>
 				</control>
+				<!-- Addons -->
 				<control type="grouplist" id="9015">
 					<posx>10</posx>
 					<posy>0</posy>
@@ -583,56 +614,110 @@
 					<onup>9015</onup>
 					<ondown>9015</ondown>
 					<itemgap>0</itemgap>
-					<visible>Container(9000).HasFocus(8) + [[Skin.HasSetting(HomeScriptButton1) + !IsEmpty(Skin.String(HomeScriptButton1_label))] | [Skin.HasSetting(HomeScriptButton2) + !IsEmpty(Skin.String(HomeScriptButton2_label))] | [Skin.HasSetting(HomeScriptButton3) + !IsEmpty(Skin.String(HomeScriptButton3_label))] | [Skin.HasSetting(HomeScriptButton4) + !IsEmpty(Skin.String(HomeScriptButton4_label))] | [Skin.HasSetting(HomeScriptButton5) + !IsEmpty(Skin.String(HomeScriptButton5_label))] | [Skin.HasSetting(HomeScriptButton6) + !IsEmpty(Skin.String(HomeScriptButton6_label))]]</visible>
-					<control type="button" id="90151">
-						<description>Button1</description>
+					<visible>Container(9000).HasFocus(8) + [[Skin.HasSetting(HomeAddonsButton1) + !IsEmpty(Skin.String(HomeAddonsButton1_label))] | [Skin.HasSetting(HomeAddonsButton2) + !IsEmpty(Skin.String(HomeAddonsButton2_label))] | [Skin.HasSetting(HomeAddonsButton3) + !IsEmpty(Skin.String(HomeAddonsButton3_label))] | [Skin.HasSetting(HomeAddonsButton4) + !IsEmpty(Skin.String(HomeAddonsButton4_label))] | [Skin.HasSetting(HomeAddonsButton5) + !IsEmpty(Skin.String(HomeAddonsButton5_label))] | [Skin.HasSetting(HomeAddonsButton6) + !IsEmpty(Skin.String(HomeAddonsButton6_label))]]</visible>
+					<control type="button" id="90191">
+						<description>Script1</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton1_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton1_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton1_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton1) + !IsEmpty(Skin.String(HomeScriptButton1_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton1) + !IsEmpty(Skin.String(HomeAddonsButton1_label)) + IsEmpty(Skin.String(HomePluginButton1_folder))</visible>
 					</control>
-					<control type="button" id="90152">
-						<description>Button2</description>
+					<control type="button" id="90192">
+						<description>Plugin1</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton2_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton1_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton1_Window)],plugin://$INFO[Skin.String(HomePluginButton1_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton1) + !IsEmpty(Skin.String(HomeAddonsButton1_label)) + IsEmpty(Skin.String(HomeScriptButton1_path))</visible>
+					</control>
+					
+					<control type="button" id="90193">
+						<description>Script2</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton2_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton2_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton2) + !IsEmpty(Skin.String(HomeScriptButton2_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton2) + !IsEmpty(Skin.String(HomeAddonsButton2_label)) + IsEmpty(Skin.String(HomePluginButton2_folder))</visible>
 					</control>
-					<control type="button" id="90153">
-						<description>Button3</description>
+					<control type="button" id="90194">
+						<description>Plugin2</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton3_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton2_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton2_Window)],plugin://$INFO[Skin.String(HomePluginButton2_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton2) + !IsEmpty(Skin.String(HomeAddonsButton2_label)) + IsEmpty(Skin.String(HomeScriptButton2_path))</visible>
+					</control>
+					
+					<control type="button" id="90195">
+						<description>Script3</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton3_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton3_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton3) + !IsEmpty(Skin.String(HomeScriptButton3_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton3) + !IsEmpty(Skin.String(HomeAddonsButton3_label)) + IsEmpty(Skin.String(HomePluginButton3_folder))</visible>
 					</control>
-					<control type="button" id="90154">
-						<description>Button4</description>
+					<control type="button" id="90196">
+						<description>Plugin3</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton4_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton3_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton3_Window)],plugin://$INFO[Skin.String(HomePluginButton3_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton3) + !IsEmpty(Skin.String(HomeAddonsButton3_label)) + IsEmpty(Skin.String(HomeScriptButton3_path))</visible>
+					</control>
+					
+					<control type="button" id="90197">
+						<description>Script4</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton4_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton4_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton4) + !IsEmpty(Skin.String(HomeScriptButton4_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton4) + !IsEmpty(Skin.String(HomeAddonsButton4_label)) + IsEmpty(Skin.String(HomePluginButton4_folder))</visible>
 					</control>
-					<control type="button" id="90155">
-						<description>Button5</description>
+					<control type="button" id="90198">
+						<description>Plugin4</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton5_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton4_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton4_Window)],plugin://$INFO[Skin.String(HomePluginButton4_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton4) + !IsEmpty(Skin.String(HomeAddonsButton4_label)) + IsEmpty(Skin.String(HomeScriptButton4_path))</visible>
+					</control>
+					
+					<control type="button" id="90199">
+						<description>Script5</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton5_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton5_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton5) + !IsEmpty(Skin.String(HomeScriptButton5_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton5) + !IsEmpty(Skin.String(HomeAddonsButton5_label)) + IsEmpty(Skin.String(HomePluginButton5_folder))</visible>
 					</control>
-					<control type="button" id="90156">
-						<description>Button6</description>
+					<control type="button" id="901100">
+						<description>Plugin5</description>
 						<include>ButtonHomeSubCommonValues</include>
-						<label>$INFO[Skin.String(HomeScriptButton6_label)]</label>
+						<label>$INFO[Skin.String(HomeAddonsButton5_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton5_Window)],plugin://$INFO[Skin.String(HomePluginButton5_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton5) + !IsEmpty(Skin.String(HomeAddonsButton5_label)) + IsEmpty(Skin.String(HomeScriptButton5_path))</visible>
+					</control>
+					
+					<control type="button" id="901101">
+						<description>Script6</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton6_label)]</label>
 						<onclick>Setfocus(9000)</onclick>
 						<onclick>XBMC.RunScript($INFO[Skin.String(HomeScriptButton6_Path)])</onclick>
-						<visible>Skin.HasSetting(HomeScriptButton6) + !IsEmpty(Skin.String(HomeScriptButton6_label))</visible>
+						<visible>Skin.HasSetting(HomeAddonsButton6) + !IsEmpty(Skin.String(HomeAddonsButton6_label)) + IsEmpty(Skin.String(HomePluginButton6_folder))</visible>
 					</control>
-				</control>
+					<control type="button" id="901102">
+						<description>Plugin6</description>
+						<include>ButtonHomeSubCommonValues</include>
+						<label>$INFO[Skin.String(HomeAddonsButton6_label)]</label>
+						<onclick>Setfocus(9000)</onclick>
+						<onclick>ActivateWindow($INFO[Skin.String(HomePluginButton6_Window)],plugin://$INFO[Skin.String(HomePluginButton6_Folder)])</onclick>
+						<visible>Skin.HasSetting(HomeAddonsButton6) + !IsEmpty(Skin.String(HomeAddonsButton6_label)) + IsEmpty(Skin.String(HomeScriptButton6_path))</visible>
+					</control>
+				</control>	
+				<!-- end -->
 				<control type="grouplist" id="9016">
 					<posx>10</posx>
 					<posy>0</posy>
@@ -719,7 +804,6 @@
 						<onclick>ActivateWindow(VideoLibrary,RecentlyAddedEpisodes,return)</onclick>
 					</control>
 				</control>
-
 				<control type="grouplist" id="9018">
 					<posx>10</posx>
 					<posy>0</posy>
@@ -763,8 +847,8 @@
 						<onclick>ActivateWindow(GameSaves)</onclick>
 					</control>
 				</control>
-
 			</control>
+			
 			<control type="image">
 				<posx>-450</posx>
 				<posy>0</posy>
@@ -833,6 +917,20 @@
 				</itemlayout>
 				<focusedlayout height="102" width="380">
 					<control type="label">
+						<animation effect="zoom" start="65" end="100" center="380,51" time="200">Focus</animation>
+						<animation effect="zoom" start="100" end="65" center="380,51" time="200">UnFocus</animation>
+						<posx>365</posx>
+						<posy>64</posy>
+						<width>380</width>
+						<height>32</height>
+						<font>font12</font>
+						<textcolor>grey</textcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label2]</label>
+						<visible>Skin.HasSetting(homepageSysteminfo)</visible>
+					</control>
+					<control type="label">
 						<posx>380</posx>
 						<posy>21</posy>
 						<width>380</width>
@@ -851,18 +949,18 @@
 						<width>18</width>
 						<height>18</height>
 						<texture>HomeHasSub.png</texture>
-						<visible>[Container(9000).HasFocus(1) + System.Platform.Xbox] | Container(9000).HasFocus(2) | Container(9000).HasFocus(3) | Container(9000).HasFocus(5) | Container(9000).HasFocus(7) | [Container(9000).HasFocus(8) + [[Skin.HasSetting(HomeScriptButton1) + !IsEmpty(Skin.String(HomeScriptButton1_label))] | [Skin.HasSetting(HomeScriptButton2) + !IsEmpty(Skin.String(HomeScriptButton2_label))] | [Skin.HasSetting(HomeScriptButton3) + !IsEmpty(Skin.String(HomeScriptButton3_label))] | [Skin.HasSetting(HomeScriptButton4) + !IsEmpty(Skin.String(HomeScriptButton4_label))] | [Skin.HasSetting(HomeScriptButton5) + !IsEmpty(Skin.String(HomeScriptButton5_label))] | [Skin.HasSetting(HomeScriptButton6) + !IsEmpty(Skin.String(HomeScriptButton6_label))]]] | Container(9000).HasFocus(10) | Container(9000).HasFocus(11)</visible>
+						<visible>[Container(9000).HasFocus(1) + System.Platform.Xbox] | Container(9000).HasFocus(2) | Container(9000).HasFocus(3) | Container(9000).HasFocus(5) | Container(9000).HasFocus(7) | [Container(9000).HasFocus(8) + [[Skin.HasSetting(HomeAddonsButton1) + !IsEmpty(Skin.String(HomeAddonsButton1_label))] | [Skin.HasSetting(HomeAddonsButton2) + !IsEmpty(Skin.String(HomeAddonsButton2_label))] | [Skin.HasSetting(HomeAddonsButton3) + !IsEmpty(Skin.String(HomeAddonsButton3_label))] | [Skin.HasSetting(HomeAddonsButton4) + !IsEmpty(Skin.String(HomeAddonsButton4_label))] | [Skin.HasSetting(HomeAddonsButton5) + !IsEmpty(Skin.String(HomeAddonsButton5_label))] | [Skin.HasSetting(HomeAddonsButton6) + !IsEmpty(Skin.String(HomeAddonsButton6_label))]]] | Container(9000).HasFocus(10) | Container(9000).HasFocus(11)</visible>
 						<animation effect="fade" start="0" end="100" time="200">Focus</animation>
 						<animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
 					</control>
 				</focusedlayout>
 				<content>
 					<item id="8">
-						<label>247</label>
+						<label>31116</label>
 						<onclick>ActivateWindow(Scripts)</onclick>
-						<icon>special://skin/backgrounds/scripts.jpg</icon>
-						<thumb>$INFO[Skin.String(Home_Custom_Back_Scripts_Folder)]</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoScriptsButton)</visible>
+						<icon>special://skin/backgrounds/addons.jpg</icon>
+						<thumb>$INFO[Skin.String(Home_Custom_Back_Addons_Folder)]</thumb>
+						<visible>!Skin.HasSetting(HomeMenuNoAddonsButton)</visible>
 					</item>
 					<item id="6">
 						<label>8</label>

@@ -65,7 +65,7 @@
   <string id="31113">Single Image</string>
   <string id="31114">Multi Image</string>
   <string id="31115">Customizer</string>
-  <string id="31116">Addon Scripts</string>
+  <string id="31116">Add-ons</string>
   <string id="31117">Show Recently added Videos</string>
   <string id="31118">Home Page Submenu</string>
   <string id="31119">Enable Custom Script Button</string>
@@ -80,12 +80,16 @@
   <string id="31128">XBMC Lyrics</string>
   <string id="31129">Enable Subtitle Download in Video OSD</string>
   <string id="31130">PATH TO SUBTITLE SCRIPT</string>
- 
+  
   <string id="31132">PATH TO VIDEO PLAYLIST</string>
   <string id="31133">Enable Custom Video Button</string>
   <string id="31134">Enable Custom Movie Button</string>
   <string id="31135">Enable Custom TV Show Button</string>
-
+ 
+  <string id="31137">Enable Custom Add-ons Button</string>
+  <string id="31138">PLUGIN "TYPE/FOLDER" [COLOR=grey3](e.g. Programs/SVN Repo Installer)[/COLOR]</string>
+  <string id="31139">PLUGIN "WINDOW" [COLOR=grey3](1=Programs 2=Pictures 24=Video 501=Music 2600=Weather)[/COLOR]</string>
+  
   <string id="31140">Music OSD</string>
   <string id="31141">Video OSD</string>
   
@@ -157,7 +161,6 @@
   <string id="31342">Applications</string>
   <string id="31343">Homebrews</string>
   <string id="31344">Dashboards</string>
-
 
   <!-- Video and Music OSD Labels  -->
   <string id="31351">Pause</string>

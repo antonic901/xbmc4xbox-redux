@@ -149,4 +149,14 @@
 			<texture>$INFO[ListItem.VideoAspect,flagging/aspectratio/,.png]</texture>
 		</control>
 	</include>
+	<include name="StudioFlaggingConditions">
+	<visible>!Skin.HasSetting(HideMediaFlags)</visible>
+		<control type="image">
+			<description>Studio Image</description>
+			<width>90</width>
+			<height>66</height>
+			<aspectratio>keep</aspectratio>
+			<texture>$INFO[ListItem.Studio,flagging/studios/,.png]</texture>
+		</control>
+	</include>
 </includes>

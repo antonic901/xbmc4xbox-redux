@@ -434,8 +434,7 @@
 				<showonepage>true</showonepage>
 				<orientation>horizontal</orientation>
 				<visible>Control.IsVisible(508)</visible>
-			</control>
-			
+			</control>		
 <!-- toggle info -->
 			<control type="label">
 				<description>show info</description>
@@ -494,8 +493,7 @@
 				<visible>!Window.IsVisible(VideoFiles)</visible>
 			</control>
 		</control>
-<!-- end -->
-		
+<!-- end -->	
 		<control type="group">
 			<posx>180</posx>
 			<posy>30</posy>
@@ -815,6 +813,16 @@
 				<itemgap>0</itemgap>
 				<orientation>horizontal</orientation>
 				<include>VideoMPAAFlaggingConditions</include>
+			</control>
+			<control type="grouplist">
+				<description>Studio Flagging Images</description>
+				<posx>0</posx>
+				<posy>330</posy>
+				<width>800</width>
+				<align>right</align>
+				<itemgap>0</itemgap>
+				<orientation>horizontal</orientation>
+				<include>StudioFlaggingConditions</include>
 			</control>
 		</control>
 	</include>
