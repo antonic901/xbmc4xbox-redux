@@ -152,7 +152,7 @@
 						<font>-</font>
 						<label>20151</label>
 						<onleft>11</onleft>
-						<onright>12</onright>
+						<onright>14</onright>
 						<onup>15</onup>
 						<ondown>16</ondown>
 						<visible>System.HasAlarm(shutdowntimer)</visible>
@@ -170,7 +170,7 @@
 						<font>-</font>
 						<label>20150</label>
 						<onleft>11</onleft>
-						<onright>12</onright>
+						<onright>14</onright>
 						<onup>17</onup>
 						<ondown>15</ondown>
 					</control>
@@ -187,7 +187,7 @@
 						<font>-</font>
 						<label>13005</label>
 						<onleft>11</onleft>
-						<onright>12</onright>
+						<onright>14</onright>
 						<onup>16</onup>
 						<ondown>17</ondown>
 					</control>
@@ -217,10 +217,10 @@
 						<pulseonselect>no</pulseonselect>
 						<font>-</font>
 						<label>$LOCALIZE[13313] XBMC4Xbox</label>
-						<onleft>15</onleft>
-						<onright>21</onright>
-						<onup>19</onup>
-						<ondown>19</ondown>
+						<onleft>13</onleft>
+						<onright>20</onright>
+						<onup>18</onup>
+						<ondown>18</ondown>
 					</control>
 					<control type="button" id="18">
 						<description>Reboot button</description>
@@ -234,10 +234,10 @@
 						<pulseonselect>no</pulseonselect>
 						<font>-</font>
 						<label>13013</label>
-						<onleft>15</onleft>
-						<onright>21</onright>
-						<onup>20</onup>
-						<ondown>20</ondown>
+						<onleft>13</onleft>
+						<onright>20</onright>
+						<onup>19</onup>
+						<ondown>19</ondown>
 					</control>
 					<control type="image">
 						<description>Reboot/Restart focus image</description>
