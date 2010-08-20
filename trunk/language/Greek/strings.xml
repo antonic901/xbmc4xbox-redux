@@ -2,9 +2,9 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: Ydatografida-->
 <!--Email: ydatografida@gmail.com-->
-<!--Date of translation: 06/09/2010-->
+<!--Date of translation: 07/23/2010-->
 <!--$Revision$-->
-<!--Based on english strings version 30388-->
+<!--Based on english strings version 30472-->
 <strings>
   <string id="0">Εφαρμογές</string>
   <string id="1">Φωτογραφίες</string>
@@ -355,7 +355,7 @@
   <string id="415">Λήψη μικρογραφίας...</string>
   <string id="416">Μη διαθέσιμος πόρος</string>
   <string id="417">Προβολή: Εικόνες</string>
-  <string id="418">Χαμηλή</string>
+  <string id="418">Ενεργοποίηση συλλογής</string>
   <string id="419">Υψηλή</string>
   <string id="422">Διαγραφή πληροφοριών άλμπουμ</string>
   <string id="423">Διαγραφή πληροφοριών CD</string>
@@ -567,6 +567,7 @@
   <string id="662">Αυτό το αρχείο δεν είναι πλέον διαθέσιμο.</string>
   <string id="663">Να αφαιρεθεί από τη συλλογή;</string>
   <string id="664">Αναζήτηση Script</string>
+  <string id="665">Επίπεδο συμπίεσης </string>
   <string id="700">Εκκαθάριση συλλογής</string>
   <string id="701">Απομάκρυνση παλαιών τραγουδιών από τη συλλογή</string>
   <string id="702">Η διαδρομή έχει σαρωθεί προηγούμενος</string>
@@ -1942,6 +1943,8 @@
   <string id="22022">Εμφάνιση αρχείων βίντεο στις λίστες</string>
   <string id="22023">Κατασκευαστής DirectX:</string>
   <string id="22024">Έκδοση Direct3D:</string>
+  <string id="22025">Ενεργοποίηση πλήρους υποστήριξης κωδικοποιητών</string>
+  <string id="22026">Γρήγορη λειτουργία (MPEG-2, MPEG-4 και H.264 μόνο)</string>
   <string id="22030">Γραμματοσειρά</string>
   <string id="22031">- Μέγεθος</string>
   <string id="22032">- Χρώματα</string>
@@ -2042,5 +2045,6 @@
   <string id="33081">Αυτό το αρχείο είναι στοιβαγμένο, επιλέξτε το μέρος αυτού που επιθυμείτε να αναπαραχθεί.</string>
   <string id="33082">Διαδρομή για το script</string>
   <string id="33083">Ενεργοποίηση προσαρμοσμένου πλήκτρου script</string>
+  <string id="34005">Flac</string>
 </strings>
  	  	 
