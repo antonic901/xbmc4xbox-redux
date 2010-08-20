@@ -720,6 +720,7 @@ int CButtonTranslator::TranslateWindowString(const char *szWindow)
   else if (strWindow.Equals("selectdialog")) windowID = WINDOW_DIALOG_SELECT;
   else if (strWindow.Equals("okdialog")) windowID = WINDOW_DIALOG_OK;
   else if (strWindow.Equals("movieinformation")) windowID = WINDOW_VIDEO_INFO;
+  else if (strWindow.Equals("textviewer")) windowID = WINDOW_DIALOG_TEXT_VIEWER;
   else if (strWindow.Equals("scriptsdebuginfo")) windowID = WINDOW_SCRIPTS_INFO;
   else if (strWindow.Equals("fullscreenvideo")) windowID = WINDOW_FULLSCREEN_VIDEO;
   else if (strWindow.Equals("visualisation")) windowID = WINDOW_VISUALISATION;

@@ -107,15 +107,24 @@ CStdString CBasicSettings::Get(const CStdString& key) const
 
   if (m_pluginXmlDoc.RootElement())
   {
-    // Try to find the setting in the plugin and return its default value
-    const TiXmlElement* setting = m_pluginXmlDoc.RootElement()->FirstChildElement("setting");
-    while (setting)
-    {
-      const char *id = setting->Attribute("id");
-      if (id && strcmpi(id, key) == 0 && setting->Attribute("default"))
-        return setting->Attribute("default");
+    const TiXmlElement *category = m_pluginXmlDoc.RootElement()->FirstChildElement("category");
+    // this makes grouping optional
+    if (!category)
+      category = m_pluginXmlDoc.RootElement();
 
-      setting = setting->NextSiblingElement("setting");
+    while (category)
+    {
+      // Try to find the setting in the plugin and return its default value
+      const TiXmlElement* setting = category->FirstChildElement("setting");
+      while (setting)
+      {
+        const char *id = setting->Attribute("id");
+        if (id && strcmpi(id, key) == 0 && setting->Attribute("default"))
+          return setting->Attribute("default");
+
+        setting = setting->NextSiblingElement("setting");
+      }
+      category = category->NextSiblingElement("category");
     }
   }
 

@@ -165,6 +165,7 @@
 #include "GUIDialogContentSettings.h"
 #include "GUIDialogVideoScan.h"
 #include "GUIDialogBusy.h"
+#include "GUIDialogTextViewer.h"
 
 #include "GUIDialogKeyboard.h"
 #include "GUIDialogYesNo.h"
@@ -1279,6 +1280,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogBusy);      // window id = 138
   g_windowManager.Add(new CGUIDialogPictureInfo);      // window id = 139
   g_windowManager.Add(new CGUIDialogPluginSettings);      // window id = 140
+  g_windowManager.Add(new CGUIDialogTextViewer);              // window id = 147
 
   g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
 
@@ -3408,6 +3410,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_PICTURE_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_PLUGIN_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
+    g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
 
     g_windowManager.Delete(WINDOW_STARTUP);
     g_windowManager.Delete(WINDOW_LOGIN_SCREEN);

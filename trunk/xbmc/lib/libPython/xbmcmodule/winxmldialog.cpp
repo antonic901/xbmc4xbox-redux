@@ -56,61 +56,44 @@ namespace PYXBMC
     PyObject* pyOXMLname = NULL;
     PyObject* pyOname = NULL;
     PyObject* pyDName = NULL;
-    char bForceDefaultSkin = false;
+    PyObject* pyRes = NULL;
 
     string strXMLname, strFallbackPath;
     string strDefault = "Default";
+    string resolution = "720p";
 
-    if (!PyArg_ParseTuple(args, (char*)"OO|Ob", &pyOXMLname, &pyOname, &pyDName, &bForceDefaultSkin )) return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"OO|OO", &pyOXMLname, &pyOname, &pyDName, &pyRes)) return NULL;
 
     PyXBMCGetUnicodeString(strXMLname, pyOXMLname);
     PyXBMCGetUnicodeString(strFallbackPath, pyOname);
     if (pyDName) PyXBMCGetUnicodeString(strDefault, pyDName);
+    if (pyRes) PyXBMCGetUnicodeString(resolution, pyRes);
 
     RESOLUTION res;
-    CStdString strSkinPath;
-    if (!bForceDefaultSkin)
+    CStdString strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res);
+
+    // Check to see if the XML file exists in current skin. If not use fallback path to find a skin for the script
+    if (!XFILE::CFile::Exists(strSkinPath))
     {
-      // Check to see if the XML file exists in current skin. If not use fallback path to find a skin for the script
-      strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res);
-      
+      // Check for the matching folder for the skin in the fallback skins folder
+      CStdString fallbackPath = CUtil::AddFileToFolder(strFallbackPath, "resources");
+      fallbackPath = CUtil::AddFileToFolder(fallbackPath, "skins");
+      CStdString basePath = CUtil::AddFileToFolder(fallbackPath, CUtil::GetFileName(g_SkinInfo.GetBaseDir()));
+      strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res, basePath);
       if (!XFILE::CFile::Exists(strSkinPath))
       {
-        // Check for the matching folder for the skin in the fallback skins folder
-        CStdString basePath;
-        CUtil::AddFileToFolder(strFallbackPath, "resources", basePath);
-        CUtil::AddFileToFolder(basePath, "skins", basePath);
-        CUtil::AddFileToFolder(basePath, CUtil::GetFileName(g_SkinInfo.GetBaseDir()), basePath);
-        strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res, basePath);
+        // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
+        CStdString basePath = CUtil::AddFileToFolder(fallbackPath, strDefault);
+        res = CSkinInfo::TranslateResolution(resolution, HDTV_720p);
+        CSkinInfo skinInfo;
+        strSkinPath = skinInfo.GetSkinPath(strXMLname, &res, basePath);
         if (!XFILE::CFile::Exists(strSkinPath))
         {
-          // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
-          bForceDefaultSkin = true;
+          PyErr_SetString(PyExc_TypeError, "XML File for Window is missing");
+          return NULL;
         }
       }
     }
-
-    if (bForceDefaultSkin)
-    {
-      CSkinInfo skinInfo;
-      CStdString basePath;
-      CUtil::AddFileToFolder(strFallbackPath, "resources", basePath);
-      CUtil::AddFileToFolder(basePath, "skins", basePath);
-      CUtil::AddFileToFolder(basePath, strDefault, basePath);
-
-      skinInfo.Load(basePath);
-      // if no skin.xml file exists default to PAL_4x3 and PAL_16x9
-      if (skinInfo.GetDefaultResolution() == INVALID)
-        skinInfo.SetDefaults();
-      strSkinPath = skinInfo.GetSkinPath(strXMLname, &res, basePath);
-
-      if (!XFILE::CFile::Exists(strSkinPath))
-      {
-        PyErr_SetString(PyExc_TypeError, "XML File for Window is missing");
-        return NULL;
-      }
-    }
-
     self->sFallBackPath = strFallbackPath;
     self->sXMLFileName = strSkinPath;
     self->bUsingXML = true;
@@ -129,17 +112,17 @@ namespace PYXBMC
   PyDoc_STRVAR(windowXMLDialog__doc__,
     "WindowXMLDialog class.\n"
     "\n"
-    "WindowXMLDialog(self, xmlFilename, scriptPath[, defaultSkin, forceFallback) -- Create a new WindowXMLDialog script.\n"
+    "WindowXMLDialog(self, xmlFilename, scriptPath[, defaultSkin, defaultRes]) -- Create a new WindowXMLDialog script.\n"
     "\n"
     "xmlFilename     : string - the name of the xml file to look for.\n"
     "scriptPath      : string - path to script. used to fallback to if the xml doesn't exist in the current skin. (eg os.getcwd())\n"
     "defaultSkin     : [opt] string - name of the folder in the skins path to look in for the xml. (default='Default')\n"
-    "forceFallback   : [opt] boolean - if true then it will look only in the defaultSkin folder. (default=False)\n"
+    "defaultRes      : [opt] string - default skins resolution. (default='720p')\n"
     "\n"
-    "*Note, skin folder structure is eg(resources/skins/Default/PAL)\n"
+    "*Note, skin folder structure is eg(resources/skins/Default/720p)\n"
     "\n"
     "example:\n"
-    " - ui = GUI('script-Lyrics-main.xml', os.getcwd(), 'LCARS', True)\n"
+    " - ui = GUI('script-Lyrics-main.xml', os.getcwd(), 'LCARS', 'PAL')\n"
     "   ui.doModal()\n"
     "   del ui\n");
 

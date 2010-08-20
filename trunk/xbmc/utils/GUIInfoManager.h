@@ -212,6 +212,7 @@ class CDateTime;
 #define MUSICPLAYER_EXISTS          224
 #define MUSICPLAYER_PLAYLISTPLAYING 225
 #define MUSICPLAYER_ALBUM_ARTIST    226
+#define MUSICPLAYER_FILENAME        227
 
 #define VIDEOPLAYER_TITLE             250
 #define VIDEOPLAYER_GENRE             251
@@ -505,7 +506,7 @@ class CDateTime;
 
 // the multiple information vector
 #define MULTI_INFO_START              40000
-#define MULTI_INFO_END                41000 // 1000 references is all we have for now
+#define MULTI_INFO_END                49999
 #define COMBINED_VALUES_START        100000
 
 // forward
@@ -635,6 +636,7 @@ public:
   void SetLibraryBool(int condition, bool value);
   bool GetLibraryBool(int condition);
   void ResetLibraryBools();
+  CStdString LocalizeTime(const CDateTime &time, TIME_FORMAT format) const;
 
 protected:
   // routines for window retrieval
@@ -647,7 +649,6 @@ protected:
   int TranslateListItem(const CStdString &info);
   int TranslateMusicPlayerString(const CStdString &info) const;
   TIME_FORMAT TranslateTimeFormat(const CStdString &format);
-  CStdString LocalizeTime(const CDateTime &time, TIME_FORMAT format) const;
   bool GetItemBool(const CGUIListItem *item, int condition) const;
   CStdString VideoWidthToResolutionDescription(int iWidth) const;
   CStdString VideoAspectToAspectDescription(float fAspect) const;

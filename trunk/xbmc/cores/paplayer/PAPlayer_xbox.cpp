@@ -499,6 +499,12 @@ void PAPlayer::ToFFRW(int iSpeed)
 {
   m_iSpeed = iSpeed;
   m_callback.OnPlayBackSpeedChanged(iSpeed);
+
+  if (iSpeed == 1)
+  {
+    m_callback.OnPlayBackResumed();
+    CLog::Log(LOGDEBUG, "PAPlayer: Playback resumed");
+  }
 }
 
 void PAPlayer::UpdateCacheLevel()

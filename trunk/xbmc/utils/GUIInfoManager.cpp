@@ -969,6 +969,7 @@ int CGUIInfoManager::TranslateMusicPlayerString(const CStdString &info) const
   else if (info.Equals("exists")) return MUSICPLAYER_EXISTS;
   else if (info.Equals("hasprevious")) return MUSICPLAYER_HASPREVIOUS;
   else if (info.Equals("hasnext")) return MUSICPLAYER_HASNEXT;
+  else if (info.Equals("filename")) return MUSICPLAYER_FILENAME;
   return 0;
 }
 
@@ -1120,6 +1121,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
   case MUSICPLAYER_RATING:
   case MUSICPLAYER_COMMENT:
   case MUSICPLAYER_LYRICS:
+  case MUSICPLAYER_FILENAME:
     strLabel = GetMusicLabel(info);
   break;
   case VIDEOPLAYER_TITLE:
@@ -2550,7 +2552,7 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
         return ((CGUITextBox *)control)->GetLabel(info.m_info);
     }
   }
-  else if (info.m_info >= MUSICPLAYER_TITLE && info.m_info <= MUSICPLAYER_DISC_NUMBER)
+  else if (info.m_info >= MUSICPLAYER_TITLE && info.m_info <= MUSICPLAYER_FILENAME)
     return GetMusicPlaylistInfo(info);
   else if (info.m_info == CONTAINER_PROPERTY)
   {
@@ -2585,7 +2587,7 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     }
     else
     { // no window specified - assume active
-      window = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
+      window = GetWindowWithCondition(contextWindow, 0);
     }
 
     if (window)
@@ -2995,6 +2997,12 @@ CStdString CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item) co
   {
   case MUSICPLAYER_TITLE:
     if (tag.GetTitle().size()) { return tag.GetTitle(); }
+    break;
+  case MUSICPLAYER_FILENAME:
+    if (tag.GetURL().size()) { return tag.GetURL(); }
+    break;
+  case MUSICPLAYER_LYRICS:
+    if (tag.GetLyrics().size()) { return tag.GetLyrics(); }
     break;
   case MUSICPLAYER_ALBUM: 
     if (tag.GetAlbum().size()) { return tag.GetAlbum(); }

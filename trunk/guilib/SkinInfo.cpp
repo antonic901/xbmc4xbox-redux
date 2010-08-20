@@ -198,7 +198,8 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
   if (!strBaseDir.IsEmpty())
     strPathToUse = strBaseDir;
   // first try and load from the current resolution's directory
-  *res = g_graphicsContext.GetVideoResolution();
+  if (!res)
+    *res = g_graphicsContext.GetVideoResolution();
   CStdString strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
   strPath = CUtil::AddFileToFolder(strPath, strFile);
   if (CFile::Exists(strPath))
@@ -267,6 +268,24 @@ CStdString CSkinInfo::GetDirFromRes(RESOLUTION res)
     break;
   }
   return strRes;
+}
+
+RESOLUTION CSkinInfo::TranslateResolution(const CStdString &res, RESOLUTION def)
+{
+  if (res.Equals("pal"))
+    return PAL_4x3;
+  else if (res.Equals("pal16x9"))
+    return PAL_16x9;
+  else if (res.Equals("ntsc"))
+    return NTSC_4x3;
+  else if (res.Equals("ntsc16x9"))
+    return NTSC_16x9;
+  else if (res.Equals("720p"))
+    return HDTV_720p;
+  else if (res.Equals("1080i"))
+    return HDTV_1080i;
+  CLog::Log(LOGERROR, "%s invalid resolution specified for %s", __FUNCTION__, res.c_str());
+  return def;
 }
 
 CStdString CSkinInfo::GetBaseDir()

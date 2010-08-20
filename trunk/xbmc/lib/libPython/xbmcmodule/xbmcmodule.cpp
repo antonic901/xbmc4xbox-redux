@@ -658,7 +658,7 @@ namespace PYXBMC
     if (!PyXBMCGetUnicodeString(strText, pObjectText, 1)) return NULL;
 
     CStdString strFilename;
-    strFilename = CUtil::MakeLegalPath(strText);
+    strFilename = CUtil::MakeLegalPath(strText, LEGAL_FATX);
     return Py_BuildValue((char*)"s", strFilename.c_str());
   }
 

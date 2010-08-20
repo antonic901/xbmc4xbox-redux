@@ -25,6 +25,8 @@
 #include "Python/osdefs.h"
 #include "XBPythonDll.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "FileSystem/Directory.h"
+#include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogKaiToast.h"
 #include "Util.h"
@@ -136,8 +138,6 @@ void XBPyThread::Process()
 {
   CLog::Log(LOGDEBUG,"Python thread: start processing");
 
-  char path[1024];
-  char sourcedir[1024];
   int m_Py_file_input = Py_file_input;
 
   // get the global lock
@@ -149,29 +149,40 @@ void XBPyThread::Process()
 
   // get path from script file name and add python path's
   // this is used for python so it will search modules from script path first
-  strcpy(sourcedir, _P(source));
+  CStdString scriptDir;
+  CUtil::GetDirectory(_P(source), scriptDir);
+  CUtil::RemoveSlashAtEnd(scriptDir);
+  CStdString path = scriptDir;
 
-  char *p = strrchr(sourcedir, PATH_SEPARATOR_CHAR);
-  *p = PY_PATH_SEP;
-  *++p = 0;
-
-  strcpy(path, sourcedir);
-  strcat(path, dll_getenv("PYTHONPATH"));
+  // add on any addon modules the user has installed
+  // fetch directory
+  CFileItemList items;
+  DIRECTORY::CDirectory::GetDirectory("Q:\\scripts\\.modules", items, "/");
+  for (int i = 0; i < items.Size(); ++i)
+  {
+    CFileItemPtr pItem = items[i];
+    if (pItem->m_bIsFolder)
+    {
+      CStdString fullpath = CUtil::AddFileToFolder(pItem->m_strPath, "lib");
+      path += PY_PATH_SEP + fullpath;
+    }
+  }
+  // and add on whatever our default path is
+  path += PY_PATH_SEP;
+  path += dll_getenv("PYTHONPATH");
 
   // set current directory and python's path.
   if (argv != NULL)
     PySys_SetArgv(argc, argv);
 
-  CLog::Log(LOGDEBUG, "%s - Setting the Python path to %s", __FUNCTION__, path);
+  CLog::Log(LOGDEBUG, "%s - Setting the Python path to %s", __FUNCTION__, path.c_str());
 
-  PySys_SetPath(path);
-  // Remove the PY_PATH_SEP at the end
-  sourcedir[strlen(sourcedir)-1] = 0;
-  
-  CLog::Log(LOGDEBUG, "%s - Entering source directory %s", __FUNCTION__, sourcedir);
-  
-  xbp_chdir(sourcedir);
-  
+  PySys_SetPath((char *)path.c_str());
+
+  CLog::Log(LOGDEBUG, "%s - Entering source directory %s", __FUNCTION__, scriptDir.c_str());
+
+  xbp_chdir(scriptDir.c_str());
+
   int retval = -1;
   
   if (type == 'F')
@@ -321,6 +332,4 @@ void XBPyThread::stop()
   threadState->use_tracing = 1;
 
   PyEval_ReleaseLock();
-
-  
 }
