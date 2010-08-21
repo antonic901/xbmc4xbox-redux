@@ -56,6 +56,17 @@
 			<timeperimage>10000</timeperimage>
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
+			<visible>Window.IsActive(VideoLibrary) + ![Container.Content(Movies) | Container.Content(TVShows) | Container.Content(Seasons) | Container.Content(Episodes)]</visible>
+		</control>
+		<control type="multiimage">
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>720</height>
+			<imagepath fallback="special://skin/backgrounds/videos.jpg" background="true">$INFO[Skin.String(Home_Custom_Back_Video_Folder)]</imagepath>
+			<timeperimage>10000</timeperimage>
+			<randomize>true</randomize>
+			<fadetime>1000</fadetime>
 			<visible>Container.Content(Movies)</visible>
 			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | Skin.HasSetting(VideoLibraryMovieFanart)</visible>
 		</control>
