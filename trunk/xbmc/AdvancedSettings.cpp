@@ -176,6 +176,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryExportAutoThumbs = false;
   m_bVideoLibraryMyMoviesCategoriesToGenres = false;
   m_bVideoLibraryImportWatchedState = false;
+  m_bVideoScannerIgnoreErrors = false;
 
   m_bUseEvilB = true;
 
@@ -361,6 +362,12 @@ bool CAdvancedSettings::Load()
     TiXmlElement* pMyMovies = pElement->FirstChildElement("mymovies");
     if (pMyMovies)
       XMLUtils::GetBoolean(pMyMovies, "categoriestogenres", m_bVideoLibraryMyMoviesCategoriesToGenres);
+  }
+
+  pElement = pRootElement->FirstChildElement("videoscanner");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "ignoreerrors", m_bVideoScannerIgnoreErrors);
   }
 
   pElement = pRootElement->FirstChildElement("slideshow");

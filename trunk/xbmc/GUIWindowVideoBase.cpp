@@ -1533,6 +1533,7 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
     for (int i=0;i<items.Size();++i)
     {
       CFileItemPtr pItem=items[i];
+
       if (pItem->IsVideoDb())
       {
         if (pItem->HasVideoInfoTag() &&
@@ -1540,6 +1541,10 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
              (!bMark && !(pItem->GetVideoInfoTag()->m_playCount))))
           continue;
       }
+
+      // Clear resume bookmark
+      if (bMark)
+        database.ClearBookMarksOfFile(pItem->m_strPath, CBookmark::RESUME);
 
       database.SetPlayCount(*pItem, bMark ? 1 : 0);
     }

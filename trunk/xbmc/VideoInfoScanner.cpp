@@ -275,7 +275,7 @@ namespace VIDEO
 
     if (!bSkip)
     {
-      if (RetrieveVideoInfo(items, settings.parent_name, m_info))
+      if (RetrieveVideoInfo(items, settings.parent_name_root, m_info))
       {
         if (!m_bStop && (m_info.strContent.Equals("movies") || m_info.strContent.Equals("musicvideos")))
         {
@@ -1264,7 +1264,8 @@ namespace VIDEO
         }
       }
     }
-    if (item->m_bIsFolder || (bGrabAny && nfoFile.IsEmpty()))
+    // folders (or stacked dvds) can take any nfo file if there's a unique one
+    if (item->m_bIsFolder || item->IsDVDFile(false, true) || (bGrabAny && nfoFile.IsEmpty()))
     {
       // see if there is a unique nfo file in this folder, and if so, use that
       CFileItemList items;
@@ -1519,6 +1520,9 @@ namespace VIDEO
 
   bool CVideoInfoScanner::DownloadFailed(CGUIDialogProgress* pDialog)
   {
+    if (g_advancedSettings.m_bVideoScannerIgnoreErrors)
+      return true;
+
     if (pDialog)
     {
       CGUIDialogOK::ShowAndGetInput(20448,20449,20022,20022);
