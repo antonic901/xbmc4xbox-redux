@@ -86,6 +86,7 @@ namespace VIDEO
     bool RetrieveVideoInfo(CFileItemList& items, bool bDirNames, const SScraperInfo& info, bool bRefresh=false, CScraperUrl *pURL=NULL, CGUIDialogProgress* pDlgProgress  = NULL, bool ignoreNfo=false);
     static void ApplyIMDBThumbToFolder(const CStdString &folder, const CStdString &imdbThumb);
     static int GetPathHash(const CFileItemList &items, CStdString &hash);
+    static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
     CNfoFile::NFOResult CheckForNFOFile(CFileItem* pItem, bool bGrabAny, SScraperInfo& info, CScraperUrl& scrUrl);
     CIMDB m_IMDB;
     /*! \brief Fetch thumbs for seasons for a given show
