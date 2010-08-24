@@ -710,7 +710,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       m_dlgProgress->Progress();
     }
 
-    if (item->m_bIsFolder && !item->IsParentFolder())
+    if (item->m_bIsFolder && !item->IsParentFolder() && !item->IsPlugin())
     { // folder item - let's check for a default.xbe file, and flatten if we have one
       CStdString defaultXBE;
       CUtil::AddFileToFolder(item->m_strPath, "default.xbe", defaultXBE);
