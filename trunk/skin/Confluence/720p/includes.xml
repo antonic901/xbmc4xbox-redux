@@ -56,7 +56,7 @@
 			<timeperimage>10000</timeperimage>
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
-			<visible>Window.IsActive(VideosSettings) | Window.IsActive(VideoLibrary) + ![Container.Content(Movies) | Container.Content(TVShows) | Container.Content(Seasons) | Container.Content(Episodes)]</visible>
+			<visible>Window.IsVisible(VideoPlaylist) | Window.IsVisible(VideosSettings) | Window.IsVisible(VideoLibrary) + ![Container.Content(Movies) | Container.Content(TVShows) | Container.Content(Seasons) | Container.Content(Episodes)]</visible>
 		</control>
 		<control type="multiimage">
 			<posx>0</posx>

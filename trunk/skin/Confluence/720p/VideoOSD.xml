@@ -97,34 +97,34 @@
 					<posy>0</posy>
 					<width>45</width>
 					<height>45</height>
-					<label>31355</label>
+					<label>10522</label>
 					<font>-</font>
-					<texturefocus>OSDDvdFO.png</texturefocus>
-					<texturenofocus>OSDDvdNF.png</texturenofocus>
+					<texturefocus>OSDPlaylistFO.png</texturefocus>
+					<texturenofocus>OSDPlaylistNF.png</texturenofocus>
 					<onleft>703</onleft>
 					<onright>705</onright>
 					<onup>605</onup>
 					<ondown>605</ondown>
-					<onclick>PlayerControl(ShowVideoMenu)</onclick>
-					<enable>VideoPlayer.HasMenu</enable>
-					<animation effect="fade" start="100" end="50" time="100" condition="!VideoPlayer.HasMenu">Conditional</animation>
+					<onclick>ActivateWindow(VideoPlaylist)</onclick>
+					<enable>Player.HasVideo</enable>
+					<animation effect="fade" start="100" end="50" time="100" condition="!Player.HasVideo">Conditional</animation>
 				</control>
 				<control type="button" id="705">
 					<posx>100</posx>
 					<posy>0</posy>
 					<width>45</width>
 					<height>45</height>
-					<label>264</label>
+					<label>31355</label>
 					<font>-</font>
-					<texturefocus>OSDRecordFO.png</texturefocus>
-					<texturenofocus>OSDRecordNF.png</texturenofocus>
+					<texturefocus>OSDDvdFO.png</texturefocus>
+					<texturenofocus>OSDDvdNF.png</texturenofocus>
 					<onleft>704</onleft>
 					<onright>700</onright>
 					<onup>605</onup>
 					<ondown>605</ondown>
-					<onclick>XBMC.PlayerControl(record)</onclick>
-					<enable>Player.CanRecord</enable>
-					<animation effect="fade" start="100" end="50" time="100" condition="!Player.CanRecord">Conditional</animation>
+					<onclick>PlayerControl(ShowVideoMenu)</onclick>
+					<enable>VideoPlayer.HasMenu</enable>
+					<animation effect="fade" start="100" end="50" time="100" condition="!VideoPlayer.HasMenu">Conditional</animation>
 				</control>
 			</control>
 			<control type="group" id="100">
