@@ -156,15 +156,18 @@ void XBPyThread::Process()
 
   // add on any addon modules the user has installed
   // fetch directory
-  CFileItemList items;
-  DIRECTORY::CDirectory::GetDirectory("Q:\\scripts\\.modules", items, "/");
-  for (int i = 0; i < items.Size(); ++i)
+  if (DIRECTORY::CDirectory::Exists("Q:\\scripts\\.modules"))
   {
-    CFileItemPtr pItem = items[i];
-    if (pItem->m_bIsFolder)
+    CFileItemList items;
+    DIRECTORY::CDirectory::GetDirectory("Q:\\scripts\\.modules", items, "/");
+    for (int i = 0; i < items.Size(); ++i)
     {
-      CStdString fullpath = CUtil::AddFileToFolder(pItem->m_strPath, "lib");
-      path += PY_PATH_SEP + fullpath;
+      CFileItemPtr pItem = items[i];
+      if (pItem->m_bIsFolder)
+      {
+        CStdString fullpath = CUtil::AddFileToFolder(pItem->m_strPath, "lib");
+        path += PY_PATH_SEP + fullpath;
+      }
     }
   }
   // and add on whatever our default path is
