@@ -275,7 +275,7 @@
 	</include>
 	<include name="ButtonInfoDialogsCommonValues">
 		<height>40</height>
-		<width>170</width>
+		<width>177</width>
 		<textoffsetx>20</textoffsetx>
 		<align>center</align>
 		<aligny>center</aligny>
