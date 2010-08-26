@@ -1204,9 +1204,9 @@ namespace VIDEO
         CFileItem item2(*item);
         CURL url(item->m_strPath);
         CStdString strPath;
-        CUtil::GetDirectory(url.GetHostName(),strPath);
-        CUtil::AddFileToFolder(strPath,CUtil::GetFileName(item->m_strPath),item2.m_strPath);
-        return GetnfoFile(&item2,bGrabAny);
+        CUtil::GetDirectory(url.GetHostName(), strPath);
+        CUtil::AddFileToFolder(strPath, CUtil::GetFileName(item->m_strPath),item2.m_strPath);
+        return GetnfoFile(&item2, bGrabAny);
       }
 
       // grab the folder path
@@ -1223,17 +1223,6 @@ namespace VIDEO
           return nfoFile;
       }
 
-      // already an .nfo file?
-      if ( strcmpi(strExtension.c_str(), ".nfo") == 0 )
-        nfoFile = item->m_strPath;
-      // no, create .nfo file
-      else
-        nfoFile = CUtil::ReplaceExtension(item->m_strPath, ".nfo");
-
-      // test file existence
-      if (!nfoFile.IsEmpty() && !CFile::Exists(nfoFile))
-        nfoFile.Empty();
-
       // try looking for .nfo file for a stacked item
       if (item->IsStack())
       {
@@ -1242,15 +1231,28 @@ namespace VIDEO
         CStdString firstFile = dir.GetFirstStackedFile(item->m_strPath);
         CFileItem item2;
         item2.m_strPath = firstFile;
-        nfoFile = GetnfoFile(&item2,bGrabAny);
+        nfoFile = GetnfoFile(&item2, bGrabAny);
         // else try .nfo file matching stacked title
         if (nfoFile.IsEmpty())
         {
           CStdString stackedTitlePath = dir.GetStackedTitlePath(item->m_strPath);
           item2.m_strPath = stackedTitlePath;
-          nfoFile = GetnfoFile(&item2,bGrabAny);
+          nfoFile = GetnfoFile(&item2, bGrabAny);
         }
       }
+      else
+      {
+         // already an .nfo file?
+        if ( strcmpi(strExtension.c_str(), ".nfo") == 0 )
+          nfoFile = item->m_strPath;
+        // no, create .nfo file
+        else
+          nfoFile = CUtil::ReplaceExtension(item->m_strPath, ".nfo");
+      }
+
+      // test file existence
+      if (!nfoFile.IsEmpty() && !CFile::Exists(nfoFile))
+        nfoFile.Empty();
 
       if (nfoFile.IsEmpty()) // final attempt - strip off any cd1 folders
       {
@@ -1259,8 +1261,8 @@ namespace VIDEO
         if (strPath.Mid(strPath.size()-3).Equals("cd1"))
         {
           strPath = strPath.Mid(0,strPath.size()-3);
-          CUtil::AddFileToFolder(strPath,CUtil::GetFileName(item->m_strPath),item2.m_strPath);
-          return GetnfoFile(&item2,bGrabAny);
+          CUtil::AddFileToFolder(strPath, CUtil::GetFileName(item->m_strPath),item2.m_strPath);
+          return GetnfoFile(&item2, bGrabAny);
         }
       }
     }
@@ -1272,7 +1274,7 @@ namespace VIDEO
       CDirectory dir;
       CStdString strPath = item->m_strPath;
       if (!item->m_bIsFolder)
-        CUtil::GetDirectory(item->m_strPath,strPath);
+        CUtil::GetDirectory(item->m_strPath, strPath);
       if (dir.GetDirectory(strPath, items, ".nfo") && items.Size())
       {
         int numNFO = -1;
