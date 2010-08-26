@@ -1956,7 +1956,7 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   g_audioManager.Load();
 
   CGUIDialogFullScreenInfo* pDialog = NULL;
-  RESOLUTION res;
+  RESOLUTION res = INVALID;
   CStdString strPath = g_SkinInfo.GetSkinPath("DialogFullScreenInfo.xml", &res);
   if (CFile::Exists(strPath))
     pDialog = new CGUIDialogFullScreenInfo;

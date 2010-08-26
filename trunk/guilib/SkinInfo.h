@@ -51,6 +51,12 @@ public:
   wchar_t* GetCreditsLine(int i);
 
   CStdString GetDirFromRes(RESOLUTION res);
+  /*! \brief Translate a resolution string
+   \param res the string to translate
+   \param def the default to use if res is invalid
+   \return the translated resolution
+   */
+  static RESOLUTION TranslateResolution(const CStdString &res, RESOLUTION def);
   CStdString GetBaseDir();
   double GetMinVersion();
   double GetVersion(){ return m_Version;};

@@ -2379,7 +2379,7 @@ void CGUIWindowSettingsCategory::FillInSkinFonts(CSetting *pSetting)
 
   m_strNewSkinFontSet.Empty();
 
-  RESOLUTION res;
+  RESOLUTION res = INVALID;
   CStdString strPath = g_SkinInfo.GetSkinPath("Font.xml", &res);
 
   TiXmlDocument xmlDoc;

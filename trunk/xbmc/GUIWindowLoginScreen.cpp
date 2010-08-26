@@ -123,7 +123,7 @@ bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
 
             g_weatherManager.Refresh();
             g_pythonParser.bLogin = true;
-            RESOLUTION res=INVALID;
+            RESOLUTION res = INVALID;
             CStdString startupPath = g_SkinInfo.GetSkinPath("startup.xml", &res);
             int startWindow = g_guiSettings.GetInt("lookandfeel.startupwindow");
             // test for a startup window, and activate that instead of home

@@ -146,7 +146,7 @@ void CGUIIncludes::ResolveIncludes(TiXmlElement *node, const CStdString &type)
     const char *file = include->Attribute("file");
     if (file)
     { // we need to load this include from the alternative file
-      RESOLUTION res;
+      RESOLUTION res = INVALID;
       LoadIncludes(g_SkinInfo.GetSkinPath(file, &res));
     }
     const char *condition = include->Attribute("condition");
