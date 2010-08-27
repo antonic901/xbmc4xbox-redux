@@ -1113,6 +1113,8 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
     dbItem.m_lStartOffset = item->m_lStartOffset;
     return IsSamePath(&dbItem);
   }
+  if (HasProperty("original_listitem_url"))
+    return (GetProperty("original_listitem_url") == item->m_strPath);
   return false;
 }
 
@@ -2485,6 +2487,7 @@ CStdString CFileItem::GetCachedEpisodeThumb() const
 void CFileItem::SetCachedVideoThumb()
 {
   if (IsParentFolder()) return;
+  if (HasThumbnail()) return;
   CStdString cachedThumb(GetCachedVideoThumb());
   if (HasVideoInfoTag() && !m_bIsFolder  &&
       GetVideoInfoTag()->m_iEpisode > -1 &&

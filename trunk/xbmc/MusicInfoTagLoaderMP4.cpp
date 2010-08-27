@@ -313,8 +313,12 @@ int CMusicInfoTagLoaderMP4::ParseAtom( __int64 startOffset, __int64 stopOffset, 
         unsigned int	metaKey		= ReadUnsignedInt( atomBuffer.get() + nextTagPosition );
         char*			metaData	= ( atomBuffer.get() + nextTagPosition ) + 20;
 
+        if (metaSize - 20 <= 0)
+          break;
+
         // This is where the next chunk of data will be, if present..
         nextTagPosition += ( metaSize + 4 );
+
 
         // Ok.. we've got some metadata to process. Go to it.
         ParseTag( metaKey, metaData, metaSize - 20, tag );

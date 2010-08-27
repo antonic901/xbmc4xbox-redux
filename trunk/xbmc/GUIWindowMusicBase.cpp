@@ -1097,7 +1097,7 @@ void CGUIWindowMusicBase::PlayItem(int iItem)
   }
 #endif
   // if its a folder, build a playlist
-  if (pItem->m_bIsFolder || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_NAV && pItem->IsPlayList()))
+  if ((pItem->m_bIsFolder && !pItem->IsPlugin()) || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_NAV && pItem->IsPlayList()))
   {
     // make a copy so that we can alter the queue state
     CFileItemPtr item(new CFileItem(*m_vecItems->Get(iItem)));
@@ -1184,15 +1184,6 @@ void CGUIWindowMusicBase::LoadPlayList(const CStdString& strPlayList)
 bool CGUIWindowMusicBase::OnPlayMedia(int iItem)
 {
   CFileItemPtr pItem = m_vecItems->Get(iItem);
-  if (pItem->m_strPath == "add" && pItem->GetLabel() == g_localizeStrings.Get(1026)) // 'add source button' in empty root
-  {
-    if (CGUIDialogMediaSource::ShowAndAddMediaSource("music"))
-    {
-      Update("");
-      return true;
-    }
-    return false;
-  }
 
   // party mode
   if (g_partyModeManager.IsEnabled() && !pItem->IsLastFM())

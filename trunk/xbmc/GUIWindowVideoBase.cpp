@@ -1357,16 +1357,6 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   g_playlistPlayer.Reset();
   g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_NONE);
 
-  if (pItem->m_strPath == "add" && pItem->GetLabel() == g_localizeStrings.Get(1026)) // 'add source button' in empty root
-  {
-    if (CGUIDialogMediaSource::ShowAndAddMediaSource("video"))
-    {
-      Update("");
-      return true;
-    }
-    return false;
-  }
-
   CFileItem item(*pItem);
   if (pItem->IsVideoDb())
   {
@@ -1642,7 +1632,7 @@ void CGUIWindowVideoBase::PlayItem(int iItem)
 
   const CFileItemPtr pItem = m_vecItems->Get(iItem);
   // if its a folder, build a temp playlist
-  if (pItem->m_bIsFolder)
+  if (pItem->m_bIsFolder && !pItem->IsPlugin())
   {
     // take a copy so we can alter the queue state
     CFileItemPtr item(new CFileItem(*m_vecItems->Get(iItem)));

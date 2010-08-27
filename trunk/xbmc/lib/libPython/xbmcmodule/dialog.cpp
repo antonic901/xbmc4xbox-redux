@@ -110,8 +110,7 @@ namespace PYXBMC
     pDialog->SetLine(2, utf8Line[3]);
 
     //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW};
-    g_applicationMessenger.SendMessage(tMsg, true);
+    PyXBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
 
     return Py_BuildValue((char*)"b", pDialog->IsConfirmed());
   }
@@ -304,8 +303,7 @@ namespace PYXBMC
       pDialog->SetChoice(1,utf8Line[5]);
 
     //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW};
-    g_applicationMessenger.SendMessage(tMsg, true);
+    PyXBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
 
     return Py_BuildValue((char*)"b", pDialog->IsConfirmed());
   }
@@ -353,8 +351,7 @@ namespace PYXBMC
       pDialog->SetAutoClose(autoClose);
 
     //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW};
-    g_applicationMessenger.SendMessage(tMsg, true);
+    PyXBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
 
     return Py_BuildValue((char*)"i", pDialog->GetSelectedLabel());
   }

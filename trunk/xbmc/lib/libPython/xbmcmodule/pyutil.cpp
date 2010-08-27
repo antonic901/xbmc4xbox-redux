@@ -24,6 +24,7 @@
 #include <wchar.h>
 #include "SkinInfo.h"
 #include "tinyXML/tinyxml.h"
+#include "Application.h"
 
 using namespace std;
 
@@ -78,6 +79,14 @@ namespace PYXBMC
       iPyXBMCGUILockRef--;
       if (iPyXBMCGUILockRef == 0) g_graphicsContext.Unlock();
     }
+  }
+
+  void PyXBMCWaitForThreadMessage(int message, int param1, int param2)
+  {
+    Py_BEGIN_ALLOW_THREADS
+    ThreadMessage tMsg = {message, param1, param2};
+    g_applicationMessenger.SendMessage(tMsg, true);
+    Py_END_ALLOW_THREADS
   }
 
   static char defaultImage[1024];
