@@ -61,6 +61,8 @@ CGUIDialogVideoSettings::~CGUIDialogVideoSettings(void)
 #define VIDEO_SETTINGS_NO_CACHE           16
 #define VIDEO_SETTINGS_FORCE_INDEX        17
 
+#define VIDEO_SETTINGS_POSTPROCESS        22
+
 void CGUIDialogVideoSettings::CreateSettings()
 {
   m_usePopupSliders = g_SkinInfo.HasSkinFile("DialogSlider.xml");
@@ -78,6 +80,7 @@ void CGUIDialogVideoSettings::CreateSettings()
   }
   AddSlider(VIDEO_SETTINGS_ZOOM, 216, &g_stSettings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.01f, 2.0f, FormatFloat);
   AddSlider(VIDEO_SETTINGS_PIXEL_RATIO, 217, &g_stSettings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.01f, 2.0f, FormatFloat);
+  AddBool(VIDEO_SETTINGS_POSTPROCESS, 16400, &g_stSettings.m_currentVideoSettings.m_PostProcess);
 
   AddSlider(VIDEO_SETTINGS_BRIGHTNESS, 464, &g_stSettings.m_currentVideoSettings.m_Brightness, 0, 1, 100, FormatInteger);
   AddSlider(VIDEO_SETTINGS_CONTRAST, 465, &g_stSettings.m_currentVideoSettings.m_Contrast, 0, 1, 100, FormatInteger);

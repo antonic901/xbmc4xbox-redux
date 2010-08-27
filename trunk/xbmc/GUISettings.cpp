@@ -414,10 +414,10 @@ void CGUISettings::Initialize()
   AddInt(7, "videoplayer.flicker", 13100, 1, 0, 1, 5, SPIN_CONTROL_INT_PLUS, -1, TEXT_OFF);
   AddBool(8, "videoplayer.soften", 215, false);
   AddFloat(9, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
-  AddSeparator(10, "videoplayer.sep2");
-  AddInt(11, "videoplayer.defaultplayer", 22030, PLAYER_MPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
-  AddBool(12, "videoplayer.allcodecs", 22025, false);
-  AddBool(13, "videoplayer.fast", 22026, false);
+  AddSeparator(11, "videoplayer.sep2");
+  AddInt(12, "videoplayer.defaultplayer", 22030, PLAYER_MPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
+  AddBool(13, "videoplayer.allcodecs", 22025, false);
+  AddBool(14, "videoplayer.fast", 22026, false);
 
   AddCategory(5, "myvideos", 14081);
   AddBool(0, "myvideos.treatstackasfile", 20051, true);

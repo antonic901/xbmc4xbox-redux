@@ -61,7 +61,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_videoPercentSeekForwardBig = 10;
   m_videoPercentSeekBackwardBig = -10;
   m_videoBlackBarColour = 0;
-  m_videoPPFFmpegType = "linblenddeint";
+  m_videoPPFFmpegDeint = "linblenddeint";
+  m_videoPPFFmpegPostProc = "ha:128:7,va,dr";
   m_videoIgnoreAtStart = 15;
   m_videoIgnoreAtEnd = 5;
   m_videoPlayCountMinimumPercent = 90.0f;
@@ -330,7 +331,8 @@ bool CAdvancedSettings::Load()
       GetCustomRegexps(pVideoExcludes, m_videoCleanStringRegExps);
 
     XMLUtils::GetString(pElement,"cleandatetime", m_videoCleanDateTimeRegExp);
-    XMLUtils::GetString(pElement,"postprocessing",m_videoPPFFmpegType);
+    XMLUtils::GetString(pElement,"ppffmpegdeinterlacing",m_videoPPFFmpegDeint);
+    XMLUtils::GetString(pElement,"ppffmpegpostprocessing",m_videoPPFFmpegPostProc);
   }
 
   pElement = pRootElement->FirstChildElement("musiclibrary");

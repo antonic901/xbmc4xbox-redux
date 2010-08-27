@@ -31,7 +31,7 @@ public:
   CDVDVideoPPFFmpeg(const CStdString& mType);
   ~CDVDVideoPPFFmpeg();
 
-
+  void SetType(const CStdString& mType);
   void SetTarget(DVDVideoPicture *pPicture){ m_pTarget = pPicture; };
   bool Process   (DVDVideoPicture *pPicture);
   bool GetPicture(DVDVideoPicture *pPicture);

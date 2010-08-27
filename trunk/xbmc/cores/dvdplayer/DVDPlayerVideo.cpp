@@ -216,7 +216,8 @@ void CDVDPlayerVideo::Process()
   CLog::Log(LOGNOTICE, "running thread: video_thread");
 
   DVDVideoPicture picture;
-  CDVDVideoPPFFmpeg mDeinterlace(g_advancedSettings.m_videoPPFFmpegType);
+  CDVDVideoPPFFmpeg mPostProcess("");
+  CStdString sPostProcessType;
 
   memset(&picture, 0, sizeof(DVDVideoPicture));
 
@@ -433,6 +434,8 @@ void CDVDPlayerVideo::Process()
           memset(&picture, 0, sizeof(DVDVideoPicture));
           if (m_pVideoCodec->GetPicture(&picture))
           {
+            sPostProcessType.clear();
+
             picture.iGroupId = pPacket->iGroupId;
 
             if(picture.iDuration == 0)
@@ -464,8 +467,24 @@ void CDVDPlayerVideo::Process()
             EINTERLACEMETHOD mInt = g_stSettings.m_currentVideoSettings.m_InterlaceMethod;
             if( mInt == VS_INTERLACEMETHOD_DEINTERLACE )
             {
-              if(mDeinterlace.Process(&picture))
-                mDeinterlace.GetPicture(&picture);
+              if (!sPostProcessType.empty())
+                sPostProcessType += ",";
+              sPostProcessType += g_advancedSettings.m_videoPPFFmpegDeint;
+            }
+
+            if (g_stSettings.m_currentVideoSettings.m_PostProcess)
+            {
+              if (!sPostProcessType.empty())
+                sPostProcessType += ",";
+              // This is what mplayer uses for its "high-quality filter combination"
+              sPostProcessType += g_advancedSettings.m_videoPPFFmpegPostProc;
+            }
+
+            if (!sPostProcessType.empty())
+            {
+              mPostProcess.SetType(sPostProcessType);
+              if (mPostProcess.Process(&picture))
+                mPostProcess.GetPicture(&picture);
             }
             else if( mInt == VS_INTERLACEMETHOD_RENDER_WEAVE || mInt == VS_INTERLACEMETHOD_RENDER_WEAVE_INVERTED )
             {
