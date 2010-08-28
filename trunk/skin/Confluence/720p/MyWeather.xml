@@ -73,9 +73,9 @@
 				</control>
 				<control type="label">
 					<description>current temp Value</description>
-					<posx>165</posx>
+					<posx>195</posx>
 					<posy>175</posy>
-					<width>160</width>
+					<width>180</width>
 					<height>40</height>
 					<font>WeatherTemp</font>
 					<align>right</align>
@@ -86,7 +86,7 @@
 				</control>
 				<control type="label">
 					<description>current temp Value Units</description>
-					<posx>170</posx>
+					<posx>190</posx>
 					<posy>185</posy>
 					<width>100</width>
 					<height>40</height>
@@ -131,7 +131,7 @@
 					<description>current feels like label</description>
 					<posx>170</posx>
 					<posy>400</posy>
-					<width>170</width> 
+					<width>170</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>right</align>
@@ -144,7 +144,7 @@
 					<description>current dew label</description>
 					<posx>170</posx>
 					<posy>430</posy>
-					<width>170</width> 
+					<width>170</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>right</align>
@@ -157,7 +157,7 @@
 					<description>current humidity label</description>
 					<posx>170</posx>
 					<posy>460</posy>
-					<width>170</width> 
+					<width>170</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>right</align>
@@ -170,7 +170,7 @@
 					<description>current UV Index label</description>
 					<posx>170</posx>
 					<posy>490</posy>
-					<width>170</width> 
+					<width>170</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>right</align>
@@ -183,7 +183,7 @@
 					<description>current Wind label</description>
 					<posx>170</posx>
 					<posy>520</posy>
-					<width>170</width> 
+					<width>170</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>right</align>
@@ -196,7 +196,7 @@
 					<description>current feels like Value</description>
 					<posx>185</posx>
 					<posy>400</posy>
-					<width>300</width> 
+					<width>300</width>
 					<height>35</height>
 					<font>font13</font>
 					<align>left</align>
@@ -323,7 +323,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[393] :</label>
+						<label>$LOCALIZE[419] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -349,7 +349,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[391] :</label>
+						<label>$LOCALIZE[418] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -422,7 +422,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[393] :</label>
+						<label>$LOCALIZE[419] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -448,7 +448,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[391] :</label>
+						<label>$LOCALIZE[418] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -521,7 +521,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[393] :</label>
+						<label>$LOCALIZE[419] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -547,7 +547,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[391] :</label>
+						<label>$LOCALIZE[418] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -620,7 +620,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[393] :</label>
+						<label>$LOCALIZE[419] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -646,7 +646,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[391] :</label>
+						<label>$LOCALIZE[418] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -684,7 +684,8 @@
 			<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | Control.HasFocus(8999)">Conditional</animation>
 			<animation effect="slide" start="0,0" end="-250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus">WindowClose</animation>
 			<control type="group">
-				<animation effect="slide" end="-228,0" time="300" tween="quadratic" easing="out">WindowClose</animation>
+				<animation effect="slide" end="-240,0" time="300" tween="quadratic" easing="out">WindowClose</animation>
+				<animation effect="slide" start="-15,0" end="0,0" time="300" tween="quadratic" easing="out">WindowOpen</animation>
 				<control type="image">
 					<posx>0</posx>
 					<posy>0</posy>
@@ -768,13 +769,7 @@
 				<texturefocus>-</texturefocus>
 				<visible>true</visible>
 			</control>
-			<control type="image">
-				<posx>-820</posx>
-				<posy>0</posy>
-				<width>846</width>
-				<height>720</height>
-				<texture>HomeBlade.png</texture>
-			</control>
+			<include>SideBladeLeft</include>
 			<control type="image">
 				<description>LOGO</description>
 				<posx>-230</posx>
@@ -897,13 +892,6 @@
 			<onup>3</onup>
 			<ondown>3</ondown>
 			<visible allowhiddenfocus="true">false</visible>
-		</control>
-		<control type="image">
-			<posx>26r</posx>
-			<posy>0</posy>
-			<width>846</width>
-			<height>720</height>
-			<texture flipx="true">HomeBlade.png</texture>
 		</control>
 		<control type="group">
 			<posx>60</posx>
