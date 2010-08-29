@@ -349,13 +349,6 @@ void CGUISettings::Initialize()
   AddBool(1, "debug.showloginfo", 20191, false);
   AddPath(2, "debug.screenshotpath",20004,"select writable folder",BUTTON_CONTROL_PATH_INPUT,false,657);
 
-  AddCategory(4, "masterlock", 12360);
-  AddString(1, "masterlock.lockcode"       , 20100, "-", BUTTON_CONTROL_STANDARD);
-  AddBool(4, "masterlock.startuplock"      , 20076,false);
-  AddBool(5, "masterlock.enableshutdown"   , 12362,false);  
-  // hidden masterlock settings
-  AddInt(0,"masterlock.maxretries", 12364, 3, 3, 1, 100, SPIN_CONTROL_TEXT);
-
   AddCategory(4, "autorun", 447);
   AddBool(1, "autorun.dvd", 240, true);
   AddBool(2, "autorun.vcd", 241, true);
@@ -388,6 +381,14 @@ void CGUISettings::Initialize()
   AddInt(12, "cachedvd.lan", 14035, 512, 0, 256, 16384, SPIN_CONTROL_INT_PLUS, MASK_KB, TEXT_OFF);
   AddSeparator(13, "cache.sep4");
   AddInt(14, "cacheunknown.internet", 14060, 1024, 0, 256, 16384, SPIN_CONTROL_INT_PLUS, MASK_KB, TEXT_OFF);
+
+  // !! Should be the last category, else disabling it will cause problems!
+  AddCategory(4, "masterlock", 12360);
+  AddString(1, "masterlock.lockcode"       , 20100, "-", BUTTON_CONTROL_STANDARD);
+  AddBool(4, "masterlock.startuplock"      , 20076,false);
+  AddBool(5, "masterlock.enableshutdown"   , 12362,false);  
+  // hidden masterlock settings
+  AddInt(0,"masterlock.maxretries", 12364, 3, 3, 1, 100, SPIN_CONTROL_TEXT);
 
   // video settings
   AddGroup(5, 3);
