@@ -3792,9 +3792,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleLineCollection.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParser.cpp">
-					</File>
-					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParser.h">
 					</File>
 					<File
@@ -3844,6 +3841,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleStream.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleTagSami.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleTagSami.h">
 					</File>
 				</Filter>
 			</Filter>

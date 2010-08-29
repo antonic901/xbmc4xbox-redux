@@ -104,6 +104,8 @@
 #include "Crc32.h"
 #include "utils/RssReader.h"
 #include "AdvancedSettings.h"
+#include "cores/dvdplayer/DVDSubtitles/DVDSubtitleTagSami.h"
+#include "cores/dvdplayer/DVDSubtitles/DVDSubtitleStream.h"
 
 using namespace std;
 namespace MathUtils {
@@ -2559,9 +2561,33 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   {
     if (items[i]->m_bIsFolder)
       continue;
- 
+
     CStdString filename = GetFileName(items[i]->m_strPath);
-    vecExtensionsCached.push_back(filename.Right(filename.size()-8));
+    strLExt = filename.Right(filename.size()-8);
+    vecExtensionsCached.push_back(strLExt);
+    if (CUtil::GetExtension(filename).Equals(".smi"))
+    {
+      //Cache multi-language sami subtitle
+      CDVDSubtitleStream* pStream = new CDVDSubtitleStream();
+      if(pStream->Open(items[i]->m_strPath))
+      {
+        CDVDSubtitleTagSami TagConv;
+        TagConv.LoadHead(pStream);
+        if (TagConv.m_Langclass.size() >= 2)
+        {
+          for (unsigned int k = 0; k < TagConv.m_Langclass.size(); k++)
+          {
+            strDest.Format("special://temp/subtitle.%s%s", TagConv.m_Langclass[k].Name, strLExt);
+            if (CFile::Cache(items[i]->m_strPath, strDest, pCallback, NULL))
+              CLog::Log(LOGINFO, " cached subtitle %s->%s\n", filename.c_str(), strDest.c_str());
+            CStdString strTemp;
+            strTemp.Format(".%s%s", TagConv.m_Langclass[k].Name, strLExt);
+            vecExtensionsCached.push_back(strTemp);
+          }
+        }
+      }
+      delete pStream;
+    }
   }
 
   // construct string of added exts
@@ -2602,7 +2628,6 @@ bool CUtil::CacheRarSubtitles(const CStdString& strRarPath,
     // checking for embedded rars, I moved this outside the sub_ext[] loop. We only need to check this once for each file.
     if (CUtil::IsRAR(strPathInRar) || CUtil::IsZIP(strPathInRar))
     {
-      CStdString strExtAdded;
       CStdString strRarInRar;
       if (CUtil::GetExtension(strPathInRar).Equals(".rar"))
         CUtil::CreateArchivePath(strRarInRar, "rar", strRarPath, strPathInRar);
@@ -2621,7 +2646,7 @@ bool CUtil::CacheRarSubtitles(const CStdString& strRarPath,
       {
         if (strExt.CompareNoCase(sub_exts[iPos]) == 0)
         {
-          CStdString strSourceUrl, strDestUrl;
+          CStdString strSourceUrl;
           if (CUtil::GetExtension(strRarPath).Equals(".rar"))
             CUtil::CreateArchivePath(strSourceUrl, "rar", strRarPath, strPathInRar);
           else
