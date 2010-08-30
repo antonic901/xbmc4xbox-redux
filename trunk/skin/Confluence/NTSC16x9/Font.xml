@@ -63,6 +63,11 @@
 			<filename>DejaVuSans-Bold.ttf</filename>
 			<size>13</size>
 		</font>
+		<font>
+			<name>font18_title</name>
+			<filename>DejaVuSans-Bold.ttf</filename>
+			<size>14</size>
+		</font>
 	 	<font>
 			<name>font13_title</name>
 			<filename>DejaVuSans-Bold.ttf</filename>
@@ -166,6 +171,11 @@
 			<filename>DejaVuSans-Bold.ttf</filename>
 			<size>13</size>
 		</font>
+		<font>
+			<name>font18_title</name>
+			<filename>DejaVuSans-Bold.ttf</filename>
+			<size>14</size>
+		</font>
 	 	<font>
 			<name>font13_title</name>
 			<filename>DejaVuSans-Bold.ttf</filename>
@@ -268,6 +278,11 @@
 			<name>font12_title</name>
 			<filename>Arial.ttf</filename>
 			<size>13</size>
+		</font>
+		<font>
+			<name>font18_title</name>
+			<filename>Arial.ttf</filename>
+			<size>14</size>
 		</font>
 	 	<font>
 			<name>font13_title</name>

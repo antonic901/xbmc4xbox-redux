@@ -275,11 +275,11 @@
 	</include>
 	<include name="ButtonInfoDialogsCommonValues">
 		<height>40</height>
-		<width>177</width>
+		<width>170</width>
 		<textoffsetx>20</textoffsetx>
 		<align>center</align>
 		<aligny>center</aligny>
-		<font>font13_title</font>
+		<font>font18_title</font>
 		<texturefocus border="5">button-focus.png</texturefocus>
 		<texturenofocus border="5">button-nofocus.png</texturenofocus>
 		<pulseonselect>false</pulseonselect>
