@@ -983,8 +983,8 @@ namespace VIDEO
     // get & save fanart image
     if (!pItem->CacheLocalFanart() || bRefresh)
     {
-      if (!movieDetails.m_fanart.m_xml.IsEmpty() && !movieDetails.m_fanart.DownloadImage(pItem->GetCachedFanart()))
-        CLog::Log(LOGERROR, "VideoInfoScanner: Failed to download fanart %s to %s", movieDetails.m_fanart.GetImageURL().c_str(), pItem->GetCachedFanart().c_str());
+      if (!movieDetails.m_fanart.m_xml.IsEmpty() && !movieDetails.m_fanart.GetImageURL().IsEmpty() && !movieDetails.m_fanart.DownloadImage(pItem->GetCachedFanart()))
+        CLog::Log(LOGWARNING, "VideoInfoScanner: Failed to download fanart %s to %s", movieDetails.m_fanart.GetImageURL().c_str(), pItem->GetCachedFanart().c_str());
     }
 
     CStdString strUserThumb = pItem->GetUserVideoThumb();
@@ -1035,6 +1035,7 @@ namespace VIDEO
       }
     }
     else
+    if (!strUserThumb.IsEmpty())
     {
       CPicture picture;
       picture.CacheThumb(strUserThumb, strThumb);
