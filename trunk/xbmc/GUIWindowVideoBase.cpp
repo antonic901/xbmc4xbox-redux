@@ -1360,8 +1360,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   CFileItem item(*pItem);
   if (pItem->IsVideoDb())
   {
-    item = CFileItem(*pItem->GetVideoInfoTag());
-    item.m_lStartOffset = pItem->m_lStartOffset;
+    item.m_strPath = pItem->GetVideoInfoTag()->m_strFileNameAndPath;
     item.SetProperty("original_listitem_url", pItem->m_strPath);
   }
 
@@ -1712,6 +1711,20 @@ void CGUIWindowVideoBase::OnPrepareFileItems(CFileItemList &items)
 {
   if (!items.m_strPath.Equals("plugin://video/"))
     items.SetCachedVideoThumbs();
+
+  if (items.GetContent() != "episodes")
+  { // we don't set cached fanart for episodes, as this requires a db fetch per episode
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      CFileItemPtr item = items[i];
+      if (!item->HasProperty("fanart_image"))
+      {
+        CStdString art = item->GetCachedFanart();
+        if (CFile::Exists(art))
+          item->SetProperty("fanart_image", art);
+      }
+    }
+  }
 }
 
 void CGUIWindowVideoBase::AddToDatabase(int iItem)

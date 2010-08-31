@@ -91,6 +91,8 @@ void CGUILabelControl::Render()
                  label.Mid(m_startHighlight, m_endHighlight - m_startHighlight), (color_t)m_label.disabledColor, label.Mid(m_endHighlight));
     label = colorLabel;
   }
+  else if (m_bHasPath)
+    label = ShortenPath(label);
 
   if (m_textLayout.Update(label, m_width))
   { // reset the scrolling as we have a new label
@@ -142,11 +144,7 @@ bool CGUILabelControl::CanFocus() const
 
 void CGUILabelControl::SetLabel(const string &strLabel)
 {
-  // shorten the path label
-  if ( m_bHasPath )
-    m_infoLabel.SetLabel(ShortenPath(strLabel), "");
-  else // parse the label for info tags
-    m_infoLabel.SetLabel(strLabel, "");
+  m_infoLabel.SetLabel(strLabel, "");
   m_ScrollInfo.Reset();
   if (m_iCursorPos > (int)strLabel.size())
     m_iCursorPos = strLabel.size();

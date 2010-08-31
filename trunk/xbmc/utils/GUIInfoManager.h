@@ -57,7 +57,7 @@ class CDateTime;
 #define PLAYER_HAS_AUDIO              2
 #define PLAYER_HAS_VIDEO              3
 #define PLAYER_PLAYING                4
-#define PLAYER_PAUSED                 5 
+#define PLAYER_PAUSED                 5
 #define PLAYER_REWINDING              6
 #define PLAYER_REWINDING_2x           7
 #define PLAYER_REWINDING_4x           8
@@ -72,14 +72,14 @@ class CDateTime;
 #define PLAYER_FORWARDING_32x        17
 #define PLAYER_CAN_RECORD            18
 #define PLAYER_RECORDING             19
-#define PLAYER_CACHING               20 
+#define PLAYER_CACHING               20
 #define PLAYER_DISPLAY_AFTER_SEEK    21
 #define PLAYER_PROGRESS              22
 #define PLAYER_SEEKBAR               23
 #define PLAYER_SEEKTIME              24
 #define PLAYER_SEEKING               25
 #define PLAYER_SHOWTIME              26
-#define PLAYER_TIME                  27  
+#define PLAYER_TIME                  27
 #define PLAYER_TIME_REMAINING        28
 #define PLAYER_DURATION              29
 #define PLAYER_SHOWCODEC             30

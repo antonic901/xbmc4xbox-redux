@@ -2164,6 +2164,23 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
             bReturn = GetImage(info.GetData1(), contextWindow).Equals(compare);
         }
         break;
+      case INTEGER_GREATER_THAN:
+        {
+          CStdString value;
+
+          if (item && item->IsFileItem() && info.GetData1() >= LISTITEM_START && info.GetData1() < LISTITEM_END)
+            value = GetItemImage((const CFileItem *)item, info.GetData1());
+          else
+            value = GetImage(info.GetData1(), contextWindow);
+
+          // Handle the case when a value contains time separator (:). This makes IntegerGreaterThan
+          // useful for Player.Time* members without adding a separate set of members returning time in seconds
+          if ( value.find_first_of( ':' ) != value.npos )
+            bReturn = StringUtils::TimeStringToSeconds( value ) > info.GetData2();
+          else
+            bReturn = atoi( value.c_str() ) > info.GetData2();
+        }
+        break;
       case STRING_STR:
           {
             CStdString compare = m_stringParameters[info.GetData2()];
@@ -2983,7 +3000,7 @@ CStdString CGUIInfoManager::GetMusicLabel(int item)
       return strCodec;
     }
     break;
-  case MUSICPLAYER_LYRICS: 
+  case MUSICPLAYER_LYRICS:
     return GetItemLabel(m_currentFile, AddListItemProp("lyrics"));
   }
   return GetMusicTagLabel(item, m_currentFile);
@@ -3004,19 +3021,19 @@ CStdString CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item) co
   case MUSICPLAYER_LYRICS:
     if (tag.GetLyrics().size()) { return tag.GetLyrics(); }
     break;
-  case MUSICPLAYER_ALBUM: 
+  case MUSICPLAYER_ALBUM:
     if (tag.GetAlbum().size()) { return tag.GetAlbum(); }
     break;
-  case MUSICPLAYER_ARTIST: 
+  case MUSICPLAYER_ARTIST:
     if (tag.GetArtist().size()) { return tag.GetArtist(); }
     break;
   case MUSICPLAYER_ALBUM_ARTIST:
     if (tag.GetAlbumArtist().size()) { return tag.GetAlbumArtist(); }
     break;
-  case MUSICPLAYER_YEAR: 
+  case MUSICPLAYER_YEAR:
     if (tag.GetYear()) { return tag.GetYearString(); }
     break;
-  case MUSICPLAYER_GENRE: 
+  case MUSICPLAYER_GENRE:
     if (tag.GetGenre().size()) { return tag.GetGenre(); }
     break;
   case MUSICPLAYER_TRACK_NUMBER:
@@ -3036,7 +3053,7 @@ CStdString CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item) co
       {
         strDisc.Format("%02i", tag.GetDiscNumber());
         return strDisc;
-      } 
+      }
     }
     break;
   case MUSICPLAYER_RATING:
