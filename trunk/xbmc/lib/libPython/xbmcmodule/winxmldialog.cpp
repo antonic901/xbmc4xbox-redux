@@ -97,7 +97,9 @@ namespace PYXBMC
 
           if (!XFILE::CFile::Exists(strSkinPath))
           {
-            PyErr_SetString(PyExc_TypeError, "XML File for Window is missing");
+            CStdString error;
+            error.Format("XML file(%s) for window is missing", strSkinPath);
+            PyErr_SetString(PyExc_TypeError, error.c_str());
             return NULL;
           }
         }
