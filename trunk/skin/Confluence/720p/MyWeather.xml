@@ -323,7 +323,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[419] :</label>
+						<label>$LOCALIZE[393] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -349,7 +349,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[418] :</label>
+						<label>$LOCALIZE[391] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -422,7 +422,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[419] :</label>
+						<label>$LOCALIZE[393] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -448,7 +448,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[418] :</label>
+						<label>$LOCALIZE[391] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -521,7 +521,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[419] :</label>
+						<label>$LOCALIZE[393] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -547,7 +547,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[418] :</label>
+						<label>$LOCALIZE[391] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -620,7 +620,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[419] :</label>
+						<label>$LOCALIZE[393] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
@@ -646,7 +646,7 @@
 						<font>font13</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$LOCALIZE[418] :</label>
+						<label>$LOCALIZE[391] :</label>
 						<textcolor>grey2</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>Weather.IsFetched</visible>
