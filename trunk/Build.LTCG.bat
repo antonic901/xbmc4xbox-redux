@@ -16,6 +16,22 @@ TITLE XBMC Build Prepare Script
 ECHO Wait while preparing the build.
 ECHO ------------------------------
 rem	CONFIG START
+
+	set Silent=0
+	set SkipCompression=0
+
+:PARAMETERS
+	IF "%1"=="noprompt" (
+	  set Silent=1
+	) ELSE IF "%1"=="nocompress" (
+	  set SkipCompression=1
+	) ELSE IF "%1"=="" (
+	  goto PARAMSDONE
+	)
+	SHIFT
+	goto PARAMETERS
+:PARAMSDONE
+
 	IF "%VS71COMNTOOLS%"=="" (
 	  set NET="%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com"
 	) ELSE (
@@ -36,10 +52,9 @@ rem ---------------------------------------------
 
 rem	check for existing xbe
 rem ---------------------------------------------
-IF EXIST Release_LTCG\default.xbe (
-  goto XBE_EXIST
-)
-goto COMPILE
+
+IF %Silent%==1 GOTO COMPILE
+IF NOT EXIST Release_LTCG\default.xbe GOTO COMPILE
 
 :XBE_EXIST
   ECHO ------------------------------
@@ -112,27 +127,35 @@ goto COMPILE
   ECHO ------------------------------
   IF NOT EXIST %RAR% (
   	ECHO WinRAR not installed!  Skipping .rar compression...
+  ) ELSE IF %SkipCompression%==1 (
+  	ECHO Skipping build compression.
   ) ELSE (
-  	ECHO Compressing build to XBMC.rar file...
-  	%RAR% %RAROPS%
+    	ECHO Compressing build to XBMC.rar file...
+    	%RAR% %RAROPS%
   )
 
   ECHO ------------------------------
   ECHO Build Succeeded!
 
-  GOTO VIEWLOG
+IF %Silent%==1 (
+  goto END
+) ELSE (
+  goto VIEWLOG
+)
+
 :DIE
   ECHO !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-
   set DIETEXT=ERROR: %DIETEXT%
-  echo %DIETEXT%
+  ECHO %DIETEXT%
 
 :VIEWLOG
   set /P XBMC_BUILD_ANSWER=View the build log in your HTML browser? [y/n]
-  if /I %XBMC_BUILD_ANSWER% NEQ y goto END
+  if /I %XBMC_BUILD_ANSWER% NEQ y goto VIEWPAUSE
   start /D"%~dp0Release_LTCG" BuildLog.htm"
-  goto END
 
-:END
+:VIEWPAUSE
   set XBMC_BUILD_ANSWER=
   ECHO Press any key to exit...
   pause > NUL
+  
+:END

@@ -14,6 +14,22 @@ rem -------------------------------------------------------------
 rem Remove 'rem' from 'web / python' below to copy these to the BUILD directory.
 rem -------------------------------------------------------------
 rem	CONFIG START
+
+	set Silent=0
+	set SkipCompression=0
+
+:PARAMETERS
+	IF "%1"=="noprompt" (
+	  set Silent=1
+	) ELSE IF "%1"=="nocompress" (
+	  set SkipCompression=1
+	) ELSE IF "%1"=="" (
+	  goto PARAMSDONE
+	)
+	SHIFT
+	goto PARAMETERS
+:PARAMSDONE
+
 	IF "%VS71COMNTOOLS%"=="" (
 	  set NET="%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com"
 	) ELSE (
@@ -37,6 +53,9 @@ rem	CONFIG START
 	set RAROPS=a -r -idp -inul -m5 XBMC.rar BUILD
 	set RAROPS_EXE=a -r -idp -inul -m5 XBMC_PC.rar BUILD_WIN32
   rem	CONFIG END
+
+IF %Silent%==1 GOTO COMPILE
+  
   rem -------------------------------------------------------------
 
   ECHO    ²²²²²²²±±±±±±±±°°°°°°°
@@ -70,7 +89,6 @@ rem	CONFIG START
   set /P XBMC_COMPILE_ANSWER=Please enter the number you want to build! [1/2]:
   if /I %XBMC_COMPILE_ANSWER% EQU 1 goto XBE_COMPILE
   if /I %XBMC_COMPILE_ANSWER% EQU 2 goto EXE_COMPILE
-
 
 :XBE_COMPILE
   rem ---------------------------------------------
@@ -220,6 +238,10 @@ rem	CONFIG START
   del exclude.txt
   ECHO ------------------------------------------------------------
   ECHO Build Succeeded!
+  IF %SkipCompression%==1 (
+    IF %Silent%==1 GOTO END
+    GOTO VIEWLOG_XBE
+  )
   GOTO RAR_XBE
 
 :MAKE_BUILD_EXE
@@ -279,6 +301,10 @@ rem	CONFIG START
   del exclude.txt
   ECHO ------------------------------------------------------------
   ECHO Build Succeeded!
+  IF %SkipCompression%==1 (
+    IF %Silent%==1 GOTO END
+    GOTO VIEWLOG_EXE
+  )
   GOTO RAR_EXE
 
 :RAR_XBE
@@ -293,6 +319,7 @@ rem	CONFIG START
       )
     )
   ECHO ------------------------------------------------------------
+  IF %Silent%==1 GOTO END
   GOTO VIEWLOG_XBE
 
 :RAR_EXE
@@ -307,6 +334,7 @@ rem	CONFIG START
       )
     )
   ECHO ------------------------------------------------------------
+  IF %Silent%==1 GOTO END
   GOTO VIEWLOG_EXE
   
 :DIE
@@ -320,17 +348,19 @@ rem	CONFIG START
 
 :VIEWLOG_XBE
   set /P XBMC_BUILD_ANSWER=View the build log in your HTML browser? [y/n]
-  if /I %XBMC_BUILD_ANSWER% NEQ y goto END
+  if /I %XBMC_BUILD_ANSWER% NEQ y goto VIEWPAUSE
   start /D"%~dp0Release" BuildLog.htm"
-  goto END
-
+  goto VIEWPAUSE
+  
 :VIEWLOG_EXE
   set /P XBMC_BUILD_ANSWER=View the build log in your HTML browser? [y/n]
-  if /I %XBMC_BUILD_ANSWER% NEQ y goto END
+  if /I %XBMC_BUILD_ANSWER% NEQ y goto VIEWPAUSE
   start /D"%~dp0tools\Win32\Release" BuildLog.htm"
-  goto END
+  goto VIEWPAUSE
 
-:END
+:VIEWPAUSE
   set XBMC_BUILD_ANSWER=
   ECHO Press any key to exit...
   pause > NUL
+
+:END
