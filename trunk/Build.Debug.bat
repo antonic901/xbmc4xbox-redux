@@ -137,7 +137,9 @@ IF NOT EXIST debug\default.xbe GOTO COMPILE
   ECHO ------------------------------
   ECHO Build Succeeded!
 
+  IF %Silent%==1 GOTO END
   GOTO VIEWLOG
+  
 :DIE
   ECHO !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-
   set DIETEXT=ERROR: %DIETEXT%
@@ -145,11 +147,12 @@ IF NOT EXIST debug\default.xbe GOTO COMPILE
 
 :VIEWLOG
   set /P XBMC_BUILD_ANSWER=View the build log in your HTML browser? [y/n]
-  if /I %XBMC_BUILD_ANSWER% NEQ y goto END
+  if /I %XBMC_BUILD_ANSWER% NEQ y goto VIEWPAUSE
   start /D"%~dp0debug" BuildLog.htm"
-  goto END
 
-:END
+:VIEWPAUSE
   set XBMC_BUILD_ANSWER=
   ECHO Press any key to exit...
   pause > NUL
+  
+:END
