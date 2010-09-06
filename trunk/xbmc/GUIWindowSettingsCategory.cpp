@@ -58,9 +58,7 @@
 #include "GUIWindowPrograms.h"
 #include "MediaManager.h"
 #include "xbox/network.h"
-#ifdef HAS_WEB_SERVER
 #include "lib/libGoAhead/WebServer.h"
-#endif
 #include "GUIControlGroupList.h"
 #include "XBTimeZone.h"
 #include "VideoDatabase.h"
@@ -589,7 +587,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(476), SPIN_DOWN_BOTH);
       pControl->SetValue(pSettingInt->GetData());
     }
-#ifdef HAS_WEB_SERVER
     else if (strSetting.Equals("services.webserverusername"))
     {
       // get password from the webserver if it's running (and update our settings)
@@ -613,7 +610,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
     }
-#endif
     else if (strSetting.Equals("services.esport"))
     {
       CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
@@ -1598,7 +1594,6 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
       if (port <= 0 || port > 65535)
         pSetting->SetData("80");
     }
-#ifdef HAS_WEB_SERVER
     g_application.StopWebServer();
     if (g_guiSettings.GetBool("services.webserver"))
     {
@@ -1610,7 +1605,6 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
           g_application.m_pWebServer->SetPassword(g_guiSettings.GetString("services.webserverpassword").c_str());
       }
     }
-#endif    
   }
   
   else if (strSetting.Equals("network.ipaddress"))

@@ -23,7 +23,6 @@
 #endif
 
 #define SOCK_DFT_SVC_TIME	1000
-#define SPYCE_SUPPORT
 
 #ifdef __cplusplus
 extern "C" {

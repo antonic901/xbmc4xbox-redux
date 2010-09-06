@@ -114,6 +114,12 @@
 					RelativePath=".\Platinum\Source\Core\PltArgument.h">
 				</File>
 				<File
+					RelativePath=".\Platinum\Source\Core\PltConstants.cpp">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Core\PltConstants.h">
+				</File>
+				<File
 					RelativePath=".\Platinum\Source\Core\PltCtrlPoint.cpp">
 				</File>
 				<File

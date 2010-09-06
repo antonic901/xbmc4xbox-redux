@@ -1426,7 +1426,6 @@ void CApplication::StopIdleThread()
 
 void CApplication::StartWebServer()
 {
-#ifdef HAS_WEB_SERVER
   if (g_guiSettings.GetBool("services.webserver") && g_network.IsAvailable() )
   {
     CLog::Log(LOGNOTICE, "Webserver: Starting...");
@@ -1441,12 +1440,10 @@ void CApplication::StartWebServer()
     if (m_pWebServer && m_pXbmcHttp && g_stSettings.m_HttpApiBroadcastLevel>=1)
       g_applicationMessenger.HttpApi("broadcastlevel; StartUp;1");
   }
-#endif
 }
 
 void CApplication::StopWebServer()
 {
-#ifdef HAS_WEB_SERVER
   if (m_pWebServer)
   {
     CLog::Log(LOGNOTICE, "Webserver: Stopping...");
@@ -1456,7 +1453,6 @@ void CApplication::StopWebServer()
     CSectionLoader::Unload("LIBHTTP");
     CLog::Log(LOGNOTICE, "Webserver: Stopped...");
   }
-#endif
 }
 
 void CApplication::StartFtpServer()
@@ -5130,10 +5126,10 @@ void CApplication::ProcessSlow()
 
   // check for any idle myth sessions
   CMythSession::CheckIdle();
-
+#ifdef HAS_FILESYSTEM
   // check for any idle htsp sessions
   HTSP::CHTSPDirectorySession::CheckIdle();
-
+#endif
 #ifdef HAS_TIME_SERVER
   // check for any needed sntp update
   if(m_psntpClient && m_psntpClient->UpdateNeeded())

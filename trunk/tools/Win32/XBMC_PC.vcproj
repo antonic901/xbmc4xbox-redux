@@ -465,12 +465,6 @@
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.h">
 					</File>
 					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.cpp">
-					</File>
-					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.h">
-					</File>
-					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxShoutcast.cpp">
 					</File>
 					<File
@@ -524,12 +518,6 @@
 					</File>
 					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamFile.h">
-					</File>
-					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.cpp">
-					</File>
-					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.h">
 					</File>
 					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHttp.cpp">
@@ -1866,6 +1854,12 @@
 					RelativePath="..\..\xbmc\StringUtils.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\strptime.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\strptime.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\utils\SystemInfo.cpp">
 				</File>
 				<File
@@ -2460,18 +2454,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HDHomeRun.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HTSPDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HTSPDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HTSPSession.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HTSPSession.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HTTPDirectory.cpp">
@@ -3646,6 +3628,12 @@
 					</File>
 					<File
 						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonPlayer.h">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonSettings.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonSettings.h">
 					</File>
 					<File
 						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\pyutil.cpp">
