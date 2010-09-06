@@ -526,6 +526,12 @@
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamFile.h">
 					</File>
 					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.h">
+					</File>
+					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHttp.cpp">
 					</File>
 					<File
@@ -627,6 +633,12 @@
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserMicroDVD.h">
 					</File>
 					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserMPL2.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserMPL2.h">
+					</File>
+					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserSami.cpp">
 					</File>
 					<File
@@ -643,6 +655,12 @@
 					</File>
 					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserSubrip.h">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserVplayer.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleParserVplayer.h">
 					</File>
 					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitlesLibass.cpp">
@@ -2108,6 +2126,12 @@
 					RelativePath="..\..\xbmc\GUIDialogSubMenu.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\GUIDialogTextViewer.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\GUIDialogTextViewer.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\GUIDialogTrainerSettings.cpp">
 				</File>
 				<File
@@ -2438,6 +2462,18 @@
 					RelativePath="..\..\xbmc\FileSystem\HDHomeRun.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\FileSystem\HTSPDirectory.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\HTSPDirectory.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\HTSPSession.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\HTSPSession.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\FileSystem\HTTPDirectory.cpp">
 				</File>
 				<File
@@ -2696,6 +2732,12 @@
 						RelativePath="..\..\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeRoot.h">
 					</File>
 					<File
+						RelativePath="..\..\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.h">
+					</File>
+					<File
 						RelativePath="..\..\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSong.cpp">
 					</File>
 					<File
@@ -2884,6 +2926,12 @@
 					</File>
 					<File
 						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeSeasons.h">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeSets.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeSets.h">
 					</File>
 					<File
 						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeStudio.cpp">
