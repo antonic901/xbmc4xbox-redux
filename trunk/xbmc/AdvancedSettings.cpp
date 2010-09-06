@@ -214,7 +214,6 @@ CAdvancedSettings::CAdvancedSettings()
   m_bNavVKeyboard = false;
 
   m_bPythonVerbose = false;
-  m_bAutoFatxLimit = true;
 
   m_bgInfoLoaderMaxThreads = 1;
 }
@@ -431,8 +430,6 @@ bool CAdvancedSettings::Load()
   {
     XMLUtils::GetBoolean(pElement, "verbose", m_bPythonVerbose);
   }
-
-  XMLUtils::GetBoolean(pRootElement, "autofatxlimit", m_bAutoFatxLimit);
 
   XMLUtils::GetString(pRootElement, "cddbaddress", m_cddbAddress);
 

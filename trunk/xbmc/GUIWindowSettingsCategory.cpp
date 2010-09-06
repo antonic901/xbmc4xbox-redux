@@ -920,7 +920,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("harddisk.remoteplayspindown") != SPIN_DOWN_NONE);
     }
-    else if (strSetting.Equals("services.ftpserveruser") || strSetting.Equals("services.ftpserverpassword"))
+    else if (strSetting.Equals("services.ftpserveruser") || strSetting.Equals("services.ftpserverpassword") || strSetting.Equals("services.ftpautofatx"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       pControl->SetEnabled(g_guiSettings.GetBool("services.ftpserver"));

@@ -22,7 +22,7 @@
 #include "FileHD.h"
 #include "Util.h"
 #include "URL.h"
-#include "AdvancedSettings.h"
+#include "GUISettings.h"
 
 #include <sys/stat.h>
 
@@ -108,7 +108,7 @@ bool CFileHD::OpenForWrite(const CURL& url, bool bOverWrite)
   // make sure it's a legal FATX filename (we are writing to the harddisk)
   CStdString strPath = GetLocal(url);
 
-  if (g_advancedSettings.m_bAutoFatxLimit) // allow overriding
+  if (g_guiSettings.GetBool("services.ftpautofatx")) // allow overriding
   {
     CStdString strPathOriginal = strPath;
     CUtil::GetFatXQualifiedPath(strPath);
