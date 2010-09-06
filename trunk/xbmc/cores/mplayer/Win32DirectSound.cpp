@@ -278,6 +278,29 @@ DWORD CWin32DirectSound::GetSpace()
   return 0;
 }
 
+FLOAT CWin32DirectSound::GetCacheTime() 
+{ 
+  FLOAT delay = 0.0f;
+
+  DWORD playCursor, writeCursor;
+  if (SUCCEEDED(m_pBuffer->GetCurrentPosition(&playCursor, &writeCursor)))
+  {
+    DWORD bytes;
+    if (playCursor < m_nextPacket * m_dwPacketSize)
+      bytes = m_nextPacket * m_dwPacketSize - playCursor;
+    else
+      bytes = m_dwPacketSize * m_dwNumPackets - playCursor + m_nextPacket * m_dwPacketSize;
+
+    delay += (FLOAT)bytes / ( m_uiChannels * m_uiSamplesPerSec * m_uiBitsPerSample / 8 );
+  }
+  return delay;
+} 
+
+FLOAT CWin32DirectSound::GetCacheTotal() 
+{ 
+  return (FLOAT)( (float)(m_dwPacketSize * m_dwNumPackets) / (float)(m_uiChannels * m_uiSamplesPerSec * (m_uiBitsPerSample>>3)) ); 
+} 
+
 //***********************************************************************************************
 FLOAT CWin32DirectSound::GetDelay()
 {

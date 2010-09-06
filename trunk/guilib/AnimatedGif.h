@@ -77,11 +77,15 @@ GUIBITMAPINFOHEADER;
  \ingroup textures
  \brief 
  */
+#ifdef HAS_XBOX_D3D
 typedef struct tagGUIBITMAPINFO 
 {
     GUIBITMAPINFOHEADER    bmiHeader;
     GUIRGBQUAD						 bmiColors[1];
 } GUIBITMAPINFO;
+#else
+  typedef tagBITMAPINFO GUIBITMAPINFO;
+#endif
 
 #pragma pack()
 

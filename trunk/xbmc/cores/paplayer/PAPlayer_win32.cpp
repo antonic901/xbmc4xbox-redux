@@ -14,9 +14,9 @@
 #include "CdgParser.h"
 #endif
 
-#ifndef HAS_XBOX_AUDIO
+//#ifndef HAS_XBOX_AUDIO
 #include "mmreg.h"
-#endif
+//#endif
 
 #define VOLUME_FFWD_MUTE 900 // 9dB
 

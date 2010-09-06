@@ -178,6 +178,12 @@
 				RelativePath=".\GUIIncludes.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIInfoTypes.cpp">
+			</File>
+			<File
+				RelativePath=".\GUIInfoTypes.h">
+			</File>
+			<File
 				RelativePath=".\GUILabelControl.cpp">
 			</File>
 			<File

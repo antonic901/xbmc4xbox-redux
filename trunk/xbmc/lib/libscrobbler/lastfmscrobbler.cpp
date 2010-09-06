@@ -22,9 +22,6 @@
 #include "stdafx.h"
 #include "lastfmscrobbler.h"
 #include "Application.h"
-#ifndef _XBOX
-#include "Atomics.h"
-#endif
 #include "Settings.h"
 #include "Util.h"
 
@@ -45,9 +42,6 @@ CLastfmScrobbler *CLastfmScrobbler::GetInstance()
 {
   if (!m_pInstance) // Avoid spinning aimlessly
   {
-#ifndef _XBOX
-    CAtomicSpinLock lock(m_instanceLock);
-#endif
     if (!m_pInstance)
     {
       m_pInstance = new CLastfmScrobbler;
@@ -60,9 +54,6 @@ void CLastfmScrobbler::RemoveInstance()
 {
   if (m_pInstance)
   {
-#ifndef _XBOX
-    CAtomicSpinLock lock(m_instanceLock);
-#endif
     delete m_pInstance;
     m_pInstance = NULL;
   }

@@ -43,6 +43,8 @@ public:
   virtual void RegisterAudioCallback(IAudioCallback* pCallback);
   virtual DWORD GetChunkLen();
   virtual FLOAT GetDelay();
+  virtual FLOAT GetCacheTime(); 
+  virtual FLOAT GetCacheTotal(); 
   CWin32DirectSound(IAudioCallback* pCallback, int iChannels, unsigned int uiSamplesPerSec, unsigned int uiBitsPerSample, bool bResample, const char* strAudioCodec = "", bool bIsMusic=false);
   virtual ~CWin32DirectSound();
 

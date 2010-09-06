@@ -253,6 +253,12 @@
 				Name="MediaServer"
 				Filter="">
 				<File
+					RelativePath=".\Platinum\Source\Devices\MediaServer\ConnectionManagerSCPD.cpp">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Devices\MediaServer\ContentDirectorywSearchSCPD.cpp">
+				</File>
+				<File
 					RelativePath=".\Platinum\Source\Devices\MediaServer\PltDidl.cpp">
 				</File>
 				<File
@@ -302,6 +308,9 @@
 				Name="MediaRenderer"
 				Filter="">
 				<File
+					RelativePath=".\Platinum\Source\Devices\MediaRenderer\AVTransportSCPD.cpp">
+				</File>
+				<File
 					RelativePath=".\Platinum\Source\Devices\MediaRenderer\PltMediaController.cpp">
 				</File>
 				<File
@@ -316,6 +325,12 @@
 				<File
 					RelativePath=".\Platinum\Source\Devices\MediaRenderer\PltMediaRenderer.h">
 				</File>
+				<File
+					RelativePath=".\Platinum\Source\Devices\MediaRenderer\RdrConnectionManagerSCPD.cpp">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Devices\MediaRenderer\RenderingControlSCPD.cpp">
+				</File>
 			</Filter>
 			<Filter
 				Name="MediaConnect"
@@ -325,6 +340,9 @@
 				</File>
 				<File
 					RelativePath=".\Platinum\Source\Devices\MediaConnect\PltMediaConnect.h">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Devices\MediaConnect\X_MS_MediaReceiverRegistrarSCPD.cpp">
 				</File>
 			</Filter>
 			<Filter

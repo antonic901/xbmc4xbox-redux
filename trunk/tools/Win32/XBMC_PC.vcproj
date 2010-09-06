@@ -271,6 +271,12 @@
 					RelativePath="..\..\xbmc\cores\dvdplayer\DVDStreamInfo.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\cores\dvdplayer\Edl.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\cores\dvdplayer\Edl.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\cores\dvdplayer\IDVDPlayer.h">
 				</File>
 				<Filter
@@ -459,6 +465,12 @@
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.h">
 					</File>
 					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.h">
+					</File>
+					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxShoutcast.cpp">
 					</File>
 					<File
@@ -643,6 +655,12 @@
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleStream.h">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleTagSami.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\cores\dvdplayer\DVDSubtitles\DVDSubtitleTagSami.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -831,6 +849,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\NSFCodec.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\cores\paplayer\OggCallback.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\cores\paplayer\OggCallback.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\OGGcodec.cpp">
@@ -1191,6 +1215,12 @@
 				Name="Settings"
 				Filter="">
 				<File
+					RelativePath="..\..\xbmc\AdvancedSettings.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\AdvancedSettings.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\GUIDialogPluginSettings.cpp">
 				</File>
 				<File
@@ -1222,6 +1252,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\ScraperSettings.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\ScriptSettings.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\ScriptSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Settings.cpp">
@@ -1713,7 +1749,10 @@
 					RelativePath="..\..\xbmc\utils\log.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\md5.c">
+					RelativePath="..\..\xbmc\utils\md5.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\md5.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\MediaManager.cpp">
@@ -1800,6 +1839,12 @@
 					RelativePath="..\..\xbmc\utils\Stopwatch.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\StreamDetails.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\StreamDetails.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\StringUtils.cpp">
 				</File>
 				<File
@@ -1880,6 +1925,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Artist.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\Bookmark.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\Bookmark.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Database.cpp">
@@ -2046,6 +2097,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogSettings.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\GUIDialogSlider.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\GUIDialogSlider.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogSubMenu.cpp">
@@ -2246,6 +2303,12 @@
 					RelativePath="..\..\xbmc\lib\libcurl\include\curl\curl.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVDirectory.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVDirectory.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\FileSystem\Directory.cpp">
 				</File>
 				<File
@@ -2313,6 +2376,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\FileLastFM.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\FileMMS.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\FileMMS.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\FileMusicDatabase.cpp">
@@ -3860,10 +3929,16 @@
 				Name="libScrobbler"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\lib\libscrobbler\md5.c">
+					RelativePath="..\..\xbmc\lib\libscrobbler\lastfmscrobbler.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\lib\libscrobbler\md5.h">
+					RelativePath="..\..\xbmc\lib\libscrobbler\lastfmscrobbler.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\lib\libscrobbler\librefmscrobbler.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\lib\libscrobbler\librefmscrobbler.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\lib\libscrobbler\scrobbler.cpp">
