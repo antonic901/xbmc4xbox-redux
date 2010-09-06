@@ -106,9 +106,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\ActionManager.cpp">
-			</File>
-			<File
 				RelativePath=".\AnimatedGif.cpp">
 			</File>
 			<File
@@ -179,9 +176,6 @@
 			</File>
 			<File
 				RelativePath=".\GUIIncludes.cpp">
-			</File>
-			<File
-				RelativePath=".\GUIInfoColor.cpp">
 			</File>
 			<File
 				RelativePath=".\GUILabelControl.cpp">
@@ -477,13 +471,13 @@
 				RelativePath=".\GUITextBox.h">
 			</File>
 			<File
+				RelativePath=".\GUITextLayout.h">
+			</File>
+			<File
 				RelativePath=".\GUITexture.h">
 			</File>
 			<File
 				RelativePath=".\GUITextureD3D.h">
-			</File>
-			<File
-				RelativePath=".\GUITextLayout.h">
 			</File>
 			<File
 				RelativePath=".\GUIToggleButtonControl.h">

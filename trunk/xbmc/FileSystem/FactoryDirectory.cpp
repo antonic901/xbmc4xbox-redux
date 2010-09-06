@@ -136,6 +136,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
     if (strProtocol == "daap") return new CDAAPDirectory();
     if (strProtocol == "xbms") return new CXBMSDirectory();
     if (strProtocol == "rtv") return new CRTVDirectory();
+    if (strProtocol == "htsp") return new CHTSPDirectory();
 #endif
 #ifdef HAS_UPNP
     if (strProtocol == "upnp") return new CUPnPDirectory();
@@ -144,7 +145,6 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
     if (strProtocol == "myth") return new CMythDirectory();
     if (strProtocol == "cmyth") return new CMythDirectory();
     if (strProtocol == "rss") return new CRSSDirectory();
-    if (strProtocol == "htsp") return new CHTSPDirectory();
   }
 
   CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, strProtocol.c_str(), url.Get().c_str() );

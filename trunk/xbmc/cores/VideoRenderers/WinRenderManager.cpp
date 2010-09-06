@@ -76,6 +76,13 @@ bool CWinRenderManager::Configure(unsigned int width, unsigned int height, unsig
   return result;
 }
 
+bool CWinRenderManager::IsConfigured()
+{
+  if (!m_pRenderer)
+    return false;
+  return m_pRenderer->IsConfigured();
+}
+
 void CWinRenderManager::Update(bool bPauseDrawing)
 {
   DWORD locks = ExitCriticalSection(g_graphicsContext);

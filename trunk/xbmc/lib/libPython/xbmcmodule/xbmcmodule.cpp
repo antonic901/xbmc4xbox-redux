@@ -276,6 +276,7 @@ namespace PYXBMC
     char *cLine = NULL;
     CStdString ret;
     if (!PyArg_ParseTuple(args, (char*)"s", &cLine)) return NULL;
+#ifdef HAS_WEB_SERVER
     if (!m_pXbmcHttp)
     {
       CSectionLoader::Load("LIBHTTP");
@@ -288,7 +289,7 @@ namespace PYXBMC
         return NULL;
     }
     ret=pXbmcHttpShim->xbmcExternalCall(cLine);
-
+#endif
     return PyString_FromString(ret.c_str());
   }
 
