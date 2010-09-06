@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Platinum/Thirdparty/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/lib/libcurl/include;../../xbmc/lib"
+				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_WIN32_WINNT=0x0500;WINVER=0x0500;NOMINMAX"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
@@ -74,7 +74,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../../xbmc/;./xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Platinum/Thirdparty/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/lib/libcurl/include;../../xbmc/lib"
+				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_WIN32_WINNT=0x0500;WINVER=0x0500;NOMINMAX"
 				StringPooling="FALSE"
 				MinimalRebuild="TRUE"
