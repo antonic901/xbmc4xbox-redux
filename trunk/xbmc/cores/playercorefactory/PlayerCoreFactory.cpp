@@ -25,7 +25,7 @@
 #ifdef HAS_XBOX_HARDWARE
 #include "../mplayer/mplayer.h"
 #else
-#include "DummyVideoPlayer.h"
+#include "../DummyVideoPlayer.h"
 #endif
 #ifdef HAS_MODPLAYER
 #include "../modplayer.h"

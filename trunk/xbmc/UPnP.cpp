@@ -113,6 +113,7 @@ bool CUPnP::broadcast = true;
 #include <xtl.h>
 #include <winsockx.h>
 #include "NptXboxNetwork.h"
+#endif
 
 namespace
 {
@@ -131,7 +132,7 @@ namespace
 
 }
 
-
+#ifdef HAS_XBOX_NETWORK
 /*----------------------------------------------------------------------
 |   static initializer
 +---------------------------------------------------------------------*/

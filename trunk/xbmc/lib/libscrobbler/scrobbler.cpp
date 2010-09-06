@@ -31,9 +31,7 @@
 #include "Settings.h"
 #include "XMLUtils.h"
 #include "Application.h"
-#ifdef _XBOX
 #include "strptime.h"
-#endif
 
 #define SCROBBLER_CLIENT              "xbm"
 //#define SCROBBLER_CLIENT              "tst"     // For testing ONLY!
