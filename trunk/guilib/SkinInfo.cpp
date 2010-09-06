@@ -198,7 +198,8 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
   if (!strBaseDir.IsEmpty())
     strPathToUse = strBaseDir;
   // first try and load from the current resolution's directory
-  *res = g_graphicsContext.GetVideoResolution();
+  if (*res == INVALID)
+    *res = g_graphicsContext.GetVideoResolution();
   CStdString strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
   strPath = CUtil::AddFileToFolder(strPath, strFile);
   if (CFile::Exists(strPath))
