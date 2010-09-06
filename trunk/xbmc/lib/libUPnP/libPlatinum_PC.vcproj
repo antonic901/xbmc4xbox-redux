@@ -189,6 +189,9 @@
 					RelativePath=".\Platinum\Source\Core\PltHttpServerTask.h">
 				</File>
 				<File
+					RelativePath=".\Platinum\Source\Core\PltIconsData.cpp">
+				</File>
+				<File
 					RelativePath=".\Platinum\Source\Core\PltLeaks.cpp">
 				</File>
 				<File
