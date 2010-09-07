@@ -366,11 +366,10 @@ void CCharsetConverter::reset(void)
 // of the string is already made or the string is not displayed in the GUI
 void CCharsetConverter::utf8ToW(const CStdStringA& utf8String, CStdStringW &wString, bool bVisualBiDiFlip/*=true*/, bool forceLTRReadingOrder /*=false*/, bool* bWasFlipped/*=NULL*/)
 {
-  CStdStringA strFlipped;
-
   // Try to flip hebrew/arabic characters, if any
   if (bVisualBiDiFlip)
   {
+    CStdStringA strFlipped;
     FriBidiCharType charset = forceLTRReadingOrder ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_PDF;
     logicalToVisualBiDi(utf8String, strFlipped, FRIBIDI_CHAR_SET_UTF8, charset, bWasFlipped);
     convert(m_iconvUtf8toW,sizeof(wchar_t),UTF8_SOURCE,WCHAR_CHARSET,strFlipped,wString);
@@ -384,27 +383,6 @@ void CCharsetConverter::subtitleCharsetToW(const CStdStringA& strSource, CStdStr
   // No need to flip hebrew/arabic as mplayer does the flipping
   CSingleLock lock(m_critSection);
   convert(m_iconvSubtitleCharsetToW,sizeof(wchar_t),g_langInfo.GetSubtitleCharSet(),WCHAR_CHARSET,strSource,strDest);
-}
-
-void CCharsetConverter::fromW(const CStdStringW& strSource,
-                              CStdStringA& strDest, const CStdString& enc)
-{
-  iconv_t iconvString;
-  ICONV_PREPARE(iconvString);
-  CStdString strEnc = enc;
-  if (strEnc.Right(8) != "//IGNORE")
-    strEnc.append("//IGNORE");
-  convert(iconvString,sizeof(wchar_t),WCHAR_CHARSET,strEnc,strSource,strDest);
-  iconv_close(iconvString);
-}
-
-void CCharsetConverter::toW(const CStdStringA& strSource,
-                            CStdStringW& strDest, const CStdString& enc)
-{
-  iconv_t iconvString;
-  ICONV_PREPARE(iconvString);
-  convert(iconvString,sizeof(wchar_t),enc,"UTF-16LE//IGNORE",strSource,strDest);
-  iconv_close(iconvString);
 }
 
 void CCharsetConverter::utf8ToStringCharset(const CStdStringA& strSource, CStdStringA& strDest)

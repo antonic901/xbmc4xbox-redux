@@ -285,10 +285,11 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
             htmlText = childNode->FirstChild()->FirstChild()->Value();
           }
 
-          CStdStringW unicodeText,unicodeText2;
+          CStdString text;
+          CStdStringW unicodeText;
 
-          fromRSSToUTF16(htmlText, unicodeText2);
-          html.ConvertHTMLToW(unicodeText2, unicodeText);
+          html.ConvertHTMLToAnsi(htmlText, text);
+          fromRSSToUTF16(text, unicodeText);
 
           mTagElements.insert(StrPair(*i, unicodeText));
         }
