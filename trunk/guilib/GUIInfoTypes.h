@@ -86,6 +86,7 @@ public:
    \return text with any localized strings filled in.
    */
   static CStdString ReplaceLocalize(const CStdString &label);
+  static CStdString ReplaceAddonStrings(const CStdString &label);
 
 private:
   void Parse(const CStdString &label);

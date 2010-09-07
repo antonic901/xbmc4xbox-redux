@@ -451,6 +451,16 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     CStdString str = strTest.Mid(8, strTest.GetLength() - 9);
     return AddMultiInfo(GUIInfo(bNegate ? -STRING_IS_EMPTY : STRING_IS_EMPTY, TranslateSingleString(str)));
   }
+  else if (strTest.Left(7).Equals("istrue("))
+  {
+    CStdString str = strTest.Mid(7, strTest.GetLength() - 8);
+    return AddMultiInfo(GUIInfo(bNegate ? -VALUE_IS_TRUE : VALUE_IS_TRUE, TranslateSingleString(str)));
+  }
+  else if (strTest.Left(14).Equals("addon.setting("))
+  {
+    CStdString str = strTest.Mid(14, strTest.GetLength() - 15);
+    return AddMultiInfo(GUIInfo(WINDOW_PROPERTY, WINDOW_DIALOG_PLUGIN_SETTINGS, ConditionalStringParameter(str)));
+  }
   else if (strTest.Left(14).Equals("stringcompare("))
   {
     int pos = strTest.Find(",");
@@ -459,7 +469,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     if (info2 > 0)
       return AddMultiInfo(GUIInfo(bNegate ? -STRING_COMPARE: STRING_COMPARE, info, -info2));
     // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2))).ToLower();
+    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2)));
+    label = CGUIInfoLabel::ReplaceAddonStrings(label).ToLower();
     int compareString = ConditionalStringParameter(label);
     return AddMultiInfo(GUIInfo(bNegate ? -STRING_COMPARE: STRING_COMPARE, info, compareString));
   }
@@ -475,7 +486,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     int pos = strTest.Find(",");
     int info = TranslateString(strTest.Mid(10, pos-10));
     // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2))).ToLower();
+    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2)));
+    label = CGUIInfoLabel::ReplaceAddonStrings(label).ToLower();
     int compareString = ConditionalStringParameter(label);
     return AddMultiInfo(GUIInfo(bNegate ? -STRING_STR: STRING_STR, info, compareString));
   }
@@ -2123,6 +2135,17 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
   {
     switch (condition)
     {
+      case VALUE_IS_TRUE:
+        {
+          CStdString value;
+          if (item && item->IsFileItem() && info.GetData1() >= LISTITEM_START && info.GetData1() < LISTITEM_END)
+            value = GetItemImage((const CFileItem *)item, info.GetData1());
+          else
+            value = GetImage(info.GetData1(), contextWindow);
+
+          bReturn = (value.Equals("true") || value.Equals("yes") || value.Equals("on"));
+        }
+        break;
       case SKIN_BOOL:
         {
           bReturn = g_settings.GetSkinBool(info.GetData1());

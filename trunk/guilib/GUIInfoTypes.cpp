@@ -220,12 +220,43 @@ CStdString CGUIInfoLabel::ReplaceLocalize(const CStdString &label)
   return work;
 }
 
+CStdString CGUIInfoLabel::ReplaceAddonStrings(const CStdString &label)
+{
+  CStdString work(label);
+  //FIXME why not use RE here?
+  // Replace all $ADDON[id number] with the real string
+  int pos1 = work.Find("$ADDON[");
+  while (pos1 >= 0)
+  {
+    int pos2 = StringUtils::FindEndBracket(work, '[', ']', pos1 + 7);
+    if (pos2 > pos1)
+    {
+      CStdString left = work.Left(pos1);
+      CStdString right = work.Mid(pos2 + 1);
+      int length = work.Find(" ", pos1 + 7) - (pos1 + 7);
+      CStdString id = work.substr(pos1+7, length);
+      int stringid = atoi(work.substr(pos1+7+id.length()+1, 5).c_str());
+      CStdString replace = g_localizeStringsTemp.Get(stringid);
+      work = left + replace + right;
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "Error parsing label - missing ']'");
+      return "";
+    }
+    pos1 = work.Find("$ADDON[", pos1);
+  }
+  return work;
+}
+
 void CGUIInfoLabel::Parse(const CStdString &label)
 {
   m_info.clear();
   // Step 1: Replace all $LOCALIZE[number] with the real string
   CStdString work = ReplaceLocalize(label);
-  // Step 2: Find all $INFO[info,prefix,postfix] blocks
+  // Step 2: Replace all $ADDON[id number] with the real string
+  work = ReplaceAddonStrings(work);
+  // Step 3: Find all $INFO[info,prefix,postfix] blocks
   int pos1 = work.Find("$INFO[");
   while (pos1 >= 0)
   {

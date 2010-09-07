@@ -42,7 +42,6 @@ public:
   static bool ShowAndGetInput(SScraperInfo& info, bool saveToDisk = true);
   static bool ShowAndGetInput(CStdString& path, bool saveToDisk = true);
   virtual void Render();
-  static CStdString ReplaceAddonStrings(const CStdString &label);
 
 protected:
   virtual void OnInitWindow();
@@ -67,30 +66,29 @@ private:
   void FreeSections();
   void CreateControls();
   void FreeControls();
-  void UpdateFromControls();
-  void EnableControls();
   void SetDefaults();
-  bool GetCondition(const CStdString &condition, const int controlId);
+  void SetEnabledProperty(const CStdString &id);
 
   void SaveSettings(void);
   bool ShowVirtualKeyboard(int iControl);
-  bool TranslateSingleString(const CStdString &strCondition, std::vector<CStdString> &enableVec);
 
   const TiXmlElement *GetFirstSetting();
 
   CBasicSettings m_addon;
   CStdString m_strHeading;
+  CStdString m_closeAction;
   CStdString m_profile;
-  std::map<CStdString,CStdString> m_buttonValues;
   bool m_changed;
   bool m_saveToDisk; // whether the addon settings should be saved to disk or just stored locally in the addon
 
   unsigned int m_currentSection;
   unsigned int m_totalSections;
 
+  CStdString NormalizePath(const char *value) const;
+  void SetSliderTextValue(const CGUIControl *control, const char *format);
+
   std::map<CStdString,CStdString> m_settings; // local storage of values
   static CURL m_url;
 };
 
 #endif
-
