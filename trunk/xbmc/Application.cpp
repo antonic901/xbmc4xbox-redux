@@ -3741,12 +3741,9 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
 
   if (item.IsPlugin())
   { // we modify the item so that it becomes a real URL
-    CFileItem item_new;
+    CFileItem item_new(item);
     if (DIRECTORY::CPluginDirectory::GetPluginResult(item.m_strPath, item_new))
-    {
-      item_new.SetProperty("original_listitem_url", item.HasProperty("original_listitem_url") ? item.GetProperty("original_listitem_url") : item.m_strPath);
       return PlayFile(item_new, false);
-    }
     return false;
   }
 
@@ -4351,12 +4348,13 @@ void CApplication::StopPlaying()
       m_pCdgParser->Stop();
 #endif
 
-    // turn off visualisation window when stopping
-    if (iWin == WINDOW_VISUALISATION)
-      g_windowManager.PreviousWindow();
-
     if (m_pPlayer)
       m_pPlayer->CloseFile();
+
+    // turn off visualisation window when stopping
+    if (iWin == WINDOW_VISUALISATION
+    ||  iWin == WINDOW_FULLSCREEN_VIDEO)
+      g_windowManager.PreviousWindow();
 
     g_partyModeManager.Disable();
   }

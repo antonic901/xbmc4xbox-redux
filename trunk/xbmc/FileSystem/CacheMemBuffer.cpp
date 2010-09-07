@@ -184,7 +184,7 @@ __int64 CacheMemBuffer::Seek(__int64 iFilePosition, int iWhence)
   }
 
   __int64 iHistoryStart = m_nStartPosition - m_HistoryBuffer.GetMaxReadSize();
-  if (iFilePosition < m_nStartPosition && iFilePosition > iHistoryStart)
+  if (iFilePosition < m_nStartPosition && iFilePosition >= iHistoryStart)
   {
     CRingBuffer saveHist, saveUnRead;
     __int64 nToSkip = iFilePosition - iHistoryStart;

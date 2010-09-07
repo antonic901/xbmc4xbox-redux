@@ -82,9 +82,9 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
         buffer_size += 256;
         delete[] buffer;
     }
-    
+
     unsigned char *entries;
-    for (entries = buffer; entries < buffer+config.ifc_len;) {
+    for (entries = (unsigned char*)config.ifc_req; entries < (unsigned char*)config.ifc_req+config.ifc_len;) {
         struct ifreq* entry = (struct ifreq*)entries;
         // get the size of the addresses
         unsigned int address_length;

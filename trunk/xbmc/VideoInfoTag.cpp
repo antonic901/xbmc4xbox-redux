@@ -173,7 +173,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
       XMLUtils::SetFloat(&stream, "aspect", m_streamDetails.GetVideoAspect(iStream));
       XMLUtils::SetInt(&stream, "width", m_streamDetails.GetVideoWidth(iStream));
       XMLUtils::SetInt(&stream, "height", m_streamDetails.GetVideoHeight(iStream));
-      XMLUtils::SetInt(&stream, "duration", m_streamDetails.GetVideoDuration(iStream));
+      XMLUtils::SetInt(&stream, "durationinseconds", m_streamDetails.GetVideoDuration(iStream));
       streamdetails.InsertEndChild(stream);
     }
     for (int iStream=1; iStream<=m_streamDetails.GetAudioStreamCount(); iStream++)
@@ -509,7 +509,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
         XMLUtils::GetFloat(nodeDetail, "aspect", p->m_fAspect);
         XMLUtils::GetInt(nodeDetail, "width", p->m_iWidth);
         XMLUtils::GetInt(nodeDetail, "height", p->m_iHeight);
-        XMLUtils::GetInt(nodeDetail, "duration", p->m_iDuration);
+        XMLUtils::GetInt(nodeDetail, "durationinseconds", p->m_iDuration);
         p->m_strCodec.MakeLower();
         m_streamDetails.AddStream(p);
       }
@@ -528,9 +528,10 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
   const TiXmlElement *epguide = movie->FirstChildElement("episodeguide");
   if (epguide)
   {
-    if (epguide->FirstChild() && strncmp(epguide->FirstChild()->Value(),"<episodeguide>",14) == 0)
+    // DEPRECIATE ME - support for old XML-encoded <episodeguide> blocks.
+    if (epguide->FirstChild() && strnicmp("<episodeguide", epguide->FirstChild()->Value(), 13) == 0)
       m_strEpisodeGuide = epguide->FirstChild()->Value();
-    else if (epguide->FirstChild() && strlen(epguide->FirstChild()->Value()) > 0)
+    else
     {
       stringstream stream;
       stream << *epguide;

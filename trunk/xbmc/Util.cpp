@@ -633,7 +633,7 @@ void CUtil::RemoveExtension(CStdString& strFileName)
   }
 }
 
-void CUtil::CleanString(CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension /* = false */)
+void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension /* = false */, bool bCleanChars /* = true */)
 {
   strTitleAndYear = strFileName;
 
@@ -642,7 +642,8 @@ void CUtil::CleanString(CStdString& strFileName, CStdString& strTitle, CStdStrin
 
   const CStdStringArray &regexps = g_advancedSettings.m_videoCleanStringRegExps;
 
-  CRegExp reTags, reYear;
+  CRegExp reTags(true);
+  CRegExp reYear;
   CStdString strExtension;
   GetExtension(strFileName, strExtension);
 
@@ -669,7 +670,7 @@ void CUtil::CleanString(CStdString& strFileName, CStdString& strTitle, CStdStrin
       continue;
     }
     int j=0;
-    if ((j=reTags.RegFind(strFileName.ToLower().c_str())) > 0)
+    if ((j=reTags.RegFind(strFileName.c_str())) > 0)
       strTitleAndYear = strTitleAndYear.Mid(0, j);
   }
 
@@ -678,6 +679,7 @@ void CUtil::CleanString(CStdString& strFileName, CStdString& strTitle, CStdStrin
   // if the file contains no spaces, all '.' tokens should be replaced by
   // spaces - one possibility of a mistake here could be something like:
   // "Dr..StrangeLove" - hopefully no one would have anything like this.
+  if (bCleanChars)
   {
     bool initialDots = true;
     bool alreadyContainsSpace = (strTitleAndYear.Find(' ') >= 0);
@@ -1505,6 +1507,9 @@ bool CUtil::IsOnLAN(const CStdString& strPath)
   if(!IsRemote(strPath))
     return false;
 
+  if(IsPlugin(strPath))
+    return false;
+
   CStdString host = url.GetHostName();
   if(host.length() == 0)
     return false;
@@ -1695,9 +1700,9 @@ bool CUtil::IsFTP(const CStdString& strFile)
          url.GetTranslatedProtocol() == "ftps";
 }
 
-bool CUtil::IsInternetStream(const CStdString& strFile, bool bStrictCheck /* = false */)
+bool CUtil::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */)
 {
-  CURL url(strFile);
+  
   CStdString strProtocol = url.GetProtocol();
   
   if (strProtocol.IsEmpty())
@@ -1705,10 +1710,7 @@ bool CUtil::IsInternetStream(const CStdString& strFile, bool bStrictCheck /* = f
 
   // there's nothing to stop internet streams from being stacked
   if (strProtocol == "stack")
-  {
-    CStdString strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
-    return IsInternetStream(strFile2);
-  }
+    return IsInternetStream(CStackDirectory::GetFirstStackedFile(url.Get()));
 
   CStdString strProtocol2 = url.GetTranslatedProtocol();
 

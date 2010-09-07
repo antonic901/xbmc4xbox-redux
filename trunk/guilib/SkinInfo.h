@@ -81,6 +81,7 @@ public:
 protected:
   void LoadIncludes();
   bool LoadStartupWindows(const TiXmlElement *startup);
+  bool IsWide(RESOLUTION res) const;
 
   wchar_t credits[6][CREDIT_LINE_LENGTH];  // credits info
   int m_iNumCreditLines;  // number of credit lines

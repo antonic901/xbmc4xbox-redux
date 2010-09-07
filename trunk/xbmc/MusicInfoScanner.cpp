@@ -854,7 +854,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
   }
   
   if (!scraper.GetAlbumCount())
-    scraper.FindAlbuminfo(strAlbum, strArtist);
+    scraper.FindAlbumInfo(strAlbum, strArtist);
 
   while (!scraper.Completed())
   {
@@ -871,7 +871,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
   if (result == CNfoFile::NO_NFO)
   {
     iSelectedAlbum = -1; // set negative so that we can detect a failure
-    if (scraper.Successfull() && scraper.GetAlbumCount() >= 1)
+    if (scraper.Succeeded() && scraper.GetAlbumCount() >= 1)
     {
       int bestMatch = -1;
       double bestRelevance = 0;
@@ -970,7 +970,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
     }
   }
 
-  scraper.LoadAlbuminfo(iSelectedAlbum);
+  scraper.LoadAlbumInfo(iSelectedAlbum);
   while (!scraper.Completed())
   {
     if (m_bStop)
@@ -981,7 +981,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
     Sleep(1);
   }
 
-  if (scraper.Successfull())
+  if (scraper.Succeeded())
   {
     albumInfo = scraper.GetAlbum(iSelectedAlbum);
     album = scraper.GetAlbum(iSelectedAlbum).GetAlbum();
@@ -1075,7 +1075,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
   }
 
   if (!scraper.GetArtistCount())
-    scraper.FindArtistinfo(strArtist);
+    scraper.FindArtistInfo(strArtist);
 
   while (!scraper.Completed())
   {
@@ -1090,7 +1090,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
   int iSelectedArtist = 0;
   if (result == CNfoFile::NO_NFO)
   {
-    if (scraper.Successfull() && scraper.GetArtistCount() >= 1)
+    if (scraper.Succeeded() && scraper.GetArtistCount() >= 1)
     {
       // now load the first match
       if (pDialog && scraper.GetArtistCount() > 1)
@@ -1152,7 +1152,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
 
   scraper.GetArtist(iSelectedArtist).m_strSearch = strArtist;
   CUtil::URLEncode(scraper.GetArtist(iSelectedArtist).m_strSearch);
-  scraper.LoadArtistinfo(iSelectedArtist);
+  scraper.LoadArtistInfo(iSelectedArtist);
 
   while (!scraper.Completed())
   {
@@ -1164,7 +1164,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
     Sleep(1);
   }
 
-  if (scraper.Successfull())
+  if (scraper.Succeeded())
   {
     artist = scraper.GetArtist(iSelectedArtist).GetArtist();
     if (result == CNfoFile::COMBINED_NFO)
