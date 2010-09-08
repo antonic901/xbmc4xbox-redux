@@ -72,14 +72,14 @@ public:
   virtual bool OnMouseWheel(char wheel, const CPoint &point);
   virtual CStdString GetDescription() const;
   void SetTextValue(const CStdString &textValue) { m_textValue = textValue; };
-protected:
-  virtual void UpdateColors();
-  virtual void Move(int iNumSteps);
-  virtual void SetFromPosition(const CPoint &point);
   /*! \brief Get the current position of the slider as a proportion
    \return slider position in the range [0,1]
    */
   float GetProportion() const;
+protected:
+  virtual void UpdateColors();
+  virtual void Move(int iNumSteps);
+  virtual void SetFromPosition(const CPoint &point);
 
   CGUITexture m_guiBackground;
   CGUITexture m_guiMid;

@@ -65,8 +65,8 @@ using namespace DIRECTORY;
 #define ID_BUTTON_DEFAULT               12
 #define CONTROL_HEADING_LABEL           20
 
-#define CONTROL_START_SETTING           100
-#define CONTROL_START_SECTION           200
+#define CONTROL_START_SETTING           200
+#define CONTROL_START_SECTION           100
 
 CGUIDialogPluginSettings::CGUIDialogPluginSettings()
    : CGUIDialogBoxBase(WINDOW_DIALOG_PLUGIN_SETTINGS, "DialogPluginSettings.xml")
@@ -385,7 +385,11 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
               strMask.Replace("$AUDIO", g_stSettings.m_musicExtensions);
               strMask.Replace("$VIDEO", g_stSettings.m_videoExtensions);
               strMask.Replace("$IMAGE", g_stSettings.m_pictureExtensions);
+#if defined(_WIN32_WINNT)
+              strMask.Replace("$EXECUTABLE", ".exe|.bat|.cmd|.py");
+#else
               strMask.Replace("$EXECUTABLE", ".xbe|.py");
+#endif
             }
             else
             {
@@ -394,7 +398,11 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
               else if (strcmpi(type, "audio") == 0)
                 strMask = g_stSettings.m_musicExtensions;
               else if (strcmpi(type, "executable") == 0)
+#if defined(_WIN32_WINNT)
+                strMask = ".exe|.bat|.cmd|.py";
+#else
                 strMask = ".xbe|.py";
+#endif
             }
 
             // get any options
@@ -775,7 +783,12 @@ void CGUIDialogPluginSettings::CreateControls()
       pControl->SetWidth(group->GetWidth());
       pControl->SetVisible(true);
       if (setting->Attribute("visible"))
-        pControl->SetVisibleCondition(g_infoManager.TranslateString(setting->Attribute("visible")), false);
+      {
+        CGUIInfoBool allowHiddenFocus(false);
+        if (setting->Attribute("allowhiddenfocus"))
+          allowHiddenFocus.Parse(setting->Attribute("allowhiddenfocus"));
+        pControl->SetVisibleCondition(g_infoManager.TranslateString(setting->Attribute("visible")), allowHiddenFocus);
+      }
       if (setting->Attribute("enable"))
         pControl->SetEnableCondition(g_infoManager.TranslateString(setting->Attribute("enable")));
       pControl->SetID(controlId);
@@ -851,7 +864,16 @@ void CGUIDialogPluginSettings::SetSliderTextValue(const CGUIControl *control, co
   if (format)
   {
     CStdString strValue;
-    strValue.Format(GetString(format), ((CGUISettingsSliderControl *)control)->GetFloatValue());
+    vector<CStdString> formats;
+    StringUtils::SplitString(format, ",", formats);
+
+    if (formats.size() == 3 && !formats[2].IsEmpty() && ((CGUISettingsSliderControl *)control)->GetProportion() == 1.0f)
+      strValue.Format(GetString(formats[2]), ((CGUISettingsSliderControl *)control)->GetFloatValue());
+    else if (formats.size() >= 2 && !formats[1].IsEmpty() && ((CGUISettingsSliderControl *)control)->GetProportion() == 0.0f)
+      strValue.Format(GetString(formats[1]), ((CGUISettingsSliderControl *)control)->GetFloatValue());
+    else
+      strValue.Format(GetString(formats[0]), ((CGUISettingsSliderControl *)control)->GetFloatValue());
+
     ((CGUISettingsSliderControl *)control)->SetTextValue(strValue);
   }
 }
