@@ -51,6 +51,7 @@
 #define EXTEND_PARTITION_END    7
 #define EXTEND_DRIVE_BEGIN     'F'
 #define EXTEND_DRIVE_END       'G'
+#define EXTEND_PARTITIONS_LIMIT  8
 
 // This flag (part of PARTITION_ENTRY.pe_flags) tells you whether/not a
 // partition is being used (whether/not drive G is active, for example)
@@ -106,6 +107,9 @@ public:
 
   static bool ReadPartitionTable();
   static bool HasPartitionTable();
+  static bool ExtendedPartitionMappingExists(char mapLetter); 
+  static INT GetExtendedPartitionPosition(char mapLetter); 
+  static char GetExtendedPartitionDriveLetter(int pos); 
   static void MapExtendedPartitions();
 
   static LARGE_INTEGER GetDriveSize();

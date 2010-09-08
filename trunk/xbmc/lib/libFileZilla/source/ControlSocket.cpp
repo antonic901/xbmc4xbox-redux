@@ -1071,12 +1071,11 @@ void CControlSocket::ParseCommand()
 						if (isalpha(iter->dir[0]) && iter->dir[1] == ':')
 						{
 							char drive = tolower(iter->dir[0]);
-							if (drive >= 'f' && drive < 'q')
-							{
-								// extended partitions and memory units - check if the drive is available
-								if (!CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
-									continue;
-							}
+
+                            // extended partitions and memory units - check if the drive is available
+                                if (!CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
+                                    continue;
+
 							// don't show x, y, z in the listing as users shouldn't really be
 							// stuffing around with these drives (power users can always go
 							// to these folders by specifying the path directly)

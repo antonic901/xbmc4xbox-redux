@@ -55,6 +55,10 @@ stDriveMapping driveMapping[] =
     { 'Y', "Harddisk0\\Partition4", 4},
     { 'Z', "Harddisk0\\Partition5", 5},
   };
+char extendPartitionMapping[] = 
+  { 
+      'F','G','R','S','V','W','A','B'
+  };
 #else
 stDriveMapping driveMapping[] =
   {
@@ -169,9 +173,10 @@ HRESULT CIoSupport::Dismount(const char* szDevice)
 void CIoSupport::GetPartition(char cDriveLetter, char* szPartition)
 {
   char upperLetter = toupper(cDriveLetter);
-  if (upperLetter >= 'F' && upperLetter <= 'O')
+  if (ExtendedPartitionMappingExists(upperLetter))
   {
-    sprintf(szPartition, "Harddisk0\\Partition%u", upperLetter - 'A' + 1);
+    sprintf(szPartition, "Harddisk0\\Partition%u", EXTEND_PARTITION_BEGIN+GetExtendedPartitionPosition(upperLetter));
+    CLog::Log(LOGNOTICE, "Partition %s", szPartition); 
     return;
   }
   for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
@@ -196,9 +201,10 @@ void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
 
   part_num = atoi(szPartition + 19);
 
-  if (part_num >= 6)
+  if (part_num >= EXTEND_PARTITION_BEGIN)
   {
-    *cDriveLetter = part_num + 'A' - 1;
+    *cDriveLetter = extendPartitionMapping[part_num-EXTEND_PARTITION_BEGIN];
+    CLog::Log(LOGNOTICE, "Drive %c", *cDriveLetter);
     return;
   }
   for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
@@ -623,6 +629,33 @@ bool CIoSupport::ReadPartitionTable()
 #endif
 }
 
+bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter) 
+{ 
+  int i; 
+  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
+  { 
+    if (mapLetter == extendPartitionMapping[i]) 
+      return true; 
+  } 
+  return false; 
+} 
+ 
+INT CIoSupport::GetExtendedPartitionPosition(char mapLetter) 
+{ 
+  int i; 
+  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
+  { 
+    if (mapLetter == extendPartitionMapping[i]) 
+      return i; 
+  } 
+  return 0; 
+} 
+
+char CIoSupport::GetExtendedPartitionDriveLetter(int pos) 
+{ 
+  return extendPartitionMapping[pos]; 
+} 
+
 bool CIoSupport::HasPartitionTable()
 {
   return m_fPartitionTableIsValid;
@@ -635,16 +668,19 @@ void CIoSupport::MapExtendedPartitions()
     return;
   char szDevice[32] = "\\Harddisk0\\Partition0";
   char driveletter;
+  char extenddriveletter;
   // we start at 5 - the first 5 partitions are the mandatory standard Xbox partitions
   // we don't deal with those here.
-  for (int i = EXTEND_PARTITION_BEGIN; i <= EXTEND_PARTITION_END; i++)
+  for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT); i++)
   {
     if (m_partitionTable.pt_entries[i - 1].pe_flags & PE_PARTFLAGS_IN_USE)
     {
       driveletter = 'A' + i - 1;
+      extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
       CLog::Log(LOGINFO, "  map drive %c:", driveletter);
+      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter); 
       szDevice[20] = '1' + i - 1;
-      MapDriveLetter(driveletter, szDevice);
+      MapDriveLetter(extenddriveletter, szDevice);
     }
   }
 #endif

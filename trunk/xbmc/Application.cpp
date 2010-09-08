@@ -893,16 +893,20 @@ HRESULT CApplication::Create(HWND hWnd)
   CIoSupport::ReadPartitionTable();
   if (CIoSupport::HasPartitionTable())
   {
-    // Mount up to Partition15 (drive O:) if they are available.
-    for (int i=EXTEND_PARTITION_BEGIN; i <= EXTEND_PARTITION_END; i++)
+    // Mount up to Partition15 if they are available.
+    for (int i=EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1); i++)
     {
       char szDevice[32];
       if (CIoSupport::PartitionExists(i))
       {
         char cDriveLetter = 'A' + i - 1;
+        
+        char extendDriveLetter = CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter-EXTEND_DRIVE_BEGIN);
+        CLog::Log(LOGNOTICE, "  map extended drive %c:", extendDriveLetter);
+		
         sprintf(szDevice, "Harddisk0\\Partition%u", i);
 
-        CIoSupport::RemapDriveLetter(cDriveLetter, szDevice);
+        CIoSupport::RemapDriveLetter(extendDriveLetter, szDevice);
       }
     }
   }
@@ -5653,12 +5657,30 @@ void CApplication::StartFtpEmergencyRecoveryMode()
   pUser->AddDirectory("D:\\", XBFILE_READ | XBDIR_LIST | XBDIR_SUBDIRS);
   pUser->AddDirectory("E:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   pUser->AddDirectory("Q:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  //Add. also Drive F/G
+  //Add existing extended partitions
   if (CIoSupport::DriveExists('F')){
     pUser->AddDirectory("F:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
   if (CIoSupport::DriveExists('G')){
     pUser->AddDirectory("G:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('R')){
+    pUser->AddDirectory("R:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('S')){
+    pUser->AddDirectory("S:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('V')){
+    pUser->AddDirectory("V:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('W')){
+    pUser->AddDirectory("W:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('A')){
+    pUser->AddDirectory("A:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  }
+  if (CIoSupport::DriveExists('B')){
+    pUser->AddDirectory("B:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
   pUser->CommitChanges();
 #endif

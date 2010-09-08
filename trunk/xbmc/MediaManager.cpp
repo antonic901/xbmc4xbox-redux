@@ -111,13 +111,14 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   share.strName.Format(g_localizeStrings.Get(21438),'E');
   localDrives.push_back(share);
-  for (char driveletter=EXTEND_DRIVE_BEGIN; driveletter<=EXTEND_DRIVE_END; driveletter++)
+  for (int driveCount=EXTEND_PARTITION_BEGIN;driveCount<=(EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1);driveCount++)
   {
-    if (CIoSupport::DriveExists(driveletter))
+    if (CIoSupport::DriveExists(CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN)))
     {
       CMediaSource share;
-      share.strPath.Format("%c:\\", driveletter);
-      share.strName.Format(g_localizeStrings.Get(21438),driveletter);
+      share.strPath.Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      CLog::Log(LOGNOTICE, "  Local Source Drive %c:", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      share.strName.Format(g_localizeStrings.Get(21438),CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
       share.m_ignore = true;
       localDrives.push_back(share);
     }
