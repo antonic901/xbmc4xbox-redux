@@ -1,3 +1,25 @@
+*Confluence XBOX (V1.08)*
+Changed Font size in fontset Bigger
+Changed Custom Add-on button label
+Changed Album Info open/close animation 
+Fixed Autoscroll in Music/Artists
+Fixed Video Library BG loading
+Fixed Artists genre in media info view (tks SteveG)
+Fixed Video Settings BG loading
+Fixed visible condition set to textviewer
+Fixed Video Playlist BG loading
+Fixed Discography label width
+Fixed Fanart view BG loading when fanart was hidden 
+Updated Plugin Settings dialog (xbmc.org)
+Updated weather labels; temperature label width; dialog open/close animation (xbmc.org)
+Updated added original title; dialog open/close animation; set focus to Play/browse to Show button (xbmc.org)
+Replaced Record button in video OSD with Video Playlist (now playing) button
+Reverted weather low/high labels
+Added new fontsize to fix artist discography cutoff (video info was being cutoff with larger buttons)
+Added Wide Icon View to Programs
+Added "Minutes" label to video library views
+Added New Full Fanart View to Movie Library
+
 *Confluence XBOX (V1.07)*
 Fixed playlists label in Music submenu
 Removed Top 100 from Music submenu
@@ -10,7 +32,7 @@ Removed non Xbox items from Shutdown Menu
 Added plugin support to Add-ons button
 Added Studio flag in fanart view
       - (studios flags must be in [skinfolder]/media/flagging/studios)
-Added System Info in Home Screen (Home.xml / custom_SkinSetting_1111.xml)
+Added System Info in Home Screen
 Deleted SystemInfo, Suspend and skin icons
 Changed skin version to 1.07
 

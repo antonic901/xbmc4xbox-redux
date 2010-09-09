@@ -284,6 +284,17 @@
 		<texturenofocus border="5">button-nofocus.png</texturenofocus>
 		<pulseonselect>false</pulseonselect>
 	</include>
+	<include name="ButtonSMSDialogsCommonValues">
+		<height>30</height>
+		<width>82</width>
+		<textoffsetx>20</textoffsetx>
+		<align>center</align>
+		<aligny>center</aligny>
+		<font>font11caps</font>
+		<texturefocus border="5">button-focus.png</texturefocus>
+		<texturenofocus border="5">button-nofocus.png</texturenofocus>
+		<pulseonselect>false</pulseonselect>
+	</include>
 	<include name="SideBladeRight">
 		<control type="image">
 			<posx>26r</posx>

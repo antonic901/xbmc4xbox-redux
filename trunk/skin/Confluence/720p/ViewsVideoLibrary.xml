@@ -19,8 +19,8 @@
 				<posy>0</posy>
 				<width>1526</width>
 				<height>460</height>
-				<onleft>57</onleft>
-				<onright>57</onright>
+				<onleft>501</onleft>
+				<onright>501</onright>
 				<onup>2</onup>
 				<ondown>60</ondown>
 				<viewtype label="31028">bigwrap</viewtype>
@@ -2250,6 +2250,171 @@
 				</control>
 			</control>	
 		</control>
-		
+	</include>
+	<include name="FullFanartView">
+		<control type="group">
+			<visible>Control.IsVisible(520)</visible>
+			<include>VisibleFadeEffect</include>
+			<control type="wraplist" id="520">
+				<visible>Container.Content(Movies)</visible>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>1280</width>
+				<height>720</height>
+				<onleft>520</onleft>
+				<onright>520</onright>
+				<onup>2</onup>
+				<ondown>521</ondown>
+				<viewtype label="31033">bigwrap</viewtype>
+				<scrolltime>250</scrolltime>
+				<focusposition>0</focusposition>
+				<orientation>horizontal</orientation>
+				<preloaditems>2</preloaditems>
+				<itemlayout height="720" width="1280">
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<height>720</height>
+						<width>1280</width>
+						<aspectratio>stretch</aspectratio>
+						<texture background="true" fallback="special://skin/backgrounds/videos.jpg">$INFO[ListItem.Property(Fanart_Image)]</texture>
+					</control>
+				</itemlayout>
+				<focusedlayout height="720" width="1280">
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<height>720</height>
+						<width>1280</width>
+						<aspectratio>stretch</aspectratio>
+						<texture background="true" fallback="special://skin/backgrounds/videos.jpg">$INFO[ListItem.Property(Fanart_Image)]</texture>
+					</control>
+				</focusedlayout>
+			</control>
+		</control>
+		<control type="image">
+			<description>media info background image</description>
+			<posx>0</posx>
+			<posy>270r</posy>
+			<width>1280</width>
+			<height>270</height>
+			<texture>HomeNowPlayingBack.png</texture>
+			<visible>Control.IsVisible(520)</visible>
+		</control>
+		<control type="group">
+			<visible>Control.IsVisible(520) + !Window.IsVisible(2003)</visible>
+			<include>VisibleFadeEffect</include>
+			<animation effect="slide" end="0,-45" time="300" tween="quadratic" easing="out" condition="ControlGroup(521).HasFocus">Conditional</animation>
+			<control type="label">
+				<posx>30</posx>
+				<posy>635</posy>
+				<width>1220</width>
+				<height>35</height>
+				<font>font30_title</font>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<scroll>true</scroll>
+				<align>center</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Label]</label>
+			</control>
+			<control type="image">
+				<posx>450</posx>
+				<posy>675</posy>
+				<width>35</width>
+				<height>35</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[ListItem.Overlay]</texture>
+				<colordiffuse>blue</colordiffuse>
+			</control>
+			<control type="grouplist">
+				<description>Media Codec Flagging Images</description>
+				<posx>30</posx>
+				<posy>680</posy>
+				<width>1220</width>
+				<itemgap>0</itemgap>
+				<align>center</align>
+				<orientation>horizontal</orientation>
+				<include>VideoCodecFlaggingConditions</include>
+				<include>AudioCodecFlaggingConditions</include>				
+			</control>
+			<control type="grouplist" id="521">
+				<posx>30</posx>
+				<posy>725</posy>
+				<width>1220</width>
+				<height>30</height>
+				<itemgap>2</itemgap>
+				<align>center</align>
+				<orientation>horizontal</orientation>
+				<onleft>521</onleft>
+				<onright>521</onright>
+				<onup>520</onup>
+				<ondown>2</ondown>
+				<control type="button" id="51">
+					<description>SMS2</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>ABC</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS2</onclick>
+					<onclick>SetFocus(51)</onclick>
+				</control>
+				<control type="button" id="52">
+					<description>SMS3</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>DEF</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS3</onclick>
+					<onclick>SetFocus(52)</onclick>
+				</control>
+					<control type="button" id="53">
+					<description>SMS4</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>GHI</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS4</onclick>
+					<onclick>SetFocus(53)</onclick>
+				</control>
+				<control type="button" id="54">
+					<description>SMS5</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>JKL</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS5</onclick>
+					<onclick>SetFocus(54)</onclick>
+				</control>
+				<control type="button" id="55">
+					<description>SMS6</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>MNO</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS6</onclick>
+					<onclick>SetFocus(55)</onclick>
+				</control>
+				<control type="button" id="56">
+					<description>SMS7</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>PQRS</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS7</onclick>
+					<onclick>SetFocus(56)</onclick>
+				</control>
+				<control type="button" id="57">
+					<description>SMS8</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>TUV</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS8</onclick>
+					<onclick>SetFocus(57)</onclick>
+				</control>
+				<control type="button" id="58">
+					<description>SMS9</description>
+					<include>ButtonSMSDialogsCommonValues</include>
+					<label>WXYZ</label>
+					<onclick>SetFocus(520)</onclick>
+					<onclick>JumpSMS9</onclick>
+					<onclick>SetFocus(58)</onclick>
+				</control>
+			</control>
+		</control>		
 	</include>
 </includes>

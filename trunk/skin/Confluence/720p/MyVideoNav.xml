@@ -1,7 +1,7 @@
 <window id="25">
 	<defaultcontrol always="true">50</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
-	<views>50,500,501,508,504,503,505,511</views>
+	<views>50,500,501,508,520,504,503,505,511</views>
 	<controls>
 		<include>CommonVideoBackground</include>
 		<control type="group">
@@ -15,7 +15,7 @@
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
 				<visible>!Skin.HasSetting(VideoLibraryMovieFanart) | Control.IsVisible(508)</visible>
-				<visible>Container.Content(Movies)</visible>
+				<visible>[Container.Content(Movies) + !Control.IsVisible(520)]</visible>
 			</control>
 			<control type="image">
 				<posx>0</posx>
@@ -145,6 +145,7 @@
 			<include>ThumbnailView</include> <!-- view id = 500 -->
 			<include>PosterWrapView</include> <!-- view id = 501 -->
 			<include>PosterWrapView2_Fanart</include> <!-- view id = 508 -->
+			<include>FullFanartView</include> <!-- view id = 520 -->
 			<include>MediaListView3</include> <!-- view id = 503 -->
 			<include>MediaListView2</include> <!-- view id = 504 -->
 			<include>WideIconView</include> <!-- view id = 505 -->
@@ -260,7 +261,7 @@
 						<label>31307</label>
 						<onclick>Skin.ToggleSetting(VideoLibraryMovieFanart)</onclick>
 						<selected>Skin.HasSetting(VideoLibraryMovieFanart)</selected>
-						<visible>Container.Content(Movies) + !Control.IsVisible(508)</visible>
+						<visible>Container.Content(Movies) + ![Control.IsVisible(508) | Control.IsVisible(520)]</visible>
 					</control>
 					<control type="radiobutton" id="202">
 						<description>Toggle TVShow Fanart</description>
