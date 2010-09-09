@@ -45,7 +45,7 @@
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
 			<visible>Window.IsVisible(VideoFiles)</visible>
-			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | Skin.HasSetting(VideoFilesFanart)</visible>
+			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | [Skin.HasSetting(VideoFilesFanart) + !Control.IsVisible(508)]</visible>
 		</control>
 		<control type="multiimage">
 			<posx>0</posx>
@@ -68,7 +68,7 @@
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
 			<visible>Container.Content(Movies)</visible>
-			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | Skin.HasSetting(VideoLibraryMovieFanart)</visible>
+			<visible>[IsEmpty(Fanart.Image) + IsEmpty(listitem.property(fanart_image))] | [Skin.HasSetting(VideoLibraryMovieFanart) + !Control.IsVisible(508)]</visible>
 		</control>
 		<control type="multiimage"> 
 			<posx>0</posx>
