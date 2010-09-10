@@ -36,6 +36,7 @@ CGUIDialog::CGUIDialog(int id, const CStdString &xmlFile)
   m_dialogClosing = false;
   m_renderOrder = 1;
   m_autoClosing = false;
+  m_enableSound = true;
 }
 
 CGUIDialog::~CGUIDialog(void)
@@ -118,7 +119,7 @@ void CGUIDialog::Close(bool forceClose /*= false*/)
   if (!m_bRunning) return;
 
   //  Play the window specific deinit sound
-  if(!m_dialogClosing)
+  if(!m_dialogClosing && m_enableSound)
     g_audioManager.PlayWindowSound(GetID(), SOUND_DEINIT);
 
   // don't close if we should be animating
@@ -152,7 +153,8 @@ void CGUIDialog::DoModal_Internal(int iWindowID /*= WINDOW_INVALID */, const CSt
   g_windowManager.RouteToWindow(this);
 
   //  Play the window specific init sound
-  g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
+  if (m_enableSound)
+    g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
 
   // active this window...
   CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0, WINDOW_INVALID, iWindowID);
@@ -201,7 +203,8 @@ void CGUIDialog::Show_Internal()
   g_windowManager.AddModeless(this);
 
   //  Play the window specific init sound
-  g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
+  if (m_enableSound)
+    g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
 
   // active this window...
   CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0);

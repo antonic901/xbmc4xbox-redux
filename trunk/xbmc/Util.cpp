@@ -3646,13 +3646,13 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
     {
       g_passwordManager.bMasterUser = false;
       g_passwordManager.LockSources(true);
-      g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(20052),g_localizeStrings.Get(20053));
+      g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),g_localizeStrings.Get(20053));
     }
     else if (g_passwordManager.IsMasterLockUnlocked(true))
     {
       g_passwordManager.LockSources(false);
       g_passwordManager.bMasterUser = true;
-      g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(20052),g_localizeStrings.Get(20054));
+      g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),g_localizeStrings.Get(20054));
     }
 
     DeleteVideoDatabaseDirectoryCache();
@@ -5069,7 +5069,7 @@ bool CUtil::AutoDetection()
         //Do Notification for this Client
         CStdString strtemplbl;
         strtemplbl.Format("%s %s",strNickName, v_xboxclients.client_ip[i]);
-        g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(1251), strtemplbl);
+        g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(1251), strtemplbl);
 
         //Debug Log
         CLog::Log(LOGDEBUG,"%s: %s FTP-Link: %s", g_localizeStrings.Get(1251).c_str(), strNickName.c_str(), strFTPPath.c_str());
