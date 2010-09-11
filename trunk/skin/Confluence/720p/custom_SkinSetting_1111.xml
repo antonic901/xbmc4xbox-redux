@@ -587,9 +587,9 @@
 						<font>font13</font>
 						<textcolor>grey2</textcolor>
 						<focusedcolor>white</focusedcolor>
-						<label>$LOCALIZE[31111] - $LOCALIZE[247]</label>
+						<label>$LOCALIZE[31111] - $LOCALIZE[31116]</label>
 						<onclick>Skin.ToggleSetting(HomeMenuNoAddonsButton)</onclick>
-						<selected>Skin.HasSetting(HomeMenuNoAddonssButton)</selected>
+						<selected>Skin.HasSetting(HomeMenuNoAddonsButton)</selected>
 						<texturefocus>MenuItemFO.png</texturefocus>
 						<texturenofocus>MenuItemNF.png</texturenofocus>
 					</control>
