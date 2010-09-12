@@ -26,6 +26,7 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "FileSystem/StackDirectory.h"
+#include <sys\stat.h>
 
 using namespace std;
 
@@ -95,17 +96,49 @@ void CURL::Parse(const CStdString& strURL1)
   // decode protocol
   int iPos = strURL.Find("://");
   if (iPos < 0)
-  { // check for misconstructed protocols
-    iPos = strURL.Find(":");
-    if (iPos == strURL.GetLength() - 1)
+  {
+    // This is an ugly hack that needs some work.
+    // example: filename /foo/bar.zip/alice.rar/bob.avi
+    // This should turn into zip://rar:///foo/bar.zip/alice.rar/bob.avi
+    iPos = 0;
+    while (1)
     {
-      m_strProtocol = strURL.Left(iPos);
-      iPos += 1;
-    }
-    else
-    {
-      //CLog::Log(LOGDEBUG, "%s - Url has no protocol %s, empty CURL created", __FUNCTION__, strURL.c_str());
-      return;
+      iPos = strURL.Find(".zip/", iPos);
+      int extLen = 3;
+      if (iPos < 0)
+      {
+        // check for misconstructed protocols
+        iPos = strURL.Find(":");
+        if (iPos == strURL.GetLength() - 1)
+        {
+          SetProtocol(strURL.Left(iPos));
+          iPos += 1;
+          break;
+        }
+        else
+        {
+          /* set filename and update extension*/
+          SetFileName(strURL);
+          return ;
+        }
+      }
+      iPos += extLen + 1;
+      CStdString archiveName = strURL.Left(iPos);
+      struct __stat64 s;
+      if (XFILE::CFile::Stat(archiveName, &s) == 0)
+      {
+#ifdef _LINUX
+        if (!S_ISDIR(s.st_mode))
+#else
+        if (!(s.st_mode & S_IFDIR))
+#endif
+        {
+          CUtil::URLEncode(archiveName);
+          CURL c((CStdString)"zip" + "://" + archiveName + '/' + strURL.Right(strURL.size() - iPos - 1));
+          *this = c;
+          return;
+        }
+      }
     }
   }
   else
@@ -234,6 +267,7 @@ void CURL::Parse(const CStdString& strURL1)
     {
       m_strHostName = strHostNameAndPort;
     }
+
   }
   else
   {
@@ -628,4 +662,3 @@ bool CURL::IsFullPath(const CStdString &url)
   if (url.size() > 1 && url[1] == ':') return true; //   c:\\foo\\bar\\bar.ext
   return false;
 }
-
