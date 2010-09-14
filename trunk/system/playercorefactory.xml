@@ -22,7 +22,7 @@
     <rule name="streams" internetstream="true">
       <rule name="flv/aacp/sdp" mimetypes="video/x-flv|video-flv|audio/aacp|application/sdp" player="DVDPlayer" />
       <rule name="mp2" mimetypes="application/octet-stream" filetypes="mp2" player="PAPlayer" />
-      <rule filetypes="wmv" player="MPlayer" />
+      <rule name="wmv" filetypes="wmv" player="MPlayer" />
     </rule>
 
     <!-- DVDs -->
