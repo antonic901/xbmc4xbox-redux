@@ -123,7 +123,7 @@ public:
 		int nBytesAllowedToDl;
 		int nBytesAllowedToUl;
 		int nUploaded;
-		int nDownloaded;		
+		int nDownloaded;
 		BOOL bDownloadBypassed;
 		BOOL bUploadBypassed;
 	} t_Quota;

@@ -1073,7 +1073,7 @@ void CControlSocket::ParseCommand()
 							char drive = tolower(iter->dir[0]);
 
 							// extended partitions and memory units - check if the drive is available
-							if (!CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
+							if (strchr("abfghirsvw", drive) && !CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
 								continue;
 
 							// don't show x, y, z in the listing as users shouldn't really be

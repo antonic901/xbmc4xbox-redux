@@ -176,7 +176,6 @@ void CIoSupport::GetPartition(char cDriveLetter, char* szPartition)
   if (ExtendedPartitionMappingExists(upperLetter))
   {
     sprintf(szPartition, "Harddisk0\\Partition%u", EXTEND_PARTITION_BEGIN+GetExtendedPartitionPosition(upperLetter));
-    CLog::Log(LOGNOTICE, "Partition %s", szPartition); 
     return;
   }
   for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
@@ -204,7 +203,6 @@ void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
   if (part_num >= EXTEND_PARTITION_BEGIN)
   {
     *cDriveLetter = extendPartitionMapping[part_num-EXTEND_PARTITION_BEGIN];
-    CLog::Log(LOGNOTICE, "Drive %c", *cDriveLetter);
     return;
   }
   for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
