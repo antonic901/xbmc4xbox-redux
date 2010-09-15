@@ -160,6 +160,15 @@
 					<fadetime>IconCrossfadeTime</fadetime>
 					<texture diffuse="diffuse_mirror3.png" flipy="true" background="true">$INFO[ListItem.Icon]</texture>
 				</control>
+				<control type="image">
+					<posx>320</posx>
+					<posy>475</posy>
+					<width>50</width>
+					<height>50</height>
+					<aspectratio>keep</aspectratio>
+					<texture>$INFO[ListItem.Overlay]</texture>
+					<visible>![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(Seasons) | Container.Content(MusicVideos)]</visible>
+				</control>
 			</control>
 		</control>
 	</include>
