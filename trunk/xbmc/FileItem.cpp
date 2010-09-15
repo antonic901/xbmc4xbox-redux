@@ -2561,7 +2561,7 @@ CStdString CFileItem::GetUserVideoThumb() const
    || m_bIsShareOrDrive
    || IsInternetStream()
    || CUtil::IsUPnP(m_strPath)
-   || IsPlugin()
+   || m_strPath.Left(4).Equals("dvd:")
    || (CUtil::IsFTP(m_strPath) && !g_advancedSettings.m_bFTPThumbs)
    || IsPlugin()
    || IsParentFolder()
