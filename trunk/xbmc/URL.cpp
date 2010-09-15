@@ -79,9 +79,10 @@ void CURL::Parse(const CStdString& strURL1)
   if (!strURL.size()) return ;
   if (strURL.Equals("?", true)) return;
 
-  if (strURL.size() > 1 && strURL[1] == ':')
+  if (strURL.size() > 1 && strURL.Find(':') > 0 && !CUtil::IsURL(strURL))
   {
     // form is drive:directoryandfile
+    // Note that drive can be more than one character, like with cdrom: !
 
     // set filename and update extension
 

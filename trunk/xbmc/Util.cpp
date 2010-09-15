@@ -3357,6 +3357,10 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
   if (CUtil::IsDOSPath(path))
   {
     result.Replace('/', '\\');
+    /* The double slash correction should only be used when *absolutely*
+       necessary! This applies to certain DLLs or use from Python DLLs/scripts
+       that incorrectly generate double (back) slashes.
+    */
     if (bFixDoubleSlashes)
     {
       // Fixup for double back slashes (but ignore the \\ of unc-paths)
@@ -3370,6 +3374,10 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
   else if (path.Find("://") >= 0 || path.Find(":\\\\") >= 0)
   {
     result.Replace('\\', '/');
+    /* The double slash correction should only be used when *absolutely*
+       necessary! This applies to certain DLLs or use from Python DLLs/scripts
+       that incorrectly generate double (back) slashes.
+    */
     if (bFixDoubleSlashes)
     {
       // Fixup for double forward slashes(/) but don't touch the :// of URLs
