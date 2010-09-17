@@ -43,12 +43,16 @@ rem	CONFIG START
  	set CLEAN=xbmc.sln /clean release
 	set XBE=release\default.xbe
 
-  set OPTS_EXE=tools\Win32\XBMC_PC.sln /build release
+	set OPTS_EXE=tools\Win32\XBMC_PC.sln /build release
 	set CLEAN_EXE=tools\Win32\XBMC_PC.sln /clean release
 	set EXE= tools\Win32\Release\XBMC_PC.exe
 	
-  set XBE_PATCH=tools\xbepatch\xbepatch.exe
-	set RAR="%ProgramFiles%\Winrar\rar.exe"
+	set XBE_PATCH=tools\xbepatch\xbepatch.exe
+	
+	IF EXIST "%ProgramFiles(x86)%\Winrar\rar.exe" SET RAR="%ProgramFiles(x86)%\Winrar\rar.exe"
+	IF EXIST "%ProgramFiles%\Winrar\rar.exe"      SET RAR="%ProgramFiles%\Winrar\rar.exe"
+	IF EXIST "%ProgramFilesW6432%\Winrar\rar.exe" SET RAR="%ProgramFilesW6432%\Winrar\rar.exe"
+	
 	set RAR_ROOT=rar.exe
 	set RAROPS=a -r -idp -inul -m5 XBMC.rar BUILD
 	set RAROPS_EXE=a -r -idp -inul -m5 XBMC_PC.rar BUILD_WIN32
