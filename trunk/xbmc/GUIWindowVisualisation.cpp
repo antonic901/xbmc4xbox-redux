@@ -244,7 +244,7 @@ bool CGUIWindowVisualisation::OnMouse(const CPoint &point)
   return true;
 }
 
-void CGUIWindowVisualisation::Render()
+void CGUIWindowVisualisation::FrameMove()
 {
   g_application.ResetScreenSaver();
   // check for a tag change
@@ -271,7 +271,7 @@ void CGUIWindowVisualisation::Render()
     if (!m_dwLockedTimer && !m_bShowPreset)
       g_infoManager.SetShowCodec(false);
   }
-  CGUIWindow::Render();
+  CGUIWindow::FrameMove();
 }
 
 void CGUIWindowVisualisation::AllocResources(bool forceLoad)

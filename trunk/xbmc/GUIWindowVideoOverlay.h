@@ -28,7 +28,7 @@ class CGUIWindowVideoOverlay: public CGUIDialog
 public:
   CGUIWindowVideoOverlay(void);
   virtual ~CGUIWindowVideoOverlay(void);
-  virtual void Render();
+  virtual void FrameMove();
   bool OnMouse(const CPoint &point);
 protected:
   virtual void SetDefaults();

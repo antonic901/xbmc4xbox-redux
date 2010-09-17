@@ -61,7 +61,7 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
   return CGUIWindow::OnMessage(message);
 }
 
-void CGUIWindowSystemInfo::Render()
+void CGUIWindowSystemInfo::FrameMove()
 {
   if(iControl == CONTROL_BT_DEFAULT)
   {
@@ -178,7 +178,7 @@ void CGUIWindowSystemInfo::Render()
   SET_CONTROL_LABEL(51, g_localizeStrings.Get(144)+" "+g_infoManager.GetVersion());
   SET_CONTROL_LABEL(52, "XBMC4Xbox "+g_infoManager.GetLabel(SYSTEM_BUILD_VERSION)+" (Compiled: "+g_infoManager.GetLabel(SYSTEM_BUILD_DATE)+")");
   SET_CONTROL_LABEL(53, g_infoManager.GetLabel(SYSTEM_MPLAYER_VERSION));
-  CGUIWindow::Render();
+  CGUIWindow::FrameMove();
 }
 void CGUIWindowSystemInfo::SetLabelDummy()
 {

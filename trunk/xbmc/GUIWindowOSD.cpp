@@ -39,7 +39,7 @@ void CGUIWindowOSD::OnWindowLoaded()
   m_bRelativeCoords = true;
 }
 
-void CGUIWindowOSD::Render()
+void CGUIWindowOSD::FrameMove()
 {
   if (m_autoClosing)
   {
@@ -49,7 +49,7 @@ void CGUIWindowOSD::Render()
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
       SetAutoClose(3000);
   }
-  CGUIDialog::Render();
+  CGUIDialog::FrameMove();
 }
 
 bool CGUIWindowOSD::OnAction(const CAction &action)

@@ -41,6 +41,7 @@ public:
 
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
+  virtual void FrameMove();
   virtual void Render();
 
   virtual void DoModal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal

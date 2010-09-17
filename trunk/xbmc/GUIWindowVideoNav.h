@@ -35,7 +35,7 @@ public:
 
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual void Render();
+  virtual void FrameMove();
 
   virtual void OnPrepareFileItems(CFileItemList &items);
   virtual void OnInfo(CFileItem* pItem, const SScraperInfo&info);

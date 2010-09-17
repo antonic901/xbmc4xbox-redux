@@ -151,7 +151,7 @@ void CGUIWindowScripts::OnInfo()
   if (pDlgInfo) pDlgInfo->DoModal();
 }
 
-void CGUIWindowScripts::Render()
+void CGUIWindowScripts::FrameMove()
 {
   // update control_list / control_thumbs if one or more scripts have stopped / started
   if (g_pythonParser.ScriptsSize() != m_scriptSize)
@@ -162,7 +162,7 @@ void CGUIWindowScripts::Render()
     m_scriptSize = g_pythonParser.ScriptsSize();
   }
 
-  CGUIWindow::Render();
+  CGUIWindow::FrameMove();
 }
 
 bool CGUIWindowScripts::GetDirectory(const CStdString& strDirectory, CFileItemList& items)

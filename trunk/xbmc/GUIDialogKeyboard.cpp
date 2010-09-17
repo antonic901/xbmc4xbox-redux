@@ -316,7 +316,7 @@ void CGUIDialogKeyboard::Character(WCHAR ch)
   MoveCursor(1);
 }
 
-void CGUIDialogKeyboard::Render()
+void CGUIDialogKeyboard::FrameMove()
 {
   // reset the hide state of the label when the remote
   // sms style input times out
@@ -325,7 +325,7 @@ void CGUIDialogKeyboard::Render()
     // finished inputting a sms style character - turn off our shift and symbol states
     ResetShiftAndSymbols();
   }
-  CGUIDialog::Render();
+  CGUIDialog::FrameMove();
 }
 
 void CGUIDialogKeyboard::UpdateLabel()

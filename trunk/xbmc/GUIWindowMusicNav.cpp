@@ -910,7 +910,7 @@ void CGUIWindowMusicNav::OnSearchUpdate()
   }
 }
 
-void CGUIWindowMusicNav::Render()
+void CGUIWindowMusicNav::FrameMove()
 {
   static const int search_timeout = 2000;
   // update our searching
@@ -923,7 +923,7 @@ void CGUIWindowMusicNav::Render()
     SET_CONTROL_LABEL(CONTROL_LABELEMPTY,g_localizeStrings.Get(745)+'\n'+g_localizeStrings.Get(746));
   else
     SET_CONTROL_LABEL(CONTROL_LABELEMPTY,"");
-  CGUIWindowMusicBase::Render();
+  CGUIWindowMusicBase::FrameMove();
 }
 
 void CGUIWindowMusicNav::OnPrepareFileItems(CFileItemList &items)

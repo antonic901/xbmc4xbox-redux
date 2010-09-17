@@ -156,10 +156,8 @@ void CGUIDialogKaiToast::ResetTimer()
   m_dwTimer = timeGetTime();
 }
 
-void CGUIDialogKaiToast::Render()
+void CGUIDialogKaiToast::FrameMove()
 {
-  CGUIDialog::Render();
-
   //  Fading does not count as display time
   if (IsAnimating(ANIM_TYPE_WINDOW_OPEN))
     ResetTimer();
@@ -167,4 +165,6 @@ void CGUIDialogKaiToast::Render()
   // now check if we should exit
   if (timeGetTime() - m_dwTimer > m_toastDisplayTime)
     Close();
+  
+  CGUIDialog::FrameMove();
 }

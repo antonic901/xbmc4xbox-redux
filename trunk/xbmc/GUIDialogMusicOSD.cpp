@@ -93,7 +93,7 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
   return CGUIDialog::OnMessage(message);
 }
 
-void CGUIDialogMusicOSD::Render()
+void CGUIDialogMusicOSD::FrameMove()
 {
   if (m_autoClosing)
   {
@@ -102,7 +102,7 @@ void CGUIDialogMusicOSD::Render()
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
       SetAutoClose(3000);
   }
-  CGUIDialog::Render();
+  CGUIDialog::FrameMove();
 }
 
 void CGUIDialogMusicOSD::OnInitWindow()

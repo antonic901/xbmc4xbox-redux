@@ -2804,6 +2804,8 @@ void CApplication::FrameMove()
   ProcessRemote(frameTime);
   ProcessGamepad(frameTime);
   ProcessEventServer(frameTime);
+
+  g_windowManager.FrameMove();
 }
 
 bool CApplication::ProcessGamepad(float frameTime)

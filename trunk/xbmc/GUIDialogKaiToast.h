@@ -54,7 +54,7 @@ public:
 
   virtual bool OnMessage(CGUIMessage& message);
   virtual void OnWindowLoaded();
-  virtual void Render();
+  virtual void FrameMove();
   void ResetTimer();
 
 protected:

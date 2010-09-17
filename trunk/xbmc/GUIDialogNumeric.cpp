@@ -232,7 +232,7 @@ void CGUIDialogNumeric::OnNext()
     VerifyDate(m_block == 2);
 }
 
-void CGUIDialogNumeric::Render()
+void CGUIDialogNumeric::FrameMove()
 {
   CStdString strLabel;
   unsigned int start = 0;
@@ -278,7 +278,7 @@ void CGUIDialogNumeric::Render()
     pLabel->SetLabel(strLabel);
     pLabel->SetHighlight(start, end);
   }
-  CGUIDialog::Render();
+  CGUIDialog::FrameMove();
 }
 
 void CGUIDialogNumeric::OnNumber(unsigned int num)

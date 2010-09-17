@@ -35,7 +35,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
   virtual bool OnMouse(const CPoint &point);
-  virtual void Render();
+  virtual void FrameMove();
 protected:
   DWORD m_dwInitTimer;
   DWORD m_dwLockedTimer;

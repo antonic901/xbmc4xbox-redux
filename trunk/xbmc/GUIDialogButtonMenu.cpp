@@ -47,7 +47,7 @@ bool CGUIDialogButtonMenu::OnMessage(CGUIMessage &message)
   return bRet;
 }
 
-void CGUIDialogButtonMenu::Render()
+void CGUIDialogButtonMenu::FrameMove()
 {
   // get the label control
   CGUILabelControl *pLabel = (CGUILabelControl *)GetControl(CONTROL_BUTTON_LABEL);
@@ -61,5 +61,5 @@ void CGUIDialogButtonMenu::Render()
       pLabel->SetLabel(pButton->GetLabel());
     }
   }
-  CGUIDialog::Render();
+  CGUIDialog::FrameMove();
 }

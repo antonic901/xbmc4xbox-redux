@@ -33,7 +33,7 @@ public:
   virtual bool OnMessage(CGUIMessage &message);
   virtual bool OnAction(const CAction &action);
   virtual bool OnMouse(const CPoint &point);
-  virtual void Render();
+  virtual void FrameMove();
 protected:
   virtual void OnInitWindow();
   CVisualisation *m_pVisualisation;

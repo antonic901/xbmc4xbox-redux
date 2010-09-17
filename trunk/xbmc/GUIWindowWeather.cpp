@@ -228,7 +228,7 @@ void CGUIWindowWeather::UpdateButtons()
   }
 }
 
-void CGUIWindowWeather::Render()
+void CGUIWindowWeather::FrameMove()
 {
   // update our controls
   UpdateButtons();
@@ -240,7 +240,7 @@ void CGUIWindowWeather::Render()
     CallPlugin();
   }
 
-  CGUIWindow::Render();
+  CGUIWindow::FrameMove();
 }
 
 //Do a complete download, parse and update

@@ -118,7 +118,7 @@ void CGUIDialogSeekBar::ResetTimer()
   m_dwTimer = timeGetTime();
 }
 
-void CGUIDialogSeekBar::Render()
+void CGUIDialogSeekBar::FrameMove()
 {
   if (!g_application.m_pPlayer)
   {
@@ -147,7 +147,6 @@ void CGUIDialogSeekBar::Render()
     msg.SetLabel(GetSeekTimeLabel());
     OnMessage(msg);
   }
-  CGUIDialog::Render();
 
   // Check for seek timeout, and perform the seek
   if (m_bRequireSeek && timeGetTime() - m_dwTimer > SEEK_BAR_SEEK_TIME)
@@ -157,6 +156,7 @@ void CGUIDialogSeekBar::Render()
     g_application.SeekTime(time);
     m_bRequireSeek = false;
   }
+  CGUIDialog::FrameMove();
 }
 
 CStdString CGUIDialogSeekBar::GetSeekTimeLabel(TIME_FORMAT format)

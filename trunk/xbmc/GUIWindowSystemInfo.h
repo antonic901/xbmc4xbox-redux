@@ -26,11 +26,11 @@
 class CGUIWindowSystemInfo : public CGUIWindow
 {
 public:
-	CGUIWindowSystemInfo(void);
-	virtual ~CGUIWindowSystemInfo(void);
-	virtual bool OnMessage(CGUIMessage& message);
-	virtual bool OnAction(const CAction &action);
-	virtual void Render();
+  CGUIWindowSystemInfo(void);
+  virtual ~CGUIWindowSystemInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual void FrameMove();
 private:
   #define CONTROL_BT_HDD			92
   #define CONTROL_BT_DVD      93
