@@ -254,7 +254,7 @@
 					<font>font12_title</font>
 					<textcolor>grey2</textcolor>
 					<shadowcolor>black</shadowcolor>
-					<visible>!Player.ChapterCount + VideoPlayer.Content(Movies)]</visible>
+					<visible>!Player.ChapterCount + VideoPlayer.Content(Movies)</visible>
 				</control>
 				<control type="label">
 					<posx>0</posx>
