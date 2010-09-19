@@ -227,6 +227,34 @@
 					<font>font24_title</font>
 					<textcolor>white</textcolor>
 					<shadowcolor>black</shadowcolor>
+					<visible>!VideoPlayer.Content(Movies)</visible>
+				</control>
+				<control type="label">
+					<posx>0</posx>
+					<posy>30</posy>
+					<width>870</width>
+					<height>25</height>
+					<label>$INFO[VideoPlayer.Title]$INFO[VideoPlayer.Year,[COLOR=grey2] (,)[/COLOR]]</label>
+					<scroll>true</scroll>
+					<align>left</align>
+					<aligny>center</aligny>
+					<font>font24_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<visible>VideoPlayer.Content(Movies)</visible>
+				</control>
+				<control type="label">
+					<posx>0</posx>
+					<posy>67</posy>
+					<width>680</width>
+					<height>20</height>
+					<label>$INFO[VideoPlayer.Director,$LOCALIZE[20339]: ]</label>
+					<align>left</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<textcolor>grey2</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<visible>!Player.ChapterCount + VideoPlayer.Content(Movies)]</visible>
 				</control>
 				<control type="label">
 					<posx>0</posx>
