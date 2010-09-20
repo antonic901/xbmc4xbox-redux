@@ -28,7 +28,7 @@
 
 // python.h should always be included first before any other includes
 #include "stdafx.h"
-#include "python/Python.h"
+#include "python/Include/Python.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
 #include "GUIPassword.h"
 

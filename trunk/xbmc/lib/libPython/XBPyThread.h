@@ -22,7 +22,7 @@
  *
  */
 
-#include "python/Python.h"
+#include "python/Include/Python.h"
 #include "utils/Thread.h"
 
 class XBPyThread : public CThread

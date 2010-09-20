@@ -21,7 +21,7 @@
  *
  */
 
-#include "lib/libPython/python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "FileItem.h"
 
 #define PlayList_Check(op) PyObject_TypeCheck(op, &PlayList_Type)

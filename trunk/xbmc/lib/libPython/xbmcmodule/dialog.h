@@ -19,7 +19,7 @@
  *
  */
 
-#include "lib/libPython/python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "window.h"
 #pragma once
 

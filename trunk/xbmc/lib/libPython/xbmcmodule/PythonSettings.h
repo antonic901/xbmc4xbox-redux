@@ -21,7 +21,7 @@
  *
  */
 
-#include "lib/libPython/Python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "ScriptSettings.h"
 
 #ifdef __cplusplus

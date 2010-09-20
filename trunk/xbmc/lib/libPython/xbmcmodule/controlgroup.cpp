@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "lib/libPython/python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "GUIControlGroup.h"
 #include "GUIFontManager.h"
 #include "control.h"

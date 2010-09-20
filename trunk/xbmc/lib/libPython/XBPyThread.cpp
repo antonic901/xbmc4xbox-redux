@@ -21,8 +21,8 @@
 
 // python.h should always be included first before any other includes
 #include "stdafx.h"
-#include "Python/Python.h"
-#include "Python/osdefs.h"
+#include "Python/Include/Python.h"
+#include "Python/Include/osdefs.h"
 #include "XBPythonDll.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/Directory.h"

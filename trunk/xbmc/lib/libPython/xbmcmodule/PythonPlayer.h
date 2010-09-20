@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "lib/libPython/python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "cores/IPlayer.h"
 
 

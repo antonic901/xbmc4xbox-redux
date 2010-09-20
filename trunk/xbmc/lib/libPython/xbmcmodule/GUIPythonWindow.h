@@ -22,7 +22,7 @@
  */
 
 #include "GUIWindow.h"
-#include "lib/libPython/python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 
 class PyXBMCAction
 {

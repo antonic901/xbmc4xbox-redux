@@ -23,7 +23,7 @@
 #include "PlayListPlayer.h"
 #include "Util.h"
 #include "pyplaylist.h"
-#include "lib/libPython/python/structmember.h"
+#include "lib/libPython/python/Include/structmember.h"
 #include "../XBPythonDll.h"
 #include "PlayListFactory.h"
 #include "pyutil.h"

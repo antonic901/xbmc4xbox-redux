@@ -19,7 +19,7 @@
  *
  */
 
-#include "lib/libPython/Python/Python.h"
+#include "lib/libPython/python/Include/Python.h"
 #include "../XBPythonDll.h"
 #include "PythonPlayer.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
