@@ -1725,7 +1725,7 @@
 					Name="VCCLCompilerTool"
 					Optimization="2"
 					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions="BUILD=69"/>
+					PreprocessorDefinitions="BUILD=71"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug|Win32">
@@ -1733,7 +1733,7 @@
 					Name="VCCLCompilerTool"
 					Optimization="0"
 					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions="BUILD=69"/>
+					PreprocessorDefinitions="BUILD=71"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="ReleaseItanium|Win32">
@@ -1741,7 +1741,7 @@
 					Name="VCCLCompilerTool"
 					Optimization="2"
 					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions="BUILD=69"/>
+					PreprocessorDefinitions="BUILD=70"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug-XBMC|Win32">
@@ -1749,7 +1749,7 @@
 					Name="VCCLCompilerTool"
 					Optimization="2"
 					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions="BUILD=69"/>
+					PreprocessorDefinitions="BUILD=70"/>
 			</FileConfiguration>
 		</File>
 		<File

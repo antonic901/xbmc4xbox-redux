@@ -1,7 +1,7 @@
 /*
  /  Author: Sam Rushing <rushing@nightmare.com>
  /  Hacked for Unix by AMK
- /  $Id: mmapmodule.c 42245 2006-02-05 06:00:54Z neal.norwitz $
+ /  $Id: mmapmodule.c 65333 2008-07-31 17:04:32Z neal.norwitz $
 
  / mmapmodule.cpp -- map a view of a file into memory
  /
@@ -223,7 +223,7 @@ mmap_read_method(mmap_object *self,
 		return(NULL);
 
 	/* silently 'adjust' out-of-range requests */
-	if ((self->pos + num_bytes) > self->size) {
+	if (num_bytes > self->size - self->pos) {
 		num_bytes -= (self->pos+num_bytes) - self->size;
 	}
 	result = Py_BuildValue("s#", self->data+self->pos, num_bytes);
@@ -1093,6 +1093,8 @@ PyMODINIT_FUNC
 	mmap_object_type.ob_type = &PyType_Type;
 
 	module = Py_InitModule ("mmap", mmap_functions);
+	if (module == NULL)
+		return;
 	dict = PyModule_GetDict (module);
 	mmap_module_error = PyExc_EnvironmentError;
 	Py_INCREF(mmap_module_error);

@@ -1633,9 +1633,11 @@ al_QueryValues(PyObject *self, PyObject *args)
 	if (nvals < 0)
 		goto cleanup;
 	if (nvals > setsize) {
+		ALvalue *old_return_set = return_set;
 		setsize = nvals;
 		PyMem_RESIZE(return_set, ALvalue, setsize);
 		if (return_set == NULL) {
+			return_set = old_return_set;
 			PyErr_NoMemory();
 			goto cleanup;
 		}
@@ -1998,6 +2000,8 @@ inital(void)
 	m = Py_InitModule4("al", al_methods,
 		al_module_documentation,
 		(PyObject*)NULL,PYTHON_API_VERSION);
+	if (m == NULL)
+		return;
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);

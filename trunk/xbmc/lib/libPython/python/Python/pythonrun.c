@@ -185,12 +185,16 @@ Py_InitializeEx(int install_sigs)
 	if (bimod == NULL)
 		Py_FatalError("Py_Initialize: can't initialize __builtin__");
 	interp->builtins = PyModule_GetDict(bimod);
+	if (interp->builtins == NULL)
+		Py_FatalError("Py_Initialize: can't initialize builtins dict");
 	Py_INCREF(interp->builtins);
 
 	sysmod = _PySys_Init();
 	if (sysmod == NULL)
 		Py_FatalError("Py_Initialize: can't initialize sys");
 	interp->sysdict = PyModule_GetDict(sysmod);
+	if (interp->sysdict == NULL)
+		Py_FatalError("Py_Initialize: can't initialize sys dict");
 	Py_INCREF(interp->sysdict);
 	_PyImport_FixupExtension("sys", "sys");
 	PySys_SetPath(Py_GetPath());
@@ -253,7 +257,8 @@ Py_InitializeEx(int install_sigs)
 		sys_isatty = PyObject_CallMethod(sys_stream, "isatty", "");
 		if (!sys_isatty)
 			PyErr_Clear();
-		if(sys_isatty && PyObject_IsTrue(sys_isatty)) {
+		if(sys_isatty && PyObject_IsTrue(sys_isatty) &&
+		   PyFile_Check(sys_stream)) {
 			if (!PyFile_SetEncoding(sys_stream, codeset))
 				Py_FatalError("Cannot set codeset of stdin");
 		}
@@ -263,7 +268,8 @@ Py_InitializeEx(int install_sigs)
 		sys_isatty = PyObject_CallMethod(sys_stream, "isatty", "");
 		if (!sys_isatty)
 			PyErr_Clear();
-		if(sys_isatty && PyObject_IsTrue(sys_isatty)) {
+		if(sys_isatty && PyObject_IsTrue(sys_isatty) &&
+		   PyFile_Check(sys_stream)) {
 			if (!PyFile_SetEncoding(sys_stream, codeset))
 				Py_FatalError("Cannot set codeset of stdout");
 		}
@@ -379,7 +385,7 @@ Py_Finalize(void)
 #endif
 
 #ifdef Py_REF_DEBUG
-	fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
+	fprintf(stderr, "[%ld refs]\n", _Py_GetRefTotal());
 #endif
 
 #ifdef Py_TRACE_REFS
@@ -493,11 +499,15 @@ Py_NewInterpreter(void)
 	bimod = _PyImport_FindExtension("__builtin__", "__builtin__");
 	if (bimod != NULL) {
 		interp->builtins = PyModule_GetDict(bimod);
+		if (interp->builtins == NULL)
+			goto handle_error;
 		Py_INCREF(interp->builtins);
 	}
 	sysmod = _PyImport_FindExtension("sys", "sys");
 	if (bimod != NULL && sysmod != NULL) {
 		interp->sysdict = PyModule_GetDict(sysmod);
+		if (interp->sysdict == NULL)
+			goto handle_error;
 		Py_INCREF(interp->sysdict);
 		PySys_SetPath(Py_GetPath());
 		PyDict_SetItemString(interp->sysdict, "modules",
@@ -511,6 +521,7 @@ Py_NewInterpreter(void)
 	if (!PyErr_Occurred())
 		return tstate;
 
+handle_error:
 	/* Oops, it didn't work.  Undo it all. */
 
 	PyErr_Print();
@@ -694,7 +705,7 @@ PyRun_InteractiveLoopFlags(FILE *fp, const char *filename, PyCompilerFlags *flag
 	for (;;) {
 		ret = PyRun_InteractiveOneFlags(fp, filename, flags);
 #ifdef Py_REF_DEBUG
-		fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
+		fprintf(stderr, "[%ld refs]\n", _Py_GetRefTotal());
 #endif
 		if (ret == E_EOF)
 			return 0;
@@ -1071,6 +1082,17 @@ PyErr_PrintEx(int set_sys_last_vars)
 			}
 			PyErr_Fetch(&exception2, &v2, &tb2);
 			PyErr_NormalizeException(&exception2, &v2, &tb2);
+			/* It should not be possible for exception2 or v2
+			   to be NULL. However PyErr_Display() can't
+			   tolerate NULLs, so just be safe. */
+			if (exception2 == NULL) {
+				exception2 = Py_None;
+				Py_INCREF(exception2);
+			}
+			if (v2 == NULL) {
+				v2 = Py_None;
+				Py_INCREF(v2);
+			}
 			if (Py_FlushLine())
 				PyErr_Clear();
 			fflush(stdout);
@@ -1078,8 +1100,8 @@ PyErr_PrintEx(int set_sys_last_vars)
 			PyErr_Display(exception2, v2, tb2);
 			PySys_WriteStderr("\nOriginal exception was:\n");
 			PyErr_Display(exception, v, tb);
-			Py_XDECREF(exception2);
-			Py_XDECREF(v2);
+			Py_DECREF(exception2);
+			Py_DECREF(v2);
 			Py_XDECREF(tb2);
 		}
 		Py_XDECREF(result);

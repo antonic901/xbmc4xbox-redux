@@ -314,10 +314,11 @@ Availability: \UNIX.  \versionadded{2.4}
 \end{funcdesc}
 
 \begin{funcdesc}{fromfd}{fd, family, type\optional{, proto}}
-Build a socket object from an existing file descriptor (an integer as
-returned by a file object's \method{fileno()} method).  Address family,
-socket type and protocol number are as for the \function{socket()} function
-above.  The file descriptor should refer to a socket, but this is not
+Duplicate the file descriptor \var{fd} (an integer as returned by a file
+object's \method{fileno()} method) and build a socket object from the
+result.  Address family, socket type and protocol number are as for the
+\function{socket()} function above.
+The file descriptor should refer to a socket, but this is not
 checked --- subsequent operations on the object may fail if the file
 descriptor is invalid.  This function is rarely needed, but can be
 used to get or set socket options on a socket passed to a program as
@@ -544,7 +545,7 @@ are described in \ref{bltin-file-objects}, ``File Objects.'')
 The file object references a \cfunction{dup()}ped version of the
 socket file descriptor, so the file object and socket object may be
 closed or garbage-collected independently.
-The socket should be in blocking mode.
+The socket must be in blocking mode.
 \index{I/O control!buffering}The optional \var{mode}
 and \var{bufsize} arguments are interpreted the same way as by the
 built-in \function{file()} function; see ``Built-in Functions''
@@ -643,7 +644,7 @@ Timeout mode internally sets the socket in non-blocking mode.  The
 blocking and timeout modes are shared between file descriptors and
 socket objects that refer to the same network endpoint.  A consequence
 of this is that file objects returned by the \method{makefile()}
-method should only be used when the socket is in blocking mode; in
+method must only be used when the socket is in blocking mode; in
 timeout or non-blocking mode file operations that cannot be completed
 immediately will fail.
 

@@ -10,7 +10,7 @@ for the Microsoft Visual Studio.
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: msvccompiler.py 39263 2005-08-07 20:50:37Z loewis $"
+__revision__ = "$Id: msvccompiler.py 50980 2006-07-30 13:31:20Z martin.v.loewis $"
 
 import sys, os, string
 from distutils.errors import \
@@ -131,8 +131,10 @@ class MacroExpander:
                 self.set_macro("FrameworkSDKDir", net, "sdkinstallroot")
         except KeyError, exc: #
             raise DistutilsPlatformError, \
-                  ("The .NET Framework SDK needs to be installed before "
-                   "building extensions for Python.")
+                  ("""Python was built with Visual Studio 2003;
+extensions must be built with a compiler than can generate compatible binaries.
+Visual Studio 2003 was not found on this system. If you have Cygwin installed,
+you can try compiling with MingW32, by passing "-c mingw32" to setup.py.""")
 
         p = r"Software\Microsoft\NET Framework Setup\Product"
         for base in HKEYS:
@@ -580,7 +582,7 @@ class MSVCCompiler (CCompiler) :
                         "but the expected registry settings are not present.\n"
                         "You must at least run the Visual Studio GUI once "
                         "so that these entries are created.")
-                break
+                    break
         return []
 
     def set_path_env_var(self, name):

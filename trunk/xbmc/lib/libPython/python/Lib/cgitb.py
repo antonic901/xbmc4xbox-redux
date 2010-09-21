@@ -22,7 +22,7 @@ The default handler displays output as HTML.
 """
 
 __author__ = 'Ka-Ping Yee'
-__version__ = '$Revision: 39082 $'
+__version__ = '$Revision: 55350 $'
 
 import sys
 
@@ -182,7 +182,8 @@ function calls leading up to the error, in the order they occurred.</p>'''
 
 %s
 -->
-''' % ''.join(traceback.format_exception(etype, evalue, etb))
+''' % pydoc.html.escape(
+          ''.join(traceback.format_exception(etype, evalue, etb)))
 
 def text((etype, evalue, etb), context=5):
     """Return a plain text document describing a given traceback."""

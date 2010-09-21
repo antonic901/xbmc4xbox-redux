@@ -20,7 +20,8 @@ class SocketTCPTest(unittest.TestCase):
     def setUp(self):
         self.serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serv.bind((HOST, PORT))
+        global PORT
+        PORT = test_support.bind_port(self.serv, HOST, PORT)
         self.serv.listen(1)
 
     def tearDown(self):
@@ -32,7 +33,8 @@ class SocketUDPTest(unittest.TestCase):
     def setUp(self):
         self.serv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serv.bind((HOST, PORT))
+        global PORT
+        PORT = test_support.bind_port(self.serv, HOST, PORT)
 
     def tearDown(self):
         self.serv.close()
@@ -268,7 +270,7 @@ class GeneralModuleTests(unittest.TestCase):
             # Probably a similar problem as above; skip this test
             return
         all_host_names = [hostname, hname] + aliases
-        fqhn = socket.getfqdn()
+        fqhn = socket.getfqdn(ip)
         if not fqhn in all_host_names:
             self.fail("Error testing host resolution mechanisms.")
 

@@ -1111,6 +1111,8 @@ format_utcoffset(char *buf, size_t buflen, const char *sep,
 	char sign;
 	int none;
 
+	assert(buflen >= 1);
+
 	offset = call_utcoffset(tzinfo, tzinfoarg, &none);
 	if (offset == -1 && PyErr_Occurred())
 		return -1;
@@ -1149,9 +1151,9 @@ wrap_strftime(PyObject *object, PyObject *format, PyObject *timetuple,
 
 	PyObject *newfmt = NULL;	/* py string, the output format */
 	char *pnew;	/* pointer to available byte in output format */
-	char totalnew;	/* number bytes total in output format buffer,
+	int totalnew;	/* number bytes total in output format buffer,
 			   exclusive of trailing \0 */
-	char usednew;	/* number bytes used so far in output format buffer */
+	int usednew;	/* number bytes used so far in output format buffer */
 
 	char *ptoappend; /* pointer to string to append to output buffer */
 	int ntoappend;	/* # of bytes to append to output buffer */
@@ -1188,6 +1190,11 @@ wrap_strftime(PyObject *object, PyObject *format, PyObject *timetuple,
 	 * a new format.  Since computing the replacements for those codes
 	 * is expensive, don't unless they're actually used.
 	 */
+	if (PyString_Size(format) > INT_MAX - 1) {
+		PyErr_NoMemory();
+		goto Done;
+	}
+
 	totalnew = PyString_Size(format) + 1;	/* realistic if no %z/%Z */
 	newfmt = PyString_FromStringAndSize(NULL, totalnew);
 	if (newfmt == NULL) goto Done;
@@ -3682,6 +3689,13 @@ datetime_from_timestamp(PyObject *cls, TM_FUNC f, double timestamp,
 		return NULL;
 	fraction = timestamp - (double)timet;
 	us = (int)round_to_long(fraction * 1e6);
+	/* If timestamp is less than one microsecond smaller than a
+	 * full second, round up. Otherwise, ValueErrors are raised
+	 * for some floats. */
+	if (us == 1000000) {
+		timet += 1;
+		us = 0;
+	}
 	return datetime_from_timet_and_us(cls, f, timet, us, tzinfo);
 }
 
@@ -4574,6 +4588,8 @@ initdatetime(void)
 
 	m = Py_InitModule3("datetime", module_methods,
 			   "Fast implementation of the datetime type.");
+	if (m == NULL)
+		return;
 
 	if (PyType_Ready(&PyDateTime_DateType) < 0)
 		return;

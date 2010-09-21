@@ -2077,6 +2077,13 @@ def supers():
 
     veris(Sub.test(), Base.aProp)
 
+    # Verify that super() doesn't allow keyword args
+    try:
+        super(Base, kw=1)
+    except TypeError:
+        pass
+    else:
+        raise TestFailed, "super shouldn't accept keyword args"
 
 def inherits():
     if verbose: print "Testing inheritance from basic types..."
@@ -3116,6 +3123,21 @@ def kwdargs():
     list.__init__(a, sequence=[0, 1, 2])
     vereq(a, [0, 1, 2])
 
+def recursive__call__():
+    if verbose: print ("Testing recursive __call__() by setting to instance of "
+                        "class ...")
+    class A(object):
+        pass
+
+    A.__call__ = A()
+    try:
+        A()()
+    except RuntimeError:
+        pass
+    else:
+        raise TestFailed("Recursion limit should have been reached for "
+                         "__call__()")
+
 def delhook():
     if verbose: print "Testing __del__ hook..."
     log = []
@@ -3921,6 +3943,13 @@ def weakref_segfault():
     o.whatever = Provoker(o)
     del o
 
+def wrapper_segfault():
+    # SF 927248: deeply nested wrappers could cause stack overflow
+    f = lambda:None
+    for i in xrange(1000000):
+        f = f.__call__
+    f = None
+
 # Fix SF #762455, segfault when sys.stdout is changed in getattr
 def filefault():
     if verbose:
@@ -4058,8 +4087,27 @@ def notimplemented():
                 check(iexpr, c, N1)
                 check(iexpr, c, N2)
 
+def test_lost_getattr():
+    # issue 4230
+    import gc
+    class EvilGetattribute(object):
+        def __getattr__(self, name):
+            raise AttributeError(name)
+        def __getattribute__(self, name):
+            del EvilGetattribute.__getattr__
+            for i in range(5):
+                gc.collect()
+            raise AttributeError(name)
+
+    try:
+        # This used to segfault
+        EvilGetattribute().attr
+    except AttributeError:
+        pass
+
 def test_main():
     weakref_segfault() # Must be first, somehow
+    wrapper_segfault()
     do_this_first()
     class_docstrings()
     lists()
@@ -4118,6 +4166,7 @@ def test_main():
     buffer_inherit()
     str_of_str_subclass()
     kwdargs()
+    recursive__call__()
     delhook()
     hashinherit()
     strops()
@@ -4152,6 +4201,7 @@ def test_main():
     vicious_descriptor_nonsense()
     test_init()
     notimplemented()
+    test_lost_getattr()
 
     if verbose: print "All OK"
 

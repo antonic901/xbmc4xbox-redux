@@ -654,7 +654,9 @@ PyZlib_flush(compobject *self, PyObject *args)
 }
 
 PyDoc_STRVAR(decomp_flush__doc__,
-"flush() -- Return a string containing any remaining decompressed data.\n"
+"flush( [length] ) -- Return a string containing any remaining\n"
+"decompressed data. length, if given, is the initial size of the\n"
+"output buffer.\n"
 "\n"
 "The decompressor object can no longer be used after this call.");
 
@@ -667,6 +669,10 @@ PyZlib_unflush(compobject *self, PyObject *args)
 
     if (!PyArg_ParseTuple(args, "|i:flush", &length))
 	return NULL;
+    if (length <= 0) {
+	PyErr_SetString(PyExc_ValueError, "length must be greater than zero");
+	return NULL;
+    }
     if (!(retval = PyString_FromStringAndSize(NULL, length)))
 	return NULL;
 
@@ -878,6 +884,8 @@ PyInit_zlib(void)
     m = Py_InitModule4("zlib", zlib_methods,
 		       zlib_module_documentation,
 		       (PyObject*)NULL,PYTHON_API_VERSION);
+    if (m == NULL)
+	return;
 
     ZlibError = PyErr_NewException("zlib.error", NULL, NULL);
     if (ZlibError != NULL) {

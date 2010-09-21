@@ -10,6 +10,6 @@ used from a setup script as
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: __init__.py 38355 2005-01-20 19:25:24Z theller $"
+__revision__ = "$Id: __init__.py 52269 2006-10-10 08:10:42Z anthony.baxter $"
 
-__version__ = "2.4.1"
+__version__ = "2.4.4"

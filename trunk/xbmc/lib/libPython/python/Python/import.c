@@ -104,6 +104,8 @@ _PyImport_Init(void)
 	for (scan = _PyImport_StandardFiletab; scan->suffix != NULL; ++scan)
 		++countS;
 	filetab = PyMem_NEW(struct filedescr, countD + countS + 1);
+	if (filetab == NULL)
+		Py_FatalError("Can't intiialize import file table.");
 	memcpy(filetab, _PyImport_DynLoadFiletab,
 	       countD * sizeof(struct filedescr));
 	memcpy(filetab + countD, _PyImport_StandardFiletab,
@@ -227,8 +229,11 @@ lock_import(void)
 	long me = PyThread_get_thread_ident();
 	if (me == -1)
 		return; /* Too bad */
-	if (import_lock == NULL)
+	if (import_lock == NULL) {
 		import_lock = PyThread_allocate_lock();
+		if (import_lock == NULL)
+			return;  /* Nothing much we can do. */
+	}
 	if (import_lock_thread == me) {
 		import_lock_level++;
 		return;
@@ -247,7 +252,7 @@ static int
 unlock_import(void)
 {
 	long me = PyThread_get_thread_ident();
-	if (me == -1)
+	if (me == -1 || import_lock == NULL)
 		return 0; /* Too bad */
 	if (import_lock_thread != me)
 		return -1;
@@ -896,7 +901,8 @@ load_source_module(char *name, char *pathname, FILE *fp)
 		if (Py_VerboseFlag)
 			PySys_WriteStderr("import %s # from %s\n",
 				name, pathname);
-		write_compiled_module(co, cpathname, mtime);
+		if (cpathname)
+			write_compiled_module(co, cpathname, mtime);
 	}
 	m = PyImport_ExecCodeModuleEx(name, (PyObject *)co, pathname);
 	Py_DECREF(co);
@@ -1186,6 +1192,8 @@ find_module(char *fullname, char *subname, PyObject *path, char *buf,
 	for (i = 0; i < npath; i++) {
 		PyObject *copy = NULL;
 		PyObject *v = PyList_GetItem(path, i);
+		if (!v)
+			return NULL;
 #ifdef Py_USING_UNICODE
 		if (PyUnicode_Check(v)) {
 			copy = PyUnicode_Encode(PyUnicode_AS_UNICODE(v),
@@ -1839,11 +1847,10 @@ PyImport_ImportFrozenModule(char *name)
 	if (co == NULL)
 		return -1;
 	if (!PyCode_Check(co)) {
-		Py_DECREF(co);
 		PyErr_Format(PyExc_TypeError,
 			     "frozen object %.200s is not a code object",
 			     name);
-		return -1;
+		goto err_return;
 	}
 	if (ispackage) {
 		/* Set __path__ to the package name */
@@ -1851,22 +1858,25 @@ PyImport_ImportFrozenModule(char *name)
 		int err;
 		m = PyImport_AddModule(name);
 		if (m == NULL)
-			return -1;
+			goto err_return;
 		d = PyModule_GetDict(m);
 		s = PyString_InternFromString(name);
 		if (s == NULL)
-			return -1;
+			goto err_return;
 		err = PyDict_SetItemString(d, "__path__", s);
 		Py_DECREF(s);
 		if (err != 0)
-			return err;
+			goto err_return;
 	}
 	m = PyImport_ExecCodeModuleEx(name, co, "<frozen>");
-	Py_DECREF(co);
 	if (m == NULL)
-		return -1;
+		goto err_return;
+	Py_DECREF(co);
 	Py_DECREF(m);
 	return 1;
+err_return:
+	Py_DECREF(co);
+	return -1;
 }
 
 
@@ -2814,7 +2824,11 @@ initimp(void)
 
 	m = Py_InitModule4("imp", imp_methods, doc_imp,
 			   NULL, PYTHON_API_VERSION);
+	if (m == NULL)
+		goto failure;
 	d = PyModule_GetDict(m);
+	if (d == NULL)
+		goto failure;
 
 	if (setint(d, "SEARCH_ERROR", SEARCH_ERROR) < 0) goto failure;
 	if (setint(d, "PY_SOURCE", PY_SOURCE) < 0) goto failure;

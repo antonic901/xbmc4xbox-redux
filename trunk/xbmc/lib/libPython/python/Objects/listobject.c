@@ -45,7 +45,16 @@ list_resize(PyListObject *self, int newsize)
 	 * system realloc().
 	 * The growth pattern is:  0, 4, 8, 16, 25, 35, 46, 58, 72, 88, ...
 	 */
-	new_allocated = (newsize >> 3) + (newsize < 9 ? 3 : 6) + newsize;
+	new_allocated = (newsize >> 3) + (newsize < 9 ? 3 : 6);
+
+	/* check for integer overflow */
+	if (new_allocated > PY_SIZE_MAX - newsize) {
+		PyErr_NoMemory();
+		return -1;
+	} else {
+		new_allocated += newsize;
+	}
+
 	if (newsize == 0)
 		new_allocated = 0;
 	items = self->ob_item;
@@ -92,8 +101,9 @@ PyList_New(int size)
 		return NULL;
 	}
 	nbytes = size * sizeof(PyObject *);
-	/* Check for overflow */
-	if (nbytes / sizeof(PyObject *) != (size_t)size)
+	/* Check for overflow without an actual overflow,
+	 *  which can cause compiler to optimise out */
+	if (size > PY_SIZE_MAX / sizeof(PyObject *))
 		return PyErr_NoMemory();
 	if (num_free_lists) {
 		num_free_lists--;
@@ -108,8 +118,10 @@ PyList_New(int size)
 		op->ob_item = NULL;
 	else {
 		op->ob_item = (PyObject **) PyMem_MALLOC(nbytes);
-		if (op->ob_item == NULL)
+		if (op->ob_item == NULL) {
+			Py_DECREF(op);
 			return PyErr_NoMemory();
+		}
 		memset(op->ob_item, 0, nbytes);
 	}
 	op->ob_size = size;
@@ -858,7 +870,8 @@ list_inplace_concat(PyListObject *self, PyObject *other)
 static PyObject *
 listpop(PyListObject *self, PyObject *args)
 {
-	int i = -1;
+	long ii = -1;
+	int i;
 	PyObject *v, *arg = NULL;
 	int status;
 
@@ -866,8 +879,8 @@ listpop(PyListObject *self, PyObject *args)
 		return NULL;
 	if (arg != NULL) {
 		if (PyInt_Check(arg))
-			i = (int)(PyInt_AS_LONG((PyIntObject*) arg));
-		else if (!PyArg_ParseTuple(args, "|i:pop", &i))
+			ii = PyInt_AS_LONG((PyIntObject*) arg);
+		else if (!PyArg_ParseTuple(args, "|l:pop", &ii))
    			return NULL;
 	}
 	if (self->ob_size == 0) {
@@ -875,12 +888,13 @@ listpop(PyListObject *self, PyObject *args)
 		PyErr_SetString(PyExc_IndexError, "pop from empty list");
 		return NULL;
 	}
-	if (i < 0)
-		i += self->ob_size;
-	if (i < 0 || i >= self->ob_size) {
+	if (ii < 0)
+		ii += self->ob_size;
+	if (ii < 0 || ii >= self->ob_size) {
 		PyErr_SetString(PyExc_IndexError, "pop index out of range");
 		return NULL;
 	}
+	i = (int)ii;
 	v = self->ob_item[i];
 	if (i == self->ob_size - 1) {
 		status = list_resize(self, self->ob_size - 1);
@@ -1368,6 +1382,10 @@ merge_getmem(MergeState *ms, int need)
 	 * we don't care what's in the block.
 	 */
 	merge_freemem(ms);
+	if (need > INT_MAX / sizeof(PyObject*)) {
+		PyErr_NoMemory();
+		return -1;
+	}
 	ms->a = (PyObject **)PyMem_Malloc(need * sizeof(PyObject*));
 	if (ms->a) {
 		ms->alloced = need;
@@ -2546,8 +2564,14 @@ list_ass_subscript(PyListObject* self, PyObject* item, PyObject* value)
 				step = -step;
 			}
 
+			assert(slicelength <= PY_SIZE_MAX / sizeof(PyObject*));
+
 			garbage = (PyObject**)
 				PyMem_MALLOC(slicelength*sizeof(PyObject*));
+			if (!garbage) {
+				PyErr_NoMemory();
+				return -1;
+			}
 
 			/* drawing pictures might help
 			   understand these for loops */
@@ -2596,9 +2620,9 @@ list_ass_subscript(PyListObject* self, PyObject* item, PyObject* value)
 			else {
 				seq = PySequence_Fast(value,
 					"must assign iterable to extended slice");
-				if (!seq)
-					return -1;
 			}
+			if (!seq)
+				return -1;
 
 			if (PySequence_Fast_GET_SIZE(seq) != slicelength) {
 				PyErr_Format(PyExc_ValueError,

@@ -1,5 +1,5 @@
 # regression test for SAX 2.0            -*- coding: iso-8859-1 -*-
-# $Id: test_sax.py 36745 2004-08-03 10:17:34Z mwh $
+# $Id: test_sax.py 46777 2006-06-09 14:00:15Z andrew.kuchling $
 
 from xml.sax import make_parser, ContentHandler, \
                     SAXException, SAXReaderNotAvailable, SAXParseException
@@ -175,11 +175,14 @@ def test_xmlgen_attr_escape():
     gen.endElement("e")
     gen.startElement("e", {"a": "'\""})
     gen.endElement("e")
+    gen.startElement("e", {"a": "\n\r\t"})
+    gen.endElement("e")
     gen.endElement("doc")
     gen.endDocument()
 
-    return result.getvalue() == start \
-           + "<doc a='\"'><e a=\"'\"></e><e a=\"'&quot;\"></e></doc>"
+    return result.getvalue() == start + ("<doc a='\"'><e a=\"'\"></e>"
+                                         "<e a=\"'&quot;\"></e>"
+                                         "<e a=\"&#10;&#13;&#9;\"></e></doc>")
 
 def test_xmlgen_ignorable():
     result = StringIO()

@@ -98,6 +98,7 @@ static PyObject *
 fill_file_fields(PyFileObject *f, FILE *fp, PyObject *name, char *mode,
 		 int (*close)(FILE *))
 {
+	assert(name != NULL);
 	assert(f != NULL);
 	assert(PyFile_Check(f));
 	assert(f->f_fp == NULL);
@@ -106,7 +107,7 @@ fill_file_fields(PyFileObject *f, FILE *fp, PyObject *name, char *mode,
 	Py_DECREF(f->f_mode);
 	Py_DECREF(f->f_encoding);
 
-        Py_INCREF (name);
+        Py_INCREF(name);
         f->f_name = name;
 
 	f->f_mode = PyString_FromString(mode);
@@ -121,7 +122,7 @@ fill_file_fields(PyFileObject *f, FILE *fp, PyObject *name, char *mode,
 	Py_INCREF(Py_None);
 	f->f_encoding = Py_None;
 
-	if (f->f_name == NULL || f->f_mode == NULL)
+	if (f->f_mode == NULL)
 		return NULL;
 	f->f_fp = fp;
         f = dircheck(f);
@@ -207,7 +208,9 @@ PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE *))
 	PyFileObject *f = (PyFileObject *)PyFile_Type.tp_new(&PyFile_Type,
 							     NULL, NULL);
 	if (f != NULL) {
-                PyObject *o_name = PyString_FromString(name);
+		PyObject *o_name = PyString_FromString(name);
+		if (o_name == NULL)
+			return NULL;
 		if (fill_file_fields(f, fp, o_name, mode, close) == NULL) {
 			Py_DECREF(f);
 			f = NULL;
@@ -279,6 +282,8 @@ PyFile_SetEncoding(PyObject *f, const char *enc)
 {
 	PyFileObject *file = (PyFileObject*)f;
 	PyObject *str = PyString_FromString(enc);
+
+	assert(PyFile_Check(f));
 	if (!str)
 		return 0;
 	Py_DECREF(file->f_encoding);
@@ -328,11 +333,11 @@ file_repr(PyFileObject *f)
 	if (PyUnicode_Check(f->f_name)) {
 #ifdef Py_USING_UNICODE
 		PyObject *ret = NULL;
-		PyObject *name;
-		name = PyUnicode_AsUnicodeEscapeString(f->f_name);
+		PyObject *name = PyUnicode_AsUnicodeEscapeString(f->f_name);
+		const char *name_str = name ? PyString_AsString(name) : "?";
 		ret = PyString_FromFormat("<%s file u'%s', mode '%s' at %p>",
 				   f->f_fp == NULL ? "closed" : "open",
-				   PyString_AsString(name),
+				   name_str,
 				   PyString_AsString(f->f_mode),
 				   f);
 		Py_XDECREF(name);
@@ -905,6 +910,7 @@ getline_via_fgets(FILE *fp)
 	size_t nfree;	/* # of free buffer slots; pvend-pvfree */
 	size_t total_v_size;  /* total # of slots in buffer */
 	size_t increment;	/* amount to increment the buffer */
+	size_t prev_v_size;
 
 	/* Optimize for normal case:  avoid _PyString_Resize if at all
 	 * possible via first reading into stack buffer "buf".
@@ -1017,8 +1023,10 @@ getline_via_fgets(FILE *fp)
 		/* expand buffer and try again */
 		assert(*(pvend-1) == '\0');
 		increment = total_v_size >> 2;	/* mild exponential growth */
+		prev_v_size = total_v_size;
 		total_v_size += increment;
-		if (total_v_size > INT_MAX) {
+		/* check for overflow */
+		if (total_v_size <= prev_v_size || total_v_size > INT_MAX) {
 			PyErr_SetString(PyExc_OverflowError,
 			    "line is longer than a Python string can hold");
 			Py_DECREF(v);
@@ -1027,7 +1035,7 @@ getline_via_fgets(FILE *fp)
 		if (_PyString_Resize(&v, (int)total_v_size) < 0)
 			return NULL;
 		/* overwrite the trailing null byte */
-		pvfree = BUF(v) + (total_v_size - increment - 1);
+		pvfree = BUF(v) + (prev_v_size - 1);
 	}
 	if (BUF(v) + total_v_size != p)
 		_PyString_Resize(&v, p - BUF(v));
@@ -1697,7 +1705,7 @@ drop_readahead(PyFileObject *f)
 
 /* Make sure that file has a readahead buffer with at least one byte
    (unless at EOF) and no more than bufsize.  Returns negative value on
-   error */
+   error, will set MemoryError if bufsize bytes cannot be allocated. */
 static int
 readahead(PyFileObject *f, int bufsize)
 {
@@ -1710,6 +1718,7 @@ readahead(PyFileObject *f, int bufsize)
 			drop_readahead(f);
 	}
 	if ((f->f_buf = PyMem_Malloc(bufsize)) == NULL) {
+		PyErr_NoMemory();
 		return -1;
 	}
 	Py_BEGIN_ALLOW_THREADS
@@ -1877,7 +1886,7 @@ file_init(PyObject *self, PyObject *args, PyObject *kwds)
                 /* We parse again to get the name as a PyObject */
                 if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|si:file", kwlist,
                     &o_name, &mode, &bufsize))
-                        return -1;
+                        goto Error;
 
 		if (fill_file_fields(foself, NULL, o_name, mode,
 				     fclose) == NULL)

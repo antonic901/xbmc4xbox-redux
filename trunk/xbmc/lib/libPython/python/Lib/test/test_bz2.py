@@ -166,9 +166,20 @@ class BZ2FileTest(BaseTest):
         sio = StringIO(self.TEXT)
         bz2f.writelines(sio.readlines())
         bz2f.close()
+        # patch #1535500
+        self.assertRaises(ValueError, bz2f.writelines, ["a"])
         f = open(self.filename, 'rb')
         self.assertEqual(self.decompress(f.read()), self.TEXT)
         f.close()
+
+    def testWriteMethodsOnReadOnlyFile(self):
+        bz2f = BZ2File(self.filename, "w")
+        bz2f.write("abc")
+        bz2f.close()
+
+        bz2f = BZ2File(self.filename, "r")
+        self.assertRaises(IOError, bz2f.write, "a")
+        self.assertRaises(IOError, bz2f.writelines, ["a"])
 
     def testSeekForward(self):
         # "Test BZ2File.seek(150, 0)"
@@ -258,7 +269,7 @@ class BZ2FileTest(BaseTest):
         bz2f = BZ2File(self.filename)
         xlines = list(bz2f.xreadlines())
         bz2f.close()
-        self.assertEqual(lines, ['Test'])
+        self.assertEqual(xlines, ['Test'])
 
 
 class BZ2CompressorTest(BaseTest):

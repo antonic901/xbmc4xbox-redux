@@ -4,19 +4,33 @@ from test.test_support import verbose, TestFailed, TestSkipped
 TEST_STRING_1 = "I wish to buy a fish license.\n"
 TEST_STRING_2 = "For my pet fish, Eric.\n"
 
-# Solaris (at least 2.9 and 2.10) seem to have a fickle isatty(). The first
-# test below, testing the result of os.openpty() for tty-ness, sometimes
-# (but not always) fails. The second isatty test, in the sub-process, always
-# works. Allow that fickle first test to fail on these platforms, since it
-# doesn't actually affect functionality.
-fickle_isatty = ["sunos5"]
-
 if verbose:
     def debug(msg):
         print msg
 else:
     def debug(msg):
         pass
+
+def normalize_output(data):
+    # Some operating systems do conversions on newline.  We could possibly
+    # fix that by doing the appropriate termios.tcsetattr()s.  I couldn't
+    # figure out the right combo on Tru64 and I don't have an IRIX box.
+    # So just normalize the output and doc the problem O/Ses by allowing
+    # certain combinations for some platforms, but avoid allowing other
+    # differences (like extra whitespace, trailing garbage, etc.)
+
+    # This is about the best we can do without getting some feedback
+    # from someone more knowledgable.
+
+    # OSF/1 (Tru64) apparently turns \n into \r\r\n.
+    if data.endswith('\r\r\n'):
+        return data[:-3] + '\n'
+
+    # IRIX apparently turns \n into \r\n.
+    if data.endswith('\r\n'):
+        return data[:-2] + '\n'
+
+    return data
 
 # Marginal testing of pty suite. Cannot do extensive 'do or fail' testing
 # because pty code is not too portable.
@@ -33,22 +47,19 @@ def test_basic_pty():
         # " An optional feature could not be imported " ... ?
         raise TestSkipped, "Pseudo-terminals (seemingly) not functional."
 
-    if not os.isatty(slave_fd) and sys.platform not in fickle_isatty:
+    if not os.isatty(slave_fd):
         raise TestFailed, "slave_fd is not a tty"
-
-    # IRIX apparently turns \n into \r\n. Allow that, but avoid allowing other
-    # differences (like extra whitespace, trailing garbage, etc.)
 
     debug("Writing to slave_fd")
     os.write(slave_fd, TEST_STRING_1)
     s1 = os.read(master_fd, 1024)
-    sys.stdout.write(s1.replace("\r\n", "\n"))
+    sys.stdout.write(normalize_output(s1))
 
     debug("Writing chunked output")
     os.write(slave_fd, TEST_STRING_2[:5])
     os.write(slave_fd, TEST_STRING_2[5:])
     s2 = os.read(master_fd, 1024)
-    sys.stdout.write(s2.replace("\r\n", "\n"))
+    sys.stdout.write(normalize_output(s2))
 
     os.close(slave_fd)
     os.close(master_fd)

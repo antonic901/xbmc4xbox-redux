@@ -1,6 +1,6 @@
 \documentclass{howto}
 \usepackage{distutils}
-% $Id: whatsnew24.tex 39518 2005-09-14 17:24:41Z birkenfeld $
+% $Id: whatsnew24.tex 51135 2006-08-06 22:10:11Z andrew.kuchling $
 
 % Don't write extensive text for new sections; I'll do that.  
 % Feel free to add commented-out reminders of things that need
@@ -799,8 +799,8 @@ from SimpleXMLRPCServer import (SimpleXMLRPCServer,
 
 The PEP also proposes that all \keyword{import} statements be absolute
 imports, with a leading \samp{.} character to indicate a relative
-import.  This part of the PEP is not yet implemented, and will have to
-wait for Python 2.5 or some other future version.
+import.  This part of the PEP was not implemented for Python 2.4,
+but was completed for Python 2.5.
 
 \begin{seealso}
 \seepep{328}{Imports: Multi-Line and Absolute/Relative}
@@ -1656,11 +1656,11 @@ Some of the changes to Python's build process and to the C API are:
 
   \item Python can now be built with additional profiling for the
   interpreter itself, intended as an aid to people developing the
-  Python core.  Providing \longprogramopt{--enable-profiling} to the
+  Python core.  Providing \longprogramopt{enable-profiling} to the
   \program{configure} script will let you profile the interpreter with
-  \program{gprof}, and providing the \longprogramopt{--with-tsc}
+  \program{gprof}, and providing the \longprogramopt{with-tsc}
   switch enables profiling using the Pentium's Time-Stamp-Counter
-  register.  Note that the \longprogramopt{--with-tsc} switch is slightly
+  register.  Note that the \longprogramopt{with-tsc} switch is slightly
   misnamed, because the profiling feature also works on the PowerPC
   platform, though that processor architecture doesn't call that
   register ``the TSC register''.  (Contributed by Jeremy Hylton.)

@@ -1,6 +1,6 @@
 #
 # Tkinter
-# $Id: tkFont.py 37069 2004-08-20 06:19:23Z loewis $
+# $Id: tkFont.py 45311 2006-04-12 15:28:52Z georg.brandl $
 #
 # font wrapper
 #
@@ -117,7 +117,9 @@ class Font:
         try:
             if self.delete_font:
                 self._call("font", "delete", self.name)
-        except (AttributeError, Tkinter.TclError):
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception:
             pass
 
     def copy(self):

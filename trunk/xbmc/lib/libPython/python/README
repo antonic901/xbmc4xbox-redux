@@ -1,7 +1,7 @@
-This is Python version 2.4
-==========================
+This is Python version 2.4.6
+============================
 
-Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation.
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Python Software Foundation.
 All rights reserved.
 
 Copyright (c) 2000 BeOpen.com.
@@ -165,6 +165,13 @@ system configuration and creates the Makefile.  (It takes a minute or
 two -- please be patient!)  You may want to pass options to the
 configure script -- see the section below on configuration options and
 variables.  When it's done, you are ready to run make.
+
+As a prerequisite, you need at least a C compiler on your system,
+along with header files for the standard C library. You also need
+a C++ compiler, unless you pass --without-cxx to configure. In
+addition, you need header files and libraries for various optional
+extension modules; if these are missing, the build process will
+skip building these modules.
 
 To build Python, you normally type "make" in the toplevel directory.
 If you have changed the configuration, the Makefile may have to be
@@ -588,7 +595,11 @@ MacOSX: The tests will crash on both 10.1 and 10.2 with SEGV in
         /Library/Frameworks). A framework install is probably needed if you
         want to use any Aqua-based GUI toolkit (whether Tkinter, wxPython,
         Carbon, Cocoa or anything else).
-        
+
+	You may also want to try the configure option "--enable-universalsdk"
+	which builds Python as a universal binary with support for the 
+	i386 and PPC architetures. This requires Xcode 2.1 or later to build.
+	  
         See Mac/OSX/README for more information on framework builds.
 
 Cygwin: With recent (relative to the time of writing, 2001-12-19)

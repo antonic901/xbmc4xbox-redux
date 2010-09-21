@@ -1800,7 +1800,7 @@ PyDoc_STRVAR(pyexpat_module_documentation,
 static PyObject *
 get_version_string(void)
 {
-    static char *rcsid = "$Revision: 43125 $";
+    static char *rcsid = "$Revision: 52017 $";
     char *rev = rcsid;
     int i = 0;
 
@@ -1853,6 +1853,8 @@ MODULE_INITFUNC(void)
     /* Create the module and add the functions */
     m = Py_InitModule3(MODULE_NAME, pyexpat_methods,
                        pyexpat_module_documentation);
+    if (m == NULL)
+	return;
 
     /* Add some symbolic constants to the module */
     if (ErrorObject == NULL) {

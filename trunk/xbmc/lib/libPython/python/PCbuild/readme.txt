@@ -114,7 +114,7 @@ _tkinter
         all.tcl:        Total   8420    Passed  6826    Skipped 1581    Failed  13
         Sourced 91 Test Files.
         Files with failing tests: canvImg.test scrollbar.test textWind.test winWm.test
-        
+
    Built Tix
    ---------
    Download from http://prdownloads.sourceforge.net/tix/tix-8.1.4.tar.gz
@@ -191,22 +191,6 @@ _bsddb
     software.  Note that Berkeley_DB.dsw is in the build_win32 subdirectory.
     Build the "Release Static" version.
 
-    XXX We're linking against Release_static\libdb42s.lib.
-    XXX This yields the following warnings:
-"""
-Compiling...
-_bsddb.c
-Linking...
-   Creating library ./_bsddb.lib and object ./_bsddb.exp
-_bsddb.obj : warning LNK4217: locally defined symbol _malloc imported in function __db_associateCallback
-_bsddb.obj : warning LNK4217: locally defined symbol _free imported in function __DB_consume
-_bsddb.obj : warning LNK4217: locally defined symbol _fclose imported in function _DB_verify
-_bsddb.obj : warning LNK4217: locally defined symbol _fopen imported in function _DB_verify
-_bsddb.obj : warning LNK4217: locally defined symbol _strncpy imported in function _init_pybsddb
-__bsddb - 0 error(s), 5 warning(s)
-"""
-    XXX This isn't encouraging, but I don't know what to do about it.
-
     To run extensive tests, pass "-u bsddb" to regrtest.py.  test_bsddb3.py
     is then enabled.  Running in verbose mode may be helpful.
 
@@ -250,17 +234,8 @@ __bsddb - 0 error(s), 5 warning(s)
 _ssl
     Python wrapper for the secure sockets library.
 
-    Get the latest source code for OpenSSL from
-        http://www.openssl.org
-
-    You (probably) don't want the "engine" code.  For example, get
-        openssl-0.9.7d.tar.gz
-    not
-        openssl-engine-0.9.7d.tar.gz
-
-    Unpack into the "dist" directory, retaining the folder name from
-    the archive - for example, the latest stable OpenSSL will install as
-        dist/openssl-0.9.7d
+    Download the source from the python.org copy:
+    svn export http://svn.python.org/projects/external/openssl-0.9.7l
 
     You can (theoretically) use any version of OpenSSL you like - the
     build process will automatically select the latest version.

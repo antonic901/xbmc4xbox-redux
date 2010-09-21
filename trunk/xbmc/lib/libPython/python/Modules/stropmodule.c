@@ -214,6 +214,13 @@ strop_joinfields(PyObject *self, PyObject *args)
 				return NULL;
 			}
 			slen = PyString_GET_SIZE(item);
+			if (slen > INT_MAX - reslen ||
+			    seplen > INT_MAX - reslen - seplen) {
+				PyErr_SetString(PyExc_OverflowError,
+						"input too long");
+				Py_DECREF(res);
+				return NULL;
+			}
 			while (reslen + slen + seplen >= sz) {
 				if (_PyString_Resize(&res, sz * 2) < 0)
 					return NULL;
@@ -251,6 +258,14 @@ strop_joinfields(PyObject *self, PyObject *args)
 			return NULL;
 		}
 		slen = PyString_GET_SIZE(item);
+		if (slen > INT_MAX - reslen ||
+		    seplen > INT_MAX - reslen - seplen) {
+			PyErr_SetString(PyExc_OverflowError,
+					"input too long");
+			Py_DECREF(res);
+			Py_XDECREF(item);
+			return NULL;
+		}
 		while (reslen + slen + seplen >= sz) {
 			if (_PyString_Resize(&res, sz * 2) < 0) {
 				Py_DECREF(item);
@@ -576,7 +591,7 @@ strop_expandtabs(PyObject *self, PyObject *args)
 	char* e;
 	char* p;
 	char* q;
-	int i, j;
+	int i, j, old_j;
 	PyObject* out;
 	char* string;
 	int stringlen;
@@ -593,18 +608,29 @@ strop_expandtabs(PyObject *self, PyObject *args)
 	}
 
 	/* First pass: determine size of output string */
-	i = j = 0; /* j: current column; i: total of previous lines */
+	i = j = old_j = 0; /* j: current column; i: total of previous lines */
 	e = string + stringlen;
 	for (p = string; p < e; p++) {
-		if (*p == '\t')
+		if (*p == '\t') {
 			j += tabsize - (j%tabsize);
-		else {
+			if (old_j > j) {
+				PyErr_SetString(PyExc_OverflowError,
+						"new string is too long");
+				return NULL;
+			}
+			old_j = j;
+		} else {
 			j++;
 			if (*p == '\n') {
 				i += j;
 				j = 0;
 			}
 		}
+	}
+
+	if ((i + j) < 0) {
+		PyErr_SetString(PyExc_OverflowError, "new string is too long");
+		return NULL;
 	}
 
 	/* Second pass: create output string and fill it */
@@ -1210,6 +1236,8 @@ initstrop(void)
 	int c, n;
 	m = Py_InitModule4("strop", strop_methods, strop_module__doc__,
 			   (PyObject*)NULL, PYTHON_API_VERSION);
+	if (m == NULL)
+		return;
 
 	/* Create 'whitespace' object */
 	n = 0;

@@ -1458,7 +1458,7 @@ subtype_getweakref(PyObject *obj, void *context)
 
 	if (obj->ob_type->tp_weaklistoffset == 0) {
 		PyErr_SetString(PyExc_AttributeError,
-				"This object has no __weaklist__");
+				"This object has no __weakref__");
 		return NULL;
 	}
 	assert(obj->ob_type->tp_weaklistoffset > 0);
@@ -3239,6 +3239,8 @@ PyType_Ready(PyTypeObject *type)
 	if (PyDict_GetItemString(type->tp_dict, "__doc__") == NULL) {
 		if (type->tp_doc != NULL) {
 			PyObject *doc = PyString_FromString(type->tp_doc);
+			if (doc == NULL)
+				goto error;
 			PyDict_SetItemString(type->tp_dict, "__doc__", doc);
 			Py_DECREF(doc);
 		} else {
@@ -3710,7 +3712,9 @@ hackcheck(PyObject *self, setattrofunc func, char *what)
 	PyTypeObject *type = self->ob_type;
 	while (type && type->tp_flags & Py_TPFLAGS_HEAPTYPE)
 		type = type->tp_base;
-	if (type->tp_setattro != func) {
+	/* If type is NULL now, this is a really weird type.
+	   In the spirit of backwards compatibility (?), just shut up. */
+	if (type && type->tp_setattro != func) {
 		PyErr_Format(PyExc_TypeError,
 			     "can't apply this %s to %s object",
 			     what,
@@ -3925,7 +3929,9 @@ tp_new_wrapper(PyObject *self, PyObject *args, PyObject *kwds)
 	staticbase = subtype;
 	while (staticbase && (staticbase->tp_flags & Py_TPFLAGS_HEAPTYPE))
 		staticbase = staticbase->tp_base;
-	if (staticbase->tp_new != type->tp_new) {
+	/* If staticbase is NULL now, this is a really weird type.
+	   In the spirit of backwards compatibility (?), just shut up. */
+	if (staticbase && staticbase->tp_new != type->tp_new) {
 		PyErr_Format(PyExc_TypeError,
 			     "%s.__new__(%s) is not safe, use %s.__new__()",
 			     type->tp_name,
@@ -4530,7 +4536,16 @@ slot_tp_call(PyObject *self, PyObject *args, PyObject *kwds)
 
 	if (meth == NULL)
 		return NULL;
+
+	/* PyObject_Call() will end up calling slot_tp_call() again if
+	   the object returned for __call__ has __call__ itself defined
+	   upon it.  This can be an infinite recursion if you set
+	   __call__ in a class to an instance of it. */
+	if (Py_EnterRecursiveCall(" in __call__"))
+		return NULL;
 	res = PyObject_Call(meth, args, kwds);
+	Py_LeaveRecursiveCall();
+
 	Py_DECREF(meth);
 	return res;
 }
@@ -4579,6 +4594,7 @@ slot_tp_getattr_hook(PyObject *self, PyObject *name)
 		tp->tp_getattro = slot_tp_getattro;
 		return slot_tp_getattro(self, name);
 	}
+	Py_INCREF(getattr);
 	getattribute = _PyType_Lookup(tp, getattribute_str);
 	if (getattribute == NULL ||
 	    (getattribute->ob_type == &PyWrapperDescr_Type &&
@@ -4591,6 +4607,7 @@ slot_tp_getattr_hook(PyObject *self, PyObject *name)
 		PyErr_Clear();
 		res = PyObject_CallFunction(getattr, "OO", self, name);
 	}
+	Py_DECREF(getattr);
 	return res;
 }
 
@@ -5697,6 +5714,8 @@ super_init(PyObject *self, PyObject *args, PyObject *kwds)
 	PyObject *obj = NULL;
 	PyTypeObject *obj_type = NULL;
 
+	if (!_PyArg_NoKeywords("super", kwds))
+		return -1;
 	if (!PyArg_ParseTuple(args, "O!|O:super", &PyType_Type, &type, &obj))
 		return -1;
 	if (obj == Py_None)

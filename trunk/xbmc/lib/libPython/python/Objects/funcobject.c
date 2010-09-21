@@ -109,8 +109,8 @@ PyFunction_SetDefaults(PyObject *op, PyObject *defaults)
 	}
 	if (defaults == Py_None)
 		defaults = NULL;
-	else if (PyTuple_Check(defaults)) {
-		Py_XINCREF(defaults);
+	else if (defaults && PyTuple_Check(defaults)) {
+		Py_INCREF(defaults);
 	}
 	else {
 		PyErr_SetString(PyExc_SystemError, "non-tuple default args");
@@ -684,6 +684,8 @@ cm_init(PyObject *self, PyObject *args, PyObject *kwds)
 
 	if (!PyArg_UnpackTuple(args, "classmethod", 1, 1, &callable))
 		return -1;
+	if (!_PyArg_NoKeywords("classmethod", kwds))
+		return -1;
 	if (!PyCallable_Check(callable)) {
 		PyErr_Format(PyExc_TypeError, "'%s' object is not callable",
 		     callable->ob_type->tp_name);
@@ -839,6 +841,8 @@ sm_init(PyObject *self, PyObject *args, PyObject *kwds)
 	PyObject *callable;
 
 	if (!PyArg_UnpackTuple(args, "staticmethod", 1, 1, &callable))
+		return -1;
+	if (!_PyArg_NoKeywords("staticmethod", kwds))
 		return -1;
 	Py_INCREF(callable);
 	sm->sm_callable = callable;

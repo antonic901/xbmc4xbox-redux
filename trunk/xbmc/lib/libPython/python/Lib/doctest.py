@@ -128,9 +128,8 @@ warnings.filterwarnings("ignore", "is_private", DeprecationWarning,
 
 OPTIONFLAGS_BY_NAME = {}
 def register_optionflag(name):
-    flag = 1 << len(OPTIONFLAGS_BY_NAME)
-    OPTIONFLAGS_BY_NAME[name] = flag
-    return flag
+    # Create a new flag unless `name` is already known.
+    return OPTIONFLAGS_BY_NAME.setdefault(name, 1 << len(OPTIONFLAGS_BY_NAME))
 
 DONT_ACCEPT_TRUE_FOR_1 = register_optionflag('DONT_ACCEPT_TRUE_FOR_1')
 DONT_ACCEPT_BLANKLINE = register_optionflag('DONT_ACCEPT_BLANKLINE')
@@ -849,6 +848,11 @@ class DocTestFinder:
         # Recursively expore `obj`, extracting DocTests.
         tests = []
         self._find(tests, obj, name, module, source_lines, globs, {})
+        # Sort the tests by alpha order of names, for consistency in
+        # verbose-mode output.  This was a feature of doctest in Pythons
+        # <= 2.3 that got lost by accident in 2.4.  It was repaired in
+        # 2.4.4 and 2.5.
+        tests.sort()
         return tests
 
     def _filter(self, obj, prefix, base):
@@ -1045,12 +1049,13 @@ class DocTestRunner:
 
         >>> tests = DocTestFinder().find(_TestClass)
         >>> runner = DocTestRunner(verbose=False)
+        >>> tests.sort(key = lambda test: test.name)
         >>> for test in tests:
-        ...     print runner.run(test)
-        (0, 2)
-        (0, 1)
-        (0, 2)
-        (0, 2)
+        ...     print test.name, '->', runner.run(test)
+        _TestClass -> (0, 2)
+        _TestClass.__init__ -> (0, 2)
+        _TestClass.get -> (0, 2)
+        _TestClass.square -> (0, 1)
 
     The `summarize` method prints a summary of all the test cases that
     have been run by the runner, and returns an aggregated `(f, t)`

@@ -98,8 +98,8 @@
 #error "eek! DBVER can't handle minor versions > 9"
 #endif
 
-#define PY_BSDDB_VERSION "4.3.0.1"
-static char *rcs_id = "$Id: _bsddb.c 42892 2006-03-07 14:16:02Z thomas.wouters $";
+#define PY_BSDDB_VERSION "4.3.0.3"
+static char *rcs_id = "$Id: _bsddb.c 52170 2006-10-05 18:49:36Z andrew.kuchling $";
 
 
 #ifdef WITH_THREAD
@@ -506,6 +506,7 @@ static int makeDBError(int err)
     PyObject *errObj = NULL;
     PyObject *errTuple = NULL;
     int exceptionRaised = 0;
+    unsigned int bytes_left;
 
     switch (err) {
         case 0:                     /* successful, no error */      break;
@@ -513,12 +514,15 @@ static int makeDBError(int err)
 #if (DBVER < 41)
         case DB_INCOMPLETE:
 #if INCOMPLETE_IS_WARNING
-            our_strlcpy(errTxt, db_strerror(err), sizeof(errTxt));
-            if (_db_errmsg[0]) {
+            bytes_left = our_strlcpy(errTxt, db_strerror(err), sizeof(errTxt));
+            /* Ensure that bytes_left never goes negative */
+            if (_db_errmsg[0] && bytes_left < (sizeof(errTxt) - 4)) {
+                bytes_left = sizeof(errTxt) - bytes_left - 4 - 1;
+		assert(bytes_left >= 0);
                 strcat(errTxt, " -- ");
-                strcat(errTxt, _db_errmsg);
-                _db_errmsg[0] = 0;
+                strncat(errTxt, _db_errmsg, bytes_left);
             }
+            _db_errmsg[0] = 0;
 #ifdef HAVE_WARNINGS
             exceptionRaised = PyErr_Warn(PyExc_RuntimeWarning, errTxt);
 #else
@@ -566,12 +570,15 @@ static int makeDBError(int err)
     }
 
     if (errObj != NULL) {
-        our_strlcpy(errTxt, db_strerror(err), sizeof(errTxt));
-        if (_db_errmsg[0]) {
+        bytes_left = our_strlcpy(errTxt, db_strerror(err), sizeof(errTxt));
+        /* Ensure that bytes_left never goes negative */
+        if (_db_errmsg[0] && bytes_left < (sizeof(errTxt) - 4)) {
+            bytes_left = sizeof(errTxt) - bytes_left - 4 - 1;
+            assert(bytes_left >= 0);
             strcat(errTxt, " -- ");
-            strcat(errTxt, _db_errmsg);
-            _db_errmsg[0] = 0;
+            strncat(errTxt, _db_errmsg, bytes_left);
         }
+        _db_errmsg[0] = 0;
 
 	errTuple = Py_BuildValue("(is)", err, errTxt);
         PyErr_SetObject(errObj, errTuple);
@@ -764,10 +771,12 @@ newDBObject(DBEnvObject* arg, int flags)
 
     MYDB_BEGIN_ALLOW_THREADS;
     err = db_create(&self->db, db_env, flags);
-    self->db->set_errcall(self->db, _db_errorCallback);
+    if (self->db != NULL) {
+        self->db->set_errcall(self->db, _db_errorCallback);
 #if (DBVER >= 33)
-    self->db->app_private = (void*)self;
+        self->db->app_private = (void*)self;
 #endif
+    }
     MYDB_END_ALLOW_THREADS;
     /* TODO add a weakref(self) to the self->myenvobj->open_child_weakrefs
      * list so that a DBEnv can refuse to close without aborting any open
@@ -1694,7 +1703,6 @@ DB_join(DBObject* self, PyObject* args)
     DBC** cursors;
     DBC*  dbc;
 
-
     if (!PyArg_ParseTuple(args,"O|i:join", &cursorsObj, &flags))
         return NULL;
 
@@ -1708,6 +1716,11 @@ DB_join(DBObject* self, PyObject* args)
 
     length = PyObject_Length(cursorsObj);
     cursors = malloc((length+1) * sizeof(DBC*));
+    if (!cursors) {
+	PyErr_NoMemory();
+	return NULL;
+    }
+
     cursors[length] = NULL;
     for (x=0; x<length; x++) {
         PyObject* item = PySequence_GetItem(cursorsObj, x);
@@ -2173,7 +2186,7 @@ DB_stat(DBObject* self, PyObject* args, PyObject* kwargs)
 #if (DBVER >= 43)
     PyObject* txnobj = NULL;
     DB_TXN *txn = NULL;
-    char* kwnames[] = { "txn", "flags", NULL };
+    char* kwnames[] = { "flags", "txn", NULL };
 #else
     char* kwnames[] = { "flags", NULL };
 #endif
@@ -2368,11 +2381,13 @@ DB_verify(DBObject* self, PyObject* args, PyObject* kwargs)
     CHECK_DB_NOT_CLOSED(self);
     if (outFileName)
         outFile = fopen(outFileName, "w");
+	/* XXX(nnorwitz): it should probably be an exception if outFile
+	   can't be opened. */
 
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->db->verify(self->db, fileName, dbName, outFile, flags);
     MYDB_END_ALLOW_THREADS;
-    if (outFileName)
+    if (outFile)
         fclose(outFile);
 
     /* DB.verify acts as a DB handle destructor (like close); this was
@@ -2451,10 +2466,15 @@ int DB_length(DBObject* self)
 
     if (self->haveStat) {  /* Has the stat function been called recently?  If
                               so, we can use the cached value. */
+#if (DBVER <= 32)
         flags = DB_CACHED_COUNTS;
+#else
+        flags = DB_FAST_STAT;
+#endif
     }
 
     MYDB_BEGIN_ALLOW_THREADS;
+redo_stat_for_length:
 #if (DBVER >= 43)
     err = self->db->stat(self->db, /*txnid*/ NULL, &sp, flags);
 #elif (DBVER >= 33)
@@ -2462,6 +2482,22 @@ int DB_length(DBObject* self)
 #else
     err = self->db->stat(self->db, &sp, NULL, flags);
 #endif
+
+    /* All the stat structures have matching fields upto the ndata field,
+       so we can use any of them for the type cast */
+    size = ((DB_BTREE_STAT*)sp)->bt_ndata;
+
+    /* A size of 0 could mean that BerkeleyDB no longer had the stat values cached.
+     * redo a full stat to make sure.
+     *   Fixes SF python bug 1493322, pybsddb bug 1184012
+     */
+    if (size == 0 && (flags & DB_FAST_STAT)) {
+        flags = 0;
+        if (!err)
+            free(sp);
+        goto redo_stat_for_length;
+    }
+
     MYDB_END_ALLOW_THREADS;
 
     if (err)
@@ -2469,9 +2505,6 @@ int DB_length(DBObject* self)
 
     self->haveStat = 1;
 
-    /* All the stat structures have matching fields upto the ndata field,
-       so we can use any of them for the type cast */
-    size = ((DB_BTREE_STAT*)sp)->bt_ndata;
     free(sp);
     return size;
 }
@@ -3572,7 +3605,7 @@ DBEnv_dbremove(DBEnvObject* self, PyObject* args, PyObject* kwargs)
     DB_TXN *txn = NULL;
     char* kwnames[] = { "file", "database", "txn", "flags", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ss|Oi:dbremove", kwnames,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|zOi:dbremove", kwnames,
 		&file, &database, &txnobj, &flags)) {
 	return NULL;
     }
@@ -3599,7 +3632,7 @@ DBEnv_dbrename(DBEnvObject* self, PyObject* args, PyObject* kwargs)
     DB_TXN *txn = NULL;
     char* kwnames[] = { "file", "database", "newname", "txn", "flags", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sss|Oi:dbrename", kwnames,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "szs|Oi:dbrename", kwnames,
 		&file, &database, &newname, &txnobj, &flags)) {
 	return NULL;
     }
@@ -4126,7 +4159,7 @@ DBEnv_log_archive(DBEnvObject* self, PyObject* args)
 {
     int flags=0;
     int err;
-    char **log_list_start, **log_list;
+    char **log_list = NULL;
     PyObject* list;
     PyObject* item = NULL;
 
@@ -4147,11 +4180,14 @@ DBEnv_log_archive(DBEnvObject* self, PyObject* args)
 
     list = PyList_New(0);
     if (list == NULL) {
+        if (log_list)
+            free(log_list);
         PyErr_SetString(PyExc_MemoryError, "PyList_New failed");
         return NULL;
     }
 
     if (log_list) {
+        char **log_list_start;
         for (log_list_start = log_list; *log_list != NULL; ++log_list) {
             item = PyString_FromString (*log_list);
             if (item == NULL) {
@@ -4828,6 +4864,8 @@ DL_EXPORT(void) init_bsddb(void)
 
     /* Create the module and add the functions */
     m = Py_InitModule(_bsddbModuleName, bsddb_methods);
+    if (m == NULL)
+    	return;
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
@@ -5129,9 +5167,21 @@ DL_EXPORT(void) init_bsddb(void)
     ADD_INT(d, DB_SET_TXN_TIMEOUT);
 #endif
 
+    /* The exception name must be correct for pickled exception *
+     * objects to unpickle properly.                            */
+#ifdef PYBSDDB_STANDALONE  /* different value needed for standalone pybsddb */
+#define PYBSDDB_EXCEPTION_BASE  "bsddb3.db."
+#else
+#define PYBSDDB_EXCEPTION_BASE  "bsddb.db."
+#endif
+
+    /* All the rest of the exceptions derive only from DBError */
+#define MAKE_EX(name)   name = PyErr_NewException(PYBSDDB_EXCEPTION_BASE #name, DBError, NULL); \
+                        PyDict_SetItemString(d, #name, name)
+
     /* The base exception class is DBError */
-    DBError = PyErr_NewException("bsddb._db.DBError", NULL, NULL);
-    PyDict_SetItemString(d, "DBError", DBError);
+    DBError = NULL;     /* used in MAKE_EX so that it derives from nothing */
+    MAKE_EX(DBError);
 
     /* Some magic to make DBNotFoundError derive from both DBError and
        KeyError, since the API only supports using one base class. */
@@ -5141,10 +5191,6 @@ DL_EXPORT(void) init_bsddb(void)
     DBNotFoundError = PyDict_GetItemString(d, "DBNotFoundError");
     PyDict_DelItemString(d, "KeyError");
 
-
-    /* All the rest of the exceptions derive only from DBError */
-#define MAKE_EX(name)   name = PyErr_NewException("bsddb._db." #name, DBError, NULL); \
-                        PyDict_SetItemString(d, #name, name)
 
 #if !INCOMPLETE_IS_WARNING
     MAKE_EX(DBIncompleteError);

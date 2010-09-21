@@ -4,6 +4,400 @@ Python News
 
 (editors: check NEWS.help for information about editing NEWS using ReST.)
 
+What's New in Python 2.4.6?
+===========================
+
+*Release date: 19-Dec-2008*
+
+
+
+What's New in Python 2.4.6c1?
+=============================
+
+*Release date: 13-Dec-2008*
+
+Core and builtins
+-----------------
+
+- Issue #4469: Prevent expandtabs() on string and unicode 
+  objects from causing a segfault when a large width is passed 
+  on 32-bit platforms. CVE-2008-5031.
+
+- Issue #4317: Fixed a crash in the imageop.rgb2rgb8() function.
+
+- Issue #4230: Fix a crash when a class has a custom __getattr__ and an
+  __getattribute__ method that deletes the __getattr__ attribute.
+
+- Apply security patches from Apple. CVE-2008-2315.
+
+- Issue #2620: Overflow checking when allocating or reallocating memory
+  was not always being done properly in some python types and extension
+  modules.  PyMem_MALLOC, PyMem_REALLOC, PyMem_NEW and PyMem_RESIZE have
+  all been updated to perform better checks and places in the code that
+  would previously leak memory on the error path when such an allocation
+  failed have been fixed.
+
+- Issue #1179: Fix CVE-2007-4965 and CVE-2008-1679, multiple integer
+  overflows in the imageop and rgbimgmodule modules.
+
+- Issue #2586: Fix CVE-2008-1721, zlib crash from
+  zlib.decompressobj().flush(val) when val is not positive.
+
+- Issues #2588, #2589: Fix potential integer underflow and overflow
+  conditions in the PyOS_vsnprintf C API function. CVE-2008-3144.
+
+- Issue #2587: In the C API, PyString_FromStringAndSize() takes a signed size
+  parameter but was not verifying that it was greater than zero.  Values
+  less than zero will now raise a SystemError and return NULL to indicate a
+  bug in the calling C code. CVE-2008-1887.
+
+- Security Issue #2: imageop did not validate arguments correctly and could
+  segfault as a result. CVE-2008-4864.
+
+Extension Modules
+-----------------
+
+Library
+-------
+
+Tests
+-----
+
+Build
+-----
+
+Tools/Demos
+-----------
+
+- Tools/faqwiz/move-faqwiz.sh: Fix unsecure use of temporary files.
+
+What's New in Python 2.4.5?
+=============================
+
+*Release date: 11-Mar-2008*
+
+What's New in Python 2.4.5c1?
+=============================
+
+*Release date: 02-Mar-2008*
+
+
+Core and builtins
+-----------------
+
+- Added checks for integer overflows, contributed by Google. Some are
+  only available if asserts are left in the code, in cases where they
+  can't be triggered from Python code.
+
+- patch #1630975: Fix crash when replacing sys.stdout in sitecustomize.py
+
+Extension Modules
+-----------------
+
+Library
+-------
+
+- HTML-escape the plain traceback in cgitb's HTML output, to prevent
+  the traceback inadvertently or maliciously closing the comment and
+  injecting HTML into the error page.
+
+Tests
+-----
+
+Build
+-----
+
+
+What's New in Python 2.4.4?
+===========================
+
+*Release date: 18-OCT-2006*
+
+Build
+-----
+
+- Bug #1578513: Cross compilation was broken by a change to configure. 
+Repair so that it's back to how it was in 2.4.3.
+
+What's New in Python 2.4.4c1?
+=============================
+
+*Release date: 11-OCT-2006*
+
+Core and builtins
+-----------------
+
+- Bug #1456209: In some obscure cases it was possible for a class with a
+  custom ``__eq__()`` method to confuse dict internals when class instances
+  were used as a dict's keys and the ``__eq__()`` method mutated the dict.
+  No, you don't have any code that did this ;-)
+
+- A number of places, including integer negation and absolute value,
+  were fixed to not rely on undefined behaviour of the C compiler
+  anymore.
+
+- Patch #1567691: super() and new.instancemethod() now don't accept
+  keyword arguments any more (previously they accepted them, but didn't
+  use them).
+
+- staticmethod() and classmethod() also now complain about keyword args
+  instead of silently ignoring them.
+
+- Bug #1331062: Fix error in UTF-7 codec.
+
+- Bug #1365916: Fix an int/long mismatch in the sorted() built-in.
+
+- Fix memory leak of coding spec in Parser/tokenizer.c.
+
+- Fix memory leak in file_init.
+
+- Fix segfault when doing string formatting on subclasses of long.
+
+- Overflow checking code in integer division ran afoul of new gcc
+  optimizations.  Changed to be more standard-conforming.
+
+- Fix some potential crashes found with failmalloc.
+
+- Fix warnings reported by the Coverity and Klocwork static analysis tools.
+
+- Patch #1541585: fix buffer overrun when performing repr() on
+  a unicode string in a build with wide unicode (UCS-4) support.
+
+- Bug #1536786: buffer comparison could emit a RuntimeWarning.
+
+- Bug #1535165: fixed a segfault in input() and raw_input() when
+  sys.stdin is closed.
+
+- Bug #1524310: Properly report errors from FindNextFile in os.listdir.
+
+- Bug #1232517: An overflow error was not detected properly when
+  attempting to convert a large float to an int in os.utime().
+
+- Bug #927248: Recursive method-wrapper objects can now safely
+  be released.
+
+- Bug #992017: A classic class that defined a __coerce__() method that returned
+  its arguments swapped would infinitely recurse and segfault the interpreter.
+
+- Bug #532646: The object set to the __call__ attribute has its own __call__
+  attribute checked; this continues until the attribute can no longer be found
+  or segfaulting.  Recursion limit is now followed.
+
+- Bug #1454485: Don't crash on Unicode characters <0.
+
+- Patch #1488312, Fix memory alignment problem on SPARC in unicode
+
+- fixed a bug with bsddb.DB.stat: the flags and txn keyword arguments
+  were transposed.
+
+Extension Modules
+-----------------
+- #1494314: Fix a regression with high-numbered sockets in 2.4.3. This
+  means that select() on sockets > FD_SETSIZE (typically 1024) work again.
+  The patch makes sockets use poll() internally where available.
+
+- Fix buffer handling in posix.confstr.
+
+- Bug #1572832: fix a bug in ISO-2022 codecs which may cause segfault
+  when encoding non-BMP unicode characters.
+
+- Fixed a few bugs in cjkcodecs:
+  - gbk and gb18030 codec now handle U+30FB KATAKANA MIDDLE DOT correctly.
+  - iso2022_jp_2 codec now encodes into G0 for KS X 1001, GB2312
+    codepoints to conform the standard.
+  - iso2022_jp_3 and iso2022_jp_2004 codec can encode JIS X 2013:2
+    codepoints now.
+
+- Bug #1556784: allow format strings longer than 127 characters in
+  datetime's strftime function.
+
+- gcmodule: add a missing incref.
+
+- threadmodule: add a missing incref.
+
+- Bug #1551427: fix a wrong NULL pointer check in the win32 version
+  of os.urandom().
+
+- Patch #1535500: fix segfault in BZ2File.writelines and make sure it
+  raises the correct exceptions.
+
+- Make regex engine raise MemoryError if allocating memory fails.
+
+- Bug #1471938: Fix curses module build problem on Solaris 8; patch by
+  Paul Eggert.
+
+- Bug #1548092: fix curses.tparm() segfault on invalid input.
+
+- cursesmodule: fix a number of reference leaks with 'python -v'; handle
+  failure from PyModule_GetDict (Klocwork 208).
+
+- Bug #1512695: cPickle.loads could crash if it was interrupted with
+  a KeyboardInterrupt.
+
+- Change binascii.hexlify() to accept any read-only buffer and not just a char
+  buffer.
+
+- Fixed a potentially invalid memory access of CJKCodecs' shift-jis decoder.
+
+- Calling Tk_Init twice is refused if the first call failed as that
+  may deadlock.
+
+- Patch #1191065: Fix preprocessor problems on systems where recvfrom
+  is a macro.
+
+- Bug #1467952: os.listdir() now correctly raises an error if readdir()
+  fails with an error condition.
+
+- Fix bsddb.db.DBError derived exceptions so they can be unpickled.
+
+- Bug #1117761: bsddb.*open() no longer raises an exception when using
+  the cachesize parameter.
+
+- Bug #1493322: bsddb: the __len__ method of a DB object has been fixed to
+  return correct results.  It could previously incorrectly return 0 in some
+  cases.  Fixes SF bug 1493322 (pybsddb bug 1184012).
+
+- pybsddb Bug #1527939: bsddb module DBEnv dbremove and dbrename
+  methods now allow their database parameter to be None as the
+  sleepycat API allows.
+
+
+Library
+-------
+
+- Bug #1545341: The 'classifier' keyword argument to the Distutils setup()
+  function now accepts tuples as well as lists.
+
+- Bug #1560617: in pyclbr, return full module name not only for classes,
+  but also for functions.
+
+- Bug #1566602: correct failure of posixpath unittest when $HOME ends
+  with a slash.
+
+- Reverted patch #1504333 because it introduced an infinite loop.
+
+- Fix missing import of the types module in logging.config.
+
+- Bug #1112549, DoS attack on cgi.FieldStorage.
+
+- Bug #1257728: Complain about missing VS 2003 in the error message
+  of msvccompiler, and mention Cygwin as an alternative.
+
+- Bug #1002398: The documentation for os.path.sameopenfile now correctly
+  refers to file descriptors, not file objects.
+
+- Bug #1529297:  The rewrite of doctest for Python 2.4 unintentionally
+  lost that tests are sorted by name before being run.  This rarely
+  matters for well-written tests, but can create baffling symptoms if
+  side effects from one test to the next affect outcomes.  ``DocTestFinder``
+  has been changed to sort the list of tests it returns.
+
+- The email package has improved RFC 2231 support, specifically for
+  recognizing the difference between encoded (name*0*=<blah>) and non-encoded
+  (name*0=<blah>) parameter continuations.  This may change the types of
+  values returned from email.message.Message.get_param() and friends.
+  Specifically in some cases where non-encoded continuations were used,
+  get_param() used to return a 3-tuple of (None, None, string) whereas now it
+  will just return the string (since non-encoded continuations don't have
+  charset and language parts).
+
+  Also, whereas % values were decoded in all parameter continuations, they are
+  now only decoded in encoded parameter parts.
+
+- Bug #822974: Honor timeout in telnetlib.{expect,read_until}
+  even if some data are received.
+
+- Bug #1267547: Put proper recursive setup.py call into the
+  spec file generated by bdist_rpm.
+
+- Bug #1504333: Make sgmllib support angle brackets in quoted attribute
+  values.
+
+- Bug #853506: Fix IPv6 address parsing in unquoted attributes in sgmllib
+  ('[' and ']' were not accepted).
+
+- Bug #1117556: SimpleHTTPServer now tries to find and use the system's
+  mime.types file for determining MIME types.
+
+- Bug #1339007: Shelf objects now don't raise an exception in their
+  __del__ method when initialization failed.
+
+- Bug #1501223: Possible overflow in _PySys_Init() when reading the code page
+  under Windows.
+
+- Patch #1478292. ``doctest.register_optionflag(name)`` shouldn't create a
+  new flag when ``name`` is already the name of an option flag.
+
+- Bug #1473760: ``tempfile.TemporaryFile()`` could hang on Windows, when
+  called from a thread spawned as a side effect of importing a module.
+
+- The ``__del__`` method of class ``local`` in module ``_threading_local``
+  returned before accomplishing any of its intended cleanup.
+
+- Patch #1191700: Adjust column alignment in bdb breakpoint lists.
+
+- The email module's parsedate_tz function now sets the daylight savings
+  flag to -1 (unknown) since it can't tell from the date whether it should
+  be set.
+
+- Bug #1460340: ``random.sample(dict)`` failed in various ways.  Dicts
+  aren't officially supported here, and trying to use them will probably
+  raise an exception some day.  But dicts have been allowed, and "mostly
+  worked", so support for them won't go away without warning.
+
+- Bug #1472827: correctly escape newlines and tabs in attribute values in
+  the saxutils.XMLGenerator class.
+
+- Patch #1110248: SYNC_FLUSH the zlib buffer for GZipFile.flush.
+
+Tools/Demos
+-----------
+
+Build
+-----
+
+- The Windows binaries for the _ssl module are now linked with
+  OpenSSL 0.9.7l.
+
+- On Windows, there are no longer linker warnings when building the
+  ``_bsddb`` project.
+
+- Bug #1568842: Fix test for uintptr_t.
+
+- Bug #1439538: Drop usage of test -e in configure as it is not portable.
+
+- Bug #1502728: Correctly link against librt library on HP-UX.
+
+- OpenBSD 3.9 and 4.0 are now supported.
+
+- Test for sys/statvfs.h before including it, as statvfs is present
+  on some OSX installation, but its header file is not.
+
+- Fix test_long failure on Tru64 with gcc by using -mieee gcc option.
+
+Documentation
+-------------
+
+- Bug #1541682: Fix example in the "Refcount details" API docs.
+  Additionally, remove a faulty example showing PySequence_SetItem applied
+  to a newly created list object and add notes that this isn't a good idea.
+
+- Clarified documentation for tp_as_buffer->bf_getcharbuffer.
+
+- Bug #1337990: clarified that ``doctest`` does not support examples
+  requiring both expected output and an exception.
+
+Tests
+-----
+
+- Bug #1535182: really test the xreadlines() method of bz2 objects.
+
+- Patch #1529686: test_iterlen and test_email_codecs are now actually
+  run by regrtest.py.
+
+- Fix the socket tests so they can be run concurrently.
+
+
 What's New in Python 2.4.3?
 ===========================
 
@@ -14,16 +408,18 @@ Core and builtins
 
 - A few reference leaks were squished.
 
-- A threading issue that caused random segfaults on some platforms from 
+- A threading issue that caused random segfaults on some platforms from
   the testsuite was fixed in test_capi.
 
-- Reverted fix for Bug #1379994: Builtin unicode_escape and 
+- Reverted fix for Bug #1379994: Builtin unicode_escape and
   raw_unicode_escape codec now encodes backslash correctly.
   This caused another issue for unicode repr strings being double-escaped
   (SF Bug #1459029). Correct fix will be in 2.5, but is too risky for 2.4.3.
 
 Extension Modules
 -----------------
+
+- Patch #1380952: fix SSL objects timing out on consecutive read()s
 
 - Ubuntu bug #29289: Fixed a bug that the gb18030 codec raises
   RuntimeError on encoding surrogate pair area on UCS4 build.
@@ -118,6 +514,9 @@ Extension Modules
 
 Library
 -------
+
+- Patch #1462313, bug #1443328: the pickle modules now can handle classes
+  that have __private names in their __slots__.
 
 - A regrtest option -w was added to re-run failed tests in verbose mode.
 
@@ -1491,7 +1890,7 @@ Tests
   platforms that use the Makefile.
 
 - SF patch 995225:  The test file testtar.tar accidentally contained
-  CVS keywords (like $Id: NEWS 43390 2006-03-28 08:36:44Z hyeshik.chang $), which could cause spurious failures in
+  CVS keywords (like $Id: NEWS 67852 2008-12-19 15:02:52Z martin.v.loewis $), which could cause spurious failures in
   test_tarfile.py depending on how the test file was checked out.
 
 

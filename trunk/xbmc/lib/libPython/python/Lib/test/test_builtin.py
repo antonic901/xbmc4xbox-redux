@@ -101,6 +101,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(abs(0), 0)
         self.assertEqual(abs(1234), 1234)
         self.assertEqual(abs(-1234), 1234)
+        self.assertTrue(abs(-sys.maxint-1) > 0)
         # float
         self.assertEqual(abs(0.0), 0.0)
         self.assertEqual(abs(3.14), 3.14)
@@ -111,6 +112,11 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(abs(-1234L), 1234L)
         # str
         self.assertRaises(TypeError, abs, 'a')
+
+    def test_neg(self):
+        x = -sys.maxint-1
+        self.assert_(isinstance(x, int))
+        self.assertEqual(-x, sys.maxint+1)
 
     def test_apply(self):
         def f0(*args):
@@ -573,9 +579,11 @@ class BuiltinTest(unittest.TestCase):
                         pass
 
         s = repr(-1-sys.maxint)
-        self.assertEqual(int(s)+1, -sys.maxint)
+        x = int(s)
+        self.assertEqual(x+1, -sys.maxint)
+        self.assert_(isinstance(x, int))
         # should return long
-        int(s[1:])
+        self.assertEqual(int(s[1:]), sys.maxint+1)
 
         # should return long
         x = int(1e100)
@@ -1039,6 +1047,14 @@ class BuiltinTest(unittest.TestCase):
             self.assertEqual(input('testing\n'), 2)
             self.assertEqual(raw_input(), 'The quick brown fox jumps over the lazy dog.')
             self.assertEqual(raw_input('testing\n'), 'Dear John')
+
+            # SF 1535165: don't segfault on closed stdin
+            # sys.stdout must be a regular file for triggering
+            sys.stdout = savestdout
+            sys.stdin.close()
+            self.assertRaises(ValueError, input)
+
+            sys.stdout = BitBucket()
             sys.stdin = cStringIO.StringIO("NULL\0")
             self.assertRaises(TypeError, input, 42, 42)
             sys.stdin = cStringIO.StringIO("    'whitespace'")

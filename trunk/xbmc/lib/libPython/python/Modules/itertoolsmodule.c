@@ -356,7 +356,7 @@ teedataobject_jumplink(teedataobject *tdo)
 {
 	if (tdo->nextlink == NULL)
 		tdo->nextlink = teedataobject_new(tdo->it);
-	Py_INCREF(tdo->nextlink);
+	Py_XINCREF(tdo->nextlink);
 	return tdo->nextlink;
 }
 
@@ -432,7 +432,7 @@ tee_next(teeobject *to)
 
 	if (to->index >= LINKCELLS) {
 		link = teedataobject_jumplink(to->dataobj);
-		Py_XDECREF(to->dataobj);
+		Py_DECREF(to->dataobj);
 		to->dataobj = (teedataobject *)link;
 		to->index = 0;
 	}
@@ -478,6 +478,12 @@ tee_fromiterable(PyObject *iterable)
 	if (to == NULL) 
 		goto done;
 	to->dataobj = (teedataobject *)teedataobject_new(it);
+	if (!to->dataobj) {
+		PyObject_GC_Del(to);
+		to = NULL;
+		goto done;
+	}
+
 	to->index = 0;
 	to->weakreflist = NULL;
 done:
@@ -2454,6 +2460,8 @@ inititertools(void)
 
 	teedataobject_type.ob_type = &PyType_Type;
 	m = Py_InitModule3("itertools", module_methods, module_doc);
+	if (m == NULL)
+		return;
 
 	for (i=0 ; typelist[i] != NULL ; i++) {
 		if (PyType_Ready(typelist[i]) < 0)

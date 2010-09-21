@@ -650,6 +650,8 @@ initthread(void)
 
 	/* Create the module and add the functions */
 	m = Py_InitModule3("thread", thread_methods, thread_doc);
+	if (m == NULL)
+		return;
 
 	/* Add a symbolic constant */
 	d = PyModule_GetDict(m);
@@ -659,6 +661,7 @@ initthread(void)
 	Py_INCREF(&Locktype);
 	PyDict_SetItemString(d, "LockType", (PyObject *)&Locktype);
 
+	Py_INCREF(&localtype);
         if (PyModule_AddObject(m, "_local", (PyObject *)&localtype) < 0)
         	return;
 

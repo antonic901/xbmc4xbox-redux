@@ -3,7 +3,7 @@ dnl Process this file with autoconf 2.0 or later to make a configure script.
 # Set VERSION so we only need to edit in one place (i.e., here)
 m4_define(PYTHON_VERSION, 2.4)
 
-AC_REVISION($Revision: 42436 $)
+AC_REVISION($Revision: 52358 $)
 AC_PREREQ(2.53)
 AC_INIT(python, PYTHON_VERSION, http://www.python.org/python-bugs)
 AC_CONFIG_SRCDIR([Include/object.h])
@@ -60,6 +60,29 @@ define_xopen_source=yes
 AC_SUBST(CONFIG_ARGS)
 CONFIG_ARGS="$ac_configure_args"
 
+AC_ARG_ENABLE(universalsdk,
+	AC_HELP_STRING(--enable-universalsdk@<:@=SDKDIR@:>@, Build agains Mac OS X 10.4u SDK (ppc/i386)),
+[
+	case $enableval in
+	yes)
+		enableval=/Developer/SDKs/MacOSX10.4u.sdk
+		;;
+	esac
+	case $enableval in
+	no)
+		UNIVERSALSDK=
+		enable_universalsdk=
+		;;
+	*)
+		UNIVERSALSDK=$enableval
+		;;
+	esac
+],[
+   	UNIVERSALSDK=
+	enable_universalsdk=
+])
+AC_SUBST(UNIVERSALSDK)
+
 dnl quadrigraphs "@<:@" and "@:>@" produce "[" and "]" in the output
 AC_ARG_ENABLE(framework,
               AC_HELP_STRING(--enable-framework@<:@=INSTALLDIR@:>@, Build (MacOSX|Darwin) framework),
@@ -74,6 +97,10 @@ AC_ARG_ENABLE(framework,
 		PYTHONFRAMEWORKDIR=no-framework
 		PYTHONFRAMEWORKPREFIX=
 		PYTHONFRAMEWORKINSTALLDIR=
+		FRAMEWORKINSTALLFIRST=
+		FRAMEWORKINSTALLLAST=
+		FRAMEWORKALTINSTALLFIRST=
+		FRAMEWORKALTINSTALLLAST=
 		enable_framework=
 		;;
 	*)
@@ -81,19 +108,49 @@ AC_ARG_ENABLE(framework,
 		PYTHONFRAMEWORKDIR=Python.framework
 		PYTHONFRAMEWORKPREFIX=$enableval
 		PYTHONFRAMEWORKINSTALLDIR=$PYTHONFRAMEWORKPREFIX/$PYTHONFRAMEWORKDIR
+		FRAMEWORKINSTALLFIRST="frameworkinstallstructure"
+		FRAMEWORKINSTALLLAST="frameworkinstallmaclib frameworkinstallapps frameworkinstallunixtools"
+		FRAMEWORKALTINSTALLFIRST="${FRAMEWORKINSTALLFIRST} bininstall maninstall"
+		FRAMEWORKALTINSTALLLAST="frameworkinstallmaclib frameworkinstallapps frameworkaltinstallunixtools"
+		if test "x${prefix}" = "xNONE" ; then
+			FRAMEWORKUNIXTOOLSPREFIX="${ac_default_prefix}"
+		else
+			FRAMEWORKUNIXTOOLSPREFIX="${prefix}"
+		fi
+
 		prefix=$PYTHONFRAMEWORKINSTALLDIR/Versions/$VERSION
+
+		# Add makefiles for Mac specific code to the list of output
+		# files:
+		AC_CONFIG_FILES(Mac/OSX/Makefile)
+		AC_CONFIG_FILES(Mac/OSX/PythonLauncher/Makefile)
+		AC_CONFIG_FILES(Mac/OSX/IDLE/Makefile)
 	esac
 	],[
 	PYTHONFRAMEWORK=
 	PYTHONFRAMEWORKDIR=no-framework
 	PYTHONFRAMEWORKPREFIX=
 	PYTHONFRAMEWORKINSTALLDIR=
+	FRAMEWORKINSTALLFIRST=
+	FRAMEWORKINSTALLLAST=
+	FRAMEWORKALTINSTALLFIRST=
+	FRAMEWORKALTINSTALLLAST=
+	if test "x${prefix}" = "xNONE" ; then
+		FRAMEWORKUNIXTOOLSPREFIX="${ac_default_prefix}"
+	else
+		FRAMEWORKUNIXTOOLSPREFIX="${prefix}"
+	fi
 	enable_framework=
 ])
 AC_SUBST(PYTHONFRAMEWORK)
 AC_SUBST(PYTHONFRAMEWORKDIR)
 AC_SUBST(PYTHONFRAMEWORKPREFIX)
 AC_SUBST(PYTHONFRAMEWORKINSTALLDIR)
+AC_SUBST(FRAMEWORKINSTALLFIRST)
+AC_SUBST(FRAMEWORKINSTALLLAST)
+AC_SUBST(FRAMEWORKALTINSTALLFIRST)
+AC_SUBST(FRAMEWORKALTINSTALLLAST)
+AC_SUBST(FRAMEWORKUNIXTOOLSPREFIX)
 
 ##AC_ARG_WITH(dyld,
 ##            AC_HELP_STRING(--with-dyld,
@@ -140,7 +197,7 @@ case $ac_sys_system/$ac_sys_release in
   # On OpenBSD, select(2) is not available if _XOPEN_SOURCE is defined,
   # even though select is a POSIX function. Reported by J. Ribbens.
   # Reconfirmed for OpenBSD 3.3 by Zachary Hamm, for 3.4 by Jason Ish.
-  OpenBSD/2.* | OpenBSD/3.@<:@012345678@:>@) 
+  OpenBSD/2.* | OpenBSD/3.@<:@0123456789@:>@ | OpenBSD/4.@<:@0@:>@) 
     define_xopen_source=no;;
   # On Solaris 2.6, sys/wait.h is inconsistent in the usage
   # of union __?sigval. Reported by Stuart Bishop.
@@ -173,7 +230,9 @@ case $ac_sys_system/$ac_sys_release in
     ;;
   # On Mac OS X 10.4, defining _POSIX_C_SOURCE or _XOPEN_SOURCE
   # disables platform specific features beyond repair.
-  Darwin/8.*)
+  # On Mac OS X 10.3, defining _POSIX_C_SOURCE or _XOPEN_SOURCE 
+  # has no effect, don't bother defining them
+  Darwin/@<:@789@:>@.*)
     define_xopen_source=no
     ;;
 
@@ -256,7 +315,9 @@ AC_MSG_RESULT($EXTRAPLATDIR)
 # it may influence the way we can build extensions, so distutils
 # needs to check it
 AC_SUBST(CONFIGURE_MACOSX_DEPLOYMENT_TARGET)
+AC_SUBST(EXPORT_MACOSX_DEPLOYMENT_TARGET)
 CONFIGURE_MACOSX_DEPLOYMENT_TARGET=
+EXPORT_MACOSX_DEPLOYMENT_TARGET='#'
 
 # checks for alternative programs
 
@@ -736,6 +797,13 @@ yes)
 	# is there any other compiler on Darwin besides gcc?
 	Darwin*)
 	    BASECFLAGS="$BASECFLAGS -Wno-long-double -no-cpp-precomp -mno-fused-madd"
+	    if test "${enable_universalsdk}"; then
+		BASECFLAGS="-arch ppc -arch i386 -isysroot ${UNIVERSALSDK} ${BASECFLAGS}"
+	    fi
+
+	    ;;
+	OSF*)
+	    BASECFLAGS="$BASECFLAGS -mieee"
 	    ;;
     esac
     ;;
@@ -981,12 +1049,12 @@ dnl AC_MSG_RESULT($cpp_type)
 AC_HEADER_STDC
 AC_CHECK_HEADERS(curses.h dlfcn.h fcntl.h grp.h langinfo.h \
 libintl.h ncurses.h poll.h pthread.h \
-stropts.h termios.h thread.h \
+stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/file.h sys/loadavg.h sys/lock.h sys/mkdev.h \
 sys/modem.h \
-sys/param.h sys/poll.h sys/select.h sys/socket.h sys/time.h sys/times.h \
-sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
+sys/param.h sys/poll.h sys/select.h sys/socket.h sys/statvfs.h sys/time.h \
+sys/times.h sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
 sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
 bluetooth/bluetooth.h)
 AC_HEADER_DIRENT
@@ -1095,16 +1163,12 @@ if test "$have_long_long" = yes ; then
 AC_CHECK_SIZEOF(long long, 8)
 fi
 
-AC_MSG_CHECKING(for uintptr_t support)
-have_uintptr_t=no
-AC_TRY_COMPILE([], [uintptr_t x; x = (uintptr_t)0;], [
-  AC_DEFINE(HAVE_UINTPTR_T, 1, [Define this if you have the type uintptr_t.]) 
-  have_uintptr_t=yes
-])
-AC_MSG_RESULT($have_uintptr_t)
-if test "$have_uintptr_t" = yes ; then
-AC_CHECK_SIZEOF(uintptr_t, 4)
-fi
+AC_CHECK_TYPES(uintptr_t, 
+   [AC_CHECK_SIZEOF(uintptr_t, 4)], 
+   [], [#ifdef HAVE_STDINT_H
+        #include <stdint.h>
+        #endif])
+
 
 # Hmph. AC_CHECK_SIZEOF() doesn't include <sys/types.h>.
 AC_MSG_CHECKING(size of off_t)
@@ -1237,7 +1301,10 @@ esac
 AC_SUBST(LIBTOOL_CRUFT)
 case $ac_sys_system/$ac_sys_release in
   Darwin/@<:@01234567@:>@.*) 
-    LIBTOOL_CRUFT="-framework System -lcc_dynamic -arch_only ppc"
+    LIBTOOL_CRUFT="-framework System -lcc_dynamic"
+    if test -z "${enable_universalsdk}"; then
+	    LIBTOOL_CRUFT="${LIBTOOL_CRUFT} -arch_only `arch`"
+    fi
     LIBTOOL_CRUFT=$LIBTOOL_CRUFT' -install_name $(PYTHONFRAMEWORKINSTALLDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)'
     LIBTOOL_CRUFT=$LIBTOOL_CRUFT' -compatibility_version $(VERSION) -current_version $(VERSION)';;
   Darwin/*)
@@ -1360,9 +1427,16 @@ then
 		# Use -undefined dynamic_lookup whenever possible (10.3 and later).
 		# This allows an extension to be used in any Python
 		cur_target=`sw_vers -productVersion | sed 's/\(10\.[[0-9]]*\).*/\1/'`
+		if test ${cur_target} '>' 10.2; then
+			cur_target=10.3
+		fi
 		CONFIGURE_MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET-${cur_target}}
+		EXPORT_MACOSX_DEPLOYMENT_TARGET=''
 		if test ${MACOSX_DEPLOYMENT_TARGET-${cur_target}} '>' 10.2
 		then
+			if test "${enable_universalsdk}"; then
+				LDFLAGS="-arch i386 -arch ppc -isysroot ${UNIVERSALSDK} ${LDFLAGS}"
+			fi
 			LDSHARED='$(CC) $(LDFLAGS) -bundle -undefined dynamic_lookup'
 			BLDSHARED="$LDSHARED"
 		else
@@ -1380,12 +1454,26 @@ then
 		;;
 	Linux*|GNU*) LDSHARED='$(CC) -shared';;
 	BSD/OS*/4*) LDSHARED="gcc -shared";;
-	OpenBSD*|FreeBSD*)
+	FreeBSD*)
 		if [[ "`$CC -dM -E - </dev/null | grep __ELF__`" != "" ]]
 		then
 			LDSHARED="$CC -shared ${LDFLAGS}"
 		else
 			LDSHARED="ld -Bshareable ${LDFLAGS}"
+		fi;;
+	OpenBSD*)
+		if [[ "`$CC -dM -E - </dev/null | grep __ELF__`" != "" ]]
+		then
+				LDSHARED='$(CC) -shared $(CCSHARED) ${LDFLAGS}'
+		else
+				case `uname -r` in
+				[[01]].* | 2.[[0-7]] | 2.[[0-7]].*)
+				   LDSHARED="ld -Bshareable ${LDFLAGS}"
+				   ;;
+				*)
+				   LDSHARED='$(CC) -shared $(CCSHARED) ${LDFLAGS}'
+				   ;;
+				esac
 		fi;;
 	NetBSD*|DragonFly*) LDSHARED="cc -shared ${LDFLAGS}";;
 	OpenUNIX*|UnixWare*)
@@ -2832,6 +2920,23 @@ fi
 
 # check for endianness
 AC_C_BIGENDIAN
+AH_VERBATIM([WORDS_BIGENDIAN],
+[
+ /* Define to 1 if your processor stores words with the most significant byte
+    first (like Motorola and SPARC, unlike Intel and VAX). 
+
+    The block below does compile-time checking for endianness on platforms
+    that use GCC and therefore allows compiling fat binaries on OSX by using 
+    '-arch ppc -arch i386' as the compile flags. The phrasing was choosen
+    such that the configure-result is used on systems that don't use GCC.
+  */
+#ifdef __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#else
+#ifndef __LITTLE_ENDIAN__
+#undef WORDS_BIGENDIAN
+#endif
+#endif])
 
 # Check whether right shifting a negative integer extends the sign bit
 # or fills with zeros (like the Cray J90, according to Tim Peters).
@@ -3099,7 +3204,7 @@ fi
 
 AC_MSG_CHECKING(for /dev/ptmx)
 
-if test -e /dev/ptmx
+if test -r /dev/ptmx
 then
   AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_DEV_PTMX, 1,
@@ -3110,7 +3215,7 @@ fi
 
 AC_MSG_CHECKING(for /dev/ptc)
 
-if test -e /dev/ptc
+if test -r /dev/ptc
 then
   AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_DEV_PTC, 1,

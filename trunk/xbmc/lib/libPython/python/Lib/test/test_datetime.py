@@ -844,6 +844,7 @@ class TestDate(HarmlessMixedComparison):
         t = self.theclass(2005, 3, 2)
         self.assertEqual(t.strftime("m:%m d:%d y:%y"), "m:03 d:02 y:05")
         self.assertEqual(t.strftime(""), "") # SF bug #761337
+        self.assertEqual(t.strftime('x'*1000), 'x'*1000) # SF bug #1556784
 
         self.assertRaises(TypeError, t.strftime) # needs an arg
         self.assertRaises(TypeError, t.strftime, "one", "two") # too many args
@@ -1399,6 +1400,12 @@ class TestDateTime(TestDate):
         expected = time.gmtime(ts)
         got = self.theclass.utcfromtimestamp(ts)
         self.verify_field_equality(expected, got)
+
+    def test_microsecond_rounding(self):
+        # Test whether fromtimestamp "rounds up" floats that are less
+        # than one microsecond smaller than an integer.
+        self.assertEquals(self.theclass.fromtimestamp(0.9999999),
+                          self.theclass.fromtimestamp(1))
 
     def test_insane_fromtimestamp(self):
         # It's possible that some platform maps time_t to double,

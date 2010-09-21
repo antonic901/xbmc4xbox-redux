@@ -812,12 +812,12 @@ BZ2File_write(BZ2FileObject *self, PyObject *args)
 		case MODE_CLOSED:
 			PyErr_SetString(PyExc_ValueError,
 					"I/O operation on closed file");
-			goto cleanup;;
+			goto cleanup;
 
 		default:
 			PyErr_SetString(PyExc_IOError,
 					"file is not ready for writing");
-			goto cleanup;;
+			goto cleanup;
 	}
 
 	self->f_softspace = 0;
@@ -861,6 +861,21 @@ BZ2File_writelines(BZ2FileObject *self, PyObject *seq)
 	int bzerror;
 
 	ACQUIRE_LOCK(self);
+	switch (self->mode) {
+		case MODE_WRITE:
+			break;
+
+		case MODE_CLOSED:
+			PyErr_SetString(PyExc_ValueError,
+					"I/O operation on closed file");
+			goto error;
+
+		default:
+			PyErr_SetString(PyExc_IOError,
+					"file is not ready for writing");
+			goto error;
+	}
+
 	islist = PyList_Check(seq);
 	if  (!islist) {
 		iter = PyObject_GetIter(seq);
@@ -985,7 +1000,6 @@ BZ2File_seek(BZ2FileObject *self, PyObject *args)
 	size_t readsize;
 	int chunksize;
 	int bzerror;
-	int rewind = 0;
 	PyObject *ret = NULL;
 
 	if (!PyArg_ParseTuple(args, "O|i:seek", &offobj, &where))
@@ -1345,8 +1359,10 @@ BZ2File_init(BZ2FileObject *self, PyObject *args, PyObject *kwargs)
 
 #ifdef WITH_THREAD
 	self->lock = PyThread_allocate_lock();
-	if (!self->lock)
+	if (!self->lock) {
+		PyErr_SetString(PyExc_MemoryError, "unable to allocate lock");
 		goto error;
+	}
 #endif
 
 	if (mode_char == 'r')
@@ -1368,10 +1384,12 @@ BZ2File_init(BZ2FileObject *self, PyObject *args, PyObject *kwargs)
 	return 0;
 
 error:
-	Py_DECREF(self->file);
+	Py_CLEAR(self->file);
 #ifdef WITH_THREAD
-	if (self->lock)
+	if (self->lock) {
 		PyThread_free_lock(self->lock);
+		self->lock = NULL;
+	}
 #endif
 	return -1;
 }
@@ -1679,8 +1697,10 @@ BZ2Comp_init(BZ2CompObject *self, PyObject *args, PyObject *kwargs)
 
 #ifdef WITH_THREAD
 	self->lock = PyThread_allocate_lock();
-	if (!self->lock)
+	if (!self->lock) {
+		PyErr_SetString(PyExc_MemoryError, "unable to allocate lock");
 		goto error;
+	}
 #endif
 
 	memset(&self->bzs, 0, sizeof(bz_stream));
@@ -1695,8 +1715,10 @@ BZ2Comp_init(BZ2CompObject *self, PyObject *args, PyObject *kwargs)
 	return 0;
 error:
 #ifdef WITH_THREAD
-	if (self->lock)
+	if (self->lock) {
 		PyThread_free_lock(self->lock);
+		self->lock = NULL;
+	}
 #endif
 	return -1;
 }
@@ -1891,8 +1913,10 @@ BZ2Decomp_init(BZ2DecompObject *self, PyObject *args, PyObject *kwargs)
 
 #ifdef WITH_THREAD
 	self->lock = PyThread_allocate_lock();
-	if (!self->lock)
+	if (!self->lock) {
+		PyErr_SetString(PyExc_MemoryError, "unable to allocate lock");
 		goto error;
+	}
 #endif
 
 	self->unused_data = PyString_FromString("");
@@ -1912,10 +1936,12 @@ BZ2Decomp_init(BZ2DecompObject *self, PyObject *args, PyObject *kwargs)
 
 error:
 #ifdef WITH_THREAD
-	if (self->lock)
+	if (self->lock) {
 		PyThread_free_lock(self->lock);
+		self->lock = NULL;
+	}
 #endif
-	Py_XDECREF(self->unused_data);
+	Py_CLEAR(self->unused_data);
 	return -1;
 }
 
@@ -2183,6 +2209,8 @@ initbz2(void)
 	BZ2Decomp_Type.ob_type = &PyType_Type;
 
 	m = Py_InitModule3("bz2", bz2_methods, bz2__doc__);
+	if (m == NULL)
+		return;
 
 	PyModule_AddObject(m, "__author__", PyString_FromString(__author__));
 

@@ -167,6 +167,10 @@ PyBuffer_New(int size)
 				"size must be zero or positive");
 		return NULL;
 	}
+	if (sizeof(*b) > INT_MAX - size) {
+		/* unlikely */
+		return PyErr_NoMemory();
+	}
 	/* Inline PyObject_New */
 	o = PyObject_MALLOC(sizeof(*b) + size);
 	if ( o == NULL )
@@ -230,7 +234,7 @@ buffer_compare(PyBufferObject *self, PyBufferObject *other)
 	if (min_len > 0) {
 		cmp = memcmp(p1, p2, min_len);
 		if (cmp != 0)
-			return cmp;
+			return cmp < 0 ? -1 : 1;
 	}
 	return (len_self < len_other) ? -1 : (len_self > len_other) ? 1 : 0;
 }
@@ -355,6 +359,8 @@ buffer_concat(PyBufferObject *self, PyObject *other)
 	if ( (count = (*pb->bf_getreadbuffer)(other, 0, &ptr2)) < 0 )
 		return NULL;
 
+	assert(count <= PY_SIZE_MAX - size);
+
  	ob = PyString_FromStringAndSize(NULL, size + count);
  	p = PyString_AS_STRING(ob);
  	memcpy(p, ptr1, size);
@@ -378,6 +384,10 @@ buffer_repeat(PyBufferObject *self, int count)
 		count = 0;
 	if (!get_buf(self, &ptr, &size))
 		return NULL;
+	if (count > INT_MAX / size) {
+		PyErr_SetString(PyExc_MemoryError, "result too large");
+		return NULL;
+	}
 	ob = PyString_FromStringAndSize(NULL, size * count);
 	if ( ob == NULL )
 		return NULL;

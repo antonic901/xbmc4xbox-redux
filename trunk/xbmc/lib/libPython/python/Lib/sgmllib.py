@@ -33,7 +33,7 @@ endbracket = re.compile('[<>]')
 tagfind = re.compile('[a-zA-Z][-_.a-zA-Z0-9]*')
 attrfind = re.compile(
     r'\s*([a-zA-Z_][-:.a-zA-Z_0-9]*)(\s*=\s*'
-    r'(\'[^\']*\'|"[^"]*"|[-a-zA-Z0-9./,:;+*%?!&$\(\)_#=~\'"@]*))?')
+    r'(\'[^\']*\'|"[^"]*"|[][\-a-zA-Z0-9./,:;+*%?!&$\(\)_#=~\'"@]*))?')
 
 
 class SGMLParseError(RuntimeError):
@@ -246,6 +246,9 @@ class SGMLParser(markupbase.ParserBase):
             self.__starttag_text = rawdata[start_pos:match.end(1) + 1]
             return k
         # XXX The following should skip matching quotes (' or ")
+        # As a shortcut way to exit, this isn't so bad, but shouldn't
+        # be used to locate the actual end of the start tag since the
+        # < or > characters may be embedded in an attribute value.
         match = endbracket.search(rawdata, i+1)
         if not match:
             return -1

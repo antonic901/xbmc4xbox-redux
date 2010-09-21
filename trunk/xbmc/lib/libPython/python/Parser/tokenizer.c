@@ -277,11 +277,14 @@ check_coding_spec(const char* line, int size, struct tok_state *tok,
 					tok->encoding = cs;
 					tok->decoding_state = -1;
 				}
+				else
+					PyMem_DEL(cs);
 #else
                                 /* Without Unicode support, we cannot
                                    process the coding spec. Since there
                                    won't be any Unicode literals, that
                                    won't matter. */
+				PyMem_DEL(cs);
 #endif
 			}
 		} else {	/* then, compare cs with BOM */
@@ -862,6 +865,11 @@ tok_nextc(register struct tok_state *tok)
 				if (decoding_fgets(tok->inp,
 					       (int)(tok->end - tok->inp),
 					       tok) == NULL) {
+					/* Break out early on decoding
+					   errors, as tok->buf will be NULL
+					 */
+					if (tok->decoding_erred)
+						return EOF;
 					/* Last line does not end in \n,
 					   fake one */
 					strcpy(tok->inp, "\n");
@@ -869,14 +877,16 @@ tok_nextc(register struct tok_state *tok)
 				tok->inp = strchr(tok->inp, '\0');
 				done = tok->inp[-1] == '\n';
 			}
-			tok->cur = tok->buf + cur;
-			/* replace "\r\n" with "\n" */
-			/* For Mac we leave the \r, giving a syntax error */
-			pt = tok->inp - 2;
-			if (pt >= tok->buf && *pt == '\r') {
-				*pt++ = '\n';
-				*pt = '\0';
-				tok->inp = pt;
+ 			if (tok->buf != NULL) {
+				tok->cur = tok->buf + cur;
+				/* replace "\r\n" with "\n" */
+				/* For Mac we leave the \r, giving a syntax error */
+				pt = tok->inp - 2;
+				if (pt >= tok->buf && *pt == '\r') {
+					*pt++ = '\n';
+					*pt = '\0';
+					tok->inp = pt;
+				}
 			}
 		}
 		if (tok->done != E_OK) {

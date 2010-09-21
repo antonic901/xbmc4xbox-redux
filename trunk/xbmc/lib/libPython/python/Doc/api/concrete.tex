@@ -558,7 +558,7 @@ parameter and are called with a non-string parameter.
 
 \begin{cvardesc}{PyTypeObject}{PyString_Type}
   This instance of \ctype{PyTypeObject} represents the Python string
-  type; it is the same object as \code{types.TypeType} in the Python
+  type; it is the same object as \code{types.StringType} in the Python
   layer.
   \withsubitem{(in module types)}{\ttindex{StringType}}.
 \end{cvardesc}
@@ -1366,7 +1366,7 @@ The following codec API is special in that maps Unicode to Unicode.
   The \var{mapping} table must map Unicode ordinal integers to Unicode
   ordinal integers or None (causing deletion of the character).
 
-  Mapping tables need only provide the method{__getitem__()}
+  Mapping tables need only provide the \method{__getitem__()}
   interface; dictionaries and sequences work well.  Unmapped character
   ordinals (ones which cause a \exception{LookupError}) are left
   untouched and are copied as-is.
@@ -1766,6 +1766,11 @@ format.
 \begin{cfuncdesc}{PyObject*}{PyList_New}{int len}
   Return a new list of length \var{len} on success, or \NULL{} on
   failure.
+  \note{If \var{length} is greater than zero, the returned list object's
+        items are set to \code{NULL}.  Thus you cannot use abstract
+        API functions such as \cfunction{PySequence_SetItem()} 
+        or expose the object to Python code before setting all items to a
+        real object with \cfunction{PyList_SetItem()}.}
 \end{cfuncdesc}
 
 \begin{cfuncdesc}{int}{PyList_Size}{PyObject *list}
@@ -1780,8 +1785,9 @@ format.
 
 \begin{cfuncdesc}{PyObject*}{PyList_GetItem}{PyObject *list, int index}
   Return the object at position \var{pos} in the list pointed to by
-  \var{p}.  If \var{pos} is out of bounds, return \NULL{} and set an
-  \exception{IndexError} exception.
+  \var{p}.  The position must be positive, indexing from the end of the
+  list is not supported.  If \var{pos} is out of bounds, return \NULL{}
+  and set an \exception{IndexError} exception.
 \end{cfuncdesc}
 
 \begin{cfuncdesc}{PyObject*}{PyList_GET_ITEM}{PyObject *list, int i}
@@ -2714,6 +2720,7 @@ rather than explicitly calling \cfunction{PyGen_New}.
 
 \begin{cfuncdesc}{PyObject*}{PyGen_New}{PyFrameObject *frame}
   Create and return a new generator object based on the \var{frame} object.
+  A reference to \var{frame} is stolen by this function.
   The parameter must not be \NULL{}.
 \end{cfuncdesc}
 

@@ -13,8 +13,8 @@ The ZIP file format is a common archive and compression standard.
 This module provides tools to create, read, write, append, and list a
 ZIP file.  Any advanced use of this module will require an
 understanding of the format, as defined in
-\citetitle[http://www.pkware.com/appnote.html]{PKZIP Application
-Note}.
+\citetitle[http://www.pkware.com/business_and_developers/developer/appnote/]
+{PKZIP Application Note}.
 
 This module does not currently handle ZIP files which have appended
 comments, or multi-disk ZIP files.
@@ -65,9 +65,9 @@ The available attributes of this module are:
 
 
 \begin{seealso}
-  \seetitle[http://www.pkware.com/appnote.html]{PKZIP Application
-            Note}{Documentation on the ZIP file format by Phil
-            Katz, the creator of the format and algorithms used.}
+  \seetitle[http://www.pkware.com/business_and_developers/developer/appnote/]
+           {PKZIP Application Note}{Documentation on the ZIP file format by
+            Phil Katz, the creator of the format and algorithms used.}
 
   \seetitle[http://www.info-zip.org/pub/infozip/]{Info-ZIP Home Page}{
             Information about the Info-ZIP project's ZIP archive
@@ -144,6 +144,15 @@ cat myzip.zip >> python.exe
   given for the \var{compression} parameter to the constructor for
   the new entry.  The archive must be open with mode \code{'w'} or
   \code{'a'}. 
+  
+  \note{There is no official file name encoding for ZIP files.
+  If you have unicode file names, please convert them to byte strings
+  in your desired encoding before passing them to \method{write()}.
+  WinZip interprets all file names as encoded in CP437, also known
+  as DOS Latin.}
+
+  \note{Archive names should be relative to the archive root, that is,
+        they should not start with a path separator.}
 \end{methoddesc}
 
 \begin{methoddesc}{writestr}{zinfo_or_arcname, bytes}
@@ -233,9 +242,9 @@ Instances have the following attributes:
 
 \begin{memberdesc}[ZipInfo]{extra}
   Expansion field data.  The
-  \citetitle[http://www.pkware.com/appnote.html]{PKZIP Application
-  Note} contains some comments on the internal structure of the data
-  contained in this string.
+  \citetitle[http://www.pkware.com/business_and_developers/developer/appnote/]
+  {PKZIP Application Note} contains some comments on the internal
+  structure of the data contained in this string.
 \end{memberdesc}
 
 \begin{memberdesc}[ZipInfo]{create_system}

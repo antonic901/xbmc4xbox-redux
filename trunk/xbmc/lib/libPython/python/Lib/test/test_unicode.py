@@ -92,6 +92,10 @@ class UnicodeTest(
                 "\\xfe\\xff'")
             testrepr = repr(u''.join(map(unichr, xrange(256))))
             self.assertEqual(testrepr, latin1repr)
+            # Test repr works on wide unicode escapes without overflow.
+            self.assertEqual(repr(u"\U00010000" * 39 + u"\uffff" * 4096),
+                             repr(u"\U00010000" * 39 + u"\uffff" * 4096))
+
 
     def test_count(self):
         string_tests.CommonTest.test_count(self)
@@ -751,6 +755,14 @@ class UnicodeTest(
 
         self.assertEqual(repr(s1()), '\\n')
         self.assertEqual(repr(s2()), '\\n')
+
+    def test_expandtabs_overflows_gracefully(self):
+        # This test only affects 32-bit platforms because expandtabs can only take
+        # an int as the max value, not a 64-bit C long.  If expandtabs is changed
+        # to take a 64-bit long, this test should apply to all platforms.
+        if sys.maxint > (1 << 32):
+            return
+        self.assertRaises(OverflowError, u't\tt\t'.expandtabs, sys.maxint)
 
 def test_main():
     test_support.run_unittest(UnicodeTest)

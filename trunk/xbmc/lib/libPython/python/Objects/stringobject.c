@@ -52,6 +52,13 @@ PyObject *
 PyString_FromStringAndSize(const char *str, int size)
 {
 	register PyStringObject *op;
+
+	if (size < 0) {
+		PyErr_SetString(PyExc_SystemError,
+		    "Negative size passed to PyString_FromStringAndSize");
+		return NULL;
+	}
+
 	if (size == 0 && (op = nullstring) != NULL) {
 #ifdef COUNT_ALLOCS
 		null_strings++;
@@ -67,6 +74,11 @@ PyString_FromStringAndSize(const char *str, int size)
 #endif
 		Py_INCREF(op);
 		return (PyObject *)op;
+	}
+
+	if (size > INT_MAX - sizeof(PyStringObject)) {
+		PyErr_SetString(PyExc_OverflowError, "string is too large");
+		return NULL;
 	}
 
 	/* Inline PyObject_NewVar */
@@ -104,7 +116,7 @@ PyString_FromString(const char *str)
 
 	assert(str != NULL);
 	size = strlen(str);
-	if (size > INT_MAX) {
+	if (size > INT_MAX - sizeof(PyStringObject)) {
 		PyErr_SetString(PyExc_OverflowError,
 			"string is too long for a Python string");
 		return NULL;
@@ -799,7 +811,7 @@ PyString_Repr(PyObject *obj, int smartquotes)
 	register PyStringObject* op = (PyStringObject*) obj;
 	size_t newsize = 2 + 4 * op->ob_size;
 	PyObject *v;
-	if (newsize > INT_MAX) {
+	if (newsize > INT_MAX || newsize / 4 != op->ob_size) {
 		PyErr_SetString(PyExc_OverflowError,
 			"string is too large to make repr");
 	}
@@ -907,7 +919,18 @@ string_concat(register PyStringObject *a, register PyObject *bb)
 		Py_INCREF(a);
 		return (PyObject *)a;
 	}
+	/* Check that string sizes are not negative, to prevent an
+	   overflow in cases where we are passed incorrectly-created
+	   strings with negative lengths (due to a bug in other code).
+	*/
 	size = a->ob_size + b->ob_size;
+	if (a->ob_size < 0 || b->ob_size < 0 ||
+	    a->ob_size > INT_MAX - b->ob_size) {
+		PyErr_SetString(PyExc_OverflowError,
+				"strings are too large to concat");
+		return NULL;
+	}
+
 	/* Inline PyObject_NewVar */
 	op = (PyStringObject *)PyObject_MALLOC(sizeof(PyStringObject) + size);
 	if (op == NULL)
@@ -1926,17 +1949,14 @@ do_argstrip(PyStringObject *self, int striptype, PyObject *args)
 			return res;
 		}
 #endif
-		else {
-			PyErr_Format(PyExc_TypeError,
+		PyErr_Format(PyExc_TypeError,
 #ifdef Py_USING_UNICODE
-				     "%s arg must be None, str or unicode",
+			     "%s arg must be None, str or unicode",
 #else
-				     "%s arg must be None or str",
+			     "%s arg must be None or str",
 #endif
-				     STRIPNAME(striptype));
-			return NULL;
-		}
-		return do_xstrip(self, striptype, sep);
+			     STRIPNAME(striptype));
+		return NULL;
 	}
 
 	return do_strip(self, striptype);
@@ -2739,9 +2759,9 @@ If tabsize is not given, a tab size of 8 characters is assumed.");
 static PyObject*
 string_expandtabs(PyStringObject *self, PyObject *args)
 {
-    const char *e, *p;
+    const char *e, *p, *qe;
     char *q;
-    int i, j;
+    int i, j, incr;
     PyObject *u;
     int tabsize = 8;
 
@@ -2749,46 +2769,70 @@ string_expandtabs(PyStringObject *self, PyObject *args)
 	return NULL;
 
     /* First pass: determine size of output string */
-    i = j = 0;
-    e = PyString_AS_STRING(self) + PyString_GET_SIZE(self);
+    i = 0; /* chars up to and including most recent \n or \r */
+    j = 0; /* chars since most recent \n or \r (use in tab calculations) */
+    e = PyString_AS_STRING(self) + PyString_GET_SIZE(self); /* end of input */
     for (p = PyString_AS_STRING(self); p < e; p++)
         if (*p == '\t') {
-	    if (tabsize > 0)
-		j += tabsize - (j % tabsize);
+	    if (tabsize > 0) {
+		incr = tabsize - (j % tabsize);
+		if (j > INT_MAX - incr)
+		    goto overflow1;
+		j += incr;
+            }
 	}
         else {
+	    if (j > INT_MAX - 1)
+		goto overflow1;
             j++;
             if (*p == '\n' || *p == '\r') {
+		if (i > INT_MAX - j)
+		    goto overflow1;
                 i += j;
                 j = 0;
             }
         }
+
+    if (i > INT_MAX - j)
+	goto overflow1;
 
     /* Second pass: create output string and fill it */
     u = PyString_FromStringAndSize(NULL, i + j);
     if (!u)
         return NULL;
 
-    j = 0;
-    q = PyString_AS_STRING(u);
+    j = 0; /* same as in first pass */
+    q = PyString_AS_STRING(u); /* next output char */
+    qe = PyString_AS_STRING(u) + PyString_GET_SIZE(u); /* end of output */
 
     for (p = PyString_AS_STRING(self); p < e; p++)
         if (*p == '\t') {
 	    if (tabsize > 0) {
 		i = tabsize - (j % tabsize);
 		j += i;
-		while (i--)
+		while (i--) {
+		    if (q >= qe)
+			goto overflow2;
 		    *q++ = ' ';
+		}
 	    }
 	}
 	else {
-            j++;
+	    if (q >= qe)
+		goto overflow2;
 	    *q++ = *p;
+            j++;
             if (*p == '\n' || *p == '\r')
                 j = 0;
         }
 
     return u;
+
+  overflow2:
+    Py_DECREF(u);
+  overflow1:
+    PyErr_SetString(PyExc_OverflowError, "new string is too long");
+    return NULL;
 }
 
 static PyObject *
@@ -3665,12 +3709,15 @@ _PyString_FormatLong(PyObject *val, int flags, int prec, int type,
 	if (!result)
 		return NULL;
 
+	buf = PyString_AsString(result);
+	if (!buf)
+		return NULL;
+
 	/* To modify the string in-place, there can only be one reference. */
 	if (result->ob_refcnt != 1) {
 		PyErr_BadInternalCall();
 		return NULL;
 	}
-	buf = PyString_AsString(result);
 	len = PyString_Size(result);
 	if (buf[len-1] == 'L') {
 		--len;

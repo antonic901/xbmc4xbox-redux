@@ -219,6 +219,14 @@ DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
             ("starttag", "a", [("a.b", "v"), ("c:d", "v"), ("e-f", "v")]),
             ])
 
+    def test_attr_value_ip6_url(self):
+        # http://www.python.org/sf/853506
+        self.check_events(("<a href='http://[1080::8:800:200C:417A]/'>"
+                           "<a href=http://[1080::8:800:200C:417A]/>"), [
+            ("starttag", "a", [("href", "http://[1080::8:800:200C:417A]/")]),
+            ("starttag", "a", [("href", "http://[1080::8:800:200C:417A]/")]),
+            ])
+
     def test_illegal_declarations(self):
         s = 'abc<!spacer type="block" height="25">def'
         self.check_events(s, [
@@ -280,6 +288,19 @@ DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
         self.check_events(s, [
             ('decl', 'DOCTYPE doc [<!ATTLIST doc attr (a | b) >]'),
             ])
+
+    def test_read_chunks(self):
+        # SF bug #1541697, this caused sgml parser to hang
+        # Just verify this code doesn't cause a hang.
+        CHUNK = 1024  # increasing this to 8212 makes the problem go away
+
+        f = open(test_support.findfile('sgml_input.html'))
+        fp = sgmllib.SGMLParser()
+        while 1:
+            data = f.read(CHUNK)
+            fp.feed(data)
+            if len(data) != CHUNK:
+                break
 
     # XXX These tests have been disabled by prefixing their names with
     # an underscore.  The first two exercise outstanding bugs in the

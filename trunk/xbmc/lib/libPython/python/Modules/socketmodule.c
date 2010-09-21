@@ -61,6 +61,15 @@ Local naming conventions:
 
 */
 
+#ifdef __APPLE__
+  /*
+   * inet_aton is not available on OSX 10.3, yet we want to use a binary
+   * that was build on 10.4 or later to work on that release, weak linking
+   * comes to the rescue.
+   */
+# pragma weak inet_aton
+#endif
+
 #include <winsock2.h>
 #include "Python.h"
 
@@ -301,6 +310,11 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
    older releases don't have */
 #undef HAVE_GETADDRINFO
 #endif
+
+#ifdef HAVE_INET_ATON
+#define USE_INET_ATON_WEAKLINK
+#endif
+
 #endif
 
 /* I know this is a bad practice, but it is the easiest... */
@@ -352,6 +366,14 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 #define _BT_SOCKADDR_MEMB(s, proto) &((s)->sock_addr)
 #define _BT_L2_MEMB(sa, memb) ((sa)->l2cap_##memb)
 #define _BT_RC_MEMB(sa, memb) ((sa)->rfcomm_##memb)
+#elif defined(__NetBSD__)
+#define sockaddr_l2 sockaddr_bt
+#define sockaddr_rc sockaddr_bt
+#define sockaddr_sco sockaddr_bt
+#define _BT_SOCKADDR_MEMB(s, proto) &((s)->sock_addr)
+#define _BT_L2_MEMB(sa, memb) ((sa)->bt_##memb)
+#define _BT_RC_MEMB(sa, memb) ((sa)->bt_##memb)
+#define _BT_SCO_MEMB(sa, memb) ((sa)->bt_##memb)
 #else
 #define _BT_SOCKADDR_MEMB(s, proto) (&((s)->sock_addr).bt_##proto)
 #define _BT_L2_MEMB(sa, memb) ((sa)->l2_##memb)
@@ -391,14 +413,24 @@ static int taskwindow;
    there has to be a circular reference. */
 static PyTypeObject sock_type;
 
-/* Can we call select() with this socket without a buffer overrun? */
+#if defined(HAVE_POLL_H)
+#include <poll.h>
+#elif defined(HAVE_SYS_POLL_H)
+#include <sys/poll.h>
+#endif
+
 #ifdef Py_SOCKET_FD_CAN_BE_GE_FD_SETSIZE
 /* Platform can select file descriptors beyond FD_SETSIZE */
 #define IS_SELECTABLE(s) 1
+#elif defined(HAVE_POLL)
+/* Instead of select(), we'll use poll() since poll() works on any fd. */
+#define IS_SELECTABLE(s) 1
+/* Can we call select() with this socket without a buffer overrun? */
 #else
 /* POSIX says selecting file descriptors beyond FD_SETSIZE
-   has undefined behaviour. */
-#define IS_SELECTABLE(s) ((s)->sock_fd < FD_SETSIZE)
+   has undefined behaviour.  If there's no timeout left, we don't have to
+   call select, so it's a safe, little white lie. */
+#define IS_SELECTABLE(s) ((s)->sock_fd < FD_SETSIZE || s->sock_timeout <= 0.0)
 #endif
 
 static PyObject*
@@ -641,7 +673,7 @@ internal_setblocking(PySocketSockObject *s, int block)
 	return 1;
 }
 
-/* Do a select() on the socket, if necessary (sock_timeout > 0).
+/* Do a select()/poll() on the socket, if necessary (sock_timeout > 0).
    The argument writing indicates the direction.
    This does not raise an exception; we'll let our caller do that
    after they've reacquired the interpreter lock.
@@ -649,8 +681,6 @@ internal_setblocking(PySocketSockObject *s, int block)
 static int
 internal_select(PySocketSockObject *s, int writing)
 {
-	fd_set fds;
-	struct timeval tv;
 	int n;
 
 	/* Nothing to do unless we're in timeout mode (not non-blocking) */
@@ -661,17 +691,37 @@ internal_select(PySocketSockObject *s, int writing)
 	if (s->sock_fd < 0)
 		return 0;
 
-	/* Construct the arguments to select */
-	tv.tv_sec = (int)s->sock_timeout;
-	tv.tv_usec = (int)((s->sock_timeout - tv.tv_sec) * 1e6);
-	FD_ZERO(&fds);
-	FD_SET(s->sock_fd, &fds);
+	/* Prefer poll, if available, since you can poll() any fd
+	 * which can't be done with select(). */
+#ifdef HAVE_POLL
+	{
+		struct pollfd pollfd;
+		int timeout;
 
-	/* See if the socket is ready */
-	if (writing)
-		n = select(s->sock_fd+1, NULL, &fds, NULL, &tv);
-	else
-		n = select(s->sock_fd+1, &fds, NULL, NULL, &tv);
+		pollfd.fd = s->sock_fd;
+		pollfd.events = writing ? POLLOUT : POLLIN;
+
+		/* s->sock_timeout is in seconds, timeout in ms */
+		timeout = (int)(s->sock_timeout * 1000 + 0.5); 
+		n = poll(&pollfd, 1, timeout);
+	}
+#else
+	{
+		/* Construct the arguments to select */
+		fd_set fds;
+		struct timeval tv;
+		tv.tv_sec = (int)s->sock_timeout;
+		tv.tv_usec = (int)((s->sock_timeout - tv.tv_sec) * 1e6);
+		FD_ZERO(&fds);
+		FD_SET(s->sock_fd, &fds);
+
+		/* See if the socket is ready */
+		if (writing)
+			n = select(s->sock_fd+1, NULL, &fds, NULL, &tv);
+		else
+			n = select(s->sock_fd+1, &fds, NULL, NULL, &tv);
+	}
+#endif
 	if (n == 0)
 		return 1;
 	return 0;
@@ -1084,7 +1134,7 @@ getsockaddrarg(PySocketSockObject *s, PyObject *args,
 		addr = (struct sockaddr_un*)&(s->sock_addr).un;
 		if (!PyArg_Parse(args, "t#", &path, &len))
 			return 0;
-		if (len > sizeof addr->sun_path) {
+		if (len >= sizeof addr->sun_path) {
 			PyErr_SetString(socket_error,
 					"AF_UNIX path too long");
 			return 0;
@@ -2162,18 +2212,20 @@ sock_recvfrom(PySocketSockObject *s, PyObject *args)
 	Py_BEGIN_ALLOW_THREADS
 	memset(&addrbuf, 0, addrlen);
 	timeout = internal_select(s, 0);
-	if (!timeout)
-		n = recvfrom(s->sock_fd, PyString_AS_STRING(buf), len, flags,
+	if (!timeout) {
 #ifndef MS_WINDOWS
 #if defined(PYOS_OS2) && !defined(PYCC_GCC)
-			     (struct sockaddr *) &addrbuf, &addrlen
+		n = recvfrom(s->sock_fd, PyString_AS_STRING(buf), len, flags,
+			     (struct sockaddr *) &addrbuf, &addrlen);
 #else
-			     (void *) &addrbuf, &addrlen
+		n = recvfrom(s->sock_fd, PyString_AS_STRING(buf), len, flags,
+			     (void *) &addrbuf, &addrlen);
 #endif
 #else
-			     (struct sockaddr *) &addrbuf, &addrlen
+		n = recvfrom(s->sock_fd, PyString_AS_STRING(buf), len, flags,
+			     (struct sockaddr *) &addrbuf, &addrlen);
 #endif
-			);
+	}
 	Py_END_ALLOW_THREADS
 
 	if (timeout) {
@@ -3114,7 +3166,8 @@ socket_fromfd(PyObject *self, PyObject *args)
 PyDoc_STRVAR(fromfd_doc,
 "fromfd(fd, family, type[, proto]) -> socket object\n\
 \n\
-Create a socket object from the given file descriptor.\n\
+Create a socket object from a duplicate of the given\n\
+file descriptor.\n\
 The remaining arguments are the same as for socket().");
 
 #endif /* NO_DUP */
@@ -3251,7 +3304,9 @@ socket_inet_aton(PyObject *self, PyObject *args)
 #endif
 #ifdef HAVE_INET_ATON
 	struct in_addr buf;
-#else
+#endif
+
+#if !defined(HAVE_INET_ATON) || defined(USE_INET_ATON_WEAKLINK)
 	/* Have to use inet_addr() instead */
 	unsigned long packed_addr;
 #endif
@@ -3262,6 +3317,10 @@ socket_inet_aton(PyObject *self, PyObject *args)
 
 
 #ifdef HAVE_INET_ATON
+
+#ifdef USE_INET_ATON_WEAKLINK
+    if (inet_aton != NULL) {
+#endif
 	if (inet_aton(ip_addr, &buf))
 		return PyString_FromStringAndSize((char *)(&buf),
 						  sizeof(buf));
@@ -3270,7 +3329,14 @@ socket_inet_aton(PyObject *self, PyObject *args)
 			"illegal IP address string passed to inet_aton");
 	return NULL;
 
-#else /* ! HAVE_INET_ATON */
+#ifdef USE_INET_ATON_WEAKLINK
+   } else {
+#endif
+
+#endif
+
+#if !defined(HAVE_INET_ATON) || defined(USE_INET_ATON_WEAKLINK)
+
 	/* special-case this address as inet_addr might return INADDR_NONE
 	 * for this */
 	if (strcmp(ip_addr, "255.255.255.255") == 0) {
@@ -3287,6 +3353,11 @@ socket_inet_aton(PyObject *self, PyObject *args)
 	}
 	return PyString_FromStringAndSize((char *) &packed_addr,
 					  sizeof(packed_addr));
+
+#ifdef USE_INET_ATON_WEAKLINK
+   }
+#endif
+
 #endif
 }
 
@@ -3862,6 +3933,8 @@ init_socket(void)
 	m = Py_InitModule3(PySocket_MODULE_NAME,
 			   socket_methods,
 			   socket_doc);
+	if (m == NULL)
+		return;
 
 	socket_error = PyErr_NewException("socket.error", NULL, NULL);
 	if (socket_error == NULL)

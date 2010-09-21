@@ -5,7 +5,7 @@ distributions)."""
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: bdist_rpm.py 37828 2004-11-10 22:23:15Z loewis $"
+__revision__ = "$Id: bdist_rpm.py 47214 2006-07-03 12:29:51Z martin.v.loewis $"
 
 import sys, os, string
 import glob
@@ -454,7 +454,8 @@ class bdist_rpm (Command):
 
         # rpm scripts
         # figure out default build script
-        def_build = "%s setup.py build" % self.python
+        def_setup_call = "%s %s" % (self.python,os.path.basename(sys.argv[0]))
+        def_build = "%s build" % def_setup_call
         if self.use_rpm_opt_flags:
             def_build = 'env CFLAGS="$RPM_OPT_FLAGS" ' + def_build
 
@@ -468,9 +469,9 @@ class bdist_rpm (Command):
             ('prep', 'prep_script', "%setup"),
             ('build', 'build_script', def_build),
             ('install', 'install_script',
-             ("%s setup.py install "
+             ("%s install "
               "--root=$RPM_BUILD_ROOT "
-              "--record=INSTALLED_FILES") % self.python),
+              "--record=INSTALLED_FILES") % def_setup_call),
             ('clean', 'clean_script', "rm -rf $RPM_BUILD_ROOT"),
             ('verifyscript', 'verify_script', None),
             ('pre', 'pre_install', None),

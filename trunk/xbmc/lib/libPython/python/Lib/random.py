@@ -29,13 +29,12 @@
 General notes on the underlying Mersenne Twister core generator:
 
 * The period is 2**19937-1.
-* It is one of the most extensively tested generators in existence
-* Without a direct way to compute N steps forward, the
-  semantics of jumpahead(n) are weakened to simply jump
-  to another distant state and rely on the large period
-  to avoid overlapping sequences.
-* The random() method is implemented in C, executes in
-  a single Python step, and is, therefore, threadsafe.
+* It is one of the most extensively tested generators in existence.
+* Without a direct way to compute N steps forward, the semantics of
+  jumpahead(n) are weakened to simply jump to another distant state and rely
+  on the large period to avoid overlapping sequences.
+* The random() method is implemented in C, executes in a single Python step,
+  and is, therefore, threadsafe.
 
 """
 
@@ -253,11 +252,6 @@ class Random(_random.Random):
 
         Optional arg random is a 0-argument function returning a random
         float in [0.0, 1.0); by default, the standard random.random.
-
-        Note that for even rather small len(x), the total number of
-        permutations of x is larger than the period of most random number
-        generators; this implies that "most" permutations of a long
-        sequence can never be generated.
         """
 
         if random is None:
@@ -285,6 +279,15 @@ class Random(_random.Random):
         large population:   sample(xrange(10000000), 60)
         """
 
+        # XXX Although the documentation says `population` is "a sequence",
+        # XXX attempts are made to cater to any iterable with a __len__
+        # XXX method.  This has had mixed success.  Examples from both
+        # XXX sides:  sets work fine, and should become officially supported;
+        # XXX dicts are much harder, and have failed in various subtle
+        # XXX ways across attempts.  Support for mapping types should probably
+        # XXX be dropped (and users should pass mapping.keys() or .values()
+        # XXX explicitly).
+
         # Sampling without replacement entails tracking either potential
         # selections (the pool) in a list or previous selections in a
         # dictionary.
@@ -302,7 +305,9 @@ class Random(_random.Random):
         random = self.random
         _int = int
         result = [None] * k
-        if n < 6 * k:     # if n len list takes less space than a k len dict
+        if n < 6 * k or hasattr(population, "keys"):
+            # An n-length list is smaller than a k-length set, or this is a
+            # mapping type so the other algorithm wouldn't work.
             pool = list(population)
             for i in xrange(k):         # invariant:  non-selected at [0,n-i)
                 j = _int(random() * (n-i))
@@ -310,15 +315,16 @@ class Random(_random.Random):
                 pool[j] = pool[n-i-1]   # move non-selected item into vacancy
         else:
             try:
-                n > 0 and (population[0], population[n//2], population[n-1])
-            except (TypeError, KeyError):   # handle sets and dictionaries
-                population = tuple(population)
-            selected = {}
-            for i in xrange(k):
-                j = _int(random() * n)
-                while j in selected:
+                selected = {}
+                for i in xrange(k):
                     j = _int(random() * n)
-                result[i] = selected[j] = population[j]
+                    while j in selected:
+                        j = _int(random() * n)
+                    result[i] = selected[j] = population[j]
+            except (TypeError, KeyError):   # handle (at least) sets
+                if isinstance(population, list):
+                    raise
+                return self.sample(tuple(population), k)
         return result
 
 ## -------------------- real-valued distributions  -------------------

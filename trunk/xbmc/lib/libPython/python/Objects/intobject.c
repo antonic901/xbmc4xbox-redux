@@ -460,6 +460,17 @@ int_mul(PyObject *v, PyObject *w)
 	}
 }
 
+/* Integer overflow checking for unary negation: on a 2's-complement
+ * box, -x overflows iff x is the most negative long.  In this case we
+ * get -x == x.  However, -x is undefined (by C) if x /is/ the most
+ * negative long (it's a signed overflow case), and some compilers care.
+ * So we cast x to unsigned long first.  However, then other compilers
+ * warn about applying unary minus to an unsigned operand.  Hence the
+ * weird "0-".
+ */
+#define UNARY_NEG_WOULD_OVERFLOW(x)	\
+	((x) < 0 && (unsigned long)(x) == 0-(unsigned long)(x))
+
 /* Return type of i_divmod */
 enum divmod_result {
 	DIVMOD_OK,		/* Correct result */
@@ -479,7 +490,7 @@ i_divmod(register long x, register long y,
 		return DIVMOD_ERROR;
 	}
 	/* (-sys.maxint-1)/-1 is the only overflow case. */
-	if (y == -1 && x < 0 && x == -x)
+	if (y == -1 && UNARY_NEG_WOULD_OVERFLOW(x))
 		return DIVMOD_OVERFLOW;
 	xdivy = x / y;
 	xmody = x - xdivy * y;
@@ -668,10 +679,10 @@ int_pow(PyIntObject *v, PyIntObject *w, PyIntObject *z)
 static PyObject *
 int_neg(PyIntObject *v)
 {
-	register long a, x;
+	register long a;
 	a = v->ob_ival;
-	x = -a;
-	if (a < 0 && x < 0) {
+        /* check for overflow */
+	if (UNARY_NEG_WOULD_OVERFLOW(a)) {
 		PyObject *o = PyLong_FromLong(a);
 		if (o != NULL) {
 			PyObject *result = PyNumber_Negative(o);
@@ -680,7 +691,7 @@ int_neg(PyIntObject *v)
 		}
 		return NULL;
 	}
-	return PyInt_FromLong(x);
+	return PyInt_FromLong(-a);
 }
 
 static PyObject *

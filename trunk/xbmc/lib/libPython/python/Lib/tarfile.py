@@ -35,7 +35,7 @@ __version__ = "$Revision: 41341 $"
 
 version     = "0.6.4"
 __author__  = "Lars Gustäbel (lars@gustaebel.de)"
-__date__    = "$Date: 2005-10-28 16:00:51 +1000 (Fri, 28 Oct 2005) $"
+__date__    = "$Date: 2005-10-28 08:00:51 +0200 (Fri, 28 Oct 2005) $"
 __cvsid__   = "$Id: tarfile.py 41341 2005-10-28 06:00:51Z neal.norwitz $"
 __credits__ = "Gustavo Niemeyer, Niels Gustäbel, Richard Townsend."
 

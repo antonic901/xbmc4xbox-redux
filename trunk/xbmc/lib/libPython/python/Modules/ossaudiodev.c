@@ -16,7 +16,7 @@
  *
  * XXX need a license statement
  *
- * $Id: ossaudiodev.c 43125 2006-03-17 19:04:15Z georg.brandl $
+ * $Id: ossaudiodev.c 52137 2006-10-04 10:23:57Z armin.rigo $
  */
 
 #include "Python.h"
@@ -34,7 +34,9 @@
 
 #if defined(linux)
 
+#ifndef HAVE_STDINT_H
 typedef unsigned long uint32_t;
+#endif
 
 #elif defined(__FreeBSD__)
 
@@ -943,6 +945,8 @@ initossaudiodev(void)
     PyObject *m;
 
     m = Py_InitModule("ossaudiodev", ossaudiodev_methods);
+    if (m == NULL)
+	return;
 
     OSSAudioError = PyErr_NewException("ossaudiodev.OSSAudioError",
 				       NULL, NULL);

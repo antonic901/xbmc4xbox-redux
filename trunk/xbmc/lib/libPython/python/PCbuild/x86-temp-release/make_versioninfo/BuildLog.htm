@@ -11,5 +11,53 @@ Build Log
 </h3>
 </pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
 Command Lines
-</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>make_versioninfo - up-to-date.</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\RSP000022.rsp" with contents
+[
+/O2 /I "..\Include" /I "..\PC" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /EHsc /MD /GS /YX"stdafx.h" /Fp".\x86-temp-release\make_versioninfo/make_versioninfo.pch" /Fo".\x86-temp-release\make_versioninfo/" /Fd".\x86-temp-release\make_versioninfo/" /W3 /c /Zi
+\xbmc\xbmc4xbox\xbmc\lib\libPython\python\Pc\make_versioninfo.c
+]
+Creating command line "cl.exe @"c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\RSP000022.rsp" /nologo"
+Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\RSP000023.rsp" with contents
+[
+/OUT:".\./make_versioninfo.exe" /INCREMENTAL:NO /NOLOGO /DEBUG /PDB:".\./make_versioninfo.pdb" /SUBSYSTEM:CONSOLE /BASE:"0x1d000000" /MACHINE:X86 odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+".\x86-temp-release\make_versioninfo\make_versioninfo.obj"
+]
+Creating command line "link.exe @"c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\RSP000023.rsp""
+Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\BAT000024.bat" with contents
+[
+@echo off
+.\make_versioninfo.exe >..\PC\pythonnt_rc.h
+
+if errorlevel 1 goto VCReportError
+goto VCEnd
+:VCReportError
+echo Project : error PRJ0019: A tool returned an error code from "Performing Custom Build Step"
+exit 1
+:VCEnd
+]
+Creating command line ""c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\BAT000024.bat""
+Creating temporary file "c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\BAT000025.bat" with contents
+[
+@echo off
+make_versioninfo.exe > ..\PC\python_nt.h
+if errorlevel 1 goto VCReportError
+goto VCEnd
+:VCReportError
+echo Project : error PRJ0019: A tool returned an error code from "Performing Post-Build Event..."
+exit 1
+:VCEnd
+]
+Creating command line ""c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\BAT000025.bat""
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Output Window
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Compiling...
+make_versioninfo.c
+Linking...
+Performing Custom Build Step
+Performing Post-Build Event...
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Results
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+Build log was saved at "file://c:\xbmc\xbmc4xbox\xbmc\lib\libPython\python\PCbuild\x86-temp-release\make_versioninfo\BuildLog.htm"
+make_versioninfo - 0 error(s), 0 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
 </font></table></body></html>
