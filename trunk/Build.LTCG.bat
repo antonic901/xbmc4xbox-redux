@@ -125,8 +125,9 @@ IF NOT EXIST Release_LTCG\default.xbe GOTO COMPILE
   xcopy visualisations BUILD\visualisations /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy system BUILD\system /E /Q /I /Y /EXCLUDE:exclude.txt
   rem %rar% x web\Project_Mayhem_webserver*.rar build\web\
-  xcopy media BUILD\media /E /Q /I /Y /EXCLUDE:exclude.txt
-  xcopy sounds BUILD\sounds /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy media   BUILD\media   /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy plugins BUILD\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy sounds  BUILD\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
 
   del exclude.txt
   ECHO ------------------------------
