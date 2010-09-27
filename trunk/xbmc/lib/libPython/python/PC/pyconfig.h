@@ -48,7 +48,7 @@ MS_CORE_DLL.
  * to set PYTHONPATH for the library build too, but that's not how it was previously
  * on xbmc.
 */
-#ifndef _WINDOWS
+#ifdef _XBMC
 #	define PYTHONPATH "Q:\\system\\python" // XBOX
 #	define Py_NO_ENABLE_SHARED
 #endif
@@ -230,7 +230,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* For an MSVC DLL, we can nominate the .lib files used by extensions */
 #ifdef MS_COREDLL
 #	ifndef Py_BUILD_CORE /* not building the core - must be an ext */
-#		if defined(_MSC_VER) && defined(_WINDOWS)
+#		if defined(_MSC_VER) && ! defined(_XBMC)
 			/* So MSVC users need not specify the .lib file in
 			their Makefile (other compilers are generally
 			taken care of by distutils.) */
@@ -270,7 +270,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #	define SIZEOF_HKEY 4
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && ! defined(_XBMC)
 #	define Py_DEBUG
 #endif
 

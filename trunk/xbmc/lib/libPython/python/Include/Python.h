@@ -4,7 +4,7 @@
 
 /* Include nearly all Python header files */
 
-#ifndef _XBOX
+#ifndef _XBMC
 #include "xbox_dll.h"
 #endif
 
