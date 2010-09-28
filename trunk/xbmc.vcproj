@@ -23,7 +23,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./guilib;./guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;xbmc/lib/libUPnP/Platinum/Source/Core;xbmc/lib/libUPnP/Platinum/Source/Platinum;xbmc/lib/libUPnP/Neptune/Source/Core;xbmc/lib/libUPnP/Neptune/Source/System/Xbox;./xbmc/lib/boost;./xbmc/lib/libRTMP;./xbmc/utils;./xbmc/xbox;./xbmc/lib/libcurl/include;./xbmc/lib;xbmc/lib/libPython/python/PC"
-				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWSNOMINMAX"
+				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
 				BasicRuntimeChecks="3"
