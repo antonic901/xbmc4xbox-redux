@@ -71,7 +71,7 @@ public:
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 class CGUIWindow : public CGUIControlGroup
 {
@@ -83,7 +83,7 @@ public:
 
   bool Initialize();  // loads the window
   bool Load(const CStdString& strFileName, bool bContainsPath = false);
-  
+
   void CenterWindow();
   
   /*! \brief Main render function, called every frame.
@@ -112,6 +112,11 @@ public:
 
   virtual bool OnMouse(const CPoint &point);
   bool HandleMouse(CGUIControl *pControl, const CPoint &point);
+
+  /*! \brief Clear the background (if necessary) prior to rendering the window
+   */
+  virtual void ClearBackground();
+
   bool OnMove(int fromControl, int moveAction);
   virtual bool OnMessage(CGUIMessage& message);
 
@@ -216,6 +221,7 @@ protected:
   bool m_loadOnDemand;  // true if the window should be loaded only as needed
   bool m_isDialog;      // true if we have a dialog, false otherwise.
   bool m_dynamicResourceAlloc;
+  CGUIInfoColor m_clearBackground; // colour to clear the window
 
   int m_renderOrder;      // for render order of dialogs
 

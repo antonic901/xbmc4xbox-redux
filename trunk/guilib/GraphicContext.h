@@ -140,7 +140,7 @@ public:
   float GetPixelRatio(RESOLUTION iRes) const;
   void CaptureStateBlock();
   void ApplyStateBlock();
-  void Clear();
+  void Clear(color_t color = 0);
 
   // output scaling
   void SetRenderingResolution(RESOLUTION res, float posX, float posY, bool needsScaling);  ///< Sets scaling up for rendering

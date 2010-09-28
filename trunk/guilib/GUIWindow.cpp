@@ -58,6 +58,7 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_dynamicResourceAlloc = true;
   m_previousWindow = WINDOW_INVALID;
   m_animationsEnabled = true;
+  m_clearBackground = 0xff000000; // opaque black -> always clear
 }
 
 CGUIWindow::~CGUIWindow(void)
@@ -127,6 +128,8 @@ bool CGUIWindow::Load(TiXmlDocument &xmlDoc)
   g_SkinInfo.ResolveIncludes(pRootElement);
   // now load in the skin file
   SetDefaults();
+
+  CGUIControlFactory::GetInfoColor(pRootElement, "backgroundcolor", m_clearBackground);
 
   TiXmlElement *pChild = pRootElement->FirstChildElement();
   while (pChild)
@@ -841,6 +844,7 @@ void CGUIWindow::SetDefaults()
   m_origins.clear();
   m_hasCamera = false;
   m_animationsEnabled = true;
+  m_clearBackground = 0xff000000; // opaque black -> clear
 }
 
 FRECT CGUIWindow::GetScaledBounds() const
@@ -958,4 +962,12 @@ void CGUIWindow::ClearProperty(const CStdString &strKey)
 void CGUIWindow::ClearProperties()
 {
   m_mapProperties.clear();
+}
+
+void CGUIWindow::ClearBackground()
+{
+  m_clearBackground.Update();
+  color_t color = m_clearBackground;
+  if (color)
+    g_graphicsContext.Clear(color);
 }

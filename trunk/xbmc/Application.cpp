@@ -2166,14 +2166,11 @@ void CApplication::DoRender()
 
   g_windowManager.UpdateModelessVisibility();
 
-  // draw GUI
-  g_graphicsContext.Clear();
   //SWATHWIDTH of 4 improves fillrates (performance investigator)
 #ifdef HAS_XBOX_D3D
   m_pd3dDevice->SetRenderState(D3DRS_SWATHWIDTH, 4);
 #endif
   g_windowManager.Render();
-
 
   // if we're recording an audio stream then show blinking REC
   if (!g_graphicsContext.IsFullScreenVideo())

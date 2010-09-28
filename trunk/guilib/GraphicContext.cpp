@@ -631,14 +631,14 @@ float CGraphicContext::GetPixelRatio(RESOLUTION iRes) const
   return g_settings.m_ResInfo[iRes].fPixelRatio;
 }
 
-void CGraphicContext::Clear()
+void CGraphicContext::Clear(color_t color)
 {
   if (!m_pd3dDevice) return;
   //Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
   if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, 0x00010001, 1.0f, 0L );
+    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L );
   else
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET, 0x00010001, 1.0f, 0L );
+    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L );
 }
 
 void CGraphicContext::CaptureStateBlock()

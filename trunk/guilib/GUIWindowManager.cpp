@@ -455,7 +455,10 @@ void CGUIWindowManager::Render_Internal()
 {
   CGUIWindow* pWindow = GetWindow(GetActiveWindow());
   if (pWindow)
+  {
+    pWindow->ClearBackground();
     pWindow->Render();
+  }
 }
 
 void CGUIWindowManager::FrameMove()
