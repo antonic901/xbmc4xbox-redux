@@ -199,12 +199,13 @@ void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
   }
 
   part_num = atoi(szPartition + 19);
-
+#ifdef _XBOX
   if (part_num >= EXTEND_PARTITION_BEGIN)
   {
     *cDriveLetter = extendPartitionMapping[part_num-EXTEND_PARTITION_BEGIN];
     return;
   }
+#endif
   for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
     if (strnicmp(driveMapping[i].szDevice, szPartition, strlen(driveMapping[i].szDevice)) == 0)
     {
@@ -629,30 +630,40 @@ bool CIoSupport::ReadPartitionTable()
 
 bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter) 
 { 
-  int i; 
+#ifdef _XBOX
+  int i;
   for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
   { 
     if (mapLetter == extendPartitionMapping[i]) 
       return true; 
-  } 
+  }
+#endif
   return false; 
 } 
  
 INT CIoSupport::GetExtendedPartitionPosition(char mapLetter) 
 { 
-  int i; 
+#ifdef _XBOX
+  int i;
   for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
   { 
     if (mapLetter == extendPartitionMapping[i]) 
       return i; 
-  } 
+  }
+#endif
   return 0; 
 } 
 
-char CIoSupport::GetExtendedPartitionDriveLetter(int pos) 
+
+char CIoSupport::GetExtendedPartitionDriveLetter(int pos)
 { 
-  return extendPartitionMapping[pos]; 
-} 
+#ifdef _XBOX
+  return extendPartitionMapping[pos];
+#else
+  return 0;
+#endif
+}
+
 
 bool CIoSupport::HasPartitionTable()
 {
