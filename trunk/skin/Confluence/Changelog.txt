@@ -1,3 +1,19 @@
+*Confluence XBOX (V1.09)*
+fixed Full Fanart view BG loading when fanart was hidden
+fixed 'Hide - Add-ons' label in Skin settings
+fixed 'Hide - Add-ons' radio button (aadc)
+added Nuka1195's XBMC Lyrics support
+added Trainers support (tks drieg500)
+added Genre image to List view
+- (video genre JPG's must be in [skinfolder]/media/flagging/videogenres)
+- (music genre JPG's must be in [skinfolder]/media/flagging/musicgenres)
+added movie year and director to video full screen info
+fixed hide item Icon when genre image is present
+fixed item Icon was only showing on Genres
+changed Login Screen background
+added visualization background
+added Jezz_X Horizontal Home Screen
+
 *Confluence XBOX (V1.08)*
 Changed Font size in fontset Bigger
 Changed Custom Add-on button label
