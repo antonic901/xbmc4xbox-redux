@@ -1,12 +1,12 @@
 import os, sys
 import xbmc, xbmcgui
 import urllib
-from pprint import pprint
+#from pprint import pprint
 from xbmcplugin_lib import *
 from shutil import rmtree, copytree
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '23-06-2009'
+__date__ = '19-10-2009'
 log("Module: %s Dated: %s loaded!" % (__name__, __date__))
 
 #################################################################################################################
@@ -22,47 +22,90 @@ class InfoDialog( xbmcgui.WindowXMLDialog ):
 		self.buttons = {}
 
 	def onInit( self ):
+
 		xbmcgui.lock()
+		try:
+			thumb = self.info.get('thumb')
+			if thumb:
+				thumb = xbmc.translatePath(thumb)
+				self.getControl( 31 ).setImage( thumb )
 
-		thumb = xbmc.translatePath(self.info.get('thumb', ''))
-		if thumb:
-			self.getControl( 31 ).setImage( thumb )
+			self.getControl( 4 ).setLabel("[B]"+self.info.get('title','?')+"[/B]")
 
-		self.getControl( 4 ).setLabel("[B]"+self.info.get('title','?')+"[/B]")
-		self.getControl( 6 ).setLabel(self.info.get('author','?'))
-		version = self.info.get('version','?')
-		if not version: version = '?'
-		svn_ver = self.info.get('svn_ver','?')
-		if not svn_ver: svn_ver = '?'
-		verText = "v%s -> v%s" % (version,svn_ver)
-		self.getControl( 8 ).setLabel(verText)
-		self.getControl( 10 ).setLabel(self.info.get('date','?'))
-		self.getControl( 12 ).setLabel(self.info.get('category','?'))
-		self.getControl( 19 ).setLabel(self.info.get('compatibility',''))
-		if self.info.get('changelog',''):
-			self.showChangelog()
-		elif self.info.get('readme',''):
-			self.showReadme()
+			text = ""
+			# AUTHORS: from description.xml
+			try:
+				items = self.info.get('authors')
+				for item in items:
+					text += ", ".join( item )
+					text += "  "
+			except:
+				logError()
+			if not text:
+				# get from docTags
+				text = self.info.get('author','?')
+			self.getControl( 6 ).setLabel(text)
 
-		# set btns enabled state
-		btnIDs = {'install': 20,'uninstall': 21,'readme': 22,'changelog': 23 }
-		for btnName, isEnabled in self.buttons.items():
-			id = btnIDs[btnName]
-			self.getControl( id ).setEnabled( isEnabled )
+			# VERSION and SVN VERSION
+			version = self.info.get('version')
+			if not version: version = '?'
+			svn_ver = self.info.get('svn_ver')
+			if not svn_ver: svn_ver = '?'
 
-		xbmcgui.unlock()
+			if version != svn_ver:
+				verText = "v%s -> v%s" % (version,svn_ver)
+			else:
+				verText = "v%s" % version
+			self.getControl( 8 ).setLabel(verText)
 
-	def showChangelog(self):
-		self.getControl( 30 ).setText(self.info.get('changelog',''))
-	def showReadme(self):
-		self.getControl( 30 ).setText(self.info.get('readme',''))
+			self.getControl( 10 ).setLabel(self.info.get('date','?'))
+
+			# CATEGORY, cut down to just installation dirname
+			cat = os.path.dirname(self.info.get('category','?'))
+			self.getControl( 12 ).setLabel(cat)
+
+			self.getControl( 19 ).setLabel(self.info.get('compatibility',''))
+
+			# PLATFORM: from description.xml
+			try:
+				text = ",".join( self.info.get('platforms') )
+			except:
+				text = '?'
+			self.getControl( 14 ).setLabel(text)
+
+			# display Addon info text, from a pref. order of availablility
+			textKeys = ('description','summary','changelog','readme')
+			for key in textKeys:
+				if self.showText(key):
+					break
+
+			# set btns enabled state
+			btnIDs = {'install': 20,'uninstall': 21,'readme': 22,'changelog': 23 }
+			for btnName, isEnabled in self.buttons.items():
+				id = btnIDs[btnName]
+				self.getControl( id ).setEnabled( isEnabled )
+
+		except:
+			xbmcgui.unlock()
+			logError("Failed to init skin controls")
+		else:
+			xbmcgui.unlock()
+
+	def showText(self, key):
+		log("showText()")
+		text = self.info.get(key)
+		if text:
+			self.getControl( 30 ).setText( text )
+			return True
+		else:
+			return False
 
 	def onClick( self, controlId ):
 		if controlId in (20,21,22,23,24):
 			if controlId == 22:
-				self.showReadme()
+				self.showText('readme')
 			elif controlId == 23:
-				self.showChangelog()
+				self.showText('changelog')
 			elif controlId == 20:
 				self.action = "install"
 			elif controlId == 21:
@@ -96,7 +139,8 @@ class InfoDialog( xbmcgui.WindowXMLDialog ):
 ########################################################################################################################
 class Main:
 
-	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
+#	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
+	INSTALLED_ITEMS_FILENAME = os.path.join( HOME_DIR, "installed_items.dat" )
 
 	def __init__( self, *args, **kwargs):
 		log( "%s started!" % self.__class__ )
@@ -131,7 +175,7 @@ class Main:
 	########################################################################################################################
 	def show_info( self, info ):
 		log("> show_info() ")
-		pprint (info)
+#		pprint (info)
 		quit = False
 		buttons = {'install': True,'uninstall': True, 'readme': True, 'changelog': True }
 
@@ -168,7 +212,8 @@ class Main:
 			buttons['uninstall'] = False
 
 		while info:
-			action = InfoDialog( InfoDialog.XML_FILENAME, os.getcwd(), "Default" ).ask( info, buttons )
+#			action = InfoDialog( InfoDialog.XML_FILENAME, os.getcwd(), "Default" ).ask( info, buttons )
+			action = InfoDialog( InfoDialog.XML_FILENAME, HOME_DIR, "Default" ).ask( info, buttons )
 			if not action:
 				break
 			elif action == "install":

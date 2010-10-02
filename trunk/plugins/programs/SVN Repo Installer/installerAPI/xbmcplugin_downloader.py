@@ -16,7 +16,7 @@ from xml.sax.saxutils import unescape
 from xbmcplugin_lib import *
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '19-06-2009'
+__date__ = '15-10-2009'
 log("Module: %s Dated: %s loaded!" % (__name__, __date__))
 
 class Parser:
@@ -70,18 +70,15 @@ class Main:
 			self._get_repo_info()
 			self._create_title()
 			# get the list
-			self._download_item()
+			self._download_item( forceInstall=True )
 
 	def _get_repo_info( self ):
 		# path to info file
-		repopath = os.path.join( os.getcwd(), "resources", "repositories", self.args.repo, "repo.xml" )
+#		repopath = os.path.join( os.getcwd(), "resources", "repositories", self.args.repo, "repo.xml" )
+		repopath = os.path.join( HOME_DIR, "resources", "repositories", self.args.repo, "repo.xml" )
 		try:
-			# grab a file object
-			fileobject = open( repopath, "r" )
-			# read the info
-			info = fileobject.read()
-			# close the file object
-			fileobject.close()
+			# read file
+			info = readFile( repopath )
 			# repo's base url
 			self.REPO_URL = re.findall( '<url>([^<]+)</url>', info )[ 0 ]
 			log("_get_repo_info() repo_url=%s" % self.REPO_URL)
@@ -109,7 +106,8 @@ class Main:
 		log("> _update_all()")
 		""" Download and install all new Addons as stored in update file """
 		# eg 'download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0'
-		fn = os.path.join( os.getcwd(), "update_all.dat" )
+#		fn = os.path.join( os.getcwd(), "update_all.dat" )
+		fn = os.path.join( HOME_DIR, "update_all.dat" )
 		items = loadFileObj(fn)
 		if items:
 			if xbmcgui.Dialog().yesno( __plugin__, xbmc.getLocalizedString( 30019 ) + " ?", "", "", xbmc.getLocalizedString( 30020 ), xbmc.getLocalizedString( 30021 ) ):

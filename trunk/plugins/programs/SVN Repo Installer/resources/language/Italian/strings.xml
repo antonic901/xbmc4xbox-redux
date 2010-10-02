@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Update messages -->
+    <string id="30000">Vuoi installare questo elemento?</string>
+    <string id="30001">Recupero file ...</string>
+    <string id="30002">Recupero elenco file...</string>
+    <string id="30003">Attendere...</string>
+    <string id="30004">Backup Creato</string>
+    <string id="30005">Recupero:</string>
+    <string id="30006">Percorso:</string>
+    <string id="30007">File:</string>
+    <string id="30008">Nuovo elemento installato in:</string>
+    <string id="30009">Controllo Add-on installati...</string>
+    <string id="30010">Controllo SVN ...</string>
+    <string id="30011">OK</string>
+    <string id="30012">Non presente nell'SVN</string>
+    <string id="30013">Versione Sconosciuta</string>
+    <string id="30014">Nuovo</string>
+    <string id="30015">Incompatibile</string>
+    <string id="30016">Aggiorna</string>
+    <string id="30017">Elenco modifiche</string>
+    <string id="30018">Rimosso</string>
+    <string id="30019">Aggiorna Tutto</string>
+
+    <string id="30020">Salta</string>
+    <string id="30021">Installa</string>
+    <string id="30022">Rimuovi</string>
+    <string id="30023">Autore:</string>
+    <string id="30024">Data:</string>
+    <string id="30025">Versione:</string>
+    <string id="30026">Categoria:</string>
+    <string id="30027">Chiudi</string>
+
+    <!-- settings -->
+    <string id="30500">Controlla aggiornamenti</string>
+    <string id="30510">Aggiornamenti: Mostra add-on non presenti nell'SVN?</string>
+    <string id="30520">Aggiornamenti: Mostra add-on senza versione?</string>
+    <string id="30530">Leggi ReadMe</string>
+    <string id="30540">Leggi Changelog</string>
+
+    <!-- context menu -->
+    <string id="30600">Leggi Changelog</string>
+    <string id="30610">Leggi Readme</string>
+
+    <!-- compatible messages -->
+    <string id="30700">Versione</string>
+    <string id="30701">Questa versione di %s richiede una</string>
+    <string id="30702">revisione di XBMC che sia almeno la %s</string>
+    <string id="30703">Prego aggiorna il tuo XBMC.</string>
+    <string id="30704">Compatibile</string>
+    <string id="30705">Incompatibile</string>
+    <string id="30706">Non si sa</string>
+
+    <!-- Update error messages -->
+    <string id="30030">C'è stato un errore durante l'installazione!</string>
+</strings>

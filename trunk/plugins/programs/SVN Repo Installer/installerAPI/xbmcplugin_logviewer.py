@@ -23,8 +23,11 @@ class _Info:
 		self.__dict__.update( kwargs )
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '14-09-2009'
+__date__ = '15-10-2009'
 log( "Module: %s Dated: %s loaded!" % (__name__, __date__ ) )
+
+#HOME_DIR = os.getcwd()
+HOME_DIR = os.path.dirname(os.path.dirname(__file__))		# until XBMC getwd() bug fixed (affects linux)
 
 class ChangelogParser:
 	# TODO: make these settings
@@ -45,9 +48,9 @@ class ChangelogParser:
 	def fetch_changelog( self ):
 		try:
 			if ( DEBUG ):
-				base_path = os.getcwd()
+				base_path = HOME_DIR
 			else:
-				base_path = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "programs", os.path.basename( os.getcwd() ) )
+				base_path = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "programs", HOME_DIR )
 			# make path
 			if ( not os.path.isdir( base_path ) ):
 				os.makedirs( base_path )
@@ -150,14 +153,15 @@ if ( not DEBUG ):
 			return parser.fetch_changelog()
 
 		def getReadmePath(self):
-			base_path = os.path.join( os.getcwd(), "resources", "language" )
+			home_dir = os.path.dirname(os.path.dirname(__file__))
+			base_path = os.path.join( home_dir, "resources", "language" )
 			path = os.path.join( base_path, xbmc.getLanguage(), "readme.txt" )
 			if not os.path.isfile(path):
 				path = os.path.join( base_path, "English", "readme.txt" )
 				if not os.path.isfile(path):
-					path = os.path.join( os.getcwd(), "resources", "readme.txt" )
+					path = os.path.join( home_dir, "resources", "readme.txt" )
 					if not os.path.isfile(path):
-						path = os.path.join( os.getcwd(), "readme.txt" )
+						path = os.path.join( home_dir, "readme.txt" )
 						if not os.path.isfile(path):
 							path = None
 			return path
@@ -211,7 +215,7 @@ if ( not DEBUG ):
 				self.close()
 
 def Main():
-	ui = GUI( "DialogScriptInfo.xml", os.getcwd(), "Default" )
+	ui = GUI( "DialogScriptInfo.xml", HOME_DIR, "Default" )
 	ui.doModal()
 	del ui
 

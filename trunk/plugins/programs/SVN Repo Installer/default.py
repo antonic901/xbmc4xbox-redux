@@ -12,9 +12,9 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.8.2a"
-__date__ = "$Date: 2009-10-05 20:03:02 +0100 (Mon, 05 Oct 2009) $"
-__svn_revision__ = "$Revision: 1335 $"
+__version__ = "1.8.3"
+__date__ = "$Date: 2010-01-25 13:50:20 +0000 (Mon, 25 Jan 2010) $"
+__svn_revision__ = "$Revision: 1588 $"
 __XBMC_Revision__ = "19001"
 
 def _check_compatible():

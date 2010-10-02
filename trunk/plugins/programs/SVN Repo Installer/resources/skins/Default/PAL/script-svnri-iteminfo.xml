@@ -68,7 +68,7 @@
 				<description>Author value</description>
 				<posx>10</posx>
 				<posy>0</posy>
-				<width>350</width>
+				<width>550</width>
 				<height>25</height>
 				<align>left</align>
 				<aligny>center</aligny>
@@ -94,7 +94,7 @@
 				<description>Version value</description>
 				<posx>10</posx>
 				<posy>25</posy>
-				<width>200</width>
+				<width>350</width>
 				<height>25</height>
 				<align>left</align>
 				<aligny>center</aligny>
@@ -144,7 +144,32 @@
 				<description>Category value</description>
 				<posx>10</posx>
 				<posy>75</posy>
-				<width>550</width>
+				<width>250</width>
+				<height>30</height>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label></label>
+				<font>font12</font>
+				<textcolor>0x66FFFFFF</textcolor>
+			</control>
+
+			<control type="label" id="13">
+				<description>Platform label</description>
+				<posx>200</posx>
+				<posy>75</posy>
+				<width>100</width>
+				<height>30</height>
+				<align>right</align>
+				<aligny>center</aligny>
+				<label>$LOCALIZE[30028]</label>
+				<font>font12</font>
+				<textcolor>DDced8da</textcolor>
+			</control>
+			<control type="label" id="14">
+				<description>Platform value</description>
+				<posx>210</posx>
+				<posy>75</posy>
+				<width>200</width>
 				<height>30</height>
 				<align>left</align>
 				<aligny>center</aligny>

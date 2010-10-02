@@ -10,12 +10,13 @@ from xbmcplugin_lib import *
 from shutil import rmtree, copytree
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '19-06-2009'
+__date__ = '15-10-2009'
 log("Module: %s Dated: %s loaded!" % (__name__, __date__))
 
 class Main:
 
-	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
+#	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
+	INSTALLED_ITEMS_FILENAME = os.path.join( HOME_DIR, "installed_items.dat" )
 	
 	def __init__( self ):
 		log( "%s started!" % self.__class__ )

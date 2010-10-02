@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addoninfo>
+    <!-- (required) guuid: unique identifier of this addon
+    guuids can be generated online at sites such as http://www.famkruithof.net/uuid/uuidgen -->
+    <guid>f4705fa0-09b5-11df-8a39-0800200c9a66</guid>
+
+    <!-- (required) type:
+    1:  visualization
+    2:  skin
+    3:  pvrdll
+    4:  script
+    5:  scraper
+    6:  screensaver
+    7:  plugin-pvr
+    8:  plugin-video
+    9:  plugin-music
+    10: plugin-program
+    11: plugin-pictures
+    12: plugin-weather -->
+    <type>10</type>
+
+    <!-- (required) Title -->
+    <title>SVN Repo Installer</title>
+
+    <!-- (required) Major.minor.build -->
+    <version>1.8.3</version>
+
+    <!-- (required) author name & email.  at least one author name is required -->
+    <authors>
+        <author name="nuka1195" email="nuka1195@xbmc.org" />
+        <author name="BigBellyBilly" email="BigBellyBilly@gmail.com" />
+    </authors>
+
+    <!-- (required) Short description of addon. -->
+    <summary>XBMC Addon installer from various SVN Repositories</summary>
+
+    <!-- Longer descrption of addon.  Usage instructions should go here if required. -->
+    <description>XBMC Addon installer from various SVN Repositories.  Browse for New or Check for Updates across the included SVN Repositories.  See ReadMe for additional information.</description>
+
+    <!-- user defined tags e.g. <tags><tag>Example</tag></tags> -->
+    <tags>
+        <tag>Addon Installer</tag>
+    </tags>
+
+    <!-- minimum revision of xbmc your addon will run on.  Leave blank all for revisions-->
+    <minrevision>19001</minrevision>
+
+    <!--patforms compatible with your addon.   xbox, osx, windows, linux, or all -->
+    <platforms>
+        <platform>all</platform>
+    </platforms>
+
+    <!-- (optional) The License the addon is released under.-->
+    <license>GPL</license>
+</addoninfo>
