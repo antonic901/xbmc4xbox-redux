@@ -937,7 +937,6 @@ __int64 iso9660::Seek(HANDLE hFile, __int64 lOffset, int whence)
     // cur = pos
     pContext->m_dwFilePos = lOffset;
     break;
-
   case SEEK_CUR:
     // cur += pos
     pContext->m_dwFilePos += lOffset;
@@ -957,7 +956,6 @@ __int64 iso9660::Seek(HANDLE hFile, __int64 lOffset, int whence)
     pContext->m_dwFilePos = dwFilePos;
     return pContext->m_dwFilePos;
   }
-
 
   return pContext->m_dwFilePos;
 }
