@@ -521,8 +521,11 @@ class Thread(_Verbose):
             try:
                 del _active[_get_ident()]
             except KeyError:
-                if 'dummy_threading' not in _sys.modules:
-                    raise
+                # XBMC Patch, because we are shutting python down in the main thread, _get_ident() will return the current thread
+                # Because that thread is not added to the _active table, we will get an error. Just completely skip the check
+                #if 'dummy_threading' not in _sys.modules:
+                #    raise
+                print("")
         finally:
             _active_limbo_lock.release()
 

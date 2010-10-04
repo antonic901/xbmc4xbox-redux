@@ -30,7 +30,7 @@ BOOL	WINAPI	DllMain (HANDLE hInst,
 			PyWin_DLLhModule = hInst;
 			// 1000 is a magic number I picked out of the air.  Could do with a #define, I spose...
 			//LoadString(hInst, 1000, dllVersionBuffer, sizeof(dllVersionBuffer));
-			strcpy(dllVersionBuffer, "2.4.1"); // XBOX
+			strcpy(dllVersionBuffer, "2.4.6"); // XBOX
 			//initall();
 			break;
 		case DLL_PROCESS_DETACH:
