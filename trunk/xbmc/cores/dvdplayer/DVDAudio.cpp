@@ -83,7 +83,11 @@ bool CDVDAudio::Create(const DVDAudioFrame &audioframe, CodecID codec)
   const char* codecstring="";
 
   if(codec == CODEC_ID_AAC)
+#ifdef USE_LIBFAAD
     codecstring = "AAC";
+#else
+    codecstring = "FF-AAC"; // ffmpeg decodes aac with a different channel order so we need to differentiate
+#endif
   else if (codec == CODEC_ID_VORBIS)
     codecstring = "Vorbis";
   else if(codec == CODEC_ID_AC3 || codec == CODEC_ID_DTS)
