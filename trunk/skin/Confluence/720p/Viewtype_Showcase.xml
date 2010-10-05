@@ -6,22 +6,6 @@
 			<posx>0</posx>
 			<posy>300</posy>
 			<control type="image">
-				<posx>240</posx>
-				<posy>420</posy>
-				<width>800</width>
-				<height>70</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>GlassTitleBar.png</texture>
-			</control>
-			<control type="image">
-				<posx>0</posx>
-				<posy>300</posy>
-				<width>1280</width>
-				<height>500</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>ContentPanel3.png</texture>
-			</control>
-			<control type="image">
 				<posx>25</posx>
 				<posy>-140</posy>
 				<width>600</width>
@@ -418,7 +402,6 @@
 				<aligny>center</aligny>
 				<label>$INFO[ListItem.Label]</label>
 			</control>
-			
 			<control type="label">
 				<posx>40</posx>
 				<posy>50</posy>
@@ -443,7 +426,6 @@
 				<aligny>center</aligny>
 				<label>$INFO[ListItem.Episode]</label>
 			</control>
-			
 			<control type="label">
 				<posx>40</posx>
 				<posy>120</posy>
@@ -468,7 +450,6 @@
 				<aligny>center</aligny>
 				<label>$INFO[ListItem.Property(UnWatchedEpisodes)]</label>
 			</control>
-			
 			<control type="label">
 				<posx>40</posx>
 				<posy>85</posy>
@@ -719,22 +700,6 @@
 			<include>VisibleFadeEffect</include>
 			<posx>0</posx>
 			<posy>300</posy>
-			<control type="image">
-				<posx>240</posx>
-				<posy>420</posy>
-				<width>800</width>
-				<height>70</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>GlassTitleBar.png</texture>
-			</control>
-			<control type="image">
-				<posx>0</posx>
-				<posy>300</posy>
-				<width>1280</width>
-				<height>500</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>ContentPanel3.png</texture>
-			</control>
 			<control type="image">
 				<posx>25</posx>
 				<posy>-140</posy>
@@ -1004,22 +969,6 @@
 			<include>VisibleFadeEffect</include>
 			<posx>0</posx>
 			<posy>300</posy>
-			<control type="image">
-				<posx>240</posx>
-				<posy>420</posy>
-				<width>800</width>
-				<height>70</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>GlassTitleBar.png</texture>
-			</control>
-			<control type="image">
-				<posx>0</posx>
-				<posy>300</posy>
-				<width>1280</width>
-				<height>500</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>ContentPanel3.png</texture>
-			</control>
 			<control type="image">
 				<posx>25</posx>
 				<posy>-140</posy>
