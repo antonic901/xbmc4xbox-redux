@@ -6,6 +6,7 @@
 	<include file="ViewsPictures.xml" />
 	<include file="IncludesCodecFlagging.xml" />
 	<include file="IncludesHomeRecentlyAdded.xml" />
+	<include file="Viewtype_Showcase.xml" />
 	
 	<include file="IncludesHomeVertical.xml" />
 	<include file="IncludesHomeHorizontal.xml" />

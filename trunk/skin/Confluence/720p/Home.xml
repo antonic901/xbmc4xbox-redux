@@ -114,6 +114,8 @@
 			<visible>!Skin.HasSetting(homepageHideRecentlyAdded)</visible>
 		</control>
 		<control type="image">
+			<include>VisibleFadeEffect</include>
+			<include>Window_OpenClose_Animation</include>
 			<posx>0</posx>
 			<posy>100r</posy>
 			<width>256</width>

@@ -317,9 +317,7 @@
 				</control>
 			</control>
 		</control>
-		
 		<include condition="Skin.HasSetting(homepageHideRecentlyAdded)">HomeRecentlyAddedInfo</include>						
-		
 		<control type="group" id="9001">
 			<posx>520</posx>
 			<posy>310</posy>
@@ -757,13 +755,12 @@
 					<onclick>ActivateWindow(GameSaves)</onclick>
 				</control>
 			</control>	
-		</control>
-			
+		</control>	
 		<control type="group">
 			<control type="image">
-				<description>media info background image</description>
-				<animation effect="slide" end="0,100" time="300" tween="quadratic" easing="out">WindowClose</animation>
-				<animation effect="slide" start="0,100" time="300" tween="quadratic" easing="out">WindowOpen</animation>
+				<description>Main menu background image</description>
+				<animation effect="slide" end="0,200" time="300" tween="quadratic" easing="out">WindowClose</animation>
+				<animation effect="slide" start="0,200" time="300" tween="quadratic" easing="out">WindowOpen</animation>
 				<posx>0</posx>
 				<posy>176r</posy>
 				<width>1280</width>
