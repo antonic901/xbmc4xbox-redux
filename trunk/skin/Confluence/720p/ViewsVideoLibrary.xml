@@ -189,6 +189,21 @@
 				<align>center</align>
 				<aligny>center</aligny>
 				<label>$INFO[ListItem.Duration,$LOCALIZE[2050] , $LOCALIZE[12391]]</label>
+				<visible>!IsEmpty(ListItem.Duration) + !SubString(ListItem.Duration,min)</visible>
+			</control>
+			<control type="label">
+				<posx>0</posx>
+				<posy>650</posy>
+				<width>1280</width>
+				<height>35</height>
+				<font>font13caps</font>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<scroll>true</scroll>
+				<align>center</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Duration,$LOCALIZE[2050] ]</label> 
+				<visible>!IsEmpty(ListItem.Duration) + SubString(ListItem.Duration,min)</visible>
 			</control>
 		</control>
 		<control type="group">
@@ -564,6 +579,23 @@
 					<align>left</align>
 					<aligny>center</aligny>
 					<label>$INFO[ListItem.Duration,, $LOCALIZE[12391]]</label>
+					<visible>!IsEmpty(ListItem.Duration) + !SubString(ListItem.Duration,min)</visible>
+					<scrollout>false</scrollout>
+					<pauseatend>2000</pauseatend>
+				</control>
+				<control type="fadelabel">
+					<posx>0</posx>
+					<posy>80</posy>
+					<width>400</width>
+					<height>30</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<scroll>true</scroll>
+					<align>left</align>
+					<aligny>center</aligny>
+					<label>$INFO[ListItem.Duration]</label>
+					<visible>!IsEmpty(ListItem.Duration) + SubString(ListItem.Duration,min)</visible>
 					<scrollout>false</scrollout>
 					<pauseatend>2000</pauseatend>
 				</control>

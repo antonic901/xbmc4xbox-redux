@@ -285,7 +285,13 @@
 								<label>$LOCALIZE[2050]:</label>
 								<label2>$INFO[ListItem.Duration] $LOCALIZE[12391]</label2>
 								<onclick>-</onclick>
-								<visible>!IsEmpty(ListItem.Duration)</visible>
+								<visible>!IsEmpty(ListItem.Duration) + !SubString(ListItem.Duration,min)</visible>
+							</item>
+							<item>
+								<label>$LOCALIZE[2050]:</label>
+								<label2>$INFO[ListItem.Duration]</label2>
+								<onclick>-</onclick>
+								<visible>!IsEmpty(ListItem.Duration) + SubString(ListItem.Duration,min)</visible>
 							</item>
 							<item>
 								<label>$LOCALIZE[563]:</label>
@@ -766,7 +772,13 @@
 								<label>$LOCALIZE[2050]:</label>
 								<label2>$INFO[ListItem.Duration] $LOCALIZE[12391]</label2>
 								<onclick>-</onclick>
-								<visible>!IsEmpty(ListItem.Duration)</visible>
+								<visible>!IsEmpty(ListItem.Duration) + !SubString(ListItem.Duration,min)</visible>
+							</item>
+							<item>
+								<label>$LOCALIZE[2050]:</label>
+								<label2>$INFO[ListItem.Duration]</label2>
+								<onclick>-</onclick>
+								<visible>!IsEmpty(ListItem.Duration) + SubString(ListItem.Duration,min)</visible>
 							</item>
 							<item>
 								<label>$LOCALIZE[563]:</label>
@@ -925,7 +937,13 @@
 								<label>$LOCALIZE[2050]:</label>
 								<label2>$INFO[ListItem.Duration] $LOCALIZE[12391]</label2>
 								<onclick>-</onclick>
-								<visible>!IsEmpty(ListItem.Duration)</visible>
+								<visible>!IsEmpty(ListItem.Duration) + !SubString(ListItem.Duration,min)</visible>
+							</item>
+							<item>
+								<label>$LOCALIZE[2050]:</label>
+								<label2>$INFO[ListItem.Duration]</label2>
+								<onclick>-</onclick>
+								<visible>!IsEmpty(ListItem.Duration) + SubString(ListItem.Duration,min)</visible>
 							</item>
 							<item>
 								<label>$LOCALIZE[15311]</label>
