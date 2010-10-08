@@ -357,7 +357,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[ListItem.Plot,[COLOR blue]$LOCALIZE[207]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 			<control type="grouplist">
 				<description>Media Codec Flagging Images</description>
@@ -498,7 +498,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[Container.ShowPlot,[COLOR blue]$LOCALIZE[207]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 		</control>
 		
@@ -689,7 +689,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[ListItem.Plot,[COLOR blue]$LOCALIZE[207]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 			<control type="label">
 				<posx>40</posx>
@@ -951,7 +951,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[ListItem.Plot,[COLOR blue]$LOCALIZE[207]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 			<control type="grouplist">
 				<description>Media Codec Flagging Images</description>
@@ -1235,7 +1235,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[ListItem.Property(Artist_Description),[COLOR blue]$LOCALIZE[21887]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 		</control>
 		
@@ -1372,7 +1372,7 @@
 				<align>justify</align>
 				<textcolor>white</textcolor>
 				<label>$INFO[ListItem.Property(Album_Description),[COLOR blue]$LOCALIZE[21887]: [/COLOR]]</label>
-				<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
 		</control>
 	</include>
