@@ -369,6 +369,8 @@
 				<orientation>horizontal</orientation>
 				<include>VideoCodecFlaggingConditions</include>
 				<include>AudioCodecFlaggingConditions</include>
+				<include>AspectCodecFlaggingConditions</include>
+				<include>VideoTypeHackFlaggingConditions</include>
 			</control>
 		</control>
 		
