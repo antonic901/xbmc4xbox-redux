@@ -959,21 +959,23 @@
 				<description>Media Codec Flagging Images</description>
 				<posx>40</posx>
 				<posy>620</posy>
-				<width>200</width>
-				<align>right</align>
+				<width>280</width>
+				<align>left</align>
 				<itemgap>0</itemgap>
 				<orientation>horizontal</orientation>
 				<include>VideoCodecFlaggingConditions</include>
+				<include>AspectCodecFlaggingConditions</include>
 			</control>
 			<control type="grouplist">
 				<description>Media Codec Flagging Images</description>
-				<posx>1000</posx>
+				<posx>330r</posx>
 				<posy>620</posy>
-				<width>200</width>
+				<width>280</width>
 				<align>right</align>
 				<itemgap>0</itemgap>
 				<orientation>horizontal</orientation>
 				<include>AudioCodecFlaggingConditions</include>
+				<include>VideoTypeHackFlaggingConditions</include>
 			</control>
 		</control>
 	</include>
