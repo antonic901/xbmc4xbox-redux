@@ -1,3 +1,18 @@
+*Confluence XBOX (V1.10)*
+added Showcase and Landscape views to video/music (nate7365 mod)
+added Aspect ratio and video source to Showcase view (movie library)
+added Aspect ratio and video source to Landscape view (episodes library)
+fixed Horizontal home screen buttons background fade/slide
+fixed Off screen/inexisting textures in Showcase and Landscape views
+fixed video duration double label
+fixed Custom Addons background was missing
+fixed AutoScroll in Showcase and Landscape views was inverted
+changed New folder icons from xbmc.org (Changeset 34716)
+changed New folder icons from xbmc.org (Changeset 34750)
+changed Textures resize to divisions/multiplications of 64 pixels width (by Cranial)
+reverted Scrollbar textures
+cosmetics Home horizontal submenus
+
 *Confluence XBOX (V1.09)*
 fixed Full Fanart view BG loading when fanart was hidden
 fixed 'Hide - Add-ons' label in Skin settings
@@ -101,5 +116,3 @@ Fantart info toggle
 Custom Video playlists shortcut in video submenu
 Hide media flags option
 Resized backgrounds
-
-
