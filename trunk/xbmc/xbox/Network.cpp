@@ -358,39 +358,38 @@ DWORD CNetwork::UpdateState()
 #endif
 }
 
-bool CNetwork::CheckNetwork(int count)
+void CNetwork::CheckNetwork(int count)
 {
 #ifdef HAS_XBOX_NETWORK
-  // update our network state
-  DWORD dwState = UpdateState();
   DWORD dwLink = XNetGetEthernetLinkStatus();
 
   // Check the network status every count itterations
   if (++m_netRetryCounter > count || m_lastlink2 != dwLink)
   {
-    m_netRetryCounter = 0;
-    m_lastlink2 = dwLink;
-    
-    // In case the network failed, try to set it up again
-    if ( !(dwLink & XNET_ETHERNET_LINK_ACTIVE) || !IsInited() || dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT )
+    if (!(dwLink & XNET_ETHERNET_LINK_ACTIVE))
     {
-      Deinitialize();
-
-      if (dwLink & XNET_ETHERNET_LINK_ACTIVE)
+      if (m_lastlink2 != dwLink)
       {
-        CLog::Log(LOGWARNING, "%s - Network error. Trying re-setup", __FUNCTION__);
-        SetupNetwork();
-        return true;
-      }
-      else
-      {
+        Deinitialize();
         CLog::Log(LOGWARNING, "%s - Network error. No network link!", __FUNCTION__);
       }
     }
+    else
+    {
+      // update our network state
+      DWORD dwState = UpdateState();
+    
+      // In case the network failed, try to set it up again
+      if ( !IsInited() || dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT )
+      {
+        Deinitialize();
+        CLog::Log(LOGWARNING, "%s - Network error. Trying re-setup", __FUNCTION__);
+        SetupNetwork();
+      }
+    }
+    m_netRetryCounter = 0;
+    m_lastlink2 = dwLink;
   }
-  return false;
-#else
-  return true;
 #endif
 }
 

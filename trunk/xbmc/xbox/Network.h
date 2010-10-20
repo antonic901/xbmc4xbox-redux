@@ -56,7 +56,7 @@ public:
   // Return true if the magic packet was send
   bool WakeOnLan(char *mac); 
   
-  bool CheckNetwork(int count);
+  void CheckNetwork(int count);
   bool SetupNetwork();
   bool IsEthernetConnected();
   bool IsAvailable(bool wait = false);
