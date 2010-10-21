@@ -21,15 +21,15 @@
 					<posy>0</posy>
 					<width>45</width>
 					<height>45</height>
-					<label>298</label>
+					<label>10522</label>
 					<font>-</font>
-					<texturefocus>OSDBookMarksFO.png</texturefocus>
-					<texturenofocus>OSDBookMarksNF.png</texturenofocus>
+					<texturefocus>OSDPlaylistFO.png</texturefocus>
+					<texturenofocus>OSDPlaylistNF.png</texturenofocus>
 					<onleft>705</onleft>
 					<onright>701</onright>
 					<onup>600</onup>
 					<ondown>600</ondown>
-					<onclick>ActivateWindow(125)</onclick>
+					<onclick>ActivateWindow(VideoPlaylist)</onclick>
 				</control>
 				<control type="button" id="701">
 					<posx>50</posx>
@@ -97,17 +97,15 @@
 					<posy>0</posy>
 					<width>45</width>
 					<height>45</height>
-					<label>10522</label>
+					<label>298</label>
 					<font>-</font>
-					<texturefocus>OSDPlaylistFO.png</texturefocus>
-					<texturenofocus>OSDPlaylistNF.png</texturenofocus>
+					<texturefocus>OSDBookMarksFO.png</texturefocus>
+					<texturenofocus>OSDBookMarksNF.png</texturenofocus>
 					<onleft>703</onleft>
 					<onright>705</onright>
 					<onup>605</onup>
 					<ondown>605</ondown>
-					<onclick>ActivateWindow(VideoPlaylist)</onclick>
-					<enable>Player.HasVideo</enable>
-					<animation effect="fade" start="100" end="50" time="100" condition="!Player.HasVideo">Conditional</animation>
+					<onclick>ActivateWindow(125)</onclick>
 				</control>
 				<control type="button" id="705">
 					<posx>100</posx>
