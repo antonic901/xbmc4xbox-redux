@@ -136,16 +136,16 @@
 				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;series&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;blank&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;&lt;/Language&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" output="&lt;thumb type=&quot;season&quot; season=&quot;\2&quot;&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
-				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;season&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;$INFO[language]&lt;/Language&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
+				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;season&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;$INFO[language]&lt;/Language&gt;[^&lt;]*&lt;Rating&gt;[^&lt;]*&lt;/Rating&gt;[^&lt;]*&lt;RatingCount&gt;[^&lt;]*&lt;/RatingCount&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" output="&lt;thumb type=&quot;season&quot; season=&quot;\2&quot;&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
-				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;season&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;[a-z][^$INFO[language]]*&lt;/Language&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
+				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;season&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;[a-z][^$INFO[language]]*&lt;/Language&gt;[^&lt;]*&lt;Rating&gt;[^&lt;]*&lt;/Rating&gt;[^&lt;]*&lt;RatingCount&gt;[^&lt;]*&lt;/RatingCount&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" output="&lt;thumb type=&quot;season&quot; season=&quot;\2&quot;&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
-				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;seasonwide&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;$INFO[language]&lt;/Language&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
+				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;seasonwide&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;$INFO[language]&lt;/Language&gt;[^&lt;]*&lt;Rating&gt;[^&lt;]*&lt;/Rating&gt;[^&lt;]*&lt;RatingCount&gt;[^&lt;]*&lt;/RatingCount&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" output="&lt;thumb type=&quot;season&quot; season=&quot;\2&quot;&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
-				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;seasonwide&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;[a-z][^$INFO[language]]*&lt;/Language&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
+				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;seasonwide&lt;/BannerType2&gt;[^&lt;]*&lt;Language&gt;[a-z][^$INFO[language]]*&lt;/Language&gt;[^&lt;]*&lt;Rating&gt;[^&lt;]*&lt;/Rating&gt;[^&lt;]*&lt;RatingCount&gt;[^&lt;]*&lt;/RatingCount&gt;[^&lt;]*&lt;Season&gt;([0-9]+)&lt;/Season&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" conditional="!posters" output="&lt;thumb&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
 				<expression repeat="yes">&lt;BannerPath&gt;([^&lt;]*)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;poster&lt;/BannerType&gt;</expression>
