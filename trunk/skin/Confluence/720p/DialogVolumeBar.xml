@@ -35,10 +35,12 @@
 					<visible>true</visible>
 				</control>
 				<control type="image">
+					<description>Lite Volume Logo</description>
 					<posx>298</posx>
 					<posy>0</posy>
 					<width>40</width>
 					<height>35</height>
+					<aspectratio>keep</aspectratio>
 					<texture>VolumeIcon.png</texture>
 				</control>
 			</control>
