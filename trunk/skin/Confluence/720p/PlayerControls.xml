@@ -118,6 +118,7 @@
 				<onright>607</onright>
 				<onup>300</onup>
 				<ondown>200</ondown>
+				<onclick>Dialog.Close(114)</onclick>
 				<onclick>ActivateWindow(VideoPlaylist)</onclick>
 				<visible>Player.HasVideo</visible>
 			</control>
@@ -133,6 +134,7 @@
 				<onright>607</onright>
 				<onup>300</onup>
 				<ondown>200</ondown>
+				<onclick>Dialog.Close(114)</onclick>
 				<onclick>ActivateWindow(MusicPlaylist)</onclick>
 				<visible>Player.HasAudio</visible>
 			</control>

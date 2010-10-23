@@ -50,7 +50,7 @@
 				<onclick>EjectTray()</onclick>
 				<texturefocus border="5">button-focus.png</texturefocus>
 				<texturenofocus>-</texturenofocus>
-				<onleft>Dialog.Close(1113)2</onleft>
+				<onleft>Dialog.Close(1113)</onleft>
 				<onright>2</onright>
 				<onup>1</onup>
 				<ondown>3</ondown>
