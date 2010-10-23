@@ -14,7 +14,7 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryMovieFanart) | Control.IsVisible(508)</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(VideoLibraryMovieFanart) + !IsEmpty(ListItem.Property(Fanart_Image)) | Control.IsVisible(508)</visible>
 				<visible>[Container.Content(Movies) + !Control.IsVisible(520)]</visible>
 			</control>
 			<control type="image">
@@ -25,7 +25,7 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(VideoLibraryTVFanart) + !IsEmpty(ListItem.Property(Fanart_Image))</visible>
 				<visible>Container.Content(TVShows) | [Container.Content(Episodes) + substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -37,7 +37,7 @@
 				<texture background="true">$INFO[Fanart.Image]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryTVFanart)</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(VideoLibraryTVFanart) + !IsEmpty(Fanart.Image)</visible>
 				<visible>Container.Content(Seasons) | [Container.Content(Episodes) + !substring(Container.FolderPath,videodb://5/)]</visible>
 			</control>
 			<control type="image">
@@ -48,7 +48,7 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(VideoLibraryMusicVideoFanart)</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(VideoLibraryMusicVideoFanart) + !IsEmpty(ListItem.Property(Fanart_Image))</visible>
 				<visible>Container.Content(MusicVideos) | Container.Content(Artists) | Container.Content(Albums)</visible>
 			</control>
 		</control>

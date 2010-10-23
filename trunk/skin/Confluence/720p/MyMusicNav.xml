@@ -14,7 +14,7 @@
 				<texture background="true">$INFO[ListItem.Property(Fanart_Image)]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(MusicLibraryFanart) + !IsEmpty(ListItem.Property(Fanart_Image))</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(MusicLibraryFanart) + !IsEmpty(ListItem.Property(Fanart_Image))</visible>
 			</control>
 			<control type="image">
 				<posx>0</posx>
@@ -24,7 +24,7 @@
 				<texture background="true">$INFO[Fanart.Image]</texture>
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
-				<visible>!Skin.HasSetting(MusicLibraryFanart) + !IsEmpty(Fanart.Image)</visible>
+				<visible>!Container.Scrolling + !Skin.HasSetting(MusicLibraryFanart) + !IsEmpty(Fanart.Image)</visible>
 			</control>
 		</control>
 		<include>CommonMediaPlayingBackground</include>
