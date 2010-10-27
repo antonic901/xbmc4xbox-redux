@@ -257,10 +257,11 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       iformat = m_dllAvFormat.av_find_input_format("mpegts");
   }
 
+  // try to abort after 30 seconds
+  m_timeout = GetTickCount() + 30000;
+
   if( m_pInput->IsStreamType(DVDSTREAM_TYPE_FFMPEG) )
   {
-    m_timeout = GetTickCount() + 10000;
-
     // special stream type that makes avformat handle file opening
     // allows internal ffmpeg protocols to be used
     if( m_dllAvFormat.av_open_input_file(&m_pFormatContext, strFile.c_str(), iformat, FFMPEG_FILE_BUFFER_SIZE, NULL) < 0 )
@@ -272,7 +273,6 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
   }
   else
   {
-    m_timeout = 0;
     unsigned char* buffer = (unsigned char*)m_dllAvUtil.av_malloc(FFMPEG_FILE_BUFFER_SIZE);
     m_ioContext = m_dllAvFormat.av_alloc_put_byte(buffer, FFMPEG_FILE_BUFFER_SIZE, 0, m_pInput, dvd_file_read, NULL, dvd_file_seek);
     m_ioContext->max_packet_size = m_pInput->GetBlockSize();
@@ -362,7 +362,7 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
   }
 
   // we need to know if this is matroska or avi later
-  m_bMatroska = strcmp(m_pFormatContext->iformat->name, "matroska") == 0;
+  m_bMatroska = strncmp(m_pFormatContext->iformat->name, "matroska", 8) == 0;	// for "matroska.webm"
   m_bAVI = strcmp(m_pFormatContext->iformat->name, "avi") == 0;
 
   // in combination with libdvdnav seek, av_find_stream_info wont work

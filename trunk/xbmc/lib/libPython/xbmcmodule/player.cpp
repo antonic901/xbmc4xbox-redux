@@ -465,7 +465,12 @@ namespace PYXBMC
 
   // Player_SetSubtitles
   PyDoc_STRVAR(setSubtitles__doc__,
-    "setSubtitles() -- set subtitle file and enable subtitles\n");
+    "setSubtitles(path) -- set subtitle file and enable subtitles\n"
+    "\n"
+    "path           : string or unicode - Path to subtitle\n"
+    "\n"
+    "example:\n"
+    "  - setSubtitles('/path/to/subtitle/test.srt')\n");
 
   PyObject* Player_SetSubtitles(PyObject *self, PyObject *args)
   {
@@ -480,6 +485,8 @@ namespace PYXBMC
       g_application.m_pPlayer->SetSubtitleVisible(true);
       g_application.m_pPlayer->AddSubtitle(cLine);
       g_application.m_pPlayer->SetSubtitle(nStream);
+      g_stSettings.m_currentVideoSettings.m_SubtitleDelay = 0.0f;
+      g_application.m_pPlayer->SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
     }
     
     Py_INCREF(Py_None);

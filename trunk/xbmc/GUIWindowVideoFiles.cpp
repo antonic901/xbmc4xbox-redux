@@ -542,10 +542,13 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
             buttons.Add(CONTEXT_BUTTON_INFO, infoString);
 
             m_database.Open();
-            if (!item->IsParentFolder())
+            if (!item->IsLiveTV())
             {
-              if (!m_database.HasMovieInfo(item->m_strPath) && !m_database.HasEpisodeInfo(item->m_strPath))
+              if (!m_database.HasMovieInfo(item->m_strPath) 
+              &&  !m_database.HasEpisodeInfo(item->m_strPath))
                 buttons.Add(CONTEXT_BUTTON_ADD_TO_LIBRARY, 527); // Add to Database
+              else  
+                buttons.Add(CONTEXT_BUTTON_DELETE, 646); // Remove from Database
             }
             m_database.Close();
           }

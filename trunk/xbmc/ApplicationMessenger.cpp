@@ -57,9 +57,15 @@ CApplicationMessenger::~CApplicationMessenger()
 
 void CApplicationMessenger::Cleanup()
 {
+  CSingleLock lock (m_critSection);
+
   while (m_vecMessages.size() > 0)
   {
     ThreadMessage* pMsg = m_vecMessages.front();
+
+    if (pMsg->hWaitEvent)
+      SetEvent(pMsg->hWaitEvent);
+
     delete pMsg;
     m_vecMessages.pop();
   }
@@ -67,6 +73,10 @@ void CApplicationMessenger::Cleanup()
   while (m_vecWindowMessages.size() > 0)
   {
     ThreadMessage* pMsg = m_vecWindowMessages.front();
+
+    if (pMsg->hWaitEvent)
+      SetEvent(pMsg->hWaitEvent);
+
     delete pMsg;
     m_vecWindowMessages.pop();
   }
@@ -89,6 +99,18 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
     }
   }
 
+  CSingleLock lock (m_critSection);
+
+  if (g_application.m_bStop)
+  {
+    if (message.hWaitEvent)
+    {
+      CloseHandle(message.hWaitEvent);
+      message.hWaitEvent = NULL;
+    }
+    return;
+  }
+
   ThreadMessage* msg = new ThreadMessage();
   msg->dwMessage = message.dwMessage;
   msg->dwParam1 = message.dwParam1;
@@ -98,7 +120,6 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
   msg->strParam = message.strParam;
   msg->params = message.params;
 
-  CSingleLock lock (m_critSection);
   if (msg->dwMessage == TMSG_DIALOG_DOMODAL ||
       msg->dwMessage == TMSG_WRITE_SCRIPT_OUTPUT)
     m_vecWindowMessages.push(msg);

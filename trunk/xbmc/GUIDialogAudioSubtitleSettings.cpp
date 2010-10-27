@@ -435,6 +435,8 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       db.EraseVideoSettings();
       db.Close();
       g_stSettings.m_defaultVideoSettings = g_stSettings.m_currentVideoSettings;
+      g_stSettings.m_defaultVideoSettings.m_SubtitleStream = -1;
+      g_stSettings.m_defaultVideoSettings.m_AudioStream = -1;
       g_settings.Save();
     }
   }

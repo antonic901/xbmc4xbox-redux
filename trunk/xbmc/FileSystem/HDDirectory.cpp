@@ -158,6 +158,8 @@ bool CHDDirectory::Remove(const char* strPath)
 
 bool CHDDirectory::Exists(const char* strPath)
 {
+  if (!strPath || !*strPath)
+    return false;
   CStdString strReplaced=strPath;
   g_charsetConverter.utf8ToStringCharset(strReplaced);
   strReplaced.Replace("/","\\");
