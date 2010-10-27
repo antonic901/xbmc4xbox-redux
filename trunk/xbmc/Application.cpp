@@ -5116,7 +5116,8 @@ void CApplication::ProcessSlow()
   CheckDelayedPlayerRestart();
 
   //  check if we can unload any unreferenced dlls or sections
-  CSectionLoader::UnloadDelayed();
+  if (!IsPlayingVideo())
+    CSectionLoader::UnloadDelayed();
 
   // Xbox Autodetection - Send in X sec PingTime Interval
   if (g_windowManager.GetActiveWindow() != WINDOW_LOGIN_SCREEN) // sorry jm ;D
@@ -5147,10 +5148,12 @@ void CApplication::ProcessSlow()
     m_bIsPaused = IsPaused();
   }
 
-  g_largeTextureManager.CleanupUnusedImages();
+  if (!IsPlayingVideo())
+    g_largeTextureManager.CleanupUnusedImages();
 
   // checks whats in the DVD drive and tries to autostart the content (xbox games, dvd, cdda, avi files...)
-  m_Autorun.HandleAutorun();
+  if (!IsPlayingVideo())
+    m_Autorun.HandleAutorun();
 
   // update upnp server/renderer states
   if(CUPnP::IsInstantiated())

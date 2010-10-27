@@ -912,7 +912,17 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         else
           st->bVFR = false;
 
-        if(pStream->r_frame_rate.den && pStream->r_frame_rate.num)
+        // never trust pts in avi files with h264.
+        if (m_bAVI && pStream->codec->codec_id == CODEC_ID_H264)
+          st->bPTSInvalid = true;
+
+        //average fps is more accurate for mkv files
+        if (m_bMatroska && pStream->avg_frame_rate.den && pStream->avg_frame_rate.num)
+        {
+          st->iFpsRate = pStream->avg_frame_rate.num;
+          st->iFpsScale = pStream->avg_frame_rate.den;
+        }
+        else if(pStream->r_frame_rate.den && pStream->r_frame_rate.num)
         {
           st->iFpsRate = pStream->r_frame_rate.num;
           st->iFpsScale = pStream->r_frame_rate.den;
@@ -1018,9 +1028,6 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
       memcpy(m_streams[iId]->ExtraData, pStream->codec->extradata, pStream->codec->extradata_size);
     }
 
-    //FFMPEG has an error doesn't set type properly for DTS
-    if( m_streams[iId]->codec == CODEC_ID_AC3 && (pStream->id >= 136 && pStream->id <= 143) )
-      m_streams[iId]->codec = CODEC_ID_DTS;
 
     if( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
     {

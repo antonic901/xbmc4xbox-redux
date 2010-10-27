@@ -488,6 +488,18 @@ CStdString CUtil::GetTitleFromPath(const CStdString& strFileNameAndPath, bool bI
   else if (url.GetProtocol() == "rtv")
     strFilename = "ReplayTV Devices";
 
+  // HTS Tvheadend client
+  else if (url.GetProtocol() == "htsp")
+    strFilename = g_localizeStrings.Get(20256);
+
+  // VDR Streamdev client
+  else if (url.GetProtocol() == "vtp")
+    strFilename = g_localizeStrings.Get(20257);
+  
+  // MythTV client
+  else if (url.GetProtocol() == "myth")
+    strFilename = g_localizeStrings.Get(20258);
+
   // SAP Streams
   else if (url.GetProtocol() == "sap" && strFilename.IsEmpty())
     strFilename = "SAP Streams";

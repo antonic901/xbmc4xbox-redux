@@ -52,6 +52,7 @@ public:
   float aspect; // display aspect as reported by demuxer
   bool vfr; // variable framerate
   bool stills; // there may be odd still frames in video
+  bool ptsinvalid;  // pts cannot be trusted (avi's).
 
   // AUDIO
   int channels;

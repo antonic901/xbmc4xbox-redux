@@ -267,6 +267,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
           AddSortMethod(SORT_METHOD_YEAR,562, LABEL_MASKS("%T", "%Y"));
         }
         SetSortMethod(g_stSettings.m_viewStateVideoNavTitles.m_sortMethod);
+        AddSortMethod(SORT_METHOD_DATEADDED, 570, LABEL_MASKS("%T", "%R"));
 
         SetViewAsControl(g_stSettings.m_viewStateVideoNavTitles.m_viewMode);
 

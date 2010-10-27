@@ -89,13 +89,13 @@ bool CEdl::ReadEditDecisionLists(const CStdString& strMovie, const float fFrameR
     CLog::Log(LOGDEBUG, "%s - Assuming 24p -> NTSC conversion interlaced content. Adjusted frames per second from %.3f (~47.952 fps) to %.3f",
               __FUNCTION__, fFrameRate, fFramesPerSecond);
   }
-  else if (iHeight == 576) // PAL. Can't used fps check of 50.0 as this is valid for 720p
+  else if (iHeight == 576 && fFrameRate > 30.0) // PAL @ 50.0fps rather than PAL @ 25.0 fps. Can't use direct fps check of 50.0 as this is valid for 720p
   {
     fFramesPerSecond = fFrameRate / 2; // ~25.0f - division used to retain accuracy of original.
     CLog::Log(LOGDEBUG, "%s - Assuming PAL interlaced content. Adjusted frames per second from %.3f (~50.00 fps) to %.3f",
               __FUNCTION__, fFrameRate, fFramesPerSecond);
   }
-  else if (iHeight == 1080) // Don't know of any 1080p content being broadcast so assume 1080i
+  else if (iHeight == 1080 && fFrameRate > 30.0) // Don't know of any 1080p content being broadcast at higher than 30.0 fps so assume 1080i
   {
     fFramesPerSecond = fFrameRate / 2;
     CLog::Log(LOGDEBUG, "%s - Assuming 1080i interlaced content. Adjusted frames per second from %.3f to %.3f",
@@ -122,8 +122,8 @@ bool CEdl::ReadEditDecisionLists(const CStdString& strMovie, const float fFrameR
   if (!bFound)
     bFound = ReadVideoReDo(strMovie);
 
-  if (!bFound)
-    bFound = ReadEdl(strMovie);
+    if (!bFound)
+      bFound = ReadEdl(strMovie, fFramesPerSecond);
 
   if (!bFound)
     bFound = ReadComskip(strMovie, fFramesPerSecond);
@@ -150,7 +150,7 @@ bool CEdl::ReadEditDecisionLists(const CStdString& strMovie, const float fFrameR
   return bFound;
 }
 
-bool CEdl::ReadEdl(const CStdString& strMovie)
+bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
 {
   Clear();
 
@@ -165,59 +165,147 @@ bool CEdl::ReadEdl(const CStdString& strMovie)
     return false;
   }
 
-  bool bValid = true;
-  char szBuffer[1024];
+  bool bError = false;
   int iLine = 0;
-  while (bValid && edlFile.ReadString(szBuffer, 1023))
+  CStdString strBuffer;
+  while (edlFile.ReadString(strBuffer.GetBuffer(1024), 1024))
   {
+    strBuffer.ReleaseBuffer();
+
+    // Log any errors from previous run in the loop
+    if (bError)
+      CLog::Log(LOGWARNING, "%s - Error on line %i in EDL file: %s", __FUNCTION__, iLine, edlFilename.c_str());
+
     iLine++;
 
-    double dStart, dEnd;
+    CStdStringArray strFields(2);
     int iAction;
-    if (sscanf(szBuffer, "%lf %lf %i", &dStart, &dEnd, &iAction) == 3)
+    int iFieldsRead = sscanf(strBuffer, "%512s %512s %i", strFields[0].GetBuffer(512),
+                             strFields[1].GetBuffer(512), &iAction);
+    strFields[0].ReleaseBuffer();
+    strFields[1].ReleaseBuffer();
+
+    if (iFieldsRead != 2 && iFieldsRead != 3) // Make sure we read the right number of fields
     {
-      if (dStart == dEnd) // Ignore zero length cuts in generated EDL files
-        continue;
+      bError = true;
+      continue;
+    }
 
-      Cut cut;
-      cut.start = (int64_t)(dStart * 1000); // seconds to ms
-      cut.end = (int64_t)(dEnd * 1000); // seconds to ms
+    if (iFieldsRead == 2) // If only 2 fields read, then assume it's a scene marker.
+    {
+      iAction = atoi(strFields[1]);
+      strFields[1] = strFields[0];
+    }
 
-      switch (iAction)
+    /*
+     * For each of the first two fields read, parse based on whether it is a time string
+     * (HH:MM:SS.sss), frame marker (#12345), or normal seconds string (123.45).
+     */
+    int64_t iCutStartEnd[2];
+    for (int i = 0; i < 2; i++)
+    {
+      if (strFields[i].Find(":") != -1) // HH:MM:SS.sss format
       {
-      case 0:
-        cut.action = CUT;
-        bValid = AddCut(cut);
-        break;
-      case 1:
-        cut.action = MUTE;
-        bValid = AddCut(cut);
-        break;
-      case 2:
-        bValid = AddSceneMarker(cut.end);
-        break;
-      case 3:
-        cut.action = COMM_BREAK;
-        bValid = AddCut(cut);
-        break;
-      default:
-        bValid = false;
-        continue;
+        CStdStringArray fieldParts;
+        StringUtils::SplitString(strFields[i], ".", fieldParts);
+        if (fieldParts.size() == 1) // No ms
+        {
+          iCutStartEnd[i] = StringUtils::TimeStringToSeconds(fieldParts[0]) * 1000; // seconds to ms
+        }
+        else if (fieldParts.size() == 2) // Has ms. Everything after the dot (.) is ms
+        {
+          /*
+           * Have to pad or truncate the ms portion to 3 characters before converting to ms.
+           */
+          if (fieldParts[1].length() == 1)
+          {
+            fieldParts[1] = fieldParts[1] + "00";
+          }
+          else if (fieldParts[1].length() == 2)
+          {
+            fieldParts[1] = fieldParts[1] + "0";
+          }
+          else if (fieldParts[1].length() > 3)
+          {
+            fieldParts[1] = fieldParts[1].Left(3);
+          }
+          iCutStartEnd[i] = StringUtils::TimeStringToSeconds(fieldParts[0]) * 1000 + atoi(fieldParts[1]); // seconds to ms
+        }
+        else
+        {
+          bError = true;
+          continue;
+        }
+      }
+      else if (strFields[i].Left(1) == "#") // #12345 format for frame number
+      {
+        iCutStartEnd[i] = (int64_t)(atol(strFields[i].Mid(1)) / fFramesPerSecond * 1000); // frame number to ms
+      }
+      else // Plain old seconds in float format, e.g. 123.45
+      {
+        iCutStartEnd[i] = (int64_t)(atof(strFields[i]) * 1000); // seconds to ms
       }
     }
-    else
-      bValid = false;
+
+    if (bError) // If there was an error in the for loop, ignore and continue with the next line
+      continue;
+
+    Cut cut;
+    cut.start = iCutStartEnd[0];
+    cut.end = iCutStartEnd[1];
+
+    switch (iAction)
+    {
+    case 0:
+      cut.action = CUT;
+      if (!AddCut(cut))
+      {
+        CLog::Log(LOGWARNING, "%s - Error adding cut from line %i in EDL file: %s", __FUNCTION__,
+                  iLine, edlFilename.c_str());
+        continue;
+      }
+      break;
+    case 1:
+      cut.action = MUTE;
+      if (!AddCut(cut))
+      {
+        CLog::Log(LOGWARNING, "%s - Error adding mute from line %i in EDL file: %s", __FUNCTION__,
+                  iLine, edlFilename.c_str());
+        continue;
+      }
+      break;
+    case 2:
+      if (!AddSceneMarker(cut.end))
+      {
+        CLog::Log(LOGWARNING, "%s - Error adding scene marker from line %i in EDL file: %s",
+                  __FUNCTION__, iLine, edlFilename.c_str());
+        continue;
+      }
+      break;
+    case 3:
+      cut.action = COMM_BREAK;
+      if (!AddCut(cut))
+      {
+        CLog::Log(LOGWARNING, "%s - Error adding commercial break from line %i in EDL file: %s",
+                  __FUNCTION__, iLine, edlFilename.c_str());
+        continue;
+      }
+      break;
+    default:
+      CLog::Log(LOGWARNING, "%s - Invalid action on line %i in EDL file: %s", __FUNCTION__, iLine,
+                edlFilename.c_str());
+      continue;
+    }
   }
+
+  strBuffer.ReleaseBuffer();
+
+  if (bError) // Log last line warning, if there was one, since while loop will have terminated.
+    CLog::Log(LOGWARNING, "%s - Error on line %i in EDL file: %s", __FUNCTION__, iLine, edlFilename.c_str());
+
   edlFile.Close();
 
-  if (!bValid)
-  {
-    CLog::Log(LOGERROR, "%s - Invalid EDL file: %s. Error in line %i. Clearing any valid cuts or scenes found.",
-              __FUNCTION__, edlFilename.c_str(), iLine);
-    Clear();
-    return false;
-  }
-  else if (HasCut() || HasSceneMarker())
+  if (HasCut() || HasSceneMarker())
   {
     CLog::Log(LOGDEBUG, "%s - Read %i cuts and %i scene markers in EDL file: %s", __FUNCTION__,
               m_vecCuts.size(), m_vecSceneMarkers.size(), edlFilename.c_str());

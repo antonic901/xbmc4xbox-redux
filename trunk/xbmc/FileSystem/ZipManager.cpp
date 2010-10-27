@@ -63,6 +63,12 @@ bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items
 
   CStdString strFile = url.GetHostName();
 
+  if (CFile::Stat(strFile,&m_StatData))
+  {
+    CLog::Log(LOGDEBUG,"CZipManager::GetZipList: failed to stat file %s", strPath.c_str());
+    return false;
+  }
+
   map<CStdString,vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
   if (it != mZipMap.end()) // already listed, just return it if not changed, else release and reread
   {
@@ -79,9 +85,9 @@ bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items
   }
 
   CFile mFile;
-  if (!mFile.Open(_P(strFile)))
+  if (!mFile.Open(strFile))
   {
-    CLog::Log(LOGDEBUG,"ZipManager: unable to open file %s!",_P(strFile).c_str());
+    CLog::Log(LOGDEBUG,"ZipManager: unable to open file %s!",strFile.c_str());
     return false;
   }
 
@@ -95,7 +101,6 @@ bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items
     return false;
   }
   // push date for update detection
-  CFile::Stat(strFile,&m_StatData);
   mZipDate.insert(make_pair(strFile,m_StatData.st_mtime));
 
   

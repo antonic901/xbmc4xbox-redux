@@ -34,6 +34,7 @@
 #include "FileSystem/File.h"
 #include "Settings.h"
 #include "FileItem.h"
+#include "Application.h"
 
 using namespace XFILE;
 using namespace MEDIA_DETECT;
@@ -83,6 +84,18 @@ void CDetectDVDMedia::Process()
     {
       m_evAutorun.Set();
       m_bAutorun = false;
+    }
+    else
+    {
+      UpdateDvdrom();
+      m_bStartup = false;
+      Sleep(2000);
+      if ( m_bAutorun )
+      {
+        Sleep(1500); // Media in drive, wait 1.5s more to be sure the device is ready for playback
+        m_evAutorun.Set();
+        m_bAutorun = false;
+      }
     }
   }
 }

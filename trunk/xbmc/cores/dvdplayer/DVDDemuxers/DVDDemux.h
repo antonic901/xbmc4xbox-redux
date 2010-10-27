@@ -106,6 +106,7 @@ public:
     iWidth = 0;
     fAspect = 0.0;
     bVFR = false;
+    bPTSInvalid = false;
     type = STREAM_VIDEO;
   }
 
@@ -116,6 +117,8 @@ public:
   int iWidth; // width of the stream reported by the demuxer
   float fAspect; // display aspect of stream
   bool bVFR;  // variable framerate
+  bool bPTSInvalid; // pts cannot be trusted (avi's).
+  
 };
 
 class CDemuxStreamAudio : public CDemuxStream
