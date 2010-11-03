@@ -81,6 +81,22 @@ SelectionStream& CSelectionStreams::Get(StreamType type, int index)
   return m_invalid;
 }
 
+bool CSelectionStreams::Get(StreamType type, CDemuxStream::EFlags flag, SelectionStream& out)
+{
+  CSingleLock lock(m_section);
+  int count = -1;
+  for(int i=0;i<(int)m_Streams.size();i++)
+  {
+    if(m_Streams[i].type != type)
+      continue;
+    if((m_Streams[i].flags & flag) != flag)
+      continue;
+    out = m_Streams[i];
+    return true;
+  }
+  return false;
+}
+
 int CSelectionStreams::IndexOf(StreamType type, int source, int id)
 {
   CSingleLock lock(m_section);
@@ -174,6 +190,7 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
       s.type     = STREAM_AUDIO;
       s.id       = i;
       s.name     = nav->GetAudioStreamLanguage(i);
+      s.flags    = CDemuxStream::FLAG_NONE;
       s.filename = filename;
       Update(s);
     }
@@ -186,6 +203,7 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
       s.type     = STREAM_SUBTITLE;
       s.id       = i;
       s.name     = nav->GetSubtitleStreamLanguage(i);
+      s.flags    = CDemuxStream::FLAG_NONE;
       s.filename = filename;
       Update(s);
     }
@@ -212,6 +230,7 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
       s.type     = stream->type;
       s.id       = stream->iId;
       s.language = stream->language;
+      s.flags    = stream->flags;
       s.filename = demuxer->GetFileName();
       stream->GetStreamName(s.name);
       if(stream->type == STREAM_AUDIO)
@@ -415,7 +434,7 @@ bool CDVDPlayer::OpenInputStream()
       filenames.push_back(m_item.GetProperty(key));
 
     for(unsigned int i=0;i<filenames.size();i++)
-      AddSubtitleFile(filenames[i]);
+      AddSubtitleFile(filenames[i], i == 0 ? CDemuxStream::FLAG_DEFAULT : CDemuxStream::FLAG_NONE);
 
     g_stSettings.m_currentVideoSettings.m_SubtitleCached = true;
   }
@@ -474,9 +493,22 @@ void CDVDPlayer::OpenDefaultStreams()
 {
   int  count;
   bool valid;
+  bool force = false;
+  SelectionStream st;
+
   // open video stream
   count = m_SelectionStreams.Count(STREAM_VIDEO);
   valid = false;
+
+  if(!valid
+  && m_SelectionStreams.Get(STREAM_VIDEO, CDemuxStream::FLAG_DEFAULT, st))
+  {
+    if(OpenVideoStream(st.id, st.source))
+      valid = true;
+    else
+      CLog::Log(LOGWARNING, "%s - failed to open default stream (%d)", __FUNCTION__, st.id);
+  }
+
   for(int i = 0;i<count && !valid;i++)
   {
     SelectionStream& s = m_SelectionStreams.Get(STREAM_VIDEO, i);
@@ -501,6 +533,15 @@ void CDVDPlayer::OpenDefaultStreams()
         CLog::Log(LOGWARNING, "%s - failed to restore selected audio stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_AudioStream);
     }
 
+    if(!valid
+    && m_SelectionStreams.Get(STREAM_AUDIO, CDemuxStream::FLAG_DEFAULT, st))
+    {
+      if(OpenAudioStream(st.id, st.source))
+        valid = true;
+      else
+        CLog::Log(LOGWARNING, "%s - failed to open default stream (%d)", __FUNCTION__, st.id);
+    }
+
     for(int i = 0; i<count && !valid; i++)
     {
       SelectionStream& s = m_SelectionStreams.Get(STREAM_AUDIO, i);
@@ -514,7 +555,23 @@ void CDVDPlayer::OpenDefaultStreams()
   // open subtitle stream
   count = m_SelectionStreams.Count(STREAM_SUBTITLE);
   valid = false;
-  if(g_stSettings.m_currentVideoSettings.m_SubtitleStream >= 0 
+
+  // if subs are disabled, check for forced
+  if(!valid && !g_stSettings.m_currentVideoSettings.m_SubtitleOn 
+  && m_SelectionStreams.Get(STREAM_SUBTITLE, CDemuxStream::FLAG_FORCED, st))
+  {
+    if(OpenSubtitleStream(st.id, st.source))
+    {
+      valid = true;
+      force = true;
+    }
+    else
+      CLog::Log(LOGWARNING, "%s - failed to open default/forced stream (%d)", __FUNCTION__, st.id);
+  }
+
+  // restore selected
+  if(!valid
+  && g_stSettings.m_currentVideoSettings.m_SubtitleStream >= 0
   && g_stSettings.m_currentVideoSettings.m_SubtitleStream < count)
   {
     SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
@@ -524,6 +581,17 @@ void CDVDPlayer::OpenDefaultStreams()
       CLog::Log(LOGWARNING, "%s - failed to restore selected subtitle stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
   }
 
+  // select default
+  if(!valid
+  && m_SelectionStreams.Get(STREAM_SUBTITLE, CDemuxStream::FLAG_DEFAULT, st))
+  {
+    if(OpenSubtitleStream(st.id, st.source))
+      valid = true;
+    else
+      CLog::Log(LOGWARNING, "%s - failed to open default/forced stream (%d)", __FUNCTION__, st.id);
+  }
+
+  // select first
   for(int i = 0;i<count && !valid; i++)
   {
     SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, i);
@@ -532,7 +600,8 @@ void CDVDPlayer::OpenDefaultStreams()
   }
   if(!valid)
     CloseSubtitleStream(false);
-  if(g_stSettings.m_currentVideoSettings.m_SubtitleOn && !m_PlayerOptions.video_only)
+
+  if((g_stSettings.m_currentVideoSettings.m_SubtitleOn || force) && !m_PlayerOptions.video_only)
     m_dvdPlayerVideo.EnableSubtitle(true);
   else
     m_dvdPlayerVideo.EnableSubtitle(false);
@@ -3081,7 +3150,7 @@ int CDVDPlayer::GetSourceBitrate()
 }
 
 
-int CDVDPlayer::AddSubtitleFile(const std::string& filename)
+int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlags flags)
 {
   std::string ext = CUtil::GetExtension(filename);
   if(ext == ".idx")
@@ -3090,7 +3159,9 @@ int CDVDPlayer::AddSubtitleFile(const std::string& filename)
     if(!v.Open(filename))
       return -1;
     m_SelectionStreams.Update(NULL, &v);
-    return m_SelectionStreams.IndexOf(STREAM_SUBTITLE, m_SelectionStreams.Source(STREAM_SOURCE_DEMUX_SUB, filename), 0);
+    int index = m_SelectionStreams.IndexOf(STREAM_SUBTITLE, m_SelectionStreams.Source(STREAM_SOURCE_DEMUX_SUB, filename), 0);
+    m_SelectionStreams.Get(STREAM_SUBTITLE, index).flags = flags;
+    return index;
   }
   if(ext == ".sub")
   {
@@ -3104,6 +3175,7 @@ int CDVDPlayer::AddSubtitleFile(const std::string& filename)
   s.id       = 0;
   s.filename = filename;
   s.name     = CUtil::GetFileName(filename);
+  s.flags    = flags;
   m_SelectionStreams.Update(s);
   return m_SelectionStreams.IndexOf(STREAM_SUBTITLE, s.source, s.id);
 }
