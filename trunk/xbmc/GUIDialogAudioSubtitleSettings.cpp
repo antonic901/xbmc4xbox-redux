@@ -268,7 +268,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
   {
     g_stSettings.m_currentVideoSettings.m_SubtitleOn = m_subtitleVisible;
     g_application.m_pPlayer->SetSubtitleVisible(g_stSettings.m_currentVideoSettings.m_SubtitleOn);
-    if (!g_stSettings.m_currentVideoSettings.m_SubtitleCached && g_stSettings.m_currentVideoSettings.m_SubtitleOn)
+    if (g_application.GetCurrentPlayer() == EPC_MPLAYER && !g_stSettings.m_currentVideoSettings.m_SubtitleCached && g_stSettings.m_currentVideoSettings.m_SubtitleOn)
     {
       g_application.Restart(true); // cache subtitles
       Close();
@@ -389,9 +389,10 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
               CFile::Rename(strSub + ".keep", strSub);
               CFile::Rename(strIdx + ".keep", strIdx);
 
-              if(g_application.m_pPlayer->AddSubtitle(strIdx))
+              int id = g_application.m_pPlayer->AddSubtitle(strIdx);
+              if(id >= 0)
               {
-                m_subtitleStream = g_application.m_pPlayer->GetSubtitleCount() - 1;
+                m_subtitleStream = id;
                 g_application.m_pPlayer->SetSubtitle(m_subtitleStream);
                 g_application.m_pPlayer->SetSubtitleVisible(true);
               }
@@ -408,10 +409,13 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
         CUtil::GetExtension(strPath,strExt);
         if (CFile::Cache(strPath,"z:\\subtitle.browsed"+strExt))
         {
-          g_stSettings.m_currentVideoSettings.m_SubtitleOn = true;
-          g_application.m_pPlayer->SetSubtitleVisible(true);
-          g_application.m_pPlayer->AddSubtitle("z:\\subtitle.browsed"+strExt);
-          g_application.m_pPlayer->SetSubtitle(m_subtitleStream);
+          int id = g_application.m_pPlayer->AddSubtitle("z:\\subtitle.browsed"+strExt);
+          if (id >= 0)
+          {
+            m_subtitleStream = id;
+            g_application.m_pPlayer->SetSubtitle(m_subtitleStream);
+            g_application.m_pPlayer->SetSubtitleVisible(true);
+          }
         }
 
         Close();

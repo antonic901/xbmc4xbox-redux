@@ -479,14 +479,14 @@ namespace PYXBMC
 
     if (g_application.m_pPlayer)
     {
-      int nStream = g_application.m_pPlayer->GetSubtitleCount();
-
-      g_stSettings.m_currentVideoSettings.m_SubtitleOn = true;
-      g_application.m_pPlayer->SetSubtitleVisible(true);
-      g_application.m_pPlayer->AddSubtitle(cLine);
-      g_application.m_pPlayer->SetSubtitle(nStream);
-      g_stSettings.m_currentVideoSettings.m_SubtitleDelay = 0.0f;
-      g_application.m_pPlayer->SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
+      int nStream = g_application.m_pPlayer->AddSubtitle(cLine);
+      if(nStream >= 0)
+      {
+        g_application.m_pPlayer->SetSubtitle(nStream);
+        g_application.m_pPlayer->SetSubtitleVisible(true);
+        g_stSettings.m_currentVideoSettings.m_SubtitleDelay = 0.0f;
+        g_application.m_pPlayer->SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
+      }
     }
     
     Py_INCREF(Py_None);
@@ -501,19 +501,19 @@ namespace PYXBMC
   PyObject* Player_GetSubtitles(PyObject *self)
   {
     if (g_application.m_pPlayer)
-    {	
+    {
       int i = g_application.m_pPlayer->GetSubtitle();
       CStdString strName;
       g_application.m_pPlayer->GetSubtitleName(i, strName);
 
       if (strName == "Unknown(Invalid)")
-        strName = "";		  
+        strName = "";
       return Py_BuildValue((char*)"s", strName.c_str());
     }
 	  
     Py_INCREF(Py_None);
-    return Py_None;	  
-  }	
+    return Py_None;
+  }
 
   // Player_DisableSubtitles
   PyDoc_STRVAR(DisableSubtitles__doc__,
@@ -521,8 +521,8 @@ namespace PYXBMC
 	
   PyObject* Player_DisableSubtitles(PyObject *self)
   {
-    if (g_application.m_pPlayer)	  
-    {	
+    if (g_application.m_pPlayer)
+    {
       g_stSettings.m_currentVideoSettings.m_SubtitleOn = false;
       g_application.m_pPlayer->SetSubtitleVisible(false);
 		

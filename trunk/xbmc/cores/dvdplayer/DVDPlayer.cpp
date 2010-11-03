@@ -405,22 +405,19 @@ bool CDVDPlayer::OpenInputStream()
   &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV)
   &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP))
   {
-    if(g_stSettings.m_currentVideoSettings.m_SubtitleOn)
-    {
-      // find any available external subtitles
-      std::vector<std::string> filenames;
-      CDVDFactorySubtitle::GetSubtitles(filenames, m_filename);
+    // find any available external subtitles
+    std::vector<std::string> filenames;
+    CDVDFactorySubtitle::GetSubtitles(filenames, m_filename);
 
-      // find any upnp subtitles
-      CStdString key("upnp:subtitle:1");
-      for(unsigned s = 1; m_item.HasProperty(key); key.Format("upnp:subtitle:%u", ++s))
-        filenames.push_back(m_item.GetProperty(key));
+    // find any upnp subtitles
+    CStdString key("upnp:subtitle:1");
+    for(unsigned s = 1; m_item.HasProperty(key); key.Format("upnp:subtitle:%u", ++s))
+      filenames.push_back(m_item.GetProperty(key));
 
-      for(unsigned int i=0;i<filenames.size();i++)
-        AddSubtitleFile(filenames[i]);
+    for(unsigned int i=0;i<filenames.size();i++)
+      AddSubtitleFile(filenames[i]);
 
-      g_stSettings.m_currentVideoSettings.m_SubtitleCached = true;
-    }
+    g_stSettings.m_currentVideoSettings.m_SubtitleCached = true;
   }
 
   SetAVDelay(g_stSettings.m_currentVideoSettings.m_AudioDelay);
@@ -515,33 +512,30 @@ void CDVDPlayer::OpenDefaultStreams()
   }
 
   // open subtitle stream
-  if(g_stSettings.m_currentVideoSettings.m_SubtitleOn && !m_PlayerOptions.video_only)
+  count = m_SelectionStreams.Count(STREAM_SUBTITLE);
+  valid = false;
+  if(g_stSettings.m_currentVideoSettings.m_SubtitleStream >= 0 
+  && g_stSettings.m_currentVideoSettings.m_SubtitleStream < count)
   {
-    m_dvdPlayerVideo.EnableSubtitle(true);
-    count = m_SelectionStreams.Count(STREAM_SUBTITLE);
-    valid = false;
-    if(g_stSettings.m_currentVideoSettings.m_SubtitleStream >= 0 
-    && g_stSettings.m_currentVideoSettings.m_SubtitleStream < count)
-    {
-      SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
-      if(OpenSubtitleStream(s.id, s.source))
-        valid = true;
-      else
-        CLog::Log(LOGWARNING, "%s - failed to restore selected subtitle stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
-    }
+    SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
+    if(OpenSubtitleStream(s.id, s.source))
+      valid = true;
+    else
+      CLog::Log(LOGWARNING, "%s - failed to restore selected subtitle stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
+  }
 
   for(int i = 0;i<count && !valid; i++)
   {
     SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, i);
     if(OpenSubtitleStream(s.id, s.source))
       valid = true;
-    }
-    if(!valid)
-      CloseSubtitleStream(false);
   }
+  if(!valid)
+    CloseSubtitleStream(false);
+  if(g_stSettings.m_currentVideoSettings.m_SubtitleOn && !m_PlayerOptions.video_only)
+    m_dvdPlayerVideo.EnableSubtitle(true);
   else
     m_dvdPlayerVideo.EnableSubtitle(false);
-
 }
 
 bool CDVDPlayer::ReadPacket(DemuxPacket*& packet, CDemuxStream*& stream)
@@ -3056,7 +3050,7 @@ int CDVDPlayer::SeekChapter(int iChapter)
   return 0;
 }
 
-bool CDVDPlayer::AddSubtitle(const CStdString& strSubPath)
+int CDVDPlayer::AddSubtitle(const CStdString& strSubPath)
 {
   return AddSubtitleFile(strSubPath);
 }
@@ -3087,23 +3081,22 @@ int CDVDPlayer::GetSourceBitrate()
 }
 
 
-bool CDVDPlayer::AddSubtitleFile(const std::string& filename)
+int CDVDPlayer::AddSubtitleFile(const std::string& filename)
 {
   std::string ext = CUtil::GetExtension(filename);
   if(ext == ".idx")
   {
     CDVDDemuxVobsub v;
     if(!v.Open(filename))
-      return false;
-
+      return -1;
     m_SelectionStreams.Update(NULL, &v);
-    return true;
+    return m_SelectionStreams.IndexOf(STREAM_SUBTITLE, m_SelectionStreams.Source(STREAM_SOURCE_DEMUX_SUB, filename), 0);
   }
   if(ext == ".sub")
   {
     CStdString strReplace(CUtil::ReplaceExtension(filename,".idx"));
     if (XFILE::CFile::Exists(strReplace))
-      return false;
+      return -1;
   }
   SelectionStream s;
   s.source   = m_SelectionStreams.Source(STREAM_SOURCE_TEXT, filename);
@@ -3112,7 +3105,7 @@ bool CDVDPlayer::AddSubtitleFile(const std::string& filename)
   s.filename = filename;
   s.name     = CUtil::GetFileName(filename);
   m_SelectionStreams.Update(s);
-  return true;
+  return m_SelectionStreams.IndexOf(STREAM_SUBTITLE, s.source, s.id);
 }
 
 void CDVDPlayer::UpdatePlayState(double timeout)

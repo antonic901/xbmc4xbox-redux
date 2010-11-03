@@ -1797,12 +1797,12 @@ int CMPlayer::GetSubtitleCount()
   return mplayer_getSubtitleCount();
 }
 
-bool CMPlayer::AddSubtitle(const CStdString& strSubPath)
+int CMPlayer::AddSubtitle(const CStdString& strSubPath)
 {
   CStdString strFile = strSubPath;
   strFile.Replace("\\","\\\\");
   mplayer_SlaveCommand("sub_load \"%s\"", strFile.c_str());
-  return true;
+  return 0;
 }
 
 int CMPlayer::GetSubtitle()
