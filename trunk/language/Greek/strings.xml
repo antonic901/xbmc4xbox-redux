@@ -2,9 +2,9 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: Ydatografida-->
 <!--Email: ydatografida@gmail.com-->
-<!--Date of translation: 07/23/2010-->
-<!--$Revision$-->
-<!--Based on english strings version 30472-->
+<!--Date of translation: 11/02/2010-->
+<!--$Revision 30703 $-->
+<!--Based on english strings version 30703 -->
 <strings>
   <string id="0">Εφαρμογές</string>
   <string id="1">Φωτογραφίες</string>
@@ -496,6 +496,7 @@
   <string id="571">Προεπιλεγμένη</string>
   <string id="572">Εταιρεία (studio)</string>
   <string id="573">Διαδρομή</string>
+  <string id="575">Σε εξέλιξη</string>
   <string id="580">Σειρά ταξινόμησης</string>
   <string id="581">Κριτήρια ταξινόμησης</string>
   <string id="582">Λειτουργία προβολής</string>
@@ -1415,6 +1416,7 @@
   <string id="16312">(VDPAU) Μείωση θορύβου</string>
   <string id="16313">(VDPAU) Οξύτητα</string>
   <string id="16314">Αντίστροφη Telecine</string>
+  <string id="16400">Μετα-επεξεργασία</string>
   <string id="17500">Προβολή λήξης χρόνου αναστόλης</string>
   <string id="19000">Αλλαγή καναλιού</string>
   <string id="20000">Φάκελος αποθήκευσης μουσικής</string>
@@ -1604,6 +1606,7 @@
   <string id="20252">Γεμίζοντας τα ποτήρια (βίντεο)</string>
   <string id="20253">Διακομιστής WebDAV (HTTP)</string>
   <string id="20254">Διακομιστής WebDAV (HTTPS)</string>
+  <string id="20258">MythTV client</string>
   <string id="20300">Κατάλογος διακομιστή ιστού (HTTP)</string>
   <string id="20301">Κατάλογος διακομιστή ιστού (HTTPS)</string>
   <string id="20302">Αδυναμία εγγραφής στο φάκελλο:</string>
@@ -1945,6 +1948,9 @@
   <string id="22024">Έκδοση Direct3D:</string>
   <string id="22025">Ενεργοποίηση πλήρους υποστήριξης κωδικοποιητών</string>
   <string id="22026">Γρήγορη λειτουργία (MPEG-2, MPEG-4 και H.264 μόνο)</string>
+  <string id="22027">PAPlayer</string>
+  <string id="22028">DVDPlayer</string>
+  <string id="22029">MPlayer</string>
   <string id="22030">Γραμματοσειρά</string>
   <string id="22031">- Μέγεθος</string>
   <string id="22032">- Χρώματα</string>
@@ -1973,7 +1979,6 @@
   <string id="29801">Διάταξη πληκτρολογίου QWERTY</string>
   <string id="29802">Σε λειτουργία η διέλευση ήχου</string>
   <string id="29999">Εφαρμογή ρυθμίσεων φίλτρου Flicker</string>
-  <string id="30011">Αναζήτηση διάρκειας</string>
   <string id="33001">Ποιότητα διαφημιστικού</string>
   <string id="33002">Ροή πολυμέσων</string>
   <string id="33003">Λήψη</string>
@@ -1984,6 +1989,7 @@
   <string id="33008">Αποθήκευση</string>
   <string id="33009">Αντιγραφή</string>
   <string id="33010">Ορισμός φακέλου λήψης</string>
+  <string id="33011">Αναζήτηση διάρκειας</string>
   <string id="33012">Σύντομος</string>
   <string id="33013">Εκτεταμένος</string>
   <string id="33014">Ορισμός αναπαραγωγέα DVD αντί του κανονικού</string>
