@@ -140,6 +140,8 @@ int CGUIInfoManager::TranslateString(const CStdString &condition)
 {
   // translate $LOCALIZE as required
   CStdString strCondition(CGUIInfoLabel::ReplaceLocalize(condition));
+  strCondition = CGUIInfoLabel::ReplaceAddonStrings(strCondition);
+
   if (strCondition.find_first_of("|") != strCondition.npos ||
       strCondition.find_first_of("+") != strCondition.npos ||
       strCondition.find_first_of("[") != strCondition.npos ||
@@ -469,8 +471,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     if (info2 > 0)
       return AddMultiInfo(GUIInfo(bNegate ? -STRING_COMPARE: STRING_COMPARE, info, -info2));
     // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2)));
-    label = CGUIInfoLabel::ReplaceAddonStrings(label).ToLower();
+    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2))).ToLower();
     int compareString = ConditionalStringParameter(label);
     return AddMultiInfo(GUIInfo(bNegate ? -STRING_COMPARE: STRING_COMPARE, info, compareString));
   }
@@ -486,8 +487,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     int pos = strTest.Find(",");
     int info = TranslateString(strTest.Mid(10, pos-10));
     // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2)));
-    label = CGUIInfoLabel::ReplaceAddonStrings(label).ToLower();
+    CStdString label = CGUIInfoLabel::GetLabel(original.Mid(pos + 1, original.GetLength() - (pos + 2))).ToLower();
     int compareString = ConditionalStringParameter(label);
     return AddMultiInfo(GUIInfo(bNegate ? -STRING_STR: STRING_STR, info, compareString));
   }
