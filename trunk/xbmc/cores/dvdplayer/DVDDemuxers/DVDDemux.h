@@ -119,7 +119,6 @@ public:
     fAspect = 0.0;
     bVFR = false;
     bPTSInvalid = false;
-    bPTSInvalid = false;
     type = STREAM_VIDEO;
   }
 

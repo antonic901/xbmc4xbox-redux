@@ -58,7 +58,6 @@ void CDVDStreamInfo::Clear()
   vfr      = false;
   stills   = false;
   ptsinvalid = false;
-  ptsinvalid = false;
 
   channels   = 0;
   samplerate = 0;
@@ -144,7 +143,6 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
   aspect   = right.aspect;
   stills   = right.stills;
   ptsinvalid = right.ptsinvalid;
-  ptsinvalid = right.ptsinvalid;
 
   // AUDIO
   channels      = right.channels;
@@ -190,7 +188,6 @@ void CDVDStreamInfo::Assign(const CDemuxStream& right, bool withextradata)
     width     = stream->iWidth;
     aspect    = stream->fAspect;
     vfr       = stream->bVFR;
-    ptsinvalid = stream->bPTSInvalid;
     ptsinvalid = stream->bPTSInvalid;
   }
   else if(  right.type == STREAM_SUBTITLE )
