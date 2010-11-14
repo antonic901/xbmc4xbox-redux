@@ -371,6 +371,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
 
             if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
             {
+              g_stSettings.m_currentVideoSettings.m_SubtitleCached = false;
               // reopen the file
               if ( g_application.PlayFile(g_application.CurrentFileItem(), true) && g_application.m_pPlayer )
               {
