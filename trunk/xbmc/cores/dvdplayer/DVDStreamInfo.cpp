@@ -43,7 +43,7 @@ void CDVDStreamInfo::Clear()
 {
   codec = CODEC_ID_NONE;
   type = STREAM_NONE;
-  codec_tag = 0;
+  codec_tag  = 0;
 
   if( extradata && extrasize ) free(extradata);
 

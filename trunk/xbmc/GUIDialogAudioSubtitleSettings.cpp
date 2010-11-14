@@ -367,7 +367,6 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
               for (int i=0;i<items.Size();++i)
                 CUtil::CacheRarSubtitles(items[i]->m_strPath,strFileNameNoExtNoCase);
             }
-            g_stSettings.m_currentVideoSettings.m_SubtitleCached = false;
             g_stSettings.m_currentVideoSettings.m_SubtitleOn = true;
 
             if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
@@ -384,21 +383,22 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
             {
               CStdString strSub("special://temp/subtitle.sub");
               CStdString strIdx("special://temp/subtitle.idx");
-              if(CFile::Exists(strSub)) CFile::Delete(strSub);
-              if(CFile::Exists(strIdx)) CFile::Delete(strIdx);
+              CFile::Delete(strSub);
+              CFile::Delete(strIdx);
               CFile::Rename(strSub + ".keep", strSub);
               CFile::Rename(strIdx + ".keep", strIdx);
 
-              int id = g_application.m_pPlayer->AddSubtitle(strIdx);
+              int id = g_application.m_pPlayer->AddSubtitle("special://temp/subtitle.idx");
               if(id >= 0)
               {
+
                 m_subtitleStream = id;
                 g_application.m_pPlayer->SetSubtitle(m_subtitleStream);
                 g_application.m_pPlayer->SetSubtitleVisible(true);
               }
-            }
 
-            Close();
+              Close();
+            }
           }
         }
       }
@@ -407,10 +407,10 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
         m_subtitleStream = g_application.m_pPlayer->GetSubtitleCount();
         CStdString strExt;
         CUtil::GetExtension(strPath,strExt);
-        if (CFile::Cache(strPath,"z:\\subtitle.browsed"+strExt))
+        if (CFile::Cache(strPath,"special://temp/subtitle.browsed"+strExt))
         {
-          int id = g_application.m_pPlayer->AddSubtitle("z:\\subtitle.browsed"+strExt);
-          if (id >= 0)
+          int id = g_application.m_pPlayer->AddSubtitle("special://temp/subtitle.browsed"+strExt);
+          if(id >= 0)
           {
             m_subtitleStream = id;
             g_application.m_pPlayer->SetSubtitle(m_subtitleStream);
