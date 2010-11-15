@@ -42,7 +42,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib  ..\..\zlib\zlib.lib"
+				AdditionalDependencies="ws2_32.lib ..\..\zlib\zlib.lib"
 				OutputFile="DLL-Release/libcurl.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -190,7 +190,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..\include"
+				AdditionalIncludeDirectories="..\polarssl\include\polarssl;.;..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;BUILDING_LIBCURL"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
