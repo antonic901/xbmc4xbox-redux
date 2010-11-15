@@ -1,7 +1,11 @@
 /**
  * \file config.h
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -76,6 +80,11 @@
  * Enable the checkup functions (*_self_test).
  */
 //#define POLARSSL_SELF_TEST
+
+/*
+ * Enable run-time version information functions
+ */
+#define POLARSSL_VERSION_C
 
 /*
  * Enable the prime-number generation code.

@@ -1,7 +1,11 @@
 /**
  * \file rsa.h
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -34,6 +38,7 @@
 #define POLARSSL_ERR_RSA_PRIVATE_FAILED                    -0x0450
 #define POLARSSL_ERR_RSA_VERIFY_FAILED                     -0x0460
 #define POLARSSL_ERR_RSA_OUTPUT_TOO_LARGE                  -0x0470
+#define POLARSSL_ERR_RSA_RNG_FAILED                        -0x0480
 
 /*
  * PKCS#1 constants
@@ -139,8 +144,6 @@ typedef struct
 
     int padding;                /*!<  1.5 or OAEP/PSS   */
     int hash_id;                /*!<  hash identifier   */
-    int (*f_rng)(void *);       /*!<  RNG function      */
-    void *p_rng;                /*!<  RNG parameter     */
 }
 rsa_context;
 
@@ -154,34 +157,35 @@ extern "C" {
  * \param ctx      RSA context to be initialized
  * \param padding  RSA_PKCS_V15 or RSA_PKCS_V21
  * \param hash_id  RSA_PKCS_V21 hash identifier
- * \param f_rng    RNG function
- * \param p_rng    RNG parameter
  *
  * \note           The hash_id parameter is actually ignored
  *                 when using RSA_PKCS_V15 padding.
  *
- * \note           Currently (xyssl-0.8), RSA_PKCS_V21 padding
+ * \note           Currently, RSA_PKCS_V21 padding
  *                 is not supported.
  */
 void rsa_init( rsa_context *ctx,
                int padding,
-               int hash_id,
-               int (*f_rng)(void *),
-               void *p_rng );
+               int hash_id);
 
 /**
  * \brief          Generate an RSA keypair
  *
  * \param ctx      RSA context that will hold the key
+ * \param f_rng    RNG function
+ * \param p_rng    RNG parameter
  * \param nbits    size of the public key in bits
  * \param exponent public exponent (e.g., 65537)
  *
  * \note           rsa_init() must be called beforehand to setup
- *                 the RSA context (especially f_rng and p_rng).
+ *                 the RSA context.
  *
  * \return         0 if successful, or an POLARSSL_ERR_RSA_XXX error code
  */
-int rsa_gen_key( rsa_context *ctx, int nbits, int exponent );
+int rsa_gen_key( rsa_context *ctx,
+                 int (*f_rng)(void *),
+                 void *p_rng,
+                 int nbits, int exponent );
 
 /**
  * \brief          Check a public RSA key
@@ -241,6 +245,8 @@ int rsa_private( rsa_context *ctx,
  * \brief          Add the message padding, then do an RSA operation
  *
  * \param ctx      RSA context
+ * \param f_rng    RNG function
+ * \param p_rng    RNG parameter
  * \param mode     RSA_PUBLIC or RSA_PRIVATE
  * \param ilen     contains the plaintext length
  * \param input    buffer holding the data to be encrypted
@@ -252,6 +258,8 @@ int rsa_private( rsa_context *ctx,
  *                 of ctx->N (eg. 128 bytes if RSA-1024 is used).
  */
 int rsa_pkcs1_encrypt( rsa_context *ctx,
+                       int (*f_rng)(void *),
+                       void *p_rng,
                        int mode, int  ilen,
                        const unsigned char *input,
                        unsigned char *output );
@@ -306,7 +314,7 @@ int rsa_pkcs1_sign( rsa_context *ctx,
  *
  * \param ctx      points to an RSA public key
  * \param mode     RSA_PUBLIC or RSA_PRIVATE
- * \param hash_id  SIG_RSA_RAW, RSA_MD{2,4,5} or RSA_SHA{1,256}
+ * \param hash_id  SIG_RSA_RAW, SIG_RSA_MD{2,4,5} or SIG_RSA_SHA{1,224,256,384,512}
  * \param hashlen  message digest length (for SIG_RSA_RAW only)
  * \param hash     buffer holding the message digest
  * \param sig      buffer holding the ciphertext

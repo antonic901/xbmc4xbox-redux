@@ -1,5 +1,5 @@
-/**
- * \file havege.h
+/*
+ *  Version information
  *
  *  Copyright (C) 2006-2010, Brainspark B.V.
  *
@@ -22,44 +22,29 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef POLARSSL_HAVEGE_H
-#define POLARSSL_HAVEGE_H
 
-#define COLLECT_SIZE 1024
+#include "polarssl/config.h"
 
-/**
- * \brief          HAVEGE state structure
- */
-typedef struct
+#if defined(POLARSSL_VERSION_C)
+
+#include "polarssl/version.h"
+#include <string.h>
+
+const char version[] = POLARSSL_VERSION_STRING;
+
+unsigned int version_get_number()
 {
-    int PT1, PT2, offset[2];
-    int pool[COLLECT_SIZE];
-    int WALK[8192];
+    return POLARSSL_VERSION_NUMBER;
 }
-havege_state;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * \brief          HAVEGE initialization
- *
- * \param hs       HAVEGE state to be initialized
- */
-void havege_init( havege_state *hs );
-
-/**
- * \brief          HAVEGE rand function
- *
- * \param p_rng    A HAVEGE state
- *
- * \return         A random int
- */
-int havege_rand( void *p_rng );
-
-#ifdef __cplusplus
+void version_get_string( char *string )
+{
+    memcpy( string, POLARSSL_VERSION_STRING, sizeof( POLARSSL_VERSION_STRING ) );
 }
-#endif
 
-#endif /* havege.h */
+void version_get_string_full( char *string )
+{
+    memcpy( string, POLARSSL_VERSION_STRING_FULL, sizeof( POLARSSL_VERSION_STRING_FULL ) );
+}
+
+#endif /* POLARSSL_VERSION_C */

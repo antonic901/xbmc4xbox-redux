@@ -1,7 +1,11 @@
 /*
  *  Multi-precision integer library
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -434,7 +438,7 @@ int mpi_write_file( const char *p, const mpi *X, int radix, FILE *fout )
     int n, ret;
     size_t slen;
     size_t plen;
-    char s[1024];
+    char s[2048];
 
     n = sizeof( s );
     memset( s, 0, n );

@@ -1,7 +1,11 @@
 /*
  *  SSLv3/TLSv1 shared functions
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -244,6 +248,7 @@ int ssl_derive_keys( ssl_context *ssl )
 
 #if defined(POLARSSL_AES_C)
         case SSL_RSA_AES_128_SHA:
+        case SSL_EDH_RSA_AES_128_SHA:
             ssl->keylen = 16; ssl->minlen = 32;
             ssl->ivlen  = 16; ssl->maclen = 20;
             break;
@@ -257,6 +262,7 @@ int ssl_derive_keys( ssl_context *ssl )
 
 #if defined(POLARSSL_CAMELLIA_C)
         case SSL_RSA_CAMELLIA_128_SHA:
+        case SSL_EDH_RSA_CAMELLIA_128_SHA:
             ssl->keylen = 16; ssl->minlen = 32;
             ssl->ivlen  = 16; ssl->maclen = 20;
             break;
@@ -288,6 +294,9 @@ int ssl_derive_keys( ssl_context *ssl )
         memcpy( ssl->mac_enc, keyblk,  ssl->maclen );
         memcpy( ssl->mac_dec, keyblk + ssl->maclen, ssl->maclen );
 
+        /*
+         * This is not used in TLS v1.1.
+         */
         memcpy( ssl->iv_enc, key2 + ssl->keylen,  ssl->ivlen );
         memcpy( ssl->iv_dec, key2 + ssl->keylen + ssl->ivlen,
                 ssl->ivlen );
@@ -300,6 +309,9 @@ int ssl_derive_keys( ssl_context *ssl )
         memcpy( ssl->mac_dec, keyblk,  ssl->maclen );
         memcpy( ssl->mac_enc, keyblk + ssl->maclen, ssl->maclen );
 
+        /*
+         * This is not used in TLS v1.1.
+         */
         memcpy( ssl->iv_dec, key1 + ssl->keylen,  ssl->ivlen );
         memcpy( ssl->iv_enc, key1 + ssl->keylen + ssl->ivlen,
                 ssl->ivlen );
@@ -325,6 +337,7 @@ int ssl_derive_keys( ssl_context *ssl )
 
 #if defined(POLARSSL_AES_C)
         case SSL_RSA_AES_128_SHA:
+        case SSL_EDH_RSA_AES_128_SHA:
             aes_setkey_enc( (aes_context *) ssl->ctx_enc, key1, 128 );
             aes_setkey_dec( (aes_context *) ssl->ctx_dec, key2, 128 );
             break;
@@ -338,6 +351,7 @@ int ssl_derive_keys( ssl_context *ssl )
 
 #if defined(POLARSSL_CAMELLIA_C)
         case SSL_RSA_CAMELLIA_128_SHA:
+        case SSL_EDH_RSA_CAMELLIA_128_SHA:
             camellia_setkey_enc( (camellia_context *) ssl->ctx_enc, key1, 128 );
             camellia_setkey_dec( (camellia_context *) ssl->ctx_dec, key2, 128 );
             break;
@@ -537,6 +551,9 @@ static int ssl_encrypt_buf( ssl_context *ssl )
     }
     else
     {
+        unsigned char *enc_msg;
+        int enc_msglen;
+
         padlen = ssl->ivlen - ( ssl->out_msglen + 1 ) % ssl->ivlen;
         if( padlen == ssl->ivlen )
             padlen = 0;
@@ -546,9 +563,38 @@ static int ssl_encrypt_buf( ssl_context *ssl )
 
         ssl->out_msglen += padlen + 1;
 
+        enc_msglen = ssl->out_msglen;
+        enc_msg = ssl->out_msg;
+
+        /*
+         * Prepend per-record IV for block cipher in TLS v1.1 as per
+         * Method 1 (6.2.3.2. in RFC4346)
+         */
+        if( ssl->minor_ver == SSL_MINOR_VERSION_2 )
+        {
+            /*
+             * Generate IV
+             */
+            for( i = 0; i < ssl->ivlen; i++ )
+                ssl->iv_enc[i] = ssl->f_rng( ssl->p_rng );
+
+            /*
+             * Shift message for ivlen bytes and prepend IV
+             */
+            memmove( ssl->out_msg + ssl->ivlen, ssl->out_msg, ssl->out_msglen );
+            memcpy( ssl->out_msg, ssl->iv_enc, ssl->ivlen );
+
+            /*
+             * Fix pointer positions and message length with added IV
+             */
+            enc_msg = ssl->out_msg + ssl->ivlen;
+            enc_msglen = ssl->out_msglen;
+            ssl->out_msglen += ssl->ivlen;
+        }
+
         SSL_DEBUG_MSG( 3, ( "before encrypt: msglen = %d, "
-                            "including %d bytes of padding",
-                       ssl->out_msglen, padlen + 1 ) );
+                            "including %d bytes of IV and %d bytes of padding",
+                       ssl->out_msglen, ssl->ivlen, padlen + 1 ) );
 
         SSL_DEBUG_BUF( 4, "before encrypt: output payload",
                        ssl->out_msg, ssl->out_msglen );
@@ -558,32 +604,34 @@ static int ssl_encrypt_buf( ssl_context *ssl )
             case  8:
 #if defined(POLARSSL_DES_C)
                 des3_crypt_cbc( (des3_context *) ssl->ctx_enc,
-                    DES_ENCRYPT, ssl->out_msglen,
-                    ssl->iv_enc, ssl->out_msg, ssl->out_msg );
+                    DES_ENCRYPT, enc_msglen,
+                    ssl->iv_enc, enc_msg, enc_msg );
                 break;
 #endif
 
             case 16:
 #if defined(POLARSSL_AES_C)
 		if ( ssl->session->cipher == SSL_RSA_AES_128_SHA ||
+		     ssl->session->cipher == SSL_EDH_RSA_AES_128_SHA ||
 		     ssl->session->cipher == SSL_RSA_AES_256_SHA ||
 		     ssl->session->cipher == SSL_EDH_RSA_AES_256_SHA)
 		{
                     aes_crypt_cbc( (aes_context *) ssl->ctx_enc,
-                        AES_ENCRYPT, ssl->out_msglen,
-                        ssl->iv_enc, ssl->out_msg, ssl->out_msg );
+                        AES_ENCRYPT, enc_msglen,
+                        ssl->iv_enc, enc_msg, enc_msg);
                     break;
 		}
 #endif
 
 #if defined(POLARSSL_CAMELLIA_C)
 		if ( ssl->session->cipher == SSL_RSA_CAMELLIA_128_SHA ||
+		     ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_128_SHA ||
 		     ssl->session->cipher == SSL_RSA_CAMELLIA_256_SHA ||
 		     ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_256_SHA)
 		{
                     camellia_crypt_cbc( (camellia_context *) ssl->ctx_enc,
-                        CAMELLIA_ENCRYPT, ssl->out_msglen,
-                        ssl->iv_enc, ssl->out_msg, ssl->out_msg );
+                        CAMELLIA_ENCRYPT, enc_msglen,
+                        ssl->iv_enc, enc_msg, enc_msg );
                     break;
 		}
 #endif
@@ -625,6 +673,10 @@ static int ssl_decrypt_buf( ssl_context *ssl )
     }
     else
     {
+        unsigned char *dec_msg;
+        unsigned char *dec_msg_result;
+        int dec_msglen;
+
         /*
          * Decrypt and check the padding
          */
@@ -635,37 +687,56 @@ static int ssl_decrypt_buf( ssl_context *ssl )
             return( POLARSSL_ERR_SSL_INVALID_MAC );
         }
 
+        dec_msglen = ssl->in_msglen;
+        dec_msg = ssl->in_msg;
+        dec_msg_result = ssl->in_msg;
+
+        /*
+         * Initialize for prepended IV for block cipher in TLS v1.1
+         */
+        if( ssl->minor_ver == SSL_MINOR_VERSION_2 )
+        {
+            dec_msg += ssl->ivlen;
+            dec_msglen -= ssl->ivlen;
+            ssl->in_msglen -= ssl->ivlen;
+
+            for( i = 0; i < ssl->ivlen; i++ )
+                ssl->iv_dec[i] = ssl->in_msg[i];
+        }
+
         switch( ssl->ivlen )
         {
 #if defined(POLARSSL_DES_C)
             case  8:
                 des3_crypt_cbc( (des3_context *) ssl->ctx_dec,
-                    DES_DECRYPT, ssl->in_msglen,
-                    ssl->iv_dec, ssl->in_msg, ssl->in_msg );
+                    DES_DECRYPT, dec_msglen,
+                    ssl->iv_dec, dec_msg, dec_msg_result );
                 break;
 #endif
 
             case 16:
 #if defined(POLARSSL_AES_C)
 		if ( ssl->session->cipher == SSL_RSA_AES_128_SHA ||
+		     ssl->session->cipher == SSL_EDH_RSA_AES_128_SHA ||
 		     ssl->session->cipher == SSL_RSA_AES_256_SHA ||
 		     ssl->session->cipher == SSL_EDH_RSA_AES_256_SHA)
 		{
                     aes_crypt_cbc( (aes_context *) ssl->ctx_dec,
-                       AES_DECRYPT, ssl->in_msglen,
-                       ssl->iv_dec, ssl->in_msg, ssl->in_msg );
+                       AES_DECRYPT, dec_msglen,
+                       ssl->iv_dec, dec_msg, dec_msg_result );
                     break;
 		}
 #endif
 
 #if defined(POLARSSL_CAMELLIA_C)
 		if ( ssl->session->cipher == SSL_RSA_CAMELLIA_128_SHA ||
+		     ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_128_SHA ||
 		     ssl->session->cipher == SSL_RSA_CAMELLIA_256_SHA ||
 		     ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_256_SHA)
 		{
                     camellia_crypt_cbc( (camellia_context *) ssl->ctx_dec,
-                       CAMELLIA_DECRYPT, ssl->in_msglen,
-                       ssl->iv_dec, ssl->in_msg, ssl->in_msg );
+                       CAMELLIA_DECRYPT, dec_msglen,
+                       ssl->iv_dec, dec_msg, dec_msg_result );
                     break;
 		}
 #endif
@@ -970,8 +1041,7 @@ int ssl_read_record( ssl_context *ssl )
         return( POLARSSL_ERR_SSL_INVALID_RECORD );
     }
 
-    if( ssl->in_hdr[2] != SSL_MINOR_VERSION_0 &&
-        ssl->in_hdr[2] != SSL_MINOR_VERSION_1 )
+    if( ssl->in_hdr[2] > ssl->max_minor_ver )
     {
         SSL_DEBUG_MSG( 1, ( "minor version mismatch" ) );
         return( POLARSSL_ERR_SSL_INVALID_RECORD );
@@ -1081,14 +1151,14 @@ int ssl_read_record( ssl_context *ssl )
         /*
          * Ignore non-fatal alerts, except close_notify
          */
-        if( ssl->in_msg[0] == SSL_ALERT_FATAL )
+        if( ssl->in_msg[0] == SSL_ALERT_LEVEL_FATAL )
         {
             SSL_DEBUG_MSG( 1, ( "is a fatal alert message" ) );
             return( POLARSSL_ERR_SSL_FATAL_ALERT_MESSAGE | ssl->in_msg[1] );
         }
 
-        if( ssl->in_msg[0] == SSL_ALERT_WARNING &&
-            ssl->in_msg[1] == SSL_ALERT_CLOSE_NOTIFY )
+        if( ssl->in_msg[0] == SSL_ALERT_LEVEL_WARNING &&
+            ssl->in_msg[1] == SSL_ALERT_MSG_CLOSE_NOTIFY )
         {
             SSL_DEBUG_MSG( 2, ( "is a close notify message" ) );
             return( POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY );
@@ -1130,8 +1200,8 @@ int ssl_write_certificate( ssl_context *ssl )
         {
             ssl->out_msglen  = 2;
             ssl->out_msgtype = SSL_MSG_ALERT;
-            ssl->out_msg[0]  = SSL_ALERT_WARNING;
-            ssl->out_msg[1]  = SSL_ALERT_NO_CERTIFICATE;
+            ssl->out_msg[0]  = SSL_ALERT_LEVEL_WARNING;
+            ssl->out_msg[1]  = SSL_ALERT_MSG_NO_CERT;
 
             SSL_DEBUG_MSG( 2, ( "got no certificate to send" ) );
             goto write_msg;
@@ -1229,10 +1299,10 @@ int ssl_parse_certificate( ssl_context *ssl )
     if( ssl->endpoint  == SSL_IS_SERVER &&
         ssl->minor_ver == SSL_MINOR_VERSION_0 )
     {
-        if( ssl->in_msglen  == 2                    &&
-            ssl->in_msgtype == SSL_MSG_ALERT        &&
-            ssl->in_msg[0]  == SSL_ALERT_WARNING    &&
-            ssl->in_msg[1]  == SSL_ALERT_NO_CERTIFICATE )
+        if( ssl->in_msglen  == 2                        &&
+            ssl->in_msgtype == SSL_MSG_ALERT            &&
+            ssl->in_msg[0]  == SSL_ALERT_LEVEL_WARNING  &&
+            ssl->in_msg[1]  == SSL_ALERT_MSG_NO_CERT )
         {
             SSL_DEBUG_MSG( 1, ( "SSLv3 client has no certificate" ) );
 
@@ -1789,6 +1859,9 @@ const char *ssl_get_cipher( const ssl_context *ssl )
         case SSL_RSA_AES_128_SHA:
             return( "SSL_RSA_AES_128_SHA" );
 
+        case SSL_EDH_RSA_AES_128_SHA:
+            return( "SSL_EDH_RSA_AES_128_SHA" );
+
         case SSL_RSA_AES_256_SHA:
             return( "SSL_RSA_AES_256_SHA" );
 
@@ -1799,6 +1872,9 @@ const char *ssl_get_cipher( const ssl_context *ssl )
 #if defined(POLARSSL_CAMELLIA_C)
         case SSL_RSA_CAMELLIA_128_SHA:
             return( "SSL_RSA_CAMELLIA_128_SHA" );
+
+        case SSL_EDH_RSA_CAMELLIA_128_SHA:
+            return( "SSL_EDH_RSA_CAMELLIA_128_SHA" );
 
         case SSL_RSA_CAMELLIA_256_SHA:
             return( "SSL_RSA_CAMELLIA_256_SHA" );
@@ -1818,9 +1894,11 @@ int ssl_default_ciphers[] =
 {
 #if defined(POLARSSL_DHM_C)
 #if defined(POLARSSL_AES_C)
+    SSL_EDH_RSA_AES_128_SHA,
     SSL_EDH_RSA_AES_256_SHA,
 #endif
 #if defined(POLARSSL_CAMELLIA_C)
+    SSL_EDH_RSA_CAMELLIA_128_SHA,
     SSL_EDH_RSA_CAMELLIA_256_SHA,
 #endif
 #if defined(POLARSSL_DES_C)
@@ -2006,8 +2084,8 @@ int ssl_close_notify( ssl_context *ssl )
     {
         ssl->out_msgtype = SSL_MSG_ALERT;
         ssl->out_msglen  = 2;
-        ssl->out_msg[0]  = SSL_ALERT_WARNING;
-        ssl->out_msg[1]  = SSL_ALERT_CLOSE_NOTIFY;
+        ssl->out_msg[0]  = SSL_ALERT_LEVEL_WARNING;
+        ssl->out_msg[1]  = SSL_ALERT_MSG_CLOSE_NOTIFY;
 
         if( ( ret = ssl_write_record( ssl ) ) != 0 )
         {

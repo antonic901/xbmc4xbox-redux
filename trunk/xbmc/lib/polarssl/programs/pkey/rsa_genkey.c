@@ -1,7 +1,11 @@
 /*
  *  Example RSA key generation program
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -49,9 +53,9 @@ int main( void )
     printf( " ok\n  . Generating the RSA key [ %d-bit ]...", KEY_SIZE );
     fflush( stdout );
 
-    rsa_init( &rsa, RSA_PKCS_V15, 0, havege_rand, &hs );
+    rsa_init( &rsa, RSA_PKCS_V15, 0 );
     
-    if( ( ret = rsa_gen_key( &rsa, KEY_SIZE, EXPONENT ) ) != 0 )
+    if( ( ret = rsa_gen_key( &rsa, havege_rand, &hs, KEY_SIZE, EXPONENT ) ) != 0 )
     {
         printf( " failed\n  ! rsa_gen_key returned %d\n\n", ret );
         goto exit;

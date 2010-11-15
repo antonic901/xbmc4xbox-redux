@@ -1,7 +1,11 @@
 /**
  * \file dhm.h
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -64,7 +68,7 @@ int dhm_read_params( dhm_context *ctx,
  * \brief          Setup and write the ServerKeyExchange parameters
  *
  * \param ctx      DHM context
- * \param x_size   private value size in bits
+ * \param x_size   private value size in bytes
  * \param output   destination buffer
  * \param olen     number of chars written
  * \param f_rng    RNG function
@@ -76,7 +80,7 @@ int dhm_read_params( dhm_context *ctx,
  *
  * \return         0 if successful, or an POLARSSL_ERR_DHM_XXX error code
  */
-int dhm_make_params( dhm_context *ctx, int s_size,
+int dhm_make_params( dhm_context *ctx, int x_size,
                      unsigned char *output, int *olen,
                      int (*f_rng)(void *), void *p_rng );
 

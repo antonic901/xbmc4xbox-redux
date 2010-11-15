@@ -1,7 +1,11 @@
 /*
  *  SSL server demonstration program
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -39,7 +43,8 @@
 
 #define HTTP_RESPONSE \
     "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" \
-    "<h2><p><center>Successful connection using: %s\r\n"
+    "<h2>PolarSSL Test Server</h2>\r\n" \
+    "<p>Successful connection using: %s</p>\r\n"
 
 /*
  * Computing a "safe" DH-1024 prime can take a very
@@ -65,6 +70,8 @@ int my_ciphers[] =
 {
     SSL_EDH_RSA_AES_256_SHA,
     SSL_EDH_RSA_CAMELLIA_256_SHA,
+    SSL_EDH_RSA_AES_128_SHA,
+    SSL_EDH_RSA_CAMELLIA_128_SHA,
     SSL_EDH_RSA_DES_168_SHA,
     SSL_RSA_AES_256_SHA,
     SSL_RSA_CAMELLIA_256_SHA,

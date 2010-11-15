@@ -1,7 +1,11 @@
 /*
  *  SSLv3/TLSv1 server-side functions
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -88,8 +92,8 @@ static int ssl_parse_client_hello( ssl_context *ssl )
         ssl->max_minor_ver = buf[4];
 
         ssl->major_ver = SSL_MAJOR_VERSION_3;
-        ssl->minor_ver = ( buf[4] <= SSL_MINOR_VERSION_1 )
-                         ? buf[4]  : SSL_MINOR_VERSION_1;
+        ssl->minor_ver = ( buf[4] <= SSL_MINOR_VERSION_2 )
+                         ? buf[4]  : SSL_MINOR_VERSION_2;
 
         if( ( ret = ssl_fetch_input( ssl, 2 + n ) ) != 0 )
         {
@@ -254,8 +258,8 @@ static int ssl_parse_client_hello( ssl_context *ssl )
         }
 
         ssl->major_ver = SSL_MAJOR_VERSION_3;
-        ssl->minor_ver = ( buf[5] <= SSL_MINOR_VERSION_1 )
-                         ? buf[5]  : SSL_MINOR_VERSION_1;
+        ssl->minor_ver = ( buf[5] <= SSL_MINOR_VERSION_2 )
+                         ? buf[5]  : SSL_MINOR_VERSION_2;
 
         ssl->max_major_ver = buf[4];
         ssl->max_minor_ver = buf[5];
@@ -525,8 +529,10 @@ static int ssl_write_server_key_exchange( ssl_context *ssl )
     SSL_DEBUG_MSG( 2, ( "=> write server key exchange" ) );
 
     if( ssl->session->cipher != SSL_EDH_RSA_DES_168_SHA &&
+        ssl->session->cipher != SSL_EDH_RSA_AES_128_SHA &&
         ssl->session->cipher != SSL_EDH_RSA_AES_256_SHA &&
-	ssl->session->cipher != SSL_EDH_RSA_CAMELLIA_256_SHA)
+        ssl->session->cipher != SSL_EDH_RSA_CAMELLIA_128_SHA &&
+	    ssl->session->cipher != SSL_EDH_RSA_CAMELLIA_256_SHA)
     {
         SSL_DEBUG_MSG( 2, ( "<= skip write server key exchange" ) );
         ssl->state++;
@@ -663,8 +669,10 @@ static int ssl_parse_client_key_exchange( ssl_context *ssl )
     }
 
     if( ssl->session->cipher == SSL_EDH_RSA_DES_168_SHA ||
+        ssl->session->cipher == SSL_EDH_RSA_AES_128_SHA ||
         ssl->session->cipher == SSL_EDH_RSA_AES_256_SHA ||
-	ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_256_SHA)
+        ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_128_SHA ||
+	    ssl->session->cipher == SSL_EDH_RSA_CAMELLIA_256_SHA)
     {
 #if !defined(POLARSSL_DHM_C)
         SSL_DEBUG_MSG( 1, ( "support for dhm is not available" ) );

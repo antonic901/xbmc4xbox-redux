@@ -1,5 +1,29 @@
 PolarSSL ChangeLog
 
+= Version 0.14.0 released on 2010-08-16
+Features
+   * Added support for SSL_EDH_RSA_AES_128_SHA and
+     SSL_EDH_RSA_CAMELLIA_128_SHA ciphersuites
+   * Added compile-time and run-time version information
+   * Expanded ssl_client2 arguments for more flexibility
+   * Added support for TLS v1.1
+
+Changes
+   * Made Makefile cleaner
+   * Removed dependency on rand() in rsa_pkcs1_encrypt().
+     Now using random fuction provided to function and
+	 changed the prototype of rsa_pkcs1_encrypt(),
+	 rsa_init() and rsa_gen_key().
+   * Some SSL defines were renamed in order to avoid
+     future confusion
+
+Bug fixes
+   * Fixed CMake out of source build for tests (found by
+     kkert)
+   * rsa_check_private() now supports PKCS1v2 keys as well
+   * Fixed deadlock in rsa_pkcs1_encrypt() on failing random
+     generator
+
 = Version 0.13.1 released on 2010-03-24
 Bug fixes
    * Fixed Makefile in library that was mistakenly merged

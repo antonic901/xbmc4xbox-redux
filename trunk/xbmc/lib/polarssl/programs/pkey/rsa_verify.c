@@ -1,7 +1,11 @@
 /*
  *  RSA/SHA-1 signature verification program
  *
- *  Copyright (C) 2006-2010, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  Copyright (C) 2006-2010, Brainspark B.V.
+ *
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -59,7 +63,7 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    rsa_init( &rsa, RSA_PKCS_V15, 0, NULL, NULL );
+    rsa_init( &rsa, RSA_PKCS_V15, 0 );
 
     if( ( ret = mpi_read_file( &rsa.N, 16, f ) ) != 0 ||
         ( ret = mpi_read_file( &rsa.E, 16, f ) ) != 0 )
