@@ -37,12 +37,16 @@ EXTRA_DIST = Makefile.b32 Makefile.m32 Makefile.vc6 Makefile.riscos $(DSP) \
  Makefile.netware nwlib.c nwos.c libcurl.imp msvcproj.head msvcproj.foot   \
  config-win32ce.h config-os400.h setup-os400.h config-symbian.h		   \
  Makefile.Watcom config-tpf.h $(DOCS) $(VCPROJ) mk-ca-bundle.pl		   \
- firefox-db2pem.sh $(CMAKE_DIST) config-vxworks.h Makefile.vxworks
+ mk-ca-bundle.vbs firefox-db2pem.sh $(CMAKE_DIST) config-vxworks.h	   \
+ Makefile.vxworks
 
 CLEANFILES = $(DSP) $(VCPROJ)
 
 lib_LTLIBRARIES = libcurl.la
 LIBCURL_LIBS = @LIBCURL_LIBS@
+
+# This might hold -Werror
+CFLAGS += @CURL_CFLAG_EXTRAS@
 
 # Specify our include paths here, and do it relative to $(top_srcdir) and
 # $(top_builddir), to ensure that these paths which belong to the library

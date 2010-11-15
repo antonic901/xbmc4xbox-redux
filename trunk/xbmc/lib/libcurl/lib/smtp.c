@@ -91,6 +91,7 @@
 #include "curl_base64.h"
 #include "curl_md5.h"
 #include "curl_hmac.h"
+#include "curl_gethostname.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -236,7 +237,8 @@ static int smtp_endofresp(struct pingpong *pp, int *resp)
 
     for (;;) {
       while (len &&
-       (*line == ' ' || *line == '\t' || *line == '\r' || *line == '\n')) {
+             (*line == ' ' || *line == '\t' ||
+              *line == '\r' || *line == '\n')) {
         line++;
         len--;
       }
@@ -245,7 +247,8 @@ static int smtp_endofresp(struct pingpong *pp, int *resp)
         break;
 
       for (wordlen = 0; wordlen < len && line[wordlen] != ' ' &&
-       line[wordlen] != '\t' && line[wordlen] != '\r' && line[wordlen] != '\n';)
+             line[wordlen] != '\t' && line[wordlen] != '\r' &&
+             line[wordlen] != '\n';)
         wordlen++;
 
       if(wordlen == 5 && !memcmp(line, "LOGIN", 5))
@@ -343,7 +346,7 @@ static size_t smtp_auth_plain_data(struct connectdata * conn, char * * outptr)
   plen = strlen(conn->passwd);
 
   if(2 * ulen + plen + 2 > sizeof plainauth)
-    return -1;
+    return 0;
 
   memcpy(plainauth, conn->user, ulen);
   plainauth[ulen] = '\0';
@@ -361,7 +364,7 @@ static size_t smtp_auth_login_user(struct connectdata * conn, char * * outptr)
 
   if(!ulen) {
     *outptr = strdup("=");
-    return *outptr? 1: -1;
+    return *outptr? 1: 0;
   }
 
   return Curl_base64_encode(conn->data, conn->user, ulen, outptr);
@@ -408,14 +411,16 @@ static CURLcode smtp_authenticate(struct connectdata *conn)
       state2 = SMTP_AUTHPASSWD;
       l = smtp_auth_login_user(conn, &initresp);
     }
-    else
+    else {
+      infof(conn->data, "No known auth mechanisms supported!\n");
       result = CURLE_LOGIN_DENIED;      /* Other mechanisms not supported. */
+    }
 
     if(!result) {
-      if(l <= 0)
+      if(!l)
         result = CURLE_OUT_OF_MEMORY;
       else if(initresp &&
-       l + strlen(mech) <= 512 - 8) {   /* AUTH <mech> ...<crlf> */
+              l + strlen(mech) <= 512 - 8) {   /* AUTH <mech> ...<crlf> */
         result = Curl_pp_sendf(&smtpc->pp, "AUTH %s %s", mech, initresp);
         free(initresp);
 
@@ -543,7 +548,7 @@ static CURLcode smtp_state_authplain_resp(struct connectdata *conn,
   else {
     l = smtp_auth_plain_data(conn, &plainauth);
 
-    if(l <= 0)
+    if(!l)
       result = CURLE_OUT_OF_MEMORY;
     else {
       result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s", plainauth);
@@ -576,7 +581,7 @@ static CURLcode smtp_state_authlogin_resp(struct connectdata *conn,
   else {
     l = smtp_auth_login_user(conn, &authuser);
 
-    if(l <= 0)
+    if(!l)
       result = CURLE_OUT_OF_MEMORY;
     else {
       result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s", authuser);
@@ -599,7 +604,7 @@ static CURLcode smtp_state_authpasswd_resp(struct connectdata *conn,
   struct SessionHandle *data = conn->data;
   size_t plen;
   size_t l;
-  char * authpasswd;
+  char *authpasswd;
 
   (void)instate; /* no use for this yet */
 
@@ -615,7 +620,7 @@ static CURLcode smtp_state_authpasswd_resp(struct connectdata *conn,
     else {
       l = Curl_base64_encode(data, conn->passwd, plen, &authpasswd);
 
-      if(l <= 0)
+      if(!l)
         result = CURLE_OUT_OF_MEMORY;
       else {
         result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s", authpasswd);
@@ -706,7 +711,7 @@ static CURLcode smtp_state_authcram_resp(struct connectdata *conn,
   /* Encode it to base64 and send it. */
   l = Curl_base64_encode(data, reply, 0, &rplyb64);
 
-  if(l <= 0)
+  if(!l)
     result = CURLE_OUT_OF_MEMORY;
   else {
     result = Curl_pp_sendf(&conn->proto.smtpc.pp, "%s", rplyb64);
@@ -1041,10 +1046,7 @@ static CURLcode smtp_connect(struct connectdata *conn,
   struct pingpong *pp=&smtpc->pp;
   const char *path = conn->data->state.path;
   int len;
-
-#ifdef HAVE_GETHOSTNAME
-    char localhost[1024 + 1];
-#endif
+  char localhost[1024 + 1];
 
   *done = FALSE; /* default to not done yet */
 
@@ -1110,12 +1112,10 @@ static CURLcode smtp_connect(struct connectdata *conn,
   pp->conn = conn;
 
   if(!*path) {
-#ifdef HAVE_GETHOSTNAME
-    if(!gethostname(localhost, sizeof localhost))
+    if(!Curl_gethostname(localhost, sizeof localhost))
       path = localhost;
     else
-#endif
-    path = "localhost";
+      path = "localhost";
   }
 
   /* url decode the path and use it as domain with EHLO */

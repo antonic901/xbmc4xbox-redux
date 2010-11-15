@@ -24,6 +24,9 @@
 /* to disable FTP */
 #undef CURL_DISABLE_FTP
 
+/* to disable Gopher */
+#undef CURL_DISABLE_GOPHER
+
 /* to disable HTTP */
 #undef CURL_DISABLE_HTTP
 
@@ -361,6 +364,9 @@
 /* Define to 1 if you have the `ldap_url_parse' function. */
 #undef HAVE_LDAP_URL_PARSE
 
+/* Define to 1 if you have the `gcrypt' library (-lgcrypt). */
+#undef HAVE_LIBGCRYPT
+
 /* Define to 1 if you have the <libgen.h> header file. */
 #undef HAVE_LIBGEN_H
 
@@ -372,9 +378,6 @@
 
 /* Define to 1 if you have the `resolve' library (-lresolve). */
 #undef HAVE_LIBRESOLVE
-
-/* Define to 1 if you have the `rtmp' library (-lrtmp). */
-#undef HAVE_LIBRTMP
 
 /* Define to 1 if you have the <librtmp/rtmp.h> header file. */
 #undef HAVE_LIBRTMP_RTMP_H
@@ -390,6 +393,9 @@
 
 /* Define to 1 if you have the `libssh2_init' function. */
 #undef HAVE_LIBSSH2_INIT
+
+/* Define to 1 if you have the `libssh2_scp_send64' function. */
+#undef HAVE_LIBSSH2_SCP_SEND64
 
 /* Define to 1 if you have the `libssh2_version' function. */
 #undef HAVE_LIBSSH2_VERSION

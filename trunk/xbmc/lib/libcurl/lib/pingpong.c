@@ -322,7 +322,7 @@ CURLcode Curl_pp_readresp(curl_socket_t sockfd,
        */
       DEBUGASSERT((ptr+pp->cache_size) <= (buf+BUFSIZE+1));
       memcpy(ptr, pp->cache, pp->cache_size);
-      gotbytes = pp->cache_size;
+      gotbytes = (ssize_t)pp->cache_size;
       free(pp->cache);    /* free the cache */
       pp->cache = NULL;   /* clear the pointer */
       pp->cache_size = 0; /* zero the size just in case */
@@ -386,8 +386,8 @@ CURLcode Curl_pp_readresp(curl_socket_t sockfd,
           if(!conn->sec_complete)
 #endif
             if(data->set.verbose)
-            Curl_debug(data, CURLINFO_HEADER_IN,
-                       pp->linestart_resp, (size_t)perline, conn);
+              Curl_debug(data, CURLINFO_HEADER_IN,
+                         pp->linestart_resp, (size_t)perline, conn);
 
           /*
            * We pass all response-lines to the callback function registered

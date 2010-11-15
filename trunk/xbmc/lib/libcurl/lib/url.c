@@ -138,6 +138,7 @@ void idn_free (void *ptr); /* prototype from idn-free.h, not provided by
 #include "socks.h"
 #include "rtsp.h"
 #include "curl_rtmp.h"
+#include "gopher.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -225,6 +226,10 @@ static const struct Curl_handler * const protocols[] = {
 
 #ifndef CURL_DISABLE_RTSP
   &Curl_handler_rtsp,
+#endif
+
+#ifndef CURL_DISABLE_GOPHER
+  &Curl_handler_gopher,
 #endif
 
 #ifdef USE_LIBRTMP
@@ -476,10 +481,20 @@ CURLcode Curl_close(struct SessionHandle *data)
   }
 #endif
 
+  Curl_expire(data, 0); /* shut off timers */
+
   if(m)
     /* This handle is still part of a multi handle, take care of this first
        and detach this handle from there. */
-    Curl_multi_rmeasy(data->multi, data);
+    curl_multi_remove_handle(data->multi, data);
+
+  /* Destroy the timeout list that is held in the easy handle. It is
+     /normally/ done by curl_multi_remove_handle() but this is "just in
+     case" */
+  if(data->state.timeoutlist) {
+    Curl_llist_destroy(data->state.timeoutlist, NULL);
+    data->state.timeoutlist = NULL;
+  }
 
   data->magic = 0; /* force a clear AFTER the possibly enforced removal from
                       the multi handle, since that function uses the magic
@@ -1404,19 +1419,6 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
     data->set.httpversion = va_arg(param, long);
     break;
 
-  case CURLOPT_CUSTOMREQUEST:
-    /*
-     * Set a custom string to use as request
-     */
-    result = setstropt(&data->set.str[STRING_CUSTOMREQUEST],
-                       va_arg(param, char *));
-
-    /* we don't set
-       data->set.httpreq = HTTPREQ_CUSTOM;
-       here, we continue as if we were using the already set type
-       and this just changes the actual request keyword */
-    break;
-
   case CURLOPT_HTTPAUTH:
     /*
      * Set HTTP Authentication type BITMASK.
@@ -1447,6 +1449,21 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
     data->set.httpauth = auth;
   }
   break;
+
+#endif   /* CURL_DISABLE_HTTP */
+
+  case CURLOPT_CUSTOMREQUEST:
+    /*
+     * Set a custom string to use as request
+     */
+    result = setstropt(&data->set.str[STRING_CUSTOMREQUEST],
+                       va_arg(param, char *));
+
+    /* we don't set
+       data->set.httpreq = HTTPREQ_CUSTOM;
+       here, we continue as if we were using the already set type
+       and this just changes the actual request keyword */
+    break;
 
 #ifndef CURL_DISABLE_PROXY
   case CURLOPT_HTTPPROXYTUNNEL:
@@ -1492,7 +1509,6 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
     data->set.proxyauth = auth;
   }
   break;
-#endif   /* CURL_DISABLE_HTTP */
 
   case CURLOPT_PROXY:
     /*
@@ -1532,7 +1548,7 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
       break;
     }
     break;
-#endif
+#endif   /* CURL_DISABLE_PROXY */
 
 #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
   case CURLOPT_SOCKS5_GSSAPI_SERVICE:
@@ -2565,7 +2581,6 @@ CURLcode Curl_disconnect(struct connectdata *conn)
                   NULL, Curl_scan_cache_used);
 #endif
 
-  Curl_expire(data, 0); /* shut off timers */
   Curl_hostcache_prune(data); /* kill old DNS cache entries */
 
   {
@@ -2684,11 +2699,10 @@ static bool RTSPConnIsDead(struct connectdata *check)
   }
   else if (sval & CURL_CSELECT_IN) {
     /* readable with no error. could be closed or could be alive */
-    long connectinfo = 0;
-    Curl_getconnectinfo(check->data, &connectinfo, &check);
-    if(connectinfo != -1) {
+    curl_socket_t connectinfo =
+      Curl_getconnectinfo(check->data, &check);
+    if(connectinfo != CURL_SOCKET_BAD)
       ret_val = FALSE;
-    }
   }
 
   return ret_val;
@@ -3126,19 +3140,13 @@ ConnectionStore(struct SessionHandle *data,
 /* after a TCP connection to the proxy has been verified, this function does
    the next magic step.
 
-   Note: this function (and its sub-functions) calls failf()
+   Note: this function's sub-functions call failf()
 
 */
 CURLcode Curl_connected_proxy(struct connectdata *conn)
 {
   CURLcode result = CURLE_OK;
   struct SessionHandle *data = conn->data;
-
-  if(conn->bits.tcpconnect)
-    /* allow this to get called again from the multi interface when TCP is
-       found connected in the state machine, even though it has already been
-       called if the connection happened "instantly" */
-    return CURLE_OK;
 
   switch(data->set.proxytype) {
 #ifndef CURL_DISABLE_PROXY
@@ -4264,18 +4272,23 @@ static CURLcode parse_remote_port(struct SessionHandle *data,
     if(conn->bits.httpproxy) {
       /* we need to create new URL with the new port number */
       char *url;
-      /* FTPS connections have the FTP bit set too, so they match as well */
-      bool isftp = (bool)(0 != (conn->protocol & PROT_FTP));
+      char type[12]="";
+
+      if(conn->bits.type_set)
+        snprintf(type, sizeof(type), ";type=%c",
+                 data->set.prefer_ascii?'A':
+                 (data->set.ftp_list_only?'D':'I'));
 
       /*
-       * This synthesized URL isn't always right--suffixes like ;type=A
-       * are stripped off. It would be better to work directly from the
-       * original URL and simply replace the port part of it.
+       * This synthesized URL isn't always right--suffixes like ;type=A are
+       * stripped off. It would be better to work directly from the original
+       * URL and simply replace the port part of it.
        */
-      url = aprintf("%s://%s%s%s:%hu%s%s", conn->handler->scheme,
+      url = aprintf("%s://%s%s%s:%hu%s%s%s", conn->handler->scheme,
                     conn->bits.ipv6_ip?"[":"", conn->host.name,
                     conn->bits.ipv6_ip?"]":"", conn->remote_port,
-                    isftp?"/":"", data->state.path);
+                    data->state.slash_removed?"/":"", data->state.path,
+                    type);
       if(!url)
         return CURLE_OUT_OF_MEMORY;
 
@@ -4307,6 +4320,11 @@ static CURLcode parse_remote_port(struct SessionHandle *data,
       *portptr = '\0'; /* cut off the name there */
       conn->remote_port = curlx_ultous(port);
     }
+    else if(!port)
+      /* Browser behavior adaptation. If there's a colon with no digits after,
+         just cut off the name there which makes us ignore the colon and just
+         use the default port. Firefox and Chrome both do that. */
+      *portptr = '\0';
   }
   return CURLE_OK;
 }
@@ -4387,30 +4405,7 @@ static CURLcode resolve_server(struct SessionHandle *data,
                                bool *async)
 {
   CURLcode result=CURLE_OK;
-  long shortest = 0; /* default to no timeout */
-
-  /*************************************************************
-   * Set timeout if that is being used
-   *************************************************************/
-  if(data->set.timeout || data->set.connecttimeout) {
-
-    /* We set the timeout on the name resolving phase first, separately from
-     * the download/upload part to allow a maximum time on everything. This is
-     * a signal-based timeout, why it won't work and shouldn't be used in
-     * multi-threaded environments. */
-
-    shortest = data->set.timeout; /* default to this timeout value */
-    if(shortest && data->set.connecttimeout &&
-       (data->set.connecttimeout < shortest))
-      /* if both are set, pick the shortest */
-      shortest = data->set.connecttimeout;
-    else if(!shortest)
-      /* if timeout is not set, use the connect timeout */
-      shortest = data->set.connecttimeout;
-  /* We can expect the conn->created time to be "now", as that was just
-     recently set in the beginning of this function and nothing slow
-     has been done since then until now. */
-  }
+  long timeout_ms = Curl_timeleft(conn, NULL, TRUE);
 
   /*************************************************************
    * Resolve the name of the server or proxy
@@ -4437,7 +4432,7 @@ static CURLcode resolve_server(struct SessionHandle *data,
 
       /* Resolve target host right on */
       rc = Curl_resolv_timeout(conn, conn->host.name, (int)conn->port,
-                               &hostaddr, shortest);
+                               &hostaddr, timeout_ms);
       if(rc == CURLRESOLV_PENDING)
         *async = TRUE;
 
@@ -4458,7 +4453,7 @@ static CURLcode resolve_server(struct SessionHandle *data,
 
       /* resolve proxy */
       rc = Curl_resolv_timeout(conn, conn->proxy.name, (int)conn->port,
-                               &hostaddr, shortest);
+                               &hostaddr, timeout_ms);
 
       if(rc == CURLRESOLV_PENDING)
         *async = TRUE;
@@ -5137,8 +5132,6 @@ CURLcode Curl_done(struct connectdata **connp,
   conn = *connp;
   data = conn->data;
 
-  Curl_expire(data, 0); /* stop timer */
-
   if(conn->bits.done)
     /* Stop if Curl_done() has already been called */
     return CURLE_OK;
@@ -5292,10 +5285,8 @@ static CURLcode do_init(struct connectdata *conn)
 static void do_complete(struct connectdata *conn)
 {
   conn->data->req.chunk=FALSE;
-  conn->data->req.trailerhdrpresent=FALSE;
-
   conn->data->req.maxfd = (conn->sockfd>conn->writesockfd?
-                               conn->sockfd:conn->writesockfd)+1;
+                           conn->sockfd:conn->writesockfd)+1;
 }
 
 CURLcode Curl_do(struct connectdata **connp, bool *done)

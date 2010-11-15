@@ -103,6 +103,7 @@
 #include "multiif.h"
 #include "easyif.h" /* for Curl_convert_to_network prototype */
 #include "rtsp.h"
+#include "connect.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -594,9 +595,12 @@ static CURLcode readwrite_data(struct SessionHandle *data,
 
           dataleft = conn->chunk.dataleft;
           if(dataleft != 0) {
-            infof(conn->data, "Leftovers after chunking. "
-                  " Rewinding %zu bytes\n",dataleft);
-            read_rewind(conn, dataleft);
+            infof(conn->data, "Leftovers after chunking: %zu bytes", dataleft);
+            if(conn->data->multi && Curl_multi_canPipeline(conn->data->multi)) {
+              /* only attempt the rewind if we truly are pipelining */
+              infof(conn->data, "Rewinding %zu bytes\n",dataleft);
+              read_rewind(conn, dataleft);
+            }
           }
         }
         /* If it returned OK, we just keep going */
@@ -811,6 +815,9 @@ static CURLcode readwrite_upload(struct SessionHandle *data,
           k->keepon &= ~KEEP_SEND;         /* disable writing */
           k->start100 = Curl_tvnow();       /* timeout count starts now */
           *didwhat &= ~KEEP_SEND;  /* we didn't write anything actually */
+
+          /* set a timeout for the multi interface */
+          Curl_expire(data, CURL_TIMEOUT_EXPECT_100);
           break;
         }
 
@@ -1057,17 +1064,17 @@ CURLcode Curl_readwrite(struct connectdata *conn,
     return result;
 
   if(k->keepon) {
-    if(data->set.timeout &&
-       (Curl_tvdiff(k->now, k->start) >= data->set.timeout)) {
+    if(0 > Curl_timeleft(conn, &k->now, FALSE)) {
       if(k->size != -1) {
         failf(data, "Operation timed out after %ld milliseconds with %"
               FORMAT_OFF_T " out of %" FORMAT_OFF_T " bytes received",
-              Curl_tvdiff(k->now, k->start), k->bytecount, k->size);
+              Curl_tvdiff(k->now, data->progress.t_startsingle), k->bytecount,
+              k->size);
       }
       else {
         failf(data, "Operation timed out after %ld milliseconds with %"
               FORMAT_OFF_T " bytes received",
-              Curl_tvdiff(k->now, k->start), k->bytecount);
+              Curl_tvdiff(k->now, data->progress.t_startsingle), k->bytecount);
       }
       return CURLE_OPERATION_TIMEDOUT;
     }
@@ -1340,12 +1347,10 @@ Transfer(struct connectdata *conn)
          to work with, skip the timeout */
       timeout_ms = 0;
     else {
-      if(data->set.timeout) {
-        totmp = (int)(data->set.timeout - Curl_tvdiff(k->now, k->start));
-        if(totmp < 0)
-          return CURLE_OPERATION_TIMEDOUT;
-      }
-      else
+      totmp = Curl_timeleft(conn, &k->now, FALSE);
+      if(totmp < 0)
+        return CURLE_OPERATION_TIMEDOUT;
+      else if(!totmp)
         totmp = 1000;
 
       if (totmp < timeout_ms)
@@ -1429,6 +1434,12 @@ CURLcode Curl_pretransfer(struct SessionHandle *data)
 
   Curl_initinfo(data); /* reset session-specific information "variables" */
   Curl_pgrsStartNow(data);
+
+  if(data->set.timeout)
+    Curl_expire(data, data->set.timeout);
+
+  if(data->set.connecttimeout)
+    Curl_expire(data, data->set.connecttimeout);
 
   return CURLE_OK;
 }
@@ -2265,6 +2276,9 @@ Curl_setup_transfer(
         /* wait with write until we either got 100-continue or a timeout */
         k->exp100 = EXP100_AWAITING_CONTINUE;
         k->start100 = k->start;
+
+        /* set a timeout for the multi interface */
+        Curl_expire(data, CURL_TIMEOUT_EXPECT_100);
       }
       else {
         if(data->state.expect100header)

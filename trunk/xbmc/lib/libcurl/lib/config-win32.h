@@ -510,6 +510,10 @@
 #  define USE_WIN32_LARGE_FILES
 #endif
 
+#if defined(__WATCOMC__) && !defined(USE_WIN32_LARGE_FILES)
+#  define USE_WIN32_LARGE_FILES
+#endif
+
 #if defined(__POCC__)
 #  undef USE_WIN32_LARGE_FILES
 #endif
@@ -552,6 +556,13 @@
 #define CURL_LDAP_WIN 1
 #endif
 
+#if defined(__WATCOMC__) && defined(CURL_LDAP_WIN)
+#if __WATCOMC__ < 1280
+#define WINBERAPI  __declspec(cdecl)
+#define WINLDAPAPI __declspec(cdecl)
+#endif
+#endif
+
 #if defined(__POCC__) && defined(CURL_LDAP_WIN)
 #  define CURL_DISABLE_LDAP 1
 #endif
@@ -575,7 +586,7 @@
 /* Name of package */
 #define PACKAGE "curl"
 
-#if defined(__POCC__)
+#if defined(__POCC__) || (USE_IPV6)
 #  define ENABLE_IPV6 1
 #endif
 

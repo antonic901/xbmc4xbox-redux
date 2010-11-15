@@ -51,7 +51,7 @@ check_PROGRAMS = 10-at-a-time$(EXEEXT) anyauthput$(EXEEXT) \
 	post-callback$(EXEEXT) postit2$(EXEEXT) sepheaders$(EXEEXT) \
 	simple$(EXEEXT) simplepost$(EXEEXT) simplessl$(EXEEXT) \
 	sendrecv$(EXEEXT) httpcustomheader$(EXEEXT) certinfo$(EXEEXT) \
-	chkspeed$(EXEEXT) ftpgetinfo$(EXEEXT)
+	chkspeed$(EXEEXT) ftpgetinfo$(EXEEXT) ftp-wildcard$(EXEEXT)
 subdir = docs/examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/curl-compilers.m4 \
@@ -102,6 +102,10 @@ fopen_SOURCES = fopen.c
 fopen_OBJECTS = fopen.$(OBJEXT)
 fopen_LDADD = $(LDADD)
 fopen_DEPENDENCIES = $(LIBDIR)/libcurl.la
+ftp_wildcard_SOURCES = ftp-wildcard.c
+ftp_wildcard_OBJECTS = ftp-wildcard.$(OBJEXT)
+ftp_wildcard_LDADD = $(LDADD)
+ftp_wildcard_DEPENDENCIES = $(LIBDIR)/libcurl.la
 ftpget_SOURCES = ftpget.c
 ftpget_OBJECTS = ftpget.$(OBJEXT)
 ftpget_LDADD = $(LDADD)
@@ -206,17 +210,17 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
-	cookie_interface.c debug.c fileupload.c fopen.c ftpget.c \
-	ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c getinmemory.c \
-	http-post.c httpcustomheader.c httpput.c https.c multi-app.c \
-	multi-debugcallback.c multi-double.c multi-post.c \
+	cookie_interface.c debug.c fileupload.c fopen.c ftp-wildcard.c \
+	ftpget.c ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c \
+	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
+	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
 	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c
 DIST_SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
-	cookie_interface.c debug.c fileupload.c fopen.c ftpget.c \
-	ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c getinmemory.c \
-	http-post.c httpcustomheader.c httpput.c https.c multi-app.c \
-	multi-debugcallback.c multi-double.c multi-post.c \
+	cookie_interface.c debug.c fileupload.c fopen.c ftp-wildcard.c \
+	ftpget.c ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c \
+	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
+	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
 	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c
 ETAGS = etags
@@ -232,6 +236,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_LIBHOSTNAME_FALSE = @BUILD_LIBHOSTNAME_FALSE@
+BUILD_LIBHOSTNAME_TRUE = @BUILD_LIBHOSTNAME_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -243,9 +249,11 @@ CROSSCOMPILING_TRUE = @CROSSCOMPILING_TRUE@
 CURLDEBUG_FALSE = @CURLDEBUG_FALSE@
 CURLDEBUG_TRUE = @CURLDEBUG_TRUE@
 CURL_CA_BUNDLE = @CURL_CA_BUNDLE@
+CURL_CFLAG_EXTRAS = @CURL_CFLAG_EXTRAS@
 CURL_DISABLE_DICT = @CURL_DISABLE_DICT@
 CURL_DISABLE_FILE = @CURL_DISABLE_FILE@
 CURL_DISABLE_FTP = @CURL_DISABLE_FTP@
+CURL_DISABLE_GOPHER = @CURL_DISABLE_GOPHER@
 CURL_DISABLE_HTTP = @CURL_DISABLE_HTTP@
 CURL_DISABLE_IMAP = @CURL_DISABLE_IMAP@
 CURL_DISABLE_LDAP = @CURL_DISABLE_LDAP@
@@ -257,6 +265,7 @@ CURL_DISABLE_SMTP = @CURL_DISABLE_SMTP@
 CURL_DISABLE_TELNET = @CURL_DISABLE_TELNET@
 CURL_DISABLE_TFTP = @CURL_DISABLE_TFTP@
 CURL_LIBS = @CURL_LIBS@
+CURL_NETWORK_LIBS = @CURL_NETWORK_LIBS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -267,6 +276,7 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_SHARED = @ENABLE_SHARED@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
@@ -425,10 +435,9 @@ LDADD = $(LIBDIR)/libcurl.la
 
 # These examples require external dependencies that may not be commonly
 # available on POSIX systems, so don't bother attempting to compile them here.
-COMPLICATED_EXAMPLES = \
- curlgtk.c curlx.c htmltitle.cc cacertinmem.c ftpuploadresume.c \
- ghiper.c hiperfifo.c htmltidy.c multithread.c \
- opensslthreadlock.c sampleconv.c synctime.c threaded-ssl.c evhiperfifo.c
+COMPLICATED_EXAMPLES = curlgtk.c curlx.c htmltitle.cc cacertinmem.c	   \
+  ftpuploadresume.c ghiper.c hiperfifo.c htmltidy.c multithread.c	   \
+  opensslthreadlock.c sampleconv.c synctime.c threaded-ssl.c evhiperfifo.c
 
 all: all-am
 
@@ -494,6 +503,9 @@ fileupload$(EXEEXT): $(fileupload_OBJECTS) $(fileupload_DEPENDENCIES)
 fopen$(EXEEXT): $(fopen_OBJECTS) $(fopen_DEPENDENCIES) 
 	@rm -f fopen$(EXEEXT)
 	$(LINK) $(fopen_LDFLAGS) $(fopen_OBJECTS) $(fopen_LDADD) $(LIBS)
+ftp-wildcard$(EXEEXT): $(ftp_wildcard_OBJECTS) $(ftp_wildcard_DEPENDENCIES) 
+	@rm -f ftp-wildcard$(EXEEXT)
+	$(LINK) $(ftp_wildcard_LDFLAGS) $(ftp_wildcard_OBJECTS) $(ftp_wildcard_LDADD) $(LIBS)
 ftpget$(EXEEXT): $(ftpget_OBJECTS) $(ftpget_DEPENDENCIES) 
 	@rm -f ftpget$(EXEEXT)
 	$(LINK) $(ftpget_LDFLAGS) $(ftpget_OBJECTS) $(ftpget_LDADD) $(LIBS)
@@ -578,6 +590,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fileupload.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fopen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftp-wildcard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftpget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftpgetinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftpgetresp.Po@am__quote@

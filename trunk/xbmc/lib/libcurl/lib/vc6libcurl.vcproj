@@ -410,6 +410,9 @@
 				RelativePath=".\curl_fnmatch.c">
 			</File>
 			<File
+				RelativePath=".\curl_gethostname.c">
+			</File>
+			<File
 				RelativePath=".\curl_memrchr.c">
 			</File>
 			<File
@@ -725,6 +728,9 @@
 						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\gopher.c">
 			</File>
 			<File
 				RelativePath="gtls.c">
@@ -1508,6 +1514,9 @@
 						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\md4.c">
 			</File>
 			<File
 				RelativePath="md5.c">
@@ -2720,10 +2729,16 @@
 				RelativePath=".\curl_fnmatch.h">
 			</File>
 			<File
+				RelativePath=".\curl_gethostname.h">
+			</File>
+			<File
 				RelativePath=".\curl_hmac.h">
 			</File>
 			<File
 				RelativePath="curl_ldap.h">
+			</File>
+			<File
+				RelativePath=".\curl_md4.h">
 			</File>
 			<File
 				RelativePath="curl_md5.h">
@@ -2775,6 +2790,9 @@
 			</File>
 			<File
 				RelativePath="getinfo.h">
+			</File>
+			<File
+				RelativePath=".\gopher.h">
 			</File>
 			<File
 				RelativePath="gtls.h">

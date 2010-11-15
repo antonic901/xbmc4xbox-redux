@@ -709,7 +709,7 @@ CURLcode Curl_rtsp_parseheader(struct connectdata *conn,
     while(*start && ISSPACE(*start))
       start++;
 
-    if(!start) {
+    if(!*start) {
       failf(data, "Got a blank Session ID");
     }
     else if(data->set.str[STRING_RTSP_SESSION_ID]) {

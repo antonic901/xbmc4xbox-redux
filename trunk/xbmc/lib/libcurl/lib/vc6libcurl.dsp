@@ -174,6 +174,10 @@ SOURCE=.\curl_fnmatch.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\curl_gethostname.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\curl_memrchr.c
 # End Source File
 # Begin Source File
@@ -231,6 +235,10 @@ SOURCE=.\getenv.c
 # Begin Source File
 
 SOURCE=.\getinfo.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\gopher.c
 # End Source File
 # Begin Source File
 
@@ -323,6 +331,10 @@ SOURCE=.\ldap.c
 # Begin Source File
 
 SOURCE=.\llist.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\md4.c
 # End Source File
 # Begin Source File
 
@@ -534,11 +546,19 @@ SOURCE=.\curl_fnmatch.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\curl_gethostname.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\curl_hmac.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\curl_ldap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\curl_md4.h
 # End Source File
 # Begin Source File
 
@@ -607,6 +627,10 @@ SOURCE=.\ftplistparser.h
 # Begin Source File
 
 SOURCE=.\getinfo.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\gopher.h
 # End Source File
 # Begin Source File
 

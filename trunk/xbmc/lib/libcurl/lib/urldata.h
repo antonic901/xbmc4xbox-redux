@@ -46,6 +46,7 @@
 #define PORT_RTMP 1935
 #define PORT_RTMPT PORT_HTTP
 #define PORT_RTMPS PORT_HTTPS
+#define PORT_GOPHER 70
 
 #define DICT_MATCH "/MATCH:"
 #define DICT_MATCH2 "/M:"
@@ -418,6 +419,7 @@ struct ConnectBits {
                                 that libcurl should reconnect and continue. */
   bool bound; /* set true if bind() has already been done on this socket/
                  connection */
+  bool type_set;  /* type= was used in the URL */
 };
 
 struct hostname {
@@ -587,9 +589,6 @@ struct SingleRequest {
   bool forbidchunk;   /* used only to explicitly forbid chunk-upload for
                          specific upload buffers. See readmoredata() in
                          http.c for details. */
-  bool trailerhdrpresent; /* Set when Trailer: header found in HTTP response.
-                             Required to determine whether to look for trailers
-                             in case of Transfer-Encoding: chunking */
 };
 
 /*
@@ -714,11 +713,13 @@ struct connectdata {
 #define PROT_RTMPTE  CURLPROTO_RTMPTE
 #define PROT_RTMPS   CURLPROTO_RTMPS
 #define PROT_RTMPTS  CURLPROTO_RTMPTS
+#define PROT_GOPHER  CURLPROTO_GOPHER
 
-/* (1<<24) is currently the highest used bit in the public bitmask. We make
-   sure we use "private bits" above the public ones to make things easier. */
+/* (1<<25) is currently the highest used bit in the public bitmask. We make
+   sure we use "private bits" above the public ones to make things easier;
+   Gopher will not conflict with the current bit 25. */
 
-#define PROT_EXTMASK 0xffffff
+#define PROT_EXTMASK 0x03ffffff
 
 #define PROT_SSL     (1<<29) /* protocol requires SSL */
 
@@ -805,7 +806,7 @@ struct connectdata {
   enum protection_level data_prot;
   enum protection_level request_data_prot;
   size_t buffer_size;
-  struct krb4buffer in_buffer, out_buffer;
+  struct krb4buffer in_buffer;
   void *app_data;
   const struct Curl_sec_client_mech *mech;
   struct sockaddr_in local_addr;
@@ -1093,6 +1094,7 @@ struct UrlState {
 #endif /* USE_SSLEAY */
   struct timeval expiretime; /* set this with Curl_expire() only */
   struct Curl_tree timenode; /* for the splay stuff */
+  struct curl_llist *timeoutlist; /* list of pending timeouts */
 
   /* a place to store the most recently set FTP entrypath */
   char *most_recent_ftp_entrypath;
@@ -1127,7 +1129,8 @@ struct UrlState {
   char *pathbuffer;/* allocated buffer to store the URL's path part in */
   char *path;      /* path to use, points to somewhere within the pathbuffer
                       area */
-
+  bool slash_removed; /* set TRUE if the 'path' points to a path where the
+                         initial URL slash separator has been taken off */
   bool use_range;
   bool rangestringalloc; /* the range string is malloc()'ed */
 

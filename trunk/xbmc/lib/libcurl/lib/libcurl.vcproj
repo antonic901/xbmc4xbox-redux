@@ -109,6 +109,7 @@
 <File RelativePath="cookie.c"></File>
 <File RelativePath="curl_addrinfo.c"></File>
 <File RelativePath="curl_fnmatch.c"></File>
+<File RelativePath="curl_gethostname.c"></File>
 <File RelativePath="curl_memrchr.c"></File>
 <File RelativePath="curl_rand.c"></File>
 <File RelativePath="curl_rtmp.c"></File>
@@ -124,6 +125,7 @@
 <File RelativePath="ftplistparser.c"></File>
 <File RelativePath="getenv.c"></File>
 <File RelativePath="getinfo.c"></File>
+<File RelativePath="gopher.c"></File>
 <File RelativePath="gtls.c"></File>
 <File RelativePath="hash.c"></File>
 <File RelativePath="hmac.c"></File>
@@ -147,6 +149,7 @@
 <File RelativePath="krb5.c"></File>
 <File RelativePath="ldap.c"></File>
 <File RelativePath="llist.c"></File>
+<File RelativePath="md4.c"></File>
 <File RelativePath="md5.c"></File>
 <File RelativePath="memdebug.c"></File>
 <File RelativePath="mprintf.c"></File>
@@ -199,8 +202,10 @@
 <File RelativePath="curl_addrinfo.h"></File>
 <File RelativePath="curl_base64.h"></File>
 <File RelativePath="curl_fnmatch.h"></File>
+<File RelativePath="curl_gethostname.h"></File>
 <File RelativePath="curl_hmac.h"></File>
 <File RelativePath="curl_ldap.h"></File>
+<File RelativePath="curl_md4.h"></File>
 <File RelativePath="curl_md5.h"></File>
 <File RelativePath="curl_memory.h"></File>
 <File RelativePath="curl_memrchr.h"></File>
@@ -218,6 +223,7 @@
 <File RelativePath="ftp.h"></File>
 <File RelativePath="ftplistparser.h"></File>
 <File RelativePath="getinfo.h"></File>
+<File RelativePath="gopher.h"></File>
 <File RelativePath="gtls.h"></File>
 <File RelativePath="hash.h"></File>
 <File RelativePath="hostip.h"></File>

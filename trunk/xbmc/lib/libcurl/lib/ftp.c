@@ -324,7 +324,7 @@ static CURLcode AllowServerConnect(struct connectdata *conn)
   for(;;) {
     timeout_ms = Curl_timeleft(conn, NULL, TRUE);
 
-    if(timeout_ms <= 0) {
+    if(timeout_ms < 0) {
       /* if a timeout was already reached, bail out */
       failf(data, "Timeout while waiting for server connect");
       return CURLE_OPERATION_TIMEDOUT;
@@ -2424,7 +2424,7 @@ static CURLcode ftp_statemach_act(struct connectdata *conn)
            set a valid level */
         Curl_sec_request_prot(conn, data->set.str[STRING_KRB_LEVEL]);
 
-        if(Curl_sec_login(conn) != 0)
+        if(Curl_sec_login(conn) != CURLE_OK)
           infof(data, "Logging in with password in cleartext!\n");
         else
           infof(data, "Authentication successful\n");
@@ -3076,10 +3076,6 @@ static CURLcode ftp_done(struct connectdata *conn, CURLcode status,
   /* free the dir tree and file parts */
   freedirs(ftpc);
 
-#if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
-  Curl_sec_fflush_fd(conn, conn->sock[SECONDARYSOCKET]);
-#endif
-
   /* shut down the socket to inform the server we're done */
 
 #ifdef _WIN32_WCE
@@ -3203,6 +3199,8 @@ CURLcode ftp_sendquote(struct connectdata *conn, struct curl_slist *quote)
   ssize_t nread;
   int ftpcode;
   CURLcode result;
+  struct ftp_conn *ftpc = &conn->proto.ftpc;
+  struct pingpong *pp = &ftpc->pp;
 
   item = quote;
   while(item) {
@@ -3221,6 +3219,8 @@ CURLcode ftp_sendquote(struct connectdata *conn, struct curl_slist *quote)
       }
 
       FTPSENDF(conn, "%s", cmd);
+
+      pp->response = Curl_tvnow(); /* timeout relative now */
 
       result = Curl_GetFTPResponse(&nread, conn, &ftpcode);
       if(result)
@@ -3509,7 +3509,7 @@ static CURLcode init_wc_data(struct connectdata *conn)
       path[0] = '\0';
     }
     else { /* only list */
-      conn->data->set.wildcardmatch = FALSE;
+      wildcard->state = CURLWC_CLEAN;
       ret = ftp_parse_url_path(conn);
       return ret;
     }
@@ -3526,8 +3526,10 @@ static CURLcode init_wc_data(struct connectdata *conn)
 
   /* INITIALIZE parselist structure */
   ftp_tmp->parser = Curl_ftp_parselist_data_alloc();
-  if(!ftp_tmp->parser)
+  if(!ftp_tmp->parser) {
+    free(ftp_tmp);
     return CURLE_OUT_OF_MEMORY;
+  }
 
   wildcard->tmp = ftp_tmp; /* put it to the WildcardData tmp pointer */
   wildcard->tmp_dtor = wc_data_dtor;
@@ -3858,6 +3860,10 @@ static CURLcode ftp_disconnect(struct connectdata *conn)
 
   Curl_pp_disconnect(pp);
 
+#if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
+  Curl_sec_end(conn);
+#endif
+
   return CURLE_OK;
 }
 
@@ -4172,6 +4178,7 @@ static CURLcode ftp_setup_connection(struct connectdata * conn)
   }
 
   data->state.path++;   /* don't include the initial slash */
+  data->state.slash_removed = TRUE; /* we've skipped the slash */
 
   /* FTP URLs support an extension like ";type=<typecode>" that
    * we'll try to get now! */
@@ -4183,6 +4190,7 @@ static CURLcode ftp_setup_connection(struct connectdata * conn)
   if(type) {
     *type = 0;                     /* it was in the middle of the hostname */
     command = Curl_raw_toupper(type[6]);
+    conn->bits.type_set = TRUE;
 
     switch (command) {
     case 'A': /* ASCII mode */

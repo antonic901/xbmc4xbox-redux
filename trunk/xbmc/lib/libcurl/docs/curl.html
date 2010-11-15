@@ -46,7 +46,7 @@ p.roffit {
 <p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
 <p class="level0">curl - transfer a URL <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
 <p class="level0"><span Class="bold">curl [options]</span> <a class="emphasis" href="#URL">[URL...]</a> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
-<p class="level0"><span Class="bold">curl</span> is a tool to transfer data from or to a server, using one of the supported protocols (HTTP, HTTPS, FTP, FTPS, SCP, SFTP, TFTP, DICT, TELNET, LDAP or FILE).  The command is designed to work without user interaction. 
+<p class="level0"><span Class="bold">curl</span> is a tool to transfer data from or to a server, using one of the supported protocols (DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, TELNET and TFTP).  The command is designed to work without user interaction. 
 <p class="level0">curl offers a busload of useful tricks like proxy support, user authentication, FTP upload, HTTP post, SSL connections, cookies, file transfer resume and more. As you will see below, the number of features will make your head spin! 
 <p class="level0">curl is powered by libcurl for all transfer-related features. See <span Class="manpage">libcurl (3)</span> for details. <a name="URL"></a><h2 class="nroffsh">URL</h2>
 <p class="level0">The URL syntax is protocol-dependent. You'll find a detailed description in RFC 3986. 
@@ -54,16 +54,16 @@ p.roffit {
 <p class="level0">&nbsp;<a href="http://site">http://site</a>.{one,two,three}.com 
 <p class="level0">or you can get sequences of alphanumeric series by using [] as in: 
 <p class="level0">&nbsp;<a href="ftp://ftp.numericals.com/file">ftp://ftp.numericals.com/file</a>[1-100].txt &nbsp;<a href="ftp://ftp.numericals.com/file">ftp://ftp.numericals.com/file</a>[001-100].txt    (with leading zeros) &nbsp;<a href="ftp://ftp.letters.com/file">ftp://ftp.letters.com/file</a>[a-z].txt 
-<p class="level0">No nesting of the sequences is supported at the moment, but you can use several ones next to each other: 
+<p class="level0">Nested sequences are not supported, but you can use several ones next to each other: 
 <p class="level0">&nbsp;<a href="http://any.org/archive">http://any.org/archive</a>[1996-1999]/vol[1-4]/part{a,b,c}.html 
 <p class="level0">You can specify any amount of URLs on the command line. They will be fetched in a sequential manner in the specified order. 
-<p class="level0">Since curl 7.15.1 you can also specify a step counter for the ranges, so that you can get every Nth number or letter: 
+<p class="level0">You can specify a step counter for the ranges to get every Nth number or letter: 
 <p class="level0">&nbsp;<a href="http://www.numericals.com/file">http://www.numericals.com/file</a>[1-100:10].txt &nbsp;<a href="http://www.letters.com/file">http://www.letters.com/file</a>[a-z:2].txt 
 <p class="level0">If you specify URL without protocol:// prefix, curl will attempt to guess what protocol you might want. It will then default to HTTP but try other protocols based on often-used host name prefixes. For example, for host names starting with "ftp." curl will assume you want to speak FTP. 
 <p class="level0">curl will do its best to use what you pass to it as a URL. It is not trying to validate it as a syntactically correct URL by any means but is instead <span Class="bold">very</span> liberal with what it accepts. 
 <p class="level0">Curl will attempt to re-use connections for multiple file transfers, so that getting many files from the same server will not do multiple connects / handshakes. This improves speed. Of course this is only done on files specified on a single command line and cannot be used between separate curl invokes. <a name="PROGRESS"></a><h2 class="nroffsh">PROGRESS METER</h2>
 <p class="level0">curl normally displays a progress meter during operations, indicating the amount of transferred data, transfer speeds and estimated time left, etc. 
-<p class="level0">However, since curl displays this data to the terminal by default, if you invoke curl to do an operation and it is about to write data to the terminal, it <span Class="emphasis">disables</span> the progress meter as otherwise it would mess up the output mixing progress meter and response data. 
+<p class="level0">curl displays this data to the terminal by default, so if you invoke curl to do an operation and it is about to write data to the terminal, it <span Class="emphasis">disables</span> the progress meter as otherwise it would mess up the output mixing progress meter and response data. 
 <p class="level0">If you want a progress meter for HTTP POST or PUT requests, you need to redirect the response output to a file, using shell redirect (&gt;), -o [file] or similar. 
 <p class="level0">It is not the same case for FTP upload as that operation does not spit out any response data to the terminal. 
 <p class="level0">If you prefer a progress "bar" instead of the regular meter, <a class="emphasis" href="#-">-#</a> is your friend. <a name="OPTIONS"></a><h2 class="nroffsh">OPTIONS</h2>
@@ -140,11 +140,11 @@ p.roffit {
 <p class="level1">If this option is used several times, the following occurrences make no difference. 
 <p class="level0"><a name="--disable-eprt"></a><span class="nroffip">--disable-eprt</span> 
 <p class="level1">(FTP) Tell curl to disable the use of the EPRT and LPRT commands when doing active FTP transfers. Curl will normally always first attempt to use EPRT, then LPRT before using PORT, but with this option, it will use PORT right away. EPRT and LPRT are extensions to the original FTP protocol, and may not work on all servers, but they enable more functionality in a better way than the traditional PORT command. 
-<p class="level1">Since curl 7.19.0, <span Class="bold">--eprt</span> can be used to explicitly enable EPRT again and <span Class="bold">--no-eprt</span> is an alias for <a class="bold" href="#--disable-eprt">--disable-eprt</a>. 
+<p class="level1"><span Class="bold">--eprt</span> can be used to explicitly enable EPRT again and <span Class="bold">--no-eprt</span> is an alias for <a class="bold" href="#--disable-eprt">--disable-eprt</a>. 
 <p class="level1">Disabling EPRT only changes the active behavior. If you want to switch to passive mode you need to not use <a class="emphasis" href="#-P--ftp-port">-P/--ftp-port</a> or force it with <a class="emphasis" href="#--ftp-pasv">--ftp-pasv</a>. 
 <p class="level0"><a name="--disable-epsv"></a><span class="nroffip">--disable-epsv</span> 
 <p class="level1">(FTP) Tell curl to disable the use of the EPSV command when doing passive FTP transfers. Curl will normally always first attempt to use EPSV before PASV, but with this option, it will not try using EPSV. 
-<p class="level1">Since curl 7.19.0, <span Class="bold">--epsv</span> can be used to explicitly enable EPRT again and <span Class="bold">--no-epsv</span> is an alias for <a class="bold" href="#--disable-epsv">--disable-epsv</a>. 
+<p class="level1"><span Class="bold">--epsv</span> can be used to explicitly enable EPRT again and <span Class="bold">--no-epsv</span> is an alias for <a class="bold" href="#--disable-epsv">--disable-epsv</a>. 
 <p class="level1">Disabling EPSV only changes the passive behavior. If you want to switch to active mode you need to use <a class="emphasis" href="#-P--ftp-port">-P/--ftp-port</a>. 
 <p class="level0"><a name="-D--dump-header"></a><span class="nroffip">-D/--dump-header &lt;file&gt;</span> 
 <p class="level1">Write the protocol headers to the specified file. 
