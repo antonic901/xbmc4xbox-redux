@@ -1,3 +1,17 @@
+*Confluence XBOX (V1.11)*
+added Hide Video and Music Fanart while scrolling
+added Hide Video Fanart when empty
+added Music Playlist and Video Playlist buttons in Player Controls
+fixed Eject button close
+changed Bookmark and Video Playlist buttons position in Video OSD
+changed Bottons textures to Menu items textures
+Changed White space fix (xbmc.org)
+changed Close Player Controls before opening video or music playlist
+changed Volume bar items position (to make it easier to read)
+removed Bigger fontset (it wasn't supported and was causing overlap text)
+reverted Volume bar missing code from last changes
+removed Record button in Player Controls
+
 *Confluence XBOX (V1.10)*
 added Showcase and Landscape views to video/music (nate7365 mod)
 added Aspect ratio and video source to Showcase view (movie library)
