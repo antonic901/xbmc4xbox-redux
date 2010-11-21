@@ -92,16 +92,16 @@
 			<RegExp input="$$1" output="&lt;thumb&gt;\2&lt;/thumb&gt;" dest="5+">
 				<expression noclean="1">&lt;image size=&quot;(extra)?large&quot;&gt;([^&lt;]*)&lt;/image&gt;</expression>
 			</RegExp>
-			<RegExp input="$$2" conditional="htbthumbs" output="&lt;chain function=&quot;GetHTBThumbs&quot;&gt;\1&lt;/chain&gt;" dest="5+">
+			<RegExp input="$$2" conditional="htbthumbs" output="&lt;url cache=&quot;htb-$$2.html&quot; function=&quot;GetHTBThumbs&quot; post=&quot;yes&quot;&gt;http://www.htbackdrops.com/search.php?search_terms=all&amp;amp;search_keywords=\1&lt;/url&gt;" dest="5+">
 				<expression/>
 			</RegExp>
-			<RegExp input="$$2" conditional="htbfanart" output="&lt;chain function=&quot;GetHTBFanart&quot;&gt;\1&lt;/chain&gt;" dest="5+">
+			<RegExp input="$$2" conditional="htbfanart" output="&lt;url cache=&quot;htb-$$2.html&quot; function=&quot;GetHTBFanart&quot; post=&quot;yes&quot;&gt;http://www.htbackdrops.com/search.php?search_terms=all&amp;amp;search_keywords=\1&lt;/url&gt;" dest="5+">
 				<expression/>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;url function=&quot;GetGenres&quot;&gt;http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&amp;amp;artist=\1&amp;amp;api_key=71e468a84c1f40d4991ddccc46e40f1b&lt;/url&gt;" dest="5+">
 				<expression noclean="1">&lt;url&gt;http://www.last.fm/music/(.*?)&lt;/url&gt;</expression>
 			</RegExp>
-			<RegExp input="$$1" output="&lt;chain function=&quot;GetLastFMDiscography&quot;&gt;\1&lt;/chain&gt;" dest="5+">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetLastFMDiscography&quot;&gt;http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&amp;amp;artist=\1&amp;amp;api_key=71e468a84c1f40d4991ddccc46e40f1b&lt;/url&gt;" dest="5+">
 				<expression noclean="1">&lt;url&gt;http://www.last.fm/music/(.*?)&lt;/url&gt;</expression>
 			</RegExp>
 			<expression noclean="1"/>
