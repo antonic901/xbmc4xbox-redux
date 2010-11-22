@@ -108,7 +108,15 @@ public:
   virtual __int64 GetPosition() = 0;
   virtual __int64 GetLength() = 0;
   virtual void Flush() { }
+
+  /* Returns the minium size that can be read from input stream.   *
+   * For example cdrom access where access could be sector based.  *
+   * This will cause file system to buffer read requests, to       *
+   * to meet the requirement of CFile.                             *
+   * It can also be used to indicate a file system is non buffered *
+   * but accepts any read size, have it return the value 1         */
   virtual int  GetChunkSize() {return 0;}
+
   virtual bool SkipNext(){return false;}
 
   virtual bool Delete(const CURL& url) { return false; }

@@ -45,7 +45,6 @@ namespace XFILE
 
     // IFIle methods
     virtual bool          Open(const CURL& url);
-    virtual bool          Attach(IFile *pFile);
     virtual void          Close();
     virtual bool          Exists(const CURL& url);
     virtual int           Stat(const CURL& url, struct __stat64* buffer);
@@ -58,8 +57,6 @@ namespace XFILE
 
     virtual ICacheInterface* GetCache();
     IFile *GetFileImp();
-
-    virtual int  GetChunkSize() {return m_source.GetChunkSize();}
 
     virtual CStdString GetContent();
 

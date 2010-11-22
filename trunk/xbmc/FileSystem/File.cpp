@@ -319,13 +319,10 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
       return false;
     }
 
-    if (m_flags & READ_BUFFERED)
+    if (m_pFile->GetChunkSize() && !(m_flags & READ_CHUNKED))
     {
-      if (m_pFile->GetChunkSize())
-      {
-        m_pBuffer = new CFileStreamBuffer(0);
-        m_pBuffer->Attach(m_pFile);
-      }
+      m_pBuffer = new CFileStreamBuffer(0);
+      m_pBuffer->Attach(m_pFile);
     }
 
     if (m_flags & READ_BITRATE)
@@ -349,30 +346,6 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
   CLog::Log(LOGERROR, "%s - Error opening %s", __FUNCTION__, strFileName.c_str());
   return false;
 }
-
-void CFile::Attach(IFile *pFile, unsigned int flags) {
-  m_pFile = pFile;
-  m_flags = flags;
-  if (m_flags & READ_BUFFERED)
-  {
-    if (m_pFile->GetChunkSize())
-    {
-      m_pBuffer = new CFileStreamBuffer(0);
-      m_pBuffer->Attach(m_pFile);
-    }
-  }
-}
-
-IFile* CFile::Detach() {
-  // TODO - currently the buffered reading is broken if in use, it should be
-  //        moved to a IFile instead, then it will work just fine
-
-  IFile* file = m_pFile;
-  m_pFile = NULL;
-  m_flags = 0;
-  return file;
-}
-
 
 bool CFile::OpenForWrite(const CStdString& strFileName, bool bOverWrite)
 {
@@ -841,9 +814,7 @@ void CFileStreamBuffer::Attach(IFile *file)
 {
   m_file = file;
 
-  m_frontsize = m_file->GetChunkSize();
-  if(!m_frontsize)
-    m_frontsize = 1024;
+  m_frontsize = CFile::GetChunkSize(m_file->GetChunkSize(), 64*1024);
 
   m_buffer = new char[m_frontsize+m_backsize];
   setg(0,0,0);

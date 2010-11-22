@@ -104,7 +104,7 @@ bool CFileCache::Open(const CURL& url)
   }
 
   // opening the source file.
-  if(!m_source.Open(m_sourcePath, READ_NO_CACHE | READ_TRUNCATED)) {
+  if(!m_source.Open(m_sourcePath, READ_NO_CACHE | READ_TRUNCATED | READ_CHUNKED)) {
     CLog::Log(LOGERROR,"%s - failed to open source <%s>", __FUNCTION__, m_sourcePath.c_str());
     Close();
     return false;
@@ -122,25 +122,6 @@ bool CFileCache::Open(const CURL& url)
   return true;
 }
 
-bool CFileCache::Attach(IFile *pFile) {
-    CSingleLock lock(m_sync);
-
-  if (!pFile || !m_pCache)
-    return false;
-
-  m_source.Attach(pFile);
-
-  if (m_pCache->Open() != CACHE_RC_OK) {
-    CLog::Log(LOGERROR,"CFileCache::Attach - failed to open cache");
-    Close();
-    return false;
-  }
-
-  CThread::Create(false);
-
-  return true;
-}
-
 void CFileCache::Process()
 {
   if (!m_pCache) {
@@ -149,9 +130,7 @@ void CFileCache::Process()
   }
 
   // setup read chunks size
-  int chunksize = m_source.GetChunkSize();
-  if(chunksize == 0)
-    chunksize = READ_CACHE_CHUNK_SIZE;
+  int chunksize = CFile::GetChunkSize(m_source.GetChunkSize(), READ_CACHE_CHUNK_SIZE);
 
   // create our read buffer
   auto_aptr<char> buffer(new char[chunksize]);
