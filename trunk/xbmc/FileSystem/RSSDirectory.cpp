@@ -56,3 +56,10 @@ bool CRSSDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
   return true;
 }
+
+bool CRSSDirectory::Exists(const char* strPath)
+{
+  CFileCurl rss;
+  CURL url(strPath);
+  return rss.Exists(url);
+}
