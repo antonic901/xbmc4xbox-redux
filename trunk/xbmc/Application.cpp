@@ -2710,7 +2710,12 @@ bool CApplication::OnAction(CAction &action)
       // only unmute if volume is to be increased, otherwise leave muted
       if (action.id == ACTION_VOLUME_DOWN)
         return true;
-      SetVolume(1);
+      
+      if (g_stSettings.m_iPreMuteVolumeLevel == 0) 
+        SetVolume(1); 
+      else 
+      // In muted, unmute 
+        Mute();
       return true;
     }
     if (action.id == ACTION_VOLUME_UP)
@@ -5255,11 +5260,15 @@ void CApplication::Mute(void)
   { // muted - unmute.
     // In case our premutevolume is 0, return to 100% volume
     if( g_stSettings.m_iPreMuteVolumeLevel == 0 )
+    {
       SetVolume(100);
+    }
     else
+    {
       SetVolume(g_stSettings.m_iPreMuteVolumeLevel);
-
-    g_stSettings.m_iPreMuteVolumeLevel = 0;
+      g_stSettings.m_iPreMuteVolumeLevel = 0;
+    }
+    m_guiDialogVolumeBar.Show();
   }
   else
   { // mute
