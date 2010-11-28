@@ -403,15 +403,15 @@
 				<control type="button" id="90107">
 					<include>ButtonHomeSubCommonValues</include>
 					<label>744</label>
-					<onclick>ActivateWindow(VideoFiles)</onclick>
+					<onclick>ActivateWindow(VideoFiles,root)</onclick>
 				</control>
 				<control type="button" id="90108">
 					<include>ButtonHomeSubCommonValues</include>
 					<label>14022</label>
-					<onclick>ActivateWindow(VideoLibrary)</onclick>
+					<onclick>ActivateWindow(VideoLibrary,root)</onclick>
 					<visible>Library.HasContent(Video)</visible>
 				</control>
-			</control>				
+			</control>
 			<control type="grouplist" id="9011">
 				<posx>10</posx>
 				<posy>0</posy>
@@ -451,15 +451,15 @@
 				<control type="button" id="90115">
 					<include>ButtonHomeSubCommonValues</include>
 					<label>744</label>
-					<onclick>ActivateWindow(MusicFiles)</onclick>
+					<onclick>ActivateWindow(MusicFiles,root)</onclick>
 				</control>
 				<control type="button" id="90116">
 					<include>ButtonHomeSubCommonValues</include>
 					<label>14022</label>
-					<onclick>ActivateWindow(MusicLibrary)</onclick>
+					<onclick>ActivateWindow(MusicLibrary,root)</onclick>
 					<visible>Library.HasContent(Music)</visible>
 				</control>
-			</control>			
+			</control>
 			<control type="grouplist" id="9014">
 				<posx>10</posx>
 				<posy>0</posy>

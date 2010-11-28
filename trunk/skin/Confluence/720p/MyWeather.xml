@@ -54,6 +54,7 @@
 					<height>30</height>
 					<font>font13_title</font>
 					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
 					<scroll>false</scroll>
 					<align>center</align>
 					<aligny>center</aligny>
@@ -334,10 +335,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day0.HighTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>selected</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day0.HighTemp))</visible>
 					</control>
@@ -360,10 +361,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day0.LowTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>blue</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day0.LowTemp))</visible>
 					</control>
@@ -433,10 +434,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day1.HighTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>selected</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day1.HighTemp))</visible>
 					</control>
@@ -459,10 +460,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day1.LowTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>blue</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day1.LowTemp))</visible>
 					</control>
@@ -532,10 +533,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day2.HighTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>selected</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day2.HighTemp))</visible>
 					</control>
@@ -558,10 +559,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day2.LowTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>blue</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day2.LowTemp))</visible>
 					</control>
@@ -631,10 +632,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day3.HighTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>selected</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day3.HighTemp))</visible>
 					</control>
@@ -657,10 +658,10 @@
 						<posy>50</posy>
 						<height>20</height>
 						<label>$INFO[Window.Property(Day3.LowTemp)]$INFO[System.TemperatureUnits]</label>
-						<font>font13</font>
+						<font>font13_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<textcolor>white</textcolor>
+						<textcolor>blue</textcolor>
 						<shadowcolor>black</shadowcolor>
 						<visible>!IsEmpty(Window.Property(Day3.LowTemp))</visible>
 					</control>
