@@ -693,19 +693,6 @@
 				<label>$INFO[ListItem.Plot,[COLOR blue]$LOCALIZE[207]: [/COLOR]]</label>
 				<autoscroll time="2000" delay="3000" repeat="5000">!Skin.HasSetting(AutoScroll)</autoscroll>
 			</control>
-			<control type="label">
-				<posx>40</posx>
-				<posy>625</posy>
-				<width>1200</width>
-				<height>33</height>
-				<visible allowhiddenfocus="true">Control.IsVisible(720) + Control.HasFocus(720)</visible>
-				<font>font13</font>
-				<textcolor>white</textcolor>
-				<scroll>true</scroll>
-				<align>center</align>
-				<aligny>center</aligny>
-				<label>$INFO[ListItem.Episode] $LOCALIZE[20360]</label>
-			</control>
 		</control>
 	</include>
 	
