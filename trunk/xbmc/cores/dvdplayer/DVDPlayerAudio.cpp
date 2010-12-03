@@ -27,6 +27,8 @@
 #include "DVDCodecs/DVDFactoryCodec.h"
 #include "DVDPerformanceCounter.h"
 #include "utils/TimeUtils.h"
+#include "Util.h"
+
 #include <sstream>
 #include <iomanip>
 
@@ -496,7 +498,8 @@ void CDVDPlayerAudio::Process()
       m_stalled = true;
 
       // Flush as the audio output may keep looping if we don't
-      m_dvdAudio.Flush();
+      if(m_speed == DVD_PLAYSPEED_NORMAL)
+        m_dvdAudio.Flush();
 
       continue;
     }
@@ -523,7 +526,6 @@ void CDVDPlayerAudio::Process()
       m_dvdAudio.Destroy();
       if(!m_dvdAudio.Create(audioframe, m_streaminfo.codec))
         CLog::Log(LOGERROR, "%s - failed to create audio renderer", __FUNCTION__);
-      m_messageQueue.SetMaxTimeSize(8.0 - m_dvdAudio.GetCacheTotal());
     }
 
     if( result & DECODE_FLAG_DROP )
@@ -673,7 +675,7 @@ void CDVDPlayerAudio::WaitForBuffers()
 string CDVDPlayerAudio::GetPlayerInfo()
 {
   std::ostringstream s;
-  s << "aq:"     << setw(2) << min(99,m_messageQueue.GetLevel()) << "%";
+  s << "aq:"     << setw(2) << min(99,m_messageQueue.GetLevel() + MathUtils::round_int(100.0/8.0*m_dvdAudio.GetCacheTime())) << "%";
   s << ", kB/s:" << fixed << setprecision(2) << (double)GetAudioBitrate() / 1024.0;
   return s.str();
 }
