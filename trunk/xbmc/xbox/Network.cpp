@@ -382,10 +382,6 @@ bool CNetwork::CheckNetwork(int count)
         SetupNetwork();
         return true;
       }
-      else
-      {
-        CLog::Log(LOGWARNING, "%s - Network error. No network link!", __FUNCTION__);
-      }
     }
   }
   return false;
@@ -552,6 +548,9 @@ void CNetwork::LogState()
 
   if ( dwLink & XNET_ETHERNET_LINK_10MBPS )
     CLog::Log(LOGINFO, __FUNCTION__" - Link: 10 mbps");
+    
+  if ( !(dwLink & XNET_ETHERNET_LINK_ACTIVE) )
+    CLog::Log(LOGINFO, __FUNCTION__" - Link: none");
 
   if ( dwState & XNET_GET_XNADDR_DNS )
     CLog::Log(LOGINFO, __FUNCTION__" - State: dns");
