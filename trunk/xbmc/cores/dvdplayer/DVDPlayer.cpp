@@ -3059,7 +3059,10 @@ bool CDVDPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
   
   // In case we stalled, don't output any subs
   if (m_dvdPlayerVideo.IsStalled() || m_dvdPlayerAudio.IsStalled())
+  {
     strSubtitle = "";
+    return false;
+  }
     
   return result;
 }
