@@ -275,7 +275,6 @@ CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
   m_errorCount = 0;
   m_playSpeed = DVD_PLAYSPEED_NORMAL;
   m_caching = CACHESTATE_DONE;
-  m_subLastPts = DVD_NOPTS_VALUE;
   
 #ifdef DVDDEBUG_MESSAGE_TRACKER
   g_dvdMessageTracker.Init();
@@ -3056,13 +3055,13 @@ bool CDVDPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
   if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
     return false;
 
-  // In case our video stalled, we must stall the subs too
-  if (m_dvdPlayerVideo.IsStalled())
-    pts = m_subLastPts;
-  else
-    m_subLastPts = pts;
+  bool result = m_dvdPlayerSubtitle.GetCurrentSubtitle(strSubtitle, pts - m_dvdPlayerVideo.GetSubtitleDelay());
+  
+  // In case we stalled, don't output any subs
+  if (m_dvdPlayerVideo.IsStalled() || m_dvdPlayerAudio.IsStalled())
+    strSubtitle = "";
     
-  return m_dvdPlayerSubtitle.GetCurrentSubtitle(strSubtitle, pts - m_dvdPlayerVideo.GetSubtitleDelay());
+  return result;
 }
 
 CStdString CDVDPlayer::GetPlayerState()
