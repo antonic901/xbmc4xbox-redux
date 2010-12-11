@@ -38,7 +38,7 @@
 				<width>550</width>
 				<height>30</height>
 				<font>font30_title</font>
-				<label>Lyrics</label>
+				<label>$INFO[Window(Visualisation).Property(Addon.Name)]</label>
 				<align>right</align>
 				<aligny>center</aligny>
 				<textcolor>white</textcolor>
@@ -82,7 +82,7 @@
 				<posx>30</posx>
 				<posy>130</posy>
 				<width>550</width>
-				<height>475</height>
+				<height>545</height>
 				<align>center</align>
 				<font>font13</font>
 				<textcolor>white</textcolor>
@@ -107,7 +107,7 @@
                 <posx>30</posx>
 				<posy>130</posy>
 				<width>550</width>
-				<height>475</height>
+				<height>545</height>
 				<onleft>1000</onleft>
 				<onright>1000</onright>
 				<onup>110</onup>
@@ -125,7 +125,7 @@
 						<font>font13</font>
 						<aligny>center</aligny>
 						<align>left</align>
-                         <textcolor>FF00FF00</textcolor>
+                        <textcolor>green</textcolor>
 						<selectedcolor>selected</selectedcolor>
                         <label>$INFO[ListItem.Label2]</label>
 					</control>
@@ -151,7 +151,7 @@
 						<font>font13</font>
 						<aligny>center</aligny>
 						<align>left</align>
-                        <textcolor>FF00FF00</textcolor>
+                        <textcolor>green</textcolor>
 						<selectedcolor>selected</selectedcolor>
                         <label>$INFO[ListItem.Label2]</label>
 					</control>
@@ -186,6 +186,30 @@
             <control type="group" id="1000">
                 <posx>25</posx>
                 <posy>630</posy>
+                <animation effect="slide" start="0,0" end="0,120" time="300" tween="quadratic" easing="out" condition="System.IdleTime(5)">Conditional</animation>
+                <control type="image">
+                    <description>background image</description>
+                    <posx>0</posx>
+                    <posy>-15</posy>
+                    <width>555</width>
+                    <height>120</height>
+                    <texture>black-back.png</texture>
+                </control>
+                <control type="image">
+                    <description>background image</description>
+                    <posx>0</posx>
+                    <posy>-15</posy>
+                    <width>555</width>
+                    <height>120</height>
+                    <texture>black-back.png</texture>
+                </control>
+                <control type="progress">
+                    <posx>0</posx>
+                    <posy>-12</posy>
+                    <width>555</width>
+                    <height>4</height>
+                    <info>Player.Progress</info>
+                </control>
                 <control type="image">
                     <posx>-6</posx>
                     <posy>-8</posy>
@@ -390,9 +414,9 @@
                     <label>$INFO[Window(Visualisation).Property(Message)]</label>
                     <align>left</align>
                     <aligny>center</aligny>
-                    <textcolor>FFFF0000</textcolor>
+                    <textcolor>red</textcolor>
                     <shadowcolor>black</shadowcolor>
-                    <visible>!IsTrue(Window(Visualisation).Property(Success))</visible>
+                    <visible>!IsTrue(Window(Visualisation).Property(Success)) + !IsTrue(Window(Visualisation).Property(Prefetching))</visible>
                     <wrapmultiline>true</wrapmultiline>
                 </control>
                 <control type="label">
@@ -405,13 +429,13 @@
                     <label>$INFO[Window(Visualisation).Property(Message)]$INFO[Window(Visualisation).Property(Website), - (,)]</label>
                     <align>left</align>
                     <aligny>center</aligny>
-                    <textcolor>FF00FF00</textcolor>
+                    <textcolor>green</textcolor>
                     <shadowcolor>black</shadowcolor>
-                    <visible>IsTrue(Window(Visualisation).Property(Success))</visible>
+                    <visible>IsTrue(Window(Visualisation).Property(Success)) | IsTrue(Window(Visualisation).Property(Prefetching))</visible>
                     <wrapmultiline>true</wrapmultiline>
                 </control>
                 <control type="label">
-                    <description>Message label</description>
+                    <description>Prefetched label</description>
                     <posx>560</posx>
                     <posy>40</posy>
                     <width>470</width>
@@ -420,9 +444,9 @@
                     <label>prefetched</label>
                     <align>right</align>
                     <aligny>center</aligny>
-                    <textcolor>FF00FF00</textcolor>
+                    <textcolor>green</textcolor>
                     <shadowcolor>black</shadowcolor>
-                    <visible>IsTrue(Window(Visualisation).Property(Prefetched))</visible>
+                    <visible>IsTrue(Window(Visualisation).Property(Prefetched)) + !IsTrue(Window(Visualisation).Property(Prefetching))</visible>
                     <wrapmultiline>true</wrapmultiline>
                 </control>
                 <control type="image">
