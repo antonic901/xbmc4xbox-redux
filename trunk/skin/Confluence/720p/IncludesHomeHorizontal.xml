@@ -702,7 +702,7 @@
 					<onclick>ActivateWindow(VideoLibrary,TVShowActors,return)</onclick>
 				</control>
 				<control type="button" id="90175">
-					<include>ButtonMediaSubCommonValues</include>
+					<include>ButtonHomeSubCommonValues</include>
 					<label>20388</label>
 					<onclick>ActivateWindow(VideoLibrary,TVShowStudios,return)</onclick>
 				</control>
