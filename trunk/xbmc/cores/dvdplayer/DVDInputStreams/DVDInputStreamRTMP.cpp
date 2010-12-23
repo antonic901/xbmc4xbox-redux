@@ -137,24 +137,27 @@ bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
   m_sStreamPlaying = (char*)calloc(strlen(strFile)+1,sizeof(char));
   strcpy(m_sStreamPlaying,strFile);
 
+  if (!m_libRTMP.SetupURL(m_rtmp, m_sStreamPlaying))
+    return false;
+
+  // SetOpt and SetAVal copy pointers to the value. librtmp doesn't use the values until the Connect() call,
+  // so value objects must stay allocated until then. To be extra safe, keep the values around until Close(),
+  // in case librtmp needs them again.
+  m_optionvalues.clear();
+  for (int i=0; options[i].name; i++)
   {
-    if (!m_libRTMP.SetupURL(m_rtmp, m_sStreamPlaying))
-      return false;
-
-    for (int i=0; options[i].name; i++)
+    CStdString tmp = m_item.GetProperty(options[i].name);
+    if (!tmp.empty())
     {
-      string tmp = m_item.GetProperty(options[i].name);
-      if (!tmp.empty())
-      {
-        AVal av_tmp;
-        SetAVal(av_tmp, tmp);
-        m_libRTMP.SetOpt(m_rtmp, &options[i].key, &av_tmp);
-      }
+      m_optionvalues.push_back(tmp);
+      AVal av_tmp;
+      SetAVal(av_tmp, m_optionvalues.back());
+      m_libRTMP.SetOpt(m_rtmp, &options[i].key, &av_tmp);
     }
-
-    if (!m_libRTMP.Connect(m_rtmp, NULL) || !m_libRTMP.ConnectStream(m_rtmp, 0))
-      return false;
   }
+
+  if (!m_libRTMP.Connect(m_rtmp, NULL) || !m_libRTMP.ConnectStream(m_rtmp, 0))
+    return false;
 
   m_eof = false;
 
@@ -169,24 +172,23 @@ void CDVDInputStreamRTMP::Close()
 
   m_libRTMP.Close(m_rtmp);
 
+  m_optionvalues.clear();
   m_eof = true;
   m_bPaused = false;
 }
 
 int CDVDInputStreamRTMP::Read(BYTE* buf, int buf_size)
 {
-  {
-    int i = m_libRTMP.Read(m_rtmp, (char *)buf, buf_size);
-    if (i < 0)
-      m_eof = true;
+  int i = m_libRTMP.Read(m_rtmp, (char *)buf, buf_size);
+  if (i < 0)
+    m_eof = true;
 
-    return i;
-  }
+  return i;
 }
 
 __int64 CDVDInputStreamRTMP::Seek(__int64 offset, int whence)
 {
-  if(whence == SEEK_POSSIBLE)
+  if (whence == SEEK_POSSIBLE)
     return 0;
   else
     return -1;
@@ -196,10 +198,9 @@ bool CDVDInputStreamRTMP::SeekTime(int iTimeInMsec)
 {
   CLog::Log(LOGNOTICE, "RTMP Seek to %i requested", iTimeInMsec);
   CSingleLock lock(m_RTMPSection);
-  {
-    if (m_libRTMP.SendSeek(m_rtmp, iTimeInMsec))
-      return true;
-  }
+
+  if (m_libRTMP.SendSeek(m_rtmp, iTimeInMsec))
+    return true;
 
   return false;
 }
@@ -218,11 +219,9 @@ bool CDVDInputStreamRTMP::Pause(double dTime)
 {
   CSingleLock lock(m_RTMPSection);
 
-  {
-    m_bPaused = !m_bPaused;
-    // currently this causes freeze on XBMC4XBOX when pausing/unpausing/pausing again. Have also seen similar issues on mainline xbmc when pausing/unpausing multiple times.
-    //m_libRTMP.Pause(m_rtmp, m_bPaused);
-  }
+  m_bPaused = !m_bPaused;
+  // currently this causes freeze on XBMC4XBOX when pausing/unpausing/pausing again. Have also seen similar issues on mainline xbmc when pausing/unpausing multiple times.
+  //m_libRTMP.Pause(m_rtmp, m_bPaused);
 
   return true;
 }
