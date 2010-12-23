@@ -42,6 +42,7 @@ CGUIWindowManager::CGUIWindowManager(void)
 {
   m_pCallback = NULL;
   m_bShowOverlay = true;
+  m_initialized = false;
 }
 
 CGUIWindowManager::~CGUIWindowManager(void)
@@ -51,6 +52,7 @@ CGUIWindowManager::~CGUIWindowManager(void)
 void CGUIWindowManager::Initialize()
 {
   LoadNotOnDemandWindows();
+  m_initialized = true;
 }
 
 bool CGUIWindowManager::SendMessage(int message, int senderID, int destID, int param1, int param2)
@@ -320,7 +322,6 @@ void CGUIWindowManager::ActivateWindow(int iWindowID, const vector<CStdString>& 
 
 void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStdString>& params, bool swappingWindows)
 {
-  bool passParams = true;
   // translate virtual windows
   // virtual music window which returns the last open music window (aka the music start window)
   if (iWindowID == WINDOW_MUSIC)
@@ -329,8 +330,6 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
     // ensure the music virtual window only returns music files and music library windows
     if (iWindowID != WINDOW_MUSIC_NAV)
       iWindowID = WINDOW_MUSIC_FILES;
-    // destination path cannot be used with virtual window
-    passParams = false;
   }
   // virtual video window which returns the last open video window (aka the video start window)
   if (iWindowID == WINDOW_VIDEOS)
@@ -339,8 +338,6 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
     // ensure the virtual video window only returns video windows
     if (iWindowID != WINDOW_VIDEO_NAV)
       iWindowID = WINDOW_VIDEO_FILES;
-    // destination path cannot be used with virtual window
-    passParams = false;
   }
 
   // debug
@@ -364,7 +361,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   else if (pNewWindow->IsDialog())
   { // if we have a dialog, we do a DoModal() rather than activate the window
     if (!pNewWindow->IsDialogRunning())
-      ((CGUIDialog *)pNewWindow)->DoModal(iWindowID, (passParams && params.size()) ? params[0] : "");
+      ((CGUIDialog *)pNewWindow)->DoModal(iWindowID, params.size() ? params[0] : "");
     return;
   }
 
@@ -397,8 +394,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   g_audioManager.PlayWindowSound(pNewWindow->GetID(), SOUND_INIT);
   // Send the init message
   CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0, currentWindow, iWindowID);
-  if (passParams)
-    msg.SetStringParams(params);
+  msg.SetStringParams(params);
   pNewWindow->OnMessage(msg);
 //  g_infoManager.SetPreviousWindow(WINDOW_INVALID);
 }
@@ -578,6 +574,8 @@ void CGUIWindowManager::DeInitialize()
   // clear our vectors of windows
   m_vecCustomWindows.clear();
   m_activeDialogs.clear();
+
+  m_initialized = false;
 }
 
 /// \brief Route to a window

@@ -59,6 +59,8 @@ CGUITextBox::CGUITextBox(const CGUITextBox &from)
   m_autoScrollTime = from.m_autoScrollTime;
   m_autoScrollDelay = from.m_autoScrollDelay;
   m_autoScrollRepeatAnim = NULL;
+  if (from.m_autoScrollRepeatAnim)
+    m_autoScrollRepeatAnim = new CAnimation(*from.m_autoScrollRepeatAnim);
   m_label = from.m_label;
   m_info = from.m_info;
   // defaults
@@ -175,8 +177,8 @@ void CGUITextBox::Render()
 
   int offset = (int)(m_scrollOffset / m_itemHeight);
 
-  g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height);
-
+  if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
+  {
   // we offset our draw position to take into account scrolling and whether or not our focused
   // item is offscreen "above" the list.
   float posX = m_posX;
@@ -205,6 +207,7 @@ void CGUITextBox::Render()
   }
 
   g_graphicsContext.RestoreClipRegion();
+  }
 
   if (m_pageControl)
   {
