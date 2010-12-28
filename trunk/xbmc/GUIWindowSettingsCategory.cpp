@@ -1042,16 +1042,10 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       if (strSetting.Equals("screensaver.usedimonpause") && g_guiSettings.GetString("screensaver.mode").Equals("Dim"))
         pControl->SetEnabled(false);
     }
-    else if (strSetting.Left(16).Equals("weather.areacode"))
-    {
-      CSettingString *pSetting = (CSettingString *)GetSetting(strSetting)->GetSetting();
-      CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->SetLabel2(g_weatherManager.GetAreaCity(pSetting->GetData()));
-    }
     else if (strSetting.Equals("weather.plugin"))
     {
       CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-      if (pControl->GetCurrentLabel().Equals(g_localizeStrings.Get(13611)))
+      if (pControl->GetCurrentLabel().Equals(g_localizeStrings.Get(13610)))
         g_guiSettings.SetString("weather.plugin", "");
       else
         g_guiSettings.SetString("weather.plugin", pControl->GetCurrentLabel());
@@ -1223,29 +1217,21 @@ void CGUIWindowSettingsCategory::UpdateRealTimeSettings()
 void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
 {
   CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
-  if (strSetting.Left(16).Equals("weather.areacode"))
+  if (strSetting.Equals("weather.plugin"))
   {
-    CStdString strSearch;
-    if (CGUIDialogKeyboard::ShowAndGetInput(strSearch, g_localizeStrings.Get(14024), false))
-    {
-      strSearch.Replace(" ", "+");
-      CStdString strResult = ((CSettingString *)pSettingControl->GetSetting())->GetData();
-      if (g_weatherManager.GetSearchResults(strSearch, strResult))
-        ((CSettingString *)pSettingControl->GetSetting())->SetData(strResult);
-      g_weatherManager.ResetTimer();
-    }
-  }
-  else if (strSetting.Equals("weather.plugin"))
-  {
+    g_weatherManager.Reset();
     g_weatherManager.ResetTimer();
   }
   else if (strSetting.Equals("weather.pluginsettings"))
   {
     // Create our base path
     CStdString basepath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
-    CGUIDialogPluginSettings::ShowAndGetInput(basepath);
-    // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
-    g_weatherManager.ResetTimer();
+    if (CGUIDialogPluginSettings::ShowAndGetInput(basepath))
+    {
+      // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
+      g_weatherManager.Reset();
+      g_weatherManager.ResetTimer();
+    }
   }
   else if (strSetting.Equals("lookandfeel.rssedit"))
     CUtil::ExecBuiltIn("RunScript("RSSEDITOR_PATH")");
@@ -3310,7 +3296,7 @@ void CGUIWindowSettingsCategory::FillInWeatherPlugins(CGUISpinControlEx *pContro
   int k=0;
   pControl->Clear();
   // add our disable option
-  pControl->AddLabel(g_localizeStrings.Get(13611), j++);
+  pControl->AddLabel(g_localizeStrings.Get(13610), j++);
 
   CFileItemList items;
   if (CDirectory::GetDirectory("special://home/plugins/weather/", items, "/", false))

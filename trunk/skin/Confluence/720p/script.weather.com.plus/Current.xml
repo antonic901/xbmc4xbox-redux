@@ -1,0 +1,1283 @@
+<includes>
+    <include name="TWC.Current.Button">
+        <control type="button" id="13205">
+            <include>TWC.ButtonCommon</include>
+            <label>31905</label>
+            <onfocus>SetProperty(Weather.CurrentView,$LOCALIZE[31905] $LOCALIZE[31912])</onfocus>
+            <onfocus>SetProperty(Weather.CurrentViewMenu,$LOCALIZE[31905])</onfocus>
+        </control>
+    </include>
+    <include name="TWC.Current.ButtonXLabel">
+        <control type="button">
+            <include>TWC.ButtonXLabelCommon</include>
+            <label>31912</label>
+        </control>
+    </include>
+    <include name="TWC.Current.SettingsButtons">
+        <control type="radiobutton" id="91205">
+            <description>show hourly</description>
+            <include>ButtonMediaSubCommonValues</include>
+            <label>31937</label>
+            <onclick>Skin.ToggleSetting(TWC.ShowCurrentNight)</onclick>
+            <selected>Skin.HasSetting(TWC.ShowCurrentNight)</selected>
+            <visible>StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31905] $LOCALIZE[31912])</visible>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayWeekdayBG">
+        <posy>0</posy>
+        <posx>0</posx>
+        <width>162</width>
+        <height>278</height>
+        <colordiffuse>30FFFFFF</colordiffuse>
+        <aspectratio>stretch</aspectratio>
+        <texture border="10">script.weather.com.plus/DailyWeekdayBG.png</texture>
+    </include>
+    <include name="TWC.Current.5DayWeekendBG">
+        <texture border="10">script.weather.com.plus/DailyWeekendBG.png</texture>
+        <include>TWC.Current.5DayWeekdayBG</include>
+    </include>
+    <include name="TWC.Current.5DayDivider">
+        <control type="image">
+            <description>day/night divider image</description>
+            <posy>50</posy>
+            <posx>81</posx>
+            <width>2</width>
+            <height>200</height>
+            <aspectratio>stretch</aspectratio>
+            <texture>separator_vertical.png</texture>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayCommon">
+        <posx>-5</posx>
+        <posy>5</posy>
+        <height>20</height>
+        <width>164</width>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>grey</textcolor>
+        <shadowcolor>black</shadowcolor>
+        <font>font13</font>
+    </include>
+    <include name="TWC.Current.5DayDateCommon">
+        <posy>27</posy>
+        <font>font12</font>
+        <include>TWC.Current.5DayCommon</include>
+    </include>
+    <include name="TWC.Current.5DayColumnLeftCommon">
+        <posx>1</posx>
+        <posy>60</posy>
+        <height>64</height>
+        <width>78</width>
+        <align>center</align>
+        <aligny>top</aligny>
+        <aspectratio>keep</aspectratio>
+        <textcolor>grey</textcolor>
+        <shadowcolor>black</shadowcolor>
+        <font>font10</font>
+    </include>
+    <include name="TWC.Current.5DayColumnRightCommon">
+        <posx>84</posx>
+        <include>TWC.Current.5DayColumnLeftCommon</include>
+    </include>
+    <include name="TWC.Current.5DayIconCommon">
+        <include>TWC.Current.5DayColumnLeftCommon</include>
+    </include>
+    <include name="TWC.Current.5DayOutlookCommon">
+        <posy>128</posy>
+        <include>TWC.Current.5DayColumnLeftCommon</include>
+    </include>
+    <include name="TWC.Current.5DayHighTempLabel">
+        <control type="label">
+            <description>precip label</description>
+            <label>High</label>
+            <posy>53</posy>
+            <include>TWC.Current.5DayColumnRightCommon</include>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayLowTempLabel">
+        <control type="label">
+            <description>precip label</description>
+            <label>Low</label>
+            <posy>53</posy>
+            <include>TWC.Current.5DayColumnRightCommon</include>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayHighTempCommon">
+        <posy>65</posy>
+        <textcolor>white</textcolor>
+        <font>font24_title</font>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayHighTempUnitsCommon">
+        <posx>117</posx>
+        <posy>70</posy>
+        <textcolor>white</textcolor>
+        <font>font10</font>
+        <info>System.TemperatureUnits</info>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayPrecipLabel">
+        <control type="label">
+            <description>precip label</description>
+            <label>Precip.</label>
+            <posy>103</posy>
+            <include>TWC.Current.5DayColumnRightCommon</include>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayPrecipCommon">
+        <posy>115</posy>
+        <font>font13_title</font>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayPrecipUnitsCommon">
+        <posx>104</posx>
+        <posy>118</posy>
+        <font>font10</font>
+        <label>%</label>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayHumidityLabel">
+        <control type="label">
+            <description>precip label</description>
+            <label>Humidity</label>
+            <posy>148</posy>
+            <include>TWC.Current.5DayColumnRightCommon</include>
+        </control>
+    </include>
+    <include name="TWC.Current.5DayHumidityCommon">
+        <posy>160</posy>
+        <font>font13_title</font>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayHumidityUnitsCommon">
+        <posx>104</posx>
+        <posy>163</posy>
+        <font>font10</font>
+        <label>%</label>
+        <include>TWC.Current.5DayColumnRightCommon</include>
+    </include>
+    <include name="TWC.Current.5DayWindCommon">
+        <posy>200</posy>
+        <font>font10</font>
+        <aligny>top</aligny>
+        <include>TWC.Current.5DayCommon</include>
+    </include>
+    <include name="TWC.Current.5DaySunriseCommon">
+        <posy>240</posy>
+        <font>font10</font>
+        <include>TWC.Current.5DayCommon</include>
+    </include>
+    <include name="TWC.Current.5DaySunsetCommon">
+        <posy>255</posy>
+        <include>TWC.Current.5DaySunriseCommon</include>
+    </include>
+    <include name="TWC.Current.ConditionLabelsCommon">
+        <posx>0</posx>
+        <posy>-90</posy>
+        <height>28</height>
+        <width>280</width>
+        <font>font13</font>
+        <align>right</align>
+        <aligny>top</aligny>
+        <textcolor>grey2</textcolor>
+        <shadowcolor>black</shadowcolor>
+        <focusedcolor>grey2</focusedcolor>
+        <texturefocus>-</texturefocus>
+        <texturenofocus>-</texturenofocus>
+    </include>
+    <include name="TWC.Current.ConditionValuesCommon">
+        <align>left</align>
+        <textcolor>white</textcolor>
+        <include>TWC.Current.ConditionLabelsCommon</include>
+    </include>
+
+    <include name="TWC.Current">
+        <control type="group">
+            <posx>290</posx>
+            <posy>60</posy>
+            <visible>StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31905] $LOCALIZE[31912])</visible>
+            <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+            <control type="label">
+                <description>Fetching weather label</description>
+                <include>TWC.LoadingLabel</include>
+            </control>
+            <control type="label">
+                <description>Error fetching weather label</description>
+                <include>TWC.LoadingFailedLabel</include>
+            </control>
+            <!-- current weather -->
+            <control type="group">
+                <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
+                <control type="group">
+                    <posx>-30</posx>
+                    <posy>-20</posy>
+                    <control type="group">
+                        <posx>10</posx>
+                        <control type="label">
+                            <description>current temp value</description>
+                            <posx>10</posx>
+                            <posy>70</posy>
+                            <width>180</width>
+                            <height>40</height>
+                            <font>WeatherTemp</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <label>$INFO[Window.Property(Current.Temperature)]</label>
+                            <textcolor>white</textcolor>
+                            <shadowcolor>black</shadowcolor>
+                            <animation effect="slide" start="0,0" end="-17,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.Temperature),-100) + !IntegerGreaterThan(Window.Property(Current.Temperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>current temp value units</description>
+                            <posx>118</posx>
+                            <posy>58</posy>
+                            <width>100</width>
+                            <height>20</height>
+                            <font>font16</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <info>System.TemperatureUnits</info>
+                            <textcolor>white</textcolor>
+                            <shadowcolor>black</shadowcolor>
+                            <animation effect="slide" start="0,0" end="28,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.Temperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-30,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.Temperature),-10) + !IntegerGreaterThan(Window.Property(Current.Temperature),9)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>current feels like label</description>
+                            <posx>10</posx>
+                            <posy>140</posy>
+                            <width>180</width>
+                            <height>40</height>
+                            <font>font13</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <label>[B]$LOCALIZE[402][/B]</label>
+                            <textcolor>grey2</textcolor>
+                            <shadowcolor>black</shadowcolor>
+                        </control>
+                        <control type="label">
+                            <description>current feels like value</description>
+                            <posx>30</posx>
+                            <posy>171</posy>
+                            <width>140</width>
+                            <height>40</height>
+                            <font>font35_title</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <label>$INFO[Window.Property(Current.FeelsLike)]</label>
+                            <textcolor>grey2</textcolor>
+                            <shadowcolor>black</shadowcolor>
+                            <animation effect="slide" start="0,0" end="-6,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.FeelsLike),-100) + !IntegerGreaterThan(Window.Property(Current.FeelsLike),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>current feels like value units</description>
+                            <posx>61</posx>
+                            <posy>166</posy>
+                            <width>140</width>
+                            <height>30</height>
+                            <info>System.TemperatureUnits</info>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font>
+                            <textcolor>grey2</textcolor>
+                            <shadowcolor>black</shadowcolor>
+                            <animation effect="slide" start="0,0" end="11,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.FeelsLike),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Current.FeelsLike),-10) + !IntegerGreaterThan(Window.Property(Current.FeelsLike),9)">Conditional</animation>
+                        </control>
+                    </control>
+                    <control type="image">
+                        <description>current weather icon</description>
+                        <posx>180</posx>
+                        <posy>35</posy>
+                        <width>230</width>
+                        <height>180</height>
+                        <info>Window.Property(Current.ConditionIcon)</info>
+                        <aspectratio>keep</aspectratio>
+                    </control>
+                    <control type="label">
+                        <description>current condition label</description>
+                        <posx>45</posx>
+                        <posy>240</posy>
+                        <width>340</width>
+                        <height>50</height>
+                        <label>$INFO[Window.Property(Current.Condition)]</label>
+                        <wrapmultiline>true</wrapmultiline>
+                        <font>font16</font>
+                        <align>center</align>
+                        <aligny>top</aligny>
+                        <textcolor>white</textcolor>
+                        <shadowcolor>black</shadowcolor>
+                    </control>
+                    <control type="image">
+                        <posx>20</posx>
+                        <posy>315</posy>
+                        <width>870</width>
+                        <height>3</height>
+                        <texture>separator.png</texture>
+                    </control>
+                    <control type="image">
+                        <posx>415</posx>
+                        <posy>40</posy>
+                        <width>4</width>
+                        <height>280</height>
+                        <texture>separator_vertical.png</texture>
+                    </control>
+                </control>
+                <control type="image">
+                    <description>current moon icon</description>
+                    <posx>700</posx>
+                    <posy>0</posy>
+                    <width>128</width>
+                    <height>96</height>
+                    <info>Window.Property(Current.MoonIcon)</info>
+                    <aspectratio>keep</aspectratio>
+                </control>
+                <control type="label">
+                    <description>current moon phase</description>
+                    <posx>710</posx>
+                    <posy>90</posy>
+                    <width>108</width>
+                    <height>30</height>
+                    <label>$INFO[Window.Property(Current.Moon)]</label>
+                    <wrapmultiline>true</wrapmultiline>
+                    <font>font10</font>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <textcolor>grey</textcolor>
+                    <shadowcolor>black</shadowcolor>
+                </control>
+
+                <control type="grouplist">
+                    <posx>278</posx>
+                    <posy>15</posy>
+                    <width>300</width>
+                    <itemgap>0</itemgap>
+                    <orientation>vertical</orientation>
+                    <control type="button">
+                        <description>current dew label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[405] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current humidity label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[406] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current UV Index label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[403] :</label>
+                    </control>
+                    <control type="button">
+                        <description>barometric pressure</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[33085] :</label>
+                    </control>
+                    <control type="button">
+                        <description>visibility</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[33086] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current Sunrise label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[33027] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current Sunset label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[33028] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current Coordinates label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[33087] :</label>
+                    </control>
+                    <control type="button">
+                        <description>current Wind label</description>
+                        <include>TWC.Current.ConditionLabelsCommon</include>
+                        <label>$LOCALIZE[404] :</label>
+                    </control>
+                </control>
+                <control type="grouplist">
+                    <posx>560</posx>
+                    <posy>15</posy>
+                    <width>270</width>
+                    <itemgap>0</itemgap>
+                    <orientation>vertical</orientation>
+                    <control type="label">
+                        <description>current dew Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.DewPoint)]$INFO[System.TemperatureUnits]</label>
+                    </control>
+                    <control type="label">
+                        <description>current humidity Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Humidity),,%]</label>
+                    </control>
+                    <control type="label">
+                        <description>current UV Index Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.UVIndex)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Pressure Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Pressure)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Visibilty Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Visibility)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Sunrise Value</description>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Sunset Value</description>
+                        <height>33</height>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Sunset)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Coordinates Value</description>
+                        <font>font12</font>
+                        <height>23</height>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Location.Latitude),,$COMMA ]$INFO[Window.Property(Location.Longitude)]</label>
+                    </control>
+                    <control type="label">
+                        <description>current Wind Value</description>
+                        <wrapmultiline>true</wrapmultiline>
+                        <include>TWC.Current.ConditionValuesCommon</include>
+                        <label>$INFO[Window.Property(Current.Wind)]$INFO[Window.Property(Current.WindGust),[CR](,)]</label>
+                    </control>
+                </control>
+            </control>
+            <!-- Daily forecast -->
+            <control type="grouplist">
+                <posx>-11</posx>
+                <posy>305</posy>
+                <width>840</width>
+                <itemgap>0</itemgap>
+                <orientation>horizontal</orientation>
+                <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
+                <control type="group">
+                    <width>168</width>
+                    <control type="image">
+                        <description>weekday image</description>
+                        <include>TWC.Current.5DayWeekdayBG</include>
+                        <visible>!StringCompare(Window.Property(Day0.Day),$LOCALIZE[16]) + !StringCompare(Window.Property(Day0.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <control type="image">
+                        <description>weekend image</description>
+                        <include>TWC.Current.5DayWeekendBG</include>
+                        <visible>StringCompare(Window.Property(Day0.Day),$LOCALIZE[16]) | StringCompare(Window.Property(Day0.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <!-- common to both day/night -->
+                    <control type="label">
+                        <description>Date label</description>
+                        <include>TWC.Current.5DayDateCommon</include>
+                        <label>$INFO[Window.Property(Day0.Date)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunrise label</description>
+                        <include>TWC.Current.5DaySunriseCommon</include>
+                        <label>$LOCALIZE[33027]: $INFO[Window.Property(Day0.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunset label</description>
+                        <include>TWC.Current.5DaySunsetCommon</include>
+                        <label>$LOCALIZE[33028]: $INFO[Window.Property(Day0.Sunset)]</label>
+                    </control>
+                    <!-- Day forecast -->
+                    <control type="group">
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight) + !StringCompare(Window.Property(Day0.HighTemperature),n/a)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$LOCALIZE[33006][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Day0.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayHighTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day0.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),-10)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Day0.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day0.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day0.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Day0.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day0.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day0.Humidity),100)">Conditional</animation>
+                            <!--visible>!StringCompare(Window.Property(Day0.Humidity),N/A)</visible-->
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Day0.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Day0.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                    <!-- Night forecast -->
+                    <control type="group">
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight) | StringCompare(Window.Property(Day0.HighTemperature),n/a)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$LOCALIZE[33018][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Night0.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayLowTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day0.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day0.LowTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Night0.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night0.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night0.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Night0.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night0.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night0.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Night0.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Night0.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                </control>
+
+                <control type="group">
+                    <width>168</width>
+                    <control type="image">
+                        <description>weekday image</description>
+                        <include>TWC.Current.5DayWeekdayBG</include>
+                        <visible>!StringCompare(Window.Property(Day1.Day),$LOCALIZE[16]) + !StringCompare(Window.Property(Day1.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <control type="image">
+                        <description>weekend image</description>
+                        <include>TWC.Current.5DayWeekendBG</include>
+                        <visible>StringCompare(Window.Property(Day1.Day),$LOCALIZE[16]) | StringCompare(Window.Property(Day1.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <!-- common to both day/night -->
+                    <control type="label">
+                        <description>Date label</description>
+                        <include>TWC.Current.5DayDateCommon</include>
+                        <label>$INFO[Window.Property(Day1.Date)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunrise label</description>
+                        <include>TWC.Current.5DaySunriseCommon</include>
+                        <label>$LOCALIZE[33027]: $INFO[Window.Property(Day1.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunset label</description>
+                        <include>TWC.Current.5DaySunsetCommon</include>
+                        <label>$LOCALIZE[33028]: $INFO[Window.Property(Day1.Sunset)]</label>
+                    </control>
+                    <!-- Day forecast -->
+                    <control type="group">
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day1.Day)][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Day1.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayHighTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day1.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day1.HighTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Day1.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day1.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day1.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Day1.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day1.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day1.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Day1.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Day1.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                    <!-- Night forecast -->
+                    <control type="group">
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day1.DayShort),, $LOCALIZE[33084]][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Night1.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayLowTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day1.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day1.LowTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Night1.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night1.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night1.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Night1.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night1.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night1.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Night1.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Night1.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                </control>
+
+                <control type="group">
+                    <width>168</width>
+                    <control type="image">
+                        <description>weekday image</description>
+                        <include>TWC.Current.5DayWeekdayBG</include>
+                        <visible>!StringCompare(Window.Property(Day2.Day),$LOCALIZE[16]) + !StringCompare(Window.Property(Day2.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <control type="image">
+                        <description>weekend image</description>
+                        <include>TWC.Current.5DayWeekendBG</include>
+                        <visible>StringCompare(Window.Property(Day2.Day),$LOCALIZE[16]) | StringCompare(Window.Property(Day2.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <!-- common to both day/night -->
+                    <control type="label">
+                        <description>Date label</description>
+                        <include>TWC.Current.5DayDateCommon</include>
+                        <label>$INFO[Window.Property(Day2.Date)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunrise label</description>
+                        <include>TWC.Current.5DaySunriseCommon</include>
+                        <label>$LOCALIZE[33027]: $INFO[Window.Property(Day2.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunset label</description>
+                        <include>TWC.Current.5DaySunsetCommon</include>
+                        <label>$LOCALIZE[33028]: $INFO[Window.Property(Day2.Sunset)]</label>
+                    </control>
+                    <!-- Day forecast -->
+                    <control type="group">
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day2.Day)][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Day2.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayHighTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day2.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day2.HighTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Day2.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day2.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day2.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Day2.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day2.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day2.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Day2.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Day2.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                    <!-- Night forecast -->
+                    <control type="group">
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day2.DayShort),, $LOCALIZE[33084]][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Night2.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayLowTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day2.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day2.LowTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Night2.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night2.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night2.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Night2.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night2.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night2.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Night2.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Night2.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                </control>
+
+                <control type="group">
+                    <width>168</width>
+                    <control type="image">
+                        <description>weekday image</description>
+                        <include>TWC.Current.5DayWeekdayBG</include>
+                        <visible>!StringCompare(Window.Property(Day3.Day),$LOCALIZE[16]) + !StringCompare(Window.Property(Day3.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <control type="image">
+                        <description>weekend image</description>
+                        <include>TWC.Current.5DayWeekendBG</include>
+                        <visible>StringCompare(Window.Property(Day3.Day),$LOCALIZE[16]) | StringCompare(Window.Property(Day3.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <!-- common to both day/night -->
+                    <control type="label">
+                        <description>Date label</description>
+                        <include>TWC.Current.5DayDateCommon</include>
+                        <label>$INFO[Window.Property(Day3.Date)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunrise label</description>
+                        <include>TWC.Current.5DaySunriseCommon</include>
+                        <label>$LOCALIZE[33027]: $INFO[Window.Property(Day3.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunset label</description>
+                        <include>TWC.Current.5DaySunsetCommon</include>
+                        <label>$LOCALIZE[33028]: $INFO[Window.Property(Day3.Sunset)]</label>
+                    </control>
+                    <!-- Day forecast -->
+                    <control type="group">
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day3.Day)][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Day3.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayHighTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day3.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day3.HighTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Day3.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day3.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day3.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Day3.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day3.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day3.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Day3.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Day3.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                    <!-- Night forecast -->
+                    <control type="group">
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day3.DayShort),, $LOCALIZE[33084]][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Night3.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayLowTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day3.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day3.LowTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Night3.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night3.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night3.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Night3.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night3.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night3.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Night3.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Night3.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                </control>
+
+                <control type="group">
+                    <width>168</width>
+                    <control type="image">
+                        <description>weekday image</description>
+                        <include>TWC.Current.5DayWeekdayBG</include>
+                        <visible>!StringCompare(Window.Property(Day4.Day),$LOCALIZE[16]) + !StringCompare(Window.Property(Day4.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <control type="image">
+                        <description>weekend image</description>
+                        <include>TWC.Current.5DayWeekendBG</include>
+                        <visible>StringCompare(Window.Property(Day4.Day),$LOCALIZE[16]) | StringCompare(Window.Property(Day4.Day),$LOCALIZE[17])</visible>
+                    </control>
+                    <!-- common to both day/night -->
+                    <control type="label">
+                        <description>Date label</description>
+                        <include>TWC.Current.5DayDateCommon</include>
+                        <label>$INFO[Window.Property(Day4.Date)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunrise label</description>
+                        <include>TWC.Current.5DaySunriseCommon</include>
+                        <label>$LOCALIZE[33027]: $INFO[Window.Property(Day4.Sunrise)]</label>
+                    </control>
+                    <control type="label">
+                        <description>sunset label</description>
+                        <include>TWC.Current.5DaySunsetCommon</include>
+                        <label>$LOCALIZE[33028]: $INFO[Window.Property(Day4.Sunset)]</label>
+                    </control>
+                    <!-- Day forecast -->
+                    <control type="group">
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day4.Day)][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Day4.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayHighTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day4.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day4.HighTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Day4.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day4.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day4.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Day4.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Day4.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Day4.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Day4.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Day4.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                    <!-- Night forecast -->
+                    <control type="group">
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight)</visible>
+                        <control type="label">
+                            <description>Day label</description>
+                            <include>TWC.Current.5DayCommon</include>
+                            <label>[B]$INFO[Window.Property(Day4.DayShort),, $LOCALIZE[33084]][/B]</label>
+                        </control>
+                        <control type="image">
+                            <description>Weather image</description>
+                            <include>TWC.Current.5DayIconCommon</include>
+                            <texture>$INFO[Window.Property(Night4.OutlookIcon)]</texture>
+                        </control>
+                        <include>TWC.Current.5DayLowTempLabel</include>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempCommon</include>
+                            <label>$INFO[Window.Property(Day4.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),-1)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>High Temp label</description>
+                            <include>TWC.Current.5DayHighTempUnitsCommon</include>
+                            <info>System.TemperatureUnits</info>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day4.LowTemperature),n/a)</visible>
+                        </control>
+                        <include>TWC.Current.5DayPrecipLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayPrecipCommon</include>
+                            <label>$INFO[Window.Property(Night4.Precipitation)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayPrecipUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night4.Precipitation),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night4.Precipitation),100)">Conditional</animation>
+                        </control>
+                        <include>TWC.Current.5DayHumidityLabel</include>
+                        <control type="label">
+                            <description>precip label</description>
+                            <include>TWC.Current.5DayHumidityCommon</include>
+                            <label>$INFO[Window.Property(Night4.Humidity)]</label>
+                        </control>
+                        <control type="label">
+                            <description>precip units label</description>
+                            <include>TWC.Current.5DayHumidityUnitsCommon</include>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="StringCompare(Window.Property(Night4.Humidity),0)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="8,0" time="0" condition="StringCompare(Window.Property(Night4.Humidity),100)">Conditional</animation>
+                        </control>
+                        <control type="label">
+                            <description>outlook label</description>
+                            <include>TWC.Current.5DayOutlookCommon</include>
+                            <label>$INFO[Window.Property(Night4.Outlook)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                        <control type="label">
+                            <description>wind label</description>
+                            <include>TWC.Current.5DayWindCommon</include>
+                            <label>$INFO[Window.Property(Night4.Wind)]</label>
+                            <wrapmultiline>true</wrapmultiline>
+                        </control>
+                    </control>
+                </control>
+
+
+            </control>
+        </control>
+    </include>
+</includes>

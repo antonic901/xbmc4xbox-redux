@@ -1,0 +1,512 @@
+<includes>
+    <include name="TWC.View">
+        <defaultcontrol always="true">20000</defaultcontrol>
+        <allowoverlay>no</allowoverlay>
+        <controls>
+            <include>CommonWeatherBackground</include>
+            <!--include>TWC.Video.BGVideoWindow</include-->
+            <control type="group">
+                <control type="button" id="20000"><!-- current conditions view -->
+                    <description>dummy button to set initial view</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>0</width>
+                    <height>0</height>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <onfocus>SetFocus(2000)</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentView,$LOCALIZE[31905] $LOCALIZE[31912])</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentViewMenu,$LOCALIZE[31905])</onfocus>
+                    <!--onfocus>Skin.Reset(TWC.ZoomWeatherMap)</onfocus-->
+                    <visible>IsEmpty(Window.Property(Weather.CurrentView)) + IsEmpty(Skin.String(TWC.DefaultView)) + IsEmpty(Window.Property(Alerts))</visible>
+                </control>
+                <control type="button" id="20000"><!-- user selected default view -->
+                    <description>dummy button to set initial view</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>0</width>
+                    <height>0</height>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <onfocus>SetFocus(2000)</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentView,$INFO[Skin.String(TWC.DefaultView)])</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentViewMenu,$INFO[Skin.String(TWC.DefaultViewMenu)])</onfocus>
+                    <!--onfocus>Skin.Reset(TWC.ZoomWeatherMap)</onfocus-->
+                    <visible>IsEmpty(Window.Property(Weather.CurrentView)) + !IsEmpty(Skin.String(TWC.DefaultView)) + IsEmpty(Window.Property(Alerts))</visible>
+                </control>
+                <control type="button" id="20000"><!-- alerts view -->
+                    <description>dummy button to set initial view</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>0</width>
+                    <height>0</height>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <onfocus>SetFocus(2000)</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentView,$LOCALIZE[31906] - $LOCALIZE[31913])</onfocus>
+                    <onfocus>SetProperty(Weather.CurrentViewMenu,$LOCALIZE[31906])</onfocus>
+                    <!--onfocus>Skin.Reset(TWC.ZoomWeatherMap)</onfocus-->
+                    <visible>IsEmpty(Window.Property(Weather.CurrentView)) + !IsEmpty(Window.Property(Alerts))</visible>
+                </control>
+                <control type="button" id="20000"><!-- previous view -->
+                    <description>dummy button to set initial view</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>0</width>
+                    <height>0</height>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <onfocus>SetFocus(2000)</onfocus>
+                    <!--onfocus>Skin.Reset(TWC.ZoomWeatherMap)</onfocus-->
+                    <visible>!IsEmpty(Window.Property(Weather.CurrentView))</visible>
+                </control>
+
+                <control type="group">
+                    <posx>60</posx>
+                    <posy>40</posy>
+                    <animation effect="fade" time="200">WindowOpen</animation>
+                    <animation effect="fade" time="300">WindowClose</animation>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>1160</width>
+                        <height>670</height>
+                        <texture border="20">DialogBack.png</texture>
+                    </control>
+                    <control type="image">
+                        <posx>268</posx>
+                        <posy>10</posy>
+                        <width>855</width>
+                        <height>648</height>
+                        <texture border="5">black-back2.png</texture>
+                    </control>
+                    <control type="image">
+                        <posx>268</posx>
+                        <posy>10</posy>
+                        <width>824</width>
+                        <height>70</height>
+                        <aspectratio>stretch</aspectratio>
+                        <texture>GlassTitleBar.png</texture>
+                        <colordiffuse>$INFO[Window.Property(Alerts.Color)]</colordiffuse>
+                    </control>
+                    <!--control type="button">
+                        <description>Close Window button</description>
+                        <posx>1050</posx>
+                        <posy>9</posy>
+                        <width>64</width>
+                        <height>32</height>
+                        <label>-</label>
+                        <font>-</font>
+                        <onclick>PreviousMenu</onclick>
+                        <texturefocus>DialogCloseButton-focus.png</texturefocus>
+                        <texturenofocus>DialogCloseButton.png</texturenofocus>
+                        <onleft>1</onleft>
+                        <onright>1</onright>
+                        <onup>1</onup>
+                        <ondown>1</ondown>
+                        <visible>system.getbool(input.enablemouse)</visible>
+                    </control-->
+                    <control type="label">
+                        <description>weather location label</description>
+                        <posx>20</posx>
+                        <posy>60</posy>
+                        <width>460</width>
+                        <height>30</height>
+                        <font>font13_title</font>
+                        <textcolor>white</textcolor>
+                        <scroll>false</scroll>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Weather.Location]</label>
+                        <visible>false</visible>
+                    </control>
+                    <control type="label">
+                        <description>header label</description>
+                        <posx>300</posx>
+                        <posy>20</posy>
+                        <width>760</width>
+                        <height>30</height>
+                        <font>font16caps</font>
+                        <label>$INFO[Window.Property(Location)]</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>white</textcolor>
+                        <shadowcolor>black</shadowcolor>
+                    </control>
+                    <control type="label">
+                        <description>last updated value</description>
+                        <posx>300</posx>
+                        <posy>43</posy>
+                        <width>760</width>
+                        <height>30</height>
+                        <font>font10</font>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>grey2</textcolor>
+                        <shadowcolor>black</shadowcolor>
+                        <label>$INFO[Window.Property(Updated),$LOCALIZE[31301]: ,]$INFO[Window.Property(Location.Time), - (,)]</label>
+                    </control>
+                    <!--include>TWC.AlertsRSS</include-->
+                    <control type="image">
+                        <description>LOGO</description>
+                        <posx>10</posx>
+                        <posy>20</posy>
+                        <width>190</width>
+                        <height>80</height>
+                        <aspectratio>keep</aspectratio>
+                        <texture>Confluence_Logo.png</texture>
+                    </control>
+                    <control type="image">
+                        <description>weather service logo</description>
+                        <posx>190</posx>
+                        <posy>30</posy>
+                        <width>60</width>
+                        <height>60</height>
+                        <texture>$INFO[Window.Property(Addon.ID),,-logo.png]</texture>
+                    </control>
+                    <control type="label">
+                        <description>addon name</description>
+                        <posx>1120</posx>
+                        <posy>18</posy>
+                        <width>400</width>
+                        <height>20</height>
+                        <label>$INFO[Window.Property(Weather.CurrentView)]</label>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <font>font12caps</font>
+                        <textcolor>grey2</textcolor>
+                        <shadowcolor>-</shadowcolor>
+                    </control>
+                    <!-- views -->
+                    <control type="group" id="3000">
+                        <include>TWC.Current</include>
+                        <!--include>TWC.Tomorrow</include-->
+                        <include>TWC.36Hour</include>
+                        <include>TWC.Weekend</include>
+                        <include>TWC.Hourly</include>
+                        <include>TWC.Daily</include>
+                        <include>TWC.Maps</include>
+                        <include>TWC.Alerts</include>
+                        <include>TWC.Video</include>
+                    </control>
+                    <!-- The Extra Labels for the above buttons button -->
+                    <control type="grouplist">
+                        <description>control area</description>
+                        <posx>10</posx>
+                        <posy>131</posy>
+                        <width>260</width>
+                        <height>601</height>
+                        <itemgap>-1</itemgap>
+                        <onleft>2000</onleft>
+                        <onright>3000</onright>
+                        <onup>2000</onup>
+                        <ondown>2000</ondown>
+                        <pagecontrol>-</pagecontrol>
+                        <include>TWC.Current.ButtonXLabel</include>
+                        <!--include>TWC.Tomorrow.ButtonXLabel</include-->
+                        <include>TWC.36Hour.ButtonXLabel</include>
+                        <include>TWC.Weekend.ButtonXLabel</include>
+                        <include>TWC.Hourly.ButtonXLabel</include>
+                        <include>TWC.10Day.ButtonXLabel</include>
+                        <include>TWC.Maps.ButtonXLabel</include>
+                        <include>TWC.Alerts.ButtonXLabel</include>
+                        <include>TWC.Video.ButtonXLabel</include>
+                    </control>
+                    <!-- Main Menu Buttons -->
+                    <control type="grouplist" id="2000">
+                        <description>control area</description>
+                        <posx>10</posx>
+                        <posy>100</posy>
+                        <width>260</width>
+                        <height>601</height>
+                        <itemgap>-1</itemgap>
+                        <onleft>9000</onleft>
+                        <onright>3000</onright>
+                        <onup>2000</onup>
+                        <ondown>2000</ondown>
+                        <pagecontrol>-</pagecontrol>
+                        <include>TWC.Current.Button</include>
+                        <!--include>TWC.Tomorrow.Button</include-->
+                        <include>TWC.36Hour.Button</include>
+                        <include>TWC.Weekend.Button</include>
+                        <include>TWC.Hourly.Button</include>
+                        <include>TWC.10Day.Button</include>
+                        <include>TWC.Maps.Button</include>
+                        <include>TWC.Alerts.Button</include>
+                        <include>TWC.Video.Button</include>
+                    </control>
+                </control>
+            </control>
+            <control type="group">
+                <animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | Control.HasFocus(8999)">Conditional</animation>
+                <animation effect="slide" start="0,0" end="-250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus">WindowClose</animation>
+                <control type="group">
+                    <animation effect="slide" end="-240,0" time="300" tween="quadratic" easing="out">WindowClose</animation>
+                    <animation effect="slide" start="-15,0" end="0,0" time="300" tween="quadratic" easing="out">WindowOpen</animation>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>1</width>
+                        <height>720</height>
+                        <texture>MediaBladeSub_Part1.png</texture>
+                        <animation effect="zoom" start="0,0,1,720" end="0,0,229,720" time="300" tween="quadratic" easing="out" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">Conditional</animation>
+                    </control>
+                    <control type="image">
+                        <posx>1</posx>
+                        <posy>0</posy>
+                        <width>12</width>
+                        <height>720</height>
+                        <texture>MediaBladeSub_Part2.png</texture>
+                        <colordiffuse>$INFO[Window.Property(Alerts.Color)]</colordiffuse>
+                        <animation effect="slide" end="228,0" time="300" tween="quadratic" easing="out" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">Conditional</animation>
+                    </control>
+                </control>
+                <control type="group" id="9001">
+                    <posx>-220</posx>
+                    <posy>0</posy>
+                    <animation effect="fade" start="100" end="0" time="0" condition="!ControlGroup(9001).HasFocus + !Control.HasFocus(98)">conditional</animation>
+                    <animation effect="fade" start="0" end="100" delay="300" time="200" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">conditional</animation>
+                    <animation effect="fade" start="100" end="0" time="0" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">WindowClose</animation>
+                    <animation effect="slide" end="220,0" time="300" tween="quadratic" easing="out" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">conditional</animation>
+                    <control type="button">
+                        <description>Fake button for mouse control</description>
+                        <posx>-15</posx>
+                        <posy>0</posy>
+                        <width>245</width>
+                        <height>720</height>
+                        <label>-</label>
+                        <font>-</font>
+                        <texturenofocus>-</texturenofocus>
+                        <texturefocus>-</texturefocus>
+                        <visible>true</visible>
+                    </control>
+                    <control type="image">
+                        <posx>185</posx>
+                        <posy>200</posy>
+                        <width>40</width>
+                        <height>40</height>
+                        <texture>MediaSubSet.png</texture>
+                    </control>
+                    <!-- dummy buttons for defaultview -->
+                    <control type="button" id="91199">
+                        <posy>-1000</posy>
+                        <onfocus>SetFocus(90199)</onfocus>
+                        <onfocus>Skin.Reset(TWC.DefaultView)</onfocus>
+                        <onfocus>Skin.Reset(TWC.DefaultViewMenu)</onfocus>
+                        <visible>StringCompare(Window.Property(Weather.CurrentView),Skin.String(TWC.DefaultView))</visible>
+                    </control>
+                    <control type="button" id="91199">
+                        <posy>-1000</posy>
+                        <onfocus>SetFocus(90199)</onfocus>
+                        <onfocus>Skin.SetString(TWC.DefaultView,$INFO[Window.Property(Weather.CurrentView)])</onfocus>
+                        <onfocus>Skin.SetString(TWC.DefaultViewMenu,$INFO[Window.Property(Weather.CurrentViewMenu)])</onfocus>
+                        <visible>!StringCompare(Window.Property(Weather.CurrentView),Skin.String(TWC.DefaultView))</visible>
+                    </control>
+                    <!-- dummy buttons for defaultmap -->
+                    <include>TWC.Maps.DummyButtons</include>
+                    <control type="grouplist" id="9010"><!-- misc options slide -->
+                        <posx>10</posx>
+                        <posy>250</posy>
+                        <width>240</width>
+                        <height>550</height>
+                        <onleft>9000</onleft>
+                        <onright>2000</onright>
+                        <onup>9010</onup>
+                        <ondown>9010</ondown>
+                        <itemgap>0</itemgap>
+                        <!--control type="label" id="90198">
+                            <width>220</width>
+                            <height>45</height>
+                            <font>font12caps</font>
+                            <info>Window.Property(Weather.CurrentViewMenu)</info>
+                            <textcolor>dialogheader</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                        </control-->
+                        <control type="radiobutton" id="90199">
+                            <description>Default View Toggle</description>
+                            <include>ButtonMediaSubCommonValues</include>
+                            <label>31930</label>
+                            <onclick>SetFocus(91199)</onclick>
+                            <selected>StringCompare(Window.Property(Weather.CurrentView),Skin.String(TWC.DefaultView))</selected>
+                            <enable>!StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31907] - $LOCALIZE[31914]) + !StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31906] - $LOCALIZE[31913])</enable>
+                        </control>
+                        <include>TWC.Current.SettingsButtons</include>
+                        <include>TWC.36Hour.SettingsButtons</include>
+                        <!--include>TWC.Hourly.SettingsButtons</include-->
+                        <include>TWC.Maps.SettingsButtons</include>
+                        <include>TWC.Weekend.SettingsButtons</include>
+                        <include>TWC.10Day.SettingsButtons</include>
+                        <!--include>TWC.Alerts.SettingsButtons</include-->
+                        <control type="label" id="90220">
+                            <width>220</width>
+                            <height>45</height>
+                            <font>font12caps</font>
+                            <label>14018</label>
+                            <textcolor>dialogheader</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="radiobutton" id="90221">
+                            <description>Fanart Toggle</description>
+                            <include>ButtonMediaSubCommonValues</include>
+                            <label>31307</label>
+                            <onclick>Skin.ToggleSetting(ShowWeatherFanart)</onclick>
+                            <selected>!Skin.HasSetting(ShowWeatherFanart)</selected>
+                        </control>
+                        <!--control type="button" id="90222">
+                            <description>Search</description>
+                            <include>ButtonMediaSubCommonValues</include>
+                            <label>31317</label>
+                            <onclick>Skin.SetPath(WeatherFanartDir)</onclick>
+                            <enable>Skin.HasSetting(ShowWeatherFanart)</enable>
+                        </control-->
+                    </control>
+                </control>
+                <control type="button" id="8999">
+                    <description>Fake button for mouse control</description>
+                    <posx>-250</posx>
+                    <posy>0</posy>
+                    <width>265</width>
+                    <height>720</height>
+                    <label>-</label>
+                    <font>-</font>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <visible>true</visible>
+                </control>
+                <include>SideBladeLeft</include>
+                <control type="image">
+                    <description>LOGO</description>
+                    <posx>-230</posx>
+                    <posy>50</posy>
+                    <width>220</width>
+                    <height>80</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>Confluence_Logo.png</texture>
+                </control>
+                <control type="group" id="9000"><!-- main slide buttons -->
+                    <posx>-250</posx>
+                    <posy>130</posy>
+                    <include>CommonNowPlaying</include>
+                    <control type="spincontrolex" id="3">
+                        <description>change location button</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <font>-</font>
+                        <textoffsetx>10</textoffsetx>
+                        <include>ButtonCommonValues</include>
+                        <onleft>2000</onleft>
+                        <onright>2000</onright>
+                        <onup>611</onup>
+                        <ondown>2</ondown>
+                    </control>
+                    <control type="label">
+                        <description>change location label</description>
+                        <posx>10</posx>
+                        <posy>0</posy>
+                        <height>40</height>
+                        <width>270</width>
+                        <font>font13caps</font>
+                        <label>31027</label>
+                        <textcolor>white</textcolor>
+                        <shadowcolor>black</shadowcolor>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                    </control>
+                    <control type="button" id="2">
+                        <description>Refresh button</description>
+                        <posx>0</posx>
+                        <posy>40</posy>
+                        <include>ButtonCommonValues</include>
+                        <label>103</label>
+                        <onleft>2000</onleft>
+                        <onright>2000</onright>
+                        <onup>3</onup>
+                        <ondown>4</ondown>
+                    </control>
+                    <control type="button" id="4">
+                        <description>Settings button</description>
+                        <posx>0</posx>
+                        <posy>80</posy>
+                        <label>5</label>
+                        <onclick>ActivateWindow(MyWeatherSettings)</onclick>
+                        <include>ButtonCommonValues</include>
+                        <onleft>2000</onleft>
+                        <onright>2000</onright>
+                        <onup>2</onup>
+                        <ondown>98</ondown>
+                    </control>
+                    <control type="radiobutton" id="98">
+                        <description>Extra Options</description>
+                        <hitrect x="0" y="120" w="265" h="40" />
+                        <posx>0</posx>
+                        <posy>120</posy>
+                        <include>ButtonCommonValues</include>
+                        <radiowidth>18</radiowidth>
+                        <radioheight>18</radioheight>
+                        <radioposx>222</radioposx>
+                        <radioposy>12</radioposy>
+                        <textureradiofocus>HomeHasSub.png</textureradiofocus>
+                        <textureradionofocus>HomeHasSub.png</textureradionofocus>
+                        <label>31026</label>
+                        <onleft>2000</onleft>
+                        <onright>9010</onright>
+                        <onup>4</onup>
+                        <ondown>610</ondown>
+                    </control>
+                    <control type="button" id="610">
+                        <description>Fake Button to fix Player Controls Navigation</description>
+                        <onup>98</onup>
+                        <ondown>603</ondown>
+                        <visible>false</visible>
+                    </control>
+                    <control type="group">
+                        <posx>0</posx>
+                        <posy>260</posy>
+                        <include>CommonNowPlaying_Controls</include>
+                    </control>
+                    <control type="button" id="611">
+                        <description>Fake Button to fix Player Controls Navigation</description>
+                        <onup>608</onup>
+                        <ondown>3</ondown>
+                        <visible>false</visible>
+                    </control>
+                </control>
+            </control>
+            <control type="group">
+                <posx>60</posx>
+                <posy>0</posy>
+                <animation effect="slide" end="-620,0" time="600" tween="quadratic" easing="out">WindowClose</animation>
+                <animation effect="slide" start="-310,0" time="400" tween="quadratic" easing="out">WindowOpen</animation>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>250</width>
+                    <height>35</height>
+                    <texture border="0,0,32,0">header.png</texture>
+                </control>
+                <control type="label">
+                    <include>WindowTitleCommons</include>
+                    <posx>220</posx>
+                    <label>8</label>
+                </control>
+                <control type="image">
+                    <posx>210</posx>
+                    <posy>0</posy>
+                    <width>350</width>
+                    <height>35</height>
+                    <texture border="0,0,32,0">header.png</texture>
+                </control>
+                <control type="label">
+                    <width>270</width>
+                    <include>WindowTitleCommons</include>
+                    <posx>530</posx>
+                    <label>$INFO[Window(Weather).Property(Addon.Name)]</label>
+                </control>
+            </control>
+            <include>WindowTitleHomeButton</include>
+            <include>Clock</include>
+        </controls>
+    </include>
+</includes>

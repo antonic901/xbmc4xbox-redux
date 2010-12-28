@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+
+    <!-- General -->
+    <category label="30051">
+        <setting label="30100" type="lsep" />
+        <!-- maxlocations is used by XBMC to limit selections, xbmc defaults to 1, max is 10 -->
+        <setting label="30110" type="enum" id="maxlocations" default="2" lvalues="30111|30112|30113|30114|30115"/>
+        <!-- town# are required settings (# limited by maxlocations) -->
+        <setting label="30101" type="lsep"/>
+        <setting label="[I]$ADDON[script.weather.standard 30120][/I] " type="text" enable="false"/>
+        <setting label="$ADDON[script.weather.standard 30130] #1" type="action" id="town1" action="RunScript($ID,search1)" default="*" option="close"/>
+        <setting label="$ADDON[script.weather.standard 30130] #2" type="action" id="town2" action="RunScript($ID,search2)" default="London, United Kingdom" option="close" enable="IntegerGreaterThan(Addon.Setting(maxlocations),0)"/>
+        <setting label="$ADDON[script.weather.standard 30130] #3" type="action" id="town3" action="RunScript($ID,search3)" default="Tokyo, Japan" option="close" enable="IntegerGreaterThan(Addon.Setting(maxlocations),1)"/>
+        <setting label="$ADDON[script.weather.standard 30130] #4" type="action" id="town4" action="RunScript($ID,search4)" default="Melbourne, Australia" option="close" enable="IntegerGreaterThan(Addon.Setting(maxlocations),2)"/>
+        <setting label="$ADDON[script.weather.standard 30130] #5" type="action" id="town5" action="RunScript($ID,search5)" default="Honolulu, HI" option="close" enable="IntegerGreaterThan(Addon.Setting(maxlocations),3)"/>
+        <setting label="30102" type="lsep"/>
+        <setting label="30140" type="action" id="town_geo_fallback" action="RunScript($ID,search_geo_fallback)" default="New York, NY" option="close"/>
+    </category>
+
+    <!-- Skinning -->
+    <category label="30055">
+        <setting label="30500" type="lsep" />
+        <setting label="30510" type="folder" id="icon_path_weather" default="special://xbmc/scripts/.modules/script.module.weather/media/weather/"/>
+        <setting label="30520" type="folder" id="icon_path_moon" default="special://xbmc/scripts/.modules/script.module.weather/media/moon/"/>
+        <setting label="30501" type="lsep" />
+        <setting label="30530" type="folder" id="fanart_path" default=""/>
+        <setting label="30540" subsetting="true" type="enum" id="fanart_type" default="0" lvalues="30541|30542" enable="!IsEmpty(Addon.Setting(fanart_path))"/>
+        <setting label="30502" type="lsep" />
+        <setting label="30550" type="enum" id="coordinate_format" default="0" values="h ddd°mm'ss&quot;|h ddd°mm.mmm'|h ddd.ddd°"/>
+    </category>
+
+    <!-- Maintenance -->
+    <category label="30056">
+        <setting type="sep"/>
+        <setting label="[B]$ADDON[script.weather.standard 30750][/B]" type="text" default="nuka1195" enable="false"/>
+        <setting label="[B]$ADDON[script.weather.standard 30753][/B]" type="text" default="$ADDON[script.weather.standard 30002]" enable="false"/>
+        <setting type="sep"/>
+        <setting label="30600" type="lsep"/>
+        <setting label="30650" type="action" action="RunScript($ID,properties)"/>
+    </category>
+
+    <!-- Settings used by addon, no user input -->
+    <category visible="false">
+        <setting type="text" id="id1" default="*" visible="false"/>
+        <setting type="text" id="id2" default="UKXX0085" visible="false"/>
+        <setting type="text" id="id3" default="JAXX0085" visible="false"/>
+        <setting type="text" id="id4" default="ASXX0075" visible="false"/>
+        <setting type="text" id="id5" default="USHI0026" visible="false"/>
+        <setting type="text" id="id_geo_fallback" default="USNY0996" visible="false"/>
+    </category>
+
+</settings>

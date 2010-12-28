@@ -11,6 +11,10 @@
 	<include file="IncludesHomeVertical.xml" />
 	<include file="IncludesHomeHorizontal.xml" />
 
+	<include file="script.weather.com.plus/CommonValues.xml" />
+	<include file="script.weather.com.plus/Current.xml" />
+	<include file="script.weather.com.plus/WeatherPluginView.xml" />
+
 	<constant name="FanartCrossfadeTime">500</constant>
 	<constant name="IconCrossfadeTime">400</constant>
 

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<strings>
+    <!-- addon localized title -->
+    <string id="30000">Weather.com (standard)</string>
+    <!-- language author (translators put your name here) -->
+    <string id="30002">nuka1195</string>
+
+    <!-- category separators -->
+    <string id="30051">General</string>
+    <string id="30055">Skinning</string>
+    <string id="30056">Maintenance</string>
+
+    <!-- General -->
+    <string id="30100">Locations</string>
+    <string id="30101">Towns</string>
+    <string id="30102">Fallback</string>
+    <!-- settings labels & options -->
+    <string id="30110">Fetch weather for</string>
+    <string id="30111">1 Town</string>
+    <string id="30112">2 Towns</string>
+    <string id="30113">3 Towns</string>
+    <string id="30114">4 Towns</string>
+    <string id="30115">5 Towns</string>
+    <string id="30120">Enter * for ip based geo location</string>
+    <string id="30130">Change town</string>
+    <string id="30140">Fallback town for failed ip based geo location</string>
+
+    <!-- Skinning -->
+    <string id="30500">Icons</string>
+    <string id="30501">Fanart</string>
+    <string id="30502">Coordinates</string>
+    <!-- settings labels & options -->
+    <string id="30510">Path to weather icons</string>
+    <string id="30520">Path to moon icons</string>
+    <string id="30530">Path to fanart</string>
+    <string id="30540">Fanart type</string>
+    <string id="30541">Conditions</string>
+    <string id="30542">Location</string>
+    <string id="30550">Coordinate format</string>
+
+    <!-- Maintenance -->
+    <string id="30600">Utilities</string>
+    <!-- settings labels & options -->
+    <string id="30650">Print property list to log</string>
+
+    <!-- search terms -->
+    <string id="30700">Property list printed to log.</string>
+    <string id="30701">Log: %s</string>
+    <string id="30730">Select town</string>
+    <string id="30731">Enter the nearest large town...</string>
+    <string id="30732">No results were found!</string>
+    <!-- credits titles -->
+    <string id="30750">Author</string>
+    <string id="30751">Version</string>
+    <string id="30752">Subversion Repo</string>
+    <string id="30753">Language Translation</string>
+    <string id="30754">Icon by</string>
+    <string id="30759">Updated</string>
+</strings>
