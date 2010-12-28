@@ -935,6 +935,19 @@
 		</control>
 	</include>
 	<include name="Clock">
+		<control type="label">
+			<description>low free memory label</description>
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>28</height>
+			<align>center</align>
+			<aligny>center</aligny>
+			<font>font12</font>
+			<textcolor>FFDD0000</textcolor>
+			<label>[B]$LOCALIZE[158]: $INFO[System.FreeMemory][/B]</label>
+			<visible>IntegerGreaterThan(system.memory(used.percent),90)</visible>
+		</control>
 		<control type="group">
 			<posx>160r</posx>
 			<posy>0</posy>

@@ -242,6 +242,20 @@
 				<textcolor>white</textcolor>
 				<shadowcolor>black</shadowcolor>
 				<label>[COLOR=grey]$INFO[System.Date][/COLOR] | $INFO[System.Time]</label>
+				<visible>!IntegerGreaterThan(system.memory(used.percent),90)</visible>
+			</control>
+			<control type="label">
+				<description>low free memory label</description>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>400</width>
+				<height>28</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font12</font>
+				<textcolor>FFDD0000</textcolor>
+				<label>[B]$LOCALIZE[158]: $INFO[System.FreeMemory][/B]</label>
+				<visible>IntegerGreaterThan(system.memory(used.percent),90)</visible>
 			</control>
 		</control>
 	</controls>	
