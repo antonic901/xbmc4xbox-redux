@@ -1683,8 +1683,7 @@ void CDVDPlayer::HandleMessages()
 
     try
     {
-      if (pMsg->IsType(CDVDMsg::PLAYER_SEEK) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK)         == 0
-                                             && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK_CHAPTER) == 0)
+      if (pMsg->IsType(CDVDMsg::PLAYER_SEEK))
       {
         CDVDMsgPlayerSeek &msg(*((CDVDMsgPlayerSeek*)pMsg));
 
@@ -1717,8 +1716,7 @@ void CDVDPlayer::HandleMessages()
         g_infoManager.m_performingSeek = false;
         g_infoManager.SetDisplayAfterSeek();
       }
-      else if (pMsg->IsType(CDVDMsg::PLAYER_SEEK_CHAPTER) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK)         == 0
-                                                          && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK_CHAPTER) == 0)
+      else if (pMsg->IsType(CDVDMsg::PLAYER_SEEK_CHAPTER))
       {
         g_infoManager.SetDisplayAfterSeek(100000);
         SetCaching(CACHESTATE_INIT);
@@ -1873,7 +1871,7 @@ void CDVDPlayer::HandleMessages()
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_NEXT) ||
                pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_PREV) ||
-              (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_SELECT) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_CHANNEL_SELECT) == 0))
+               pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_SELECT))
       {
         CDVDInputStream::IChannel* input = dynamic_cast<CDVDInputStream::IChannel*>(m_pInputStream);
         if(input)
