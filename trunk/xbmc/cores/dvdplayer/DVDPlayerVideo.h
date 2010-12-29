@@ -46,6 +46,7 @@ public:
   virtual ~CDVDPlayerVideo();
 
   bool OpenStream(CDVDStreamInfo &hint);
+  void OpenStream(CDVDStreamInfo &hint, CDVDVideoCodec* codec);
   void CloseStream(bool bWaitForBuffers);
 
   void StepFrame();

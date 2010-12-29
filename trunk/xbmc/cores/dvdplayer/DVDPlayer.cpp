@@ -2088,6 +2088,15 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep)
   }
 
   __int64 time = GetTime();
+  if(g_application.CurrentFileItem().IsStack() 
+  && (seek > GetTotalTimeInMsec() || seek < 0))
+  {
+    g_application.SeekTime((seek - time) * 0.001 + g_application.GetTime());
+    // warning, don't access any dvdplayer variables here as
+    // the dvdplayer object may have been destroyed
+    return;
+  }
+
   m_messenger.Put(new CDVDMsgPlayerSeek((int)seek, !bPlus, true, false, restore));
   SynchronizeDemuxer(100);
   if (seek < 0) seek = 0;
@@ -2363,12 +2372,6 @@ bool CDVDPlayer::OpenAudioStream(int iStream, int source)
   if(m_CurrentAudio.id    < 0
   || m_CurrentAudio.hint != hint)
   {
-    if(m_CurrentAudio.id >= 0)
-    {
-      CLog::Log(LOGDEBUG, " - codecs hints have changed, must close previous stream");
-      CloseAudioStream(true);
-    }
-
     if (!m_dvdPlayerAudio.OpenStream( hint ))
     {
       /* mark stream as disabled, to disallaw further attempts*/
@@ -2420,12 +2423,6 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
   if(m_CurrentVideo.id    < 0
   || m_CurrentVideo.hint != hint)
   {
-    if(m_CurrentVideo.id >= 0)
-    {
-      CLog::Log(LOGDEBUG, " - codecs hints have changed, must close previous stream");
-      CloseVideoStream(true);
-    }
-
     if (!m_dvdPlayerVideo.OpenStream(hint))
     {
       /* mark stream as disabled, to disallaw further attempts */
