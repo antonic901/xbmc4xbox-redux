@@ -55,7 +55,7 @@ CDVDAudio::~CDVDAudio()
     m_pAudioDecoder->Deinitialize();
     delete m_pAudioDecoder;
   }
-  if (m_pBuffer) delete[] m_pBuffer;
+  free(m_pBuffer);
 }
 
 void CDVDAudio::RegisterAudioCallback(IAudioCallback* pCallback)
@@ -134,8 +134,7 @@ void CDVDAudio::Destroy()
     m_pAudioDecoder->Deinitialize();
     delete m_pAudioDecoder;
   }
-
-  if (m_pBuffer) delete[] m_pBuffer;
+  free(m_pBuffer);
   m_pBuffer = NULL;
   m_dwPacketSize = 0;
   m_pAudioDecoder = NULL;
