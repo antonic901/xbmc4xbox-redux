@@ -858,7 +858,7 @@
 						<label>8</label>
 						<onclick>ActivateWindow(Weather)</onclick>
 						<icon>special://skin/backgrounds/weather.jpg</icon>
-						<thumb>$INFO[Skin.String(WeatherFanartDir)]$INFO[Weather.FanartCode]</thumb>
+						<thumb>$INFO[Window(Weather).Property(Current.FanartPath)]</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
 						<visible>Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Skin.String(WeatherFanartDir))</visible>
 					</item>

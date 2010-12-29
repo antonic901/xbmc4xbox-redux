@@ -548,7 +548,7 @@ namespace PYXBMC
   }
 
   PyDoc_STRVAR(openSettings__doc__,
-    "openSettings(url[, reload]) -- Opens this plugins settings.\n"
+    "openSettings(url[, reload]) -- Opens this plugins settings dialog. Returns True if user changed settings.\n"
     "\n"
     "url         : string or unicode - url of plugin. (plugin://pictures/picasa/)\n"
     "reload      : [opt] bool - reload language strings and settings (default=True)\n"
@@ -558,7 +558,7 @@ namespace PYXBMC
     "       reload is only necessary if calling openSettings() from the plugin.\n"
     "\n"
     "example:\n"
-    "  - xbmcplugin.openSettings(url=sys.argv[0])\n");
+    "  - ok = xbmcplugin.openSettings(url=sys.argv[0])\n");
 
   PyObject* XBMCPLUGIN_OpenSettings(PyTypeObject *type, PyObject *args, PyObject *kwds)
   {
@@ -588,8 +588,13 @@ namespace PYXBMC
       return NULL;
     }
 
+    bool ok;
     CURL cUrl(url);
-    CGUIDialogPluginSettings::ShowAndGetInput(cUrl);
+
+    // show settings dialog
+    Py_BEGIN_ALLOW_THREADS
+    ok = CGUIDialogPluginSettings::ShowAndGetInput(cUrl);
+    Py_END_ALLOW_THREADS
 
     // reload plugin settings & strings
     if (bReload)
@@ -598,8 +603,7 @@ namespace PYXBMC
       DIRECTORY::CPluginDirectory::LoadPluginStrings(cUrl);
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue((char*)"b", ok);
   }
 
   // define c functions to be used in python here

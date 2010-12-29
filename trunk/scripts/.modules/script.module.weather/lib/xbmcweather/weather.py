@@ -35,6 +35,8 @@ class Weather:
     def __init__( self, addon, index, refresh, localize ):
         # set our Addon class
         self.Addon = addon
+        # set addon info
+        self._set_addon_info()
         # get weather.com code, used to fetch proper weather info
         self.location_id = self.Addon.getSetting( "id%s" % ( index, ) )
         # if ip based geo location, fetch location
@@ -49,8 +51,12 @@ class Weather:
         self.localize_text_special = localize.localize_text_special
         # set base path for source
         self.base_path = os.path.join( self.Addon.getAddonInfo( "Profile" ), "source", "weather-%s.xml" % self.location_id )
-        # set addon info
-        self._set_addon_info()
+
+    def _set_addon_info( self ):
+        # set addon's logo, id and name
+        self.WINDOW.setProperty( "Addon.Logo", self.Addon.getAddonInfo( "Icon" ) )# $GROUP[Addon Info] Addon's Icon path
+        self.WINDOW.setProperty( "Addon.Id", self.Addon.getAddonInfo( "Id" ) )# Addon's Id (useful for customized logo's)
+        self.WINDOW.setProperty( "Addon.Name", self.Addon.getAddonInfo( "Name" ) )# Addon's name
 
     def _get_geo_location_id( self ):
         # FIXME: Remove if block and always search for mobile application (eg traveling) maybe have a setting since everytime you change
@@ -64,12 +70,6 @@ class Weather:
             self.location_id, ip = search.TownSearch( addon=self.Addon, index="_geo" ).get_geo_location()
             # set window property (ip based geo location)
             self.WINDOW.setProperty( "Location.IP", ip )
-
-    def _set_addon_info( self ):
-        # set addon's logo, id and name
-        self.WINDOW.setProperty( "Addon.Logo", self.Addon.getAddonInfo( "Icon" ) )# $GROUP[Addon Info] Addon's Icon path
-        self.WINDOW.setProperty( "Addon.Id", self.Addon.getAddonInfo( "Id" ) )# Addon's Id (useful for customized logo's)
-        self.WINDOW.setProperty( "Addon.Name", self.Addon.getAddonInfo( "Name" ) )# Addon's name
 
     def fetch_weather( self ):
         try:

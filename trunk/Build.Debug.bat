@@ -128,6 +128,7 @@ IF NOT EXIST debug\default.xbe GOTO COMPILE
   xcopy media   BUILD\media   /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy plugins BUILD\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy sounds  BUILD\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy scripts BUILD\scripts /E /Q /I /Y /EXCLUDE:exclude.txt
 
   del exclude.txt
   ECHO ------------------------------

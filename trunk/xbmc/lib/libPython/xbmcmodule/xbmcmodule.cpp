@@ -764,7 +764,7 @@ namespace PYXBMC
     "\n"
     "id             : string - id of setting to return\n"
     "\n"
-    "*Note, choices are (dateshort, datelong, time, meridiem, tempunit, speedunit)\n"
+    "*Note, choices are (dateshort, datelong, locale, meridiem, speedunit, tempunit, time)\n"
     "\n"
     "       You can use the above as keywords for arguments.\n"
     "\n"
@@ -789,20 +789,18 @@ namespace PYXBMC
 
     CStdString result;
 
-    if (strcmpi(id, "datelong") == 0)
+    if (strcmpi(id, "datelong") == 0 || strcmpi(id, "dateshort") == 0)
     {
-      result = g_langInfo.GetDateFormat(true);
+      result = g_langInfo.GetDateFormat(strcmpi(id, "datelong") == 0 ? true : false);
+      // make python compatible
       result.Replace("DDDD", "%A");
       result.Replace("MMMM", "%B");
+      result.Replace("MM", "%m");
+      result.Replace("M", "%m");
+      result.Replace("DD", "%d");
       result.Replace("D", "%d");
       result.Replace("YYYY", "%Y");
-    }
-    else if (strcmpi(id, "dateshort") == 0)
-    {
-      result = g_langInfo.GetDateFormat(false);
-      result.Replace("MM", "%m");
-      result.Replace("DD", "%d");
-      result.Replace("YYYY", "%Y");
+      result.Replace("YY", "%y");
     }
     else if (strcmpi(id, "tempunit") == 0)
       result = g_langInfo.GetTempUnitString();
@@ -811,7 +809,11 @@ namespace PYXBMC
     else if (strcmpi(id, "time") == 0)
     {
       result = g_langInfo.GetTimeFormat();
-      result.Replace("H", "%H");
+      // make python compatible
+      if (result.Find("HH") >=0)
+        result.Replace("HH", "%H");
+      else
+        result.Replace("H", "%H");
       result.Replace("h", "%I");
       result.Replace("mm", "%M");
       result.Replace("ss", "%S");
@@ -819,6 +821,8 @@ namespace PYXBMC
     }
     else if (strcmpi(id, "meridiem") == 0)
       result.Format("%s/%s", g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_AM), g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_PM));
+    else if (strcmpi(id, "locale") == 0)
+      result = g_langInfo.GetDVDAudioLanguage();
 
     return Py_BuildValue((char*)"s", result.c_str());
   }

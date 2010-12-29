@@ -239,6 +239,7 @@ IF %Silent%==1 GOTO COMPILE
   xcopy media   BUILD\media   /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy plugins BUILD\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy sounds  BUILD\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy scripts BUILD\scripts /E /Q /I /Y /EXCLUDE:exclude.txt
 
   del exclude.txt
   ECHO ------------------------------------------------------------
@@ -303,6 +304,7 @@ IF %Silent%==1 GOTO COMPILE
   xcopy media   BUILD_WIN32\Xbmc_pc\media   /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy plugins BUILD_WIN32\Xbmc_pc\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy sounds  BUILD_WIN32\Xbmc_pc\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy scripts BUILD_WIN32\Xbmc_pc\scripts /E /Q /I /Y /EXCLUDE:exclude.txt
 
   del exclude.txt
   ECHO ------------------------------------------------------------

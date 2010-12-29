@@ -23,6 +23,7 @@
 #include "PythonSettings.h"
 #include "pyutil.h"
 #include "GUIDialogPluginSettings.h"
+#include "Weather.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -155,22 +156,32 @@ namespace PYXBMC
   }
 
   PyDoc_STRVAR(openSettings__doc__,
-    "openSettings() -- Opens this scripts settings dialog.\n"
+    "openSettings() -- Opens this scripts settings dialog. Returns True if user changed settings.\n"
     "\n"
     "example:\n"
-    "  - self.Settings.openSettings()\n");
+    "  - ok = self.Settings.openSettings()\n");
 
   PyObject* Settings_OpenSettings(Settings *self, PyObject *args, PyObject *kwds)
   {
-    // show settings dialog
+    bool ok;
     CStdString path = self->pSettings->getPath();
-    CGUIDialogPluginSettings::ShowAndGetInput(path);
+
+    // show settings dialog
+    Py_BEGIN_ALLOW_THREADS
+    ok = CGUIDialogPluginSettings::ShowAndGetInput(path);
+    Py_END_ALLOW_THREADS
+
+    // refresh weather if weather settings
+    if (ok && path.Find("Q:\\plugins\\weather\\"))
+    {
+      g_weatherManager.Refresh();
+      g_weatherManager.Reset();
+    }
 
     // reload settings
     self->pSettings->Load(path);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue((char*)"b", ok);
   }
 
   PyMethodDef Settings_methods[] = {
