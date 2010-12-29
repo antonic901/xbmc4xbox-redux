@@ -378,7 +378,6 @@ void CGUIDialogContentSettings::FillListControl()
   OnMessage(msgReset); 
   int iIndex=0;
   int selectedIndex = 0;
-  m_vecItems->Clear();
   for (vector<SScraperInfo>::iterator iter=m_scrapers.find(m_info.strContent)->second.begin();iter!=m_scrapers.find(m_info.strContent)->second.end();++iter)
   {
     CFileItemPtr item(new CFileItem(iter->strTitle));

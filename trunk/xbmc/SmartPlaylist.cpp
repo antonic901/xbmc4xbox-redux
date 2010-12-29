@@ -445,7 +445,7 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CStdString& strType)
     parameter = CDatabase::FormatSQL(operatorString.c_str(), m_parameter.c_str());
   }
   
-  if (m_field == FIELD_LASTPLAYED)
+  if (m_field == FIELD_LASTPLAYED || m_field == FIELD_AIRDATE)
   {
     if (m_operator == OPERATOR_IN_THE_LAST || m_operator == OPERATOR_NOT_IN_THE_LAST)
     { // translate time period

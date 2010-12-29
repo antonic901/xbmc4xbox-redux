@@ -605,8 +605,12 @@ bool CGUIWindowVideoFiles::OnContextButton(int itemNumber, CONTEXT_BUTTON button
   {
     if (CGUIDialogContextMenu::OnContextButton("video", item, button))
     {
-      if (button == CONTEXT_BUTTON_REMOVE_SOURCE)
-      OnUnAssignContent(itemNumber,20375,20340,20341);
+      //TODO should we search DB for entries from plugins?
+      if (button == CONTEXT_BUTTON_REMOVE_SOURCE && !item->IsPlugin()
+          && !item->IsLiveTV() &&!item->IsRSS())
+      {
+        OnUnAssignContent(itemNumber,20375,20340,20341);
+      }
       Update("");
       return true;
     }

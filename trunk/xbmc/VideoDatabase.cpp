@@ -4066,7 +4066,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const CStdString& strBaseDir, CFileI
     CStdString strSQL;
     if (g_settings.m_vecProfiles[0].getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
     {
-      strSQL=FormatSQL("select musicvideo.c%02d,musicvideo.idMVideo,actors.strActor,path.strPath from musicvideo,path,files join artistlinkmusicvideo on artistlinkmusicvideo.idmvideo=musicvideo.idmvideo join actors on actors.idActor=artistlinkmusicvideo.idartist join files on files.idFile = musicvideo.idfile join path on path.idpath = files.idpath",VIDEODB_ID_MUSICVIDEO_ALBUM);
+      strSQL=FormatSQL("select musicvideo.c%02d,musicvideo.idMVideo,actors.strActor,path.strPath from musicvideo join artistlinkmusicvideo on artistlinkmusicvideo.idmvideo=musicvideo.idmvideo join actors on actors.idActor=artistlinkmusicvideo.idartist join files on files.idFile = musicvideo.idfile join path on path.idpath = files.idpath",VIDEODB_ID_MUSICVIDEO_ALBUM);
     }
     else
     {
@@ -6431,24 +6431,28 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       CStdString fullPath;
       ConstructPath(fullPath,path,fileName);
 
+      // get the first stacked file
       if (CUtil::IsStack(fullPath))
-      { // do something?
-        CStackDirectory dir;
-        CFileItemList items;
-        if (dir.GetDirectory(fullPath, items) && items.Size())
-          fullPath = items[0]->m_strPath; // just test the first path
+        fullPath = CStackDirectory::GetFirstStackedFile(fullPath);
+
+      // check for deletion
+      bool bIsSource;
+      VECSOURCES *pShares = g_settings.GetSourcesFromType("video");
+
+      // check if we have a internet related file that is part of a media source
+      if (CUtil::IsInternetStream(fullPath, true) && CUtil::GetMatchingSource(fullPath, *pShares, bIsSource) > -1)
+      {
+        if (!CFile::Exists(fullPath, false))
+          filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
+      }
+      else
+      {
+        // remove optical, internet related and non-existing files
+        // note: this will also remove entries from previously existing media sources
+        if (CUtil::IsOnDVD(fullPath) || CUtil::IsMemCard(fullPath) || CUtil::IsInternetStream(fullPath, true) || !CFile::Exists(fullPath, false))
+          filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
       }
 
-      // delete all removable media + ftp/http streams
-      CURL url(fullPath);
-      if (CUtil::IsOnDVD(fullPath) ||
-          CUtil::IsMemCard(fullPath) ||
-          url.GetProtocol() == "http" ||
-          url.GetProtocol() == "https" ||
-          !CFile::Exists(fullPath, false))
-      { // mark for deletion
-        filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
-      }
       if (!pObserver)
       {
         if (progress)
@@ -6873,12 +6877,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
             CLog::Log(LOGERROR, "%s: Movie fanart export failed! ('%s' -> '%s')", __FUNCTION__, cachedFanart.c_str(), savedFanart.c_str());
         
         if (actorThumbs)
-        {
-          if (singleFiles)
-            ExportActorThumbs(movie, overwrite);
-          else
-            ExportActorThumbs(actorsDir, movie, overwrite);
-        }
+          ExportActorThumbs(actorsDir, movie, singleFiles, overwrite);
       }
       m_pDS->next();
       current++;
@@ -6997,10 +6996,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
       CFileItem item(tvshow.m_strPath, true);
       CFileItem saveItem(item);
       if (!singleFiles)
-      {
         saveItem = CFileItem(GetSafeFile(tvshowsDir, tvshow.m_strShowTitle), true);
-        CDirectory::Create(item.m_strPath);
-      }
       if (singleFiles && CUtil::IsWritable(tvshow.m_strPath))
       {
         if (!item.Exists(false))
@@ -7051,12 +7047,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
             CLog::Log(LOGERROR, "%s: TVShow fanart export failed! ('%s' -> '%s')", __FUNCTION__, cachedFanart.c_str(), savedFanart.c_str());
 
         if (actorThumbs)
-        {
-          if (singleFiles)
-            ExportActorThumbs(tvshow, overwrite);
-          else
-            ExportActorThumbs(actorsDir, tvshow, overwrite);
-        }
+          ExportActorThumbs(actorsDir, tvshow, singleFiles, overwrite);
 
         // now get all available seasons from this show
         sql = FormatSQL("select distinct(c%02d) from episodeview where idShow=%i", VIDEODB_ID_EPISODE_SEASON, tvshow.m_iDbId);
@@ -7189,7 +7180,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
               CLog::Log(LOGERROR, "%s: Episode thumb export failed! ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
 
           if (actorThumbs)
-            ExportActorThumbs(episode, overwrite);
+            ExportActorThumbs(actorsDir, episode, singleFiles, overwrite);
         }
       }
       pDS->close();
@@ -7238,18 +7229,18 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
     progress->Close();
 }
 
-void CVideoDatabase::ExportActorThumbs(const CVideoInfoTag& tag, bool overwrite /*=false*/)
+void CVideoDatabase::ExportActorThumbs(const CStdString &strDir, const CVideoInfoTag &tag, bool singleFiles, bool overwrite /*=false*/)
 {
-  CStdString strDir = CUtil::AddFileToFolder(tag.m_strPath,".actors");
-  if (!CDirectory::Exists(strDir))
+  CStdString strPath(strDir);
+  if (singleFiles)
   {
-    CDirectory::Create(strDir);
+    strPath = CUtil::AddFileToFolder(tag.m_strPath, ".actors");
+    if (!CDirectory::Exists(strPath))
+    {
+      CDirectory::Create(strPath);
+    }
   }
-  ExportActorThumbs(strDir, tag, overwrite);
-}
 
-void CVideoDatabase::ExportActorThumbs(const CStdString &strDir, const CVideoInfoTag &tag, bool overwrite /*=false*/)
-{
   for (CVideoInfoTag::iCast iter = tag.m_cast.begin();iter != tag.m_cast.end();++iter)
   {
     CFileItem item;
@@ -7257,7 +7248,7 @@ void CVideoDatabase::ExportActorThumbs(const CStdString &strDir, const CVideoInf
     CStdString strThumb = item.GetCachedActorThumb();
     if (CFile::Exists(strThumb))
     {
-      CStdString thumbFile(GetSafeFile(strDir, iter->strName) + ".tbn");
+      CStdString thumbFile(GetSafeFile(strPath, iter->strName) + ".tbn");
       if (overwrite || !CFile::Exists(thumbFile))
         if (!CFile::Cache(strThumb, thumbFile))
           CLog::Log(LOGERROR, "%s: Actor thumb export failed! ('%s' -> '%s')", __FUNCTION__, strThumb.c_str(), thumbFile.c_str());

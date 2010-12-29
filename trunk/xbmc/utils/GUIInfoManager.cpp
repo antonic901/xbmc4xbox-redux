@@ -62,6 +62,7 @@
 #include "FileSystem/File.h"
 #include "PlayList.h"
 #include "AdvancedSettings.h"
+#include "Util.h"
 
 // stuff for current song
 #ifdef HAS_FILESYSTEM
@@ -2984,7 +2985,7 @@ CStdString CGUIInfoManager::GetMusicLabel(int item)
       }
       CStdString strBitrate = "";
       if (m_MusicBitrate > 0)
-        strBitrate.Format("%i", m_MusicBitrate);
+        strBitrate.Format("%i", MathUtils::round_int((double)m_MusicBitrate / 1000.0));
       return strBitrate;
     }
     break;

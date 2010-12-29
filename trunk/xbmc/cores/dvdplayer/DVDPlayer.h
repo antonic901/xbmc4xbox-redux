@@ -330,6 +330,7 @@ protected:
 
   struct SPlayerState
   {
+    SPlayerState() { Clear(); }
     void Clear()
     {
       timestamp     = 0;
