@@ -22,7 +22,7 @@
 			<include>VisibleFadeEffect</include>
 			<visible>Skin.HasSetting(homepageSysteminfo) + Container(9000).HasFocus(5)</visible>
 			<animation effect="slide" start="0,0" end="-60,0" delay="0" time="300" condition="Window.IsVisible(MuteBug)">conditional</animation>
-			<animation effect="slide" start="0,0" end="130,0" delay="0" time="300" condition="Skin.HasSetting(homepageWeatherinfo) | !IsTrue(Window(Weather).Property(Weather.IsFetched))">conditional</animation>
+			<animation effect="slide" start="0,0" end="130,0" delay="0" time="300" condition="Skin.HasSetting(homepageWeatherinfo) | !Weather.IsFetched">conditional</animation>
 			<animation effect="slide" start="0,0" end="840,0" delay="0" time="300">WindowClose</animation>
 			<animation effect="slide" start="840,0" end="0,0" delay="0" time="300">WindowOpen</animation>
 			<control type="image">
@@ -54,7 +54,7 @@
 			<animation effect="slide" start="0,0" end="-60,0" delay="0" time="300" condition="Window.IsVisible(MuteBug)">conditional</animation>
 			<animation effect="slide" start="0,0" end="510,0" delay="0" time="300">WindowClose</animation>
 			<animation effect="slide" start="510,0" end="0,0" delay="0" time="300">WindowOpen</animation>
-			<visible>!Skin.HasSetting(homepageWeatherinfo) + IsTrue(Window(Weather).Property(Weather.IsFetched))</visible>
+			<visible>!Skin.HasSetting(homepageWeatherinfo) + Weather.IsFetched</visible>
 			<control type="image">
 				<description>time background</description>
 				<posx>0</posx>

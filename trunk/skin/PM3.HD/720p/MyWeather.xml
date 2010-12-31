@@ -258,7 +258,7 @@
 					<posx>110</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day0.HighTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day0.HighTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -281,7 +281,7 @@
 					<posx>290</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day0.LowTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day0.LowTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -357,7 +357,7 @@
 					<posx>110</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day1.HighTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day1.HighTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -380,7 +380,7 @@
 					<posx>290</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day1.LowTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day1.LowTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -456,7 +456,7 @@
 					<posx>110</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day2.HighTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day2.HighTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -479,7 +479,7 @@
 					<posx>290</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day2.LowTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day2.LowTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -555,7 +555,7 @@
 					<posx>110</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day3.HighTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day3.HighTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>
@@ -578,7 +578,7 @@
 					<posx>290</posx>
 					<posy>50</posy>
 					<height>20</height>
-					<label>$INFO[Window.Property(Day3.LowTemp)]$INFO[System.TemperatureUnits]</label>
+					<label>$INFO[Window.Property(Day3.LowTemperature)]$INFO[System.TemperatureUnits]</label>
 					<font>font12</font>
 					<align>left</align>
 					<aligny>center</aligny>

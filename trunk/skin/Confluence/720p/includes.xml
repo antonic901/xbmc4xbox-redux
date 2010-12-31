@@ -173,7 +173,7 @@
 			<timeperimage>10000</timeperimage>
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
-			<visible>![Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Skin.String(WeatherFanartDir))]</visible>
+			<visible>![Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Window(Weather).Property(Current.FanartPath)]</visible>
 		</control>
 		<control type="multiimage">
 			<posx>0</posx>
@@ -184,7 +184,7 @@
 			<timeperimage>10000</timeperimage>
 			<randomize>true</randomize>
 			<fadetime>1000</fadetime>
-			<visible>Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Skin.String(WeatherFanartDir))</visible>
+			<visible>Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Window(Weather).Property(Current.FanartPath))</visible>
 			<animation effect="fade" time="200">WindowClose</animation>
 		</control>
 	</include>

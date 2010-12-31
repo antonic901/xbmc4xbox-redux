@@ -242,7 +242,7 @@ void CGUIWindowWeather::SetProperties()
 
 void CGUIWindowWeather::CallPlugin()
 {
-  SetProperty("Weather.IsFetched", false);
+  SetProperty("Weather.IsFetched", "false");
 
   if (g_guiSettings.GetString("weather.plugin").IsEmpty()) return;
 
