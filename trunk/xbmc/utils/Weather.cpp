@@ -52,8 +52,8 @@ const char *CWeather::TranslateInfo(int info)
 }
 
 DWORD CWeather::TimeToNextRefreshInMs()
-{ // 10 minutes
-  return 10 * 60 * 1000;
+{ // 15 minutes
+  return 15 * 60 * 1000;
 }
 
 char *CWeather::GetLocation(int iLocation)

@@ -19,7 +19,7 @@ class TownSearch:
     # base urls
     BASE_URLS = {
         "geo": "http://www.dnsstuff.com/tools/ipall/",
-        "weather": "http://xoap.weather.com/weather/local/%s?cc=*&unit=e&dayf=5&prod=xoap&link=xoap&par=%s&key=%s",
+        "weather": "http://xoap.weather.com/weather/local/%s?cc=*&dayf=5&link=xoap&prod=xoap&unit=s&par=%s&key=%s",
         "search": "http://xoap.weather.com/search/search?where=%s"
     }
     # set headers

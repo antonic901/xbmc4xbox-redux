@@ -20,7 +20,7 @@ class Weather:
     PARTNER_KEY = "079f24145f208494"
     # base url
     BASE_URLS = {
-        "weather": "http://xoap.weather.com/weather/local/%s?cc=*&unit=e&dayf=5&prod=xoap&link=xoap&par=%s&key=%s"
+        "weather": "http://xoap.weather.com/weather/local/%s?cc=*&dayf=5&link=xoap&prod=xoap&unit=s&par=%s&key=%s"
     }
     # set headers
     HEADERS = {
@@ -30,7 +30,7 @@ class Weather:
     # weather window for setting weather properties
     WINDOW = xbmcgui.Window( 12600 )
     # set refresh time in minutes
-    REFRESH_TIME = 20
+    REFRESH_TIME = 25
 
     def __init__( self, addon, index, refresh, localize ):
         # set our Addon class
@@ -98,6 +98,9 @@ class Weather:
             # parse info
             info = self._parse_source( xml )
         except:
+            # remove source
+            if ( os.path.isfile( self.base_path ) ):
+                os.remove( xbmc.translatePath( self.base_path ) )
             # set error message and clear info
             msg = "error"
             info = self._clear_info()
