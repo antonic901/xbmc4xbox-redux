@@ -317,7 +317,7 @@
 				</control>
 			</control>
 		</control>
-		<include condition="Skin.HasSetting(homepageHideRecentlyAdded)">HomeRecentlyAddedInfo</include>						
+		<include condition="Skin.HasSetting(homepageRecentlyAdded)">HomeRecentlyAddedInfo</include>						
 		<control type="group" id="9001">
 			<posx>520</posx>
 			<posy>315</posy>

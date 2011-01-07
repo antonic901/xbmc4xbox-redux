@@ -98,7 +98,7 @@
 			<onfocus>SetFocus(9000)</onfocus>
 			<texturenofocus>-</texturenofocus>
 			<texturefocus>-</texturefocus>
-			<visible>Skin.HasSetting(homepageHideRecentlyAdded)</visible>
+			<visible>Skin.HasSetting(homepageRecentlyAdded)</visible>
 		</control>
 		<control type="button" id="8999">
 			<description>Don't run Recently added</description>
@@ -111,7 +111,7 @@
 			<onfocus>SetFocus(9000)</onfocus>
 			<texturenofocus>-</texturenofocus>
 			<texturefocus>-</texturefocus>
-			<visible>!Skin.HasSetting(homepageHideRecentlyAdded)</visible>
+			<visible>!Skin.HasSetting(homepageRecentlyAdded)</visible>
 		</control>
 		<control type="image">
 			<include>VisibleFadeEffect</include>

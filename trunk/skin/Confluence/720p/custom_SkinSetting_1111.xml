@@ -482,8 +482,8 @@
 						<textcolor>grey2</textcolor>
 						<focusedcolor>white</focusedcolor>
 						<label>31117</label>
-						<onclick>Skin.ToggleSetting(homepageHideRecentlyAdded)</onclick>
-						<selected>Skin.HasSetting(homepageHideRecentlyAdded)</selected>
+						<onclick>Skin.ToggleSetting(homepageRecentlyAdded)</onclick>
+						<selected>Skin.HasSetting(homepageRecentlyAdded)</selected> 
 						<texturefocus>MenuItemFO.png</texturefocus>
 						<texturenofocus>MenuItemNF.png</texturenofocus>
 					</control>
