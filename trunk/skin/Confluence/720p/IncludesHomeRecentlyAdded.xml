@@ -216,7 +216,7 @@
 					<width>250</width>
 					<height>136</height>
 					<onleft>8000</onleft>
-					<onright>8001</onright>
+					<onright>9000</onright>
 					<onup>8001</onup>
 					<ondown>8001</ondown>
 					<viewtype label="535">list</viewtype>

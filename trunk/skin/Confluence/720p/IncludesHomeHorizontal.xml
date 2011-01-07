@@ -419,7 +419,7 @@
 				<height>240</height>
 				<align>center</align>
 				<onleft>9000</onleft>
-				<onright>9001</onright>
+				<onright>9000</onright>
 				<onup>9011</onup>
 				<ondown>9011</ondown>
 				<itemgap>0</itemgap>
@@ -467,7 +467,7 @@
 				<height>240</height>
 				<align>center</align>
 				<onleft>9000</onleft>
-				<onright>9001</onright>
+				<onright>9000</onright>
 				<onup>9014</onup>
 				<ondown>9014</ondown>
 				<itemgap>0</itemgap>
@@ -518,7 +518,7 @@
 				<height>240</height>
 				<align>center</align>
 				<onleft>9000</onleft>
-				<onright>9001</onright>
+				<onright>9000</onright>
 				<onup>9015</onup>
 				<ondown>9015</ondown>
 				<itemgap>0</itemgap>
@@ -719,7 +719,7 @@
 				<height>240</height>
 				<align>center</align>
 				<onleft>9000</onleft>
-				<onright>9001</onright>
+				<onright>9000</onright>
 				<onup>9018</onup>
 				<ondown>9018</ondown>
 				<itemgap>0</itemgap>
@@ -755,7 +755,35 @@
 					<onclick>ActivateWindow(GameSaves)</onclick>
 				</control>
 			</control>	
-		</control>	
+		</control>
+
+		<control type="button" id="8000">
+			<description>Fake button</description>
+			<posx>-20</posx>
+			<posy>-20</posy>
+			<width>1</width>
+			<height>1</height>
+			<label>-</label>
+			<font>-</font>
+			<onfocus>SetFocus(9000)</onfocus>
+			<texturenofocus>-</texturenofocus>
+			<texturefocus>-</texturefocus>
+			<visible>!ControlGroup(8000).IsVisible</visible>
+		</control>
+		<control type="button" id="8001">
+			<description>Fake button</description>
+			<posx>-20</posx>
+			<posy>-20</posy>
+			<width>1</width>
+			<height>1</height>
+			<label>-</label>
+			<font>-</font>
+			<onfocus>SetFocus(9000)</onfocus>
+			<texturenofocus>-</texturenofocus>
+			<texturefocus>-</texturefocus>
+			<visible>!ControlGroup(8001).IsVisible</visible>
+		</control>
+		
 		<control type="group">
 			<control type="image">
 				<description>Main menu background image</description>
