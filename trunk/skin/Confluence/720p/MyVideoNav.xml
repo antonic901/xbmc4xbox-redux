@@ -1,11 +1,36 @@
 <window id="25">
-	<defaultcontrol always="true">50</defaultcontrol>
+	<defaultcontrol always="true">9999</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<views>50,500,501,508,520,504,503,505,511,720,723</views>
 	<controls>
 		<include>CommonVideoBackground</include>
 		<control type="group">
-			<include>Window_OpenClose_Animation</include>		
+			<visible>Skin.HasSetting(TVTunesScript_Enable)</visible>
+			<control type="button" id="9999">
+				<description>Run TV Show Tunes script if video isn't playing</description>
+				<onfocus>XBMC.RunScript($INFO[Skin.String(TVTunesScript_Path)],player)</onfocus>
+				<onfocus>SetFocus(50)</onfocus>
+				<texturenofocus>-</texturenofocus>
+				<texturefocus>-</texturefocus>
+				<visible>!Player.Playing</visible>
+			</control>
+			<control type="button" id="9999">
+				<description>Don't Run TV Show Tunes script if video is playing</description>
+				<onfocus>SetFocus(50)</onfocus>
+				<texturenofocus>-</texturenofocus>
+				<texturefocus>-</texturefocus>
+				<visible>Player.Playing</visible>
+			</control>
+		</control>
+		<control type="button" id="9999">
+			<description>Don't Run TV Show Tunes script</description>
+			<onfocus>SetFocus(50)</onfocus>
+			<texturenofocus>-</texturenofocus>
+			<texturefocus>-</texturefocus>
+			<visible>!Skin.HasSetting(TVTunesScript_Enable)</visible>
+		</control>
+		<control type="group">
+			<include>Window_OpenClose_Animation</include>
 			<control type="image">
 				<posx>0</posx>
 				<posy>0</posy>

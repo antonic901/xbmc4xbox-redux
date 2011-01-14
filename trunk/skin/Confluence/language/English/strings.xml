@@ -18,7 +18,7 @@
   <string id="31025">Items</string>
   <string id="31026">Misc Options</string>
   <string id="31027">Location</string>
- 
+
   <!-- View Type labels -->
   <string id="31028">Poster Wrap</string>
   <string id="31029">Fanart</string>
@@ -41,7 +41,6 @@
   <string id="31048">Visualization Presets</string>
   <string id="31049">End Time</string>
 
-
   <!-- Playlist Editor labels -->
   <string id="31055">Open playlist</string>
   <string id="31056">Save playlist</string>
@@ -50,7 +49,7 @@
   <string id="31059">Current playlist</string>
   <string id="31060">This file is stacked, select the part you want to play from.</string>
   <string id="31061">Current Selected</string>
-  
+
   <!-- Skin Settings labels -->
   <string id="31100"></string>
   <string id="31101">Home screen options</string>
@@ -84,21 +83,21 @@
   <string id="31129">Enable Subtitle Download in Video OSD</string>
   <string id="31130">PATH TO SUBTITLE SCRIPT</string>
   <string id="31131">Use Horizontal Home Menu</string>
-  
+
   <string id="31132">PATH TO VIDEO PLAYLIST</string>
   <string id="31133">Enable Custom Video Button</string>
   <string id="31134">Enable Custom Movie Button</string>
   <string id="31135">Enable Custom TV Show Button</string>
- 
+
   <string id="31137">Enable Custom Add-on Button</string>
   <string id="31138">PLUGIN "TYPE/FOLDER" [COLOR=grey3](e.g. Programs/SVN Repo Installer)[/COLOR]</string>
   <string id="31139">PLUGIN "WINDOW" [COLOR=grey3](1=Programs 2=Pictures 24=Video 501=Music 2600=Weather)[/COLOR]</string>
-  
+
   <string id="31140">Music OSD</string>
   <string id="31141">Video OSD</string>
   
   <string id="31145">Enable Kiosk mode [COLOR=grey3](Disable slide menu)[/COLOR]</string>
-  
+
   <string id="31147">Hide Media Flags</string>
 
   <!-- Script labels -->
@@ -119,7 +118,12 @@
   <string id="31161">Video Info</string>
   <string id="31162">Enable Theater in Video Info [COLOR=grey3](Disable Trailer button)[/COLOR]</string>
   <string id="31163">PATH TO THEATER SCRIPT</string>
-  
+
+  <!-- TVShow tunes Script labels -->
+  <string id="31165">Video Library - TV Shows</string>
+  <string id="31166">Enable Tunes in Video Library [COLOR=grey3](Requires theme.mp3 in TV show folder)[/COLOR]</string>
+  <string id="31167">PATH TO TV SHOW TUNES SCRIPT</string>
+
   <!-- Extra labels -->
   <string id="31300">Current Temp</string>
   <string id="31301">Last Updated</string>
@@ -152,7 +156,7 @@
   <string id="31328">Recently Added</string>
   <string id="31329">[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]</string>
   <string id="31330">Click button to play[CR][CR]Movie trailer</string>
-  
+
   <string id="31331"></string>
   <string id="31332"></string>
 
@@ -160,7 +164,7 @@
   <string id="31334">Press up to show info</string>
   <string id="31335">Enable file mode</string>
   <string id="31336">Program</string>
- 
+
   <string id="31341">Emulators</string>
   <string id="31342">Applications</string>
   <string id="31343">Homebrews</string>
@@ -187,7 +191,7 @@
   <string id="31408">[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Enable/Configure Video mode Switching · Choose your Trainers folder · Set a Custom Dashboard path</string> 
 
   <string id="31421">Select your XBMC user Profile[CR]to login and continue</string>
-  
+
     <!-- Weather plugin -->
     <string id="31900">MAPS</string>
     <string id="31901">36-HOUR</string>
