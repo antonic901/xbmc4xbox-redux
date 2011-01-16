@@ -3,6 +3,7 @@
 __all__ = [ "Addon" ]
 __author__ = "nuka1195"
 
+import sys
 import os
 import xbmc
 import re
@@ -34,12 +35,18 @@ class Addon:
         self._set_addon_info( cwd, id )
 
     def _get_root_dir( self ):
+        print "****************************"
+        print sys.argv
+        print xbmc.translatePath( os.path.dirname( sys.argv[ 0 ] ) )
+        print "****************************"
+        print os.getcwd()
+        print "****************************"
         # get current working directory
-        cwd = os.getcwd()
+        cwd = xbmc.translatePath( os.path.dirname( sys.argv[ 0 ] ) )#os.getcwd()
         # check if we're at root folder of addon
         if ( not os.path.isfile( os.path.join( cwd, "addon.xml" ) ) ):
             # we're not at root, assume resources/lib/
-            cwd = os.path.dirname( os.path.dirname( os.getcwd() ) )
+            cwd = os.path.dirname( os.path.dirname( cwd ) )#os.path.dirname( os.getcwd() ) )
         # return result
         return cwd
 
