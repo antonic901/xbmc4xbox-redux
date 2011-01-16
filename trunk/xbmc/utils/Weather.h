@@ -22,11 +22,14 @@
  */
 
 #include "InfoLoader.h"
+#include "StdString.h"
 
 #define WEATHER_LABEL_LOCATION   10
 #define WEATHER_IMAGE_CURRENT_ICON 21
 #define WEATHER_LABEL_CURRENT_COND 22
 #define WEATHER_LABEL_CURRENT_TEMP 23
+#define WEATHER_ISFETCHED 24
+#define WEATHER_LABEL_FANART_CODE 25
 
 
 class CBackgroundWeatherLoader : public CBackgroundLoader
@@ -47,21 +50,12 @@ public:
 
   void SetArea(int iArea) { m_iCurWeather = iArea; };
   unsigned int GetMaxLocations();
-  void SetInfo();
 
 protected:
-  virtual const char *TranslateInfo(int info);
+  virtual CStdString TranslateInfo(int info) const;
   virtual DWORD TimeToNextRefreshInMs();
 
   char m_szLocation[10][100];
-
-  // Last updated
-  char m_szLastUpdateTime[256];
-  // Now weather
-  char m_szCurrentIcon[256];
-  char m_szCurrentConditions[256];
-  char m_szCurrentTemperature[10];
-  char m_szCurrentLocation[256];
 
   unsigned int m_iCurWeather;
   int m_MaxLocations;
