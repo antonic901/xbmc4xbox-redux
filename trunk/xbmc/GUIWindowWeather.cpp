@@ -28,6 +28,7 @@
 #include "Util.h"
 #include "lib/libPython/XBPython.h"
 #include "GUIDialogOK.h"
+#include "xbox/network.h"
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3
@@ -205,10 +206,9 @@ void CGUIWindowWeather::UpdateLocations()
 
 void CGUIWindowWeather::UpdateButtons()
 {
-    CONTROL_ENABLE(CONTROL_BTNREFRESH);
+  CONTROL_ENABLE(CONTROL_BTNREFRESH);
 
   SET_CONTROL_LABEL(CONTROL_BTNREFRESH, 184);   //Refresh
-
 }
 
 void CGUIWindowWeather::FrameMove()
@@ -245,7 +245,10 @@ void CGUIWindowWeather::CallPlugin()
   SetProperty("Weather.IsFetched", "false");
 
   if (g_guiSettings.GetString("weather.plugin").IsEmpty()) return;
-
+  
+  // No point in trying to fetch weather if we don't have a working network
+  if (!g_network.IsAvailable()) return;
+  
   // create the full path to the plugin
   CStdString plugin = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin") + "/default.py";
 
@@ -270,7 +273,6 @@ void CGUIWindowWeather::CallPlugin()
   strSetting.Format("%i", m_iCurWeather + 1);
   argv[1] = (char*)strSetting.c_str();
   argv[2] = (char*)(forceRefresh ? "1" : "0");
-
 
   // call our plugin, passing the areacode
   g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
