@@ -12,7 +12,7 @@ Echo exclude.txt>>exclude.txt
 
 ECHO ----------------------------------------
 ECHO Creating XPR File...
-START /B /WAIT ..\..\Tools\XBMCTex\XBMCTex -input media -quality high -output media -noprotect
+START /B /WAIT ..\..\Tools\XBMCTex\XBMCTex -input media -output media -noprotect
 
 ECHO ----------------------------------------
 ECHO Copying XPR File...
