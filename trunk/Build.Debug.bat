@@ -74,7 +74,7 @@ IF NOT EXIST debug\default.xbe GOTO COMPILE
 :COMPILE
   ECHO Compiling Solution...
   %NET% %CLEAN%
-  del debug\xbmc.map
+  del debug\xbmc.map 2>NUL
   %NET% %OPTS%
   IF NOT EXIST %XBE% (
   	set DIETEXT=Default.xbe failed to build!  See .\debug\BuildLog.htm for details.

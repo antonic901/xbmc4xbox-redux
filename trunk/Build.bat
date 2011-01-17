@@ -141,7 +141,7 @@ IF %Silent%==1 GOTO COMPILE
   ECHO ------------------------------------------------------------
   ECHO Cleaning Solution...
   %NET% %CLEAN%
-  del release\xbmc.map
+  del release\xbmc.map 2>NUL
   ECHO Compiling Solution...
   %NET% %OPTS%
   IF NOT EXIST %XBE% (
@@ -157,7 +157,7 @@ IF %Silent%==1 GOTO COMPILE
   ECHO ------------------------------------------------------------
   ECHO Cleaning Solution...
   %NET% %CLEAN_EXE%
-  del  tools\Win32\Release\xbmc.map
+  del  tools\Win32\Release\xbmc.map 2>NUL
   ECHO Compiling Solution...
   %NET% %OPTS_EXE%
   IF NOT EXIST %EXE% (

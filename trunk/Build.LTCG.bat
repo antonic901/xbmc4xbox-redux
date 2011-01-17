@@ -73,7 +73,7 @@ IF NOT EXIST Release_LTCG\default.xbe GOTO COMPILE
 :COMPILE
   ECHO Compiling Solution...
   %NET% %CLEAN%
-  del Release_LTCG\xbmc.map
+  del Release_LTCG\xbmc.map 2>NUL
   %NET% %OPTS%
   IF NOT EXIST %XBE% (
   	set DIETEXT=Default.xbe failed to build!  See .\Release_LTCG\BuildLog.htm for details.
