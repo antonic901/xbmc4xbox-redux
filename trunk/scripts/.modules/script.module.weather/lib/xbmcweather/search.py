@@ -44,6 +44,9 @@ class TownSearch:
             html = self._fetch_source()
             # get location name
             result = self.regex_geo.search( html ).groups( 1 )
+            # raise an error if city not in database
+            if ( result[ 1 ].startswith( "-" ) ):
+                raise
             # if ip has not changed return old values
             if ( result[ 0 ] == self.Addon.getSetting( "ip_geo" ) ):
                 return self.Addon.getSetting( "id_geo" ), result[ 0 ]
@@ -53,7 +56,7 @@ class TownSearch:
             return self.get_town( text=result[ 1 ] )[ 1 ], result[ 0 ]
         except:
             # use our fallback for any errors
-            return self.Addon.getSetting( "id_geo_fallback" ), ""
+            return self.Addon.getSetting( "id_geo_fallback" ), "None"
 
     def get_town( self, text=None ):
         try:

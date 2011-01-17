@@ -67,9 +67,9 @@ DWORD CWeather::TimeToNextRefreshInMs()
   return 15 * 60 * 1000;
 }
 
-char *CWeather::GetLocation(int iLocation)
+CStdString CWeather::GetLocation(int iLocation)
 {
-  if (strlen(m_szLocation[iLocation]) == 0)
+  if (m_szLocation[iLocation].IsEmpty())
   {
     CStdString cScriptPath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
     CScriptSettings* settings = new CScriptSettings();
@@ -77,7 +77,7 @@ char *CWeather::GetLocation(int iLocation)
     settings->Load(cScriptPath);
     CStdString setting;
     setting.Format("town%i", iLocation + 1);
-    strcpy(m_szLocation[iLocation], settings->Get(setting).c_str());
+    m_szLocation[iLocation] = settings->Get(setting);
   }
   return m_szLocation[iLocation];
 }
@@ -99,7 +99,7 @@ void CWeather::Reset()
 {
   for (int i = 0; i < MAX_LOCATION; i++)
   {
-    strcpy(m_szLocation[i], "");
+    m_szLocation[i] = "";
   }
   m_MaxLocations = -1;
 }

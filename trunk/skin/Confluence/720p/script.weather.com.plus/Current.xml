@@ -208,7 +208,7 @@
             <!-- current weather -->
             <control type="group">
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
+                <visible>Weather.IsFetched</visible>
                 <control type="group">
                     <posx>-30</posx>
                     <posy>-20</posy>
@@ -465,7 +465,7 @@
                 <itemgap>0</itemgap>
                 <orientation>horizontal</orientation>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
+                <visible>Weather.IsFetched</visible>
                 <control type="group">
                     <width>168</width>
                     <control type="image">

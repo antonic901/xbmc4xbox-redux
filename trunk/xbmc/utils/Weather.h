@@ -44,7 +44,7 @@ public:
   CWeather(void);
   virtual ~CWeather(void);
 
-  char *GetLocation(int iLocation);
+  CStdString GetLocation(int iLocation);
   bool IsFetched();
   void Reset();
 
@@ -55,7 +55,7 @@ protected:
   virtual CStdString TranslateInfo(int info) const;
   virtual DWORD TimeToNextRefreshInMs();
 
-  char m_szLocation[10][100];
+  CStdString m_szLocation[10];
 
   unsigned int m_iCurWeather;
   int m_MaxLocations;
