@@ -31,7 +31,8 @@
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3
 
-float timeToCallPlugin = 1000;
+#define TIME_TO_CALL_PLUGIN            1000
+
 bool forceRefresh = false;
 
 
@@ -180,7 +181,7 @@ void CGUIWindowWeather::FrameMove()
   UpdateButtons();
 
   // call weather plugin
-  if (m_pluginTimer.IsRunning() && m_pluginTimer.GetElapsedMilliseconds() > timeToCallPlugin)
+  if (m_pluginTimer.IsRunning() && m_pluginTimer.GetElapsedMilliseconds() > TIME_TO_CALL_PLUGIN)
   {
     m_pluginTimer.Stop();
     CallPlugin();

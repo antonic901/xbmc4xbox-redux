@@ -40,7 +40,7 @@ class Addon:
         # check if we're at root folder of addon
         if ( not os.path.isfile( os.path.join( cwd, "addon.xml" ) ) ):
             # we're not at root, assume resources/lib/
-            cwd = os.path.dirname( os.path.dirname( os.path.dirname( cwd ) )
+            cwd = os.path.dirname( os.path.dirname( cwd ) )
         # return result
         return cwd
 
