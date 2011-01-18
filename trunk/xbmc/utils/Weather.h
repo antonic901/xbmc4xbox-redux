@@ -47,6 +47,7 @@ public:
   CStdString GetLocation(int iLocation);
   bool IsFetched();
   void Reset();
+  void RefreshInfo();
 
   void SetArea(int iArea) { m_iCurWeather = iArea; };
   unsigned int GetMaxLocations();
@@ -60,14 +61,13 @@ protected:
 
   unsigned int m_iCurWeather;
   int m_MaxLocations;
-  char m_szCurrentIcon[256];
 
   char m_CurrentCondition[256];
   char m_CurrentConditionIcon[256];
-  char m_CurrentTemperature[10];
+  char m_CurrentTemperature[32];
   char m_CurrentLocation[256];
-  char m_CurrentFanartCode[10];
-  char m_IsFetched[10];
+  char m_CurrentFanartCode[32];
+  char m_IsFetched[32];
 };
 
 extern CWeather g_weatherManager;

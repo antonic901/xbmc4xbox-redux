@@ -94,14 +94,8 @@ unsigned int CWeather::GetMaxLocations()
 
 void CWeather::Reset()
 {
-  strcpy(m_CurrentCondition, "");
-  strcpy(m_CurrentConditionIcon, "");
-  strcpy(m_CurrentTemperature, "");
-  strcpy(m_CurrentLocation, "");
-  strcpy(m_CurrentFanartCode, "");
-  strcpy(m_IsFetched, "false");
-
-  for (int i = 0; i < MAX_LOCATION; i++)
+  RefreshInfo();
+  for (unsigned int i = 0; i < MAX_LOCATION; i++)
   {
     m_szLocation[i] = "";
   }
@@ -114,11 +108,21 @@ bool CWeather::IsFetched()
   return (strcmp(GetInfo(WEATHER_ISFETCHED), "true") == 0);
 }
 
+void CWeather::RefreshInfo()
+{
+  strcpy(m_CurrentCondition, "");
+  strcpy(m_CurrentConditionIcon, "");
+  strcpy(m_CurrentTemperature, "");
+  strcpy(m_CurrentLocation, m_szLocation[m_iCurWeather]);
+  strcpy(m_CurrentFanartCode, "");
+  strcpy(m_IsFetched, "false");
+}
+
 void CWeather::SetInfo()
 {
-  if (strcmp(m_CurrentCondition, "") == 0 || strcmp(m_CurrentConditionIcon, "") == 0 ||
-      strcmp(m_CurrentTemperature, "") == 0 || strcmp(m_CurrentLocation, "") == 0 ||
-      strcmp(m_CurrentFanartCode, "") == 0 || strcmp(m_IsFetched, "false") == 0)
+  if ((strcmp(m_CurrentCondition, "") == 0 || strcmp(m_CurrentConditionIcon, "") == 0 ||
+      strcmp(m_CurrentTemperature, "") == 0 || strcmp(m_CurrentFanartCode, "") == 0) && 
+      strcmp(m_IsFetched, "true") == 0)
   {
     CGUIWindow *window = g_windowManager.GetWindow(WINDOW_WEATHER);
     if (window)
@@ -129,6 +133,13 @@ void CWeather::SetInfo()
       strcpy(m_CurrentTemperature, ((CGUIMediaWindow*)window)->GetProperty("Current.Temperature").c_str());
       strcpy(m_CurrentLocation, ((CGUIMediaWindow*)window)->GetProperty("Location").c_str());
       strcpy(m_CurrentFanartCode, ((CGUIMediaWindow*)window)->GetProperty("Current.FanartCode").c_str());
+    }
+  }
+  else if (strcmp(m_IsFetched, "false") == 0)
+  {
+    CGUIWindow *window = g_windowManager.GetWindow(WINDOW_WEATHER);
+    if (window)
+    {
       strcpy(m_IsFetched, ((CGUIMediaWindow*)window)->GetProperty("Weather.IsFetched").c_str());
     }
   }

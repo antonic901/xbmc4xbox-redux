@@ -683,7 +683,7 @@ void CGUIDialogPluginSettings::CreateControls()
           else
             ((CGUIButtonControl *)pControl)->SetLabel2(value);
         }
-        else if (setting->Attribute("default"))
+        else if (!defaultValue.IsEmpty())
           ((CGUIButtonControl *)pControl)->SetLabel2(defaultValue);
       }
       else if (strcmpi(type, "bool") == 0)

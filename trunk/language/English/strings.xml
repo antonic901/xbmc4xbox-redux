@@ -2251,10 +2251,15 @@
   <string id="23105"></string>
   <string id="23106"></string>
 
+  <!-- strings 24000 thru 24299 reserved for the Add-ons framework -->
+  <string id="24000">Add-on</string>
+
   <string id="24020">Configure</string>
   <string id="24021">Disable</string>
   <string id="24022">Enable</string>
   <string id="24023">Add-on disabled</string>
+
+  <string id="24030">This Add-on can not be configured</string>
 
   <!-- strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code -->
   <string id="29800">Library Mode</string>

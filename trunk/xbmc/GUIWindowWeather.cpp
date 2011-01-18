@@ -194,6 +194,7 @@ void CGUIWindowWeather::FrameMove()
 void CGUIWindowWeather::Refresh()
 {
   g_weatherManager.SetArea(m_iCurWeather);
+  g_weatherManager.RefreshInfo();
   g_weatherManager.Refresh();
 }
 
@@ -231,7 +232,7 @@ void CGUIWindowWeather::CallPlugin()
       return;
     }
   }
-
+  g_weatherManager.RefreshInfo();
   // get the current locations area code
   CStdString strSetting;
   strSetting.Format("%i", m_iCurWeather + 1);
@@ -241,7 +242,7 @@ void CGUIWindowWeather::CallPlugin()
   // call our plugin, passing the areacode
   g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
 
-  CLog::Log(LOGDEBUG, "%s - Weather plugin called: %s (%s)", __FUNCTION__, argv[0], argv[1]);
+  CLog::Log(LOGDEBUG, "%s - Weather plugin called: %s (%s,%s)", __FUNCTION__, argv[0], argv[1], argv[2]);
 
   forceRefresh = false;
   delete [] argv;
