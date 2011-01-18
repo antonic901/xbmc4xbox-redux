@@ -83,7 +83,7 @@ class TownSearch:
         if ( self.index == "_geo" ):
             return town
         # open settings for non ip based geo location search
-        self.Addon.openSettings()
+        ##self.Addon.openSettings()
 
     def _get_search_text( self, default="", heading="", hidden=False ):
         """ shows a keyboard and returns a value """

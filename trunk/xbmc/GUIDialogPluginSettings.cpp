@@ -70,10 +70,14 @@ using namespace DIRECTORY;
 
 CGUIDialogPluginSettings::CGUIDialogPluginSettings()
    : CGUIDialogBoxBase(WINDOW_DIALOG_PLUGIN_SETTINGS, "DialogPluginSettings.xml")
-{}
+{
+  m_currentSection = 0;
+  m_totalSections = 1;
+}
 
 CGUIDialogPluginSettings::~CGUIDialogPluginSettings(void)
-{}
+{
+}
 
 bool CGUIDialogPluginSettings::OnMessage(CGUIMessage& message)
 {
@@ -168,7 +172,11 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CURL& url, bool saveToDisk /* = t
     }
     return pDialog->m_bConfirmed;
   }
-  return false;
+  else
+  { // addon does not support settings, inform user
+    CGUIDialogOK::ShowAndGetInput(24000,0,24030,0);
+    return false;
+  }
 }
 
 // \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
@@ -236,7 +244,11 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CStdString& path, bool saveToDisk
     }
     return pDialog->m_bConfirmed;
   }
-  return false;
+  else
+  { // addon does not support settings, inform user
+    CGUIDialogOK::ShowAndGetInput(24000,0,24030,0);
+    return false;
+  }
 }
 
 bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
@@ -356,7 +368,11 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
             if (!source || strcmpi(source, "local") != 0)
               g_mediaManager.GetNetworkLocations(networkShares);
             localShares.insert(localShares.end(), networkShares.begin(), networkShares.end());
-            shares = &localShares;
+          }
+          else // always append local drives
+          {
+            localShares = *shares;
+            g_mediaManager.GetLocalDrives(localShares);
           }
 
           if (strcmpi(type, "folder") == 0)
@@ -366,12 +382,12 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
             if (option)
               bWriteOnly = (strcmpi(option, "writeable") == 0);
 
-            if (CGUIDialogFileBrowser::ShowAndGetDirectory(*shares, label, value, bWriteOnly))
+            if (CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, label, value, bWriteOnly))
               ((CGUIButtonControl*) control)->SetLabel2(value);
           }
           else if (strcmpi(type, "image") == 0)
           {
-            if (CGUIDialogFileBrowser::ShowAndGetImage(*shares, label, value))
+            if (CGUIDialogFileBrowser::ShowAndGetImage(localShares, label, value))
               ((CGUIButtonControl*) control)->SetLabel2(value);
           }
           else
@@ -416,7 +432,7 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
               bUseFileDirectories = find(options.begin(), options.end(), "treatasfolder") != options.end();
             }
 
-            if (CGUIDialogFileBrowser::ShowAndGetFile(*shares, strMask, label, value))
+            if (CGUIDialogFileBrowser::ShowAndGetFile(localShares, strMask, label, value))
               ((CGUIButtonControl*) control)->SetLabel2(value);
           }
         }
@@ -623,6 +639,9 @@ void CGUIDialogPluginSettings::CreateControls()
     CStdString entries;
     if (setting->Attribute("entries"))
       entries = setting->Attribute("entries");
+    CStdString defaultValue;
+    if (setting->Attribute("default"))
+      defaultValue = setting->Attribute("default");
     const char *subsetting = setting->Attribute("subsetting");
     CStdString label = GetString(setting->Attribute("label"), subsetting && 0 == strcmpi(subsetting, "true"));
 
@@ -665,7 +684,7 @@ void CGUIDialogPluginSettings::CreateControls()
             ((CGUIButtonControl *)pControl)->SetLabel2(value);
         }
         else if (setting->Attribute("default"))
-          ((CGUIButtonControl *)pControl)->SetLabel2(GetString(setting->Attribute("default")));
+          ((CGUIButtonControl *)pControl)->SetLabel2(defaultValue);
       }
       else if (strcmpi(type, "bool") == 0)
       {

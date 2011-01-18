@@ -244,4 +244,5 @@ void CGUIWindowWeather::CallPlugin()
   CLog::Log(LOGDEBUG, "%s - Weather plugin called: %s (%s)", __FUNCTION__, argv[0], argv[1]);
 
   forceRefresh = false;
+  delete [] argv;
 }

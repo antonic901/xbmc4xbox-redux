@@ -52,14 +52,22 @@ public:
   unsigned int GetMaxLocations();
 
 protected:
-  virtual CStdString TranslateInfo(int info) const;
+  virtual const char *TranslateInfo(int info);
   virtual DWORD TimeToNextRefreshInMs();
+  void SetInfo();
 
   CStdString m_szLocation[10];
 
   unsigned int m_iCurWeather;
   int m_MaxLocations;
+  char m_szCurrentIcon[256];
 
+  char m_CurrentCondition[256];
+  char m_CurrentConditionIcon[256];
+  char m_CurrentTemperature[10];
+  char m_CurrentLocation[256];
+  char m_CurrentFanartCode[10];
+  char m_IsFetched[10];
 };
 
 extern CWeather g_weatherManager;
