@@ -37,7 +37,14 @@ bool CScriptSettings::Load(const CStdString& strPath)
 
   // create the users filepath
   CUtil::RemoveSlashAtEnd(m_scriptPath);
-  m_userFileName.Format("special://profile/script_data/%s", CUtil::GetFileName(m_scriptPath));
+  if (CUtil::IsPlugin(m_scriptPath))
+  {
+    CURL url(m_scriptPath);
+    m_scriptPath.Replace("plugin://", "special://home/plugins/");
+    m_userFileName.Format("special://profile/plugin_data/%s/%s", url.GetHostName(), url.GetFileName());
+  }
+  else
+    m_userFileName.Format("special://profile/script_data/%s", CUtil::GetFileName(m_scriptPath));
   CUtil::AddFileToFolder(m_userFileName, "settings.xml", m_userFileName);
 
   // Create our final settings path
@@ -103,11 +110,13 @@ bool CScriptSettings::Save(void)
 bool CScriptSettings::SettingsExist(const CStdString& strPath)
 {
   CStdString scriptFileName = strPath;
+
   CUtil::RemoveSlashAtEnd(scriptFileName);
+  if (CUtil::IsPlugin(scriptFileName))
+    scriptFileName.Replace("plugin://", "special://home/plugins/");
 
   CUtil::AddFileToFolder(scriptFileName, "resources", scriptFileName);
   CUtil::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);
-
   // Load the settings file to verify it's valid
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(scriptFileName))

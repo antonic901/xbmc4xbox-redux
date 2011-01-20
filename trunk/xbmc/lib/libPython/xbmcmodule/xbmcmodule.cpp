@@ -314,15 +314,11 @@ namespace PYXBMC
     }
 
     long i = PyInt_AsLong(pObject);
-    //while(i != 0)
-    //{
       Py_BEGIN_ALLOW_THREADS
-      Sleep(i);//(500);
+      Sleep(i);
       Py_END_ALLOW_THREADS
 
       Py_MakePendingCalls();
-      //i = PyInt_AsLong(pObject);
-    //}
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -685,10 +681,7 @@ namespace PYXBMC
       strText = CSpecialProtocol::ReplaceOldPath(strText, 0);
 
     if (CUtil::IsPlugin(strText))
-    {
-      strPath = strText;
-      strPath.Replace("plugin://","special://home/plugins/");
-    }
+      strText.Replace("plugin://", "special://home/plugins/");
 
     strPath = CSpecialProtocol::TranslatePath(strText);
 

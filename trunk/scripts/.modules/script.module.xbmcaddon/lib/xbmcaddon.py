@@ -32,13 +32,13 @@ class Addon:
         self._get_methods( cwd )
         # TODO: do we want to use id for anything?
         # parse addon.xml and set all addon info
-        self._set_addon_info( cwd, id )
+        self._set_addon_info( xbmc.translatePath( cwd ), id )
 
     def _get_root_dir( self ):
         # get current working directory
-        cwd = xbmc.translatePath( os.path.dirname( sys.argv[ 0 ] ) )
+        cwd = os.path.dirname( sys.argv[ 0 ] )
         # check if we're at root folder of addon
-        if ( not os.path.isfile( os.path.join( cwd, "addon.xml" ) ) ):
+        if ( not os.path.isfile( os.path.join( xbmc.translatePath( cwd ), "addon.xml" ) ) ):
             # we're not at root, assume resources/lib/
             cwd = os.path.dirname( os.path.dirname( cwd ) )
         # return result

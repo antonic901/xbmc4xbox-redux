@@ -65,6 +65,9 @@ namespace PYXBMC
     self->pLanguage = new CLocalizeStrings();
 
     CStdString languagePath = cScriptPath;
+    if (CUtil::IsPlugin(languagePath))
+      languagePath.Replace("plugin://", "special://home/plugins/");
+
     CStdString languageFallbackPath = languagePath;
     CStdString defaultLanguage;
 
