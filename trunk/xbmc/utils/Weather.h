@@ -62,12 +62,12 @@ protected:
   unsigned int m_iCurWeather;
   int m_MaxLocations;
 
-  char m_CurrentCondition[256];
-  char m_CurrentConditionIcon[256];
-  char m_CurrentTemperature[32];
-  char m_CurrentLocation[256];
-  char m_CurrentFanartCode[32];
-  char m_IsFetched[32];
+  CStdString m_CurrentCondition;
+  CStdString m_CurrentConditionIcon;
+  CStdString m_CurrentTemperature;
+  CStdString m_CurrentLocation;
+  CStdString m_CurrentFanartCode;
+  CStdString m_IsFetched;
 };
 
 extern CWeather g_weatherManager;

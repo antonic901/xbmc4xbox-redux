@@ -45,17 +45,17 @@ const char *CWeather::TranslateInfo(int info)
 {
   SetInfo();
   if (info == WEATHER_LABEL_CURRENT_COND)
-    return m_CurrentCondition;
+    return m_CurrentCondition.c_str();
   else if (info == WEATHER_IMAGE_CURRENT_ICON)
-    return m_CurrentConditionIcon;
+    return m_CurrentConditionIcon.c_str();
   else if (info == WEATHER_LABEL_CURRENT_TEMP)
-    return m_CurrentTemperature;
+    return m_CurrentTemperature.c_str();
   else if (info == WEATHER_LABEL_LOCATION)
-    return m_CurrentLocation;
+    return m_CurrentLocation.c_str();
   else if (info == WEATHER_LABEL_FANART_CODE)
-    return m_CurrentFanartCode;
+    return m_CurrentFanartCode.c_str();
   else if (info == WEATHER_ISFETCHED)
-    return m_IsFetched;
+    return m_IsFetched.c_str();
   return "";
 }
 
@@ -97,7 +97,7 @@ void CWeather::Reset()
   RefreshInfo();
   for (unsigned int i = 0; i < MAX_LOCATION; i++)
   {
-    m_szLocation[i] = "";
+    m_szLocation[i].Empty();
   }
   m_MaxLocations = -1;
 }
@@ -110,29 +110,29 @@ bool CWeather::IsFetched()
 
 void CWeather::RefreshInfo()
 {
-  strcpy(m_CurrentCondition, "");
-  strcpy(m_CurrentConditionIcon, "");
-  strcpy(m_CurrentTemperature, "");
-  strcpy(m_CurrentLocation, m_szLocation[m_iCurWeather]);
-  strcpy(m_CurrentFanartCode, "");
-  strcpy(m_IsFetched, "false");
+  m_CurrentCondition.Empty();
+  m_CurrentConditionIcon.Empty();
+  m_CurrentTemperature.Empty();
+  m_CurrentLocation = m_szLocation[m_iCurWeather];
+  m_CurrentFanartCode.Empty();
+  m_IsFetched = "false";
 }
 
 void CWeather::SetInfo()
 {
-  if ((strcmp(m_CurrentCondition, "") == 0 || strcmp(m_CurrentConditionIcon, "") == 0 ||
-      strcmp(m_CurrentTemperature, "") == 0 || strcmp(m_CurrentFanartCode, "") == 0) && 
-      strcmp(m_IsFetched, "true") == 0)
+  if ((m_CurrentCondition.IsEmpty() || m_CurrentConditionIcon.IsEmpty() ||
+      m_CurrentTemperature.IsEmpty() || m_CurrentFanartCode.IsEmpty()) && 
+      m_IsFetched.Equals("true"))
   {
     CGUIWindow *window = g_windowManager.GetWindow(WINDOW_WEATHER);
     if (window)
     {
       // set these so existing weather infolabels don't break
-      strcpy(m_CurrentCondition, ((CGUIMediaWindow*)window)->GetProperty("Current.Condition").c_str());
-      strcpy(m_CurrentConditionIcon, ((CGUIMediaWindow*)window)->GetProperty("Current.ConditionIcon").c_str());
-      strcpy(m_CurrentTemperature, ((CGUIMediaWindow*)window)->GetProperty("Current.Temperature").c_str());
-      strcpy(m_CurrentLocation, ((CGUIMediaWindow*)window)->GetProperty("Location").c_str());
-      strcpy(m_CurrentFanartCode, ((CGUIMediaWindow*)window)->GetProperty("Current.FanartCode").c_str());
+      m_CurrentCondition = ((CGUIMediaWindow*)window)->GetProperty("Current.Condition");
+      m_CurrentConditionIcon = ((CGUIMediaWindow*)window)->GetProperty("Current.ConditionIcon");
+      m_CurrentTemperature = ((CGUIMediaWindow*)window)->GetProperty("Current.Temperature");
+      m_CurrentLocation = ((CGUIMediaWindow*)window)->GetProperty("Location");
+      m_CurrentFanartCode = ((CGUIMediaWindow*)window)->GetProperty("Current.FanartCode");
     }
   }
   else if (strcmp(m_IsFetched, "false") == 0)
@@ -140,7 +140,7 @@ void CWeather::SetInfo()
     CGUIWindow *window = g_windowManager.GetWindow(WINDOW_WEATHER);
     if (window)
     {
-      strcpy(m_IsFetched, ((CGUIMediaWindow*)window)->GetProperty("Weather.IsFetched").c_str());
+      m_IsFetched = ((CGUIMediaWindow*)window)->GetProperty("Weather.IsFetched");
     }
   }
 }
