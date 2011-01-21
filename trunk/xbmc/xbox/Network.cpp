@@ -614,7 +614,7 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
       CLastfmScrobbler::GetInstance()->Init();
       CLibrefmScrobbler::GetInstance()->Init();
       g_rssManager.Start();
-      //g_weatherManager.Refresh();
+      g_weatherManager.Refresh();
     }
     break;
     case SERVICES_DOWN:

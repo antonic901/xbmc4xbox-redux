@@ -45,4 +45,5 @@ protected:
 
   unsigned int m_iCurWeather;
   CStopWatch m_pluginTimer;
+  CCriticalSection m_criticalSection;
 };
