@@ -886,6 +886,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\DateTime.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\DDSImage.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\DDSImage.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\DelayController.cpp">
 				</File>
 				<File
@@ -1151,6 +1157,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\XBInputEx.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\XBTF.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\XBTimeZone.cpp">

@@ -145,6 +145,7 @@ CAdvancedSettings::CAdvancedSettings()
 
   m_thumbSize = 192;
   m_fanartHeight = 480;
+  m_useddsfanart = false;
 
   m_sambaclienttimeout = 10;
   m_sambadoscodepage = "";
@@ -589,6 +590,9 @@ bool CAdvancedSettings::Load()
   XMLUtils::GetFloat(pRootElement, "controllerdeadzone", m_controllerDeadzone, 0.0f, 1.0f);
   XMLUtils::GetInt(pRootElement, "thumbsize", m_thumbSize, 0, 1024);
   XMLUtils::GetInt(pRootElement, "fanartheight", m_fanartHeight, 0, 1080);
+  //dds support
+  XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useddsfanart);
+
 
   XMLUtils::GetBoolean(pRootElement, "playlistasfolders", m_playlistAsFolders);
   XMLUtils::GetBoolean(pRootElement, "detectasudf", m_detectAsUdf);
