@@ -64,6 +64,7 @@ p.roffit {
 <p class="level0"><a name="CURLOPTNOSIGNAL"></a><span class="nroffip">CURLOPT_NOSIGNAL</span> 
 <p class="level1">Pass a long. If it is 1, libcurl will not use any functions that install signal handlers or any functions that cause signals to be sent to the process. This option is mainly here to allow multi-threaded unix applications to still set/use all timeout options etc, without risking getting signals. (Added in 7.10) 
 <p class="level1">If this option is set and libcurl has been built with the standard name resolver, timeouts will not occur while the name resolve takes place. Consider building libcurl with c-ares support to enable asynchronous DNS lookups, which enables nice timeouts for name resolves without signals. 
+<p class="level1">Setting <a class="emphasis" href="#CURLOPTNOSIGNAL">CURLOPT_NOSIGNAL</a> to 1 makes libcurl NOT ask the system to ignore SIGPIPE signals, which otherwise are sent by the system when trying to send data to a socket which is closed in the other end. libcurl makes an effort to never cause such SIGPIPEs to trigger, but some operating systems have no way to avoid them and even on those that have there are some corner cases when they may still happen, contrary to our desire. 
 <p class="level0"><a name="CURLOPTWILDCARDMATCH"></a><span class="nroffip">CURLOPT_WILDCARDMATCH</span> 
 <p class="level1">Set this option to 1 if you want to transfer multiple files according to a file name pattern. The pattern can be specified as part of the <a class="emphasis" href="#CURLOPTURL">CURLOPT_URL</a> option, using an fnmatch-like pattern (Shell Pattern Matching) in the last part of URL (file name). 
 <p class="level1">By default, libcurl uses its internal wildcard matching implementation. You can provide your own matching function by the <a class="emphasis" href="#CURLOPTFNMATCHFUNCTION">CURLOPT_FNMATCH_FUNCTION</a> option. 
@@ -332,6 +333,8 @@ p.roffit {
 <p class="level2">This is a convenience macro that sets all bits and thus makes libcurl pick any it finds suitable. libcurl will automatically select the one it finds most secure. 
 <p class="level1"><a name="CURLAUTHANYSAFE"></a><span class="nroffip">CURLAUTH_ANYSAFE</span> 
 <p class="level2">This is a convenience macro that sets all bits except Basic and thus makes libcurl pick any it finds suitable. libcurl will automatically select the one it finds most secure. 
+<p class="level1"><a name="CURLAUTHONLY"></a><span class="nroffip">CURLAUTH_ONLY</span> 
+<p class="level2">This is a meta symbol. Or this value together with a single specific auth value to force libcurl to probe for un-restricted auth and if not, only that single auth algorithm is acceptable. (Added in 7.21.3) 
 <p class="level1">
 <p class="level0"><a name="CURLOPTPROXYAUTH"></a><span class="nroffip">CURLOPT_PROXYAUTH</span> 
 <p class="level1">Pass a long as parameter, which is set to a bitmask, to tell libcurl which authentication method(s) you want it to use for your proxy authentication.  If more than one bit is set, libcurl will first query the site to see what authentication methods it supports and then pick the best one you allow it to use. For some methods, this will induce an extra network round-trip. Set the actual name and password with the <a class="emphasis" href="#CURLOPTPROXYUSERPWD">CURLOPT_PROXYUSERPWD</a> option. The bitmask can be constructed by or'ing together the bits listed above for the <a class="emphasis" href="#CURLOPTHTTPAUTH">CURLOPT_HTTPAUTH</a> option. As of this writing, only Basic, Digest and NTLM work. (Added in 7.10.7) <a name="HTTP"></a><h2 class="nroffsh">HTTP OPTIONS</h2>
@@ -490,19 +493,6 @@ p.roffit {
 <p class="level0"><a name="CURLOPTFTPSKIPPASVIP"></a><span class="nroffip">CURLOPT_FTP_SKIP_PASV_IP</span> 
 <p class="level1">Pass a long. If set to 1, it instructs libcurl to not use the IP address the server suggests in its 227-response to libcurl's PASV command when libcurl connects the data connection. Instead libcurl will re-use the same IP address it already uses for the control connection. But it will use the port number from the 227-response. (Added in 7.14.2) 
 <p class="level1">This option has no effect if PORT, EPRT or EPSV is used instead of PASV. 
-<p class="level0"><a name="CURLOPTUSESSL"></a><span class="nroffip">CURLOPT_USE_SSL</span> 
-<p class="level1">Pass a long using one of the values from below, to make libcurl use your desired level of SSL for the FTP transfer. (Added in 7.11.0) 
-<p class="level1">(This option was known as CURLOPT_FTP_SSL up to 7.16.4, and the constants were known as CURLFTPSSL_*) 
-<p class="level2">
-<p class="level1"><a name="CURLUSESSLNONE"></a><span class="nroffip">CURLUSESSL_NONE</span> 
-<p class="level2">Don't attempt to use SSL. 
-<p class="level1"><a name="CURLUSESSLTRY"></a><span class="nroffip">CURLUSESSL_TRY</span> 
-<p class="level2">Try using SSL, proceed as normal otherwise. 
-<p class="level1"><a name="CURLUSESSLCONTROL"></a><span class="nroffip">CURLUSESSL_CONTROL</span> 
-<p class="level2">Require SSL for the control connection or fail with <span Class="emphasis">CURLE_USE_SSL_FAILED</span>. 
-<p class="level1"><a name="CURLUSESSLALL"></a><span class="nroffip">CURLUSESSL_ALL</span> 
-<p class="level2">Require SSL for all communication or fail with <span Class="emphasis">CURLE_USE_SSL_FAILED</span>. 
-<p class="level1">
 <p class="level0"><a name="CURLOPTFTPSSLAUTH"></a><span class="nroffip">CURLOPT_FTPSSLAUTH</span> 
 <p class="level1">Pass a long using one of the values from below, to alter how libcurl issues "AUTH TLS" or "AUTH SSL" when FTP over SSL is activated (see <a class="emphasis" href="#CURLOPTUSESSL">CURLOPT_USE_SSL</a>). (Added in 7.12.2) 
 <p class="level2">
@@ -581,7 +571,7 @@ p.roffit {
 <p class="level0"><a name="CURLOPTPROXYTRANSFERMODE"></a><span class="nroffip">CURLOPT_PROXY_TRANSFER_MODE</span> 
 <p class="level1">Pass a long. If the value is set to 1 (one), it tells libcurl to set the transfer mode (binary or ASCII) for FTP transfers done via an HTTP proxy, by appending ;type=a or ;type=i to the URL. Without this setting, or it being set to 0 (zero, the default), <a class="emphasis" href="#CURLOPTTRANSFERTEXT">CURLOPT_TRANSFERTEXT</a> has no effect when doing FTP via a proxy. Beware that not all proxies support this feature.  (Added in 7.18.0) 
 <p class="level0"><a name="CURLOPTCRLF"></a><span class="nroffip">CURLOPT_CRLF</span> 
-<p class="level1">Convert Unix newlines to CRLF newlines on transfers. 
+<p class="level1">Pass a long. If the value is set to 1 (one), libcurl converts Unix newlines to CRLF newlines on transfers. Disable this option again by setting the value to 0 (zero). 
 <p class="level0"><a name="CURLOPTRANGE"></a><span class="nroffip">CURLOPT_RANGE</span> 
 <p class="level1">Pass a char * as parameter, which should contain the specified range you want. It should be in the format "X-Y", where X or Y may be left out. HTTP transfers also support several intervals, separated with commas as in <span Class="emphasis">"X-Y,N-M"</span>. Using this kind of multiple intervals will cause the HTTP server to send the response document in pieces (using standard MIME separation techniques). For RTSP, the formatting of a range should follow RFC 2326 Section 12.29. For RTSP, byte ranges are <span Class="bold">not</span> permitted. Instead, ranges should be given in npt, utc, or smpte formats. 
 <p class="level1">Pass a NULL to this option to disable the use of ranges. 
@@ -668,7 +658,27 @@ p.roffit {
 <p class="level1">
 <p class="level0"><a name="CURLOPTCONNECTONLY"></a><span class="nroffip">CURLOPT_CONNECT_ONLY</span> 
 <p class="level1">Pass a long. If the parameter equals 1, it tells the library to perform all the required proxy authentication and connection setup, but no data transfer. This option is useful only on HTTP URLs. 
-<p class="level1">This option is useful with the <span Class="emphasis">CURLINFO_LASTSOCKET</span> option to <a class="emphasis" href="./curl_easy_getinfo.html">curl_easy_getinfo(3)</a>. The library can set up the connection and then the application can obtain the most recently used socket for special data transfers. (Added in 7.15.2) <a name="SSL"></a><h2 class="nroffsh">SSL and SECURITY OPTIONS</h2>
+<p class="level1">This option is useful with the <span Class="emphasis">CURLINFO_LASTSOCKET</span> option to <a class="emphasis" href="./curl_easy_getinfo.html">curl_easy_getinfo(3)</a>. The library can set up the connection and then the application can obtain the most recently used socket for special data transfers. (Added in 7.15.2) 
+<p class="level0"><a name="CURLOPTUSESSL"></a><span class="nroffip">CURLOPT_USE_SSL</span> 
+<p class="level1">Pass a long using one of the values from below, to make libcurl use your desired level of SSL for the transfer. (Added in 7.11.0) 
+<p class="level1">This is for enabling SSL/TLS when you use FTP, SMTP, POP3, IMAP etc. 
+<p class="level1">(This option was known as CURLOPT_FTP_SSL up to 7.16.4, and the constants were known as CURLFTPSSL_*) 
+<p class="level2">
+<p class="level1"><a name="CURLUSESSLNONE"></a><span class="nroffip">CURLUSESSL_NONE</span> 
+<p class="level2">Don't attempt to use SSL. 
+<p class="level1"><a name="CURLUSESSLTRY"></a><span class="nroffip">CURLUSESSL_TRY</span> 
+<p class="level2">Try using SSL, proceed as normal otherwise. 
+<p class="level1"><a name="CURLUSESSLCONTROL"></a><span class="nroffip">CURLUSESSL_CONTROL</span> 
+<p class="level2">Require SSL for the control connection or fail with <span Class="emphasis">CURLE_USE_SSL_FAILED</span>. 
+<p class="level1"><a name="CURLUSESSLALL"></a><span class="nroffip">CURLUSESSL_ALL</span> 
+<p class="level2">Require SSL for all communication or fail with <span Class="emphasis">CURLE_USE_SSL_FAILED</span>. 
+<p class="level1">
+<p class="level0"><a name="CURLOPTRESOLVE"></a><span class="nroffip">CURLOPT_RESOLVE</span> 
+<p class="level1">Pass a pointer to a linked list of strings with host name resolve information to use for requests with this handle. The linked list should be a fully valid list of <span Class="bold">struct curl_slist</span> structs properly filled in. Use <a class="emphasis" href="./curl_slist_append.html">curl_slist_append(3)</a> to create the list and <a class="emphasis" href="./curl_slist_free_all.html">curl_slist_free_all(3)</a> to clean up an entire list. 
+<p class="level1">Each single name resolve string should be written using the format HOST:PORT:ADDRESS where HOST is the name libcurl will try to resolve, PORT is the port number of the service where libcurl wants to connect to the HOST and ADDRESS is the numerical IP address. If libcurl is built to support IPv6, ADDRESS can of course be either IPv4 or IPv6 style addressing. 
+<p class="level1">This option effectively pre-populates the DNS cache with entries for the host+port pair so redirects and everything that operations against the HOST+PORT will instead use your provided ADDRESS. 
+<p class="level1">You can remove names from the DNS cache again, to stop providing these fake resolves, by including a string in the linked list that uses the format "-HOST:PORT". The host name must be prefixed with a dash, and the host name and port number must exactly match what was already added previously. 
+<p class="level1">(Added in 7.12.3) <a name="SSL"></a><h2 class="nroffsh">SSL and SECURITY OPTIONS</h2>
 <p class="level0">
 <p class="level0"><a name="CURLOPTSSLCERT"></a><span class="nroffip">CURLOPT_SSLCERT</span> 
 <p class="level1">Pass a pointer to a zero terminated string as parameter. The string should be the file name of your certificate. The default format is "PEM" and can be changed with <a class="emphasis" href="#CURLOPTSSLCERTTYPE">CURLOPT_SSLCERTTYPE</a>. 

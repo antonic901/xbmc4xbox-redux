@@ -1,61 +1,51 @@
-Curl and libcurl 7.21.2
+Curl and libcurl 7.21.3
 
- Public curl releases:         118
- Command line options:         138
- curl_easy_setopt() options:   180
+ Public curl releases:         119
+ Command line options:         143
+ curl_easy_setopt() options:   185
  Public functions in libcurl:  58
  Known libcurl bindings:       39
- Contributors:                 817
+ Contributors:                 827
 
 This release includes the following changes:
 
- o curl -T: ignore file size of special files
- o Added GOPHER protocol support
- o Added mk-ca-bundle.vbs script
- o c-ares build now requires c-ares >= 1.6.0
+ o Added --noconfigure switch to testcurl.pl
+ o Added --xattr option
+ o Added CURLOPT_RESOLVE and --resolve
+ o Added CURLAUTH_ONLY
+ o Added version-check.pl to the examples dir
 
 This release includes the following bugfixes:
 
- o --remote-header-name security vulnerability fixed:
-   http://curl.haxx.se/docs/adv_20101013.html
-
- o multi: support the timeouts correctly, fixes known bug #62
- o multi: use timeouts properly for MAX_RECV/SEND_SPEED
- o negotiation: Wrong proxy authorization
- o multi: avoid sending multiple complete messages
- o cmdline: make -F type= accept ;charset=
- o RESUME_FROM: clarify what ftp uploads do
- o http: handle trailer headers in all chunked responses
- o Curl_is_connected: use correct errno
- o Added SSPI build to Watcom makefile
- o progress: callback for POSTs less than MAX_INITIAL_POST_SIZE
- o linking problem on Fedora 13
- o Link curl and the test apps with -lrt explicitly when necessary
- o chunky parser: only rewind stream internally if needed
- o remote-header-name: don't output filename when NULL
- o Curl_timeleft: avoid returning "no timeout" by mistake
- o timeout: use the correct start value as offset
- o FTP: fix wrong timeout trigger
- o buildconf got better output on failures
- o rtsp: avoid SIGSEGV on malformed header
- o LDAP: Support for tunnelling queries through HTTP proxy
- o configure's --enable-werror had a bashism
- o test565: Don't hardcode IP:PORT
- o configure: check for gcrypt if using GnuTLS
- o configure: don't enable RTMP if the lib detect fails
- o curl_easy_duphandle: clone the c-ares handle correctly
- o MacOSX-Framework: updates for Snowleopard
- o support URL containing colon without trailing port number
- o parsedate: allow time specified without seconds
- o curl_easy_escape: don't escape "unreserved" characters
- o SFTP: avoid downloading negative sizes
- o Lots of GSS/KRB FTP fixes
- o TFTP: Work around tftpd-hpa upload bug
- o libcurl.m4: several fixes
- o HTTP: remove special case for 416
- o examples: use example.com in example URLs
- o globbing: fix crash on unballanced open brace
- o cmake: build fixed
+ o check for libcurl features for some command line options
+ o Curl_setopt: disallow CURLOPT_USE_SSL without SSL support
+ o http_chunks: remove debug output
+ o URL-parsing: consider ? a divider
+ o SSH: avoid using the libssh2_ prefix
+ o SSH: use libssh2_session_handshake() to work on win64
+ o ftp: prevent server from hanging on closed data connection when stopping
+   a transfer before the end of the full transfer (ranges)
+ o LDAP: detect non-binary attributes properly
+ o ftp: treat server's response 421 as CURLE_OPERATION_TIMEDOUT
+ o gnutls->handshake: improved timeout handling
+ o security: Pass the right parameter to init
+ o krb5: Use GSS_ERROR to check for error
+ o TFTP: resend the correct data
+ o configure: fix autoconf 2.68 warning: no AC_LANG_SOURCE call detected
+ o GnuTLS: now detects socket errors on Windows
+ o symbols-in-versions: updated en masse
+ o added a couple examples that were missing from the tar ball
+ o Curl_send/recv_plain: return errno on failure
+ o Curl_wait_for_resolv (for c-ares): correct timeout
+ o ossl_connect_common: detect connection re-use
+ o configure: Prevent link errors with --librtmp
+ o openldap: use remote port in URL passed to ldap_init_fd()
+ o url: provide dead_connection flag in Curl_handler::disconnect
+ o lots of compiler warning fixes
+ o ssh: fix a download resume point calculation
+ o fix getinfo CURLINFO_LOCAL* for reused connections
+ o multi: the returned running handles conuter could turn negative
+ o multi: only ever consider pipelining for connections doing HTTP(S)
 
 This release includes the following known bugs:
 
@@ -64,10 +54,8 @@ This release includes the following known bugs:
 This release would not have looked like this without help, code, reports and
 advice from friends like these:
 
- Kamil Dudka, Ben Greear, Cameron Kaiser, Dan Fandrich, Dirk Manske,
- Guenter Knauf, Julien Chaffraix, Quanah Gibson-Mount, Tor Arntsen,
- Peter Pentchev, James Bursa, Fabian Keil, Michal Gorny, Mauro Iorio,
- Hendrik Visage, Ning Dong, David McCreedy, Patrick Monnerat,
- Tim Newsome, Dan Locks, Vlad Ureche, Dimitre Dimitrov
+ Dan Fandrich, Guenter Knauf, Pat Ray, Hongli Lai, Kamil Dudka,
+ Stefan Tomanek, Alfred Gebert, Yang Tse, Julien Chaffraix, Adam Light,
+ Rutger Hofman, Matthias Bolte, Heinrich Ko, Dmitri Shubin
 
         Thanks! (and sorry if I forgot to mention someone)

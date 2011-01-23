@@ -84,6 +84,13 @@ If this option is set and libcurl has been built with the standard name
 resolver, timeouts will not occur while the name resolve takes place.
 Consider building libcurl with c-ares support to enable asynchronous DNS
 lookups, which enables nice timeouts for name resolves without signals.
+
+Setting \fICURLOPT_NOSIGNAL\fP to 1 makes libcurl NOT ask the system to ignore
+SIGPIPE signals, which otherwise are sent by the system when trying to send
+data to a socket which is closed in the other end. libcurl makes an effort to
+never cause such SIGPIPEs to trigger, but some operating systems have no way
+to avoid them and even on those that have there are some corner cases when
+they may still happen, contrary to our desire.
 .IP CURLOPT_WILDCARDMATCH
 Set this option to 1 if you want to transfer multiple files according to a
 file name pattern. The pattern can be specified as part of the
@@ -858,6 +865,10 @@ secure.
 This is a convenience macro that sets all bits except Basic and thus makes
 libcurl pick any it finds suitable. libcurl will automatically select the one
 it finds most secure.
+.IP CURLAUTH_ONLY
+This is a meta symbol. Or this value together with a single specific auth
+value to force libcurl to probe for un-restricted auth and if not, only that
+single auth algorithm is acceptable. (Added in 7.21.3)
 .RE
 .IP CURLOPT_PROXYAUTH
 Pass a long as parameter, which is set to a bitmask, to tell libcurl which
@@ -1337,22 +1348,6 @@ it already uses for the control connection. But it will use the port number
 from the 227-response. (Added in 7.14.2)
 
 This option has no effect if PORT, EPRT or EPSV is used instead of PASV.
-.IP CURLOPT_USE_SSL
-Pass a long using one of the values from below, to make libcurl use your
-desired level of SSL for the FTP transfer. (Added in 7.11.0)
-
-(This option was known as CURLOPT_FTP_SSL up to 7.16.4, and the constants
-were known as CURLFTPSSL_*)
-.RS
-.IP CURLUSESSL_NONE
-Don't attempt to use SSL.
-.IP CURLUSESSL_TRY
-Try using SSL, proceed as normal otherwise.
-.IP CURLUSESSL_CONTROL
-Require SSL for the control connection or fail with \fICURLE_USE_SSL_FAILED\fP.
-.IP CURLUSESSL_ALL
-Require SSL for all communication or fail with \fICURLE_USE_SSL_FAILED\fP.
-.RE
 .IP CURLOPT_FTPSSLAUTH
 Pass a long using one of the values from below, to alter how libcurl issues
 \&"AUTH TLS" or "AUTH SSL" when FTP over SSL is activated (see
@@ -1524,7 +1519,9 @@ to 0 (zero, the default), \fICURLOPT_TRANSFERTEXT\fP has no effect when doing
 FTP via a proxy. Beware that not all proxies support this feature.  (Added in
 7.18.0)
 .IP CURLOPT_CRLF
-Convert Unix newlines to CRLF newlines on transfers.
+Pass a long. If the value is set to 1 (one), libcurl converts Unix newlines to
+CRLF newlines on transfers. Disable this option again by setting the value to
+0 (zero).
 .IP CURLOPT_RANGE
 Pass a char * as parameter, which should contain the specified range you
 want. It should be in the format "X-Y", where X or Y may be left out. HTTP
@@ -1763,6 +1760,47 @@ This option is useful with the \fICURLINFO_LASTSOCKET\fP option to
 \fIcurl_easy_getinfo(3)\fP. The library can set up the connection and then the
 application can obtain the most recently used socket for special data
 transfers. (Added in 7.15.2)
+.IP CURLOPT_USE_SSL
+Pass a long using one of the values from below, to make libcurl use your
+desired level of SSL for the transfer. (Added in 7.11.0)
+
+This is for enabling SSL/TLS when you use FTP, SMTP, POP3, IMAP etc.
+
+(This option was known as CURLOPT_FTP_SSL up to 7.16.4, and the constants
+were known as CURLFTPSSL_*)
+.RS
+.IP CURLUSESSL_NONE
+Don't attempt to use SSL.
+.IP CURLUSESSL_TRY
+Try using SSL, proceed as normal otherwise.
+.IP CURLUSESSL_CONTROL
+Require SSL for the control connection or fail with \fICURLE_USE_SSL_FAILED\fP.
+.IP CURLUSESSL_ALL
+Require SSL for all communication or fail with \fICURLE_USE_SSL_FAILED\fP.
+.RE
+.IP CURLOPT_RESOLVE
+Pass a pointer to a linked list of strings with host name resolve information
+to use for requests with this handle. The linked list should be a fully valid
+list of \fBstruct curl_slist\fP structs properly filled in. Use
+\fIcurl_slist_append(3)\fP to create the list and \fIcurl_slist_free_all(3)\fP
+to clean up an entire list.
+
+Each single name resolve string should be written using the format
+HOST:PORT:ADDRESS where HOST is the name libcurl will try to resolve, PORT is
+the port number of the service where libcurl wants to connect to the HOST and
+ADDRESS is the numerical IP address. If libcurl is built to support IPv6,
+ADDRESS can of course be either IPv4 or IPv6 style addressing.
+
+This option effectively pre-populates the DNS cache with entries for the
+host+port pair so redirects and everything that operations against the
+HOST+PORT will instead use your provided ADDRESS.
+
+You can remove names from the DNS cache again, to stop providing these fake
+resolves, by including a string in the linked list that uses the format
+\&"-HOST:PORT". The host name must be prefixed with a dash, and the host name
+and port number must exactly match what was already added previously.
+
+(Added in 7.12.3)
 .SH SSL and SECURITY OPTIONS
 .IP CURLOPT_SSLCERT
 Pass a pointer to a zero terminated string as parameter. The string should be

@@ -1382,6 +1382,46 @@ Transfer(struct connectdata *conn)
   return CURLE_OK;
 }
 
+static void loadhostpairs(struct SessionHandle *data)
+{
+  struct curl_slist *hostp;
+  char hostname[256];
+  char address[256];
+  int port;
+
+  for(hostp = data->change.resolve; hostp; hostp = hostp->next ) {
+    if(!hostp->data)
+      continue;
+    if(hostp->data[0] == '-') {
+      /* mark an entry for removal */
+    }
+    else if(3 == sscanf(hostp->data, "%255[^:]:%d:%255s", hostname, &port,
+                        address)) {
+      struct Curl_dns_entry *dns;
+      Curl_addrinfo *addr;
+
+      addr = Curl_str2addr(address, port);
+      if(!addr) {
+        infof(data, "Resolve %s found illegal!\n", hostp->data);
+        continue;
+      }
+      infof(data, "Added %s:%d:%s to DNS cache\n",
+            hostname, port, address);
+
+      if(data->share)
+        Curl_share_lock(data, CURL_LOCK_DATA_DNS, CURL_LOCK_ACCESS_SINGLE);
+
+      /* put this host in the cache */
+      dns = Curl_cache_addr(data, addr, hostname, port);
+
+      if(data->share)
+        Curl_share_unlock(data, CURL_LOCK_DATA_DNS);
+    }
+  }
+  data->change.resolve = NULL; /* dealt with now */
+}
+
+
 /*
  * Curl_pretransfer() is called immediately before a transfer starts.
  */
@@ -1415,9 +1455,12 @@ CURLcode Curl_pretransfer(struct SessionHandle *data)
   data->info.wouldredirect = NULL;
 
   /* If there is a list of cookie files to read, do it now! */
-  if(data->change.cookielist) {
+  if(data->change.cookielist)
     Curl_cookie_loadfiles(data);
-  }
+
+  /* If there is a list of host pairs to deal with */
+  if(data->change.resolve)
+    loadhostpairs(data);
 
  /* Allow data->set.use_port to set which port to use. This needs to be
   * disabled for example when we follow Location: headers to URLs using
@@ -1916,7 +1959,7 @@ connect_host(struct SessionHandle *data,
       res = Curl_async_resolved(*conn, &protocol_done);
     else
       /* if we can't resolve, we kill this "connection" now */
-      (void)Curl_disconnect(*conn);
+      (void)Curl_disconnect(*conn, /* dead_connection */ FALSE);
   }
 
   return res;

@@ -226,7 +226,7 @@ p.roffit {
 <p class="level1"><span Class="bold">curl</span> -F "web=@index.html;type=text/html" url.com 
 <p class="level1">or 
 <p class="level1"><span Class="bold">curl</span> -F "name=daniel;type=text/foo" url.com 
-<p class="level1">You can also explicitly change the name field of an file upload part by setting filename=, like this: 
+<p class="level1">You can also explicitly change the name field of a file upload part by setting filename=, like this: 
 <p class="level1"><span Class="bold">curl</span> -F "file=@localfile;filename=nameinpost" url.com 
 <p class="level1">See further examples and details in the MANUAL. 
 <p class="level1">This option can be used multiple times. 
@@ -486,6 +486,10 @@ p.roffit {
 <p class="level1">When used, it disables all internal HTTP decoding of content or transfer encodings and instead makes them passed on unaltered, raw. (Added in 7.16.2) 
 <p class="level0"><a name="-R--remote-time"></a><span class="nroffip">-R/--remote-time</span> 
 <p class="level1">When used, this will make libcurl attempt to figure out the timestamp of the remote file, and if that is available make the local file get that same timestamp. 
+<p class="level0"><a name="--resolve"></a><span class="nroffip">--resolve &lt;host:port:address&gt;</span> 
+<p class="level1">Provide a custom address for a specific host and port pair. Using this, you can make the curl requests(s) use a specified address and prevent the otherwise normally resolved address to be used. Consider it a sort of /etc/hosts alternative provided on the command line. The port number should be the number used for the specific protocol the host will be used for. It means you need several entries if you want to provide address for the same host but different ports. 
+<p class="level1">This option can be used many times to add many host names to resolve. 
+<p class="level1">(Added in 7.21.3) 
 <p class="level0"><a name="--retry"></a><span class="nroffip">--retry &lt;num&gt;</span> 
 <p class="level1">If a transient error is returned when curl tries to perform a transfer, it will retry this number of times before giving up. Setting the number to 0 makes curl do no retries (which is the default). Transient error means either: a timeout, an FTP 4xx response code or an HTTP 5xx response code. 
 <p class="level1">When curl is about to retry a transfer, it will first wait one second and then for all forthcoming retries it will double the waiting time until it reaches 10 minutes which then will be the delay between the rest of the retries.  By using <a class="emphasis" href="#--retry-delay">--retry-delay</a> you disable this exponential backoff algorithm. See also <a class="emphasis" href="#--retry-max-time">--retry-max-time</a> to limit the total time allowed for retries. (Added in 7.12.3) 
@@ -823,6 +827,16 @@ p.roffit {
 <p class="level1">Could not load CRL file, missing or wrong format (added in 7.19.0). 
 <p class="level0"><a name="83"></a><span class="nroffip">83</span> 
 <p class="level1">Issuer check failed (added in 7.19.0). 
+<p class="level0"><a name="84"></a><span class="nroffip">84</span> 
+<p class="level1">The FTP PRET command failed 
+<p class="level0"><a name="85"></a><span class="nroffip">85</span> 
+<p class="level1">RTSP: mismatch of CSeq numbers 
+<p class="level0"><a name="86"></a><span class="nroffip">86</span> 
+<p class="level1">RTSP: mismatch of Session Identifiers 
+<p class="level0"><a name="87"></a><span class="nroffip">87</span> 
+<p class="level1">unable to parse FTP file list 
+<p class="level0"><a name="88"></a><span class="nroffip">88</span> 
+<p class="level1">FTP chunk callback reported error 
 <p class="level0"><a name="XX"></a><span class="nroffip">XX</span> 
 <p class="level1">More error codes will appear here in future releases. The existing ones are meant to never change. <a name="AUTHORS"></a><h2 class="nroffsh">AUTHORS / CONTRIBUTORS</h2>
 <p class="level0">Daniel Stenberg is the main author, but the whole list of contributors is found in the separate THANKS file. <a name="WWW"></a><h2 class="nroffsh">WWW</h2>

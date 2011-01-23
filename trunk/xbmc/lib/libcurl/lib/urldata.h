@@ -199,12 +199,15 @@ struct krb4buffer {
   size_t index;
   int eof_flag;
 };
+
 enum protection_level {
-  prot_clear,
-  prot_safe,
-  prot_confidential,
-  prot_private,
-  prot_cmd
+  PROT_NONE, /* first in list */
+  PROT_CLEAR,
+  PROT_SAFE,
+  PROT_CONFIDENTIAL,
+  PROT_PRIVATE,
+  PROT_CMD,
+  PROT_LAST /* last in list */
 };
 #endif
 
@@ -643,9 +646,11 @@ struct Curl_handler {
                          int numsocks);
 
   /* This function *MAY* be set to a protocol-dependent function that is run
-   * by the curl_disconnect(), as a step in the disconnection.
+   * by the curl_disconnect(), as a step in the disconnection.  If the handler
+   * is called because the connection has been considered dead, dead_connection
+   * is set to TRUE.
    */
-  CURLcode (*disconnect)(struct connectdata *);
+  CURLcode (*disconnect)(struct connectdata *, bool dead_connection);
 
   long defport;       /* Default port. */
   long protocol;      /* PROT_* flags concerning the protocol set */
@@ -754,6 +759,23 @@ struct connectdata {
   unsigned short remote_port; /* what remote port to connect to,
                                  not the proxy port! */
 
+  /* 'primary_ip' and 'primary_port' get filled with peer's numerical
+     ip address and port number whenever an outgoing connection is
+     *attemted* from the primary socket to a remote address. When more
+     than one address is tried for a connection these will hold data
+     for the last attempt. When the connection is actualy established
+     these are updated with data which comes directly from the socket. */
+
+  char primary_ip[MAX_IPADR_LEN];
+  long primary_port;
+
+  /* 'local_ip' and 'local_port' get filled with local's numerical
+     ip address and port number whenever an outgoing connection is
+     **established** from the primary socket to a remote address. */
+
+  char local_ip[MAX_IPADR_LEN];
+  long local_port;
+
   char *user;    /* user name string, allocated */
   char *passwd;  /* password string, allocated */
 
@@ -778,6 +800,8 @@ struct connectdata {
   struct ConnectBits bits;    /* various state-flags for this connection */
 
   const struct Curl_handler * handler;  /* Connection's protocol handler. */
+
+  long ip_version; /* copied from the SessionHandle at creation time */
 
   /**** curl_get() phase fields */
 
@@ -909,15 +933,21 @@ struct PureInfo {
   long numconnects; /* how many new connection did libcurl created */
   char *contenttype; /* the content type of the object */
   char *wouldredirect; /* URL this would've been redirected to if asked to */
-  char ip[MAX_IPADR_LEN]; /* this buffer gets the numerical ip version stored
-                             at the connect *attempt* so it will get the last
-                             tried connect IP even on failures */
-  long port; /* the remote port the last connection was established to */
-  char localip[MAX_IPADR_LEN]; /* this buffer gets the numerical (local) ip
-                                  stored from where the last connection was
-                                  established */
-  long localport; /* the local (src) port the last connection
-                     originated from */
+
+  /* PureInfo members 'conn_primary_ip', 'conn_primary_port', 'conn_local_ip'
+     and, 'conn_local_port' are copied over from the connectdata struct in
+     order to allow curl_easy_getinfo() to return this information even when
+     the session handle is no longer associated with a connection, and also
+     allow curl_easy_reset() to clear this information from the session handle
+     without disturbing information which is still alive, and that might be
+     reused, in the connection cache. */
+
+  char conn_primary_ip[MAX_IPADR_LEN];
+  long conn_primary_port;
+
+  char conn_local_ip[MAX_IPADR_LEN];
+  long conn_local_port;
+
   struct curl_certinfo certs; /* info about the certs, only populated in
                                  OpenSSL builds. Asked for with
                                  CURLOPT_CERTINFO / CURLINFO_CERTINFO */
@@ -1186,6 +1216,8 @@ struct DynamicStatic {
   bool referer_alloc; /* referer sting is malloc()ed */
   struct curl_slist *cookielist; /* list of cookie files set by
                                     curl_easy_setopt(COOKIEFILE) calls */
+  struct curl_slist *resolve; /* set to point to the set.resolve list when
+                                 this should be dealt with in pretransfer */
 };
 
 /*
@@ -1332,6 +1364,8 @@ struct UserDefined {
   struct curl_slist *source_postquote; /* in 3rd party transfer mode - after
                                           the transfer on source host */
   struct curl_slist *telnet_options; /* linked list of telnet options */
+  struct curl_slist *resolve;     /* list of names to add/remove from
+                                     DNS cache */
   curl_TimeCond timecondition; /* kind of time/date comparison */
   time_t timevalue;       /* what time to compare with */
   Curl_HttpReq httpreq;   /* what kind of HTTP request (if any) is this */
@@ -1351,8 +1385,8 @@ struct UserDefined {
 
   struct curl_slist *http200aliases; /* linked list of aliases for http200 */
 
-  long ip_version; /* the CURL_IPRESOLVE_* defines in the public header file
-                      0 - whatever, 1 - v2, 2 - v6 */
+  long ipver; /* the CURL_IPRESOLVE_* defines in the public header file
+                 0 - whatever, 1 - v2, 2 - v6 */
 
   curl_off_t max_filesize; /* Maximum file size to download */
 

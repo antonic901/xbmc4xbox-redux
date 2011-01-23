@@ -955,16 +955,19 @@ dnl Check if the operating system allows programs to write to their own argv[]
 dnl **********************************************************************
 
 AC_MSG_CHECKING([if argv can be written to])
-AC_CACHE_VAL(curl_cv_writable_argv, [
-AC_RUN_IFELSE([[
+AC_RUN_IFELSE([
+  AC_LANG_SOURCE([[
 int main(int argc, char ** argv) {
-        argv[0][0] = ' ';
-        return (argv[0][0] == ' ')?0:1;
+    argv[0][0] = ' ';
+    return (argv[0][0] == ' ')?0:1;
 }
-        ]],
-        curl_cv_writable_argv=yes,
-        curl_cv_writable_argv=no,
-        curl_cv_writable_argv=cross)
+  ]])
+],[
+  curl_cv_writable_argv=yes
+],[
+  curl_cv_writable_argv=no
+],[
+  curl_cv_writable_argv=cross
 ])
 case $curl_cv_writable_argv in
 yes)
@@ -2019,8 +2022,9 @@ if test X"$OPT_LIBSSH2" != Xno; then
        dnl libssh2_version is a post 1.0 addition
        dnl libssh2_init and libssh2_exit were added in 1.2.5
        dnl libssh2_scp_send64 was added in 1.2.6
+       dnl libssh2_session_handshake was added in 1.2.8
        AC_CHECK_FUNCS( libssh2_version libssh2_init libssh2_exit \
-                       libssh2_scp_send64 )
+                       libssh2_scp_send64 libssh2_session_handshake)
 
        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR_SSH2"
        export LD_LIBRARY_PATH
@@ -2062,6 +2066,10 @@ if test X"$OPT_LIBRTMP" != Xno; then
       CPP_RTMP=`$PKGCONFIG --cflags-only-I librtmp`
       version=`$PKGCONFIG --modversion librtmp`
       DIR_RTMP=`echo $LD_RTMP | $SED -e 's/-L//'`
+    else
+      dnl To avoid link errors, we do not allow --librtmp without
+      dnl a pkgconfig file
+      AC_MSG_ERROR([--librtmp was specified but could not find librtmp pkgconfig file.])
     fi
 
     ;;
@@ -2277,11 +2285,17 @@ AC_CHECK_TYPE(long long,
 
 if test "xyes" = "x$longlong"; then
   AC_MSG_CHECKING([if numberLL works])
-  AC_COMPILE_IFELSE([long long val = 1000LL;],
-   [AC_DEFINE(HAVE_LL, 1, [if your compiler supports LL])]
-   AC_MSG_RESULT(yes),
-   AC_MSG_RESULT(no)
-  )
+  AC_COMPILE_IFELSE([
+    AC_LANG_PROGRAM([[
+    ]],[[
+      long long val = 1000LL;
+    ]])
+  ],[
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(HAVE_LL, 1, [if your compiler supports LL])
+  ],[
+    AC_MSG_RESULT([no])
+  ])
 fi
 
 
@@ -2328,6 +2342,7 @@ CURL_CHECK_FUNC_FCNTL
 CURL_CHECK_FUNC_FDOPEN
 CURL_CHECK_FUNC_FREEADDRINFO
 CURL_CHECK_FUNC_FREEIFADDRS
+CURL_CHECK_FUNC_FSETXATTR
 CURL_CHECK_FUNC_FTRUNCATE
 CURL_CHECK_FUNC_GETADDRINFO
 CURL_CHECK_FUNC_GETHOSTBYADDR
@@ -2368,10 +2383,6 @@ CURL_CHECK_FUNC_STRTOK_R
 CURL_CHECK_FUNC_STRTOLL
 CURL_CHECK_FUNC_WRITEV
 
-dnl Checks for library functions.
-dnl AC_PROG_GCC_TRADITIONAL
-
-dnl AC_FUNC_VPRINTF
 case $host in
   *msdosdjgpp)
      ac_cv_func_pipe=no
@@ -2861,6 +2872,8 @@ AC_CONFIG_FILES([Makefile \
            libcurl.pc
 ])
 AC_OUTPUT
+
+CURL_GENERATE_CONFIGUREHELP_PM
 
 AC_MSG_NOTICE([Configured to build curl/libcurl:
 

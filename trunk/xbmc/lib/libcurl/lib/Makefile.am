@@ -30,15 +30,15 @@ DOCS = README.encoding README.memoryleak README.ares README.curlx	\
 
 CMAKE_DIST = CMakeLists.txt curl_config.h.cmake
 
-EXTRA_DIST = Makefile.b32 Makefile.m32 Makefile.vc6 Makefile.riscos $(DSP) \
+EXTRA_DIST = Makefile.b32 Makefile.m32 Makefile.vc6 $(DSP)                 \
  vc6libcurl.dsw config-win32.h config-win32ce.h config-riscos.h            \
- config-mac.h curl_config.h.in makefile.dj config.dos libcurl.plist        \
+ config-mac.h curl_config.h.in makefile.dj config-dos.h libcurl.plist      \
  libcurl.rc config-amigaos.h amigaos.c amigaos.h makefile.amiga		   \
  Makefile.netware nwlib.c nwos.c libcurl.imp msvcproj.head msvcproj.foot   \
  config-win32ce.h config-os400.h setup-os400.h config-symbian.h		   \
  Makefile.Watcom config-tpf.h $(DOCS) $(VCPROJ) mk-ca-bundle.pl		   \
  mk-ca-bundle.vbs firefox-db2pem.sh $(CMAKE_DIST) config-vxworks.h	   \
- Makefile.vxworks
+ Makefile.vxworks config-vms.h
 
 CLEANFILES = $(DSP) $(VCPROJ)
 

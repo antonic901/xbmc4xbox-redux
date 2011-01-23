@@ -585,6 +585,9 @@ typedef enum {
 #define CURLAUTH_GSSNEGOTIATE (1<<2)  /* GSS-Negotiate */
 #define CURLAUTH_NTLM         (1<<3)  /* NTLM */
 #define CURLAUTH_DIGEST_IE    (1<<4)  /* Digest with IE flavour */
+#define CURLAUTH_ONLY         (1<<31) /* used together with a single other
+                                         type to force no auth or just that
+                                         single type */
 #define CURLAUTH_ANY (~CURLAUTH_DIGEST_IE)  /* all fine types set */
 #define CURLAUTH_ANYSAFE (~(CURLAUTH_BASIC|CURLAUTH_DIGEST_IE))
 
@@ -1435,6 +1438,9 @@ typedef enum {
 
   /* FNMATCH_FUNCTION user pointer */
   CINIT(FNMATCH_DATA, OBJECTPOINT, 202),
+
+  /* send linked-list of name:port:address sets */
+  CINIT(RESOLVE, OBJECTPOINT, 203),
 
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;

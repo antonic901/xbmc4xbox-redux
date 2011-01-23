@@ -98,6 +98,7 @@
 #include "rawstr.h"
 #include "content_encoding.h"
 #include "rtsp.h"
+#include "warnless.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -2375,18 +2376,14 @@ CURLcode Curl_http(struct connectdata *conn, bool *done)
 #endif /* CURL_DISABLE_PROXY */
 
   if(HTTPREQ_POST_FORM == httpreq) {
-    /* we must build the whole darned post sequence first, so that we have
-       a size of the whole shebang before we start to send it */
-     result = Curl_getFormData(&http->sendit, data->set.httppost,
-                               Curl_checkheaders(data, "Content-Type:"),
-                               &http->postsize);
-     if(CURLE_OK != result) {
-       /* Curl_getFormData() doesn't use failf() */
-       failf(data, "failed creating formpost data");
-       return result;
-     }
+    /* we must build the whole post sequence first, so that we have a size of
+       the whole transfer before we start to send it */
+    result = Curl_getformdata(data, &http->sendit, data->set.httppost,
+                              Curl_checkheaders(data, "Content-Type:"),
+                              &http->postsize);
+    if(result)
+      return result;
   }
-
 
   http->p_accept = Curl_checkheaders(data, "Accept:")?NULL:"Accept: */*\r\n";
 
@@ -2428,27 +2425,25 @@ CURLcode Curl_http(struct connectdata *conn, bool *done)
         /* when seekerr == CURL_SEEKFUNC_CANTSEEK (can't seek to offset) */
         else {
           curl_off_t passed=0;
-
           do {
-            size_t readthisamountnow = (size_t)(data->state.resume_from -
-                                                passed);
-            size_t actuallyread;
+            size_t readthisamountnow =
+              (data->state.resume_from - passed > CURL_OFF_T_C(BUFSIZE)) ?
+              BUFSIZE : curlx_sotouz(data->state.resume_from - passed);
 
-            if(readthisamountnow > BUFSIZE)
-              readthisamountnow = BUFSIZE;
-
-            actuallyread = data->set.fread_func(data->state.buffer, 1,
-                                                (size_t)readthisamountnow,
-                                                data->set.in);
+            size_t actuallyread =
+              data->set.fread_func(data->state.buffer, 1, readthisamountnow,
+                                   data->set.in);
 
             passed += actuallyread;
-            if(actuallyread != readthisamountnow) {
+            if((actuallyread == 0) || (actuallyread > readthisamountnow)) {
+              /* this checks for greater-than only to make sure that the
+                 CURL_READFUNC_ABORT return code still aborts */
               failf(data, "Could only read %" FORMAT_OFF_T
                     " bytes from the input",
                     passed);
               return CURLE_READ_ERROR;
             }
-          } while(passed != data->state.resume_from); /* loop until done */
+          } while(passed < data->state.resume_from);
         }
       }
 

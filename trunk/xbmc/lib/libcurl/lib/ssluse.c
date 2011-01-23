@@ -1049,7 +1049,7 @@ static int asn1_output(const ASN1_UTCTIME *tm,
 
 static int hostmatch(const char *hostname, const char *pattern)
 {
-  while(1) {
+  for(;;) {
     char c = *pattern++;
 
     if(c == '\0')
@@ -2370,6 +2370,12 @@ ossl_connect_common(struct connectdata *conn,
   curl_socket_t sockfd = conn->sock[sockindex];
   long timeout_ms;
   int what;
+
+  /* check if the connection has already been established */
+  if(ssl_connection_complete == connssl->state) {
+    *done = TRUE;
+    return CURLE_OK;
+  }
 
   if(ssl_connect_1==connssl->connecting_state) {
     /* Find out how much more time we're allowed */

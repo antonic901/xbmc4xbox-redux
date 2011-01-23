@@ -51,7 +51,8 @@ check_PROGRAMS = 10-at-a-time$(EXEEXT) anyauthput$(EXEEXT) \
 	post-callback$(EXEEXT) postit2$(EXEEXT) sepheaders$(EXEEXT) \
 	simple$(EXEEXT) simplepost$(EXEEXT) simplessl$(EXEEXT) \
 	sendrecv$(EXEEXT) httpcustomheader$(EXEEXT) certinfo$(EXEEXT) \
-	chkspeed$(EXEEXT) ftpgetinfo$(EXEEXT) ftp-wildcard$(EXEEXT)
+	chkspeed$(EXEEXT) ftpgetinfo$(EXEEXT) ftp-wildcard$(EXEEXT) \
+	smtp-multi$(EXEEXT)
 subdir = docs/examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/curl-compilers.m4 \
@@ -198,6 +199,10 @@ simplessl_SOURCES = simplessl.c
 simplessl_OBJECTS = simplessl.$(OBJEXT)
 simplessl_LDADD = $(LDADD)
 simplessl_DEPENDENCIES = $(LIBDIR)/libcurl.la
+smtp_multi_SOURCES = smtp-multi.c
+smtp_multi_OBJECTS = smtp-multi.$(OBJEXT)
+smtp_multi_LDADD = $(LDADD)
+smtp_multi_DEPENDENCIES = $(LIBDIR)/libcurl.la
 DEFAULT_INCLUDES = 
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -215,14 +220,16 @@ SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
 	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
 	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
-	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c
+	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c \
+	smtp-multi.c
 DIST_SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
 	cookie_interface.c debug.c fileupload.c fopen.c ftp-wildcard.c \
 	ftpget.c ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c \
 	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
 	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
-	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c
+	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c \
+	smtp-multi.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -437,7 +444,8 @@ LDADD = $(LIBDIR)/libcurl.la
 # available on POSIX systems, so don't bother attempting to compile them here.
 COMPLICATED_EXAMPLES = curlgtk.c curlx.c htmltitle.cc cacertinmem.c	   \
   ftpuploadresume.c ghiper.c hiperfifo.c htmltidy.c multithread.c	   \
-  opensslthreadlock.c sampleconv.c synctime.c threaded-ssl.c evhiperfifo.c
+  opensslthreadlock.c sampleconv.c synctime.c threaded-ssl.c evhiperfifo.c \
+  smooth-gtk-thread.c version-check.pl
 
 all: all-am
 
@@ -575,6 +583,9 @@ simplepost$(EXEEXT): $(simplepost_OBJECTS) $(simplepost_DEPENDENCIES)
 simplessl$(EXEEXT): $(simplessl_OBJECTS) $(simplessl_DEPENDENCIES) 
 	@rm -f simplessl$(EXEEXT)
 	$(LINK) $(simplessl_LDFLAGS) $(simplessl_OBJECTS) $(simplessl_LDADD) $(LIBS)
+smtp-multi$(EXEEXT): $(smtp_multi_OBJECTS) $(smtp_multi_DEPENDENCIES) 
+	@rm -f smtp-multi$(EXEEXT)
+	$(LINK) $(smtp_multi_LDFLAGS) $(smtp_multi_OBJECTS) $(smtp_multi_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -614,6 +625,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simplepost.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simplessl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp-multi.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

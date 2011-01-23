@@ -18639,32 +18639,33 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if argv can be written to" >&5
 $as_echo_n "checking if argv can be written to... " >&6; }
-if test "${curl_cv_writable_argv+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-
 if test "$cross_compiling" = yes; then :
+
   curl_cv_writable_argv=cross
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+
 int main(int argc, char ** argv) {
-        argv[0][0] = ' ';
-        return (argv[0][0] == ' ')?0:1;
+    argv[0][0] = ' ';
+    return (argv[0][0] == ' ')?0:1;
 }
+
 
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
+
   curl_cv_writable_argv=yes
+
 else
+
   curl_cv_writable_argv=no
+
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-
 fi
 
 case $curl_cv_writable_argv in
@@ -21093,8 +21094,8 @@ done
   if test "$LIBSSH2_ENABLED" = "1"; then
     if test -n "$DIR_SSH2"; then
 
-                            for ac_func in libssh2_version libssh2_init libssh2_exit \
-                       libssh2_scp_send64
+                                   for ac_func in libssh2_version libssh2_init libssh2_exit \
+                       libssh2_scp_send64 libssh2_session_handshake
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -21256,6 +21257,8 @@ $as_echo "found" >&6; }
       CPP_RTMP=`$PKGCONFIG --cflags-only-I librtmp`
       version=`$PKGCONFIG --modversion librtmp`
       DIR_RTMP=`echo $LD_RTMP | $SED -e 's/-L//'`
+    else
+                  as_fn_error $? "--librtmp was specified but could not find librtmp pkgconfig file." "$LINENO" 5
     fi
 
     ;;
@@ -22468,16 +22471,30 @@ if test "xyes" = "x$longlong"; then
 $as_echo_n "checking if numberLL works... " >&6; }
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-long long val = 1000LL;
+
+
+
+int main (void)
+{
+
+      long long val = 1000LL;
+
+ ;
+ return 0;
+}
+
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
 
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
 $as_echo "#define HAVE_LL 1" >>confdefs.h
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
+
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 fi
@@ -25798,6 +25815,240 @@ _ACEOF
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
     ac_cv_func_freeifaddrs="no"
+  fi
+
+
+curl_includes_sys_xattr="\
+/* includes start */
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_XATTR_H
+#  include <sys/xattr.h>
+#endif
+/* includes end */"
+  for ac_header in sys/types.h sys/xattr.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "$curl_includes_sys_xattr
+"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+
+    #
+  tst_links_fsetxattr="unknown"
+  tst_proto_fsetxattr="unknown"
+  tst_compi_fsetxattr="unknown"
+  tst_allow_fsetxattr="unknown"
+  tst_nargs_fsetxattr="unknown"
+  #
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr can be linked" >&5
+$as_echo_n "checking if fsetxattr can be linked... " >&6; }
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+#define fsetxattr innocuous_fsetxattr
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+#undef fsetxattr
+#ifdef __cplusplus
+extern "C"
+#endif
+char fsetxattr ();
+#if defined __stub_fsetxattr || defined __stub___fsetxattr
+choke me
+#endif
+
+int main (void)
+{
+return fsetxattr ();
+ ;
+ return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    tst_links_fsetxattr="yes"
+
+else
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    tst_links_fsetxattr="no"
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  #
+  if test "$tst_links_fsetxattr" = "yes"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr is prototyped" >&5
+$as_echo_n "checking if fsetxattr is prototyped... " >&6; }
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+      $curl_includes_sys_xattr
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "fsetxattr" >/dev/null 2>&1; then :
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      tst_proto_fsetxattr="yes"
+
+else
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+      tst_proto_fsetxattr="no"
+
+fi
+rm -f conftest*
+
+  fi
+  #
+  if test "$tst_proto_fsetxattr" = "yes"; then
+    if test "$tst_nargs_fsetxattr" = "unknown"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr takes 5 args." >&5
+$as_echo_n "checking if fsetxattr takes 5 args.... " >&6; }
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+          $curl_includes_sys_xattr
+
+int main (void)
+{
+
+          if(0 != fsetxattr(0, 0, 0, 0, 0))
+            return 1;
+
+ ;
+ return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        tst_compi_fsetxattr="yes"
+        tst_nargs_fsetxattr="5"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        tst_compi_fsetxattr="no"
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    fi
+    if test "$tst_nargs_fsetxattr" = "unknown"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr takes 6 args." >&5
+$as_echo_n "checking if fsetxattr takes 6 args.... " >&6; }
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+          $curl_includes_sys_xattr
+
+int main (void)
+{
+
+          if(0 != fsetxattr(0, 0, 0, 0, 0, 0))
+            return 1;
+
+ ;
+ return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        tst_compi_fsetxattr="yes"
+        tst_nargs_fsetxattr="6"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        tst_compi_fsetxattr="no"
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr is compilable" >&5
+$as_echo_n "checking if fsetxattr is compilable... " >&6; }
+    if test "$tst_compi_fsetxattr" = "yes"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    fi
+  fi
+  #
+  if test "$tst_compi_fsetxattr" = "yes"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr usage allowed" >&5
+$as_echo_n "checking if fsetxattr usage allowed... " >&6; }
+    if test "x$curl_disallow_fsetxattr" != "xyes"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      tst_allow_fsetxattr="yes"
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+      tst_allow_fsetxattr="no"
+    fi
+  fi
+  #
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if fsetxattr might be used" >&5
+$as_echo_n "checking if fsetxattr might be used... " >&6; }
+  if test "$tst_links_fsetxattr" = "yes" &&
+     test "$tst_proto_fsetxattr" = "yes" &&
+     test "$tst_compi_fsetxattr" = "yes" &&
+     test "$tst_allow_fsetxattr" = "yes"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_FSETXATTR 1
+_ACEOF
+
+            #
+    if test "$tst_nargs_fsetxattr" -eq "5"; then
+
+$as_echo "#define HAVE_FSETXATTR_5 1" >>confdefs.h
+
+    elif test "$tst_nargs_fsetxattr" -eq "6"; then
+
+$as_echo "#define HAVE_FSETXATTR_6 1" >>confdefs.h
+
+    fi
+    #
+    ac_cv_func_fsetxattr="yes"
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    ac_cv_func_fsetxattr="no"
   fi
 
 
@@ -33444,7 +33695,6 @@ $as_echo "no" >&6; }
   fi
 
 
-
 case $host in
   *msdosdjgpp)
      ac_cv_func_pipe=no
@@ -37273,6 +37523,38 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
+
+
+    tmp_cpp=`eval echo "$ac_cpp" 2>/dev/null`
+  if test -z "$tmp_cpp"; then
+    tmp_cpp='cpp'
+  fi
+  cat >./tests/configurehelp.pm <<_EOF
+# This is a generated file.  Do not edit.
+
+package configurehelp;
+
+use strict;
+use warnings;
+use Exporter;
+
+use vars qw(
+    @ISA
+    @EXPORT_OK
+    \$Cpreprocessor
+    );
+
+@ISA = qw(Exporter);
+
+@EXPORT_OK = qw(
+    \$Cpreprocessor
+    );
+
+\$Cpreprocessor = '$tmp_cpp';
+
+1;
+_EOF
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Configured to build curl/libcurl:
