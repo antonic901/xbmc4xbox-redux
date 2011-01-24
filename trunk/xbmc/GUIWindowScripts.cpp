@@ -140,7 +140,11 @@ bool CGUIWindowScripts::OnPlayMedia(int iItem)
       return true;
     }
   }
-  g_pythonParser.evalFile(strPath);
+  unsigned int argc = 1;
+  char ** argv = new char*[argc];
+  argv[0] = (char*)strPath.c_str();
+  g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
+  delete [] argv;
 
   return true;
 }

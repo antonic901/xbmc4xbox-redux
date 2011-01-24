@@ -220,6 +220,8 @@ void CGUIWindowWeather::CallPlugin()
   if (g_pythonParser.ScriptsSize() > 0)
     return;
 
+  g_weatherManager.RefreshInfo();
+
   // create the full path to the plugin
   CStdString plugin = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin") + "/default.py";
 
@@ -228,14 +230,13 @@ void CGUIWindowWeather::CallPlugin()
   char ** argv = new char*[argc];
   argv[0] = (char*)plugin.c_str();
 
-  g_weatherManager.RefreshInfo();
   // get the current locations area code
   CStdString strSetting;
   strSetting.Format("%i", m_iCurWeather + 1);
   argv[1] = (char*)strSetting.c_str();
   argv[2] = (char*)(forceRefresh ? "1" : "0");
 
-  // call our plugin, passing the areacode
+  // call our plugin, passing the town index # and force refresh status
   g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
 
   CLog::Log(LOGDEBUG, "%s - Weather plugin called: %s (%s,%s)", __FUNCTION__, argv[0], argv[1], argv[2]);

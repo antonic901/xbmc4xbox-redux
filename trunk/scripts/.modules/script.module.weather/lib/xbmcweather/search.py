@@ -28,7 +28,7 @@ class TownSearch:
         "Accept": "application/xml; charset=UTF-8"
     }
     # set regex's
-    regex_geo = re.compile( "Your IP Address: <strong>(.+?)</strong><br />\s.+?Located near: <strong>(.+?)</strong>", re.IGNORECASE )
+    regex_geo = re.compile( "Your IP Address: <strong>(.+?)</strong><br />\s.+?Located near: <strong>([^\(<]+).*?</strong>", re.IGNORECASE )
     regex_town = re.compile( "<dnam>([^<]+)</dnam>" )
     regex_location_list = re.compile( "<loc.+?id=\"([^\"]+)\".+?type=\"([^\"]+)\">([^<]+)</loc>" )
 
@@ -53,7 +53,7 @@ class TownSearch:
             # set new ip
             self.Addon.setSetting( "ip_geo", result[ 0 ] )
             # get new town
-            return self.get_town( text=result[ 1 ] )[ 1 ], result[ 0 ]
+            return self.get_town( text=result[ 1 ].strip() )[ 1 ], result[ 0 ]
         except:
             # use our fallback for any errors
             return self.Addon.getSetting( "id_geo_fallback" ), "None"
@@ -83,6 +83,7 @@ class TownSearch:
         if ( self.index == "_geo" ):
             return town
         # open settings for non ip based geo location search
+        # FIXME: uncomment when settings navigation bug is fixed
         ##self.Addon.openSettings()
 
     def _get_search_text( self, default="", heading="", hidden=False ):

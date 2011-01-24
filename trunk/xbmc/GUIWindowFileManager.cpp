@@ -609,7 +609,11 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem)
   }
   if (pItem->IsPythonScript())
   {
-    g_pythonParser.evalFile(pItem->m_strPath.c_str());
+    unsigned int argc = 1;
+    char ** argv = new char*[argc];
+    argv[0] = (char*)pItem->m_strPath.c_str();
+    g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
+    delete [] argv;
     return ;
   }
   if (pItem->IsXBE())

@@ -6,7 +6,7 @@ __author__ = "nuka1195"
 import sys
 import os
 import xbmc
-import re
+from xml.dom.minidom import parseString
 
 
 class Addon:
@@ -35,6 +35,8 @@ class Addon:
         self._set_addon_info( xbmc.translatePath( cwd ), id )
 
     def _get_root_dir( self ):
+        # we need to reset sys.argv[ 0 ] to a plugin for weather plugins as they aren't run as plugins, but they are categorized as plugins
+        sys.argv[ 0 ] = xbmc.validatePath( sys.argv[ 0 ].replace( "Q:\\plugins\\weather\\", "plugin://weather/" ) )
         # get current working directory
         cwd = os.path.dirname( sys.argv[ 0 ] )
         # check if we're at root folder of addon
@@ -56,28 +58,47 @@ class Addon:
     def _set_addon_info( self, cwd, id ):
         # get source
         xml = open( os.path.join( cwd, "addon.xml" ), "r" ).read()
-        # set addon.xml info into dictionary
-        self._info[ "id" ], self._info[ "name" ], self._info[ "version" ], self._info[ "author" ] = re.search( "<addon.+?id=\"([^\"]+)\".+?name=\"([^\"]+)\".+?version=\"([^\"]+)\".+?provider-name=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
-        self._info[ "type" ], self._info[ "library" ] = re.search( "<extension.+?point=\"([^\"]+)\".+?library=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
+        # parse source
+        dom = parseString( xml )
+        # get main element
+        item = dom.getElementsByTagName( "addon" )[ 0 ]
+        # set info
+        self._info[ "id" ] = item.getAttribute( "id" )
+        self._info[ "name" ] = item.getAttribute( "name" )
+        self._info[ "version" ] = item.getAttribute( "version" )
+        self._info[ "author" ] = item.getAttribute( "provider-name" )
+        for extension in dom.getElementsByTagName( "extension" ):
+            # the type will always be xbmc.python.pluginsource afaik
+            if ( extension.getAttribute( "point" ) == "xbmc.python.pluginsource" ):
+                self._info[ "type" ] = extension.getAttribute( "point" )
+                self._info[ "library" ] = extension.getAttribute("library")
+            # get any meta data
+            if ( extension.getAttribute( "point" ) == "xbmc.addon.metadata" ):
+                locale = xbmc.getRegion( "locale" )
+                for metatype in [ "disclaimer", "summary", "description" ]:
+                    metadict = { "en": "" }
+                    for metadata in extension.getElementsByTagName(metatype):
+                        if ( metadata.getAttribute( "lang" ) != "" ):
+                            metadict[ metadata.getAttribute( "lang" ) ] = metadata.firstChild.data
+                        else:
+                            metadict[ "en" ] = metadata.firstChild.data
+                    if ( metadict.has_key( locale ) ):
+                        self._info[ metatype ] = metadict[ locale ]
+                    else:
+                        self._info[ metatype ] = metadict[ "en" ]
         # reset this to default.py as that's what xbox uses
         self._info[ "library" ] = "default.py"
-        # set any metadata
-        for metadata in [ "disclaimer", "summary", "description" ]:
-            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, xbmc.getRegion( "locale" ), metadata, ), xml, re.DOTALL )
-            if ( data ):
-                self._info[ metadata ] = data[ -1 ]
-            else:
-                self._info[ metadata ] = ""
-        # set other info
         self._info[ "path" ] = cwd
         self._info[ "libpath" ] = os.path.join( cwd, self._info[ "library" ] )
         self._info[ "icon" ] = os.path.join( cwd, "default.tbn" )
         self._info[ "fanart" ] = os.path.join( cwd, "fanart.jpg" )
         self._info[ "changelog" ] = os.path.join( cwd, "changelog.txt" )
-        if ( cwd.startswith( "Q:\\plugins" ) and not cwd.startswith( "Q:\\plugins\\weather" ) ):
+        if ( cwd.startswith( "Q:\\plugins" ) ):
             self._info[ "profile" ] = "special://profile/plugin_data/%s/%s" % ( os.path.basename( os.path.dirname( cwd ) ), os.path.basename( cwd ), )
         else:
             self._info[ "profile" ] = "special://profile/script_data/%s" % ( os.path.basename( cwd ), )
+        # cleanup
+        dom.unlink()
 
     def getAddonInfo( self, id ):
         """

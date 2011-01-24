@@ -1225,8 +1225,8 @@ void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
   else if (strSetting.Equals("weather.pluginsettings"))
   {
     // Create our base path
-    CStdString basepath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
-    if (CGUIDialogPluginSettings::ShowAndGetInput(basepath))
+    CURL url("plugin://weather/" + g_guiSettings.GetString("weather.plugin"));
+    if (CGUIDialogPluginSettings::ShowAndGetInput(url))
     {
       // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
       g_weatherManager.Reset();

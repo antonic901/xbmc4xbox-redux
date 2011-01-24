@@ -24,6 +24,7 @@
 #include "pyutil.h"
 #include "GUIDialogPluginSettings.h"
 #include "Weather.h"
+#include "Util.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -61,7 +62,11 @@ namespace PYXBMC
       return NULL;
     };
 
-    if (!CScriptSettings::SettingsExist(cScriptPath))
+    CStdString scriptPath = cScriptPath;
+    if (CUtil::IsPlugin(scriptPath))
+      scriptPath.Replace("plugin://", "special://home/plugins/");
+
+    if (!CScriptSettings::SettingsExist(scriptPath))
     {
       PyErr_SetString(PyExc_Exception, "No settings.xml file could be found!");
       return NULL;
@@ -69,7 +74,7 @@ namespace PYXBMC
 
     self->pSettings = new CScriptSettings();
     self->pSettings->Clear();
-    self->pSettings->Load(cScriptPath);
+    self->pSettings->Load(scriptPath);
 
     return (PyObject*)self;
   }
@@ -165,14 +170,23 @@ namespace PYXBMC
   {
     bool ok;
     CStdString path = self->pSettings->getPath();
-
-    // show settings dialog
-    Py_BEGIN_ALLOW_THREADS
-    ok = CGUIDialogPluginSettings::ShowAndGetInput(path);
-    Py_END_ALLOW_THREADS
+    if (path.Find("special://home/plugins/"))
+    {
+      CURL url(path);
+      Py_BEGIN_ALLOW_THREADS
+      ok = CGUIDialogPluginSettings::ShowAndGetInput(url);
+      Py_END_ALLOW_THREADS
+    }
+    else
+    {
+      // show settings dialog
+      Py_BEGIN_ALLOW_THREADS
+      ok = CGUIDialogPluginSettings::ShowAndGetInput(path);
+      Py_END_ALLOW_THREADS
+    }
 
     // refresh weather if weather settings
-    if (ok && path.Find("Q:\\plugins\\weather\\"))
+    if (ok && path.Find("special://home/plugins/weather/"))
     {
       g_weatherManager.Refresh();
       g_weatherManager.Reset();

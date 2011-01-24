@@ -5016,7 +5016,11 @@ bool CApplication::OnMessage(CGUIMessage& message)
         CFileItem item(message.GetStringParam(), false);
         if (item.IsPythonScript())
         { // a python script
-          g_pythonParser.evalFile(item.m_strPath.c_str());
+          unsigned int argc = 1;
+          char ** argv = new char*[argc];
+          argv[0] = (char*)item.m_strPath.c_str();
+          g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
+          delete [] argv;
         }
         else if (item.IsXBE())
         { // an XBE

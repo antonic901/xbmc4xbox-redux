@@ -37,10 +37,11 @@ bool CScriptSettings::Load(const CStdString& strPath)
 
   // create the users filepath
   CUtil::RemoveSlashAtEnd(m_scriptPath);
-  if (CUtil::IsPlugin(m_scriptPath))
+  if (m_scriptPath.Find("special://home/plugins/") >= 0)
   {
-    CURL url(m_scriptPath);
-    m_scriptPath.Replace("plugin://", "special://home/plugins/");
+    CStdString userPath = m_scriptPath;
+    userPath.Replace("special://home/plugins/", "plugin://");
+    CURL url(userPath);
     m_userFileName.Format("special://profile/plugin_data/%s/%s", url.GetHostName(), url.GetFileName());
   }
   else
@@ -112,8 +113,6 @@ bool CScriptSettings::SettingsExist(const CStdString& strPath)
   CStdString scriptFileName = strPath;
 
   CUtil::RemoveSlashAtEnd(scriptFileName);
-  if (CUtil::IsPlugin(scriptFileName))
-    scriptFileName.Replace("plugin://", "special://home/plugins/");
 
   CUtil::AddFileToFolder(scriptFileName, "resources", scriptFileName);
   CUtil::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);

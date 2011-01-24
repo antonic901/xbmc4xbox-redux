@@ -474,7 +474,13 @@ case TMSG_POWERDOWN:
     break;
 
     case TMSG_EXECUTE_SCRIPT:
-      g_pythonParser.evalFile(pMsg->strParam.c_str());
+      {
+        unsigned int argc = 1;
+        char ** argv = new char*[argc];
+        argv[0] = (char*)pMsg->strParam.c_str();
+        g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
+        delete [] argv;
+      }
       break;
 
     case TMSG_EXECUTE_BUILT_IN:
