@@ -68,16 +68,16 @@ class Addon:
         self._info[ "version" ] = item.getAttribute( "version" )
         self._info[ "author" ] = item.getAttribute( "provider-name" )
         for extension in dom.getElementsByTagName( "extension" ):
-            # the type will always be xbmc.python.pluginsource afaik
-            if ( extension.getAttribute( "point" ) == "xbmc.python.pluginsource" ):
+            # get library and type
+            if ( extension.hasAttribute( "library" ) ):
+                self._info[ "library" ] = extension.getAttribute( "library" )
                 self._info[ "type" ] = extension.getAttribute( "point" )
-                self._info[ "library" ] = extension.getAttribute("library")
             # get any meta data
             if ( extension.getAttribute( "point" ) == "xbmc.addon.metadata" ):
                 locale = xbmc.getRegion( "locale" )
                 for metatype in [ "disclaimer", "summary", "description" ]:
                     metadict = { "en": "" }
-                    for metadata in extension.getElementsByTagName(metatype):
+                    for metadata in extension.getElementsByTagName( metatype ):
                         if ( metadata.getAttribute( "lang" ) != "" ):
                             metadict[ metadata.getAttribute( "lang" ) ] = metadata.firstChild.data
                         else:
