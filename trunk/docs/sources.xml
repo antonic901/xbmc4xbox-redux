@@ -181,14 +181,6 @@
             <path>daap://192.168.1.100</path>
         </bookmark>
         <bookmark>
-            <name>SHOUTcast - Directory</name>
-            <path>shout://www.shoutcast.com/sbin/newxml.phtml</path>
-            <!-- direct links to genres and searches are allowed                                 -->
-            <!-- shout://www.shoutcast.com/sbin/newxml.phtml?genre=Funk                          -->
-            <!-- shout://www.shoutcast.com/sbin/newxml.phtml?genre=Top500                        -->
-            <!-- shout://www.shoutcast.com/sbin/newxml.phtml?search=[stationname]                -->
-        </bookmark>
-        <bookmark>
             <name>UPnP Media Servers (Auto-Discover)</name>
             <path>upnp://</path>
         </bookmark>

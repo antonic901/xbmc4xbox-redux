@@ -30,7 +30,6 @@
 #include "FileSystem/PluginDirectory.h"
 #include "GUIDialogYesNo.h"
 #include "FileSystem/File.h"
-#include "FileSystem/ShoutcastDirectory.h"
 #include "FileItem.h"
 
 using namespace std;
@@ -269,10 +268,6 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     share1.strPath = "soundtrack://";
     extraShares.push_back(share1);
 #endif
-
-    share1.strName = "Shoutcast";
-    share1.strPath = SHOUTCAST_MASTER_LINK;
-    extraShares.push_back(share1);
     
     if (g_guiSettings.GetString("scrobbler.lastfmusername") != "")
     {

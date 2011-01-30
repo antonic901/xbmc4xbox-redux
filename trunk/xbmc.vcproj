@@ -1875,9 +1875,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\RTVDirectory.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\ShoutcastDirectory.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\ShoutcastRipFile.cpp">
 				</File>
 				<File
@@ -3171,9 +3168,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\Shortcut.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\ShoutcastDirectory.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\ShoutcastRipFile.h">

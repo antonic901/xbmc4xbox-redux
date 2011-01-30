@@ -32,7 +32,6 @@
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "FileSystem/PluginDirectory.h"
-#include "FileSystem/ShoutcastDirectory.h"
 
 using namespace DIRECTORY;
 using namespace MUSICDATABASEDIRECTORY;
@@ -515,9 +514,7 @@ void CGUIViewStateWindowMusicNav::AddOnlineShares()
   for (int i = 0; i < (int)g_settings.m_musicSources.size(); ++i)
   {
     CMediaSource share = g_settings.m_musicSources.at(i);
-    if (share.strPath.Find(SHOUTCAST_MASTER_LINK) == 0)//shoutcast shares
-      m_sources.push_back(share);
-    else if (share.strPath.Find("lastfm://") == 0)//lastfm share
+    if (share.strPath.Find("lastfm://") == 0)//lastfm share
       m_sources.push_back(share);
   }
 }
