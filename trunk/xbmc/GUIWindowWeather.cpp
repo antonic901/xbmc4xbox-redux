@@ -209,18 +209,10 @@ void CGUIWindowWeather::CallPlugin()
   if (m_pluginTimer.IsRunning())
     m_pluginTimer.Stop();
 
-  SetProperty("Weather.IsFetched", "false");
-
   if (g_guiSettings.GetString("weather.plugin").IsEmpty()) return;
   
   // No point in trying to fetch weather if we don't have a working network
   if (!g_network.IsAvailable()) return;
-
-  // do not run if other scripts are running, causes issues with sys.argv being global
-  if (g_pythonParser.ScriptsSize() > 0)
-    return;
-
-  g_weatherManager.RefreshInfo();
 
   // create the full path to the plugin
   CStdString plugin = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin") + "/default.py";
@@ -229,6 +221,18 @@ void CGUIWindowWeather::CallPlugin()
   unsigned int argc = 3;
   char ** argv = new char*[argc];
   argv[0] = (char*)plugin.c_str();
+
+  int id = g_pythonParser.getScriptId(argv[0]);
+  if (id != -1 && g_pythonParser.isRunning(id))
+  {
+    // if plugin is running we wait for another timeout only when in weather window
+    if (IsActive())
+      m_pluginTimer.StartZero();
+    return;
+  }
+
+  SetProperty("Weather.IsFetched", "false");
+  g_weatherManager.RefreshInfo();
 
   // get the current locations area code
   CStdString strSetting;

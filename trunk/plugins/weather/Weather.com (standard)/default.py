@@ -9,7 +9,7 @@ Addon = xbmcaddon.Addon( id="script.weather.standard" )
 
 if ( __name__ == "__main__" ):
     # search for new town
-    if sys.argv[ 1 ].startswith( "search" ):
+    if ( sys.argv[ 1 ].startswith( "search" ) ):
         from xbmcweather import search
         search.TownSearch( addon=Addon, index=sys.argv[ 1 ][ 6 : ] ).get_town()
     # print properties

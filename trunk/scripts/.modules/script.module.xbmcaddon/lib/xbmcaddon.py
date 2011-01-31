@@ -4,6 +4,8 @@ __all__ = [ "Addon" ]
 __author__ = "nuka1195"
 
 import sys
+# set this here, hopefully sys.argv will be more accurate the faster we have it
+__sysargv = sys.argv
 import os
 import xbmc
 from xml.dom.minidom import parseString
@@ -35,10 +37,8 @@ class Addon:
         self._set_addon_info( xbmc.translatePath( cwd ), id )
 
     def _get_root_dir( self ):
-        # we need to reset sys.argv[ 0 ] to a plugin for weather plugins as they aren't run as plugins, but they are categorized as plugins
-        sys.argv[ 0 ] = xbmc.validatePath( sys.argv[ 0 ].replace( "Q:\\plugins\\weather\\", "plugin://weather/" ) )
-        # get current working directory
-        cwd = os.path.dirname( sys.argv[ 0 ] )
+        # get current working directory, we need to reset sys.argv[ 0 ] to a plugin for weather plugins as they aren't run as plugins, but they are categorized as plugins
+        cwd = os.path.dirname( xbmc.validatePath( __sysargv[ 0 ].replace( "Q:\\plugins\\weather\\", "plugin://weather/" ) ) )
         # check if we're at root folder of addon
         if ( not os.path.isfile( os.path.join( xbmc.translatePath( cwd ), "addon.xml" ) ) ):
             # we're not at root, assume resources/lib/
