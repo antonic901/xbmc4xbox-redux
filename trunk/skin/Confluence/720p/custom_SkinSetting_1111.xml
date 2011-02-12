@@ -13,7 +13,7 @@
 			<animation type="WindowClose" reversible="false">
 				<effect type="zoom" start="100" end="80" center="640,360" easing="in" tween="back" time="300" />
 				<effect type="fade" start="100" end="0" time="300" />
-			</animation>			
+			</animation>
 			<control type="image">
 				<posx>0</posx>
 				<posy>0</posy>
@@ -255,7 +255,6 @@
 						<onclick>Skin.ToggleSetting(WindowedTrailer)</onclick>
 						<selected>Skin.HasSetting(WindowedTrailer)</selected>
 					</control>
-					<!-- extra hiding options (flags, filename flags & kiosk mode) -->
 					<control type="radiobutton" id="113">
 						<width>750</width>
 						<height>40</height>
@@ -293,7 +292,19 @@
 						<onclick>Skin.ToggleSetting(kioskmode)</onclick>
 						<selected>Skin.HasSetting(kioskmode)</selected>
 					</control>
-					
+					<control type="radiobutton" id="116">
+						<description>QWERTY Keyboard Button</description>
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>31146</label>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.ToggleSetting(QWERTYKeys)</onclick>
+						<selected>Skin.HasSetting(QWERTYKeys)</selected>
+					</control>
 					<control type="label" id="104">
 						<width>750</width>
 						<height>45</height>
@@ -510,7 +521,7 @@
 						<texturefocus>MenuItemFO.png</texturefocus>
 						<texturenofocus>MenuItemNF.png</texturenofocus>
 					</control>
-<!-- home videos file mode -->					
+<!-- home videos file mode -->
 					<control type="radiobutton" id="220">
 						<description>Enable Videos file mode</description>
 						<width>750</width>
@@ -2213,7 +2224,6 @@
 			</control>
 <!-- END -->
 		</control>
-
 		<include>BehindDialogFadeOut</include>
 		<control type="image">
 			<posx>-820</posx>
