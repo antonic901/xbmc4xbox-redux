@@ -412,7 +412,7 @@ void CGUISettings::Initialize()
   AddBool(8, "videoplayer.soften", 215, false);
   AddFloat(9, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
   AddSeparator(11, "videoplayer.sep2");
-  AddInt(12, "videoplayer.defaultplayer", 22030, PLAYER_MPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
+  AddInt(12, "videoplayer.defaultplayer", 22030, PLAYER_DVDPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
   AddBool(13, "videoplayer.allcodecs", 22025, false);
   AddBool(14, "videoplayer.fast", 22026, false);
 
