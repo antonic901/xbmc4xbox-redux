@@ -443,14 +443,18 @@ int CDVDPlayerAudio::DecodeFrame(DVDAudioFrame &audioframe, bool bDropPacket)
     {
       m_speed = static_cast<CDVDMsgInt*>(pMsg)->m_value;
 
-      if (m_speed == DVD_PLAYSPEED_PAUSE)
+      if (m_speed == DVD_PLAYSPEED_NORMAL)
+      {
+        m_dvdAudio.Resume();
+      }
+      else
       {
         m_ptsOutput.Flush();
         m_syncclock = true;
+        if (m_speed != DVD_PLAYSPEED_PAUSE)
+          m_dvdAudio.Flush();
         m_dvdAudio.Pause();
       }
-      else
-        m_dvdAudio.Resume();
     }
     else if (pMsg->IsType(CDVDMsg::GENERAL_STREAMCHANGE))
     {
@@ -526,6 +530,12 @@ void CDVDPlayerAudio::Process()
     if (!m_dvdAudio.IsValidFormat(audioframe))
     {
       m_dvdAudio.Destroy();
+
+      if(m_speed)
+        m_dvdAudio.Resume();
+      else
+        m_dvdAudio.Pause();
+
       if(!m_dvdAudio.Create(audioframe, m_streaminfo.codec))
         CLog::Log(LOGERROR, "%s - failed to create audio renderer", __FUNCTION__);
     }
