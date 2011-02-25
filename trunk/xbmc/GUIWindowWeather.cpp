@@ -27,6 +27,7 @@
 #include "lib/libPython/XBPython.h"
 #include "GUIDialogOK.h"
 #include "xbox/network.h"
+#include "Application.h"
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3
@@ -209,10 +210,16 @@ void CGUIWindowWeather::CallPlugin()
   if (m_pluginTimer.IsRunning())
     m_pluginTimer.Stop();
 
-  if (g_guiSettings.GetString("weather.plugin").IsEmpty()) return;
+  if (g_guiSettings.GetString("weather.plugin").IsEmpty())
+    return;
   
   // No point in trying to fetch weather if we don't have a working network
-  if (!g_network.IsAvailable()) return;
+  if (!g_network.IsAvailable())
+    return;
+    
+  // Fetching weather while playing videos may cause OOM!
+  if (g_application.IsPlayingVideo())
+    return;
 
   // create the full path to the plugin
   CStdString plugin = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin") + "/default.py";
