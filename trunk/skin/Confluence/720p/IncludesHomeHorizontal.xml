@@ -880,15 +880,15 @@
 						<icon>special://skin/backgrounds/weather.jpg</icon>
 						<thumb>$INFO[Skin.String(Home_Custom_Back_Weather_Folder)]</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
-						<visible>!Skin.HasSetting(ShowWeatherFanart) | IsEmpty(Window(Weather).Property(Current.FanartPath))</visible>
+						<visible>!Skin.HasSetting(ShowWeatherFanart) | IsEmpty(Skin.String(WeatherFanartDir))</visible>
 					</item>
 					<item id="6">
 						<label>8</label>
 						<onclick>ActivateWindow(Weather)</onclick>
 						<icon>special://skin/backgrounds/weather.jpg</icon>
-						<thumb>$INFO[Window(Weather).Property(Current.FanartPath)]</thumb>
+						<thumb>$INFO[Skin.String(WeatherFanartDir)]$INFO[Weather.FanartCode]</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
-						<visible>Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Window(Weather).Property(Current.FanartPath))</visible>
+						<visible>Skin.HasSetting(ShowWeatherFanart) + !IsEmpty(Skin.String(WeatherFanartDir))</visible>
 					</item>
 					<item id="4">
 						<label>1</label>

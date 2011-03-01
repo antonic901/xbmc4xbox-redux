@@ -1033,6 +1033,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
   {
   case WEATHER_CONDITIONS:
     strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_COND);
+    strLabel = strLabel.Trim();
     break;
   case WEATHER_TEMPERATURE:
     strLabel.Format("%s%s", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_TEMP), g_langInfo.GetTempUnitString().c_str());
@@ -1041,7 +1042,8 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
     strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_LOCATION);
     break;
   case WEATHER_FANART_CODE:
-    strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_FANART_CODE);
+    strLabel = CUtil::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
+    CUtil::RemoveExtension(strLabel);
     break;
   case WEATHER_PLUGIN:
     strLabel = g_guiSettings.GetString("weather.plugin");
@@ -2646,9 +2648,7 @@ CStdString CGUIInfoManager::GetImage(int info, int contextWindow)
     return GetMultiInfoLabel(m_multiInfo[info - MULTI_INFO_START], contextWindow);
   }
   else if (info == WEATHER_CONDITIONS)
-  {
     return g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON);
-  }
   else if (info == SYSTEM_PROFILETHUMB)
   {
     CStdString thumb = g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].getThumb();

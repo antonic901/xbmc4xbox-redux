@@ -107,6 +107,20 @@
                         <visible>system.getbool(input.enablemouse)</visible>
                     </control-->
                     <control type="label">
+                        <description>weather location label</description>
+                        <posx>20</posx>
+                        <posy>60</posy>
+                        <width>460</width>
+                        <height>30</height>
+                        <font>font13_title</font>
+                        <textcolor>white</textcolor>
+                        <scroll>false</scroll>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Weather.Location]</label>
+                        <visible>false</visible>
+                    </control>
+                    <control type="label">
                         <description>header label</description>
                         <posx>300</posx>
                         <posy>20</posy>
@@ -166,6 +180,14 @@
                     <!-- views -->
                     <control type="group" id="3000">
                         <include>TWC.Current</include>
+                        <!--include>TWC.Tomorrow</include-->
+                        <include>TWC.36Hour</include>
+                        <include>TWC.Weekend</include>
+                        <include>TWC.Hourly</include>
+                        <include>TWC.Daily</include>
+                        <include>TWC.Maps</include>
+                        <include>TWC.Alerts</include>
+                        <include>TWC.Video</include>
                     </control>
                     <!-- The Extra Labels for the above buttons button -->
                     <control type="grouplist">
@@ -181,6 +203,14 @@
                         <ondown>2000</ondown>
                         <pagecontrol>-</pagecontrol>
                         <include>TWC.Current.ButtonXLabel</include>
+                        <!--include>TWC.Tomorrow.ButtonXLabel</include-->
+                        <include>TWC.36Hour.ButtonXLabel</include>
+                        <include>TWC.Weekend.ButtonXLabel</include>
+                        <include>TWC.Hourly.ButtonXLabel</include>
+                        <include>TWC.10Day.ButtonXLabel</include>
+                        <include>TWC.Maps.ButtonXLabel</include>
+                        <include>TWC.Alerts.ButtonXLabel</include>
+                        <include>TWC.Video.ButtonXLabel</include>
                     </control>
                     <!-- Main Menu Buttons -->
                     <control type="grouplist" id="2000">
@@ -196,6 +226,14 @@
                         <ondown>2000</ondown>
                         <pagecontrol>-</pagecontrol>
                         <include>TWC.Current.Button</include>
+                        <!--include>TWC.Tomorrow.Button</include-->
+                        <include>TWC.36Hour.Button</include>
+                        <include>TWC.Weekend.Button</include>
+                        <include>TWC.Hourly.Button</include>
+                        <include>TWC.10Day.Button</include>
+                        <include>TWC.Maps.Button</include>
+                        <include>TWC.Alerts.Button</include>
+                        <include>TWC.Video.Button</include>
                     </control>
                 </control>
             </control>
@@ -265,6 +303,7 @@
                         <visible>!StringCompare(Window.Property(Weather.CurrentView),Skin.String(TWC.DefaultView))</visible>
                     </control>
                     <!-- dummy buttons for defaultmap -->
+                    <include>TWC.Maps.DummyButtons</include>
                     <control type="grouplist" id="9010"><!-- misc options slide -->
                         <posx>10</posx>
                         <posy>250</posy>
@@ -293,6 +332,12 @@
                             <enable>!StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31907] - $LOCALIZE[31914]) + !StringCompare(Window.Property(Weather.CurrentView),$LOCALIZE[31906] - $LOCALIZE[31913])</enable>
                         </control>
                         <include>TWC.Current.SettingsButtons</include>
+                        <include>TWC.36Hour.SettingsButtons</include>
+                        <!--include>TWC.Hourly.SettingsButtons</include-->
+                        <include>TWC.Maps.SettingsButtons</include>
+                        <include>TWC.Weekend.SettingsButtons</include>
+                        <include>TWC.10Day.SettingsButtons</include>
+                        <!--include>TWC.Alerts.SettingsButtons</include-->
                         <control type="label" id="90220">
                             <width>220</width>
                             <height>45</height>

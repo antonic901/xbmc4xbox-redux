@@ -208,7 +208,7 @@
             <!-- current weather -->
             <control type="group">
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <visible>Weather.IsFetched</visible>
+                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
                 <control type="group">
                     <posx>-30</posx>
                     <posy>-20</posy>
@@ -465,7 +465,7 @@
                 <itemgap>0</itemgap>
                 <orientation>horizontal</orientation>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <visible>Weather.IsFetched</visible>
+                <visible>IsTrue(Window.Property(Weather.IsFetched))</visible>
                 <control type="group">
                     <width>168</width>
                     <control type="image">
@@ -496,7 +496,7 @@
                     </control>
                     <!-- Day forecast -->
                     <control type="group">
-                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight) + !StringCompare(Window.Property(Day0.HighTemp),n/a)</visible>
+                        <visible>!Skin.HasSetting(TWC.ShowCurrentNight) + !StringCompare(Window.Property(Day0.HighTemperature),n/a)</visible>
                         <control type="label">
                             <description>Day label</description>
                             <include>TWC.Current.5DayCommon</include>
@@ -511,16 +511,16 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day0.HighTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day0.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemp),9) + !IntegerGreaterThan(Window.Property(Day0.HighTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemp),-10) + !IntegerGreaterThan(Window.Property(Day0.HighTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemp),-10)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.HighTemperature),-10)">Conditional</animation>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -562,7 +562,7 @@
                     </control>
                     <!-- Night forecast -->
                     <control type="group">
-                        <visible>Skin.HasSetting(TWC.ShowCurrentNight) | StringCompare(Window.Property(Day0.HighTemp),n/a)</visible>
+                        <visible>Skin.HasSetting(TWC.ShowCurrentNight) | StringCompare(Window.Property(Day0.HighTemperature),n/a)</visible>
                         <control type="label">
                             <description>Day label</description>
                             <include>TWC.Current.5DayCommon</include>
@@ -577,17 +577,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day0.LowTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day0.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemp),9) + !IntegerGreaterThan(Window.Property(Day0.LowTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemp),-10) + !IntegerGreaterThan(Window.Property(Day0.LowTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day0.LowTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day0.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day0.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day0.LowTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -673,17 +673,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day1.HighTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day1.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemp),9) + !IntegerGreaterThan(Window.Property(Day1.HighTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemp),-10) + !IntegerGreaterThan(Window.Property(Day1.HighTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day1.HighTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day1.HighTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -739,17 +739,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day1.LowTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day1.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemp),9) + !IntegerGreaterThan(Window.Property(Day1.LowTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemp),-10) + !IntegerGreaterThan(Window.Property(Day1.LowTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day1.LowTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day1.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day1.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day1.LowTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -835,17 +835,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day2.HighTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day2.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemp),9) + !IntegerGreaterThan(Window.Property(Day2.HighTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemp),-10) + !IntegerGreaterThan(Window.Property(Day2.HighTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day2.HighTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day2.HighTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -901,17 +901,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day2.LowTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day2.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemp),9) + !IntegerGreaterThan(Window.Property(Day2.LowTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemp),-10) + !IntegerGreaterThan(Window.Property(Day2.LowTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day2.LowTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day2.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day2.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day2.LowTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -997,17 +997,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day3.HighTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day3.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemp),9) + !IntegerGreaterThan(Window.Property(Day3.HighTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemp),-10) + !IntegerGreaterThan(Window.Property(Day3.HighTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day3.HighTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day3.HighTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -1063,17 +1063,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day3.LowTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day3.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemp),9) + !IntegerGreaterThan(Window.Property(Day3.LowTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemp),-10) + !IntegerGreaterThan(Window.Property(Day3.LowTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day3.LowTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day3.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day3.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day3.LowTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -1159,17 +1159,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day4.HighTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day4.HighTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemp),9) + !IntegerGreaterThan(Window.Property(Day4.HighTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemp),-10) + !IntegerGreaterThan(Window.Property(Day4.HighTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemp),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day4.HighTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),9) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-10) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.HighTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.HighTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day4.HighTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">
@@ -1225,17 +1225,17 @@
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempCommon</include>
-                            <label>$INFO[Window.Property(Day4.LowTemp)]</label>
-                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemp),-1)">Conditional</animation>
+                            <label>$INFO[Window.Property(Day4.LowTemperature)]</label>
+                            <animation effect="slide" start="0,0" end="-7,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),-1)">Conditional</animation>
                         </control>
                         <control type="label">
                             <description>High Temp label</description>
                             <include>TWC.Current.5DayHighTempUnitsCommon</include>
                             <info>System.TemperatureUnits</info>
-                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemp),9) + !IntegerGreaterThan(Window.Property(Day4.LowTemp),99)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemp),-10) + !IntegerGreaterThan(Window.Property(Day4.LowTemp),9)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemp),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemp),-10)">Conditional</animation>
-                            <visible>!StringCompare(Window.Property(Day4.LowTemp),n/a)</visible>
+                            <animation effect="slide" start="0,0" end="-10,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),9) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),99)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-21,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-10) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),9)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="-12,0" time="0" condition="IntegerGreaterThan(Window.Property(Day4.LowTemperature),-100) + !IntegerGreaterThan(Window.Property(Day4.LowTemperature),-10)">Conditional</animation>
+                            <visible>!StringCompare(Window.Property(Day4.LowTemperature),n/a)</visible>
                         </control>
                         <include>TWC.Current.5DayPrecipLabel</include>
                         <control type="label">

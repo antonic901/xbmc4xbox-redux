@@ -50,7 +50,7 @@
     </include>
     <include name="TWC.LoadingLabel">
         <label>$LOCALIZE[410]</label>
-        <visible>!Weather.IsFetched + !StringCompare(Window.Property(Weather.IsFetched),error)</visible>
+        <visible>!IsTrue(Window.Property(Weather.IsFetched)) + !StringCompare(Window.Property(Weather.IsFetched),error)</visible>
         <include>TWC.LoadingLabelCommon</include>
     </include>
     <include name="TWC.LoadingFailedLabel">

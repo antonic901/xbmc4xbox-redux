@@ -191,45 +191,4 @@
   <string id="31408">[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Enable/Configure Video mode Switching · Choose your Trainers folder · Set a Custom Dashboard path</string> 
 
   <string id="31421">Select your XBMC user Profile[CR]to login and continue</string>
-
-    <!-- Weather plugin -->
-    <string id="31900">MAPS</string>
-    <string id="31901">36-HOUR</string>
-    <string id="31902">HOURLY</string>
-    <string id="31903">WEEKEND</string>
-    <string id="31904">10 DAY</string>
-    <string id="31905">CURRENT</string>
-    <string id="31906">ALERTS</string>
-    <string id="31907">VIDEO</string>
-
-    <string id="31910">Satellite &amp; Radar</string>
-    <string id="31911">Forecast</string>
-    <string id="31912">Conditions</string>
-    <string id="31913">Severe Weather</string>
-    <string id="31914">Weather Outlook</string>
-
-    <string id="31923">Average High</string>
-    <string id="31924">Average Low</string>
-    <string id="31925">Record High</string>
-    <string id="31926">Record Low</string>
-    <string id="31927">Observed High</string>
-    <string id="31928">Observed Low</string>
-
-    <string id="31930">Default View</string>
-    <string id="31931">Default Map</string>
-    <string id="31932">Zoom Map</string>
-    <string id="31933">Map Pack Path</string>
-    <string id="31934">Show Details</string>
-    <string id="31935">Show RSS</string>
-    <string id="31936">Show Hourly</string>
-    <string id="31937">Show Night</string>
-
-    <string id="31940">Pressure</string>
-    <string id="31941">Visibility</string>
-    <string id="31943">Statistics</string>
-    <string id="31948">Chance Precip</string>
-
-    <string id="31970">Fetching forecast info...</string>
-    <string id="31971">Fetching video urls and thumbs...</string>
-
 </strings>

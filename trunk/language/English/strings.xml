@@ -54,33 +54,6 @@
   <string id="61">Nov</string>
   <string id="62">Dec</string>
 
-  <string id="71">N</string>
-  <string id="72">NNE</string>
-  <string id="73">NE</string>
-  <string id="74">ENE</string>
-  <string id="75">E</string>
-  <string id="76">ESE</string>
-  <string id="77">SE</string>
-  <string id="78">SSE</string>
-  <string id="79">S</string>
-  <string id="80">SSW</string>
-  <string id="81">SW</string>
-  <string id="82">WSW</string>
-  <string id="83">W</string>
-  <string id="84">WNW</string>
-  <string id="85">NW</string>
-  <string id="86">NNW</string>
-  <string id="87">VAR</string>
-  <string id="88">North</string>
-  <string id="89">Northeast</string>
-  <string id="90">East</string>
-  <string id="91">Southeast</string>
-  <string id="92">South</string>
-  <string id="93">Southwest</string>
-  <string id="94">West</string>
-  <string id="95">Northwest</string>
-  <string id="96">Variable</string>
-
   <string id="98">View: Auto</string>
   <string id="99">View: Auto big</string>
   <string id="100">View: Icons</string>
@@ -410,10 +383,9 @@
   <string id="431">No cache</string>
   <string id="432">Remove movie from library</string>
   <string id="433">Really remove '%s'?</string>
-  <string id="434">From %s at %i %s</string> <!--From <wind dir.> at <speed> <unit>-->
-  <string id="435">From the %s at %i %s</string> <!--From the <wind dir.> at <speed> <unit>-->
-  <string id="436">Gust to %i %s</string> <!--Gust to <speed> <unit>-->
-
+  <string id="434"></string>
+  <string id="435"></string>
+  <string id="436"></string>
   <string id="437">Removable disk</string>
   <string id="438">Opening file</string>
   <string id="439">Cache</string>
@@ -854,23 +826,6 @@
   <string id="1417">Grains</string>
   <string id="1418">T-Storms</string>
   <string id="1419">T-Showers</string>
-  <string id="1420">Moderate</string>
-  <string id="1421">Very High</string>
-  <string id="1422">Windy</string>
-  <string id="1423">Mist</string>
-  <string id="1424">Blowing</string>
-  <string id="1425">Clearing</string>
-
-  <string id="1440">Moon</string>
-  <string id="1441">Waning</string>
-  <string id="1442">Waxing</string>
-  <string id="1443">Full</string>
-  <string id="1444">New</string>
-  <string id="1445">First</string>
-  <string id="1446">Last</string>
-  <string id="1447">Quarter</string>
-  <string id="1448">Crescent</string>
-  <string id="1449">Gibbous</string>
 
   <!-- strings through to 1450 reserved for weather translation -->
 
@@ -2104,7 +2059,6 @@
   <string id="21448">Subtitle language</string>
   <string id="21449">Remote control sends keyboard presses</string>
   <string id="21450">- Edit</string>
-  <string id="21451">Internet connection required.</string>
 
   <string id="21800">File name</string>
   <string id="21801">File path</string>
@@ -2251,16 +2205,6 @@
   <string id="23105"></string>
   <string id="23106"></string>
 
-  <!-- strings 24000 thru 24299 reserved for the Add-ons framework -->
-  <string id="24000">Add-on</string>
-
-  <string id="24020">Configure</string>
-  <string id="24021">Disable</string>
-  <string id="24022">Enable</string>
-  <string id="24023">Add-on disabled</string>
-
-  <string id="24030">This Add-on can not be configured</string>
-
   <!-- strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code -->
   <string id="29800">Library Mode</string>
   <string id="29801">QWERTY keyboard</string>
@@ -2344,15 +2288,6 @@
   <string id="33081">This file is stacked, select the part you want to play from.</string>
   <string id="33082">Path to script</string>
   <string id="33083">Enable custom script button</string>
-  <string id="33084">Night</string>
-  <string id="33085">Pressure</string>
-  <string id="33086">Visibility</string>
-  <string id="33087">Coordinates</string>
-
-  <string id="33200">mile</string>
-  <string id="33201">miles</string>
-  <string id="33202">kilometer</string>
-  <string id="33203">kilometers</string>
 
   <string id="34005">Flac</string>
 </strings>

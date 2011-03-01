@@ -1,5 +1,5 @@
 <window id="10140">
-	<defaultcontrol always="true">9</defaultcontrol>
+	<defaultcontrol always="true">2</defaultcontrol>
 	<coordinates>
 		<system>1</system>
 		<posx>160</posx>
@@ -50,7 +50,7 @@
 		<control type="label" id="20">
 			<description>header label</description>
 			<posx>300</posx>
-			<posy>20</posy>
+			<posy>30</posy>
 			<width>640</width>
 			<height>30</height>
 			<font>font16caps</font>
@@ -241,3 +241,5 @@
 		</control>
 	</controls>
 </window>
+
+ 	  	 
