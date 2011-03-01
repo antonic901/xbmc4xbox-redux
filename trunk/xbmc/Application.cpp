@@ -1207,7 +1207,6 @@ HRESULT CApplication::Initialize()
   CreateDirectory("Q:\\plugins\\video", NULL);
   CreateDirectory("Q:\\plugins\\pictures", NULL);
   CreateDirectory("Q:\\plugins\\programs", NULL);
-  CreateDirectory("Q:\\plugins\\weather", NULL);
   CreateDirectory("Q:\\language", NULL);
   CreateDirectory("Q:\\visualisations", NULL);
   CreateDirectory("Q:\\sounds", NULL);
