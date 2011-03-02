@@ -428,7 +428,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
   //Lock here, we will do stuff that could break rendering
   CSingleLock lock(g_graphicsContext);
 
-  LPDIRECT3DTEXTURE8 pTexture;
+  LPDIRECT3DTEXTURE8 pTexture = NULL;
   LPDIRECT3DPALETTE8 pPal = 0;
 
 #ifdef _DEBUG
@@ -559,7 +559,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     m_vecTextures.push_back(pMap);
     return 1;
   } // of if (strPath.Right(4).ToLower()==".gif")
-
+  
   if (bundle >= 0)
   {
     if (FAILED(m_TexBundle[bundle].LoadTexture(g_graphicsContext.Get3DDevice(), strTextureName, &info, &pTexture, &pPal)))
@@ -575,21 +575,49 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     CStdString texturePath;
     g_charsetConverter.utf8ToStringCharset(strPath, texturePath);
 
-    if ( D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+    HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
                                      D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
-                                     D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture) != D3D_OK)
-    {
-      if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
-        CLog::Log(LOGERROR, "Texture manager unable to load file: %s", strPath.c_str());
-      return 0;
+                                     D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
+    
+    int checkWidth = 0;
+    int checkHeight = 0;
 
+    if ( (int) info.Width > g_graphicsContext.GetWidth() )
+      checkWidth = g_graphicsContext.GetWidth();
+
+    if ( (int) info.Height > g_graphicsContext.GetHeight() )
+      checkHeight = g_graphicsContext.GetHeight();
+      
+    if (result == D3DERR_OUTOFVIDEOMEMORY || result == E_OUTOFMEMORY || checkWidth != 0 || checkHeight != 0 )
+    {
+      // HACK!: If the picture/texture turns out to be too large or fails to load (due to eg. out-of-memory)
+      //        try to load with a resolution equal to our screen
+      CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) exceeds screen resolution (%i x %i)! Reloading resized!", __FUNCTION__, strPath.c_str(), info.Width, info.Height, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight() );
+
+      if (pTexture)
+      {
+        pTexture->Release();
+        pTexture = NULL;
+      }
+      
+      result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+                                       checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
+                                       D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
+    }
+    
+    if (result != D3D_OK)
+    {
+//      if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
+        CLog::Log(LOGERROR, "%s - Texture manager unable to load file: %s", __FUNCTION__, strPath.c_str());
+      return 0;
     }
   }
 
   CTextureMap* pMap = new CTextureMap(strTextureName, info.Width, info.Height, 0, pPal, bundle >= 0);
+  
   pMap->Add(pTexture, 100);
   m_vecTextures.push_back(pMap);
-
+  
 #ifdef _DEBUG
   LARGE_INTEGER end, freq;
   QueryPerformanceCounter(&end);
