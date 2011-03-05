@@ -1665,6 +1665,12 @@
 					RelativePath="..\..\xbmc\DateTime.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\DDSImage.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\DDSImage.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\utils\DelayController.cpp">
 				</File>
 				<File
@@ -2396,9 +2402,6 @@
 					RelativePath="..\..\xbmc\FileSystem\FileLastFM.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\FileMMS.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\FileMMS.h">
 				</File>
 				<File
@@ -2562,12 +2565,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\RSSDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\ShoutcastDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\ShoutcastRipFile.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\SmartPlaylistDirectory.cpp">
