@@ -1923,6 +1923,9 @@
 					RelativePath="..\..\xbmc\XBAudioConfig.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\XBTF.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\XBTimeZone.cpp">
 				</File>
 				<File
