@@ -583,17 +583,17 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     int checkHeight = 0;
 
     // Don't allow anything bigger than 720p on Xbox because of the limited amount of memory
-    if ( (int) info.Width > 1280 )
+    if ( info.Width > 1280 )
       checkWidth = 1280;
 
-    if ( (int) info.Height > 720 )
+    if ( info.Height > 720 )
       checkHeight = 720;
       
     if (result == D3DERR_OUTOFVIDEOMEMORY || result == E_OUTOFMEMORY || checkWidth != 0 || checkHeight != 0 )
     {
       // HACK!: If the picture/texture turns out to be too large or fails to load (due to eg. out-of-memory)
       //        try to load with a resolution equal to our screen
-      CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) exceeds screen resolution (%i x %i)! Reloading resized!", __FUNCTION__, strPath.c_str(), info.Width, info.Height, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight() );
+      CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) is too big! Reloading resized", __FUNCTION__, strPath.c_str(), info.Width, info.Height );
 
       if (pTexture)
       {
