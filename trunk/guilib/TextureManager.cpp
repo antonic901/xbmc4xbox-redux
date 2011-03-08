@@ -582,11 +582,12 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     int checkWidth = 0;
     int checkHeight = 0;
 
-    if ( (int) info.Width > g_graphicsContext.GetWidth() )
-      checkWidth = g_graphicsContext.GetWidth();
+    // Don't allow anything bigger than 720p on Xbox because of the limited amount of memory
+    if ( (int) info.Width > 1280 )
+      checkWidth = 1280;
 
-    if ( (int) info.Height > g_graphicsContext.GetHeight() )
-      checkHeight = g_graphicsContext.GetHeight();
+    if ( (int) info.Height > 720 )
+      checkHeight = 720;
       
     if (result == D3DERR_OUTOFVIDEOMEMORY || result == E_OUTOFMEMORY || checkWidth != 0 || checkHeight != 0 )
     {
