@@ -176,6 +176,7 @@ bool CDAVDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
   dav.SetCustomRequest(strRequest);
   dav.SetMimeType("text/xml; charset=\"utf-8\"");
+  dav.SetRequestHeader("content-type", "text/xml");
   dav.SetRequestHeader("depth", 1);
   dav.SetPostData(
     "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
