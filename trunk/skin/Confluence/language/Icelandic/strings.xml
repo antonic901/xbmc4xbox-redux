@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Translator: Kristján Bjarni Guðmundsson-->
 <!--Email: kristjanbjarni@gmail.com-->
-<!--Date of translation: 2010-11-18-->
+<!--Date of translation: 2011-03-18-->
 <!--$Revision$-->
-<!--Based on english strings version 30677-->
+<!--Based on english strings version 30820-->
 <strings>
   <!-- Misc labels -->
   <string id="31000">Breyta -</string>
@@ -23,7 +23,7 @@
   <string id="31025">Hlutir</string>
   <string id="31026">Ýmsir valkostir</string>
   <string id="31027">Staðsetning</string>
- 
+
   <!-- View Type labels -->
   <string id="31028">Veggspjaldafletting</string>
   <string id="31029">Aðdáendamyndir</string>
@@ -46,7 +46,6 @@
   <string id="31048">Forstillingar myndskreytinga</string>
   <string id="31049">Lokatími</string>
 
-
   <!-- Playlist Editor labels -->
   <string id="31055">Opna lagalista</string>
   <string id="31056">Vista lagalista</string>
@@ -55,7 +54,7 @@
   <string id="31059">Núgildandi lagalisti</string>
   <string id="31060">Þessi skrá er stöfluð, veldu þann part sem þú vilt byrja að spila frá.</string>
   <string id="31061">Núverandi val</string>
-  
+
   <!-- Skin Settings labels -->
   <string id="31100"/>
   <string id="31101">Stillingar heimaskjás</string>
@@ -89,21 +88,21 @@
   <string id="31129">Virkja niðurhal á þýðingartexta í myndbandaskjá</string>
   <string id="31130">SLÓÐ Á ÞÝÐINGARTEXTA SKRIFTU</string>
   <string id="31131">Nota lárétta heimavalmynd</string>
-  
+
   <string id="31132">SLÓÐ Á MYNDBANDALISTA</string>
   <string id="31133">Virkja sérsniðin myndbandahnapp</string>
   <string id="31134">Virkja sérsniðin kvikmyndahnapp</string>
   <string id="31135">Virkja sérsniðin sjónvarpsþáttahnapp</string>
- 
+
   <string id="31137">Virkja sérsniðin viðbótarhnapp</string>
   <string id="31138">PLUGIN "TYPE/FOLDER" [COLOR=grey3](t.d. Forrit/SVN Repo uppsetning)[/COLOR]</string>
   <string id="31139">PLUGIN "WINDOW" [COLOR=grey3](1=Forrit 2=Ljósmyndir 24=Myndbönd 501=Tónlist 2600=Veður)[/COLOR]</string>
-  
-  <string id="31140">Tónlistarskjár</string>
-  <string id="31141">Myndbandaskjár</string>
+
+  <string id="31140">Tónlist</string>
+  <string id="31141">Myndefni</string>
   
   <string id="31145">Virkja upplýsingastand [COLOR=grey3](Slökkva á hliðarvalmynd)[/COLOR]</string>
-  
+  <string id="31146">Nota QWERTY lyklaborð</string>
   <string id="31147">Fela miðlaraflögg</string>
 
   <!-- Script labels -->
@@ -124,7 +123,12 @@
   <string id="31161">Myndbandaupplýsingar</string>
   <string id="31162">Virkja kvikmyndahús í myndbandaupplýsingum [COLOR=grey3](Slökkva á sýnishornahnappi)[/COLOR]</string>
   <string id="31163">SLÓÐ Á KVIKMYNDAHÚS SKRIFTU</string>
-  
+
+  <!-- TVShow tunes Script labels -->
+  <string id="31165">Myndbandasafn - Sjónvarpsþættir</string>
+  <string id="31166">Virkja stef í myndbandasafni [COLOR=grey3](Þarfnasttheme.mp3 í sjónvarpsþátta möppu)[/COLOR]</string>
+  <string id="31167">SLÓÐ Á SKRIFTU FYRIR SJÓNVARPSÞÁTTASTEF</string>
+
   <!-- Extra labels -->
   <string id="31300">Núverandi hiti</string>
   <string id="31301">Síðast uppfært</string>
@@ -157,7 +161,7 @@
   <string id="31328">Nýlega bætt við</string>
   <string id="31329">[B]Tímamælir virkur![/B] [COLOR=grey2] - Slökkt sjálfvirkt eftir[/COLOR]</string>
   <string id="31330">Smelltu á takka til að spila[CR][CR]Kvikmyndasýnishorn</string>
-  
+
   <string id="31331"/>
   <string id="31332"/>
 
@@ -165,7 +169,7 @@
   <string id="31334">Ýttu á upp til að sýna upplýsingar</string>
   <string id="31335">Virkja skráarham</string>
   <string id="31336">Forrit</string>
- 
+
   <string id="31341">Tölvuhermar</string>
   <string id="31342">Forrit</string>
   <string id="31343">Heimatilbúin</string>
