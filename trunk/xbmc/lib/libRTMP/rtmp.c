@@ -877,7 +877,13 @@ RTMP_Connect1(RTMP *r, RTMPPacket *cp)
       r->m_clientID.av_val = NULL;
       r->m_clientID.av_len = 0;
       HTTP_Post(r, RTMPT_OPEN, "", 1);
-      HTTP_read(r, 1);
+      if (HTTP_read(r, 1) != 0)
+	{
+	  r->m_msgCounter = 0;
+	  RTMP_Log(RTMP_LOGDEBUG, "%s, Could not connect for handshake", __FUNCTION__);
+	  RTMP_Close(r);
+	  return 0;
+	}
       r->m_msgCounter = 0;
     }
   RTMP_Log(RTMP_LOGDEBUG, "%s, ... connected, handshaking", __FUNCTION__);
@@ -1284,7 +1290,12 @@ ReadN(RTMP *r, char *buffer, int n)
 		      return 0;
 		    }
 		}
-	      HTTP_read(r, 0);
+	      if (HTTP_read(r, 0) == -1)
+		{
+		  RTMP_Log(RTMP_LOGDEBUG, "%s, No valid HTTP response found", __FUNCTION__);
+		  RTMP_Close(r);
+		  return 0;
+		}
 	    }
 	  if (r->m_resplen && !r->m_sb.sb_size)
 	    RTMPSockBuf_Fill(&r->m_sb);
@@ -3395,10 +3406,10 @@ RTMP_Close(RTMP *r)
     {
       if (r->m_stream_id > 0)
         {
-          if ((r->Link.protocol & RTMP_FEATURE_WRITE))
-	    SendFCUnpublish(r);
 	  i = r->m_stream_id;
 	  r->m_stream_id = 0;
+          if ((r->Link.protocol & RTMP_FEATURE_WRITE))
+	    SendFCUnpublish(r);
 	  SendDeleteStream(r, i);
 	}
       if (r->m_clientID.av_val)
@@ -3670,7 +3681,7 @@ HTTP_read(RTMP *r, int fill)
   if (fill)
     RTMPSockBuf_Fill(&r->m_sb);
   if (r->m_sb.sb_size < 144)
-    return -1;
+    return -2;
   if (strncmp(r->m_sb.sb_start, "HTTP/1.1 200 ", 13))
     return -1;
   ptr = r->m_sb.sb_start + sizeof("HTTP/1.1 200");
@@ -4083,7 +4094,7 @@ Read_1_Packet(RTMP *r, char *buf, unsigned int buflen)
 	  /* grab first timestamp and see if it needs fixing */
 	  nTimeStamp = AMF_DecodeInt24(packetBody + 4);
 	  nTimeStamp |= (packetBody[7] << 24);
-	  delta = packet.m_nTimeStamp - nTimeStamp;
+	  delta = packet.m_nTimeStamp - nTimeStamp + r->m_read.nResumeTS;
 
 	  while (pos + 11 < nPacketLen)
 	    {
