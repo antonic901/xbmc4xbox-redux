@@ -2391,6 +2391,9 @@ bool CDVDPlayer::OpenAudioStream(int iStream, int source)
   m_CurrentAudio.stream = (void*)pStream;
   m_CurrentAudio.started = false;
 
+  /* we are potentially going to be waiting on this */
+  m_dvdPlayerAudio.SendMessage(new CDVDMsg(CDVDMsg::PLAYER_STARTED), 1);
+
   /* audio normally won't consume full cpu, so let it have prio */
 //  m_dvdPlayerAudio.SetPriority(GetThreadPriority(*this)+1);
   m_dvdPlayerAudio.SetPriority(GetThreadPriority(*this));
@@ -2442,6 +2445,9 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
   m_CurrentVideo.hint = hint;
   m_CurrentVideo.stream = (void*)pStream;
   m_CurrentVideo.started = false;
+
+  /* we are potentially going to be waiting on this */
+  m_dvdPlayerVideo.SendMessage(new CDVDMsg(CDVDMsg::PLAYER_STARTED), 1);
 
   /* use same priority for video thread as demuxing thread, as */
   /* otherwise demuxer will starve if video consumes the full cpu */
