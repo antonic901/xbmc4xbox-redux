@@ -66,16 +66,20 @@ private:
   void FreeSections();
   void CreateControls();
   void FreeControls();
+  void UpdateFromControls();
+  void EnableControls();
   void SetDefaults();
-  void SetEnabledProperty(const CStdString &id);
+  bool GetCondition(const CStdString &condition, const int controlId);
 
   void SaveSettings(void);
   bool ShowVirtualKeyboard(int iControl);
+  bool TranslateSingleString(const CStdString &strCondition, std::vector<CStdString> &enableVec);
 
   const TiXmlElement *GetFirstSetting();
 
   CBasicSettings m_addon;
   CStdString m_strHeading;
+  std::map<CStdString,CStdString> m_buttonValues;
   CStdString m_closeAction;
   CStdString m_profile;
   bool m_changed;
@@ -85,7 +89,6 @@ private:
   unsigned int m_totalSections;
 
   CStdString NormalizePath(const char *value) const;
-  void SetSliderTextValue(const CGUIControl *control, const char *format);
 
   std::map<CStdString,CStdString> m_settings; // local storage of values
   static CURL m_url;
