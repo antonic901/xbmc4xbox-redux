@@ -37,6 +37,7 @@
 #include "FileMemUnit.h"
 #include "FileDAAP.h"
 #endif
+#include "FileMMS.h"
 #include "FileZip.h"
 #include "FileRar.h"
 #include "FileMusicDatabase.h"
@@ -94,6 +95,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     ||  strProtocol == "ftpx"
     ||  strProtocol == "ftps"
     ||  strProtocol == "rss") return new CFileCurl();
+    else if (strProtocol == "mms") return new CFileMMS();
     else if (strProtocol == "shout") return new CFileShoutcast();
     else if (strProtocol == "lastfm") return new CFileLastFM();
     else if (strProtocol == "tuxbox") return new CFileTuxBox();
