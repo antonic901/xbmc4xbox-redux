@@ -858,7 +858,7 @@ void CDVDPlayer::Process()
   SetCaching(CACHESTATE_INIT);
 
 #ifdef _XBOX
-  // Have things settle else may get A/V desync issues
+  // Let things settle else we may get A/V desync issues
   Sleep(1500);
 #endif
 
