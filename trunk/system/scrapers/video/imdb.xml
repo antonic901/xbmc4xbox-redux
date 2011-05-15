@@ -53,7 +53,7 @@
 	<GetSearchResults dest="8">
 		<RegExp input="$$5" output="&lt;?xml version=&quot;1.0&quot; encoding=&quot;iso-8859-1&quot; standalone=&quot;yes&quot;?&gt;&lt;results&gt;\1&lt;/results&gt;" dest="8">
 			<RegExp input="$$1" output="\1" dest="7">
-				<expression clear="yes" noclean="1">/title/([t0-9]*)/faq</expression>
+				<expression clear="yes" noclean="1">og:url&quot; content=&quot;.+?/title/([t0-9]*)/</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\1&lt;/title&gt;&lt;year&gt;\2&lt;/year&gt;&lt;url&gt;http://akas.imdb.com/title/$$7/&lt;/url&gt;&lt;id&gt;$$7&lt;/id&gt;&lt;/entity&gt;" dest="5">
 				<expression  clear="yes" noclean="1">&lt;meta name="title" content="([^"]*) \([^\)0-9]*([0-9]+)\)</expression>
