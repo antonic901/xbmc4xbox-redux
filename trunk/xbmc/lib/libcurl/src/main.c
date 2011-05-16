@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -474,6 +474,7 @@ struct Configurable {
   char *cookiefile; /* read from this file */
   bool cookiesession; /* new session? */
   bool encoding;    /* Accept-Encoding please */
+  bool tr_encoding; /* Transfer-Encoding please */
   long authtype;    /* auth bitmask */
   bool use_resume;
   bool resume_from_current;
@@ -503,6 +504,9 @@ struct Configurable {
   long low_speed_time;
   bool showerror;
   char *userpwd;
+  char *tls_username;
+  char *tls_password;
+  char *tls_authtype;
   char *proxyuserpwd;
   char *proxy;
   int proxyver;     /* set to CURLPROXY_HTTP* define */
@@ -524,6 +528,7 @@ struct Configurable {
                               changed */
   bool netrc_opt;
   bool netrc;
+  char *netrc_file;
   bool noprogress;
   bool isatty;             /* updated internally only if the output is a tty */
   struct getout *url_list; /* point to the first node */
@@ -621,7 +626,7 @@ struct Configurable {
   long alivetime;
   bool content_disposition; /* use Content-disposition filename */
 
-  int default_node_flags; /* default flags to seach for each 'node', which is
+  int default_node_flags; /* default flags to search for each 'node', which is
                              basically each given URL to transfer */
   struct OutStruct *outs;
   bool xattr; /* store metadata in extended attributes */
@@ -839,6 +844,7 @@ static void help(void)
     "    --negotiate     Use HTTP Negotiate Authentication (H)",
     " -n/--netrc         Must read .netrc for user name and password",
     "    --netrc-optional Use either .netrc or URL; overrides -n",
+    "    --netrc-file <file> Set up the netrc filename to use",
     " -N/--no-buffer     Disable buffering of the output stream",
     "    --no-keepalive  Disable keepalive use on the connection",
     "    --no-sessionid  Disable SSL session-ID reusing (SSL)",
@@ -899,10 +905,14 @@ static void help(void)
     "    --trace <file>  Write a debug trace to the given file",
     "    --trace-ascii <file> Like --trace but without the hex output",
     "    --trace-time    Add time stamps to trace/verbose output",
+    "    --tr-encoding   Request compressed transfer encoding (H)",
     " -T/--upload-file <file> Transfer <file> to remote site",
     "    --url <URL>     Set URL to work with",
     " -B/--use-ascii     Use ASCII/text transfer",
     " -u/--user <user[:password]> Set server user and password",
+    "    --tlsuser     <user> Set TLS username",
+    "    --tlspassword <string> Set TLS password",
+    "    --tlsauthtype <string> Set TLS authentication type (default SRP)",
     " -A/--user-agent <string> User-Agent to send to server (H)",
     " -v/--verbose       Make the operation more talkative",
     " -V/--version       Show version number and quit",
@@ -1759,6 +1769,10 @@ static int sockoptcallback(void *clientp, curl_socket_t curlfd,
           return 0;
         }
 #endif
+#if !defined(TCP_KEEPIDLE) || !defined(TCP_KEEPINTVL)
+        warnf(clientp, "Keep-alive functionality somewhat crippled due to "
+              "missing support in your operating system!\n");
+#endif
       }
     }
     break;
@@ -1811,7 +1825,8 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
     {"*g", "trace",      TRUE},
     {"*h", "trace-ascii", TRUE},
     {"*i", "limit-rate", TRUE},
-    {"*j", "compressed",  FALSE}, /* might take an arg someday */
+    {"*j", "compressed",  FALSE},
+    {"*J", "tr-encoding",  FALSE},
     {"*k", "digest",     FALSE},
     {"*l", "negotiate",  FALSE},
     {"*m", "ntlm",       FALSE},
@@ -1916,6 +1931,9 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
     {"Eh","pubkey",      TRUE},
     {"Ei", "hostpubmd5", TRUE},
     {"Ej","crlfile",     TRUE},
+    {"Ek","tlsuser",     TRUE},
+    {"El","tlspassword", TRUE},
+    {"Em","tlsauthtype", TRUE},
     {"f", "fail",        FALSE},
     {"F", "form",        TRUE},
     {"Fs","form-string", TRUE},
@@ -1936,6 +1954,7 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
     {"M", "manual",      FALSE},
     {"n", "netrc",       FALSE},
     {"no", "netrc-optional", FALSE},
+    {"ne", "netrc-file", TRUE},
     {"N", "buffer",   FALSE}, /* listed as --no-buffer in the help */
     {"o", "output",      TRUE},
     {"O",  "remote-name", FALSE},
@@ -2130,6 +2149,10 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
         if(toggle && !(curlinfo->features & CURL_VERSION_LIBZ))
           return PARAM_LIBCURL_DOESNT_SUPPORT;
         config->encoding = toggle;
+        break;
+
+      case 'J': /* --tr-encoding */
+        config->tr_encoding = toggle;
         break;
 
       case 'k': /* --digest */
@@ -2450,6 +2473,8 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
         break;
       case 'F': /* --resolve */
         err = add2list(&config->resolve, nextarg);
+        if(err)
+          return err;
         break;
       }
       break;
@@ -2507,7 +2532,7 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
       GetStr(&config->cookiefile, nextarg);
       break;
     case 'B':
-      /* use ASCII/text when transfering */
+      /* use ASCII/text when transferring */
       config->use_ascii = toggle;
       break;
     case 'c':
@@ -2742,6 +2767,27 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
         /* CRL file */
         GetStr(&config->crlfile, nextarg);
         break;
+      case 'k': /* TLS username */
+        if(curlinfo->features & CURL_VERSION_TLSAUTH_SRP)
+          GetStr(&config->tls_username, nextarg);
+        else
+          return PARAM_LIBCURL_DOESNT_SUPPORT;
+        break;
+      case 'l': /* TLS password */
+        if(curlinfo->features & CURL_VERSION_TLSAUTH_SRP)
+          GetStr(&config->tls_password, nextarg);
+        else
+          return PARAM_LIBCURL_DOESNT_SUPPORT;
+        break;
+      case 'm': /* TLS authentication type */
+        if(curlinfo->features & CURL_VERSION_TLSAUTH_SRP) {
+          GetStr(&config->tls_authtype, nextarg);
+          if (!strequal(config->tls_authtype, "SRP"))
+            return PARAM_LIBCURL_DOESNT_SUPPORT; /* only support TLS-SRP */
+        }
+        else
+          return PARAM_LIBCURL_DOESNT_SUPPORT;
+        break;
       default: /* certificate file */
       {
         char *ptr = strchr(nextarg, ':');
@@ -2878,6 +2924,9 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
       case 'o': /* CA info PEM file */
         /* use .netrc or URL */
         config->netrc_opt = toggle;
+        break;
+      case 'e': /* netrc-file */
+        GetStr(&config->netrc_file, nextarg);
         break;
       default:
         /* pick info from .netrc, if this is used for http, curl will
@@ -3120,7 +3169,8 @@ static ParameterError getparameter(char *flag, /* f or -long-flag */
           {"SSPI",  CURL_VERSION_SSPI},
           {"krb4", CURL_VERSION_KERBEROS4},
           {"libz", CURL_VERSION_LIBZ},
-          {"CharConv", CURL_VERSION_CONV}
+          {"CharConv", CURL_VERSION_CONV},
+          {"TLS-SRP", CURL_VERSION_TLSAUTH_SRP}
         };
         printf("Features: ");
         for(i=0; i<sizeof(feats)/sizeof(feats[0]); i++) {
@@ -3929,7 +3979,7 @@ int my_trace(CURL *handle, curl_infotype type,
     size_t i;
     for(i = 0; i < size - 4; i++) {
       if(memcmp(&data[i], "\r\n\r\n", 4) == 0) {
-        /* dump everthing through the CRLFCRLF as a sent header */
+        /* dump everything through the CRLFCRLF as a sent header */
         text = "=> Send header";
         dump(timebuf, text, output, data, i+4, config->tracetype, type);
         data += i + 3;
@@ -4010,6 +4060,8 @@ static void free_config_fields(struct Configurable *config)
     free(config->writeout);
   if(config->httppost)
     curl_formfree(config->httppost);
+  if(config->netrc_file)
+    free(config->netrc_file);
   if(config->cert)
     free(config->cert);
   if(config->cacert)
@@ -4046,6 +4098,14 @@ static void free_config_fields(struct Configurable *config)
     free(config->hostpubmd5);
   if(config->mail_from)
     free(config->mail_from);
+#ifdef USE_TLS_SRP
+  if(config->tls_authtype)
+    free(config->tls_authtype);
+  if(config->tls_username)
+    free(config->tls_username);
+  if(config->tls_password)
+    free(config->tls_password);
+#endif
 #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
   if(config->socks5_gssapi_service)
     free(config->socks5_gssapi_service);
@@ -4133,7 +4193,7 @@ static CURLcode _my_setopt(CURL *curl, bool str, struct Configurable *config,
 
   if(tag < CURLOPTTYPE_OBJECTPOINT) {
     long lval = va_arg(arg, long);
-    snprintf(value, sizeof(value), "%ld", lval);
+    snprintf(value, sizeof(value), "%ldL", lval);
     ret = curl_easy_setopt(curl, tag, lval);
     if(!lval)
       skip = TRUE;
@@ -4877,7 +4937,7 @@ operate(struct Configurable *config, int argc, argv_item_t argv[])
             }
           }
 
-          /* Create the directory hierarchy, if not pre-existant to a multiple
+          /* Create the directory hierarchy, if not pre-existent to a multiple
              file output call */
 
           if(config->create_dirs &&
@@ -5138,10 +5198,13 @@ operate(struct Configurable *config, int argc, argv_item_t argv[])
 
         if(config->netrc_opt)
           my_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
-        else if(config->netrc)
+        else if(config->netrc || config->netrc_file)
           my_setopt(curl, CURLOPT_NETRC, CURL_NETRC_REQUIRED);
         else
           my_setopt(curl, CURLOPT_NETRC, CURL_NETRC_IGNORED);
+
+        if(config->netrc_file)
+          my_setopt(curl, CURLOPT_NETRC_FILE, config->netrc_file);
 
         my_setopt(curl, CURLOPT_FOLLOWLOCATION, config->followlocation);
         my_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, config->unrestricted_auth);
@@ -5325,9 +5388,11 @@ operate(struct Configurable *config, int argc, argv_item_t argv[])
         if(res != CURLE_OK)
           goto show_error;
 
-        /* new in curl 7.10 */
-        my_setopt_str(curl, CURLOPT_ENCODING,
-                      (config->encoding) ? "" : NULL);
+        if(config->encoding)
+          my_setopt_str(curl, CURLOPT_ACCEPT_ENCODING, "");
+
+        if(config->tr_encoding)
+          my_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1);
 
         /* new in curl 7.10.7, extended in 7.19.4 but this only sets 0 or 1 */
         my_setopt(curl, CURLOPT_FTP_CREATE_MISSING_DIRS,
@@ -5459,6 +5524,10 @@ operate(struct Configurable *config, int argc, argv_item_t argv[])
         if(config->resolve)
           /* new in 7.21.3 */
           my_setopt(curl, CURLOPT_RESOLVE, config->resolve);
+
+        /* TODO: new in ### */
+        curl_easy_setopt(curl, CURLOPT_TLSAUTH_USERNAME, config->tls_username);
+        curl_easy_setopt(curl, CURLOPT_TLSAUTH_PASSWORD, config->tls_password);
 
         retry_numretries = config->req_retry;
 

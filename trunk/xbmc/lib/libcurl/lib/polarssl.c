@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 2010, Hoi-Ho Chan, <hoiho.chan@gmail.com>
+ * Copyright (C) 2010, 2011, Hoi-Ho Chan, <hoiho.chan@gmail.com>
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -229,7 +229,7 @@ Curl_polarssl_connect(struct connectdata *conn,
       return CURLE_SSL_CONNECT_ERROR;
     } else {
       /* wait for data from server... */
-      long timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+      long timeout_ms = Curl_timeleft(data, NULL, TRUE);
 
       if(timeout_ms < 0) {
         failf(data, "SSL connection timeout");
@@ -352,6 +352,9 @@ static ssize_t polarssl_recv(struct connectdata *conn,
   ret = ssl_read(&conn->ssl[num].ssl, (unsigned char *)buf, buffersize);
 
   if(ret <= 0) {
+    if(ret == POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY)
+      return 0;
+
     *curlcode = (ret == POLARSSL_ERR_NET_TRY_AGAIN) ?
       CURLE_AGAIN : CURLE_RECV_ERROR;
     return -1;

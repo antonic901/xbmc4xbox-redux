@@ -39,16 +39,16 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.inc
-noinst_PROGRAMS = lib500$(EXEEXT) lib501$(EXEEXT) lib502$(EXEEXT) \
-	lib503$(EXEEXT) lib504$(EXEEXT) lib505$(EXEEXT) \
-	lib506$(EXEEXT) lib507$(EXEEXT) lib508$(EXEEXT) \
-	lib510$(EXEEXT) lib511$(EXEEXT) lib512$(EXEEXT) \
-	lib513$(EXEEXT) lib514$(EXEEXT) lib515$(EXEEXT) \
-	lib516$(EXEEXT) lib517$(EXEEXT) lib518$(EXEEXT) \
-	lib519$(EXEEXT) lib520$(EXEEXT) lib521$(EXEEXT) \
-	lib523$(EXEEXT) lib524$(EXEEXT) lib525$(EXEEXT) \
-	lib526$(EXEEXT) lib527$(EXEEXT) lib574$(EXEEXT) \
-	lib575$(EXEEXT) lib576$(EXEEXT) lib577$(EXEEXT) \
+noinst_PROGRAMS = chkhostname$(EXEEXT) lib500$(EXEEXT) lib501$(EXEEXT) \
+	lib502$(EXEEXT) lib503$(EXEEXT) lib504$(EXEEXT) \
+	lib505$(EXEEXT) lib506$(EXEEXT) lib507$(EXEEXT) \
+	lib508$(EXEEXT) lib510$(EXEEXT) lib511$(EXEEXT) \
+	lib512$(EXEEXT) lib513$(EXEEXT) lib514$(EXEEXT) \
+	lib515$(EXEEXT) lib516$(EXEEXT) lib517$(EXEEXT) \
+	lib518$(EXEEXT) lib519$(EXEEXT) lib520$(EXEEXT) \
+	lib521$(EXEEXT) lib523$(EXEEXT) lib524$(EXEEXT) \
+	lib525$(EXEEXT) lib526$(EXEEXT) lib527$(EXEEXT) \
+	lib574$(EXEEXT) lib575$(EXEEXT) lib576$(EXEEXT) \
 	lib578$(EXEEXT) lib579$(EXEEXT) lib529$(EXEEXT) \
 	lib530$(EXEEXT) lib532$(EXEEXT) lib533$(EXEEXT) \
 	lib536$(EXEEXT) lib537$(EXEEXT) lib540$(EXEEXT) \
@@ -57,11 +57,11 @@ noinst_PROGRAMS = lib500$(EXEEXT) lib501$(EXEEXT) lib502$(EXEEXT) \
 	lib548$(EXEEXT) lib549$(EXEEXT) lib552$(EXEEXT) \
 	lib553$(EXEEXT) lib554$(EXEEXT) lib555$(EXEEXT) \
 	lib556$(EXEEXT) lib539$(EXEEXT) lib557$(EXEEXT) \
-	lib558$(EXEEXT) lib559$(EXEEXT) lib560$(EXEEXT) \
-	lib562$(EXEEXT) lib564$(EXEEXT) lib565$(EXEEXT) \
-	lib566$(EXEEXT) lib567$(EXEEXT) lib568$(EXEEXT) \
-	lib569$(EXEEXT) lib570$(EXEEXT) lib571$(EXEEXT) \
-	lib572$(EXEEXT) lib573$(EXEEXT) chkhostname$(EXEEXT)
+	lib560$(EXEEXT) lib562$(EXEEXT) lib564$(EXEEXT) \
+	lib565$(EXEEXT) lib566$(EXEEXT) lib567$(EXEEXT) \
+	lib568$(EXEEXT) lib569$(EXEEXT) lib570$(EXEEXT) \
+	lib571$(EXEEXT) lib572$(EXEEXT) lib573$(EXEEXT) \
+	lib582$(EXEEXT) lib583$(EXEEXT)
 subdir = tests/libtest
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/curl-compilers.m4 \
@@ -299,16 +299,6 @@ am_lib557_OBJECTS = lib557.$(OBJEXT) $(am__objects_1)
 lib557_OBJECTS = $(am_lib557_OBJECTS)
 lib557_LDADD = $(LDADD)
 lib557_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
-am__objects_15 = lib558-first.$(OBJEXT)
-am_lib558_OBJECTS = lib558-lib558.$(OBJEXT) $(am__objects_15)
-lib558_OBJECTS = $(am_lib558_OBJECTS)
-lib558_LDADD = $(LDADD)
-lib558_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
-am__objects_16 = lib559-first.$(OBJEXT)
-am_lib559_OBJECTS = lib559-lib558.$(OBJEXT) $(am__objects_16)
-lib559_OBJECTS = $(am_lib559_OBJECTS)
-lib559_LDADD = $(LDADD)
-lib559_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
 am_lib560_OBJECTS = lib560.$(OBJEXT) $(am__objects_1)
 lib560_OBJECTS = $(am_lib560_OBJECTS)
 lib560_LDADD = $(LDADD)
@@ -321,8 +311,8 @@ am_lib564_OBJECTS = lib564.$(OBJEXT) $(am__objects_1) $(am__objects_2)
 lib564_OBJECTS = $(am_lib564_OBJECTS)
 lib564_LDADD = $(LDADD)
 lib564_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
-am__objects_17 = lib565-first.$(OBJEXT)
-am_lib565_OBJECTS = lib565-lib510.$(OBJEXT) $(am__objects_17)
+am__objects_15 = lib565-first.$(OBJEXT)
+am_lib565_OBJECTS = lib565-lib510.$(OBJEXT) $(am__objects_15)
 lib565_OBJECTS = $(am_lib565_OBJECTS)
 lib565_LDADD = $(LDADD)
 lib565_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
@@ -370,10 +360,6 @@ am_lib576_OBJECTS = lib576.$(OBJEXT) $(am__objects_1)
 lib576_OBJECTS = $(am_lib576_OBJECTS)
 lib576_LDADD = $(LDADD)
 lib576_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
-am_lib577_OBJECTS = lib577.$(OBJEXT) $(am__objects_1)
-lib577_OBJECTS = $(am_lib577_OBJECTS)
-lib577_LDADD = $(LDADD)
-lib577_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
 am_lib578_OBJECTS = lib578.$(OBJEXT) $(am__objects_1)
 lib578_OBJECTS = $(am_lib578_OBJECTS)
 lib578_LDADD = $(LDADD)
@@ -382,6 +368,14 @@ am_lib579_OBJECTS = lib579.$(OBJEXT) $(am__objects_1)
 lib579_OBJECTS = $(am_lib579_OBJECTS)
 lib579_LDADD = $(LDADD)
 lib579_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
+am_lib582_OBJECTS = lib582.$(OBJEXT) $(am__objects_1) $(am__objects_2)
+lib582_OBJECTS = $(am_lib582_OBJECTS)
+lib582_LDADD = $(LDADD)
+lib582_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
+am_lib583_OBJECTS = lib583.$(OBJEXT) $(am__objects_1)
+lib583_OBJECTS = $(am_lib583_OBJECTS)
+lib583_LDADD = $(LDADD)
+lib583_DEPENDENCIES = $(top_builddir)/lib/libcurl.la
 DEFAULT_INCLUDES = 
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -410,13 +404,13 @@ SOURCES = $(libhostname_la_SOURCES) $(chkhostname_SOURCES) \
 	$(lib547_SOURCES) $(lib548_SOURCES) $(lib549_SOURCES) \
 	$(lib552_SOURCES) $(lib553_SOURCES) $(lib554_SOURCES) \
 	$(lib555_SOURCES) $(lib556_SOURCES) $(lib557_SOURCES) \
-	$(lib558_SOURCES) $(lib559_SOURCES) $(lib560_SOURCES) \
-	$(lib562_SOURCES) $(lib564_SOURCES) $(lib565_SOURCES) \
-	$(lib566_SOURCES) $(lib567_SOURCES) $(lib568_SOURCES) \
-	$(lib569_SOURCES) $(lib570_SOURCES) $(lib571_SOURCES) \
-	$(lib572_SOURCES) $(lib573_SOURCES) $(lib574_SOURCES) \
-	$(lib575_SOURCES) $(lib576_SOURCES) $(lib577_SOURCES) \
-	$(lib578_SOURCES) $(lib579_SOURCES)
+	$(lib560_SOURCES) $(lib562_SOURCES) $(lib564_SOURCES) \
+	$(lib565_SOURCES) $(lib566_SOURCES) $(lib567_SOURCES) \
+	$(lib568_SOURCES) $(lib569_SOURCES) $(lib570_SOURCES) \
+	$(lib571_SOURCES) $(lib572_SOURCES) $(lib573_SOURCES) \
+	$(lib574_SOURCES) $(lib575_SOURCES) $(lib576_SOURCES) \
+	$(lib578_SOURCES) $(lib579_SOURCES) $(lib582_SOURCES) \
+	$(lib583_SOURCES)
 DIST_SOURCES = $(libhostname_la_SOURCES) $(chkhostname_SOURCES) \
 	$(lib500_SOURCES) $(lib501_SOURCES) $(lib502_SOURCES) \
 	$(lib503_SOURCES) $(lib504_SOURCES) $(lib505_SOURCES) \
@@ -434,13 +428,13 @@ DIST_SOURCES = $(libhostname_la_SOURCES) $(chkhostname_SOURCES) \
 	$(lib547_SOURCES) $(lib548_SOURCES) $(lib549_SOURCES) \
 	$(lib552_SOURCES) $(lib553_SOURCES) $(lib554_SOURCES) \
 	$(lib555_SOURCES) $(lib556_SOURCES) $(lib557_SOURCES) \
-	$(lib558_SOURCES) $(lib559_SOURCES) $(lib560_SOURCES) \
-	$(lib562_SOURCES) $(lib564_SOURCES) $(lib565_SOURCES) \
-	$(lib566_SOURCES) $(lib567_SOURCES) $(lib568_SOURCES) \
-	$(lib569_SOURCES) $(lib570_SOURCES) $(lib571_SOURCES) \
-	$(lib572_SOURCES) $(lib573_SOURCES) $(lib574_SOURCES) \
-	$(lib575_SOURCES) $(lib576_SOURCES) $(lib577_SOURCES) \
-	$(lib578_SOURCES) $(lib579_SOURCES)
+	$(lib560_SOURCES) $(lib562_SOURCES) $(lib564_SOURCES) \
+	$(lib565_SOURCES) $(lib566_SOURCES) $(lib567_SOURCES) \
+	$(lib568_SOURCES) $(lib569_SOURCES) $(lib570_SOURCES) \
+	$(lib571_SOURCES) $(lib572_SOURCES) $(lib573_SOURCES) \
+	$(lib574_SOURCES) $(lib575_SOURCES) $(lib576_SOURCES) \
+	$(lib578_SOURCES) $(lib579_SOURCES) $(lib582_SOURCES) \
+	$(lib583_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -466,6 +460,7 @@ CROSSCOMPILING_FALSE = @CROSSCOMPILING_FALSE@
 CROSSCOMPILING_TRUE = @CROSSCOMPILING_TRUE@
 CURLDEBUG_FALSE = @CURLDEBUG_FALSE@
 CURLDEBUG_TRUE = @CURLDEBUG_TRUE@
+CURLVERSION = @CURLVERSION@
 CURL_CA_BUNDLE = @CURL_CA_BUNDLE@
 CURL_CFLAG_EXTRAS = @CURL_CFLAG_EXTRAS@
 CURL_DISABLE_DICT = @CURL_DISABLE_DICT@
@@ -498,11 +493,13 @@ ENABLE_SHARED = @ENABLE_SHARED@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
+HAVE_GNUTLS_SRP = @HAVE_GNUTLS_SRP@
 HAVE_LDAP_SSL = @HAVE_LDAP_SSL@
 HAVE_LIBZ = @HAVE_LIBZ@
 HAVE_LIBZ_FALSE = @HAVE_LIBZ_FALSE@
 HAVE_LIBZ_TRUE = @HAVE_LIBZ_TRUE@
 HAVE_PK11_CREATEGENERICOBJECT = @HAVE_PK11_CREATEGENERICOBJECT@
+HAVE_SSLEAY_SRP = @HAVE_SSLEAY_SRP@
 IDN_ENABLED = @IDN_ENABLED@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -523,6 +520,7 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MANOPT = @MANOPT@
 MIMPURE_FALSE = @MIMPURE_FALSE@
 MIMPURE_TRUE = @MIMPURE_TRUE@
@@ -565,6 +563,8 @@ SUPPORT_FEATURES = @SUPPORT_FEATURES@
 SUPPORT_PROTOCOLS = @SUPPORT_PROTOCOLS@
 TEST_SERVER_LIBS = @TEST_SERVER_LIBS@
 USE_ARES = @USE_ARES@
+USE_AXTLS = @USE_AXTLS@
+USE_CYASSL = @USE_CYASSL@
 USE_EMBEDDED_ARES_FALSE = @USE_EMBEDDED_ARES_FALSE@
 USE_EMBEDDED_ARES_TRUE = @USE_EMBEDDED_ARES_TRUE@
 USE_GNUTLS = @USE_GNUTLS@
@@ -579,6 +579,7 @@ USE_SSLEAY = @USE_SSLEAY@
 USE_WINDOWS_SSPI = @USE_WINDOWS_SSPI@
 VERSION = @VERSION@
 VERSIONNUM = @VERSIONNUM@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
@@ -613,7 +614,6 @@ libexecdir = @libexecdir@
 libext = @libext@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -748,15 +748,10 @@ lib553_SOURCES = lib553.c $(SUPPORTFILES)
 lib554_SOURCES = lib554.c $(SUPPORTFILES)
 lib556_SOURCES = lib556.c $(SUPPORTFILES)
 lib557_SOURCES = lib557.c $(SUPPORTFILES)
-lib558_SOURCES = lib558.c $(SUPPORTFILES)
-lib558_CFLAGS = -DLIB558
-lib559_SOURCES = lib558.c $(SUPPORTFILES)
-lib559_CFLAGS = -DLIB559
 lib560_SOURCES = lib560.c $(SUPPORTFILES)
 lib574_SOURCES = lib574.c $(SUPPORTFILES)
 lib575_SOURCES = lib575.c $(SUPPORTFILES)
 lib576_SOURCES = lib576.c $(SUPPORTFILES)
-lib577_SOURCES = lib577.c $(SUPPORTFILES)
 lib562_SOURCES = lib562.c $(SUPPORTFILES)
 lib564_SOURCES = lib564.c $(SUPPORTFILES) $(TESTUTIL)
 lib565_SOURCES = lib510.c $(SUPPORTFILES)
@@ -771,6 +766,8 @@ lib572_SOURCES = lib572.c $(SUPPORTFILES)
 lib573_SOURCES = lib573.c $(SUPPORTFILES) $(TESTUTIL)
 lib578_SOURCES = lib578.c $(SUPPORTFILES)
 lib579_SOURCES = lib579.c $(SUPPORTFILES)
+lib582_SOURCES = lib582.c $(SUPPORTFILES) $(TESTUTIL)
+lib583_SOURCES = lib583.c $(SUPPORTFILES)
 @BUILD_LIBHOSTNAME_FALSE@noinst_LTLIBRARIES = 
 
 # Makefile.inc provides the source defines (TESTUTIL, SUPPORTFILES,
@@ -984,12 +981,6 @@ lib556$(EXEEXT): $(lib556_OBJECTS) $(lib556_DEPENDENCIES)
 lib557$(EXEEXT): $(lib557_OBJECTS) $(lib557_DEPENDENCIES) 
 	@rm -f lib557$(EXEEXT)
 	$(LINK) $(lib557_LDFLAGS) $(lib557_OBJECTS) $(lib557_LDADD) $(LIBS)
-lib558$(EXEEXT): $(lib558_OBJECTS) $(lib558_DEPENDENCIES) 
-	@rm -f lib558$(EXEEXT)
-	$(LINK) $(lib558_LDFLAGS) $(lib558_OBJECTS) $(lib558_LDADD) $(LIBS)
-lib559$(EXEEXT): $(lib559_OBJECTS) $(lib559_DEPENDENCIES) 
-	@rm -f lib559$(EXEEXT)
-	$(LINK) $(lib559_LDFLAGS) $(lib559_OBJECTS) $(lib559_LDADD) $(LIBS)
 lib560$(EXEEXT): $(lib560_OBJECTS) $(lib560_DEPENDENCIES) 
 	@rm -f lib560$(EXEEXT)
 	$(LINK) $(lib560_LDFLAGS) $(lib560_OBJECTS) $(lib560_LDADD) $(LIBS)
@@ -1035,15 +1026,18 @@ lib575$(EXEEXT): $(lib575_OBJECTS) $(lib575_DEPENDENCIES)
 lib576$(EXEEXT): $(lib576_OBJECTS) $(lib576_DEPENDENCIES) 
 	@rm -f lib576$(EXEEXT)
 	$(LINK) $(lib576_LDFLAGS) $(lib576_OBJECTS) $(lib576_LDADD) $(LIBS)
-lib577$(EXEEXT): $(lib577_OBJECTS) $(lib577_DEPENDENCIES) 
-	@rm -f lib577$(EXEEXT)
-	$(LINK) $(lib577_LDFLAGS) $(lib577_OBJECTS) $(lib577_LDADD) $(LIBS)
 lib578$(EXEEXT): $(lib578_OBJECTS) $(lib578_DEPENDENCIES) 
 	@rm -f lib578$(EXEEXT)
 	$(LINK) $(lib578_LDFLAGS) $(lib578_OBJECTS) $(lib578_LDADD) $(LIBS)
 lib579$(EXEEXT): $(lib579_OBJECTS) $(lib579_DEPENDENCIES) 
 	@rm -f lib579$(EXEEXT)
 	$(LINK) $(lib579_LDFLAGS) $(lib579_OBJECTS) $(lib579_LDADD) $(LIBS)
+lib582$(EXEEXT): $(lib582_OBJECTS) $(lib582_DEPENDENCIES) 
+	@rm -f lib582$(EXEEXT)
+	$(LINK) $(lib582_LDFLAGS) $(lib582_OBJECTS) $(lib582_LDADD) $(LIBS)
+lib583$(EXEEXT): $(lib583_OBJECTS) $(lib583_DEPENDENCIES) 
+	@rm -f lib583$(EXEEXT)
+	$(LINK) $(lib583_LDFLAGS) $(lib583_OBJECTS) $(lib583_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1114,10 +1108,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib555.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib556.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib557.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib558-first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib558-lib558.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib559-first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib559-lib558.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib560.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib562.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib564.Po@am__quote@
@@ -1134,9 +1124,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib574.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib575.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib576.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib577.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib578.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib579.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib582.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib583.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sethostname.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testutil.Po@am__quote@
 
@@ -1454,62 +1445,6 @@ lib548-first.obj: first.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='first.c' object='lib548-first.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib548_CFLAGS) $(CFLAGS) -c -o lib548-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
-
-lib558-lib558.o: lib558.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -MT lib558-lib558.o -MD -MP -MF "$(DEPDIR)/lib558-lib558.Tpo" -c -o lib558-lib558.o `test -f 'lib558.c' || echo '$(srcdir)/'`lib558.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib558-lib558.Tpo" "$(DEPDIR)/lib558-lib558.Po"; else rm -f "$(DEPDIR)/lib558-lib558.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lib558.c' object='lib558-lib558.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -c -o lib558-lib558.o `test -f 'lib558.c' || echo '$(srcdir)/'`lib558.c
-
-lib558-lib558.obj: lib558.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -MT lib558-lib558.obj -MD -MP -MF "$(DEPDIR)/lib558-lib558.Tpo" -c -o lib558-lib558.obj `if test -f 'lib558.c'; then $(CYGPATH_W) 'lib558.c'; else $(CYGPATH_W) '$(srcdir)/lib558.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib558-lib558.Tpo" "$(DEPDIR)/lib558-lib558.Po"; else rm -f "$(DEPDIR)/lib558-lib558.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lib558.c' object='lib558-lib558.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -c -o lib558-lib558.obj `if test -f 'lib558.c'; then $(CYGPATH_W) 'lib558.c'; else $(CYGPATH_W) '$(srcdir)/lib558.c'; fi`
-
-lib558-first.o: first.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -MT lib558-first.o -MD -MP -MF "$(DEPDIR)/lib558-first.Tpo" -c -o lib558-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib558-first.Tpo" "$(DEPDIR)/lib558-first.Po"; else rm -f "$(DEPDIR)/lib558-first.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='first.c' object='lib558-first.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -c -o lib558-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
-
-lib558-first.obj: first.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -MT lib558-first.obj -MD -MP -MF "$(DEPDIR)/lib558-first.Tpo" -c -o lib558-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib558-first.Tpo" "$(DEPDIR)/lib558-first.Po"; else rm -f "$(DEPDIR)/lib558-first.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='first.c' object='lib558-first.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib558_CFLAGS) $(CFLAGS) -c -o lib558-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
-
-lib559-lib558.o: lib558.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -MT lib559-lib558.o -MD -MP -MF "$(DEPDIR)/lib559-lib558.Tpo" -c -o lib559-lib558.o `test -f 'lib558.c' || echo '$(srcdir)/'`lib558.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib559-lib558.Tpo" "$(DEPDIR)/lib559-lib558.Po"; else rm -f "$(DEPDIR)/lib559-lib558.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lib558.c' object='lib559-lib558.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -c -o lib559-lib558.o `test -f 'lib558.c' || echo '$(srcdir)/'`lib558.c
-
-lib559-lib558.obj: lib558.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -MT lib559-lib558.obj -MD -MP -MF "$(DEPDIR)/lib559-lib558.Tpo" -c -o lib559-lib558.obj `if test -f 'lib558.c'; then $(CYGPATH_W) 'lib558.c'; else $(CYGPATH_W) '$(srcdir)/lib558.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib559-lib558.Tpo" "$(DEPDIR)/lib559-lib558.Po"; else rm -f "$(DEPDIR)/lib559-lib558.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lib558.c' object='lib559-lib558.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -c -o lib559-lib558.obj `if test -f 'lib558.c'; then $(CYGPATH_W) 'lib558.c'; else $(CYGPATH_W) '$(srcdir)/lib558.c'; fi`
-
-lib559-first.o: first.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -MT lib559-first.o -MD -MP -MF "$(DEPDIR)/lib559-first.Tpo" -c -o lib559-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib559-first.Tpo" "$(DEPDIR)/lib559-first.Po"; else rm -f "$(DEPDIR)/lib559-first.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='first.c' object='lib559-first.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -c -o lib559-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
-
-lib559-first.obj: first.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -MT lib559-first.obj -MD -MP -MF "$(DEPDIR)/lib559-first.Tpo" -c -o lib559-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lib559-first.Tpo" "$(DEPDIR)/lib559-first.Po"; else rm -f "$(DEPDIR)/lib559-first.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='first.c' object='lib559-first.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib559_CFLAGS) $(CFLAGS) -c -o lib559-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
 
 lib565-lib510.o: lib510.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib565_CFLAGS) $(CFLAGS) -MT lib565-lib510.o -MD -MP -MF "$(DEPDIR)/lib565-lib510.Tpo" -c -o lib565-lib510.o `test -f 'lib510.c' || echo '$(srcdir)/'`lib510.c; \

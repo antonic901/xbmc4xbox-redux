@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -71,7 +71,7 @@
 #endif
 
 #include "curl_memory.h"
-#include "easyif.h" /* for Curl_convert_from_utf8 prototype */
+#include "non-ascii.h" /* for Curl_convert_from_utf8 prototype */
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -225,7 +225,8 @@ static int ossl_seed(struct SessionHandle *data)
   /* If we get here, it means we need to seed the PRNG using a "silly"
      approach! */
 #ifdef HAVE_RAND_SCREEN
-  /* if RAND_screen() is present, it was called during global init */
+  /* if RAND_screen() is present, this is windows and thus we assume that the
+     randomness is already taken care of */
   nread = 100; /* just a value */
 #else
   {
@@ -324,9 +325,9 @@ int cert_stuff(struct connectdata *conn,
        * If password has been given, we store that in the global
        * area (*shudder*) for a while:
        */
-      size_t len = strlen(data->set.key_passwd);
+      size_t len = strlen(data->set.str[STRING_KEY_PASSWD]);
       if(len < sizeof(global_passwd))
-        memcpy(global_passwd, data->set.key_passwd, len+1);
+        memcpy(global_passwd, data->set.str[STRING_KEY_PASSWD], len+1);
 #else
       /*
        * We set the password in the callback userdata
@@ -684,13 +685,6 @@ int Curl_ossl_init(void)
     return 0;
 
   OpenSSL_add_all_algorithms();
-
-#ifdef HAVE_RAND_SCREEN
-  /* This one gets a random value by reading the currently shown screen.
-     RAND_screen() is not thread-safe according to OpenSSL devs - although not
-     mentioned in documentation. */
-  RAND_screen();
-#endif
 
   return 1;
 }
@@ -1206,7 +1200,7 @@ static CURLcode verifyhost(struct connectdata *conn,
     res = CURLE_PEER_FAILED_VERIFICATION;
   }
   else {
-    /* we have to look to the last occurence of a commonName in the
+    /* we have to look to the last occurrence of a commonName in the
        distinguished one to get the most significant one. */
     int j,i=-1 ;
 
@@ -1257,18 +1251,15 @@ static CURLcode verifyhost(struct connectdata *conn,
 
     if(peer_CN == nulstr)
        peer_CN = NULL;
-#ifdef CURL_DOES_CONVERSIONS
     else {
       /* convert peer_CN from UTF8 */
-      size_t rc;
-      rc = Curl_convert_from_utf8(data, peer_CN, strlen(peer_CN));
+      size_t rc = Curl_convert_from_utf8(data, peer_CN, strlen(peer_CN));
       /* Curl_convert_from_utf8 calls failf if unsuccessful */
-      if(rc != CURLE_OK) {
+      if(rc) {
         OPENSSL_free(peer_CN);
         return rc;
       }
     }
-#endif /* CURL_DOES_CONVERSIONS */
 
     if(res)
       /* error already detected, pass through */
@@ -1443,9 +1434,16 @@ ossl_connect_step1(struct connectdata *conn,
   Curl_ossl_seed(data);
 
   /* check to see if we've been told to use an explicit SSL/TLS version */
+
   switch(data->set.ssl.version) {
   default:
   case CURL_SSLVERSION_DEFAULT:
+#ifdef USE_TLS_SRP
+    if (data->set.ssl.authtype == CURL_TLSAUTH_SRP) {
+      infof(data, "Set version TLSv1 for SRP authorisation\n");
+      req_method = TLSv1_client_method() ;
+    } else
+#endif
     /* we try to figure out version */
     req_method = SSLv23_client_method();
     use_sni(TRUE);
@@ -1455,10 +1453,23 @@ ossl_connect_step1(struct connectdata *conn,
     use_sni(TRUE);
     break;
   case CURL_SSLVERSION_SSLv2:
+#ifdef OPENSSL_NO_SSL2
+    failf(data, "OpenSSL was built without SSLv2 support");
+    return CURLE_NOT_BUILT_IN;
+#else
+#ifdef USE_TLS_SRP
+    if (data->set.ssl.authtype == CURL_TLSAUTH_SRP)
+      return CURLE_SSL_CONNECT_ERROR;
+#endif
     req_method = SSLv2_client_method();
     use_sni(FALSE);
     break;
+#endif
   case CURL_SSLVERSION_SSLv3:
+#ifdef USE_TLS_SRP
+    if (data->set.ssl.authtype == CURL_TLSAUTH_SRP)
+      return CURLE_SSL_CONNECT_ERROR;
+#endif
     req_method = SSLv3_client_method();
     use_sni(FALSE);
     break;
@@ -1469,7 +1480,8 @@ ossl_connect_step1(struct connectdata *conn,
   connssl->ctx = SSL_CTX_new(req_method);
 
   if(!connssl->ctx) {
-    failf(data, "SSL: couldn't create a context!");
+    failf(data, "SSL: couldn't create a context: %s",
+          ERR_error_string(ERR_peek_error(), NULL));
     return CURLE_OUT_OF_MEMORY;
   }
 
@@ -1552,6 +1564,28 @@ ossl_connect_step1(struct connectdata *conn,
     }
   }
 
+#ifdef USE_TLS_SRP
+  if(data->set.ssl.authtype == CURL_TLSAUTH_SRP) {
+    infof(data, "Using TLS-SRP username: %s\n", data->set.ssl.username);
+
+    if (!SSL_CTX_set_srp_username(connssl->ctx, data->set.ssl.username)) {
+      failf(data, "Unable to set SRP user name");
+      return CURLE_BAD_FUNCTION_ARGUMENT;
+    }
+    if (!SSL_CTX_set_srp_password(connssl->ctx,data->set.ssl.password)) {
+      failf(data, "failed setting SRP password");
+      return CURLE_BAD_FUNCTION_ARGUMENT;
+    }
+    if(!data->set.str[STRING_SSL_CIPHER_LIST]) {
+      infof(data, "Setting cipher list SRP\n");
+
+      if(!SSL_CTX_set_cipher_list(connssl->ctx, "SRP")) {
+        failf(data, "failed setting SRP cipher list");
+        return CURLE_SSL_CIPHER;
+      }
+    }
+  }
+#endif
   if(data->set.str[STRING_SSL_CAFILE] || data->set.str[STRING_SSL_CAPATH]) {
     /* tell SSL where to find CA certificates that are used to verify
        the servers certificate. */
@@ -1846,31 +1880,35 @@ static void pubkey_show(struct SessionHandle *data,
                         unsigned char *raw,
                         int len)
 {
-  char buffer[1024];
-  size_t left = sizeof(buffer);
+  size_t left;
   int i;
-  char *ptr=buffer;
   char namebuf[32];
+  char *buffer;
 
-  snprintf(namebuf, sizeof(namebuf), "%s(%s)", type, name);
-
-  for(i=0; i< len; i++) {
-    snprintf(ptr, left, "%02x:", raw[i]);
-    ptr += 3;
-    left -= 3;
+  left = len*3 + 1;
+  buffer = malloc(left);
+  if(buffer) {
+    char *ptr=buffer;
+    snprintf(namebuf, sizeof(namebuf), "%s(%s)", type, name);
+    for(i=0; i< len; i++) {
+      snprintf(ptr, left, "%02x:", raw[i]);
+      ptr += 3;
+      left -= 3;
+    }
+    infof(data, "   %s: %s\n", namebuf, buffer);
+    push_certinfo(data, num, namebuf, buffer);
+    free(buffer);
   }
-  infof(data, "   %s: %s\n", namebuf, buffer);
-  push_certinfo(data, num, namebuf, buffer);
 }
 
 #define print_pubkey_BN(_type, _name, _num)    \
 do {                              \
   if (pubkey->pkey._type->_name != NULL) { \
     int len = BN_num_bytes(pubkey->pkey._type->_name); \
-    if(len < (int)sizeof(buf)) {                       \
-      BN_bn2bin(pubkey->pkey._type->_name, (unsigned char*)buf); \
-      buf[len] = 0; \
-      pubkey_show(data, _num, #_type, #_name, (unsigned char*)buf, len); \
+    if(len < CERTBUFFERSIZE) {                       \
+      BN_bn2bin(pubkey->pkey._type->_name, (unsigned char*)bufp); \
+      bufp[len] = 0; \
+      pubkey_show(data, _num, #_type, #_name, (unsigned char*)bufp, len); \
     } \
   } \
 } while (0)
@@ -1986,25 +2024,38 @@ static int init_certinfo(struct SessionHandle *data,
   return 0;
 }
 
+/*
+ * This size was previously 512 which has been reported "too small" without
+ * any specifics, so it was enlarged to allow more data to get shown uncut.
+ * The "perfect" size is yet to figure out.
+ */
+#define CERTBUFFERSIZE 8192
+
 static CURLcode get_cert_chain(struct connectdata *conn,
                                struct ssl_connect_data *connssl)
 
 {
   STACK_OF(X509) *sk;
   int i;
-  char buf[512];
+  char *bufp;
   struct SessionHandle *data = conn->data;
   int numcerts;
 
-  sk = SSL_get_peer_cert_chain(connssl->handle);
-
-  if(!sk)
+  bufp = malloc(CERTBUFFERSIZE);
+  if(!bufp)
     return CURLE_OUT_OF_MEMORY;
+
+  sk = SSL_get_peer_cert_chain(connssl->handle);
+  if(!sk) {
+    free(bufp);
+    return CURLE_OUT_OF_MEMORY;
+  }
 
   numcerts = sk_X509_num(sk);
-
-  if(init_certinfo(data, numcerts))
+  if(init_certinfo(data, numcerts)) {
+    free(bufp);
     return CURLE_OUT_OF_MEMORY;
+  }
 
   infof(data, "--- Certificate chain\n");
   for (i=0; i<numcerts; i++) {
@@ -2024,68 +2075,70 @@ static CURLcode get_cert_chain(struct connectdata *conn,
     int j;
     char *ptr;
 
-    (void)x509_name_oneline(X509_get_subject_name(x), buf, sizeof(buf));
-    infof(data, "%2d Subject: %s\n",i,buf);
-    push_certinfo(data, i, "Subject", buf);
+    (void)x509_name_oneline(X509_get_subject_name(x), bufp, CERTBUFFERSIZE);
+    infof(data, "%2d Subject: %s\n", i, bufp);
+    push_certinfo(data, i, "Subject", bufp);
 
-    (void)x509_name_oneline(X509_get_issuer_name(x), buf, sizeof(buf));
-    infof(data, "   Issuer: %s\n",buf);
-    push_certinfo(data, i, "Issuer", buf);
+    (void)x509_name_oneline(X509_get_issuer_name(x), bufp, CERTBUFFERSIZE);
+    infof(data, "   Issuer: %s\n", bufp);
+    push_certinfo(data, i, "Issuer", bufp);
 
     value = X509_get_version(x);
     infof(data, "   Version: %lu (0x%lx)\n", value+1, value);
-    snprintf(buf, sizeof(buf), "%lx", value);
-    push_certinfo(data, i, "Version", buf); /* hex */
+    snprintf(bufp, CERTBUFFERSIZE, "%lx", value);
+    push_certinfo(data, i, "Version", bufp); /* hex */
 
     num=X509_get_serialNumber(x);
     if (num->length <= 4) {
       value = ASN1_INTEGER_get(num);
       infof(data,"   Serial Number: %ld (0x%lx)\n", value, value);
-      snprintf(buf, sizeof(buf), "%lx", value);
+      snprintf(bufp, CERTBUFFERSIZE, "%lx", value);
     }
     else {
+      int left = CERTBUFFERSIZE;
 
-      ptr = buf;
+      ptr = bufp;
       *ptr++ = 0;
       if(num->type == V_ASN1_NEG_INTEGER)
         *ptr++='-';
 
-      for (j=0; j<num->length; j++) {
+      for (j=0; (j<num->length) && (left>=4); j++) {
         /* TODO: length restrictions */
         snprintf(ptr, 3, "%02x%c",num->data[j],
                  ((j+1 == num->length)?'\n':':'));
         ptr += 3;
+        left-=4;
       }
       if(num->length)
-        infof(data,"   Serial Number: %s\n", buf);
+        infof(data,"   Serial Number: %s\n", bufp);
       else
-        buf[0]=0;
+        bufp[0]=0;
     }
-    if(buf[0])
-      push_certinfo(data, i, "Serial Number", buf); /* hex */
+    if(bufp[0])
+      push_certinfo(data, i, "Serial Number", bufp); /* hex */
 
     cinf = x->cert_info;
 
-    j = asn1_object_dump(cinf->signature->algorithm, buf, sizeof(buf));
+    j = asn1_object_dump(cinf->signature->algorithm, bufp, CERTBUFFERSIZE);
     if(!j) {
-      infof(data, "   Signature Algorithm: %s\n", buf);
-      push_certinfo(data, i, "Signature Algorithm", buf);
+      infof(data, "   Signature Algorithm: %s\n", bufp);
+      push_certinfo(data, i, "Signature Algorithm", bufp);
     }
 
     certdate = X509_get_notBefore(x);
-    asn1_output(certdate, buf, sizeof(buf));
-    infof(data, "   Start date: %s\n", buf);
-    push_certinfo(data, i, "Start date", buf);
+    asn1_output(certdate, bufp, CERTBUFFERSIZE);
+    infof(data, "   Start date: %s\n", bufp);
+    push_certinfo(data, i, "Start date", bufp);
 
     certdate = X509_get_notAfter(x);
-    asn1_output(certdate, buf, sizeof(buf));
-    infof(data, "   Expire date: %s\n", buf);
-    push_certinfo(data, i, "Expire date", buf);
+    asn1_output(certdate, bufp, CERTBUFFERSIZE);
+    infof(data, "   Expire date: %s\n", bufp);
+    push_certinfo(data, i, "Expire date", bufp);
 
-    j = asn1_object_dump(cinf->key->algor->algorithm, buf, sizeof(buf));
+    j = asn1_object_dump(cinf->key->algor->algorithm, bufp, CERTBUFFERSIZE);
     if(!j) {
-      infof(data, "   Public Key Algorithm: %s\n", buf);
-      push_certinfo(data, i, "Public Key Algorithm", buf);
+      infof(data, "   Public Key Algorithm: %s\n", bufp);
+      push_certinfo(data, i, "Public Key Algorithm", bufp);
     }
 
     pubkey = X509_get_pubkey(x);
@@ -2096,8 +2149,8 @@ static CURLcode get_cert_chain(struct connectdata *conn,
       case EVP_PKEY_RSA:
         infof(data,  "   RSA Public Key (%d bits)\n",
               BN_num_bits(pubkey->pkey.rsa->n));
-        snprintf(buf, sizeof(buf), "%d", BN_num_bits(pubkey->pkey.rsa->n));
-        push_certinfo(data, i, "RSA Public Key", buf);
+        snprintf(bufp, CERTBUFFERSIZE, "%d", BN_num_bits(pubkey->pkey.rsa->n));
+        push_certinfo(data, i, "RSA Public Key", bufp);
 
         print_pubkey_BN(rsa, n, i);
         print_pubkey_BN(rsa, e, i);
@@ -2136,6 +2189,8 @@ static CURLcode get_cert_chain(struct connectdata *conn,
 
     dumpcert(data, x, i);
   }
+
+  free(bufp);
 
   return CURLE_OK;
 }
@@ -2379,7 +2434,7 @@ ossl_connect_common(struct connectdata *conn,
 
   if(ssl_connect_1==connssl->connecting_state) {
     /* Find out how much more time we're allowed */
-    timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+    timeout_ms = Curl_timeleft(data, NULL, TRUE);
 
     if(timeout_ms < 0) {
       /* no need to continue if time already is up */
@@ -2396,7 +2451,7 @@ ossl_connect_common(struct connectdata *conn,
         ssl_connect_2_writing == connssl->connecting_state) {
 
     /* check allowed time left */
-    timeout_ms = Curl_timeleft(conn, NULL, TRUE);
+    timeout_ms = Curl_timeleft(data, NULL, TRUE);
 
     if(timeout_ms < 0) {
       /* no need to continue if time already is up */
@@ -2532,7 +2587,7 @@ static ssize_t ossl_send(struct connectdata *conn,
     case SSL_ERROR_WANT_READ:
     case SSL_ERROR_WANT_WRITE:
       /* The operation did not complete; the same TLS/SSL I/O function
-         should be called again later. This is basicly an EWOULDBLOCK
+         should be called again later. This is basically an EWOULDBLOCK
          equivalent. */
       *curlcode = CURLE_AGAIN;
       return -1;
@@ -2603,7 +2658,7 @@ static ssize_t ossl_recv(struct connectdata *conn, /* connection data */
 size_t Curl_ossl_version(char *buffer, size_t size)
 {
 #ifdef YASSL_VERSION
-  /* yassl provides an OpenSSL API compatiblity layer so it looks identical
+  /* yassl provides an OpenSSL API compatibility layer so it looks identical
      to OpenSSL in all other aspects */
   return snprintf(buffer, size, "yassl/%s", YASSL_VERSION);
 #else /* YASSL_VERSION */

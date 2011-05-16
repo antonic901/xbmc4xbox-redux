@@ -32,27 +32,27 @@ ssl:
 
 borland:
 	cd lib
-	make -f Makefile.b32
+	$(MAKE) -f Makefile.b32
 	cd ..\src
-	make -f Makefile.b32
+	$(MAKE) -f Makefile.b32
 
 borland-ssl:
 	cd lib
-	make -f Makefile.b32 WITH_SSL=1
+	$(MAKE) -f Makefile.b32 WITH_SSL=1
 	cd ..\src
-	make -f Makefile.b32 WITH_SSL=1
+	$(MAKE) -f Makefile.b32 WITH_SSL=1
 
 borland-ssl-zlib:
 	cd lib
-	make -f Makefile.b32 WITH_SSL=1 WITH_ZLIB=1
+	$(MAKE) -f Makefile.b32 WITH_SSL=1 WITH_ZLIB=1
 	cd ..\src
-	make -f Makefile.b32 WITH_SSL=1 WITH_ZLIB=1
+	$(MAKE) -f Makefile.b32 WITH_SSL=1 WITH_ZLIB=1
 
 borland-clean:
 	cd lib
-	make -f Makefile.b32 clean
+	$(MAKE) -f Makefile.b32 clean
 	cd ..\src
-	make -f Makefile.b32 clean
+	$(MAKE) -f Makefile.b32 clean
 
 watcom: .SYMBOLIC
 	cd lib && $(MAKE) -u -f Makefile.Watcom
@@ -70,29 +70,17 @@ mingw32:
 	$(MAKE) -C lib -f Makefile.m32
 	$(MAKE) -C src -f Makefile.m32
 
-mingw32-zlib:
-	$(MAKE) -C lib -f Makefile.m32 ZLIB=1
-	$(MAKE) -C src -f Makefile.m32 ZLIB=1
-
-mingw32-ssl-zlib:
-	$(MAKE) -C lib -f Makefile.m32 SSL=1 ZLIB=1
-	$(MAKE) -C src -f Makefile.m32 SSL=1 ZLIB=1
-
-mingw32-ssh2-ssl-zlib:
-	$(MAKE) -C lib -f Makefile.m32 SSH2=1 SSL=1 ZLIB=1
-	$(MAKE) -C src -f Makefile.m32 SSH2=1 SSL=1 ZLIB=1
-
-mingw32-ssh2-ssl-sspi-zlib:
-	$(MAKE) -C lib -f Makefile.m32 SSH2=1 SSL=1 SSPI=1 ZLIB=1
-	$(MAKE) -C src -f Makefile.m32 SSH2=1 SSL=1 SSPI=1 ZLIB=1
-
-mingw32-rtmp-ssh2-ssl-sspi-zlib:
-	$(MAKE) -C lib -f Makefile.m32 RTMP=1 SSH2=1 SSL=1 SSPI=1 ZLIB=1
-	$(MAKE) -C src -f Makefile.m32 RTMP=1 SSH2=1 SSL=1 SSPI=1 ZLIB=1
-
 mingw32-clean:
 	$(MAKE) -C lib -f Makefile.m32 clean
 	$(MAKE) -C src -f Makefile.m32 clean
+
+mingw32-vclean mingw32-distclean:
+	$(MAKE) -C lib -f Makefile.m32 vclean
+	$(MAKE) -C src -f Makefile.m32 vclean
+
+mingw32%:
+	$(MAKE) -C lib -f Makefile.m32 CFG=$@
+	$(MAKE) -C src -f Makefile.m32 CFG=$@
 
 vc-clean: $(VC)
 	cd lib

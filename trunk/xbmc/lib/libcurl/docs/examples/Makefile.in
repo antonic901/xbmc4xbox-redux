@@ -14,8 +14,27 @@
 
 @SET_MAKE@
 
+#***************************************************************************
+#                                  _   _ ____  _
+#  Project                     ___| | | |  _ \| |
+#                             / __| | | | |_) | |
+#                            | (__| |_| |  _ <| |___
+#                             \___|\___/|_| \_\_____|
 #
+# Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
+# This software is licensed as described in the file COPYING, which
+# you should have received as part of this distribution. The terms
+# are also available at http://curl.haxx.se/docs/copyright.html.
+#
+# You may opt to use, copy, modify, merge, publish, distribute and/or sell
+# copies of the Software, and permit persons to whom the Software is
+# furnished to do so, under the terms of the COPYING file.
+#
+# This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+# KIND, either express or implied.
+#
+###########################################################################
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -52,7 +71,7 @@ check_PROGRAMS = 10-at-a-time$(EXEEXT) anyauthput$(EXEEXT) \
 	simple$(EXEEXT) simplepost$(EXEEXT) simplessl$(EXEEXT) \
 	sendrecv$(EXEEXT) httpcustomheader$(EXEEXT) certinfo$(EXEEXT) \
 	chkspeed$(EXEEXT) ftpgetinfo$(EXEEXT) ftp-wildcard$(EXEEXT) \
-	smtp-multi$(EXEEXT)
+	smtp-multi$(EXEEXT) simplesmtp$(EXEEXT) smtp-tls$(EXEEXT)
 subdir = docs/examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/curl-compilers.m4 \
@@ -195,6 +214,10 @@ simplepost_SOURCES = simplepost.c
 simplepost_OBJECTS = simplepost.$(OBJEXT)
 simplepost_LDADD = $(LDADD)
 simplepost_DEPENDENCIES = $(LIBDIR)/libcurl.la
+simplesmtp_SOURCES = simplesmtp.c
+simplesmtp_OBJECTS = simplesmtp.$(OBJEXT)
+simplesmtp_LDADD = $(LDADD)
+simplesmtp_DEPENDENCIES = $(LIBDIR)/libcurl.la
 simplessl_SOURCES = simplessl.c
 simplessl_OBJECTS = simplessl.$(OBJEXT)
 simplessl_LDADD = $(LDADD)
@@ -203,6 +226,10 @@ smtp_multi_SOURCES = smtp-multi.c
 smtp_multi_OBJECTS = smtp-multi.$(OBJEXT)
 smtp_multi_LDADD = $(LDADD)
 smtp_multi_DEPENDENCIES = $(LIBDIR)/libcurl.la
+smtp_tls_SOURCES = smtp-tls.c
+smtp_tls_OBJECTS = smtp-tls.$(OBJEXT)
+smtp_tls_LDADD = $(LDADD)
+smtp_tls_DEPENDENCIES = $(LIBDIR)/libcurl.la
 DEFAULT_INCLUDES = 
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -220,16 +247,16 @@ SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
 	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
 	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
-	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c \
-	smtp-multi.c
+	sendrecv.c sepheaders.c simple.c simplepost.c simplesmtp.c \
+	simplessl.c smtp-multi.c smtp-tls.c
 DIST_SOURCES = 10-at-a-time.c anyauthput.c certinfo.c chkspeed.c \
 	cookie_interface.c debug.c fileupload.c fopen.c ftp-wildcard.c \
 	ftpget.c ftpgetinfo.c ftpgetresp.c ftpupload.c getinfo.c \
 	getinmemory.c http-post.c httpcustomheader.c httpput.c https.c \
 	multi-app.c multi-debugcallback.c multi-double.c multi-post.c \
 	multi-single.c persistant.c post-callback.c postit2.c \
-	sendrecv.c sepheaders.c simple.c simplepost.c simplessl.c \
-	smtp-multi.c
+	sendrecv.c sepheaders.c simple.c simplepost.c simplesmtp.c \
+	simplessl.c smtp-multi.c smtp-tls.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -255,6 +282,7 @@ CROSSCOMPILING_FALSE = @CROSSCOMPILING_FALSE@
 CROSSCOMPILING_TRUE = @CROSSCOMPILING_TRUE@
 CURLDEBUG_FALSE = @CURLDEBUG_FALSE@
 CURLDEBUG_TRUE = @CURLDEBUG_TRUE@
+CURLVERSION = @CURLVERSION@
 CURL_CA_BUNDLE = @CURL_CA_BUNDLE@
 CURL_CFLAG_EXTRAS = @CURL_CFLAG_EXTRAS@
 CURL_DISABLE_DICT = @CURL_DISABLE_DICT@
@@ -287,11 +315,13 @@ ENABLE_SHARED = @ENABLE_SHARED@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
+HAVE_GNUTLS_SRP = @HAVE_GNUTLS_SRP@
 HAVE_LDAP_SSL = @HAVE_LDAP_SSL@
 HAVE_LIBZ = @HAVE_LIBZ@
 HAVE_LIBZ_FALSE = @HAVE_LIBZ_FALSE@
 HAVE_LIBZ_TRUE = @HAVE_LIBZ_TRUE@
 HAVE_PK11_CREATEGENERICOBJECT = @HAVE_PK11_CREATEGENERICOBJECT@
+HAVE_SSLEAY_SRP = @HAVE_SSLEAY_SRP@
 IDN_ENABLED = @IDN_ENABLED@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -312,6 +342,7 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MANOPT = @MANOPT@
 MIMPURE_FALSE = @MIMPURE_FALSE@
 MIMPURE_TRUE = @MIMPURE_TRUE@
@@ -354,6 +385,8 @@ SUPPORT_FEATURES = @SUPPORT_FEATURES@
 SUPPORT_PROTOCOLS = @SUPPORT_PROTOCOLS@
 TEST_SERVER_LIBS = @TEST_SERVER_LIBS@
 USE_ARES = @USE_ARES@
+USE_AXTLS = @USE_AXTLS@
+USE_CYASSL = @USE_CYASSL@
 USE_EMBEDDED_ARES_FALSE = @USE_EMBEDDED_ARES_FALSE@
 USE_EMBEDDED_ARES_TRUE = @USE_EMBEDDED_ARES_TRUE@
 USE_GNUTLS = @USE_GNUTLS@
@@ -368,6 +401,7 @@ USE_SSLEAY = @USE_SSLEAY@
 USE_WINDOWS_SSPI = @USE_WINDOWS_SSPI@
 VERSION = @VERSION@
 VERSIONNUM = @VERSIONNUM@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
@@ -402,7 +436,6 @@ libexecdir = @libexecdir@
 libext = @libext@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -580,12 +613,18 @@ simple$(EXEEXT): $(simple_OBJECTS) $(simple_DEPENDENCIES)
 simplepost$(EXEEXT): $(simplepost_OBJECTS) $(simplepost_DEPENDENCIES) 
 	@rm -f simplepost$(EXEEXT)
 	$(LINK) $(simplepost_LDFLAGS) $(simplepost_OBJECTS) $(simplepost_LDADD) $(LIBS)
+simplesmtp$(EXEEXT): $(simplesmtp_OBJECTS) $(simplesmtp_DEPENDENCIES) 
+	@rm -f simplesmtp$(EXEEXT)
+	$(LINK) $(simplesmtp_LDFLAGS) $(simplesmtp_OBJECTS) $(simplesmtp_LDADD) $(LIBS)
 simplessl$(EXEEXT): $(simplessl_OBJECTS) $(simplessl_DEPENDENCIES) 
 	@rm -f simplessl$(EXEEXT)
 	$(LINK) $(simplessl_LDFLAGS) $(simplessl_OBJECTS) $(simplessl_LDADD) $(LIBS)
 smtp-multi$(EXEEXT): $(smtp_multi_OBJECTS) $(smtp_multi_DEPENDENCIES) 
 	@rm -f smtp-multi$(EXEEXT)
 	$(LINK) $(smtp_multi_LDFLAGS) $(smtp_multi_OBJECTS) $(smtp_multi_LDADD) $(LIBS)
+smtp-tls$(EXEEXT): $(smtp_tls_OBJECTS) $(smtp_tls_DEPENDENCIES) 
+	@rm -f smtp-tls$(EXEEXT)
+	$(LINK) $(smtp_tls_LDFLAGS) $(smtp_tls_OBJECTS) $(smtp_tls_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -624,8 +663,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepheaders.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simplepost.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simplesmtp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simplessl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp-multi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp-tls.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -827,6 +868,8 @@ uninstall-am: uninstall-info-am
 
 
 # Makefile.inc provides the check_PROGRAMS and COMPLICATED_EXAMPLES defines
+
+all: $(check_PROGRAMS)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

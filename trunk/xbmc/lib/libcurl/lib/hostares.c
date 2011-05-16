@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -224,7 +224,7 @@ CURLcode Curl_wait_for_resolv(struct connectdata *conn,
   long timeout;
   struct timeval now = Curl_tvnow();
 
-  timeout = Curl_timeleft(conn, &now, TRUE);
+  timeout = Curl_timeleft(data, &now, TRUE);
   if(!timeout)
     timeout = CURL_TIMEOUT_RESOLVE * 1000; /* default name resolve timeout */
 
@@ -332,8 +332,17 @@ static void ares_query_completed_cb(void *arg,  /* (struct connectdata *) */
   (void)timeouts; /* ignored */
 #endif
 
-  if (status == CURL_ASYNC_SUCCESS) {
+  switch(status) {
+  case CURL_ASYNC_SUCCESS:
     ai = Curl_he2ai(hostent, conn->async.port);
+    break;
+  case ARES_EDESTRUCTION:
+    /* this ares handle is getting destroyed, the 'arg' pointer may not be
+       valid! */
+    return;
+  default:
+    /* do nothing */
+    break;
   }
 
   (void)Curl_addrinfo_callback(arg, status, ai);
@@ -398,13 +407,30 @@ Curl_addrinfo *Curl_getaddrinfo(struct connectdata *conn,
     Curl_safefree(conn->async.hostname);
     conn->async.hostname = bufp;
     conn->async.port = port;
-    conn->async.done = FALSE; /* not done */
-    conn->async.status = 0;   /* clear */
-    conn->async.dns = NULL;   /* clear */
+    conn->async.done = FALSE;   /* not done */
+    conn->async.status = 0;     /* clear */
+    conn->async.dns = NULL;     /* clear */
+    conn->async.temp_ai = NULL; /* clear */
 
-    /* areschannel is already setup in the Curl_open() function */
-    ares_gethostbyname(data->state.areschannel, hostname, family,
-                       (ares_host_callback)ares_query_completed_cb, conn);
+#ifdef ENABLE_IPV6 /* CURLRES_IPV6 */
+    if(family == PF_UNSPEC) {
+      conn->async.num_pending = 2;
+
+      /* areschannel is already setup in the Curl_open() function */
+      ares_gethostbyname(data->state.areschannel, hostname, PF_INET,
+                         ares_query_completed_cb, conn);
+      ares_gethostbyname(data->state.areschannel, hostname, PF_INET6,
+                         ares_query_completed_cb, conn);
+    }
+    else
+#endif /* CURLRES_IPV6 */
+    {
+      conn->async.num_pending = 1;
+
+      /* areschannel is already setup in the Curl_open() function */
+      ares_gethostbyname(data->state.areschannel, hostname, family,
+                         ares_query_completed_cb, conn);
+    }
 
     *waitp = 1; /* expect asynchronous response */
   }

@@ -256,6 +256,9 @@
 				RelativePath=".\amigaos.c">
 			</File>
 			<File
+				RelativePath=".\axtls.c">
+			</File>
+			<File
 				RelativePath="base64.c">
 				<FileConfiguration
 					Name="DLL Release|Win32">
@@ -426,6 +429,9 @@
 			</File>
 			<File
 				RelativePath=".\curl_threads.c">
+			</File>
+			<File
+				RelativePath=".\cyassl.c">
 			</File>
 			<File
 				RelativePath="dict.c">
@@ -1217,6 +1223,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\http_negotiate_sspi.c">
+			</File>
+			<File
 				RelativePath="http_ntlm.c">
 				<FileConfiguration
 					Name="DLL Release|Win32">
@@ -1252,6 +1261,12 @@
 						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\http_proxy.c">
+			</File>
+			<File
+				RelativePath=".\idn_win32.c">
 			</File>
 			<File
 				RelativePath="if2ip.c">
@@ -1702,6 +1717,9 @@
 						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\non-ascii.c">
 			</File>
 			<File
 				RelativePath=".\nonblock.c">

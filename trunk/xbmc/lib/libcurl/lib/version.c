@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -99,6 +99,11 @@ char *curl_version(void)
     ptr += len;
   }
 #endif
+#ifdef USE_WIN32_IDN
+  len = snprintf(ptr, left, " IDN-Windows-native");
+  left -= len;
+  ptr += len;
+#endif
 #if defined(HAVE_ICONV) && defined(CURL_DOES_CONVERSIONS)
 #ifdef _LIBICONV_VERSION
   len = snprintf(ptr, left, " iconv/%d.%d",
@@ -175,8 +180,9 @@ static const char * const protocols[] = {
 #endif
 #ifndef CURL_DISABLE_LDAP
   "ldap",
-#if (defined(USE_OPENLDAP) && defined(USE_SSL)) || \
-   (!defined(USE_OPENLDAP) && defined(HAVE_LDAP_SSL))
+#if !defined(CURL_DISABLE_LDAPS) && \
+    ((defined(USE_OPENLDAP) && defined(USE_SSL)) || \
+     (!defined(USE_OPENLDAP) && defined(HAVE_LDAP_SSL)))
   "ldaps",
 #endif
 #endif
@@ -238,7 +244,7 @@ static curl_version_info_data version_info = {
 #ifdef HAVE_LIBZ
   | CURL_VERSION_LIBZ
 #endif
-#ifdef HAVE_GSSAPI
+#ifdef USE_HTTP_NEGOTIATE
   | CURL_VERSION_GSSNEGOTIATE
 #endif
 #ifdef DEBUGBUILD
@@ -259,6 +265,9 @@ static curl_version_info_data version_info = {
 #endif
 #if defined(CURL_DOES_CONVERSIONS)
   | CURL_VERSION_CONV
+#endif
+#if defined(USE_TLS_SRP)
+  | CURL_VERSION_TLSAUTH_SRP
 #endif
   ,
   NULL, /* ssl_version */
@@ -301,6 +310,8 @@ curl_version_info_data *curl_version_info(CURLversion stamp)
   version_info.libidn = stringprep_check_version(LIBIDN_REQUIRED_VERSION);
   if(version_info.libidn)
     version_info.features |= CURL_VERSION_IDN;
+#elif defined(USE_WIN32_IDN)
+  version_info.features |= CURL_VERSION_IDN;
 #endif
 
 #if defined(HAVE_ICONV) && defined(CURL_DOES_CONVERSIONS)

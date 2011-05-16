@@ -1,12 +1,25 @@
-/*****************************************************************************
+/***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
  *                             / __| | | | |_) | |
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
- * This is an example application source code sending SMTP mail using the
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution. The terms
+ * are also available at http://curl.haxx.se/docs/copyright.html.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
+/* This is an example application source code sending SMTP mail using the
  * multi interface.
  */
 
@@ -21,7 +34,7 @@
 #define SMTPSERVER "smtp.example.com"
 #define SMTPPORT ":587" /* it is a colon+port string, but you can set it
                            to "" to use the default port */
-#define RECEPIENT "receipient@example.com"
+#define RECIPIENT "<recipient@example.com>"
 #define MAILFROM "<realuser@example.com>"
 
 #define MULTI_PERFORM_HANG_TIMEOUT 60 * 1000
@@ -99,9 +112,9 @@ int main(void)
    if(!mcurl)
      return 2;
 
-   rcpt_list = curl_slist_append(rcpt_list, RECEPIENT);
+   rcpt_list = curl_slist_append(rcpt_list, RECIPIENT);
    /* more addresses can be added here
-      rcpt_list = curl_slist_append(rcpt_list, "others@example.com");
+      rcpt_list = curl_slist_append(rcpt_list, "<others@example.com>");
    */
 
    curl_easy_setopt(curl, CURLOPT_URL, "smtp://" SMTPSERVER SMTPPORT);

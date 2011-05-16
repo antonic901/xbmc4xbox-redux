@@ -19,12 +19,17 @@ endif
 
 # Edit the path below to point to the base of your OpenSSL package.
 ifndef OPENSSL_PATH
-OPENSSL_PATH = ../../openssl-0.9.8q
+OPENSSL_PATH = ../../openssl-0.9.8r
 endif
 
 # Edit the path below to point to the base of your LibSSH2 package.
 ifndef LIBSSH2_PATH
-LIBSSH2_PATH = ../../libssh2-1.2.7
+LIBSSH2_PATH = ../../libssh2-1.2.8
+endif
+
+# Edit the path below to point to the base of your axTLS package.
+ifndef AXTLS_PATH
+AXTLS_PATH = ../../axTLS-1.2.7
 endif
 
 # Edit the path below to point to the base of your libidn package.
@@ -135,7 +140,11 @@ else
 LD	= nlmconv
 LDFLAGS	= -T
 LIBEXT	= a
-CFLAGS	+= -fno-builtin -fpcc-struct-return -fno-strict-aliasing
+CFLAGS	+= -m32
+CFLAGS  += -fno-builtin -fno-strict-aliasing
+ifeq ($(findstring gcc,$(CC)),gcc)
+CFLAGS  += -fpcc-struct-return
+endif
 CFLAGS	+= -Wall # -pedantic
 ifeq ($(LIBARCH),LIBC)
 ifeq ($(POSIXFL),1)
@@ -196,6 +205,16 @@ ifdef WITH_SSL
 	LDLIBS += $(OPENSSL_PATH)/out_nw_$(LIBARCH_L)/ssl.$(LIBEXT)
 	LDLIBS += $(OPENSSL_PATH)/out_nw_$(LIBARCH_L)/crypto.$(LIBEXT)
 	IMPORTS += GetProcessSwitchCount RunningProcess
+else
+ifdef WITH_AXTLS
+	INCLUDES += -I$(AXTLS_PATH)/inc
+ifdef LINK_STATIC
+	LDLIBS += $(AXTLS_PATH)/lib/libaxtls.$(LIBEXT)
+else
+	MODULES += libaxtls.nlm
+	IMPORTS += $(AXTLS_PATH)/lib/libaxtls.imp
+endif
+endif
 endif
 ifdef WITH_ZLIB
 	INCLUDES += -I$(ZLIB_PATH)
@@ -557,6 +576,10 @@ ifdef WITH_SSL
 	@echo $(DL)#define HAVE_LIBSSL 1$(DL) >> $@
 	@echo $(DL)#define HAVE_LIBCRYPTO 1$(DL) >> $@
 	@echo $(DL)#define OPENSSL_NO_KRB5 1$(DL) >> $@
+else
+ifdef WITH_AXTLS
+	@echo $(DL)#define USE_AXTLS 1$(DL) >> $@
+endif
 endif
 ifdef WITH_SSH2
 	@echo $(DL)#define USE_LIBSSH2 1$(DL) >> $@

@@ -5,7 +5,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -29,12 +29,13 @@ AC_INIT([curl], [-], [a suitable curl mailing list: http://curl.haxx.se/mail/])
 CURL_OVERRIDE_AUTOCONF
 
 dnl configure script copyright
-AC_COPYRIGHT([Copyright (c) 1998 - 2010 Daniel Stenberg, <daniel@haxx.se>
+AC_COPYRIGHT([Copyright (c) 1998 - 2011 Daniel Stenberg, <daniel@haxx.se>
 This configure script may be copied, distributed and modified under the
 terms of the curl license; see COPYING for more details])
 
 AC_CONFIG_SRCDIR([lib/urldata.h])
 AM_CONFIG_HEADER(lib/curl_config.h src/curl_config.h include/curl/curlbuild.h)
+AC_CONFIG_MACRO_DIR([m4])
 AM_MAINTAINER_MODE
 
 CURL_CHECK_OPTION_DEBUG
@@ -120,10 +121,12 @@ if test -f ${srcdir}/include/curl/curlbuild.h; then
 fi
 
 dnl figure out the libcurl version
-VERSION=`$SED -ne 's/^#define LIBCURL_VERSION "\(.*\)"/\1/p' ${srcdir}/include/curl/curlver.h`
-AM_INIT_AUTOMAKE(curl,$VERSION)
+CURLVERSION=`$SED -ne 's/^#define LIBCURL_VERSION "\(.*\)"/\1/p' ${srcdir}/include/curl/curlver.h`
+AM_INIT_AUTOMAKE
 AC_MSG_CHECKING([curl version])
-AC_MSG_RESULT($VERSION)
+AC_MSG_RESULT($CURLVERSION)
+
+AC_SUBST(CURLVERSION)
 
 dnl
 dnl we extract the numerical version for curl-config only
@@ -140,12 +143,13 @@ AC_SUBST(PKGADD_VENDOR)
 
 dnl
 dnl initialize all the info variables
-    curl_ssl_msg="no      (--with-{ssl,gnutls,nss,polarssl} )"
+    curl_ssl_msg="no      (--with-{ssl,gnutls,nss,polarssl,cyassl,axtls} )"
     curl_ssh_msg="no      (--with-libssh2)"
    curl_zlib_msg="no      (--with-zlib)"
    curl_krb4_msg="no      (--with-krb4*)"
     curl_gss_msg="no      (--with-gssapi)"
  curl_spnego_msg="no      (--with-spnego)"
+curl_tls_srp_msg="no      (--enable-tls-srp)"
     curl_res_msg="default (--enable-ares / --enable-threaded-resolver)"
    curl_ipv6_msg="no      (--enable-ipv6)"
     curl_idn_msg="no      (--with-libidn)"
@@ -156,6 +160,7 @@ curl_verbose_msg="enabled (--disable-verbose)"
   curl_ldaps_msg="no      (--enable-ldaps)"
    curl_rtsp_msg="no      (--enable-rtsp)"
    curl_rtmp_msg="no      (--with-librtmp)"
+    init_ssl_msg=${curl_ssl_msg}
 
 dnl
 dnl Save anything in $LIBS for later
@@ -1630,6 +1635,17 @@ if test X"$OPENSSL_ENABLED" = X"1"; then
   fi
 fi
 
+dnl ---
+dnl We require OpenSSL with SRP support.
+dnl ---
+if test "$OPENSSL_ENABLED" = "1"; then
+  AC_CHECK_LIB(crypto, SRP_Calc_client_key,
+   [
+     AC_DEFINE(HAVE_SSLEAY_SRP, 1, [if you have the function SRP_Calc_client_key])
+     AC_SUBST(HAVE_SSLEAY_SRP, [1])
+   ])
+fi
+
 dnl ----------------------------------------------------
 dnl check for GnuTLS
 dnl ----------------------------------------------------
@@ -1638,7 +1654,7 @@ dnl Default to compiler & linker defaults for GnuTLS files & libraries.
 OPT_GNUTLS=no
 
 AC_ARG_WITH(gnutls,dnl
-AC_HELP_STRING([--with-gnutls=PATH],[where to look for GnuTLS, PATH points to the installation root (default: /usr/local/)])
+AC_HELP_STRING([--with-gnutls=PATH],[where to look for GnuTLS, PATH points to the installation root])
 AC_HELP_STRING([--without-gnutls], [disable GnuTLS detection]),
   OPT_GNUTLS=$withval)
 
@@ -1753,6 +1769,17 @@ if test "$GNUTLS_ENABLED" = "1"; then
     ])
 fi
 
+dnl ---
+dnl We require GnuTLS with SRP support.
+dnl ---
+if test "$GNUTLS_ENABLED" = "1"; then
+  AC_CHECK_LIB(gnutls, gnutls_srp_verifier,
+   [
+     AC_DEFINE(HAVE_GNUTLS_SRP, 1, [if you have the function gnutls_srp_verifier])
+     AC_SUBST(HAVE_GNUTLS_SRP, [1])
+   ])
+fi
+
 dnl ----------------------------------------------------
 dnl check for PolarSSL
 dnl ----------------------------------------------------
@@ -1763,7 +1790,7 @@ OPT_POLARSSL=no
 _cppflags=$CPPFLAGS
 _ldflags=$LDFLAGS
 AC_ARG_WITH(polarssl,dnl
-AC_HELP_STRING([--with-polarssl=PATH],[where to look for PolarSSL, PATH points to the installation root (default: /usr/local/)])
+AC_HELP_STRING([--with-polarssl=PATH],[where to look for PolarSSL, PATH points to the installation root])
 AC_HELP_STRING([--without-polarssl], [disable PolarSSL detection]),
   OPT_POLARSSL=$withval)
 
@@ -1838,6 +1865,95 @@ if test "$OPENSSL_ENABLED" != "1"; then
 fi dnl OPENSSL != 1
 
 dnl ----------------------------------------------------
+dnl check for CyaSSL
+dnl ----------------------------------------------------
+
+dnl Default to compiler & linker defaults for CyaSSL files & libraries.
+OPT_CYASSL=no
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+AC_ARG_WITH(cyassl,dnl
+AC_HELP_STRING([--with-cyassl=PATH],[where to look for CyaSSL, PATH points to the installation root (default: /usr/local/cyassl)])
+AC_HELP_STRING([--without-cyassl], [disable CyaSSL detection]),
+  OPT_CYASSL=$withval)
+
+if test "$OPENSSL_ENABLED" != "1"; then
+
+  if test X"$OPT_CYASSL" != Xno; then
+
+    if test "$OPT_CYASSL" = "yes"; then
+      OPT_CYASSL=""
+    fi
+
+    if test -z "$OPT_CYASSL" ; then
+      dnl check for lib in default first
+
+      trycyassldir="/usr/local/cyassl"
+
+      LDFLAGS="$LDFLAGS -L$trycyassldir/lib"
+      CPPFLAGS="$CPPFLAGS -I$trycyassldir/include"
+
+      AC_CHECK_LIB(cyassl, InitCyaSSL,
+      dnl libcyassl found, set the variable
+       [
+         AC_DEFINE(USE_CYASSL, 1, [if CyaSSL is enabled])
+         AC_SUBST(USE_CYASSL, [1])
+         CYASSL_ENABLED=1
+         USE_CYASSL="yes"
+         curl_ssl_msg="enabled (CyaSSL)"
+        ])
+    fi
+
+    if test "x$USE_CYASSL" != "xyes"; then
+      dnl add the path and test again
+      addld=-L$OPT_CYASSL/lib$libsuff
+      addcflags=-I$OPT_CYASSL/include
+      cyassllib=$OPT_CYASSL/lib$libsuff
+
+      LDFLAGS="$LDFLAGS $addld"
+      if test "$addcflags" != "-I/usr/include"; then
+         CPPFLAGS="$CPPFLAGS $addcflags"
+      fi
+
+      AC_CHECK_LIB(cyassl, InitCyaSSL,
+       [
+       AC_DEFINE(USE_CYASSL, 1, [if CyaSSL is enabled])
+       AC_SUBST(USE_CYASSL, [1])
+       CYASSL_ENABLED=1
+       USE_CYASSL="yes"
+       curl_ssl_msg="enabled (CyaSSL)"
+       ],
+       [
+         CPPFLAGS=$_cppflags
+         LDFLAGS=$_ldflags
+       ])
+    fi
+
+    if test "x$USE_CYASSL" = "xyes"; then
+      AC_MSG_NOTICE([detected CyaSSL])
+
+      CURL_LIBS="$CURL_LIBS -lcyassl -lm"
+      LIBS="$LIBS -lcyassl -lm"
+
+      if test -n "$cyassllib"; then
+        dnl when shared libs were found in a path that the run-time
+        dnl linker doesn't search through, we need to add it to
+        dnl LD_LIBRARY_PATH to prevent further configure tests to fail
+        dnl due to this
+
+        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$cyassllib"
+        export LD_LIBRARY_PATH
+        AC_MSG_NOTICE([Added $cyassllib to LD_LIBRARY_PATH])
+      fi
+
+    fi
+
+  fi dnl CyaSSL not disabled
+
+fi dnl OPENSSL != 1
+
+dnl ----------------------------------------------------
 dnl NSS. Only check if GnuTLS and OpenSSL are not enabled
 dnl ----------------------------------------------------
 
@@ -1845,7 +1961,7 @@ dnl Default to compiler & linker defaults for NSS files & libraries.
 OPT_NSS=no
 
 AC_ARG_WITH(nss,dnl
-AC_HELP_STRING([--with-nss=PATH],[where to look for NSS, PATH points to the installation root (default: /usr/local/)])
+AC_HELP_STRING([--with-nss=PATH],[where to look for NSS, PATH points to the installation root])
 AC_HELP_STRING([--without-nss], [disable NSS detection]),
   OPT_NSS=$withval)
 
@@ -1933,9 +2049,64 @@ if test "$OPENSSL_ENABLED" != "1" -a "$GNUTLS_ENABLED" != "1"; then
 
 fi dnl OPENSSL != 1 -a GNUTLS_ENABLED != 1
 
-if test "x$OPENSSL_ENABLED$GNUTLS_ENABLED$NSS_ENABLED$POLARSSL_ENABLED" = "x"; then
+OPT_AXTLS=off
+
+AC_ARG_WITH(axtls,dnl
+AC_HELP_STRING([--with-axtls=PATH],[Where to look for axTLS, PATH points to the axTLS installation prefix (default: /usr/local).  Ignored if another SSL engine is selected.])
+AC_HELP_STRING([--without-axtls], [disable axTLS]),
+  OPT_AXTLS=$withval)
+
+if test "$curl_ssl_msg" = "$init_ssl_msg"; then
+  if test X"$OPT_AXTLS" != Xno; then
+    dnl backup the pre-axtls variables
+    CLEANLDFLAGS="$LDFLAGS"
+    CLEANCPPFLAGS="$CPPFLAGS"
+    CLEANLIBS="$LIBS"
+
+    case "$OPT_AXTLS" in
+    yes)
+      dnl --with-axtls (without path) used
+      PREFIX_AXTLS=/usr/local
+      LIB_AXTLS="$PREFIX_AXTLS/lib"
+      LDFLAGS="$LDFLAGS -L$LIB_AXTLS"
+      CPPFLAGS="$CPPFLAGS -I$PREFIX_AXTLS/include"
+      ;;
+    off)
+      dnl no --with-axtls option given, just check default places
+      PREFIX_AXTLS=
+      ;;
+    *)
+      dnl check the given --with-axtls spot
+      PREFIX_AXTLS=$OPT_AXTLS
+      LIB_AXTLS="$PREFIX_AXTLS/lib"
+      LDFLAGS="$LDFLAGS -L$LIB_AXTLS"
+      CPPFLAGS="$CPPFLAGS -I$PREFIX_AXTLS/include"
+      ;;
+    esac
+
+    AC_CHECK_LIB(axtls, ssl_version,[
+      LIBS="-laxtls $LIBS"
+      AC_DEFINE(USE_AXTLS, 1, [if axTLS is enabled])
+      AC_SUBST(USE_AXTLS, [1])
+      AXTLS_ENABLED=1
+      USE_AXTLS="yes"
+      curl_ssl_msg="enabled (axTLS)"
+
+
+      LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIB_AXTLS"
+      export LD_LIBRARY_PATH
+      AC_MSG_NOTICE([Added $LIB_AXTLS to LD_LIBRARY_PATH])
+      ],[
+      LDFLAGS="$CLEANLDFLAGS"
+      CPPFLAGS="$CLEANCPPFLAGS"
+      LIBS="$CLEANLIBS"
+    ])
+  fi
+fi
+
+if test "x$OPENSSL_ENABLED$GNUTLS_ENABLED$NSS_ENABLED$POLARSSL_ENABLED$AXTLS_ENABLED$CYASSL_ENABLED" = "x"; then
   AC_MSG_WARN([SSL disabled, you will not be able to use HTTPS, FTPS, NTLM and more.])
-  AC_MSG_WARN([Use --with-ssl, --with-gnutls, --with-polarssl or --with-nss to address this.])
+  AC_MSG_WARN([Use --with-ssl, --with-gnutls, --with-polarssl, --with-cyassl, --with-nss or --with-axtls to address this.])
 else
   # SSL is enabled, genericly
   AC_SUBST(SSL_ENABLED)
@@ -1955,7 +2126,7 @@ dnl **********************************************************************
 dnl Default to compiler & linker defaults for LIBSSH2 files & libraries.
 OPT_LIBSSH2=off
 AC_ARG_WITH(libssh2,dnl
-AC_HELP_STRING([--with-libssh2=PATH],[Where to look for libssh2, PATH points to the LIBSSH2 installation (default: /usr/local/lib); when possible, set the PKG_CONFIG_PATH environment variable instead of using this option])
+AC_HELP_STRING([--with-libssh2=PATH],[Where to look for libssh2, PATH points to the LIBSSH2 installation; when possible, set the PKG_CONFIG_PATH environment variable instead of using this option])
 AC_HELP_STRING([--without-libssh2], [disable LIBSSH2]),
   OPT_LIBSSH2=$withval)
 
@@ -1990,6 +2161,7 @@ if test X"$OPT_LIBSSH2" != Xno; then
 
   dnl if given with a prefix, we set -L and -I based on that
   if test -n "$PREFIX_SSH2"; then
+    LIB_SSH2="-lssh2"
     LD_SSH2=-L${PREFIX_SSH2}/lib$libsuff
     CPP_SSH2=-I${PREFIX_SSH2}/include
     DIR_SSH2=${PREFIX_SSH2}/lib$libsuff
@@ -2045,7 +2217,7 @@ dnl **********************************************************************
 dnl Default to compiler & linker defaults for LIBRTMP files & libraries.
 OPT_LIBRTMP=off
 AC_ARG_WITH(librtmp,dnl
-AC_HELP_STRING([--with-librtmp=PATH],[Where to look for librtmp, PATH points to the LIBRTMP installation (default: /usr/local/lib); when possible, set the PKG_CONFIG_PATH environment variable instead of using this option])
+AC_HELP_STRING([--with-librtmp=PATH],[Where to look for librtmp, PATH points to the LIBRTMP installation; when possible, set the PKG_CONFIG_PATH environment variable instead of using this option])
 AC_HELP_STRING([--without-librtmp], [disable LIBRTMP]),
   OPT_LIBRTMP=$withval)
 
@@ -2505,7 +2677,8 @@ AM_CONDITIONAL(USE_MANUAL, test x"$USE_MANUAL" = x1)
 CURL_CHECK_LIB_ARES
 AM_CONDITIONAL(USE_EMBEDDED_ARES, test x$embedded_ares = xyes)
 
-if test "x$enable_shared" = "xyes"; then
+if test "x$ac_cv_native_windows" != "xyes" &&
+   test "x$enable_shared" = "xyes"; then
   build_libhostname=yes
 else
   build_libhostname=no
@@ -2596,6 +2769,33 @@ AC_HELP_STRING([--disable-crypto-auth],[Disable cryptographic authentication]),
   esac ],
        AC_MSG_RESULT(yes)
 )
+
+dnl ************************************************************
+dnl disable TLS-SRP authentication
+dnl
+AC_MSG_CHECKING([whether to enable TLS-SRP authentication])
+AC_ARG_ENABLE(tls-srp,
+AC_HELP_STRING([--enable-tls-srp],[Enable TLS-SRP authentication])
+AC_HELP_STRING([--disable-tls-srp],[Disable TLS-SRP authentication]),
+[ case "$enableval" in
+  no)
+       AC_MSG_RESULT(no)
+       AC_DEFINE(CURL_DISABLE_TLS_SRP, 1, [to disable TLS-SRP authentication])
+       want_tls_srp=no
+       ;;
+  *)   AC_MSG_RESULT(yes)
+       want_tls_srp=yes
+       ;;
+  esac ],
+       AC_MSG_RESULT(yes)
+       want_tls_srp=yes
+)
+
+if test "$want_tls_srp" = "yes" && ( test "x$HAVE_GNUTLS_SRP" = "x1" || test "x$HAVE_SSLEAY_SRP" = "x1") ; then
+   AC_DEFINE(USE_TLS_SRP, 1, [Use TLS-SRP authentication])
+   USE_TLS_SRP=1
+   curl_tls_srp_msg="enabled"
+fi
 
 dnl ************************************************************
 dnl disable cookies support
@@ -2741,9 +2941,14 @@ fi
 if test "x$USE_WINDOWS_SSPI" = "x1"; then
   SUPPORT_FEATURES="$SUPPORT_FEATURES SSPI"
 fi
-if test "x$USE_SSLEAY" = "x1" -o "x$USE_WINDOWS_SSPI" = "x1" \
-    -o "x$GNUTLS_ENABLED" = "x1" -o "x$NSS_ENABLED" = "x1"; then
-  SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM"
+if test "x$CURL_DISABLE_HTTP" != "x1"; then
+  if test "x$USE_SSLEAY" = "x1" -o "x$USE_WINDOWS_SSPI" = "x1" \
+      -o "x$GNUTLS_ENABLED" = "x1" -o "x$NSS_ENABLED" = "x1"; then
+    SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM"
+  fi
+fi
+if test "x$USE_TLS_SRP" = "x1"; then
+  SUPPORT_FEATURES="$SUPPORT_FEATURES TLS-SRP"
 fi
 
 AC_SUBST(SUPPORT_FEATURES)
@@ -2854,6 +3059,7 @@ AC_CONFIG_FILES([Makefile \
            tests/data/Makefile \
            tests/server/Makefile \
            tests/libtest/Makefile \
+           tests/unit/Makefile \
            packages/Makefile \
            packages/Win32/Makefile \
            packages/Win32/cygwin/Makefile \
@@ -2877,7 +3083,7 @@ CURL_GENERATE_CONFIGUREHELP_PM
 
 AC_MSG_NOTICE([Configured to build curl/libcurl:
 
-  curl version:    ${VERSION}
+  curl version:    ${CURLVERSION}
   Host setup:      ${host}
   Install prefix:  ${prefix}
   Compiler:        ${CC}
@@ -2887,6 +3093,7 @@ AC_MSG_NOTICE([Configured to build curl/libcurl:
   krb4 support:    ${curl_krb4_msg}
   GSSAPI support:  ${curl_gss_msg}
   SPNEGO support:  ${curl_spnego_msg}
+  TLS-SRP support: ${curl_tls_srp_msg}
   resolver:        ${curl_res_msg}
   ipv6 support:    ${curl_ipv6_msg}
   IDN support:     ${curl_idn_msg}
