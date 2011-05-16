@@ -1285,11 +1285,6 @@ bool CFileCurl::CReadState::FillBuffer(unsigned int want)
     {
       case CURLM_OK:
       {
-#ifdef _XBOX
-        // hack for broken curl, that thinks there is data all the time
-        // happens especially on ftp during initial connection
-        SwitchToThread();
-#endif
         int maxfd = -1;
         FD_ZERO(&fdread);
         FD_ZERO(&fdwrite);
