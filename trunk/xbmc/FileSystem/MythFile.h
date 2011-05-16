@@ -29,7 +29,7 @@
 #include <queue>
 
 extern "C" {
-#include "lib/libcmyth/cmyth.h"
+#include "lib/cmyth/include/cmyth/cmyth.h"
 }
 
 class DllLibCMyth;
