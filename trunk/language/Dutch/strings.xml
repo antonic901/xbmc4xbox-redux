@@ -4,7 +4,7 @@
 <!--$Revision$-->
 <strings>
   <string id="0">Programma's</string>
-  <string id="1">Afbeeldingen</string>
+  <string id="1">Foto's</string>
   <string id="2">Muziek</string>
   <string id="3">Video</string>
   <string id="4">TV-gids</string>
@@ -83,7 +83,7 @@
   <string id="141">GPU:</string>
   <string id="142">Tijd:</string>
   <string id="143">Huidige:</string>
-  <string id="144">Bouw:</string>
+  <string id="144">Versie:</string>
   <string id="145">Netwerk:</string>
   <string id="146">Type:</string>
   <string id="147">Statisch</string>
@@ -111,6 +111,7 @@
   <string id="169">Resolutie</string>
   <string id="170">Aanpassen refresh rate</string>
   <string id="172">Release datum:</string>
+  <string id="173">Laat 4:3 videos zien als</string>
   <string id="175">Moods</string>
   <string id="176">Stijlen</string>
   <string id="179">Tracklist</string>
@@ -1622,7 +1623,7 @@
   <string id="20339">Regisseur</string>
   <string id="20340">Wilt u alle items in deze map</string>
   <string id="20341">uit de bibliotheek verwijderen?</string>
-  <string id="20342">Video's</string>
+  <string id="20342">Films</string>
   <string id="20343">TV-series</string>
   <string id="20344">Deze map bevat</string>
   <string id="20345">Uitvoeren van automatische scan</string>
@@ -1649,7 +1650,7 @@
   <string id="20366">* Alle seizoenen</string>
   <string id="20367">Verberg bekeken</string>
   <string id="20368">Prod.</string>
-  <string id="20369">Plot van niet-bekeken video's verbergen</string>
+  <string id="20369">Toon plot van niet-bekeken items</string>
   <string id="20370">* Verborgen om plot niet te verklappen *</string>
   <string id="20371">Afbeelding seizoen selecteren</string>
   <string id="20372">Afbeelding van Seizoen</string>
@@ -1658,11 +1659,11 @@
   <string id="20375">Inhoud ontkoppelen</string>
   <string id="20377">Vernieuw TV-serie informatie</string>
   <string id="20378">Alle afleveringen vernieuwen?</string>
-  <string id="20379">Map bevat één enkele TV-serie</string>
+  <string id="20379">Geselecteerde map bevat 1 TV-serie</string>
   <string id="20380">Map uitsluiten van scans</string>
   <string id="20381">Specials</string>
   <string id="20382">Automatisch thumbnails van seizoen laden</string>
-  <string id="20383">Map bevat 1 video</string>
+  <string id="20383">Geselecteerde map bevat 1 video</string>
   <string id="20384">Link naar TV-serie</string>
   <string id="20385">Link naar TV-serie verwijderen</string>
   <string id="20386">Recent toegevoegde speelfilms</string>
@@ -1760,7 +1761,7 @@
   <string id="21379">720p weergeven</string>
   <string id="21380">1080i weergeven</string>
   <string id="21381">Geef naam voor de intelligente afspeellijst</string>
-  <string id="21382">'Bron toevoegen'-knoppen niet weergeven</string>
+  <string id="21382">'Bron toevoegen'-knoppen weergeven</string>
   <string id="21383">Schuifbalken weergeven</string>
   <string id="21384">'Verberg bekeken'-knop toevoegen in bibliotheek</string>
   <string id="21385">Openen</string>
@@ -1925,6 +1926,7 @@
   <string id="22021">Toegestane afwijking in beeldverhouding (%)</string>
   <string id="22022">Voeg video bestanden in lijsten</string>
   <string id="22024">Direct3D versie</string>
+  <string id="22030">Standaard speler</string>
   <string id="22030">Font</string>
   <string id="22031">- Grootte</string>
   <string id="22032">- Kleuren</string>
