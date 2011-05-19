@@ -434,12 +434,11 @@ class CDateTime;
 #define CONTROL_HAS_FOCUS           30000
 #define BUTTON_SCROLLER_HAS_ICON    30001
 
-// Version string MUST NOT contain spaces.  It is used
-// in the HTTP request user agent.
+// NOTE: Version string MUST NOT contain spaces.  It is used in the HTTP request user agent.
 #ifdef SVN_REV
-#define VERSION_STRING "3.0-r"SVN_REV
+#define VERSION_STRING "3.0.1-r"SVN_REV
 #else
-#define VERSION_STRING "3.0"
+#define VERSION_STRING "3.0.1"
 #endif
 
 #define LISTITEM_START              35000
@@ -740,6 +739,3 @@ protected:
  */
 extern CGUIInfoManager g_infoManager;
 #endif
-
-
-
