@@ -43,14 +43,9 @@
 			<RegExp conditional="fullcredits" input="$$1" output="\1" dest="6">
 				<expression noclean="1">&lt;table class="cast"&gt;(.*?)&lt;/table&gt;</expression>
 			</RegExp>
-			<RegExp input="$$6" output="&lt;actor&gt;&lt;thumb&gt;\1&lt;/thumb&gt;&lt;name&gt;\2&lt;/name&gt;&lt;role&gt;\3 \4&lt;/role&gt;&lt;/actor&gt;" dest="2+">
-				<expression fixchars="2,3,4" clear="yes" repeat="yes" noclean="1" trim="2,3,4">src="([^"]*\.(?:jpg|png))".*?&lt;td class="name"&gt;(.*?)&lt;/td&gt;.*?&lt;td class="character"&gt;.*?&lt;div&gt;\n([^\n]*)\n(.*?)&lt;/div&gt;.*?&lt;/td&gt;</expression>
+			<RegExp input="$$6" output="&lt;actor&gt;&lt;thumb&gt;\1&lt;/thumb&gt;&lt;name&gt;\2&lt;/name&gt;&lt;role&gt;\3&lt;/role&gt;&lt;/actor&gt;" dest="2+">
+				<expression fixchars="2,3" trim="2,3" clear="yes" repeat="yes" noclean="1">img src="([^"]*\.(?:jpg|png))".*?&lt;td class="nm"&gt;(.*?)&lt;/td&gt;.*?&lt;td class="char"&gt;(.*?)&lt;/td&gt;</expression>
 			</RegExp>
-<!--
-			<RegExp input="$$7" output="&lt;actor&gt;&lt;thumb&gt;\1&lt;/thumb&gt;\2&lt;/actor&gt;" dest="2+">
-				<expression clear="yes" repeat="yes" noclean="1,2,3">&lt;actor&gt;&lt;thumb&gt;(?:(http.*?)|_SX[0-9]+_SY[0-9]+_)&lt;/thumb&gt;(.*?)&lt;/actor&gt;</expression>
-			</RegExp>
--->
 			<expression noclean="1"/>
 		</RegExp>
 	</GetIMDBCast>
