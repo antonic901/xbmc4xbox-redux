@@ -711,7 +711,7 @@ bool CGUIWindowFileManager::DoProcessFile(int iAction, const CStdString& strFile
   {
   case ACTION_COPY:
     {
-      CLog::Log(LOGDEBUG,"FileManager: copy %s->%s\n", strFile.c_str(), strDestFile.c_str());
+      CLog::Log(LOGDEBUG,"FileManager: copy %s -> %s\n", strFile.c_str(), strDestFile.c_str());
 
       CAsyncFileCopy copier;
       if (!copier.Copy(strFile, strDestFile, g_localizeStrings.Get(115)))
@@ -722,7 +722,7 @@ bool CGUIWindowFileManager::DoProcessFile(int iAction, const CStdString& strFile
 
   case ACTION_MOVE:
     {
-      CLog::Log(LOGDEBUG,"FileManager: move %s->%s\n", strFile.c_str(), strDestFile.c_str());
+      CLog::Log(LOGDEBUG,"FileManager: move %s -> %s\n", strFile.c_str(), strDestFile.c_str());
 
       if (strFile[1] == ':' && strFile[0] == strDestFile[0])
       {
@@ -858,7 +858,11 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
 
       CStdString strnewDestFile;
       if(!strDestFile.IsEmpty()) // only do this if we have a destination
+      {
         CUtil::AddFileToFolder(strDestFile, strFileName, strnewDestFile);
+        // URL Decode for cases where source uses URL encoding and target does not
+        CUtil::URLDecode(strnewDestFile);
+      }
 
       if (pItem->m_bIsFolder)
       {
