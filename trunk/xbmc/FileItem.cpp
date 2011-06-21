@@ -1929,7 +1929,7 @@ void CFileItemList::Stack()
   {
     CFileItemPtr item = Get(i);
     // combined the folder checks
-    if (item->m_bIsFolder)
+    if (item->m_bIsFolder && !item->IsPlugin())
     {
       // only check known fast sources?
       // xbms included because it supports file existance
