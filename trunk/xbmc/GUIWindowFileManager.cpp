@@ -841,6 +841,10 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
       CUtil::RemoveSlashAtEnd(strNoSlash);
       CStdString strFileName = CUtil::GetFileName(strNoSlash);
 
+      // URL Decode for cases where source uses URL encoding and target does not
+      if ( CUtil::IsInternetStream(pItem->m_strPath, true) && !CUtil::IsInternetStream(strDestFile, true) )
+        CUtil::URLDecode(strFileName);
+
       // special case for upnp
       if (CUtil::IsUPnP(items.m_strPath) || CUtil::IsUPnP(pItem->m_strPath))
       {
@@ -860,11 +864,7 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
 
       CStdString strnewDestFile;
       if(!strDestFile.IsEmpty()) // only do this if we have a destination
-      {
         CUtil::AddFileToFolder(strDestFile, strFileName, strnewDestFile);
-        // URL Decode for cases where source uses URL encoding and target does not
-        CUtil::URLDecode(strnewDestFile);
-      }
 
       if (pItem->m_bIsFolder)
       {

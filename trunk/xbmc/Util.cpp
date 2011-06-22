@@ -1717,7 +1717,6 @@ bool CUtil::IsFTP(const CStdString& strFile)
 
 bool CUtil::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */)
 {
-  
   CStdString strProtocol = url.GetProtocol();
   
   if (strProtocol.IsEmpty())
