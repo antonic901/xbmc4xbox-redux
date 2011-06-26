@@ -170,7 +170,7 @@ namespace PYXBMC
   {
     bool ok;
     CStdString path = self->pSettings->getPath();
-    if (path.Find("special://home/plugins/"))
+    if (path.Find("special://home/plugins/") == 0)
     {
       CURL url(path);
       Py_BEGIN_ALLOW_THREADS
