@@ -841,8 +841,8 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
       CUtil::RemoveSlashAtEnd(strNoSlash);
       CStdString strFileName = CUtil::GetFileName(strNoSlash);
 
-      // URL Decode for cases where source uses URL encoding and target does not
-      if ( CUtil::IsInternetStream(pItem->m_strPath, true) && !CUtil::IsInternetStream(strDestFile, true) )
+      // URL Decode for cases where source uses URL encoding
+      if ( CUtil::IsInternetStream(pItem->m_strPath, true) )
         CUtil::URLDecode(strFileName);
 
       // special case for upnp
