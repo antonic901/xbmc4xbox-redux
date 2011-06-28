@@ -331,8 +331,6 @@ void CNetwork::NetworkUp()
 DWORD CNetwork::UpdateState()
 {
 #ifdef HAS_XBOX_NETWORK
-  CSingleLock lock (m_critSection);
-
   XNADDR xna;
   DWORD dwState = XNetGetTitleXnAddr(&xna);
   DWORD dwLink = XNetGetEthernetLinkStatus();
@@ -361,6 +359,8 @@ DWORD CNetwork::UpdateState()
 bool CNetwork::CheckNetwork(int count)
 {
 #ifdef HAS_XBOX_NETWORK
+  CSingleLock lock (m_critSection);
+  
   // update our network state
   DWORD dwState = UpdateState();
   DWORD dwLink = XNetGetEthernetLinkStatus();
