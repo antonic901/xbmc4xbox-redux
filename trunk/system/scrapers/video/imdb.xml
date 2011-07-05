@@ -73,7 +73,7 @@
 				<expression fixchars="1"/>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
-				<expression fixchars="1" trim="1" noclean="1">&lt;h1 class="header"&gt;([^&lt;]*)</expression>
+				<expression fixchars="1" trim="1" noclean="1">&lt;h1 class="header" itemprop="name"&gt;([^&lt;]*)</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;year&gt;\1&lt;/year&gt;" dest="5+">
 				<expression fixchars="1">a href=&quot;/year/([0-9]*)</expression>
@@ -94,7 +94,7 @@
 				<expression noclean="1">&gt;Runtime:&lt;/h4&gt;[^0-9]*([,0-9]+) min</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;rating&gt;\1&lt;/rating&gt;" dest="5+">
-				<expression fixchars="1">id="star-bar-user-rate"&gt;&lt;b&gt;([0-9.]+)&lt;/b&gt;</expression>
+				<expression fixchars="1">&quot;star-bar-user-rate&quot;&gt;&lt;b&gt;([0-9.]+).*?&gt;.*?title=&quot;([0-9,]+)\s</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;votes&gt;\1&lt;/votes&gt;" dest="5+">
 				<expression fixchars="1">&gt;([0-9,]+) votes&lt;/a&gt;</expression>
