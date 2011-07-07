@@ -331,6 +331,8 @@ void CNetwork::NetworkUp()
 DWORD CNetwork::UpdateState()
 {
 #ifdef HAS_XBOX_NETWORK
+  CSingleLock lock (m_critSection);
+  
   XNADDR xna;
   DWORD dwState = XNetGetTitleXnAddr(&xna);
   DWORD dwLink = XNetGetEthernetLinkStatus();
@@ -359,8 +361,6 @@ DWORD CNetwork::UpdateState()
 bool CNetwork::CheckNetwork(int count)
 {
 #ifdef HAS_XBOX_NETWORK
-  CSingleLock lock (m_critSection);
-  
   // update our network state
   DWORD dwState = UpdateState();
   DWORD dwLink = XNetGetEthernetLinkStatus();
@@ -425,8 +425,6 @@ bool CNetwork::IsEthernetConnected()
 bool CNetwork::WaitForSetup(DWORD timeout)
 {
 #ifdef HAS_XBOX_NETWORK
-  CSingleLock lock (m_critSection);
-
   // Wait until the net is inited
   DWORD timestamp = GetTickCount() + timeout;
 
