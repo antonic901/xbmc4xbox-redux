@@ -62,7 +62,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_videoPercentSeekBackwardBig = -10;
   m_videoBlackBarColour = 0;
   m_videoPPFFmpegDeint = "linblenddeint";
-  m_videoPPFFmpegPostProc = "ha:128:7,va,dr";
+  m_videoPPFFmpegPostProc = "hb:a,vb:a,dr:a";
   m_videoIgnoreSecondsAtStart = 3*60;
   m_videoIgnorePercentAtEnd   = 8.0f;
   m_videoPlayCountMinimumPercent = 90.0f;
