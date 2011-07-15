@@ -361,15 +361,18 @@ DWORD CNetwork::UpdateState()
 bool CNetwork::CheckNetwork(int count)
 {
 #ifdef HAS_XBOX_NETWORK
-  // update our network state
+  static DWORD lastLink;  // will hold the last link, to notice changes
+  static int netRetryCounter;
+
+  // get our network state
   DWORD dwState = UpdateState();
   DWORD dwLink = XNetGetEthernetLinkStatus();
-
+  
   // Check the network status every count itterations
-  if (++m_netRetryCounter > count || m_lastlink2 != dwLink)
+  if (++netRetryCounter > count || lastLink != dwLink)
   {
-    m_netRetryCounter = 0;
-    m_lastlink2 = dwLink;
+    netRetryCounter = 0;
+    lastLink = dwLink;
     
     // In case the network failed, try to set it up again
     if ( !(dwLink & XNET_ETHERNET_LINK_ACTIVE) || !IsInited() || dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT )
@@ -503,11 +506,9 @@ bool in_ether (char *bufp, unsigned char *addr)
 
 CNetwork::CNetwork(void)
 {
-  memset(&m_networkinfo, 0, sizeof(m_networkinfo));      
+  memset(&m_networkinfo, 0, sizeof(m_networkinfo));
   m_lastlink = 0;
   m_laststate = 0;
-  m_lastlink2 = 0;
-  m_netRetryCounter = 0;
   m_networkup = false;
   m_inited = false;
 }
