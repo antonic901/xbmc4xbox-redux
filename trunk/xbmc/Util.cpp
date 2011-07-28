@@ -484,6 +484,10 @@ CStdString CUtil::GetTitleFromPath(const CStdString& strFileNameAndPath, bool bI
   else if (url.GetProtocol() == "hdhomerun" && strFilename.IsEmpty())
     strFilename = "HDHomerun Devices";
 
+  // Slingbox Devices
+  else if (url.GetProtocol() == "sling")
+    strFilename = "Slingbox";
+
   // ReplayTV Devices
   else if (url.GetProtocol() == "rtv")
     strFilename = "ReplayTV Devices";
@@ -1771,6 +1775,11 @@ bool CUtil::IsHDHomeRun(const CStdString& strFile)
   return strFile.Left(10).Equals("hdhomerun:");
 }
 
+bool CUtil::IsSlingbox(const CStdString& strFile)
+{
+  return strFile.Left(6).Equals("sling:");
+}
+
 bool CUtil::IsVTP(const CStdString& strFile)
 {
   return strFile.Left(4).Equals("vtp:");
@@ -1783,7 +1792,7 @@ bool CUtil::IsHTSP(const CStdString& strFile)
 
 bool CUtil::IsLiveTV(const CStdString& strFile)
 {
-  if (IsTuxBox(strFile) || IsVTP(strFile) || IsHDHomeRun(strFile) || IsHTSP(strFile))
+  if (IsTuxBox(strFile) || IsVTP(strFile) || IsHDHomeRun(strFile) || IsHTSP(strFile) || IsSlingbox(strFile))
     return true;
 
   if (IsMythTV(strFile) && CMythDirectory::IsLiveTV(strFile))
@@ -2413,6 +2422,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   CFileItem item(strMovie, false);
   if (item.IsInternetStream()) return ;
   if (item.IsHDHomeRun()) return ;
+  if (item.IsSlingbox()) return ;
   if (item.IsPlayList()) return ;
   if (!item.IsVideo()) return ;
 

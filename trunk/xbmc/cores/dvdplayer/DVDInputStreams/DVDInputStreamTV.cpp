@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "DVDInputStreamTV.h"
 #include "FileSystem/MythFile.h"
+#include "Filesystem/Slingbox.h"
 #include "URL.h"
 
 using namespace XFILE;
@@ -48,9 +49,18 @@ bool CDVDInputStreamTV::Open(const char* strFile, const std::string& content)
 {
   if (!CDVDInputStream::Open(strFile, content)) return false;
 
-  m_pFile = new CMythFile();
-  m_pLiveTV = ((CMythFile*)m_pFile)->GetLiveTV();
-  m_pRecordable = ((CMythFile*)m_pFile)->GetRecordable();
+  if (strncmp(strFile, "sling://", 8) == 0)
+  {
+    m_pFile       = new CSlingboxFile();
+    m_pLiveTV     = ((CSlingboxFile*)m_pFile)->GetLiveTV();
+    m_pRecordable = NULL;
+  }
+  else
+  {
+    m_pFile       = new CMythFile();
+    m_pLiveTV     = ((CMythFile*)m_pFile)->GetLiveTV();
+    m_pRecordable = ((CMythFile*)m_pFile)->GetRecordable();
+  }
 
   CURL url(strFile);
   // open file in binary mode

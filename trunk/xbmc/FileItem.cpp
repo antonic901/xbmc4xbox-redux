@@ -475,7 +475,7 @@ bool CFileItem::IsVideo() const
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
 
-  if (IsHDHomeRun() || IsTuxBox() || CUtil::IsDVD(m_strPath))
+  if (IsHDHomeRun() || IsTuxBox() || CUtil::IsDVD(m_strPath) || IsSlingbox())
     return true;
 
   CStdString extension;
@@ -775,6 +775,11 @@ bool CFileItem::IsMythTV() const
 bool CFileItem::IsHDHomeRun() const
 {
   return CUtil::IsHDHomeRun(m_strPath);
+}
+
+bool CFileItem::IsSlingbox() const
+{
+  return CUtil::IsSlingbox(m_strPath);
 }
 
 bool CFileItem::IsVTP() const
