@@ -23,6 +23,7 @@
 #include "FileSystem/CDDADirectory.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "VideoDatabase.h"
+#include "ProgramDatabase.h"
 #include "GUIButtonControl.h"
 #include "utils/GUIInfoManager.h"
 #include "Picture.h"
@@ -982,6 +983,28 @@ int CXbmcHttp::xbmcQueryVideoDataBase(int numParas, CStdString paras[])
   }
   else
     return SetResponse(openTag+"Error:Could not open database");
+  }
+  return true;
+}
+
+int CXbmcHttp::xbmcQueryProgramDataBase(int numParas, CStdString paras[])
+{
+  if (numParas==0)
+    return SetResponse(openTag+"Error:Missing Parameter");
+  else
+  {
+    CProgramDatabase programdatabase;
+    if (programdatabase.Open())
+    {
+      CStdString result;
+      if (programdatabase.GetArbitraryQuery(paras[0], openRecordSet, closeRecordSet, openRecord, closeRecord, openField, closeField, result))
+        return SetResponse(result);
+      else
+        return SetResponse(openTag+"Error:"+result);
+      programdatabase.Close();
+    }
+    else
+      return SetResponse(openTag+"Error:Could not open database");
   }
   return true;
 }
@@ -3283,6 +3306,7 @@ int CXbmcHttp::xbmcCommand(const CStdString &parameter)
       else if (command == "setresponseformat")        retVal = xbmcSetResponseFormat(numParas, paras);
       else if (command == "querymusicdatabase")       retVal = xbmcQueryMusicDataBase(numParas, paras);
       else if (command == "queryvideodatabase")       retVal = xbmcQueryVideoDataBase(numParas, paras);
+      else if (command == "queryprogramdatabase")     retVal = xbmcQueryProgramDataBase(numParas, paras);
       else if (command == "execmusicdatabase")        retVal = xbmcExecMusicDataBase(numParas, paras);
       else if (command == "execvideodatabase")        retVal = xbmcExecVideoDataBase(numParas, paras);
       else if (command == "spindownharddisk")         retVal = xbmcSpinDownHardDisk(numParas, paras);

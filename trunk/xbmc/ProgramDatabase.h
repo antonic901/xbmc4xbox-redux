@@ -56,6 +56,9 @@ public:
   int GetProgramInfo(CFileItem *item);
   bool AddProgramInfo(CFileItem *item, unsigned int titleID);
 
+  bool GetArbitraryQuery(const CStdString& strQuery, const CStdString& strOpenRecordSet, const CStdString& strCloseRecordSet,
+                         const CStdString& strOpenRecord, const CStdString& strCloseRecord, const CStdString& strOpenField, const CStdString& strCloseField, CStdString& strResult);
+
 protected:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
