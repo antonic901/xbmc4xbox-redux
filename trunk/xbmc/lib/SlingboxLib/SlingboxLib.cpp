@@ -19,8 +19,6 @@
 #include "stdafx.h"
 #include "SlingboxLib.h"
 
-#ifdef _XBOX
-
 extern "C" {
   #include "..\..\cores\DllLoader\exports\emu_socket\emu_socket.h"
   #include "..\..\cores\DllLoader\exports\emu_socket\addrinfo.h"
@@ -31,8 +29,6 @@ extern "C" {
 #define getaddrinfo(nodename, servname, addrinfo, res) dllgetaddrinfo(nodename, servname, addrinfo, res)
 #define freeaddrinfo(ai) dllfreeaddrinfo(ai);
 typedef int socklen_t;
-
-#endif
 
 // ********************
 // Public Functions

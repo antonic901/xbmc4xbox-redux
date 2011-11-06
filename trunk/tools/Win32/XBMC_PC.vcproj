@@ -2573,6 +2573,12 @@
 					RelativePath="..\..\xbmc\FileSystem\RSSDirectory.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\FileSystem\Slingbox.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\Slingbox.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\FileSystem\SmartPlaylistDirectory.cpp">
 				</File>
 				<File
@@ -3984,6 +3990,16 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\lib\libscrobbler\scrobbler.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="SlingboxLib"
+				Filter="">
+				<File
+					RelativePath="..\..\xbmc\lib\SlingboxLib\SlingboxLib.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\lib\SlingboxLib\SlingboxLib.h">
 				</File>
 			</Filter>
 		</Filter>
