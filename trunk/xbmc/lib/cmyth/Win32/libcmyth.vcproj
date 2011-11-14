@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\include\cmyth;..\librefmem;..\libcmyth;include;..\..\.."
+				AdditionalIncludeDirectories="..\include;..\include\cmyth;..\librefmem;..\libcmyth;include;..\..\..\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;inline=__inline"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -71,7 +71,7 @@
 				Optimization="1"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..\include;..\include\cmyth;..\librefmem;..\libcmyth;include;..\..\.."
+				AdditionalIncludeDirectories="..\include;..\include\cmyth;..\librefmem;..\libcmyth;include;..\..\..\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;inline=__inline"
 				RuntimeLibrary="2"
 				EnableEnhancedInstructionSet="1"
