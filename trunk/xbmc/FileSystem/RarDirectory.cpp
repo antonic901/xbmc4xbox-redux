@@ -73,7 +73,10 @@ namespace DIRECTORY
       return( true);
     }
     else
+    {
+      CLog::Log(LOGWARNING,"%s: rar lib returned no files in archive %s, likely corrupt",__FUNCTION__,strArchive.c_str());
       return( false );
+    }
   }
 
   bool CRarDirectory::Exists(const char* strPath)
