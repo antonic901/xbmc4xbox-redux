@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Translator: Kristján Bjarni Guðmundsson-->
 <!--Email: kristjanbjarni@gmail.com-->
-<!--Date of translation: 2011-03-17-->
+<!--Date of translation: 2011-11-18-->
 <!--$Revision$-->
-<!--Based on english strings version 30820-->
+<!--Based on english strings version 30910 -->
 <strings>
   <string id="0">Forrit</string>
   <string id="1">Ljósmyndir</string>
@@ -476,7 +476,7 @@
   <string id="527">Bæta handvirkt við safn</string>
   <string id="528">Sláðu inn titil</string>
   <string id="529">Villa: Titill þegar til</string>
-  <string id="530">Veldu flokk</string>
+  <string id="530">Veldu tegund</string>
   <string id="531">Ný tegund</string>
   <string id="532">Handvirk viðbót</string>
   <string id="533">Sláðu inn flokk</string>
@@ -2210,6 +2210,16 @@ fyrir þessa myndskreytingu</string>
   <string id="23104">Smelltu á Í lagi þegar spilun er lokið</string>
   <string id="23105"/>
   <string id="23106"/>
+
+  <!-- strings 24000 thru 24299 reserved for the Add-ons framework -->
+  <string id="24000">Viðbót</string>
+
+  <string id="24020">Stilla</string>
+  <string id="24021">Slökkva</string>
+  <string id="24022">Virkja</string>
+  <string id="24023">Viðbót óvirk</string>
+
+  <string id="24030">Ekki er hægt að stilla þessa viðbót</string>
 
   <!-- strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code -->
   <string id="29800">Safnhamur</string>
