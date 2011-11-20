@@ -19,6 +19,8 @@
  */
 
 #include "libavutil/intmath.h"
+#include "libavutil/log.h"
+#include "libavutil/opt.h"
 #include "avcodec.h"
 #include "dsputil.h"
 #include "dwt.h"
@@ -33,42 +35,6 @@
 #undef NDEBUG
 #include <assert.h>
 
-static const int8_t quant3[256]={
- 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,
-};
-static const int8_t quant3b[256]={
- 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
--1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-};
 static const int8_t quant3bA[256]={
  0, 0, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1,
  1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1,
@@ -87,153 +53,7 @@ static const int8_t quant3bA[256]={
  1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1,
  1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1,
 };
-static const int8_t quant5[256]={
- 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-1,-1,
-};
-static const int8_t quant7[256]={
- 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
- 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,
--2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-1,
-};
-static const int8_t quant9[256]={
- 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-2,-2,-2,-2,-1,-1,
-};
-static const int8_t quant11[256]={
- 0, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4,
- 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-4,-4,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,
--4,-4,-4,-4,-4,-3,-3,-3,-3,-3,-3,-3,-2,-2,-2,-1,
-};
-static const int8_t quant13[256]={
- 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
- 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
- 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
--6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,
--6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,
--6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,
--6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,
--6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-6,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,
--4,-4,-4,-4,-4,-4,-4,-4,-4,-3,-3,-3,-3,-2,-2,-1,
-};
 
-#if 0 //64*cubic
-static const uint8_t obmc32[1024]={
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4,  8,  8,  8,  8,  8,  8,  4,  4,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,
-  0,  0,  0,  4,  4,  4,  4,  8,  8, 12, 12, 12, 16, 16, 16, 16, 16, 16, 16, 16, 12, 12, 12,  8,  8,  4,  4,  4,  4,  0,  0,  0,
-  0,  0,  4,  4,  8,  8, 12, 16, 16, 20, 24, 24, 28, 28, 32, 32, 32, 32, 28, 28, 24, 24, 20, 16, 16, 12,  8,  8,  4,  4,  0,  0,
-  0,  0,  4,  8,  8, 12, 16, 24, 28, 32, 36, 40, 44, 48, 48, 48, 48, 48, 48, 44, 40, 36, 32, 28, 24, 16, 12,  8,  8,  4,  0,  0,
-  0,  4,  4,  8, 12, 20, 24, 32, 40, 44, 52, 56, 60, 64, 68, 72, 72, 68, 64, 60, 56, 52, 44, 40, 32, 24, 20, 12,  8,  4,  4,  0,
-  0,  4,  4, 12, 16, 24, 32, 40, 52, 60, 68, 76, 80, 88, 88, 92, 92, 88, 88, 80, 76, 68, 60, 52, 40, 32, 24, 16, 12,  4,  4,  0,
-  0,  4,  8, 16, 24, 32, 40, 52, 64, 76, 84, 92,100,108,112,116,116,112,108,100, 92, 84, 76, 64, 52, 40, 32, 24, 16,  8,  4,  0,
-  0,  4,  8, 16, 28, 40, 52, 64, 76, 88,100,112,124,132,136,140,140,136,132,124,112,100, 88, 76, 64, 52, 40, 28, 16,  8,  4,  0,
-  0,  4, 12, 20, 32, 44, 60, 76, 88,104,120,132,144,152,160,164,164,160,152,144,132,120,104, 88, 76, 60, 44, 32, 20, 12,  4,  0,
-  0,  4, 12, 24, 36, 48, 68, 84,100,120,136,152,164,176,180,184,184,180,176,164,152,136,120,100, 84, 68, 48, 36, 24, 12,  4,  0,
-  0,  4, 12, 24, 40, 56, 76, 92,112,132,152,168,180,192,204,208,208,204,192,180,168,152,132,112, 92, 76, 56, 40, 24, 12,  4,  0,
-  0,  4, 16, 28, 44, 60, 80,100,124,144,164,180,196,208,220,224,224,220,208,196,180,164,144,124,100, 80, 60, 44, 28, 16,  4,  0,
-  0,  8, 16, 28, 48, 64, 88,108,132,152,176,192,208,224,232,240,240,232,224,208,192,176,152,132,108, 88, 64, 48, 28, 16,  8,  0,
-  0,  4, 16, 32, 48, 68, 88,112,136,160,180,204,220,232,244,248,248,244,232,220,204,180,160,136,112, 88, 68, 48, 32, 16,  4,  0,
-  1,  8, 16, 32, 48, 72, 92,116,140,164,184,208,224,240,248,255,255,248,240,224,208,184,164,140,116, 92, 72, 48, 32, 16,  8,  1,
-  1,  8, 16, 32, 48, 72, 92,116,140,164,184,208,224,240,248,255,255,248,240,224,208,184,164,140,116, 92, 72, 48, 32, 16,  8,  1,
-  0,  4, 16, 32, 48, 68, 88,112,136,160,180,204,220,232,244,248,248,244,232,220,204,180,160,136,112, 88, 68, 48, 32, 16,  4,  0,
-  0,  8, 16, 28, 48, 64, 88,108,132,152,176,192,208,224,232,240,240,232,224,208,192,176,152,132,108, 88, 64, 48, 28, 16,  8,  0,
-  0,  4, 16, 28, 44, 60, 80,100,124,144,164,180,196,208,220,224,224,220,208,196,180,164,144,124,100, 80, 60, 44, 28, 16,  4,  0,
-  0,  4, 12, 24, 40, 56, 76, 92,112,132,152,168,180,192,204,208,208,204,192,180,168,152,132,112, 92, 76, 56, 40, 24, 12,  4,  0,
-  0,  4, 12, 24, 36, 48, 68, 84,100,120,136,152,164,176,180,184,184,180,176,164,152,136,120,100, 84, 68, 48, 36, 24, 12,  4,  0,
-  0,  4, 12, 20, 32, 44, 60, 76, 88,104,120,132,144,152,160,164,164,160,152,144,132,120,104, 88, 76, 60, 44, 32, 20, 12,  4,  0,
-  0,  4,  8, 16, 28, 40, 52, 64, 76, 88,100,112,124,132,136,140,140,136,132,124,112,100, 88, 76, 64, 52, 40, 28, 16,  8,  4,  0,
-  0,  4,  8, 16, 24, 32, 40, 52, 64, 76, 84, 92,100,108,112,116,116,112,108,100, 92, 84, 76, 64, 52, 40, 32, 24, 16,  8,  4,  0,
-  0,  4,  4, 12, 16, 24, 32, 40, 52, 60, 68, 76, 80, 88, 88, 92, 92, 88, 88, 80, 76, 68, 60, 52, 40, 32, 24, 16, 12,  4,  4,  0,
-  0,  4,  4,  8, 12, 20, 24, 32, 40, 44, 52, 56, 60, 64, 68, 72, 72, 68, 64, 60, 56, 52, 44, 40, 32, 24, 20, 12,  8,  4,  4,  0,
-  0,  0,  4,  8,  8, 12, 16, 24, 28, 32, 36, 40, 44, 48, 48, 48, 48, 48, 48, 44, 40, 36, 32, 28, 24, 16, 12,  8,  8,  4,  0,  0,
-  0,  0,  4,  4,  8,  8, 12, 16, 16, 20, 24, 24, 28, 28, 32, 32, 32, 32, 28, 28, 24, 24, 20, 16, 16, 12,  8,  8,  4,  4,  0,  0,
-  0,  0,  0,  4,  4,  4,  4,  8,  8, 12, 12, 12, 16, 16, 16, 16, 16, 16, 16, 16, 12, 12, 12,  8,  8,  4,  4,  4,  4,  0,  0,  0,
-  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4,  8,  8,  8,  8,  8,  8,  4,  4,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-//error:0.000022
-};
-static const uint8_t obmc16[256]={
-  0,  0,  0,  0,  0,  0,  4,  4,  4,  4,  0,  0,  0,  0,  0,  0,
-  0,  4,  4,  8, 16, 20, 20, 24, 24, 20, 20, 16,  8,  4,  4,  0,
-  0,  4, 16, 24, 36, 44, 52, 60, 60, 52, 44, 36, 24, 16,  4,  0,
-  0,  8, 24, 44, 60, 80, 96,104,104, 96, 80, 60, 44, 24,  8,  0,
-  0, 16, 36, 60, 92,116,136,152,152,136,116, 92, 60, 36, 16,  0,
-  0, 20, 44, 80,116,152,180,196,196,180,152,116, 80, 44, 20,  0,
-  4, 20, 52, 96,136,180,212,228,228,212,180,136, 96, 52, 20,  4,
-  4, 24, 60,104,152,196,228,248,248,228,196,152,104, 60, 24,  4,
-  4, 24, 60,104,152,196,228,248,248,228,196,152,104, 60, 24,  4,
-  4, 20, 52, 96,136,180,212,228,228,212,180,136, 96, 52, 20,  4,
-  0, 20, 44, 80,116,152,180,196,196,180,152,116, 80, 44, 20,  0,
-  0, 16, 36, 60, 92,116,136,152,152,136,116, 92, 60, 36, 16,  0,
-  0,  8, 24, 44, 60, 80, 96,104,104, 96, 80, 60, 44, 24,  8,  0,
-  0,  4, 16, 24, 36, 44, 52, 60, 60, 52, 44, 36, 24, 16,  4,  0,
-  0,  4,  4,  8, 16, 20, 20, 24, 24, 20, 20, 16,  8,  4,  4,  0,
-  0,  0,  0,  0,  0,  0,  4,  4,  4,  4,  0,  0,  0,  0,  0,  0,
-//error:0.000033
-};
-#elif 1 // 64*linear
 static const uint8_t obmc32[1024]={
   0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4,  8,  8,  8,  8,  8,  8,  8,  8,  4,  4,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,
   0,  4,  4,  4,  8,  8,  8, 12, 12, 16, 16, 16, 20, 20, 20, 24, 24, 20, 20, 20, 16, 16, 16, 12, 12,  8,  8,  8,  4,  4,  4,  0,
@@ -288,62 +108,6 @@ static const uint8_t obmc16[256]={
   0,  4,  4,  8,  8, 12, 12, 16, 16, 12, 12,  8,  8,  4,  4,  0,
 //error:0.000015
 };
-#else //64*cos
-static const uint8_t obmc32[1024]={
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4,  8,  4,  4,  8,  4,  4,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  4,  4,  4,  4,  8,  8, 12, 12, 12, 12, 16, 16, 16, 16, 16, 16, 12, 12, 12, 12,  8,  8,  4,  4,  4,  4,  0,  0,  0,
-  0,  0,  4,  4,  4,  8,  8, 12, 16, 20, 20, 24, 28, 28, 28, 28, 28, 28, 28, 28, 24, 20, 20, 16, 12,  8,  8,  4,  4,  4,  0,  0,
-  0,  0,  4,  4,  8, 12, 16, 20, 24, 28, 36, 40, 44, 44, 48, 48, 48, 48, 44, 44, 40, 36, 28, 24, 20, 16, 12,  8,  4,  4,  0,  0,
-  0,  0,  4,  8, 12, 20, 24, 32, 36, 44, 48, 56, 60, 64, 68, 68, 68, 68, 64, 60, 56, 48, 44, 36, 32, 24, 20, 12,  8,  4,  0,  0,
-  0,  4,  4,  8, 16, 24, 32, 40, 48, 60, 68, 76, 80, 84, 88, 92, 92, 88, 84, 80, 76, 68, 60, 48, 40, 32, 24, 16,  8,  4,  4,  0,
-  0,  4,  8, 12, 20, 32, 40, 52, 64, 76, 84, 96,104,108,112,116,116,112,108,104, 96, 84, 76, 64, 52, 40, 32, 20, 12,  8,  4,  0,
-  0,  4,  8, 16, 24, 36, 48, 64, 76, 92,104,116,124,132,136,140,140,136,132,124,116,104, 92, 76, 64, 48, 36, 24, 16,  8,  4,  0,
-  0,  4, 12, 20, 28, 44, 60, 76, 92,104,120,136,148,156,160,164,164,160,156,148,136,120,104, 92, 76, 60, 44, 28, 20, 12,  4,  0,
-  0,  4, 12, 20, 36, 48, 68, 84,104,120,140,152,168,176,184,188,188,184,176,168,152,140,120,104, 84, 68, 48, 36, 20, 12,  4,  0,
-  0,  4, 12, 24, 36, 56, 76, 96,116,136,152,172,184,196,204,208,208,204,196,184,172,152,136,116, 96, 76, 56, 36, 24, 12,  4,  0,
-  0,  4, 12, 24, 44, 60, 80,104,124,148,168,184,200,212,224,228,228,224,212,200,184,168,148,124,104, 80, 60, 44, 24, 12,  4,  0,
-  0,  4, 12, 28, 44, 64, 84,108,132,156,176,196,212,228,236,240,240,236,228,212,196,176,156,132,108, 84, 64, 44, 28, 12,  4,  0,
-  0,  4, 16, 28, 48, 68, 88,112,136,160,184,204,224,236,244,252,252,244,236,224,204,184,160,136,112, 88, 68, 48, 28, 16,  4,  0,
-  1,  4, 16, 28, 48, 68, 92,116,140,164,188,208,228,240,252,255,255,252,240,228,208,188,164,140,116, 92, 68, 48, 28, 16,  4,  1,
-  1,  4, 16, 28, 48, 68, 92,116,140,164,188,208,228,240,252,255,255,252,240,228,208,188,164,140,116, 92, 68, 48, 28, 16,  4,  1,
-  0,  4, 16, 28, 48, 68, 88,112,136,160,184,204,224,236,244,252,252,244,236,224,204,184,160,136,112, 88, 68, 48, 28, 16,  4,  0,
-  0,  4, 12, 28, 44, 64, 84,108,132,156,176,196,212,228,236,240,240,236,228,212,196,176,156,132,108, 84, 64, 44, 28, 12,  4,  0,
-  0,  4, 12, 24, 44, 60, 80,104,124,148,168,184,200,212,224,228,228,224,212,200,184,168,148,124,104, 80, 60, 44, 24, 12,  4,  0,
-  0,  4, 12, 24, 36, 56, 76, 96,116,136,152,172,184,196,204,208,208,204,196,184,172,152,136,116, 96, 76, 56, 36, 24, 12,  4,  0,
-  0,  4, 12, 20, 36, 48, 68, 84,104,120,140,152,168,176,184,188,188,184,176,168,152,140,120,104, 84, 68, 48, 36, 20, 12,  4,  0,
-  0,  4, 12, 20, 28, 44, 60, 76, 92,104,120,136,148,156,160,164,164,160,156,148,136,120,104, 92, 76, 60, 44, 28, 20, 12,  4,  0,
-  0,  4,  8, 16, 24, 36, 48, 64, 76, 92,104,116,124,132,136,140,140,136,132,124,116,104, 92, 76, 64, 48, 36, 24, 16,  8,  4,  0,
-  0,  4,  8, 12, 20, 32, 40, 52, 64, 76, 84, 96,104,108,112,116,116,112,108,104, 96, 84, 76, 64, 52, 40, 32, 20, 12,  8,  4,  0,
-  0,  4,  4,  8, 16, 24, 32, 40, 48, 60, 68, 76, 80, 84, 88, 92, 92, 88, 84, 80, 76, 68, 60, 48, 40, 32, 24, 16,  8,  4,  4,  0,
-  0,  0,  4,  8, 12, 20, 24, 32, 36, 44, 48, 56, 60, 64, 68, 68, 68, 68, 64, 60, 56, 48, 44, 36, 32, 24, 20, 12,  8,  4,  0,  0,
-  0,  0,  4,  4,  8, 12, 16, 20, 24, 28, 36, 40, 44, 44, 48, 48, 48, 48, 44, 44, 40, 36, 28, 24, 20, 16, 12,  8,  4,  4,  0,  0,
-  0,  0,  4,  4,  4,  8,  8, 12, 16, 20, 20, 24, 28, 28, 28, 28, 28, 28, 28, 28, 24, 20, 20, 16, 12,  8,  8,  4,  4,  4,  0,  0,
-  0,  0,  0,  4,  4,  4,  4,  8,  8, 12, 12, 12, 12, 16, 16, 16, 16, 16, 16, 12, 12, 12, 12,  8,  8,  4,  4,  4,  4,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4,  8,  4,  4,  8,  4,  4,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-//error:0.000022
-};
-static const uint8_t obmc16[256]={
-  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,
-  0,  0,  4,  8, 12, 16, 20, 20, 20, 20, 16, 12,  8,  4,  0,  0,
-  0,  4, 12, 24, 32, 44, 52, 56, 56, 52, 44, 32, 24, 12,  4,  0,
-  0,  8, 24, 40, 60, 80, 96,104,104, 96, 80, 60, 40, 24,  8,  0,
-  0, 12, 32, 64, 92,120,140,152,152,140,120, 92, 64, 32, 12,  0,
-  4, 16, 44, 80,120,156,184,196,196,184,156,120, 80, 44, 16,  4,
-  4, 20, 52, 96,140,184,216,232,232,216,184,140, 96, 52, 20,  4,
-  0, 20, 56,104,152,196,232,252,252,232,196,152,104, 56, 20,  0,
-  0, 20, 56,104,152,196,232,252,252,232,196,152,104, 56, 20,  0,
-  4, 20, 52, 96,140,184,216,232,232,216,184,140, 96, 52, 20,  4,
-  4, 16, 44, 80,120,156,184,196,196,184,156,120, 80, 44, 16,  4,
-  0, 12, 32, 64, 92,120,140,152,152,140,120, 92, 64, 32, 12,  0,
-  0,  8, 24, 40, 60, 80, 96,104,104, 96, 80, 60, 40, 24,  8,  0,
-  0,  4, 12, 24, 32, 44, 52, 56, 56, 52, 44, 32, 24, 12,  4,  0,
-  0,  0,  4,  8, 12, 16, 20, 20, 20, 20, 16, 12,  8,  4,  0,  0,
-  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  0,  0,  0,  0,  0,
-//error:0.000022
-};
-#endif /* 0 */
 
 //linear *64
 static const uint8_t obmc8[64]={
@@ -437,7 +201,7 @@ typedef struct Plane{
 }Plane;
 
 typedef struct SnowContext{
-
+    AVClass *class;
     AVCodecContext *avctx;
     RangeCoder c;
     DSPContext dsp;
@@ -490,6 +254,7 @@ typedef struct SnowContext{
     int me_cache[ME_CACHE_SIZE];
     int me_cache_generation;
     slice_buffer sb;
+    int memc_only;
 
     MpegEncContext m; // needed for motion estimation, should not be used for anything else, the idea is to eventually make the motion estimation independent of MpegEncContext, so this will be removed then (FIXME/XXX)
 
@@ -509,7 +274,6 @@ static inline void put_symbol(RangeCoder *c, uint8_t *state, int v, int is_signe
     if(v){
         const int a= FFABS(v);
         const int e= av_log2(a);
-#if 1
         const int el= FFMIN(e, 10);
         put_rac(c, state+0, 0);
 
@@ -530,35 +294,6 @@ static inline void put_symbol(RangeCoder *c, uint8_t *state, int v, int is_signe
 
         if(is_signed)
             put_rac(c, state+11 + el, v < 0); //11..21
-#else
-
-        put_rac(c, state+0, 0);
-        if(e<=9){
-            for(i=0; i<e; i++){
-                put_rac(c, state+1+i, 1);  //1..10
-            }
-            put_rac(c, state+1+i, 0);
-
-            for(i=e-1; i>=0; i--){
-                put_rac(c, state+22+i, (a>>i)&1); //22..31
-            }
-
-            if(is_signed)
-                put_rac(c, state+11 + e, v < 0); //11..21
-        }else{
-            for(i=0; i<e; i++){
-                put_rac(c, state+1+FFMIN(i,9), 1);  //1..10
-            }
-            put_rac(c, state+1+9, 0);
-
-            for(i=e-1; i>=0; i--){
-                put_rac(c, state+22+FFMIN(i,9), (a>>i)&1); //22..31
-            }
-
-            if(is_signed)
-                put_rac(c, state+11 + 10, v < 0); //11..21
-        }
-#endif /* 1 */
     }else{
         put_rac(c, state+0, 1);
     }
@@ -789,14 +524,6 @@ static int alloc_blocks(SnowContext *s){
     return 0;
 }
 
-static inline void copy_rac_state(RangeCoder *d, RangeCoder *s){
-    uint8_t *bytestream= d->bytestream;
-    uint8_t *bytestream_start= d->bytestream_start;
-    *d= *s;
-    d->bytestream= bytestream;
-    d->bytestream_start= bytestream_start;
-}
-
 static inline void set_blocks(SnowContext *s, int level, int x, int y, int l, int cb, int cr, int mx, int my, int ref, int type){
     const int w= s->b_width << s->block_max_depth;
     const int rem_depth= s->block_max_depth - level;
@@ -920,7 +647,7 @@ static void decode_blocks(SnowContext *s){
     }
 }
 
-static void mc_block(Plane *p, uint8_t *dst, const uint8_t *src, uint8_t *tmp, int stride, int b_w, int b_h, int dx, int dy){
+static void mc_block(Plane *p, uint8_t *dst, const uint8_t *src, int stride, int b_w, int b_h, int dx, int dy){
     static const uint8_t weight[64]={
     8,7,6,5,4,3,2,1,
     7,7,0,0,0,0,0,1,
@@ -1106,9 +833,8 @@ static void mc_block(Plane *p, uint8_t *dst, const uint8_t *src, uint8_t *tmp, i
 
 #define mca(dx,dy,b_w)\
 static void mc_block_hpel ## dx ## dy ## b_w(uint8_t *dst, const uint8_t *src, int stride, int h){\
-    uint8_t tmp[stride*(b_w+HTAPS_MAX-1)];\
     assert(h==b_w);\
-    mc_block(NULL, dst, src-(HTAPS_MAX/2-1)-(HTAPS_MAX/2-1)*stride, tmp, stride, b_w, b_w, dx, dy);\
+    mc_block(NULL, dst, src-(HTAPS_MAX/2-1)-(HTAPS_MAX/2-1)*stride, stride, b_w, b_w, dx, dy);\
 }
 
 mca( 0, 0,16)
@@ -1172,7 +898,7 @@ static void pred_block(SnowContext *s, uint8_t *dst, uint8_t *tmp, int stride, i
         src += sx + sy*stride;
         if(   (unsigned)sx >= w - b_w - (HTAPS_MAX-2)
            || (unsigned)sy >= h - b_h - (HTAPS_MAX-2)){
-            ff_emulated_edge_mc(tmp + MB_SIZE, src, stride, b_w+HTAPS_MAX-1, b_h+HTAPS_MAX-1, sx, sy, w, h);
+            s->dsp.emulated_edge_mc(tmp + MB_SIZE, src, stride, b_w+HTAPS_MAX-1, b_h+HTAPS_MAX-1, sx, sy, w, h);
             src= tmp + MB_SIZE;
         }
 //        assert(b_w == b_h || 2*b_w == b_h || b_w == 2*b_h);
@@ -1180,7 +906,7 @@ static void pred_block(SnowContext *s, uint8_t *dst, uint8_t *tmp, int stride, i
         assert(b_w>1 && b_h>1);
         assert((tab_index>=0 && tab_index<4) || b_w==32);
         if((dx&3) || (dy&3) || !(b_w == b_h || 2*b_w == b_h || b_w == 2*b_h) || (b_w&(b_w-1)) || !s->plane[plane_index].fast_mc )
-            mc_block(&s->plane[plane_index], dst, src, tmp, stride, b_w, b_h, dx, dy);
+            mc_block(&s->plane[plane_index], dst, src, stride, b_w, b_h, dx, dy);
         else if(b_w==32){
             int y;
             for(y=0; y<b_h; y+=16){
@@ -1324,40 +1050,6 @@ static av_always_inline void add_yblock(SnowContext *s, int sliced, slice_buffer
         block[3]= ptmp;
         pred_block(s, block[3], tmp, src_stride, src_x, src_y, b_w, b_h, rb, plane_index, w, h);
     }
-#if 0
-    for(y=0; y<b_h; y++){
-        for(x=0; x<b_w; x++){
-            int v=   obmc [x + y*obmc_stride] * block[3][x + y*src_stride] * (256/OBMC_MAX);
-            if(add) dst[x + y*dst_stride] += v;
-            else    dst[x + y*dst_stride] -= v;
-        }
-    }
-    for(y=0; y<b_h; y++){
-        uint8_t *obmc2= obmc + (obmc_stride>>1);
-        for(x=0; x<b_w; x++){
-            int v=   obmc2[x + y*obmc_stride] * block[2][x + y*src_stride] * (256/OBMC_MAX);
-            if(add) dst[x + y*dst_stride] += v;
-            else    dst[x + y*dst_stride] -= v;
-        }
-    }
-    for(y=0; y<b_h; y++){
-        uint8_t *obmc3= obmc + obmc_stride*(obmc_stride>>1);
-        for(x=0; x<b_w; x++){
-            int v=   obmc3[x + y*obmc_stride] * block[1][x + y*src_stride] * (256/OBMC_MAX);
-            if(add) dst[x + y*dst_stride] += v;
-            else    dst[x + y*dst_stride] -= v;
-        }
-    }
-    for(y=0; y<b_h; y++){
-        uint8_t *obmc3= obmc + obmc_stride*(obmc_stride>>1);
-        uint8_t *obmc4= obmc3+ (obmc_stride>>1);
-        for(x=0; x<b_w; x++){
-            int v=   obmc4[x + y*obmc_stride] * block[0][x + y*src_stride] * (256/OBMC_MAX);
-            if(add) dst[x + y*dst_stride] += v;
-            else    dst[x + y*dst_stride] -= v;
-        }
-    }
-#else
     if(sliced){
         s->dwt.inner_add_yblock(obmc, obmc_stride, block, b_w, b_h, src_x,src_y, src_stride, sb, add, dst8);
     }else{
@@ -1388,7 +1080,6 @@ static av_always_inline void add_yblock(SnowContext *s, int sliced, slice_buffer
             }
         }
     }
-#endif /* 0 */
 }
 
 static av_always_inline void predict_slice_buffered(SnowContext *s, slice_buffer * sb, IDWTELEM * old_buffer, int plane_index, int add, int mb_y){
@@ -1918,8 +1609,6 @@ static void dwt_quantize(SnowContext *s, Plane *p, DWTELEM *buffer, int width, i
 static void halfpel_interpol(SnowContext *s, uint8_t *halfpel[4][4], AVFrame *frame){
     int p,x,y;
 
-    assert(!(s->avctx->flags & CODEC_FLAG_EMU_EDGE));
-
     for(p=0; p<3; p++){
         int is_chroma= !!p;
         int w= s->avctx->width  >>is_chroma;
@@ -1976,10 +1665,16 @@ static int frame_start(SnowContext *s){
    int w= s->avctx->width; //FIXME round up to x16 ?
    int h= s->avctx->height;
 
-    if(s->current_picture.data[0]){
-        s->dsp.draw_edges(s->current_picture.data[0], s->current_picture.linesize[0], w   , h   , EDGE_WIDTH  );
-        s->dsp.draw_edges(s->current_picture.data[1], s->current_picture.linesize[1], w>>1, h>>1, EDGE_WIDTH/2);
-        s->dsp.draw_edges(s->current_picture.data[2], s->current_picture.linesize[2], w>>1, h>>1, EDGE_WIDTH/2);
+    if (s->current_picture.data[0] && !(s->avctx->flags&CODEC_FLAG_EMU_EDGE)) {
+        s->dsp.draw_edges(s->current_picture.data[0],
+                          s->current_picture.linesize[0], w   , h   ,
+                          EDGE_WIDTH  , EDGE_WIDTH  , EDGE_TOP | EDGE_BOTTOM);
+        s->dsp.draw_edges(s->current_picture.data[1],
+                          s->current_picture.linesize[1], w>>1, h>>1,
+                          EDGE_WIDTH/2, EDGE_WIDTH/2, EDGE_TOP | EDGE_BOTTOM);
+        s->dsp.draw_edges(s->current_picture.data[2],
+                          s->current_picture.linesize[2], w>>1, h>>1,
+                          EDGE_WIDTH/2, EDGE_WIDTH/2, EDGE_TOP | EDGE_BOTTOM);
     }
 
     release_buffer(s->avctx);
@@ -2006,7 +1701,7 @@ static int frame_start(SnowContext *s){
         }
     }
 
-    s->current_picture.reference= 1;
+    s->current_picture.reference= 3;
     if(s->avctx->get_buffer(s->avctx, &s->current_picture) < 0){
         av_log(s->avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
@@ -2075,7 +1770,7 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPac
     ff_init_range_decoder(c, buf, buf_size);
     ff_build_rac_states(c, 0.05*(1LL<<32), 256-8);
 
-    s->current_picture.pict_type= FF_I_TYPE; //FIXME I vs. P
+    s->current_picture.pict_type= AV_PICTURE_TYPE_I; //FIXME I vs. P
     if(decode_header(s)<0)
         return -1;
     common_init_after_header(avctx);
@@ -2235,17 +1930,15 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec snow_decoder = {
-    "snow",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_SNOW,
-    sizeof(SnowContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1 /*| CODEC_CAP_DRAW_HORIZ_BAND*/,
-    NULL,
+AVCodec ff_snow_decoder = {
+    .name           = "snow",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_SNOW,
+    .priv_data_size = sizeof(SnowContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1 /*| CODEC_CAP_DRAW_HORIZ_BAND*/,
     .long_name = NULL_IF_CONFIG_SMALL("Snow"),
 };
 
@@ -3294,10 +2987,8 @@ static void iterative_me(SnowContext *s){
                 }
                 best_rd= ref_rd;
                 *block= ref_b;
-#if 1
                 check_block(s, mb_x, mb_y, color, 1, *obmc_edged, &best_rd);
                 //FIXME RD style color selection
-#endif
                 if(!same_block(block, &backup)){
                     if(tb ) tb ->type &= ~BLOCK_OPT;
                     if(lb ) lb ->type &= ~BLOCK_OPT;
@@ -3616,7 +3307,7 @@ static void update_last_header_values(SnowContext *s){
 
 static int qscale2qlog(int qscale){
     return rint(QROOT*log(qscale / (float)FF_QP2LAMBDA)/log(2))
-           + 61*QROOT/8; //<64 >60
+           + 61*QROOT/8; ///< 64 > 60
 }
 
 static int ratecontrol_1pass(SnowContext *s, AVFrame *pict)
@@ -3654,7 +3345,7 @@ static int ratecontrol_1pass(SnowContext *s, AVFrame *pict)
     coef_sum = (uint64_t)coef_sum * coef_sum >> 16;
     assert(coef_sum < INT_MAX);
 
-    if(pict->pict_type == FF_I_TYPE){
+    if(pict->pict_type == AV_PICTURE_TYPE_I){
         s->m.current_picture.mb_var_sum= coef_sum;
         s->m.current_picture.mc_mb_var_sum= 0;
     }else{
@@ -3723,7 +3414,7 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
     if(avctx->flags&CODEC_FLAG_PASS2){
         s->m.pict_type =
         pict->pict_type= s->m.rc_context.entry[avctx->frame_number].new_pict_type;
-        s->keyframe= pict->pict_type==FF_I_TYPE;
+        s->keyframe= pict->pict_type==AV_PICTURE_TYPE_I;
         if(!(avctx->flags&CODEC_FLAG_QSCALE)) {
             pict->quality= ff_rate_estimate_qscale(&s->m, 0);
             if (pict->quality < 0)
@@ -3732,7 +3423,7 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
     }else{
         s->keyframe= avctx->gop_size==0 || avctx->frame_number % avctx->gop_size == 0;
         s->m.pict_type=
-        pict->pict_type= s->keyframe ? FF_I_TYPE : FF_P_TYPE;
+        pict->pict_type= s->keyframe ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_P;
     }
 
     if(s->pass1_rc && avctx->frame_number == 0)
@@ -3749,9 +3440,9 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
     frame_start(s);
 
     s->m.current_picture_ptr= &s->m.current_picture;
-    s->m.last_picture.pts= s->m.current_picture.pts;
-    s->m.current_picture.pts= pict->pts;
-    if(pict->pict_type == FF_P_TYPE){
+    s->m.last_picture.f.pts = s->m.current_picture.f.pts;
+    s->m.current_picture.f.pts = pict->pts;
+    if(pict->pict_type == AV_PICTURE_TYPE_P){
         int block_width = (width +15)>>4;
         int block_height= (height+15)>>4;
         int stride= s->current_picture.linesize[0];
@@ -3760,14 +3451,14 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
         assert(s->last_picture[0].data[0]);
 
         s->m.avctx= s->avctx;
-        s->m.current_picture.data[0]= s->current_picture.data[0];
-        s->m.   last_picture.data[0]= s->last_picture[0].data[0];
-        s->m.    new_picture.data[0]= s->  input_picture.data[0];
+        s->m.current_picture.f.data[0] = s->current_picture.data[0];
+        s->m.   last_picture.f.data[0] = s->last_picture[0].data[0];
+        s->m.    new_picture.f.data[0] = s->  input_picture.data[0];
         s->m.   last_picture_ptr= &s->m.   last_picture;
         s->m.linesize=
-        s->m.   last_picture.linesize[0]=
-        s->m.    new_picture.linesize[0]=
-        s->m.current_picture.linesize[0]= stride;
+        s->m.   last_picture.f.linesize[0] =
+        s->m.    new_picture.f.linesize[0] =
+        s->m.current_picture.f.linesize[0] = stride;
         s->m.uvlinesize= s->current_picture.linesize[1];
         s->m.width = width;
         s->m.height= height;
@@ -3800,13 +3491,13 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
 
 redo_frame:
 
-    if(pict->pict_type == FF_I_TYPE)
+    if(pict->pict_type == AV_PICTURE_TYPE_I)
         s->spatial_decomposition_count= 5;
     else
         s->spatial_decomposition_count= 5;
 
     s->m.pict_type = pict->pict_type;
-    s->qbias= pict->pict_type == FF_P_TYPE ? 2 : 0;
+    s->qbias= pict->pict_type == AV_PICTURE_TYPE_P ? 2 : 0;
 
     common_init_after_header(avctx);
 
@@ -3828,7 +3519,7 @@ redo_frame:
         int x, y;
 //        int bits= put_bits_count(&s->c.pb);
 
-        if(!(avctx->flags2 & CODEC_FLAG2_MEMC_ONLY)){
+        if (!s->memc_only) {
             //FIXME optimize
             if(pict->data[plane_index]) //FIXME gray hack
                 for(y=0; y<h; y++){
@@ -3839,12 +3530,12 @@ redo_frame:
             predict_plane(s, s->spatial_idwt_buffer, plane_index, 0);
 
             if(   plane_index==0
-               && pict->pict_type == FF_P_TYPE
+               && pict->pict_type == AV_PICTURE_TYPE_P
                && !(avctx->flags&CODEC_FLAG_PASS2)
                && s->m.me.scene_change_score > s->avctx->scenechange_threshold){
                 ff_init_range_encoder(c, buf, buf_size);
                 ff_build_rac_states(c, 0.05*(1LL<<32), 256-8);
-                pict->pict_type= FF_I_TYPE;
+                pict->pict_type= AV_PICTURE_TYPE_I;
                 s->keyframe=1;
                 s->current_picture.key_frame=1;
                 goto redo_frame;
@@ -3890,7 +3581,7 @@ redo_frame:
                     if(!QUANTIZE2)
                         quantize(s, b, b->ibuf, b->buf, b->stride, s->qbias);
                     if(orientation==0)
-                        decorrelate(s, b, b->ibuf, b->stride, pict->pict_type == FF_P_TYPE, 0);
+                        decorrelate(s, b, b->ibuf, b->stride, pict->pict_type == AV_PICTURE_TYPE_P, 0);
                     encode_subband(s, b, b->ibuf, b->parent ? b->parent->ibuf : NULL, b->stride, orientation);
                     assert(b->parent==NULL || b->parent->stride == b->stride*2);
                     if(orientation==0)
@@ -3917,7 +3608,7 @@ redo_frame:
             predict_plane(s, s->spatial_idwt_buffer, plane_index, 1);
         }else{
             //ME/MC only
-            if(pict->pict_type == FF_I_TYPE){
+            if(pict->pict_type == AV_PICTURE_TYPE_I){
                 for(y=0; y<h; y++){
                     for(x=0; x<w; x++){
                         s->current_picture.data[plane_index][y*s->current_picture.linesize[plane_index] + x]=
@@ -3954,9 +3645,9 @@ redo_frame:
     s->current_picture.quality = pict->quality;
     s->m.frame_bits = 8*(s->c.bytestream - s->c.bytestream_start);
     s->m.p_tex_bits = s->m.frame_bits - s->m.misc_bits - s->m.mv_bits;
-    s->m.current_picture.display_picture_number =
-    s->m.current_picture.coded_picture_number = avctx->frame_number;
-    s->m.current_picture.quality = pict->quality;
+    s->m.current_picture.f.display_picture_number =
+    s->m.current_picture.f.coded_picture_number   = avctx->frame_number;
+    s->m.current_picture.f.quality                = pict->quality;
     s->m.total_bits += 8*(s->c.bytestream - s->c.bytestream_start);
     if(s->pass1_rc)
         if (ff_rate_estimate_qscale(&s->m, 0) < 0)
@@ -3986,15 +3677,30 @@ static av_cold int encode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec snow_encoder = {
-    "snow",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_SNOW,
-    sizeof(SnowContext),
-    encode_init,
-    encode_frame,
-    encode_end,
+#define OFFSET(x) offsetof(SnowContext, x)
+#define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
+static const AVOption options[] = {
+    { "memc_only",      "Only do ME/MC (I frames -> ref, P frame -> ME+MC).",   OFFSET(memc_only), AV_OPT_TYPE_INT, { 0 }, 0, 1, VE },
+    { NULL },
+};
+
+static const AVClass snowenc_class = {
+    .class_name = "snow encoder",
+    .item_name  = av_default_item_name,
+    .option     = options,
+    .version    = LIBAVUTIL_VERSION_INT,
+};
+
+AVCodec ff_snow_encoder = {
+    .name           = "snow",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_SNOW,
+    .priv_data_size = sizeof(SnowContext),
+    .init           = encode_init,
+    .encode         = encode_frame,
+    .close          = encode_end,
     .long_name = NULL_IF_CONFIG_SMALL("Snow"),
+    .priv_class     = &snowenc_class,
 };
 #endif
 
@@ -4005,6 +3711,7 @@ AVCodec snow_encoder = {
 #undef printf
 
 #include "libavutil/lfg.h"
+#include "libavutil/mathematics.h"
 
 int main(void){
     int width=256;
@@ -4039,27 +3746,6 @@ int main(void){
     for(i=0; i<width*height; i++)
         if(FFABS(buffer[0][i] - buffer[1][i])>20) printf("fsck: %6d %12d %7d\n",i, buffer[0][i], buffer[1][i]);
 
-#if 0
-    printf("testing AC coder\n");
-    memset(s.header_state, 0, sizeof(s.header_state));
-    ff_init_range_encoder(&s.c, buffer[0], 256*256);
-    ff_init_cabac_states(&s.c, ff_h264_lps_range, ff_h264_mps_state, ff_h264_lps_state, 64);
-
-    for(i=-256; i<256; i++){
-        put_symbol(&s.c, s.header_state, i*i*i/3*FFABS(i), 1);
-    }
-    ff_rac_terminate(&s.c);
-
-    memset(s.header_state, 0, sizeof(s.header_state));
-    ff_init_range_decoder(&s.c, buffer[0], 256*256);
-    ff_init_cabac_states(&s.c, ff_h264_lps_range, ff_h264_mps_state, ff_h264_lps_state, 64);
-
-    for(i=-256; i<256; i++){
-        int j;
-        j= get_symbol(&s.c, s.header_state, 1);
-        if(j!=i*i*i/3*FFABS(i)) printf("fsck: %d != %d\n", i, j);
-    }
-#endif
     {
     int level, orientation, x, y;
     int64_t errors[8][4];
@@ -4117,7 +3803,6 @@ int main(void){
             buf+=stride>>1;
 
             memset(buffer[0], 0, sizeof(int)*width*height);
-#if 1
             for(y=0; y<height; y++){
                 for(x=0; x<width; x++){
                     int tab[4]={0,2,3,1};
@@ -4125,15 +3810,6 @@ int main(void){
                 }
             }
             ff_spatial_dwt(buffer[0], width, height, width, s.spatial_decomposition_type, s.spatial_decomposition_count);
-#else
-            for(y=0; y<h; y++){
-                for(x=0; x<w; x++){
-                    buf[x + y*stride  ]=169;
-                    buf[x + y*stride-w]=64;
-                }
-            }
-            ff_spatial_idwt(buffer[0], width, height, width, s.spatial_decomposition_type, s.spatial_decomposition_count);
-#endif
             for(y=0; y<height; y++){
                 for(x=0; x<width; x++){
                     int64_t d= buffer[0][x + y*width];

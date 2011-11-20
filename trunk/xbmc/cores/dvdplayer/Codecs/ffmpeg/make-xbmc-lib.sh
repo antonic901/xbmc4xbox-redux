@@ -13,7 +13,8 @@ xbmc_clean ()
 xbmc_configure ()
 {
   echo "Configuring ..."
-  CFLAGS="-D_XBOX -fno-common -mtune=pentium3 -msse -mfpmath=sse -pipe -Wno-unused"
+  CFLAGS="-D_XBOX -msse -mfpmath=sse -pipe"
+  LDFLAGS="-Wl,--enable-auto-import"
   PARAMS=" \
   --cpu=pentium3 \
   --enable-gpl \
@@ -30,8 +31,10 @@ xbmc_configure ()
   --disable-ffplay \
   --disable-ffprobe \
   --disable-ffserver \
+  --disable-avconv \
   \
   --disable-muxers \
+  --enable-muxer=spdif,adts \
   --disable-encoders \
   --disable-devices \
   --disable-bsfs \
@@ -39,10 +42,8 @@ xbmc_configure ()
   --enable-postproc \
   \
   --disable-filters \
-  --enable-filter=buffer \
   \
-  --disable-protocols \
-  --enable-protocol=concat,file,pipe,gopher,mmst,rtp,tcp,udp,http \
+  --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte \
   \
   --disable-vdpau \
   --disable-vaapi \
@@ -52,6 +53,7 @@ xbmc_configure ()
   --disable-amd3dnow \
   --disable-amd3dnowext \
   --disable-ssse3 \
+  --disable-avx \
   --disable-armv5te \
   --disable-armv6 \
   --disable-armv6t2 \
@@ -60,8 +62,8 @@ xbmc_configure ()
   --disable-mmi \
   --disable-neon \
   --disable-vis"
-  echo "--extra-cflags=\"$CFLAGS\" $PARAMS $1"
-  ./configure --extra-cflags="$CFLAGS" $PARAMS $1
+  echo "--extra-cflags=\"$CFLAGS\" --extra-ldflags=\"$LDFLAGS\" $PARAMS $1"
+  ./configure --extra-cflags="$CFLAGS" --extra-ldflags="$LDFLAGS" $PARAMS $1
 }
 
 # $1 = destination folder
@@ -72,15 +74,14 @@ xbmc_make ()
   make -j2
   [ ! -d .libs ] && mkdir .libs
   cp lib*/*.dll .libs/
-  mv .libs/swscale-0.dll .libs/swscale-0.6.1.dll
   if [ "$1" != "" ]; then
     echo "Copying libraries to $1 ..."
     [ ! -d "$1" ] && mkdir -p "$1"
-    cp .libs/avcodec-52.dll "$1"
-    cp .libs/avformat-52.dll "$1"
-    cp .libs/avutil-50.dll "$1"
+    cp .libs/avcodec-53.dll "$1"
+    cp .libs/avformat-53.dll "$1"
+    cp .libs/avutil-51.dll "$1"
     cp .libs/postproc-51.dll "$1"
-    cp .libs/swscale-0.6.1.dll "$1"
+    cp .libs/swscale-2.dll "$1"
   fi
 }
 
@@ -90,21 +91,21 @@ xbmc_all ()
   xbmc_configure "\
     --disable-decoders \
     --enable-decoder=mpeg4,msmpeg4v1,msmpeg4v2,msmpeg4v3 \
-    --enable-decoder=vp5,vp6,vp6a,vp6f \
+    --enable-decoder=vp6,vp6a,vp6f \
     --enable-decoder=mp1,mp2,mp3,mpegvideo,mpeg1video,mpeg2video \
-	--enable-decoder=mjpeg,mjpegb \
+    --enable-decoder=mjpeg,mjpegb,rawvideo \
     --enable-decoder=wmav1,wmav2,wmapro,wmv1,wmv2,wmv3 \
-    --enable-decoder=aac,ac3,dca,dvbsub,dvdsub,flv,h263,h264,rtp,svq1,svq3,vorbis \
+    --enable-decoder=aac,ac3,dca,dvbsub,dvdsub,flv,h263,h264,rtp,vorbis \
     \
     --disable-demuxers \
     --enable-demuxer=mp1,mp2,mp3,mpegps,mpegts,mpegtsraw,mpegvideo \
     --enable-demuxer=aac,ac3,dts,asf,avi,flv,h263,h264,ogg,matroska,mov \
     --enable-demuxer=nuv,sdp,rtsp \
-	"
-	xbmc_make ../../../../../system/players/dvdplayer/
-	xbmc_clean
-	xbmc_configure
-	xbmc_make ../../../../../system/players/dvdplayer/full
+  "
+  xbmc_make ../../../../../system/players/dvdplayer/
+  xbmc_clean
+  xbmc_configure
+  xbmc_make ../../../../../system/players/dvdplayer/full
 }
 
 case "$1"

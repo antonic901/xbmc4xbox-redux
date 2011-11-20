@@ -46,6 +46,7 @@ public:
 protected:
   bool       m_eof;
   bool       m_bPaused;
+  bool       m_bLive;
   char*      m_sStreamPlaying;
   std::vector<CStdString> m_optionvalues;
 

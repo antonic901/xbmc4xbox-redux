@@ -313,6 +313,10 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
       {
         g_audioConfig.SetAC3Enabled(g_guiSettings.GetBool("audiooutput.ac3passthrough"));
         g_audioConfig.SetDTSEnabled(g_guiSettings.GetBool("audiooutput.dtspassthrough"));
+        g_audioConfig.SetAACEnabled(g_guiSettings.GetBool("audiooutput.aacpassthrough"));
+        g_audioConfig.SetMP1Enabled(g_guiSettings.GetBool("audiooutput.mp1passthrough"));
+        g_audioConfig.SetMP2Enabled(g_guiSettings.GetBool("audiooutput.mp2passthrough"));
+        g_audioConfig.SetMP3Enabled(g_guiSettings.GetBool("audiooutput.mp3passthrough"));
         if (g_audioConfig.NeedsSave())
         { // should we perhaps show a dialog here?
           g_audioConfig.Save();
@@ -877,7 +881,14 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiocds.encoder") == CDDARIP_ENCODER_FLAC);
     }
-    else if (strSetting.Equals("musicplayer.outputtoallspeakers") || strSetting.Equals("audiooutput.ac3passthrough") || strSetting.Equals("audiooutput.dtspassthrough"))
+    else if (
+             strSetting.Equals("musicplayer.outputtoallspeakers") ||
+             strSetting.Equals("audiooutput.ac3passthrough") ||
+             strSetting.Equals("audiooutput.dtspassthrough") ||
+             strSetting.Equals("audiooutput.aacpassthrough") ||
+             strSetting.Equals("audiooutput.mp1passthrough") ||
+             strSetting.Equals("audiooutput.mp2passthrough") ||
+             strSetting.Equals("audiooutput.mp3passthrough"))
     { // only visible if we are in digital mode
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL);

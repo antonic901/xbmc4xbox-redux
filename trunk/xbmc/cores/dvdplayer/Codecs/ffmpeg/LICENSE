@@ -15,8 +15,6 @@ Specifically, the GPL parts of FFmpeg are
 
 - libpostproc
 - optional x86 optimizations in the files
-  libavcodec/x86/h264_deblock_sse2.asm
-  libavcodec/x86/h264_idct_sse2.asm
   libavcodec/x86/idct_mmx.c
 - the X11 grabber in libavdevice/x11grab.c
 
@@ -43,6 +41,6 @@ is incompatible with the LGPL v2.1 and the GPL v2, but not with version 3 of
 those licenses. So to combine the OpenCORE libraries with FFmpeg, the license
 version needs to be upgraded by passing --enable-version3 to configure.
 
-The nonfree external library libfaac can be hooked up in FFmpeg. You need to
-pass --enable-nonfree to configure to enable it. Employ this option with care
-as FFmpeg then becomes nonfree and unredistributable.
+The nonfree external libraries libfaac and libaacplus can be hooked up in FFmpeg.
+You need to pass --enable-nonfree to configure to enable it. Employ this option
+with care as FFmpeg then becomes nonfree and unredistributable.

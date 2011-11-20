@@ -18,11 +18,13 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+
+#include "DVDAudioCodecLiba52.h"
+#ifdef USE_LIBA52_DECODER
  
 #include "stdafx.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"
-#include "DVDAudioCodecLiba52.h"
 #include "DVDStreamInfo.h"
 
 
@@ -349,3 +351,4 @@ void CDVDAudioCodecLiba52::Reset()
   m_fSamples = m_dll.a52_samples(m_pState);
 }
 
+#endif /* USE_LIBA52_DECODER */

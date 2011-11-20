@@ -79,12 +79,8 @@ CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
   m_iSubtitleDelay = 0;
   m_fForcedAspectRatio = 0;
   m_iNrOfPicturesNotToSkip = 0;
-#ifdef _XBOX
-  m_messageQueue.SetMaxDataSize(10 * 256 * 1024);
-#else
-  m_messageQueue.SetMaxDataSize(8 * 1024 * 1024);
-#endif
-  m_messageQueue.SetMaxTimeSize(8.0);
+  m_messageQueue.SetMaxDataSize(g_guiSettings.GetInt("dvdplayercache.video") * 1024);
+  m_messageQueue.SetMaxTimeSize(g_guiSettings.GetInt("dvdplayercache.videotime"));
   g_dvdPerformanceCounter.EnableVideoQueue(&m_messageQueue);
 
   m_iCurrentPts = DVD_NOPTS_VALUE;
@@ -316,7 +312,7 @@ void CDVDPlayerVideo::Process()
       if(pMsgGeneralResync->m_clock)
       {
         CLog::Log(LOGDEBUG, "CDVDPlayerVideo - CDVDMsg::GENERAL_RESYNC(%f, 1)", pts);
-        m_pClock->Discontinuity(CLOCK_DISC_NORMAL, pts, delay);
+        m_pClock->Discontinuity(pts - delay);
       }
       else
         CLog::Log(LOGDEBUG, "CDVDPlayerVideo - CDVDMsg::GENERAL_RESYNC(%f, 0)", pts);

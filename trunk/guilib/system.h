@@ -118,6 +118,8 @@
 
 #define USE_LIBMAD
 #undef USE_LIBFAAD
+#undef USE_LIBDTS_DECODER
+#undef USE_LIBA52_DECODER
 
 #include "../xbmc/xbox/PlatformInclude.h"
 

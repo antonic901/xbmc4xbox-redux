@@ -40,7 +40,7 @@ VLC ff_ivi_mb_vlc_tabs [8];
 VLC ff_ivi_blk_vlc_tabs[8];
 
 /**
- *  Reverses "nbits" bits of the value "val" and returns the result
+ *  Reverse "nbits" bits of the value "val" and return the result
  *  in the least significant bits.
  */
 static uint16_t inv_bits(uint16_t val, int nbits)
@@ -404,6 +404,10 @@ int ff_ivi_decode_blocks(GetBitContext *gb, IVIBandDesc *band, IVITile *tile)
                         hi  = get_vlc2(gb, band->blk_vlc.tab->table, IVI_VLC_BITS, 1);
                         val = IVI_TOSIGNED((hi << 6) | lo); /* merge them and convert into signed val */
                     } else {
+                        if (sym >= 256U) {
+                            av_log(NULL, AV_LOG_ERROR, "Invalid sym encountered: %d.\n", sym);
+                            return -1;
+                        }
                         run = rvmap->runtab[sym];
                         val = rvmap->valtab[sym];
                     }
@@ -414,8 +418,8 @@ int ff_ivi_decode_blocks(GetBitContext *gb, IVIBandDesc *band, IVITile *tile)
                         break;
                     pos = band->scan[scan_pos];
 
-                    if (IVI_DEBUG && !val)
-                        av_log(NULL, AV_LOG_ERROR, "Val = 0 encountered!\n");
+                    if (!val)
+                        av_dlog(NULL, "Val = 0 encountered!\n");
 
                     q = (base_tab[pos] * quant) >> 9;
                     if (q > 1)
@@ -559,7 +563,7 @@ void ff_ivi_process_empty_tile(AVCodecContext *avctx, IVIBandDesc *band,
 }
 
 
-#if IVI_DEBUG
+#ifdef DEBUG
 uint16_t ivi_calc_band_checksum (IVIBandDesc *band)
 {
     int         x, y;

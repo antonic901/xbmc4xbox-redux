@@ -23,7 +23,7 @@
  * @file
  * @brief Brute Force & Ignorance (.bfi) video decoder
  * @author Sisir Koppaka ( sisir.koppaka at gmail dot com )
- * @sa http://wiki.multimedia.cx/index.php?title=BFI
+ * @see http://wiki.multimedia.cx/index.php?title=BFI
  */
 
 #include "libavutil/common.h"
@@ -34,12 +34,14 @@ typedef struct BFIContext {
     AVCodecContext *avctx;
     AVFrame frame;
     uint8_t *dst;
+    uint32_t pal[256];
 } BFIContext;
 
 static av_cold int bfi_decode_init(AVCodecContext * avctx)
 {
     BFIContext *bfi = avctx->priv_data;
     avctx->pix_fmt = PIX_FMT_PAL8;
+    avcodec_get_frame_defaults(&bfi->frame);
     bfi->dst = av_mallocz(avctx->width * avctx->height);
     return 0;
 }
@@ -47,7 +49,7 @@ static av_cold int bfi_decode_init(AVCodecContext * avctx)
 static int bfi_decode_frame(AVCodecContext * avctx, void *data,
                             int *data_size, AVPacket *avpkt)
 {
-    const uint8_t *buf = avpkt->data;
+    const uint8_t *buf = avpkt->data, *buf_end = avpkt->data + avpkt->size;
     int buf_size = avpkt->size;
     BFIContext *bfi = avctx->priv_data;
     uint8_t *dst = bfi->dst;
@@ -59,7 +61,7 @@ static int bfi_decode_frame(AVCodecContext * avctx, void *data,
     if (bfi->frame.data[0])
         avctx->release_buffer(avctx, &bfi->frame);
 
-    bfi->frame.reference = 1;
+    bfi->frame.reference = 3;
 
     if (avctx->get_buffer(avctx, &bfi->frame) < 0) {
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
@@ -68,7 +70,7 @@ static int bfi_decode_frame(AVCodecContext * avctx, void *data,
 
     /* Set frame parameters and palette, if necessary */
     if (!avctx->frame_number) {
-        bfi->frame.pict_type = FF_I_TYPE;
+        bfi->frame.pict_type = AV_PICTURE_TYPE_I;
         bfi->frame.key_frame = 1;
         /* Setting the palette */
         if(avctx->extradata_size>768) {
@@ -78,17 +80,20 @@ static int bfi_decode_frame(AVCodecContext * avctx, void *data,
         pal = (uint32_t *) bfi->frame.data[1];
         for (i = 0; i < avctx->extradata_size / 3; i++) {
             int shift = 16;
-            *pal = 0;
+            *pal = 0xFF << 24;
             for (j = 0; j < 3; j++, shift -= 8)
                 *pal +=
                     ((avctx->extradata[i * 3 + j] << 2) |
                     (avctx->extradata[i * 3 + j] >> 4)) << shift;
             pal++;
         }
+        memcpy(bfi->pal, bfi->frame.data[1], sizeof(bfi->pal));
         bfi->frame.palette_has_changed = 1;
     } else {
-        bfi->frame.pict_type = FF_P_TYPE;
+        bfi->frame.pict_type = AV_PICTURE_TYPE_P;
         bfi->frame.key_frame = 0;
+        bfi->frame.palette_has_changed = 0;
+        memcpy(bfi->frame.data[1], bfi->pal, sizeof(bfi->pal));
     }
 
     buf += 4; //Unpacked size, not required.
@@ -98,6 +103,11 @@ static int bfi_decode_frame(AVCodecContext * avctx, void *data,
         unsigned int byte = *buf++, av_uninit(offset);
         unsigned int code = byte >> 6;
         unsigned int length = byte & ~0xC0;
+
+        if (buf >= buf_end) {
+            av_log(avctx, AV_LOG_ERROR, "Input resolution larger than actual frame.\n");
+            return -1;
+        }
 
         /* Get length and offset(if required) */
         if (length == 0) {
@@ -121,6 +131,10 @@ static int bfi_decode_frame(AVCodecContext * avctx, void *data,
         switch (code) {
 
         case 0:                //Normal Chain
+            if (length >= buf_end - buf) {
+                av_log(avctx, AV_LOG_ERROR, "Frame larger than buffer.\n");
+                return -1;
+            }
             bytestream_get_buffer(&buf, dst, length);
             dst += length;
             break;
@@ -171,7 +185,7 @@ static av_cold int bfi_decode_close(AVCodecContext * avctx)
     return 0;
 }
 
-AVCodec bfi_decoder = {
+AVCodec ff_bfi_decoder = {
     .name = "bfi",
     .type = AVMEDIA_TYPE_VIDEO,
     .id = CODEC_ID_BFI,

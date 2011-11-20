@@ -95,7 +95,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   }
 
   // set acceleration
-  m_pCodecContext->dsp_mask = FF_MM_FORCE | FF_MM_MMX | FF_MM_MMX2 | FF_MM_SSE;
+  m_pCodecContext->dsp_mask = AV_CPU_FLAG_FORCE | AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE;
   
   // advanced setting override for skip loop filter (see avcodec.h for valid options)
   // TODO: allow per video setting?
@@ -107,7 +107,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   // set any special options
   for(CDVDCodecOptions::iterator it = options.begin(); it != options.end(); it++)
   {
-    m_dllAvCodec.av_set_string(m_pCodecContext, it->m_name.c_str(), it->m_value.c_str());
+    m_dllAvUtil.av_set_string3(m_pCodecContext, it->m_name.c_str(), it->m_value.c_str(), 0, NULL);
   }
   
   if (m_dllAvCodec.avcodec_open(m_pCodecContext, pCodec) < 0)
@@ -204,7 +204,14 @@ int CDVDVideoCodecFFmpeg::Decode(BYTE* pData, int iSize, double dts, double pts)
   m_dts = dts;
   m_pCodecContext->reordered_opaque = pts_dtoi(pts);
 
-  len = m_dllAvCodec.avcodec_decode_video(m_pCodecContext, m_pFrame, &iGotPicture, pData, iSize);
+  AVPacket avpkt;
+  m_dllAvCodec.av_init_packet(&avpkt);
+  avpkt.data = pData;
+  avpkt.size = iSize;
+  /* We lie, but this flag is only used by pngdec.c.
+   * Setting it correctly would allow CorePNG decoding. */
+  avpkt.flags = AV_PKT_FLAG_KEY;
+  len = m_dllAvCodec.avcodec_decode_video2(m_pCodecContext, m_pFrame, &iGotPicture, &avpkt);
 
   if (len < 0)
   {
@@ -212,7 +219,7 @@ int CDVDVideoCodecFFmpeg::Decode(BYTE* pData, int iSize, double dts, double pts)
     return VC_ERROR;
   }
 
-  if (len != iSize && !m_pCodecContext->hurry_up)
+  if (len != iSize && m_pCodecContext->skip_frame <= AVDISCARD_DEFAULT)
     CLog::Log(LOGWARNING, "%s - avcodec_decode_video didn't consume the full packet. size: %d, consumed: %d", __FUNCTION__, iSize, len);
 
   if (!iGotPicture)

@@ -21,15 +21,22 @@
 #ifndef AVFORMAT_NETWORK_H
 #define AVFORMAT_NETWORK_H
 
+#include <errno.h>
+
 #include "config.h"
+#include "libavutil/error.h"
+#include "os_support.h"
 
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#define ff_neterrno() (-WSAGetLastError())
-#define FF_NETERROR(err) (-WSA##err)
-#define WSAEAGAIN WSAEWOULDBLOCK
+#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#define ETIMEDOUT       WSAETIMEDOUT
+#define ECONNREFUSED    WSAECONNREFUSED
+#define EINPROGRESS     WSAEINPROGRESS
+
+int ff_neterrno(void);
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -37,31 +44,26 @@
 #include <netdb.h>
 
 #define ff_neterrno() AVERROR(errno)
-#define FF_NETERROR(err) AVERROR(err)
 #endif
 
 #if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
 
+#if HAVE_POLL_H
+#include <poll.h>
+#endif
+
 int ff_socket_nonblock(int socket, int enable);
 
-static inline int ff_network_init(void)
-{
-#if HAVE_WINSOCK2_H
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(1,1), &wsaData))
-        return 0;
-#endif
-    return 1;
-}
+extern int ff_network_inited_globally;
+int ff_network_init(void);
+void ff_network_close(void);
 
-static inline void ff_network_close(void)
-{
-#if HAVE_WINSOCK2_H
-    WSACleanup();
-#endif
-}
+void ff_tls_init(void);
+void ff_tls_deinit(void);
+
+int ff_network_wait_fd(int fd, int write);
 
 int ff_inet_aton (const char * str, struct in_addr * add);
 
@@ -150,5 +152,18 @@ const char *ff_gai_strerror(int ecode);
 #define getnameinfo ff_getnameinfo
 #define gai_strerror ff_gai_strerror
 #endif
+
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN INET_ADDRSTRLEN
+#endif
+
+#ifndef IN_MULTICAST
+#define IN_MULTICAST(a) ((((uint32_t)(a)) & 0xf0000000) == 0xe0000000)
+#endif
+#ifndef IN6_IS_ADDR_MULTICAST
+#define IN6_IS_ADDR_MULTICAST(a) (((uint8_t *) (a))[0] == 0xff)
+#endif
+
+int ff_is_multicast_address(struct sockaddr *addr);
 
 #endif /* AVFORMAT_NETWORK_H */

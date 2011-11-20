@@ -52,7 +52,7 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf,
     unsigned char *orig_buf = buf, *end_buf = buf + buf_size;
 
     *p = *(AVFrame*)data;
-    p->pict_type = FF_I_TYPE;
+    p->pict_type = AV_PICTURE_TYPE_I;
     p->key_frame = 1;
 
     width  = avctx->width;
@@ -159,14 +159,13 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf,
     return buf - orig_buf;
 }
 
-AVCodec sgi_encoder = {
-    "sgi",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_SGI,
-    sizeof(SgiContext),
-    encode_init,
-    encode_frame,
-    NULL,
+AVCodec ff_sgi_encoder = {
+    .name           = "sgi",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_SGI,
+    .priv_data_size = sizeof(SgiContext),
+    .init           = encode_init,
+    .encode         = encode_frame,
     .pix_fmts= (const enum PixelFormat[]){PIX_FMT_RGB24, PIX_FMT_RGBA, PIX_FMT_GRAY8, PIX_FMT_NONE},
     .long_name= NULL_IF_CONFIG_SMALL("SGI image"),
 };

@@ -36,8 +36,8 @@ static void md5_finish(struct AVFormatContext *s, char *buf)
     buf[offset] = '\n';
     buf[offset+1] = 0;
 
-    put_buffer(s->pb, buf, strlen(buf));
-    put_flush_packet(s->pb);
+    avio_write(s->pb, buf, strlen(buf));
+    avio_flush(s->pb);
 }
 
 #if CONFIG_MD5_MUXER
@@ -65,17 +65,16 @@ static int write_trailer(struct AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat md5_muxer = {
-    "md5",
-    NULL_IF_CONFIG_SMALL("MD5 testing format"),
-    NULL,
-    "",
-    PRIVSIZE,
-    CODEC_ID_PCM_S16LE,
-    CODEC_ID_RAWVIDEO,
-    write_header,
-    write_packet,
-    write_trailer,
+AVOutputFormat ff_md5_muxer = {
+    .name              = "md5",
+    .long_name         = NULL_IF_CONFIG_SMALL("MD5 testing format"),
+    .extensions        = "",
+    .priv_data_size    = PRIVSIZE,
+    .audio_codec       = CODEC_ID_PCM_S16LE,
+    .video_codec       = CODEC_ID_RAWVIDEO,
+    .write_header      = write_header,
+    .write_packet      = write_packet,
+    .write_trailer     = write_trailer,
 };
 #endif
 
@@ -95,16 +94,13 @@ static int framemd5_write_packet(struct AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVOutputFormat framemd5_muxer = {
-    "framemd5",
-    NULL_IF_CONFIG_SMALL("Per-frame MD5 testing format"),
-    NULL,
-    "",
-    PRIVSIZE,
-    CODEC_ID_PCM_S16LE,
-    CODEC_ID_RAWVIDEO,
-    NULL,
-    framemd5_write_packet,
-    NULL,
+AVOutputFormat ff_framemd5_muxer = {
+    .name              = "framemd5",
+    .long_name         = NULL_IF_CONFIG_SMALL("Per-frame MD5 testing format"),
+    .extensions        = "",
+    .priv_data_size    = PRIVSIZE,
+    .audio_codec       = CODEC_ID_PCM_S16LE,
+    .video_codec       = CODEC_ID_RAWVIDEO,
+    .write_packet      = framemd5_write_packet,
 };
 #endif

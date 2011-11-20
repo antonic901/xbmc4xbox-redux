@@ -1,5 +1,4 @@
 /*
- * TIFF tables
  * Copyright (c) 2006 Konstantin Shishkov
  *
  * This file is part of FFmpeg.
@@ -20,10 +19,14 @@
  */
 
 /**
- * TIFF tables
  * @file
+ * TIFF tables
+ *
+ * For more information about the TIFF format, check the official docs at:
+ * http://partners.adobe.com/public/developer/tiff/index.html
  * @author Konstantin Shishkov
  */
+
 #ifndef AVCODEC_TIFF_H
 #define AVCODEC_TIFF_H
 

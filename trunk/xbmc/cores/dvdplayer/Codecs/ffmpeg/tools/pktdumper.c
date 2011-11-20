@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 {
     char fntemplate[PATH_MAX];
     char pktfilename[PATH_MAX];
-    AVFormatContext *fctx;
+    AVFormatContext *fctx = NULL;
     AVPacket pkt;
     int64_t pktnum = 0;
     int64_t maxpkts = 0;
@@ -83,15 +83,15 @@ int main(int argc, char **argv)
     // register all file formats
     av_register_all();
 
-    err = av_open_input_file(&fctx, argv[1], NULL, 0, NULL);
+    err = avformat_open_input(&fctx, argv[1], NULL, NULL);
     if (err < 0) {
-        fprintf(stderr, "av_open_input_file: error %d\n", err);
+        fprintf(stderr, "cannot open input: error %d\n", err);
         return 1;
     }
 
-    err = av_find_stream_info(fctx);
+    err = avformat_find_stream_info(fctx, NULL);
     if (err < 0) {
-        fprintf(stderr, "av_find_stream_info: error %d\n", err);
+        fprintf(stderr, "avformat_find_stream_info: error %d\n", err);
         return 1;
     }
 
@@ -104,7 +104,11 @@ int main(int argc, char **argv)
         //printf("open(\"%s\")\n", pktfilename);
         if (!nowrite) {
             fd = open(pktfilename, O_WRONLY|O_CREAT, 0644);
-            write(fd, pkt.data, pkt.size);
+            err = write(fd, pkt.data, pkt.size);
+            if (err < 0) {
+                fprintf(stderr, "write: error %d\n", err);
+                return 1;
+            }
             close(fd);
         }
         av_free_packet(&pkt);

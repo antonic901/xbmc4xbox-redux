@@ -4,6 +4,9 @@
  * Copyright (c) 2009 Mans Rullgard <mans@mansr.com>
  * Copyright (c) 2009 Naotoshi Nojiri
  *
+ * This algorithm (though not any of the implementation details) is
+ * based on libdjbfft by D. J. Bernstein.
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -320,7 +323,7 @@ function ff_fft_permute_neon, export=1
         push            {r4,lr}
         mov             r12, #1
         ldr             r2,  [r0]       @ nbits
-        ldr             r3,  [r0, #20]  @ tmp_buf
+        ldr             r3,  [r0, #12]  @ tmp_buf
         ldr             r0,  [r0, #8]   @ revtab
         lsl             r12, r12, r2
         mov             r2,  r12
@@ -346,9 +349,7 @@ function ff_fft_permute_neon, export=1
         pop             {r4,pc}
 endfunc
 
-        .section .rodata
-        .align 4
-fft_tab_neon:
+const   fft_tab_neon
         .word fft4_neon
         .word fft8_neon
         .word fft16_neon
@@ -364,8 +365,12 @@ fft_tab_neon:
         .word fft16384_neon
         .word fft32768_neon
         .word fft65536_neon
-        .size fft_tab_neon, . - fft_tab_neon
+endconst
 
-        .align 4
-pmmp:   .float  +1.0, -1.0, -1.0, +1.0
-mppm:   .float  -M_SQRT1_2, M_SQRT1_2, M_SQRT1_2, -M_SQRT1_2
+const   pmmp, align=4
+        .float          +1.0, -1.0, -1.0, +1.0
+endconst
+
+const   mppm, align=4
+        .float          -M_SQRT1_2, M_SQRT1_2, M_SQRT1_2, -M_SQRT1_2
+endconst

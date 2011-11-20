@@ -61,6 +61,7 @@ class CAdvancedSettings
     float m_karaokeSyncDelay;
     float m_ac3Gain;
     float m_audioPlayCountMinimumPercent;
+    bool m_dvdplayerIgnoreDTSinWAV;
 
     float m_videoSubsDelayRange;
     float m_videoAudioDelayRange;

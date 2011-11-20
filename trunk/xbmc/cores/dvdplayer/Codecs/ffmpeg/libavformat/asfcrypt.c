@@ -28,9 +28,9 @@
 #include "asfcrypt.h"
 
 /**
- * \brief find multiplicative inverse modulo 2 ^ 32
- * \param v number to invert, must be odd!
- * \return number so that result * v = 1 (mod 2^32)
+ * @brief find multiplicative inverse modulo 2 ^ 32
+ * @param v number to invert, must be odd!
+ * @return number so that result * v = 1 (mod 2^32)
  */
 static uint32_t inverse(uint32_t v) {
     // v ^ 3 gives the inverse (mod 16), could also be implemented
@@ -45,9 +45,9 @@ static uint32_t inverse(uint32_t v) {
 }
 
 /**
- * \brief read keys from keybuf into keys
- * \param keybuf buffer containing the keys
- * \param keys output key array containing the keys for encryption in
+ * @brief read keys from keybuf into keys
+ * @param keybuf buffer containing the keys
+ * @param keys output key array containing the keys for encryption in
  *             native endianness
  */
 static void multiswap_init(const uint8_t keybuf[48], uint32_t keys[12]) {
@@ -57,9 +57,9 @@ static void multiswap_init(const uint8_t keybuf[48], uint32_t keys[12]) {
 }
 
 /**
- * \brief invert the keys so that encryption become decryption keys and
+ * @brief invert the keys so that encryption become decryption keys and
  *        the other way round.
- * \param keys key array of ints to invert
+ * @param keys key array of ints to invert
  */
 static void multiswap_invert_keys(uint32_t keys[12]) {
     int i;
@@ -92,12 +92,12 @@ static uint32_t multiswap_inv_step(const uint32_t keys[12], uint32_t v) {
 }
 
 /**
- * \brief "MultiSwap" encryption
- * \param keys 32 bit numbers in machine endianness,
+ * @brief "MultiSwap" encryption
+ * @param keys 32 bit numbers in machine endianness,
  *             0-4 and 6-10 must be inverted from decryption
- * \param key another key, this one must be the same for the decryption
- * \param data data to encrypt
- * \return encrypted data
+ * @param key another key, this one must be the same for the decryption
+ * @param data data to encrypt
+ * @return encrypted data
  */
 static uint64_t multiswap_enc(const uint32_t keys[12], uint64_t key, uint64_t data) {
     uint32_t a = data;
@@ -114,12 +114,12 @@ static uint64_t multiswap_enc(const uint32_t keys[12], uint64_t key, uint64_t da
 }
 
 /**
- * \brief "MultiSwap" decryption
- * \param keys 32 bit numbers in machine endianness,
+ * @brief "MultiSwap" decryption
+ * @param keys 32 bit numbers in machine endianness,
  *             0-4 and 6-10 must be inverted from encryption
- * \param key another key, this one must be the same as for the encryption
- * \param data data to decrypt
- * \return decrypted data
+ * @param key another key, this one must be the same as for the encryption
+ * @param data data to decrypt
+ * @return decrypted data
  */
 static uint64_t multiswap_dec(const uint32_t keys[12], uint64_t key, uint64_t data) {
     uint32_t a;
@@ -139,7 +139,7 @@ void ff_asfcrypt_dec(const uint8_t key[20], uint8_t *data, int len) {
     struct AVDES des;
     struct AVRC4 rc4;
     int num_qwords = len >> 3;
-    uint64_t *qwords = (uint64_t *)data;
+    uint8_t *qwords = data;
     uint64_t rc4buff[8];
     uint64_t packetkey;
     uint32_t ms_keys[12];
@@ -156,7 +156,7 @@ void ff_asfcrypt_dec(const uint8_t key[20], uint8_t *data, int len) {
     av_rc4_crypt(&rc4, (uint8_t *)rc4buff, NULL, sizeof(rc4buff), NULL, 1);
     multiswap_init((uint8_t *)rc4buff, ms_keys);
 
-    packetkey = qwords[num_qwords - 1];
+    packetkey = AV_RN64(&qwords[num_qwords*8 - 8]);
     packetkey ^= rc4buff[7];
     av_des_init(&des, key + 12, 64, 1);
     av_des_crypt(&des, (uint8_t *)&packetkey, (uint8_t *)&packetkey, 1, NULL, 1);
@@ -166,11 +166,11 @@ void ff_asfcrypt_dec(const uint8_t key[20], uint8_t *data, int len) {
     av_rc4_crypt(&rc4, data, data, len, NULL, 1);
 
     ms_state = 0;
-    for (i = 0; i < num_qwords - 1; i++, qwords++)
+    for (i = 0; i < num_qwords - 1; i++, qwords += 8)
         ms_state = multiswap_enc(ms_keys, ms_state, AV_RL64(qwords));
     multiswap_invert_keys(ms_keys);
     packetkey = (packetkey << 32) | (packetkey >> 32);
-    packetkey = le2me_64(packetkey);
+    packetkey = av_le2ne64(packetkey);
     packetkey = multiswap_dec(ms_keys, ms_state, packetkey);
     AV_WL64(qwords, packetkey);
 }

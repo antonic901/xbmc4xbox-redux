@@ -43,7 +43,7 @@ int16_t ff_cos(uint16_t arg);
 int ff_exp2(uint16_t power);
 
 /**
- * Calculates log2(x).
+ * Calculate log2(x).
  * @param value function argument, 0 < value <= 7fff ffff
  *
  * @return value of (1<<15) * log2(value)
@@ -62,6 +62,16 @@ static inline int bidir_sal(int value, int offset)
     if(offset < 0) return value >> -offset;
     else           return value <<  offset;
 }
+
+/**
+ * returns the dot product of 2 int16_t vectors.
+ * @param a input data array
+ * @param b input data array
+ * @param length number of elements
+ *
+ * @return dot product = sum of elementwise products
+ */
+int64_t ff_dot_product(const int16_t *a, const int16_t *b, int length);
 
 /**
  * returns the dot product.

@@ -26,37 +26,166 @@
 #   define ELF @
 #endif
 
-        .macro require8, val=1
+#if CONFIG_THUMB
+#   define A @
+#   define T
+#else
+#   define A
+#   define T @
+#endif
+
+        .syntax unified
+T       .thumb
+
+.macro  require8 val=1
 ELF     .eabi_attribute 24, \val
-        .endm
+.endm
 
-        .macro preserve8, val=1
+.macro  preserve8 val=1
 ELF     .eabi_attribute 25, \val
-        .endm
+.endm
 
-        .macro function name, export=0
-        .macro endfunc
+.macro  function name, export=0
+    .macro endfunc
 ELF     .size   \name, . - \name
         .endfunc
         .purgem endfunc
-        .endm
-.if \export
+    .endm
+        .text
+    .if \export
         .global EXTERN_ASM\name
 EXTERN_ASM\name:
-.endif
+    .endif
 ELF     .type   \name, %function
         .func   \name
 \name:
-        .endm
+.endm
 
-        .macro movrel rd, val
-#if HAVE_ARMV6T2 && !CONFIG_PIC
+.macro  const   name, align=2
+    .macro endconst
+ELF     .size   \name, . - \name
+        .purgem endconst
+    .endm
+        .section        .rodata
+        .align          \align
+\name:
+.endm
+
+.macro  mov32   rd, val
+#if HAVE_ARMV6T2
+        movw            \rd, #(\val) & 0xffff
+    .if (\val) >> 16
+        movt            \rd, #(\val) >> 16
+    .endif
+#else
+        ldr             \rd, =\val
+#endif
+.endm
+
+.macro  movrel rd, val
+#if HAVE_ARMV6T2 && !CONFIG_PIC && !defined(__APPLE__)
         movw            \rd, #:lower16:\val
         movt            \rd, #:upper16:\val
 #else
         ldr             \rd, =\val
 #endif
-        .endm
+.endm
+
+.macro  ldr_pre         rt,  rn,  rm:vararg
+A       ldr             \rt, [\rn, \rm]!
+T       add             \rn, \rn, \rm
+T       ldr             \rt, [\rn]
+.endm
+
+.macro  ldr_dpren       rt,  rn,  rm:vararg
+A       ldr             \rt, [\rn, -\rm]
+T       sub             \rt, \rn, \rm
+T       ldr             \rt, [\rt]
+.endm
+
+.macro  ldr_post        rt,  rn,  rm:vararg
+A       ldr             \rt, [\rn], \rm
+T       ldr             \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  ldrd_reg        rt,  rt2, rn,  rm
+A       ldrd            \rt, \rt2, [\rn, \rm]
+T       add             \rt, \rn, \rm
+T       ldrd            \rt, \rt2, [\rt]
+.endm
+
+.macro  ldrd_post       rt,  rt2, rn,  rm
+A       ldrd            \rt, \rt2, [\rn], \rm
+T       ldrd            \rt, \rt2, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  ldrh_pre        rt,  rn,  rm
+A       ldrh            \rt, [\rn, \rm]!
+T       add             \rn, \rn, \rm
+T       ldrh            \rt, [\rn]
+.endm
+
+.macro  ldrh_dpre       rt,  rn,  rm
+A       ldrh            \rt, [\rn, -\rm]!
+T       sub             \rn, \rn, \rm
+T       ldrh            \rt, [\rn]
+.endm
+
+.macro  ldrh_post       rt,  rn,  rm
+A       ldrh            \rt, [\rn], \rm
+T       ldrh            \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  ldrb_post       rt,  rn,  rm
+A       ldrb            \rt, [\rn], \rm
+T       ldrb            \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  str_post       rt,  rn,  rm:vararg
+A       str             \rt, [\rn], \rm
+T       str             \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  strb_post       rt,  rn,  rm:vararg
+A       strb            \rt, [\rn], \rm
+T       strb            \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  strd_post       rt,  rt2, rn,  rm
+A       strd            \rt, \rt2, [\rn], \rm
+T       strd            \rt, \rt2, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  strh_pre        rt,  rn,  rm
+A       strh            \rt, [\rn, \rm]!
+T       add             \rn, \rn, \rm
+T       strh            \rt, [\rn]
+.endm
+
+.macro  strh_dpre       rt,  rn,  rm
+A       strh            \rt, [\rn, -\rm]!
+T       sub             \rn, \rn, \rm
+T       strh            \rt, [\rn]
+.endm
+
+.macro  strh_post       rt,  rn,  rm
+A       strh            \rt, [\rn], \rm
+T       strh            \rt, [\rn]
+T       add             \rn, \rn, \rm
+.endm
+
+.macro  strh_dpost       rt,  rn,  rm
+A       strh            \rt, [\rn], -\rm
+T       strh            \rt, [\rn]
+T       sub             \rn, \rn, \rm
+.endm
 
 #if HAVE_VFP_ARGS
         .eabi_attribute 28, 1

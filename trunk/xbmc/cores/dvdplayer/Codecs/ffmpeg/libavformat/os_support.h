@@ -1,5 +1,5 @@
 /*
- * various utilities for ffmpeg system
+ * various OS-feature replacement utilities
  * copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -45,6 +45,11 @@ static inline int is_dos_path(const char *path)
     return 0;
 }
 
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+int ff_win32_open(const char *filename, int oflag, int pmode);
+#define open ff_win32_open
+#endif
+
 #if CONFIG_NETWORK
 #if !HAVE_SOCKLEN_T
 typedef int socklen_t;
@@ -55,7 +60,6 @@ typedef int socklen_t;
 #define closesocket close
 #endif
 
-#if CONFIG_FFSERVER
 #if !HAVE_POLL_H
 typedef unsigned long nfds_t;
 
@@ -82,7 +86,6 @@ struct pollfd {
 
 int poll(struct pollfd *fds, nfds_t numfds, int timeout);
 #endif /* HAVE_POLL_H */
-#endif /* CONFIG_FFSERVER */
 #endif /* CONFIG_NETWORK */
 
 #endif /* AVFORMAT_OS_SUPPORT_H */

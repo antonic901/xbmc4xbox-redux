@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "libavutil/imgutils.h"
 #include "avcodec.h"
 #include "bytestream.h"
 #include "sgi.h"
@@ -201,7 +202,7 @@ static int decode_frame(AVCodecContext *avctx,
         return -1;
     }
 
-    if (avcodec_check_dimensions(avctx, s->width, s->height))
+    if (av_image_check_size(s->width, s->height, 0, avctx))
         return -1;
     avcodec_set_dimensions(avctx, s->width, s->height);
 
@@ -214,7 +215,7 @@ static int decode_frame(AVCodecContext *avctx,
         return -1;
     }
 
-    p->pict_type = FF_I_TYPE;
+    p->pict_type = AV_PICTURE_TYPE_I;
     p->key_frame = 1;
     out_buf = p->data[0];
 
@@ -258,15 +259,14 @@ static av_cold int sgi_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec sgi_decoder = {
-    "sgi",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_SGI,
-    sizeof(SgiState),
-    sgi_init,
-    NULL,
-    sgi_end,
-    decode_frame,
+AVCodec ff_sgi_decoder = {
+    .name           = "sgi",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_SGI,
+    .priv_data_size = sizeof(SgiState),
+    .init           = sgi_init,
+    .close          = sgi_end,
+    .decode         = decode_frame,
     .long_name = NULL_IF_CONFIG_SMALL("SGI image"),
 };
 

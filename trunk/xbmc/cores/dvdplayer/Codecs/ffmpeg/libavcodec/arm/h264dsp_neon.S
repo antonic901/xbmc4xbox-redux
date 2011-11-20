@@ -71,7 +71,9 @@ function ff_\type\()_h264_chroma_mc8_neon, export=1
         pld             [r1]
         pld             [r1, r2]
 
-        muls            r7,  r4,  r5
+A       muls            r7,  r4,  r5
+T       mul             r7,  r4,  r5
+T       cmp             r7,  #0
         rsb             r6,  r7,  r5,  lsl #3
         rsb             ip,  r7,  r4,  lsl #3
         sub             r4,  r7,  r4,  lsl #3
@@ -197,7 +199,9 @@ function ff_\type\()_h264_chroma_mc4_neon, export=1
         pld             [r1]
         pld             [r1, r2]
 
-        muls            r7,  r4,  r5
+A       muls            r7,  r4,  r5
+T       mul             r7,  r4,  r5
+T       cmp             r7,  #0
         rsb             r6,  r7,  r5,  lsl #3
         rsb             ip,  r7,  r4,  lsl #3
         sub             r4,  r7,  r4,  lsl #3
@@ -368,10 +372,10 @@ function ff_\type\()_h264_chroma_mc2_neon, export=1
         pop             {r4-r6, pc}
 2:
 .ifc \type,put
-        ldrh            r5,  [r1], r2
-        strh            r5,  [r0], r2
-        ldrh            r6,  [r1], r2
-        strh            r6,  [r0], r2
+        ldrh_post       r5,  r1,  r2
+        strh_post       r5,  r0,  r2
+        ldrh_post       r6,  r1,  r2
+        strh_post       r6,  r0,  r2
 .else
         vld1.16         {d16[0]}, [r1], r2
         vld1.16         {d16[1]}, [r1], r2
@@ -404,26 +408,15 @@ endfunc
         ldr             ip,  [sp]
         tst             r2,  r2
         ldr             ip,  [ip]
+        it              ne
         tstne           r3,  r3
         vmov.32         d24[0], ip
         and             ip,  ip,  ip, lsl #16
+        it              eq
         bxeq            lr
         ands            ip,  ip,  ip, lsl #8
+        it              lt
         bxlt            lr
-        .endm
-
-        .macro align_push_regs
-        and             ip,  sp,  #15
-        add             ip,  ip,  #32
-        sub             sp,  sp,  ip
-        vst1.64         {d12-d15}, [sp,:128]
-        sub             sp,  sp,  #32
-        vst1.64         {d8-d11},  [sp,:128]
-        .endm
-
-        .macro align_pop_regs
-        vld1.64         {d8-d11},  [sp,:128]!
-        vld1.64         {d12-d15}, [sp,:128], ip
         .endm
 
         .macro h264_loop_filter_luma
@@ -506,7 +499,7 @@ function ff_h264_v_loop_filter_luma_neon, export=1
         vld1.64         {d18,d19}, [r0,:128], r1
         vld1.64         {d16,d17}, [r0,:128], r1
 
-        align_push_regs
+        vpush           {d8-d15}
 
         h264_loop_filter_luma
 
@@ -516,7 +509,7 @@ function ff_h264_v_loop_filter_luma_neon, export=1
         vst1.64         {d0, d1},  [r0,:128], r1
         vst1.64         {d10,d11}, [r0,:128]
 
-        align_pop_regs
+        vpop            {d8-d15}
         bx              lr
 endfunc
 
@@ -543,7 +536,7 @@ function ff_h264_h_loop_filter_luma_neon, export=1
 
         transpose_8x8   q3, q10, q9, q8, q0, q1, q2, q13
 
-        align_push_regs
+        vpush           {d8-d15}
 
         h264_loop_filter_luma
 
@@ -568,7 +561,7 @@ function ff_h264_h_loop_filter_luma_neon, export=1
         vst1.32         {d1[1]},  [r0], r1
         vst1.32         {d11[1]}, [r0], r1
 
-        align_pop_regs
+        vpop            {d8-d15}
         bx              lr
 endfunc
 
@@ -586,19 +579,17 @@ endfunc
         vclt.u8         d26, d26, d22   @ < alpha
         vsubw.u8        q2,  q2,  d2
         vdup.8          d22, r3         @ beta
-        vclt.s8         d25, d24, #0
         vrshrn.i16      d4,  q2,  #3
         vclt.u8         d28, d28, d22   @ < beta
-        vbic            d26, d26, d25
         vclt.u8         d30, d30, d22   @ < beta
-        vand            d26, d26, d28
-        vneg.s8         d25, d24
-        vand            d26, d26, d30
         vmin.s8         d4,  d4,  d24
-        vmovl.u8        q14, d16
-        vand            d4,  d4,  d26
+        vneg.s8         d25, d24
+        vand            d26, d26, d28
         vmax.s8         d4,  d4,  d25
+        vand            d26, d26, d30
         vmovl.u8        q11, d0
+        vand            d4,  d4,  d26
+        vmovl.u8        q14, d16
         vaddw.s8        q14, q14, d4
         vsubw.s8        q11, q11, d4
         vqmovun.s16     d16, q14
@@ -1118,6 +1109,7 @@ function \type\()_h264_qpel8_hv_lowpass_neon
         vrhadd.u8       d11, d11, d7
         sub             r0,  r0,  r2,  lsl #3
 .endif
+
         vst1.64         {d12},     [r0,:64], r2
         vst1.64         {d13},     [r0,:64], r2
         vst1.64         {d14},     [r0,:64], r2
@@ -1265,7 +1257,9 @@ function ff_\type\()_h264_qpel8_mc11_neon, export=1
 \type\()_h264_qpel8_mc11:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #64
         mov             r0,  sp
         sub             r1,  r1,  #2
@@ -1273,14 +1267,14 @@ function ff_\type\()_h264_qpel8_mc11_neon, export=1
         mov             ip,  #8
         vpush           {d8-d15}
         bl              put_h264_qpel8_h_lowpass_neon
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         mov             r3,  r2
         add             ip,  sp,  #64
         sub             r1,  r1,  r2, lsl #1
         mov             r2,  #8
         bl              \type\()_h264_qpel8_v_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11, #8
+        mov             sp,  r11
         pop             {r11, pc}
 endfunc
 
@@ -1289,7 +1283,9 @@ function ff_\type\()_h264_qpel8_mc21_neon, export=1
 \type\()_h264_qpel8_mc21:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #(8*8+16*12)
         sub             r1,  r1,  #2
         mov             r3,  #8
@@ -1298,14 +1294,14 @@ function ff_\type\()_h264_qpel8_mc21_neon, export=1
         vpush           {d8-d15}
         bl              put_h264_qpel8_h_lowpass_neon
         mov             r4,  r0
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         sub             r1,  r1,  r2, lsl #1
         sub             r1,  r1,  #2
         mov             r3,  r2
         sub             r2,  r4,  #64
         bl              \type\()_h264_qpel8_hv_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11,  #8
+        mov             sp,  r11
         pop             {r4, r10, r11, pc}
 endfunc
 
@@ -1332,7 +1328,9 @@ function ff_\type\()_h264_qpel8_mc12_neon, export=1
 \type\()_h264_qpel8_mc12:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #(8*8+16*12)
         sub             r1,  r1,  r2, lsl #1
         mov             r3,  r2
@@ -1341,20 +1339,22 @@ function ff_\type\()_h264_qpel8_mc12_neon, export=1
         vpush           {d8-d15}
         bl              put_h264_qpel8_v_lowpass_neon
         mov             r4,  r0
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         sub             r1,  r1,  r3, lsl #1
         sub             r1,  r1,  #2
         sub             r2,  r4,  #64
         bl              \type\()_h264_qpel8_hv_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11,  #8
+        mov             sp,  r11
         pop             {r4, r10, r11, pc}
 endfunc
 
 function ff_\type\()_h264_qpel8_mc22_neon, export=1
         push            {r4, r10, r11, lr}
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r4,  r11, #15
+T       mov             sp,  r4
         sub             r1,  r1,  r2, lsl #1
         sub             r1,  r1,  #2
         mov             r3,  r2
@@ -1443,21 +1443,23 @@ function ff_\type\()_h264_qpel16_mc11_neon, export=1
 \type\()_h264_qpel16_mc11:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #256
         mov             r0,  sp
         sub             r1,  r1,  #2
         mov             r3,  #16
         vpush           {d8-d15}
         bl              put_h264_qpel16_h_lowpass_neon
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         mov             r3,  r2
         add             ip,  sp,  #64
         sub             r1,  r1,  r2, lsl #1
         mov             r2,  #16
         bl              \type\()_h264_qpel16_v_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11, #8
+        mov             sp,  r11
         pop             {r4, r11, pc}
 endfunc
 
@@ -1466,20 +1468,22 @@ function ff_\type\()_h264_qpel16_mc21_neon, export=1
 \type\()_h264_qpel16_mc21:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #(16*16+16*12)
         sub             r1,  r1,  #2
         mov             r0,  sp
         vpush           {d8-d15}
         bl              put_h264_qpel16_h_lowpass_neon_packed
         mov             r4,  r0
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         sub             r1,  r1,  r2, lsl #1
         sub             r1,  r1,  #2
         mov             r3,  r2
         bl              \type\()_h264_qpel16_hv_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11,  #8
+        mov             sp,  r11
         pop             {r4-r5, r9-r11, pc}
 endfunc
 
@@ -1506,7 +1510,9 @@ function ff_\type\()_h264_qpel16_mc12_neon, export=1
 \type\()_h264_qpel16_mc12:
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r0,  r11, #15
+T       mov             sp,  r0
         sub             sp,  sp,  #(16*16+16*12)
         sub             r1,  r1,  r2, lsl #1
         mov             r0,  sp
@@ -1514,13 +1520,13 @@ function ff_\type\()_h264_qpel16_mc12_neon, export=1
         vpush           {d8-d15}
         bl              put_h264_qpel16_v_lowpass_neon_packed
         mov             r4,  r0
-        ldrd            r0,  [r11]
+        ldrd            r0,  [r11], #8
         sub             r1,  r1,  r3, lsl #1
         sub             r1,  r1,  #2
         mov             r2,  r3
         bl              \type\()_h264_qpel16_hv_lowpass_l2_neon
         vpop            {d8-d15}
-        add             sp,  r11,  #8
+        mov             sp,  r11
         pop             {r4-r5, r9-r11, pc}
 endfunc
 
@@ -1528,7 +1534,9 @@ function ff_\type\()_h264_qpel16_mc22_neon, export=1
         push            {r4, r9-r11, lr}
         lowpass_const   r3
         mov             r11, sp
-        bic             sp,  sp,  #15
+A       bic             sp,  sp,  #15
+T       bic             r4,  r11, #15
+T       mov             sp,  r4
         sub             r1,  r1,  r2, lsl #1
         sub             r1,  r1,  #2
         mov             r3,  r2
@@ -1584,7 +1592,7 @@ endfunc
         vdup.8          d1,  r5
         vmov            q2,  q8
         vmov            q3,  q8
-1:      subs            ip,  ip,  #2
+1:      subs            r3,  r3,  #2
         vld1.8          {d20-d21},[r0,:128], r2
         \macd           q2,  d0,  d20
         pld             [r0]
@@ -1624,7 +1632,7 @@ endfunc
         vdup.8          d1,  r5
         vmov            q1,  q8
         vmov            q10, q8
-1:      subs            ip,  ip,  #2
+1:      subs            r3,  r3,  #2
         vld1.8          {d4},[r0,:64], r2
         \macd           q1,  d0,  d4
         pld             [r0]
@@ -1654,7 +1662,7 @@ endfunc
         vdup.8          d1,  r5
         vmov            q1,  q8
         vmov            q10, q8
-1:      subs            ip,  ip,  #4
+1:      subs            r3,  r3,  #4
         vld1.32         {d4[0]},[r0,:32], r2
         vld1.32         {d4[1]},[r0,:32], r2
         \macd           q1,  d0,  d4
@@ -1692,16 +1700,17 @@ endfunc
         .endm
 
         .macro  biweight_func w
-function biweight_h264_pixels_\w\()_neon
+function ff_biweight_h264_pixels_\w\()_neon, export=1
         push            {r4-r6, lr}
-        add             r4,  sp,  #16
+        ldr             r12, [sp, #16]
+        add             r4,  sp,  #20
         ldm             r4,  {r4-r6}
         lsr             lr,  r4,  #31
         add             r6,  r6,  #1
         eors            lr,  lr,  r5,  lsr #30
         orr             r6,  r6,  #1
-        vdup.16         q9,  r3
-        lsl             r6,  r6,  r3
+        vdup.16         q9,  r12
+        lsl             r6,  r6,  r12
         vmvn            q9,  q9
         vdup.16         q8,  r6
         mov             r6,  r0
@@ -1722,34 +1731,15 @@ function biweight_h264_pixels_\w\()_neon
 endfunc
         .endm
 
-        .macro  biweight_entry w, h, b=1
-function ff_biweight_h264_pixels_\w\()x\h\()_neon, export=1
-        mov             ip,  #\h
-.if \b
-        b               biweight_h264_pixels_\w\()_neon
-.endif
-endfunc
-        .endm
-
-        biweight_entry  16, 8
-        biweight_entry  16, 16, b=0
         biweight_func   16
-
-        biweight_entry  8,  16
-        biweight_entry  8,  4
-        biweight_entry  8,  8,  b=0
         biweight_func   8
-
-        biweight_entry  4,  8
-        biweight_entry  4,  2
-        biweight_entry  4,  4,  b=0
         biweight_func   4
 
 @ Weighted prediction
 
         .macro  weight_16 add
-        vdup.8          d0,  r3
-1:      subs            ip,  ip,  #2
+        vdup.8          d0,  r12
+1:      subs            r2,  r2,  #2
         vld1.8          {d20-d21},[r0,:128], r1
         vmull.u8        q2,  d0,  d20
         pld             [r0]
@@ -1777,8 +1767,8 @@ endfunc
         .endm
 
         .macro  weight_8 add
-        vdup.8          d0,  r3
-1:      subs            ip,  ip,  #2
+        vdup.8          d0,  r12
+1:      subs            r2,  r2,  #2
         vld1.8          {d4},[r0,:64], r1
         vmull.u8        q1,  d0,  d4
         pld             [r0]
@@ -1798,10 +1788,10 @@ endfunc
         .endm
 
         .macro  weight_4 add
-        vdup.8          d0,  r3
+        vdup.8          d0,  r12
         vmov            q1,  q8
         vmov            q10, q8
-1:      subs            ip,  ip,  #4
+1:      subs            r2,  r2,  #4
         vld1.32         {d4[0]},[r0,:32], r1
         vld1.32         {d4[1]},[r0,:32], r1
         vmull.u8        q1,  d0,  d4
@@ -1834,50 +1824,32 @@ endfunc
         .endm
 
         .macro  weight_func w
-function weight_h264_pixels_\w\()_neon
+function ff_weight_h264_pixels_\w\()_neon, export=1
         push            {r4, lr}
-        ldr             r4,  [sp, #8]
-        cmp             r2,  #1
-        lsl             r4,  r4,  r2
+        ldr             r12, [sp, #8]
+        ldr             r4,  [sp, #12]
+        cmp             r3,  #1
+        lsl             r4,  r4,  r3
         vdup.16         q8,  r4
         mov             r4,  r0
         ble             20f
-        rsb             lr,  r2,  #1
+        rsb             lr,  r3,  #1
         vdup.16         q9,  lr
-        cmp             r3,  #0
+        cmp             r12, #0
         blt             10f
         weight_\w       vhadd.s16
-10:     rsb             r3,  r3,  #0
+10:     rsb             r12, r12, #0
         weight_\w       vhsub.s16
-20:     rsb             lr,  r2,  #0
+20:     rsb             lr,  r3,  #0
         vdup.16         q9,  lr
-        cmp             r3,  #0
+        cmp             r12, #0
         blt             10f
         weight_\w       vadd.s16
-10:     rsb             r3,  r3,  #0
+10:     rsb             r12, r12, #0
         weight_\w       vsub.s16
 endfunc
         .endm
 
-        .macro  weight_entry w, h, b=1
-function ff_weight_h264_pixels_\w\()x\h\()_neon, export=1
-        mov             ip,  #\h
-.if \b
-        b               weight_h264_pixels_\w\()_neon
-.endif
-endfunc
-        .endm
-
-        weight_entry    16, 8
-        weight_entry    16, 16, b=0
         weight_func     16
-
-        weight_entry    8,  16
-        weight_entry    8,  4
-        weight_entry    8,  8,  b=0
         weight_func     8
-
-        weight_entry    4,  8
-        weight_entry    4,  2
-        weight_entry    4,  4,  b=0
         weight_func     4

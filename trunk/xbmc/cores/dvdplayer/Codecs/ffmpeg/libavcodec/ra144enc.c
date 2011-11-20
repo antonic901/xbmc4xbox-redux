@@ -29,7 +29,6 @@
 
 #include "avcodec.h"
 #include "put_bits.h"
-#include "lpc.h"
 #include "celp_filters.h"
 #include "ra144.h"
 
@@ -37,8 +36,9 @@
 static av_cold int ra144_encode_init(AVCodecContext * avctx)
 {
     RA144Context *ractx;
+    int ret;
 
-    if (avctx->sample_fmt != SAMPLE_FMT_S16) {
+    if (avctx->sample_fmt != AV_SAMPLE_FMT_S16) {
         av_log(avctx, AV_LOG_ERROR, "invalid sample format\n");
         return -1;
     }
@@ -53,13 +53,22 @@ static av_cold int ra144_encode_init(AVCodecContext * avctx)
     ractx->lpc_coef[0] = ractx->lpc_tables[0];
     ractx->lpc_coef[1] = ractx->lpc_tables[1];
     ractx->avctx = avctx;
-    dsputil_init(&ractx->dsp, avctx);
+    ret = ff_lpc_init(&ractx->lpc_ctx, avctx->frame_size, LPC_ORDER,
+                      FF_LPC_TYPE_LEVINSON);
+    return ret;
+}
+
+
+static av_cold int ra144_encode_close(AVCodecContext *avctx)
+{
+    RA144Context *ractx = avctx->priv_data;
+    ff_lpc_end(&ractx->lpc_ctx);
     return 0;
 }
 
 
 /**
- * Quantizes a value by searching a sorted table for the element with the
+ * Quantize a value by searching a sorted table for the element with the
  * nearest value
  *
  * @param value value to quantize
@@ -88,7 +97,7 @@ static int quantize(int value, const int16_t *table, unsigned int size)
 
 
 /**
- * Orthogonalizes a vector to another vector
+ * Orthogonalize a vector to another vector
  *
  * @param v vector to orthogonalize
  * @param u vector against which orthogonalization is performed
@@ -109,7 +118,7 @@ static void orthogonalize(float *v, const float *u)
 
 
 /**
- * Calculates match score and gain of an LPC-filtered vector with respect to
+ * Calculate match score and gain of an LPC-filtered vector with respect to
  * input data, possibly othogonalizing it to up to 2 other vectors
  *
  * @param work array used to calculate the filtered vector
@@ -148,7 +157,7 @@ static void get_match_score(float *work, const float *coefs, float *vect,
 
 
 /**
- * Creates a vector from the adaptive codebook at a given lag value
+ * Create a vector from the adaptive codebook at a given lag value
  *
  * @param vect array where vector is stored
  * @param cb adaptive codebook
@@ -168,7 +177,7 @@ static void create_adapt_vect(float *vect, const int16_t *cb, int lag)
 
 
 /**
- * Searches the adaptive codebook for the best entry and gain and removes its
+ * Search the adaptive codebook for the best entry and gain and remove its
  * contribution from input data
  *
  * @param adapt_cb array from which the adaptive codebook is extracted
@@ -210,7 +219,7 @@ static int adaptive_cb_search(const int16_t *adapt_cb, float *work,
 
 
 /**
- * Finds the best vector of a fixed codebook by applying an LPC filter to
+ * Find the best vector of a fixed codebook by applying an LPC filter to
  * codebook entries, possibly othogonalizing them to up to 2 other vectors and
  * matching the results with input data
  *
@@ -249,7 +258,7 @@ static void find_best_vect(float *work, const float *coefs,
 
 
 /**
- * Searches the two fixed codebooks for the best entry and gain
+ * Search the two fixed codebooks for the best entry and gain
  *
  * @param work array used to calculate LPC-filtered vectors
  * @param coefs coefficients of the LPC filter
@@ -301,7 +310,7 @@ static void fixed_cb_search(float *work, const float *coefs, float *data,
 
 
 /**
- * Encodes a subblock of the current frame
+ * Encode a subblock of the current frame
  *
  * @param ractx encoder context
  * @param sblock_data input data of the subblock
@@ -451,9 +460,9 @@ static int ra144_encode_frame(AVCodecContext *avctx, uint8_t *frame,
     energy = ff_energy_tab[quantize(ff_t_sqrt(energy >> 5) >> 10, ff_energy_tab,
                                     32)];
 
-    ff_lpc_calc_coefs(&ractx->dsp, lpc_data, NBLOCKS * BLOCKSIZE, LPC_ORDER,
-                      LPC_ORDER, 16, lpc_coefs, shift, 1, ORDER_METHOD_EST, 12,
-                      0);
+    ff_lpc_calc_coefs(&ractx->lpc_ctx, lpc_data, NBLOCKS * BLOCKSIZE, LPC_ORDER,
+                      LPC_ORDER, 16, lpc_coefs, shift, FF_LPC_TYPE_LEVINSON,
+                      0, ORDER_METHOD_EST, 12, 0);
     for (i = 0; i < LPC_ORDER; i++)
         block_coefs[NBLOCKS - 1][i] = -(lpc_coefs[LPC_ORDER - 1][i] <<
                                         (12 - shift[LPC_ORDER - 1]));
@@ -499,13 +508,15 @@ static int ra144_encode_frame(AVCodecContext *avctx, uint8_t *frame,
 }
 
 
-AVCodec ra_144_encoder =
-{
-    "real_144",
-    CODEC_TYPE_AUDIO,
-    CODEC_ID_RA_144,
-    sizeof(RA144Context),
-    ra144_encode_init,
-    ra144_encode_frame,
-    .long_name = NULL_IF_CONFIG_SMALL("RealAudio 1.0 (14.4K) encoder"),
+AVCodec ff_ra_144_encoder = {
+    .name           = "real_144",
+    .type           = AVMEDIA_TYPE_AUDIO,
+    .id             = CODEC_ID_RA_144,
+    .priv_data_size = sizeof(RA144Context),
+    .init           = ra144_encode_init,
+    .encode         = ra144_encode_frame,
+    .close          = ra144_encode_close,
+    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
+                                                     AV_SAMPLE_FMT_NONE },
+    .long_name      = NULL_IF_CONFIG_SMALL("RealAudio 1.0 (14.4K) encoder"),
 };

@@ -1,5 +1,5 @@
 /*
- * DVD subtitle encoding for ffmpeg
+ * DVD subtitle encoding
  * Copyright (c) 2005 Wolfram Gloger
  *
  * This file is part of FFmpeg.
@@ -215,12 +215,10 @@ static int dvdsub_encode(AVCodecContext *avctx,
     return ret;
 }
 
-AVCodec dvdsub_encoder = {
-    "dvdsub",
-    AVMEDIA_TYPE_SUBTITLE,
-    CODEC_ID_DVD_SUBTITLE,
-    0,
-    NULL,
-    dvdsub_encode,
+AVCodec ff_dvdsub_encoder = {
+    .name           = "dvdsub",
+    .type           = AVMEDIA_TYPE_SUBTITLE,
+    .id             = CODEC_ID_DVD_SUBTITLE,
+    .encode         = dvdsub_encode,
     .long_name = NULL_IF_CONFIG_SMALL("DVD subtitles"),
 };

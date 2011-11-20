@@ -1,0 +1,27 @@
+From 3883033ad9101e512508c2d46dc767ef5ac9453c Mon Sep 17 00:00:00 2001
+From: exobuzz <exobuzz@568bbfeb-2a22-0410-94d2-cc84cf5bfa90>
+Date: Mon, 14 Nov 2011 02:42:20 +0000
+Subject: [PATCH 1/1] fixed: force libs used by ffmpeg to statically link into
+ ffmpeg (libz for example)
+
+git-svn-id: https://xbmc4xbox.svn.sourceforge.net/svnroot/xbmc4xbox/branches/dvdplayer_improvements@30999 568bbfeb-2a22-0410-94d2-cc84cf5bfa90
+---
+ ffmpeg/common.mak |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/common.mak b/xbmc/cores/dvdplayer/Codecs/ffmpeg/common.mak
+index 14c79f0..c3ac56c 100644
+--- a/common.mak
++++ b/common.mak
+@@ -79,7 +79,7 @@ OBJS      += $(OBJS-yes)
+ FFLIBS    := $(FFLIBS-yes) $(FFLIBS)
+ TESTPROGS += $(TESTPROGS-yes)
+ 
+-FFEXTRALIBS := $(FFLIBS:%=-l%$(BUILDSUF)) $(EXTRALIBS)
++FFEXTRALIBS := $(FFLIBS:%=-l%$(BUILDSUF)) -Wl,-Bstatic $(EXTRALIBS)
+ 
+ EXAMPLES  := $(EXAMPLES:%=$(SUBDIR)%-example$(EXESUF))
+ OBJS      := $(sort $(OBJS:%=$(SUBDIR)%))
+-- 
+1.7.5.4
+

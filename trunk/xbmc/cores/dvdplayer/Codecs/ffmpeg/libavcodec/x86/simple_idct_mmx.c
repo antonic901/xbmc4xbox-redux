@@ -37,11 +37,7 @@
 #define C1 22725 //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
 #define C2 21407 //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
 #define C3 19266 //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-#if 0
-#define C4 16384 //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-#else
 #define C4 16383 //cos(i*M_PI/16)*sqrt(2)*(1<<14) - 0.5
-#endif
 #define C5 12873 //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
 #define C6 8867  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
 #define C7 4520  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
@@ -79,135 +75,6 @@ DECLARE_ALIGNED(8, static const int16_t, coeffs)[]= {
  C7, -C5,  C7, -C5,
  C3, -C1,  C3, -C1
 };
-
-#if 0
-static void unused_var_killer(void)
-{
-        int a= wm1010 + d40000;
-        temp[0]=a;
-}
-
-static void inline idctCol (int16_t * col, int16_t *input)
-{
-#undef C0
-#undef C1
-#undef C2
-#undef C3
-#undef C4
-#undef C5
-#undef C6
-#undef C7
-        int a0, a1, a2, a3, b0, b1, b2, b3;
-        const int C0 = 23170; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C1 = 22725; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C2 = 21407; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C3 = 19266; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C4 = 16383; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C5 = 12873; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C6 = 8867;  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C7 = 4520;  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-/*
-        if( !(col[8*1] | col[8*2] |col[8*3] |col[8*4] |col[8*5] |col[8*6] | col[8*7])) {
-                col[8*0] = col[8*1] = col[8*2] = col[8*3] = col[8*4] =
-                        col[8*5] = col[8*6] = col[8*7] = col[8*0]<<3;
-                return;
-        }*/
-
-col[8*0] = input[8*0 + 0];
-col[8*1] = input[8*2 + 0];
-col[8*2] = input[8*0 + 1];
-col[8*3] = input[8*2 + 1];
-col[8*4] = input[8*4 + 0];
-col[8*5] = input[8*6 + 0];
-col[8*6] = input[8*4 + 1];
-col[8*7] = input[8*6 + 1];
-
-        a0 = C4*col[8*0] + C2*col[8*2] + C4*col[8*4] + C6*col[8*6] + (1<<(COL_SHIFT-1));
-        a1 = C4*col[8*0] + C6*col[8*2] - C4*col[8*4] - C2*col[8*6] + (1<<(COL_SHIFT-1));
-        a2 = C4*col[8*0] - C6*col[8*2] - C4*col[8*4] + C2*col[8*6] + (1<<(COL_SHIFT-1));
-        a3 = C4*col[8*0] - C2*col[8*2] + C4*col[8*4] - C6*col[8*6] + (1<<(COL_SHIFT-1));
-
-        b0 = C1*col[8*1] + C3*col[8*3] + C5*col[8*5] + C7*col[8*7];
-        b1 = C3*col[8*1] - C7*col[8*3] - C1*col[8*5] - C5*col[8*7];
-        b2 = C5*col[8*1] - C1*col[8*3] + C7*col[8*5] + C3*col[8*7];
-        b3 = C7*col[8*1] - C5*col[8*3] + C3*col[8*5] - C1*col[8*7];
-
-        col[8*0] = (a0 + b0) >> COL_SHIFT;
-        col[8*1] = (a1 + b1) >> COL_SHIFT;
-        col[8*2] = (a2 + b2) >> COL_SHIFT;
-        col[8*3] = (a3 + b3) >> COL_SHIFT;
-        col[8*4] = (a3 - b3) >> COL_SHIFT;
-        col[8*5] = (a2 - b2) >> COL_SHIFT;
-        col[8*6] = (a1 - b1) >> COL_SHIFT;
-        col[8*7] = (a0 - b0) >> COL_SHIFT;
-}
-
-static void inline idctRow (int16_t * output, int16_t * input)
-{
-        int16_t row[8];
-
-        int a0, a1, a2, a3, b0, b1, b2, b3;
-        const int C0 = 23170; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C1 = 22725; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C2 = 21407; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C3 = 19266; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C4 = 16383; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C5 = 12873; //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C6 = 8867;  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-        const int C7 = 4520;  //cos(i*M_PI/16)*sqrt(2)*(1<<14) + 0.5
-
-row[0] = input[0];
-row[2] = input[1];
-row[4] = input[4];
-row[6] = input[5];
-row[1] = input[8];
-row[3] = input[9];
-row[5] = input[12];
-row[7] = input[13];
-
-        if( !(row[1] | row[2] |row[3] |row[4] |row[5] |row[6] | row[7]) ) {
-                row[0] = row[1] = row[2] = row[3] = row[4] =
-                        row[5] = row[6] = row[7] = row[0]<<3;
-        output[0]  = row[0];
-        output[2]  = row[1];
-        output[4]  = row[2];
-        output[6]  = row[3];
-        output[8]  = row[4];
-        output[10] = row[5];
-        output[12] = row[6];
-        output[14] = row[7];
-                return;
-        }
-
-        a0 = C4*row[0] + C2*row[2] + C4*row[4] + C6*row[6] + (1<<(ROW_SHIFT-1));
-        a1 = C4*row[0] + C6*row[2] - C4*row[4] - C2*row[6] + (1<<(ROW_SHIFT-1));
-        a2 = C4*row[0] - C6*row[2] - C4*row[4] + C2*row[6] + (1<<(ROW_SHIFT-1));
-        a3 = C4*row[0] - C2*row[2] + C4*row[4] - C6*row[6] + (1<<(ROW_SHIFT-1));
-
-        b0 = C1*row[1] + C3*row[3] + C5*row[5] + C7*row[7];
-        b1 = C3*row[1] - C7*row[3] - C1*row[5] - C5*row[7];
-        b2 = C5*row[1] - C1*row[3] + C7*row[5] + C3*row[7];
-        b3 = C7*row[1] - C5*row[3] + C3*row[5] - C1*row[7];
-
-        row[0] = (a0 + b0) >> ROW_SHIFT;
-        row[1] = (a1 + b1) >> ROW_SHIFT;
-        row[2] = (a2 + b2) >> ROW_SHIFT;
-        row[3] = (a3 + b3) >> ROW_SHIFT;
-        row[4] = (a3 - b3) >> ROW_SHIFT;
-        row[5] = (a2 - b2) >> ROW_SHIFT;
-        row[6] = (a1 - b1) >> ROW_SHIFT;
-        row[7] = (a0 - b0) >> ROW_SHIFT;
-
-        output[0]  = row[0];
-        output[2]  = row[1];
-        output[4]  = row[2];
-        output[6]  = row[3];
-        output[8]  = row[4];
-        output[10] = row[5];
-        output[12] = row[6];
-        output[14] = row[7];
-}
-#endif
 
 static inline void idct(int16_t *block)
 {
@@ -789,7 +656,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
 IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "4:                             \n\t"
 Z_COND_IDCT(  64(%0), 72(%0), 80(%0), 88(%0), 64(%1),paddd (%2), 11, 6f)
 Z_COND_IDCT(  96(%0),104(%0),112(%0),120(%0), 96(%1),paddd (%2), 11, 5f)
@@ -864,7 +731,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
 IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "6:                             \n\t"
 Z_COND_IDCT(  96(%0),104(%0),112(%0),120(%0), 96(%1),paddd (%2), 11, 7f)
 
@@ -930,7 +797,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
 IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "2:                             \n\t"
 Z_COND_IDCT(  96(%0),104(%0),112(%0),120(%0), 96(%1),paddd (%2), 11, 3f)
 
@@ -1007,7 +874,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
 IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "3:                             \n\t"
 #undef IDCT
 #define IDCT(src0, src4, src1, src5, dst, shift) \
@@ -1071,7 +938,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
 IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "5:                             \n\t"
 #undef IDCT
 #define IDCT(src0, src4, src1, src5, dst, shift) \
@@ -1136,7 +1003,7 @@ IDCT(  16(%1), 80(%1), 48(%1), 112(%1),  8(%0), 20)
         "jmp 9f                         \n\t"
 
 
-        "#" ASMALIGN(4)                      \
+        "# .p2align 4                   \n\t"\
         "1:                             \n\t"
 #undef IDCT
 #define IDCT(src0, src4, src1, src5, dst, shift) \
@@ -1210,7 +1077,7 @@ IDCT(  24(%1), 88(%1), 56(%1), 120(%1), 12(%0), 20)
         "jmp 9f                         \n\t"
 
 
-        "#" ASMALIGN(4)
+        "# .p2align 4                   \n\t"
         "7:                             \n\t"
 #undef IDCT
 #define IDCT(src0, src4, src1, src5, dst, shift) \
@@ -1287,10 +1154,10 @@ void ff_simple_idct_mmx(int16_t *block)
 void ff_simple_idct_put_mmx(uint8_t *dest, int line_size, DCTELEM *block)
 {
     idct(block);
-    put_pixels_clamped_mmx(block, dest, line_size);
+    ff_put_pixels_clamped_mmx(block, dest, line_size);
 }
 void ff_simple_idct_add_mmx(uint8_t *dest, int line_size, DCTELEM *block)
 {
     idct(block);
-    add_pixels_clamped_mmx(block, dest, line_size);
+    ff_add_pixels_clamped_mmx(block, dest, line_size);
 }

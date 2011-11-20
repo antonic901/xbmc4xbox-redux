@@ -1,5 +1,6 @@
 #pragma once
 #include "DynamicDll.h"
+#include "DllAvUtil.h"
 
 extern "C" {
 #ifndef HAVE_MMX
@@ -18,7 +19,6 @@ extern "C" {
 #pragma warning(disable:4244)
 #endif
 
-#include "Codecs/ffmpeg/libavutil/avutil.h"
 #include "Codecs/ffmpeg/libswscale/swscale.h"
 #include "Codecs/ffmpeg/libswscale/rgb2rgb.h"
 }
@@ -78,7 +78,7 @@ public:
 class DllSwScale : public DllDynamic, public DllSwScaleInterface
 {
 public:
-  DllSwScale() : DllDynamic( g_settings.GetFFmpegDllFolder() + "swscale-0.6.1.dll") {}
+  DllSwScale() : DllDynamic( g_settings.GetFFmpegDllFolder() + "swscale-2.dll") {}
   DEFINE_METHOD10(struct SwsContext *, sws_getContext, ( int p1, int p2, int p3, int p4, int p5, int p6, int p7, 
 							 SwsFilter * p8, SwsFilter * p9, double * p10))
   DEFINE_METHOD7(int, sws_scale, (struct SwsContext *p1, uint8_t** p2, int *p3, int p4, int p5, uint8_t **p6, int *p7))
@@ -91,6 +91,17 @@ public:
     RESOLVE_METHOD(sws_rgb2rgb_init)
     RESOLVE_METHOD(sws_freeContext)
   END_METHOD_RESOLVE()
+
+  /* dependency of libswscale */
+  DllAvUtil m_dllAvUtil;
+
+public:
+  virtual bool Load()
+  {
+    if (!m_dllAvUtil.Load())
+      return false;
+    return DllDynamic::Load();
+  }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Various utilities for ffmpeg system
+ * various OS-feature replacement utilities
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * copyright (c) 2002 Francois Revol
  *
@@ -22,17 +22,44 @@
 
 /* needed by inet_aton() */
 #define _SVID_SOURCE
-#define _DARWIN_C_SOURCE
 
 #include "config.h"
 #include "avformat.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/time.h>
 #include "os_support.h"
 
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+#include <windows.h>
+
+#undef open
+int ff_win32_open(const char *filename_utf8, int oflag, int pmode)
+{
+    int fd;
+    int num_chars;
+    wchar_t *filename_w;
+
+    /* convert UTF-8 to wide chars */
+    num_chars = MultiByteToWideChar(CP_UTF8, 0, filename_utf8, -1, NULL, 0);
+    if (num_chars <= 0)
+        return -1;
+    filename_w = av_mallocz(sizeof(wchar_t) * num_chars);
+    MultiByteToWideChar(CP_UTF8, 0, filename_utf8, -1, filename_w, num_chars);
+
+    fd = _wopen(filename_w, oflag, pmode);
+    av_freep(&filename_w);
+
+    /* filename maybe be in CP_ACP */
+    if (fd == -1 && !(oflag & O_CREAT))
+        return open(filename_utf8, oflag, pmode);
+
+    return fd;
+}
+#endif
+
 #if CONFIG_NETWORK
+#include <fcntl.h>
+#include <unistd.h>
 #if !HAVE_POLL_H
+#include <sys/time.h>
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #elif HAVE_SYS_SELECT_H
@@ -44,7 +71,6 @@
 
 #if !HAVE_INET_ATON
 #include <stdlib.h>
-#include <strings.h>
 
 int ff_inet_aton (const char * str, struct in_addr * add)
 {
@@ -234,9 +260,7 @@ int ff_socket_nonblock(int socket, int enable)
       return fcntl(socket, F_SETFL, fcntl(socket, F_GETFL) & ~O_NONBLOCK);
 #endif
 }
-#endif /* CONFIG_NETWORK */
 
-#if CONFIG_FFSERVER
 #if !HAVE_POLL_H
 int poll(struct pollfd *fds, nfds_t numfds, int timeout)
 {
@@ -294,7 +318,7 @@ int poll(struct pollfd *fds, nfds_t numfds, int timeout)
     if (rc < 0)
         return rc;
 
-    for(i = 0; i < (nfds_t) n; i++) {
+    for(i = 0; i < numfds; i++) {
         fds[i].revents = 0;
 
         if (FD_ISSET(fds[i].fd, &read_set))      fds[i].revents |= POLLIN;
@@ -305,5 +329,4 @@ int poll(struct pollfd *fds, nfds_t numfds, int timeout)
     return rc;
 }
 #endif /* HAVE_POLL_H */
-#endif /* CONFIG_FFSERVER */
-
+#endif /* CONFIG_NETWORK */

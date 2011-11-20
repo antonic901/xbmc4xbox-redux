@@ -24,7 +24,7 @@
  * @file
  * @brief LZW decoding routines
  * @author Fabrice Bellard
- * Modified for use in TIFF by Konstantin Shishkov
+ * @author modified for use in TIFF by Konstantin Shishkov
  */
 
 #include "avcodec.h"
@@ -121,7 +121,7 @@ av_cold void ff_lzw_decode_close(LZWState **p)
 
 /**
  * Initialize LZW decoder
- * @param s LZW context
+ * @param p LZW context
  * @param csize initial code size in bits
  * @param buf input data
  * @param buf_size input data size
@@ -161,7 +161,7 @@ int ff_lzw_decode_init(LZWState *p, int csize, const uint8_t *buf, int buf_size,
  * NOTE: the algorithm here is inspired from the LZW GIF decoder
  *  written by Steven A. Bennett in 1987.
  *
- * @param s LZW context
+ * @param p LZW context
  * @param buf output buffer
  * @param len number of bytes to decode
  * @return number of bytes decoded

@@ -1,0 +1,25 @@
+From b1c10f712c5d3f63284623a8fb1b2954d52ce01f Mon Sep 17 00:00:00 2001
+From: Jools Wills <jools@oxfordinspire.co.uk>
+Date: Fri, 5 Aug 2011 08:06:18 +0100
+Subject: [PATCH 5/6] Revert "Fix url_feof() for file appendings."
+
+This reverts commit 3bd624b4ee355328382295af411f5343b1329f43.
+---
+ libavformat/aviobuf.c |    4 ----
+ 1 files changed, 0 insertions(+), 4 deletions(-)
+
+Index: ffmpeg/libavformat/aviobuf.c
+===================================================================
+--- ffmpeg.orig/libavformat/aviobuf.c	2011-11-13 19:00:33.563572500 +0000
++++ ffmpeg/libavformat/aviobuf.c	2011-11-13 19:00:36.127258900 +0000
+@@ -278,10 +278,6 @@
+ {
+     if(!s)
+         return 0;
+-    if(s->eof_reached){
+-        s->eof_reached=0;
+-        fill_buffer(s);
+-    }
+     return s->eof_reached;
+ }
+ 

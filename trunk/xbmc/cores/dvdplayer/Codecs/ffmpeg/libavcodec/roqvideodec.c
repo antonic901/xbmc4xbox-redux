@@ -71,9 +71,17 @@ static void roqvideo_decode_frame(RoqContext *ri)
     }
 
     bpos = xpos = ypos = 0;
+    if (chunk_size > buf_end - buf) {
+        av_log(ri->avctx, AV_LOG_ERROR, "Chunk does not fit in input buffer\n");
+        chunk_size = buf_end - buf;
+    }
     while(bpos < chunk_size) {
         for (yp = ypos; yp < ypos + 16; yp += 8)
             for (xp = xpos; xp < xpos + 16; xp += 8) {
+                if (bpos >= chunk_size) {
+                    av_log(ri->avctx, AV_LOG_ERROR, "Input buffer too small\n");
+                    return;
+                }
                 if (vqflg_pos < 0) {
                     vqflg = buf[bpos++]; vqflg |= (buf[bpos++] << 8);
                     vqflg_pos = 7;
@@ -103,6 +111,10 @@ static void roqvideo_decode_frame(RoqContext *ri)
                         if(k & 0x01) x += 4;
                         if(k & 0x02) y += 4;
 
+                        if (bpos >= chunk_size) {
+                            av_log(ri->avctx, AV_LOG_ERROR, "Input buffer too small\n");
+                            return;
+                        }
                         if (vqflg_pos < 0) {
                             vqflg = buf[bpos++];
                             vqflg |= (buf[bpos++] << 8);
@@ -159,6 +171,8 @@ static av_cold int roq_decode_init(AVCodecContext *avctx)
     s->avctx = avctx;
     s->width = avctx->width;
     s->height = avctx->height;
+    avcodec_get_frame_defaults(&s->frames[0]);
+    avcodec_get_frame_defaults(&s->frames[1]);
     s->last_frame    = &s->frames[0];
     s->current_frame = &s->frames[1];
     avctx->pix_fmt = PIX_FMT_YUV444P;
@@ -175,6 +189,7 @@ static int roq_decode_frame(AVCodecContext *avctx,
     RoqContext *s = avctx->priv_data;
     int copy= !s->current_frame->data[0];
 
+    s->current_frame->reference = 3;
     if (avctx->reget_buffer(avctx, s->current_frame)) {
         av_log(avctx, AV_LOG_ERROR, "  RoQ: get_buffer() failed\n");
         return -1;
@@ -210,15 +225,14 @@ static av_cold int roq_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec roq_decoder = {
-    "roqvideo",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_ROQ,
-    sizeof(RoqContext),
-    roq_decode_init,
-    NULL,
-    roq_decode_end,
-    roq_decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_roq_decoder = {
+    .name           = "roqvideo",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_ROQ,
+    .priv_data_size = sizeof(RoqContext),
+    .init           = roq_decode_init,
+    .close          = roq_decode_end,
+    .decode         = roq_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("id RoQ video"),
 };

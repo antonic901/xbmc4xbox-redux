@@ -20,8 +20,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#undef V_DEBUG
-//#define V_DEBUG
+/**
+ * @file
+ * Common code for Vorbis I encoder and decoder
+ * @author Denes Balatoni  ( dbalatoni programozo hu )
+ */
 
 #define ALT_BITSTREAM_READER_LE
 #include "avcodec.h"
@@ -51,16 +54,13 @@ unsigned int ff_vorbis_nth_root(unsigned int x, unsigned int n)
 // the two bits[p] > 32 checks should be redundant, all calling code should
 // already ensure that, but since it allows overwriting the stack it seems
 // reasonable to check redundantly.
-int ff_vorbis_len2vlc(uint8_t *bits, uint32_t *codes, uint_fast32_t num)
+int ff_vorbis_len2vlc(uint8_t *bits, uint32_t *codes, unsigned num)
 {
-    uint_fast32_t exit_at_level[33] = {
-        404, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint32_t exit_at_level[33] = { 404 };
 
-    uint_fast8_t i, j;
-    uint_fast32_t code, p;
+    unsigned i, j, p, code;
 
-#ifdef V_DEBUG
+#ifdef DEBUG
     GetBitContext gb;
 #endif
 
@@ -77,9 +77,9 @@ int ff_vorbis_len2vlc(uint8_t *bits, uint32_t *codes, uint_fast32_t num)
     for (i = 0; i < bits[p]; ++i)
         exit_at_level[i+1] = 1 << i;
 
-#ifdef V_DEBUG
-    av_log(NULL, AV_LOG_INFO, " %d. of %d code len %d code %d - ", p, num, bits[p], codes[p]);
-    init_get_bits(&gb, (uint_fast8_t *)&codes[p], bits[p]);
+#ifdef DEBUG
+    av_log(NULL, AV_LOG_INFO, " %u. of %u code len %d code %d - ", p, num, bits[p], codes[p]);
+    init_get_bits(&gb, (uint8_t *)&codes[p], bits[p]);
     for (i = 0; i < bits[p]; ++i)
         av_log(NULL, AV_LOG_INFO, "%s", get_bits1(&gb) ? "1" : "0");
     av_log(NULL, AV_LOG_INFO, "\n");
@@ -105,9 +105,9 @@ int ff_vorbis_len2vlc(uint8_t *bits, uint32_t *codes, uint_fast32_t num)
             exit_at_level[j] = code + (1 << (j - 1));
         codes[p] = code;
 
-#ifdef V_DEBUG
+#ifdef DEBUG
         av_log(NULL, AV_LOG_INFO, " %d. code len %d code %d - ", p, bits[p], codes[p]);
-        init_get_bits(&gb, (uint_fast8_t *)&codes[p], bits[p]);
+        init_get_bits(&gb, (uint8_t *)&codes[p], bits[p]);
         for (i = 0; i < bits[p]; ++i)
             av_log(NULL, AV_LOG_INFO, "%s", get_bits1(&gb) ? "1" : "0");
         av_log(NULL, AV_LOG_INFO, "\n");
@@ -207,7 +207,7 @@ static void render_line(int x0, int y0, int x1, int y1, float *buf)
 }
 
 void ff_vorbis_floor1_render_list(vorbis_floor1_entry * list, int values,
-                                  uint_fast16_t *y_list, int *flag,
+                                  uint16_t *y_list, int *flag,
                                   int multiplier, float *out, int samples)
 {
     int lx, ly, i;

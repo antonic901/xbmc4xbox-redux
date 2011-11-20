@@ -18,11 +18,13 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
+
+#include "DVDAudioCodecLibDts.h"
+#ifdef USE_LIBDTS_DECODER
+
 #include "stdafx.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"
-#include "DVDAudioCodecLibDts.h"
 #include "DVDStreamInfo.h"
 
 #define HEADER_SIZE 14
@@ -363,3 +365,4 @@ void CDVDAudioCodecLibDts::Reset()
   m_fSamples = m_dll.dts_samples(m_pState);
 }
 
+#endif /* USE_LIBDTS_DECODER */

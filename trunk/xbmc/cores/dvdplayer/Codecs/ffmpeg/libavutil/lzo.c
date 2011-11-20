@@ -37,8 +37,8 @@ typedef struct LZOContext {
 } LZOContext;
 
 /**
- * \brief Reads one byte from the input buffer, avoiding an overrun.
- * \return byte read
+ * @brief Reads one byte from the input buffer, avoiding an overrun.
+ * @return byte read
  */
 static inline int get_byte(LZOContext *c) {
     if (c->in < c->in_end)
@@ -54,10 +54,10 @@ static inline int get_byte(LZOContext *c) {
 #endif
 
 /**
- * \brief Decodes a length value in the coding used by lzo.
- * \param x previous byte value
- * \param mask bits used from x
- * \return decoded length value
+ * @brief Decodes a length value in the coding used by lzo.
+ * @param x previous byte value
+ * @param mask bits used from x
+ * @return decoded length value
  */
 static inline int get_len(LZOContext *c, int x, int mask) {
     int cnt = x & mask;
@@ -82,8 +82,8 @@ static inline int get_len(LZOContext *c, int x, int mask) {
 #endif
 
 /**
- * \brief Copies bytes from input to output buffer with checking.
- * \param cnt number of bytes to copy, must be >= 0
+ * @brief Copies bytes from input to output buffer with checking.
+ * @param cnt number of bytes to copy, must be >= 0
  */
 static inline void copy(LZOContext *c, int cnt) {
     register const uint8_t *src = c->in;
@@ -111,9 +111,9 @@ static inline void copy(LZOContext *c, int cnt) {
 static inline void memcpy_backptr(uint8_t *dst, int back, int cnt);
 
 /**
- * \brief Copies previously decoded bytes to current position.
- * \param back how many bytes back we start
- * \param cnt number of bytes to copy, must be >= 0
+ * @brief Copies previously decoded bytes to current position.
+ * @param back how many bytes back we start
+ * @param cnt number of bytes to copy, must be >= 0
  *
  * cnt > back is valid, this will copy the bytes we just copied,
  * thus creating a repeating pattern with a period length of back.
@@ -175,6 +175,14 @@ int av_lzo1x_decode(void *out, int *outlen, const void *in, int *inlen) {
     int state= 0;
     int x;
     LZOContext c;
+    if (*outlen <= 0 || *inlen <= 0) {
+        int res = 0;
+        if (*outlen <= 0)
+            res |= AV_LZO_OUTPUT_FULL;
+        if (*inlen <= 0)
+            res |= AV_LZO_INPUT_DEPLETED;
+        return res;
+    }
     c.in = in;
     c.in_end = (const uint8_t *)in + *inlen;
     c.out = c.out_start = out;

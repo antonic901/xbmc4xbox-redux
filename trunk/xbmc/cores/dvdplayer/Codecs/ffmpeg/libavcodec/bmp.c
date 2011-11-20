@@ -171,16 +171,14 @@ static int bmp_decode_frame(AVCodecContext *avctx,
         else
             avctx->pix_fmt = PIX_FMT_GRAY8;
         break;
+    case 1:
     case 4:
         if(hsize - ihsize - 14 > 0){
             avctx->pix_fmt = PIX_FMT_PAL8;
         }else{
-            av_log(avctx, AV_LOG_ERROR, "Unknown palette for 16-colour BMP\n");
+            av_log(avctx, AV_LOG_ERROR, "Unknown palette for %d-colour BMP\n", 1<<depth);
             return -1;
         }
-        break;
-    case 1:
-        avctx->pix_fmt = PIX_FMT_MONOBLACK;
         break;
     default:
         av_log(avctx, AV_LOG_ERROR, "depth %d not supported\n", depth);
@@ -200,7 +198,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
     }
-    p->pict_type = FF_I_TYPE;
+    p->pict_type = AV_PICTURE_TYPE_I;
     p->key_frame = 1;
 
     buf = buf0 + hsize;
@@ -245,7 +243,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
         buf = buf0 + 14 + ihsize; //palette location
         if((hsize-ihsize-14) < (colors << 2)){ // OS/2 bitmap, 3 bytes per palette entry
             for(i = 0; i < colors; i++)
-                ((uint32_t*)p->data[1])[i] = bytestream_get_le24(&buf);
+                ((uint32_t*)p->data[1])[i] = (0xff<<24) | bytestream_get_le24(&buf);
         }else{
             for(i = 0; i < colors; i++)
                 ((uint32_t*)p->data[1])[i] = bytestream_get_le32(&buf);
@@ -265,6 +263,22 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     }else{
         switch(depth){
         case 1:
+            for(i = 0; i < avctx->height; i++){
+                int j;
+                for(j = 0; j < n; j++){
+                    ptr[j*8+0] =  buf[j] >> 7;
+                    ptr[j*8+1] = (buf[j] >> 6) & 1;
+                    ptr[j*8+2] = (buf[j] >> 5) & 1;
+                    ptr[j*8+3] = (buf[j] >> 4) & 1;
+                    ptr[j*8+4] = (buf[j] >> 3) & 1;
+                    ptr[j*8+5] = (buf[j] >> 2) & 1;
+                    ptr[j*8+6] = (buf[j] >> 1) & 1;
+                    ptr[j*8+7] =  buf[j]       & 1;
+                }
+                buf += n;
+                ptr += linesize;
+            }
+            break;
         case 8:
         case 24:
             for(i = 0; i < avctx->height; i++){
@@ -290,7 +304,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
                 uint16_t *dst = (uint16_t *) ptr;
 
                 for(j = 0; j < avctx->width; j++)
-                    *dst++ = le2me_16(*src++);
+                    *dst++ = av_le2ne16(*src++);
 
                 buf += n;
                 ptr += linesize;
@@ -335,15 +349,14 @@ static av_cold int bmp_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec bmp_decoder = {
-    "bmp",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_BMP,
-    sizeof(BMPContext),
-    bmp_decode_init,
-    NULL,
-    bmp_decode_end,
-    bmp_decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_bmp_decoder = {
+    .name           = "bmp",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_BMP,
+    .priv_data_size = sizeof(BMPContext),
+    .init           = bmp_decode_init,
+    .close          = bmp_decode_end,
+    .decode         = bmp_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("BMP image"),
 };

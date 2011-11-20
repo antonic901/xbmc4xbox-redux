@@ -23,8 +23,8 @@
  * @file
  * @brief Bethesda Softworks VID Video Decoder
  * @author Nicholas Tung [ntung (at. ntung com] (2007-03)
- * @sa http://wiki.multimedia.cx/index.php?title=Bethsoft_VID
- * @sa http://www.svatopluk.com/andux/docs/dfvid.html
+ * @see http://wiki.multimedia.cx/index.php?title=Bethsoft_VID
+ * @see http://www.svatopluk.com/andux/docs/dfvid.html
  */
 
 #include "libavutil/common.h"
@@ -39,7 +39,8 @@ typedef struct BethsoftvidContext {
 static av_cold int bethsoftvid_decode_init(AVCodecContext *avctx)
 {
     BethsoftvidContext *vid = avctx->priv_data;
-    vid->frame.reference = 1;
+    avcodec_get_frame_defaults(&vid->frame);
+    vid->frame.reference = 3;
     vid->frame.buffer_hints = FF_BUFFER_HINTS_VALID |
         FF_BUFFER_HINTS_PRESERVE | FF_BUFFER_HINTS_REUSABLE;
     avctx->pix_fmt = PIX_FMT_PAL8;
@@ -51,7 +52,8 @@ static void set_palette(AVFrame * frame, const uint8_t * palette_buffer)
     uint32_t * palette = (uint32_t *)frame->data[1];
     int a;
     for(a = 0; a < 256; a++){
-        palette[a] = AV_RB24(&palette_buffer[a * 3]) * 4;
+        palette[a] = 0xFF << 24 | AV_RB24(&palette_buffer[a * 3]) * 4;
+        palette[a] |= palette[a] >> 6 & 0x30303;
     }
     frame->palette_has_changed = 1;
 }
@@ -130,7 +132,7 @@ static av_cold int bethsoftvid_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec bethsoftvid_decoder = {
+AVCodec ff_bethsoftvid_decoder = {
     .name = "bethsoftvid",
     .type = AVMEDIA_TYPE_VIDEO,
     .id = CODEC_ID_BETHSOFTVID,

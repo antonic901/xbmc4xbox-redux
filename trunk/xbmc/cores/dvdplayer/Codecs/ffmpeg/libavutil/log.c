@@ -29,12 +29,10 @@
 #include "avutil.h"
 #include "log.h"
 
-#if LIBAVUTIL_VERSION_MAJOR > 50
-static
-#endif
-int av_log_level = AV_LOG_INFO;
+static int av_log_level = AV_LOG_INFO;
+static int flags;
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32CE__)
 #include <windows.h>
 static const uint8_t color[] = {12,12,12,14,7,7,7};
 static int16_t background, attr_orig;
@@ -51,19 +49,20 @@ static int use_color=-1;
 #undef fprintf
 static void colored_fputs(int level, const char *str){
     if(use_color<0){
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32CE__)
         CONSOLE_SCREEN_BUFFER_INFO con_info;
         con = GetStdHandle(STD_ERROR_HANDLE);
-        use_color = (con != INVALID_HANDLE_VALUE) && !getenv("NO_COLOR");
+        use_color = (con != INVALID_HANDLE_VALUE) && !getenv("NO_COLOR") && !getenv("AV_LOG_FORCE_NOCOLOR");
         if (use_color) {
             GetConsoleScreenBufferInfo(con, &con_info);
             attr_orig  = con_info.wAttributes;
             background = attr_orig & 0xF0;
         }
 #elif HAVE_ISATTY
-        use_color= getenv("TERM") && !getenv("NO_COLOR") && isatty(2);
+        use_color= !getenv("NO_COLOR") && !getenv("AV_LOG_FORCE_NOCOLOR") &&
+            (getenv("TERM") && isatty(2) || getenv("AV_LOG_FORCE_COLOR"));
 #else
-        use_color= 0;
+        use_color= getenv("AV_LOG_FORCE_COLOR") && !getenv("NO_COLOR") && !getenv("AV_LOG_FORCE_NOCOLOR");
 #endif
     }
 
@@ -80,39 +79,57 @@ const char* av_default_item_name(void* ptr){
     return (*(AVClass**)ptr)->class_name;
 }
 
+static void sanitize(uint8_t *line){
+    while(*line){
+        if(*line < 0x08 || (*line > 0x0D && *line < 0x20))
+            *line='?';
+        line++;
+    }
+}
+
 void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
 {
     static int print_prefix=1;
     static int count;
-    static char line[1024], prev[1024];
+    static char prev[1024];
+    char line[1024];
+    static int is_atty;
     AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
     if(level>av_log_level)
         return;
     line[0]=0;
 #undef fprintf
     if(print_prefix && avc) {
-        if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
+        if (avc->parent_log_context_offset) {
             AVClass** parent= *(AVClass***)(((uint8_t*)ptr) + avc->parent_log_context_offset);
             if(parent && *parent){
-                snprintf(line, sizeof(line), "[%s @ %p]", (*parent)->item_name(parent), parent);
+                snprintf(line, sizeof(line), "[%s @ %p] ", (*parent)->item_name(parent), parent);
             }
         }
-        snprintf(line + strlen(line), sizeof(line) - strlen(line), "[%s @ %p]", avc->item_name(ptr), ptr);
+        snprintf(line + strlen(line), sizeof(line) - strlen(line), "[%s @ %p] ", avc->item_name(ptr), ptr);
     }
 
     vsnprintf(line + strlen(line), sizeof(line) - strlen(line), fmt, vl);
 
-    print_prefix= line[strlen(line)-1] == '\n';
-    if(print_prefix && !strcmp(line, prev)){
+    print_prefix = strlen(line) && line[strlen(line)-1] == '\n';
+
+#if HAVE_ISATTY
+    if(!is_atty) is_atty= isatty(2) ? 1 : -1;
+#endif
+
+    if(print_prefix && (flags & AV_LOG_SKIP_REPEATED) && !strcmp(line, prev)){
         count++;
+        if(is_atty==1)
+            fprintf(stderr, "    Last message repeated %d times\r", count);
         return;
     }
     if(count>0){
         fprintf(stderr, "    Last message repeated %d times\n", count);
         count=0;
     }
-    colored_fputs(av_clip(level>>3, 0, 6), line);
     strcpy(prev, line);
+    sanitize(line);
+    colored_fputs(av_clip(level>>3, 0, 6), line);
 }
 
 static void (*av_log_callback)(void*, int, const char*, va_list) = av_log_default_callback;
@@ -141,6 +158,11 @@ int av_log_get_level(void)
 void av_log_set_level(int level)
 {
     av_log_level = level;
+}
+
+void av_log_set_flags(int arg)
+{
+    flags= arg;
 }
 
 void av_log_set_callback(void (*callback)(void*, int, const char*, va_list))

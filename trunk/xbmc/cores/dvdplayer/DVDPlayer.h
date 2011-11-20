@@ -50,6 +50,7 @@ class CStreamInfo;
 #define DVDSTATE_NORMAL           0x00000001 // normal dvd state
 #define DVDSTATE_STILL            0x00000002 // currently displaying a still frame
 #define DVDSTATE_WAIT             0x00000003 // waiting for demuxer read error
+#define DVDSTATE_SEEK             0x00000004 // we are finishing a seek request
 
 class CCurrentStream
 {
@@ -384,6 +385,7 @@ protected:
       commbreak_end = -1;
       seek_to_start = false;
       reset = 0;
+      mute = false;
     }
 
     void ResetCutMarker(double timeout)
@@ -407,6 +409,7 @@ protected:
     int commbreak_end;    // end time of the last commercial break automatically skipped
     bool seek_to_start;   // whether seeking can go back to the start of a previously skipped break
     double reset;         // last actual reset time
+    bool mute;            // whether EDL mute is on
 
   } m_EdlAutoSkipMarkers;
 

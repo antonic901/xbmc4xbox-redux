@@ -84,6 +84,7 @@ CDVDInputStreamRTMP::CDVDInputStreamRTMP() : CDVDInputStream(DVDSTREAM_TYPE_RTMP
 
   m_eof = true;
   m_bPaused = false;
+  m_bLive = false;
   m_sStreamPlaying = NULL;
 }
 
@@ -139,6 +140,10 @@ bool CDVDInputStreamRTMP::Open(const char* strFile, const std::string& content)
 
   if (!m_libRTMP.SetupURL(m_rtmp, m_sStreamPlaying))
     return false;
+
+  // make a note if we have the live property set
+  if ( m_item.GetProperty("IsLive") == "true" || strstr(strFile, " live=1") )
+    m_bLive = true;
 
   // SetOpt and SetAVal copy pointers to the value. librtmp doesn't use the values until the Connect() call,
   // so value objects must stay allocated until then. To be extra safe, keep the values around until Close(),
@@ -198,6 +203,10 @@ bool CDVDInputStreamRTMP::SeekTime(int iTimeInMsec)
 {
   CLog::Log(LOGNOTICE, "RTMP Seek to %i requested", iTimeInMsec);
   CSingleLock lock(m_RTMPSection);
+
+  // don't try to seek in live streams as it can cause librtmp to stall
+  if (m_bLive)
+    return false;
 
   if (m_libRTMP.SendSeek(m_rtmp, iTimeInMsec))
     return true;

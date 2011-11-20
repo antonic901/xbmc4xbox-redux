@@ -27,7 +27,7 @@
 #include "avcodec.h"
 
 /*
- * Adapted to ffmpeg by Francois Revol <revol@free.fr>
+ * Adapted to libavcodec by Francois Revol <revol@free.fr>
  * (removed 68k REG stuff, changed types, added some statics and consts,
  * libavcodec api, context stuff, interlaced stereo out).
  */
@@ -230,7 +230,7 @@ static av_cold int mace_decode_init(AVCodecContext * avctx)
 {
     if (avctx->channels > 2)
         return -1;
-    avctx->sample_fmt = SAMPLE_FMT_S16;
+    avctx->sample_fmt = AV_SAMPLE_FMT_S16;
     return 0;
 }
 
@@ -243,11 +243,14 @@ static int mace_decode_frame(AVCodecContext *avctx,
     int16_t *samples = data;
     MACEContext *ctx = avctx->priv_data;
     int i, j, k, l;
+    int out_size;
     int is_mace3 = (avctx->codec_id == CODEC_ID_MACE3);
 
-    if (*data_size < (3 * buf_size << (2-is_mace3))) {
-        av_log(avctx, AV_LOG_ERROR, "Output buffer too small!\n");
-        return -1;
+    out_size = 3 * (buf_size << (1 - is_mace3)) *
+               av_get_bytes_per_sample(avctx->sample_fmt);
+    if (*data_size < out_size) {
+        av_log(avctx, AV_LOG_ERROR, "Output buffer is too small\n");
+        return AVERROR(EINVAL);
     }
 
     for(i = 0; i < avctx->channels; i++) {
@@ -274,32 +277,28 @@ static int mace_decode_frame(AVCodecContext *avctx,
             }
     }
 
-    *data_size = 3 * buf_size << (2-is_mace3);
+    *data_size = out_size;
 
     return buf_size;
 }
 
-AVCodec mace3_decoder = {
-    "mace3",
-    AVMEDIA_TYPE_AUDIO,
-    CODEC_ID_MACE3,
-    sizeof(MACEContext),
-    mace_decode_init,
-    NULL,
-    NULL,
-    mace_decode_frame,
+AVCodec ff_mace3_decoder = {
+    .name           = "mace3",
+    .type           = AVMEDIA_TYPE_AUDIO,
+    .id             = CODEC_ID_MACE3,
+    .priv_data_size = sizeof(MACEContext),
+    .init           = mace_decode_init,
+    .decode         = mace_decode_frame,
     .long_name = NULL_IF_CONFIG_SMALL("MACE (Macintosh Audio Compression/Expansion) 3:1"),
 };
 
-AVCodec mace6_decoder = {
-    "mace6",
-    AVMEDIA_TYPE_AUDIO,
-    CODEC_ID_MACE6,
-    sizeof(MACEContext),
-    mace_decode_init,
-    NULL,
-    NULL,
-    mace_decode_frame,
+AVCodec ff_mace6_decoder = {
+    .name           = "mace6",
+    .type           = AVMEDIA_TYPE_AUDIO,
+    .id             = CODEC_ID_MACE6,
+    .priv_data_size = sizeof(MACEContext),
+    .init           = mace_decode_init,
+    .decode         = mace_decode_frame,
     .long_name = NULL_IF_CONFIG_SMALL("MACE (Macintosh Audio Compression/Expansion) 6:1"),
 };
 

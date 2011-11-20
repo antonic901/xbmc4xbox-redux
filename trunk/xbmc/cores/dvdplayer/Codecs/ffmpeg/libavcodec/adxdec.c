@@ -34,7 +34,7 @@
 
 static av_cold int adx_decode_init(AVCodecContext *avctx)
 {
-    avctx->sample_fmt = SAMPLE_FMT_S16;
+    avctx->sample_fmt = AV_SAMPLE_FMT_S16;
     return 0;
 }
 
@@ -166,15 +166,13 @@ static int adx_decode_frame(AVCodecContext *avctx,
     return buf-buf0;
 }
 
-AVCodec adpcm_adx_decoder = {
-    "adpcm_adx",
-    AVMEDIA_TYPE_AUDIO,
-    CODEC_ID_ADPCM_ADX,
-    sizeof(ADXContext),
-    adx_decode_init,
-    NULL,
-    NULL,
-    adx_decode_frame,
+AVCodec ff_adpcm_adx_decoder = {
+    .name           = "adpcm_adx",
+    .type           = AVMEDIA_TYPE_AUDIO,
+    .id             = CODEC_ID_ADPCM_ADX,
+    .priv_data_size = sizeof(ADXContext),
+    .init           = adx_decode_init,
+    .decode         = adx_decode_frame,
     .long_name = NULL_IF_CONFIG_SMALL("SEGA CRI ADX ADPCM"),
 };
 

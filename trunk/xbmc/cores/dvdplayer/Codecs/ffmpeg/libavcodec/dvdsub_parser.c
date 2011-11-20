@@ -1,5 +1,5 @@
 /*
- * DVD subtitle decoding for ffmpeg
+ * DVD subtitle decoding
  * Copyright (c) 2005 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -76,10 +76,10 @@ static av_cold void dvdsub_parse_close(AVCodecParserContext *s)
     av_freep(&pc->packet);
 }
 
-AVCodecParser dvdsub_parser = {
-    { CODEC_ID_DVD_SUBTITLE },
-    sizeof(DVDSubParseContext),
-    dvdsub_parse_init,
-    dvdsub_parse,
-    dvdsub_parse_close,
+AVCodecParser ff_dvdsub_parser = {
+    .codec_ids      = { CODEC_ID_DVD_SUBTITLE },
+    .priv_data_size = sizeof(DVDSubParseContext),
+    .parser_init    = dvdsub_parse_init,
+    .parser_parse   = dvdsub_parse,
+    .parser_close   = dvdsub_parse_close,
 };

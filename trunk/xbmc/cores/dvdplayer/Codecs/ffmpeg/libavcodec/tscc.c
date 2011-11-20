@@ -60,6 +60,8 @@ typedef struct TsccContext {
     unsigned char* decomp_buf;
     int height;
     z_stream zstream;
+
+    uint32_t pal[256];
 } CamtasiaContext;
 
 /*
@@ -73,21 +75,18 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPac
     int buf_size = avpkt->size;
     CamtasiaContext * const c = avctx->priv_data;
     const unsigned char *encoded = buf;
-    unsigned char *outptr;
     int zret; // Zlib return code
     int len = buf_size;
 
     if(c->pic.data[0])
             avctx->release_buffer(avctx, &c->pic);
 
-    c->pic.reference = 1;
+    c->pic.reference = 3;
     c->pic.buffer_hints = FF_BUFFER_HINTS_VALID;
     if(avctx->get_buffer(avctx, &c->pic) < 0){
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
     }
-
-    outptr = c->pic.data[0]; // Output image pointer
 
     zret = inflateReset(&(c->zstream));
     if (zret != Z_OK) {
@@ -111,11 +110,13 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPac
 
     /* make the palette available on the way out */
     if (c->avctx->pix_fmt == PIX_FMT_PAL8) {
-        memcpy(c->pic.data[1], c->avctx->palctrl->palette, AVPALETTE_SIZE);
-        if (c->avctx->palctrl->palette_changed) {
+        const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
+
+        if (pal) {
             c->pic.palette_has_changed = 1;
-            c->avctx->palctrl->palette_changed = 0;
+            memcpy(c->pal, pal, AVPALETTE_SIZE);
         }
+        memcpy(c->pic.data[1], c->pal, AVPALETTE_SIZE);
     }
 
     *data_size = sizeof(AVFrame);
@@ -141,6 +142,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     c->height = avctx->height;
 
+    avcodec_get_frame_defaults(&c->pic);
     // Needed if zlib unused or init aborted before inflateInit
     memset(&(c->zstream), 0, sizeof(z_stream));
     switch(avctx->bits_per_coded_sample){
@@ -197,16 +199,15 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec tscc_decoder = {
-        "camtasia",
-        AVMEDIA_TYPE_VIDEO,
-        CODEC_ID_TSCC,
-        sizeof(CamtasiaContext),
-        decode_init,
-        NULL,
-        decode_end,
-        decode_frame,
-        CODEC_CAP_DR1,
-        .long_name = NULL_IF_CONFIG_SMALL("TechSmith Screen Capture Codec"),
+AVCodec ff_tscc_decoder = {
+    .name           = "camtasia",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_TSCC,
+    .priv_data_size = sizeof(CamtasiaContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
+    .long_name      = NULL_IF_CONFIG_SMALL("TechSmith Screen Capture Codec"),
 };
 

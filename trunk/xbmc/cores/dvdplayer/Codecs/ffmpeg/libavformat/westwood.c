@@ -126,11 +126,11 @@ static int wsaud_read_header(AVFormatContext *s,
                              AVFormatParameters *ap)
 {
     WsAudDemuxContext *wsaud = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     AVStream *st;
     unsigned char header[AUD_HEADER_SIZE];
 
-    if (get_buffer(pb, header, AUD_HEADER_SIZE) != AUD_HEADER_SIZE)
+    if (avio_read(pb, header, AUD_HEADER_SIZE) != AUD_HEADER_SIZE)
         return AVERROR(EIO);
     wsaud->audio_samplerate = AV_RL16(&header[0]);
     if (header[11] == 99)
@@ -144,7 +144,7 @@ static int wsaud_read_header(AVFormatContext *s,
     wsaud->audio_bits = (((header[10] & 0x2) >> 1) + 1) * 8;
 
     /* initialize the audio decoder stream */
-    st = av_new_stream(s, 0);
+    st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
     av_set_pts_info(st, 33, 1, wsaud->audio_samplerate);
@@ -168,12 +168,12 @@ static int wsaud_read_packet(AVFormatContext *s,
                              AVPacket *pkt)
 {
     WsAudDemuxContext *wsaud = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     unsigned char preamble[AUD_CHUNK_PREAMBLE_SIZE];
     unsigned int chunk_size;
     int ret = 0;
 
-    if (get_buffer(pb, preamble, AUD_CHUNK_PREAMBLE_SIZE) !=
+    if (avio_read(pb, preamble, AUD_CHUNK_PREAMBLE_SIZE) !=
         AUD_CHUNK_PREAMBLE_SIZE)
         return AVERROR(EIO);
 
@@ -213,7 +213,7 @@ static int wsvqa_read_header(AVFormatContext *s,
                              AVFormatParameters *ap)
 {
     WsVqaDemuxContext *wsvqa = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     AVStream *st;
     unsigned char *header;
     unsigned char scratch[VQA_PREAMBLE_SIZE];
@@ -221,7 +221,7 @@ static int wsvqa_read_header(AVFormatContext *s,
     unsigned int chunk_size;
 
     /* initialize the video decoder stream */
-    st = av_new_stream(s, 0);
+    st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
     av_set_pts_info(st, 33, 1, VQA_FRAMERATE);
@@ -231,13 +231,13 @@ static int wsvqa_read_header(AVFormatContext *s,
     st->codec->codec_tag = 0;  /* no fourcc */
 
     /* skip to the start of the VQA header */
-    url_fseek(pb, 20, SEEK_SET);
+    avio_seek(pb, 20, SEEK_SET);
 
     /* the VQA header needs to go to the decoder */
     st->codec->extradata_size = VQA_HEADER_SIZE;
     st->codec->extradata = av_mallocz(VQA_HEADER_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
     header = (unsigned char *)st->codec->extradata;
-    if (get_buffer(pb, st->codec->extradata, VQA_HEADER_SIZE) !=
+    if (avio_read(pb, st->codec->extradata, VQA_HEADER_SIZE) !=
         VQA_HEADER_SIZE) {
         av_free(st->codec->extradata);
         return AVERROR(EIO);
@@ -247,7 +247,7 @@ static int wsvqa_read_header(AVFormatContext *s,
 
     /* initialize the audio decoder stream for VQA v1 or nonzero samplerate */
     if (AV_RL16(&header[24]) || (AV_RL16(&header[0]) == 1 && AV_RL16(&header[2]) == 1)) {
-        st = av_new_stream(s, 0);
+        st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR(ENOMEM);
         av_set_pts_info(st, 33, 1, VQA_FRAMERATE);
@@ -277,10 +277,8 @@ static int wsvqa_read_header(AVFormatContext *s,
     /* there are 0 or more chunks before the FINF chunk; iterate until
      * FINF has been skipped and the file will be ready to be demuxed */
     do {
-        if (get_buffer(pb, scratch, VQA_PREAMBLE_SIZE) != VQA_PREAMBLE_SIZE) {
-            av_free(st->codec->extradata);
+        if (avio_read(pb, scratch, VQA_PREAMBLE_SIZE) != VQA_PREAMBLE_SIZE)
             return AVERROR(EIO);
-        }
         chunk_tag = AV_RB32(&scratch[0]);
         chunk_size = AV_RB32(&scratch[4]);
 
@@ -303,7 +301,7 @@ static int wsvqa_read_header(AVFormatContext *s,
             break;
         }
 
-        url_fseek(pb, chunk_size, SEEK_CUR);
+        avio_skip(pb, chunk_size);
     } while (chunk_tag != FINF_TAG);
 
     return 0;
@@ -313,14 +311,14 @@ static int wsvqa_read_packet(AVFormatContext *s,
                              AVPacket *pkt)
 {
     WsVqaDemuxContext *wsvqa = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     int ret = -1;
     unsigned char preamble[VQA_PREAMBLE_SIZE];
     unsigned int chunk_type;
     unsigned int chunk_size;
     int skip_byte;
 
-    while (get_buffer(pb, preamble, VQA_PREAMBLE_SIZE) == VQA_PREAMBLE_SIZE) {
+    while (avio_read(pb, preamble, VQA_PREAMBLE_SIZE) == VQA_PREAMBLE_SIZE) {
         chunk_type = AV_RB32(&preamble[0]);
         chunk_size = AV_RB32(&preamble[4]);
         skip_byte = chunk_size & 0x01;
@@ -329,7 +327,7 @@ static int wsvqa_read_packet(AVFormatContext *s,
 
             if (av_new_packet(pkt, chunk_size))
                 return AVERROR(EIO);
-            ret = get_buffer(pb, pkt->data, chunk_size);
+            ret = avio_read(pb, pkt->data, chunk_size);
             if (ret != chunk_size) {
                 av_free_packet(pkt);
                 return AVERROR(EIO);
@@ -348,7 +346,7 @@ static int wsvqa_read_packet(AVFormatContext *s,
             }
             /* stay on 16-bit alignment */
             if (skip_byte)
-                url_fseek(pb, 1, SEEK_CUR);
+                avio_skip(pb, 1);
 
             return ret;
         } else {
@@ -359,7 +357,7 @@ static int wsvqa_read_packet(AVFormatContext *s,
             default:
                 av_log(s, AV_LOG_INFO, "Skipping unknown chunk 0x%08X\n", chunk_type);
             }
-            url_fseek(pb, chunk_size + skip_byte, SEEK_CUR);
+            avio_skip(pb, chunk_size + skip_byte);
         }
     }
 
@@ -367,22 +365,22 @@ static int wsvqa_read_packet(AVFormatContext *s,
 }
 
 #if CONFIG_WSAUD_DEMUXER
-AVInputFormat wsaud_demuxer = {
-    "wsaud",
-    NULL_IF_CONFIG_SMALL("Westwood Studios audio format"),
-    sizeof(WsAudDemuxContext),
-    wsaud_probe,
-    wsaud_read_header,
-    wsaud_read_packet,
+AVInputFormat ff_wsaud_demuxer = {
+    .name           = "wsaud",
+    .long_name      = NULL_IF_CONFIG_SMALL("Westwood Studios audio format"),
+    .priv_data_size = sizeof(WsAudDemuxContext),
+    .read_probe     = wsaud_probe,
+    .read_header    = wsaud_read_header,
+    .read_packet    = wsaud_read_packet,
 };
 #endif
 #if CONFIG_WSVQA_DEMUXER
-AVInputFormat wsvqa_demuxer = {
-    "wsvqa",
-    NULL_IF_CONFIG_SMALL("Westwood Studios VQA format"),
-    sizeof(WsVqaDemuxContext),
-    wsvqa_probe,
-    wsvqa_read_header,
-    wsvqa_read_packet,
+AVInputFormat ff_wsvqa_demuxer = {
+    .name           = "wsvqa",
+    .long_name      = NULL_IF_CONFIG_SMALL("Westwood Studios VQA format"),
+    .priv_data_size = sizeof(WsVqaDemuxContext),
+    .read_probe     = wsvqa_probe,
+    .read_header    = wsvqa_read_header,
+    .read_packet    = wsvqa_read_packet,
 };
 #endif

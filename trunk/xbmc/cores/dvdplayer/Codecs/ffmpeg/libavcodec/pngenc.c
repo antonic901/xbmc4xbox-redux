@@ -199,7 +199,7 @@ static void png_write_chunk(uint8_t **f, uint32_t tag,
     crc = crc32(0, Z_NULL, 0);
     AV_WL32(tagbuf, tag);
     crc = crc32(crc, tagbuf, 4);
-    bytestream_put_be32(f, bswap_32(tag));
+    bytestream_put_be32(f, av_bswap32(tag));
     if (length > 0) {
         crc = crc32(crc, buf, length);
         memcpy(*f, buf, length);
@@ -243,7 +243,7 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
     uint8_t *top_buf = NULL;
 
     *p = *pict;
-    p->pict_type= FF_I_TYPE;
+    p->pict_type= AV_PICTURE_TYPE_I;
     p->key_frame= 1;
 
     s->bytestream_start=
@@ -436,14 +436,13 @@ static av_cold int png_enc_init(AVCodecContext *avctx){
     return 0;
 }
 
-AVCodec png_encoder = {
-    "png",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_PNG,
-    sizeof(PNGEncContext),
-    png_enc_init,
-    encode_frame,
-    NULL, //encode_end,
+AVCodec ff_png_encoder = {
+    .name           = "png",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_PNG,
+    .priv_data_size = sizeof(PNGEncContext),
+    .init           = png_enc_init,
+    .encode         = encode_frame,
     .pix_fmts= (const enum PixelFormat[]){PIX_FMT_RGB24, PIX_FMT_RGB32, PIX_FMT_PAL8, PIX_FMT_GRAY8, PIX_FMT_MONOBLACK, PIX_FMT_NONE},
     .long_name= NULL_IF_CONFIG_SMALL("PNG image"),
 };

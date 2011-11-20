@@ -53,7 +53,7 @@ void ff_h261_encode_picture_header(MpegEncContext * s, int picture_number){
     H261Context * h = (H261Context *) s;
     int format, temp_ref;
 
-    align_put_bits(&s->pb);
+    avpriv_align_put_bits(&s->pb);
 
     /* Update the pointer to last GOB */
     s->ptr_lastgob = put_bits_ptr(&s->pb);
@@ -84,7 +84,7 @@ void ff_h261_encode_picture_header(MpegEncContext * s, int picture_number){
 }
 
 /**
- * Encodes a group of blocks header.
+ * Encode a group of blocks header.
  */
 static void h261_encode_gob_header(MpegEncContext * s, int mb_line){
     H261Context * h = (H261Context *)s;
@@ -321,14 +321,14 @@ static void h261_encode_block(H261Context * h, DCTELEM * block, int n){
     }
 }
 
-AVCodec h261_encoder = {
-    "h261",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_H261,
-    sizeof(H261Context),
-    MPV_encode_init,
-    MPV_encode_picture,
-    MPV_encode_end,
+AVCodec ff_h261_encoder = {
+    .name           = "h261",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_H261,
+    .priv_data_size = sizeof(H261Context),
+    .init           = MPV_encode_init,
+    .encode         = MPV_encode_picture,
+    .close          = MPV_encode_end,
     .pix_fmts= (const enum PixelFormat[]){PIX_FMT_YUV420P, PIX_FMT_NONE},
     .long_name= NULL_IF_CONFIG_SMALL("H.261"),
 };

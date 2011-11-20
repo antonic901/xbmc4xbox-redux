@@ -27,13 +27,18 @@
 #include <stdint.h>
 #include "avcodec.h"
 
+struct AVCodecDefault {
+    const uint8_t *key;
+    const uint8_t *value;
+};
+
 /**
- * Determines whether pix_fmt is a hardware accelerated format.
+ * Determine whether pix_fmt is a hardware accelerated format.
  */
 int ff_is_hwaccel_pix_fmt(enum PixelFormat pix_fmt);
 
 /**
- * Returns the hardware accelerated codec for codec codec_id and
+ * Return the hardware accelerated codec for codec codec_id and
  * pixel format pix_fmt.
  *
  * @param codec_id the codec to match
@@ -48,6 +53,14 @@ AVHWAccel *ff_find_hwaccel(enum CodecID codec_id, enum PixelFormat pix_fmt);
  */
 int ff_match_2uint16(const uint16_t (*tab)[2], int size, int a, int b);
 
-unsigned int ff_toupper4(unsigned int x);
+unsigned int avpriv_toupper4(unsigned int x);
+
+/**
+ * does needed setup of pkt_pts/pos and such for (re)get_buffer();
+ */
+void ff_init_buffer_info(AVCodecContext *s, AVFrame *pic);
+
+int avpriv_lock_avformat(void);
+int avpriv_unlock_avformat(void);
 
 #endif /* AVCODEC_INTERNAL_H */

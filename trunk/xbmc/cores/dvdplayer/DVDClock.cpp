@@ -99,25 +99,14 @@ void CDVDClock::SetSpeed(int iSpeed)
   m_systemUsed.QuadPart = newfreq;    
 }
 
-void CDVDClock::Discontinuity(ClockDiscontinuityType type, double currentPts, double delay)
+void CDVDClock::Discontinuity(double currentPts)
 {
   CExclusiveLock lock(m_critSection);
-  switch (type)
-  {
-  case CLOCK_DISC_FULL:
-    {
-      m_bReset = true;
-      break;
-    }
-  case CLOCK_DISC_NORMAL:
-    {
-      QueryPerformanceCounter(&m_startClock);
-      m_startClock.QuadPart += (__int64)(delay * m_systemUsed.QuadPart / DVD_TIME_BASE);
-      m_iDisc = currentPts;
-      m_bReset = false;
-      break;
-    }
-  }
+  QueryPerformanceCounter(&m_startClock);
+  if(m_pauseClock.QuadPart)
+    m_pauseClock.QuadPart = m_startClock.QuadPart;
+  m_iDisc = currentPts;
+  m_bReset = false;
 }
 
 void CDVDClock::Pause()
@@ -140,8 +129,3 @@ void CDVDClock::Resume()
   }  
 }
 
-double CDVDClock::DistanceToDisc()
-{
-  // GetClock will lock. if we lock the shared lock here there's potentialy a chance that another thread will try exclusive lock on the section and we'll deadlock
-  return GetClock() - m_iDisc;
-}

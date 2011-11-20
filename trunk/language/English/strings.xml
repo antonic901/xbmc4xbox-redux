@@ -388,7 +388,7 @@
   <string id="436"></string>
   <string id="437">Removable disk</string>
   <string id="438">Opening file</string>
-  <string id="439">Cache</string>
+  <string id="439">MPlayer cache</string>
   <string id="440">Harddisk</string>
   <string id="441">UDF</string>
   <string id="442">Local network</string>
@@ -429,7 +429,7 @@
   <string id="480">Appearance</string>
   <string id="481">Audio options</string>
   <string id="482">About XBMC</string>
-  <string id="483"></string>
+  <string id="483">DVDPlayer cache</string>
   <string id="484"></string>
   <string id="485">Delete album</string>
   <string id="486">Repeat</string>
@@ -1360,6 +1360,10 @@
   <string id="14093">Security</string>
   <string id="14094">Input devices</string>
   <string id="14095">Power saving</string>
+  <string id="14096">Video cache</string>
+  <string id="14097">Video cache - max time</string>
+  <string id="14098">Audio cache</string>
+  <string id="14099">Audio cache - max time</string>
 
   <string id="15000"></string>
   <string id="15001"></string>

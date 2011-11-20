@@ -24,6 +24,8 @@
  * RV40 decoder
  */
 
+#include "libavutil/imgutils.h"
+
 #include "avcodec.h"
 #include "dsputil.h"
 #include "mpegvideo.h"
@@ -142,7 +144,7 @@ static int rv40_parse_slice_header(RV34DecContext *r, GetBitContext *gb, SliceIn
     si->pts = get_bits(gb, 13);
     if(!si->type || !get_bits1(gb))
         rv40_parse_picture_size(gb, &w, &h);
-    if(avcodec_check_dimensions(r->s.avctx, w, h) < 0)
+    if(av_image_check_size(w, h, 0, r->s.avctx) < 0)
         return -1;
     si->width  = w;
     si->height = h;
@@ -229,8 +231,11 @@ static int rv40_decode_mb_info(RV34DecContext *r)
     int blocks[RV34_MB_TYPES] = {0};
     int count = 0;
 
-    if(!r->s.mb_skip_run)
+    if(!r->s.mb_skip_run) {
         r->s.mb_skip_run = svq3_get_ue_golomb(gb) + 1;
+        if(r->s.mb_skip_run > (unsigned)s->mb_num)
+            return -1;
+    }
 
     if(--r->s.mb_skip_run)
          return RV34_MB_SKIP;
@@ -251,7 +256,7 @@ static int rv40_decode_mb_info(RV34DecContext *r)
             prev_type = i;
         }
     }
-    if(s->pict_type == FF_P_TYPE){
+    if(s->pict_type == AV_PICTURE_TYPE_P){
         prev_type = block_num_to_ptype_vlc_num[prev_type];
         q = get_vlc2(gb, ptype_vlc[prev_type].table, PTYPE_VLC_BITS, 1);
         if(q < PBTYPE_ESCAPE)
@@ -307,7 +312,7 @@ static inline void rv40_weak_loop_filter(uint8_t *src, const int step,
     }
 }
 
-static inline void rv40_adaptive_loop_filter(uint8_t *src, const int step,
+static av_always_inline void rv40_adaptive_loop_filter(uint8_t *src, const int step,
                                              const int stride, const int dmode,
                                              const int lim_q1, const int lim_p1,
                                              const int alpha,
@@ -473,7 +478,7 @@ static void rv40_loop_filter(RV34DecContext *r, int row)
 
     mb_pos = row * s->mb_stride;
     for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++){
-        int mbtype = s->current_picture_ptr->mb_type[mb_pos];
+        int mbtype = s->current_picture_ptr->f.mb_type[mb_pos];
         if(IS_INTRA(mbtype) || IS_SEPARATE_DC(mbtype))
             r->cbp_luma  [mb_pos] = r->deblock_coefs[mb_pos] = 0xFFFF;
         if(IS_INTRA(mbtype))
@@ -487,7 +492,7 @@ static void rv40_loop_filter(RV34DecContext *r, int row)
         int avail[4];
         int y_to_deblock, c_to_deblock[2];
 
-        q = s->current_picture_ptr->qscale_table[mb_pos];
+        q = s->current_picture_ptr->f.qscale_table[mb_pos];
         alpha = rv40_alpha_tab[q];
         beta  = rv40_beta_tab [q];
         betaY = betaC = beta * 3;
@@ -502,7 +507,7 @@ static void rv40_loop_filter(RV34DecContext *r, int row)
             if(avail[i]){
                 int pos = mb_pos + neighbour_offs_x[i] + neighbour_offs_y[i]*s->mb_stride;
                 mvmasks[i] = r->deblock_coefs[pos];
-                mbtype [i] = s->current_picture_ptr->mb_type[pos];
+                mbtype [i] = s->current_picture_ptr->f.mb_type[pos];
                 cbp    [i] = r->cbp_luma[pos];
                 uvcbp[i][0] = r->cbp_chroma[pos] & 0xF;
                 uvcbp[i][1] = r->cbp_chroma[pos] >> 4;
@@ -561,7 +566,7 @@ static void rv40_loop_filter(RV34DecContext *r, int row)
         }
 
         for(j = 0; j < 16; j += 4){
-            Y = s->current_picture_ptr->data[0] + mb_x*16 + (row*16 + j) * s->linesize;
+            Y = s->current_picture_ptr->f.data[0] + mb_x*16 + (row*16 + j) * s->linesize;
             for(i = 0; i < 4; i++, Y += 4){
                 int ij = i + j;
                 int clip_cur = y_to_deblock & (MASK_CUR << ij) ? clip[POS_CUR] : 0;
@@ -605,7 +610,7 @@ static void rv40_loop_filter(RV34DecContext *r, int row)
         }
         for(k = 0; k < 2; k++){
             for(j = 0; j < 2; j++){
-                C = s->current_picture_ptr->data[k+1] + mb_x*8 + (row*8 + j*4) * s->uvlinesize;
+                C = s->current_picture_ptr->f.data[k + 1] + mb_x*8 + (row*8 + j*4) * s->uvlinesize;
                 for(i = 0; i < 2; i++, C += 4){
                     int ij = i + j*2;
                     int clip_cur = c_to_deblock[k] & (MASK_CUR << ij) ? clip[POS_CUR] : 0;
@@ -666,17 +671,16 @@ static av_cold int rv40_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec rv40_decoder = {
-    "rv40",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_RV40,
-    sizeof(RV34DecContext),
-    rv40_decode_init,
-    NULL,
-    ff_rv34_decode_end,
-    ff_rv34_decode_frame,
-    CODEC_CAP_DR1 | CODEC_CAP_DELAY,
-    .flush = ff_mpeg_flush,
-    .long_name = NULL_IF_CONFIG_SMALL("RealVideo 4.0"),
-    .pix_fmts= ff_pixfmt_list_420,
+AVCodec ff_rv40_decoder = {
+    .name           = "rv40",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_RV40,
+    .priv_data_size = sizeof(RV34DecContext),
+    .init           = rv40_decode_init,
+    .close          = ff_rv34_decode_end,
+    .decode         = ff_rv34_decode_frame,
+    .capabilities   = CODEC_CAP_DR1 | CODEC_CAP_DELAY,
+    .flush          = ff_mpeg_flush,
+    .long_name      = NULL_IF_CONFIG_SMALL("RealVideo 4.0"),
+    .pix_fmts       = ff_pixfmt_list_420,
 };

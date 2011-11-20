@@ -24,6 +24,7 @@
 #include "DVDDemux.h"
 #include "Codecs/DllAvFormat.h"
 #include "Codecs/DllAvCodec.h"
+#include "Codecs/DllAvUtil.h"
 
 class CDVDDemuxFFmpeg;
 
@@ -123,7 +124,7 @@ protected:
   void UpdateCurrentPTS();
 
   CRITICAL_SECTION m_critSection;
-  // #define MAX_STREAMS 42 // from avformat.h
+  #define MAX_STREAMS 100
   CDemuxStream* m_streams[MAX_STREAMS]; // maximum number of streams that ffmpeg can handle
 
   ByteIOContext* m_ioContext;
@@ -138,7 +139,6 @@ protected:
   int      m_speed;
   unsigned m_program;
   DWORD    m_timeout;
-  unsigned char m_buffer[FFMPEG_FILE_BUFFER_SIZE + AVPROBE_PADDING_SIZE];
 
   CDVDInputStream* m_pInput;
 };

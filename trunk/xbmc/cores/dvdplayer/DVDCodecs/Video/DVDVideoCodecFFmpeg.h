@@ -24,6 +24,7 @@
 #include "DVDVideoCodec.h"
 #include "Codecs/DllAvCodec.h"
 #include "Codecs/DllAvFormat.h"
+#include "Codecs/DllAvUtil.h"
 #include "Codecs/DllSwScale.h"
 
 class CDVDVideoCodecFFmpeg : public CDVDVideoCodec

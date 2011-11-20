@@ -50,8 +50,8 @@ static av_cold int aasc_decode_init(AVCodecContext *avctx)
     AascContext *s = avctx->priv_data;
 
     s->avctx = avctx;
-
     avctx->pix_fmt = PIX_FMT_BGR24;
+    avcodec_get_frame_defaults(&s->frame);
 
     return 0;
 }
@@ -65,7 +65,7 @@ static int aasc_decode_frame(AVCodecContext *avctx,
     AascContext *s = avctx->priv_data;
     int compr, i, stride;
 
-    s->frame.reference = 1;
+    s->frame.reference = 3;
     s->frame.buffer_hints = FF_BUFFER_HINTS_VALID | FF_BUFFER_HINTS_PRESERVE | FF_BUFFER_HINTS_REUSABLE;
     if (avctx->reget_buffer(avctx, &s->frame)) {
         av_log(avctx, AV_LOG_ERROR, "reget_buffer() failed\n");
@@ -109,15 +109,14 @@ static av_cold int aasc_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec aasc_decoder = {
-    "aasc",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_AASC,
-    sizeof(AascContext),
-    aasc_decode_init,
-    NULL,
-    aasc_decode_end,
-    aasc_decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_aasc_decoder = {
+    .name           = "aasc",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_AASC,
+    .priv_data_size = sizeof(AascContext),
+    .init           = aasc_decode_init,
+    .close          = aasc_decode_end,
+    .decode         = aasc_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("Autodesk RLE"),
 };

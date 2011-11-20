@@ -80,12 +80,12 @@ typedef struct {
 
 
 /**
- *  Decodes Indeo5 GOP (Group of pictures) header.
+ *  Decode Indeo5 GOP (Group of pictures) header.
  *  This header is present in key frames only.
  *  It defines parameters for all frames in a GOP.
  *
- *  @param ctx      [in,out] ptr to the decoder context
- *  @param avctx    [in] ptr to the AVCodecContext
+ *  @param[in,out] ctx    ptr to the decoder context
+ *  @param[in]     avctx  ptr to the AVCodecContext
  *  @return         result code: 0 = OK, -1 = error
  */
 static int decode_gop_header(IVI5DecContext *ctx, AVCodecContext *avctx)
@@ -296,9 +296,9 @@ static int decode_gop_header(IVI5DecContext *ctx, AVCodecContext *avctx)
 
 
 /**
- *  Skips a header extension.
+ *  Skip a header extension.
  *
- *  @param gb   [in,out] the GetBit context
+ *  @param[in,out]  gb  the GetBit context
  */
 static inline void skip_hdr_extension(GetBitContext *gb)
 {
@@ -312,10 +312,10 @@ static inline void skip_hdr_extension(GetBitContext *gb)
 
 
 /**
- *  Decodes Indeo5 picture header.
+ *  Decode Indeo5 picture header.
  *
- *  @param ctx      [in,out] ptr to the decoder context
- *  @param avctx    [in] ptr to the AVCodecContext
+ *  @param[in,out]  ctx    ptr to the decoder context
+ *  @param[in]      avctx  ptr to the AVCodecContext
  *  @return         result code: 0 = OK, -1 = error
  */
 static int decode_pic_hdr(IVI5DecContext *ctx, AVCodecContext *avctx)
@@ -364,11 +364,11 @@ static int decode_pic_hdr(IVI5DecContext *ctx, AVCodecContext *avctx)
 
 
 /**
- *  Decodes Indeo5 band header.
+ *  Decode Indeo5 band header.
  *
- *  @param ctx      [in,out] ptr to the decoder context
- *  @param band     [in,out] ptr to the band descriptor
- *  @param avctx    [in] ptr to the AVCodecContext
+ *  @param[in,out]  ctx    ptr to the decoder context
+ *  @param[in,out]  band   ptr to the band descriptor
+ *  @param[in]      avctx  ptr to the AVCodecContext
  *  @return         result code: 0 = OK, -1 = error
  */
 static int decode_band_hdr(IVI5DecContext *ctx, IVIBandDesc *band,
@@ -432,13 +432,13 @@ static int decode_band_hdr(IVI5DecContext *ctx, IVIBandDesc *band,
 
 
 /**
- *  Decodes info (block type, cbp, quant delta, motion vector)
+ *  Decode info (block type, cbp, quant delta, motion vector)
  *  for all macroblocks in the current tile.
  *
- *  @param ctx      [in,out] ptr to the decoder context
- *  @param band     [in,out] ptr to the band descriptor
- *  @param tile     [in,out] ptr to the tile descriptor
- *  @param avctx    [in] ptr to the AVCodecContext
+ *  @param[in,out]  ctx    ptr to the decoder context
+ *  @param[in,out]  band   ptr to the band descriptor
+ *  @param[in,out]  tile   ptr to the tile descriptor
+ *  @param[in]      avctx  ptr to the AVCodecContext
  *  @return         result code: 0 = OK, -1 = error
  */
 static int decode_mb_info(IVI5DecContext *ctx, IVIBandDesc *band,
@@ -557,11 +557,11 @@ static int decode_mb_info(IVI5DecContext *ctx, IVIBandDesc *band,
 
 
 /**
- *  Decodes an Indeo5 band.
+ *  Decode an Indeo5 band.
  *
- *  @param ctx      [in,out] ptr to the decoder context
- *  @param band     [in,out] ptr to the band descriptor
- *  @param avctx    [in] ptr to the AVCodecContext
+ *  @param[in,out]  ctx    ptr to the decoder context
+ *  @param[in,out]  band   ptr to the band descriptor
+ *  @param[in]      avctx  ptr to the AVCodecContext
  *  @return         result code: 0 = OK, -1 = error
  */
 static int decode_band(IVI5DecContext *ctx, int plane_num,
@@ -629,7 +629,7 @@ static int decode_band(IVI5DecContext *ctx, int plane_num,
         FFSWAP(int16_t, band->rv_map->valtab[idx1], band->rv_map->valtab[idx2]);
     }
 
-#if IVI_DEBUG
+#ifdef DEBUG
     if (band->checksum_present) {
         uint16_t chksum = ivi_calc_band_checksum(band);
         if (chksum != band->checksum) {
@@ -647,9 +647,9 @@ static int decode_band(IVI5DecContext *ctx, int plane_num,
 
 
 /**
- *  Switches buffers.
+ *  Switch buffers.
  *
- *  @param ctx      [in,out] ptr to the decoder context
+ *  @param[in,out] ctx  ptr to the decoder context
  */
 static void switch_buffers(IVI5DecContext *ctx)
 {
@@ -690,7 +690,7 @@ static void switch_buffers(IVI5DecContext *ctx)
 
 
 /**
- *  Initializes Indeo5 decoder.
+ *  Initialize Indeo5 decoder.
  */
 static av_cold int decode_init(AVCodecContext *avctx)
 {
@@ -712,6 +712,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     ctx->pic_conf.tile_width    = avctx->width;
     ctx->pic_conf.tile_height   = avctx->height;
     ctx->pic_conf.luma_bands    = ctx->pic_conf.chroma_bands = 1;
+
+    avcodec_get_frame_defaults(&ctx->frame);
 
     result = ff_ivi_init_planes(ctx->planes, &ctx->pic_conf);
     if (result) {
@@ -800,7 +802,7 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size,
 
 
 /**
- *  Closes Indeo5 decoder and cleans up its context.
+ *  Close Indeo5 decoder and clean up its context.
  */
 static av_cold int decode_close(AVCodecContext *avctx)
 {
@@ -818,7 +820,7 @@ static av_cold int decode_close(AVCodecContext *avctx)
 }
 
 
-AVCodec indeo5_decoder = {
+AVCodec ff_indeo5_decoder = {
     .name           = "indeo5",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = CODEC_ID_INDEO5,

@@ -707,3 +707,13 @@ bool CMythFile::GetCommBreakList(cmyth_commbreaklist_t& commbreaklist)
   }
   return false;
 }
+
+bool CMythFile::GetCutList(cmyth_commbreaklist_t& commbreaklist)
+{
+  if (m_program)
+  {
+    commbreaklist = m_dll->get_cutlist(m_control, m_program);
+    return true;
+  }
+  return false;
+}

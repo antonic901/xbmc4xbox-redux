@@ -73,7 +73,7 @@ static void vb_decode_palette(VBDecContext *c, int data_size)
         return;
     }
     for(i = start; i <= start + size; i++)
-        c->pal[i] = bytestream_get_be24(&c->stream);
+        c->pal[i] = 0xFF << 24 | bytestream_get_be24(&c->stream);
 }
 
 static inline int check_pixel(uint8_t *buf, uint8_t *start, uint8_t *end)
@@ -205,7 +205,7 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *data_size, AVPac
 
     if(c->pic.data[0])
         avctx->release_buffer(avctx, &c->pic);
-    c->pic.reference = 1;
+    c->pic.reference = 3;
     if(avctx->get_buffer(avctx, &c->pic) < 0){
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
@@ -268,6 +268,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     c->avctx = avctx;
     avctx->pix_fmt = PIX_FMT_PAL8;
+    avcodec_get_frame_defaults(&c->pic);
 
     c->frame      = av_mallocz(avctx->width * avctx->height);
     c->prev_frame = av_mallocz(avctx->width * avctx->height);
@@ -287,15 +288,14 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec vb_decoder = {
-    "vb",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_VB,
-    sizeof(VBDecContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
+AVCodec ff_vb_decoder = {
+    .name           = "vb",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_VB,
+    .priv_data_size = sizeof(VBDecContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
     .long_name = NULL_IF_CONFIG_SMALL("Beam Software VB"),
 };
 

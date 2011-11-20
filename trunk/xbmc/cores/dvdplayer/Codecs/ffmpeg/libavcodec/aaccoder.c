@@ -30,7 +30,10 @@
  * add sane pulse detection
  ***********************************/
 
+#include "libavutil/libm.h" // brought forward to work around cygwin header breakage
+
 #include <float.h>
+#include <math.h>
 #include "avcodec.h"
 #include "put_bits.h"
 #include "aac.h"
@@ -99,25 +102,27 @@ static const uint8_t aac_cb_maxval[12] = {0, 1, 1, 2, 2, 4, 4, 7, 7, 12, 12, 16}
  *
  * @return quantization distortion
  */
-static float quantize_and_encode_band_cost(struct AACEncContext *s,
+static av_always_inline float quantize_and_encode_band_cost_template(
+                                struct AACEncContext *s,
                                 PutBitContext *pb, const float *in,
                                 const float *scaled, int size, int scale_idx,
                                 int cb, const float lambda, const float uplim,
-                                int *bits)
+                                int *bits, int BT_ZERO, int BT_UNSIGNED,
+                                int BT_PAIR, int BT_ESC)
 {
-    const float IQ = ff_aac_pow2sf_tab[200 + scale_idx - SCALE_ONE_POS + SCALE_DIV_512];
-    const float  Q = ff_aac_pow2sf_tab[200 - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
+    const float IQ = ff_aac_pow2sf_tab[POW_SF2_ZERO + scale_idx - SCALE_ONE_POS + SCALE_DIV_512];
+    const float  Q = ff_aac_pow2sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     const float CLIPPED_ESCAPE = 165140.0f*IQ;
-    int i, j, k;
+    int i, j;
     float cost = 0;
-    const int dim = cb < FIRST_PAIR_BT ? 4 : 2;
+    const int dim = BT_PAIR ? 2 : 4;
     int resbits = 0;
     const float  Q34 = sqrtf(Q * sqrtf(Q));
     const int range  = aac_cb_range[cb];
     const int maxval = aac_cb_maxval[cb];
     int off;
 
-    if (!cb) {
+    if (BT_ZERO) {
         for (i = 0; i < size; i++)
             cost += in[i]*in[i];
         if (bits)
@@ -128,8 +133,8 @@ static float quantize_and_encode_band_cost(struct AACEncContext *s,
         abs_pow34_v(s->scoefs, in, size);
         scaled = s->scoefs;
     }
-    quantize_bands(s->qcoefs, in, scaled, size, Q34, !IS_CODEBOOK_UNSIGNED(cb), maxval);
-    if (IS_CODEBOOK_UNSIGNED(cb)) {
+    quantize_bands(s->qcoefs, in, scaled, size, Q34, !BT_UNSIGNED, maxval);
+    if (BT_UNSIGNED) {
         off = 0;
     } else {
         off = maxval;
@@ -144,55 +149,55 @@ static float quantize_and_encode_band_cost(struct AACEncContext *s,
             curidx *= range;
             curidx += quants[j] + off;
         }
-            curbits =  ff_aac_spectral_bits[cb-1][curidx];
-            vec     = &ff_aac_codebook_vectors[cb-1][curidx*dim];
-            if (IS_CODEBOOK_UNSIGNED(cb)) {
-                for (k = 0; k < dim; k++) {
-                    float t = fabsf(in[i+k]);
-                    float di;
-                    if (vec[k] == 64.0f) { //FIXME: slow
-                        if (t >= CLIPPED_ESCAPE) {
-                            di = t - CLIPPED_ESCAPE;
-                            curbits += 21;
-                        } else {
-                            int c = av_clip(quant(t, Q), 0, 8191);
-                            di = t - c*cbrtf(c)*IQ;
-                            curbits += av_log2(c)*2 - 4 + 1;
-                        }
+        curbits =  ff_aac_spectral_bits[cb-1][curidx];
+        vec     = &ff_aac_codebook_vectors[cb-1][curidx*dim];
+        if (BT_UNSIGNED) {
+            for (j = 0; j < dim; j++) {
+                float t = fabsf(in[i+j]);
+                float di;
+                if (BT_ESC && vec[j] == 64.0f) { //FIXME: slow
+                    if (t >= CLIPPED_ESCAPE) {
+                        di = t - CLIPPED_ESCAPE;
+                        curbits += 21;
                     } else {
-                        di = t - vec[k]*IQ;
+                        int c = av_clip(quant(t, Q), 0, 8191);
+                        di = t - c*cbrtf(c)*IQ;
+                        curbits += av_log2(c)*2 - 4 + 1;
                     }
-                    if (vec[k] != 0.0f)
-                        curbits++;
-                    rd += di*di;
+                } else {
+                    di = t - vec[j]*IQ;
                 }
-            } else {
-                for (k = 0; k < dim; k++) {
-                    float di = in[i+k] - vec[k]*IQ;
-                    rd += di*di;
-                }
+                if (vec[j] != 0.0f)
+                    curbits++;
+                rd += di*di;
             }
+        } else {
+            for (j = 0; j < dim; j++) {
+                float di = in[i+j] - vec[j]*IQ;
+                rd += di*di;
+            }
+        }
         cost    += rd * lambda + curbits;
         resbits += curbits;
         if (cost >= uplim)
             return uplim;
         if (pb) {
-        put_bits(pb, ff_aac_spectral_bits[cb-1][curidx], ff_aac_spectral_codes[cb-1][curidx]);
-        if (IS_CODEBOOK_UNSIGNED(cb))
-            for (j = 0; j < dim; j++)
-                if (ff_aac_codebook_vectors[cb-1][curidx*dim+j] != 0.0f)
-                    put_bits(pb, 1, in[i+j] < 0.0f);
-        if (cb == ESC_BT) {
-            for (j = 0; j < 2; j++) {
-                if (ff_aac_codebook_vectors[cb-1][curidx*2+j] == 64.0f) {
-                    int coef = av_clip(quant(fabsf(in[i+j]), Q), 0, 8191);
-                    int len = av_log2(coef);
+            put_bits(pb, ff_aac_spectral_bits[cb-1][curidx], ff_aac_spectral_codes[cb-1][curidx]);
+            if (BT_UNSIGNED)
+                for (j = 0; j < dim; j++)
+                    if (ff_aac_codebook_vectors[cb-1][curidx*dim+j] != 0.0f)
+                        put_bits(pb, 1, in[i+j] < 0.0f);
+            if (BT_ESC) {
+                for (j = 0; j < 2; j++) {
+                    if (ff_aac_codebook_vectors[cb-1][curidx*2+j] == 64.0f) {
+                        int coef = av_clip(quant(fabsf(in[i+j]), Q), 0, 8191);
+                        int len = av_log2(coef);
 
-                    put_bits(pb, len - 4 + 1, (1 << (len - 4 + 1)) - 2);
-                    put_bits(pb, len, coef & ((1 << len) - 1));
+                        put_bits(pb, len - 4 + 1, (1 << (len - 4 + 1)) - 2);
+                        put_bits(pb, len, coef & ((1 << len) - 1));
+                    }
                 }
             }
-        }
         }
     }
 
@@ -200,6 +205,54 @@ static float quantize_and_encode_band_cost(struct AACEncContext *s,
         *bits = resbits;
     return cost;
 }
+
+#define QUANTIZE_AND_ENCODE_BAND_COST_FUNC(NAME, BT_ZERO, BT_UNSIGNED, BT_PAIR, BT_ESC) \
+static float quantize_and_encode_band_cost_ ## NAME(                                        \
+                                struct AACEncContext *s,                                \
+                                PutBitContext *pb, const float *in,                     \
+                                const float *scaled, int size, int scale_idx,           \
+                                int cb, const float lambda, const float uplim,          \
+                                int *bits) {                                            \
+    return quantize_and_encode_band_cost_template(                                      \
+                                s, pb, in, scaled, size, scale_idx,                     \
+                                BT_ESC ? ESC_BT : cb, lambda, uplim, bits,              \
+                                BT_ZERO, BT_UNSIGNED, BT_PAIR, BT_ESC);                 \
+}
+
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(ZERO,  1, 0, 0, 0)
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(SQUAD, 0, 0, 0, 0)
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(UQUAD, 0, 1, 0, 0)
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(SPAIR, 0, 0, 1, 0)
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(UPAIR, 0, 1, 1, 0)
+QUANTIZE_AND_ENCODE_BAND_COST_FUNC(ESC,   0, 1, 1, 1)
+
+static float (*const quantize_and_encode_band_cost_arr[])(
+                                struct AACEncContext *s,
+                                PutBitContext *pb, const float *in,
+                                const float *scaled, int size, int scale_idx,
+                                int cb, const float lambda, const float uplim,
+                                int *bits) = {
+    quantize_and_encode_band_cost_ZERO,
+    quantize_and_encode_band_cost_SQUAD,
+    quantize_and_encode_band_cost_SQUAD,
+    quantize_and_encode_band_cost_UQUAD,
+    quantize_and_encode_band_cost_UQUAD,
+    quantize_and_encode_band_cost_SPAIR,
+    quantize_and_encode_band_cost_SPAIR,
+    quantize_and_encode_band_cost_UPAIR,
+    quantize_and_encode_band_cost_UPAIR,
+    quantize_and_encode_band_cost_UPAIR,
+    quantize_and_encode_band_cost_UPAIR,
+    quantize_and_encode_band_cost_ESC,
+};
+
+#define quantize_and_encode_band_cost(                                  \
+                                s, pb, in, scaled, size, scale_idx, cb, \
+                                lambda, uplim, bits)                    \
+    quantize_and_encode_band_cost_arr[cb](                              \
+                                s, pb, in, scaled, size, scale_idx, cb, \
+                                lambda, uplim, bits)
+
 static float quantize_band_cost(struct AACEncContext *s, const float *in,
                                 const float *scaled, int size, int scale_idx,
                                 int cb, const float lambda, const float uplim,
@@ -229,7 +282,7 @@ static float find_max_val(int group_len, int swb_size, const float *scaled) {
 }
 
 static int find_min_book(float maxval, int sf) {
-    float Q = ff_aac_pow2sf_tab[200 - sf + SCALE_ONE_POS - SCALE_DIV_512];
+    float Q = ff_aac_pow2sf_tab[POW_SF2_ZERO - sf + SCALE_ONE_POS - SCALE_DIV_512];
     float Q34 = sqrtf(Q * sqrtf(Q));
     int qmaxval, cb;
     qmaxval = maxval * Q34 + 0.4054f;
@@ -259,7 +312,7 @@ static void encode_window_bands_info(AACEncContext *s, SingleChannelElement *sce
                                      int win, int group_len, const float lambda)
 {
     BandCodingPath path[120][12];
-    int w, swb, cb, start, start2, size;
+    int w, swb, cb, start, size;
     int i, j;
     const int max_sfb  = sce->ics.max_sfb;
     const int run_bits = sce->ics.num_windows == 1 ? 5 : 3;
@@ -277,7 +330,6 @@ static void encode_window_bands_info(AACEncContext *s, SingleChannelElement *sce
         path[0][cb].run      = 0;
     }
     for (swb = 0; swb < max_sfb; swb++) {
-        start2 = start;
         size = sce->ics.swb_sizes[swb];
         if (sce->zeroes[win*16 + swb]) {
             for (cb = 0; cb < 12; cb++) {
@@ -294,7 +346,7 @@ static void encode_window_bands_info(AACEncContext *s, SingleChannelElement *sce
                 float cost_stay_here, cost_get_here;
                 float rd = 0.0f;
                 for (w = 0; w < group_len; w++) {
-                    FFPsyBand *band = &s->psy.psy_bands[s->cur_channel*PSY_MAX_BANDS+(win+w)*16+swb];
+                    FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(win+w)*16+swb];
                     rd += quantize_band_cost(s, sce->coeffs + start + w*128,
                                              s->scoefs + start + w*128, size,
                                              sce->sf_idx[(win+w)*16+swb], cb,
@@ -361,7 +413,7 @@ static void codebook_trellis_rate(AACEncContext *s, SingleChannelElement *sce,
                                   int win, int group_len, const float lambda)
 {
     BandCodingPath path[120][12];
-    int w, swb, cb, start, start2, size;
+    int w, swb, cb, start, size;
     int i, j;
     const int max_sfb  = sce->ics.max_sfb;
     const int run_bits = sce->ics.num_windows == 1 ? 5 : 3;
@@ -379,13 +431,28 @@ static void codebook_trellis_rate(AACEncContext *s, SingleChannelElement *sce,
         path[0][cb].run      = 0;
     }
     for (swb = 0; swb < max_sfb; swb++) {
-        start2 = start;
         size = sce->ics.swb_sizes[swb];
         if (sce->zeroes[win*16 + swb]) {
-            for (cb = 0; cb < 12; cb++) {
-                path[swb+1][cb].prev_idx = cb;
-                path[swb+1][cb].cost     = path[swb][cb].cost;
-                path[swb+1][cb].run      = path[swb][cb].run + 1;
+            float cost_stay_here = path[swb][0].cost;
+            float cost_get_here  = next_minrd + run_bits + 4;
+            if (   run_value_bits[sce->ics.num_windows == 8][path[swb][0].run]
+                != run_value_bits[sce->ics.num_windows == 8][path[swb][0].run+1])
+                cost_stay_here += run_bits;
+            if (cost_get_here < cost_stay_here) {
+                path[swb+1][0].prev_idx = next_mincb;
+                path[swb+1][0].cost     = cost_get_here;
+                path[swb+1][0].run      = 1;
+            } else {
+                path[swb+1][0].prev_idx = 0;
+                path[swb+1][0].cost     = cost_stay_here;
+                path[swb+1][0].run      = path[swb][0].run + 1;
+            }
+            next_minrd = path[swb+1][0].cost;
+            next_mincb = 0;
+            for (cb = 1; cb < 12; cb++) {
+                path[swb+1][cb].cost = 61450;
+                path[swb+1][cb].prev_idx = -1;
+                path[swb+1][cb].run = 0;
             }
         } else {
             float minrd = next_minrd;
@@ -438,7 +505,7 @@ static void codebook_trellis_rate(AACEncContext *s, SingleChannelElement *sce,
             idx = cb;
     ppos = max_sfb;
     while (ppos > 0) {
-        if (idx < 0) abort();
+        assert(idx >= 0);
         cb = idx;
         stackrun[stack_len] = path[ppos][cb].run;
         stackcb [stack_len] = cb;
@@ -463,6 +530,16 @@ static void codebook_trellis_rate(AACEncContext *s, SingleChannelElement *sce,
         }
         put_bits(&s->pb, run_bits, count);
     }
+}
+
+/** Return the minimum scalefactor where the quantized coef does not clip. */
+static av_always_inline uint8_t coef2minsf(float coef) {
+    return av_clip_uint8(log2f(coef)*4 - 69 + SCALE_ONE_POS - SCALE_DIV_512);
+}
+
+/** Return the maximum scalefactor where the quantized coef is not zero. */
+static av_always_inline uint8_t coef2maxsf(float coef) {
+    return av_clip_uint8(log2f(coef)*4 +  6 + SCALE_ONE_POS - SCALE_DIV_512);
 }
 
 typedef struct TrellisPath {
@@ -504,18 +581,18 @@ static void search_for_quantizers_anmr(AVCodecContext *avctx, AACEncContext *s,
     }
 
     //minimum scalefactor index is when minimum nonzero coefficient after quantizing is not clipped
-    q0 = av_clip_uint8(log2(q0f)*4 - 69 + SCALE_ONE_POS - SCALE_DIV_512);
+    q0 = coef2minsf(q0f);
     //maximum scalefactor index is when maximum coefficient after quantizing is still not zero
-    q1 = av_clip_uint8(log2(q1f)*4 +  6 + SCALE_ONE_POS - SCALE_DIV_512);
+    q1 = coef2maxsf(q1f);
     //av_log(NULL, AV_LOG_ERROR, "q0 %d, q1 %d\n", q0, q1);
     if (q1 - q0 > 60) {
         int q0low  = q0;
         int q1high = q1;
         //minimum scalefactor index is when maximum nonzero coefficient after quantizing is not clipped
-        int qnrg = av_clip_uint8(log2(sqrt(qnrgf/qcnt))*4 - 31 + SCALE_ONE_POS - SCALE_DIV_512);
+        int qnrg = av_clip_uint8(log2f(sqrtf(qnrgf/qcnt))*4 - 31 + SCALE_ONE_POS - SCALE_DIV_512);
         q1 = qnrg + 30;
         q0 = qnrg - 30;
-    //av_log(NULL, AV_LOG_ERROR, "q0 %d, q1 %d\n", q0, q1);
+        //av_log(NULL, AV_LOG_ERROR, "q0 %d, q1 %d\n", q0, q1);
         if (q0 < q0low) {
             q1 += q0low - q0;
             q0  = q0low;
@@ -549,7 +626,7 @@ static void search_for_quantizers_anmr(AVCodecContext *avctx, AACEncContext *s,
             qmin = INT_MAX;
             qmax = 0.0f;
             for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
-                FFPsyBand *band = &s->psy.psy_bands[s->cur_channel*PSY_MAX_BANDS+(w+w2)*16+g];
+                FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(w+w2)*16+g];
                 if (band->energy <= band->threshold || band->threshold == 0.0f) {
                     sce->zeroes[(w+w2)*16+g] = 1;
                     continue;
@@ -568,9 +645,9 @@ static void search_for_quantizers_anmr(AVCodecContext *avctx, AACEncContext *s,
                 float minrd = INFINITY;
                 float maxval;
                 //minimum scalefactor index is when minimum nonzero coefficient after quantizing is not clipped
-                minscale = av_clip_uint8(log2(qmin)*4 - 69 + SCALE_ONE_POS - SCALE_DIV_512);
+                minscale = coef2minsf(qmin);
                 //maximum scalefactor index is when maximum coefficient after quantizing is still not zero
-                maxscale = av_clip_uint8(log2(qmax)*4 +  6 + SCALE_ONE_POS - SCALE_DIV_512);
+                maxscale = coef2maxsf(qmax);
                 minscale = av_clip(minscale - q0, 0, TRELLIS_STATES - 1);
                 maxscale = av_clip(maxscale - q0, 0, TRELLIS_STATES);
                 maxval = find_max_val(sce->ics.group_len[w], sce->ics.swb_sizes[g], s->scoefs+start);
@@ -578,7 +655,7 @@ static void search_for_quantizers_anmr(AVCodecContext *avctx, AACEncContext *s,
                     float dist = 0;
                     int cb = find_min_book(maxval, sce->sf_idx[w*16+g]);
                     for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
-                        FFPsyBand *band = &s->psy.psy_bands[s->cur_channel*PSY_MAX_BANDS+(w+w2)*16+g];
+                        FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(w+w2)*16+g];
                         dist += quantize_band_cost(s, coefs + w2*128, s->scoefs + start + w2*128, sce->ics.swb_sizes[g],
                                                    q + q0, cb, lambda / band->threshold, INFINITY, NULL);
                     }
@@ -637,6 +714,7 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
     int start = 0, i, w, w2, g;
     int destbits = avctx->bit_rate * 1024.0 / avctx->sample_rate / avctx->channels;
     float dists[128], uplims[128];
+    float maxvals[128];
     int fflag, minscaler;
     int its  = 0;
     int allz = 0;
@@ -650,7 +728,7 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
             int nz = 0;
             float uplim = 0.0f;
             for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
-                FFPsyBand *band = &s->psy.psy_bands[s->cur_channel*PSY_MAX_BANDS+(w+w2)*16+g];
+                FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(w+w2)*16+g];
                 uplim += band->threshold;
                 if (band->energy <= band->threshold || band->threshold == 0.0f) {
                     sce->zeroes[(w+w2)*16+g] = 1;
@@ -662,7 +740,7 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
             sce->zeroes[w*16+g] = !nz;
             if (nz)
                 minthr = FFMIN(minthr, uplim);
-            allz = FFMAX(allz, nz);
+            allz |= nz;
         }
     }
     for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
@@ -671,13 +749,23 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
                 sce->sf_idx[w*16+g] = SCALE_ONE_POS;
                 continue;
             }
-            sce->sf_idx[w*16+g] = SCALE_ONE_POS + FFMIN(log2(uplims[w*16+g]/minthr)*4,59);
+            sce->sf_idx[w*16+g] = SCALE_ONE_POS + FFMIN(log2f(uplims[w*16+g]/minthr)*4,59);
         }
     }
 
     if (!allz)
         return;
     abs_pow34_v(s->scoefs, sce->coeffs, 1024);
+
+    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
+        start = w*128;
+        for (g = 0;  g < sce->ics.num_swb; g++) {
+            const float *scaled = s->scoefs + start;
+            maxvals[w*16+g] = find_max_val(sce->ics.group_len[w], sce->ics.swb_sizes[g], scaled);
+            start += sce->ics.swb_sizes[g];
+        }
+    }
+
     //perform two-loop search
     //outer loop - improve quality
     do {
@@ -703,8 +791,7 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
                         continue;
                     }
                     minscaler = FFMIN(minscaler, sce->sf_idx[w*16+g]);
-                    cb = find_min_book(find_max_val(sce->ics.group_len[w], sce->ics.swb_sizes[g], scaled), sce->sf_idx[w*16+g]);
-                    sce->band_type[w*16+g] = cb;
+                    cb = find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]);
                     for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
                         int b;
                         dist += quantize_band_cost(s, coefs + w2*128,
@@ -736,24 +823,26 @@ static void search_for_quantizers_twoloop(AVCodecContext *avctx,
                         sce->sf_idx[i] -= qstep;
             }
             qstep >>= 1;
-            if (!qstep && tbits > destbits*1.02)
+            if (!qstep && tbits > destbits*1.02 && sce->sf_idx[0] < 217)
                 qstep = 1;
-            if (sce->sf_idx[0] >= 217)
-                break;
         } while (qstep);
 
         fflag = 0;
         minscaler = av_clip(minscaler, 60, 255 - SCALE_MAX_DIFF);
         for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
-            start = w*128;
             for (g = 0; g < sce->ics.num_swb; g++) {
                 int prevsc = sce->sf_idx[w*16+g];
-                if (dists[w*16+g] > uplims[w*16+g] && sce->sf_idx[w*16+g] > 60)
-                    sce->sf_idx[w*16+g]--;
+                if (dists[w*16+g] > uplims[w*16+g] && sce->sf_idx[w*16+g] > 60) {
+                    if (find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]-1))
+                        sce->sf_idx[w*16+g]--;
+                    else //Try to make sure there is some energy in every band
+                        sce->sf_idx[w*16+g]-=2;
+                }
                 sce->sf_idx[w*16+g] = av_clip(sce->sf_idx[w*16+g], minscaler, minscaler + SCALE_MAX_DIFF);
                 sce->sf_idx[w*16+g] = FFMIN(sce->sf_idx[w*16+g], 219);
                 if (sce->sf_idx[w*16+g] != prevsc)
                     fflag = 1;
+                sce->band_type[w*16+g] = find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]);
             }
         }
         its++;
@@ -863,7 +952,7 @@ static void search_for_quantizers_faac(AVCodecContext *avctx, AACEncContext *s,
                 continue;
             }
             sce->zeroes[w*16+g] = 0;
-            scf  = prev_scf = av_clip(SCALE_ONE_POS - SCALE_DIV_512 - log2(1/maxq[w*16+g])*16/3, 60, 218);
+            scf  = prev_scf = av_clip(SCALE_ONE_POS - SCALE_DIV_512 - log2f(1/maxq[w*16+g])*16/3, 60, 218);
             step = 16;
             for (;;) {
                 float dist = 0.0f;
@@ -882,7 +971,7 @@ static void search_for_quantizers_faac(AVCodecContext *avctx, AACEncContext *s,
                     dist -= b;
                 }
                 dist *= 1.0f / 512.0f / lambda;
-                quant_max = quant(maxq[w*16+g], ff_aac_pow2sf_tab[200 - scf + SCALE_ONE_POS - SCALE_DIV_512]);
+                quant_max = quant(maxq[w*16+g], ff_aac_pow2sf_tab[POW_SF2_ZERO - scf + SCALE_ONE_POS - SCALE_DIV_512]);
                 if (quant_max >= 8191) { // too much, return to the previous quantizer
                     sce->sf_idx[w*16+g] = prev_scf;
                     break;
@@ -892,7 +981,7 @@ static void search_for_quantizers_faac(AVCodecContext *avctx, AACEncContext *s,
                 if (curdiff <= 1.0f)
                     step = 0;
                 else
-                    step = log2(curdiff);
+                    step = log2f(curdiff);
                 if (dist > uplim[w*16+g])
                     step = -step;
                 scf += step;
@@ -932,20 +1021,19 @@ static void search_for_quantizers_fast(AVCodecContext *avctx, AACEncContext *s,
                                        SingleChannelElement *sce,
                                        const float lambda)
 {
-    int start = 0, i, w, w2, g;
+    int i, w, w2, g;
     int minq = 255;
 
     memset(sce->sf_idx, 0, sizeof(sce->sf_idx));
     for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
-        start = w*128;
         for (g = 0; g < sce->ics.num_swb; g++) {
             for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
-                FFPsyBand *band = &s->psy.psy_bands[s->cur_channel*PSY_MAX_BANDS+(w+w2)*16+g];
+                FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(w+w2)*16+g];
                 if (band->energy <= band->threshold) {
                     sce->sf_idx[(w+w2)*16+g] = 218;
                     sce->zeroes[(w+w2)*16+g] = 1;
                 } else {
-                    sce->sf_idx[(w+w2)*16+g] = av_clip(SCALE_ONE_POS - SCALE_DIV_512 + log2(band->threshold), 80, 218);
+                    sce->sf_idx[(w+w2)*16+g] = av_clip(SCALE_ONE_POS - SCALE_DIV_512 + log2f(band->threshold), 80, 218);
                     sce->zeroes[(w+w2)*16+g] = 0;
                 }
                 minq = FFMIN(minq, sce->sf_idx[(w+w2)*16+g]);
@@ -978,14 +1066,14 @@ static void search_for_ms(AACEncContext *s, ChannelElement *cpe,
             if (!cpe->ch[0].zeroes[w*16+g] && !cpe->ch[1].zeroes[w*16+g]) {
                 float dist1 = 0.0f, dist2 = 0.0f;
                 for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++) {
-                    FFPsyBand *band0 = &s->psy.psy_bands[(s->cur_channel+0)*PSY_MAX_BANDS+(w+w2)*16+g];
-                    FFPsyBand *band1 = &s->psy.psy_bands[(s->cur_channel+1)*PSY_MAX_BANDS+(w+w2)*16+g];
+                    FFPsyBand *band0 = &s->psy.ch[s->cur_channel+0].psy_bands[(w+w2)*16+g];
+                    FFPsyBand *band1 = &s->psy.ch[s->cur_channel+1].psy_bands[(w+w2)*16+g];
                     float minthr = FFMIN(band0->threshold, band1->threshold);
                     float maxthr = FFMAX(band0->threshold, band1->threshold);
                     for (i = 0; i < sce0->ics.swb_sizes[g]; i++) {
                         M[i] = (sce0->coeffs[start+w2*128+i]
                               + sce1->coeffs[start+w2*128+i]) * 0.5;
-                        S[i] =  sce0->coeffs[start+w2*128+i]
+                        S[i] =  M[i]
                               - sce1->coeffs[start+w2*128+i];
                     }
                     abs_pow34_v(L34, sce0->coeffs+start+w2*128, sce0->ics.swb_sizes[g]);

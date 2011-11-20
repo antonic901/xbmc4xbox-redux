@@ -44,17 +44,17 @@ static int vc1t_probe(AVProbeData *p)
 static int vc1t_read_header(AVFormatContext *s,
                            AVFormatParameters *ap)
 {
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     AVStream *st;
     int frames;
     uint32_t fps;
 
-    frames = get_le24(pb);
-    if(get_byte(pb) != 0xC5 || get_le32(pb) != 4)
+    frames = avio_rl24(pb);
+    if(avio_r8(pb) != 0xC5 || avio_rl32(pb) != 4)
         return -1;
 
     /* init video codec */
-    st = av_new_stream(s, 0);
+    st = avformat_new_stream(s, NULL);
     if (!st)
         return -1;
 
@@ -63,13 +63,13 @@ static int vc1t_read_header(AVFormatContext *s,
 
     st->codec->extradata = av_malloc(VC1_EXTRADATA_SIZE);
     st->codec->extradata_size = VC1_EXTRADATA_SIZE;
-    get_buffer(pb, st->codec->extradata, VC1_EXTRADATA_SIZE);
-    st->codec->height = get_le32(pb);
-    st->codec->width = get_le32(pb);
-    if(get_le32(pb) != 0xC)
+    avio_read(pb, st->codec->extradata, VC1_EXTRADATA_SIZE);
+    st->codec->height = avio_rl32(pb);
+    st->codec->width = avio_rl32(pb);
+    if(avio_rl32(pb) != 0xC)
         return -1;
-    url_fskip(pb, 8);
-    fps = get_le32(pb);
+    avio_skip(pb, 8);
+    fps = avio_rl32(pb);
     if(fps == 0xFFFFFFFF)
         av_set_pts_info(st, 32, 1, 1000);
     else{
@@ -87,7 +87,7 @@ static int vc1t_read_header(AVFormatContext *s,
 static int vc1t_read_packet(AVFormatContext *s,
                            AVPacket *pkt)
 {
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     int frame_size;
     int keyframe = 0;
     uint32_t pts;
@@ -95,10 +95,10 @@ static int vc1t_read_packet(AVFormatContext *s,
     if(url_feof(pb))
         return AVERROR(EIO);
 
-    frame_size = get_le24(pb);
-    if(get_byte(pb) & 0x80)
+    frame_size = avio_rl24(pb);
+    if(avio_r8(pb) & 0x80)
         keyframe = 1;
-    pts = get_le32(pb);
+    pts = avio_rl32(pb);
     if(av_get_packet(pb, pkt, frame_size) < 0)
         return AVERROR(EIO);
     if(s->streams[0]->time_base.den == 1000)
@@ -109,12 +109,11 @@ static int vc1t_read_packet(AVFormatContext *s,
     return pkt->size;
 }
 
-AVInputFormat vc1t_demuxer = {
-    "vc1test",
-    NULL_IF_CONFIG_SMALL("VC-1 test bitstream format"),
-    0,
-    vc1t_probe,
-    vc1t_read_header,
-    vc1t_read_packet,
+AVInputFormat ff_vc1t_demuxer = {
+    .name           = "vc1test",
+    .long_name      = NULL_IF_CONFIG_SMALL("VC-1 test bitstream format"),
+    .read_probe     = vc1t_probe,
+    .read_header    = vc1t_read_header,
+    .read_packet    = vc1t_read_packet,
     .flags = AVFMT_GENERIC_INDEX,
 };

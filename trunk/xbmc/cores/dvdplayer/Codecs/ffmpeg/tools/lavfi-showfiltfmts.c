@@ -20,7 +20,53 @@
 
 #include "libavformat/avformat.h"
 #include "libavutil/pixdesc.h"
+#include "libavutil/samplefmt.h"
 #include "libavfilter/avfilter.h"
+
+static void print_formats(AVFilterContext *filter_ctx)
+{
+    int i, j;
+
+#define PRINT_FMTS(inout, outin, INOUT)                                 \
+    for (i = 0; i < filter_ctx->input_count; i++) {                     \
+        if (filter_ctx->inout##puts[i]->type == AVMEDIA_TYPE_VIDEO) {   \
+            AVFilterFormats *fmts =                                     \
+                filter_ctx->inout##puts[i]->outin##_formats;            \
+            for (j = 0; j < fmts->format_count; j++)                    \
+                printf(#INOUT "PUT[%d] %s: fmt:%s\n",                   \
+                       i, filter_ctx->filter->inout##puts[i].name,      \
+                       av_get_pix_fmt_name(fmts->formats[j]));          \
+        } else if (filter_ctx->inout##puts[i]->type == AVMEDIA_TYPE_AUDIO) { \
+            AVFilterFormats *fmts;                                      \
+                                                                        \
+            fmts = filter_ctx->inout##puts[i]->outin##_formats;         \
+            for (j = 0; j < fmts->format_count; j++)                    \
+                printf(#INOUT "PUT[%d] %s: fmt:%s\n",                   \
+                       i, filter_ctx->filter->inout##puts[i].name,      \
+                       av_get_sample_fmt_name(fmts->formats[j]));       \
+                                                                        \
+            fmts = filter_ctx->inout##puts[i]->outin##_chlayouts;       \
+            for (j = 0; j < fmts->format_count; j++) {                  \
+                char buf[256];                                          \
+                av_get_channel_layout_string(buf, sizeof(buf), -1,      \
+                                             fmts->formats[j]);         \
+                printf(#INOUT "PUT[%d] %s: chlayout:%s\n",              \
+                       i, filter_ctx->filter->inout##puts[i].name, buf); \
+            }                                                           \
+                                                                        \
+            fmts = filter_ctx->inout##puts[i]->outin##_packing;         \
+            for (j = 0; j < fmts->format_count; j++) {                  \
+                printf(#INOUT "PUT[%d] %s: packing:%s\n",               \
+                       i, filter_ctx->filter->inout##puts[i].name,      \
+                       fmts->formats[j] == AVFILTER_PACKED ?            \
+                                           "packed" : "planar");        \
+            }                                                           \
+        }                                                               \
+    }                                                                   \
+
+    PRINT_FMTS(in,  out, IN);
+    PRINT_FMTS(out, in,  OUT);
+}
 
 int main(int argc, char **argv)
 {
@@ -28,7 +74,7 @@ int main(int argc, char **argv)
     AVFilterContext *filter_ctx;
     const char *filter_name;
     const char *filter_args = NULL;
-    int i, j;
+    int i;
 
     av_log_set_level(AV_LOG_DEBUG);
 
@@ -49,7 +95,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if (!(filter_ctx = avfilter_open(filter, NULL))) {
+    if (avfilter_open(&filter_ctx, filter, NULL) < 0) {
         fprintf(stderr, "Inpossible to open filter with name '%s'\n", filter_name);
         return 1;
     }
@@ -60,11 +106,13 @@ int main(int argc, char **argv)
 
     /* create a link for each of the input pads */
     for (i = 0; i < filter_ctx->input_count; i++) {
-        AVFilterLink *link = av_malloc(sizeof(AVFilterLink));
+        AVFilterLink *link = av_mallocz(sizeof(AVFilterLink));
+        link->type = filter_ctx->filter->inputs[i].type;
         filter_ctx->inputs[i] = link;
     }
     for (i = 0; i < filter_ctx->output_count; i++) {
-        AVFilterLink *link = av_malloc(sizeof(AVFilterLink));
+        AVFilterLink *link = av_mallocz(sizeof(AVFilterLink));
+        link->type = filter_ctx->filter->outputs[i].type;
         filter_ctx->outputs[i] = link;
     }
 
@@ -73,26 +121,9 @@ int main(int argc, char **argv)
     else
         avfilter_default_query_formats(filter_ctx);
 
-    /* print the supported formats in input */
-    for (i = 0; i < filter_ctx->input_count; i++) {
-        AVFilterFormats *fmts = filter_ctx->inputs[i]->out_formats;
+    print_formats(filter_ctx);
 
-        printf("INPUT[%d] %s: ", i, filter_ctx->filter->inputs[i].name);
-        for (j = 0; j < fmts->format_count; j++)
-            printf("%s ", av_pix_fmt_descriptors[fmts->formats[j]].name);
-        printf("\n");
-    }
-
-    /* print the supported formats in output */
-    for (i = 0; i < filter_ctx->output_count; i++) {
-        AVFilterFormats *fmts = filter_ctx->outputs[i]->in_formats;
-
-        printf("OUTPUT[%d] %s: ", i, filter_ctx->filter->outputs[i].name);
-        for (j = 0; j < fmts->format_count; j++)
-            printf("%s ", av_pix_fmt_descriptors[fmts->formats[j]].name);
-        printf("\n");
-    }
-
+    avfilter_free(filter_ctx);
     fflush(stdout);
     return 0;
 }

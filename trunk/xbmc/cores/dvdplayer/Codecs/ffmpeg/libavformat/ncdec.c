@@ -45,7 +45,7 @@ static int nc_probe(AVProbeData *probe_packet)
 
 static int nc_read_header(AVFormatContext *s, AVFormatParameters *ap)
 {
-    AVStream *st = av_new_stream(s, 0);
+    AVStream *st = avformat_new_stream(s, NULL);
 
     if (!st)
         return AVERROR(ENOMEM);
@@ -68,12 +68,12 @@ static int nc_read_packet(AVFormatContext *s, AVPacket *pkt)
     while (state != NC_VIDEO_FLAG) {
         if (url_feof(s->pb))
             return AVERROR(EIO);
-        state = (state<<8) + get_byte(s->pb);
+        state = (state<<8) + avio_r8(s->pb);
     }
 
-    get_byte(s->pb);
-    size = get_le16(s->pb);
-    url_fskip(s->pb, 9);
+    avio_r8(s->pb);
+    size = avio_rl16(s->pb);
+    avio_skip(s->pb, 9);
 
     if (size == 0) {
         av_log(s, AV_LOG_DEBUG, "Next packet size is zero\n");
@@ -90,12 +90,11 @@ static int nc_read_packet(AVFormatContext *s, AVPacket *pkt)
     return size;
 }
 
-AVInputFormat nc_demuxer = {
-    "nc",
-    NULL_IF_CONFIG_SMALL("NC camera feed format"),
-    0,
-    nc_probe,
-    nc_read_header,
-    nc_read_packet,
+AVInputFormat ff_nc_demuxer = {
+    .name           = "nc",
+    .long_name      = NULL_IF_CONFIG_SMALL("NC camera feed format"),
+    .read_probe     = nc_probe,
+    .read_header    = nc_read_header,
+    .read_packet    = nc_read_packet,
     .extensions = "v",
 };

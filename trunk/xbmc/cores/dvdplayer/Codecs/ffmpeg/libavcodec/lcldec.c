@@ -73,8 +73,8 @@ typedef struct LclDecContext {
 
 
 /**
- * \param srcptr compressed source buffer, must be padded with at least 5 extra bytes
- * \param destptr must be padded sufficiently for av_memcpy_backptr
+ * @param srcptr compressed source buffer, must be padded with at least 5 extra bytes
+ * @param destptr must be padded sufficiently for av_memcpy_backptr
  */
 static unsigned int mszh_decomp(const unsigned char * srcptr, int srclen, unsigned char * destptr, unsigned int destsize)
 {
@@ -117,14 +117,14 @@ static unsigned int mszh_decomp(const unsigned char * srcptr, int srclen, unsign
 }
 
 
-/**
- * \brief decompress a zlib-compressed data block into decomp_buf
- * \param src compressed input buffer
- * \param src_len data length in input buffer
- * \param offset offset in decomp_buf
- * \param expected expected decompressed length
- */
 #if CONFIG_ZLIB_DECODER
+/**
+ * @brief decompress a zlib-compressed data block into decomp_buf
+ * @param src compressed input buffer
+ * @param src_len data length in input buffer
+ * @param offset offset in decomp_buf
+ * @param expected expected decompressed length
+ */
 static int zlib_decomp(AVCodecContext *avctx, const uint8_t *src, int src_len, int offset, int expected)
 {
     LclDecContext *c = avctx->priv_data;
@@ -453,6 +453,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
     unsigned int max_basesize = FFALIGN(avctx->width, 4) * FFALIGN(avctx->height, 4) + AV_LZO_OUTPUT_PADDING;
     unsigned int max_decomp_size;
 
+    avcodec_get_frame_defaults(&c->pic);
     if (avctx->extradata_size < 8) {
         av_log(avctx, AV_LOG_ERROR, "Extradata size too small.\n");
         return 1;
@@ -609,31 +610,29 @@ static av_cold int decode_end(AVCodecContext *avctx)
 }
 
 #if CONFIG_MSZH_DECODER
-AVCodec mszh_decoder = {
-    "mszh",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_MSZH,
-    sizeof(LclDecContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_mszh_decoder = {
+    .name           = "mszh",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_MSZH,
+    .priv_data_size = sizeof(LclDecContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("LCL (LossLess Codec Library) MSZH"),
 };
 #endif
 
 #if CONFIG_ZLIB_DECODER
-AVCodec zlib_decoder = {
-    "zlib",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_ZLIB,
-    sizeof(LclDecContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_zlib_decoder = {
+    .name           = "zlib",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_ZLIB,
+    .priv_data_size = sizeof(LclDecContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("LCL (LossLess Codec Library) ZLIB"),
 };
 #endif

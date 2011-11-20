@@ -20,12 +20,14 @@
  */
 
 #include "libavutil/fifo.h"
+#include "libavutil/log.h"
+#include "libavutil/mathematics.h"
+#include "libavutil/opt.h"
 #include "libavcodec/put_bits.h"
 #include "avformat.h"
 #include "mpeg.h"
 
 #define MAX_PAYLOAD_SIZE 4096
-//#define DEBUG_SEEK
 
 #undef NDEBUG
 #include <assert.h>
@@ -56,6 +58,7 @@ typedef struct {
 } StreamInfo;
 
 typedef struct {
+    const AVClass *class;
     int packet_size; /* required packet size */
     int packet_number;
     int pack_header_freq;     /* frequency (in packets^-1) at which we send pack headers */
@@ -74,12 +77,13 @@ typedef struct {
     double vcd_padding_bitrate; //FIXME floats
     int64_t vcd_padding_bytes_written;
 
+    int preload;
 } MpegMuxContext;
 
-extern AVOutputFormat mpeg1vcd_muxer;
-extern AVOutputFormat mpeg2dvd_muxer;
-extern AVOutputFormat mpeg2svcd_muxer;
-extern AVOutputFormat mpeg2vob_muxer;
+extern AVOutputFormat ff_mpeg1vcd_muxer;
+extern AVOutputFormat ff_mpeg2dvd_muxer;
+extern AVOutputFormat ff_mpeg2svcd_muxer;
+extern AVOutputFormat ff_mpeg2vob_muxer;
 
 static int put_pack_header(AVFormatContext *ctx,
                            uint8_t *buf, int64_t timestamp)
@@ -297,12 +301,12 @@ static int mpeg_mux_init(AVFormatContext *ctx)
     int video_bitrate;
 
     s->packet_number = 0;
-    s->is_vcd =    (CONFIG_MPEG1VCD_MUXER  && ctx->oformat == &mpeg1vcd_muxer);
-    s->is_svcd =   (CONFIG_MPEG2SVCD_MUXER && ctx->oformat == &mpeg2svcd_muxer);
-    s->is_mpeg2 = ((CONFIG_MPEG2VOB_MUXER  && ctx->oformat == &mpeg2vob_muxer) ||
-                   (CONFIG_MPEG2DVD_MUXER  && ctx->oformat == &mpeg2dvd_muxer) ||
-                   (CONFIG_MPEG2SVCD_MUXER && ctx->oformat == &mpeg2svcd_muxer));
-    s->is_dvd =    (CONFIG_MPEG2DVD_MUXER  && ctx->oformat == &mpeg2dvd_muxer);
+    s->is_vcd =    (CONFIG_MPEG1VCD_MUXER  && ctx->oformat == &ff_mpeg1vcd_muxer);
+    s->is_svcd =   (CONFIG_MPEG2SVCD_MUXER && ctx->oformat == &ff_mpeg2svcd_muxer);
+    s->is_mpeg2 = ((CONFIG_MPEG2VOB_MUXER  && ctx->oformat == &ff_mpeg2vob_muxer) ||
+                   (CONFIG_MPEG2DVD_MUXER  && ctx->oformat == &ff_mpeg2dvd_muxer) ||
+                   (CONFIG_MPEG2SVCD_MUXER && ctx->oformat == &ff_mpeg2svcd_muxer));
+    s->is_dvd =    (CONFIG_MPEG2DVD_MUXER  && ctx->oformat == &ff_mpeg2dvd_muxer);
 
     if(ctx->packet_size) {
         if (ctx->packet_size < 20 || ctx->packet_size > (1 << 23) + 10) {
@@ -367,8 +371,10 @@ static int mpeg_mux_init(AVFormatContext *ctx)
             stream->id = mpv_id++;
             if (st->codec->rc_buffer_size)
                 stream->max_buffer_size = 6*1024 + st->codec->rc_buffer_size/8;
-            else
+            else {
+                av_log(ctx, AV_LOG_WARNING, "VBV buffer size not set, muxing may fail\n");
                 stream->max_buffer_size = 230*1024; //FIXME this is probably too small as default
+            }
 #if 0
                 /* see VCD standard, p. IV-7*/
                 stream->max_buffer_size = 46 * 1024;
@@ -414,9 +420,12 @@ static int mpeg_mux_init(AVFormatContext *ctx)
             video_bitrate += codec_rate;
     }
 
+#if FF_API_MUXRATE
     if(ctx->mux_rate){
         s->mux_rate= (ctx->mux_rate + (8 * 50) - 1) / (8 * 50);
-    } else {
+    } else
+#endif
+    if (!s->mux_rate) {
         /* we increase slightly the bitrate to take into account the
            headers. XXX: compute it exactly */
         bitrate += bitrate*5/100;
@@ -489,14 +498,14 @@ static int mpeg_mux_init(AVFormatContext *ctx)
     return AVERROR(ENOMEM);
 }
 
-static inline void put_timestamp(ByteIOContext *pb, int id, int64_t timestamp)
+static inline void put_timestamp(AVIOContext *pb, int id, int64_t timestamp)
 {
-    put_byte(pb,
+    avio_w8(pb,
              (id << 4) |
              (((timestamp >> 30) & 0x07) << 1) |
              1);
-    put_be16(pb, (uint16_t)((((timestamp >> 15) & 0x7fff) << 1) | 1));
-    put_be16(pb, (uint16_t)((((timestamp      ) & 0x7fff) << 1) | 1));
+    avio_wb16(pb, (uint16_t)((((timestamp >> 15) & 0x7fff) << 1) | 1));
+    avio_wb16(pb, (uint16_t)((((timestamp      ) & 0x7fff) << 1) | 1));
 }
 
 
@@ -611,21 +620,21 @@ static int get_packet_payload_size(AVFormatContext *ctx, int stream_index,
 #endif
 
 /* Write an MPEG padding packet header. */
-static void put_padding_packet(AVFormatContext *ctx, ByteIOContext *pb,int packet_bytes)
+static void put_padding_packet(AVFormatContext *ctx, AVIOContext *pb,int packet_bytes)
 {
     MpegMuxContext *s = ctx->priv_data;
     int i;
 
-    put_be32(pb, PADDING_STREAM);
-    put_be16(pb, packet_bytes - 6);
+    avio_wb32(pb, PADDING_STREAM);
+    avio_wb16(pb, packet_bytes - 6);
     if (!s->is_mpeg2) {
-        put_byte(pb, 0x0f);
+        avio_w8(pb, 0x0f);
         packet_bytes -= 7;
     } else
         packet_bytes -= 6;
 
     for(i=0;i<packet_bytes;i++)
-        put_byte(pb, 0xff);
+        avio_w8(pb, 0xff);
 }
 
 static int get_nb_frames(AVFormatContext *ctx, StreamInfo *stream, int len){
@@ -660,10 +669,7 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
 
     id = stream->id;
 
-#if 0
-    printf("packet ID=%2x PTS=%0.3f\n",
-           id, pts / 90000.0);
-#endif
+    av_dlog(ctx, "packet ID=%2x PTS=%0.3f\n", id, pts / 90000.0);
 
     buf_ptr = buffer;
 
@@ -697,19 +703,19 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
                     size = put_system_header(ctx, buf_ptr, 0);
                     buf_ptr += size;
                     size = buf_ptr - buffer;
-                    put_buffer(ctx->pb, buffer, size);
+                    avio_write(ctx->pb, buffer, size);
 
-                    put_be32(ctx->pb, PRIVATE_STREAM_2);
-                    put_be16(ctx->pb, 0x03d4);         // length
-                    put_byte(ctx->pb, 0x00);           // substream ID, 00=PCI
+                    avio_wb32(ctx->pb, PRIVATE_STREAM_2);
+                    avio_wb16(ctx->pb, 0x03d4);         // length
+                    avio_w8(ctx->pb, 0x00);           // substream ID, 00=PCI
                     for (i = 0; i < 979; i++)
-                        put_byte(ctx->pb, 0x00);
+                        avio_w8(ctx->pb, 0x00);
 
-                    put_be32(ctx->pb, PRIVATE_STREAM_2);
-                    put_be16(ctx->pb, 0x03fa);         // length
-                    put_byte(ctx->pb, 0x01);           // substream ID, 01=DSI
+                    avio_wb32(ctx->pb, PRIVATE_STREAM_2);
+                    avio_wb16(ctx->pb, 0x03fa);         // length
+                    avio_w8(ctx->pb, 0x01);           // substream ID, 01=DSI
                     for (i = 0; i < 1017; i++)
-                        put_byte(ctx->pb, 0x00);
+                        avio_w8(ctx->pb, 0x00);
 
                     memset(buffer, 0, 128);
                     buf_ptr = buffer;
@@ -732,7 +738,7 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
         }
     }
     size = buf_ptr - buffer;
-    put_buffer(ctx->pb, buffer, size);
+    avio_write(ctx->pb, buffer, size);
 
     packet_size = s->packet_size - size;
 
@@ -837,16 +843,16 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
 
         nb_frames= get_nb_frames(ctx, stream, payload_size - stuffing_size);
 
-        put_be32(ctx->pb, startcode);
+        avio_wb32(ctx->pb, startcode);
 
-        put_be16(ctx->pb, packet_size);
+        avio_wb16(ctx->pb, packet_size);
 
         if (!s->is_mpeg2)
             for(i=0;i<stuffing_size;i++)
-                put_byte(ctx->pb, 0xff);
+                avio_w8(ctx->pb, 0xff);
 
         if (s->is_mpeg2) {
-            put_byte(ctx->pb, 0x80); /* mpeg2 id */
+            avio_w8(ctx->pb, 0x80); /* mpeg2 id */
 
             pes_flags=0;
 
@@ -863,8 +869,8 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
             if (stream->packet_number == 0)
                 pes_flags |= 0x01;
 
-            put_byte(ctx->pb, pes_flags); /* flags */
-            put_byte(ctx->pb, header_len - 3 + stuffing_size);
+            avio_w8(ctx->pb, pes_flags); /* flags */
+            avio_w8(ctx->pb, header_len - 3 + stuffing_size);
 
             if (pes_flags & 0x80)  /*write pts*/
                 put_timestamp(ctx->pb, (pes_flags & 0x40) ? 0x03 : 0x02, pts);
@@ -872,13 +878,13 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
                 put_timestamp(ctx->pb, 0x01, dts);
 
             if (pes_flags & 0x01) {  /*write pes extension*/
-                put_byte(ctx->pb, 0x10); /* flags */
+                avio_w8(ctx->pb, 0x10); /* flags */
 
                 /* P-STD buffer info */
                 if ((id & 0xe0) == AUDIO_ID)
-                    put_be16(ctx->pb, 0x4000 | stream->max_buffer_size/ 128);
+                    avio_wb16(ctx->pb, 0x4000 | stream->max_buffer_size/ 128);
                 else
-                    put_be16(ctx->pb, 0x6000 | stream->max_buffer_size/1024);
+                    avio_wb16(ctx->pb, 0x6000 | stream->max_buffer_size/1024);
             }
 
         } else {
@@ -890,38 +896,38 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
                     put_timestamp(ctx->pb, 0x02, pts);
                 }
             } else {
-                put_byte(ctx->pb, 0x0f);
+                avio_w8(ctx->pb, 0x0f);
             }
         }
 
         if (s->is_mpeg2) {
             /* special stuffing byte that is always written
                to prevent accidental generation of start codes. */
-            put_byte(ctx->pb, 0xff);
+            avio_w8(ctx->pb, 0xff);
 
             for(i=0;i<stuffing_size;i++)
-                put_byte(ctx->pb, 0xff);
+                avio_w8(ctx->pb, 0xff);
         }
 
         if (startcode == PRIVATE_STREAM_1) {
-            put_byte(ctx->pb, id);
+            avio_w8(ctx->pb, id);
             if (id >= 0xa0) {
                 /* LPCM (XXX: check nb_frames) */
-                put_byte(ctx->pb, 7);
-                put_be16(ctx->pb, 4); /* skip 3 header bytes */
-                put_byte(ctx->pb, stream->lpcm_header[0]);
-                put_byte(ctx->pb, stream->lpcm_header[1]);
-                put_byte(ctx->pb, stream->lpcm_header[2]);
+                avio_w8(ctx->pb, 7);
+                avio_wb16(ctx->pb, 4); /* skip 3 header bytes */
+                avio_w8(ctx->pb, stream->lpcm_header[0]);
+                avio_w8(ctx->pb, stream->lpcm_header[1]);
+                avio_w8(ctx->pb, stream->lpcm_header[2]);
             } else if (id >= 0x40) {
                 /* AC-3 */
-                put_byte(ctx->pb, nb_frames);
-                put_be16(ctx->pb, trailer_size+1);
+                avio_w8(ctx->pb, nb_frames);
+                avio_wb16(ctx->pb, trailer_size+1);
             }
         }
 
         /* output data */
         assert(payload_size - stuffing_size <= av_fifo_size(stream->fifo));
-        av_fifo_generic_read(stream->fifo, ctx->pb, payload_size - stuffing_size, &put_buffer);
+        av_fifo_generic_read(stream->fifo, ctx->pb, payload_size - stuffing_size, (void*)avio_write);
         stream->bytes_to_iframe -= payload_size - stuffing_size;
     }else{
         payload_size=
@@ -932,9 +938,9 @@ static int flush_packet(AVFormatContext *ctx, int stream_index,
         put_padding_packet(ctx,ctx->pb, pad_packet_bytes);
 
     for(i=0;i<zero_trail_bytes;i++)
-        put_byte(ctx->pb, 0x00);
+        avio_w8(ctx->pb, 0x00);
 
-    put_flush_packet(ctx->pb);
+    avio_flush(ctx->pb);
 
     s->packet_number++;
 
@@ -959,11 +965,11 @@ static void put_vcd_padding_sector(AVFormatContext *ctx)
     int i;
 
     for(i=0;i<s->packet_size;i++)
-        put_byte(ctx->pb, 0);
+        avio_w8(ctx->pb, 0);
 
     s->vcd_padding_bytes_written += s->packet_size;
 
-    put_flush_packet(ctx->pb);
+    avio_flush(ctx->pb);
 
     /* increasing the packet number is correct. The SCR of the following packs
        is calculated from the packet_number and it has to include the padding
@@ -1076,10 +1082,8 @@ retry:
                 best_dts= pkt_desc->dts;
         }
 
-#if 0
-        av_log(ctx, AV_LOG_DEBUG, "bumping scr, scr:%f, dts:%f\n",
-               scr/90000.0, best_dts/90000.0);
-#endif
+        av_dlog(ctx, "bumping scr, scr:%f, dts:%f\n",
+                scr / 90000.0, best_dts / 90000.0);
         if(best_dts == INT64_MAX)
             return 0;
 
@@ -1155,14 +1159,24 @@ static int mpeg_mux_write_packet(AVFormatContext *ctx, AVPacket *pkt)
     StreamInfo *stream = st->priv_data;
     int64_t pts, dts;
     PacketDesc *pkt_desc;
-    const int preload= av_rescale(ctx->preload, 90000, AV_TIME_BASE);
+    int preload;
     const int is_iframe = st->codec->codec_type == AVMEDIA_TYPE_VIDEO && (pkt->flags & AV_PKT_FLAG_KEY);
+
+#if FF_API_PRELOAD
+    if (ctx->preload)
+        s->preload = ctx->preload;
+#endif
+    preload = av_rescale(s->preload, 90000, AV_TIME_BASE);
 
     pts= pkt->pts;
     dts= pkt->dts;
 
-    if(pts != AV_NOPTS_VALUE) pts += preload;
-    if(dts != AV_NOPTS_VALUE) dts += preload;
+    if(pts != AV_NOPTS_VALUE) pts += 2*preload;
+    if(dts != AV_NOPTS_VALUE){
+        if(!s->last_scr)
+            s->last_scr= dts + preload;
+        dts += 2*preload;
+    }
 
 //av_log(ctx, AV_LOG_DEBUG, "dts:%f pts:%f flags:%d stream:%d nopts:%d\n", dts/90000.0, pts/90000.0, pkt->flags, pkt->stream_index, pts != AV_NOPTS_VALUE);
     if (!stream->premux_packet)
@@ -1214,8 +1228,8 @@ static int mpeg_mux_end(AVFormatContext *ctx)
     /* End header according to MPEG1 systems standard. We do not write
        it as it is usually not needed by decoders and because it
        complicates MPEG stream concatenation. */
-    //put_be32(ctx->pb, ISO_11172_END_CODE);
-    //put_flush_packet(ctx->pb);
+    //avio_wb32(ctx->pb, ISO_11172_END_CODE);
+    //avio_flush(ctx->pb);
 
     for(i=0;i<ctx->nb_streams;i++) {
         stream = ctx->streams[i]->priv_data;
@@ -1226,77 +1240,102 @@ static int mpeg_mux_end(AVFormatContext *ctx)
     return 0;
 }
 
+#define OFFSET(x) offsetof(MpegMuxContext, x)
+#define E AV_OPT_FLAG_ENCODING_PARAM
+static const AVOption options[] = {
+    { "muxrate", NULL, OFFSET(mux_rate), AV_OPT_TYPE_INT, {0}, 0, INT_MAX, E },
+    { "preload", "Initial demux-decode delay in microseconds.", OFFSET(preload),  AV_OPT_TYPE_INT, {500000}, 0, INT_MAX, E},
+    { NULL },
+};
+
+#define MPEGENC_CLASS(flavor)\
+static const AVClass flavor ## _class = {\
+    .class_name = #flavor " muxer",\
+    .item_name  = av_default_item_name,\
+    .version    = LIBAVUTIL_VERSION_INT,\
+    .option     = options,\
+};
+
 #if CONFIG_MPEG1SYSTEM_MUXER
-AVOutputFormat mpeg1system_muxer = {
-    "mpeg",
-    NULL_IF_CONFIG_SMALL("MPEG-1 System format"),
-    "video/mpeg",
-    "mpg,mpeg",
-    sizeof(MpegMuxContext),
-    CODEC_ID_MP2,
-    CODEC_ID_MPEG1VIDEO,
-    mpeg_mux_init,
-    mpeg_mux_write_packet,
-    mpeg_mux_end,
+MPEGENC_CLASS(mpeg)
+AVOutputFormat ff_mpeg1system_muxer = {
+    .name              = "mpeg",
+    .long_name         = NULL_IF_CONFIG_SMALL("MPEG-1 System format"),
+    .mime_type         = "video/mpeg",
+    .extensions        = "mpg,mpeg",
+    .priv_data_size    = sizeof(MpegMuxContext),
+    .audio_codec       = CODEC_ID_MP2,
+    .video_codec       = CODEC_ID_MPEG1VIDEO,
+    .write_header      = mpeg_mux_init,
+    .write_packet      = mpeg_mux_write_packet,
+    .write_trailer     = mpeg_mux_end,
+    .priv_class        = &mpeg_class,
 };
 #endif
 #if CONFIG_MPEG1VCD_MUXER
-AVOutputFormat mpeg1vcd_muxer = {
-    "vcd",
-    NULL_IF_CONFIG_SMALL("MPEG-1 System format (VCD)"),
-    "video/mpeg",
-    NULL,
-    sizeof(MpegMuxContext),
-    CODEC_ID_MP2,
-    CODEC_ID_MPEG1VIDEO,
-    mpeg_mux_init,
-    mpeg_mux_write_packet,
-    mpeg_mux_end,
+MPEGENC_CLASS(vcd)
+AVOutputFormat ff_mpeg1vcd_muxer = {
+    .name              = "vcd",
+    .long_name         = NULL_IF_CONFIG_SMALL("MPEG-1 System format (VCD)"),
+    .mime_type         = "video/mpeg",
+    .priv_data_size    = sizeof(MpegMuxContext),
+    .audio_codec       = CODEC_ID_MP2,
+    .video_codec       = CODEC_ID_MPEG1VIDEO,
+    .write_header      = mpeg_mux_init,
+    .write_packet      = mpeg_mux_write_packet,
+    .write_trailer     = mpeg_mux_end,
+    .priv_class        = &vcd_class,
 };
 #endif
 #if CONFIG_MPEG2VOB_MUXER
-AVOutputFormat mpeg2vob_muxer = {
-    "vob",
-    NULL_IF_CONFIG_SMALL("MPEG-2 PS format (VOB)"),
-    "video/mpeg",
-    "vob",
-    sizeof(MpegMuxContext),
-    CODEC_ID_MP2,
-    CODEC_ID_MPEG2VIDEO,
-    mpeg_mux_init,
-    mpeg_mux_write_packet,
-    mpeg_mux_end,
+MPEGENC_CLASS(vob)
+AVOutputFormat ff_mpeg2vob_muxer = {
+    .name              = "vob",
+    .long_name         = NULL_IF_CONFIG_SMALL("MPEG-2 PS format (VOB)"),
+    .mime_type         = "video/mpeg",
+    .extensions        = "vob",
+    .priv_data_size    = sizeof(MpegMuxContext),
+    .audio_codec       = CODEC_ID_MP2,
+    .video_codec       = CODEC_ID_MPEG2VIDEO,
+    .write_header      = mpeg_mux_init,
+    .write_packet      = mpeg_mux_write_packet,
+    .write_trailer     = mpeg_mux_end,
+    .priv_class        = &vob_class,
 };
 #endif
 
 /* Same as mpeg2vob_mux except that the pack size is 2324 */
 #if CONFIG_MPEG2SVCD_MUXER
-AVOutputFormat mpeg2svcd_muxer = {
-    "svcd",
-    NULL_IF_CONFIG_SMALL("MPEG-2 PS format (VOB)"),
-    "video/mpeg",
-    "vob",
-    sizeof(MpegMuxContext),
-    CODEC_ID_MP2,
-    CODEC_ID_MPEG2VIDEO,
-    mpeg_mux_init,
-    mpeg_mux_write_packet,
-    mpeg_mux_end,
+MPEGENC_CLASS(svcd)
+AVOutputFormat ff_mpeg2svcd_muxer = {
+    .name              = "svcd",
+    .long_name         = NULL_IF_CONFIG_SMALL("MPEG-2 PS format (VOB)"),
+    .mime_type         = "video/mpeg",
+    .extensions        = "vob",
+    .priv_data_size    = sizeof(MpegMuxContext),
+    .audio_codec       = CODEC_ID_MP2,
+    .video_codec       = CODEC_ID_MPEG2VIDEO,
+    .write_header      = mpeg_mux_init,
+    .write_packet      = mpeg_mux_write_packet,
+    .write_trailer     = mpeg_mux_end,
+    .priv_class        = &svcd_class,
 };
 #endif
 
 /*  Same as mpeg2vob_mux except the 'is_dvd' flag is set to produce NAV pkts */
 #if CONFIG_MPEG2DVD_MUXER
-AVOutputFormat mpeg2dvd_muxer = {
-    "dvd",
-    NULL_IF_CONFIG_SMALL("MPEG-2 PS format (DVD VOB)"),
-    "video/mpeg",
-    "dvd",
-    sizeof(MpegMuxContext),
-    CODEC_ID_MP2,
-    CODEC_ID_MPEG2VIDEO,
-    mpeg_mux_init,
-    mpeg_mux_write_packet,
-    mpeg_mux_end,
+MPEGENC_CLASS(dvd)
+AVOutputFormat ff_mpeg2dvd_muxer = {
+    .name              = "dvd",
+    .long_name         = NULL_IF_CONFIG_SMALL("MPEG-2 PS format (DVD VOB)"),
+    .mime_type         = "video/mpeg",
+    .extensions        = "dvd",
+    .priv_data_size    = sizeof(MpegMuxContext),
+    .audio_codec       = CODEC_ID_MP2,
+    .video_codec       = CODEC_ID_MPEG2VIDEO,
+    .write_header      = mpeg_mux_init,
+    .write_packet      = mpeg_mux_write_packet,
+    .write_trailer     = mpeg_mux_end,
+    .priv_class        = &dvd_class,
 };
 #endif

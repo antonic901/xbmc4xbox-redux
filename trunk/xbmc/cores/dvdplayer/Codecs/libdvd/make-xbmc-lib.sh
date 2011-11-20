@@ -48,7 +48,6 @@ gcc \
       -shared \
       -o obj/libdvdnav.dll \
       ../libdvdread/obj/*.o obj/*.o ../libdvdcss/src/.libs/libdvdcss.dll.a \
-      -ldl \
       -Wl,--enable-auto-image-base \
       -Xlinker --enable-auto-import
 

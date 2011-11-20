@@ -248,7 +248,7 @@ static av_cold int decode_init(AVCodecContext *avctx){
         break;
     default:
         l->lossy = AV_RL32(avctx->extradata + 8);
-        av_log(avctx, AV_LOG_INFO, "This is LOCO codec version %i, please upload file for study\n", version);
+        av_log_ask_for_sample(avctx, "This is LOCO codec version %i.\n", version);
     }
 
     l->mode = AV_RL32(avctx->extradata + 4);
@@ -272,6 +272,8 @@ static av_cold int decode_init(AVCodecContext *avctx){
     if(avctx->debug & FF_DEBUG_PICT_INFO)
         av_log(avctx, AV_LOG_INFO, "lossy:%i, version:%i, mode: %i\n", l->lossy, version, l->mode);
 
+    avcodec_get_frame_defaults(&l->pic);
+
     return 0;
 }
 
@@ -285,15 +287,14 @@ static av_cold int decode_end(AVCodecContext *avctx){
     return 0;
 }
 
-AVCodec loco_decoder = {
-    "loco",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_LOCO,
-    sizeof(LOCOContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_loco_decoder = {
+    .name           = "loco",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_LOCO,
+    .priv_data_size = sizeof(LOCOContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("LOCO"),
 };

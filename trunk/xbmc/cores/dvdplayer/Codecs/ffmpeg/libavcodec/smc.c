@@ -54,6 +54,7 @@ typedef struct SmcContext {
     unsigned char color_quads[COLORS_PER_TABLE * CQUAD];
     unsigned char color_octets[COLORS_PER_TABLE * COCTET];
 
+    uint32_t pal[256];
 } SmcContext;
 
 #define GET_BLOCK_COUNT() \
@@ -110,11 +111,7 @@ static void smc_decode_stream(SmcContext *s)
     int color_octet_index = 0;
 
     /* make the palette available */
-    memcpy(s->frame.data[1], s->avctx->palctrl->palette, AVPALETTE_SIZE);
-    if (s->avctx->palctrl->palette_changed) {
-        s->frame.palette_has_changed = 1;
-        s->avctx->palctrl->palette_changed = 0;
-    }
+    memcpy(s->frame.data[1], s->pal, AVPALETTE_SIZE);
 
     chunk_size = AV_RB32(&s->buf[stream_ptr]) & 0x00FFFFFF;
     stream_ptr += 4;
@@ -428,6 +425,7 @@ static av_cold int smc_decode_init(AVCodecContext *avctx)
     s->avctx = avctx;
     avctx->pix_fmt = PIX_FMT_PAL8;
 
+    avcodec_get_frame_defaults(&s->frame);
     s->frame.data[0] = NULL;
 
     return 0;
@@ -440,16 +438,22 @@ static int smc_decode_frame(AVCodecContext *avctx,
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
     SmcContext *s = avctx->priv_data;
+    const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
 
     s->buf = buf;
     s->size = buf_size;
 
-    s->frame.reference = 1;
+    s->frame.reference = 3;
     s->frame.buffer_hints = FF_BUFFER_HINTS_VALID | FF_BUFFER_HINTS_PRESERVE |
                             FF_BUFFER_HINTS_REUSABLE | FF_BUFFER_HINTS_READABLE;
     if (avctx->reget_buffer(avctx, &s->frame)) {
         av_log(s->avctx, AV_LOG_ERROR, "reget_buffer() failed\n");
         return -1;
+    }
+
+    if (pal) {
+        s->frame.palette_has_changed = 1;
+        memcpy(s->pal, pal, AVPALETTE_SIZE);
     }
 
     smc_decode_stream(s);
@@ -471,15 +475,14 @@ static av_cold int smc_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec smc_decoder = {
-    "smc",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_SMC,
-    sizeof(SmcContext),
-    smc_decode_init,
-    NULL,
-    smc_decode_end,
-    smc_decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_smc_decoder = {
+    .name           = "smc",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_SMC,
+    .priv_data_size = sizeof(SmcContext),
+    .init           = smc_decode_init,
+    .close          = smc_decode_end,
+    .decode         = smc_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("QuickTime Graphics (SMC)"),
 };

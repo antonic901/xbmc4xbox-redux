@@ -1,7 +1,4 @@
-/**
- * @file
- * VP6 DSP-oriented functions
- *
+/*
  * Copyright (C) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
  * This file is part of FFmpeg.
@@ -21,8 +18,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * @file
+ * VP6 DSP-oriented functions
+ */
+
 #include "libavutil/common.h"
-#include "dsputil.h"
+#include "vp56dsp.h"
 
 
 void ff_vp6_filter_diag4_c(uint8_t *dst, uint8_t *src, int stride,

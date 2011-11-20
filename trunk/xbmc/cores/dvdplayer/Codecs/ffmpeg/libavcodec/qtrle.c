@@ -46,6 +46,7 @@ typedef struct QtrleContext {
     const unsigned char *buf;
     int size;
 
+    uint32_t pal[256];
 } QtrleContext;
 
 #define CHECK_STREAM_PTR(n) \
@@ -126,6 +127,7 @@ static inline void qtrle_decode_2n4bpp(QtrleContext *s, int stream_ptr,
     while (lines_to_change--) {
         CHECK_STREAM_PTR(2);
         pixel_ptr = row_ptr + (num_pixels * (s->buf[stream_ptr++] - 1));
+        CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
 
         while ((rle_code = (signed char)s->buf[stream_ptr++]) != -1) {
             if (rle_code == 0) {
@@ -182,6 +184,7 @@ static void qtrle_decode_8bpp(QtrleContext *s, int stream_ptr, int row_ptr, int 
     while (lines_to_change--) {
         CHECK_STREAM_PTR(2);
         pixel_ptr = row_ptr + (4 * (s->buf[stream_ptr++] - 1));
+        CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
 
         while ((rle_code = (signed char)s->buf[stream_ptr++]) != -1) {
             if (rle_code == 0) {
@@ -235,6 +238,7 @@ static void qtrle_decode_16bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
     while (lines_to_change--) {
         CHECK_STREAM_PTR(2);
         pixel_ptr = row_ptr + (s->buf[stream_ptr++] - 1) * 2;
+        CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
 
         while ((rle_code = (signed char)s->buf[stream_ptr++]) != -1) {
             if (rle_code == 0) {
@@ -284,6 +288,7 @@ static void qtrle_decode_24bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
     while (lines_to_change--) {
         CHECK_STREAM_PTR(2);
         pixel_ptr = row_ptr + (s->buf[stream_ptr++] - 1) * 3;
+        CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
 
         while ((rle_code = (signed char)s->buf[stream_ptr++]) != -1) {
             if (rle_code == 0) {
@@ -335,6 +340,7 @@ static void qtrle_decode_32bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
     while (lines_to_change--) {
         CHECK_STREAM_PTR(2);
         pixel_ptr = row_ptr + (s->buf[stream_ptr++] - 1) * 4;
+        CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
 
         while ((rle_code = (signed char)s->buf[stream_ptr++]) != -1) {
             if (rle_code == 0) {
@@ -416,6 +422,7 @@ static av_cold int qtrle_decode_init(AVCodecContext *avctx)
         break;
     }
 
+    avcodec_get_frame_defaults(&s->frame);
     s->frame.data[0] = NULL;
 
     return 0;
@@ -435,7 +442,7 @@ static int qtrle_decode_frame(AVCodecContext *avctx,
     s->buf = buf;
     s->size = buf_size;
 
-    s->frame.reference = 1;
+    s->frame.reference = 3;
     s->frame.buffer_hints = FF_BUFFER_HINTS_VALID | FF_BUFFER_HINTS_PRESERVE |
                             FF_BUFFER_HINTS_REUSABLE | FF_BUFFER_HINTS_READABLE;
     if (avctx->reget_buffer(avctx, &s->frame)) {
@@ -462,6 +469,8 @@ static int qtrle_decode_frame(AVCodecContext *avctx,
         stream_ptr += 4;
         height = AV_RB16(&s->buf[stream_ptr]);
         stream_ptr += 4;
+        if (height > s->avctx->height - start_line)
+            goto done;
     } else {
         start_line = 0;
         height = s->avctx->height;
@@ -511,12 +520,15 @@ static int qtrle_decode_frame(AVCodecContext *avctx,
     }
 
     if(has_palette) {
-        /* make the palette available on the way out */
-        memcpy(s->frame.data[1], s->avctx->palctrl->palette, AVPALETTE_SIZE);
-        if (s->avctx->palctrl->palette_changed) {
+        const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
+
+        if (pal) {
             s->frame.palette_has_changed = 1;
-            s->avctx->palctrl->palette_changed = 0;
+            memcpy(s->pal, pal, AVPALETTE_SIZE);
         }
+
+        /* make the palette available on the way out */
+        memcpy(s->frame.data[1], s->pal, AVPALETTE_SIZE);
     }
 
 done:
@@ -537,16 +549,15 @@ static av_cold int qtrle_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec qtrle_decoder = {
-    "qtrle",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_QTRLE,
-    sizeof(QtrleContext),
-    qtrle_decode_init,
-    NULL,
-    qtrle_decode_end,
-    qtrle_decode_frame,
-    CODEC_CAP_DR1,
+AVCodec ff_qtrle_decoder = {
+    .name           = "qtrle",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_QTRLE,
+    .priv_data_size = sizeof(QtrleContext),
+    .init           = qtrle_decode_init,
+    .close          = qtrle_decode_end,
+    .decode         = qtrle_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("QuickTime Animation (RLE) video"),
 };
 

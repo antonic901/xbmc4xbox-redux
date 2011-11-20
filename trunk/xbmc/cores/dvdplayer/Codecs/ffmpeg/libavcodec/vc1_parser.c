@@ -45,6 +45,7 @@ static void vc1_extract_headers(AVCodecParserContext *s, AVCodecContext *avctx,
     vpc->v.s.avctx = avctx;
     vpc->v.parse_only = 1;
     next = buf;
+    s->repeat_pict = 0;
 
     for(start = buf, end = buf + buf_size; next < end; start = next){
         int buf2_size, size;
@@ -67,11 +68,25 @@ static void vc1_extract_headers(AVCodecParserContext *s, AVCodecContext *avctx,
             else
                 vc1_parse_frame_header_adv(&vpc->v, &gb);
 
-            /* keep FF_BI_TYPE internal to VC1 */
-            if (vpc->v.s.pict_type == FF_BI_TYPE)
-                s->pict_type = FF_B_TYPE;
+            /* keep AV_PICTURE_TYPE_BI internal to VC1 */
+            if (vpc->v.s.pict_type == AV_PICTURE_TYPE_BI)
+                s->pict_type = AV_PICTURE_TYPE_B;
             else
                 s->pict_type = vpc->v.s.pict_type;
+
+            if (avctx->ticks_per_frame > 1){
+                // process pulldown flags
+                s->repeat_pict = 1;
+                // Pulldown flags are only valid when 'broadcast' has been set.
+                // So ticks_per_frame will be 2
+                if (vpc->v.rff){
+                    // repeat field
+                    s->repeat_pict = 2;
+                }else if (vpc->v.rptfrm){
+                    // repeat frames
+                    s->repeat_pict = vpc->v.rptfrm * 2 + 1;
+                }
+            }
 
             break;
         }
@@ -169,11 +184,10 @@ static int vc1_split(AVCodecContext *avctx,
     return 0;
 }
 
-AVCodecParser vc1_parser = {
-    { CODEC_ID_VC1 },
-    sizeof(VC1ParseContext),
-    NULL,
-    vc1_parse,
-    ff_parse1_close,
-    vc1_split,
+AVCodecParser ff_vc1_parser = {
+    .codec_ids      = { CODEC_ID_VC1 },
+    .priv_data_size = sizeof(VC1ParseContext),
+    .parser_parse   = vc1_parse,
+    .parser_close   = ff_parse1_close,
+    .split          = vc1_split,
 };

@@ -24,7 +24,6 @@
 #endif
 #include "libavutil/common.h"
 #include "libavcodec/dsputil.h"
-#include "dsputil_ppc.h"
 #include "dsputil_altivec.h"
 
 #define vs16(v) ((vector signed short)(v))
@@ -198,16 +197,12 @@ static vector float fdctconsts[3] = {
 
 void fdct_altivec(int16_t *block)
 {
-POWERPC_PERF_DECLARE(altivec_fdct, 1);
     vector signed short *bp;
     vector float *cp;
     vector float b00, b10, b20, b30, b40, b50, b60, b70;
     vector float b01, b11, b21, b31, b41, b51, b61, b71;
     vector float mzero, cnst, cnsts0, cnsts1, cnsts2;
     vector float x0, x1, x2, x3, x4, x5, x6, x7, x8;
-
-    POWERPC_PERF_START_COUNT(altivec_fdct, 1);
-
 
     /* setup constants {{{ */
     /* mzero = -0.0 */
@@ -270,7 +265,6 @@ POWERPC_PERF_DECLARE(altivec_fdct, 1);
  * conversion to vector float.  The following code section takes advantage
  * of this.
  */
-#if 1
     /* fdct rows {{{ */
     x0 = ((vector float)vec_add(vs16(b00), vs16(b70)));
     x7 = ((vector float)vec_sub(vs16(b00), vs16(b70)));
@@ -394,29 +388,6 @@ POWERPC_PERF_DECLARE(altivec_fdct, 1);
     b31 = vec_add(b31, x2);
     b11 = vec_add(b11, x3);
     /* }}} */
-#else
-    /* convert to float {{{ */
-#define CTF(n) \
-    vs32(b##n##1) = vec_unpackl(vs16(b##n##0)); \
-    vs32(b##n##0) = vec_unpackh(vs16(b##n##0)); \
-    b##n##1 = vec_ctf(vs32(b##n##1), 0); \
-    b##n##0 = vec_ctf(vs32(b##n##0), 0); \
-
-    CTF(0);
-    CTF(1);
-    CTF(2);
-    CTF(3);
-    CTF(4);
-    CTF(5);
-    CTF(6);
-    CTF(7);
-
-#undef CTF
-    /* }}} */
-
-    FDCTROW(b00, b10, b20, b30, b40, b50, b60, b70);
-    FDCTROW(b01, b11, b21, b31, b41, b51, b61, b71);
-#endif
 
 
     /* 8x8 matrix transpose (vector float[8][2]) {{{ */
@@ -487,8 +458,6 @@ POWERPC_PERF_DECLARE(altivec_fdct, 1);
 
 #undef CTS
     /* }}} */
-
-POWERPC_PERF_STOP_COUNT(altivec_fdct, 1);
 }
 
 /* vim:set foldmethod=marker foldlevel=0: */
