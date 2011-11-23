@@ -52,10 +52,15 @@ SODIR_mingw=$(BINDIR)
 SODIR=$(SODIR_$(SYS))
 
 SO_LDFLAGS_posix=-shared -Wl,-soname,$@
-SO_LDFLAGS_darwin=-dynamiclib -flat_namespace -undefined suppress -fno-common \
-	-headerpad_max_install_names
-SO_LDFLAGS_mingw=-shared
+SO_LDFLAGS_darwin=-dynamiclib -twolevel_namespace -undefined dynamic_lookup \
+	-fno-common -headerpad_max_install_names -install_name $(libdir)/$@
+SO_LDFLAGS_mingw=-shared -Wl,--out-implib,librtmp.dll.a
 SO_LDFLAGS=$(SO_LDFLAGS_$(SYS))
+
+INSTALL_IMPLIB_posix=
+INSTALL_IMPLIB_darwin=
+INSTALL_IMPLIB_mingw=cp librtmp.dll.a $(LIBDIR)
+INSTALL_IMPLIB=$(INSTALL_IMPLIB_$(SYS))
 
 SHARED=yes
 SODEF_yes=-fPIC
@@ -76,7 +81,7 @@ OBJS=rtmp.o log.o amf.o hashswf.o parseurl.o
 all:	librtmp.a $(SO_LIB)
 
 clean:
-	rm -f *.o *.a *.$(SOX) *.$(SO_EXT)
+	rm -f *.o *.a *.$(SOX) *.$(SO_EXT) librtmp.pc
 
 librtmp.a: $(OBJS)
 	$(AR) rs $@ $?
@@ -100,7 +105,7 @@ librtmp.pc: librtmp.pc.in Makefile
 install:	install_base $(SO_INST)
 
 install_base:	librtmp.a librtmp.pc
-	-mkdir -p $(INCDIR) $(LIBDIR)/pkgconfig $(MANDIR)/man3
+	-mkdir -p $(INCDIR) $(LIBDIR)/pkgconfig $(MANDIR)/man3 $(SODIR)
 	cp amf.h http.h log.h rtmp.h $(INCDIR)
 	cp librtmp.a $(LIBDIR)
 	cp librtmp.pc $(LIBDIR)/pkgconfig
@@ -108,5 +113,6 @@ install_base:	librtmp.a librtmp.pc
 
 install_so:	librtmp.$(SO_EXT)
 	cp librtmp.$(SO_EXT) $(SODIR)
+	$(INSTALL_IMPLIB)
 	cd $(SODIR); ln -sf librtmp.$(SO_EXT) librtmp.$(SOX)
 

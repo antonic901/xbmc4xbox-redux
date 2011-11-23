@@ -141,7 +141,7 @@ HTTP_get(struct HTTP_ctx *http, const char *url, HTTP_read_callback *cb)
     return HTTPRES_LOST_CONNECTION;
   i =
     sprintf(sb.sb_buf,
-	    "GET %s HTTP/1.0\r\nUser-Agent: %s\r\nHost: %s\r\nReferrer: %.*s\r\n",
+	    "GET %s HTTP/1.0\r\nUser-Agent: %s\r\nHost: %s\r\nReferer: %.*s\r\n",
 	    path, AGENT, host, (int)(path - url + 1), url);
   if (http->date[0])
     i += sprintf(sb.sb_buf + i, "If-Modified-Since: %s\r\n", http->date);
@@ -163,7 +163,7 @@ HTTP_get(struct HTTP_ctx *http, const char *url, HTTP_read_callback *cb)
 #else
       TLS_client(RTMP_TLS_ctx, sb.sb_ssl);
       TLS_setfd(sb.sb_ssl, sb.sb_socket);
-      if ((i = TLS_connect(sb.sb_ssl)) < 0)
+      if (TLS_connect(sb.sb_ssl) < 0)
 	{
 	  RTMP_Log(RTMP_LOGERROR, "%s, TLS_Connect failed", __FUNCTION__);
 	  ret = HTTPRES_LOST_CONNECTION;

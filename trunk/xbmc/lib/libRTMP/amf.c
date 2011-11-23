@@ -586,7 +586,7 @@ AMF3Prop_Decode(AMFObjectProperty *prop, const char *pBuffer, int nSize,
     case AMF3_ARRAY:
     case AMF3_BYTE_ARRAY:
     default:
-      RTMP_Log(RTMP_LOGDEBUG, "%s - AMF3 unknown/unsupported datatype 0x%02x, @0x%08X",
+      RTMP_Log(RTMP_LOGDEBUG, "%s - AMF3 unknown/unsupported datatype 0x%02x, @%p",
 	  __FUNCTION__, (unsigned char)(*pBuffer), pBuffer);
       return -1;
     }
@@ -772,7 +772,7 @@ AMFProp_Decode(AMFObjectProperty *prop, const char *pBuffer, int nSize,
 	break;
       }
     default:
-      RTMP_Log(RTMP_LOGDEBUG, "%s - unknown datatype 0x%02x, @0x%08X", __FUNCTION__,
+      RTMP_Log(RTMP_LOGDEBUG, "%s - unknown datatype 0x%02x, @%p", __FUNCTION__,
 	  prop->p_type, pBuffer - 1);
       return -1;
     }
@@ -1111,7 +1111,7 @@ AMF_AddProp(AMFObject *obj, const AMFObjectProperty *prop)
   if (!(obj->o_num & 0x0f))
     obj->o_props =
       realloc(obj->o_props, (obj->o_num + 16) * sizeof(AMFObjectProperty));
-  obj->o_props[obj->o_num++] = *prop;
+  memcpy(&obj->o_props[obj->o_num++], prop, sizeof(AMFObjectProperty));
 }
 
 int

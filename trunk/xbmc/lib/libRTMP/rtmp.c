@@ -96,6 +96,7 @@ static int SendDeleteStream(RTMP *r, double dStreamId);
 static int SendFCSubscribe(RTMP *r, AVal *subscribepath);
 static int SendPlay(RTMP *r);
 static int SendBytesReceived(RTMP *r);
+static int SendUsherToken(RTMP *r, AVal *usherToken);
 
 #if 0				/* unused */
 static int SendBGHasStream(RTMP *r, double dId, AVal *playpath);
@@ -184,7 +185,7 @@ void
 RTMPPacket_Dump(RTMPPacket *p)
 {
   RTMP_Log(RTMP_LOGDEBUG,
-      "RTMP PACKET: packet type: 0x%02x. channel: 0x%02x. info 1: %d info 2: %d. Body size: %lu. body: 0x%02x",
+      "RTMP PACKET: packet type: 0x%02x. channel: 0x%02x. info 1: %d info 2: %d. Body size: %u. body: 0x%02x",
       p->m_packetType, p->m_nChannel, p->m_nTimeStamp, p->m_nInfoField2,
       p->m_nBodySize, p->m_body ? (unsigned char)p->m_body[0] : 0);
 }
@@ -335,6 +336,7 @@ RTMP_SetupStream(RTMP *r,
 		 uint32_t swfSize,
 		 AVal *flashVer,
 		 AVal *subscribepath,
+		 AVal *usherToken,
 		 int dStart,
 		 int dStop, int bLiveStream, long int timeout)
 {
@@ -355,6 +357,8 @@ RTMP_SetupStream(RTMP *r,
     RTMP_Log(RTMP_LOGDEBUG, "auth     : %s", auth->av_val);
   if (subscribepath && subscribepath->av_val)
     RTMP_Log(RTMP_LOGDEBUG, "subscribepath : %s", subscribepath->av_val);
+  if (usherToken && usherToken->av_val)
+    RTMP_Log(RTMP_LOGDEBUG, "NetStream.Authenticate.UsherToken : %s", usherToken->av_val);
   if (flashVer && flashVer->av_val)
     RTMP_Log(RTMP_LOGDEBUG, "flashVer : %s", flashVer->av_val);
   if (dStart > 0)
@@ -363,7 +367,7 @@ RTMP_SetupStream(RTMP *r,
     RTMP_Log(RTMP_LOGDEBUG, "StopTime      : %d msec", dStop);
 
   RTMP_Log(RTMP_LOGDEBUG, "live     : %s", bLiveStream ? "yes" : "no");
-  RTMP_Log(RTMP_LOGDEBUG, "timeout  : %d sec", timeout);
+  RTMP_Log(RTMP_LOGDEBUG, "timeout  : %ld sec", timeout);
 
 #ifdef CRYPTO
   if (swfSHA256Hash != NULL && swfSize > 0)
@@ -372,7 +376,7 @@ RTMP_SetupStream(RTMP *r,
       r->Link.SWFSize = swfSize;
       RTMP_Log(RTMP_LOGDEBUG, "SWFSHA256:");
       RTMP_LogHex(RTMP_LOGDEBUG, r->Link.SWFHash, sizeof(r->Link.SWFHash));
-      RTMP_Log(RTMP_LOGDEBUG, "SWFSize  : %lu", r->Link.SWFSize);
+      RTMP_Log(RTMP_LOGDEBUG, "SWFSize  : %u", r->Link.SWFSize);
     }
   else
     {
@@ -420,6 +424,8 @@ RTMP_SetupStream(RTMP *r,
     r->Link.flashVer = RTMP_DefaultFlashVer;
   if (subscribepath && subscribepath->av_len)
     r->Link.subscribepath = *subscribepath;
+  if (usherToken && usherToken->av_len)
+    r->Link.usherToken = *usherToken;
   r->Link.seekTime = dStart;
   r->Link.stopTime = dStop;
   if (bLiveStream)
@@ -477,6 +483,8 @@ static struct urlopt {
   	"Stream is live, no seeking possible" },
   { AVC("subscribe"), OFF(Link.subscribepath), OPT_STR, 0,
   	"Stream to subscribe to" },
+  { AVC("jtv"), OFF(Link.usherToken),          OPT_STR, 0,
+	"Justin.tv authentication token" },
   { AVC("token"),     OFF(Link.token),	       OPT_STR, 0,
   	"Key for SecureToken response" },
   { AVC("swfVfy"),    OFF(Link.lFlags),        OPT_BOOL, RTMP_LF_SWFV,
@@ -966,7 +974,7 @@ SocksNegotiate(RTMP *r)
       }
     else
       {
-        RTMP_Log(RTMP_LOGERROR, "%s, SOCKS returned error code %d", packet[1]);
+        RTMP_Log(RTMP_LOGERROR, "%s, SOCKS returned error code %d", __FUNCTION__, packet[1]);
         return FALSE;
       }
   }
@@ -1153,14 +1161,14 @@ RTMP_ClientPacket(RTMP *r, RTMPPacket *packet)
     case RTMP_PACKET_TYPE_FLEX_STREAM_SEND:
       /* flex stream send */
       RTMP_Log(RTMP_LOGDEBUG,
-	  "%s, flex stream send, size %lu bytes, not supported, ignoring",
+	  "%s, flex stream send, size %u bytes, not supported, ignoring",
 	  __FUNCTION__, packet->m_nBodySize);
       break;
 
     case RTMP_PACKET_TYPE_FLEX_SHARED_OBJECT:
       /* flex shared object */
       RTMP_Log(RTMP_LOGDEBUG,
-	  "%s, flex shared object, size %lu bytes, not supported, ignoring",
+	  "%s, flex shared object, size %u bytes, not supported, ignoring",
 	  __FUNCTION__, packet->m_nBodySize);
       break;
 
@@ -1168,7 +1176,7 @@ RTMP_ClientPacket(RTMP *r, RTMPPacket *packet)
       /* flex message */
       {
 	RTMP_Log(RTMP_LOGDEBUG,
-	    "%s, flex message, size %lu bytes, not fully supported",
+	    "%s, flex message, size %u bytes, not fully supported",
 	    __FUNCTION__, packet->m_nBodySize);
 	/*RTMP_LogHex(packet.m_body, packet.m_nBodySize); */
 
@@ -1190,7 +1198,7 @@ RTMP_ClientPacket(RTMP *r, RTMPPacket *packet)
       }
     case RTMP_PACKET_TYPE_INFO:
       /* metadata (notify) */
-      RTMP_Log(RTMP_LOGDEBUG, "%s, received: notify %lu bytes", __FUNCTION__,
+      RTMP_Log(RTMP_LOGDEBUG, "%s, received: notify %u bytes", __FUNCTION__,
 	  packet->m_nBodySize);
       if (HandleMetadata(r, packet->m_body, packet->m_nBodySize))
 	bHasMediaPacket = 1;
@@ -1203,7 +1211,7 @@ RTMP_ClientPacket(RTMP *r, RTMPPacket *packet)
 
     case RTMP_PACKET_TYPE_INVOKE:
       /* invoke */
-      RTMP_Log(RTMP_LOGDEBUG, "%s, received: invoke %lu bytes", __FUNCTION__,
+      RTMP_Log(RTMP_LOGDEBUG, "%s, received: invoke %u bytes", __FUNCTION__,
 	  packet->m_nBodySize);
       /*RTMP_LogHex(packet.m_body, packet.m_nBodySize); */
 
@@ -1329,8 +1337,9 @@ ReadN(RTMP *r, char *buffer, int n)
 	  nBytes = nRead;
 	  r->m_nBytesIn += nRead;
 	  if (r->m_bSendCounter
-	      && r->m_nBytesIn > r->m_nBytesInSent + r->m_nClientBW / 2)
-	    SendBytesReceived(r);
+	      && r->m_nBytesIn > ( r->m_nBytesInSent + r->m_nClientBW / 10))
+	    if (!SendBytesReceived(r))
+	        return FALSE;
 	}
       /*RTMP_Log(RTMP_LOGDEBUG, "%s: %d bytes\n", __FUNCTION__, nBytes); */
 #ifdef _DEBUG
@@ -1640,6 +1649,39 @@ SendFCSubscribe(RTMP *r, AVal *subscribepath)
 
   return RTMP_SendPacket(r, &packet, TRUE);
 }
+
+/* Justin.tv specific authentication */
+static const AVal av_NetStream_Authenticate_UsherToken = AVC("NetStream.Authenticate.UsherToken");
+
+static int
+SendUsherToken(RTMP *r, AVal *usherToken)
+{
+  RTMPPacket packet;
+  char pbuf[1024], *pend = pbuf + sizeof(pbuf);
+  char *enc;
+  packet.m_nChannel = 0x03;	/* control channel (invoke) */
+  packet.m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+  packet.m_packetType = RTMP_PACKET_TYPE_INVOKE;
+  packet.m_nTimeStamp = 0;
+  packet.m_nInfoField2 = 0;
+  packet.m_hasAbsTimestamp = 0;
+  packet.m_body = pbuf + RTMP_MAX_HEADER_SIZE;
+
+  RTMP_Log(RTMP_LOGDEBUG, "UsherToken: %s", usherToken->av_val);
+  enc = packet.m_body;
+  enc = AMF_EncodeString(enc, pend, &av_NetStream_Authenticate_UsherToken);
+  enc = AMF_EncodeNumber(enc, pend, ++r->m_numInvokes);
+  *enc++ = AMF_NULL;
+  enc = AMF_EncodeString(enc, pend, usherToken);
+
+  if (!enc)
+    return FALSE;
+
+  packet.m_nBodySize = enc - packet.m_body;
+
+  return RTMP_SendPacket(r, &packet, FALSE);
+}
+/******************************************/
 
 SAVC(releaseStream);
 
@@ -2297,7 +2339,7 @@ HandleInvoke(RTMP *r, const char *body, unsigned int nBodySize)
 {
   AMFObject obj;
   AVal method;
-  int txn;
+  double txn;
   int ret = 0, nRes;
   if (body[0] != 0x02)		/* make sure it is a string method name we start with */
     {
@@ -2315,7 +2357,7 @@ HandleInvoke(RTMP *r, const char *body, unsigned int nBodySize)
 
   AMF_Dump(&obj);
   AMFProp_GetString(AMF_GetProp(&obj, NULL, 0), &method);
-  txn = (int)AMFProp_GetNumber(AMF_GetProp(&obj, NULL, 1));
+  txn = AMFProp_GetNumber(AMF_GetProp(&obj, NULL, 1));
   RTMP_Log(RTMP_LOGDEBUG, "%s, server invoking <%s>", __FUNCTION__, method.av_val);
 
   if (AVMATCH(&method, &av__result))
@@ -2324,14 +2366,14 @@ HandleInvoke(RTMP *r, const char *body, unsigned int nBodySize)
       int i;
 
       for (i=0; i<r->m_numCalls; i++) {
-  	if (r->m_methodCalls[i].num == txn) {
+	if (r->m_methodCalls[i].num == (int)txn) {
 	  methodInvoked = r->m_methodCalls[i].name;
 	  AV_erase(r->m_methodCalls, &r->m_numCalls, i, FALSE);
 	  break;
 	}
       }
       if (!methodInvoked.av_val) {
-        RTMP_Log(RTMP_LOGDEBUG, "%s, received result id %d without matching request",
+        RTMP_Log(RTMP_LOGDEBUG, "%s, received result id %f without matching request",
 	  __FUNCTION__, txn);
 	goto leave;
       }
@@ -2364,6 +2406,9 @@ HandleInvoke(RTMP *r, const char *body, unsigned int nBodySize)
 
 	  if (!(r->Link.protocol & RTMP_FEATURE_WRITE))
 	    {
+	      /* Authenticate on Justin.tv legacy servers before sending FCSubscribe */
+	      if (r->Link.usherToken.av_len)
+	        SendUsherToken(r, &r->Link.usherToken);
 	      /* Send the FCSubscribe if live stream or if subscribepath is set */
 	      if (r->Link.subscribepath.av_len)
 	        SendFCSubscribe(r, &r->Link.subscribepath);
@@ -2539,7 +2584,7 @@ RTMP_FindFirstMatchingProperty(AMFObject *obj, const AVal *name,
 
       if (AVMATCH(&prop->p_name, name))
 	{
-	  *p = *prop;
+	  memcpy(p, prop, sizeof(*prop));
 	  return TRUE;
 	}
 
@@ -2565,7 +2610,7 @@ RTMP_FindPrefixProperty(AMFObject *obj, const AVal *name,
       if (prop->p_name.av_len > name->av_len &&
       	  !memcmp(prop->p_name.av_val, name->av_val, name->av_len))
 	{
-	  *p = *prop;
+	  memcpy(p, prop, sizeof(*prop));
 	  return TRUE;
 	}
 
@@ -3010,7 +3055,7 @@ RTMP_ReadPacket(RTMP *r, RTMPPacket *packet)
 
   if (ReadN(r, packet->m_body + packet->m_nBytesRead, nChunk) != nChunk)
     {
-      RTMP_Log(RTMP_LOGERROR, "%s, failed to read RTMP packet body. len: %lu",
+      RTMP_Log(RTMP_LOGERROR, "%s, failed to read RTMP packet body. len: %u",
 	  __FUNCTION__, packet->m_nBodySize);
       return FALSE;
     }
@@ -3581,7 +3626,9 @@ RTMPSockBuf_Close(RTMPSockBuf *sb)
       sb->sb_ssl = NULL;
     }
 #endif
-  return closesocket(sb->sb_socket);
+  if (sb->sb_socket != -1)
+      return closesocket(sb->sb_socket);
+  return 0;
 }
 
 #define HEX2BIN(a)	(((a)&0x40)?((a)&0xf)+9:((a)&0xf))
@@ -4129,7 +4176,7 @@ Read_1_Packet(RTMP *r, char *buf, unsigned int buflen)
 		  if (pos + 11 + dataSize > nPacketLen)
 		    {
 		      RTMP_Log(RTMP_LOGERROR,
-			  "Wrong data size (%lu), stream corrupted, aborting!",
+			  "Wrong data size (%u), stream corrupted, aborting!",
 			  dataSize);
 		      ret = RTMP_READ_ERROR;
 		      break;
