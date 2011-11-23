@@ -2,6 +2,10 @@ BEGIN_HEADER
 #include <polarssl/camellia.h>
 END_HEADER
 
+BEGIN_DEPENDENCIES
+depends_on:POLARSSL_CAMELLIA_C
+END_DEPENDENCIES
+
 BEGIN_CASE
 camellia_encrypt_ecb:hex_key_string:hex_src_string:hex_dst_string:setkey_result
 {
@@ -133,7 +137,7 @@ camellia_encrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_stri
     unsigned char dst_str[100];
     unsigned char output[100];
     camellia_context ctx;
-    int iv_offset = 0;
+    size_t iv_offset = 0;
     int key_len;
 
     memset(key_str, 0x00, 100);
@@ -163,7 +167,7 @@ camellia_decrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_stri
     unsigned char dst_str[100];
     unsigned char output[100];
     camellia_context ctx;
-    int iv_offset = 0;
+    size_t iv_offset = 0;
     int key_len;
 
     memset(key_str, 0x00, 100);

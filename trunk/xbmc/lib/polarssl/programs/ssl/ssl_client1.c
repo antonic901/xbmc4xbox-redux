@@ -30,6 +30,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "polarssl/config.h"
+
 #include "polarssl/net.h"
 #include "polarssl/ssl.h"
 #include "polarssl/havege.h"
@@ -49,6 +51,17 @@ void my_debug( void *ctx, int level, const char *str )
     }
 }
 
+#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_HAVEGE_C) ||   \
+    !defined(POLARSSL_SSL_TLS_C) || !defined(POLARSSL_SSL_CLI_C) || \
+    !defined(POLARSSL_NET_C) || !defined(POLARSSL_RSA_C)
+int main( void )
+{
+    printf("POLARSSL_BIGNUM_C and/or POLARSSL_HAVEGE_C and/or "
+           "POLARSSL_SSL_TLS_C and/or POLARSSL_SSL_CLI_C and/or "
+           "POLARSSL_NET_C and/or POLARSSL_RSA_C not defined.\n");
+    return( 0 );
+}
+#else
 int main( void )
 {
     int ret, len, server_fd;
@@ -62,6 +75,7 @@ int main( void )
      */
     havege_init( &hs );
     memset( &ssn, 0, sizeof( ssl_session ) );
+    memset( &ssl, 0, sizeof( ssl_context ) );
 
     /*
      * 1. Start the connection
@@ -101,7 +115,7 @@ int main( void )
     ssl_set_bio( &ssl, net_recv, &server_fd,
                        net_send, &server_fd );
 
-    ssl_set_ciphers( &ssl, ssl_default_ciphers );
+    ssl_set_ciphersuites( &ssl, ssl_default_ciphersuites );
     ssl_set_session( &ssl, 1, 600, &ssn );
 
     /*
@@ -114,7 +128,7 @@ int main( void )
 
     while( ( ret = ssl_write( &ssl, buf, len ) ) <= 0 )
     {
-        if( ret != POLARSSL_ERR_NET_TRY_AGAIN )
+        if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
         {
             printf( " failed\n  ! ssl_write returned %d\n\n", ret );
             goto exit;
@@ -136,7 +150,7 @@ int main( void )
         memset( buf, 0, sizeof( buf ) );
         ret = ssl_read( &ssl, buf, len );
 
-        if( ret == POLARSSL_ERR_NET_TRY_AGAIN )
+        if( ret == POLARSSL_ERR_NET_WANT_READ || ret == POLARSSL_ERR_NET_WANT_WRITE )
             continue;
 
         if( ret == POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY )
@@ -169,3 +183,5 @@ exit:
 
     return( ret );
 }
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_HAVEGE_C && POLARSSL_SSL_TLS_C &&
+          POLARSSL_SSL_CLI_C && POLARSSL_NET_C && POLARSSL_RSA_C */

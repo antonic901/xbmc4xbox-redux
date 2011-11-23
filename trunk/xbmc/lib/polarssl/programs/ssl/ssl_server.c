@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "polarssl/config.h"
+
 #include "polarssl/havege.h"
 #include "polarssl/certs.h"
 #include "polarssl/x509.h"
@@ -66,7 +68,7 @@ char *my_dhm_G = "4";
 /*
  * Sorted by order of preference
  */
-int my_ciphers[] =
+int my_ciphersuites[] =
 {
     SSL_EDH_RSA_AES_256_SHA,
     SSL_EDH_RSA_CAMELLIA_256_SHA,
@@ -119,7 +121,7 @@ static int my_get_session( ssl_context *ssl )
         if( ssl->timeout != 0 && t - prv->start > ssl->timeout )
             continue;
 
-        if( ssl->session->cipher != prv->cipher ||
+        if( ssl->session->ciphersuite != prv->ciphersuite ||
             ssl->session->length != prv->length )
             continue;
 
@@ -168,6 +170,18 @@ static int my_set_session( ssl_context *ssl )
     return( 0 );
 }
 
+#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_CERTS_C) ||    \
+    !defined(POLARSSL_HAVEGE_C) || !defined(POLARSSL_SSL_TLS_C) ||  \
+    !defined(POLARSSL_SSL_SRV_C) || !defined(POLARSSL_NET_C) ||   \
+    !defined(POLARSSL_RSA_C)
+int main( void )
+{
+    printf("POLARSSL_BIGNUM_C and/or POLARSSL_CERTS_C and/or POLARSSL_HAVEGE_C "
+           "and/or POLARSSL_SSL_TLS_C and/or POLARSSL_SSL_SRV_C and/or "
+           "POLARSSL_NET_C and/or POLARSSL_RSA_C not defined.\n");
+    return( 0 );
+}
+#else
 int main( void )
 {
     int ret, len;
@@ -210,6 +224,7 @@ int main( void )
         goto exit;
     }
 
+    rsa_init( &rsa, RSA_PKCS_V15, 0 );
     ret =  x509parse_key( &rsa, (unsigned char *) test_srv_key,
                           strlen( test_srv_key ), NULL, 0 );
     if( ret != 0 )
@@ -287,7 +302,7 @@ accept:
     ssl_set_scb( &ssl, my_get_session,
                        my_set_session );
 
-    ssl_set_ciphers( &ssl, my_ciphers );
+    ssl_set_ciphersuites( &ssl, my_ciphersuites );
     ssl_set_session( &ssl, 1, 0, &ssn );
 
     memset( &ssn, 0, sizeof( ssl_session ) );
@@ -304,7 +319,7 @@ accept:
 
     while( ( ret = ssl_handshake( &ssl ) ) != 0 )
     {
-        if( ret != POLARSSL_ERR_NET_TRY_AGAIN )
+        if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
         {
             printf( " failed\n  ! ssl_handshake returned %d\n\n", ret );
             goto accept;
@@ -325,7 +340,7 @@ accept:
         memset( buf, 0, sizeof( buf ) );
         ret = ssl_read( &ssl, buf, len );
 
-        if( ret == POLARSSL_ERR_NET_TRY_AGAIN )
+        if( ret == POLARSSL_ERR_NET_WANT_READ || ret == POLARSSL_ERR_NET_WANT_WRITE )
             continue;
 
         if( ret <= 0 )
@@ -360,7 +375,7 @@ accept:
     fflush( stdout );
 
     len = sprintf( (char *) buf, HTTP_RESPONSE,
-                   ssl_get_cipher( &ssl ) );
+                   ssl_get_ciphersuite( &ssl ) );
 
     while( ( ret = ssl_write( &ssl, buf, len ) ) <= 0 )
     {
@@ -370,7 +385,7 @@ accept:
             goto accept;
         }
 
-        if( ret != POLARSSL_ERR_NET_TRY_AGAIN )
+        if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
         {
             printf( " failed\n  ! ssl_write returned %d\n\n", ret );
             goto exit;
@@ -408,3 +423,6 @@ exit:
 
     return( ret );
 }
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_CERTS_C && POLARSSL_HAVEGE_C &&
+          POLARSSL_SSL_TLS_C && POLARSSL_SSL_SRV_C && POLARSSL_NET_C &&
+          POLARSSL_RSA_C */

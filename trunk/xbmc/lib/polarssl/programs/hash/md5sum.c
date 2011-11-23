@@ -30,8 +30,17 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "polarssl/config.h"
+
 #include "polarssl/md5.h"
 
+#if !defined(POLARSSL_MD5_C) || !defined(POLARSSL_FS_IO)
+int main( void )
+{
+    printf("POLARSSL_MD5_C and/or POLARSSL_FS_IO not defined.\n");
+    return( 0 );
+}
+#else
 static int md5_wrapper( char *filename, unsigned char *sum )
 {
     int ret = md5_file( filename, sum );
@@ -83,7 +92,7 @@ static int md5_check( char *filename )
 
     n = sizeof( line );
 
-    while( fgets( line, n - 1, f ) != NULL )
+    while( fgets( line, (int) n - 1, f ) != NULL )
     {
         n = strlen( line );
 
@@ -159,3 +168,4 @@ int main( int argc, char *argv[] )
 
     return( ret );
 }
+#endif /* POLARSSL_MD5_C && POLARSSL_FS_IO */

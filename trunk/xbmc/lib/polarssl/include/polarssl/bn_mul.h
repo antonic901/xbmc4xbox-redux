@@ -1,6 +1,8 @@
 /**
  * \file bn_mul.h
  *
+ * \brief  Multi-precision integer library
+ *
  *  Copyright (C) 2006-2010, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
@@ -691,11 +693,11 @@
 
 #define MULADDC_INIT                    \
 {                                       \
-    t_dbl r;                            \
-    t_int r0, r1;
+    t_udbl r;                           \
+    t_uint r0, r1;
 
 #define MULADDC_CORE                    \
-    r   = *(s++) * (t_dbl) b;           \
+    r   = *(s++) * (t_udbl) b;           \
     r0  = r;                            \
     r1  = r >> biL;                     \
     r0 += c;  r1 += (r0 <  c);          \
@@ -708,8 +710,8 @@
 #else
 #define MULADDC_INIT                    \
 {                                       \
-    t_int s0, s1, b0, b1;               \
-    t_int r0, r1, rx, ry;               \
+    t_uint s0, s1, b0, b1;              \
+    t_uint r0, r1, rx, ry;              \
     b0 = ( b << biH ) >> biH;           \
     b1 = ( b >> biH );
 

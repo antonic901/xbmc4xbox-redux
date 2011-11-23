@@ -143,6 +143,18 @@ unsigned long hardclock( void )
 }
 
 #else
+#if defined(_MSC_VER)
+
+unsigned long hardclock( void )
+{
+    LARGE_INTEGER offset;
+    
+	QueryPerformanceCounter( &offset );
+
+	return (unsigned long)( offset.QuadPart );
+}
+
+#else
 
 static int hardclock_init = 0;
 static struct timeval tv_init;
@@ -163,6 +175,7 @@ unsigned long hardclock( void )
 }
 
 #endif /* generic */
+#endif /* WIN32   */
 #endif /* IA-64   */
 #endif /* Alpha   */
 #endif /* SPARC8  */
@@ -170,7 +183,7 @@ unsigned long hardclock( void )
 #endif /* AMD64   */
 #endif /* i586+   */
 
-int alarmed = 0;
+volatile int alarmed = 0;
 
 #if defined(_WIN32)
 

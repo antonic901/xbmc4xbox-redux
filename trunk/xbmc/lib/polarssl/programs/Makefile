@@ -1,21 +1,28 @@
 
 # To compile on SunOS: add "-lsocket -lnsl" to LDFLAGS
 # To compile on MinGW: add "-lws2_32" to LDFLAGS
+# To compile with PKCS11: add "-lpkcs11-helper" to LDFLAGS
 
-CFLAGS	= -I../include -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement
+CFLAGS	+= -I../include -D_FILE_OFFSET_BITS=64 -Wall -W -Wdeclaration-after-statement
 OFLAGS	= -O
-LDFLAGS	= -L../library -lpolarssl
+LDFLAGS	+= -L../library -lpolarssl $(SYS_LDFLAGS)
 
-APPS =	aes/aescrypt2		hash/hello		\
+APPS =	aes/aescrypt2	aes/crypt_and_hash	\
+	hash/hello			hash/generic_sum	\
 	hash/md5sum			hash/sha1sum		\
 	hash/sha2sum		pkey/dh_client		\
 	pkey/dh_genprime	pkey/dh_server		\
+	pkey/key_app							\
 	pkey/mpi_demo		pkey/rsa_genkey		\
+	pkey/rsa_decrypt	pkey/rsa_encrypt	\
 	pkey/rsa_sign		pkey/rsa_verify		\
+	pkey/rsa_sign_pss	pkey/rsa_verify_pss \
 	ssl/ssl_client1		ssl/ssl_client2		\
-	ssl/ssl_server		test/ssl_cert_test	\
-	test/benchmark		test/selftest		\
-	test/ssl_test		x509/cert_app
+	ssl/ssl_server		ssl/ssl_fork_server	\
+	ssl/ssl_mail_client	random/gen_random	\
+	test/ssl_cert_test	test/benchmark		\
+	test/selftest		test/ssl_test		\
+	x509/cert_app		x509/crl_app
 
 .SILENT:
 
@@ -25,9 +32,17 @@ aes/aescrypt2: aes/aescrypt2.c ../library/libpolarssl.a
 	echo   "  CC    aes/aescrypt2.c"
 	$(CC) $(CFLAGS) $(OFLAGS) aes/aescrypt2.c    $(LDFLAGS) -o $@
 
+aes/crypt_and_hash: aes/crypt_and_hash.c ../library/libpolarssl.a
+	echo   "  CC    aes/crypt_and_hash.c"
+	$(CC) $(CFLAGS) $(OFLAGS) aes/crypt_and_hash.c $(LDFLAGS) -o $@
+
 hash/hello: hash/hello.c ../library/libpolarssl.a
 	echo   "  CC    hash/hello.c"
 	$(CC) $(CFLAGS) $(OFLAGS) hash/hello.c       $(LDFLAGS) -o $@
+
+hash/generic_sum: hash/generic_sum.c ../library/libpolarssl.a
+	echo   "  CC    hash/generic_sum.c"
+	$(CC) $(CFLAGS) $(OFLAGS) hash/generic_sum.c $(LDFLAGS) -o $@
 
 hash/md5sum: hash/md5sum.c ../library/libpolarssl.a
 	echo   "  CC    hash/md5sum.c"
@@ -53,6 +68,10 @@ pkey/dh_server: pkey/dh_server.c ../library/libpolarssl.a
 	echo   "  CC    pkey/dh_server.c"
 	$(CC) $(CFLAGS) $(OFLAGS) pkey/dh_server.c   $(LDFLAGS) -o $@
 
+pkey/key_app: pkey/key_app.c ../library/libpolarssl.a
+	echo   "  CC    pkey/key_app.c"
+	$(CC) $(CFLAGS) $(OFLAGS) pkey/key_app.c   $(LDFLAGS) -o $@
+
 pkey/mpi_demo: pkey/mpi_demo.c ../library/libpolarssl.a
 	echo   "  CC    pkey/mpi_demo.c"
 	$(CC) $(CFLAGS) $(OFLAGS) pkey/mpi_demo.c    $(LDFLAGS) -o $@
@@ -69,6 +88,26 @@ pkey/rsa_verify: pkey/rsa_verify.c ../library/libpolarssl.a
 	echo   "  CC    pkey/rsa_verify.c"
 	$(CC) $(CFLAGS) $(OFLAGS) pkey/rsa_verify.c  $(LDFLAGS) -o $@
 
+pkey/rsa_sign_pss: pkey/rsa_sign_pss.c ../library/libpolarssl.a
+	echo   "  CC    pkey/rsa_sign_pss.c"
+	$(CC) $(CFLAGS) $(OFLAGS) pkey/rsa_sign_pss.c    $(LDFLAGS) -o $@
+
+pkey/rsa_verify_pss: pkey/rsa_verify_pss.c ../library/libpolarssl.a
+	echo   "  CC    pkey/rsa_verify_pss.c"
+	$(CC) $(CFLAGS) $(OFLAGS) pkey/rsa_verify_pss.c  $(LDFLAGS) -o $@
+
+pkey/rsa_decrypt: pkey/rsa_decrypt.c ../library/libpolarssl.a
+	echo   "  CC    pkey/rsa_decrypt.c"
+	$(CC) $(CFLAGS) $(OFLAGS) pkey/rsa_decrypt.c    $(LDFLAGS) -o $@
+
+pkey/rsa_encrypt: pkey/rsa_encrypt.c ../library/libpolarssl.a
+	echo   "  CC    pkey/rsa_encrypt.c"
+	$(CC) $(CFLAGS) $(OFLAGS) pkey/rsa_encrypt.c    $(LDFLAGS) -o $@
+
+random/gen_random: random/gen_random.c ../library/libpolarssl.a
+	echo   "  CC    random/gen_random.c"
+	$(CC) $(CFLAGS) $(OFLAGS) random/gen_random.c $(LDFLAGS) -o $@
+
 ssl/ssl_client1: ssl/ssl_client1.c ../library/libpolarssl.a
 	echo   "  CC    ssl/ssl_client1.c"
 	$(CC) $(CFLAGS) $(OFLAGS) ssl/ssl_client1.c  $(LDFLAGS) -o $@
@@ -80,6 +119,14 @@ ssl/ssl_client2: ssl/ssl_client2.c ../library/libpolarssl.a
 ssl/ssl_server: ssl/ssl_server.c ../library/libpolarssl.a
 	echo   "  CC    ssl/ssl_server.c"
 	$(CC) $(CFLAGS) $(OFLAGS) ssl/ssl_server.c   $(LDFLAGS) -o $@
+
+ssl/ssl_fork_server: ssl/ssl_fork_server.c ../library/libpolarssl.a
+	echo   "  CC    ssl/ssl_fork_server.c"
+	$(CC) $(CFLAGS) $(OFLAGS) ssl/ssl_fork_server.c   $(LDFLAGS) -o $@
+
+ssl/ssl_mail_client: ssl/ssl_mail_client.c ../library/libpolarssl.a
+	echo   "  CC    ssl/ssl_mail_client.c"
+	$(CC) $(CFLAGS) $(OFLAGS) ssl/ssl_mail_client.c   $(LDFLAGS) -o $@
 
 test/ssl_cert_test: test/ssl_cert_test.c ../library/libpolarssl.a
 	echo   "  CC    test/ssl_cert_test.c"
@@ -100,6 +147,10 @@ test/ssl_test: test/ssl_test.c ../library/libpolarssl.a
 x509/cert_app: x509/cert_app.c ../library/libpolarssl.a
 	echo   "  CC    x509/cert_app.c"
 	$(CC) $(CFLAGS) $(OFLAGS) x509/cert_app.c    $(LDFLAGS) -o $@
+
+x509/crl_app: x509/crl_app.c ../library/libpolarssl.a
+	echo   "  CC    x509/crl_app.c"
+	$(CC) $(CFLAGS) $(OFLAGS) x509/crl_app.c    $(LDFLAGS) -o $@
 
 clean:
 	rm -f $(APPS)

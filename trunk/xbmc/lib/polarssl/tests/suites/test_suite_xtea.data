@@ -35,4 +35,5 @@ XTEA Decrypt_ecb #6
 xtea_decrypt_ecb:"00000000000000000000000000000000":"4141414141414141":"70e1225d6e4e7655"
 
 XTEA Selftest
+depends_on:POLARSSL_SELF_TEST
 xtea_selftest:

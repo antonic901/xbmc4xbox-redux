@@ -30,6 +30,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "polarssl/config.h"
+
 #include "polarssl/net.h"
 #include "polarssl/aes.h"
 #include "polarssl/dhm.h"
@@ -40,11 +42,24 @@
 #define SERVER_NAME "localhost"
 #define SERVER_PORT 11999
 
+#if !defined(POLARSSL_AES_C) || !defined(POLARSSL_DHM_C) ||     \
+    !defined(POLARSSL_HAVEGE_C) || !defined(POLARSSL_NET_C) ||  \
+    !defined(POLARSSL_RSA_C) || !defined(POLARSSL_SHA1_C) ||    \
+    !defined(POLARSSL_FS_IO)
+int main( void )
+{
+    printf("POLARSSL_AES_C and/or POLARSSL_DHM_C and/or POLARSSL_HAVEGE_C "
+           "and/or POLARSSL_NET_C and/or POLARSSL_RSA_C and/or "
+           "POLARSSL_SHA1_C and/or POLARSSL_FS_IO not defined.\n");
+    return( 0 );
+}
+#else
 int main( void )
 {
     FILE *f;
 
-    int ret, n, buflen;
+    int ret;
+    size_t n, buflen;
     int server_fd = -1;
 
     unsigned char *p, *end;
@@ -123,7 +138,7 @@ int main( void )
     }
 
     n = buflen = ( buf[0] << 8 ) | buf[1];
-    if( buflen < 1 || buflen > (int) sizeof( buf ) )
+    if( buflen < 1 || buflen > sizeof( buf ) )
     {
         printf( " failed\n  ! Got an invalid buffer length\n\n" );
         goto exit;
@@ -134,7 +149,7 @@ int main( void )
      */
     memset( buf, 0, sizeof( buf ) );
 
-    if( ( ret = net_recv( &server_fd, buf, n ) ) != n )
+    if( ( ret = net_recv( &server_fd, buf, n ) ) != (int) n )
     {
         printf( " failed\n  ! net_recv returned %d\n\n", ret );
         goto exit;
@@ -162,7 +177,7 @@ int main( void )
     printf( "\n  . Verifying the server's RSA signature" );
     fflush( stdout );
 
-    if( ( n = (int)( end - p ) ) != rsa.len )
+    if( ( n = (size_t) ( end - p ) ) != rsa.len )
     {
         ret = 1;
         printf( " failed\n  ! Invalid RSA signature size\n\n" );
@@ -192,7 +207,7 @@ int main( void )
         goto exit;
     }
 
-    if( ( ret = net_send( &server_fd, buf, n ) ) != n )
+    if( ( ret = net_send( &server_fd, buf, n ) ) != (int) n )
     {
         printf( " failed\n  ! net_send returned %d\n\n", ret );
         goto exit;
@@ -252,3 +267,6 @@ exit:
 
     return( ret );
 }
+#endif /* POLARSSL_AES_C && POLARSSL_DHM_C && POLARSSL_HAVEGE_C &&
+          POLARSSL_NET_C && POLARSSL_RSA_C && POLARSSL_SHA1_C && 
+          POLARSSL_FS_IO */

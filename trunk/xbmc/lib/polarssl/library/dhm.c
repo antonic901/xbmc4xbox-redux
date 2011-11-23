@@ -34,8 +34,6 @@
 
 #include "polarssl/dhm.h"
 
-#include <string.h>
-
 /*
  * helper to validate the mpi size and import it
  */
@@ -55,11 +53,40 @@ static int dhm_read_bignum( mpi *X,
         return( POLARSSL_ERR_DHM_BAD_INPUT_DATA );
 
     if( ( ret = mpi_read_binary( X, *p, n ) ) != 0 )
-        return( POLARSSL_ERR_DHM_READ_PARAMS_FAILED | ret );
+        return( POLARSSL_ERR_DHM_READ_PARAMS_FAILED + ret );
 
     (*p) += n;
 
     return( 0 );
+}
+
+/*
+ * Verify sanity of public parameter with regards to P
+ *
+ * Public parameter should be: 2 <= public_param <= P - 2
+ *
+ * For more information on the attack, see:
+ *  http://www.cl.cam.ac.uk/~rja14/Papers/psandqs.pdf
+ *  http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2005-2643
+ */
+static int dhm_check_range( const mpi *public_param, const mpi *P )
+{
+    mpi L, U;
+    int ret = POLARSSL_ERR_DHM_BAD_INPUT_DATA;
+
+    mpi_init( &L ); mpi_init( &U );
+    mpi_lset( &L, 2 );
+    mpi_sub_int( &U, P, 2 );
+
+    if( mpi_cmp_mpi( public_param, &L ) >= 0 &&
+        mpi_cmp_mpi( public_param, &U ) <= 0 )
+    {
+        ret = 0;
+    }
+
+    mpi_free( &L ); mpi_free( &U );
+
+    return( ret );
 }
 
 /*
@@ -76,6 +103,9 @@ int dhm_read_params( dhm_context *ctx,
     if( ( ret = dhm_read_bignum( &ctx->P,  p, end ) ) != 0 ||
         ( ret = dhm_read_bignum( &ctx->G,  p, end ) ) != 0 ||
         ( ret = dhm_read_bignum( &ctx->GY, p, end ) ) != 0 )
+        return( ret );
+
+    if( ( ret = dhm_check_range( &ctx->GY, &ctx->P ) ) != 0 )
         return( ret );
 
     ctx->len = mpi_size( &ctx->P );
@@ -96,22 +126,19 @@ int dhm_read_params( dhm_context *ctx,
  * Setup and write the ServerKeyExchange parameters
  */
 int dhm_make_params( dhm_context *ctx, int x_size,
-                     unsigned char *output, int *olen,
+                     unsigned char *output, size_t *olen,
                      int (*f_rng)(void *), void *p_rng )
 {
-    int i, ret, n, n1, n2, n3;
+    int ret, n;
+    size_t n1, n2, n3;
     unsigned char *p;
 
     /*
      * Generate X as large as possible ( < P )
      */
-    n = x_size / sizeof( t_int );
-    MPI_CHK( mpi_grow( &ctx->X, n ) );
-    MPI_CHK( mpi_lset( &ctx->X, 0 ) );
+    n = x_size / sizeof( t_uint ) + 1;
 
-    p = (unsigned char *) ctx->X.p;
-    for( i = 0; i < x_size - 1; i++ )
-        *p++ = (unsigned char) f_rng( p_rng );
+    mpi_fill_random( &ctx->X, n, f_rng, p_rng );
 
     while( mpi_cmp_mpi( &ctx->X, &ctx->P ) >= 0 )
            mpi_shift_r( &ctx->X, 1 );
@@ -121,6 +148,9 @@ int dhm_make_params( dhm_context *ctx, int x_size,
      */
     MPI_CHK( mpi_exp_mod( &ctx->GX, &ctx->G, &ctx->X,
                           &ctx->P , &ctx->RP ) );
+
+    if( ( ret = dhm_check_range( &ctx->GX, &ctx->P ) ) != 0 )
+        return( ret );
 
     /*
      * export P, G, GX
@@ -146,7 +176,7 @@ int dhm_make_params( dhm_context *ctx, int x_size,
 cleanup:
 
     if( ret != 0 )
-        return( ret | POLARSSL_ERR_DHM_MAKE_PARAMS_FAILED );
+        return( POLARSSL_ERR_DHM_MAKE_PARAMS_FAILED + ret );
 
     return( 0 );
 }
@@ -155,7 +185,7 @@ cleanup:
  * Import the peer's public value G^Y
  */
 int dhm_read_public( dhm_context *ctx,
-                     const unsigned char *input, int ilen )
+                     const unsigned char *input, size_t ilen )
 {
     int ret;
 
@@ -163,7 +193,7 @@ int dhm_read_public( dhm_context *ctx,
         return( POLARSSL_ERR_DHM_BAD_INPUT_DATA );
 
     if( ( ret = mpi_read_binary( &ctx->GY, input, ilen ) ) != 0 )
-        return( POLARSSL_ERR_DHM_READ_PUBLIC_FAILED | ret );
+        return( POLARSSL_ERR_DHM_READ_PUBLIC_FAILED + ret );
 
     return( 0 );
 }
@@ -172,11 +202,10 @@ int dhm_read_public( dhm_context *ctx,
  * Create own private value X and export G^X
  */
 int dhm_make_public( dhm_context *ctx, int x_size,
-                     unsigned char *output, int olen,
+                     unsigned char *output, size_t olen,
                      int (*f_rng)(void *), void *p_rng )
 {
-    int ret, i, n;
-    unsigned char *p;
+    int ret, n;
 
     if( ctx == NULL || olen < 1 || olen > ctx->len )
         return( POLARSSL_ERR_DHM_BAD_INPUT_DATA );
@@ -184,14 +213,9 @@ int dhm_make_public( dhm_context *ctx, int x_size,
     /*
      * generate X and calculate GX = G^X mod P
      */
-    n = x_size / sizeof( t_int );
-    MPI_CHK( mpi_grow( &ctx->X, n ) );
-    MPI_CHK( mpi_lset( &ctx->X, 0 ) );
+    n = x_size / sizeof( t_uint ) + 1;
 
-    n = x_size - 1;
-    p = (unsigned char *) ctx->X.p;
-    for( i = 0; i < n; i++ )
-        *p++ = (unsigned char) f_rng( p_rng );
+    mpi_fill_random( &ctx->X, n, f_rng, p_rng );
 
     while( mpi_cmp_mpi( &ctx->X, &ctx->P ) >= 0 )
            mpi_shift_r( &ctx->X, 1 );
@@ -199,12 +223,15 @@ int dhm_make_public( dhm_context *ctx, int x_size,
     MPI_CHK( mpi_exp_mod( &ctx->GX, &ctx->G, &ctx->X,
                           &ctx->P , &ctx->RP ) );
 
+    if( ( ret = dhm_check_range( &ctx->GX, &ctx->P ) ) != 0 )
+        return( ret );
+
     MPI_CHK( mpi_write_binary( &ctx->GX, output, olen ) );
 
 cleanup:
 
     if( ret != 0 )
-        return( POLARSSL_ERR_DHM_MAKE_PUBLIC_FAILED | ret );
+        return( POLARSSL_ERR_DHM_MAKE_PUBLIC_FAILED + ret );
 
     return( 0 );
 }
@@ -213,7 +240,7 @@ cleanup:
  * Derive and export the shared secret (G^Y)^X mod P
  */
 int dhm_calc_secret( dhm_context *ctx,
-                     unsigned char *output, int *olen )
+                     unsigned char *output, size_t *olen )
 {
     int ret;
 
@@ -223,6 +250,9 @@ int dhm_calc_secret( dhm_context *ctx,
     MPI_CHK( mpi_exp_mod( &ctx->K, &ctx->GY, &ctx->X,
                           &ctx->P, &ctx->RP ) );
 
+    if( ( ret = dhm_check_range( &ctx->GY, &ctx->P ) ) != 0 )
+        return( ret );
+
     *olen = mpi_size( &ctx->K );
 
     MPI_CHK( mpi_write_binary( &ctx->K, output, *olen ) );
@@ -230,7 +260,7 @@ int dhm_calc_secret( dhm_context *ctx,
 cleanup:
 
     if( ret != 0 )
-        return( POLARSSL_ERR_DHM_CALC_SECRET_FAILED | ret );
+        return( POLARSSL_ERR_DHM_CALC_SECRET_FAILED + ret );
 
     return( 0 );
 }
@@ -240,9 +270,9 @@ cleanup:
  */
 void dhm_free( dhm_context *ctx )
 {
-    mpi_free( &ctx->RP, &ctx->K, &ctx->GY,
-              &ctx->GX, &ctx->X, &ctx->G,
-              &ctx->P, NULL );    
+    mpi_free( &ctx->RP ); mpi_free( &ctx->K ); mpi_free( &ctx->GY );
+    mpi_free( &ctx->GX ); mpi_free( &ctx->X ); mpi_free( &ctx->G );
+    mpi_free( &ctx->P );
 }
 
 #if defined(POLARSSL_SELF_TEST)

@@ -1,6 +1,8 @@
 /**
  * \file version.h
  *
+ * \brief Run-time version information
+ *
  *  Copyright (C) 2006-2010, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
@@ -21,7 +23,8 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ */
+/*
  * This set of compile-time defines and run-time variables can be used to
  * determine the version number of the PolarSSL library used.
  */
@@ -34,8 +37,8 @@
  * The version number x.y.z is split into three parts.
  * Major, Minor, Patchlevel
  */
-#define POLARSSL_VERSION_MAJOR  0
-#define POLARSSL_VERSION_MINOR  14
+#define POLARSSL_VERSION_MAJOR  1
+#define POLARSSL_VERSION_MINOR  0
 #define POLARSSL_VERSION_PATCH  0
 
 /**
@@ -43,24 +46,24 @@
  *    MMNNPP00
  *    Major version | Minor version | Patch version
  */
-#define POLARSSL_VERSION_NUMBER         0x000E0000
-#define POLARSSL_VERSION_STRING         "0.14.0"
-#define POLARSSL_VERSION_STRING_FULL    "PolarSSL 0.14.0"
+#define POLARSSL_VERSION_NUMBER         0x01000000
+#define POLARSSL_VERSION_STRING         "1.0.0"
+#define POLARSSL_VERSION_STRING_FULL    "PolarSSL 1.0.0"
 
 #if defined(POLARSSL_VERSION_C)
 
 /**
  * Get the version number.
  *
- * @return          The constructed version number in the format
+ * \return          The constructed version number in the format
  *                  MMNNPP00 (Major, Minor, Patch).
  */
-unsigned int version_get_number();
+unsigned int version_get_number( void );
 
 /**
  * Get the version string ("x.y.z").
  *
- * @param string    The string that will receive the value.
+ * \param string    The string that will receive the value.
  *                  (Should be at least 9 bytes in size)
  */
 void version_get_string( char *string );
@@ -68,7 +71,7 @@ void version_get_string( char *string );
 /**
  * Get the full version string ("PolarSSL x.y.z").
  *
- * @param string    The string that will receive the value.
+ * \param string    The string that will receive the value.
  *                  (Should be at least 18 bytes in size)
  */
 void version_get_string_full( char *string );

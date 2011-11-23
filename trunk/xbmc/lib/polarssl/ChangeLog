@@ -1,5 +1,136 @@
 PolarSSL ChangeLog
 
+= Version 1.0.0 released on 2011-07-27
+Features
+   * Expanded cipher layer with support for CFB128 and CTR mode
+   * Added rsa_encrypt and rsa_decrypt simple example programs.
+
+Changes
+   * The generic cipher and message digest layer now have normal error
+     codes instead of integers
+
+Bugfix
+   * Undid faulty bug fix in ssl_write() when flushing old data (Ticket
+     #18)
+
+= Version 0.99-pre5 released on 2011-05-26
+Features
+   * Added additional Cipher Block Modes to symmetric ciphers
+     (AES CTR, Camellia CTR, XTEA CBC) including the option to
+	 enable and disable individual modes when needed
+   * Functions requiring File System functions can now be disabled
+     by undefining POLARSSL_FS_IO
+   * A error_strerror function() has been added to translate between
+     error codes and their description.
+   * Added mpi_get_bit() and mpi_set_bit() individual bit setter/getter
+     functions.
+   * Added ssl_mail_client and ssl_fork_server as example programs.
+
+Changes
+   * Major argument / variable rewrite. Introduced use of size_t
+     instead of int for buffer lengths and loop variables for
+	 better unsigned / signed use. Renamed internal bigint types
+	 t_int and t_dbl to t_uint and t_udbl in the process
+   * mpi_init() and mpi_free() now only accept a single MPI
+     argument and do not accept variable argument lists anymore.
+   * The error codes have been remapped and combining error codes
+     is now done with a PLUS instead of an OR as error codes
+	 used are negative.
+   * Changed behaviour of net_read(), ssl_fetch_input() and ssl_recv().
+     net_recv() now returns 0 on EOF instead of
+	 POLARSSL_ERR_NET_CONN_RESET. ssl_fetch_input() returns
+	 POLARSSL_ERR_SSL_CONN_EOF on an EOF from its f_recv() function.
+	 ssl_read() returns 0 if a POLARSSL_ERR_SSL_CONN_EOF is received
+	 after the handshake.
+   * Network functions now return POLARSSL_ERR_NET_WANT_READ or
+     POLARSSL_ERR_NET_WANT_WRITE instead of the ambiguous
+	 POLARSSL_ERR_NET_TRY_AGAIN
+
+= Version 0.99-pre4 released on 2011-04-01
+Features
+   * Added support for PKCS#1 v2.1 encoding and thus support
+     for the RSAES-OAEP and RSASSA-PSS operations.
+   * Reading of Public Key files incorporated into default x509
+     functionality as well.
+   * Added mpi_fill_random() for centralized filling of big numbers
+     with random data (Fixed ticket #10)
+
+Changes
+   * Debug print of MPI now removes leading zero octets and 
+     displays actual bit size of the value.
+   * x509parse_key() (and as a consequence x509parse_keyfile()) 
+     does not zeroize memory in advance anymore. Use rsa_init()
+	 before parsing a key or keyfile!
+
+Bugfix
+   * Debug output of MPI's now the same independent of underlying
+     platform (32-bit / 64-bit) (Fixes ticket #19, found by Mads
+	 Kiilerich and Mihai Militaru)
+   * Fixed bug in ssl_write() when flushing old data (Fixed ticket
+     #18, found by Nikolay Epifanov)
+   * Fixed proper handling of RSASSA-PSS verification with variable
+     length salt lengths
+
+= Version 0.99-pre3 released on 2011-02-28
+This release replaces version 0.99-pre2 which had possible copyright issues.
+Features
+   * Parsing PEM private keys encrypted with DES and AES
+     are now supported as well (Fixes ticket #5)
+   * Added crl_app program to allow easy reading and
+     printing of X509 CRLs from file
+
+Changes
+   * Parsing of PEM files moved to separate module (Fixes 
+     ticket #13). Also possible to remove PEM support for
+	 systems only using DER encoding
+
+Bugfixes
+   * Corrected parsing of UTCTime dates before 1990 and
+     after 1950
+   * Support more exotic OID's when parsing certificates
+   	 (found by Mads Kiilerich)
+   * Support more exotic name representations when parsing
+     certificates (found by Mads Kiilerich)
+   * Replaced the expired test certificates
+   * Do not bail out if no client certificate specified. Try
+     to negotiate anonymous connection (Fixes ticket #12,
+	 found by Boris Krasnovskiy)
+
+Security fixes
+   * Fixed a possible Man-in-the-Middle attack on the
+     Diffie Hellman key exchange (thanks to Larry Highsmith,
+	 Subreption LLC)
+
+= Version 0.99-pre1 released on 2011-01-30
+Features
+Note: Most of these features have been donated by Fox-IT
+   * Added Doxygen source code documentation parts
+   * Added reading of DHM context from memory and file
+   * Improved X509 certificate parsing to include extended
+     certificate fields, including Key Usage
+   * Improved certificate verification and verification
+     against the available CRLs
+   * Detection for DES weak keys and parity bits added
+   * Improvements to support integration in other
+     applications:
+       + Added generic message digest and cipher wrapper
+       + Improved information about current capabilities,
+         status, objects and configuration
+       + Added verification callback on certificate chain
+         verification to allow external blacklisting
+	   + Additional example programs to show usage
+   * Added support for PKCS#11 through the use of the
+     libpkcs11-helper library
+
+Changes
+   * x509parse_time_expired() checks time in addition to
+     the existing date check
+   * The ciphers member of ssl_context and the cipher member
+     of ssl_session have been renamed to ciphersuites and
+	 ciphersuite respectively. This clarifies the difference
+	 with the generic cipher layer and is better naming
+	 altogether
+
 = Version 0.14.0 released on 2010-08-16
 Features
    * Added support for SSL_EDH_RSA_AES_128_SHA and
@@ -245,7 +376,7 @@ XySSL ChangeLog
     * Ciphers used in SSL/TLS can now be disabled at compile
       time, to reduce the memory footprint on embedded systems
     * Added multiply assembly code for the TriCore and modified
-      havege_struct for this processor, thanks to David Patiño
+      havege_struct for this processor, thanks to David PatiÃ±o
     * Added multiply assembly code for 64-bit PowerPCs,
       thanks to Peking University and the OSU Open Source Lab
     * Added experimental support of Quantum Cryptography
@@ -282,7 +413,7 @@ XySSL ChangeLog
 
     * Added server-side SSLv3 and TLSv1.0 support
     * Multiple fixes to enhance the compatibility with g++,
-      thanks to Xosé Antón Otero Ferreira
+      thanks to XosÃ© AntÃ³n Otero Ferreira
     * Fixed a bug in the CBC code, thanks to dowst; also,
       the bignum code is no longer dependant on long long
     * Updated rsa_pkcs1_sign to handle arbitrary large inputs
@@ -295,14 +426,14 @@ XySSL ChangeLog
     * Updated the MPI code to support 8086 on MSVC 1.5
     * Added the copyright notice at the top of havege.h
     * Fixed a bug in sha2_hmac, thanks to newsoft/Wenfang Zhang
-    * Fixed a bug reported by Adrian Rüegsegger in x509_read_key
+    * Fixed a bug reported by Adrian RÃ¼egsegger in x509_read_key
     * Fixed a bug reported by Torsten Lauter in ssl_read_record
     * Fixed a bug in rsa_check_privkey that would wrongly cause
       valid RSA keys to be dismissed (thanks to oldwolf)
     * Fixed a bug in mpi_is_prime that caused some primes to fail
       the Miller-Rabin primality test
 
-    I'd also like to thank Younès Hafri for the CRUX linux port,
+    I'd also like to thank YounÃ¨s Hafri for the CRUX linux port,
     Khalil Petit who added XySSL into pkgsrc and Arnaud Cornet
     who maintains the Debian package :-)
 

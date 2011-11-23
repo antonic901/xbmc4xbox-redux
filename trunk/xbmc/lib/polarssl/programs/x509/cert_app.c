@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "polarssl/config.h"
+
 #include "polarssl/havege.h"
 #include "polarssl/net.h"
 #include "polarssl/ssl.h"
@@ -77,6 +79,19 @@ void my_debug( void *ctx, int level, const char *str )
     "    debug_level=%%d      default: 0 (disabled)\n"  \
     "\n"
 
+#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_HAVEGE_C) ||   \
+    !defined(POLARSSL_SSL_TLS_C) || !defined(POLARSSL_SSL_CLI_C) || \
+    !defined(POLARSSL_NET_C) || !defined(POLARSSL_RSA_C) ||         \
+    !defined(POLARSSL_X509_PARSE_C) || !defined(POLARSSL_FS_IO)
+int main( void )
+{
+    printf("POLARSSL_BIGNUM_C and/or POLARSSL_HAVEGE_C and/or "
+           "POLARSSL_SSL_TLS_C and/or POLARSSL_SSL_CLI_C and/or "
+           "POLARSSL_NET_C and/or POLARSSL_RSA_C and/or "
+           "POLARSSL_X509_PARSE_C and/or POLARSSL_FS_IO not defined.\n");
+    return( 0 );
+}
+#else
 int main( int argc, char *argv[] )
 {
     int ret = 0, server_fd;
@@ -88,6 +103,15 @@ int main( int argc, char *argv[] )
     rsa_context rsa;
     int i, j, n;
     char *p, *q;
+
+    /*
+     * Set to sane values
+     */
+    server_fd = 0;
+    memset( &ssl, 0, sizeof( ssl_context ) );
+    memset( &ssn, 0, sizeof( ssl_session ) );
+    memset( &clicert, 0, sizeof( x509_cert ) );
+    memset( &rsa, 0, sizeof( rsa_context ) );
 
     if( argc == 0 )
     {
@@ -149,7 +173,6 @@ int main( int argc, char *argv[] )
     if( opt.mode == MODE_FILE )
     {
         x509_cert crt;
-
         memset( &crt, 0, sizeof( x509_cert ) );
 
         /*
@@ -191,7 +214,6 @@ int main( int argc, char *argv[] )
          * 1. Initialize the RNG and the session data
          */
         havege_init( &hs );
-        memset( &ssn, 0, sizeof( ssl_session ) );
 
         /*
          * 2. Start the connection
@@ -224,7 +246,7 @@ int main( int argc, char *argv[] )
         ssl_set_bio( &ssl, net_recv, &server_fd,
                 net_send, &server_fd );
 
-        ssl_set_ciphers( &ssl, ssl_default_ciphers );
+        ssl_set_ciphersuites( &ssl, ssl_default_ciphersuites );
         ssl_set_session( &ssl, 1, 600, &ssn );
 
         ssl_set_own_cert( &ssl, &clicert, &rsa );
@@ -236,7 +258,7 @@ int main( int argc, char *argv[] )
          */
         while( ( ret = ssl_handshake( &ssl ) ) != 0 )
         {
-            if( ret != POLARSSL_ERR_NET_TRY_AGAIN )
+            if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
             {
                 printf( " failed\n  ! ssl_handshake returned %d\n\n", ret );
                 goto exit;
@@ -265,7 +287,8 @@ int main( int argc, char *argv[] )
 
 exit:
 
-    net_close( server_fd );
+    if( server_fd )
+        net_close( server_fd );
     x509_free( &clicert );
     rsa_free( &rsa );
     ssl_free( &ssl );
@@ -279,3 +302,6 @@ exit:
 
     return( ret );
 }
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_HAVEGE_C && POLARSSL_SSL_TLS_C &&
+          POLARSSL_SSL_CLI_C && POLARSSL_NET_C && POLARSSL_RSA_C &&
+          POLARSSL_X509_PARSE_C && POLARSSL_FS_IO */

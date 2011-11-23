@@ -1,6 +1,8 @@
 /**
  * \file camellia.h
  *
+ * \brief Camellia block cipher
+ *
  *  Copyright (C) 2006-2010, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
@@ -25,6 +27,8 @@
 #ifndef POLARSSL_CAMELLIA_H
 #define POLARSSL_CAMELLIA_H
 
+#include <string.h>
+
 #ifdef _MSC_VER
 #include <basetsd.h>
 typedef UINT32 uint32_t;
@@ -35,8 +39,8 @@ typedef UINT32 uint32_t;
 #define CAMELLIA_ENCRYPT     1
 #define CAMELLIA_DECRYPT     0
 
-#define POLARSSL_ERR_CAMELLIA_INVALID_KEY_LENGTH            -0x0a00
-#define POLARSSL_ERR_CAMELLIA_INVALID_INPUT_LENGTH          -0x0a10
+#define POLARSSL_ERR_CAMELLIA_INVALID_KEY_LENGTH           -0x0024  /**< Invalid key length. */
+#define POLARSSL_ERR_CAMELLIA_INVALID_INPUT_LENGTH         -0x0026  /**< Invalid data input length. */
 
 /**
  * \brief          CAMELLIA context structure
@@ -61,7 +65,7 @@ extern "C" {
  * 
  * \return         0 if successful, or POLARSSL_ERR_CAMELLIA_INVALID_KEY_LENGTH
  */
-int camellia_setkey_enc( camellia_context *ctx, const unsigned char *key, int keysize );
+int camellia_setkey_enc( camellia_context *ctx, const unsigned char *key, unsigned int keysize );
 
 /**
  * \brief          CAMELLIA key schedule (decryption)
@@ -72,7 +76,7 @@ int camellia_setkey_enc( camellia_context *ctx, const unsigned char *key, int ke
  * 
  * \return         0 if successful, or POLARSSL_ERR_CAMELLIA_INVALID_KEY_LENGTH
  */
-int camellia_setkey_dec( camellia_context *ctx, const unsigned char *key, int keysize );
+int camellia_setkey_dec( camellia_context *ctx, const unsigned char *key, unsigned int keysize );
 
 /**
  * \brief          CAMELLIA-ECB block encryption/decryption
@@ -105,7 +109,7 @@ int camellia_crypt_ecb( camellia_context *ctx,
  */
 int camellia_crypt_cbc( camellia_context *ctx,
                     int mode,
-                    int length,
+                    size_t length,
                     unsigned char iv[16],
                     const unsigned char *input,
                     unsigned char *output );
@@ -125,9 +129,34 @@ int camellia_crypt_cbc( camellia_context *ctx,
  */
 int camellia_crypt_cfb128( camellia_context *ctx,
                        int mode,
-                       int length,
-                       int *iv_off,
+                       size_t length,
+                       size_t *iv_off,
                        unsigned char iv[16],
+                       const unsigned char *input,
+                       unsigned char *output );
+
+/*
+ * \brief               CAMELLIA-CTR buffer encryption/decryption
+ *
+ * Warning: You have to keep the maximum use of your counter in mind!
+ *
+ * \param length        The length of the data
+ * \param nc_off        The offset in the current stream_block (for resuming
+ *                      within current cipher stream). The offset pointer to
+ *                      should be 0 at the start of a stream.
+ * \param nonce_counter The 128-bit nonce and counter.
+ * \param stream_block  The saved stream-block for resuming. Is overwritten
+ *                      by the function.
+ * \param input         The input data stream
+ * \param output        The output data stream
+ *
+ * \return         0 if successful
+ */
+int camellia_crypt_ctr( camellia_context *ctx,
+                       size_t length,
+                       size_t *nc_off,
+                       unsigned char nonce_counter[16],
+                       unsigned char stream_block[16],
                        const unsigned char *input,
                        unsigned char *output );
 

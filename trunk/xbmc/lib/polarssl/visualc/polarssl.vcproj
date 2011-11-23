@@ -78,6 +78,12 @@
 				RelativePath="..\library\certs.c">
 			</File>
 			<File
+				RelativePath="..\library\cipher.c">
+			</File>
+			<File
+				RelativePath="..\library\cipher_wrap.c">
+			</File>
+			<File
 				RelativePath="..\library\debug.c">
 			</File>
 			<File
@@ -87,7 +93,13 @@
 				RelativePath="..\library\dhm.c">
 			</File>
 			<File
+				RelativePath="..\library\error.c">
+			</File>
+			<File
 				RelativePath="..\library\havege.c">
+			</File>
+			<File
+				RelativePath="..\library\md.c">
 			</File>
 			<File
 				RelativePath="..\library\md2.c">
@@ -99,10 +111,19 @@
 				RelativePath="..\library\md5.c">
 			</File>
 			<File
+				RelativePath="..\library\md_wrap.c">
+			</File>
+			<File
 				RelativePath="..\library\net.c">
 			</File>
 			<File
 				RelativePath="..\library\padlock.c">
+			</File>
+			<File
+				RelativePath="..\library\pem.c">
+			</File>
+			<File
+				RelativePath="..\library\pkcs11.c">
 			</File>
 			<File
 				RelativePath="..\library\rsa.c">
@@ -160,6 +181,12 @@
 				RelativePath="..\include\polarssl\certs.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\cipher.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\cipher_wrap.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\config.h">
 			</File>
 			<File
@@ -172,7 +199,13 @@
 				RelativePath="..\include\polarssl\dhm.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\error.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\havege.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\md.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\md2.h">
@@ -184,6 +217,9 @@
 				RelativePath="..\include\polarssl\md5.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\md_wrap.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\net.h">
 			</File>
 			<File
@@ -191,6 +227,12 @@
 			</File>
 			<File
 				RelativePath="..\include\polarssl\padlock.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\pem.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\pkcs11.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\rsa.h">
@@ -209,6 +251,9 @@
 			</File>
 			<File
 				RelativePath="..\include\polarssl\timing.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\version.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\x509.h">
