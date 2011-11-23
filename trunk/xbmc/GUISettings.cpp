@@ -260,7 +260,7 @@ void CGUISettings::Initialize()
   AddSeparator(7, "musicplayer.sep2");
   AddString(8, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, SPIN_CONTROL_TEXT);
   AddSeparator(9, "musicplayer.sep3");
-  AddInt(10, "musicplayer.defaultplayer", 22030, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
+  AddInt(10, "musicplayer.defaultplayer", 22003, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
 #ifdef _XBOX
   AddBool(11, "musicplayer.outputtoallspeakers", 252, false);
 #endif
@@ -427,7 +427,7 @@ void CGUISettings::Initialize()
   AddBool(8, "videoplayer.soften", 215, false);
   AddFloat(9, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
   AddSeparator(11, "videoplayer.sep2");
-  AddInt(12, "videoplayer.defaultplayer", 22030, PLAYER_DVDPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
+  AddInt(12, "videoplayer.defaultplayer", 22003, PLAYER_DVDPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
   AddBool(13, "videoplayer.allcodecs", 22025, false);
   AddBool(14, "videoplayer.fast", 22026, false);
   AddInt(15, "videoplayer.skiploopfilter", 14100, VS_SKIPLOOP_NONREF, VS_SKIPLOOP_DEFAULT, 1, VS_SKIPLOOP_ALL, SPIN_CONTROL_TEXT);

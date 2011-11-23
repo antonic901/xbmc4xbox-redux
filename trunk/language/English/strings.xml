@@ -2152,7 +2152,7 @@
   <string id="22000">Update library on startup</string>
   <string id="22001">Always update library in background</string>
   <string id="22002">- DNS suffix</string>
-  <string id="22003"></string>
+  <string id="22003">Default player</string>
   <string id="22004">Delayed by: %2.3fs</string>
   <string id="22005">Ahead by: %2.3fs</string>
   <string id="22006">Subtitle offset</string>
@@ -2179,7 +2179,6 @@
   <string id="22027">PAPlayer</string>
   <string id="22028">DVDPlayer</string>
   <string id="22029">MPlayer</string>
-  <string id="22030">Default player</string>
 
   <!-- strings 22030 thru 22060 reserved for karaoke -->
   <string id="22030">Font</string>
