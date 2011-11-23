@@ -717,6 +717,17 @@ void CGUIWindowSettingsCategory::CreateSettings()
         pControl->AddLabel(g_localizeStrings.Get(12382), FRAME_RATE_USE_PAL60); // "Play NTSC videos in PAL60"
       pControl->SetValue(pSettingInt->GetData());
     }
+    else if (strSetting.Equals("videoplayer.skiploopfilter"))
+    {
+      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
+      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
+      pControl->AddLabel(g_localizeStrings.Get(14101), VS_SKIPLOOP_DEFAULT);
+      pControl->AddLabel(g_localizeStrings.Get(14102), VS_SKIPLOOP_NONREF);
+      pControl->AddLabel(g_localizeStrings.Get(14103), VS_SKIPLOOP_BIDIR);
+      pControl->AddLabel(g_localizeStrings.Get(14104), VS_SKIPLOOP_NONKEY);
+      pControl->AddLabel(g_localizeStrings.Get(14105), VS_SKIPLOOP_ALL);
+      pControl->SetValue(pSettingInt->GetData());
+    }
     else if (strSetting.Equals("videolibrary.flattentvshows"))
     {
       CSettingInt *pSettingInt = (CSettingInt*)pSetting;

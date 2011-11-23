@@ -1364,7 +1364,13 @@
   <string id="14097">Video cache - max time</string>
   <string id="14098">Audio cache</string>
   <string id="14099">Audio cache - max time</string>
-
+  <string id="14100">H.264 Skip Loop Filter</string>
+  <string id="14101">Default</string>
+  <string id="14102">Skip Non-reference Frames</string>
+  <string id="14103">Skip Bidirectional Frames</string>
+  <string id="14104">Skip Non-key frames</string>
+  <string id="14105">Skip Everything</string>
+  
   <string id="15000"></string>
   <string id="15001"></string>
   <string id="15002"></string>

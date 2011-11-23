@@ -211,7 +211,6 @@ CAdvancedSettings::CAdvancedSettings()
 
   m_playlistRetries = 100;
   m_playlistTimeout = 20; // 20 seconds timeout
-  m_iSkipLoopFilter = 0;
   m_bVirtualShares = true;
   m_bNavVKeyboard = false;
 
@@ -449,7 +448,6 @@ bool CAdvancedSettings::Load()
   XMLUtils::GetInt(pRootElement, "playlisttimeout", m_playlistTimeout, 0, 5000);
 
   XMLUtils::GetBoolean(pRootElement,"rootovershoot",m_bUseEvilB);
-  XMLUtils::GetInt(pRootElement,"skiploopfilter", m_iSkipLoopFilter, -16, 48);
   XMLUtils::GetBoolean(pRootElement,"virtualshares", m_bVirtualShares);
   XMLUtils::GetBoolean(pRootElement,"navigatevirtualkeyboard", m_bNavVKeyboard);
 

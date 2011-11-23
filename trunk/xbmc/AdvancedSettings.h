@@ -214,7 +214,6 @@ class CAdvancedSettings
 
     int m_playlistRetries;
     int m_playlistTimeout;
-    int m_iSkipLoopFilter;
     bool m_bVirtualShares; 
     bool m_bNavVKeyboard; // if true we navigate the virtual keyboard using cursor keys
     

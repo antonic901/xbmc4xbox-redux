@@ -96,13 +96,11 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
 
   // set acceleration
   m_pCodecContext->dsp_mask = AV_CPU_FLAG_FORCE | AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE;
-  
-  // advanced setting override for skip loop filter (see avcodec.h for valid options)
-  // TODO: allow per video setting?
-  if (g_advancedSettings.m_iSkipLoopFilter != 0)
-    m_pCodecContext->skip_loop_filter = (AVDiscard)g_advancedSettings.m_iSkipLoopFilter;
-  else
-    m_pCodecContext->skip_loop_filter = AVDISCARD_NONREF;
+
+  AVDiscard discardVals[] = {AVDISCARD_DEFAULT, AVDISCARD_NONREF, AVDISCARD_BIDIR, AVDISCARD_NONKEY, AVDISCARD_ALL};
+  AVDiscard avDiscard = discardVals[g_guiSettings.GetInt("videoplayer.skiploopfilter")];
+  if (avDiscard != AVDISCARD_DEFAULT)
+    m_pCodecContext->skip_loop_filter = avDiscard;
 
   // set any special options
   for(CDVDCodecOptions::iterator it = options.begin(); it != options.end(); it++)
