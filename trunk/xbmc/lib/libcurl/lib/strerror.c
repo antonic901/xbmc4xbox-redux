@@ -29,14 +29,11 @@
       (defined(HAVE_POSIX_STRERROR_R) && defined(HAVE_VXWORKS_STRERROR_R)) || \
       (defined(HAVE_GLIBC_STRERROR_R) && defined(HAVE_VXWORKS_STRERROR_R)) || \
       (defined(HAVE_POSIX_STRERROR_R) && defined(HAVE_GLIBC_STRERROR_R))
-#    error "strerror_r MUST be either POSIX-style, glibc-style or vxworks-style"
+#    error "strerror_r MUST be either POSIX, glibc or vxworks-style"
 #  endif
 #endif
 
 #include <curl/curl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 
 #ifdef USE_LIBIDN
 #include <idna.h>
@@ -205,7 +202,8 @@ curl_easy_strerror(CURLcode error)
     return "Couldn't use specified SSL cipher";
 
   case CURLE_SSL_CACERT:
-    return "Peer certificate cannot be authenticated with known CA certificates";
+    return "Peer certificate cannot be authenticated with given CA "
+      "certificates";
 
   case CURLE_SSL_CACERT_BADFILE:
     return "Problem with the SSL CA cert (path? access rights?)";
@@ -385,6 +383,9 @@ curl_share_strerror(CURLSHcode error)
 
   case CURLSHE_NOMEM:
     return "Out of memory";
+
+  case CURLSHE_NOT_BUILT_IN:
+    return "Feature not enabled in this library";
 
   case CURLSHE_LAST:
     break;

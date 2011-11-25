@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -24,9 +24,6 @@
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
 #endif
 
 #if !defined(HAVE_SELECT) && !defined(HAVE_POLL_FINE)
@@ -47,20 +44,7 @@
 #include "urldata.h"
 #include "connect.h"
 #include "select.h"
-
-/* Winsock and TPF sockets are not in range [0..FD_SETSIZE-1] */
-
-#if defined(USE_WINSOCK) || defined(TPF)
-#define VERIFY_SOCK(x) do { } while(0)
-#else
-#define VALID_SOCK(s) (((s) >= 0) && ((s) < FD_SETSIZE))
-#define VERIFY_SOCK(x) do { \
-  if(!VALID_SOCK(x)) { \
-    SET_SOCKERRNO(EINVAL); \
-    return -1; \
-  } \
-} while(0)
-#endif
+#include "warnless.h"
 
 /* Convenience local macros */
 
@@ -92,7 +76,7 @@
  *   -1 = system call error, invalid timeout value, or interrupted
  *    0 = specified timeout has elapsed
  */
-static int wait_ms(int timeout_ms)
+int Curl_wait_ms(int timeout_ms)
 {
 #if !defined(MSDOS) && !defined(USE_WINSOCK)
 #ifndef HAVE_POLL_FINE
@@ -159,7 +143,7 @@ static int wait_ms(int timeout_ms)
  *    CURL_CSELECT_IN | CURL_CSELECT_OUT | CURL_CSELECT_ERR
  */
 int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
-                      int timeout_ms)
+                      long timeout_ms)
 {
 #ifdef HAVE_POLL_FINE
   struct pollfd pfd[2];
@@ -179,7 +163,7 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
   int ret;
 
   if((readfd == CURL_SOCKET_BAD) && (writefd == CURL_SOCKET_BAD)) {
-    r = wait_ms(timeout_ms);
+    r = Curl_wait_ms((int)timeout_ms);
     return r;
   }
 
@@ -189,7 +173,7 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
      value indicating a blocking call should be performed. */
 
   if(timeout_ms > 0) {
-    pending_ms = timeout_ms;
+    pending_ms = (int)timeout_ms;
     initial_tv = curlx_tvnow();
   }
 
@@ -221,7 +205,7 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
     if(error && error_not_EINTR)
       break;
     if(timeout_ms > 0) {
-      pending_ms = timeout_ms - elapsed_ms;
+      pending_ms = (int)(timeout_ms - elapsed_ms);
       if(pending_ms <= 0)
         break;
     }
@@ -355,7 +339,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
   int r;
 
   if(ufds) {
-    for (i = 0; i < nfds; i++) {
+    for(i = 0; i < nfds; i++) {
       if(ufds[i].fd != CURL_SOCKET_BAD) {
         fds_none = FALSE;
         break;
@@ -363,7 +347,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
     }
   }
   if(fds_none) {
-    r = wait_ms(timeout_ms);
+    r = Curl_wait_ms(timeout_ms);
     return r;
   }
 
@@ -402,7 +386,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
   if(r == 0)
     return 0;
 
-  for (i = 0; i < nfds; i++) {
+  for(i = 0; i < nfds; i++) {
     if(ufds[i].fd == CURL_SOCKET_BAD)
       continue;
     if(ufds[i].revents & POLLHUP)
@@ -418,7 +402,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
   FD_ZERO(&fds_err);
   maxfd = (curl_socket_t)-1;
 
-  for (i = 0; i < nfds; i++) {
+  for(i = 0; i < nfds; i++) {
     ufds[i].revents = 0;
     if(ufds[i].fd == CURL_SOCKET_BAD)
       continue;
@@ -466,7 +450,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
     return 0;
 
   r = 0;
-  for (i = 0; i < nfds; i++) {
+  for(i = 0; i < nfds; i++) {
     ufds[i].revents = 0;
     if(ufds[i].fd == CURL_SOCKET_BAD)
       continue;

@@ -24,9 +24,6 @@
 
 #include "setup.h"
 
-#include <stdlib.h>
-#include <string.h>
-
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
@@ -71,10 +68,19 @@ static void decodeQuantum(unsigned char *dest, const char *src)
 /*
  * Curl_base64_decode()
  *
- * Given a base64 string at src, decode it and return an allocated memory in
- * the *outptr. Returns the length of the decoded data.
+ * Given a base64 NUL-terminated string at src, decode it and return a
+ * pointer in *outptr to a newly allocated memory area holding decoded
+ * data. Size of decoded data is returned in variable pointed by outlen.
+ *
+ * Returns CURLE_OK on success, otherwise specific error code. Function
+ * output shall not be considered valid unless CURLE_OK is returned.
+ *
+ * When decoded data length is 0, returns NULL in *outptr.
+ *
+ * @unittest: 1302
  */
-size_t Curl_base64_decode(const char *src, unsigned char **outptr)
+CURLcode Curl_base64_decode(const char *src,
+                            unsigned char **outptr, size_t *outlen)
 {
   size_t length = 0;
   size_t equalsTerm = 0;
@@ -85,6 +91,7 @@ size_t Curl_base64_decode(const char *src, unsigned char **outptr)
   unsigned char *newstr;
 
   *outptr = NULL;
+  *outlen = 0;
 
   while((src[length] != '=') && src[length])
     length++;
@@ -98,7 +105,7 @@ size_t Curl_base64_decode(const char *src, unsigned char **outptr)
 
   /* Don't allocate a buffer if the decoded length is 0 */
   if(numQuantums == 0)
-    return 0;
+    return CURLE_OK;
 
   rawlen = (numQuantums * 3) - equalsTerm;
 
@@ -106,7 +113,7 @@ size_t Curl_base64_decode(const char *src, unsigned char **outptr)
   (which may be partially thrown out) and the zero terminator. */
   newstr = malloc(rawlen+4);
   if(!newstr)
-    return 0;
+    return CURLE_OUT_OF_MEMORY;
 
   *outptr = newstr;
 
@@ -125,21 +132,34 @@ size_t Curl_base64_decode(const char *src, unsigned char **outptr)
     newstr[i] = lastQuantum[i];
 
   newstr[i] = '\0'; /* zero terminate */
-  return rawlen;
+
+  *outlen = rawlen; /* return size of decoded data */
+
+  return CURLE_OK;
 }
 
 /*
  * Curl_base64_encode()
  *
- * Returns the length of the newly created base64 string. The third argument
- * is a pointer to an allocated area holding the base64 data. If something
- * went wrong, 0 is returned.
+ * Given a pointer to an input buffer and an input size, encode it and
+ * return a pointer in *outptr to a newly allocated memory area holding
+ * encoded data. Size of encoded data is returned in variable pointed by
+ * outlen.
  *
+ * Input length of 0 indicates input buffer holds a NUL-terminated string.
+ *
+ * Returns CURLE_OK on success, otherwise specific error code. Function
+ * output shall not be considered valid unless CURLE_OK is returned.
+ *
+ * When encoded data length is 0, returns NULL in *outptr.
+ *
+ * @unittest: 1302
  */
-size_t Curl_base64_encode(struct SessionHandle *data,
-                          const char *inputbuff, size_t insize,
-                          char **outptr)
+CURLcode Curl_base64_encode(struct SessionHandle *data,
+                            const char *inputbuff, size_t insize,
+                            char **outptr, size_t *outlen)
 {
+  CURLcode error;
   unsigned char ibuf[3];
   unsigned char obuf[4];
   int i;
@@ -150,28 +170,32 @@ size_t Curl_base64_encode(struct SessionHandle *data,
 
   const char *indata = inputbuff;
 
-  *outptr = NULL; /* set to NULL in case of failure before we reach the end */
+  *outptr = NULL;
+  *outlen = 0;
 
   if(0 == insize)
     insize = strlen(indata);
 
   base64data = output = malloc(insize*4/3+4);
   if(NULL == output)
-    return 0;
+    return CURLE_OUT_OF_MEMORY;
 
   /*
    * The base64 data needs to be created using the network encoding
    * not the host encoding.  And we can't change the actual input
    * so we copy it to a buffer, translate it, and use that instead.
    */
-  if(Curl_convert_clone(data, indata, insize, &convbuf))
-    return 0;
+  error = Curl_convert_clone(data, indata, insize, &convbuf);
+  if(error) {
+    free(output);
+    return error;
+  }
 
   if(convbuf)
     indata = (char *)convbuf;
 
   while(insize > 0) {
-    for (i = inputparts = 0; i < 3; i++) {
+    for(i = inputparts = 0; i < 3; i++) {
       if(insize > 0) {
         inputparts++;
         ibuf[i] = (unsigned char) *indata;
@@ -211,12 +235,14 @@ size_t Curl_base64_encode(struct SessionHandle *data,
     }
     output += 4;
   }
-  *output=0;
-  *outptr = base64data; /* make it return the actual data memory */
+  *output = '\0';
+  *outptr = base64data; /* return pointer to new data, allocated memory */
 
   if(convbuf)
     free(convbuf);
 
-  return strlen(base64data); /* return the length of the new data */
+  *outlen = strlen(base64data); /* return the length of the new data */
+
+  return CURLE_OK;
 }
 /* ---- End of Base64 Encoding ---- */

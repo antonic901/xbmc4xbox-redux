@@ -43,9 +43,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -65,6 +62,7 @@
 #include "url.h"
 #include "curl_memory.h"
 #include "progress.h"
+#include "share.h"
 /* The last #include file should be: */
 #include "memdebug.h"
 
@@ -72,10 +70,10 @@ static bool safe_strequal(char* str1, char* str2)
 {
   if(str1 && str2)
     /* both pointers point to something then compare them */
-    return (bool)(0 != Curl_raw_equal(str1, str2));
+    return (0 != Curl_raw_equal(str1, str2)) ? TRUE : FALSE;
   else
     /* if both pointers are NULL then treat them as equal */
-    return (bool)(!str1 && !str2);
+    return (!str1 && !str2) ? TRUE : FALSE;
 }
 
 bool
@@ -213,7 +211,7 @@ Curl_ssl_connect_nonblocking(struct connectdata *conn, int sockindex,
   /* mark this is being ssl requested from here on. */
   conn->ssl[sockindex].use = TRUE;
   res = curlssl_connect_nonblocking(conn, sockindex, done);
-  if(!res && *done == TRUE)
+  if(!res && *done)
     Curl_pgrsTime(conn->data, TIMER_APPCONNECT); /* SSL is connected */
   return res;
 #else
@@ -239,6 +237,10 @@ int Curl_ssl_getsessionid(struct connectdata *conn,
     /* session ID re-use is disabled */
     return TRUE;
 
+  /* Lock for reading if shared */
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_lock(data, CURL_LOCK_DATA_SSL_SESSION, CURL_LOCK_ACCESS_SHARED);
+
   for(i=0; i< data->set.ssl.numsessions; i++) {
     check = &data->state.session[i];
     if(!check->sessionid)
@@ -257,13 +259,19 @@ int Curl_ssl_getsessionid(struct connectdata *conn,
     }
   }
   *ssl_sessionid = NULL;
+
+  /* Unlock for reading */
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_unlock(data, CURL_LOCK_DATA_SSL_SESSION);
+
+
   return TRUE;
 }
 
 /*
  * Kill a single session ID entry in the cache.
  */
-static int kill_session(struct curl_ssl_session *session)
+int Curl_ssl_kill_session(struct curl_ssl_session *session)
 {
   if(session->sessionid) {
     /* defensive check */
@@ -291,14 +299,23 @@ static int kill_session(struct curl_ssl_session *session)
 void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid)
 {
   int i;
-  for(i=0; i< conn->data->set.ssl.numsessions; i++) {
-    struct curl_ssl_session *check = &conn->data->state.session[i];
+  struct SessionHandle *data=conn->data;
 
-    if (check->sessionid == ssl_sessionid) {
-      kill_session(check);
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_lock(data, CURL_LOCK_DATA_SSL_SESSION,
+                    CURL_LOCK_ACCESS_SINGLE);
+
+  for(i=0; i< data->set.ssl.numsessions; i++) {
+    struct curl_ssl_session *check = &data->state.session[i];
+
+    if(check->sessionid == ssl_sessionid) {
+      Curl_ssl_kill_session(check);
       break;
     }
   }
+
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_unlock(data, CURL_LOCK_DATA_SSL_SESSION);
 }
 
 /*
@@ -328,6 +345,10 @@ CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
   /* Now we should add the session ID and the host name to the cache, (remove
      the oldest if necessary) */
 
+  /* If using shared SSL session, lock! */
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_lock(data, CURL_LOCK_DATA_SSL_SESSION, CURL_LOCK_ACCESS_SINGLE);
+
   /* find an empty slot for us, or find the oldest */
   for(i=1; (i<data->set.ssl.numsessions) &&
         data->state.session[i].sessionid; i++) {
@@ -338,7 +359,7 @@ CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
   }
   if(i == data->set.ssl.numsessions)
     /* cache is full, we must "kill" the oldest entry! */
-    kill_session(store);
+    Curl_ssl_kill_session(store);
   else
     store = &data->state.session[i]; /* use this slot */
 
@@ -346,11 +367,16 @@ CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
   store->sessionid = ssl_sessionid;
   store->idsize = idsize;
   store->age = data->state.sessionage;    /* set current age */
-  if (store->name)
+  if(store->name)
     /* free it if there's one already present */
     free(store->name);
   store->name = clone_host;               /* clone host name */
   store->remote_port = conn->remote_port; /* port number */
+
+
+  /* Unlock */
+  if(data->share && data->share->sslsession == data->state.session)
+    Curl_share_unlock(data, CURL_LOCK_DATA_SSL_SESSION);
 
   if(!Curl_clone_ssl_config(&conn->ssl_config, &store->ssl_config)) {
     store->sessionid = NULL; /* let caller free sessionid */
@@ -366,14 +392,20 @@ void Curl_ssl_close_all(struct SessionHandle *data)
 {
   long i;
   /* kill the session ID cache */
-  if(data->state.session) {
+  if(data->state.session &&
+     !(data->share && data->share->sslsession == data->state.session)) {
+
+    Curl_share_lock(data, CURL_LOCK_DATA_SSL_SESSION, CURL_LOCK_ACCESS_SINGLE);
+
     for(i=0; i< data->set.ssl.numsessions; i++)
       /* the single-killer function handles empty table slots */
-      kill_session(&data->state.session[i]);
+      Curl_ssl_kill_session(&data->state.session[i]);
 
     /* free the cache data */
     free(data->state.session);
     data->state.session = NULL;
+
+    Curl_share_unlock(data, CURL_LOCK_DATA_SSL_SESSION);
   }
 
   curlssl_close_all(data);
@@ -472,9 +504,12 @@ void Curl_ssl_free_certinfo(struct SessionHandle *data)
   struct curl_certinfo *ci = &data->info.certs;
   if(ci->num_of_certs) {
     /* free all individual lists used */
-    for(i=0; i<ci->num_of_certs; i++)
+    for(i=0; i<ci->num_of_certs; i++) {
       curl_slist_free_all(ci->certinfo[i]);
+      ci->certinfo[i] = NULL;
+    }
     free(ci->certinfo); /* free the actual array too */
+    ci->certinfo = NULL;
     ci->num_of_certs = 0;
   }
 }

@@ -23,7 +23,7 @@
 
 #include "memdebug.h"
 
-static const char *dates[]={
+static const char * const dates[]={
   "Sun, 06 Nov 1994 08:49:37 GMT",
   "Sunday, 06-Nov-94 08:49:37 GMT",
   "Sun Nov  6 08:49:37 1994",
@@ -110,7 +110,12 @@ static const char *dates[]={
   "Thu, 12-Aug-2007 20:61:99999999999 GMT",
   "IAintNoDateFool",
   "Thu Apr 18 22:50 2007 GMT", /* without seconds */
-
+  "20110623 12:34:56",
+  "20110632 12:34:56",
+  "20110623 56:34:56",
+  "20111323 12:34:56",
+  "20110623 12:34:79",
+  "Wed, 31 Dec 2008 23:59:60 GMT", /* leap second */
   NULL
 };
 

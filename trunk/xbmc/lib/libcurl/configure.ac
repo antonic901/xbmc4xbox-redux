@@ -305,6 +305,44 @@ AM_CONDITIONAL(NO_UNDEFINED, test x$need_no_undefined = xyes)
 CURL_CHECK_CURLDEBUG
 AM_CONDITIONAL(CURLDEBUG, test x$want_curldebug = xyes)
 
+supports_unittests=yes
+# cross-compilation of unit tests static library/programs fails when
+# libcurl shared library is built. This might be due to a libtool or
+# automake issue. In this case we disable unit tests.
+if test "x$cross_compiling" != "xno" &&
+   test "x$enable_shared" != "xno"; then
+  supports_unittests=no
+fi
+
+# IRIX 6.5.24 gcc 3.3 autobuilds fail unittests library compilation due to
+# a problem related with OpenSSL headers and library versions not matching.
+# Disable unit tests while time to further investigate this is found.
+case $host in
+  mips-sgi-irix6.5)
+    if test "$compiler_id" = "GNU_C"; then
+      supports_unittests=no
+    fi
+    ;;
+esac
+
+# All AIX autobuilds fails unit tests linking against unittests library
+# due to unittests library being built with no symbols or members. Libtool ?
+# Disable unit tests while time to further investigate this is found.
+case $host_os in
+  aix*)
+    supports_unittests=no
+    ;;
+esac
+
+dnl Build unit tests when option --enable-debug is given.
+if test "x$want_debug" = "xyes" &&
+   test "x$supports_unittests" = "xyes"; then
+  want_unittests=yes
+else
+  want_unittests=no
+fi
+AM_CONDITIONAL(BUILD_UNITTESTS, test x$want_unittests = xyes)
+
 dnl **********************************************************************
 dnl Compilation based checks should not be done before this point.
 dnl **********************************************************************
@@ -1312,7 +1350,7 @@ if test X"$OPT_SSL" != Xno; then
     dnl the user told us to look
     OPENSSL_PCDIR="$OPT_SSL/lib/pkgconfig"
     AC_MSG_NOTICE([PKG_CONFIG_LIBDIR will be set to "$OPENSSL_PCDIR"])
-    if test -e "$OPENSSL_PCDIR/openssl.pc"; then
+    if test -f "$OPENSSL_PCDIR/openssl.pc"; then
       PKGTEST="yes"
     fi
 
@@ -1513,6 +1551,7 @@ if test X"$OPT_SSL" != Xno; then
        export LD_LIBRARY_PATH
        AC_MSG_NOTICE([Added $LIB_OPENSSL to LD_LIBRARY_PATH])
     fi
+    CURL_CHECK_OPENSSL_API
   fi
 
 fi
@@ -1624,8 +1663,12 @@ if test X"$OPENSSL_ENABLED" = X"1"; then
                  [read randomness from FILE (default=/dev/urandom)]),
       [ RANDOM_FILE="$withval" ],
       [
-          dnl Check for random device
-          AC_CHECK_FILE("/dev/urandom", [ RANDOM_FILE="/dev/urandom"] )
+          if test x$cross_compiling != xyes; then
+            dnl Check for random device
+            AC_CHECK_FILE("/dev/urandom", [ RANDOM_FILE="/dev/urandom"] )
+          else
+            AC_MSG_WARN([skipped the /dev/urandom detection when cross-compiling])
+          fi
       ]
   )
   if test -n "$RANDOM_FILE" && test X"$RANDOM_FILE" != Xno ; then
@@ -2396,6 +2439,7 @@ AC_CHECK_HEADERS(
         stdbool.h \
         arpa/tftp.h \
         sys/filio.h \
+        sys/wait.h \
         setjmp.h,
 dnl to do if not found
 [],
@@ -2517,6 +2561,7 @@ CURL_CHECK_FUNC_FREEIFADDRS
 CURL_CHECK_FUNC_FSETXATTR
 CURL_CHECK_FUNC_FTRUNCATE
 CURL_CHECK_FUNC_GETADDRINFO
+CURL_CHECK_FUNC_GAI_STRERROR
 CURL_CHECK_FUNC_GETHOSTBYADDR
 CURL_CHECK_FUNC_GETHOSTBYADDR_R
 CURL_CHECK_FUNC_GETHOSTBYNAME
@@ -2540,6 +2585,7 @@ CURL_CHECK_FUNC_SIGINTERRUPT
 CURL_CHECK_FUNC_SIGNAL
 CURL_CHECK_FUNC_SIGSETJMP
 CURL_CHECK_FUNC_SOCKET
+CURL_CHECK_FUNC_SOCKETPAIR
 CURL_CHECK_FUNC_STRCASECMP
 CURL_CHECK_FUNC_STRCASESTR
 CURL_CHECK_FUNC_STRCMPI
@@ -2593,7 +2639,7 @@ AC_CHECK_FUNCS([fork \
     ],[
       AC_MSG_RESULT([yes])
       eval "ac_cv_func_$func=yes"
-      AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$func]), [1],
+      AC_DEFINE_UNQUOTED(XC_SH_TR_CPP([HAVE_$func]), [1],
         [Define to 1 if you have the $func function.])
     ],[
       AC_MSG_RESULT([but still no])
@@ -2770,6 +2816,10 @@ AC_HELP_STRING([--disable-crypto-auth],[Disable cryptographic authentication]),
        AC_MSG_RESULT(yes)
 )
 
+CURL_CHECK_OPTION_NTLM_WB
+
+CURL_CHECK_NTLM_WB
+
 dnl ************************************************************
 dnl disable TLS-SRP authentication
 dnl
@@ -2945,6 +2995,9 @@ if test "x$CURL_DISABLE_HTTP" != "x1"; then
   if test "x$USE_SSLEAY" = "x1" -o "x$USE_WINDOWS_SSPI" = "x1" \
       -o "x$GNUTLS_ENABLED" = "x1" -o "x$NSS_ENABLED" = "x1"; then
     SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM"
+    if test "x$NTLM_WB_ENABLED" = "x1"; then
+      SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM_WB"
+    fi
   fi
 fi
 if test "x$USE_TLS_SRP" = "x1"; then

@@ -24,12 +24,9 @@
  * allocated string or NULL if an error occurred.  */
 
 #include "setup.h"
-#include <ctype.h>
+
 #include <curl/curl.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "curl_memory.h"
 #include "urldata.h"
 #include "warnless.h"
@@ -89,6 +86,7 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
   size_t newlen = alloc;
   int strindex=0;
   size_t length;
+  CURLcode res;
 
   ns = malloc(alloc);
   if(!ns)
@@ -98,10 +96,9 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
   while(length--) {
     in = *string;
 
-    if (Curl_isunreserved(in)) {
+    if(Curl_isunreserved(in))
       /* just copy this */
       ns[strindex++]=in;
-    }
     else {
       /* encode it */
       newlen += 2; /* the size grows with two, since this'll become a %XX */
@@ -117,7 +114,8 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
         }
       }
 
-      if(Curl_convert_to_network(handle, &in, 1)) {
+      res = Curl_convert_to_network(handle, &in, 1);
+      if(res) {
         /* Curl_convert_to_network calls failf if unsuccessful */
         free(ns);
         return NULL;
@@ -147,6 +145,7 @@ char *curl_easy_unescape(CURL *handle, const char *string, int length,
   unsigned char in;
   int strindex=0;
   unsigned long hex;
+  CURLcode res;
 
   if(!ns)
     return NULL;
@@ -165,7 +164,8 @@ char *curl_easy_unescape(CURL *handle, const char *string, int length,
 
       in = curlx_ultouc(hex); /* this long is never bigger than 255 anyway */
 
-      if(Curl_convert_from_network(handle, &in, 1)) {
+      res = Curl_convert_from_network(handle, &in, 1);
+      if(res) {
         /* Curl_convert_from_network calls failf if unsuccessful */
         free(ns);
         return NULL;

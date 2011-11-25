@@ -32,8 +32,6 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#include <string.h>
-#include <errno.h>
 
 #include "inet_pton.h"
 
@@ -223,7 +221,7 @@ inet_pton6(const char *src, unsigned char *dst)
 
     if(tp == endp)
       return (0);
-    for (i = 1; i <= n; i++) {
+    for(i = 1; i <= n; i++) {
       *(endp - i) = *(colonp + n - i);
       *(colonp + n - i) = 0;
     }

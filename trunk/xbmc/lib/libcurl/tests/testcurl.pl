@@ -6,7 +6,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -70,10 +70,10 @@ use vars qw($version $fixed $infixed $CURLDIR $git $pwd $build $buildlog
 
 use vars qw($name $email $desc $confopts $runtestopts $setupfile $mktarball
             $extvercmd $nogitpull $nobuildconf $crosscompile
-            $timestamp);
+            $timestamp $notes);
 
 # version of this script
-$version='2010-08-20';
+$version='2011-06-23';
 $fixed=0;
 
 # Determine if we're running from git or a canned copy of curl,
@@ -108,8 +108,9 @@ while ($ARGV[0]) {
   elsif ($ARGV[0] =~ /--desc=/) {
     $desc = (split(/=/, shift @ARGV))[1];
   }
-  elsif ($ARGV[0] =~ /--configure=/) {
-    $confopts = (split(/=/, shift @ARGV))[1];
+  elsif ($ARGV[0] =~ /--configure=(.*)/) {
+    $confopts = $1;
+    shift @ARGV;
   }
   elsif (($ARGV[0] eq "--nocvsup") || ($ARGV[0] eq "--nogitpull")) {
     $nogitpull=1;
@@ -307,6 +308,7 @@ if ($fixed < 4) {
     print F "email='$email'\n";
     print F "desc='$desc'\n";
     print F "confopts='$confopts'\n";
+    print F "notes='$notes'\n";
     print F "fixed='$fixed'\n";
     close(F);
 }
@@ -329,6 +331,7 @@ logit 'TRANSFER CONTROL ==== 1120 CHAR LINE' . $str1066os . 'LINE_END';
 logit "NAME = $name";
 logit "EMAIL = $email";
 logit "DESC = $desc";
+logit "NOTES = $notes";
 logit "CONFOPTS = $confopts";
 logit "CPPFLAGS = ".$ENV{CPPFLAGS};
 logit "CFLAGS = ".$ENV{CFLAGS};

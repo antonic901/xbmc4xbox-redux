@@ -69,12 +69,14 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/curl-compilers.m4 \
 	$(top_srcdir)/m4/curl-confopts.m4 \
 	$(top_srcdir)/m4/curl-functions.m4 \
+	$(top_srcdir)/m4/curl-openssl.m4 \
 	$(top_srcdir)/m4/curl-override.m4 \
 	$(top_srcdir)/m4/curl-reentrant.m4 \
 	$(top_srcdir)/m4/curl-system.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/xc-translit.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -128,6 +130,8 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BUILD_LIBHOSTNAME_FALSE = @BUILD_LIBHOSTNAME_FALSE@
 BUILD_LIBHOSTNAME_TRUE = @BUILD_LIBHOSTNAME_TRUE@
+BUILD_UNITTESTS_FALSE = @BUILD_UNITTESTS_FALSE@
+BUILD_UNITTESTS_TRUE = @BUILD_UNITTESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -321,8 +325,8 @@ EXTRA_DIST = CHANGES COPYING maketgz Makefile.dist curl-config.in	\
  Makefile.msvc.names $(WINBUILD_DIST)
 
 bin_SCRIPTS = curl-config
-SUBDIRS = lib src
-DIST_SUBDIRS = $(SUBDIRS) tests include packages docs
+SUBDIRS = lib src include
+DIST_SUBDIRS = $(SUBDIRS) tests packages docs
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libcurl.pc
 all: all-recursive
@@ -898,6 +902,10 @@ ca-bundle: lib/mk-ca-bundle.pl
 ca-firefox: lib/firefox-db2pem.sh
 	@echo "generate a fresh ca-bundle.crt"
 	./lib/firefox-db2pem.sh lib/ca-bundle.crt
+
+checksrc:
+	cd lib && $(MAKE) checksrc
+	cd src && $(MAKE) checksrc
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

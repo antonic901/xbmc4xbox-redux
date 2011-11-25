@@ -24,28 +24,18 @@
 
 #ifndef CURL_DISABLE_DICT
 
-/* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
-
-#ifdef WIN32
-#include <time.h>
-#include <io.h>
-#else
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
@@ -62,9 +52,6 @@
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
-
-
 #endif
 
 #include "urldata.h"
@@ -105,8 +92,10 @@ const struct Curl_handler Curl_handler_dict = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
+  ZERO_NULL,                            /* readwrite */
   PORT_DICT,                            /* defport */
   CURLPROTO_DICT,                       /* protocol */
   PROTOPT_NONE                          /* flags */
@@ -279,7 +268,7 @@ static CURLcode dict_do(struct connectdata *conn, bool *done)
       int i;
 
       ppath++;
-      for (i = 0; ppath[i]; i++) {
+      for(i = 0; ppath[i]; i++) {
         if(ppath[i] == ':')
           ppath[i] = ' ';
       }

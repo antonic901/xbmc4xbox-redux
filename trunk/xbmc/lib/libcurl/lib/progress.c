@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -201,6 +201,8 @@ void Curl_pgrsStartNow(struct SessionHandle *data)
 {
   data->progress.speeder_c = 0; /* reset the progress meter display */
   data->progress.start = Curl_tvnow();
+  /* clear all bits except HIDE and HEADERS_OUT */
+  data->progress.flags &= PGRS_HIDE|PGRS_HEADERS_OUT;
 }
 
 void Curl_pgrsSetDownloadCounter(struct SessionHandle *data, curl_off_t size)
@@ -369,8 +371,10 @@ int Curl_pgrsUpdate(struct connectdata *conn)
                 data->state.resume_from);
       }
       fprintf(data->set.err,
-              "  %% Total    %% Received %% Xferd  Average Speed   Time    Time     Time  Current\n"
-              "                                 Dload  Upload   Total   Spent    Left  Speed\n");
+              "  %% Total    %% Received %% Xferd  Average Speed   "
+              "Time    Time     Time  Current\n"
+              "                                 Dload  Upload   "
+              "Total   Spent    Left  Speed\n");
       data->progress.flags |= PGRS_HEADERS_OUT; /* headers are shown */
     }
 

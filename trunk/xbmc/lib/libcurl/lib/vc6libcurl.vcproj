@@ -89,7 +89,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..\include"
+				AdditionalIncludeDirectories="..\..\zlib\;.;..\include;..\..\polarssl\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;BUILDING_LIBCURL;CURL_STATICLIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -140,7 +140,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".,..\include"
+				AdditionalIncludeDirectories="..\..\zlib\;.;..\include;..\..\polarssl\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -190,7 +190,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\polarssl\include\polarssl;.;..\include"
+				AdditionalIncludeDirectories="..\..\zlib\;.;..\include;..\..\polarssl\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;BUILDING_LIBCURL"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -254,6 +254,12 @@
 			Filter="">
 			<File
 				RelativePath=".\amigaos.c">
+			</File>
+			<File
+				RelativePath=".\asyn-ares.c">
+			</File>
+			<File
+				RelativePath=".\asyn-thread.c">
 			</File>
 			<File
 				RelativePath=".\axtls.c">
@@ -416,7 +422,22 @@
 				RelativePath=".\curl_gethostname.c">
 			</File>
 			<File
+				RelativePath=".\curl_gssapi.c">
+			</File>
+			<File
 				RelativePath=".\curl_memrchr.c">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm.c">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_core.c">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_msgs.c">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_wb.c">
 			</File>
 			<File
 				RelativePath=".\curl_rand.c">
@@ -816,43 +837,6 @@
 				RelativePath=".\hmac.c">
 			</File>
 			<File
-				RelativePath="hostares.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="hostasyn.c">
 				<FileConfiguration
 					Name="DLL Release|Win32">
@@ -1038,43 +1022,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hostthre.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="http.c">
 				<FileConfiguration
 					Name="DLL Release|Win32">
@@ -1186,81 +1133,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="http_negotiate.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\http_negotiate.c">
 			</File>
 			<File
 				RelativePath=".\http_negotiate_sspi.c">
-			</File>
-			<File
-				RelativePath="http_ntlm.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\http_proxy.c">
@@ -2702,7 +2578,16 @@
 				RelativePath="arpa_telnet.h">
 			</File>
 			<File
+				RelativePath=".\asyn.h">
+			</File>
+			<File
+				RelativePath=".\axtls.h">
+			</File>
+			<File
 				RelativePath=".\config-amigaos.h">
+			</File>
+			<File
+				RelativePath=".\config-dos.h">
 			</File>
 			<File
 				RelativePath=".\config-mac.h">
@@ -2718,6 +2603,9 @@
 			</File>
 			<File
 				RelativePath=".\config-tpf.h">
+			</File>
+			<File
+				RelativePath=".\config-vms.h">
 			</File>
 			<File
 				RelativePath=".\config-vxworks.h">
@@ -2750,6 +2638,9 @@
 				RelativePath=".\curl_gethostname.h">
 			</File>
 			<File
+				RelativePath=".\curl_gssapi.h">
+			</File>
+			<File
 				RelativePath=".\curl_hmac.h">
 			</File>
 			<File
@@ -2768,6 +2659,18 @@
 				RelativePath=".\curl_memrchr.h">
 			</File>
 			<File
+				RelativePath=".\curl_ntlm.h">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_core.h">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_msgs.h">
+			</File>
+			<File
+				RelativePath=".\curl_ntlm_wb.h">
+			</File>
+			<File
 				RelativePath=".\curl_rand.h">
 			</File>
 			<File
@@ -2781,6 +2684,9 @@
 			</File>
 			<File
 				RelativePath="curlx.h">
+			</File>
+			<File
+				RelativePath=".\cyassl.h">
 			</File>
 			<File
 				RelativePath="dict.h">
@@ -2837,6 +2743,9 @@
 				RelativePath="http_ntlm.h">
 			</File>
 			<File
+				RelativePath=".\http_proxy.h">
+			</File>
+			<File
 				RelativePath="if2ip.h">
 			</File>
 			<File
@@ -2868,6 +2777,9 @@
 			</File>
 			<File
 				RelativePath="netrc.h">
+			</File>
+			<File
+				RelativePath=".\non-ascii.h">
 			</File>
 			<File
 				RelativePath=".\nonblock.h">

@@ -1,5 +1,5 @@
-#ifndef __URLDATA_H
-#define __URLDATA_H
+#ifndef HEADER_CURL_URLDATA_H
+#define HEADER_CURL_URLDATA_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -71,12 +71,12 @@
 
 #ifdef USE_SSLEAY
 #ifdef USE_OPENSSL
-#include "openssl/rsa.h"
-#include "openssl/crypto.h"
-#include "openssl/x509.h"
-#include "openssl/pem.h"
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include <openssl/rsa.h>
+#include <openssl/crypto.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #ifdef HAVE_OPENSSL_ENGINE_H
 #include <openssl/engine.h>
 #endif
@@ -84,12 +84,12 @@
 #include <openssl/pkcs12.h>
 #endif
 #else /* SSLeay-style includes */
-#include "rsa.h"
-#include "crypto.h"
-#include "x509.h"
-#include "pem.h"
-#include "ssl.h"
-#include "err.h"
+#include <rsa.h>
+#include <crypto.h>
+#include <x509.h>
+#include <pem.h>
+#include <ssl.h>
+#include <err.h>
 #ifdef HAVE_OPENSSL_ENGINE_H
 #include <engine.h>
 #endif
@@ -143,14 +143,6 @@
 /* zlib pollutes the namespace with this definition */
 #undef WIN32
 #endif
-#endif
-
-#ifdef USE_ARES
-#  if defined(CURL_STATICLIB) && !defined(CARES_STATICLIB) && \
-     (defined(WIN32) || defined(_WIN32) || defined(__SYMBIAN32__))
-#    define CARES_STATICLIB
-#  endif
-#  include <ares.h>
 #endif
 
 #include <curl/curl.h>
@@ -281,6 +273,7 @@ struct ssl_connect_data {
   struct SessionHandle *data;
 #ifdef HAVE_PK11_CREATEGENERICOBJECT
   struct curl_llist *obj_list;
+  PK11GenericObject *obj_clicert;
 #endif
 #endif /* USE_NSS */
 #ifdef USE_QSOSSL
@@ -368,7 +361,7 @@ struct ntlmdata {
   SEC_WINNT_AUTH_IDENTITY *p_identity;
   int has_handles;
   void *type_2;
-  int n_type_2;
+  unsigned long n_type_2;
 #else
   unsigned int flags;
   unsigned char nonce[8];
@@ -419,7 +412,7 @@ struct ConnectBits {
   bool do_more; /* this is set TRUE if the ->curl_do_more() function is
                    supposed to be called, after ->curl_do() */
 
-  bool tcpconnect;    /* the TCP layer (or similar) is connected, this is set
+  bool tcpconnect[2]; /* the TCP layer (or similar) is connected, this is set
                          the first time on the first connect function call */
   bool protoconnstart;/* the protocol layer has STARTED its operation after
                          the TCP layer connect */
@@ -508,8 +501,6 @@ struct Curl_async {
   bool done;  /* set TRUE when the lookup is complete */
   int status; /* if done is TRUE, this is the status from the callback */
   void *os_specific;  /* 'struct thread_data' for Windows */
-  int num_pending; /* number of ares_gethostbyname() requests */
-  Curl_addrinfo *temp_ai; /* intermediary result while fetching c-ares parts */
 };
 #endif
 
@@ -680,6 +671,12 @@ struct Curl_handler {
                        curl_socket_t *socks,
                        int numsocks);
 
+  /* Called from the multi interface during the DO_MORE phase, and it should
+     then return a proper fd set */
+  int (*domore_getsock)(struct connectdata *conn,
+                        curl_socket_t *socks,
+                        int numsocks);
+
   /* Called from the multi interface during the DO_DONE, PERFORM and
      WAITPERFORM phases, and it should then return a proper fd set. Not setting
      this will make libcurl use the generic default one. */
@@ -693,6 +690,11 @@ struct Curl_handler {
    * is set to TRUE.
    */
   CURLcode (*disconnect)(struct connectdata *, bool dead_connection);
+
+  /* If used, this function gets called from transfer.c:readwrite_data() to
+     allow the protocol to do extra reads/writes */
+  CURLcode (*readwrite)(struct SessionHandle *data, struct connectdata *conn,
+                        ssize_t *nread, bool *readmore);
 
   long defport;           /* Default port. */
   unsigned int protocol;  /* See CURLPROTO_*  */
@@ -708,7 +710,9 @@ struct Curl_handler {
    the send function might need to be called while uploading, or vice versa.
 */
 #define PROTOPT_DIRLOCK (1<<3)
-#define PROTOPT_BANPROXY (1<<4)    /* not allowed to use proxy */
+#define PROTOPT_NONETWORK (1<<4)   /* protocol doesn't use the network! */
+#define PROTOPT_NEEDSPWD (1<<5)    /* needs a password, and if none is set it
+                                      gets a default */
 
 
 /* return the count of bytes sent, or -1 on error */
@@ -739,6 +743,9 @@ struct connectdata {
      struct only because we can do just about any protocol through a HTTP proxy
      and a HTTP proxy may in fact respond using chunked encoding */
   struct Curl_chunker chunk;
+
+  curl_closesocket_callback fclosesocket; /* function closing the socket(s) */
+  void *closesocket_client;
 
   bool inuse; /* This is a marker for the connection cache logic. If this is
                  TRUE this handle is being used by an easy handle and cannot
@@ -904,6 +911,14 @@ struct connectdata {
                                because it authenticates connections, not
                                single requests! */
   struct ntlmdata proxyntlm; /* NTLM data for proxy */
+
+#if defined(USE_NTLM) && defined(NTLM_WB_ENABLED)
+  /* used for communication with Samba's winbind daemon helper ntlm_auth */
+  curl_socket_t ntlm_auth_hlpr_socket;
+  pid_t ntlm_auth_hlpr_pid;
+  char* challenge_header;
+  char* response_header;
+#endif
 
   char syserr_buf [256]; /* buffer for Curl_strerror() */
 
@@ -1153,9 +1168,8 @@ struct UrlState {
 
   bool authproblem; /* TRUE if there's some problem authenticating */
 
-#ifdef USE_ARES
-  ares_channel areschannel; /* for name resolves */
-#endif
+  void *resolver; /* resolver state, if it is used in the URL state -
+                     ares_channel f.e. */
 
 #if defined(USE_SSLEAY) && defined(HAVE_OPENSSL_ENGINE_H)
   ENGINE *engine;
@@ -1370,8 +1384,12 @@ struct UserDefined {
   curl_sockopt_callback fsockopt;  /* function for setting socket options */
   void *sockopt_client; /* pointer to pass to the socket options callback */
   curl_opensocket_callback fopensocket; /* function for checking/translating
-                                           the address and opening the socket */
+                                           the address and opening the
+                                           socket */
   void* opensocket_client;
+  curl_closesocket_callback fclosesocket; /* function for closing the
+                                             socket */
+  void* closesocket_client;
 
   void *seek_client;    /* pointer to pass to the seek callback */
   /* the 3 curl_conv_callback functions below are used on non-ASCII hosts */
@@ -1392,7 +1410,8 @@ struct UserDefined {
   long low_speed_limit; /* bytes/second */
   long low_speed_time;  /* number of seconds */
   curl_off_t max_send_speed; /* high speed limit in bytes/second for upload */
-  curl_off_t max_recv_speed; /* high speed limit in bytes/second for download */
+  curl_off_t max_recv_speed; /* high speed limit in bytes/second for
+                                download */
   curl_off_t set_resume_from;  /* continue [ftp] transfer from here */
   struct curl_slist *headers; /* linked list of extra headers */
   struct curl_httppost *httppost;  /* linked list of POST data */
@@ -1474,7 +1493,7 @@ struct UserDefined {
   bool ftp_use_eprt;     /* if EPRT is to be attempted or not */
   bool ftp_use_pret;     /* if PRET is to be used before PASV or not */
 
-  curl_usessl ftp_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
+  curl_usessl use_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
                             IMAP or POP3 or others! */
   curl_ftpauth ftpsslauth; /* what AUTH XXX to be attempted */
   curl_ftpccc ftp_ccc;   /* FTP CCC options */
@@ -1506,12 +1525,16 @@ struct UserDefined {
   Curl_RtspReq rtspreq; /* RTSP request type */
   long rtspversion; /* like httpversion, for RTSP */
   bool wildcardmatch; /* enable wildcard matching */
-  curl_chunk_bgn_callback chunk_bgn; /* called before part of transfer starts */
+  curl_chunk_bgn_callback chunk_bgn; /* called before part of transfer
+                                        starts */
   curl_chunk_end_callback chunk_end; /* called after part transferring
                                         stopped */
   curl_fnmatch_callback fnmatch; /* callback to decide which file corresponds
                                     to pattern (e.g. if WILDCARDMATCH is on) */
   void *fnmatch_data;
+
+  long gssapi_delegation; /* GSSAPI credential delegation, see the
+                             documentation of CURLOPT_GSSAPI_DELEGATION */
 };
 
 struct Names {
@@ -1565,4 +1588,4 @@ struct SessionHandle {
 
 #define LIBCURL_NAME "libcurl"
 
-#endif
+#endif /* HEADER_CURL_URLDATA_H */

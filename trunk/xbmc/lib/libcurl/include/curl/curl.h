@@ -55,18 +55,17 @@
 #include <sys/types.h>
 #include <time.h>
 
-#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__GNUC__) && \
-  !defined(__CYGWIN__) || defined(__MINGW32__)
-#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H))
+#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__CYGWIN__)
+#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H) || defined(__LWIP_OPT_H__))
 /* The check above prevents the winsock2 inclusion if winsock.h already was
    included, since they can't co-exist without problems */
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #endif
-#else
+#endif
 
 /* HP-UX systems version 9, 10 and 11 lack sys/select.h and so does oldish
-   libc5-based Linux systems. Only include it on system that are known to
+   libc5-based Linux systems. Only include it on systems that are known to
    require it! */
 #if defined(_AIX) || defined(__NOVELL_LIBC__) || defined(__NetBSD__) || \
     defined(__minix) || defined(__SYMBIAN32__) || defined(__INTEGRITY) || \
@@ -75,13 +74,12 @@
 #include <sys/select.h>
 #endif
 
-#ifndef _WIN32_WCE
+#if !defined(WIN32) && !defined(_WIN32_WCE)
 #include <sys/socket.h>
 #endif
+
 #if !defined(WIN32) && !defined(__WATCOMC__) && !defined(__VXWORKS__)
 #include <sys/time.h>
-#endif
-#include <sys/types.h>
 #endif
 
 #ifdef __BEOS__
@@ -122,7 +120,7 @@ typedef void CURL;
 
 #ifndef curl_socket_typedef
 /* socket typedef */
-#ifdef WIN32
+#if defined(WIN32) && !defined(__LWIP_OPT_H__)
 typedef SOCKET curl_socket_t;
 #define CURL_SOCKET_BAD INVALID_SOCKET
 #else
@@ -189,10 +187,10 @@ typedef int (*curl_progress_callback)(void *clientp,
 #define CURL_MAX_HTTP_HEADER (100*1024)
 #endif
 
-
 /* This is a magic return code for the write callback that, when returned,
    will signal libcurl to pause receiving on the current transfer. */
 #define CURL_WRITEFUNC_PAUSE 0x10000001
+
 typedef size_t (*curl_write_callback)(char *buffer,
                                       size_t size,
                                       size_t nitems,
@@ -340,6 +338,9 @@ typedef curl_socket_t
 (*curl_opensocket_callback)(void *clientp,
                             curlsocktype purpose,
                             struct curl_sockaddr *address);
+
+typedef int
+(*curl_closesocket_callback)(void *clientp, curl_socket_t item);
 
 typedef enum {
   CURLIOE_OK,            /* I/O operation successful */
@@ -507,7 +508,7 @@ typedef enum {
                                     7.19.0) */
   CURLE_FTP_PRET_FAILED,         /* 84 - a PRET command failed */
   CURLE_RTSP_CSEQ_ERROR,         /* 85 - mismatch of RTSP CSeq numbers */
-  CURLE_RTSP_SESSION_ERROR,      /* 86 - mismatch of RTSP Session Identifiers */
+  CURLE_RTSP_SESSION_ERROR,      /* 86 - mismatch of RTSP Session Ids */
   CURLE_FTP_BAD_FILE_LIST,       /* 87 - unable to parse FTP file list */
   CURLE_CHUNK_FAILED,            /* 88 - chunk callback reported error */
 
@@ -597,6 +598,7 @@ typedef enum {
 #define CURLAUTH_GSSNEGOTIATE (1<<2)  /* GSS-Negotiate */
 #define CURLAUTH_NTLM         (1<<3)  /* NTLM */
 #define CURLAUTH_DIGEST_IE    (1<<4)  /* Digest with IE flavour */
+#define CURLAUTH_NTLM_WB      (1<<5)  /* NTLM delegating to winbind helper */
 #define CURLAUTH_ONLY         (1<<31) /* used together with a single other
                                          type to force no auth or just that
                                          single type */
@@ -610,6 +612,10 @@ typedef enum {
 #define CURLSSH_AUTH_HOST      (1<<2) /* host key files */
 #define CURLSSH_AUTH_KEYBOARD  (1<<3) /* keyboard interactive */
 #define CURLSSH_AUTH_DEFAULT CURLSSH_AUTH_ANY
+
+#define CURLGSSAPI_DELEGATION_NONE        0      /* no delegation (default) */
+#define CURLGSSAPI_DELEGATION_POLICY_FLAG (1<<0) /* if permitted by policy */
+#define CURLGSSAPI_DELEGATION_FLAG        (1<<1) /* delegate always */
 
 #define CURL_ERROR_SIZE 256
 
@@ -755,7 +761,7 @@ typedef enum {
 #endif
 
 #ifdef CURL_ISOCPP
-#define CINIT(name,type,number) CURLOPT_ ## name = CURLOPTTYPE_ ## type + number
+#define CINIT(na,t,nu) CURLOPT_ ## na = CURLOPTTYPE_ ## t + nu
 #else
 /* The macro "##" is ISO C, we assume pre-ISO C doesn't support it. */
 #define LONG          CURLOPTTYPE_LONG
@@ -913,9 +919,7 @@ typedef enum {
   /* send linked-list of post-transfer QUOTE commands */
   CINIT(POSTQUOTE, OBJECTPOINT, 39),
 
-  /* Pass a pointer to string of the output using full variable-replacement
-     as described elsewhere. */
-  CINIT(WRITEINFO, OBJECTPOINT, 40),
+  CINIT(WRITEINFO, OBJECTPOINT, 40), /* DEPRECATED, do not use! */
 
   CINIT(VERBOSE, LONG, 41),      /* talk a lot */
   CINIT(HEADER, LONG, 42),       /* throw the header out too */
@@ -924,7 +928,7 @@ typedef enum {
   CINIT(FAILONERROR, LONG, 45),  /* no output on http error codes >= 300 */
   CINIT(UPLOAD, LONG, 46),       /* this is an upload */
   CINIT(POST, LONG, 47),         /* HTTP POST method */
-  CINIT(DIRLISTONLY, LONG, 48),  /* return bare names when listing directories */
+  CINIT(DIRLISTONLY, LONG, 48),  /* bare names when listing directories */
 
   CINIT(APPEND, LONG, 50),       /* Append instead of overwrite on upload! */
 
@@ -991,9 +995,7 @@ typedef enum {
   /* Max amount of cached alive connections */
   CINIT(MAXCONNECTS, LONG, 71),
 
-  /* What policy to use when closing connections when the cache is filled
-     up */
-  CINIT(CLOSEPOLICY, LONG, 72),
+  CINIT(CLOSEPOLICY, LONG, 72), /* DEPRECATED, do not use! */
 
   /* 73 = OBSOLETE */
 
@@ -1067,7 +1069,7 @@ typedef enum {
   CINIT(SSLENGINE_DEFAULT, LONG, 90),
 
   /* Non-zero value means to use the global dns cache */
-  CINIT(DNS_USE_GLOBAL_CACHE, LONG, 91), /* To become OBSOLETE soon */
+  CINIT(DNS_USE_GLOBAL_CACHE, LONG, 91), /* DEPRECATED, do not use! */
 
   /* DNS cache timeout */
   CINIT(DNS_CACHE_TIMEOUT, LONG, 92),
@@ -1119,8 +1121,8 @@ typedef enum {
      and password to whatever host the server decides. */
   CINIT(UNRESTRICTED_AUTH, LONG, 105),
 
-  /* Specifically switch on or off the FTP engine's use of the EPRT command ( it
-     also disables the LPRT attempt). By default, those ones will always be
+  /* Specifically switch on or off the FTP engine's use of the EPRT command (
+     it also disables the LPRT attempt). By default, those ones will always be
      attempted before the good old traditional PORT command. */
   CINIT(FTP_USE_EPRT, LONG, 106),
 
@@ -1476,6 +1478,14 @@ typedef enum {
   */
   CINIT(TRANSFER_ENCODING, LONG, 207),
 
+  /* Callback function for closing socket (instead of close(2)). The callback
+     should have type curl_closesocket_callback */
+  CINIT(CLOSESOCKETFUNCTION, FUNCTIONPOINT, 208),
+  CINIT(CLOSESOCKETDATA, OBJECTPOINT, 209),
+
+  /* allow GSSAPI credential delegation */
+  CINIT(GSSAPI_DELEGATION, LONG, 210),
+
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;
 
@@ -1704,7 +1714,8 @@ CURL_EXTERN CURLFORMcode curl_formadd(struct curl_httppost **httppost,
  * Should return the buffer length passed to it as the argument "len" on
  *   success.
  */
-typedef size_t (*curl_formget_callback)(void *arg, const char *buf, size_t len);
+typedef size_t (*curl_formget_callback)(void *arg, const char *buf,
+                                        size_t len);
 
 /*
  * NAME curl_formget()
@@ -2003,8 +2014,9 @@ typedef enum {
   CURLSHE_BAD_OPTION, /* 1 */
   CURLSHE_IN_USE,     /* 2 */
   CURLSHE_INVALID,    /* 3 */
-  CURLSHE_NOMEM,      /* out of memory */
-  CURLSHE_LAST /* never use */
+  CURLSHE_NOMEM,      /* 4 out of memory */
+  CURLSHE_NOT_BUILT_IN, /* 5 feature not present in lib */
+  CURLSHE_LAST        /* never use */
 } CURLSHcode;
 
 typedef enum {
@@ -2084,8 +2096,9 @@ typedef struct {
 #define CURL_VERSION_CONV      (1<<12) /* character conversions supported */
 #define CURL_VERSION_CURLDEBUG (1<<13) /* debug memory tracking supported */
 #define CURL_VERSION_TLSAUTH_SRP (1<<14) /* TLS-SRP auth is supported */
+#define CURL_VERSION_NTLM_WB   (1<<15) /* NTLM delegating to winbind helper */
 
-/*
+ /*
  * NAME curl_version_info()
  *
  * DESCRIPTION

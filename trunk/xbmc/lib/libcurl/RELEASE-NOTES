@@ -1,22 +1,16 @@
-Curl and libcurl 7.21.6
+Curl and libcurl 7.23.1
 
- Public curl releases:         122
- Command line options:         144
- curl_easy_setopt() options:   186
+ Public curl releases:         126
+ Command line options:         149
+ curl_easy_setopt() options:   192
  Public functions in libcurl:  58
  Known libcurl bindings:       39
- Contributors:                 865
-
-This release includes the following changes:
-
- o Added --tr-encoding and CURLOPT_TRANSFER_ENCODING
+ Contributors:                 907
 
 This release includes the following bugfixes:
 
- o curl-config: fix --version
- o curl_easy_setopt.3: CURLOPT_PROXYTYPE clarification
- o use HTTPS properly after CONNECT
- o SFTP: close file before post quote operations
+ o Windows: curl would fail if it found no CA cert, unless -k was used. Even
+   if a non-SSL protocol URL was used
 
 This release includes the following known bugs:
 
@@ -25,8 +19,6 @@ This release includes the following known bugs:
 This release would not have looked like this without help, code, reports and
 advice from friends like these:
 
- Patrick Monnerat, Dan Fandrich, Gisle Vanem, Guenter Knauf,
- Rajesh Naganathan, Josue Andrade Gomes, Ryan Schmidt, Fabian Keil,
- Julien Chaffraix
+ Mark Brand
 
         Thanks! (and sorry if I forgot to mention someone)

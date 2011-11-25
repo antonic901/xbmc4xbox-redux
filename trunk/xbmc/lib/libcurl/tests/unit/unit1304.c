@@ -19,16 +19,13 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-#include <stdlib.h>
-#include "curl_config.h"
-#include "setup.h"
-
-#include "netrc.h"
 #include "curlcheck.h"
 
-char login[LOGINSIZE];
-char password[PASSWORDSIZE];
-char filename[64];
+#include "netrc.h"
+
+static char login[LOGINSIZE];
+static char password[PASSWORDSIZE];
+static char filename[64];
 
 static CURLcode unit_setup(void)
 {
@@ -44,7 +41,7 @@ static void unit_stop(void)
 UNITTEST_START
   int result;
 
-  static const char* filename1 = "log/netrc";
+  static const char* filename1 = "log/netrc1304";
   memcpy(filename, filename1, strlen(filename1));
 
   /*

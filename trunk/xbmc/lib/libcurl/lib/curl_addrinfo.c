@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -40,7 +40,6 @@
 #ifdef __VMS
 #  include <in.h>
 #  include <inet.h>
-#  include <stdlib.h>
 #endif
 
 #if defined(NETWARE) && defined(__NOVELL_LIBC__)
@@ -50,6 +49,7 @@
 
 #include "curl_addrinfo.h"
 #include "inet_pton.h"
+#include "warnless.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -294,7 +294,7 @@ Curl_he2ai(const struct hostent *he, int port)
 
     size_t ss_size;
 #ifdef ENABLE_IPV6
-    if (he->h_addrtype == AF_INET6)
+    if(he->h_addrtype == AF_INET6)
       ss_size = sizeof (struct sockaddr_in6);
     else
 #endif

@@ -19,14 +19,13 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-#include <stdlib.h>
-#include "curl_config.h"
-#include "setup.h"
-
-#include "llist.h"
 #include "curlcheck.h"
 
-struct curl_llist *llist;
+#include "llist.h"
+
+static struct curl_llist *llist;
+
+static struct curl_llist *llist_destination;
 
 static void test_curl_llist_dtor(void *key, void *value)
 {
@@ -38,14 +37,21 @@ static void test_curl_llist_dtor(void *key, void *value)
 static CURLcode unit_setup(void)
 {
   llist = Curl_llist_alloc(test_curl_llist_dtor);
-  if (!llist)
+  if(!llist)
     return CURLE_OUT_OF_MEMORY;
+  llist_destination = Curl_llist_alloc(test_curl_llist_dtor);
+  if(!llist_destination) {
+      Curl_llist_destroy(llist, NULL);
+      return CURLE_OUT_OF_MEMORY;
+  }
+
   return CURLE_OK;
 }
 
 static void unit_stop(void)
 {
   Curl_llist_destroy(llist, NULL);
+  Curl_llist_destroy(llist_destination, NULL);
 }
 
 UNITTEST_START
@@ -58,6 +64,17 @@ UNITTEST_START
   struct curl_llist_element *to_remove;
   size_t llist_size = Curl_llist_count(llist);
   int curlErrCode = 0;
+
+  /**
+   * testing llist_init
+   * case 1:
+   * list initiation
+   * @assumptions:
+   * 1: list size will be 0
+   * 2: list head will be NULL
+   * 3: list tail will be NULL
+   * 4: list dtor will be NULL
+  */
 
   fail_unless(llist->size == 0, "list initial size should be zero");
   fail_unless(llist->head == NULL, "list head should initiate to NULL");
@@ -217,5 +234,59 @@ UNITTEST_START
               "llist head is not NULL while the llist is empty");
   fail_unless(llist->tail == NULL,
               "llist tail is not NULL while the llist is empty");
+
+  /* @testing Curl_llist_move(struct curl_llist *,
+   * struct curl_llist_element *, struct curl_llist *,
+   * struct curl_llist_element *);
+  */
+
+  /**
+   * @case 1:
+   * moving head from an llist containg one element to an empty llist
+   * @assumptions:
+   * 1: llist size will be 0
+   * 2: llist_destination size will be 1
+   * 3: llist head will be NULL
+   * 4: llist_destination head == llist_destination tail != NULL
+   */
+
+  /*
+  * @setup
+  * add one element to the list
+  */
+
+  curlErrCode = Curl_llist_insert_next(llist, llist->head, &unusedData_case1);
+  /* necessary assertions */
+
+  abort_unless(curlErrCode == 1,
+  "Curl_llist_insert_next returned an error, Can't move on with test");
+  abort_unless(Curl_llist_count(llist) == 1,
+  "Number of list elements is not as expected, Aborting");
+  abort_unless(Curl_llist_count(llist_destination) == 0,
+  "Number of list elements is not as expected, Aborting");
+
+  /*actual testing code*/
+  curlErrCode = Curl_llist_move(llist, llist->head, llist_destination, NULL);
+  abort_unless(curlErrCode == 1,
+  "Curl_llist_move returned an error, Can't move on with test");
+  fail_unless(Curl_llist_count(llist) == 0,
+      "moving element from llist didn't decrement the size");
+
+  fail_unless(Curl_llist_count(llist_destination) == 1,
+        "moving element to llist_destination didn't increment the size");
+
+  fail_unless(llist->head == NULL,
+      "llist head not set to null after moving the head");
+
+  fail_unless(llist_destination->head != NULL,
+        "llist_destination head set to null after moving an element");
+
+  fail_unless(llist_destination->tail != NULL,
+          "llist_destination tail set to null after moving an element");
+
+  fail_unless(llist_destination->tail == llist_destination->tail,
+            "llist_destination tail doesn't equal llist_destination head");
+
+
 
 UNITTEST_STOP

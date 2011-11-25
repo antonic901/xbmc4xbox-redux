@@ -1,4 +1,3 @@
-/* curl_config.h.in.  Generated automatically from configure.in by autoheader.  */
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -91,6 +90,9 @@
 
 /* Define if you have the <des.h> header file. */
 #undef HAVE_DES_H
+
+/* Define if you have the <errno.h> header file. */
+#define HAVE_ERRNO_H
 
 /* Define if you have the <err.h> header file. */
 #undef HAVE_ERR_H

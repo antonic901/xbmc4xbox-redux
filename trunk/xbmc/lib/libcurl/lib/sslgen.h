@@ -1,5 +1,5 @@
-#ifndef __SSLGEN_H
-#define __SSLGEN_H
+#ifndef HEADER_CURL_SSLGEN_H
+#define HEADER_CURL_SSLGEN_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -21,6 +21,7 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
+#include "setup.h"
 
 bool Curl_ssl_config_matches(struct ssl_config_data* data,
                              struct ssl_config_data* needle);
@@ -63,6 +64,8 @@ int Curl_ssl_getsessionid(struct connectdata *conn,
 CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
                                void *ssl_sessionid,
                                size_t idsize);
+/* Kill a single session ID entry in the cache */
+int Curl_ssl_kill_session(struct curl_ssl_session *session);
 /* delete a session from the cache */
 void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid);
 
@@ -71,10 +74,10 @@ void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid);
 #else
 /* When SSL support is not present, just define away these function calls */
 #define Curl_ssl_init() 1
-#define Curl_ssl_cleanup() do { } while (0)
+#define Curl_ssl_cleanup() Curl_nop_stmt
 #define Curl_ssl_connect(x,y) CURLE_NOT_BUILT_IN
-#define Curl_ssl_close_all(x)
-#define Curl_ssl_close(x,y)
+#define Curl_ssl_close_all(x) Curl_nop_stmt
+#define Curl_ssl_close(x,y) Curl_nop_stmt
 #define Curl_ssl_shutdown(x,y) CURLE_NOT_BUILT_IN
 #define Curl_ssl_set_engine(x,y) CURLE_NOT_BUILT_IN
 #define Curl_ssl_set_engine_default(x) CURLE_NOT_BUILT_IN
@@ -85,8 +88,9 @@ void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid);
 #define Curl_ssl_version(x,y) 0
 #define Curl_ssl_data_pending(x,y) 0
 #define Curl_ssl_check_cxn(x) 0
-#define Curl_ssl_free_certinfo(x)
+#define Curl_ssl_free_certinfo(x) Curl_nop_stmt
 #define Curl_ssl_connect_nonblocking(x,y,z) CURLE_NOT_BUILT_IN
+#define Curl_ssl_kill_session(x) 0
 #endif
 
-#endif /* USE_SSL */
+#endif /* HEADER_CURL_SSLGEN_H */

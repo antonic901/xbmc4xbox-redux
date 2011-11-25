@@ -29,14 +29,13 @@
  */
 
 #include "setup.h"
+
 #ifdef USE_GNUTLS
+
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 #include <gcrypt.h>
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -78,6 +77,18 @@ static void tls_log_func(int level, const char *str)
 }
 #endif
 static bool gtls_inited = FALSE;
+
+#if defined(GNUTLS_VERSION_NUMBER)
+#  if (GNUTLS_VERSION_NUMBER >= 0x020c00)
+#    undef gnutls_transport_set_lowat
+#    define gnutls_transport_set_lowat(A,B) Curl_nop_stmt
+#    define USE_GNUTLS_PRIORITY_SET_DIRECT 1
+#  endif
+#  if (GNUTLS_VERSION_NUMBER >= 0x020c03)
+#    undef gnutls_transport_set_global_errno
+#    define gnutls_transport_set_global_errno(A) SET_ERRNO((A))
+#  endif
+#endif
 
 /*
  * Custom push and pull callback functions used by GNU TLS to read and write
@@ -197,14 +208,14 @@ static gnutls_datum load_file (const char *file)
   long filelen;
   void *ptr;
 
-  if (!(f = fopen(file, "r")))
+  if(!(f = fopen(file, "r")))
     return loaded_file;
-  if (fseek(f, 0, SEEK_END) != 0
-      || (filelen = ftell(f)) < 0
-      || fseek(f, 0, SEEK_SET) != 0
-      || !(ptr = malloc((size_t)filelen)))
+  if(fseek(f, 0, SEEK_END) != 0
+     || (filelen = ftell(f)) < 0
+     || fseek(f, 0, SEEK_SET) != 0
+     || !(ptr = malloc((size_t)filelen)))
     goto out;
-  if (fread(ptr, 1, (size_t)filelen, f) < (size_t)filelen) {
+  if(fread(ptr, 1, (size_t)filelen, f) < (size_t)filelen) {
     free(ptr);
     goto out;
   }
@@ -255,7 +266,8 @@ static CURLcode handshake(struct connectdata *conn,
         connssl->connecting_state?sockfd:CURL_SOCKET_BAD;
 
       what = Curl_socket_ready(readfd, writefd,
-                               nonblocking?0:(int)timeout_ms?1000:timeout_ms);
+                               nonblocking?0:
+                               timeout_ms?timeout_ms:1000);
       if(what < 0) {
         /* fatal error */
         failf(data, "select/poll on SSL socket, errno: %d", SOCKERRNO);
@@ -282,7 +294,7 @@ static CURLcode handshake(struct connectdata *conn,
       if(nonblocking)
         return CURLE_OK;
     }
-    else if (rc < 0) {
+    else if(rc < 0) {
       failf(data, "gnutls_handshake() failed: %s", gnutls_strerror(rc));
       return CURLE_SSL_CONNECT_ERROR;
     }
@@ -309,7 +321,9 @@ static CURLcode
 gtls_connect_step1(struct connectdata *conn,
                    int sockindex)
 {
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
   static const int cert_type_priority[] = { GNUTLS_CRT_X509, 0 };
+#endif
   struct SessionHandle *data = conn->data;
   gnutls_session session;
   int rc;
@@ -357,7 +371,8 @@ gtls_connect_step1(struct connectdata *conn,
       return CURLE_OUT_OF_MEMORY;
     }
 
-    rc = gnutls_srp_set_client_credentials(conn->ssl[sockindex].srp_client_cred,
+    rc = gnutls_srp_set_client_credentials(conn->ssl[sockindex].
+                                           srp_client_cred,
                                            data->set.ssl.username,
                                            data->set.ssl.password);
     if(rc != GNUTLS_E_SUCCESS) {
@@ -412,13 +427,13 @@ gtls_connect_step1(struct connectdata *conn,
   /* convenient assign */
   session = conn->ssl[sockindex].session;
 
-  if ((0 == Curl_inet_pton(AF_INET, conn->host.name, &addr)) &&
+  if((0 == Curl_inet_pton(AF_INET, conn->host.name, &addr)) &&
 #ifdef ENABLE_IPV6
-      (0 == Curl_inet_pton(AF_INET6, conn->host.name, &addr)) &&
+     (0 == Curl_inet_pton(AF_INET6, conn->host.name, &addr)) &&
 #endif
-      sni &&
-      (gnutls_server_name_set(session, GNUTLS_NAME_DNS, conn->host.name,
-                              strlen(conn->host.name)) < 0))
+     sni &&
+     (gnutls_server_name_set(session, GNUTLS_NAME_DNS, conn->host.name,
+                             strlen(conn->host.name)) < 0))
     infof(data, "WARNING: failed to configure server name indication (SNI) "
           "TLS extension\n");
 
@@ -428,26 +443,35 @@ gtls_connect_step1(struct connectdata *conn,
     return CURLE_SSL_CONNECT_ERROR;
 
   if(data->set.ssl.version == CURL_SSLVERSION_SSLv3) {
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
     static const int protocol_priority[] = { GNUTLS_SSL3, 0 };
-    gnutls_protocol_set_priority(session, protocol_priority);
+    rc = gnutls_protocol_set_priority(session, protocol_priority);
+#else
+    const char *err;
+    rc = gnutls_priority_set_direct(session, "-VERS-TLS-ALL:+VERS-SSL3.0",
+                                    &err);
+#endif
     if(rc != GNUTLS_E_SUCCESS)
       return CURLE_SSL_CONNECT_ERROR;
   }
 
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
   /* Sets the priority on the certificate types supported by gnutls. Priority
      is higher for types specified before others. After specifying the types
      you want, you must append a 0. */
   rc = gnutls_certificate_type_set_priority(session, cert_type_priority);
   if(rc != GNUTLS_E_SUCCESS)
     return CURLE_SSL_CONNECT_ERROR;
+#endif
 
   if(data->set.str[STRING_CERT]) {
-    if( gnutls_certificate_set_x509_key_file(
-          conn->ssl[sockindex].cred,
-          data->set.str[STRING_CERT],
-          data->set.str[STRING_KEY] ?
-          data->set.str[STRING_KEY] : data->set.str[STRING_CERT],
-          do_file_type(data->set.str[STRING_CERT_TYPE]) ) != GNUTLS_E_SUCCESS) {
+    if(gnutls_certificate_set_x509_key_file(
+         conn->ssl[sockindex].cred,
+         data->set.str[STRING_CERT],
+         data->set.str[STRING_KEY] ?
+         data->set.str[STRING_KEY] : data->set.str[STRING_CERT],
+         do_file_type(data->set.str[STRING_CERT_TYPE]) ) !=
+       GNUTLS_E_SUCCESS) {
       failf(data, "error reading X.509 key or certificate file");
       return CURLE_SSL_CONNECT_ERROR;
     }
@@ -458,10 +482,10 @@ gtls_connect_step1(struct connectdata *conn,
   if(data->set.ssl.authtype == CURL_TLSAUTH_SRP) {
     rc = gnutls_credentials_set(session, GNUTLS_CRD_SRP,
                                 conn->ssl[sockindex].srp_client_cred);
-    if (rc != GNUTLS_E_SUCCESS) {
+    if(rc != GNUTLS_E_SUCCESS)
       failf(data, "gnutls_credentials_set() failed: %s", gnutls_strerror(rc));
-    }
-  } else
+  }
+  else
 #endif
     rc = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE,
                                 conn->ssl[sockindex].cred);
@@ -586,13 +610,13 @@ gtls_connect_step3(struct connectdata *conn,
      gnutls_x509_crt_t format */
   gnutls_x509_crt_import(x509_cert, chainp, GNUTLS_X509_FMT_DER);
 
-  if (data->set.ssl.issuercert) {
+  if(data->set.ssl.issuercert) {
     gnutls_x509_crt_init(&x509_issuer);
     issuerp = load_file(data->set.ssl.issuercert);
     gnutls_x509_crt_import(x509_issuer, &issuerp, GNUTLS_X509_FMT_PEM);
     rc = gnutls_x509_crt_check_issuer(x509_cert,x509_issuer);
     unload_file(issuerp);
-    if (rc <= 0) {
+    if(rc <= 0) {
       failf(data, "server certificate issuer check failed (IssuerCert: %s)",
             data->set.ssl.issuercert?data->set.ssl.issuercert:"none");
       return CURLE_SSL_ISSUER_ERROR;
@@ -743,7 +767,7 @@ after_server_cert_verification:
       gnutls_session_get_data(session, connect_sessionid, &connect_idsize);
 
       incache = !(Curl_ssl_getsessionid(conn, &ssl_sessionid, NULL));
-      if (incache) {
+      if(incache) {
         /* there was one before in the cache, so instead of risking that the
            previous one was rejected, we just kill that and store the new */
         Curl_ssl_delsessionid(conn, ssl_sessionid);
@@ -869,7 +893,7 @@ static void close_one(struct connectdata *conn,
     conn->ssl[idx].cred = NULL;
   }
 #ifdef USE_TLS_SRP
-  if (conn->ssl[idx].srp_client_cred) {
+  if(conn->ssl[idx].srp_client_cred) {
     gnutls_srp_free_client_credentials(conn->ssl[idx].srp_client_cred);
     conn->ssl[idx].srp_client_cred = NULL;
   }
@@ -904,7 +928,7 @@ int Curl_gtls_shutdown(struct connectdata *conn, int sockindex)
   if(conn->ssl[sockindex].session) {
     while(!done) {
       int what = Curl_socket_ready(conn->sock[sockindex],
-                             CURL_SOCKET_BAD, SSL_SHUTDOWN_TIMEOUT);
+                                   CURL_SOCKET_BAD, SSL_SHUTDOWN_TIMEOUT);
       if(what > 0) {
         /* Something to read, let's do it and hope that it is the close
            notify alert from the server */

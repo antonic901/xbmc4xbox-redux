@@ -27,15 +27,16 @@
  */
 
 #include "setup.h"
+
 #ifdef USE_CYASSL
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
-
 
 #include "urldata.h"
 #include "sendf.h"
@@ -122,12 +123,13 @@ cyassl_connect_step1(struct connectdata *conn,
     return CURLE_OUT_OF_MEMORY;
   }
 
+#ifndef NO_FILESYSTEM
   /* load trusted cacert */
   if(data->set.str[STRING_SSL_CAFILE]) {
-    if (!SSL_CTX_load_verify_locations(conssl->ctx,
-                                       data->set.str[STRING_SSL_CAFILE],
-                                       data->set.str[STRING_SSL_CAPATH])) {
-      if (data->set.ssl.verifypeer) {
+    if(!SSL_CTX_load_verify_locations(conssl->ctx,
+                                      data->set.str[STRING_SSL_CAFILE],
+                                      data->set.str[STRING_SSL_CAPATH])) {
+      if(data->set.ssl.verifypeer) {
         /* Fail if we insiste on successfully verifying the server. */
         failf(data,"error setting certificate verify locations:\n"
               "  CAfile: %s\n  CApath: %s\n",
@@ -161,7 +163,7 @@ cyassl_connect_step1(struct connectdata *conn,
   if(data->set.str[STRING_CERT] && data->set.str[STRING_KEY]) {
     int file_type = do_file_type(data->set.str[STRING_CERT_TYPE]);
 
-    if (SSL_CTX_use_certificate_file(conssl->ctx, data->set.str[STRING_CERT],
+    if(SSL_CTX_use_certificate_file(conssl->ctx, data->set.str[STRING_CERT],
                                      file_type) != 1) {
       failf(data, "unable to use client certificate (no key or wrong pass"
             " phrase?)");
@@ -169,12 +171,17 @@ cyassl_connect_step1(struct connectdata *conn,
     }
 
     file_type = do_file_type(data->set.str[STRING_KEY_TYPE]);
-    if (SSL_CTX_use_PrivateKey_file(conssl->ctx, data->set.str[STRING_KEY],
+    if(SSL_CTX_use_PrivateKey_file(conssl->ctx, data->set.str[STRING_KEY],
                                     file_type) != 1) {
       failf(data, "unable to set private key");
       return CURLE_SSL_CONNECT_ERROR;
     }
   }
+#else
+  if(CyaSSL_no_filesystem_verify(conssl->ctx)!= SSL_SUCCESS) {
+    return CURLE_SSL_CONNECT_ERROR;
+  }
+#endif /* NO_FILESYSTEM */
 
   /* SSL always tries to verify the peer, this only says whether it should
    * fail to connect if the verification fails, or if it should continue
@@ -185,10 +192,10 @@ cyassl_connect_step1(struct connectdata *conn,
                      NULL);
 
   /* Let's make an SSL structure */
-  if (conssl->handle)
+  if(conssl->handle)
     SSL_free(conssl->handle);
   conssl->handle = SSL_new(conssl->ctx);
-  if (!conssl->handle) {
+  if(!conssl->handle) {
     failf(data, "SSL: couldn't create a context (handle)!");
     return CURLE_OUT_OF_MEMORY;
   }
@@ -206,7 +213,7 @@ cyassl_connect_step1(struct connectdata *conn,
   }
 
   /* pass the raw socket into the SSL layer */
-  if (!SSL_set_fd(conssl->handle, (int)sockfd)) {
+  if(!SSL_set_fd(conssl->handle, (int)sockfd)) {
     failf(data, "SSL: SSL_set_fd failed");
     return CURLE_SSL_CONNECT_ERROR;
   }
@@ -231,16 +238,16 @@ cyassl_connect_step2(struct connectdata *conn,
   conn->send[sockindex] = cyassl_send;
 
   ret = SSL_connect(conssl->handle);
-  if (ret != 1) {
+  if(ret != 1) {
     char error_buffer[80];
     int  detail = SSL_get_error(conssl->handle, ret);
 
-    if (SSL_ERROR_WANT_READ == detail) {
+    if(SSL_ERROR_WANT_READ == detail) {
       conssl->connecting_state = ssl_connect_2_reading;
       return CURLE_OK;
     }
 
-    if (SSL_ERROR_WANT_WRITE == detail) {
+    if(SSL_ERROR_WANT_WRITE == detail) {
       conssl->connecting_state = ssl_connect_2_writing;
       return CURLE_OK;
     }
@@ -273,14 +280,14 @@ cyassl_connect_step3(struct connectdata *conn,
   our_ssl_sessionid = SSL_get_session(connssl->handle);
 
   incache = !(Curl_ssl_getsessionid(conn, &old_ssl_sessionid, NULL));
-  if (incache) {
-    if (old_ssl_sessionid != our_ssl_sessionid) {
+  if(incache) {
+    if(old_ssl_sessionid != our_ssl_sessionid) {
       infof(data, "old SSL session ID is stale, removing\n");
       Curl_ssl_delsessionid(conn, old_ssl_sessionid);
       incache = FALSE;
     }
   }
-  if (!incache) {
+  if(!incache) {
     retcode = Curl_ssl_addsessionid(conn, our_ssl_sessionid,
                                     0 /* unknown size */);
     if(retcode) {
@@ -305,7 +312,7 @@ static ssize_t cyassl_send(struct connectdata *conn,
   int  memlen = (len > (size_t)INT_MAX) ? INT_MAX : (int)len;
   int  rc     = SSL_write(conn->ssl[sockindex].handle, mem, memlen);
 
-  if (rc < 0) {
+  if(rc < 0) {
     int err = SSL_get_error(conn->ssl[sockindex].handle, rc);
 
     switch(err) {
@@ -355,7 +362,7 @@ static ssize_t cyassl_recv(struct connectdata *conn,
   int  buffsize = (buffersize > (size_t)INT_MAX) ? INT_MAX : (int)buffersize;
   int  nread    = SSL_read(conn->ssl[num].handle, buf, buffsize);
 
-  if (nread < 0) {
+  if(nread < 0) {
     int err = SSL_get_error(conn->ssl[num].handle, nread);
 
     switch(err) {
@@ -405,8 +412,8 @@ int Curl_cyassl_init(void)
 
 bool Curl_cyassl_data_pending(const struct connectdata* conn, int connindex)
 {
-  if (conn->ssl[connindex].handle)   /* SSL is in use */
-    return (bool)(0 != SSL_pending(conn->ssl[connindex].handle));
+  if(conn->ssl[connindex].handle)   /* SSL is in use */
+    return (0 != SSL_pending(conn->ssl[connindex].handle)) ? TRUE : FALSE;
   else
     return FALSE;
 }
@@ -484,8 +491,7 @@ cyassl_connect_common(struct connectdata *conn,
       curl_socket_t readfd = ssl_connect_2_reading==
         connssl->connecting_state?sockfd:CURL_SOCKET_BAD;
 
-      what = Curl_socket_ready(readfd, writefd,
-                               nonblocking?0:(int)timeout_ms);
+      what = Curl_socket_ready(readfd, writefd, nonblocking?0:timeout_ms);
       if(what < 0) {
         /* fatal error */
         failf(data, "select/poll on SSL socket, errno: %d", SOCKERRNO);

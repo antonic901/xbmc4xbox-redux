@@ -1,5 +1,5 @@
-#ifndef __COOKIE_H
-#define __COOKIE_H
+#ifndef HEADER_CURL_COOKIE_H
+#define HEADER_CURL_COOKIE_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -21,15 +21,7 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-
-#include <stdio.h>
-#if defined(WIN32)
-#include <time.h>
-#else
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#endif
+#include "setup.h"
 
 #include <curl/curl.h>
 
@@ -92,14 +84,13 @@ struct Cookie *Curl_cookie_getlist(struct CookieInfo *, const char *,
 void Curl_cookie_freelist(struct Cookie *cookies, bool cookiestoo);
 void Curl_cookie_clearall(struct CookieInfo *cookies);
 void Curl_cookie_clearsess(struct CookieInfo *cookies);
-int Curl_cookie_output(struct CookieInfo *, const char *);
 
 #if defined(CURL_DISABLE_HTTP) || defined(CURL_DISABLE_COOKIES)
 #define Curl_cookie_list(x) NULL
-#define Curl_cookie_loadfiles(x) do { } while (0)
+#define Curl_cookie_loadfiles(x) Curl_nop_stmt
 #define Curl_cookie_init(x,y,z,w) NULL
-#define Curl_cookie_cleanup(x)
-#define Curl_flush_cookies(x,y)
+#define Curl_cookie_cleanup(x) Curl_nop_stmt
+#define Curl_flush_cookies(x,y) Curl_nop_stmt
 #else
 void Curl_flush_cookies(struct SessionHandle *data, int cleanup);
 void Curl_cookie_cleanup(struct CookieInfo *);
@@ -109,4 +100,4 @@ struct curl_slist *Curl_cookie_list(struct SessionHandle *data);
 void Curl_cookie_loadfiles(struct SessionHandle *data);
 #endif
 
-#endif
+#endif /* HEADER_CURL_COOKIE_H */
