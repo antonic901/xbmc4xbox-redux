@@ -21,7 +21,7 @@
  */
 
 #include "IFile.h"
-#include "cores/paplayer/RingHoldBuffer.h"
+#include "utils/RingBuffer.h"
 #include <map>
 #include "utils/HttpHeader.h"
 
@@ -91,7 +91,7 @@ namespace XFILE
           XCURL::CURL_HANDLE*    m_easyHandle;
           XCURL::CURLM*          m_multiHandle;
 
-          CRingHoldBuffer m_buffer;           // our ringhold buffer
+          CRingBuffer     m_buffer;           // our ringhold buffer
           unsigned int    m_bufferSize;
 
           char *          m_overflowBuffer;   // in the rare case we would overflow the above buffer
