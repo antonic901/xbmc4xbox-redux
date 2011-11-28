@@ -914,14 +914,6 @@ void CDVDPlayer::Process()
     ||  (!m_dvdPlayerVideo.AcceptsData() && m_CurrentVideo.id >= 0))
     {
       Sleep(10);
-      if( m_caching != CACHESTATE_INIT
-      || (m_dvdPlayerAudio.m_messageQueue.GetDataSize() == 0 && m_CurrentAudio.id >= 0)
-      || (m_dvdPlayerVideo.m_messageQueue.GetDataSize() == 0 && m_CurrentVideo.id >= 0))
-      {
-        SetCaching(CACHESTATE_DONE);
-        SAFE_RELEASE(m_CurrentAudio.startsync);
-        SAFE_RELEASE(m_CurrentVideo.startsync);
-      }
       continue;
     }
 
@@ -1190,24 +1182,49 @@ void CDVDPlayer::ProcessSubData(CDemuxStream* pStream, DemuxPacket* pPacket)
 
 void CDVDPlayer::HandlePlaySpeed()
 {
-  if(IsInMenu() && m_caching != CACHESTATE_DONE)
-    SetCaching(CACHESTATE_DONE);
+  ECacheState caching = m_caching;
+  
+  if(IsInMenu() && caching != CACHESTATE_DONE)
+    caching = CACHESTATE_DONE;
 
-  if(m_caching == CACHESTATE_INIT)
+  if(caching == CACHESTATE_FULL)
+  {
+    if ((!m_dvdPlayerAudio.AcceptsData() && m_CurrentAudio.id >= 0)
+    ||  (!m_dvdPlayerVideo.AcceptsData() && m_CurrentVideo.id >= 0))
+      caching = CACHESTATE_INIT;
+  }  
+  
+  if(caching == CACHESTATE_INIT)
   {
     // if all enabled streams have been inited we are done
-    if((m_CurrentVideo.id < 0 || m_CurrentVideo.inited)
-    && (m_CurrentAudio.id < 0 || m_CurrentAudio.inited))
-      SetCaching(CACHESTATE_PLAY);
+    if((m_CurrentVideo.id < 0 || m_CurrentVideo.started)
+    && (m_CurrentAudio.id < 0 || m_CurrentAudio.started))
+      caching = CACHESTATE_PLAY;
+      
+    // handle situation that we get no data on one stream
+    if(m_CurrentAudio.id >= 0 && m_CurrentVideo.id >= 0)
+    {
+      if ((!m_dvdPlayerAudio.AcceptsData() && !m_CurrentVideo.started)
+      ||  (!m_dvdPlayerVideo.AcceptsData() && !m_CurrentAudio.started))
+      {
+        caching = CACHESTATE_DONE;
+        SAFE_RELEASE(m_CurrentAudio.startsync);
+        SAFE_RELEASE(m_CurrentVideo.startsync);
+      }
+    }      
   }
-  if(m_caching == CACHESTATE_PLAY)
+  
+  if(caching == CACHESTATE_PLAY)
   {
     // if all enabled streams have started playing we are done
     if((m_CurrentVideo.id < 0 || !m_dvdPlayerVideo.IsStalled())
     && (m_CurrentAudio.id < 0 || !m_dvdPlayerAudio.IsStalled()))
-      SetCaching(CACHESTATE_DONE);
+      caching = CACHESTATE_DONE;
   }
 
+  if(m_caching != caching)
+    SetCaching(caching);
+  
   if(GetPlaySpeed() != DVD_PLAYSPEED_NORMAL && GetPlaySpeed() != DVD_PLAYSPEED_PAUSE)
   {
     if (IsInMenu())
