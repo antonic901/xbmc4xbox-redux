@@ -25,7 +25,7 @@
 #include "CacheStrategy.h"
 #include "utils/CriticalSection.h"
 #include "utils/Event.h"
-#include "RingBuffer.h"
+#include "utils/RingBuffer.h"
 
 /**
   @author Team XBMC

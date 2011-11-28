@@ -1039,6 +1039,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\RegExp.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\RingBuffer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RingBuffer.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\RssFeed.cpp">
 				</File>
 				<File
@@ -4375,13 +4381,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllAvFormat.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllAvUtil.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllPostProc.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllSwScale.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllAvUtil.h">
 				</File>
 			</Filter>
 			<Filter

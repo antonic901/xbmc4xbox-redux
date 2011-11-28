@@ -32,7 +32,7 @@
 #include "IFile.h"
 #include "iso9660.h"
 #include "xbox/IoSupport.h"
-#include "RingBuffer.h"
+#include "utils/RingBuffer.h"
 
 namespace XFILE
 {
