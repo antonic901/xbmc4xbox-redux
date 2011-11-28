@@ -512,7 +512,10 @@ void CDVDPlayerAudio::Process()
 #ifndef _XBOX
       // Flush as the audio output may keep looping if we don't
       if(m_speed == DVD_PLAYSPEED_NORMAL)
+	  {
+	    m_dvdAudio.Drain();
         m_dvdAudio.Flush();
+      }
 #endif
 
       continue;
