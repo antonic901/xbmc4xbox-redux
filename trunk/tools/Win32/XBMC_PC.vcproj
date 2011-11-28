@@ -358,6 +358,12 @@
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthrough.h">
 						</File>
 						<File
+							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthroughFFmpeg.cpp">
+						</File>
+						<File
+							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthroughFFmpeg.h">
+						</File>
+						<File
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPcm.cpp">
 						</File>
 						<File
@@ -2403,12 +2409,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\FileLastFM.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\FileMMS.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\FileMMS.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\FileMusicDatabase.cpp">
