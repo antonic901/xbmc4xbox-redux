@@ -23,6 +23,8 @@
 #include "CodecFactory.h"
 #include "GUISettings.h"
 #include "FileItem.h"
+#include "utils/SingleLock.h"
+#include "utils/log.h"
 
 #define INTERNAL_BUFFER_LENGTH  sizeof(float)*2*44100       // float samples, 2 channels, 44100 samples per sec = 1 second
 
@@ -65,7 +67,7 @@ bool CAudioDecoder::Create(const CFileItem &file, __int64 seekOffset, unsigned i
 
   CSingleLock lock(m_critSection);
   // create our pcm buffer
-  m_pcmBuffer.Create( std::max<unsigned int>(1, nBufferSize) * INTERNAL_BUFFER_LENGTH, 0 );
+  m_pcmBuffer.Create( std::max<unsigned int>(1, nBufferSize) * INTERNAL_BUFFER_LENGTH );
 
   // reset our playback timing variables
   m_eof = false;
@@ -130,9 +132,9 @@ unsigned int CAudioDecoder::GetDataSize()
   if (m_status == STATUS_QUEUING || m_status == STATUS_NO_FILE)
     return 0;
   // check for end of file and end of buffer
-  if (m_status == STATUS_ENDING && m_pcmBuffer.GetMaxReadSize() < PACKET_SIZE)
+  if (m_status == STATUS_ENDING && m_pcmBuffer.getMaxReadSize() < PACKET_SIZE)
     m_status = STATUS_ENDED;
-  return m_pcmBuffer.GetMaxReadSize() / sizeof(float);
+  return m_pcmBuffer.getMaxReadSize() / sizeof(float);
 }
 
 void *CAudioDecoder::GetData(unsigned int size)
@@ -153,13 +155,13 @@ void *CAudioDecoder::GetData(unsigned int size)
   if (m_gaplessBufferSize)
     memcpy(m_outputBuffer, m_gaplessBuffer, m_gaplessBufferSize*sizeof(float));
 
-  if (m_pcmBuffer.ReadBinary( (char *)(m_outputBuffer + m_gaplessBufferSize), (size - m_gaplessBufferSize) * sizeof(float)))
+  if (m_pcmBuffer.ReadData( (char *)(m_outputBuffer + m_gaplessBufferSize), (size - m_gaplessBufferSize) * sizeof(float)))
   {
     m_gaplessBufferSize = 0;
     // check for end of file + end of buffer
-    if ( m_status == STATUS_ENDING && m_pcmBuffer.GetMaxReadSize() < (int) (OUTPUT_SAMPLES * sizeof(float)))
+    if ( m_status == STATUS_ENDING && m_pcmBuffer.getMaxReadSize() < (int) (OUTPUT_SAMPLES * sizeof(float)))
     {
-      CLog::Log(LOGINFO, "CAudioDecoder::GetData() ending track - only have %lu samples left", (unsigned long)(m_pcmBuffer.GetMaxReadSize() / sizeof(float)));
+      CLog::Log(LOGINFO, "CAudioDecoder::GetData() ending track - only have %lu samples left", (unsigned long)(m_pcmBuffer.getMaxReadSize() / sizeof(float)));
       m_status = STATUS_ENDED;
     }
     return m_outputBuffer;
@@ -194,7 +196,7 @@ int CAudioDecoder::ReadSamples(int numsamples)
   CSingleLock lock(m_critSection);
 
   // Read in more data
-  int maxsize = std::min<unsigned int>(INPUT_SAMPLES, m_pcmBuffer.GetMaxWriteSize() / sizeof(float));
+  int maxsize = std::min<unsigned int>(INPUT_SAMPLES, m_pcmBuffer.getMaxWriteSize() / sizeof(float));
   numsamples = std::min(numsamples, maxsize);
   numsamples -= (numsamples % m_codec->m_Channels);  // make sure it's divisible by our number of channels
   if ( numsamples )
@@ -213,10 +215,10 @@ int CAudioDecoder::ReadSamples(int numsamples)
       ProcessAudio(m_inputBuffer, actualsamples);
 
       // move it into our buffer
-      m_pcmBuffer.WriteBinary((char *)m_inputBuffer, actualsamples * sizeof(float));
+      m_pcmBuffer.WriteData((char *)m_inputBuffer, actualsamples * sizeof(float));
 
       // update status
-      if (m_status == STATUS_QUEUING && m_pcmBuffer.GetMaxReadSize() > m_pcmBuffer.Size() * 0.9)
+      if (m_status == STATUS_QUEUING && m_pcmBuffer.getMaxReadSize() > m_pcmBuffer.getSize() * 0.9)
       {
         CLog::Log(LOGINFO, "AudioDecoder: File is queued");
         m_status = STATUS_QUEUED;

@@ -23,7 +23,7 @@
 
 #include "utils/Thread.h"
 #include "ICodec.h"
-#include "ringholdbuffer.h"
+#include "utils/RingBuffer.h"
 
 class CFileItem;
 
@@ -84,7 +84,7 @@ private:
   // block size (number of bytes per sample * number of channels)
   int m_blockSize;
   // pcm buffer
-  CRingHoldBuffer m_pcmBuffer;
+  CRingBuffer m_pcmBuffer;
 
   // output buffer (for transferring data from the Pcm Buffer to the rest of the audio chain)
   float m_outputBuffer[OUTPUT_SAMPLES];
