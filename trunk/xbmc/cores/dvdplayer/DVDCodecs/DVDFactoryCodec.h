@@ -34,7 +34,7 @@ class CDVDFactoryCodec
 {
 public:
   static CDVDVideoCodec* CreateVideoCodec(CDVDStreamInfo &hint );
-  static CDVDAudioCodec* CreateAudioCodec(CDVDStreamInfo &hint );
+  static CDVDAudioCodec* CreateAudioCodec(CDVDStreamInfo &hint, bool passthrough = true );
   static CDVDOverlayCodec* CreateOverlayCodec(CDVDStreamInfo &hint );
 
   static CDVDAudioCodec* OpenCodec(CDVDAudioCodec* pCodec, CDVDStreamInfo &hint, CDVDCodecOptions &options );

@@ -50,7 +50,7 @@
 #include "TimidityCodec.h"
 #include "ASAPCodec.h"
 #include "URL.h"
-
+#include "DVDPlayerCodec.h"
 
 ICodec* CodecFactory::CreateCodec(const CStdString& strFileType)
 {

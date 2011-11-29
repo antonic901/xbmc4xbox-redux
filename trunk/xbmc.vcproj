@@ -4007,6 +4007,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\DTSCodec.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\cores\paplayer\DVDPlayerCodec.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\cores\paplayer\DVDPlayerCodec.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\cores\paplayer\FLACcodec.cpp">
 				</File>
 				<File

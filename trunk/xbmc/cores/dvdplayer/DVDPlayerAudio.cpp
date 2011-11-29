@@ -175,9 +175,10 @@ CDVDPlayerAudio::~CDVDPlayerAudio()
 
 bool CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints )
 {
+  bool passthrough = (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL);
 
   CLog::Log(LOGNOTICE, "Finding audio codec for: %i", hints.codec);
-  CDVDAudioCodec* codec = CDVDFactoryCodec::CreateAudioCodec(hints);
+  CDVDAudioCodec* codec = CDVDFactoryCodec::CreateAudioCodec(hints, passthrough);
   if( !codec )
   {
     CLog::Log(LOGERROR, "Unsupported audio codec");

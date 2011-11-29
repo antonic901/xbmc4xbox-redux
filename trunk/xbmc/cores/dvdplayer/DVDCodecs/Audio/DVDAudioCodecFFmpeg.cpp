@@ -244,3 +244,9 @@ int CDVDAudioCodecFFmpeg::GetBitsPerSample()
 {
   return 16;
 }
+
+int CDVDAudioCodecFFmpeg::GetBitRate()
+{
+  if (m_pCodecContext) return m_pCodecContext->bit_rate;
+  return 0;
+}
