@@ -3893,18 +3893,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\AdplugCodec.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\paplayer\AIFFcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\AIFFcodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\APEcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\APEcodec.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\cores\paplayer\ASAPCodec.cpp">
 				</File>
 				<File
@@ -3969,9 +3957,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\DllMadCodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\DllMpcCodec.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\DllNosefart.h">
@@ -4040,12 +4025,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\MP3codec.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\paplayer\MPCcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\MPCcodec.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\cores\paplayer\NSFCodec.cpp">
 				</File>
 				<File
@@ -4076,12 +4055,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\ReplayGain.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\paplayer\SHNcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\SHNcodec.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\cores\paplayer\SIDCodec.cpp">
 				</File>
 				<File
@@ -4110,18 +4083,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\WAVcodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\WAVPackcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\WAVPackcodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\WMACodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\WMACodec.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\YMCodec.cpp">

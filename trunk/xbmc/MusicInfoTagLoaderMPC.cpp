@@ -21,8 +21,7 @@
 
 #include "stdafx.h"
 #include "MusicInfoTagLoaderMPC.h"
-#include "cores/paplayer/MPCcodec.h"
-
+#include "cores/paplayer/DVDPlayerCodec.h"
 
 using namespace MUSIC_INFO;
 
@@ -34,7 +33,7 @@ CMusicInfoTagLoaderMPC::~CMusicInfoTagLoaderMPC()
 
 int CMusicInfoTagLoaderMPC::ReadDuration(const CStdString &strFileName)
 {
-  MPCCodec codec;
+  DVDPlayerCodec codec;
   if (codec.Init(strFileName, 4096))
   {
     return (int)((codec.m_TotalTime + 500) / 1000);
