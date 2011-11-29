@@ -41,12 +41,10 @@ public:
   void GetHeader(CStdString& strHeader) const;
   
   CStdString GetMimeType() { return GetValue(HTTPHEADER_CONTENT_TYPE); }
-  CStdString GetProtoLine() { return m_protoLine; }
 
   void Clear();
   
 protected:
   HeaderParams m_params;
-  CStdString   m_protoLine;
 };
 

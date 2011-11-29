@@ -23,15 +23,32 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#if !defined(AFX_FILESHOUTCAST_H__6B6082E6_547E_44C4_8801_9890781659C0__INCLUDED_)
+#define AFX_FILESHOUTCAST_H__6B6082E6_547E_44C4_8801_9890781659C0__INCLUDED_
+
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "IFile.h"
-#include "FileCurl.h"
 #include "StdString.h"
-#include "MusicInfoTag.h"
+
+namespace MUSIC_INFO
+{
+  class CMusicInfoTag;
+}
 
 namespace XFILE
 {
+typedef struct FileStateSt
+{
+  bool bBuffering;
+  bool bRipDone;
+  bool bRipStarted;
+  bool bRipError;
+}
+FileState;
+
 class CFileShoutcast : public IFile
 {
 public:
@@ -45,17 +62,16 @@ public:
   virtual unsigned int Read(void* lpBuf, __int64 uiBufSize);
   virtual __int64 Seek(__int64 iFilePosition, int iWhence = SEEK_SET);
   virtual void Close();
+  virtual bool CanRecord();
+  virtual bool Record();
+  virtual void StopRecording();
+  virtual bool IsRecording();
+  virtual bool GetMusicInfoTag(MUSIC_INFO::CMusicInfoTag& tag);
+  virtual CStdString GetContent();
 protected:
-  void ExtractTagInfo(const char* buf);
-  void ReadTruncated(char* buf2, int size);
-
-  unsigned int m_lastTime;
-  CFileCurl m_file;
-  int m_metaint;
-  int m_discarded; // data used for tags
-  int m_currint;
-  char* m_buffer; // buffer used for tags
-  MUSIC_INFO::CMusicInfoTag m_tag;
+  void outputTimeoutMessage(const char* message);
+  DWORD m_dwLastTime;
+  CStdString m_mimetype;
 };
 }
-
+#endif // !defined(AFX_FILESHOUTCAST_H__6B6082E6_547E_44C4_8801_9890781659C0__INCLUDED_)

@@ -44,8 +44,8 @@ namespace XFILE
       virtual bool Open(const CURL& url);
       virtual bool Exists(const CURL& url);
       virtual __int64  Seek(__int64 iFilePosition, int iWhence=SEEK_SET);
-      virtual __int64  GetPosition();
-      virtual __int64  GetLength();
+      virtual __int64 GetPosition();
+	    virtual __int64	GetLength();
       virtual int	Stat(const CURL& url, struct __stat64* buffer);
 	    virtual void Close();
       virtual bool ReadString(char *szLine, int iLineLength)     { return m_state->ReadString(szLine, iLineLength); }
@@ -152,7 +152,6 @@ namespace XFILE
       bool            m_useOldHttpVersion;
       bool            m_seekable;
       bool            m_multisession;
-      bool            m_skipshout;
 
       struct XCURL::curl_slist* m_curlAliasList;
       struct XCURL::curl_slist* m_curlHeaderList;

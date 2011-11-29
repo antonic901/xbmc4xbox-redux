@@ -126,17 +126,7 @@ public:
 
   virtual CStdString GetContent()                            { return "application/octet-stream"; }
 };
-
-class CRedirectException
-{
-public:
-  IFile *m_pNewFileImp;
-
-  CRedirectException() : m_pNewFileImp(NULL) { }
-  CRedirectException(IFile *pNewFileImp) : m_pNewFileImp(pNewFileImp) { }
-};
-
-};
+}
 
 #endif // !defined(AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_)
 

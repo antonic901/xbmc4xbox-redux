@@ -155,6 +155,9 @@ public:
   virtual void Update(bool bPauseDrawing = false);
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect);
   virtual void GetVideoAspectRatio(float& fAR);
+  virtual bool CanRecord() ;
+  virtual bool IsRecording();
+  virtual bool Record(bool bOnOff) ;
   virtual void SeekPercentage(float fPercent = 0);
   virtual float GetPercentage();
   virtual void SetAVDelay(float fValue = 0.0f);

@@ -313,36 +313,8 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
     if (!m_pFile)
       return false;
 
-    try
+    if (!m_pFile->Open(url))
     {
-      if (!m_pFile->Open(url))
-      {
-        SAFE_DELETE(m_pFile);
-        return false;
-      }
-    }
-    catch (CRedirectException *pRedirectEx)
-    {
-      // the file implementation decided this item should use a different implementation.
-      // the exception will contain the new implementation.
-
-      CLog::Log(LOGDEBUG,"File::Open - redirecting implementation for %s", strFileName.c_str());
-      SAFE_DELETE(m_pFile);
-      if (pRedirectEx && pRedirectEx->m_pNewFileImp)
-      {
-        m_pFile = pRedirectEx->m_pNewFileImp;
-        delete pRedirectEx;
-
-        if (!m_pFile->Open(url))
-        {
-          SAFE_DELETE(m_pFile);
-          return false;
-        }      
-      }
-    }
-    catch (...)
-    {
-      CLog::Log(LOGERROR, "File::Open - unknown exception when opening %s", strFileName.c_str());
       SAFE_DELETE(m_pFile);
       return false;
     }
@@ -408,8 +380,7 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
 {
   try
   {
-    if (strFileName.IsEmpty())
-      return false;
+    if (strFileName.IsEmpty()) return false;
 
     if (bUseCache)
     {
@@ -423,8 +394,7 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
     CURL url(strFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
-    if (!pFile.get())
-      return false;
+    if (!pFile.get()) return false;
 
     return pFile->Exists(url);
   }
@@ -454,8 +424,7 @@ int CFile::Stat(const CStdString& strFileName, struct __stat64* buffer)
     CURL url(strFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
-    if (!pFile.get())
-      return false;
+    if (!pFile.get()) return false;
 
     return pFile->Stat(url, buffer);
   }
@@ -541,7 +510,10 @@ void CFile::Close()
 {
   try
   {
+    if (m_pBuffer)
       SAFE_DELETE(m_pBuffer);
+
+    if (m_pFile)
       SAFE_DELETE(m_pFile);
   }
 #ifndef _LINUX
@@ -561,8 +533,7 @@ void CFile::Flush()
 {
   try
   {
-    if (m_pFile)
-      m_pFile->Flush();
+    if (m_pFile) m_pFile->Flush();
   }
 #ifndef _LINUX
   catch (const win32_exception &e)
@@ -629,8 +600,7 @@ __int64 CFile::GetLength()
 {
   try
   {
-    if (m_pFile)
-      return m_pFile->GetLength();
+    if (m_pFile) return m_pFile->GetLength();
     return 0;
   }
 #ifndef _LINUX
@@ -765,8 +735,7 @@ bool CFile::Delete(const CStdString& strFileName)
     CURL url(strFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
-    if (!pFile.get())
-      return false;
+    if (!pFile.get()) return false;
 
     if(pFile->Delete(url))
     {
@@ -801,8 +770,7 @@ bool CFile::Rename(const CStdString& strFileName, const CStdString& strNewFileNa
     CURL urlnew(strNewFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
-    if (!pFile.get())
-      return false;
+    if (!pFile.get()) return false;
 
     if(pFile->Rename(url, urlnew))
     {
@@ -840,8 +808,7 @@ CFileStreamBuffer::CFileStreamBuffer(int backsize)
   , m_buffer(NULL)
   , m_backsize(backsize)
   , m_frontsize(0)
-{
-}
+{}
 
 void CFileStreamBuffer::Attach(IFile *file)
 {

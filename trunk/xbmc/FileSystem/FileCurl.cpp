@@ -34,7 +34,6 @@
 #include <climits>
 
 #include "DllLibCurl.h"
-#include "FileShoutcast.h"
 #include "SpecialProtocol.h"
 
 using namespace std;
@@ -320,7 +319,6 @@ CFileCurl::CFileCurl()
   m_password = "";
   m_httpauth = "";
   m_state = new CReadState();
-  m_skipshout = false;
 }
 
 //Has to be called before Open()
@@ -694,16 +692,12 @@ void CFileCurl::ParseAndCorrectUrl(CURL &url2)
           if(m_httpauth.IsEmpty())
             m_httpauth = "any";
         }
-        else if (name.Equals("Referer"))
-          SetReferer(value);
         else if (name.Equals("User-Agent"))
           SetUserAgent(value);
         else if (name.Equals("Cookie"))
           SetCookie(value);
         else if (name.Equals("Encoding"))
           SetContentEncoding(value);
-        else if (name.Equals("noshout") && value.Equals("true"))
-          m_skipshout = true;
         else
           SetRequestHeader(name, value);
       }
@@ -836,21 +830,12 @@ bool CFileCurl::Open(const CURL& url)
 
   SetCorrectHeaders(m_state);
   
+
   // since we can't know the stream size up front if we're gzipped/deflated
   // flag the stream with an unknown file size rather than the compressed
   // file size.
   if (m_contentencoding.size() > 0)
     m_state->m_fileSize = 0;
-
-  // check if this stream is a shoutcast stream. sometimes checking the protocol line is not enough so examine other headers as well.
-  // shoutcast streams should be handled by FileShoutcast.
-  if ((m_state->m_httpheader.GetProtoLine().Left(3) == "ICY" || !m_state->m_httpheader.GetValue("icy-notice1").IsEmpty()
-     || !m_state->m_httpheader.GetValue("icy-name").IsEmpty()
-     || !m_state->m_httpheader.GetValue("icy-br").IsEmpty()) && !m_skipshout)
-  {
-    CLog::Log(LOGDEBUG,"FileCurl - file <%s> is a shoutcast stream. re-opening", m_url.c_str());
-    throw new CRedirectException(new CFileShoutcast);
-  }
 
   m_multisession = false;
   if(m_url.Left(5).Equals("http:") || m_url.Left(6).Equals("https:"))

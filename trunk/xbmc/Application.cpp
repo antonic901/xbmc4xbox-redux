@@ -250,6 +250,7 @@ using namespace EVENTSERVER;
   #pragma comment (lib,"xbmc/lib/libGoAhead/goahead.lib")
   #pragma comment (lib,"xbmc/lib/sqLite/libSQLite3.lib")
   #pragma comment (lib,"xbmc/lib/libcdio/libcdio.lib")
+  #pragma comment (lib,"xbmc/lib/libshout/libshout.lib")
   #pragma comment (lib,"xbmc/lib/libiconv/libiconv.lib")
   #pragma comment (lib,"xbmc/lib/libfribidi/libfribidi.lib")
   #pragma comment (lib,"xbmc/lib/libpcre/libpcre.lib")
