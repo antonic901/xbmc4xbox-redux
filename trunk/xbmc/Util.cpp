@@ -2573,7 +2573,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
           }
         }
       }
-      g_directoryCache.ClearDirectory(strLookInPaths[step]);
+//      g_directoryCache.ClearDirectory(strLookInPaths[step]);
     }
   }
   CLog::Log(LOGDEBUG,"%s: Done (time: %i ms)", __FUNCTION__, (int)(timeGetTime() - nextTimer));
