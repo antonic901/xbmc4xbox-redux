@@ -82,6 +82,8 @@ bool CFileShoutcast::Open(const CURL& url)
     g_infoManager.SetCurrentSongTag(m_tag);
   }
   m_metaint = atoi(m_file.GetHttpHeader().GetValue("icy-metaint").c_str());
+  if (!m_metaint)
+    m_metaint = -1;
   m_buffer = new char[16*255];
 
   return result;
@@ -104,7 +106,11 @@ unsigned int CFileShoutcast::Read(void* lpBuf, __int64 uiBufSize)
     g_infoManager.SetCurrentSongTag(m_tag);
   }
 
-  unsigned int toRead = std::min((unsigned int)uiBufSize,(unsigned int)m_metaint-m_currint);
+  unsigned int toRead;
+  if (m_metaint > 0)
+    toRead = std::min((unsigned int)uiBufSize,(unsigned int)m_metaint-m_currint);
+  else
+    toRead = std::min((unsigned int)uiBufSize,(unsigned int)(16*255));
   toRead = m_file.Read(lpBuf,toRead);
   m_currint += toRead;
   return toRead;
