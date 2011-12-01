@@ -2523,7 +2523,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
     {
       CFileItemList items;
 
-      CDirectory::GetDirectory(strLookInPaths[step], items,".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|.ass|.idx|.ifo|.rar|.zip",false);
+      CDirectory::GetDirectory(strLookInPaths[step], items, ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|.ass|.idx|.ifo|.rar|.zip", false, false, DIR_CACHE_NEVER, true);
       int fnl = strFileNameNoExt.size();
 
       CStdString strFileNameNoExtNoCase(strFileNameNoExt);
@@ -2573,7 +2573,6 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
           }
         }
       }
-//      g_directoryCache.ClearDirectory(strLookInPaths[step]);
     }
   }
   CLog::Log(LOGDEBUG,"%s: Done (time: %i ms)", __FUNCTION__, (int)(timeGetTime() - nextTimer));

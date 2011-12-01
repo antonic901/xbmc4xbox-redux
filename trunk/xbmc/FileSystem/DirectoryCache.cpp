@@ -334,8 +334,7 @@ void CDirectoryCache::ClearMusicThumbCache()
 void CDirectoryCache::CheckIfFull()
 {
   CSingleLock lock (m_cs);
-  // Set this to 5 on Xbox due to the limited amount of memory:
-  static const unsigned int max_cached_dirs = 5;
+  static const unsigned int max_cached_dirs = 10;
 
   // find the last accessed folder, and remove if the number of cached folders is too many
   iCache lastAccessed = m_cache.end();
