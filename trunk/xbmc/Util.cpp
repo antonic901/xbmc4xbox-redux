@@ -3577,7 +3577,7 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
         // trim off start and end quotes
         if (parameter.GetLength() > 1 && parameter[0] == '\"' && parameter[parameter.GetLength() - 1] == '\"')
           parameter = parameter.Mid(1,parameter.GetLength() - 2);
-		parameters.push_back(parameter);
+        parameters.push_back(parameter);
         parameter.Empty();
         whiteSpacePos = 0;
         continue;
