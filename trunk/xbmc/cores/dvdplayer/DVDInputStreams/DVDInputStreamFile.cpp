@@ -21,7 +21,7 @@
  
 #include "stdafx.h"
 #include "DVDInputStreamFile.h"
-#include "FileItem.h"
+#include "Util.h"
 #include "FileSystem/File.h"
 
 using namespace XFILE;
@@ -46,14 +46,12 @@ bool CDVDInputStreamFile::Open(const char* strFile, const std::string& content)
 {
   if (!CDVDInputStream::Open(strFile, content)) return false;
 
-  CStdString stdFile = strFile;
-  
   m_pFile = new CFile();
   if (!m_pFile) return false;
 
   unsigned int flags = READ_TRUNCATED | READ_BITRATE | READ_CHUNKED;
   
-  if( CFileItem(strFile, false).IsInternetStream() )
+  if( CUtil::IsInternetStream( CStdString(strFile) ) )
     flags |= READ_CACHED;
 
   // open file in binary mode
