@@ -33,7 +33,7 @@ bool CFavourites::Load(CFileItemList &items)
 {
   items.Clear();
   CStdString favourites;
-  
+
   favourites = "special://xbmc/system/favourites.xml";
   if(XFILE::CFile::Exists(favourites))
     CFavourites::LoadFavourites(favourites, items);
@@ -151,6 +151,7 @@ bool CFavourites::IsFavourite(CFileItem *item, int contextWindow)
 static CStdString Paramify(const CStdString& param)
 {
   CStdString result(param);
+  result.Replace("\\", "\\\\");
   result.Replace("\"", "\\\"");
   return "\"" + result + "\"";
 }

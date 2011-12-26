@@ -3539,8 +3539,13 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
   if( function.Left(5).Equals("xbmc.", false) )
     function.Delete(0, 5);
 
-  // now split up our parameters - we may have quotes to deal with as well as brackets and whitespace
+  SplitParams(paramString, parameters);
+}
+
+void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &parameters)
+{
   bool inQuotes = false;
+  bool lastEscaped = false; // only every second character can be escaped
   int inFunction = 0;
   size_t whiteSpacePos = 0;
   CStdString parameter;
@@ -3548,7 +3553,8 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
   for (size_t pos = 0; pos < paramString.size(); pos++)
   {
     char ch = paramString[pos];
-    bool escaped = (pos > 0 && paramString[pos - 1] == '\\');
+    bool escaped = (pos > 0 && paramString[pos - 1] == '\\' && !lastEscaped);
+    lastEscaped = escaped;
     if (inQuotes)
     { // if we're in a quote, we accept everything until the closing quote
       if (ch == '\"' && !escaped)
@@ -3570,7 +3576,7 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
       { // start of function
         inFunction++;
       }
-      if (!inFunction && !IsStack(paramString) && ch == ',')
+      if (!inFunction && ch == ',')
       { // not in a function, so a comma signfies the end of this parameter
         if (whiteSpacePos)
           parameter = parameter.Left(whiteSpacePos);
@@ -3582,6 +3588,11 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
         whiteSpacePos = 0;
         continue;
       }
+    }
+    if ((ch == '\"' || ch == '\\') && escaped)
+    { // escaped quote or backslash
+      parameter[parameter.size()-1] = ch;
+      continue;
     }
     // whitespace handling - we skip any whitespace at the left or right of an unquoted parameter
     if (ch == ' ' && !inQuotes)
@@ -3596,13 +3607,13 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
     parameter += ch;
   }
   if (inFunction || inQuotes)
-    CLog::Log(LOGWARNING, "%s(%s) - end of string while searching for ) or \"", __FUNCTION__, execString.c_str());
+    CLog::Log(LOGWARNING, "%s(%s) - end of string while searching for ) or \"", __FUNCTION__, paramString.c_str());
   if (whiteSpacePos)
     parameter = parameter.Left(whiteSpacePos);
   // trim off start and end quotes
   if (parameter.GetLength() > 1 && parameter[0] == '\"' && parameter[parameter.GetLength() - 1] == '\"')
     parameter = parameter.Mid(1,parameter.GetLength() - 2);
-  if (!parameter.IsEmpty())
+  if (!parameter.IsEmpty() || parameters.size())
     parameters.push_back(parameter);
 }
 
