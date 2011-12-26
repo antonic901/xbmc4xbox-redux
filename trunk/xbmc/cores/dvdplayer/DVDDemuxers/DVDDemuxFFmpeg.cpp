@@ -256,6 +256,8 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       iformat = m_dllAvFormat.av_find_input_format("mpeg");
     else if( content.compare("video/x-mpegts") == 0 )
       iformat = m_dllAvFormat.av_find_input_format("mpegts");
+    else if( content.compare("multipart/x-mixed-replace") == 0 )
+      iformat = m_dllAvFormat.av_find_input_format("mjpeg");
   }
 
   // try to abort after 30 seconds
@@ -293,7 +295,8 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
     if(m_ioContext->max_packet_size)
       m_ioContext->max_packet_size *= FFMPEG_FILE_BUFFER_SIZE / m_ioContext->max_packet_size;
 
-    if(m_pInput->Seek(0, SEEK_POSSIBLE) == 0) {
+    if(m_pInput->Seek(0, SEEK_POSSIBLE) == 0)
+    {
       m_ioContext->is_streamed = 1;
       // normally ffmpeg sets the new "seekable" flag based on the value of is_streamed in ffio_fdopen but since we use our own vfs, we need to set it here also
       m_ioContext->seekable = 0;
@@ -421,6 +424,10 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
       return false;
     }
   }
+
+  // analyse very short to speed up mjpeg playback start
+  if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->is_streamed)
+    m_pFormatContext->max_analyze_duration = 500000;
 
   // we need to know if this is matroska or avi later
   m_bMatroska = strncmp(m_pFormatContext->iformat->name, "matroska", 8) == 0;	// for "matroska.webm"
@@ -722,7 +729,7 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
 
         // we need to get duration slightly different for matroska embedded text subtitels
         if(m_bMatroska && stream->codec->codec_id == CODEC_ID_TEXT && pkt.convergence_duration != 0)
-            pkt.duration = pkt.convergence_duration;
+          pkt.duration = pkt.convergence_duration;
 
         if(m_bAVI && stream->codec && stream->codec->codec_type == AVMEDIA_TYPE_VIDEO)
         {
@@ -750,19 +757,19 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
         // check if stream has passed full duration, needed for live streams
         if(pkt.dts != (int64_t)AV_NOPTS_VALUE)
         {
-            int64_t duration;
-            duration = pkt.dts;
-            if(stream->start_time != (int64_t)AV_NOPTS_VALUE)
-              duration -= stream->start_time;
+          int64_t duration;
+          duration = pkt.dts;
+          if(stream->start_time != (int64_t)AV_NOPTS_VALUE)
+            duration -= stream->start_time;
 
-            if(duration > stream->duration)
-            {
-              stream->duration = duration;
-              duration = m_dllAvUtil.av_rescale_rnd(stream->duration, stream->time_base.num * AV_TIME_BASE, stream->time_base.den, AV_ROUND_NEAR_INF);
-              if ((m_pFormatContext->duration == (int64_t)AV_NOPTS_VALUE && m_pFormatContext->file_size > 0)
-              ||  (m_pFormatContext->duration != (int64_t)AV_NOPTS_VALUE && duration > m_pFormatContext->duration))
-                m_pFormatContext->duration = duration;
-            }
+          if(duration > stream->duration)
+          {
+            stream->duration = duration;
+            duration = m_dllAvUtil.av_rescale_rnd(stream->duration, stream->time_base.num * AV_TIME_BASE, stream->time_base.den, AV_ROUND_NEAR_INF);
+            if ((m_pFormatContext->duration == (int64_t)AV_NOPTS_VALUE && m_pFormatContext->file_size > 0)
+                ||  (m_pFormatContext->duration != (int64_t)AV_NOPTS_VALUE && duration > m_pFormatContext->duration))
+              m_pFormatContext->duration = duration;
+          }
         }
 
         // check if stream seem to have grown since start
@@ -991,6 +998,16 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
           st->iFpsRate  = 0;
           st->iFpsScale = 0;
         }
+
+        if (pStream->codec_info_nb_frames >  0
+        &&  pStream->codec_info_nb_frames <= 2
+        &&  m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
+        {
+          CLog::Log(LOGDEBUG, "%s - fps may be unreliable since ffmpeg decoded only %d frame(s)", __FUNCTION__, pStream->codec_info_nb_frames);
+          st->iFpsRate  = 0;
+          st->iFpsScale = 0;
+        }
+
         st->iWidth = pStream->codec->width;
         st->iHeight = pStream->codec->height;
         if (pStream->sample_aspect_ratio.num == 0)
@@ -1247,7 +1264,7 @@ void CDVDDemuxFFmpeg::GetStreamCodecName(int iStreamId, CStdString &strName)
   if (stream)
   {
     unsigned int in = stream->codec_fourcc;
-    // FourCC codes are only valid on video streams, audio codecs in AVI/WAV 
+    // FourCC codes are only valid on video streams, audio codecs in AVI/WAV
     // are 2 bytes and audio codecs in transport streams have subtle variation
     // e.g AC-3 instead of ac3
     if (stream->type == STREAM_VIDEO && in != 0)
@@ -1259,7 +1276,7 @@ void CDVDDemuxFFmpeg::GetStreamCodecName(int iStreamId, CStdString &strName)
       fourcc[2] = (in >> 16) & 0xff;
       fourcc[3] = (in >> 24) & 0xff;
 #else
-      *(unsigned int*)fourcc = in;
+      memcpy(fourcc, &in, 4);
 #endif
       fourcc[4] = 0;
       // fourccs have to be 4 characters
