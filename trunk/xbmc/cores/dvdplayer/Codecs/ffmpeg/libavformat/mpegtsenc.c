@@ -206,7 +206,7 @@ typedef struct MpegTSWriteStream {
     struct MpegTSService *service;
     int pid; /* stream associated pid */
     int cc;
-    int payload_index;
+    int payload_size;
     int first_pts_check; ///< first pts check needed
     int64_t payload_pts;
     int64_t payload_dts;
@@ -514,7 +514,7 @@ static int mpegts_write_header(AVFormatContext *s)
     /* assign pids to each stream */
     for(i = 0;i < s->nb_streams; i++) {
         st = s->streams[i];
-        av_set_pts_info(st, 33, 1, 90000);
+        avpriv_set_pts_info(st, 33, 1, 90000);
         ts_st = av_mallocz(sizeof(MpegTSWriteStream));
         if (!ts_st)
             goto fail;
@@ -979,7 +979,7 @@ static int mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
         uint32_t state = -1;
 
         if (pkt->size < 5 || AV_RB32(pkt->data) != 0x0000001) {
-            av_log(s, AV_LOG_ERROR, "h264 bitstream malformated, "
+            av_log(s, AV_LOG_ERROR, "H.264 bitstream malformed, "
                    "no startcode found, use -vbsf h264_mp4toannexb\n");
             return -1;
         }
@@ -1006,7 +1006,7 @@ static int mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
             return -1;
         if ((AV_RB16(pkt->data) & 0xfff0) != 0xfff0) {
             ADTSContext *adts = ts_st->adts;
-            int new_size;
+            int new_size, err;
             if (!adts) {
                 av_log(s, AV_LOG_ERROR, "aac bitstream not in adts format "
                        "and extradata missing\n");
@@ -1018,7 +1018,12 @@ static int mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
             data = av_malloc(new_size);
             if (!data)
                 return AVERROR(ENOMEM);
-            ff_adts_write_frame_header(adts, data, pkt->size, adts->pce_size);
+            err = ff_adts_write_frame_header(adts, data, pkt->size,
+                                             adts->pce_size);
+            if (err < 0) {
+                av_free(data);
+                return err;
+            }
             if (adts->pce_size) {
                 memcpy(data+ADTS_HEADER_SIZE, adts->pce_data, adts->pce_size);
                 adts->pce_size = 0;
@@ -1029,29 +1034,29 @@ static int mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
         }
     }
 
-    if (ts_st->payload_index && ts_st->payload_index + size > DEFAULT_PES_PAYLOAD_SIZE) {
-        mpegts_write_pes(s, st, ts_st->payload, ts_st->payload_index,
+    if (ts_st->payload_size && ts_st->payload_size + size > DEFAULT_PES_PAYLOAD_SIZE) {
+        mpegts_write_pes(s, st, ts_st->payload, ts_st->payload_size,
                          ts_st->payload_pts, ts_st->payload_dts,
                          ts_st->payload_flags & AV_PKT_FLAG_KEY);
-        ts_st->payload_index = 0;
+        ts_st->payload_size = 0;
     }
 
     if (st->codec->codec_type != AVMEDIA_TYPE_AUDIO || size > DEFAULT_PES_PAYLOAD_SIZE) {
-        av_assert0(!ts_st->payload_index);
+        av_assert0(!ts_st->payload_size);
         // for video and subtitle, write a single pes packet
         mpegts_write_pes(s, st, buf, size, pts, dts, pkt->flags & AV_PKT_FLAG_KEY);
         av_free(data);
         return 0;
     }
 
-    if (!ts_st->payload_index) {
+    if (!ts_st->payload_size) {
         ts_st->payload_pts = pts;
         ts_st->payload_dts = dts;
         ts_st->payload_flags = pkt->flags;
     }
 
-    memcpy(ts_st->payload + ts_st->payload_index, buf, size);
-    ts_st->payload_index += size;
+    memcpy(ts_st->payload + ts_st->payload_size, buf, size);
+    ts_st->payload_size += size;
 
     av_free(data);
 
@@ -1070,8 +1075,8 @@ static int mpegts_write_end(AVFormatContext *s)
     for(i = 0; i < s->nb_streams; i++) {
         st = s->streams[i];
         ts_st = st->priv_data;
-        if (ts_st->payload_index > 0) {
-            mpegts_write_pes(s, st, ts_st->payload, ts_st->payload_index,
+        if (ts_st->payload_size > 0) {
+            mpegts_write_pes(s, st, ts_st->payload, ts_st->payload_size,
                              ts_st->payload_pts, ts_st->payload_dts,
                              ts_st->payload_flags & AV_PKT_FLAG_KEY);
         }
@@ -1094,7 +1099,7 @@ AVOutputFormat ff_mpegts_muxer = {
     .name              = "mpegts",
     .long_name         = NULL_IF_CONFIG_SMALL("MPEG-2 transport stream format"),
     .mime_type         = "video/x-mpegts",
-    .extensions        = "ts,m2t,m2ts",
+    .extensions        = "ts,m2t,m2ts,mts",
     .priv_data_size    = sizeof(MpegTSWrite),
     .audio_codec       = CODEC_ID_MP2,
     .video_codec       = CODEC_ID_MPEG2VIDEO,

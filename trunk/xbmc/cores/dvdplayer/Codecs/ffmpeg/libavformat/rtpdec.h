@@ -122,6 +122,7 @@ struct RTPDynamicProtocolHandler_s {
                             * require any custom depacketization code. */
 
     // may be null
+    int (*init)(AVFormatContext *s, int st_index, PayloadContext *priv_data); ///< Initialize dynamic protocol handler, called after the full rtpmap line is parsed
     int (*parse_sdp_a_line) (AVFormatContext *s,
                              int st_index,
                              PayloadContext *priv_data,
@@ -151,6 +152,7 @@ struct RTPDemuxContext {
     uint32_t timestamp;
     uint32_t base_timestamp;
     uint32_t cur_timestamp;
+    int64_t  unwrapped_timestamp;
     int64_t  range_start_offset;
     int max_payload_size;
     struct MpegTSContext *ts;   /* only used for MP2T payloads */

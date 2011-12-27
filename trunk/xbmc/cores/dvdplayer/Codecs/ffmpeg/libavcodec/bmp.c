@@ -92,7 +92,8 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     }
 
     switch(ihsize){
-    case  40: // windib v3
+    case  40: // windib
+    case  56: // windib v3
     case  64: // OS/2 v2
     case 108: // windib v4
     case 124: // windib v5
@@ -115,7 +116,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
 
     depth = bytestream_get_le16(&buf);
 
-    if(ihsize == 40)
+    if(ihsize == 40 || ihsize == 64 || ihsize == 56)
         comp = bytestream_get_le32(&buf);
     else
         comp = BMP_RGB;
@@ -154,7 +155,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
             rgb[2] = 0;
         }
 
-        avctx->pix_fmt = PIX_FMT_BGR24;
+        avctx->pix_fmt = PIX_FMT_BGRA;
         break;
     case 24:
         avctx->pix_fmt = PIX_FMT_BGR24;
@@ -205,7 +206,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     dsize = buf_size - hsize;
 
     /* Line size in file multiple of 4 */
-    n = ((avctx->width * depth) / 8 + 3) & ~3;
+    n = ((avctx->width * depth + 31) / 8) & ~3;
 
     if(n * avctx->height > dsize && comp != BMP_RLE4 && comp != BMP_RLE8){
         av_log(avctx, AV_LOG_ERROR, "not enough data (%d < %d)\n",
@@ -263,9 +264,9 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     }else{
         switch(depth){
         case 1:
-            for(i = 0; i < avctx->height; i++){
+            for (i = 0; i < avctx->height; i++) {
                 int j;
-                for(j = 0; j < n; j++){
+                for (j = 0; j < n; j++) {
                     ptr[j*8+0] =  buf[j] >> 7;
                     ptr[j*8+1] = (buf[j] >> 6) & 1;
                     ptr[j*8+2] = (buf[j] >> 5) & 1;
@@ -319,7 +320,13 @@ static int bmp_decode_frame(AVCodecContext *avctx,
                     dst[0] = src[rgb[2]];
                     dst[1] = src[rgb[1]];
                     dst[2] = src[rgb[0]];
-                    dst += 3;
+/* The Microsoft documentation states:
+ * "The high byte in each DWORD is not used."
+ * Both GIMP and ImageMagick store the alpha transparency value
+ * in the high byte for 32bit bmp files.
+ */
+                    dst[3] = src[3];
+                    dst += 4;
                     src += 4;
                 }
 

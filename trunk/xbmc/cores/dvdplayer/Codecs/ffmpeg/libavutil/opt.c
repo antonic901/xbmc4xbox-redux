@@ -80,7 +80,7 @@ static int read_number(const AVOption *o, void *dst, double *num, int *den, int6
 static int write_number(void *obj, const AVOption *o, void *dst, double num, int den, int64_t intnum)
 {
     if (o->max*den < num*intnum || o->min*den > num*intnum) {
-        av_log(obj, AV_LOG_ERROR, "Value %lf for parameter '%s' out of range\n", num, o->name);
+        av_log(obj, AV_LOG_ERROR, "Value %f for parameter '%s' out of range\n", num*intnum/den, o->name);
         return AVERROR(ERANGE);
     }
 
@@ -753,8 +753,13 @@ const AVOption *av_opt_find(void *obj, const char *name, const char *unit,
 const AVOption *av_opt_find2(void *obj, const char *name, const char *unit,
                              int opt_flags, int search_flags, void **target_obj)
 {
-    const AVClass  *c = *(AVClass**)obj;
+    const AVClass  *c;
     const AVOption *o = NULL;
+
+    if(!obj)
+        return NULL;
+
+    c= *(AVClass**)obj;
 
     if (search_flags & AV_OPT_SEARCH_CHILDREN) {
         if (search_flags & AV_OPT_SEARCH_FAKE_OBJ) {
@@ -799,6 +804,14 @@ const AVClass *av_opt_child_class_next(const AVClass *parent, const AVClass *pre
     if (parent->child_class_next)
         return parent->child_class_next(prev);
     return NULL;
+}
+
+void *av_opt_ptr(const AVClass *class, void *obj, const char *name)
+{
+    AVOption *opt= av_opt_find2(&class, name, NULL, 0, AV_OPT_SEARCH_FAKE_OBJ, NULL);
+    if(!opt)
+        return NULL;
+    return (uint8_t*)obj + opt->offset;
 }
 
 #ifdef TEST

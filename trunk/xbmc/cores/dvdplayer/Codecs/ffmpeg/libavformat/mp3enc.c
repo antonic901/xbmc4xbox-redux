@@ -156,7 +156,9 @@ static int mp3_write_xing(AVFormatContext *s)
 {
     AVCodecContext   *codec = s->streams[0]->codec;
     MP3Context       *mp3 = s->priv_data;
-    int              bitrate_idx = 3;
+    int              bitrate_idx;
+    int              best_bitrate_idx;
+    int              best_bitrate_error= INT_MAX;
     int64_t          xing_offset;
     int32_t          mask, header;
     MPADecodeHeader  c;
@@ -185,13 +187,21 @@ static int mp3_write_xing(AVFormatContext *s)
     header |= (srate_idx << 2) <<  8;
     header |= channels << 6;
 
-    for (;;) {
+    for (bitrate_idx=1; bitrate_idx<15; bitrate_idx++) {
+        int error;
+        avpriv_mpegaudio_decode_header(&c, header | (bitrate_idx << (4+8)));
+        error= FFABS(c.bit_rate - codec->bit_rate);
+        if(error < best_bitrate_error){
+            best_bitrate_error= error;
+            best_bitrate_idx  = bitrate_idx;
+        }
+    }
+
+    for (bitrate_idx= best_bitrate_idx;; bitrate_idx++) {
         if (15 == bitrate_idx)
             return -1;
 
-        mask = (bitrate_idx << 4) <<  8;
-        header |= mask;
-        avpriv_mpegaudio_decode_header(&c, header);
+        avpriv_mpegaudio_decode_header(&c, header | (bitrate_idx << (4+8)));
         xing_offset=xing_offtbl[c.lsf == 1][c.nb_channels == 1];
         needed = 4              // header
                + xing_offset
@@ -203,9 +213,6 @@ static int mp3_write_xing(AVFormatContext *s)
 
         if (needed <= c.frame_size)
             break;
-
-        header &= ~mask;
-        ++bitrate_idx;
     }
 
     avio_wb32(s->pb, header);

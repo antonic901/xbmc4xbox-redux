@@ -40,6 +40,8 @@ static int ac3_eac3_probe(AVProbeData *p, enum CodecID expected_codec_id)
         buf2 = buf;
 
         for(frames = 0; buf2 < end; frames++) {
+            if(!memcmp(buf2, "\x1\x10\0\0\0\0\0\0", 8))
+                buf2+=16;
             init_get_bits(&gbc, buf2, 54);
             if(avpriv_ac3_parse_header(&gbc, &hdr) < 0)
                 break;
@@ -58,7 +60,7 @@ static int ac3_eac3_probe(AVProbeData *p, enum CodecID expected_codec_id)
     // keep this in sync with mp3 probe, both need to avoid
     // issues with MPEG-files!
     if   (first_frames>=4) return AVPROBE_SCORE_MAX/2+1;
-    else if(max_frames>500)return AVPROBE_SCORE_MAX/2;
+    else if(max_frames>200)return AVPROBE_SCORE_MAX/2;
     else if(max_frames>=4) return AVPROBE_SCORE_MAX/4;
     else if(max_frames>=1) return 1;
     else                   return 0;

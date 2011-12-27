@@ -18,7 +18,7 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-#define ALT_BITSTREAM_READER_LE
+#define BITSTREAM_READER_LE
 #include "avcodec.h"
 #include "get_bits.h"
 #include "unary.h"
@@ -110,13 +110,11 @@ typedef struct WavpackFrameContext {
     int extra_bits;
     int and, or, shift;
     int post_shift;
-    int hybrid, hybrid_bitrate;
+    int hybrid, hybrid_bitrate, hybrid_maxclip;
     int float_flag;
     int float_shift;
     int float_max_exp;
     WvChannel ch[2];
-    int samples_left;
-    int max_samples;
     int pos;
     SavedContext sc, extra_sc;
 } WavpackFrameContext;
@@ -125,6 +123,7 @@ typedef struct WavpackFrameContext {
 
 typedef struct WavpackContext {
     AVCodecContext *avctx;
+    AVFrame frame;
 
     WavpackFrameContext *fdec[WV_MAX_FRAME_DECODERS];
     int fdec_num;
@@ -133,7 +132,6 @@ typedef struct WavpackContext {
     int mkv_mode;
     int block;
     int samples;
-    int samples_left;
     int ch_offset;
 } WavpackContext;
 
@@ -405,8 +403,14 @@ static inline int wv_get_value_integer(WavpackFrameContext *s, uint32_t *crc, in
             *crc = *crc * 9 + (S&0xffff) * 3 + ((unsigned)S>>16);
         }
     }
+
     bit = (S & s->and) | s->or;
-    return (((S + bit) << s->shift) - bit) << s->post_shift;
+    bit = (((S + bit) << s->shift) - bit) << s->post_shift;
+
+    if(s->hybrid)
+        bit = av_clip(bit, -s->hybrid_maxclip - 1, s->hybrid_maxclip);
+
+    return bit;
 }
 
 static float wv_get_value_float(WavpackFrameContext *s, uint32_t *crc, int S)
@@ -485,7 +489,6 @@ static float wv_get_value_float(WavpackFrameContext *s, uint32_t *crc, int S)
 static void wv_reset_saved_context(WavpackFrameContext *s)
 {
     s->pos = 0;
-    s->samples_left = 0;
     s->sc.crc = s->extra_sc.crc = 0xFFFFFFFF;
 }
 
@@ -502,8 +505,7 @@ static inline int wv_unpack_stereo(WavpackFrameContext *s, GetBitContext *gb, vo
     float   *dstfl = dst;
     const int channel_pad = s->avctx->channels - 2;
 
-    if(s->samples_left == s->samples)
-        s->one = s->zero = s->zeroes = 0;
+    s->one = s->zero = s->zeroes = 0;
     do{
         L = wv_get_value(s, gb, 0, &last);
         if(last) break;
@@ -594,13 +596,8 @@ static inline int wv_unpack_stereo(WavpackFrameContext *s, GetBitContext *gb, vo
             dst16 += channel_pad;
         }
         count++;
-    }while(!last && count < s->max_samples);
+    } while (!last && count < s->samples);
 
-    if (last)
-        s->samples_left = 0;
-    else
-        s->samples_left -= count;
-    if(!s->samples_left){
         wv_reset_saved_context(s);
         if(crc != s->CRC){
             av_log(s->avctx, AV_LOG_ERROR, "CRC error\n");
@@ -610,15 +607,7 @@ static inline int wv_unpack_stereo(WavpackFrameContext *s, GetBitContext *gb, vo
             av_log(s->avctx, AV_LOG_ERROR, "Extra bits CRC error\n");
             return -1;
         }
-    }else{
-        s->pos = pos;
-        s->sc.crc = crc;
-        s->sc.bits_used = get_bits_count(&s->gb);
-        if(s->got_extra_bits){
-            s->extra_sc.crc = crc_extra_bits;
-            s->extra_sc.bits_used = get_bits_count(&s->gb_extra_bits);
-        }
-    }
+
     return count * 2;
 }
 
@@ -635,8 +624,7 @@ static inline int wv_unpack_mono(WavpackFrameContext *s, GetBitContext *gb, void
     float   *dstfl = dst;
     const int channel_stride = s->avctx->channels;
 
-    if(s->samples_left == s->samples)
-        s->one = s->zero = s->zeroes = 0;
+    s->one = s->zero = s->zeroes = 0;
     do{
         T = wv_get_value(s, gb, 0, &last);
         S = 0;
@@ -675,13 +663,8 @@ static inline int wv_unpack_mono(WavpackFrameContext *s, GetBitContext *gb, void
             dst16 += channel_stride;
         }
         count++;
-    }while(!last && count < s->max_samples);
+    } while (!last && count < s->samples);
 
-    if (last)
-        s->samples_left = 0;
-    else
-        s->samples_left -= count;
-    if(!s->samples_left){
         wv_reset_saved_context(s);
         if(crc != s->CRC){
             av_log(s->avctx, AV_LOG_ERROR, "CRC error\n");
@@ -691,15 +674,7 @@ static inline int wv_unpack_mono(WavpackFrameContext *s, GetBitContext *gb, void
             av_log(s->avctx, AV_LOG_ERROR, "Extra bits CRC error\n");
             return -1;
         }
-    }else{
-        s->pos = pos;
-        s->sc.crc = crc;
-        s->sc.bits_used = get_bits_count(&s->gb);
-        if(s->got_extra_bits){
-            s->extra_sc.crc = crc_extra_bits;
-            s->extra_sc.bits_used = get_bits_count(&s->gb_extra_bits);
-        }
-    }
+
     return count;
 }
 
@@ -743,6 +718,9 @@ static av_cold int wavpack_decode_init(AVCodecContext *avctx)
 
     s->fdec_num = 0;
 
+    avcodec_get_frame_defaults(&s->frame);
+    avctx->coded_frame = &s->frame;
+
     return 0;
 }
 
@@ -759,7 +737,7 @@ static av_cold int wavpack_decode_end(AVCodecContext *avctx)
 }
 
 static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
-                                void *data, int *data_size,
+                                void *data, int *got_frame_ptr,
                                 const uint8_t *buf, int buf_size)
 {
     WavpackContext *wc = avctx->priv_data;
@@ -774,7 +752,7 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
     int bpp, chan, chmask;
 
     if (buf_size == 0){
-        *data_size = 0;
+        *got_frame_ptr = 0;
         return 0;
     }
 
@@ -789,18 +767,16 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
         return -1;
     }
 
-    if(!s->samples_left){
         memset(s->decorr, 0, MAX_TERMS * sizeof(Decorr));
         memset(s->ch, 0, sizeof(s->ch));
         s->extra_bits = 0;
         s->and = s->or = s->shift = 0;
         s->got_extra_bits = 0;
-    }
 
     if(!wc->mkv_mode){
         s->samples = AV_RL32(buf); buf += 4;
         if(!s->samples){
-            *data_size = 0;
+            *got_frame_ptr = 0;
             return 0;
         }
     }else{
@@ -822,19 +798,13 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
     s->joint = s->frame_flags & WV_JOINT_STEREO;
     s->hybrid = s->frame_flags & WV_HYBRID_MODE;
     s->hybrid_bitrate = s->frame_flags & WV_HYBRID_BITRATE;
+    s->hybrid_maxclip = (1LL << ((((s->frame_flags & 0x03) + 1) << 3) - 1)) - 1;
     s->post_shift = 8 * (bpp-1-(s->frame_flags&0x03)) + ((s->frame_flags >> 13) & 0x1f);
     s->CRC = AV_RL32(buf); buf += 4;
     if(wc->mkv_mode)
         buf += 4; //skip block size;
 
     wc->ch_offset += 1 + s->stereo;
-
-    s->max_samples = *data_size / (bpp * avctx->channels);
-    s->max_samples = FFMIN(s->max_samples, s->samples);
-    if(s->samples_left > 0){
-        s->max_samples = FFMIN(s->max_samples, s->samples_left);
-        buf = buf_end;
-    }
 
     // parse metadata blocks
     while(buf < buf_end){
@@ -1064,7 +1034,7 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
         }
         if(id & WP_IDF_ODD) buf++;
     }
-    if(!s->samples_left){
+
         if(!got_terms){
             av_log(avctx, AV_LOG_ERROR, "No block with decorrelation terms\n");
             return -1;
@@ -1101,16 +1071,6 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
                 s->got_extra_bits = 0;
             }
         }
-        s->samples_left = s->samples;
-    }else{
-        init_get_bits(&s->gb, orig_buf + s->sc.offset, s->sc.size);
-        skip_bits_long(&s->gb, s->sc.bits_used);
-        if(s->got_extra_bits){
-            init_get_bits(&s->gb_extra_bits, orig_buf + s->extra_sc.offset,
-                          s->extra_sc.size);
-            skip_bits_long(&s->gb_extra_bits, s->extra_sc.bits_used);
-        }
-    }
 
     if(s->stereo_in){
         if(avctx->sample_fmt == AV_SAMPLE_FMT_S16)
@@ -1167,7 +1127,7 @@ static int wavpack_decode_block(AVCodecContext *avctx, int block_no,
         }
     }
 
-    wc->samples_left = s->samples_left;
+    *got_frame_ptr = 1;
 
     return samplecount * bpp;
 }
@@ -1181,23 +1141,40 @@ static void wavpack_decode_flush(AVCodecContext *avctx)
         wv_reset_saved_context(s->fdec[i]);
 }
 
-static int wavpack_decode_frame(AVCodecContext *avctx,
-                            void *data, int *data_size,
-                            AVPacket *avpkt)
+static int wavpack_decode_frame(AVCodecContext *avctx, void *data,
+                                int *got_frame_ptr, AVPacket *avpkt)
 {
     WavpackContext *s = avctx->priv_data;
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
-    int frame_size;
+    int frame_size, ret;
     int samplecount = 0;
 
     s->block = 0;
-    s->samples_left = 0;
     s->ch_offset = 0;
 
+    /* determine number of samples */
     if(s->mkv_mode){
         s->samples = AV_RL32(buf); buf += 4;
+    } else {
+        if (s->multichannel)
+            s->samples = AV_RL32(buf + 4);
+        else
+            s->samples = AV_RL32(buf);
     }
+    if (s->samples <= 0) {
+        av_log(avctx, AV_LOG_ERROR, "Invalid number of samples: %d\n",
+               s->samples);
+        return AVERROR(EINVAL);
+    }
+
+    /* get output buffer */
+    s->frame.nb_samples = s->samples;
+    if ((ret = avctx->get_buffer(avctx, &s->frame)) < 0) {
+        av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
+        return ret;
+    }
+
     while(buf_size > 0){
         if(!s->multichannel){
             frame_size = buf_size;
@@ -1216,17 +1193,19 @@ static int wavpack_decode_frame(AVCodecContext *avctx,
             wavpack_decode_flush(avctx);
             return -1;
         }
-        if((samplecount = wavpack_decode_block(avctx, s->block, data,
-                                               data_size, buf, frame_size)) < 0) {
+        if((samplecount = wavpack_decode_block(avctx, s->block, s->frame.data[0],
+                                               got_frame_ptr, buf, frame_size)) < 0) {
             wavpack_decode_flush(avctx);
             return -1;
         }
         s->block++;
         buf += frame_size; buf_size -= frame_size;
     }
-    *data_size = samplecount * avctx->channels;
 
-    return s->samples_left > 0 ? 0 : avpkt->size;
+    if (*got_frame_ptr)
+        *(AVFrame *)data = s->frame;
+
+    return avpkt->size;
 }
 
 AVCodec ff_wavpack_decoder = {
@@ -1238,6 +1217,6 @@ AVCodec ff_wavpack_decoder = {
     .close          = wavpack_decode_end,
     .decode         = wavpack_decode_frame,
     .flush          = wavpack_decode_flush,
-    .capabilities = CODEC_CAP_SUBFRAMES,
+    .capabilities   = CODEC_CAP_SUBFRAMES | CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("WavPack"),
 };

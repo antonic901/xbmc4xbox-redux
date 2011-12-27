@@ -330,7 +330,6 @@ static const AVOption options[]={
 {"ibias", "intra quant bias", OFFSET(intra_quant_bias), AV_OPT_TYPE_INT, {.dbl = FF_DEFAULT_QUANT_BIAS }, INT_MIN, INT_MAX, V|E},
 {"pbias", "inter quant bias", OFFSET(inter_quant_bias), AV_OPT_TYPE_INT, {.dbl = FF_DEFAULT_QUANT_BIAS }, INT_MIN, INT_MAX, V|E},
 {"color_table_id", NULL, OFFSET(color_table_id), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX},
-{"internal_buffer_count", NULL, OFFSET(internal_buffer_count), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX},
 {"global_quality", NULL, OFFSET(global_quality), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX, V|A|E},
 {"coder", NULL, OFFSET(coder_type), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX, V|E, "coder"},
 {"vlc", "variable length coder / huffman coder", 0, AV_OPT_TYPE_CONST, {.dbl = FF_CODER_TYPE_VLC }, INT_MIN, INT_MAX, V|E, "coder"},
@@ -372,7 +371,8 @@ static const AVOption options[]={
 {"float", NULL, 0, AV_OPT_TYPE_CONST, {.dbl = FF_AA_FLOAT }, INT_MIN, INT_MAX, V|D, "aa"},
 #endif
 {"qns", "quantizer noise shaping", OFFSET(quantizer_noise_shaping), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX, V|E},
-{"threads", NULL, OFFSET(thread_count), AV_OPT_TYPE_INT, {.dbl = 1 }, INT_MIN, INT_MAX, V|E|D},
+{"threads", NULL, OFFSET(thread_count), AV_OPT_TYPE_INT, {.dbl = 1 }, 0, INT_MAX, V|E|D, "threads"},
+{"auto", "detect a good number of threads", 0, AV_OPT_TYPE_CONST, {.dbl = 0 }, INT_MIN, INT_MAX, V|E|D, "threads"},
 {"me_threshold", "motion estimaton threshold", OFFSET(me_threshold), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX, V|E},
 {"mb_threshold", "macroblock threshold", OFFSET(mb_threshold), AV_OPT_TYPE_INT, {.dbl = DEFAULT }, INT_MIN, INT_MAX, V|E},
 {"dc", "intra_dc_precision", OFFSET(intra_dc_precision), AV_OPT_TYPE_INT, {.dbl = 0 }, INT_MIN, INT_MAX, V|E},
@@ -579,6 +579,7 @@ int avcodec_get_context_defaults3(AVCodecContext *s, AVCodec *codec){
     s->sample_aspect_ratio = (AVRational){0,1};
     s->pix_fmt             = PIX_FMT_NONE;
     s->sample_fmt          = AV_SAMPLE_FMT_NONE;
+    s->timecode_frame_start = -1;
 
     s->reget_buffer        = avcodec_default_reget_buffer;
     s->reordered_opaque    = AV_NOPTS_VALUE;
@@ -590,15 +591,15 @@ int avcodec_get_context_defaults3(AVCodecContext *s, AVCodec *codec){
             }
         }
         if(codec->priv_class){
-            *(AVClass**)s->priv_data= codec->priv_class;
+            *(const AVClass**)s->priv_data = codec->priv_class;
             av_opt_set_defaults(s->priv_data);
         }
     }
     if (codec && codec->defaults) {
         int ret;
-        AVCodecDefault *d = codec->defaults;
+        const AVCodecDefault *d = codec->defaults;
         while (d->key) {
-            ret = av_set_string3(s, d->key, d->value, 0, NULL);
+            ret = av_opt_set(s, d->key, d->value, 0);
             av_assert0(ret >= 0);
             d++;
         }
@@ -653,9 +654,9 @@ int avcodec_copy_context(AVCodecContext *dest, const AVCodecContext *src)
     dest->priv_data       = NULL;
     dest->codec           = NULL;
     dest->slice_offset    = NULL;
-    dest->internal_buffer = NULL;
     dest->hwaccel         = NULL;
     dest->thread_opaque   = NULL;
+    dest->internal        = NULL;
 
     /* reallocate values that should be allocated separately */
     dest->rc_eq           = NULL;
@@ -699,4 +700,28 @@ fail:
 const AVClass *avcodec_get_class(void)
 {
     return &av_codec_context_class;
+}
+
+#define FOFFSET(x) offsetof(AVFrame,x)
+
+static const AVOption frame_options[]={
+{"best_effort_timestamp", "", FOFFSET(best_effort_timestamp), AV_OPT_TYPE_INT64, {.dbl = AV_NOPTS_VALUE }, INT64_MIN, INT64_MAX, 0},
+{"pkt_pos", "", FOFFSET(pkt_pos), AV_OPT_TYPE_INT64, {.dbl = -1 }, INT64_MIN, INT64_MAX, 0},
+{"sample_aspect_ratio", "", FOFFSET(sample_aspect_ratio), AV_OPT_TYPE_RATIONAL, {.dbl = 0 }, 0, INT_MAX, 0},
+{"width", "", FOFFSET(width), AV_OPT_TYPE_INT, {.dbl = 0 }, 0, INT_MAX, 0},
+{"height", "", FOFFSET(height), AV_OPT_TYPE_INT, {.dbl = 0 }, 0, INT_MAX, 0},
+{"format", "", FOFFSET(format), AV_OPT_TYPE_INT, {.dbl = -1 }, 0, INT_MAX, 0},
+{NULL},
+};
+
+static const AVClass av_frame_class = {
+    .class_name              = "AVFrame",
+    .item_name               = NULL,
+    .option                  = frame_options,
+    .version                 = LIBAVUTIL_VERSION_INT,
+};
+
+const AVClass *avcodec_get_frame_class(void)
+{
+    return &av_frame_class;
 }

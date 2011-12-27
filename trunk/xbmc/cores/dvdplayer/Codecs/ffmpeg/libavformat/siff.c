@@ -21,6 +21,8 @@
 
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
+#include "avio_internal.h"
 
 enum SIFFTags{
     TAG_SIFF = MKTAG('S', 'I', 'F', 'F'),
@@ -80,7 +82,7 @@ static int create_audio_stream(AVFormatContext *s, SIFFContext *c)
     ast->codec->bits_per_coded_sample = c->bits;
     ast->codec->sample_rate     = c->rate;
     ast->codec->frame_size      = c->block_align;
-    av_set_pts_info(ast, 16, 1, c->rate);
+    avpriv_set_pts_info(ast, 16, 1, c->rate);
     return 0;
 }
 
@@ -124,7 +126,7 @@ static int siff_parse_vbv1(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
     st->codec->width      = width;
     st->codec->height     = height;
     st->codec->pix_fmt    = PIX_FMT_PAL8;
-    av_set_pts_info(st, 16, 1, 12);
+    avpriv_set_pts_info(st, 16, 1, 12);
 
     c->cur_frame = 0;
     c->has_video = 1;
@@ -200,13 +202,16 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
         }
 
         if (!c->curstrm){
-            size = c->pktsize - c->sndsize;
-            if (av_new_packet(pkt, size) < 0)
+            size = c->pktsize - c->sndsize - c->gmcsize - 2;
+            size = ffio_limit(s->pb, size);
+            if(size < 0 || c->pktsize < c->sndsize)
+                return AVERROR_INVALIDDATA;
+            if (av_new_packet(pkt, size + c->gmcsize + 2) < 0)
                 return AVERROR(ENOMEM);
             AV_WL16(pkt->data, c->flags);
             if (c->gmcsize)
                 memcpy(pkt->data + 2, c->gmc, c->gmcsize);
-            avio_read(s->pb, pkt->data + 2 + c->gmcsize, size - c->gmcsize - 2);
+            avio_read(s->pb, pkt->data + 2 + c->gmcsize, size);
             pkt->stream_index = 0;
             c->curstrm = -1;
         }else{

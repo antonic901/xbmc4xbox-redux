@@ -22,6 +22,7 @@
  */
 
 #include "config.h"
+#include "libavformat/internal.h"
 #include "libavutil/log.h"
 #include "libavutil/mathematics.h"
 #include "libavutil/opt.h"
@@ -256,7 +257,7 @@ static int dc1394_read_header(AVFormatContext *c, AVFormatParameters * ap)
     vst = avformat_new_stream(c, NULL);
     if (!vst)
         goto out_camera;
-    av_set_pts_info(vst, 64, 1, 1000);
+    avpriv_set_pts_info(vst, 64, 1, 1000);
     vst->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     vst->codec->codec_id = CODEC_ID_RAWVIDEO;
     vst->codec->time_base.den = final_frame_rate;
@@ -334,8 +335,8 @@ static int dc1394_read_packet(AVFormatContext *c, AVPacket *pkt)
 
     res = dc1394_capture_dequeue(dc1394->camera, DC1394_CAPTURE_POLICY_WAIT, &dc1394->frame);
     if (res == DC1394_SUCCESS) {
-        dc1394->packet.data = (uint8_t *)(dc1394->frame->image);
-        dc1394->packet.pts = (dc1394->current_frame  * 1000000) / (dc1394->frame_rate);
+        dc1394->packet.data = (uint8_t *) dc1394->frame->image;
+        dc1394->packet.pts  = dc1394->current_frame * 1000000 / dc1394->frame_rate;
         res = dc1394->frame->image_bytes;
     } else {
         av_log(c, AV_LOG_ERROR, "DMA capture failed\n");

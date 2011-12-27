@@ -26,6 +26,7 @@
 #include "libavutil/bswap.h"
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define SMACKER_PAL 0x01
 #define SMACKER_FLAG_RING_FRAME 0x01
@@ -171,7 +172,7 @@ static int smacker_read_header(AVFormatContext *s, AVFormatParameters *ap)
         smk->pts_inc *= 100;
     tbase = 100000;
     av_reduce(&tbase, &smk->pts_inc, tbase, smk->pts_inc, (1UL<<31)-1);
-    av_set_pts_info(st, 33, smk->pts_inc, tbase);
+    avpriv_set_pts_info(st, 33, smk->pts_inc, tbase);
     st->duration = smk->frames;
     /* handle possible audio streams */
     for(i = 0; i < 7; i++) {
@@ -195,7 +196,7 @@ static int smacker_read_header(AVFormatContext *s, AVFormatParameters *ap)
             ast[i]->codec->bits_per_coded_sample = (smk->aflags[i] & SMK_AUD_16BITS) ? 16 : 8;
             if(ast[i]->codec->bits_per_coded_sample == 16 && ast[i]->codec->codec_id == CODEC_ID_PCM_U8)
                 ast[i]->codec->codec_id = CODEC_ID_PCM_S16LE;
-            av_set_pts_info(ast[i], 64, 1, ast[i]->codec->sample_rate
+            avpriv_set_pts_info(ast[i], 64, 1, ast[i]->codec->sample_rate
                     * ast[i]->codec->channels * ast[i]->codec->bits_per_coded_sample / 8);
         }
     }
@@ -254,6 +255,8 @@ static int smacker_read_packet(AVFormatContext *s, AVPacket *pkt)
             memcpy(oldpal, pal, 768);
             size = avio_r8(s->pb);
             size = size * 4 - 1;
+            if(size + 1 > frame_size)
+                return AVERROR_INVALIDDATA;
             frame_size -= size;
             frame_size--;
             sz = 0;
@@ -288,10 +291,12 @@ static int smacker_read_packet(AVFormatContext *s, AVPacket *pkt)
         /* if audio chunks are present, put them to stack and retrieve later */
         for(i = 0; i < 7; i++) {
             if(flags & 1) {
-                int size;
+                unsigned int size;
                 uint8_t *tmpbuf;
 
                 size = avio_rl32(s->pb) - 4;
+                if(size + 4L > frame_size)
+                    return AVERROR_INVALIDDATA;
                 frame_size -= size;
                 frame_size -= 4;
                 smk->curstream++;

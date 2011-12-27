@@ -25,6 +25,8 @@
  * MPEG-1/2 decoder
  */
 
+#define UNCHECKED_BITSTREAM_READER 1
+
 //#define DEBUG
 #include "internal.h"
 #include "avcodec.h"
@@ -1364,7 +1366,7 @@ static int mpeg1_decode_picture(AVCodecContext *avctx,
     if (s->pict_type == AV_PICTURE_TYPE_P || s->pict_type == AV_PICTURE_TYPE_B) {
         s->full_pel[0] = get_bits1(&s->gb);
         f_code = get_bits(&s->gb, 3);
-        if (f_code == 0 && (avctx->err_recognition & AV_EF_BITSTREAM))
+        if (f_code == 0 && (avctx->err_recognition & (AV_EF_BITSTREAM|AV_EF_COMPLIANT)))
             return -1;
         s->mpeg_f_code[0][0] = f_code;
         s->mpeg_f_code[0][1] = f_code;
@@ -1372,7 +1374,7 @@ static int mpeg1_decode_picture(AVCodecContext *avctx,
     if (s->pict_type == AV_PICTURE_TYPE_B) {
         s->full_pel[1] = get_bits1(&s->gb);
         f_code = get_bits(&s->gb, 3);
-        if (f_code == 0 && (avctx->err_recognition & AV_EF_BITSTREAM))
+        if (f_code == 0 && (avctx->err_recognition & (AV_EF_BITSTREAM|AV_EF_COMPLIANT)))
             return -1;
         s->mpeg_f_code[1][0] = f_code;
         s->mpeg_f_code[1][1] = f_code;
@@ -1653,9 +1655,10 @@ static int mpeg_field_start(MpegEncContext *s, const uint8_t *buf, int buf_size)
 #define DECODE_SLICE_OK     0
 
 /**
- * decodes a slice. MpegEncContext.mb_y must be set to the MB row from the startcode
- * @return DECODE_SLICE_ERROR if the slice is damaged<br>
- *         DECODE_SLICE_OK if this slice is ok<br>
+ * Decode a slice.
+ * MpegEncContext.mb_y must be set to the MB row from the startcode.
+ * @return DECODE_SLICE_ERROR if the slice is damaged,
+ *         DECODE_SLICE_OK if this slice is OK
  */
 static int mpeg_decode_slice(MpegEncContext *s, int mb_y,
                              const uint8_t **buf, int buf_size)
@@ -1804,7 +1807,7 @@ static int mpeg_decode_slice(MpegEncContext *s, int mb_y,
                              && s->progressive_frame == 0 /* vbv_delay == 0xBBB || 0xE10*/;
 
                 if (left < 0 || (left && show_bits(&s->gb, FFMIN(left, 23)) && !is_d10)
-                    || ((avctx->err_recognition & AV_EF_BUFFER) && left > 8)) {
+                    || ((avctx->err_recognition & (AV_EF_BITSTREAM | AV_EF_AGGRESSIVE)) && left > 8)) {
                     av_log(avctx, AV_LOG_ERROR, "end mismatch left=%d %0X\n", left, show_bits(&s->gb, FFMIN(left, 23)));
                     return -1;
                 } else
@@ -1899,9 +1902,9 @@ static int slice_decode_thread(AVCodecContext *c, void *arg)
             if (c->err_recognition & AV_EF_EXPLODE)
                 return ret;
             if (s->resync_mb_x >= 0 && s->resync_mb_y >= 0)
-                ff_er_add_slice(s, s->resync_mb_x, s->resync_mb_y, s->mb_x, s->mb_y, AC_ERROR | DC_ERROR | MV_ERROR);
+                ff_er_add_slice(s, s->resync_mb_x, s->resync_mb_y, s->mb_x, s->mb_y, ER_AC_ERROR | ER_DC_ERROR | ER_MV_ERROR);
         } else {
-            ff_er_add_slice(s, s->resync_mb_x, s->resync_mb_y, s->mb_x-1, s->mb_y, AC_END | DC_END | MV_END);
+            ff_er_add_slice(s, s->resync_mb_x, s->resync_mb_y, s->mb_x-1, s->mb_y, ER_AC_END | ER_DC_END | ER_MV_END);
         }
 
         if (s->mb_y == s->end_mb_y)
@@ -1984,7 +1987,7 @@ static int mpeg1_decode_sequence(AVCodecContext *avctx,
     s->aspect_ratio_info = get_bits(&s->gb, 4);
     if (s->aspect_ratio_info == 0) {
         av_log(avctx, AV_LOG_ERROR, "aspect ratio has forbidden 0 value\n");
-        if (avctx->err_recognition & AV_EF_BITSTREAM)
+        if (avctx->err_recognition & (AV_EF_BITSTREAM | AV_EF_COMPLIANT))
             return -1;
     }
     s->frame_rate_index = get_bits(&s->gb, 4);
@@ -2030,6 +2033,7 @@ static int mpeg1_decode_sequence(AVCodecContext *avctx,
     s->progressive_sequence = 1;
     s->progressive_frame    = 1;
     s->picture_structure    = PICT_FRAME;
+    s->first_field          = 0;
     s->frame_pred_frame_dct = 1;
     s->chroma_format        = 1;
     s->codec_id             = s->avctx->codec_id = CODEC_ID_MPEG1VIDEO;
@@ -2089,6 +2093,7 @@ static int vcr2_init_sequence(AVCodecContext *avctx)
     s->progressive_sequence  = 1;
     s->progressive_frame     = 1;
     s->picture_structure     = PICT_FRAME;
+    s->first_field           = 0;
     s->frame_pred_frame_dct  = 1;
     s->chroma_format         = 1;
     s->codec_id              = s->avctx->codec_id = CODEC_ID_MPEG2VIDEO;
@@ -2141,20 +2146,12 @@ static void mpeg_decode_gop(AVCodecContext *avctx,
 {
     Mpeg1Context *s1  = avctx->priv_data;
     MpegEncContext *s = &s1->mpeg_enc_ctx;
-
-    int drop_frame_flag;
-    int time_code_hours, time_code_minutes;
-    int time_code_seconds, time_code_pictures;
     int broken_link;
+    int64_t tc;
 
     init_get_bits(&s->gb, buf, buf_size*8);
 
-    drop_frame_flag   = get_bits(&s->gb, 1);
-    time_code_hours   = get_bits(&s->gb, 5);
-    time_code_minutes = get_bits(&s->gb, 6);
-    skip_bits1(&s->gb); // marker bit
-    time_code_seconds  = get_bits(&s->gb, 6);
-    time_code_pictures = get_bits(&s->gb, 6);
+    tc = avctx->timecode_frame_start = get_bits(&s->gb, 25);
 
     s->closed_gop = get_bits1(&s->gb);
     /*broken_link indicate that after editing the
@@ -2162,11 +2159,17 @@ static void mpeg_decode_gop(AVCodecContext *avctx,
       are missing (open gop)*/
     broken_link = get_bits1(&s->gb);
 
-    if (s->avctx->debug & FF_DEBUG_PICT_INFO)
+    if (s->avctx->debug & FF_DEBUG_PICT_INFO) {
+        int time_code_hours    = tc>>19 & 0x1f;
+        int time_code_minutes  = tc>>13 & 0x3f;
+        int time_code_seconds  = tc>>6  & 0x3f;
+        int drop_frame_flag    = tc     & 1<<24;
+        int time_code_pictures = tc     & 0x3f;
         av_log(s->avctx, AV_LOG_DEBUG, "GOP (%02d:%02d:%02d%c%02d) closed_gop=%d broken_link=%d\n",
                time_code_hours, time_code_minutes, time_code_seconds,
                drop_frame_flag ? ';' : ':',
                time_code_pictures, s->closed_gop, broken_link);
+    }
 }
 /**
  * Find the end of the current frame in the bitstream.
@@ -2505,9 +2508,9 @@ static int decode_chunks(AVCodecContext *avctx,
                         if (avctx->err_recognition & AV_EF_EXPLODE)
                             return ret;
                         if (s2->resync_mb_x >= 0 && s2->resync_mb_y >= 0)
-                            ff_er_add_slice(s2, s2->resync_mb_x, s2->resync_mb_y, s2->mb_x, s2->mb_y, AC_ERROR | DC_ERROR | MV_ERROR);
+                            ff_er_add_slice(s2, s2->resync_mb_x, s2->resync_mb_y, s2->mb_x, s2->mb_y, ER_AC_ERROR | ER_DC_ERROR | ER_MV_ERROR);
                     } else {
-                        ff_er_add_slice(s2, s2->resync_mb_x, s2->resync_mb_y, s2->mb_x-1, s2->mb_y, AC_END | DC_END | MV_END);
+                        ff_er_add_slice(s2, s2->resync_mb_x, s2->resync_mb_y, s2->mb_x-1, s2->mb_y, ER_AC_END | ER_DC_END | ER_MV_END);
                     }
                 }
             }

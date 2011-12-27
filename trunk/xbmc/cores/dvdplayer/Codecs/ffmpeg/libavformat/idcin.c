@@ -70,6 +70,7 @@
 
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define HUFFMAN_TABLE_SIZE (64 * 1024)
 #define IDCIN_FPS 14
@@ -156,7 +157,7 @@ static int idcin_read_header(AVFormatContext *s,
     st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
-    av_set_pts_info(st, 33, 1, IDCIN_FPS);
+    avpriv_set_pts_info(st, 33, 1, IDCIN_FPS);
     idcin->video_stream_index = st->index;
     st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codec->codec_id = CODEC_ID_IDCIN;
@@ -177,7 +178,7 @@ static int idcin_read_header(AVFormatContext *s,
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR(ENOMEM);
-        av_set_pts_info(st, 33, 1, IDCIN_FPS);
+        avpriv_set_pts_info(st, 33, 1, IDCIN_FPS);
         idcin->audio_stream_index = st->index;
         st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         st->codec->codec_tag = 1;
@@ -247,7 +248,9 @@ static int idcin_read_packet(AVFormatContext *s,
                 r = palette_buffer[i * 3    ] << palette_scale;
                 g = palette_buffer[i * 3 + 1] << palette_scale;
                 b = palette_buffer[i * 3 + 2] << palette_scale;
-                palette[i] = (r << 16) | (g << 8) | (b);
+                palette[i] = (0xFFU << 24) | (r << 16) | (g << 8) | (b);
+                if (palette_scale == 2)
+                    palette[i] |= palette[i] >> 6 & 0x30303;
             }
         }
 

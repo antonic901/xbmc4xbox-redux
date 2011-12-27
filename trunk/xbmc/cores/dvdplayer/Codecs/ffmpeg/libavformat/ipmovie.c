@@ -34,6 +34,7 @@
 
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define CHUNK_PREAMBLE_SIZE 4
 #define OPCODE_PREAMBLE_SIZE 4
@@ -114,7 +115,7 @@ static int load_ipmovie_packet(IPMVEContext *s, AVIOContext *pb,
 
     int chunk_type;
 
-    if (s->audio_chunk_offset) {
+    if (s->audio_chunk_offset && s->audio_channels && s->audio_bits) {
 
         /* adjust for PCM audio by skipping chunk header */
         if (s->audio_type != CODEC_ID_INTERPLAY_DPCM) {
@@ -562,7 +563,7 @@ static int ipmovie_read_header(AVFormatContext *s,
     st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
-    av_set_pts_info(st, 63, 1, 1000000);
+    avpriv_set_pts_info(st, 63, 1, 1000000);
     ipmovie->video_stream_index = st->index;
     st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codec->codec_id = CODEC_ID_INTERPLAY_VIDEO;
@@ -575,7 +576,7 @@ static int ipmovie_read_header(AVFormatContext *s,
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR(ENOMEM);
-        av_set_pts_info(st, 32, 1, ipmovie->audio_sample_rate);
+        avpriv_set_pts_info(st, 32, 1, ipmovie->audio_sample_rate);
         ipmovie->audio_stream_index = st->index;
         st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         st->codec->codec_id = ipmovie->audio_type;

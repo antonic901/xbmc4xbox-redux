@@ -11,6 +11,8 @@ set -e
 
 eval do_$test=y
 
+ENC_OPTS="$ENC_OPTS -metadata title=lavftest"
+
 do_lavf()
 {
     file=${outfile}lavf.$1
@@ -71,7 +73,7 @@ do_lavf mxf_d10 "-ar 48000 -ac 2 -r 25 -s 720x576 -vf pad=720:608:0:32 -vcodec m
 fi
 
 if [ -n "$do_ts" ] ; then
-do_lavf ts "-ab 64k"
+do_lavf ts "-ab 64k -mpegts_transport_stream_id 42"
 fi
 
 if [ -n "$do_swf" ] ; then
@@ -104,6 +106,10 @@ fi
 
 if [ -n "$do_mkv" ] ; then
 do_lavf mkv "-acodec mp2 -ab 64k -vcodec mpeg4"
+fi
+
+if [ -n "$do_wtv" ] ; then
+do_lavf wtv "-acodec mp2"
 fi
 
 
@@ -215,6 +221,14 @@ fi
 
 if [ -n "$do_rso" ] ; then
 do_audio_only rso
+fi
+
+if [ -n "$do_sox" ] ; then
+do_audio_only sox
+fi
+
+if [ -n "$do_caf" ] ; then
+do_audio_only caf
 fi
 
 # pix_fmt conversions

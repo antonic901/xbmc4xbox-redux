@@ -44,6 +44,7 @@ typedef struct {
     int line_count;
     int http_code;
     int64_t chunksize;      /**< Used if "Transfer-Encoding: chunked" otherwise -1. */
+    char *user_agent;
     int64_t off, filesize;
     char location[MAX_URL_SIZE];
     HTTPAuthState auth_state;
@@ -56,9 +57,11 @@ typedef struct {
 #define OFFSET(x) offsetof(HTTPContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
 #define E AV_OPT_FLAG_ENCODING_PARAM
+#define DEC AV_OPT_FLAG_DECODING_PARAM
 static const AVOption options[] = {
 {"chunked_post", "use chunked transfer-encoding for posts", OFFSET(chunked_post), AV_OPT_TYPE_INT, {.dbl = 1}, 0, 1, E },
 {"headers", "custom HTTP headers, can override built in default headers", OFFSET(headers), AV_OPT_TYPE_STRING, { 0 }, 0, 0, D|E },
+{"user-agent", "override User-Agent header", OFFSET(user_agent), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, DEC},
 {NULL}
 };
 #define HTTP_CLASS(flavor)\
@@ -67,7 +70,7 @@ static const AVClass flavor ## _context_class = {\
     .item_name      = av_default_item_name,\
     .option         = options,\
     .version        = LIBAVUTIL_VERSION_INT,\
-};
+}
 
 HTTP_CLASS(http);
 HTTP_CLASS(https);
@@ -90,7 +93,7 @@ static int http_open_cnx(URLContext *h)
 {
     const char *path, *proxy_path, *lower_proto = "tcp", *local_path;
     char hostname[1024], hoststr[1024], proto[10];
-    char auth[1024], proxyauth[1024];
+    char auth[1024], proxyauth[1024] = "";
     char path1[1024];
     char buf[1024], urlbuf[1024];
     int port, use_proxy, err, location_changed = 0, redirects = 0;
@@ -110,6 +113,15 @@ static int http_open_cnx(URLContext *h)
                  path1, sizeof(path1), s->location);
     ff_url_join(hoststr, sizeof(hoststr), NULL, NULL, hostname, port, NULL);
 
+    if (!strcmp(proto, "https")) {
+        lower_proto = "tls";
+        use_proxy = 0;
+        if (port < 0)
+            port = 443;
+    }
+    if (port < 0)
+        port = 80;
+
     if (path1[0] == '\0')
         path = "/";
     else
@@ -124,16 +136,10 @@ static int http_open_cnx(URLContext *h)
         av_url_split(NULL, 0, proxyauth, sizeof(proxyauth),
                      hostname, sizeof(hostname), &port, NULL, 0, proxy_path);
     }
-    if (!strcmp(proto, "https")) {
-        lower_proto = "tls";
-        if (port < 0)
-            port = 443;
-    }
-    if (port < 0)
-        port = 80;
 
     ff_url_join(buf, sizeof(buf), lower_proto, NULL, hostname, port, NULL);
-    err = ffurl_open(&hd, buf, AVIO_FLAG_READ_WRITE);
+    err = ffurl_open(&hd, buf, AVIO_FLAG_READ_WRITE,
+                     &h->interrupt_callback, NULL);
     if (err < 0)
         goto fail;
 
@@ -339,8 +345,9 @@ static int http_connect(URLContext *h, const char *path, const char *local_path,
 
     /* set default headers if needed */
     if (!has_header(s->headers, "\r\nUser-Agent: "))
-       len += av_strlcatf(headers + len, sizeof(headers) - len,
-                          "User-Agent: %s\r\n", LIBAVFORMAT_IDENT);
+        len += av_strlcatf(headers + len, sizeof(headers) - len,
+                           "User-Agent: %s\r\n",
+                           s->user_agent ? s->user_agent : LIBAVFORMAT_IDENT);
     if (!has_header(s->headers, "\r\nAccept: "))
         len += av_strlcpy(headers + len, "Accept: */*\r\n",
                           sizeof(headers) - len);
@@ -412,10 +419,33 @@ static int http_connect(URLContext *h, const char *path, const char *local_path,
 }
 
 
-static int http_read(URLContext *h, uint8_t *buf, int size)
+static int http_buf_read(URLContext *h, uint8_t *buf, int size)
 {
     HTTPContext *s = h->priv_data;
     int len;
+    /* read bytes from input buffer first */
+    len = s->buf_end - s->buf_ptr;
+    if (len > 0) {
+        if (len > size)
+            len = size;
+        memcpy(buf, s->buf_ptr, len);
+        s->buf_ptr += len;
+    } else {
+        if (!s->willclose && s->filesize >= 0 && s->off >= s->filesize)
+            return AVERROR_EOF;
+        len = ffurl_read(s->hd, buf, size);
+    }
+    if (len > 0) {
+        s->off += len;
+        if (s->chunksize > 0)
+            s->chunksize -= len;
+    }
+    return len;
+}
+
+static int http_read(URLContext *h, uint8_t *buf, int size)
+{
+    HTTPContext *s = h->priv_data;
 
     if (s->chunksize >= 0) {
         if (!s->chunksize) {
@@ -438,24 +468,7 @@ static int http_read(URLContext *h, uint8_t *buf, int size)
         }
         size = FFMIN(size, s->chunksize);
     }
-    /* read bytes from input buffer first */
-    len = s->buf_end - s->buf_ptr;
-    if (len > 0) {
-        if (len > size)
-            len = size;
-        memcpy(buf, s->buf_ptr, len);
-        s->buf_ptr += len;
-    } else {
-        if (!s->willclose && s->filesize >= 0 && s->off >= s->filesize)
-            return AVERROR_EOF;
-        len = ffurl_read(s->hd, buf, size);
-    }
-    if (len > 0) {
-        s->off += len;
-        if (s->chunksize > 0)
-            s->chunksize -= len;
-    }
-    return len;
+    return http_buf_read(h, buf, size);
 }
 
 /* used only when posting data */
@@ -569,5 +582,120 @@ URLProtocol ff_https_protocol = {
     .url_get_file_handle = http_get_file_handle,
     .priv_data_size      = sizeof(HTTPContext),
     .priv_data_class     = &https_context_class,
+};
+#endif
+
+#if CONFIG_HTTPPROXY_PROTOCOL
+static int http_proxy_close(URLContext *h)
+{
+    HTTPContext *s = h->priv_data;
+    if (s->hd)
+        ffurl_close(s->hd);
+    return 0;
+}
+
+static int http_proxy_open(URLContext *h, const char *uri, int flags)
+{
+    HTTPContext *s = h->priv_data;
+    char hostname[1024], hoststr[1024];
+    char auth[1024], pathbuf[1024], *path;
+    char line[1024], lower_url[100];
+    int port, ret = 0;
+    HTTPAuthType cur_auth_type;
+    char *authstr;
+
+    h->is_streamed = 1;
+
+    av_url_split(NULL, 0, auth, sizeof(auth), hostname, sizeof(hostname), &port,
+                 pathbuf, sizeof(pathbuf), uri);
+    ff_url_join(hoststr, sizeof(hoststr), NULL, NULL, hostname, port, NULL);
+    path = pathbuf;
+    if (*path == '/')
+        path++;
+
+    ff_url_join(lower_url, sizeof(lower_url), "tcp", NULL, hostname, port,
+                NULL);
+redo:
+    ret = ffurl_open(&s->hd, lower_url, AVIO_FLAG_READ_WRITE,
+                     &h->interrupt_callback, NULL);
+    if (ret < 0)
+        return ret;
+
+    authstr = ff_http_auth_create_response(&s->proxy_auth_state, auth,
+                                           path, "CONNECT");
+    snprintf(s->buffer, sizeof(s->buffer),
+             "CONNECT %s HTTP/1.1\r\n"
+             "Host: %s\r\n"
+             "Connection: close\r\n"
+             "%s%s"
+             "\r\n",
+             path,
+             hoststr,
+             authstr ? "Proxy-" : "", authstr ? authstr : "");
+    av_freep(&authstr);
+
+    if ((ret = ffurl_write(s->hd, s->buffer, strlen(s->buffer))) < 0)
+        goto fail;
+
+    s->buf_ptr = s->buffer;
+    s->buf_end = s->buffer;
+    s->line_count = 0;
+    s->filesize = -1;
+    cur_auth_type = s->proxy_auth_state.auth_type;
+
+    for (;;) {
+        int new_loc;
+        // Note: This uses buffering, potentially reading more than the
+        // HTTP header. If tunneling a protocol where the server starts
+        // the conversation, we might buffer part of that here, too.
+        // Reading that requires using the proper ffurl_read() function
+        // on this URLContext, not using the fd directly (as the tls
+        // protocol does). This shouldn't be an issue for tls though,
+        // since the client starts the conversation there, so there
+        // is no extra data that we might buffer up here.
+        if (http_get_line(s, line, sizeof(line)) < 0) {
+            ret = AVERROR(EIO);
+            goto fail;
+        }
+
+        av_dlog(h, "header='%s'\n", line);
+
+        ret = process_line(h, line, s->line_count, &new_loc);
+        if (ret < 0)
+            goto fail;
+        if (ret == 0)
+            break;
+        s->line_count++;
+    }
+    if (s->http_code == 407 && cur_auth_type == HTTP_AUTH_NONE &&
+        s->proxy_auth_state.auth_type != HTTP_AUTH_NONE) {
+        ffurl_close(s->hd);
+        s->hd = NULL;
+        goto redo;
+    }
+
+    if (s->http_code < 400)
+        return 0;
+    ret = AVERROR(EIO);
+
+fail:
+    http_proxy_close(h);
+    return ret;
+}
+
+static int http_proxy_write(URLContext *h, const uint8_t *buf, int size)
+{
+    HTTPContext *s = h->priv_data;
+    return ffurl_write(s->hd, buf, size);
+}
+
+URLProtocol ff_httpproxy_protocol = {
+    .name                = "httpproxy",
+    .url_open            = http_proxy_open,
+    .url_read            = http_buf_read,
+    .url_write           = http_proxy_write,
+    .url_close           = http_proxy_close,
+    .url_get_file_handle = http_get_file_handle,
+    .priv_data_size      = sizeof(HTTPContext),
 };
 #endif

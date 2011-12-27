@@ -1,7 +1,19 @@
 Entries are sorted chronologically from oldest to youngest within each release,
 releases are sorted from youngest to oldest.
 
+
 version next:
+- v410 Quicktime Uncompressed 4:4:4 10-bit encoder and decoder
+- SBaGen (SBG) binaural beats script demuxer
+- OpenMG Audio muxer
+- SMJPEG demuxer
+- dv: add timecode to metadata
+- thumbnail video filter
+- XML output in ffprobe
+- asplit audio filter
+
+
+version 0.9:
 
 - openal input device added
 - boxblur filter added
@@ -120,10 +132,24 @@ easier to use. The changes are:
 - Encrypted OMA files support
 - Discworld II BMV decoding support
 - VBLE Decoder
+- OS X Video Decoder Acceleration (VDA) support
+- compact and csv output in ffprobe
+- pan audio filter
+- IFF Amiga Continuous Bitmap (ACBM) decoder
+- ass filter
+- CRI ADX audio format demuxer
+- Playstation Portable PMP format demuxer
+- Microsoft Windows ICO demuxer
+- life source
+- PCM format support in OMA demuxer
+- CLJR encoder
+- new option: -report
+- Dxtory capture format decoder
+- cellauto source
+- Simple segmenting muxer
 
 
 version 0.8:
-
 
 - many many things we forgot because we rather write code than changelogs
 - WebM support in Matroska de/muxer
@@ -239,6 +265,7 @@ version 0.8:
 - lut, lutrgb, and lutyuv filters added
 - buffersink libavfilter sink added
 - Bump libswscale for recently reported ABI break
+- New J2K encoder (via OpenJPEG)
 
 
 version 0.7:

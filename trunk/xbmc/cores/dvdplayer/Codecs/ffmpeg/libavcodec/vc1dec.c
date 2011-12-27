@@ -236,7 +236,7 @@ static void vc1_put_signed_blocks_clamped(VC1Context *v)
         if (s->mb_x) {
             topleft_mb_pos = (s->mb_y - 1) * s->mb_stride + s->mb_x - 1;
             fieldtx        = v->fieldtx_plane[topleft_mb_pos];
-            stride_y       = (s->linesize) << fieldtx;
+            stride_y       = s->linesize << fieldtx;
             v_dist         = (16 - fieldtx) >> (fieldtx == 0);
             s->dsp.put_signed_pixels_clamped(v->block[v->topleft_blk_idx][0],
                                              s->dest[0] - 16 * s->linesize - 16,
@@ -501,13 +501,14 @@ static void vc1_mc_1mv(VC1Context *v, int dir)
         uvmy = uvmy - 2 + 4 * v->cur_field_type;
     }
 
-    if (v->fastuvmc && (v->fcm != 1)) { // fastuvmc shall be ignored for interlaced frame picture
+    // fastuvmc shall be ignored for interlaced frame picture
+    if (v->fastuvmc && (v->fcm != ILACE_FRAME)) {
         uvmx = uvmx + ((uvmx < 0) ? (uvmx & 1) : -(uvmx & 1));
         uvmy = uvmy + ((uvmy < 0) ? (uvmy & 1) : -(uvmy & 1));
     }
     if (v->field_mode) { // interlaced field picture
         if (!dir) {
-            if ((v->cur_field_type != v->ref_field_type[dir]) && v->cur_field_type) {
+            if ((v->cur_field_type != v->ref_field_type[dir]) && v->second_field) {
                 srcY = s->current_picture.f.data[0];
                 srcU = s->current_picture.f.data[1];
                 srcV = s->current_picture.f.data[2];
@@ -630,7 +631,7 @@ static void vc1_mc_1mv(VC1Context *v, int dir)
         srcY += s->mspel * (1 + s->linesize);
     }
 
-    if (v->field_mode && v->cur_field_type) {
+    if (v->field_mode && v->second_field) {
         off    = s->current_picture_ptr->f.linesize[0];
         off_uv = s->current_picture_ptr->f.linesize[1];
     } else {
@@ -685,7 +686,7 @@ static void vc1_mc_4mv_luma(VC1Context *v, int n, int dir)
     uint8_t *srcY;
     int dxy, mx, my, src_x, src_y;
     int off;
-    int fieldmv = (v->fcm == 1) ? v->blk_mv_type[s->block_index[n]] : 0;
+    int fieldmv = (v->fcm == ILACE_FRAME) ? v->blk_mv_type[s->block_index[n]] : 0;
     int v_edge_pos = s->v_edge_pos >> v->field_mode;
 
     if (!v->field_mode && !v->s.last_picture.f.data[0])
@@ -696,7 +697,7 @@ static void vc1_mc_4mv_luma(VC1Context *v, int n, int dir)
 
     if (!dir) {
         if (v->field_mode) {
-            if ((v->cur_field_type != v->ref_field_type[dir]) && v->cur_field_type)
+            if ((v->cur_field_type != v->ref_field_type[dir]) && v->second_field)
                 srcY = s->current_picture.f.data[0];
             else
                 srcY = s->last_picture.f.data[0];
@@ -744,7 +745,7 @@ static void vc1_mc_4mv_luma(VC1Context *v, int n, int dir)
             v->mv_f[1][s->block_index[k] + v->blocks_off] = f;
     }
 
-    if (v->fcm == 1) {  // not sure if needed for other types of picture
+    if (v->fcm == ILACE_FRAME) {  // not sure if needed for other types of picture
         int qx, qy;
         int width  = s->avctx->coded_width;
         int height = s->avctx->coded_height >> 1;
@@ -761,11 +762,11 @@ static void vc1_mc_4mv_luma(VC1Context *v, int n, int dir)
             my -= 8 * (qy - height - 1);
     }
 
-    if ((v->fcm == 1) && fieldmv)
+    if ((v->fcm == ILACE_FRAME) && fieldmv)
         off = ((n > 1) ? s->linesize : 0) + (n & 1) * 8;
     else
         off = s->linesize * 4 * (n & 2) + (n & 1) * 8;
-    if (v->field_mode && v->cur_field_type)
+    if (v->field_mode && v->second_field)
         off += s->current_picture_ptr->f.linesize[0];
 
     src_x = s->mb_x * 16 + (n & 1) * 8 + (mx >> 2);
@@ -779,7 +780,7 @@ static void vc1_mc_4mv_luma(VC1Context *v, int n, int dir)
         src_y = av_clip(src_y, -16, s->mb_height * 16);
     } else {
         src_x = av_clip(src_x, -17, s->avctx->coded_width);
-        if (v->fcm == 1) {
+        if (v->fcm == ILACE_FRAME) {
             if (src_y & 1)
                 src_y = av_clip(src_y, -17, s->avctx->coded_height + 1);
             else
@@ -993,7 +994,7 @@ static void vc1_mc_4mv_chroma(VC1Context *v, int dir)
             srcU += s->current_picture_ptr->f.linesize[1];
             srcV += s->current_picture_ptr->f.linesize[2];
         }
-        off = v->cur_field_type ? s->current_picture_ptr->f.linesize[1] : 0;
+        off = v->second_field ? s->current_picture_ptr->f.linesize[1] : 0;
     }
 
     if (v->rangeredfrm || (v->mv_mode == MV_PMODE_INTENSITY_COMP)
@@ -2047,7 +2048,7 @@ static void vc1_interp_mc(VC1Context *v)
         srcY += s->mspel * (1 + s->linesize);
     }
 
-    if (v->field_mode && v->cur_field_type) {
+    if (v->field_mode && v->second_field) {
         off    = s->current_picture_ptr->f.linesize[0];
         off_uv = s->current_picture_ptr->f.linesize[1];
     } else {
@@ -2917,7 +2918,7 @@ static int vc1_decode_i_block_adv(VC1Context *v, DCTELEM block[64], int n,
         int k;
 
         if (v->s.ac_pred) {
-            if (!use_pred && v->fcm == 1) {
+            if (!use_pred && v->fcm == ILACE_FRAME) {
                 zz_table = v->zzi_8x8;
             } else {
                 if (!dc_pred_dir) // top
@@ -2926,7 +2927,7 @@ static int vc1_decode_i_block_adv(VC1Context *v, DCTELEM block[64], int n,
                     zz_table = v->zz_8x8[3];
             }
         } else {
-            if (v->fcm != 1)
+            if (v->fcm != ILACE_FRAME)
                 zz_table = v->zz_8x8[1];
             else
                 zz_table = v->zzi_8x8;
@@ -3136,10 +3137,10 @@ static int vc1_decode_intra_block(VC1Context *v, DCTELEM block[64], int n,
             i += skip;
             if (i > 63)
                 break;
-            if (v->fcm == 0)
+            if (v->fcm == PROGRESSIVE)
                 block[v->zz_8x8[0][i++]] = value;
             else {
-                if (use_pred && (v->fcm == 1)) {
+                if (use_pred && (v->fcm == ILACE_FRAME)) {
                     if (!dc_pred_dir) // top
                         block[v->zz_8x8[2][i++]] = value;
                     else // left
@@ -3293,7 +3294,7 @@ static int vc1_decode_p_block(VC1Context *v, DCTELEM block[64], int n,
             i += skip;
             if (i > 63)
                 break;
-            if (!v->interlace)
+            if (!v->fcm)
                 idx = v->zz_8x8[0][i++];
             else
                 idx = v->zzi_8x8[i++];
@@ -3321,7 +3322,7 @@ static int vc1_decode_p_block(VC1Context *v, DCTELEM block[64], int n,
                 i += skip;
                 if (i > 15)
                     break;
-                if (!v->interlace)
+                if (!v->fcm)
                     idx = ff_vc1_simple_progressive_4x4_zz[i++];
                 else
                     idx = ff_vc1_adv_interlaced_4x4_zz[i++];
@@ -3348,7 +3349,7 @@ static int vc1_decode_p_block(VC1Context *v, DCTELEM block[64], int n,
                 i += skip;
                 if (i > 31)
                     break;
-                if (!v->interlace)
+                if (!v->fcm)
                     idx = v->zz_8x4[i++] + off;
                 else
                     idx = ff_vc1_adv_interlaced_8x4_zz[i++] + off;
@@ -3375,7 +3376,7 @@ static int vc1_decode_p_block(VC1Context *v, DCTELEM block[64], int n,
                 i += skip;
                 if (i > 31)
                     break;
-                if (!v->interlace)
+                if (!v->fcm)
                     idx = v->zz_4x8[i++] + off;
                 else
                     idx = ff_vc1_adv_interlaced_4x8_zz[i++] + off;
@@ -3535,7 +3536,7 @@ static void vc1_apply_p_loop_filter(VC1Context *v)
         vc1_apply_p_v_loop_filter(v, i);
     }
 
-    /* V always preceedes H, therefore we run H one MB before V;
+    /* V always precedes H, therefore we run H one MB before V;
      * at the end of a row, we catch up to complete the row */
     if (s->mb_x) {
         for (i = 0; i < 6; i++) {
@@ -3572,7 +3573,7 @@ static int vc1_decode_p_mb(VC1Context *v)
     int skipped, fourmv;
     int block_cbp = 0, pat, block_tt = 0, block_intra = 0;
 
-    mquant = v->pq; /* Loosy initialization */
+    mquant = v->pq; /* lossy initialization */
 
     if (v->mv_type_is_raw)
         fourmv = get_bits1(gb);
@@ -4054,7 +4055,7 @@ static int vc1_decode_p_mb_intfi(VC1Context *v)
                 continue;
             v->vc1dsp.vc1_inv_trans_8x8(s->block[i]);
             off  = (i & 4) ? 0 : ((i & 1) * 8 + (i & 2) * 4 * s->linesize);
-            off += v->cur_field_type ? ((i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0]) : 0;
+            off += v->second_field ? ((i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0]) : 0;
             s->dsp.put_signed_pixels_clamped(s->block[i], s->dest[dst_idx] + off, (i & 4) ? s->uvlinesize : s->linesize);
             // TODO: loop filter
         }
@@ -4101,7 +4102,7 @@ static int vc1_decode_p_mb_intfi(VC1Context *v)
             dst_idx += i >> 2;
             val = ((cbp >> (5 - i)) & 1);
             off = (i & 4) ? 0 : (i & 1) * 8 + (i & 2) * 4 * s->linesize;
-            if (v->cur_field_type)
+            if (v->second_field)
                 off += (i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0];
             if (val) {
                 pat = vc1_decode_p_block(v, s->block[i], i, mquant, ttmb,
@@ -4140,7 +4141,7 @@ static void vc1_decode_b_mb(VC1Context *v)
     int dmv_x[2], dmv_y[2];
     int bmvtype = BMV_TYPE_BACKWARD;
 
-    mquant      = v->pq; /* Loosy initialization */
+    mquant      = v->pq; /* lossy initialization */
     s->mb_intra = 0;
 
     if (v->dmb_is_raw)
@@ -4331,7 +4332,7 @@ static void vc1_decode_b_mb_intfi(VC1Context *v)
                 for (j = 0; j < 64; j++)
                     s->block[i][j] <<= 1;
             off  = (i & 4) ? 0 : ((i & 1) * 8 + (i & 2) * 4 * s->linesize);
-            off += v->cur_field_type ? ((i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0]) : 0;
+            off += v->second_field ? ((i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0]) : 0;
             s->dsp.put_signed_pixels_clamped(s->block[i], s->dest[dst_idx] + off, (i & 4) ? s->uvlinesize : s->linesize);
             // TODO: yet to perform loop filter
         }
@@ -4413,7 +4414,7 @@ static void vc1_decode_b_mb_intfi(VC1Context *v)
             dst_idx += i >> 2;
             val = ((cbp >> (5 - i)) & 1);
             off = (i & 4) ? 0 : (i & 1) * 8 + (i & 2) * 4 * s->linesize;
-            if (v->cur_field_type)
+            if (v->second_field)
                 off += (i & 4) ? s->current_picture_ptr->f.linesize[1] : s->current_picture_ptr->f.linesize[0];
             if (val) {
                 vc1_decode_p_block(v, s->block[i], i, mquant, ttmb,
@@ -4547,7 +4548,7 @@ static void vc1_decode_i_blocks(VC1Context *v)
             if (v->s.loop_filter) vc1_loop_filter_iblk(v, v->pq);
 
             if (get_bits_count(&s->gb) > v->bits) {
-                ff_er_add_slice(s, 0, 0, s->mb_x, s->mb_y, (AC_END|DC_END|MV_END));
+                ff_er_add_slice(s, 0, 0, s->mb_x, s->mb_y, ER_MB_ERROR);
                 av_log(s->avctx, AV_LOG_ERROR, "Bits overconsumption: %i > %i\n",
                        get_bits_count(&s->gb), v->bits);
                 return;
@@ -4562,7 +4563,7 @@ static void vc1_decode_i_blocks(VC1Context *v)
     }
     if (v->s.loop_filter)
         ff_draw_horiz_band(s, (s->mb_height - 1) * 16, 16);
-    ff_er_add_slice(s, 0, 0, s->mb_width - 1, s->mb_height - 1, (AC_END|DC_END|MV_END));
+    ff_er_add_slice(s, 0, 0, s->mb_width - 1, s->mb_height - 1, ER_MB_END);
 }
 
 /** Decode blocks of I-frame for advanced profile
@@ -4672,7 +4673,7 @@ static void vc1_decode_i_blocks_adv(VC1Context *v)
 
             if (get_bits_count(&s->gb) > v->bits) {
                 // TODO: may need modification to handle slice coding
-                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, (AC_END|DC_END|MV_END));
+                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, ER_MB_ERROR);
                 av_log(s->avctx, AV_LOG_ERROR, "Bits overconsumption: %i > %i\n",
                        get_bits_count(&s->gb), v->bits);
                 return;
@@ -4697,7 +4698,7 @@ static void vc1_decode_i_blocks_adv(VC1Context *v)
     if (v->s.loop_filter)
         ff_draw_horiz_band(s, (s->end_mb_y-1)*16, 16);
     ff_er_add_slice(s, 0, s->start_mb_y << v->field_mode, s->mb_width - 1,
-                    (s->end_mb_y << v->field_mode) - 1, (AC_END|DC_END|MV_END));
+                    (s->end_mb_y << v->field_mode) - 1, ER_MB_END);
 }
 
 static void vc1_decode_p_blocks(VC1Context *v)
@@ -4739,16 +4740,16 @@ static void vc1_decode_p_blocks(VC1Context *v)
         for (; s->mb_x < s->mb_width; s->mb_x++) {
             ff_update_block_index(s);
 
-            if (v->fcm == 2)
+            if (v->fcm == ILACE_FIELD)
                 vc1_decode_p_mb_intfi(v);
-            else if (v->fcm == 1)
+            else if (v->fcm == ILACE_FRAME)
                 vc1_decode_p_mb_intfr(v);
             else vc1_decode_p_mb(v);
-            if (s->mb_y != s->start_mb_y && apply_loop_filter && v->fcm == 0)
+            if (s->mb_y != s->start_mb_y && apply_loop_filter && v->fcm == PROGRESSIVE)
                 vc1_apply_p_loop_filter(v);
             if (get_bits_count(&s->gb) > v->bits || get_bits_count(&s->gb) < 0) {
                 // TODO: may need modification to handle slice coding
-                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, (AC_END|DC_END|MV_END));
+                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, ER_MB_ERROR);
                 av_log(s->avctx, AV_LOG_ERROR, "Bits overconsumption: %i > %i at %ix%i\n",
                        get_bits_count(&s->gb), v->bits, s->mb_x, s->mb_y);
                 return;
@@ -4772,7 +4773,7 @@ static void vc1_decode_p_blocks(VC1Context *v)
     if (s->end_mb_y >= s->start_mb_y)
         ff_draw_horiz_band(s, (s->end_mb_y - 1) * 16, 16);
     ff_er_add_slice(s, 0, s->start_mb_y << v->field_mode, s->mb_width - 1,
-                    (s->end_mb_y << v->field_mode) - 1, (AC_END|DC_END|MV_END));
+                    (s->end_mb_y << v->field_mode) - 1, ER_MB_END);
 }
 
 static void vc1_decode_b_blocks(VC1Context *v)
@@ -4811,13 +4812,13 @@ static void vc1_decode_b_blocks(VC1Context *v)
         for (; s->mb_x < s->mb_width; s->mb_x++) {
             ff_update_block_index(s);
 
-            if (v->fcm == 2)
+            if (v->fcm == ILACE_FIELD)
                 vc1_decode_b_mb_intfi(v);
             else
                 vc1_decode_b_mb(v);
             if (get_bits_count(&s->gb) > v->bits || get_bits_count(&s->gb) < 0) {
                 // TODO: may need modification to handle slice coding
-                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, (AC_END|DC_END|MV_END));
+                ff_er_add_slice(s, 0, s->start_mb_y, s->mb_x, s->mb_y, ER_MB_ERROR);
                 av_log(s->avctx, AV_LOG_ERROR, "Bits overconsumption: %i > %i at %ix%i\n",
                        get_bits_count(&s->gb), v->bits, s->mb_x, s->mb_y);
                 return;
@@ -4833,14 +4834,14 @@ static void vc1_decode_b_blocks(VC1Context *v)
     if (v->s.loop_filter)
         ff_draw_horiz_band(s, (s->end_mb_y - 1) * 16, 16);
     ff_er_add_slice(s, 0, s->start_mb_y << v->field_mode, s->mb_width - 1,
-                    (s->end_mb_y << v->field_mode) - 1, (AC_END|DC_END|MV_END));
+                    (s->end_mb_y << v->field_mode) - 1, ER_MB_END);
 }
 
 static void vc1_decode_skip_blocks(VC1Context *v)
 {
     MpegEncContext *s = &v->s;
 
-    ff_er_add_slice(s, 0, s->start_mb_y, s->mb_width - 1, s->end_mb_y - 1, (AC_END|DC_END|MV_END));
+    ff_er_add_slice(s, 0, s->start_mb_y, s->mb_width - 1, s->end_mb_y - 1, ER_MB_END);
     s->first_slice_line = 1;
     for (s->mb_y = s->start_mb_y; s->mb_y < s->end_mb_y; s->mb_y++) {
         s->mb_x = 0;
@@ -5424,14 +5425,13 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
     MpegEncContext *s = &v->s;
     AVFrame *pict = data;
     uint8_t *buf2 = NULL;
-    uint8_t *buf_field2 = NULL;
     const uint8_t *buf_start = buf;
     int mb_height, n_slices1=-1;
     struct {
         uint8_t *buf;
         GetBitContext gb;
         int mby_start;
-    } *slices = NULL;
+    } *slices = NULL, *tmp;
 
     if(s->flags & CODEC_FLAG_LOW_DELAY)
         s->low_delay = 1;
@@ -5494,9 +5494,6 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
                     slices[n_slices].mby_start = s->mb_height >> 1;
                     n_slices1 = n_slices - 1; // index of the last slice of the first field
                     n_slices++;
-                    // not necessary, ad hoc until I find a way to handle WVC1i
-                    buf_field2 = av_mallocz(buf_size + FF_INPUT_BUFFER_PADDING_SIZE);
-                    vc1_unescape_buffer(start + 4, size, buf_field2);
                     break;
                 }
                 case VC1_CODE_ENTRYPOINT: /* it should be before frame data */
@@ -5524,14 +5521,26 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
             }
         } else if (v->interlace && ((buf[0] & 0xC0) == 0xC0)) { /* WVC1 interlaced stores both fields divided by marker */
             const uint8_t *divider;
+            int buf_size3;
 
             divider = find_next_marker(buf, buf + buf_size);
             if ((divider == (buf + buf_size)) || AV_RB32(divider) != VC1_CODE_FIELD) {
                 av_log(avctx, AV_LOG_ERROR, "Error in WVC1 interlaced frame\n");
                 goto err;
             } else { // found field marker, unescape second field
-                buf_field2 = av_mallocz(buf_size + FF_INPUT_BUFFER_PADDING_SIZE);
-                vc1_unescape_buffer(divider + 4, buf + buf_size - divider - 4, buf_field2);
+                tmp = av_realloc(slices, sizeof(*slices) * (n_slices+1));
+                if (!tmp)
+                    goto err;
+                slices = tmp;
+                slices[n_slices].buf = av_mallocz(buf_size + FF_INPUT_BUFFER_PADDING_SIZE);
+                if (!slices[n_slices].buf)
+                    goto err;
+                buf_size3 = vc1_unescape_buffer(divider + 4, buf + buf_size - divider - 4, slices[n_slices].buf);
+                init_get_bits(&slices[n_slices].gb, slices[n_slices].buf,
+                              buf_size3 << 3);
+                slices[n_slices].mby_start = s->mb_height >> 1;
+                n_slices1 = n_slices - 1;
+                n_slices++;
             }
             buf_size2 = vc1_unescape_buffer(buf, divider - buf, buf2);
         } else {
@@ -5581,6 +5590,8 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
      * otherwise we cannot store anything in there. */
     if (s->current_picture_ptr == NULL || s->current_picture_ptr->f.data[0]) {
         int i = ff_find_unused_picture(s, 0);
+        if (i < 0)
+            goto err;
         s->current_picture_ptr = &s->picture[i];
     }
 
@@ -5702,10 +5713,7 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
                 s->gb = slices[i].gb;
         }
         if (v->field_mode) {
-            av_free(buf_field2);
             v->second_field = 0;
-        }
-        if (v->field_mode) {
             if (s->pict_type == AV_PICTURE_TYPE_B) {
                 memcpy(v->mv_f_base, v->mv_f_next_base,
                        2 * (s->b8_stride * (s->mb_height * 2 + 1) + s->mb_stride * (s->mb_height + 1) * 2));
@@ -5719,6 +5727,8 @@ static int vc1_decode_frame(AVCodecContext *avctx, void *data,
 //av_log(s->avctx, AV_LOG_INFO, "Consumed %i/%i bits\n", get_bits_count(&s->gb), s->gb.size_in_bits);
 //  if (get_bits_count(&s->gb) > buf_size * 8)
 //      return -1;
+        if(s->error_occurred && s->pict_type == AV_PICTURE_TYPE_B)
+            goto err;
         ff_er_frame_end(s);
     }
 
@@ -5760,7 +5770,6 @@ err:
     for (i = 0; i < n_slices; i++)
         av_free(slices[i].buf);
     av_free(slices);
-    av_free(buf_field2);
     return -1;
 }
 

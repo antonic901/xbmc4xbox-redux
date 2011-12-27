@@ -56,8 +56,15 @@ AVFilterFormats *avfilter_merge_formats(AVFilterFormats *a, AVFilterFormats *b)
                                                            b->format_count));
     for (i = 0; i < a->format_count; i++)
         for (j = 0; j < b->format_count; j++)
-            if (a->formats[i] == b->formats[j])
+            if (a->formats[i] == b->formats[j]){
+                if(k >= FFMIN(a->format_count, b->format_count)){
+                    av_log(0, AV_LOG_ERROR, "Duplicate formats in avfilter_merge_formats() detected\n");
+                    av_free(ret->formats);
+                    av_free(ret);
+                    return NULL;
+                }
                 ret->formats[k++] = a->formats[i];
+            }
 
     ret->format_count = k;
     /* check that there was at least one common format */
@@ -84,6 +91,32 @@ int ff_fmt_is_in(int fmt, const int *fmts)
             return 1;
     }
     return 0;
+}
+
+#define COPY_INT_LIST(list_copy, list, type) {                          \
+    int count = 0;                                                      \
+    if (list)                                                           \
+        for (count = 0; list[count] != -1; count++)                     \
+            ;                                                           \
+    list_copy = av_calloc(count+1, sizeof(type));                       \
+    if (list_copy) {                                                    \
+        memcpy(list_copy, list, sizeof(type) * count);                  \
+        list_copy[count] = -1;                                          \
+    }                                                                   \
+}
+
+int *ff_copy_int_list(const int * const list)
+{
+    int *ret = NULL;
+    COPY_INT_LIST(ret, list, int);
+    return ret;
+}
+
+int64_t *ff_copy_int64_list(const int64_t * const list)
+{
+    int64_t *ret = NULL;
+    COPY_INT_LIST(ret, list, int64_t);
+    return ret;
 }
 
 #define MAKE_FORMAT_LIST()                                              \

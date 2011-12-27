@@ -28,6 +28,7 @@
 #include "libavutil/mathematics.h"
 #include "libavcodec/mpegaudio.h"
 #include "avformat.h"
+#include "internal.h"
 #include "avio_internal.h"
 #include "riff.h"
 #include "asf.h"
@@ -166,7 +167,7 @@ static void get_tag(AVFormatContext *s, const char *key, int type, int len)
     if (type == 0) {         // UTF16-LE
         avio_get_str16le(s->pb, len, value, 2*len + 1);
     } else if (type == -1) { // ASCII
-        get_buffer(s->pb, value, len);
+        avio_read(s->pb, value, len);
         value[len]=0;
     } else if (type > 1 && type <= 5) {  // boolean or DWORD or QWORD or WORD
         uint64_t num = get_value(s->pb, type);
@@ -227,7 +228,7 @@ static int asf_read_stream_properties(AVFormatContext *s, int64_t size)
     st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
-    av_set_pts_info(st, 32, 1, 1000); /* 32 bit pts in ms */
+    avpriv_set_pts_info(st, 32, 1, 1000); /* 32 bit pts in ms */
     asf_st = av_mallocz(sizeof(ASFStream));
     if (!asf_st)
         return AVERROR(ENOMEM);
@@ -764,7 +765,7 @@ static int ff_asf_get_packet(AVFormatContext *s, AVIOContext *pb)
         c= avio_r8(pb);
         d= avio_r8(pb);
         rsize+=3;
-    }else{
+    }else if(!url_feof(pb)){
         avio_seek(pb, -1, SEEK_CUR); //FIXME
     }
 
@@ -812,7 +813,7 @@ static int asf_read_frame_header(AVFormatContext *s, AVIOContext *pb){
     ASFContext *asf = s->priv_data;
     int rsize = 1;
     int num = avio_r8(pb);
-    int64_t ts0;
+    int64_t ts0, ts1 av_unused;
 
     asf->packet_segments--;
     asf->packet_key_frame = num >> 7;
@@ -839,7 +840,7 @@ static int asf_read_frame_header(AVFormatContext *s, AVIOContext *pb){
 //            av_log(s, AV_LOG_DEBUG, "\n");
             avio_skip(pb, 10);
             ts0= avio_rl64(pb);
-            avio_skip(pb, 8);;
+            ts1= avio_rl64(pb);
             avio_skip(pb, 12);
             avio_rl32(pb);
             avio_skip(pb, asf->packet_replic_size - 8 - 38 - 4);
@@ -986,7 +987,7 @@ static int ff_asf_parse_packet(AVFormatContext *s, AVIOContext *pb, AVPacket *pk
             asf_st->packet_pos= asf->packet_pos;
             if (asf_st->pkt.data && asf_st->palette_changed) {
                 uint8_t *pal;
-                pal = av_packet_new_side_data(pkt, AV_PKT_DATA_PALETTE,
+                pal = av_packet_new_side_data(&asf_st->pkt, AV_PKT_DATA_PALETTE,
                                               AVPALETTE_SIZE);
                 if (!pal) {
                     av_log(s, AV_LOG_ERROR, "Cannot append palette to packet\n");
@@ -1181,7 +1182,7 @@ static int64_t asf_read_pts(AVFormatContext *s, int stream_index, int64_t *ppos,
             return AV_NOPTS_VALUE;
         }
 
-        pts= pkt->pts;
+        pts = pkt->dts;
 
         av_free_packet(pkt);
         if(pkt->flags&AV_PKT_FLAG_KEY){

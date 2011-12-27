@@ -115,6 +115,12 @@ multimedia stream.
 Each media stream information is printed within a dedicated section
 with name "STREAM".
 
+@item -show_private_data, -private
+Show private data, that is data depending on the format of the
+particular shown element.
+This option is enabled by default, but you may need to disable it
+for specific uses, for example when creating XSD-compliant XML output.
+
 @item -i @var{input_file}
 Read @var{input_file}.
 
@@ -147,12 +153,103 @@ keyN=valN
 Metadata tags are printed as a line in the corresponding FORMAT or
 STREAM section, and are prefixed by the string "TAG:".
 
+@section compact
+Compact format.
+
+Each section is printed on a single line.
+If no option is specifid, the output has the form:
+@example
+section|key1=val1| ... |keyN=valN
+@end example
+
+Metadata tags are printed in the corresponding "format" or "stream"
+section. A metadata tag key, if printed, is prefixed by the string
+"tag:".
+
+This writer accepts options as a list of @var{key}=@var{value} pairs,
+separated by ":".
+
+The description of the accepted options follows.
+
+@table @option
+
+@item item_sep, s
+Specify the character to use for separating fields in the output line.
+It must be a single printable character, it is "|" by default.
+
+@item nokey, nk
+If set to 1 specify not to print the key of each field. Its default
+value is 0.
+
+@item escape, e
+Set the escape mode to use, default to "c".
+
+It can assume one of the following values:
+@table @option
+@item c
+Perform C-like escaping. Strings containing a newline ('\n') or
+carriage return ('\r'), the escaping character ('\') or the item
+separator character @var{SEP} are escaped using C-like fashioned
+escaping, so that a newline is converted to the sequence "\n", a
+carriage return to "\r", '\' to "\\" and the separator @var{SEP} is
+converted to "\@var{SEP}".
+
+@item csv
+Perform CSV-like escaping, as described in RFC4180.  Strings
+containing a newline ('\n'), a carriage return ('\r'), a double quote
+('"'), or @var{SEP} are enclosed in double-quotes.
+
+@item none
+Perform no escaping.
+@end table
+
+@end table
+
+@section csv
+CSV format.
+
+This writer is equivalent to
+@code{compact=item_sep=,:nokey=1:escape=csv}.
+
 @section json
 JSON based format.
 
 Each section is printed using JSON notation.
 
 For more information about JSON, see @url{http://www.json.org/}.
+
+@section xml
+XML based format.
+
+The XML output is described in the XML schema description file
+@file{ffprobe.xsd} installed in the FFmpeg datadir.
+
+Note that the output issued will be compliant to the
+@file{ffprobe.xsd} schema only when no special global output options
+(@option{unit}, @option{prefix}, @option{byte_binary_prefix},
+@option{sexagesimal} etc.) are specified.
+
+This writer accepts options as a list of @var{key}=@var{value} pairs,
+separated by ":".
+
+The description of the accepted options follows.
+
+@table @option
+
+@item fully_qualified, q
+If set to 1 specify if the output should be fully qualified. Default
+value is 0.
+This is required for generating an XML file which can be validated
+through an XSD file.
+
+@item xsd_compliant, x
+If set to 1 perform more checks for ensuring that the output is XSD
+compliant. Default value is 0.
+This option automatically sets @option{fully_qualified} to 1.
+@end table
+
+For more information about the XML format, see
+@url{http://www.w3.org/XML/}.
 
 @c man end WRITERS
 

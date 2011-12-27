@@ -26,7 +26,7 @@
 
 //#define DEBUG
 
-#define A32_BITSTREAM_READER
+#define LONG_BITSTREAM_READER
 
 #include "avcodec.h"
 #include "get_bits.h"
@@ -277,7 +277,7 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
             val = q;                                                    \
             SKIP_BITS(re, gb, q+1);                                     \
         }                                                               \
-    } while (0);                                                        \
+    } while (0)
 
 #define TOSIGNED(x) (((x) >> 1) ^ (-((x) & 1)))
 
@@ -325,7 +325,7 @@ static av_always_inline void decode_ac_coeffs(AVCodecContext *avctx, GetBitConte
     int log2_block_count = av_log2(blocks_per_slice);
 
     OPEN_READER(re, gb);
-
+    UPDATE_CACHE(re, gb);                                           \
     run   = 4;
     level = 2;
 
@@ -333,7 +333,7 @@ static av_always_inline void decode_ac_coeffs(AVCodecContext *avctx, GetBitConte
     block_mask = blocks_per_slice - 1;
 
     for (pos = block_mask;;) {
-        bits_left = gb->size_in_bits - (((uint8_t*)re_buffer_ptr - gb->buffer)*8 - 32 + re_bit_count);
+        bits_left = gb->size_in_bits - re_index;
         if (!bits_left || (bits_left < 32 && !SHOW_UBITS(re, gb, bits_left)))
             break;
 
@@ -443,7 +443,8 @@ static int decode_slice_thread(AVCodecContext *avctx, void *arg, int jobnr, int 
     v_data_size = slice->data_size - y_data_size - u_data_size - hdr_size;
     if (hdr_size > 7) v_data_size = AV_RB16(buf + 6);
 
-    if (y_data_size < 0 || u_data_size < 0 || v_data_size < 0) {
+    if (y_data_size < 0 || u_data_size < 0 || v_data_size < 0
+        || hdr_size+y_data_size+u_data_size+v_data_size > slice->data_size){
         av_log(avctx, AV_LOG_ERROR, "invalid plane data size\n");
         return -1;
     }

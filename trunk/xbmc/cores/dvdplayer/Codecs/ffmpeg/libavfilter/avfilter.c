@@ -31,6 +31,7 @@
 #include "internal.h"
 
 unsigned avfilter_version(void) {
+    av_assert0(LIBAVFILTER_VERSION_MICRO >= 100);
     return LIBAVFILTER_VERSION_INT;
 }
 
@@ -369,7 +370,7 @@ static void ff_dlog_link(void *ctx, AVFilterLink *link, int end)
 {
     if (link->type == AVMEDIA_TYPE_VIDEO) {
         av_dlog(ctx,
-                "link[%p s:%dx%d fmt:%-16s %-16s->%-16s]%s",
+                "link[%p s:%dx%d fmt:%s %s->%s]%s",
                 link, link->w, link->h,
                 av_pix_fmt_descriptors[link->format].name,
                 link->src ? link->src->filter->name : "",
@@ -380,7 +381,7 @@ static void ff_dlog_link(void *ctx, AVFilterLink *link, int end)
         av_get_channel_layout_string(buf, sizeof(buf), -1, link->channel_layout);
 
         av_dlog(ctx,
-                "link[%p r:%d cl:%s fmt:%-16s %-16s->%-16s]%s",
+                "link[%p r:%d cl:%s fmt:%s %s->%s]%s",
                 link, (int)link->sample_rate, buf,
                 av_get_sample_fmt_name(link->format),
                 link->src ? link->src->filter->name : "",
@@ -473,7 +474,7 @@ AVFilterBufferRef *avfilter_get_audio_buffer(AVFilterLink *link,
 AVFilterBufferRef *
 avfilter_get_audio_buffer_ref_from_arrays(uint8_t *data[8], int linesize[8], int perms,
                                           int nb_samples, enum AVSampleFormat sample_fmt,
-                                          int64_t channel_layout, int planar)
+                                          uint64_t channel_layout, int planar)
 {
     AVFilterBuffer *samples = av_mallocz(sizeof(AVFilterBuffer));
     AVFilterBufferRef *samplesref = av_mallocz(sizeof(AVFilterBufferRef));
@@ -677,7 +678,7 @@ void avfilter_filter_samples(AVFilterLink *link, AVFilterBufferRef *samplesref)
         link->cur_buf->audio->sample_rate = samplesref->audio->sample_rate;
 
         /* Copy actual data into new samples buffer */
-        for (i = 0; samplesref->data[i]; i++)
+        for (i = 0; samplesref->data[i] && i < 8; i++)
             memcpy(link->cur_buf->data[i], samplesref->data[i], samplesref->linesize[0]);
 
         avfilter_unref_buffer(samplesref);

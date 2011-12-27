@@ -17,7 +17,7 @@ output pads is called a "sink".
 @section Filtergraph syntax
 
 A filtergraph can be represented using a textual representation, which
-is recognized by the @code{-vf} and @code{-af} options of the ff*
+is recognized by the @code{-vf} option of the ff*
 tools, and by the @code{avfilter_graph_parse()} function defined in
 @file{libavfilter/avfiltergraph.h}.
 
@@ -224,6 +224,19 @@ expressed in the form "[@var{c0} @var{c1} @var{c2} @var{c3} @var{c4} @var{c5}
 @var{c6} @var{c7}]"
 @end table
 
+@section asplit
+
+Pass on the input audio to two outputs. Both outputs are identical to
+the input audio.
+
+For example:
+@example
+[in] asplit[out0], showaudio[out1]
+@end example
+
+will create two separate outputs from the same input, one cropped and
+one padded.
+
 @section earwax
 
 Make audio easier to listen to on headphones.
@@ -234,6 +247,54 @@ inside your head (standard for headphones) to outside and in front of
 the listener (standard for speakers).
 
 Ported from SoX.
+
+@section pan
+
+Mix channels with specific gain levels. The filter accepts the output
+channel layout followed by a set of channels definitions.
+
+The filter accepts parameters of the form:
+"@var{l}:@var{outdef}:@var{outdef}:..."
+
+@table @option
+@item l
+output channel layout or number of channels
+
+@item outdef
+output channel specification, of the form:
+"@var{out_name}=[@var{gain}*]@var{in_name}[+[@var{gain}*]@var{in_name}...]"
+
+@item out_name
+output channel to define, either a channel name (FL, FR, etc.) or a channel
+number (c0, c1, etc.)
+
+@item gain
+multiplicative coefficient for the channel, 1 leaving the volume unchanged
+
+@item in_name
+input channel to use, see out_name for details; it is not possible to mix
+named and numbered input channels
+@end table
+
+If the `=' in a channel specification is replaced by `<', then the gains for
+that specification will be renormalized so that the total is 1, thus
+avoiding clipping noise.
+
+For example, if you want to down-mix from stereo to mono, but with a bigger
+factor for the left channel:
+@example
+pan=1:c0=0.9*c0+0.1*c1
+@end example
+
+A customized down-mix to stereo that works automatically for 3-, 4-, 5- and
+7-channels surround:
+@example
+pan=stereo: FL < FL + 0.5*FC + 0.6*BL + 0.6*SL : FR < FR + 0.5*FC + 0.6*BR + 0.6*SR
+@end example
+
+Note that @file{ffmpeg} integrates a default down-mix (and up-mix) system
+that should be preferred (see "-ac" option) unless you have very specific
+needs.
 
 @section volume
 
@@ -357,6 +418,16 @@ The description of the accepted options follows.
 
 @table @option
 
+@item duration, d
+Set the minimum duration of the sourced audio. See the function
+@code{av_parse_time()} for the accepted format.
+Note that the resulting duration may be greater than the specified
+duration, as the generated audio is always cut at the end of a
+complete frame.
+
+If not specified, or the expressed duration is negative, the audio is
+supposed to be generated forever.
+
 @item nb_samples, n
 Set the number of samples per channel per each output frame,
 default to 1024.
@@ -391,7 +462,7 @@ aevalsrc=0
 
 @item
 
-Generate a sin signal with frequence of 440 Hz, set sample rate to
+Generate a sin signal with frequency of 440 Hz, set sample rate to
 8000 Hz:
 @example
 aevalsrc="sin(440*2*PI*t)::s=8000"
@@ -526,6 +597,22 @@ build.
 
 Below is a description of the currently available video filters.
 
+@section ass
+
+Draw ASS (Advanced Substation Alpha) subtitles on top of input video
+using the libass library.
+
+To enable compilation of this filter you need to configure FFmpeg with
+@code{--enable-libass}.
+
+This filter accepts in input the name of the ass file to render.
+
+For example, to render the file @file{sub.ass} on top of the input
+video, use the command:
+@example
+ass=sub.ass
+@end example
+
 @section blackframe
 
 Detect frames that are (almost) completely black. Can be useful to
@@ -564,7 +651,7 @@ input plane. They are expressions, and can contain the following
 constants:
 @table @option
 @item w, h
-the input width and heigth in pixels
+the input width and height in pixels
 
 @item cw, ch
 the input chroma image width and height in pixels
@@ -1024,8 +1111,8 @@ The parameters for @var{x} and @var{y} are expressions containing the
 following constants:
 
 @table @option
-@item w, h
-the input width and heigth
+@item W, H
+the input width and height
 
 @item tw, text_w
 the width of the rendered text
@@ -1074,6 +1161,13 @@ the number of input frame, starting from 0
 
 @item t
 timestamp expressed in seconds, NAN if the input timestamp is unknown
+
+@item timecode
+initial timecode representation in "hh:mm:ss[:;.]ff" format. It can be used
+with or without text parameter. @var{rate} option must be specified
+
+@item r, rate
+frame rate (timecode only)
 @end table
 
 Some examples follow.
@@ -1219,7 +1313,7 @@ which is bottom field first.
 
 For example:
 @example
-./ffmpeg -i in.vob -vf "fieldorder=bff" out.dv
+ffmpeg -i in.vob -vf "fieldorder=bff" out.dv
 @end example
 
 @section fifo
@@ -1303,7 +1397,7 @@ For more information see:
 @section gradfun
 
 Fix the banding artifacts that are sometimes introduced into nearly flat
-regions by truncation to 8bit colordepth.
+regions by truncation to 8bit color depth.
 Interpolate the gradients that should go where the bands are, and
 dither them.
 
@@ -1337,8 +1431,7 @@ gradfun=1.2
 
 Flip the input video horizontally.
 
-For example to horizontally flip the video in input with
-@file{ffmpeg}:
+For example to horizontally flip the input video with @command{ffmpeg}:
 @example
 ffmpeg -i in.avi -vf "hflip" out.avi
 @end example
@@ -1428,7 +1521,7 @@ The expressions can contain the following constants and functions:
 
 @table @option
 @item w, h
-the input width and heigth
+the input width and height
 
 @item val
 input value for the pixel component
@@ -1625,7 +1718,7 @@ The filter takes the parameters: @var{filter_name}@{:=@}@var{filter_params}.
 filter. If not specified the default values are assumed.
 
 Refer to the official libopencv documentation for more precise
-informations:
+information:
 @url{http://opencv.willowgarage.com/documentation/c/image_filtering.html}
 
 Follows the list of supported libopencv filters.
@@ -1641,7 +1734,7 @@ It accepts the parameters: @var{struct_el}:@var{nb_iterations}.
 @var{struct_el} represents a structuring element, and has the syntax:
 @var{cols}x@var{rows}+@var{anchor_x}x@var{anchor_y}/@var{shape}
 
-@var{cols} and @var{rows} represent the number of colums and rows of
+@var{cols} and @var{rows} represent the number of columns and rows of
 the structuring element, @var{anchor_x} and @var{anchor_y} the anchor
 point, and @var{shape} the shape for the structuring element, and
 can be one of the values "rect", "cross", "ellipse", "custom".
@@ -1707,6 +1800,7 @@ other parameters is 0.
 These parameters correspond to the parameters assigned to the
 libopencv function @code{cvSmooth}.
 
+@anchor{overlay}
 @section overlay
 
 Overlay one video on top of another.
@@ -1742,7 +1836,7 @@ The description of the accepted options follows.
 @table @option
 @item rgb
 If set to 1, force the filter to accept inputs in the RGB
-colorspace. Default value is 0.
+color space. Default value is 0.
 @end table
 
 Be aware that frames are taken from each input video in timestamp
@@ -1829,7 +1923,7 @@ value for @var{width} or @var{height} is 0, the corresponding input size
 is used for the output.
 
 The @var{width} expression can reference the value set by the
-@var{height} expression, and viceversa.
+@var{height} expression, and vice versa.
 
 The default value of @var{width} and @var{height} is 0.
 
@@ -1839,7 +1933,7 @@ Specify the offsets where to place the input image in the padded area
 with respect to the top/left border of the output image.
 
 The @var{x} expression can reference the value set by the @var{y}
-expression, and viceversa.
+expression, and vice versa.
 
 The default value of @var{x} and @var{y} is 0.
 
@@ -2254,7 +2348,7 @@ seconds
 
 @item pos
 position of the frame in the input stream, -1 if this information in
-unavailable and/or meanigless (for example in case of synthetic video)
+unavailable and/or meaningless (for example in case of synthetic video)
 
 @item fmt
 pixel format name
@@ -2295,7 +2389,7 @@ Pass the images of input video on to next video filter as multiple
 slices.
 
 @example
-./ffmpeg -i in.avi -vf "slicify=32" out.avi
+ffmpeg -i in.avi -vf "slicify=32" out.avi
 @end example
 
 The filter accepts the slice height as parameter. If the parameter is
@@ -2318,6 +2412,26 @@ For example:
 
 will create two separate outputs from the same input, one cropped and
 one padded.
+
+@section thumbnail
+Select the most representative frame in a given sequence of consecutive frames.
+
+It accepts as argument the frames batch size to analyze (default @var{N}=100);
+in a set of @var{N} frames, the filter will pick one of them, and then handle
+the next batch of @var{N} frames until the end.
+
+Since the filter keeps track of the whole frames sequence, a bigger @var{N}
+value will result in a higher memory usage, so a high value is not recommended.
+
+The following example extract one picture each 50 frames:
+@example
+thumbnail=50
+@end example
+
+Complete example of a thumbnail creation with @command{ffmpeg}:
+@example
+ffmpeg -i in.avi -vf thumbnail,scale=300:200 -frames:v 1 out.png
+@end example
 
 @section transpose
 
@@ -2407,7 +2521,7 @@ unsharp=7:7:2.5
 unsharp=7:7:-2:7:7:-2
 
 # Use the default values with @command{ffmpeg}
-./ffmpeg -i in.avi -vf "unsharp" out.mp4
+ffmpeg -i in.avi -vf "unsharp" out.mp4
 @end example
 
 @section vflip
@@ -2415,7 +2529,7 @@ unsharp=7:7:-2:7:7:-2
 Flip the input video vertically.
 
 @example
-./ffmpeg -i in.avi -vf "vflip" out.avi
+ffmpeg -i in.avi -vf "vflip" out.avi
 @end example
 
 @section yadif
@@ -2529,6 +2643,121 @@ this example corresponds to:
 @example
 buffer=320:240:6:1:24:1:1
 @end example
+
+@section cellauto
+
+Create a pattern generated by an elementary cellular automaton.
+
+The initial state of the cellular automaton can be defined through the
+@option{filename}, and @option{pattern} options. If such options are
+not specified an initial state is created randomly.
+
+At each new frame a new row in the video is filled with the result of
+the cellular automaton next generation. The behavior when the whole
+frame is filled is defined by the @option{scroll} option.
+
+This source accepts a list of options in the form of
+@var{key}=@var{value} pairs separated by ":". A description of the
+accepted options follows.
+
+@table @option
+@item filename, f
+Read the initial cellular automaton state, i.e. the starting row, from
+the specified file.
+In the file, each non-whitespace character is considered an alive
+cell, a newline will terminate the row, and further characters in the
+file will be ignored.
+
+@item pattern, p
+Read the initial cellular automaton state, i.e. the starting row, from
+the specified string.
+
+Each non-whitespace character in the string is considered an alive
+cell, a newline will terminate the row, and further characters in the
+string will be ignored.
+
+@item rate, r
+Set the video rate, that is the number of frames generated per second.
+Default is 25.
+
+@item random_fill_ratio, ratio
+Set the random fill ratio for the initial cellular automaton row. It
+is a floating point number value ranging from 0 to 1, defaults to
+1/PHI.
+
+This option is ignored when a file or a pattern is specified.
+
+@item random_seed, seed
+Set the seed for filling randomly the initial row, must be an integer
+included between 0 and UINT32_MAX. If not specified, or if explicitly
+set to -1, the filter will try to use a good random seed on a best
+effort basis.
+
+@item rule
+Set the cellular automaton rule, it is a number ranging from 0 to 255.
+Default value is 110.
+
+@item size, s
+Set the size of the output video.
+
+If @option{filename} or @option{pattern} is specified, the size is set
+by default to the width of the specified initial state row, and the
+height is set to @var{width} * PHI.
+
+If @option{size} is set, it must contain the width of the specified
+pattern string, and the specified pattern will be centered in the
+larger row.
+
+If a filename or a pattern string is not specified, the size value
+defaults to "320x518" (used for a randomly generated initial state).
+
+@item scroll
+If set to 1, scroll the output upward when all the rows in the output
+have been already filled. If set to 0, the new generated row will be
+written over the top row just after the bottom row is filled.
+Defaults to 1.
+
+@item start_full, full
+If set to 1, completely fill the output with generated rows before
+outputting the first frame.
+This is the default behavior, for disabling set the value to 0.
+
+@item stitch
+If set to 1, stitch the left and right row edges together.
+This is the default behavior, for disabling set the value to 0.
+@end table
+
+@subsection Examples
+
+@itemize
+@item
+Read the initial state from @file{pattern}, and specify an output of
+size 200x400.
+@example
+cellauto=f=pattern:s=200x400
+@end example
+
+@item
+Generate a random initial row with a width of 200 cells, with a fill
+ratio of 2/3:
+@example
+cellauto=ratio=2/3:s=200x200
+@end example
+
+@item
+Create a pattern generated by rule 18 starting by a single alive cell
+centered on an initial row with width 100:
+@example
+cellauto=p=@@:s=100x400:full=0:rule=18
+@end example
+
+@item
+Specify a more elaborated initial pattern:
+@example
+cellauto=p='@@@@ @@ @@@@':s=100x400:full=0:rule=18
+@end example
+
+@end itemize
 
 @section color
 
@@ -2703,10 +2932,137 @@ section @ref{frei0r} in the description of the video filters.
 
 Some examples follow:
 @example
-# generate a frei0r partik0l source with size 200x200 and framerate 10
+# generate a frei0r partik0l source with size 200x200 and frame rate 10
 # which is overlayed on the overlay filter main input
 frei0r_src=200x200:10:partik0l=1234 [overlay]; [in][overlay] overlay
 @end example
+
+@section life
+
+Generate a life pattern.
+
+This source is based on a generalization of John Conway's life game.
+
+The sourced input represents a life grid, each pixel represents a cell
+which can be in one of two possible states, alive or dead. Every cell
+interacts with its eight neighbours, which are the cells that are
+horizontally, vertically, or diagonally adjacent.
+
+At each interaction the grid evolves according to the adopted rule,
+which specifies the number of neighbor alive cells which will make a
+cell stay alive or born. The @option{rule} option allows to specify
+the rule to adopt.
+
+This source accepts a list of options in the form of
+@var{key}=@var{value} pairs separated by ":". A description of the
+accepted options follows.
+
+@table @option
+@item filename, f
+Set the file from which to read the initial grid state. In the file,
+each non-whitespace character is considered an alive cell, and newline
+is used to delimit the end of each row.
+
+If this option is not specified, the initial grid is generated
+randomly.
+
+@item rate, r
+Set the video rate, that is the number of frames generated per second.
+Default is 25.
+
+@item random_fill_ratio, ratio
+Set the random fill ratio for the initial random grid. It is a
+floating point number value ranging from 0 to 1, defaults to 1/PHI.
+It is ignored when a file is specified.
+
+@item random_seed, seed
+Set the seed for filling the initial random grid, must be an integer
+included between 0 and UINT32_MAX. If not specified, or if explicitly
+set to -1, the filter will try to use a good random seed on a best
+effort basis.
+
+@item rule
+Set the life rule.
+
+A rule can be specified with a code of the kind "S@var{NS}/B@var{NB}",
+where @var{NS} and @var{NB} are sequences of numbers in the range 0-8,
+@var{NS} specifies the number of alive neighbor cells which make a
+live cell stay alive, and @var{NB} the number of alive neighbor cells
+which make a dead cell to become alive (i.e. to "born").
+"s" and "b" can be used in place of "S" and "B", respectively.
+
+Alternatively a rule can be specified by an 18-bits integer. The 9
+high order bits are used to encode the next cell state if it is alive
+for each number of neighbor alive cells, the low order bits specify
+the rule for "borning" new cells. Higher order bits encode for an
+higher number of neighbor cells.
+For example the number 6153 = @code{(12<<9)+9} specifies a stay alive
+rule of 12 and a born rule of 9, which corresponds to "S23/B03".
+
+Default value is "S23/B3", which is the original Conway's game of life
+rule, and will keep a cell alive if it has 2 or 3 neighbor alive
+cells, and will born a new cell if there are three alive cells around
+a dead cell.
+
+@item size, s
+Set the size of the output video.
+
+If @option{filename} is specified, the size is set by default to the
+same size of the input file. If @option{size} is set, it must contain
+the size specified in the input file, and the initial grid defined in
+that file is centered in the larger resulting area.
+
+If a filename is not specified, the size value defaults to "320x240"
+(used for a randomly generated initial grid).
+
+@item stitch
+If set to 1, stitch the left and right grid edges together, and the
+top and bottom edges also. Defaults to 1.
+
+@item mold
+Set cell mold speed. If set, a dead cell will go from @option{death_color} to
+@option{mold_color} with a step of @option{mold}. @option{mold} can have a
+value from 0 to 255.
+
+@item life_color
+Set the color of living (or new born) cells.
+
+@item death_color
+Set the color of dead cells. If @option{mold} is set, this is the first color
+used to represent a dead cell.
+
+@item mold_color
+Set mold color, for definitely dead and moldy cells.
+@end table
+
+@subsection Examples
+
+@itemize
+@item
+Read a grid from @file{pattern}, and center it on a grid of size
+300x300 pixels:
+@example
+life=f=pattern:s=300x300
+@end example
+
+@item
+Generate a random grid of size 200x200, with a fill ratio of 2/3:
+@example
+life=ratio=2/3:s=200x200
+@end example
+
+@item
+Specify a custom rule for evolving a randomly generated grid:
+@example
+life=rule=S14/B34
+@end example
+
+@item
+Full example with slow death effect (mold) using @command{ffplay}:
+@example
+ffplay -f lavfi life=s=300x200:mold=10:r=60:ratio=0.1:death_color=#C83232:life_color=#00ff00,scale=1200:800:flags=16
+@end example
+@end itemize
 
 @section nullsrc, rgbtestsrc, testsrc
 
@@ -2729,7 +3085,7 @@ separated by ":". The description of the accepted options follows.
 
 @item size, s
 Specify the size of the sourced video, it may be a string of the form
-@var{width}x@var{heigth}, or the name of a size abbreviation. The
+@var{width}x@var{height}, or the name of a size abbreviation. The
 default value is "320x240".
 
 @item rate, r
@@ -2760,7 +3116,7 @@ testsrc=duration=5.3:size=qcif:rate=10
 @end example
 
 will generate a video with a duration of 5.3 seconds, with size
-176x144 and a framerate of 10 frames per second.
+176x144 and a frame rate of 10 frames per second.
 
 If the input content is to be ignored, @code{nullsrc} can be used. The
 following command generates noise in the luminance plane by employing

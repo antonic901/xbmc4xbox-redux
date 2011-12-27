@@ -228,7 +228,7 @@ static void update_duplicate_context_after_me(MpegEncContext *dst, MpegEncContex
 }
 
 /**
- * sets the given MpegEncContext to defaults for encoding.
+ * Set the given MpegEncContext to defaults for encoding.
  * the changed fields will not depend upon the prior state of the MpegEncContext.
  */
 static void MPV_encode_defaults(MpegEncContext *s){
@@ -864,6 +864,8 @@ static int load_input_picture(MpegEncContext *s, AVFrame *pic_arg){
 
     if(direct){
         i= ff_find_unused_picture(s, 1);
+        if (i < 0)
+            return i;
 
         pic= (AVFrame*)&s->picture[i];
         pic->reference= 3;
@@ -877,6 +879,8 @@ static int load_input_picture(MpegEncContext *s, AVFrame *pic_arg){
         }
     }else{
         i= ff_find_unused_picture(s, 0);
+        if (i < 0)
+            return i;
 
         pic= (AVFrame*)&s->picture[i];
         pic->reference= 3;
@@ -902,6 +906,10 @@ static int load_input_picture(MpegEncContext *s, AVFrame *pic_arg){
                 int h= s->height>>v_shift;
                 uint8_t *src= pic_arg->data[i];
                 uint8_t *dst= pic->data[i];
+
+                if(s->codec_id == CODEC_ID_AMV && !(s->avctx->flags & CODEC_FLAG_EMU_EDGE)){
+                    h= ((s->height+15)/16*16)>>v_shift;
+                }
 
                 if(!s->avctx->rc_buffer_size)
                     dst +=INPLACE_OFFSET;
@@ -1205,8 +1213,11 @@ no_output_pic:
         if (s->reordered_input_picture[0]->f.type == FF_BUFFER_TYPE_SHARED || s->avctx->rc_buffer_size) {
             // input is a shared pix, so we can't modifiy it -> alloc a new one & ensure that the shared one is reuseable
 
+            Picture *pic;
             int i= ff_find_unused_picture(s, 0);
-            Picture *pic= &s->picture[i];
+            if (i < 0)
+                return i;
+            pic = &s->picture[i];
 
             pic->f.reference = s->reordered_input_picture[0]->f.reference;
             if(ff_alloc_picture(s, pic, 0) < 0){
@@ -1558,7 +1569,7 @@ static av_always_inline void encode_mb_internal(MpegEncContext *s, int motion_x,
     ptr_cb = s->new_picture.f.data[1] + (mb_y * mb_block_height * wrap_c) + mb_x * 8;
     ptr_cr = s->new_picture.f.data[2] + (mb_y * mb_block_height * wrap_c) + mb_x * 8;
 
-    if(mb_x*16+16 > s->width || mb_y*16+16 > s->height){
+    if((mb_x*16+16 > s->width || mb_y*16+16 > s->height) && s->codec_id != CODEC_ID_AMV){
         uint8_t *ebuf= s->edge_emu_buffer + 32;
         s->dsp.emulated_edge_mc(ebuf            , ptr_y , wrap_y,16,16,mb_x*16,mb_y*16, s->width   , s->height);
         ptr_y= ebuf;

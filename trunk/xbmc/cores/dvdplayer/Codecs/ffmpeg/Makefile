@@ -8,6 +8,7 @@ vpath %.S    $(SRC_PATH)
 vpath %.asm  $(SRC_PATH)
 vpath %.v    $(SRC_PATH)
 vpath %.texi $(SRC_PATH)
+vpath %/fate_config.sh.template $(SRC_PATH)
 
 PROGS-$(CONFIG_FFMPEG)   += ffmpeg
 PROGS-$(CONFIG_AVCONV)   += avconv
@@ -38,7 +39,7 @@ FFLIBS-$(CONFIG_SWSCALE)  += swscale
 
 FFLIBS := avutil
 
-DATA_FILES := $(wildcard $(SRC_PATH)/presets/*.ffpreset)
+DATA_FILES := $(wildcard $(SRC_PATH)/presets/*.ffpreset) doc/ffprobe.xsd
 
 SKIPHEADERS = cmdutils_common_opts.h
 
@@ -77,6 +78,7 @@ define DOSUBDIR
 $(foreach V,$(SUBDIR_VARS),$(eval $(call RESET,$(V))))
 SUBDIR := $(1)/
 include $(SRC_PATH)/$(1)/Makefile
+include $(SRC_PATH)/library.mak
 endef
 
 $(foreach D,$(FFLIBS),$(eval $(call DOSUBDIR,lib$(D))))
@@ -137,6 +139,8 @@ clean::
 	$(RM) $(CLEANSUFFIXES)
 	$(RM) $(TOOLS)
 	$(RM) $(CLEANSUFFIXES:%=tools/%)
+	$(RM) coverage.info
+	$(RM) -r coverage-html
 
 distclean::
 	$(RM) $(DISTCLEANSUFFIXES)
@@ -144,6 +148,15 @@ distclean::
 
 config:
 	$(SRC_PATH)/configure $(value FFMPEG_CONFIGURATION)
+
+# Without the sed genthml thinks "libavutil" and "./libavutil" are two different things
+coverage.info: $(wildcard *.gcda *.gcno */*.gcda */*.gcno */*/*.gcda */*/*.gcno)
+	$(Q)lcov -c -d . -b . | sed -e 's#/./#/#g' > $@
+
+coverage-html: coverage.info
+	$(Q)mkdir -p $@
+	$(Q)genhtml -o $@ $<
+	$(Q)touch $@
 
 include $(SRC_PATH)/doc/Makefile
 include $(SRC_PATH)/tests/Makefile

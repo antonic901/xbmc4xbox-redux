@@ -53,13 +53,7 @@ static int cache_open(URLContext *h, const char *arg, int flags)
 {
     int access;
     const char *buffername;
-    Context *c;
-
-    c = av_mallocz(sizeof(Context));
-    if (!c) {
-        return AVERROR(ENOMEM);
-    }
-    h->priv_data = c;
+    Context *c= h->priv_data;
 
     av_strstart(arg, "cache:", &arg);
 
@@ -72,7 +66,7 @@ static int cache_open(URLContext *h, const char *arg, int flags)
     unlink(buffername);
     av_free(buffername);
 
-    return ffurl_open(&c->inner, arg, flags);
+    return ffurl_open(&c->inner, arg, flags, &h->interrupt_callback, NULL);
 }
 
 static int cache_read(URLContext *h, unsigned char *buf, int size)
@@ -130,8 +124,6 @@ static int cache_close(URLContext *h)
     close(c->fd);
     ffurl_close(c->inner);
 
-    av_freep(&h->priv_data);
-
     return 0;
 }
 
@@ -141,4 +133,5 @@ URLProtocol ff_cache_protocol = {
     .url_read            = cache_read,
     .url_seek            = cache_seek,
     .url_close           = cache_close,
+    .priv_data_size      = sizeof(Context),
 };

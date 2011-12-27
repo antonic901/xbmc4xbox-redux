@@ -30,8 +30,11 @@
 
 #include "psymodel.h"
 
+#define AAC_CODER_NB 4
+
 typedef struct AACEncOptions {
     int stereo_mode;
+    int aac_coder;
 } AACEncOptions;
 
 struct AACEncContext;

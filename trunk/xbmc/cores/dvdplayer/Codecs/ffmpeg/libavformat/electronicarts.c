@@ -27,6 +27,7 @@
 
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define SCHl_TAG MKTAG('S', 'C', 'H', 'l')
 #define SEAD_TAG MKTAG('S', 'E', 'A', 'D')    /* Sxxx header */
@@ -419,7 +420,7 @@ static int ea_read_header(AVFormatContext *s,
             st->need_parsing = AVSTREAM_PARSE_HEADERS;
         st->codec->codec_tag = 0;  /* no fourcc */
         if (ea->time_base.num)
-            av_set_pts_info(st, 64, ea->time_base.num, ea->time_base.den);
+            avpriv_set_pts_info(st, 64, ea->time_base.num, ea->time_base.den);
         st->codec->width = ea->width;
         st->codec->height = ea->height;
     }
@@ -440,7 +441,7 @@ static int ea_read_header(AVFormatContext *s,
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR(ENOMEM);
-        av_set_pts_info(st, 33, 1, ea->sample_rate);
+        avpriv_set_pts_info(st, 33, 1, ea->sample_rate);
         st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         st->codec->codec_id = ea->audio_codec;
         st->codec->codec_tag = 0;  /* no tag */

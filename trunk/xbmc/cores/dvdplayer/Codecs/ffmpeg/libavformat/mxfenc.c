@@ -70,7 +70,7 @@ typedef struct {
     int index;               ///< index in mxf_essence_container_uls table
     const UID *codec_ul;
     int order;               ///< interleaving order if dts are equal
-    int interlaced;          ///< wether picture is interlaced
+    int interlaced;          ///< whether picture is interlaced
     int temporal_reordering;
     AVRational aspect_ratio; ///< display aspect ratio
     int closed_gop;          ///< gop is closed, used in mpeg-2 frame parsing
@@ -1428,11 +1428,11 @@ static int mxf_write_header(AVFormatContext *s)
                 av_log(s, AV_LOG_ERROR, "unsupported video frame rate\n");
                 return -1;
             }
-            av_set_pts_info(st, 64, mxf->time_base.num, mxf->time_base.den);
+            avpriv_set_pts_info(st, 64, mxf->time_base.num, mxf->time_base.den);
             if (mxf->tc.str) {
                 mxf->tc.rate.num = mxf->time_base.den;
                 mxf->tc.rate.den = mxf->time_base.num;
-                if (ff_init_smtpe_timecode(s, &mxf->tc) < 0)
+                if (avpriv_init_smpte_timecode(s, &mxf->tc) < 0)
                     return -1;
             }
             if (s->oformat == &ff_mxf_d10_muxer) {
@@ -1462,7 +1462,7 @@ static int mxf_write_header(AVFormatContext *s)
                 av_log(s, AV_LOG_ERROR, "only 48khz is implemented\n");
                 return -1;
             }
-            av_set_pts_info(st, 64, 1, st->codec->sample_rate);
+            avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
             if (s->oformat == &ff_mxf_d10_muxer) {
                 if (st->index != 1) {
                     av_log(s, AV_LOG_ERROR, "MXF D-10 only support one audio track\n");
@@ -1572,9 +1572,9 @@ static void mxf_write_system_item(AVFormatContext *s)
     avio_w8(pb, 0x81); // SMPTE 12M time code
     time_code = frame;
     if (mxf->tc.drop)
-        time_code = ff_framenum_to_drop_timecode(time_code);
-    time_code = ff_framenum_to_smtpe_timecode(time_code, mxf->timecode_base,
-                                              mxf->tc.drop);
+        time_code = avpriv_framenum_to_drop_timecode(time_code);
+    time_code = avpriv_framenum_to_smpte_timecode(time_code, mxf->timecode_base,
+                                                  mxf->tc.drop);
     avio_wb32(pb, time_code);
     avio_wb32(pb, 0); // binary group data
     avio_wb64(pb, 0);

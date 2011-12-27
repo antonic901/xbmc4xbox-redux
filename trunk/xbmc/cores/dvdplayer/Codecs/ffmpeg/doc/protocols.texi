@@ -67,7 +67,7 @@ File access protocol.
 
 Allow to read from or read to a file.
 
-For example to read from a file @file{input.mpeg} with @file{ffmpeg}
+For example to read from a file @file{input.mpeg} with @command{ffmpeg}
 use the command:
 @example
 ffmpeg -i file:input.mpeg output.mpeg
@@ -134,14 +134,14 @@ pipe (e.g. 0 for stdin, 1 for stdout, 2 for stderr).  If @var{number}
 is not specified, by default the stdout file descriptor will be used
 for writing, stdin for reading.
 
-For example to read from stdin with @file{ffmpeg}:
+For example to read from stdin with @command{ffmpeg}:
 @example
 cat test.wav | ffmpeg -i pipe:0
 # ...this is the same as...
 cat test.wav | ffmpeg -i pipe:
 @end example
 
-For writing to stdout with @file{ffmpeg}:
+For writing to stdout with @command{ffmpeg}:
 @example
 ffmpeg -i test.wav -f avi pipe:1 | cat > test.avi
 # ...this is the same as...
@@ -155,8 +155,8 @@ be seekable, so they will fail with the pipe output protocol.
 
 Real-Time Messaging Protocol.
 
-The Real-Time Messaging Protocol (RTMP) is used for streaming multime‐
-dia content across a TCP/IP network.
+The Real-Time Messaging Protocol (RTMP) is used for streaming multimedia
+content across a TCP/IP network.
 
 The required syntax is:
 @example
@@ -195,7 +195,7 @@ Real-Time Messaging Protocol and its variants supported through
 librtmp.
 
 Requires the presence of the librtmp headers and library during
-configuration. You need to explicitely configure the build with
+configuration. You need to explicitly configure the build with
 "--enable-librtmp". If enabled this will replace the native RTMP
 protocol.
 
@@ -219,7 +219,7 @@ meaning as specified for the RTMP native protocol.
 See the librtmp manual page (man 3 librtmp) for more information.
 
 For example, to stream a file in real-time to an RTMP server using
-@file{ffmpeg}:
+@command{ffmpeg}:
 @example
 ffmpeg -re -i myfile -f flv rtmp://myserver/live/mystream
 @end example
@@ -249,7 +249,7 @@ The required syntax for a RTSP url is:
 rtsp://@var{hostname}[:@var{port}]/@var{path}
 @end example
 
-The following options (set on the @file{ffmpeg}/@file{ffplay} command
+The following options (set on the @command{ffmpeg}/@file{ffplay} command
 line, or set in code via @code{AVOption}s or in @code{avformat_open_input}),
 are supported:
 
@@ -472,7 +472,7 @@ For receiving, this gives the benefit of only receiving packets from
 the specified peer address/port.
 @end table
 
-Some usage examples of the udp protocol with @file{ffmpeg} follow.
+Some usage examples of the udp protocol with @command{ffmpeg} follow.
 
 To stream over UDP to a remote endpoint:
 @example

@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "h264.h"
 #include "vda_internal.h"
 
 static int start_frame(AVCodecContext *avctx,
@@ -64,7 +65,7 @@ static int end_frame(AVCodecContext *avctx)
 {
     H264Context *h = avctx->priv_data;
     struct vda_context *vda_ctx = avctx->hwaccel_context;
-    AVFrame *frame = (AVFrame*)h->s.current_picture_ptr;
+    AVFrame *frame = &h->s.current_picture_ptr->f;
     int status;
 
     if (!vda_ctx->decoder || !vda_ctx->bitstream)
@@ -85,7 +86,6 @@ AVHWAccel ff_h264_vda_hwaccel = {
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = CODEC_ID_H264,
     .pix_fmt        = PIX_FMT_VDA_VLD,
-    .capabilities   = 0,
     .start_frame    = start_frame,
     .decode_slice   = decode_slice,
     .end_frame      = end_frame,

@@ -21,6 +21,7 @@
  */
 
 #include "avformat.h"
+#include "internal.h"
 #include "avio_internal.h"
 #include "rawdec.h"
 #include "libavutil/opt.h"
@@ -57,9 +58,9 @@ int ff_raw_read_header(AVFormatContext *s, AVFormatParameters *ap)
             if (s1 && s1->sample_rate)
                 st->codec->sample_rate = s1->sample_rate;
             if (st->codec->sample_rate <= 0) {
-                av_log(s, AV_LOG_ERROR, "Invalid sample rate %d specified\n",
+                av_log(s, AV_LOG_WARNING, "Invalid sample rate %d specified using default of 44100\n",
                        st->codec->sample_rate);
-                return AVERROR(EINVAL);
+                st->codec->sample_rate= 44100;
             }
 
             if (s1 && s1->channels)
@@ -68,7 +69,7 @@ int ff_raw_read_header(AVFormatContext *s, AVFormatParameters *ap)
             st->codec->bits_per_coded_sample = av_get_bits_per_sample(st->codec->codec_id);
             assert(st->codec->bits_per_coded_sample > 0);
             st->codec->block_align = st->codec->bits_per_coded_sample*st->codec->channels/8;
-            av_set_pts_info(st, 64, 1, st->codec->sample_rate);
+            avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
             break;
             }
         case AVMEDIA_TYPE_VIDEO: {
@@ -90,7 +91,7 @@ int ff_raw_read_header(AVFormatContext *s, AVFormatParameters *ap)
                 av_log(s, AV_LOG_ERROR, "Could not parse framerate: %s.\n", s1->framerate);
                 goto fail;
             }
-            av_set_pts_info(st, 64, framerate.den, framerate.num);
+            avpriv_set_pts_info(st, 64, framerate.den, framerate.num);
             st->codec->width  = width;
             st->codec->height = height;
             st->codec->pix_fmt = pix_fmt;
@@ -166,7 +167,7 @@ int ff_raw_video_read_header(AVFormatContext *s,
     }
 
     st->codec->time_base = (AVRational){framerate.den, framerate.num};
-    av_set_pts_info(st, 64, 1, 1200000);
+    avpriv_set_pts_info(st, 64, 1, 1200000);
 
 fail:
     return ret;
@@ -206,7 +207,7 @@ AVInputFormat ff_latm_demuxer = {
 #endif
 
 #if CONFIG_MJPEG_DEMUXER
-FF_DEF_RAWVIDEO_DEMUXER(mjpeg, "raw MJPEG video", NULL, "mjpg,mjpeg", CODEC_ID_MJPEG)
+FF_DEF_RAWVIDEO_DEMUXER(mjpeg, "raw MJPEG video", NULL, "mjpg,mjpeg,mpo", CODEC_ID_MJPEG)
 #endif
 
 #if CONFIG_MLP_DEMUXER

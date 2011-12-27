@@ -97,7 +97,7 @@ static int do_tls_poll(URLContext *h, int ret)
         int n = poll(&p, 1, 100);
         if (n > 0)
             break;
-        if (url_interrupt_cb())
+        if (ff_check_interrupt(&h->interrupt_callback))
             return AVERROR(EINTR);
     }
     return 0;
@@ -111,8 +111,14 @@ static int tls_open(URLContext *h, const char *uri, int flags)
     char buf[200], host[200];
     int numerichost = 0;
     struct addrinfo hints = { 0 }, *ai = NULL;
+    const char *proxy_path;
+    int use_proxy;
 
     ff_tls_init();
+
+    proxy_path = getenv("http_proxy");
+    use_proxy = (proxy_path != NULL) && !getenv("no_proxy") &&
+        av_strstart(proxy_path, "http://", NULL);
 
     av_url_split(NULL, 0, NULL, 0, host, sizeof(host), &port, NULL, 0, uri);
     ff_url_join(buf, sizeof(buf), "tcp", NULL, host, port, NULL);
@@ -123,7 +129,19 @@ static int tls_open(URLContext *h, const char *uri, int flags)
         freeaddrinfo(ai);
     }
 
-    ret = ffurl_open(&c->tcp, buf, AVIO_FLAG_READ_WRITE);
+    if (use_proxy) {
+        char proxy_host[200], proxy_auth[200], dest[200];
+        int proxy_port;
+        av_url_split(NULL, 0, proxy_auth, sizeof(proxy_auth),
+                     proxy_host, sizeof(proxy_host), &proxy_port, NULL, 0,
+                     proxy_path);
+        ff_url_join(dest, sizeof(dest), NULL, NULL, host, port, NULL);
+        ff_url_join(buf, sizeof(buf), "httpproxy", proxy_auth, proxy_host,
+                    proxy_port, "/%s", dest);
+    }
+
+    ret = ffurl_open(&c->tcp, buf, AVIO_FLAG_READ_WRITE,
+                     &h->interrupt_callback, NULL);
     if (ret)
         goto fail;
     c->fd = ffurl_get_file_handle(c->tcp);
@@ -146,7 +164,7 @@ static int tls_open(URLContext *h, const char *uri, int flags)
             goto fail;
     }
 #elif CONFIG_OPENSSL
-    c->ctx = SSL_CTX_new(SSLv3_client_method());
+    c->ctx = SSL_CTX_new(TLSv1_client_method());
     if (!c->ctx) {
         av_log(h, AV_LOG_ERROR, "%s\n", ERR_error_string(ERR_get_error(), NULL));
         ret = AVERROR(EIO);
@@ -228,7 +246,6 @@ URLProtocol ff_tls_protocol = {
     .url_open       = tls_open,
     .url_read       = tls_read,
     .url_write      = tls_write,
-    .url_seek       = NULL,
     .url_close      = tls_close,
     .priv_data_size = sizeof(TLSContext),
 };

@@ -139,7 +139,7 @@ static int g722_encode_trellis(AVCodecContext *avctx,
         nodes[i][0]->state = c->band[i];
     }
 
-    for (i = 0; i < buf_size >> 1; i++) {
+    for (i = 0; i < buf_size; i++) {
         int xlow, xhigh;
         struct TrellisNode *next[2];
         int heap_pos[2] = {0, 0};
@@ -153,7 +153,7 @@ static int g722_encode_trellis(AVCodecContext *avctx,
 
         for (j = 0; j < frontier && nodes[0][j]; j++) {
             /* Only k >> 2 affects the future adaptive state, therefore testing
-             * small steps that don't change k >> 2 is useless, the orignal
+             * small steps that don't change k >> 2 is useless, the original
              * value from encode_low is better than them. Since we step k
              * in steps of 4, make sure range is a multiple of 4, so that
              * we don't miss the original value from encode_low. */
@@ -285,7 +285,7 @@ static int g722_encode_frame(AVCodecContext *avctx,
     if (avctx->trellis)
         return g722_encode_trellis(avctx, dst, buf_size, data);
 
-    for (i = 0; i < buf_size >> 1; i++) {
+    for (i = 0; i < buf_size; i++) {
         int xlow, xhigh, ihigh, ilow;
         filter_samples(c, &samples[2*i], &xlow, &xhigh);
         ihigh = encode_high(&c->band[1], xhigh);

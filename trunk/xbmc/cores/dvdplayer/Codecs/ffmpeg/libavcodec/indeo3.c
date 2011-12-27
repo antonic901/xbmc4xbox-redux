@@ -226,8 +226,11 @@ static void copy_cell(Indeo3DecodeContext *ctx, Plane *plane, Cell *cell)
     /* setup output and reference pointers */
     offset_dst  = (cell->ypos << 2) * plane->pitch + (cell->xpos << 2);
     dst         = plane->pixels[ctx->buf_sel] + offset_dst;
+    if(cell->mv_ptr){
     mv_y        = cell->mv_ptr[0];
     mv_x        = cell->mv_ptr[1];
+    }else
+        mv_x= mv_y= 0;
     offset      = offset_dst + mv_y * plane->pitch + mv_x;
     src         = plane->pixels[ctx->buf_sel ^ 1] + offset;
 
@@ -733,7 +736,7 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
         ref_cell->width -= curr_cell.width;
     }
 
-    while (1) { /* loop until return */
+    while (get_bits_left(&ctx->gb) >= 2) { /* loop until return */
         RESYNC_BITSTREAM;
         switch (code = get_bits(&ctx->gb, 2)) {
         case H_SPLIT:
@@ -756,6 +759,8 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
                     av_log(avctx, AV_LOG_ERROR, "SkipCell procedure not implemented yet!\n");
 
                 CHECK_CELL
+                if (!curr_cell.mv_ptr)
+                    return AVERROR_INVALIDDATA;
                 copy_cell(ctx, plane, &curr_cell);
                 return 0;
             }
@@ -765,7 +770,8 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
                 /* get motion vector index and setup the pointer to the mv set */
                 if (!ctx->need_resync)
                     ctx->next_cell_data = &ctx->gb.buffer[(get_bits_count(&ctx->gb) + 7) >> 3];
-                curr_cell.mv_ptr = &ctx->mc_vectors[*(ctx->next_cell_data++) << 1];
+                if(ctx->mc_vectors)
+                    curr_cell.mv_ptr = &ctx->mc_vectors[*(ctx->next_cell_data++) << 1];
                 curr_cell.tree   = 1; /* enter the VQ tree */
                 UPDATE_BITPOS(8);
             } else { /* VQ tree DATA code */
@@ -786,7 +792,7 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
         }
     }//while
 
-    return 0;
+    return AVERROR_INVALIDDATA;
 }
 
 
@@ -795,15 +801,19 @@ static int decode_plane(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
                         int32_t strip_width)
 {
     Cell            curr_cell;
-    int             num_vectors;
+    uint32_t        num_vectors;
 
     /* each plane data starts with mc_vector_count field, */
     /* an optional array of motion vectors followed by the vq data */
     num_vectors = bytestream_get_le32(&data);
+    if(num_vectors >= data_size/2)
+        return AVERROR_INVALIDDATA;
     ctx->mc_vectors  = num_vectors ? data : 0;
+    data     += num_vectors * 2;
+    data_size-= num_vectors * 2;
 
     /* init the bitreader */
-    init_get_bits(&ctx->gb, &data[num_vectors * 2], data_size << 3);
+    init_get_bits(&ctx->gb, data, data_size << 3);
     ctx->skip_bits   = 0;
     ctx->need_resync = 0;
 
@@ -875,7 +885,8 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
         ctx->height = height;
 
         free_frame_buffers(ctx);
-        allocate_frame_buffers(ctx, avctx);
+        if(allocate_frame_buffers(ctx, avctx) < 0)
+            return AVERROR_INVALIDDATA;
         avcodec_set_dimensions(avctx, width, height);
     }
 
@@ -975,9 +986,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     dsputil_init(&ctx->dsp, avctx);
 
-    allocate_frame_buffers(ctx, avctx);
-
-    return 0;
+    return allocate_frame_buffers(ctx, avctx);
 }
 
 

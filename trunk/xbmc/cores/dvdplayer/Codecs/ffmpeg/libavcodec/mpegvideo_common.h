@@ -42,14 +42,14 @@
 int dct_quantize_c(MpegEncContext *s, DCTELEM *block, int n, int qscale, int *overflow);
 
 /**
- * allocates a Picture
- * The pixels are allocated/set by calling get_buffer() if shared=0
+ * Allocate a Picture.
+ * The pixels are allocated/set by calling get_buffer() if shared = 0.
  */
 int alloc_picture(MpegEncContext *s, Picture *pic, int shared);
 
 /**
- * sets the given MpegEncContext to common defaults (same for encoding and decoding).
- * the changed fields will not depend upon the prior state of the MpegEncContext.
+ * Set the given MpegEncContext to common defaults (same for encoding and decoding).
+ * The changed fields will not depend upon the prior state of the MpegEncContext.
  */
 void MPV_common_defaults(MpegEncContext *s);
 
@@ -585,7 +585,7 @@ static inline void chroma_4mv_motion(MpegEncContext *s,
     if (src_y == (s->height >> 1))
         dxy &= ~2;
 
-    offset = (src_y * (s->uvlinesize)) + src_x;
+    offset = src_y * s->uvlinesize + src_x;
     ptr = ref_picture[1] + offset;
     if(s->flags&CODEC_FLAG_EMU_EDGE){
         if(   (unsigned)src_x > (s->h_edge_pos>>1) - (dxy &1) - 8
@@ -725,7 +725,7 @@ static av_always_inline void MPV_motion_internal(MpegEncContext *s,
                         0, 0, 0,
                         ref_picture, pix_op, qpix_op,
                         s->mv[dir][0][0], s->mv[dir][0][1], 16);
-        }else if(!is_mpeg12 && (CONFIG_WMV2_DECODER || CONFIG_WMV2_ENCODER) && s->mspel){
+        }else if(!is_mpeg12 && (CONFIG_WMV2_DECODER || CONFIG_WMV2_ENCODER) && s->mspel && s->codec_id == CODEC_ID_WMV2){
             ff_mspel_motion(s, dest_y, dest_cb, dest_cr,
                         ref_picture, pix_op,
                         s->mv[dir][0][0], s->mv[dir][0][1], 16);

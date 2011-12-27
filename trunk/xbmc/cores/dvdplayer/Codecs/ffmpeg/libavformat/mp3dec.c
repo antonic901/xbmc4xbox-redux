@@ -24,6 +24,7 @@
 #include "libavutil/dict.h"
 #include "libavutil/mathematics.h"
 #include "avformat.h"
+#include "internal.h"
 #include "id3v2.h"
 #include "id3v1.h"
 #include "libavcodec/mpegaudiodecheader.h"
@@ -63,7 +64,7 @@ static int mp3_read_probe(AVProbeData *p)
     // keep this in sync with ac3 probe, both need to avoid
     // issues with MPEG-files!
     if   (first_frames>=4) return AVPROBE_SCORE_MAX/2+1;
-    else if(max_frames>500)return AVPROBE_SCORE_MAX/2;
+    else if(max_frames>200)return AVPROBE_SCORE_MAX/2;
     else if(max_frames>=4) return AVPROBE_SCORE_MAX/4;
     else if(max_frames>=1) return 1;
     else                   return 0;
@@ -147,7 +148,7 @@ static int mp3_read_header(AVFormatContext *s,
     st->start_time = 0;
 
     // lcm of all mp3 sample rates
-    av_set_pts_info(st, 64, 1, 14112000);
+    avpriv_set_pts_info(st, 64, 1, 14112000);
 
     off = avio_tell(s->pb);
 

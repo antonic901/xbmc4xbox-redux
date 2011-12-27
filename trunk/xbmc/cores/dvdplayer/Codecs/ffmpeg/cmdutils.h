@@ -76,6 +76,10 @@ int opt_default(const char *opt, const char *arg);
  */
 int opt_loglevel(const char *opt, const char *arg);
 
+int opt_report(const char *opt);
+
+int opt_max_alloc(const char *opt, const char *arg);
+
 int opt_codec_debug(const char *opt, const char *arg);
 
 /**
@@ -89,7 +93,7 @@ int opt_timelimit(const char *opt, const char *arg);
  * parsed or the corresponding value is invalid.
  *
  * @param context the context of the value to be set (e.g. the
- * corresponding commandline option name)
+ * corresponding command line option name)
  * @param numstr the string to be parsed
  * @param type the type (OPT_INT64 or OPT_FLOAT) as which the
  * string should be parsed
@@ -104,7 +108,7 @@ double parse_number_or_die(const char *context, const char *numstr, int type, do
  * the string cannot be correctly parsed.
  *
  * @param context the context of the value to be set (e.g. the
- * corresponding commandline option name)
+ * corresponding command line option name)
  * @param timestr the string to be parsed
  * @param is_duration a flag which tells how to interpret timestr, if
  * not zero timestr is interpreted as a duration, otherwise as a
@@ -187,7 +191,7 @@ void parse_options(void *optctx, int argc, char **argv, const OptionDef *options
 int parse_option(void *optctx, const char *opt, const char *arg, const OptionDef *options);
 
 /**
- * Find the '-loglevel' option in the commandline args and apply it.
+ * Find the '-loglevel' option in the command line args and apply it.
  */
 void parse_loglevel(int argc, char **argv, const OptionDef *options);
 
@@ -196,7 +200,7 @@ void parse_loglevel(int argc, char **argv, const OptionDef *options);
  *
  * @param s  Corresponding format context.
  * @param st Stream from s to be checked.
- * @param spec A stream specifier of the [v|a|s|d]:[<stream index>] form.
+ * @param spec A stream specifier of the [v|a|s|d]:[\<stream index\>] form.
  *
  * @return 1 if the stream matches, 0 if it doesn't, <0 on error
  */
@@ -212,7 +216,7 @@ int check_stream_specifier(AVFormatContext *s, AVStream *st, const char *spec);
  * @param st A stream from s for which the options should be filtered.
  * @return a pointer to the created dictionary
  */
-AVDictionary *filter_codec_opts(AVDictionary *opts, enum CodecID codec_id, AVFormatContext *s, AVStream *st);
+AVDictionary *filter_codec_opts(AVDictionary *opts, AVCodec *codec, AVFormatContext *s, AVStream *st);
 
 /**
  * Setup AVCodecContext options for avformat_find_stream_info().
@@ -243,7 +247,7 @@ void print_error(const char *filename, int err);
  * current version of the repository and of the libav* libraries used by
  * the program.
  */
-void show_banner(void);
+void show_banner(int argc, char **argv, const OptionDef *options);
 
 /**
  * Print the version of the program to stdout. The version message

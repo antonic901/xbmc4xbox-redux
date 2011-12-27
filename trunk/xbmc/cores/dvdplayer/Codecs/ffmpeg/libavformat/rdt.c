@@ -484,7 +484,7 @@ real_parse_asm_rulebook(AVFormatContext *s, AVStream *orig_st,
      * is set and once for if it isn't. We only read the first because we
      * don't care much (that's what the "odd" variable is for).
      * Each rule contains a set of one or more statements, optionally
-     * preceeded by a single condition. If there's a condition, the rule
+     * preceded by a single condition. If there's a condition, the rule
      * starts with a '#'. Multiple conditions are merged between brackets,
      * so there are never multiple conditions spread out over separate
      * statements. Generally, these conditions are bitrate limits (min/max)
@@ -544,7 +544,7 @@ rdt_free_context (PayloadContext *rdt)
             av_freep(&rdt->rmst[i]);
         }
     if (rdt->rmctx)
-        av_close_input_file(rdt->rmctx);
+        avformat_close_input(&rdt->rmctx);
     av_freep(&rdt->mlti_data);
     av_freep(&rdt->rmst);
     av_free(rdt);

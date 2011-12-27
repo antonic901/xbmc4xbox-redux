@@ -109,10 +109,10 @@ static void fill_quantization_matrices(AVCodecContext *avctx,
         qm->bNewQmatrix[i] = 1;
     for (i = 0; i < 64; i++) {
         int n = s->dsp.idct_permutation[ff_zigzag_direct[i]];
-        qm->Qmatrix[0][i] = s->intra_matrix[n];;
-        qm->Qmatrix[1][i] = s->inter_matrix[n];;
-        qm->Qmatrix[2][i] = s->chroma_intra_matrix[n];;
-        qm->Qmatrix[3][i] = s->chroma_inter_matrix[n];;
+        qm->Qmatrix[0][i] = s->intra_matrix[n];
+        qm->Qmatrix[1][i] = s->inter_matrix[n];
+        qm->Qmatrix[2][i] = s->chroma_intra_matrix[n];
+        qm->Qmatrix[3][i] = s->chroma_inter_matrix[n];
     }
 }
 
@@ -265,7 +265,6 @@ AVHWAccel ff_mpeg2_dxva2_hwaccel = {
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = CODEC_ID_MPEG2VIDEO,
     .pix_fmt        = PIX_FMT_DXVA2_VLD,
-    .capabilities   = 0,
     .start_frame    = start_frame,
     .decode_slice   = decode_slice,
     .end_frame      = end_frame,

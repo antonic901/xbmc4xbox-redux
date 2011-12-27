@@ -99,6 +99,8 @@ typedef struct AppleHTTPContext {
     int cur_seq_no;
     int end_of_segment;
     int first_packet;
+    int64_t first_timestamp;
+    AVIOInterruptCB *interrupt_callback;
 } AppleHTTPContext;
 
 static int read_chomp_line(AVIOContext *s, char *buf, int maxlen)
@@ -130,7 +132,7 @@ static void free_variant_list(AppleHTTPContext *c)
             ffurl_close(var->input);
         if (var->ctx) {
             var->ctx->pb = NULL;
-            av_close_input_file(var->ctx);
+            avformat_close_input(&var->ctx);
         }
         av_free(var);
     }
@@ -202,14 +204,15 @@ static int parse_playlist(AppleHTTPContext *c, const char *url,
     enum KeyType key_type = KEY_NONE;
     uint8_t iv[16] = "";
     int has_iv = 0;
-    char key[MAX_URL_SIZE];
+    char key[MAX_URL_SIZE] = "";
     char line[1024];
     const char *ptr;
     int close_in = 0;
 
     if (!in) {
         close_in = 1;
-        if ((ret = avio_open(&in, url, AVIO_FLAG_READ)) < 0)
+        if ((ret = avio_open2(&in, url, AVIO_FLAG_READ,
+                              c->interrupt_callback, NULL)) < 0)
             return ret;
     }
 
@@ -322,13 +325,15 @@ static int open_input(struct variant *var)
 {
     struct segment *seg = var->segments[var->cur_seq_no - var->start_seq_no];
     if (seg->key_type == KEY_NONE) {
-        return ffurl_open(&var->input, seg->url, AVIO_FLAG_READ);
+        return ffurl_open(&var->input, seg->url, AVIO_FLAG_READ,
+                          &var->parent->interrupt_callback, NULL);
     } else if (seg->key_type == KEY_AES_128) {
         char iv[33], key[33], url[MAX_URL_SIZE];
         int ret;
         if (strcmp(seg->key, var->key_url)) {
             URLContext *uc;
-            if (ffurl_open(&uc, seg->key, AVIO_FLAG_READ) == 0) {
+            if (ffurl_open(&uc, seg->key, AVIO_FLAG_READ,
+                           &var->parent->interrupt_callback, NULL) == 0) {
                 if (ffurl_read_complete(uc, var->key, sizeof(var->key))
                     != sizeof(var->key)) {
                     av_log(NULL, AV_LOG_ERROR, "Unable to read key file %s\n",
@@ -348,11 +353,12 @@ static int open_input(struct variant *var)
             snprintf(url, sizeof(url), "crypto+%s", seg->url);
         else
             snprintf(url, sizeof(url), "crypto:%s", seg->url);
-        if ((ret = ffurl_alloc(&var->input, url, AVIO_FLAG_READ)) < 0)
+        if ((ret = ffurl_alloc(&var->input, url, AVIO_FLAG_READ,
+                               &var->parent->interrupt_callback)) < 0)
             return ret;
         av_opt_set(var->input->priv_data, "key", key, 0);
         av_opt_set(var->input->priv_data, "iv", iv, 0);
-        if ((ret = ffurl_connect(var->input)) < 0) {
+        if ((ret = ffurl_connect(var->input, NULL)) < 0) {
             ffurl_close(var->input);
             var->input = NULL;
             return ret;
@@ -388,7 +394,7 @@ reload:
                 return AVERROR_EOF;
             while (av_gettime() - v->last_load_time <
                    v->target_duration*1000000) {
-                if (url_interrupt_cb())
+                if (ff_check_interrupt(c->interrupt_callback))
                     return AVERROR_EXIT;
                 usleep(100*1000);
             }
@@ -432,6 +438,8 @@ static int applehttp_read_header(AVFormatContext *s, AVFormatParameters *ap)
 {
     AppleHTTPContext *c = s->priv_data;
     int ret = 0, i, j, stream_offset = 0;
+
+    c->interrupt_callback = &s->interrupt_callback;
 
     if ((ret = parse_playlist(c, s->filename, NULL, s->pb)) < 0)
         goto fail;
@@ -495,8 +503,15 @@ static int applehttp_read_header(AVFormatContext *s, AVFormatParameters *ap)
         v->pb.seekable = 0;
         ret = av_probe_input_buffer(&v->pb, &in_fmt, v->segments[0]->url,
                                     NULL, 0, 0);
-        if (ret < 0)
+        if (ret < 0) {
+            /* Free the ctx - it isn't initialized properly at this point,
+             * so avformat_close_input shouldn't be called. If
+             * avformat_open_input fails below, it frees and zeros the
+             * context, so it doesn't need any special treatment like this. */
+            avformat_free_context(v->ctx);
+            v->ctx = NULL;
             goto fail;
+        }
         v->ctx->pb       = &v->pb;
         ret = avformat_open_input(&v->ctx, v->segments[0]->url, in_fmt, NULL);
         if (ret < 0)
@@ -520,6 +535,7 @@ static int applehttp_read_header(AVFormatContext *s, AVFormatParameters *ap)
     }
 
     c->first_packet = 1;
+    c->first_timestamp = AV_NOPTS_VALUE;
 
     return 0;
 fail:
@@ -534,7 +550,7 @@ static int recheck_discard_flags(AVFormatContext *s, int first)
 
     /* Check if any new streams are needed */
     for (i = 0; i < c->n_variants; i++)
-        c->variants[i]->cur_needed = 0;;
+        c->variants[i]->cur_needed = 0;
 
     for (i = 0; i < s->nb_streams; i++) {
         AVStream *st = s->streams[i];
@@ -584,6 +600,9 @@ start:
                 if (!url_feof(&var->pb))
                     return ret;
                 reset_packet(&var->pkt);
+            } else {
+                if (c->first_timestamp == AV_NOPTS_VALUE)
+                    c->first_timestamp = var->pkt.dts;
             }
         }
         /* Check if this stream has the packet with the lowest dts */
@@ -632,8 +651,12 @@ static int applehttp_read_seek(AVFormatContext *s, int stream_index,
     for (i = 0; i < c->n_variants; i++) {
         /* Reset reading */
         struct variant *var = c->variants[i];
-        int64_t pos = 0;
-        if (var->input) {
+        int64_t pos = c->first_timestamp == AV_NOPTS_VALUE ? 0 :
+                      av_rescale_rnd(c->first_timestamp, 1, stream_index >= 0 ?
+                               s->streams[stream_index]->time_base.den :
+                               AV_TIME_BASE, flags & AVSEEK_FLAG_BACKWARD ?
+                               AV_ROUND_DOWN : AV_ROUND_UP);
+         if (var->input) {
             ffurl_close(var->input);
             var->input = NULL;
         }

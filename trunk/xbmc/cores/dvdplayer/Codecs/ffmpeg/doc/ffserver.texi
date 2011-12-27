@@ -23,6 +23,7 @@ ffserver [options]
 @c man begin DESCRIPTION
 
 ffserver is a streaming server for both audio and video. It supports
+
 several live feeds, streaming from files and time shifting on live feeds
 (you can seek to positions in the past on each live feed, provided you
 specify a big enough feed storage in ffserver.conf).
@@ -34,7 +35,7 @@ file.
 
 This documentation covers only the streaming aspects of ffserver /
 ffmpeg. All questions about parameters for ffmpeg, codec questions,
-etc. are not covered here. Read @file{ffmpeg-doc.html} for more
+etc. are not covered here. Read @file{ffmpeg.html} for more
 information.
 
 @section How does it work?
@@ -110,8 +111,8 @@ As a simple test, just run the following two command lines where INPUTFILE
 is some file which you can decode with ffmpeg:
 
 @example
-./ffserver -f doc/ffserver.conf &
-./ffmpeg -i INPUTFILE http://localhost:8090/feed1.ffm
+ffserver -f doc/ffserver.conf &
+ffmpeg -i INPUTFILE http://localhost:8090/feed1.ffm
 @end example
 
 At this point you should be able to go to your Windows machine and fire up
@@ -146,7 +147,7 @@ that only captures in stereo and also requires that one channel be flipped.
 If you are one of these people, then export 'AUDIO_FLIP_LEFT=1' before
 starting ffmpeg.
 
-@subsection The audio and video loose sync after a while.
+@subsection The audio and video lose sync after a while.
 
 Yes, they do.
 
@@ -265,7 +266,7 @@ rather than as a daemon.
 
 @c man begin SEEALSO
 
-ffmpeg(1), ffplay(1), ffprobe(1), the @file{ffmpeg/doc/ffserver.conf}
+ffmpeg(1), ffplay(1), ffprobe(1), the @file{ffserver.conf}
 example and the FFmpeg HTML documentation
 @c man end
 

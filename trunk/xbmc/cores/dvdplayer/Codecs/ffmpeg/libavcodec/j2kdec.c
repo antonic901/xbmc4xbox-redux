@@ -220,6 +220,9 @@ static int get_siz(J2kDecoderContext *s)
      s->tile_offset_y = bytestream_get_be32(&s->buf); // YT0Siz
        s->ncomponents = bytestream_get_be16(&s->buf); // CSiz
 
+    if(s->tile_width<=0 || s->tile_height<=0)
+        return AVERROR(EINVAL);
+
     if (s->buf_end - s->buf < 2 * s->ncomponents)
         return AVERROR(EINVAL);
 
@@ -227,13 +230,16 @@ static int get_siz(J2kDecoderContext *s)
         uint8_t x = bytestream_get_byte(&s->buf);
         s->cbps[i] = (x & 0x7f) + 1;
         s->precision = FFMAX(s->cbps[i], s->precision);
-        s->sgnd[i] = (x & 0x80) == 1;
+        s->sgnd[i] = !!(x & 0x80);
         s->cdx[i] = bytestream_get_byte(&s->buf);
         s->cdy[i] = bytestream_get_byte(&s->buf);
     }
 
     s->numXtiles = ff_j2k_ceildiv(s->width - s->tile_offset_x, s->tile_width);
     s->numYtiles = ff_j2k_ceildiv(s->height - s->tile_offset_y, s->tile_height);
+
+    if(s->numXtiles * (uint64_t)s->numYtiles > INT_MAX/sizeof(J2kTile))
+        return AVERROR(EINVAL);
 
     s->tile = av_mallocz(s->numXtiles * s->numYtiles * sizeof(J2kTile));
     if (!s->tile)
@@ -359,7 +365,7 @@ static int get_qcx(J2kDecoderContext *s, int n, J2kQuantStyle *q)
 
     if (q->quantsty == J2K_QSTY_NONE){
         n -= 3;
-        if (s->buf_end - s->buf < n)
+        if (s->buf_end - s->buf < n || 32*3 < n)
             return AVERROR(EINVAL);
         for (i = 0; i < n; i++)
             q->expn[i] = bytestream_get_byte(&s->buf) >> 3;
@@ -376,7 +382,7 @@ static int get_qcx(J2kDecoderContext *s, int n, J2kQuantStyle *q)
         }
     } else{
         n = (n - 3) >> 1;
-        if (s->buf_end - s->buf < n)
+        if (s->buf_end - s->buf < n || 32*3 < n)
             return AVERROR(EINVAL);
         for (i = 0; i < n; i++){
             x = bytestream_get_be16(&s->buf);
@@ -421,6 +427,10 @@ static uint8_t get_sot(J2kDecoderContext *s)
         return AVERROR(EINVAL);
 
     s->curtileno = bytestream_get_be16(&s->buf); ///< Isot
+    if((unsigned)s->curtileno >= s->numXtiles * s->numYtiles){
+        s->curtileno=0;
+        return AVERROR(EINVAL);
+    }
 
     s->buf += 4; ///< Psot (ignored)
 

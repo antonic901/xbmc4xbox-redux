@@ -126,11 +126,11 @@ static int decode_frame(AVCodecContext *avctx,
     s->nb_planes      = (*buf++ >> 4) + 1;
     bpp               = s->nb_planes ? bits_per_plane*s->nb_planes : bits_per_plane;
     if (bits_per_plane > 8 || bpp < 1 || bpp > 32) {
-        av_log_ask_for_sample(s, "unsupported bit depth\n");
+        av_log_ask_for_sample(avctx, "unsupported bit depth\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (*buf == 0xFF) {
+    if (*buf == 0xFF || bpp == 8) {
         buf += 2;
         etype  = bytestream_get_le16(&buf);
         esize  = bytestream_get_le16(&buf);
@@ -198,17 +198,17 @@ static int decode_frame(AVCodecContext *avctx,
     buf += esize;
 
 
-    x = 0;
     y = s->height - 1;
-    plane = 0;
     if (bytestream_get_le16(&buf)) {
-        while (buf_end - buf >= 6) {
+        x = 0;
+        plane = 0;
+        while (y >= 0 && buf_end - buf >= 6) {
             const uint8_t *buf_pend = buf + FFMIN(AV_RL16(buf), buf_end - buf);
             //ignore uncompressed block size reported at buf[2]
             int marker = buf[4];
             buf += 5;
 
-            while (plane < s->nb_planes && buf_pend - buf >= 1) {
+            while (plane < s->nb_planes && y >= 0 && buf_pend - buf >= 1) {
                 int run = 1;
                 int val = *buf++;
                 if (val == marker) {
@@ -222,16 +222,17 @@ static int decode_frame(AVCodecContext *avctx,
 
                 if (bits_per_plane == 8) {
                     picmemset_8bpp(s, val, run, &x, &y);
-                    if (y < 0)
-                        break;
                 } else {
                     picmemset(s, val, run, &x, &y, &plane, bits_per_plane);
                 }
             }
         }
     } else {
-        av_log_ask_for_sample(s, "uncompressed image\n");
-        return buf_size;
+        while (y >= 0 && buf < buf_end) {
+            memcpy(s->frame.data[0] + y * s->frame.linesize[0], buf, FFMIN(avctx->width, buf_end - buf));
+            buf += avctx->width;
+            y--;
+        }
     }
 
     *data_size = sizeof(AVFrame);

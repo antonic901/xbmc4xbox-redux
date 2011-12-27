@@ -11,6 +11,9 @@ YASM-OBJS-$(CONFIG_FFT)                += x86/fft_mmx.o                 \
 
 YASM-OBJS-$(CONFIG_DWT)                += x86/dwt_yasm.o
 
+YASM-OBJS-$(CONFIG_H264CHROMA)         += x86/h264_chromamc.o           \
+                                          x86/h264_chromamc_10bit.o
+
 MMX-OBJS-$(CONFIG_H264DSP)             += x86/h264dsp_mmx.o
 YASM-OBJS-$(CONFIG_H264DSP)            += x86/h264_deblock.o            \
                                           x86/h264_deblock_10bit.o      \
@@ -32,6 +35,7 @@ YASM-OBJS-$(CONFIG_DIRAC_DECODER)      += x86/diracdsp_mmx.o x86/diracdsp_yasm.o
 MMX-OBJS-$(CONFIG_AC3DSP)              += x86/ac3dsp_mmx.o
 YASM-OBJS-$(CONFIG_AC3DSP)             += x86/ac3dsp.o
 MMX-OBJS-$(CONFIG_CAVS_DECODER)        += x86/cavsdsp_mmx.o
+MMX-OBJS-$(CONFIG_DNXHD_ENCODER)       += x86/dnxhd_mmx.o
 MMX-OBJS-$(CONFIG_MPEGAUDIODSP)        += x86/mpegaudiodec_mmx.o
 YASM-OBJS-$(CONFIG_MPEGAUDIODSP)       += x86/imdct36_sse.o
 MMX-OBJS-$(CONFIG_PNG_DECODER)         += x86/png_mmx.o
@@ -59,15 +63,12 @@ MMX-OBJS-$(CONFIG_VP8_DECODER)         += x86/vp8dsp-init.o
 MMX-OBJS-$(HAVE_YASM)                  += x86/dsputil_yasm.o            \
                                           x86/deinterlace.o             \
                                           x86/fmtconvert.o              \
-                                          x86/h264_chromamc.o           \
-                                          x86/h264_chromamc_10bit.o     \
                                           x86/h264_qpel_10bit.o         \
                                           $(YASM-OBJS-yes)
 
 MMX-OBJS-$(CONFIG_FFT)                 += x86/fft.o
 
-OBJS-$(HAVE_MMX)                       += x86/dnxhd_mmx.o               \
-                                          x86/dsputil_mmx.o             \
+OBJS-$(HAVE_MMX)                       += x86/dsputil_mmx.o             \
                                           x86/fdct_mmx.o                \
                                           x86/fmtconvert_mmx.o          \
                                           x86/idct_mmx_xvid.o           \

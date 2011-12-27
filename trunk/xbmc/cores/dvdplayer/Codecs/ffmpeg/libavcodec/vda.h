@@ -30,16 +30,13 @@
 #undef __GNUC_STDC_INLINE__
 
 #define Picture QuickdrawPicture
-
-#include <pthread.h>
-#include "avcodec.h"
 #include <VideoDecodeAcceleration/VDADecoder.h>
+#undef Picture
 
 /**
  *  This structure is used to store a decoded frame information and data.
  */
-typedef struct
-{
+typedef struct {
     /**
     * The PTS of the frame.
     *
@@ -73,7 +70,6 @@ typedef struct
  * The application must make it available as AVCodecContext.hwaccel_context.
  */
 struct vda_context {
-
     /**
     * VDA decoder object.
     *

@@ -35,6 +35,7 @@
 #include "libavutil/intreadwrite.h"
 #include "libavutil/mathematics.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define EXTRADATA1_SIZE (6 + 256 * 3) ///< video base, clr, palette
 
@@ -137,6 +138,9 @@ static av_cold int rl2_read_header(AVFormatContext *s,
 
     /** setup audio stream if present */
     if(sound_rate){
+        if(channels <= 0)
+            return AVERROR_INVALIDDATA;
+
         pts_num = def_sound_size;
         pts_den = rate;
 
@@ -153,10 +157,10 @@ static av_cold int rl2_read_header(AVFormatContext *s,
             st->codec->bits_per_coded_sample;
         st->codec->block_align = st->codec->channels *
             st->codec->bits_per_coded_sample / 8;
-        av_set_pts_info(st,32,1,rate);
+        avpriv_set_pts_info(st,32,1,rate);
     }
 
-    av_set_pts_info(s->streams[0], 32, pts_num, pts_den);
+    avpriv_set_pts_info(s->streams[0], 32, pts_num, pts_den);
 
     chunk_size =   av_malloc(frame_count * sizeof(uint32_t));
     audio_size =   av_malloc(frame_count * sizeof(uint32_t));

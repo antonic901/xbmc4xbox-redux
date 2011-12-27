@@ -1,5 +1,4 @@
 /*
- * Multiple format streaming server
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -17,6 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+/**
+ * @file
+ * multiple format streaming server based on the FFmpeg libraries
  */
 
 #include "config.h"
@@ -475,7 +479,7 @@ static void start_children(FFStream *feed)
                     slash++;
                 strcpy(slash, "ffmpeg");
 
-                http_log("Launch commandline: ");
+                http_log("Launch command line: ");
                 http_log("%s ", pathname);
                 for (i = 1; feed->child_argv[i] && feed->child_argv[i][0]; i++)
                     http_log("%s ", feed->child_argv[i]);
@@ -849,7 +853,7 @@ static void close_connection(HTTPContext *c)
             if (st->codec->codec)
                 avcodec_close(st->codec);
         }
-        av_close_input_file(c->fmt_in);
+        avformat_close_input(&c->fmt_in);
     }
 
     /* free RTP output streams if any */
@@ -2169,7 +2173,7 @@ static int open_input_stream(HTTPContext *c, const char *info)
     c->fmt_in = s;
     if (strcmp(s->iformat->name, "ffm") && avformat_find_stream_info(c->fmt_in, NULL) < 0) {
         http_log("Could not find stream info '%s'\n", input_filename);
-        av_close_input_file(s);
+        avformat_close_input(&s);
         return -1;
     }
 
@@ -2311,8 +2315,7 @@ static int http_prepare_data(HTTPContext *c)
                     return 0;
                 } else {
                     if (c->stream->loop) {
-                        av_close_input_file(c->fmt_in);
-                        c->fmt_in = NULL;
+                        avformat_close_input(&c->fmt_in);
                         if (open_input_stream(c, "") < 0)
                             goto no_loop;
                         goto redo;
@@ -2736,7 +2739,7 @@ static int http_receive_data(HTTPContext *c)
 
             /* Now we have the actual streams */
             if (s->nb_streams != feed->nb_streams) {
-                av_close_input_stream(s);
+                avformat_close_input(&s);
                 av_free(pb);
                 http_log("Feed '%s' stream number does not match registered feed\n",
                          c->stream->feed_filename);
@@ -2749,7 +2752,7 @@ static int http_receive_data(HTTPContext *c)
                 avcodec_copy_context(fst->codec, st->codec);
             }
 
-            av_close_input_stream(s);
+            avformat_close_input(&s);
             av_free(pb);
         }
         c->buffer_ptr = c->buffer;
@@ -3629,7 +3632,7 @@ static void build_file_streams(void)
                 if (avformat_find_stream_info(infile, NULL) < 0) {
                     http_log("Could not find codec parameters from '%s'\n",
                              stream->feed_filename);
-                    av_close_input_file(infile);
+                    avformat_close_input(&infile);
                     goto fail;
                 }
                 extract_mpeg4_header(infile);
@@ -3637,7 +3640,7 @@ static void build_file_streams(void)
                 for(i=0;i<infile->nb_streams;i++)
                     add_av_stream1(stream, infile->streams[i]->codec, 1);
 
-                av_close_input_file(infile);
+                avformat_close_input(&infile);
             }
         }
     }
@@ -3727,7 +3730,7 @@ static void build_feed_streams(void)
                     http_log("Deleting feed file '%s' as stream counts differ (%d != %d)\n",
                         feed->feed_filename, s->nb_streams, feed->nb_streams);
 
-                av_close_input_file(s);
+                avformat_close_input(&s);
             } else
                 http_log("Deleting feed file '%s' as it appears to be corrupt\n",
                         feed->feed_filename);
@@ -4674,7 +4677,7 @@ int main(int argc, char **argv)
     av_register_all();
     avformat_network_init();
 
-    show_banner();
+    show_banner(argc, argv, options);
 
     my_program_name = argv[0];
     my_program_dir = getcwd(0, 0);

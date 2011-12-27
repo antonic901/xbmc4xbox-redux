@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include "avformat.h"
+#include "internal.h"
 #include "libavcodec/get_bits.h"
 #include "libavcodec/put_bits.h"
 
@@ -60,7 +61,7 @@ static int read_header(AVFormatContext *s, AVFormatParameters *ap)
     st->codec->block_align = 16;
     st->codec->channels=1;
 
-    av_set_pts_info(st, 64, 1, 100);
+    avpriv_set_pts_info(st, 64, 1, 100);
     return 0;
 }
 
@@ -112,7 +113,7 @@ AVInputFormat ff_bit_demuxer = {
     .extensions  = "bit",
 };
 
-#ifdef CONFIG_MUXERS
+#if CONFIG_MUXERS
 static int write_header(AVFormatContext *s)
 {
     AVCodecContext *enc = s->streams[0]->codec;
@@ -127,7 +128,7 @@ static int write_header(AVFormatContext *s)
 
 static int write_packet(AVFormatContext *s, AVPacket *pkt)
 {
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     GetBitContext gb;
     int i;
 

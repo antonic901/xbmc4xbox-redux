@@ -1,14 +1,32 @@
 MANPAGES    = $(PROGS-yes:%=doc/%.1)
 PODPAGES    = $(PROGS-yes:%=doc/%.pod)
-HTMLPAGES   = $(PROGS-yes:%=doc/%.html)
+HTMLPAGES   = $(PROGS-yes:%=doc/%.html)                                 \
+              doc/developer.html                                        \
+              doc/faq.html                                              \
+              doc/fate.html                                             \
+              doc/general.html                                          \
+              doc/git-howto.html                                        \
+              doc/libavfilter.html                                      \
+              doc/platform.html                                         \
 
-DOCS = $(addprefix doc/, developer.html faq.html general.html libavfilter.html) $(HTMLPAGES) $(MANPAGES) $(PODPAGES)
+TXTPAGES    = doc/fate.txt                                              \
+
+
+DOCS = $(HTMLPAGES) $(MANPAGES) $(PODPAGES)
+ifdef HAVE_MAKEINFO
+DOCS += $(TXTPAGES)
+endif
 
 all-$(CONFIG_DOC): documentation
 
 documentation: $(DOCS)
 
-TEXIDEP = awk '/^@include/ { printf "$@: $(@D)/%s\n", $$2 }' <$< >$(@:%=%.d)
+TEXIDEP = awk '/^@(verbatim)?include/ { printf "$@: $(@D)/%s\n", $$2 }' <$< >$(@:%=%.d)
+
+doc/%.txt: TAG = TXT
+doc/%.txt: doc/%.texi
+	$(Q)$(TEXIDEP)
+	$(M)makeinfo --force --no-headers -o $@ $< 2>/dev/null
 
 doc/%.html: TAG = HTML
 doc/%.html: doc/%.texi $(SRC_PATH)/doc/t2h.init
@@ -39,7 +57,7 @@ uninstall-man:
 	$(RM) $(addprefix "$(MANDIR)/man1/",$(ALLMANPAGES))
 
 clean::
-	$(RM) doc/*.html doc/*.pod doc/*.1 $(CLEANSUFFIXES:%=doc/%)
+	$(RM) $(TXTPAGES) doc/*.html doc/*.pod doc/*.1 $(CLEANSUFFIXES:%=doc/%)
 
 -include $(wildcard $(DOCS:%=%.d))
 

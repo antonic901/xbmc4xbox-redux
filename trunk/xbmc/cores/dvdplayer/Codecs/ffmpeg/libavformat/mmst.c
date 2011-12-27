@@ -470,7 +470,6 @@ static int mms_close(URLContext *h)
     /* free all separately allocated pointers in mms */
     av_free(mms->streams);
     av_free(mms->asf_header);
-    av_freep(&h->priv_data);
 
     return 0;
 }
@@ -502,15 +501,12 @@ static void clear_stream_buffers(MMSContext *mms)
 
 static int mms_open(URLContext *h, const char *uri, int flags)
 {
-    MMSTContext *mmst;
+    MMSTContext *mmst = h->priv_data;
     MMSContext *mms;
     int port, err;
     char tcpname[256];
 
     h->is_streamed = 1;
-    mmst = h->priv_data = av_mallocz(sizeof(MMSTContext));
-    if (!h->priv_data)
-        return AVERROR(ENOMEM);
     mms = &mmst->mms;
 
     // only for MMS over TCP, so set proto = NULL
@@ -523,7 +519,8 @@ static int mms_open(URLContext *h, const char *uri, int flags)
 
     // establish tcp connection.
     ff_url_join(tcpname, sizeof(tcpname), "tcp", NULL, mmst->host, port, NULL);
-    err = ffurl_open(&mms->mms_hd, tcpname, AVIO_FLAG_READ_WRITE);
+    err = ffurl_open(&mms->mms_hd, tcpname, AVIO_FLAG_READ_WRITE,
+                     &h->interrupt_callback, NULL);
     if (err)
         goto fail;
 
@@ -623,8 +620,9 @@ static int mms_read(URLContext *h, uint8_t *buf, int size)
 }
 
 URLProtocol ff_mmst_protocol = {
-    .name      = "mmst",
-    .url_open  = mms_open,
-    .url_read  = mms_read,
-    .url_close = mms_close,
+    .name           = "mmst",
+    .url_open       = mms_open,
+    .url_read       = mms_read,
+    .url_close      = mms_close,
+    .priv_data_size = sizeof(MMSTContext),
 };

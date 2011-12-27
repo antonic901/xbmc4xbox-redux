@@ -4,8 +4,8 @@ AREF = fate-acodec-aref
 VREF = fate-vsynth1-vref fate-vsynth2-vref
 REFS = $(AREF) $(VREF)
 
-$(VREF): avconv$(EXESUF) tests/vsynth1/00.pgm tests/vsynth2/00.pgm
-$(AREF): avconv$(EXESUF) tests/data/asynth1.sw
+$(VREF): ffmpeg$(EXESUF) tests/vsynth1/00.pgm tests/vsynth2/00.pgm
+$(AREF): ffmpeg$(EXESUF) tests/data/asynth1.sw
 
 ffservertest: ffserver$(EXESUF) tests/vsynth1/00.pgm tests/data/asynth1.sw
 	@echo
@@ -44,17 +44,33 @@ include $(SRC_PATH)/tests/fate.mak
 include $(SRC_PATH)/tests/fate2.mak
 
 include $(SRC_PATH)/tests/fate/aac.mak
+include $(SRC_PATH)/tests/fate/ac3.mak
 include $(SRC_PATH)/tests/fate/als.mak
 include $(SRC_PATH)/tests/fate/amrnb.mak
 include $(SRC_PATH)/tests/fate/amrwb.mak
+include $(SRC_PATH)/tests/fate/atrac.mak
 include $(SRC_PATH)/tests/fate/dct.mak
 include $(SRC_PATH)/tests/fate/fft.mak
 include $(SRC_PATH)/tests/fate/h264.mak
+include $(SRC_PATH)/tests/fate/image.mak
+include $(SRC_PATH)/tests/fate/indeo.mak
+include $(SRC_PATH)/tests/fate/libavcodec.mak
 include $(SRC_PATH)/tests/fate/libavutil.mak
+include $(SRC_PATH)/tests/fate/mapchan.mak
+include $(SRC_PATH)/tests/fate/lossless-audio.mak
+include $(SRC_PATH)/tests/fate/lossless-video.mak
+include $(SRC_PATH)/tests/fate/microsoft.mak
 include $(SRC_PATH)/tests/fate/mp3.mak
+include $(SRC_PATH)/tests/fate/mpc.mak
 include $(SRC_PATH)/tests/fate/prores.mak
+include $(SRC_PATH)/tests/fate/qtrle.mak
+include $(SRC_PATH)/tests/fate/real.mak
+include $(SRC_PATH)/tests/fate/screen.mak
+include $(SRC_PATH)/tests/fate/utvideo.mak
 include $(SRC_PATH)/tests/fate/vorbis.mak
-include $(SRC_PATH)/tests/fate/vp8.mak
+include $(SRC_PATH)/tests/fate/vpx.mak
+include $(SRC_PATH)/tests/fate/vqf.mak
+include $(SRC_PATH)/tests/fate/wma.mak
 
 FATE_ACODEC  = $(ACODEC_TESTS:%=fate-acodec-%)
 FATE_VSYNTH1 = $(VCODEC_TESTS:%=fate-vsynth1-%)
@@ -99,6 +115,8 @@ FATE += $(FATE_TESTS) $(FATE_TESTS-yes)
 fate-rsync:
 	rsync -vaLW --timeout=60 --contimeout=60 rsync://fate.ffmpeg.org/fate-suite/ $(SAMPLES)
 else
+fate::
+	@echo "warning: only a subset of the fate tests will be run because SAMPLES is not specified"
 fate-rsync:
 	@echo "use 'make fate-rsync SAMPLES=/path/to/samples' to sync the fate suite"
 $(FATE_TESTS):
@@ -109,7 +127,7 @@ FATE_UTILS = base64 tiny_psnr
 
 TOOL = ffmpeg
 
-fate: $(FATE)
+fate:: $(FATE)
 
 $(FATE): $(TOOL)$(EXESUF) $(FATE_UTILS:%=tests/%$(HOSTEXESUF))
 	@echo "TEST    $(@:fate-%=%)"

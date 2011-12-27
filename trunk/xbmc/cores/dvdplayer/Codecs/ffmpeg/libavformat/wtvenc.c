@@ -284,7 +284,7 @@ static void write_sync(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     WtvContext *wctx = s->priv_data;
     int64_t last_chunk_pos = wctx->last_chunk_pos;
-    wctx->sync_pos = avio_tell(pb) - wctx->timeline_start_pos;;
+    wctx->sync_pos = avio_tell(pb) - wctx->timeline_start_pos;
 
     write_chunk_header(s, &sync_guid, 0x18, 0);
     write_pad(pb, 24);
@@ -327,7 +327,7 @@ static int write_stream_data(AVFormatContext *s, AVStream *st, int flag)
     }
     finish_chunk(s);
 
-    av_set_pts_info(st, 64, 1, 10000000);
+    avpriv_set_pts_info(st, 64, 1, 10000000);
 
     return 0;
 }

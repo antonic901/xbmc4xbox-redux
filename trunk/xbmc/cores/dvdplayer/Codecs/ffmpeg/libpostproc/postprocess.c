@@ -75,6 +75,7 @@ try to unroll inner for(x=0 ... loop to avoid these damn if(x ... checks
 
 #include "config.h"
 #include "libavutil/avutil.h"
+#include "libavutil/avassert.h"
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,6 +91,7 @@ try to unroll inner for(x=0 ... loop to avoid these damn if(x ... checks
 
 unsigned postproc_version(void)
 {
+    av_assert0(LIBPOSTPROC_VERSION_MICRO >= 100);
     return LIBPOSTPROC_VERSION_INT;
 }
 
@@ -644,7 +646,7 @@ static inline void postProcess(const uint8_t src[], int srcStride, uint8_t dst[]
 #endif
             postProcess_C(src, srcStride, dst, dstStride, width, height, QPs, QPStride, isColor, c);
 #endif
-#else //CONFIG_RUNTIME_CPUDETECT
+#else /* CONFIG_RUNTIME_CPUDETECT */
 #if   HAVE_MMX2
             postProcess_MMX2(src, srcStride, dst, dstStride, width, height, QPs, QPStride, isColor, c);
 #elif HAVE_AMD3DNOW
@@ -656,7 +658,7 @@ static inline void postProcess(const uint8_t src[], int srcStride, uint8_t dst[]
 #else
             postProcess_C(src, srcStride, dst, dstStride, width, height, QPs, QPStride, isColor, c);
 #endif
-#endif //!CONFIG_RUNTIME_CPUDETECT
+#endif /* !CONFIG_RUNTIME_CPUDETECT */
 }
 
 //static void postProcess(uint8_t src[], int srcStride, uint8_t dst[], int dstStride, int width, int height,
@@ -912,7 +914,7 @@ static void reallocBuffers(PPContext *c, int width, int height, int stride, int 
             c->yHistogram[i]= width*height/64*15/256;
 
     for(i=0; i<3; i++){
-        //Note: The +17*1024 is just there so i do not have to worry about r/w over the end.
+        //Note: The +17*1024 is just there so I do not have to worry about r/w over the end.
         reallocAlign((void **)&c->tempBlurred[i], 8, stride*mbHeight*16 + 17*1024);
         reallocAlign((void **)&c->tempBlurredPast[i], 8, 256*((height+7)&(~7))/2 + 17*1024);//FIXME size
     }

@@ -33,7 +33,7 @@ typedef union {
 
 typedef struct AVAES {
     // Note: round_key[16] is accessed in the init code, but this only
-    // overwrites state, which does not matter (see also r7471).
+    // overwrites state, which does not matter (see also commit ba554c0).
     av_aes_block round_key[15];
     av_aes_block state[2];
     int rounds;
@@ -259,6 +259,7 @@ int av_aes_init(AVAES *a, const uint8_t *key, int key_bits, int decrypt)
 }
 
 #ifdef TEST
+// LCOV_EXCL_START
 #include <string.h>
 #include "lfg.h"
 #include "log.h"
@@ -331,4 +332,5 @@ int main(int argc, char **argv)
     }
     return err;
 }
+// LCOV_EXCL_STOP
 #endif

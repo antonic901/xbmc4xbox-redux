@@ -39,7 +39,9 @@ void avfilter_register_all(void)
     REGISTER_FILTER (ANULL,       anull,       af);
     REGISTER_FILTER (ARESAMPLE,   aresample,   af);
     REGISTER_FILTER (ASHOWINFO,   ashowinfo,   af);
+    REGISTER_FILTER (ASPLIT,      asplit,      af);
     REGISTER_FILTER (EARWAX,      earwax,      af);
+    REGISTER_FILTER (PAN,         pan,         af);
     REGISTER_FILTER (VOLUME,      volume,      af);
 
     REGISTER_FILTER (ABUFFER,     abuffer,     asrc);
@@ -50,6 +52,7 @@ void avfilter_register_all(void)
     REGISTER_FILTER (ABUFFERSINK, abuffersink, asink);
     REGISTER_FILTER (ANULLSINK,   anullsink,   asink);
 
+    REGISTER_FILTER (ASS,         ass,  vf);
     REGISTER_FILTER (BLACKFRAME,  blackframe,  vf);
     REGISTER_FILTER (BOXBLUR,     boxblur,     vf);
     REGISTER_FILTER (COPY,        copy,        vf);
@@ -87,14 +90,16 @@ void avfilter_register_all(void)
     REGISTER_FILTER (SHOWINFO,    showinfo,    vf);
     REGISTER_FILTER (SLICIFY,     slicify,     vf);
     REGISTER_FILTER (SPLIT,       split,       vf);
+    REGISTER_FILTER (THUMBNAIL,   thumbnail,   vf);
     REGISTER_FILTER (TRANSPOSE,   transpose,   vf);
     REGISTER_FILTER (UNSHARP,     unsharp,     vf);
     REGISTER_FILTER (VFLIP,       vflip,       vf);
     REGISTER_FILTER (YADIF,       yadif,       vf);
 
-    REGISTER_FILTER (BUFFER,      buffer,      vsrc);
+    REGISTER_FILTER (CELLAUTO,    cellauto,    vsrc);
     REGISTER_FILTER (COLOR,       color,       vsrc);
     REGISTER_FILTER (FREI0R,      frei0r_src,  vsrc);
+    REGISTER_FILTER (LIFE,        life,        vsrc);
     REGISTER_FILTER (MANDELBROT,  mandelbrot,  vsrc);
     REGISTER_FILTER (MOVIE,       movie,       vsrc);
     REGISTER_FILTER (MPTESTSRC,   mptestsrc,   vsrc);
@@ -104,4 +109,10 @@ void avfilter_register_all(void)
 
     REGISTER_FILTER (BUFFERSINK,  buffersink,  vsink);
     REGISTER_FILTER (NULLSINK,    nullsink,    vsink);
+
+    /* vsrc_buffer is a part of public API => registered unconditionally */
+    {
+        extern AVFilter avfilter_vsrc_buffer;
+        avfilter_register(&avfilter_vsrc_buffer);
+    }
 }

@@ -28,6 +28,7 @@
 #define AVCODEC_TIMECODE_H
 
 #include <stdint.h>
+#include "avcodec.h"
 #include "libavutil/rational.h"
 
 #define TIMECODE_OPT(ctx, flags)                                         \
@@ -49,7 +50,7 @@ struct ff_timecode {
  * @return          Adjusted frame number
  * @warning         Adjustment is only valid in NTSC 29.97
  */
-int ff_framenum_to_drop_timecode(int frame_num);
+int avpriv_framenum_to_drop_timecode(int frame_num);
 
 /**
  * @brief       Convert frame id (timecode) to SMPTE 12M binary representation
@@ -58,7 +59,18 @@ int ff_framenum_to_drop_timecode(int frame_num);
  * @param drop  Drop flag
  * @return      The actual binary representation
  */
-uint32_t ff_framenum_to_smtpe_timecode(unsigned frame, int fps, int drop);
+uint32_t avpriv_framenum_to_smpte_timecode(unsigned frame, int fps, int drop);
+
+/**
+ * @brief       Load timecode string in buf
+ * @param buf   Destination buffer
+ * @param tc    Timecode struct pointer
+ * @param frame Frame id (timecode frame is computed with tc->start+frame)
+ * @return a pointer to the buf parameter
+ * @note  buf must have enough space to store the timecode representation
+ *        (sizeof("hh:mm:ss.ff"))
+ */
+char *avpriv_timecode_to_string(char *buf, const struct ff_timecode *tc, unsigned frame);
 
 /**
  * Parse SMTPE 12M time representation (hh:mm:ss[:;.]ff). str and rate fields
@@ -70,6 +82,12 @@ uint32_t ff_framenum_to_smtpe_timecode(unsigned frame, int fps, int drop);
  * @return     0 on success, negative value on failure
  * @warning    Adjustement is only valid in NTSC 29.97
  */
-int ff_init_smtpe_timecode(void *avcl, struct ff_timecode *tc);
+int avpriv_init_smpte_timecode(void *avcl, struct ff_timecode *tc);
+
+#if FF_API_OLD_TIMECODE
+attribute_deprecated int ff_framenum_to_drop_timecode(int frame_num);
+attribute_deprecated uint32_t ff_framenum_to_smtpe_timecode(unsigned frame, int fps, int drop);
+attribute_deprecated int ff_init_smtpe_timecode(void *avcl, struct ff_timecode *tc);
+#endif
 
 #endif /* AVCODEC_TIMECODE_H */

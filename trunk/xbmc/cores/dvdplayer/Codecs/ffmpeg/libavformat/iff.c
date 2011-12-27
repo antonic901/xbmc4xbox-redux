@@ -32,6 +32,7 @@
 #include "libavutil/intreadwrite.h"
 #include "libavutil/dict.h"
 #include "avformat.h"
+#include "internal.h"
 
 #define ID_8SVX       MKTAG('8','S','V','X')
 #define ID_VHDR       MKTAG('V','H','D','R')
@@ -43,6 +44,7 @@
 #define ID_BMHD       MKTAG('B','M','H','D')
 #define ID_CAMG       MKTAG('C','A','M','G')
 #define ID_CMAP       MKTAG('C','M','A','P')
+#define ID_ACBM       MKTAG('A','C','B','M')
 
 #define ID_FORM       MKTAG('F','O','R','M')
 #define ID_ANNO       MKTAG('A','N','N','O')
@@ -53,6 +55,7 @@
 #define ID_FVER       MKTAG('F','V','E','R')
 #define ID_NAME       MKTAG('N','A','M','E')
 #define ID_TEXT       MKTAG('T','E','X','T')
+#define ID_ABIT       MKTAG('A','B','I','T')
 #define ID_BODY       MKTAG('B','O','D','Y')
 #define ID_ANNO       MKTAG('A','N','N','O')
 
@@ -118,7 +121,7 @@ static int iff_probe(AVProbeData *p)
     const uint8_t *d = p->buf;
 
     if ( AV_RL32(d)   == ID_FORM &&
-         (AV_RL32(d+8) == ID_8SVX || AV_RL32(d+8) == ID_PBM || AV_RL32(d+8) == ID_ILBM) )
+         (AV_RL32(d+8) == ID_8SVX || AV_RL32(d+8) == ID_PBM || AV_RL32(d+8) == ID_ILBM || AV_RL32(d+8) == ID_ACBM) )
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -166,6 +169,7 @@ static int iff_read_header(AVFormatContext *s,
             }
             break;
 
+        case ID_ABIT:
         case ID_BODY:
             iff->body_pos = avio_tell(pb);
             iff->body_size = data_size;
@@ -235,7 +239,7 @@ static int iff_read_header(AVFormatContext *s,
 
     switch(st->codec->codec_type) {
     case AVMEDIA_TYPE_AUDIO:
-        av_set_pts_info(st, 32, 1, st->codec->sample_rate);
+        avpriv_set_pts_info(st, 32, 1, st->codec->sample_rate);
 
         switch (iff->svx8_compression) {
         case COMP_NONE:

@@ -229,7 +229,8 @@ static inline int decode_vui_parameters(H264Context *h, SPS *sps){
     if(sps->nal_hrd_parameters_present_flag || sps->vcl_hrd_parameters_present_flag)
         get_bits1(&s->gb);     /* low_delay_hrd_flag */
     sps->pic_struct_present_flag = get_bits1(&s->gb);
-
+    if(!get_bits_left(&s->gb))
+        return 0;
     sps->bitstream_restriction_flag = get_bits1(&s->gb);
     if(sps->bitstream_restriction_flag){
         get_bits1(&s->gb);     /* motion_vectors_over_pic_boundaries_flag */
@@ -347,6 +348,10 @@ int ff_h264_decode_seq_parameter_set(H264Context *h){
 
     if(sps->profile_idc >= 100){ //high profile
         sps->chroma_format_idc= get_ue_golomb_31(&s->gb);
+        if (sps->chroma_format_idc > 3U) {
+            av_log(h->s.avctx, AV_LOG_ERROR, "chroma_format_idc %d is illegal\n", sps->chroma_format_idc);
+            goto fail;
+        }
         if(sps->chroma_format_idc == 3)
             sps->residual_color_transform_flag = get_bits1(&s->gb);
         sps->bit_depth_luma   = get_ue_golomb(&s->gb) + 8;
@@ -485,6 +490,21 @@ build_qp_table(PPS *pps, int t, int index, const int depth)
         pps->chroma_qp_table[t][i] = ff_h264_chroma_qp[depth-8][av_clip(i + index, 0, max_qp)];
 }
 
+static int more_rbsp_data_in_pps(H264Context *h, PPS *pps)
+{
+    const SPS *sps = h->sps_buffers[pps->sps_id];
+    int profile_idc = sps->profile_idc;
+
+    if ((profile_idc == 66 || profile_idc == 77 ||
+         profile_idc == 88) && (sps->constraint_set_flags & 7)) {
+        av_log(h->s.avctx, AV_LOG_VERBOSE,
+               "Current profile doesn't provide more RBSP data in PPS, skipping\n");
+        return 0;
+    }
+
+    return 1;
+}
+
 int ff_h264_decode_picture_parameter_set(H264Context *h, int bit_length){
     MpegEncContext * const s = &h->s;
     unsigned int pps_id= get_ue_golomb(&s->gb);
@@ -568,7 +588,7 @@ int ff_h264_decode_picture_parameter_set(H264Context *h, int bit_length){
     memcpy(pps->scaling_matrix8, h->sps_buffers[pps->sps_id]->scaling_matrix8, sizeof(pps->scaling_matrix8));
 
     bits_left = bit_length - get_bits_count(&s->gb);
-    if(bits_left > 0){
+    if(bits_left > 0 && more_rbsp_data_in_pps(h, pps)){
         pps->transform_8x8_mode= get_bits1(&s->gb);
         decode_scaling_matrices(h, h->sps_buffers[pps->sps_id], pps, 0, pps->scaling_matrix4, pps->scaling_matrix8);
         pps->chroma_qp_index_offset[1]= get_se_golomb(&s->gb); //second_chroma_qp_index_offset

@@ -245,7 +245,7 @@ static av_cold int X264_close(AVCodecContext *avctx)
                         "bad value for '%s': '%s'\n", opt, param);            \
             return -1;                                                        \
         }                                                                     \
-    } while (0);
+    } while (0)
 
 static int convert_pix_fmt(enum PixelFormat pix_fmt)
 {
@@ -279,6 +279,7 @@ static int convert_pix_fmt(enum PixelFormat pix_fmt)
 static av_cold int X264_init(AVCodecContext *avctx)
 {
     X264Context *x4 = avctx->priv_data;
+    int sw,sh;
 
     x264_param_default(&x4->params);
 
@@ -350,8 +351,10 @@ static av_cold int X264_init(AVCodecContext *avctx)
         const char *p= x4->x264opts;
         while(p){
             char param[256]={0}, val[256]={0};
-            sscanf(p, "%255[^:=]=%255[^:]", param, val);
-            OPT_STR(param, val);
+            if(sscanf(p, "%255[^:=]=%255[^:]", param, val) == 1){
+                OPT_STR(param, "1");
+            }else
+                OPT_STR(param, val);
             p= strchr(p, ':');
             p+=!!p;
         }
@@ -505,8 +508,9 @@ static av_cold int X264_init(AVCodecContext *avctx)
 
     x4->params.i_width          = avctx->width;
     x4->params.i_height         = avctx->height;
-    x4->params.vui.i_sar_width  = avctx->sample_aspect_ratio.num;
-    x4->params.vui.i_sar_height = avctx->sample_aspect_ratio.den;
+    av_reduce(&sw, &sh, avctx->sample_aspect_ratio.num, avctx->sample_aspect_ratio.den, 4096);
+    x4->params.vui.i_sar_width  = sw;
+    x4->params.vui.i_sar_height = sh;
     x4->params.i_fps_num = x4->params.i_timebase_den = avctx->time_base.den;
     x4->params.i_fps_den = x4->params.i_timebase_num = avctx->time_base.num;
 
@@ -561,10 +565,6 @@ static const enum PixelFormat pix_fmts_8bit[] = {
     PIX_FMT_YUVJ420P,
     PIX_FMT_YUV422P,
     PIX_FMT_YUV444P,
-#ifdef X264_CSP_BGR
-    PIX_FMT_BGR24,
-    PIX_FMT_RGB24,
-#endif
     PIX_FMT_NONE
 };
 static const enum PixelFormat pix_fmts_9bit[] = {
@@ -576,6 +576,13 @@ static const enum PixelFormat pix_fmts_10bit[] = {
     PIX_FMT_YUV420P10,
     PIX_FMT_YUV422P10,
     PIX_FMT_YUV444P10,
+    PIX_FMT_NONE
+};
+static const enum PixelFormat pix_fmts_8bit_rgb[] = {
+#ifdef X264_CSP_BGR
+    PIX_FMT_BGR24,
+    PIX_FMT_RGB24,
+#endif
     PIX_FMT_NONE
 };
 
@@ -648,6 +655,13 @@ static const AVClass class = {
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
+static const AVClass rgbclass = {
+    .class_name = "libx264rgb",
+    .item_name  = av_default_item_name,
+    .option     = options,
+    .version    = LIBAVUTIL_VERSION_INT,
+};
+
 static const AVCodecDefault x264_defaults[] = {
     { "b",                "0" },
     { "bf",               "-1" },
@@ -687,4 +701,19 @@ AVCodec ff_libx264_encoder = {
     .priv_class     = &class,
     .defaults       = x264_defaults,
     .init_static_data = X264_init_static,
+};
+
+AVCodec ff_libx264rgb_encoder = {
+    .name           = "libx264rgb",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_H264,
+    .priv_data_size = sizeof(X264Context),
+    .init           = X264_init,
+    .encode         = X264_frame,
+    .close          = X264_close,
+    .capabilities   = CODEC_CAP_DELAY,
+    .long_name      = NULL_IF_CONFIG_SMALL("libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 RGB"),
+    .priv_class     = &rgbclass,
+    .defaults       = x264_defaults,
+    .pix_fmts       = pix_fmts_8bit_rgb,
 };

@@ -26,6 +26,7 @@
  */
 
 #define CABAC 1
+#define UNCHECKED_BITSTREAM_READER 1
 
 #include "internal.h"
 #include "dsputil.h"
@@ -1656,7 +1657,7 @@ decode_cabac_residual_internal(H264Context *h, DCTELEM *block,
             index[coeff_count++] = last;\
         }
         const uint8_t *sig_off = significant_coeff_flag_offset_8x8[MB_FIELD];
-#if ARCH_X86 && HAVE_7REGS && HAVE_EBX_AVAILABLE && !defined(BROKEN_RELOCATIONS)
+#if ARCH_X86 && HAVE_EBX_AVAILABLE && !defined(BROKEN_RELOCATIONS)
         coeff_count= decode_significance_8x8_x86(CC, significant_coeff_ctx_base, index,
                                                  last_coeff_ctx_base, sig_off);
     } else {
@@ -1863,8 +1864,8 @@ static av_always_inline void decode_cabac_luma_residual( H264Context *h, const u
 }
 
 /**
- * decodes a macroblock
- * @return 0 if OK, AC_ERROR / DC_ERROR / MV_ERROR if an error is noticed
+ * Decode a macroblock.
+ * @return 0 if OK, ER_AC_ERROR / ER_DC_ERROR / ER_MV_ERROR if an error is noticed
  */
 int ff_h264_decode_mb_cabac(H264Context *h) {
     MpegEncContext * const s = &h->s;

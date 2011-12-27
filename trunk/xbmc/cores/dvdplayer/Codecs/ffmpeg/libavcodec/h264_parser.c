@@ -25,6 +25,8 @@
  * @author Michael Niedermayer <michaelni@gmx.at>
  */
 
+#define UNCHECKED_BITSTREAM_READER 1
+
 #include "parser.h"
 #include "h264data.h"
 #include "golomb.h"
@@ -148,6 +150,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     unsigned int slice_type;
     int state = -1;
     const uint8_t *ptr;
+    int q264 = buf_size >=4 && !memcmp("Q264", buf, 4);
 
     /* set some sane default values */
     s->pict_type = AV_PICTURE_TYPE_I;
@@ -266,6 +269,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
         }
         buf += consumed;
     }
+    if (q264)
+        return 0;
     /* didn't find a picture! */
     av_log(h->s.avctx, AV_LOG_ERROR, "missing picture in access unit with size %d\n", buf_size);
     return -1;

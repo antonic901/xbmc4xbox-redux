@@ -21,6 +21,7 @@
 
 #include "libavcodec/get_bits.h"
 #include "avformat.h"
+#include "internal.h"
 #include "id3v1.h"
 #include "libavutil/dict.h"
 
@@ -72,8 +73,8 @@ static int tta_read_header(AVFormatContext *s, AVFormatParameters *ap)
     c->totalframes = datalen / framelen + ((datalen % framelen) ? 1 : 0);
     c->currentframe = 0;
 
-    if(c->totalframes >= UINT_MAX/sizeof(uint32_t)){
-        av_log(s, AV_LOG_ERROR, "totalframes too large\n");
+    if(c->totalframes >= UINT_MAX/sizeof(uint32_t) || c->totalframes <= 0){
+        av_log(s, AV_LOG_ERROR, "totalframes %d invalid\n", c->totalframes);
         return -1;
     }
 
@@ -81,7 +82,7 @@ static int tta_read_header(AVFormatContext *s, AVFormatParameters *ap)
     if (!st)
         return AVERROR(ENOMEM);
 
-    av_set_pts_info(st, 64, 1, samplerate);
+    avpriv_set_pts_info(st, 64, 1, samplerate);
     st->start_time = 0;
     st->duration = datalen;
 

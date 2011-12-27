@@ -29,11 +29,11 @@
 #include "libavutil/mathematics.h"
 #include "libavutil/opt.h"
 #include "avformat.h"
+#include "internal.h"
 #include "avio_internal.h"
 #include "pcm.h"
 #include "riff.h"
 #include "avio.h"
-#include "avio_internal.h"
 #include "metadata.h"
 
 typedef struct {
@@ -52,6 +52,7 @@ typedef struct {
     int smv_last_stream;
     int smv_eof;
     int audio_eof;
+    int ignore_length;
 } WAVContext;
 
 #if CONFIG_WAV_MUXER
@@ -138,7 +139,7 @@ static int wav_write_header(AVFormatContext *s)
     if (wav->write_bext)
         bwf_write_bext_chunk(s);
 
-    av_set_pts_info(s->streams[0], 64, 1, s->streams[0]->codec->sample_rate);
+    avpriv_set_pts_info(s->streams[0], 64, 1, s->streams[0]->codec->sample_rate);
     wav->maxpts = wav->last_duration = 0;
     wav->minpts = INT64_MAX;
 
@@ -231,7 +232,7 @@ AVOutputFormat ff_wav_muxer = {
 
 #if CONFIG_WAV_DEMUXER
 
-static int64_t next_tag(AVIOContext *pb, unsigned int *tag)
+static int64_t next_tag(AVIOContext *pb, uint32_t *tag)
 {
     *tag = avio_rl32(pb);
     return avio_rl32(pb);
@@ -289,7 +290,7 @@ static int wav_parse_fmt_tag(AVFormatContext *s, int64_t size, AVStream **st)
         return ret;
     (*st)->need_parsing = AVSTREAM_PARSE_FULL;
 
-    av_set_pts_info(*st, 64, 1, (*st)->codec->sample_rate);
+    avpriv_set_pts_info(*st, 64, 1, (*st)->codec->sample_rate);
 
     return 0;
 }
@@ -345,7 +346,7 @@ static int wav_parse_bext_tag(AVFormatContext *s, int64_t size)
             } else {
                 /* extended UMID */
                 snprintf(temp, sizeof(temp), "0x%016"PRIX64"%016"PRIX64"%016"PRIX64"%016"PRIX64
-                                             "0x%016"PRIX64"%016"PRIX64"%016"PRIX64"%016"PRIX64,
+                                               "%016"PRIX64"%016"PRIX64"%016"PRIX64"%016"PRIX64,
                          umid_parts[0], umid_parts[1], umid_parts[2], umid_parts[3],
                          umid_parts[4], umid_parts[5], umid_parts[6], umid_parts[7]);
             }
@@ -392,7 +393,7 @@ static int wav_read_header(AVFormatContext *s,
     int64_t size, av_uninit(data_size);
     int64_t sample_count=0;
     int rf64;
-    unsigned int tag;
+    uint32_t tag, list_type;
     AVIOContext *pb = s->pb;
     AVStream *st = NULL;
     WAVContext *wav = s->priv_data;
@@ -442,7 +443,7 @@ static int wav_read_header(AVFormatContext *s,
         switch (tag) {
         case MKTAG('f', 'm', 't', ' '):
             /* only parse the first 'fmt ' tag found */
-            if (!got_fmt && (ret = wav_parse_fmt_tag(s, size, &st) < 0)) {
+            if (!got_fmt && (ret = wav_parse_fmt_tag(s, size, &st)) < 0) {
                 return ret;
             } else if (got_fmt)
                 av_log(s, AV_LOG_WARNING, "found more than one 'fmt ' tag\n");
@@ -498,12 +499,24 @@ static int wav_read_header(AVFormatContext *s,
             wav->smv_data_ofs = avio_tell(pb) + (size - 5) * 3;
             avio_rl24(pb);
             wav->smv_block_size = avio_rl24(pb);
-            av_set_pts_info(vst, 32, 1, avio_rl24(pb));
+            avpriv_set_pts_info(vst, 32, 1, avio_rl24(pb));
             vst->duration = avio_rl24(pb);
             avio_rl24(pb);
             avio_rl24(pb);
             wav->smv_frames_per_jpeg = avio_rl24(pb);
             goto break_loop;
+        case MKTAG('L', 'I', 'S', 'T'):
+            list_type = avio_rl32(pb);
+            if (size < 4) {
+                av_log(s, AV_LOG_ERROR, "too short LIST tag\n");
+                return AVERROR_INVALIDDATA;
+            }
+            switch (list_type) {
+            case MKTAG('I', 'N', 'F', 'O'):
+                if ((ret = ff_read_riff_info(s, size - 4)) < 0)
+                    return ret;
+            }
+            break;
         }
 
         /* seek to next tag unless we know that we'll run into EOF */
@@ -526,6 +539,7 @@ break_loop:
         st->duration = sample_count;
 
     ff_metadata_conv_ctx(s, NULL, wav_metadata_conv);
+    ff_metadata_conv_ctx(s, NULL, ff_riff_info_conv);
 
     return 0;
 }
@@ -605,6 +619,8 @@ smv_out:
     st = s->streams[0];
 
     left = wav->data_end - avio_tell(s->pb);
+    if (wav->ignore_length)
+        left= INT_MAX;
     if (left <= 0){
         if (CONFIG_W64_DEMUXER && wav->w64)
             left = find_guid(s->pb, guid_data) - 24;
@@ -664,6 +680,19 @@ static int wav_read_seek(AVFormatContext *s,
     return pcm_read_seek(s, stream_index, timestamp, flags);
 }
 
+#define OFFSET(x) offsetof(WAVContext, x)
+#define DEC AV_OPT_FLAG_DECODING_PARAM
+static const AVOption demux_options[] = {
+    { "ignore_length", "Ignore length", OFFSET(ignore_length), AV_OPT_TYPE_INT, { 0 }, 0, 1, DEC },
+    { NULL },
+};
+
+static const AVClass wav_demuxer_class = {
+    .class_name = "WAV demuxer",
+    .item_name  = av_default_item_name,
+    .option     = demux_options,
+    .version    = LIBAVUTIL_VERSION_INT,
+};
 AVInputFormat ff_wav_demuxer = {
     .name           = "wav",
     .long_name      = NULL_IF_CONFIG_SMALL("WAV format"),
@@ -674,6 +703,7 @@ AVInputFormat ff_wav_demuxer = {
     .read_seek      = wav_read_seek,
     .flags= AVFMT_GENERIC_INDEX,
     .codec_tag= (const AVCodecTag* const []){ff_codec_wav_tags, 0},
+    .priv_class     = &wav_demuxer_class,
 };
 #endif /* CONFIG_WAV_DEMUXER */
 
@@ -739,7 +769,7 @@ static int w64_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
     st->need_parsing = AVSTREAM_PARSE_FULL;
 
-    av_set_pts_info(st, 64, 1, st->codec->sample_rate);
+    avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
 
     size = find_guid(pb, guid_data);
     if (size < 0) {

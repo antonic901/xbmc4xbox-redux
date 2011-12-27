@@ -24,13 +24,15 @@
  * VBLE Decoder
  */
 
-#define ALT_BITSTREAM_READER_LE
+#define BITSTREAM_READER_LE
 
 #include "avcodec.h"
+#include "dsputil.h"
 #include "get_bits.h"
 
 typedef struct {
     AVCodecContext *avctx;
+    DSPContext dsp;
 
     int            size;
     uint8_t        *val; ///< This array first holds the lengths of vlc symbols and then their value.
@@ -73,43 +75,34 @@ static int vble_unpack(VBLEContext *ctx, GetBitContext *gb)
     /* Check we have enough bits left */
     if (get_bits_left(gb) < allbits)
         return -1;
-
-    for (i = 0; i < ctx->size; i++) {
-        /* get_bits can't take a length of 0 */
-        if (ctx->val[i])
-            ctx->val[i] = (1 << ctx->val[i]) + get_bits(gb, ctx->val[i]) - 1;
-    }
-
     return 0;
 }
 
-static void vble_restore_plane(VBLEContext *ctx, int plane, int offset,
-                              int width, int height)
+static void vble_restore_plane(VBLEContext *ctx, GetBitContext *gb, int plane,
+                               int offset, int width, int height)
 {
     AVFrame *pic = ctx->avctx->coded_frame;
     uint8_t *dst = pic->data[plane];
     uint8_t *val = ctx->val + offset;
-    uint8_t a, b, c;
     int stride = pic->linesize[plane];
-    int i, j;
+    int i, j, left, left_top;
 
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            dst[j] = (val[j] >> 1) ^ -(val[j] & 1);
-
-            /* Top line and left column are not predicted */
-            if (!j)
-                continue;
-
-            if (!i) {
-                dst[j] += dst[j - 1];
-                continue;
+            /* get_bits can't take a length of 0 */
+            if (val[j]) {
+                int v = (1 << val[j]) + get_bits(gb, val[j]) - 1;
+                val[j] = (v >> 1) ^ -(v & 1);
             }
-
-            a = dst[j - 1];
-            b = dst[j - stride];
-            c = a + b - dst[j - 1 - stride];
-            dst[j] += mid_pred(a, b, c);
+        }
+        if (i) {
+            left = 0;
+            left_top = dst[-stride];
+            ctx->dsp.add_hfyu_median_prediction(dst, dst-stride, val, width, &left, &left_top);
+        } else {
+            dst[0] = val[0];
+            for (j = 1; j < width; j++)
+                dst[j] = val[j] + dst[j - 1];
         }
         dst += stride;
         val += width;
@@ -160,15 +153,15 @@ static int vble_decode_frame(AVCodecContext *avctx, void *data, int *data_size,
     }
 
     /* Restore planes. Should be almost identical to Huffyuv's. */
-    vble_restore_plane(ctx, 0, offset, avctx->width, avctx->height);
+    vble_restore_plane(ctx, &gb, 0, offset, avctx->width, avctx->height);
 
     /* Chroma */
     if (!(ctx->avctx->flags & CODEC_FLAG_GRAY)) {
         offset += avctx->width * avctx->height;
-        vble_restore_plane(ctx, 1, offset, width_uv, height_uv);
+        vble_restore_plane(ctx, &gb, 1, offset, width_uv, height_uv);
 
         offset += width_uv * height_uv;
-        vble_restore_plane(ctx, 2, offset, width_uv, height_uv);
+        vble_restore_plane(ctx, &gb, 2, offset, width_uv, height_uv);
     }
 
     *data_size = sizeof(AVFrame);
@@ -197,6 +190,7 @@ static av_cold int vble_decode_init(AVCodecContext *avctx)
 
     /* Stash for later use */
     ctx->avctx = avctx;
+    dsputil_init(&ctx->dsp, avctx);
 
     avctx->pix_fmt = PIX_FMT_YUV420P;
     avctx->bits_per_raw_sample = 8;

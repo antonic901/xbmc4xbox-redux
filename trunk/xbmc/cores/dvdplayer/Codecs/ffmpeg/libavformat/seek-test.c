@@ -28,7 +28,6 @@
 #include "libavutil/mathematics.h"
 #include "libavformat/avformat.h"
 
-#undef exit
 #undef printf
 #undef fprintf
 
@@ -49,13 +48,12 @@ static const char *ret_str(int v)
 
 static void ts_str(char buffer[60], int64_t ts, AVRational base)
 {
-    double tsval;
     if (ts == AV_NOPTS_VALUE) {
         strcpy(buffer, " NOPTS   ");
         return;
     }
-    tsval = ts * av_q2d(base);
-    snprintf(buffer, 60, "%9f", tsval);
+    ts= av_rescale_q(ts, base, (AVRational){1, 1000000});
+    snprintf(buffer, 60, "%c%"PRId64".%06"PRId64"", ts<0 ? '-' : ' ', FFABS(ts)/1000000, FFABS(ts)%1000000);
 }
 
 int main(int argc, char **argv)
@@ -75,7 +73,7 @@ int main(int argc, char **argv)
     if (argc != 2) {
         printf("usage: %s input_file\n"
                "\n", argv[0]);
-        exit(1);
+        return 1;
     }
 
     filename = argv[1];
@@ -84,13 +82,13 @@ int main(int argc, char **argv)
     av_dict_free(&format_opts);
     if (ret < 0) {
         fprintf(stderr, "cannot open %s\n", filename);
-        exit(1);
+        return 1;
     }
 
     ret = avformat_find_stream_info(ic, NULL);
     if (ret < 0) {
         fprintf(stderr, "%s: could not find codec parameters\n", filename);
-        exit(1);
+        return 1;
     }
 
     for(i=0; ; i++){
@@ -128,7 +126,7 @@ int main(int argc, char **argv)
         printf("ret:%-10s st:%2d flags:%d  ts:%s\n", ret_str(ret), stream_id, i&1, ts_buf);
     }
 
-    av_close_input_file(ic);
+    avformat_close_input(&ic);
 
     return 0;
 }

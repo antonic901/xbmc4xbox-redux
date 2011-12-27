@@ -44,12 +44,14 @@
 #include "libavutil/cpu.h"
 #include "libavutil/avutil.h"
 #include "libavutil/bswap.h"
+#include "libavutil/mathematics.h"
 #include "libavutil/opt.h"
 #include "libavutil/pixdesc.h"
 #include "libavutil/avassert.h"
 
 unsigned swscale_version(void)
 {
+    av_assert0(LIBSWSCALE_VERSION_MICRO >= 100);
     return LIBSWSCALE_VERSION_INT;
 }
 
@@ -100,6 +102,10 @@ const static FormatEntry format_entries[PIX_FMT_NB] = {
     [PIX_FMT_RGBA]        = { 1 , 1 },
     [PIX_FMT_ABGR]        = { 1 , 1 },
     [PIX_FMT_BGRA]        = { 1 , 1 },
+    [PIX_FMT_0RGB]        = { 1 , 1 },
+    [PIX_FMT_RGB0]        = { 1 , 1 },
+    [PIX_FMT_0BGR]        = { 1 , 1 },
+    [PIX_FMT_BGR0]        = { 1 , 1 },
     [PIX_FMT_GRAY16BE]    = { 1 , 1 },
     [PIX_FMT_GRAY16LE]    = { 1 , 1 },
     [PIX_FMT_YUV440P]     = { 1 , 1 },
@@ -145,6 +151,13 @@ const static FormatEntry format_entries[PIX_FMT_NB] = {
     [PIX_FMT_YUV444P10BE] = { 1 , 1 },
     [PIX_FMT_YUV444P10LE] = { 1 , 1 },
     [PIX_FMT_GBR24P]      = { 1 , 0 },
+    [PIX_FMT_GBRP]        = { 1 , 0 },
+    [PIX_FMT_GBRP9LE]     = { 1 , 0 },
+    [PIX_FMT_GBRP9BE]     = { 1 , 0 },
+    [PIX_FMT_GBRP10LE]    = { 1 , 0 },
+    [PIX_FMT_GBRP10BE]    = { 1 , 0 },
+    [PIX_FMT_GBRP16LE]    = { 1 , 0 },
+    [PIX_FMT_GBRP16BE]    = { 1 , 0 },
 };
 
 int sws_isSupportedInput(enum PixelFormat pix_fmt)
@@ -208,7 +221,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
 
     } else if (flags&SWS_POINT) { // lame looking point sampling mode
         int i;
-        int xDstInSrc;
+        int64_t xDstInSrc;
         filterSize= 1;
         FF_ALLOC_OR_GOTO(NULL, filter, dstW*sizeof(*filter)*filterSize, fail);
 
@@ -222,7 +235,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
         }
     } else if ((xInc <= (1<<16) && (flags&SWS_AREA)) || (flags&SWS_FAST_BILINEAR)) { // bilinear upscale
         int i;
-        int xDstInSrc;
+        int64_t xDstInSrc;
         filterSize= 2;
         FF_ALLOC_OR_GOTO(NULL, filter, dstW*sizeof(*filter)*filterSize, fail);
 
@@ -234,7 +247,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
             (*filterPos)[i]= xx;
             //bilinear upscale / linear interpolate / area averaging
             for (j=0; j<filterSize; j++) {
-                int64_t coeff= fone - FFABS((xx<<16) - xDstInSrc)*(fone>>16);
+                int64_t coeff= fone - FFABS(((int64_t)xx<<16) - xDstInSrc)*(fone>>16);
                 if (coeff<0) coeff=0;
                 filter[i*filterSize + j]= coeff;
                 xx++;
@@ -242,7 +255,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
             xDstInSrc+= xInc;
         }
     } else {
-        int xDstInSrc;
+        int64_t xDstInSrc;
         int sizeFactor;
 
         if      (flags&SWS_BICUBIC)      sizeFactor=  4;
@@ -271,7 +284,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
             int j;
             (*filterPos)[i]= xx;
             for (j=0; j<filterSize; j++) {
-                int64_t d= ((int64_t)FFABS((xx<<17) - xDstInSrc))<<13;
+                int64_t d= (FFABS(((int64_t)xx<<17) - xDstInSrc))<<13;
                 double floatd;
                 int64_t coeff;
 
@@ -735,6 +748,10 @@ static int handle_jpeg(enum PixelFormat *format)
     case PIX_FMT_YUVJ422P: *format = PIX_FMT_YUV422P; return 1;
     case PIX_FMT_YUVJ444P: *format = PIX_FMT_YUV444P; return 1;
     case PIX_FMT_YUVJ440P: *format = PIX_FMT_YUV440P; return 1;
+    case PIX_FMT_0BGR    : *format = PIX_FMT_ABGR   ; return 0;
+    case PIX_FMT_BGR0    : *format = PIX_FMT_BGRA   ; return 0;
+    case PIX_FMT_0RGB    : *format = PIX_FMT_ARGB   ; return 0;
+    case PIX_FMT_RGB0    : *format = PIX_FMT_RGBA   ; return 0;
     default:                                          return 0;
     }
 }
@@ -770,6 +787,15 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
     if (!rgb15to16) sws_rgb2rgb_init();
 
     unscaled = (srcW == dstW && srcH == dstH);
+
+    handle_jpeg(&srcFormat);
+    handle_jpeg(&dstFormat);
+
+    if(srcFormat!=c->srcFormat || dstFormat!=c->dstFormat){
+        av_log(c, AV_LOG_WARNING, "deprecated pixel format used, make sure you did set range correctly\n");
+        c->srcFormat= srcFormat;
+        c->dstFormat= dstFormat;
+    }
 
     if (!sws_isSupportedInput(srcFormat)) {
         av_log(c, AV_LOG_ERROR, "%s is not supported as input pixel format\n", av_get_pix_fmt_name(srcFormat));
@@ -923,14 +949,17 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
 #else
             if (!c->lumMmx2FilterCode || !c->chrMmx2FilterCode)
 #endif
+            {
+                av_log(c, AV_LOG_ERROR, "Failed to allocate MMX2FilterCode\n");
                 return AVERROR(ENOMEM);
+            }
             FF_ALLOCZ_OR_GOTO(c, c->hLumFilter   , (dstW        /8+8)*sizeof(int16_t), fail);
             FF_ALLOCZ_OR_GOTO(c, c->hChrFilter   , (c->chrDstW  /4+8)*sizeof(int16_t), fail);
             FF_ALLOCZ_OR_GOTO(c, c->hLumFilterPos, (dstW      /2/8+8)*sizeof(int32_t), fail);
             FF_ALLOCZ_OR_GOTO(c, c->hChrFilterPos, (c->chrDstW/2/4+8)*sizeof(int32_t), fail);
 
-            initMMX2HScaler(      dstW, c->lumXInc, c->lumMmx2FilterCode, c->hLumFilter, c->hLumFilterPos, 8);
-            initMMX2HScaler(c->chrDstW, c->chrXInc, c->chrMmx2FilterCode, c->hChrFilter, c->hChrFilterPos, 4);
+            initMMX2HScaler(      dstW, c->lumXInc, c->lumMmx2FilterCode, c->hLumFilter, (uint32_t*)c->hLumFilterPos, 8);
+            initMMX2HScaler(c->chrDstW, c->chrXInc, c->chrMmx2FilterCode, c->hChrFilter, (uint32_t*)c->hChrFilterPos, 4);
 
 #ifdef MAP_ANONYMOUS
             mprotect(c->lumMmx2FilterCode, c->lumMmx2FilterCodeSize, PROT_EXEC | PROT_READ);

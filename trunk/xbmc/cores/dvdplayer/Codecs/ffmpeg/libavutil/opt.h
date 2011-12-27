@@ -34,6 +34,7 @@
 
 /**
  * @defgroup avoptions AVOptions
+ * @ingroup lavu_data
  * @{
  * AVOptions provide a generic system to declare options on arbitrary structs
  * ("objects"). An option can have a help text, a type and a range of possible
@@ -175,7 +176,7 @@
  *
  * @section avoptions_use Using AVOptions
  * This section deals with accessing options in an AVOptions-enabled struct.
- * Such structs in Libav are e.g. AVCodecContext in libavcodec or
+ * Such structs in FFmpeg are e.g. AVCodecContext in libavcodec or
  * AVFormatContext in libavformat.
  *
  * @subsection avoptions_use_examine Examining AVOptions
@@ -212,7 +213,6 @@
  * filled with option as a parameter. This allows to set some options
  * that cannot be set otherwise, since e.g. the input file format is not known
  * before the file is actually opened.
- * @}
  */
 
 enum AVOptionType{
@@ -584,6 +584,18 @@ int av_opt_get       (void *obj, const char *name, int search_flags, uint8_t   *
 int av_opt_get_int   (void *obj, const char *name, int search_flags, int64_t    *out_val);
 int av_opt_get_double(void *obj, const char *name, int search_flags, double     *out_val);
 int av_opt_get_q     (void *obj, const char *name, int search_flags, AVRational *out_val);
+/**
+ * @}
+ */
+/**
+ * Gets a pointer to the requested field in a struct.
+ * This function allows accessing a struct even when its fields are moved or
+ * renamed since the application making the access has been compiled,
+ *
+ * @returns a pointer to the field, it can be cast to the correct type and read
+ *          or written to.
+ */
+void *av_opt_ptr(const AVClass *avclass, void *obj, const char *name);
 /**
  * @}
  */

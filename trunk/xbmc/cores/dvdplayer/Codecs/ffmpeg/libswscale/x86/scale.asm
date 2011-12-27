@@ -651,7 +651,7 @@ cglobal yuv2planeX_%2_%1, %4, 7, %3
 %define PALIGNR PALIGNR_MMX
 %ifdef ARCH_X86_32
 INIT_MMX
-yuv2planeX_fn mmx,   8,  0, 7
+yuv2planeX_fn mmx2,  8,  0, 7
 yuv2planeX_fn mmx2,  9,  0, 5
 yuv2planeX_fn mmx2, 10,  0, 5
 %endif
@@ -720,6 +720,8 @@ yuv2planeX_fn avx,  10,  7, 5
 
 %macro yuv2plane1_fn 3
 cglobal yuv2plane1_%1, %3, %3, %2
+    add             r2, mmsize - 1
+    and             r2, ~(mmsize - 1)
 %if %1 == 8
     add             r1, r2
 %else ; %1 != 8

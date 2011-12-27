@@ -15,11 +15,11 @@ OPT="-nH"
 #FILES=$($GREP '^+++' $* | sed 's/+++ //g')
 
 echo patCHeck 1e10.0
-echo This tool is intended to help a human check/review patches it is very far from
-echo being free of false positives and negatives, its output are just hints of what
+echo This tool is intended to help a human check/review patches. It is very far from
+echo being free of false positives and negatives, and its output are just hints of what
 echo may or may not be bad. When you use it and it misses something or detects
-echo something wrong, fix it and send a patch to the ffmpeg-dev mailing list.
-echo License:GPL Autor: Michael Niedermayer
+echo something wrong, fix it and send a patch to the ffmpeg-devel mailing list.
+echo License: GPL, Author: Michael Niedermayer
 
 ERE_PRITYP='(unsigned *|)(char|short|long|int|long *int|short *int|void|float|double|(u|)int(8|16|32|64)_t)'
 ERE_TYPES='(const|static|av_cold|inline| *)*('$ERE_PRITYP'|[a-zA-Z][a-zA-Z0-9_]*)[* ]{1,}[a-zA-Z][a-zA-Z0-9_]*'
@@ -55,6 +55,7 @@ hiegrep 'INIT_VLC_USE_STATIC' 'forbidden ancient vlc type' $*
 hiegrep '=[-+\*\&] ' 'looks like compound assignment' $*
 hiegrep2 '/\*\* *[a-zA-Z0-9].*' '\*/' 'Inconsistently formatted doxygen comment' $*
 hiegrep '; */\*\*[^<]' 'Misformatted doxygen comment' $*
+hiegrep '//!|/\*!' 'inconsistent doxygen syntax' $*
 
 hiegrep2 '(int|unsigned|static|void)[a-zA-Z0-9 _]*(init|end)[a-zA-Z0-9 _]*\(.*[^;]$' '(av_cold|:\+[^a-zA-Z_])' 'These functions may need av_cold, please review the whole patch for similar functions needing av_cold' $*
 
@@ -66,7 +67,7 @@ $EGREP $OPT '^\+ *(const *|)static' $*| $EGREP --color=always '[^=]= *(0|NULL)[^
 cat $TMP
 hiegrep '# *ifdef * (HAVE|CONFIG)_' 'ifdefs that should be #if' $*
 
-hiegrep '\b(awnser|cant|dont|quantised|quantisation|teh|wont)\b' 'common typos' $*
+hiegrep '\b(awnser|cant|dont|wont|usefull|successfull|occured|teh|alot|wether|skiped|heigth|informations|colums|loosy|loosing|seperate|preceed)\b' 'common typos' $*
 
 hiegrep 'av_log\( *NULL' 'Missing context in av_log' $*
 hiegrep '[^sn]printf' 'Please use av_log' $*

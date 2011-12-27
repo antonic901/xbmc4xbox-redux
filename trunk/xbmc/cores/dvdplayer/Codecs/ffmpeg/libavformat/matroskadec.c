@@ -22,10 +22,10 @@
 /**
  * @file
  * Matroska file demuxer
- * by Ronald Bultje <rbultje@ronald.bitfreak.net>
- * with a little help from Moritz Bunkus <moritz@bunkus.org>
- * totally reworked by Aurelien Jacobs <aurel@gnuage.org>
- * Specs available on the Matroska project page: http://www.matroska.org/.
+ * @author Ronald Bultje <rbultje@ronald.bitfreak.net>
+ * @author with a little help from Moritz Bunkus <moritz@bunkus.org>
+ * @author totally reworked by Aurelien Jacobs <aurel@gnuage.org>
+ * @see specs available on the Matroska project page: http://www.matroska.org/
  */
 
 #include <stdio.h>
@@ -38,7 +38,7 @@
 #include "rm.h"
 #include "matroska.h"
 #include "libavcodec/mpeg4audio.h"
-#include "libavutil/intfloat_readwrite.h"
+#include "libavutil/intfloat.h"
 #include "libavutil/intreadwrite.h"
 #include "libavutil/avstring.h"
 #include "libavutil/lzo.h"
@@ -652,9 +652,9 @@ static int ebml_read_float(AVIOContext *pb, int size, double *num)
     if (size == 0) {
         *num = 0;
     } else if (size == 4) {
-        *num= av_int2flt(avio_rb32(pb));
-    } else if(size==8){
-        *num= av_int2dbl(avio_rb64(pb));
+        *num = av_int2float(avio_rb32(pb));
+    } else if (size == 8){
+        *num = av_int2double(avio_rb64(pb));
     } else
         return AVERROR_INVALIDDATA;
 
@@ -1554,7 +1554,7 @@ static int matroska_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
         if (track->time_scale < 0.01)
             track->time_scale = 1.0;
-        av_set_pts_info(st, 64, matroska->time_scale*track->time_scale, 1000*1000*1000); /* 64 bit pts in ns */
+        avpriv_set_pts_info(st, 64, matroska->time_scale*track->time_scale, 1000*1000*1000); /* 64 bit pts in ns */
 
         st->codec->codec_id = codec_id;
         st->start_time = 0;
@@ -1566,10 +1566,6 @@ static int matroska_read_header(AVFormatContext *s, AVFormatParameters *ap)
             st->disposition |= AV_DISPOSITION_DEFAULT;
         if (track->flag_forced)
             st->disposition |= AV_DISPOSITION_FORCED;
-
-        if (track->default_duration)
-            av_reduce(&st->codec->time_base.num, &st->codec->time_base.den,
-                      track->default_duration, 1000000000, 30000);
 
         if (!st->codec->extradata) {
             if(extradata){

@@ -32,6 +32,7 @@
 
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
+#include "internal.h"
 #include "sauce.h"
 #include "libavcodec/bintext.h"
 
@@ -59,28 +60,28 @@ static const uint8_t next_magic[]={
 
 static int next_tag_read(AVFormatContext *avctx, uint64_t *fsize)
 {
-    ByteIOContext *pb = avctx->pb;
+    AVIOContext *pb = avctx->pb;
     char buf[36];
     int len;
-    uint64_t start_pos = url_fsize(pb) - 256;
+    uint64_t start_pos = avio_size(pb) - 256;
 
-    url_fseek(pb, start_pos, SEEK_SET);
-    if (get_buffer(pb, buf, sizeof(next_magic)) != sizeof(next_magic))
+    avio_seek(pb, start_pos, SEEK_SET);
+    if (avio_read(pb, buf, sizeof(next_magic)) != sizeof(next_magic))
         return -1;
     if (memcmp(buf, next_magic, sizeof(next_magic)))
         return -1;
-    if (get_byte(pb) != 0x01)
+    if (avio_r8(pb) != 0x01)
         return -1;
 
     *fsize -= 256;
 
 #define GET_EFI2_META(name,size) \
-    len = get_byte(pb); \
+    len = avio_r8(pb); \
     if (len < 1 || len > size) \
         return -1; \
-    if (get_buffer(pb, buf, size) == size && *buf) { \
+    if (avio_read(pb, buf, size) == size && *buf) { \
         buf[len] = 0; \
-        av_metadata_set2(&avctx->metadata, name, buf, 0); \
+        av_dict_set(&avctx->metadata, name, buf, 0); \
     }
 
     GET_EFI2_META("filename",  12)
@@ -109,9 +110,9 @@ static AVStream * init_stream(AVFormatContext *s,
     st->codec->codec_type  = AVMEDIA_TYPE_VIDEO;
 
     if (!ap->time_base.num) {
-        av_set_pts_info(st, 60, 1, 25);
+        avpriv_set_pts_info(st, 60, 1, 25);
     } else {
-        av_set_pts_info(st, 60, ap->time_base.num, ap->time_base.den);
+        avpriv_set_pts_info(st, 60, ap->time_base.num, ap->time_base.den);
     }
 
     /* simulate tty display speed */
@@ -126,7 +127,7 @@ static int bintext_read_header(AVFormatContext *s,
                                AVFormatParameters *ap)
 {
     BinDemuxContext *bin = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
 
     AVStream *st = init_stream(s, ap);
     if (!st)
@@ -140,16 +141,16 @@ static int bintext_read_header(AVFormatContext *s,
     st->codec->extradata[0] = 16;
     st->codec->extradata[1] = 0;
 
-    if (!url_is_streamed(pb)) {
+    if (pb->seekable) {
         int got_width = 0;
-        bin->fsize = url_fsize(pb);
+        bin->fsize = avio_size(pb);
         if (ff_sauce_read(s, &bin->fsize, &got_width, 0) < 0)
             next_tag_read(s, &bin->fsize);
         if (!ap->width)
             predict_width(st->codec, bin->fsize, got_width);
         if (!ap->height)
             calculate_height(st->codec, bin->fsize);
-        url_fseek(pb, 0, SEEK_SET);
+        avio_seek(pb, 0, SEEK_SET);
     }
     return 0;
 };
@@ -171,19 +172,19 @@ static int xbin_read_header(AVFormatContext *s,
                            AVFormatParameters *ap)
 {
     BinDemuxContext *bin = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     char fontheight, flags;
 
     AVStream *st = init_stream(s, ap);
     if (!st)
         return AVERROR(ENOMEM);
 
-    url_fskip(pb, 5);
-    st->codec->width   = get_le16(pb)<<3;
-    st->codec->height  = get_le16(pb);
-    fontheight         = get_byte(pb);
+    avio_skip(pb, 5);
+    st->codec->width   = avio_rl16(pb)<<3;
+    st->codec->height  = avio_rl16(pb);
+    fontheight         = avio_r8(pb);
     st->codec->height *= fontheight;
-    flags              = get_byte(pb);
+    flags              = avio_r8(pb);
 
     st->codec->extradata_size = 2;
     if ((flags & BINTEXT_PALETTE))
@@ -197,13 +198,13 @@ static int xbin_read_header(AVFormatContext *s,
         return AVERROR(ENOMEM);
     st->codec->extradata[0] = fontheight;
     st->codec->extradata[1] = flags;
-    if (get_buffer(pb, st->codec->extradata + 2, st->codec->extradata_size - 2) < 0)
+    if (avio_read(pb, st->codec->extradata + 2, st->codec->extradata_size - 2) < 0)
         return AVERROR(EIO);
 
-    if (!url_is_streamed(pb)) {
-        bin->fsize = url_fsize(pb) - 9 - st->codec->extradata_size;
+    if (pb->seekable) {
+        bin->fsize = avio_size(pb) - 9 - st->codec->extradata_size;
         ff_sauce_read(s, &bin->fsize, NULL, 0);
-        url_fseek(pb, 9 + st->codec->extradata_size, SEEK_SET);
+        avio_seek(pb, 9 + st->codec->extradata_size, SEEK_SET);
     }
 
     return 0;
@@ -215,10 +216,10 @@ static int adf_read_header(AVFormatContext *s,
                            AVFormatParameters *ap)
 {
     BinDemuxContext *bin = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     AVStream *st;
 
-    if (get_byte(pb) != 1)
+    if (avio_r8(pb) != 1)
         return AVERROR_INVALIDDATA;
 
     st = init_stream(s, ap);
@@ -233,22 +234,22 @@ static int adf_read_header(AVFormatContext *s,
     st->codec->extradata[0] = 16;
     st->codec->extradata[1] = BINTEXT_PALETTE|BINTEXT_FONT;
 
-    if (get_buffer(pb, st->codec->extradata + 2, 24) < 0)
+    if (avio_read(pb, st->codec->extradata + 2, 24) < 0)
         return AVERROR(EIO);
-    url_fskip(pb, 144);
-    if (get_buffer(pb, st->codec->extradata + 2 + 24, 24) < 0)
+    avio_skip(pb, 144);
+    if (avio_read(pb, st->codec->extradata + 2 + 24, 24) < 0)
         return AVERROR(EIO);
-    if (get_buffer(pb, st->codec->extradata + 2 + 48, 4096) < 0)
+    if (avio_read(pb, st->codec->extradata + 2 + 48, 4096) < 0)
         return AVERROR(EIO);
 
-    if (!url_is_streamed(pb)) {
+    if (pb->seekable) {
         int got_width = 0;
-        bin->fsize = url_fsize(pb) - 1 - 192 - 4096;
+        bin->fsize = avio_size(pb) - 1 - 192 - 4096;
         st->codec->width = 80<<3;
         ff_sauce_read(s, &bin->fsize, &got_width, 0);
         if (!ap->height)
             calculate_height(st->codec, bin->fsize);
-        url_fseek(pb, 1 + 192 + 4096, SEEK_SET);
+        avio_seek(pb, 1 + 192 + 4096, SEEK_SET);
     }
     return 0;
 }
@@ -272,11 +273,11 @@ static int idf_read_header(AVFormatContext *s,
                            AVFormatParameters *ap)
 {
     BinDemuxContext *bin = s->priv_data;
-    ByteIOContext *pb = s->pb;
+    AVIOContext *pb = s->pb;
     AVStream *st;
     int got_width = 0;
 
-    if (url_is_streamed(pb))
+    if (!pb->seekable)
         return AVERROR(EIO);
 
     st = init_stream(s, ap);
@@ -291,18 +292,18 @@ static int idf_read_header(AVFormatContext *s,
     st->codec->extradata[0] = 16;
     st->codec->extradata[1] = BINTEXT_PALETTE|BINTEXT_FONT;
 
-    url_fseek(pb, url_fsize(pb) - 4096 - 48, SEEK_SET);
+    avio_seek(pb, avio_size(pb) - 4096 - 48, SEEK_SET);
 
-    if (get_buffer(pb, st->codec->extradata + 2 + 48, 4096) < 0)
+    if (avio_read(pb, st->codec->extradata + 2 + 48, 4096) < 0)
         return AVERROR(EIO);
-    if (get_buffer(pb, st->codec->extradata + 2, 48) < 0)
+    if (avio_read(pb, st->codec->extradata + 2, 48) < 0)
         return AVERROR(EIO);
 
-    bin->fsize = url_fsize(pb) - 12 - 4096 - 48;
+    bin->fsize = avio_size(pb) - 12 - 4096 - 48;
     ff_sauce_read(s, &bin->fsize, &got_width, 0);
     if (!ap->height)
         calculate_height(st->codec, bin->fsize);
-    url_fseek(pb, 12, SEEK_SET);
+    avio_seek(pb, 12, SEEK_SET);
     return 0;
 }
 #endif /* CONFIG_IDF_DEMUXER */

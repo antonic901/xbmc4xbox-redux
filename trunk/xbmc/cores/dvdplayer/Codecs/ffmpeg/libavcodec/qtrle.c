@@ -72,6 +72,15 @@ static void qtrle_decode_1bpp(QtrleContext *s, int stream_ptr, int row_ptr, int 
     unsigned char *rgb = s->frame.data[0];
     int pixel_limit = s->frame.linesize[0] * s->avctx->height;
     int skip;
+    /* skip & 0x80 appears to mean 'start a new line', which can be interpreted
+     * as 'go to next line' during the decoding of a frame but is 'go to first
+     * line' at the beginning. Since we always interpret it as 'go to next line'
+     * in the decoding loop (which makes code simpler/faster), the first line
+     * would not be counted, so we count one more.
+     * See: https://ffmpeg.org/trac/ffmpeg/ticket/226
+     * In the following decoding loop, row_ptr will be the position of the
+     * _next_ row. */
+    lines_to_change++;
 
     while (lines_to_change) {
         CHECK_STREAM_PTR(2);
@@ -81,11 +90,14 @@ static void qtrle_decode_1bpp(QtrleContext *s, int stream_ptr, int row_ptr, int 
             break;
         if(skip & 0x80) {
             lines_to_change--;
-            row_ptr += row_inc;
             pixel_ptr = row_ptr + 2 * (skip & 0x7f);
+            row_ptr += row_inc;
         } else
             pixel_ptr += 2 * skip;
         CHECK_PIXEL_PTR(0);  /* make sure pixel_ptr is positive */
+
+        if(rle_code == -1)
+            continue;
 
         if (rle_code < 0) {
             /* decode the run length code */
@@ -332,7 +344,6 @@ static void qtrle_decode_32bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
     int rle_code;
     int pixel_ptr;
     int row_inc = s->frame.linesize[0];
-    unsigned char a, r, g, b;
     unsigned int argb;
     unsigned char *rgb = s->frame.data[0];
     int pixel_limit = s->frame.linesize[0] * s->avctx->height;
@@ -352,16 +363,13 @@ static void qtrle_decode_32bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
                 /* decode the run length code */
                 rle_code = -rle_code;
                 CHECK_STREAM_PTR(4);
-                a = s->buf[stream_ptr++];
-                r = s->buf[stream_ptr++];
-                g = s->buf[stream_ptr++];
-                b = s->buf[stream_ptr++];
-                argb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+                argb = AV_RB32(s->buf + stream_ptr);
+                stream_ptr += 4;
 
                 CHECK_PIXEL_PTR(rle_code * 4);
 
                 while (rle_code--) {
-                    *(unsigned int *)(&rgb[pixel_ptr]) = argb;
+                    AV_WN32A(rgb + pixel_ptr, argb);
                     pixel_ptr += 4;
                 }
             } else {
@@ -370,13 +378,10 @@ static void qtrle_decode_32bpp(QtrleContext *s, int stream_ptr, int row_ptr, int
 
                 /* copy pixels directly to output */
                 while (rle_code--) {
-                    a = s->buf[stream_ptr++];
-                    r = s->buf[stream_ptr++];
-                    g = s->buf[stream_ptr++];
-                    b = s->buf[stream_ptr++];
-                    argb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
-                    *(unsigned int *)(&rgb[pixel_ptr]) = argb;
-                    pixel_ptr += 4;
+                    argb = AV_RB32(s->buf + stream_ptr);
+                    AV_WN32A(rgb + pixel_ptr, argb);
+                    stream_ptr += 4;
+                    pixel_ptr  += 4;
                 }
             }
         }
