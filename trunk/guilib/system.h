@@ -115,7 +115,7 @@
 #endif
 
 #define USE_LIBMAD
-#define USE_LIBFAAD
+#undef USE_LIBFAAD
 #undef USE_LIBDTS_DECODER
 #undef USE_LIBA52_DECODER
 
