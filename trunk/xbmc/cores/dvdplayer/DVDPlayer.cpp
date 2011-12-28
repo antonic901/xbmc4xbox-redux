@@ -1197,8 +1197,8 @@ void CDVDPlayer::HandlePlaySpeed()
   if(caching == CACHESTATE_INIT)
   {
     // if all enabled streams have been inited we are done
-    if((m_CurrentVideo.id < 0 || m_CurrentVideo.inited)
-    && (m_CurrentAudio.id < 0 || m_CurrentAudio.inited))
+    if((m_CurrentVideo.id < 0 || m_CurrentVideo.started)
+    && (m_CurrentAudio.id < 0 || m_CurrentAudio.started))
       caching = CACHESTATE_PLAY;
       
     // handle situation that we get no data on one stream
