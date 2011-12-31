@@ -1,0 +1,30 @@
+From 02512ebff8f812832a3a33582dd7f89501d14605 Mon Sep 17 00:00:00 2001
+From: U-VIRTUALBOX-TRAV\Jools <Jools@vboxdev.(none)>
+Date: Sat, 31 Dec 2011 04:04:50 +0000
+Subject: [PATCH] Revert "avio: Fix ffio_limit() when due to seeking past the
+ end less than 0 bytes remain."
+
+This reverts commit 27d323577c19af218f8a5ac33364f213b623a023.
+---
+ libavformat/utils.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/libavformat/utils.c b/libavformat/utils.c
+index 7248f91..db2ca56 100644
+--- a/libavformat/utils.c
++++ b/libavformat/utils.c
+@@ -276,10 +276,9 @@ int ffio_limit(AVIOContext *s, int size)
+             if(!s->maxsize || s->maxsize<newsize)
+                 s->maxsize= newsize;
+             remaining= s->maxsize - avio_tell(s);
+-            remaining= FFMAX(remaining, 0);
+         }
+ 
+-        if(s->maxsize>=0 && remaining+1 < size){
++        if(s->maxsize>=0 && remaining>=0 && remaining+1 < size){
+             av_log(0, AV_LOG_ERROR, "Truncating packet of size %d to %"PRId64"\n", size, remaining+1);
+             size= remaining+1;
+         }
+-- 
+1.7.5.1
+
