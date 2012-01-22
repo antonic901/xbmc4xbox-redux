@@ -56,7 +56,7 @@ class Addon:
                     break
                     
         # get settings and language methods
-        self._get_methods( xbmc.translatePath( cwd ) )
+        self._get_methods( cwd )
         xbmc.log( "xbmcaddon: using " + cwd, xbmc.LOGDEBUG )
 
     def _get_root_dir( self, path ):
