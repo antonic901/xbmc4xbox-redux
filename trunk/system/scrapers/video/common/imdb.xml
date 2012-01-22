@@ -27,7 +27,7 @@
 				<expression clear="yes" noclean="1">Writing credits.*?&lt;/h5&gt;(.*?)&lt;/table</expression>
 			</RegExp>
 			<RegExp input="$$6" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="2+">
-				<expression repeat="yes" fixchars="1">href=&quot;/name[^&gt;]*&gt;([^&lt;]*)&lt;</expression>
+				<expression repeat="yes" clear="yes">href=&quot;/name[^&gt;]*&gt;([^&lt;]*)&lt;</expression>
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
@@ -55,7 +55,7 @@
 				<expression clear="yes" noclean="1">Directed by.*?&lt;/h5&gt;(.*?)&lt;/table</expression>
 			</RegExp>
 			<RegExp input="$$6" output="&lt;director&gt;\1&lt;/director&gt;" dest="2+">
-				<expression repeat="yes" fixchars="1" clear="yes">href=&quot;/name[^&gt;]*&gt;([^&lt;]*)&lt;</expression>
+				<expression repeat="yes" clear="yes">href=&quot;/name[^&gt;]*&gt;([^&lt;]*)&lt;</expression>
 			</RegExp>
 			<expression noclean="1" />
 		</RegExp>
