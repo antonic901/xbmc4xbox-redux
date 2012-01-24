@@ -133,9 +133,10 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
     if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
   }
 
-  // try to decide if we want to try halfres decoding
+  // try to decide if we want to try halfres decoding - note some codecs such as vp8 may return bad data for fpsrate (1000)/fpsscale (1),
+  // so check for sensible values, as well as for vp8 codec as it doesn't support the lowres flag.
   float pixelrate = (float)hint.width*hint.height*hint.fpsrate/hint.fpsscale;
-  if( pixelrate > 1400.0f*720.0f*30.0f )
+  if( pixelrate > 1400.0f*720.0f*30.0f && (hint.fpsrate/hint.fpsscale) < 100 && hint.codec != CODEC_ID_VP8)
   {
     CLog::Log(LOGINFO, "CDVDFactoryCodec - High video resolution detected %dx%d, trying half resolution decoding ", hint.width, hint.height);    
     options.push_back(CDVDCodecOption("lowres","1"));    
