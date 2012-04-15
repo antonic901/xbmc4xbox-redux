@@ -48,8 +48,8 @@ main(int /* argc */, char** /* argv */)
 
     PLT_DeviceHostReference device(new PLT_Simple("Platinum Test"));
 
-    services.upnpAddDevice(device);
-    services.upnpStart();
+    upnp.AddDevice(device);
+    upnp.Start();
 
     char buf[256];
     while (gets(buf)) {
@@ -57,7 +57,7 @@ main(int /* argc */, char** /* argv */)
             break;
     }
 
-    services.upnpStop();
+    upnp.Stop();
 
     return 0;
 }

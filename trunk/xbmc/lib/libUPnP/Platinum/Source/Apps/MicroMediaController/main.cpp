@@ -92,7 +92,7 @@ int main(void)
     server->m_ManufacturerURL = "http://www.plutinosoft.com/";
 
     // add device
-    services.upnpAddDevice(server);
+    upnp.AddDevice(server);
 
     // remove device uuid from ctrlpoint
     ctrlPoint->IgnoreUUID(server->GetUUID());
@@ -108,14 +108,14 @@ int main(void)
     renderer->m_Manufacturer = "Plutinosoft";
 
     // add device
-    services.upnpAddDevice(renderer);
+    upnp.AddDevice(renderer);
     ctrlPoint->IgnoreUUID(renderer->GetUUID());
 #endif
 
     // add control point to upnp engine and start it
-    services.upnpAddCtrlPoint(ctrlPoint);
+    upnp.AddCtrlPoint(ctrlPoint);
 
-    services.upnpStart();
+    upnp.Start();
 
 #ifdef BROADCAST_EXTRA
     // tell control point to perform extra broadcast discover every 6 secs
@@ -127,7 +127,7 @@ int main(void)
     // start to process commands 
     controller.ProcessCommandLoop();
 
-    services.upnpStop();
+    upnp.Stop();
 
     return 0;
 }

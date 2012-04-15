@@ -95,10 +95,10 @@ main(int /* argc */, char** argv)
         new PLT_MediaRenderer(Options.friendly_name?Options.friendly_name:"Platinum Media Renderer",
                               false,
                               "e6572b54-f3c7-2d91-2fb5-b757f2537e21"));
-    services.upnpAddDevice(device);
+    upnp.AddDevice(device);
     bool added = true;
 
-    services.upnpStart();
+    upnp.Start();
 
     char buf[256];
     while (gets(buf)) {
@@ -107,14 +107,14 @@ main(int /* argc */, char** argv)
 
         if (*buf == 's') {
             if (added) {
-                services.upnpRemoveDevice(device);
+                upnp.RemoveDevice(device);
             } else {
-                services.upnpAddDevice(device);
+                upnp.AddDevice(device);
             }
             added = !added;
         }
     }
 
-    services.upnpStop();
+    upnp.Stop();
     return 0;
 }

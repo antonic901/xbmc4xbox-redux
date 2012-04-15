@@ -57,8 +57,8 @@ main(int /* argc */, char** /* argv */)
     device->AddDevice(device3);
 #endif
 
-    services.upnpAddDevice(device);
-    services.upnpStart();
+    upnp.AddDevice(device);
+    upnp.Start();
 
     char buf[256];
     while (gets(buf)) {
@@ -66,7 +66,7 @@ main(int /* argc */, char** /* argv */)
             break;
     }
 
-    services.upnpStop();
+    upnp.Stop();
 
     return 0;
 }

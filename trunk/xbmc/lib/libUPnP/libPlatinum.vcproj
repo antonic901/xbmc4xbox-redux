@@ -330,6 +330,12 @@ copy Release\libPlatinum.lib ..\..\xbmc\lib\libUPnP
 					RelativePath=".\Platinum\Source\Core\PltIconsData.cpp">
 				</File>
 				<File
+					RelativePath=".\Platinum\Source\Core\PltLeaks.cpp">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Core\PltLeaks.h">
+				</File>
+				<File
 					RelativePath=".\Platinum\Source\Core\PltMetadataHandler.cpp">
 				</File>
 				<File
@@ -355,6 +361,12 @@ copy Release\libPlatinum.lib ..\..\xbmc\lib\libUPnP
 				</File>
 				<File
 					RelativePath=".\Platinum\Source\Core\PltStateVariable.h">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Core\PltStreamPump.cpp">
+				</File>
+				<File
+					RelativePath=".\Platinum\Source\Core\PltStreamPump.h">
 				</File>
 				<File
 					RelativePath=".\Platinum\Source\Core\PltTaskManager.cpp">

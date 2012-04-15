@@ -47,7 +47,7 @@ int main(void)
 {
     PLT_UPnP upnp;
     PLT_CtrlPointReference ctrlPoint(new PLT_CtrlPoint());
-    services.upnpAddCtrlPoint(ctrlPoint);
+    upnp.AddCtrlPoint(ctrlPoint);
 
     CMediaCrawler* crawler = 
         new CMediaCrawler(ctrlPoint, 
@@ -56,12 +56,12 @@ int main(void)
         new CPassThroughStreamHandler(crawler);
     crawler->AddStreamHandler(handler);
     PLT_DeviceHostReference device(crawler);
-    services.upnpAddDevice(device);
+    upnp.AddDevice(device);
     
     // make sure we ignore ourselves
     ctrlPoint->IgnoreUUID(device->GetUUID());
 
-    services.upnpStart();
+    upnp.Start();
 
     // extra broadcast discover 
     ctrlPoint->Discover(NPT_HttpUrl("255.255.255.255", 1900, "*"), "upnp:rootdevice", 1);
@@ -72,7 +72,7 @@ int main(void)
             break;
     }
 
-    services.upnpStop();
+    upnp.Stop();
 
     delete handler;
     return 0;

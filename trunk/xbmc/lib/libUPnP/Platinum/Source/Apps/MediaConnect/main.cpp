@@ -103,9 +103,9 @@ main(int argc, char** argv)
     PLT_DeviceHostReference device(
         new PLT_MediaConnect(Options.path, "Platinum"));
     PLT_UPnP upnp;
-    services.upnpAddDevice(device);
+    upnp.AddDevice(device);
 
-    if (NPT_FAILED(services.upnpStart()))
+    if (NPT_FAILED(upnp.Start()))
         return 1;
 
     char buf[256];
@@ -117,6 +117,6 @@ main(int argc, char** argv)
         }
     }
 
-    services.upnpStop();
+    upnp.Stop();
     return 0;
 }

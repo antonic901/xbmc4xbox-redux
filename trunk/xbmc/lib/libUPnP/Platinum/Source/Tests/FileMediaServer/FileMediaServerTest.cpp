@@ -140,10 +140,10 @@ main(int /* argc */, char** argv)
 
     if (Options.broadcast) device->SetBroadcast(true);
 
-    services.upnpAddDevice(device);
+    upnp.AddDevice(device);
     NPT_String uuid = device->GetUUID();
 
-    NPT_CHECK_SEVERE(services.upnpStart());
+    NPT_CHECK_SEVERE(upnp.Start());
     NPT_LOG_INFO("Press 'q' to quit.");
 
     char buf[256];
@@ -152,7 +152,7 @@ main(int /* argc */, char** argv)
             break;
     }
 
-    services.upnpStop();
+    upnp.Stop();
 
     return 0;
 }

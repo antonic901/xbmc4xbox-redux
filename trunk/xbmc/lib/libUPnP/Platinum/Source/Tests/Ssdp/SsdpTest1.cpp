@@ -46,9 +46,9 @@ main(int, char**)
 {
     PLT_UPnP upnp;
     PLT_CtrlPointReference ctrl_point(new PLT_CtrlPoint());
-    services.upnpAddCtrlPoint(ctrl_point);
+    upnp.AddCtrlPoint(ctrl_point);
 
-    if (NPT_FAILED(services.upnpStart()))
+    if (NPT_FAILED(upnp.Start()))
         return 1;
 
     char buf[256];
@@ -57,7 +57,7 @@ main(int, char**)
             break;
     }
 
-    services.upnpStop();
+    upnp.Stop();
 
     return 0;
 }
