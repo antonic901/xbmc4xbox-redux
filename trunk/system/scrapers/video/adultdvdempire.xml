@@ -20,11 +20,11 @@
 	</GetSearchResults>
 	<GetDetails dest="3">
 		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
-			<RegExp input="$$1" output="&lt;thumb&gt;http://\1.dvdempire.com/res/movies/\2h.jpg&lt;/thumb&gt;" dest="5+">
-				<expression>BoxCover_Container"&gt;[^&gt;]*&gt;&lt;img src="http://(.*?).dvdempire.com/res/movies/([^m]*)</expression>
+			<RegExp input="$$1" output="&lt;thumb&gt;http://\2.dvdempire.org/products/\3/\1h.jpg&lt;/thumb&gt;" dest="5+">
+				<expression>&lt;a href="/boxcover/(\d+)/[\w-]*?-porn-movies.html"&gt;&lt;img src="http://(.*?).dvdempire.org/products/([0-9]*)/([^m]*)</expression>
 			</RegExp>
-			<RegExp input="$$1" output="&lt;thumb&gt;http://\1.dvdempire.com/res/movies/\2bh.jpg&lt;/thumb&gt;" dest="5+">
-				<expression>BoxCover_Container"&gt;[^&gt;]*&gt;&lt;img src="http://(.*?).dvdempire.com/res/movies/([^m]*)</expression>
+			<RegExp input="$$1" output="&lt;thumb&gt;http://\2.dvdempire.org/products/\3/\1bh.jpg&lt;/thumb&gt;" dest="5+">
+				<expression>&lt;a href="/boxcover/(\d+)/[\w-]*?-porn-movies.html"&gt;&lt;img src="http://(.*?).dvdempire.org/products/([0-9]*)/([^m]*)</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
 				<expression>Item_Title"&gt;([^&lt;]*)</expression>
