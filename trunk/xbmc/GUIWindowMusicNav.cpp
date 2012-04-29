@@ -45,6 +45,7 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -432,7 +433,7 @@ void CGUIWindowMusicNav::UpdateButtons()
   {
     // get playlist name from path
     CStdString strDummy;
-    CUtil::Split(m_vecItems->m_strPath, strDummy, strLabel);
+    URIUtils::Split(m_vecItems->m_strPath, strDummy, strLabel);
   }
   // everything else is from a musicdb:// path
   else
@@ -596,7 +597,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
         buttons.Add(CONTEXT_BUTTON_DELETE, 646);
       }
     }
-    if (inPlaylists && !CUtil::GetFileName(item->m_strPath).Equals("PartyMode.xsp")
+    if (inPlaylists && !URIUtils::GetFileName(item->m_strPath).Equals("PartyMode.xsp")
                     && (item->IsPlayList() || item->IsSmartPlayList()))
       buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
@@ -797,7 +798,7 @@ void CGUIWindowMusicNav::SetPluginThumb(int iItem, const VECSOURCES &sources)
   }
   else
   {
-    CFileItem item2(CUtil::AddFileToFolder(picturePath, "default.py"), false);
+    CFileItem item2(URIUtils::AddFileToFolder(picturePath, "default.py"), false);
       if (XFILE::CFile::Exists(item2.GetCachedProgramThumb()))
       {
         CFileItemPtr item(new CFileItem("thumb://Current", false));
@@ -807,7 +808,7 @@ void CGUIWindowMusicNav::SetPluginThumb(int iItem, const VECSOURCES &sources)
       }
     }
 
-  CStdString localThumb = CUtil::AddFileToFolder(picturePath, "default.tbn");
+  CStdString localThumb = URIUtils::AddFileToFolder(picturePath, "default.tbn");
   if (XFILE::CFile::Exists(localThumb))
     {
     CFileItemPtr item(new CFileItem(localThumb, false));
@@ -833,7 +834,7 @@ void CGUIWindowMusicNav::SetPluginThumb(int iItem, const VECSOURCES &sources)
     if (picturePath.Equals("thumb://None"))
     {
       XFILE::CFile::Delete(cachedThumb);
-      CFileItem item2(CUtil::AddFileToFolder(itemPath, "default.py"), false);
+      CFileItem item2(URIUtils::AddFileToFolder(itemPath, "default.py"), false);
         XFILE::CFile::Delete(item2.GetCachedProgramThumb());
       }
     else

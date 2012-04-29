@@ -23,7 +23,7 @@
 #include "lastfmscrobbler.h"
 #include "Application.h"
 #include "Settings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 long CLastfmScrobbler::m_instanceLock = 0;
 CLastfmScrobbler *CLastfmScrobbler::m_pInstance = NULL;
@@ -68,7 +68,7 @@ void CLastfmScrobbler::LoadCredentials()
 CStdString CLastfmScrobbler::GetJournalFileName()
 {
   CStdString strFileName = g_settings.GetProfileUserDataFolder();
-  return CUtil::AddFileToFolder(strFileName, "LastfmScrobbler.xml");
+  return URIUtils::AddFileToFolder(strFileName, "LastfmScrobbler.xml");
 }
 
 void CLastfmScrobbler::NotifyUser(int error)

@@ -23,6 +23,7 @@
 #include "FileRar.h"
 #include <sys/stat.h>
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 #include "URL.h"
 #include "GUIDialogOK.h"
@@ -509,7 +510,7 @@ void CFileRar::Flush()
 void CFileRar::InitFromUrl(const CURL& url)
 {
   m_strCacheDir = g_advancedSettings.m_cachePath;//url.GetDomain();
-  CUtil::AddSlashAtEnd(m_strCacheDir);
+  URIUtils::AddSlashAtEnd(m_strCacheDir);
   m_strRarPath = url.GetHostName();
   m_strPassword = url.GetUserName();
   m_strPathInRar = url.GetFileName();  

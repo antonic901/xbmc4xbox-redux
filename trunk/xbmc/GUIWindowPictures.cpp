@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIWindowPictures.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Picture.h"
 #include "Application.h"
 #include "GUIPassword.h"
@@ -136,7 +137,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
                 m_vecItems->m_strPath=shares[iIndex].strPath;
               else
                 m_vecItems->m_strPath=strDestination;
-              CUtil::RemoveSlashAtEnd(m_vecItems->m_strPath);
+              URIUtils::RemoveSlashAtEnd(m_vecItems->m_strPath);
               CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
             }
           }
@@ -147,7 +148,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         }
 
         // check for network up
-        if (CUtil::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
+        if (URIUtils::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
           m_vecItems->m_strPath.Empty();
 
         SetHistoryForPath(m_vecItems->m_strPath);
@@ -327,9 +328,9 @@ bool CGUIWindowPictures::OnClick(int iItem)
   {
     CStdString strComicPath;
     if (pItem->IsCBZ())
-      CUtil::CreateArchivePath(strComicPath, "zip", pItem->m_strPath, "");
+      URIUtils::CreateArchivePath(strComicPath, "zip", pItem->m_strPath, "");
     else
-      CUtil::CreateArchivePath(strComicPath, "rar", pItem->m_strPath, "");
+      URIUtils::CreateArchivePath(strComicPath, "rar", pItem->m_strPath, "");
 
     OnShowPictureRecursive(strComicPath);
     return true;
@@ -370,7 +371,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   for (int i = 0; i < (int)m_vecItems->Size();++i)
   {
     CFileItemPtr pItem = m_vecItems->Get(i);
-    if (!pItem->m_bIsFolder && !(CUtil::IsRAR(pItem->m_strPath) || CUtil::IsZIP(pItem->m_strPath)) && pItem->IsPicture())
+    if (!pItem->m_bIsFolder && !(URIUtils::IsRAR(pItem->m_strPath) || URIUtils::IsZIP(pItem->m_strPath)) && pItem->IsPicture())
     {
       pSlideShow->Add(pItem.get());
     }
@@ -535,7 +536,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
 {
   if (pItem->IsCBR() || pItem->IsCBZ())
   {
-    CStdString strTBN(CUtil::ReplaceExtension(pItem->m_strPath,".tbn"));
+    CStdString strTBN(URIUtils::ReplaceExtension(pItem->m_strPath,".tbn"));
     if (CFile::Exists(strTBN))
     {
       CPicture pic;
@@ -554,17 +555,17 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
     CStdString strPath = pItem->m_strPath;
     if (pItem->IsCBR())
     {
-      CUtil::CreateArchivePath(strPath,"rar",pItem->m_strPath,"");
+      URIUtils::CreateArchivePath(strPath,"rar",pItem->m_strPath,"");
       thumb = "cover.jpg";
     }
     if (pItem->IsCBZ())
     {
-      CUtil::CreateArchivePath(strPath,"zip",pItem->m_strPath,"");
+      URIUtils::CreateArchivePath(strPath,"zip",pItem->m_strPath,"");
       thumb = "cover.jpg";
     }
     if (pItem->IsMultiPath())
       strPath = CMultiPathDirectory::GetFirstPath(pItem->m_strPath);
-    thumb = CUtil::AddFileToFolder(strPath, thumb);
+    thumb = URIUtils::AddFileToFolder(strPath, thumb);
     if (CFile::Exists(thumb))
     {
       CPicture pic;

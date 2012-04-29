@@ -47,6 +47,7 @@
 #include "FileItem.h"
 #include "utils/StreamDetails.h"
 #include "GUIDialogBusy.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 
@@ -3225,7 +3226,7 @@ int CDVDPlayer::GetSourceBitrate()
 
 int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlags flags)
 {
-  std::string ext = CUtil::GetExtension(filename);
+  std::string ext = URIUtils::GetExtension(filename);
   if(ext == ".idx")
   {
     CDVDDemuxVobsub v;
@@ -3238,7 +3239,7 @@ int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlag
   }
   if(ext == ".sub")
   {
-    CStdString strReplace(CUtil::ReplaceExtension(filename,".idx"));
+    CStdString strReplace(URIUtils::ReplaceExtension(filename,".idx"));
     if (XFILE::CFile::Exists(strReplace))
       return -1;
   }
@@ -3247,7 +3248,7 @@ int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlag
   s.type     = STREAM_SUBTITLE;
   s.id       = 0;
   s.filename = filename;
-  s.name     = CUtil::GetFileName(filename);
+  s.name     = URIUtils::GetFileName(filename);
   s.flags    = flags;
   m_SelectionStreams.Update(s);
   return m_SelectionStreams.IndexOf(STREAM_SUBTITLE, s.source, s.id);

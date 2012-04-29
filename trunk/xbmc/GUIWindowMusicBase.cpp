@@ -28,6 +28,7 @@
 #endif
 #include "PlayListFactory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "PlayListM3U.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
@@ -277,7 +278,7 @@ void CGUIWindowMusicBase::OnInfo(int iItem, bool bShowInfo)
 void CGUIWindowMusicBase::OnInfo(CFileItem *pItem, bool bShowInfo)
 {
   if ((pItem->IsMusicDb() && !pItem->HasMusicInfoTag()) || pItem->IsParentFolder() ||
-       CUtil::IsSpecial(pItem->m_strPath) || pItem->m_strPath.Left(14).Equals("musicsearch://"))
+       URIUtils::IsSpecial(pItem->m_strPath) || pItem->m_strPath.Left(14).Equals("musicsearch://"))
     return; // nothing to do
 
   if (!pItem->m_bIsFolder)
@@ -1120,7 +1121,7 @@ void CGUIWindowMusicBase::PlayItem(int iItem)
 
     /*
     CStdString strPlayListDirectory = m_vecItems->m_strPath;
-    CUtil::RemoveSlashAtEnd(strPlayListDirectory);
+    URIUtils::RemoveSlashAtEnd(strPlayListDirectory);
     */
 
     g_playlistPlayer.ClearPlaylist(PLAYLIST_MUSIC);
@@ -1253,7 +1254,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
   // Save this thumb as the directory thumb if it's the only album in the folder (files view nicety)
   // We do this by grabbing all the songs in the folder, and checking to see whether they come
   // from the same album.
-  if (saveDirThumb && CFile::Exists(albumThumb) && !albumPath.IsEmpty() && !CUtil::IsCDDA(albumPath))
+  if (saveDirThumb && CFile::Exists(albumThumb) && !albumPath.IsEmpty() && !URIUtils::IsCDDA(albumPath))
   {
     CFileItemList items;
     GetDirectory(albumPath, items);

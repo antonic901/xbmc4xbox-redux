@@ -12,7 +12,7 @@
 #include "lib/liblzo/LZO1X.H"
 #include "SkinInfo.h"
 #include "GUISettings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/SpecialProtocol.h"
 
 #ifdef _XBOX
@@ -116,14 +116,14 @@ bool CTextureBundle::OpenBundle()
     CStdString themeXPR = g_guiSettings.GetString("lookandfeel.skintheme");
     if (!themeXPR.IsEmpty() && themeXPR.CompareNoCase("SKINDEFAULT"))
     {
-      strPath = CUtil::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
-      strPath = CUtil::AddFileToFolder(strPath, themeXPR);
+      strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
+      strPath = URIUtils::AddFileToFolder(strPath, themeXPR);
     }
     else
       return false;
   }
   else
-    strPath = CUtil::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media/Textures.xpr");
+    strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media/Textures.xpr");
 
   if (GetFileAttributes(strPath.c_str()) == -1)
     return false;
@@ -282,7 +282,7 @@ void CTextureBundle::GetTexturesFromPath(const CStdString &path, std::vector<CSt
     return;
 
   CStdString testPath = Normalize(path);
-  if (!CUtil::HasSlashAtEnd(testPath))
+  if (!URIUtils::HasSlashAtEnd(testPath))
     testPath += "\\";
   int testLength = testPath.GetLength();
   std::map<CStdString, FileHeader_t>::iterator it;

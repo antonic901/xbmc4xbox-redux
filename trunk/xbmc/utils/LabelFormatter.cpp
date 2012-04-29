@@ -27,6 +27,7 @@
 #include "VideoInfoTag.h"
 #include "MusicInfoTag.h"
 #include "FileItem.h"
+#include "utils/URIUtils.h"
 
 using namespace MUSIC_INFO;
 
@@ -204,7 +205,7 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   case 'L':
     value = item->GetLabel();
     // is the label the actual file or folder name?
-    if (value == CUtil::GetFileName(item->m_strPath))
+    if (value == URIUtils::GetFileName(item->m_strPath))
     { // label is the same as filename, clean it up as appropriate
       value = CUtil::GetTitleFromPath(item->m_strPath, item->m_bIsFolder && !item->IsFileFolder());
     }

@@ -21,7 +21,7 @@
 
 #include "include.h"
 #include "GUIColorManager.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "SkinInfo.h"
 
@@ -53,8 +53,8 @@ void CGUIColorManager::Load(const CStdString &colorFile)
 
   // first load the default color map if it exists
   CStdString path, basePath;
-  CUtil::AddFileToFolder(g_SkinInfo.GetBaseDir(), "colors", basePath);
-  CUtil::AddFileToFolder(basePath, "defaults.xml", path);
+  URIUtils::AddFileToFolder(g_SkinInfo.GetBaseDir(), "colors", basePath);
+  URIUtils::AddFileToFolder(basePath, "defaults.xml", path);
 
   if (xmlDoc.LoadFile(path))
     LoadXML(xmlDoc);
@@ -63,7 +63,7 @@ void CGUIColorManager::Load(const CStdString &colorFile)
   if (colorFile.CompareNoCase("SKINDEFAULT") == 0)
     return; // nothing to do
 
-  CUtil::AddFileToFolder(basePath, colorFile, path);
+  URIUtils::AddFileToFolder(basePath, colorFile, path);
   CLog::Log(LOGINFO, "Loading colors from %s", path.c_str());
 
   if (xmlDoc.LoadFile(path))

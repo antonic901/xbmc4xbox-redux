@@ -25,6 +25,7 @@
 #include "Util.h"
 #include "GUISettings.h"
 #include "Settings.h"
+#include "utils/URIUtils.h"
 
 #ifdef _LINUX
 #include <dirent.h>
@@ -113,40 +114,40 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName;
 
   if (RootDir.Equals("subtitles"))
-    CUtil::AddFileToFolder(g_guiSettings.GetString("subtitles.custompath"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("subtitles.custompath"), FileName, translatedPath);
   else if (RootDir.Equals("userdata"))
-    CUtil::AddFileToFolder(g_settings.GetUserDataFolder(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), FileName, translatedPath);
   else if (RootDir.Equals("database"))
-    CUtil::AddFileToFolder(g_settings.GetDatabaseFolder(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_settings.GetDatabaseFolder(), FileName, translatedPath);
   else if (RootDir.Equals("thumbnails"))
-    CUtil::AddFileToFolder(g_settings.GetThumbnailsFolder(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_settings.GetThumbnailsFolder(), FileName, translatedPath);
   else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
-    CUtil::AddFileToFolder(g_guiSettings.GetString("audiocds.recordingpath", false), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("audiocds.recordingpath", false), FileName, translatedPath);
   else if (RootDir.Equals("screenshots"))
-    CUtil::AddFileToFolder(g_guiSettings.GetString("debug.screenshotpath", false), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("debug.screenshotpath", false), FileName, translatedPath);
   else if (RootDir.Equals("musicplaylists"))
-    CUtil::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName, translatedPath);
   else if (RootDir.Equals("videoplaylists"))
-    CUtil::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName, translatedPath);
   else if (RootDir.Equals("skin"))
-    CUtil::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName, translatedPath);
+    URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName, translatedPath);
 
   // from here on, we have our "real" special paths
   else if (RootDir.Equals("xbmc"))
-    CUtil::AddFileToFolder(GetPath("xbmc"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("xbmc"), FileName, translatedPath);
   else if (RootDir.Equals("home"))
-    CUtil::AddFileToFolder(GetPath("home"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("home"), FileName, translatedPath);
   else if (RootDir.Equals("userhome"))
-    CUtil::AddFileToFolder(GetPath("userhome"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("userhome"), FileName, translatedPath);
   else if (RootDir.Equals("temp"))
-    CUtil::AddFileToFolder(GetPath("temp"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("temp"), FileName, translatedPath);
   else if (RootDir.Equals("profile"))
-    CUtil::AddFileToFolder(GetPath("profile"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("profile"), FileName, translatedPath);
   else if (RootDir.Equals("masterprofile"))
-    CUtil::AddFileToFolder(GetPath("masterprofile"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(GetPath("masterprofile"), FileName, translatedPath);
 
   // check if we need to recurse in
-  if (CUtil::IsSpecial(translatedPath))
+  if (URIUtils::IsSpecial(translatedPath))
   { // we need to recurse in, as there may be multiple translations required
     return TranslatePath(translatedPath);
   }
@@ -223,15 +224,15 @@ CStdString CSpecialProtocol::ReplaceOldPath(const CStdString &oldPath, int pathV
   if (pathVersion < 1)
   {
     if (oldPath.Left(2).CompareNoCase("P:") == 0)
-      return CUtil::AddFileToFolder("special://profile/", oldPath.Mid(2));
+      return URIUtils::AddFileToFolder("special://profile/", oldPath.Mid(2));
     else if (oldPath.Left(2).CompareNoCase("Q:") == 0)
-      return CUtil::AddFileToFolder("special://xbmc/", oldPath.Mid(2));
+      return URIUtils::AddFileToFolder("special://xbmc/", oldPath.Mid(2));
     else if (oldPath.Left(2).CompareNoCase("T:") == 0)
-      return CUtil::AddFileToFolder("special://masterprofile/", oldPath.Mid(2));
+      return URIUtils::AddFileToFolder("special://masterprofile/", oldPath.Mid(2));
     else if (oldPath.Left(2).CompareNoCase("U:") == 0)
-      return CUtil::AddFileToFolder("special://home/", oldPath.Mid(2));
+      return URIUtils::AddFileToFolder("special://home/", oldPath.Mid(2));
     else if (oldPath.Left(2).CompareNoCase("Z:") == 0)
-      return CUtil::AddFileToFolder("special://temp/", oldPath.Mid(2));
+      return URIUtils::AddFileToFolder("special://temp/", oldPath.Mid(2));
   }
   return oldPath;
 }

@@ -39,6 +39,7 @@
 #include "GUISettings.h"
 #include "FileItem.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -90,7 +91,7 @@ bool CCDDARipper::Init(const CStdString& strTrackFile, const CStdString& strFile
   }
 
   // init encoder
-  CStdString strFile2=CUtil::MakeLegalPath(strFile, CUtil::IsHD(strFile) ? LEGAL_FATX : LEGAL_WIN32_COMPAT);
+  CStdString strFile2=CUtil::MakeLegalPath(strFile, URIUtils::IsHD(strFile) ? LEGAL_FATX : LEGAL_WIN32_COMPAT);
   if (!m_pEncoder->Init(strFile2.c_str(), 2, 44100, 16))
   {
     m_cdReader.DeInit();
@@ -231,7 +232,7 @@ bool CCDDARipper::Rip(const CStdString& strTrackFile, const CStdString& strFile,
 bool CCDDARipper::RipTrack(CFileItem* pItem)
 {
   CStdString strDirectory = g_guiSettings.GetString("audiocds.recordingpath");
-  CUtil::AddSlashAtEnd(strDirectory);
+  URIUtils::AddSlashAtEnd(strDirectory);
   CFileItem ripPath(strDirectory, true);
 
   int LegalType = LEGAL_NONE;
@@ -257,14 +258,14 @@ bool CCDDARipper::RipTrack(CFileItem* pItem)
   if (!pItem->GetMusicInfoTag()->GetAlbum().empty())
   {
     strDirectory += CUtil::MakeLegalFileName(pItem->GetMusicInfoTag()->GetAlbum().c_str(), LegalType);
-    CUtil::AddSlashAtEnd(strDirectory);
+    URIUtils::AddSlashAtEnd(strDirectory);
   }
 
   // Create directory if it doesn't exist
   CUtil::CreateDirectoryEx(strDirectory);
 
   CStdString strFile;
-  CUtil::AddFileToFolder(strDirectory, GetTrackName(pItem, LegalType), strFile);
+  URIUtils::AddFileToFolder(strDirectory, GetTrackName(pItem, LegalType), strFile);
 
   return Rip(pItem->m_strPath, strFile.c_str(), *pItem->GetMusicInfoTag());
 }
@@ -275,7 +276,7 @@ bool CCDDARipper::RipCD()
   bool bResult = true;
   CStdString strFile;
   CStdString strDirectory = g_guiSettings.GetString("audiocds.recordingpath");
-  CUtil::AddSlashAtEnd(strDirectory);
+  URIUtils::AddSlashAtEnd(strDirectory);
   CFileItem ripPath(strDirectory, true);
   bool bIsFATX = !ripPath.IsSmb();
 
@@ -355,7 +356,7 @@ bool CCDDARipper::RipCD()
 
   // construct directory where the tracks are stored
   strDirectory += strAlbumDir;
-  CUtil::AddSlashAtEnd(strDirectory);
+  URIUtils::AddSlashAtEnd(strDirectory);
 
   // Create directory if it doesn't exist
   if (!CUtil::CreateDirectoryEx(strDirectory))
@@ -371,7 +372,7 @@ bool CCDDARipper::RipCD()
     CStdString track(GetTrackName(item.get(), bIsFATX));
 
     // construct filename
-    CUtil::AddFileToFolder(strDirectory, track, strFile);
+    URIUtils::AddFileToFolder(strDirectory, track, strFile);
 
     DWORD dwTick = timeGetTime();
 

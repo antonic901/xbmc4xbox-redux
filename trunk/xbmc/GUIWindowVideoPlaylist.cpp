@@ -23,6 +23,7 @@
 #include "GUIWindowVideoPlaylist.h"
 #include "PlayListFactory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "PlayListM3U.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
@@ -367,10 +368,10 @@ void CGUIWindowVideoPlaylist::SavePlayList()
   {
     // need 2 rename it
     CStdString strPath, strFolder;
-    CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "video", strFolder);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "video", strFolder);
     CUtil::RemoveIllegalChars( strNewFileName );
     strNewFileName += ".m3u";
-    CUtil::AddFileToFolder(strFolder, strNewFileName, strPath);
+    URIUtils::AddFileToFolder(strFolder, strNewFileName, strPath);
 
     CPlayListM3U playlist;
     playlist.Add(*m_vecItems);

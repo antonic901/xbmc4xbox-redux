@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "RssFeed.h"
 #include "Settings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/FileCurl.h"
 #include "tinyXML/tinyxml.h"
 
@@ -294,7 +294,7 @@ bool CRssFeed::ReadFeed()
 bool CRssFeed::IsPathToMedia(const CStdString& strPath )
 {
   CStdString extension;
-  CUtil::GetExtension(strPath, extension);
+  URIUtils::GetExtension(strPath, extension);
 
   if (extension.IsEmpty())
     return false;
@@ -318,7 +318,7 @@ bool CRssFeed::IsPathToThumbnail(const CStdString& strPath )
   // Currently just check if this is an image, maybe we will add some
   // other checks later
   CStdString extension;
-  CUtil::GetExtension(strPath, extension);
+  URIUtils::GetExtension(strPath, extension);
 
   if (extension.IsEmpty())
     return false;

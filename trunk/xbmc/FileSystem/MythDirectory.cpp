@@ -23,6 +23,7 @@
 #include "MythDirectory.h"
 #include "MythSession.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "DllLibCMyth.h"
 #include "VideoInfoTag.h"
 #include "URL.h"
@@ -59,7 +60,7 @@ DIR_CACHE_TYPE CMythDirectory::GetCacheType(const CStdString& strPath) const
 {
   CURL url(strPath);
   CStdString fileName = url.GetFileName();
-  CUtil::RemoveSlashAtEnd(fileName);
+  URIUtils::RemoveSlashAtEnd(fileName);
 
   /*
    * Always cache "All Recordings", "Guide" (top folder only), "Movies", and "TV Shows" (including
@@ -140,7 +141,7 @@ bool CMythDirectory::GetGuide(const CStdString& base, CFileItemList &items)
       CStdString icon = GetValue(m_dll->channel_icon(channel));
       if (!icon.IsEmpty())
       {
-        url.SetFileName("files/channels/" + CUtil::GetFileName(icon)); // e.g. files/channels/tv3.jpg
+        url.SetFileName("files/channels/" + URIUtils::GetFileName(icon)); // e.g. files/channels/tv3.jpg
         item->SetThumbnailImage(url.Get());
       }
 
@@ -271,7 +272,7 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
        */
       url.SetHostName(GetValue(m_dll->proginfo_host(program)));
 
-      CStdString path = CUtil::GetFileName(GetValue(m_dll->proginfo_pathname(program)));
+      CStdString path = URIUtils::GetFileName(GetValue(m_dll->proginfo_pathname(program)));
       CStdString name = GetValue(m_dll->proginfo_title(program));
 
       switch (type)
@@ -490,11 +491,11 @@ bool CMythDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
     return false;
 
   CStdString base(strPath);
-  CUtil::RemoveSlashAtEnd(base);
+  URIUtils::RemoveSlashAtEnd(base);
 
   CURL url(strPath);
   CStdString fileName = url.GetFileName();
-  CUtil::RemoveSlashAtEnd(fileName);
+  URIUtils::RemoveSlashAtEnd(fileName);
 
   if (fileName == "")
   {
@@ -555,7 +556,7 @@ bool CMythDirectory::Exists(const char* strPath)
    */
   CURL url(strPath);
        CStdString fileName = url.GetFileName();
-       CUtil::RemoveSlashAtEnd(fileName);
+       URIUtils::RemoveSlashAtEnd(fileName);
 
   if (fileName == ""
   ||  fileName == "channels"
@@ -624,14 +625,14 @@ bool CMythDirectory::SupportsFileOperations(const CStdString& strPath)
 {
   CURL url(strPath);
   CStdString filename = url.GetFileName();
-  CUtil::RemoveSlashAtEnd(filename);
+  URIUtils::RemoveSlashAtEnd(filename);
   /*
    * TV Shows directory has sub-folders so extra check is included so only files get the file
    * operations.
    */
   return filename.Left(11) == "recordings/" ||
          filename.Left(7)  == "movies/" ||
-        (filename.Left(8)  == "tvshows/" && CUtil::GetExtension(filename) != "");
+        (filename.Left(8)  == "tvshows/" && URIUtils::GetExtension(filename) != "");
 }
 
 bool CMythDirectory::IsLiveTV(const CStdString& strPath)

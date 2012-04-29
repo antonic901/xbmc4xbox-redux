@@ -78,6 +78,7 @@
 #include "ScriptSettings.h"
 #include "GUIDialogPluginSettings.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -253,7 +254,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
       {
         g_guiSettings.SetString("lookandfeel.skintheme", m_strNewSkinTheme);
         // also set the default color theme
-        CStdString colorTheme(CUtil::ReplaceExtension(m_strNewSkinTheme, ".xml"));
+        CStdString colorTheme(URIUtils::ReplaceExtension(m_strNewSkinTheme, ".xml"));
         if (colorTheme.Equals("Textures.xml"))
           colorTheme = "defaults.xml";
         g_guiSettings.SetString("lookandfeel.skincolors", colorTheme);
@@ -2382,7 +2383,7 @@ void CGUIWindowSettingsCategory::FillInSubtitleFonts(CSetting *pSetting)
         if (!pItem->m_bIsFolder)
         {
 
-          if ( !CUtil::GetExtension(pItem->GetLabel()).Equals(".ttf") ) continue;
+          if ( !URIUtils::GetExtension(pItem->GetLabel()).Equals(".ttf") ) continue;
           if (pItem->GetLabel().Equals(pSettingString->GetData(), false))
             iCurrentFont = iFont;
 
@@ -2614,7 +2615,7 @@ void CGUIWindowSettingsCategory::FillInVisualisations(CSetting *pSetting, int iC
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension;
-      CUtil::GetExtension(pItem->m_strPath, strExtension);
+      URIUtils::GetExtension(pItem->m_strPath, strExtension);
       if (strExtension == ".vis")
       {
         CStdString strLabel = pItem->GetLabel();
@@ -2888,7 +2889,7 @@ void CGUIWindowSettingsCategory::FillInScreenSavers(CSetting *pSetting)
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension;
-      CUtil::GetExtension(pItem->m_strPath, strExtension);
+      URIUtils::GetExtension(pItem->m_strPath, strExtension);
       if (strExtension == ".xbs")
       {
         CStdString strLabel = pItem->GetLabel();
@@ -2899,7 +2900,7 @@ void CGUIWindowSettingsCategory::FillInScreenSavers(CSetting *pSetting)
 
   CStdString strDefaultScr = pSettingString->GetData();
   CStdString strExtension;
-  CUtil::GetExtension(strDefaultScr, strExtension);
+  URIUtils::GetExtension(strDefaultScr, strExtension);
   if (strExtension == ".xbs")
     strDefaultScr.Delete(strDefaultScr.size() - 4, 4);
 
@@ -3097,7 +3098,7 @@ void CGUIWindowSettingsCategory::FillInSkinThemes(CSetting *pSetting)
 
   // Remove the .xpr extension from the Themes
   CStdString strExtension;
-  CUtil::GetExtension(strSettingString, strExtension);
+  URIUtils::GetExtension(strSettingString, strExtension);
   if (strExtension == ".xpr") strSettingString.Delete(strSettingString.size() - 4, 4);
   // Sort the Themes for GUI and list them
   int iCurrentTheme = 0;
@@ -3131,7 +3132,7 @@ void CGUIWindowSettingsCategory::FillInSkinColors(CSetting *pSetting)
   vector<CStdString> vecColors;
 
   CStdString strPath;
-  CUtil::AddFileToFolder(g_SkinInfo.GetBaseDir(),"colors",strPath);
+  URIUtils::AddFileToFolder(g_SkinInfo.GetBaseDir(),"colors",strPath);
 
   CFileItemList items;
   CDirectory::GetDirectory(strPath, items, ".xml");
@@ -3148,8 +3149,8 @@ void CGUIWindowSettingsCategory::FillInSkinColors(CSetting *pSetting)
   sort(vecColors.begin(), vecColors.end(), sortstringbyname());
 
   // Remove the .xml extension from the Themes
-  if (CUtil::GetExtension(strSettingString) == ".xml")
-    CUtil::RemoveExtension(strSettingString);
+  if (URIUtils::GetExtension(strSettingString) == ".xml")
+    URIUtils::RemoveExtension(strSettingString);
 
   int iCurrentColor = 0;
   for (int i = 0; i < (int) vecColors.size(); ++i)
@@ -3294,13 +3295,13 @@ void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, con
       if (parser.GetContent() != strContent && !strContent.Equals("music"))
         continue;
 
-      if (parser.GetName().Equals(strSelected) || CUtil::GetFileName(items[i]->m_strPath).Equals(strSelected))
+      if (parser.GetName().Equals(strSelected) || URIUtils::GetFileName(items[i]->m_strPath).Equals(strSelected))
       {
         if (strContent.Equals("music")) // native strContent would be albums or artists but we're using the same scraper for both
         {
           if (g_guiSettings.GetString("musiclibrary.scraper") != strSelected)
           {
-            g_guiSettings.SetString("musiclibrary.scraper", CUtil::GetFileName(items[i]->m_strPath));
+            g_guiSettings.SetString("musiclibrary.scraper", URIUtils::GetFileName(items[i]->m_strPath));
 
             SScraperInfo info;
             CMusicDatabase database;
@@ -3315,11 +3316,11 @@ void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, con
           }
         }
         else if (strContent.Equals("movies"))
-          g_guiSettings.SetString("scrapers.moviedefault", CUtil::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.moviedefault", URIUtils::GetFileName(items[i]->m_strPath));
         else if (strContent.Equals("tvshows"))
-          g_guiSettings.SetString("scrapers.tvshowdefault", CUtil::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.tvshowdefault", URIUtils::GetFileName(items[i]->m_strPath));
         else if (strContent.Equals("musicvideos"))
-          g_guiSettings.SetString("scrapers.musicvideodefault", CUtil::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.musicvideodefault", URIUtils::GetFileName(items[i]->m_strPath));
         k = j;
       }
       pControl->AddLabel(parser.GetName(),j++);
@@ -3345,16 +3346,16 @@ void CGUIWindowSettingsCategory::FillInWeatherPlugins(CGUISpinControlEx *pContro
       CStdString plugin;
       CStdString pluginPath = items[i]->m_strPath;
       // remove slash at end so we can use the plugins folder as plugin name
-      CUtil::RemoveSlashAtEnd(pluginPath);
+      URIUtils::RemoveSlashAtEnd(pluginPath);
       // add default.py to our plugin path to create the full path
-      CUtil::AddFileToFolder(pluginPath, "default.py", plugin);
+      URIUtils::AddFileToFolder(pluginPath, "default.py", plugin);
       if (XFILE::CFile::Exists(plugin))
       {
         // is this the users choice
-        if (CUtil::GetFileName(pluginPath).Equals(strSelected))
+        if (URIUtils::GetFileName(pluginPath).Equals(strSelected))
           k = j;
         // we want to use the plugins folder as name
-        pControl->AddLabel(CUtil::GetFileName(pluginPath), j++);
+        pControl->AddLabel(URIUtils::GetFileName(pluginPath), j++);
       }
     }
   }

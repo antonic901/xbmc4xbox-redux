@@ -2,7 +2,7 @@
 
 #include "Settings.h"
 #include "XBMCConfiguration.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "includes.h"
 #include "URL.h"
 
@@ -289,7 +289,7 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
   if (numParas==5)
     share.m_strThumbnailImage = thumbnail;
   CStdString strPath=path;
-  CUtil::AddSlashAtEnd(strPath);
+  URIUtils::AddSlashAtEnd(strPath);
 
   share.strPath = strPath;
   share.vecPaths.push_back(strPath.c_str());
@@ -545,7 +545,7 @@ int CXbmcConfiguration::SaveConfiguration( int eid, webs_t wp, CStdString& respo
   if (!CURL::IsFullPath(strPath))
 	{
 		// only filename specified, so use our homedir as base.
-    strPath = CUtil::AddFileToFolder("special://home/", filename);
+    strPath = URIUtils::AddFileToFolder("special://home/", filename);
 	}
 
   if (!xbmcCfg.SaveFile(strPath))

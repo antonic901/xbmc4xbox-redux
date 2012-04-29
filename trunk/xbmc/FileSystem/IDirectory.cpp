@@ -23,6 +23,7 @@
 #include "stdafx.h"
 #include "IDirectory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -49,7 +50,7 @@ bool IDirectory::IsAllowed(const CStdString& strFile) const
   if ( !m_strFileMask.size() ) return true;
   if ( !strFile.size() ) return true;
 
-  CUtil::GetExtension(strFile, strExtension);
+  URIUtils::GetExtension(strFile, strExtension);
 
   if (!strExtension.size()) return false;
 
@@ -59,7 +60,7 @@ bool IDirectory::IsAllowed(const CStdString& strFile) const
   { // it's allowed, but we should also ignore all non dvd related ifo files.
     if (strExtension.Equals(".ifo|"))
     {
-      CStdString fileName = CUtil::GetFileName(strFile);
+      CStdString fileName = URIUtils::GetFileName(strFile);
       if (fileName.Equals("video_ts.ifo")) return true;
       if (fileName.length() == 12 && fileName.Left(4).Equals("vts_") && fileName.Right(6).Equals("_0.ifo")) return true;
       return false;

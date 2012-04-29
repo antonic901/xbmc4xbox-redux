@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "ModuleCodec.h"
 #include "FileSystem/File.h"
 
@@ -54,12 +54,12 @@ bool ModuleCodec::Init(const CStdString &strFile, unsigned int filecache)
     return false; // error logged previously
 
   // set correct codec name
-  CUtil::GetExtension(strFile,m_CodecName);
+  URIUtils::GetExtension(strFile,m_CodecName);
   m_CodecName.erase(0,1);
   m_CodecName.ToUpper();
 
   CStdString strLoadFile = "Z:\\cachedmod";
-  if (!CUtil::IsHD(strFile))
+  if (!URIUtils::IsHD(strFile))
     CFile::Cache(strFile,"Z:\\cachedmod");
   else
     strLoadFile = strFile;

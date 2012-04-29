@@ -24,6 +24,7 @@
 #include "PlayListXML.h"
 #include "FileSystem/File.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "XMLUtils.h"
@@ -90,8 +91,8 @@ bool CPlayListXML::Load( const CStdString& strFileName )
 {
   TiXmlDocument xmlDoc;
 
-  m_strPlayListName = CUtil::GetFileName(strFileName);
-  CUtil::GetParentPath(strFileName, m_strBasePath);
+  m_strPlayListName = URIUtils::GetFileName(strFileName);
+  URIUtils::GetParentPath(strFileName, m_strBasePath);
 
   Clear();
 

@@ -23,6 +23,7 @@
 #include "stdafx.h"
 #include "HDDirectory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
 #include "URL.h"
@@ -49,10 +50,10 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
   CURL url(strPath);
 
   memset(&wfd, 0, sizeof(wfd));
-  if (!CUtil::HasSlashAtEnd(strPath) )
+  if (!URIUtils::HasSlashAtEnd(strPath) )
     strRoot += "\\";
   strRoot.Replace("/", "\\");
-  if (CUtil::IsDVD(strRoot) && m_isoReader.IsScanned())
+  if (URIUtils::IsDVD(strRoot) && m_isoReader.IsScanned())
   {
     // Reset iso reader and remount or
     // we can't access the dvd-rom
@@ -90,7 +91,7 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
             pItem->m_strPath += wfd.cFileName;
             g_charsetConverter.unknownToUTF8(pItem->m_strPath);
             pItem->m_bIsFolder = true;
-            CUtil::AddSlashAtEnd(pItem->m_strPath);
+            URIUtils::AddSlashAtEnd(pItem->m_strPath);
             FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
             pItem->m_dateTime=localTime;
 
@@ -128,7 +129,7 @@ bool CHDDirectory::Create(const char* strPath)
 {
   CStdString strPath1 = strPath;
   g_charsetConverter.utf8ToStringCharset(strPath1);
-  if (!CUtil::HasSlashAtEnd(strPath1))
+  if (!URIUtils::HasSlashAtEnd(strPath1))
     strPath1 += '\\';
 
   // okey this is really evil, since the create will succeed
@@ -164,7 +165,7 @@ bool CHDDirectory::Exists(const char* strPath)
   g_charsetConverter.utf8ToStringCharset(strReplaced);
   strReplaced.Replace("/","\\");
   CUtil::GetFatXQualifiedPath(strReplaced);
-  if (!CUtil::HasSlashAtEnd(strReplaced))
+  if (!URIUtils::HasSlashAtEnd(strReplaced))
     strReplaced += '\\';
   DWORD attributes = GetFileAttributes(strReplaced.c_str());
   if (FILE_ATTRIBUTE_DIRECTORY == attributes) return true;

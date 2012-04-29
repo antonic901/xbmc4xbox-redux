@@ -24,6 +24,7 @@
 #include "MultiPathDirectory.h"
 #include "Directory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
@@ -163,7 +164,7 @@ bool CMultiPathDirectory::GetPaths(const CStdString& strPath, vector<CStdString>
 
   // remove multipath:// from path and any trailing / (so that the last path doesn't get any more than it originally had)
   strPath1 = strPath1.Mid(12);
-  CUtil::RemoveSlashAtEnd(strPath1);
+  URIUtils::RemoveSlashAtEnd(strPath1);
 
   // split on "/"
   vector<CStdString> vecTemp;
@@ -185,7 +186,7 @@ bool CMultiPathDirectory::HasPath(const CStdString& strPath, const CStdString& s
 {
   // remove multipath:// from path and any trailing / (so that the last path doesn't get any more than it originally had)
   CStdString strPath1 = strPath.Mid(12);
-  CUtil::RemoveSlashAtEnd(strPath1);
+  URIUtils::RemoveSlashAtEnd(strPath1);
 
   // split on "/"
   vector<CStdString> vecTemp;
@@ -221,7 +222,7 @@ CStdString CMultiPathDirectory::ConstructMultiPath(const CFileItemList& items, c
 void CMultiPathDirectory::AddToMultiPath(CStdString& strMultiPath, const CStdString& strPath)
 {
   CStdString strPath1 = strPath;
-  CUtil::AddSlashAtEnd(strMultiPath);
+  URIUtils::AddSlashAtEnd(strMultiPath);
   //CLog::Log(LOGDEBUG, "-- adding path: %s", strPath.c_str());
   CURL::Encode(strPath1);  
   strMultiPath += strPath1;

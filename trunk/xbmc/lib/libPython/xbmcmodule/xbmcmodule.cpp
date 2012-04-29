@@ -42,6 +42,7 @@
 #include "TextureManager.h"
 #include "language.h"
 #include "PythonSettings.h"
+#include "utils/URIUtils.h"
 
 // include for constants
 #include "pyutil.h"
@@ -677,10 +678,10 @@ namespace PYXBMC
     if (!PyXBMCGetUnicodeString(strText, pObjectText, 1)) return NULL;
 
     CStdString strPath;
-    if (CUtil::IsDOSPath(strText))
+    if (URIUtils::IsDOSPath(strText))
       strText = CSpecialProtocol::ReplaceOldPath(strText, 0);
 
-    if (CUtil::IsPlugin(strText))
+    if (URIUtils::IsPlugin(strText))
       strText.Replace("plugin://", "special://home/plugins/");
 
     strPath = CSpecialProtocol::TranslatePath(strText);

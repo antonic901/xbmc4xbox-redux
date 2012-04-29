@@ -35,6 +35,7 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "CharsetConverter.h"
+#include "utils/URIUtils.h"
 
 #include <sstream>
 #include <cstring>
@@ -121,7 +122,7 @@ bool CScraperParser::LoadFromXML()
     return false;
 
   CStdString strPath;
-  CUtil::GetDirectory(m_strFile,strPath);
+  URIUtils::GetDirectory(m_strFile,strPath);
 
   m_pRootElement = m_document->RootElement();
   CStdString strValue = m_pRootElement->Value();
@@ -160,7 +161,7 @@ bool CScraperParser::LoadFromXML()
         {
           if (include->FirstChild())
           {
-            CStdString strFile = CUtil::AddFileToFolder(strPath,include->FirstChild()->Value());
+            CStdString strFile = URIUtils::AddFileToFolder(strPath,include->FirstChild()->Value());
             TiXmlDocument doc;
             if (doc.LoadFile(strFile))
             {
@@ -535,14 +536,14 @@ void CScraperParser::ClearBuffers()
 void CScraperParser::ClearCache()
 {
   CStdString strCachePath;
-  CUtil::AddFileToFolder(g_advancedSettings.m_cachePath,"scrapers",strCachePath);
+  URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"scrapers",strCachePath);
 
   // create scraper cache dir if needed
   if (!CDirectory::Exists(strCachePath))
     CDirectory::Create(strCachePath);
 
-  strCachePath = CUtil::AddFileToFolder(strCachePath,CUtil::GetFileName(m_strFile));
-  CUtil::AddSlashAtEnd(strCachePath);
+  strCachePath = URIUtils::AddFileToFolder(strCachePath,URIUtils::GetFileName(m_strFile));
+  URIUtils::AddSlashAtEnd(strCachePath);
 
   if (CDirectory::Exists(strCachePath))
   {

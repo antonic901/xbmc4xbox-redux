@@ -22,7 +22,7 @@
 
 #include "stdafx.h"
 #include "PluginDirectory.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #ifdef HAS_PYTHON
 #include "lib/libPython/XBPython.h"
 #endif
@@ -77,18 +77,18 @@ bool CPluginDirectory::StartScript(const CStdString& strPath)
   
   // path is special://home/plugins/<path from here>
   CStdString pathToScript = "special://home/plugins/";
-  CUtil::AddFileToFolder(pathToScript, url.GetHostName(), pathToScript);
-  CUtil::AddFileToFolder(pathToScript, url.GetFileName(), pathToScript);
-  CUtil::AddFileToFolder(pathToScript, "default.py", pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, url.GetHostName(), pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, url.GetFileName(), pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, "default.py", pathToScript);
 
   // base path
   CStdString basePath = "plugin://";
-  CUtil::AddFileToFolder(basePath, url.GetHostName(), basePath);
-  CUtil::AddFileToFolder(basePath, url.GetFileName(), basePath);
+  URIUtils::AddFileToFolder(basePath, url.GetHostName(), basePath);
+  URIUtils::AddFileToFolder(basePath, url.GetFileName(), basePath);
 
   // options
   CStdString options = url.GetOptions();
-  CUtil::RemoveSlashAtEnd(options); // This MAY kill some scripts (eg though with a URL ending with a slash), but
+  URIUtils::RemoveSlashAtEnd(options); // This MAY kill some scripts (eg though with a URL ending with a slash), but
                                     // is needed for all others, as XBMC adds slashes to "folders"
 
   // Load the plugin settings
@@ -122,7 +122,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath)
   if (g_pythonParser.evalFile(pathToScript.c_str(), 3, (const char**)plugin_argv) >= 0)
   { // wait for our script to finish
     CStdString scriptName = url.GetFileName();
-    CUtil::RemoveSlashAtEnd(scriptName);
+    URIUtils::RemoveSlashAtEnd(scriptName);
     success = WaitOnScriptResult(pathToScript, scriptName);
   }
   else
@@ -411,18 +411,18 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
 
   // path is special://home/plugins/<path from here>
   CStdString pathToScript = "special://home/plugins/";
-  CUtil::AddFileToFolder(pathToScript, url.GetHostName(), pathToScript);
-  CUtil::AddFileToFolder(pathToScript, url.GetFileName(), pathToScript);
-  CUtil::AddFileToFolder(pathToScript, "default.py", pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, url.GetHostName(), pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, url.GetFileName(), pathToScript);
+  URIUtils::AddFileToFolder(pathToScript, "default.py", pathToScript);
 
   // options
   CStdString options = url.GetOptions();
-  CUtil::RemoveSlashAtEnd(options); // This MAY kill some scripts (eg though with a URL ending with a slash), but
+  URIUtils::RemoveSlashAtEnd(options); // This MAY kill some scripts (eg though with a URL ending with a slash), but
                                     // is needed for all others, as XBMC adds slashes to "folders"
   // base path
   CStdString basePath = "plugin://";
-  CUtil::AddFileToFolder(basePath, url.GetHostName(), basePath);
-  CUtil::AddFileToFolder(basePath, url.GetFileName(), basePath);
+  URIUtils::AddFileToFolder(basePath, url.GetHostName(), basePath);
+  URIUtils::AddFileToFolder(basePath, url.GetFileName(), basePath);
 
   // setup our parameters to send the script
   CStdString strHandle;
@@ -447,7 +447,7 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
 bool CPluginDirectory::HasPlugins(const CStdString &type)
 {
   CStdString path = "special://home/plugins/";
-  CUtil::AddFileToFolder(path, type, path);
+  URIUtils::AddFileToFolder(path, type, path);
   CFileItemList items;
   if (CDirectory::GetDirectory(path, items, "/", false))
   {
@@ -457,7 +457,7 @@ bool CPluginDirectory::HasPlugins(const CStdString &type)
       if (item->m_bIsFolder && !item->IsParentFolder() && !item->m_bIsShareOrDrive)
       {
         CStdString defaultPY;
-        CUtil::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
+        URIUtils::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
         if (XFILE::CFile::Exists(defaultPY))
           return true;
       }
@@ -470,8 +470,8 @@ bool CPluginDirectory::GetPluginsDirectory(const CStdString &type, CFileItemList
 {
   // retrieve our folder
   CStdString pluginsFolder = "special://home/plugins";
-  CUtil::AddFileToFolder(pluginsFolder, type, pluginsFolder);
-  CUtil::AddSlashAtEnd(pluginsFolder);
+  URIUtils::AddFileToFolder(pluginsFolder, type, pluginsFolder);
+  URIUtils::AddSlashAtEnd(pluginsFolder);
 
   if (!CDirectory::GetDirectory(pluginsFolder, items, "*.py", false))
     return false;
@@ -489,7 +489,7 @@ bool CPluginDirectory::GetPluginsDirectory(const CStdString &type, CFileItemList
     if (!item->HasThumbnail())
     {
       CFileItem item2(item->m_strPath);
-      CUtil::AddFileToFolder(item->m_strPath,"default.py",item2.m_strPath);
+      URIUtils::AddFileToFolder(item->m_strPath,"default.py",item2.m_strPath);
       item2.m_bIsFolder = false;
       item2.SetCachedProgramThumb();
       if (!item2.HasThumbnail())
@@ -649,20 +649,20 @@ void CPluginDirectory::LoadPluginStrings(const CURL &url)
 {
   // Path where the plugin resides
   CStdString pathToPlugin = "special://home/plugins/";
-  CUtil::AddFileToFolder(pathToPlugin, url.GetHostName(), pathToPlugin);
-  CUtil::AddFileToFolder(pathToPlugin, url.GetFileName(), pathToPlugin);
+  URIUtils::AddFileToFolder(pathToPlugin, url.GetHostName(), pathToPlugin);
+  URIUtils::AddFileToFolder(pathToPlugin, url.GetFileName(), pathToPlugin);
 
   // Path where the language strings reside
   CStdString pathToLanguageFile = pathToPlugin;
   CStdString pathToFallbackLanguageFile = pathToPlugin;
-  CUtil::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
 
   // Load language strings temporarily
   g_localizeStringsTemp.Load(pathToLanguageFile, pathToFallbackLanguageFile);

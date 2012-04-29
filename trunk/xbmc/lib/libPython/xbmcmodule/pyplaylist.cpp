@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "PlayListPlayer.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "pyplaylist.h"
 #include "lib/libPython/python/Include/structmember.h"
 #include "../XBPythonDll.h"
@@ -245,7 +246,7 @@ namespace PYXBMC
         {
           CFileItemPtr playListItem =(*pPlayList)[i];
           if (playListItem->GetLabel().IsEmpty())
-            playListItem->SetLabel(CUtil::GetFileName(playListItem->m_strPath));
+            playListItem->SetLabel(URIUtils::GetFileName(playListItem->m_strPath));
 
           self->pPlayList->Add(playListItem);
         }

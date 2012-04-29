@@ -43,6 +43,7 @@
 #include "musicInfoTag.h"
 #include "PictureInfoTag.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -410,7 +411,7 @@ int CXbmcHttp::displayDir(int numParas, CStdString paras[])
     CStdString aLine;
     if (mask=="*" || mask=="/" || (mask =="" && itm->m_bIsFolder))
     {
-      if (!CUtil::HasSlashAtEnd(itm->m_strPath))
+      if (!URIUtils::HasSlashAtEnd(itm->m_strPath))
         aLine = closeTag + openTag + itm->m_strPath + "\\" ;
       else
         aLine = closeTag + openTag + itm->m_strPath;
@@ -506,7 +507,7 @@ void CXbmcHttp::AddItemToPlayList(const CFileItemPtr &pItem, int playList, int s
 
 bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, bool autoStart)
 {
-  CFileItem *item = new CFileItem(CUtil::GetFileName(strPath));
+  CFileItem *item = new CFileItem(URIUtils::GetFileName(strPath));
   item->m_strPath=strPath;
 
   auto_ptr<CPlayList> pPlayList (CPlayListFactory::Create(*item));
@@ -773,8 +774,8 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
     CStdString strFolder = "0";
     if (item->m_bIsFolder)
     {
-      if (!item->IsFileFolder() && !CUtil::HasSlashAtEnd(strPath))
-        CUtil::AddSlashAtEnd(strPath);
+      if (!item->IsFileFolder() && !URIUtils::HasSlashAtEnd(strPath))
+        URIUtils::AddSlashAtEnd(strPath);
       strFolder = "1";
     }
     strLine = openTag;
@@ -926,7 +927,7 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
       strName.Replace(";", ";;");
       CStdString strPath = share.strPath;
       strPath.Replace(";", ";;");
-      CUtil::AddSlashAtEnd(strPath);
+      URIUtils::AddSlashAtEnd(strPath);
       CStdString strLine = openTag;
       if (bShowType)
         strLine += strType + ";";
@@ -1158,7 +1159,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
   if (numParas==0) {
     return SetResponse(openTag+"Error:Missing Parameter");
   }
-  strFileName=CUtil::GetFileName(paras[0]);
+  strFileName=URIUtils::GetFileName(paras[0]);
   CFileItem *pItem = new CFileItem(strFileName);
   pItem->m_strPath=paras[0].c_str();
   if (!pItem->IsAudio())
@@ -1841,7 +1842,7 @@ int CXbmcHttp::xbmcGetThumb(int numParas, CStdString paras[], bool bGetThumb)
      tempSkipWebFooterHeader=paras[1].ToLower() == "bare";
   if (numParas>2)
      tempSkipWebFooterHeader=paras[2].ToLower() == "bare";
-  if (CUtil::IsRemote(paras[0]))
+  if (URIUtils::IsRemote(paras[0]))
   {
     CStdString strDest="special://temp/xbmcDownloadFile.tmp";
     CFile::Cache(paras[0], strDest, NULL, NULL) ;

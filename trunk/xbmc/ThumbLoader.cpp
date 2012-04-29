@@ -30,6 +30,7 @@
 #include "TextureManager.h"
 #include "VideoInfoTag.h"
 #include "VideoDatabase.h"
+#include "utils/URIUtils.h"
 
 #include "cores/dvdplayer/DVDFileInfo.h"
 
@@ -129,7 +130,7 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
     else
     {
       CStdString strPath, strFileName;
-      CUtil::Split(cachedThumb, strPath, strFileName);
+      URIUtils::Split(cachedThumb, strPath, strFileName);
 
       // create unique thumb for auto generated thumbs
       cachedThumb = strPath + "auto-" + strFileName;

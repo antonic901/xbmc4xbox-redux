@@ -39,6 +39,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/RarManager.h"
 #include "FileItem.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -221,7 +222,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
         CStdString strTitleID;
         CStdString strGameSavepath;
         strTitleID.Format("%08X",dwTitleId);
-        CUtil::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
+        URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
   
         if (CDirectory::Exists(strGameSavepath))
           buttons.Add(CONTEXT_BUTTON_GAMESAVES, 20322);         // Goto GameSaves
@@ -326,7 +327,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString strTitleID;
       CStdString strGameSavepath;
       strTitleID.Format("%08X",CUtil::GetXbeID(item->m_strPath));
-      CUtil::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
+      URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
       g_windowManager.ActivateWindow(WINDOW_GAMESAVES,strGameSavepath);
       return true;
     }
@@ -567,7 +568,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
     directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
     for( int i=0;i<archives.Size();++i)
     {
-      if (stricmp(CUtil::GetExtension(archives[i]->m_strPath),".rar") == 0)
+      if (stricmp(URIUtils::GetExtension(archives[i]->m_strPath),".rar") == 0)
       {
         g_RarManager.GetFilesInRar(inArchives,archives[i]->m_strPath,false);
         CHDDirectory dir;
@@ -577,15 +578,15 @@ void CGUIWindowPrograms::PopulateTrainersList()
           {
             CFileItemPtr item(new CFileItem(*inArchives[j]));
             CStdString strPathInArchive = item->m_strPath;
-            CUtil::CreateArchivePath(item->m_strPath, "rar", archives[i]->m_strPath, strPathInArchive,"");
+            URIUtils::CreateArchivePath(item->m_strPath, "rar", archives[i]->m_strPath, strPathInArchive,"");
             trainers.Add(item);
           }
       }
-      if (stricmp(CUtil::GetExtension(archives[i]->m_strPath),".zip")==0)
+      if (stricmp(URIUtils::GetExtension(archives[i]->m_strPath),".zip")==0)
       {
         // add trainers in zip
         CStdString strZipPath;
-        CUtil::CreateArchivePath(strZipPath,"zip",archives[i]->m_strPath,"");
+        URIUtils::CreateArchivePath(strZipPath,"zip",archives[i]->m_strPath,"");
         CFileItemList zipTrainers;
         directory.GetDirectory(strZipPath,zipTrainers,".etm|.xbtf");
         for (int j=0;j<zipTrainers.Size();++j)
@@ -656,10 +657,10 @@ void CGUIWindowPrograms::PopulateTrainersList()
 bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
 {
   bool bFlattened=false;
-  if (CUtil::IsDVD(strDirectory))
+  if (URIUtils::IsDVD(strDirectory))
   {
     CStdString strPath;
-    CUtil::AddFileToFolder(strDirectory,"default.xbe",strPath);
+    URIUtils::AddFileToFolder(strDirectory,"default.xbe",strPath);
     if (CFile::Exists(strPath)) // flatten dvd
     {
       CFileItemPtr item(new CFileItem("default.xbe"));
@@ -702,7 +703,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     if (item->m_bIsFolder && !item->IsParentFolder() && !item->IsPlugin())
     { // folder item - let's check for a default.xbe file, and flatten if we have one
       CStdString defaultXBE;
-      CUtil::AddFileToFolder(item->m_strPath, "default.xbe", defaultXBE);
+      URIUtils::AddFileToFolder(item->m_strPath, "default.xbe", defaultXBE);
       if (CFile::Exists(defaultXBE))
       { // yes, format the item up
         item->m_strPath = defaultXBE;
@@ -736,7 +737,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     }
     if (item->IsXBE())
     {
-      if (CUtil::GetFileName(item->m_strPath).Equals("default_ffp.xbe"))
+      if (URIUtils::GetFileName(item->m_strPath).Equals("default_ffp.xbe"))
       {
         m_vecItems->Remove(i--);
         continue;

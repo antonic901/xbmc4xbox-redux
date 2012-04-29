@@ -27,7 +27,7 @@
 #include "PlayListWPL.h"
 #include "PlayListURL.h"
 #include "PlayListXML.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace PLAYLIST;
 
@@ -71,7 +71,7 @@ CPlayList* CPlayListFactory::Create(const CFileItem& item)
       return new CPlayListWPL();
   }
 
-  CStdString extension = CUtil::GetExtension(item.m_strPath);
+  CStdString extension = URIUtils::GetExtension(item.m_strPath);
   extension.MakeLower();
 
   if (extension == ".m3u" || extension == ".strm")
@@ -129,7 +129,7 @@ bool CPlayListFactory::IsPlaylist(const CFileItem& item)
 
 bool CPlayListFactory::IsPlaylist(const CStdString& filename)
 {
-  CStdString extension = CUtil::GetExtension(filename);
+  CStdString extension = URIUtils::GetExtension(filename);
   extension.ToLower();
 
   if (extension == ".m3u") return true;

@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "PlayList.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "PlayListFactory.h"
 #include <sstream>
 #include "VideoInfoTag.h"
@@ -365,7 +365,7 @@ void CPlayList::SetUnPlayable(int iItem)
 bool CPlayList::Load(const CStdString& strFileName)
 {
   Clear();
-  CUtil::GetDirectory(strFileName, m_strBasePath);
+  URIUtils::GetDirectory(strFileName, m_strBasePath);
 
   CFileStream file;
   if (!file.Open(strFileName))

@@ -57,8 +57,8 @@ bool CPlayListDirectory::GetDirectory(const CStdString& strPath, VECFILEITEMS &i
     {
       CFileItem* pItem = tmpitems[i];
       CStdString strPlayListName, strPlayList;
-      strPlayList = CUtil::GetFileName( pItem->m_strPath );
-      strPlayListName = CUtil::GetFileName( strPlayList );
+      strPlayList = URIUtils::GetFileName( pItem->m_strPath );
+      strPlayListName = URIUtils::GetFileName( strPlayList );
       delete pItem;
 
       CPlayListFactory factory;
@@ -104,7 +104,7 @@ bool CPlayListDirectory::GetDirectory(const CStdString& strPath, VECFILEITEMS &i
       const CPlayList::CPlayListItem& playlistItem = (*pPlayList)[i];
 
       CStdString strLabel;
-      strLabel = CUtil::GetFileName( playlistItem.GetFileName() );
+      strLabel = URIUtils::GetFileName( playlistItem.GetFileName() );
       CFileItem* pItem = new CFileItem(strLabel);
       pItem->m_strPath = playlistItem.GetFileName();
       pItem->m_bIsFolder = false;

@@ -28,7 +28,7 @@
 #include "GUIViewStateScripts.h"
 #include "GUIViewStateGameSaves.h"
 #include "PlayListPlayer.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "GUIPassword.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
@@ -305,7 +305,7 @@ const CStdString& CGUIViewState::GetPlaylistDirectory()
 void CGUIViewState::SetPlaylistDirectory(const CStdString& strDirectory)
 {
   m_strPlaylistDirectory=strDirectory;
-  CUtil::RemoveSlashAtEnd(m_strPlaylistDirectory);
+  URIUtils::RemoveSlashAtEnd(m_strPlaylistDirectory);
 }
 
 bool CGUIViewState::IsCurrentPlaylistDirectory(const CStdString& strDirectory)
@@ -314,7 +314,7 @@ bool CGUIViewState::IsCurrentPlaylistDirectory(const CStdString& strDirectory)
     return false;
 
   CStdString strDir=strDirectory;
-  CUtil::RemoveSlashAtEnd(strDir);
+  URIUtils::RemoveSlashAtEnd(strDir);
 
   return (m_strPlaylistDirectory==strDir);
 }

@@ -39,6 +39,7 @@
 #include "FileSystem/File.h"
 #include "GUISettings.h"
 #include "FileItem.h"
+#include "utils/URIUtils.h"
 
 #include "emu_msvcrt.h"
 #include "emu_dummy.h"
@@ -628,7 +629,7 @@ extern "C"
     }
     else if (url.GetFileName().Find("*.") != string::npos)
     {
-      CUtil::GetExtension(url.GetFileName(),strMask);
+      URIUtils::GetExtension(url.GetFileName(),strMask);
       url.SetFileName(url.GetFileName().Left(url.GetFileName().Find("*.")));
     }
     int iDirSlot=0; // locate next free directory

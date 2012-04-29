@@ -29,6 +29,7 @@
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/md5.h"
 #include "utils/GUIInfoManager.h"
 #include "xbox/XKGeneral.h"
@@ -239,7 +240,7 @@ void CMusicInfoScanner::FetchAlbumInfo(const CStdString& strDirectory)
   }
   else
   {
-    if (CUtil::HasSlashAtEnd(strDirectory)) // directory
+    if (URIUtils::HasSlashAtEnd(strDirectory)) // directory
       CDirectory::GetDirectory(strDirectory,items);
     else
     {
@@ -280,7 +281,7 @@ void CMusicInfoScanner::FetchArtistInfo(const CStdString& strDirectory)
   }
   else
   {
-    if (CUtil::HasSlashAtEnd(strDirectory)) // directory
+    if (URIUtils::HasSlashAtEnd(strDirectory)) // directory
       CDirectory::GetDirectory(strDirectory,items);
     else
     {
@@ -434,7 +435,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(CFileItemList& items, const CStdString&
   {
     CFileItemPtr pItem = items[i];
     CStdString strExtension;
-    CUtil::GetExtension(pItem->m_strPath, strExtension);
+    URIUtils::GetExtension(pItem->m_strPath, strExtension);
 
     if (m_bStop)
       return 0;
@@ -708,7 +709,7 @@ void CMusicInfoScanner::UpdateFolderThumb(const VECSONGS &songs, const CStdStrin
   {
     CStdString folderPath1(folderPath);
     // Folder art is cached without the slash at end
-    CUtil::RemoveSlashAtEnd(folderPath1);
+    URIUtils::RemoveSlashAtEnd(folderPath1);
     CStdString folderCoverArt(CUtil::GetCachedMusicThumb(folderPath1));
     // copy as directory thumb as well
     if (CFile::Cache(albumCoverArt, folderCoverArt))
@@ -815,7 +816,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
   // handle nfo files
   CStdString strAlbumPath, strNfo;
   m_musicDatabase.GetAlbumPath(params.GetAlbumId(),strAlbumPath);
-  CUtil::AddFileToFolder(strAlbumPath,"album.nfo",strNfo);
+  URIUtils::AddFileToFolder(strAlbumPath,"album.nfo",strNfo);
   CNfoFile::NFOResult result=CNfoFile::NO_NFO;
   CNfoFile nfoReader;
   if (XFILE::CFile::Exists(strNfo))
@@ -1042,7 +1043,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
   // handle nfo files
   CStdString strArtistPath, strNfo;
   m_musicDatabase.GetArtistPath(params.GetArtistId(),strArtistPath);
-  CUtil::AddFileToFolder(strArtistPath,"artist.nfo",strNfo);
+  URIUtils::AddFileToFolder(strArtistPath,"artist.nfo",strNfo);
   CNfoFile::NFOResult result=CNfoFile::NO_NFO;
   CNfoFile nfoReader;
   if (XFILE::CFile::Exists(strNfo))
@@ -1185,7 +1186,7 @@ void CMusicInfoScanner::GetArtistArtwork(long id, const CStdString &artistName, 
   CStdString thumb = item.GetCachedArtistThumb();
   if (m_musicDatabase.GetArtistPath(id, artistPath) && !XFILE::CFile::Exists(thumb))
   {
-    CStdString localThumb = CUtil::AddFileToFolder(artistPath, "folder.jpg");
+    CStdString localThumb = URIUtils::AddFileToFolder(artistPath, "folder.jpg");
     if (XFILE::CFile::Exists(localThumb))
     {
       CPicture pic;

@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "ZipManager.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileSystem/File.h"
 #include "SpecialProtocol.h"
@@ -250,7 +250,7 @@ bool CZipManager::ExtractArchive(const CStdString& strArchive, const CStdString&
 {
   vector<SZipEntry> entry;
   CStdString strZipPath;
-  CUtil::CreateArchivePath(strZipPath, "zip", strArchive, "");
+  URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, "");
   GetZipList(strZipPath,entry);
   for (vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)
   {
@@ -259,7 +259,7 @@ bool CZipManager::ExtractArchive(const CStdString& strArchive, const CStdString&
     CStdString strFilePath(it->name);
 
 
-    CUtil::CreateArchivePath(strZipPath, "zip", strArchive, strFilePath);
+    URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, strFilePath);
     if (!CFile::Cache(strZipPath.c_str(),(strPath+strFilePath).c_str()))
       return false;
   }
@@ -270,7 +270,7 @@ void CZipManager::CleanUp(const CStdString& strArchive, const CStdString& strPat
 {
   vector<SZipEntry> entry;
   CStdString strZipPath;
-  CUtil::CreateArchivePath(strZipPath, "zip", strArchive, "");
+  URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, "");
 
   GetZipList(strZipPath,entry);
   for (vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)

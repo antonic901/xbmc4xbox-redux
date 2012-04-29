@@ -1138,6 +1138,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\UdpClient.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\URIUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\URIUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\URL.cpp">
 				</File>
 				<File

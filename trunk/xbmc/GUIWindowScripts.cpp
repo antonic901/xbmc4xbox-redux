@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "GUIWindowScripts.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"
 #include "GUIWindowScriptsInfo.h"
 #include "GUIWindowManager.h"
@@ -181,7 +181,7 @@ bool CGUIWindowScripts::GetDirectory(const CStdString& strDirectory, CFileItemLi
     if (item->m_bIsFolder && !item->IsParentFolder() && !item->m_bIsShareOrDrive && !item->GetLabel().Left(1).Equals("."))
     { // folder item - let's check for a default.py file, and flatten if we have one
       CStdString defaultPY;
-      CUtil::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
+      URIUtils::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
 
       if (CFile::Exists(defaultPY))
       { // yes, format the item up
@@ -212,7 +212,7 @@ void CGUIWindowScripts::GetContextButtons(int itemNumber, CContextButtons &butto
   if (item && item->IsPythonScript())
   {
     CStdString path, filename;
-    CUtil::Split(item->m_strPath, path, filename);
+    URIUtils::Split(item->m_strPath, path, filename);
     if (CScriptSettings::SettingsExist(path))
       buttons.Add(CONTEXT_BUTTON_SCRIPT_SETTINGS, 1049);
   }
@@ -231,7 +231,7 @@ bool CGUIWindowScripts::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   else if (button == CONTEXT_BUTTON_SCRIPT_SETTINGS)
   {
     CStdString path, filename;
-    CUtil::Split(m_vecItems->Get(itemNumber)->m_strPath, path, filename);
+    URIUtils::Split(m_vecItems->Get(itemNumber)->m_strPath, path, filename);
     if(CGUIDialogPluginSettings::ShowAndGetInput(path))
       Update(m_vecItems->m_strPath);
     return true;
@@ -239,7 +239,7 @@ bool CGUIWindowScripts::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   else if (button == CONTEXT_BUTTON_DELETE)
   {
     CStdString path;
-    CUtil::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,path);
+    URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,path);
     CFileItem item2(path,true);
     if (CGUIWindowFileManager::DeleteItem(&item2))
       Update(m_vecItems->m_strPath);

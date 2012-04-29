@@ -26,7 +26,7 @@
 #include "SingleLock.h"
 #include "Settings.h"
 #include "AdvancedSettings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 FILE* CLog::fd = NULL;
 int         CLog::m_repeatCount     = 0;
@@ -71,7 +71,7 @@ void CLog::Log(int loglevel, const char *format, ... )
       // g_stSettings.m_logFolder is initialized in the CSettings constructor to Q:\\
       // and if we are running from DVD, it's changed to T:\\ in CApplication::Create()
       CStdString LogFile;
-      CUtil::AddFileToFolder(g_stSettings.m_logFolder, "xbmc.log", LogFile);
+      URIUtils::AddFileToFolder(g_stSettings.m_logFolder, "xbmc.log", LogFile);
       fd = _fsopen(LogFile, "a+", _SH_DENYWR);
     }
       

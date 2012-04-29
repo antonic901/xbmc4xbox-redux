@@ -26,6 +26,7 @@
 #include "FileSystem/File.h"
 #include "AdvancedSettings.h"
 #include "MusicInfoTag.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -56,7 +57,7 @@ bool CPlayListPLS::Load(const CStdString &strFile)
 {
   //read it from the file
   CStdString strFileName(strFile);
-  m_strPlayListName = CUtil::GetFileName(strFileName);
+  m_strPlayListName = URIUtils::GetFileName(strFileName);
 
   Clear();
 
@@ -69,7 +70,7 @@ bool CPlayListPLS::Load(const CStdString &strFile)
     bShoutCast = true;
   }
   else
-    CUtil::GetParentPath(strFileName, m_strBasePath);
+    URIUtils::GetParentPath(strFileName, m_strBasePath);
 
   CFile file;
   if (!file.Open(strFileName) )
@@ -135,13 +136,13 @@ bool CPlayListPLS::Load(const CStdString &strFile)
           break;
         }
         if (m_vecItems[idx - 1]->GetLabel().empty())
-          m_vecItems[idx - 1]->SetLabel(CUtil::GetFileName(strValue));
+          m_vecItems[idx - 1]->SetLabel(URIUtils::GetFileName(strValue));
         CFileItem item(strValue, false);
         if (bShoutCast && !item.IsAudio())
           strValue.Replace("http:", "shout:");
 
-        if (CUtil::IsRemote(m_strBasePath) && g_advancedSettings.m_pathSubstitutions.size() > 0)
-          strValue = CUtil::SubstitutePath(strValue);
+        if (URIUtils::IsRemote(m_strBasePath) && g_advancedSettings.m_pathSubstitutions.size() > 0)
+          strValue = URIUtils::SubstitutePath(strValue);
         CUtil::GetQualifiedFilename(m_strBasePath, strValue);
         g_charsetConverter.unknownToUTF8(strValue);
         m_vecItems[idx - 1]->m_strPath = strValue;
@@ -178,7 +179,7 @@ bool CPlayListPLS::Load(const CStdString &strFile)
 
   if (bFailed)
   {
-    CLog::Log(LOGERROR, "File %s is not a valid PLS playlist. Location of first file,title or length is not permitted (eg. File0 should be File1)", CUtil::GetFileName(strFileName).c_str());
+    CLog::Log(LOGERROR, "File %s is not a valid PLS playlist. Location of first file,title or length is not permitted (eg. File0 should be File1)", URIUtils::GetFileName(strFileName).c_str());
     return false;
   }
 

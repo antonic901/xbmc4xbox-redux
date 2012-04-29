@@ -32,6 +32,7 @@
 #include "FileItem.h"
 #include "Settings.h"
 #include "LangCodeExpander.h"
+#include "utils/URIUtils.h"
 
 #define CONTROL_CONTENT_TYPE        3
 #define CONTROL_SCRAPER_LIST        4
@@ -177,7 +178,7 @@ void CGUIDialogContentSettings::OnWindowLoaded()
 
       SScraperInfo info;
       info.strTitle = parser.GetName();
-      info.strPath = CUtil::GetFileName(items[i]->m_strPath);
+      info.strPath = URIUtils::GetFileName(items[i]->m_strPath);
       info.strThumb = parser.GetThumb();
       info.strContent = parser.GetContent();
       info.strLanguage = parser.GetLanguage();

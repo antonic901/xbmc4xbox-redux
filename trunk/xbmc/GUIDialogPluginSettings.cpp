@@ -26,6 +26,7 @@
 #include "GUIDialogFileBrowser.h"
 #include "GUIControlGroupList.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "MediaManager.h"
 #include "GUILabelControl.h"
 #include "GUIRadioButtonControl.h"
@@ -154,7 +155,7 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CURL& url, bool saveToDisk /* = t
 
     pDialog->m_url = url;
     pDialog->m_strHeading = pDialog->m_url.GetFileNameWithoutPath();
-    CUtil::RemoveSlashAtEnd(pDialog->m_strHeading);
+    URIUtils::RemoveSlashAtEnd(pDialog->m_strHeading);
     pDialog->m_profile.Format("special://profile/plugin_data/%s/%s", pDialog->m_url.GetHostName().c_str(), pDialog->m_strHeading.c_str());
     pDialog->m_strHeading.Format("$LOCALIZE[1045] - %s", pDialog->m_strHeading.c_str());
     pDialog->m_addon = settings;
@@ -199,7 +200,7 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(SScraperInfo& info, bool saveToDi
 // \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
 bool CGUIDialogPluginSettings::ShowAndGetInput(CStdString& path, bool saveToDisk /* = true */)
 {
-  CUtil::RemoveSlashAtEnd(path);
+  URIUtils::RemoveSlashAtEnd(path);
   CScriptSettings settings;
   if (settings.Load(path))
   {
@@ -214,19 +215,19 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CStdString& path, bool saveToDisk
     // Path where the language strings reside
     CStdString pathToLanguageFile = path;
     CStdString pathToFallbackLanguageFile = path;
-    CUtil::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
-    CUtil::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
-    CUtil::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
-    CUtil::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
-    CUtil::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
-    CUtil::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
-    CUtil::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
-    CUtil::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
+    URIUtils::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
+    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
+    URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
+    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
+    URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
+    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
+    URIUtils::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
+    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
     // Load language strings temporarily
     g_localizeStringsTemp.Load(pathToLanguageFile, pathToFallbackLanguageFile);
 
     pDialog->m_strHeading = pDialog->m_url.GetFileNameWithoutPath();
-    CUtil::RemoveSlashAtEnd(pDialog->m_strHeading);
+    URIUtils::RemoveSlashAtEnd(pDialog->m_strHeading);
     pDialog->m_profile.Format("special://profile/script_data/%s", pDialog->m_strHeading.c_str());
     pDialog->m_strHeading.Format("$LOCALIZE[1049] - %s", pDialog->m_strHeading.c_str());
     pDialog->m_addon = settings;
@@ -885,7 +886,7 @@ vector<CStdString> CGUIDialogPluginSettings::GetFileEnumValues(const CStdString 
     CStdString url = m_url.Get();
     // replace plugin:// with the plugins root path
     url.Replace("plugin://", "special://home/plugins/");
-    fullPath = CUtil::ValidatePath(CUtil::AddFileToFolder(url, path));
+    fullPath = CUtil::ValidatePath(URIUtils::AddFileToFolder(url, path));
   }
 
   bool hideExtensions = (options.CompareNoCase("hideext") == 0);
@@ -1051,7 +1052,7 @@ CStdString CGUIDialogPluginSettings::NormalizePath(const char *value) const
 {
   CStdString normalPath = value;
   CStdString path = m_url.Get();
-  CUtil::RemoveSlashAtEnd(path);
+  URIUtils::RemoveSlashAtEnd(path);
   // we need to change plugin:// protocol if we are using runscript
   if (m_url.GetProtocol().Equals("plugin") && !normalPath.Left(10).Equals("runplugin("))
     path.Replace("plugin://", "Q:\\plugins\\");
@@ -1061,7 +1062,7 @@ CStdString CGUIDialogPluginSettings::NormalizePath(const char *value) const
   normalPath.Replace("$PROFILE", m_profile);
   // replace $ID with the addon's path or path to default.py
   if (!m_url.GetProtocol().Equals("plugin") || (m_url.GetProtocol().Equals("plugin") && normalPath.Left(10).Equals("runscript(")))
-    path = CUtil::AddFileToFolder(path, "default.py");
+    path = URIUtils::AddFileToFolder(path, "default.py");
   normalPath.Replace("$ID", path);
   // validatePath will not work on action commands, so replace / here
   normalPath.Replace("/", "\\");

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIWindowMusicTop100.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
 
@@ -178,7 +179,7 @@ void CGUIWindowMusicTop100::OnClick(int iItem)
   // Save current window and directroy to know where the selected item was
   m_nTempPlayListWindow = GetID();
   m_strTempPlayListDirectory = m_Directory.m_strPath;
-  CUtil::RemoveSlashAtEnd(m_strTempPlayListDirectory);
+  URIUtils::RemoveSlashAtEnd(m_strTempPlayListDirectory);
 
   g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC_TEMP);
   g_playlistPlayer.Play(iItem);

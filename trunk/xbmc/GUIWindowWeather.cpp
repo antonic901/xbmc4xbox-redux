@@ -26,6 +26,7 @@
 #include "GUISettings.h"
 #include "GUIWindowManager.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"
 
 #define CONTROL_BTNREFRESH             2
@@ -268,8 +269,8 @@ void CGUIWindowWeather::SetProperties()
   SetProperty("Current.DewPoint", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_DEWP));
   SetProperty("Current.Humidity", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_HUMI));
   // we use the icons code number for fanart as it's the safest way
-  CStdString fanartcode = CUtil::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
-  CUtil::RemoveExtension(fanartcode);
+  CStdString fanartcode = URIUtils::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
+  URIUtils::RemoveExtension(fanartcode);
   SetProperty("Current.FanartCode", fanartcode);
 
   // Future weather
@@ -282,8 +283,8 @@ void CGUIWindowWeather::SetProperties()
     SetProperty(day + "LowTemp", g_weatherManager.m_dfForcast[i].m_szLow);
     SetProperty(day + "Outlook", g_weatherManager.m_dfForcast[i].m_szOverview);
     SetProperty(day + "OutlookIcon", g_weatherManager.m_dfForcast[i].m_szIcon);
-    fanartcode = CUtil::GetFileName(g_weatherManager.m_dfForcast[i].m_szIcon);
-    CUtil::RemoveExtension(fanartcode);
+    fanartcode = URIUtils::GetFileName(g_weatherManager.m_dfForcast[i].m_szIcon);
+    URIUtils::RemoveExtension(fanartcode);
     SetProperty(day + "FanartCode", fanartcode);
   }
 }

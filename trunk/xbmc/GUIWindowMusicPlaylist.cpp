@@ -23,6 +23,7 @@
 #include "GUIWindowMusicPlaylist.h"
 #include "GUIDialogSmartPlaylistEditor.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "PlayListM3U.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
@@ -274,10 +275,10 @@ void CGUIWindowMusicPlayList::SavePlayList()
   {
     // need 2 rename it
     CStdString strFolder, strPath;
-    CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "music", strFolder);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "music", strFolder);
     CUtil::RemoveIllegalChars( strNewFileName );
     strNewFileName += ".m3u";
-    CUtil::AddFileToFolder(strFolder, strNewFileName, strPath);
+    URIUtils::AddFileToFolder(strFolder, strNewFileName, strPath);
 
     // get selected item
     int iItem = m_viewControl.GetSelectedItem();

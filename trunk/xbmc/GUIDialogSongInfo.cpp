@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIDialogSongInfo.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Picture.h"
 #include "GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
@@ -102,7 +103,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
         if (window)
         {
           CFileItem item(*m_song);
-          CUtil::GetDirectory(m_song->m_strPath,item.m_strPath);
+          URIUtils::GetDirectory(m_song->m_strPath,item.m_strPath);
           item.m_bIsFolder = true;
           window->OnInfo(&item, true);
         }
@@ -208,7 +209,7 @@ void CGUIDialogSongInfo::OnGetThumb()
   // Grab the thumbnail from the web
   CStdString thumbFromWeb;
   /*
-  CUtil::AddFileToFolder(g_advancedSettings.m_cachePath, "allmusicThumb.jpg", thumbFromWeb);
+  URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, "allmusicThumb.jpg", thumbFromWeb);
   if (DownloadThumbnail(thumbFromWeb))
   {
     CFileItemPtr item(new CFileItem("thumb://allmusic.com", false));
@@ -236,7 +237,7 @@ void CGUIDialogSongInfo::OnGetThumb()
   }
   if (CFile::Exists(localThumb))
   {
-    CUtil::AddFileToFolder(g_advancedSettings.m_cachePath, "localthumb.jpg", cachedLocalThumb);
+    URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, "localthumb.jpg", cachedLocalThumb);
     CPicture pic;
     if (pic.CreateThumbnail(localThumb, cachedLocalThumb))
     {

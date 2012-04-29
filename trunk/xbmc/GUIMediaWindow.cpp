@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIMediaWindow.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "DetectDVDType.h"
 #include "PlayListPlayer.h"
 #include "FileSystem/ZipManager.h"
@@ -359,7 +360,7 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
         else if (newItem)
         { // need to remove the disc cache
           CFileItemList items;
-          CUtil::GetDirectory(newItem->m_strPath, items.m_strPath);
+          URIUtils::GetDirectory(newItem->m_strPath, items.m_strPath);
           items.RemoveDiscCache(GetID());
         }
       }
@@ -983,14 +984,14 @@ void CGUIMediaWindow::GoParentFolder()
   // there were some issues due some folders having a trailing slash and some not
   // so just add a trailing slash to all of them for comparison.
   CStdString strPath = m_vecItems->m_strPath;
-  CUtil::AddSlashAtEnd(strPath);
+  URIUtils::AddSlashAtEnd(strPath);
   CStdString strParent = m_history.GetParentPath();
   // in case the path history is messed up and the current folder is on
   // the stack more than once, keep going until there's nothing left or they
   // dont match anymore.
   while (!strParent.IsEmpty())
   {
-    CUtil::AddSlashAtEnd(strParent);
+    URIUtils::AddSlashAtEnd(strParent);
     if (strParent.Equals(strPath))
       m_history.RemoveParentPath();
     else
@@ -1035,7 +1036,7 @@ void CGUIMediaWindow::GetDirectoryHistoryString(const CFileItem* pItem, CStdStri
     {
       // Other items in virual directory
       CStdString strPath = pItem->m_strPath;
-      CUtil::RemoveSlashAtEnd(strPath);
+      URIUtils::RemoveSlashAtEnd(strPath);
 
       strHistoryString = pItem->GetLabel() + strPath;
     }
@@ -1052,7 +1053,7 @@ void CGUIMediaWindow::GetDirectoryHistoryString(const CFileItem* pItem, CStdStri
     // Normal directory items
     strHistoryString = pItem->m_strPath;
   }
-  CUtil::RemoveSlashAtEnd(strHistoryString);
+  URIUtils::RemoveSlashAtEnd(strHistoryString);
   strHistoryString.ToLower();
 }
 
@@ -1067,25 +1068,25 @@ void CGUIMediaWindow::SetHistoryForPath(const CStdString& strDirectory)
     // Build the directory history for default path
     CStdString strPath, strParentPath;
     strPath = strDirectory;
-    CUtil::RemoveSlashAtEnd(strPath);
+    URIUtils::RemoveSlashAtEnd(strPath);
 
     CFileItemList items;
     m_rootDir.GetDirectory("", items);
 
     m_history.ClearPathHistory();
 
-    while (CUtil::GetParentPath(strPath, strParentPath))
+    while (URIUtils::GetParentPath(strPath, strParentPath))
     {
       for (int i = 0; i < (int)items.Size(); ++i)
       {
         CFileItemPtr pItem = items[i];
-        CUtil::RemoveSlashAtEnd(pItem->m_strPath);
+        URIUtils::RemoveSlashAtEnd(pItem->m_strPath);
         if (pItem->m_strPath == strPath)
         {
           CStdString strHistory;
           GetDirectoryHistoryString(pItem.get(), strHistory);
           m_history.SetSelectedItem(strHistory, "");
-          CUtil::AddSlashAtEnd(strPath);
+          URIUtils::AddSlashAtEnd(strPath);
           m_history.AddPathFront(strPath);
           m_history.AddPathFront("");
 
@@ -1094,11 +1095,11 @@ void CGUIMediaWindow::SetHistoryForPath(const CStdString& strDirectory)
         }
       }
 
-      CUtil::AddSlashAtEnd(strPath);
+      URIUtils::AddSlashAtEnd(strPath);
       m_history.AddPathFront(strPath);
       m_history.SetSelectedItem(strPath, strParentPath);
       strPath = strParentPath;
-      CUtil::RemoveSlashAtEnd(strPath);
+      URIUtils::RemoveSlashAtEnd(strPath);
     }
   }
   else
@@ -1349,7 +1350,7 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_DELETE_PLUGIN:
     {
       CStdString path;
-      CUtil::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,path);
+      URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,path);
       path.Replace("plugin://","special://home/plugins/");
       CFileItem item2(path,true);
       if (CGUIWindowFileManager::DeleteItem(&item2))

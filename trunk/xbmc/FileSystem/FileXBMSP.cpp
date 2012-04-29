@@ -24,6 +24,7 @@
 #include "FileSystem/Directory.h"
 #include "URL.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 #include <sys/stat.h>
 
@@ -116,7 +117,7 @@ bool CFileXBMSP::Open(const CURL& urlUtf8)
                                             strPassword);
   }
 
-  CStdString strFile = CUtil::GetFileName(strFileName);
+  CStdString strFile = URIUtils::GetFileName(strFileName);
 
   char szPath[1024];
   strcpy(szPath, "");

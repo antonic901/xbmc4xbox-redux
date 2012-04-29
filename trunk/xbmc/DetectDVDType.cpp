@@ -29,6 +29,7 @@
 #include "Application.h"
 #include "AdvancedSettings.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Picture.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
@@ -315,7 +316,7 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const CStdString& strNewUrl, bool bCDDA
     StringUtils::SplitString(g_advancedSettings.m_dvdThumbs, "|", thumbs);
     for (unsigned int i = 0; i < thumbs.size(); ++i)
     {
-      CUtil::AddFileToFolder(m_diskPath, thumbs[i], strThumb);
+      URIUtils::AddFileToFolder(m_diskPath, thumbs[i], strThumb);
       CLog::Log(LOGDEBUG,"%s: looking for disc thumb:[%s]", __FUNCTION__, strThumb.c_str());
       if (CFile::Exists(strThumb))
       {

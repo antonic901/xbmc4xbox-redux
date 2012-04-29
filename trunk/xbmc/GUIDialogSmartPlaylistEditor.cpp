@@ -23,6 +23,7 @@
 #include "GUIDialogSmartPlaylistEditor.h"
 #include "GUIDialogKeyboard.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "GUIDialogSmartPlaylistRule.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
@@ -168,12 +169,12 @@ void CGUIDialogSmartPlaylistEditor::OnOK()
     CStdString path;
     if (CGUIDialogKeyboard::ShowAndGetInput(filename, g_localizeStrings.Get(16013), false))
     {
-      path = CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"),m_playlist.GetSaveLocation());
-      path = CUtil::AddFileToFolder(path, filename);
+      path = URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"),m_playlist.GetSaveLocation());
+      path = URIUtils::AddFileToFolder(path, filename);
     }
     else
       return;
-    if (CUtil::GetExtension(path) != ".xsp")
+    if (URIUtils::GetExtension(path) != ".xsp")
       path += ".xsp";
 
     // should we check whether we should overwrite?
@@ -185,13 +186,13 @@ void CGUIDialogSmartPlaylistEditor::OnOK()
     // this occurs if the user switches from music video <> songs <> mixed
     if (m_path.Left(g_guiSettings.GetString("system.playlistspath").size()).Equals(g_guiSettings.GetString("system.playlistspath"))) // fugly, well aware
     {
-      CStdString filename = CUtil::GetFileName(m_path);
+      CStdString filename = URIUtils::GetFileName(m_path);
       CStdString strFolder = m_path.Mid(g_guiSettings.GetString("system.playlistspath").size(),m_path.size()-filename.size()-g_guiSettings.GetString("system.playlistspath").size()-1);
       if (strFolder != m_playlist.GetSaveLocation())
       { // move to the correct folder
         XFILE::CFile::Delete(m_path);
-        m_path = CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"),m_playlist.GetSaveLocation());
-        m_path = CUtil::AddFileToFolder(m_path, filename);
+        m_path = URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"),m_playlist.GetSaveLocation());
+        m_path = URIUtils::AddFileToFolder(m_path, filename);
       }
     }
   }

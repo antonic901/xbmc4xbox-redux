@@ -27,6 +27,7 @@
 #include "GUIWindowVideoFiles.h"
 #include "GUIWindowManager.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/PluginDirectory.h"
 #include "GUIDialogYesNo.h"
 #include "FileSystem/File.h"
@@ -365,7 +366,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     {
       CURL url(path);
       m_name = url.GetWithoutUserDetails();
-      CUtil::RemoveSlashAtEnd(m_name);
+      URIUtils::RemoveSlashAtEnd(m_name);
       m_name = CUtil::GetTitleFromPath(m_name);
     }
     UpdateButtons();
@@ -380,13 +381,13 @@ void CGUIDialogMediaSource::OnPath(int item)
     m_bNameChanged=true;
 
   CGUIDialogKeyboard::ShowAndGetInput(m_paths->Get(item)->m_strPath, g_localizeStrings.Get(1021), false);
-  CUtil::AddSlashAtEnd(m_paths->Get(item)->m_strPath);
+  URIUtils::AddSlashAtEnd(m_paths->Get(item)->m_strPath);
 
   if (!m_bNameChanged || m_name.IsEmpty())
   {
     CURL url(m_paths->Get(item)->m_strPath);
     m_name = url.GetWithoutUserDetails();
-    CUtil::RemoveSlashAtEnd(m_name);
+    URIUtils::RemoveSlashAtEnd(m_name);
     m_name = CUtil::GetTitleFromPath(m_name);
   }
   UpdateButtons();
@@ -415,7 +416,7 @@ void CGUIDialogMediaSource::OnOK()
         item.SetUserProgramThumb();
       if (!item.HasThumbnail())
       {
-        CUtil::AddFileToFolder(strPath,"default.py",item.m_strPath);
+        URIUtils::AddFileToFolder(strPath,"default.py",item.m_strPath);
         item.m_bIsFolder = false;
         item.SetCachedProgramThumb();
         if (!item.HasThumbnail())
@@ -435,7 +436,7 @@ void CGUIDialogMediaSource::OnOK()
   // Special handling of multipath:// shares.
   // * GetScraperForPath takes the first path of the multipath:// element to fetch needed scraper and scan settings.
   // * SetScraperForPath loops through all elements and adds the appropriate settings for each path.
-  if (CUtil::IsMultiPath(share.strPath))
+  if (URIUtils::IsMultiPath(share.strPath))
   {
     CVideoDatabase database;
     database.Open();

@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "FileItem.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 #define PRE_2_1_STACK_COMPATIBILITY
 
@@ -47,7 +48,7 @@ namespace XFILE
     // stack://file1 , file2 , file3 , file4
     // filenames with commas are double escaped (ie replaced with ,,), thus the " , " separator used.
     //CStdString folder, file;
-    //CUtil::Split(strPath, folder, file);
+    //URIUtils::Split(strPath, folder, file);
     // split files on the single comma
     CStdStringArray files;
     StringUtils::SplitString(strPath, " , ", files);
@@ -63,15 +64,15 @@ namespace XFILE
       if (i > 0 && file.Find("\\") == -1 && file.Find('/') == -1)
       {
         CStdString strPath;
-        CUtil::GetDirectory(items[0]->m_strPath,strPath);
+        URIUtils::GetDirectory(items[0]->m_strPath,strPath);
         CStdString strFile = file;
-        CUtil::AddFileToFolder(strPath,strFile,file);
+        URIUtils::AddFileToFolder(strPath,strFile,file);
       }
 #endif
       // replace double comma's with single ones.
       file.Replace(",,", ",");
       CFileItemPtr item(new CFileItem(file));
-      //CUtil::AddFileToFolder(folder, file, item->m_strPath);
+      //URIUtils::AddFileToFolder(folder, file, item->m_strPath);
       item->m_strPath = file;
       item->m_bIsFolder = false;
       items.Add(item);
@@ -107,15 +108,15 @@ namespace XFILE
                     File2,
                     strStackTitlePath,
                     strStackTitle,
-                    strCommonDir        = CUtil::GetParentPath(strPath);
+                    strCommonDir        = URIUtils::GetParentPath(strPath);
     
     stack.GetDirectory(strPath, files);
 
     if (files.Size() > 1)
     {
 
-      File1 = CUtil::GetFileName(files[0]->m_strPath);
-      File2 = CUtil::GetFileName(files[1]->m_strPath);
+      File1 = URIUtils::GetFileName(files[0]->m_strPath);
+      File2 = URIUtils::GetFileName(files[1]->m_strPath);
 
       std::vector<CRegExp>::iterator itRegExp = RegExps.begin();
       int offset = 0;
@@ -177,14 +178,14 @@ namespace XFILE
     CStdString path, file, folder;
     int pos = strPath.Find(" , ");
     if (pos > 0)
-      CUtil::Split(strPath.Left(pos), folder, file);
+      URIUtils::Split(strPath.Left(pos), folder, file);
     else
-      CUtil::Split(strPath, folder, file); // single filed stacks - should really not happen
+      URIUtils::Split(strPath, folder, file); // single filed stacks - should really not happen
 
     // remove "stack://" from the folder    
     folder = folder.Mid(8);
     file.Replace(",,", ",");
-    CUtil::AddFileToFolder(folder, file, path);
+    URIUtils::AddFileToFolder(folder, file, path);
     
     return path;
   }
@@ -196,7 +197,7 @@ namespace XFILE
     // the files using " , ".
     CStdString stackedPath = "stack://";
     CStdString folder, file;
-    CUtil::Split(items[stack[0]]->m_strPath, folder, file);
+    URIUtils::Split(items[stack[0]]->m_strPath, folder, file);
     stackedPath += folder;
     // double escape any occurence of commas
     file.Replace(",", ",,");
@@ -219,7 +220,7 @@ namespace XFILE
       return false;
     stackedPath = "stack://";
     CStdString folder, file;
-    CUtil::Split(paths[0], folder, file);
+    URIUtils::Split(paths[0], folder, file);
     stackedPath += folder;
     // double escape any occurence of commas
     file.Replace(",", ",,");

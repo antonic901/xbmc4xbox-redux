@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "FileCDDA.h"
 #include <sys/stat.h>
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "DetectDVDType.h"
 #include "URL.h"
 
@@ -185,7 +185,7 @@ bool CFileCDDA::IsValidFile(const CURL& url)
 {
   // Only .cdda files are supported
   CStdString strExtension;
-  CUtil::GetExtension(url.Get(), strExtension);
+  URIUtils::GetExtension(url.Get(), strExtension);
   strExtension.MakeLower();
 
   return (strExtension == ".cdda");

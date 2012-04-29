@@ -27,6 +27,7 @@
 #include "GUIPassword.h"
 #include "utils/GUIInfoManager.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "GUISettings.h"
 #include "Settings.h"
 
@@ -718,12 +719,12 @@ bool CGUIWindowManager::IsWindowActive(int id, bool ignoreClosing /* = true */) 
 bool CGUIWindowManager::IsWindowActive(const CStdString &xmlFile, bool ignoreClosing /* = true */) const
 {
   CGUIWindow *window = GetWindow(GetActiveWindow());
-  if (window && CUtil::GetFileName(window->GetProperty("xmlfile")).Equals(xmlFile)) return true;
+  if (window && URIUtils::GetFileName(window->GetProperty("xmlfile")).Equals(xmlFile)) return true;
   // run through the dialogs
   for (ciDialog it = m_activeDialogs.begin(); it != m_activeDialogs.end(); ++it)
   {
     CGUIWindow *window = *it;
-    if (CUtil::GetFileName(window->GetProperty("xmlfile")).Equals(xmlFile) && (!ignoreClosing || !window->IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
+    if (URIUtils::GetFileName(window->GetProperty("xmlfile")).Equals(xmlFile) && (!ignoreClosing || !window->IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
       return true;
   }
   return false; // window isn't active
@@ -841,7 +842,7 @@ bool CGUIWindowManager::IsWindowTopMost(int id) const
 bool CGUIWindowManager::IsWindowTopMost(const CStdString &xmlFile) const
 {
   CGUIWindow *topMost = GetTopMostDialog();
-  if (topMost && CUtil::GetFileName(topMost->GetProperty("xmlfile")).Equals(xmlFile))
+  if (topMost && URIUtils::GetFileName(topMost->GetProperty("xmlfile")).Equals(xmlFile))
     return true;
   return false;
 }

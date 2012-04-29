@@ -50,6 +50,7 @@
 #include "GUIWindowManager.h"
 #include "utils/GUIInfoManager.h"
 #include "utils/md5.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace MUSIC_INFO;
@@ -395,7 +396,7 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
     XBMC::MD5 md5state;
     md5state.append(file_path);
     md5state.getDigest(md5);
-    md5 += "/" + CUtil::GetFileName(file_path);
+    md5 += "/" + URIUtils::GetFileName(file_path);
     { NPT_AutoLock lock(m_FileMutex);
       NPT_CHECK(m_FileMap.Put(md5.c_str(), file_path));
     }
@@ -410,7 +411,7 @@ NPT_String
 CUPnPServer::GetMimeType(const char* filename,
                             const PLT_HttpRequestContext* context /* = NULL */)
 {
-    NPT_String ext = CUtil::GetExtension(filename).c_str();
+    NPT_String ext = URIUtils::GetExtension(filename).c_str();
     ext.TrimLeft('.');
     ext = ext.ToLowercase();
 
@@ -434,7 +435,7 @@ CUPnPServer::GetMimeType(const CFileItem& item,
     if(path.Left(8).Equals("stack://"))
       return "audio/x-mpegurl";
 
-    NPT_String ext = CUtil::GetExtension(path).c_str();
+    NPT_String ext = URIUtils::GetExtension(path).c_str();
     ext.TrimLeft('.');
     ext = ext.ToLowercase();
 
@@ -536,7 +537,7 @@ CUPnPServer::PopulateObjectFromTag(CMusicInfoTag&         tag,
         object.m_Creator = tag.GetAlbumArtist();
     object.m_MiscInfo.original_track_number = tag.GetTrackNumber();
     if(tag.GetDatabaseId() >= 0) {
-      object.m_ReferenceID = NPT_String::Format("musicdb://4/%i%s", tag.GetDatabaseId(), CUtil::GetExtension(tag.GetURL()).c_str());
+      object.m_ReferenceID = NPT_String::Format("musicdb://4/%i%s", tag.GetDatabaseId(), URIUtils::GetExtension(tag.GetURL()).c_str());
     }
     if (object.m_ReferenceID == object.m_ObjectID)
         object.m_ReferenceID = "";
@@ -713,7 +714,7 @@ CUPnPServer::BuildObject(const CFileItem&              item,
         }
 
         // if the item is remote, add a direct link to the item
-        if (CUtil::IsRemote((const char*)file_path)) {
+        if (URIUtils::IsRemote((const char*)file_path)) {
             resource.m_ProtocolInfo = PLT_ProtocolInfo(
                 CUPnPServer::GetProtocolInfo(item, item.GetAsUrl().GetProtocol(), context));
             resource.m_Uri = file_path;
@@ -823,12 +824,12 @@ CUPnPServer::BuildObject(const CFileItem&              item,
     if (object->m_Title.IsEmpty()) {
         if (!item.GetLabel().IsEmpty()) {
             CStdString title = item.GetLabel();
-            if (item.IsPlayList() || !item.m_bIsFolder) CUtil::RemoveExtension(title);
+            if (item.IsPlayList() || !item.m_bIsFolder) URIUtils::RemoveExtension(title);
             object->m_Title = title;
         } else {
             CStdString title, volumeNumber;
             CUtil::GetVolumeFromFileName(item.m_strPath, title, volumeNumber);
-            if (!item.m_bIsFolder) CUtil::RemoveExtension(title);
+            if (!item.m_bIsFolder) URIUtils::RemoveExtension(title);
             object->m_Title = title;
         }
     }
@@ -1044,7 +1045,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
         // determine parent id for shared paths only
         // otherwise let db find out
         CStdString parent;
-        if (!CUtil::GetParentPath((const char*)id, parent)) parent = "0";
+        if (!URIUtils::GetParentPath((const char*)id, parent)) parent = "0";
 
 //#ifdef WMP_ID_MAPPING
 //        if (!id.StartsWith("musicdb://") && !id.StartsWith("videodb://")) {
@@ -1432,7 +1433,7 @@ CUPnPServer::ServeFile(NPT_HttpRequest&              request,
 
         NPT_List<NPT_String>::Iterator url = files.GetFirstItem();
         for (;url;url++) {
-            output += "#EXTINF:-1," + CUtil::GetFileName((const char*)*url);
+            output += "#EXTINF:-1," + URIUtils::GetFileName((const char*)*url);
             output += "\r\n";
             output += BuildSafeResourceUri(
                           context.GetLocalAddress().GetIpAddress().ToString(),
@@ -1446,9 +1447,9 @@ CUPnPServer::ServeFile(NPT_HttpRequest&              request,
         return NPT_SUCCESS;
     }
 
-    if(CUtil::IsURL((const char*)file_path))
+    if(URIUtils::IsURL((const char*)file_path))
     {
-      CStdString disp = "inline; filename=\"" + CUtil::GetFileName((const char*)file_path) + "\"";
+      CStdString disp = "inline; filename=\"" + URIUtils::GetFileName((const char*)file_path) + "\"";
       response.GetHeaders().SetHeader("Content-Disposition", disp.c_str());
     }
 
@@ -1635,7 +1636,7 @@ CUPnPRenderer::ProcessHttpRequest(NPT_HttpRequest&              request,
             }
 
             // ensure that the request's path is a valid thumb path
-            if (CUtil::IsRemote(filepath.GetChars()) ||
+            if (URIUtils::IsRemote(filepath.GetChars()) ||
                 !filepath.StartsWith(g_settings.GetUserDataFolder())) {
                 response.SetStatus(404, "Not Found");
                 return NPT_SUCCESS;
@@ -2212,7 +2213,7 @@ CUPnP::StartServer()
 
     // load upnpserver.xml so that g_settings.m_vecUPnPMusiCMediaSources, etc.. are loaded
     CStdString filename;
-    CUtil::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
+    URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
     g_settings.LoadUPnPXml(filename);
 
     // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
@@ -2308,7 +2309,7 @@ void CUPnP::StartRenderer()
     if (!m_RendererHolder->m_Device.IsNull()) return;
 
     CStdString filename;
-    CUtil::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
+    URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
     g_settings.LoadUPnPXml(filename);
 
     m_RendererHolder->m_Device = CreateRenderer(g_settings.m_UPnPPortRenderer);

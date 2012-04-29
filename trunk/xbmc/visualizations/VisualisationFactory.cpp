@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "VisualisationFactory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 
 CVisualisationFactory::CVisualisationFactory()
@@ -37,7 +38,7 @@ CVisualisation* CVisualisationFactory::LoadVisualisation(const CStdString& strVi
 {
   // strip of the path & extension to get the name of the visualisation
   // like goom or spectrum
-  CStdString strName = CUtil::GetFileName(strVisz);
+  CStdString strName = URIUtils::GetFileName(strVisz);
   strName = strName.Left(strName.size() - 4);
 
 #ifdef HAS_VISUALISATION

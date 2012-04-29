@@ -27,7 +27,7 @@
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "FileSystem/MusicDatabaseDirectory/QueryParams.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "FileSystem/File.h"
 #include "GUISettings.h"
@@ -140,8 +140,8 @@ bool CMusicInfoLoader::LoadItem(CFileItem* pItem)
   }
 
   CStdString strPath;
-  CUtil::GetDirectory(pItem->m_strPath, strPath);
-  CUtil::AddSlashAtEnd(strPath);
+  URIUtils::GetDirectory(pItem->m_strPath, strPath);
+  URIUtils::AddSlashAtEnd(strPath);
   if (strPath!=m_strPrevPath)
   {
     // The item is from another directory as the last one,

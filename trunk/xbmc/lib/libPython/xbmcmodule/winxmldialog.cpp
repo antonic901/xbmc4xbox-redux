@@ -27,6 +27,7 @@
 #include "GUIPythonWindowXMLDialog.h"
 #include "SkinInfo.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 
 #define ACTIVE_WINDOW  g_windowManager.GetActiveWindow()
@@ -76,14 +77,14 @@ namespace PYXBMC
     if (!XFILE::CFile::Exists(strSkinPath))
     {
       // Check for the matching folder for the skin in the fallback skins folder
-      CStdString fallbackPath = CUtil::AddFileToFolder(strFallbackPath, "resources");
-      fallbackPath = CUtil::AddFileToFolder(fallbackPath, "skins");
-      CStdString basePath = CUtil::AddFileToFolder(fallbackPath, CUtil::GetFileName(g_SkinInfo.GetBaseDir()));
+      CStdString fallbackPath = URIUtils::AddFileToFolder(strFallbackPath, "resources");
+      fallbackPath = URIUtils::AddFileToFolder(fallbackPath, "skins");
+      CStdString basePath = URIUtils::AddFileToFolder(fallbackPath, URIUtils::GetFileName(g_SkinInfo.GetBaseDir()));
       strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res, basePath);
       if (!XFILE::CFile::Exists(strSkinPath))
       {
         // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
-        CStdString basePath = CUtil::AddFileToFolder(fallbackPath, strDefault);
+        CStdString basePath = URIUtils::AddFileToFolder(fallbackPath, strDefault);
         res = CSkinInfo::TranslateResolution(resolution, HDTV_720p);
         CSkinInfo skinInfo;
         strSkinPath = skinInfo.GetSkinPath(strXMLname, &res, basePath);

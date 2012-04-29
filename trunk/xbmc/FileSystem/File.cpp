@@ -23,6 +23,7 @@
 #include "FileFactory.h"
 #include "Application.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "DirectoryCache.h"
 #include "FileCache.h"
 
@@ -131,7 +132,7 @@ bool CFile::Cache(const CStdString& strFileName, const CStdString& strDest, XFIL
 
   // special case for zips - ignore caching
   CURL url(strFileName);
-  if (CUtil::IsInZIP(strFileName))
+  if (URIUtils::IsInZIP(strFileName))
     url.SetOptions("?cache=no");
   if (file.Open(url.Get(), READ_TRUNCATED))
   {
@@ -144,12 +145,12 @@ bool CFile::Cache(const CStdString& strFileName, const CStdString& strDest, XFIL
     }
 
     CFile newFile;
-    if (CUtil::IsHD(strDest)) // create possible missing dirs
+    if (URIUtils::IsHD(strDest)) // create possible missing dirs
     {
       vector<CStdString> tokens;
       CStdString strDirectory;
-      CUtil::GetDirectory(strDest,strDirectory);
-      CUtil::RemoveSlashAtEnd(strDirectory);  // for the test below
+      URIUtils::GetDirectory(strDest,strDirectory);
+      URIUtils::RemoveSlashAtEnd(strDirectory);  // for the test below
       if (!(strDirectory.size() == 2 && strDirectory[1] == ':'))
       {
         CURL url(strDirectory);
@@ -299,7 +300,7 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
     }
 
     CURL url(strFileName);
-    if ( (flags & READ_NO_CACHE) == 0 && CUtil::IsInternetStream(url) && !CUtil::IsPicture(strFileName) )
+    if ( (flags & READ_NO_CACHE) == 0 && URIUtils::IsInternetStream(url) && !CUtil::IsPicture(strFileName) )
       m_flags |= READ_CACHED;
 
     if (m_flags & READ_CACHED)

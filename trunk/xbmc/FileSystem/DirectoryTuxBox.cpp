@@ -23,7 +23,7 @@
 #include "stdafx.h"
 #include "DirectoryTuxBox.h"
 #include "DirectoryCache.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileCurl.h"
 #include "utils/HttpHeader.h"
 #include "utils/TuxBoxUtil.h"
@@ -51,7 +51,7 @@ bool CDirectoryTuxBox::GetDirectory(const CStdString& strPath, CFileItemList &it
   static bool enigma2 = false;
   // Detect and delete slash at end
   CStdString strRoot = strPath;
-  CUtil::RemoveSlashAtEnd(strRoot);
+  URIUtils::RemoveSlashAtEnd(strRoot);
 
   //Get the request strings
   CStdString strBQRequest;

@@ -53,6 +53,7 @@
 #include "FileSystem/Directory.h"
 #include "PlayList.h"
 #include "AdvancedSettings.h"
+#include "utils/URIUtils.h"
 
 #include "SkinInfo.h"
 
@@ -203,7 +204,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
               strDir = item->GetVideoInfoTag()->m_strPath;
             }
             else
-              CUtil::GetDirectory(item->m_strPath,strDir);
+              URIUtils::GetDirectory(item->m_strPath,strDir);
 
             int iFound;
             m_database.GetScraperForPath(strDir, info, settings, iFound);
@@ -454,7 +455,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
         //       database.  Possible solutions are to store the paths in the db separately and rely on the show
         //       stacking stuff, or to modify GetTvShowId to do support multipath:// shares
         CStdString strParentDirectory;
-        CUtil::GetParentPath(item->m_strPath, strParentDirectory);
+        URIUtils::GetParentPath(item->m_strPath, strParentDirectory);
         if (m_database.GetTvShowId(strParentDirectory) < 0)
         {
           CLog::Log(LOGERROR,"%s: could not add episode [%s]. tvshow does not exist yet..", __FUNCTION__, item->m_strPath.c_str());
@@ -666,9 +667,9 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
       }
 
       if (item->m_bIsFolder)
-        CUtil::GetParentPath(strPath,list.m_strPath);
+        URIUtils::GetParentPath(strPath,list.m_strPath);
       else
-        CUtil::GetDirectory(strPath,list.m_strPath);
+        URIUtils::GetDirectory(strPath,list.m_strPath);
 
       int iString=198;
       if (info.strContent.Equals("tvshows"))
@@ -722,7 +723,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
         {
           CStdString hash, strParent;
           CFileItemList items;
-          CUtil::GetParentPath(list.m_strPath,strParent);
+          URIUtils::GetParentPath(list.m_strPath,strParent);
           CDirectory::GetDirectory(strParent,items,g_stSettings.m_videoExtensions);
           scanner.GetPathHash(items, hash);
           m_database.SetPathHash(strParent, hash);
@@ -903,7 +904,7 @@ void CGUIWindowVideoBase::AddItemToPlayList(const CFileItemPtr &pItem, CFileItem
       if (items[i]->m_bIsFolder)
       {
         CStdString strPath = items[i]->m_strPath;
-        CUtil::RemoveSlashAtEnd(strPath);
+        URIUtils::RemoveSlashAtEnd(strPath);
         strPath.ToLower();
         if (strPath.size() > 6)
         {
@@ -1092,7 +1093,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
       CStdString path(item->m_strPath);
       if (item->IsVideoDb() && item->HasVideoInfoTag())
         path = item->GetVideoInfoTag()->m_strFileNameAndPath;
-      if (CUtil::IsStack(path))
+      if (URIUtils::IsStack(path))
       {
         vector<int> times;
         if (m_database.GetStackTimes(path,times))
@@ -1737,7 +1738,7 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
     CStackDirectory stack;
     strXml = stack.GetFirstStackedFile(pItem->m_strPath) + ".xml";
   }
-  CStdString strCache = CUtil::AddFileToFolder("special://temp/", CUtil::MakeLegalFileName(CUtil::GetFileName(strXml), LEGAL_FATX));
+  CStdString strCache = URIUtils::AddFileToFolder("special://temp/", CUtil::MakeLegalFileName(URIUtils::GetFileName(strXml), LEGAL_FATX));
   if (CFile::Exists(strXml))
   {
     bGotXml = true;
@@ -1877,7 +1878,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
   {
     CStdString strPath = pSelItem->m_strPath;
     CStdString strParentPath;
-    CUtil::GetParentPath(strPath, strParentPath);
+    URIUtils::GetParentPath(strPath, strParentPath);
 
     Update(strParentPath);
 
@@ -1888,7 +1889,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
 
     strPath = pSelItem->m_strPath;
     CURL url(strPath);
-    if (pSelItem->IsSmb() && !CUtil::HasSlashAtEnd(strPath))
+    if (pSelItem->IsSmb() && !URIUtils::HasSlashAtEnd(strPath))
       strPath += "/";
 
     for (int i = 0; i < m_vecItems->Size(); i++)
@@ -1904,7 +1905,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
   else
   {
     CStdString strPath;
-    CUtil::GetDirectory(pSelItem->m_strPath, strPath);
+    URIUtils::GetDirectory(pSelItem->m_strPath, strPath);
 
     Update(strPath);
 

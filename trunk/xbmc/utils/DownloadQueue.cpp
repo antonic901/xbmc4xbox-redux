@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "DownloadQueue.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileCurl.h"
 
@@ -103,7 +103,7 @@ TICKET CDownloadQueue::RequestFile(CStdString& aUrl, IDownloadQueueObserver* aOb
   CLog::Log(LOGDEBUG, "RequestFile from observer at %p", aObserver);
   // create a temporary destination
   CStdString strExtension;
-  CUtil::GetExtension(aUrl, strExtension);
+  URIUtils::GetExtension(aUrl, strExtension);
 
   TICKET ticket(m_wQueueId, m_dwNextItemId++);
 

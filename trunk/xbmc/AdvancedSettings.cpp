@@ -28,7 +28,7 @@
 #include "FileSystem/File.h"
 #include "LangCodeExpander.h"
 #include "LangInfo.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "Settings.h"
 
 using namespace XFILE;
@@ -517,7 +517,7 @@ bool CAdvancedSettings::Load()
   // TODO: Should cache path be given in terms of our predefined paths??
   //       Are we even going to have predefined paths??
   CSettings::GetPath(pRootElement, "cachepath", m_cachePath);
-  CUtil::AddSlashAtEnd(m_cachePath);
+  URIUtils::AddSlashAtEnd(m_cachePath);
 
   XMLUtils::GetBoolean(pRootElement, "ftpshowcache", m_FTPShowCache);
 

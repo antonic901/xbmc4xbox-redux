@@ -26,7 +26,7 @@
 #include "Application.h"
 #include "ApplicationRenderer.h"
 #include "PlayListPlayer.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "PlayListFactory.h"
 #include "Picture.h"
 #include "utils/md5.h"
@@ -436,8 +436,8 @@ void CLastFmManager::CacheTrackThumb(const int nrInitialTracksToAdd)
         Crc32 crc;
         crc.ComputeFromLowerCase(coverUrl);
         crcFile.Format("%08x.tbn", (__int32)crc);
-        CUtil::AddFileToFolder(g_advancedSettings.m_cachePath, crcFile, cachedFile);
-        CUtil::AddFileToFolder(g_settings.GetLastFMThumbFolder(), crcFile, thumbFile);
+        URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, crcFile, cachedFile);
+        URIUtils::AddFileToFolder(g_settings.GetLastFMThumbFolder(), crcFile, thumbFile);
         item->SetThumbnailImage("");
         try
         {

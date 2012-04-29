@@ -24,7 +24,7 @@
 #include "stdafx.h"
 #include "Trainer.h"
 #include "FileSystem/File.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "log.h"
 
 using namespace XFILE;
@@ -64,7 +64,7 @@ bool CTrainer::Load(const CStdString& strPath)
   if (!file.Open(strPath))
     return false;
 
-  if (CUtil::GetExtension(strPath).Equals(".xbtf"))
+  if (URIUtils::GetExtension(strPath).Equals(".xbtf"))
     m_bIsXBTF = true;
   else
     m_bIsXBTF = false;

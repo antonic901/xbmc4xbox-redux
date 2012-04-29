@@ -32,7 +32,7 @@
 #include "DNSNameCache.h"
 #include "Id3Tag.h"
 #include "AdvancedSettings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 
 using namespace std;
@@ -1386,7 +1386,7 @@ CStdString Xcddb::GetCacheFile(unsigned int disc_id) const
 {
   CStdString strFileName;
   strFileName.Format("%x.cddb", disc_id);
-  return CUtil::AddFileToFolder(cCacheDir, strFileName);
+  return URIUtils::AddFileToFolder(cCacheDir, strFileName);
 }
 
 

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "PlayListWPL.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "tinyXML/tinyxml.h"
 #include "AdvancedSettings.h"
 #include "FileSystem/File.h"
@@ -92,10 +93,10 @@ bool CPlayListWPL::LoadData(istream& stream)
     CStdString strFileName = pMediaElement->Attribute("src");
     if (strFileName.size())
     {
-      if (CUtil::IsRemote(m_strBasePath) && g_advancedSettings.m_pathSubstitutions.size() > 0)
-        strFileName = CUtil::SubstitutePath(strFileName);
+      if (URIUtils::IsRemote(m_strBasePath) && g_advancedSettings.m_pathSubstitutions.size() > 0)
+        strFileName = URIUtils::SubstitutePath(strFileName);
       CUtil::GetQualifiedFilename(m_strBasePath, strFileName);
-      CStdString strDescription = CUtil::GetFileName(strFileName);
+      CStdString strDescription = URIUtils::GetFileName(strFileName);
       CFileItemPtr newItem(new CFileItem(strDescription));
       newItem->m_strPath = strFileName;
       Add(newItem);

@@ -29,6 +29,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
 #include "FileItem.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -142,7 +143,7 @@ bool CVirtualPathDirectory::GetTypeAndSource(const CStdString& strPath, CStdStri
 {
   // format: virtualpath://type/sourcename
   CStdString strTemp = strPath;
-  CUtil::RemoveSlashAtEnd(strTemp);
+  URIUtils::RemoveSlashAtEnd(strTemp);
   CStdString strTest = "virtualpath://";
   if (strTemp.Left(strTest.length()).Equals(strTest))
   {

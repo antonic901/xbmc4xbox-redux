@@ -29,7 +29,7 @@
 #include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogKaiToast.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 #include "XBPyThread.h"
 #include "XBPython.h"
@@ -150,8 +150,8 @@ void XBPyThread::Process()
   // get path from script file name and add python path's
   // this is used for python so it will search modules from script path first
   CStdString scriptDir;
-  CUtil::GetDirectory(_P(source), scriptDir);
-  CUtil::RemoveSlashAtEnd(scriptDir);
+  URIUtils::GetDirectory(_P(source), scriptDir);
+  URIUtils::RemoveSlashAtEnd(scriptDir);
   CStdString path = scriptDir;
 
   // add on any addon modules the user has installed
@@ -165,7 +165,7 @@ void XBPyThread::Process()
       CFileItemPtr pItem = items[i];
       if (pItem->m_bIsFolder)
       {
-        CStdString fullpath = CUtil::AddFileToFolder(pItem->m_strPath, "lib");
+        CStdString fullpath = URIUtils::AddFileToFolder(pItem->m_strPath, "lib");
         path += PY_PATH_SEP + fullpath;
       }
     }
@@ -270,12 +270,12 @@ void XBPyThread::Process()
         CStdString desc;
         CStdString path;
         CStdString script;
-        CUtil::Split(source, path, script);
+        URIUtils::Split(source, path, script);
         if (script.Equals("default.py"))
         {
           CStdString path2;
-          CUtil::RemoveSlashAtEnd(path);
-          CUtil::Split(path, path2, script);
+          URIUtils::RemoveSlashAtEnd(path);
+          URIUtils::Split(path, path2, script);
         }
 
         desc.Format(g_localizeStrings.Get(2100), script);

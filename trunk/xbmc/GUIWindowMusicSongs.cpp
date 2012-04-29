@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIWindowMusicSongs.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/GUIInfoManager.h"
 #include "Application.h"
 #include "CueDocument.h"
@@ -149,7 +150,7 @@ bool CGUIWindowMusicSongs::OnMessage(CGUIMessage& message)
         }
 
         // check for network up
-        if (CUtil::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
+        if (URIUtils::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
           m_vecItems->m_strPath.Empty();
 
         // need file filters or GetDirectory in SetHistoryPath fails
@@ -168,7 +169,7 @@ bool CGUIWindowMusicSongs::OnMessage(CGUIMessage& message)
       if (directory.IsHD())
       {
         CStdString strParent;
-        CUtil::GetParentPath(directory.m_strPath, strParent);
+        URIUtils::GetParentPath(directory.m_strPath, strParent);
         if (directory.m_strPath == m_vecItems->m_strPath || strParent == m_vecItems->m_strPath)
         {
           Update(m_vecItems->m_strPath);

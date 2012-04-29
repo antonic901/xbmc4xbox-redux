@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"
 #include "HDHomeRun.h"
@@ -135,7 +136,7 @@ bool CDirectoryHomeRun::GetDirectory(const CStdString& strPath, CFileItemList &i
       label.Format("Current Stream: Channel %s, SNR %d", status.channel, status.signal_to_noise_quality);
 
     CFileItemPtr item(new CFileItem("hdhomerun://" + url.GetHostName() + "/" + url.GetFileName(), false));
-    CUtil::RemoveSlashAtEnd(item->m_strPath);
+    URIUtils::RemoveSlashAtEnd(item->m_strPath);
     item->SetLabel(label);
     item->SetLabelPreformated(true);
     items.Add(item);
@@ -172,7 +173,7 @@ bool CFileHomeRun::Exists(const CURL& url)
    * for *.tbn, *.jpg, *.jpeg, *.edl etc. that do not exist.
    */
   if(path.Left(5) == "tuner"
-  && CUtil::GetExtension(path).IsEmpty())
+  && URIUtils::GetExtension(path).IsEmpty())
     return true;
 
   return false;

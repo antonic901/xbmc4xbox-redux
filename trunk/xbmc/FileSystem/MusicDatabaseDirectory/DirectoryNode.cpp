@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "DirectoryNode.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "QueryParams.h"
 #include "DirectoryNodeRoot.h"
 #include "DirectoryNodeOverview.h"
@@ -70,7 +70,7 @@ CDirectoryNode* CDirectoryNode::ParseURL(const CStdString& strPath)
   CURL url(strPath);
 
   CStdString strDirectory=url.GetFileName();
-  CUtil::RemoveSlashAtEnd(strDirectory);
+  URIUtils::RemoveSlashAtEnd(strDirectory);
 
   CStdStringArray Path;
   StringUtils::SplitString(strDirectory, "/", Path);

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIWindowVideoFiles.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Picture.h"
 #include "utils/IMDB.h"
 #include "utils/GUIInfoManager.h"
@@ -148,7 +149,7 @@ bool CGUIWindowVideoFiles::OnMessage(CGUIMessage& message)
         }
 
         // check for network up
-        if (CUtil::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
+        if (URIUtils::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
           m_vecItems->m_strPath.Empty();
 
         SetHistoryForPath(m_vecItems->m_strPath);
@@ -306,7 +307,7 @@ void CGUIWindowVideoFiles::OnPrepareFileItems(CFileItemList &items)
     for (int i = 0; i < (int)items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
-      if ((item->m_bIsFolder && !CUtil::IsInArchive(item->m_strPath)) || m_cleaningAvailable)
+      if ((item->m_bIsFolder && !URIUtils::IsInArchive(item->m_strPath)) || m_cleaningAvailable)
         item->CleanString();
     }
   }
@@ -522,7 +523,7 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
             if (iFound==0)
             { // scraper not set - allow movie information or set content
               CStdString strPath(item->m_strPath);
-              CUtil::AddSlashAtEnd(strPath);
+              URIUtils::AddSlashAtEnd(strPath);
               if ((info.strContent.Equals("movies") && m_database.HasMovieInfo(strPath)) ||
                   (info.strContent.Equals("tvshows") && m_database.HasTvShowInfo(strPath)))
                 buttons.Add(CONTEXT_BUTTON_INFO, infoString);

@@ -501,9 +501,9 @@ void CTransferSocket::OnReceive(int nErrorCode)
       if (g_guiSettings.GetBool("services.ftpautofatx"))
       {
         /*CUtil::ShortenFileName(m_Filename); // change! addme to new ports
-        CStdString strFilename = CUtil::GetFileName(m_Filename);
+        CStdString strFilename = URIUtils::GetFileName(m_Filename);
         CStdString strPath;
-        CUtil::GetDirectory(m_Filename,strPath);
+        URIUtils::GetDirectory(m_Filename,strPath);
         vector<CStdString> tokens;
         CUtil::Tokenize(strPath,tokens,"\\/");
         strPath = tokens.front();

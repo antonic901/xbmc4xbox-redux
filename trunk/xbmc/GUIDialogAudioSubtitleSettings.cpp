@@ -24,6 +24,7 @@
 #include "GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Application.h"
 #include "VideoDatabase.h"
 #include "XBAudioConfig.h"
@@ -285,7 +286,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
   else if (setting.id == SUBTITLE_SETTINGS_BROWSER)
   {
     CStdString strPath;
-    if (CUtil::IsInRAR(g_application.CurrentFileItem().m_strPath) || CUtil::IsInZIP(g_application.CurrentFileItem().m_strPath))
+    if (URIUtils::IsInRAR(g_application.CurrentFileItem().m_strPath) || URIUtils::IsInZIP(g_application.CurrentFileItem().m_strPath))
     {
       CURL url(g_application.CurrentFileItem().m_strPath);
       strPath = url.GetHostName();
@@ -302,7 +303,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       CMediaSource share;
       std::vector<CStdString> paths;
       CStdString strPath1;
-      CUtil::GetDirectory(strPath,strPath1);
+      URIUtils::GetDirectory(strPath,strPath1);
       paths.push_back(strPath1);
       strPath1 = g_guiSettings.GetString("subtitles.custompath");
       paths.push_back(g_guiSettings.GetString("subtitles.custompath"));
@@ -310,12 +311,12 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       // hack
       g_settings.m_videoSources.push_back(share);
       strPath = share.strPath;
-      CUtil::AddSlashAtEnd(strPath);
+      URIUtils::AddSlashAtEnd(strPath);
     }
     if (CGUIDialogFileBrowser::ShowAndGetFile(g_settings.m_videoSources,strMask,g_localizeStrings.Get(293),strPath,false,true)) // "subtitles"
     {
       CStdString strExt;
-      CUtil::GetExtension(strPath,strExt);
+      URIUtils::GetExtension(strPath,strExt);
       if (strExt.CompareNoCase(".idx") == 0 || strExt.CompareNoCase(".sub") == 0)
       {
         // else get current position
@@ -336,19 +337,19 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
             CStdString strPath3;
             if (strExt.CompareNoCase(".idx") == 0)
             {
-              strPath2 = CUtil::ReplaceExtension(strPath,".sub");
+              strPath2 = URIUtils::ReplaceExtension(strPath,".sub");
               strPath3 = "special://temp/subtitle.sub.keep";
             }
             else
             {
-              strPath2 = CUtil::ReplaceExtension(strPath,".idx");
-              if (!CFile::Exists(strPath2) && (CUtil::IsInRAR(strPath2) || CUtil::IsInZIP(strPath2)))
+              strPath2 = URIUtils::ReplaceExtension(strPath,".idx");
+              if (!CFile::Exists(strPath2) && (URIUtils::IsInRAR(strPath2) || URIUtils::IsInZIP(strPath2)))
               {
-                CStdString strFileName = CUtil::GetFileName(strPath);
-                CUtil::GetDirectory(strPath,strPath3);
-                CUtil::GetParentPath(strPath3,strPath2);
-                CUtil::AddFileToFolder(strPath2,strFileName,strPath2);
-                strPath2 = CUtil::ReplaceExtension(strPath2,".idx");
+                CStdString strFileName = URIUtils::GetFileName(strPath);
+                URIUtils::GetDirectory(strPath,strPath3);
+                URIUtils::GetParentPath(strPath3,strPath2);
+                URIUtils::AddFileToFolder(strPath2,strFileName,strPath2);
+                strPath2 = URIUtils::ReplaceExtension(strPath2,".idx");
               }
               strPath3 = "special://temp/subtitle.idx.keep";
             }
@@ -358,10 +359,10 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
             {
               CFileItemList items;
               CStdString strDir,strFileNameNoExtNoCase;
-              CUtil::Split(strPath,strDir,strPath3);
-              strFileNameNoExtNoCase = CUtil::ReplaceExtension(strPath3,".");
+              URIUtils::Split(strPath,strDir,strPath3);
+              strFileNameNoExtNoCase = URIUtils::ReplaceExtension(strPath3,".");
               strFileNameNoExtNoCase.ToLower();
-              CUtil::GetDirectory(strPath,strDir);
+              URIUtils::GetDirectory(strPath,strDir);
               CDirectory::GetDirectory(strDir,items,".rar|.zip",false);
               for (int i=0;i<items.Size();++i)
                 CUtil::CacheRarSubtitles(items[i]->m_strPath,strFileNameNoExtNoCase);
@@ -406,7 +407,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       {
         m_subtitleStream = g_application.m_pPlayer->GetSubtitleCount();
         CStdString strExt;
-        CUtil::GetExtension(strPath,strExt);
+        URIUtils::GetExtension(strPath,strExt);
         if (CFile::Cache(strPath,"special://temp/subtitle.browsed"+strExt))
         {
           int id = g_application.m_pPlayer->AddSubtitle("special://temp/subtitle.browsed"+strExt);

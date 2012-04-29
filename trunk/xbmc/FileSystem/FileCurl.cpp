@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "FileCurl.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"
@@ -385,7 +386,7 @@ void CFileCurl::SetCommonOptions(CReadState* state)
   // Enable cookie engine for current handle to re-use them in future requests
   CStdString strCookieFile;
   CStdString strTempPath = CSpecialProtocol::TranslatePath(g_advancedSettings.m_cachePath);
-  CUtil::AddFileToFolder(strTempPath, "cookies.dat", strCookieFile);
+  URIUtils::AddFileToFolder(strTempPath, "cookies.dat", strCookieFile);
 
   g_curlInterface.easy_setopt(h, CURLOPT_COOKIEFILE, strCookieFile.c_str());
   g_curlInterface.easy_setopt(h, CURLOPT_COOKIEJAR, strCookieFile.c_str());

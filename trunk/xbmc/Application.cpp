@@ -31,6 +31,7 @@
 #endif
 #include "xbox/xbeheader.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "TextureManager.h"
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "PlayListPlayer.h"
@@ -748,7 +749,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
 
   // if we are running from DVD our UserData location will be TDATA
-  if (CUtil::IsDVD(strExecutablePath))
+  if (URIUtils::IsDVD(strExecutablePath))
   {
     // TODO: Should we copy over any UserData folder from the DVD?
     if (!CFile::Exists("special://masterprofile/guisettings.xml")) // first run - cache userdata folder
@@ -756,7 +757,7 @@ HRESULT CApplication::Create(HWND hWnd)
       CFileItemList items;
       CUtil::GetRecursiveListing("special://xbmc/userdata",items,"");
       for (int i=0;i<items.Size();++i)
-          CFile::Cache(items[i]->m_strPath,"special://masterprofile/"+CUtil::GetFileName(items[i]->m_strPath));
+          CFile::Cache(items[i]->m_strPath,"special://masterprofile/"+URIUtils::GetFileName(items[i]->m_strPath));
     }
     g_settings.m_vecProfiles[0].setDirectory("special://masterprofile/");
     g_stSettings.m_logFolder = "special://masterprofile/";
@@ -860,13 +861,13 @@ HRESULT CApplication::Create(HWND hWnd)
     if (m_DefaultGamepad.bPressedAnalogButtons[XINPUT_GAMEPAD_A])
     {
       CUtil::DeleteGUISettings();
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"database\\"));
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"thumbnails\\"));
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"playlists\\"));
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"cache\\"));
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"profiles\\"));
-      CUtil::WipeDir(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"visualisations\\"));
-      CFile::Delete(CUtil::AddFileToFolder(g_settings.GetUserDataFolder(),"avpacksettings.xml"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"database\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"thumbnails\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"playlists\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"cache\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"profiles\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"visualisations\\"));
+      CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"avpacksettings.xml"));
       g_settings.m_vecProfiles.erase(g_settings.m_vecProfiles.begin()+1,g_settings.m_vecProfiles.end());
 
       g_settings.SaveProfiles("q:\\system\\profiles.xml");
@@ -1906,13 +1907,13 @@ void CApplication::LoadSkin(const CStdString& strSkin)
 
   // load in the skin strings
   CStdString skinPath, skinEnglishPath;
-  CUtil::AddFileToFolder(strSkinPath, "language", skinPath);
-  CUtil::AddFileToFolder(skinPath, g_guiSettings.GetString("locale.language"), skinPath);
-  CUtil::AddFileToFolder(skinPath, "strings.xml", skinPath);
+  URIUtils::AddFileToFolder(strSkinPath, "language", skinPath);
+  URIUtils::AddFileToFolder(skinPath, g_guiSettings.GetString("locale.language"), skinPath);
+  URIUtils::AddFileToFolder(skinPath, "strings.xml", skinPath);
 
-  CUtil::AddFileToFolder(strSkinPath, "language", skinEnglishPath);
-  CUtil::AddFileToFolder(skinEnglishPath, "English", skinEnglishPath);
-  CUtil::AddFileToFolder(skinEnglishPath, "strings.xml", skinEnglishPath);
+  URIUtils::AddFileToFolder(strSkinPath, "language", skinEnglishPath);
+  URIUtils::AddFileToFolder(skinEnglishPath, "English", skinEnglishPath);
+  URIUtils::AddFileToFolder(skinEnglishPath, "strings.xml", skinEnglishPath);
 
   g_localizeStrings.LoadSkinStrings(skinPath, skinEnglishPath);
 
@@ -2033,15 +2034,15 @@ bool CApplication::LoadUserWindows(const CStdString& strSkinPath)
   g_SkinInfo.GetSkinPath("Home.xml", &resToUse);
   std::vector<CStdString> vecSkinPath;
   if (resToUse == HDTV_1080i)
-    vecSkinPath.push_back(CUtil::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_1080i)));
+    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_1080i)));
   if (resToUse == HDTV_720p)
-    vecSkinPath.push_back(CUtil::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_720p)));
+    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_720p)));
   if (resToUse == PAL_16x9 || resToUse == NTSC_16x9 || resToUse == HDTV_480p_16x9 || resToUse == HDTV_720p || resToUse == HDTV_1080i)
-    vecSkinPath.push_back(CUtil::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultWideResolution())));
-  vecSkinPath.push_back(CUtil::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultResolution())));
+    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultWideResolution())));
+  vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultResolution())));
   for (unsigned int i = 0;i < vecSkinPath.size();++i)
   {
-    CStdString strPath = CUtil::AddFileToFolder(vecSkinPath[i], "custom*.xml");
+    CStdString strPath = URIUtils::AddFileToFolder(vecSkinPath[i], "custom*.xml");
     CLog::Log(LOGINFO, "Loading user windows, path %s", vecSkinPath[i].c_str());
     hFind = FindFirstFile(_P(strPath).c_str(), &NextFindFileData);
 
@@ -2060,11 +2061,11 @@ bool CApplication::LoadUserWindows(const CStdString& strSkinPath)
       if (!strcmp(FindFileData.cFileName, ".") || !strcmp(FindFileData.cFileName, ".."))
         continue;
 
-      strFileName = CUtil::AddFileToFolder(vecSkinPath[i], FindFileData.cFileName);
+      strFileName = URIUtils::AddFileToFolder(vecSkinPath[i], FindFileData.cFileName);
       CLog::Log(LOGINFO, "Loading skin file: %s", strFileName.c_str());
       CStdString strLower(FindFileData.cFileName);
       strLower.MakeLower();
-      strLower = CUtil::AddFileToFolder(vecSkinPath[i], strLower);
+      strLower = URIUtils::AddFileToFolder(vecSkinPath[i], strLower);
       if (!xmlDoc.LoadFile(strFileName) && !xmlDoc.LoadFile(strLower))
       {
         CLog::Log(LOGERROR, "unable to load:%s, Line %d\n%s", strFileName.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
@@ -3752,7 +3753,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
     return false;
   }
 
-  if (CUtil::IsUPnP(item.m_strPath))
+  if (URIUtils::IsUPnP(item.m_strPath))
   {
     CFileItem item_new(item);
     if (XFILE::CUPnPDirectory::GetResource(item.m_strPath, item_new))
@@ -5740,7 +5741,7 @@ void CApplication::InitDirectoriesXbox()
   // check logpath
   CStdString strLogFile, strLogFileOld;
   g_stSettings.m_logFolder = install_path;
-  CUtil::AddSlashAtEnd(g_stSettings.m_logFolder);
+  URIUtils::AddSlashAtEnd(g_stSettings.m_logFolder);
   strLogFile.Format("%sxbmc.log", g_stSettings.m_logFolder);
   strLogFileOld.Format("%sxbmc.old.log", g_stSettings.m_logFolder);
 

@@ -27,7 +27,7 @@
 #include "window.h"
 #include "control.h"
 #include "action.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
@@ -287,10 +287,10 @@ void CGUIPythonWindowXML::PulseActionEvent()
 void CGUIPythonWindowXML::AllocResources(bool forceLoad /*= FALSE */)
 {
   CStdString tmpDir;
-  CUtil::GetDirectory(GetProperty("xmlfile"), tmpDir);
+  URIUtils::GetDirectory(GetProperty("xmlfile"), tmpDir);
   CStdString fallbackMediaPath;
-  CUtil::GetParentPath(tmpDir, fallbackMediaPath);
-  CUtil::RemoveSlashAtEnd(fallbackMediaPath);
+  URIUtils::GetParentPath(tmpDir, fallbackMediaPath);
+  URIUtils::RemoveSlashAtEnd(fallbackMediaPath);
   m_mediaDir = fallbackMediaPath;
 
   //CLog::Log(LOGDEBUG, "CGUIPythonWindowXML::AllocResources called: %s", fallbackMediaPath.c_str());
@@ -426,14 +426,14 @@ unsigned int CGUIPythonWindowXML::LoadScriptStrings()
   // Path where the language strings reside
   CStdString pathToLanguageFile = m_scriptPath;
   CStdString pathToFallbackLanguageFile = m_scriptPath;
-  CUtil::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
-  CUtil::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
-  CUtil::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
+  URIUtils::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
+  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
 
   // allocate a bunch of strings 
   return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, pathToFallbackLanguageFile);

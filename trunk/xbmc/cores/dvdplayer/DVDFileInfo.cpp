@@ -42,6 +42,7 @@
 
 #include "Filesystem/File.h"
 #include "TimeUtils.h"
+#include "utils/URIUtils.h"
 
 bool CDVDFileInfo::GetFileDuration(const CStdString &path, int& duration)
 {
@@ -265,7 +266,7 @@ bool CDVDFileInfo::GetFileStreamDetails(CFileItem *pItem)
     return false;
 
   CStdString playablePath = strFileNameAndPath;
-  if (CUtil::IsStack(playablePath))
+  if (URIUtils::IsStack(playablePath))
     playablePath = XFILE::CStackDirectory::GetFirstStackedFile(playablePath);
 
   CDVDInputStream *pInputStream = CDVDFactoryInputStream::CreateInputStream(NULL, playablePath, "");
@@ -314,7 +315,7 @@ bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &det
       p->m_iDuration = pDemux->GetStreamLength();
 
       // stack handling
-      if (CUtil::IsStack(path))
+      if (URIUtils::IsStack(path))
       {
         CFileItemList files;
         XFILE::CStackDirectory stack;

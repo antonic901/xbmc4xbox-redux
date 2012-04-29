@@ -25,6 +25,7 @@
 #include "dll_tracker.h" // for python unload hack
 #include "FileSystem/File.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 #define ENV_PATH "special://xbmc/system/;special://xbmc/system/players/mplayer/;special://xbmc/system/players/dvdplayer/;special://xbmc/system/players/paplayer/;special://xbmc/system/python/"
 
@@ -154,7 +155,7 @@ LibraryLoader* DllLoaderContainer::LoadModule(const char* sName, const char* sCu
 
 LibraryLoader* DllLoaderContainer::FindModule(const char* sName, const char* sCurrentDir, bool bLoadSymbols)
 {
-  if (CUtil::IsInArchive(sName))
+  if (URIUtils::IsInArchive(sName))
   {
     CURL url(sName);
     CStdString newName = "special://temp/";

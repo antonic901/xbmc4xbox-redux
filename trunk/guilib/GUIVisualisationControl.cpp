@@ -10,6 +10,7 @@
 #include "CdgParser.h"
 #endif
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/CriticalSection.h"
 #include "utils/SingleLock.h"
 #include "utils/GUIInfoManager.h"
@@ -278,7 +279,7 @@ void CGUIVisualisationControl::OnInitialize(int iChannels, int iSamplesPerSec, i
   m_iBitsPerSample = iBitsPerSample;
 
   // Start the visualisation (this loads settings etc.)
-  CStdString strFile = CUtil::GetFileName(g_application.CurrentFile());
+  CStdString strFile = URIUtils::GetFileName(g_application.CurrentFile());
   OutputDebugString("Visualisation::Start()\n");
   m_pVisualisation->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile);
   if (!m_bInitialized)

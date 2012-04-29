@@ -26,6 +26,7 @@
 #include "MusicInfoTag.h"
 #include "FileItem.h"
 #include "PlayList.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -157,7 +158,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   else if (pItem->IsZIP() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
   {
     CStdString strDirectory;
-    CUtil::CreateArchivePath(strDirectory, "zip", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strDirectory, "zip", pItem->m_strPath, "");
     CFileItemList items;
     directory->GetDirectory(strDirectory, items);
 
@@ -170,7 +171,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   else if (pItem->IsRAR() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
   {
     CStdString strDirectory;
-    CUtil::CreateArchivePath(strDirectory, "rar", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strDirectory, "rar", pItem->m_strPath, "");
     CFileItemList items;
     directory->GetDirectory(strDirectory, items);
 
@@ -690,7 +691,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
           if (itm->IsZIP()) // mount zip archive
           {
             CMediaSource shareZip;
-            CUtil::CreateArchivePath(shareZip.strPath,"zip",itm->m_strPath,"");
+            URIUtils::CreateArchivePath(shareZip.strPath,"zip",itm->m_strPath,"");
             itm->m_strPath = shareZip.strPath;
             itm->m_bIsFolder = true;
           }
@@ -698,7 +699,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
           {
             CMediaSource shareRar;
             CStdString strRarPath;
-            CUtil::CreateArchivePath(strRarPath,"rar",itm->m_strPath,"");
+            URIUtils::CreateArchivePath(strRarPath,"rar",itm->m_strPath,"");
             shareRar.strPath = strRarPath;
 
             itm->m_strPath = shareRar.strPath;
@@ -725,7 +726,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
             //set new current directory for webserver
             SetCurrentDir(strDirectory.c_str());
 
-            bool bParentExists=CUtil::GetParentPath(strDirectory, strParentPath);
+            bool bParentExists=URIUtils::GetParentPath(strDirectory, strParentPath);
 
             // check if current directory is a root share
             if ( !directory->IsSource(strDirectory) )
@@ -788,7 +789,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                   {
                     CFileItemPtr playlistItem =(*pPlayList)[i];
                     if (playlistItem->GetLabel().IsEmpty())
-                      playlistItem->SetLabel(CUtil::GetFileName(playlistItem->m_strPath));
+                      playlistItem->SetLabel(URIUtils::GetFileName(playlistItem->m_strPath));
                     playlist.Add(playlistItem);
                   }
 

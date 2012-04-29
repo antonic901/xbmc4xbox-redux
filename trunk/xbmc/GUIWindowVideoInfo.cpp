@@ -23,6 +23,7 @@
 #include "GUIWindow.h"
 #include "GUIWindowVideoInfo.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "Picture.h"
 #include "guiImage.h"
 #include "StringUtils.h"
@@ -759,7 +760,7 @@ void CGUIWindowVideoInfo::OnGetThumb()
   CStdString localThumb(m_movieItem->GetUserVideoThumb());
   if (CFile::Exists(localThumb))
   {
-    CUtil::AddFileToFolder(g_advancedSettings.m_cachePath, "localthumb.jpg", cachedLocalThumb);
+    URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, "localthumb.jpg", cachedLocalThumb);
     CPicture pic;
     pic.CreateThumbnail(localThumb, cachedLocalThumb);
     CFileItemPtr item(new CFileItem("thumb://Local", false));
@@ -856,7 +857,7 @@ void CGUIWindowVideoInfo::OnGetFanart()
 
   // Grab the thumbnails from the web
   CStdString strPath;
-  CUtil::AddFileToFolder(g_advancedSettings.m_cachePath,"fanartthumbs",strPath);
+  URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"fanartthumbs",strPath);
   CUtil::WipeDir(strPath);
   XFILE::CDirectory::Create(strPath);
   for (unsigned int i = 0; i < m_movieItem->GetVideoInfoTag()->m_fanart.GetNumFanarts(); i++)

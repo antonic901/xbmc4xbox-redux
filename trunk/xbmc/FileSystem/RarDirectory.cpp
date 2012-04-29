@@ -24,7 +24,7 @@
 #include "RarDirectory.h"
 #include "RarManager.h"
 #include "utils/log.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"
 
@@ -44,7 +44,7 @@ namespace XFILE
 
     /* if this isn't a proper archive path, assume it's the path to a archive file */
     if( !strPathOrig.Left(6).Equals("rar://") )
-      CUtil::CreateArchivePath(strPath, "rar", strPathOrig, "");
+      URIUtils::CreateArchivePath(strPath, "rar", strPathOrig, "");
     else
       strPath = strPathOrig;
 
@@ -57,7 +57,7 @@ namespace XFILE
     CStdString strSlashPath = url.Get();
 
     // the RAR code depends on things having a "\" at the end of the path
-    CUtil::AddSlashAtEnd(strSlashPath);
+    URIUtils::AddSlashAtEnd(strSlashPath);
 
     if (g_RarManager.GetFilesInRar(items,strArchive,true,strPathInArchive))
     {
@@ -66,7 +66,7 @@ namespace XFILE
       {
         if (items[iEntry]->IsParentFolder())
           continue;
-        CUtil::AddFileToFolder(strSlashPath,items[iEntry]->m_strPath+strOptions,items[iEntry]->m_strPath);
+        URIUtils::AddFileToFolder(strSlashPath,items[iEntry]->m_strPath+strOptions,items[iEntry]->m_strPath);
         items[iEntry]->m_iDriveType = 0;
         //CLog::Log(LOGDEBUG, "RarDirectory::GetDirectory() retrieved file: %s", items[iEntry]->m_strPath.c_str());
       }

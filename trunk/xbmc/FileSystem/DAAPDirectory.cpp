@@ -21,7 +21,7 @@
 #include "stdafx.h"
 #include "FileDAAP.h"
 #include "DAAPDirectory.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "FileItem.h"
 
@@ -65,7 +65,7 @@ bool CDAAPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
   CURL url(strPath);
 
   CStdString strRoot = strPath;
-  CUtil::AddSlashAtEnd(strRoot);
+  URIUtils::AddSlashAtEnd(strRoot);
 
   CStdString host = url.GetHostName();
   if (url.HasPort())
@@ -415,7 +415,7 @@ int CDAAPDirectory::GetCurrLevel(CStdString strPath)
   else
     strJustPath = strPath;
 
-  CUtil::RemoveSlashAtEnd(strJustPath);
+  URIUtils::RemoveSlashAtEnd(strJustPath);
 
   intLevel = -1;
   intSPos = strPath.length();

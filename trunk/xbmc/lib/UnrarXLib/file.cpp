@@ -4,6 +4,7 @@
 
 #include "FileSystem/Directory.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 //static File *CreatedFiles[32];
 static int RemoveCreatedActive=0;
@@ -158,7 +159,7 @@ bool File::Create(const char *Name,const wchar *NameW)
   hFile=fopen(Name,CREATEBINARY);
 #endif*/
   CStdString strPath;
-  CUtil::GetDirectory(Name,strPath);
+  URIUtils::GetDirectory(Name,strPath);
   CUtil::CreateDirectoryEx(strPath);
   m_File.OpenForWrite(Name,true);
   NewFile=true;

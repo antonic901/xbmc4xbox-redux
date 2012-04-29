@@ -27,6 +27,7 @@
 #include "DVDStreamInfo.h"
 #include "DVDSubtitleTagSami.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 
@@ -54,7 +55,7 @@ bool CDVDSubtitleParserSami::Open(CDVDStreamInfo &hints)
 
   CStdString strFileName;
   CStdString strClassID;
-  strFileName = CUtil::GetFileName(m_filename);
+  strFileName = URIUtils::GetFileName(m_filename);
 
   CDVDSubtitleTagSami TagConv;
   if (!TagConv.Init())

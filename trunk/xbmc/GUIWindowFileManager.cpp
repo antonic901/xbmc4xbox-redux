@@ -23,6 +23,7 @@
 #include "GUIWindowFileManager.h"
 #include "Application.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "xbox/xbeheader.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/ZipManager.h"
@@ -460,7 +461,7 @@ bool CGUIWindowFileManager::Update(int iList, const CStdString &strDirectory)
   m_vecItems[iList]->m_strPath = items.m_strPath;
 
   CStdString strParentPath;
-  CUtil::GetParentPath(strDirectory, strParentPath);
+  URIUtils::GetParentPath(strDirectory, strParentPath);
   if (strDirectory.IsEmpty() && (m_vecItems[iList]->Size() == 0 || g_guiSettings.GetBool("filelists.showaddsourcebuttons")))
   { // add 'add source button'
     CStdString strLabel = g_localizeStrings.Get(1026);
@@ -498,7 +499,7 @@ bool CGUIWindowFileManager::Update(int iList, const CStdString &strDirectory)
   {
     CFileItemPtr pItem = m_vecItems[iList]->Get(i);
     CStdString strExtension;
-    CUtil::GetExtension(pItem->m_strPath, strExtension);
+    URIUtils::GetExtension(pItem->m_strPath, strExtension);
     if (pItem->IsHD() && strExtension == ".tbn")
     {
       pItem->SetThumbnailImage(pItem->m_strPath);
@@ -566,13 +567,13 @@ void CGUIWindowFileManager::OnClick(int iList, int iItem)
   else if (pItem->IsZIP() || pItem->IsCBZ()) // mount zip archive
   {
     CStdString strArcivedPath;
-    CUtil::CreateArchivePath(strArcivedPath, "zip", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strArcivedPath, "zip", pItem->m_strPath, "");
     Update(iList, strArcivedPath);
   }
   else if (pItem->IsRAR() || pItem->IsCBR())
   {
     CStdString strArcivedPath;
-    CUtil::CreateArchivePath(strArcivedPath, "rar", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strArcivedPath, "rar", pItem->m_strPath, "");
     Update(iList, strArcivedPath);
   }
   else
@@ -837,24 +838,24 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
     if (pItem->IsSelected())
     {
       CStdString strNoSlash = pItem->m_strPath;
-      CUtil::RemoveSlashAtEnd(strNoSlash);
-      CStdString strFileName = CUtil::GetFileName(strNoSlash);
+      URIUtils::RemoveSlashAtEnd(strNoSlash);
+      CStdString strFileName = URIUtils::GetFileName(strNoSlash);
 
       // URL Decode for cases where source uses URL encoding
-      if ( CUtil::IsInternetStream(pItem->m_strPath, true) )
+      if ( URIUtils::IsInternetStream(pItem->m_strPath, true) )
         CURL::Decode(strFileName);
 
       // special case for upnp
-      if (CUtil::IsUPnP(items.m_strPath) || CUtil::IsUPnP(pItem->m_strPath))
+      if (URIUtils::IsUPnP(items.m_strPath) || URIUtils::IsUPnP(pItem->m_strPath))
       {
         // get filename from label instead of path
         strFileName = pItem->GetLabel();
 
-        if(!pItem->m_bIsFolder && CUtil::GetExtension(strFileName).length() == 0)
+        if(!pItem->m_bIsFolder && URIUtils::GetExtension(strFileName).length() == 0)
         {
           // FIXME: for now we only work well if the url has the extension
           // we should map the content type to the extension otherwise
-          strFileName += CUtil::GetExtension(pItem->m_strPath);
+          strFileName += URIUtils::GetExtension(pItem->m_strPath);
         }
 
         CUtil::RemoveIllegalChars(strFileName);
@@ -863,7 +864,7 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
 
       CStdString strnewDestFile;
       if(!strDestFile.IsEmpty()) // only do this if we have a destination
-        CUtil::AddFileToFolder(strDestFile, strFileName, strnewDestFile);
+        URIUtils::AddFileToFolder(strDestFile, strFileName, strnewDestFile);
 
       if (pItem->m_bIsFolder)
       {
@@ -972,14 +973,14 @@ void CGUIWindowFileManager::OnSelectAll(int iList)
 bool CGUIWindowFileManager::RenameFile(const CStdString &strFile)
 {
   CStdString strFileAndPath(strFile);
-  CUtil::RemoveSlashAtEnd(strFileAndPath);
-  CStdString strFileName = CUtil::GetFileName(strFileAndPath);
+  URIUtils::RemoveSlashAtEnd(strFileAndPath);
+  CStdString strFileName = URIUtils::GetFileName(strFileAndPath);
   CStdString strPath = strFile.Left(strFileAndPath.size() - strFileName.size());
   if (CGUIDialogKeyboard::ShowAndGetInput(strFileName, g_localizeStrings.Get(16013), false))
   {
     strPath += strFileName;
     CLog::Log(LOGINFO,"FileManager: rename %s->%s\n", strFileAndPath.c_str(), strPath.c_str());
-    if (CUtil::IsMultiPath(strFileAndPath))
+    if (URIUtils::IsMultiPath(strFileAndPath))
     { // special case for multipath renames - rename all the paths.
       vector<CStdString> paths;
       CMultiPathDirectory::GetPaths(strFileAndPath, paths);
@@ -987,9 +988,9 @@ bool CGUIWindowFileManager::RenameFile(const CStdString &strFile)
       for (unsigned int i = 0; i < paths.size(); ++i)
       {
         CStdString filePath(paths[i]);
-        CUtil::RemoveSlashAtEnd(filePath);
-        CUtil::GetDirectory(filePath, filePath);
-        CUtil::AddFileToFolder(filePath, strFileName, filePath);
+        URIUtils::RemoveSlashAtEnd(filePath);
+        URIUtils::GetDirectory(filePath, filePath);
+        URIUtils::AddFileToFolder(filePath, strFileName, filePath);
         if (CFile::Rename(paths[i], filePath))
           success = true;
       }
@@ -1006,7 +1007,7 @@ void CGUIWindowFileManager::OnNewFolder(int iList)
   if (CGUIDialogKeyboard::ShowAndGetInput(strNewFolder, g_localizeStrings.Get(16014), false))
   {
     CStdString strNewPath = m_Directory[iList]->m_strPath;
-    CUtil::AddSlashAtEnd(strNewPath);
+    URIUtils::AddSlashAtEnd(strNewPath);
     strNewPath += strNewFolder;
     CDirectory::Create(strNewPath);
     Refresh(iList);
@@ -1016,7 +1017,7 @@ void CGUIWindowFileManager::OnNewFolder(int iList)
     {
       CFileItemPtr pItem=m_vecItems[iList]->Get(i);
       CStdString strPath=pItem->m_strPath;
-      CUtil::RemoveSlashAtEnd(strPath);
+      URIUtils::RemoveSlashAtEnd(strPath);
       if (strPath==strNewPath)
       {
         CONTROL_SELECT_ITEM(iList + CONTROL_LEFT_LIST, i);
@@ -1126,14 +1127,14 @@ void CGUIWindowFileManager::GetDirectoryHistoryString(const CFileItem* pItem, CS
     {
       // Other items in virtual directory
       strHistoryString = pItem->GetLabel() + pItem->m_strPath;
-      CUtil::RemoveSlashAtEnd(strHistoryString);
+      URIUtils::RemoveSlashAtEnd(strHistoryString);
     }
   }
   else
   {
     // Normal directory items
     strHistoryString = pItem->m_strPath;
-    CUtil::RemoveSlashAtEnd(strHistoryString);
+    URIUtils::RemoveSlashAtEnd(strHistoryString);
   }
 }
 
@@ -1438,7 +1439,7 @@ bool CGUIWindowFileManager::DeleteItem(const CFileItem *pItem)
   {
     pDialog->SetHeading(122);
     pDialog->SetLine(0, 125);
-    pDialog->SetLine(1, CUtil::GetFileName(pItem->m_strPath));
+    pDialog->SetLine(1, URIUtils::GetFileName(pItem->m_strPath));
     pDialog->SetLine(2, "");
     pDialog->DoModal();
     if (!pDialog->IsConfirmed()) return false;
@@ -1470,7 +1471,7 @@ bool CGUIWindowFileManager::CopyItem(const CFileItem *pItem, const CStdString& s
 
   // prompt user for confirmation of file/folder deletion
   if (!bSilent)
-      if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(122),g_localizeStrings.Get(125),  CUtil::GetFileName(pItem->m_strPath), ""))
+      if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(122),g_localizeStrings.Get(125),  URIUtils::GetFileName(pItem->m_strPath), ""))
       return false;
 
   // Create a temporary item list containing the file/folder for deletion
@@ -1548,7 +1549,7 @@ void CGUIWindowFileManager::OnInitWindow()
     CFileItem pItem;
     pItem.m_strPath=strCheckSharePath;
     pItem.m_bIsShareOrDrive = true;
-    if (CUtil::IsHD(strCheckSharePath))
+    if (URIUtils::IsHD(strCheckSharePath))
       pItem.m_iDriveType=CMediaSource::SOURCE_TYPE_LOCAL;
     else //we asume that this is a remote share else we can set SOURCE_TYPE_UNKNOWN
       pItem.m_iDriveType=CMediaSource::SOURCE_TYPE_REMOTE;
@@ -1597,7 +1598,7 @@ void CGUIWindowFileManager::SetInitialPath(const CStdString &path)
           m_Directory[0]->m_strPath = shares[iIndex].strPath;
         else
           m_Directory[0]->m_strPath = strDestination;
-        CUtil::RemoveSlashAtEnd(m_Directory[0]->m_strPath);
+        URIUtils::RemoveSlashAtEnd(m_Directory[0]->m_strPath);
         CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
 
         // outside call: check the share for connectivity
@@ -1635,9 +1636,9 @@ bool CGUIWindowFileManager::MoveItem(const CFileItem *pItem, const CStdString& s
   CLog::Log(LOGDEBUG,"FileManager::MoveItem: %s",pItem->GetLabel().c_str());
 
   // prompt user for confirmation of file/folder moving
-  //if (CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(121),g_localizeStrings.Get(124),  CUtil::GetFileName(pItem->m_strPath), ""))	return false;
+  //if (CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(121),g_localizeStrings.Get(124),  URIUtils::GetFileName(pItem->m_strPath), ""))	return false;
   if (!bSilent)
-    if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(121),g_localizeStrings.Get(124),  CUtil::GetFileName(pItem->m_strPath), ""))
+    if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(121),g_localizeStrings.Get(124),  URIUtils::GetFileName(pItem->m_strPath), ""))
       return false;
 
   // Create a temporary item list containing the file/folder for deletion

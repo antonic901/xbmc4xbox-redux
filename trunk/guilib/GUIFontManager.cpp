@@ -29,6 +29,7 @@
 #include "XMLUtils.h"
 #include "GuiControlFactory.h"
 #include "../xbmc/Util.h"
+#include "../xbmc/utils/URIUtils.h"
 #include "../xbmc/FileSystem/File.h"
 #include "../xbmc/FileSystem/SpecialProtocol.h"
 
@@ -74,8 +75,8 @@ CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdStrin
   CStdString strPath;
   if (!CURL::IsFullPath(strFilename))
   {
-    strPath = CUtil::AddFileToFolder(g_graphicsContext.GetMediaDir(), "fonts");
-    strPath = CUtil::AddFileToFolder(strPath, strFilename);
+    strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "fonts");
+    strPath = URIUtils::AddFileToFolder(strPath, strFilename);
   }
   else
     strPath = strFilename;
@@ -83,7 +84,7 @@ CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdStrin
   // Check if the file exists, otherwise try loading it from the global media dir
   if (!XFILE::CFile::Exists(strPath))
   {
-    strPath = CUtil::AddFileToFolder("special://xbmc/media/Fonts", CUtil::GetFileName(strFilename));
+    strPath = URIUtils::AddFileToFolder("special://xbmc/media/Fonts", URIUtils::GetFileName(strFilename));
   }
   
   // check if we already have this font file loaded (font object could differ only by color or style)

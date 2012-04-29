@@ -23,13 +23,13 @@
 #include "XMLUtils.h"
 #include "ScraperUrl.h"
 #include "AdvancedSettings.h"
-#include "HTMLUtil.h"
+#include "Util.h"
 #include "CharsetConverter.h"
 #include "URL.h"
 #include "FileSystem/FileCurl.h"
 #include "FileSystem/FileZip.h"
 #include "Picture.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 #include <cstring>
 #include <sstream>
@@ -181,14 +181,14 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, string& strHTML, XFILE::CFileCurl
   http.SetReferer(scrURL.m_spoof);
   CStdString strCachePath;
 
-  CStdString cacheContext = CUtil::GetFileName(cacheContext1);
+  CStdString cacheContext = URIUtils::GetFileName(cacheContext1);
 
   if (scrURL.m_isgz)
     http.SetContentEncoding("gzip");
 
   if (!scrURL.m_cache.IsEmpty())
   {
-    CUtil::AddFileToFolder(g_advancedSettings.m_cachePath,
+    URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,
                            "scrapers/"+cacheContext+"/"+scrURL.m_cache,
                            strCachePath);
     if (XFILE::CFile::Exists(strCachePath))
@@ -236,7 +236,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, string& strHTML, XFILE::CFileCurl
   if (!scrURL.m_cache.IsEmpty())
   {
     CStdString strCachePath;
-    CUtil::AddFileToFolder(g_advancedSettings.m_cachePath,
+    URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,
                            "scrapers/"+cacheContext+"/"+scrURL.m_cache,
                            strCachePath);
     XFILE::CFile file;
@@ -275,7 +275,7 @@ bool CScraperUrl::DownloadThumbnail(const CStdString &thumb, const CScraperUrl::
     try
     {
       CPicture picture;
-      return picture.CreateThumbnailFromMemory((const BYTE *)thumbData.c_str(), thumbData.size(), CUtil::GetExtension(entry.m_url), thumb);
+      return picture.CreateThumbnailFromMemory((const BYTE *)thumbData.c_str(), thumbData.size(), URIUtils::GetExtension(entry.m_url), thumb);
     }
     catch (...)
     {

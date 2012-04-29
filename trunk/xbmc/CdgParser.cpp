@@ -23,6 +23,7 @@
 #include "CdgParser.h"
 #include "Application.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "AudioContext.h"
 #include "utils/GUIInfoManager.h"
 #include "MusicInfoTag.h"
@@ -51,7 +52,7 @@ void CCdgLoader::StreamFile(CStdString strfilename)
 {
   CSingleLock lock (m_CritSection);
   m_strFileName = strfilename;
-  CUtil::RemoveExtension(m_strFileName);
+  URIUtils::RemoveExtension(m_strFileName);
   m_strFileName += ".cdg";
   CThread::Create(false);
 }
@@ -280,7 +281,7 @@ void CCdgReader::Process()
   bool bIsFirstPass = true;
   double fNewTime=0.f;
   CStdString strExt;
-  CUtil::GetExtension(m_pLoader->GetFileName(),strExt);
+  URIUtils::GetExtension(m_pLoader->GetFileName(),strExt);
   strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
 
   while (!CThread::m_bStop)
@@ -294,7 +295,7 @@ void CCdgReader::Process()
       if (CThread::m_bStop)
         return;
 
-      CUtil::GetExtension(m_pLoader->GetFileName(),strExt);
+      URIUtils::GetExtension(m_pLoader->GetFileName(),strExt);
       strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
 
       fDiff = 0.f;
@@ -380,7 +381,7 @@ void CCdgRenderer::Render()
   else
   {
     CStdString strMessage, strFileName;
-    strFileName = CUtil::GetFileName(m_pReader->GetFileName());
+    strFileName = URIUtils::GetFileName(m_pReader->GetFileName());
     switch (m_FileState)
     {
     case FILE_ERR_NOT_FOUND:
@@ -639,7 +640,7 @@ bool CCdgParser::StartLoader(CStdString strSongPath)
   CSingleLock lock (m_CritSection);
   if (!AllocLoader()) return false;
 
-  CUtil::RemoveExtension(strSongPath);
+  URIUtils::RemoveExtension(strSongPath);
   strSongPath += ".cdg";
   if (CFile::Exists(strSongPath))
   {

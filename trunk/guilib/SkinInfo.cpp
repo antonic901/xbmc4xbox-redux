@@ -25,7 +25,7 @@
 #include "GUISettings.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "Settings.h"
 #include "StringUtils.h"
 
@@ -82,7 +82,7 @@ void CSkinInfo::Load(const CStdString& strSkinDir)
         else if (strDefaultDir == "720p") m_DefaultResolution = HDTV_720p;
         else if (strDefaultDir == "1080i") m_DefaultResolution = HDTV_1080i;
       }
-      CLog::Log(LOGINFO, "Default 4:3 resolution directory is %s", CUtil::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolution)).c_str());
+      CLog::Log(LOGINFO, "Default 4:3 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolution)).c_str());
 
       pChild = pRootElement->FirstChild("defaultresolutionwide");
       if (pChild && pChild->FirstChild())
@@ -98,7 +98,7 @@ void CSkinInfo::Load(const CStdString& strSkinDir)
       }
       else
         m_DefaultResolutionWide = m_DefaultResolution; // default to same as 4:3
-      CLog::Log(LOGINFO, "Default 16:9 resolution directory is %s", CUtil::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolutionWide)).c_str());
+      CLog::Log(LOGINFO, "Default 16:9 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolutionWide)).c_str());
 
       // get the version
       pChild = pRootElement->FirstChild("version");
@@ -154,7 +154,7 @@ bool CSkinInfo::Check(const CStdString& strSkinDir)
   bool bVersionOK = false;
   // Load from skin.xml
   TiXmlDocument xmlDoc;
-  CStdString strFile = CUtil::AddFileToFolder(strSkinDir, "skin.xml");
+  CStdString strFile = URIUtils::AddFileToFolder(strSkinDir, "skin.xml");
   CStdString strGoodPath = strSkinDir;
   if (xmlDoc.LoadFile(strFile))
   { // ok - get the default res folder out of it...
@@ -167,7 +167,7 @@ bool CSkinInfo::Check(const CStdString& strSkinDir)
       { // found the defaultresolution tag
         strGoodPath += "\\";
         CStdString resolution =  pChild->FirstChild()->Value();
-        strGoodPath = CUtil::AddFileToFolder(strGoodPath, resolution);
+        strGoodPath = URIUtils::AddFileToFolder(strGoodPath, resolution);
       }
       // get the version
       pChild = pRootElement->FirstChild("version");
@@ -182,8 +182,8 @@ bool CSkinInfo::Check(const CStdString& strSkinDir)
     }
   }
   // Check to see if we have a good path
-  CStdString strFontXML = CUtil::AddFileToFolder(strGoodPath, "Font.xml");
-  CStdString strHomeXML = CUtil::AddFileToFolder(strGoodPath, "Home.xml");
+  CStdString strFontXML = URIUtils::AddFileToFolder(strGoodPath, "Font.xml");
+  CStdString strHomeXML = URIUtils::AddFileToFolder(strGoodPath, "Home.xml");
   if ( CFile::Exists(strFontXML) &&
        CFile::Exists(strHomeXML) && bVersionOK )
   {
@@ -200,16 +200,16 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
   // first try and load from the current resolution's directory
   if (*res == INVALID)
     *res = g_graphicsContext.GetVideoResolution();
-  CStdString strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
-  strPath = CUtil::AddFileToFolder(strPath, strFile);
+  CStdString strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
+  strPath = URIUtils::AddFileToFolder(strPath, strFile);
   if (CFile::Exists(strPath))
     return strPath;
   // if we're in 1080i mode, try 720p next
   if (*res == HDTV_1080i)
   {
     *res = HDTV_720p;
-    strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
-    strPath = CUtil::AddFileToFolder(strPath, strFile);
+    strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
+    strPath = URIUtils::AddFileToFolder(strPath, strFile);
     if (CFile::Exists(strPath))
       return strPath;
   }
@@ -217,15 +217,15 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
   if (*res == PAL_16x9 || *res == NTSC_16x9 || *res == HDTV_480p_16x9 || *res == HDTV_720p)
   {
     *res = m_DefaultResolutionWide;
-    strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
-    strPath = CUtil::AddFileToFolder(strPath, strFile);
+    strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
+    strPath = URIUtils::AddFileToFolder(strPath, strFile);
     if (CFile::Exists(strPath))
       return strPath;
   }
   // that failed - drop to the default resolution
   *res = m_DefaultResolution;
-  strPath = CUtil::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
-  strPath = CUtil::AddFileToFolder(strPath, strFile);
+  strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
+  strPath = URIUtils::AddFileToFolder(strPath, strFile);
   // check if we don't have any subdirectories
   if (*res == INVALID) *res = PAL_4x3;
   return strPath;

@@ -38,6 +38,7 @@
 #include "GUIDialogOK.h"
 #include "Application.h"
 #include "GUIWindowManager.h"
+#include "utils/URIUtils.h"
 
 using namespace HTML;
 using namespace std;
@@ -87,7 +88,7 @@ int CIMDB::InternalFindMovie(const CStdString &strMovie, IMDB_MOVIELIST& movieli
        return 0;
 
       CScraperUrl scrURL("filenamescrape");
-      CUtil::RemoveExtension(strName);
+      URIUtils::RemoveExtension(strName);
       scrURL.strTitle = strName;
       movielist.push_back(scrURL);
       return 1;
@@ -512,7 +513,7 @@ int CIMDB::FindMovie(const CStdString &strMovie, IMDB_MOVIELIST& movieList, CGUI
   //CLog::Log(LOGDEBUG,"CIMDB::FindMovie(%s)", strMovie.c_str());
 
   // load our scraper xml
-  if (!m_parser.Load(CUtil::AddFileToFolder("special://xbmc/system/scrapers/video/", m_info.strPath)))
+  if (!m_parser.Load(URIUtils::AddFileToFolder("special://xbmc/system/scrapers/video/", m_info.strPath)))
     return 0;
   m_parser.ClearCache();
 
@@ -629,7 +630,7 @@ bool CIMDB::GetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& movieDetail
   m_episode = movieDetails;
 
   // load our scraper xml
-  if (!m_parser.Load(CUtil::AddFileToFolder("special://xbmc/system/scrapers/video/", m_info.strPath)))
+  if (!m_parser.Load(URIUtils::AddFileToFolder("special://xbmc/system/scrapers/video/", m_info.strPath)))
     return false;
 
   // fill in the defaults
@@ -672,7 +673,7 @@ bool CIMDB::ScrapeFilename(const CStdString& strFileName, CVideoInfoTag& details
 {
   m_parser.m_param[0] = strFileName;
 
-  CUtil::RemoveExtension(m_parser.m_param[0]);
+  URIUtils::RemoveExtension(m_parser.m_param[0]);
   m_parser.m_param[0].Replace("_"," ");
   CStdString strResult = m_parser.Parse("FileNameScrape",&m_info.settings);
   CLog::Log(LOGDEBUG,"scraper: FileNameScrape returned %s", strResult.c_str());

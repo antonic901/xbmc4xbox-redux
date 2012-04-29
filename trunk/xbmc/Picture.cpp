@@ -28,7 +28,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FileCurl.h"
 #include "DDSImage.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "Crc32.h"
 #include <XGraphics.h>
 #include "d3dx8.h"
@@ -57,7 +57,7 @@ IDirect3DTexture8* CPicture::Load(const CStdString& strFileName, int iMaxWidth, 
   if (g_advancedSettings.m_useddsfanart)
   {
     //If a .dds version of the image exists we load it instead.
-    CStdString ddsPath = CUtil::ReplaceExtension(strFileName, ".dds");
+    CStdString ddsPath = URIUtils::ReplaceExtension(strFileName, ".dds");
     if (CFile::Exists(ddsPath))
     {
       CDDSImage img;
@@ -150,12 +150,12 @@ bool CPicture::CreateThumbnail(const CStdString& file, const CStdString& thumbFi
   CLog::Log(LOGINFO, "Creating thumb from: %s as: %s", file.c_str(), thumbFile.c_str());
 
   memset(&m_info, 0, sizeof(ImageInfo));
-  if (CUtil::IsInternetStream(file, true))
+  if (URIUtils::IsInternetStream(file, true))
   {
     CFileCurl stream;
     CStdString thumbData;
     if (stream.Get(file, thumbData))
-      return CreateThumbnailFromMemory((const BYTE *)thumbData.c_str(), thumbData.size(), CUtil::GetExtension(file), thumbFile);
+      return CreateThumbnailFromMemory((const BYTE *)thumbData.c_str(), thumbData.size(), URIUtils::GetExtension(file), thumbFile);
 
     return false;
   }      
@@ -177,12 +177,12 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
     CLog::Log(LOGINFO, "Caching image from: %s to %s with width %i and height %i", sourceUrl.c_str(), destFile.c_str(), width, height);
     if (!m_dll.Load()) return false;
   
-    if (CUtil::IsInternetStream(sourceUrl, true))
+    if (URIUtils::IsInternetStream(sourceUrl, true))
     {
       Crc32 crc;
       crc.ComputeFromLowerCase(sourceUrl);
       CStdString tempFile;
-      tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, CUtil::GetExtension(sourceUrl).c_str());
+      tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, URIUtils::GetExtension(sourceUrl).c_str());
 
       CFileCurl stream;
       if (stream.Download(sourceUrl, tempFile))
@@ -209,7 +209,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
   else
   {
     CLog::Log(LOGINFO, "Caching image from: %s to %s", sourceUrl.c_str(), destFile.c_str());
-    if (CUtil::IsInternetStream(sourceUrl, true))
+    if (URIUtils::IsInternetStream(sourceUrl, true))
     {
       CFileCurl stream;
       return stream.Download(sourceUrl, destFile);

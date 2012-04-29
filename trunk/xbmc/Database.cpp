@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "Database.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "Settings.h"
 #include "Crc32.h"
 #include "FileSystem/SpecialProtocol.h"
@@ -90,7 +90,7 @@ bool CDatabase::Open()
   }
 
   CStdString strDatabase;
-  CUtil::AddFileToFolder(g_settings.GetDatabaseFolder(), m_strDatabaseFile, strDatabase);
+  URIUtils::AddFileToFolder(g_settings.GetDatabaseFolder(), m_strDatabaseFile, strDatabase);
 
   m_pDB.reset(new SqliteDatabase() ) ;
   m_pDB->setDatabase(_P(strDatabase).c_str());

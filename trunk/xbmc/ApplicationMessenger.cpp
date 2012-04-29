@@ -30,6 +30,7 @@
 #include "TextureManager.h"
 #include "PlayListPlayer.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"
 #include "GUIWindowSlideShow.h"
 #include "lib/libGoAhead/XBMChttp.h"
@@ -342,14 +343,14 @@ case TMSG_POWERDOWN:
         pSlideShow->Reset();
         if (g_windowManager.GetActiveWindow() != WINDOW_SLIDESHOW)
           g_windowManager.ActivateWindow(WINDOW_SLIDESHOW);
-        if (CUtil::IsZIP(pMsg->strParam) || CUtil::IsRAR(pMsg->strParam)) // actually a cbz/cbr
+        if (URIUtils::IsZIP(pMsg->strParam) || URIUtils::IsRAR(pMsg->strParam)) // actually a cbz/cbr
         {
           CFileItemList items;
           CStdString strPath;
-          if (CUtil::IsZIP(pMsg->strParam))
-            CUtil::CreateArchivePath(strPath, "zip", pMsg->strParam.c_str(), "");
+          if (URIUtils::IsZIP(pMsg->strParam))
+            URIUtils::CreateArchivePath(strPath, "zip", pMsg->strParam.c_str(), "");
           else
-            CUtil::CreateArchivePath(strPath, "rar", pMsg->strParam.c_str(), "");
+            URIUtils::CreateArchivePath(strPath, "rar", pMsg->strParam.c_str(), "");
 
           CUtil::GetRecursiveListing(strPath, items, g_stSettings.m_pictureExtensions);
           if (items.Size() > 0)

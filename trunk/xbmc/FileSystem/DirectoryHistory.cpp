@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 #include "DirectoryHistory.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 
@@ -37,7 +37,7 @@ void CDirectoryHistory::RemoveSelectedItem(const CStdString& strDirectory)
 {
   CStdString strDir = strDirectory;
   strDir.ToLower();
-  CUtil::RemoveSlashAtEnd(strDir);
+  URIUtils::RemoveSlashAtEnd(strDir);
 
   vector<CHistoryItem>::iterator Iter;
   for (Iter = m_vecHistory.begin();Iter != m_vecHistory.end(); Iter++)
@@ -56,10 +56,10 @@ void CDirectoryHistory::SetSelectedItem(const CStdString& strSelectedItem, const
   // if (strDirectory.size()==0) return;
   CStdString strDir = strDirectory;
   strDir.ToLower();
-  CUtil::RemoveSlashAtEnd(strDir);
+  URIUtils::RemoveSlashAtEnd(strDir);
 
   CStdString strItem = strSelectedItem;
-  CUtil::RemoveSlashAtEnd(strItem);
+  URIUtils::RemoveSlashAtEnd(strItem);
 
   for (int i = 0; i < (int)m_vecHistory.size(); ++i)
   {
@@ -81,7 +81,7 @@ const CStdString& CDirectoryHistory::GetSelectedItem(const CStdString& strDirect
 {
   CStdString strDir = strDirectory;
   strDir.ToLower();
-  CUtil::RemoveSlashAtEnd(strDir);
+  URIUtils::RemoveSlashAtEnd(strDir);
 
   for (int i = 0; i < (int)m_vecHistory.size(); ++i)
   {

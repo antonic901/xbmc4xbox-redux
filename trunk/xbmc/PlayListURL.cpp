@@ -23,6 +23,7 @@
 #include "PlayListURL.h"
 #include "FileSystem/File.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace PLAYLIST;
 using namespace XFILE;
@@ -46,8 +47,8 @@ bool CPlayListURL::Load(const CStdString& strFileName)
 
   Clear();
 
-  m_strPlayListName = CUtil::GetFileName(strFileName);
-  CUtil::GetParentPath(strFileName, m_strBasePath);
+  m_strPlayListName = URIUtils::GetFileName(strFileName);
+  URIUtils::GetParentPath(strFileName, m_strBasePath);
 
   CFile file;
   if (!file.Open(strFileName) )

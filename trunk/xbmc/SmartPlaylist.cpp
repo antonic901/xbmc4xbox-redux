@@ -30,6 +30,7 @@
 #include "Database.h"
 #include "VideoDatabase.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "DateTime.h"
 
 using namespace std;
@@ -778,8 +779,8 @@ TiXmlElement *CSmartPlaylist::OpenAndReadName(const CStdString &path)
   else
   {
     m_playlistName = CUtil::GetTitleFromPath(path);
-    if (CUtil::GetExtension(m_playlistName) == ".xsp")
-      CUtil::RemoveExtension(m_playlistName);
+    if (URIUtils::GetExtension(m_playlistName) == ".xsp")
+      URIUtils::RemoveExtension(m_playlistName);
   }
   return root;
 }

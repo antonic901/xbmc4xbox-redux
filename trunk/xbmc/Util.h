@@ -95,20 +95,12 @@ class CUtil
 public:
   CUtil(void);
   virtual ~CUtil(void);
-  static const CStdString GetExtension(const CStdString& strFileName);
-  static void RemoveExtension(CStdString& strFileName);
   static bool GetVolumeFromFileName(const CStdString& strFileName, CStdString& strFileTitle, CStdString& strVolumeNumber);
   static void CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
-  static const CStdString GetFileName(const CStdString& strFileNameAndPath);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
-  static void GetCommonPath(CStdString& strPath, const CStdString& strPath2);
-  static bool IsDOSPath(const CStdString &path);
-  static bool IsHD(const CStdString& strFileName);
-  static CStdString GetParentPath(const CStdString& strPath);
   static bool IsBuiltIn(const CStdString& execString);
   static void GetBuiltInHelp(CStdString &help);
   static int ExecBuiltIn(const CStdString& execString);
-  static bool GetParentPath(const CStdString& strPath, CStdString& strParent);
   static void GetQualifiedFilename(const CStdString &strBasePath, CStdString &strFilename);
   static bool InstallTrainer(CTrainer& trainer);
   static bool RemoveTrainer();
@@ -116,39 +108,7 @@ public:
   static void RunShortcut(const char* szPath);
   static void RunXBE(const char* szPath, char* szParameters = NULL, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL);
   static void LaunchXbe(const char* szPath, const char* szXbe, const char* szParameters, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL); 
-  static void GetDirectory(const CStdString& strFilePath, CStdString& strDirectoryPath);
   static void GetHomePath(CStdString& strPath);
-  static CStdString ReplaceExtension(const CStdString& strFile, const CStdString& strNewExtension);
-  static void GetExtension(const CStdString& strFile, CStdString& strExtension);
-  static bool HasSlashAtEnd(const CStdString& strFile);
-  static bool IsRemote(const CStdString& strFile);
-  static bool IsOnDVD(const CStdString& strFile);
-  static bool IsOnLAN(const CStdString& strFile);
-  static bool IsDVD(const CStdString& strFile);
-  static bool IsVirtualPath(const CStdString& strFile);
-  static bool IsMultiPath(const CStdString& strPath);
-  static bool IsStack(const CStdString& strFile);
-  static bool IsRAR(const CStdString& strFile);
-  static bool IsInRAR(const CStdString& strFile);
-  static bool IsZIP(const CStdString& strFile);
-  static bool IsInZIP(const CStdString& strFile);
-  static bool IsInArchive(const CStdString& strFile);
-  static bool IsSpecial(const CStdString& strFile);
-  static bool IsPlugin(const CStdString& strFile); 
-  static bool IsPluginRoot(const CStdString& strFile); 
-  static bool IsCDDA(const CStdString& strFile);
-  static bool IsMemCard(const CStdString& strFile);
-  static bool IsTuxBox(const CStdString& strFile);
-  static bool IsMythTV(const CStdString& strFile);
-  static bool IsHDHomeRun(const CStdString& strFile);
-  static bool IsSlingbox(const CStdString& strFile);
-  static bool IsVTP(const CStdString& strFile);
-  static bool IsHTSP(const CStdString& strFile);
-  static bool IsLiveTV(const CStdString& strFile);
-  static bool IsMusicDb(const CStdString& strFile);
-  static bool IsVideoDb(const CStdString& strFile);
-  static bool IsShoutCast(const CStdString& strFile);
-  static bool IsLastFM(const CStdString& strFile);
   static bool ExcludeFileOrFolder(const CStdString& strFileOrFolder, const CStdStringArray& regexps);
   static void GetFileAndProtocol(const CStdString& strURL, CStdString& strDir);
   static int GetDVDIfoTitle(const CStdString& strPathFile);
@@ -161,14 +121,6 @@ public:
   static void CreateShortcut(CFileItem* pItem);
   static void GetFatXQualifiedPath(CStdString& strFileNameAndPath);
   static bool ShortenFileName(CStdString& strFileNameAndPath);
-  static bool IsISO9660(const CStdString& strFile);
-  static bool IsSmb(const CStdString& strFile);
-  static bool IsXBMS(const CStdString& strFile);
-  static bool IsURL(const CStdString& strFile);
-  static bool IsFTP(const CStdString& strFile);
-  static bool IsInternetStream(const CURL& url, bool bStrictCheck = false);
-  static bool IsDAAP(const CStdString& strFile);
-  static bool IsUPnP(const CStdString& strFile);
   static bool IsWritable(const CStdString& strFile);
   static bool IsPicture(const CStdString& strFile);
   static void GetDVDDriveIcon( const CStdString& strPath, CStdString& strIcon );
@@ -181,18 +133,6 @@ public:
   static void ClearSubtitles();
   static void PrepareSubtitleFonts();
   static __int64 ToInt64(DWORD dwHigh, DWORD dwLow);
-  static void AddFileToFolder(const CStdString& strFolder, const CStdString& strFile, CStdString& strResult);
-  static CStdString AddFileToFolder(const CStdString &strFolder, const CStdString &strFile)
-  {
-    CStdString result;
-    AddFileToFolder(strFolder, strFile, result);
-    return result;
-  }
-  static void AddSlashAtEnd(CStdString& strFolder);
-  static void RemoveSlashAtEnd(CStdString& strFolder);
-  static void Split(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);
-  static void CreateArchivePath(CStdString& strUrlPath, const CStdString& strType, const CStdString& strArchivePath,
-  const CStdString& strFilePathInArchive, const CStdString& strPwd="");
   static bool ThumbExists(const CStdString& strFileName, bool bAddCache = false);
   static bool ThumbCached(const CStdString& strFileName);
   static void ThumbCacheAdd(const CStdString& strFileName, bool bFileExists);
@@ -232,7 +172,6 @@ public:
   static void DeleteVideoDatabaseDirectoryCache();
   static CStdString MusicPlaylistsLocation();
   static CStdString VideoPlaylistsLocation();
-  static CStdString SubstitutePath(const CStdString& strFileName);
 
   static bool SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute);
   static int GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew);

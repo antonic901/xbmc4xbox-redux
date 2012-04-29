@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIWindowMusicPlaylistEditor.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/GUIInfoManager.h"
 #include "Autorun.h"
 #include "GUIDialogFileBrowser.h"
@@ -404,16 +405,16 @@ void CGUIWindowMusicPlaylistEditor::LoadPlaylist(const CStdString &playlist)
 void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
 {
   // saves playlist to the playlist folder
-  CStdString name = CUtil::GetFileName(m_strLoadedPlaylist);
-  CStdString strExt = CUtil::GetExtension(name);
+  CStdString name = URIUtils::GetFileName(m_strLoadedPlaylist);
+  CStdString strExt = URIUtils::GetExtension(name);
   name = name.Mid(0,name.size()-strExt.size());
   if (CGUIDialogKeyboard::ShowAndGetInput(name, g_localizeStrings.Get(16012), false))
   { // save playlist as an .m3u
     PLAYLIST::CPlayListM3U playlist;
     playlist.Add(*m_playlist);
     CStdString path, strBase;
-    CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "music", strBase);
-    CUtil::AddFileToFolder(strBase, name + ".m3u", path);
+    URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "music", strBase);
+    URIUtils::AddFileToFolder(strBase, name + ".m3u", path);
     playlist.Save(path);
     m_strLoadedPlaylist = name;
   }

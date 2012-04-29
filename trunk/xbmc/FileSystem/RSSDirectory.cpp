@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "RSSDirectory.h"
 #include "utils/RssFeed.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileItem.h"
 #include "FileCurl.h"
 
@@ -40,7 +40,7 @@ CRSSDirectory::~CRSSDirectory()
 bool CRSSDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
 {
   CStdString path(strPath);
-  CUtil::RemoveSlashAtEnd(path);
+  URIUtils::RemoveSlashAtEnd(path);
   
   CURL url(path);
   url.SetProtocol("http");

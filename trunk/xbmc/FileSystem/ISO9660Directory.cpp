@@ -25,6 +25,7 @@
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"
 
@@ -39,7 +40,7 @@ CISO9660Directory::~CISO9660Directory(void)
 bool CISO9660Directory::GetDirectory(const CStdString& strPath, CFileItemList &items)
 {
   CStdString strRoot = strPath;
-  CUtil::AddSlashAtEnd(strRoot);
+  URIUtils::AddSlashAtEnd(strRoot);
 
   // Scan active disc if not done before
   if (!m_isoReader.IsScanned())
@@ -84,7 +85,7 @@ bool CISO9660Directory::GetDirectory(const CStdString& strPath, CFileItemList &i
           pItem->m_strPath = strRoot;
           pItem->m_strPath += wfd.cFileName;
           pItem->m_bIsFolder = true;
-          CUtil::AddSlashAtEnd(pItem->m_strPath);
+          URIUtils::AddSlashAtEnd(pItem->m_strPath);
           FILETIME localTime;
           FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
           pItem->m_dateTime=localTime;

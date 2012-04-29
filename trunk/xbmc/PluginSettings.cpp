@@ -20,7 +20,7 @@
  */
 #include "stdafx.h"
 #include "PluginSettings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 #include "FileSystem/Directory.h"
 
@@ -146,17 +146,17 @@ bool CPluginSettings::Load(const CURL& url)
 
   // create the users filepath
   m_userFileName.Format("special://profile/plugin_data/%s/%s", url.GetHostName().c_str(), url.GetFileName().c_str());
-  CUtil::RemoveSlashAtEnd(m_userFileName);
-  CUtil::AddFileToFolder(m_userFileName, "settings.xml", m_userFileName);
+  URIUtils::RemoveSlashAtEnd(m_userFileName);
+  URIUtils::AddFileToFolder(m_userFileName, "settings.xml", m_userFileName);
   
   // Create our final path
   CStdString pluginFileName = "special://home/plugins/";
 
-  CUtil::AddFileToFolder(pluginFileName, url.GetHostName(), pluginFileName);
-  CUtil::AddFileToFolder(pluginFileName, url.GetFileName(), pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, url.GetHostName(), pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, url.GetFileName(), pluginFileName);
 
-  CUtil::AddFileToFolder(pluginFileName, "resources", pluginFileName);
-  CUtil::AddFileToFolder(pluginFileName, "settings.xml", pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, "resources", pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, "settings.xml", pluginFileName);
 
   if (!m_pluginXmlDoc.LoadFile(pluginFileName))
   {
@@ -195,12 +195,12 @@ bool CPluginSettings::Save(void)
 {
   // break down the path into directories
   CStdString strRoot, strType, strPlugin;
-  CUtil::GetDirectory(m_userFileName, strPlugin);
-  CUtil::RemoveSlashAtEnd(strPlugin);
-  CUtil::GetDirectory(strPlugin, strType);
-  CUtil::RemoveSlashAtEnd(strType);
-  CUtil::GetDirectory(strType, strRoot);
-  CUtil::RemoveSlashAtEnd(strRoot);
+  URIUtils::GetDirectory(m_userFileName, strPlugin);
+  URIUtils::RemoveSlashAtEnd(strPlugin);
+  URIUtils::GetDirectory(strPlugin, strType);
+  URIUtils::RemoveSlashAtEnd(strType);
+  URIUtils::GetDirectory(strType, strRoot);
+  URIUtils::RemoveSlashAtEnd(strRoot);
 
   // create the individual folders
   if (!XFILE::CDirectory::Exists(strRoot))
@@ -224,11 +224,11 @@ bool CPluginSettings::SettingsExist(const CStdString& strPath)
   CStdString pluginFileName = "special://home/plugins/";
 
   // Create our final path
-  CUtil::AddFileToFolder(pluginFileName, url.GetHostName(), pluginFileName);
-  CUtil::AddFileToFolder(pluginFileName, url.GetFileName(), pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, url.GetHostName(), pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, url.GetFileName(), pluginFileName);
 
-  CUtil::AddFileToFolder(pluginFileName, "resources", pluginFileName);
-  CUtil::AddFileToFolder(pluginFileName, "settings.xml", pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, "resources", pluginFileName);
+  URIUtils::AddFileToFolder(pluginFileName, "settings.xml", pluginFileName);
 
   // Load the settings file to verify it's valid
   TiXmlDocument xmlDoc;

@@ -291,7 +291,7 @@ bool CJpegParse::Process (const char *picFileName)
   CStdString tmp, urlFName, path;
   CURL url(picFileName);
   url.GetURLWithoutUserDetails(urlFName);
-  CUtil::Split(urlFName, path, tmp);
+  URIUtils::Split(urlFName, path, tmp);
   m_JpegInfo[SLIDE_FILE_NAME] = tmp;
   // ...then path...
   m_JpegInfo[SLIDE_FILE_PATH] = path;

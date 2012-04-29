@@ -24,7 +24,7 @@
 #include "MythFile.h"
 #include "DateTime.h"
 #include "FileItem.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "DllLibCMyth.h"
 #include "URL.h"
 #include "DirectoryCache.h"
@@ -196,12 +196,12 @@ bool CMythFile::SetupLiveTV(const CURL& url)
     return false;
 
   CStdString channel = url.GetFileNameWithoutPath();
-  if(!CUtil::GetExtension(channel).Equals(".ts"))
+  if(!URIUtils::GetExtension(channel).Equals(".ts"))
   {
     CLog::Log(LOGERROR, "%s - invalid channel url %s", __FUNCTION__, channel.c_str());
     return false;
   }
-  CUtil::RemoveExtension(channel);
+  URIUtils::RemoveExtension(channel);
 
   for(int i=0;i<16;i++)
   {
@@ -406,8 +406,8 @@ bool CMythFile::Exists(const CURL& url)
   if ((path.Left(11) == "recordings/"
     || path.Left(7)  == "movies/"
     || path.Left(8)  == "tvshows/")
-    && (CUtil::GetExtension(path).Equals(".mpg")
-    ||  CUtil::GetExtension(path).Equals(".nuv")))
+    && (URIUtils::GetExtension(path).Equals(".mpg")
+    ||  URIUtils::GetExtension(path).Equals(".nuv")))
   {
     if(!SetupConnection(url, true, false, false))
       return false;

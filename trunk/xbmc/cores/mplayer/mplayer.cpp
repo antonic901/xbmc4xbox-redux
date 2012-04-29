@@ -16,6 +16,7 @@
 #include "cores/DllLoader/exports/emu_registry.h"
 #include "Settings.h"
 #include "FileItem.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -965,7 +966,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     else if (bFileIsDVDIfoFile)
     {
       CStdString strPath;
-      CUtil::GetParentPath(strFile, strPath);
+      URIUtils::GetParentPath(strFile, strPath);
       if (strPath.Equals("D:\\VIDEO_TS\\", false) || strPath.Equals("D:\\VIDEO_TS", false))
         options.SetDVDDevice("D:\\"); //Properly mastered dvd, lets mplayer open the dvd properly
       else
@@ -974,7 +975,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
 
     CStdString strExtension;
-    CUtil::GetExtension(strFile, strExtension);
+    URIUtils::GetExtension(strFile, strExtension);
     strExtension.MakeLower();
 
 

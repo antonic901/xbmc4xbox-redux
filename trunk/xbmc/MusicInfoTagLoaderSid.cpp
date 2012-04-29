@@ -24,6 +24,7 @@
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "Settings.h"
 #include "FileSystem/SpecialProtocol.h"
@@ -48,20 +49,20 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
   CStdString strFileToLoad = strFileName;
   int iTrack = 0;
   CStdString strExtension;
-  CUtil::GetExtension(strFileName,strExtension);
+  URIUtils::GetExtension(strFileName,strExtension);
   strExtension.MakeLower();
   if (strExtension==".sidstream")
   {
     //  Extract the track to play
-    CStdString strFile=CUtil::GetFileName(strFileName);
+    CStdString strFile=URIUtils::GetFileName(strFileName);
     int iStart=strFile.ReverseFind("-")+1;
     iTrack = atoi(strFile.substr(iStart, strFile.size()-iStart-10).c_str());
     //  The directory we are in, is the file
     //  that contains the bitstream to play,
     //  so extract it
     CStdString strPath=strFileName;
-    CUtil::GetDirectory(strPath, strFileToLoad);
-    CUtil::RemoveSlashAtEnd(strFileToLoad);   // we want the filename
+    URIUtils::GetDirectory(strPath, strFileToLoad);
+    URIUtils::RemoveSlashAtEnd(strFileToLoad);   // we want the filename
   }
   CStdString strFileNameLower(strFileToLoad);
   strFileNameLower.MakeLower();
@@ -94,7 +95,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     return( false );
   }
 
-  ifstream f(_P(CUtil::AddFileToFolder(g_settings.GetDatabaseFolder(), "stil.txt")).c_str()); // changeme?
+  ifstream f(_P(URIUtils::AddFileToFolder(g_settings.GetDatabaseFolder(), "stil.txt")).c_str()); // changeme?
   if( !f.good() ) {
     CLog::Log(LOGINFO,"MusicInfoTagLoaderSid::Load(..) unable to locate stil.txt");
     tag.SetLoaded(false);
@@ -181,7 +182,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     }
   }
 
-  ifstream f2(_P(CUtil::AddFileToFolder(g_settings.GetDatabaseFolder(),"sidlist.csv")).c_str()); // changeme?
+  ifstream f2(_P(URIUtils::AddFileToFolder(g_settings.GetDatabaseFolder(),"sidlist.csv")).c_str()); // changeme?
   if( !f2.good() ) {
     CLog::Log(LOGINFO,"MusicInfoTagLoaderSid::Load(..) unable to locate sidlist.csv");
     tag.SetLoaded(false);

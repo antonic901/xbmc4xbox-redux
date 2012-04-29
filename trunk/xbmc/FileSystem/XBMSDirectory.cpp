@@ -22,7 +22,7 @@
 
 #include "stdafx.h"
 #include "XBMSDirectory.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"
 
@@ -69,7 +69,7 @@ bool CXBMSDirectory::GetDirectory(const CStdString& strPathUtf8, CFileItemList &
   CURL url(strPath);
 
   CStdString strRoot = strPath;
-  CUtil::AddSlashAtEnd(strPath);
+  URIUtils::AddSlashAtEnd(strPath);
 
   CcXstreamServerConnection conn = 0;
 
@@ -222,7 +222,7 @@ bool CXBMSDirectory::GetDirectory(const CStdString& strPathUtf8, CFileItemList &
     g_charsetConverter.unknownToUTF8(pItem->m_strPath);
     pItem->m_bIsFolder = bIsDirectory;
     if (pItem->m_bIsFolder)
-      CUtil::AddSlashAtEnd(pItem->m_strPath);
+      URIUtils::AddSlashAtEnd(pItem->m_strPath);
 
     items.Add(pItem);
 

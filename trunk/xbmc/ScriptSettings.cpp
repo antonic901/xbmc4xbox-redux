@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "ScriptSettings.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "FileSystem/Directory.h"
 
 CScriptSettings::CScriptSettings()
@@ -36,7 +37,7 @@ bool CScriptSettings::Load(const CStdString& strPath)
   m_scriptPath = strPath;
 
   // create the users filepath
-  CUtil::RemoveSlashAtEnd(m_scriptPath);
+  URIUtils::RemoveSlashAtEnd(m_scriptPath);
   if (m_scriptPath.Find("special://home/plugins/") >= 0)
   {
     CStdString userPath = m_scriptPath;
@@ -45,13 +46,13 @@ bool CScriptSettings::Load(const CStdString& strPath)
     m_userFileName.Format("special://profile/plugin_data/%s/%s", url.GetHostName(), url.GetFileName());
   }
   else
-    m_userFileName.Format("special://profile/script_data/%s", CUtil::GetFileName(m_scriptPath));
-  CUtil::AddFileToFolder(m_userFileName, "settings.xml", m_userFileName);
+    m_userFileName.Format("special://profile/script_data/%s", URIUtils::GetFileName(m_scriptPath));
+  URIUtils::AddFileToFolder(m_userFileName, "settings.xml", m_userFileName);
 
   // Create our final settings path
   CStdString scriptFileName;
-  CUtil::AddFileToFolder(m_scriptPath, "resources", scriptFileName);
-  CUtil::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);
+  URIUtils::AddFileToFolder(m_scriptPath, "resources", scriptFileName);
+  URIUtils::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);
 
   if (!m_pluginXmlDoc.LoadFile(scriptFileName))
   {
@@ -90,12 +91,12 @@ bool CScriptSettings::Save(void)
 {
   // break down the path into directories
   CStdString strRoot, strType, strScript;
-  CUtil::GetDirectory(m_userFileName, strScript);
-  CUtil::RemoveSlashAtEnd(strScript);
-  CUtil::GetDirectory(strScript, strType);
-  CUtil::RemoveSlashAtEnd(strType);
-  CUtil::GetDirectory(strType, strRoot);
-  CUtil::RemoveSlashAtEnd(strRoot);
+  URIUtils::GetDirectory(m_userFileName, strScript);
+  URIUtils::RemoveSlashAtEnd(strScript);
+  URIUtils::GetDirectory(strScript, strType);
+  URIUtils::RemoveSlashAtEnd(strType);
+  URIUtils::GetDirectory(strType, strRoot);
+  URIUtils::RemoveSlashAtEnd(strRoot);
 
   // create the individual folders
   if (!XFILE::CDirectory::Exists(strRoot))
@@ -112,10 +113,10 @@ bool CScriptSettings::SettingsExist(const CStdString& strPath)
 {
   CStdString scriptFileName = strPath;
 
-  CUtil::RemoveSlashAtEnd(scriptFileName);
+  URIUtils::RemoveSlashAtEnd(scriptFileName);
 
-  CUtil::AddFileToFolder(scriptFileName, "resources", scriptFileName);
-  CUtil::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);
+  URIUtils::AddFileToFolder(scriptFileName, "resources", scriptFileName);
+  URIUtils::AddFileToFolder(scriptFileName, "settings.xml", scriptFileName);
   // Load the settings file to verify it's valid
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(scriptFileName))

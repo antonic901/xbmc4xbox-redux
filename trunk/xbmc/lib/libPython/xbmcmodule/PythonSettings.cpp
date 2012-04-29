@@ -24,7 +24,7 @@
 #include "pyutil.h"
 #include "GUIDialogPluginSettings.h"
 #include "Weather.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -63,7 +63,7 @@ namespace PYXBMC
     };
 
     CStdString scriptPath = cScriptPath;
-    if (CUtil::IsPlugin(scriptPath))
+    if (URIUtils::IsPlugin(scriptPath))
       scriptPath.Replace("plugin://", "special://home/plugins/");
 
     if (!CScriptSettings::SettingsExist(scriptPath))

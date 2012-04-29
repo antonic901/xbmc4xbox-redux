@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "Picture.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "URL.h"
 #include "TextureManager.h"
 #include "GUILabelControl.h"
@@ -740,11 +741,11 @@ void CGUIWindowSlideShow::OnLoadPic(int iPic, int iSlideNumber, LPDIRECT3DTEXTUR
       m_Image[iPic].Zoom(m_iZoomFactor, true);
 
       m_Image[iPic].m_bIsComic = false;
-      if (CUtil::IsInRAR(m_slides->Get(m_iCurrentSlide)->m_strPath) || CUtil::IsInZIP(m_slides->Get(m_iCurrentSlide)->m_strPath)) // move to top for cbr/cbz
+      if (URIUtils::IsInRAR(m_slides->Get(m_iCurrentSlide)->m_strPath) || URIUtils::IsInZIP(m_slides->Get(m_iCurrentSlide)->m_strPath)) // move to top for cbr/cbz
       {
         CURL url(m_slides->Get(m_iCurrentSlide)->m_strPath);
         CStdString strHostName = url.GetHostName();
-        if (CUtil::GetExtension(strHostName).Equals(".cbr", false) || CUtil::GetExtension(strHostName).Equals(".cbz", false))
+        if (URIUtils::GetExtension(strHostName).Equals(".cbr", false) || URIUtils::GetExtension(strHostName).Equals(".cbz", false))
         {
           m_Image[iPic].m_bIsComic = true;
           m_Image[iPic].Move((float)m_Image[iPic].GetOriginalWidth(),(float)m_Image[iPic].GetOriginalHeight());
@@ -823,7 +824,7 @@ void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursiv
   if (recursivePaths)
   {
     CStdString path(strPath);
-    CUtil::RemoveSlashAtEnd(path);
+    URIUtils::RemoveSlashAtEnd(path);
     if (recursivePaths->find(path) != recursivePaths->end())
       return;
     recursivePaths->insert(path);
@@ -844,7 +845,7 @@ void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursiv
     {
       AddItems(item->m_strPath, recursivePaths);
     }
-    else if (!item->m_bIsFolder && !CUtil::IsRAR(item->m_strPath) && !CUtil::IsZIP(item->m_strPath))
+    else if (!item->m_bIsFolder && !URIUtils::IsRAR(item->m_strPath) && !URIUtils::IsZIP(item->m_strPath))
     { // add to the slideshow
       Add(item.get());
     }

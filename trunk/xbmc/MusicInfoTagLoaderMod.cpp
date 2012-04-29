@@ -24,7 +24,7 @@
 #ifdef HAS_MIKMOD
 #include "lib/mikxbox/mikmod.h"
 #endif
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
@@ -54,7 +54,7 @@ bool CMusicInfoTagLoaderMod::Load(const CStdString& strFileName, CMusicInfoTag& 
 {
 	tag.SetURL(strFileName);
 	// first, does the module have a .mdz?
-	CStdString strMDZ(CUtil::ReplaceExtension(strFileName,".mdz"));
+	CStdString strMDZ(URIUtils::ReplaceExtension(strFileName,".mdz"));
 	if( CFile::Exists(strMDZ) ) {
 		if( !getFile(strMDZ,strMDZ) ) {
 			tag.SetLoaded(false);
@@ -114,7 +114,7 @@ bool CMusicInfoTagLoaderMod::Load(const CStdString& strFileName, CMusicInfoTag& 
 
 bool CMusicInfoTagLoaderMod::getFile(CStdString& strFile, const CStdString& strSource)
 {
-	if( !CUtil::IsHD(strSource) ) {
+	if( !URIUtils::IsHD(strSource) ) {
 		if (!CFile::Cache(strSource.c_str(), "Z:\\cachedmod", NULL, NULL)) {
 			::DeleteFile("Z:\\cachedmod");
 			CLog::Log(LOGERROR, "ModTagLoader: Unable to cache file %s\n", strSource.c_str());

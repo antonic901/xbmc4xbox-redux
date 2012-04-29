@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIDialogFileBrowser.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "DetectDVDType.h"
 #include "GUIDialogNetworkSetup.h"
 #include "GUIDialogMediaSource.h"
@@ -125,7 +126,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
       bool bIsDir = false;
       // this code allows two different selection modes for directories
       // end the path with a slash to start inside the directory
-      if (CUtil::HasSlashAtEnd(m_selectedPath))
+      if (URIUtils::HasSlashAtEnd(m_selectedPath))
       {
         bIsDir = true;
         bool bFool;
@@ -149,7 +150,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
       // find the parent folder if we are a file browser (don't do this for folders)
       m_Directory->m_strPath = m_selectedPath;
       if (!m_browsingForFolders && !bIsDir)
-        CUtil::GetParentPath(m_selectedPath, m_Directory->m_strPath);
+        URIUtils::GetParentPath(m_selectedPath, m_Directory->m_strPath);
       Update(m_Directory->m_strPath);
       m_viewControl.SetSelectedItem(m_selectedPath);
       return CGUIDialog::OnMessage(message);
@@ -182,7 +183,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
           else
             strPath = (*m_vecItems)[iItem]->m_strPath;
 
-          CUtil::AddFileToFolder(strPath,"1",strTest);
+          URIUtils::AddFileToFolder(strPath,"1",strTest);
           CFile file;
           if (file.OpenForWrite(strTest,true))
           {
@@ -212,7 +213,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
         if (CGUIDialogKeyboard::ShowAndGetInput(strInput,g_localizeStrings.Get(119),false))
         {
           CStdString strPath;
-          CUtil::AddFileToFolder(m_vecItems->m_strPath,strInput,strPath);
+          URIUtils::AddFileToFolder(m_vecItems->m_strPath,strInput,strPath);
           if (CDirectory::Create(strPath))
             Update(m_vecItems->m_strPath);
           else
@@ -298,7 +299,7 @@ void CGUIDialogFileBrowser::Update(const CStdString &strDirectory)
     if (!pItem->IsParentFolder())
     {
       strSelectedItem = pItem->m_strPath;
-      CUtil::RemoveSlashAtEnd(strSelectedItem);
+      URIUtils::RemoveSlashAtEnd(strSelectedItem);
       m_history.SetSelectedItem(strSelectedItem, m_Directory->m_strPath==""?"empty":m_Directory->m_strPath);
     }
   }
@@ -307,7 +308,7 @@ void CGUIDialogFileBrowser::Update(const CStdString &strDirectory)
   {
     CFileItemList items;
     CStdString strParentPath;
-    bool bParentExists = CUtil::GetParentPath(strDirectory, strParentPath);
+    bool bParentExists = URIUtils::GetParentPath(strDirectory, strParentPath);
 
     // check if current directory is a root share
 /*    if (g_guiSettings.GetBool("filelists.showarentdiritems"))
@@ -398,7 +399,7 @@ void CGUIDialogFileBrowser::Update(const CStdString &strDirectory)
   m_viewControl.SetCurrentView((m_browsingForImages && CAutoSwitch::ByFileCount(*m_vecItems)) ? DEFAULT_VIEW_ICONS : DEFAULT_VIEW_LIST);
 
   CStdString strPath2 = m_Directory->m_strPath;
-  CUtil::RemoveSlashAtEnd(strPath2);
+  URIUtils::RemoveSlashAtEnd(strPath2);
   strSelectedItem = m_history.GetSelectedItem(strPath2==""?"empty":strPath2);
 
   bool bSelectedFound = false;
@@ -406,7 +407,7 @@ void CGUIDialogFileBrowser::Update(const CStdString &strDirectory)
   {
     CFileItemPtr pItem = (*m_vecItems)[i];
     strPath2 = pItem->m_strPath;
-    CUtil::RemoveSlashAtEnd(strPath2);
+    URIUtils::RemoveSlashAtEnd(strPath2);
     if (strPath2 == strSelectedItem)
     {
       m_viewControl.SetSelectedItem(i);
@@ -534,7 +535,7 @@ void CGUIDialogFileBrowser::GoParentFolder()
   CStdString strPath(m_strParentPath), strOldPath(m_Directory->m_strPath);
   if (strPath.size() == 2)
     if (strPath[1] == ':')
-      CUtil::AddSlashAtEnd(strPath);
+      URIUtils::AddSlashAtEnd(strPath);
   Update(strPath);
 }
 
@@ -669,7 +670,7 @@ bool CGUIDialogFileBrowser::ShowAndGetFile(const CStdString &directory, const CS
   VECSOURCES shares;
   CMediaSource share;
   share.strPath = directory;
-  CUtil::RemoveSlashAtEnd(share.strPath); // this is needed for the dodgy code in WINDOW_INIT
+  URIUtils::RemoveSlashAtEnd(share.strPath); // this is needed for the dodgy code in WINDOW_INIT
   shares.push_back(share);
   browser->m_browsingForImages = useThumbs;
   browser->SetHeading(heading);
@@ -791,7 +792,7 @@ void CGUIDialogFileBrowser::OnAddNetworkLocation()
       share.strPath = path; //setPath(path);
       CURL url(path);
       share.strName = url.GetWithoutUserDetails();
-      CUtil::RemoveSlashAtEnd(share.strName);
+      URIUtils::RemoveSlashAtEnd(share.strName);
       m_shares.push_back(share);
       // add to our location manager...
       g_mediaManager.AddNetworkLocation(path);

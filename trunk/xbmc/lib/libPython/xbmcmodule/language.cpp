@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "language.h"
 #include "pyutil.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 #include "GUISettings.h"
 
 #ifndef __GNUC__
@@ -65,7 +65,7 @@ namespace PYXBMC
     self->pLanguage = new CLocalizeStrings();
 
     CStdString languagePath = cScriptPath;
-    if (CUtil::IsPlugin(languagePath))
+    if (URIUtils::IsPlugin(languagePath))
       languagePath.Replace("plugin://", "special://home/plugins/");
 
     CStdString languageFallbackPath = languagePath;
@@ -78,14 +78,14 @@ namespace PYXBMC
       defaultLanguage = cDefaultLanguage;
 
     // Path where the language strings reside
-    CUtil::AddFileToFolder(languagePath, "resources", languagePath);
-    CUtil::AddFileToFolder(languageFallbackPath, "resources", languageFallbackPath);
-    CUtil::AddFileToFolder(languagePath, "language", languagePath);
-    CUtil::AddFileToFolder(languageFallbackPath, "language", languageFallbackPath);
-    CUtil::AddFileToFolder(languagePath, g_guiSettings.GetString("locale.language"), languagePath);
-    CUtil::AddFileToFolder(languageFallbackPath, defaultLanguage, languageFallbackPath);
-    CUtil::AddFileToFolder(languagePath, "strings.xml", languagePath);
-    CUtil::AddFileToFolder(languageFallbackPath, "strings.xml", languageFallbackPath);
+    URIUtils::AddFileToFolder(languagePath, "resources", languagePath);
+    URIUtils::AddFileToFolder(languageFallbackPath, "resources", languageFallbackPath);
+    URIUtils::AddFileToFolder(languagePath, "language", languagePath);
+    URIUtils::AddFileToFolder(languageFallbackPath, "language", languageFallbackPath);
+    URIUtils::AddFileToFolder(languagePath, g_guiSettings.GetString("locale.language"), languagePath);
+    URIUtils::AddFileToFolder(languageFallbackPath, defaultLanguage, languageFallbackPath);
+    URIUtils::AddFileToFolder(languagePath, "strings.xml", languagePath);
+    URIUtils::AddFileToFolder(languageFallbackPath, "strings.xml", languageFallbackPath);
 
     // Load language strings
     self->pLanguage->Clear();

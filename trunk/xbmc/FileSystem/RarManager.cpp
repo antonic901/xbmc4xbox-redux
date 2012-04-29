@@ -23,6 +23,7 @@
 #include "RarManager.h"
 #include "lib/UnrarXLib/rar.hpp"
 #include "Util.h"
+#include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogYesNo.h"
@@ -104,7 +105,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
     {
       pDialog->SetHeading(120);
       pDialog->SetLine(0, 645);
-      pDialog->SetLine(1, CUtil::GetFileName(strPathInRar));
+      pDialog->SetLine(1, URIUtils::GetFileName(strPathInRar));
       pDialog->SetLine(2, "");
       pDialog->DoModal();
       if (!pDialog->IsConfirmed())
@@ -171,7 +172,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
       bShowProgress=true;
 
     CStdString strDir2(strDir);
-    CUtil::RemoveSlashAtEnd(strDir2);
+    URIUtils::RemoveSlashAtEnd(strDir2);
     iRes = urarlib_get(const_cast<char*>(strRarPath.c_str()), const_cast<char*>(strDir2.c_str()),
                        const_cast<char*>(strPath.c_str()),NULL,&iOffset,bShowProgress);
   }
@@ -200,7 +201,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
     pFile = &(j->second.second[j->second.second.size()-1]);
     pFile->m_iUsed = 1;
   }
-  CUtil::AddFileToFolder(strDir,CUtil::GetFileName(strPathInRar),pFile->m_strCachedPath); // GetFileName
+  URIUtils::AddFileToFolder(strDir,URIUtils::GetFileName(strPathInRar),pFile->m_strCachedPath); // GetFileName
   CUtil::GetFatXQualifiedPath(pFile->m_strCachedPath);
   pFile->m_bAutoDel = (bOptions & EXFILE_AUTODELETE) != 0;
   pFile->m_iOffset = iOffset;
@@ -245,7 +246,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const CStdString& strR
 
   ArchiveList_struct* pIterator;
   CStdString strCompare = strPathInRar;
-  if (!CUtil::HasSlashAtEnd(strCompare) && !strCompare.IsEmpty())
+  if (!URIUtils::HasSlashAtEnd(strCompare) && !strCompare.IsEmpty())
     strCompare += '/';
   for( pIterator = pFileList; pIterator  ; pIterator ? pIterator = pIterator->next : NULL)
   {
@@ -409,7 +410,7 @@ void CRarManager::ClearCachedFile(const CStdString& strRarPath, const CStdString
 void CRarManager::ExtractArchive(const CStdString& strArchive, const CStdString& strPath)
 {
   CStdString strPath2(strPath);
-  CUtil::RemoveSlashAtEnd(strPath2);
+  URIUtils::RemoveSlashAtEnd(strPath2);
   if (!urarlib_get(const_cast<char*>(strArchive.c_str()), const_cast<char*>(strPath2.c_str()),NULL))
   {
     CLog::Log(LOGERROR,"rarmanager::extractarchive error while extracting %s", strArchive.c_str());
