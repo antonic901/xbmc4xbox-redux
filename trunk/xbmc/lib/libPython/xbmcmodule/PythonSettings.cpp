@@ -170,20 +170,11 @@ namespace PYXBMC
   {
     bool ok;
     CStdString path = self->pSettings->getPath();
-    if (path.Find("special://home/plugins/") == 0)
-    {
-      CURL url(path);
-      Py_BEGIN_ALLOW_THREADS
-      ok = CGUIDialogPluginSettings::ShowAndGetInput(url);
-      Py_END_ALLOW_THREADS
-    }
-    else
-    {
-      // show settings dialog
-      Py_BEGIN_ALLOW_THREADS
-      ok = CGUIDialogPluginSettings::ShowAndGetInput(path);
-      Py_END_ALLOW_THREADS
-    }
+
+    // show settings dialog
+    Py_BEGIN_ALLOW_THREADS
+    ok = CGUIDialogPluginSettings::ShowAndGetInput(path);
+    Py_END_ALLOW_THREADS
 
     // refresh weather if weather settings
     if (ok && path.Find("special://home/plugins/weather/"))
