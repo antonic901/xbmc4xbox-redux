@@ -34,7 +34,6 @@
 #include <process.h>
 
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////

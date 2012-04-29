@@ -26,7 +26,7 @@
 #include "PlayList.h"
 
 using namespace PLAYLIST;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CPlaylistDirectory::CPlaylistDirectory()
 {

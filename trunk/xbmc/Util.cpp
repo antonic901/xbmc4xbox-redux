@@ -173,7 +173,6 @@ void hack()
 
 } // CMathUtils namespace
 
-using namespace DIRECTORY;
 
 #define clamp(x) (x) > 255.f ? 255 : ((x) < 0 ? 0 : (BYTE)(x+0.5f)) // Valid ranges: brightness[-1 -> 1 (0 is default)] contrast[0 -> 2 (1 is default)]  gamma[0.5 -> 3.5 (1 is default)] default[ramp is linear]
 static const __int64 SECS_BETWEEN_EPOCHS = 11644473600LL;
@@ -4914,7 +4913,7 @@ CStdString CUtil::MusicPlaylistsLocation()
   vec.push_back(strReturn);
   CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "mixed", strReturn);
   vec.push_back(strReturn);
-  return DIRECTORY::CMultiPathDirectory::ConstructMultiPath(vec);;
+  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
 }
 
 CStdString CUtil::VideoPlaylistsLocation()
@@ -4925,7 +4924,7 @@ CStdString CUtil::VideoPlaylistsLocation()
   vec.push_back(strReturn);
   CUtil::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "mixed", strReturn);
   vec.push_back(strReturn);
-  return DIRECTORY::CMultiPathDirectory::ConstructMultiPath(vec);;
+  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
 }
 
 void CUtil::DeleteMusicDatabaseDirectoryCache()

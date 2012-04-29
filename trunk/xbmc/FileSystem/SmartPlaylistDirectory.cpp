@@ -31,7 +31,7 @@
 
 using namespace PLAYLIST;
 
-namespace DIRECTORY
+namespace XFILE
 {
   CSmartPlaylistDirectory::CSmartPlaylistDirectory()
   {

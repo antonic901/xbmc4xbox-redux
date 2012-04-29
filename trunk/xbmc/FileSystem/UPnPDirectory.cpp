@@ -35,10 +35,9 @@
 #include "URL.h"
 
 using namespace MUSIC_INFO;
-using namespace DIRECTORY;
 using namespace XFILE;
 
-namespace DIRECTORY
+namespace XFILE
 {
 /*----------------------------------------------------------------------
 |   CProtocolFinder

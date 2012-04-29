@@ -51,7 +51,6 @@
 
 using namespace std;
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace MEDIA_DETECT;
 using namespace PLAYLIST;
 

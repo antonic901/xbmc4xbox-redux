@@ -24,7 +24,7 @@
 #include "IDirectory.h"
 #include "MemoryUnits/IFileSystem.h"
 
-namespace DIRECTORY
+namespace XFILE
 {
   class CMemUnitDirectory : public IDirectory
   {

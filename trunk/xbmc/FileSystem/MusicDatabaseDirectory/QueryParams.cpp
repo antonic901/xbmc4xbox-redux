@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "QueryParams.h"
 
-using namespace DIRECTORY::MUSICDATABASEDIRECTORY;
+using namespace XFILE::MUSICDATABASEDIRECTORY;
 
 CQueryParams::CQueryParams()
 {

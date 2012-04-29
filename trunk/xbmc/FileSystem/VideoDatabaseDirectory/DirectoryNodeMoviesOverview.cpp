@@ -24,7 +24,7 @@
 #include "FileItem.h"
 #include "VideoDatabase.h"
 
-using namespace DIRECTORY::VIDEODATABASEDIRECTORY;
+using namespace XFILE::VIDEODATABASEDIRECTORY;
 
 CDirectoryNodeMoviesOverview::CDirectoryNodeMoviesOverview(const CStdString& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_MOVIES_OVERVIEW, strName, pParent)

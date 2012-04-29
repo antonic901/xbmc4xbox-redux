@@ -42,7 +42,6 @@
 using namespace std;
 using namespace dbiplus;
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace VIDEO;
 
 //********************************************************************************************************************************

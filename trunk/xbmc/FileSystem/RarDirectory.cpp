@@ -28,7 +28,7 @@
 #include "URL.h"
 #include "FileItem.h"
 
-namespace DIRECTORY
+namespace XFILE
 {
   CRarDirectory::CRarDirectory()
   {

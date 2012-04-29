@@ -53,7 +53,7 @@
 
 using namespace std;
 using namespace MUSIC_INFO;
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace XFILE;
 
 extern CGUIInfoManager g_infoManager;
@@ -917,8 +917,8 @@ CUPnPServer::Build(CFileItemPtr                  item,
                 item->SetLabelPreformated(true);
             } else {
                 if (!item->HasVideoInfoTag()) {
-                    DIRECTORY::VIDEODATABASEDIRECTORY::CQueryParams params;
-                    DIRECTORY::VIDEODATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo((const char*)path, params);
+                    XFILE::VIDEODATABASEDIRECTORY::CQueryParams params;
+                    XFILE::VIDEODATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo((const char*)path, params);
 
                     CVideoDatabase db;
                     if (!db.Open() ) return NULL;

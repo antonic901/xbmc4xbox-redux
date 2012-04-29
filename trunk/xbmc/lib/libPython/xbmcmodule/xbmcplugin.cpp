@@ -96,7 +96,7 @@ namespace PYXBMC
     pListItem->item->m_bIsFolder = (0 != bIsFolder);
 
     // call the directory class to add our item
-    bool bOk = DIRECTORY::CPluginDirectory::AddItem(handle, pListItem->item.get(), iTotalItems);
+    bool bOk = XFILE::CPluginDirectory::AddItem(handle, pListItem->item.get(), iTotalItems);
     return Py_BuildValue((char*)"b", bOk);
   }
 
@@ -165,7 +165,7 @@ namespace PYXBMC
       items.Add(pListItem->item);
     }
     // call the directory class to add our items
-    bool bOk = DIRECTORY::CPluginDirectory::AddItems(handle, &items, totalItems);
+    bool bOk = XFILE::CPluginDirectory::AddItems(handle, &items, totalItems);
 
     return Py_BuildValue((char*)"b", bOk);
   }
@@ -207,7 +207,7 @@ namespace PYXBMC
     };
 
     // tell the directory class that we're done
-    DIRECTORY::CPluginDirectory::EndOfDirectory(handle, 0 != bSucceeded, 0 != bUpdateListing, 0 != bCacheToDisc);
+    XFILE::CPluginDirectory::EndOfDirectory(handle, 0 != bSucceeded, 0 != bUpdateListing, 0 != bCacheToDisc);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -248,7 +248,7 @@ namespace PYXBMC
 
     ListItem *pListItem = (ListItem *)pItem;
     
-    DIRECTORY::CPluginDirectory::SetResolvedUrl(handle, 0 != bSucceeded, pListItem->item.get());
+    XFILE::CPluginDirectory::SetResolvedUrl(handle, 0 != bSucceeded, pListItem->item.get());
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -299,7 +299,7 @@ namespace PYXBMC
 
     // call the directory class to add the sort method.
     if (sortMethod >= SORT_METHOD_NONE && sortMethod < SORT_METHOD_MAX)
-      DIRECTORY::CPluginDirectory::AddSortMethod(handle, (SORT_METHOD)sortMethod, label2Mask);
+      XFILE::CPluginDirectory::AddSortMethod(handle, (SORT_METHOD)sortMethod, label2Mask);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -406,7 +406,7 @@ namespace PYXBMC
       return NULL;
     };
 
-    DIRECTORY::CPluginDirectory::SetContent(handle, content);
+    XFILE::CPluginDirectory::SetContent(handle, content);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -445,7 +445,7 @@ namespace PYXBMC
     if (!category || (category && !PyXBMCGetUnicodeString(uCategory, category, 1)))
       return NULL;
 
-    DIRECTORY::CPluginDirectory::SetProperty(handle, "plugincategory", uCategory);
+    XFILE::CPluginDirectory::SetProperty(handle, "plugincategory", uCategory);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -490,13 +490,13 @@ namespace PYXBMC
     };
 
     if (image)
-      DIRECTORY::CPluginDirectory::SetProperty(handle, "fanart_image", image);
+      XFILE::CPluginDirectory::SetProperty(handle, "fanart_image", image);
     if (color1)
-      DIRECTORY::CPluginDirectory::SetProperty(handle, "fanart_color1", color1);
+      XFILE::CPluginDirectory::SetProperty(handle, "fanart_color1", color1);
     if (color2)
-      DIRECTORY::CPluginDirectory::SetProperty(handle, "fanart_color2", color2);
+      XFILE::CPluginDirectory::SetProperty(handle, "fanart_color2", color2);
     if (color3)
-      DIRECTORY::CPluginDirectory::SetProperty(handle, "fanart_color3", color3);
+      XFILE::CPluginDirectory::SetProperty(handle, "fanart_color3", color3);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -541,7 +541,7 @@ namespace PYXBMC
       return NULL;
 
     CStdString lowerKey = key;
-    DIRECTORY::CPluginDirectory::SetProperty(handle, key, value);
+    XFILE::CPluginDirectory::SetProperty(handle, key, value);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -600,7 +600,7 @@ namespace PYXBMC
     if (bReload)
     {
       g_currentPluginSettings.Load(cUrl);
-      DIRECTORY::CPluginDirectory::LoadPluginStrings(cUrl);
+      XFILE::CPluginDirectory::LoadPluginStrings(cUrl);
     }
 
     return Py_BuildValue((char*)"b", ok);

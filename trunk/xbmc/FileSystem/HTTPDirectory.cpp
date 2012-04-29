@@ -29,7 +29,6 @@
 #include "AdvancedSettings.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CHTTPDirectory::CHTTPDirectory(void){}
 CHTTPDirectory::~CHTTPDirectory(void){}

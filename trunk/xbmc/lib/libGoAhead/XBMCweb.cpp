@@ -28,7 +28,7 @@
 #include "PlayList.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace PLAYLIST;
 using namespace MUSIC_INFO;
 

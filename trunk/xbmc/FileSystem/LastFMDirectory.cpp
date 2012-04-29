@@ -35,7 +35,7 @@
 #include "FileCurl.h"
 
 using namespace MUSIC_INFO;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define AUDIOSCROBBLER_BASE_URL      "http://ws.audioscrobbler.com/1.0/"
 

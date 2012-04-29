@@ -31,7 +31,7 @@
 #include "../xbmc/FileSystem/Directory.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CGUIAudioManager g_audioManager;
 

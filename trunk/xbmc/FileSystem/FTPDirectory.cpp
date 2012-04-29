@@ -28,7 +28,6 @@
 #include "FileItem.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CFTPDirectory::CFTPDirectory(void){}
 CFTPDirectory::~CFTPDirectory(void){}

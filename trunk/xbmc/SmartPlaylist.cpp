@@ -33,7 +33,6 @@
 #include "DateTime.h"
 
 using namespace std;
-using namespace DIRECTORY;
 using namespace XFILE;
 
 typedef struct

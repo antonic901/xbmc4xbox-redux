@@ -27,7 +27,6 @@
 #include "FileItem.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CFatXFileSystem::CFatXFileSystem(unsigned char unit) : IFileSystem(unit)
 {

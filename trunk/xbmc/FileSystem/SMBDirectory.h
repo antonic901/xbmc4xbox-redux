@@ -23,7 +23,7 @@
 #include "IDirectory.h"
 #include "FileSmb.h"
 
-namespace DIRECTORY
+namespace XFILE
 {
 class CSMBDirectory : public IDirectory
 {

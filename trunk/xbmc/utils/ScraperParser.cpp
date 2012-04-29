@@ -41,7 +41,6 @@
 
 using namespace std;
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CScraperParser::CScraperParser()
 {

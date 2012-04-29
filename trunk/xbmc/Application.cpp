@@ -196,7 +196,6 @@
 
 using namespace std;
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace MEDIA_DETECT;
 using namespace PLAYLIST;
 using namespace VIDEO;
@@ -3748,7 +3747,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
   if (item.IsPlugin())
   { // we modify the item so that it becomes a real URL
     CFileItem item_new(item);
-    if (DIRECTORY::CPluginDirectory::GetPluginResult(item.m_strPath, item_new))
+    if (XFILE::CPluginDirectory::GetPluginResult(item.m_strPath, item_new))
       return PlayFile(item_new, false);
     return false;
   }
@@ -3756,7 +3755,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
   if (CUtil::IsUPnP(item.m_strPath))
   {
     CFileItem item_new(item);
-    if (DIRECTORY::CUPnPDirectory::GetResource(item.m_strPath, item_new))
+    if (XFILE::CUPnPDirectory::GetResource(item.m_strPath, item_new))
       return PlayFile(item_new, false);
     return false;
   }

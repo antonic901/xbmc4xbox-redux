@@ -24,7 +24,7 @@
 #include "QueryParams.h"
 #include "MusicDatabase.h"
 
-using namespace DIRECTORY::MUSICDATABASEDIRECTORY;
+using namespace XFILE::MUSICDATABASEDIRECTORY;
 
 CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const CStdString& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_YEAR_ALBUM, strName, pParent)

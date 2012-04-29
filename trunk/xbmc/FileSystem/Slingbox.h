@@ -26,7 +26,7 @@
 
 class CSlingbox;
 
-namespace DIRECTORY
+namespace XFILE
 {
 class CSlingboxDirectory
   : public IDirectory

@@ -48,7 +48,7 @@
 #include "GUIDialogSelect.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define CONTROL_SETTINGS_AREA           2
 #define CONTROL_DEFAULT_BUTTON          3
@@ -150,7 +150,7 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CURL& url, bool saveToDisk /* = t
       return false;
 
     // Load language strings temporarily
-    DIRECTORY::CPluginDirectory::LoadPluginStrings(url);
+    XFILE::CPluginDirectory::LoadPluginStrings(url);
 
     pDialog->m_url = url;
     pDialog->m_strHeading = pDialog->m_url.GetFileNameWithoutPath();

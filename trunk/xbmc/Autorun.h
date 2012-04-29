@@ -49,7 +49,7 @@ protected:
   static void RunXboxCd(bool bypassSettings = false);
   static void RunCdda();
   static void RunISOMedia(bool bypassSettings = false);
-  static bool RunDisc(DIRECTORY::IDirectory* pDir, const CStdString& strDrive, int& nAddedToPlaylist, bool bRoot, bool bypassSettings = false);
+  static bool RunDisc(XFILE::IDirectory* pDir, const CStdString& strDrive, int& nAddedToPlaylist, bool bRoot, bool bypassSettings = false);
   bool m_bEnable;
 };
 }

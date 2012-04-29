@@ -27,7 +27,7 @@
 #include "Util.h"
 #include "FileItem.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CSpecialProtocolDirectory::CSpecialProtocolDirectory(void)
 {

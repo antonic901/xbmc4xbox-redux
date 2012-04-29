@@ -47,7 +47,6 @@
 using namespace std;
 using namespace MEDIA_DETECT;
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace PLAYLIST;
 
 #define CONTROL_BTNSLIDESHOW   6

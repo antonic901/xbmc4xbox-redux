@@ -32,7 +32,6 @@
 #include "utils/strptime.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CDAVDirectory::CDAVDirectory(void) {}
 CDAVDirectory::~CDAVDirectory(void) {}

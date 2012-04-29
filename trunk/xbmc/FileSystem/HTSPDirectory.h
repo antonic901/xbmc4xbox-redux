@@ -73,7 +73,7 @@ namespace HTSP
   };
 }
 
-namespace DIRECTORY
+namespace XFILE
 {
 
   class CHTSPDirectory : public IDirectory

@@ -27,7 +27,7 @@
 #include "Utils/MemoryUnitManager.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 bool CMediaSource::IsWritable() const
 {

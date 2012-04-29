@@ -26,7 +26,7 @@
 #include "FileItem.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CMusicSearchDirectory::CMusicSearchDirectory(void)
 {

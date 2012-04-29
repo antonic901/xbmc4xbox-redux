@@ -39,7 +39,7 @@ typedef std::map<UINT, CSoundtrack> SOUNDTRACK;
 typedef std::map<UINT, CSoundtrack>::iterator ISOUNDTRACK;
 typedef std::pair<UINT, CSoundtrack> SOUNDTRACK_PAIR;
 
-namespace DIRECTORY
+namespace XFILE
 {
 
 class CSndtrkDirectory :

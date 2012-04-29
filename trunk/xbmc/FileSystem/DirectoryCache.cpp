@@ -26,7 +26,7 @@
 #include "FileItem.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CDirectoryCache g_directoryCache;
 
@@ -74,8 +74,8 @@ bool CDirectoryCache::GetDirectory(const CStdString& strPath, CFileItemList &ite
   if (i != m_cache.end())
   {
     CDir* dir = i->second;
-    if (dir->m_cacheType == DIRECTORY::DIR_CACHE_ALWAYS ||
-       (dir->m_cacheType == DIRECTORY::DIR_CACHE_ONCE && retrieveAll))
+    if (dir->m_cacheType == XFILE::DIR_CACHE_ALWAYS ||
+       (dir->m_cacheType == XFILE::DIR_CACHE_ONCE && retrieveAll))
     {
       items.Copy(*dir->m_Items);
       dir->SetLastAccess(m_accessCounter);

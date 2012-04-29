@@ -31,7 +31,7 @@
 #include "FileItem.h"
 #include "Util.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;
 
 CStdString CGUIViewStateWindowVideo::GetLockType()

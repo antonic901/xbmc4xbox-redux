@@ -26,7 +26,7 @@
 #include "URL.h"
 #include "FileItem.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 extern "C"
 {

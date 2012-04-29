@@ -179,7 +179,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     CStdString path = "special://videoplaylists/";
     if (m_type.Equals("songs") || m_type.Equals("albums"))
       path = "special://musicplaylists/";
-    DIRECTORY::CDirectory::GetDirectory(path, items, ".xsp");
+    XFILE::CDirectory::GetDirectory(path, items, ".xsp");
     iLabel = 559;
   }
   else

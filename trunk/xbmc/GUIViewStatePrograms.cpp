@@ -29,7 +29,7 @@
 #include "FileSystem/PluginDirectory.h"
 #include "Util.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& items) : CGUIViewState(items)
 {

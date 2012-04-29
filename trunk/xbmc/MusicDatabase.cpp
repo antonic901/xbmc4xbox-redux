@@ -50,7 +50,6 @@
 using namespace std;
 using namespace AUTOPTR;
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace MUSICDATABASEDIRECTORY;
 using namespace MEDIA_DETECT;
 

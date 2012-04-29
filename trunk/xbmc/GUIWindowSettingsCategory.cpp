@@ -80,7 +80,7 @@
 #include "AdvancedSettings.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define CONTROL_GROUP_BUTTONS           0
 #define CONTROL_GROUP_SETTINGS          1

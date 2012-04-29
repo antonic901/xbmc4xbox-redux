@@ -27,7 +27,7 @@
 #include "utils/log.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace std;
 
 class CUrlOptions 

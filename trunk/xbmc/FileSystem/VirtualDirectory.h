@@ -23,7 +23,7 @@
 #include "IDirectory.h"
 #include "Settings.h"
 
-namespace DIRECTORY
+namespace XFILE
 {
 
   /*!

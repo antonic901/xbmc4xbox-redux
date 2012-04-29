@@ -37,7 +37,7 @@
 #include "FileItem.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define CONTROL_BTNVIEWASICONS     2
 #define CONTROL_BTNSORTBY          3

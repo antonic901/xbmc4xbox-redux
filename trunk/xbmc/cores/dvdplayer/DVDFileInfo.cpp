@@ -266,7 +266,7 @@ bool CDVDFileInfo::GetFileStreamDetails(CFileItem *pItem)
 
   CStdString playablePath = strFileNameAndPath;
   if (CUtil::IsStack(playablePath))
-    playablePath = DIRECTORY::CStackDirectory::GetFirstStackedFile(playablePath);
+    playablePath = XFILE::CStackDirectory::GetFirstStackedFile(playablePath);
 
   CDVDInputStream *pInputStream = CDVDFactoryInputStream::CreateInputStream(NULL, playablePath, "");
   if (!pInputStream)
@@ -317,7 +317,7 @@ bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &det
       if (CUtil::IsStack(path))
       {
         CFileItemList files;
-        DIRECTORY::CStackDirectory stack;
+        XFILE::CStackDirectory stack;
         stack.GetDirectory(path, files);
 
         // skip first path as we already know the duration

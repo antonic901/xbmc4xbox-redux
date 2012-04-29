@@ -33,7 +33,7 @@
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "FileSystem/PluginDirectory.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
 
 int CGUIViewStateWindowMusic::GetPlaylist()
@@ -499,8 +499,8 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
   {
     if (items.IsVideoDb() && items.Size() > (!g_guiSettings.GetBool("filelists.showparentdiritems")?0:1))
     {
-      DIRECTORY::VIDEODATABASEDIRECTORY::CQueryParams params;
-      DIRECTORY::CVideoDatabaseDirectory::GetQueryParams(items[!g_guiSettings.GetBool("filelists.showparentdiritems")?0:1]->m_strPath,params);
+      XFILE::VIDEODATABASEDIRECTORY::CQueryParams params;
+      XFILE::CVideoDatabaseDirectory::GetQueryParams(items[!g_guiSettings.GetBool("filelists.showparentdiritems")?0:1]->m_strPath,params);
       if (params.GetMVideoId() != -1)
       {
         if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))

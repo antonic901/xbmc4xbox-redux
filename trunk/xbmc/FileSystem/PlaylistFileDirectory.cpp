@@ -30,7 +30,7 @@
 using namespace std;
 using namespace PLAYLIST;
 
-namespace DIRECTORY
+namespace XFILE
 {
   CPlaylistFileDirectory::CPlaylistFileDirectory()
   {

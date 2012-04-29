@@ -51,7 +51,7 @@ private:
 	char		currentDir[1024];
 	CFileItemList* webDirItems;
 	int			catalogItemCounter;
-	DIRECTORY::CVirtualDirectory *directory;
+	XFILE::CVirtualDirectory *directory;
 	CFileItem*	currentMediaItem;
 };
 

@@ -23,7 +23,7 @@
 #include "DirectoryNodeTvShowsOverview.h"
 #include "FileItem.h"
 
-using namespace DIRECTORY::VIDEODATABASEDIRECTORY;
+using namespace XFILE::VIDEODATABASEDIRECTORY;
 
 CDirectoryNodeTvShowsOverview::CDirectoryNodeTvShowsOverview(const CStdString& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_TVSHOWS_OVERVIEW, strName, pParent)

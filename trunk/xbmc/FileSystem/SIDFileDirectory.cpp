@@ -23,7 +23,7 @@
 #include "SIDFileDirectory.h"
 
 using namespace MUSIC_INFO;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CSIDFileDirectory::CSIDFileDirectory(void)
 {

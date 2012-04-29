@@ -28,7 +28,7 @@
 #include <vector>
 using namespace std;
 
-namespace DIRECTORY
+namespace XFILE
 {
 
 class CPlayListDirectory : public CDirectory

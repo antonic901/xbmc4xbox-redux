@@ -24,7 +24,7 @@
 #include "IDirectory.h"
 #include "Util.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 IDirectory::IDirectory(void)
 {

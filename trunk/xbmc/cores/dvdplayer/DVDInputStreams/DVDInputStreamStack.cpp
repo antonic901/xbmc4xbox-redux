@@ -27,7 +27,6 @@
 #include <limits>
 
 using namespace XFILE;
-using namespace DIRECTORY;
 using namespace boost;
 using namespace std;
 

@@ -36,7 +36,7 @@
 
 using namespace XFILE;
 
-namespace DIRECTORY
+namespace XFILE
 {
 
 CVirtualDirectory::CVirtualDirectory(void)

@@ -24,7 +24,7 @@
 #include "IFileDirectory.h"
 #include "musicInfoTag.h"
 
-namespace DIRECTORY
+namespace XFILE
 {
   class CMusicFileDirectory : public IFileDirectory
   {

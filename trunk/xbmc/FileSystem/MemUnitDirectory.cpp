@@ -27,7 +27,7 @@
 #include "MemoryUnits/IDevice.h"
 #include "FileItem.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CMemUnitDirectory::CMemUnitDirectory(void)
 {}

@@ -27,7 +27,6 @@
 #include "FileCurl.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CRSSDirectory::CRSSDirectory()
 {

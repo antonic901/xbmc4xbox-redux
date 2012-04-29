@@ -34,7 +34,7 @@
 #include "FileItem.h"
 #include "Util.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define CONTROL_PROFILES 2
 #define CONTROL_LASTLOADED_PROFILE 3

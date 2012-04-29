@@ -30,7 +30,7 @@
 #include "FileSystem/PluginDirectory.h"
 #include "Util.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& items) : CGUIViewState(items)
 {

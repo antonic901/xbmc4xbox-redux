@@ -39,7 +39,6 @@
 #include "FileItem.h"
 
 using namespace XFILE;
-using namespace DIRECTORY;
 
 #define CONTROL_LIST          450
 #define CONTROL_THUMBS        451

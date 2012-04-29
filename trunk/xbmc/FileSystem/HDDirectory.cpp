@@ -30,7 +30,7 @@
 #include "FileItem.h"
 
 using namespace AUTOPTR;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CHDDirectory::CHDDirectory(void)
 {}

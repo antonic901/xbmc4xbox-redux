@@ -38,7 +38,7 @@
 #define RELOAD_ON_ZOOM
 #endif
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 #define MAX_ZOOM_FACTOR                     10
 #define MAX_PICTURE_SIZE             2048*2048

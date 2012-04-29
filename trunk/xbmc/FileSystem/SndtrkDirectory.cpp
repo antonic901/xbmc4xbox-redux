@@ -26,7 +26,7 @@
 
 SOUNDTRACK datastorage; //created a vector of the XSOUNDTRACK_DATA class to keep track of each album
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CSndtrkDirectory::CSndtrkDirectory(void)
 {}

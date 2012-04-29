@@ -24,7 +24,7 @@
 #include "FileSystem/File.h"
 #include "MusicInfoTagLoaderASAP.h"
 
-using namespace DIRECTORY;
+using namespace XFILE;
 
 CASAPFileDirectory::CASAPFileDirectory()
 {

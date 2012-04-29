@@ -1056,7 +1056,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         if(pStream->codec->codec_id == CODEC_ID_TTF)
         {
           std::string fileName = "special://temp/fonts/";
-          DIRECTORY::CDirectory::Create(fileName);
+          XFILE::CDirectory::Create(fileName);
           AVMetadataTag *nameTag = m_dllAvFormat.av_metadata_get(pStream->metadata, "filename", NULL, 0);
           if (!nameTag) {
             CLog::Log(LOGERROR, "%s: TTF attachment has no name", __FUNCTION__);

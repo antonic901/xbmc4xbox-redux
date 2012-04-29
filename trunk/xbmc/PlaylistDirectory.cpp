@@ -30,7 +30,7 @@
 #define new DEBUG_NEW
 #endif
 
-using namespace DIRECTORY;
+using namespace XFILE;
 using namespace PLAYLIST;
 
 CPlayListDirectory::CPlayListDirectory(void)

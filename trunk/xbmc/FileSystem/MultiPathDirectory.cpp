@@ -30,7 +30,7 @@
 #include "FileItem.h"
 
 using namespace std;
-using namespace DIRECTORY;
+using namespace XFILE;
 
 //
 // multipath://{path1}/{path2}/{path3}/.../{path-N}

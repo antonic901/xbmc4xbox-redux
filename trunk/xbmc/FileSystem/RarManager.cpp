@@ -37,7 +37,6 @@
 
 using namespace std;
 using namespace XFILE;
-using namespace DIRECTORY;
 
 CRarManager g_RarManager;
 
