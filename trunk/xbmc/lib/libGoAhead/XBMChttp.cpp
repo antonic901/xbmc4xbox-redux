@@ -1416,7 +1416,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
   {
     CURL url(fileItem.m_strPath);
     CStdString strPath(url.GetWithoutUserDetails());
-    CUtil::URLDecode(strPath);
+    CURL::Decode(strPath);
     output = openTag + "Filename:" + strPath;  // currently playing item filename
     if (g_application.IsPlaying())
       if (!g_application.m_pPlayer->IsPaused()) 
@@ -3414,7 +3414,7 @@ CStdString CXbmcHttpShim::xbmcExternalCall(char *command)
   }
   else //no parameters
     execute = cmd;
-  CUtil::URLDecode(parameter);
+  CURL::Decode(parameter);
   return xbmcProcessCommand(NO_EID, NULL, (char_t *) execute.c_str(), (char_t *) parameter.c_str());
 }
 

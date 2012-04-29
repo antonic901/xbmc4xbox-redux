@@ -26,7 +26,7 @@
 #include "GUIDialogGamepad.h"
 #include "GUIDialogContextMenu.h"
 #include "GUIWindowManager.h"
-#include "Util.h"
+#include "URL.h"
 
 CGUIDialogLockSettings::CGUIDialogLockSettings(void)
     : CGUIDialogSettings(WINDOW_DIALOG_LOCK_SETTINGS, "LockSettings.xml")
@@ -64,7 +64,7 @@ void CGUIDialogLockSettings::SetupPage()
   {
     CStdString strLabel;
     CStdString strLabel2=m_strURL;
-    CUtil::URLDecode(strLabel2);
+    CURL::Decode(strLabel2);
     strLabel.Format(g_localizeStrings.Get(20152),strLabel2.c_str());
     SET_CONTROL_LABEL(2,strLabel);
   }
@@ -128,7 +128,7 @@ void CGUIDialogLockSettings::OnSettingChanged(SettingInfo &setting)
     {
       CStdString strHeading;
       CStdString strDecodeUrl = m_strURL;
-      CUtil::URLDecode(strDecodeUrl);
+      CURL::Decode(strDecodeUrl);
       strHeading.Format("%s %s",g_localizeStrings.Get(14062).c_str(),strDecodeUrl.c_str());
       if (CGUIDialogKeyboard::ShowAndGetInput(m_strUser,strHeading,true))
       {
@@ -197,7 +197,7 @@ void CGUIDialogLockSettings::OnSettingChanged(SettingInfo &setting)
   {
     CStdString strHeading;
     CStdString strDecodeUrl = m_strURL;
-    CUtil::URLDecode(strDecodeUrl);
+    CURL::Decode(strDecodeUrl);
     strHeading.Format("%s %s",g_localizeStrings.Get(20143).c_str(),strDecodeUrl.c_str());
     if (CGUIDialogKeyboard::ShowAndGetInput(m_strLock,strHeading,true,true))
     {

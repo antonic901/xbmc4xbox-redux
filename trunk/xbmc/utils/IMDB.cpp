@@ -470,7 +470,7 @@ void CIMDB::GetURL(const CStdString &movieFile, const CStdString &movieName, con
 
     // convert to the encoding requested by the parser
     g_charsetConverter.utf8To(m_parser.GetSearchStringEncoding(), movieName, m_parser.m_param[0]);
-    CUtil::URLEncode(m_parser.m_param[0]);
+    CURL::Encode(m_parser.m_param[0]);
  
   scrURL.ParseString(m_parser.Parse("CreateSearchUrl",&m_info.settings));
 }

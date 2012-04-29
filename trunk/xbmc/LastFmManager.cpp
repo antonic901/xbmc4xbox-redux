@@ -138,7 +138,7 @@ bool CLastFmManager::RadioHandShake()
   CreateMD5Hash(strPassword, passwordmd5);
 
   CStdString url;
-  CUtil::URLEncode(strUserName);
+  CURL::Encode(strUserName);
   url.Format("http://ws.audioscrobbler.com/radio/handshake.php?version=%s&platform=%s&username=%s&passwordmd5=%s&debug=%i&partner=%s", XBMC_LASTFM_VERSION, XBMC_LASTFM_ID, strUserName, passwordmd5, 0, "");
   if (!http.Get(url, html))
   {
@@ -171,7 +171,7 @@ void CLastFmManager::InitProgressDialog(const CStdString& strUrl)
       dlgProgress->SetHeading(15200);
       dlgProgress->SetLine(0, 259);
       CStdString strUrlDec = strUrl;
-      CUtil::URLDecode(strUrlDec);
+      CURL::Decode(strUrlDec);
       dlgProgress->SetLine(1, strUrlDec);
       dlgProgress->SetLine(2, "");
       if (!dlgProgress->IsDialogRunning())

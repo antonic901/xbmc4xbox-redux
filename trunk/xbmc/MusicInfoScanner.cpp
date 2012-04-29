@@ -1150,7 +1150,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
   }
 
   scraper.GetArtist(iSelectedArtist).m_strSearch = strArtist;
-  CUtil::URLEncode(scraper.GetArtist(iSelectedArtist).m_strSearch);
+  CURL::Encode(scraper.GetArtist(iSelectedArtist).m_strSearch);
   scraper.LoadArtistInfo(iSelectedArtist);
 
   while (!scraper.Completed())

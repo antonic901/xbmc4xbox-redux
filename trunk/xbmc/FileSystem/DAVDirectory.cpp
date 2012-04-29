@@ -243,7 +243,7 @@ bool CDAVDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
           {
             CStdString name(item.m_strPath);
             CUtil::RemoveSlashAtEnd(name);
-            CUtil::URLDecode(name);
+            CURL::Decode(name);
             item.SetLabel(CUtil::GetFileName(name));
           }
 

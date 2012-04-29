@@ -107,10 +107,10 @@ void CScrobbler::AddSong(const MUSIC_INFO::CMusicInfoTag &tag, bool lastfmradio)
   m_CurrentTrack.strStartTime.Format("%d", time(NULL));
   m_CurrentTrack.strTrackNum.Format("%d",tag.GetTrackNumber());
   
-  CUtil::URLEncode(m_CurrentTrack.strArtist); 
-  CUtil::URLEncode(m_CurrentTrack.strTitle);
-  CUtil::URLEncode(m_CurrentTrack.strAlbum);
-  CUtil::URLEncode(m_CurrentTrack.strMusicBrainzID);
+  CURL::Encode(m_CurrentTrack.strArtist); 
+  CURL::Encode(m_CurrentTrack.strTitle);
+  CURL::Encode(m_CurrentTrack.strAlbum);
+  CURL::Encode(m_CurrentTrack.strMusicBrainzID);
 
   m_bNotified = false;
   if (lastfmradio)
@@ -180,7 +180,7 @@ void CScrobbler::SetUsername(const CStdString& strUser)
     return;
 
   m_strUsername=strUser;
-  CUtil::URLEncode(m_strUsername);
+  CURL::Encode(m_strUsername);
   m_bBadAuth = false;
 }
 
@@ -344,10 +344,10 @@ bool CScrobbler::LoadJournal()
         continue;
       entry.strStartTime.Format("%d", startt);
       // url encode entries
-      CUtil::URLEncode(entry.strArtist); 
-      CUtil::URLEncode(entry.strTitle);
-      CUtil::URLEncode(entry.strAlbum);
-      CUtil::URLEncode(entry.strMusicBrainzID);
+      CURL::Encode(entry.strArtist); 
+      CURL::Encode(entry.strTitle);
+      CURL::Encode(entry.strAlbum);
+      CURL::Encode(entry.strMusicBrainzID);
     }
     m_vecSubmissionQueue.push_back(entry);
   }

@@ -751,7 +751,7 @@ namespace VIDEO
       if (!bMatched)
       {
         CStdString decode(items[i]->m_strPath);
-        CUtil::URLDecode(decode);
+        CURL::Decode(decode);
         CLog::Log(LOGDEBUG, "VideoInfoScanner: Could not enumerate file %s", decode.c_str());
       }
     }
@@ -765,7 +765,7 @@ namespace VIDEO
 
     CStdString strLabel=item->m_strPath;
     // URLDecode in case an episode is on a http/https/dav/davs:// source and URL-encoded like foo%201x01%20bar.avi
-    CUtil::URLDecode(strLabel);
+    CURL::Decode(strLabel);
     strLabel.MakeLower();
 //    CLog::Log(LOGDEBUG,"running expression %s on label %s",regexp.c_str(),strLabel.c_str());
     int regexppos, regexp2pos;
@@ -857,7 +857,7 @@ namespace VIDEO
 
     CStdString strLabel=item->m_strPath;
     // URLDecode in case an episode is on a http/https/dav/davs:// source and URL-encoded like foo%201x01%20bar.avi
-    CUtil::URLDecode(strLabel);
+    CURL::Decode(strLabel);
     strLabel.MakeLower();
 //    CLog::Log(LOGDEBUG,"running expression %s on label %s",regexp.c_str(),strLabel.c_str());
     int regexppos;

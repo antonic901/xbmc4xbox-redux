@@ -523,7 +523,7 @@ CStdString CUtil::GetTitleFromPath(const CStdString& strFileNameAndPath, bool bI
   }
   
   // URLDecode since the original path may be an URL
-  URLDecode(strFilename);
+  CURL::Decode(strFilename);
   return strFilename;
 }
 
@@ -1892,65 +1892,6 @@ int CUtil::GetDVDIfoTitle(const CStdString& strFile)
   return atoi(strFilename.Mid(4, 2).c_str());
 }
 
-void CUtil::URLDecode(CStdString& strURLData)
-//modified to be more accomodating - if a non hex value follows a % take the characters directly and don't raise an error.
-// However % characters should really be escaped like any other non safe character (www.rfc-editor.org/rfc/rfc1738.txt)
-{
-  CStdString strResult;
-
-  /* result will always be less than source */
-  strResult.reserve( strURLData.length() );
-
-  for (unsigned int i = 0; i < strURLData.size(); ++i)
-  {
-    int kar = (unsigned char)strURLData[i];
-    if (kar == '+') strResult += ' ';
-    else if (kar == '%')
-    {
-      if (i < strURLData.size() - 2)
-      {
-        CStdString strTmp;
-        strTmp.assign(strURLData.substr(i + 1, 2));
-        int dec_num=-1;
-        sscanf(strTmp,"%x",(unsigned int *)&dec_num);
-        if (dec_num<0 || dec_num>255)
-          strResult += kar;
-        else
-        {
-          strResult += (char)dec_num;
-          i += 2;
-        }
-      }
-      else
-        strResult += kar;
-    }
-    else strResult += kar;
-  }
-  strURLData = strResult;
-}
-
-void CUtil::URLEncode(CStdString& strURLData)
-{
-  CStdString strResult;
-
-  /* wonder what a good value is here is, depends on how often it occurs */
-  strResult.reserve( strURLData.length() * 2 );
-
-  for (int i = 0; i < (int)strURLData.size(); ++i)
-  {
-    int kar = (unsigned char)strURLData[i];
-    //if (kar == ' ') strResult += '+';
-    if (isalnum(kar)) strResult += kar;
-    else
-    {
-      CStdString strTmp;
-      strTmp.Format("%%%02.2x", kar);
-      strResult += strTmp;
-    }
-  }
-  strURLData = strResult;
-}
-
 bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon)
 {
   bool success(false);
@@ -2889,13 +2830,13 @@ void CUtil::CreateArchivePath(CStdString& strUrlPath, const CStdString& strType,
   if( !strPwd.IsEmpty() )
   {
     strBuffer = strPwd;
-    CUtil::URLEncode(strBuffer);
+    CURL::Encode(strBuffer);
     strUrlPath += strBuffer;
     strUrlPath += "@";
   }
 
   strBuffer = strArchivePath;
-  CUtil::URLEncode(strBuffer);
+  CURL::Encode(strBuffer);
 
   strUrlPath += strBuffer;
 
@@ -2908,7 +2849,7 @@ void CUtil::CreateArchivePath(CStdString& strUrlPath, const CStdString& strType,
 
 #if 0 // options are not used
   strBuffer = strCachePath;
-  CUtil::URLEncode(strBuffer);
+  CURL::Encode(strBuffer);
 
   strUrlPath += "?cache=";
   strUrlPath += strBuffer;

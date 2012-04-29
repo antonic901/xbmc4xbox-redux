@@ -582,7 +582,7 @@ void CFileCurl::ParseAndCorrectUrl(CURL &url2)
         filename += "/";
 
       partial = *it;
-      CUtil::URLEncode(partial);
+      CURL::Encode(partial);
       filename += partial;
     }
 
@@ -686,7 +686,7 @@ void CFileCurl::ParseAndCorrectUrl(CURL &url2)
         }
 
         // url decode value
-        CUtil::URLDecode(value);
+        CURL::Decode(value);
 
         if(name.Equals("auth"))
         {

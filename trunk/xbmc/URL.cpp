@@ -33,7 +33,7 @@ using namespace std;
 CStdString URLEncodeInline(const CStdString& strData)
 {
   CStdString buffer = strData;
-  CUtil::URLEncode(buffer);
+  CURL::Encode(buffer);
   return buffer;
 }
 
@@ -112,7 +112,7 @@ void CURL::Parse(const CStdString& strURL1)
         if (!(s.st_mode & S_IFDIR))
 #endif
         {
-          CUtil::URLEncode(archiveName);
+          CURL::Encode(archiveName);
           CURL c((CStdString)"zip" + "://" + archiveName + '/' + strURL.Right(strURL.size() - iPos - 1));
           *this = c;
           return;
@@ -307,13 +307,13 @@ void CURL::Parse(const CStdString& strURL1)
   /* decode urlencoding on this stuff */
   if( m_strProtocol.Equals("rar") || m_strProtocol.Equals("zip") || m_strProtocol.Equals("musicsearch"))
   {
-    CUtil::URLDecode(m_strHostName);
+    CURL::Decode(m_strHostName);
     // Validate it as it is likely to contain a filename
     SetHostName(CUtil::ValidatePath(m_strHostName));
   }
 
-  CUtil::URLDecode(m_strUserName);
-  CUtil::URLDecode(m_strPassword);
+  CURL::Decode(m_strUserName);
+  CURL::Decode(m_strPassword);
 }
 
 void CURL::SetFileName(const CStdString& strFileName)
@@ -640,4 +640,63 @@ bool CURL::IsFullPath(const CStdString &url)
   if (url.Find("://") >= 0) return true;                 //   foo://bar.ext
   if (url.size() > 1 && url[1] == ':') return true; //   c:\\foo\\bar\\bar.ext
   return false;
+}
+
+void CURL::Decode(CStdString& strURLData)
+//modified to be more accomodating - if a non hex value follows a % take the characters directly and don't raise an error.
+// However % characters should really be escaped like any other non safe character (www.rfc-editor.org/rfc/rfc1738.txt)
+{
+  CStdString strResult;
+
+  /* result will always be less than source */
+  strResult.reserve( strURLData.length() );
+
+  for (unsigned int i = 0; i < strURLData.size(); ++i)
+  {
+    int kar = (unsigned char)strURLData[i];
+    if (kar == '+') strResult += ' ';
+    else if (kar == '%')
+    {
+      if (i < strURLData.size() - 2)
+      {
+        CStdString strTmp;
+        strTmp.assign(strURLData.substr(i + 1, 2));
+        int dec_num=-1;
+        sscanf(strTmp,"%x",(unsigned int *)&dec_num);
+        if (dec_num<0 || dec_num>255)
+          strResult += kar;
+        else
+        {
+          strResult += (char)dec_num;
+          i += 2;
+        }
+      }
+      else
+        strResult += kar;
+    }
+    else strResult += kar;
+  }
+  strURLData = strResult;
+}
+
+void CURL::Encode(CStdString& strURLData)
+{
+  CStdString strResult;
+
+  /* wonder what a good value is here is, depends on how often it occurs */
+  strResult.reserve( strURLData.length() * 2 );
+
+  for (int i = 0; i < (int)strURLData.size(); ++i)
+  {
+    int kar = (unsigned char)strURLData[i];
+    //if (kar == ' ') strResult += '+';
+    if (isalnum(kar)) strResult += kar;
+    else
+    {
+      CStdString strTmp;
+      strTmp.Format("%%%02.2x", kar);
+      strResult += strTmp;
+    }
+  }
+  strURLData = strResult;
 }

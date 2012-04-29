@@ -2043,7 +2043,7 @@ public:
         NPT_String path = "upnp://"+device->GetUUID()+"/";
         if (!NPT_StringsEqual(item_id, "0")) {
             CStdString id = item_id;
-            CUtil::URLEncode(id);
+            CURL::Encode(id);
             path += id.c_str();
             path += "/";
         }

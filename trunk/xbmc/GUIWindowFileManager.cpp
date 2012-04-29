@@ -842,7 +842,7 @@ bool CGUIWindowFileManager::DoProcess(int iAction, CFileItemList & items, const 
 
       // URL Decode for cases where source uses URL encoding
       if ( CUtil::IsInternetStream(pItem->m_strPath, true) )
-        CUtil::URLDecode(strFileName);
+        CURL::Decode(strFileName);
 
       // special case for upnp
       if (CUtil::IsUPnP(items.m_strPath) || CUtil::IsUPnP(pItem->m_strPath))
