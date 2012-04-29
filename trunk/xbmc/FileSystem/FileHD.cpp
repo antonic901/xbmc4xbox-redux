@@ -233,3 +233,15 @@ void CFileHD::Flush()
 {
   ::FlushFileBuffers(m_hFile);
 }
+
+int CFileHD::IoControl(EIoControl request, void* param)
+{
+#ifdef _LINUX
+  if(request == IOCTRL_NATIVE && param)
+  {
+    SNativeIoControl* s = (SNativeIoControl*)param;
+    return ioctl((*m_hFile).fd, s->request, s->param);
+  }
+#endif
+  return -1;
+}

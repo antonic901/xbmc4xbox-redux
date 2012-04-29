@@ -61,7 +61,6 @@ public:
 #define READ_BITRATE   0x10
 
 class CFileStreamBuffer;
-class ICacheInterface;
 
 class CFile
 {
@@ -94,11 +93,9 @@ public:
   bool SkipNext(){if (m_pFile) return m_pFile->SkipNext(); return false;}
   BitstreamStats* GetBitstreamStats() { return m_bitStreamStats; }
 
-  ICacheInterface* GetCache() {if (m_pFile) return m_pFile->GetCache(); return NULL;}
+  int IoControl(EIoControl request, void* param);
 
   IFile *GetImplemenation() { return m_pFile; }
-  IFile *Detach();
-  void   Attach(IFile *pFile, unsigned int flags = 0);
 
   static bool Exists(const CStdString& strFileName, bool bUseCache = true);
   static int  Stat(const CStdString& strFileName, struct __stat64* buffer);

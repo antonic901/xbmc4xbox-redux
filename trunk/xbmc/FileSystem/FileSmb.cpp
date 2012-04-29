@@ -494,12 +494,10 @@ unsigned int CFileSMB::Read(void *lpBuf, __int64 uiBufSize)
 __int64 CFileSMB::Seek(__int64 iFilePosition, int iWhence)
 {
   if (m_fd == -1) return -1;
-  if(iWhence == SEEK_POSSIBLE)
-    return 1;
 
   CSingleLock lock(smb); // Init not called since it has to be "inited" by now
 
-  INT64 pos = smbc_lseek(m_fd, iFilePosition, iWhence);
+  __int64 pos = smbc_lseek(m_fd, iFilePosition, iWhence);
   
 //  CLog::Log(LOGDEBUG, "%s - iFilePosition=%"PRId64", pos=%"PRId64, __FUNCTION__, iFilePosition, pos);
 

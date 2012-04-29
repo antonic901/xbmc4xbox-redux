@@ -30,14 +30,31 @@
 
 #include "URL.h"
 
-#include <stdio.h>
-
-#define SEEK_POSSIBLE 0x10 // flag used to check if protocol allows seeks
+#include <sys/stat.h>
 
 namespace XFILE
 {
 
-class ICacheInterface;
+struct SNativeIoControl
+{
+  int   request;
+  void* param;
+};
+
+struct SCacheStatus
+{
+  __int64 forward;  /**< number of bytes cached forward of current position */
+  unsigned maxrate;  /**< maximum number of bytes per second cache is allowed to fill */
+  unsigned currate;  /**< average read rate from source file since last position change */
+  bool     full;     /**< is the cache full */
+};
+
+typedef enum {
+  IOCTRL_NATIVE        = 1, /**< SNativeIoControl structure, containing what should be passed to native ioctrl */
+  IOCTRL_SEEK_POSSIBLE = 2, /**< return 0 if known not to work, 1 if it should work */
+  IOCTRL_CACHE_STATUS  = 3, /**< SCacheStatus structure */
+  IOCTRL_CACHE_SETRATE = 4, /**< unsigned int with speed limit for caching in bytes per second */
+} EIoControl;
 
 class IFile
 {
@@ -49,60 +66,10 @@ public:
   virtual bool OpenForWrite(const CURL& url, bool bOverWrite = false) { return false; };
   virtual bool Exists(const CURL& url) = 0;
   virtual int Stat(const CURL& url, struct __stat64* buffer) = 0;
-  virtual int Stat(struct __stat64* buffer)
-  {
-    memset(buffer, 0, sizeof (buffer));
-    errno = ENOENT;
-    return -1;
-  }
+  virtual int Stat(struct __stat64* buffer);
   virtual unsigned int Read(void* lpBuf, __int64 uiBufSize) = 0;
   virtual int Write(const void* lpBuf, __int64 uiBufSize) { return -1;};
-  virtual bool ReadString(char *szLine, int iLineLength)
-  {
-    if(Seek(0, SEEK_CUR) < 0) return false;
-
-    __int64 iFilePos = GetPosition();
-    int iBytesRead = Read( (unsigned char*)szLine, iLineLength - 1);
-    if (iBytesRead <= 0)
-      return false;
-
-    szLine[iBytesRead] = 0;
-
-    for (int i = 0; i < iBytesRead; i++)
-    {
-      if ('\n' == szLine[i])
-      {
-        if ('\r' == szLine[i + 1])
-        {
-          szLine[i + 1] = 0;
-          Seek(iFilePos + i + 2, SEEK_SET);
-        }
-        else
-        {
-          // end of line
-          szLine[i + 1] = 0;
-          Seek(iFilePos + i + 1, SEEK_SET);
-        }
-        break;
-      }
-      else if ('\r' == szLine[i])
-      {
-        if ('\n' == szLine[i + 1])
-        {
-          szLine[i + 1] = 0;
-          Seek(iFilePos + i + 2, SEEK_SET);
-        }
-        else
-        {
-          // end of line
-          szLine[i + 1] = 0;
-          Seek(iFilePos + i + 1, SEEK_SET);
-        }
-        break;
-      }
-    }
-    return true;
-  }
+  virtual bool ReadString(char *szLine, int iLineLength);
   virtual __int64 Seek(__int64 iFilePosition, int iWhence = SEEK_SET) = 0;
   virtual void Close() = 0;
   virtual __int64 GetPosition() = 0;
@@ -121,8 +88,9 @@ public:
 
   virtual bool Delete(const CURL& url) { return false; }
   virtual bool Rename(const CURL& url, const CURL& urlnew) { return false; }
+  virtual bool SetHidden(const CURL& url, bool hidden) { return false; }
 
-  virtual ICacheInterface* GetCache() {return NULL;}
+  virtual int IoControl(EIoControl request, void* param) { return -1; }
 
   virtual CStdString GetContent()                            { return "application/octet-stream"; }
 };
@@ -131,13 +99,16 @@ class CRedirectException
 {
 public:
   IFile *m_pNewFileImp;
+  CURL  *m_pNewUrl;
 
-  CRedirectException() : m_pNewFileImp(NULL) { }
-  CRedirectException(IFile *pNewFileImp) : m_pNewFileImp(pNewFileImp) { }
+  CRedirectException() : m_pNewFileImp(NULL), m_pNewUrl(NULL) { }
+  
+  CRedirectException(IFile *pNewFileImp, CURL *pNewUrl=NULL) 
+  : m_pNewFileImp(pNewFileImp)
+  , m_pNewUrl(pNewUrl) 
+  { }
 };
 
-};
+}
 
 #endif // !defined(AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_)
-
-

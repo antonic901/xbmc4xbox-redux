@@ -55,7 +55,8 @@ namespace XFILE
     virtual __int64       GetPosition();
     virtual __int64       GetLength();
 
-    virtual ICacheInterface* GetCache();
+    virtual int           IoControl(EIoControl request, void* param);
+
     IFile *GetFileImp();
 
     virtual CStdString GetContent();
@@ -63,7 +64,7 @@ namespace XFILE
   private:
     CCacheStrategy *m_pCache;
     bool      m_bDeleteCache;
-    int64_t    m_seekPossible;
+    int    m_seekPossible;
     CFile      m_source;
     CStdString    m_sourcePath;
     CEvent      m_seekEvent;
