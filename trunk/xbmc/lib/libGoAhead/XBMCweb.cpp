@@ -145,7 +145,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     // recursive
     if (pItem->IsParentFolder()) return;
 
-    CStdString strDirectory=pItem->m_strPath;
+    CStdString strDirectory=pItem->GetPath();
     CFileItemList items;
     directory->GetDirectory(strDirectory, items);
 
@@ -158,7 +158,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   else if (pItem->IsZIP() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
   {
     CStdString strDirectory;
-    URIUtils::CreateArchivePath(strDirectory, "zip", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strDirectory, "zip", pItem->GetPath(), "");
     CFileItemList items;
     directory->GetDirectory(strDirectory, items);
 
@@ -171,7 +171,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   else if (pItem->IsRAR() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
   {
     CStdString strDirectory;
-    URIUtils::CreateArchivePath(strDirectory, "rar", pItem->m_strPath, "");
+    URIUtils::CreateArchivePath(strDirectory, "rar", pItem->GetPath(), "");
     CFileItemList items;
     directory->GetDirectory(strDirectory, items);
 
@@ -466,7 +466,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
         if( selectionNumber >= 0 && selectionNumber < iItemCount)
         {
           CFileItemPtr itm = webDirItems->Get(selectionNumber);
-          strcpy(buffer, itm->m_strPath);
+          strcpy(buffer, itm->GetPath());
           output = buffer;
         }
       }
@@ -691,18 +691,18 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
           if (itm->IsZIP()) // mount zip archive
           {
             CMediaSource shareZip;
-            URIUtils::CreateArchivePath(shareZip.strPath,"zip",itm->m_strPath,"");
-            itm->m_strPath = shareZip.strPath;
+            URIUtils::CreateArchivePath(shareZip.strPath,"zip",itm->GetPath(),"");
+            itm->SetPath(shareZip.strPath);
             itm->m_bIsFolder = true;
           }
           else if (itm->IsRAR()) // mount rar archive
           {
             CMediaSource shareRar;
             CStdString strRarPath;
-            URIUtils::CreateArchivePath(strRarPath,"rar",itm->m_strPath,"");
+            URIUtils::CreateArchivePath(strRarPath,"rar",itm->GetPath(),"");
             shareRar.strPath = strRarPath;
 
-            itm->m_strPath = shareRar.strPath;
+            itm->SetPath(shareRar.strPath);
             itm->m_bIsFolder = true;
           }
 
@@ -719,7 +719,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               if (stricmp(temp,"zip://") == 0) // unmount archive
                 g_ZipManager.release(currentDir);
             }
-            CStdString strDirectory = itm->m_strPath;
+            CStdString strDirectory = itm->GetPath();
             CStdString strParentPath;
             webDirItems->Clear();
 
@@ -736,7 +736,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               {
                 // yes
                 CFileItemPtr pItem(new CFileItem(".."));
-                pItem->m_strPath=strParentPath;
+                pItem->SetPath(strParentPath);
                 pItem->m_bIsFolder=true;
                 pItem->m_bIsShareOrDrive=false;
                 webDirItems->Add(pItem);
@@ -747,7 +747,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               // yes, this is the root of a share
               // add parent path to the virtual directory
               CFileItemPtr pItem(new CFileItem(".."));
-              pItem->m_strPath="";
+              pItem->SetPath("");
               pItem->m_bIsShareOrDrive=false;
               pItem->m_bIsFolder=true;
               webDirItems->Add(pItem);
@@ -774,7 +774,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                 if ( NULL != pPlayList.get())
                 {
                   // load it
-                  if (!pPlayList->Load(itm->m_strPath))
+                  if (!pPlayList->Load(itm->GetPath()))
                   {
                     //hmmm unable to load playlist?
                     return -1;
@@ -789,7 +789,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                   {
                     CFileItemPtr playlistItem =(*pPlayList)[i];
                     if (playlistItem->GetLabel().IsEmpty())
-                      playlistItem->SetLabel(URIUtils::GetFileName(playlistItem->m_strPath));
+                      playlistItem->SetLabel(URIUtils::GetFileName(playlistItem->GetPath()));
                     playlist.Add(playlistItem);
                   }
 
@@ -807,14 +807,14 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                 // just play the file
                 SetCurrentMediaItem(*itm);
                 g_applicationMessenger.MediaStop();
-                g_applicationMessenger.MediaPlay(itm->m_strPath);
+                g_applicationMessenger.MediaPlay(itm->GetPath());
               }
             }
             else
             {
               if (GetNavigatorState() == WEB_NAV_PICTURES)
               {
-                g_applicationMessenger.PictureShow(itm->m_strPath);
+                g_applicationMessenger.PictureShow(itm->GetPath());
               }
             }
           }
@@ -830,9 +830,9 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
 /* Play */
 int CXbmcWeb::xbmcPlayerPlay( int eid, webs_t wp, char_t *parameter)
 {
-  if (currentMediaItem->m_strPath.size() > 0)
+  if (currentMediaItem->GetPath().size() > 0)
   {
-    g_applicationMessenger.MediaPlay(currentMediaItem->m_strPath);
+    g_applicationMessenger.MediaPlay(currentMediaItem->GetPath());
   }
   else
   {
@@ -971,7 +971,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (musicdatabase.Open())
   {
     CSong song;
-    bFound=musicdatabase.GetSongByFileName(newItem.m_strPath, song);
+    bFound=musicdatabase.GetSongByFileName(newItem.GetPath(), song);
     tag->SetSong(song);
     musicdatabase.Close();
   }
@@ -979,10 +979,10 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (!bFound && g_guiSettings.GetBool("musicfiles.usetags"))
   {
     //	...no, try to load the tag of the file.
-    auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem.m_strPath));
+    auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem.GetPath()));
     //	Do we have a tag loader for this file type?
     if (pLoader.get() != NULL)
-      pLoader->Load(newItem.m_strPath,*tag);
+      pLoader->Load(newItem.GetPath(),*tag);
   }
 
   //	If we have tag information, ...

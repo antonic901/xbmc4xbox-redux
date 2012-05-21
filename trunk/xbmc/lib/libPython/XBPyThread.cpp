@@ -165,7 +165,7 @@ void XBPyThread::Process()
       CFileItemPtr pItem = items[i];
       if (pItem->m_bIsFolder)
       {
-        CStdString fullpath = URIUtils::AddFileToFolder(pItem->m_strPath, "lib");
+        CStdString fullpath = URIUtils::AddFileToFolder(pItem->GetPath(), "lib");
         path += PY_PATH_SEP + fullpath;
       }
     }

@@ -105,7 +105,7 @@ namespace PYXBMC
     }
     if (path && PyXBMCGetUnicodeString(utf8String, path, 1))
     {
-      self->item->m_strPath = utf8String;
+      self->item->SetPath(utf8String);
     }
     return (PyObject*)self;
   }
@@ -563,7 +563,7 @@ namespace PYXBMC
           if (strcmpi(PyString_AsString(key), "title") == 0)
             self->item->m_strTitle = tmp;
           else if (strcmpi(PyString_AsString(key), "picturepath") == 0)
-            self->item->m_strPath = tmp;
+            self->item->SetPath(tmp);
           else if (strcmpi(PyString_AsString(key), "date") == 0)
           {
             if (strlen(tmp) == 10)
@@ -814,7 +814,7 @@ namespace PYXBMC
       return NULL;
     // set path
     PyXBMCGUILock();
-    self->item->m_strPath = path;
+    self->item->SetPath(path);
     PyXBMCGUIUnlock();
 
     Py_INCREF(Py_None);

@@ -57,7 +57,7 @@ bool CPlayListDirectory::GetDirectory(const CStdString& strPath, VECFILEITEMS &i
     {
       CFileItem* pItem = tmpitems[i];
       CStdString strPlayListName, strPlayList;
-      strPlayList = URIUtils::GetFileName( pItem->m_strPath );
+      strPlayList = URIUtils::GetFileName( pItem->GetPath() );
       strPlayListName = URIUtils::GetFileName( strPlayList );
       delete pItem;
 
@@ -85,7 +85,7 @@ bool CPlayListDirectory::GetDirectory(const CStdString& strPath, VECFILEITEMS &i
   // yes, first add parent path
   {
     CFileItem *pItem = new CFileItem("..");
-    pItem->m_strPath = "";
+    pItem->SetPath("");
     pItem->m_bIsFolder = true;
     pItem->m_bIsShareOrDrive = false;
     items.push_back(pItem);
@@ -106,7 +106,7 @@ bool CPlayListDirectory::GetDirectory(const CStdString& strPath, VECFILEITEMS &i
       CStdString strLabel;
       strLabel = URIUtils::GetFileName( playlistItem.GetFileName() );
       CFileItem* pItem = new CFileItem(strLabel);
-      pItem->m_strPath = playlistItem.GetFileName();
+      pItem->SetPath(playlistItem.GetFileName());
       pItem->m_bIsFolder = false;
       pItem->m_bIsShareOrDrive = false;
       items.push_back(pItem);

@@ -78,14 +78,14 @@ bool CFTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
       CFileItemPtr pItem(new CFileItem(name));
 
-      pItem->m_strPath = path + name;
+      CStdString filePath = path + name;
       pItem->m_bIsFolder = (bool)(lp.flagtrycwd != 0);
       if (pItem->m_bIsFolder)
-        URIUtils::AddSlashAtEnd(pItem->m_strPath);
+        URIUtils::AddSlashAtEnd(filePath);
 
       /* qualify the url with host and all */
-      url.SetFileName(pItem->m_strPath);
-      pItem->m_strPath = url.Get();
+      url.SetFileName(filePath);
+      pItem->SetPath(url.Get());
 
       pItem->m_dwSize = lp.size;
       pItem->m_dateTime=lp.mtime;

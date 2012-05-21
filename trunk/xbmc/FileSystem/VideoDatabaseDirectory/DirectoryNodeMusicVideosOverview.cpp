@@ -67,7 +67,7 @@ bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items)
     CFileItemPtr pItem(new CFileItem(vecRoot[i]));
     CStdString strDir;
     strDir.Format("%i/", i+1);
-    pItem->m_strPath = BuildPath() + strDir;
+    pItem->SetPath(BuildPath() + strDir);
     pItem->m_bIsFolder = true;
     pItem->SetCanQueue(false);
     items.Add(pItem);

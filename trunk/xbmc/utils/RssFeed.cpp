@@ -146,27 +146,27 @@ bool CRssFeed::ReadFeed()
 		  {
             // If this is an rss item, we treat it as another level in the directory
             item->m_bIsFolder = true;
-            item->m_strPath = strLink;
+            item->SetPath(strLink);
           }
-          else if (item->m_strPath == "" && IsPathToMedia(strLink))
-            item->m_strPath = strLink;
+          else if (item->GetPath() == "" && IsPathToMedia(strLink))
+            item->SetPath(strLink);
         }
       }
       else if(strcmp(item_child->Value(), "enclosure") == 0)
 	  {
         const char * url = item_child->Attribute("url");
-        if (url && item->m_strPath.IsEmpty() && IsPathToMedia(url))
-          item->m_strPath = url;
+        if (url && item->GetPath().IsEmpty() && IsPathToMedia(url))
+          item->SetPath(url);
         const char * content_type = item_child->Attribute("type");
         if (content_type)
 		{
           item->SetMimeType(content_type);
           CStdString strContentType(content_type);
-          if (url && item->m_strPath.IsEmpty() &&  
+          if (url && item->GetPath().IsEmpty() &&  
             (strContentType.Left(6).Equals("video/") ||
              strContentType.Left(6).Equals("audio/") 
             ))
-            item->m_strPath = url;
+            item->SetPath(url);
         }
         const char * len = item_child->Attribute("length");
         if (len)  
@@ -175,19 +175,19 @@ bool CRssFeed::ReadFeed()
       else if(strcmp(item_child->Value(), "media:content") == 0)
 	  {
         const char * url = item_child->Attribute("url");
-        if (url && item->m_strPath == "" && IsPathToMedia(url))
-          item->m_strPath = url;
+        if (url && item->GetPath() == "" && IsPathToMedia(url))
+          item->SetPath(url);
         
         const char * content_type = item_child->Attribute("type");
         if (content_type)
 		{
           item->SetMimeType(content_type);
           CStdString strContentType(content_type);
-          if (url && item->m_strPath.IsEmpty() &&  
+          if (url && item->GetPath().IsEmpty() &&  
             (strContentType.Left(6).Equals("video/") ||
              strContentType.Left(6).Equals("audio/") 
             ))
-            item->m_strPath = url;
+            item->SetPath(url);
         }
 
         // Go over all child nodes of the media content and get the thumbnail
@@ -201,10 +201,10 @@ bool CRssFeed::ReadFeed()
       }
       else if(strcmp(item_child->Value(), "guid") == 0)
 	  {
-        if (item->m_strPath.IsEmpty() && IsPathToMedia(item_child->Value()))
+        if (item->GetPath().IsEmpty() && IsPathToMedia(item_child->Value()))
 		{
           if(item_child->GetText())
-            item->m_strPath = item_child->GetText();
+            item->SetPath(item_child->GetText());
         }
       }
       else if(strcmp(item_child->Value(), "media:thumbnail") == 0 && IsPathToThumbnail(item_child->GetText())) 
@@ -280,7 +280,7 @@ bool CRssFeed::ReadFeed()
     item->SetProperty("isrss", "1");
     item->SetProperty("chanthumb",strMediaThumbnail);
 
-    if (!item->m_strPath.IsEmpty())
+    if (!item->GetPath().IsEmpty())
     {
       EnterCriticalSection(m_ItemVectorLock);
       items.Add(item);

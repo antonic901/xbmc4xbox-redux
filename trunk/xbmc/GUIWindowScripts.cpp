@@ -68,8 +68,8 @@ bool CGUIWindowScripts::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      if (m_vecItems->m_strPath == "?")
-        m_vecItems->m_strPath = "Q:\\scripts"; //g_stSettings.m_szDefaultScripts;
+      if (m_vecItems->GetPath() == "?")
+        m_vecItems->SetPath("Q:\\scripts"); //g_stSettings.m_szDefaultScripts;
 
       return CGUIMediaWindow::OnMessage(message);
     }
@@ -99,7 +99,7 @@ bool CGUIWindowScripts::Update(const CStdString &strDirectory)
       for (int i = 0; i < m_vecItems->Size(); i++)
       {
         CFileItemPtr pItem = m_vecItems->Get(i);
-        if (pItem->m_strPath == filename)
+        if (pItem->GetPath() == filename)
         {
             CStdString runningLabel = pItem->GetLabel() + " (";
             if (g_pythonParser.isStopping(id))
@@ -118,7 +118,7 @@ bool CGUIWindowScripts::Update(const CStdString &strDirectory)
 bool CGUIWindowScripts::OnPlayMedia(int iItem)
 {
   CFileItemPtr pItem=m_vecItems->Get(iItem);
-  CStdString strPath = pItem->m_strPath;
+  CStdString strPath = pItem->GetPath();
 
   /* execute script...
     * if script is already running do not run it again but stop it.
@@ -135,7 +135,7 @@ bool CGUIWindowScripts::OnPlayMedia(int iItem)
 
       // update items
       int selectedItem = m_viewControl.GetSelectedItem();
-      Update(m_vecItems->m_strPath);
+      Update(m_vecItems->GetPath());
       m_viewControl.SetSelectedItem(selectedItem);
       return true;
     }
@@ -161,7 +161,7 @@ void CGUIWindowScripts::FrameMove()
   if (g_pythonParser.ScriptsSize() != m_scriptSize)
   {
     int selectedItem = m_viewControl.GetSelectedItem();
-    Update(m_vecItems->m_strPath);
+    Update(m_vecItems->GetPath());
     m_viewControl.SetSelectedItem(selectedItem);
     m_scriptSize = g_pythonParser.ScriptsSize();
   }
@@ -181,11 +181,11 @@ bool CGUIWindowScripts::GetDirectory(const CStdString& strDirectory, CFileItemLi
     if (item->m_bIsFolder && !item->IsParentFolder() && !item->m_bIsShareOrDrive && !item->GetLabel().Left(1).Equals("."))
     { // folder item - let's check for a default.py file, and flatten if we have one
       CStdString defaultPY;
-      URIUtils::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
+      URIUtils::AddFileToFolder(item->GetPath(), "default.py", defaultPY);
 
       if (CFile::Exists(defaultPY))
       { // yes, format the item up
-        item->m_strPath = defaultPY;
+        item->SetPath(defaultPY);
         item->m_bIsFolder = false;
         item->FillInDefaultIcon();
         item->SetLabelPreformated(true);
@@ -212,7 +212,7 @@ void CGUIWindowScripts::GetContextButtons(int itemNumber, CContextButtons &butto
   if (item && item->IsPythonScript())
   {
     CStdString path, filename;
-    URIUtils::Split(item->m_strPath, path, filename);
+    URIUtils::Split(item->GetPath(), path, filename);
     if (CScriptSettings::SettingsExist(path))
       buttons.Add(CONTEXT_BUTTON_SCRIPT_SETTINGS, 1049);
   }
@@ -231,18 +231,18 @@ bool CGUIWindowScripts::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   else if (button == CONTEXT_BUTTON_SCRIPT_SETTINGS)
   {
     CStdString path, filename;
-    URIUtils::Split(m_vecItems->Get(itemNumber)->m_strPath, path, filename);
+    URIUtils::Split(m_vecItems->Get(itemNumber)->GetPath(), path, filename);
     if(CGUIDialogPluginSettings::ShowAndGetInput(path))
-      Update(m_vecItems->m_strPath);
+      Update(m_vecItems->GetPath());
     return true;
   }
   else if (button == CONTEXT_BUTTON_DELETE)
   {
     CStdString path;
-    URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,path);
+    URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),path);
     CFileItem item2(path,true);
     if (CGUIWindowFileManager::DeleteItem(&item2))
-      Update(m_vecItems->m_strPath);
+      Update(m_vecItems->GetPath());
 
     return true;
   }

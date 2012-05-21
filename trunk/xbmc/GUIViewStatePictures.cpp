@@ -55,12 +55,12 @@ CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& it
     SetViewAsControl(g_stSettings.m_viewStatePictures.m_viewMode);
     SetSortOrder(g_stSettings.m_viewStatePictures.m_sortOrder);
   }
-  LoadViewState(items.m_strPath, WINDOW_PICTURES);
+  LoadViewState(items.GetPath(), WINDOW_PICTURES);
 }
 
 void CGUIViewStateWindowPictures::SaveViewState()
 {
-    SaveViewToDb(m_items.m_strPath, WINDOW_PICTURES, &g_stSettings.m_viewStatePictures);
+    SaveViewToDb(m_items.GetPath(), WINDOW_PICTURES, &g_stSettings.m_viewStatePictures);
 }
 
 CStdString CGUIViewStateWindowPictures::GetLockType()

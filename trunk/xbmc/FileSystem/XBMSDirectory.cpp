@@ -216,13 +216,13 @@ bool CXBMSDirectory::GetDirectory(const CStdString& strPathUtf8, CFileItemList &
 
     }
 
-
-    pItem->m_strPath = strRoot;
-    pItem->m_strPath += filename;
-    g_charsetConverter.unknownToUTF8(pItem->m_strPath);
+    CStdString path;
+    path = strRoot + filename;
+    g_charsetConverter.unknownToUTF8(path);
     pItem->m_bIsFolder = bIsDirectory;
     if (pItem->m_bIsFolder)
-      URIUtils::AddSlashAtEnd(pItem->m_strPath);
+      URIUtils::AddSlashAtEnd(path);
+    pItem->SetPath(path);
 
     items.Add(pItem);
 
@@ -279,8 +279,9 @@ static void DiscoveryCallback(const char *addr, const char *port, const char *ve
   // Add to items
   g_charsetConverter.unknownToUTF8(itemName);
   CFileItemPtr pItem(new CFileItem(itemName));
-  pItem->m_strPath = strPath;
-  g_charsetConverter.unknownToUTF8(pItem->m_strPath);
+  CStdString path(strPath);
+  g_charsetConverter.unknownToUTF8(path);
+  pItem->SetPath(path);
   pItem->m_bIsFolder = true;
   pItem->m_bIsShareOrDrive = true;
   pItem->SetIconImage("DefaultNetwork.png");

@@ -812,7 +812,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   bool bFileIsDVDIfoFile(false);
   
   starttime = 0;
-  CStdString strFile = file.m_strPath;
+  CStdString strFile = file.GetPath();
 
   /* use our own protocol for ftp to avoid using mplayer's builtin */
   // not working well with seeking.. curl locks up for some reason. think it's the thread handover

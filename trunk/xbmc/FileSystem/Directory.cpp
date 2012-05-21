@@ -49,7 +49,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
 
     // check our cache for this path
     if (g_directoryCache.GetDirectory(strPath, items, cacheDirectory == DIR_CACHE_ALWAYS))
-      items.m_strPath = strPath;
+      items.SetPath(strPath);
     else
     {
       // need to clear the cache (in case the directory fetch fails)
@@ -62,7 +62,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
       pDirectory->SetUseFileDirectories(bUseFileDirectories);
       pDirectory->SetExtFileInfo(extFileInfo);
 
-      items.m_strPath = strPath;
+      items.SetPath(strPath);
 
       if (!pDirectory->GetDirectory(strPath, items))
       {
@@ -80,7 +80,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
-      if ((!item->m_bIsFolder && !pDirectory->IsAllowed(item->m_strPath)) ||
+      if ((!item->m_bIsFolder && !pDirectory->IsAllowed(item->GetPath())) ||
           (item->GetPropertyBOOL("file:hidden") && !g_guiSettings.GetBool("filelists.showhidden")))
       {
         items.Remove(i);
@@ -184,7 +184,7 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const CStdString &m
     CFileItemPtr pItem=items[i];
     if ((!pItem->m_bIsFolder) && (!pItem->IsInternetStream()))
     {
-      auto_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->m_strPath,pItem.get(),mask));
+      auto_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetPath(),pItem.get(),mask));
       if (pDirectory.get())
         pItem->m_bIsFolder = true;
       else

@@ -85,7 +85,7 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
   if (url.GetProtocol() == "lastfm")
     return new CGUIViewStateMusicLastFM(items);
 
-  if (items.m_strPath == "special://musicplaylists/")
+  if (items.GetPath() == "special://musicplaylists/")
     return new CGUIViewStateWindowMusicSongs(items);
   
   if (windowId==WINDOW_MUSIC_NAV)
@@ -410,12 +410,12 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
   SetSortOrder(SORT_ORDER_ASC);
-  LoadViewState(items.m_strPath, g_windowManager.GetActiveWindow());
+  LoadViewState(items.GetPath(), g_windowManager.GetActiveWindow());
 }
 
 void CGUIViewStateFromItems::SaveViewState()
 {
-  SaveViewToDb(m_items.m_strPath, g_windowManager.GetActiveWindow());
+  SaveViewToDb(m_items.GetPath(), g_windowManager.GetActiveWindow());
 }
 
 

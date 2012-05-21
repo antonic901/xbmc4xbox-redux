@@ -719,13 +719,14 @@ void CMusicDatabase::GetFileItemFromDataset(CFileItem* item, const CStdString& s
   // Get filename with full path
   if (strMusicDBbasePath.IsEmpty())
   {
-    item->m_strPath = strRealPath;
+    item->SetPath(strRealPath);
   }
   else
   {
     CStdString strFileName=m_pDS->fv(song_strFileName).get_asString();
     CStdString strExt=URIUtils::GetExtension(strFileName);
-    item->m_strPath.Format("%s%ld%s", strMusicDBbasePath.c_str(), m_pDS->fv(song_idSong).get_asInt(), strExt.c_str());
+    CStdString path; path.Format("%s%ld%s", strMusicDBbasePath.c_str(), m_pDS->fv(song_idSong).get_asInt(), strExt.c_str());
+    item->SetPath(path);
   }
 }
 
@@ -2477,7 +2478,7 @@ bool CMusicDatabase::GetGenresNav(const CStdString& strBaseDir, CFileItemList& i
       pItem->GetMusicInfoTag()->SetGenre(m_pDS->fv("strGenre").get_asString());
       CStdString strDir;
       strDir.Format("%ld/", m_pDS->fv("idGenre").get_asInt());
-      pItem->m_strPath=strBaseDir + strDir;
+      pItem->SetPath(strBaseDir + strDir);
       pItem->m_bIsFolder=true;
       items.Add(pItem);
 
@@ -2525,7 +2526,7 @@ bool CMusicDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& it
       pItem->GetMusicInfoTag()->SetReleaseDate(stTime);
       CStdString strDir;
       strDir.Format("%ld/", m_pDS->fv("iYear").get_asInt());
-      pItem->m_strPath=strBaseDir + strDir;
+      pItem->SetPath(strBaseDir + strDir);
       pItem->m_bIsFolder=true;
       items.Add(pItem);
 
@@ -2676,7 +2677,7 @@ bool CMusicDatabase::GetArtistsNav(const CStdString& strBaseDir, CFileItemList& 
       CStdString strDir;
       int idArtist = m_pDS->fv("idArtist").get_asInt();
       strDir.Format("%ld/", idArtist);
-      pItem->m_strPath=strBaseDir + strDir;
+      pItem->SetPath(strBaseDir + strDir);
       pItem->m_bIsFolder=true;
       if (CFile::Exists(pItem->GetCachedArtistThumb()))
         pItem->SetThumbnailImage(pItem->GetCachedArtistThumb());

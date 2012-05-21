@@ -245,7 +245,7 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
   CGUIListItem::operator=(item);
   m_bLabelPreformated=item.m_bLabelPreformated;
   FreeMemory();
-  m_strPath = item.m_strPath;
+  m_strPath = item.GetPath();
   m_bIsParentFolder = item.m_bIsParentFolder;
   m_iDriveType = item.m_iDriveType;
   m_bIsShareOrDrive = item.m_bIsShareOrDrive;
@@ -1095,7 +1095,7 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
   if (!item)
     return false;
 
-  if (item->m_strPath == m_strPath && item->m_lStartOffset == m_lStartOffset) return true;
+  if (item->GetPath() == m_strPath && item->m_lStartOffset == m_lStartOffset) return true;
   if (IsMusicDb() && HasMusicInfoTag())
   {
     CFileItem dbItem(m_musicInfoTag->GetURL(), false);
@@ -1121,7 +1121,7 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
     return IsSamePath(&dbItem);
   }
   if (HasProperty("original_listitem_url"))
-    return (GetProperty("original_listitem_url") == item->m_strPath);
+    return (GetProperty("original_listitem_url") == item->GetPath());
   return false;
 }
 
@@ -1141,11 +1141,9 @@ CFileItemList::CFileItemList()
   m_replaceListing = false;
 }
 
-CFileItemList::CFileItemList(const CStdString& strPath)
+CFileItemList::CFileItemList(const CStdString& strPath) : CFileItem(strPath, true)
 {
-  m_strPath=strPath;
   m_fastLookup = false;
-  m_bIsFolder=true;
   m_cacheToDisc=CACHE_IF_SLOW;
   m_sortMethod=SORT_METHOD_NONE;
   m_sortOrder=SORT_ORDER_NONE;
@@ -1187,7 +1185,8 @@ void CFileItemList::SetFastLookup(bool fastLookup)
     for (unsigned int i=0; i < m_items.size(); i++)
     {
       CFileItemPtr pItem = m_items[i];
-      CStdString path(pItem->m_strPath); path.ToLower();
+      CStdString path(pItem->GetPath());
+      path.ToLower();
       m_map.insert(MAPFILEITEMSPAIR(path, pItem));
     }
   }
@@ -1201,14 +1200,15 @@ bool CFileItemList::Contains(const CStdString& fileName) const
   CSingleLock lock(m_lock);
 
   // checks case insensitive
-  CStdString checkPath(fileName); checkPath.ToLower();
+  CStdString checkPath(fileName);
+  checkPath.ToLower();
   if (m_fastLookup)
     return m_map.find(checkPath) != m_map.end();
   // slow method...
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     const CFileItemPtr pItem = m_items[i];
-    if (pItem->m_strPath.Equals(checkPath))
+    if (pItem->GetPath().Equals(checkPath))
       return true;
   }
   return false;
@@ -1248,7 +1248,8 @@ void CFileItemList::Add(const CFileItemPtr &pItem)
   m_items.push_back(pItem);
   if (m_fastLookup)
   {
-    CStdString path(pItem->m_strPath); path.ToLower();
+    CStdString path(pItem->GetPath());
+    path.ToLower();
     m_map.insert(MAPFILEITEMSPAIR(path, pItem));
   }
 }
@@ -1267,7 +1268,8 @@ void CFileItemList::AddFront(const CFileItemPtr &pItem, int itemPosition)
   }
   if (m_fastLookup)
   {
-    CStdString path(pItem->m_strPath); path.ToLower();
+    CStdString path(pItem->GetPath());
+    path.ToLower();
     m_map.insert(MAPFILEITEMSPAIR(path, pItem));
   }
 }
@@ -1283,7 +1285,8 @@ void CFileItemList::Remove(CFileItem* pItem)
       m_items.erase(it);
       if (m_fastLookup)
       {
-        CStdString path(pItem->m_strPath); path.ToLower();
+        CStdString path(pItem->GetPath());
+        path.ToLower();
         m_map.erase(path);
       }
       break;
@@ -1300,7 +1303,8 @@ void CFileItemList::Remove(int iItem)
     CFileItemPtr pItem = *(m_items.begin() + iItem);
     if (m_fastLookup)
     {
-      CStdString path(pItem->m_strPath); path.ToLower();
+      CStdString path(pItem->GetPath());
+      path.ToLower();
       m_map.erase(path);
     }
     m_items.erase(m_items.begin() + iItem);
@@ -1321,7 +1325,7 @@ void CFileItemList::Assign(const CFileItemList& itemlist, bool append)
   if (!append)
     Clear();
   Append(itemlist);
-  m_strPath = itemlist.m_strPath;
+  SetPath(itemlist.GetPath());
   m_sortDetails = itemlist.m_sortDetails;
   m_replaceListing = itemlist.m_replaceListing;
   m_content = itemlist.m_content;
@@ -1377,7 +1381,8 @@ CFileItemPtr CFileItemList::Get(const CStdString& strPath)
 {
   CSingleLock lock(m_lock);
 
-  CStdString pathToCheck(strPath); pathToCheck.ToLower();
+  CStdString pathToCheck(strPath);
+  pathToCheck.ToLower();
   if (m_fastLookup)
   {
     IMAPFILEITEMS it=m_map.find(pathToCheck);
@@ -1390,7 +1395,7 @@ CFileItemPtr CFileItemList::Get(const CStdString& strPath)
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     CFileItemPtr pItem = m_items[i];
-    if (pItem->m_strPath.Equals(pathToCheck))
+    if (pItem->GetPath().Equals(pathToCheck))
       return pItem;
   }
 
@@ -1401,7 +1406,8 @@ const CFileItemPtr CFileItemList::Get(const CStdString& strPath) const
 {
   CSingleLock lock(m_lock);
 
-  CStdString pathToCheck(strPath); pathToCheck.ToLower();
+  CStdString pathToCheck(strPath);
+  pathToCheck.ToLower();
   if (m_fastLookup)
   {
     map<CStdString, CFileItemPtr>::const_iterator it=m_map.find(pathToCheck);
@@ -1414,7 +1420,7 @@ const CFileItemPtr CFileItemList::Get(const CStdString& strPath) const
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     CFileItemPtr pItem = m_items[i];
-    if (pItem->m_strPath.Equals(pathToCheck))
+    if (pItem->GetPath().Equals(pathToCheck))
       return pItem;
   }
 
@@ -1781,7 +1787,7 @@ void CFileItemList::FilterCueItems()
       if (pItem->IsCUESheet())
       {
         CCueDocument cuesheet;
-        if (cuesheet.Parse(pItem->m_strPath))
+        if (cuesheet.Parse(pItem->GetPath()))
         {
           VECSONGS newitems;
           cuesheet.GetSongs(newitems);
@@ -1807,7 +1813,7 @@ void CFileItemList::FilterCueItems()
               else
               {
                 // try removing the .cue extension...
-                strMediaFile = pItem->m_strPath;
+                strMediaFile = pItem->GetPath();
                 URIUtils::RemoveExtension(strMediaFile);
                 CFileItem item(strMediaFile, false);
                 if (item.IsAudio() && Contains(strMediaFile))
@@ -1820,7 +1826,7 @@ void CFileItemList::FilterCueItems()
                   StringUtils::SplitString(g_stSettings.m_musicExtensions, "|", extensions);
                   for (unsigned int i = 0; i < extensions.size(); i++)
                   {
-                    strMediaFile = URIUtils::ReplaceExtension(pItem->m_strPath, extensions[i]);
+                    strMediaFile = URIUtils::ReplaceExtension(pItem->GetPath(), extensions[i]);
                     CFileItem item(strMediaFile, false);
                     if (!item.IsCUESheet() && !item.IsPlayList() && Contains(strMediaFile))
                     {
@@ -1833,7 +1839,7 @@ void CFileItemList::FilterCueItems()
             }
             if (bFoundMediaFile)
             {
-              itemstodelete.push_back(pItem->m_strPath);
+              itemstodelete.push_back(pItem->GetPath());
               itemstodelete.push_back(strMediaFile);
               // get the additional stuff (year, genre etc.) from the underlying media files tag.
               CMusicInfoTag tag;
@@ -1874,13 +1880,13 @@ void CFileItemList::FilterCueItems()
             }
             else
             { // remove the .cue sheet from the directory
-              itemstodelete.push_back(pItem->m_strPath);
+              itemstodelete.push_back(pItem->GetPath());
             }
           }
         }
         else
         { // remove the .cue sheet from the directory (can't parse it - no point listing it)
-          itemstodelete.push_back(pItem->m_strPath);
+          itemstodelete.push_back(pItem->GetPath());
         }
       }
     }
@@ -1891,7 +1897,7 @@ void CFileItemList::FilterCueItems()
     for (int j = 0; j < (int)m_items.size(); j++)
     {
       CFileItemPtr pItem = m_items[j];
-      if (stricmp(pItem->m_strPath.c_str(), itemstodelete[i].c_str()) == 0)
+      if (stricmp(pItem->GetPath().c_str(), itemstodelete[i].c_str()) == 0)
       { // delete this item
         m_items.erase(m_items.begin() + j);
         break;
@@ -1939,13 +1945,13 @@ void CFileItemList::Stack()
       // only check known fast sources?
       // xbms included because it supports file existance
       // NOTES:
-      // 1. xbms would not have worked previously: item->m_strPath.Left(5).Equals("xbms", false)
+      // 1. xbms would not have worked previously: item->GetPath().Left(5).Equals("xbms", false)
       // 2. rars and zips may be on slow sources? is this supposed to be allowed?
       if( !item->IsRemote()
         || item->IsSmb()
         || item->IsXBMS()
-        || URIUtils::IsInRAR(item->m_strPath)
-        || URIUtils::IsInZIP(item->m_strPath)
+        || URIUtils::IsInRAR(item->GetPath())
+        || URIUtils::IsInZIP(item->GetPath())
         )
       {
         // stack cd# folders if contains only a single video file
@@ -1954,7 +1960,7 @@ void CFileItemList::Stack()
         if (folderName.Left(2).Equals("CD") && StringUtils::IsNaturalNumber(folderName.Mid(2)))
         {
           CFileItemList items;
-          CDirectory::GetDirectory(item->m_strPath,items,g_stSettings.m_videoExtensions,true);
+          CDirectory::GetDirectory(item->GetPath(),items,g_stSettings.m_videoExtensions,true);
           // optimized to only traverse listing once by checking for filecount
           // and recording last file item for later use
           int nFiles = 0;
@@ -1980,12 +1986,12 @@ void CFileItemList::Stack()
         {
           CStdString path;
           CStdString dvdPath;
-          URIUtils::AddFileToFolder(item->m_strPath, "VIDEO_TS.IFO", path);
+          URIUtils::AddFileToFolder(item->GetPath(), "VIDEO_TS.IFO", path);
           if (CFile::Exists(path))
             dvdPath = path;
           else
           {
-            URIUtils::AddFileToFolder(item->m_strPath, "VIDEO_TS", dvdPath);
+            URIUtils::AddFileToFolder(item->GetPath(), "VIDEO_TS", dvdPath);
             URIUtils::AddFileToFolder(dvdPath, "VIDEO_TS.IFO", path);
             dvdPath.Empty();
             if (CFile::Exists(path))
@@ -2000,7 +2006,7 @@ void CFileItemList::Stack()
               item->SetUserVideoThumb();
 
             item->m_bIsFolder = false;
-            item->m_strPath = dvdPath;
+            item->SetPath(dvdPath);
             item->SetLabel2("");
             item->SetLabelPreformated(true);
             m_sortMethod = SORT_METHOD_NONE; /* sorting is now broken */
@@ -2065,7 +2071,7 @@ void CFileItemList::Stack()
     vector<int>           stack;
     VECCREGEXP::iterator  expr        = stackRegExps.begin();
 
-    URIUtils::Split(item1->m_strPath, filePath, file1);
+    URIUtils::Split(item1->GetPath(), filePath, file1);
     int j;
     while (expr != stackRegExps.end())
     {
@@ -2095,7 +2101,7 @@ void CFileItemList::Stack()
           }
 
           CStdString file2, filePath2;
-          URIUtils::Split(item2->m_strPath, filePath2, file2);
+          URIUtils::Split(item2->GetPath(), filePath2, file2);
 
           if (expr->RegFind(file2, offset) != -1)
           {
@@ -2168,13 +2174,13 @@ void CFileItemList::Stack()
         // dont actually stack a multipart rar set, just remove all items but the first
         CStdString stackPath;
         if (Get(stack[0])->IsRAR())
-          stackPath = Get(stack[0])->m_strPath;
+          stackPath = Get(stack[0])->GetPath();
         else
         {
           CStackDirectory dir;
           stackPath = dir.ConstructStackPath(*this, stack);
         }
-        item1->m_strPath = stackPath;
+        item1->SetPath(stackPath);
         // clean up list
         for (unsigned k = 1; k < stack.size(); k++)
           Remove(i+1);
@@ -2198,10 +2204,10 @@ bool CFileItemList::Load(int windowID)
   CFile file;
   if (file.Open(GetDiscCacheFile(windowID)))
   {
-    CLog::Log(LOGDEBUG,"Loading fileitems [%s]",m_strPath.c_str());
+    CLog::Log(LOGDEBUG,"Loading fileitems [%s]",GetPath().c_str());
     CArchive ar(&file, CArchive::load);
     ar >> *this;
-    CLog::Log(LOGDEBUG,"  -- items: %i, directory: %s sort method: %i, ascending: %s",Size(),m_strPath.c_str(), m_sortMethod, m_sortOrder ? "true" : "false");
+    CLog::Log(LOGDEBUG,"  -- items: %i, directory: %s sort method: %i, ascending: %s",Size(),GetPath().c_str(), m_sortMethod, m_sortOrder ? "true" : "false");
     ar.Close();
     file.Close();
     return true;
@@ -2216,7 +2222,7 @@ bool CFileItemList::Save(int windowID)
   if (iSize <= 0)
     return false;
 
-  CLog::Log(LOGDEBUG,"Saving fileitems [%s]",m_strPath.c_str());
+  CLog::Log(LOGDEBUG,"Saving fileitems [%s]",GetPath().c_str());
 
   CFile file;
   if (file.OpenForWrite(GetDiscCacheFile(windowID), true)) // overwrite always
@@ -2237,14 +2243,14 @@ void CFileItemList::RemoveDiscCache(int windowID) const
   CStdString cacheFile(GetDiscCacheFile(windowID));
   if (CFile::Exists(cacheFile))
   {
-    CLog::Log(LOGDEBUG,"Clearing cached fileitems [%s]",m_strPath.c_str());
+    CLog::Log(LOGDEBUG,"Clearing cached fileitems [%s]",GetPath().c_str());
     CFile::Delete(cacheFile);
   }
 }
 
 CStdString CFileItemList::GetDiscCacheFile(int windowID) const
 {
-  CStdString strPath=m_strPath;
+  CStdString strPath(GetPath());
   URIUtils::RemoveSlashAtEnd(strPath);
 
   Crc32 crc;
@@ -2268,9 +2274,9 @@ bool CFileItemList::AlwaysCache() const
 {
   // some database folders are always cached
   if (IsMusicDb())
-    return CMusicDatabaseDirectory::CanCache(m_strPath);
+    return CMusicDatabaseDirectory::CanCache(GetPath());
   if (IsVideoDb())
-    return CVideoDatabaseDirectory::CanCache(m_strPath);
+    return CVideoDatabaseDirectory::CanCache(GetPath());
   return false;
 }
 
@@ -3094,7 +3100,7 @@ void CFileItemList::Swap(unsigned int item1, unsigned int item2)
 bool CFileItemList::UpdateItem(const CFileItem *item)
 {
   if (!item) return false;
-  CFileItemPtr oldItem = Get(item->m_strPath);
+  CFileItemPtr oldItem = Get(item->GetPath());
   if (oldItem)
     *oldItem = *item;
   return oldItem;

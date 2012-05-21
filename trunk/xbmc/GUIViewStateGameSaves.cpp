@@ -44,12 +44,12 @@ CGUIViewStateWindowGameSaves::CGUIViewStateWindowGameSaves(const CFileItemList& 
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
   SetSortOrder(SORT_ORDER_ASC);
-  LoadViewState(items.m_strPath, WINDOW_GAMESAVES);
+  LoadViewState(items.GetPath(), WINDOW_GAMESAVES);
 }
 
 void CGUIViewStateWindowGameSaves::SaveViewState()
 {
-  SaveViewToDb(m_items.m_strPath, WINDOW_GAMESAVES);
+  SaveViewToDb(m_items.GetPath(), WINDOW_GAMESAVES);
 }
 
 VECSOURCES& CGUIViewStateWindowGameSaves::GetSources()

@@ -140,12 +140,12 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, SScraperInfo& in
       if (!items[i]->m_bIsFolder)
       {
         // skip selected and default scraper
-        if (items[i]->m_strPath.Equals(strSelected) || items[i]->m_strPath.Equals(strDefault))
+        if (items[i]->GetPath().Equals(strSelected) || items[i]->GetPath().Equals(strDefault))
           continue;
  
         SScraperInfo info2;
         CScraperParser parser2;
-        parser2.Load(items[i]->m_strPath);
+        parser2.Load(items[i]->GetPath());
         info2.strContent = parser2.GetContent();
         info2.strLanguage = parser2.GetLanguage();
  
@@ -159,7 +159,7 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, SScraperInfo& in
        
         // add same language, multi-language and music scrapers
         if (info.strLanguage == info2.strLanguage || info2.strLanguage == "multi" || info.strContent.Equals("albums") || info.strContent.Equals("artists"))
-          vecScrapers.push_back(items[i]->m_strPath);
+          vecScrapers.push_back(items[i]->GetPath());
       } 
     }
   }

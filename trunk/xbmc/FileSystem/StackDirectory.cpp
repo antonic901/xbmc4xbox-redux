@@ -64,7 +64,7 @@ namespace XFILE
       if (i > 0 && file.Find("\\") == -1 && file.Find('/') == -1)
       {
         CStdString strPath;
-        URIUtils::GetDirectory(items[0]->m_strPath,strPath);
+        URIUtils::GetDirectory(items[0]->GetPath(),strPath);
         CStdString strFile = file;
         URIUtils::AddFileToFolder(strPath,strFile,file);
       }
@@ -72,8 +72,8 @@ namespace XFILE
       // replace double comma's with single ones.
       file.Replace(",,", ",");
       CFileItemPtr item(new CFileItem(file));
-      //URIUtils::AddFileToFolder(folder, file, item->m_strPath);
-      item->m_strPath = file;
+      //URIUtils::AddFileToFolder(folder, file, item->GetPath());
+      item->SetPath(file);
       item->m_bIsFolder = false;
       items.Add(item);
     }
@@ -115,8 +115,8 @@ namespace XFILE
     if (files.Size() > 1)
     {
 
-      File1 = URIUtils::GetFileName(files[0]->m_strPath);
-      File2 = URIUtils::GetFileName(files[1]->m_strPath);
+      File1 = URIUtils::GetFileName(files[0]->GetPath());
+      File2 = URIUtils::GetFileName(files[1]->GetPath());
 
       std::vector<CRegExp>::iterator itRegExp = RegExps.begin();
       int offset = 0;
@@ -197,7 +197,7 @@ namespace XFILE
     // the files using " , ".
     CStdString stackedPath = "stack://";
     CStdString folder, file;
-    URIUtils::Split(items[stack[0]]->m_strPath, folder, file);
+    URIUtils::Split(items[stack[0]]->GetPath(), folder, file);
     stackedPath += folder;
     // double escape any occurence of commas
     file.Replace(",", ",,");
@@ -205,7 +205,7 @@ namespace XFILE
     for (unsigned int i = 1; i < stack.size(); ++i)
     {
       stackedPath += " , ";
-      file = items[stack[i]]->m_strPath;
+      file = items[stack[i]]->GetPath();
       
       // double escape any occurence of commas
       file.Replace(",", ",,");

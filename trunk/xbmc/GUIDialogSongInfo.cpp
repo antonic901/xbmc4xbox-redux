@@ -66,7 +66,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
         CMusicDatabase db;
         if (db.Open())      // OpenForWrite() ?
         {
-          db.SetSongRating(m_song->m_strPath, m_song->GetMusicInfoTag()->GetRating());
+          db.SetSongRating(m_song->GetPath(), m_song->GetMusicInfoTag()->GetRating());
           db.Close();
         }
         m_needsUpdate = true;
@@ -103,7 +103,9 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
         if (window)
         {
           CFileItem item(*m_song);
-          URIUtils::GetDirectory(m_song->m_strPath,item.m_strPath);
+          CStdString itemPath;
+          URIUtils::GetDirectory(m_song->GetPath(),itemPath);
+          item.SetPath(itemPath);
           item.m_bIsFolder = true;
           window->OnInfo(&item, true);
         }

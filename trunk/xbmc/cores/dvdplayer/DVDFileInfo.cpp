@@ -325,7 +325,7 @@ bool CDVDFileInfo::DemuxerToStreamDetails(CDVDDemux *pDemux, CStreamDetails &det
         for (int i = 1; i < files.Size(); i++)
         {
            int duration = 0;
-           if (CDVDFileInfo::GetFileDuration(files[i]->m_strPath, duration))
+           if (CDVDFileInfo::GetFileDuration(files[i]->GetPath(), duration))
              p->m_iDuration = p->m_iDuration + duration;
         }
       }

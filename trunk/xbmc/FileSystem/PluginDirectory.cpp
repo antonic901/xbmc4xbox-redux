@@ -105,7 +105,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath)
   // clear out our status variables
   m_fileResult->Reset();
   m_listItems->Clear();
-  m_listItems->m_strPath = strPath;
+  m_listItems->SetPath(strPath);
   m_cancelled = false;
   m_success = false;
   m_totalItems = 0;
@@ -144,8 +144,8 @@ bool CPluginDirectory::GetPluginResult(const CStdString& strPath, CFileItem &res
   if (success)
   { // update the play path, saving the old one as needed
     if (!resultItem.HasProperty("original_listitem_url"))
-      resultItem.SetProperty("original_listitem_url", resultItem.m_strPath);
-    resultItem.m_strPath = newDir->m_fileResult->m_strPath;
+      resultItem.SetProperty("original_listitem_url", resultItem.GetPath());
+    resultItem.SetPath(newDir->m_fileResult->GetPath());
     resultItem.SetMimeType(newDir->m_fileResult->GetMimeType(false));
   }
   delete newDir;
@@ -457,7 +457,7 @@ bool CPluginDirectory::HasPlugins(const CStdString &type)
       if (item->m_bIsFolder && !item->IsParentFolder() && !item->m_bIsShareOrDrive)
       {
         CStdString defaultPY;
-        URIUtils::AddFileToFolder(item->m_strPath, "default.py", defaultPY);
+        URIUtils::AddFileToFolder(item->GetPath(), "default.py", defaultPY);
         if (XFILE::CFile::Exists(defaultPY))
           return true;
       }
@@ -476,7 +476,9 @@ bool CPluginDirectory::GetPluginsDirectory(const CStdString &type, CFileItemList
   if (!CDirectory::GetDirectory(pluginsFolder, items, "*.py", false))
     return false;
 
-  items.m_strPath.Replace("special://home/plugins/", "plugin://");
+  CStdString path = items.GetPath();
+  path.Replace("special://home/plugins/", "plugin://");
+  items.SetPath(path);
 
   // flatten any folders - TODO: Assigning of thumbs
   for (int i = 0; i < items.Size(); i++)
@@ -488,8 +490,8 @@ bool CPluginDirectory::GetPluginsDirectory(const CStdString &type, CFileItemList
       item->SetUserProgramThumb();
     if (!item->HasThumbnail())
     {
-      CFileItem item2(item->m_strPath);
-      URIUtils::AddFileToFolder(item->m_strPath,"default.py",item2.m_strPath);
+      CFileItem item2(item->GetPath());
+      item2.SetPath(URIUtils::AddFileToFolder(item->GetPath(),"default.py"));
       item2.m_bIsFolder = false;
       item2.SetCachedProgramThumb();
       if (!item2.HasThumbnail())
@@ -500,8 +502,10 @@ bool CPluginDirectory::GetPluginsDirectory(const CStdString &type, CFileItemList
         item->SetThumbnailImage(item->GetCachedProgramThumb());
       }
     }
-    item->m_strPath.Replace("special://home/plugins/", "plugin://");
-    item->m_strPath.Replace("\\", "/");
+    path = item->GetPath();
+    path.Replace("special://home/plugins/", "plugin://");
+    path.Replace("\\", "/");
+    item->SetPath(path);
   }
   return true;
 }

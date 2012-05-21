@@ -1303,7 +1303,7 @@ bool CSettings::DeleteProfile(int index)
       }
 
       CFileItem item(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory));
-      item.m_strPath = URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory + "\\");
+      item.SetPath(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory + "\\"));
       item.m_bIsFolder = true;
       item.Select(true);
       CGUIWindowFileManager::DeleteItem(&item);

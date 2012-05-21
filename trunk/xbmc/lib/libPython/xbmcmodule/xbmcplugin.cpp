@@ -92,7 +92,7 @@ namespace PYXBMC
     if (!PyXBMCGetUnicodeString(url, pURL, 1) || !ListItem_CheckExact(pItem)) return NULL;
     
     ListItem *pListItem = (ListItem *)pItem;
-    pListItem->item->m_strPath = url;
+    pListItem->item->SetPath(url);
     pListItem->item->m_bIsFolder = (0 != bIsFolder);
 
     // call the directory class to add our item
@@ -160,7 +160,7 @@ namespace PYXBMC
       if (!PyXBMCGetUnicodeString(url, pURL, 1) || !ListItem_CheckExact(pItem)) return NULL;
 
       ListItem *pListItem = (ListItem *)pItem;
-      pListItem->item->m_strPath = url;
+      pListItem->item->SetPath(url);
       pListItem->item->m_bIsFolder = (0 != bIsFolder);
       items.Add(pListItem->item);
     }

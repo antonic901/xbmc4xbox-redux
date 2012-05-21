@@ -219,7 +219,7 @@ void CGUIMultiImage::LoadDirectory()
     {
       CFileItemPtr pItem = items[i];
       if (pItem->IsPicture())
-        m_files.push_back(pItem->m_strPath);
+        m_files.push_back(pItem->GetPath());
     }
   }
 

@@ -142,14 +142,14 @@ namespace PYXBMC
       pListItem = (ListItem*)pObjectListItem;
 
       // set m_strPath to the passed url
-      pListItem->item->m_strPath = PyString_AsString(pObject);
+      pListItem->item->SetPath(PyString_AsString(pObject));
 
       g_applicationMessenger.PlayFile((const CFileItem)*pListItem->item, false);
     }
     else if (PyString_Check(pObject) || PyUnicode_Check(pObject))
     {
       CFileItem item(PyString_AsString(pObject), false);
-      g_applicationMessenger.MediaPlay(item.m_strPath);
+      g_applicationMessenger.MediaPlay(item.GetPath());
     }
     else if (PlayList_Check(pObject))
     {

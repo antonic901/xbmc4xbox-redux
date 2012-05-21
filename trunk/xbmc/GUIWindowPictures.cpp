@@ -91,9 +91,9 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         m_history.ClearPathHistory();
       }
       // otherwise, is this the first time accessing this window?
-      else if (m_vecItems->m_strPath == "?")
+      else if (m_vecItems->GetPath() == "?")
       {
-        m_vecItems->m_strPath = strDestination = g_settings.m_defaultPictureSource;
+        m_vecItems->SetPath(strDestination = g_settings.m_defaultPictureSource);
         CLog::Log(LOGINFO, "Attempting to default to: %s", strDestination.c_str());
       }
 
@@ -103,13 +103,13 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         // open root
         if (strDestination.Equals("$ROOT"))
         {
-          m_vecItems->m_strPath = "";
+          m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
         }
         else
         {
           // default parameters if the jump fails
-          m_vecItems->m_strPath = "";
+          m_vecItems->SetPath("");
 
           bool bIsSourceName = false;
 
@@ -125,19 +125,21 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
               CFileItem item(shares[iIndex]);
               if (!g_passwordManager.IsItemUnlocked(&item,"pictures"))
               {
-                m_vecItems->m_strPath = ""; // no u don't
+                m_vecItems->SetPath(""); // no u don't
                 bDoStuff = false;
                 CLog::Log(LOGINFO, "  Failure! Failed to unlock destination path: %s", strDestination.c_str());
               }
             }
             // set current directory to matching share
+            CStdString path;
             if (bDoStuff)
             {
               if (bIsSourceName)
-                m_vecItems->m_strPath=shares[iIndex].strPath;
+                path = shares[iIndex].strPath;
               else
-                m_vecItems->m_strPath=strDestination;
-              URIUtils::RemoveSlashAtEnd(m_vecItems->m_strPath);
+                path = strDestination;
+              URIUtils::RemoveSlashAtEnd(path);
+              m_vecItems->SetPath(path);
               CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
             }
           }
@@ -148,10 +150,9 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         }
 
         // check for network up
-        if (URIUtils::IsRemote(m_vecItems->m_strPath) && !WaitForNetwork())
-          m_vecItems->m_strPath.Empty();
-
-        SetHistoryForPath(m_vecItems->m_strPath);
+        if (URIUtils::IsRemote(m_vecItems->GetPath()) && !WaitForNetwork())
+          m_vecItems->SetPath("");
+        SetHistoryForPath(m_vecItems->GetPath());
       }
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -280,7 +281,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
 
       if (!bProgressVisible && dwElapsed>1500 && m_dlgProgress)
       { // tag loading takes more then 1.5 secs, show a progress dialog
-        CURL url(items.m_strPath);
+        CURL url(items.GetPath());
         
         m_dlgProgress->SetHeading(189);
         m_dlgProgress->SetLine(0, 505);
@@ -328,9 +329,9 @@ bool CGUIWindowPictures::OnClick(int iItem)
   {
     CStdString strComicPath;
     if (pItem->IsCBZ())
-      URIUtils::CreateArchivePath(strComicPath, "zip", pItem->m_strPath, "");
+      URIUtils::CreateArchivePath(strComicPath, "zip", pItem->GetPath(), "");
     else
-      URIUtils::CreateArchivePath(strComicPath, "rar", pItem->m_strPath, "");
+      URIUtils::CreateArchivePath(strComicPath, "rar", pItem->GetPath(), "");
 
     OnShowPictureRecursive(strComicPath);
     return true;
@@ -353,7 +354,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
 {
   if ( iItem < 0 || iItem >= (int)m_vecItems->Size() ) return false;
   CFileItemPtr pItem = m_vecItems->Get(iItem);
-  CStdString strPicture = pItem->m_strPath;
+  CStdString strPicture = pItem->GetPath();
 
   if (pItem->IsDVD())
     return CAutorun::PlayDisc();
@@ -371,7 +372,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   for (int i = 0; i < (int)m_vecItems->Size();++i)
   {
     CFileItemPtr pItem = m_vecItems->Get(i);
-    if (!pItem->m_bIsFolder && !(URIUtils::IsRAR(pItem->m_strPath) || URIUtils::IsZIP(pItem->m_strPath)) && pItem->IsPicture())
+    if (!pItem->m_bIsFolder && !(URIUtils::IsRAR(pItem->GetPath()) || URIUtils::IsZIP(pItem->GetPath())) && pItem->IsPicture())
     {
       pSlideShow->Add(pItem.get());
     }
@@ -419,12 +420,12 @@ void CGUIWindowPictures::OnSlideShowRecursive(const CStdString &strPicture)
 void CGUIWindowPictures::OnSlideShowRecursive()
 {
   CStdString strEmpty = "";
-  OnSlideShowRecursive(m_vecItems->m_strPath);
+  OnSlideShowRecursive(m_vecItems->GetPath());
 }
 
 void CGUIWindowPictures::OnSlideShow()
 {
-  OnSlideShow(m_vecItems->m_strPath);
+  OnSlideShow(m_vecItems->GetPath());
 }
 
 void CGUIWindowPictures::OnSlideShow(const CStdString &strPicture)
@@ -497,13 +498,13 @@ bool CGUIWindowPictures::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
   case CONTEXT_BUTTON_VIEW_SLIDESHOW:
     if (item && item->m_bIsFolder)
-    OnSlideShow(item->m_strPath);
+    OnSlideShow(item->GetPath());
     else
       ShowPicture(itemNumber, true);
     return true;
   case CONTEXT_BUTTON_RECURSIVE_SLIDESHOW:
     if (item)
-    OnSlideShowRecursive(item->m_strPath);
+    OnSlideShowRecursive(item->GetPath());
     return true;
   case CONTEXT_BUTTON_INFO:
     OnInfo(itemNumber);
@@ -524,7 +525,7 @@ bool CGUIWindowPictures::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     Update("");
     return true;
   case CONTEXT_BUTTON_SWITCH_MEDIA:
-    CGUIDialogContextMenu::SwitchMedia("pictures", m_vecItems->m_strPath);
+    CGUIDialogContextMenu::SwitchMedia("pictures", m_vecItems->GetPath());
     return true;
   default:
     break;
@@ -536,7 +537,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
 {
   if (pItem->IsCBR() || pItem->IsCBZ())
   {
-    CStdString strTBN(URIUtils::ReplaceExtension(pItem->m_strPath,".tbn"));
+    CStdString strTBN(URIUtils::ReplaceExtension(pItem->GetPath(),".tbn"));
     if (CFile::Exists(strTBN))
     {
       CPicture pic;
@@ -552,19 +553,19 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
   {
     // first check for a folder.jpg
     CStdString thumb = "folder.jpg";
-    CStdString strPath = pItem->m_strPath;
+    CStdString strPath = pItem->GetPath();
     if (pItem->IsCBR())
     {
-      URIUtils::CreateArchivePath(strPath,"rar",pItem->m_strPath,"");
+      URIUtils::CreateArchivePath(strPath,"rar",pItem->GetPath(),"");
       thumb = "cover.jpg";
     }
     if (pItem->IsCBZ())
     {
-      URIUtils::CreateArchivePath(strPath,"zip",pItem->m_strPath,"");
+      URIUtils::CreateArchivePath(strPath,"zip",pItem->GetPath(),"");
       thumb = "cover.jpg";
     }
     if (pItem->IsMultiPath())
-      strPath = CMultiPathDirectory::GetFirstPath(pItem->m_strPath);
+      strPath = CMultiPathDirectory::GetFirstPath(pItem->GetPath());
     thumb = URIUtils::AddFileToFolder(strPath, thumb);
     if (CFile::Exists(thumb))
     {
@@ -621,7 +622,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
         CStdString folderThumb(pItem->GetCachedPictureThumb());
         items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
         CPicture pic;
-        pic.CreateThumbnail(items[0]->m_strPath, folderThumb);
+        pic.CreateThumbnail(items[0]->GetPath(), folderThumb);
       }
       else
       {
@@ -629,7 +630,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
         // we basically load the 4 thumbs, resample to 62x62 pixels, and add them
         CStdString strFiles[4];
         for (int thumb = 0; thumb < 4; thumb++)
-          strFiles[thumb] = items[thumb]->m_strPath;
+          strFiles[thumb] = items[thumb]->GetPath();
         CPicture pic;
         pic.CreateFolderThumb(strFiles, pItem->GetCachedPictureThumb());
       }
@@ -668,7 +669,7 @@ void CGUIWindowPictures::LoadPlayList(const CStdString& strPlayList)
     for (int i = 0; i < (int)playlist.size(); ++i)
     {
       CFileItemPtr pItem = playlist[i];
-      //CLog::Log(LOGDEBUG,"-- playlist item: %s", pItem->m_strPath.c_str());
+      //CLog::Log(LOGDEBUG,"-- playlist item: %s", pItem->GetPath().c_str());
       if (pItem->IsPicture() && !(pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBZ() || pItem->IsCBR()))
         pSlideShow->Add(pItem.get());
     }

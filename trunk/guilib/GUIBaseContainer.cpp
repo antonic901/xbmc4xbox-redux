@@ -611,7 +611,7 @@ bool CGUIBaseContainer::OnClick(int actionID)
         int controlID = GetID(); // save as these could go away as we send messages
         int parentID = GetParentID();
         vector<CStdString> actions;
-        StringUtils::SplitString(item->m_strPath, " , ", actions);
+        StringUtils::SplitString(item->GetPath(), " , ", actions);
         for (unsigned int i = 0; i < actions.size(); i++)
         {
           CStdString action = actions[i];
@@ -943,7 +943,7 @@ void CGUIBaseContainer::LoadContent(TiXmlElement *content)
       TiXmlNode *click = item->FirstChild("onclick");
       if (click && click->FirstChild())
       {
-        CStdString label, label2, thumb, icon;
+        CStdString label, label2, thumb, icon, path;
         XMLUtils::GetString(item, "label", label);   label  = CGUIControlFactory::FilterLabel(label);
         XMLUtils::GetString(item, "label2", label2); label2 = CGUIControlFactory::FilterLabel(label2);
         XMLUtils::GetString(item, "thumb", thumb);   thumb  = CGUIControlFactory::FilterLabel(thumb);
@@ -957,7 +957,8 @@ void CGUIBaseContainer::LoadContent(TiXmlElement *content)
         CGUIControlFactory::GetMultipleString(item, "onclick", actions);
         for (vector<CStdString>::iterator it = actions.begin(); it != actions.end(); ++it)
           (*it).Replace(",", ",,");
-        StringUtils::JoinString(actions, " , ", newItem->m_strPath);
+        StringUtils::JoinString(actions, " , ", path);
+        newItem->SetPath(path); 
         newItem->SetLabel2(CGUIInfoLabel::GetLabel(label2, GetParentID()));
         newItem->SetThumbnailImage(CGUIInfoLabel::GetLabel(thumb, GetParentID(), true));
         newItem->SetIconImage(CGUIInfoLabel::GetLabel(icon, GetParentID(), true));
@@ -977,7 +978,7 @@ void CGUIBaseContainer::LoadContent(TiXmlElement *content)
         icon   = item->Attribute("icon");   icon   = CGUIControlFactory::FilterLabel(icon);
         const char *id = item->Attribute("id");
         newItem.reset(new CFileItem(CGUIInfoLabel::GetLabel(label, GetParentID())));
-        newItem->m_strPath = item->FirstChild()->Value();
+        newItem->SetPath(item->FirstChild()->Value());
         newItem->SetLabel2(CGUIInfoLabel::GetLabel(label2, GetParentID()));
         newItem->SetThumbnailImage(CGUIInfoLabel::GetLabel(thumb, GetParentID(), true));
         newItem->SetIconImage(CGUIInfoLabel::GetLabel(icon, GetParentID(), true));

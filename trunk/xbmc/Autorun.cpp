@@ -215,20 +215,20 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     {
       CFileItemPtr pItem = vecItems[i];
 
-      if (pItem->m_bIsFolder && pItem->m_strPath != "." && pItem->m_strPath != "..")
+      if (pItem->m_bIsFolder && pItem->GetPath() != "." && pItem->GetPath() != "..")
       {
-        if (pItem->m_strPath.Find( "VIDEO_TS" ) != -1 && bAllowVideo
+        if (pItem->GetPath().Find( "VIDEO_TS" ) != -1 && bAllowVideo
         && (bypassSettings || g_guiSettings.GetBool("autorun.dvd")))
         {
           CUtil::PlayDVD();
           bPlaying = true;
           return true;
         }
-        else if (pItem->m_strPath.Find("MPEGAV") != -1 && bAllowVideo
+        else if (pItem->GetPath().Find("MPEGAV") != -1 && bAllowVideo
              && (bypassSettings || g_guiSettings.GetBool("autorun.vcd")))
         {
           CFileItemList items;
-          CDirectory::GetDirectory(pItem->m_strPath, items, ".dat");
+          CDirectory::GetDirectory(pItem->GetPath(), items, ".dat");
           if (items.Size())
           {
             items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
@@ -240,11 +240,11 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
             return true;
           }
         }
-        else if (pItem->m_strPath.Find("MPEG2") != -1 && bAllowVideo
+        else if (pItem->GetPath().Find("MPEG2") != -1 && bAllowVideo
               && (bypassSettings || g_guiSettings.GetBool("autorun.vcd")))
         {
           CFileItemList items;
-          CDirectory::GetDirectory(pItem->m_strPath, items, ".mpg");
+          CDirectory::GetDirectory(pItem->GetPath(), items, ".mpg");
           if (items.Size())
           {
             items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
@@ -256,12 +256,12 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
             return true;
           }
         }
-        else if (pItem->m_strPath.Find("PICTURES") != -1 && bAllowPictures
+        else if (pItem->GetPath().Find("PICTURES") != -1 && bAllowPictures
               && (bypassSettings || g_guiSettings.GetBool("autorun.pictures")))
         {
           bPlaying = true;
           CStdString strExec;
-          strExec.Format("XBMC.RecursiveSlideShow(%s)", pItem->m_strPath.c_str());
+          strExec.Format("XBMC.RecursiveSlideShow(%s)", pItem->GetPath().c_str());
           CUtil::ExecBuiltIn(strExec);
           return true;
         }
@@ -290,7 +290,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           // TODO: remove this once the app/player is capable of handling stacks immediately
           CStackDirectory dir;
           CFileItemList items;
-          dir.GetDirectory(pItem->m_strPath, items);
+          dir.GetDirectory(pItem->GetPath(), items);
           itemlist.Append(items);
         }
         else
@@ -352,9 +352,9 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
       CFileItemPtr  pItem = vecItems[i];
       if (pItem->m_bIsFolder)
       {
-        if (pItem->m_strPath != "." && pItem->m_strPath != ".." )
+        if (pItem->GetPath() != "." && pItem->GetPath() != ".." )
         {
-          if (RunDisc(pDir, pItem->m_strPath, nAddedToPlaylist, false, bypassSettings))
+          if (RunDisc(pDir, pItem->GetPath(), nAddedToPlaylist, false, bypassSettings))
           {
             bPlaying = true;
             break;

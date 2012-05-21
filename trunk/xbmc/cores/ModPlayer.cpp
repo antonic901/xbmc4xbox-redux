@@ -103,16 +103,16 @@ bool ModPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
   char* str = NULL;
   if (!file.IsHD())
   {
-    if (!CFile::Cache(file.m_strPath.c_str(), "Z:\\cachedmod", NULL, NULL))
+    if (!CFile::Cache(file.GetPath().c_str(), "Z:\\cachedmod", NULL, NULL))
     {
       ::DeleteFile("Z:\\cachedmod");
-      CLog::Log(LOGERROR, "ModPlayer: Unable to cache file %s\n", file.m_strPath.c_str());
+      CLog::Log(LOGERROR, "ModPlayer: Unable to cache file %s\n", file.GetPath().c_str());
       return false;
     }
     str = strdup("Z:\\cachedmod");
   }
   else
-    str = strdup(file.m_strPath.c_str());
+    str = strdup(file.GetPath().c_str());
 
   m_pModule = Mod_Player_Load(str, 127, 0);
   free(str);
@@ -123,7 +123,7 @@ bool ModPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
   }
   else
   {
-    CLog::Log(LOGERROR, "ModPlayer: Could not load module %s: %s\n", file.m_strPath.c_str(), MikMod_strerror(mikxboxGetErrno()));
+    CLog::Log(LOGERROR, "ModPlayer: Could not load module %s: %s\n", file.GetPath().c_str(), MikMod_strerror(mikxboxGetErrno()));
     return false;
   }
 

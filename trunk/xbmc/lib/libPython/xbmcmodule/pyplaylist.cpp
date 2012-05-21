@@ -96,7 +96,7 @@ namespace PYXBMC
 
   PyObject* PlayListItem_GetFileName(PlayListItem *self, PyObject *key)
   {
-    return Py_BuildValue((char*)"s", self->item->m_strPath.c_str());
+    return Py_BuildValue((char*)"s", self->item->GetPath().c_str());
   }
 
 /* PlayList Fucntions */
@@ -188,7 +188,7 @@ namespace PYXBMC
       pListItem = (ListItem*)pObjectListItem;
 
       // set m_strPath to the passed url
-      pListItem->item->m_strPath = strUrl;
+      pListItem->item->SetPath(strUrl);
 
       items.Add(pListItem->item);
     }
@@ -220,7 +220,7 @@ namespace PYXBMC
     if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))	return NULL;
 
     CFileItem item(cFileName);
-    item.m_strPath=cFileName;
+    item.SetPath(cFileName);
 
     if (item.IsPlayList())
     {
@@ -232,7 +232,7 @@ namespace PYXBMC
       if ( NULL != pPlayList.get())
       {
         // load it
-        if (!pPlayList->Load(item.m_strPath))
+        if (!pPlayList->Load(item.GetPath()))
         {
           //hmmm unable to load playlist?
           return Py_BuildValue((char*)"b", false);
@@ -246,7 +246,7 @@ namespace PYXBMC
         {
           CFileItemPtr playListItem =(*pPlayList)[i];
           if (playListItem->GetLabel().IsEmpty())
-            playListItem->SetLabel(URIUtils::GetFileName(playListItem->m_strPath));
+            playListItem->SetLabel(URIUtils::GetFileName(playListItem->GetPath()));
 
           self->pPlayList->Add(playListItem);
         }

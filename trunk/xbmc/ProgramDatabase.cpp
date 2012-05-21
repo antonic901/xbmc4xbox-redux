@@ -470,7 +470,7 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select xbedescription,iTimesPlayed,lastAccessed,titleId,iSize from files where strFileName like '%s'", item->m_strPath.c_str());
+    CStdString strSQL = FormatSQL("select xbedescription,iTimesPlayed,lastAccessed,titleId,iSize from files where strFileName like '%s'", item->GetPath().c_str());
     m_pDS->query(strSQL.c_str());
     if (!m_pDS->eof())
     { // get info - only set the label if not preformatted
@@ -484,9 +484,9 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
       if (item->m_dwSize == -1)
       {
         CStdString strPath;
-        URIUtils::GetDirectory(item->m_strPath,strPath);
+        URIUtils::GetDirectory(item->GetPath(),strPath);
         __int64 iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
-        CStdString strSQL=FormatSQL("update files set iSize=%I64u where strFileName like '%s'",iSize,item->m_strPath.c_str());
+        CStdString strSQL=FormatSQL("update files set iSize=%I64u where strFileName like '%s'",iSize,item->GetPath().c_str());
         m_pDS->exec(strSQL.c_str());
       }
     }
@@ -494,7 +494,7 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "CProgramDatabase::GetProgramInfo(%s) failed", item->m_strPath.c_str());
+    CLog::Log(LOGERROR, "CProgramDatabase::GetProgramInfo(%s) failed", item->GetPath().c_str());
   }
   return idTitle;
 }
@@ -510,7 +510,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     if (g_guiSettings.GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
-      iRegion = xbe.ExtractGameRegion(item->m_strPath);
+      iRegion = xbe.ExtractGameRegion(item->GetPath());
       if (iRegion < 1 || iRegion > 7)
         iRegion = 0;
     }
@@ -523,7 +523,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     lastAccessed.u.HighPart = time.dwHighDateTime;
 
     CStdString strPath, strParent;
-    URIUtils::GetDirectory(item->m_strPath,strPath);
+    URIUtils::GetDirectory(item->GetPath(),strPath);
     // special case - programs in root of sources
     bool bIsShare=false;
     CUtil::GetMatchingSource(strPath,g_settings.m_programSources,bIsShare);
@@ -531,20 +531,20 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     if (bIsShare || !item->IsDefaultXBE())
     {
       __stat64 stat;
-      if (CFile::Stat(item->m_strPath,&stat) == 0)
+      if (CFile::Stat(item->GetPath(),&stat) == 0)
         iSize = stat.st_size;
     }
     else
       iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
     if (titleID == 0)
       titleID = (unsigned int) -1;
-    CStdString strSQL=FormatSQL("insert into files (idFile, strFileName, titleId, xbedescription, iTimesPlayed, lastAccessed, iRegion, iSize) values(NULL, '%s', %u, '%s', %i, %I64u, %i, %I64u)", item->m_strPath.c_str(), titleID, item->GetLabel().c_str(), 0, lastAccessed.QuadPart, iRegion, iSize);
+    CStdString strSQL=FormatSQL("insert into files (idFile, strFileName, titleId, xbedescription, iTimesPlayed, lastAccessed, iRegion, iSize) values(NULL, '%s', %u, '%s', %i, %I64u, %i, %I64u)", item->GetPath().c_str(), titleID, item->GetLabel().c_str(), 0, lastAccessed.QuadPart, iRegion, iSize);
     m_pDS->exec(strSQL.c_str());
     item->m_dwSize = iSize;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "CProgramDatabase::AddProgramInfo(%s) failed", item->m_strPath.c_str());
+    CLog::Log(LOGERROR, "CProgramDatabase::AddProgramInfo(%s) failed", item->GetPath().c_str());
   }
   return true;
 }

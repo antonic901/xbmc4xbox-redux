@@ -57,7 +57,7 @@ bool CDirectoryNodeSeasons::GetContent(CFileItemList& items)
   { // flatten if one season or flatten always
     items.Clear();
     bSuccess=videodatabase.GetEpisodesNav(BuildPath()+"-1/",items,params.GetGenreId(),params.GetYear(),params.GetActorId(),params.GetDirectorId(),params.GetTvShowId());
-    items.m_strPath = BuildPath()+"-1/";
+    items.SetPath(BuildPath()+"-1/");
   }
 
   videodatabase.Close();

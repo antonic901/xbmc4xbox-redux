@@ -112,7 +112,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
 
     if (!g_guiSettings.GetBool("filelists.unrollarchives"))
     {
-      pItem->m_strPath = strUrl;
+      pItem->SetPath(strUrl);
       return new CZipDirectory;
     }
 
@@ -127,7 +127,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     }
     else
     { // compressed or more than one file -> create a zip dir
-      pItem->m_strPath = strUrl;
+      pItem->SetPath(strUrl);
       return new CZipDirectory;
     }
     return NULL;
@@ -167,7 +167,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     
     if (!g_guiSettings.GetBool("filelists.unrollarchives"))
     {
-      pItem->m_strPath = strUrl;
+      pItem->SetPath(strUrl);
       return new CRarDirectory;
     }
 
@@ -182,7 +182,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     }
     else
     { // compressed or more than one file -> create a rar dir
-      pItem->m_strPath = strUrl;
+      pItem->SetPath(strUrl);
       return new CRarDirectory;
     }
     return NULL;

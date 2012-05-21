@@ -119,7 +119,7 @@ bool CFat32FileSystem::GetShortFilePath(const CStdString &path, CStdString &shor
       {
         if (items[j]->GetLabel() == folders[i])
         { // found :)
-          shortPath += "/" + items[j]->m_strPath;
+          shortPath += "/" + items[j]->GetPath();
           found = true;
           isfolder = items[j]->m_bIsFolder;
           break;
@@ -207,10 +207,12 @@ bool CFat32FileSystem::GetDirectory(const CStdString &directory, CFileItemList &
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
+      CStdString path;
       if (directory.IsEmpty())
-        item->m_strPath.Format("mem%d://%s", m_unit, item->GetLabel().c_str());
+        path.Format("mem%d://%s", m_unit, item->GetLabel().c_str());
       else
-        item->m_strPath.Format("mem%d://%s/%s", m_unit, directory.c_str(), item->GetLabel().c_str());
+        path.Format("mem%d://%s/%s", m_unit, directory.c_str(), item->GetLabel().c_str());
+      item->SetPath(path);
     }
     return true;
   }
@@ -301,7 +303,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
         vfatName.Empty();
       }
       CFileItemPtr item(new CFileItem(longPath));
-      item->m_strPath = shortPath;
+      item->SetPath(shortPath);
       item->m_bIsFolder = (de.attr & ATTR_DIRECTORY) == ATTR_DIRECTORY;
       // file size
       if ((de.attr & ATTR_DIRECTORY) == 0)

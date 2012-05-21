@@ -308,7 +308,7 @@ case TMSG_POWERDOWN:
         }
         else
         {
-          item.m_strPath = pMsg->strParam;
+          item.SetPath(pMsg->strParam);
           item.m_bIsFolder = false;
           if (item.IsAudio())
             item.SetMusicThumb();
@@ -359,7 +359,7 @@ case TMSG_POWERDOWN:
             {
               pSlideShow->Add(items[i].get());
             }
-            pSlideShow->Select(items[0]->m_strPath);
+            pSlideShow->Select(items[0]->GetPath());
           }
         }
         else

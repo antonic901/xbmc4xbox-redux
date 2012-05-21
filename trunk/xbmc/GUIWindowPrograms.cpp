@@ -91,9 +91,9 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
       }
       // is this the first time accessing this window?
       // a quickpath overrides the a default parameter
-      if (m_vecItems->m_strPath == "?" && strDestination.IsEmpty())
+      if (m_vecItems->GetPath() == "?" && strDestination.IsEmpty())
       {
-        m_vecItems->m_strPath = strDestination = g_settings.m_defaultProgramSource;
+        m_vecItems->SetPath(strDestination = g_settings.m_defaultProgramSource);
         CLog::Log(LOGINFO, "Attempting to default to: %s", strDestination.c_str());
       }
 
@@ -104,13 +104,13 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
         // open root
         if (strDestination.Equals("$ROOT"))
         {
-          m_vecItems->m_strPath = "";
+          m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
         }
         else
         {
           // default parameters if the jump fails
-          m_vecItems->m_strPath = "";
+          m_vecItems->SetPath("");
 
           bool bIsSourceName = false;
           SetupShares();
@@ -125,7 +125,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
               CFileItem item(shares[iIndex]);
               if (!g_passwordManager.IsItemUnlocked(&item,"programs"))
               {
-                m_vecItems->m_strPath = ""; // no u don't
+                m_vecItems->SetPath(""); // no u don't
                 bDoStuff = false;
                 CLog::Log(LOGINFO, "  Failure! Failed to unlock destination path: %s", strDestination.c_str());
               }
@@ -134,9 +134,9 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
             if (bDoStuff)
             {
               if (bIsSourceName)
-                m_vecItems->m_strPath=shares[iIndex].strPath;
+                m_vecItems->SetPath(shares[iIndex].strPath);
               else
-                m_vecItems->m_strPath=strDestination;
+                m_vecItems->SetPath(strDestination);
               CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
             }
           }
@@ -145,7 +145,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
             CLog::Log(LOGERROR, "  Failed! Destination parameter (%s) does not match a valid source!", strDestination.c_str());
           }
         }
-        SetHistoryForPath(m_vecItems->m_strPath);
+        SetHistoryForPath(m_vecItems->GetPath());
       }
 
       return CGUIMediaWindow::OnMessage(message);
@@ -218,7 +218,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
         }
         buttons.Add(CONTEXT_BUTTON_LAUNCH, strLaunch);
   
-        DWORD dwTitleId = CUtil::GetXbeID(item->m_strPath);
+        DWORD dwTitleId = CUtil::GetXbeID(item->GetPath());
         CStdString strTitleID;
         CStdString strGameSavepath;
         strTitleID.Format("%08X",dwTitleId);
@@ -271,7 +271,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CShortcut cut;
       if (item->IsShortCut())
       {
-        cut.Create(item->m_strPath);
+        cut.Create(item->GetPath());
         strDescription = cut.m_strLabel;
       }
       else
@@ -282,31 +282,31 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         if (item->IsShortCut())
         {
           cut.m_strLabel = strDescription;
-          cut.Save(item->m_strPath);
+          cut.Save(item->GetPath());
         }
         else
         {
           // SetXBEDescription will truncate to 40 characters.
-          CUtil::SetXBEDescription(item->m_strPath,strDescription);
-          m_database.SetDescription(item->m_strPath,strDescription);
+          CUtil::SetXBEDescription(item->GetPath(),strDescription);
+          m_database.SetDescription(item->GetPath(),strDescription);
         }
-        Update(m_vecItems->m_strPath);
+        Update(m_vecItems->GetPath());
       }
       return true;
     }
 
   case CONTEXT_BUTTON_TRAINER_OPTIONS:
     {
-      DWORD dwTitleId = CUtil::GetXbeID(item->m_strPath);
+      DWORD dwTitleId = CUtil::GetXbeID(item->GetPath());
       if (CGUIDialogTrainerSettings::ShowForTitle(dwTitleId,&m_database))
-        Update(m_vecItems->m_strPath);
+        Update(m_vecItems->GetPath());
       return true;
     }
 
   case CONTEXT_BUTTON_SCAN_TRAINERS:
     {
       PopulateTrainersList();
-      Update(m_vecItems->m_strPath);
+      Update(m_vecItems->GetPath());
       return true;
     }
 
@@ -326,7 +326,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CStdString strTitleID;
       CStdString strGameSavepath;
-      strTitleID.Format("%08X",CUtil::GetXbeID(item->m_strPath));
+      strTitleID.Format("%08X",CUtil::GetXbeID(item->GetPath()));
       URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
       g_windowManager.ActivateWindow(WINDOW_GAMESAVES,strGameSavepath);
       return true;
@@ -389,22 +389,22 @@ bool CGUIWindowPrograms::OnChooseVideoModeAndLaunch(int item)
   if (btnid == btn_NTSCM)
   {
     m_iRegionSet = VIDEO_NTSCM;
-    m_database.SetRegion(m_vecItems->Get(item)->m_strPath,1);
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),1);
   }
   if (btnid == btn_NTSCJ)
   {
     m_iRegionSet = VIDEO_NTSCJ;
-    m_database.SetRegion(m_vecItems->Get(item)->m_strPath,2);
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),2);
   }
   if (btnid == btn_PAL)
   {
     m_iRegionSet = VIDEO_PAL50;
-    m_database.SetRegion(m_vecItems->Get(item)->m_strPath,4);
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),4);
   }
   if (btnid == btn_PAL60)
   {
     m_iRegionSet = VIDEO_PAL60;
-    m_database.SetRegion(m_vecItems->Get(item)->m_strPath,8);
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),8);
   }
 
   if (btnid > -1)
@@ -439,15 +439,15 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem)
   char szPath[1024];
   char szParameters[1024];
 
-  m_database.IncTimesPlayed(pItem->m_strPath);
+  m_database.IncTimesPlayed(pItem->GetPath());
 
   int iRegion = m_iRegionSet?m_iRegionSet:GetRegion(iItem);
 
   DWORD dwTitleId = 0;
   if (!pItem->IsOnDVD())
-    dwTitleId = m_database.GetTitleId(pItem->m_strPath);
+    dwTitleId = m_database.GetTitleId(pItem->GetPath());
   if (!dwTitleId)
-    dwTitleId = CUtil::GetXbeID(pItem->m_strPath);
+    dwTitleId = CUtil::GetXbeID(pItem->GetPath());
   CStdString strTrainer = m_database.GetActiveTrainer(dwTitleId);
   if (strTrainer != "")
   {
@@ -462,11 +462,11 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem)
   m_database.Close();
   memset(szParameters, 0, sizeof(szParameters));
 
-  strcpy(szPath, pItem->m_strPath.c_str());
+  strcpy(szPath, pItem->GetPath().c_str());
 
   if (pItem->IsShortCut())
   {
-    CUtil::RunShortcut(pItem->m_strPath.c_str());
+    CUtil::RunShortcut(pItem->GetPath().c_str());
     return false;
   }
 
@@ -486,12 +486,12 @@ int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
   if (bReload || m_vecItems->Get(iItem)->IsOnDVD())
   {
     CXBE xbe;
-    iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->m_strPath);
+    iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
   }
   else
   {
     m_database.Open();
-    iRegion = m_database.GetRegion(m_vecItems->Get(iItem)->m_strPath);
+    iRegion = m_database.GetRegion(m_vecItems->Get(iItem)->GetPath());
     m_database.Close();
   }
   if (iRegion == -1)
@@ -499,10 +499,10 @@ int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
     if (g_guiSettings.GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
-      iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->m_strPath);
+      iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
       if (iRegion < 1 || iRegion > 7)
         iRegion = 0;
-      m_database.SetRegion(m_vecItems->Get(iItem)->m_strPath,iRegion);
+      m_database.SetRegion(m_vecItems->Get(iItem)->GetPath(),iRegion);
     }
     else
       iRegion = 0;
@@ -568,25 +568,27 @@ void CGUIWindowPrograms::PopulateTrainersList()
     directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
     for( int i=0;i<archives.Size();++i)
     {
-      if (stricmp(URIUtils::GetExtension(archives[i]->m_strPath),".rar") == 0)
+      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".rar") == 0)
       {
-        g_RarManager.GetFilesInRar(inArchives,archives[i]->m_strPath,false);
+        g_RarManager.GetFilesInRar(inArchives,archives[i]->GetPath(),false);
         CHDDirectory dir;
         dir.SetMask(".xbtf|.etm");
         for (int j=0;j<inArchives.Size();++j)
-          if (dir.IsAllowed(inArchives[j]->m_strPath))
+          if (dir.IsAllowed(inArchives[j]->GetPath()))
           {
             CFileItemPtr item(new CFileItem(*inArchives[j]));
-            CStdString strPathInArchive = item->m_strPath;
-            URIUtils::CreateArchivePath(item->m_strPath, "rar", archives[i]->m_strPath, strPathInArchive,"");
+            CStdString strPathInArchive = item->GetPath();
+            CStdString path;
+            URIUtils::CreateArchivePath(path, "rar", archives[i]->GetPath(), strPathInArchive,"");
+            item->SetPath(path);
             trainers.Add(item);
           }
       }
-      if (stricmp(URIUtils::GetExtension(archives[i]->m_strPath),".zip")==0)
+      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".zip")==0)
       {
         // add trainers in zip
         CStdString strZipPath;
-        URIUtils::CreateArchivePath(strZipPath,"zip",archives[i]->m_strPath,"");
+        URIUtils::CreateArchivePath(strZipPath,"zip",archives[i]->GetPath(),"");
         CFileItemList zipTrainers;
         directory.GetDirectory(strZipPath,zipTrainers,".etm|.xbtf");
         for (int j=0;j<zipTrainers.Size();++j)
@@ -613,18 +615,18 @@ void CGUIWindowPrograms::PopulateTrainersList()
     }
     for (int i=0;i<trainers.Size();++i)
     {
-      CLog::Log(LOGDEBUG,"found trainer %s",trainers[i]->m_strPath.c_str());
+      CLog::Log(LOGDEBUG,"found trainer %s",trainers[i]->GetPath().c_str());
       m_dlgProgress->SetPercentage((int)((float)(i)/trainers.Size()*100.f));
       CStdString strLine;
       strLine.Format("%s %i / %i",g_localizeStrings.Get(12013).c_str(), i+1,trainers.Size());
       m_dlgProgress->SetLine(0,strLine);
       m_dlgProgress->SetLine(2,"");
       m_dlgProgress->Progress();
-      if (m_database.HasTrainer(trainers[i]->m_strPath)) // skip existing trainers
+      if (m_database.HasTrainer(trainers[i]->GetPath())) // skip existing trainers
         continue;
 
       CTrainer trainer;
-      if (trainer.Load(trainers[i]->m_strPath))
+      if (trainer.Load(trainers[i]->GetPath()))
       {
         m_dlgProgress->SetLine(1,trainer.GetName());
         m_dlgProgress->SetLine(2,"");
@@ -632,11 +634,11 @@ void CGUIWindowPrograms::PopulateTrainersList()
         unsigned int iTitle1, iTitle2, iTitle3;
         trainer.GetTitleIds(iTitle1,iTitle2,iTitle3);
         if (iTitle1)
-          m_database.AddTrainer(iTitle1,trainers[i]->m_strPath);
+          m_database.AddTrainer(iTitle1,trainers[i]->GetPath());
         if (iTitle2)
-          m_database.AddTrainer(iTitle2,trainers[i]->m_strPath);
+          m_database.AddTrainer(iTitle2,trainers[i]->GetPath());
         if (iTitle3)
-          m_database.AddTrainer(iTitle3,trainers[i]->m_strPath);
+          m_database.AddTrainer(iTitle3,trainers[i]->GetPath());
       }
       if (m_dlgProgress->IsCanceled())
       {
@@ -651,7 +653,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
   if (!bDatabaseState)
     m_database.Close();
   else
-    Update(m_vecItems->m_strPath);
+    Update(m_vecItems->GetPath());
 }
 
 bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
@@ -664,9 +666,9 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     if (CFile::Exists(strPath)) // flatten dvd
     {
       CFileItemPtr item(new CFileItem("default.xbe"));
-      item->m_strPath = strPath;
+      item->SetPath(strPath);
       items.Add(item);
-      items.m_strPath=strDirectory;
+      items.SetPath(strDirectory);
       bFlattened = true;
     }
   }
@@ -703,10 +705,10 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     if (item->m_bIsFolder && !item->IsParentFolder() && !item->IsPlugin())
     { // folder item - let's check for a default.xbe file, and flatten if we have one
       CStdString defaultXBE;
-      URIUtils::AddFileToFolder(item->m_strPath, "default.xbe", defaultXBE);
+      URIUtils::AddFileToFolder(item->GetPath(), "default.xbe", defaultXBE);
       if (CFile::Exists(defaultXBE))
       { // yes, format the item up
-        item->m_strPath = defaultXBE;
+        item->SetPath(defaultXBE);
         item->m_bIsFolder = false;
       }
     }
@@ -714,10 +716,10 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     { // resolve the shortcut to set it's description etc.
       // and save the old shortcut path (so we can reassign it later)
       CShortcut cut;
-      if (cut.Create(item->m_strPath))
+      if (cut.Create(item->GetPath()))
       {
-        shortcutPath = item->m_strPath;
-        item->m_strPath = cut.m_strPath;
+        shortcutPath = item->GetPath();
+        item->SetPath(cut.m_strPath);
         item->SetThumbnailImage(cut.m_strThumb);
 
         LABEL_MASKS labelMasks;
@@ -727,7 +729,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
         {
           item->SetLabel(cut.m_strLabel);
           __stat64 stat;
-          if (CFile::Stat(item->m_strPath,&stat) == 0)
+          if (CFile::Stat(item->GetPath(),&stat) == 0)
             item->m_dwSize = stat.st_size;
 
           formatter.FormatLabel2(item.get());
@@ -737,7 +739,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     }
     if (item->IsXBE())
     {
-      if (URIUtils::GetFileName(item->m_strPath).Equals("default_ffp.xbe"))
+      if (URIUtils::GetFileName(item->GetPath()).Equals("default_ffp.xbe"))
       {
         m_vecItems->Remove(i--);
         continue;
@@ -747,10 +749,10 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       if (!dwTitleID)
       {
         CStdString description;
-        if (CUtil::GetXBEDescription(item->m_strPath, description) && (!item->IsLabelPreformated() && !item->GetLabel().IsEmpty()))
+        if (CUtil::GetXBEDescription(item->GetPath(), description) && (!item->IsLabelPreformated() && !item->GetLabel().IsEmpty()))
           item->SetLabel(description);
 
-        dwTitleID = CUtil::GetXbeID(item->m_strPath);
+        dwTitleID = CUtil::GetXbeID(item->GetPath());
         if (!item->IsOnDVD())
           m_database.AddProgramInfo(item.get(), dwTitleID);
       }
@@ -765,7 +767,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       }
     }
     if (!shortcutPath.IsEmpty())
-      item->m_strPath = shortcutPath;
+      item->SetPath(shortcutPath);
   }
   m_database.CommitTransaction();
   // set the cached thumbs

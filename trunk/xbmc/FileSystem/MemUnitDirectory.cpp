@@ -51,7 +51,7 @@ bool CMemUnitDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
   for (int i = 0; i < cacheItems.Size(); i++)
   {
     CFileItemPtr item = cacheItems[i];
-    if (item->m_bIsFolder || IsAllowed(item->m_strPath))
+    if (item->m_bIsFolder || IsAllowed(item->GetPath()))
       items.Add(item);
   }
 

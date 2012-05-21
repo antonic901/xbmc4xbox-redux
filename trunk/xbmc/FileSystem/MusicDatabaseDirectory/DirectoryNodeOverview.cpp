@@ -87,12 +87,12 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items)
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(rootItems[i].second)));
     CStdString strDir;
     strDir.Format("%i/", rootItems[i].first);
-    pItem->m_strPath = BuildPath() + strDir;
+    pItem->SetPath(BuildPath() + strDir);
     pItem->m_bIsFolder = true;
     pItem->SetCanQueue(false);
     items.Add(pItem);
   }
 
-  items.m_strPath = "";
+  items.SetPath("");
   return true;
 }

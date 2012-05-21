@@ -85,23 +85,23 @@ bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
     items.Clear();
 
   // return the root listing
-  items.m_strPath=strPath;
+  items.SetPath(strPath);
 
   // grab our shares
   for (unsigned int i = 0; i < shares.size(); ++i)
   {
     CMediaSource& share = shares[i];
     CFileItemPtr pItem(new CFileItem(share));
-    if (pItem->IsLastFM() || pItem->IsShoutCast() || (pItem->m_strPath.Left(14).Equals("musicsearch://")))
+    if (pItem->IsLastFM() || pItem->IsShoutCast() || (pItem->GetPath().Left(14).Equals("musicsearch://")))
       pItem->SetCanQueue(false);
-    CStdString strPathUpper = pItem->m_strPath;
+    CStdString strPathUpper = pItem->GetPath();
     strPathUpper.ToUpper();
 
     CStdString strIcon;
     // We have the real DVD-ROM, set icon on disktype
     if (share.m_iDriveType == CMediaSource::SOURCE_TYPE_DVD && share.m_strThumbnailImage.IsEmpty())
     {
-      CUtil::GetDVDDriveIcon( pItem->m_strPath, strIcon );
+      CUtil::GetDVDDriveIcon( pItem->GetPath(), strIcon );
       // CDetectDVDMedia::SetNewDVDShareUrl() caches disc thumb as special://temp/dvdicon.tbn
       CStdString strThumb = "special://temp/dvdicon.tbn";
       if (XFILE::CFile::Exists(strThumb))
@@ -115,9 +115,9 @@ bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
           || pItem->IsMusicDb()
           || pItem->IsPlugin()
           || pItem->IsPluginRoot()
-          || pItem->m_strPath == "special://musicplaylists/"
-          || pItem->m_strPath == "special://videoplaylists/"
-          || pItem->m_strPath == "musicsearch://")
+          || pItem->GetPath() == "special://musicplaylists/"
+          || pItem->GetPath() == "special://videoplaylists/"
+          || pItem->GetPath() == "musicsearch://")
       strIcon = "DefaultFolder.png";
     else if (pItem->IsRemote())
       strIcon = "DefaultNetwork.png";

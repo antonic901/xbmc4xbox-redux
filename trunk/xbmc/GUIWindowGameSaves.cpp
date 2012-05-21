@@ -59,10 +59,10 @@ CGUIWindowGameSaves::~CGUIWindowGameSaves()
 
 void CGUIWindowGameSaves::GoParentFolder()
 {
-  if (m_history.GetParentPath() == m_vecItems->m_strPath)
+  if (m_history.GetParentPath() == m_vecItems->GetPath())
     m_history.RemoveParentPath();
   CStdString strParent=m_history.RemoveParentPath();
-  CStdString strOldPath(m_vecItems->m_strPath);
+  CStdString strOldPath(m_vecItems->GetPath());
   CStdString strPath(m_strParentPath);
   VECSOURCES shares;
   bool bIsSourceName = false;
@@ -125,8 +125,8 @@ bool CGUIWindowGameSaves::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       CStdString strDestination = message.GetStringParam();
-      if (m_vecItems->m_strPath == "?")
-        m_vecItems->m_strPath = "E:\\udata";
+      if (m_vecItems->GetPath() == "?")
+        m_vecItems->SetPath("E:\\udata");
 
       m_rootDir.SetMask("/");
       VECSOURCES shares;
@@ -143,18 +143,18 @@ bool CGUIWindowGameSaves::OnMessage(CGUIMessage& message)
           CFileItem item(shares[iIndex]);
           if (!g_passwordManager.IsItemUnlocked(&item,"programs"))
           {
-            m_vecItems->m_strPath = ""; // no u don't
+            m_vecItems->SetPath(""); // no u don't
             bDoStuff = false;
             CLog::Log(LOGINFO, "  Failure! Failed to unlock destination path: %s", strDestination.c_str());
           }
         }
         if (bIsSourceName)
         {
-          m_vecItems->m_strPath=shares[iIndex].strPath;
+          m_vecItems->SetPath(shares[iIndex].strPath);
         }
         else if (CDirectory::Exists(strDestination))
         {
-          m_vecItems->m_strPath = strDestination;
+          m_vecItems->SetPath(strDestination);
         }
       }
       return CGUIMediaWindow::OnMessage(message);
@@ -168,7 +168,7 @@ bool CGUIWindowGameSaves::OnMessage(CGUIMessage& message)
 bool CGUIWindowGameSaves::OnPlayMedia(int iItem)
 {
   CFileItemPtr pItem=m_vecItems->Get(iItem);
-  CStdString strPath = pItem->m_strPath;
+  CStdString strPath = pItem->GetPath();
   return true;
 }
 
@@ -224,8 +224,8 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
 
       CStdString titlemetaXBX;
       CStdString savemetaXBX;
-      URIUtils::AddFileToFolder(item->m_strPath, "titlemeta.xbx", titlemetaXBX);
-      URIUtils::AddFileToFolder(item->m_strPath, "savemeta.xbx", savemetaXBX);
+      URIUtils::AddFileToFolder(item->GetPath(), "titlemeta.xbx", titlemetaXBX);
+      URIUtils::AddFileToFolder(item->GetPath(), "savemeta.xbx", savemetaXBX);
       int domode = 0;
       if (CFile::Exists(titlemetaXBX))
       {
@@ -264,14 +264,14 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
           CLog::Log(LOGDEBUG, "Loading GameSave info from %s,  data is %s, located at %i to %i",  titlemetaXBX.c_str(),strDescription.c_str(),poss,pose);
           // check for subfolders with savemeta.xbx
           CFileItemList items2;
-          m_rootDir.GetDirectory(item->m_strPath,items2,false);
+          m_rootDir.GetDirectory(item->GetPath(),items2,false);
           int j;
           for (j=0;j<items2.Size();++j)
           {
             if (items2[j]->m_bIsFolder)
             {
               CStdString strPath;
-              URIUtils::AddFileToFolder(items2[j]->m_strPath,"savemeta.xbx",strPath);
+              URIUtils::AddFileToFolder(items2[j]->GetPath(),"savemeta.xbx",strPath);
               if (CFile::Exists(strPath))
                 break;
             }
@@ -279,14 +279,14 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
           if (j == items2.Size())
           {
             item->m_bIsFolder = false;
-            item->m_strPath = titlemetaXBX;
+            item->SetPath(titlemetaXBX);
           }
         }
         else
         {
           CLog::Log(LOGDEBUG, "Loading GameSave info from %s,  data is %s, located at %i to %i", savemetaXBX.c_str(),strDescription.c_str(),poss,pose);
           item->m_bIsFolder = false;
-          item->m_strPath = savemetaXBX;
+          item->SetPath(savemetaXBX);
         }
         item->GetMusicInfoTag()->SetTitle(item->GetLabel());  // Note we set ID as the TITLE to save code makign a SORT ID and a ID varible to the FileItem
         item->SetLabel(strDescription);
@@ -386,7 +386,7 @@ void CGUIWindowGameSaves::GetContextButtons(int itemNumber, CContextButtons &but
   buttons.Add(CONTEXT_BUTTON_MOVE, 116);
   buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   // Only add if we are on E:/udata/
-  // CStdString strFileName = URIUtils::GetFileName(m_vecItems->Get(iItem)->m_strPath);
+  // CStdString strFileName = URIUtils::GetFileName(m_vecItems->Get(iItem)->GetPath());
   // if (!strFileName.Equals("savemeta.xbx"))
   //   buttons.Add(CONTEXT_BUTTON_DOWNLOAD, 20317);
 }
@@ -410,7 +410,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   dir.GetSources(localMemShares);
 
   CFileItem item(*m_vecItems->Get(itemNumber));
-  CStdString strFileName = URIUtils::GetFileName(item.m_strPath);
+  CStdString strFileName = URIUtils::GetFileName(item.GetPath());
   switch (button)
   {
   case CONTEXT_BUTTON_COPY:
@@ -423,12 +423,14 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString path;
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx") )
       {
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,item.m_strPath);
+        CStdString itemPath;
+        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
+        item.SetPath(itemPath);
         item.m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;
         CStdString strParent;
-        URIUtils::GetParentPath(item.m_strPath,strParent);
+        URIUtils::GetParentPath(item.GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
         URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
         for (int j=0;j<items2.Size();++j)
@@ -436,28 +438,30 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           if (!items2[j]->m_bIsFolder)
           {
             CStdString strDest;
-            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->m_strPath),strDest);
-            CFile::Cache(items2[j]->m_strPath,strDest);
+            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
+            CFile::Cache(items2[j]->GetPath(),strDest);
           }
         }
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.m_strPath),path);
+        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.GetPath()),path);
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.m_strPath),path);
+        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.GetPath()),path);
       }
 
       item.Select(true);
-      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.m_strPath.c_str());
+      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.GetPath().c_str());
       CGUIWindowFileManager::CopyItem(&item,path,true);
       return true;
     }
   case CONTEXT_BUTTON_DELETE:
     {
-      CLog::Log(LOGDEBUG,"GSM: Deletion of folder confirmed for folder %s", item.m_strPath.c_str());
+      CLog::Log(LOGDEBUG,"GSM: Deletion of folder confirmed for folder %s", item.GetPath().c_str());
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx"))
       {
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,item.m_strPath);
+        CStdString itemPath;
+        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
+        item.SetPath(itemPath);
         item.m_bIsFolder = true;
       }
 
@@ -465,7 +469,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       if (CGUIWindowFileManager::DeleteItem(&item))
       {
         CFile::Delete(item.GetThumbnailImage());
-        Update(m_vecItems->m_strPath);
+        Update(m_vecItems->GetPath());
       }
       return true;
     }
@@ -479,12 +483,14 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString path;
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx"))
       {
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->m_strPath,item.m_strPath);
+        CStdString itemPath;
+        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
+        item.SetPath(itemPath);
         item.m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;
         CStdString strParent;
-        URIUtils::GetParentPath(item.m_strPath,strParent);
+        URIUtils::GetParentPath(item.GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
 
         URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
@@ -493,23 +499,23 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           if (!items2[j]->m_bIsFolder)
           {
             CStdString strDest;
-            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->m_strPath),strDest);
-            CFile::Cache(items2[j]->m_strPath,strDest);
+            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
+            CFile::Cache(items2[j]->GetPath(),strDest);
           }
         }
 
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.m_strPath),path);
+        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.GetPath()),path);
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.m_strPath),path);
+        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.GetPath()),path);
       }
 
       item.Select(true);
-      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.m_strPath.c_str());
+      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.GetPath().c_str());
       CGUIWindowFileManager::MoveItem(&item,path,true);
-      CDirectory::Remove(item.m_strPath);
-      Update(m_vecItems->m_strPath);
+      CDirectory::Remove(item.GetPath());
+      Update(m_vecItems->GetPath());
       return true;
     }
   /*
@@ -526,7 +532,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         }
         else
         {
-          Update(m_vecItems->m_strPath);
+          Update(m_vecItems->GetPath());
         }
       }
       return true;

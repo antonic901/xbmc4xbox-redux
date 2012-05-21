@@ -110,8 +110,10 @@ bool CFatXFileSystem::GetDirectory(const CStdString &directory, CFileItemList &i
     for (int i = 0; i < items.Size(); i++)
     {
       CFileItemPtr item = items[i];
-      item->m_strPath.Format("mem%d://%s", m_unit, item->m_strPath.Mid(3).c_str());
-      item->m_strPath.Replace("\\","/");
+      CStdString path;
+      path.Format("mem%d://%s", m_unit, item->GetPath().Mid(3).c_str());
+      path.Replace("\\","/");
+      item->SetPath(path);
     }
     return true;
   }

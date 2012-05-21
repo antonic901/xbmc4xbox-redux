@@ -207,7 +207,7 @@ void CGUIDialogProfileSettings::OnSettingChanged(SettingInfo &setting)
     {
       m_bNeedSave = true;
       CFileItem item(strThumb);
-      item.m_strPath = strThumb;
+      item.SetPath(strThumb);
       m_strThumb = item.GetCachedProfileThumb();
       if (CFile::Exists(m_strThumb))
         CFile::Delete(m_strThumb);

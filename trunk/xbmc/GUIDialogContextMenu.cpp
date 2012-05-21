@@ -340,7 +340,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
 
   case CONTEXT_BUTTON_EJECT_DISC:
 #ifdef _WIN32PC
-    if( item->m_strPath[0] ) CIoSupport::EjectTray( true, item->m_strPath[0] ); // TODO: detect tray state
+    if( item->GetPath()[0] ) CIoSupport::EjectTray( true, item->GetPath()[0] ); // TODO: detect tray state
 #else
     CIoSupport::ToggleTray();
 #endif
@@ -479,7 +479,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
         CStdString cachedThumb;
         if (type == "music")
         {
-          cachedThumb = item->m_strPath;
+          cachedThumb = item->GetPath();
           URIUtils::RemoveSlashAtEnd(cachedThumb);
           cachedThumb = CUtil::GetCachedMusicThumb(cachedThumb);
         }
@@ -610,7 +610,7 @@ CMediaSource *CGUIDialogContextMenu::GetShare(const CStdString &type, const CFil
     }
     else
     {
-      if (!testShare.strPath.Equals(item->m_strPath))
+      if (!testShare.strPath.Equals(item->GetPath()))
         continue;
     }
     // paths match, what about share name - only match the leftmost

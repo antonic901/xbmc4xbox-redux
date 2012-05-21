@@ -172,13 +172,13 @@ void CGUIDialogContentSettings::OnWindowLoaded()
   for (int i=0;i<items.Size();++i)
   {
     CScraperParser parser;
-    if (parser.Load(items[i]->m_strPath))
+    if (parser.Load(items[i]->GetPath()))
     {
       bool IsDefaultScraper = false;
 
       SScraperInfo info;
       info.strTitle = parser.GetName();
-      info.strPath = URIUtils::GetFileName(items[i]->m_strPath);
+      info.strPath = URIUtils::GetFileName(items[i]->GetPath());
       info.strThumb = parser.GetThumb();
       info.strContent = parser.GetContent();
       info.strLanguage = parser.GetLanguage();
@@ -383,7 +383,7 @@ void CGUIDialogContentSettings::FillListControl()
   for (vector<SScraperInfo>::iterator iter=m_scrapers.find(m_info.strContent)->second.begin();iter!=m_scrapers.find(m_info.strContent)->second.end();++iter)
   {
     CFileItemPtr item(new CFileItem(iter->strTitle));
-    item->m_strPath = iter->strPath;
+    item->SetPath(iter->strPath);
 
     CStdString strLanguage;
 

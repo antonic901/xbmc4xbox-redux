@@ -40,12 +40,12 @@ CGUIViewStateWindowScripts::CGUIViewStateWindowScripts(const CFileItemList& item
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
   SetSortOrder(SORT_ORDER_ASC);
-  LoadViewState(items.m_strPath, WINDOW_SCRIPTS);
+  LoadViewState(items.GetPath(), WINDOW_SCRIPTS);
 }
 
 void CGUIViewStateWindowScripts::SaveViewState()
 {
-  SaveViewToDb(m_items.m_strPath, WINDOW_SCRIPTS);
+  SaveViewToDb(m_items.GetPath(), WINDOW_SCRIPTS);
 }
 
 CStdString CGUIViewStateWindowScripts::GetExtensions()

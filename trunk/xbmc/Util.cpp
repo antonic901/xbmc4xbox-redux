@@ -1428,19 +1428,19 @@ void CUtil::CreateShortcut(CFileItem* pItem)
     if ( !pItem->IsOnDVD() )
     {
       CStdString strDescription;
-      if (! CUtil::GetXBEDescription(pItem->m_strPath, strDescription))
+      if (! CUtil::GetXBEDescription(pItem->GetPath(), strDescription))
       {
-        CUtil::GetDirectoryName(pItem->m_strPath, strDescription);
+        CUtil::GetDirectoryName(pItem->GetPath(), strDescription);
       }
       if (strDescription.size())
       {
         CStdString strFname;
-        strFname = URIUtils::GetFileName(pItem->m_strPath);
+        strFname = URIUtils::GetFileName(pItem->GetPath());
         strFname.ToLower();
         if (strFname != "dashupdate.xbe" && strFname != "downloader.xbe" && strFname != "update.xbe")
         {
           CShortcut cut;
-          cut.m_strPath = pItem->m_strPath;
+          cut.m_strPath = pItem->GetPath();
           cut.Save(strDescription);
         }
       }
@@ -1685,10 +1685,10 @@ void CUtil::ClearSubtitles()
   {
     if (!items[i]->m_bIsFolder)
     {
-      if ( items[i]->m_strPath.Find("subtitle") >= 0 || items[i]->m_strPath.Find("vobsub_queue") >= 0 )
+      if ( items[i]->GetPath().Find("subtitle") >= 0 || items[i]->GetPath().Find("vobsub_queue") >= 0 )
       {
-        CLog::Log(LOGDEBUG, "%s - Deleting temporary subtitle %s", __FUNCTION__, items[i]->m_strPath.c_str());
-        CFile::Delete(items[i]->m_strPath);
+        CLog::Log(LOGDEBUG, "%s - Deleting temporary subtitle %s", __FUNCTION__, items[i]->GetPath().c_str());
+        CFile::Delete(items[i]->GetPath());
       }
     }
   }
@@ -1830,7 +1830,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
       strFileNameNoExtNoCase.MakeLower();
       for (int j = 0; j < (int)items.Size(); j++)
       {
-        URIUtils::Split(items[j]->m_strPath, strPath, strItem);
+        URIUtils::Split(items[j]->GetPath(), strPath, strItem);
 
         // is this a rar-file ..
         if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && g_guiSettings.GetBool("subtitles.searchrars"))
@@ -1842,7 +1842,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
           unsigned int iPos = strMovie.substr(0,6)=="rar://"?1:0;
           iPos = strMovie.substr(0,6)=="zip://"?1:0;
           if ((step != iPos) || (strFileNameNoExtNoCase+".rar").Equals(strItem) || (strFileNameNoExtNoCase+".zip").Equals(strItem))
-            CacheRarSubtitles(items[j]->m_strPath, strFileNameNoExtNoCase);
+            CacheRarSubtitles(items[j]->GetPath(), strFileNameNoExtNoCase);
         }
         else
         {
@@ -1855,7 +1855,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
             {
               strLExt = strItem.Right(strItem.GetLength() - 9);
               strDest.Format("special://temp/subtitle.alt-%s", strLExt);
-              if (CFile::Cache(items[j]->m_strPath, strDest, pCallback, NULL))
+              if (CFile::Cache(items[j]->GetPath(), strDest, pCallback, NULL))
               {
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
                 strExtensionCached = strLExt;
@@ -1867,7 +1867,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
             {
               strLExt = strItem.Right(strItem.size() - fnl);
               strDest.Format("special://temp/subtitle%s", strLExt);
-              if (CFile::Cache(items[j]->m_strPath, strDest, pCallback, NULL))
+              if (CFile::Cache(items[j]->GetPath(), strDest, pCallback, NULL))
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
             }
           }
@@ -1885,14 +1885,14 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
     if (items[i]->m_bIsFolder)
       continue;
 
-    CStdString filename = URIUtils::GetFileName(items[i]->m_strPath);
+    CStdString filename = URIUtils::GetFileName(items[i]->GetPath());
     strLExt = filename.Right(filename.size()-8);
     vecExtensionsCached.push_back(strLExt);
     if (URIUtils::GetExtension(filename).Equals(".smi"))
     {
       //Cache multi-language sami subtitle
       CDVDSubtitleStream* pStream = new CDVDSubtitleStream();
-      if(pStream->Open(items[i]->m_strPath))
+      if(pStream->Open(items[i]->GetPath()))
       {
         CDVDSubtitleTagSami TagConv;
         TagConv.LoadHead(pStream);
@@ -1901,7 +1901,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
           for (unsigned int k = 0; k < TagConv.m_Langclass.size(); k++)
           {
             strDest.Format("special://temp/subtitle.%s%s", TagConv.m_Langclass[k].Name, strLExt);
-            if (CFile::Cache(items[i]->m_strPath, strDest, pCallback, NULL))
+            if (CFile::Cache(items[i]->GetPath(), strDest, pCallback, NULL))
               CLog::Log(LOGINFO, " cached subtitle %s->%s\n", filename.c_str(), strDest.c_str());
             CStdString strTemp;
             strTemp.Format(".%s%s", TagConv.m_Langclass[k].Name, strLExt);
@@ -1943,7 +1943,7 @@ bool CUtil::CacheRarSubtitles(const CStdString& strRarPath,
   }
   for (int it= 0 ; it <ItemList.Size();++it)
   {
-    CStdString strPathInRar = ItemList[it]->m_strPath;
+    CStdString strPathInRar = ItemList[it]->GetPath();
     CStdString strExt = URIUtils::GetExtension(strPathInRar);
 
     CLog::Log(LOGDEBUG, "CacheRarSubs:: Found file %s", strPathInRar.c_str());
@@ -2940,7 +2940,7 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
     if (params.size())
     {
       CFileItem item(params[0]);
-      item.m_strPath = params[0];
+      item.SetPath(params[0]);
       if (item.IsShortCut())
         CUtil::RunShortcut(params[0]);
       else if (item.IsXBE())
@@ -2972,8 +2972,8 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
       CFileItem item(params[0]);
       if (!item.m_bIsFolder)
       {
-        item.m_strPath = params[0];
-        CPluginDirectory::RunScriptWithParams(item.m_strPath);
+        item.SetPath(params[0]);
+        CPluginDirectory::RunScriptWithParams(item.GetPath());
       }
     }
     else
@@ -4695,7 +4695,7 @@ void CUtil::GetRecursiveListing(const CStdString& strPath, CFileItemList& items,
   for (int i=0;i<myItems.Size();++i)
   {
     if (myItems[i]->m_bIsFolder)
-      CUtil::GetRecursiveListing(myItems[i]->m_strPath,items,strMask,bUseFileDirectories);
+      CUtil::GetRecursiveListing(myItems[i]->GetPath(),items,strMask,bUseFileDirectories);
     else 
 //    if (!myItems[i]->IsRAR() && !myItems[i]->IsZIP())
       items.Add(myItems[i]);
@@ -4708,10 +4708,10 @@ void CUtil::GetRecursiveDirsListing(const CStdString& strPath, CFileItemList& it
   CDirectory::GetDirectory(strPath,myItems,"",false);
   for (int i=0;i<myItems.Size();++i)
   {
-    if (myItems[i]->m_bIsFolder && !myItems[i]->m_strPath.Equals(".."))
+    if (myItems[i]->m_bIsFolder && !myItems[i]->GetPath().Equals(".."))
     {
       item.Add(myItems[i]);
-      CUtil::GetRecursiveDirsListing(myItems[i]->m_strPath,item);
+      CUtil::GetRecursiveDirsListing(myItems[i]->GetPath(),item);
     }
   }
 }
@@ -4878,7 +4878,7 @@ void CUtil::GetSkinThemes(vector<CStdString>& vecTheme)
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension;
-      URIUtils::GetExtension(pItem->m_strPath, strExtension);
+      URIUtils::GetExtension(pItem->GetPath(), strExtension);
       if (strExtension == ".xpr" && pItem->GetLabel().CompareNoCase("Textures.xpr"))
       {
         CStdString strLabel = pItem->GetLabel();
@@ -4898,13 +4898,13 @@ void CUtil::WipeDir(const CStdString& strPath) // DANGEROUS!!!!
   for (int i=0;i<items.Size();++i)
   {
     if (!items[i]->m_bIsFolder)
-      CFile::Delete(items[i]->m_strPath);
+      CFile::Delete(items[i]->GetPath());
   }
   items.Clear();
   GetRecursiveDirsListing(strPath,items);
   for (int i=items.Size()-1;i>-1;--i) // need to wipe them backwards
   {
-    CStdString strDir = items[i]->m_strPath;
+    CStdString strDir = items[i]->GetPath();
     URIUtils::AddSlashAtEnd(strDir);
     CDirectory::Remove(strDir);
   }
@@ -4994,7 +4994,7 @@ void CUtil::ClearFileItemCache()
   for (int i = 0; i < items.Size(); ++i)
   {
     if (!items[i]->m_bIsFolder)
-      CFile::Delete(items[i]->m_strPath);
+      CFile::Delete(items[i]->GetPath());
   }
 }
 

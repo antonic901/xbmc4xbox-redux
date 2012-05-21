@@ -182,7 +182,7 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
       if (bIsDir)
       {
         CFileItemPtr pItem(new CFileItem(strFile));
-        pItem->m_strPath = strRoot;
+        CStdString path(strRoot);
 
         // needed for network / workgroup browsing
         // skip if root if we are given a server
@@ -192,10 +192,11 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
           CURL rooturl(strRoot);
           rooturl.SetFileName("");
           rooturl.SetHostName("");
-          pItem->m_strPath = smb.URLEncode(rooturl);
+          path = smb.URLEncode(rooturl);
         }
-        pItem->m_strPath += aDir.name;
-        if (!URIUtils::HasSlashAtEnd(pItem->m_strPath)) pItem->m_strPath += '/';
+        path += aDir.name;
+        URIUtils::AddSlashAtEnd(path);
+        pItem->SetPath(path);
         pItem->m_bIsFolder = true;
         pItem->m_dateTime=localTime;
         if (hidden)
@@ -205,7 +206,7 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
       else
       {
         CFileItemPtr pItem(new CFileItem(strFile));
-        pItem->m_strPath = strRoot + aDir.name;
+        pItem->SetPath(strRoot + aDir.name);
         pItem->m_bIsFolder = false;
         pItem->m_dwSize = iSize;
         pItem->m_dateTime=localTime;

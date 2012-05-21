@@ -86,7 +86,7 @@ void CPlayerSelectionRule::GetPlayers(const CFileItem& item, VECPLAYERCORES &vec
   if (m_tDVDFile >= 0 && (m_tDVDFile > 0) != item.IsDVDFile()) return;
   if (m_tDVDImage >= 0 && (m_tDVDImage > 0) != item.IsDVDImage()) return;
 
-  CURL url(item.m_strPath);
+  CURL url(item.GetPath());
 
   CRegExp regExp;
   if (m_fileTypes && m_fileTypes.length() > 0 && regExp.RegComp(m_fileTypes.c_str()))
@@ -99,7 +99,7 @@ void CPlayerSelectionRule::GetPlayers(const CFileItem& item, VECPLAYERCORES &vec
       regExp.RegFind(item.GetMimeType(), 0) != 0) return;
 
   if (m_fileName && m_fileName.length() > 0 && regExp.RegComp(m_fileName.c_str()) &&
-      regExp.RegFind(item.m_strPath, 0) != 0) return;
+      regExp.RegFind(item.GetPath(), 0) != 0) return;
 
   CLog::Log(LOGDEBUG, "CPlayerSelectionRule::GetPlayers: matches rule: %s", m_name.c_str());
 

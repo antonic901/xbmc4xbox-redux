@@ -211,7 +211,7 @@ void CGUIWindowMusicTop100::OnSearchItemFound(const CFileItem* pSelItem)
   for (int i = 0; i < (int)m_vecItems.Size(); i++)
   {
     CFileItem* pItem = m_vecItems[i];
-    if (pItem->m_strPath == pSelItem->m_strPath)
+    if (pItem->GetPath() == pSelItem->m_strPath)
     {
       m_viewControl.SetSelectedItem(i);
       m_viewControl.SetFocused();

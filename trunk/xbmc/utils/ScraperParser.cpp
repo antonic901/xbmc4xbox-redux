@@ -553,7 +553,7 @@ void CScraperParser::ClearCache()
     {
       // wipe cache
       if (items[i]->m_dateTime+m_persistence <= CDateTime::GetCurrentDateTime())
-        CFile::Delete(items[i]->m_strPath);
+        CFile::Delete(items[i]->GetPath());
     }
   }
   else

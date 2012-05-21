@@ -87,11 +87,11 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
             CStdString strLabel=wfd.cFileName;
             g_charsetConverter.unknownToUTF8(strLabel);
             CFileItemPtr pItem(new CFileItem(strLabel));
-            pItem->m_strPath = strRoot;
-            pItem->m_strPath += wfd.cFileName;
-            g_charsetConverter.unknownToUTF8(pItem->m_strPath);
+            CStdString itemPath = strRoot + wfd.cFileName;
+            g_charsetConverter.unknownToUTF8(itemPath);
             pItem->m_bIsFolder = true;
-            URIUtils::AddSlashAtEnd(pItem->m_strPath);
+            URIUtils::AddSlashAtEnd(itemPath);
+            pItem->SetPath(itemPath);
             FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
             pItem->m_dateTime=localTime;
 
@@ -103,10 +103,9 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
           CStdString strLabel=wfd.cFileName;
           g_charsetConverter.unknownToUTF8(strLabel);
           CFileItemPtr pItem(new CFileItem(strLabel));
-          pItem->m_strPath = strRoot;
-          pItem->m_strPath += wfd.cFileName;
-          g_charsetConverter.unknownToUTF8(pItem->m_strPath);
-
+          CStdString itemPath = strRoot + wfd.cFileName;
+          g_charsetConverter.unknownToUTF8(itemPath);
+          pItem->SetPath(itemPath);
           pItem->m_bIsFolder = false;
           pItem->m_dwSize = CUtil::ToInt64(wfd.nFileSizeHigh, wfd.nFileSizeLow);
           FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);

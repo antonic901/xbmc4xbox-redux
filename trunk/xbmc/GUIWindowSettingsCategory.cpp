@@ -2490,7 +2490,7 @@ void CGUIWindowSettingsCategory::FillInSkins(CSetting *pSetting)
       if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
       if (strcmpi(pItem->GetLabel().c_str(), "fonts") == 0) continue;
       if (strcmpi(pItem->GetLabel().c_str(), "media") == 0) continue;
-      //   if (g_SkinInfo.Check(pItem->m_strPath))
+      //   if (g_SkinInfo.Check(pItem->GetPath()))
       //   {
       vecSkins.push_back(pItem->GetLabel());
       //   }
@@ -2615,7 +2615,7 @@ void CGUIWindowSettingsCategory::FillInVisualisations(CSetting *pSetting, int iC
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension;
-      URIUtils::GetExtension(pItem->m_strPath, strExtension);
+      URIUtils::GetExtension(pItem->GetPath(), strExtension);
       if (strExtension == ".vis")
       {
         CStdString strLabel = pItem->GetLabel();
@@ -2889,7 +2889,7 @@ void CGUIWindowSettingsCategory::FillInScreenSavers(CSetting *pSetting)
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension;
-      URIUtils::GetExtension(pItem->m_strPath, strExtension);
+      URIUtils::GetExtension(pItem->GetPath(), strExtension);
       if (strExtension == ".xbs")
       {
         CStdString strLabel = pItem->GetLabel();
@@ -3290,18 +3290,18 @@ void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, con
       continue;
 
     CScraperParser parser;
-    if (parser.Load(items[i]->m_strPath))
+    if (parser.Load(items[i]->GetPath()))
     {
       if (parser.GetContent() != strContent && !strContent.Equals("music"))
         continue;
 
-      if (parser.GetName().Equals(strSelected) || URIUtils::GetFileName(items[i]->m_strPath).Equals(strSelected))
+      if (parser.GetName().Equals(strSelected) || URIUtils::GetFileName(items[i]->GetPath()).Equals(strSelected))
       {
         if (strContent.Equals("music")) // native strContent would be albums or artists but we're using the same scraper for both
         {
           if (g_guiSettings.GetString("musiclibrary.scraper") != strSelected)
           {
-            g_guiSettings.SetString("musiclibrary.scraper", URIUtils::GetFileName(items[i]->m_strPath));
+            g_guiSettings.SetString("musiclibrary.scraper", URIUtils::GetFileName(items[i]->GetPath()));
 
             SScraperInfo info;
             CMusicDatabase database;
@@ -3316,11 +3316,11 @@ void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, con
           }
         }
         else if (strContent.Equals("movies"))
-          g_guiSettings.SetString("scrapers.moviedefault", URIUtils::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.moviedefault", URIUtils::GetFileName(items[i]->GetPath()));
         else if (strContent.Equals("tvshows"))
-          g_guiSettings.SetString("scrapers.tvshowdefault", URIUtils::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.tvshowdefault", URIUtils::GetFileName(items[i]->GetPath()));
         else if (strContent.Equals("musicvideos"))
-          g_guiSettings.SetString("scrapers.musicvideodefault", URIUtils::GetFileName(items[i]->m_strPath));
+          g_guiSettings.SetString("scrapers.musicvideodefault", URIUtils::GetFileName(items[i]->GetPath()));
         k = j;
       }
       pControl->AddLabel(parser.GetName(),j++);
@@ -3344,7 +3344,7 @@ void CGUIWindowSettingsCategory::FillInWeatherPlugins(CGUISpinControlEx *pContro
     {    
       // create the full path to the plugin
       CStdString plugin;
-      CStdString pluginPath = items[i]->m_strPath;
+      CStdString pluginPath = items[i]->GetPath();
       // remove slash at end so we can use the plugins folder as plugin name
       URIUtils::RemoveSlashAtEnd(pluginPath);
       // add default.py to our plugin path to create the full path

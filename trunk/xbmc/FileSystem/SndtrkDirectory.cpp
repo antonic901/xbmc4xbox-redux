@@ -63,11 +63,10 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
             it->second=stInfo;
 
           CFileItemPtr pItem(new CFileItem(stData.szName));
-          pItem->m_strPath = strRoot;
           pItem->SetLabelPreformated(true);
           char tmpvar[4];
           itoa (stData.uSoundtrackId, tmpvar, 10);
-          pItem->m_strPath += tmpvar;
+          pItem->SetPath(strRoot + tmpvar);
           pItem->m_bIsFolder = true;
           items.Add(pItem);
         }
@@ -98,16 +97,17 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
       {
         // Add it to the list
         CFileItemPtr pItem(new CFileItem(strSong));
-        pItem->m_strPath = "E:\\TDATA\\fffe0000\\music\\";
+        CStdString strPath("E:\\TDATA\\fffe0000\\music\\");
         char tmpvar[16];
         *tmpvar = NULL;
         sprintf(tmpvar, "%04x", stInfo.uSoundtrackId);
-        pItem->m_strPath += tmpvar;
-        pItem->m_strPath += "\\";
+        strPath += tmpvar;
+        strPath += "\\";
         *tmpvar = NULL;
         sprintf(tmpvar, "%08x", dwSongId);
-        pItem->m_strPath += tmpvar;
-        pItem->m_strPath += ".wma";
+        strPath += tmpvar;
+        strPath += ".wma";
+        pItem->SetPath(strPath);
         pItem->m_bIsFolder = false;
         items.Add(pItem);
       }

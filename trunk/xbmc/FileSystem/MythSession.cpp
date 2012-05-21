@@ -170,7 +170,7 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
   /*
    * Set further FileItem and VideoInfoTag meta-data based on whether it is LiveTV or not.
    */
-  CURL url(item.m_strPath);
+  CURL url(item.GetPath());
   if (url.GetFileName().Left(9) == "channels/")
   {
     /*
@@ -207,7 +207,7 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
     if (!number.IsEmpty())
     {
       url.SetFileName("channels/" + number + ".ts"); // e.g. channels/3.ts
-      item.m_strPath = url.Get();
+      item.SetPath(url.Get());
     }
     CStdString chanicon = GetValue(m_dll->proginfo_chanicon(program));
     if (!chanicon.IsEmpty())
