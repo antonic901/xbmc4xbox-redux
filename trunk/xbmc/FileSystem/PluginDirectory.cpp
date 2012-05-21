@@ -313,6 +313,11 @@ void CPluginDirectory::AddSortMethod(int handle, SORT_METHOD sortMethod, const C
         dir->m_listItems->AddSortMethod(SORT_METHOD_GENRE, 515, LABEL_MASKS("%T", "%G"));
         break;
       }
+    case SORT_METHOD_COUNTRY:
+      {
+        dir->m_listItems->AddSortMethod(SORT_METHOD_COUNTRY, 574, LABEL_MASKS("%T", "%G"));
+        break;
+      }
     case SORT_METHOD_VIDEO_TITLE:
       {
         dir->m_listItems->AddSortMethod(SORT_METHOD_VIDEO_TITLE, 369, LABEL_MASKS("%T", label2Mask));

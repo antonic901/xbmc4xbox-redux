@@ -56,6 +56,7 @@ public:
                         FIELD_DIRECTOR,
                         FIELD_ACTOR,
                         FIELD_STUDIO,
+                        FIELD_COUNTRY,
                         FIELD_MPAA,
                         FIELD_TOP250,
                         FIELD_NUMEPISODES,

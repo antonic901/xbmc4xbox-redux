@@ -28,6 +28,7 @@ CQueryParams::CQueryParams()
 {
   m_idMovie = -1;
   m_idGenre = -1;
+  m_idCountry = -1;
   m_idYear = -1;
   m_idActor = -1;
   m_idDirector = -1;
@@ -52,6 +53,9 @@ void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeNa
     break;
   case NODE_TYPE_GENRE:
     m_idGenre = idDb;
+    break;
+  case NODE_TYPE_COUNTRY:
+    m_idCountry = idDb;
     break;
   case NODE_TYPE_YEAR:
     m_idYear = idDb;
