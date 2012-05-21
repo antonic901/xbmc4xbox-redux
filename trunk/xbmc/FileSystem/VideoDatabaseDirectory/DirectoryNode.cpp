@@ -164,6 +164,11 @@ const CStdString& CDirectoryNode::GetName() const
   return m_strName;
 }
 
+int CDirectoryNode::GetID() const
+{
+  return atoi(m_strName.c_str());
+}
+
 //  Current node type
 NODE_TYPE CDirectoryNode::GetType() const
 {
