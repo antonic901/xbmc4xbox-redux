@@ -32,14 +32,12 @@ CDirectoryNodeCountry::CDirectoryNodeCountry(const CStdString& strName, CDirecto
 
 }
 
-NODE_TYPE CDirectoryNodeCountry::GetChildType()
+NODE_TYPE CDirectoryNodeCountry::GetChildType() const
 {
-  CQueryParams params;
-  CollectQueryParams(params);
   return NODE_TYPE_TITLE_MOVIES;
 }
 
-bool CDirectoryNodeCountry::GetContent(CFileItemList& items)
+bool CDirectoryNodeCountry::GetContent(CFileItemList& items) const
 {
   CVideoDatabase videodatabase;
   if (!videodatabase.Open())

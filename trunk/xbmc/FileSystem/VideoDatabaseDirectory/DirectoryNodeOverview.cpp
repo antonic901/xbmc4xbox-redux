@@ -35,7 +35,7 @@ CDirectoryNodeOverview::CDirectoryNodeOverview(const CStdString& strName, CDirec
 
 }
 
-NODE_TYPE CDirectoryNodeOverview::GetChildType()
+NODE_TYPE CDirectoryNodeOverview::GetChildType() const
 {
   if (GetName()=="1")
     return NODE_TYPE_MOVIES_OVERVIEW;
@@ -53,7 +53,7 @@ NODE_TYPE CDirectoryNodeOverview::GetChildType()
   return NODE_TYPE_NONE;
 }
 
-bool CDirectoryNodeOverview::GetContent(CFileItemList& items)
+bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
 {
   CVideoDatabase database;
   database.Open();

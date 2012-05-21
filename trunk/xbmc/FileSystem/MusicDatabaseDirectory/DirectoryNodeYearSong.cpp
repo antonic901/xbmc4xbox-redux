@@ -32,7 +32,7 @@ CDirectoryNodeYearSong::CDirectoryNodeYearSong(const CStdString& strName, CDirec
 
 }
 
-bool CDirectoryNodeYearSong::GetContent(CFileItemList& items)
+bool CDirectoryNodeYearSong::GetContent(CFileItemList& items) const
 {
   CMusicDatabase musicdatabase;
   if (!musicdatabase.Open())

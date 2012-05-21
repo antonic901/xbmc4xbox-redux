@@ -32,7 +32,7 @@ CDirectoryNodeTitleMusicVideos::CDirectoryNodeTitleMusicVideos(const CStdString&
 
 }
 
-bool CDirectoryNodeTitleMusicVideos::GetContent(CFileItemList& items)
+bool CDirectoryNodeTitleMusicVideos::GetContent(CFileItemList& items) const
 {
   CVideoDatabase videodatabase;
   if (!videodatabase.Open())

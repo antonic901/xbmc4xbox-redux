@@ -31,7 +31,7 @@ CDirectoryNodeTvShowsOverview::CDirectoryNodeTvShowsOverview(const CStdString& s
 
 }
 
-NODE_TYPE CDirectoryNodeTvShowsOverview::GetChildType()
+NODE_TYPE CDirectoryNodeTvShowsOverview::GetChildType() const
 {
   if (GetName()=="0")
     return NODE_TYPE_EPISODES;
@@ -49,7 +49,7 @@ NODE_TYPE CDirectoryNodeTvShowsOverview::GetChildType()
   return NODE_TYPE_NONE;
 }
 
-bool CDirectoryNodeTvShowsOverview::GetContent(CFileItemList& items)
+bool CDirectoryNodeTvShowsOverview::GetContent(CFileItemList& items) const
 {
   CStdStringArray vecRoot;
   vecRoot.push_back(g_localizeStrings.Get(135));  // Genres

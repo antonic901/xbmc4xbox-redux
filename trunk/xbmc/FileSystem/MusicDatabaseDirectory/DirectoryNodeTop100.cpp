@@ -32,7 +32,7 @@ CDirectoryNodeTop100::CDirectoryNodeTop100(const CStdString& strName, CDirectory
 
 }
 
-NODE_TYPE CDirectoryNodeTop100::GetChildType()
+NODE_TYPE CDirectoryNodeTop100::GetChildType() const
 {
   if (GetName()=="1")
     return NODE_TYPE_SONG_TOP100;
@@ -42,7 +42,7 @@ NODE_TYPE CDirectoryNodeTop100::GetChildType()
   return NODE_TYPE_NONE;
 }
 
-bool CDirectoryNodeTop100::GetContent(CFileItemList& items)
+bool CDirectoryNodeTop100::GetContent(CFileItemList& items) const
 {
   vector<CStdString> vecRoot;
   vecRoot.push_back(g_localizeStrings.Get(10504));  // Top 100 Songs

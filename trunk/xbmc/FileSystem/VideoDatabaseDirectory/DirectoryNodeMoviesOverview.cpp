@@ -33,7 +33,7 @@ CDirectoryNodeMoviesOverview::CDirectoryNodeMoviesOverview(const CStdString& str
 
 }
 
-NODE_TYPE CDirectoryNodeMoviesOverview::GetChildType()
+NODE_TYPE CDirectoryNodeMoviesOverview::GetChildType() const
 {
   if (GetName()=="1")
     return NODE_TYPE_GENRE;
@@ -55,7 +55,7 @@ NODE_TYPE CDirectoryNodeMoviesOverview::GetChildType()
   return NODE_TYPE_NONE;
 }
 
-bool CDirectoryNodeMoviesOverview::GetContent(CFileItemList& items)
+bool CDirectoryNodeMoviesOverview::GetContent(CFileItemList& items) const
 {
   vector<pair<const char*, int> > vecRoot;
   vecRoot.push_back(make_pair("1", 135));  // Genres

@@ -31,7 +31,7 @@ CDirectoryNodeMusicVideosOverview::CDirectoryNodeMusicVideosOverview(const CStdS
 
 }
 
-NODE_TYPE CDirectoryNodeMusicVideosOverview::GetChildType()
+NODE_TYPE CDirectoryNodeMusicVideosOverview::GetChildType() const
 {
   if (GetName()=="1")
     return NODE_TYPE_GENRE;
@@ -51,7 +51,7 @@ NODE_TYPE CDirectoryNodeMusicVideosOverview::GetChildType()
   return NODE_TYPE_NONE;
 }
 
-bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items)
+bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items) const
 {
   CStdStringArray vecRoot;
   vecRoot.push_back(g_localizeStrings.Get(135));  // Genres

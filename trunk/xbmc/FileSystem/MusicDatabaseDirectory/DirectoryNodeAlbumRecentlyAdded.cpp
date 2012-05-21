@@ -32,7 +32,7 @@ CDirectoryNodeAlbumRecentlyAdded::CDirectoryNodeAlbumRecentlyAdded(const CStdStr
 
 }
 
-NODE_TYPE CDirectoryNodeAlbumRecentlyAdded::GetChildType()
+NODE_TYPE CDirectoryNodeAlbumRecentlyAdded::GetChildType() const
 {
   if (GetName()=="-1")
     return NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS;
@@ -40,7 +40,7 @@ NODE_TYPE CDirectoryNodeAlbumRecentlyAdded::GetChildType()
   return NODE_TYPE_SONG;
 }
 
-bool CDirectoryNodeAlbumRecentlyAdded::GetContent(CFileItemList& items)
+bool CDirectoryNodeAlbumRecentlyAdded::GetContent(CFileItemList& items) const
 {
   CMusicDatabase musicdatabase;
   if (!musicdatabase.Open())

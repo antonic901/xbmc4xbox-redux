@@ -32,7 +32,7 @@ CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const CStdString& strName, CDir
 
 }
 
-NODE_TYPE CDirectoryNodeYearAlbum::GetChildType()
+NODE_TYPE CDirectoryNodeYearAlbum::GetChildType() const
 {
   if (GetName()=="-1")
     return NODE_TYPE_YEAR_SONG;
@@ -40,7 +40,7 @@ NODE_TYPE CDirectoryNodeYearAlbum::GetChildType()
   return NODE_TYPE_SONG;
 }
 
-bool CDirectoryNodeYearAlbum::GetContent(CFileItemList& items)
+bool CDirectoryNodeYearAlbum::GetContent(CFileItemList& items) const
 {
   CMusicDatabase musicdatabase;
   if (!musicdatabase.Open())
