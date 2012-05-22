@@ -30,7 +30,7 @@ namespace XFILE
 class CUPnPDirectory :  public IDirectory
 {
 public:
-    CUPnPDirectory(void);
+    CUPnPDirectory(void) {}
     virtual ~CUPnPDirectory(void) {}
 
     // IDirectory methods

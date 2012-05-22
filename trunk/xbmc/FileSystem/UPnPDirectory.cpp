@@ -117,16 +117,6 @@ static bool FindDeviceWait(CUPnP* upnp, const char* uuid, PLT_DeviceDataReferenc
     return !device.IsNull();
 }
 
-CUPnPDirectory::CUPnPDirectory(void)
-{
-  // since svn r27276/27277 when the CHTTP class was removed, upnp is crashing.
-  // the interaction for this is unknown as the code is unused, but loading the
-  // LIBHTTP section (webserver) fixes it. see
-  // https://sourceforge.net/apps/trac/xbmc4xbox/ticket/44#comment:3
-  // this is also loaded later if enabling the webserver and unloaded after
-  CSectionLoader::Load("LIBHTTP");
-}
-
 /*----------------------------------------------------------------------
 |   CUPnPDirectory::GetFriendlyName
 +---------------------------------------------------------------------*/
