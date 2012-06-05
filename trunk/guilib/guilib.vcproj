@@ -675,9 +675,6 @@
 				RelativePath=".\VisibleEffect.h">
 			</File>
 			<File
-				RelativePath=".\XBTF.h">
-			</File>
-			<File
 				RelativePath=".\XMLUtils.h">
 			</File>
 		</Filter>

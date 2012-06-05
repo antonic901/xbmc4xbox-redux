@@ -27,11 +27,13 @@
 #include "GraphicContext.h"
 #include "utils/SingleLock.h"
 #include "StringUtils.h"
+#include "Picture.h"
 #include "utils/CharsetConverter.h"
 #include "../xbmc/utils/URIUtils.h"
 #include "../xbmc/FileSystem/File.h"
 #include "../xbmc/FileSystem/Directory.h"
 #include "../xbmc/FileSystem/SpecialProtocol.h"
+#include "AdvancedSettings.h"
 
 #ifdef HAS_XBOX_D3D
 #include <XGraphics.h>
@@ -575,44 +577,56 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     CStdString texturePath;
     g_charsetConverter.utf8ToStringCharset(strPath, texturePath);
 
-    HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
-                                     D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
-                                     D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
-    
-    int checkWidth  = D3DX_DEFAULT;
-    int checkHeight = D3DX_DEFAULT;
-
-    // Don't allow anything bigger than 720p on Xbox because of the limited amount of memory
-    if ( info.Width > 1280 )
-      checkWidth = 1280;
-
-    if ( info.Height > 720 )
-      checkHeight = 720;
-      
-    if (checkWidth != D3DX_DEFAULT || checkHeight != D3DX_DEFAULT )
+    // if the file is a thumbnail, load with picture loader (fast jpeg decoder), and limit to our chosen thumbsize
+    // as thumbnails could be slighly bigger on disk due to libjpeg scaling
+    if (URIUtils::GetExtension(strPath).Equals(".tbn"))
     {
-      // HACK!: If the picture/texture turns out to be too large try to load with a resolution equal to our screen
-      CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) is too big! Reloading resized", __FUNCTION__, strPath.c_str(), info.Width, info.Height );
-
-      if (pTexture)
-      {
-        pTexture->Release();
-        pTexture = NULL;
-      }
-      
-      result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
-                                       checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
-                                       D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
+      CPicture pic;
+      pTexture = pic.Load(strPath, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize);
+      info.Width = pic.GetWidth();
+      info.Height = pic.GetHeight();
     }
-    
-    if (result != D3D_OK)
+    else
     {
-//      if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
-        CLog::Log(LOGERROR, "%s - Texture manager unable to load file: %s", __FUNCTION__, strPath.c_str());
-      return 0;
+
+      HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+                                       D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
+                                       D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
+    
+      int checkWidth  = D3DX_DEFAULT;
+      int checkHeight = D3DX_DEFAULT;
+
+      // Don't allow anything bigger than 720p on Xbox because of the limited amount of memory
+      if ( info.Width > 1280 )
+        checkWidth = 1280;
+
+      if ( info.Height > 720 )
+        checkHeight = 720;
+      
+      if (checkWidth != D3DX_DEFAULT || checkHeight != D3DX_DEFAULT )
+      {
+        // HACK!: If the picture/texture turns out to be too large try to load with a resolution equal to our screen
+        CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) is too big! Reloading resized", __FUNCTION__, strPath.c_str(), info.Width, info.Height );
+
+        if (pTexture)
+        {
+          pTexture->Release();
+          pTexture = NULL;
+        }
+      
+        result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+                                         checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
+                                         D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
+      }
+    
+      if (result != D3D_OK)
+      {
+//       if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
+          CLog::Log(LOGERROR, "%s - Texture manager unable to load file: %s", __FUNCTION__, strPath.c_str());
+        return 0;
+      }
     }
   }
-
   CTextureMap* pMap = new CTextureMap(strTextureName, info.Width, info.Height, 0, pPal, bundle >= 0);
   
   pMap->Add(pTexture, 100);

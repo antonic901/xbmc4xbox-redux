@@ -26,7 +26,7 @@
 #include "FileItem.h"
 #include "Settings.h"
 #include "AdvancedSettings.h"
-#include "Util.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 
@@ -72,7 +72,11 @@ void CGUILargeTextureManager::Process()
       {
         loadPath = g_TextureManager.GetTexturePath(path);
       }
-      texture = pic.Load(loadPath, min(g_graphicsContext.GetWidth(), 1024), min(g_graphicsContext.GetHeight(), 720));
+      int width = min(g_graphicsContext.GetWidth(), 1024);
+      int height = min(g_graphicsContext.GetHeight(), 720);
+      if (URIUtils::GetExtension(loadPath).Equals(".tbn"))
+        width = height = g_advancedSettings.m_thumbSize;
+      texture = pic.Load(loadPath, width, height);
     }
     // and add to our allocated list
     lock.Enter();

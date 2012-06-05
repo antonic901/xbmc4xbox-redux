@@ -36,6 +36,9 @@
 #define XB_FMT_DXT5_YCoCg  8
 #define XB_FMT_A8R8G8B8   16
 #define XB_FMT_A8         32
+#define XB_FMT_RGBA8      64
+#define XB_FMT_RGB8      128
+#define XB_FMT_OPAQUE  65536
 
 class CXBTFFrame
 {

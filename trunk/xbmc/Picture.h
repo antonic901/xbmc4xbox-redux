@@ -26,17 +26,17 @@ class CPicture
 public:
   CPicture(void);
   virtual ~CPicture(void);
-  IDirect3DTexture8* Load(const CStdString& strFilename, int iMaxWidth = 128, int iMaxHeight = 128);
+  IDirect3DTexture8* Load(const CStdString& strFilename, int width = 128, int height = 128);
 
-  bool CreateThumbnailFromMemory(const BYTE* pBuffer, int nBufSize, const CStdString& strExtension, const CStdString& strThumbFileName);
-  bool CreateThumbnailFromSurface(BYTE* pBuffer, int width, int height, int stride, const CStdString &strThumbFileName);
-  bool CreateThumbnailFromSwizzledTexture(LPDIRECT3DTEXTURE8 &texture, int width, int height, const CStdString &thumb);
-  int ConvertFile(const CStdString& srcFile, const CStdString& destFile, float rotateDegrees, int width, int height, unsigned int quality, bool mirror=false);
+  static bool CreateThumbnailFromMemory(const unsigned char* buffer, int bufSize, const CStdString& extension, const CStdString& thumbFile);
+  static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const CStdString &thumbFile);
+  static bool CreateThumbnailFromSwizzledTexture(LPDIRECT3DTEXTURE8 &texture, int width, int height, const CStdString &thumbFile);
+  static int ConvertFile(const CStdString& srcFile, const CStdString& destFile, float rotateDegrees, int width, int height, unsigned int quality, bool mirror=false);
 
-  void CreateFolderThumb(const CStdString *strThumbs, const CStdString &folderThumbnail);
-  bool CreateThumbnail(const CStdString& strFileName, const CStdString& strThumbFileName, bool checkExistence = false);
-  bool CacheThumb(const CStdString& sourceUrl, const CStdString& destFileName);
-  bool CacheFanart(const CStdString& sourceUrl, const CStdString& destFileName);
+  static void CreateFolderThumb(const CStdString *strThumbs, const CStdString &folderThumbnail);
+  static bool CreateThumbnail(const CStdString& strFileName, const CStdString& strThumbFileName, bool checkExistence = false);
+  static bool CacheThumb(const CStdString& sourceUrl, const CStdString& destFileName);
+  static bool CacheFanart(const CStdString& sourceUrl, const CStdString& destFileName);
 
   // caches a skin image as a thumbnail image
   bool CacheSkinImage(const CStdString &srcFile, const CStdString &destFile);
@@ -51,7 +51,7 @@ public:
 protected:
   
 private:
-  bool CacheImage(const CStdString& sourceUrl, const CStdString& destFileName, int width, int height);
+  static bool CacheImage(const CStdString& sourceUrl, const CStdString& destFileName, int width, int height);
 
   struct VERTEX
   {
@@ -60,8 +60,6 @@ private:
     FLOAT tu, tv;
   };
   static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-
-  DllImageLib m_dll;
 
   ImageInfo m_info;
 };
