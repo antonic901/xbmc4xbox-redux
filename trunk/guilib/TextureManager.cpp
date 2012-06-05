@@ -578,7 +578,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     g_charsetConverter.utf8ToStringCharset(strPath, texturePath);
 
     // if the file is a thumbnail, load with picture loader (fast jpeg decoder), and limit to our chosen thumbsize
-    // as thumbnails could be slighly bigger on disk due to libjpeg scaling
+    // as thumbnails could be slightly bigger on disk due to libjpeg scaling
     if (URIUtils::GetExtension(strPath).Equals(".tbn"))
     {
       CPicture pic;
