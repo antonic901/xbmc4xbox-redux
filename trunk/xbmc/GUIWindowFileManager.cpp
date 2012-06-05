@@ -1140,18 +1140,7 @@ void CGUIWindowFileManager::GetDirectoryHistoryString(const CFileItem* pItem, CS
 
 bool CGUIWindowFileManager::GetDirectory(int iList, const CStdString &strDirectory, CFileItemList &items)
 {
-  bool bResult = m_rootDir.GetDirectory(strDirectory,items,false);
-  if (strDirectory.IsEmpty() && items.Size() == 0)
-  {
-    CStdString strLabel = g_localizeStrings.Get(1026);
-    CFileItemPtr pItem(new CFileItem(strLabel));
-    pItem->SetPath("add");
-    pItem->SetThumbnailImage("settings-network-focus.png");
-    pItem->SetLabel(strLabel);
-    pItem->SetLabelPreformated(true);
-    items.Add(pItem);
-  }
-  return bResult;
+  return m_rootDir.GetDirectory(strDirectory,items,false);
 }
 
 bool CGUIWindowFileManager::CanRename(int iList)
