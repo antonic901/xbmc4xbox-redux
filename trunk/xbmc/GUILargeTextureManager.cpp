@@ -76,7 +76,7 @@ void CGUILargeTextureManager::Process()
       int height = min(g_graphicsContext.GetHeight(), 720);
       if (URIUtils::GetExtension(loadPath).Equals(".tbn"))
       {
-        width = height = g_advancedSettings.m_thumbSize;
+        width = g_advancedSettings.m_thumbSize;
         height = g_advancedSettings.m_thumbSize;
       }
       texture = pic.Load(loadPath, width, height);
