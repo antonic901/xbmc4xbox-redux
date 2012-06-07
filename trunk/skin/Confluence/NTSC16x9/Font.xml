@@ -8,7 +8,8 @@
 		</font>
 		<font>
 			<name>font11caps</name>
-			<filename>DefaultCaps.ttf</filename>
+			<filename>DejaVuSans.ttf</filename>
+			<style>uppercase</style>
 			<size>11</size>
 		</font>
 	 	<font>
@@ -18,7 +19,8 @@
 		</font>
 	 	<font>
 			<name>font12caps</name>
-			<filename>DefaultCaps.ttf</filename>
+			<filename>DejaVuSans.ttf</filename>
+			<style>uppercase</style>
 			<size>13</size>
 		</font>
 	 	<font>
@@ -28,12 +30,14 @@
 		</font>
 	 	<font>
 			<name>font13caps</name>
-			<filename>DefaultCaps.ttf</filename>
+			<filename>DejaVuSans.ttf</filename>
+			<style>uppercase</style>
 			<size>15</size>
 		</font>
 	 	<font>
 			<name>font16caps</name>
-			<filename>DefaultCaps.ttf</filename>
+			<filename>DejaVuSans.ttf</filename>
+			<style>uppercase</style>
 			<size>21</size>
 		</font>
 	 	<font>
@@ -95,7 +99,8 @@
 		</font>
 	 	<font>
 			<name>font50caps_title</name>
-			<filename>DejaVuSans-Bold-Caps.ttf</filename>
+			<filename>DejaVuSans-Bold.ttf</filename>
+			<style>uppercase</style>
 			<size>36</size>
 		</font>
 
