@@ -311,8 +311,6 @@ void CGUITextLayout::ParseText(const CStdStringW &text, uint32_t defaultStyle, v
   // these aren't independent, but that's probably not too much of an issue
   // eg [UPPERCASE]Glah[LOWERCASE]FReD[/LOWERCASE]Georeg[/UPPERCASE] will work (lower case >> upper case)
   // but [LOWERCASE]Glah[UPPERCASE]FReD[/UPPERCASE]Georeg[/LOWERCASE] won't
-#define FONT_STYLE_UPPERCASE 4
-#define FONT_STYLE_LOWERCASE 8
 
   int startPos = 0;
   size_t pos = text.Find(L'[');
@@ -377,7 +375,8 @@ void CGUITextLayout::ParseText(const CStdStringW &text, uint32_t defaultStyle, v
         colorStack.pop();
         newColor = colorStack.top();
       }
-      pos = finish + 1;
+      if (finish != CStdString::npos)
+        pos = finish + 1;
     }
 
     if (newStyle || newColor != currentColor || newLine)
