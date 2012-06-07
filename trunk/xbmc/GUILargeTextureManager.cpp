@@ -74,7 +74,14 @@ void CGUILargeTextureManager::Process()
       }
       int width = min(g_graphicsContext.GetWidth(), 1024);
       int height = min(g_graphicsContext.GetHeight(), 720);
-      if (URIUtils::GetExtension(loadPath).Equals(".tbn"))
+      // if loading a .tbn that is not a fanart, try and load at requested thumbnail size as actual on disk
+      // tbn might be larger due to libjpeg 1/8 - 8/8 scaling.
+      CStdString directoryPath;
+      URIUtils::GetDirectory(loadPath, directoryPath);
+      URIUtils::RemoveSlashAtEnd(directoryPath);
+      if (directoryPath != g_settings.GetVideoFanartFolder() &&
+          directoryPath != g_settings.GetMusicFanartFolder() &&
+          URIUtils::GetExtension(loadPath).Equals(".tbn"))
       {
         width = g_advancedSettings.m_thumbSize;
         height = g_advancedSettings.m_thumbSize;
