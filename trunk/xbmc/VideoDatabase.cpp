@@ -107,14 +107,14 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_countrylinkmovie_2 ON countrylinkmovie ( idMovie, idCountry)\n");
 
     CLog::Log(LOGINFO, "create movie table");
-    CStdString columns = "CREATE TABLE movie ( idMovie integer primary key";
+    CStdString columns = "CREATE TABLE movie ( idMovie integer primary key, idFile integer";
     for (int i = 0; i < VIDEODB_MAX_COLUMNS; i++)
     {
       CStdString column;
       column.Format(",c%02d text", i);
       columns += column;
     }
-    columns += ",idFile integer)";
+    columns += ")";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_1 ON movie (idFile, idMovie)");
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
@@ -172,14 +172,14 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_studiolinktvshow_2 ON studiolinktvshow ( idShow, idStudio)\n");
 
     CLog::Log(LOGINFO, "create episode table");
-    columns = "CREATE TABLE episode ( idEpisode integer primary key";
+    columns = "CREATE TABLE episode ( idEpisode integer primary key, idFile integer";
     for (int i = 0; i < VIDEODB_MAX_COLUMNS; i++)
     {
       CStdString column;
       column.Format(",c%02d text", i);
       columns += column;
     }
-    columns += ",idFile integer)";
+    columns += ")";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_episode_file_1 on episode (idEpisode, idFile)");
     m_pDS->exec("CREATE UNIQUE INDEX id_episode_file_2 on episode (idFile, idEpisode)");
@@ -233,14 +233,14 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_studiolinkmovie_2 ON studiolinkmovie ( idMovie, idStudio)\n");
 
     CLog::Log(LOGINFO, "create musicvideo table");
-    columns = "CREATE TABLE musicvideo ( idMVideo integer primary key";
+    columns = "CREATE TABLE musicvideo ( idMVideo integer primary key, idFile integer";
     for (int i = 0; i < VIDEODB_MAX_COLUMNS; i++)
     {
       CStdString column;
       column.Format(",c%02d text", i);
       columns += column;
     }
-    columns += ",idFile integer)";
+    columns += ")";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_1 on musicvideo (idMVideo, idFile)");
     m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_2 on musicvideo (idFile, idMVideo)");
@@ -2572,24 +2572,24 @@ void CVideoDatabase::DeleteSet(int idSet)
   }
 }
 
-void CVideoDatabase::GetDetailsFromDB(auto_ptr<Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details)
+void CVideoDatabase::GetDetailsFromDB(auto_ptr<Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset)
 {
   for (int i = min + 1; i < max; i++)
   {
     switch (offsets[i].type)
     {
     case VIDEODB_TYPE_STRING:
-      *(CStdString*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+1).get_asString();
+      *(CStdString*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+idxOffset).get_asString();
       break;
     case VIDEODB_TYPE_INT:
     case VIDEODB_TYPE_COUNT:
-      *(int*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+1).get_asInt();
+      *(int*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+idxOffset).get_asInt();
       break;
     case VIDEODB_TYPE_BOOL:
-      *(bool*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+1).get_asBool();
+      *(bool*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+idxOffset).get_asBool();
       break;
     case VIDEODB_TYPE_FLOAT:
-      *(float*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+1).get_asFloat();
+      *(float*)(((char*)&details)+offsets[i].offset) = pDS->fv(i+idxOffset).get_asFloat();
       break;
     }
   }
@@ -2757,7 +2757,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(auto_ptr<Dataset> &pDS, bool n
   DWORD time = CTimeUtils::GetTimeMS();
   int idTvShow = pDS->fv(0).get_asInt();
 
-  GetDetailsFromDB(pDS, VIDEODB_ID_TV_MIN, VIDEODB_ID_TV_MAX, DbTvShowOffsets, details);
+  GetDetailsFromDB(pDS, VIDEODB_ID_TV_MIN, VIDEODB_ID_TV_MAX, DbTvShowOffsets, details, 1);
   details.m_iDbId = idTvShow;
   details.m_strPath = pDS->fv(VIDEODB_DETAILS_TVSHOW_PATH).get_asString();
   details.m_iEpisode = m_pDS->fv(VIDEODB_DETAILS_TVSHOW_NUM_EPISODES).get_asInt();
@@ -3665,6 +3665,47 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("DELETE FROM streamdetails"); //Roll the stream details as changed from minutes to seconds
     }
     if (iVersion < 37)
+    {
+      //recreate tables
+      CStdString columnsSelect, columns;
+      for (int i = 0; i < 21; i++)
+      {
+        CStdString column;
+        column.Format(",c%02d", i);
+        columnsSelect += column;
+        columns += column + " text";
+      }
+
+      //movie
+      m_pDS->exec(FormatSQL("CREATE TABLE movienew ( idMovie integer primary key, idFile integer%s)", columns.c_str()));
+      m_pDS->exec(FormatSQL("INSERT INTO movienew select idMovie,idFile%s from movie", columnsSelect.c_str()));
+      m_pDS->exec("DROP TABLE movie");
+      m_pDS->exec("ALTER TABLE movienew RENAME TO movie");
+
+      m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_1 ON movie (idFile, idMovie)");
+      m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
+
+      //episode
+      m_pDS->exec(FormatSQL("CREATE TABLE episodenew ( idEpisode integer primary key, idFile integer%s)", columns.c_str()));
+      m_pDS->exec(FormatSQL("INSERT INTO episodenew select idEpisode,idFile%s from episode", columnsSelect.c_str()));
+      m_pDS->exec("DROP TABLE episode");
+      m_pDS->exec("ALTER TABLE episodenew RENAME TO episode");
+
+      m_pDS->exec("CREATE UNIQUE INDEX ix_episode_file_1 on episode (idEpisode, idFile)");
+      m_pDS->exec("CREATE UNIQUE INDEX id_episode_file_2 on episode (idFile, idEpisode)");
+      m_pDS->exec(FormatSQL("CREATE INDEX ix_episode_season_episode on episode (c%02d, c%02d)", VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE));
+      m_pDS->exec(FormatSQL("CREATE INDEX ix_episode_bookmark on episode (c%02d)", VIDEODB_ID_EPISODE_BOOKMARK));
+
+      //musicvideo
+      m_pDS->exec(FormatSQL("CREATE TABLE musicvideonew ( idMVideo integer primary key, idFile integer%s)", columns.c_str()));
+      m_pDS->exec(FormatSQL("INSERT INTO musicvideonew select idMVideo,idFile%s from musicvideo", columnsSelect.c_str()));
+      m_pDS->exec("DROP TABLE musicvideo");
+      m_pDS->exec("ALTER TABLE musicvideonew RENAME TO musicvideo");
+
+      m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_1 on musicvideo (idMVideo, idFile)");
+      m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_2 on musicvideo (idFile, idMVideo)");
+    }
+    if (iVersion < 38)
     {
       m_pDS->exec("ALTER table movie add c21 text");
       m_pDS->exec("ALTER table episode add c21 text");
