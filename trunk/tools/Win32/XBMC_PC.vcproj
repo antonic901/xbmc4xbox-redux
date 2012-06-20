@@ -94,6 +94,7 @@
 				AdditionalDependencies="d3dxof.lib dxguid.lib d3dx8.lib d3d8.lib dinput8.lib dsound.lib ws2_32.lib winmm.lib"
 				OutputFile="$(OutDir)/XBMC_PC.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libc;msvcrt;libci"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -810,6 +811,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\DTSCodec.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\cores\paplayer\DVDPlayerCodec.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\cores\paplayer\DVDPlayerCodec.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\FLACcodec.cpp">
@@ -1782,6 +1789,12 @@
 					RelativePath="..\..\xbmc\utils\RegExp.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\RingBuffer.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\RingBuffer.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\utils\RssFeed.cpp">
 				</File>
 				<File
@@ -1873,6 +1886,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\UdpClient.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\URIUtils.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\URIUtils.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\URL.cpp">
@@ -2396,6 +2415,9 @@
 					RelativePath="..\..\xbmc\FileSystem\FileShoutcast.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\FileSystem\FileShoutcast.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\FileSystem\FileSpecialProtocol.cpp">
 				</File>
 				<File
@@ -2541,6 +2563,12 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\RSSDirectory.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\ShoutcastRipFile.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\ShoutcastRipFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\Slingbox.cpp">
@@ -2779,6 +2807,12 @@
 					</File>
 					<File
 						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeActor.h">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeCountry.cpp">
+					</File>
+					<File
+						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeCountry.h">
 					</File>
 					<File
 						RelativePath="..\..\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeDirector.cpp">
@@ -3083,9 +3117,6 @@
 				RelativePath="..\..\xbmc\FileItem.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\FileSystem\FileShoutcast.h">
-			</File>
-			<File
 				RelativePath="..\..\xbmc\utils\fstrcmp.h">
 			</File>
 			<File
@@ -3384,12 +3415,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\Shortcut.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\FileSystem\ShoutcastDirectory.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\FileSystem\ShoutcastRipFile.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\SingleLock.h">
