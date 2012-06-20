@@ -196,7 +196,7 @@ bool PAPlayer::QueueNextFile(const CFileItem &file, bool checkCrossFading)
   if (IsPaused())
     Pause();
 
-  if (file.GetPath() == m_currentFile->m_strPath &&
+  if (file.GetPath() == m_currentFile->GetPath() &&
       file.m_lStartOffset > 0 && 
       file.m_lStartOffset == m_currentFile->m_lEndOffset)
   { // continuing on a .cue sheet item - return true to say we'll handle the transistion
@@ -626,7 +626,7 @@ bool PAPlayer::ProcessPAP()
     // Check for EOF and queue the next track if applicable
     if (m_decoder[m_currentDecoder].GetStatus() == STATUS_ENDED)
     { // time to swap tracks
-      if (m_nextFile->m_strPath != m_currentFile->m_strPath ||
+      if (m_nextFile->GetPath() != m_currentFile->GetPath() ||
           !m_nextFile->m_lStartOffset ||
           m_nextFile->m_lStartOffset != m_currentFile->m_lEndOffset)
       { // don't have a .cue sheet item
