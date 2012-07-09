@@ -245,7 +245,7 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
   struct jpeg_compress_struct cinfo;
   struct my_error_mgr jerr;
   JSAMPROW row_pointer[1];
-  long unsigned int outBufSize = 0;
+  long unsigned int outBufSize = width * height;
   unsigned char* result;
   unsigned char* src = buffer;
   unsigned char* rgbbuf, *src2, *dst2;
@@ -256,7 +256,7 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
     return false;
   }
 
-  result = (unsigned char*) malloc(width * height);
+  result = (unsigned char*) malloc(outBufSize); //Initial buffer. Grows as-needed.
   if (result == NULL)
   {
     CLog::Log(LOGERROR, "JpegIO::CreateThumbnailFromSurface error allocating memory for image buffer");
