@@ -35,6 +35,7 @@ CDatabase::CDatabase(void)
 {
   m_bOpen = false;
   m_iRefCount = 0;
+  m_bMultiWrite = false;
 }
 
 CDatabase::~CDatabase(void)
@@ -79,6 +80,151 @@ CStdString CDatabase::FormatSQL(CStdString strStmt, ...)
   va_end(args);
 
   return szStmt.get();
+}
+
+CStdString CDatabase::PrepareSQL(CStdString strStmt, ...) const
+{
+  CStdString strResult = "";
+
+  if (NULL != m_pDB.get())
+  {
+    va_list args;
+    va_start(args, strStmt);
+    strResult = m_pDB->vprepare(strStmt.c_str(), args);
+    va_end(args);
+  }
+
+  return strResult;
+}
+
+std::string CDatabase::GetSingleValue(const std::string &query, std::auto_ptr<Dataset> &ds)
+{
+  std::string ret;
+  try
+  {
+    if (!m_pDB.get() || !ds.get())
+      return ret;
+
+    if (ds->query(query.c_str()) && ds->num_rows() > 0)
+      ret = ds->fv(0).get_asString();
+
+    ds->close();
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s - failed on query '%s'", __FUNCTION__, query.c_str());
+  }
+  return ret;
+}
+
+CStdString CDatabase::GetSingleValue(const CStdString &strTable, const CStdString &strColumn, const CStdString &strWhereClause /* = CStdString() */, const CStdString &strOrderBy /* = CStdString() */)
+{
+  CStdString query = PrepareSQL("SELECT %s FROM %s", strColumn.c_str(), strTable.c_str());
+  if (!strWhereClause.empty())
+    query += " WHERE " + strWhereClause;
+  if (!strOrderBy.empty())
+    query += " ORDER BY " + strOrderBy;
+  query += " LIMIT 1";
+  return GetSingleValue(query, m_pDS);
+}
+
+bool CDatabase::DeleteValues(const CStdString &strTable, const CStdString &strWhereClause /* = CStdString() */)
+{
+  bool bReturn = true;
+
+  CStdString strQueryBase = "DELETE FROM %s";
+  if (!strWhereClause.IsEmpty())
+    strQueryBase.AppendFormat(" WHERE %s", strWhereClause.c_str());
+
+  CStdString strQuery = FormatSQL(strQueryBase, strTable.c_str());
+
+  bReturn = ExecuteQuery(strQuery);
+
+  return bReturn;
+}
+
+bool CDatabase::ExecuteQuery(const CStdString &strQuery)
+{
+  bool bReturn = false;
+
+  try
+  {
+    if (NULL == m_pDB.get()) return bReturn;
+    if (NULL == m_pDS.get()) return bReturn;
+    m_pDS->exec(strQuery.c_str());
+    bReturn = true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s - failed to execute query '%s'",
+        __FUNCTION__, strQuery.c_str());
+  }
+
+  return bReturn;
+}
+
+bool CDatabase::ResultQuery(const CStdString &strQuery)
+{
+  bool bReturn = false;
+
+  try
+  {
+    if (NULL == m_pDB.get()) return bReturn;
+    if (NULL == m_pDS.get()) return bReturn;
+
+    CStdString strPreparedQuery = PrepareSQL(strQuery.c_str());
+
+    bReturn = m_pDS->query(strPreparedQuery.c_str());
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s - failed to execute query '%s'",
+        __FUNCTION__, strQuery.c_str());
+  }
+
+  return bReturn;
+}
+
+bool CDatabase::QueueInsertQuery(const CStdString &strQuery)
+{
+  if (strQuery.IsEmpty())
+    return false;
+
+  if (!m_bMultiWrite)
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS2.get()) return false;
+
+    m_bMultiWrite = true;
+    m_pDS2->insert();
+  }
+
+  m_pDS2->add_insert_sql(strQuery);
+
+  return true;
+}
+
+bool CDatabase::CommitInsertQueries()
+{
+  bool bReturn = false;
+
+  if (m_bMultiWrite)
+  {
+    try
+    {
+      m_bMultiWrite = false;
+      m_pDS2->post();
+      m_pDS2->clear_insert_sql();
+      bReturn = true;
+    }
+    catch(...)
+    {
+      CLog::Log(LOGERROR, "%s - failed to execute queries",
+          __FUNCTION__);
+    }
+  }
+
+  return bReturn;
 }
 
 bool CDatabase::Open()

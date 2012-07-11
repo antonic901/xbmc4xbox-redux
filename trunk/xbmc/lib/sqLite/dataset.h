@@ -130,6 +130,20 @@ public:
   virtual void commit_transaction() {};
   virtual void rollback_transaction() {};
 
+  /*! \brief Prepare a SQL statement for execution or querying using C printf nomenclature.
+   \param format - C printf compliant format string
+   \param ... - optional comma seperated list of variables for substitution in format string placeholders.
+   \return escaped and formatted string.
+   */
+  virtual std::string prepare(const char *format, ...);
+
+  /*! \brief Prepare a SQL statement for execution or querying using C printf nomenclature
+   \param format - C printf compliant format string
+   \param args - va_list of variables for substitution in format string placeholders.
+   \return escaped and formatted string.
+   */
+  virtual std::string vprepare(const char *format, va_list args);
+
   virtual bool in_transaction() {return false;};
 
 };
