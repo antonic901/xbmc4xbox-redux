@@ -3326,9 +3326,13 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
   {
     // format is alarmclock(name,command[,seconds,true]);
     float seconds = 0;
-    bool silent = false;
     if (params.size() > 2)
-      seconds = static_cast<float>(atoi(params[2].c_str())*60);
+    {
+      if (params[2].Find(':') == -1)
+        seconds = static_cast<float>(atoi(params[2].c_str())*60);
+      else
+        seconds = (float)StringUtils::TimeStringToSeconds(params[2]);
+    }
     else
     { // check if shutdown is specified in particular, and get the time for it
       CStdString strHeading;
@@ -3345,13 +3349,21 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
       else
         return false;
     }
-    if (params.size() > 3 && params[3].CompareNoCase("true") == 0)
-      silent = true;
+    bool silent = false;
+    bool loop = false;
+    for (unsigned int i = 3; i < params.size() ; i++)
+    {
+      // check "true" for backward comp
+      if (params[i].CompareNoCase("true") == 0 || params[i].CompareNoCase("silent") == 0)
+        silent = true;
+      else if (params[i].CompareNoCase("loop") == 0)
+        loop = true;
+    }
 
     if( g_alarmClock.isRunning() )
       g_alarmClock.stop(params[0]);
 
-    g_alarmClock.start(params[0], seconds, params[1], silent);
+    g_alarmClock.Start(params[0], seconds, params[1], silent, loop);
   }
   else if (execute.Equals("notification"))
   {

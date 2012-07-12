@@ -35,7 +35,7 @@ CAlarmClock::~CAlarmClock()
 {
 }
 
-void CAlarmClock::start(const CStdString& strName, float n_secs, const CStdString& strCommand, bool bSilent /* false */)
+void CAlarmClock::Start(const CStdString& strName, float n_secs, const CStdString& strCommand, bool bSilent /* false */, bool bLoop /* false */)
 {
   // make lower case so that lookups are case-insensitive
   CStdString lowerName(strName);
@@ -44,6 +44,7 @@ void CAlarmClock::start(const CStdString& strName, float n_secs, const CStdStrin
   SAlarmClockEvent event;
   event.m_fSecs = n_secs;
   event.m_strCommand = strCommand;
+  event.m_loop = bLoop;
   if (!m_bIsRunning)
   {
     StopThread();
@@ -66,7 +67,7 @@ void CAlarmClock::start(const CStdString& strName, float n_secs, const CStdStrin
 
   CStdString strMessage;
 
-  strMessage.Format(strStarted.c_str(),static_cast<int>(event.m_fSecs)/60);
+  strMessage.Format(strStarted.c_str(),static_cast<int>(event.m_fSecs)/60,static_cast<int>(event.m_fSecs)%60);
 
   if(!bSilent)
      g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
@@ -108,7 +109,14 @@ void CAlarmClock::stop(const CStdString& strName)
   if (iter->second.m_strCommand.IsEmpty() || iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
     g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
   else
+  {
     g_applicationMessenger.ExecBuiltIn(iter->second.m_strCommand);
+    if (iter->second.m_loop)
+    {
+      iter->second.watch.Reset();
+      return;
+    }
+  }
 
   iter->second.watch.Stop();
   m_event.erase(iter);
