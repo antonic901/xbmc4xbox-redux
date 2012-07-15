@@ -505,6 +505,20 @@ bool CGUIWindowVideoNav::GetDirectory(const CStdString &strDirectory, CFileItemL
       else
         items.SetContent("");
     }
+    else if (strDirectory.Equals("plugin://video/"))
+    {
+      items.SetContent("plugins");
+      items.SetLabel(g_localizeStrings.Get(24001));
+    }
+    else if (strDirectory.IsEmpty())
+      items.SetLabel("");
+    else if (!items.IsVirtualDirectoryRoot())
+    {
+      CStdString label;
+      if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("video"), &label)) 
+        items.SetLabel(label);
+    }
+
   }
 
   return bResult;

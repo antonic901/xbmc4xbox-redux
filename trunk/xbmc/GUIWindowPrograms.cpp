@@ -107,6 +107,8 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
           m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
         }
+        else if (strDestination.Equals("Plugins"))
+          m_vecItems->SetPath("plugin://programs/");
         else
         {
           // default parameters if the jump fails
@@ -677,7 +679,16 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       return false;
 
   if (items.IsVirtualDirectoryRoot())
+  {
+    items.SetLabel("");
     return true;
+  }
+
+  if (strDirectory.Equals("plugin://programs/"))
+  {
+    items.SetContent("plugins");
+    items.SetLabel(g_localizeStrings.Get(24001));
+  }
 
   // flatten any folders
   m_database.BeginTransaction();

@@ -2218,6 +2218,7 @@
 
   <!-- strings 24000 thru 24299 reserved for the Add-ons framework -->
   <string id="24000">Add-on</string>
+  <string id="24001">Plugins</string>
 
   <string id="24020">Configure</string>
   <string id="24021">Disable</string>

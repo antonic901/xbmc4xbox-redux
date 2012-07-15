@@ -390,9 +390,14 @@ bool CGUIWindowMusicNav::GetDirectory(const CStdString &strDirectory, CFileItemL
   else if (strDirectory.Equals("special://musicplaylists"))
     items.SetContent("playlists");
   else if (strDirectory.Equals("plugin://music/"))
+  {
     items.SetContent("plugins");
+    items.SetLabel(g_localizeStrings.Get(24001)); 
+  }
   else if (items.IsPlayList())
     items.SetContent("songs");
+  else if (strDirectory.IsEmpty())
+      items.SetLabel("");
 
   return bResult;
 }
