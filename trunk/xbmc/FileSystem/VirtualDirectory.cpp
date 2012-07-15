@@ -149,7 +149,7 @@ bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
  \note The parameter \e strPath can not be a share with directory. Eg. "iso9660://dir" will return \e false.
     It must be "iso9660://".
  */
-bool CVirtualDirectory::IsSource(const CStdString& strPath) const
+bool CVirtualDirectory::IsSource(const CStdString& strPath, VECSOURCES *sources, CStdString *name) const
 {
   CStdString strPathCpy = strPath;
   strPathCpy.TrimRight("/");
@@ -162,7 +162,10 @@ bool CVirtualDirectory::IsSource(const CStdString& strPath) const
     strPathCpy.Replace("/", "\\");
 
   VECSOURCES shares;
-  GetSources(shares);
+  if (sources)
+    shares = *sources;
+  else
+    GetSources(shares);
   for (int i = 0; i < (int)shares.size(); ++i)
   {
     const CMediaSource& share = shares.at(i);
@@ -171,7 +174,12 @@ bool CVirtualDirectory::IsSource(const CStdString& strPath) const
     strShare.TrimRight("\\");
     if(URIUtils::IsDOSPath(strShare))
       strShare.Replace("/", "\\");
-    if (strShare == strPathCpy) return true;
+    if (strShare == strPathCpy)
+    {
+      if (name)
+        *name = share.strName;
+      return true;
+    }
   }
   return false;
 }

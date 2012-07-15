@@ -19,6 +19,7 @@
  *
  */
 
+#include "stdafx.h"
 #include "DirectoryNodeArtist.h"
 #include "QueryParams.h"
 #include "MusicDatabase.h"
@@ -35,6 +36,16 @@ CDirectoryNodeArtist::CDirectoryNodeArtist(const CStdString& strName, CDirectory
 NODE_TYPE CDirectoryNodeArtist::GetChildType() const
 {
   return NODE_TYPE_ALBUM;
+}
+
+CStdString CDirectoryNodeArtist::GetLocalizedName() const
+{
+  if (GetID() == -1)
+    return g_localizeStrings.Get(15103); // All Artists
+  CMusicDatabase db;
+  if (db.Open())
+    return db.GetArtistById(GetID());
+  return "";
 }
 
 bool CDirectoryNodeArtist::GetContent(CFileItemList& items) const

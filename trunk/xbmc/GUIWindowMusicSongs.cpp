@@ -8,7 +8,7 @@
  *  any later version.
  *
  *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty ofF
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU General Public License for more details.
  *
@@ -275,6 +275,10 @@ bool CGUIWindowMusicSongs::GetDirectory(const CStdString &strDirectory, CFileIte
 
   // check for .CUE files here.
   items.FilterCueItems();
+
+  CStdString label;
+  if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("music"), &label)) 
+    items.SetLabel(label);
 
   return true;
 }

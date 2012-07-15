@@ -53,7 +53,9 @@ bool CMusicSearchDirectory::GetDirectory(const CStdString& strPath, CFileItemLis
   db.Open();
   db.Search(search, items);
   db.Close();
-  CLog::Log(LOGDEBUG, "%s (%s) took %lu ms", __FUNCTION__, strPath.c_str(), timeGetTime() - time);
+  CLog::Log(LOGDEBUG, "%s (%s) took %lu ms",
+            __FUNCTION__, strPath.c_str(), timeGetTime() - time);
+  items.SetLabel(g_localizeStrings.Get(137)); // Search
   return true;
 }
 

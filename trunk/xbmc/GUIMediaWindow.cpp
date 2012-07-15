@@ -679,6 +679,9 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     return false;
   }
 
+  if (m_vecItems->GetLabel().IsEmpty())
+    m_vecItems->SetLabel(CUtil::GetTitleFromPath(m_vecItems->GetPath(), true));
+
   // if we're getting the root source listing
   // make sure the path history is clean
   if (strDirectory.IsEmpty())

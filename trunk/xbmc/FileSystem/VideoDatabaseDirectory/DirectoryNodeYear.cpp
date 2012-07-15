@@ -44,6 +44,11 @@ NODE_TYPE CDirectoryNodeYear::GetChildType() const
   return NODE_TYPE_TITLE_TVSHOWS;
 }
 
+CStdString CDirectoryNodeYear::GetLocalizedName() const
+{
+  return GetName();
+}
+
 bool CDirectoryNodeYear::GetContent(CFileItemList& items) const
 {
   CVideoDatabase videodatabase;
