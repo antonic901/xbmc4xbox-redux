@@ -165,7 +165,6 @@ public:
   DEFINE_METHOD1(int, av_read_play, (AVFormatContext *p1))
   DEFINE_METHOD1(int, av_read_pause, (AVFormatContext *p1))
   DEFINE_METHOD1(void, av_read_frame_flush, (AVFormatContext *p1))
-#ifndef _LINUX
   DEFINE_FUNC_ALIGNED2(int, __cdecl, av_read_frame, AVFormatContext *, AVPacket *)
   DEFINE_FUNC_ALIGNED4(int, __cdecl, av_seek_frame, AVFormatContext*, int, int64_t, int)
   DEFINE_FUNC_ALIGNED6(int, __cdecl, avformat_seek_file, AVFormatContext*, int, int64_t, int64_t, int64_t, int)
@@ -176,18 +175,6 @@ public:
   DEFINE_FUNC_ALIGNED6(int, __cdecl, av_probe_input_buffer, AVIOContext *, AVInputFormat **, const char *, void *, unsigned int, unsigned int)
   DEFINE_FUNC_ALIGNED3(int, __cdecl, get_buffer, AVIOContext*, unsigned char *, int)
   DEFINE_FUNC_ALIGNED3(int, __cdecl, get_partial_buffer, AVIOContext*, unsigned char *, int)
-#else
-  DEFINE_METHOD2(int, av_read_frame, (AVFormatContext *p1, AVPacket *p2))
-  DEFINE_METHOD4(int, av_seek_frame, (AVFormatContext *p1, int p2, int64_t p3, int p4))
-  DEFINE_METHOD6(int, avformat_seek_file, (AVFormatContext *p1, int p2, int64_t p3, int64_t p4, int64_t p5, int p6))
-  DEFINE_METHOD2(int, avformat_find_stream_info_dont_call, AVFormatContext*, AVDictionary **)
-  DEFINE_METHOD4(int, avformat_open_input, AVFormatContext **, const char *, AVInputFormat *, AVDictionary **)
-  DEFINE_METHOD2(AVInputFormat*, av_probe_input_format, (AVProbeData* p1 , int p2))
-  DEFINE_METHOD3(AVInputFormat*, av_probe_input_format2, (AVProbeData* p1 , int p2, int *p3))
-  DEFINE_METHOD6(int, av_probe_input_buffer, (AVIOContext *p1, AVInputFormat **p2, const char *p3, void *p4, unsigned int p5, unsigned int p6))
-  DEFINE_METHOD3(int, get_buffer, (AVIOContext* p1, unsigned char *p2, int p3))
-  DEFINE_METHOD3(int, get_partial_buffer, (AVIOContext* p1, unsigned char *p2, int p3))
-#endif
   DEFINE_METHOD1(void, url_set_interrupt_cb, (URLInterruptCB *p1))
   DEFINE_METHOD8(int, init_put_byte, (AVIOContext *p1, unsigned char *p2, int p3, int p4, void *p5, 
                   int (*p6)(void *opaque, uint8_t *buf, int buf_size),
