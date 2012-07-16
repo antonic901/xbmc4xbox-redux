@@ -48,7 +48,7 @@ protected:
   AVAudioConvert* m_pConvert;;
   enum SampleFormat m_iSampleFormat;
 
-  BYTE *m_pBuffer1;
+  AVFrame* m_pFrame1;
   int   m_iBufferSize1;
 
   BYTE *m_pBuffer2;

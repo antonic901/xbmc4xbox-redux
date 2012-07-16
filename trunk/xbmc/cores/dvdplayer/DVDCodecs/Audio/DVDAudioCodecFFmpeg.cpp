@@ -26,10 +26,6 @@
 
 CDVDAudioCodecFFmpeg::CDVDAudioCodecFFmpeg() : CDVDAudioCodec()
 {
-  m_iBufferSize1 = 0;
-  m_pBuffer1     = (BYTE*)_aligned_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE, 16);
-  memset(m_pBuffer1, 0, AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
-
   m_iBufferSize2 = 0;
   m_pBuffer2     = (BYTE*)_aligned_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE, 16);
   memset(m_pBuffer2, 0, AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
@@ -38,11 +34,11 @@ CDVDAudioCodecFFmpeg::CDVDAudioCodecFFmpeg() : CDVDAudioCodec()
   m_pCodecContext = NULL;
   m_pConvert = NULL;
   m_bOpenedCodec = false;
+  m_pFrame1 = NULL;
 }
 
 CDVDAudioCodecFFmpeg::~CDVDAudioCodecFFmpeg()
 {
-  _aligned_free(m_pBuffer1);
   _aligned_free(m_pBuffer2);
   Dispose();
 }
@@ -104,6 +100,7 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
     return false;
   }
   
+  m_pFrame1 = m_dllAvCodec.avcodec_alloc_frame();
   m_bOpenedCodec = true;
   m_iSampleFormat = AV_SAMPLE_FMT_NONE;
   return true;
@@ -111,6 +108,9 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
 
 void CDVDAudioCodecFFmpeg::Dispose()
 {
+  if (m_pFrame1) m_dllAvUtil.av_free(m_pFrame1);
+  m_pFrame1 = NULL;
+
   if (m_pConvert)
   {
     m_dllAvCodec.av_audio_convert_free(m_pConvert);
@@ -135,7 +135,7 @@ void CDVDAudioCodecFFmpeg::Dispose()
 
 int CDVDAudioCodecFFmpeg::Decode(BYTE* pData, int iSize)
 {
-  int iBytesUsed;
+  int iBytesUsed, got_frame;
   if (!m_pCodecContext) return -1;
 
   m_iBufferSize1 = AVCODEC_MAX_AUDIO_FRAME_SIZE ;
@@ -145,10 +145,13 @@ int CDVDAudioCodecFFmpeg::Decode(BYTE* pData, int iSize)
   m_dllAvCodec.av_init_packet(&avpkt);
   avpkt.data = pData;
   avpkt.size = iSize;
-  iBytesUsed = m_dllAvCodec.avcodec_decode_audio3( m_pCodecContext
-                                                 , (int16_t*)m_pBuffer1
-                                                 , &m_iBufferSize1
+  iBytesUsed = m_dllAvCodec.avcodec_decode_audio4( m_pCodecContext
+                                                 , m_pFrame1
+                                                 , &got_frame
                                                  , &avpkt);
+  if (iBytesUsed < 0 || !got_frame)
+    return iBytesUsed;
+  m_iBufferSize1 = m_dllAvUtil.av_samples_get_buffer_size(NULL, m_pCodecContext->channels, m_pFrame1->nb_samples, m_pCodecContext->sample_fmt, 1);
 
   /* some codecs will attempt to consume more data than what we gave */
   if (iBytesUsed > iSize)
@@ -184,7 +187,7 @@ int CDVDAudioCodecFFmpeg::Decode(BYTE* pData, int iSize)
       return iBytesUsed;
     }
 
-    const void *ibuf[6] = { m_pBuffer1 };
+    const void *ibuf[6] = { m_pFrame1->data[0] };
     void       *obuf[6] = { m_pBuffer2 };
     int         istr[6] = { m_dllAvUtil.av_get_bytes_per_sample(m_pCodecContext->sample_fmt) };
     int         ostr[6] = { 2 };
@@ -208,7 +211,7 @@ int CDVDAudioCodecFFmpeg::GetData(BYTE** dst)
 {
   if(m_iBufferSize1)
   {
-    *dst = m_pBuffer1;
+    *dst = m_pFrame1->data[0];
     return m_iBufferSize1;
   }
   if(m_iBufferSize2)
