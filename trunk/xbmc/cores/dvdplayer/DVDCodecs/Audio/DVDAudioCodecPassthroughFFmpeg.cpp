@@ -114,14 +114,6 @@ bool CDVDAudioCodecPassthroughFFmpeg::SetupMuxer(CDVDStreamInfo &hints, CStdStri
   muxer.m_pFormat->flags            |= AVFMT_NOFILE | AVFMT_FLAG_IGNIDX;
   muxer.m_pFormat->bit_rate          = hints.bitrate;
 
-  /* setup the muxer */
-  if (m_dllAvFormat.av_set_parameters(muxer.m_pFormat, NULL) != 0)
-  {
-    CLog::Log(LOGERROR, "CDVDAudioCodecPassthroughFFmpeg::SetupMuxer - Failed to set the %s muxer parameters", muxerName.c_str());
-    Dispose();
-    return false;
-  }
-
 #if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(52,92,0)
   // API added on: 2011-01-02
 
