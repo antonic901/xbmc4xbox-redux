@@ -70,7 +70,7 @@ public:
   virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length)=0;
   virtual int av_opt_set(void *obj, const char *name, const char *val, int search_flags)=0;
   virtual char *av_strdup(const char *s)=0;
-  virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1) = 0;
+  virtual int av_get_bytes_per_sample(enum AVSampleFormat p1) = 0;
   virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags) = 0;
   virtual int av_dict_set(AVDictionary **pm, const char *key, const char *value, int flags)=0;
 };
@@ -93,8 +93,8 @@ public:
    virtual const AVCRC* av_crc_get_table(AVCRCId crc_id) { return ::av_crc_get_table(crc_id); }
    virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length) { return ::av_crc(ctx, crc, buffer); }
    virtual int av_opt_set(void *obj, const char *name, const char *val, int search_flags) { return ::av_opt_set(obj, name, val, search_flags); }
-  virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1)
-    { return ::av_get_bits_per_sample_fmt(p1); }
+  virtual int av_get_bytes_per_sample(enum AVSampleFormat p1)
+    { return ::av_get_bytes_per_sample(p1); }
   virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags){ return ::av_dict_get(m, key, prev, flags); }
   virtual int av_dict_set(AVDictionary **pm, const char *key, const char *value, int flags) { return ::av_dict_set(pm, key, value, flags); }
 
@@ -127,7 +127,7 @@ public:
   DEFINE_METHOD4(uint32_t, av_crc, (const AVCRC *p1, uint32_t p2, const uint8_t *p3, size_t p4));
   DEFINE_METHOD4(int, av_opt_set, (void *p1, const char *p2, const char *p3, int p4));
   DEFINE_METHOD1(char*, av_strdup, (const char *p1))
-  DEFINE_METHOD1(int, av_get_bits_per_sample_fmt, (enum AVSampleFormat p1))
+  DEFINE_METHOD1(int, av_get_bytes_per_sample, (enum AVSampleFormat p1))
   DEFINE_METHOD4(AVDictionaryEntry *, av_dict_get, (AVDictionary *p1, const char *p2, const AVDictionaryEntry *p3, int p4))
   DEFINE_METHOD4(int, av_dict_set, (AVDictionary **p1, const char *p2, const char *p3, int p4));
 
@@ -144,7 +144,7 @@ public:
     RESOLVE_METHOD(av_crc)
     RESOLVE_METHOD(av_opt_set)
     RESOLVE_METHOD(av_strdup)
-    RESOLVE_METHOD(av_get_bits_per_sample_fmt)
+    RESOLVE_METHOD(av_get_bytes_per_sample)
     RESOLVE_METHOD(av_dict_get)
     RESOLVE_METHOD(av_dict_set)
   END_METHOD_RESOLVE()
