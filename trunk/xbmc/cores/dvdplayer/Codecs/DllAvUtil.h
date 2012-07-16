@@ -88,7 +88,7 @@ public:
    virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length) { return ::av_crc(ctx, crc, buffer); }
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,7,0)
    // API added on: 2008-12-16
-   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return :
+   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return ::av_set_string3(obj, name, val, alloc, o_out); }
 #else
    virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return A
 #endif
