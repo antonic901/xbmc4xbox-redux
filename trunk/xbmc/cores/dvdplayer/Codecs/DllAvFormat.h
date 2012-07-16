@@ -27,7 +27,7 @@ public:
   virtual void av_register_all_dont_call(void)=0;
   virtual AVInputFormat *av_find_input_format(const char *short_name)=0;
   virtual int url_feof(AVIOContext *s)=0;
-  virtual AVMetadataTag *av_metadata_get(AVMetadata *m, const char *key, const AVMetadataTag *prev, int flags)=0;
+  virtual AVDictionaryEntry *av_metadata_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags)=0;
   virtual void av_close_input_file(AVFormatContext *s)=0;
   virtual void av_close_input_stream(AVFormatContext *s)=0;
   virtual int av_read_frame(AVFormatContext *s, AVPacket *pkt)=0;
@@ -87,7 +87,7 @@ public:
   virtual void av_register_all_dont_call() { *(int* )0x0 = 0; } 
   virtual AVInputFormat *av_find_input_format(const char *short_name) { return ::av_find_input_format(short_name); }
   virtual int url_feof(AVIOContext *s) { return ::url_feof(s); }
-  virtual AVMetadataTag *av_metadata_get(AVMetadata *m, const char *key, const AVMetadataTag *prev, int flags){ return ::av_metadata_get(m, key, prev, flags); }
+  virtual AVDictionaryEntry *av_metadata_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags){ return ::av_metadata_get(m, key, prev, flags); }
   virtual void av_close_input_file(AVFormatContext *s) { ::av_close_input_file(s); }
   virtual void av_close_input_stream(AVFormatContext *s) { ::av_close_input_stream(s); }
   virtual int av_read_frame(AVFormatContext *s, AVPacket *pkt) { return ::av_read_frame(s, pkt); }
@@ -155,7 +155,7 @@ public:
   DEFINE_METHOD0(void, av_register_all_dont_call)
   DEFINE_METHOD1(AVInputFormat*, av_find_input_format, (const char *p1))
   DEFINE_METHOD1(int, url_feof, (AVIOContext *p1))
-  DEFINE_METHOD4(AVMetadataTag*, av_metadata_get, (AVMetadata *p1, const char *p2, const AVMetadataTag *p3, int p4))
+  DEFINE_METHOD4(AVDictionaryEntry*, av_metadata_get, (AVDictionary *p1, const char *p2, const AVDictionaryEntry *p3, int p4))
   DEFINE_METHOD1(void, av_close_input_file, (AVFormatContext *p1))
   DEFINE_METHOD1(void, av_close_input_stream, (AVFormatContext *p1))
   DEFINE_METHOD1(int, av_read_play, (AVFormatContext *p1))
