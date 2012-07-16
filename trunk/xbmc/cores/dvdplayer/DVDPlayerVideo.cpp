@@ -344,12 +344,14 @@ void CDVDPlayerVideo::Process()
     {
       if(m_pVideoCodec)
         m_pVideoCodec->Reset();
+      picture.iFlags &= ~DVP_FLAG_ALLOCATED;
       m_started = false;
     }
     else if (pMsg->IsType(CDVDMsg::GENERAL_FLUSH)) // private message sent by (CDVDPlayerVideo::Flush())
     {
       if(m_pVideoCodec)
         m_pVideoCodec->Reset();
+      picture.iFlags &= ~DVP_FLAG_ALLOCATED;
       m_stalled = true;
       m_started = false;
     }
