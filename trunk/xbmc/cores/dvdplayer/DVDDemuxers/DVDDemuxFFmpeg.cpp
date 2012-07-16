@@ -297,8 +297,6 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
 
     if(m_pInput->Seek(0, SEEK_POSSIBLE) == 0)
     {
-      m_ioContext->is_streamed = 1;
-      // normally ffmpeg sets the new "seekable" flag based on the value of is_streamed in ffio_fdopen but since we use our own vfs, we need to set it here also
       m_ioContext->seekable = 0;
     }
 
@@ -429,7 +427,7 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
   }
 
   // analyse very short to speed up mjpeg playback start
-  if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->is_streamed)
+  if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
     m_pFormatContext->max_analyze_duration = 500000;
 
   // we need to know if this is matroska or avi later
