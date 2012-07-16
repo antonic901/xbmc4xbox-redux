@@ -61,7 +61,7 @@ public:
                                            int (*read_packet)(void *opaque, uint8_t *buf, int buf_size),
                                            int (*write_packet)(void *opaque, uint8_t *buf, int buf_size),
                                            offset_t (*seek)(void *opaque, offset_t offset, int whence))=0;
-  virtual int av_write_header (AVFormatContext *s)=0;
+  virtual int avformat_write_header (AVFormatContext *s, AVDictionary **options)=0;
   virtual int av_write_trailer(AVFormatContext *s)=0;
   virtual int av_write_frame  (AVFormatContext *s, AVPacket *pkt)=0;
 };
@@ -117,7 +117,7 @@ public:
                                            int (*read_packet)(void *opaque, uint8_t *buf, int buf_size),
                                            int (*write_packet)(void *opaque, uint8_t *buf, int buf_size),
                                            offset_t (*seek)(void *opaque, offset_t offset, int whence)) { return ::av_alloc_put_byte(buffer, buffer_size, write_flag, opaque, read_packet, write_packet, seek) }
-  virtual int av_write_header (AVFormatContext *s) { return ::av_write_header (s); }
+  virtual int avformat_write_header (AVFormatContext *s, AVDictionary **options) { return ::avformat_write_header (s, options); }
   virtual int av_write_trailer(AVFormatContext *s) { return ::av_write_trailer(s); }
   virtual int av_write_frame  (AVFormatContext *s, AVPacket *pkt) { return ::av_write_frame(s, pkt); }
 
@@ -175,7 +175,7 @@ public:
                   int(*p5)(void *opaque, uint8_t *buf, int buf_size),
                   int(*p6)(void *opaque, uint8_t *buf, int buf_size),
                   offset_t(*p7)(void *opaque, offset_t offset, int whence)))
-  DEFINE_METHOD1(int, av_write_header , (AVFormatContext *p1))
+  DEFINE_METHOD2(int, avformat_write_header , (AVFormatContext *p1, AVDictionary **p2))
   DEFINE_METHOD1(int, av_write_trailer, (AVFormatContext *p1))
   DEFINE_METHOD2(int, av_write_frame  , (AVFormatContext *p1, AVPacket *p2))
   BEGIN_METHOD_RESOLVE()
@@ -208,7 +208,7 @@ public:
     RESOLVE_METHOD(av_guess_format)
     RESOLVE_METHOD(av_set_parameters)
     RESOLVE_METHOD(av_alloc_put_byte)
-    RESOLVE_METHOD(av_write_header)
+    RESOLVE_METHOD(avformat_write_header)
     RESOLVE_METHOD(av_write_trailer)
     RESOLVE_METHOD(av_write_frame)
   END_METHOD_RESOLVE()
