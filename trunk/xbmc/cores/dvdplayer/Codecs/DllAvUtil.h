@@ -44,6 +44,9 @@ extern "C" {
 #include "libavutil/avutil.h"
 #include "libavutil/crc.h"
 #include "libavutil/opt.h"
+#include "libavutil/mem.h"
+#include "libavutil/fifo.h"
+#include "libavutil/samplefmt.h"
 
 }
 
@@ -67,6 +70,7 @@ public:
   virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length)=0;
   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out)=0;
   virtual char *av_strdup(const char *s)=0;
+  virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1) = 0;
 };
 
 #if (defined USE_EXTERNAL_FFMPEG)
@@ -92,7 +96,8 @@ public:
 #else
    virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return A
 #endif
-   virtual char *av_strdup(const char *s) { return ::av_strdup(s); }
+  virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1)
+    { return ::av_get_bits_per_sample_fmt(p1); }
 
    // DLL faking.
    virtual bool ResolveExports() { return true; }
@@ -123,6 +128,7 @@ public:
   DEFINE_METHOD4(uint32_t, av_crc, (const AVCRC *p1, uint32_t p2, const uint8_t *p3, size_t p4));
   DEFINE_METHOD5(int, av_set_string3, (void *p1, const char *p2, const char *p3, int p4, const AVOption **p5));
   DEFINE_METHOD1(char*, av_strdup, (const char *p1))
+  DEFINE_METHOD1(int, av_get_bits_per_sample_fmt, (enum AVSampleFormat p1))
 
   public:
   BEGIN_METHOD_RESOLVE()
@@ -137,6 +143,7 @@ public:
     RESOLVE_METHOD(av_crc)
     RESOLVE_METHOD(av_set_string3)
     RESOLVE_METHOD(av_strdup)
+    RESOLVE_METHOD(av_get_bits_per_sample_fmt)
   END_METHOD_RESOLVE()
 };
 
