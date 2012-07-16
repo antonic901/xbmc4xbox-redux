@@ -104,7 +104,7 @@ bool CDVDAudioCodecPassthroughFFmpeg::SetupMuxer(CDVDStreamInfo &hints, CStdStri
   muxer.m_pFormat->pb = m_dllAvFormat.av_alloc_put_byte(muxer.m_BCBuffer, sizeof(muxer.m_BCBuffer), URL_RDONLY, &muxer,  NULL, MuxerReadPacket, NULL);
   if (!muxer.m_pFormat->pb)
   {
-    CLog::Log(LOGERROR, "CDVDAudioCodecPassthroughFFmpeg::SetupMuxer - Failed to allocate ByteIOContext");
+    CLog::Log(LOGERROR, "CDVDAudioCodecPassthroughFFmpeg::SetupMuxer - Failed to allocate AVIOContext");
     Dispose();
     return false;
   }
