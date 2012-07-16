@@ -68,7 +68,7 @@ public:
   virtual int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, enum AVRounding)=0;
   virtual const AVCRC* av_crc_get_table(AVCRCId crc_id)=0;
   virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length)=0;
-  virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out)=0;
+  virtual int av_opt_set(void *obj, const char *name, const char *val, int search_flags)=0;
   virtual char *av_strdup(const char *s)=0;
   virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1) = 0;
   virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags) = 0;
@@ -92,12 +92,7 @@ public:
    virtual int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, enum AVRounding d) { return ::av_rescale_rnd(a, b, c, d); }
    virtual const AVCRC* av_crc_get_table(AVCRCId crc_id) { return ::av_crc_get_table(crc_id); }
    virtual uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t length) { return ::av_crc(ctx, crc, buffer); }
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,7,0)
-   // API added on: 2008-12-16
-   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return ::av_set_string3(obj, name, val, alloc, o_out); }
-#else
-   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out) { return A
-#endif
+   virtual int av_opt_set(void *obj, const char *name, const char *val, int search_flags) { return ::av_opt_set(obj, name, val, search_flags); }
   virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1)
     { return ::av_get_bits_per_sample_fmt(p1); }
   virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags){ return ::av_dict_get(m, key, prev, flags); }
@@ -130,7 +125,7 @@ public:
   DEFINE_METHOD4(int64_t, av_rescale_rnd, (int64_t p1, int64_t p2, int64_t p3, enum AVRounding p4));
   DEFINE_METHOD1(const AVCRC*, av_crc_get_table, (AVCRCId p1))
   DEFINE_METHOD4(uint32_t, av_crc, (const AVCRC *p1, uint32_t p2, const uint8_t *p3, size_t p4));
-  DEFINE_METHOD5(int, av_set_string3, (void *p1, const char *p2, const char *p3, int p4, const AVOption **p5));
+  DEFINE_METHOD4(int, av_opt_set, (void *p1, const char *p2, const char *p3, int p4));
   DEFINE_METHOD1(char*, av_strdup, (const char *p1))
   DEFINE_METHOD1(int, av_get_bits_per_sample_fmt, (enum AVSampleFormat p1))
   DEFINE_METHOD4(AVDictionaryEntry *, av_dict_get, (AVDictionary *p1, const char *p2, const AVDictionaryEntry *p3, int p4))
@@ -147,7 +142,7 @@ public:
     RESOLVE_METHOD(av_rescale_rnd)
     RESOLVE_METHOD(av_crc_get_table)
     RESOLVE_METHOD(av_crc)
-    RESOLVE_METHOD(av_set_string3)
+    RESOLVE_METHOD(av_opt_set)
     RESOLVE_METHOD(av_strdup)
     RESOLVE_METHOD(av_get_bits_per_sample_fmt)
     RESOLVE_METHOD(av_dict_get)
