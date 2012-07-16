@@ -397,7 +397,7 @@ bool CGUIWindowMusicNav::GetDirectory(const CStdString &strDirectory, CFileItemL
   else if (items.IsPlayList())
     items.SetContent("songs");
   else if (strDirectory.IsEmpty())
-      items.SetLabel("");
+    items.SetLabel("");
 
   return bResult;
 }
