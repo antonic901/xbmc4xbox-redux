@@ -95,16 +95,9 @@ public:
   }
   virtual AVFrame *avcodec_alloc_frame() { return ::avcodec_alloc_frame(); }
   virtual int avpicture_fill(AVPicture *picture, uint8_t *ptr, int pix_fmt, int width, int height) { return ::avpicture_fill(picture, ptr, pix_fmt, width, height); }
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,23,0)
-  // API added on: 2009-04-07
   virtual int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture, int *got_picture_ptr, AVPacket *avpkt) { return ::avcodec_decode_video2(avctx, picture, got_picture_ptr, avpkt); }
   virtual int avcodec_decode_audio3(AVCodecContext *avctx, int16_t *samples, int *frame_size_ptr, AVPacket *avpkt) { return ::avcodec_decode_audio3(avctx, samples, frame_size_ptr, avpkt); }
   virtual int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub, int *got_sub_ptr, AVPacket *avpkt) { return ::avcodec_decode_subtitle2(avctx, sub, got_sub_ptr, avpkt); }
-#else
-  virtual int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture, int *got_picture_ptr, AVPacket *avpkt) { return ::avcodec_decode_video(avctx, picture, got_picture_ptr, avpkt->data, avpkt->size); }
-  virtual int avcodec_decode_audio3(AVCodecContext *avctx, int16_t *samples, int *frame_size_ptr, AVPacket *avpkt) { return ::avcodec_decode_audio2(avctx, samples, frame_size_ptr, avpkt->data, avpkt->size); }
-  virtual int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub, int *got_sub_ptr, AVPacket *avpkt) { return ::avcodec_decode_subtitle(avctx, sub, got_sub_ptr, avpkt->data, avpkt->size); }
-#endif
   virtual int avpicture_get_size(PixelFormat pix_fmt, int width, int height) { return ::avpicture_get_size(pix_fmt, width, height); }
   virtual AVCodecContext *avcodec_alloc_context3(AVCodec *codec) { return ::avcodec_alloc_context3(codec); }
   virtual void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode) { ::avcodec_string(buf, buf_size, enc, encode); }
@@ -115,12 +108,7 @@ public:
                     const uint8_t *buf, int buf_size,
                     int64_t pts, int64_t dts, int64_t pos)
   {
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,21,0)
-    // API added on : 2009-03-05
     return ::av_parser_parse2(s, avctx, poutbuf, poutbuf_size, buf, buf_size, pts, dts, pos);
-#else
-    return ::av_parser_parse(s, avctx, poutbuf, poutbuf_size, buf, buf_size, pts, dts);
-#endif
   }
   virtual void av_parser_close(AVCodecParserContext *s) { ::av_parser_close(s); }
   
