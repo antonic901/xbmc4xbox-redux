@@ -54,7 +54,6 @@ public:
   virtual int avpicture_alloc(AVPicture *picture, PixelFormat pix_fmt, int width, int height)=0;
   virtual int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic)=0;
   virtual void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic)=0;
-  virtual int avcodec_thread_init(AVCodecContext *s, int thread_count)=0;
   virtual AVCodec *av_codec_next(AVCodec *c)=0;
   virtual int av_get_bits_per_sample_format(enum SampleFormat sample_fmt)=0;
   virtual AVAudioConvert *av_audio_convert_alloc(enum SampleFormat out_fmt, int out_channels,
@@ -129,7 +128,6 @@ public:
   virtual int avpicture_alloc(AVPicture *picture, PixelFormat pix_fmt, int width, int height) { return ::avpicture_alloc(picture, pix_fmt, width, height); }
   virtual int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic) { return ::avcodec_default_get_buffer(s, pic); }
   virtual void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic) { ::avcodec_default_release_buffer(s, pic); }
-  virtual int avcodec_thread_init(AVCodecContext *s, int thread_count) { return ::avcodec_thread_init(s, thread_count); }
   virtual AVCodec *av_codec_next(AVCodec *c) { return ::av_codec_next(c); }
   virtual int av_get_bits_per_sample_format(enum SampleFormat sample_fmt) 
           { return ::av_get_bits_per_sample_format(sample_fmt); }
@@ -198,7 +196,6 @@ public:
   DEFINE_METHOD4(int, avpicture_alloc, (AVPicture *p1, PixelFormat p2, int p3, int p4))
   DEFINE_METHOD2(int, avcodec_default_get_buffer, (AVCodecContext *p1, AVFrame *p2))
   DEFINE_METHOD2(void, avcodec_default_release_buffer, (AVCodecContext *p1, AVFrame *p2))
-  DEFINE_METHOD2(int, avcodec_thread_init, (AVCodecContext *p1, int p2))
   DEFINE_METHOD1(AVCodec*, av_codec_next, (AVCodec *p1))
   DEFINE_METHOD1(int, av_get_bits_per_sample_format, (enum SampleFormat p1))
   DEFINE_METHOD6(AVAudioConvert*, av_audio_convert_alloc, (enum SampleFormat p1, int p2,
@@ -234,7 +231,6 @@ public:
     RESOLVE_METHOD(avpicture_alloc)
     RESOLVE_METHOD(avcodec_default_get_buffer)
     RESOLVE_METHOD(avcodec_default_release_buffer)
-    RESOLVE_METHOD(avcodec_thread_init)
     RESOLVE_METHOD(av_codec_next)
     RESOLVE_METHOD(av_get_bits_per_sample_format)
     RESOLVE_METHOD(av_audio_convert_alloc)
