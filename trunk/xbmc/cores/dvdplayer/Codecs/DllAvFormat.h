@@ -56,7 +56,7 @@ public:
   virtual int get_buffer(AVIOContext *s, unsigned char *buf, int size)=0;
   virtual int get_partial_buffer(AVIOContext *s, unsigned char *buf, int size)=0;
   virtual AVFormatContext *avformat_alloc_context(void)=0;
-  virtual AVStream *av_new_stream(AVFormatContext *s, int id)=0;
+  virtual AVStream *avformat_new_stream(AVFormatContext *s, AVCodec *c)=0;
 #if LIBAVFORMAT_VERSION_MAJOR < 53
   virtual AVOutputFormat *guess_format(const char *short_name, const char *filename, const char *mime_type)=0;
 #else
@@ -102,7 +102,7 @@ public:
   }
   virtual void url_set_interrupt_cb(URLInterruptCB *interrupt_cb) { ::url_set_interrupt_cb(interrupt_cb); }
   virtual int avformat_open_input(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options)
-  { return ::avformat_open_input(ps, filename, fmt, opt, ap); }
+  { return ::avformat_open_input(ps, filename, fmt, options); }
   virtual int init_put_byte(AVIOContext *s, unsigned char *buffer, int buffer_size, int write_flag, void *opaque, 
                             int (*read_packet)(void *opaque, uint8_t *buf, int buf_size),
                             int (*write_packet)(void *opaque, uint8_t *buf, int buf_size),
@@ -123,7 +123,7 @@ public:
   virtual int get_buffer(AVIOContext *s, unsigned char *buf, int size) { return ::get_buffer(s, buf, size); }
   virtual int get_partial_buffer(AVIOContext *s, unsigned char *buf, int size) { return ::get_partial_buffer(s, buf, size); }
   virtual AVFormatContext *avformat_alloc_context() { return ::avformat_alloc_context(); }
-  virtual AVStream *av_new_stream(AVFormatContext *s, int id) { return ::av_new_stream(s, id); }
+  virtual AVStream *avformat_new_stream(AVFormatContext *s, AVCodec *c) { return ::avformat_new_stream(s, c); }
 #if LIBAVFORMAT_VERSION_MAJOR < 53
   virtual AVOutputFormat *guess_format(const char *short_name, const char *filename, const char *mime_type) { return ::guess_format(short_name, filename, mime_type); }
 #else
@@ -186,7 +186,7 @@ public:
   DEFINE_METHOD1(int, url_fclose, (AVIOContext *p1))
   DEFINE_METHOD3(offset_t, url_fseek, (AVIOContext *p1, offset_t p2, int p3))
   DEFINE_METHOD0(AVFormatContext *, avformat_alloc_context)
-  DEFINE_METHOD2(AVStream *, av_new_stream, (AVFormatContext *p1, int p2))
+  DEFINE_METHOD2(AVStream *, avformat_new_stream, (AVFormatContext *p1, AVCodec *p2))
 #if LIBAVFORMAT_VERSION_MAJOR < 53
   DEFINE_METHOD3(AVOutputFormat *, guess_format, (const char *p1, const char *p2, const char *p3))
 #else
@@ -228,7 +228,7 @@ public:
     RESOLVE_METHOD(get_buffer)
     RESOLVE_METHOD(get_partial_buffer)
     RESOLVE_METHOD(avformat_alloc_context)
-    RESOLVE_METHOD(av_new_stream)
+    RESOLVE_METHOD(avformat_new_stream)
 #if LIBAVFORMAT_VERSION_MAJOR < 53
     RESOLVE_METHOD(guess_format)
 #else

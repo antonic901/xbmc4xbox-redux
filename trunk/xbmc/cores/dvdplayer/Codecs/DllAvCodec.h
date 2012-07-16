@@ -34,7 +34,7 @@ public:
   virtual ~DllAvCodecInterface() {}
   virtual void avcodec_register_all(void)=0;
   virtual void avcodec_flush_buffers(AVCodecContext *avctx)=0;
-  virtual int avcodec_open_dont_call(AVCodecContext *avctx, AVCodec *codec)=0;
+  virtual int avcodec_open2_dont_call(AVCodecContext *avctx, AVCodec *codec, AVDictionary **options)=0;
   virtual AVCodec *avcodec_find_decoder(enum CodecID id)=0;
   virtual int avcodec_close_dont_call(AVCodecContext *avctx)=0;
   virtual AVFrame *avcodec_alloc_frame(void)=0;
@@ -42,9 +42,9 @@ public:
   virtual int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture, int *got_picture_ptr, AVPacket *avpkt)=0;
   virtual int avcodec_decode_audio3(AVCodecContext *avctx, int16_t *samples, int *frame_size_ptr, AVPacket *avpkt)=0;
   virtual int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub, int *got_sub_ptr, AVPacket *avpkt)=0;  virtual int avpicture_get_size(PixelFormat pix_fmt, int width, int height)=0;
-  virtual AVCodecContext *avcodec_alloc_context(void)=0;
+  virtual AVCodecContext *avcodec_alloc_context3(AVCodec *codec)=0;
   virtual void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode)=0;
-  virtual void avcodec_get_context_defaults(AVCodecContext *s)=0;
+  virtual void avcodec_get_context_defaults3(AVCodecContext *s, AVCodec *codec)=0;
   virtual AVCodecParserContext *av_parser_init(int codec_id)=0;
   virtual int av_parser_parse2(AVCodecParserContext *s,AVCodecContext *avctx, uint8_t **poutbuf, int *poutbuf_size,
                     const uint8_t *buf, int buf_size,
@@ -80,12 +80,12 @@ public:
   virtual ~DllAvCodec() {}
   virtual void avcodec_register_all() { ::avcodec_register_all(); }
   virtual void avcodec_flush_buffers(AVCodecContext *avctx) { ::avcodec_flush_buffers(avctx); }
-  virtual int avcodec_open(AVCodecContext *avctx, AVCodec *codec) 
+  virtual int avcodec_open2(AVCodecContext *avctx, AVCodec *codec, AVDictionary **options) 
   { 
     CSingleLock lock(DllAvCodec::m_critSection);
-    return ::avcodec_open(avctx, codec); 
+    return ::avcodec_open2(avctx, codec, options);
   }
-  virtual int avcodec_open_dont_call(AVCodecContext *avctx, AVCodec *codec) { *(int *)0x0 = 0; return 0; } 
+  virtual int avcodec_open2_dont_call(AVCodecContext *avctx, AVCodec *codec, AVDictionary **options) { *(int *)0x0 = 0; return 0; } 
   virtual int avcodec_close_dont_call(AVCodecContext *avctx) { *(int *)0x0 = 0; return 0; } 
   virtual AVCodec *avcodec_find_decoder(enum CodecID id) { return ::avcodec_find_decoder(id); }
   virtual int avcodec_close(AVCodecContext *avctx) 
@@ -106,9 +106,9 @@ public:
   virtual int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub, int *got_sub_ptr, AVPacket *avpkt) { return ::avcodec_decode_subtitle(avctx, sub, got_sub_ptr, avpkt->data, avpkt->size); }
 #endif
   virtual int avpicture_get_size(PixelFormat pix_fmt, int width, int height) { return ::avpicture_get_size(pix_fmt, width, height); }
-  virtual AVCodecContext *avcodec_alloc_context() { return ::avcodec_alloc_context(); }
+  virtual AVCodecContext *avcodec_alloc_context3(AVCodec *codec) { return ::avcodec_alloc_context3(codec); }
   virtual void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode) { ::avcodec_string(buf, buf_size, enc, encode); }
-  virtual void avcodec_get_context_defaults(AVCodecContext *s) { ::avcodec_get_context_defaults(s); }
+  virtual void avcodec_get_context_defaults3(AVCodecContext *s, AVCodec *codec) { ::avcodec_get_context_defaults3(s, codec); }
   
   virtual AVCodecParserContext *av_parser_init(int codec_id) { return ::av_parser_init(codec_id); }
   virtual int av_parser_parse2(AVCodecParserContext *s,AVCodecContext *avctx, uint8_t **poutbuf, int *poutbuf_size,
@@ -163,11 +163,11 @@ public:
   DllAvCodec() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avcodec-53.dll") {}
 
   DEFINE_FUNC_ALIGNED1(void, __cdecl, avcodec_flush_buffers, AVCodecContext*)
-  DEFINE_FUNC_ALIGNED2(int, __cdecl, avcodec_open_dont_call, AVCodecContext*, AVCodec *)
+  DEFINE_FUNC_ALIGNED3(int, __cdecl, avcodec_open2_dont_call, AVCodecContext*, AVCodec *, AVDictionary **)
   DEFINE_FUNC_ALIGNED4(int, __cdecl, avcodec_decode_video2, AVCodecContext*, AVFrame*, int*, AVPacket*)
   DEFINE_FUNC_ALIGNED4(int, __cdecl, avcodec_decode_audio3, AVCodecContext*, int16_t*, int*, AVPacket*)
   DEFINE_FUNC_ALIGNED4(int, __cdecl, avcodec_decode_subtitle2, AVCodecContext*, AVSubtitle*, int*, AVPacket*)
-  DEFINE_FUNC_ALIGNED0(AVCodecContext*, __cdecl, avcodec_alloc_context)
+  DEFINE_FUNC_ALIGNED1(AVCodecContext*, __cdecl, avcodec_alloc_context3, AVCodec *)
   DEFINE_FUNC_ALIGNED1(AVCodecParserContext*, __cdecl, av_parser_init, int)
   DEFINE_FUNC_ALIGNED9(int, __cdecl, av_parser_parse2, AVCodecParserContext*,AVCodecContext*, uint8_t**, int*, const uint8_t*, int, int64_t, int64_t, int64_t)
 
@@ -180,7 +180,7 @@ public:
   DEFINE_METHOD5(int, avpicture_fill, (AVPicture *p1, uint8_t *p2, int p3, int p4, int p5))
   DEFINE_METHOD3(int, avpicture_get_size, (PixelFormat p1, int p2, int p3))
   DEFINE_METHOD4(void, avcodec_string, (char *p1, int p2, AVCodecContext *p3, int p4))
-  DEFINE_METHOD1(void, avcodec_get_context_defaults, (AVCodecContext *p1))
+  DEFINE_METHOD2(void, avcodec_get_context_defaults3, (AVCodecContext *p1, AVCodec *p2))
   DEFINE_METHOD1(void, av_parser_close, (AVCodecParserContext *p1))
   DEFINE_METHOD1(void, avpicture_free, (AVPicture *p1))
   DEFINE_METHOD4(int, avpicture_alloc, (AVPicture *p1, PixelFormat p2, int p3, int p4))
@@ -201,7 +201,7 @@ public:
   DEFINE_METHOD1(void, av_free_packet,        (AVPacket *p1))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(avcodec_flush_buffers)
-    RESOLVE_METHOD_RENAME(avcodec_open,avcodec_open_dont_call)
+    RESOLVE_METHOD_RENAME(avcodec_open2,avcodec_open2_dont_call)
     RESOLVE_METHOD_RENAME(avcodec_close,avcodec_close_dont_call)
     RESOLVE_METHOD(avcodec_find_decoder)
     RESOLVE_METHOD(avcodec_alloc_frame)
@@ -211,9 +211,9 @@ public:
     RESOLVE_METHOD(avcodec_decode_audio3)
     RESOLVE_METHOD(avcodec_decode_subtitle2)
     RESOLVE_METHOD(avpicture_get_size)
-    RESOLVE_METHOD(avcodec_alloc_context)
+    RESOLVE_METHOD(avcodec_alloc_context3)
     RESOLVE_METHOD(avcodec_string)
-    RESOLVE_METHOD(avcodec_get_context_defaults)
+    RESOLVE_METHOD(avcodec_get_context_defaults3)
     RESOLVE_METHOD(av_parser_init)
     RESOLVE_METHOD(av_parser_parse2)
     RESOLVE_METHOD(av_parser_close)
@@ -237,10 +237,10 @@ public:
 
 public:
     static CCriticalSection m_critSection;
-    int avcodec_open(AVCodecContext *avctx, AVCodec *codec)
+    int avcodec_open2(AVCodecContext *avctx, AVCodec *codec, AVDictionary **options)
     {
       CSingleLock lock(DllAvCodec::m_critSection);
-      return avcodec_open_dont_call(avctx,codec);
+      return avcodec_open2_dont_call(avctx,codec, options);
     }
     int avcodec_close(AVCodecContext *avctx)
     {
