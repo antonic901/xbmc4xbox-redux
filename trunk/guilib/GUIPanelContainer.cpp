@@ -57,7 +57,8 @@ void CGUIPanelContainer::Render()
   // Free memory not used on screen at the moment, do this first so there's more memory for the new items.
   FreeMemory(CorrectOffset(offset - cacheBefore, 0), CorrectOffset(offset + cacheAfter + m_itemsPerPage + 1, 0));
 
-  g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height);
+  if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
+  {
   float posX = m_posX + m_renderOffset.x;
   float posY = m_posY + m_renderOffset.y;
   float pos = (m_orientation == VERTICAL) ? posY : posX;
@@ -113,6 +114,7 @@ void CGUIPanelContainer::Render()
   }
 
   g_graphicsContext.RestoreClipRegion();
+  }
 
   UpdatePageControl(offset);
 
