@@ -934,8 +934,8 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         st->iBitRate = pStream->codec->bit_rate;
         st->iBitsPerSample = pStream->codec->bits_per_coded_sample;
 	
-        if(m_dllAvFormat.av_metadata_get(pStream->metadata, "title", NULL, 0))
-          st->m_description = m_dllAvFormat.av_metadata_get(pStream->metadata, "title", NULL, 0)->value;
+        if(m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0))
+          st->m_description = m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0)->value;
 
         break;
       }
@@ -1015,8 +1015,8 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
           if(pStream->codec)
             st->identifier = pStream->codec->sub_id;
 	    
-          if(m_dllAvFormat.av_metadata_get(pStream->metadata, "title", NULL, 0))
-            st->m_description = m_dllAvFormat.av_metadata_get(pStream->metadata, "title", NULL, 0)->value;
+          if(m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0))
+            st->m_description = m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0)->value;
 	
           break;
         }
@@ -1027,7 +1027,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         {
           std::string fileName = "special://temp/fonts/";
           XFILE::CDirectory::Create(fileName);
-          AVDictionaryEntry *nameTag = m_dllAvFormat.av_metadata_get(pStream->metadata, "filename", NULL, 0);
+          AVDictionaryEntry *nameTag = m_dllAvUtil.av_dict_get(pStream->metadata, "filename", NULL, 0);
           if (!nameTag) {
             CLog::Log(LOGERROR, "%s: TTF attachment has no name", __FUNCTION__);
             break;
@@ -1075,7 +1075,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
     // API added on: 2010-10-15
     // (Note that while the function was available earlier, the generic
     // metadata tags were not populated by default)
-    AVDictionaryEntry *langTag = m_dllAvFormat.av_metadata_get(pStream->metadata, "language", NULL, 0);
+    AVDictionaryEntry *langTag = m_dllAvUtil.av_dict_get(pStream->metadata, "language", NULL, 0);
     if (langTag)
       strncpy(m_streams[iId]->language, langTag->value, 3);
 #else
@@ -1182,7 +1182,7 @@ void CDVDDemuxFFmpeg::GetChapterName(std::string& strChapterName)
       // API added on: 2010-10-15
       // (Note that while the function was available earlier, the generic
       // metadata tags were not populated by default)
-      AVDictionaryEntry *titleTag = m_dllAvFormat.av_metadata_get(m_pFormatContext->chapters[chapterIdx-1]->metadata,
+      AVDictionaryEntry *titleTag = m_dllAvUtil.av_dict_get(m_pFormatContext->chapters[chapterIdx-1]->metadata,
                                                               "title", NULL, 0);
       if (titleTag)
         strChapterName = titleTag->value;

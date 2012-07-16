@@ -71,6 +71,8 @@ public:
   virtual int av_set_string3(void *obj, const char *name, const char *val, int alloc, const AVOption **o_out)=0;
   virtual char *av_strdup(const char *s)=0;
   virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1) = 0;
+  virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags) = 0;
+  virtual int av_dict_set(AVDictionary **pm, const char *key, const char *value, int flags)=0;
 };
 
 #if (defined USE_EXTERNAL_FFMPEG)
@@ -98,6 +100,8 @@ public:
 #endif
   virtual int av_get_bits_per_sample_fmt(enum AVSampleFormat p1)
     { return ::av_get_bits_per_sample_fmt(p1); }
+  virtual AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags){ return ::av_dict_get(m, key, prev, flags); }
+  virtual int av_dict_set(AVDictionary **pm, const char *key, const char *value, int flags) { return ::av_dict_set(pm, key, value, flags); }
 
    // DLL faking.
    virtual bool ResolveExports() { return true; }
@@ -129,6 +133,8 @@ public:
   DEFINE_METHOD5(int, av_set_string3, (void *p1, const char *p2, const char *p3, int p4, const AVOption **p5));
   DEFINE_METHOD1(char*, av_strdup, (const char *p1))
   DEFINE_METHOD1(int, av_get_bits_per_sample_fmt, (enum AVSampleFormat p1))
+  DEFINE_METHOD4(AVDictionaryEntry *, av_dict_get, (AVDictionary *p1, const char *p2, const AVDictionaryEntry *p3, int p4))
+  DEFINE_METHOD4(int, av_dict_set, (AVDictionary **p1, const char *p2, const char *p3, int p4));
 
   public:
   BEGIN_METHOD_RESOLVE()
@@ -144,6 +150,8 @@ public:
     RESOLVE_METHOD(av_set_string3)
     RESOLVE_METHOD(av_strdup)
     RESOLVE_METHOD(av_get_bits_per_sample_fmt)
+    RESOLVE_METHOD(av_dict_get)
+    RESOLVE_METHOD(av_dict_set)
   END_METHOD_RESOLVE()
 };
 
