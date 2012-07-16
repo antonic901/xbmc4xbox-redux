@@ -106,6 +106,8 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
           m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
         }
+        else if (strDestination.Equals("Plugins"))
+          m_vecItems->SetPath("plugin://pictures/");
         else
         {
           // default parameters if the jump fails
@@ -346,6 +348,14 @@ bool CGUIWindowPictures::GetDirectory(const CStdString &strDirectory, CFileItemL
 {
   if (!CGUIMediaWindow::GetDirectory(strDirectory, items))
     return false;
+
+  if (strDirectory.Equals("plugin://pictures/"))
+  {
+    items.SetContent("plugins");
+    items.SetLabel(g_localizeStrings.Get(24001)); 
+  }
+  else if (strDirectory.IsEmpty())
+    items.SetLabel("");
 
   CStdString label;
   if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("pictures"), &label)) 
