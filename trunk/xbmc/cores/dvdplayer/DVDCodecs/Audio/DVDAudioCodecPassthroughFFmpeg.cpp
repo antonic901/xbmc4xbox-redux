@@ -283,9 +283,6 @@ bool CDVDAudioCodecPassthroughFFmpeg::SupportsFormat(CDVDStreamInfo &hints)
        if (m_bSupportsAC3Out && hints.codec == CODEC_ID_AC3) m_pSyncFrame = &CDVDAudioCodecPassthroughFFmpeg::SyncAC3;
   else if (m_bSupportsDTSOut && hints.codec == CODEC_ID_DTS) m_pSyncFrame = &CDVDAudioCodecPassthroughFFmpeg::SyncDTS;
   else if (m_bSupportsAACOut && hints.codec == CODEC_ID_AAC) m_pSyncFrame = &CDVDAudioCodecPassthroughFFmpeg::SyncAAC;
-  else if (m_bSupportsMP1Out && hints.codec == CODEC_ID_MP1);
-  else if (m_bSupportsMP2Out && hints.codec == CODEC_ID_MP2);
-  else if (m_bSupportsMP3Out && hints.codec == CODEC_ID_MP3);
   else return false;
 
   return true;
@@ -299,9 +296,6 @@ bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptio
     m_bSupportsAC3Out = g_guiSettings.GetBool("audiooutput.ac3passthrough");
     m_bSupportsDTSOut = g_guiSettings.GetBool("audiooutput.dtspassthrough");
     m_bSupportsAACOut = g_guiSettings.GetBool("audiooutput.aacpassthrough");
-    m_bSupportsMP1Out = g_guiSettings.GetBool("audiooutput.mp1passthrough");
-    m_bSupportsMP2Out = g_guiSettings.GetBool("audiooutput.mp2passthrough");
-    m_bSupportsMP3Out = g_guiSettings.GetBool("audiooutput.mp3passthrough");
   }
   else
     return false;
