@@ -26,7 +26,6 @@
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDClock.h"
 #include "Util.h"
-#include "AutoPtrHandle.h"
 
 using namespace AUTOPTR;
 using namespace std;

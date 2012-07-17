@@ -64,7 +64,7 @@
 
 #include "SectionLoader.h"
 #include "ApplicationMessenger.h"
-#include "AutoPtrHandle.h"
+#include "utils/AutoPtrHandle.h"
 
 // Often used
 #include "GUIUserMessages.h"
