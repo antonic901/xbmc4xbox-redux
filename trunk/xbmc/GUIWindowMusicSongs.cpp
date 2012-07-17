@@ -32,8 +32,8 @@
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "FileSystem/Directory.h"
 
-using namespace AUTOPTR;
 using namespace MEDIA_DETECT;
 
 #define CONTROL_BTNVIEWASICONS     2
@@ -509,36 +509,34 @@ bool CGUIWindowMusicSongs::OnContextButton(int itemNumber, CONTEXT_BUTTON button
 
 void CGUIWindowMusicSongs::DeleteDirectoryCache()
 {
-  WIN32_FIND_DATA wfd;
-  memset(&wfd, 0, sizeof(wfd));
-
-  CStdString searchPath = "special://temp/*.fi";
-  CAutoPtrFind hFind( FindFirstFile(_P(searchPath).c_str(), &wfd));
-  if (!hFind.isValid())
+  CStdString searchPath = "special://temp/";
+  CFileItemList items;
+  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".fi", false))
     return;
-  do
+
+  for (int i = 0; i < items.Size(); ++i)
   {
-    if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-      XFILE::CFile::Delete(CStdString("special://temp/") + wfd.cFileName);
+    if (items[i]->m_bIsFolder)
+      continue;
+    XFILE::CFile::Delete(items[i]->GetPath());
   }
-  while (FindNextFile(hFind, &wfd));
 }
 
 void CGUIWindowMusicSongs::DeleteRemoveableMediaDirectoryCache()
 {
-  WIN32_FIND_DATA wfd;
-  memset(&wfd, 0, sizeof(wfd));
-
-  CStdString searchPath = "special://temp/r-*.fi";
-  CAutoPtrFind hFind( FindFirstFile(_P(searchPath).c_str(), &wfd));
-  if (!hFind.isValid())
+  CStdString searchPath = "special://temp/";
+  CFileItemList items;
+  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".fi", false))
     return;
-  do
+
+  for (int i = 0; i < items.Size(); ++i)
   {
-    if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-      XFILE::CFile::Delete(CStdString("special://temp/") + wfd.cFileName);
+    if (items[i]->m_bIsFolder)
+      continue;
+    CStdString fileName = URIUtils::GetFileName(items[i]->GetPath());
+    if (fileName.Left(2) == "r-")
+      XFILE::CFile::Delete(items[i]->GetPath());
   }
-  while (FindNextFile(hFind, &wfd));
 }
 
 void CGUIWindowMusicSongs::PlayItem(int iItem)
