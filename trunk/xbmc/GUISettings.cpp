@@ -333,9 +333,6 @@ void CGUISettings::Initialize()
   AddBool(4, "audiooutput.ac3passthrough", 364, true);
   AddBool(5, "audiooutput.dtspassthrough", 254, true);
   AddBool(6, "audiooutput.aacpassthrough", 299, false);
-  AddBool(7, "audiooutput.mp1passthrough", 300, false);
-  AddBool(8, "audiooutput.mp2passthrough", 301, false);
-  AddBool(9, "audiooutput.mp3passthrough", 302, false);
 #ifdef _XBOX
   AddBool(10, "audiooutput.downmixmultichannel", 548, true);
 #endif
