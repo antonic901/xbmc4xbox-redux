@@ -1612,7 +1612,7 @@
 					RelativePath="..\..\xbmc\utils\AsyncFileCopy.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\AutoPtrHandle.cpp">
+					RelativePath="..\..\xbmc\utils\AutoPtrHandle.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Autorun.cpp">
@@ -3033,7 +3033,7 @@
 				RelativePath="..\..\xbmc\utils\Archive.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\AutoPtrHandle.h">
+				RelativePath="..\..\xbmc\utils\AutoPtrHandle.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\Autorun.h">
