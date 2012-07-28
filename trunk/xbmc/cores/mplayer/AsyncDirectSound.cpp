@@ -86,7 +86,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
   m_drcTable = NULL;
   m_drcAmount = 0;
   // TODO DRC
-  if (!bIsMusic && uiBitsPerSample == 16) SetDynamicRangeCompression((long)(g_stSettings.m_currentVideoSettings.m_VolumeAmplification * 100));
+  if (!bIsMusic && uiBitsPerSample == 16) SetDynamicRangeCompression((long)(g_settings.m_currentVideoSettings.m_VolumeAmplification * 100));
 
   bool bAudioOnAllSpeakers(false);
   g_audioContext.SetupSpeakerConfig(iChannels, bAudioOnAllSpeakers,bIsMusic);
@@ -210,7 +210,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
     m_pbSampleData[dwX] = m_pbSampleData[dwX - 1] + m_dwPacketSize;
 
   // set volume (from settings)
-  m_nCurrentVolume = g_stSettings.m_nVolumeLevel;
+  m_nCurrentVolume = g_settings.m_nVolumeLevel;
   m_pStream->SetVolume( m_nCurrentVolume );
 
   // Set the headroom of the stream to 0 (to allow the maximum volume)

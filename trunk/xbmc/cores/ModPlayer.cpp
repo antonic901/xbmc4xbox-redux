@@ -82,7 +82,7 @@ ModPlayer::ModPlayer(IPlayerCallback& callback) : IPlayer(callback)
     CLog::Log(LOGERROR, "ModPlayer: Could not initialize sound, reason: %s", MikMod_strerror(mikxboxGetErrno()));
   }
 
-  SetVolume(g_stSettings.m_nVolumeLevel);
+  SetVolume(g_settings.m_nVolumeLevel);
   // mikxboxSetMusicVolume(127);
   mikxboxSetCallback(ModCallback);
 }

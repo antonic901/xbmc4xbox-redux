@@ -395,9 +395,9 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
             {
               strMask = setting->Attribute("mask");
               // convert mask qualifiers
-              strMask.Replace("$AUDIO", g_stSettings.m_musicExtensions);
-              strMask.Replace("$VIDEO", g_stSettings.m_videoExtensions);
-              strMask.Replace("$IMAGE", g_stSettings.m_pictureExtensions);
+              strMask.Replace("$AUDIO", g_settings.m_musicExtensions);
+              strMask.Replace("$VIDEO", g_settings.m_videoExtensions);
+              strMask.Replace("$IMAGE", g_settings.m_pictureExtensions);
 #if defined(_WIN32_WINNT)
               strMask.Replace("$EXECUTABLE", ".exe|.bat|.cmd|.py");
 #else
@@ -407,9 +407,9 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
             else
             {
               if (strcmpi(type, "video") == 0)
-                strMask = g_stSettings.m_videoExtensions;
+                strMask = g_settings.m_videoExtensions;
               else if (strcmpi(type, "audio") == 0)
-                strMask = g_stSettings.m_musicExtensions;
+                strMask = g_settings.m_musicExtensions;
               else if (strcmpi(type, "executable") == 0)
 #if defined(_WIN32_WINNT)
                 strMask = ".exe|.bat|.cmd|.py";

@@ -863,7 +863,7 @@ int CPermissions::GetRealDirectory(CStdString directory, int user, t_directory &
 		PathPieces.pop_front();
 
 #ifdef _XBOX
-	    if (1 /*g_stSettings.m_bFTPSingleCharDrives*/)
+	    if (1 /*g_settings.m_bFTPSingleCharDrives*/)
 	    {
 			// modified to be consistent with other xbox ftp behavior: drive 
 			// name is a single character without the ':' at the end
@@ -1117,7 +1117,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, CStdString &currentdir, CStdStr
 				if (dir.GetLength()<3 || !isalpha(dir[1]) || (dir[2] != ':'))
 				{
 #ifdef _XBOX
-					if (1 /*g_stSettings.m_bFTPSingleCharDrives*/ &&
+					if (1 /*g_settings.m_bFTPSingleCharDrives*/ &&
 					  (isalpha(dir[1]) && ((dir.GetLength() == 2) || (dir[2] == '/'))))
 					{
 					// modified to be consistent with other xbox ftp behavior: drive 

@@ -103,8 +103,8 @@ void COSDMenu::Draw()
   pSubMenu->Draw();
 
 
-  //  g_graphicsContext.Get3DDevice()->SetSoftDisplayFilter(g_stSettings.m_bSoften);
-  // g_graphicsContext.Get3DDevice()->SetFlickerFilter(g_stSettings.m_bSoften ? 5 : 1);
+  //  g_graphicsContext.Get3DDevice()->SetSoftDisplayFilter(g_settings.m_bSoften);
+  // g_graphicsContext.Get3DDevice()->SetFlickerFilter(g_settings.m_bSoften ? 5 : 1);
 }
 
 bool COSDMenu::OnAction(IExecutor& executor, const CAction& action)

@@ -40,7 +40,7 @@ extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iPosX, int iPosY, int i
 	g_settings.LoadSettings();
 
 	vInfo.bWantsFreq = true;
-	vInfo.iSyncDelay = g_stSettings.m_iSyncDelay;
+	vInfo.iSyncDelay = g_settings.m_iSyncDelay;
 
 	if(!myVis.Init(m_pd3dDevice))
 		return;
@@ -65,23 +65,23 @@ extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqD
 	int jmin=2;
 	int jmax;
 	// FIXME:  Roll conditionals out of loop
-	for (int i=0, iBin=0; i < g_stSettings.m_iBars; i++, iBin+=2)
+	for (int i=0, iBin=0; i < g_settings.m_iBars; i++, iBin+=2)
 	{
 		m_pFreq[iBin]=0.000001f;	// almost zero to avoid taking log of zero later
 		m_pFreq[iBin+1]=0.000001f;
-		if(g_stSettings.m_bLogScale)
-			jmax = (int) (g_stSettings.m_fMinFreq*pow(g_stSettings.m_fMaxFreq/g_stSettings.m_fMinFreq,(float)i/g_stSettings.m_iBars)/m_iSampleRate*iFreqDataLength + 0.5f);
+		if(g_settings.m_bLogScale)
+			jmax = (int) (g_settings.m_fMinFreq*pow(g_settings.m_fMaxFreq/g_settings.m_fMinFreq,(float)i/g_settings.m_iBars)/m_iSampleRate*iFreqDataLength + 0.5f);
 		else
-			jmax = (int) ((g_stSettings.m_fMinFreq + (g_stSettings.m_fMaxFreq-g_stSettings.m_fMinFreq)*i/g_stSettings.m_iBars)/m_iSampleRate*iFreqDataLength + 0.5f);
+			jmax = (int) ((g_settings.m_fMinFreq + (g_settings.m_fMaxFreq-g_settings.m_fMinFreq)*i/g_settings.m_iBars)/m_iSampleRate*iFreqDataLength + 0.5f);
 		// Round up to nearest multiple of 2 and check that jmin is not jmax
 		jmax<<=1;
 		if(jmax > iFreqDataLength) jmax = iFreqDataLength;
 		if(jmax == jmin)jmin -= 2;
 		for (int j=jmin; j<jmax; j+=2)
 		{
-			if(g_stSettings.m_bMixChannels)
+			if(g_settings.m_bMixChannels)
 			{
-				if(g_stSettings.m_bAverageLevels)
+				if(g_settings.m_bAverageLevels)
 					m_pFreq[iBin] += pFreqData[j] + pFreqData[j+1];
 				else 
 				{
@@ -93,7 +93,7 @@ extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqD
 			}
 			else
 			{
-				if(g_stSettings.m_bAverageLevels)
+				if(g_settings.m_bAverageLevels)
 				{
 					m_pFreq[iBin] += pFreqData[j];
 					m_pFreq[iBin+1] += pFreqData[j+1];
@@ -107,9 +107,9 @@ extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqD
 				}
 			}
 		}
-		if(g_stSettings.m_bAverageLevels)
+		if(g_settings.m_bAverageLevels)
 		{
-			if(g_stSettings.m_bMixChannels)
+			if(g_settings.m_bMixChannels)
 				m_pFreq[iBin] /=(jmax-jmin);
 			else
 			{
@@ -121,7 +121,7 @@ extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqD
 	}
 
 	// Transform data to dB scale, 0 (Quietest possible) to 96 (Loudest)
-	for (int i=0; i < g_stSettings.m_iBars*2; i++)
+	for (int i=0; i < g_settings.m_iBars*2; i++)
 	{
 		m_pFreq[i] = 10*log10(m_pFreq[i]);
 		if (m_pFreq[i] > MAX_LEVEL)
@@ -134,8 +134,8 @@ extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqD
 void SetupCamera(float fPosZ)
 {
 	D3DXMATRIX matView;
-    D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(g_stSettings.m_fCamX, g_stSettings.m_fCamY, fPosZ), //Camera Position
-                                 &D3DXVECTOR3(g_stSettings.m_fCamLookX, g_stSettings.m_fCamLookY, fPosZ + 30.0f), //Look At Position
+    D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(g_settings.m_fCamX, g_settings.m_fCamY, fPosZ), //Camera Position
+                                 &D3DXVECTOR3(g_settings.m_fCamLookX, g_settings.m_fCamLookY, fPosZ + 30.0f), //Look At Position
                                  &D3DXVECTOR3(0.0f, 1.0f, 0.0f)); //Up Direction
 
     m_pd3dDevice->SetTransform(D3DTS_VIEW, &matView);
@@ -146,12 +146,12 @@ extern "C" void Render()
 	if(m_pd3dDevice == NULL)
 		return;
 
-	if(g_stSettings.m_bCamStatic != true)
+	if(g_settings.m_bCamStatic != true)
 	{
-		float fThisRowZ = myVis.GetNextZ() - 30.0f - g_stSettings.m_fBarDepth;
+		float fThisRowZ = myVis.GetNextZ() - 30.0f - g_settings.m_fBarDepth;
 		float fCurRowTime = (float)(timeGetTime() - myVis.GetLastRowTime());	//time spent in curr row
 		
-		fCamPos = fThisRowZ + ((fCurRowTime / (float)g_stSettings.m_iLingerTime) * g_stSettings.m_fBarDepth);
+		fCamPos = fThisRowZ + ((fCurRowTime / (float)g_settings.m_iLingerTime) * g_settings.m_fBarDepth);
 
 	}
 	SetupCamera(fCamPos);

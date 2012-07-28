@@ -14,7 +14,7 @@ bool CBoxalizer::Init(LPDIRECT3DDEVICE8 pd3dDevice)
 {
 	m_pd3dDevice = pd3dDevice;
 	myLines = NULL;
-	m_dwLastNewBlock = timeGetTime() - g_stSettings.m_iLingerTime;
+	m_dwLastNewBlock = timeGetTime() - g_settings.m_iLingerTime;
 
 	m_fNextZ = 40.0f;
 	m_pTexture = NULL;
@@ -22,7 +22,7 @@ bool CBoxalizer::Init(LPDIRECT3DDEVICE8 pd3dDevice)
 	//load the texture
 	char szTexFile[1024];
 	strcpy(szTexFile, "Q:\\Visualisations\\");
-	strcat(szTexFile, g_stSettings.m_szTextureFile);
+	strcat(szTexFile, g_settings.m_szTextureFile);
 
 	if(FAILED(D3DXCreateTextureFromFile(m_pd3dDevice, szTexFile, &m_pTexture)))
 	{
@@ -34,12 +34,12 @@ bool CBoxalizer::Init(LPDIRECT3DDEVICE8 pd3dDevice)
 bool CBoxalizer::Set(float *pFreqData)
 {
 	//if static cam and now rows, or its time to add another row, add one
-	if((g_stSettings.m_bCamStatic && !myLines) || (!g_stSettings.m_bCamStatic && timeGetTime() - m_dwLastNewBlock > (DWORD)g_stSettings.m_iLingerTime))
+	if((g_settings.m_bCamStatic && !myLines) || (!g_settings.m_bCamStatic && timeGetTime() - m_dwLastNewBlock > (DWORD)g_settings.m_iLingerTime))
 	{
 		LineListLine *newLine = AddLine();
 		newLine->myLine.Set(pFreqData);
 		m_lllCurrentActive = newLine;
-		m_fNextZ += g_stSettings.m_fBarDepth;
+		m_fNextZ += g_settings.m_fBarDepth;
 		m_dwLastNewBlock = timeGetTime();
 	} 
 	else //else keep updating the current row

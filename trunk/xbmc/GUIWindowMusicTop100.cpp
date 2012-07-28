@@ -51,7 +51,7 @@ bool CGUIWindowMusicTop100::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      m_iViewAsIconsRoot = g_stSettings.m_iMyMusicTop100ViewAsIcons;
+      m_iViewAsIconsRoot = g_settings.m_iMyMusicTop100ViewAsIcons;
 
       CGUIWindowMusicBase::OnMessage(message);
 
@@ -73,7 +73,7 @@ bool CGUIWindowMusicTop100::OnMessage(CGUIMessage& message)
         m_iViewAsIconsRoot++;
         if (m_iViewAsIconsRoot > VIEW_AS_LARGE_LIST) m_iViewAsIconsRoot = VIEW_AS_LIST;
         if (m_iViewAsIconsRoot != VIEW_AS_LIST) m_iViewAsIconsRoot = VIEW_AS_LARGE_LIST;
-        g_stSettings.m_iMyMusicTop100ViewAsIcons = m_iViewAsIconsRoot;
+        g_settings.m_iMyMusicTop100ViewAsIcons = m_iViewAsIconsRoot;
         g_settings.Save();
         UpdateButtons();
         return true;

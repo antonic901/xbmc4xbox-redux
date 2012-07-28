@@ -2327,7 +2327,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
     } // if ( !cddb.queryCDinfo( pCdInfo ) )
     else
       pDialogProgress->Close();
-  } // if (pCdInfo->HasCDDBInfo() && g_stSettings.m_bUseCDDB)
+  } // if (pCdInfo->HasCDDBInfo() && g_settings.m_bUseCDDB)
 
   // Filling the file items with cddb info happens in CMusicInfoTagLoaderCDDA
 

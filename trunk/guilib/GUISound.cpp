@@ -152,7 +152,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   }
 
   //  Make effects as loud as possible
-  m_soundBuffer->SetVolume(g_stSettings.m_nVolumeLevel);
+  m_soundBuffer->SetVolume(g_settings.m_nVolumeLevel);
 #ifdef HAS_XBOX_AUDIO
   m_soundBuffer->SetHeadroom(0);
 

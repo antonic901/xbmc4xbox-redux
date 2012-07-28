@@ -50,7 +50,7 @@ CWin32DirectSound::CWin32DirectSound(IAudioCallback* pCallback, int iChannels, u
   m_uiSamplesPerSec = uiSamplesPerSec;
   m_uiBitsPerSample = uiBitsPerSample;
 
-  m_nCurrentVolume = g_stSettings.m_nVolumeLevel;
+  m_nCurrentVolume = g_settings.m_nVolumeLevel;
 
   WAVEFORMATEXTENSIBLE wfxex = {0};
   wfxex.Format.nChannels       = iChannels;
@@ -96,7 +96,7 @@ CWin32DirectSound::CWin32DirectSound(IAudioCallback* pCallback, int iChannels, u
   }
   
   m_pBuffer->Stop();
-  m_pBuffer->SetVolume( g_stSettings.m_nVolumeLevel );
+  m_pBuffer->SetVolume( g_settings.m_nVolumeLevel );
 
   m_bIsAllocated = true;
   m_nextPacket = 0;

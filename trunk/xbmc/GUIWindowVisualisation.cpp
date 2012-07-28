@@ -60,9 +60,9 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   {
   case ACTION_SHOW_INFO:
     {
-      if (!m_dwInitTimer || g_stSettings.m_bMyMusicSongThumbInVis)
-        g_stSettings.m_bMyMusicSongThumbInVis = !g_stSettings.m_bMyMusicSongThumbInVis;
-      g_infoManager.SetShowInfo(g_stSettings.m_bMyMusicSongThumbInVis);
+      if (!m_dwInitTimer || g_settings.m_bMyMusicSongThumbInVis)
+        g_settings.m_bMyMusicSongThumbInVis = !g_settings.m_bMyMusicSongThumbInVis;
+      g_infoManager.SetShowInfo(g_settings.m_bMyMusicSongThumbInVis);
       return true;
     }
     break;
@@ -202,7 +202,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
         g_application.m_pCdgParser->AllocGraphics();
 #endif
 
-      if (g_stSettings.m_bMyMusicSongThumbInVis)
+      if (g_settings.m_bMyMusicSongThumbInVis)
       { // always on
         m_dwInitTimer = 0;
       }
@@ -259,7 +259,7 @@ void CGUIWindowVisualisation::FrameMove()
   if (m_dwInitTimer)
   {
     m_dwInitTimer--;
-    if (!m_dwInitTimer && !g_stSettings.m_bMyMusicSongThumbInVis)
+    if (!m_dwInitTimer && !g_settings.m_bMyMusicSongThumbInVis)
     { // reached end of fade in, fade out again
       g_infoManager.SetShowInfo(false);
     }

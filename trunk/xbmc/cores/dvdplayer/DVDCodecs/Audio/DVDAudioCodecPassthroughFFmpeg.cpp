@@ -301,7 +301,7 @@ bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptio
     return false;
 
   // TODO - this is only valid for video files, and should be moved somewhere else
-  if( hints.channels == 2 && g_stSettings.m_currentVideoSettings.m_OutputToAllSpeakers )
+  if( hints.channels == 2 && g_settings.m_currentVideoSettings.m_OutputToAllSpeakers )
   {
     CLog::Log(LOGINFO, "CDVDAudioCodecPassthroughFFmpeg::Open - disabled passthrough due to video OTAS");
     return false;

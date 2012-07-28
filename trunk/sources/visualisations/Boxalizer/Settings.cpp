@@ -14,24 +14,24 @@ std::vector<VisSetting> m_vecSettings;
 
 void CSettings::SetDefaults()
 {
-	g_stSettings.m_iSyncDelay = 15;
-	g_stSettings.m_iBars = 8;
-	g_stSettings.m_bLogScale = true;
-	g_stSettings.m_bAverageLevels = false;
-	g_stSettings.m_fMinFreq = 80;
-	g_stSettings.m_fMaxFreq = 16000;
-	g_stSettings.m_bMixChannels = false;
-	g_stSettings.m_iLingerTime = 1500;
-	g_stSettings.m_fBarDepth = 3.0f;
+	g_settings.m_iSyncDelay = 15;
+	g_settings.m_iBars = 8;
+	g_settings.m_bLogScale = true;
+	g_settings.m_bAverageLevels = false;
+	g_settings.m_fMinFreq = 80;
+	g_settings.m_fMaxFreq = 16000;
+	g_settings.m_bMixChannels = false;
+	g_settings.m_iLingerTime = 1500;
+	g_settings.m_fBarDepth = 3.0f;
 	
 	//Camera Settings
-	g_stSettings.m_bCamStatic = false;
-	g_stSettings.m_fCamX = 0.0f;
-	g_stSettings.m_fCamY = 10.0f;
-	g_stSettings.m_fCamLookX = 0.0f;
-	g_stSettings.m_fCamLookY = 0.0f;
+	g_settings.m_bCamStatic = false;
+	g_settings.m_fCamX = 0.0f;
+	g_settings.m_fCamY = 10.0f;
+	g_settings.m_fCamLookX = 0.0f;
+	g_settings.m_fCamLookY = 0.0f;
 
-	strcpy(g_stSettings.m_szTextureFile, "");
+	strcpy(g_settings.m_szTextureFile, "");
   strcpy(m_szVisName,"boxalizer");
 }
 
@@ -183,72 +183,72 @@ void CSettings::LoadPreset(int nPreset)
         }
         if (childNode = doc.GetChildNode(node, "syncdelay"))
         {
-          g_stSettings.m_iSyncDelay = atoi(doc.GetNodeText(childNode));
-          if (g_stSettings.m_iSyncDelay < 0)
-            g_stSettings.m_iSyncDelay = 0;
+          g_settings.m_iSyncDelay = atoi(doc.GetNodeText(childNode));
+          if (g_settings.m_iSyncDelay < 0)
+            g_settings.m_iSyncDelay = 0;
         }
         else if(childNode = doc.GetChildNode(node, "bars"))
         {
-          g_stSettings.m_iBars = atoi(doc.GetNodeText(childNode));
-          if(g_stSettings.m_iBars < 1)
-            g_stSettings.m_iBars = 1;
-          if(g_stSettings.m_iBars > MAX_BARS)
-            g_stSettings.m_iBars = MAX_BARS;
+          g_settings.m_iBars = atoi(doc.GetNodeText(childNode));
+          if(g_settings.m_iBars < 1)
+            g_settings.m_iBars = 1;
+          if(g_settings.m_iBars > MAX_BARS)
+            g_settings.m_iBars = MAX_BARS;
         }
         else if (childNode = doc.GetChildNode(node, "freqmin"))
         {
-          g_stSettings.m_fMinFreq = (float)atof(doc.GetNodeText(childNode));
-          if(g_stSettings.m_fMinFreq < MIN_FREQUENCY) 
-            g_stSettings.m_fMinFreq = MIN_FREQUENCY;
-          if(g_stSettings.m_fMinFreq > MAX_FREQUENCY-1) 
-            g_stSettings.m_fMinFreq = MAX_FREQUENCY-1;
+          g_settings.m_fMinFreq = (float)atof(doc.GetNodeText(childNode));
+          if(g_settings.m_fMinFreq < MIN_FREQUENCY) 
+            g_settings.m_fMinFreq = MIN_FREQUENCY;
+          if(g_settings.m_fMinFreq > MAX_FREQUENCY-1) 
+            g_settings.m_fMinFreq = MAX_FREQUENCY-1;
         }
         else if (childNode = doc.GetChildNode(node, "freqmax"))
         {
-          g_stSettings.m_fMaxFreq = (float)atof(doc.GetNodeText(childNode));
-          if(g_stSettings.m_fMaxFreq <= g_stSettings.m_fMinFreq) 
-            g_stSettings.m_fMaxFreq = g_stSettings.m_fMinFreq+1;
-          if(g_stSettings.m_fMaxFreq > MAX_FREQUENCY) 
-            g_stSettings.m_fMaxFreq = MAX_FREQUENCY;
+          g_settings.m_fMaxFreq = (float)atof(doc.GetNodeText(childNode));
+          if(g_settings.m_fMaxFreq <= g_settings.m_fMinFreq) 
+            g_settings.m_fMaxFreq = g_settings.m_fMinFreq+1;
+          if(g_settings.m_fMaxFreq > MAX_FREQUENCY) 
+            g_settings.m_fMaxFreq = MAX_FREQUENCY;
         }
         else if (childNode = doc.GetChildNode(node, "lingertime"))
         {
-          g_stSettings.m_iLingerTime = atoi(doc.GetNodeText(childNode));
-          if(g_stSettings.m_iLingerTime < 100)
-            g_stSettings.m_iLingerTime = 100;
+          g_settings.m_iLingerTime = atoi(doc.GetNodeText(childNode));
+          if(g_settings.m_iLingerTime < 100)
+            g_settings.m_iLingerTime = 100;
         }
         else if (childNode = doc.GetChildNode(node, "rowdepth"))
         {
-          g_stSettings.m_fBarDepth = (float)atof(doc.GetNodeText(childNode));
-          if(g_stSettings.m_fBarDepth < 0.1f)
-            g_stSettings.m_fBarDepth = 0.1f;
+          g_settings.m_fBarDepth = (float)atof(doc.GetNodeText(childNode));
+          if(g_settings.m_fBarDepth < 0.1f)
+            g_settings.m_fBarDepth = 0.1f;
         }
         else if (childNode = doc.GetChildNode(node, "camposx"))
         {
-          g_stSettings.m_fCamX = (float)atof(doc.GetNodeText(childNode));
+          g_settings.m_fCamX = (float)atof(doc.GetNodeText(childNode));
         }
         else if (childNode = doc.GetChildNode(node, "camposy"))
         {
-          g_stSettings.m_fCamY = (float)atof(doc.GetNodeText(childNode));
+          g_settings.m_fCamY = (float)atof(doc.GetNodeText(childNode));
         }
         else if (childNode = doc.GetChildNode(node, "camlookx"))
         {
-          g_stSettings.m_fCamLookX = (float)atof(doc.GetNodeText(childNode));
+          g_settings.m_fCamLookX = (float)atof(doc.GetNodeText(childNode));
         }
         else if (childNode = doc.GetChildNode(node, "camlooky"))
         {
-          g_stSettings.m_fCamLookY = (float)atof(doc.GetNodeText(childNode));
+          g_settings.m_fCamLookY = (float)atof(doc.GetNodeText(childNode));
         }
         else if (childNode = doc.GetChildNode(node, "staticcam"))
         {
           if(strcmp(doc.GetNodeText(childNode), "TRUE") == 0)
-            g_stSettings.m_bCamStatic = true;
+            g_settings.m_bCamStatic = true;
           else
-            g_stSettings.m_bCamStatic = false;
+            g_settings.m_bCamStatic = false;
         }
         else if (childNode = doc.GetChildNode(node, "texture"))
         {
-          strcpy(g_stSettings.m_szTextureFile, doc.GetNodeText(childNode));
+          strcpy(g_settings.m_szTextureFile, doc.GetNodeText(childNode));
         }
         node = doc.GetNextNode(node);
       }

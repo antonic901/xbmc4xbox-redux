@@ -1206,7 +1206,7 @@ bool CUtil::IsPicture(const CStdString& strFile)
     return false;
 
   extension.ToLower();
-  if (g_stSettings.m_pictureExtensions.Find(extension) != -1)
+  if (g_settings.m_pictureExtensions.Find(extension) != -1)
     return true;
 
   if (extension == ".tbn" || extension == ".dds")
@@ -1738,20 +1738,20 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   CStdString strFileNameNoExt(URIUtils::ReplaceExtension(strFileName, ""));
   strLookInPaths.push_back(strPath);
 
-  if (!g_stSettings.iAdditionalSubtitleDirectoryChecked && !g_guiSettings.GetString("subtitles.custompath").IsEmpty()) // to avoid checking non-existent directories (network) every time..
+  if (!g_settings.iAdditionalSubtitleDirectoryChecked && !g_guiSettings.GetString("subtitles.custompath").IsEmpty()) // to avoid checking non-existent directories (network) every time..
   {
     if (!g_network.IsAvailable() && !URIUtils::IsHD(g_guiSettings.GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonaccessible");
-      g_stSettings.iAdditionalSubtitleDirectoryChecked = -1; // disabled
+      g_settings.iAdditionalSubtitleDirectoryChecked = -1; // disabled
     }
     else if (!CDirectory::Exists(g_guiSettings.GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonexistant");
-      g_stSettings.iAdditionalSubtitleDirectoryChecked = -1; // disabled
+      g_settings.iAdditionalSubtitleDirectoryChecked = -1; // disabled
     }
 
-    g_stSettings.iAdditionalSubtitleDirectoryChecked = 1;
+    g_settings.iAdditionalSubtitleDirectoryChecked = 1;
   }
 
   if (strMovie.substr(0,6) == "rar://") // <--- if this is found in main path then ignore it!
@@ -1803,7 +1803,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   // .. done checking for cd-dirs
 
   // this is last because we dont want to check any common subdirs or cd-dirs in the alternate <subtitles> dir.
-  if (g_stSettings.iAdditionalSubtitleDirectoryChecked == 1)
+  if (g_settings.iAdditionalSubtitleDirectoryChecked == 1)
   {
     strPath = g_guiSettings.GetString("subtitles.custompath");
     if (!URIUtils::HasSlashAtEnd(strPath))
@@ -3009,7 +3009,7 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
 
     // set fullscreen or windowed
     if (params.size() >= 2 && params[1] == "1")
-      g_stSettings.m_bStartVideoWindowed = true;
+      g_settings.m_bStartVideoWindowed = true;
 
     // ask if we need to check guisettings to resume
     bool askToResume = true;
@@ -3170,7 +3170,7 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
     {
       if( g_application.IsPlaying() && g_application.m_pPlayer && g_application.m_pPlayer->CanRecord())
       {
-        if (m_pXbmcHttp && g_stSettings.m_HttpApiBroadcastLevel>=1)
+        if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
           g_applicationMessenger.HttpApi(g_application.m_pPlayer->IsRecording()?"broadcastlevel; RecordStopping;1":"broadcastlevel; RecordStarting;1");
         g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
       }
@@ -3212,11 +3212,11 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
       switch (iPlaylist)
       {
       case PLAYLIST_MUSIC:
-        g_stSettings.m_bMyMusicPlaylistShuffle = g_playlistPlayer.IsShuffled(iPlaylist);
+        g_settings.m_bMyMusicPlaylistShuffle = g_playlistPlayer.IsShuffled(iPlaylist);
         g_settings.Save();
         break;
       case PLAYLIST_VIDEO:
-        g_stSettings.m_bMyVideoPlaylistShuffle = g_playlistPlayer.IsShuffled(iPlaylist);
+        g_settings.m_bMyVideoPlaylistShuffle = g_playlistPlayer.IsShuffled(iPlaylist);
         g_settings.Save();
       }
 
@@ -3250,11 +3250,11 @@ int CUtil::ExecBuiltIn(const CStdString& execString)
       switch (iPlaylist)
       {
       case PLAYLIST_MUSIC:
-        g_stSettings.m_bMyMusicPlaylistRepeat = (state == PLAYLIST::REPEAT_ALL);
+        g_settings.m_bMyMusicPlaylistRepeat = (state == PLAYLIST::REPEAT_ALL);
         g_settings.Save();
         break;
       case PLAYLIST_VIDEO:
-        g_stSettings.m_bMyVideoPlaylistRepeat = (state == PLAYLIST::REPEAT_ALL);
+        g_settings.m_bMyVideoPlaylistRepeat = (state == PLAYLIST::REPEAT_ALL);
         g_settings.Save();
       }
 

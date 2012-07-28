@@ -422,7 +422,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   m_pStream[num]->SetEG(&dsed);
   m_pStream[num]->SetHeadroom(0);
 #endif
-  m_pStream[num]->SetVolume(g_stSettings.m_nVolumeLevel);
+  m_pStream[num]->SetVolume(g_settings.m_nVolumeLevel);
 #ifdef HAS_XBOX_AUDIO
   m_pStream[num]->Pause(DSSTREAMPAUSE_PAUSE);
 #else
@@ -761,7 +761,7 @@ bool PAPlayer::ProcessPAP()
       {
         CLog::Log(LOGDEBUG, "Finished Crossfading");
         m_currentlyCrossFading = false;
-        SetStreamVolume(m_currentStream, g_stSettings.m_nVolumeLevel);
+        SetStreamVolume(m_currentStream, g_settings.m_nVolumeLevel);
         FreeStream(1 - m_currentStream);
         m_decoder[1 - m_currentDecoder].Destroy();
       }
@@ -773,8 +773,8 @@ bool PAPlayer::ProcessPAP()
         if (fraction < -0.499f) fraction = -0.499f;
         float volumeCurrent = 2000.0f * log10(0.5f - fraction);
         float volumeNext = 2000.0f * log10(0.5f + fraction);
-        SetStreamVolume(m_currentStream, g_stSettings.m_nVolumeLevel + (int)volumeCurrent);
-        SetStreamVolume(1 - m_currentStream, g_stSettings.m_nVolumeLevel + (int)volumeNext);
+        SetStreamVolume(m_currentStream, g_settings.m_nVolumeLevel + (int)volumeCurrent);
+        SetStreamVolume(1 - m_currentStream, g_settings.m_nVolumeLevel + (int)volumeNext);
         if (AddPacketsToStream(1 - m_currentStream, m_decoder[1 - m_currentDecoder]))
           retVal2 = RET_SUCCESS;
       }
@@ -958,7 +958,7 @@ bool PAPlayer::HandleFFwdRewd()
   if (m_IsFFwdRewding && m_iSpeed == 1)
   { // stop ffwd/rewd
     m_IsFFwdRewding = false;
-    SetVolume(g_stSettings.m_nVolumeLevel);
+    SetVolume(g_settings.m_nVolumeLevel);
     m_bytesSentOut = 0;
     FlushStreams();
     return true;
@@ -980,7 +980,7 @@ bool PAPlayer::HandleFFwdRewd()
       m_timeOffset = m_decoder[m_currentDecoder].Seek(time);
       m_bytesSentOut = 0;
       FlushStreams();
-      SetVolume(g_stSettings.m_nVolumeLevel - VOLUME_FFWD_MUTE); // override xbmc mute 
+      SetVolume(g_settings.m_nVolumeLevel - VOLUME_FFWD_MUTE); // override xbmc mute 
     }
     else if (time < 0)
     { // ...disable seeking and start the track again
@@ -989,12 +989,12 @@ bool PAPlayer::HandleFFwdRewd()
       m_bytesSentOut = 0;
       FlushStreams();
       m_iSpeed = 1;
-      SetVolume(g_stSettings.m_nVolumeLevel); // override xbmc mute 
+      SetVolume(g_settings.m_nVolumeLevel); // override xbmc mute 
     } // is our next position greater then the end sector...
     else //if (time > m_codec->m_TotalTime)
     {
       // restore volume level so the next track isn't muted
-      SetVolume(g_stSettings.m_nVolumeLevel);
+      SetVolume(g_settings.m_nVolumeLevel);
       CLog::Log(LOGDEBUG, "PAPlayer: End of track reached while seeking");
       return false;
     }

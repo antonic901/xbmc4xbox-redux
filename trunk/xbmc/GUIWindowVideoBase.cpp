@@ -120,9 +120,9 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
       // save current window, unless the current window is the video playlist window
-      if (GetID() != WINDOW_VIDEO_PLAYLIST && g_stSettings.m_iVideoStartWindow != GetID())
+      if (GetID() != WINDOW_VIDEO_PLAYLIST && g_settings.m_iVideoStartWindow != GetID())
       {
-        g_stSettings.m_iVideoStartWindow = GetID();
+        g_settings.m_iVideoStartWindow = GetID();
         g_settings.Save();
       }
 
@@ -157,7 +157,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
 
         if (nNewWindow != GetID())
         {
-          g_stSettings.m_iVideoStartWindow = nNewWindow;
+          g_settings.m_iVideoStartWindow = nNewWindow;
           g_settings.Save();
           g_windowManager.ChangeActiveWindow(nNewWindow);
           CGUIMessage msg2(GUI_MSG_SETFOCUS, nNewWindow, CONTROL_BTNTYPE);
@@ -289,7 +289,7 @@ void CGUIWindowVideoBase::UpdateButtons()
   g_windowManager.SendMessage(msg2);
 
   // Select the current window as default item
-  int nWindow = g_stSettings.m_iVideoStartWindow-WINDOW_VIDEO_FILES;
+  int nWindow = g_settings.m_iVideoStartWindow-WINDOW_VIDEO_FILES;
   CONTROL_SELECT_ITEM(CONTROL_BTNTYPE, nWindow);
 
     CONTROL_ENABLE(CONTROL_BTNSCAN);
@@ -728,7 +728,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
           CStdString hash, strParent;
           CFileItemList items;
           URIUtils::GetParentPath(list.GetPath(),strParent);
-          CDirectory::GetDirectory(strParent,items,g_stSettings.m_videoExtensions);
+          CDirectory::GetDirectory(strParent,items,g_settings.m_videoExtensions);
           scanner.GetPathHash(items, hash);
           m_database.SetPathHash(strParent, hash);
         }
@@ -1886,7 +1886,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
 
     Update(strParentPath);
 
-    if (pSelItem->IsVideoDb() && g_stSettings.m_bMyVideoNavFlatten)
+    if (pSelItem->IsVideoDb() && g_settings.m_bMyVideoNavFlatten)
       SetHistoryForPath("");
     else
       SetHistoryForPath(strParentPath);
@@ -1913,7 +1913,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
 
     Update(strPath);
 
-    if (pSelItem->IsVideoDb() && g_stSettings.m_bMyVideoNavFlatten)
+    if (pSelItem->IsVideoDb() && g_settings.m_bMyVideoNavFlatten)
       SetHistoryForPath("");
     else
       SetHistoryForPath(strPath);

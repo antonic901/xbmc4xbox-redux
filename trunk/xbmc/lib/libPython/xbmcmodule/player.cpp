@@ -121,7 +121,7 @@ namespace PYXBMC
     }
 
     // set fullscreen or windowed
-    g_stSettings.m_bStartVideoWindowed = (0 != bWindowed);
+    g_settings.m_bStartVideoWindowed = (0 != bWindowed);
 
     // force a playercore before playing
     g_application.m_eForcedNextPlayer = self->playerCore;
@@ -484,8 +484,8 @@ namespace PYXBMC
       {
         g_application.m_pPlayer->SetSubtitle(nStream);
         g_application.m_pPlayer->SetSubtitleVisible(true);
-        g_stSettings.m_currentVideoSettings.m_SubtitleDelay = 0.0f;
-        g_application.m_pPlayer->SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
+        g_settings.m_currentVideoSettings.m_SubtitleDelay = 0.0f;
+        g_application.m_pPlayer->SetSubTitleDelay(g_settings.m_currentVideoSettings.m_SubtitleDelay);
       }
     }
     
@@ -523,7 +523,7 @@ namespace PYXBMC
   {
     if (g_application.m_pPlayer)
     {
-      g_stSettings.m_currentVideoSettings.m_SubtitleOn = false;
+      g_settings.m_currentVideoSettings.m_SubtitleOn = false;
       g_application.m_pPlayer->SetSubtitleVisible(false);
 		
       Py_INCREF(Py_None);

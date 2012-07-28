@@ -66,12 +66,12 @@ void CLog::Log(int loglevel, const char *format, ... )
     if (!fd)
     {
 	  // We should only continue when the logfolder is set
-	  if (g_stSettings.m_logFolder.IsEmpty()) return;
+	  if (g_settings.m_logFolder.IsEmpty()) return;
 
-      // g_stSettings.m_logFolder is initialized in the CSettings constructor to Q:\\
+      // g_settings.m_logFolder is initialized in the CSettings constructor to Q:\\
       // and if we are running from DVD, it's changed to T:\\ in CApplication::Create()
       CStdString LogFile;
-      URIUtils::AddFileToFolder(g_stSettings.m_logFolder, "xbmc.log", LogFile);
+      URIUtils::AddFileToFolder(g_settings.m_logFolder, "xbmc.log", LogFile);
       fd = _fsopen(LogFile, "a+", _SH_DENYWR);
     }
       

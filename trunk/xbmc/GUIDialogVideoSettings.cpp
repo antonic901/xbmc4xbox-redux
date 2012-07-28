@@ -71,20 +71,20 @@ void CGUIDialogVideoSettings::CreateSettings()
   // create our settings
   {
     const int entries[] = { 16018, 16019, 20131, 20130, 20129, 16022, 16021, 16020};
-    AddSpin(VIDEO_SETTINGS_INTERLACEMETHOD, 16023, (int*)&g_stSettings.m_currentVideoSettings.m_InterlaceMethod, 8, entries);
+    AddSpin(VIDEO_SETTINGS_INTERLACEMETHOD, 16023, (int*)&g_settings.m_currentVideoSettings.m_InterlaceMethod, 8, entries);
   }
-  AddBool(VIDEO_SETTINGS_CROP, 644, &g_stSettings.m_currentVideoSettings.m_Crop);
+  AddBool(VIDEO_SETTINGS_CROP, 644, &g_settings.m_currentVideoSettings.m_Crop);
   {
     const int entries[] = {630, 631, 632, 633, 634, 635, 636 };
-    AddSpin(VIDEO_SETTINGS_VIEW_MODE, 629, &g_stSettings.m_currentVideoSettings.m_ViewMode, 7, entries);
+    AddSpin(VIDEO_SETTINGS_VIEW_MODE, 629, &g_settings.m_currentVideoSettings.m_ViewMode, 7, entries);
   }
-  AddSlider(VIDEO_SETTINGS_ZOOM, 216, &g_stSettings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.01f, 2.0f, FormatFloat);
-  AddSlider(VIDEO_SETTINGS_PIXEL_RATIO, 217, &g_stSettings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.01f, 2.0f, FormatFloat);
-  AddBool(VIDEO_SETTINGS_POSTPROCESS, 16400, &g_stSettings.m_currentVideoSettings.m_PostProcess);
+  AddSlider(VIDEO_SETTINGS_ZOOM, 216, &g_settings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.01f, 2.0f, FormatFloat);
+  AddSlider(VIDEO_SETTINGS_PIXEL_RATIO, 217, &g_settings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.01f, 2.0f, FormatFloat);
+  AddBool(VIDEO_SETTINGS_POSTPROCESS, 16400, &g_settings.m_currentVideoSettings.m_PostProcess);
 
-  AddSlider(VIDEO_SETTINGS_BRIGHTNESS, 464, &g_stSettings.m_currentVideoSettings.m_Brightness, 0, 1, 100, FormatInteger);
-  AddSlider(VIDEO_SETTINGS_CONTRAST, 465, &g_stSettings.m_currentVideoSettings.m_Contrast, 0, 1, 100, FormatInteger);
-  AddSlider(VIDEO_SETTINGS_GAMMA, 466, &g_stSettings.m_currentVideoSettings.m_Gamma, 0, 1, 100, FormatInteger);
+  AddSlider(VIDEO_SETTINGS_BRIGHTNESS, 464, &g_settings.m_currentVideoSettings.m_Brightness, 0, 1, 100, FormatInteger);
+  AddSlider(VIDEO_SETTINGS_CONTRAST, 465, &g_settings.m_currentVideoSettings.m_Contrast, 0, 1, 100, FormatInteger);
+  AddSlider(VIDEO_SETTINGS_GAMMA, 466, &g_settings.m_currentVideoSettings.m_Gamma, 0, 1, 100, FormatInteger);
 
   AddSeparator(8);
   AddButton(VIDEO_SETTINGS_MAKE_DEFAULT, 12376);
@@ -95,9 +95,9 @@ void CGUIDialogVideoSettings::CreateSettings()
   AddButton(VIDEO_SETTINGS_CALIBRATION, 214);
   if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
   {
-    AddSlider(VIDEO_SETTINGS_FILM_GRAIN, 14058, &g_stSettings.m_currentVideoSettings.m_FilmGrain, 0, 1, 10, FormatInteger);
-    AddBool(VIDEO_SETTINGS_NON_INTERLEAVED, 306, &g_stSettings.m_currentVideoSettings.m_NonInterleaved);
-    AddBool(VIDEO_SETTINGS_NO_CACHE, 431, &g_stSettings.m_currentVideoSettings.m_NoCache);
+    AddSlider(VIDEO_SETTINGS_FILM_GRAIN, 14058, &g_settings.m_currentVideoSettings.m_FilmGrain, 0, 1, 10, FormatInteger);
+    AddBool(VIDEO_SETTINGS_NON_INTERLEAVED, 306, &g_settings.m_currentVideoSettings.m_NonInterleaved);
+    AddBool(VIDEO_SETTINGS_NO_CACHE, 431, &g_settings.m_currentVideoSettings.m_NoCache);
     AddButton(VIDEO_SETTINGS_FORCE_INDEX, 12009);
   }
 }
@@ -111,24 +111,24 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
     g_application.DelayedPlayerRestart();
 #ifdef HAS_VIDEO_PLAYBACK
   else if (setting.id == VIDEO_SETTINGS_CROP)
-    g_renderManager.AutoCrop(g_stSettings.m_currentVideoSettings.m_Crop);
+    g_renderManager.AutoCrop(g_settings.m_currentVideoSettings.m_Crop);
   else if (setting.id == VIDEO_SETTINGS_VIEW_MODE)
   {
-    g_renderManager.SetViewMode(g_stSettings.m_currentVideoSettings.m_ViewMode);
-    g_stSettings.m_currentVideoSettings.m_CustomZoomAmount = g_stSettings.m_fZoomAmount;
-    g_stSettings.m_currentVideoSettings.m_CustomPixelRatio = g_stSettings.m_fPixelRatio;
+    g_renderManager.SetViewMode(g_settings.m_currentVideoSettings.m_ViewMode);
+    g_settings.m_currentVideoSettings.m_CustomZoomAmount = g_settings.m_fZoomAmount;
+    g_settings.m_currentVideoSettings.m_CustomPixelRatio = g_settings.m_fPixelRatio;
     UpdateSetting(VIDEO_SETTINGS_ZOOM);
     UpdateSetting(VIDEO_SETTINGS_PIXEL_RATIO);
   }
   else if (setting.id == VIDEO_SETTINGS_ZOOM || setting.id == VIDEO_SETTINGS_PIXEL_RATIO)
   {
-    g_stSettings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
+    g_settings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
     g_renderManager.SetViewMode(VIEW_MODE_CUSTOM);
     UpdateSetting(VIDEO_SETTINGS_VIEW_MODE);
   }
 #endif
   else if (setting.id == VIDEO_SETTINGS_BRIGHTNESS || setting.id == VIDEO_SETTINGS_CONTRAST || setting.id == VIDEO_SETTINGS_GAMMA)
-    CUtil::SetBrightnessContrastGammaPercent(g_stSettings.m_currentVideoSettings.m_Brightness, g_stSettings.m_currentVideoSettings.m_Contrast, g_stSettings.m_currentVideoSettings.m_Gamma, true);
+    CUtil::SetBrightnessContrastGammaPercent(g_settings.m_currentVideoSettings.m_Brightness, g_settings.m_currentVideoSettings.m_Contrast, g_settings.m_currentVideoSettings.m_Gamma, true);
   else if (setting.id == VIDEO_SETTINGS_FLICKER || setting.id == VIDEO_SETTINGS_SOFTEN)
   {
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
@@ -146,7 +146,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
   }
   else if (setting.id == VIDEO_SETTINGS_FORCE_INDEX)
   {
-    g_stSettings.m_currentVideoSettings.m_bForceIndex = true;
+    g_settings.m_currentVideoSettings.m_bForceIndex = true;
     g_application.Restart(true);
   }
   else if (setting.id == VIDEO_SETTINGS_MAKE_DEFAULT)
@@ -162,9 +162,9 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
       db.Open();
       db.EraseVideoSettings();
       db.Close();
-      g_stSettings.m_defaultVideoSettings = g_stSettings.m_currentVideoSettings;
-      g_stSettings.m_defaultVideoSettings.m_SubtitleStream = -1;
-      g_stSettings.m_defaultVideoSettings.m_AudioStream = -1;
+      g_settings.m_defaultVideoSettings = g_settings.m_currentVideoSettings;
+      g_settings.m_defaultVideoSettings.m_SubtitleStream = -1;
+      g_settings.m_defaultVideoSettings.m_AudioStream = -1;
       g_settings.Save();
     }
   }

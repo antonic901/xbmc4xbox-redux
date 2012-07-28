@@ -85,9 +85,9 @@ void URIUtils::RemoveExtension(CStdString& strFileName)
     strExtension += "|";
 
     CStdString strFileMask;
-    strFileMask = g_stSettings.m_pictureExtensions;
-    strFileMask += "|" + g_stSettings.m_musicExtensions;
-    strFileMask += "|" + g_stSettings.m_videoExtensions;
+    strFileMask = g_settings.m_pictureExtensions;
+    strFileMask += "|" + g_settings.m_musicExtensions;
+    strFileMask += "|" + g_settings.m_videoExtensions;
     strFileMask += "|.py|.xml|.milk|.xpr|.cdg";
     strFileMask += "|";
 

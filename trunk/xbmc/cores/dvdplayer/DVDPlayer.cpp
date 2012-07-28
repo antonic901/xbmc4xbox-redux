@@ -435,11 +435,11 @@ bool CDVDPlayer::OpenInputStream()
     for(unsigned int i=0;i<filenames.size();i++)
       AddSubtitleFile(filenames[i], i == 0 ? CDemuxStream::FLAG_DEFAULT : CDemuxStream::FLAG_NONE);
 
-    g_stSettings.m_currentVideoSettings.m_SubtitleCached = true;
+    g_settings.m_currentVideoSettings.m_SubtitleCached = true;
   }
 
-  SetAVDelay(g_stSettings.m_currentVideoSettings.m_AudioDelay);
-  SetSubTitleDelay(g_stSettings.m_currentVideoSettings.m_SubtitleDelay);
+  SetAVDelay(g_settings.m_currentVideoSettings.m_AudioDelay);
+  SetSubTitleDelay(g_settings.m_currentVideoSettings.m_SubtitleDelay);
   m_clock.Reset();
   m_dvd.Clear();
   m_errorCount = 0;
@@ -522,14 +522,14 @@ void CDVDPlayer::OpenDefaultStreams()
     // open audio stream
     count = m_SelectionStreams.Count(STREAM_AUDIO);
     valid = false;
-    if(g_stSettings.m_currentVideoSettings.m_AudioStream >= 0
-    && g_stSettings.m_currentVideoSettings.m_AudioStream < count)
+    if(g_settings.m_currentVideoSettings.m_AudioStream >= 0
+    && g_settings.m_currentVideoSettings.m_AudioStream < count)
     {
-      SelectionStream& s = m_SelectionStreams.Get(STREAM_AUDIO, g_stSettings.m_currentVideoSettings.m_AudioStream);
+      SelectionStream& s = m_SelectionStreams.Get(STREAM_AUDIO, g_settings.m_currentVideoSettings.m_AudioStream);
       if(OpenAudioStream(s.id, s.source))
         valid = true;
       else
-        CLog::Log(LOGWARNING, "%s - failed to restore selected audio stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_AudioStream);
+        CLog::Log(LOGWARNING, "%s - failed to restore selected audio stream (%d)", __FUNCTION__, g_settings.m_currentVideoSettings.m_AudioStream);
     }
 
     if(!valid
@@ -556,7 +556,7 @@ void CDVDPlayer::OpenDefaultStreams()
   valid = false;
 
   // if subs are disabled, check for forced
-  if(!valid && !g_stSettings.m_currentVideoSettings.m_SubtitleOn 
+  if(!valid && !g_settings.m_currentVideoSettings.m_SubtitleOn 
   && m_SelectionStreams.Get(STREAM_SUBTITLE, CDemuxStream::FLAG_FORCED, st))
   {
     if(OpenSubtitleStream(st.id, st.source))
@@ -570,14 +570,14 @@ void CDVDPlayer::OpenDefaultStreams()
 
   // restore selected
   if(!valid
-  && g_stSettings.m_currentVideoSettings.m_SubtitleStream >= 0
-  && g_stSettings.m_currentVideoSettings.m_SubtitleStream < count)
+  && g_settings.m_currentVideoSettings.m_SubtitleStream >= 0
+  && g_settings.m_currentVideoSettings.m_SubtitleStream < count)
   {
-    SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
+    SelectionStream& s = m_SelectionStreams.Get(STREAM_SUBTITLE, g_settings.m_currentVideoSettings.m_SubtitleStream);
     if(OpenSubtitleStream(s.id, s.source))
       valid = true;
     else
-      CLog::Log(LOGWARNING, "%s - failed to restore selected subtitle stream (%d)", __FUNCTION__, g_stSettings.m_currentVideoSettings.m_SubtitleStream);
+      CLog::Log(LOGWARNING, "%s - failed to restore selected subtitle stream (%d)", __FUNCTION__, g_settings.m_currentVideoSettings.m_SubtitleStream);
   }
 
   // select default
@@ -600,7 +600,7 @@ void CDVDPlayer::OpenDefaultStreams()
   if(!valid)
     CloseSubtitleStream(false);
 
-  if((g_stSettings.m_currentVideoSettings.m_SubtitleOn || force) && !m_PlayerOptions.video_only)
+  if((g_settings.m_currentVideoSettings.m_SubtitleOn || force) && !m_PlayerOptions.video_only)
     m_dvdPlayerVideo.EnableSubtitle(true);
   else
     m_dvdPlayerVideo.EnableSubtitle(false);
@@ -771,9 +771,9 @@ void CDVDPlayer::Process()
     if(m_PlayerOptions.state.size() > 0)
       ((CDVDInputStreamNavigator*)m_pInputStream)->SetNavigatorState(m_PlayerOptions.state);
     else
-      ((CDVDInputStreamNavigator*)m_pInputStream)->EnableSubtitleStream(g_stSettings.m_currentVideoSettings.m_SubtitleOn);
+      ((CDVDInputStreamNavigator*)m_pInputStream)->EnableSubtitleStream(g_settings.m_currentVideoSettings.m_SubtitleOn);
 
-    g_stSettings.m_currentVideoSettings.m_SubtitleCached = true;
+    g_settings.m_currentVideoSettings.m_SubtitleCached = true;
   }
 
   if(!OpenDemuxStream())
@@ -2302,7 +2302,7 @@ bool CDVDPlayer::GetSubtitleVisible()
   {
     CDVDInputStreamNavigator* pStream = (CDVDInputStreamNavigator*)m_pInputStream;
     if(pStream->IsInMenu())
-      return g_stSettings.m_currentVideoSettings.m_SubtitleOn;
+      return g_settings.m_currentVideoSettings.m_SubtitleOn;
     else
       return pStream->IsSubtitleStreamEnabled();
   }
@@ -2312,7 +2312,7 @@ bool CDVDPlayer::GetSubtitleVisible()
 
 void CDVDPlayer::SetSubtitleVisible(bool bVisible)
 {
-  g_stSettings.m_currentVideoSettings.m_SubtitleOn = bVisible;
+  g_settings.m_currentVideoSettings.m_SubtitleOn = bVisible;
   m_messenger.Put(new CDVDMsgBool(CDVDMsg::PLAYER_SET_SUBTITLESTREAM_VISIBLE, bVisible));
 }
 
