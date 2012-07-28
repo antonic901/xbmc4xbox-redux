@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
@@ -35,7 +35,7 @@
 #include <climits>
 
 #include "DllLibCurl.h"
-#include "FileShoutcast.h"
+#include "ShoutcastFile.h"
 #include "SpecialProtocol.h"
 
 using namespace std;
@@ -78,13 +78,13 @@ extern "C" size_t write_callback(char *buffer,
 {
   if(userp == NULL) return 0;
 
-  CFileCurl::CReadState *state = (CFileCurl::CReadState *)userp;
+  CCurlFile::CReadState *state = (CCurlFile::CReadState *)userp;
   return state->WriteCallback(buffer, size, nitems);
 }
 
 extern "C" size_t header_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-  CFileCurl::CReadState *state = (CFileCurl::CReadState *)stream;
+  CCurlFile::CReadState *state = (CCurlFile::CReadState *)stream;
   return state->HeaderCallback(ptr, size, nmemb);
 }
 
@@ -101,7 +101,7 @@ static inline void* realloc_simple(void *ptr, size_t size)
     return ptr2;
 }
 
-size_t CFileCurl::CReadState::HeaderCallback(void *ptr, size_t size, size_t nmemb)
+size_t CCurlFile::CReadState::HeaderCallback(void *ptr, size_t size, size_t nmemb)
 {
   // clear any previous header
   if(m_headerdone)
@@ -132,10 +132,10 @@ size_t CFileCurl::CReadState::HeaderCallback(void *ptr, size_t size, size_t nmem
   return iSize;
 }
 
-size_t CFileCurl::CReadState::WriteCallback(char *buffer, size_t size, size_t nitems)
+size_t CCurlFile::CReadState::WriteCallback(char *buffer, size_t size, size_t nitems)
 {
   unsigned int amount = size * nitems;
-//  CLog::Log(LOGDEBUG, "CFileCurl::WriteCallback (%p) with %i bytes, readsize = %i, writesize = %i", this, amount, m_buffer.getMaxReadSize(), m_buffer.getMaxWriteSize() - m_overflowSize);
+//  CLog::Log(LOGDEBUG, "CCurlFile::WriteCallback (%p) with %i bytes, readsize = %i, writesize = %i", this, amount, m_buffer.getMaxReadSize(), m_buffer.getMaxWriteSize() - m_overflowSize);
   if (m_overflowSize)
   {
     // we have our overflow buffer - first get rid of as much as we can
@@ -167,7 +167,7 @@ size_t CFileCurl::CReadState::WriteCallback(char *buffer, size_t size, size_t ni
   }
   if (amount)
   {
-//    CLog::Log(LOGDEBUG, "CFileCurl::WriteCallback(%p) not enough free space for %i bytes", (void*)this,  amount);
+//    CLog::Log(LOGDEBUG, "CCurlFile::WriteCallback(%p) not enough free space for %i bytes", (void*)this,  amount);
 
     m_overflowBuffer = (char*)realloc_simple(m_overflowBuffer, amount + m_overflowSize);
     if(m_overflowBuffer == NULL)
@@ -181,7 +181,7 @@ size_t CFileCurl::CReadState::WriteCallback(char *buffer, size_t size, size_t ni
   return size * nitems;
 }
 
-CFileCurl::CReadState::CReadState()
+CCurlFile::CReadState::CReadState()
 {
   m_easyHandle = NULL;
   m_multiHandle = NULL;
@@ -195,7 +195,7 @@ CFileCurl::CReadState::CReadState()
   m_headerdone = false;
 }
 
-CFileCurl::CReadState::~CReadState()
+CCurlFile::CReadState::~CReadState()
 {
   Disconnect();
 
@@ -203,7 +203,7 @@ CFileCurl::CReadState::~CReadState()
     g_curlInterface.easy_release(&m_easyHandle, &m_multiHandle);
 }
 
-bool CFileCurl::CReadState::Seek(__int64 pos)
+bool CCurlFile::CReadState::Seek(__int64 pos)
 {
   if(pos == m_filePos)
     return true;
@@ -243,7 +243,7 @@ bool CFileCurl::CReadState::Seek(__int64 pos)
   return false;
 }
 
-long CFileCurl::CReadState::Connect(unsigned int size)
+long CCurlFile::CReadState::Connect(unsigned int size)
 {
   g_curlInterface.easy_setopt(m_easyHandle, CURLOPT_RESUME_FROM_LARGE, m_filePos);
   g_curlInterface.multi_add_handle(m_multiHandle, m_easyHandle);
@@ -258,7 +258,7 @@ long CFileCurl::CReadState::Connect(unsigned int size)
   m_stillRunning = 1;
   if (!FillBuffer(1))
   {
-    CLog::Log(LOGERROR, "CFileCurl::CReadState::Open, didn't get any data from stream.");
+    CLog::Log(LOGERROR, "CCurlFile::CReadState::Open, didn't get any data from stream.");
     return -1;
   }
 
@@ -277,7 +277,7 @@ long CFileCurl::CReadState::Connect(unsigned int size)
   return -1;
 }
 
-void CFileCurl::CReadState::Disconnect()
+void CCurlFile::CReadState::Disconnect()
 {
   if(m_multiHandle && m_easyHandle)
     g_curlInterface.multi_remove_handle(m_multiHandle, m_easyHandle);
@@ -292,7 +292,7 @@ void CFileCurl::CReadState::Disconnect()
 }
 
 
-CFileCurl::~CFileCurl()
+CCurlFile::~CCurlFile()
 {
   if (m_opened)
     Close();
@@ -300,7 +300,7 @@ CFileCurl::~CFileCurl()
   g_curlInterface.Unload();
 }
 
-CFileCurl::CFileCurl()
+CCurlFile::CCurlFile()
 {
   g_curlInterface.Load(); // loads the curl dll and resolves exports etc.
   m_curlAliasList = NULL;
@@ -325,12 +325,12 @@ CFileCurl::CFileCurl()
 }
 
 //Has to be called before Open()
-void CFileCurl::SetBufferSize(unsigned int size)
+void CCurlFile::SetBufferSize(unsigned int size)
 {
   m_bufferSize = size;
 }
 
-void CFileCurl::Close()
+void CCurlFile::Close()
 {
   m_state->Disconnect();
 
@@ -349,7 +349,7 @@ void CFileCurl::Close()
   m_opened = false;
 }
 
-void CFileCurl::SetCommonOptions(CReadState* state)
+void CCurlFile::SetCommonOptions(CReadState* state)
 {
   CURL_HANDLE* h = state->m_easyHandle;
 
@@ -512,7 +512,7 @@ void CFileCurl::SetCommonOptions(CReadState* state)
   g_curlInterface.easy_setopt(h, CURLOPT_LOW_SPEED_TIME, m_lowspeedtime);
 }
 
-void CFileCurl::SetRequestHeaders(CReadState* state)
+void CCurlFile::SetRequestHeaders(CReadState* state)
 {
   if(m_curlHeaderList)
   {
@@ -533,7 +533,7 @@ void CFileCurl::SetRequestHeaders(CReadState* state)
 
 }
 
-void CFileCurl::SetCorrectHeaders(CReadState* state)
+void CCurlFile::SetCorrectHeaders(CReadState* state)
 {
   CHttpHeader& h = state->m_httpheader;
   /* workaround for shoutcast server wich doesn't set content type on standard mp3 */
@@ -555,7 +555,7 @@ void CFileCurl::SetCorrectHeaders(CReadState* state)
   }
 }
 
-void CFileCurl::ParseAndCorrectUrl(CURL &url2)
+void CCurlFile::ParseAndCorrectUrl(CURL &url2)
 {
   CStdString strProtocol = url2.GetTranslatedProtocol();
   url2.SetProtocol(strProtocol);
@@ -717,17 +717,17 @@ void CFileCurl::ParseAndCorrectUrl(CURL &url2)
     m_url = url2.Get();
 }
 
-bool CFileCurl::Post(const CStdString& strURL, const CStdString& strPostData, CStdString& strHTML)
+bool CCurlFile::Post(const CStdString& strURL, const CStdString& strPostData, CStdString& strHTML)
 {
   return Service(strURL, strPostData, strHTML);
 }
 
-bool CFileCurl::Get(const CStdString& strURL, CStdString& strHTML)
+bool CCurlFile::Get(const CStdString& strURL, CStdString& strHTML)
 {
   return Service(strURL, "", strHTML);
 }
 
-bool CFileCurl::Service(const CStdString& strURL, const CStdString& strPostData, CStdString& strHTML)
+bool CCurlFile::Service(const CStdString& strURL, const CStdString& strPostData, CStdString& strHTML)
 {
   m_postdata = strPostData;
   if (Open(strURL))
@@ -742,7 +742,7 @@ bool CFileCurl::Service(const CStdString& strURL, const CStdString& strPostData,
   return false;
 }
 
-bool CFileCurl::ReadData(CStdString& strHTML)
+bool CCurlFile::ReadData(CStdString& strHTML)
 {
   int size_read = 0;
   int data_size = 0;
@@ -759,7 +759,7 @@ bool CFileCurl::ReadData(CStdString& strHTML)
   return true;
 }
 
-bool CFileCurl::Download(const CStdString& strURL, const CStdString& strFileName, LPDWORD pdwSize)
+bool CCurlFile::Download(const CStdString& strURL, const CStdString& strFileName, LPDWORD pdwSize)
 {
   CLog::Log(LOGINFO, "Download: %s->%s", strURL.c_str(), strFileName.c_str());
 
@@ -787,7 +787,7 @@ bool CFileCurl::Download(const CStdString& strURL, const CStdString& strFileName
 }
 
 // Detect whether we are "online" or not! Very simple and dirty!
-bool CFileCurl::IsInternet(bool checkDNS /* = true */)
+bool CCurlFile::IsInternet(bool checkDNS /* = true */)
 {
   CStdString strURL = "http://www.google.com";
   if (!checkDNS)
@@ -799,19 +799,19 @@ bool CFileCurl::IsInternet(bool checkDNS /* = true */)
   return found;
 }
 
-void CFileCurl::Cancel()
+void CCurlFile::Cancel()
 {
   m_state->m_cancelled = true;
   while (m_opened)
     Sleep(1);
 }
 
-void CFileCurl::Reset()
+void CCurlFile::Reset()
 {
   m_state->m_cancelled = false;
 }
 
-bool CFileCurl::Open(const CURL& url)
+bool CCurlFile::Open(const CURL& url)
 {
   if (!g_network.IsAvailable())
     return false;
@@ -888,7 +888,7 @@ bool CFileCurl::Open(const CURL& url)
   return true;
 }
 
-bool CFileCurl::CReadState::ReadString(char *szLine, int iLineLength)
+bool CCurlFile::CReadState::ReadString(char *szLine, int iLineLength)
 {
   unsigned int want = (unsigned int)iLineLength;
 
@@ -920,7 +920,7 @@ bool CFileCurl::CReadState::ReadString(char *szLine, int iLineLength)
   return (bool)((pLine - szLine) > 0);
 }
 
-bool CFileCurl::Exists(const CURL& url)
+bool CCurlFile::Exists(const CURL& url)
 {
   // if file is already running, get info from it
   if( m_opened )
@@ -957,7 +957,7 @@ bool CFileCurl::Exists(const CURL& url)
   return false;
 }
 
-__int64 CFileCurl::Seek(__int64 iFilePosition, int iWhence)
+__int64 CCurlFile::Seek(__int64 iFilePosition, int iWhence)
 {
   __int64 nextPos = m_state->m_filePos;
   switch(iWhence)
@@ -1027,19 +1027,19 @@ __int64 CFileCurl::Seek(__int64 iFilePosition, int iWhence)
   return m_state->m_filePos;
 }
 
-__int64 CFileCurl::GetLength()
+__int64 CCurlFile::GetLength()
 {
   if (!m_opened) return 0;
   return m_state->m_fileSize;
 }
 
-__int64 CFileCurl::GetPosition()
+__int64 CCurlFile::GetPosition()
 {
   if (!m_opened) return 0;
   return m_state->m_filePos;
 }
 
-int CFileCurl::Stat(const CURL& url, struct __stat64* buffer)
+int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   // if file is already running, get info from it
   if( m_opened )
@@ -1149,7 +1149,7 @@ int CFileCurl::Stat(const CURL& url, struct __stat64* buffer)
   return 0;
 }
 
-unsigned int CFileCurl::CReadState::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CCurlFile::CReadState::Read(void* lpBuf, __int64 uiBufSize)
 {
   /* only request 1 byte, for truncated reads (only if not eof) */
   if((m_fileSize == 0 || m_filePos < m_fileSize) && !FillBuffer(1))
@@ -1176,7 +1176,7 @@ unsigned int CFileCurl::CReadState::Read(void* lpBuf, __int64 uiBufSize)
 }
 
 /* use to attempt to fill the read buffer up to requested number of bytes */
-bool CFileCurl::CReadState::FillBuffer(unsigned int want)
+bool CCurlFile::CReadState::FillBuffer(unsigned int want)
 {
   int retry=0;
   fd_set fdread;
@@ -1326,17 +1326,17 @@ bool CFileCurl::CReadState::FillBuffer(unsigned int want)
   return true;
 }
 
-void CFileCurl::ClearRequestHeaders()
+void CCurlFile::ClearRequestHeaders()
 {
   m_requestheaders.clear();
 }
 
-void CFileCurl::SetRequestHeader(CStdString header, CStdString value)
+void CCurlFile::SetRequestHeader(CStdString header, CStdString value)
 {
   m_requestheaders[header] = value;
 }
 
-void CFileCurl::SetRequestHeader(CStdString header, long value)
+void CCurlFile::SetRequestHeader(CStdString header, long value)
 {
   CStdString buffer;
   buffer.Format("%ld", value);
@@ -1344,11 +1344,11 @@ void CFileCurl::SetRequestHeader(CStdString header, long value)
 }
 
 /* STATIC FUNCTIONS */
-bool CFileCurl::GetHttpHeader(const CURL &url, CHttpHeader &headers)
+bool CCurlFile::GetHttpHeader(const CURL &url, CHttpHeader &headers)
 {
   try
   {
-    CFileCurl file;
+    CCurlFile file;
     if(file.Stat(url, NULL) == 0)
     {
       headers = file.GetHttpHeader();
@@ -1363,24 +1363,24 @@ bool CFileCurl::GetHttpHeader(const CURL &url, CHttpHeader &headers)
   }
 }
 
-bool CFileCurl::GetMimeType(const CURL &url, CStdString &content, CStdString useragent)
+bool CCurlFile::GetMimeType(const CURL &url, CStdString &content, CStdString useragent)
 {
-   CFileCurl file;
+   CCurlFile file;
    if (!useragent.IsEmpty())
      file.SetUserAgent(useragent);
 
    if( file.Stat(url, NULL) == 0 )
    {
      content = file.GetMimeType();
-     CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
+     CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
      return true;
    }
-   CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> failed", url.Get().c_str());
+   CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> failed", url.Get().c_str());
    content = "";
    return false;
 }
 
-int CFileCurl::IoControl(EIoControl request, void* param)
+int CCurlFile::IoControl(EIoControl request, void* param)
 {
   if(request == IOCTRL_SEEK_POSSIBLE)
     return m_seekable ? 1 : 0;

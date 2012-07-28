@@ -36,11 +36,11 @@ class CHttpHeader;
 
 namespace XFILE
 {
-	class CFileCurl : public IFile  
+	class CCurlFile : public IFile  
 	{
     public:
-      CFileCurl();
-      virtual ~CFileCurl();
+      CCurlFile();
+      virtual ~CCurlFile();
       virtual bool Open(const CURL& url);
       virtual bool Exists(const CURL& url);
       virtual __int64  Seek(__int64 iFilePosition, int iWhence=SEEK_SET);

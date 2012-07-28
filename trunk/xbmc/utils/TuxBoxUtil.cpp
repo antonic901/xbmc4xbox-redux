@@ -26,7 +26,7 @@
 #include "TuxBoxUtil.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "GUIDialogContextMenu.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
@@ -460,7 +460,7 @@ bool CTuxBoxUtil::ZapToUrl(CURL url, CStdString strOptions, int ipoint)
   }
     
   //Send ZAP Command
-  CFileCurl http;
+  CCurlFile http;
   if(http.Open(strZapUrl+strPostUrl))
   {
     //DEBUG LOG
@@ -637,7 +637,7 @@ bool CTuxBoxUtil::GetZapUrl(const CStdString& strPath, CFileItem &items )
 bool CTuxBoxUtil::InitZapstream(const CStdString& strPath)
 {
   CURL url(strPath);
-  CFileCurl http;
+  CCurlFile http;
   int iTryConnect = 0;
   int iTimeout = 2;
 
@@ -681,7 +681,7 @@ bool CTuxBoxUtil::InitZapstream(const CStdString& strPath)
 bool CTuxBoxUtil::SetAudioChannel( const CStdString& strPath, const AUDIOCHANNEL& sAC )
 {
   CURL url(strPath);
-  CFileCurl http;
+  CCurlFile http;
   int iTryConnect = 0;
   int iTimeout = 2;
 
@@ -749,7 +749,7 @@ bool CTuxBoxUtil::GetHttpXML(CURL url,CStdString strRequestType)
   url.SetFileName("");
   
   //Open 
-  CFileCurl http;
+  CCurlFile http;
   http.SetTimeout(20);
   if(http.Open(url)) 
   {

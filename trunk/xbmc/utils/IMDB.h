@@ -35,7 +35,7 @@
 #include "VideoInfoTag.h"
 #include "ScraperSettings.h"
 #include "DateTime.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 
 // forward definitions
 class TiXmlDocument;
@@ -83,7 +83,7 @@ protected:
 
   static bool RelevanceSortFunction(const CScraperUrl& left, const CScraperUrl &right);
 
-  XFILE::CFileCurl m_http;
+  XFILE::CCurlFile m_http;
   CScraperParser m_parser;
 
   // threaded stuff

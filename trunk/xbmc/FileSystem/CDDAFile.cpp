@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileCDDA.h"
+#include "CDDAFile.h"
 #include <sys/stat.h>
 #include "utils/URIUtils.h"
 #include "DetectDVDType.h"

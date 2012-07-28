@@ -19,7 +19,7 @@
 */
 
 #include "stdafx.h"
-#include "FileDAAP.h"
+#include "DAAPFile.h"
 #include "DAAPDirectory.h"
 #include "utils/URIUtils.h"
 #include "MusicInfoTag.h"

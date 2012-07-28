@@ -17,7 +17,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-// FileDAAP.h: interface for the CFileDAAP class.
+// DAAPFile.h: interface for the CFileDAAP class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -29,7 +29,7 @@
 #endif // _MSC_VER > 1000
 
 #include "lib/libXDAAP/client.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 #include "URL.h"
 
 class CDaapClient : public CCriticalSection 
@@ -94,7 +94,7 @@ protected:
   
   CStdString m_hashurl; // the url that should be used in hash calculation
   CURL       m_url;     // the complete url we have connected too
-  CFileCurl  m_curl;
+  CCurlFile  m_curl;
 };
 }
 

@@ -1,7 +1,5 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2008 Team XBMC
+ *      Copyright (C) 2011 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -21,27 +19,27 @@
  *
  */
 
-#include "DVDInputStream.h"
-#include "FileSystem/CurlFile.h"
-#include "utils/HttpHeader.h"
+#include "SlingboxDirectory.h"
+#include "FileItem.h"
 
-class CDVDInputStreamHttp : public CDVDInputStream
+using namespace XFILE;
+using namespace std;
+
+CSlingboxDirectory::CSlingboxDirectory()
 {
-public:
-  CDVDInputStreamHttp();
-  virtual ~CDVDInputStreamHttp();
-  virtual bool Open(const char* strFile, const std::string& content);
-  virtual void Close();
-  virtual int Read(BYTE* buf, int buf_size);
-  virtual __int64 Seek(__int64 offset, int whence);
-  virtual bool IsEOF();
-  virtual __int64 GetLength();
-  
-  CHttpHeader* GetHttpHeader();
-  
-protected:
-  XFILE::CCurlFile* m_pFile;
-  CHttpHeader m_httpHeader;
-  bool m_eof;
-};
+}
 
+CSlingboxDirectory::~CSlingboxDirectory()
+{
+}
+
+bool CSlingboxDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+{
+  // Create generic Watch Slingbox item
+  CFileItemPtr item(new CFileItem(strPath, false));
+  item->SetLabel("Watch Slingbox");
+  item->SetLabelPreformated(true);
+  items.Add(item);
+
+  return true;
+}

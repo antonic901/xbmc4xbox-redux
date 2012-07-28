@@ -32,7 +32,7 @@
 #include "GUIDialogKeyboard.h"
 #include "GUISettings.h"
 #include "FileItem.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
@@ -629,7 +629,7 @@ DIR_CACHE_TYPE CLastFMDirectory::GetCacheType(const CStdString& strPath) const
 
 void CLastFMDirectory::Run()
 {
-  XFILE::CFileCurl http;
+  XFILE::CCurlFile http;
   if (!http.Download(m_strSource, m_strDestination))
     m_Error=true;
 

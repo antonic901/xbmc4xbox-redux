@@ -28,7 +28,7 @@
 
 #include <vector>
 
-namespace XFILE { class CFileCurl; }
+namespace XFILE { class CCurlFile; }
 
 class CScraperUrl
 {
@@ -63,7 +63,7 @@ public:
   const SUrlEntry GetFirstThumb() const;
   const SUrlEntry GetSeasonThumb(int) const;
   void Clear();
-  static bool Get(const SUrlEntry&, std::string&, XFILE::CFileCurl& http,
+  static bool Get(const SUrlEntry&, std::string&, XFILE::CCurlFile& http,
                  const CStdString& cacheContext);
   static bool DownloadThumbnail(const CStdString &thumb, const SUrlEntry& entry);
   static void ClearCache();

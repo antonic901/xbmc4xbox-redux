@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileZip.h"
+#include "ZipFile.h"
 #include "URL.h"
 
 #include <sys/stat.h>

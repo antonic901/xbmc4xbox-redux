@@ -25,9 +25,9 @@
 #include "MusicArtistInfo.h"
 #include "ScraperSettings.h"
 #include "Thread.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 
-namespace XFILE { class CFileCurl; }
+namespace XFILE { class CCurlFile; }
 
 namespace MUSIC_GRABBER
 {
@@ -83,7 +83,7 @@ protected:
   int m_iArtist;
   bool m_bSucceeded;
   bool m_bCanceled;
-  XFILE::CFileCurl m_http;
+  XFILE::CCurlFile m_http;
   SScraperInfo m_info;
 };
 

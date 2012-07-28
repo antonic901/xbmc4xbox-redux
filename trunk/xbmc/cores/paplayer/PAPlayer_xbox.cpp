@@ -24,7 +24,7 @@
 #include "CodecFactory.h"
 #include "utils/GUIInfoManager.h"
 #include "AudioContext.h"
-#include "FileSystem/FileShoutcast.h"
+#include "FileSystem/ShoutcastFile.h"
 #include "CdgParser.h"
 #include "MusicInfoTag.h"
 #include "Settings.h"

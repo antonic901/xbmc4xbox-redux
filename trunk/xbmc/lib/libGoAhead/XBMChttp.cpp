@@ -2390,7 +2390,7 @@ int CXbmcHttp::xbmcChooseAlbum(int numParas, CStdString paras[])
     try
     {
       CMusicAlbumInfo musicInfo;//("", "") ;
-      XFILE::CFileCurl http;
+      XFILE::CCurlFile http;
       SScraperInfo info; // TODO - WTF is this code supposed to do?
       if (musicInfo.Load(http,info))
       {
@@ -2432,7 +2432,7 @@ int CXbmcHttp::xbmcDownloadInternetFile(int numParas, CStdString paras[])
           tempSkipWebFooterHeader=paras[1].ToLower() == "bare";
         if (numParas>2)
           tempSkipWebFooterHeader=paras[2].ToLower() == "bare";
-        XFILE::CFileCurl http;
+        XFILE::CCurlFile http;
         http.Download(src, dest);
         CStdString encoded="";
         encoded=encodeFileToBase64(dest, 80);

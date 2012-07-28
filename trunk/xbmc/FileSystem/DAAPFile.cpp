@@ -19,7 +19,7 @@
 */
 
 #include "stdafx.h"
-#include "FileDAAP.h"
+#include "DAAPFile.h"
 #include <sys/stat.h>
 
 #include "lib/libXDAAP/private.h"

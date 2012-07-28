@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileSpecialProtocol.h"
+#include "SpecialProtocolFile.h"
 #include "SpecialProtocol.h"
 #include "URL.h"
 

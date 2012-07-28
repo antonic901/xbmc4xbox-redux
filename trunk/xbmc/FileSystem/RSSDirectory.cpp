@@ -24,7 +24,7 @@
 #include "utils/RssFeed.h"
 #include "utils/URIUtils.h"
 #include "FileItem.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 
 using namespace XFILE;
 
@@ -58,7 +58,7 @@ bool CRSSDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
 bool CRSSDirectory::Exists(const char* strPath)
 {
-  CFileCurl rss;
+  CCurlFile rss;
   CURL url(strPath);
   return rss.Exists(url);
 }

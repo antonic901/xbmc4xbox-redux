@@ -25,7 +25,7 @@
 #include <vector>
 #include "StdString.h"
 #include "Thread.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "CriticalSection.h"
 
 #define SCROBBLER_USER_ERROR_BADAUTH  1
@@ -130,7 +130,7 @@ protected:
   CStdString m_strHandshakeTimeStamp;
   SubmissionJournalEntry m_CurrentTrack;
   HANDLE m_hEvent;
-  XFILE::CFileCurl  *m_pHttp;
+  XFILE::CCurlFile  *m_pHttp;
   CCriticalSection  m_queueLock;
   CCriticalSection  m_actionLock;
   std::vector<SubmissionJournalEntry> m_vecSubmissionQueue;

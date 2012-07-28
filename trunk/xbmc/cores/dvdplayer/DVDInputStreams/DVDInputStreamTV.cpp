@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "DVDInputStreamTV.h"
 #include "FileSystem/MythFile.h"
-#include "Filesystem/Slingbox.h"
+#include "Filesystem/SlingboxFile.h"
 #include "URL.h"
 
 using namespace XFILE;

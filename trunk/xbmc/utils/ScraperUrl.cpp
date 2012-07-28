@@ -26,8 +26,8 @@
 #include "Util.h"
 #include "CharsetConverter.h"
 #include "URL.h"
-#include "FileSystem/FileCurl.h"
-#include "FileSystem/FileZip.h"
+#include "FileSystem/CurlFile.h"
+#include "FileSystem/ZipFile.h"
 #include "Picture.h"
 #include "utils/URIUtils.h"
 
@@ -175,7 +175,7 @@ const CScraperUrl::SUrlEntry CScraperUrl::GetSeasonThumb(int season) const
   return result;
 }
 
-bool CScraperUrl::Get(const SUrlEntry& scrURL, string& strHTML, XFILE::CFileCurl& http, const CStdString& cacheContext1)
+bool CScraperUrl::Get(const SUrlEntry& scrURL, string& strHTML, XFILE::CCurlFile& http, const CStdString& cacheContext1)
 {
   CURL url(scrURL.m_url);
   http.SetReferer(scrURL.m_spoof);
@@ -267,7 +267,7 @@ bool CScraperUrl::DownloadThumbnail(const CStdString &thumb, const CScraperUrl::
     return false;
   }
 
-  XFILE::CFileCurl http;
+  XFILE::CCurlFile http;
   http.SetReferer(entry.m_spoof);
   CStdString thumbData;
   if (http.Get(entry.m_url, thumbData))

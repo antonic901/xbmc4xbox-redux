@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "CacheMemBuffer.h"
+#include "MemBufferCache.h"
 #include "utils/log.h"
 #include "utils/SingleLock.h"
 #include "Settings.h"

@@ -33,7 +33,7 @@
 #include "../paplayer/paplayer.h"
 #include "GUIDialogContextMenu.h"
 #include "XBAudioConfig.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "utils/HttpHeader.h"
 #include "Settings.h"
 #include "URL.h"

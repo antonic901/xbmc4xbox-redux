@@ -18,7 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include "stdafx.h"
-#include "FileMemUnit.h"
+#include "MemUnitFile.h"
 #include <sys/stat.h>
 #include "utils/MemoryUnitManager.h"
 #include "MemoryUnits/IFileSystem.h"

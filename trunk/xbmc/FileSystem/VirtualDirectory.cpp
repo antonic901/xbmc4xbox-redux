@@ -22,7 +22,7 @@
 
 #include "stdafx.h"
 #include "VirtualDirectory.h"
-#include "FactoryDirectory.h"
+#include "DirectoryFactory.h"
 #include "Util.h"
 #include "Profile.h"
 #include "Directory.h"

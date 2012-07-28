@@ -24,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "FileRTV.h"
+#include "RTVFile.h"
 #include "URL.h"
 
 #include <sys/stat.h>

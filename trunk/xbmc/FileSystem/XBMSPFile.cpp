@@ -19,7 +19,7 @@
 */
 
 #include "stdafx.h"
-#include "FileXBMSP.h"
+#include "XBMSPFile.h"
 #include "Util.h"
 #include "FileSystem/Directory.h"
 #include "URL.h"

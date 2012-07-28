@@ -1,5 +1,4 @@
 #pragma once
-
 /*
  *      Copyright (C) 2005-2008 Team XBMC
  *      http://www.xbmc.org
@@ -21,27 +20,17 @@
  *
  */
 
-#include "DVDInputStream.h"
-#include "FileSystem/CurlFile.h"
-#include "utils/HttpHeader.h"
+#include "CurlFile.h"
 
-class CDVDInputStreamHttp : public CDVDInputStream
+namespace XFILE
 {
-public:
-  CDVDInputStreamHttp();
-  virtual ~CDVDInputStreamHttp();
-  virtual bool Open(const char* strFile, const std::string& content);
-  virtual void Close();
-  virtual int Read(BYTE* buf, int buf_size);
-  virtual __int64 Seek(__int64 offset, int whence);
-  virtual bool IsEOF();
-  virtual __int64 GetLength();
-  
-  CHttpHeader* GetHttpHeader();
-  
-protected:
-  XFILE::CCurlFile* m_pFile;
-  CHttpHeader m_httpHeader;
-  bool m_eof;
-};
 
+  class CFileLastFM : public CCurlFile
+  {
+  public:
+    CFileLastFM();
+    virtual ~CFileLastFM();
+  protected:
+  };
+
+}

@@ -29,7 +29,7 @@
 //
 //
 
-#include "FileSystem/FactoryDirectory.h"
+#include "FileSystem/DirectoryFactory.h"
 
 namespace MEDIA_DETECT
 {

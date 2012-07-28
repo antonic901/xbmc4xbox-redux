@@ -23,7 +23,7 @@
 #include "Weather.h"
 #include "FileSystem/ZipManager.h"
 #include "FileSystem/RarManager.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "XMLUtils.h"
 #include "Temperature.h"
 #include "xbox/network.h"
@@ -103,7 +103,7 @@ void CBackgroundWeatherLoader::GetInformation()
   CWeather *callback = (CWeather *)m_callback;
   // Download our weather
   CLog::Log(LOGINFO, "WEATHER: Downloading weather");
-  XFILE::CFileCurl httpUtil;
+  XFILE::CCurlFile httpUtil;
   CStdString strURL;
 
   CStdString strSetting;
@@ -561,7 +561,7 @@ bool CWeather::GetSearchResults(const CStdString &strSearch, CStdString &strResu
   //do the download
   CStdString strURL;
   CStdString strXML;
-  XFILE::CFileCurl httpUtil;
+  XFILE::CCurlFile httpUtil;
 
   if (pDlgProgress)
   {

@@ -24,7 +24,7 @@
 #include "tinyXML/tinyxml.h"
 #include "utils/URIUtils.h"
 #include "Picture.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "FileSystem/File.h"
 
 const unsigned int CFanart::max_fanart_colors=3;
@@ -145,7 +145,7 @@ bool CFanart::DownloadThumb(unsigned int index, const CStdString &strDestination
     else
       thumbURL = URIUtils::AddFileToFolder(m_url, m_fanart[index].strPreview);
 
-    XFILE::CFileCurl http;
+    XFILE::CCurlFile http;
     if (http.Download(thumbURL, strDestination))
       return true;
   }

@@ -18,7 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// FileISO.h: interface for the CFileISO class.
+// ISOFile.h: interface for the CFileISO class.
 //
 //////////////////////////////////////////////////////////////////////
 

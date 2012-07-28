@@ -1,5 +1,6 @@
+#pragma once
 /*
- *      Copyright (C) 2005-2008 Team XBMC
+ *      Copyright (C) 2011 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -18,22 +19,20 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-
-#include "stdafx.h"
-#include "FileLastFM.h"
-
+ 
+ #include "IDirectory.h"
+ 
 namespace XFILE
 {
-
-CFileLastFM::CFileLastFM() : CFileCurl()
-{
-  SetUserAgent("");
-  SetBufferSize(8192);
+  
+  class CSlingboxDirectory
+  : public IDirectory
+  {
+  public:
+    CSlingboxDirectory();
+    virtual ~CSlingboxDirectory();
+    
+    virtual bool IsAllowed(const CStdString &strFile) const    { return true; }
+    virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
+  };
 }
-
-CFileLastFM::~CFileLastFM()
-{
-}
-
-}
-

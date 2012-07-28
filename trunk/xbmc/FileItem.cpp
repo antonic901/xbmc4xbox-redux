@@ -29,11 +29,11 @@
 #include "Crc32.h"
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/StackDirectory.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
-#include "FileSystem/FactoryDirectory.h"
+#include "FileSystem/DirectoryFactory.h"
 #include "MusicInfoTagLoaderFactory.h"
 #include "CueDocument.h"
 #include "VideoDatabase.h"
@@ -1059,13 +1059,13 @@ const CStdString& CFileItem::GetMimeType(bool lookup /*= true*/) const
           || m_strPath.Left(7).Equals("http://")
           || m_strPath.Left(8).Equals("https://"))
     {
-      CFileCurl::GetMimeType(GetAsUrl(), m_ref);
+      CCurlFile::GetMimeType(GetAsUrl(), m_ref);
 
       // try to get mime-type again but with an NSPlayer User-Agent
       // in order for server to provide correct mime-type.  Allows us
       // to properly detect an MMS stream
       if (m_ref.Left(11).Equals("video/x-ms-"))
-        CFileCurl::GetMimeType(GetAsUrl(), m_ref, "NSPlayer/11.00.6001.7000");
+        CCurlFile::GetMimeType(GetAsUrl(), m_ref, "NSPlayer/11.00.6001.7000");
 
       // make sure there are no options set in mime-type
       // mime-type can look like "video/x-ms-asf ; charset=utf8"

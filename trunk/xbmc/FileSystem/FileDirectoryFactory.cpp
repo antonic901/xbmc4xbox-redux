@@ -23,7 +23,7 @@
 #include "stdafx.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "FactoryFileDirectory.h"
+#include "FileDirectoryFactory.h"
 #ifdef HAS_FILESYSTEM
 #include "OGGFileDirectory.h"
 #include "NSFFileDirectory.h"

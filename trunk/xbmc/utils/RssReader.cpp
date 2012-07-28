@@ -27,7 +27,7 @@
 #include "GUISettings.h"
 #include "URL.h"
 #include "FileSystem/File.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #ifdef __APPLE__
 #include "CocoaUtils.h"
 #endif
@@ -125,7 +125,7 @@ void CRssReader::Process()
     m_strFeed[iFeed] = "";
     m_strColors[iFeed] = "";
 
-    CFileCurl http;
+    CCurlFile http;
     http.SetUserAgent(m_userAgent);
     http.SetTimeout(2);
     CStdString strXML;

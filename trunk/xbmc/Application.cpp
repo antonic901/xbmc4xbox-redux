@@ -84,7 +84,7 @@
 #include "AdvancedSettings.h"
 
 #ifdef HAS_FILESYSTEM
-#include "FileSystem/FileDAAP.h"
+#include "FileSystem/DAAPFile.h"
 #endif
 #ifdef HAS_UPNP
 #include "UPnP.h"

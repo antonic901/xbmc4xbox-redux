@@ -26,7 +26,7 @@
 #include "GUISettings.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "DDSImage.h"
 #include "JPEGIO.h"
 #include "utils/URIUtils.h"
@@ -206,7 +206,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       CStdString tempFile;
       tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, URIUtils::GetExtension(sourceUrl).c_str());
 
-      CFileCurl stream;
+      CCurlFile stream;
       if (stream.Download(sourceUrl, tempFile))
       {
         if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))

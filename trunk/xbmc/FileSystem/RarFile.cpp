@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileRar.h"
+#include "RarFile.h"
 #include <sys/stat.h>
 #include "Util.h"
 #include "utils/URIUtils.h"

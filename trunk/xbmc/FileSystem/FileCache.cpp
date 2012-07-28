@@ -27,7 +27,7 @@
 #include "URL.h"
 #include "Settings.h"
 
-#include "CacheMemBuffer.h"
+#include "MemBufferCache.h"
 #include "utils/SingleLock.h"
 
 using namespace AUTOPTR;

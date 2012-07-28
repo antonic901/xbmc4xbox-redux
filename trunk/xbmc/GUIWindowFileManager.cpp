@@ -27,7 +27,7 @@
 #include "xbox/xbeheader.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/ZipManager.h"
-#include "FileSystem/FactoryFileDirectory.h"
+#include "FileSystem/FileDirectoryFactory.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "Picture.h"

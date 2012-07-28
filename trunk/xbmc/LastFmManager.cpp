@@ -31,7 +31,7 @@
 #include "Picture.h"
 #include "utils/md5.h"
 #include "FileSystem/File.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "utils/GUIInfoManager.h"
 #include "MusicDatabase.h"
 #include "MusicInfoTag.h"
@@ -123,7 +123,7 @@ bool CLastFmManager::RadioHandShake()
 
   m_RadioSession = "";
 
-  CFileCurl http;
+  CCurlFile http;
   CStdString html;
 
   CStdString strPassword = g_guiSettings.GetString("scrobbler.lastfmpassword");
@@ -221,7 +221,7 @@ bool CLastFmManager::ChangeStation(const CURL& stationUrl)
 
   UpdateProgressDialog(15252); // Selecting station...
 
-  CFileCurl http;
+  CCurlFile http;
   CStdString url;
   CStdString html;
 
@@ -274,7 +274,7 @@ bool CLastFmManager::RequestRadioTracks()
   CStdString html;
   url.Format("http://" + m_RadioBaseUrl + m_RadioBasePath + "/xspf.php?sk=%s&discovery=0&desktop=", m_RadioSession);
   {
-    CFileCurl http;
+    CCurlFile http;
     if (!http.Get(url, html))
     {
       m_RadioSession.empty();
@@ -419,7 +419,7 @@ void CLastFmManager::CacheTrackThumb(const int nrInitialTracksToAdd)
   CSingleLock lock(m_lockCache);
   int iNrCachedTracks = m_RadioTrackQueue->size();
   CPicture pic;
-  CFileCurl http;
+  CCurlFile http;
   for (int i = 0; i < nrInitialTracksToAdd && i < iNrCachedTracks; i++)
   {
     CFileItemPtr item = (*m_RadioTrackQueue)[i];
@@ -778,7 +778,7 @@ bool CLastFmManager::CallXmlRpc(const CStdString& action, const CStdString& arti
   CStdString strBody;
   strBody << doc;
 
-  CFileCurl http;
+  CCurlFile http;
   CStdString html;
   CStdString url = "http://ws.audioscrobbler.com/1.0/rw/xmlrpc.php";
   http.SetMimeType("text/xml");

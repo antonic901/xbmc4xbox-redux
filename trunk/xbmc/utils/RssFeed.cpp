@@ -23,7 +23,7 @@
 #include "RssFeed.h"
 #include "Settings.h"
 #include "utils/URIUtils.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 #include "tinyXML/tinyxml.h"
 
 using namespace std;
@@ -65,7 +65,7 @@ bool CRssFeed::ReadFeed()
   LeaveCriticalSection(m_ItemVectorLock);
 
   CStdString strXML;
-  XFILE::CFileCurl http;
+  XFILE::CCurlFile http;
   if (!http.Get(m_strURL, strXML))
     return false;
 

@@ -21,10 +21,10 @@
 
 
 #include "stdafx.h"
-#include "DirectoryTuxBox.h"
+#include "TuxBoxDirectory.h"
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 #include "utils/HttpHeader.h"
 #include "utils/TuxBoxUtil.h"
 #include "URL.h"
@@ -101,7 +101,7 @@ bool CDirectoryTuxBox::GetDirectory(const CStdString& strPath, CFileItemList &it
     bIsBouquet = true;
   }
   //Open
-  CFileCurl http;
+  CCurlFile http;
   int iTryConnect = 0;
   int iWaitTimer = 20;
   bool result = false;

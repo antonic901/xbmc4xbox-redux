@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "FileMusicDatabase.h"
+#include "MusicDatabaseFile.h"
 #include "MusicDatabase.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

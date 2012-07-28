@@ -23,7 +23,7 @@
 #include "DownloadQueue.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"
-#include "FileSystem/FileCurl.h"
+#include "FileSystem/CurlFile.h"
 
 using namespace std;
 using namespace XFILE;
@@ -130,7 +130,7 @@ void CDownloadQueue::Process()
 {
   CLog::Log(LOGNOTICE, "DownloadQueue ready.");
 
-  CFileCurl http;
+  CCurlFile http;
   bool bSuccess;
 
   while ( !m_bStop )

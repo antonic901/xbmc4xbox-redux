@@ -632,8 +632,8 @@ void CScrobbler::Process()
   CLog::Log(LOGDEBUG, "%s: Thread started.", m_strLogPrefix.c_str());
   if (!m_pHttp)
   {
-    // Hack since CFileCurl isn't threadsafe
-    if (!(m_pHttp = new XFILE::CFileCurl))
+    // Hack since CCurlFile isn't threadsafe
+    if (!(m_pHttp = new XFILE::CCurlFile))
       return;
   }
   m_bRunThread = true;

@@ -23,7 +23,7 @@
 #include "HTTPDirectory.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
-#include "FileCurl.h"
+#include "CurlFile.h"
 #include "FileItem.h"
 #include "utils/RegExp.h"
 #include "AdvancedSettings.h"
@@ -35,7 +35,7 @@ CHTTPDirectory::~CHTTPDirectory(void){}
 
 bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
 {
-  CFileCurl http;
+  CCurlFile http;
   CURL url(strPath);
 
   CStdString strName, strLink;
@@ -87,7 +87,7 @@ bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
 
         if (!pItem->m_bIsFolder && g_advancedSettings.m_bHTTPDirectoryStatFilesize)
         {
-          CFileCurl file;
+          CCurlFile file;
           file.Open(url);
           pItem->m_dwSize= file.GetLength();
           file.Close();
@@ -124,7 +124,7 @@ bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
 
 bool CHTTPDirectory::Exists(const char* strPath)
 {
-  CFileCurl http;
+  CCurlFile http;
   CURL url(strPath);
   return http.Exists(url);
 }

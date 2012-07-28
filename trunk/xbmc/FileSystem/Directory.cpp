@@ -21,8 +21,8 @@
 
 #include "stdafx.h"
 #include "Directory.h"
-#include "FactoryDirectory.h"
-#include "FactoryFileDirectory.h"
+#include "DirectoryFactory.h"
+#include "FileDirectoryFactory.h"
 #ifndef _LINUX
 #include "utils/Win32Exception.h"
 #endif
