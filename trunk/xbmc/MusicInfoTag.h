@@ -24,11 +24,12 @@ class CSong;
 class CAlbum;
 
 #include "utils/Archive.h"
+#include "utils/ISerializable.h"
 
 namespace MUSIC_INFO
 {
 
-class CMusicInfoTag : public ISerializable
+class CMusicInfoTag : public IArchivable, public ISerializable
 {
 public:
   CMusicInfoTag(void);
@@ -104,7 +105,8 @@ public:
    */
   void AppendGenre(const CStdString &genre);
 
-  virtual void Serialize(CArchive& ar);
+  virtual void Archive(CArchive& ar);
+  virtual void Serialize(CVariant& ar);
 
   void Clear();
 protected:

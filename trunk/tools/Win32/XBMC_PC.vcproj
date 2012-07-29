@@ -1639,9 +1639,6 @@
 					RelativePath="..\..\xbmc\utils\CriticalSection.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\XBDateTime.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\DDSImage.cpp">
 				</File>
 				<File
@@ -1900,6 +1897,12 @@
 					RelativePath="..\..\xbmc\Util.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\Variant.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\Variant.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\VideoInfoTag.cpp">
 				</File>
 				<File
@@ -1916,6 +1919,9 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\XBAudioConfig.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\XBDateTime.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\XBTF.h">
@@ -3081,9 +3087,6 @@
 				RelativePath="..\..\xbmc\CueDocument.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\XBDateTime.h">
-			</File>
-			<File
 				RelativePath="..\..\xbmc\utils\DelayController.h">
 			</File>
 			<File
@@ -3487,6 +3490,9 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\XBAudioConfig.h">
+			</File>
+			<File
+				RelativePath="..\..\xbmc\XBDateTime.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\XBTimeZone.h">

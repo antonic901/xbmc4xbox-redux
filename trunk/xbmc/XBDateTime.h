@@ -83,7 +83,7 @@ private:
 };
 
 /// \brief DateTime class, which uses FILETIME as it's base.
-class CDateTime : public ISerializable
+class CDateTime : public IArchivable
 {
 public:
   CDateTime();
@@ -151,7 +151,7 @@ public:
 
   operator FILETIME() const;
 
-  virtual void Serialize(CArchive& ar);
+  virtual void Archive(CArchive& ar);
 
   void Reset();
 

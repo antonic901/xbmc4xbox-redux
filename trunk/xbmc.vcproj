@@ -883,9 +883,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\CriticalSection.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\XBDateTime.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\DDSImage.cpp">
 				</File>
 				<File
@@ -1156,6 +1153,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\Util.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Variant.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Variant.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\VideoInfoTag.cpp">
 				</File>
 				<File
@@ -1172,6 +1175,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\XBAudioConfig.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\XBDateTime.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\XBInputEx.cpp">
@@ -2795,9 +2801,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\xbox\custom_launch_params.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\XBDateTime.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\DelayController.h">
 			</File>
 			<File
@@ -3288,6 +3291,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\XBAudioConfig.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\XBDateTime.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\XBInputEx.h">
