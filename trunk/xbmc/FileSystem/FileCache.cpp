@@ -45,7 +45,7 @@ CFileCache::CFileCache()
    if (!g_advancedSettings.m_cacheMemBufferSize)
      m_pCache = new CSimpleFileCache();
    else
-     m_pCache = new CacheMemBuffer();
+     m_pCache = new MemBufferCache();
    m_seekPossible = 0;
 }
 

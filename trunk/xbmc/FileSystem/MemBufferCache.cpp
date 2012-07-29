@@ -31,7 +31,7 @@ using namespace XFILE;
 
 #define SEEK_CHECK_RET(x) if (!(x)) return -1;
 
-CacheMemBuffer::CacheMemBuffer()
+MemBufferCache::MemBufferCache()
  : CCacheStrategy()
 {
   m_nStartPosition = 0;
@@ -43,14 +43,14 @@ CacheMemBuffer::CacheMemBuffer()
 }
 
 
-CacheMemBuffer::~CacheMemBuffer()
+MemBufferCache::~MemBufferCache()
 {
   m_buffer.Destroy();
   m_HistoryBuffer.Destroy();
   m_forwardBuffer.Destroy();
 }
 
-int CacheMemBuffer::Open()
+int MemBufferCache::Open()
 {
   m_nStartPosition = 0;
   m_buffer.Clear();
@@ -59,14 +59,14 @@ int CacheMemBuffer::Open()
   return CACHE_RC_OK;
 }
 
-void CacheMemBuffer::Close()
+void MemBufferCache::Close()
 {
   m_buffer.Clear();
   m_HistoryBuffer.Clear();
   m_forwardBuffer.Clear();
 }
 
-int CacheMemBuffer::WriteToCache(const char *pBuffer, size_t iSize)
+int MemBufferCache::WriteToCache(const char *pBuffer, size_t iSize)
 {
   CSingleLock lock(m_sync);
   unsigned int nToWrite = m_buffer.getMaxWriteSize() ;
@@ -90,7 +90,7 @@ int CacheMemBuffer::WriteToCache(const char *pBuffer, size_t iSize)
   return nToWrite;
 }
 
-int CacheMemBuffer::ReadFromCache(char *pBuffer, size_t iMaxSize)
+int MemBufferCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
 {
   CSingleLock lock(m_sync);
   if ( m_buffer.getMaxReadSize() == 0 ) {
@@ -130,7 +130,7 @@ int CacheMemBuffer::ReadFromCache(char *pBuffer, size_t iMaxSize)
   return nRead;
 }
 
-__int64 CacheMemBuffer::WaitForData(unsigned int iMinAvail, unsigned int iMillis)
+__int64 MemBufferCache::WaitForData(unsigned int iMinAvail, unsigned int iMillis)
 {
   if (iMillis == 0 || IsEndOfInput())
     return m_buffer.getMaxReadSize();
@@ -142,7 +142,7 @@ __int64 CacheMemBuffer::WaitForData(unsigned int iMinAvail, unsigned int iMillis
   return m_buffer.getMaxReadSize();
 }
 
-__int64 CacheMemBuffer::Seek(__int64 iFilePosition)
+__int64 MemBufferCache::Seek(__int64 iFilePosition)
 {
   CSingleLock lock(m_sync);
 
@@ -208,7 +208,7 @@ __int64 CacheMemBuffer::Seek(__int64 iFilePosition)
   return CACHE_RC_ERROR;
 }
 
-void CacheMemBuffer::Reset(__int64 iSourcePosition)
+void MemBufferCache::Reset(__int64 iSourcePosition)
 {
   CSingleLock lock(m_sync);
   m_nStartPosition = iSourcePosition;

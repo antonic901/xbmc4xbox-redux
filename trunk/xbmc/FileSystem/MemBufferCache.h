@@ -32,11 +32,11 @@
 */
 namespace XFILE {
 
-class CacheMemBuffer : public CCacheStrategy
+class MemBufferCache : public CCacheStrategy
 {
 public:
-    CacheMemBuffer();
-    virtual ~CacheMemBuffer();
+    MemBufferCache();
+    virtual ~MemBufferCache();
 
     virtual int Open() ;
     virtual void Close();
