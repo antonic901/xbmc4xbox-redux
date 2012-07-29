@@ -24,7 +24,7 @@
 #include "ScraperSettings.h"
 #include "NfoFile.h"
 #include "utils/IMDB.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "FileItem.h"
 
 class CIMDB;

@@ -34,7 +34,7 @@
 #include "ScraperParser.h"
 #include "VideoInfoTag.h"
 #include "ScraperSettings.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "FileSystem/CurlFile.h"
 
 // forward definitions

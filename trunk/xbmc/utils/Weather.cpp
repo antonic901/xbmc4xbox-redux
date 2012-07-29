@@ -33,7 +33,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
 #include "GUIDialogSelect.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "FileSystem/Directory.h"
 
 using namespace std;

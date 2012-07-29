@@ -20,7 +20,7 @@
  */
 
 #include "stdafx.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 
 #define SECONDS_PER_DAY 86400UL
 #define SECONDS_PER_HOUR 3600UL

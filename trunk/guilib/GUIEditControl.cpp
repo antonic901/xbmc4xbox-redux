@@ -26,7 +26,7 @@
 #include "GUIDialogKeyboard.h"
 #include "GUIDialogNumeric.h"
 #include "LocalizeStrings.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 
 using namespace std;
 

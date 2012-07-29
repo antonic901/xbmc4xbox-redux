@@ -33,7 +33,7 @@
 #define __STRINGUTILS_H_
 
 #include "xbox/PlatformDefs.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "StdString.h"
 #include <vector>
 

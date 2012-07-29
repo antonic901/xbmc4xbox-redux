@@ -883,7 +883,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\CriticalSection.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\DateTime.cpp">
+					RelativePath=".\xbmc\XBDateTime.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\DDSImage.cpp">
@@ -2795,7 +2795,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\xbox\custom_launch_params.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\DateTime.h">
+				RelativePath=".\xbmc\XBDateTime.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DelayController.h">

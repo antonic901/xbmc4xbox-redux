@@ -20,7 +20,7 @@
  */
 #include "stdafx.h"
 #include "PictureInfoTag.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "Util.h"
 
 using namespace std;

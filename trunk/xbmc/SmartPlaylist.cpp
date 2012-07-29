@@ -31,7 +31,7 @@
 #include "VideoDatabase.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 
 using namespace std;
 using namespace XFILE;
