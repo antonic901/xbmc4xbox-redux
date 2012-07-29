@@ -56,6 +56,7 @@ CFileCache::CFileCache(CCacheStrategy *pCache, bool bDeleteCache)
   m_seekPos = 0;
   m_readPos = 0;
   m_nSeekResult = 0;
+  m_chunkSize = 0;
 }
 
 CFileCache::~CFileCache()
@@ -112,6 +113,7 @@ bool CFileCache::Open(const CURL& url)
 
   // check if source can seek
   m_seekPossible = m_source.IoControl(IOCTRL_SEEK_POSSIBLE, NULL);
+  m_chunkSize = CFile::GetChunkSize(m_source.GetChunkSize(), READ_CACHE_CHUNK_SIZE);
 
   m_readPos = 0;
   m_seekEvent.Reset();
@@ -129,11 +131,8 @@ void CFileCache::Process()
     return;
   }
 
-  // setup read chunks size
-  int chunksize = CFile::GetChunkSize(m_source.GetChunkSize(), READ_CACHE_CHUNK_SIZE);
-
   // create our read buffer
-  auto_aptr<char> buffer(new char[chunksize]);
+  auto_aptr<char> buffer(new char[m_chunkSize]);
   if (buffer.get() == NULL)
   {
     CLog::Log(LOGERROR, "%s - failed to allocate read buffer", __FUNCTION__);
@@ -159,8 +158,8 @@ void CFileCache::Process()
       m_seekEnded.Set();
     }
 
-    int iRead = m_source.Read(buffer.get(), chunksize);
-    if(iRead == 0)
+    int iRead = m_source.Read(buffer.get(), m_chunkSize);
+    if (iRead == 0)
     {
       CLog::Log(LOGINFO, "CFileCache::Process - Hit eof.");
       m_pCache->EndOfInput();
@@ -298,12 +297,28 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
       return m_nSeekResult;
 
     m_seekPos = iTarget;
+    /* never request closer to end than 2k, speeds up tag reading */
+    m_seekPos = std::min(iTarget, std::max((int64_t)0, m_source.GetLength() - m_chunkSize));
+
     m_seekEvent.Set();
     if (!m_seekEnded.WaitMSec(INFINITE))
     {
       CLog::Log(LOGWARNING,"%s - seek to %"PRId64" failed.", __FUNCTION__, m_seekPos);
       return -1;
     }
+
+    /* wait for any remainin data */
+    if(m_seekPos < iTarget)
+    {
+      CLog::Log(LOGDEBUG,"%s - waiting for position %"PRId64".", __FUNCTION__, iTarget);
+      if(m_pCache->WaitForData((unsigned)(iTarget - m_seekPos), 10000) < iTarget - m_seekPos)
+      {
+        CLog::Log(LOGWARNING,"%s - failed to get remaining data", __FUNCTION__);
+        return -1;
+      }
+      m_pCache->Seek(iTarget);
+    }
+    m_readPos = iTarget;
     m_seekEvent.Reset();
     m_seekPos = -1;
   }
