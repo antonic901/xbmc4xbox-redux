@@ -607,7 +607,9 @@ void CDateTime::Serialize(CArchive& ar)
   else
   {
     Reset();
-    ar>>(int&)m_state;
+    int state;
+    ar >> (int &)state;
+    m_state = CDateTime::STATE(state);
     if (m_state==valid)
     {
       SYSTEMTIME st;
@@ -635,7 +637,8 @@ bool CDateTime::IsValid() const
 
 bool CDateTime::ToFileTime(const SYSTEMTIME& time, FILETIME& fileTime) const
 {
-  return SystemTimeToFileTime(&time, &fileTime)==TRUE;
+  return SystemTimeToFileTime(&time, &fileTime) == TRUE &&
+         (fileTime.dwLowDateTime > 0 || fileTime.dwHighDateTime > 0);
 }
 
 bool CDateTime::ToFileTime(const time_t& time, FILETIME& fileTime) const
@@ -859,6 +862,64 @@ CStdString CDateTime::GetAsDBDateTime() const
   return date;
 }
 
+void CDateTime::SetFromW3CDate(const CStdString &dateTime)
+{
+  CStdString date, time, zone;
+
+  int posT = dateTime.Find("T");
+  if(posT >= 0)
+  {
+    date = dateTime.Left(posT);
+    CStdString::size_type posZ = dateTime.find_first_of("+-Z", posT);
+    if(posZ == CStdString::npos)
+      time = dateTime.Mid(posT+1);
+    else
+    {
+      time = dateTime.Mid(posT+1, posZ-posT-1);
+      zone = dateTime.Mid(posZ);
+    }
+  }
+  else
+    date = dateTime;
+
+  int year = 0, month = 1, day = 1, hour = 0, min = 0, sec = 0;
+
+  if (date.size() >= 4)
+    year  = atoi(date.Mid(0,4).c_str());
+
+  if (date.size() >= 10)
+  {
+    month = atoi(date.Mid(5,2).c_str());
+    day   = atoi(date.Mid(8,2).c_str());
+  }
+
+  if (time.length() >= 5)
+  {
+    hour = atoi(time.Mid(0,2).c_str());
+    min  = atoi(time.Mid(3,2).c_str());
+  }
+
+  if (time.length() >= 8)
+    sec  = atoi(time.Mid(6,2).c_str());
+
+  SetDateTime(year, month, day, hour, min, sec);
+}
+
+void CDateTime::SetFromDBDateTime(const CStdString &dateTime)
+{
+  // assumes format YYYY-MM-DD HH:MM:SS
+  if (dateTime.size() == 19)
+  {
+    int year  = atoi(dateTime.Mid(0,4).c_str());
+    int month = atoi(dateTime.Mid(5,2).c_str());
+    int day   = atoi(dateTime.Mid(8,2).c_str());
+    int hour  = atoi(dateTime.Mid(11,2).c_str());
+    int min   = atoi(dateTime.Mid(14,2).c_str());
+    int sec   = atoi(dateTime.Mid(17,2).c_str());
+    SetDateTime(year, month, day, hour, min, sec);
+  }
+}
+
 void CDateTime::SetFromDBDate(const CStdString &date)
 {
   // assumes format:
@@ -872,11 +933,24 @@ void CDateTime::SetFromDBDate(const CStdString &date)
   }
   else
   {
-  year = atoi(date.Mid(0,4).c_str());
-  month = atoi(date.Mid(5,2).c_str());
-  day = atoi(date.Mid(8,2).c_str());
+    year = atoi(date.Mid(0,4).c_str());
+    month = atoi(date.Mid(5,2).c_str());
+    day = atoi(date.Mid(8,2).c_str());
   }
   SetDate(year, month, day);
+}
+
+void CDateTime::SetFromDBTime(const CStdString &time)
+{
+  // assumes format:
+  // HH:MM:SS
+  int hour, minute, second;
+
+  hour   = atoi(time.Mid(0,2).c_str());
+  minute = atoi(time.Mid(3,2).c_str());
+  second = atoi(time.Mid(6,2).c_str());
+
+  SetTime(hour, minute, second);
 }
 
 CStdString CDateTime::GetAsLocalizedTime(const CStdString &format, bool withSeconds) const
@@ -1015,19 +1089,15 @@ CStdString CDateTime::GetAsLocalizedTime(const CStdString &format, bool withSeco
     }
     else if (c=='x') // add meridiem symbol
     {
-      int partLength=0;
-
       int pos=strFormat.find_first_not_of(c,i+1);
       if (pos>-1)
       {
         // Get length of the meridiem mask
-        partLength=pos-i;
         i=pos-1;
       }
       else
       {
         // mask ends at the end of the string, extract it
-        partLength=length-i;
         i=length;
       }
 
@@ -1040,11 +1110,14 @@ CStdString CDateTime::GetAsLocalizedTime(const CStdString &format, bool withSeco
   return strOut;
 }
 
-CStdString CDateTime::GetAsLocalizedDate(bool longDate/*=false*/) const
+CStdString CDateTime::GetAsLocalizedDate(bool longDate/*=false*/, bool withShortNames/*=true*/) const
+{
+  return GetAsLocalizedDate(g_langInfo.GetDateFormat(longDate), withShortNames);
+}
+
+CStdString CDateTime::GetAsLocalizedDate(const CStdString &strFormat, bool withShortNames/*=true*/) const
 {
   CStdString strOut;
-
-  const CStdString& strFormat=g_langInfo.GetDateFormat(longDate);
 
   SYSTEMTIME dateTime;
   GetAsSystemTime(dateTime);
@@ -1076,7 +1149,7 @@ CStdString CDateTime::GetAsLocalizedDate(bool longDate/*=false*/) const
       strPart.Replace("''", "'");
       strOut+=strPart;
     }
-    else if (c=='D') // parse days
+    else if (c=='D' || c=='d') // parse days
     {
       int partLength=0;
 
@@ -1102,20 +1175,13 @@ CStdString CDateTime::GetAsLocalizedDate(bool longDate/*=false*/) const
         str.Format("%02d", dateTime.wDay);
       else // Day of week string
       {
-        switch (dateTime.wDayOfWeek)
-        {
-          case 1 : str = g_localizeStrings.Get(11); break;
-          case 2 : str = g_localizeStrings.Get(12); break;
-          case 3 : str = g_localizeStrings.Get(13); break;
-          case 4 : str = g_localizeStrings.Get(14); break;
-          case 5 : str = g_localizeStrings.Get(15); break;
-          case 6 : str = g_localizeStrings.Get(16); break;
-          default: str = g_localizeStrings.Get(17); break;
-        }
+        int wday = dateTime.wDayOfWeek;
+        if (wday < 1 || wday > 7) wday = 7;
+        str = g_localizeStrings.Get(((withShortNames || c =='d') ? 40 : 10) + wday);
       }
       strOut+=str;
     }
-    else if (c=='M') // parse month
+    else if (c=='M' || c=='m') // parse month
     {
       int partLength=0;
 
@@ -1141,25 +1207,13 @@ CStdString CDateTime::GetAsLocalizedDate(bool longDate/*=false*/) const
         str.Format("%02d", dateTime.wMonth);
       else // Month string
       {
-        switch (dateTime.wMonth)
-        {
-          case 1 : str = g_localizeStrings.Get(21); break;
-          case 2 : str = g_localizeStrings.Get(22); break;
-          case 3 : str = g_localizeStrings.Get(23); break;
-          case 4 : str = g_localizeStrings.Get(24); break;
-          case 5 : str = g_localizeStrings.Get(25); break;
-          case 6 : str = g_localizeStrings.Get(26); break;
-          case 7 : str = g_localizeStrings.Get(27); break;
-          case 8 : str = g_localizeStrings.Get(28); break;
-          case 9 : str = g_localizeStrings.Get(29); break;
-          case 10: str = g_localizeStrings.Get(30); break;
-          case 11: str = g_localizeStrings.Get(31); break;
-          default: str = g_localizeStrings.Get(32); break;
-        }
+        int wmonth = dateTime.wMonth;
+        if (wmonth < 1 || wmonth > 12) wmonth = 12;
+        str = g_localizeStrings.Get(((withShortNames || c =='m') ? 50 : 20) + wmonth);
       }
       strOut+=str;
     }
-    else if (c=='Y') // parse year
+    else if (c=='Y' || c =='y') // parse year
     {
       int partLength=0;
 
@@ -1197,10 +1251,60 @@ CStdString CDateTime::GetAsLocalizedDateTime(bool longDate/*=false*/, bool withS
   return GetAsLocalizedDate(longDate)+" "+GetAsLocalizedTime("", withSeconds);
 }
 
+CDateTime CDateTime::GetAsUTCDateTime() const
+{
+  TIME_ZONE_INFORMATION tz;
+
+  CDateTime time(m_time);
+  switch(GetTimeZoneInformation(&tz))
+  {
+    case TIME_ZONE_ID_DAYLIGHT:
+        time += CDateTimeSpan(0, 0, tz.Bias + tz.DaylightBias, 0);
+        break;
+    case TIME_ZONE_ID_STANDARD:
+        time += CDateTimeSpan(0, 0, tz.Bias + tz.StandardBias, 0);
+        break;
+    case TIME_ZONE_ID_UNKNOWN:
+        time += CDateTimeSpan(0, 0, tz.Bias, 0);
+        break;
+  }
+
+  return time;
+}
+
+static const char *DAY_NAMES[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+static const char *MONTH_NAMES[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+CStdString CDateTime::GetAsRFC1123DateTime() const
+{
+  CDateTime time(GetAsUTCDateTime());
+
+  int weekDay = time.GetDayOfWeek();
+  if (weekDay < 0)
+    weekDay = 0;
+  else if (weekDay > 6)
+    weekDay = 6;
+  if (weekDay != time.GetDayOfWeek())
+    CLog::Log(LOGWARNING, "Invalid day of week %d in %s", time.GetDayOfWeek(), time.GetAsDBDateTime().c_str());
+
+  int month = time.GetMonth();
+  if (month < 1)
+    month = 1;
+  else if (month > 12)
+    month = 12;
+  if (month != time.GetMonth())
+    CLog::Log(LOGWARNING, "Invalid month %d in %s", time.GetMonth(), time.GetAsDBDateTime().c_str());
+
+  CStdString result;
+  result.Format("%s, %02i %s %04i %02i:%02i:%02i GMT", DAY_NAMES[weekDay], time.GetDay(), MONTH_NAMES[month - 1], time.GetYear(), time.GetHour(), time.GetMinute(), time.GetSecond());
+  return result;
+}
+
 int CDateTime::MonthStringToMonthNum(const CStdString& month)
 {
   const char* months[] = {"january","february","march","april","may","june","july","august","september","october","november","december"};
   const char* abr_months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+
   int i = 0;
   for (; i < 12 && month.CompareNoCase(months[i]) != 0 && month.CompareNoCase(abr_months[i]) != 0; i++);
   i++;

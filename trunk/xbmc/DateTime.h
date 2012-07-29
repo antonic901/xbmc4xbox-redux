@@ -37,7 +37,9 @@ enum TIME_FORMAT { TIME_FORMAT_GUESS     =  0,
                    TIME_FORMAT_HH_MM     =  6,
                    TIME_FORMAT_HH_MM_SS  =  7,
                    TIME_FORMAT_XX        =  8, // AM/PM
-                   TIME_FORMAT_HH_MM_XX  = 14};
+                   TIME_FORMAT_HH_MM_XX  = 14,
+                   TIME_FORMAT_H         = 16,
+                   TIME_FORMAT_H_MM_SS   = 19};
 
 class CDateTime;
 
@@ -166,17 +168,27 @@ public:
   void SetDate(int year, int month, int day);
   void SetTime(int hour, int minute, int second);
   void SetFromDBDate(const CStdString &date);
+  void SetFromDBTime(const CStdString &time);
+  void SetFromW3CDate(const CStdString &date);
+
+  /*! \brief set from a database datetime format YYYY-MM-DD HH:MM:SS
+   \sa GetAsDBDateTime()
+   */
+  void SetFromDBDateTime(const CStdString &dateTime);
 
   void GetAsSystemTime(SYSTEMTIME& time) const;
   void GetAsTime(time_t& time) const;
   void GetAsTm(tm& time) const;
   void GetAsTimeStamp(FILETIME& time) const;
 
+  CDateTime GetAsUTCDateTime() const;
   CStdString GetAsDBDateTime() const;
   CStdString GetAsDBDate() const;
-  CStdString GetAsLocalizedDate(bool longDate=false) const;
+  CStdString GetAsLocalizedDate(bool longDate=false, bool withShortNames=true) const;
+  CStdString GetAsLocalizedDate(const CStdString &strFormat, bool withShortNames=true) const;
   CStdString GetAsLocalizedTime(const CStdString &format, bool withSeconds=true) const;
   CStdString GetAsLocalizedDateTime(bool longDate=false, bool withSeconds=true) const;
+  CStdString GetAsRFC1123DateTime() const;
 
   void SetValid(bool yesNo);
   bool IsValid() const;
