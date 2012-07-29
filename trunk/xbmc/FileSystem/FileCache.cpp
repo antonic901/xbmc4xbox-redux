@@ -296,7 +296,6 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
     if(m_seekPossible == 0)
       return m_nSeekResult;
 
-    m_seekPos = iTarget;
     /* never request closer to end than 2k, speeds up tag reading */
     m_seekPos = std::min(iTarget, std::max((int64_t)0, m_source.GetLength() - m_chunkSize));
 
