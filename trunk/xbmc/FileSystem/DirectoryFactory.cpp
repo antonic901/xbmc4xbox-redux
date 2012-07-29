@@ -70,7 +70,7 @@
 #include "ZipDirectory.h"
 #include "RarDirectory.h"
 #include "TuxBoxDirectory.h"
-#include "HDHomeRun.h"
+#include "HDHomeRunDirectory.h"
 #include "SlingboxDirectory.h"
 #include "MythDirectory.h"
 #include "FileItem.h"
@@ -140,7 +140,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
 #ifdef HAS_UPNP
     if (strProtocol == "upnp") return new CUPnPDirectory();
 #endif
-    if (strProtocol == "hdhomerun") return new CDirectoryHomeRun();
+    if (strProtocol == "hdhomerun") return new CHomeRunDirectory();
     if (strProtocol == "sling") return new CSlingboxDirectory();
     if (strProtocol == "myth") return new CMythDirectory();
     if (strProtocol == "cmyth") return new CMythDirectory();

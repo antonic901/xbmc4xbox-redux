@@ -1614,6 +1614,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\DirectoryHistory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\DllHDHomeRun.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\DllLibCurl.cpp">
 				</File>
 				<File
@@ -1662,10 +1665,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\HDFile.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRun.cpp">
+					RelativePath=".\xbmc\FileSystem\HDHomeRunDirectory.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRun.h">
+					RelativePath=".\xbmc\FileSystem\HDHomeRunDirectory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\HDHomeRunFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\HDHomeRunFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\HTSPDirectory.cpp">
