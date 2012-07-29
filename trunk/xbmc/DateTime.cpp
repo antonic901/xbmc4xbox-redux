@@ -1196,3 +1196,14 @@ CStdString CDateTime::GetAsLocalizedDateTime(bool longDate/*=false*/, bool withS
 {
   return GetAsLocalizedDate(longDate)+" "+GetAsLocalizedTime("", withSeconds);
 }
+
+int CDateTime::MonthStringToMonthNum(const CStdString& month)
+{
+  const char* months[] = {"january","february","march","april","may","june","july","august","september","october","november","december"};
+  const char* abr_months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+  int i = 0;
+  for (; i < 12 && month.CompareNoCase(months[i]) != 0 && month.CompareNoCase(abr_months[i]) != 0; i++);
+  i++;
+
+  return i;
+}
