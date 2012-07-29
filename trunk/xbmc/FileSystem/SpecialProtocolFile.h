@@ -24,11 +24,11 @@
 
 namespace XFILE
 {
-class CFileSpecialProtocol : public IFile
+class CSpecialProtocolFile : public IFile
 {
 public:
-  CFileSpecialProtocol(void);
-  virtual ~CFileSpecialProtocol(void);
+  CSpecialProtocolFile(void);
+  virtual ~CSpecialProtocolFile(void);
   virtual bool Open(const CURL& url);
   virtual bool Exists(const CURL& url);
   virtual int Stat(const CURL& url, struct __stat64* buffer);

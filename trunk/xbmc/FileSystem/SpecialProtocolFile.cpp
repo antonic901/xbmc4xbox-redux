@@ -28,51 +28,51 @@
 
 using namespace XFILE;
 
-CFileSpecialProtocol::CFileSpecialProtocol(void)
+CSpecialProtocolFile::CSpecialProtocolFile(void)
 {
 }
 
-CFileSpecialProtocol::~CFileSpecialProtocol(void)
+CSpecialProtocolFile::~CSpecialProtocolFile(void)
 {
   Close();
 }
 
-bool CFileSpecialProtocol::Open(const CURL& url)
+bool CSpecialProtocolFile::Open(const CURL& url)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
 
   return m_file.Open(strFileName);
 }
 
-bool CFileSpecialProtocol::OpenForWrite(const CURL& url, bool bOverWrite /*=false */)
+bool CSpecialProtocolFile::OpenForWrite(const CURL& url, bool bOverWrite /*=false */)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
 
   return m_file.OpenForWrite(strFileName,bOverWrite);
 }
 
-bool CFileSpecialProtocol::Delete(const CURL& url)
+bool CSpecialProtocolFile::Delete(const CURL& url)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
   
   return m_file.Delete(strFileName);
 }
 
-bool CFileSpecialProtocol::Exists(const CURL& url)
+bool CSpecialProtocolFile::Exists(const CURL& url)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
 
   return m_file.Exists(strFileName);
 }
 
-int CFileSpecialProtocol::Stat(const CURL& url, struct __stat64* buffer)
+int CSpecialProtocolFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
 
   return m_file.Stat(strFileName, buffer);
 }
 
-bool CFileSpecialProtocol::Rename(const CURL& url, const CURL& urlnew)
+bool CSpecialProtocolFile::Rename(const CURL& url, const CURL& urlnew)
 {
   CStdString strFileName=CSpecialProtocol::TranslatePath(url);
   CStdString strFileName2=CSpecialProtocol::TranslatePath(urlnew);
@@ -80,37 +80,37 @@ bool CFileSpecialProtocol::Rename(const CURL& url, const CURL& urlnew)
   return m_file.Rename(strFileName,strFileName2);
 }
 
-int CFileSpecialProtocol::Stat(struct __stat64* buffer)
+int CSpecialProtocolFile::Stat(struct __stat64* buffer)
 {
   return m_file.Stat(buffer);
 }
 
-unsigned int CFileSpecialProtocol::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CSpecialProtocolFile::Read(void* lpBuf, __int64 uiBufSize)
 {
   return m_file.Read(lpBuf, uiBufSize);
 }
   
-int CFileSpecialProtocol::Write(const void* lpBuf, __int64 uiBufSize)
+int CSpecialProtocolFile::Write(const void* lpBuf, __int64 uiBufSize)
 {
   return m_file.Write(lpBuf,uiBufSize);
 }
 
-__int64 CFileSpecialProtocol::Seek(__int64 iFilePosition, int iWhence /*=SEEK_SET*/)
+__int64 CSpecialProtocolFile::Seek(__int64 iFilePosition, int iWhence /*=SEEK_SET*/)
 {
   return m_file.Seek(iFilePosition, iWhence);
 }
 
-void CFileSpecialProtocol::Close()
+void CSpecialProtocolFile::Close()
 {
   m_file.Close();
 }
 
-__int64 CFileSpecialProtocol::GetPosition()
+__int64 CSpecialProtocolFile::GetPosition()
 {
   return m_file.GetPosition();
 }
 
-__int64 CFileSpecialProtocol::GetLength()
+__int64 CSpecialProtocolFile::GetLength()
 {
   return m_file.GetLength();
 }
