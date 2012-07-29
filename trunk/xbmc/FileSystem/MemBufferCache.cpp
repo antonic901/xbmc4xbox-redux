@@ -59,12 +59,11 @@ int CacheMemBuffer::Open()
   return CACHE_RC_OK;
 }
 
-int CacheMemBuffer::Close()
+void CacheMemBuffer::Close()
 {
   m_buffer.Clear();
   m_HistoryBuffer.Clear();
   m_forwardBuffer.Clear();
-  return CACHE_RC_OK;
 }
 
 int CacheMemBuffer::WriteToCache(const char *pBuffer, size_t iSize)
@@ -143,15 +142,8 @@ __int64 CacheMemBuffer::WaitForData(unsigned int iMinAvail, unsigned int iMillis
   return m_buffer.getMaxReadSize();
 }
 
-__int64 CacheMemBuffer::Seek(__int64 iFilePosition, int iWhence)
+__int64 CacheMemBuffer::Seek(__int64 iFilePosition)
 {
-  if (iWhence != SEEK_SET)
-  {
-    // sanity. we should always get here with SEEK_SET
-    CLog::Log(LOGERROR, "%s, only SEEK_SET supported.", __FUNCTION__);
-    return CACHE_RC_ERROR;
-  }
-
   CSingleLock lock(m_sync);
 
   // if seek is a bit over what we have, try to wait a few seconds for the data to be available.

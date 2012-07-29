@@ -45,13 +45,13 @@ public:
   virtual ~CCacheStrategy();
 
   virtual int Open() = 0;
-  virtual int Close() = 0;
+  virtual void Close() = 0;
 
   virtual int WriteToCache(const char *pBuffer, size_t iSize) = 0;
   virtual int ReadFromCache(char *pBuffer, size_t iMaxSize) = 0;
   virtual __int64 WaitForData(unsigned int iMinAvail, unsigned int iMillis) = 0;
 
-  virtual __int64 Seek(__int64 iFilePosition, int iWhence) = 0;
+  virtual __int64 Seek(__int64 iFilePosition) = 0;
   virtual void Reset(__int64 iSourcePosition) = 0;
 
   virtual void EndOfInput(); // mark the end of the input stream so that Read will know when to return EOF
@@ -71,13 +71,13 @@ public:
     virtual ~CSimpleFileCache();
 
   virtual int Open() ;
-  virtual int Close() ;
+  virtual void Close() ;
 
   virtual int WriteToCache(const char *pBuffer, size_t iSize) ;
   virtual int ReadFromCache(char *pBuffer, size_t iMaxSize) ;
   virtual __int64 WaitForData(unsigned int iMinAvail, unsigned int iMillis) ;
 
-  virtual __int64 Seek(__int64 iFilePosition, int iWhence);
+  virtual __int64 Seek(__int64 iFilePosition);
   virtual void Reset(__int64 iSourcePosition);
   virtual void EndOfInput();
 

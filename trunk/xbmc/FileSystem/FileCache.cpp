@@ -292,7 +292,7 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
   if (iTarget == m_readPos)
     return m_readPos;
 
-  if ((m_nSeekResult = m_pCache->Seek(iTarget, SEEK_SET)) != iTarget)
+  if ((m_nSeekResult = m_pCache->Seek(iTarget)) != iTarget)
   {
     if(m_seekPossible == 0)
       return m_nSeekResult;
