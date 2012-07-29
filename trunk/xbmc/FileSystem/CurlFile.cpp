@@ -1365,19 +1365,23 @@ bool CCurlFile::GetHttpHeader(const CURL &url, CHttpHeader &headers)
 
 bool CCurlFile::GetMimeType(const CURL &url, CStdString &content, CStdString useragent)
 {
-   CCurlFile file;
-   if (!useragent.IsEmpty())
-     file.SetUserAgent(useragent);
+  CCurlFile file;
+  if (!useragent.IsEmpty())
+    file.SetUserAgent(useragent);
 
-   if( file.Stat(url, NULL) == 0 )
-   {
-     content = file.GetMimeType();
-     CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
-     return true;
-   }
-   CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> failed", url.Get().c_str());
-   content = "";
-   return false;
+  struct __stat64 buffer;
+  if( file.Stat(url, &buffer) == 0 )
+  {
+    if (buffer.st_mode == _S_IFDIR)
+      content = "x-directory/normal";
+    else
+      content = file.GetMimeType();
+    CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
+    return true;
+  }
+  CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> failed", url.Get().c_str());
+  content = "";
+  return false;
 }
 
 int CCurlFile::IoControl(EIoControl request, void* param)
