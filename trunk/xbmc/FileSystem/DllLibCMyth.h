@@ -86,7 +86,7 @@ public:
   virtual unsigned long long file_start             (cmyth_file_t file)=0;
 
   virtual char*             proginfo_pathname       (cmyth_proginfo_t prog)=0;
-  virtual char*             proginfo_title          (cmyth_proginfo_t prog)=0;  
+  virtual char*             proginfo_title          (cmyth_proginfo_t prog)=0;
   virtual char*             proginfo_description    (cmyth_proginfo_t prog)=0;
   virtual char*             proginfo_subtitle       (cmyth_proginfo_t prog)=0;
   virtual char*             proginfo_chanstr        (cmyth_proginfo_t prog)=0;
@@ -99,11 +99,14 @@ public:
   virtual int               proginfo_length_sec     (cmyth_proginfo_t prog)=0;
   virtual char*             proginfo_host           (cmyth_proginfo_t prog)=0;
   virtual char*             proginfo_programid      (cmyth_proginfo_t prog)=0;
+  virtual char*             proginfo_seriesid       (cmyth_proginfo_t prog)=0;
+  virtual cmyth_timestamp_t proginfo_originalairdate(cmyth_proginfo_t prog)=0;
   virtual cmyth_timestamp_t proginfo_start          (cmyth_proginfo_t prog)=0;
   virtual cmyth_timestamp_t proginfo_end            (cmyth_proginfo_t prog)=0;
   virtual cmyth_timestamp_t proginfo_rec_start      (cmyth_proginfo_t prog)=0;
   virtual cmyth_timestamp_t proginfo_rec_end        (cmyth_proginfo_t prog)=0;
   virtual cmyth_proginfo_rec_status_t proginfo_rec_status(cmyth_proginfo_t prog)=0;
+  virtual unsigned short    proginfo_year           (cmyth_proginfo_t prog)=0;
   virtual cmyth_proginfo_t  proginfo_get_from_basename   (cmyth_conn_t control, const char* basename)=0;
   virtual int               proginfo_delete_recording(cmyth_conn_t control, cmyth_proginfo_t prog)=0;
   virtual int               proginfo_stop_recording(cmyth_conn_t control, cmyth_proginfo_t prog)=0;
@@ -115,6 +118,7 @@ public:
   virtual void             ref_release              (void* ptr)=0;
   virtual void*            ref_hold                 (void* ptr)=0;
   virtual void             dbg_level                (int l)=0;
+  virtual void             set_dbg_msgcallback      (void (*msgcb)(int l, char *m))=0;
 
   virtual time_t           timestamp_to_unixtime    (cmyth_timestamp_t ts)=0;
   virtual int              timestamp_compare        (cmyth_timestamp_t ts1, cmyth_timestamp_t ts2)=0;
@@ -128,7 +132,7 @@ public:
 
 class DllLibCMyth : public DllDynamic, DllLibCMythInterface
 {
-  DECLARE_DLL_WRAPPER(DllLibCMyth, Q:\\system\\libcmyth.dll)
+  DECLARE_DLL_WRAPPER(DllLibCMyth, DLL_PATH_LIBCMYTH)
   DEFINE_METHOD4(cmyth_conn_t,        conn_connect_ctrl,        (char *p1, unsigned short p2, unsigned p3, int p4))
   DEFINE_METHOD4(cmyth_conn_t,        conn_connect_event,       (char *p1, unsigned short p2, unsigned p3, int p4))
   DEFINE_METHOD4(cmyth_file_t,        conn_connect_file,        (cmyth_proginfo_t p1, cmyth_conn_t p2, unsigned p3, int p4))
@@ -195,11 +199,15 @@ class DllLibCMyth : public DllDynamic, DllLibCMythInterface
   DEFINE_METHOD1(int,                 proginfo_length_sec,      (cmyth_proginfo_t p1))
   DEFINE_METHOD1(char*,               proginfo_host,            (cmyth_proginfo_t p1))
   DEFINE_METHOD1(char*,               proginfo_programid,       (cmyth_proginfo_t p1))
+  DEFINE_METHOD1(char*,               proginfo_seriesid,        (cmyth_proginfo_t p1))
+  DEFINE_METHOD1(cmyth_timestamp_t,   proginfo_originalairdate, (cmyth_proginfo_t p1))
   DEFINE_METHOD1(cmyth_timestamp_t,   proginfo_start,           (cmyth_proginfo_t p1))
   DEFINE_METHOD1(cmyth_timestamp_t,   proginfo_end,             (cmyth_proginfo_t p1))
   DEFINE_METHOD1(cmyth_timestamp_t,   proginfo_rec_start,       (cmyth_proginfo_t p1))
   DEFINE_METHOD1(cmyth_timestamp_t,   proginfo_rec_end,         (cmyth_proginfo_t p1))
   DEFINE_METHOD1(cmyth_proginfo_rec_status_t, proginfo_rec_status, (cmyth_proginfo_t p1))
+  DEFINE_METHOD1(unsigned long,       proginfo_flags,           (cmyth_proginfo_t p1))
+  DEFINE_METHOD1(unsigned short,      proginfo_year,            (cmyth_proginfo_t p1))
   DEFINE_METHOD2(cmyth_proginfo_t,    proginfo_get_from_basename,    (cmyth_conn_t p1, const char* p2))
   DEFINE_METHOD2(int,                 proginfo_delete_recording, (cmyth_conn_t p1, cmyth_proginfo_t p2))
   DEFINE_METHOD2(int,                 proginfo_stop_recording,  (cmyth_conn_t p1, cmyth_proginfo_t p2))
@@ -211,6 +219,7 @@ class DllLibCMyth : public DllDynamic, DllLibCMythInterface
   DEFINE_METHOD1(void,                ref_release,              (void* p1))
   DEFINE_METHOD1(void*,               ref_hold,                 (void* p1))
   DEFINE_METHOD1(void,                dbg_level,                (int p1))
+  DEFINE_METHOD1(void,                set_dbg_msgcallback,      (void (*p1)(int l, char *m)))
 
   DEFINE_METHOD1(time_t,              timestamp_to_unixtime,    (cmyth_timestamp_t p1))
   DEFINE_METHOD2(int,                 timestamp_compare,        (cmyth_timestamp_t p1, cmyth_timestamp_t p2))
@@ -285,11 +294,15 @@ class DllLibCMyth : public DllDynamic, DllLibCMythInterface
     RESOLVE_METHOD_RENAME(cmyth_proginfo_length_sec, proginfo_length_sec)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_host, proginfo_host)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_programid, proginfo_programid)
+    RESOLVE_METHOD_RENAME(cmyth_proginfo_seriesid, proginfo_seriesid)
+    RESOLVE_METHOD_RENAME(cmyth_proginfo_originalairdate, proginfo_originalairdate)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_start, proginfo_start)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_end, proginfo_end)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_rec_start, proginfo_rec_start)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_rec_end, proginfo_rec_end)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_rec_status, proginfo_rec_status)
+    RESOLVE_METHOD_RENAME(cmyth_proginfo_flags, proginfo_flags)
+    RESOLVE_METHOD_RENAME(cmyth_proginfo_year, proginfo_year)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_get_from_basename, proginfo_get_from_basename)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_delete_recording, proginfo_delete_recording)
     RESOLVE_METHOD_RENAME(cmyth_proginfo_stop_recording, proginfo_stop_recording)
@@ -301,6 +314,7 @@ class DllLibCMyth : public DllDynamic, DllLibCMythInterface
     RESOLVE_METHOD(ref_release)
     RESOLVE_METHOD(ref_hold)
     RESOLVE_METHOD_RENAME(cmyth_dbg_level, dbg_level)
+    RESOLVE_METHOD_RENAME(cmyth_set_dbg_msgcallback, set_dbg_msgcallback)
 
     RESOLVE_METHOD_RENAME(cmyth_timestamp_to_unixtime, timestamp_to_unixtime)
     RESOLVE_METHOD_RENAME(cmyth_timestamp_compare, timestamp_compare)

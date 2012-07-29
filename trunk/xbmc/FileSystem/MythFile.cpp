@@ -43,7 +43,6 @@ static void prog_update_callback(cmyth_proginfo_t prog)
   CLog::Log(LOGDEBUG, "%s - prog_update_callback", __FUNCTION__);
 }
 
-
 void CMythFile::OnEvent(int event, const string& data)
 {
   CSingleLock lock(m_section);
@@ -59,21 +58,20 @@ bool CMythFile::HandleEvents()
 
   while(!m_events.empty())
   {
-    int next        = m_events.front().first;
-    CStdString data = m_events.front().second;
+    int event   = m_events.front().first;
+    string data = m_events.front().second;
     m_events.pop();
 
     lock.Leave();
 
-    switch (next) {
+    switch (event) {
     case CMYTH_EVENT_CLOSE:
       Close();
       break;
     case CMYTH_EVENT_LIVETV_CHAIN_UPDATE:
       {
-        string chainid = data.substr(strlen("LIVETV_CHAIN UPDATE "));
         if(m_recorder)
-          m_dll->livetv_chain_update(m_recorder, (char*)chainid.c_str(), 4096);
+          m_dll->livetv_chain_update(m_recorder, (char*)data.c_str(), 4096);
       }
       break;
     }
@@ -458,6 +456,11 @@ bool CMythFile::Delete(const CURL& url)
       g_directoryCache.ClearDirectory(tvshows.Get());
     }
 
+    /*
+     * Reset the recorded programs cache so the updated list is retrieved from mythbackend.
+     */
+    m_session->ResetAllRecordedPrograms();
+
     return true;
   }
   return false;
@@ -550,7 +553,7 @@ bool CMythFile::UpdateItem(CFileItem& item)
 
 int CMythFile::GetTotalTime()
 {
-  if(m_recorder && m_timestamp + 5000 < CTimeUtils::GetTimeMS())
+  if(m_recorder && (CTimeUtils::GetTimeMS() - m_timestamp) > 5000 )
   {
     m_timestamp = CTimeUtils::GetTimeMS();
     if(m_program)

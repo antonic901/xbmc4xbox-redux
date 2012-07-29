@@ -40,7 +40,6 @@ extern "C"
 }
 
 using namespace XFILE;
-using namespace XFILE;
 using namespace std;
 
 CMythDirectory::CMythDirectory()
@@ -239,11 +238,7 @@ bool CMythDirectory::GetGuideForChannel(const CStdString& base, CFileItemList &i
 bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items, enum FilterType type,
                                     const CStdString& filter)
 {
-  cmyth_conn_t control = m_session->GetControl();
-  if (!control)
-    return false;
-
-  cmyth_proglist_t list = m_dll->proglist_get_all_recorded(control);
+  cmyth_proglist_t list = m_session->GetAllRecordedPrograms();
   if (!list)
   {
     CLog::Log(LOGERROR, "%s - unable to get list of recordings", __FUNCTION__);
@@ -308,7 +303,15 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
        */
       if (type == MOVIES)
       {
-        item->SetLabel(item->m_strTitle);
+        /*
+         * Adding the production year, if available, to the label for Movies to aid in scraper
+         * lookups.
+         */
+        CStdString label(item->m_strTitle);
+        unsigned short year = m_dll->proginfo_year(program);
+        if (year > 0)
+          label.AppendFormat(" (%d)", year);
+        item->SetLabel(label);
         item->SetLabelPreformated(true);
       }
 
@@ -316,6 +319,7 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
       m_dll->ref_release(program);
     }
   }
+  m_dll->ref_release(list);
 
   /*
    * Don't sort by name for TV_SHOWS as they all have the same name, so only date sort is useful.
@@ -331,7 +335,6 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
   }
   items.AddSortMethod(SORT_METHOD_DATE, 552 /* Date */, LABEL_MASKS("%K", "%J"));
 
-  m_dll->ref_release(list);
   return true;
 }
 
@@ -340,11 +343,7 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
  */
 bool CMythDirectory::GetTvShowFolders(const CStdString& base, CFileItemList &items)
 {
-  cmyth_conn_t control = m_session->GetControl();
-  if (!control)
-    return false;
-
-  cmyth_proglist_t list = m_dll->proglist_get_all_recorded(control);
+  cmyth_proglist_t list = m_session->GetAllRecordedPrograms();
   if (!list)
   {
     CLog::Log(LOGERROR, "%s - unable to get list of recordings", __FUNCTION__);
@@ -393,6 +392,7 @@ bool CMythDirectory::GetTvShowFolders(const CStdString& base, CFileItemList &ite
     }
 
   }
+  m_dll->ref_release(list);
 
   if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
     items.AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551 /* Name */, LABEL_MASKS("", "", "%L", "%J"));
@@ -400,7 +400,6 @@ bool CMythDirectory::GetTvShowFolders(const CStdString& base, CFileItemList &ite
     items.AddSortMethod(SORT_METHOD_LABEL, 551 /* Name */, LABEL_MASKS("", "", "%L", "%J"));
   items.AddSortMethod(SORT_METHOD_DATE, 552 /* Date */, LABEL_MASKS("", "", "%L", "%J"));
 
-  m_dll->ref_release(list);
   return true;
 }
 
@@ -499,6 +498,16 @@ bool CMythDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
 
   if (fileName == "")
   {
+    /*
+     * If we can't get the control then we can't connect to the backend. Don't even show any of the
+     * virtual folders as none of them will work. Without this check the "Browse" functionality
+     * when adding a myth:// source is way confusing as it shows folders so it looks like it has
+     * connected successfully when it in fact hasn't.
+     */
+    cmyth_conn_t control = m_session->GetControl();
+    if (!control)
+      return false;
+
     CFileItemPtr item;
 
     item.reset(new CFileItem(base + "/recordings/", true));
@@ -555,8 +564,8 @@ bool CMythDirectory::Exists(const char* strPath)
    * way they are implemented - by iterating over all programs and filtering out content.
    */
   CURL url(strPath);
-       CStdString fileName = url.GetFileName();
-       URIUtils::RemoveSlashAtEnd(fileName);
+  CStdString fileName = url.GetFileName();
+  URIUtils::RemoveSlashAtEnd(fileName);
 
   if (fileName == ""
   ||  fileName == "channels"
@@ -574,12 +583,20 @@ bool CMythDirectory::Exists(const char* strPath)
 bool CMythDirectory::IsVisible(const cmyth_proginfo_t program)
 {
   CStdString group = GetValue(m_dll->proginfo_recgroup(program));
+  unsigned long flags = m_dll->proginfo_flags(program);
+
   /*
    * Ignore programs that were recorded using "LiveTV" or that have been deleted via the
    * "Auto Expire Instead of Delete Recording" option, which places the recording in the
    * "Deleted" recording group for x days rather than deleting straight away.
+   *
+   * As of 0.24, when a recording is deleted using the Myth Protocol it is marked as "pending delete"
+   * using the program flags mask. It is then scheduled to be physically deleted in a detached
+   * thread. This means that a deleted recording can still appear in the list of all recordings.
+   * Recordings that are "pending delete" will have a program flag mask that matches
+   * FL_DELETEPENDING = 0x00000080.
    */
-  return !(group.Equals("LiveTV") || group.Equals("Deleted"));
+  return !(group.Equals("LiveTV") || group.Equals("Deleted") || flags & 0x00000080);
 }
 
 bool CMythDirectory::IsMovie(const cmyth_proginfo_t program)

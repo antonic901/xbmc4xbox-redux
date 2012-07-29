@@ -45,6 +45,8 @@ using namespace std;
 #define MYTH_DEFAULT_PASSWORD "mythtv"
 #define MYTH_DEFAULT_DATABASE "mythconverg"
 
+#define MYTH_IDLE_TIMEOUT     5 * 60 // 5 minutes in seconds
+
 CCriticalSection       CMythSession::m_section_session;
 vector<CMythSession*>  CMythSession::m_sessions;
 
@@ -56,7 +58,7 @@ void CMythSession::CheckIdle()
   for (it = m_sessions.begin(); it != m_sessions.end(); )
   {
     CMythSession* session = *it;
-    if (session->m_timestamp + 5000 < CTimeUtils::GetTimeMS())
+    if ((CTimeUtils::GetTimeMS() - session->m_timestamp) > (MYTH_IDLE_TIMEOUT * 1000) )
     {
       CLog::Log(LOGINFO, "%s - closing idle connection to MythTV backend: %s", __FUNCTION__, session->m_hostname.c_str());
       delete session;
@@ -80,14 +82,19 @@ CMythSession* CMythSession::AquireSession(const CURL& url)
     if (session->CanSupport(url))
     {
       m_sessions.erase(it);
+      CLog::Log(LOGDEBUG, "%s - Aquired existing MythTV session: %p", __FUNCTION__, session);
       return session;
     }
   }
-  return new CMythSession(url);
+  CMythSession* session = new CMythSession(url);
+  CLog::Log(LOGINFO, "%s - Aquired new MythTV session for %s: %p", __FUNCTION__,
+            url.GetWithoutUserDetails().c_str(), session);
+  return session;
 }
 
 void CMythSession::ReleaseSession(CMythSession* session)
 {
+  CLog::Log(LOGDEBUG, "%s - Releasing MythTV session: %p", __FUNCTION__, session);
   session->SetListener(NULL);
   session->m_timestamp = CTimeUtils::GetTimeMS();
   CSingleLock lock(m_section_session);
@@ -102,8 +109,13 @@ CDateTime CMythSession::GetValue(cmyth_timestamp_t t)
     time_t time = m_dll->timestamp_to_unixtime(t); // Returns NULL if error
     if (time)
       result = CTimeUtils::GetLocalTime(time);
+    else
+      result = CTimeUtils::GetLocalTime(0);
     m_dll->ref_release(t);
   }
+  else // Return epoch so 0 and NULL behave the same.
+    result = CTimeUtils::GetLocalTime(0);
+
   return result;
 }
 
@@ -139,7 +151,7 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
    * Set the VideoInfoTag meta-data so it matches the FileItem meta-data where possible.
    */
   CVideoInfoTag* tag      = item.GetVideoInfoTag();
-  tag->m_strTitle         = item.m_strTitle; // With subtitle included, if present, as above. Shown in the OSD
+  tag->m_strTitle         = subtitle; // The title is just supposed to be the episode title.
   tag->m_strShowTitle     = title;
   tag->m_strOriginalTitle = title;
   tag->m_strPlotOutline   = subtitle;
@@ -155,8 +167,17 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
   tag->m_strGenre         = GetValue(m_dll->proginfo_category(program)); // e.g. Sports
   tag->m_strAlbum         = GetValue(m_dll->proginfo_chansign(program)); // e.g. TV3
   tag->m_strRuntime       = StringUtils::SecondsToTimeString(m_dll->proginfo_length_sec(program));
-  tag->m_iSeason          = 0; // So XBMC treats the content as an episode and displays tag information.
-  tag->m_iEpisode         = 0;
+  
+  SetSeasonAndEpisode(program, &tag->m_iSeason, &tag->m_iEpisode);
+
+  /*
+   * Original air date is used by the VideoInfoScanner to scrape the TV Show information into the
+   * Video Library. If the original air date is empty the date returned will be the epoch.
+   */
+  CStdString originalairdate = GetValue(m_dll->proginfo_originalairdate(program)).GetAsDBDate();
+  if (originalairdate != "1970-01-01"
+  &&  originalairdate != "1969-12-31")
+  tag->m_strFirstAired = originalairdate;
 
   /*
    * Video sort title is the raw title with the date appended on the end in a sortable format so
@@ -229,6 +250,113 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
   }
 }
 
+void CMythSession::SetSeasonAndEpisode(const cmyth_proginfo_t &program, int *season, int *episode) {
+  /*
+   * A valid programid generated from an XMLTV source should look like:
+   * [EP|MV|SH|SP][seriesid][episode][season]([partnumber][parttotal])
+   * mythtv/trunk/programs/mytfilldatabaseline/xmltvparser.cpp - Line 522 onwards.
+   * 
+   * Season changed to a base36 character for XMLTV in Myth 0.24. http://svn.mythtv.org/trac/changeset/24724
+   * 
+   * A valid SchedulesDirect programid appears to have a similar format to the XMLTV programid but
+   * doesn't have any obvious way to parse out the season and episode information. The number at the
+   * end of the programid could possibly be the completely sequential number for the episode, but
+   * even that doesn't seem to match up with TVDB. SchedulesDirect data does seem to have a valid
+   * original air date though, so if we identify a SchedulesDirect programid, leave the season and
+   * episode as 0. 
+   */
+  CStdString programid = GetValue(m_dll->proginfo_programid(program));
+  CStdString seriesid = GetValue(m_dll->proginfo_seriesid(program));
+
+  /*
+   * Default the season and episode to 0 so XBMC treats the content as an episode and displays tag
+   * information. If the season and episode can be parsed from the programid these will be
+   * overwritten.
+   */
+  *season  = 0;
+  *episode = 0;
+  
+  if (programid.IsEmpty() // Can't do anything if the program ID is empty
+  ||  seriesid.IsEmpty()) // Can't figure out the end parsing if the series ID is empty  {
+    return;
+  
+  CStdString category = programid.Left(2); // Valid for both XMLTV and SchedulesDirect sources
+  if (category != "MV"  // Movie
+  &&  category != "EP"  // Series
+  &&  category != "SH"  // TV Show
+  &&  category != "SP") // Sports
+    return;
+  
+  if (programid.Mid(category.length(), seriesid.length()) != seriesid) // Series ID does not follow the category
+    return;
+  
+  CStdString remainder = programid.Mid(category.length() + seriesid.length()); // Whatever is after series ID
+  
+  /*
+   * All SchedulesDirect remainders appear to be 4 characters and start with a 0. If the assumption
+   * is correct that the number somehow relates to the sequential episode number across all seasons
+   * then we can ignore remainders that start with 0. It will be very unlikely for a sequential
+   * episode number for a series to be > 999.
+   */
+  if (remainder.length() == 4     // All SchedulesDirect codes seem to be 4 characters
+  &&  remainder.Left(0)  == "0")  // Padded with 0's for low number. No valid XMLTV remainder will start with 0.
+    return;
+  
+  /*
+   * If the remainder is more than 5 characters, it must include the optional part number and total
+   * number of parts. Strip off the last 2 characters assuming that there are ridiculously few
+   * cases where the number of parts for a single episode is > 9.
+   */
+  if (remainder.length() >= 5) // Must include optional part number and total number of parts
+    remainder = remainder.Left(remainder.length() - 2); // Assumes part number and total are both < 10
+  
+  /*
+   * Now for some heuristic black magic.
+   */
+  if (remainder.length() == 2)  // Single character season and episode.
+  {
+    *season = atoi(remainder.Right(1)); // TODO: Fix for base 36 in Myth 0.24. Assume season < 10
+    *episode = atoi(remainder.Left(1));
+  }
+  else if (remainder.length() == 3) // Ambiguous in Myth 0.23. Single character season in Myth 0.24
+  {
+    /*
+     * Following heuristics are intended to work with largest possible number of cases. It won't be
+     * perfect, but way better than just assuming the season is < 10.
+     */
+    if (remainder.Right(1) == "0") // e.g. 610. Unlikely to have a season of 0 (specials) with more than 9 special episodes.
+    {
+      *season = atoi(remainder.Right(2));
+      *episode = atoi(remainder.Left(1));
+    }
+    else if (remainder.Mid(2, 1) == "0") // e.g. 203. Can't have a season start with 0. Must be end of episode.
+    {
+      *season = atoi(remainder.Right(1)); // TODO: Fix for base 36 in Myth 0.24. Assume season < 10
+      *episode = atoi(remainder.Left(2));
+    }
+    else if (atoi(remainder.Left(1)) > 3) // e.g. 412. Very unlikely to have more than 39 episodes per season if season > 9.
+    {
+      /*
+       * TODO: See if a check for > 2 is better, e.g. is it still unlike to have more than 29 episodes
+       * per season if season > 9?
+       */
+      *season = atoi(remainder.Right(2));
+      *episode = atoi(remainder.Left(1));
+    }
+    else // e.g. 129. Assume season is < 10 or Myth 0.24 Base 36 season.
+    {
+      *season = atoi(remainder.Right(1)); // TODO: Fix for base 36 in Myth 0.24. Assume season < 10
+      *episode = atoi(remainder.Left(2));
+    }
+  }
+  else if (remainder.length() == 4) // Double digit season and episode in Myth 0.23 OR TODO: has part number and total number of parts
+  {
+    *season = atoi(remainder.Right(2));
+    *episode = atoi(remainder.Left(2));
+  }
+  return;
+}
+
 CMythSession::CMythSession(const CURL& url)
 {
   m_control   = NULL;
@@ -243,6 +371,7 @@ CMythSession::CMythSession(const CURL& url)
   m_dll->Load();
   if (m_dll->IsLoaded())
   {
+    m_dll->set_dbg_msgcallback(&CMythSession::LogCMyth);
     if (g_advancedSettings.m_logLevel >= LOG_LEVEL_DEBUG_SAMBA)
       m_dll->dbg_level(CMYTH_DBG_ALL);
     else if (g_advancedSettings.m_logLevel >= LOG_LEVEL_DEBUG)
@@ -250,6 +379,7 @@ CMythSession::CMythSession(const CURL& url)
     else
       m_dll->dbg_level(CMYTH_DBG_ERROR);
   }
+  m_all_recorded = NULL;
 }
 
 CMythSession::~CMythSession()
@@ -303,6 +433,19 @@ void CMythSession::Process()
       break;
     case CMYTH_EVENT_RECORDING_LIST_CHANGE:
       CLog::Log(LOGDEBUG, "%s - MythTV event RECORDING_LIST_CHANGE", __FUNCTION__);
+      ResetAllRecordedPrograms();
+      break;
+    case CMYTH_EVENT_RECORDING_LIST_CHANGE_ADD:
+      CLog::Log(LOGDEBUG, "%s - MythTV event RECORDING_LIST_CHANGE_ADD: %s", __FUNCTION__, buf);
+      ResetAllRecordedPrograms();
+      break;
+    case CMYTH_EVENT_RECORDING_LIST_CHANGE_UPDATE:
+      CLog::Log(LOGDEBUG, "%s - MythTV event RECORDING_LIST_CHANGE_UPDATE", __FUNCTION__);
+      ResetAllRecordedPrograms();
+      break;
+    case CMYTH_EVENT_RECORDING_LIST_CHANGE_DELETE:
+      CLog::Log(LOGDEBUG, "%s - MythTV event RECORDING_LIST_CHANGE_DELETE: %s", __FUNCTION__, buf);
+      ResetAllRecordedPrograms();
       break;
     case CMYTH_EVENT_SCHEDULE_CHANGE:
       CLog::Log(LOGDEBUG, "%s - MythTV event SCHEDULE_CHANGE", __FUNCTION__);
@@ -313,6 +456,9 @@ void CMythSession::Process()
     case CMYTH_EVENT_QUIT_LIVETV:
       CLog::Log(LOGDEBUG, "%s - MythTV event QUIT_LIVETV", __FUNCTION__);
       break;
+    case CMYTH_EVENT_WATCH_LIVETV:
+      CLog::Log(LOGDEBUG, "%s - MythTV event LIVETV_WATCH", __FUNCTION__);
+      break;
     case CMYTH_EVENT_LIVETV_CHAIN_UPDATE:
       CLog::Log(LOGDEBUG, "%s - MythTV event LIVETV_CHAIN_UPDATE: %s", __FUNCTION__, buf);
       break;
@@ -321,6 +467,18 @@ void CMythSession::Process()
       break;
     case CMYTH_EVENT_ASK_RECORDING:
       CLog::Log(LOGDEBUG, "%s - MythTV event ASK_RECORDING", __FUNCTION__);
+      break;
+    case CMYTH_EVENT_SYSTEM_EVENT:
+      CLog::Log(LOGDEBUG, "%s - MythTV event SYSTEM_EVENT: %s", __FUNCTION__, buf);
+      break;
+    case CMYTH_EVENT_UPDATE_FILE_SIZE:
+      CLog::Log(LOGDEBUG, "%s - MythTV event UPDATE_FILE_SIZE: %s", __FUNCTION__, buf);
+      break;
+    case CMYTH_EVENT_GENERATED_PIXMAP:
+      CLog::Log(LOGDEBUG, "%s - MythTV event GENERATED_PIXMAP: %s", __FUNCTION__, buf);
+      break;
+    case CMYTH_EVENT_CLEAR_SETTINGS_CACHE:
+      CLog::Log(LOGDEBUG, "%s - MythTV event CLEAR_SETTINGS_CACHE", __FUNCTION__);
       break;
     }
 
@@ -345,6 +503,8 @@ void CMythSession::Disconnect()
     m_dll->ref_release(m_event);
   if (m_database)
     m_dll->ref_release(m_database);
+  if (m_all_recorded)
+    m_dll->ref_release(m_all_recorded);
 }
 
 cmyth_conn_t CMythSession::GetControl()
@@ -402,4 +562,59 @@ DllLibCMyth* CMythSession::GetLibrary()
   if (m_dll->IsLoaded())
     return m_dll;
   return NULL;
+}
+
+/*
+ * The caller must call m_dll->ref_release() when finished.
+ */
+cmyth_proglist_t CMythSession::GetAllRecordedPrograms()
+{
+  CSingleLock lock(m_section);
+  if (!m_all_recorded)
+  {
+    if (m_all_recorded)
+    {
+      m_dll->ref_release(m_all_recorded);
+      m_all_recorded = NULL;
+    }
+    cmyth_conn_t control = GetControl();
+    if (!control)
+      return NULL;
+
+    m_all_recorded = m_dll->proglist_get_all_recorded(control);
+  }
+  /*
+   * An extra reference is needed to prevent a race condition while resetting the proglist from
+   * the Process() thread while it is being read.
+   */
+  m_dll->ref_hold(m_all_recorded);
+
+  return m_all_recorded;
+}
+
+void CMythSession::ResetAllRecordedPrograms()
+{
+  CSingleLock lock(m_section);
+  if (m_all_recorded)
+  {
+    m_dll->ref_release(m_all_recorded);
+    m_all_recorded = NULL;
+  }
+  return;
+}
+
+void CMythSession::LogCMyth(int level, char *msg)
+{
+  int xbmc_lvl = -1;
+  switch (level)
+  {
+    case CMYTH_DBG_NONE:  break;
+    case CMYTH_DBG_ERROR: xbmc_lvl = LOGERROR;   break;
+    case CMYTH_DBG_WARN:  xbmc_lvl = LOGWARNING; break;
+    case CMYTH_DBG_INFO:  xbmc_lvl = LOGINFO;    break;
+    default:              xbmc_lvl = LOGDEBUG;   break;
+  }
+  if (xbmc_lvl >= 0) {
+    CLog::Log(xbmc_lvl, "%s", msg);
+  }
 }
