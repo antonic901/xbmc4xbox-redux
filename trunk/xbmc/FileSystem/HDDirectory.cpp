@@ -50,8 +50,7 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
   CURL url(strPath);
 
   memset(&wfd, 0, sizeof(wfd));
-  if (!URIUtils::HasSlashAtEnd(strPath) )
-    strRoot += "\\";
+  URIUtils::AddSlashAtEnd(strRoot);
   strRoot.Replace("/", "\\");
   if (URIUtils::IsDVD(strRoot) && m_isoReader.IsScanned())
   {
@@ -128,8 +127,7 @@ bool CHDDirectory::Create(const char* strPath)
 {
   CStdString strPath1 = strPath;
   g_charsetConverter.utf8ToStringCharset(strPath1);
-  if (!URIUtils::HasSlashAtEnd(strPath1))
-    strPath1 += '\\';
+  URIUtils::AddSlashAtEnd(strPath1);
 
   // okey this is really evil, since the create will succeed
   // the caller will have no idea that a different directory was created
@@ -164,8 +162,7 @@ bool CHDDirectory::Exists(const char* strPath)
   g_charsetConverter.utf8ToStringCharset(strReplaced);
   strReplaced.Replace("/","\\");
   CUtil::GetFatXQualifiedPath(strReplaced);
-  if (!URIUtils::HasSlashAtEnd(strReplaced))
-    strReplaced += '\\';
+  URIUtils::AddSlashAtEnd(strReplaced);
   DWORD attributes = GetFileAttributes(strReplaced.c_str());
   if (FILE_ATTRIBUTE_DIRECTORY == attributes) return true;
   return false;
