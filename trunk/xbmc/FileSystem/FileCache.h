@@ -76,6 +76,8 @@ namespace XFILE
     __int64      m_readPos;
     __int64      m_writePos;
     unsigned     m_writeRate;
+    unsigned     m_writeRateActual;
+    bool         m_cacheFull;
     unsigned     m_chunkSize;
     CCriticalSection m_sync;
   };
