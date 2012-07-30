@@ -117,6 +117,15 @@ __int64 CDVDInputStreamFile::GetLength()
   return 0;
 }
 
+__int64 CDVDInputStreamFile::GetCachedBytes()
+{
+  SCacheStatus status;
+  if(m_pFile && m_pFile->IoControl(IOCTRL_CACHE_STATUS, &status) >= 0)
+    return status.forward;
+  else
+    return -1;
+}
+
 BitstreamStats CDVDInputStreamFile::GetBitstreamStats() const 
 {
   if (!m_pFile)

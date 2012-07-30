@@ -212,6 +212,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     else if (strTest.Equals("player.cachelevel")) ret = PLAYER_CACHELEVEL;
     else if (strTest.Equals("player.seekbar")) ret = PLAYER_SEEKBAR;
     else if (strTest.Equals("player.progress")) ret = PLAYER_PROGRESS;
+    else if (strTest.Equals("player.progresscache")) ret = PLAYER_PROGRESS_CACHE;
     else if (strTest.Equals("player.seeking")) ret = PLAYER_SEEKING;
     else if (strTest.Equals("player.showtime")) ret = PLAYER_SHOWTIME;
     else if (strTest.Equals("player.showcodec")) ret = PLAYER_SHOWCODEC;
@@ -1670,6 +1671,7 @@ int CGUIInfoManager::GetInt(int info, int contextWindow) const
     case PLAYER_AUDIO_DELAY:
       return g_application.GetAudioDelay();
     case PLAYER_PROGRESS:
+    case PLAYER_PROGRESS_CACHE:
     case PLAYER_SEEKBAR:
     case PLAYER_CACHELEVEL:
     case PLAYER_CHAPTER:
@@ -1681,6 +1683,8 @@ int CGUIInfoManager::GetInt(int info, int contextWindow) const
           {
           case PLAYER_PROGRESS:
             return (int)(g_application.GetPercentage());
+          case PLAYER_PROGRESS_CACHE:
+            return (int)(g_application.GetCachePercentage());
           case PLAYER_SEEKBAR:
             {
               CGUIDialogSeekBar *seekBar = (CGUIDialogSeekBar*)g_windowManager.GetWindow(WINDOW_DIALOG_SEEK_BAR);
