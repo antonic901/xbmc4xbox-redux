@@ -28,6 +28,7 @@
 #include "Settings.h"
 
 #include "MemBufferCache.h"
+#include "CacheCircular.h"
 #include "utils/SingleLock.h"
 
 using namespace AUTOPTR;
@@ -45,7 +46,7 @@ CFileCache::CFileCache()
    if (!g_advancedSettings.m_cacheMemBufferSize)
      m_pCache = new CSimpleFileCache();
    else
-     m_pCache = new MemBufferCache();
+     m_pCache = new CCacheCircular(g_advancedSettings.m_cacheMemBufferSize, g_advancedSettings.m_cacheMemBufferSize);
    m_seekPossible = 0;
 }
 
