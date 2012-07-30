@@ -201,7 +201,7 @@ void CFileCache::Process()
   while (!m_bStop)
   {
     // check for seek events
-    if (m_seekEvent.WaitMSec(INFINITE))
+    if (m_seekEvent.WaitMSec(0))
     {
       m_seekEvent.Reset();
       CLog::Log(LOGDEBUG,"%s, request seek on source to %"PRId64, __FUNCTION__, m_seekPos);
