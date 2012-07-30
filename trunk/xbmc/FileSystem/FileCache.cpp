@@ -25,6 +25,7 @@
 #include "utils/Thread.h"
 #include "File.h"
 #include "URL.h"
+#include "utils/TimeUtils.h"
 #include "Settings.h"
 
 #include "MemBufferCache.h"
@@ -117,6 +118,7 @@ bool CFileCache::Open(const CURL& url)
   m_chunkSize = CFile::GetChunkSize(m_source.GetChunkSize(), READ_CACHE_CHUNK_SIZE);
 
   m_readPos = 0;
+  m_writeRate = 1024 * 1024;
   m_seekEvent.Reset();
   m_seekEnded.Reset();
 
@@ -140,6 +142,9 @@ void CFileCache::Process()
     return;
   }
 
+  unsigned fill_time = CTimeUtils::GetTimeMS();
+  int64_t  fill_data = 0;
+
   while(!m_bStop)
   {
     // check for seek events
@@ -154,9 +159,41 @@ void CFileCache::Process()
         m_seekPossible = m_source.IoControl(IOCTRL_SEEK_POSSIBLE, NULL);
       }
       else
+      {
         m_pCache->Reset(m_seekPos);
+        fill_time = CTimeUtils::GetTimeMS();
+        fill_data = m_seekPos;
+        m_writePos = m_seekPos;
+        m_readPos = m_seekPos;
+      }
 
       m_seekEnded.Set();
+    }
+
+    while(1)
+    {
+      unsigned timestamp = CTimeUtils::GetTimeMS();
+      if(m_writePos - m_readPos < m_writeRate)
+      {
+        fill_time = timestamp;
+        fill_data = m_writePos;
+        break;
+      }
+
+      __int64  count = m_writePos - fill_data;
+      unsigned delay = timestamp  - fill_time;
+
+      if(delay == 0)
+        break;
+
+      if(count * 1000 / delay < m_writeRate)
+        break;
+
+      if(m_seekEvent.WaitMSec(100))
+      {
+        m_seekEvent.Set();
+        break;
+      }
     }
 
     int iRead = m_source.Read(buffer.get(), m_chunkSize);
@@ -206,6 +243,7 @@ void CFileCache::Process()
         break;
       }
     }
+    m_writePos += iTotalWrite;
   }
 }
 
@@ -298,7 +336,7 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
       return m_nSeekResult;
 
     /* never request closer to end than 2k, speeds up tag reading */
-    m_seekPos = std::min(iTarget, std::max((int64_t)0, m_source.GetLength() - m_chunkSize));
+    m_seekPos = std::min(iTarget, std::max((__int64)0, m_source.GetLength() - m_chunkSize));
 
     m_seekEvent.Set();
     if (!m_seekEnded.WaitMSec(INFINITE))
@@ -320,11 +358,9 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
     }
     m_readPos = iTarget;
     m_seekEvent.Reset();
-    m_seekPos = -1;
   }
-
-  if (m_nSeekResult >= 0)
-    m_readPos = m_nSeekResult;
+  else
+    m_readPos = iTarget;
 
   return m_nSeekResult;
 }

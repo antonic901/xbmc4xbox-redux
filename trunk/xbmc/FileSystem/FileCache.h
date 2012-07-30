@@ -74,6 +74,8 @@ namespace XFILE
     __int64      m_nSeekResult;
     __int64      m_seekPos;
     __int64      m_readPos;
+    __int64      m_writePos;
+    unsigned     m_writeRate;
     unsigned     m_chunkSize;
     CCriticalSection m_sync;
   };
