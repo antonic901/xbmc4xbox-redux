@@ -23,7 +23,7 @@
 #include "utils/log.h"
 #include "utils/SingleLock.h"
 #include "utils/TimeUtils.h"
-#include "CacheCircular.h"
+#include "CircularCache.h"
 
 using namespace XFILE;
 

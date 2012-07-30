@@ -28,7 +28,7 @@
 #include "Settings.h"
 
 #include "MemBufferCache.h"
-#include "CacheCircular.h"
+#include "CircularCache.h"
 #include "utils/SingleLock.h"
 
 using namespace AUTOPTR;

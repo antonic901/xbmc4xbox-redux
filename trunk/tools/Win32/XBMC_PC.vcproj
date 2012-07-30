@@ -2310,10 +2310,10 @@
 					RelativePath="..\..\xbmc\FileSystem\ASAPFileDirectory.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\CacheCircular.cpp">
+					RelativePath="..\..\xbmc\FileSystem\CircularCache.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\CacheCircular.h">
+					RelativePath="..\..\xbmc\FileSystem\CircularCache.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\CacheStrategy.cpp">
