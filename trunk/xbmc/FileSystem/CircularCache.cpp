@@ -27,7 +27,7 @@
 
 using namespace XFILE;
 
-CCacheCircular::CCacheCircular(size_t front, size_t back)
+CCircularCache::CCircularCache(size_t front, size_t back)
  : CCacheStrategy()
  , m_beg(0)
  , m_end(0)
@@ -38,12 +38,12 @@ CCacheCircular::CCacheCircular(size_t front, size_t back)
 {
 }
 
-CCacheCircular::~CCacheCircular()
+CCircularCache::~CCircularCache()
 {
   Close();
 }
 
-int CCacheCircular::Open()
+int CCircularCache::Open()
 {
   m_buf = new uint8_t[m_size];
   m_beg = 0;
@@ -52,7 +52,7 @@ int CCacheCircular::Open()
   return CACHE_RC_OK;
 }
 
-void CCacheCircular::Close()
+void CCircularCache::Close()
 {
   delete[] m_buf;
   m_buf = NULL;
@@ -77,7 +77,7 @@ void CCacheCircular::Close()
  *
  * Multiple calls may be needed to fill buffer completely.
  */
-int CCacheCircular::WriteToCache(const char *buf, size_t len)
+int CCircularCache::WriteToCache(const char *buf, size_t len)
 {
   CSingleLock lock(m_sync);
 
@@ -118,7 +118,7 @@ int CCacheCircular::WriteToCache(const char *buf, size_t len)
  * the buffer wrap point. So multiple calls
  * may be needed to empty the whole cache
  */
-int CCacheCircular::ReadFromCache(char *buf, size_t len)
+int CCircularCache::ReadFromCache(char *buf, size_t len)
 {
   CSingleLock lock(m_sync);
 
@@ -148,7 +148,7 @@ int CCacheCircular::ReadFromCache(char *buf, size_t len)
   return len;
 }
 
-__int64 CCacheCircular::WaitForData(unsigned int minumum, unsigned int millis)
+__int64 CCircularCache::WaitForData(unsigned int minumum, unsigned int millis)
 {
   CSingleLock lock(m_sync);
   unsigned __int64 avail = m_end - m_cur;
@@ -171,7 +171,7 @@ __int64 CCacheCircular::WaitForData(unsigned int minumum, unsigned int millis)
   return avail;
 }
 
-__int64 CCacheCircular::Seek(__int64 pos)
+__int64 CCircularCache::Seek(__int64 pos)
 {
   CSingleLock lock(m_sync);
 
@@ -193,7 +193,7 @@ __int64 CCacheCircular::Seek(__int64 pos)
   return CACHE_RC_ERROR;
 }
 
-void CCacheCircular::Reset(__int64 pos)
+void CCircularCache::Reset(__int64 pos)
 {
   CSingleLock lock(m_sync);
   m_end = pos;
