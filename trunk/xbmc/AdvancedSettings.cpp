@@ -79,7 +79,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_musicPercentSeekBackwardBig = -10;
   m_musicResample = 48000;
 
-  m_cacheMemBufferSize = 256;
+  m_cacheMemBufferSize = 1024 * 1024;
 
   m_slideshowPanAmount = 2.5f;
   m_slideshowZoomAmount = 5.0f;
@@ -521,7 +521,7 @@ bool CAdvancedSettings::Load()
 
   XMLUtils::GetBoolean(pRootElement, "ftpshowcache", m_FTPShowCache);
 
-  XMLUtils::GetInt(pRootElement, "cachemembufsize", m_cacheMemBufferSize, 0, 8192);
+  XMLUtils::GetUInt(pRootElement, "cachemembufsize", m_cacheMemBufferSize);
 
   g_LangCodeExpander.LoadUserCodes(pRootElement->FirstChildElement("languagecodes"));
 

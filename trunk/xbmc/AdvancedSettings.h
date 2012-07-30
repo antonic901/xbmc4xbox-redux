@@ -97,7 +97,7 @@ class CAdvancedSettings
 
     float m_videoPlayCountMinimumPercent;
 
-    int m_cacheMemBufferSize;
+    unsigned int m_cacheMemBufferSize;
 
     float m_slideshowBlackBarCompensation;
     float m_slideshowZoomAmount;
