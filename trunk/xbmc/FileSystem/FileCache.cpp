@@ -56,7 +56,7 @@ public:
   unsigned Rate(int64_t pos, unsigned int time_bias = 0)
   {
     const unsigned ts = CTimeUtils::GetTimeMS() + time_bias;
-    if(ts == m_stamp)
+    if (ts == m_stamp)
       return 0;
     return (unsigned)(1000 * (pos - m_pos) / (ts - m_stamp));
   }
@@ -87,7 +87,7 @@ CFileCache::CFileCache()
    m_readPos = 0;
    m_writePos = 0;
 
-   if (!g_advancedSettings.m_cacheMemBufferSize)
+   if (g_advancedSettings.m_cacheMemBufferSize == 0)
      m_pCache = new CSimpleFileCache();
    else
      m_pCache = new CCircularCache(g_advancedSettings.m_cacheMemBufferSize, g_advancedSettings.m_cacheMemBufferSize);
@@ -125,7 +125,8 @@ void CFileCache::SetCacheStrategy(CCacheStrategy *pCache, bool bDeleteCache)
   m_bDeleteCache = bDeleteCache;
 }
 
-IFile *CFileCache::GetFileImp() {
+IFile *CFileCache::GetFileImp()
+{
   return m_source.GetImplemenation();
 }
 
@@ -137,7 +138,8 @@ bool CFileCache::Open(const CURL& url)
 
   CLog::Log(LOGDEBUG,"CFileCache::Open - opening <%s> using cache", url.GetFileName().c_str());
 
-  if (!m_pCache) {
+  if (!m_pCache)
+  {
     CLog::Log(LOGERROR,"CFileCache::Open - no cache strategy defined");
     return false;
   }
@@ -145,14 +147,16 @@ bool CFileCache::Open(const CURL& url)
   m_sourcePath = url.Get();
 
   // open cache strategy
-  if (m_pCache->Open() != CACHE_RC_OK) {
+  if (m_pCache->Open() != CACHE_RC_OK)
+  {
     CLog::Log(LOGERROR,"CFileCache::Open - failed to open cache");
     Close();
     return false;
   }
 
   // opening the source file.
-  if(!m_source.Open(m_sourcePath, READ_NO_CACHE | READ_TRUNCATED | READ_CHUNKED)) {
+  if (!m_source.Open(m_sourcePath, READ_NO_CACHE | READ_TRUNCATED | READ_CHUNKED))
+  {
     CLog::Log(LOGERROR,"%s - failed to open source <%s>", __FUNCTION__, m_sourcePath.c_str());
     Close();
     return false;
@@ -177,7 +181,8 @@ bool CFileCache::Open(const CURL& url)
 
 void CFileCache::Process()
 {
-  if (!m_pCache) {
+  if (!m_pCache)
+  {
     CLog::Log(LOGERROR,"CFileCache::Process - sanity failed. no cache strategy");
     return;
   }
@@ -193,7 +198,7 @@ void CFileCache::Process()
   CWriteRate limiter;
   CWriteRate average;
 
-  while(!m_bStop)
+  while (!m_bStop)
   {
     // check for seek events
     if (m_seekEvent.WaitMSec(0))
@@ -219,18 +224,18 @@ void CFileCache::Process()
       m_seekEnded.Set();
     }
 
-    while(m_writeRate)
+    while (m_writeRate)
     {
-      if(m_writePos - m_readPos < m_writeRate)
+      if (m_writePos - m_readPos < m_writeRate)
       {
         limiter.Reset(m_writePos);
         break;
       }
 
-      if(limiter.Rate(m_writePos) < m_writeRate)
+      if (limiter.Rate(m_writePos) < m_writeRate)
         break;
 
-      if(m_seekEvent.WaitMSec(100))
+      if (m_seekEvent.WaitMSec(100))
       {
         m_seekEvent.Set();
         break;
@@ -305,7 +310,7 @@ void CFileCache::OnExit()
   m_bStop = true;
 
   // make sure cache is set to mark end of file (read may be waiting).
-  if(m_pCache)
+  if (m_pCache)
     m_pCache->EndOfInput();
 
   // just in case someone's waiting...
@@ -325,7 +330,8 @@ int CFileCache::Stat(const CURL& url, struct __stat64* buffer)
 unsigned int CFileCache::Read(void* lpBuf, __int64 uiBufSize)
 {
   CSingleLock lock(m_sync);
-  if (!m_pCache) {
+  if (!m_pCache)
+  {
     CLog::Log(LOGERROR,"%s - sanity failed. no cache strategy!", __FUNCTION__);
     return 0;
   }
@@ -366,7 +372,8 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
 {
   CSingleLock lock(m_sync);
 
-  if (!m_pCache) {
+  if (!m_pCache)
+  {
     CLog::Log(LOGERROR,"%s - sanity failed. no cache strategy!", __FUNCTION__);
     return -1;
   }
@@ -385,7 +392,7 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
 
   if ((m_nSeekResult = m_pCache->Seek(iTarget)) != iTarget)
   {
-    if(m_seekPossible == 0)
+    if (m_seekPossible == 0)
       return m_nSeekResult;
 
     /* never request closer to end than 2k, speeds up tag reading */
@@ -467,7 +474,7 @@ int CFileCache::IoControl(EIoControl request, void* param)
     return 0;
   }
 
-  if(request == IOCTRL_CACHE_SETRATE)
+  if (request == IOCTRL_CACHE_SETRATE)
   {
     m_writeRate = *(unsigned*)param;
     return 0;
