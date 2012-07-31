@@ -518,7 +518,7 @@ void CGUIWindowManager::UpdateModelessVisibility()
   }
 }
 
-void CGUIWindowManager::Process(bool renderOnly /*= false*/)
+void CGUIWindowManager::ProcessRenderLoop(bool renderOnly /*= false*/)
 {
   Process_Internal(renderOnly);
 }
