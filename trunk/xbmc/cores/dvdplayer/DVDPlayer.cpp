@@ -2603,8 +2603,11 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
     float aspect = static_cast<CDVDInputStreamNavigator*>(m_pInputStream)->GetVideoAspectRatio();
     if(aspect != 0.0)
       hint.aspect = aspect;
-    hint.stills   = static_cast<CDVDInputStreamNavigator*>(m_pInputStream)->IsInMenu();
   }
+
+  CDVDInputStream::IMenus* pMenus = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
+  if(pMenus && pMenus->IsInMenu())
+    hint.stills = true;
 
   if(m_CurrentVideo.id    < 0
   || m_CurrentVideo.hint != hint)
@@ -3017,12 +3020,10 @@ bool CDVDPlayer::OnAction(const CAction &action)
     } \
   } while(false)
 
-  if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  CDVDInputStream::IMenus* pMenus = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
+  if (pMenus)
   {
-    CDVDInputStreamNavigator* pStream = (CDVDInputStreamNavigator*)m_pInputStream;
-
-
-    if( m_dvd.state == DVDSTATE_STILL && m_dvd.iDVDStillTime != 0 && pStream->GetTotalButtons() == 0 )
+    if( m_dvd.state == DVDSTATE_STILL && m_dvd.iDVDStillTime != 0 && pMenus->GetTotalButtons() == 0 )
     {
       switch(action.id)
       {
@@ -3050,7 +3051,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       {
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev");
-        pStream->OnPrevious();
+        pMenus->OnPrevious();
         g_infoManager.SetDisplayAfterSeek();
         return true;
       }
@@ -3059,7 +3060,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       {
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next");
-        pStream->OnNext();
+        pMenus->OnNext();
         g_infoManager.SetDisplayAfterSeek();
         return true;
       }
@@ -3069,7 +3070,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       {
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - go to menu");
-        pStream->OnMenu();
+        pMenus->OnMenu();
         // send a message to everyone that we've gone to the menu
         CGUIMessage msg(GUI_MSG_VIDEO_MENU_STARTED, 0, 0);
         g_windowManager.SendMessage(msg);
@@ -3078,7 +3079,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       break;
     }
 
-    if (pStream->IsInMenu())
+    if (pMenus->IsInMenu())
     {
       switch (action.id)
       {
@@ -3086,49 +3087,49 @@ bool CDVDPlayer::OnAction(const CAction &action)
       case ACTION_PAGE_UP:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next in menu, stream will decide");
-        pStream->OnNext();
+        pMenus->OnNext();
         g_infoManager.SetDisplayAfterSeek();
         return true;
       case ACTION_PREV_ITEM:
       case ACTION_PAGE_DOWN:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev in menu, stream will decide");
-        pStream->OnPrevious();
+        pMenus->OnPrevious();
         g_infoManager.SetDisplayAfterSeek();
         return true;
       case ACTION_PREVIOUS_MENU:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - menu back");
-          pStream->OnBack();
+          pMenus->OnBack();
         }
         break;
       case ACTION_MOVE_LEFT:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move left");
-          pStream->OnLeft();
+          pMenus->OnLeft();
         }
         break;
       case ACTION_MOVE_RIGHT:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move right");
-          pStream->OnRight();
+          pMenus->OnRight();
         }
         break;
       case ACTION_MOVE_UP:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move up");
-          pStream->OnUp();
+          pMenus->OnUp();
         }
         break;
       case ACTION_MOVE_DOWN:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move down");
-          pStream->OnDown();
+          pMenus->OnDown();
         }
         break;
 
@@ -3153,8 +3154,8 @@ bool CDVDPlayer::OnAction(const CAction &action)
           pt.y *= (float)(rs.bottom - rs.top) / (rd.bottom - rd.top);
           pt += CPoint(rs.left, rs.top);
           if (action2.buttonCode)
-            return pStream->OnMouseClick(pt);
-          return pStream->OnMouseMove(pt);
+            return pMenus->OnMouseClick(pt);
+          return pMenus->OnMouseMove(pt);
         }
         break;
       case ACTION_SELECT_ITEM:
@@ -3162,9 +3163,10 @@ bool CDVDPlayer::OnAction(const CAction &action)
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - button select");
           // show button pushed overlay
-          m_dvdPlayerSubtitle.UpdateOverlayInfo((CDVDInputStreamNavigator*)m_pInputStream, LIBDVDNAV_BUTTON_CLICKED);
+          if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+            m_dvdPlayerSubtitle.UpdateOverlayInfo((CDVDInputStreamNavigator*)m_pInputStream, LIBDVDNAV_BUTTON_CLICKED);
 
-          pStream->ActivateButton();
+          pMenus->ActivateButton();
         }
         break;
       case REMOTE_0:
@@ -3182,7 +3184,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
           // Offset from key codes back to button number
           int button = action.id - REMOTE_0;
           CLog::Log(LOGDEBUG, " - button pressed %d", button);
-          pStream->SelectButton(button);
+          pMenus->SelectButton(button);
         }
        break;
       default:
@@ -3253,9 +3255,9 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
 bool CDVDPlayer::IsInMenu() const
 {
-  if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  CDVDInputStream::IMenus* pStream = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
+  if (pStream)
   {
-    CDVDInputStreamNavigator* pStream = (CDVDInputStreamNavigator*)m_pInputStream;
     if( m_dvd.state == DVDSTATE_STILL )
       return true;
     else
@@ -3266,7 +3268,8 @@ bool CDVDPlayer::IsInMenu() const
 
 bool CDVDPlayer::HasMenu()
 {
-  if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  CDVDInputStream::IMenus* pStream = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
+  if (pStream)
     return true;
   else
     return false;
@@ -3453,20 +3456,14 @@ void CDVDPlayer::UpdatePlayState(double timeout)
       state.time_total = pDisplayTime->GetTotalTime();
     }
 
-    if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+    if (dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream))
     {
       if(m_dvd.state == DVDSTATE_STILL)
       {
         state.time       = GetTickCount() - m_dvd.iDVDStillStartTime;
         state.time_total = m_dvd.iDVDStillTime;
       }
-
-      if(!((CDVDInputStreamNavigator*)m_pInputStream)->GetNavigatorState(m_State.player_state))
-        state.player_state = "";
     }
-    else
-        state.player_state = "";
-
 
     if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
     {
@@ -3484,8 +3481,13 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     state.time_total  = m_Edl.RemoveCutTime(llrint(state.time_total));
   }
 
+  state.player_state = "";
   if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  {
     state.time_offset = DVD_MSEC_TO_TIME(state.time) - state.dts;
+    if(!((CDVDInputStreamNavigator*)m_pInputStream)->GetNavigatorState(state.player_state))
+      state.player_state = "";
+  }
   else
     state.time_offset = 0;
 
