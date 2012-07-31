@@ -28,7 +28,6 @@
 #define FRAME_TYPE_B 3
 #define FRAME_TYPE_D 4
 
-
 // should be entirely filled by all codecs
 struct DVDVideoPicture
 {  
@@ -152,4 +151,20 @@ public:
    * should return codecs name
    */
   virtual const char* GetName() = 0;
+
+  /*
+   * returns the number of demuxer bytes in any internal buffers
+   */
+  virtual int GetDataSize(void)
+  {
+    return 0;
+  }
+
+  /*
+   * returns the time in seconds for demuxer bytes in any internal buffers
+   */
+  virtual double GetTimeSize(void)
+  {
+    return 0;
+  }
 };

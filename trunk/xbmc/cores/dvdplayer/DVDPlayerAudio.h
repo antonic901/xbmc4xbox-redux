@@ -100,7 +100,10 @@ public:
 
   // waits until all available data has been rendered
   void WaitForBuffers();
-  bool AcceptsData()                                    { return !m_messageQueue.IsFull(); }
+  bool AcceptsData() const                              { return !m_messageQueue.IsFull(); }
+  bool HasData() const                                  { return m_messageQueue.GetDataSize() > 0; }
+  int  GetLevel() const                                 { return m_messageQueue.GetLevel(); }
+  bool IsInited() const                                 { return m_messageQueue.IsInited(); }
   void SendMessage(CDVDMsg* pMsg, int priority = 0)     { m_messageQueue.Put(pMsg, priority); }
 
   void SetVolume(long nVolume)                          { m_dvdAudio.SetVolume(nVolume); }
@@ -112,8 +115,6 @@ public:
   // holds stream information for current playing stream
   CDVDStreamInfo m_streaminfo;
 
-  CDVDMessageQueue m_messageQueue;
-  CDVDMessageQueue& m_messageParent;
   CPTSOutputQueue m_ptsOutput;
   CPTSInputQueue  m_ptsInput;
 
@@ -127,6 +128,9 @@ protected:
   virtual void Process();
 
   int DecodeFrame(DVDAudioFrame &audioframe, bool bDropPacket);
+
+  CDVDMessageQueue m_messageQueue;
+  CDVDMessageQueue& m_messageParent;
 
   double m_audioClock;
 
