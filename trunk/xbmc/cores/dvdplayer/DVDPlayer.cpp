@@ -319,6 +319,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
     m_State.Clear();
     m_UpdateApplication = 0;
+    m_offset_pts = 0;
 
     m_PlayerOptions = options;
     m_item     = file;
@@ -682,6 +683,7 @@ bool CDVDPlayer::ReadPacket(DemuxPacket*& packet, CDemuxStream*& stream)
 
     if(packet)
     {
+      UpdateCorrection(packet, m_offset_pts);
       if(packet->iStreamId < 0)
         return true;
 
@@ -706,6 +708,7 @@ bool CDVDPlayer::ReadPacket(DemuxPacket*& packet, CDemuxStream*& stream)
 
   if(packet)
   {
+    UpdateCorrection(packet, m_offset_pts);
     // this groupId stuff is getting a bit messy, need to find a better way
     // currently it is used to determine if a menu overlay is associated with a picture
     // for dvd's we use as a group id, the current cell and the current title
@@ -1161,13 +1164,13 @@ void CDVDPlayer::ProcessAudioData(CDemuxStream* pStream, DemuxPacket* pPacket)
   CEdl::Cut cut;
   if (CheckSceneSkip(m_CurrentAudio))
     drop = true;
-  else if (m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts), &cut) && cut.action == CEdl::MUTE // Inside EDL mute
+  else if (m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) && cut.action == CEdl::MUTE // Inside EDL mute
   &&      !m_EdlAutoSkipMarkers.mute) // Mute not already triggered
   {
     m_dvdPlayerAudio.SendMessage(new CDVDMsgBool(CDVDMsg::AUDIO_SILENCE, true));
     m_EdlAutoSkipMarkers.mute = true;
   }
-  else if (!m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts), &cut) // Outside of any EDL
+  else if (!m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) // Outside of any EDL
   &&        m_EdlAutoSkipMarkers.mute) // But the mute hasn't been removed yet
   {
     m_dvdPlayerAudio.SendMessage(new CDVDMsgBool(CDVDMsg::AUDIO_SILENCE, false));
@@ -1482,6 +1485,12 @@ bool CDVDPlayer::CheckPlayerInit(CCurrentStream& current, unsigned int source)
   return false;
 }
 
+void CDVDPlayer::UpdateCorrection(DemuxPacket* pkt, double correction)
+{
+  if(pkt->dts != DVD_NOPTS_VALUE) pkt->dts -= correction;
+  if(pkt->pts != DVD_NOPTS_VALUE) pkt->pts -= correction;
+}
+
 void CDVDPlayer::UpdateTimestamps(CCurrentStream& current, DemuxPacket* pPacket)
 {
   double dts = current.dts;
@@ -1490,6 +1499,12 @@ void CDVDPlayer::UpdateTimestamps(CCurrentStream& current, DemuxPacket* pPacket)
     dts = pPacket->dts;
   else if(pPacket->pts != DVD_NOPTS_VALUE)
     dts = pPacket->pts;
+
+  /* calculate some average duration */
+  if(pPacket->duration != DVD_NOPTS_VALUE)
+    current.dur = pPacket->duration;
+  else if(dts != DVD_NOPTS_VALUE && current.dts != DVD_NOPTS_VALUE)
+    current.dur = 0.1 * (current.dur * 9 + (dts - current.dts));
 
   current.dts = dts;
 }
@@ -1550,47 +1565,42 @@ void CDVDPlayer::CheckContinuity(CCurrentStream& current, DemuxPacket* pPacket)
   double mindts = DVD_NOPTS_VALUE, maxdts = DVD_NOPTS_VALUE;
   UpdateLimits(mindts, maxdts, m_CurrentAudio.dts);
   UpdateLimits(mindts, maxdts, m_CurrentVideo.dts);
+  UpdateLimits(mindts, maxdts, m_CurrentAudio.dts_end());
+  UpdateLimits(mindts, maxdts, m_CurrentVideo.dts_end());
 
   /* if we don't have max and min, we can't do anything more */
   if( mindts == DVD_NOPTS_VALUE || maxdts == DVD_NOPTS_VALUE )
     return;
 
-  if( pPacket->dts < mindts - DVD_MSEC_TO_TIME(100) && current.inited)
+  double correction = 0.0;
+  if( pPacket->dts > maxdts + DVD_MSEC_TO_TIME(1000))
   {
-    /* if video player is rendering a stillframe, we need to make sure */
-    /* audio has finished processing it's data otherwise it will be */
-    /* displayed too early */
-
-    CLog::Log(LOGWARNING, "CDVDPlayer::CheckContinuity - resync backword :%d, prev:%f, curr:%f, diff:%f"
-                            , current.type, current.dts, pPacket->dts, pPacket->dts - current.dts);
-    if (m_dvdPlayerVideo.IsStalled() && m_CurrentVideo.dts != DVD_NOPTS_VALUE)
-      SynchronizePlayers(SYNCSOURCE_VIDEO);
-    else if (m_dvdPlayerAudio.IsStalled() && m_CurrentAudio.dts != DVD_NOPTS_VALUE)
-      SynchronizePlayers(SYNCSOURCE_AUDIO);
-
-    m_CurrentAudio.inited = false;
-    m_CurrentVideo.inited = false;
-    m_CurrentSubtitle.inited = false;
+    CLog::Log(LOGDEBUG, "CDVDPlayer::CheckContinuity - resync forward :%d, prev:%f, curr:%f, diff:%f"
+                            , current.type, current.dts, pPacket->dts, pPacket->dts - maxdts);
+    correction = pPacket->dts - maxdts;
   }
 
-  /* stream jump forward */
-  if( pPacket->dts > maxdts + DVD_MSEC_TO_TIME(1000) && current.inited)
+  if(current.dts != DVD_NOPTS_VALUE)
   {
-    CLog::Log(LOGWARNING, "CDVDPlayer::CheckContinuity - resync forward :%d, prev:%f, curr:%f, diff:%f"
-                            , current.type, current.dts, pPacket->dts, pPacket->dts - current.dts);
-    /* normally don't need to sync players since video player will keep playing at normal fps */
-    /* after a discontinuity */
-    //SynchronizePlayers(dts, pts, MSGWAIT_ALL);
-    m_CurrentAudio.inited = false;
-    m_CurrentVideo.inited = false;
-    m_CurrentSubtitle.inited = false;
+    /* if it's large scale jump, correct for it */
+    if(pPacket->dts + DVD_MSEC_TO_TIME(100) < current.dts_end())
+    {
+      CLog::Log(LOGDEBUG, "CDVDPlayer::CheckContinuity - resync backward :%d, prev:%f, curr:%f, diff:%f"
+                              , current.type, current.dts, pPacket->dts, pPacket->dts - current.dts);
+      correction = pPacket->dts - current.dts_end();
+    }
+    else if(pPacket->dts < current.dts)
+    {
+      CLog::Log(LOGDEBUG, "CDVDPlayer::CheckContinuity - wrapback :%d, prev:%f, curr:%f, diff:%f"
+                              , current.type, current.dts, pPacket->dts, pPacket->dts - current.dts);
+    }
+
   }
 
-  if(current.dts != DVD_NOPTS_VALUE && pPacket->dts < current.dts && current.inited)
+  if(correction != 0.0)
   {
-    /* warn if dts is moving backwords */
-    CLog::Log(LOGWARNING, "CDVDPlayer::CheckContinuity - wrapback of stream:%d, prev:%f, curr:%f, diff:%f"
-                        , current.type, current.dts, pPacket->dts, pPacket->dts - current.dts);
+    m_offset_pts += correction;
+    UpdateCorrection(pPacket, correction);
   }
 
 }
@@ -1607,7 +1617,7 @@ bool CDVDPlayer::CheckSceneSkip(CCurrentStream& current)
     return false;
 
   CEdl::Cut cut;
-  return m_Edl.InCut(DVD_TIME_TO_MSEC(current.dts), &cut) && cut.action == CEdl::CUT;
+  return m_Edl.InCut(DVD_TIME_TO_MSEC(current.dts + m_offset_pts), &cut) && cut.action == CEdl::CUT;
 }
 
 void CDVDPlayer::CheckAutoSceneSkip()
@@ -1634,7 +1644,7 @@ void CDVDPlayer::CheckAutoSceneSkip()
   || m_CurrentVideo.dts == DVD_NOPTS_VALUE)
     return;
 
-  const int64_t clock = DVD_TIME_TO_MSEC(min(m_CurrentAudio.dts, m_CurrentVideo.dts));
+  const int64_t clock = DVD_TIME_TO_MSEC(min(m_CurrentAudio.dts, m_CurrentVideo.dts) + m_offset_pts);
 
   CEdl::Cut cut;
   if(!m_Edl.InCut(clock, &cut))
@@ -2674,6 +2684,7 @@ bool CDVDPlayer::OpenSubtitleStream(int iStream, int source)
       pts = m_CurrentVideo.dts;
     if(pts == DVD_NOPTS_VALUE)
       pts = 0;
+    pts += m_offset_pts;
     m_pSubtitleDemuxer->SeekTime((int)(1000.0 * pts / (double)DVD_TIME_BASE));
 
     hint.Assign(*pStream, true);
@@ -2788,6 +2799,10 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
     startpts = pts;
   else
     startpts = DVD_NOPTS_VALUE;
+
+  /* call with demuxer pts */
+  if(startpts != DVD_NOPTS_VALUE)
+    startpts -= m_offset_pts;
 
   m_CurrentAudio.inited      = false;
   m_CurrentAudio.dts         = DVD_NOPTS_VALUE;
@@ -3435,7 +3450,7 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     state.chapter_count = m_pDemuxer->GetChapterCount();
     m_pDemuxer->GetChapterName(state.chapter_name);
 
-    state.time       = DVD_TIME_TO_MSEC(m_clock.GetClock());
+    state.time       = DVD_TIME_TO_MSEC(m_clock.GetClock() + m_offset_pts);
     state.time_total = m_pDemuxer->GetStreamLength();
   }
 
