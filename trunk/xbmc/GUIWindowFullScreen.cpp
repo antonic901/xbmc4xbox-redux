@@ -264,14 +264,26 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
   case ACTION_NEXT_SUBTITLE:
     {
-      if (g_application.m_pPlayer->GetSubtitleCount() == 1)
+      if (g_application.m_pPlayer->GetSubtitleCount() == 0)
         return true;
 
-      g_settings.m_currentVideoSettings.m_SubtitleStream++;
-      if (g_settings.m_currentVideoSettings.m_SubtitleStream >= g_application.m_pPlayer->GetSubtitleCount())
-        g_settings.m_currentVideoSettings.m_SubtitleStream = 0;
-      g_application.m_pPlayer->SetSubtitle(g_settings.m_currentVideoSettings.m_SubtitleStream);
-      return true;
+      if (g_settings.m_currentVideoSettings.m_SubtitleOn)
+      {
+        g_settings.m_currentVideoSettings.m_SubtitleStream++;
+        if (g_settings.m_currentVideoSettings.m_SubtitleStream >= g_application.m_pPlayer->GetSubtitleCount())
+        {
+          g_settings.m_currentVideoSettings.m_SubtitleStream = 0;
+          g_settings.m_currentVideoSettings.m_SubtitleOn = false;
+          g_application.m_pPlayer->SetSubtitleVisible(false);
+        }
+        g_application.m_pPlayer->SetSubtitle(g_settings.m_currentVideoSettings.m_SubtitleStream);
+      }
+      else
+      {
+        g_settings.m_currentVideoSettings.m_SubtitleOn = true;
+        g_application.m_pPlayer->SetSubtitleVisible(true);
+      }
+
     }
     return true;
     break;
