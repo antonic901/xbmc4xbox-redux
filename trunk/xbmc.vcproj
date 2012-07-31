@@ -1102,6 +1102,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\StreamDetails.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\StreamUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StreamUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\StringUtils.cpp">
 				</File>
 				<File
@@ -1563,12 +1569,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\ASAPFileDirectory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\CircularCache.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\CircularCache.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\CacheStrategy.cpp">
 				</File>
 				<File
@@ -1585,6 +1585,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\cdioSupport.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\CircularCache.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\CircularCache.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\CurlFile.cpp">

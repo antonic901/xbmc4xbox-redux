@@ -99,6 +99,8 @@ typedef struct
   CDemuxStream::EFlags flags;
   int          source;
   int          id;
+  std::string  codec;
+  int          channels;
 } SelectionStream;
 
 class CSelectionStreams
