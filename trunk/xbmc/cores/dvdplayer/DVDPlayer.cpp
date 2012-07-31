@@ -885,11 +885,6 @@ void CDVDPlayer::Process()
 
   SetCaching(CACHESTATE_FLUSH);
 
-#ifdef _XBOX
-  // Let things settle else we may get A/V desync issues
-  Sleep(1500);
-#endif
-
   while (!m_bAbortRequest)
   {
     // handle messages send to this thread, like seek or demuxer reset requests
