@@ -262,9 +262,9 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
 CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
     : IPlayer(callback),
       CThread(),
-      m_CurrentAudio(STREAM_AUDIO),
-      m_CurrentVideo(STREAM_VIDEO),
-      m_CurrentSubtitle(STREAM_SUBTITLE),
+      m_CurrentAudio(STREAM_AUDIO, DVDPLAYER_AUDIO),
+      m_CurrentVideo(STREAM_VIDEO, DVDPLAYER_VIDEO),
+      m_CurrentSubtitle(STREAM_SUBTITLE, DVDPLAYER_SUBTITLE),
       m_messenger("player"),
       m_dvdPlayerVideo(&m_clock, &m_overlayContainer, m_messenger),
       m_dvdPlayerAudio(&m_clock, m_messenger),
