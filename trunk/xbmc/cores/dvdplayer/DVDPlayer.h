@@ -67,13 +67,11 @@ public:
   const int        player;
   // stuff to handle starting after seek
   double   startpts;
-  CDVDMsg* startsync;
 
   CCurrentStream(StreamType t, int i)
     : type(t)
     , player(i)
   {
-    startsync = NULL;
     Clear();
   }
 
@@ -87,9 +85,6 @@ public:
     stream = NULL;
     inited = false;
     started = false;
-    if(startsync)
-      startsync->Release();
-    startsync = NULL;
     startpts  = DVD_NOPTS_VALUE;
   }
 
