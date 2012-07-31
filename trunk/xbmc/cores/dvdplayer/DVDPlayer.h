@@ -106,6 +106,7 @@ public:
 typedef struct
 {
   StreamType   type;
+  int          type_index;
   std::string  filename;
   std::string  language;
   std::string  name;
@@ -115,6 +116,8 @@ typedef struct
   std::string  codec;
   int          channels;
 } SelectionStream;
+
+typedef std::vector<SelectionStream> SelectionStreams;
 
 class CSelectionStreams
 {
@@ -134,6 +137,14 @@ public:
   int              Count   (StreamType type) const { return IndexOf(type, STREAM_SOURCE_NONE, -1) + 1; }
   SelectionStream& Get     (StreamType type, int index);
   bool             Get     (StreamType type, CDemuxStream::EFlags flag, SelectionStream& out);
+
+  SelectionStreams Get(StreamType type);
+  template<typename Compare> SelectionStreams Get(StreamType type, Compare compare)
+  {
+    SelectionStreams streams = Get(type);
+    std::stable_sort(streams.begin(), streams.end(), compare);
+    return streams;
+  }
 
   void             Clear   (StreamType type, StreamSource source);
   int              Source  (StreamSource source, std::string filename);
