@@ -2749,13 +2749,14 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
 
       // we should now wait for init cache
       SetCaching(CACHESTATE_FLUSH);
-      if(pts != DVD_NOPTS_VALUE)
-        m_clock.Discontinuity(pts);
-      UpdatePlayState(0);
       m_CurrentAudio.started    = false;
       m_CurrentVideo.started    = false;
       m_CurrentSubtitle.started = false;
     }
+
+    if(pts != DVD_NOPTS_VALUE)
+      m_clock.Discontinuity(pts);
+    UpdatePlayState(0);
   }
 }
 
