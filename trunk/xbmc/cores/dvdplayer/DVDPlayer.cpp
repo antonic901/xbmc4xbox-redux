@@ -1145,10 +1145,7 @@ void CDVDPlayer::ProcessAudioData(CDemuxStream* pStream, DemuxPacket* pPacket)
   CheckStartCaching(m_CurrentAudio);
 
   CheckContinuity(m_CurrentAudio, pPacket);
-  if(pPacket->dts != DVD_NOPTS_VALUE)
-    m_CurrentAudio.dts = pPacket->dts;
-  else if(pPacket->pts != DVD_NOPTS_VALUE)
-    m_CurrentAudio.dts = pPacket->pts;
+  UpdateTimestamps(m_CurrentAudio, pPacket);
 
   bool drop = false;
   if (CheckPlayerInit(m_CurrentAudio, DVDPLAYER_AUDIO))
@@ -1198,10 +1195,7 @@ void CDVDPlayer::ProcessVideoData(CDemuxStream* pStream, DemuxPacket* pPacket)
   if( pPacket->iSize != 4) //don't check the EOF_SEQUENCE of stillframes
   {
     CheckContinuity(m_CurrentVideo, pPacket);
-    if(pPacket->dts != DVD_NOPTS_VALUE)
-      m_CurrentVideo.dts = pPacket->dts;
-    else if(pPacket->pts != DVD_NOPTS_VALUE)
-      m_CurrentVideo.dts = pPacket->pts;
+    UpdateTimestamps(m_CurrentVideo, pPacket);
   }
 
   bool drop = false;
@@ -1226,10 +1220,8 @@ void CDVDPlayer::ProcessSubData(CDemuxStream* pStream, DemuxPacket* pPacket)
 
     m_CurrentSubtitle.stream = (void*)pStream;
   }
-  if(pPacket->dts != DVD_NOPTS_VALUE)
-    m_CurrentSubtitle.dts = pPacket->dts;
-  else if(pPacket->pts != DVD_NOPTS_VALUE)
-    m_CurrentSubtitle.dts = pPacket->pts;
+
+  UpdateTimestamps(m_CurrentSubtitle, pPacket);
 
   bool drop = false;
   if (CheckPlayerInit(m_CurrentSubtitle, DVDPLAYER_SUBTITLE))
@@ -1489,6 +1481,17 @@ bool CDVDPlayer::CheckPlayerInit(CCurrentStream& current, unsigned int source)
   return false;
 }
 
+void CDVDPlayer::UpdateTimestamps(CCurrentStream& current, DemuxPacket* pPacket)
+{
+  double dts = current.dts;
+  /* update stored values */
+  if(pPacket->dts != DVD_NOPTS_VALUE)
+    dts = pPacket->dts;
+  else if(pPacket->pts != DVD_NOPTS_VALUE)
+    dts = pPacket->pts;
+
+  current.dts = dts;
+}
 void CDVDPlayer::CheckContinuity(CCurrentStream& current, DemuxPacket* pPacket)
 {
   if (m_playSpeed < DVD_PLAYSPEED_PAUSE)
