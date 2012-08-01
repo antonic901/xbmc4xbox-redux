@@ -1,16 +1,103 @@
 Entries are sorted chronologically from oldest to youngest within each release,
 releases are sorted from youngest to oldest.
 
-
 version next:
+
+
+version 0.10.4:
+
+- Several bugs and crashes have been fixed
+  Note, CVE-2012-0851 and CVE-2011-3937 have been fixed in previous releases
+
+version 0.10.3:
+
+- Security fixes in the 4xm demuxer, avi demuxer, cook decoder,
+  mm demuxer, mpegvideo decoder, vqavideo decoder (CVE-2012-0947) and
+  xmv demuxer.
+
+- Several bugs and crashes have been fixed in the following codecs: AAC,
+  APE, H.263, H.264, Indeo 4, Mimic, MJPEG, Motion Pixels Video, RAW,
+  TTA, VC1, VQA, WMA Voice, vqavideo.
+
+- Several bugs and crashes have been fixed in the following formats:
+  ASF, ID3v2, MOV, xWMA
+
+- This release additionally updates the following codecs to the
+  bytestream2 API, and therefore benefit from additional overflow
+  checks: truemotion2, utvideo, vqavideo
+
+
+version 0.10.1
+- Several security fixes, many bugfixes affecting many formats and
+  codecs, the list below is not complete.
+
+- swapuv filter
+
+- Several bugs and crashes have been fixed in the following codecs: AAC,
+  AC-3, ADPCM, AMR (both NB and WB), ATRAC3, CAVC, Cook, camstudio, DCA,
+  DPCM, DSI CIN, DV, EA TGQ, FLAC, fraps, G.722 (both encoder and
+  decoder), H.264, huvffyuv, BB JV decoder, Indeo 3, KGV1, LCL, the
+  libx264 wrapper, MJPEG, mp3on4, Musepack, MPEG1/2, PNG, QDM2, Qt RLE,
+  ROQ, RV10, RV30/RV34/RV40, shorten, smacker, subrip, SVQ3, TIFF,
+  Truemotion2, TTA, VC1, VMware Screen codec, Vorbis, VP5, VP6, WMA,
+  Westwood SNDx, XXAN.
+
+- This release additionally updates the following codecs to the
+  bytestream2 API, and therefore benefit from additional overflow
+  checks: XXAN, ALG MM, TQG, SMC, Qt SMC, ROQ, PNG
+
+- Several bugs and crashes have been fixed in the following formats:
+  AIFF, ASF, DV, Matroska, NSV, MOV, MPEG-TS, Smacker, Sony OpenMG, RM,
+  SWF.
+
+- Libswscale has an potential overflow for large image size fixed.
+
+- The following APIs have been added:
+
+  avcodec_is_open()
+  avformat_get_riff_video_tags()
+  avformat_get_riff_audio_tags()
+
+  Please see the file doc/APIchanges and the Doxygen documentation for
+  further information.
+
+
+version 0.10:
+- Fixes: CVE-2011-3929, CVE-2011-3934, CVE-2011-3935, CVE-2011-3936,
+         CVE-2011-3937, CVE-2011-3940, CVE-2011-3941, CVE-2011-3944,
+         CVE-2011-3945, CVE-2011-3946, CVE-2011-3947, CVE-2011-3949,
+         CVE-2011-3950, CVE-2011-3951, CVE-2011-3952
 - v410 Quicktime Uncompressed 4:4:4 10-bit encoder and decoder
 - SBaGen (SBG) binaural beats script demuxer
 - OpenMG Audio muxer
-- SMJPEG demuxer
-- dv: add timecode to metadata
+- Timecode extraction in DV and MOV
 - thumbnail video filter
 - XML output in ffprobe
 - asplit audio filter
+- tinterlace video filter
+- astreamsync audio filter
+- amerge audio filter
+- ISMV (Smooth Streaming) muxer
+- GSM audio parser
+- SMJPEG muxer
+- XWD encoder and decoder
+- Automatic thread count based on detection number of (available) CPU cores
+- y41p Brooktree Uncompressed 4:1:1 12-bit encoder and decoder
+- ffprobe -show_error option
+- Avid 1:1 10-bit RGB Packer codec
+- v308 Quicktime Uncompressed 4:4:4 encoder and decoder
+- yuv4 libquicktime packed 4:2:0 encoder and decoder
+- ffprobe -show_frames option
+- silencedetect audio filter
+- ffprobe -show_program_version, -show_library_versions, -show_versions options
+- rv34: frame-level multi-threading
+- optimized iMDCT transform on x86 using SSE for for mpegaudiodec
+- Improved PGS subtitle decoder
+- dumpgraph option to lavfi device
+- r210 and r10k encoders
+- ffwavesynth decoder
+- aviocat tool
+- ffeval tool
 
 
 version 0.9:
@@ -137,7 +224,7 @@ easier to use. The changes are:
 - pan audio filter
 - IFF Amiga Continuous Bitmap (ACBM) decoder
 - ass filter
-- CRI ADX audio format demuxer
+- CRI ADX audio format muxer and demuxer
 - Playstation Portable PMP format demuxer
 - Microsoft Windows ICO demuxer
 - life source
@@ -147,6 +234,8 @@ easier to use. The changes are:
 - Dxtory capture format decoder
 - cellauto source
 - Simple segmenting muxer
+- Indeo 4 decoder
+- SMJPEG demuxer
 
 
 version 0.8:

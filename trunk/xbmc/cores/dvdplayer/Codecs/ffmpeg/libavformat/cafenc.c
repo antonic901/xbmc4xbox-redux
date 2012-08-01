@@ -24,7 +24,7 @@
 #include "riff.h"
 #include "isom.h"
 #include "avio_internal.h"
-#include "libavutil/intfloat_readwrite.h"
+#include "libavutil/intfloat.h"
 
 typedef struct {
     int64_t data;
@@ -144,7 +144,7 @@ static int caf_write_header(AVFormatContext *s)
 
     ffio_wfourcc(pb, "desc");                         //< Audio Description chunk
     avio_wb64(pb, 32);                                //< mChunkSize
-    avio_wb64(pb, av_dbl2int(enc->sample_rate));      //< mSampleRate
+    avio_wb64(pb, av_double2int(enc->sample_rate));   //< mSampleRate
     avio_wl32(pb, codec_tag);                         //< mFormatID
     avio_wb32(pb, codec_flags(enc->codec_id));        //< mFormatFlags
     avio_wb32(pb, enc->block_align);                  //< mBytesPerPacket
@@ -248,15 +248,15 @@ static int caf_write_trailer(AVFormatContext *s)
 }
 
 AVOutputFormat ff_caf_muxer = {
-    "caf",
-    NULL_IF_CONFIG_SMALL("Apple Core Audio Format"),
-    "audio/x-caf",
-    "caf",
-    sizeof(CAFContext),
-    CODEC_ID_PCM_S16BE,
-    CODEC_ID_NONE,
-    caf_write_header,
-    caf_write_packet,
-    caf_write_trailer,
+    .name           = "caf",
+    .long_name      = NULL_IF_CONFIG_SMALL("Apple Core Audio Format"),
+    .mime_type      = "audio/x-caf",
+    .extensions     = "caf",
+    .priv_data_size = sizeof(CAFContext),
+    .audio_codec    = CODEC_ID_PCM_S16BE,
+    .video_codec    = CODEC_ID_NONE,
+    .write_header   = caf_write_header,
+    .write_packet   = caf_write_packet,
+    .write_trailer  = caf_write_trailer,
     .codec_tag= (const AVCodecTag* const []){ff_codec_caf_tags, 0},
 };

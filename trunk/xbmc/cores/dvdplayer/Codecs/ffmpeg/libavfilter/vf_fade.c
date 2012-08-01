@@ -149,7 +149,7 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    const static enum PixelFormat pix_fmts[] = {
+    static const enum PixelFormat pix_fmts[] = {
         PIX_FMT_YUV444P,  PIX_FMT_YUV422P,  PIX_FMT_YUV420P,
         PIX_FMT_YUV411P,  PIX_FMT_YUV410P,
         PIX_FMT_YUVJ444P, PIX_FMT_YUVJ422P, PIX_FMT_YUVJ420P,
@@ -191,9 +191,9 @@ static int config_props(AVFilterLink *inlink)
     fade->alpha = fade->alpha ? ff_fmt_is_in(inlink->format, alpha_pix_fmts) : 0;
     fade->is_packed_rgb = ff_fill_rgba_map(fade->rgba_map, inlink->format) >= 0;
 
-    /* CCIR601/709 black level unless input is RGB or has alpha */
+    /* use CCIR601/709 black level for studio-level pixel non-alpha components */
     fade->black_level =
-            ff_fmt_is_in(inlink->format, studio_level_pix_fmts) || fade->alpha ? 0 : 16;
+            ff_fmt_is_in(inlink->format, studio_level_pix_fmts) && !fade->alpha ? 16 : 0;
     /* 32768 = 1 << 15, it is an integer representation
      * of 0.5 and is for rounding. */
     fade->black_level_scaled = (fade->black_level << 16) + 32768;
@@ -278,7 +278,7 @@ static void end_frame(AVFilterLink *inlink)
 
 AVFilter avfilter_vf_fade = {
     .name          = "fade",
-    .description   = NULL_IF_CONFIG_SMALL("Fade in/out input video"),
+    .description   = NULL_IF_CONFIG_SMALL("Fade in/out input video."),
     .init          = init,
     .uninit        = uninit,
     .priv_size     = sizeof(FadeContext),

@@ -20,7 +20,6 @@
  */
 
 #include "avcodec.h"
-#include "bytestream.h"
 #include "put_bits.h"
 #include "pnm.h"
 
@@ -58,10 +57,20 @@ static int pnm_decode_frame(AVCodecContext *avctx, void *data,
     switch (avctx->pix_fmt) {
     default:
         return -1;
+    case PIX_FMT_RGBA64BE:
+        n = avctx->width * 8;
+        components=4;
+        sample_len=16;
+        goto do_read;
     case PIX_FMT_RGB48BE:
         n = avctx->width * 6;
         components=3;
         sample_len=16;
+        goto do_read;
+    case PIX_FMT_RGBA:
+        n = avctx->width * 4;
+        components=4;
+        sample_len=8;
         goto do_read;
     case PIX_FMT_RGB24:
         n = avctx->width * 3;
@@ -74,6 +83,11 @@ static int pnm_decode_frame(AVCodecContext *avctx, void *data,
         sample_len=8;
         if (s->maxval < 255)
             upgrade = 1;
+        goto do_read;
+    case PIX_FMT_GRAY8A:
+        n = avctx->width * 2;
+        components=2;
+        sample_len=8;
         goto do_read;
     case PIX_FMT_GRAY16BE:
     case PIX_FMT_GRAY16LE:
@@ -166,24 +180,6 @@ static int pnm_decode_frame(AVCodecContext *avctx, void *data,
                 ptr1 += p->linesize[1];
                 ptr2 += p->linesize[2];
             }
-        }
-        break;
-    case PIX_FMT_RGB32:
-        ptr      = p->data[0];
-        linesize = p->linesize[0];
-        if (s->bytestream + avctx->width * avctx->height * 4 > s->bytestream_end)
-            return -1;
-        for (i = 0; i < avctx->height; i++) {
-            int j, r, g, b, a;
-
-            for (j = 0; j < avctx->width; j++) {
-                r = *s->bytestream++;
-                g = *s->bytestream++;
-                b = *s->bytestream++;
-                a = *s->bytestream++;
-                ((uint32_t *)ptr)[j] = (a << 24) | (r << 16) | (g << 8) | b;
-            }
-            ptr += linesize;
         }
         break;
     }

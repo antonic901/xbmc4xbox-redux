@@ -81,7 +81,9 @@
         "add    "tmp"       , "low"                                     \n\t"\
         "1:                                                             \n\t"
 
-#if HAVE_7REGS && !defined(BROKEN_RELOCATIONS)
+
+#if HAVE_7REGS && !defined(BROKEN_RELOCATIONS) && !(defined(__i386) && defined(__clang__) && (__clang_major__<2 || (__clang_major__==2 && __clang_minor__<10)))\
+                                               && !(defined(__i386) && !defined(__clang__) && defined(__llvm__) && __GNUC__==4 && __GNUC_MINOR__==2 && __GNUC_PATCHLEVEL__<=1)
 #define get_cabac_inline get_cabac_inline_x86
 static av_always_inline int get_cabac_inline_x86(CABACContext *c,
                                                  uint8_t *const state)
@@ -105,8 +107,8 @@ static av_always_inline int get_cabac_bypass_sign_x86(CABACContext *c, int val)
 {
     x86_reg tmp;
     __asm__ volatile(
-        "movl %4, %k1                           \n\t"
-        "movl %2, %%eax                         \n\t"
+        "movl %a5(%2), %k1                      \n\t"
+        "movl %a3(%2), %%eax                    \n\t"
         "shl $17, %k1                           \n\t"
         "add %%eax, %%eax                       \n\t"
         "sub %k1, %%eax                         \n\t"
@@ -117,20 +119,23 @@ static av_always_inline int get_cabac_bypass_sign_x86(CABACContext *c, int val)
         "sub %%edx, %%ecx                       \n\t"
         "test %%ax, %%ax                        \n\t"
         " jnz 1f                                \n\t"
-        "mov  %3, %1                            \n\t"
+        "mov  %a4(%2), %1                       \n\t"
         "subl $0xFFFF, %%eax                    \n\t"
         "movzwl (%1), %%edx                     \n\t"
         "bswap %%edx                            \n\t"
         "shrl $15, %%edx                        \n\t"
         "add  $2, %1                            \n\t"
         "addl %%edx, %%eax                      \n\t"
-        "mov  %1, %3                            \n\t"
+        "mov  %1, %a4(%2)                       \n\t"
         "1:                                     \n\t"
-        "movl %%eax, %2                         \n\t"
+        "movl %%eax, %a3(%2)                    \n\t"
 
-        :"+c"(val), "=&r"(tmp), "+m"(c->low), "+m"(c->bytestream)
-        :"m"(c->range)
-        : "%eax", "%edx"
+        : "+c"(val), "=&r"(tmp)
+        : "r"(c),
+          "i"(offsetof(CABACContext, low)),
+          "i"(offsetof(CABACContext, bytestream)),
+          "i"(offsetof(CABACContext, range))
+        : "%eax", "%edx", "memory"
     );
     return val;
 }

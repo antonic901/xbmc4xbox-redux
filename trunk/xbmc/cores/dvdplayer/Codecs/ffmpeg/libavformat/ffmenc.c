@@ -207,7 +207,7 @@ static int ffm_write_packet(AVFormatContext *s, AVPacket *pkt)
     uint8_t header[FRAME_HEADER_SIZE+4];
     int header_size = FRAME_HEADER_SIZE;
 
-    dts = s->timestamp + pkt->dts;
+    dts = pkt->dts;
     /* packet size & key_frame */
     header[0] = pkt->stream_index;
     header[1] = 0;
@@ -215,7 +215,7 @@ static int ffm_write_packet(AVFormatContext *s, AVPacket *pkt)
         header[1] |= FLAG_KEY_FRAME;
     AV_WB24(header+2, pkt->size);
     AV_WB24(header+5, pkt->duration);
-    AV_WB64(header+8, s->timestamp + pkt->pts);
+    AV_WB64(header+8, pkt->pts);
     if (pkt->pts != pkt->dts) {
         header[1] |= FLAG_DTS;
         AV_WB32(header+16, pkt->pts - pkt->dts);
@@ -244,7 +244,6 @@ static int ffm_write_trailer(AVFormatContext *s)
 AVOutputFormat ff_ffm_muxer = {
     .name              = "ffm",
     .long_name         = NULL_IF_CONFIG_SMALL("FFM (FFserver live feed) format"),
-    .mime_type         = "",
     .extensions        = "ffm",
     .priv_data_size    = sizeof(FFMContext),
     .audio_codec       = CODEC_ID_MP2,

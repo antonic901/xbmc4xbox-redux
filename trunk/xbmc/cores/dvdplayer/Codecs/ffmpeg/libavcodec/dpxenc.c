@@ -53,6 +53,12 @@ static av_cold int encode_init(AVCodecContext *avctx)
     case PIX_FMT_RGB48BE:
         s->bits_per_component = avctx->bits_per_raw_sample ? avctx->bits_per_raw_sample : 16;
         break;
+    case PIX_FMT_RGBA64LE:
+        s->big_endian = 0;
+    case PIX_FMT_RGBA64BE:
+        s->descriptor = 51;
+        s->bits_per_component = 16;
+        break;
     default:
         av_log(avctx, AV_LOG_INFO, "unsupported pixel format\n");
         return -1;
@@ -115,7 +121,9 @@ static int encode_frame(AVCodecContext *avctx, unsigned char *buf, int buf_size,
     memcpy (buf +   8, "V1.0", 4);
     write32(buf +  20, 1); /* new image */
     write32(buf +  24, HEADER_SIZE);
-    memcpy (buf + 160, LIBAVCODEC_IDENT, FFMIN(sizeof(LIBAVCODEC_IDENT), 100));
+    if(!(avctx->flags & CODEC_FLAG_BITEXACT)){
+        memcpy (buf + 160, LIBAVCODEC_IDENT, FFMIN(sizeof(LIBAVCODEC_IDENT), 100));
+    }
     write32(buf + 660, 0xFFFFFFFF); /* unencrypted */
 
     /* Image information header */
@@ -171,6 +179,8 @@ AVCodec ff_dpx_encoder = {
         PIX_FMT_RGBA,
         PIX_FMT_RGB48LE,
         PIX_FMT_RGB48BE,
+        PIX_FMT_RGBA64LE,
+        PIX_FMT_RGBA64BE,
         PIX_FMT_NONE},
     .long_name = NULL_IF_CONFIG_SMALL("DPX image"),
 };

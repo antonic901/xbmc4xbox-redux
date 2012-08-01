@@ -1273,7 +1273,7 @@ static int mpeg_decode_postinit(AVCodecContext *avctx)
 
         /* low_delay may be forced, in this case we will have B-frames
          * that behave like P-frames. */
-        avctx->has_b_frames = !(s->low_delay);
+        avctx->has_b_frames = !s->low_delay;
 
         assert((avctx->sub_id == 1) == (avctx->codec_id == CODEC_ID_MPEG1VIDEO));
         if (avctx->codec_id == CODEC_ID_MPEG1VIDEO) {
@@ -1694,7 +1694,7 @@ static int mpeg_decode_slice(MpegEncContext *s, int mb_y,
     if (mb_y == 0 && s->codec_tag == AV_RL32("SLIF")) {
         skip_bits1(&s->gb);
     } else {
-        for (;;) {
+        while (get_bits_left(&s->gb) > 0) {
             int code = get_vlc2(&s->gb, mbincr_vlc.table, MBINCR_VLC_BITS, 2);
             if (code < 0) {
                 av_log(s->avctx, AV_LOG_ERROR, "first mb_incr damaged\n");
@@ -2075,8 +2075,6 @@ static int vcr2_init_sequence(AVCodecContext *avctx)
 
     if (MPV_common_init(s) < 0)
         return -1;
-    exchange_uv(s); // common init reset pblocks, so we swap them here
-    s->swap_uv = 1; // in case of xvmc we need to swap uv for each MB
     s1->mpeg_enc_ctx_allocated = 1;
 
     for (i = 0; i < 64; i++) {
@@ -2096,8 +2094,15 @@ static int vcr2_init_sequence(AVCodecContext *avctx)
     s->first_field           = 0;
     s->frame_pred_frame_dct  = 1;
     s->chroma_format         = 1;
-    s->codec_id              = s->avctx->codec_id = CODEC_ID_MPEG2VIDEO;
-    avctx->sub_id            = 2; /* indicates MPEG-2 */
+    if (s->codec_tag == AV_RL32("BW10")) {
+        s->codec_id              = s->avctx->codec_id = CODEC_ID_MPEG1VIDEO;
+        avctx->sub_id            = 1; /* indicates MPEG-1 */
+    } else {
+        exchange_uv(s); // common init reset pblocks, so we swap them here
+        s->swap_uv = 1; // in case of xvmc we need to swap uv for each MB
+        s->codec_id              = s->avctx->codec_id = CODEC_ID_MPEG2VIDEO;
+        avctx->sub_id            = 2; /* indicates MPEG-2 */
+    }
     s1->save_width           = s->width;
     s1->save_height          = s->height;
     s1->save_progressive_seq = s->progressive_sequence;
@@ -2211,6 +2216,7 @@ int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, 
                 pc->frame_start_found = 4;
             }
             if (state == SEQ_END_CODE) {
+                pc->frame_start_found = 0;
                 pc->state=-1;
                 return i+1;
             }
@@ -2268,7 +2274,10 @@ static int mpeg_decode_frame(AVCodecContext *avctx,
             return buf_size;
     }
 
-    if (s->mpeg_enc_ctx_allocated == 0 && avctx->codec_tag == AV_RL32("VCR2"))
+    s2->codec_tag = avpriv_toupper4(avctx->codec_tag);
+    if (s->mpeg_enc_ctx_allocated == 0 && (   s2->codec_tag == AV_RL32("VCR2")
+                                           || s2->codec_tag == AV_RL32("BW10")
+                                          ))
         vcr2_init_sequence(avctx);
 
     s->slice_count = 0;
@@ -2485,7 +2494,9 @@ static int decode_chunks(AVCodecContext *avctx,
                 }
 
                 if (HAVE_THREADS && (avctx->active_thread_type & FF_THREAD_SLICE)) {
-                    int threshold= (s2->mb_height*s->slice_count + avctx->thread_count/2) / avctx->thread_count;
+                    int threshold = (s2->mb_height * s->slice_count +
+                                     s2->slice_context_count / 2) /
+                                    s2->slice_context_count;
                     av_assert0(avctx->thread_count > 1);
                     if (threshold <= mb_y) {
                         MpegEncContext *thread_context = s2->thread_context[s->slice_count];

@@ -579,6 +579,14 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
 
 // Precalculate order of x coordinates - needed for decode
             ff_vorbis_ready_floor1_list(floor_setup->data.t1.list, floor_setup->data.t1.x_list_dim);
+
+            for (j=1; j<floor_setup->data.t1.x_list_dim; j++) {
+                if (   floor_setup->data.t1.list[ floor_setup->data.t1.list[j-1].sort ].x
+                    == floor_setup->data.t1.list[ floor_setup->data.t1.list[j  ].sort ].x) {
+                    av_log(vc->avccontext, AV_LOG_ERROR, "Non unique x values in floor type 1\n");
+                    return AVERROR_INVALIDDATA;
+                }
+            }
         } else if (floor_setup->floor_type == 0) {
             unsigned max_codebook_dim = 0;
 
@@ -679,7 +687,7 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
         res_setup->partition_size = get_bits(gb, 24) + 1;
         /* Validations to prevent a buffer overflow later. */
         if (res_setup->begin>res_setup->end ||
-            res_setup->end > vc->avccontext->channels * vc->blocksize[1] / 2 ||
+            res_setup->end > (res_setup->type == 2 ? vc->avccontext->channels : 1) * vc->blocksize[1] / 2 ||
             (res_setup->end-res_setup->begin) / res_setup->partition_size > V_MAX_PARTITIONS) {
             av_log(vc->avccontext, AV_LOG_ERROR,
                    "partition out of bounds: type, begin, end, size, blocksize: %"PRIu16", %"PRIu32", %"PRIu32", %u, %"PRIu32"\n",
@@ -820,8 +828,7 @@ static void create_map(vorbis_context *vc, unsigned floor_number)
 
         for (idx = 0; idx < n; ++idx) {
             map[idx] = floor(BARK((vf->rate * idx) / (2.0f * n)) *
-                             ((vf->bark_map_size) /
-                              BARK(vf->rate / 2.0f)));
+                             (vf->bark_map_size / BARK(vf->rate / 2.0f)));
             if (vf->bark_map_size-1 < map[idx])
                 map[idx] = vf->bark_map_size - 1;
         }
@@ -935,12 +942,12 @@ static int vorbis_parse_id_hdr(vorbis_context *vc)
     vc->bitrate_minimum = get_bits_long(gb, 32);
     bl0 = get_bits(gb, 4);
     bl1 = get_bits(gb, 4);
-    vc->blocksize[0] = (1 << bl0);
-    vc->blocksize[1] = (1 << bl1);
     if (bl0 > 13 || bl0 < 6 || bl1 > 13 || bl1 < 6 || bl1 < bl0) {
         av_log(vc->avccontext, AV_LOG_ERROR, " Vorbis id header packet corrupt (illegal blocksize). \n");
         return AVERROR_INVALIDDATA;
     }
+    vc->blocksize[0] = (1 << bl0);
+    vc->blocksize[1] = (1 << bl1);
     vc->win[0] = ff_vorbis_vwin[bl0 - 6];
     vc->win[1] = ff_vorbis_vwin[bl1 - 6];
 
@@ -979,7 +986,7 @@ static av_cold int vorbis_decode_init(AVCodecContext *avccontext)
     int headers_len    = avccontext->extradata_size;
     uint8_t *header_start[3];
     int header_len[3];
-    GetBitContext *gb = &(vc->gb);
+    GetBitContext *gb = &vc->gb;
     int hdr_type, ret;
 
     vc->avccontext = avccontext;
@@ -1249,20 +1256,20 @@ static int vorbis_floor1_decode(vorbis_context *vc,
             floor1_flag[i]               = 1;
             if (val >= room) {
                 if (highroom > lowroom) {
-                    floor1_Y_final[i] = val - lowroom + predicted;
+                    floor1_Y_final[i] = av_clip_uint16(val - lowroom + predicted);
                 } else {
-                    floor1_Y_final[i] = predicted - val + highroom - 1;
+                    floor1_Y_final[i] = av_clip_uint16(predicted - val + highroom - 1);
                 }
             } else {
                 if (val & 1) {
-                    floor1_Y_final[i] = predicted - (val + 1) / 2;
+                    floor1_Y_final[i] = av_clip_uint16(predicted - (val + 1) / 2);
                 } else {
-                    floor1_Y_final[i] = predicted + val / 2;
+                    floor1_Y_final[i] = av_clip_uint16(predicted + val / 2);
                 }
             }
         } else {
             floor1_flag[i]    = 0;
-            floor1_Y_final[i] = predicted;
+            floor1_Y_final[i] = av_clip_uint16(predicted);
         }
 
         av_dlog(NULL, " Decoded floor(%d) = %u / val %u\n",
@@ -1286,6 +1293,7 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
                                                            uint8_t *do_not_decode,
                                                            float *vec,
                                                            unsigned vlen,
+                                                           unsigned ch_left,
                                                            int vr_type)
 {
     GetBitContext *gb = &vc->gb;
@@ -1293,6 +1301,7 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
     unsigned ptns_to_read = vr->ptns_to_read;
     uint8_t *classifs = vr->classifs;
     unsigned pass, ch_used, i, j, k, l;
+    unsigned max_output = (ch - 1) * vlen;
 
     if (vr_type == 2) {
         for (j = 1; j < ch; ++j)
@@ -1300,8 +1309,15 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
         if (do_not_decode[0])
             return 0;
         ch_used = 1;
+        max_output += vr->end / ch;
     } else {
         ch_used = ch;
+        max_output += vr->end;
+    }
+
+    if (max_output > ch_left * vlen) {
+        av_log(vc->avccontext, AV_LOG_ERROR, "Insufficient output buffer\n");
+        return -1;
     }
 
     av_dlog(NULL, " residue type 0/1/2 decode begin, ch: %d  cpc %d  \n", ch, c_p_c);
@@ -1428,14 +1444,15 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
 static inline int vorbis_residue_decode(vorbis_context *vc, vorbis_residue *vr,
                                         unsigned ch,
                                         uint8_t *do_not_decode,
-                                        float *vec, unsigned vlen)
+                                        float *vec, unsigned vlen,
+                                        unsigned ch_left)
 {
     if (vr->type == 2)
-        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, 2);
+        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, ch_left, 2);
     else if (vr->type == 1)
-        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, 1);
+        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, ch_left, 1);
     else if (vr->type == 0)
-        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, 0);
+        return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, ch_left, 0);
     else {
         av_log(vc->avccontext, AV_LOG_ERROR, " Invalid residue type while residue decode?! \n");
         return AVERROR_INVALIDDATA;
@@ -1483,6 +1500,8 @@ static int vorbis_parse_audio_packet(vorbis_context *vc)
     uint8_t res_chan[255];
     unsigned res_num = 0;
     int retlen  = 0;
+    unsigned ch_left = vc->audio_channels;
+    unsigned vlen;
 
     if (get_bits1(gb)) {
         av_log(vc->avccontext, AV_LOG_ERROR, "Not a Vorbis I audio packet.\n");
@@ -1502,11 +1521,12 @@ static int vorbis_parse_audio_packet(vorbis_context *vc)
 
     blockflag = vc->modes[mode_number].blockflag;
     blocksize = vc->blocksize[blockflag];
+    vlen = blocksize / 2;
     if (blockflag)
         skip_bits(gb, 2); // previous_window, next_window
 
-    memset(ch_res_ptr,   0, sizeof(float) * vc->audio_channels * blocksize / 2); //FIXME can this be removed ?
-    memset(ch_floor_ptr, 0, sizeof(float) * vc->audio_channels * blocksize / 2); //FIXME can this be removed ?
+    memset(ch_res_ptr,   0, sizeof(float) * vc->audio_channels * vlen); //FIXME can this be removed ?
+    memset(ch_floor_ptr, 0, sizeof(float) * vc->audio_channels * vlen); //FIXME can this be removed ?
 
 // Decode floor
 
@@ -1526,7 +1546,7 @@ static int vorbis_parse_audio_packet(vorbis_context *vc)
             return AVERROR_INVALIDDATA;
         }
         no_residue[i] = ret;
-        ch_floor_ptr += blocksize / 2;
+        ch_floor_ptr += vlen;
     }
 
 // Nonzero vector propagate
@@ -1543,6 +1563,7 @@ static int vorbis_parse_audio_packet(vorbis_context *vc)
     for (i = 0; i < mapping->submaps; ++i) {
         vorbis_residue *residue;
         unsigned ch = 0;
+        int ret;
 
         for (j = 0; j < vc->audio_channels; ++j) {
             if ((mapping->submaps == 1) || (i == mapping->mux[j])) {
@@ -1557,9 +1578,18 @@ static int vorbis_parse_audio_packet(vorbis_context *vc)
             }
         }
         residue = &vc->residues[mapping->submap_residue[i]];
-        vorbis_residue_decode(vc, residue, ch, do_not_decode, ch_res_ptr, blocksize/2);
+        if (ch_left < ch) {
+            av_log(vc->avccontext, AV_LOG_ERROR, "Too many channels in vorbis_floor_decode.\n");
+            return -1;
+        }
+        if (ch) {
+            ret = vorbis_residue_decode(vc, residue, ch, do_not_decode, ch_res_ptr, vlen, ch_left);
+            if (ret < 0)
+                return ret;
+        }
 
-        ch_res_ptr += ch * blocksize / 2;
+        ch_res_ptr += ch * vlen;
+        ch_left -= ch;
     }
 
 // Inverse coupling
@@ -1619,7 +1649,7 @@ static int vorbis_decode_frame(AVCodecContext *avccontext, void *data,
     const uint8_t *buf = avpkt->data;
     int buf_size       = avpkt->size;
     vorbis_context *vc = avccontext->priv_data;
-    GetBitContext *gb = &(vc->gb);
+    GetBitContext *gb = &vc->gb;
     const float *channel_ptrs[255];
     int i, len, ret;
 

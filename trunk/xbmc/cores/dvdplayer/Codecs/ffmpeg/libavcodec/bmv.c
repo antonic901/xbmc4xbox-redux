@@ -21,6 +21,7 @@
 
 #include "avcodec.h"
 #include "bytestream.h"
+#include "libavutil/avassert.h"
 
 enum BMVFlags{
     BMV_NOP = 0,
@@ -52,7 +53,7 @@ typedef struct BMVDecContext {
 
 static int decode_bmv_frame(const uint8_t *source, int src_len, uint8_t *frame, int frame_off)
 {
-    int val, saved_val = 0;
+    unsigned val, saved_val = 0;
     int tmplen = src_len;
     const uint8_t *src, *source_end = source + src_len;
     uint8_t *frame_end = frame + SCREEN_WIDE * SCREEN_HIGH;
@@ -98,6 +99,8 @@ static int decode_bmv_frame(const uint8_t *source, int src_len, uint8_t *frame, 
         }
         if (!(val & 0xC)) {
             for (;;) {
+                if(shift>22)
+                    return -1;
                 if (!read_two_nibbles) {
                     if (src < source || src >= source_end)
                         return -1;
@@ -131,6 +134,7 @@ static int decode_bmv_frame(const uint8_t *source, int src_len, uint8_t *frame, 
         }
         advance_mode = val & 1;
         len = (val >> 1) - 1;
+        av_assert0(len>0);
         mode += 1 + advance_mode;
         if (mode >= 4)
             mode -= 3;
@@ -139,7 +143,7 @@ static int decode_bmv_frame(const uint8_t *source, int src_len, uint8_t *frame, 
         switch (mode) {
         case 1:
             if (forward) {
-                if (dst - frame + SCREEN_WIDE < frame_off ||
+                if (dst - frame + SCREEN_WIDE < -frame_off ||
                         frame_end - dst < frame_off + len)
                     return -1;
                 for (i = 0; i < len; i++)
@@ -147,7 +151,7 @@ static int decode_bmv_frame(const uint8_t *source, int src_len, uint8_t *frame, 
                 dst += len;
             } else {
                 dst -= len;
-                if (dst - frame + SCREEN_WIDE < frame_off ||
+                if (dst - frame + SCREEN_WIDE < -frame_off ||
                         frame_end - dst < frame_off + len)
                     return -1;
                 for (i = len - 1; i >= 0; i--)
@@ -285,12 +289,17 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
+typedef struct BMVAudioDecContext {
+    AVFrame frame;
+} BMVAudioDecContext;
+
 static const int bmv_aud_mults[16] = {
     16512, 8256, 4128, 2064, 1032, 516, 258, 192, 129, 88, 64, 56, 48, 40, 36, 32
 };
 
 static av_cold int bmv_aud_decode_init(AVCodecContext *avctx)
 {
+    BMVAudioDecContext *c = avctx->priv_data;
 
     if (avctx->channels != 2) {
         av_log(avctx, AV_LOG_INFO, "invalid number of channels\n");
@@ -299,17 +308,21 @@ static av_cold int bmv_aud_decode_init(AVCodecContext *avctx)
 
     avctx->sample_fmt = AV_SAMPLE_FMT_S16;
 
+    avcodec_get_frame_defaults(&c->frame);
+    avctx->coded_frame = &c->frame;
+
     return 0;
 }
 
-static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data, int *data_size,
-                                AVPacket *avpkt)
+static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data,
+                                int *got_frame_ptr, AVPacket *avpkt)
 {
+    BMVAudioDecContext *c = avctx->priv_data;
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
     int blocks = 0, total_blocks, i;
-    int out_size;
-    int16_t *output_samples = data;
+    int ret;
+    int16_t *output_samples;
     int scale[2];
 
     total_blocks = *buf++;
@@ -318,11 +331,14 @@ static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data, int *data_siz
                total_blocks * 65 + 1, buf_size);
         return AVERROR_INVALIDDATA;
     }
-    out_size = total_blocks * 64 * sizeof(*output_samples);
-    if (*data_size < out_size) {
-        av_log(avctx, AV_LOG_ERROR, "Output buffer is too small\n");
-        return AVERROR(EINVAL);
+
+    /* get output buffer */
+    c->frame.nb_samples = total_blocks * 32;
+    if ((ret = avctx->get_buffer(avctx, &c->frame)) < 0) {
+        av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
+        return ret;
     }
+    output_samples = (int16_t *)c->frame.data[0];
 
     for (blocks = 0; blocks < total_blocks; blocks++) {
         uint8_t code = *buf++;
@@ -335,7 +351,9 @@ static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data, int *data_siz
         }
     }
 
-    *data_size = out_size;
+    *got_frame_ptr   = 1;
+    *(AVFrame *)data = c->frame;
+
     return buf_size;
 }
 
@@ -354,7 +372,9 @@ AVCodec ff_bmv_audio_decoder = {
     .name           = "bmv_audio",
     .type           = AVMEDIA_TYPE_AUDIO,
     .id             = CODEC_ID_BMV_AUDIO,
+    .priv_data_size = sizeof(BMVAudioDecContext),
     .init           = bmv_aud_decode_init,
     .decode         = bmv_aud_decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name      = NULL_IF_CONFIG_SMALL("Discworld II BMV audio"),
 };

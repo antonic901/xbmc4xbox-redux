@@ -243,7 +243,7 @@ static int encode_frame(AVCodecContext *avctx, uint8_t *buf, int buf_size, void 
         c->keyint = 0;
     else
         c->keyint++;
-    p->pict_type= keyframe ? FF_I_TYPE : FF_P_TYPE;
+    p->pict_type= keyframe ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_P;
     p->key_frame= keyframe;
 
     return dst - buf;
@@ -290,13 +290,13 @@ static av_cold int encode_end(AVCodecContext *avctx)
 }
 
 AVCodec ff_msvideo1_encoder = {
-    "msvideo1",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_MSVIDEO1,
-    sizeof(Msvideo1EncContext),
-    encode_init,
-    encode_frame,
-    encode_end,
+    .name           = "msvideo1",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_MSVIDEO1,
+    .priv_data_size = sizeof(Msvideo1EncContext),
+    .init           = encode_init,
+    .encode         = encode_frame,
+    .close          = encode_end,
     .pix_fmts = (const enum PixelFormat[]){PIX_FMT_RGB555, PIX_FMT_NONE},
     .long_name = NULL_IF_CONFIG_SMALL("Microsoft Video-1"),
 };

@@ -143,6 +143,10 @@ static int decode_frame(AVCodecContext *avctx,
     buf += 5;
 
     if (video_size) {
+        if(video_size < 0) {
+            av_log(avctx, AV_LOG_ERROR, "video size %d invalid\n", video_size);
+            return AVERROR_INVALIDDATA;
+        }
         if (avctx->reget_buffer(avctx, &s->frame) < 0) {
             av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
             return -1;
@@ -150,7 +154,7 @@ static int decode_frame(AVCodecContext *avctx,
 
         if (video_type == 0 || video_type == 1) {
             GetBitContext gb;
-            init_get_bits(&gb, buf, FFMIN(video_size, (buf_end - buf) * 8));
+            init_get_bits(&gb, buf, 8 * FFMIN(video_size, buf_end - buf));
 
             for (j = 0; j < avctx->height; j += 8)
                 for (i = 0; i < avctx->width; i += 8)

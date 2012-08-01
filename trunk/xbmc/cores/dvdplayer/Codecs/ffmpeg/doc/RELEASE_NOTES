@@ -1,21 +1,12 @@
 Release Notes
 =============
 
-* 0.9 "Harmony"  December, 2011
+* 0.10 "Freedom"  January, 2012
 
 
 General notes
 -------------
-
-This release is binary compatible with 0.8. The 'ffmpeg' command-line tool has
-been extended to also support the command line syntax and features of a tool
-called avconv.
-
-Additionally, this release introduces a number of new interesting codecs
-such as the Apple Prores, Flash Screen Video 2 and Windows Media Image,
-and muxers such as LATM or CELT in Ogg, among many others. Moreover, our
-H.264 decoder has been improved to decode 4:2:2 material and our libx264
-wrapper now allows to produce 4:2:2 and 4:4:4 video.
+This release is binary compatible with 0.8 and 0.9.
 
 See the Changelog file for a list of significant changes. Note, there
 are many more new features and bugfixes than whats listed there.
@@ -32,13 +23,27 @@ API changes
 
 A number of additional APIs have been introduced and some existing
 functions have been deprecated and are scheduled for removal in the next
-release. Please see the file doc/APIchanges for details along with
-similar programmer-centric information.
+release. Significant API changes include:
 
+* new audio decoding API which decodes from an AVPacket to an AVFrame and
+is able to use AVCodecContext.get_buffer() in the similar way as video decoding.
+
+* new audio encoding API which encodes from an AVFrame to an AVPacket, thus
+allowing it to properly output timing information and side data.
+
+Please see the git history and the file doc/APIchanges for details.
 
 
 Other notable changes
 ---------------------
 
+Libavcodec and libavformat built as shared libraries now hide non-public
+symbols. This will break applications using those symbols. Possible solutions
+are, in order of preference:
+1) Try finding a way of accomplishing the same with public API.
+2) If there is no corresponding public API, but you think there should be,
+post a request on the developer mailing list or IRC channel.
+3) Finally if your program needs access to FFmpeg / libavcodec / libavformat
+internals for some special reason then the best solution is to link statically.
 
-Please see the Changelog file for a more detailed list of changes.
+Please see the Changelog file and git history for a more detailed list of changes.

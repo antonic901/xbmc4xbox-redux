@@ -73,7 +73,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
     ff_proresdsp_init(&ctx->prodsp, avctx);
 
     avctx->coded_frame = &ctx->frame;
-    ctx->frame.type = FF_I_TYPE;
+    ctx->frame.type = AV_PICTURE_TYPE_I;
     ctx->frame.key_frame = 1;
 
     ff_init_scantable_permutation(idct_permutation,
@@ -302,7 +302,7 @@ static av_always_inline void decode_dc_coeffs(GetBitContext *gb, DCTELEM *out,
     code = 5;
     sign = 0;
     for (i = 1; i < blocks_per_slice; i++, out += 64) {
-        DECODE_CODEWORD(code, dc_codebook[FFMIN(code, 6)]);
+        DECODE_CODEWORD(code, dc_codebook[FFMIN(code, 6U)]);
         if(code) sign ^= -(code & 1);
         else     sign  = 0;
         prev_dc += (((code + 1) >> 1) ^ sign) - sign;

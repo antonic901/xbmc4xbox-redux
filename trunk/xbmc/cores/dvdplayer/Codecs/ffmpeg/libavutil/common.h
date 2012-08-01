@@ -61,10 +61,6 @@
 #define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
 #define FFALIGN(x, a) (((x)+(a)-1)&~((a)-1))
 
-#if defined(_MSC_VER) && ! defined(UINT64_C)
-  #define UINT64_C(val) val##ui64
-#endif
-
 /* misc math functions */
 extern const uint8_t ff_log2_tab[256];
 
@@ -222,6 +218,16 @@ static av_always_inline av_const int av_popcount_c(uint32_t x)
     x = (x + (x >> 4)) & 0x0F0F0F0F;
     x += x >> 8;
     return (x + (x >> 16)) & 0x3F;
+}
+
+/**
+ * Count number of bits set to one in x
+ * @param x value to count bits of
+ * @return the number of bits set to one in x
+ */
+static av_always_inline av_const int av_popcount64_c(uint64_t x)
+{
+    return av_popcount(x) + av_popcount(x >> 32);
 }
 
 #define MKTAG(a,b,c,d) ((a) | ((b) << 8) | ((c) << 16) | ((unsigned)(d) << 24))
@@ -388,4 +394,7 @@ static av_always_inline av_const int av_popcount_c(uint32_t x)
 #endif
 #ifndef av_popcount
 #   define av_popcount      av_popcount_c
+#endif
+#ifndef av_popcount64
+#   define av_popcount64    av_popcount64_c
 #endif

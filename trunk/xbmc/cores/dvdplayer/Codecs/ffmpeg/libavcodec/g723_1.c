@@ -77,7 +77,7 @@ static av_cold int g723_1_decode_init(AVCodecContext *avctx)
 {
     G723_1_Context *p  = avctx->priv_data;
 
-    avctx->sample_fmt  = SAMPLE_FMT_S16;
+    avctx->sample_fmt  = AV_SAMPLE_FMT_S16;
     p->pf_gain         = 1 << 12;
     memcpy(p->prev_lsp, dc_lsp, LPC_ORDER * sizeof(int16_t));
 
@@ -985,7 +985,7 @@ static int g723_1_decode_frame(AVCodecContext *avctx, void *data,
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return ret;
     }
-    out= p->frame.data[0];
+    out= (int16_t*)p->frame.data[0];
 
 
     if(p->cur_frame_type == ActiveFrame) {
@@ -2224,7 +2224,7 @@ AVCodec ff_g723_1_encoder = {
     .init           = g723_1_encode_init,
     .encode         = g723_1_encode_frame,
     .long_name      = NULL_IF_CONFIG_SMALL("G.723.1"),
-    .sample_fmts    = (const enum SampleFormat[]){SAMPLE_FMT_S16,
-                                                  SAMPLE_FMT_NONE},
+    .sample_fmts    = (const enum SampleFormat[]){AV_SAMPLE_FMT_S16,
+                                                  AV_SAMPLE_FMT_NONE},
 };
 #endif

@@ -100,6 +100,8 @@ typedef struct AppleHTTPContext {
     int end_of_segment;
     int first_packet;
     int64_t first_timestamp;
+    int64_t seek_timestamp;
+    int seek_flags;
     AVIOInterruptCB *interrupt_callback;
 } AppleHTTPContext;
 
@@ -376,13 +378,23 @@ static int read_data(void *opaque, uint8_t *buf, int buf_size)
 
 restart:
     if (!v->input) {
-reload:
-        /* If this is a live stream and target_duration has elapsed since
+        /* If this is a live stream and the reload interval has elapsed since
          * the last playlist reload, reload the variant playlists now. */
+        int64_t reload_interval = v->n_segments > 0 ?
+                                  v->segments[v->n_segments - 1]->duration :
+                                  v->target_duration;
+        reload_interval *= 1000000;
+
+reload:
         if (!v->finished &&
-            av_gettime() - v->last_load_time >= v->target_duration*1000000 &&
-            (ret = parse_playlist(c, v->url, v, NULL)) < 0)
+            av_gettime() - v->last_load_time >= reload_interval) {
+            if ((ret = parse_playlist(c, v->url, v, NULL)) < 0)
                 return ret;
+            /* If we need to reload the playlist again below (if
+             * there's still no more segments), switch to a reload
+             * interval of half the target duration. */
+            reload_interval = v->target_duration * 500000;
+        }
         if (v->cur_seq_no < v->start_seq_no) {
             av_log(NULL, AV_LOG_WARNING,
                    "skipping %d segments ahead, expired from playlists\n",
@@ -392,8 +404,7 @@ reload:
         if (v->cur_seq_no >= v->start_seq_no + v->n_segments) {
             if (v->finished)
                 return AVERROR_EOF;
-            while (av_gettime() - v->last_load_time <
-                   v->target_duration*1000000) {
+            while (av_gettime() - v->last_load_time < reload_interval) {
                 if (ff_check_interrupt(c->interrupt_callback))
                     return AVERROR_EXIT;
                 usleep(100*1000);
@@ -536,6 +547,7 @@ static int applehttp_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
     c->first_packet = 1;
     c->first_timestamp = AV_NOPTS_VALUE;
+    c->seek_timestamp = AV_NOPTS_VALUE;
 
     return 0;
 fail:
@@ -595,14 +607,44 @@ start:
         /* Make sure we've got one buffered packet from each open variant
          * stream */
         if (var->needed && !var->pkt.data) {
-            ret = av_read_frame(var->ctx, &var->pkt);
-            if (ret < 0) {
-                if (!url_feof(&var->pb))
-                    return ret;
-                reset_packet(&var->pkt);
-            } else {
-                if (c->first_timestamp == AV_NOPTS_VALUE)
-                    c->first_timestamp = var->pkt.dts;
+            while (1) {
+                int64_t ts_diff;
+                ret = av_read_frame(var->ctx, &var->pkt);
+                if (ret < 0) {
+                    if (!url_feof(&var->pb)) {
+                        return ret;
+                    } else {
+                        if ((var->cur_seq_no - var->start_seq_no) == (var->n_segments)) {
+                            return AVERROR_EOF;
+                        }
+                    }
+                    reset_packet(&var->pkt);
+                } else {
+                    if (c->first_timestamp == AV_NOPTS_VALUE)
+                        c->first_timestamp = var->pkt.dts;
+                }
+
+                if (c->seek_timestamp == AV_NOPTS_VALUE)
+                    break;
+
+                if (var->pkt.dts == AV_NOPTS_VALUE) {
+                    c->seek_timestamp = AV_NOPTS_VALUE;
+                    break;
+                }
+
+                ts_diff = var->pkt.dts - c->seek_timestamp;
+                if (ts_diff >= 0) {
+                    if (c->seek_flags & AVSEEK_FLAG_ANY) {
+                        c->seek_timestamp = AV_NOPTS_VALUE;
+                        break;
+                    }
+
+                    /* Seek to keyframe */
+                    if (var->pkt.flags & AV_PKT_FLAG_KEY) {
+                        c->seek_timestamp = AV_NOPTS_VALUE;
+                        break;
+                    }
+                }
             }
         }
         /* Check if this stream has the packet with the lowest dts */
@@ -643,10 +685,17 @@ static int applehttp_read_seek(AVFormatContext *s, int stream_index,
     if ((flags & AVSEEK_FLAG_BYTE) || !c->variants[0]->finished)
         return AVERROR(ENOSYS);
 
+    c->seek_timestamp = timestamp;
+    c->seek_flags = flags;
     timestamp = av_rescale_rnd(timestamp, 1, stream_index >= 0 ?
                                s->streams[stream_index]->time_base.den :
                                AV_TIME_BASE, flags & AVSEEK_FLAG_BACKWARD ?
                                AV_ROUND_DOWN : AV_ROUND_UP);
+    if (s->duration < c->seek_timestamp) {
+        c->seek_timestamp = AV_NOPTS_VALUE;
+        return AVERROR(EIO);
+    }
+
     ret = AVERROR(EIO);
     for (i = 0; i < c->n_variants; i++) {
         /* Reset reading */
@@ -674,6 +723,8 @@ static int applehttp_read_seek(AVFormatContext *s, int stream_index,
             }
             pos += var->segments[j]->duration;
         }
+        if (ret != 0)
+            c->seek_timestamp = AV_NOPTS_VALUE;
     }
     return ret;
 }

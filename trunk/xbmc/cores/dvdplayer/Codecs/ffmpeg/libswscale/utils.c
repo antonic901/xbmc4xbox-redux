@@ -72,7 +72,7 @@ typedef struct FormatEntry {
     int is_supported_in, is_supported_out;
 } FormatEntry;
 
-const static FormatEntry format_entries[PIX_FMT_NB] = {
+static const FormatEntry format_entries[PIX_FMT_NB] = {
     [PIX_FMT_YUV420P]     = { 1 , 1 },
     [PIX_FMT_YUYV422]     = { 1 , 1 },
     [PIX_FMT_RGB24]       = { 1 , 1 },
@@ -129,10 +129,10 @@ const static FormatEntry format_entries[PIX_FMT_NB] = {
     [PIX_FMT_YUV422P16BE] = { 1 , 1 },
     [PIX_FMT_YUV444P16LE] = { 1 , 1 },
     [PIX_FMT_YUV444P16BE] = { 1 , 1 },
-    [PIX_FMT_RGB444LE]    = { 0 , 1 },
-    [PIX_FMT_RGB444BE]    = { 0 , 1 },
-    [PIX_FMT_BGR444LE]    = { 0 , 1 },
-    [PIX_FMT_BGR444BE]    = { 0 , 1 },
+    [PIX_FMT_RGB444LE]    = { 1 , 1 },
+    [PIX_FMT_RGB444BE]    = { 1 , 1 },
+    [PIX_FMT_BGR444LE]    = { 1 , 1 },
+    [PIX_FMT_BGR444BE]    = { 1 , 1 },
     [PIX_FMT_Y400A]       = { 1 , 0 },
     [PIX_FMT_BGR48BE]     = { 1 , 1 },
     [PIX_FMT_BGR48LE]     = { 1 , 1 },
@@ -191,7 +191,7 @@ static double getSplineCoeff(double a, double b, double c, double d, double dist
                                          dist-1.0);
 }
 
-static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSize, int xInc,
+static int initFilter(int16_t **outFilter, int32_t **filterPos, int *outFilterSize, int xInc,
                       int srcW, int dstW, int filterAlign, int one, int flags, int cpu_flags,
                       SwsVector *srcFilter, SwsVector *dstFilter, double param[2])
 {
@@ -207,7 +207,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
     emms_c(); //FIXME this should not be required but it IS (even for non-MMX versions)
 
     // NOTE: the +3 is for the MMX(+1)/SSE(+3) scaler which reads over the end
-    FF_ALLOC_OR_GOTO(NULL, *filterPos, (dstW+3)*sizeof(int16_t), fail);
+    FF_ALLOC_OR_GOTO(NULL, *filterPos, (dstW+3)*sizeof(**filterPos), fail);
 
     if (FFABS(xInc - 0x10000) <10) { // unscaled
         int i;
@@ -274,7 +274,7 @@ static int initFilter(int16_t **outFilter, int16_t **filterPos, int *outFilterSi
         if (xInc <= 1<<16)      filterSize= 1 + sizeFactor; // upscale
         else                    filterSize= 1 + (sizeFactor*srcW + dstW - 1)/ dstW;
 
-        if (filterSize > srcW-2) filterSize=srcW-2;
+        filterSize = av_clip(filterSize, 1, srcW - 2);
 
         FF_ALLOC_OR_GOTO(NULL, filter, dstW*sizeof(*filter)*filterSize, fail);
 
@@ -748,10 +748,17 @@ static int handle_jpeg(enum PixelFormat *format)
     case PIX_FMT_YUVJ422P: *format = PIX_FMT_YUV422P; return 1;
     case PIX_FMT_YUVJ444P: *format = PIX_FMT_YUV444P; return 1;
     case PIX_FMT_YUVJ440P: *format = PIX_FMT_YUV440P; return 1;
-    case PIX_FMT_0BGR    : *format = PIX_FMT_ABGR   ; return 0;
-    case PIX_FMT_BGR0    : *format = PIX_FMT_BGRA   ; return 0;
-    case PIX_FMT_0RGB    : *format = PIX_FMT_ARGB   ; return 0;
-    case PIX_FMT_RGB0    : *format = PIX_FMT_RGBA   ; return 0;
+    default:                                          return 0;
+    }
+}
+
+static int handle_0alpha(enum PixelFormat *format)
+{
+    switch (*format) {
+    case PIX_FMT_0BGR    : *format = PIX_FMT_ABGR   ; return 1;
+    case PIX_FMT_BGR0    : *format = PIX_FMT_BGRA   ; return 4;
+    case PIX_FMT_0RGB    : *format = PIX_FMT_ARGB   ; return 1;
+    case PIX_FMT_RGB0    : *format = PIX_FMT_RGBA   ; return 4;
     default:                                          return 0;
     }
 }
@@ -790,6 +797,8 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
 
     handle_jpeg(&srcFormat);
     handle_jpeg(&dstFormat);
+    handle_0alpha(&srcFormat);
+    handle_0alpha(&dstFormat);
 
     if(srcFormat!=c->srcFormat || dstFormat!=c->dstFormat){
         av_log(c, AV_LOG_WARNING, "deprecated pixel format used, make sure you did set range correctly\n");
@@ -818,7 +827,7 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
                 |SWS_SPLINE
                 |SWS_BICUBLIN);
     if(!i || (i & (i-1))) {
-        av_log(c, AV_LOG_ERROR, "Exactly one scaler algorithm must be chosen\n");
+        av_log(c, AV_LOG_ERROR, "Exactly one scaler algorithm must be chosen, got %X\n", i);
         return AVERROR(EINVAL);
     }
     /* sanity check */
@@ -831,8 +840,8 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
     if (!dstFilter) dstFilter= &dummyFilter;
     if (!srcFilter) srcFilter= &dummyFilter;
 
-    c->lumXInc= ((srcW<<16) + (dstW>>1))/dstW;
-    c->lumYInc= ((srcH<<16) + (dstH>>1))/dstH;
+    c->lumXInc= (((int64_t)srcW<<16) + (dstW>>1))/dstW;
+    c->lumYInc= (((int64_t)srcH<<16) + (dstH>>1))/dstH;
     c->dstFormatBpp = av_get_bits_per_pixel(&av_pix_fmt_descriptors[dstFormat]);
     c->srcFormatBpp = av_get_bits_per_pixel(&av_pix_fmt_descriptors[srcFormat]);
     c->vRounder= 4* 0x0001000100010001ULL;
@@ -850,7 +859,14 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
     getSubSampleFactors(&c->chrDstHSubSample, &c->chrDstVSubSample, dstFormat);
 
     // reuse chroma for 2 pixels RGB/BGR unless user wants full chroma interpolation
-    if (isAnyRGB(dstFormat) && !(flags&SWS_FULL_CHR_H_INT)) c->chrDstHSubSample=1;
+    if (isAnyRGB(dstFormat) && !(flags&SWS_FULL_CHR_H_INT)) {
+        if (dstW&1) {
+            av_log(c, AV_LOG_DEBUG, "Forcing full internal H chroma due to odd output size\n");
+            flags |= SWS_FULL_CHR_H_INT;
+            c->flags = flags;
+        } else
+            c->chrDstHSubSample = 1;
+    }
 
     // drop some chroma lines if the user wants it
     c->vChrDrop= (flags&SWS_SRC_V_CHR_DROP_MASK)>>SWS_SRC_V_CHR_DROP_SHIFT;
@@ -904,8 +920,8 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
     else
         c->canMMX2BeUsed=0;
 
-    c->chrXInc= ((c->chrSrcW<<16) + (c->chrDstW>>1))/c->chrDstW;
-    c->chrYInc= ((c->chrSrcH<<16) + (c->chrDstH>>1))/c->chrDstH;
+    c->chrXInc= (((int64_t)c->chrSrcW<<16) + (c->chrDstW>>1))/c->chrDstW;
+    c->chrYInc= (((int64_t)c->chrSrcH<<16) + (c->chrDstH>>1))/c->chrDstH;
 
     // match pixel 0 of the src to pixel 0 of dst and match pixel n-2 of src to pixel n-2 of dst
     // but only for the FAST_BILINEAR mode otherwise do correct scaling
@@ -920,8 +936,8 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
         }
         //we don't use the x86 asm scaler if MMX is available
         else if (HAVE_MMX && cpu_flags & AV_CPU_FLAG_MMX && c->dstBpc <= 10) {
-            c->lumXInc = ((srcW-2)<<16)/(dstW-2) - 20;
-            c->chrXInc = ((c->chrSrcW-2)<<16)/(c->chrDstW-2) - 20;
+            c->lumXInc = ((int64_t)(srcW-2)<<16)/(dstW-2) - 20;
+            c->chrXInc = ((int64_t)(c->chrSrcW-2)<<16)/(c->chrDstW-2) - 20;
         }
     }
 
@@ -1028,7 +1044,7 @@ int sws_init_context(SwsContext *c, SwsFilter *srcFilter, SwsFilter *dstFilter)
     c->vLumBufSize= c->vLumFilterSize;
     c->vChrBufSize= c->vChrFilterSize;
     for (i=0; i<dstH; i++) {
-        int chrI= (int64_t)i*c->chrDstH / dstH;
+        int chrI = (int64_t) i * c->chrDstH / dstH;
         int nextSlice= FFMAX(c->vLumFilterPos[i   ] + c->vLumFilterSize - 1,
                            ((c->vChrFilterPos[chrI] + c->vChrFilterSize - 1)<<c->chrSrcVSubSample));
 
@@ -1140,6 +1156,8 @@ SwsContext *sws_getContext(int srcW, int srcH, enum PixelFormat srcFormat,
     c->dstH= dstH;
     c->srcRange = handle_jpeg(&srcFormat);
     c->dstRange = handle_jpeg(&dstFormat);
+    c->src0Alpha = handle_0alpha(&srcFormat);
+    c->dst0Alpha = handle_0alpha(&dstFormat);
     c->srcFormat= srcFormat;
     c->dstFormat= dstFormat;
 
@@ -1538,10 +1556,12 @@ struct SwsContext *sws_getCachedContext(struct SwsContext *context,
         context->srcW      = srcW;
         context->srcH      = srcH;
         context->srcRange  = handle_jpeg(&srcFormat);
+        context->src0Alpha = handle_0alpha(&srcFormat);
         context->srcFormat = srcFormat;
         context->dstW      = dstW;
         context->dstH      = dstH;
         context->dstRange  = handle_jpeg(&dstFormat);
+        context->dst0Alpha = handle_0alpha(&dstFormat);
         context->dstFormat = dstFormat;
         context->flags     = flags;
         context->param[0]  = param[0];

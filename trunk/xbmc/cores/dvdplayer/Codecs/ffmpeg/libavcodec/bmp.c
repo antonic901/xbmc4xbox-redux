@@ -49,6 +49,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     unsigned int ihsize;
     int i, j, n, linesize;
     uint32_t rgb[3];
+    uint32_t alpha = 0;
     uint8_t *ptr;
     int dsize;
     const uint8_t *buf0 = buf;
@@ -131,6 +132,8 @@ static int bmp_decode_frame(AVCodecContext *avctx,
         rgb[0] = bytestream_get_le32(&buf);
         rgb[1] = bytestream_get_le32(&buf);
         rgb[2] = bytestream_get_le32(&buf);
+        if (ihsize >= 108)
+            alpha = bytestream_get_le32(&buf);
     }
 
     avctx->width = width;
@@ -141,21 +144,21 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     switch(depth){
     case 32:
         if(comp == BMP_BITFIELDS){
-            rgb[0] = (rgb[0] >> 15) & 3;
-            rgb[1] = (rgb[1] >> 15) & 3;
-            rgb[2] = (rgb[2] >> 15) & 3;
-
-            if(rgb[0] + rgb[1] + rgb[2] != 3 ||
-               rgb[0] == rgb[1] || rgb[0] == rgb[2] || rgb[1] == rgb[2]){
-                break;
+            if (rgb[0] == 0xFF000000 && rgb[1] == 0x00FF0000 && rgb[2] == 0x0000FF00)
+                avctx->pix_fmt = alpha ? PIX_FMT_ABGR : PIX_FMT_0BGR;
+            else if (rgb[0] == 0x00FF0000 && rgb[1] == 0x0000FF00 && rgb[2] == 0x000000FF)
+                avctx->pix_fmt = alpha ? PIX_FMT_BGRA : PIX_FMT_BGR0;
+            else if (rgb[0] == 0x0000FF00 && rgb[1] == 0x00FF0000 && rgb[2] == 0xFF000000)
+                avctx->pix_fmt = alpha ? PIX_FMT_ARGB : PIX_FMT_0RGB;
+            else if (rgb[0] == 0x000000FF && rgb[1] == 0x0000FF00 && rgb[2] == 0x00FF0000)
+                avctx->pix_fmt = alpha ? PIX_FMT_RGBA : PIX_FMT_RGB0;
+            else {
+                av_log(avctx, AV_LOG_ERROR, "Unknown bitfields %0X %0X %0X\n", rgb[0], rgb[1], rgb[2]);
+                return AVERROR(EINVAL);
             }
         } else {
-            rgb[0] = 2;
-            rgb[1] = 1;
-            rgb[2] = 0;
+            avctx->pix_fmt = PIX_FMT_BGRA;
         }
-
-        avctx->pix_fmt = PIX_FMT_BGRA;
         break;
     case 24:
         avctx->pix_fmt = PIX_FMT_BGR24;
@@ -163,8 +166,18 @@ static int bmp_decode_frame(AVCodecContext *avctx,
     case 16:
         if(comp == BMP_RGB)
             avctx->pix_fmt = PIX_FMT_RGB555;
-        if(comp == BMP_BITFIELDS)
-            avctx->pix_fmt = rgb[1] == 0x07E0 ? PIX_FMT_RGB565 : PIX_FMT_RGB555;
+        else if (comp == BMP_BITFIELDS) {
+            if (rgb[0] == 0xF800 && rgb[1] == 0x07E0 && rgb[2] == 0x001F)
+               avctx->pix_fmt = PIX_FMT_RGB565;
+            else if (rgb[0] == 0x7C00 && rgb[1] == 0x03E0 && rgb[2] == 0x001F)
+               avctx->pix_fmt = PIX_FMT_RGB555;
+            else if (rgb[0] == 0x0F00 && rgb[1] == 0x00F0 && rgb[2] == 0x000F)
+               avctx->pix_fmt = PIX_FMT_RGB444;
+            else {
+               av_log(avctx, AV_LOG_ERROR, "Unknown bitfields %0X %0X %0X\n", rgb[0], rgb[1], rgb[2]);
+               return AVERROR(EINVAL);
+            }
+        }
         break;
     case 8:
         if(hsize - ihsize - 14 > 0)
@@ -247,7 +260,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
                 ((uint32_t*)p->data[1])[i] = (0xff<<24) | bytestream_get_le24(&buf);
         }else{
             for(i = 0; i < colors; i++)
-                ((uint32_t*)p->data[1])[i] = bytestream_get_le32(&buf);
+                ((uint32_t*)p->data[1])[i] = 0xFFU << 24 | bytestream_get_le32(&buf);
         }
         buf = buf0 + hsize;
     }
@@ -282,6 +295,7 @@ static int bmp_decode_frame(AVCodecContext *avctx,
             break;
         case 8:
         case 24:
+        case 32:
             for(i = 0; i < avctx->height; i++){
                 memcpy(ptr, buf, n);
                 buf += n;
@@ -306,29 +320,6 @@ static int bmp_decode_frame(AVCodecContext *avctx,
 
                 for(j = 0; j < avctx->width; j++)
                     *dst++ = av_le2ne16(*src++);
-
-                buf += n;
-                ptr += linesize;
-            }
-            break;
-        case 32:
-            for(i = 0; i < avctx->height; i++){
-                const uint8_t *src = buf;
-                uint8_t *dst = ptr;
-
-                for(j = 0; j < avctx->width; j++){
-                    dst[0] = src[rgb[2]];
-                    dst[1] = src[rgb[1]];
-                    dst[2] = src[rgb[0]];
-/* The Microsoft documentation states:
- * "The high byte in each DWORD is not used."
- * Both GIMP and ImageMagick store the alpha transparency value
- * in the high byte for 32bit bmp files.
- */
-                    dst[3] = src[3];
-                    dst += 4;
-                    src += 4;
-                }
 
                 buf += n;
                 ptr += linesize;

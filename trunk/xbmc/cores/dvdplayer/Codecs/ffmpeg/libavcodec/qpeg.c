@@ -32,7 +32,7 @@ typedef struct QpegContext{
     uint32_t pal[256];
 } QpegContext;
 
-static void qpeg_decode_intra(const uint8_t *src, uint8_t *dst, int size,
+static int qpeg_decode_intra(const uint8_t *src, uint8_t *dst, int size,
                             int stride, int width, int height)
 {
     int i;
@@ -94,6 +94,8 @@ static void qpeg_decode_intra(const uint8_t *src, uint8_t *dst, int size,
             }
         } else {
             size -= copy;
+            if (size<0)
+                return AVERROR_INVALIDDATA;
             for(i = 0; i < copy; i++) {
                 dst[filled++] = *src++;
                 if (filled >= width) {
@@ -106,6 +108,7 @@ static void qpeg_decode_intra(const uint8_t *src, uint8_t *dst, int size,
             }
         }
     }
+    return 0;
 }
 
 static const int qpeg_table_h[16] =
@@ -200,6 +203,8 @@ static void qpeg_decode_inter(const uint8_t *src, uint8_t *dst, int size,
                     filled = 0;
                     dst -= stride;
                     height--;
+                    if(height < 0)
+                        break;
                 }
             }
         } else if(code >= 0xC0) { /* copy code: 0xC0..0xDF */
@@ -211,6 +216,8 @@ static void qpeg_decode_inter(const uint8_t *src, uint8_t *dst, int size,
                     filled = 0;
                     dst -= stride;
                     height--;
+                    if(height < 0)
+                        break;
                 }
             }
             size -= code + 1;
@@ -259,7 +266,7 @@ static int decode_frame(AVCodecContext *avctx,
     AVFrame * p= (AVFrame*)&a->pic;
     AVFrame * ref= (AVFrame*)&a->ref;
     uint8_t* outdata;
-    int delta;
+    int delta, ret = 0;
     const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
 
     if(ref->data[0])
@@ -273,11 +280,14 @@ static int decode_frame(AVCodecContext *avctx,
     }
     outdata = a->pic.data[0];
     if(buf[0x85] == 0x10) {
-        qpeg_decode_intra(buf+0x86, outdata, buf_size - 0x86, a->pic.linesize[0], avctx->width, avctx->height);
+        ret = qpeg_decode_intra(buf+0x86, outdata, buf_size - 0x86, a->pic.linesize[0], avctx->width, avctx->height);
     } else {
         delta = buf[0x85];
         qpeg_decode_inter(buf+0x86, outdata, buf_size - 0x86, a->pic.linesize[0], avctx->width, avctx->height, delta, buf + 4, a->ref.data[0]);
     }
+
+    if (ret<0)
+        return ret;
 
     /* make the palette available on the way out */
     if (pal) {

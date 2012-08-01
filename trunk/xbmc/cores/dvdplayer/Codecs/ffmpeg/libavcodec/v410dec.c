@@ -29,8 +29,7 @@ static av_cold int v410_decode_init(AVCodecContext *avctx)
     avctx->bits_per_raw_sample = 10;
 
     if (avctx->width & 1) {
-        av_log(avctx, AV_LOG_ERROR, "v410 requires width to be even.\n");
-        return AVERROR_INVALIDDATA;
+        av_log(avctx, AV_LOG_WARNING, "v410 requires width to be even.\n");
     }
 
     avctx->coded_frame = avcodec_alloc_frame();
@@ -55,6 +54,11 @@ static int v410_decode_frame(AVCodecContext *avctx, void *data,
     if (pic->data[0])
         avctx->release_buffer(avctx, pic);
 
+    if (avpkt->size < 4 * avctx->height * avctx->width) {
+        av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
+        return AVERROR(EINVAL);
+    }
+
     pic->reference = 0;
 
     if (avctx->get_buffer(avctx, pic) < 0) {
@@ -63,7 +67,7 @@ static int v410_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     pic->key_frame = 1;
-    pic->pict_type = FF_I_TYPE;
+    pic->pict_type = AV_PICTURE_TYPE_I;
 
     y = (uint16_t *)pic->data[0];
     u = (uint16_t *)pic->data[1];

@@ -57,7 +57,7 @@ static int v410_encode_frame(AVCodecContext *avctx, uint8_t *buf,
 
     avctx->coded_frame->reference = 0;
     avctx->coded_frame->key_frame = 1;
-    avctx->coded_frame->pict_type = FF_I_TYPE;
+    avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
 
     y = (uint16_t *)pic->data[0];
     u = (uint16_t *)pic->data[1];
@@ -67,7 +67,7 @@ static int v410_encode_frame(AVCodecContext *avctx, uint8_t *buf,
         for (j = 0; j < avctx->width; j++) {
             val  = u[j] << 2;
             val |= y[j] << 12;
-            val |= v[j] << 22;
+            val |= (uint32_t) v[j] << 22;
             AV_WL32(dst, val);
             dst += 4;
             output_size += 4;

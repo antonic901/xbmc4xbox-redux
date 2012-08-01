@@ -223,7 +223,7 @@ int ff_ps_read_data(AVCodecContext *avctx, GetBitContext *gb_host, PSContext *ps
             cnt -= 2 + ps_read_extension_data(gb, ps, ps_extension_id);
         }
         if (cnt < 0) {
-            av_log(avctx, AV_LOG_ERROR, "ps extension overflow %d", cnt);
+            av_log(avctx, AV_LOG_ERROR, "ps extension overflow %d\n", cnt);
             goto err;
         }
         skip_bits(gb, cnt);
@@ -275,6 +275,10 @@ int ff_ps_read_data(AVCodecContext *avctx, GetBitContext *gb_host, PSContext *ps
 err:
     ps->start = 0;
     skip_bits_long(gb_host, bits_left);
+    memset(ps->iid_par, 0, sizeof(ps->iid_par));
+    memset(ps->icc_par, 0, sizeof(ps->icc_par));
+    memset(ps->ipd_par, 0, sizeof(ps->ipd_par));
+    memset(ps->opd_par, 0, sizeof(ps->opd_par));
     return bits_left;
 }
 

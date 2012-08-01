@@ -1,6 +1,6 @@
 LIBAVFORMAT_$MAJOR {
         global: av*;
-                #FIXME those are for avserver
+                #FIXME those are for ffserver
                 ff_inet_aton;
                 ff_socket_nonblock;
                 ffm_set_write_index;
@@ -10,6 +10,9 @@ LIBAVFORMAT_$MAJOR {
                 ff_rtp_get_local_rtp_port;
                 ff_rtp_get_local_rtcp_port;
                 ffio_open_dyn_packet_buf;
+                ffurl_close;
+                ffurl_open;
+                ffurl_write;
                 url_open;
                 url_close;
                 url_write;

@@ -77,18 +77,6 @@ static const float gain_levels[9] = {
 };
 
 /**
- * Table for center mix levels
- * reference: Section 5.4.2.4 cmixlev
- */
-static const uint8_t center_levels[4] = { 4, 5, 6, 5 };
-
-/**
- * Table for surround mix levels
- * reference: Section 5.4.2.5 surmixlev
- */
-static const uint8_t surround_levels[4] = { 4, 6, 7, 6 };
-
-/**
  * Table for default stereo downmixing coefficients
  * reference: Section 7.8.2 Downmixing Into Two Channels
  */
@@ -223,7 +211,7 @@ static int ac3_parse_header(AC3DecodeContext *s)
     int i;
 
     /* read the rest of the bsi. read twice for dual mono mode. */
-    i = !(s->channel_mode);
+    i = !s->channel_mode;
     do {
         skip_bits(gbc, 5); // skip dialog normalization
         if (get_bits1(gbc))
@@ -320,8 +308,8 @@ static int parse_frame_header(AC3DecodeContext *s)
 static void set_downmix_coeffs(AC3DecodeContext *s)
 {
     int i;
-    float cmix = gain_levels[center_levels[s->center_mix_level]];
-    float smix = gain_levels[surround_levels[s->surround_mix_level]];
+    float cmix = gain_levels[s->  center_mix_level];
+    float smix = gain_levels[s->surround_mix_level];
     float norm0, norm1;
 
     for (i = 0; i < s->fbw_channels; i++) {
@@ -792,7 +780,7 @@ static int decode_audio_block(AC3DecodeContext *s, int blk)
     }
 
     /* dynamic range */
-    i = !(s->channel_mode);
+    i = !s->channel_mode;
     do {
         if (get_bits1(gbc)) {
             s->dynamic_range[i] = ((dynamic_range_tab[get_bits(gbc, 8)] - 1.0) *
@@ -1395,13 +1383,13 @@ static int ac3_decode_frame(AVCodecContext * avctx, void *data,
                 avctx->request_channels < s->channels) {
             s->out_channels = avctx->request_channels;
             s->output_mode  = avctx->request_channels == 1 ? AC3_CHMODE_MONO : AC3_CHMODE_STEREO;
-            s->channel_layout = ff_ac3_channel_layout_tab[s->output_mode];
+            s->channel_layout = avpriv_ac3_channel_layout_tab[s->output_mode];
         }
         avctx->channels       = s->out_channels;
         avctx->channel_layout = s->channel_layout;
 
-        s->loro_center_mix_level   = gain_levels[  center_levels[s->  center_mix_level]];
-        s->loro_surround_mix_level = gain_levels[surround_levels[s->surround_mix_level]];
+        s->loro_center_mix_level   = gain_levels[s->  center_mix_level];
+        s->loro_surround_mix_level = gain_levels[s->surround_mix_level];
         s->ltrt_center_mix_level   = LEVEL_MINUS_3DB;
         s->ltrt_surround_mix_level = LEVEL_MINUS_3DB;
         /* set downmixing coefficients if needed */

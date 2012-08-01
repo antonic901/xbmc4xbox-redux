@@ -52,6 +52,7 @@ static enum PixelFormat check_image_attributes(AVCodecContext *avctx, opj_image_
 
     switch (compRatio) {
     case 0111111: goto libopenjpeg_yuv444_rgb;
+    case 0111212: return PIX_FMT_YUV440P;
     case 0112121: goto libopenjpeg_yuv422;
     case 0112222: goto libopenjpeg_yuv420;
     default: goto libopenjpeg_rgb;
@@ -88,6 +89,15 @@ libopenjpeg_rgb:
     }
 
     return PIX_FMT_RGB24;
+}
+
+static int is_yuva420(opj_image_t *image)
+{
+    return image->numcomps == 4 &&
+           image->comps[0].dx == 1 && image->comps[0].dy == 1 &&
+           image->comps[1].dx == 2 && image->comps[1].dy == 2 &&
+           image->comps[2].dx == 2 && image->comps[2].dy == 2 &&
+           image->comps[3].dx == 1 && image->comps[3].dy == 1;
 }
 
 static inline int libopenjpeg_ispacked(enum PixelFormat pix_fmt) {
@@ -139,8 +149,8 @@ static inline void libopenjpeg_copyto8(AVFrame *picture, opj_image_t *image) {
 
     for(index = 0; index < image->numcomps; index++) {
         comp_data = image->comps[index].data;
-        img_ptr = picture->data[index];
         for(y = 0; y < image->comps[index].h; y++) {
+            img_ptr = picture->data[index] + y * picture->linesize[index];
             for(x = 0; x < image->comps[index].w; x++) {
                 *img_ptr = (uint8_t) *comp_data;
                 img_ptr++;
@@ -156,8 +166,8 @@ static inline void libopenjpeg_copyto16(AVFrame *picture, opj_image_t *image) {
     int index, x, y;
     for(index = 0; index < image->numcomps; index++) {
         comp_data = image->comps[index].data;
-        img_ptr = (uint16_t*) picture->data[index];
         for(y = 0; y < image->comps[index].h; y++) {
+            img_ptr = (uint16_t*) (picture->data[index] + y * picture->linesize[index]);
             for(x = 0; x < image->comps[index].w; x++) {
                 *img_ptr = *comp_data;
                 img_ptr++;
@@ -252,7 +262,7 @@ static int libopenjpeg_decode_frame(AVCodecContext *avctx,
              break;
     case 3:  avctx->pix_fmt = check_image_attributes(avctx, image);
              break;
-    case 4:  avctx->pix_fmt = PIX_FMT_RGBA;
+    case 4:  avctx->pix_fmt = is_yuva420(image) ? PIX_FMT_YUVA420P : PIX_FMT_RGBA;
              break;
     default: av_log(avctx, AV_LOG_ERROR, "%d components unsupported.\n", image->numcomps);
              goto done;
@@ -296,6 +306,7 @@ static int libopenjpeg_decode_frame(AVCodecContext *avctx,
         libopenjpeg_copyto16(picture, image);
         break;
     case 3:
+    case 4:
         if (ispacked) {
             libopenjpeg_copy_to_packed8(picture, image);
         }

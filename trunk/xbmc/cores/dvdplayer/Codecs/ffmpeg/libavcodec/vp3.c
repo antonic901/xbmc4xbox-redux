@@ -1378,6 +1378,8 @@ static inline int vp3_dequant(Vp3DecodeContext *s, Vp3Fragment *frag,
             return i;
         }
     } while (i < 64);
+    // return value is expected to be a valid level
+    i--;
 end:
     // the actual DC+prediction is in the fragment structure
     block[0] = frag->dc * s->qmat[0][inter][plane][0];
@@ -1570,10 +1572,7 @@ static void render_slice(Vp3DecodeContext *s, int slice)
                     /* invert DCT and place (or add) in final output */
 
                     if (s->all_fragments[i].coding_method == MODE_INTRA) {
-                        int index;
-                        index = vp3_dequant(s, s->all_fragments + i, plane, 0, block);
-                        if (index > 63)
-                            continue;
+                        vp3_dequant(s, s->all_fragments + i, plane, 0, block);
                         if(s->avctx->idct_algo!=FF_IDCT_VP3)
                             block[0] += 128<<3;
                         s->dsp.idct_put(
@@ -1581,10 +1580,7 @@ static void render_slice(Vp3DecodeContext *s, int slice)
                             stride,
                             block);
                     } else {
-                        int index = vp3_dequant(s, s->all_fragments + i, plane, 1, block);
-                        if (index > 63)
-                            continue;
-                        if (index > 0) {
+                        if (vp3_dequant(s, s->all_fragments + i, plane, 1, block)) {
                         s->dsp.idct_add(
                             output_plane + first_pixel,
                             stride,
@@ -1863,7 +1859,7 @@ static int vp3_update_thread_context(AVCodecContext *dst, const AVCodecContext *
         ||s->width != s1->width
         ||s->height!= s1->height) {
         if (s != s1)
-            copy_fields(s, s1, golden_frame, current_frame);
+            copy_fields(s, s1, golden_frame, keyframe);
         return -1;
     }
 
@@ -2059,8 +2055,6 @@ error:
 
     return -1;
 }
-
-static void vp3_decode_flush(AVCodecContext *avctx);
 
 static int read_huffman_tree(AVCodecContext *avctx, GetBitContext *gb)
 {

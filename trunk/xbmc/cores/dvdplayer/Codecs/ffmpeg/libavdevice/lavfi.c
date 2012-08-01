@@ -41,6 +41,7 @@
 typedef struct {
     AVClass *class;          ///< class for private options
     char          *graph_str;
+    char          *dump_graph;
     AVFilterGraph *graph;
     AVFilterContext **sinks;
     int *sink_stream_map;
@@ -230,6 +231,13 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx,
     if ((ret = avfilter_graph_config(lavfi->graph, avctx)) < 0)
         FAIL(ret);
 
+    if (lavfi->dump_graph) {
+        char *dump = avfilter_graph_dump(lavfi->graph, lavfi->dump_graph);
+        fputs(dump, stderr);
+        fflush(stderr);
+        av_free(dump);
+    }
+
     /* fill each stream with the information in the corresponding sink */
     for (i = 0; i < avctx->nb_streams; i++) {
         AVFilterLink *link = lavfi->sinks[lavfi->stream_sink_map[i]]->inputs[0];
@@ -270,7 +278,8 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     int stream_idx, min_pts_sink_idx = 0;
     AVFilterBufferRef *ref;
     AVPicture pict;
-    int ret, i, size;
+    int ret, i;
+    int size = 0;
 
     /* iterate through all the graph sinks. Select the sink with the
      * minimum PTS */
@@ -328,6 +337,7 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
 static const AVOption options[] = {
     { "graph", "Libavfilter graph", OFFSET(graph_str),  AV_OPT_TYPE_STRING, {.str = NULL }, 0,  0, DEC },
+    { "dumpgraph", "Dump graph to stderr", OFFSET(dump_graph), AV_OPT_TYPE_STRING, {.str = NULL}, 0,  0, DEC },
     { NULL },
 };
 

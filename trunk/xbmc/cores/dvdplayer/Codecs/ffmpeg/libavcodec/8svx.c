@@ -47,7 +47,7 @@ typedef struct EightSvxContext {
     /* buffer used to store the whole audio decoded/interleaved chunk,
      * which is sent with the first packet */
     uint8_t *samples;
-    size_t samples_size;
+    int64_t samples_size;
     int samples_idx;
 } EightSvxContext;
 
@@ -106,12 +106,11 @@ static int eightsvx_decode_frame(AVCodecContext *avctx, void *data,
 {
     EightSvxContext *esc = avctx->priv_data;
     int n, out_data_size, ret;
-    uint8_t *out_date;
     uint8_t *src, *dst;
 
     /* decode and interleave the first packet */
     if (!esc->samples && avpkt) {
-        uint8_t *deinterleaved_samples;
+        uint8_t *deinterleaved_samples, *p = NULL;
 
         esc->samples_size = avctx->codec->id == CODEC_ID_8SVX_RAW || avctx->codec->id ==CODEC_ID_PCM_S8_PLANAR?
             avpkt->size : avctx->channels + (avpkt->size-avctx->channels) * 2;
@@ -130,6 +129,7 @@ static int eightsvx_decode_frame(AVCodecContext *avctx, void *data,
             }
             if (!(deinterleaved_samples = av_mallocz(n)))
                 return AVERROR(ENOMEM);
+            p = deinterleaved_samples;
 
             /* the uncompressed starting value is contained in the first byte */
             if (avctx->channels == 2) {
@@ -146,6 +146,7 @@ static int eightsvx_decode_frame(AVCodecContext *avctx, void *data,
             interleave_stereo(esc->samples, deinterleaved_samples, esc->samples_size);
         else
             memcpy(esc->samples, deinterleaved_samples, esc->samples_size);
+        av_freep(&p);
     }
 
     /* get output buffer */

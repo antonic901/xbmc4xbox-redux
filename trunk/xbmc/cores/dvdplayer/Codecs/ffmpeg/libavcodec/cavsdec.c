@@ -491,7 +491,7 @@ static int decode_pic(AVSContext *h) {
             skip_bits(&s->gb,24);//time_code
         /* old sample clips were all progressive and no low_delay,
            bump stream revision if detected otherwise */
-        if((s->low_delay) || !(show_bits(&s->gb,9) & 1))
+        if (s->low_delay || !(show_bits(&s->gb,9) & 1))
             h->stream_revision = 1;
         /* similarly test top_field_first and repeat_first_field */
         else if(show_bits(&s->gb,11) & 3)
@@ -656,7 +656,8 @@ static int cavs_decode_frame(AVCodecContext * avctx,void *data, int *data_size,
     if (buf_size == 0) {
         if (!s->low_delay && h->DPB[0].f.data[0]) {
             *data_size = sizeof(AVPicture);
-            *picture = *(AVFrame *) &h->DPB[0];
+            *picture = h->DPB[0].f;
+            memset(&h->DPB[0], 0, sizeof(h->DPB[0]));
         }
         return 0;
     }

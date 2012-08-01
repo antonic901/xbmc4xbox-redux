@@ -36,12 +36,15 @@ void avfilter_register_all(void)
 
     REGISTER_FILTER (ACONVERT,    aconvert,    af);
     REGISTER_FILTER (AFORMAT,     aformat,     af);
+    REGISTER_FILTER (AMERGE,      amerge,      af);
     REGISTER_FILTER (ANULL,       anull,       af);
     REGISTER_FILTER (ARESAMPLE,   aresample,   af);
     REGISTER_FILTER (ASHOWINFO,   ashowinfo,   af);
     REGISTER_FILTER (ASPLIT,      asplit,      af);
+    REGISTER_FILTER (ASTREAMSYNC, astreamsync, af);
     REGISTER_FILTER (EARWAX,      earwax,      af);
     REGISTER_FILTER (PAN,         pan,         af);
+    REGISTER_FILTER (SILENCEDETECT, silencedetect, af);
     REGISTER_FILTER (VOLUME,      volume,      af);
 
     REGISTER_FILTER (ABUFFER,     abuffer,     asrc);
@@ -90,7 +93,9 @@ void avfilter_register_all(void)
     REGISTER_FILTER (SHOWINFO,    showinfo,    vf);
     REGISTER_FILTER (SLICIFY,     slicify,     vf);
     REGISTER_FILTER (SPLIT,       split,       vf);
+    REGISTER_FILTER (SWAPUV,      swapuv,      vf);
     REGISTER_FILTER (THUMBNAIL,   thumbnail,   vf);
+    REGISTER_FILTER (TINTERLACE,  tinterlace,  vf);
     REGISTER_FILTER (TRANSPOSE,   transpose,   vf);
     REGISTER_FILTER (UNSHARP,     unsharp,     vf);
     REGISTER_FILTER (VFLIP,       vflip,       vf);

@@ -380,6 +380,7 @@ typedef struct AVFormatParameters {
 #define AVFMT_NOBINSEARCH   0x2000 /**< Format does not allow to fallback to binary search via read_timestamp */
 #define AVFMT_NOGENSEARCH   0x4000 /**< Format does not allow to fallback to generic search */
 #define AVFMT_NO_BYTE_SEEK  0x8000 /**< Format does not allow seeking by bytes */
+#define AVFMT_ALLOW_FLUSH  0x10000 /**< Format allows flushing. If not set, the muxer will not receive a NULL packet in the write_packet function. */
 #define AVFMT_TS_NONSTRICT  0x8000000 /**< Format does not require strictly
                                            increasing timestamps, but they must
                                            still be monotonic */
@@ -406,12 +407,19 @@ typedef struct AVOutputFormat {
     enum CodecID audio_codec; /**< default audio codec */
     enum CodecID video_codec; /**< default video codec */
     int (*write_header)(struct AVFormatContext *);
+    /**
+     * Write a packet. If AVFMT_ALLOW_FLUSH is set in flags,
+     * pkt can be NULL in order to flush data buffered in the muxer.
+     * When flushing, return 0 if there still is more data to flush,
+     * or 1 if everything was flushed and there is no more buffered
+     * data.
+     */
     int (*write_packet)(struct AVFormatContext *, AVPacket *pkt);
     int (*write_trailer)(struct AVFormatContext *);
     /**
      * can use flags: AVFMT_NOFILE, AVFMT_NEEDNUMBER, AVFMT_RAWPICTURE,
      * AVFMT_GLOBALHEADER, AVFMT_NOTIMESTAMPS, AVFMT_VARIABLE_FPS,
-     * AVFMT_NODIMENSIONS, AVFMT_NOSTREAMS
+     * AVFMT_NODIMENSIONS, AVFMT_NOSTREAMS, AVFMT_ALLOW_FLUSH
      */
     int flags;
 
@@ -508,7 +516,6 @@ typedef struct AVInputFormat {
      */
     int (*read_close)(struct AVFormatContext *);
 
-#if FF_API_READ_SEEK
     /**
      * Seek to a given timestamp relative to the frames in
      * stream component stream_index.
@@ -517,9 +524,9 @@ typedef struct AVInputFormat {
      *              match is available.
      * @return >= 0 on success (but not necessarily the new offset)
      */
-    attribute_deprecated int (*read_seek)(struct AVFormatContext *,
-                                          int stream_index, int64_t timestamp, int flags);
-#endif
+    int (*read_seek)(struct AVFormatContext *,
+                     int stream_index, int64_t timestamp, int flags);
+
     /**
      * Get the next timestamp in stream[stream_index].time_base units.
      * @return the timestamp or AV_NOPTS_VALUE if an error occurred
@@ -1804,8 +1811,12 @@ attribute_deprecated int av_write_header(AVFormatContext *s);
  *
  * @param s media file handle
  * @param pkt The packet, which contains the stream_index, buf/buf_size,
-              dts/pts, ...
- * @return < 0 on error, = 0 if OK, 1 if end of stream wanted
+ *            dts/pts, ...
+ *            This can be NULL (at any time, not just at the end), in
+ *            order to immediately flush data buffered within the muxer,
+ *            for muxers that buffer up data internally before writing it
+ *            to the output.
+ * @return < 0 on error, = 0 if OK, 1 if flushed and there is no more data to flush
  */
 int av_write_frame(AVFormatContext *s, AVPacket *pkt);
 
@@ -1820,9 +1831,18 @@ int av_write_frame(AVFormatContext *s, AVPacket *pkt);
  * demuxer level.
  *
  * @param s media file handle
- * @param pkt The packet, which contains the stream_index, buf/buf_size,
-              dts/pts, ...
- * @return < 0 on error, = 0 if OK, 1 if end of stream wanted
+ * @param pkt The packet containing the data to be written. Libavformat takes
+ * ownership of the data and will free it when it sees fit using the packet's
+ * @ref AVPacket.destruct "destruct" field. The caller must not access the data
+ * after this function returns, as it may already be freed.
+ * Packet's @ref AVPacket.stream_index "stream_index" field must be set to the
+ * index of the corresponding stream in @ref AVFormatContext.streams
+ * "s.streams".
+ * It is very strongly recommended that timing information (@ref AVPacket.pts
+ * "pts", @ref AVPacket.dts "dts" @ref AVPacket.duration "duration") is set to
+ * correct values.
+ *
+ * @return 0 on success, a negative AVERROR on error.
  */
 int av_interleaved_write_frame(AVFormatContext *s, AVPacket *pkt);
 
@@ -2126,6 +2146,30 @@ int av_match_ext(const char *filename, const char *extensions);
  *         A negative number if this information is not available.
  */
 int avformat_query_codec(AVOutputFormat *ofmt, enum CodecID codec_id, int std_compliance);
+
+/**
+ * @defgroup riff_fourcc RIFF FourCCs
+ * @{
+ * Get the tables mapping RIFF FourCCs to libavcodec CodecIDs. The tables are
+ * meant to be passed to av_codec_get_id()/av_codec_get_tag() as in the
+ * following code:
+ * @code
+ * uint32_t tag = MKTAG('H', '2', '6', '4');
+ * const struct AVCodecTag *table[] = { avformat_get_riff_video_tags(), 0 };
+ * enum CodecID id = av_codec_get_id(table, tag);
+ * @endcode
+ */
+/**
+ * @return the table mapping RIFF FourCCs for video to libavcodec CodecID.
+ */
+const struct AVCodecTag *avformat_get_riff_video_tags(void);
+/**
+ * @return the table mapping RIFF FourCCs for audio to CodecID.
+ */
+const struct AVCodecTag *avformat_get_riff_audio_tags(void);
+/**
+ * @}
+ */
 
 /**
  * @}

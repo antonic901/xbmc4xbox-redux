@@ -260,6 +260,8 @@ int av_cold ff_ivi_init_tiles(IVIPlaneDesc *planes, int tile_width, int tile_hei
             t_width  >>= 1;
             t_height >>= 1;
         }
+        if(t_width<=0 || t_height<=0)
+            return AVERROR(EINVAL);
 
         for (b = 0; b < planes[p].num_bands; b++) {
             band = &planes[p].bands[b];
@@ -506,7 +508,7 @@ void ff_ivi_process_empty_tile(AVCodecContext *avctx, IVIBandDesc *band,
             if (band->inherit_qdelta && ref_mb)
                 mb->q_delta = ref_mb->q_delta;
 
-            if (band->inherit_mv) {
+            if (band->inherit_mv && ref_mb) {
                 /* motion vector inheritance */
                 if (mv_scale) {
                     mb->mv_x = ivi_scale_mv(ref_mb->mv_x, mv_scale);
@@ -611,7 +613,7 @@ void ff_ivi_output_plane(IVIPlaneDesc *plane, uint8_t *dst, int dst_pitch)
     const int16_t   *src  = plane->bands[0].buf;
     uint32_t        pitch = plane->bands[0].pitch;
 
-    if(!src)
+    if (!src)
         return;
 
     for (y = 0; y < plane->height; y++) {

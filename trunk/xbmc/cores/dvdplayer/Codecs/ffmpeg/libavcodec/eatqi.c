@@ -62,7 +62,7 @@ static int tqi_decode_mb(MpegEncContext *s, DCTELEM (*block)[64])
     int n;
     s->dsp.clear_blocks(block[0]);
     for (n=0; n<6; n++)
-        if(ff_mpeg1_decode_block_intra(s, block[n], n)<0)
+        if (ff_mpeg1_decode_block_intra(s, block[n], n) < 0)
             return -1;
 
     return 0;
@@ -127,7 +127,7 @@ static int tqi_decode_frame(AVCodecContext *avctx,
         return -1;
     }
 
-    av_fast_malloc(&t->bitstream_buf, &t->bitstream_buf_size, (buf_end-buf) + FF_INPUT_BUFFER_PADDING_SIZE);
+    av_fast_padded_malloc(&t->bitstream_buf, &t->bitstream_buf_size, buf_end-buf);
     if (!t->bitstream_buf)
         return AVERROR(ENOMEM);
     s->dsp.bswap_buf(t->bitstream_buf, (const uint32_t*)buf, (buf_end-buf)/4);
@@ -137,7 +137,7 @@ static int tqi_decode_frame(AVCodecContext *avctx,
     for (s->mb_y=0; s->mb_y<(avctx->height+15)/16; s->mb_y++)
     for (s->mb_x=0; s->mb_x<(avctx->width+15)/16; s->mb_x++)
     {
-        if(tqi_decode_mb(s, t->block) < 0)
+        if (tqi_decode_mb(s, t->block) < 0)
             break;
         tqi_idct_put(t, t->block);
     }

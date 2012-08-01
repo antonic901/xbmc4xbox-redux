@@ -70,7 +70,7 @@ enum RTSPControlTransport {
 #define RTSP_DEFAULT_NB_AUDIO_CHANNELS 1
 #define RTSP_DEFAULT_AUDIO_SAMPLERATE 44100
 #define RTSP_RTP_PORT_MIN 5000
-#define RTSP_RTP_PORT_MAX 10000
+#define RTSP_RTP_PORT_MAX 65000
 
 /**
  * This describes a single item in the "Transport:" line of one stream as
@@ -359,6 +359,11 @@ typedef struct RTSPState {
      * Mask of all requested media types
      */
     int media_type_mask;
+
+    /**
+     * Minimum and maximum local UDP ports.
+     */
+    int rtp_port_min, rtp_port_max;
 } RTSPState;
 
 #define RTSP_FLAG_FILTER_SRC  0x1    /**< Filter incoming UDP packets -
@@ -404,9 +409,6 @@ typedef struct RTSPStream {
 
 void ff_rtsp_parse_line(RTSPMessageHeader *reply, const char *buf,
                         RTSPState *rt, const char *method);
-
-extern int rtsp_rtp_port_min;
-extern int rtsp_rtp_port_max;
 
 /**
  * Send a command to the RTSP server without waiting for the reply.

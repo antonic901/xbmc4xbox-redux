@@ -163,6 +163,19 @@ static ChannelElement *get_che(AACContext *ac, int type, int elem_id)
     }
 }
 
+static int count_channels(enum ChannelPosition che_pos[4][MAX_ELEM_ID])
+{
+    int i, type, sum = 0;
+    for (i = 0; i < MAX_ELEM_ID; i++) {
+        for (type = 0; type < 4; type++) {
+            sum += (1 + (type == TYPE_CPE)) *
+                (che_pos[type][i] != AAC_CHANNEL_OFF &&
+                 che_pos[type][i] != AAC_CHANNEL_CC);
+        }
+    }
+    return sum;
+}
+
 /**
  * Check for the channel element in the current channel position configuration.
  * If it exists, make sure the appropriate element is allocated and map the
@@ -437,6 +450,12 @@ static int decode_ga_specific_config(AACContext *ac, AVCodecContext *avctx,
         if ((ret = set_default_channel_config(avctx, new_che_pos, channel_config)))
             return ret;
     }
+
+    if (count_channels(new_che_pos) > 1) {
+        m4ac->ps = 0;
+    } else if (m4ac->sbr == 1 && m4ac->ps == -1)
+        m4ac->ps = 1;
+
     if (ac && (ret = output_configure(ac, ac->che_pos, new_che_pos, channel_config, OC_GLOBAL_HDR)))
         return ret;
 
@@ -495,8 +514,6 @@ static int decode_audio_specific_config(AACContext *ac,
         av_log(avctx, AV_LOG_ERROR, "invalid sampling rate index %d\n", m4ac->sampling_index);
         return -1;
     }
-    if (m4ac->sbr == 1 && m4ac->ps == -1)
-        m4ac->ps = 1;
 
     skip_bits_long(&gb, i);
 
@@ -809,19 +826,20 @@ static int decode_band_types(AACContext *ac, enum BandType band_type[120],
                 av_log(ac->avctx, AV_LOG_ERROR, "invalid band type\n");
                 return -1;
             }
-            while ((sect_len_incr = get_bits(gb, bits)) == (1 << bits) - 1 && get_bits_left(gb) >= bits)
+            do {
+                sect_len_incr = get_bits(gb, bits);
                 sect_end += sect_len_incr;
-            sect_end += sect_len_incr;
-            if (get_bits_left(gb) < 0 || sect_len_incr == (1 << bits) - 1) {
-                av_log(ac->avctx, AV_LOG_ERROR, overread_err);
-                return -1;
-            }
-            if (sect_end > ics->max_sfb) {
-                av_log(ac->avctx, AV_LOG_ERROR,
-                       "Number of bands (%d) exceeds limit (%d).\n",
-                       sect_end, ics->max_sfb);
-                return -1;
-            }
+                if (get_bits_left(gb) < 0) {
+                    av_log(ac->avctx, AV_LOG_ERROR, overread_err);
+                    return -1;
+                }
+                if (sect_end > ics->max_sfb) {
+                    av_log(ac->avctx, AV_LOG_ERROR,
+                           "Number of bands (%d) exceeds limit (%d).\n",
+                           sect_end, ics->max_sfb);
+                    return -1;
+                }
+            } while (sect_len_incr == (1 << bits) - 1);
             for (; k < sect_end; k++) {
                 band_type        [idx]   = sect_band_type;
                 band_type_run_end[idx++] = sect_end;
@@ -2093,7 +2111,7 @@ static int parse_adts_frame_header(AACContext *ac, GetBitContext *gb)
 
     size = avpriv_aac_parse_header(gb, &hdr_info);
     if (size > 0) {
-        if (hdr_info.chan_config && (hdr_info.chan_config!=ac->m4ac.chan_config || ac->m4ac.sample_rate!=hdr_info.sample_rate)) {
+        if (hdr_info.chan_config) {
             enum ChannelPosition new_che_pos[4][MAX_ELEM_ID];
             memset(new_che_pos, 0, 4 * MAX_ELEM_ID * sizeof(new_che_pos[0][0]));
             ac->m4ac.chan_config = hdr_info.chan_config;
@@ -2201,10 +2219,11 @@ static int aac_decode_frame_int(AVCodecContext *avctx, void *data,
             if ((err = decode_pce(avctx, &ac->m4ac, new_che_pos, gb)))
                 break;
             if (ac->output_configured > OC_TRIAL_PCE)
-                av_log(avctx, AV_LOG_ERROR,
-                       "Not evaluating a further program_config_element as this construct is dubious at best.\n");
-            else
-                err = output_configure(ac, ac->che_pos, new_che_pos, 0, OC_TRIAL_PCE);
+                av_log(avctx, AV_LOG_INFO,
+                       "Evaluating a further program_config_element.\n");
+            err = output_configure(ac, ac->che_pos, new_che_pos, 0, OC_TRIAL_PCE);
+            if (!err)
+                ac->m4ac.chan_config = 0;
             break;
         }
 
@@ -2375,6 +2394,8 @@ static int latm_decode_audio_specific_config(struct LATMContext *latmctx,
                                "config not byte aligned.\n", 1);
         return AVERROR_INVALIDDATA;
     }
+    if (asclen <= 0)
+        return AVERROR_INVALIDDATA;
     bits_consumed = decode_audio_specific_config(NULL, avctx, &m4ac,
                                          gb->buffer + (config_start_bit / 8),
                                          asclen, sync_extension);

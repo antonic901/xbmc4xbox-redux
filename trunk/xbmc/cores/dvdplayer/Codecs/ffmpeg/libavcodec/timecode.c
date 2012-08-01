@@ -55,7 +55,7 @@ uint32_t avpriv_framenum_to_smpte_timecode(unsigned frame, int fps, int drop)
            (  (frame / (fps * 3600) % 24)) % 10;          // units of hours
 }
 
-static int check_timecode_rate(void *avcl, AVRational rate, int drop)
+int avpriv_check_timecode_rate(void *avcl, AVRational rate, int drop)
 {
     int fps;
 
@@ -64,7 +64,7 @@ static int check_timecode_rate(void *avcl, AVRational rate, int drop)
         return -1;
     }
     fps = (rate.num + rate.den/2) / rate.den;
-    if (drop && (rate.den != 1001 || fps != 30)) {
+    if (drop && fps != 30) {
         av_log(avcl, AV_LOG_ERROR, "Drop frame is only allowed with 30000/1001 FPS\n");
         return -2;
     }
@@ -83,15 +83,20 @@ char *avpriv_timecode_to_string(char *buf, const struct ff_timecode *tc, unsigne
 {
     int frame_num = tc->start + frame;
     int fps = (tc->rate.num + tc->rate.den/2) / tc->rate.den;
-    int hh, mm, ss, ff;
+    int hh, mm, ss, ff, neg = 0;
 
     if (tc->drop)
         frame_num = avpriv_framenum_to_drop_timecode(frame_num);
+    if (frame_num < 0) {
+        frame_num = -frame_num;
+        neg = 1;
+    }
     ff = frame_num % fps;
     ss = frame_num / fps        % 60;
     mm = frame_num / (fps*60)   % 60;
-    hh = frame_num / (fps*3600) % 24;
-    snprintf(buf, sizeof("hh:mm:ss.ff"), "%02d:%02d:%02d%c%02d",
+    hh = frame_num / (fps*3600);
+    snprintf(buf, 16, "%s%02d:%02d:%02d%c%02d",
+             neg ? "-" : "",
              hh, mm, ss, tc->drop ? ';' : ':', ff);
     return buf;
 }
@@ -109,7 +114,7 @@ int avpriv_init_smpte_timecode(void *avcl, struct ff_timecode *tc)
 
     tc->drop  = c != ':'; // drop if ';', '.', ...
 
-    ret = check_timecode_rate(avcl, tc->rate, tc->drop);
+    ret = avpriv_check_timecode_rate(avcl, tc->rate, tc->drop);
     if (ret < 0)
         return ret;
 

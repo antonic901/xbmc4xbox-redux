@@ -41,7 +41,7 @@ struct ff_timecode {
     char *str;       ///< string following the hh:mm:ss[:;.]ff format
     int start;       ///< timecode frame start
     int drop;        ///< drop flag (1 if drop, else 0)
-    AVRational rate; ///< Frame rate in rationnal form
+    AVRational rate; ///< Frame rate in rational form
 };
 
 /**
@@ -67,10 +67,19 @@ uint32_t avpriv_framenum_to_smpte_timecode(unsigned frame, int fps, int drop);
  * @param tc    Timecode struct pointer
  * @param frame Frame id (timecode frame is computed with tc->start+frame)
  * @return a pointer to the buf parameter
- * @note  buf must have enough space to store the timecode representation
- *        (sizeof("hh:mm:ss.ff"))
+ * @note  timecode representation can be a negative timecode and have
+ *        more than 24 hours.
+ * @note  buf must have enough space to store the timecode representation: 16
+ *        bytes is the minimum required size.
  */
 char *avpriv_timecode_to_string(char *buf, const struct ff_timecode *tc, unsigned frame);
+
+/**
+ * Check if timecode rate is valid and consistent with the drop flag.
+ *
+ * @return 0 on success, negative value on failure
+ */
+int avpriv_check_timecode_rate(void *avcl, AVRational rate, int drop);
 
 /**
  * Parse SMTPE 12M time representation (hh:mm:ss[:;.]ff). str and rate fields

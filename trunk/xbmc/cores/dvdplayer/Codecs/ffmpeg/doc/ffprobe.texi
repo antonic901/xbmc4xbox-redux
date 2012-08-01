@@ -94,6 +94,11 @@ For example for printing the output in JSON format, specify:
 For more details on the available output printing formats, see the
 Writers section below.
 
+@item -show_error
+Show information about the error found when trying to probe the input.
+
+The error information is printed within a section with name "ERROR".
+
 @item -show_format
 Show information about the container format of the input multimedia
 stream.
@@ -108,6 +113,13 @@ stream.
 The information for each single packet is printed within a dedicated
 section with name "PACKET".
 
+@item -show_frames
+Show information about each frame contained in the input multimedia
+stream.
+
+The information for each single frame is printed within a dedicated
+section with name "FRAME".
+
 @item -show_streams
 Show information about each media stream contained in the input
 multimedia stream.
@@ -121,6 +133,23 @@ particular shown element.
 This option is enabled by default, but you may need to disable it
 for specific uses, for example when creating XSD-compliant XML output.
 
+@item -show_program_version
+Show information related to program version.
+
+Version information is printed within a section with name
+"PROGRAM_VERSION".
+
+@item -show_library_versions
+Show information related to library versions.
+
+Version information for each library is printed within a section with
+name "LIBRARY_VERSION".
+
+@item -show_versions
+Show information related to program and library versions. This is the
+equivalent of setting both @option{-show_program_version} and
+@option{-show_library_versions} options.
+
 @item -i @var{input_file}
 Read @var{input_file}.
 
@@ -130,7 +159,7 @@ Read @var{input_file}.
 @chapter Writers
 @c man begin WRITERS
 
-A writer defines the output format adopted by @file{ffprobe}, and will be
+A writer defines the output format adopted by @command{ffprobe}, and will be
 used for printing all the parts of the output.
 
 A writer may accept one or more arguments, which specify the options to
@@ -216,6 +245,18 @@ JSON based format.
 
 Each section is printed using JSON notation.
 
+This writer accepts options as a list of @var{key}=@var{value} pairs,
+separated by ":".
+
+The description of the accepted options follows.
+
+@table @option
+
+@item compact, c
+If set to 1 enable compact output, that is each section will be
+printed on a single line. Default value is 0.
+@end table
+
 For more information about JSON, see @url{http://www.json.org/}.
 
 @section xml
@@ -250,6 +291,23 @@ This option automatically sets @option{fully_qualified} to 1.
 
 For more information about the XML format, see
 @url{http://www.w3.org/XML/}.
+
+@chapter Timecode
+
+@command{ffprobe} supports Timecode extraction:
+
+@itemize
+
+@item MPEG1/2 timecode is extracted from the GOP, and is available in the video
+stream details (@option{-show_streams}, see @var{timecode}).
+
+@item MOV timecode is extracted from tmcd track, so is available in the tmcd
+stream metadata (@option{-show_streams}, see @var{TAG:timecode}).
+
+@item DV and GXF timecodes are available in format metadata
+(@option{-show_format}, see @var{TAG:timecode}).
+
+@end itemize
 
 @c man end WRITERS
 

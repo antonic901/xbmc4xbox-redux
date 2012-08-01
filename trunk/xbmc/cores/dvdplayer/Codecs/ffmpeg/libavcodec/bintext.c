@@ -139,7 +139,7 @@ static int decode_frame(AVCodecContext *avctx,
         av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
         return -1;
     }
-    s->frame.pict_type           = FF_I_TYPE;
+    s->frame.pict_type           = AV_PICTURE_TYPE_I;
     s->frame.palette_has_changed = 1;
     memcpy(s->frame.data[1], s->palette, 16 * 4);
 
@@ -211,40 +211,37 @@ static av_cold int decode_end(AVCodecContext *avctx)
 }
 
 AVCodec ff_bintext_decoder = {
-    "bintext",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_BINTEXT,
-    sizeof(XbinContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+    .name           = "bintext",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_BINTEXT,
+    .priv_data_size = sizeof(XbinContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("Binary text"),
 };
 
 AVCodec ff_xbin_decoder = {
-    "xbin",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_XBIN,
-    sizeof(XbinContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+    .name           = "xbin",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_XBIN,
+    .priv_data_size = sizeof(XbinContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("eXtended BINary text"),
 };
 
 AVCodec ff_idf_decoder = {
-    "idf",
-    AVMEDIA_TYPE_VIDEO,
-    CODEC_ID_IDF,
-    sizeof(XbinContext),
-    decode_init,
-    NULL,
-    decode_end,
-    decode_frame,
-    CODEC_CAP_DR1,
+    .name           = "idf",
+    .type           = AVMEDIA_TYPE_VIDEO,
+    .id             = CODEC_ID_IDF,
+    .priv_data_size = sizeof(XbinContext),
+    .init           = decode_init,
+    .close          = decode_end,
+    .decode         = decode_frame,
+    .capabilities   = CODEC_CAP_DR1,
     .long_name = NULL_IF_CONFIG_SMALL("iCEDraw text"),
 };

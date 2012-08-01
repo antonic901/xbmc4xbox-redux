@@ -854,8 +854,8 @@ end:
     {
         int v= show_bits(&s->gb, 16);
 
-        if(get_bits_count(&s->gb) + 16 > s->gb.size_in_bits){
-            v>>= get_bits_count(&s->gb) + 16 - s->gb.size_in_bits;
+        if (get_bits_left(&s->gb) < 16) {
+            v >>= 16 - get_bits_left(&s->gb);
         }
 
         if(v==0)
@@ -963,6 +963,8 @@ int h263_decode_picture_header(MpegEncContext *s)
             s->h263_aic = get_bits1(&s->gb); /* Advanced Intra Coding (AIC) */
             s->loop_filter= get_bits1(&s->gb);
             s->unrestricted_mv = s->umvplus || s->obmc || s->loop_filter;
+            if(s->avctx->lowres)
+                s->loop_filter = 0;
 
             s->h263_slice_structured= get_bits1(&s->gb);
             if (get_bits1(&s->gb) != 0) {

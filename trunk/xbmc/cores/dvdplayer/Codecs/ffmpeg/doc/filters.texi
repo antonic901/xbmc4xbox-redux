@@ -93,7 +93,7 @@ Follows a BNF description for the filtergraph syntax:
 @c man begin AUDIO FILTERS
 
 When you configure your FFmpeg build, you can disable any of the
-existing filters using --disable-filters.
+existing filters using @code{--disable-filters}.
 The configure output will show the audio filters included in your
 build.
 
@@ -154,6 +154,39 @@ Some examples follow:
 aformat=u8\\,s16:mono:packed
 
 aformat=s16:mono\\,stereo:all
+@end example
+
+@section amerge
+
+Merge two audio streams into a single multi-channel stream.
+
+This filter does not need any argument.
+
+If the channel layouts of the inputs are disjoint, and therefore compatible,
+the channel layout of the output will be set accordingly and the channels
+will be reordered as necessary. If the channel layouts of the inputs are not
+disjoint, the output will have all the channels of the first input then all
+the channels of the second input, in that order, and the channel layout of
+the output will be the default value corresponding to the total number of
+channels.
+
+For example, if the first input is in 2.1 (FL+FR+LF) and the second input
+is FC+BL+BR, then the output will be in 5.1, with the channels in the
+following order: a1, a2, b1, a3, b2, b3 (a1 is the first channel of the
+first input, b1 is the first channel of the second input).
+
+On the other hand, if both input are in stereo, the output channels will be
+in the default order: a1, a2, b1, b2, and the channel layout will be
+arbitrarily set to 4.0, which may or may not be the expected value.
+
+Both inputs must have the same sample rate, format and packing.
+
+If inputs do not have the same duration, the output will stop with the
+shortest.
+
+Example: merge two mono files into a stereo stream:
+@example
+amovie=left.wav [l] ; amovie=right.mp3 [r] ; [l] [r] amerge
 @end example
 
 @section anull
@@ -237,6 +270,35 @@ For example:
 will create two separate outputs from the same input, one cropped and
 one padded.
 
+@section astreamsync
+
+Forward two audio streams and control the order the buffers are forwarded.
+
+The argument to the filter is an expression deciding which stream should be
+forwarded next: if the result is negative, the first stream is forwarded; if
+the result is positive or zero, the second stream is forwarded. It can use
+the following variables:
+
+@table @var
+@item b1 b2
+number of buffers forwarded so far on each stream
+@item s1 s2
+number of samples forwarded so far on each stream
+@item t1 t2
+current timestamp of each stream
+@end table
+
+The default value is @code{t1-t2}, which means to always forward the stream
+that has a smaller timestamp.
+
+Example: stress-test @code{amerge} by randomly sending buffers on the wrong
+input, while avoiding too much of a desynchronization:
+@example
+amovie=file.ogg [a] ; amovie=file.mp3 [b] ;
+[a] [b] astreamsync=(2*random(1))-1+tanh(5*(t1-t2)) [a2] [b2] ;
+[a2] [b2] amerge
+@end example
+
 @section earwax
 
 Make audio easier to listen to on headphones.
@@ -252,6 +314,9 @@ Ported from SoX.
 
 Mix channels with specific gain levels. The filter accepts the output
 channel layout followed by a set of channels definitions.
+
+This filter is also designed to remap efficiently the channels of an audio
+stream.
 
 The filter accepts parameters of the form:
 "@var{l}:@var{outdef}:@var{outdef}:..."
@@ -280,6 +345,8 @@ If the `=' in a channel specification is replaced by `<', then the gains for
 that specification will be renormalized so that the total is 1, thus
 avoiding clipping noise.
 
+@subsection Mixing examples
+
 For example, if you want to down-mix from stereo to mono, but with a bigger
 factor for the left channel:
 @example
@@ -292,9 +359,79 @@ A customized down-mix to stereo that works automatically for 3-, 4-, 5- and
 pan=stereo: FL < FL + 0.5*FC + 0.6*BL + 0.6*SL : FR < FR + 0.5*FC + 0.6*BR + 0.6*SR
 @end example
 
-Note that @file{ffmpeg} integrates a default down-mix (and up-mix) system
+Note that @command{ffmpeg} integrates a default down-mix (and up-mix) system
 that should be preferred (see "-ac" option) unless you have very specific
 needs.
+
+@subsection Remapping examples
+
+The channel remapping will be effective if, and only if:
+
+@itemize
+@item gain coefficients are zeroes or ones,
+@item only one input per channel output,
+@item the number of output channels is supported by libswresample (16 at the
+      moment)
+@c if SWR_CH_MAX changes, fix the line above.
+@end itemize
+
+If all these conditions are satisfied, the filter will notify the user ("Pure
+channel mapping detected"), and use an optimized and lossless method to do the
+remapping.
+
+For example, if you have a 5.1 source and want a stereo audio stream by
+dropping the extra channels:
+@example
+pan="stereo: c0=FL : c1=FR"
+@end example
+
+Given the same source, you can also switch front left and front right channels
+and keep the input channel layout:
+@example
+pan="5.1: c0=c1 : c1=c0 : c2=c2 : c3=c3 : c4=c4 : c5=c5"
+@end example
+
+If the input is a stereo audio stream, you can mute the front left channel (and
+still keep the stereo channel layout) with:
+@example
+pan="stereo:c1=c1"
+@end example
+
+Still with a stereo audio stream input, you can copy the right channel in both
+front left and right:
+@example
+pan="stereo: c0=FR : c1=FR"
+@end example
+
+@section silencedetect
+
+Detect silence in an audio stream.
+
+This filter logs a message when it detects that the input audio volume is less
+or equal to a noise tolerance value for a duration greater or equal to the
+minimum detected noise duration.
+
+The printed times and duration are expressed in seconds.
+
+@table @option
+@item duration, d
+Set silence duration until notification (default is 2 seconds).
+
+@item noise, n
+Set noise tolerance. Can be specified in dB (in case "dB" is appended to the
+specified value) or amplitude ratio. Default is -60dB, or 0.001.
+@end table
+
+Detect 5 seconds of silence with -50dB noise tolerance:
+@example
+silencedetect=n=-50dB:d=5
+@end example
+
+Complete example with @command{ffmpeg} to detect silence with 0.0001 noise
+tolerance in @file{silence.mp3}:
+@example
+ffmpeg -f lavfi -i amovie=silence.mp3,silencedetect=noise=0.0001 -f null -
+@end example
 
 @section volume
 
@@ -305,7 +442,7 @@ how the audio volume will be increased or decreased.
 
 Output values are clipped to the maximum value.
 
-If @var{vol} is expressed as a decimal number, and the output audio
+If @var{vol} is expressed as a decimal number, the output audio
 volume is given by the relation:
 @example
 @var{output_volume} = @var{vol} * @var{input_volume}
@@ -591,7 +728,7 @@ tools.
 @c man begin VIDEO FILTERS
 
 When you configure your FFmpeg build, you can disable any of the
-existing filters using --disable-filters.
+existing filters using @code{--disable-filters}.
 The configure output will show the video filters included in your
 build.
 
@@ -1164,7 +1301,9 @@ timestamp expressed in seconds, NAN if the input timestamp is unknown
 
 @item timecode
 initial timecode representation in "hh:mm:ss[:;.]ff" format. It can be used
-with or without text parameter. @var{rate} option must be specified
+with or without text parameter. @var{rate} option must be specified.
+Note that timecode options are @emph{not} effective if FFmpeg is build with
+@code{--disable-avcodec}.
 
 @item r, rate
 frame rate (timecode only)
@@ -1349,7 +1488,7 @@ format=yuv420p:yuv444p:yuv410p
 Apply a frei0r effect to the input video.
 
 To enable compilation of this filter you need to install the frei0r
-header and configure FFmpeg with --enable-frei0r.
+header and configure FFmpeg with @code{--enable-frei0r}.
 
 The filter supports the syntax:
 @example
@@ -1708,7 +1847,7 @@ Pass the video source unchanged to the output.
 Apply video transform using libopencv.
 
 To enable this filter install libopencv library and headers and
-configure FFmpeg with --enable-libopencv.
+configure FFmpeg with @code{--enable-libopencv}.
 
 The filter takes the parameters: @var{filter_name}@{:=@}@var{filter_params}.
 
@@ -2017,9 +2156,6 @@ input sample aspect ratio
 
 @item dar
 input display aspect ratio, it is the same as (@var{iw} / @var{ih}) * @var{sar}
-
-@item sar
-input sample aspect ratio
 
 @item hsub, vsub
 horizontal and vertical chroma subsample values. For example for the
@@ -2413,6 +2549,9 @@ For example:
 will create two separate outputs from the same input, one cropped and
 one padded.
 
+@section swapuv
+Swap U & V plane.
+
 @section thumbnail
 Select the most representative frame in a given sequence of consecutive frames.
 
@@ -2432,6 +2571,44 @@ Complete example of a thumbnail creation with @command{ffmpeg}:
 @example
 ffmpeg -i in.avi -vf thumbnail,scale=300:200 -frames:v 1 out.png
 @end example
+
+@section tinterlace
+
+Perform various types of temporal field interlacing.
+
+Frames are counted starting from 1, so the first input frame is
+considered odd.
+
+This filter accepts a single parameter specifying the mode. Available
+modes are:
+
+@table @samp
+@item 0
+Move odd frames into the upper field, even into the lower field,
+generating a double height frame at half framerate.
+
+@item 1
+Only output even frames, odd frames are dropped, generating a frame with
+unchanged height at half framerate.
+
+@item 2
+Only output odd frames, even frames are dropped, generating a frame with
+unchanged height at half framerate.
+
+@item 3
+Expand each frame to full height, but pad alternate lines with black,
+generating a frame with double height at the same input framerate.
+
+@item 4
+Interleave the upper field from odd frames with the lower field from
+even frames, generating a frame with unchanged height at half framerate.
+
+@item 5
+Interleave the lower field from odd frames with the upper field from
+even frames, generating a frame with unchanged height at half framerate.
+@end table
+
+Default mode is 0.
 
 @section transpose
 
@@ -2915,7 +3092,7 @@ will generate a "dc_luma" test pattern.
 Provide a frei0r source.
 
 To enable compilation of this filter you need to install the frei0r
-header and configure FFmpeg with --enable-frei0r.
+header and configure FFmpeg with @code{--enable-frei0r}.
 
 The source supports the syntax:
 @example
@@ -3098,7 +3275,7 @@ number or a valid video frame rate abbreviation. The default value is
 @item sar
 Set the sample aspect ratio of the sourced video.
 
-@item duration
+@item duration, d
 Set the video duration of the sourced video. The accepted syntax is:
 @example
 [-]HH[:MM[:SS[.m...]]]
@@ -3108,6 +3285,14 @@ See also the function @code{av_parse_time()}.
 
 If not specified, or the expressed duration is negative, the video is
 supposed to be generated forever.
+
+@item decimals, n
+Set the number of decimals to show in the timestamp, only used in the
+@code{testsrc} source.
+
+The displayed timestamp value will correspond to the original
+timestamp value multiplied by the power of 10 of the specified
+value. Default value is 0.
 @end table
 
 For example the following:

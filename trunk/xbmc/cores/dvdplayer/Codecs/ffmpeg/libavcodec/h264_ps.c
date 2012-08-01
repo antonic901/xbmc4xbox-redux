@@ -241,7 +241,7 @@ static inline int decode_vui_parameters(H264Context *h, SPS *sps){
         sps->num_reorder_frames= get_ue_golomb(&s->gb);
         get_ue_golomb(&s->gb); /*max_dec_frame_buffering*/
 
-        if(get_bits_left(&s->gb) < 0){
+        if (get_bits_left(&s->gb) < 0) {
             sps->num_reorder_frames=0;
             sps->bitstream_restriction_flag= 0;
         }
@@ -251,9 +251,9 @@ static inline int decode_vui_parameters(H264Context *h, SPS *sps){
             return -1;
         }
     }
-    if(get_bits_left(&s->gb) < 0){
+    if (get_bits_left(&s->gb) < 0) {
         av_log(h->s.avctx, AV_LOG_ERROR, "Overread VUI by %d bits\n", -get_bits_left(&s->gb));
-        return -1;
+        return AVERROR_INVALIDDATA;
     }
 
     return 0;
@@ -351,9 +351,9 @@ int ff_h264_decode_seq_parameter_set(H264Context *h){
         if (sps->chroma_format_idc > 3U) {
             av_log(h->s.avctx, AV_LOG_ERROR, "chroma_format_idc %d is illegal\n", sps->chroma_format_idc);
             goto fail;
-        }
-        if(sps->chroma_format_idc == 3)
+        } else if(sps->chroma_format_idc == 3) {
             sps->residual_color_transform_flag = get_bits1(&s->gb);
+        }
         sps->bit_depth_luma   = get_ue_golomb(&s->gb) + 8;
         sps->bit_depth_chroma = get_ue_golomb(&s->gb) + 8;
         if (sps->bit_depth_luma > 12U || sps->bit_depth_chroma > 12U) {
@@ -515,6 +515,9 @@ int ff_h264_decode_picture_parameter_set(H264Context *h, int bit_length){
     if(pps_id >= MAX_PPS_COUNT) {
         av_log(h->s.avctx, AV_LOG_ERROR, "pps_id (%d) out of range\n", pps_id);
         return -1;
+    } else if (h->sps.bit_depth_luma > 10) {
+        av_log(h->s.avctx, AV_LOG_ERROR, "Unimplemented luma bit depth=%d (max=10)\n", h->sps.bit_depth_luma);
+        return AVERROR_PATCHWELCOME;
     }
 
     pps= av_mallocz(sizeof(PPS));
