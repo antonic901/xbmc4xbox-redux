@@ -358,7 +358,7 @@ static int r3d_seek(AVFormatContext *s, int stream_index, int64_t sample_time, i
     int frame_num;
 
     if (!st->codec->time_base.num || !st->time_base.den)
-        return -1;
+        return AVERROR(ENOSYS);
 
     frame_num = sample_time*st->codec->time_base.den/
         ((int64_t)st->codec->time_base.num*st->time_base.den);

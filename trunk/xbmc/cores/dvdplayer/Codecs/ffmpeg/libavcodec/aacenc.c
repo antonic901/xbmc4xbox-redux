@@ -777,6 +777,11 @@ static const AVClass aacenc_class = {
     LIBAVUTIL_VERSION_INT,
 };
 
+static const AVProfile profiles[] = {
+    { FF_PROFILE_AAC_LOW,  "Low"  },
+    { FF_PROFILE_UNKNOWN },
+};
+
 AVCodec ff_aac_encoder = {
     .name           = "aac",
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -789,4 +794,5 @@ AVCodec ff_aac_encoder = {
     .sample_fmts = (const enum AVSampleFormat[]){AV_SAMPLE_FMT_FLT,AV_SAMPLE_FMT_NONE},
     .long_name = NULL_IF_CONFIG_SMALL("Advanced Audio Coding"),
     .priv_class = &aacenc_class,
+    .profiles = profiles,
 };

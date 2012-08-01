@@ -1631,6 +1631,11 @@ int av_read_packet(AVFormatContext *s, AVPacket *pkt);
 int av_read_frame(AVFormatContext *s, AVPacket *pkt);
 
 /**
+ * Clear out any buffered data in context
+ */
+void av_read_frame_flush(AVFormatContext *s);
+
+/**
  * Seek to the keyframe at timestamp.
  * 'timestamp' in 'stream_index'.
  * @param stream_index If stream_index is (-1), a default

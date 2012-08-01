@@ -78,6 +78,7 @@ struct MpegTSFilter {
     int pid;
     int es_id;
     int last_cc; /* last cc code (-1 if first packet) */
+    int last_version; /* last version of data on this pid */
     enum MpegTSFilterType type;
     union {
         MpegTSPESFilter pes_filter;
@@ -334,6 +335,7 @@ static MpegTSFilter *mpegts_open_section_filter(MpegTSContext *ts, unsigned int 
     filter->pid = pid;
     filter->es_id = -1;
     filter->last_cc = -1;
+    filter->last_version = -1;
     sec = &filter->u.section_filter;
     sec->section_cb = section_cb;
     sec->opaque = opaque;
@@ -437,6 +439,7 @@ typedef struct SectionHeader {
     uint8_t tid;
     uint16_t id;
     uint8_t version;
+    uint8_t current;
     uint8_t sec_num;
     uint8_t last_sec_num;
 } SectionHeader;
@@ -508,6 +511,7 @@ static int parse_section_header(SectionHeader *h,
     val = get8(pp, p_end);
     if (val < 0)
         return -1;
+    h->current = val & 0x1;
     h->version = (val >> 1) & 0x1f;
     val = get8(pp, p_end);
     if (val < 0)
@@ -581,6 +585,8 @@ static const StreamType DESC_types[] = {
     { 0x7b, AVMEDIA_TYPE_AUDIO,             CODEC_ID_DTS },
     { 0x56, AVMEDIA_TYPE_SUBTITLE, CODEC_ID_DVB_TELETEXT },
     { 0x59, AVMEDIA_TYPE_SUBTITLE, CODEC_ID_DVB_SUBTITLE }, /* subtitling descriptor */
+    { 0x45, AVMEDIA_TYPE_DATA,         CODEC_ID_VBI_DATA }, /* VBI Data descriptor */
+    { 0x46, AVMEDIA_TYPE_DATA,     CODEC_ID_VBI_TELETEXT }, /* VBI Teletext descriptor */
     { 0 },
 };
 
@@ -658,6 +664,10 @@ static int mpegts_set_stream_info(AVStream *st, PESContext *pes,
 
 static void new_pes_packet(PESContext *pes, AVPacket *pkt)
 {
+    if(pkt->data) {
+      av_log(pes->stream, AV_LOG_ERROR, "ignoring previously allocated packet on stream %d\n", pkt->stream_index);
+      av_free_packet(pkt);
+    }
     av_init_packet(pkt);
 
     pkt->destruct = av_destruct_packet;
@@ -815,7 +825,7 @@ static int mpegts_push_data(MpegTSFilter *filter,
                         goto skip;
 
                     /* stream not present in PMT */
-                    if (!pes->st) {
+                    if (ts->auto_guess && !pes->st) {
                         pes->st = avformat_new_stream(ts->stream, NULL);
                         if (!pes->st)
                             return AVERROR(ENOMEM);
@@ -1554,6 +1564,12 @@ static void pat_cb(MpegTSFilter *filter, const uint8_t *section, int section_len
         return;
     if (h->tid != PAT_TID)
         return;
+    if (!h->current)
+        return;
+    if (h->version == filter->last_version)
+        return;
+    filter->last_version = h->version;
+    av_dlog(ts->stream, "version=%d\n", filter->last_version);
 
     ts->stream->ts_id = h->id;
 
@@ -1916,6 +1932,44 @@ static int parse_pcr(int64_t *ppcr_high, int *ppcr_low,
     return 0;
 }
 
+static int parse_timestamp(int64_t *ts, const uint8_t *buf)
+{
+    int afc, flags;
+    const uint8_t *p;
+
+    if(!(buf[1] & 0x40)) /* must be a start packet */
+        return -1;
+
+    afc = (buf[3] >> 4) & 3;
+    p = buf + 4;
+    if (afc == 0 || afc == 2) /* invalid or only adaption field */
+        return -1;
+    if (afc == 3)
+        p += p[0] + 1;
+    if (p >= buf + TS_PACKET_SIZE)
+        return -1;
+
+    if (p[0] != 0x00 || p[1] != 0x00 || p[2] != 0x01)  /* packet_start_code_prefix */
+        return -1;
+
+    flags = p[3] | 0x100; /* stream type */
+    if (!((flags >= 0x1c0 && flags <= 0x1df) ||
+          (flags >= 0x1e0 && flags <= 0x1ef) ||
+          (flags == 0x1bd) || (flags == 0x1fd)))
+        return -1;
+
+    flags = p[7];
+    if ((flags & 0xc0) == 0x80) {
+        *ts = ff_parse_pes_pts(p+9);
+        return 0;
+    } else if ((flags & 0xc0) == 0xc0) {
+        *ts = ff_parse_pes_pts(p+9+5);
+        return 0;
+    }
+    return -1;
+}
+
+
 static int mpegts_read_header(AVFormatContext *s,
                               AVFormatParameters *ap)
 {
@@ -1959,7 +2013,10 @@ static int mpegts_read_header(AVFormatContext *s,
 
         av_dlog(ts->stream, "tuning done\n");
 
-        s->ctx_flags |= AVFMTCTX_NOHEADER;
+        /* only flag NOHEADER if we are in file mode,
+           in streaming mode scanning may take too long for users */
+        if (!url_is_streamed(pb))
+            s->ctx_flags |= AVFMTCTX_NOHEADER;
     } else {
         AVStream *st;
         int pcr_pid, pid, nb_packets, nb_pcrs, ret, pcr_l;
@@ -2067,6 +2124,8 @@ static int mpegts_read_packet(AVFormatContext *s,
     int ret, i;
 
     ts->pkt = pkt;
+    ts->pkt->data = NULL;
+
     ret = handle_packets(ts, 0);
     if (ret < 0) {
         /* flush pes data left */
@@ -2106,6 +2165,7 @@ static int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
     int64_t pos, timestamp;
     uint8_t buf[TS_PACKET_SIZE];
     int pcr_l, pcr_pid = ((PESContext*)s->streams[stream_index]->priv_data)->pcr_pid;
+    int pid = ((PESContext*)s->streams[stream_index]->priv_data)->pid;
     pos = ((*ppos  + ts->raw_packet_size - 1 - ts->pos47) / ts->raw_packet_size) * ts->raw_packet_size + ts->pos47;
     while(pos < pos_limit) {
         if (avio_seek(s->pb, pos, SEEK_SET) < 0)
@@ -2120,6 +2180,11 @@ static int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
         }
         if ((pcr_pid < 0 || (AV_RB16(buf + 1) & 0x1fff) == pcr_pid) &&
             parse_pcr(&timestamp, &pcr_l, buf) == 0) {
+            *ppos = pos;
+            return timestamp;
+        }
+        if ((pid < 0 || (AV_RB16(buf + 1) & 0x1fff) == pid) &&
+            parse_timestamp(&timestamp, buf) == 0) {
             *ppos = pos;
             return timestamp;
         }
@@ -2310,7 +2375,7 @@ AVInputFormat ff_mpegts_demuxer = {
     .read_header    = mpegts_read_header,
     .read_packet    = mpegts_read_packet,
     .read_close     = mpegts_read_close,
-    .read_timestamp = mpegts_get_dts,
+    .read_timestamp = mpegts_get_pcr,
     .flags = AVFMT_SHOW_IDS|AVFMT_TS_DISCONT,
 #ifdef USE_SYNCPOINT_SEARCH
     .read_seek2 = read_seek2,
@@ -2324,7 +2389,7 @@ AVInputFormat ff_mpegtsraw_demuxer = {
     .read_header    = mpegts_read_header,
     .read_packet    = mpegts_raw_read_packet,
     .read_close     = mpegts_read_close,
-    .read_timestamp = mpegts_get_dts,
+    .read_timestamp = mpegts_get_pcr,
     .flags = AVFMT_SHOW_IDS|AVFMT_TS_DISCONT,
 #ifdef USE_SYNCPOINT_SEARCH
     .read_seek2 = read_seek2,

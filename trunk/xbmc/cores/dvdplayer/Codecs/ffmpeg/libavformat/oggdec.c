@@ -663,8 +663,10 @@ static int ogg_read_seek(AVFormatContext *s, int stream_index,
 
     ret = ff_seek_frame_binary(s, stream_index, timestamp, flags);
     os = ogg->streams + stream_index;
-    if (ret < 0)
+    if (ret < 0) {
         os->keyframe_seek = 0;
+        ret = AVERROR(ENOSYS);
+    }
     return ret;
 }
 
