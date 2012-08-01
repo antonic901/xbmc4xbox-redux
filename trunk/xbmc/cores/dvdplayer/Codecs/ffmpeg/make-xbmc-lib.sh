@@ -31,7 +31,6 @@ xbmc_configure ()
   --disable-ffplay \
   --disable-ffprobe \
   --disable-ffserver \
-  --disable-avconv \
   \
   --disable-muxers \
   --enable-muxer=spdif,adts \
@@ -80,7 +79,7 @@ xbmc_make ()
     cp .libs/avcodec-53.dll "$1"
     cp .libs/avformat-53.dll "$1"
     cp .libs/avutil-51.dll "$1"
-    cp .libs/postproc-51.dll "$1"
+    cp .libs/postproc-52.dll "$1"
     cp .libs/swscale-2.dll "$1"
   fi
 }
