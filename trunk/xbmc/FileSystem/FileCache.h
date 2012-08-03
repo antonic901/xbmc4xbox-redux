@@ -64,21 +64,19 @@ namespace XFILE
   private:
     CCacheStrategy *m_pCache;
     bool      m_bDeleteCache;
-    int    m_seekPossible;
+    int        m_seekPossible;
     CFile      m_source;
     CStdString    m_sourcePath;
     CEvent      m_seekEvent;
     CEvent      m_seekEnded;
-    int        m_nBytesToBuffer;
-    time_t      m_tmLastBuffering;
     __int64      m_nSeekResult;
     __int64      m_seekPos;
     __int64      m_readPos;
     __int64      m_writePos;
+    unsigned     m_chunkSize;
     unsigned     m_writeRate;
     unsigned     m_writeRateActual;
     bool         m_cacheFull;
-    unsigned     m_chunkSize;
     CCriticalSection m_sync;
   };
 
