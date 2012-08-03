@@ -19,7 +19,7 @@
  *
  */
 
-// FileSmb.h: interface for the CFileSMB class.
+// FileSmb.h: interface for the CSmbFile class.
 
 //
 
@@ -74,12 +74,12 @@ extern CSMB smb;
 
 namespace XFILE
 {
-class CFileSMB : public IFile
+class CSmbFile : public IFile
 {
 public:
-  CFileSMB();
+  CSmbFile();
   int OpenFile(const CURL &url, CStdString& strAuth);
-  virtual ~CFileSMB();
+  virtual ~CSmbFile();
   virtual void Close();
   virtual __int64 Seek(__int64 iFilePosition, int iWhence = SEEK_SET);
   virtual unsigned int Read(void* lpBuf, __int64 uiBufSize);

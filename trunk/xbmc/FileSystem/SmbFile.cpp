@@ -19,7 +19,7 @@
  *
  */
 
-// FileSmb.cpp: implementation of the CFileSMB class.
+// FileSmb.cpp: implementation of the CSmbFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -234,18 +234,18 @@ DWORD CSMB::ConvertUnixToNT(int error)
 
 CSMB smb;
 
-CFileSMB::CFileSMB()
+CSmbFile::CSmbFile()
 {
   smb.Init();
   m_fd = -1;
 }
 
-CFileSMB::~CFileSMB()
+CSmbFile::~CSmbFile()
 {
   Close();
 }
 
-__int64 CFileSMB::GetPosition()
+__int64 CSmbFile::GetPosition()
 {
   if (m_fd == -1) return 0;
   smb.Init();
@@ -256,13 +256,13 @@ __int64 CFileSMB::GetPosition()
   return pos;
 }
 
-__int64 CFileSMB::GetLength()
+__int64 CSmbFile::GetLength()
 {
   if (m_fd == -1) return 0;
   return m_fileSize;
 }
 
-bool CFileSMB::Open(const CURL& url)
+bool CSmbFile::Open(const CURL& url)
 {
   Close();
 
@@ -282,7 +282,7 @@ bool CFileSMB::Open(const CURL& url)
   CStdString strFileName;
   m_fd = OpenFile(url, strFileName);
 
-  CLog::Log(LOGDEBUG,"CFileSMB::Open - opened %s, fd=%d",url.GetFileName().c_str(), m_fd);
+  CLog::Log(LOGDEBUG,"CSmbFile::Open - opened %s, fd=%d",url.GetFileName().c_str(), m_fd);
   if (m_fd == -1)
   {
     // write error to logfile
@@ -318,7 +318,7 @@ bool CFileSMB::Open(const CURL& url)
 /// \param strAuth The SMB style path
 /// \return SMB file descriptor
 /*
-int CFileSMB::OpenFile(CStdString& strAuth)
+int CSmbFile::OpenFile(CStdString& strAuth)
 {
   int fd = -1;
 
@@ -339,7 +339,7 @@ int CFileSMB::OpenFile(CStdString& strAuth)
 }
 */
 
-int CFileSMB::OpenFile(const CURL &url, CStdString& strAuth)
+int CSmbFile::OpenFile(const CURL &url, CStdString& strAuth)
 {
   int fd = -1;
   smb.Init();
@@ -374,7 +374,7 @@ int CFileSMB::OpenFile(const CURL &url, CStdString& strAuth)
       // dont need to purge since its the same server and share
       smbc_closedir(fd);
 
-      // set up new filehandle (as CFileSMB::Open does)
+      // set up new filehandle (as CSmbFile::Open does)
       strPath = g_passwordManager.GetSMBAuthFilename(strPath);
       fd = smbc_open(strPath.c_str(), O_RDONLY, 0);
     }
@@ -386,7 +386,7 @@ int CFileSMB::OpenFile(const CURL &url, CStdString& strAuth)
   return fd;
 }
 
-bool CFileSMB::Exists(const CURL& url)
+bool CSmbFile::Exists(const CURL& url)
 {
   // we can't open files like smb://file.f or smb://server/file.f
   // if a file matches the if below return false, it can't exist on a samba share.
@@ -405,7 +405,7 @@ bool CFileSMB::Exists(const CURL& url)
   return true;
 }
 
-int CFileSMB::Stat(struct __stat64* buffer)
+int CSmbFile::Stat(struct __stat64* buffer)
 {
   if (m_fd == -1)
     return -1;
@@ -431,7 +431,7 @@ int CFileSMB::Stat(struct __stat64* buffer)
   return iResult;
 }
 
-int CFileSMB::Stat(const CURL& url, struct __stat64* buffer)
+int CSmbFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   smb.Init();
   CStdString strFileName = smb.URLEncode(url);
@@ -458,7 +458,7 @@ int CFileSMB::Stat(const CURL& url, struct __stat64* buffer)
   return iResult;
 }
 
-unsigned int CFileSMB::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CSmbFile::Read(void *lpBuf, __int64 uiBufSize)
 {
   if (m_fd == -1) return 0;
   CSingleLock lock(smb); // Init not called since it has to be "inited" by now
@@ -490,7 +490,7 @@ unsigned int CFileSMB::Read(void *lpBuf, __int64 uiBufSize)
   return (unsigned int)bytesRead;
 }
 
-__int64 CFileSMB::Seek(__int64 iFilePosition, int iWhence)
+__int64 CSmbFile::Seek(__int64 iFilePosition, int iWhence)
 {
   if (m_fd == -1) return -1;
 
@@ -509,18 +509,18 @@ __int64 CFileSMB::Seek(__int64 iFilePosition, int iWhence)
   return (__int64)pos;
 }
 
-void CFileSMB::Close()
+void CSmbFile::Close()
 {
   if (m_fd != -1)
   {
-    CLog::Log(LOGDEBUG,"CFileSMB::Close closing fd %d", m_fd);
+    CLog::Log(LOGDEBUG,"CSmbFile::Close closing fd %d", m_fd);
     CSingleLock lock(smb);
     smbc_close(m_fd);
   }
   m_fd = -1;
 }
 
-int CFileSMB::Write(const void* lpBuf, __int64 uiBufSize)
+int CSmbFile::Write(const void* lpBuf, __int64 uiBufSize)
 {
   if (m_fd == -1) return -1;
   DWORD dwNumberOfBytesWritten = 0;
@@ -533,7 +533,7 @@ int CFileSMB::Write(const void* lpBuf, __int64 uiBufSize)
   return (int)dwNumberOfBytesWritten;
 }
 
-bool CFileSMB::Delete(const CURL& url)
+bool CSmbFile::Delete(const CURL& url)
 {
   smb.Init();
   CStdString strFile = g_passwordManager.GetSMBAuthFilename(smb.URLEncode(url));
@@ -548,7 +548,7 @@ bool CFileSMB::Delete(const CURL& url)
   return (result == 0);
 }
 
-bool CFileSMB::Rename(const CURL& url, const CURL& urlnew)
+bool CSmbFile::Rename(const CURL& url, const CURL& urlnew)
 {
   smb.Init();
   CStdString strFile = g_passwordManager.GetSMBAuthFilename(smb.URLEncode(url));
@@ -564,7 +564,7 @@ bool CFileSMB::Rename(const CURL& url, const CURL& urlnew)
   return (result == 0);
 }
 
-bool CFileSMB::OpenForWrite(const CURL& url, bool bOverWrite)
+bool CSmbFile::OpenForWrite(const CURL& url, bool bOverWrite)
 {
   m_fileSize = 0;
 
@@ -601,7 +601,7 @@ bool CFileSMB::OpenForWrite(const CURL& url, bool bOverWrite)
   return true;
 }
 
-bool CFileSMB::IsValidFile(const CStdString& strFileName)
+bool CSmbFile::IsValidFile(const CStdString& strFileName)
 {
   if (strFileName.Find('/') == -1 || /* doesn't have sharename */
       strFileName.Right(2) == "/." || /* not current folder */
