@@ -46,6 +46,8 @@ CCircularCache::~CCircularCache()
 int CCircularCache::Open()
 {
   m_buf = new uint8_t[m_size];
+  if(m_buf == 0)
+    return CACHE_RC_ERROR;
   m_beg = 0;
   m_end = 0;
   m_cur = 0;
