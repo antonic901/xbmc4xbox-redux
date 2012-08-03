@@ -32,11 +32,11 @@
 
 namespace XFILE
 {
-  class CFileZip : public IFile
+  class CZipFile : public IFile
   {
   public:
-    CFileZip();
-    virtual ~CFileZip();
+    CZipFile();
+    virtual ~CZipFile();
   
     virtual __int64 GetPosition();
     virtual __int64 GetLength();

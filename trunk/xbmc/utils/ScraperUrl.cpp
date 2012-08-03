@@ -223,7 +223,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, string& strHTML, XFILE::CCurlFile
 
   if (scrURL.m_url.Find(".zip") > -1 )
   {
-    XFILE::CFileZip file;
+    XFILE::CZipFile file;
     CStdString strBuffer;
     int iSize = file.UnpackFromMemory(strBuffer,strHTML,scrURL.m_isgz);
     if (iSize)

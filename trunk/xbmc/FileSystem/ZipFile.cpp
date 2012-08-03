@@ -34,7 +34,7 @@
 using namespace XFILE;
 using namespace std;
 
-CFileZip::CFileZip() : m_dlgProgress(NULL), m_bUseProgressBar(false)
+CZipFile::CZipFile() : m_dlgProgress(NULL), m_bUseProgressBar(false)
 {
   m_szStringBuffer = NULL;
   m_szStartOfStringBuffer = NULL;
@@ -42,14 +42,14 @@ CFileZip::CFileZip() : m_dlgProgress(NULL), m_bUseProgressBar(false)
   m_iRead = -1;
 }
 
-CFileZip::~CFileZip()
+CZipFile::~CZipFile()
 {
   if (m_szStringBuffer)
     delete[] m_szStringBuffer;
   Close();
 }
 
-bool CFileZip::Open(const CURL&url)
+bool CZipFile::Open(const CURL&url)
 {
   CStdString strOpts = url.GetOptions();
   CURL url2(url);
@@ -79,7 +79,7 @@ bool CFileZip::Open(const CURL&url)
   return InitDecompress();
 }
 
-bool CFileZip::InitDecompress()
+bool CZipFile::InitDecompress()
 {
   m_iRead = 1;
   m_iFilePos = 0;
@@ -104,17 +104,17 @@ bool CFileZip::InitDecompress()
   return true;
 }
 
-__int64 CFileZip::GetLength()
+__int64 CZipFile::GetLength()
 {
   return mZipItem.usize;
 }
 
-__int64 CFileZip::GetPosition()
+__int64 CZipFile::GetPosition()
 {
   return m_iFilePos;
 }
 
-__int64 CFileZip::Seek(__int64 iFilePosition, int iWhence)
+__int64 CZipFile::Seek(__int64 iFilePosition, int iWhence)
 {
   if (mZipItem.method == 0) // this is easy
   {
@@ -270,7 +270,7 @@ __int64 CFileZip::Seek(__int64 iFilePosition, int iWhence)
   return -1;
 }
 
-bool CFileZip::Exists(const CURL& url)
+bool CZipFile::Exists(const CURL& url)
 {
   SZipEntry item;
   if (g_ZipManager.GetZipEntry(url.Get(),item))
@@ -278,7 +278,7 @@ bool CFileZip::Exists(const CURL& url)
   return false;
 }
 
-int CFileZip::Stat(const CURL& url, struct __stat64* buffer)
+int CZipFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   if (!g_ZipManager.GetZipEntry(url.Get(),mZipItem))
     return -1;
@@ -290,7 +290,7 @@ int CFileZip::Stat(const CURL& url, struct __stat64* buffer)
   return -1;
 }
 
-unsigned int CFileZip::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CZipFile::Read(void* lpBuf, __int64 uiBufSize)
 {
   // flush what might be left in the string buffer
   if (m_iDataInStringBuffer > 0)
@@ -359,7 +359,7 @@ unsigned int CFileZip::Read(void* lpBuf, __int64 uiBufSize)
     return false; // shouldn't happen. compression method checked in open
 }
 
-void CFileZip::Close()
+void CZipFile::Close()
 {
   if (mZipItem.method == 8 && m_iRead != -1)
     inflateEnd(&m_ZStream);
@@ -367,7 +367,7 @@ void CFileZip::Close()
   mFile.Close();
 }
 /* CHANGED: JM - moved to CFile
-bool CFileZip::ReadString(char* szLine, int iLineLength)
+bool CZipFile::ReadString(char* szLine, int iLineLength)
 {
   if (!m_szStringBuffer)
   {
@@ -437,7 +437,7 @@ bool CFileZip::ReadString(char* szLine, int iLineLength)
   return !bEof;
 }*/
 
-bool CFileZip::FillBuffer()
+bool CZipFile::FillBuffer()
 {
   unsigned int sToRead = 65535;
   if (m_iZipFilePos+65535 > mZipItem.csize)
@@ -454,7 +454,7 @@ bool CFileZip::FillBuffer()
   return true;
 }
 
-void CFileZip::DestroyBuffer(void* lpBuffer, int iBufSize)
+void CZipFile::DestroyBuffer(void* lpBuffer, int iBufSize)
 {
   if (!m_bFlush)
     return;
@@ -468,7 +468,7 @@ void CFileZip::DestroyBuffer(void* lpBuffer, int iBufSize)
   m_bFlush = false;
 }
 
-void CFileZip::StartProgressBar()
+void CZipFile::StartProgressBar()
 {
   if (!m_dlgProgress)
     m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -481,12 +481,12 @@ void CFileZip::StartProgressBar()
   m_dlgProgress->ShowProgressBar(true);
 }
 
-void CFileZip::StopProgressBar()
+void CZipFile::StopProgressBar()
 {
   m_dlgProgress->Close();
 }
 
-int CFileZip::UnpackFromMemory(std::string& strDest, const std::string& strInput, bool isGZ)
+int CZipFile::UnpackFromMemory(std::string& strDest, const std::string& strInput, bool isGZ)
 {
   unsigned int iPos=0;
   int iResult=0;

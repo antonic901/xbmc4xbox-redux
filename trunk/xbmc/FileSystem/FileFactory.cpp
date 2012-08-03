@@ -71,7 +71,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   CStdString strProtocol = url.GetProtocol();
   strProtocol.MakeLower();
 
-  if (strProtocol == "zip") return new CFileZip();
+  if (strProtocol == "zip") return new CZipFile();
   else if (strProtocol == "rar") return new CFileRar();
   else if (strProtocol == "musicdb") return new CFileMusicDatabase();
   else if (strProtocol == "videodb") return NULL;
