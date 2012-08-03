@@ -52,7 +52,7 @@ DVDREAD_CONFIG=dvdread-config
 PREFIX=/usr/local/
 INSTALLSTRIP=-s
 USEDEBUG=-g
-optimizations="-O3"
+optimizations="-O2"
 threadlib="-lpthread"
 
 for opt do
