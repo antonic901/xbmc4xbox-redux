@@ -339,6 +339,20 @@ bool CThread::IsCurrentThread(const ThreadIdentifier tid)
   return (::GetCurrentThreadId() == tid);
 }
 
+int CThread::GetMinPriority(void)
+{
+  return(THREAD_PRIORITY_IDLE);
+}
+
+int CThread::GetMaxPriority(void)
+{
+  return(THREAD_PRIORITY_HIGHEST);
+}
+
+int CThread::GetNormalPriority(void)
+{
+  return(THREAD_PRIORITY_NORMAL);
+}
 
 DWORD CThread::WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds)
 {

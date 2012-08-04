@@ -68,6 +68,9 @@ public:
   virtual void StopThread(bool bWait = true);
   float GetRelativeUsage();  // returns the relative cpu usage of this thread since last call
   bool IsCurrentThread() const;
+  int GetMinPriority(void);
+  int GetMaxPriority(void);
+  int GetNormalPriority(void);
 
   static bool IsCurrentThread(const ThreadIdentifier tid);
   static ThreadIdentifier GetCurrentThreadId();
