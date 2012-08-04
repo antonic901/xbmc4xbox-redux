@@ -1407,7 +1407,7 @@ bool CMusicDatabase::GetRecentlyPlayedAlbumSongs(const CStdString& strBaseDir, C
   return false;
 }
 
-bool CMusicDatabase::GetRecentlyAddedAlbums(VECALBUMS& albums)
+bool CMusicDatabase::GetRecentlyAddedAlbums(VECALBUMS& albums, unsigned int limit)
 {
   try
   {
@@ -1416,7 +1416,7 @@ bool CMusicDatabase::GetRecentlyAddedAlbums(VECALBUMS& albums)
     if (NULL == m_pDS.get()) return false;
 
     CStdString strSQL;
-    strSQL.Format("select * from albumview order by idAlbum desc limit %i", g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
+    strSQL.Format("select * from albumview order by idAlbum desc limit %u", limit ? limit : g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
 
     CLog::Log(LOGDEBUG, "%s query: %s", __FUNCTION__, strSQL.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
@@ -1444,7 +1444,7 @@ bool CMusicDatabase::GetRecentlyAddedAlbums(VECALBUMS& albums)
   return false;
 }
 
-bool CMusicDatabase::GetRecentlyAddedAlbumSongs(const CStdString& strBaseDir, CFileItemList& items)
+bool CMusicDatabase::GetRecentlyAddedAlbumSongs(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   try
   {
@@ -1452,7 +1452,7 @@ bool CMusicDatabase::GetRecentlyAddedAlbumSongs(const CStdString& strBaseDir, CF
     if (NULL == m_pDS.get()) return false;
 
     CStdString strSQL;
-    strSQL.Format("select songview.* from albumview join songview on (songview.idAlbum = albumview.idAlbum) where albumview.idalbum in ( select idAlbum from albumview order by idAlbum desc limit %i)", g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
+    strSQL.Format("SELECT songview.* FROM (SELECT idAlbum FROM albumview ORDER BY idAlbum DESC LIMIT %u) AS recentalbums JOIN songview ON songview.idAlbum=recentalbums.idAlbum", limit ? limit : g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
     CLog::Log(LOGDEBUG,"GetRecentlyAddedAlbumSongs() query: %s", strSQL.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
 

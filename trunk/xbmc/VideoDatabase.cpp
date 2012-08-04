@@ -5254,21 +5254,21 @@ bool CVideoDatabase::GetMusicVideosNav(const CStdString& strBaseDir, CFileItemLi
   return GetMusicVideosByWhere(strBaseDir, where, items);
 }
 
-bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFileItemList& items)
+bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
-  CStdString order = FormatSQL("order by idMovie desc limit %i", g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  CStdString order = FormatSQL("order by idMovie desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMoviesByWhere(strBaseDir, "", order, items);
 }
 
-bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, CFileItemList& items)
+bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
-  CStdString where = FormatSQL("order by idepisode desc limit %i", g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  CStdString where = FormatSQL("order by idEpisode desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetEpisodesByWhere(strBaseDir, where, items, false);
 }
 
-bool CVideoDatabase::GetRecentlyAddedMusicVideosNav(const CStdString& strBaseDir, CFileItemList& items)
+bool CVideoDatabase::GetRecentlyAddedMusicVideosNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
-  CStdString where = FormatSQL("order by idmvideo desc limit %i", g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  CStdString where = FormatSQL("order by idMVideo desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMusicVideosByWhere(strBaseDir, where, items);
 }
 
