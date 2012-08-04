@@ -1632,6 +1632,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\DirectoryHistory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\cores\paplayer\DllASAP.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\DllHDHomeRun.h">
 				</File>
 				<File
@@ -3987,9 +3990,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\DllAdplug.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\DllASAP.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\DllCube.h">
