@@ -1,6 +1,6 @@
-
+#pragma once
 /*
- *      Copyright (C) 2005-2008 Team XBMC
+ *      Copyright (C) 2005-2011 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,32 +20,26 @@
  *
  */
 
-#include "stdafx.h"
-#include "GUIWindowHome.h"
-#include "utils/JobManager.h"
-#include "utils/RecentlyAddedJob.h"
-#include "utils/log.h"
+#include "ThumbLoader.h"
+#include "Job.h"
 
-CGUIWindowHome::CGUIWindowHome(void) : CGUIWindow(WINDOW_HOME, "Home.xml")
+enum ERecentlyAddedFlag
 {
-  m_updateRA = (Audio | Video | Totals);
-  }
+  Audio = 0x1,
+  Video = 0x2,
+  Totals = 0x4
+};
 
-CGUIWindowHome::~CGUIWindowHome(void)
+class CRecentlyAddedJob : public CJob
 {
-}
-
-void CGUIWindowHome::OnInitWindow()
-{  
-  AddRecentlyAddedJobs( m_updateRA );
-
-  CGUIWindow::OnInitWindow();
-}
-
-void CGUIWindowHome::AddRecentlyAddedJobs(int flag)
-{
-  if (flag != 0)
-    CJobManager::GetInstance().AddJob(new CRecentlyAddedJob(flag), NULL);
-  m_updateRA = 0;
-}
-
+public:
+  CRecentlyAddedJob(int flag);
+  bool UpdateVideo();
+  bool UpdateMusic();
+  bool UpdateTotal();
+  virtual bool DoWork();
+protected:
+  CVideoThumbLoader m_thumbLoader;
+private:
+  int m_flag;
+};

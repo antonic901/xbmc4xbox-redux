@@ -958,6 +958,15 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Job.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JobManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JobManager.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\JpegIO.cpp">
 				</File>
 				<File
@@ -1037,6 +1046,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\Profile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RecentlyAddedJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RecentlyAddedJob.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RegExp.cpp">

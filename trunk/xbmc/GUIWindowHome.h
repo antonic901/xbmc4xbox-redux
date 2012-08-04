@@ -25,8 +25,14 @@
 
 class CGUIWindowHome :
       public CGUIWindow
+
 {
 public:
   CGUIWindowHome(void);
   virtual ~CGUIWindowHome(void);
+  virtual void OnInitWindow();
+
+private:
+  int m_updateRA; // flag for which recently added items needs to be queried
+  void AddRecentlyAddedJobs(int flag);
 };
