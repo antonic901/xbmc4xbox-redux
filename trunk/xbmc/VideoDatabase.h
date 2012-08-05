@@ -514,6 +514,27 @@ public:
   unsigned int GetMusicVideoIDs(const CStdString& strWhere, std::vector<std::pair<int,int> > &songIDs);
   bool GetRandomMusicVideo(CFileItem* item, int& idSong, const CStdString& strWhere);
 
+  static void VideoContentTypeToString(VIDEODB_CONTENT_TYPE type, CStdString& out)
+  {
+    switch (type)
+    {
+    case VIDEODB_CONTENT_MOVIES:
+      out = "movie";
+      break;
+    case VIDEODB_CONTENT_TVSHOWS:
+      out = "tvshow";
+      break;
+    case VIDEODB_CONTENT_EPISODES:
+      out = "episode";
+      break;
+    case VIDEODB_CONTENT_MUSICVIDEOS:
+      out = "musicvideo";
+      break;
+    default:
+      break;
+    }
+  }
+
 protected:
   int GetMovieId(const CStdString& strFilenameAndPath);
   int GetMusicVideoId(const CStdString& strFilenameAndPath);
@@ -604,4 +625,7 @@ private:
    \return safe filename based on this title
    */
   CStdString GetSafeFile(const CStdString &dir, const CStdString &name) const;
+  
+  void AnnounceRemove(std::string content, int id);
+  void AnnounceUpdate(std::string content, int id);
 };

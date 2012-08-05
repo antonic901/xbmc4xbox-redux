@@ -47,6 +47,8 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "xbox/Network.h"
+#include "utils/variant.h"
+#include "interfaces/AnnouncementManager.h"
 
 using namespace std;
 using namespace AUTOPTR;
@@ -281,6 +283,8 @@ void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
     else
       AddExtraAlbumArtists(vecArtists, idAlbum);
     AddExtraGenres(vecGenres, idSong, idAlbum, bCheck);
+    
+    AnnounceUpdate("song", idSong);
   }
   catch (...)
   {
@@ -787,7 +791,7 @@ CArtist CMusicDatabase::GetArtistFromDataset(dbiplus::Dataset* pDS, bool needThu
   return artist;
 }
 
-bool CMusicDatabase::GetSongByFileName(const CStdString& strFileName, CSong& song)
+bool CMusicDatabase::GetSongByFileName(const CStdString& strFileName, CSong& song, int startOffset)
 {
   try
   {
@@ -814,6 +818,8 @@ bool CMusicDatabase::GetSongByFileName(const CStdString& strFileName, CSong& son
                                 "where dwFileNameCRC='%ul' and strPath like'%s'"
                                 , crc,
                                 strPath.c_str());
+    if (startOffset)
+      strSQL += PrepareSQL(" AND iStartOffset=%i", startOffset);
 
     if (!m_pDS->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS->num_rows();
@@ -1801,6 +1807,7 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
       m_pDS->close();
       return true;
     }
+    std::vector<int> ids;
     CStdString strSongsToDelete = "(";
     while (!m_pDS->eof())
     { // get the full song path
@@ -1822,6 +1829,7 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
       if (!CFile::Exists(strFileName))
       { // file no longer exists, so add to deletion list
         strSongsToDelete += m_pDS->fv("song.idSong").get_asString() + ",";
+        ids.push_back(m_pDS->fv("song.idSong").get_asInt());
       }
       m_pDS->next();
     }
@@ -1837,6 +1845,10 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
     m_pDS->exec(strSQL.c_str());
     strSQL = "delete from karaokedata where idSong in " + strSongsToDelete;
     m_pDS->exec(strSQL.c_str());
+
+    for (unsigned int i = 0; i < ids.size(); i++)
+      AnnounceRemove("song", ids[i]);
+
     m_pDS->close();
     return true;
   }
@@ -4327,6 +4339,22 @@ void CMusicDatabase::SetPropertiesForFileItem(CFileItem& item)
   CStdString strFanart = item.GetCachedFanart();
   if (XFILE::CFile::Exists(strFanart))
     item.SetProperty("fanart_image",strFanart);
+}
+
+void CMusicDatabase::AnnounceRemove(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnRemove", data);
+}
+
+void CMusicDatabase::AnnounceUpdate(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnUpdate", data);
 }
 
 int CMusicDatabase::GetVariousArtistsAlbumsCount()

@@ -128,7 +128,7 @@ public:
   bool GetAlbumInfo(int idAlbum, CAlbum &info, VECSONGS* songs);
   bool HasAlbumInfo(int idAlbum);
   bool GetArtistInfo(int idArtist, CArtist &info, bool needAll=true);
-  bool GetSongByFileName(const CStdString& strFileName, CSong& song);
+  bool GetSongByFileName(const CStdString& strFileName, CSong& song, int startOffset = 0);
   int GetAlbumIdByPath(const CStdString& path);
   bool GetSongById(int idSong, CSong& song);
   bool GetSongsByPath(const CStdString& strPath, CSongMap& songs, bool bAppendToMap = false);
@@ -310,4 +310,7 @@ private:
     artist_strImage,
     artist_strFanart
   } ArtistFields;
+
+  void AnnounceRemove(std::string content, int id);
+  void AnnounceUpdate(std::string content, int id);
 };

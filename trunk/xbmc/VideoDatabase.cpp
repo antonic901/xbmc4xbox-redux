@@ -39,6 +39,8 @@
 #include "AdvancedSettings.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
+#include "utils/variant.h"
+#include "interfaces/AnnouncementManager.h"
 
 using namespace std;
 using namespace dbiplus;
@@ -3812,6 +3814,21 @@ void CVideoDatabase::SetPlayCount(const CFileItem &item, int count, const CStdSt
     }
 
     m_pDS->exec(strSQL.c_str());
+
+    // We only need to announce changes to video items in the library
+    if (item.HasVideoInfoTag() && item.GetVideoInfoTag()->m_iDbId > 0)
+    {
+      // Only provide the "playcount" value if it has actually changed
+      if (item.GetVideoInfoTag()->m_playCount != count)
+      {
+        CVariant data;
+        data["playcount"] = count;
+        ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", CFileItemPtr(new CFileItem(item)), data);
+      }
+      else
+        ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", CFileItemPtr(new CFileItem(item)));
+    }
+
   }
   catch (...)
   {
@@ -3835,26 +3852,31 @@ void CVideoDatabase::UpdateMovieTitle(int idMovie, const CStdString& strNewMovie
   {
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
+    CStdString content;
     CStdString strSQL;
     if (iType == VIDEODB_CONTENT_MOVIES)
     {
       CLog::Log(LOGINFO, "Changing Movie:id:%i New Title:%s", idMovie, strNewMovieTitle.c_str());
       strSQL = FormatSQL("UPDATE movie SET c%02d='%s' WHERE idMovie=%i", VIDEODB_ID_TITLE, strNewMovieTitle.c_str(), idMovie );
+      content = "movie";
     }
     else if (iType == VIDEODB_CONTENT_EPISODES)
     {
       CLog::Log(LOGINFO, "Changing Episode:id:%i New Title:%s", idMovie, strNewMovieTitle.c_str());
       strSQL = FormatSQL("UPDATE episode SET c%02d='%s' WHERE idEpisode=%i", VIDEODB_ID_EPISODE_TITLE, strNewMovieTitle.c_str(), idMovie );
+      content = "episode";
     }
     else if (iType == VIDEODB_CONTENT_TVSHOWS)
     {
       CLog::Log(LOGINFO, "Changing TvShow:id:%i New Title:%s", idMovie, strNewMovieTitle.c_str());
       strSQL = FormatSQL("UPDATE tvshow SET c%02d='%s' WHERE idShow=%i", VIDEODB_ID_TV_TITLE, strNewMovieTitle.c_str(), idMovie );
+      content = "tvshow";
     }
     else if (iType == VIDEODB_CONTENT_MUSICVIDEOS)
     {
       CLog::Log(LOGINFO, "Changing MusicVideo:id:%i New Title:%s", idMovie, strNewMovieTitle.c_str());
       strSQL = FormatSQL("UPDATE musicvideo SET c%02d='%s' WHERE idMVideo=%i", VIDEODB_ID_MUSICVIDEO_TITLE, strNewMovieTitle.c_str(), idMovie );
+      content = "musicvideo";
     }
     else if (iType == VIDEODB_CONTENT_MOVIE_SETS)
     {
@@ -3862,6 +3884,9 @@ void CVideoDatabase::UpdateMovieTitle(int idMovie, const CStdString& strNewMovie
       strSQL = FormatSQL("UPDATE sets SET strSet='%s' WHERE idSet=%i", strNewMovieTitle.c_str(), idMovie );
     }
     m_pDS->exec(strSQL.c_str());
+
+    if (content.size() > 0)
+      AnnounceUpdate(content, idMovie);
   }
   catch (...)
   {
@@ -6554,6 +6579,11 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     CStdString moviesToDelete = "(";
     CStdString episodesToDelete = "(";
     CStdString musicVideosToDelete = "(";
+
+    std::vector<int> movieIDs;
+    std::vector<int> episodeIDs;
+    std::vector<int> musicVideoIDs;
+
     int total = m_pDS->num_rows();
     int current = 0;
     while (!m_pDS->eof())
@@ -6613,6 +6643,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     m_pDS->query(sql.c_str());
     while (!m_pDS->eof())
     {
+      movieIDs.push_back(m_pDS->fv(0).get_asInt());
       moviesToDelete += m_pDS->fv(0).get_asString() + ",";
       m_pDS->next();
     }
@@ -6622,6 +6653,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     m_pDS->query(sql.c_str());
     while (!m_pDS->eof())
     {
+      episodeIDs.push_back(m_pDS->fv(0).get_asInt());
       episodesToDelete += m_pDS->fv(0).get_asString() + ",";
       m_pDS->next();
     }
@@ -6632,6 +6664,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     m_pDS->query(sql.c_str());
     while (!m_pDS->eof())
     {
+      musicVideoIDs.push_back(m_pDS->fv(0).get_asInt());
       musicVideosToDelete += m_pDS->fv(0).get_asString() + ",";
       m_pDS->next();
     }
@@ -6745,12 +6778,27 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     CLog::Log(LOGDEBUG, "%s Cleaning tvshow table", __FUNCTION__);
     sql = "delete from tvshow where idshow not in (select idshow from tvshowlinkpath)";
     m_pDS->exec(sql.c_str());
-    sql = "delete from tvshow where idShow in (select tvshow.idShow from tvshow "
-                                               "join tvshowlinkpath on tvshow.idshow=tvshowlinkpath.idshow "
-                                               "join path on path.idpath=tvshowlinkpath.idpath "
-                                               "where tvshow.idShow not in (select idShow from tvshowlinkepisode) "
-                                               "and path.strContent == '')";
-    m_pDS->exec(sql.c_str());
+
+    std::vector<int> tvshowIDs;
+    CStdString showsToDelete;
+    sql = "select tvshow.idShow from tvshow "
+            "join tvshowlinkpath on tvshow.idShow=tvshowlinkpath.idShow "
+            "join path on path.idPath=tvshowlinkpath.idPath "
+          "where tvshow.idShow not in (select idShow from tvshowlinkepisode) "
+            "and path.strContent == ''";
+    m_pDS->query(sql.c_str());
+    while (!m_pDS->eof())
+    {
+      tvshowIDs.push_back(m_pDS->fv(0).get_asInt());
+      showsToDelete += m_pDS->fv(0).get_asString() + ",";
+      m_pDS->next();
+    }
+    m_pDS->close();
+    if (!showsToDelete.IsEmpty())
+    {
+      sql = "delete from tvshow where idShow in (" + showsToDelete.TrimRight(",") + ")";
+      m_pDS->exec(sql.c_str());
+    }
 
     CLog::Log(LOGDEBUG, "%s Cleaning actorlinktvshow table", __FUNCTION__);
     sql = "delete from actorlinktvshow where idShow not in (select idShow from tvshow)";
@@ -6826,6 +6874,18 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     Compress(false);
 
     CUtil::DeleteVideoDatabaseDirectoryCache();
+
+    for (unsigned int i = 0; i < movieIDs.size(); i++)
+      AnnounceRemove("movie", movieIDs[i]);
+
+    for (unsigned int i = 0; i < episodeIDs.size(); i++)
+      AnnounceRemove("episode", episodeIDs[i]);
+
+    for (unsigned int i = 0; i < tvshowIDs.size(); i++)
+      AnnounceRemove("tvshow", tvshowIDs[i]);
+
+    for (unsigned int i = 0; i < musicVideoIDs.size(); i++)
+      AnnounceRemove("musicvideo", musicVideoIDs[i]);
   }
   catch (...)
   {
@@ -7764,4 +7824,20 @@ CStdString CVideoDatabase::GetSafeFile(const CStdString &dir, const CStdString &
   CStdString safeThumb(name);
   safeThumb.Replace(' ', '_');
   return URIUtils::AddFileToFolder(dir, CUtil::MakeLegalFileName(safeThumb));
+}
+
+void CVideoDatabase::AnnounceRemove(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnRemove", data);
+}
+
+void CVideoDatabase::AnnounceUpdate(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", data);
 }

@@ -44,6 +44,7 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "Picture.h"
+#include "interfaces/AnnouncementManager.h"
 
 #include <algorithm>
 
@@ -199,6 +200,7 @@ void CMusicInfoScanner::Process()
   {
     CLog::Log(LOGERROR, "MusicInfoScanner: Exception while scanning.");
   }
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnScanFinished");
   m_bRunning = false;
   if (m_pObserver)
     m_pObserver->OnFinished();
