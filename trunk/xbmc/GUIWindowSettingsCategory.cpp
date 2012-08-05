@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "interfaces/Builtins.h"
 #include "GUIWindowSettingsCategory.h"
 #include "Application.h"
 #include "KeyboardLayoutConfiguration.h"
@@ -1273,7 +1274,7 @@ void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
     }
   }
   else if (strSetting.Equals("lookandfeel.rssedit"))
-    CUtil::ExecBuiltIn("RunScript("RSSEDITOR_PATH")");
+    CBuiltins::Execute("RunScript("RSSEDITOR_PATH")");
   else if (strSetting.Equals("musiclibrary.scrapersettings"))
   {
     CMusicDatabase database;
@@ -1411,9 +1412,9 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     }
   }
   else if (strSetting.Equals("videolibrary.export"))
-    CUtil::ExecBuiltIn("exportlibrary(video)");
+    CBuiltins::Execute("exportlibrary(video)");
   else if (strSetting.Equals("musiclibrary.export"))
-    CUtil::ExecBuiltIn("exportlibrary(music)");
+    CBuiltins::Execute("exportlibrary(music)");
 
   else if (strSetting.Equals("videolibrary.import"))
   {

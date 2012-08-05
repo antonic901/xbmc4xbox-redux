@@ -33,6 +33,7 @@
 #include "utils/Log.h"
 #include "xbox/IoSupport.h"
 #include "Util.h"
+#include "interfaces/Builtins.h"
 #include "Utils/log.h"
 #include "GUISettings.h"
 #include "ApplicationMessenger.h"
@@ -2174,9 +2175,9 @@ void CControlSocket::ParseCommand()
 	    {
         // check for a built-in function
         CStdString strBuiltIn = fullcommand;
-        if (!CUtil::IsBuiltIn(fullcommand))
+        if (!CBuiltins::HasCommand(fullcommand))
           strBuiltIn = "XBMC." + fullcommand;
-        if (!CUtil::IsBuiltIn(strBuiltIn))
+        if (!CBuiltins::HasCommand(strBuiltIn))
         { // invalid - send error
           Send(_T("500 Invalid built-in function.  Use SITE HELP for a list of valid SITE commands"));
           return;
@@ -2184,7 +2185,7 @@ void CControlSocket::ParseCommand()
         if (strBuiltIn.Equals("xbmc.help", false) || strBuiltIn.Equals("help", false))
         {
           CStdString strHelp;
-          CUtil::GetBuiltInHelp(strHelp);
+          CBuiltins::GetHelp(strHelp);
           Send(_T("200-FTP SITE HELP"));
           int iReturn = strHelp.Find("\n");
           while (iReturn >= 0)
@@ -2234,7 +2235,7 @@ void CControlSocket::ParseCommand()
             CLog::Log(LOGNOTICE, str);
           }
 
-          int rtn = CUtil::ExecBuiltIn(siteargs);
+          int rtn = CBuiltins::Execute(siteargs);
 
           {
 	          CStdString str;

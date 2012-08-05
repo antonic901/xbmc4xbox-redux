@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "interfaces/Builtins.h"
 #include "Autorun.h"
 #include "Application.h"
 #include "DetectDVDType.h"
@@ -262,7 +263,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           bPlaying = true;
           CStdString strExec;
           strExec.Format("XBMC.RecursiveSlideShow(%s)", pItem->GetPath().c_str());
-          CUtil::ExecBuiltIn(strExec);
+          CBuiltins::Execute(strExec);
           return true;
         }
       }
@@ -338,7 +339,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
         bPlaying = true;
         CStdString strExec;
         strExec.Format("XBMC.RecursiveSlideShow(%s)", strDrive.c_str());
-        CUtil::ExecBuiltIn(strExec);
+        CBuiltins::Execute(strExec);
         break;
       }
     }

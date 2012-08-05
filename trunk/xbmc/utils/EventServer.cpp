@@ -23,6 +23,7 @@
 
 #ifdef HAS_EVENT_SERVER
 
+#include "interfaces/Builtins.h"
 #include "EventServer.h"
 #include "EventPacket.h"
 #include "EventClient.h"
@@ -332,7 +333,7 @@ bool CEventServer::ExecuteNextAction()
       switch(actionEvent.actionType)
       {
       case AT_EXEC_BUILTIN:
-        CUtil::ExecBuiltIn(actionEvent.actionName);
+        CBuiltins::Execute(actionEvent.actionName);
         break;
 
       case AT_BUTTON:

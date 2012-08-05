@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "interfaces/Builtins.h"
 #include "ApplicationMessenger.h"
 #include "Application.h"
 #ifdef _XBOX
@@ -206,7 +207,7 @@ case TMSG_POWERDOWN:
 #ifdef _XBOX
     case TMSG_QUIT:
       {
-        CUtil::ExecBuiltIn("XBMC.Dashboard()");
+        CBuiltins::Execute("XBMC.Dashboard()");
       }
       break;
 #else
@@ -485,7 +486,7 @@ case TMSG_POWERDOWN:
       break;
 
     case TMSG_EXECUTE_BUILT_IN:
-      CUtil::ExecBuiltIn(pMsg->strParam.c_str());
+      CBuiltins::Execute(pMsg->strParam.c_str());
       break;
 
     case TMSG_PLAYLISTPLAYER_PLAY:

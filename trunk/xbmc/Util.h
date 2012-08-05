@@ -98,9 +98,6 @@ public:
   static bool GetVolumeFromFileName(const CStdString& strFileName, CStdString& strFileTitle, CStdString& strVolumeNumber);
   static void CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
-  static bool IsBuiltIn(const CStdString& execString);
-  static void GetBuiltInHelp(CStdString &help);
-  static int ExecBuiltIn(const CStdString& execString);
   static void GetQualifiedFilename(const CStdString &strBasePath, CStdString &strFilename);
   static bool InstallTrainer(CTrainer& trainer);
   static bool RemoveTrainer();

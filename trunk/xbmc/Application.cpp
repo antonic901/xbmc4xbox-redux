@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "Application.h"
+#include "interfaces/Builtins.h"
 #include "Splash.h"
 #include "KeyboardLayoutConfiguration.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -2472,7 +2473,7 @@ bool CApplication::OnAction(CAction &action)
   // built in functions : execute the built-in
   if (action.id == ACTION_BUILT_IN_FUNCTION)
   {
-    CUtil::ExecBuiltIn(action.strAction);
+    CBuiltins::Execute(action.strAction);
     m_navigationTimer.StartZero();
     return true;
   }
@@ -5003,8 +5004,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
       CLog::Log(LOGDEBUG,"%s : To %s", __FUNCTION__, message.GetStringParam().c_str());
 
       // user has asked for something to be executed
-      if (CUtil::IsBuiltIn(message.GetStringParam()))
-        CUtil::ExecBuiltIn(message.GetStringParam());
+      if (CBuiltins::HasCommand(message.GetStringParam()))
+        CBuiltins::Execute(message.GetStringParam());
       else
       {
         // try translating the action from our ButtonTranslator
