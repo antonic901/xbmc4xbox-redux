@@ -125,6 +125,17 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
       minx = g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iWidth;
       miny = g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iHeight;
     }
+
+    /* override minx/miny values based on image aspect and area of requested minx/miny 
+    so that tall/wide images come out larger (geometric mean) */
+    unsigned int rminx = minx;
+    unsigned int rminy = miny;
+    unsigned int area = minx * miny;
+    float aspect = ((float) m_originalwidth) / ((float) m_originalheight);
+    minx = (unsigned int)sqrt(area * aspect);
+    miny = (unsigned int)sqrt(area / aspect);
+    CLog::Log(LOGDEBUG, "JpegIO::Read - Requested minx x miny %u x %u - using minx x miny %u x %u", rminx, rminy, minx, miny);
+
     m_cinfo.scale_denom = 8;
     m_cinfo.out_color_space = JCS_RGB;
     unsigned int maxtexsize = 4096;
@@ -142,6 +153,7 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     tb_jpeg_calc_output_dimensions(&m_cinfo);
     m_width  = m_cinfo.output_width;
     m_height = m_cinfo.output_height;
+    CLog::Log(LOGDEBUG, "JpegIO::Read - Using scale_num of %i, %u x %u", m_cinfo.scale_num, m_width, m_height);
 
     if (m_cinfo.marker_list)
       m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
