@@ -24,6 +24,7 @@
 #include "stdafx.h"
 #include "Util.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 
 #include "xbox/Network.h"
 #include "UPnP.h"

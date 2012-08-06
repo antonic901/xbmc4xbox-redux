@@ -17,6 +17,7 @@
 #include "Settings.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 using namespace XFILE;

@@ -31,6 +31,7 @@
 #include "lib/libscrobbler/librefmscrobbler.h"
 #include "Settings.h"
 #include "GUIWindowManager.h"
+#include "ApplicationMessenger.h"
 #include "../utils/RssReader.h"
 #include "../utils/Weather.h"
 

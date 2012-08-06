@@ -18,6 +18,7 @@
 
 #include "PlayListFactory.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "Util.h"
 #include "PlayListPlayer.h"
 #include "FileSystem/HDDirectory.h" 

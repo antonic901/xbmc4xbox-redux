@@ -46,6 +46,7 @@
 #include "AdvancedSettings.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 using namespace XFILE;

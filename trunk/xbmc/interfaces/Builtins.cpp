@@ -24,6 +24,7 @@
 #include "XBVideoConfig.h"
 #include "AlarmClock.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "Autorun.h"
 #include "Builtins.h"
 #include "ButtonTranslator.h"

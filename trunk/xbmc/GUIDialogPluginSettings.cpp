@@ -37,6 +37,7 @@
 #include "ScraperSettings.h"
 #include "GUIWindowManager.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "GUIDialogKeyboard.h"
 #include "FileItem.h"
 #include "ScriptSettings.h"

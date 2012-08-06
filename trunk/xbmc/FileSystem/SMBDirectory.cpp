@@ -41,6 +41,7 @@
 #include "FileItem.h"
 #include "AdvancedSettings.h"
 #include "PasswordManager.h"
+#include "ApplicationMessenger.h"
 
 struct CachedDirEntry
 {

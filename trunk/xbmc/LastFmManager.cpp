@@ -24,6 +24,7 @@
 #include "Album.h"
 #include "Artist.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "ApplicationRenderer.h"
 #include "PlayListPlayer.h"
 #include "utils/URIUtils.h"

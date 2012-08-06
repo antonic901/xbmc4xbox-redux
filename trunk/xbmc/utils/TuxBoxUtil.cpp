@@ -29,6 +29,7 @@
 #include "FileSystem/CurlFile.h"
 #include "GUIDialogContextMenu.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "VideoInfoTag.h"
 #include "GUIWindowManager.h"

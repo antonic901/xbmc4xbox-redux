@@ -25,6 +25,8 @@
 #include "CDDAReader.h"
 #include "Encoder.h"
 
+class CFileItem;
+
 namespace MUSIC_INFO
 {
   class CMusicInfoTag;

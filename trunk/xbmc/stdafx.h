@@ -49,8 +49,6 @@
 #include "utils/CharsetConverter.h"
 #include "LangInfo.h"
 
-#include "ApplicationMessenger.h"
-
 #ifdef _XBOX
 #ifdef QueryPerformanceFrequency
 #undef QueryPerformanceFrequency

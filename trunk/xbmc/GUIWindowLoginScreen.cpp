@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "GUIWindowLoginScreen.h"
 #include "GUIWindowSettingsProfile.h"
 #include "GUIDialogContextMenu.h"

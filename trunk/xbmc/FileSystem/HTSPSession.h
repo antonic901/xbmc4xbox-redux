@@ -27,6 +27,8 @@
 
 typedef struct htsmsg htsmsg_t;
 
+class CFileItem;
+
 namespace HTSP
 {
 

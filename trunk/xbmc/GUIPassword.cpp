@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIPassword.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "GUIDialogNumeric.h"
 #include "GUIDialogGamepad.h"
 #include "GUIDialogKeyboard.h"

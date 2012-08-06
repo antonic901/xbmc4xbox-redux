@@ -25,6 +25,7 @@
 #include "SkinInfo.h"
 #include "tinyXML/tinyxml.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 

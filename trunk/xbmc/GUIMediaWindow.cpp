@@ -29,6 +29,7 @@
 #include "FileSystem/PluginDirectory.h"
 #include "GUIPassword.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "xbox/network.h"
 #include "utils/RegExp.h"
 #include "PartyModeManager.h"

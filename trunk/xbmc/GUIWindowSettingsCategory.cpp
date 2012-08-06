@@ -23,6 +23,7 @@
 #include "interfaces/Builtins.h"
 #include "GUIWindowSettingsCategory.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "KeyboardLayoutConfiguration.h"
 #include "FileSystem/Directory.h"
 #include "Util.h"

@@ -26,6 +26,7 @@
 class CURL;
 class TiXmlElement;
 class CFileItemList;
+class CFileItem;
 
 struct STREAMINFO
 {

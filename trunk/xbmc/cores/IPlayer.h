@@ -27,6 +27,8 @@
 class TiXmlElement; 
 class CStreamDetails;
 
+class CFileItem;
+
 class IPlayerCallback
 {
 public:

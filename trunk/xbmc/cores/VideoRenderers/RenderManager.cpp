@@ -28,6 +28,7 @@
 #include "RGBRenderer.h"
 #include "RGBRendererV2.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "Settings.h"
 
 CXBoxRenderManager g_renderManager;

@@ -32,6 +32,7 @@
 #include "GUIDialogProgress.h"
 #include "GUIDialogYesNo.h"
 #include "GUIDialogSelect.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 

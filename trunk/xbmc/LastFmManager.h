@@ -35,6 +35,7 @@ namespace MUSIC_INFO
 
 class CURL;
 class CGUIDialogProgress;
+class CFileItem;
 
 class CLastFmManager : CThread
 {
