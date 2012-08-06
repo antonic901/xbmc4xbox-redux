@@ -48,6 +48,7 @@
 #include "Settings.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "utils/GUIInfoManager.h"
 #include "utils/md5.h"
 #include "utils/URIUtils.h"

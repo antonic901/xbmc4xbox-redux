@@ -27,6 +27,7 @@
 #include "GUIDialogNumeric.h"
 #include "GUIDialogOK.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "utils/RegExp.h"
 #include "GUIPassword.h"
 #include "utils/md5.h"

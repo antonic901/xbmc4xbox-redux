@@ -32,6 +32,7 @@
 #include "FileSystem/Directory.h"
 #include "GUIDialogPictureInfo.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

@@ -39,6 +39,7 @@
 #include "PartyModeManager.h"
 #include "MusicDatabase.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogYesNo.h"
 #include "GUIDialogSelect.h"
 #include "FileSystem/Directory.h"

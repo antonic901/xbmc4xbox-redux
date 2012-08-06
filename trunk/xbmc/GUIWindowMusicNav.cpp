@@ -38,6 +38,7 @@
 #include "GUIWindowVideoNav.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIWindowFileManager.h"
 #include "GUIDialogOK.h"
 #include "GUIDialogKeyboard.h"

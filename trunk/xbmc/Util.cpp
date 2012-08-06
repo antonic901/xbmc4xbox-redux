@@ -91,6 +91,7 @@
 #include "lib/libGoAhead/XBMChttp.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogOK.h"
 #include "GUIDialogYesNo.h"
 #include "GUIDialogKeyboard.h"

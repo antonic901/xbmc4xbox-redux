@@ -24,6 +24,7 @@
 #include "GUISliderControl.h"
 #include "Application.h"
 #include "utils/GUIInfoManager.h"
+#include "GUIUserMessages.h"
 
 #define SEEK_BAR_DISPLAY_TIME 2000L
 #define SEEK_BAR_SEEK_TIME     500L

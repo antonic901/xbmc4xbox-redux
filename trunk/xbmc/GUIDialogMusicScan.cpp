@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "Settings.h"
 #include "utils/SingleLock.h"
 

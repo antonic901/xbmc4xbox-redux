@@ -36,6 +36,7 @@
 #include "GUIDialogLockSettings.h"
 #include "MediaManager.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"s
 #include "GUIDialogYesNo.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"

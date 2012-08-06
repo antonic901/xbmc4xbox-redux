@@ -30,6 +30,7 @@
 #include "GUIDialogMusicScan.h"
 #include "GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "FileItem.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/Directory.h"

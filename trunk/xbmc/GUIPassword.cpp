@@ -31,6 +31,7 @@
 #include "URL.h"
 #include "Settings.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogOK.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

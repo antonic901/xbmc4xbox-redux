@@ -28,6 +28,7 @@
 #include "SmartPlaylist.h"
 #include "GUIDialogProgress.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogOK.h"
 #include "PlayList.h"
 

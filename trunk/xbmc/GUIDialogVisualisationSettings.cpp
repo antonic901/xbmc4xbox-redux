@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "GUIDialogVisualisationSettings.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIWindowSettingsCategory.h"
 #include "GUIControlGroupList.h"
 #include "utils/GUIInfoManager.h"

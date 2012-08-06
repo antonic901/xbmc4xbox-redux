@@ -22,8 +22,8 @@
 #include "stdafx.h"
 #include "GUIDialogMuteBug.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
-
 
 // the MuteBug is a true modeless dialog
 

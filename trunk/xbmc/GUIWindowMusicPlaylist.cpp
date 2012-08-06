@@ -32,6 +32,7 @@
 #include "utils/LabelFormatter.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogKeyboard.h"
 #include "Favourites.h"
 #include "LocalizeStrings.h"

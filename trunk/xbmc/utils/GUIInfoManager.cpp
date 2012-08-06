@@ -25,6 +25,7 @@
 #include "GUIDialogFileBrowser.h"
 #include "GUIDialogContentSettings.h"
 #include "GUIDialogProgress.h"
+#include "GUIUserMessages.h"
 #include "Application.h"
 #include "Util.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"

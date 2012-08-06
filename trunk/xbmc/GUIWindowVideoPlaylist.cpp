@@ -31,6 +31,7 @@
 #include "GUIDialogSmartPlaylistEditor.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogKeyboard.h"
+#include "GUIUserMessages.h"
 #include "Favourites.h"
 #include "LocalizeStrings.h"
 

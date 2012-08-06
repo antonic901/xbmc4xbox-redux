@@ -30,6 +30,7 @@
 #include "GUIWindowMusicBase.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"
 #include "FileItem.h"

@@ -53,9 +53,6 @@
 #include "ApplicationMessenger.h"
 #include "utils/AutoPtrHandle.h"
 
-// Often used
-#include "GUIUserMessages.h"
-
 #ifdef _XBOX
 #ifdef QueryPerformanceFrequency
 #undef QueryPerformanceFrequency

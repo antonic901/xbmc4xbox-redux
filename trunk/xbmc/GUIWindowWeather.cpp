@@ -25,6 +25,7 @@
 #include "utils/Weather.h"
 #include "GUISettings.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"

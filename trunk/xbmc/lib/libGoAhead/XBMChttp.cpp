@@ -14,6 +14,7 @@
 #include "XBMChttp.h"
 #include "includes.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 
 #include "PlayListFactory.h"
 #include "Application.h"

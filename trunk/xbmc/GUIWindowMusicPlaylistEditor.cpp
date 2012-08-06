@@ -32,6 +32,7 @@
 #include "FileSystem/Directory.h"
 #include "PlayListM3U.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogKeyboard.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

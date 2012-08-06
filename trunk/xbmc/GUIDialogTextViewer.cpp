@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "GUIDialogTextViewer.h"
+#include "GUIUserMessages.h"
 
 #define CONTROL_HEADING  1
 #define CONTROL_TEXTAREA 5

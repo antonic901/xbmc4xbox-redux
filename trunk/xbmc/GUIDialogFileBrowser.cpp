@@ -35,6 +35,7 @@
 #include "GUIDialogOK.h"
 #include "GUIDialogYesNo.h"
 #include "GUIDialogKeyboard.h"
+#include "GUIUserMessages.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"

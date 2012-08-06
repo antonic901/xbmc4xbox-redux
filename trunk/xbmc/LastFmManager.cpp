@@ -37,6 +37,7 @@
 #include "MusicInfoTag.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "GUIDialogProgress.h"
 #include "GUIDialogYesNo.h"
 #include "Settings.h"

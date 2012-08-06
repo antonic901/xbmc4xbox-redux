@@ -44,6 +44,7 @@
 #include "GUIDialogYesNo.h"
 #include "GUIDialogKeyboard.h"
 #include "GUIDialogProgress.h"
+#include "GUIUserMessages.h"
 #include "FileSystem/RarManager.h"
 #include "Favourites.h"
 #include "PlayList.h"

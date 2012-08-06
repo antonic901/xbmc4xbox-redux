@@ -32,6 +32,7 @@
 #include "utils/URIUtils.h"
 #include "Picture.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
 #include "FileSystem/File.h"
 #include "Settings.h"
 #include "FileItem.h"

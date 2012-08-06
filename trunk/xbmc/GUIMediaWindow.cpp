@@ -37,6 +37,7 @@
 #include "Favourites.h"
 #include "utils/LabelFormatter.h"
 #include "GUIDialogProgress.h"
+#include "GUIUserMessages.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
