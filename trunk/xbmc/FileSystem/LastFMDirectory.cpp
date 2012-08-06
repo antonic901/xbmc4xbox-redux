@@ -33,6 +33,7 @@
 #include "GUISettings.h"
 #include "FileItem.h"
 #include "CurlFile.h"
+#include "utils/StringUtils.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

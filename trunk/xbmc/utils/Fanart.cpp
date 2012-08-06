@@ -23,6 +23,7 @@
 #include "Fanart.h"
 #include "tinyXML/tinyxml.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "Picture.h"
 #include "FileSystem/CurlFile.h"
 #include "FileSystem/File.h"

@@ -28,6 +28,7 @@
 #include "MusicInfoTag.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 
 using namespace MUSIC_INFO;
 

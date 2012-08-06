@@ -39,7 +39,6 @@
 #include <memory>
 #include <queue>
 #include "StdString.h"
-#include "utils/StringUtils.h"
 
 #ifdef _XBOX
 #if defined(_DEBUG) && defined(_MEMTRACKING)

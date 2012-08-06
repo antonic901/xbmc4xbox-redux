@@ -26,6 +26,7 @@
 #include "GUIAudioManager.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogOK.h"
+#include "utils/StringUtils.h"
 
 CGUIDialogGamepad::CGUIDialogGamepad(void)
     : CGUIDialogBoxBase(WINDOW_DIALOG_GAMEPAD, "DialogGamepad.xml")

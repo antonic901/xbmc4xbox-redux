@@ -24,6 +24,7 @@
 #include "FTPParse.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "CurlFile.h"
 #include "FileItem.h"
 

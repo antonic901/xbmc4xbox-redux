@@ -25,6 +25,7 @@
 #include "Directory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
