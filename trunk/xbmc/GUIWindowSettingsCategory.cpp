@@ -76,7 +76,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/File.h"
 #include "LocalizeStrings.h"
-
+#include "LangInfo.h"
 
 #include "ScraperSettings.h"
 #include "ScriptSettings.h"

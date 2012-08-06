@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "XBTimeZone.h"
+#include "LangInfo.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #endif

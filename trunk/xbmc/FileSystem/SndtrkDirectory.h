@@ -20,6 +20,7 @@
  *
  */
 
+#include <map>
 
 #include "IDirectory.h"
 

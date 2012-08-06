@@ -41,7 +41,6 @@
 #ifdef HAS_LCD
 #include "utils/LCD.h"
 #endif
-#include "GUIPassword.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "FanController.h"
 #include "xbox/XKHDD.h"
@@ -49,6 +48,8 @@
 #include "SystemInfo.h"
 #include "GUIButtonScroller.h"
 #include "GUITextBox.h"
+#include "GUIPassword.h"
+#include "LangInfo.h"
 #include "GUIInfoManager.h"
 #include <stack>
 #include "xbox/network.h"

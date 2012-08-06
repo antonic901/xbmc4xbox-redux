@@ -26,6 +26,7 @@
 #include "DVDStateSerializer.h"
 #include "GUISettings.h"
 #include "FileSystem/IFile.h"
+#include "LangInfo.h"
 
 #ifndef PRId64
 #ifdef _MSC_VER

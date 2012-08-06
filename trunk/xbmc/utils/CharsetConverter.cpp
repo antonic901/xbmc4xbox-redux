@@ -23,6 +23,7 @@
 #include "Util.h"
 #include "ArabicShaping.h"
 #include "GUISettings.h"
+#include "LangInfo.h"
 
 #ifndef _LINUX
 #include "lib/libiconv/iconv.h"

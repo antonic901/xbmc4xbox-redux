@@ -29,6 +29,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"
+#include "LangInfo.h"
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3

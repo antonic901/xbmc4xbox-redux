@@ -24,6 +24,7 @@
 #include "interfaces/Builtins.h"
 #include "Splash.h"
 #include "KeyboardLayoutConfiguration.h"
+#include "LangInfo.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/XKEEPROM.h"
 #include "utils/LCD.h"

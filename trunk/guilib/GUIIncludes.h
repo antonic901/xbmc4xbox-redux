@@ -21,6 +21,9 @@
  *
  */
 
+#include <map>
+#include <set>
+
 // forward definitions
 class TiXmlElement;
 

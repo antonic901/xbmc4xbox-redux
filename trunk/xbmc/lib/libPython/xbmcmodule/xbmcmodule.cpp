@@ -42,6 +42,7 @@
 #include "Settings.h"
 #include "TextureManager.h"
 #include "language.h"
+#include "LangInfo.h"
 #include "PythonSettings.h"
 #include "SectionLoader.h"
 #include "utils/URIUtils.h"

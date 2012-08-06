@@ -24,6 +24,11 @@
 #define MAX_EMULATED_FILES    50
 #define FILE_WRAPPER_OFFSET   0x00000100
 
+namespace XFILE
+{
+  class CFile;
+}
+
 typedef struct stEmuFileObject
 {
   bool    used;
