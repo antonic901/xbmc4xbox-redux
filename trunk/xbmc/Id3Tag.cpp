@@ -25,6 +25,8 @@
 #include "Picture.h"
 #include "AdvancedSettings.h"
 
+#include <set>
+
 using namespace std;
 using namespace MUSIC_INFO;
 

@@ -23,6 +23,7 @@
 #include "IDirectory.h"
 #include "Directory.h"
 
+#include <map>
 #include <set>
 
 class CFileItem;

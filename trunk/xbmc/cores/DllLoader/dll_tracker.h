@@ -22,6 +22,9 @@
  *
  */
 
+#include <list>
+#include <map>
+
 class DllLoader;
 
 struct AllocLenCaller

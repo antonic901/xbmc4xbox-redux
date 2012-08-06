@@ -34,6 +34,8 @@
 #include "GUIFont.h"
 #include "FileSystem/SpecialProtocol.h"
 
+#include <list>
+
 using namespace std;
 
 // Transition effects for text, must specific exactly one in and one out effect

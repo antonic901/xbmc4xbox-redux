@@ -32,12 +32,6 @@
 #include "system.h"
 #include "gui3d.h"
 
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <memory>
-#include <queue>
 #include "StdString.h"
 
 #ifdef _XBOX

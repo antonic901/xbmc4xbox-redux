@@ -59,6 +59,8 @@
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 
+#include <set>
+
 using namespace std;
 
 CCueDocument::CCueDocument(void)
