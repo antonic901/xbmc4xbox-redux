@@ -33,7 +33,7 @@
 #include "LangCodeExpander.h"
 #include "ButtonTranslator.h"
 #include "XMLUtils.h"
-#include "GUIPassword.h"
+#include "PasswordManager.h"
 #include "GUIAudioManager.h"
 #include "AudioContext.h"
 #include "utils/GUIInfoManager.h"
@@ -659,6 +659,8 @@ bool CSettings::LoadCalibration(const TiXmlElement* pElement, const CStdString& 
       GetInteger(pOverscan, "right", m_ResInfo[iRes].Overscan.right, m_ResInfo[iRes].iWidth, m_ResInfo[iRes].iWidth / 2, m_ResInfo[iRes].iWidth*3 / 2);
       GetInteger(pOverscan, "bottom", m_ResInfo[iRes].Overscan.bottom, m_ResInfo[iRes].iHeight, m_ResInfo[iRes].iHeight / 2, m_ResInfo[iRes].iHeight*3 / 2);
     }
+    
+    CPasswordManager::GetInstance().Clear();
 
 /*    CLog::Log(LOGDEBUG, "  calibration for %s %ix%i", m_ResInfo[iRes].strMode, m_ResInfo[iRes].iWidth, m_ResInfo[iRes].iHeight);
     CLog::Log(LOGDEBUG, "    subtitle yposition:%i pixelratio:%03.3f offsets:(%i,%i)->(%i,%i)",

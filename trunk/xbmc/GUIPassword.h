@@ -29,9 +29,6 @@ class CMediaSource;
 
 typedef std::vector<CMediaSource> VECSOURCES;
 
-typedef std::map<CStdString, CStdString> MAPPASSWORDS;
-typedef std::map<CStdString, CStdString>::iterator IMAPPASSWORDS;
-
 typedef enum
 {
   LOCK_MODE_UNKNOWN            = -1,
@@ -69,8 +66,6 @@ public:
   void LockSources(bool lock);
   void RemoveSourceLocks();
   bool IsDatabasePathUnlocked(CStdString& strPath, VECSOURCES& VECSOURCES);
-
-	MAPPASSWORDS			m_mapSMBPasswordCache; // SMB share password cache
 
   bool bMasterUser;
   int iMasterLockRetriesLeft;

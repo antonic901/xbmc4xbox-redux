@@ -25,7 +25,7 @@
 
 #include "stdafx.h"
 #include "SmbFile.h"
-#include "GUIPassword.h"
+#include "PasswordManager.h"
 #include "SMBDirectory.h"
 #include "Util.h"
 #include "xbox/Network.h"
@@ -343,12 +343,12 @@ int CSmbFile::OpenFile(const CURL &url, CStdString& strAuth)
 {
   int fd = -1;
   smb.Init();
-  /* original auth name */
-  strAuth = smb.URLEncode(url);
 
-  CStdString strPath = g_passwordManager.GetSMBAuthFilename(strAuth);
+  strAuth = GetAuthenticatedPath(url);
+  CStdString strPath = strAuth;
 
-  { CSingleLock lock(smb);
+  {
+    CSingleLock lock(smb);
     fd = smbc_open(strPath.c_str(), O_RDONLY, 0);
   }
 
@@ -375,7 +375,8 @@ int CSmbFile::OpenFile(const CURL &url, CStdString& strAuth)
       smbc_closedir(fd);
 
       // set up new filehandle (as CSmbFile::Open does)
-      strPath = g_passwordManager.GetSMBAuthFilename(strPath);
+      strPath = GetAuthenticatedPath(url);
+
       fd = smbc_open(strPath.c_str(), O_RDONLY, 0);
     }
   }
@@ -393,8 +394,7 @@ bool CSmbFile::Exists(const CURL& url)
   if (!IsValidFile(url.GetFileName())) return false;
 
   smb.Init();
-  CStdString strFileName = smb.URLEncode(url);
-  strFileName = g_passwordManager.GetSMBAuthFilename(strFileName);
+  CStdString strFileName = GetAuthenticatedPath(url);
 
   struct __stat64 info;
 
@@ -434,9 +434,7 @@ int CSmbFile::Stat(struct __stat64* buffer)
 int CSmbFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   smb.Init();
-  CStdString strFileName = smb.URLEncode(url);
-  strFileName = g_passwordManager.GetSMBAuthFilename(strFileName);
-
+  CStdString strFileName = GetAuthenticatedPath(url);
   CSingleLock lock(smb);
 
   struct __stat64 tmpBuffer = {0};
@@ -536,7 +534,7 @@ int CSmbFile::Write(const void* lpBuf, __int64 uiBufSize)
 bool CSmbFile::Delete(const CURL& url)
 {
   smb.Init();
-  CStdString strFile = g_passwordManager.GetSMBAuthFilename(smb.URLEncode(url));
+  CStdString strFile = GetAuthenticatedPath(url);
 
   CSingleLock lock(smb);
 
@@ -551,9 +549,8 @@ bool CSmbFile::Delete(const CURL& url)
 bool CSmbFile::Rename(const CURL& url, const CURL& urlnew)
 {
   smb.Init();
-  CStdString strFile = g_passwordManager.GetSMBAuthFilename(smb.URLEncode(url));
-  CStdString strFileNew = g_passwordManager.GetSMBAuthFilename(smb.URLEncode(urlnew));
-
+  CStdString strFile = GetAuthenticatedPath(url);
+  CStdString strFileNew = GetAuthenticatedPath(urlnew);
   CSingleLock lock(smb);
 
   int result = smbc_rename(strFile.c_str(), strFileNew.c_str());
@@ -574,9 +571,7 @@ bool CSmbFile::OpenForWrite(const CURL& url, bool bOverWrite)
   // if a file matches the if below return false, it can't exist on a samba share.
   if (!IsValidFile(url.GetFileName())) return false;
 
-  CStdString strFileName = smb.URLEncode(url);
-  strFileName = g_passwordManager.GetSMBAuthFilename(strFileName);
-
+  CStdString strFileName = GetAuthenticatedPath(url);
   CSingleLock lock(smb);
 
   if (bOverWrite)
@@ -608,4 +603,11 @@ bool CSmbFile::IsValidFile(const CStdString& strFileName)
       strFileName.Right(3) == "/..")  /* not parent folder */
       return false;
   return true;
+}
+
+CStdString CSmbFile::GetAuthenticatedPath(const CURL &url)
+{
+  CURL authURL(url);
+  CPasswordManager::GetInstance().AuthenticateURL(authURL);
+  return smb.URLEncode(authURL);
 }

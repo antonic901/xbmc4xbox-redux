@@ -1042,6 +1042,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\PartyModeManager.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\PasswordManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\PasswordManager.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\Picture.cpp">
 				</File>
 				<File

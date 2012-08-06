@@ -993,7 +993,6 @@ int CBuiltins::Execute(const CStdString& execString)
     CFanController::Instance()->Stop();
 #endif
     g_settings.LoadProfile(0); // login screen always runs as default user
-    g_passwordManager.m_mapSMBPasswordCache.clear();
     g_passwordManager.bMasterUser = false;
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
     g_network.SetupNetwork();

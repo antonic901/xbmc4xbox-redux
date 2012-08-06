@@ -100,6 +100,7 @@ public:
 protected:
   CURL m_url;
   bool IsValidFile(const CStdString& strFileName);
+  CStdString GetAuthenticatedPath(const CURL &url);
   __int64 m_fileSize;
   int m_fd;
 };
