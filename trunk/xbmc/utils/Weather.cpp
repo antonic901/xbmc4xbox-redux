@@ -35,6 +35,7 @@
 #include "GUIDialogSelect.h"
 #include "XBDateTime.h"
 #include "FileSystem/Directory.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

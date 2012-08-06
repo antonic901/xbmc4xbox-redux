@@ -24,6 +24,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
 #include "utils/SingleLock.h"
+#include "LocalizeStrings.h"
 
 extern "C" void mplayer_exit_player(void);
 

@@ -45,6 +45,7 @@
 #include "FileItem.h"
 #include "Picture.h"
 #include "interfaces/AnnouncementManager.h"
+#include "LocalizeStrings.h"
 
 #include <algorithm>
 

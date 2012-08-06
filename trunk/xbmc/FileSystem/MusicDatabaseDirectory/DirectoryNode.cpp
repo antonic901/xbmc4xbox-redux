@@ -47,6 +47,7 @@
 #include "URL.h"
 #include "AdvancedSettings.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE::MUSICDATABASEDIRECTORY;

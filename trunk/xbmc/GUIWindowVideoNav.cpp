@@ -48,6 +48,7 @@
 #include "AdvancedSettings.h"
 #include "MediaManager.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;

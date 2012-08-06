@@ -46,6 +46,7 @@
 #include "FileItem.h"
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

@@ -36,6 +36,7 @@
 #include "Settings.h"
 #include "FileItem.h"
 #include "Application.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace MEDIA_DETECT;

@@ -34,6 +34,7 @@
 #include "MediaManager.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

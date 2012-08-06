@@ -50,6 +50,7 @@
 #include "URL.h"
 #include "Settings.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 #include "utils/RegExp.h"
 #include "utils/Variant.h"
 

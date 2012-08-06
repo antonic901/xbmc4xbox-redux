@@ -43,6 +43,7 @@
 #include "PlayList.h"
 #include "Crc32.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 #include <sstream>
 

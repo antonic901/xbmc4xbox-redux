@@ -49,6 +49,7 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE::VIDEODATABASEDIRECTORY;

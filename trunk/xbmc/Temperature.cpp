@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "Temperature.h"
+#include "LocalizeStrings.h"
 
 
 CTemperature::CTemperature()

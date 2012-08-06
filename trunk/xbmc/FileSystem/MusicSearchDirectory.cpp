@@ -24,6 +24,7 @@
 #include "MusicDatabase.h"
 #include "URL.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace XFILE;

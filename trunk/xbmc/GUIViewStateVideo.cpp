@@ -30,6 +30,7 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "Util.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;

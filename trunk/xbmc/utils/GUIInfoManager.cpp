@@ -77,6 +77,7 @@
 #include "SkinInfo.h"
 #include "TimeUtils.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

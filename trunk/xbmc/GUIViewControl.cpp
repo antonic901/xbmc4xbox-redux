@@ -25,6 +25,7 @@
 #include "utils/URIUtils.h"
 #include "FileItem.h"
 #include "utils/GUIInfoManager.h"
+#include "LocalizeStrings.h"
 
 CGUIViewControl::CGUIViewControl(void)
 {

@@ -23,6 +23,7 @@
 #include "DirectoryNodeAlbumCompilations.h"
 #include "QueryParams.h"
 #include "MusicDatabase.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 

@@ -47,6 +47,7 @@
 #include "Settings.h"
 #include "GUIInfoManager.h"
 #include "GUIDialogSelect.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

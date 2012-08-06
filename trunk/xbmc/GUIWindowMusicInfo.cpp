@@ -39,6 +39,7 @@
 #include "FileSystem/Directory.h"
 #include "utils/AsyncFileCopy.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 

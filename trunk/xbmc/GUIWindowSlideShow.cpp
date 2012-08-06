@@ -34,6 +34,7 @@
 #include "GUIWindowManager.h"
 #include "Settings.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 #ifdef _XBOX
 #define RELOAD_ON_ZOOM

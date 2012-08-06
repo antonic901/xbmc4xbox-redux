@@ -27,6 +27,7 @@
 #include "cores/DllLoader/DllLoader.h"
 #include "utils/GUIInfoManager.h"
 #include "FileSystem/CurlFile.h"
+#include "LocalizeStrings.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #include "xbox/XKUtils.h"

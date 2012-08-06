@@ -23,6 +23,7 @@
 #include "GUIWindowSystemInfo.h"
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowManager.h"
+#include "LocalizeStrings.h"
 
 CGUIWindowSystemInfo::CGUIWindowSystemInfo(void)
 :CGUIWindow(WINDOW_SYSTEM_INFORMATION, "SettingsSystemInfo.xml")

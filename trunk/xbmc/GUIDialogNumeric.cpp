@@ -27,6 +27,7 @@
 #include "xbox/XKGeneral.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogOK.h"
+#include "LocalizeStrings.h"
 
 #define CONTROL_HEADING_LABEL  1
 #define CONTROL_INPUT_LABEL    4

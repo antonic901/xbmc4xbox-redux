@@ -34,6 +34,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogKeyboard.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace MEDIA_DETECT;
 

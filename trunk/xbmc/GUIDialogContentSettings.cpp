@@ -33,6 +33,7 @@
 #include "Settings.h"
 #include "LangCodeExpander.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 #define CONTROL_CONTENT_TYPE        3
 #define CONTROL_SCRAPER_LIST        4

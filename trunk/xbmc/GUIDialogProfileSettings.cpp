@@ -38,6 +38,7 @@
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 

@@ -34,6 +34,7 @@
 #include "FileSystem/CurlFile.h"
 #include "FileItem.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 

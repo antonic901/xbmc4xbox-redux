@@ -30,6 +30,7 @@
 #include "GUISettings.h"
 #include "Settings.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

@@ -30,6 +30,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogKaiToast.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 #include "XBPyThread.h"
 #include "XBPython.h"

@@ -23,6 +23,7 @@
 #include "MediaManager.h"
 #include "xbox/IoSupport.h"
 #include "URL.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

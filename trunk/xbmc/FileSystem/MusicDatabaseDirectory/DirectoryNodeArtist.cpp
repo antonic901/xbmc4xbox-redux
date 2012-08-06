@@ -24,6 +24,7 @@
 #include "QueryParams.h"
 #include "MusicDatabase.h"
 #include "Settings.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 

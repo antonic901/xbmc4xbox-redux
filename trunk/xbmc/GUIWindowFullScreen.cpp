@@ -41,6 +41,7 @@
 #include "Settings.h"
 #include "FileItem.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 #include <stdio.h>
 

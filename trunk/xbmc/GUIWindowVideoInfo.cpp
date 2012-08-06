@@ -45,6 +45,7 @@
 #include "utils/AsyncFileCopy.h"
 #include "AdvancedSettings.h"
 #include "GUIUserMessages.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

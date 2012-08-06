@@ -42,9 +42,6 @@
 #endif
 #endif
 
-// guilib internal
-#include "LocalizeStrings.h"
-
 #include "utils/CriticalSection.h"
 #include "utils/SingleLock.h"
 #include "utils/Event.h"

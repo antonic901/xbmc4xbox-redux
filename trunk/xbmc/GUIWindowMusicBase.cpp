@@ -53,6 +53,7 @@
 #include "FileItem.h"
 #include "FileSystem/File.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

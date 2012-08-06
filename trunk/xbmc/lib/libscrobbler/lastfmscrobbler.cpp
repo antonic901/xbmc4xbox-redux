@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "Settings.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 long CLastfmScrobbler::m_instanceLock = 0;
 CLastfmScrobbler *CLastfmScrobbler::m_pInstance = NULL;

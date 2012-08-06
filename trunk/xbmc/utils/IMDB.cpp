@@ -39,6 +39,7 @@
 #include "Application.h"
 #include "GUIWindowManager.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace HTML;
 using namespace std;

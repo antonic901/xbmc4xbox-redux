@@ -32,6 +32,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogYesNo.h"
 #include "GUIFontManager.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

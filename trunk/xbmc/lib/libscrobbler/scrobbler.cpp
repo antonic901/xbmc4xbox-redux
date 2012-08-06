@@ -32,6 +32,7 @@
 #include "XMLUtils.h"
 #include "Application.h"
 #include "strptime.h"
+#include "LocalizeStrings.h"
 
 #define SCROBBLER_CLIENT              "xbm"
 //#define SCROBBLER_CLIENT              "tst"     // For testing ONLY!

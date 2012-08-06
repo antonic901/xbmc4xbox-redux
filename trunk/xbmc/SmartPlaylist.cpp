@@ -32,6 +32,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "XBDateTime.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

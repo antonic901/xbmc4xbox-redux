@@ -46,6 +46,7 @@
 #include "Settings.h"
 #include "AdvancedSettings.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 #include "xbox/Network.h"
 #include "utils/variant.h"
 #include "interfaces/AnnouncementManager.h"

@@ -24,6 +24,7 @@
 #include "Util.h"
 #include "Picture.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 #include <set>
 

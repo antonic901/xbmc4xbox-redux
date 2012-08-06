@@ -26,6 +26,7 @@
 #include "xbox/network.h"
 #include "GUISettings.h"
 #include "URL.h"
+#include "LocalizeStrings.h"
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"
 #ifdef __APPLE__

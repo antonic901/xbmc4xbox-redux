@@ -37,6 +37,7 @@
 #include "FileItem.h"
 #include "Crc32.h"
 #include "utils/SingleLock.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

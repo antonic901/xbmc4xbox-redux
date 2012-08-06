@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "XBDateTime.h"
+#include "LocalizeStrings.h"
 
 #define SECONDS_PER_DAY 86400UL
 #define SECONDS_PER_HOUR 3600UL

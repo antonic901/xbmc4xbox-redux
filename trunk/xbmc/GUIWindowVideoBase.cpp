@@ -54,6 +54,7 @@
 #include "PlayList.h"
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 #include "SkinInfo.h"
 

@@ -51,6 +51,7 @@
 #include "utils/StreamUtils.h"
 #include "GUIDialogBusy.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

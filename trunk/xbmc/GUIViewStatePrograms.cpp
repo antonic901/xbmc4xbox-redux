@@ -28,6 +28,7 @@
 #include "FileSystem/Directory.h"
 #include "FileSystem/PluginDirectory.h"
 #include "Util.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 

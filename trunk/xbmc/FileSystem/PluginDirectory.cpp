@@ -33,6 +33,7 @@
 #include "FileSystem/File.h"
 #include "GUISettings.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace std;

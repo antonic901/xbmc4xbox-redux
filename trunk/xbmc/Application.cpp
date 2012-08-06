@@ -83,6 +83,7 @@
 #include "PlayList.h"
 #include "utils/DownloadQueueManager.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 #ifdef HAS_FILESYSTEM
 #include "FileSystem/DAAPFile.h"

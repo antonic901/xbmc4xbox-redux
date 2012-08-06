@@ -20,6 +20,8 @@
  *
  */
 
+#include <map>
+
 class TiXmlNode;
 
 class CLangInfo

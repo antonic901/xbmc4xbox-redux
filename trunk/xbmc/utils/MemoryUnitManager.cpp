@@ -29,6 +29,7 @@
 #include "FileSystem/MemoryUnits/Fat32FileSystem.h"
 #include "Application.h"
 #include "URL.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

@@ -32,6 +32,7 @@
 #include "GUIDialogYesNo.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

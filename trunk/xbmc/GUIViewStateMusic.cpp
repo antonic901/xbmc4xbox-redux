@@ -28,6 +28,7 @@
 #include "AdvancedSettings.h"
 #include "FileItem.h"
 #include "Util.h"
+#include "LocalizeStrings.h"
 
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"

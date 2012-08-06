@@ -54,6 +54,7 @@
 #endif
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "utils/URIUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

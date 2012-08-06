@@ -23,6 +23,7 @@
 #include "GUIDialogTrainerSettings.h"
 #include "utils/Trainer.h"
 #include "GUIWindowManager.h"
+#include "LocalizeStrings.h"
 
 #define CONTROL_SETTINGS_LABEL      2
 #define CONTROL_START              30

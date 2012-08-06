@@ -23,6 +23,7 @@
 #include "DirectoryNodeOverview.h"
 #include "FileItem.h"
 #include "MusicDatabase.h"
+#include "LocalizeStrings.h"
 
 namespace XFILE
 {

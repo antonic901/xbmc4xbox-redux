@@ -33,6 +33,7 @@
 #include "FileSystem/File.h"
 #include "TextureManager.h"
 #include "../XBPython.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 

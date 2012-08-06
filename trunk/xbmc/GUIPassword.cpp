@@ -33,6 +33,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogOK.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 CGUIPassword g_passwordManager;
 

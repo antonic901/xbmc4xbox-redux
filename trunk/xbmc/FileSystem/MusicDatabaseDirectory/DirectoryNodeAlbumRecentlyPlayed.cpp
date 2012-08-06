@@ -23,6 +23,7 @@
 #include "DirectoryNodeAlbumRecentlyPlayed.h"
 #include "MusicDatabase.h"
 #include "FileItem.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 

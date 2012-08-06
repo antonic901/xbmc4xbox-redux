@@ -35,6 +35,7 @@
 #include "FileItem.h"
 #include "SkinInfo.h"
 #include "AdvancedSettings.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

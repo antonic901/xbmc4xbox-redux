@@ -29,6 +29,7 @@
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace MUSIC_INFO;
 

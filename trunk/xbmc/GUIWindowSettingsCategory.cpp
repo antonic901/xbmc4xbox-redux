@@ -73,6 +73,7 @@
 #include "GUIToggleButtonControl.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/File.h"
+#include "LocalizeStrings.h"
 
 
 #include "ScraperSettings.h"

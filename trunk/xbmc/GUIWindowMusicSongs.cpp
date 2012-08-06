@@ -33,6 +33,7 @@
 #include "FileItem.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/Directory.h"
+#include "LocalizeStrings.h"
 
 using namespace MEDIA_DETECT;
 

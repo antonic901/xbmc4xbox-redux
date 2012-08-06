@@ -41,6 +41,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

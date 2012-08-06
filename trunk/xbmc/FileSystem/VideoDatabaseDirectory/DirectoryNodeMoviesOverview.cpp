@@ -23,6 +23,7 @@
 #include "DirectoryNodeMoviesOverview.h"
 #include "FileItem.h"
 #include "VideoDatabase.h"
+#include "LocalizeStrings.h"
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 using namespace std;

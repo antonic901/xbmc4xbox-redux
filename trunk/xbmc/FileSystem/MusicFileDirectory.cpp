@@ -26,6 +26,7 @@
 #include "MusicFileDirectory.h"
 #include "FileItem.h"
 #include "URL.h"
+#include "LocalizeStrings.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

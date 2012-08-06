@@ -22,6 +22,7 @@
  */
 
 #include "lib/libPython/python/Include/Python.h"
+#include "LocalizeStrings.h"
 
 #ifdef __cplusplus
 extern "C" {

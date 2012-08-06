@@ -32,6 +32,7 @@
 #include "FileItem.h"
 #include "DirectoryCache.h"
 #include "TimeUtils.h"
+#include "LocalizeStrings.h"
 
 extern "C"
 {

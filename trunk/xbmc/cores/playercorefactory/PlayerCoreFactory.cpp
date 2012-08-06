@@ -41,6 +41,7 @@
 #include "FileItem.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
+#include "LocalizeStrings.h"
 
 using namespace AUTOPTR;
 

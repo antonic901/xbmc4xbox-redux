@@ -40,6 +40,7 @@
 #include "FileItem.h"
 #include "FileSystem/File.h"
 #include "Picture.h"
+#include "LocalizeStrings.h"
 
 using namespace std;
 using namespace MEDIA_DETECT;
