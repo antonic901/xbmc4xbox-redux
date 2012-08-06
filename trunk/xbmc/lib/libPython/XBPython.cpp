@@ -40,6 +40,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "xbox/network.h"
 #include "Settings.h"
+#include "utils/SingleLock.h"
 
 XBPython g_pythonParser;
 

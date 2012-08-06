@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "DllLibCurl.h"
 #include "TimeUtils.h"
+#include "utils/SingleLock.h"
 
 #include <assert.h>
 

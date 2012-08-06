@@ -65,6 +65,7 @@
 #include "PlayList.h"
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "utils/SingleLock.h"
 
 // stuff for current song
 #ifdef HAS_FILESYSTEM

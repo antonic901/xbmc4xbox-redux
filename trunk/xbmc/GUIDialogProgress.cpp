@@ -26,6 +26,7 @@
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "LocalizeStrings.h"
+#include "utils/SingleLock.h"
 
 using namespace std;
 

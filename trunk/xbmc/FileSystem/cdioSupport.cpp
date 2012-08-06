@@ -24,7 +24,7 @@
 #include "lib/libcdio/cdio.h"
 #include "lib/libcdio/logging.h"
 #include "lib/libcdio/Util.h"
-
+#include "utils/SingleLock.h"
 
 using namespace MEDIA_DETECT;
 

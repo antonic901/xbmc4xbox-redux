@@ -25,6 +25,7 @@
 #include "utils/JobManager.h"
 #include "utils/RecentlyAddedJob.h"
 #include "interfaces/AnnouncementManager.h"
+#include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
 

@@ -34,6 +34,7 @@
 #endif
 #include "SystemInfo.h"
 #include "GUIRSSControl.h"
+#include "utils/SingleLock.h"
 
 using namespace std;
 using namespace XFILE;

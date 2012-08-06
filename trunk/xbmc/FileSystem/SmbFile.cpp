@@ -33,6 +33,7 @@
 #include "lib/libsmb/xbLibSmb.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"
+#include "utils/SingleLock.h"
 
 
 using namespace XFILE;

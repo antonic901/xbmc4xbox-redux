@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "LocalizeStrings.h"
+#include "utils/SingleLock.h"
 
 CAlarmClock g_alarmClock;
 

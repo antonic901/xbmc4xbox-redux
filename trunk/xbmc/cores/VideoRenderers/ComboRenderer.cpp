@@ -23,6 +23,7 @@
 #include "ComboRenderer.h"
 #include "Application.h"
 #include "Settings.h"
+#include "utils/SingleLock.h"
 
 CComboRenderer::CComboRenderer(LPDIRECT3DDEVICE8 pDevice)
     : CXBoxRenderer(pDevice)

@@ -23,6 +23,7 @@
 #include "dll_tracker_file.h"
 #include "dll_tracker.h"
 #include "DllLoader.h"
+#include "utils/SingleLock.h"
 #include "exports/emu_msvcrt.h"
 #include <io.h>
 

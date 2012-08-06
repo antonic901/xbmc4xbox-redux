@@ -36,6 +36,7 @@
 #include "Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
+#include "utils/SingleLock.h"
 
 #ifdef _XBOX
 #define RELOAD_ON_ZOOM

@@ -38,6 +38,7 @@
 #include "FileItem.h"
 #include "Application.h"
 #include "LocalizeStrings.h"
+#include "utils/SingleLock.h"
 
 using namespace XFILE;
 using namespace MEDIA_DETECT;

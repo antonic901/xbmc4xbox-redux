@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/SingleLock.h"
 #include "DVDAudio.h"
 #ifdef _XBOX
 #include "cores/mplayer/ASyncDirectSound.h"

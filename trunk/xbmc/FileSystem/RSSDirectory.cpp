@@ -28,6 +28,7 @@
 #include "VideoInfoTag.h"
 #include "utils/URIUtils.h"
 #include "utils/strptime.h"
+#include "utils/SingleLock.h"
 
 using namespace XFILE;
 using namespace std;

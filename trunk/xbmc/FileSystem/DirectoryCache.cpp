@@ -24,6 +24,7 @@
 #include "utils/URIUtils.h"
 #include "Settings.h"
 #include "FileItem.h"
+#include "utils/SingleLock.h"
 
 using namespace std;
 using namespace XFILE;

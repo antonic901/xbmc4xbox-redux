@@ -23,6 +23,7 @@
 #include "dll_tracker_socket.h"
 #include "DllLoader.h"
 #include "dll_tracker.h"
+#include "utils/SingleLock.h"
 #include "exports/emu_socket.h"
 
 extern "C" void tracker_socket_track(uintptr_t caller, SOCKET socket)

@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/SingleLock.h"
 #include "DVDPlayer.h"
 
 #include "DVDInputStreams/DVDInputStream.h"

@@ -24,6 +24,7 @@
 #include "ArabicShaping.h"
 #include "GUISettings.h"
 #include "LangInfo.h"
+#include "utils/SingleLock.h"
 
 #ifndef _LINUX
 #include "lib/libiconv/iconv.h"

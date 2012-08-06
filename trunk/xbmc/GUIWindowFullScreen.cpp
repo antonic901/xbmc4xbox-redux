@@ -42,6 +42,7 @@
 #include "FileItem.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "utils/SingleLock.h"
 
 #include <stdio.h>
 

@@ -29,6 +29,7 @@
 #include "DVDPerformanceCounter.h"
 #include "utils/TimeUtils.h"
 #include "Util.h"
+#include "utils/SingleLock.h"
 
 #include <sstream>
 #include <iomanip>

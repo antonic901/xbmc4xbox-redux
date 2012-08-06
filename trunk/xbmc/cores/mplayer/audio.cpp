@@ -29,7 +29,7 @@
 #include "IAudioCallback.h"
 #include "MPlayer.h"
 #include "cores/VideoRenderers/RenderManager.h"
-
+#include "utils/SingleLock.h"
 
 static IDirectSoundRenderer* m_pAudioDecoder = NULL;
 static CCriticalSection m_critAudio;

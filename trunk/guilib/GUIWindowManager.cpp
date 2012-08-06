@@ -30,6 +30,7 @@
 #include "utils/URIUtils.h"
 #include "GUISettings.h"
 #include "Settings.h"
+#include "utils/SingleLock.h"
 
 #ifndef _XBOX
 #include "../Tools/Win32/XBMC_PC.h"

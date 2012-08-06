@@ -27,6 +27,7 @@
 #include "Settings.h"
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "utils/SingleLock.h"
 
 using namespace std;
 

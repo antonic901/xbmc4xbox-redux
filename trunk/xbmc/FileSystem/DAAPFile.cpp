@@ -22,6 +22,7 @@
 #include "DAAPFile.h"
 #include "SectionLoader.h"
 #include <sys/stat.h>
+#include "utils/SingleLock.h"
 
 #include "lib/libXDAAP/private.h"
 

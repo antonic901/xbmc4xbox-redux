@@ -28,6 +28,8 @@
 enum CodecID;
 typedef struct stDVDAudioFrame DVDAudioFrame;
 
+class CSingleLock;
+
 class CDVDAudio
 {
 public:

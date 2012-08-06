@@ -41,8 +41,6 @@
 #endif
 #endif
 
-#include "utils/CriticalSection.h"
-#include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "utils/CharsetConverter.h"
 
