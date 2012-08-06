@@ -26,7 +26,7 @@
 #include "utils/URIUtils.h"
 #include "Picture.h"
 #include "guiImage.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "GUIWindowVideoBase.h"
 #include "GUIWindowVideoFiles.h"
 #include "GUIDialogFileBrowser.h"

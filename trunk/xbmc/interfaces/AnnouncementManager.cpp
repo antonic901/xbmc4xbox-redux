@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "utils/log.h"
 #include "utils/Variant.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "FileItem.h"
 #include "MusicInfoTag.h"
 #include "MusicDatabase.h"

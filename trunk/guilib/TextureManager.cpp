@@ -26,7 +26,7 @@
 #include "PackedTexture.h"
 #include "GraphicContext.h"
 #include "utils/SingleLock.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "Picture.h"
 #include "utils/CharsetConverter.h"
 #include "../xbmc/utils/URIUtils.h"

@@ -29,7 +29,7 @@
 #include <SDL/SDL_thread.h>
 
 #include "PlatformDefs.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 
 struct CXHandle {
 

@@ -1129,7 +1129,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\StreamUtils.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\StringUtils.cpp">
+					RelativePath=".\xbmc\utils\StringUtils.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\strptime.cpp">
@@ -3300,7 +3300,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath="..\..\xbmc\stdint.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\StringUtils.h">
+				RelativePath=".\xbmc\utils\StringUtils.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\SystemInfo.h">

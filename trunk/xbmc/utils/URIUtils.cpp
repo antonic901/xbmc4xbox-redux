@@ -33,7 +33,7 @@
 #include "xbox/network.h"
 #include "Settings.h"
 #include "URL.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;

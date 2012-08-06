@@ -20,7 +20,7 @@
  */
 //-----------------------------------------------------------------------
 //
-//  File:      StringUtils.cpp
+//  File:      utils/StringUtils.cpp
 //
 //  Purpose:   ATL split string utility
 //  Author:    Paul J. Weiss
@@ -31,7 +31,7 @@
 
 
 #include "stdafx.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include <math.h>
 #include <sstream>
 

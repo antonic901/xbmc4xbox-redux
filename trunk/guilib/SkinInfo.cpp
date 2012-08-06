@@ -27,7 +27,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "utils/URIUtils.h"
 #include "Settings.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;

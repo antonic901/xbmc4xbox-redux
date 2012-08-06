@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "SmartPlaylist.h"
 #include "utils/log.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "FileSystem/SmartPlaylistDirectory.h"
 #include "FileSystem/File.h"
 #include "utils/CharsetConverter.h"

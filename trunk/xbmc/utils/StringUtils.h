@@ -20,7 +20,7 @@
  */
 //-----------------------------------------------------------------------
 //
-//  File:      StringUtils.h
+//  File:      utils/StringUtils.h
 //
 //  Purpose:   ATL split string utility
 //  Author:    Paul J. Weiss

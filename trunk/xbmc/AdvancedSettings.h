@@ -24,7 +24,7 @@
 
 #include "tinyXML/tinyxml.h"
 #include "StdString.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 
 struct TVShowRegexp
 {

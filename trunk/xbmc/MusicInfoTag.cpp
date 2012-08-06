@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "MusicInfoTag.h"
 #include "Album.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "AdvancedSettings.h"
 #include "utils/Variant.h"
 

@@ -43,7 +43,7 @@
 #include "RssReader.h"
 #include "PartyModeManager.h"
 #include "Settings.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "Util.h"
 #include "VideoDatabase.h"
 

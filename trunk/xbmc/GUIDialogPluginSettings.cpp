@@ -43,7 +43,7 @@
 #include "GUIDialogOK.h"
 #include "GUIControlGroupList.h"
 #include "GUISettingsSliderControl.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "Settings.h"
 #include "GUIInfoManager.h"
 #include "GUIDialogSelect.h"

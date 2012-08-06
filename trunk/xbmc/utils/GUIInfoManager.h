@@ -27,7 +27,7 @@
  *
  */
 
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "Temperature.h"
 #include "CriticalSection.h"
 #include "IMsgTargetCallback.h"

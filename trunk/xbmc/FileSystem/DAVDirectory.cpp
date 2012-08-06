@@ -26,7 +26,7 @@
 #include "FileItem.h"
 #include "utils/RegExp.h"
 #include "AdvancedSettings.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
 #include "XMLUtils.h"
 #include "utils/strptime.h"

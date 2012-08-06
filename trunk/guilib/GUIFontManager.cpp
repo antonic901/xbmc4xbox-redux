@@ -29,7 +29,7 @@
 #include "XMLUtils.h"
 #include "GuiControlFactory.h"
 #include "../xbmc/utils/URIUtils.h"
-#include "StringUtils.h"
+#include "utils/StringUtils.h"
 #include "../xbmc/FileSystem/File.h"
 #include "../xbmc/FileSystem/SpecialProtocol.h"
 
