@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "DynamicDll.h"
 #include "FileSystem/File.h"
+#include "SectionLoader.h"
 
 using namespace XFILE;
 

@@ -25,6 +25,7 @@
 
 #include "stdafx.h"
 #include "RTVDirectory.h"
+#include "SectionLoader.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 #include "tinyXML/tinyxml.h"

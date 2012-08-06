@@ -28,6 +28,7 @@
 #include "MusicInfoTag.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "SectionLoader.h"
 
 #include <fstream>
 

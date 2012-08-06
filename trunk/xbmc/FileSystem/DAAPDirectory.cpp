@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "DAAPFile.h"
 #include "DAAPDirectory.h"
+#include "SectionLoader.h"
 #include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "FileItem.h"

@@ -22,6 +22,7 @@
 
 #include "stdafx.h"
 #include "XBMSDirectory.h"
+#include "SectionLoader.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"

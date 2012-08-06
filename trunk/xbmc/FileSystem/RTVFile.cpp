@@ -25,6 +25,7 @@
 
 #include "stdafx.h"
 #include "RTVFile.h"
+#include "SectionLoader.h"
 #include "URL.h"
 
 #include <sys/stat.h>

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "modplayer.h"
 #include "Settings.h"
+#include "SectionLoader.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
 

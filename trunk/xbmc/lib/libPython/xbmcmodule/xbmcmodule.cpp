@@ -42,6 +42,7 @@
 #include "TextureManager.h"
 #include "language.h"
 #include "PythonSettings.h"
+#include "SectionLoader.h"
 #include "utils/URIUtils.h"
 
 // include for constants

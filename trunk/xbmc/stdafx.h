@@ -49,7 +49,6 @@
 #include "utils/CharsetConverter.h"
 #include "LangInfo.h"
 
-#include "SectionLoader.h"
 #include "ApplicationMessenger.h"
 
 #ifdef _XBOX

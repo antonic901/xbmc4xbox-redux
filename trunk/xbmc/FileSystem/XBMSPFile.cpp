@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include "XBMSPFile.h"
+#include "SectionLoader.h"
 #include "Util.h"
 #include "FileSystem/Directory.h"
 #include "URL.h"

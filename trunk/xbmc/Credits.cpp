@@ -33,6 +33,7 @@
 #include "SkinInfo.h"
 #include "GUIFont.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "SectionLoader.h"
 
 #include <list>
 
