@@ -23,6 +23,7 @@
 #include "MusicInfoTagLoaderMP4.h"
 #include "Util.h"
 #include "LocalizeStrings.h"
+#include "AutoPtrHandle.h"
 #include "Picture.h"
 #include "id3v1genre.h"
 #include "MusicInfoTag.h"

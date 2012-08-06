@@ -21,6 +21,7 @@
 
 
 #include "stdafx.h"
+#include "AutoPtrHandle.h"
 #include "HDDirectory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

@@ -51,7 +51,6 @@
 
 #include "SectionLoader.h"
 #include "ApplicationMessenger.h"
-#include "utils/AutoPtrHandle.h"
 
 #ifdef _XBOX
 #ifdef QueryPerformanceFrequency

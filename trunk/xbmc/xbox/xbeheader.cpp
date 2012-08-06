@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "AutoPtrHandle.h"
 #include "xbeheader.h"
 #include "Util.h"
 #include "GUISettings.h"
