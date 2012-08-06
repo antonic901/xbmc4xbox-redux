@@ -14,6 +14,7 @@
 #include "stdafx.h"
 #include "XBMCweb.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 
 #include "Util.h"
 #include "PlayListPlayer.h"
