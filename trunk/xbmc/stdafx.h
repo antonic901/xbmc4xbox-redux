@@ -32,8 +32,6 @@
 #include "system.h"
 #include "gui3d.h"
 
-#include "StdString.h"
-
 #ifdef _XBOX
 #if defined(_DEBUG) && defined(_MEMTRACKING)
 #define _CRTDBG_MAP_ALLOC
