@@ -40,7 +40,7 @@ ISO9660
  
 */
 #include "iso9660.h"
-
+#include "utils/CharsetConverter.h"
 #include "DetectDVDType.h"  // for MODE2_DATA_SIZE etc.
 //#define _DEBUG_OUTPUT 1
 

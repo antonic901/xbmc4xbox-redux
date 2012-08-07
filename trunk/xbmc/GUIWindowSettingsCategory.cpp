@@ -83,6 +83,7 @@
 #include "GUIDialogPluginSettings.h"
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

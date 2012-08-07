@@ -46,7 +46,6 @@
 #include "Crc32.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
-#include "utils/SingleLock.h"
 
 #include <sstream>
 

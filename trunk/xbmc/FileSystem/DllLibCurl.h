@@ -20,6 +20,7 @@
  *
  */
 
+#include "utils/SingleLock.h"
 #include "DynamicDll.h"
 
 /* put types of curl in namespace to avoid namespace pollution */

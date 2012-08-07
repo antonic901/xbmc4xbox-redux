@@ -29,6 +29,7 @@
 #include "FileItem.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "utils/CharsetConverter.h"
 
 #include <vector>
 

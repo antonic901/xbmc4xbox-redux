@@ -25,6 +25,7 @@
 #include "URL.h"
 #include "FileSystem/File.h"
 #include "SpecialProtocol.h"
+#include "CharsetConverter.h"
 
 // All values are stored in little-endian byte order in .zip file
 // Use SDL macros to perform byte swapping on big-endian systems

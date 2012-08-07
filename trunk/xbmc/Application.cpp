@@ -85,7 +85,7 @@
 #include "utils/DownloadQueueManager.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
-
+#include "utils/CharsetConverter.h"
 #ifdef HAS_FILESYSTEM
 #include "FileSystem/DAAPFile.h"
 #endif

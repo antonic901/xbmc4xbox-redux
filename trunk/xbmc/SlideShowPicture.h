@@ -20,6 +20,8 @@
  *
  */
 
+#include "utils/SingleLock.h"
+
 typedef uint32_t color_t;
 
 class CSlideShowPic

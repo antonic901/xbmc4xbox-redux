@@ -23,6 +23,7 @@
 #include "Fat32Device.h"
 #include "utils/MemoryUnitManager.h"
 #include "FileItem.h"
+#include "CharsetConverter.h"
 
 namespace XFILE
 {

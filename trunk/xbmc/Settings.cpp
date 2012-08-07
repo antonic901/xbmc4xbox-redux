@@ -56,6 +56,7 @@
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

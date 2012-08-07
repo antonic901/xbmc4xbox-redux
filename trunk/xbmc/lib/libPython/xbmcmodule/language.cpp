@@ -24,6 +24,7 @@
 #include "pyutil.h"
 #include "utils/URIUtils.h"
 #include "GUISettings.h"
+#include "utils/CharsetConverter.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")

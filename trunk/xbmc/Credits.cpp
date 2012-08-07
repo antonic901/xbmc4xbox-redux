@@ -34,6 +34,7 @@
 #include "GUIFont.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "SectionLoader.h"
+#include "utils/CharsetConverter.h"
 
 #include <list>
 

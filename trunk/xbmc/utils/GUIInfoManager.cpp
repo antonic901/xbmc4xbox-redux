@@ -38,6 +38,7 @@
 #include "ButtonTranslator.h"
 #include "MusicDatabase.h"
 #include "utils/AlarmClock.h"
+#include "CharsetConverter.h"
 #ifdef HAS_LCD
 #include "utils/LCD.h"
 #endif

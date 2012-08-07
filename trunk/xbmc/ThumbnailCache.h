@@ -20,6 +20,8 @@
  *
  */
 
+#include "utils/SingleLock.h"
+
 #include <map>
 
 class CThumbnailCache

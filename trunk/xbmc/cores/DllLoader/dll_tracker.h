@@ -22,6 +22,8 @@
  *
  */
 
+#include "utils/SingleLock.h"
+
 #include <list>
 #include <map>
 

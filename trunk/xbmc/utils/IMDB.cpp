@@ -40,6 +40,7 @@
 #include "GUIWindowManager.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "CharsetConverter.h"
 
 using namespace HTML;
 using namespace std;

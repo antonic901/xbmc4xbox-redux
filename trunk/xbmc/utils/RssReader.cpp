@@ -34,7 +34,7 @@
 #endif
 #include "SystemInfo.h"
 #include "GUIRSSControl.h"
-#include "utils/SingleLock.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

@@ -26,6 +26,7 @@
 #include "tinyXML/tinyxml.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
+#include "CharsetConverter.h"
 
 using namespace std;
 

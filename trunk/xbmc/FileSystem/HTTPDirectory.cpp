@@ -28,6 +28,8 @@
 #include "FileItem.h"
 #include "utils/RegExp.h"
 #include "AdvancedSettings.h"
+#include "utils/CriticalSection.h"
+#include "utils/CharsetConverter.h"
 
 using namespace XFILE;
 

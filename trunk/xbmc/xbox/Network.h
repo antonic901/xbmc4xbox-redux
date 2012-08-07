@@ -21,6 +21,8 @@
  *
  */
 
+#include "utils/CriticalSection.h"
+
 struct network_info
 {
   char ip[32];

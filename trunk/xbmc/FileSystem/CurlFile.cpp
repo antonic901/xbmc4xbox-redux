@@ -37,6 +37,7 @@
 #include "DllLibCurl.h"
 #include "ShoutcastFile.h"
 #include "SpecialProtocol.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

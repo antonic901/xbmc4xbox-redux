@@ -58,6 +58,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
+#include "utils/CharsetConverter.h"
 
 #include <set>
 

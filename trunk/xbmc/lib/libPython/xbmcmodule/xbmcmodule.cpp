@@ -46,6 +46,7 @@
 #include "PythonSettings.h"
 #include "SectionLoader.h"
 #include "utils/URIUtils.h"
+#include "CharsetConverter.h"
 
 // include for constants
 #include "pyutil.h"

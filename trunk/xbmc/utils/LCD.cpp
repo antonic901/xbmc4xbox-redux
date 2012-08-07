@@ -23,6 +23,7 @@
 #include "LCD.h"
 #include "Settings.h"
 #include "AdvancedSettings.h"
+#include "CharsetConverter.h"
 
 using namespace std;
 

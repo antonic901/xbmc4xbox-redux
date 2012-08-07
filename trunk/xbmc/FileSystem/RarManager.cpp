@@ -31,6 +31,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "AdvancedSettings.h"
 #include "FileItem.h"
+#include "utils/CharsetConverter.h"
 
 #include <set>
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FatXDevice.h"
 #include "xbox/Undocumented.h"
+#include "utils/CharsetConverter.h"
 
 typedef STRING OBJECT_STRING;
 typedef PSTRING POBJECT_STRING;

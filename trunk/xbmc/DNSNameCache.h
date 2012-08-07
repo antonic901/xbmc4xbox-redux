@@ -22,6 +22,7 @@
  */
 
 #include "StdString.h"
+#include "utils/SingleLock.h"
 
 #include <vector>
 

@@ -37,6 +37,7 @@
 #include "LangInfo.h"
 #include "FileSystem/Directory.h"
 #include "LocalizeStrings.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

@@ -23,6 +23,8 @@
 #include "Util.h"
 #include "URL.h"
 #include "GUISettings.h"
+#include "utils/CharsetConverter.h"
+#include "utils/CriticalSection.h"
 
 #include <sys/stat.h>
 

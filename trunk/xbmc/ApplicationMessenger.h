@@ -20,6 +20,9 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+
+#include "SingleLock.h"
+
 #include <queue>
 
 class CFileItem;

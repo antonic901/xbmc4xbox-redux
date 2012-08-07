@@ -25,7 +25,6 @@
 #include "utils/GUIInfoManager.h"
 #include "AdvancedSettings.h"
 #include "Settings.h"
-#include "utils/SingleLock.h"
 
 using namespace std;
 

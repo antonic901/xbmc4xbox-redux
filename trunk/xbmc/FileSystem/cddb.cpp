@@ -34,6 +34,7 @@
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

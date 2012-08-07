@@ -30,6 +30,8 @@
 #include "URL.h"
 #include "GUISettings.h"
 #include "FileItem.h"
+#include "utils/CharsetConverter.h"
+#include "utils/CriticalSection.h"
 
 using namespace AUTOPTR;
 using namespace XFILE;

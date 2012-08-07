@@ -27,6 +27,7 @@
 #include "AdvancedSettings.h"
 #include "MusicInfoTag.h"
 #include "utils/URIUtils.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

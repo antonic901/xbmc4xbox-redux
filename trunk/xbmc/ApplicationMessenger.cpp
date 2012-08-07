@@ -41,7 +41,6 @@
 #include "FileItem.h"
 #include "GUIDialog.h"
 #include "SectionLoader.h"
-#include "SingleLock.h"
 
 CApplicationMessenger g_applicationMessenger;
 

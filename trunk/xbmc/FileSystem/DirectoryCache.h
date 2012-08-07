@@ -20,6 +20,7 @@
  *
  */
 
+#include "utils/SingleLock.h"
 #include "IDirectory.h"
 #include "Directory.h"
 

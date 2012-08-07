@@ -29,6 +29,7 @@
 #include "cores/dllloader/exports/emu_msvcrt.h"
 #include "AdvancedSettings.h"
 #include "MusicInfoTag.h"
+#include "utils/CharsetConverter.h"
 
 using namespace PLAYLIST;
 using namespace XFILE;

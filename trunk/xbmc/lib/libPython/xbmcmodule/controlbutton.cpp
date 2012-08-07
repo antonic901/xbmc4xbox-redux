@@ -26,6 +26,7 @@
 #include "GUIFontManager.h"
 #include "control.h"
 #include "pyutil.h"
+#include "CharsetConverter.h"
 
 using namespace std;
 

@@ -37,6 +37,7 @@
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "utils/CharsetConverter.h"
 
 using namespace XFILE;
 using namespace XFILE;

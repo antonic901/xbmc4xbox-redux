@@ -23,6 +23,7 @@
 
 #include "XBPyThread.h"
 #include "cores/IPlayer.h"
+#include "utils/SingleLock.h"
 
 extern "C" {
   extern void initxbmc(void);

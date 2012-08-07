@@ -20,6 +20,7 @@
  *
  */
 
+#include "utils/SingleLock.h"
 #include "utils/Thread.h"
 
 namespace PLAYLIST

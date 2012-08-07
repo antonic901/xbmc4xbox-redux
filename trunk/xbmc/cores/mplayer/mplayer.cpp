@@ -19,7 +19,7 @@
 #include "utils/URIUtils.h"
 #include "ApplicationMessenger.h"
 #include "LangInfo.h"
-#include "utils/SingleLock.h"
+#include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;

@@ -42,7 +42,6 @@
 #endif
 
 #include "utils/log.h"
-#include "utils/CharsetConverter.h"
 
 #ifdef _XBOX
 #ifdef QueryPerformanceFrequency

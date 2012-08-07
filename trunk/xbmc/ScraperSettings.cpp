@@ -26,6 +26,7 @@
 #include "FileSystem/CurlFile.h"
 #include "utils/ScraperParser.h"
 #include "utils/ScraperUrl.h"
+#include "utils/CharsetConverter.h"
 
 #include <sstream>
 
