@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "xeniumlcd.h"
 #include "conio.h"
 #include "Settings.h"

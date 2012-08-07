@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "Cdg.h"
 
 CCdg::CCdg()

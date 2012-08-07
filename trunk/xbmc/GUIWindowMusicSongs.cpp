@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowMusicSongs.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

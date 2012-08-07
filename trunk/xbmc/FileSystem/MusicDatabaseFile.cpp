@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "MusicDatabaseFile.h"
 #include "MusicDatabase.h"
 #include "Util.h"

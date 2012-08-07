@@ -20,7 +20,6 @@
  */
 
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "LastFMDirectory.h"
 #include "DirectoryCache.h"

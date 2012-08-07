@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIDialogSelect.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"

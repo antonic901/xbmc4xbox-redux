@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowVideoNav.h"
 #include "GUIWindowVideoFiles.h"
 #include "GUIWindowMusicNav.h"

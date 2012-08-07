@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "URIUtils.h"
 #include "FileItem.h"
 #include "FileSystem/HDDirectory.h"

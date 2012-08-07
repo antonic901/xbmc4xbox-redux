@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
 #include "Settings.h"

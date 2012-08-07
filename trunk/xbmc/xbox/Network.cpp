@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 
 #include "Network.h"
 #ifdef HAS_XBOX_NETWORK

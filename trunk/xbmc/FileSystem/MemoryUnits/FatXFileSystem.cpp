@@ -18,7 +18,6 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "stdafx.h"
 #include "FatXFileSystem.h"
 #include "FatXDevice.h"
 #include "utils/MemoryUnitManager.h"

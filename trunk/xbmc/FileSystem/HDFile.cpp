@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 /*
  * XBMC Media Center

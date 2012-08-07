@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "smartxxlcd.h"
 #include "conio.h"
 #include "utils/SystemInfo.h"

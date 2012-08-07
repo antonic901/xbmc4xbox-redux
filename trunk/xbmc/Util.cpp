@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "Application.h"
 #include "AutoPtrHandle.h"
 #include "GUIWindowVideoBase.h"

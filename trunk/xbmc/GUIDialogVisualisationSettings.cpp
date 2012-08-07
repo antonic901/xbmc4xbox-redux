@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIDialogVisualisationSettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

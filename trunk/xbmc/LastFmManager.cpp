@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "LastFmManager.h"
 #include "Album.h"
 #include "Artist.h"

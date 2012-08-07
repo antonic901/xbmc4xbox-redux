@@ -30,7 +30,7 @@
 //-----------------------------------------------------------------------------
 
 
-#include "stdafx.h"
+#include "system.h"
 #ifdef HAS_GAMEPAD
 #include "XBInputEx.h"
 #endif

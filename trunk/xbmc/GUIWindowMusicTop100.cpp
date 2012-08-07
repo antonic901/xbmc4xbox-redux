@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowMusicTop100.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

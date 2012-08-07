@@ -19,7 +19,6 @@
  *
  */
  
-#include "stdafx.h"
 #include "PixelShaderRenderer.h"
 
 CPixelShaderRenderer::CPixelShaderRenderer(LPDIRECT3DDEVICE8 pDevice)

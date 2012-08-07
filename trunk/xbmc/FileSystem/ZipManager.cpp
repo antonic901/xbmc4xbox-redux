@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "ZipManager.h"
 #include "utils/URIUtils.h"

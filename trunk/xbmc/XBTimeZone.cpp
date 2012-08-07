@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "XBTimeZone.h"
 #include "LangInfo.h"
 #include "utils/log.h"

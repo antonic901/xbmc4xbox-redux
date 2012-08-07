@@ -18,7 +18,8 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "stdafx.h"
+
+#include "system.h"
 #include "ScreenSaverFactory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

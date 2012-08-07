@@ -23,6 +23,8 @@
 
 #include <stdio.h>
 
+#include "system.h"
+
 #define MAX_EMULATED_FILES    50
 #define FILE_WRAPPER_OFFSET   0x00000100
 

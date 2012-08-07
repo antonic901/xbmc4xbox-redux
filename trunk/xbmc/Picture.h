@@ -19,6 +19,8 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+
+#include "system.h"
 #include "DllImageLib.h"
 #include "gui3d.h"
 

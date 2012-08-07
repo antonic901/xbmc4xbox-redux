@@ -30,7 +30,6 @@
 * debugging is set to a max of 10 for release builds (see local.h)
 */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "SMBDirectory.h"
 #include "utils/URIUtils.h"

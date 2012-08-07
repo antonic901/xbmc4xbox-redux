@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "TuxBoxFile.h"
 
 //Reserved for TuxBox Recording!

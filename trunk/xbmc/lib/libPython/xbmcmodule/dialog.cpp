@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "dialog.h"
 #include "lib/libPython/python/Include/Python.h"
 #include "../XBPythonDll.h"

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "YMCodec.h"
 #include "cores/DllLoader/DllLoader.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "window.h"
 #include "dialog.h"
 #include "winxml.h"

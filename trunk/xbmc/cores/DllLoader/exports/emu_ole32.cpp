@@ -18,8 +18,8 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
-#include "stdafx.h"
+
+#include "system.h"
 #include "utils/log.h"
 #include "emu_dummy.h"
 #include "emu_ole32.h"

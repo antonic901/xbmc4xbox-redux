@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "log.h"
 #include <share.h>
 #include "CriticalSection.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "keyboard.h"
 #include "pyutil.h"
 #include "GUIWindowManager.h"

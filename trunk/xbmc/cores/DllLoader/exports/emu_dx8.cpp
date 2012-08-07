@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "emu_dx8.h"
 #include "GraphicContext.h"
 #include "FileSystem/SpecialProtocol.h"

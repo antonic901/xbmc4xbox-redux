@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #define _WCTYPE_INLINE_DEFINED
 #include <process.h>

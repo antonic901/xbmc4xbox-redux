@@ -1,4 +1,4 @@
-#include "StdString.h"
+#include "../../guilib/StdString.h"
 
 class CXBMC_PC
 {

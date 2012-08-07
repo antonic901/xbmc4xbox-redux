@@ -23,6 +23,7 @@
 #pragma once
 #include "xbox/IoSupport.h"
 #include "IFile.h"
+#include "system.h"
 #ifdef _WIN32
 // Ideally we should just be including iso9660.h, but it's not win32-ified at this point,
 // and these are all we need

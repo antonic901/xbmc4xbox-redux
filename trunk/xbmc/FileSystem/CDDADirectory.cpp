@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "CDDADirectory.h"
 #include "DetectDVDType.h"
 #include "MusicDatabase.h"

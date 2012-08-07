@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "WAVcodec.h"
 #ifndef HAS_XBOX_AUDIO
 #include "mmreg.h"

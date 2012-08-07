@@ -22,7 +22,7 @@
 #include "DVDAudioCodecLibDts.h"
 #ifdef USE_LIBDTS_DECODER
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"

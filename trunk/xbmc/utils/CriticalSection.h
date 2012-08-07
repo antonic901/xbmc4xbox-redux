@@ -30,6 +30,8 @@
  *
  */
 
+#include "system.h"
+
 class CCriticalSection
 {
 public:

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "UdpClient.h"
 #include "GraphicContext.h"
 #include "GraphicContext.h"

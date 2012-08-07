@@ -23,7 +23,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "system.h"
 #include "IAudioCallback.h"
 
 #ifdef _DEBUG

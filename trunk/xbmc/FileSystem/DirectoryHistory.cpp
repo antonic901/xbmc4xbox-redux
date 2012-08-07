@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "DirectoryHistory.h"
 #include "utils/URIUtils.h"

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowStartup.h"
 
 CGUIWindowStartup::CGUIWindowStartup(void)

@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "MusicInfoTagLoaderMod.h"
 #ifdef HAS_MIKMOD
 #include "lib/mikxbox/mikmod.h"

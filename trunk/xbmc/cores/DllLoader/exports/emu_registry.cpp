@@ -19,6 +19,7 @@
  *
  */
 
+#include "system.h"
 #ifdef _XBOX
 #include <xtl.h>
 #else

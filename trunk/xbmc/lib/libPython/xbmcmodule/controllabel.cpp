@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "lib/libPython/python/Include/Python.h"
 #include "../XBPythonDll.h"
 #include "GUILabelControl.h"

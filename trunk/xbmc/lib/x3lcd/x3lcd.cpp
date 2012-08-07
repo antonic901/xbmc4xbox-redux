@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "x3lcd.h"
 #include "conio.h"
 #include "Application.h" // for g_application.IsInScreenSaver()

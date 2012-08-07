@@ -22,7 +22,6 @@
 //
 // GeminiServer
 //
-#include "stdafx.h"
 #include "TuxBoxUtil.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

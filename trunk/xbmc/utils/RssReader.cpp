@@ -20,7 +20,7 @@
  */
 
 
-#include "stdafx.h"
+#include "system.h"
 #include "RssReader.h"
 #include "utils/HTMLUtil.h"
 #include "xbox/network.h"

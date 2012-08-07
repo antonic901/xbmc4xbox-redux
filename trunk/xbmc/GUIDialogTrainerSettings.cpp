@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIDialogTrainerSettings.h"
 #include "utils/Trainer.h"
 #include "GUIWindowManager.h"

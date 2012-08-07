@@ -21,6 +21,7 @@
  *
  */
 
+#include "system.h"
 #include "XBApplicationEx.h"
 
 #include "IMsgTargetCallback.h"

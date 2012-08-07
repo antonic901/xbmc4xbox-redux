@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/SystemInfo.h"
 #include "XBVideoConfig.h"
 #include "AlarmClock.h"

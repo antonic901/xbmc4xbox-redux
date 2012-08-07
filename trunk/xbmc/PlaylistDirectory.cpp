@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "PlaylistDirectory.h"
 #include "Settings.h"
 #include "FileSystem/HDDirectory.h"

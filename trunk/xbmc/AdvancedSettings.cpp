@@ -21,7 +21,6 @@
 
 #include <limits.h>
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "AdvancedSettings.h"
 #include "Application.h"

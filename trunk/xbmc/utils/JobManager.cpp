@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "JobManager.h"
 #include <algorithm>
 #include "utils/SingleLock.h"

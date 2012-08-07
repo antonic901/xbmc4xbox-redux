@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "KeyboardLayoutConfiguration.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"

@@ -10,7 +10,7 @@
 /*----------------------------------------------------------------------
 |   includes
 +---------------------------------------------------------------------*/
-#include "stdafx.h"
+#include "system.h"
 #include "IFile.h"
 #include "FileFactory.h"
 #include "utils/log.h"

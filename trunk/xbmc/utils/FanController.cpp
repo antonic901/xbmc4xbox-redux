@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include <ConIo.h>
 #include "FanController.h"
 #include "xbox/Undocumented.h"

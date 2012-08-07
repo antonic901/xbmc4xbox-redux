@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "GUIDialogVideoScan.h"
 #include "GUIProgressControl.h"

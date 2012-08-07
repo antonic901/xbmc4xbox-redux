@@ -20,7 +20,7 @@
  */
 
 
-#include "stdafx.h"
+#include "system.h"
 #include "StackDirectory.h"
 #include "utils/log.h"
 #include "Util.h"

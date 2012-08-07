@@ -12,6 +12,7 @@
 #define __XBOX_INTERNAL_UNDOCUMENTE_H__
 #pragma once
 #include <pshpack4.h>
+#include "system.h"
 
 // Do extern "C" for C++
 #if defined(__cplusplus) && !defined(XBOXINTERNAL_NO_EXTERN_C)

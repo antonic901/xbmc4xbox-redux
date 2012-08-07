@@ -18,7 +18,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "GUIWindowGameSaves.h"
 #include "Util.h"

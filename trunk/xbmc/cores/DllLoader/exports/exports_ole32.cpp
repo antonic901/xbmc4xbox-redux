@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "../DllLoader.h"
 #include "emu_ole32.h"
 

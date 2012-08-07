@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "PlayListWPL.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

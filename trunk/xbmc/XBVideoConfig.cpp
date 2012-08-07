@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "XBVideoConfig.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE

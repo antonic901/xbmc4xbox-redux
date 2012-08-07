@@ -28,7 +28,6 @@
 //
 // ******************************************************
 
-#include "stdafx.h"
 #include "FilterFlickerPatch.h"
 #include "FileSystem/File.h"
 #include "GUISettings.h"

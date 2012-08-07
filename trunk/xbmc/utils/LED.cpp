@@ -44,7 +44,6 @@ XBOX Front LED control
 OFF/Green/Red/Orange/Cycle
 10.11.2004 GeminiServer
 */
-#include "stdafx.h"
 #include "LED.h"
 #include "SystemInfo.h"
 #include "xbox/XKUtils.h"

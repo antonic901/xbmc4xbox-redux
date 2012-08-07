@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "SndtrkDirectory.h"
 #include "xbox/IoSupport.h"
 #include "FileItem.h"

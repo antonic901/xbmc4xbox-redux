@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "system.h"
 #include <stdio.h>
 #include "XBInputEx.h"
 #include "Settings.h"

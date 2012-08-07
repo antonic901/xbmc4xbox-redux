@@ -19,7 +19,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "stdafx.h"
+#include "system.h"
 #include <vector>
 #include "MediaSource.h"
 #ifdef HAS_XBOX_HARDWARE

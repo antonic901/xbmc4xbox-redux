@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowSettingsUICalibration.h"
 #include "GUIMoverControl.h"
 #include "Application.h"

@@ -20,7 +20,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowHome.h"
 #include "utils/JobManager.h"
 #include "utils/RecentlyAddedJob.h"

@@ -1,11 +1,8 @@
-#include "stdafx.h"
 #include "Xenium.h"
 #include "XeniumSPI.h"
 
 #define SPI0 0
 #define SPI1 1
-
-
 
 void Xenium::OutputByte(unsigned char data)
 {

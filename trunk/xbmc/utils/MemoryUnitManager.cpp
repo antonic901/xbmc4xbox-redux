@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 
 #include "xbox/Undocumented.h"
 #include "MemoryUnitManager.h"

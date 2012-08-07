@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "ProgramDatabase.h"
 #include "Util.h"
 #include "xbox/xbeheader.h"

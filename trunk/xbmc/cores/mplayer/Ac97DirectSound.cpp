@@ -19,7 +19,6 @@
 */
 
 
-#include "stdafx.h"
 #include "utils/log.h"
 #include "Settings.h"
 #include "Ac97DirectSound.h"

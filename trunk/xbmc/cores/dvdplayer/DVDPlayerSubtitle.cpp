@@ -19,7 +19,6 @@
  *
  */
  
-#include "stdafx.h"
 #include "utils/log.h"
 #include "DVDPlayerSubtitle.h"
 #include "DVDCodecs/Overlay/DVDOverlay.h"

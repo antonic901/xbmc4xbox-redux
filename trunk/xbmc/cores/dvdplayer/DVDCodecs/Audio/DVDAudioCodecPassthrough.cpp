@@ -19,7 +19,7 @@
  *
  */
  
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "DVDAudioCodecPassthrough.h"
 #if defined(USE_LIBDTS_DECODER) || defined(USE_LIBA52_DECODER)

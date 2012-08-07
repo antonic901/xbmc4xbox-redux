@@ -18,7 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "Fat32FileSystem.h"
 #include "Fat32Device.h"

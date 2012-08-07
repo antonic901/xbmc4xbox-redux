@@ -22,6 +22,7 @@
  *
  */
 
+#include "system.h"
 #include <string>
 #ifdef _LINUX
 #include "linux/PlatformDefs.h"

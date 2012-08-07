@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "AnnouncementManager.h"
 #include "utils/SingleLock.h"
 #include <stdio.h>

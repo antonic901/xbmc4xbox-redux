@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "system.h"
 #include "AutoPtrHandle.h"
 #include "xbeheader.h"
 #include "Util.h"

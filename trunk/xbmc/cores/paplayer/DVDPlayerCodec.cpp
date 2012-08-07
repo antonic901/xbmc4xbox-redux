@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "DVDPlayerCodec.h"
 #include "Util.h"
 

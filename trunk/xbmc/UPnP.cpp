@@ -21,7 +21,7 @@
 */
 
 
-#include "stdafx.h"
+#include "system.h"
 #include "Util.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"

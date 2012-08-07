@@ -21,7 +21,7 @@
 */
 
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "Util.h"
 #include "UPnPDirectory.h"

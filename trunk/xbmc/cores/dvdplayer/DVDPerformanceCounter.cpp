@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "DVDPerformanceCounter.h"
 #include "DVDMessageQueue.h"
 

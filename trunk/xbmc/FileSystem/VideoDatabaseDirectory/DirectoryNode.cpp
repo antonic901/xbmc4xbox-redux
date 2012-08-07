@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "DirectoryNode.h"
 #include "utils/URIUtils.h"
 #include "QueryParams.h"

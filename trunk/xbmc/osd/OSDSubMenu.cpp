@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "OSDSubMenu.h"
 #include "GUIFontManager.h"
 

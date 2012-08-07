@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowScripts.h"
 #include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"

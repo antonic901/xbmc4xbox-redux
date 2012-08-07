@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "memutil.h"
 #ifdef _XBOX
 #include "xbox/Undocumented.h"

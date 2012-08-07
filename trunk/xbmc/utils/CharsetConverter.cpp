@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "CharsetConverter.h"
 #include "Util.h"
 #include "ArabicShaping.h"

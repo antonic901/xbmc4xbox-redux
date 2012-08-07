@@ -18,7 +18,6 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "stdafx.h"
 #include "PluginSettings.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"

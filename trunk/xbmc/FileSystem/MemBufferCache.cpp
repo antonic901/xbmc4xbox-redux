@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "MemBufferCache.h"
 #include "utils/log.h"
 #include "utils/SingleLock.h"

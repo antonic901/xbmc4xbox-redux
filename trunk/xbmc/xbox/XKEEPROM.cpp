@@ -60,7 +60,6 @@ By: UNDEAD [team-assembly]
 Reason: Prepared for Public Release
 --------------------------------------------------------------------------------------------------------*/
 
-#include "stdafx.h"
 #include "xkeeprom.h"
 #include <stdio.h>
 #include <string>

@@ -27,7 +27,6 @@
 //   - xbfilezilla : doesnt support section loading yet
 //
 
-#include "stdafx.h"
 #include "Application.h"
 #include "AdvancedSettings.h"
 

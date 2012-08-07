@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "LCDFactory.h"
 #include "lib/smartxx/smartxxLCD.h"
 #include "lib/libXenium/XeniumLCD.h"

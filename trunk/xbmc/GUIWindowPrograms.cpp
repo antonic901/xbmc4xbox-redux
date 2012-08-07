@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowPrograms.h"
 #include "Util.h"
 #include "Shortcut.h"

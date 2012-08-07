@@ -19,7 +19,7 @@
  *
  */
  
-#include "stdafx.h"
+#include "system.h"
 #include "../DllLoader.h"
 #ifdef HAS_XFONT
 #include <xfont.h>

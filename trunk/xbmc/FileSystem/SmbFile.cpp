@@ -23,7 +23,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "SmbFile.h"
 #include "PasswordManager.h"

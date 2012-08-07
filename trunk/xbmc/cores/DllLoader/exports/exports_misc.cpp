@@ -18,8 +18,8 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
-#include "stdafx.h"
+
+#include "system.h"
 #include "../DllLoader.h"
 #include "emu_misc.h"
 #include "emu_msvcrt.h"

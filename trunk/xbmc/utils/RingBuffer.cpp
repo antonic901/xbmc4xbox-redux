@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "RingBuffer.h"
 #include "utils/SingleLock.h"
 

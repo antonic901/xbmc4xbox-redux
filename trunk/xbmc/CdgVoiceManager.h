@@ -22,6 +22,7 @@
  *
  */
 
+#include "system.h"
 #include <xvoice.h>
 #include "utils/SingleLock.h"
 

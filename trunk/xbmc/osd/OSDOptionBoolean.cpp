@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "OSDOptionBoolean.h"
 #include "GUIFontManager.h"
 

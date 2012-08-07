@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "PlayListPlayer.h"
 #include "PlayListFactory.h"
 #include "Application.h"

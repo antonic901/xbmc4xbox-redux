@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "interfaces/Builtins.h"
 #include "Autorun.h"
 #include "Application.h"

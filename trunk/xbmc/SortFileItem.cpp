@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "AdvancedSettings.h"
 #include "SortFileItem.h"
 #include "VideoInfoTag.h"

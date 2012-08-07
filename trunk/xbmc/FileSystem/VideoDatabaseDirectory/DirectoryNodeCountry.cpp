@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "DirectoryNodeCountry.h"
 #include "QueryParams.h"
 #include "VideoDatabase.h"

@@ -60,6 +60,8 @@ Reason: Prepared for Public Release
 #endif
 #endif
 
+#include "system.h"
+
 #ifndef FILENAME_MAX
  #define FILENAME_MAX 260
 #endif

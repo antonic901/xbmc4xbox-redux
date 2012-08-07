@@ -20,7 +20,6 @@
  */
 
 
-#include "stdafx.h"
 #include "RarDirectory.h"
 #include "RarManager.h"
 #include "utils/log.h"

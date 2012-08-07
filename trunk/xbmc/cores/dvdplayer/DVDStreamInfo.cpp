@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 
 #include "DVDStreamInfo.h"
 

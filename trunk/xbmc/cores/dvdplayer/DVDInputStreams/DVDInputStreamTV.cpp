@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "DVDInputStreamTV.h"
 #include "FileSystem/MythFile.h"
 #include "Filesystem/SlingboxFile.h"

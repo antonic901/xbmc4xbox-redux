@@ -21,6 +21,7 @@
  *
  */
 
+#include "system.h"
 #include "DVDOverlay.h"
 
 // VC_ messages, messages can be combined

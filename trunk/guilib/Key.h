@@ -29,6 +29,7 @@
  *
  */
 
+#include "system.h"
 #include "XBIRRemote.h"
 #include "StdString.h"
 

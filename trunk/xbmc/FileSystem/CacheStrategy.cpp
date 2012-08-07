@@ -20,7 +20,7 @@
  */
 
 
-#include "stdafx.h"
+#include "system.h"
 #include "CacheStrategy.h"
 #ifdef _LINUX
 #include "PlatformInclude.h"

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "ViewDatabase.h"
 #include "utils/URIUtils.h"
 #include "ViewState.h"

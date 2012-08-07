@@ -21,7 +21,6 @@
 
 // trainer loading generously donated by team xored - thanks!
 
-#include "stdafx.h"
 #include "Trainer.h"
 #include "FileSystem/File.h"
 #include "utils/URIUtils.h"

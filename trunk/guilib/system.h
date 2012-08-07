@@ -22,6 +22,8 @@
  */
 
 #ifdef _XBOX
+#define DEBUG_MOUSE
+#define DEBUG_KEYBOARD
 #include <xtl.h>
 #include <xvoice.h>
 #include <xonline.h>
@@ -118,6 +120,35 @@
 #undef USE_LIBFAAD
 #undef USE_LIBDTS_DECODER
 #undef USE_LIBA52_DECODER
+
+#define XBMC_MAX_PATH 1024 // normal max path is 260, but smb shares and the like can be longer
+
+#define DEBUG_MOUSE
+#define DEBUG_KEYBOARD
+
+#ifdef _XBOX
+#if defined(_DEBUG) && defined(_MEMTRACKING)
+#define _CRTDBG_MAP_ALLOC
+#include <FStream>
+#include <stdlib.h>
+#include <crtdbg.h>
+#define new new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+#endif
+
+#ifdef _XBOX
+#ifdef QueryPerformanceFrequency
+#undef QueryPerformanceFrequency
+#endif
+WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency);
+#define QueryPerformanceFrequency(a) QueryPerformanceFrequencyXbox(a)
+#else
+#undef GetFreeSpace
+#endif
+
+#define SAFE_DELETE(p)       { delete (p);     (p)=NULL; }
+#define SAFE_DELETE_ARRAY(p) { delete[] (p);   (p)=NULL; }
+#define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
 #include "../xbmc/xbox/PlatformInclude.h"
 

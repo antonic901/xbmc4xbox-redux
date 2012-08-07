@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "system.h"
 #ifdef SPYCE_SUPPORT
 #include "SpyceModule.h"
 

@@ -27,7 +27,6 @@
  **********************************************************************/
 
 
-#include "stdafx.h"
 #include "dataset.h"
 #include "utils/log.h"
 

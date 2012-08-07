@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "HDHomeRunDirectory.h"
 #include "URL.h"
 #include "FileItem.h"

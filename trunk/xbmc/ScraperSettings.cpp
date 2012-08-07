@@ -18,7 +18,6 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "stdafx.h"
 #include "XMLUtils.h"
 #include "ScraperSettings.h"
 #include "FileSystem/File.h"

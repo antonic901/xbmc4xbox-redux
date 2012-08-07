@@ -20,7 +20,6 @@
  */
 
 
-#include "stdafx.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "MusicFileDirectory.h"

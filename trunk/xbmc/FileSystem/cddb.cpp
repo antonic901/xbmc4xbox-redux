@@ -27,7 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "stdafx.h"
+#include "system.h"
 #include "utils/log.h"
 #include "cddb.h"
 #include "DNSNameCache.h"

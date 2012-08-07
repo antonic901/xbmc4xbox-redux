@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "FileSystem/PluginDirectory.h"
 #include "listitem.h"
 #include "PluginSettings.h"

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "utils/log.h"
 #include "FatXDevice.h"
 #include "xbox/Undocumented.h"

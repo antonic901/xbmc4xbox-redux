@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "PythonSettings.h"
 #include "pyutil.h"
 #include "GUIDialogPluginSettings.h"

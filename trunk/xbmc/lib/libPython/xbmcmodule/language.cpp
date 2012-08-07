@@ -19,7 +19,7 @@
  *
  */
 
-#include "stdafx.h"
+#include "system.h"
 #include "language.h"
 #include "pyutil.h"
 #include "utils/URIUtils.h"

@@ -19,7 +19,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "GUIWindowPictures.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

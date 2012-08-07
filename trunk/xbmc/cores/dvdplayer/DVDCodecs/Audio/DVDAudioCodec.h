@@ -21,6 +21,8 @@
  *
  */
 
+#include "system.h"
+
 #include <vector>
 
 enum CodecID;
