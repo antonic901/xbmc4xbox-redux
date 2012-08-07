@@ -24,6 +24,7 @@
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

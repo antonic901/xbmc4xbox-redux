@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "emu_dummy.h"
 
 extern "C" void not_implement( LPCSTR debuginfo)

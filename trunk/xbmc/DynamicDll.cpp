@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DynamicDll.h"
 #include "FileSystem/File.h"
 #include "SectionLoader.h"

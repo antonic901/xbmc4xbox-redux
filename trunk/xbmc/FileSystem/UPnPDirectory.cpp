@@ -22,6 +22,7 @@
 
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "Util.h"
 #include "UPnPDirectory.h"
 #include "UPnP.h"

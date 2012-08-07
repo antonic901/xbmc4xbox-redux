@@ -35,6 +35,7 @@
 #include "Artist.h"
 #include "Settings.h"
 #include <vector>
+#include "utils/log.h"
 
 using namespace XFILE;
 using namespace std;

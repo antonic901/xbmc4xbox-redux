@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "ComboRenderer.h"
 #include "Application.h"
 #include "Settings.h"

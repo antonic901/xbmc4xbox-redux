@@ -23,6 +23,7 @@
 #ifdef USE_LIBA52_DECODER
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "AdvancedSettings.h"
 #include "GUISettings.h"
 #include "DVDStreamInfo.h"

@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "GUIPassword.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"

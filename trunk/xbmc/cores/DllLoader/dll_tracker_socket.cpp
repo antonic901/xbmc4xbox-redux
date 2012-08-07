@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "dll_tracker_socket.h"
 #include "DllLoader.h"
 #include "dll_tracker.h"

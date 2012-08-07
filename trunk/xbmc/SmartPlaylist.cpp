@@ -33,6 +33,7 @@
 #include "utils/URIUtils.h"
 #include "XBDateTime.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

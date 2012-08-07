@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "Fat32FileSystem.h"
 #include "Fat32Device.h"
 #include "utils/MemoryUnitManager.h"

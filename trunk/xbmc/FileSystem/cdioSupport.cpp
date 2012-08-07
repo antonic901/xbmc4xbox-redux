@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "cdioSupport.h"
 #include "lib/libcdio/cdio.h"
 #include "lib/libcdio/logging.h"

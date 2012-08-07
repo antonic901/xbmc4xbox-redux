@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "SPCCodec.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "MusicInfoTagLoaderSPC.h"

@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DllLoaderContainer.h"
 #include "DllLoader.h"
 #include "dll_tracker.h" // for python unload hack

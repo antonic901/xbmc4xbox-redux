@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "VGMCodec.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

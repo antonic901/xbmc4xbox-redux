@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "TimidityCodec.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "FileSystem/File.h"

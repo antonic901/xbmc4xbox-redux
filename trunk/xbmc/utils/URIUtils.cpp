@@ -34,6 +34,7 @@
 #include "Settings.h"
 #include "URL.h"
 #include "utils/StringUtils.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

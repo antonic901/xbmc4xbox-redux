@@ -25,6 +25,7 @@
 #include "Stopwatch.h"
 #include "CriticalSection.h"
 #include "Thread.h"
+#include "utils/log.h"
 
 #include <map>
 

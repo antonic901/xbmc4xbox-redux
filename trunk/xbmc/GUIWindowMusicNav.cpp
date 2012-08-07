@@ -49,6 +49,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "ApplicationMessenger.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

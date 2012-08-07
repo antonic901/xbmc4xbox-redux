@@ -27,6 +27,8 @@
 #include "FileItem.h"
 #include "FileSystem/StackDirectory.h"
 #include "utils/URIUtils.h"
+#include "utils/log.h"
+
 #include <sys\stat.h>
 
 using namespace std;

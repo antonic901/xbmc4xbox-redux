@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "File.h"
 #include "FileFactory.h"
 #include "Application.h"

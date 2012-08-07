@@ -34,6 +34,8 @@
 #include "ButtonTranslator.h"
 #include "SingleLock.h"
 #include "GUIAudioManager.h"
+#include "utils/log.h"
+
 #include <map>
 #include <queue>
 

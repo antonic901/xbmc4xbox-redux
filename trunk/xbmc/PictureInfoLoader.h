@@ -20,6 +20,7 @@
  *
  */
 #include "BackgroundInfoLoader.h"
+#include "StdString.h"
 
 class CPictureInfoLoader : public CBackgroundInfoLoader
 {

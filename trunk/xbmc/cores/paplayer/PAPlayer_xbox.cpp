@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "paplayer.h"
 #include "CodecFactory.h"
 #include "utils/GUIInfoManager.h"

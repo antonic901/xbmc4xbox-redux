@@ -32,6 +32,7 @@
 #include "listitem.h"
 #include "FileItem.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 using namespace MUSIC_INFO;
 

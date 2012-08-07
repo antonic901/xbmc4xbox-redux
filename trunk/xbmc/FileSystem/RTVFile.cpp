@@ -24,6 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "RTVFile.h"
 #include "SectionLoader.h"
 #include "URL.h"

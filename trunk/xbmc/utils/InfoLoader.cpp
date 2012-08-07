@@ -26,6 +26,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 CBackgroundLoader::CBackgroundLoader(CInfoLoader *callback) : CThread()
 {

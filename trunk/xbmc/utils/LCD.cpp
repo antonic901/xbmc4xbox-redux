@@ -24,6 +24,7 @@
 #include "Settings.h"
 #include "AdvancedSettings.h"
 #include "CharsetConverter.h"
+#include "utils/log.h"
 
 using namespace std;
 

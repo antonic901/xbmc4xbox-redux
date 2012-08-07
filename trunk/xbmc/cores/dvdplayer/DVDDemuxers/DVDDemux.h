@@ -21,6 +21,8 @@
  *
  */
 
+#include "StdString.h"
+
 class CDVDInputStream;
 enum CodecID;
 enum AVDiscard;

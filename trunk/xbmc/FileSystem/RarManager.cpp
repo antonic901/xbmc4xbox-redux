@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "RarManager.h"
 #include "lib/UnrarXLib/rar.hpp"
 #include "Util.h"

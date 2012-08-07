@@ -25,6 +25,7 @@
 #include "utils/URIUtils.h"
 #include "FileSystem/CurlFile.h"
 #include "tinyXML/tinyxml.h"
+#include "utils/log.h"
 
 using namespace std;
 

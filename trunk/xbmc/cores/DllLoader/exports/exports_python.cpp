@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include <io.h>
 #include <direct.h>
 #include <sys/stat.h>

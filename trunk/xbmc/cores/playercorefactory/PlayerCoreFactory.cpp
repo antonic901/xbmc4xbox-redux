@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "PlayerCoreFactory.h"
 #include "../dvdplayer/DVDPlayer.h"
 #ifdef HAS_XBOX_HARDWARE

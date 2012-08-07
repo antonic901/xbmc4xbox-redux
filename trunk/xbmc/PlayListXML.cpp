@@ -34,6 +34,7 @@
 
 #include "Settings.h"
 #include "MusicInfoTag.h"
+#include "utils/log.h"
 
 using namespace PLAYLIST;
 using namespace XFILE;

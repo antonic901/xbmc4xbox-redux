@@ -38,6 +38,7 @@
 #include "FileSystem/File.h"
 #include "PlayList.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 #define CONTROL_BTNVIEWASICONS      2
 #define CONTROL_BTNSORTBY           3

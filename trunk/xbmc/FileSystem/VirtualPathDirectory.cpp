@@ -21,6 +21,7 @@
 
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "VirtualPathDirectory.h"
 #include "Directory.h"
 #include "Settings.h"

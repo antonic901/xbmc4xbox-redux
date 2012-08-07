@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "emu_dummy.h"
 #include "emu_ole32.h"
 #if defined(HAS_VIDEO_PLAYBACK) && defined(HAS_XBOX_HARDWARE)

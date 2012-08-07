@@ -31,6 +31,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "SMBDirectory.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"

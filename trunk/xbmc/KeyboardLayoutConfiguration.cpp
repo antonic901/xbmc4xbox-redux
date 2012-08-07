@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "KeyboardLayoutConfiguration.h"
 #include "utils/CharsetConverter.h"
+#include "utils/log.h"
 
 // Comment OUT, if not really debugging!!!
 //#define DEBUG_KEYBOARD_GETCHAR

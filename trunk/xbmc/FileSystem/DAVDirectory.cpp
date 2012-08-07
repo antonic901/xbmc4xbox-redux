@@ -31,6 +31,7 @@
 #include "XMLUtils.h"
 #include "utils/strptime.h"
 #include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 

@@ -29,6 +29,7 @@
 #include "GUIUserMessages.h"
 #include "GUIDialogOK.h"
 #include "PlayList.h"
+#include "utils/log.h"
 
 using namespace PLAYLIST;
 

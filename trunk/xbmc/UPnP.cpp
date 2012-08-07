@@ -53,6 +53,7 @@
 #include "utils/GUIInfoManager.h"
 #include "utils/md5.h"
 #include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

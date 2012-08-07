@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "FlacTag.h"
 #include "Util.h"
 #include "Picture.h"

@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "GUISettings.h"
 #include "DVDPlayerAudio.h"
 #include "DVDPlayer.h"

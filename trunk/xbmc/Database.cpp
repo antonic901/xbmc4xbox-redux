@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "AutoPtrHandle.h"
 #include "Database.h"
 #include "utils/URIUtils.h"

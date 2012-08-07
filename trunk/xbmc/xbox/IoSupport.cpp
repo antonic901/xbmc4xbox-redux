@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "IoSupport.h"
 #include "Settings.h"
+#include "utils/log.h"
 #ifdef HAS_UNDOCUMENTED
 #ifdef _XBOX
 #include "Undocumented.h"

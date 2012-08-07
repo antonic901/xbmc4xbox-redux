@@ -21,6 +21,7 @@
  *
  */
 
+#include "StdString.h"
 #include "../xbmc/xbox/PlatformDefs.h"
 
 // forward

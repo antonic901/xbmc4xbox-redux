@@ -23,6 +23,7 @@
 #include "ViewDatabase.h"
 #include "utils/URIUtils.h"
 #include "ViewState.h"
+#include "utils/log.h"
 
 //********************************************************************************************************************************
 CViewDatabase::CViewDatabase(void)

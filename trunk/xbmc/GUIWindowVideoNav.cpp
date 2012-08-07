@@ -51,6 +51,7 @@
 #include "MediaManager.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;

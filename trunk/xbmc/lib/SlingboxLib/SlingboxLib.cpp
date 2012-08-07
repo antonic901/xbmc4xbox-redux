@@ -17,6 +17,7 @@
 //
 
 #include "stdafx.h"
+#include <stdio.h>
 #include "SlingboxLib.h"
 
 extern "C" {

@@ -35,6 +35,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/Directory.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace MEDIA_DETECT;
 

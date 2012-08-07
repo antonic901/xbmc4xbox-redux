@@ -21,6 +21,7 @@
 
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "TuxBoxDirectory.h"
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"

@@ -21,6 +21,8 @@
  *
  */
 
+#include "StdString.h"
+
 #include <vector>
 
 #ifdef __GNUC__

@@ -50,6 +50,7 @@ OFF/Green/Red/Orange/Cycle
 #include "xbox/XKUtils.h"
 #include "LCD.h"
 #include "GUISettings.h"
+#include "utils/log.h"
 
 #include <conio.h>
 

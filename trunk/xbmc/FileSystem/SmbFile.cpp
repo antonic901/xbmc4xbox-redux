@@ -24,6 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "SmbFile.h"
 #include "PasswordManager.h"
 #include "SMBDirectory.h"

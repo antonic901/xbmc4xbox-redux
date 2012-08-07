@@ -21,7 +21,7 @@
  *
  */
 
-#include "SingleLock.h"
+#include "utils/SingleLock.h"
 
 #include <queue>
 

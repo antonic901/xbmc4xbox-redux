@@ -25,6 +25,7 @@
 #include "utils/GUIInfoManager.h"
 #include "AdvancedSettings.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 using namespace std;
 

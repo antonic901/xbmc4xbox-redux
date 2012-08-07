@@ -21,6 +21,7 @@
 
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "MultiPathDirectory.h"
 #include "Directory.h"
 #include "Util.h"

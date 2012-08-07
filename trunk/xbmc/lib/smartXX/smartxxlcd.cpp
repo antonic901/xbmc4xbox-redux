@@ -7,6 +7,7 @@
 #include "Application.h" // for g_application.IsInScreenSaver()
 #include "utils/LED.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 #include <conio.h>
 

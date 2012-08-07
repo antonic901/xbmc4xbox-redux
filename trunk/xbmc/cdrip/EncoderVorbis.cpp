@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "EncoderVorbis.h"
 #include "GUISettings.h"
 

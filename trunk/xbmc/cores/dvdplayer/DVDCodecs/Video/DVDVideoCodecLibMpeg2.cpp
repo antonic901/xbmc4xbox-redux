@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DVDVideoCodecLibMpeg2.h"
 #include "DVDClock.h"
 #include "DVDStreamInfo.h"

@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "interfaces/Builtins.h"
 #include "GUIWindowSettingsCategory.h"
 #include "Application.h"

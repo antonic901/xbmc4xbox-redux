@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "CDDAFile.h"
 #include <sys/stat.h>
 #include "utils/URIUtils.h"

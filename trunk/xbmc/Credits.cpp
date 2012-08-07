@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #define _WCTYPE_INLINE_DEFINED
 #include <process.h>
 #include "GUIFontManager.h"

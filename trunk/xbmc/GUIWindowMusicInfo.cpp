@@ -40,6 +40,7 @@
 #include "utils/AsyncFileCopy.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 

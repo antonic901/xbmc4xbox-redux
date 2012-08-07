@@ -55,6 +55,7 @@
 #include "AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 #include "SkinInfo.h"
 

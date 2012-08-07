@@ -27,6 +27,7 @@
 #include "FileItem.h"
 #include "Crc32.h"
 #include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 

@@ -25,6 +25,7 @@
 #include "DetectDVDType.h"
 #include "MusicInfoTag.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 using namespace MEDIA_DETECT;
 using namespace MUSIC_INFO;

@@ -3,6 +3,7 @@
 #include "xeniumlcd.h"
 #include "conio.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 #define SCROLL_SPEED_IN_MSEC 250
 

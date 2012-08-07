@@ -30,9 +30,12 @@
 #include "ButtonTranslator.h"
 #include "GraphicContext.h"
 #include "Key.h"
+#include "FileSystem/File.h"
+#include "utils/log.h"
+
 #include <map>
 #include <queue>
-#include "FileSystem/File.h"
+
 
 using namespace EVENTCLIENT;
 using namespace EVENTPACKET;

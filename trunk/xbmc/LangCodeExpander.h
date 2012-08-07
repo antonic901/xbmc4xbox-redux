@@ -20,6 +20,7 @@
  *
  */
 
+#include "StdString.h"
 #include "tinyXml/TinyXML.h"
 #include <map>
 

@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "HTTPDirectory.h"
 #include "URL.h"
 #include "utils/URIUtils.h"

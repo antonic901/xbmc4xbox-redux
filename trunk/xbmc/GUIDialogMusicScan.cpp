@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "GUIDialogMusicScan.h"
 #include "GUIProgressControl.h"
 #include "Application.h"

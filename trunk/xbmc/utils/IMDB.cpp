@@ -41,6 +41,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "CharsetConverter.h"
+#include "utils/log.h"
 
 using namespace HTML;
 using namespace std;

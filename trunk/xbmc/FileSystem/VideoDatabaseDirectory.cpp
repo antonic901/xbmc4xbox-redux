@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "VideoDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "VideoDatabaseDirectory/QueryParams.h"

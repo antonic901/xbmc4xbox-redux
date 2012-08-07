@@ -47,6 +47,7 @@
 #include "SectionLoader.h"
 #include "utils/URIUtils.h"
 #include "CharsetConverter.h"
+#include "utils/log.h"
 
 // include for constants
 #include "pyutil.h"

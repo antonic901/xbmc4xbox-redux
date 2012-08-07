@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "MP3codec.h"
 #include "FileItem.h"
 

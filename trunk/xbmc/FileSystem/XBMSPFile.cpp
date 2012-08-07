@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "XBMSPFile.h"
 #include "SectionLoader.h"
 #include "Util.h"

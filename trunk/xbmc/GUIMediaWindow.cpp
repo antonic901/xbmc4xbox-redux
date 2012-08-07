@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "GUIMediaWindow.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

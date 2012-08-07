@@ -26,6 +26,7 @@
 #include "GUISettings.h"
 #include "LangInfo.h"
 #include "utils/SingleLock.h"
+#include "utils/log.h"
 
 #ifndef _LINUX
 #include "lib/libiconv/iconv.h"

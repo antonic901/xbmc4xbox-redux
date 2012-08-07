@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "FileSystem/File.h"
 #include "Favourites.h"
 #include "Util.h"

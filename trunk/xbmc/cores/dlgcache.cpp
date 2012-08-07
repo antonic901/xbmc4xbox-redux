@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "dlgcache.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"

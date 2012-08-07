@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include <stdio.h>
 //#include <xobjbase.h>
 #ifndef _XBOX

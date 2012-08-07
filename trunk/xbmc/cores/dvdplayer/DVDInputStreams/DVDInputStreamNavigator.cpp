@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DVDInputStreamNavigator.h"
 #include "LangCodeExpander.h"
 #include "DVDDemuxSPU.h"

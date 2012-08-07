@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DVDFactorySubtitle.h"
 
 #include "DVDSubtitleStream.h"

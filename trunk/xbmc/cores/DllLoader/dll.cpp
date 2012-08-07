@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "dll.h"
 #include "DllLoader.h"
 #include "DllLoaderContainer.h"

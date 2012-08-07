@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DllLibCurl.h"
 #include "TimeUtils.h"
 

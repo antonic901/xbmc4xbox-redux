@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "XBInputEx.h"
 #include "Settings.h"
-
+#include "utils/log.h"
 
 //#define REMOTE_DEBUG 1
 #define IR_REMOTE_MIN_COUNTER 61

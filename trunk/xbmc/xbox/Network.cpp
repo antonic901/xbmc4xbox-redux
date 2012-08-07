@@ -34,6 +34,7 @@
 #include "ApplicationMessenger.h"
 #include "utils/RssReader.h"
 #include "utils/Weather.h"
+#include "utils/log.h"
 
 // global network variable
 CNetwork g_network;

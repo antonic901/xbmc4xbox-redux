@@ -23,6 +23,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/Directory.h"
+#include "utils/log.h"
 
 CScriptSettings::CScriptSettings()
 {

@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include "XBAudioConfig.h"
+#include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #endif

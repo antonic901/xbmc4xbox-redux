@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "AC3Codec.h"
 
 #ifdef HAS_AC3_CODEC

@@ -21,6 +21,8 @@
  *
  */
 
+#include "StdString.h"
+
 #include "lib/libPython/python/Include/Python.h"
 #include "../XBPythonDll.h"
 

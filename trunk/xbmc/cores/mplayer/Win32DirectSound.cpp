@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "Win32DirectSound.h"
 #include "AudioContext.h"
 #include "KS.h"

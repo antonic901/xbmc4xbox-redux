@@ -20,9 +20,11 @@
  *
  */
 
-#include "utils/SingleLock.h"
+#include "StdString.h"
 
 #include <map>
+
+class CCriticalSection;
 
 class CThumbnailCache
 {

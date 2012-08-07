@@ -14,6 +14,7 @@
 #include "XBApplicationEx.h"
 #include "XBVideoConfig.h"
 #include "Settings.h"
+#include "utils/log.h"
 
 //-----------------------------------------------------------------------------
 // Global access to common members

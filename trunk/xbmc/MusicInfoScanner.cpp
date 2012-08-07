@@ -46,6 +46,7 @@
 #include "Picture.h"
 #include "interfaces/AnnouncementManager.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 #include <algorithm>
 

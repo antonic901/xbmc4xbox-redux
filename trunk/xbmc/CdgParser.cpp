@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "CdgParser.h"
 #include "Application.h"
 #include "Util.h"

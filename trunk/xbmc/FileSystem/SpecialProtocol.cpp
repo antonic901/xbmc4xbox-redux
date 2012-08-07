@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "SpecialProtocol.h"
 #include "URL.h"
 #include "Util.h"

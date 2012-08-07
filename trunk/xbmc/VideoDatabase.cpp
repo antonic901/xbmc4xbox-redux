@@ -42,6 +42,7 @@
 #include "LocalizeStrings.h"
 #include "utils/variant.h"
 #include "interfaces/AnnouncementManager.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace dbiplus;

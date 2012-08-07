@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "utils/log.h"
 /*
  * XBMC Media Center
  * Copyright (c) 2002 Frodo

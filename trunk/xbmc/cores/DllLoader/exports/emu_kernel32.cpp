@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "emu_kernel32.h"
 #include "emu_dummy.h"
 

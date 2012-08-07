@@ -21,6 +21,7 @@
  */
 
 #include "utils/SingleLock.h"
+#include "StdString.h"
 
 typedef uint32_t color_t;
 

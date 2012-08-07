@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DllLibCMyth.h"
 #include "MythSession.h"
 #include "VideoInfoTag.h"

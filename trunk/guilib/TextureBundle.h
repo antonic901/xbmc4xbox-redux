@@ -21,6 +21,7 @@
  *
  */
 
+#include "StdString.h"
 #include <map>
 
 class CAutoTexBuffer;

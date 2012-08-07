@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "RGBRendererV2.h"
 #include "utils/SingleLock.h"
 

@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DAAPFile.h"
 #include "SectionLoader.h"
 #include <sys/stat.h>

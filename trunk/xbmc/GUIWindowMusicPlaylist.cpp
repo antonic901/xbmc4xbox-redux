@@ -36,6 +36,7 @@
 #include "GUIDialogKeyboard.h"
 #include "Favourites.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace PLAYLIST;
 

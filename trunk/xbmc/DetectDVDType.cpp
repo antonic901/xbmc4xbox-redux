@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DetectDVDType.h"
 #include "FileSystem/cdioSupport.h"
 #include "FileSystem/iso9660.h"

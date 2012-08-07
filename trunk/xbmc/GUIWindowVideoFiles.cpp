@@ -41,6 +41,7 @@
 #include "GUIDialogYesNo.h"
 #include "FileSystem/File.h"
 #include "PlayList.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace MEDIA_DETECT;

@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "MusicDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "MusicDatabaseDirectory/QueryParams.h"

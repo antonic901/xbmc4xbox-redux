@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DVDCodecUtils.h"
 #include "cores/VideoRenderers/RenderManager.h"
 

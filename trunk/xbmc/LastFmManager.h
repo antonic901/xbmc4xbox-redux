@@ -20,8 +20,9 @@
  *
  */
 
-#include "utils/SingleLock.h"
+#include "utils/CriticalSection.h"
 #include "utils/Thread.h"
+#include "PlayListPlayer.h"
 
 namespace PLAYLIST
 {

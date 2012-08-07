@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "CDDARipper.h"
 #include "CDDAReader.h"
 #include "Util.h"

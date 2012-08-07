@@ -24,6 +24,7 @@
 #include "GUIDialogProgress.h"
 #include "GUIWindowManager.h"
 #include "URL.h"
+#include "utils/log.h"
 
 CAsyncFileCopy::CAsyncFileCopy()
 {

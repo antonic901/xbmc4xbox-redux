@@ -3,6 +3,8 @@
 
 #include <string.h>
 #include <map>
+#include <vector>
+
 #ifdef _XBOX
 #include <xtl.h>
 #include "xbox/Network.h"

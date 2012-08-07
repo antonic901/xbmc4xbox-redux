@@ -46,6 +46,7 @@
 #include "Crc32.h"
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 #include <sstream>
 

@@ -26,6 +26,7 @@
 #include "AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
+#include "utils/log.h"
 
 #include <set>
 

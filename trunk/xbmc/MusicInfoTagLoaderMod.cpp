@@ -29,6 +29,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "SectionLoader.h"
+#include "utils/log.h"
 
 #include <fstream>
 

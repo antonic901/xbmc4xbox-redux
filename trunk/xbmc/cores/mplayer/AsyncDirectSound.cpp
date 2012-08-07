@@ -19,6 +19,7 @@
 */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "Settings.h"
 #include <stdio.h>
 #include "AsyncDirectSound.h"

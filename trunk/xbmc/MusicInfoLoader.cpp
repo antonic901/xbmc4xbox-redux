@@ -34,6 +34,7 @@
 #include "FileItem.h"
 #include "Artist.h"
 #include "Album.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

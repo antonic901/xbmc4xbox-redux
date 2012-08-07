@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"
 #include "Settings.h"

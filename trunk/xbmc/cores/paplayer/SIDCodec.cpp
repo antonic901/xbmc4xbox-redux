@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "SIDCodec.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "Util.h"

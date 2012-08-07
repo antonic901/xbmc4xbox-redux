@@ -34,6 +34,7 @@
 #include <XGraphics.h>
 #include "d3dx8.h"
 #include "XBTF.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 

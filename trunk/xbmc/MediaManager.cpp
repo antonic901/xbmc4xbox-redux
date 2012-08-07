@@ -24,6 +24,7 @@
 #include "xbox/IoSupport.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
+#include "utils/log.h"
 
 using namespace std;
 

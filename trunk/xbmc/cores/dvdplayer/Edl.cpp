@@ -22,6 +22,7 @@
 #include "Edl.h"
 #include "include.h"
 #include "stdafx.h"
+#include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 #include "FileSystem/MythFile.h"

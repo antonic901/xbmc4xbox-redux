@@ -1,5 +1,7 @@
 #pragma once
 
+#include "StdString.h"
+
 class IDevice
 {
 public:

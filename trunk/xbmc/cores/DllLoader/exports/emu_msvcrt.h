@@ -22,6 +22,9 @@
  *
  */
 
+#include <stdint.h>
+#include <stdio.h>
+
 typedef void ( *PFV)(void);
 
 #define __IS_STDIN_STREAM(stream)   (stream == stdin  || stream->_file == 0)

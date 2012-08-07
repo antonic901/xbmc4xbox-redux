@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "DVDInputStreamStack.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"

@@ -35,6 +35,7 @@
 #include "SystemInfo.h"
 #include "GUIRSSControl.h"
 #include "utils/CharsetConverter.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;

@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "MythDirectory.h"
 #include "MythSession.h"
 #include "Util.h"

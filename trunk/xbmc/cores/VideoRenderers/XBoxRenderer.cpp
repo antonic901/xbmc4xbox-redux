@@ -20,6 +20,7 @@
  */
  
 #include "stdafx.h"
+#include "utils/log.h"
 #include "XBoxRenderer.h"
 #include "Application.h"
 #include "XBVideoConfig.h"

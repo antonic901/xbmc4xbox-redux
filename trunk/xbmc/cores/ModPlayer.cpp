@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "modplayer.h"
 #include "Settings.h"
 #include "SectionLoader.h"

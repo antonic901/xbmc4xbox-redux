@@ -19,7 +19,8 @@
  *
  */
 
-#include "stdafx.h" 
+#include "stdafx.h"
+#include "utils/log.h" 
 
 #include "AutoPtrHandle.h"
 #include "FileCache.h"

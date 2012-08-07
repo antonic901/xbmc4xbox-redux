@@ -23,6 +23,9 @@
 
 // enum CodecID
 
+#include <string>
+#include <vector>
+
 extern "C" {
 #ifndef HAVE_MMX
 #define HAVE_MMX

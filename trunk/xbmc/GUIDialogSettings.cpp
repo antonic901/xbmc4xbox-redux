@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "utils/log.h"
 #include "GUIDialogSettings.h"
 #include "GUIImage.h"
 #include "GUIControlGroupList.h"

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "MusicInfoTagLoaderShn.h"
 #include "MusicInfoTag.h"
+#include "utils/log.h"
 
 using namespace MUSIC_INFO;
 

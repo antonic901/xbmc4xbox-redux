@@ -36,6 +36,7 @@
 #include "FileItem.h"
 #include "CharsetConverter.h"
 #include "utils/URIUtils.h"
+#include "log.h"
 
 #include <sstream>
 #include <cstring>

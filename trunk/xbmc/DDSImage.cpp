@@ -24,8 +24,9 @@
 #include "Util.h"
 #include <string.h>
 #include "FileSystem/File.h"
-using namespace XFILE;
+#include "utils/log.h"
 
+using namespace XFILE;
 using namespace std;
 
 CDDSImage::CDDSImage()

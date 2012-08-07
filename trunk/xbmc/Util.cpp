@@ -106,6 +106,7 @@
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleStream.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
+#include "utils/log.h"
 
 using namespace std;
 namespace MathUtils {

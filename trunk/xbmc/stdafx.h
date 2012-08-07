@@ -41,8 +41,6 @@
 #endif
 #endif
 
-#include "utils/log.h"
-
 #ifdef _XBOX
 #ifdef QueryPerformanceFrequency
 #undef QueryPerformanceFrequency
