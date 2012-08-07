@@ -22,6 +22,8 @@
  */
 
 #include "StdString.h"
+#include "gui3d.h"
+
 #include <map>
 
 class CAutoTexBuffer;

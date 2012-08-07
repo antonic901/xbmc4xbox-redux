@@ -16,6 +16,7 @@
 #include "IWindowManagerCallback.h"
 #include "common/Mouse.h"
 #include "common/Keyboard.h"
+#include "gui3d.h"
 //-----------------------------------------------------------------------------
 // Global access to common members
 //-----------------------------------------------------------------------------

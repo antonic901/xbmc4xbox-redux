@@ -20,6 +20,7 @@
  *
  */
 #include "DynamicDll.h"
+#include "gui3d.h"
 
 struct VIS_INFO 
 { 

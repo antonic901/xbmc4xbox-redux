@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "utils/log.h"
 #include "WinRenderManager.h"
+#include "ApplicationMessenger.h"
 
 
 CWinRenderManager g_renderManager;

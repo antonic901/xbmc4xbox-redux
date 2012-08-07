@@ -7,10 +7,11 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
-#include "../../xbmc/stdafx.h"
+#include "stdafx.h"
 #include "XBMC_PC.h"
 #include <d3d8.h>
-#include "../../xbmc/Application.h"
+#include "Application.h"
+#include "ApplicationMessenger.h"
 
 //-----------------------------------------------------------------------------
 // Resource defines

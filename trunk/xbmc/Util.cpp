@@ -89,7 +89,6 @@
 #ifndef HAS_XBOX_D3D
 #include "DirectXGraphics.h"
 #endif
-#include "lib/libGoAhead/XBMChttp.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

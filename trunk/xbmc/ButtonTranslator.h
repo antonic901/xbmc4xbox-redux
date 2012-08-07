@@ -22,6 +22,7 @@
  *
  */
 
+#include <map>
 #ifdef HAS_EVENT_SERVER
 #include "utils/EventClient.h"
 #endif

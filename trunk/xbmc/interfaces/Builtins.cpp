@@ -54,8 +54,10 @@
 #include "FileSystem/ZipManager.h"
 
 #include "utils/URIUtils.h"
-#ifdef HAS_XBOX_HARDWARE
 #include "xbox/xbeheader.h"
+#include "xbox/network.h"
+#include "lib/libGoAhead/XBMChttp.h"
+#ifdef HAS_XBOX_HARDWARE
 #include "utils/FanController.h"
 #endif
 

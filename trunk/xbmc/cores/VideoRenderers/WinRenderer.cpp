@@ -25,7 +25,7 @@
 #include "Util.h"
 #include "XBVideoConfig.h"
 #include "Settings.h"
-
+#include "utils/SingleLock.h"
 
 // http://www.martinreddy.net/gfx/faqs/colorconv.faq
 

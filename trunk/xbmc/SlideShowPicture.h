@@ -22,6 +22,7 @@
 
 #include "utils/SingleLock.h"
 #include "StdString.h"
+#include "gui3d.h"
 
 typedef uint32_t color_t;
 

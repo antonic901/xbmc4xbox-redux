@@ -22,6 +22,8 @@
  *
  */
 
+#include "gui3d.h"
+
 extern "C"
 {
   void OutputDebug(char* strDebug);

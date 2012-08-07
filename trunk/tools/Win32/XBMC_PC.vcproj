@@ -1708,6 +1708,12 @@
 					RelativePath="..\..\xbmc\utils\InfoLoader.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\JobManager.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\JobManager.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\utils\JpegIO.cpp">
 				</File>
 				<File
@@ -1777,10 +1783,22 @@
 					RelativePath="..\..\xbmc\PartyModeManager.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\PasswordManager.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\PasswordManager.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\Picture.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Profile.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\RecentlyAddedJob.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\RecentlyAddedJob.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\RegExp.cpp">
@@ -3047,6 +3065,25 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\UPnP.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="interfaces"
+				Filter="">
+				<File
+					RelativePath="..\..\xbmc\interfaces\AnnouncementManager.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\AnnouncementManager.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\Builtins.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\Builtins.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\IAnnouncer.h">
 				</File>
 			</Filter>
 		</Filter>
