@@ -27,7 +27,7 @@
 #include "utils/log.h"
 #include "utils/Variant.h"
 #include "utils/CharsetConverter.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 
 #include <sstream>
 

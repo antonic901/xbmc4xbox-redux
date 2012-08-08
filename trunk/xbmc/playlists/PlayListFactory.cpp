@@ -19,13 +19,13 @@
  *
  */
 
-#include "PlayListFactory.h"
-#include "PlayListM3U.h"
-#include "PlayListPLS.h"
-#include "PlayListB4S.h"
-#include "PlayListWPL.h"
-#include "PlayListURL.h"
-#include "PlayListXML.h"
+#include "playlists/PlayListFactory.h"
+#include "playlists/PlayListM3U.h"
+#include "playlists/PlayListPLS.h"
+#include "playlists/PlayListB4S.h"
+#include "playlists/PlayListWPL.h"
+#include "playlists/PlayListURL.h"
+#include "playlists/PlayListXML.h"
 #include "utils/URIUtils.h"
 
 using namespace PLAYLIST;

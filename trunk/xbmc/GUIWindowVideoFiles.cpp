@@ -22,10 +22,10 @@
 #include "GUIWindowVideoFiles.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "utils/IMDB.h"
 #include "utils/GUIInfoManager.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "Application.h"
 #include "NfoFile.h"
 #include "PlayListPlayer.h"
@@ -39,7 +39,7 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/File.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "utils/log.h"
 
 using namespace std;

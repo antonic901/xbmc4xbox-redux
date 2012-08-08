@@ -40,7 +40,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "LocalizeStrings.h"
 
 using namespace std;

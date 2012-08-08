@@ -24,9 +24,9 @@
 #include "GUIMediaWindow.h"
 #include "FileSystem/VirtualDirectory.h"
 #include "FileSystem/DirectoryHistory.h"
-#include "GUIWindowSlideShow.h"
-#include "PictureThumbLoader.h"
-#include "DllImageLib.h"
+#include "pictures/GUIWindowSlideShow.h"
+#include "pictures/PictureThumbLoader.h"
+#include "pictures/DllImageLib.h"
 
 class CGUIDialogProgress;
 

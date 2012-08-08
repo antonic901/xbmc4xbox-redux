@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "SlideShowPicture.h"
+#include "pictures/SlideShowPicture.h"
 #include "cores/ssrc.h"         // for M_PI
 #include "utils/GUIInfoManager.h"
 #include "settings/AdvancedSettings.h"

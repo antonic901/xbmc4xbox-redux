@@ -29,7 +29,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "utils/log.h"
 
 using namespace std;

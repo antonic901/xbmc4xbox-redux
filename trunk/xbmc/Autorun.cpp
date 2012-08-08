@@ -37,7 +37,7 @@
 #include "FileSystem/File.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 
 using namespace std;
 using namespace XFILE;

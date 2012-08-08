@@ -21,10 +21,10 @@
 
 #include "PlaylistFileDirectory.h"
 #include "utils/log.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileSystem/File.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 
 using namespace std;
 using namespace PLAYLIST;

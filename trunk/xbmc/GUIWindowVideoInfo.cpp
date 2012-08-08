@@ -23,7 +23,7 @@
 #include "GUIWindowVideoInfo.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "guiImage.h"
 #include "utils/StringUtils.h"
 #include "GUIWindowVideoBase.h"

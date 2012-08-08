@@ -19,8 +19,8 @@
  *
  */
 
-#include "PictureInfoLoader.h"
-#include "PictureInfoTag.h"
+#include "pictures/PictureInfoLoader.h"
+#include "pictures/PictureInfoTag.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
 

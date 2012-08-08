@@ -19,7 +19,7 @@
  *
  */
 
-#include "PlayListWPL.h"
+#include "playlists/PlayListWPL.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "tinyXML/tinyxml.h"

@@ -19,9 +19,9 @@
  *
  */
 
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "utils/URIUtils.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include <sstream>
 #include "VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"

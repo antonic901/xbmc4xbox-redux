@@ -22,7 +22,7 @@
 
 #include "utils/ISerializable.h"
 #include "utils/Archive.h"
-#include "DllLibExif.h"
+#include "pictures/DllLibExif.h"
 
 #define SLIDE_FILE_NAME             900         // Note that not all image tags will be present for each image
 #define SLIDE_FILE_PATH             901

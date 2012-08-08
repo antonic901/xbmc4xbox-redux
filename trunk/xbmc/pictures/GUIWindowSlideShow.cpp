@@ -20,9 +20,9 @@
  */
 
 #include "system.h"
-#include "GUIWindowSlideShow.h"
+#include "pictures/GUIWindowSlideShow.h"
 #include "Application.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
@@ -30,7 +30,7 @@
 #include "GUILabelControl.h"
 #include "utils/GUIInfoManager.h"
 #include "FileSystem/Directory.h"
-#include "GUIDialogPictureInfo.h"
+#include "pictures/GUIDialogPictureInfo.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "settings/Settings.h"

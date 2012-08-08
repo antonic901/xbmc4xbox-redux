@@ -42,7 +42,7 @@
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "interfaces/AnnouncementManager.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"

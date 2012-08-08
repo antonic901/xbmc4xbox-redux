@@ -19,17 +19,16 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 
 namespace PLAYLIST
 {
-class CPlayListM3U :
+class CPlayListURL :
       public CPlayList
 {
 public:
-  CPlayListM3U(void);
-  virtual ~CPlayListM3U(void);
+  CPlayListURL(void);
+  virtual ~CPlayListURL(void);
   virtual bool Load(const CStdString& strFileName);
-  virtual void Save(const CStdString& strFileName) const;
 };
 }

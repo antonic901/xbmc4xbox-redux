@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "music/tags/FlacTag.h"
 #include "Util.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "FileSystem/File.h"
 
 // Use SDL macros to perform byte swapping on big-endian systems

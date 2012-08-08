@@ -26,10 +26,10 @@
 #include "pyplaylist.h"
 #include "lib/libPython/python/Include/structmember.h"
 #include "../XBPythonDll.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "pyutil.h"
 #include "listitem.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 

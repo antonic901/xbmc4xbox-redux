@@ -50,7 +50,7 @@
 #include "PluginSettings.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "FileSystem/FileDirectoryFactory.h"
 #include "GUIEditControl.h"
 #include "GUIDialogKeyboard.h"

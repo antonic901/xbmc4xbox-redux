@@ -32,7 +32,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "GUIPassword.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"

@@ -23,7 +23,7 @@
 #include "PlaylistDirectory.h"
 #include "settings/Settings.h"
 #include "FileSystem/HDDirectory.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "Util.h"
 
 #ifdef _DEBUG

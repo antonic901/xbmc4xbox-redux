@@ -36,7 +36,7 @@
 #include "SmartPlaylistDirectory.h"
 #include "SmartPlaylist.h"
 #include "PlaylistFileDirectory.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "FileSystem/RarManager.h"

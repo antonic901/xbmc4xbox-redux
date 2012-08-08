@@ -20,7 +20,7 @@
  */
 
 #include "GUILargeTextureManager.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "settings/Settings.h"

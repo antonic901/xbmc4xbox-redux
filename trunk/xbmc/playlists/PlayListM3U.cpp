@@ -19,7 +19,7 @@
  *
  */
 
-#include "PlayListM3U.h"
+#include "playlists/PlayListM3U.h"
 #include "FileSystem/File.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

@@ -616,31 +616,31 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="Playlist"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\PlayList.cpp">
+					RelativePath=".\xbmc\playlists\PlayList.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListB4S.cpp">
+					RelativePath=".\xbmc\playlists\PlayListB4S.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListFactory.cpp">
+					RelativePath=".\xbmc\playlists\PlayListFactory.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListM3U.cpp">
+					RelativePath=".\xbmc\playlists\PlayListM3U.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\PlayListPlayer.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListPLS.cpp">
+					RelativePath=".\xbmc\playlists\PlayListPLS.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListUrl.cpp">
+					RelativePath=".\xbmc\playlists\PlayListURL.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListWPL.cpp">
+					RelativePath=".\xbmc\playlists\PlayListWPL.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PlayListXML.cpp">
+					RelativePath=".\xbmc\playlists\PlayListXML.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -809,16 +809,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="Pictures"
 					Filter="">
 					<File
-						RelativePath=".\xbmc\PictureInfoLoader.cpp">
+						RelativePath=".\xbmc\pictures\PictureInfoLoader.cpp">
 					</File>
 					<File
-						RelativePath=".\xbmc\PictureInfoLoader.h">
+						RelativePath=".\xbmc\pictures\PictureInfoLoader.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\PictureInfoTag.cpp">
+						RelativePath=".\xbmc\pictures\PictureInfoTag.cpp">
 					</File>
 					<File
-						RelativePath=".\xbmc\PictureInfoTag.h">
+						RelativePath=".\xbmc\pictures\PictureInfoTag.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1048,7 +1048,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\PasswordManager.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\Picture.cpp">
+					RelativePath=".\xbmc\pictures\Picture.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\Profile.cpp">
@@ -1365,10 +1365,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogOK.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPictureInfo.cpp">
+					RelativePath=".\xbmc\pictures\GUIDialogPictureInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPictureInfo.h">
+					RelativePath=".\xbmc\pictures\GUIDialogPictureInfo.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogPlayerControls.cpp">
@@ -1474,10 +1474,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIViewStateGameSaves.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIViewStatePictures.cpp">
+					RelativePath=".\xbmc\pictures\GUIViewStatePictures.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIViewStatePictures.h">
+					RelativePath=".\xbmc\pictures\GUIViewStatePictures.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIViewStatePrograms.cpp">
@@ -1516,7 +1516,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIWindowOSD.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowPictures.cpp">
+					RelativePath=".\xbmc\pictures\GUIWindowPictures.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIWindowPointer.cpp">
@@ -1534,7 +1534,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIWindowScriptsInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowSlideShow.cpp">
+					RelativePath=".\xbmc\pictures\GUIWindowSlideShow.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIWindowStartup.cpp">
@@ -1552,10 +1552,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIWindowWeather.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\SlideShowPicture.cpp">
+					RelativePath=".\xbmc\pictures\SlideShowPicture.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\SlideShowPicture.h">
+					RelativePath=".\xbmc\pictures\SlideShowPicture.h">
 				</File>
 			</Filter>
 			<Filter
@@ -1568,10 +1568,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\BackgroundInfoLoader.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\PictureThumbLoader.cpp">
+					RelativePath=".\xbmc\pictures\PictureThumbLoader.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\PictureThumbLoader.h">
+					RelativePath=".\xbmc\pictures\PictureThumbLoader.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\ThumbLoader.cpp">
@@ -2874,7 +2874,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\cores\dlgcache.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\DllImageLib.h">
+				RelativePath=".\xbmc\pictures\DllImageLib.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\network\DNSNameCache.h">
@@ -3006,7 +3006,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIWindowOSD.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowPictures.h">
+				RelativePath=".\xbmc\pictures\GUIWindowPictures.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIWindowPointer.h">
@@ -3039,7 +3039,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIWindowSettingsUICalibration.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowSlideShow.h">
+				RelativePath=".\xbmc\pictures\GUIWindowSlideShow.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIWindowSystemInfo.h">
@@ -3198,34 +3198,34 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\PartyModeManager.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\Picture.h">
+				RelativePath=".\xbmc\pictures\Picture.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayList.h">
+				RelativePath=".\xbmc\playlists\PlayList.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListB4S.h">
+				RelativePath=".\xbmc\playlists\PlayListB4S.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListFactory.h">
+				RelativePath=".\xbmc\playlists\PlayListFactory.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListM3U.h">
+				RelativePath=".\xbmc\playlists\PlayListM3U.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\PlayListPlayer.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListPLS.h">
+				RelativePath=".\xbmc\playlists\PlayListPLS.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListUrl.cpp">
+				RelativePath=".\xbmc\playlists\PlayListURL.cpp">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListWPL.h">
+				RelativePath=".\xbmc\playlists\PlayListWPL.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\PlayListXML.h">
+				RelativePath=".\xbmc\playlists\PlayListXML.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\settings\Profile.h">

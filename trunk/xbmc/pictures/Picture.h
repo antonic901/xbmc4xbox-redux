@@ -21,7 +21,7 @@
  */
 
 #include "system.h"
-#include "DllImageLib.h"
+#include "pictures/DllImageLib.h"
 #include "gui3d.h"
 
 class CPicture

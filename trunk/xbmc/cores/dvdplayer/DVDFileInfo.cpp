@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "VideoInfoTag.h"
 #include "Util.h"
 #include "FileSystem/StackDirectory.h"

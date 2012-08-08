@@ -20,13 +20,13 @@
 #include "PlayListPlayer.h"
 #include "FileSystem/CDDADirectory.h"
 #include "FileSystem/ZipManager.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListFactory.h"
 #include "utils/GUIInfoManager.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 #include "utils/URIUtils.h"
 
 using namespace std;

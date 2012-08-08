@@ -18,7 +18,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "PictureInfoTag.h"
+#include "pictures/PictureInfoTag.h"
 #include "XBDateTime.h"
 #include "Util.h"
 #include "utils/Variant.h"

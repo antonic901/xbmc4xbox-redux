@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIViewStatePictures.h"
+#include "pictures/GUIViewStatePictures.h"
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
 #include "ViewState.h"

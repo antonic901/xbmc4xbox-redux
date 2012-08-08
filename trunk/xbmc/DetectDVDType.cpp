@@ -31,7 +31,7 @@
 #include "settings/AdvancedSettings.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "FileSystem/File.h"

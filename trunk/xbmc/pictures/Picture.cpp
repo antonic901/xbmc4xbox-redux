@@ -19,7 +19,7 @@
  *
  */
 
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "TextureManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/GUISettings.h"

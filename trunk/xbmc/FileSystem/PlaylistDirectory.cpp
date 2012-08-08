@@ -22,7 +22,7 @@
 #include "PlaylistDirectory.h"
 #include "PlayListPlayer.h"
 #include "URL.h"
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 
 using namespace PLAYLIST;
 using namespace XFILE;

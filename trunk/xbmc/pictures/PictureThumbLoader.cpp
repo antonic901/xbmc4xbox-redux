@@ -19,8 +19,8 @@
  *
  */
 
-#include "PictureThumbLoader.h"
-#include "Picture.h"
+#include "pictures/PictureThumbLoader.h"
+#include "pictures/Picture.h"
 #include "URL.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogPictureInfo.h"
+#include "pictures/GUIDialogPictureInfo.h"
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"

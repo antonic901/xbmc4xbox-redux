@@ -25,7 +25,7 @@
 #include "FileSystem/VirtualDirectory.h"
 #include "FileSystem/DirectoryHistory.h"
 #include "GUIViewControl.h"
-#include "PictureThumbLoader.h"
+#include "pictures/PictureThumbLoader.h"
 
 class CFileItem;
 class CFileItemList;

@@ -19,8 +19,8 @@
  *
  */
 
-#include "PlayListPLS.h"
-#include "PlayListFactory.h"
+#include "playlists/PlayListPLS.h"
+#include "playlists/PlayListFactory.h"
 #include "Util.h"
 #include "FileSystem/File.h"
 #include "settings/AdvancedSettings.h"

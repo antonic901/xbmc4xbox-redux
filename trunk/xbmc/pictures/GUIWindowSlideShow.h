@@ -25,8 +25,8 @@
 #include "GUIWindow.h"
 #include "utils/Thread.h"
 #include "utils/CriticalSection.h"
-#include "SlideShowPicture.h"
-#include "DllImageLib.h"
+#include "pictures/SlideShowPicture.h"
+#include "pictures/DllImageLib.h"
 #include "SortFileItem.h"
 
 class CFileItemList;

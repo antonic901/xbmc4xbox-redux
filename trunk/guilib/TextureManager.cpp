@@ -27,7 +27,7 @@
 #include "GraphicContext.h"
 #include "utils/SingleLock.h"
 #include "utils/StringUtils.h"
-#include "Picture.h"
+#include "pictures/Picture.h"
 #include "utils/CharsetConverter.h"
 #include "../xbmc/utils/URIUtils.h"
 #include "../xbmc/FileSystem/File.h"

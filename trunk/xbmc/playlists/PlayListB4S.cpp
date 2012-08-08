@@ -19,7 +19,7 @@
  *
  */
 
-#include "PlayListB4S.h"
+#include "playlists/PlayListB4S.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "tinyXML/tinyxml.h"

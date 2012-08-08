@@ -19,7 +19,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "PlayList.h"
+#include "playlists/PlayList.h"
 
 namespace PLAYLIST
 {
