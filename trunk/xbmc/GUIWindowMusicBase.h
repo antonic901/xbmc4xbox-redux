@@ -27,11 +27,11 @@
  */
 
 #include "GUIMediaWindow.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "musicInfoTagLoaderFactory.h"
 #include "utils/MusicInfoScraper.h"
 #include "PlayListPlayer.h"
-#include "MusicInfoLoader.h"
+#include "music/MusicInfoLoader.h"
 
 struct SScraperInfo;
 

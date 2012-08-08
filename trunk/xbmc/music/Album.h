@@ -28,7 +28,7 @@
 #include <map>
 #include <vector>
 
-#include "Song.h"
+#include "music/Song.h"
 #include "utils/ScraperUrl.h"
 
 class CAlbum

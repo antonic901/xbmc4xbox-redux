@@ -83,8 +83,8 @@
 #include "lib/libfilezilla/xbfilezilla.h"
 #endif
 #include "lib/libscrobbler/scrobbler.h"
-#include "LastFmManager.h"
-#include "MusicInfoLoader.h"
+#include "music/LastFmManager.h"
+#include "music/MusicInfoLoader.h"
 #include "XBVideoConfig.h"
 #ifndef HAS_XBOX_D3D
 #include "DirectXGraphics.h"

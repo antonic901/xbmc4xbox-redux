@@ -21,7 +21,7 @@
 
 #include "DirectoryNodeArtist.h"
 #include "QueryParams.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "settings/Settings.h"
 #include "LocalizeStrings.h"
 

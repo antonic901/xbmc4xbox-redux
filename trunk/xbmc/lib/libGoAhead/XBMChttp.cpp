@@ -31,7 +31,7 @@
 #include "Picture.h"
 #include "MusicInfoTagLoaderFactory.h"
 #include "utils/MusicInfoScraper.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "GUIWindowSlideShow.h"
 #include "GUIMediaWindow.h"
 #include "GUIWindowFileManager.h"

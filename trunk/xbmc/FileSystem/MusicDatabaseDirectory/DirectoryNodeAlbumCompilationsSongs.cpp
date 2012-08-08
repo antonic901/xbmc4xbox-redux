@@ -21,7 +21,7 @@
 
 #include "DirectoryNodeAlbumCompilationsSongs.h"
 #include "QueryParams.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 

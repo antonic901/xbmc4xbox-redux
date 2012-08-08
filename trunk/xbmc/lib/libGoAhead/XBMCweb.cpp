@@ -23,7 +23,7 @@
 #include "PlayListFactory.h"
 #include "utils/GUIInfoManager.h"
 #include "MusicInfoTagLoaderFactory.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "MusicInfoTag.h"
 #include "FileItem.h"
 #include "PlayList.h"

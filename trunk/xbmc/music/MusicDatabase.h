@@ -24,7 +24,7 @@
 */
 #pragma once
 #include "Database.h"
-#include "Album.h"
+#include "music/Album.h"
 #include "utils/StringUtils.h"
 
 struct SScraperInfo;

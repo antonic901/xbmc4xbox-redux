@@ -27,7 +27,7 @@
 #include "utils/StringUtils.h"
 #include "FileItem.h"
 #include "MusicInfoTag.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
 
 #define LOOKUP_PROPERTY "database-lookup"

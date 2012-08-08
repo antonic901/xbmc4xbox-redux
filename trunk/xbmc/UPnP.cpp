@@ -30,7 +30,7 @@
 #include "UPnP.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
 #include "FileSystem/VideoDatabaseDirectory/DirectoryNode.h"
 #include "FileSystem/VideoDatabaseDirectory/QueryParams.h"

@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIViewStateMusic.h"
+#include "music/GUIViewStateMusic.h"
 #include "PlayListPlayer.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
 #include "VideoDatabase.h"

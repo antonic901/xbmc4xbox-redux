@@ -19,7 +19,7 @@
  *
  */
 
-#include "Artist.h"
+#include "music/Artist.h"
 #include "XMLUtils.h"
 #include "settings/AdvancedSettings.h"
 

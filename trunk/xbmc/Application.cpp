@@ -79,7 +79,7 @@
 #include "utils/SystemInfo.h"
 #include "ApplicationRenderer.h"
 #include "GUILargeTextureManager.h"
-#include "LastFmManager.h"
+#include "music/LastFmManager.h"
 #include "SmartPlaylist.h"
 #include "FileSystem/RarManager.h"
 #include "PlayList.h"

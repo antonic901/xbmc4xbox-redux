@@ -20,7 +20,7 @@
  */
 
 #include "MusicInfoTagLoaderDatabase.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "MusicInfoTag.h"

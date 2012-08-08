@@ -22,7 +22,7 @@
 #include "SmartPlaylistDirectory.h"
 #include "utils/log.h"
 #include "SmartPlaylist.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
 #include "Playlist.h"
 #include "FileSystem/Directory.h"

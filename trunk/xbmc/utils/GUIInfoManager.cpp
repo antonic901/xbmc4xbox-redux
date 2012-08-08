@@ -36,7 +36,7 @@
 #include "PartyModeManager.h"
 #include "visualizations/Visualisation.h"
 #include "input/ButtonTranslator.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "utils/AlarmClock.h"
 #include "CharsetConverter.h"
 #ifdef HAS_LCD
@@ -55,7 +55,7 @@
 #include <stack>
 #include "xbox/network.h"
 #include "GUIWindowSlideShow.h"
-#include "LastFmManager.h"
+#include "music/LastFmManager.h"
 #include "PictureInfoTag.h"
 #include "MusicInfoTag.h"
 #include "VideoDatabase.h"
@@ -73,7 +73,7 @@
 #include "FileSystem/SndtrkDirectory.h"
 #endif
 #include "musicInfoTagLoaderFactory.h"
-#include "MusicInfoLoader.h"
+#include "music/MusicInfoLoader.h"
 #include "LabelFormatter.h"
 #include "TextureManager.h"
 #include "GUIWindowVideoInfo.h"

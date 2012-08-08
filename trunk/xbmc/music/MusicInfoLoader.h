@@ -20,7 +20,7 @@
  *
  */
 #include "BackgroundInfoLoader.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 
 class CFileItemList;
 

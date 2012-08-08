@@ -19,7 +19,7 @@
  *
  */
 
-#include "Song.h"
+#include "music/Song.h"
 #include "MusicInfoTag.h"
 
 using namespace std;

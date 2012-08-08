@@ -21,8 +21,8 @@
  *
  */
 
-#include "Song.h"
-#include "Album.h"
+#include "music/Song.h"
+#include "music/Album.h"
 #include "ScraperParser.h"
 
 class TiXmlDocument;

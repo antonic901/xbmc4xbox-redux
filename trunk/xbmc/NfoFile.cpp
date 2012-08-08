@@ -30,8 +30,8 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "FileItem.h"
-#include "Album.h"
-#include "Artist.h"
+#include "music/Album.h"
+#include "music/Artist.h"
 #include "settings/Settings.h"
 #include <vector>
 #include "utils/log.h"

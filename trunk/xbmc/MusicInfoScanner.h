@@ -20,7 +20,7 @@
  *
  */
 #include "utils/Thread.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "utils/MusicAlbumInfo.h"
 
 class CAlbum;

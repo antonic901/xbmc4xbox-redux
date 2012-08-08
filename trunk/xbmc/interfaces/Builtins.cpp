@@ -37,7 +37,7 @@
 #include "GUIDialogVideoScan.h"
 #include "GUIUserMessages.h"
 #include "GUIWindowVideoBase.h"
-#include "LastFmManager.h"
+#include "music/LastFmManager.h"
 #include "LCD.h"
 #include "log.h"
 #include "MediaManager.h"

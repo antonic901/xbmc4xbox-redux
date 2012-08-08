@@ -23,7 +23,7 @@
 #include "MusicDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "MusicDatabaseDirectory/QueryParams.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "Crc32.h"

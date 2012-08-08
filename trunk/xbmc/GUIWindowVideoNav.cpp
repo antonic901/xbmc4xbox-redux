@@ -36,7 +36,7 @@
 #include "GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogOK.h"
 #include "PartyModeManager.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogYesNo.h"

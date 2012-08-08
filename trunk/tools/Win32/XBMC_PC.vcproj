@@ -1292,10 +1292,10 @@
 					RelativePath="..\..\xbmc\GUIViewState.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateMusic.cpp">
+					RelativePath="..\..\xbmc\music\GUIViewStateMusic.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateMusic.h">
+					RelativePath="..\..\xbmc\music\GUIViewStateMusic.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowMusicBase.cpp">
@@ -1433,7 +1433,7 @@
 					RelativePath="..\..\xbmc\Id3Tag.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\MusicInfoLoader.cpp">
+					RelativePath="..\..\xbmc\music\MusicInfoLoader.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\MusicInfoScanner.cpp">
@@ -1738,10 +1738,10 @@
 					RelativePath="..\..\xbmc\LangInfo.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\LastFmManager.cpp">
+					RelativePath="..\..\xbmc\music\LastFmManager.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\LastFmManager.h">
+					RelativePath="..\..\xbmc\music\LastFmManager.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\log.cpp">
@@ -1961,16 +1961,16 @@
 				Name="Database"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\Album.cpp">
+					RelativePath="..\..\xbmc\music\Album.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Album.h">
+					RelativePath="..\..\xbmc\music\Album.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Artist.cpp">
+					RelativePath="..\..\xbmc\music\Artist.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Artist.h">
+					RelativePath="..\..\xbmc\music\Artist.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Bookmark.cpp">
@@ -1985,10 +1985,10 @@
 					RelativePath="..\..\xbmc\Database.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\MusicDatabase.cpp">
+					RelativePath="..\..\xbmc\music\MusicDatabase.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\MusicDatabase.h">
+					RelativePath="..\..\xbmc\music\MusicDatabase.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\ProgramDatabase.cpp">
@@ -1997,7 +1997,7 @@
 					RelativePath="..\..\xbmc\ProgramDatabase.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Song.cpp">
+					RelativePath="..\..\xbmc\music\Song.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\VideoDatabase.cpp">
@@ -3397,7 +3397,7 @@
 				RelativePath="..\..\xbmc\utils\MusicAlbumInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\MusicInfoLoader.h">
+				RelativePath="..\..\xbmc\music\MusicInfoLoader.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\MusicInfoScanner.h">
@@ -3487,7 +3487,7 @@
 				RelativePath="..\..\xbmc\utils\SingleLock.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\Song.h">
+				RelativePath="..\..\xbmc\music\Song.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\SortFileItem.h">

@@ -22,9 +22,9 @@
  */
 
 #include "GUIDialog.h"
-#include "Song.h"
-#include "Artist.h"
-#include "Album.h"
+#include "music/Song.h"
+#include "music/Artist.h"
+#include "music/Album.h"
 
 class CFileItem;
 class CFileItemList;

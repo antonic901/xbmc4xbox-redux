@@ -44,7 +44,7 @@
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "GUIDialogSongInfo.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "LastFmManager.h"
+#include "music/LastFmManager.h"
 #include "MusicInfoTag.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

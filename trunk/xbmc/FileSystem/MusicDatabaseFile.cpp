@@ -20,7 +20,7 @@
  */
 
 #include "MusicDatabaseFile.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"

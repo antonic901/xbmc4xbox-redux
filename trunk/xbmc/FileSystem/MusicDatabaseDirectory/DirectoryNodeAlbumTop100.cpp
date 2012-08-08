@@ -20,7 +20,7 @@
  */
 
 #include "DirectoryNodeAlbumTop100.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "FileItem.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;

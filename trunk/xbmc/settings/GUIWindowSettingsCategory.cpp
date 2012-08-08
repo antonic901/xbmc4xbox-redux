@@ -32,7 +32,7 @@
 #include "GUICheckMarkControl.h"
 #include "GUIImage.h"
 #include "utils/Weather.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "ProgramDatabase.h"
 #include "ViewDatabase.h"
 #include "XBAudioConfig.h"

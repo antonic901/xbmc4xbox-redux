@@ -20,9 +20,9 @@
  */
 
 #include "system.h"
-#include "LastFmManager.h"
-#include "Album.h"
-#include "Artist.h"
+#include "music/LastFmManager.h"
+#include "music/Album.h"
+#include "music/Artist.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "ApplicationRenderer.h"
@@ -34,7 +34,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"
 #include "utils/GUIInfoManager.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "MusicInfoTag.h"
 #include "URL.h"
 #include "GUIWindowManager.h"

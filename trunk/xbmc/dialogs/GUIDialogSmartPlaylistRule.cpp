@@ -21,7 +21,7 @@
 
 #include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogSelect.h"

@@ -20,7 +20,7 @@
  */
 
 #include "DirectoryNodeAlbumRecentlyAdded.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 

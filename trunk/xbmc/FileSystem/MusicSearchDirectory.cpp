@@ -21,7 +21,7 @@
 
 #include "utils/log.h"
 #include "MusicSearchDirectory.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "URL.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

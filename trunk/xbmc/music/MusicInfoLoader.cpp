@@ -19,8 +19,8 @@
  *
  */
 
-#include "MusicInfoLoader.h"
-#include "MusicDatabase.h"
+#include "music/MusicInfoLoader.h"
+#include "music/MusicDatabase.h"
 #include "MusicInfoTagLoaderFactory.h"
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
@@ -31,8 +31,8 @@
 #include "FileSystem/File.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
-#include "Artist.h"
-#include "Album.h"
+#include "music/Artist.h"
+#include "music/Album.h"
 #include "utils/log.h"
 
 using namespace std;

@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "MusicDatabase.h"
+#include "music/MusicDatabase.h"
 #include "FileSystem/cddb.h"
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/MusicDatabaseDirectory/DirectoryNode.h"
@@ -34,9 +34,9 @@
 #include "ScraperSettings.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "Artist.h"
-#include "Album.h"
-#include "Song.h"
+#include "music/Artist.h"
+#include "music/Album.h"
+#include "music/Song.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
