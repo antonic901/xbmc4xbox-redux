@@ -21,7 +21,7 @@
  */
 #include "utils/Thread.h"
 #include "music/MusicDatabase.h"
-#include "utils/MusicAlbumInfo.h"
+#include "music/infoscanner/MusicAlbumInfo.h"
 
 class CAlbum;
 class CArtist;

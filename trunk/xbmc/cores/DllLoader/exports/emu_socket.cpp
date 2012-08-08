@@ -23,7 +23,7 @@
 #include "utils/log.h"
 #include "../DllLoaderContainer.h"
 
-#include "DNSNameCache.h"
+#include "network/DNSNameCache.h"
 #include "xbox\Network.h"
 #include "emu_dummy.h"
 #include "emu_socket.h"

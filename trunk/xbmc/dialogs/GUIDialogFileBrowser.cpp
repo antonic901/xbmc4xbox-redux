@@ -24,7 +24,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "DetectDVDType.h"
-#include "GUIDialogNetworkSetup.h"
+#include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "MediaManager.h"

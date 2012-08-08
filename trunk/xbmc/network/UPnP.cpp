@@ -27,7 +27,7 @@
 #include "ApplicationMessenger.h"
 
 #include "xbox/Network.h"
-#include "UPnP.h"
+#include "network/UPnP.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "music/MusicDatabase.h"

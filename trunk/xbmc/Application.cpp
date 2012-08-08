@@ -91,7 +91,7 @@
 #include "FileSystem/DAAPFile.h"
 #endif
 #ifdef HAS_UPNP
-#include "UPnP.h"
+#include "network/UPnP.h"
 #include "FileSystem/UPnPDirectory.h"
 #endif
 #include "PartyModeManager.h"
@@ -160,7 +160,7 @@
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
 #include "GUIDialogTrainerSettings.h"
 #include "GUIWindowScriptsInfo.h"
-#include "GUIDialogNetworkSetup.h"
+#include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "GUIDialogVideoSettings.h"
 #include "GUIDialogAudioSubtitleSettings.h"

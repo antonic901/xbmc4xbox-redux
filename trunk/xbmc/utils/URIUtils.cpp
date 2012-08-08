@@ -29,7 +29,7 @@
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/MythDirectory.h"
-#include "DNSNameCache.h"
+#include "network/DNSNameCache.h"
 #include "xbox/network.h"
 #include "settings/Settings.h"
 #include "URL.h"

@@ -30,7 +30,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "cddb.h"
-#include "DNSNameCache.h"
+#include "network/DNSNameCache.h"
 #include "music/tags/Id3Tag.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"

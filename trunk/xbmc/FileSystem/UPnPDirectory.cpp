@@ -25,7 +25,7 @@
 #include "utils/log.h"
 #include "Util.h"
 #include "UPnPDirectory.h"
-#include "UPnP.h"
+#include "network/UPnP.h"
 #include "Platinum.h"
 #include "PltSyncMediaBrowser.h"
 #include "VideoInfoTag.h"

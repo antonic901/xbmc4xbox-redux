@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "DNSNameCache.h"
+#include "network/DNSNameCache.h"
 #include "settings/Settings.h"
 #include "settings/GUISettings.h"
 

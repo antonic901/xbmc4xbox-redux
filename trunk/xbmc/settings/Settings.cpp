@@ -44,7 +44,7 @@
 #include "utils/FanController.h"
 #include "MediaManager.h"
 #include "XBVideoConfig.h"
-#include "DNSNameCache.h"
+#include "network/DNSNameCache.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
