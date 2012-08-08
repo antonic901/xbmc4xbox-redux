@@ -30,7 +30,7 @@
  */
 
 #include "system.h"
-#include "XBIRRemote.h"
+#include "input/XBIRRemote.h"
 #include "StdString.h"
 
 // Analogue - don't change order

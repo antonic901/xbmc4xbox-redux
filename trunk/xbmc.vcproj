@@ -862,7 +862,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\BitstreamStats.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\ButtonTranslator.cpp">
+					RelativePath=".\xbmc\input\ButtonTranslator.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\Cdg.cpp">
@@ -973,10 +973,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\JpegIO.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\KeyboardLayoutConfiguration.cpp">
+					RelativePath=".\xbmc\input\KeyboardLayoutConfiguration.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\KeyboardLayoutConfiguration.h">
+					RelativePath=".\xbmc\input\KeyboardLayoutConfiguration.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\LabelFormatter.cpp">
@@ -2814,7 +2814,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\BusyIndicator.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\ButtonTranslator.h">
+				RelativePath=".\xbmc\input\ButtonTranslator.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\CDDADirectory.h">
@@ -3354,7 +3354,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\XBInputEx.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\XBIRRemote.h">
+				RelativePath=".\xbmc\input\XBIRRemote.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\XBMSDirectory.h">

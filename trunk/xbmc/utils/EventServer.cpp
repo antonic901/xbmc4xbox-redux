@@ -31,7 +31,7 @@
 #include "CriticalSection.h"
 #include "Application.h"
 #include "Util.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "SingleLock.h"
 #include "GUIAudioManager.h"
 #include "utils/log.h"

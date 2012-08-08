@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "KeyboardLayoutConfiguration.h"
+#include "input/KeyboardLayoutConfiguration.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 

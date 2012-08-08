@@ -35,7 +35,7 @@
 #include "PlayListPlayer.h"
 #include "PartyModeManager.h"
 #include "visualizations/Visualisation.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "MusicDatabase.h"
 #include "utils/AlarmClock.h"
 #include "CharsetConverter.h"

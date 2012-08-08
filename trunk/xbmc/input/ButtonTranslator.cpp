@@ -22,7 +22,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "interfaces/Builtins.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "Util.h"
 #include "settings/Settings.h"
 #include "SkinInfo.h"

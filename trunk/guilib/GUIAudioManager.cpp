@@ -25,7 +25,7 @@
 #include "AudioContext.h"
 #include "GUISound.h"
 #include "settings/GUISettings.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "utils/SingleLock.h"
 #include "../xbmc/utils/URIUtils.h"
 #include "../xbmc/FileSystem/Directory.h"

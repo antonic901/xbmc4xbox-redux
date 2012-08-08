@@ -25,7 +25,7 @@
 #include "settings/GUIWindowSettingsCategory.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "KeyboardLayoutConfiguration.h"
+#include "input/KeyboardLayoutConfiguration.h"
 #include "FileSystem/Directory.h"
 #include "Util.h"
 #include "GUILabelControl.h"

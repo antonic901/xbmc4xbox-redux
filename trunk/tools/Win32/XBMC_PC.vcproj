@@ -1627,7 +1627,7 @@
 					RelativePath="..\..\xbmc\utils\BitstreamStats.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\ButtonTranslator.cpp">
+					RelativePath="..\..\xbmc\input\ButtonTranslator.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\CharsetConverter.cpp">
@@ -1720,10 +1720,10 @@
 					RelativePath="..\..\xbmc\utils\JpegIO.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\KeyboardLayoutConfiguration.cpp">
+					RelativePath="..\..\xbmc\input\KeyboardLayoutConfiguration.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\KeyboardLayoutConfiguration.h">
+					RelativePath="..\..\xbmc\input\KeyboardLayoutConfiguration.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\LabelFormatter.cpp">
@@ -3115,7 +3115,7 @@
 				RelativePath="..\..\xbmc\BusyIndicator.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\ButtonTranslator.h">
+				RelativePath="..\..\xbmc\input\ButtonTranslator.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\FileSystem\cddb.h">

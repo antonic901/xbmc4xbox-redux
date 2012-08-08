@@ -27,7 +27,7 @@
 #include "ApplicationMessenger.h"
 #include "Autorun.h"
 #include "Builtins.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "FileItem.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIDialogKeyboard.h"

@@ -25,7 +25,7 @@
 #include "Application.h"
 #include "GUIDialogMusicOSD.h"
 #include "utils/GUIInfoManager.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "GUIDialogVisualisationPresetList.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

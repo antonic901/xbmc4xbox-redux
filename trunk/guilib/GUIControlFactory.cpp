@@ -57,7 +57,7 @@
 #include "GUIListGroup.h"
 #include "utils/GUIInfoManager.h"
 #include "utils/CharsetConverter.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "XMLUtils.h"
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"

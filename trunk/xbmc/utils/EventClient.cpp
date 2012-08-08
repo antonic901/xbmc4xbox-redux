@@ -27,7 +27,7 @@
 #include "EventPacket.h"
 #include "Application.h"
 #include "SingleLock.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "GraphicContext.h"
 #include "Key.h"
 #include "FileSystem/File.h"

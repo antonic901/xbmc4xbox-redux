@@ -58,7 +58,7 @@
 #include "utils/RegExp.h"
 #include "utils/AlarmClock.h"
 #include "utils/RssFeed.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "Picture.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "GUIDialogMusicScan.h"

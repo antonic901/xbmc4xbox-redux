@@ -24,7 +24,7 @@
 #include "Application.h"
 #include "interfaces/Builtins.h"
 #include "Splash.h"
-#include "KeyboardLayoutConfiguration.h"
+#include "input/KeyboardLayoutConfiguration.h"
 #include "LangInfo.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/XKEEPROM.h"
@@ -56,7 +56,7 @@
 #include "GUITextLayout.h"
 #include "SkinInfo.h"
 #include "lib/libPython/XBPython.h"
-#include "ButtonTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "GUIAudioManager.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"
 #include "lib/libscrobbler/librefmscrobbler.h"
