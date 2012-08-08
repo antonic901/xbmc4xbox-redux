@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIWindowSystemInfo.h"
+#include "windows/GUIWindowSystemInfo.h"
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "LocalizeStrings.h"

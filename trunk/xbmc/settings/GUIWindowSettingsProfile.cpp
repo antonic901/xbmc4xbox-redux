@@ -20,7 +20,7 @@
  */
 
 #include "settings/GUIWindowSettingsProfile.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "settings/Profile.h"
 #include "Application.h"
 #include "dialogs/GUIDialogContextMenu.h"

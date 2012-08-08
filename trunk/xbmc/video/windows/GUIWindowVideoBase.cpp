@@ -42,7 +42,7 @@
 #include "FileSystem/MultiPathDirectory.h"
 #include "video/dialogs/GUIDialogFileStacking.h"
 #include "dialogs/GUIDialogMediaSource.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "PartyModeManager.h"
 #include "GUIWindowManager.h"

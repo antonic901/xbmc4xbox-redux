@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIWindowWeather.h"
+#include "windows/GUIWindowWeather.h"
 #include "GUIImage.h"
 #include "utils/Weather.h"
 #include "settings/GUISettings.h"

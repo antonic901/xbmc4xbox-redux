@@ -38,7 +38,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "GUIDialogKeyboard.h"
 #include "GUIEditControl.h"

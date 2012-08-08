@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "ProgramDatabase.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "ThumbLoader.h"

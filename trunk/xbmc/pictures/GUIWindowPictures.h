@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "FileSystem/VirtualDirectory.h"
 #include "FileSystem/DirectoryHistory.h"
 #include "pictures/GUIWindowSlideShow.h"

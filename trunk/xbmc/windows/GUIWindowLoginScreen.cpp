@@ -22,7 +22,7 @@
 #include "system.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "GUIWindowLoginScreen.h"
+#include "windows/GUIWindowLoginScreen.h"
 #include "settings/GUIWindowSettingsProfile.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "settings/GUIDialogProfileSettings.h"

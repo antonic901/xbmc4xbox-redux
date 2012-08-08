@@ -22,7 +22,7 @@
  */
 
 #include "GUIPythonWindow.h"
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 
 int Py_XBMC_Event_OnClick(void* arg);
 int Py_XBMC_Event_OnFocus(void* arg);

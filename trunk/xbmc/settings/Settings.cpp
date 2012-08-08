@@ -26,7 +26,7 @@
 #include "input/KeyboardLayoutConfiguration.h"
 #include "Util.h"
 #include "URL.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "dialogs/GUIDialogButtonMenu.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "GUIFontManager.h"

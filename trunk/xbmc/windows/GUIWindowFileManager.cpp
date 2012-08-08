@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "Application.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "video/VideoDatabase.h"
 #include "PlayListPlayer.h"
 #include "ThumbLoader.h"

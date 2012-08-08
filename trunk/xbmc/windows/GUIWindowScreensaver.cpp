@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIWindowScreensaver.h"
+#include "windows/GUIWindowScreensaver.h"
 #ifdef HAS_SCREENSAVER
 #include "screensavers/ScreenSaverFactory.h"
 #endif

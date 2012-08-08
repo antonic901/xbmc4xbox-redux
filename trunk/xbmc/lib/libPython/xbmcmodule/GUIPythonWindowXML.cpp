@@ -22,7 +22,7 @@
 #include "GUIPythonWindowXML.h"
 #include "GUIWindow.h"
 #include "pyutil.h"
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "window.h"
 #include "control.h"
 #include "action.h"

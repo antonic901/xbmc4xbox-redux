@@ -2206,10 +2206,10 @@
 					RelativePath="..\..\xbmc\GUILargeTextureManager.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIMediaWindow.cpp">
+					RelativePath="..\..\xbmc\windows\GUIMediaWindow.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIMediaWindow.h">
+					RelativePath="..\..\xbmc\windows\GUIMediaWindow.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIViewStateGameSaves.cpp">
@@ -2236,7 +2236,7 @@
 					RelativePath="..\..\xbmc\GUIViewStateScripts.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowFileManager.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowFileManager.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\video\windows\GUIWindowFullScreen.cpp">
@@ -2248,13 +2248,13 @@
 					RelativePath="..\..\xbmc\GUIWindowGameSaves.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowHome.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowHome.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowLoginScreen.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowLoginScreen.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowLoginScreen.h">
+					RelativePath="..\..\xbmc\windows\GUIWindowLoginScreen.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowOSD.cpp">
@@ -2263,13 +2263,13 @@
 					RelativePath="..\..\xbmc\pictures\GUIWindowPictures.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowPointer.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowPointer.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\programs\GUIWindowPrograms.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowScreensaver.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowScripts.cpp">
@@ -2281,19 +2281,19 @@
 					RelativePath="..\..\xbmc\pictures\GUIWindowSlideShow.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowStartup.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowStartup.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowStartup.h">
+					RelativePath="..\..\xbmc\windows\GUIWindowStartup.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowSystemInfo.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowSystemInfo.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\music\windows\GUIWindowVisualisation.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowWeather.cpp">
+					RelativePath="..\..\xbmc\windows\GUIWindowWeather.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\pictures\SlideShowPicture.cpp">
@@ -3247,13 +3247,13 @@
 				RelativePath="..\..\xbmc\GUIUserMessages.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowFileManager.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowFileManager.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\video\windows\GUIWindowFullScreen.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowHome.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowHome.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\windows\GUIWindowMusicBase.h">
@@ -3277,13 +3277,13 @@
 				RelativePath="..\..\xbmc\pictures\GUIWindowPictures.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowPointer.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowPointer.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\programs\GUIWindowPrograms.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowScreensaver.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowScripts.h">
@@ -3307,7 +3307,7 @@
 				RelativePath="..\..\xbmc\pictures\GUIWindowSlideShow.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowSystemInfo.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowSystemInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\video\windows\GUIWindowVideoBase.h">
@@ -3328,7 +3328,7 @@
 				RelativePath="..\..\xbmc\music\windows\GUIWindowVisualisation.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowWeather.h">
+				RelativePath="..\..\xbmc\windows\GUIWindowWeather.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\FileSystem\HDDirectory.h">

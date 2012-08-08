@@ -23,7 +23,7 @@
 #include "Util.h"
 #include "FileSystem/ZipManager.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "GUIPassword.h"
 #include <fstream>
 //#include "Utils/HTTP.h"  // For Download Function

@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 
 class CGUIWindowGameSaves : public CGUIMediaWindow
 {

@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "storage/DetectDVDType.h"
@@ -35,7 +35,7 @@
 #include "utils/RegExp.h"
 #include "PartyModeManager.h"
 #include "dialogs/GUIDialogMediaSource.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "Favourites.h"
 #include "utils/LabelFormatter.h"
 #include "dialogs/GUIDialogProgress.h"

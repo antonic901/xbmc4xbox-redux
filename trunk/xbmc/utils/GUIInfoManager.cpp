@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "dialogs/GUIDialogSeekBar.h"
-#include "GUIMediaWindow.h"
+#include "windows/GUIMediaWindow.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "dialogs/GUIDialogProgress.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowStartup.h"
+#include "windows/GUIWindowStartup.h"
 
 CGUIWindowStartup::CGUIWindowStartup(void)
     : CGUIWindow(WINDOW_STARTUP, "Startup.xml")

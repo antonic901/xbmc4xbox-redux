@@ -22,7 +22,7 @@
 #include "ProgramDatabase.h"
 #include "Util.h"
 #include "xbox/xbeheader.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"
 #include "utils/URIUtils.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowPointer.h"
+#include "windows/GUIWindowPointer.h"
 
 
 #define ID_POINTER 10

@@ -24,7 +24,7 @@
 #include "lib/libPython/XBPython.h"
 #include "GUIWindowScriptsInfo.h"
 #include "GUIWindowManager.h"
-#include "GUIWindowFileManager.h"
+#include "windows/GUIWindowFileManager.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "ScriptSettings.h"
