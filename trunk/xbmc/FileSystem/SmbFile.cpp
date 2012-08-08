@@ -32,8 +32,8 @@
 #include "xbox/Network.h"
 #include "utils/Win32Exception.h"
 #include "lib/libsmb/xbLibSmb.h"
-#include "AdvancedSettings.h"
-#include "GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "utils/SingleLock.h"
 
 

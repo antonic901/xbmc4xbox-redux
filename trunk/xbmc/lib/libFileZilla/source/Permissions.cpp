@@ -25,7 +25,7 @@
 #include "Permissions.h"
 #include "misc\MarkupSTL.h"
 #include "options.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "Util.h"
 
 #ifdef _DEBUG

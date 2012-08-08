@@ -29,8 +29,8 @@
 #include "GUIDialogVisualisationPresetList.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #ifdef HAS_KARAOKE
 #include "CdgParser.h"
 #endif

@@ -21,8 +21,8 @@
 
 #include "VideoDatabase.h"
 #include "DirectoryNodeOverview.h"
-#include "AdvancedSettings.h"
-#include "Settings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 

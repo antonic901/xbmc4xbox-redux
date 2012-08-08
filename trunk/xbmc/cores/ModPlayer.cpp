@@ -22,7 +22,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "modplayer.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "SectionLoader.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"

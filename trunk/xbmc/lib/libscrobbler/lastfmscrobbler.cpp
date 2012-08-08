@@ -21,7 +21,7 @@
 
 #include "lastfmscrobbler.h"
 #include "Application.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 

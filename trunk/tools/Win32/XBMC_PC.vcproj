@@ -1198,10 +1198,10 @@
 				Name="Settings"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\AdvancedSettings.cpp">
+					RelativePath="..\..\xbmc\settings\AdvancedSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\AdvancedSettings.h">
+					RelativePath="..\..\xbmc\settings\AdvancedSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogPluginSettings.cpp">
@@ -1210,19 +1210,19 @@
 					RelativePath="..\..\xbmc\GUIDialogPluginSettings.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUISettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowSettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUIWindowSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowSettingsCategory.cpp">
+					RelativePath="..\..\xbmc\settings\GUIWindowSettingsCategory.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowSettingsProfile.cpp">
+					RelativePath="..\..\xbmc\settings\GUIWindowSettingsProfile.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowSettingsScreenCalibration.cpp">
+					RelativePath="..\..\xbmc\settings\GUIWindowSettingsScreenCalibration.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\PluginSettings.cpp">
@@ -1243,10 +1243,10 @@
 					RelativePath="..\..\xbmc\ScriptSettings.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Settings.cpp">
+					RelativePath="..\..\xbmc\settings\Settings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\SettingsControls.cpp">
+					RelativePath="..\..\xbmc\settings\SettingsControls.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\settings\VideoSettings.cpp">
@@ -1792,7 +1792,7 @@
 					RelativePath="..\..\xbmc\Picture.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Profile.cpp">
+					RelativePath="..\..\xbmc\settings\Profile.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\RecentlyAddedJob.cpp">
@@ -2037,10 +2037,10 @@
 					RelativePath="..\..\xbmc\GUIDialogButtonMenu.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogContentSettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUIDialogContentSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogContentSettings.h">
+					RelativePath="..\..\xbmc\settings\GUIDialogContentSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogContextMenu.cpp">
@@ -2076,10 +2076,10 @@
 					RelativePath="..\..\xbmc\GUIDialogKeyboard.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogLockSettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUIDialogLockSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogLockSettings.h">
+					RelativePath="..\..\xbmc\settings\GUIDialogLockSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogMediaSource.cpp">
@@ -2121,10 +2121,10 @@
 					RelativePath="..\..\xbmc\GUIDialogPlayerControls.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogProfileSettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUIDialogProfileSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogProfileSettings.h">
+					RelativePath="..\..\xbmc\settings\GUIDialogProfileSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogProgress.cpp">
@@ -2139,10 +2139,10 @@
 					RelativePath="..\..\xbmc\GuiDialogSelect.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogSettings.cpp">
+					RelativePath="..\..\xbmc\settings\GUIDialogSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogSettings.h">
+					RelativePath="..\..\xbmc\settings\GUIDialogSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIDialogSlider.cpp">
@@ -3241,7 +3241,7 @@
 				RelativePath="..\..\xbmc\GUIPassword.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUISettings.h">
+				RelativePath="..\..\xbmc\settings\GUISettings.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIUserMessages.h">
@@ -3292,16 +3292,16 @@
 				RelativePath="..\..\xbmc\GUIWindowScriptsInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowSettings.h">
+				RelativePath="..\..\xbmc\settings\GUIWindowSettings.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowSettingsCategory.h">
+				RelativePath="..\..\xbmc\settings\GUIWindowSettingsCategory.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowSettingsProfile.h">
+				RelativePath="..\..\xbmc\settings\GUIWindowSettingsProfile.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowSettingsScreenCalibration.h">
+				RelativePath="..\..\xbmc\settings\GUIWindowSettingsScreenCalibration.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowSlideShow.h">
@@ -3460,7 +3460,7 @@
 				RelativePath="..\..\xbmc\PlayListWPL.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\Profile.h">
+				RelativePath="..\..\xbmc\settings\Profile.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\RegExp.h">
@@ -3472,10 +3472,10 @@
 				RelativePath="..\..\xbmc\SectionLoader.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\Settings.h">
+				RelativePath="..\..\xbmc\settings\Settings.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\SettingsControls.h">
+				RelativePath="..\..\xbmc\settings\SettingsControls.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\SharedSection.h">

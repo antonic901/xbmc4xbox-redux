@@ -25,10 +25,10 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "Key.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "VideoInfoTag.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 bool CFavourites::Load(CFileItemList &items)
 {

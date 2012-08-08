@@ -25,7 +25,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileSystem/SpecialProtocol.h"
 
 #include <cstring>

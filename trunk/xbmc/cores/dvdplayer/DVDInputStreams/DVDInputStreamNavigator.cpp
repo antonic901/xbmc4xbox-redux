@@ -25,7 +25,7 @@
 #include "LangCodeExpander.h"
 #include "DVDDemuxSPU.h"
 #include "DVDStateSerializer.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileSystem/IFile.h"
 #include "LangInfo.h"
 

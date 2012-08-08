@@ -26,7 +26,7 @@
 #endif
 #include "Application.h"
 #include "GUIPassword.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "utils/SingleLock.h"

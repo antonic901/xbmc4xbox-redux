@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIDialogFileBrowser.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/FanController.h"
@@ -34,7 +34,7 @@
 #endif
 #include "MediaManager.h"
 #include "FileSystem/SpecialProtocol.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace std;

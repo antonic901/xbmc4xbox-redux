@@ -14,7 +14,7 @@
 #include "utils/CriticalSection.h"
 #include "utils/SingleLock.h"
 #include "utils/GUIInfoManager.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileSystem/SpecialProtocol.h"
 
 using namespace std;

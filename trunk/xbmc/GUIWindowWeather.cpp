@@ -23,7 +23,7 @@
 #include "GUIWindowWeather.h"
 #include "GUIImage.h"
 #include "utils/Weather.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "Util.h"

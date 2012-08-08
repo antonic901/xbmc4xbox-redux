@@ -21,7 +21,7 @@
 
 #include "FileItem.h"
 
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "DVDInputStreamRTMP.h"
 #include "FileSystem/IFile.h"
 #include "utils/SingleLock.h"

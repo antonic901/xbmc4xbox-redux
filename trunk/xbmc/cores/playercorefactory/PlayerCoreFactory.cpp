@@ -36,7 +36,7 @@
 #include "XBAudioConfig.h"
 #include "FileSystem/CurlFile.h"
 #include "utils/HttpHeader.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"

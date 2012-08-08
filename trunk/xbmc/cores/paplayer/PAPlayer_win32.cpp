@@ -8,7 +8,7 @@
 #include "AudioContext.h"
 #include "FileSystem/ShoutcastFile.h"
 #include "Application.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "MusicInfoTag.h"
 #ifdef HAS_KARAOKE

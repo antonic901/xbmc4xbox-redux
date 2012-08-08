@@ -36,7 +36,7 @@
 #include "GUIDialogProgress.h"
 #include "GUIDialogYesNo.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"

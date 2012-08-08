@@ -21,46 +21,42 @@
  *
  */
 
-#include "GUIDialogSettings.h"
-#include "MediaSource.h"
+#include "settings/GUIDialogSettings.h"
+#include "GUIPassword.h"
 
-class CGUIDialogProfileSettings : public CGUIDialogSettings
+class CGUIDialogLockSettings : public CGUIDialogSettings
 {
 public:
-  CGUIDialogProfileSettings(void);
-  virtual ~CGUIDialogProfileSettings(void);
+  CGUIDialogLockSettings(void);
+  virtual ~CGUIDialogLockSettings(void);
   virtual bool OnMessage(CGUIMessage &message);
-
-  static bool ShowForProfile(unsigned int iProfile, bool bDetails=true);
+  static bool ShowAndGetLock(LockType& iLockMode, CStdString& strPassword, int iHeader=20091);
+  static bool ShowAndGetLock(LockType& iLockMode, CStdString& strPassword, bool& bLockMusic, bool& bLockVideo, bool& bLockPictures, bool& bLockPrograms, bool& bLockFiles, bool& bLockSettings, int iButtonLabel=20091,bool bConditional=false, bool bDetails=true);
+  static bool ShowAndGetUserAndPassword(CStdString& strUser, CStdString& strPassword, const CStdString& strURL, bool *saveUserDetails);
 protected:
   virtual void OnCancel();
-  virtual void OnWindowLoaded();
   virtual void OnInitWindow();
   virtual void SetupPage();
   virtual void CreateSettings();
-  void OnSettingChanged(unsigned int setting);
   virtual void OnSettingChanged(SettingInfo &setting);
+  void EnableDetails(bool bEnable);
 
-  bool m_bNeedSave;
-  CStdString m_strName;
-  CStdString m_strThumb;
-  CStdString m_strDirectory;
-  int m_iSourcesMode;
-  int m_iDbMode;
-  bool m_bIsDefault;
-  bool m_bIsNewUser;
-  bool m_bShowDetails;
-
-  // lock stuff
-  CStdString m_strLockCode;
-  LockType m_iLockMode;
-  bool m_bLockSettings;
-  bool m_bLockMusic;
+  LockType m_iLock;
+  CStdString m_strLock;
+  CStdString m_strUser;
+  CStdString m_strURL;
+  bool m_bChanged;
+  bool m_bDetails;
+  bool m_bConditionalDetails;
+  bool m_bGetUser;
+  int m_iButtonLabel;
+  bool m_bLockMusic; 
   bool m_bLockVideo;
-  bool m_bLockFiles;
   bool m_bLockPictures;
   bool m_bLockPrograms;
-
-  CStdString m_strDefaultImage;
+  bool m_bLockFiles;
+  bool m_bLockSettings;
+  bool *m_saveUserDetails;
 };
+
 

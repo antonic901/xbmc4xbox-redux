@@ -44,7 +44,7 @@
 #include "PlayList.h"
 #include "musicInfoTag.h"
 #include "PictureInfoTag.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"

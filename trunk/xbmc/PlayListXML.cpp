@@ -31,7 +31,7 @@
 #include "cores/dllloader/exports/emu_msvcrt.h"
 #endif
 
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "MusicInfoTag.h"
 #include "utils/log.h"
 

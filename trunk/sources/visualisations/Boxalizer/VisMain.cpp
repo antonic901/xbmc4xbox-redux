@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "fft.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "Boxalizer.h"
 #include "xbmc_vis.h"
 

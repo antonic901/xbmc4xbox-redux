@@ -46,7 +46,7 @@
 #include "FileItem.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "MediaManager.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"

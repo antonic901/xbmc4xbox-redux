@@ -40,7 +40,7 @@
 #include "utils/LabelFormatter.h"
 #include "GUIDialogProgress.h"
 #include "GUIUserMessages.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
 #include "GUIImage.h"

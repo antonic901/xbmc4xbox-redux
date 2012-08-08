@@ -34,7 +34,7 @@
 #include "URL.h"
 #include "FileItem.h"
 #include "SkinInfo.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace std;

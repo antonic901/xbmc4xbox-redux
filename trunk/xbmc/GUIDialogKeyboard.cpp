@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIDialogKeyboard.h"
 #include "GUILabelControl.h"
 #include "GUIButtonControl.h"
@@ -31,8 +31,8 @@
 #include "GUIPassword.h"
 #include "utils/md5.h"
 #include "xbox/XKGeneral.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "CharsetConverter.h"
 

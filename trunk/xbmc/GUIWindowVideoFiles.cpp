@@ -31,7 +31,7 @@
 #include "PlayListPlayer.h"
 #include "GUIPassword.h"
 #include "GUIDialogMediaSource.h"
-#include "GUIDialogContentSettings.h"
+#include "settings/GUIDialogContentSettings.h"
 #include "GUIDialogVideoScan.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "utils/RegExp.h"

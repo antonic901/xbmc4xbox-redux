@@ -27,7 +27,7 @@
 #include "FileSystem/ShoutcastFile.h"
 #include "CdgParser.h"
 #include "MusicInfoTag.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 
 #define VOLUME_FFWD_MUTE 900 // 9dB

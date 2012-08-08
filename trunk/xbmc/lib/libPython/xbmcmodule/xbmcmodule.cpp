@@ -39,7 +39,7 @@
 #include "Util.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "TextureManager.h"
 #include "language.h"
 #include "LangInfo.h"

@@ -35,8 +35,8 @@
 #include "GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "PlayList.h"
 
 using namespace std;

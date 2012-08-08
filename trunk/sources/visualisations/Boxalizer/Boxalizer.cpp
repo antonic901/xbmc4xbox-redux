@@ -1,5 +1,5 @@
 #include "Boxalizer.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 void CBoxalizer::CleanUp()
 {

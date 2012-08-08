@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIWindowSettingsScreenCalibration.h"
+#include "settings/GUIWindowSettingsScreenCalibration.h"
 #include "GUIMoverControl.h"
 #include "GUIResizeControl.h"
 #include "GUILabelControl.h"
@@ -28,7 +28,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "Application.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogYesNo.h"
 #include "GUIFontManager.h"

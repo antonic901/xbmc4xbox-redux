@@ -20,7 +20,7 @@
 
 
 #include "utils/log.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "Ac97DirectSound.h"
 #include "AudioContext.h"
 

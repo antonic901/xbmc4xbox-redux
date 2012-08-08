@@ -32,7 +32,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/Directory.h"
 #include "Util.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "CharsetConverter.h"
 #include "utils/URIUtils.h"

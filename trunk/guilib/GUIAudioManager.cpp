@@ -24,7 +24,7 @@
 #include "Key.h"
 #include "AudioContext.h"
 #include "GUISound.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "ButtonTranslator.h"
 #include "utils/SingleLock.h"
 #include "../xbmc/utils/URIUtils.h"

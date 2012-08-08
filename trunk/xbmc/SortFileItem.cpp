@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "SortFileItem.h"
 #include "VideoInfoTag.h"
 #include "MusicInfoTag.h"

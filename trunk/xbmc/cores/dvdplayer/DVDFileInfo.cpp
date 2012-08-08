@@ -21,7 +21,7 @@
 
 #include "utils/log.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Picture.h"
 #include "VideoInfoTag.h"
 #include "Util.h"

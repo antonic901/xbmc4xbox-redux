@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIDialogSettings.h"
+#include "settings/GUIDialogSettings.h"
 #include "ScraperSettings.h"
 
 namespace VIDEO

@@ -24,7 +24,7 @@
 #include "Util.h"
 #include "FileSystem/Directory.h"
 #include "URL.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 

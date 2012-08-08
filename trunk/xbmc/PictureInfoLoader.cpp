@@ -21,7 +21,7 @@
 
 #include "PictureInfoLoader.h"
 #include "PictureInfoTag.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 
 CPictureInfoLoader::CPictureInfoLoader()

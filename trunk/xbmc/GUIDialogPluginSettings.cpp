@@ -45,7 +45,7 @@
 #include "GUIControlGroupList.h"
 #include "GUISettingsSliderControl.h"
 #include "utils/StringUtils.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "GUIInfoManager.h"
 #include "GUIDialogSelect.h"
 #include "LocalizeStrings.h"

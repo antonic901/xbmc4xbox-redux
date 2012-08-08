@@ -20,9 +20,9 @@
  */
 
 #include "PasswordManager.h"
-#include "GUIDialogLockSettings.h"
+#include "settings/GUIDialogLockSettings.h"
 #include "URL.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "XMLUtils.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"

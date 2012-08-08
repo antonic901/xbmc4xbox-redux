@@ -26,7 +26,7 @@
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "cores/dllloader/exports/emu_msvcrt.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "MusicInfoTag.h"
 #include "utils/CharsetConverter.h"
 

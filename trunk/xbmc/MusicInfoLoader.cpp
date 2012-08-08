@@ -29,7 +29,7 @@
 #include "utils/URIUtils.h"
 #include "MusicInfoTag.h"
 #include "FileSystem/File.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "Artist.h"
 #include "Album.h"

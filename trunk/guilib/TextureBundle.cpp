@@ -11,7 +11,7 @@
 #endif
 #include "lib/liblzo/LZO1X.H"
 #include "SkinInfo.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/SpecialProtocol.h"
 

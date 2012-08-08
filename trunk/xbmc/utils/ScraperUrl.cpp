@@ -21,7 +21,7 @@
 
 #include "XMLUtils.h"
 #include "ScraperUrl.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Util.h"
 #include "CharsetConverter.h"
 #include "URL.h"

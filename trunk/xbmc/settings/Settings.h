@@ -26,11 +26,11 @@
 #define DEFAULT_WEATHER_PLUGIN "Weather.com (standard)"
 
 #include "settings/VideoSettings.h"
-#include "GUISettings.h"
-#include "Profile.h"
+#include "settings/GUISettings.h"
+#include "settings/Profile.h"
 #include "MediaSource.h"
 #include "ViewState.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 #include <vector>
 #include <map>

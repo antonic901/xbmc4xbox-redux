@@ -45,7 +45,7 @@
 #include "DirectoryNodeMusicVideoAlbum.h"
 #include "VideoInfoTag.h"
 #include "URL.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
 #include "LocalizeStrings.h"

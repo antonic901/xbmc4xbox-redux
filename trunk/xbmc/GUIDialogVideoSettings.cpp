@@ -31,7 +31,7 @@
 #endif
 #include "VideoDatabase.h"
 #include "GUIDialogYesNo.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "SkinInfo.h"
 
 CGUIDialogVideoSettings::CGUIDialogVideoSettings(void)

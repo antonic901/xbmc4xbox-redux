@@ -21,7 +21,7 @@
  
 #include "system.h"
 #include "utils/log.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "DVDPlayerAudio.h"
 #include "DVDPlayer.h"
 #include "DVDCodecs/Audio/DVDAudioCodec.h"

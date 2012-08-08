@@ -21,7 +21,7 @@
 
 #include "Artist.h"
 #include "XMLUtils.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 using namespace std;
 

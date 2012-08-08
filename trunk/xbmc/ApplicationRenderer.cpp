@@ -24,7 +24,7 @@
 #include "Application.h"
 #include "ApplicationRenderer.h"
 #include "guiImage.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "GUIWindowManager.h"
 #include "utils/SingleLock.h"
 

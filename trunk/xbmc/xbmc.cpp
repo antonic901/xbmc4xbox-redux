@@ -28,7 +28,7 @@
 //
 
 #include "Application.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 
 CApplication g_application;

@@ -24,7 +24,7 @@
 
 #include "system.h"
 #include "ScreenSaver.h" 
-#include "Settings.h"
+#include "settings/Settings.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

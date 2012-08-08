@@ -1,5 +1,5 @@
 #include "BoxLine.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include <stdio.h>
 
 void CBoxLine::CleanUp()

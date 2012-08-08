@@ -22,7 +22,7 @@
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "utils/GUIInfoManager.h"

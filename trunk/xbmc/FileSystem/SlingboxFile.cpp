@@ -23,7 +23,7 @@
 #include "SlingboxFile.h"
 #include "File.h"
 #include "lib/SlingboxLib/SlingboxLib.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 #include "XMLUtils.h"
 

@@ -30,7 +30,7 @@
 #include "utils/Trainer.h"
 #include "utils/LabelFormatter.h"
 #include "Autorun.h"
-#include "Profile.h"
+#include "settings/Profile.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogYesNo.h"
 #include "GUIDialogKeyboard.h"

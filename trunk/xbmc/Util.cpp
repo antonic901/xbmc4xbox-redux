@@ -99,7 +99,7 @@
 #include "PlayList.h"
 #include "Crc32.h"
 #include "utils/RssReader.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleTagSami.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleStream.h"

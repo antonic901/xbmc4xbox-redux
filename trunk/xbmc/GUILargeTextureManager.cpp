@@ -21,10 +21,10 @@
 
 #include "GUILargeTextureManager.h"
 #include "Picture.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
 

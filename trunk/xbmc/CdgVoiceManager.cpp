@@ -21,7 +21,7 @@
 
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 //CdgChatter
 CCdgChatter::CCdgChatter()

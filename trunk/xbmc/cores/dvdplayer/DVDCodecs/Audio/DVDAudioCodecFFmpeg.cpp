@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "DVDAudioCodecFFmpeg.h"
 #include "DVDStreamInfo.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 
 CDVDAudioCodecFFmpeg::CDVDAudioCodecFFmpeg() : CDVDAudioCodec()
 {

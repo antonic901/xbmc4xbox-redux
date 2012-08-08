@@ -20,8 +20,8 @@
  */
 
 #include "LangInfo.h"
-#include "AdvancedSettings.h"
-#include "GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 

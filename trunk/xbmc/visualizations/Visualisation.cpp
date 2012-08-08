@@ -23,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "Visualisation.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 using namespace std;
 

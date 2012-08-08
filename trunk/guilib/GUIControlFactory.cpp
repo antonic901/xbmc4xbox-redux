@@ -62,7 +62,7 @@
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"
 #include "SkinInfo.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 using namespace std;
 

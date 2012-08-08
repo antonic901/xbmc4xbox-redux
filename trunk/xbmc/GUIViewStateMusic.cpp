@@ -24,8 +24,8 @@
 #include "PlayListPlayer.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
 #include "VideoDatabase.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "LocalizeStrings.h"

@@ -28,7 +28,7 @@
 #endif
 #include "FileItem.h"
 #include "DirectoryCache.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 using namespace std;
 using namespace XFILE;

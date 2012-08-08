@@ -24,7 +24,7 @@
 #include "RssReader.h"
 #include "utils/HTMLUtil.h"
 #include "xbox/network.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
 #include "FileSystem/File.h"

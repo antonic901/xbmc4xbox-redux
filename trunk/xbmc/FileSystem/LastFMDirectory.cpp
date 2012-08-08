@@ -30,7 +30,7 @@
 #include "GUIDialogOK.h"
 #include "GUIDialogProgress.h"
 #include "GUIDialogKeyboard.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "CurlFile.h"
 #include "utils/StringUtils.h"

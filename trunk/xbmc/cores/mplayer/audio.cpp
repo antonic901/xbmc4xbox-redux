@@ -20,7 +20,7 @@
  */
  
 #include "utils/log.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "audio.h"
 #include "IDirectSoundRenderer.h"
 #include "ASyncDirectSound.h"

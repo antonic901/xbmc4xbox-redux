@@ -23,7 +23,7 @@
 #include "GUIDialogSeekBar.h"
 #include "GUIMediaWindow.h"
 #include "GUIDialogFileBrowser.h"
-#include "GUIDialogContentSettings.h"
+#include "settings/GUIDialogContentSettings.h"
 #include "GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
@@ -64,7 +64,7 @@
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
 #include "PlayList.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
 

@@ -19,12 +19,12 @@
  *
  */
 
-#include "SettingsControls.h"
+#include "settings/SettingsControls.h"
 #include "GUIDialogNumeric.h"
 #include "Util.h"
 #include "GUIDialogOK.h"
 #include "GUIDialogKeyboard.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIImage.h"
 #include "LocalizeStrings.h"
 

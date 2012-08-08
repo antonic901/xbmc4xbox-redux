@@ -19,9 +19,9 @@
  *
  */
 
-#include "Profile.h"
+#include "settings/Profile.h"
 #include "utils/GUIInfoManager.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 CProfile::CProfile(void)
 {

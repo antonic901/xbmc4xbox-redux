@@ -34,12 +34,12 @@
 
 #include "XBPython.h"
 #include "XBPythonDll.h"
-#include "Settings.h"
-#include "Profile.h"
+#include "settings/Settings.h"
+#include "settings/Profile.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "xbox/network.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 
 XBPython g_pythonParser;

@@ -27,7 +27,7 @@
 #include "CriticalSection.h"
 #include "Socket.h"
 #include "EventPacket.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include <map>
 #include <queue>
 

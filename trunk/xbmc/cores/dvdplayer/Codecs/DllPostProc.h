@@ -17,7 +17,7 @@ extern "C" {
 #include "Codecs/ffmpeg/libpostproc/postprocess.h"
 }
 
-#include "settings.h"
+#include "settings/Settings.h"
 
 class DllPostProcInterface
 {

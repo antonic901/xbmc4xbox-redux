@@ -26,7 +26,7 @@ extern "C" {
 }
 
 #include "utils/SingleLock.h"
-#include "settings.h"
+#include "settings/Settings.h"
 
 class DllAvCodecInterface
 {

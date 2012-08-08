@@ -46,7 +46,7 @@
 #include "MusicInfoTag.h"
 #include "FileSystem/Directory.h"
 #include "URL.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

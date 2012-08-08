@@ -41,10 +41,10 @@
 #include "GUIUserMessages.h"
 #include "GUIDialogProgress.h"
 #include "GUIDialogYesNo.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "PlayList.h"
 #include "Crc32.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 

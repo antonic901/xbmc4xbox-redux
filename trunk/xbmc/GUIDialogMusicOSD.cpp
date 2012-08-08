@@ -20,7 +20,7 @@
  */
 
 #include "GUIDialogMusicOSD.h"
-#include "GUIWindowSettingsCategory.h"
+#include "settings/GUIWindowSettingsCategory.h"
 #include "Application.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

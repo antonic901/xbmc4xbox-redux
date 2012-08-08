@@ -24,9 +24,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "ShoutcastFile.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "GUIDialogProgress.h"
 #include "GUIWindowManager.h"
 #include "URL.h"

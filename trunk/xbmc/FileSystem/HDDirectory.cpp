@@ -29,7 +29,7 @@
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
 #include "URL.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "utils/CharsetConverter.h"
 #include "utils/CriticalSection.h"

@@ -32,7 +32,7 @@
 #include "FileItem.h"
 #include "Album.h"
 #include "Artist.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include <vector>
 #include "utils/log.h"
 

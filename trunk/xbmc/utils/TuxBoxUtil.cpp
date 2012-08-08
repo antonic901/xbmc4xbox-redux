@@ -36,7 +36,7 @@
 #include "GUIDialogYesNo.h"
 #include "FileSystem/File.h"
 #include "URL.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"

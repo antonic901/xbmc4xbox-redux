@@ -22,7 +22,7 @@
 #include "GUIWindowSettingsUICalibration.h"
 #include "GUIMoverControl.h"
 #include "Application.h"
-#include "GUIWindowSettingsScreenCalibration.h"
+#include "settings/GUIWindowSettingsScreenCalibration.h"
 
 #define CONTROL_TOPLEFT 8
 #define CONTROL_BOTTOMRIGHT 9

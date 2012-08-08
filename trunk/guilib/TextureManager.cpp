@@ -33,7 +33,7 @@
 #include "../xbmc/FileSystem/File.h"
 #include "../xbmc/FileSystem/Directory.h"
 #include "../xbmc/FileSystem/SpecialProtocol.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 #ifdef HAS_XBOX_D3D
 #include <XGraphics.h>

@@ -20,7 +20,7 @@
  */
 
 #include "RssFeed.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "FileSystem/CurlFile.h"
 #include "tinyXML/tinyxml.h"

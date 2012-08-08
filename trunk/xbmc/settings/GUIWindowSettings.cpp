@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIWindowSettings.h"
+#include "settings/GUIWindowSettings.h"
 #include "GUIWindowManager.h"
 #ifdef HAS_CREDITS
 #include "Credits.h"

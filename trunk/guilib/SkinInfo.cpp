@@ -22,11 +22,11 @@
 #include "include.h"
 #include "SkinInfo.h"
 #include "GUIWindowManager.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "utils/URIUtils.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/StringUtils.h"
 
 using namespace std;

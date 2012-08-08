@@ -25,7 +25,7 @@
 #include "options.h"
 #if defined(_XBOX)
 #include "util.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #endif
 #include "ServerThread.h"
 #ifndef NOLAYERS

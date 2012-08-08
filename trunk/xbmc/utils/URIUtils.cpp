@@ -31,7 +31,7 @@
 #include "FileSystem/MythDirectory.h"
 #include "DNSNameCache.h"
 #include "xbox/network.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "URL.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"

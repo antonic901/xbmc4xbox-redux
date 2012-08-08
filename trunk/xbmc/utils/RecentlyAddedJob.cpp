@@ -29,7 +29,7 @@
 #include "Key.h"
 #include "MusicDatabase.h"
 #include "MusicInfoTag.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/Variant.h"
 
 #define NUM_ITEMS 10

@@ -21,8 +21,8 @@
 
 #include "Picture.h"
 #include "TextureManager.h"
-#include "AdvancedSettings.h"
-#include "GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"

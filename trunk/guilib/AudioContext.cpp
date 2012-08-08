@@ -23,8 +23,8 @@
 #include "AudioContext.h"
 #include "GUIAudioManager.h"
 #include "IAudioDeviceChangedCallback.h"
-#include "Settings.h"
-#include "GUISettings.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "XBAudioConfig.h"
 #include "utils/log.h"
 

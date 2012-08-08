@@ -23,7 +23,7 @@
 #include "DllLibCMyth.h"
 #include "MythSession.h"
 #include "VideoInfoTag.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "XBDateTime.h"
 #include "FileItem.h"
 #include "URL.h"

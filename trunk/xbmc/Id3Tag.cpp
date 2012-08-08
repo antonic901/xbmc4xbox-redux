@@ -22,7 +22,7 @@
 #include "Id3Tag.h"
 #include "Util.h"
 #include "Picture.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"

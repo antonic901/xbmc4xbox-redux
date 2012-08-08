@@ -22,14 +22,14 @@
 #include <limits.h>
 
 #include "utils/log.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Application.h"
 #include "DNSNameCache.h"
 #include "FileSystem/File.h"
 #include "LangCodeExpander.h"
 #include "LangInfo.h"
 #include "utils/URIUtils.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 using namespace XFILE;
 

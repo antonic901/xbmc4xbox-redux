@@ -1,4 +1,4 @@
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "Boxalizer.h"
 #include <cstdio>
 #include <io.h>

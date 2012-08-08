@@ -28,8 +28,8 @@
 #include "utils/GUIInfoManager.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "GUISettings.h"
-#include "Settings.h"
+#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "utils/SingleLock.h"
 
 #ifndef _XBOX

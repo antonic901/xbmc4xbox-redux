@@ -20,15 +20,15 @@
  */
 
 #include "system.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "Application.h"
 #include "KeyboardLayoutConfiguration.h"
 #include "Util.h"
 #include "URL.h"
 #include "GUIWindowFileManager.h"
 #include "GUIDialogButtonMenu.h"
-#include "GUIDialogContentSettings.h"
+#include "settings/GUIDialogContentSettings.h"
 #include "GUIFontManager.h"
 #include "LangCodeExpander.h"
 #include "ButtonTranslator.h"

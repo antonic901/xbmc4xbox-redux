@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIDialogSettings.h"
+#include "settings/GUIDialogSettings.h"
 #include "GUIImage.h"
 #include "GUIControlGroupList.h"
 #include "LocalizeStrings.h"

@@ -24,7 +24,7 @@
 #include "FileSystem/cddb.h"
 #include "DetectDVDType.h"
 #include "MusicInfoTag.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 
 using namespace MEDIA_DETECT;

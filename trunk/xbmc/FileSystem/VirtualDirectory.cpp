@@ -24,7 +24,7 @@
 #include "VirtualDirectory.h"
 #include "DirectoryFactory.h"
 #include "Util.h"
-#include "Profile.h"
+#include "settings/Profile.h"
 #include "Directory.h"
 #include "DirectoryCache.h"
 #ifdef HAS_XBOX_HARDWARE

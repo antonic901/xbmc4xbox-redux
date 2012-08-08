@@ -25,7 +25,7 @@
 #include "utils/log.h"
 #include "Util.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 
 #define PRE_2_1_STACK_COMPATIBILITY

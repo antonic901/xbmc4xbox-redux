@@ -20,7 +20,7 @@
  *
  */
 
-#include "Settings.h" // for VECSOURCES
+#include "settings/Settings.h" // for VECSOURCES
 #include "URL.h"
 
 class CNetworkLocation

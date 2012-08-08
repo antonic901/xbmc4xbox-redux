@@ -25,7 +25,7 @@
 #include "utils/URIUtils.h"
 #include "FileSystem/File.h"
 #include "FileSystem/MythFile.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 extern "C"
 {

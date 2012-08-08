@@ -22,7 +22,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "interfaces/Builtins.h"
-#include "GUIWindowSettingsCategory.h"
+#include "settings/GUIWindowSettingsCategory.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "KeyboardLayoutConfiguration.h"
@@ -82,7 +82,7 @@
 #include "ScraperSettings.h"
 #include "ScriptSettings.h"
 #include "GUIDialogPluginSettings.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 

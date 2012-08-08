@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include <stdio.h>
 #include "AsyncDirectSound.h"
 #include "MPlayer.h"

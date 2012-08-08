@@ -32,7 +32,7 @@
 #include "ScraperParser.h"
 #include "NfoFile.h"
 #include "GUIDialogProgress.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "fstrcmp.h"
 #include "GUIDialogOK.h"
 #include "Application.h"

@@ -41,8 +41,8 @@
 #include "FileSystem/File.h"
 #include "FileSystem/RarManager.h"
 #include "FileSystem/ZipManager.h"
-#include "AdvancedSettings.h"
-#include "GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 
 using namespace XFILE;

@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogContentSettings.h"
+#include "settings/GUIDialogContentSettings.h"
 #include "GUIDialogPluginSettings.h"
 #include "Util.h"
 #include "VideoDatabase.h"
@@ -29,7 +29,7 @@
 #include "GUIWindowManager.h"
 #include "utils/ScraperParser.h"
 #include "FileItem.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "LangCodeExpander.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"

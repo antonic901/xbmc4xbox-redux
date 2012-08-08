@@ -35,7 +35,7 @@
 #include "Util.h"
 #include "interfaces/Builtins.h"
 #include "Utils/log.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "ApplicationMessenger.h"
 #include "utils/MemoryUnitManager.h"
 #endif

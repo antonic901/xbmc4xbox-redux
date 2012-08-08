@@ -20,7 +20,7 @@
  */
 
 #include "LabelFormatter.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "RegExp.h"
 #include "Util.h"
 #include "VideoInfoTag.h"

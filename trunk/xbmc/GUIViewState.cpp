@@ -35,7 +35,7 @@
 #include "AutoSwitch.h"
 #include "GUIWindowManager.h"
 #include "ViewState.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 
 using namespace std;

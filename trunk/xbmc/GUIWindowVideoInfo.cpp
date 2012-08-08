@@ -42,7 +42,7 @@
 #include "FileItem.h"
 #include "MediaManager.h"
 #include "utils/AsyncFileCopy.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
 #include "ApplicationMessenger.h"

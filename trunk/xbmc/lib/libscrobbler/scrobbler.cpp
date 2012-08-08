@@ -27,7 +27,7 @@
 #include "Util.h"
 #include "MusicInfoTag.h"
 #include "errors.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "XMLUtils.h"
 #include "Application.h"
 #include "strptime.h"

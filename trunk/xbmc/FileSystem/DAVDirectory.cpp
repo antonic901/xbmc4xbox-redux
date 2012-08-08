@@ -25,7 +25,7 @@
 #include "CurlFile.h"
 #include "FileItem.h"
 #include "utils/RegExp.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
 #include "XMLUtils.h"

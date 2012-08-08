@@ -16,7 +16,7 @@ extern "C" {
 #include "libavformat/riff.h"
 }
 
-#include "settings.h"
+#include "settings/Settings.h"
 
 typedef int64_t offset_t;
 

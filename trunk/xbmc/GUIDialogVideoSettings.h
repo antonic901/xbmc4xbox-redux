@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIDialogSettings.h"
+#include "settings/GUIDialogSettings.h"
 
 class CGUIDialogVideoSettings :
       public CGUIDialogSettings

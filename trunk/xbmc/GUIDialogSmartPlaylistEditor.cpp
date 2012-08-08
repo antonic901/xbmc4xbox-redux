@@ -26,8 +26,8 @@
 #include "GUIDialogSmartPlaylistRule.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
-#include "GUISettings.h"
-#include "Settings.h"
+#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 

@@ -23,7 +23,7 @@
 #include "HTSPDirectory.h"
 #include "URL.h"
 #include "FileItem.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "LocalizeStrings.h"
 #include "cores/dvdplayer/DVDInputStreams/DVDInputStreamHTSP.h"
 #include "utils/SingleLock.h"

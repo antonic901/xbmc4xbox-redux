@@ -22,7 +22,7 @@
 #include "MusicInfoTagLoaderMP3.h"
 #include "APEv2Tag.h"
 #include "Id3Tag.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileSystem/File.h"
 #include "utils/log.h"
 

@@ -21,8 +21,8 @@
 
 #include "utils/log.h"
 #include "DNSNameCache.h"
-#include "Settings.h"
-#include "GUISettings.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 
 CDNSNameCache g_DNSCache;
 

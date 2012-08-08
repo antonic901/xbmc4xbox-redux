@@ -31,7 +31,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogProgress.h"
 #include "tinyXML/tinyxml.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 
 using namespace XFILE;

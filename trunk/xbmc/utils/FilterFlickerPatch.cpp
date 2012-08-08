@@ -30,7 +30,7 @@
 
 #include "FilterFlickerPatch.h"
 #include "FileSystem/File.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "log.h"
 
 using namespace XFILE;

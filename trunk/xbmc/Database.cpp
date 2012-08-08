@@ -23,7 +23,7 @@
 #include "AutoPtrHandle.h"
 #include "Database.h"
 #include "utils/URIUtils.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "Crc32.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "AutoPtrHandle.h"

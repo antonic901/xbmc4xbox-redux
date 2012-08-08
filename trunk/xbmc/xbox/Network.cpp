@@ -29,7 +29,7 @@
 #include "FileSystem/SmbFile.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"
 #include "lib/libscrobbler/librefmscrobbler.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "ApplicationMessenger.h"
 #include "utils/RssReader.h"

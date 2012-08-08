@@ -22,8 +22,8 @@
  */
 
 #include "GUIWindow.h"
-#include "SettingsControls.h"
-#include "Settings.h"
+#include "settings/SettingsControls.h"
+#include "settings/Settings.h"
 #include "utils/Stopwatch.h"
 
 class CGUIWindowSettingsCategory :

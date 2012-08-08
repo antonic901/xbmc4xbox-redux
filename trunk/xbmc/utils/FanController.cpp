@@ -23,7 +23,7 @@
 #include "FanController.h"
 #include "xbox/Undocumented.h"
 #include "xbox/XKExports.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "utils/log.h"
 
 #define PIC_ADDRESS      0x20

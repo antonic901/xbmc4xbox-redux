@@ -24,8 +24,8 @@
 #include <share.h>
 #include "CriticalSection.h"
 #include "SingleLock.h"
-#include "Settings.h"
-#include "AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 
 FILE* CLog::fd = NULL;

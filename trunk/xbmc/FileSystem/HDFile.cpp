@@ -23,7 +23,7 @@
 #include "HDFile.h"
 #include "Util.h"
 #include "URL.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/CriticalSection.h"
 

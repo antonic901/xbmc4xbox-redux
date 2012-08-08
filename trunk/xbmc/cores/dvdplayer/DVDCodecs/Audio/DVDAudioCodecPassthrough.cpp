@@ -27,7 +27,7 @@
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDStreamInfo.h"
 #include "XBAudioConfig.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 #undef  MAX
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))

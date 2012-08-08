@@ -23,7 +23,7 @@
 #include "language.h"
 #include "pyutil.h"
 #include "utils/URIUtils.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "utils/CharsetConverter.h"
 
 #ifndef __GNUC__

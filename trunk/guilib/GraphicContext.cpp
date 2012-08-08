@@ -22,8 +22,8 @@
 #include "include.h"
 #include "GraphicContext.h"
 #include "GUIFontManager.h"
-#include "Settings.h"
-#include "GUISettings.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "XBVideoConfig.h"
 #include "GUIAudioManager.h"
 #ifdef HAS_XBOX_D3D

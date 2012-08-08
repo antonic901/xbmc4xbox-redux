@@ -23,7 +23,7 @@
 #include "ScraperParser.h"
 #include "ScraperSettings.h"
 #include "XMLUtils.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "CharsetConverter.h"
 #include "utils/log.h"
 

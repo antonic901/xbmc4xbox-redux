@@ -23,7 +23,7 @@
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
 #include "ViewState.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileSystem/Directory.h"
 
 using namespace XFILE;

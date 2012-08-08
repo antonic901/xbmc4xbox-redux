@@ -21,8 +21,8 @@
 
 #include "AutoSwitch.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
-#include "Settings.h"
-#include "GUISettings.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 

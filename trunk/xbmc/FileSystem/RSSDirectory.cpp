@@ -23,7 +23,7 @@
 #include "RSSDirectory.h"
 #include "FileItem.h"
 #include "CurlFile.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/HTMLUtil.h"
 #include "VideoInfoTag.h"
 #include "utils/URIUtils.h"

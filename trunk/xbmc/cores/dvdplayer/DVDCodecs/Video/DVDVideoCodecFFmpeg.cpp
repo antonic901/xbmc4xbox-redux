@@ -27,8 +27,8 @@
 #include "DVDClock.h"
 #include "DVDCodecs/DVDCodecs.h"
 #include "utils/Win32Exception.h"
-#include "AdvancedSettings.h"
-#include "GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 
 #define RINT(x) ((x) >= 0 ? ((int)((x) + 0.5)) : ((int)((x) - 0.5)))
 

@@ -6,7 +6,7 @@
 #include "..\Form1.h"
 #include "..\FormSnapShot.h"
 #include "Log.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "CallerTree.h"
 
 namespace XboxMemoryUsage

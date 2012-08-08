@@ -22,7 +22,7 @@
  */
 
 #include <vector>
-#include "Settings.h"  // for VECSOURCES
+#include "settings/Settings.h"  // for VECSOURCES
 
 class IDevice;
 class IFileSystem;

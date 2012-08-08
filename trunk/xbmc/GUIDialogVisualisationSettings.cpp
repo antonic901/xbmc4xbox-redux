@@ -22,7 +22,7 @@
 #include "GUIDialogVisualisationSettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIWindowSettingsCategory.h"
+#include "settings/GUIWindowSettingsCategory.h"
 #include "GUIControlGroupList.h"
 #include "utils/GUIInfoManager.h"
 #include "LocalizeStrings.h"

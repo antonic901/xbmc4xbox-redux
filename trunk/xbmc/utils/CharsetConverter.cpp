@@ -23,7 +23,7 @@
 #include "CharsetConverter.h"
 #include "Util.h"
 #include "ArabicShaping.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 #include "LangInfo.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"

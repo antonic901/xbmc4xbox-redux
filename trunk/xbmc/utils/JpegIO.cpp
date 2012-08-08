@@ -23,8 +23,8 @@
 
 #include "include.h"
 #include "lib/libexif/libexif.h"
-#include "GUISettings.h"
-#include "Settings.h"
+#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "../xbmc/FileSystem/File.h"
 #include "utils/log.h"
 #include "JpegIO.h"

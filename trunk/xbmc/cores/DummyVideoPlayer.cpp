@@ -24,7 +24,7 @@
 #include "GUIFontManager.h"
 #include "GUITextLayout.h"
 #include "Application.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 
 CDummyVideoPlayer::CDummyVideoPlayer(IPlayerCallback& callback)
     : IPlayer(callback),

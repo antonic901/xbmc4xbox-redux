@@ -22,7 +22,7 @@
 #include "MemBufferCache.h"
 #include "utils/log.h"
 #include "utils/SingleLock.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 
 #include <math.h>
 

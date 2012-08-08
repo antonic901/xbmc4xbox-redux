@@ -23,7 +23,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "tinyXML/tinyxml.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileSystem/File.h"
 #include "utils/log.h"
 

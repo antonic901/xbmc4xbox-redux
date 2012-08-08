@@ -39,9 +39,9 @@
 #include "GUIDialogAudioSubtitleSettings.h"
 #include "GUIDialogNumeric.h"
 #include "GUISliderControl.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/SingleLock.h"
 

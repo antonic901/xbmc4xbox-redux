@@ -23,7 +23,7 @@
 #include "utils/log.h"
 #include "BackgroundInfoLoader.h"
 #include "FileItem.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/SingleLock.h"
 
 using namespace std;

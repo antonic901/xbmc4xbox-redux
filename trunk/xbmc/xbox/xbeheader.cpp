@@ -2,7 +2,7 @@
 #include "AutoPtrHandle.h"
 #include "xbeheader.h"
 #include "Util.h"
-#include "GUISettings.h"
+#include "settings/GUISettings.h"
 
 using namespace AUTOPTR;
 

@@ -1,5 +1,5 @@
 
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "XBMCConfiguration.h"
 #include "utils/URIUtils.h"
 #include "includes.h"

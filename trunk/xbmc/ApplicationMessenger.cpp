@@ -37,7 +37,7 @@
 #include "lib/libGoAhead/XBMChttp.h"
 #include "xbox/network.h"
 #include "GUIWindowManager.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "GUIDialog.h"
 #include "SectionLoader.h"

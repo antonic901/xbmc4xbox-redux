@@ -53,7 +53,7 @@
 #include "GUIDialogProgress.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 

@@ -13,7 +13,7 @@
 #include "system.h"
 #include "XBApplicationEx.h"
 #include "XBVideoConfig.h"
-#include "Settings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 
 //-----------------------------------------------------------------------------

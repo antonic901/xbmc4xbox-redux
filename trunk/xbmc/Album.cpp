@@ -19,7 +19,7 @@
  *
  */
 
-#include "AdvancedSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Album.h"
 #include "XMLUtils.h"
 
