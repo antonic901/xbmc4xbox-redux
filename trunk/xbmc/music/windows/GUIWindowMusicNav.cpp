@@ -40,7 +40,7 @@
 #include "GUIUserMessages.h"
 #include "windows/GUIWindowFileManager.h"
 #include "dialogs/GUIDialogOK.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "GUIEditControl.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"

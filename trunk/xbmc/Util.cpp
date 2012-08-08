@@ -94,7 +94,7 @@
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "FileSystem/File.h"
 #include "playlists/PlayList.h"
 #include "utils/Crc32.h"

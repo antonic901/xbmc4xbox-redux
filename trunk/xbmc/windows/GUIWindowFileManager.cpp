@@ -42,7 +42,7 @@
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "FileSystem/RarManager.h"

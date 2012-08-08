@@ -20,7 +20,7 @@
  */
 
 #include "settings/GUIDialogContentSettings.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 #include "Util.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoInfoScanner.h"

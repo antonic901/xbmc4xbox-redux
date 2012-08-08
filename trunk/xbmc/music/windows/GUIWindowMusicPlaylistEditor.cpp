@@ -32,7 +32,7 @@
 #include "playlists/PlayListM3U.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 

@@ -25,7 +25,7 @@
 #include "ApplicationMessenger.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogGamepad.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "settings/GUIDialogLockSettings.h"
 #include "settings/GUIDialogProfileSettings.h"
 #include "Util.h"

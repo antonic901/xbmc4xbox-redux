@@ -23,7 +23,7 @@
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogGamepad.h"
 #include "settings/GUIDialogLockSettings.h"
 #include "GUIImage.h"

@@ -22,7 +22,7 @@
 #include "network/GUIDialogNetworkSetup.h"
 #include "GUISpinControlEx.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIWindowManager.h"
 #include "GUIEditControl.h"

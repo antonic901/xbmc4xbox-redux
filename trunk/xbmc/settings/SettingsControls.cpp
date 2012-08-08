@@ -23,7 +23,7 @@
 #include "dialogs/GUIDialogNumeric.h"
 #include "Util.h"
 #include "dialogs/GUIDialogOK.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "settings/GUISettings.h"
 #include "GUIImage.h"
 #include "LocalizeStrings.h"

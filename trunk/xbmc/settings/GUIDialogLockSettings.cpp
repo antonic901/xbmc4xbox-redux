@@ -21,7 +21,7 @@
 
 #include "settings/GUIDialogLockSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "GUIWindowManager.h"

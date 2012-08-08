@@ -46,14 +46,14 @@
 #include "GUIImage.h"
 #include "GUIMultiImage.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 #include "PluginSettings.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "playlists/PlayList.h"
 #include "FileSystem/FileDirectoryFactory.h"
 #include "GUIEditControl.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 
 #define CONTROL_BTNVIEWASICONS     2
 #define CONTROL_BTNSORTBY          3

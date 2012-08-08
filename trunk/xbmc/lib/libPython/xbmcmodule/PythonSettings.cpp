@@ -22,7 +22,7 @@
 #include "system.h"
 #include "PythonSettings.h"
 #include "pyutil.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 #include "Weather.h"
 #include "utils/URIUtils.h"
 

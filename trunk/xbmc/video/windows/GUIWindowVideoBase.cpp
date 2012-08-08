@@ -48,7 +48,7 @@
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "FileSystem/Directory.h"
 #include "playlists/PlayList.h"
 #include "settings/AdvancedSettings.h"

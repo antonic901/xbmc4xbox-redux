@@ -49,7 +49,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"

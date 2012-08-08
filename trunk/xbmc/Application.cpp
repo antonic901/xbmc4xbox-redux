@@ -156,9 +156,9 @@
 
 // Dialog includes
 #include "music/dialogs/GUIDialogMusicOSD.h"
-#include "GUIDialogVisualisationSettings.h"
+#include "dialogs/GUIDialogVisualisationSettings.h"
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
-#include "GUIDialogTrainerSettings.h"
+#include "dialogs/GUIDialogTrainerSettings.h"
 #include "GUIWindowScriptsInfo.h"
 #include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
@@ -172,7 +172,7 @@
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogTextViewer.h"
 
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -190,7 +190,7 @@
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "pictures/GUIDialogPictureInfo.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "dialogs/GUIDialogSlider.h"
 #include "cores/dlgcache.h"

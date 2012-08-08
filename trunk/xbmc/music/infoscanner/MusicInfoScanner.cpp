@@ -37,7 +37,7 @@
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "FileSystem/File.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"

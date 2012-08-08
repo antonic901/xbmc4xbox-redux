@@ -28,7 +28,7 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "ScriptSettings.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace XFILE;

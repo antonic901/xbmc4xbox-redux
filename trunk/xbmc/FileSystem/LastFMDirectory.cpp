@@ -29,7 +29,7 @@
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "CurlFile.h"

@@ -30,7 +30,7 @@
 #include "input/ButtonTranslator.h"
 #include "FileItem.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogYesNo.h"

@@ -29,7 +29,7 @@
 #include "PartyModeManager.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "GUIUserMessages.h"
 #include "Favourites.h"
 #include "LocalizeStrings.h"

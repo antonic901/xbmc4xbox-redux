@@ -442,10 +442,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\AdvancedSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPluginSettings.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogPluginSettings.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPluginSettings.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogPluginSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
@@ -1329,7 +1329,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogKeyboard.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogKeyboard.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUIDialogLockSettings.cpp">
@@ -1416,10 +1416,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogTextViewer.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogTrainerSettings.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogTrainerSettings.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogTrainerSettings.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogTrainerSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoBookmarks.cpp">
@@ -1440,10 +1440,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\dialogs\GUIDialogVisualisationPresetList.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogVisualisationSettings.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogVisualisationSettings.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogVisualisationSettings.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogVisualisationSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogVolumeBar.cpp">
@@ -2937,7 +2937,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogKeyboard.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogKeyboard.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\music\dialogs\GUIDialogMusicScan.h">

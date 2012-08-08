@@ -23,7 +23,7 @@
 #include "GUIEditControl.h"
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
-#include "GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "LocalizeStrings.h"
 #include "XBDateTime.h"

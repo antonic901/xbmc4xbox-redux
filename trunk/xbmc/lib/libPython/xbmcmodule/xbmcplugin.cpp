@@ -24,7 +24,7 @@
 #include "listitem.h"
 #include "PluginSettings.h"
 #include "FileItem.h"
-#include "GUIDialogPluginSettings.h"
+#include "dialogs/GUIDialogPluginSettings.h"
 
 // include for constants
 #include "pyutil.h"
