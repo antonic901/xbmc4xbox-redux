@@ -34,7 +34,7 @@
 #include "utils/URIUtils.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "settings/GUIDialogLockSettings.h"
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogYesNo.h"

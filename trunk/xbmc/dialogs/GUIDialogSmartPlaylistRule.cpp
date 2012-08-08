@@ -28,7 +28,7 @@
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
 #include "GUIEditControl.h"
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "LocalizeStrings.h"
 
 #define CONTROL_FIELD           15

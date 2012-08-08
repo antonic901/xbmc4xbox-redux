@@ -28,7 +28,7 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "LocalizeStrings.h"
 
 using namespace std;

@@ -26,7 +26,7 @@
 #include "music/MusicDatabase.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "TextureManager.h"
 #include "LocalizeStrings.h"
 

@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "FileSystem/cdioSupport.h"
 #include "FileSystem/iso9660.h"
 #ifdef HAS_UNDOCUMENTED

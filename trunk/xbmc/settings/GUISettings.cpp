@@ -32,7 +32,7 @@
 #ifdef HAS_XFONT
 #include <xfont.h>
 #endif
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"

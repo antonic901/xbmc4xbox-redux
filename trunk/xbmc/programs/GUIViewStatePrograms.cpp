@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIViewStatePrograms.h"
+#include "programs/GUIViewStatePrograms.h"
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
 #include "ViewState.h"

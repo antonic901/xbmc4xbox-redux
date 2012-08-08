@@ -22,7 +22,7 @@
 #include "system.h"
 #include "music/tags/MusicInfoTagLoaderCDDA.h"
 #include "FileSystem/cddb.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/Settings.h"
 #include "utils/log.h"

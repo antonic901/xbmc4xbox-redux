@@ -34,7 +34,7 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "VideoInfoTag.h"
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "FileSystem/Directory.h"
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"

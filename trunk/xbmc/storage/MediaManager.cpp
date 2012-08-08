@@ -19,7 +19,7 @@
  *
  */
 
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "xbox/IoSupport.h"
 #include "URL.h"
 #include "LocalizeStrings.h"

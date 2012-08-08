@@ -29,7 +29,7 @@
 #include "DDSImage.h"
 #include "JPEGIO.h"
 #include "utils/URIUtils.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include <XGraphics.h>
 #include "d3dx8.h"
 #include "XBTF.h"

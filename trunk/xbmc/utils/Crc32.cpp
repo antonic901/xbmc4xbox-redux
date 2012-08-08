@@ -18,7 +18,7 @@
  *
  */
 
-#include "Crc32.h"
+#include "utils/Crc32.h"
 
 uint32_t  crc_tab[256] =
 {

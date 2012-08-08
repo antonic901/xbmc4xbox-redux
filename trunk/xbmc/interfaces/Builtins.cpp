@@ -40,7 +40,7 @@
 #include "music/LastFmManager.h"
 #include "LCD.h"
 #include "log.h"
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "RssReader.h"
 #include "PartyModeManager.h"
 #include "settings/Settings.h"

@@ -22,7 +22,7 @@
 #include "interfaces/Builtins.h"
 #include "Autorun.h"
 #include "Application.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "Util.h"
 #include "GUIPassword.h"
 #include "PlayListPlayer.h"

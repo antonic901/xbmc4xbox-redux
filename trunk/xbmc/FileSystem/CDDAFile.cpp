@@ -24,7 +24,7 @@
 #include "CDDAFile.h"
 #include <sys/stat.h>
 #include "utils/URIUtils.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "URL.h"
 
 using namespace MEDIA_DETECT;

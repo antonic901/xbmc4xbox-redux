@@ -48,7 +48,7 @@
 #include "utils/LED.h"
 #endif
 #include "XBVideoConfig.h"
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "utils/GUIInfoManager.h"
 #include "playlists/PlayListFactory.h"
 #include "GUIFontManager.h"
@@ -138,7 +138,7 @@
 #include "GUIWindowVideoNav.h"
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
-#include "GUIWindowPrograms.h"
+#include "programs/GUIWindowPrograms.h"
 #include "pictures/GUIWindowPictures.h"
 #include "GUIWindowScripts.h"
 #include "GUIWindowWeather.h"

@@ -1633,7 +1633,7 @@
 					RelativePath="..\..\xbmc\utils\CharsetConverter.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Crc32.cpp">
+					RelativePath="..\..\xbmc\utils\Crc32.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\CriticalSection.cpp">
@@ -1648,7 +1648,7 @@
 					RelativePath="..\..\xbmc\utils\DelayController.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\DetectDVDType.cpp">
+					RelativePath="..\..\xbmc\storage\DetectDVDType.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\network\DNSNameCache.cpp">
@@ -1732,7 +1732,7 @@
 					RelativePath="..\..\xbmc\utils\LabelFormatter.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\LangCodeExpander.cpp">
+					RelativePath="..\..\xbmc\utils\LangCodeExpander.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\LangInfo.cpp">
@@ -1753,7 +1753,7 @@
 					RelativePath="..\..\xbmc\utils\md5.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\MediaManager.cpp">
+					RelativePath="..\..\xbmc\storage\MediaManager.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\MediaSource.cpp">
@@ -2224,10 +2224,10 @@
 					RelativePath="..\..\xbmc\pictures\GUIViewStatePictures.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStatePrograms.cpp">
+					RelativePath="..\..\xbmc\programs\GUIViewStatePrograms.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStatePrograms.h">
+					RelativePath="..\..\xbmc\programs\GUIViewStatePrograms.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIViewStateScripts.cpp">
@@ -2266,7 +2266,7 @@
 					RelativePath="..\..\xbmc\GUIWindowPointer.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowPrograms.cpp">
+					RelativePath="..\..\xbmc\programs\GUIWindowPrograms.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowScreensaver.cpp">
@@ -3127,7 +3127,7 @@
 				RelativePath="..\..\xbmc\utils\CharsetConverter.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\Crc32.h">
+				RelativePath="..\..\xbmc\utils\Crc32.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\CriticalSection.h">
@@ -3139,7 +3139,7 @@
 				RelativePath="..\..\xbmc\utils\DelayController.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\DetectDVDType.h">
+				RelativePath="..\..\xbmc\storage\DetectDVDType.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\FileSystem\Directory.h">
@@ -3280,7 +3280,7 @@
 				RelativePath="..\..\xbmc\GUIWindowPointer.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowPrograms.h">
+				RelativePath="..\..\xbmc\programs\GUIWindowPrograms.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowScreensaver.h">
@@ -3379,7 +3379,7 @@
 				RelativePath="..\..\xbmc\FileSystem\iso9660.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\LangCodeExpander.h">
+				RelativePath="..\..\xbmc\utils\LangCodeExpander.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\LangInfo.h">
@@ -3388,7 +3388,7 @@
 				RelativePath="..\..\xbmc\utils\log.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\MediaManager.h">
+				RelativePath="..\..\xbmc\storage\MediaManager.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\memutil.h">

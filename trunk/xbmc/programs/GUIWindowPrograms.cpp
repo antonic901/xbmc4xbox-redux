@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowPrograms.h"
+#include "programs/GUIWindowPrograms.h"
 #include "Util.h"
 #include "Shortcut.h"
 #include "FileSystem/HDDirectory.h"

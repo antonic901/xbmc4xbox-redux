@@ -35,7 +35,7 @@
 #include "GUIAudioManager.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "Util.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"

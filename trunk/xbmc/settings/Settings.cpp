@@ -30,7 +30,7 @@
 #include "dialogs/GUIDialogButtonMenu.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "GUIFontManager.h"
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "input/ButtonTranslator.h"
 #include "XMLUtils.h"
 #include "PasswordManager.h"
@@ -42,7 +42,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE enum
 #include "utils/FanController.h"
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #include "XBVideoConfig.h"
 #include "network/DNSNameCache.h"
 #include "GUIWindowManager.h"

@@ -24,7 +24,7 @@
 #include "GUIMediaWindow.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "PlayListPlayer.h"
 #include "FileSystem/ZipManager.h"
 #include "FileSystem/PluginDirectory.h"

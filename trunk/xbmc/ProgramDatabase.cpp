@@ -24,7 +24,7 @@
 #include "xbox/xbeheader.h"
 #include "GUIWindowFileManager.h"
 #include "FileItem.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 

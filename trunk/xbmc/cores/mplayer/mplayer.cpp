@@ -9,7 +9,7 @@
 #include "FileSystem/SmbFile.h"
 #include "XBAudioConfig.h"
 #include "XBVideoConfig.h"
-#include "langcodeexpander.h"
+#include "utils/LangCodeExpander.h"
 #include "VideoDatabase.h"
 #include "utils/GUIInfoManager.h"
 #include "cores/VideoRenderers/RenderManager.h"

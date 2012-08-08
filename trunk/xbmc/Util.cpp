@@ -30,7 +30,7 @@
 #include "xbox/Undocumented.h"
 #include "xbresource.h"
 #endif
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "FileSystem/HDDirectory.h"
 #include "FileSystem/StackDirectory.h"
@@ -73,7 +73,7 @@
 #include "utils/FanController.h"
 #include "utils/SystemInfo.h"
 #endif
-#include "MediaManager.h"
+#include "storage/MediaManager.h"
 #ifdef _XBOX
 #include <xbdm.h>
 #endif
@@ -97,7 +97,7 @@
 #include "GUIDialogKeyboard.h"
 #include "FileSystem/File.h"
 #include "playlists/PlayList.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "utils/RssReader.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"

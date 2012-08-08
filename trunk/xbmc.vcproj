@@ -877,7 +877,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\CharsetConverter.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\Crc32.cpp">
+					RelativePath=".\xbmc\utils\Crc32.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\CriticalSection.cpp">
@@ -892,7 +892,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\DelayController.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\DetectDVDType.cpp">
+					RelativePath=".\xbmc\storage\DetectDVDType.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\network\DNSNameCache.cpp">
@@ -985,7 +985,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\LabelFormatter.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\LangCodeExpander.cpp">
+					RelativePath=".\xbmc\utils\LangCodeExpander.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\LangInfo.cpp">
@@ -1006,7 +1006,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\md5.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MediaManager.cpp">
+					RelativePath=".\xbmc\storage\MediaManager.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\MediaSource.cpp">
@@ -1480,10 +1480,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\pictures\GUIViewStatePictures.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIViewStatePrograms.cpp">
+					RelativePath=".\xbmc\programs\GUIViewStatePrograms.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIViewStatePrograms.h">
+					RelativePath=".\xbmc\programs\GUIViewStatePrograms.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIViewStateScripts.cpp">
@@ -1522,7 +1522,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIWindowPointer.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowPrograms.cpp">
+					RelativePath=".\xbmc\programs\GUIWindowPrograms.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIWindowScreensaver.cpp">
@@ -2841,7 +2841,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\CharsetConverter.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\Crc32.h">
+				RelativePath=".\xbmc\utils\Crc32.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\Credits.h">
@@ -2859,7 +2859,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\DelayController.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\DetectDVDType.h">
+				RelativePath=".\xbmc\storage\DetectDVDType.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\Directory.h">
@@ -3012,7 +3012,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIWindowPointer.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowPrograms.h">
+				RelativePath=".\xbmc\programs\GUIWindowPrograms.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIWindowScreensaver.h">
@@ -3129,7 +3129,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\LangCodeExpander.h">
+				RelativePath=".\xbmc\utils\LangCodeExpander.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\LangInfo.h">
@@ -3144,7 +3144,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\md5.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MediaManager.h">
+				RelativePath=".\xbmc\storage\MediaManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\MemoryUnitManager.h">

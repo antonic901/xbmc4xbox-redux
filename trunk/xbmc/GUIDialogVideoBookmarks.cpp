@@ -35,7 +35,7 @@
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
-#include "Crc32.h"
+#include "utils/Crc32.h"
 #include "utils/SingleLock.h"
 #include "LocalizeStrings.h"
 

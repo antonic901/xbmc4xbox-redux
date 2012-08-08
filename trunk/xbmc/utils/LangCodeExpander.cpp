@@ -19,7 +19,7 @@
  *
  */
 #include "system.h"
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "SectionLoader.h"
 
 #define MAKECODE(a, b, c, d) ((((long)(a))<<24) | (((long)(b))<<16) | (((long)(c))<<8) | (long)(d))

@@ -41,7 +41,7 @@ class CFileItemList;
 #include "cores/IPlayer.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "PlayListPlayer.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "Bookmark.h"
 #include "utils/Stopwatch.h"

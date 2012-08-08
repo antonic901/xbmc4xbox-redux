@@ -29,7 +29,7 @@
 #include "EncoderVorbis.h"
 #include "EncoderFlac.h"
 #include "FileSystem/CDDADirectory.h"
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "utils/LabelFormatter.h"
 #include "music/tags/MusicInfoTag.h"

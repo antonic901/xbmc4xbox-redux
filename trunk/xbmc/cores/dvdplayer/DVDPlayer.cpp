@@ -39,7 +39,7 @@
 
 #include "DVDFileInfo.h"
 
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "Util.h"
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowManager.h"

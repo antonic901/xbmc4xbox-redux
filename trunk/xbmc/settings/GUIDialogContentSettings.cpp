@@ -30,7 +30,7 @@
 #include "utils/ScraperParser.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 

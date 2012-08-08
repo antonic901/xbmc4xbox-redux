@@ -30,7 +30,7 @@
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/MemoryUnitManager.h"
 #endif
-#include "DetectDVDType.h"
+#include "storage/DetectDVDType.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
