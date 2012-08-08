@@ -30,7 +30,7 @@
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "GUIInfoManager.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"

@@ -64,7 +64,7 @@
 #include "lib/libGoAhead/WebServer.h"
 #include "GUIControlGroupList.h"
 #include "XBTimeZone.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"

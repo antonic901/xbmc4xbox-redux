@@ -19,7 +19,7 @@
  *
  */
 
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "DirectoryNodeOverview.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"

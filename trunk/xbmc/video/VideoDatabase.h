@@ -20,8 +20,8 @@
  *
  */
 #include "Database.h"
-#include "VideoInfoTag.h"
-#include "Bookmark.h"
+#include "video/VideoInfoTag.h"
+#include "video/Bookmark.h"
 
 #include <memory>
 #include <set>

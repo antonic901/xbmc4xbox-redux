@@ -21,7 +21,7 @@
 
 #include "GUIViewState.h"
 #include "music/GUIViewStateMusic.h"
-#include "GUIViewStateVideo.h"
+#include "video/GUIViewStateVideo.h"
 #include "pictures/GUIViewStatePictures.h"
 #include "programs/GUIViewStatePrograms.h"
 #include "GUIViewStateScripts.h"

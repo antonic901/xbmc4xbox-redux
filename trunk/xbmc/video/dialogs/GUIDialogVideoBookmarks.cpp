@@ -20,8 +20,8 @@
  */
 
 #include "system.h"
-#include "GUIDialogVideoBookmarks.h"
-#include "VideoDatabase.h"
+#include "video/dialogs/GUIDialogVideoBookmarks.h"
+#include "video/VideoDatabase.h"
 #include "Application.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

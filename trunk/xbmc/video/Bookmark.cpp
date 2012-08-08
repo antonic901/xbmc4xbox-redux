@@ -19,7 +19,7 @@
  *
  */
 
-#include "Bookmark.h"
+#include "video/Bookmark.h"
 
 CBookmark::CBookmark()
 {

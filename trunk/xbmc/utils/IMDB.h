@@ -32,7 +32,7 @@
 
 #include "Thread.h"
 #include "ScraperParser.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "ScraperSettings.h"
 #include "XBDateTime.h"
 #include "FileSystem/CurlFile.h"

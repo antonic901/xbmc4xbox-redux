@@ -31,7 +31,7 @@
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "music/MusicDatabase.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "FileSystem/VideoDatabaseDirectory/DirectoryNode.h"
 #include "FileSystem/VideoDatabaseDirectory/QueryParams.h"
 #include "FileSystem/File.h"

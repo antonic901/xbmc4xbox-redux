@@ -22,7 +22,7 @@
 #include "system.h"
 #include "settings/AdvancedSettings.h"
 #include "SortFileItem.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "URL.h"

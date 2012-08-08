@@ -19,12 +19,12 @@
  *
  */
 
-#include "GUIViewStateVideo.h"
+#include "video/GUIViewStateVideo.h"
 #include "PlayListPlayer.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "FileSystem/PluginDirectory.h"
 #include "GUIBaseContainer.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"

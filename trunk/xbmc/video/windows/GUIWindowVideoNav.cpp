@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowVideoNav.h"
+#include "video/windows/GUIWindowVideoNav.h"
 #include "GUIWindowVideoFiles.h"
 #include "music/windows/GUIWindowMusicNav.h"
 #include "GUIWindowFileManager.h"
@@ -33,7 +33,7 @@
 #include "pictures/Picture.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #include "playlists/PlayListFactory.h"
-#include "GUIDialogVideoScan.h"
+#include "video/dialogs/GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogOK.h"
 #include "PartyModeManager.h"
 #include "music/MusicDatabase.h"

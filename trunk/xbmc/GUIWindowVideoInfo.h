@@ -23,7 +23,7 @@
 
 #include "GUIDialog.h"
 #include "GUIListItem.h"
-#include "GUIWindowVideoBase.h"
+#include "video/windows/GUIWindowVideoBase.h"
 #include "GUIWindowVideoFiles.h"
 #include "ThumbLoader.h"
 

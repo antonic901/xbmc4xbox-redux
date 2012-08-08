@@ -20,8 +20,8 @@
  */
 
 #include "system.h"
-#include "VideoDatabase.h"
-#include "GUIWindowVideoBase.h"
+#include "video/VideoDatabase.h"
+#include "video/windows/GUIWindowVideoBase.h"
 #include "utils/RegExp.h"
 #include "utils/GUIInfoManager.h"
 #include "Util.h"
@@ -29,7 +29,7 @@
 #include "GUIPassword.h"
 #include "FileSystem/StackDirectory.h"
 #include "FileSystem/MultiPathDirectory.h"
-#include "VideoInfoScanner.h"
+#include "video/VideoInfoScanner.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"

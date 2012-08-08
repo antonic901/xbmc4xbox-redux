@@ -21,7 +21,7 @@
 
 #include "DirectoryNodeTitleMusicVideos.h"
 #include "QueryParams.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 

@@ -27,7 +27,7 @@
 #include "utils/CharsetConverter.h"
 #include "XMLUtils.h"
 #include "Database.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "XBDateTime.h"

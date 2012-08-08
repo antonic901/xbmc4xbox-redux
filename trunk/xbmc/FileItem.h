@@ -33,7 +33,7 @@
 #include "utils/LabelFormatter.h"
 #include "GUIPassword.h"
 #include "utils/CriticalSection.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 
 #include <vector>
 #include "boost/shared_ptr.hpp"

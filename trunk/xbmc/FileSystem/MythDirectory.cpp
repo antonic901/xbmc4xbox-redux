@@ -25,7 +25,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "DllLibCMyth.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "URL.h"
 #include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"

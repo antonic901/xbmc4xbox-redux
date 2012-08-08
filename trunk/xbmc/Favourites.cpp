@@ -27,7 +27,7 @@
 #include "Key.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "settings/AdvancedSettings.h"
 
 bool CFavourites::Load(CFileItemList &items)

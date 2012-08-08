@@ -32,7 +32,7 @@
 #include "GUIPassword.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "settings/GUIDialogContentSettings.h"
-#include "GUIDialogVideoScan.h"
+#include "video/dialogs/GUIDialogVideoScan.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "utils/RegExp.h"
 #include "GUIWindowManager.h"

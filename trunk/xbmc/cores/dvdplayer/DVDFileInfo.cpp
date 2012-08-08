@@ -23,7 +23,7 @@
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "pictures/Picture.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "Util.h"
 #include "FileSystem/StackDirectory.h"
 

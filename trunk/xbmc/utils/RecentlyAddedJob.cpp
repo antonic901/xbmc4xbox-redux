@@ -20,8 +20,8 @@
  */
 
 #include "utils/log.h"
-#include "VideoDatabase.h"
-#include "VideoInfoTag.h"
+#include "video/VideoDatabase.h"
+#include "video/VideoInfoTag.h"
 #include "FileItem.h"
 #include "RecentlyAddedJob.h"
 #include "GUIWindow.h"

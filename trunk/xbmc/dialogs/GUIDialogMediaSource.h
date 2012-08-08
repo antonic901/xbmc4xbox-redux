@@ -22,7 +22,7 @@
  */
 
 #include "GUIDialog.h"
-#include "VideoInfoScanner.h"
+#include "video/VideoInfoScanner.h"
 
 class CFileItemList;
 class CMediaSource;

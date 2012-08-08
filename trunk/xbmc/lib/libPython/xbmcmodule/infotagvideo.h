@@ -20,7 +20,7 @@
  */
  
 #include "lib/libPython/python/Include/Python.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #pragma once
 
 #ifdef __cplusplus

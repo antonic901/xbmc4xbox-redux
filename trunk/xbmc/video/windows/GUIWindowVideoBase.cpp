@@ -19,15 +19,15 @@
  *
  */
 
-#include "GUIWindowVideoBase.h"
+#include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
 #include "utils/IMDB.h"
 #include "utils/RegExp.h"
 #include "utils/GUIInfoManager.h"
 #include "GUIWindowVideoInfo.h"
-#include "GUIWindowVideoNav.h" 
+#include "video/windows/GUIWindowVideoNav.h" 
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "GUIDialogVideoScan.h"
+#include "video/dialogs/GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -40,7 +40,7 @@
 #include "FileSystem/ZipManager.h"
 #include "FileSystem/StackDirectory.h"
 #include "FileSystem/MultiPathDirectory.h"
-#include "GUIDialogFileStacking.h"
+#include "video/dialogs/GUIDialogFileStacking.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "GUIWindowFileManager.h"
 #include "FileSystem/VideoDatabaseDirectory.h"

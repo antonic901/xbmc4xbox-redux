@@ -30,7 +30,7 @@
 #include "pyutil.h"
 #include "listitem.h"
 #include "playlists/PlayList.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 
 using namespace std;

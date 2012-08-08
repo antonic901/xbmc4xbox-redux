@@ -20,13 +20,13 @@
  */
 
 #include "system.h"
-#include "GUIDialogAudioSubtitleSettings.h"
+#include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "Application.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "XBAudioConfig.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"

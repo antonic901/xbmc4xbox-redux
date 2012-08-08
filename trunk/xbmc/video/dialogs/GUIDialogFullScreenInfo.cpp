@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  *      Copyright (C) 2005-2008 Team XBMC
  *      http://www.xbmc.org
@@ -21,32 +19,14 @@
  *
  */
 
-#include "GUIDialog.h"
-#include "GUIViewControl.h"
-#include "VideoDatabase.h"
+#include "video/dialogs/GUIDialogFullScreenInfo.h"
 
-class CFileItemList;
-
-class CGUIDialogVideoBookmarks : public CGUIDialog
+CGUIDialogFullScreenInfo::CGUIDialogFullScreenInfo(void)
+    : CGUIDialog(WINDOW_DIALOG_FULLSCREEN_INFO, "DialogFullScreenInfo.xml")
 {
-public:
-  CGUIDialogVideoBookmarks(void);
-  virtual ~CGUIDialogVideoBookmarks(void);
-  virtual bool OnMessage(CGUIMessage& message);
-  virtual void OnWindowLoaded();
-  virtual void OnWindowUnload();
+}
 
-protected:
-  void GotoBookmark(int iItem);
-  void ClearBookmarks();
-  void AddBookmark(CVideoInfoTag* tag=NULL);
-  void Clear();
-  void Update();
-  void AddEpisodeBookmark();
+CGUIDialogFullScreenInfo::~CGUIDialogFullScreenInfo(void)
+{
+}
 
-  CGUIControl *GetFirstFocusableControl(int id);
-
-  CFileItemList* m_vecItems;
-  CGUIViewControl m_viewControl;
-  VECBOOKMARKS m_bookmarks;
-};

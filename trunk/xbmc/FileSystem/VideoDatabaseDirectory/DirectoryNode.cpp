@@ -43,7 +43,7 @@
 #include "DirectoryNodeRecentlyAddedMusicVideos.h"
 #include "DirectoryNodeTitleMusicVideos.h"
 #include "DirectoryNodeMusicVideoAlbum.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "URL.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"

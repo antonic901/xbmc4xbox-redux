@@ -1335,19 +1335,19 @@
 				Name="GUI Video"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoScan.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoScan.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoScan.h">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoScan.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateVideo.cpp">
+					RelativePath="..\..\xbmc\video\GUIViewStateVideo.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateVideo.h">
+					RelativePath="..\..\xbmc\video\GUIViewStateVideo.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowVideoBase.cpp">
+					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoBase.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowVideoFiles.cpp">
@@ -1356,22 +1356,22 @@
 					RelativePath="..\..\xbmc\GUIWindowVideoInfo.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowVideoNav.cpp">
+					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoNav.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowVideoNav.h">
+					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoNav.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowVideoOverlay.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowVideoPlaylist.cpp">
+					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoPlaylist.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoInfoScanner.cpp">
+					RelativePath="..\..\xbmc\video\VideoInfoScanner.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoInfoScanner.h">
+					RelativePath="..\..\xbmc\video\VideoInfoScanner.h">
 				</File>
 			</Filter>
 			<Filter
@@ -1927,10 +1927,10 @@
 					RelativePath="..\..\xbmc\utils\Variant.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoInfoTag.cpp">
+					RelativePath="..\..\xbmc\video\VideoInfoTag.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoInfoTag.h">
+					RelativePath="..\..\xbmc\video\VideoInfoTag.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\utils\Weather.cpp">
@@ -1973,10 +1973,10 @@
 					RelativePath="..\..\xbmc\music\Artist.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Bookmark.cpp">
+					RelativePath="..\..\xbmc\video\Bookmark.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Bookmark.h">
+					RelativePath="..\..\xbmc\video\Bookmark.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\Database.cpp">
@@ -2000,10 +2000,10 @@
 					RelativePath="..\..\xbmc\music\Song.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoDatabase.cpp">
+					RelativePath="..\..\xbmc\video\VideoDatabase.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\VideoDatabase.h">
+					RelativePath="..\..\xbmc\video\VideoDatabase.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\ViewDatabase.cpp">
@@ -2016,10 +2016,10 @@
 				Name="GUI Dialog"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\GUIDialogAudioSubtitleSettings.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogAudioSubtitleSettings.h">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\dialogs\GUIDialogBoxBase.cpp">
@@ -2058,13 +2058,13 @@
 					RelativePath="..\..\xbmc\dialogs\GUIDialogFileBrowser.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogFileStacking.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogFileStacking.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogFullScreenInfo.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogFullScreenInfo.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogFullScreenInfo.h">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogFullScreenInfo.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\dialogs\GUIDialogGamepad.cpp">
@@ -2166,16 +2166,16 @@
 					RelativePath="..\..\xbmc\GUIDialogTrainerSettings.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoBookmarks.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoBookmarks.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoBookmarks.h">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoBookmarks.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoSettings.cpp">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoSettings.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIDialogVideoSettings.h">
+					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoSettings.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\music\dialogs\GUIDialogVisualisationPresetList.cpp">
@@ -2239,7 +2239,7 @@
 					RelativePath="..\..\xbmc\GUIWindowFileManager.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowFullScreen.cpp">
+					RelativePath="..\..\xbmc\video\windows\GUIWindowFullScreen.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIWindowGameSaves.cpp">
@@ -3190,7 +3190,7 @@
 				RelativePath="..\..\xbmc\dialogs\GUIDialogContextMenu.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIDialogFileStacking.h">
+				RelativePath="..\..\xbmc\video\dialogs\GUIDialogFileStacking.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogGamepad.h">
@@ -3250,7 +3250,7 @@
 				RelativePath="..\..\xbmc\GUIWindowFileManager.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowFullScreen.h">
+				RelativePath="..\..\xbmc\video\windows\GUIWindowFullScreen.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowHome.h">
@@ -3310,7 +3310,7 @@
 				RelativePath="..\..\xbmc\GUIWindowSystemInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowVideoBase.h">
+				RelativePath="..\..\xbmc\video\windows\GUIWindowVideoBase.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowVideoFiles.h">
@@ -3322,7 +3322,7 @@
 				RelativePath="..\..\xbmc\GuiWindowVideoOverlay.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowVideoPlaylist.h">
+				RelativePath="..\..\xbmc\video\windows\GUIWindowVideoPlaylist.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\windows\GUIWindowVisualisation.h">

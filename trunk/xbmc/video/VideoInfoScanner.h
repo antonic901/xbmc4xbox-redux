@@ -20,7 +20,7 @@
  *
  */
 #include "utils/Thread.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "ScraperSettings.h"
 #include "NfoFile.h"
 #include "utils/IMDB.h"

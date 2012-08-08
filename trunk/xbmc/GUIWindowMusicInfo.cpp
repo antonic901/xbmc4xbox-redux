@@ -33,7 +33,7 @@
 #include "URL.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "storage/MediaManager.h"
 #include "FileSystem/Directory.h"
 #include "utils/AsyncFileCopy.h"

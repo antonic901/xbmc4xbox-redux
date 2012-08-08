@@ -25,7 +25,7 @@
 #include "CurlFile.h"
 #include "settings/Settings.h"
 #include "utils/HTMLUtil.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "utils/URIUtils.h"
 #include "utils/strptime.h"
 #include "utils/SingleLock.h"

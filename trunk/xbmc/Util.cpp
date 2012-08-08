@@ -22,7 +22,7 @@
 #include "system.h"
 #include "Application.h"
 #include "AutoPtrHandle.h"
-#include "GUIWindowVideoBase.h"
+#include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
 #include "xbox/IoSupport.h"
 #include "xbox/xbeheader.h"
@@ -63,7 +63,7 @@
 #include "dialogs/GUIDialogNumeric.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "GUIDialogVideoScan.h"
+#include "video/dialogs/GUIDialogVideoScan.h"
 #include "utils/fstrcmp.h"
 #include "utils/Trainer.h"
 #ifdef HAS_XBOX_HARDWARE

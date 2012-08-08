@@ -23,7 +23,7 @@
 #include "VideoDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "VideoDatabaseDirectory/QueryParams.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "TextureManager.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"

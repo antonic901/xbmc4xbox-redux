@@ -23,7 +23,7 @@
 #include "music/GUIViewStateMusic.h"
 #include "PlayListPlayer.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"

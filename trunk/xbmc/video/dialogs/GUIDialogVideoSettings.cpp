@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIDialogVideoSettings.h"
+#include "video/dialogs/GUIDialogVideoSettings.h"
 #include "GUIWindowManager.h"
 #include "GUIPassword.h"
 #include "Util.h"
@@ -29,7 +29,7 @@
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "settings/Settings.h"
 #include "SkinInfo.h"

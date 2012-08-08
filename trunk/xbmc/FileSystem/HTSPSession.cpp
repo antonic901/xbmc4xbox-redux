@@ -22,7 +22,7 @@
 #include "system.h"
 #include "HTSPSession.h"
 #include "URL.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "FileItem.h"
 #include "utils/log.h"
 #ifdef _MSC_VER

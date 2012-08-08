@@ -33,7 +33,7 @@
 #include "GUISpinControlEx.h"
 #include "GUIImage.h"
 #include "FileSystem/Directory.h"
-#include "VideoInfoScanner.h"
+#include "video/VideoInfoScanner.h"
 #include "ScraperSettings.h"
 #include "GUIWindowManager.h"
 #include "Application.h"

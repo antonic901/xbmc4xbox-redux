@@ -20,7 +20,7 @@
  */
 
 #include "system.h"
-#include "GUIDialogFileStacking.h"
+#include "video/dialogs/GUIDialogFileStacking.h"
 #include "LocalizeStrings.h"
 #include "FileItem.h"
 #include "settings/Settings.h" // for the ifdef

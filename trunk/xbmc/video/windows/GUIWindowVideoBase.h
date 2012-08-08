@@ -22,7 +22,7 @@
  */
 
 #include "GUIMediaWindow.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "PlayListPlayer.h"
 #include "ThumbLoader.h"
 

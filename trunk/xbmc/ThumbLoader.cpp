@@ -27,8 +27,8 @@
 #include "FileItem.h"
 #include "settings/GUISettings.h"
 #include "TextureManager.h"
-#include "VideoInfoTag.h"
-#include "VideoDatabase.h"
+#include "video/VideoInfoTag.h"
+#include "video/VideoDatabase.h"
 #include "utils/URIUtils.h"
 
 #include "cores/dvdplayer/DVDFileInfo.h"

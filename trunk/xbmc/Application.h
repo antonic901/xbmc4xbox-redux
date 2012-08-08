@@ -43,7 +43,7 @@ class CFileItemList;
 #include "PlayListPlayer.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
-#include "Bookmark.h"
+#include "video/Bookmark.h"
 #include "utils/Stopwatch.h"
 
 class CWebServer;

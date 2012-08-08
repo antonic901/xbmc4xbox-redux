@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowVideoPlaylist.h"
+#include "video/windows/GUIWindowVideoPlaylist.h"
 #include "playlists/PlayListFactory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

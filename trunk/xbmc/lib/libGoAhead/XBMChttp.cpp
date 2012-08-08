@@ -24,7 +24,7 @@
 #include "FileSystem/HDDirectory.h" 
 #include "FileSystem/CDDADirectory.h"
 #include "FileSystem/SpecialProtocol.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "ProgramDatabase.h"
 #include "GUIButtonControl.h"
 #include "utils/GUIInfoManager.h"

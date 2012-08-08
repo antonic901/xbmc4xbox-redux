@@ -19,7 +19,7 @@
  *
  */
 
-#include "VideoInfoScanner.h"
+#include "video/VideoInfoScanner.h"
 #include "FileSystem/DirectoryCache.h"
 #include "Util.h"
 #include "NfoFile.h"

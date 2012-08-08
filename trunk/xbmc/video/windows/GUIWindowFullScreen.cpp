@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "GUIWindowFullScreen.h"
+#include "video/windows/GUIWindowFullScreen.h"
 #include "Application.h"
 #include "Util.h"
 #ifdef HAS_VIDEO_PLAYBACK
@@ -35,8 +35,8 @@
 #include "GUIFontManager.h"
 #include "GUITextLayout.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogFullScreenInfo.h"
-#include "GUIDialogAudioSubtitleSettings.h"
+#include "video/dialogs/GUIDialogFullScreenInfo.h"
+#include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "GUISliderControl.h"
 #include "settings/Settings.h"

@@ -28,7 +28,7 @@
 #include "network/UPnP.h"
 #include "Platinum.h"
 #include "PltSyncMediaBrowser.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"

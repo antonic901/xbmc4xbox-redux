@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIWindowVideoBase.h"
+#include "video/windows/GUIWindowVideoBase.h"
 
 namespace VIDEO
 {

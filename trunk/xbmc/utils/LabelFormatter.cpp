@@ -23,7 +23,7 @@
 #include "settings/GUISettings.h"
 #include "RegExp.h"
 #include "Util.h"
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"

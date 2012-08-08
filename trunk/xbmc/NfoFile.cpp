@@ -23,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "NfoFile.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "utils/IMDB.h"
 #include "FileSystem/File.h"
 #include "FileSystem/Directory.h"

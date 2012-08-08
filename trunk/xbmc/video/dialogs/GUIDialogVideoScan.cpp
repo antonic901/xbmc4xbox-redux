@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIDialogVideoScan.h"
+#include "video/dialogs/GUIDialogVideoScan.h"
 #include "GUIProgressControl.h"
 #include "Util.h"
 #include "GUIWindowManager.h"

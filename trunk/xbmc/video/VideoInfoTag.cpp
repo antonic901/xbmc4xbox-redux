@@ -19,7 +19,7 @@
  *
  */
 
-#include "VideoInfoTag.h"
+#include "video/VideoInfoTag.h"
 #include "XMLUtils.h"
 #include "LocalizeStrings.h"
 #include "settings/GUISettings.h"

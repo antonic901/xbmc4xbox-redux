@@ -10,7 +10,7 @@
 #include "XBAudioConfig.h"
 #include "XBVideoConfig.h"
 #include "utils/LangCodeExpander.h"
-#include "VideoDatabase.h"
+#include "video/VideoDatabase.h"
 #include "utils/GUIInfoManager.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "utils/win32exception.h"
