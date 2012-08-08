@@ -21,7 +21,7 @@
 
 #include "GUIWindowVideoNav.h"
 #include "GUIWindowVideoFiles.h"
-#include "GUIWindowMusicNav.h"
+#include "music/windows/GUIWindowMusicNav.h"
 #include "GUIWindowFileManager.h"
 #include "utils/GUIInfoManager.h"
 #include "Util.h"

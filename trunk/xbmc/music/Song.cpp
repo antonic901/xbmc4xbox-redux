@@ -20,7 +20,7 @@
  */
 
 #include "music/Song.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

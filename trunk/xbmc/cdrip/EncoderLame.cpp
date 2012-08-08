@@ -22,7 +22,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "EncoderLame.h"
-#include "Id3Tag.h"
+#include "music/tags/Id3Tag.h"
 #include "settings/GUISettings.h"
 
 #ifdef _WIN32PC

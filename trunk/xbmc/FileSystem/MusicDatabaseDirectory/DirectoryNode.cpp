@@ -42,7 +42,7 @@
 #include "DirectoryNodeYearAlbum.h"
 #include "DirectoryNodeYearSong.h"
 #include "DirectoryNodeSingles.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "URL.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"

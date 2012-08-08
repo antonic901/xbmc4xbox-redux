@@ -32,7 +32,7 @@
 #endif
 
 #include "settings/Settings.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "utils/log.h"
 
 using namespace PLAYLIST;

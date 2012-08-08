@@ -20,8 +20,8 @@
  */
 
 #include "NSFFileDirectory.h"
-#include "MusicInfoTagLoaderNSF.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTagLoaderNSF.h"
+#include "music/tags/MusicInfoTag.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

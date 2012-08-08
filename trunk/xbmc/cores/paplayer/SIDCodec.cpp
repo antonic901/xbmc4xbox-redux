@@ -24,7 +24,7 @@
 #include "cores/DllLoader/DllLoader.h"
 #include "Util.h"
 #include "MusicInfoTagLoaderSid.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 

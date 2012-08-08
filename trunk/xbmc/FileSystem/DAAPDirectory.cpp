@@ -23,7 +23,7 @@
 #include "DAAPDirectory.h"
 #include "SectionLoader.h"
 #include "utils/URIUtils.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 
 namespace XFILE

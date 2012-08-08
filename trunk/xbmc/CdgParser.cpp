@@ -27,7 +27,7 @@
 #include "utils/URIUtils.h"
 #include "AudioContext.h"
 #include "utils/GUIInfoManager.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "GUIWindowManager.h"
 #include "settings/Settings.h"
 

@@ -20,7 +20,7 @@
  *
  */
 
-#include "ImusicInfoTagLoader.h"
+#include "music/tags/ImusicInfoTagLoader.h"
 #include "cores/paplayer/DllAdplug.h"
 #include "cores/paplayer/AdplugCodec.h"
 

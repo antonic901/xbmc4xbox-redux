@@ -10,7 +10,7 @@
 #include "Application.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #ifdef HAS_KARAOKE
 #include "CdgParser.h"
 #endif

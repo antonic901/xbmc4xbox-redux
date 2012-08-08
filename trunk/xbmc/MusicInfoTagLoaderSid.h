@@ -20,7 +20,7 @@
  *
  */
 
-#include "ImusicInfoTagLoader.h"
+#include "music/tags/ImusicInfoTagLoader.h"
 
 namespace MUSIC_INFO
 {

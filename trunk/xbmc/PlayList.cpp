@@ -24,7 +24,7 @@
 #include "PlayListFactory.h"
 #include <sstream>
 #include "VideoInfoTag.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileSystem/File.h"
 #include "utils/log.h"
 

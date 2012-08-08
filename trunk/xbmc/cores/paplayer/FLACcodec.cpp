@@ -21,7 +21,7 @@
 
 #include "utils/log.h"
 #include "FLACcodec.h"
-#include "FlacTag.h"
+#include "music/tags/FlacTag.h"
 
 using namespace MUSIC_INFO;
 

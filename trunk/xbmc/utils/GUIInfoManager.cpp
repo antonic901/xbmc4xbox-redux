@@ -57,9 +57,9 @@
 #include "GUIWindowSlideShow.h"
 #include "music/LastFmManager.h"
 #include "PictureInfoTag.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "VideoDatabase.h"
-#include "GUIDialogMusicScan.h"
+#include "music/dialogs/GUIDialogMusicScan.h"
 #include "GUIDialogVideoScan.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
@@ -72,7 +72,7 @@
 #ifdef HAS_FILESYSTEM
 #include "FileSystem/SndtrkDirectory.h"
 #endif
-#include "musicInfoTagLoaderFactory.h"
+#include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/MusicInfoLoader.h"
 #include "LabelFormatter.h"
 #include "TextureManager.h"

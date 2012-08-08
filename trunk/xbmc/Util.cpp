@@ -61,7 +61,7 @@
 #include "input/ButtonTranslator.h"
 #include "Picture.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "GUIDialogMusicScan.h"
+#include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIDialogVideoScan.h"
 #include "utils/fstrcmp.h"
@@ -89,7 +89,7 @@
 #ifndef HAS_XBOX_D3D
 #include "DirectXGraphics.h"
 #endif
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"

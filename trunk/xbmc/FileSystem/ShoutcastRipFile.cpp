@@ -21,7 +21,7 @@
 
 
 #include "ShoutcastRipFile.h"
-#include "Id3Tag.h"
+#include "music/tags/Id3Tag.h"
 #include "settings/GUISettings.h"
 
 using namespace MUSIC_INFO;

@@ -20,7 +20,7 @@
  */
 
 #include "lib/libPython/python/Include/Python.h"
-#include "MusicInfotag.h"
+#include "music/tags/MusicInfoTag.h"
 #pragma once
 
 #ifdef __cplusplus

@@ -497,7 +497,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="GUI Music"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\GUIDialogMusicScan.cpp">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogMusicScan.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistEditor.cpp">
@@ -512,10 +512,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistRule.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSongInfo.cpp">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogSongInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSongInfo.h">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogSongInfo.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIViewControl.cpp">
@@ -536,31 +536,31 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\GUIViewStateMusic.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicBase.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicBase.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GuiWindowMusicInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicNav.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicNav.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicNav.h">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicNav.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIWindowMusicOverlay.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicPlaylist.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylist.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicPlaylistEditor.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylistEditor.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicPlaylistEditor.h">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylistEditor.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicSongs.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowMusicSongs.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\SmartPlaylist.cpp">
@@ -647,43 +647,43 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="infoTagReaders"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\APEv2Tag.cpp">
+					RelativePath=".\xbmc\music\tags\APEv2Tag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\APEv2Tag.h">
+					RelativePath=".\xbmc\music\tags\APEv2Tag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\DllLibid3tag.h">
+					RelativePath=".\xbmc\music\tags\DllLibid3tag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FlacTag.cpp">
+					RelativePath=".\xbmc\music\tags\FlacTag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\FlacTag.h">
+					RelativePath=".\xbmc\music\tags\FlacTag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\Id3Tag.cpp">
+					RelativePath=".\xbmc\music\tags\Id3Tag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\Id3Tag.h">
+					RelativePath=".\xbmc\music\tags\Id3Tag.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\MusicInfoLoader.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoScanner.cpp">
+					RelativePath=".\xbmc\music\infoscanner\MusicInfoScanner.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\musicInfoTag.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\musicInfoTag.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderAAC.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAAC.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderAAC.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAAC.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\MusicInfoTagLoaderAdplug.cpp">
@@ -692,31 +692,31 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\MusicInfoTagLoaderAdplug.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderApe.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderApe.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderApe.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderApe.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderASAP.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderASAP.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderASAP.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderASAP.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderCDDA.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderCDDA.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderDatabase.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderDatabase.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderDatabase.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderDatabase.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\musicInfoTagLoaderFactory.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFactory.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderFlac.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFlac.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\MusicInfoTagLoaderGYM.cpp">
@@ -725,37 +725,37 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\MusicInfoTagLoaderGYM.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMod.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMod.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMod.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMod.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMP3.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP3.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMP4.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP4.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMPC.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMPC.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderMPC.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMPC.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderNSF.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderNSF.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderNSF.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderNSF.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderOgg.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderOgg.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderShn.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderShn.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderShn.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderShn.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\MusicInfoTagLoaderSid.cpp">
@@ -764,46 +764,46 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\MusicInfoTagLoaderSid.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderSPC.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderSPC.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderSPC.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderSPC.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderWav.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWav.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderWav.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWav.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderWavPack.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWavPack.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderWavPack.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWavPack.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderWMA.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWMA.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderYM.cpp">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderYM.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\MusicInfoTagLoaderYM.h">
+					RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderYM.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\OggTag.cpp">
+					RelativePath=".\xbmc\music\tags\OggTag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\OggTag.h">
+					RelativePath=".\xbmc\music\tags\OggTag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\Tag.h">
+					RelativePath=".\xbmc\music\tags\Tag.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\VorbisTag.cpp">
+					RelativePath=".\xbmc\music\tags\VorbisTag.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\VorbisTag.h">
+					RelativePath=".\xbmc\music\tags\VorbisTag.h">
 				</File>
 				<Filter
 					Name="Pictures"
@@ -1021,16 +1021,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\memutil.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\MusicAlbumInfo.cpp">
+					RelativePath=".\xbmc\music\infoscanner\MusicAlbumInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\MusicArtistInfo.cpp">
+					RelativePath=".\xbmc\music\infoscanner\MusicArtistInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\MusicArtistInfo.h">
+					RelativePath=".\xbmc\music\infoscanner\MusicArtistInfo.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\MusicInfoScraper.cpp">
+					RelativePath=".\xbmc\music\infoscanner\MusicInfoScraper.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Mutex.cpp">
@@ -1344,10 +1344,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogMediaSource.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogMusicOSD.cpp">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogMusicOSD.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogMusicOSD.h">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogMusicOSD.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.cpp">
@@ -1434,10 +1434,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogVideoSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogVisualisationPresetList.cpp">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogVisualisationPresetList.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogVisualisationPresetList.h">
+					RelativePath=".\xbmc\music\dialogs\GUIDialogVisualisationPresetList.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogVisualisationSettings.cpp">
@@ -1546,7 +1546,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIWindowSystemInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowVisualisation.cpp">
+					RelativePath=".\xbmc\music\windows\GUIWindowVisualisation.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIWindowWeather.cpp">
@@ -2940,7 +2940,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIDialogKeyboard.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogMusicScan.h">
+				RelativePath=".\xbmc\music\dialogs\GUIDialogMusicScan.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.h">
@@ -2988,7 +2988,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIWindowHome.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowMusicBase.h">
+				RelativePath=".\xbmc\music\windows\GUIWindowMusicBase.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GuiWindowMusicInfo.h">
@@ -2997,10 +2997,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GuiWindowMusicOverlay.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowMusicPlaylist.h">
+				RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylist.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowMusicSongs.h">
+				RelativePath=".\xbmc\music\windows\GUIWindowMusicSongs.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIWindowOSD.h">
@@ -3060,7 +3060,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIWindowVideoPlaylist.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowVisualisation.h">
+				RelativePath=".\xbmc\music\windows\GUIWindowVisualisation.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIWindowWeather.h">
@@ -3099,7 +3099,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\IMDB.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\ImusicInfoTagLoader.h">
+				RelativePath=".\xbmc\music\tags\ImusicInfoTagLoader.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\InfoLoader.h">
@@ -3156,37 +3156,37 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\cores\ModPlayer.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\MusicAlbumInfo.h">
+				RelativePath=".\xbmc\utils\music\infoscanner\MusicAlbumInfo.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\music\MusicInfoLoader.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoScanner.h">
+				RelativePath=".\xbmc\music\infoscanner\MusicInfoScanner.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\MusicInfoScraper.h">
+				RelativePath=".\xbmc\utils\music\infoscanner\MusicInfoScraper.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderCDDA.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderCDDA.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\musicInfoTagLoaderFactory.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFactory.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderFlac.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFlac.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderMP3.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP3.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderMP4.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP4.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderOgg.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderOgg.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\MusicInfoTagLoaderWMA.h">
+				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWMA.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Mutex.h">

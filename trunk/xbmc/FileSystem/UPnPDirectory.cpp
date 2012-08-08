@@ -29,7 +29,7 @@
 #include "Platinum.h"
 #include "PltSyncMediaBrowser.h"
 #include "VideoInfoTag.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"

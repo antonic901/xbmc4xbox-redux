@@ -27,7 +27,7 @@
 #include "utils/log.h"
 #include "cores/dllloader/exports/emu_msvcrt.h"
 #include "settings/AdvancedSettings.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "utils/CharsetConverter.h"
 
 using namespace PLAYLIST;

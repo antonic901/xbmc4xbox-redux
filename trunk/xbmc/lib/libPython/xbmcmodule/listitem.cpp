@@ -26,7 +26,7 @@
 #include "pyutil.h"
 #include "VideoInfoTag.h"
 #include "PictureInfoTag.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 
 using namespace std;

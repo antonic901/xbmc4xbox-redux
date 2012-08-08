@@ -23,8 +23,8 @@
 #include "utils/log.h"
 #include "SPCCodec.h"
 #include "cores/DllLoader/DllLoader.h"
-#include "MusicInfoTagLoaderSPC.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTagLoaderSPC.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileSystem/File.h"
 #include "../../Util.h"
 #ifdef _WIN32PC

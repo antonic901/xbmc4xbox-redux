@@ -23,7 +23,7 @@
 #include "PlayListPlayer.h"
 #include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
-#include "GUIWindowMusicPlaylist.h"
+#include "music/windows/GUIWindowMusicPlaylist.h"
 #include "SmartPlaylist.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIWindowManager.h"

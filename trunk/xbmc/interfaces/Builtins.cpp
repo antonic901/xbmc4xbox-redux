@@ -31,7 +31,7 @@
 #include "FileItem.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIDialogKeyboard.h"
-#include "GUIDialogMusicScan.h"
+#include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "GUIDialogVideoScan.h"

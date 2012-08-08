@@ -24,7 +24,7 @@
 #include "LastFMDirectory.h"
 #include "DirectoryCache.h"
 #include "Util.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"

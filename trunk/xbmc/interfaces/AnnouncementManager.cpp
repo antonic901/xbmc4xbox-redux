@@ -26,7 +26,7 @@
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
 #include "FileItem.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "music/MusicDatabase.h"
 #include "VideoDatabase.h"
 

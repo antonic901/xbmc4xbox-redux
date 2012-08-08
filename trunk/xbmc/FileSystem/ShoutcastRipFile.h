@@ -22,7 +22,7 @@
  */
 
 
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 
 typedef struct RecStateSt
 {

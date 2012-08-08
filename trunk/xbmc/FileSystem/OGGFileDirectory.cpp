@@ -21,7 +21,7 @@
 
 
 #include "OGGFileDirectory.h"
-#include "OggTag.h"
+#include "music/tags/OggTag.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

@@ -43,7 +43,7 @@
 #include "PltDidl.h"
 #include "NptNetwork.h"
 #include "NptConsole.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "FileSystem/Directory.h"
 #include "URL.h"
 #include "settings/Settings.h"

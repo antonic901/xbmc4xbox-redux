@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIWindowMusicBase.h"
+#include "music/windows/GUIWindowMusicBase.h"
 
 class CGUIWindowMusicTop100 : public CGUIWindowMusicBase
 {

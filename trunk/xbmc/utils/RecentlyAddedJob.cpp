@@ -28,7 +28,7 @@
 #include "GUIWindowManager.h"
 #include "Key.h"
 #include "music/MusicDatabase.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "settings/Settings.h"
 #include "utils/Variant.h"
 

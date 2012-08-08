@@ -29,7 +29,7 @@
 //#include "Utils/HTTP.h"  // For Download Function
 #include "MediaManager.h"
 #include "utils/LabelFormatter.h"
-#include "MusicInfoTag.h"// todo - program tags
+#include "music/tags/MusicInfoTag.h"// todo - program tags
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"

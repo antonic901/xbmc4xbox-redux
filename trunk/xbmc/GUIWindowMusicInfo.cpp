@@ -29,7 +29,7 @@
 #include "GUIPassword.h"
 #include "music/MusicDatabase.h"
 #include "music/LastFmManager.h"
-#include "MusicInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "URL.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
