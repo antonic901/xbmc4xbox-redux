@@ -22,7 +22,7 @@
 #include "GUIWindowGameSaves.h"
 #include "Util.h"
 #include "FileSystem/ZipManager.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIWindowFileManager.h"
 #include "GUIPassword.h"
 #include <fstream>
@@ -31,8 +31,8 @@
 #include "utils/LabelFormatter.h"
 #include "MusicInfoTag.h"// todo - program tags
 #include "GUIWindowManager.h"
-#include "GUIDialogProgress.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"

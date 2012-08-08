@@ -23,7 +23,7 @@
 
 #include "GUIMediaWindow.h"
 #include "ProgramDatabase.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "ThumbLoader.h"
 
 class CGUIWindowPrograms :

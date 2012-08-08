@@ -24,7 +24,7 @@
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
 #include "GUIDialogKeyboard.h"
-#include "GUIDialogNumeric.h"
+#include "dialogs/GUIDialogNumeric.h"
 #include "LocalizeStrings.h"
 #include "XBDateTime.h"
 

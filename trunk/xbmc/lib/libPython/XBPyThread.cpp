@@ -28,7 +28,7 @@
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogKaiToast.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"

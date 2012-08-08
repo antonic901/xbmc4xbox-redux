@@ -27,7 +27,7 @@
 #include "Application.h"
 #include "PlayListPlayer.h"
 #include "PartyModeManager.h"
-#include "GUIDialogSmartPlaylistEditor.h"
+#include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogKeyboard.h"
 #include "GUIUserMessages.h"

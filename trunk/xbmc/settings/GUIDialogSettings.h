@@ -26,7 +26,7 @@
 #include "GUIRadioButtonControl.h"
 #include "GUIButtonControl.h"
 #include "GUISettingsSliderControl.h"
-#include "GUIDialogSlider.h"
+#include "dialogs/GUIDialogSlider.h"
 
 class CGUIImage;
 

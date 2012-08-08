@@ -29,7 +29,7 @@
 #include "utils/TuxBoxUtil.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "tinyXML/tinyxml.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"

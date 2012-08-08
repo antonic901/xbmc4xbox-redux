@@ -19,48 +19,63 @@
  *
  */
 
-#include "GUIDialogBusy.h"
-#include "ApplicationRenderer.h"
+#include "dialogs/GUIDialogTextViewer.h"
+#include "GUIUserMessages.h"
 
-CGUIDialogBusy::CGUIDialogBusy(void)
-: CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml")
+#define CONTROL_HEADING  1
+#define CONTROL_TEXTAREA 5
+
+CGUIDialogTextViewer::CGUIDialogTextViewer(void)
+    : CGUIDialog(WINDOW_DIALOG_TEXT_VIEWER, "DialogTextViewer.xml")
+{}
+
+CGUIDialogTextViewer::~CGUIDialogTextViewer(void)
+{}
+
+bool CGUIDialogTextViewer::OnAction(const CAction &action)
 {
-  m_loadOnDemand = true;
+  return CGUIDialog::OnAction(action);
 }
 
-CGUIDialogBusy::~CGUIDialogBusy(void)
-{
-}
-
-bool CGUIDialogBusy::OnMessage(CGUIMessage& message)
+bool CGUIDialogTextViewer::OnMessage(CGUIMessage& message)
 {
   switch ( message.GetMessage() )
   {
   case GUI_MSG_WINDOW_INIT:
     {
       CGUIDialog::OnMessage(message);
+      SetHeading();
+      SetText();
       return true;
     }
     break;
-
-  case GUI_MSG_WINDOW_DEINIT:
+  case GUI_MSG_NOTIFY_ALL:
     {
+      if (message.GetParam1() == GUI_MSG_UPDATE)
+      {
+        SetText();
+        SetHeading();
+        return true;
+      }
     }
+    break;
+  default:
     break;
   }
   return CGUIDialog::OnMessage(message);
 }
 
-void CGUIDialogBusy::OnWindowLoaded()
+void CGUIDialogTextViewer::SetText()
 {
-  CGUIDialog::OnWindowLoaded();
+  CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), CONTROL_TEXTAREA);
+  msg.SetLabel(m_strText);
+  OnMessage(msg);
 }
 
-void CGUIDialogBusy::Render()
+void CGUIDialogTextViewer::SetHeading()
 {
-  //only render if system is busy
-  if (g_ApplicationRenderer.IsBusy() || IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
-  {
-    CGUIDialog::Render();
-  }
+  CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), CONTROL_HEADING);
+  msg.SetLabel(m_strHeading);
+  OnMessage(msg);
 }
+

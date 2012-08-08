@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  *      Copyright (C) 2005-2008 Team XBMC
  *      http://www.xbmc.org
@@ -21,14 +19,24 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogSubMenu.h"
 
-class CGUIDialogOK :
-      public CGUIDialogBoxBase
+CGUIDialogSubMenu::CGUIDialogSubMenu(void)
+    : CGUIDialog(WINDOW_DIALOG_SUB_MENU, "DialogSubMenu.xml")
 {
-public:
-  CGUIDialogOK(void);
-  virtual ~CGUIDialogOK(void);
-  virtual bool OnMessage(CGUIMessage& message);
-  static void ShowAndGetInput(int heading, int line0, int line1, int line2);
-};
+}
+
+CGUIDialogSubMenu::~CGUIDialogSubMenu(void)
+{}
+
+bool CGUIDialogSubMenu::OnMessage(CGUIMessage &message)
+{
+  if (message.GetMessage() == GUI_MSG_CLICKED)
+  {
+    // someone has been clicked - deinit...
+    CGUIDialog::OnMessage(message);
+    Close();
+    return true;
+  }
+  return CGUIDialog::OnMessage(message);
+}

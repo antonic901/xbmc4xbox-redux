@@ -20,7 +20,7 @@
  */
 
 #include "AsyncFileCopy.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "GUIWindowManager.h"
 #include "URL.h"
 #include "utils/log.h"

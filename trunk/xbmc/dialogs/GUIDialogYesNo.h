@@ -21,27 +21,22 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogBoxBase.h"
 
-class CGUIDialogGamepad :
+class CGUIDialogYesNo :
       public CGUIDialogBoxBase
 {
 public:
-  CGUIDialogGamepad(void);
-  virtual ~CGUIDialogGamepad(void);
+  CGUIDialogYesNo(void);
+  virtual ~CGUIDialogYesNo(void);
   virtual bool OnMessage(CGUIMessage& message);
-  bool IsCanceled() const;
-  CStdString m_strUserInput;
-  CStdString m_strPassword;
-  int m_iRetries;
-  bool m_bUserInputCleanup;
-  bool m_bHideInputChars;
-  static bool ShowAndGetInput(CStdString& aTextString, const CStdString& dlgHeading, bool bHideUserInput);
-  static bool ShowAndVerifyNewPassword(CStdString& strNewPassword);
-  static int ShowAndVerifyPassword(CStdString& strPassword, const CStdString& dlgHeading, int iRetries);
-  static bool ShowAndVerifyInput(CStdString& strPassword, const CStdString& dlgHeading, const CStdString& dlgLine0, const CStdString& dlgLine1, const CStdString& dlgLine2, bool bGetUserInput, bool bHideInputChars);
+  virtual bool OnAction(const CAction& action);
+  
+  static bool ShowAndGetInput(int heading, int line0, int line1, int line2, int iNoLabel=-1, int iYesLabel=-1);
+  static bool ShowAndGetInput(int heading, int line0, int line1, int line2, bool& bCanceled);
+  static bool ShowAndGetInput(int heading, int line0, int line1, int line2, int iNoLabel, int iYesLabel, bool& bCanceled, unsigned int autoCloseTime = 0);
+  static bool ShowAndGetInput(const CStdString& heading, const CStdString& line0, const CStdString& line1, const CStdString& line2);
+  static bool ShowAndGetInput(const CStdString& heading, const CStdString& line0, const CStdString& line1, const CStdString& line2, bool &bCanceled);
 protected:
-  virtual bool OnAction(const CAction &action);
   bool m_bCanceled;
-  char m_cHideInputChar;
 };

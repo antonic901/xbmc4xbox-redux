@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogBoxBase.h"
 #include "GUIWindowManager.h"
 
 using namespace std;

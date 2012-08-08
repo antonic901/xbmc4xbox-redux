@@ -52,7 +52,7 @@
 #include "FileItem.h"
 #include "utils/StreamDetails.h"
 #include "utils/StreamUtils.h"
-#include "GUIDialogBusy.h"
+#include "dialogs/GUIDialogBusy.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 

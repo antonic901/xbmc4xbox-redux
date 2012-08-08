@@ -25,7 +25,7 @@
 #include "utils/URIUtils.h"
 #include "GUIImage.h"
 #include "Picture.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
 #include "MusicDatabase.h"
 #include "LastFmManager.h"

@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogBoxBase.h"
 #include "IProgressCallback.h"
 
 class CGUIDialogProgress :

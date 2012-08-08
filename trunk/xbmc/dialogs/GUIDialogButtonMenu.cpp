@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogButtonMenu.h"
+#include "dialogs/GUIDialogButtonMenu.h"
 #include "GUILabelControl.h"
 #include "GUIButtonControl.h"
 

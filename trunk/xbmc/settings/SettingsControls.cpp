@@ -20,9 +20,9 @@
  */
 
 #include "settings/SettingsControls.h"
-#include "GUIDialogNumeric.h"
+#include "dialogs/GUIDialogNumeric.h"
 #include "Util.h"
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogOK.h"
 #include "GUIDialogKeyboard.h"
 #include "settings/GUISettings.h"
 #include "GUIImage.h"

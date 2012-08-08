@@ -22,7 +22,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "settings/GUISettings.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/FanController.h"
 #endif

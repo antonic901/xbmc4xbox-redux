@@ -25,10 +25,10 @@
 #include "VideoDatabase.h"
 #include "GUIWindowMusicPlaylist.h"
 #include "SmartPlaylist.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogOK.h"
 #include "PlayList.h"
 #include "utils/log.h"
 

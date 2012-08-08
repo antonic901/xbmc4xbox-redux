@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogSeekBar.h"
+#include "dialogs/GUIDialogSeekBar.h"
 #include "GUISliderControl.h"
 #include "Application.h"
 #include "utils/GUIInfoManager.h"

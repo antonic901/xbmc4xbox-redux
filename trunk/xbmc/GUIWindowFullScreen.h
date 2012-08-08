@@ -23,7 +23,7 @@
 
 #include "GUIWindow.h"
 #include "utils/CriticalSection.h"
-#include "GUIDialogSlider.h"
+#include "dialogs/GUIDialogSlider.h"
 
 class CGUITextLayout; // forward
 

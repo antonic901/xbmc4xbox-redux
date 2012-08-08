@@ -19,48 +19,43 @@
  *
  */
 
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogMuteBug.h"
 #include "GUIWindowManager.h"
+#include "GUIUserMessages.h"
+#include "LocalizeStrings.h"
 
-#define ID_BUTTON_OK   10
+// the MuteBug is a true modeless dialog
 
-CGUIDialogOK::CGUIDialogOK(void)
-    : CGUIDialogBoxBase(WINDOW_DIALOG_OK, "DialogOK.xml")
+#define MUTEBUG_IMAGE     901
+
+CGUIDialogMuteBug::CGUIDialogMuteBug(void)
+    : CGUIDialog(WINDOW_DIALOG_MUTE_BUG, "DialogMuteBug.xml")
 {
+  m_loadOnDemand = false;
 }
 
-CGUIDialogOK::~CGUIDialogOK(void)
+CGUIDialogMuteBug::~CGUIDialogMuteBug(void)
 {}
 
-bool CGUIDialogOK::OnMessage(CGUIMessage& message)
+bool CGUIDialogMuteBug::OnMessage(CGUIMessage& message)
 {
   switch ( message.GetMessage() )
   {
-  case GUI_MSG_CLICKED:
+  case GUI_MSG_MUTE_OFF:
     {
-      int iControl = message.GetSenderId();
-      if (iControl == ID_BUTTON_OK)
-      {
-        m_bConfirmed = true;
-        Close();
-        return true;
-      }
+      Close();
+      return true;
+    }
+    break;
+
+  case GUI_MSG_MUTE_ON:
+    {
+      // this is handled in g_application
+      // non-active modeless window can not get messages
+      //Show();
+      return true;
     }
     break;
   }
-  return CGUIDialogBoxBase::OnMessage(message);
+  return CGUIDialog::OnMessage(message);
 }
-
-// \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
-void CGUIDialogOK::ShowAndGetInput(int heading, int line0, int line1, int line2)
-{
-  CGUIDialogOK *dialog = (CGUIDialogOK *)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
-  if (!dialog) return;
-  dialog->SetHeading( heading );
-  dialog->SetLine( 0, line0 );
-  dialog->SetLine( 1, line1 );
-  dialog->SetLine( 2, line2 );
-  dialog->DoModal();
-  return ;
-}
-

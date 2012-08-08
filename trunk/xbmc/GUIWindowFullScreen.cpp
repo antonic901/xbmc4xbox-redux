@@ -37,7 +37,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialogFullScreenInfo.h"
 #include "GUIDialogAudioSubtitleSettings.h"
-#include "GUIDialogNumeric.h"
+#include "dialogs/GUIDialogNumeric.h"
 #include "GUISliderControl.h"
 #include "settings/Settings.h"
 #include "FileItem.h"

@@ -26,7 +26,7 @@
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 #include "URL.h"
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogOK.h"
 #include "FileSystem/Directory.h"
 #include "RarManager.h"
 #include "settings/AdvancedSettings.h"

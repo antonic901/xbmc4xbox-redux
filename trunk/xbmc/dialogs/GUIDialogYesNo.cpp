@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
 
 CGUIDialogYesNo::CGUIDialogYesNo(void)

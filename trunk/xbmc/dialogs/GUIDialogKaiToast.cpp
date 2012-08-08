@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogKaiToast.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "GUISliderControl.h"
 #include "GUIImage.h"
 #include "GUIAudioManager.h"

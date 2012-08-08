@@ -25,7 +25,7 @@
 #include "FileSystem/VirtualDirectory.h"
 #include "FileSystem/DirectoryHistory.h"
 #include "GUIViewControl.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogContextMenu.h"
 
 class CFileItemList;
 

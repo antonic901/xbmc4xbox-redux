@@ -19,12 +19,12 @@
  *
  */
 
-#include "GUIDialogSmartPlaylistRule.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogSmartPlaylistRule.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #include "MusicDatabase.h"
 #include "VideoDatabase.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogSelect.h"
+#include "dialogs/GUIDialogSelect.h"
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
 #include "GUIEditControl.h"

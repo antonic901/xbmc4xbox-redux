@@ -20,10 +20,10 @@
  */
 
 #include "settings/GUIDialogLockSettings.h"
-#include "GUIDialogNumeric.h"
+#include "dialogs/GUIDialogNumeric.h"
 #include "GUIDialogKeyboard.h"
-#include "GUIDialogGamepad.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogGamepad.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "GUIWindowManager.h"
 #include "URL.h"
 #include "LocalizeStrings.h"

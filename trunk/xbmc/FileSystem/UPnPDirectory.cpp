@@ -32,7 +32,7 @@
 #include "MusicInfoTag.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "URL.h"
 
 using namespace MUSIC_INFO;

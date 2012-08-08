@@ -27,7 +27,7 @@
 #include "settings/AdvancedSettings.h"
 #include "ShoutcastFile.h"
 #include "settings/GUISettings.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "GUIWindowManager.h"
 #include "URL.h"
 #include "LocalizeStrings.h"

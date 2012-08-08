@@ -27,7 +27,7 @@
 #include "CueDocument.h"
 #include "GUIPassword.h"
 #include "GUIDialogMusicScan.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "FileItem.h"

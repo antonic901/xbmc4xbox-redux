@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogSelect.h"
+#include "dialogs/GUIDialogSelect.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

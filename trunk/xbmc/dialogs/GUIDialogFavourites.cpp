@@ -19,8 +19,8 @@
  *
  */
 
-#include "GUIDialogFavourites.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogFavourites.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "Favourites.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogKeyboard.h"

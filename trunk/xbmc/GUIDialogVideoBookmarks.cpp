@@ -29,7 +29,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "Picture.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "GUIWindowManager.h"
 #include "ViewState.h"
 #include "settings/Settings.h"

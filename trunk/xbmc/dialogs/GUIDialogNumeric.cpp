@@ -19,13 +19,13 @@
  *
  */
 
-#include "GUIDialogNumeric.h"
+#include "dialogs/GUIDialogNumeric.h"
 #include "GUILabelControl.h"
 #include "utils/md5.h"
 #include "utils/StringUtils.h"
 #include "xbox/XKGeneral.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogOK.h"
 #include "LocalizeStrings.h"
 
 #define CONTROL_HEADING_LABEL  1

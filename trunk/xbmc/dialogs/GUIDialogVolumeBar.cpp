@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogVolumeBar.h"
+#include "dialogs/GUIDialogVolumeBar.h"
 #include "GUISliderControl.h"
 
 #define VOLUME_BAR_DISPLAY_TIME 1000L

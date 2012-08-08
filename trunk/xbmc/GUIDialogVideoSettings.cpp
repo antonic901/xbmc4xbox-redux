@@ -30,7 +30,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "VideoDatabase.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "settings/Settings.h"
 #include "SkinInfo.h"
 

@@ -500,16 +500,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogMusicScan.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSmartPlaylistEditor.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistEditor.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSmartPlaylistEditor.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistEditor.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSmartPlaylistRule.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistRule.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSmartPlaylistRule.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistRule.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogSongInfo.cpp">
@@ -1278,19 +1278,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogAudioSubtitleSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogBoxBase.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogBoxBase.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogBoxBase.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogBoxBase.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogBusy.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogBusy.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogBusy.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogBusy.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogButtonMenu.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUIDialogContentSettings.cpp">
@@ -1299,19 +1299,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUIDialogContentSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogContextMenu.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogContextMenu.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogFavourites.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogFavourites.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogFavourites.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogFavourites.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogFileBrowser.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogFileBrowser.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogFileBrowser.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogFileBrowser.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogFileStacking.cpp">
@@ -1323,10 +1323,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogFullScreenInfo.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogGamepad.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogGamepad.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogKaiToast.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogKeyboard.cpp">
@@ -1338,10 +1338,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUIDialogLockSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogMediaSource.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogMediaSource.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogMediaSource.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogMediaSource.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogMusicOSD.cpp">
@@ -1350,7 +1350,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogMusicOSD.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogMuteBug.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogNetworkSetup.cpp">
@@ -1359,10 +1359,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogNetworkSetup.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogNumeric.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogNumeric.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogOK.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogOK.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogPictureInfo.cpp">
@@ -1371,10 +1371,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogPictureInfo.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPlayerControls.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogPlayerControls.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogPlayerControls.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogPlayerControls.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUIDialogProfileSettings.cpp">
@@ -1383,16 +1383,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUIDialogProfileSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogProgress.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogProgress.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSeekBar.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSeekBar.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSeekBar.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogSeekBar.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GuiDialogSelect.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSelect.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUIDialogSettings.cpp">
@@ -1401,19 +1401,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUIDialogSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSlider.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSlider.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSlider.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogSlider.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogSubMenu.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogSubMenu.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogTextViewer.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogTextViewer.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogTextViewer.h">
+					RelativePath=".\xbmc\dialogs\GUIDialogTextViewer.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIDialogTrainerSettings.cpp">
@@ -1446,10 +1446,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIDialogVisualisationSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogVolumeBar.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogVolumeBar.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIDialogYesNo.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogYesNo.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -2922,19 +2922,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\fstrcmp.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogButtonMenu.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogContextMenu.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogContextMenu.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIDialogFileStacking.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogGamepad.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogGamepad.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogKaiToast.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIDialogKeyboard.h">
@@ -2943,28 +2943,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\GUIDialogMusicScan.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogMuteBug.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogNumeric.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogNumeric.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogOK.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogOK.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogProgress.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogProgress.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogSelect.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogSelect.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogSubMenu.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogSubMenu.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogVolumeBar.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogVolumeBar.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIDialogYesNo.h">
+				RelativePath=".\xbmc\dialogs\GUIDialogYesNo.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\GUIInfoManager.h">

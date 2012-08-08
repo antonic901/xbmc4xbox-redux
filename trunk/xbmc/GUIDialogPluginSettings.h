@@ -22,7 +22,7 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogBoxBase.h"
 #include "PluginSettings.h"
 
 struct SScraperInfo;

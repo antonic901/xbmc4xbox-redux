@@ -32,7 +32,7 @@
 #include "../modplayer.h"
 #endif
 #include "../paplayer/paplayer.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "XBAudioConfig.h"
 #include "FileSystem/CurlFile.h"
 #include "utils/HttpHeader.h"

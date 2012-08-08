@@ -20,7 +20,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "GUIProgressControl.h"
 #include "Application.h"
 #include "utils/GUIInfoManager.h"

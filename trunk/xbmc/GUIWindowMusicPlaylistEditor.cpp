@@ -24,7 +24,7 @@
 #include "utils/URIUtils.h"
 #include "utils/GUIInfoManager.h"
 #include "Autorun.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #include "FileSystem/PlaylistFileDirectory.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"

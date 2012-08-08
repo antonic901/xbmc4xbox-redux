@@ -32,7 +32,7 @@
 #include "utils/Trainer.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "settings/Settings.h"

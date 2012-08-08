@@ -19,24 +19,15 @@
  *
  */
 
-#include "GUIDialogSubMenu.h"
+#include "dialogs/GUIDialogPlayerControls.h"
 
-CGUIDialogSubMenu::CGUIDialogSubMenu(void)
-    : CGUIDialog(WINDOW_DIALOG_SUB_MENU, "DialogSubMenu.xml")
+
+CGUIDialogPlayerControls::CGUIDialogPlayerControls(void)
+    : CGUIDialog(WINDOW_DIALOG_PLAYER_CONTROLS, "PlayerControls.xml")
 {
 }
 
-CGUIDialogSubMenu::~CGUIDialogSubMenu(void)
-{}
-
-bool CGUIDialogSubMenu::OnMessage(CGUIMessage &message)
+CGUIDialogPlayerControls::~CGUIDialogPlayerControls(void)
 {
-  if (message.GetMessage() == GUI_MSG_CLICKED)
-  {
-    // someone has been clicked - deinit...
-    CGUIDialog::OnMessage(message);
-    Close();
-    return true;
-  }
-  return CGUIDialog::OnMessage(message);
 }
+

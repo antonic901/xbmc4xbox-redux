@@ -23,7 +23,7 @@
 #include "GUIWindowFileManager.h"
 #include "settings/Profile.h"
 #include "Application.h"
-#include "GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "settings/GUIDialogProfileSettings.h"
 #include "xbox/network.h"
 #include "utils/Weather.h"

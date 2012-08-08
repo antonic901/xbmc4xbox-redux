@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIDialogBoxBase.h"
+#include "dialogs/GUIDialogBoxBase.h"
 #include "GUIListItem.h"
 
 class CFileItem;

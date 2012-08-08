@@ -27,7 +27,7 @@
 #include "settings/AdvancedSettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "GUIDialogOK.h"
+#include "dialogs/GUIDialogOK.h"
 #include "PlayList.h"
 #include "utils/log.h"
 

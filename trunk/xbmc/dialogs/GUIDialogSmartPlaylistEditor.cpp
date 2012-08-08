@@ -19,11 +19,11 @@
  *
  */
 
-#include "GUIDialogSmartPlaylistEditor.h"
+#include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "GUIDialogKeyboard.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "GUIDialogSmartPlaylistRule.h"
+#include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/File.h"
 #include "settings/GUISettings.h"

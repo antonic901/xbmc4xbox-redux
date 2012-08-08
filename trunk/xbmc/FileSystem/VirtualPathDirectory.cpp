@@ -27,7 +27,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 

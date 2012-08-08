@@ -30,7 +30,7 @@
 #include "Application.h"
 #include "settings/Settings.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "GUIFontManager.h"
 #include "LocalizeStrings.h"
 

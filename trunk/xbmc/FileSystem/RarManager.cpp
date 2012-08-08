@@ -26,7 +26,7 @@
 #include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogYesNo.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"

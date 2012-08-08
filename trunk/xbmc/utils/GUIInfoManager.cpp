@@ -20,11 +20,11 @@
  */
 
 #include "system.h"
-#include "GUIDialogSeekBar.h"
+#include "dialogs/GUIDialogSeekBar.h"
 #include "GUIMediaWindow.h"
-#include "GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/GUIDialogContentSettings.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
 #include "Util.h"

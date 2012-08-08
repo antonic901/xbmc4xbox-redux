@@ -23,7 +23,7 @@
 
 #include "utils/Thread.h"
 #include "utils/CriticalSection.h"
-#include "GUIDialogBusy.h"
+#include "dialogs/GUIDialogBusy.h"
 
 class CApplicationRenderer : public CThread
 {

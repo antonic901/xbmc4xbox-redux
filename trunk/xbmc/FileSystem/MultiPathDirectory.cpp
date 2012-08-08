@@ -28,7 +28,7 @@
 #include "utils/StringUtils.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogProgress.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
 
 using namespace std;

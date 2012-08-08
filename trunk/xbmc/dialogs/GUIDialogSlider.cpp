@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIDialogSlider.h"
+#include "dialogs/GUIDialogSlider.h"
 #include "GUISliderControl.h"
 #include "GUIWindowManager.h"
 #include "LocalizeStrings.h"
