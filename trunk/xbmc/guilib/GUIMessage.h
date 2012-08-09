@@ -227,7 +227,7 @@ do { \
 
 #include <vector>
 #include "boost/shared_ptr.hpp"
-#include "StdString.h"
+#include "utils/StdString.h"
 
 // forwards
 class CGUIListItem; typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;

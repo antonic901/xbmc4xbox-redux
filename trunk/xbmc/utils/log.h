@@ -22,7 +22,7 @@
  */
 
 #include <stdio.h>
-#include "StdString.h"
+#include "utils/StdString.h"
 
 #define LOG_LEVEL_NONE         -1 // nothing at all is logged
 #define LOG_LEVEL_NORMAL        0 // shows notice, error, severe and fatal

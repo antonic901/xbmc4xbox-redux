@@ -32,7 +32,7 @@
 
 #include <map>
 #include "utils/log.h"
-#include "../guilib/StdString.h"
+#include "utils/StdString.h"
 #include "../guilib/tinyXML/tinyxml.h"
 
 class CKeyboardLayoutConfiguration

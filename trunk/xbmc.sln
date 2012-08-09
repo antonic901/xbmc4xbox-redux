@@ -12,7 +12,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBFileZilla", "xbmc\lib\lib
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "guilib", "guilib\guilib.vcproj", "{9B28366B-79F0-4361-B5C5-4608DFA8CF17}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "guilib", "xbmc\guilib\guilib.vcproj", "{9B28366B-79F0-4361-B5C5-4608DFA8CF17}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

@@ -3,72 +3,40 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="guilib"
-	ProjectGUID="{510441AC-B9E1-4B31-9C0C-EB3AD39D90C4}"
-	Keyword="Win32Proj">
+	ProjectGUID="{9B28366B-79F0-4361-B5C5-4608DFA8CF17}"
+	RootNamespace="guilib"
+	Keyword="XboxProj">
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Xbox"/>
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug (Win32)"
-			IntermediateDirectory="Debug (Win32)"
+			Name="Debug|Xbox"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
 				Optimization="0"
-				AdditionalIncludeDirectories="../xbmc/;freetype2/include;../xbmc/lib/boost;../guilib"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..;freetype2\include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../lib/boost;../guilib"
+				PreprocessorDefinitions="_DEBUG;_XBOX;_LIB"
 				StringPooling="FALSE"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
 				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="include.h"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="4"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/guilib.lib"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release (Win32)"
-			IntermediateDirectory="Release (Win32)"
-			ConfigurationType="4"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../xbmc/;freetype2/include;../xbmc/lib/boost;../guilib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="include.h"
+				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
@@ -76,26 +44,177 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/guilib.lib"
-				IgnoreDefaultLibraryNames=""/>
-			<Tool
-				Name="VCMIDLTool"/>
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
+		</Configuration>
+		<Configuration
+			Name="Profile|Xbox"
+			OutputDirectory="Profile"
+			IntermediateDirectory="Profile"
+			ConfigurationType="4"
+			CharacterSet="2">
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/EHa"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="FALSE"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..;freetype2\include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../lib/boost;../guilib"
+				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;_LIB"
+				StringPooling="FALSE"
+				ExceptionHandling="FALSE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="FALSE"
+				EnableEnhancedInstructionSet="1"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="include.h"
+				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+		</Configuration>
+		<Configuration
+			Name="Profile_FastCap|Xbox"
+			OutputDirectory="Profile_FastCap"
+			IntermediateDirectory="Profile_FastCap"
+			ConfigurationType="4"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/EHa"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="FALSE"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..;freetype2\include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../lib/boost;../guilib"
+				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;FASTCAP;_LIB"
+				StringPooling="FALSE"
+				ExceptionHandling="FALSE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="FALSE"
+				EnableEnhancedInstructionSet="1"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="include.h"
+				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"
+				FastCAP="TRUE"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Xbox"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="4"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/EHa"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="TRUE"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..;freetype2\include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../lib/boost;../guilib;..\utils"
+				PreprocessorDefinitions="NDEBUG;_XBOX;_LIB"
+				StringPooling="TRUE"
+				ExceptionHandling="FALSE"
+				RuntimeLibrary="0"
+				EnableEnhancedInstructionSet="1"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="include.h"
+				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release_LTCG|Xbox"
+			OutputDirectory="Release_LTCG"
+			IntermediateDirectory="Release_LTCG"
+			ConfigurationType="4"
+			CharacterSet="2"
+			WholeProgramOptimization="TRUE">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/EHa"
+				Optimization="1"
+				GlobalOptimizations="FALSE"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="FALSE"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="TRUE"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..;freetype2\include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../lib/boost;../guilib"
+				PreprocessorDefinitions="NDEBUG;_XBOX;LTCG;_LIB"
+				StringPooling="TRUE"
+				ExceptionHandling="FALSE"
+				RuntimeLibrary="0"
+				EnableEnhancedInstructionSet="1"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough="include.h"
+				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions="/LTCG"
+				OutputFile="$(OutDir)/$(ProjectName).lib"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -110,9 +229,6 @@
 			</File>
 			<File
 				RelativePath=".\AudioContext.cpp">
-			</File>
-			<File
-				RelativePath=".\DirectXGraphics.cpp">
 			</File>
 			<File
 				RelativePath=".\GraphicContext.cpp">
@@ -142,7 +258,7 @@
 				RelativePath=".\GUIControl.cpp">
 			</File>
 			<File
-				RelativePath=".\GuiControlFactory.cpp">
+				RelativePath=".\GUIControlFactory.cpp">
 			</File>
 			<File
 				RelativePath=".\GUIControlGroup.cpp">
@@ -172,16 +288,13 @@
 				RelativePath=".\GUIFontTTF.cpp">
 			</File>
 			<File
-				RelativePath=".\guiImage.cpp">
+				RelativePath=".\GUIImage.cpp">
 			</File>
 			<File
 				RelativePath=".\GUIIncludes.cpp">
 			</File>
 			<File
 				RelativePath=".\GUIInfoTypes.cpp">
-			</File>
-			<File
-				RelativePath=".\GUIInfoTypes.h">
 			</File>
 			<File
 				RelativePath=".\GUILabelControl.cpp">
@@ -318,16 +431,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\ActionManager.h">
-			</File>
-			<File
 				RelativePath=".\AnimatedGif.h">
 			</File>
 			<File
 				RelativePath=".\AudioContext.h">
-			</File>
-			<File
-				RelativePath=".\DirectXGraphics.h">
 			</File>
 			<File
 				RelativePath=".\Geometry.h">
@@ -366,7 +473,7 @@
 				RelativePath=".\GUIControl.h">
 			</File>
 			<File
-				RelativePath=".\GuiControlFactory.h">
+				RelativePath=".\GUIControlFactory.h">
 			</File>
 			<File
 				RelativePath=".\GUIControlGroup.h">
@@ -396,13 +503,16 @@
 				RelativePath=".\GUIFontTTF.h">
 			</File>
 			<File
-				RelativePath=".\guiImage.h">
+				RelativePath=".\GUIImage.h">
 			</File>
 			<File
 				RelativePath=".\GUIIncludes.h">
 			</File>
 			<File
-				RelativePath=".\GUIInfoColor.h">
+				RelativePath=".\GUIInfoTypes.h">
+			</File>
+			<File
+				RelativePath=".\GUIItem.h">
 			</File>
 			<File
 				RelativePath=".\GUILabelControl.h">
@@ -507,13 +617,26 @@
 				RelativePath=".\IAudioDeviceChangedCallback.h">
 			</File>
 			<File
-				RelativePath=".\IMsgSenderCallback.h">
-			</File>
-			<File
 				RelativePath=".\IMsgTargetCallback.h">
 			</File>
 			<File
 				RelativePath=".\include.h">
+				<FileConfiguration
+					Name="Release|Xbox">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\update_svn_rev.bat"
+						AdditionalDependencies="..\.svn\entries"
+						Outputs="..\xbox\svn_rev.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release_LTCG|Xbox">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="update_svn_rev.bat"
+						AdditionalDependencies="..\.svn\entries"
+						Outputs="..\xbox\svn_rev.h"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\IWindowManagerCallback.h">
@@ -556,12 +679,35 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			Name="common"
+			Filter="">
+			<File
+				RelativePath=".\common\Keyboard.cpp">
+			</File>
+			<File
+				RelativePath=".\common\Keyboard.h">
+			</File>
+			<File
+				RelativePath=".\common\Mouse.cpp">
+			</File>
+			<File
+				RelativePath=".\common\Mouse.h">
+			</File>
+			<File
+				RelativePath=".\common\XBoxKeyboard.cpp">
+			</File>
+			<File
+				RelativePath=".\common\XBoxKeyboard.h">
+			</File>
+			<File
+				RelativePath=".\common\XBoxMouse.cpp">
+			</File>
+			<File
+				RelativePath=".\common\XBoxMouse.h">
+			</File>
 		</Filter>
 		<Filter
-			Name="tinyxml"
+			Name="tinyXML"
 			Filter="">
 			<File
 				RelativePath=".\tinyXML\tinystr.cpp">
@@ -583,42 +729,30 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="common"
+			Name="xdk Files"
 			Filter="">
 			<File
-				RelativePath=".\common\DirectInput.cpp">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Src\xbinput.cpp">
 			</File>
 			<File
-				RelativePath=".\common\DirectInput.h">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Include\xbinput.h">
 			</File>
 			<File
-				RelativePath=".\common\DirectInputKeyboard.cpp">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Src\xbresource.cpp">
 			</File>
 			<File
-				RelativePath=".\common\DirectInputKeyboard.h">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Include\xbresource.h">
 			</File>
 			<File
-				RelativePath=".\common\DirectInputMouse.cpp">
+				RelativePath="($XDK)\Samples\Xbox\Common\Include\xbstopwatch.h">
 			</File>
 			<File
-				RelativePath=".\common\DirectInputMouse.h">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Src\xbutil.cpp">
 			</File>
 			<File
-				RelativePath=".\common\Keyboard.cpp">
-			</File>
-			<File
-				RelativePath=".\common\Keyboard.h">
-			</File>
-			<File
-				RelativePath=".\common\Mouse.cpp">
-			</File>
-			<File
-				RelativePath=".\common\Mouse.h">
+				RelativePath="$(XDK)\Samples\Xbox\Common\Include\xbutil.h">
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -21,7 +21,7 @@
  */
 
 #include <map>
-#include "StdString.h"
+#include "utils/StdString.h"
 
 // static class for path translation from our special:// URLs.
 

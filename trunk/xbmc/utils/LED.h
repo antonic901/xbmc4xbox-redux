@@ -21,7 +21,7 @@
  *
  */
 
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "Thread.h"
 
 #define SMARTXX_PWD_RED       0xf70c   //PWM1: SmartXX V3 port for RGB red output

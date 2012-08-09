@@ -29,7 +29,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "StdString.h"
+#include "utils/StdString.h"
 
 class CShortcut
 {

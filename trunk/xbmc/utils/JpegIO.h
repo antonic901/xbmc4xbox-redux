@@ -31,7 +31,7 @@
 #define XMD_H
 #include <jpeglib.h>
 //#include <DllTurboJpeg.h>
-#include "StdString.h"
+#include "utils/StdString.h"
 
 class CJpegIO
 {

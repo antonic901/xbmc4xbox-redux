@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib;..\..\xbmc\lib\libPython\python\PC;&quot;../../xbmc/lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../xbmc/guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib;..\..\xbmc\lib\libPython\python\Include;..\..\xbmc\lib\libPython\python\PC;&quot;../../xbmc/lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="WIN32;_XBMC;_DEBUG;_WINDOWS;_WIN32_WINNT=0x0500;WINVER=0x0500;NOMINMAX"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
@@ -74,7 +74,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib;..\..\xbmc\lib\libPython\python\Include;..\..\xbmc\lib\libPython\python\PC;&quot;../../xbmc/lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="../../xbmc/;../../xbmc/cores/dvdplayer/Codecs/ffmpeg;../../xbmc/cores/dvdplayer/;../../xbmc/guilib/;../..;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaServer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaRenderer;../../xbmc/lib/libUPnP/Platinum/Source/Devices/MediaConnect;../../xbmc/lib/libUPnP/Platinum/Source/Core;../../xbmc/lib/libUPnP/Platinum/Source/Platinum;../../xbmc/lib/libUPnP/Neptune/Source/Core;../../xbmc/lib/libUPnP/Neptune/Source/System/Win32;../../xbmc/cores/dvdplayer;../../xbmc/lib/boost;..\..\xbmc\lib\libRTMP;../../xbmc/utils;../../xbmc/xbox;../../xbmc/lib/libcurl/include;../../xbmc/lib;..\..\xbmc\lib\libPython\python\Include;..\..\xbmc\lib\libPython\python\PC;&quot;../../xbmc/lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_XBMC;_WINDOWS;_WIN32_WINNT=0x0500;WINVER=0x0500;NOMINMAX"
 				StringPooling="FALSE"
 				MinimalRebuild="TRUE"

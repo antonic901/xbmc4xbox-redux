@@ -22,7 +22,7 @@
  */
 
 #include "PluginSettings.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 
 class CScraperUrl;
 

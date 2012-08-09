@@ -23,7 +23,7 @@
 #define LIBSCROBBLER_H__
 
 #include <vector>
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "Thread.h"
 #include "FileSystem/CurlFile.h"
 #include "CriticalSection.h"

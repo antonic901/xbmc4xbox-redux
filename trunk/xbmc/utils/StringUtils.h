@@ -34,7 +34,7 @@
 
 #include "xbox/PlatformDefs.h"
 #include "XBDateTime.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 #include <vector>
 
 class StringUtils

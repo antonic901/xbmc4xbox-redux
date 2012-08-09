@@ -23,7 +23,7 @@
  */
 
 #include "CriticalSection.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "../xbox/PlatFormDefs.h"
 
 #include <vector>

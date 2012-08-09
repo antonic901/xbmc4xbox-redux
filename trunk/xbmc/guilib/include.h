@@ -37,7 +37,7 @@
 #include <memory>
 #include <queue>
 #include <stdio.h>
-#include "StdString.h"
+#include "utils/StdString.h"
 #ifdef _XBOX
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

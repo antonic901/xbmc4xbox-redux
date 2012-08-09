@@ -31,7 +31,7 @@
 
 #include <iostream>
 #include "IFile.h"
-#include "../../guilib/StdString.h"
+#include "../utils/StdString.h"
 #include "../utils/BitstreamStats.h"
 
 class CURL;

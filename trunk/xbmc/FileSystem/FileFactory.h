@@ -31,7 +31,7 @@
 #endif // _MSC_VER > 1000
 
 #include "IFile.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 
 namespace XFILE
 {

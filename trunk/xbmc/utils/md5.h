@@ -41,7 +41,7 @@
 #define _MD5_H_ 1
 
 #include "system.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 
 /* typedef a 32 bit type */
 typedef uint32_t UINT4;

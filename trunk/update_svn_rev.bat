@@ -1,7 +1,9 @@
 @echo off
 rem subwcrev is included in the tortoise svn client: http://tortoisesvn.net/downloads
 
-SET REV_FILE=..\xbmc\xbox\svn_rev.h
+SET CWD=%~dp0
+
+SET REV_FILE=%CWD%xbmc\xbox\svn_rev.h
 
 IF EXIST %REV_FILE% del %REV_FILE%
 
@@ -12,13 +14,13 @@ IF EXIST "%ProgramW6432%\TortoiseSVN\bin\subwcrev.exe" SET SUBWCREV="%ProgramW64
 
 IF NOT EXIST %SUBWCREV% GOTO SKIPSUBWCREV
 
-%SUBWCREV% .. ../xbmc/xbox/svn_rev.tmpl %REV_FILE% -f
+%SUBWCREV% %CWD%xbmc/xbox/svn_rev.tmpl %REV_FILE% -f
 
-IF NOT EXIST %REV_FILE% %SUBWCREV% .. ../xbmc/xbox/svn_rev.tmpl %REV_FILE% -f
+IF NOT EXIST %REV_FILE% %SUBWCREV% %CWD% %CWD%xbmc\xbox\svn_rev.tmpl %REV_FILE% -f
 
 :SKIPSUBWCREV
 
-IF NOT EXIST %REV_FILE% copy ..\xbmc\xbox\svn_rev.unknown %REV_FILE%
+IF NOT EXIST %REV_FILE% copy %CWD%xbmc\xbox\svn_rev.unknown %REV_FILE%
 
 SET REV_FILE=
 SET SUBWCREV=

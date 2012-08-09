@@ -30,7 +30,7 @@
 #include <list>
 #include <map>
 
-#include "..\..\..\guilib\stdstring.h"
+#include "utils/StdString.h"
 #include "xbdefines.h"
 
 

@@ -22,7 +22,7 @@
  */
 
 #include "../../xbox/PlatformDefs.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 
 namespace XFILE
 {

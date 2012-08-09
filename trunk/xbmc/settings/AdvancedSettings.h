@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "tinyXML/tinyxml.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "utils/StringUtils.h"
 
 struct TVShowRegexp

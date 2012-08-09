@@ -7,7 +7,7 @@
 #define CGUILIB_GUIFONT_H
 #pragma once
 
-#include "StdString.h"
+#include "utils/StdString.h"
 
 typedef uint32_t character_t;
 typedef uint32_t color_t;
