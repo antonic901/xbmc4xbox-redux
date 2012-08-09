@@ -622,6 +622,30 @@
 			<File
 				RelativePath=".\include.h">
 				<FileConfiguration
+					Name="Debug|Xbox">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\update_svn_rev.bat"
+						AdditionalDependencies="..\.svn\entries"
+						Outputs="..\xbox\svn_rev.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Xbox">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\update_svn_rev.bat"
+						AdditionalDependencies="..\.svn\entries"
+						Outputs="..\xbox\svn_rev.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile_FastCap|Xbox">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\update_svn_rev.bat"
+						AdditionalDependencies="..\.svn\entries"
+						Outputs="..\xbox\svn_rev.h"/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Xbox">
 					<Tool
 						Name="VCCustomBuildTool"
@@ -633,7 +657,7 @@
 					Name="Release_LTCG|Xbox">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="update_svn_rev.bat"
+						CommandLine="..\..\update_svn_rev.bat"
 						AdditionalDependencies="..\.svn\entries"
 						Outputs="..\xbox\svn_rev.h"/>
 				</FileConfiguration>
