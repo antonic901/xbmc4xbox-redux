@@ -940,6 +940,7 @@ int CGUIInfoManager::TranslateListItem(const CStdString &info)
   else if (info.Equals("comment")) return LISTITEM_COMMENT;
   else if (info.Equals("path")) return LISTITEM_PATH;
   else if (info.Equals("foldername")) return LISTITEM_FOLDERNAME;
+  else if (info.Equals("folderpath")) return LISTITEM_FOLDERPATH;
   else if (info.Equals("picturepath")) return LISTITEM_PICTURE_PATH;
   else if (info.Equals("pictureresolution")) return LISTITEM_PICTURE_RESOLUTION;
   else if (info.Equals("picturedatetime")) return LISTITEM_PICTURE_DATETIME;
@@ -3917,6 +3918,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
     return item->GetOverlayImage();
   case LISTITEM_THUMB:
     return item->GetThumbnailImage();
+  case LISTITEM_FOLDERPATH:
+    return CURL(item->GetPath()).GetWithoutUserDetails();
   case LISTITEM_FOLDERNAME:
   case LISTITEM_PATH:
     {
