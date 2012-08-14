@@ -600,6 +600,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     else if (strTest.Equals("videoplayer.videoaspect")) return VIDEOPLAYER_VIDEO_ASPECT;
     else if (strTest.Equals("videoplayer.audiocodec")) return VIDEOPLAYER_AUDIO_CODEC;
     else if (strTest.Equals("videoplayer.audiochannels")) return VIDEOPLAYER_AUDIO_CHANNELS;
+    else if (strTest.Equals("videoplayer.lastplayed")) return VIDEOPLAYER_LASTPLAYED;
     else if (strTest.Equals("videoplayer.playcount")) return VIDEOPLAYER_PLAYCOUNT;
   }
   else if (strCategory.Equals("playlist"))
@@ -962,6 +963,7 @@ int CGUIInfoManager::TranslateListItem(const CStdString &info)
   else if (info.Equals("subtitlelanguage")) return LISTITEM_SUBTITLE_LANGUAGE;
   else if (info.Equals("isfolder")) return LISTITEM_IS_FOLDER;
   else if (info.Equals("originaltitle")) return LISTITEM_ORIGINALTITLE;
+  else if (info.Equals("lastplayed")) return LISTITEM_LASTPLAYED;
   else if (info.Equals("playcount")) return LISTITEM_PLAYCOUNT;
   else if (info.Left(9).Equals("property(")) return AddListItemProp(info.Mid(9, info.GetLength() - 10));
   return 0;
@@ -1175,6 +1177,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
   case VIDEOPLAYER_TAGLINE:
   case VIDEOPLAYER_TRAILER:
   case VIDEOPLAYER_PLAYCOUNT:
+  case VIDEOPLAYER_LASTPLAYED:
     strLabel = GetVideoLabel(info);
   break;
   case VIDEOPLAYER_VIDEO_CODEC:
@@ -3235,6 +3238,8 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
       return m_currentFile->GetVideoInfoTag()->m_strWritingCredits;
     case VIDEOPLAYER_TAGLINE:
       return m_currentFile->GetVideoInfoTag()->m_strTagLine;
+    case VIDEOPLAYER_LASTPLAYED:
+      return m_currentFile->GetVideoInfoTag()->m_lastPlayed;
     case VIDEOPLAYER_PLAYCOUNT:
       {
         CStdString strPlayCount;
@@ -3732,6 +3737,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info) const
         strPlayCount.Format("%i", item->GetVideoInfoTag()->m_playCount);
       return strPlayCount;
     }
+  case LISTITEM_LASTPLAYED:
+    return item->GetVideoInfoTag()->m_lastPlayed;
   case LISTITEM_TRACKNUMBER:
     {
       CStdString track;
