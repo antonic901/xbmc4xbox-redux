@@ -24,7 +24,7 @@
 #include "utils/URIUtils.h"
 #include "pictures/Picture.h"
 #include "utils/IMDB.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "playlists/PlayListFactory.h"
 #include "Application.h"
 #include "NfoFile.h"

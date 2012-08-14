@@ -21,7 +21,7 @@
 
 #include "include.h"
 #include "GUIProgressControl.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 CGUIProgressControl::CGUIProgressControl(int parentID, int controlID, 
                                          float posX, float posY, float width, 

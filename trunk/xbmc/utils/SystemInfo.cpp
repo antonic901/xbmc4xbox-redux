@@ -25,7 +25,7 @@
 #include "settings/Settings.h"
 #include "utils/log.h"
 #include "cores/DllLoader/DllLoader.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "FileSystem/CurlFile.h"
 #include "LocalizeStrings.h"
 #ifdef HAS_XBOX_HARDWARE

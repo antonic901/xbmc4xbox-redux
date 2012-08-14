@@ -21,7 +21,7 @@
 
 #include "music/windows/GUIWindowMusicNav.h"
 #include "Util.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "playlists/PlayListM3U.h"
 #include "PlayListPlayer.h"
 #include "GUIPassword.h"

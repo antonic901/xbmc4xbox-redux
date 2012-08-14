@@ -24,7 +24,7 @@
 #include "GUIUserMessages.h"
 #include "settings/GUIWindowSettingsCategory.h"
 #include "GUIControlGroupList.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 
 #define CONTROL_SETTINGS_LABEL      2

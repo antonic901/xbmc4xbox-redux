@@ -29,7 +29,7 @@
 #include "video/windows/GUIWindowVideoBase.h"
 #include "GUIWindowVideoFiles.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "video/VideoInfoScanner.h"
 #include "video/VideoInfoTag.h"
 #include "GUIWindowManager.h"

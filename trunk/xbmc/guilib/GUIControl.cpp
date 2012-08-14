@@ -22,7 +22,7 @@
 #include "include.h"
 #include "GUIControl.h"
 
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 #include "GUIWindowManager.h"
 

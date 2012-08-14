@@ -21,7 +21,7 @@
 
 #include "include.h"
 #include "VisibleEffect.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "SkinInfo.h" // for the effect time adjustments
 #include "guiImage.h" // for FRECT
 #include "Tween.h"

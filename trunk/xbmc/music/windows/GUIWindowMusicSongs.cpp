@@ -22,7 +22,7 @@
 #include "music/windows/GUIWindowMusicSongs.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "Application.h"
 #include "CueDocument.h"
 #include "GUIPassword.h"

@@ -30,7 +30,7 @@
 #include "infotagvideo.h"
 #include "infotagmusic.h"
 #include "lib/libGoAhead/XBMChttp.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "GUIAudioManager.h"
 #include "Application.h"

@@ -22,7 +22,7 @@
 #include "system.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "PlayListPlayer.h"
 #include "player.h"
 #include "pyplaylist.h"

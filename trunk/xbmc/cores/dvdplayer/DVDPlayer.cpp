@@ -41,7 +41,7 @@
 
 #include "utils/LangCodeExpander.h"
 #include "Util.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "Application.h"

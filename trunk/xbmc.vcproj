@@ -934,7 +934,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\fstrcmp.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\GUIInfoManager.cpp">
+					RelativePath=".\xbmc\GUIInfoManager.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\GUIPassword.cpp">
@@ -2967,7 +2967,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\dialogs\GUIDialogYesNo.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\GUIInfoManager.h">
+				RelativePath=".\xbmc\GUIInfoManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIPassword.h">

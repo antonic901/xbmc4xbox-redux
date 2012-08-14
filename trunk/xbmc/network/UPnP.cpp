@@ -50,7 +50,7 @@
 #include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "utils/md5.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"

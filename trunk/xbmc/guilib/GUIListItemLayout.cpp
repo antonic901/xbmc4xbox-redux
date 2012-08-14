@@ -24,7 +24,7 @@
 #include "FileItem.h"
 #include "GUIControlFactory.h"
 #include "SkinInfo.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIListLabel.h"
 #include "GUIImage.h"
 

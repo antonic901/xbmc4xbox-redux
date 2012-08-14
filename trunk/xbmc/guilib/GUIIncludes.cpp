@@ -22,7 +22,7 @@
 #include "include.h"
 #include "GUIIncludes.h"
 #include "SkinInfo.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 using namespace std;
 

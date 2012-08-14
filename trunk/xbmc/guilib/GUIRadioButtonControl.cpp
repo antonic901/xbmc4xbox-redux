@@ -21,7 +21,7 @@
 
 #include "include.h"
 #include "GUIRadioButtonControl.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIFontManager.h"
 
 CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, float posX, float posY, float width, float height,

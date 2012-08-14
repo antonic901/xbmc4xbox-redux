@@ -23,7 +23,7 @@
 #include "GUITextBox.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 using namespace std;
 

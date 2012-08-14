@@ -29,7 +29,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "storage/DetectDVDType.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTag.h"
 #include "ScraperSettings.h"
 #include "Util.h"

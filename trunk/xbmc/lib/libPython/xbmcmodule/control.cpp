@@ -22,7 +22,7 @@
 #include "system.h"
 #include "control.h"
 #include "pyutil.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GuiControlFactory.h"
 #include "GUITexture.h"
 #include "tinyXML/tinyxml.h"

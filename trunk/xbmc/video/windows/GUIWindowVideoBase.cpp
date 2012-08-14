@@ -23,7 +23,7 @@
 #include "Util.h"
 #include "utils/IMDB.h"
 #include "utils/RegExp.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIWindowVideoInfo.h"
 #include "video/windows/GUIWindowVideoNav.h" 
 #include "dialogs/GUIDialogFileBrowser.h"

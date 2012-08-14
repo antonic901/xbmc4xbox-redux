@@ -20,7 +20,7 @@
  */
 
 #include "settings/Profile.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "settings/Settings.h"
 
 CProfile::CProfile(void)

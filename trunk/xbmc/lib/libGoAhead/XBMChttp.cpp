@@ -27,7 +27,7 @@
 #include "video/VideoDatabase.h"
 #include "ProgramDatabase.h"
 #include "GUIButtonControl.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "pictures/Picture.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicInfoScraper.h"

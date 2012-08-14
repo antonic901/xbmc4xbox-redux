@@ -24,7 +24,7 @@
 #include "GUIWindowManager.h"
 #include "GUIDialog.h"
 #include "utils/CharsetConverter.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 using namespace std;
 

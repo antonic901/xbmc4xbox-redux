@@ -22,7 +22,7 @@
 #include "include.h"
 #include "GUIFixedListContainer.h"
 #include "GUIListItem.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 CGUIFixedListContainer::CGUIFixedListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, int scrollTime, int preloadItems, int fixedPosition, int cursorRange)
     : CGUIBaseContainer(parentID, controlID, posX, posY, width, height, orientation, scrollTime, preloadItems)

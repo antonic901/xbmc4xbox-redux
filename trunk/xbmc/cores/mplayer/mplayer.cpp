@@ -11,7 +11,7 @@
 #include "XBVideoConfig.h"
 #include "utils/LangCodeExpander.h"
 #include "video/VideoDatabase.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "utils/win32exception.h"
 #include "cores/DllLoader/exports/emu_registry.h"

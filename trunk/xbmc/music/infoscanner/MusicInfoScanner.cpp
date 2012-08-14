@@ -30,7 +30,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/md5.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "xbox/XKGeneral.h"
 #include "NfoFile.h"
 #include "music/tags/MusicInfoTag.h"

@@ -24,7 +24,7 @@
 #include "GuiControlFactory.h"
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "XMLUtils.h"
 #include "SkinInfo.h"
 #include "FileItem.h"

@@ -20,7 +20,7 @@
  */
 
 #include "pictures/GUIDialogPictureInfo.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

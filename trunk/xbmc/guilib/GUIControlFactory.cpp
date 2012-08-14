@@ -55,7 +55,7 @@
 #include "GUIMultiSelectText.h"
 #include "GUIListLabel.h"
 #include "GUIListGroup.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "utils/CharsetConverter.h"
 #include "input/ButtonTranslator.h"
 #include "XMLUtils.h"

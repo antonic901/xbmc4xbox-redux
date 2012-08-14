@@ -40,7 +40,7 @@
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "PartyModeManager.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "music/dialogs/GUIDialogSongInfo.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"

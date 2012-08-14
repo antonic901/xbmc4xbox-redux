@@ -23,7 +23,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIProgressControl.h"
 #include "Application.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "LocalizeStrings.h"
 #include "utils/SingleLock.h"

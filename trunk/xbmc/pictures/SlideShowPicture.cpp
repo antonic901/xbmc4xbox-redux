@@ -22,7 +22,7 @@
 #include "system.h"
 #include "pictures/SlideShowPicture.h"
 #include "cores/ssrc.h"         // for M_PI
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "utils/log.h"

@@ -13,7 +13,7 @@
 #include "utils/URIUtils.h"
 #include "utils/CriticalSection.h"
 #include "utils/SingleLock.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "settings/GUISettings.h"
 #include "FileSystem/SpecialProtocol.h"
 

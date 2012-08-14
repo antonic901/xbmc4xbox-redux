@@ -1684,7 +1684,7 @@
 					RelativePath="..\..\xbmc\utils\fstrcmp.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\GUIInfoManager.cpp">
+					RelativePath="..\..\xbmc\GUIInfoManager.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\GUIPassword.cpp">
@@ -3235,7 +3235,7 @@
 				RelativePath="..\..\xbmc\dialogs\GUIDialogYesNo.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\utils\GUIInfoManager.h">
+				RelativePath="..\..\xbmc\GUIInfoManager.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIPassword.h">

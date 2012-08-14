@@ -29,7 +29,7 @@
 #include "FileSystem/StackDirectory.h"
 #include "xbox/XKGeneral.h"
 #include "utils/IMDB.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "FileSystem/File.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "settings/Settings.h"

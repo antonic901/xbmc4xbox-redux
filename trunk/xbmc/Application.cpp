@@ -49,7 +49,7 @@
 #endif
 #include "XBVideoConfig.h"
 #include "utils/LangCodeExpander.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "playlists/PlayListFactory.h"
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"

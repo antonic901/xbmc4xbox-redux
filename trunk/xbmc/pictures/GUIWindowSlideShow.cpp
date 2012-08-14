@@ -28,7 +28,7 @@
 #include "URL.h"
 #include "TextureManager.h"
 #include "GUILabelControl.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "FileSystem/Directory.h"
 #include "pictures/GUIDialogPictureInfo.h"
 #include "GUIWindowManager.h"

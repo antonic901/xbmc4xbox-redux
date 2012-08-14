@@ -4,7 +4,7 @@
 #include "utils/log.h"
 #include "paplayer.h"
 #include "CodecFactory.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "AudioContext.h"
 #include "FileSystem/ShoutcastFile.h"
 #include "Application.h"

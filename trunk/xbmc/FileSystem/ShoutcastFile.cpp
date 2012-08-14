@@ -48,7 +48,7 @@
 #include "lib/libshout/filelib.h"
 #include "RingBuffer.h"
 #include "ShoutcastRipFile.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

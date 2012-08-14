@@ -36,7 +36,7 @@
 #include "PasswordManager.h"
 #include "GUIAudioManager.h"
 #include "AudioContext.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "xbox/Network.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "FileSystem/SpecialProtocol.h"

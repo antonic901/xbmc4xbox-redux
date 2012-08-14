@@ -22,7 +22,7 @@
 #include "include.h"
 #include "GUIInfoTypes.h"
 #include "utils/CharsetConverter.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 #include "GUIColorManager.h"
 #include "GUIListItem.h"

@@ -33,7 +33,7 @@
 #include "utils/md5.h"
 #include "FileSystem/File.h"
 #include "FileSystem/CurlFile.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
 #include "URL.h"

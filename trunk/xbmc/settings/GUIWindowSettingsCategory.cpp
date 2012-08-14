@@ -52,7 +52,7 @@
 #include "lib/libscrobbler/lastfmscrobbler.h"
 #include "lib/libscrobbler/librefmscrobbler.h"
 #include "GUIPassword.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogFileBrowser.h"

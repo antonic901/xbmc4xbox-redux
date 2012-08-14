@@ -21,7 +21,7 @@
 #include "FileSystem/CDDADirectory.h"
 #include "FileSystem/ZipManager.h"
 #include "playlists/PlayListFactory.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"

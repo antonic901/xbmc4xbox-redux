@@ -23,7 +23,7 @@
 #include "GUIWindowVideoFiles.h"
 #include "music/windows/GUIWindowMusicNav.h"
 #include "windows/GUIWindowFileManager.h"
-#include "utils/GUIInfoManager.h"
+#include "GUIInfoManager.h"
 #include "Util.h"
 #include "utils/RegExp.h"
 #include "playlists/PlayListM3U.h"
