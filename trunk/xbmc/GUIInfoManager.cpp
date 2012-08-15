@@ -1318,7 +1318,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
     break;
 
   case SYSTEM_SCREEN_RESOLUTION:
-    strLabel.Format("%ix%i %s %02.2f Hz.",
+    strLabel.Format("%ix%i %s %02.2f fps.",
       g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iWidth,
       g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iHeight,
       g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].strMode,GetFPS());
