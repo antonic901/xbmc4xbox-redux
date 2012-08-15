@@ -61,6 +61,7 @@ const CMusicInfoTag& CMusicInfoTag::operator =(const CMusicInfoTag& tag)
   m_iTrack = tag.m_iTrack;
   m_bLoaded = tag.m_bLoaded;
   m_rating = tag.m_rating;
+  m_iTimesPlayed = tag.m_iTimesPlayed;
   m_iDbId = tag.m_iDbId;
   memcpy(&m_dwReleaseDate, &tag.m_dwReleaseDate, sizeof(m_dwReleaseDate) );
   return *this;
@@ -166,6 +167,11 @@ char CMusicInfoTag::GetRating() const
   return m_rating;
 }
 
+int CMusicInfoTag::GetPlayCount() const
+{
+  return m_iTimesPlayed;
+}
+
 void CMusicInfoTag::SetURL(const CStdString& strURL)
 {
   m_strURL = strURL;
@@ -267,6 +273,11 @@ void CMusicInfoTag::SetRating(char rating)
   m_rating = rating;
 }
 
+void CMusicInfoTag::SetPlayCount(int playcount)
+{
+  m_iTimesPlayed = playcount;
+}
+
 void CMusicInfoTag::SetLoaded(bool bOnOff)
 {
   m_bLoaded = bOnOff;
@@ -354,6 +365,7 @@ void CMusicInfoTag::SetSong(const CSong& song)
   SetMusicBrainzAlbumArtistID(song.strMusicBrainzAlbumArtistID);
   SetMusicBrainzTRMID(song.strMusicBrainzTRMID);
   SetComment(song.strComment);
+  SetPlayCount(song.iTimesPlayed);
   m_rating = song.rating;
   m_strURL = song.strFileName;
   SYSTEMTIME stTime;
@@ -363,6 +375,7 @@ void CMusicInfoTag::SetSong(const CSong& song)
   m_iDuration = song.iDuration;
   m_iDbId = song.idSong;
   m_bLoaded = true;
+  m_iTimesPlayed = song.iTimesPlayed;
 }
 
 void CMusicInfoTag::Serialize(CVariant& value)
@@ -384,6 +397,7 @@ void CMusicInfoTag::Serialize(CVariant& value)
   value["musicbrainztrmid"] = m_strMusicBrainzTRMID;
   value["comment"] = m_strComment;
   value["rating"] = m_rating;
+  value["playcount"] = m_iTimesPlayed;
 }
 void CMusicInfoTag::Archive(CArchive& ar)
 {
@@ -406,6 +420,7 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar << m_strMusicBrainzTRMID;
     ar << m_strComment;
     ar << m_rating;
+    ar << m_iTimesPlayed;
   }
   else
   {
@@ -426,6 +441,7 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar >> m_strMusicBrainzTRMID;
     ar >> m_strComment;
     ar >> m_rating;
+    ar >> m_iTimesPlayed;
  }
 }
 
@@ -448,6 +464,7 @@ void CMusicInfoTag::Clear()
   m_strComment.Empty();
   m_rating = '0';
   m_iDbId = -1;
+  m_iTimesPlayed = 0;
   memset(&m_dwReleaseDate, 0, sizeof(m_dwReleaseDate) );
 }
 
