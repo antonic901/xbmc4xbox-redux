@@ -3356,26 +3356,11 @@ void CGUIInfoManager::SetCurrentMovie(CFileItem &item)
   *m_currentFile = item;
   
   CVideoDatabase dbs;
-  dbs.Open();
-  if (dbs.HasMovieInfo(item.GetPath()))
+  if (dbs.Open())
   {
-    dbs.GetMovieInfo(item.GetPath(), *m_currentFile->GetVideoInfoTag());
-    CLog::Log(LOGDEBUG,"%s, got movie info!", __FUNCTION__);
-    CLog::Log(LOGDEBUG,"  Title = %s", m_currentFile->GetVideoInfoTag()->m_strTitle.c_str());
+    dbs.LoadVideoInfo(item.GetPath(), *m_currentFile->GetVideoInfoTag());
+    dbs.Close();
   }
-  else if (dbs.HasEpisodeInfo(item.GetPath()))
-  {
-    dbs.GetEpisodeInfo(item.GetPath(), *m_currentFile->GetVideoInfoTag());
-    CLog::Log(LOGDEBUG,"%s, got episode info!", __FUNCTION__);
-    CLog::Log(LOGDEBUG,"  Title = %s", m_currentFile->GetVideoInfoTag()->m_strTitle.c_str());
-  }
-  else if (dbs.HasMusicVideoInfo(item.GetPath()))
-  {
-    dbs.GetMusicVideoInfo(item.GetPath(), *m_currentFile->GetVideoInfoTag());
-    CLog::Log(LOGDEBUG,"%s, got music video info!", __FUNCTION__);
-    CLog::Log(LOGDEBUG,"  Title = %s", m_currentFile->GetVideoInfoTag()->m_strTitle.c_str());
-  }
-  dbs.Close();
 
   // Find a thumb for this file.
   item.SetVideoThumb();
