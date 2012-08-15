@@ -366,6 +366,9 @@
 				RelativePath=".\GUIStandardWindow.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIStaticItem.cpp">
+			</File>
+			<File
 				RelativePath=".\GUITextBox.cpp">
 			</File>
 			<File
@@ -582,6 +585,9 @@
 			</File>
 			<File
 				RelativePath=".\GUIStandardWindow.h">
+			</File>
+			<File
+				RelativePath=".\GUIStaticItem.h">
 			</File>
 			<File
 				RelativePath=".\GUITextBox.h">
