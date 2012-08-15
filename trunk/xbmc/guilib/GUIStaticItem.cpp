@@ -50,6 +50,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     for (vector<CStdString>::iterator it = actions.begin(); it != actions.end(); ++it)
       (*it).Replace(",", ",,");
     StringUtils::JoinString(actions, " , ", path);
+    SetPath(path);
     SetLabel(CGUIInfoLabel::GetLabel(label, parentID));
     SetLabel2(CGUIInfoLabel::GetLabel(label2, parentID));
     SetThumbnailImage(CGUIInfoLabel::GetLabel(thumb, parentID, true));
