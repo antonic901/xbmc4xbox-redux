@@ -2756,6 +2756,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\interfaces\IAnnouncer.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\interfaces\info\InfoBool.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\interfaces\info\InfoBool.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
