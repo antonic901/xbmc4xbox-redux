@@ -121,7 +121,7 @@ bool CVideoDatabase::CreateTables()
     columns += ")";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_1 ON movie (idFile, idMovie)");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie./xbmc/video/VideoDatabase.cpp (idMovie, idFile)");
 
     CLog::Log(LOGINFO, "create actorlinkmovie table");
     m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text)\n");
@@ -3975,7 +3975,7 @@ bool CVideoDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& i
         strSQL = FormatSQL("select %s.id%s,%s.str%s,count(1),count(files.playCount) from %s join %slinkmovie on %s.id%s=%slinkmovie.id%s join movie on %slinkmovie.idMovie=movie.idMovie join files on files.idFile=movie.idFile group by %s.id%s",
                            type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str());
       else if (idContent == VIDEODB_CONTENT_TVSHOWS)
-        strSQL = FormatSQL("select distinct %s.id%s,%s.str%s from %s join %slinktvshow on %s.id%s=%slinkTvShow.id%s join tvshow on id%slinkTvShow.idShow=tvshow.idShow",
+        strSQL = FormatSQL("select distinct %s.id%s,%s.str%s from %s join %slinktvshow on %s.id%s=%slinkTvShow.id%s join tvshow on %slinkTvShow.idShow=tvshow.idShow",
                            type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str());
       else if (idContent == VIDEODB_CONTENT_MUSICVIDEOS)
         strSQL = FormatSQL("select %s.id%s,%s.str%s,count(1),count(files.playCount) from %s join %slinkmusicvideo on %s.id%s=%slinkmusicvideo.id%s join musicvideo on %slinkmusicvideo.idMVideo=musicvideo.idMVideo join files on files.idFile=musicvideo.idFile group by %s.id%s",
