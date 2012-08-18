@@ -121,7 +121,7 @@ bool CVideoDatabase::CreateTables()
     columns += ")";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_1 ON movie (idFile, idMovie)");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie./xbmc/video/VideoDatabase.cpp (idMovie, idFile)");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
 
     CLog::Log(LOGINFO, "create actorlinkmovie table");
     m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text)\n");
