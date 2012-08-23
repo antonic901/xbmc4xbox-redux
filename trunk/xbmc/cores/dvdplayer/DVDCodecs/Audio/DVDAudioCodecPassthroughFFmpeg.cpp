@@ -56,8 +56,6 @@ CDVDAudioCodecPassthroughFFmpeg::CDVDAudioCodecPassthroughFFmpeg(void)
   m_SampleRate   = 0;
 
   m_Codec        = NULL;
-  m_Encoder      = NULL;
-  m_InitEncoder  = true;
   
   /* make enough room for at-least two audio frames */
   m_DecodeSize   = 0;
@@ -338,7 +336,6 @@ bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptio
       }
 
     m_Codec   = NULL;
-    m_Encoder = NULL;
   }
 
   if (!SetupMuxer(hints, "spdif", m_SPDIF))
