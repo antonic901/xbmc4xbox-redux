@@ -238,18 +238,18 @@ CSmbFile::~CSmbFile()
   Close();
 }
 
-__int64 CSmbFile::GetPosition()
+int64_t CSmbFile::GetPosition()
 {
   if (m_fd == -1) return 0;
   smb.Init();
   CSingleLock lock(smb);
-  __int64 pos = smbc_lseek(m_fd, 0, SEEK_CUR);
+  int64_t pos = smbc_lseek(m_fd, 0, SEEK_CUR);
   if ( pos < 0 )
     return 0;
   return pos;
 }
 
-__int64 CSmbFile::GetLength()
+int64_t CSmbFile::GetLength()
 {
   if (m_fd == -1) return 0;
   return m_fileSize;
@@ -295,7 +295,7 @@ bool CSmbFile::Open(const CURL& url)
 
   m_fileSize = tmpBuffer.st_size;
 
-  __int64 ret = smbc_lseek(m_fd, 0, SEEK_SET);
+  int64_t ret = smbc_lseek(m_fd, 0, SEEK_SET);
   if ( ret < 0 )
   {
     smbc_close(m_fd);
@@ -420,7 +420,7 @@ int CSmbFile::Stat(const CURL& url, struct __stat64* buffer)
   return iResult;
 }
 
-unsigned int CSmbFile::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CSmbFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (m_fd == -1) return 0;
   CSingleLock lock(smb); // Init not called since it has to be "inited" by now
@@ -452,13 +452,13 @@ unsigned int CSmbFile::Read(void *lpBuf, __int64 uiBufSize)
   return (unsigned int)bytesRead;
 }
 
-__int64 CSmbFile::Seek(__int64 iFilePosition, int iWhence)
+int64_t CSmbFile::Seek(int64_t iFilePosition, int iWhence)
 {
   if (m_fd == -1) return -1;
 
   CSingleLock lock(smb); // Init not called since it has to be "inited" by now
 
-  __int64 pos = smbc_lseek(m_fd, iFilePosition, iWhence);
+  int64_t pos = smbc_lseek(m_fd, iFilePosition, iWhence);
   
 //  CLog::Log(LOGDEBUG, "%s - iFilePosition=%"PRId64", pos=%"PRId64, __FUNCTION__, iFilePosition, pos);
 
@@ -468,7 +468,7 @@ __int64 CSmbFile::Seek(__int64 iFilePosition, int iWhence)
     return -1;
   }
 
-  return (__int64)pos;
+  return (int64_t)pos;
 }
 
 void CSmbFile::Close()
@@ -482,7 +482,7 @@ void CSmbFile::Close()
   m_fd = -1;
 }
 
-int CSmbFile::Write(const void* lpBuf, __int64 uiBufSize)
+int CSmbFile::Write(const void* lpBuf, int64_t uiBufSize)
 {
   if (m_fd == -1) return -1;
   DWORD dwNumberOfBytesWritten = 0;

@@ -65,7 +65,7 @@ bool CFileSndtrk::OpenForWrite(const char* strFileName)
 }
 
 //*********************************************************************************************
-unsigned int CFileSndtrk::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileSndtrk::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return 0;
   DWORD nBytesRead;
@@ -78,7 +78,7 @@ unsigned int CFileSndtrk::Read(void *lpBuf, __int64 uiBufSize)
 }
 
 //*********************************************************************************************
-unsigned int CFileSndtrk::Write(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileSndtrk::Write(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return 0;
   DWORD nBytesWriten;
@@ -96,7 +96,7 @@ void CFileSndtrk::Close()
 }
 
 //*********************************************************************************************
-__int64 CFileSndtrk::Seek(__int64 iFilePosition, int iWhence)
+int64_t CFileSndtrk::Seek(int64_t iFilePosition, int iWhence)
 {
   LARGE_INTEGER lPos, lNewPos;
   lPos.QuadPart = iFilePosition;
@@ -121,7 +121,7 @@ __int64 CFileSndtrk::Seek(__int64 iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-__int64 CFileSndtrk::GetLength()
+int64_t CFileSndtrk::GetLength()
 {
   LARGE_INTEGER i64Size;
   GetFileSizeEx((HANDLE)m_hFile, &i64Size);
@@ -131,13 +131,13 @@ __int64 CFileSndtrk::GetLength()
 }
 
 //*********************************************************************************************
-__int64 CFileSndtrk::GetPosition()
+int64_t CFileSndtrk::GetPosition()
 {
   return m_i64FilePos;
 }
 
 
-int CFileSndtrk::Write(const void* lpBuf, __int64 uiBufSize)
+int CFileSndtrk::Write(const void* lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return -1;
   DWORD dwNumberOfBytesWritten = 0;

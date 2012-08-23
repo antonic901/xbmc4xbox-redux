@@ -132,9 +132,9 @@ static long getlong(char *buf,int len)
   return u;
 }
 
-static __int64 getint64(char *buf,int len)
+static int64_t getint64(char *buf,int len)
 {
-  __int64 u = 0;
+  int64_t u = 0;
   while (len-- > 0)
     u = u * 10 + (*buf++ - '0');
   return u;
@@ -145,7 +145,7 @@ int ftpparse(struct ftpparse *fp,char *buf,int len)
   int i;
   int j;
   int state;
-  __int64 size;
+  int64_t size;
   long year;
   long month;
   long mday;

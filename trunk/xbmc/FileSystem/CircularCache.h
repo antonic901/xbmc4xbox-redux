@@ -37,9 +37,9 @@ public:
 
     virtual int WriteToCache(const char *buf, size_t len) ;
     virtual int ReadFromCache(char *buf, size_t len) ;
-    virtual __int64 WaitForData(unsigned int minimum, unsigned int iMillis) ;
+    virtual int64_t WaitForData(unsigned int minimum, unsigned int iMillis) ;
 
-    virtual __int64 Seek(int64_t pos) ;
+    virtual int64_t Seek(int64_t pos) ;
     virtual void Reset(int64_t pos) ;
 
 protected:

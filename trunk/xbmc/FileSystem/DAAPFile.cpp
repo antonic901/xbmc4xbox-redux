@@ -198,7 +198,7 @@ bool CFileDAAP::Open(const CURL& url)
 
 
 //*********************************************************************************************
-unsigned int CFileDAAP::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileDAAP::Read(void *lpBuf, int64_t uiBufSize)
 {
   return m_curl.Read(lpBuf, uiBufSize);
 }
@@ -211,7 +211,7 @@ void CFileDAAP::Close()
 }
 
 //*********************************************************************************************
-__int64 CFileDAAP::Seek(__int64 iFilePosition, int iWhence)
+int64_t CFileDAAP::Seek(int64_t iFilePosition, int iWhence)
 {
   CSingleLock lock(g_DaapClient);
 
@@ -227,13 +227,13 @@ __int64 CFileDAAP::Seek(__int64 iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-__int64 CFileDAAP::GetLength()
+int64_t CFileDAAP::GetLength()
 {
   return m_curl.GetLength();
 }
 
 //*********************************************************************************************
-__int64 CFileDAAP::GetPosition()
+int64_t CFileDAAP::GetPosition()
 {
   return m_curl.GetPosition();
 }

@@ -84,17 +84,17 @@ int CSpecialProtocolFile::Stat(struct __stat64* buffer)
   return m_file.Stat(buffer);
 }
 
-unsigned int CSpecialProtocolFile::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CSpecialProtocolFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   return m_file.Read(lpBuf, uiBufSize);
 }
   
-int CSpecialProtocolFile::Write(const void* lpBuf, __int64 uiBufSize)
+int CSpecialProtocolFile::Write(const void* lpBuf, int64_t uiBufSize)
 {
   return m_file.Write(lpBuf,uiBufSize);
 }
 
-__int64 CSpecialProtocolFile::Seek(__int64 iFilePosition, int iWhence /*=SEEK_SET*/)
+int64_t CSpecialProtocolFile::Seek(int64_t iFilePosition, int iWhence /*=SEEK_SET*/)
 {
   return m_file.Seek(iFilePosition, iWhence);
 }
@@ -104,12 +104,12 @@ void CSpecialProtocolFile::Close()
   m_file.Close();
 }
 
-__int64 CSpecialProtocolFile::GetPosition()
+int64_t CSpecialProtocolFile::GetPosition()
 {
   return m_file.GetPosition();
 }
 
-__int64 CSpecialProtocolFile::GetLength()
+int64_t CSpecialProtocolFile::GetLength()
 {
   return m_file.GetLength();
 }

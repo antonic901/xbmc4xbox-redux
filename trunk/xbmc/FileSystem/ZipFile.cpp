@@ -104,21 +104,21 @@ bool CZipFile::InitDecompress()
   return true;
 }
 
-__int64 CZipFile::GetLength()
+int64_t CZipFile::GetLength()
 {
   return mZipItem.usize;
 }
 
-__int64 CZipFile::GetPosition()
+int64_t CZipFile::GetPosition()
 {
   return m_iFilePos;
 }
 
-__int64 CZipFile::Seek(__int64 iFilePosition, int iWhence)
+int64_t CZipFile::Seek(int64_t iFilePosition, int iWhence)
 {
   if (mZipItem.method == 0) // this is easy
   {
-    __int64 iResult;
+    int64_t iResult;
     switch (iWhence)
     {
     case SEEK_SET:
@@ -156,7 +156,7 @@ __int64 CZipFile::Seek(__int64 iFilePosition, int iWhence)
   if (mZipItem.method == 8)
   {
     char temp[131072];
-    __int64 iStartPos = m_iFilePos;
+    int64_t iStartPos = m_iFilePos;
     switch (iWhence)
     {
     case SEEK_SET:
@@ -290,7 +290,7 @@ int CZipFile::Stat(const CURL& url, struct __stat64* buffer)
   return -1;
 }
 
-unsigned int CZipFile::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CZipFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   // flush what might be left in the string buffer
   if (m_iDataInStringBuffer > 0)

@@ -328,7 +328,7 @@ int CFileCache::Stat(const CURL& url, struct __stat64* buffer)
   return CFile::Stat(url.Get(), buffer);
 }
 
-unsigned int CFileCache::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CFileCache::Read(void* lpBuf, int64_t uiBufSize)
 {
   CSingleLock lock(m_sync);
   if (!m_pCache)
@@ -336,7 +336,7 @@ unsigned int CFileCache::Read(void* lpBuf, __int64 uiBufSize)
     CLog::Log(LOGERROR,"%s - sanity failed. no cache strategy!", __FUNCTION__);
     return 0;
   }
-  __int64 iRc;
+  int64_t iRc;
 
 retry:
   // attempt to read
@@ -369,7 +369,7 @@ retry:
   return 0;
 }
 
-__int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
+int64_t CFileCache::Seek(int64_t iFilePosition, int iWhence)
 {
   CSingleLock lock(m_sync);
 
@@ -379,8 +379,8 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
     return -1;
   }
 
-  __int64 iCurPos = m_readPos;
-  __int64 iTarget = iFilePosition;
+  int64_t iCurPos = m_readPos;
+  int64_t iTarget = iFilePosition;
   if (iWhence == SEEK_END)
     iTarget = GetLength() + iTarget;
   else if (iWhence == SEEK_CUR)
@@ -397,7 +397,7 @@ __int64 CFileCache::Seek(__int64 iFilePosition, int iWhence)
       return m_nSeekResult;
 
     /* never request closer to end than 2k, speeds up tag reading */
-    m_seekPos = std::min(iTarget, std::max((__int64)0, m_source.GetLength() - m_chunkSize));
+    m_seekPos = std::min(iTarget, std::max((int64_t)0, m_source.GetLength() - m_chunkSize));
 
     m_seekEvent.Set();
     if (!m_seekEnded.WaitMSec(INFINITE))
@@ -437,12 +437,12 @@ void CFileCache::Close()
   m_source.Close();
 }
 
-__int64 CFileCache::GetPosition()
+int64_t CFileCache::GetPosition()
 {
   return m_readPos;
 }
 
-__int64 CFileCache::GetLength()
+int64_t CFileCache::GetLength()
 {
   return m_source.GetLength();
 }

@@ -30,6 +30,7 @@
 
 #include "URL.h"
 
+#include <stdint.h>
 #include <sys/stat.h>
 
 namespace XFILE
@@ -43,7 +44,7 @@ struct SNativeIoControl
 
 struct SCacheStatus
 {
-  __int64 forward;  /**< number of bytes cached forward of current position */
+  int64_t forward;  /**< number of bytes cached forward of current position */
   unsigned maxrate;  /**< maximum number of bytes per second cache is allowed to fill */
   unsigned currate;  /**< average read rate from source file since last position change */
   bool     full;     /**< is the cache full */
@@ -67,13 +68,13 @@ public:
   virtual bool Exists(const CURL& url) = 0;
   virtual int Stat(const CURL& url, struct __stat64* buffer) = 0;
   virtual int Stat(struct __stat64* buffer);
-  virtual unsigned int Read(void* lpBuf, __int64 uiBufSize) = 0;
-  virtual int Write(const void* lpBuf, __int64 uiBufSize) { return -1;};
+  virtual unsigned int Read(void* lpBuf, int64_t uiBufSize) = 0;
+  virtual int Write(const void* lpBuf, int64_t uiBufSize) { return -1;};
   virtual bool ReadString(char *szLine, int iLineLength);
-  virtual __int64 Seek(__int64 iFilePosition, int iWhence = SEEK_SET) = 0;
+  virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET) = 0;
   virtual void Close() = 0;
-  virtual __int64 GetPosition() = 0;
-  virtual __int64 GetLength() = 0;
+  virtual int64_t GetPosition() = 0;
+  virtual int64_t GetLength() = 0;
   virtual void Flush() { }
 
   /* Returns the minium size that can be read from input stream.   *

@@ -72,7 +72,7 @@ namespace XFILE
     virtual void          Flush();
 
     virtual bool          OpenForWrite(const CURL& url);
-    unsigned int          Write(void *lpBuf, __int64 uiBufSize);
+    unsigned int          Write(void *lpBuf, int64_t uiBufSize);
 
   protected:
     CStdString m_strCacheDir;
@@ -85,8 +85,8 @@ namespace XFILE
     bool OpenInArchive();
     void CleanUp();
     
-    __int64 m_iFilePosition;
-    __int64 m_iFileSize;
+    int64_t m_iFilePosition;
+    int64_t m_iFileSize;
     // rar stuff
     bool m_bUseFile;
     bool m_bOpen;
@@ -98,8 +98,8 @@ namespace XFILE
     CFileRarExtractThread* m_pExtractThread;
     byte* m_szBuffer;
     byte* m_szStartOfBuffer;
-    __int64 m_iDataInBuffer;
-    __int64 m_iBufferStart;
+    int64_t m_iDataInBuffer;
+    int64_t m_iBufferStart;
 	};
 
 }

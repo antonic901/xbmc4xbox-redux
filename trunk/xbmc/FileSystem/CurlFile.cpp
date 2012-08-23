@@ -202,7 +202,7 @@ CCurlFile::CReadState::~CReadState()
     g_curlInterface.easy_release(&m_easyHandle, &m_multiHandle);
 }
 
-bool CCurlFile::CReadState::Seek(__int64 pos)
+bool CCurlFile::CReadState::Seek(int64_t pos)
 {
   if(pos == m_filePos)
     return true;
@@ -266,7 +266,7 @@ long CCurlFile::CReadState::Connect(unsigned int size)
   {
     if (length < 0)
       length = 0.0;
-    m_fileSize = m_filePos + (__int64)length;
+    m_fileSize = m_filePos + (int64_t)length;
   }
 
   long response;
@@ -956,9 +956,9 @@ bool CCurlFile::Exists(const CURL& url)
   return false;
 }
 
-__int64 CCurlFile::Seek(__int64 iFilePosition, int iWhence)
+int64_t CCurlFile::Seek(int64_t iFilePosition, int iWhence)
 {
-  __int64 nextPos = m_state->m_filePos;
+  int64_t nextPos = m_state->m_filePos;
   switch(iWhence)
   {
     case SEEK_SET:
@@ -1026,13 +1026,13 @@ __int64 CCurlFile::Seek(__int64 iFilePosition, int iWhence)
   return m_state->m_filePos;
 }
 
-__int64 CCurlFile::GetLength()
+int64_t CCurlFile::GetLength()
 {
   if (!m_opened) return 0;
   return m_state->m_fileSize;
 }
 
-__int64 CCurlFile::GetPosition()
+int64_t CCurlFile::GetPosition()
 {
   if (!m_opened) return 0;
   return m_state->m_filePos;
@@ -1163,7 +1163,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
   return 0;
 }
 
-unsigned int CCurlFile::CReadState::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CCurlFile::CReadState::Read(void* lpBuf, int64_t uiBufSize)
 {
   /* only request 1 byte, for truncated reads (only if not eof) */
   if((m_fileSize == 0 || m_filePos < m_fileSize) && !FillBuffer(1))

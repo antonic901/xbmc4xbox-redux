@@ -62,13 +62,13 @@ bool CFileMemUnit::OpenForWrite(const CURL& url, bool bOverWrite)
 }
 
 //*********************************************************************************************
-unsigned int CFileMemUnit::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileMemUnit::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_fileSystem) return 0;
   return m_fileSystem->Read(lpBuf, uiBufSize);
 }
 
-int CFileMemUnit::Write(const void* lpBuf, __int64 uiBufSize)
+int CFileMemUnit::Write(const void* lpBuf, int64_t uiBufSize)
 {
   if (!m_fileSystem) return 0;
   return m_fileSystem->Write(lpBuf, uiBufSize);
@@ -86,10 +86,10 @@ void CFileMemUnit::Close()
 }
 
 //*********************************************************************************************
-__int64 CFileMemUnit::Seek(__int64 iFilePosition, int iWhence)
+int64_t CFileMemUnit::Seek(int64_t iFilePosition, int iWhence)
 {
   if (!m_fileSystem) return -1;
-  __int64 position = iFilePosition;
+  int64_t position = iFilePosition;
   if (iWhence == SEEK_CUR)
     position += m_fileSystem->GetPosition();
   else if (iWhence == SEEK_END)
@@ -103,14 +103,14 @@ __int64 CFileMemUnit::Seek(__int64 iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-__int64 CFileMemUnit::GetLength()
+int64_t CFileMemUnit::GetLength()
 {
   if (!m_fileSystem) return -1;
   return m_fileSystem->GetLength();
 }
 
 //*********************************************************************************************
-__int64 CFileMemUnit::GetPosition()
+int64_t CFileMemUnit::GetPosition()
 {
   if (!m_fileSystem) return -1;
   return m_fileSystem->GetPosition();

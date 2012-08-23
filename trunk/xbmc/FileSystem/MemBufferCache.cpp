@@ -127,7 +127,7 @@ int MemBufferCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
   return nRead;
 }
 
-__int64 MemBufferCache::WaitForData(unsigned int iMinAvail, unsigned int iMillis)
+int64_t MemBufferCache::WaitForData(unsigned int iMinAvail, unsigned int iMillis)
 {
   if (iMillis == 0 || IsEndOfInput())
     return m_buffer.getMaxReadSize();
@@ -139,7 +139,7 @@ __int64 MemBufferCache::WaitForData(unsigned int iMinAvail, unsigned int iMillis
   return m_buffer.getMaxReadSize();
 }
 
-__int64 MemBufferCache::Seek(__int64 iFilePosition)
+int64_t MemBufferCache::Seek(int64_t iFilePosition)
 {
   CSingleLock lock(m_sync);
 
@@ -172,11 +172,11 @@ __int64 MemBufferCache::Seek(__int64 iFilePosition)
     return m_nStartPosition;
   }
 
-  __int64 iHistoryStart = m_nStartPosition - m_HistoryBuffer.getMaxReadSize();
+  int64_t iHistoryStart = m_nStartPosition - m_HistoryBuffer.getMaxReadSize();
   if (iFilePosition < m_nStartPosition && iFilePosition >= iHistoryStart)
   {
     CRingBuffer saveHist, saveUnRead;
-    __int64 nToSkip = iFilePosition - iHistoryStart;
+    int64_t nToSkip = iFilePosition - iHistoryStart;
     SEEK_CHECK_RET(m_HistoryBuffer.ReadData(saveHist, (int)nToSkip));
 
     SEEK_CHECK_RET(saveUnRead.Copy(m_buffer));
@@ -205,7 +205,7 @@ __int64 MemBufferCache::Seek(__int64 iFilePosition)
   return CACHE_RC_ERROR;
 }
 
-void MemBufferCache::Reset(__int64 iSourcePosition)
+void MemBufferCache::Reset(int64_t iSourcePosition)
 {
   CSingleLock lock(m_sync);
   m_nStartPosition = iSourcePosition;

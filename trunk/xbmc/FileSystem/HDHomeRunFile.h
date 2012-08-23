@@ -34,14 +34,14 @@ namespace XFILE
       ~CHomeRunFile();
 
       virtual bool          Exists(const CURL& url);
-      virtual __int64       Seek(__int64 iFilePosition, int iWhence);
+      virtual int64_t       Seek(int64_t iFilePosition, int iWhence);
       virtual int           Stat(const CURL& url, struct __stat64* buffer);
-      virtual __int64       GetPosition();
-      virtual __int64       GetLength();
+      virtual int64_t       GetPosition();
+      virtual int64_t       GetLength();
 
       virtual bool          Open(const CURL& url);
       virtual void          Close();
-      virtual unsigned int  Read(void* lpBuf, __int64 uiBufSize);
+      virtual unsigned int  Read(void* lpBuf, int64_t uiBufSize);
       virtual int           GetChunkSize();
     private:
       struct hdhomerun_device_t* m_device;

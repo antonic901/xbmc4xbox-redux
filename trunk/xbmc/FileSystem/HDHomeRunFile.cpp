@@ -92,7 +92,7 @@ bool CHomeRunFile::Exists(const CURL& url)
   return false;
 }
 
-__int64 CHomeRunFile::Seek(__int64 iFilePosition, int iWhence)
+int64_t CHomeRunFile::Seek(int64_t iFilePosition, int iWhence)
 { 
   return -1;
 }
@@ -103,12 +103,12 @@ int CHomeRunFile::Stat(const CURL& url, struct __stat64* buffer)
   return 0;
 }
 
-__int64 CHomeRunFile::GetPosition()
+int64_t CHomeRunFile::GetPosition()
 {
   return 0;
 }
 
-__int64 CHomeRunFile::GetLength()
+int64_t CHomeRunFile::GetLength()
 {
   return 0;
 }
@@ -140,7 +140,7 @@ bool CHomeRunFile::Open(const CURL &url)
   return true;
 }
 
-unsigned int CHomeRunFile::Read(void* lpBuf, __int64 uiBufSize)
+unsigned int CHomeRunFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   unsigned int datasize;
 

@@ -189,7 +189,7 @@ bool CFileRar::Open(const CURL& url)
     }
     else 
     {
-      if (items[i]->m_dwSize > ((__int64)4)*1024*1024*1024) // 4 gig limit of fat-x
+      if (items[i]->m_dwSize > ((int64_t)4)*1024*1024*1024) // 4 gig limit of fat-x
       {
         CGUIDialogOK::ShowAndGetInput(257,21395,-1,-1);
         CLog::Log(LOGERROR,"CFileRar::Open: Can't cache files bigger than 4GB due to fat-x limits.");
@@ -261,7 +261,7 @@ bool CFileRar::OpenForWrite(const CURL& url)
 }
 
 //*********************************************************************************************
-unsigned int CFileRar::Read(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileRar::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_bOpen)
     return 0;
@@ -280,10 +280,10 @@ unsigned int CFileRar::Read(void *lpBuf, __int64 uiBufSize)
 
 
   byte* pBuf = (byte*)lpBuf;
-  __int64 uicBufSize = uiBufSize;
+  int64_t uicBufSize = uiBufSize;
   if (m_iDataInBuffer > 0)
   {
-    __int64 iCopy = uiBufSize<m_iDataInBuffer?uiBufSize:m_iDataInBuffer;
+    int64_t iCopy = uiBufSize<m_iDataInBuffer?uiBufSize:m_iDataInBuffer;
     memcpy(lpBuf,m_szStartOfBuffer,size_t(iCopy));
     m_szStartOfBuffer += iCopy;
     m_iDataInBuffer -= int(iCopy);
@@ -346,7 +346,7 @@ unsigned int CFileRar::Read(void *lpBuf, __int64 uiBufSize)
 }
 
 //*********************************************************************************************
-unsigned int CFileRar::Write(void *lpBuf, __int64 uiBufSize)
+unsigned int CFileRar::Write(void *lpBuf, int64_t uiBufSize)
 {
   return 0;
 }
@@ -376,7 +376,7 @@ void CFileRar::Close()
 }
 
 //*********************************************************************************************
-__int64 CFileRar::Seek(__int64 iFilePosition, int iWhence)
+int64_t CFileRar::Seek(int64_t iFilePosition, int iWhence)
 { 
   if (!m_bOpen)
     return -1;
@@ -491,7 +491,7 @@ __int64 CFileRar::Seek(__int64 iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-__int64 CFileRar::GetLength()
+int64_t CFileRar::GetLength()
 {
   if (!m_bOpen)
     return 0;
@@ -503,7 +503,7 @@ __int64 CFileRar::GetLength()
 }
 
 //*********************************************************************************************
-__int64 CFileRar::GetPosition()
+int64_t CFileRar::GetPosition()
 {
   if (!m_bOpen)
     return -1;
@@ -514,7 +514,7 @@ __int64 CFileRar::GetPosition()
   return m_iFilePosition;
 }
 
-int CFileRar::Write(const void* lpBuf, __int64 uiBufSize)
+int CFileRar::Write(const void* lpBuf, int64_t uiBufSize)
 {
   return -1;
 }
