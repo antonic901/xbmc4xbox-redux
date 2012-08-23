@@ -103,7 +103,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
     m_pCodecContext->skip_loop_filter = avDiscard;
 
   // set any special options
-  for(CDVDCodecOptions::iterator it = options.begin(); it != options.end(); it++)
+  for(std::vector<CDVDCodecOption>::iterator it = options.m_keys.begin(); it != options.m_keys.end(); it++)
   {
     m_dllAvUtil.av_opt_set(m_pCodecContext, it->m_name.c_str(), it->m_value.c_str(), 0);
   }
