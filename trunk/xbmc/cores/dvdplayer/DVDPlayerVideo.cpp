@@ -732,7 +732,8 @@ int CDVDPlayerVideo::GetLevel()
 void CDVDPlayerVideo::ProcessOverlays(DVDVideoPicture* pSource, YV12Image* pDest, double pts)
 {
   // remove any overlays that are out of time
-  m_pOverlayContainer->CleanUp(pts - m_iSubtitleDelay);
+  if (m_started)
+    m_pOverlayContainer->CleanUp(pts - m_iSubtitleDelay);
 
   if(pSource->format != DVDVideoPicture::FMT_YUV420P)
     return;
