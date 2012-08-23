@@ -36,8 +36,8 @@ class CHttpHeader;
 
 namespace XFILE
 {
-	class CCurlFile : public IFile  
-	{
+  class CCurlFile : public IFile
+  {
     public:
       CCurlFile();
       virtual ~CCurlFile();
@@ -73,14 +73,14 @@ namespace XFILE
       void SetCookie(CStdString cookie)                          { m_cookie = cookie; }
       void SetMimeType(CStdString mimetype)                      { SetRequestHeader("Content-Type", m_mimetype); }
       void SetRequestHeader(CStdString header, CStdString value);
-      void SetRequestHeader(CStdString header, long value);      
+      void SetRequestHeader(CStdString header, long value);
 
       void ClearRequestHeaders();
       void SetBufferSize(unsigned int size);
 
       const CHttpHeader& GetHttpHeader() { return m_state->m_httpheader; }
 
-      /* static function that will get content type of a file */      
+      /* static function that will get content type of a file */
       static bool GetHttpHeader(const CURL &url, CHttpHeader &headers);
       static bool GetMimeType(const CURL &url, CStdString &content, CStdString useragent="");
 
@@ -155,9 +155,15 @@ namespace XFILE
       bool            m_multisession;
       bool            m_skipshout;
 
+      CRingBuffer     m_buffer;           // our ringhold buffer
+      char *          m_overflowBuffer;   // in the rare case we would overflow the above buffer
+      unsigned int    m_overflowSize;     // size of the overflow buffer
+
+      int             m_stillRunning;     // Is background url fetch still in progress?
+
       struct XCURL::curl_slist* m_curlAliasList;
       struct XCURL::curl_slist* m_curlHeaderList;
-      
+
       typedef std::map<CStdString, CStdString> MAPHTTPHEADERS;
       MAPHTTPHEADERS m_requestheaders;
   };

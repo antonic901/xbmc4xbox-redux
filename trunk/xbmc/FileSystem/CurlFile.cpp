@@ -30,7 +30,6 @@
 #include "File.h"
 #include "xbox/network.h"
 
-#include <sys/stat.h>
 #include <vector>
 #include <climits>
 
@@ -39,7 +38,6 @@
 #include "SpecialProtocol.h"
 #include "utils/CharsetConverter.h"
 
-using namespace std;
 using namespace XFILE;
 using namespace XCURL;
 
@@ -140,7 +138,7 @@ size_t CCurlFile::CReadState::WriteCallback(char *buffer, size_t size, size_t ni
   if (m_overflowSize)
   {
     // we have our overflow buffer - first get rid of as much as we can
-    unsigned int maxWriteable = min(m_buffer.getMaxWriteSize(), m_overflowSize);
+    unsigned int maxWriteable = XMIN((unsigned int)m_buffer.getMaxWriteSize(), m_overflowSize);
     if (maxWriteable)
     {
       if (!m_buffer.WriteData(m_overflowBuffer, maxWriteable))
@@ -153,7 +151,7 @@ size_t CCurlFile::CReadState::WriteCallback(char *buffer, size_t size, size_t ni
     }
   }
   // ok, now copy the data into our ring buffer
-  unsigned int maxWriteable = min(m_buffer.getMaxWriteSize(), amount);
+  unsigned int maxWriteable = XMIN((unsigned int)m_buffer.getMaxWriteSize(), amount);
   if (maxWriteable)
   {
     if (!m_buffer.WriteData(buffer, maxWriteable))
@@ -449,7 +447,7 @@ void CCurlFile::SetCommonOptions(CReadState* state)
   }
 
   // setup requested http authentication method
-  if(m_httpauth.length() > 0 && m_username.length() > 0 && m_password.length() > 0)
+  if(m_httpauth.length() > 0)
   {
     if( m_httpauth.Equals("any") )
       g_curlInterface.easy_setopt(h, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
@@ -481,7 +479,7 @@ void CCurlFile::SetCommonOptions(CReadState* state)
     g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, m_userAgent.c_str());
   else /* set some default agent as shoutcast doesn't return proper stuff otherwise */
     g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, g_sysinfo.GetUserAgent().c_str());
-  
+
   if (m_useOldHttpVersion)
     g_curlInterface.easy_setopt(h, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
   else
@@ -560,7 +558,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
 {
   CStdString strProtocol = url2.GetTranslatedProtocol();
   url2.SetProtocol(strProtocol);
-  
+
   if( strProtocol.Equals("ftp")
   ||  strProtocol.Equals("ftps") )
   {
@@ -711,7 +709,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
       }
     }
   }
-  
+
   if (m_username.length() > 0 && m_password.length() > 0)
     m_url = url2.GetWithoutUserDetails();
   else
@@ -822,7 +820,7 @@ bool CCurlFile::Open(const CURL& url)
   CURL url2(url);
   ParseAndCorrectUrl(url2);
 
-  CLog::Log(LOGDEBUG, "FileCurl::Open(%p) %s", (void*)this, m_url.c_str());
+  CLog::Log(LOGDEBUG, "CurlFile::Open(%p) %s", (void*)this, m_url.c_str());
 
   ASSERT(!(!m_state->m_easyHandle ^ !m_state->m_multiHandle));
   if( m_state->m_easyHandle == NULL )
@@ -837,7 +835,7 @@ bool CCurlFile::Open(const CURL& url)
     return false;
 
   SetCorrectHeaders(m_state);
-  
+
   // since we can't know the stream size up front if we're gzipped/deflated
   // flag the stream with an unknown file size rather than the compressed
   // file size.
@@ -850,7 +848,7 @@ bool CCurlFile::Open(const CURL& url)
      || !m_state->m_httpheader.GetValue("icy-name").IsEmpty()
      || !m_state->m_httpheader.GetValue("icy-br").IsEmpty()) && !m_skipshout)
   {
-    CLog::Log(LOGDEBUG,"FileCurl - file <%s> is a shoutcast stream. re-opening", m_url.c_str());
+    CLog::Log(LOGDEBUG,"CurlFile - file <%s> is a shoutcast stream. re-opening", m_url.c_str());
     throw new CRedirectException(new CFileShoutcast);
   }
 
@@ -860,7 +858,7 @@ bool CCurlFile::Open(const CURL& url)
     m_multisession = true;
     if(m_state->m_httpheader.GetValue("Server").Find("Portable SDK for UPnP devices") >= 0)
     {
-      CLog::Log(LOGWARNING, "FileCurl - disabling multi session due to broken libupnp server");
+      CLog::Log(LOGWARNING, "CurlFile - disabling multi session due to broken libupnp server");
       m_multisession = false;
     }
   }
@@ -897,7 +895,7 @@ bool CCurlFile::CReadState::ReadString(char *szLine, int iLineLength)
     return false;
 
   // ensure only available data is considered
-  want = min(m_buffer.getMaxReadSize(), want);
+  want = XMIN((unsigned int)m_buffer.getMaxReadSize(), want);
 
   /* check if we finished prematurely */
   if (!m_stillRunning && (m_fileSize == 0 || m_filePos != m_fileSize) && !want)
@@ -950,10 +948,10 @@ bool CCurlFile::Exists(const CURL& url)
 
   CURLcode result = g_curlInterface.easy_perform(m_state->m_easyHandle);
   g_curlInterface.easy_release(&m_state->m_easyHandle, NULL);
-  
+
   if (result == CURLE_WRITE_ERROR || result == CURLE_OK)
     return true;
-  
+
   errno = ENOENT;
   return false;
 }
@@ -1066,6 +1064,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 5);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_NOBODY, 1);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_WRITEDATA, NULL); /* will cause write failure*/
+  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME , 1); 
 
   if(url2.GetProtocol() == "ftp")
   {
@@ -1095,6 +1094,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 5);
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_RANGE, "0-0");
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_WRITEDATA, NULL); /* will cause write failure*/
+    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME , 1); 
     result = g_curlInterface.easy_perform(m_state->m_easyHandle);
   }
 
@@ -1145,6 +1145,19 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
       else
         buffer->st_mode = _S_IFREG;
     }
+    long filetime;
+    if (CURLE_OK != g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_FILETIME, &filetime))
+    {
+      CLog::Log(LOGWARNING, "%s - Cannot get curl filetime", __FUNCTION__);
+    }
+    else
+    {
+      if (filetime != -1)
+      {
+        CLog::Log(LOGDEBUG, "%s - curl filetime: %d", __FUNCTION__, filetime);
+        buffer->st_mtime = filetime;
+      }
+    }
   }
   g_curlInterface.easy_release(&m_state->m_easyHandle, NULL);
   return 0;
@@ -1157,7 +1170,7 @@ unsigned int CCurlFile::CReadState::Read(void* lpBuf, __int64 uiBufSize)
     return 0;
 
   /* ensure only available data is considered */
-  unsigned int want = (unsigned int)min(m_buffer.getMaxReadSize(), (unsigned int)uiBufSize);
+  unsigned int want = (unsigned int)XMIN(m_buffer.getMaxReadSize(), uiBufSize);
 
   /* xfer data to caller */
   if (m_buffer.ReadData((char *)lpBuf, want))
@@ -1194,7 +1207,7 @@ bool CCurlFile::CReadState::FillBuffer(unsigned int want)
     /* if there is data in overflow buffer, try to use that first */
     if (m_overflowSize)
     {
-      unsigned amount = min(m_buffer.getMaxWriteSize(), m_overflowSize);
+      unsigned amount = XMIN((unsigned int)m_buffer.getMaxWriteSize(), m_overflowSize);
       m_buffer.WriteData(m_overflowBuffer, amount);
 
       if (amount < m_overflowSize)
@@ -1377,10 +1390,10 @@ bool CCurlFile::GetMimeType(const CURL &url, CStdString &content, CStdString use
       content = "x-directory/normal";
     else
       content = file.GetMimeType();
-    CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
+    CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> %s", url.Get().c_str(), content.c_str());
     return true;
   }
-  CLog::Log(LOGDEBUG, "CFileCurl::GetMimeType - %s -> failed", url.Get().c_str());
+  CLog::Log(LOGDEBUG, "CCurlFile::GetMimeType - %s -> failed", url.Get().c_str());
   content = "";
   return false;
 }
