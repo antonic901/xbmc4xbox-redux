@@ -25,6 +25,9 @@
 
 #include "IDirectory.h"
 
+class CFileItem;
+class CURL;
+
 namespace XFILE
 {
 class CUPnPDirectory :  public IDirectory
