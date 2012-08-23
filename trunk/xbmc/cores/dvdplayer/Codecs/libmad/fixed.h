@@ -35,7 +35,7 @@ typedef unsigned long mad_fixed64lo_t;
 # endif
 
 # if defined(_MSC_VER)
-#  define mad_fixed64_t  signed __int64
+#  define mad_fixed64_t  signed int64_t
 # elif 1 || defined(__GNUC__)
 #  define mad_fixed64_t  signed long long
 # endif

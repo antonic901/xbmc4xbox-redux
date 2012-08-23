@@ -86,7 +86,7 @@ void CDVDClock::SetSpeed(int iSpeed)
   }
   
   LARGE_INTEGER current;
-  __int64 newfreq = m_systemFrequency.QuadPart * DVD_PLAYSPEED_NORMAL / iSpeed;
+  int64_t newfreq = m_systemFrequency.QuadPart * DVD_PLAYSPEED_NORMAL / iSpeed;
   
   QueryPerformanceCounter(&current);
   if( m_pauseClock.QuadPart )

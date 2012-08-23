@@ -22,6 +22,7 @@
  */
 
 #include "utils/StdString.h"
+#include "system.h"
 
 class CDVDInputStream;
 enum CodecID;
