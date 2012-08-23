@@ -509,8 +509,6 @@ void CGUISettings::Initialize()
   AddBool(5,    "autodetect.senduserpw",1255, true); // can be in advanced.xml! default:true
 
   AddCategory(6, "smb", 1200);
-  AddString(1, "smb.username",    1203,   "", EDIT_CONTROL_INPUT, true, 1203);
-  AddString(2, "smb.password",    1204,   "", EDIT_CONTROL_HIDDEN_INPUT, true, 1204);
   AddString(3, "smb.winsserver",  1207,   "",  EDIT_CONTROL_IP_INPUT);
   AddString(4, "smb.workgroup",   1202,   "WORKGROUP", EDIT_CONTROL_INPUT, false, 1202);
 

@@ -190,15 +190,6 @@ CStdString CSMB::URLEncode(const CURL &url)
     flat += URLEncode(url.GetPassWord());
     flat += "@";
   }
-  else if( !url.GetHostName().IsEmpty() && !g_guiSettings.GetString("smb.username").IsEmpty() )
-  {
-    /* okey this is abit uggly to do this here, as we don't really only url encode */
-    /* but it's the simplest place to do so */
-    flat += URLEncode(g_guiSettings.GetString("smb.username"));
-    flat += ":";
-    flat += URLEncode(g_guiSettings.GetString("smb.password"));
-    flat += "@";
-  }
 
   flat += URLEncode(url.GetHostName());
 
@@ -352,35 +343,6 @@ int CSmbFile::OpenFile(const CURL &url, CStdString& strAuth)
   {
     CSingleLock lock(smb);
     fd = smbc_open(strPath.c_str(), O_RDONLY, 0);
-  }
-
-  // file open failed, try to open the directory to force authentication
-  if (fd < 0 && smb.ConvertUnixToNT(errno) == NT_STATUS_ACCESS_DENIED)
-  {
-    CURL urlshare(url);
-
-    /* just replace the filename with the sharename */
-    urlshare.SetFileName(url.GetShareName());
-
-    CSMBDirectory smbDir;
-    // TODO: Currently we always allow prompting on files.  This may need to
-    // change in the future as background scanners are more prolific.
-    smbDir.SetAllowPrompting(true);
-    fd = smbDir.Open(urlshare);
-
-    // directory open worked, try opening the file again
-    if (fd >= 0)
-    {
-      CSingleLock lock(smb);
-      // close current directory filehandle
-      // dont need to purge since its the same server and share
-      smbc_closedir(fd);
-
-      // set up new filehandle (as CSmbFile::Open does)
-      strPath = GetAuthenticatedPath(url);
-
-      fd = smbc_open(strPath.c_str(), O_RDONLY, 0);
-    }
   }
 
   if (fd >= 0)
