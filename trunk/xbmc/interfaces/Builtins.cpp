@@ -421,6 +421,9 @@ int CBuiltins::Execute(const CStdString& execString)
     }
 
     CFileItem item(params[0], false);
+    if (URIUtils::HasSlashAtEnd(params[0]) || 
+       (params.size() == 2 && params[1].Equals("isdir")))
+      item.m_bIsFolder = true;
 
     // restore to previous window if needed
     if( g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW ||
@@ -433,7 +436,8 @@ int CBuiltins::Execute(const CStdString& execString)
     g_application.ResetScreenSaverWindow();
 
     // set fullscreen or windowed
-    if (params.size() >= 2 && params[1] == "1")
+    if ((params.size() >= 3 && params[2] == "1") ||
+       (params.size() == 2 && params[1] == "1"))
       g_settings.m_bStartVideoWindowed = true;
 
     // ask if we need to check guisettings to resume
@@ -456,11 +460,22 @@ int CBuiltins::Execute(const CStdString& execString)
       if ( CGUIWindowVideoBase::OnResumeShowMenu(item) == false )
         return false;
     }
-    // play media
-    if (!g_application.PlayMedia(item, item.IsAudio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
+    if (item.m_bIsFolder)
     {
-      CLog::Log(LOGERROR, "XBMC.PlayMedia could not play media: %s", params[0].c_str());
-      return false;
+      CFileItemList items;
+      CDirectory::GetDirectory(item.GetPath(),items,g_settings.m_videoExtensions);
+      g_playlistPlayer.Add(PLAYLIST_VIDEO,items);
+      g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
+      g_playlistPlayer.Play();
+    }
+    else
+    {
+      // play media
+      if (!g_application.PlayMedia(item, item.IsAudio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
+      {
+        CLog::Log(LOGERROR, "XBMC.PlayMedia could not play media: %s", params[0].c_str());
+        return false;
+      }
     }
   }
   else if (execute.Equals("slideShow") || execute.Equals("recursiveslideShow"))
