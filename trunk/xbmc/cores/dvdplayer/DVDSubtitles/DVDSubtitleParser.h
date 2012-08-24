@@ -21,10 +21,11 @@
  *
  */
 
-#include "DVDCodecs/Overlay/DVDOverlay.h"
+#include "../DVDCodecs/Overlay/DVDOverlay.h"
 #include "DVDSubtitleStream.h"
 #include "DVDSubtitleLineCollection.h"
 
+#include <string>
 
 class CDVDStreamInfo;
 

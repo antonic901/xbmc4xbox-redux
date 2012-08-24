@@ -18,7 +18,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
+
 #include "DVDSubtitleStream.h"
 #include "DVDInputStreams/DVDFactoryInputStream.h"
 #include "DVDInputStreams/DVDInputStream.h"
@@ -54,18 +54,21 @@ bool CDVDSubtitleStream::Open(const string& strFile)
     }
     else
       pInputStream->Seek(0, SEEK_SET);
-  
+
     if (isUTF16)
     {
       std::wstringstream wstringstream;
-      while( (size_read = pInputStream->Read(buffer, sizeof(buffer)) ) > 0 )
+      while( (size_read = pInputStream->Read(buffer, sizeof(buffer)-2) ) > 0 )
       {
-        wstringstream.write((wchar_t *)buffer, size_read / 2);
+        buffer[size_read] = buffer[size_read + 1] = '\0';
+        CStdStringW temp; 
+        g_charsetConverter.utf16LEtoW(CStdString16((uint16_t*)buffer),temp); 
+        wstringstream << temp; 
       }
       delete pInputStream;
-    
+
       CStdString strUTF8;
-      g_charsetConverter.wToUTF8(wstringstream.str(),strUTF8);
+      g_charsetConverter.wToUTF8(CStdStringW(wstringstream.str()),strUTF8);
       m_stringstream.str("");
       m_stringstream << strUTF8;
     }
@@ -77,10 +80,10 @@ bool CDVDSubtitleStream::Open(const string& strFile)
         m_stringstream << buffer;
       }
       delete pInputStream;
-        
+
       if (!isUTF8)
         isUTF8 = g_charsetConverter.isValidUtf8(m_stringstream.str());
- 
+
       if (!isUTF8)
       {
         CStdStringW strUTF16;
@@ -100,9 +103,9 @@ bool CDVDSubtitleStream::Open(const string& strFile)
 
 int CDVDSubtitleStream::Read(char* buf, int buf_size)
 {
-  return m_stringstream.readsome(buf, buf_size);
+  return (int)m_stringstream.readsome(buf, buf_size);
 }
-  
+
 long CDVDSubtitleStream::Seek(long offset, int whence)
 {
   switch (whence)
@@ -123,7 +126,7 @@ long CDVDSubtitleStream::Seek(long offset, int whence)
       break;
     }
   }
-  return m_stringstream.tellg();
+  return (int)m_stringstream.tellg();
 }
 
 char* CDVDSubtitleStream::ReadLine(char* buf, int iLen)

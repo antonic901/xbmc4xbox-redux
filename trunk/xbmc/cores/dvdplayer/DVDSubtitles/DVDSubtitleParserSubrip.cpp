@@ -18,10 +18,11 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
+
 #include "DVDSubtitleParserSubrip.h"
 #include "DVDCodecs/Overlay/DVDOverlayText.h"
 #include "DVDClock.h"
+#include "utils/StdString.h"
 #include "DVDSubtitleTagSami.h"
 
 using namespace std;
