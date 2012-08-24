@@ -115,7 +115,7 @@ public:
   virtual void OnPlayBackSeekChapter(int iChapter);
   virtual void OnPlayBackSpeedChanged(int iSpeed);
   bool PlayMedia(const CFileItem& item, int iPlaylist = PLAYLIST_MUSIC);
-  bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist);
+  bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
   bool PlayFile(const CFileItem& item, bool bRestart = false);
   void SaveFileState();
   void UpdateFileState();
