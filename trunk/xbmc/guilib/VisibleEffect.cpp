@@ -23,7 +23,6 @@
 #include "VisibleEffect.h"
 #include "GUIInfoManager.h"
 #include "SkinInfo.h" // for the effect time adjustments
-#include "guiImage.h" // for FRECT
 #include "Tween.h"
 
 using namespace std;
@@ -246,7 +245,7 @@ void CRotateEffect::ApplyEffect(float offset, const CPoint &center)
     m_matrix.SetZRotation(((m_endAngle - m_startAngle)*offset + m_startAngle) * degree_to_radian, m_center.x, m_center.y, g_graphicsContext.GetScalingPixelRatio());
 }
 
-CZoomEffect::CZoomEffect(const TiXmlElement *node, const FRECT &rect) : CAnimEffect(node, EFFECT_TYPE_ZOOM)
+CZoomEffect::CZoomEffect(const TiXmlElement *node, const CRect &rect) : CAnimEffect(node, EFFECT_TYPE_ZOOM)
 {
   // effect defaults
   m_startX = m_startY = 100;
@@ -254,13 +253,13 @@ CZoomEffect::CZoomEffect(const TiXmlElement *node, const FRECT &rect) : CAnimEff
   m_center = CPoint(0,0);
   m_autoCenter = false;
 
-  float startPosX = rect.left;
-  float startPosY = rect.top;
-  float endPosX = rect.left;
-  float endPosY = rect.top;
+  float startPosX = rect.x1;
+  float startPosY = rect.y1;
+  float endPosX = rect.x1;
+  float endPosY = rect.y1;
 
-  float width = (rect.right) ? rect.right : 0.001f;
-  float height = (rect.bottom) ? rect.bottom : 0.001f;
+  float width = max(rect.Width(), 0.001f);
+  float height = max(rect.Height(),0.001f);
 
   const char *start = node->Attribute("start");
   if (start)
@@ -606,7 +605,7 @@ void CAnimation::SetInitialCondition(int contextWindow)
     ResetAnimation();
 }
 
-void CAnimation::Create(const TiXmlElement *node, const FRECT &rect)
+void CAnimation::Create(const TiXmlElement *node, const CRect &rect)
 {
   if (!node || !node->FirstChild())
     return;
@@ -669,7 +668,7 @@ void CAnimation::Create(const TiXmlElement *node, const FRECT &rect)
   }
 }
 
-void CAnimation::AddEffect(const CStdString &type, const TiXmlElement *node, const FRECT &rect)
+void CAnimation::AddEffect(const CStdString &type, const TiXmlElement *node, const CRect &rect)
 {
   CAnimEffect *effect = NULL;
   if (type.Equals("fade"))
