@@ -118,6 +118,11 @@ IF NOT EXIST Release_LTCG\default.xbe GOTO COMPILE
   cd ..\..
   xcopy "skin\Confluence\BUILD\Confluence" "BUILD\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
 
+  cd "skin\Confluence Lite"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "BUILD\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
+	
   xcopy credits BUILD\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language BUILD\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers BUILD\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt

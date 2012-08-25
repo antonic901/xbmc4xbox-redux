@@ -1,0 +1,12 @@
+<skin>
+	<defaultresolution>720p</defaultresolution>
+	<defaultresolutionwide>720p</defaultresolutionwide>
+	<defaultthemename>Textures.xpr</defaultthemename>
+	<version>2.11</version>
+	<effectslowdown>.75</effectslowdown>
+	<credits>
+		<skinname>Confluence</skinname>
+		<name>Confluence skin by Jezz_X, Team XBMC</name>
+		<name>XBOX port by xbs</name>
+	</credits>
+</skin>
