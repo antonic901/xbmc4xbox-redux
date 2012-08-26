@@ -34,6 +34,14 @@
 
 typedef uint32_t color_t;
 
+struct FRECT
+{
+  float left;
+  float top;
+  float right;
+  float bottom;
+};
+
 // image alignment for <aspect>keep</aspect>, <aspect>scale</aspect> or <aspect>center</aspect>
 #define ASPECT_ALIGN_CENTER  0
 #define ASPECT_ALIGN_LEFT    1
@@ -70,11 +78,31 @@ public:
 class CTextureInfo
 {
 public:
-  CTextureInfo();
-  CTextureInfo(const CStdString &file);
-  void operator=(const CTextureInfo &right);
+  CTextureInfo()
+  {
+    memset(&border, 0, sizeof(FRECT));
+    orientation = 0;
+    useLarge = false;
+  };
+
+  CTextureInfo(const CStdString &file)
+  {
+    memset(&border, 0, sizeof(FRECT));
+    orientation = 0;
+    useLarge = false;
+    filename = file;
+  }
+
+  void operator=(const CTextureInfo &right)
+  {
+    memcpy(&border, &right.border, sizeof(FRECT));
+    orientation = right.orientation;
+    diffuse = right.diffuse;
+    filename = right.filename;
+    useLarge = right.useLarge;
+  };
   bool       useLarge;
-  CRect      border;      // scaled  - unneeded if we get rid of scale on load
+  FRECT      border;      // scaled  - unneeded if we get rid of scale on load
   int        orientation; // orientation of the texture (0 - 7 == EXIForientation - 1)
   CStdString diffuse;     // diffuse overlay texture
   CStdString filename;    // main texture file

@@ -159,7 +159,7 @@ bool CGUIWindow::Load(TiXmlDocument &xmlDoc)
     }
     else if (strValue == "animation" && pChild->FirstChild())
     {
-      CRect rect(0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight);
+      FRECT rect = { 0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight };
       CAnimation anim;
       anim.Create(pChild, rect);
       m_animations.push_back(anim);
@@ -236,13 +236,13 @@ void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup)
   // get control type
   CGUIControlFactory factory;
 
-  CRect rect(0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight);
+  FRECT rect = { 0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight };
   if (pGroup)
   {
-    rect.x1 = pGroup->GetXPosition();
-    rect.y1 = pGroup->GetYPosition();
-    rect.x2 = rect.x1 + pGroup->GetWidth();
-    rect.y2 = rect.y2 + pGroup->GetHeight();
+    rect.left = pGroup->GetXPosition();
+    rect.top = pGroup->GetYPosition();
+    rect.right = rect.left + pGroup->GetWidth();
+    rect.bottom = rect.top + pGroup->GetHeight();
   }
   CGUIControl* pGUIControl = factory.Create(GetID(), rect, pControl);
   if (pGUIControl)
@@ -849,14 +849,14 @@ void CGUIWindow::SetDefaults()
   m_clearBackground = 0xff000000; // opaque black -> clear
 }
 
-CRect CGUIWindow::GetScaledBounds() const
+FRECT CGUIWindow::GetScaledBounds() const
 {
   CSingleLock lock(g_graphicsContext);
   g_graphicsContext.SetScalingResolution(m_coordsRes, m_posX, m_posY, m_needsScaling);
-  CRect rect(0, 0, m_width, m_height);
+  FRECT rect = {0, 0, m_width, m_height};
   float z = 0;
-  g_graphicsContext.ScaleFinalCoords(rect.x1, rect.y1, z);
-  g_graphicsContext.ScaleFinalCoords(rect.x2, rect.y2, z);
+  g_graphicsContext.ScaleFinalCoords(rect.left, rect.top, z);
+  g_graphicsContext.ScaleFinalCoords(rect.right, rect.bottom, z);
   return rect;
 }
 

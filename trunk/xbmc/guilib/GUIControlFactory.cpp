@@ -241,24 +241,24 @@ bool CGUIControlFactory::GetTexture(const TiXmlNode* pRootNode, const char* strT
   return true;
 }
 
-void CGUIControlFactory::GetRectFromString(const CStdString &string, CRect &rect)
+void CGUIControlFactory::GetRectFromString(const CStdString &string, FRECT &rect)
 {
-  // format is rect="left[,top,right,bottom]"
+  // format is rect="left,right,top,bottom"
   CStdStringArray strRect;
   StringUtils::SplitString(string, ",", strRect);
   if (strRect.size() == 1)
   {
-    g_SkinInfo.ResolveConstant(strRect[0], rect.x1);
-    rect.y1 = rect.x1;
-    rect.x2 = rect.x1;
-    rect.y2 = rect.x1;
+    g_SkinInfo.ResolveConstant(strRect[0], rect.left);
+    rect.top = rect.left;
+    rect.right = rect.left;
+    rect.bottom = rect.left;
   }
   else if (strRect.size() == 4)
   {
-    g_SkinInfo.ResolveConstant(strRect[0], rect.x1);
-    g_SkinInfo.ResolveConstant(strRect[1], rect.y1);
-    g_SkinInfo.ResolveConstant(strRect[2], rect.x2);
-    g_SkinInfo.ResolveConstant(strRect[3], rect.y2);
+    g_SkinInfo.ResolveConstant(strRect[0], rect.left);
+    g_SkinInfo.ResolveConstant(strRect[1], rect.top);
+    g_SkinInfo.ResolveConstant(strRect[2], rect.right);
+    g_SkinInfo.ResolveConstant(strRect[3], rect.bottom);
   }
 }
 
@@ -341,7 +341,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, int 
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
-bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const CRect &rect, vector<CAnimation> &animations)
+bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &rect, vector<CAnimation> &animations)
 {
   const TiXmlElement* node = control->FirstChildElement("animation");
   bool ret = false;
@@ -539,7 +539,7 @@ CStdString CGUIControlFactory::GetType(const TiXmlElement *pControlNode)
   return type;
 }
 
-CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlElement* pControlNode, bool insideContainer)
+CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlElement* pControlNode, bool insideContainer)
 {
   // resolve any <include> tag's in this control
   g_SkinInfo.ResolveIncludes(pControlNode);
@@ -597,7 +597,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CTextureInfo textureRadioOn, textureRadioOff;
   CTextureInfo imageNoFocus, imageFocus;
   CGUIInfoLabel texturePath;
-  CRect borderSize;
+  FRECT borderSize = { 0, 0, 0, 0};
 
   float itemWidth = 16, itemHeight = 16;
   float sliderWidth = 150, sliderHeight = 16;
@@ -700,10 +700,10 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CStdString pos;
   XMLUtils::GetString(pControlNode, "posx", pos);
   if (pos.Right(1) == "r")
-    posX = rect.Width() - posX;
+    posX = (rect.right - rect.left) - posX;
   XMLUtils::GetString(pControlNode, "posy", pos);
   if (pos.Right(1) == "r")
-    posY = rect.Height() - posY;
+    posY = (rect.bottom - rect.top) - posY;
 
   GetDimension(pControlNode, "width", width, minWidth);
   GetFloat(pControlNode, "height", height);
@@ -716,9 +716,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   if (strType == "group" || strType == "grouplist")
   {
     if (!width)
-      width = max(rect.x2 - posX, 0.0f);
+      width = max(rect.right - posX, 0.0f);
     if (!height)
-      height = max(rect.y2 - posY, 0.0f);
+      height = max(rect.bottom - posY, 0.0f);
   }
 
   hitRect.SetRect(posX, posY, posX + width, posY + height);
@@ -742,7 +742,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetConditionalVisibility(pControlNode, iVisibleCondition, allowHiddenFocus);
   GetCondition(pControlNode, "enable", enableCondition);
 
-  CRect animRect(posX, posY, posX + width, posY + height);
+  // note: animrect here uses .right and .bottom as width and height respectively (nonstandard)
+  FRECT animRect = { posX, posY, width, height };
   GetAnimations(pControlNode, animRect, animations);
 
   GetInfoColor(pControlNode, "textcolor", labelInfo.textColor);
