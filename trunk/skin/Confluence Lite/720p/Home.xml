@@ -1,35 +1,8 @@
 <window id="0">
-	<defaultcontrol always="true">8998</defaultcontrol>
+	<defaultcontrol always="true">9000</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<controls>
 		<include>CommonBackground</include>
-		<control type="button" id="8998">
-			<description>Run Recently added</description>
-			<posx>-20</posx>
-			<posy>-20</posy>
-			<width>1</width>
-			<height>1</height>
-			<label>-</label>
-			<font>-</font>
-			<onfocus>XBMC.RunScript(special://skin/scripts/RecentlyAdded.py,limit=10)</onfocus>
-			<onfocus>SetFocus(9000)</onfocus>
-			<texturenofocus>-</texturenofocus>
-			<texturefocus>-</texturefocus>
-			<visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
-		</control>
-		<control type="button" id="8998">
-			<description>Don't run Recently added</description>
-			<posx>-20</posx>
-			<posy>-20</posy>
-			<width>1</width>
-			<height>1</height>
-			<label>-</label>
-			<font>-</font>
-			<onfocus>SetFocus(9000)</onfocus>
-			<texturenofocus>-</texturenofocus>
-			<texturefocus>-</texturefocus>
-			<visible>Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
-		</control>
 		<control type="image">
 			<posx>0</posx>
 			<posy>90r</posy>
