@@ -80,6 +80,7 @@ public:
 
   virtual void UpdateColors();
 protected:
+  friend class CGUISpinControlEx;
   void OnFocus();
   void OnUnFocus();
   virtual void RenderText();

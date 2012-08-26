@@ -18,7 +18,8 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
+
+#define NOMINMAX
 #include "include.h"
 #include "GUISpinControlEx.h"
 
@@ -136,4 +137,13 @@ void CGUISpinControlEx::SetSpinPosition(float spinPosX)
 {
   m_spinPosX = spinPosX;
   SetPosition(m_buttonControl.GetXPosition(), m_buttonControl.GetYPosition());
+}
+
+void CGUISpinControlEx::RenderText(float posX, float width)
+{
+  const float spaceWidth = 10;
+  // check our limits from the button control
+  float x = std::max(m_buttonControl.m_label.GetRenderRect().x2 + spaceWidth, posX);
+  m_label.SetScrolling(HasFocus());
+  CGUISpinControl::RenderText(x, width + posX - x);
 }
