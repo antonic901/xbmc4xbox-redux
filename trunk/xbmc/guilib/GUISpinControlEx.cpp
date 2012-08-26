@@ -42,11 +42,8 @@ void CGUISpinControlEx::PreAllocResources()
 
 void CGUISpinControlEx::AllocResources()
 {
-  // Correct alignment - we always align the spincontrol on the right,
-  // and we always use a negative offsetX
-  m_label.align = (m_label.align & 4) | XBFONT_RIGHT;
-  if (m_label.offsetX > 0)
-    m_label.offsetX = -m_label.offsetX;
+  // Correct alignment - we always align the spincontrol on the right
+  m_label.GetLabelInfo().align = (m_label.GetLabelInfo().align & XBFONT_CENTER_Y) | XBFONT_RIGHT;
   CGUISpinControl::AllocResources();
   m_buttonControl.AllocResources();
   if (m_height == 0)
@@ -131,8 +128,8 @@ CStdString CGUISpinControlEx::GetDescription() const
 
 void CGUISpinControlEx::SettingsCategorySetSpinTextColor(const CGUIInfoColor &color)
 {
-  m_label.textColor = color;
-  m_label.focusedColor = color;
+  m_label.GetLabelInfo().textColor = color;
+  m_label.GetLabelInfo().focusedColor = color;
 }
 
 void CGUISpinControlEx::SetSpinPosition(float spinPosX)

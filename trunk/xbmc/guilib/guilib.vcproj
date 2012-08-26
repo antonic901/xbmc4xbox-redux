@@ -297,6 +297,9 @@
 				RelativePath=".\GUIInfoTypes.cpp">
 			</File>
 			<File
+				RelativePath=".\GUILabel.cpp">
+			</File>
+			<File
 				RelativePath=".\GUILabelControl.cpp">
 			</File>
 			<File
@@ -516,6 +519,9 @@
 			</File>
 			<File
 				RelativePath=".\GUIItem.h">
+			</File>
+			<File
+				RelativePath=".\GUILabel.h">
 			</File>
 			<File
 				RelativePath=".\GUILabelControl.h">

@@ -52,6 +52,7 @@ CGUISelectButtonControl::CGUISelectButtonControl(int parentID, int controlID,
   m_bMovedLeft = false;
   m_bMovedRight = false;
   m_dwTicks = 0;
+  m_label.SetAlign(m_label.GetLabelInfo().align | XBFONT_CENTER_X);
   ControlType = GUICONTROL_SELECTBUTTON;
 }
 
@@ -71,7 +72,7 @@ void CGUISelectButtonControl::Render()
     // render background, left and right arrow
     m_imgBackground.Render();
 
-    color_t textColor = m_label.textColor;
+    CGUILabel::COLOR color = CGUILabel::COLOR_TEXT;
 
     // User has moved left...
     if (m_bMovedLeft)
@@ -84,7 +85,7 @@ void CGUISelectButtonControl::Render()
       }
       // If we are moving left
       // render item text as disabled
-      textColor = m_label.disabledColor;
+      color = CGUILabel::COLOR_DISABLED;
     }
 
     // Render arrow
@@ -104,7 +105,7 @@ void CGUISelectButtonControl::Render()
       }
       // If we are moving right
       // render item text as disabled
-      textColor = m_label.disabledColor;
+      color = CGUILabel::COLOR_DISABLED;
     }
 
     // Render arrow
@@ -116,12 +117,10 @@ void CGUISelectButtonControl::Render()
     // Render text if a current item is available
     if (m_iCurrentItem >= 0 && (unsigned)m_iCurrentItem < m_vecItems.size())
     {
-      m_textLayout.Update(m_vecItems[m_iCurrentItem]);
-      uint32_t align = m_label.align | XBFONT_CENTER_X;
-      float fPosY = m_posY + m_label.offsetY;
-      if (m_label.align & XBFONT_CENTER_Y)
-        fPosY = m_posY + m_imgBackground.GetHeight()*0.5f;
-      m_textLayout.Render(m_posX + GetWidth()*0.5f, fPosY, 0, textColor, m_label.shadowColor, align, m_label.width);
+      m_label.SetMaxRect(m_posX, m_posY, m_width, m_height);
+      m_label.SetText(m_vecItems[m_iCurrentItem]);
+      m_label.SetColor(color);
+      m_label.Render();
     }
 
     // Select current item, if user doesn't

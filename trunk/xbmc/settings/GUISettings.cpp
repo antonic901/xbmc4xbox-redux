@@ -36,6 +36,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "GUIFont.h" // for FONT_STYLE_* definitions
 
 using namespace std;
 

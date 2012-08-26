@@ -32,6 +32,12 @@
 struct FT_FaceRec_;
 struct FT_LibraryRec_;
 struct FT_GlyphSlotRec_;
+typedef struct FT_BitmapGlyphRec_ *FT_BitmapGlyph;
+ 
+typedef uint32_t character_t;
+typedef uint32_t color_t;
+typedef std::vector<character_t> vecText;
+typedef std::vector<color_t> vecColors;
 
 typedef struct FT_FaceRec_ *FT_Face;
 typedef struct FT_LibraryRec_ *FT_Library;

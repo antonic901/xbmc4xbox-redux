@@ -23,6 +23,7 @@
 
 #include "GUIControl.h"
 #include "GUITexture.h"
+#include "GUILabel.h"
 
 class CButton
 {

@@ -301,7 +301,7 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
     // Get the extent of this line
     float w = GetTextWidthInternal( text.begin(), text.end() );
 
-    if ( alignment & XBFONT_TRUNCATED && w > maxPixelWidth )
+    if ( alignment & XBFONT_TRUNCATED && w > maxPixelWidth + 0.5f ) // + 0.5f due to rounding issues
       w = maxPixelWidth;
       
     if ( alignment & XBFONT_CENTER_X)

@@ -73,6 +73,7 @@ protected:
   void RecalcLabelPosition();
   void ValidateCursor();
   void OnTextChanged();
+  void DefaultConstructor();  
 
   CStdStringW m_text2;
   CStdString  m_text;
