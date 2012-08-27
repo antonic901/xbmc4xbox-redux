@@ -67,14 +67,14 @@ public:
   bool IsEnabled() const;
   bool HasMoved() const;
   void SetInactive();
-  void SetExclusiveAccess(DWORD dwControlID, DWORD dwWindowID, const CPoint &point);
-  void EndExclusiveAccess(DWORD dwControlID, DWORD dwWindowID);
-  DWORD GetExclusiveWindowID() const { return m_exclusiveWindowID; };
-  DWORD GetExclusiveControlID() const { return m_exclusiveControlID; };
+  void SetExclusiveAccess(int controlID, int windowID, const CPoint &point);
+  void EndExclusiveAccess(int controlID, int windowID);
+  int GetExclusiveWindowID() const { return m_exclusiveWindowID; };
+  int GetExclusiveControlID() const { return m_exclusiveControlID; };
   const CPoint &GetExclusiveOffset() const { return m_exclusiveOffset; };
-  void SetState(DWORD state) { m_pointerState = state; };
+  void SetState(int state) { m_pointerState = state; };
   void SetEnabled(bool enabled) { m_mouseEnabled = enabled; };
-  DWORD GetState() const { return m_pointerState; };
+  int GetState() const { return m_pointerState; };
   CPoint GetLocation() const;
   void SetLocation(const CPoint &point, bool activate=false);
   CPoint GetLastMove() const;
@@ -82,12 +82,12 @@ public:
 
 private:
   // exclusive access to mouse from a control
-  DWORD m_exclusiveWindowID;
-  DWORD m_exclusiveControlID;
+  int m_exclusiveWindowID;
+  int m_exclusiveControlID;
   CPoint m_exclusiveOffset;
   
   // state of the mouse
-  DWORD m_pointerState;
+  int m_pointerState;
   MouseState m_mouseState;
   bool m_mouseEnabled;
   bool m_lastDown[5];
@@ -102,8 +102,8 @@ private:
   float m_speedY;
 
   // active/click timers
-  DWORD m_lastActiveTime;
-  DWORD m_lastClickTime[5];
+  int m_lastActiveTime;
+  int m_lastClickTime[5];
 
 public:
   // public access variables to button clicks etc.
