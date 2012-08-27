@@ -25,6 +25,7 @@
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
 #include "GUIInfoManager.h"
+#include "utils/TimeUtils.h"
 #include "XMLUtils.h"
 #include "SkinInfo.h"
 #include "GUIStaticItem.h"
@@ -217,8 +218,8 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
       { // action is held down - repeat a number of times
         float speed = min(1.0f, (float)(action.holdTime - HOLD_TIME_START) / (HOLD_TIME_END - HOLD_TIME_START));
         unsigned int itemsPerFrame = 1;
-        if (m_lastHoldTime) // number of rows/10 items/second max speed
-          itemsPerFrame = max((unsigned int)1, (unsigned int)(speed * 0.0001f * GetRows() * (timeGetTime() - m_lastHoldTime)));
+          itemsPerFrame = max((unsigned int)1, (unsigned int)(speed * 0.0001f * GetRows() * (CTimeUtils::GetFrameTime() - m_lastHoldTime)));
+        m_lastHoldTime = CTimeUtils::GetFrameTime();
         m_lastHoldTime = timeGetTime();
         if (action.actionId == ACTION_MOVE_LEFT || action.actionId == ACTION_MOVE_UP)
           while (itemsPerFrame--) MoveUp(false);
@@ -682,7 +683,7 @@ void CGUIBaseContainer::ValidateOffset()
 {
 }
 
-void CGUIBaseContainer::DoRender(DWORD currentTime)
+void CGUIBaseContainer::DoRender(unsigned int currentTime)
 {
   m_renderTime = currentTime;
   CGUIControl::DoRender(currentTime);
@@ -760,10 +761,10 @@ void CGUIBaseContainer::UpdateVisibility(const CGUIListItem *item)
     Reset();
     bool updateItems = false;
     if (!m_staticUpdateTime)
-      m_staticUpdateTime = timeGetTime();
-    if (timeGetTime() - m_staticUpdateTime > 1000)
+      m_staticUpdateTime = CTimeUtils::GetFrameTime();
+    if (CTimeUtils::GetFrameTime() - m_staticUpdateTime > 1000)
     {
-      m_staticUpdateTime = timeGetTime();
+      m_staticUpdateTime = CTimeUtils::GetFrameTime();
       updateItems = true;
     }
     for (unsigned int i = 0; i < m_staticItems.size(); ++i)

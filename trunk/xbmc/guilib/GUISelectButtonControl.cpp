@@ -23,6 +23,7 @@
 #include "GUISelectButtonControl.h"
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
+#include "utils/TimeUtils.h"
 
 CGUISelectButtonControl::CGUISelectButtonControl(int parentID, int controlID,
     float posX, float posY,
@@ -51,7 +52,7 @@ CGUISelectButtonControl::CGUISelectButtonControl(int parentID, int controlID,
   m_bRightSelected = false;
   m_bMovedLeft = false;
   m_bMovedRight = false;
-  m_dwTicks = 0;
+  m_ticks = 0;
   m_label.SetAlign(m_label.GetLabelInfo().align | XBFONT_CENTER_X);
   ControlType = GUICONTROL_SELECTBUTTON;
 }
@@ -125,8 +126,8 @@ void CGUISelectButtonControl::Render()
 
     // Select current item, if user doesn't
     // move left or right for 1.5 sec.
-    DWORD dwTicksSpan = timeGetTime() - m_dwTicks;
-    if (dwTicksSpan > 1500)
+    unsigned int ticksSpan = CTimeUtils::GetFrameTime() - m_ticks;
+    if (ticksSpan > 1500)
     {
       // User hasn't moved disable selection mode...
       m_bShowSelect = false;
@@ -196,7 +197,7 @@ bool CGUISelectButtonControl::OnAction(const CAction &action)
       // Start timer, if user doesn't select an item
       // or moves left/right. The control will
       // automatically select the current item.
-      m_dwTicks = timeGetTime();
+      m_ticks = CTimeUtils::GetFrameTime();
       return true;
     }
     else
@@ -300,7 +301,7 @@ void CGUISelectButtonControl::OnLeft()
 
     // Reset timer for automatically selecting
     // the current item.
-    m_dwTicks = timeGetTime();
+    m_ticks = CTimeUtils::GetFrameTime();
 
     // Switch to previous item
     if (m_vecItems.size() > 0)
@@ -326,7 +327,7 @@ void CGUISelectButtonControl::OnRight()
 
     // Reset timer for automatically selecting
     // the current item.
-    m_dwTicks = timeGetTime();
+    m_ticks = CTimeUtils::GetFrameTime();
 
     // Switch to next item
     if (m_vecItems.size() > 0)
@@ -356,7 +357,7 @@ bool CGUISelectButtonControl::OnMouseOver(const CPoint &point)
     m_bRightSelected = true;
   }
   // reset ticks
-  m_dwTicks = timeGetTime();
+  m_ticks = CTimeUtils::GetFrameTime();
   return ret;
 }
 

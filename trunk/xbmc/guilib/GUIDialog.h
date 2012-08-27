@@ -59,7 +59,7 @@ public:
   void SetSound(bool OnOff) { m_enableSound = OnOff; };
 
 protected:
-  virtual bool RenderAnimation(DWORD time);
+  virtual bool RenderAnimation(unsigned int time);
   virtual void SetDefaults();
   virtual void OnWindowLoaded();
 
@@ -71,6 +71,6 @@ protected:
   bool m_dialogClosing;
   bool m_autoClosing;
   bool m_enableSound;
-  DWORD m_showStartTime;
-  DWORD m_showDuration;
+  unsigned int m_showStartTime;
+  unsigned int m_showDuration;
 };

@@ -25,6 +25,7 @@
 #include "GUILabelControl.h"
 #include "GUIAudioManager.h"
 #include "utils/SingleLock.h"
+#include "utils/TimeUtils.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 
@@ -101,7 +102,7 @@ bool CGUIDialog::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      m_showStartTime = timeGetTime();
+      m_showStartTime = CTimeUtils::GetFrameTime();
       return true;
     }
   }
@@ -228,7 +229,7 @@ void CGUIDialog::Show()
   Show_Internal();
 }
 
-bool CGUIDialog::RenderAnimation(DWORD time)
+bool CGUIDialog::RenderAnimation(unsigned int time)
 {
   CGUIWindow::RenderAnimation(time);
   return m_bRunning;
@@ -236,7 +237,7 @@ bool CGUIDialog::RenderAnimation(DWORD time)
 
 void CGUIDialog::FrameMove()
 {
-  if (m_autoClosing && m_showStartTime + m_showDuration < timeGetTime() && !m_dialogClosing)
+  if (m_autoClosing && m_showStartTime + m_showDuration < CTimeUtils::GetFrameTime() && !m_dialogClosing)
     Close();
   CGUIWindow::FrameMove();
 }
@@ -272,7 +273,7 @@ void CGUIDialog::SetAutoClose(unsigned int timeoutMs)
    m_autoClosing = true;
    m_showDuration = timeoutMs;
    if (m_bRunning)
-     m_showStartTime = timeGetTime();
+     m_showStartTime = CTimeUtils::GetFrameTime();
 }
 
 

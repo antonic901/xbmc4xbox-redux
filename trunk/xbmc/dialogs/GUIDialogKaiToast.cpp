@@ -23,7 +23,8 @@
 #include "GUISliderControl.h"
 #include "GUIImage.h"
 #include "GUIAudioManager.h"
-#include "SingleLock.h"
+#include "utils/SingleLock.h"
+#include "utils/TimeUtils.h"
 
 #define POPUP_ICON                400
 #define POPUP_CAPTION_TEXT        401
@@ -114,7 +115,7 @@ bool CGUIDialogKaiToast::DoWork()
   CSingleLock lock(m_critical);
 
   if (m_notifications.size() > 0 &&
-      timeGetTime() - m_dwTimer > m_toastMessageTime)
+      CTimeUtils::GetFrameTime() - m_timer > TOAST_MESSAGE_TIME)
   {
     Notification toast = m_notifications.front();
     m_notifications.pop();
@@ -154,7 +155,7 @@ bool CGUIDialogKaiToast::DoWork()
 
 void CGUIDialogKaiToast::ResetTimer()
 {
-  m_dwTimer = timeGetTime();
+  m_timer = CTimeUtils::GetFrameTime();
 }
 
 void CGUIDialogKaiToast::FrameMove()
@@ -164,7 +165,7 @@ void CGUIDialogKaiToast::FrameMove()
     ResetTimer();
 
   // now check if we should exit
-  if (timeGetTime() - m_dwTimer > m_toastDisplayTime)
+  if (CTimeUtils::GetFrameTime() - m_timer > m_toastDisplayTime)
     Close();
   
   CGUIDialog::FrameMove();

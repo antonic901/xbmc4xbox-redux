@@ -23,6 +23,7 @@
 #include "GUISliderControl.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
+#include "utils/TimeUtils.h"
 #include "GUIUserMessages.h"
 
 #define SEEK_BAR_DISPLAY_TIME 2000L
@@ -115,7 +116,7 @@ bool CGUIDialogSeekBar::OnMessage(CGUIMessage& message)
 
 void CGUIDialogSeekBar::ResetTimer()
 {
-  m_dwTimer = timeGetTime();
+  m_timer = CTimeUtils::GetFrameTime();
 }
 
 void CGUIDialogSeekBar::FrameMove()
@@ -127,7 +128,7 @@ void CGUIDialogSeekBar::FrameMove()
   }
 
   // check if we should seek or exit
-  if (!g_infoManager.m_performingSeek && timeGetTime() - m_dwTimer > SEEK_BAR_DISPLAY_TIME)
+  if (!g_infoManager.m_performingSeek && CTimeUtils::GetFrameTime() - m_timer > SEEK_BAR_DISPLAY_TIME)
     g_infoManager.SetSeeking(false);
 
   // render our controls
@@ -149,7 +150,7 @@ void CGUIDialogSeekBar::FrameMove()
   }
 
   // Check for seek timeout, and perform the seek
-  if (m_bRequireSeek && timeGetTime() - m_dwTimer > SEEK_BAR_SEEK_TIME)
+  if (m_bRequireSeek && CTimeUtils::GetFrameTime() - m_timer > SEEK_BAR_SEEK_TIME)
   {
     g_infoManager.m_performingSeek = true;
     double time = g_infoManager.GetTotalPlayTime() * m_fSeekPercentage * 0.01;

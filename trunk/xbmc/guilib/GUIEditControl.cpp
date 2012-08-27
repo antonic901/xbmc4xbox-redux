@@ -352,7 +352,7 @@ void CGUIEditControl::RenderText()
     if (HasFocus())
     {
       CStdStringW col;
-      if ((m_dwFocusCounter % 64) > 32)
+      if ((m_focusCounter % 64) > 32)
         col = L"|";
       else
         col = L"[COLOR 00FFFFFF]|[/COLOR]";

@@ -130,6 +130,6 @@ protected:
   bool m_bRightSelected;
   bool m_bMovedLeft;
   bool m_bMovedRight;
-  DWORD m_dwTicks;
+  unsigned int m_ticks;
 };
 #endif

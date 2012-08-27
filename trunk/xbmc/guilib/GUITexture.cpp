@@ -56,7 +56,7 @@ CGUITextureBase::CGUITextureBase(float posX, float posY, float width, float heig
 
   // anim gifs
   m_currentFrame = 0;
-  m_frameCounter = (DWORD) -1;
+  m_frameCounter = (unsigned int) -1;
   m_currentLoop = 0;
 
   m_allocateDynamically = false;
@@ -95,7 +95,7 @@ CGUITextureBase::CGUITextureBase(const CGUITextureBase &right)
   m_largeOrientation = 0;
 
   m_currentFrame = 0;
-  m_frameCounter = (DWORD) -1;
+  m_frameCounter = (unsigned int) -1;
   m_currentLoop = 0;
 
   m_isAllocated = NO;
@@ -458,7 +458,7 @@ void CGUITextureBase::DynamicResourceAlloc(bool allocateDynamically)
 void CGUITextureBase::UpdateAnimFrame()
 {
   m_frameCounter++;
-  DWORD delay = m_texture.m_delays[m_currentFrame];
+  unsigned int delay = m_texture.m_delays[m_currentFrame];
   if (!delay) delay = 100;
   if (m_frameCounter * 40 >= delay)
   {

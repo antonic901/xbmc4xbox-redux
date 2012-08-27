@@ -24,6 +24,7 @@
 #include "GUIFontTTF.h"
 #include "GraphicContext.h"
 #include "utils/SingleLock.h"
+#include "utils/TimeUtils.h"
 
 using namespace std;
 namespace MathUtils {
@@ -49,7 +50,7 @@ float CScrollInfo::GetPixelsPerFrame()
 
   if (0 == pixelSpeed)
     return 0; // not scrolling
-  DWORD currentTime = timeGetTime();
+  unsigned int currentTime = CTimeUtils::GetFrameTime();
   float delta = m_lastFrameTime ? (float)(currentTime - m_lastFrameTime) : m_averageFrameTime;
   if (delta > 100)
     delta = 100; // assume a minimum of 10 fps

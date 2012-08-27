@@ -25,6 +25,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
+#include "utils/TimeUtils.h"
 #include "utils/log.h"
 
 CBackgroundLoader::CBackgroundLoader(CInfoLoader *callback) : CThread()
@@ -87,7 +88,7 @@ void CInfoLoader::Refresh()
 
 void CInfoLoader::LoaderFinished()
 {
-  m_refreshTime = timeGetTime() + TimeToNextRefreshInMs();
+  m_refreshTime = CTimeUtils::GetFrameTime() + TimeToNextRefreshInMs();
   m_backgroundLoader = NULL;
   if (m_type == "weather" && m_busy)
   {
@@ -100,7 +101,7 @@ void CInfoLoader::LoaderFinished()
 const char *CInfoLoader::GetInfo(int info)
 {
   // Refresh if need be
-  if (m_refreshTime < timeGetTime())
+  if (m_refreshTime < CTimeUtils::GetFrameTime())
   {
     Refresh();
   }
@@ -124,6 +125,6 @@ const char *CInfoLoader::TranslateInfo(int info)
 
 void CInfoLoader::ResetTimer()
 {
-  m_refreshTime = timeGetTime();
+  m_refreshTime = CTimeUtils::GetFrameTime();
 }
 

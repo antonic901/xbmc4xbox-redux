@@ -77,6 +77,7 @@
 #include "FileSystem/HTSPDirectory.h"
 #include "utils/TuxBoxUtil.h"
 #include "utils/SystemInfo.h"
+#include "utils/TimeUtils.h"
 #include "ApplicationRenderer.h"
 #include "GUILargeTextureManager.h"
 #include "music/LastFmManager.h"
@@ -309,7 +310,7 @@ CApplication::CApplication(void) : m_ctrDpad(220, 220), m_itemCurrentFile(new CF
 #endif
   m_bScreenSave = false;   // CB: SCREENSAVER PATCH
   m_iScreenSaveLock = 0;
-  m_dwSkinTime = 0;
+  m_skinReloadTime = 0;
   m_bInitializing = true;
   m_eForcedNextPlayer = EPC_NONE;
   m_strPlayListFile = "";
@@ -1821,13 +1822,13 @@ void CApplication::StopServices()
 
 void CApplication::DelayLoadSkin()
 {
-  m_dwSkinTime = timeGetTime() + 2000;
+  m_skinReloadTime = CTimeUtils::GetFrameTime() + 2000;
   return ;
 }
 
 void CApplication::CancelDelayLoadSkin()
 {
-  m_dwSkinTime = 0;
+  m_skinReloadTime = 0;
 }
 
 void CApplication::ReloadSkin()
@@ -1872,7 +1873,7 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   // close the music and video overlays (they're re-opened automatically later)
   CSingleLock lock(g_graphicsContext);
 
-  m_dwSkinTime = 0;
+  m_skinReloadTime = 0;
 
   CStdString strHomePath;
   CStdString strSkinPath = "Q:\\skin\\" + strSkin;
@@ -2273,6 +2274,7 @@ void CApplication::Render()
   RenderNoPresent();
   // Present the backbuffer contents to the display
   if (m_pd3dDevice) m_pd3dDevice->Present( NULL, NULL, NULL, NULL );
+  CTimeUtils::UpdateFrameTime();
   g_graphicsContext.Unlock();
 }
 #endif
@@ -3320,7 +3322,7 @@ bool CApplication::ProcessKeyboard()
       keyID = vkey | KEY_VKEY;
     else
       keyID = KEY_UNICODE;
-    //  CLog::Log(LOGDEBUG,"Keyboard: time=%i key=%i", timeGetTime(), vkey);
+    //  CLog::Log(LOGDEBUG,"Keyboard: time=%i key=%i", CTimeUtils::GetFrameTime(), vkey);
     CKey key(keyID);
     key.SetHeld(g_Keyboard.KeyHeld());
     return OnKey(key);
@@ -3514,7 +3516,7 @@ void CApplication::Stop()
     }
 
     CLog::Log(LOGNOTICE, "Storing total System Uptime");
-    g_settings.m_iSystemTimeTotalUp = g_settings.m_iSystemTimeTotalUp + (int)(timeGetTime() / 60000);
+    g_settings.m_iSystemTimeTotalUp = g_settings.m_iSystemTimeTotalUp + (int)(CTimeUtils::GetFrameTime() / 60000);
 
     // Update the settings information (volume, uptime etc. need saving)
     if (CFile::Exists(g_settings.GetSettingsFile()))
@@ -5091,7 +5093,7 @@ bool CApplication::ExecuteAction(CGUIActionDescriptor action)
 void CApplication::Process()
 {
   // check if we need to load a new skin
-  if (m_dwSkinTime && timeGetTime() >= m_dwSkinTime)
+  if (m_skinReloadTime && CTimeUtils::GetFrameTime() >= m_skinReloadTime)
   {
     ReloadSkin();
   }
