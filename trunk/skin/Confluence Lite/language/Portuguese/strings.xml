@@ -110,6 +110,17 @@
   <string id="31206">Encontrado</string>
   <string id="31207">Encontrar Mais Itens</string>
   <string id="31208">Próximos Episódios</string>
+  
+  <!-- Xbox labels -->
+  <string id="31240">Addon</string>
+  <string id="31241">Addons</string>
+  <string id="31250">Plugin</string>
+  <string id="31251">Plugins</string>
+  
+  <string id="31260">Configurar</string>
+  
+  <string id="31271">Aplicações</string>
+  <string id="31272">Emuladores</string>
 
   <!-- Extra labels -->
   <string id="31300">Temp corrente</string>
