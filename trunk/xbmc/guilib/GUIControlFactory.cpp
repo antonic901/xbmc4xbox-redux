@@ -620,6 +620,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   vector<CStdString> clickActions;
   vector<CStdString> altclickActions;
   vector<CStdString> focusActions;
+  vector<CStdString> unfocusActions;
   CStdString strTitle = "";
   CStdString strRSSTags = "";
 
@@ -784,6 +785,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   GetMultipleString(pControlNode, "onclick", clickActions);
   GetMultipleString(pControlNode, "onfocus", focusActions);
+  GetMultipleString(pControlNode, "onunfocus", unfocusActions);
   GetMultipleString(pControlNode, "altclick", altclickActions);
 
   CStdString infoString;
@@ -1098,6 +1100,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIButtonControl *)control)->SetLabel2(strLabel2);
     ((CGUIButtonControl *)control)->SetClickActions(clickActions);
     ((CGUIButtonControl *)control)->SetFocusActions(focusActions);
+    ((CGUIButtonControl *)control)->SetUnFocusActions(unfocusActions);
   }
   else if (strType == "togglebutton")
   {
@@ -1111,6 +1114,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIToggleButtonControl *)control)->SetClickActions(clickActions);
     ((CGUIToggleButtonControl *)control)->SetAltClickActions(altclickActions);
     ((CGUIToggleButtonControl *)control)->SetFocusActions(focusActions);
+    ((CGUIToggleButtonControl *)control)->SetUnFocusActions(unfocusActions);
     ((CGUIToggleButtonControl *)control)->SetToggleSelect(iToggleSelect);
   }
   else if (strType == "checkmark")
@@ -1135,6 +1139,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIRadioButtonControl *)control)->SetToggleSelect(iToggleSelect);
     ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);
     ((CGUIRadioButtonControl *)control)->SetFocusActions(focusActions);
+    ((CGUIRadioButtonControl *)control)->SetUnFocusActions(unfocusActions);
   }
   else if (strType == "multiselect")
   {
