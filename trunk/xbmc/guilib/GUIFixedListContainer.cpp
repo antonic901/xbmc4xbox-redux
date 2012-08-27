@@ -93,8 +93,8 @@ bool CGUIFixedListContainer::MoveUp(bool wrapAround)
   else if (wrapAround)
   {
     SelectItem((int)m_items.size() - 1);
-      g_infoManager.SetContainerMoving(GetID(), -1);
-    }
+    SetContainerMoving(-1);
+  }
   else
     return false;
   return true;
@@ -108,7 +108,7 @@ bool CGUIFixedListContainer::MoveDown(bool wrapAround)
   else if (wrapAround)
   { // move first item in list
     SelectItem(0);
-    g_infoManager.SetContainerMoving(GetID(), 1);
+    SetContainerMoving(1);
   }
   else
     return false;
