@@ -2936,7 +2936,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
   {
     if( m_dvd.state == DVDSTATE_STILL && m_dvd.iDVDStillTime != 0 && pMenus->GetTotalButtons() == 0 )
     {
-      switch(action.id)
+      switch(action.actionId)
       {
         case ACTION_NEXT_ITEM:
         case ACTION_MOVE_RIGHT:
@@ -2954,7 +2954,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
     }
 
 
-    switch (action.id)
+    switch (action.actionId)
     {
 /* this code is disabled to allow switching playlist items (dvdimage "stacks") */
 #if 0
@@ -2992,7 +2992,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
     if (pMenus->IsInMenu())
     {
-      switch (action.id)
+      switch (action.actionId)
       {
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
@@ -3093,7 +3093,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         {
           THREAD_ACTION(action);
           // Offset from key codes back to button number
-          int button = action.id - REMOTE_0;
+          int button = action.actionId - REMOTE_0;
           CLog::Log(LOGDEBUG, " - button pressed %d", button);
           pMenus->SelectButton(button);
         }
@@ -3108,7 +3108,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
   if (dynamic_cast<CDVDInputStream::IChannel*>(m_pInputStream))
   {
-    switch (action.id)
+    switch (action.actionId)
     {
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
@@ -3136,7 +3136,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
     }
   }
 
-  switch (action.id)
+  switch (action.actionId)
   {
     case ACTION_NEXT_ITEM:
     case ACTION_PAGE_UP:

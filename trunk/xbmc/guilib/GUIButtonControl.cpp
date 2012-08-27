@@ -123,7 +123,7 @@ void CGUIButtonControl::RenderText()
 
 bool CGUIButtonControl::OnAction(const CAction &action)
 {
-  if (action.id == ACTION_SELECT_ITEM)
+  if (action.actionId == ACTION_SELECT_ITEM)
   {
     OnClick();
     return true;
@@ -231,7 +231,7 @@ bool CGUIButtonControl::OnMouseClick(int button, const CPoint &point)
   {
     g_Mouse.SetState(MOUSE_STATE_CLICK);
     CAction action;
-    action.id = ACTION_SELECT_ITEM;
+    action.actionId = ACTION_SELECT_ITEM;
     OnAction(action);
     return true;
   }

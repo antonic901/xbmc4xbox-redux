@@ -185,7 +185,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   if (g_application.m_pPlayer != NULL && g_application.m_pPlayer->OnAction(action))
     return true;
 
-  switch (action.id)
+  switch (action.actionId)
   {
   case ACTION_SHOW_OSD:
     ToggleOSD();
@@ -319,13 +319,13 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   case ACTION_SUBTITLE_DELAY:
     CGUIDialogSlider::ShowAndGetInput(g_localizeStrings.Get(22006), g_settings.m_currentVideoSettings.m_SubtitleDelay,
                                                                    -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                                                    g_advancedSettings.m_videoSubsDelayRange, this, (void *)&action.id);
+                                                                    g_advancedSettings.m_videoSubsDelayRange, this, (void *)&action.actionId);
     return true;
     break;
   case ACTION_AUDIO_DELAY:
     CGUIDialogSlider::ShowAndGetInput(g_localizeStrings.Get(297), g_settings.m_currentVideoSettings.m_AudioDelay,
                                                                  -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                                                  g_advancedSettings.m_videoAudioDelayRange, this, (void *)&action.id);
+                                                                  g_advancedSettings.m_videoAudioDelayRange, this, (void *)&action.actionId);
     return true;
     break;
   case ACTION_AUDIO_DELAY_MIN:
@@ -378,21 +378,21 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         int channelNr = -1;
 
         CStdString strChannel;
-        strChannel.Format("%i", action.id - REMOTE_0);
+        strChannel.Format("%i", action.actionId - REMOTE_0);
         if (CGUIDialogNumeric::ShowAndGetNumber(strChannel, g_localizeStrings.Get(19000)))
           channelNr = atoi(strChannel.c_str());
 
         if (channelNr > 0)
         {
           CAction action;
-          action.id = ACTION_CHANNEL_SWITCH;
+          action.actionId = ACTION_CHANNEL_SWITCH;
           action.amount1 = (float)channelNr;
           OnAction(action);
         }
       }
       else
       {
-        ChangetheTimeCode(action.id);
+        ChangetheTimeCode(action.actionId);
       }
       return true;
     }
@@ -580,14 +580,14 @@ bool CGUIWindowFullScreen::OnMouse(const CPoint &point)
   if (g_Mouse.bClick[MOUSE_RIGHT_BUTTON])
   { // no control found to absorb this click - go back to GUI
     CAction action;
-    action.id = ACTION_SHOW_GUI;
+    action.actionId = ACTION_SHOW_GUI;
     OnAction(action);
     return true;
   }
   if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
   { // no control found to absorb this click - pause video
     CAction action;
-    action.id = ACTION_PAUSE;
+    action.actionId = ACTION_PAUSE;
     return g_application.OnAction(action);
   }
   if (g_Mouse.HasMoved())

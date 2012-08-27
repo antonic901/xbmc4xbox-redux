@@ -309,7 +309,7 @@ CAction CButtonTranslator::GetAction(int window, const CKey &key)
     actionID = GetActionCode( -1, key, strAction);
   // Now fill our action structure
   CAction action;
-  action.id = actionID;
+  action.actionId = actionID;
   action.strAction = strAction;
   action.amount1 = 1; // digital button (could change this for repeat acceleration)
   action.amount2 = 0;

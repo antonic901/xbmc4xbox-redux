@@ -57,7 +57,7 @@ CGUIWindowVisualisation::~CGUIWindowVisualisation(void)
 
 bool CGUIWindowVisualisation::OnAction(const CAction &action)
 {
-  switch (action.id)
+  switch (action.actionId)
   {
   case ACTION_SHOW_INFO:
     {
@@ -223,14 +223,14 @@ bool CGUIWindowVisualisation::OnMouse(const CPoint &point)
   if (g_Mouse.bClick[MOUSE_RIGHT_BUTTON])
   { // no control found to absorb this click - go back to GUI
     CAction action;
-    action.id = ACTION_SHOW_GUI;
+    action.actionId = ACTION_SHOW_GUI;
     OnAction(action);
     return true;
   }
   if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
   { // no control found to absorb this click - toggle the track INFO
     CAction action;
-    action.id = ACTION_PAUSE;
+    action.actionId = ACTION_PAUSE;
     return g_application.OnAction(action);
   }
   if (g_Mouse.HasMoved())

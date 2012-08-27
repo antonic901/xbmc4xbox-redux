@@ -55,10 +55,10 @@ void CGUIWindowOSD::FrameMove()
 bool CGUIWindowOSD::OnAction(const CAction &action)
 {
   // keyboard or controller movement should prevent autoclosing
-  if (action.id != ACTION_MOUSE && m_autoClosing)
+  if (action.actionId != ACTION_MOUSE && m_autoClosing)
     SetAutoClose(3000);
 
-  if (action.id == ACTION_NEXT_ITEM || action.id == ACTION_PREV_ITEM)
+  if (action.actionId == ACTION_NEXT_ITEM || action.actionId == ACTION_PREV_ITEM)
   {
     // these could indicate next chapter if video supports it
     if (g_application.m_pPlayer != NULL && g_application.m_pPlayer->OnAction(action))
@@ -73,7 +73,7 @@ bool CGUIWindowOSD::OnMouse(const CPoint &point)
   if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
   { // pause
     CAction action;
-    action.id = ACTION_PAUSE;
+    action.actionId = ACTION_PAUSE;
     return g_application.OnAction(action);
   }
   return CGUIDialog::OnMouse(point);

@@ -62,7 +62,7 @@ CGUISpinControl::~CGUISpinControl(void)
 
 bool CGUISpinControl::OnAction(const CAction &action)
 {
-  switch (action.id)
+  switch (action.actionId)
   {
   case REMOTE_0:
   case REMOTE_1:
@@ -80,7 +80,7 @@ bool CGUISpinControl::OnAction(const CAction &action)
         m_iTypedPos = 0;
         strcpy(m_szTyped, "");
       }
-      int iNumber = action.id - REMOTE_0;
+      int iNumber = action.actionId - REMOTE_0;
 
       m_szTyped[m_iTypedPos] = iNumber + '0';
       m_iTypedPos++;
@@ -165,7 +165,7 @@ bool CGUISpinControl::OnAction(const CAction &action)
     break;
   }
 /*  static float m_fSmoothScrollOffset = 0.0f;
-  if (action.id == ACTION_SCROLL_UP)
+  if (action.actionId == ACTION_SCROLL_UP)
   {
     m_fSmoothScrollOffset += action.amount1 * action.amount1;
     bool handled = false;

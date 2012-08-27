@@ -53,7 +53,7 @@ CGUIWindowScripts::~CGUIWindowScripts()
 
 bool CGUIWindowScripts::OnAction(const CAction &action)
 {
-  if (action.id == ACTION_SHOW_INFO)
+  if (action.actionId == ACTION_SHOW_INFO)
   {
     OnInfo();
     return true;

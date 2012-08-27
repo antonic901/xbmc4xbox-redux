@@ -112,7 +112,7 @@ bool CGUISliderControl::OnMessage(CGUIMessage& message)
 
 bool CGUISliderControl::OnAction(const CAction &action)
 {
-  switch ( action.id )
+  switch ( action.actionId )
   {
   case ACTION_MOVE_LEFT:
     //case ACTION_OSD_SHOW_VALUE_MIN:

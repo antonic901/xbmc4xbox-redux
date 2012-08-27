@@ -153,7 +153,7 @@ void CGUIControl::Render()
 
 bool CGUIControl::OnAction(const CAction &action)
 {
-  switch (action.id)
+  switch (action.actionId)
   {
   case ACTION_MOVE_DOWN:
     if (!HasFocus()) return false;

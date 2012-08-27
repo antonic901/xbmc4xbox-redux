@@ -83,8 +83,8 @@ bool CGUIEditControl::OnAction(const CAction &action)
 {
   ValidateCursor();
 
-  if (action.id == ACTION_BACKSPACE
-      || action.id == ACTION_PARENT_DIR
+  if (action.actionId == ACTION_BACKSPACE
+      || action.actionId == ACTION_PARENT_DIR
       )
   {
     // backspace
@@ -95,7 +95,7 @@ bool CGUIEditControl::OnAction(const CAction &action)
     }
     return true;
   }
-  else if (action.id == ACTION_MOVE_LEFT)
+  else if (action.actionId == ACTION_MOVE_LEFT)
   {
     if (m_cursorPos > 0) {
       m_cursorPos--;
@@ -103,7 +103,7 @@ bool CGUIEditControl::OnAction(const CAction &action)
       return true;
     }
   }
-  else if (action.id == ACTION_MOVE_RIGHT)
+  else if (action.actionId == ACTION_MOVE_RIGHT)
   {
     if ((unsigned int) m_cursorPos < m_text2.size())
     { 
@@ -112,14 +112,14 @@ bool CGUIEditControl::OnAction(const CAction &action)
       return true;
     }
   }
-  else if (action.id == ACTION_PASTE)
+  else if (action.actionId == ACTION_PASTE)
   {
     OnPasteClipboard();
   }
-  else if (action.id >= KEY_VKEY && action.id < KEY_ASCII)
+  else if (action.actionId >= KEY_VKEY && action.actionId < KEY_ASCII)
   {
     // input from the keyboard (vkey, not ascii)
-    BYTE b = action.id & 0xFF;
+    BYTE b = action.actionId & 0xFF;
     if (b == 0x25 && m_cursorPos > 0)
     { // left
       m_cursorPos--;
@@ -151,7 +151,7 @@ bool CGUIEditControl::OnAction(const CAction &action)
       return true;
     }
   }
-  else if (action.id >= KEY_ASCII)
+  else if (action.actionId >= KEY_ASCII)
   {
     // input from the keyboard
     switch (action.unicode)
@@ -190,11 +190,11 @@ bool CGUIEditControl::OnAction(const CAction &action)
     OnTextChanged();
     return true;
   }
-  else if (action.id >= REMOTE_2 && action.id <= REMOTE_9)
+  else if (action.actionId >= REMOTE_2 && action.actionId <= REMOTE_9)
   { // input from the remote
     if (m_inputType == INPUT_TYPE_FILTER)
     { // filtering - use single number presses
-      m_text2.insert(m_text2.begin() + m_cursorPos, L'0' + (action.id - REMOTE_0));
+      m_text2.insert(m_text2.begin() + m_cursorPos, L'0' + (action.actionId - REMOTE_0));
       m_cursorPos++;
       OnTextChanged();
       return true;

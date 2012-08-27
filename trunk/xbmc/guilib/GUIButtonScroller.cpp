@@ -112,7 +112,7 @@ CGUIButtonScroller::~CGUIButtonScroller(void)
 
 bool CGUIButtonScroller::OnAction(const CAction &action)
 {
-  if (action.id == ACTION_SELECT_ITEM)
+  if (action.actionId == ACTION_SELECT_ITEM)
   {
     // send the appropriate message to the parent window
     vector<CGUIActionDescriptor> actions = m_vecButtons[GetActiveButton()]->clickActions;
@@ -125,13 +125,13 @@ bool CGUIButtonScroller::OnAction(const CAction &action)
     }
     return true;
   }
-  if (action.id == ACTION_CONTEXT_MENU)
+  if (action.actionId == ACTION_CONTEXT_MENU)
   { // send a click message to our parent
-    SEND_CLICK_MESSAGE(GetID(), GetParentID(), action.id);
+    SEND_CLICK_MESSAGE(GetID(), GetParentID(), action.actionId);
     return true;
   }
   // smooth scrolling (for analog controls)
-  if (action.id == ACTION_SCROLL_UP)
+  if (action.actionId == ACTION_SCROLL_UP)
   {
     m_fAnalogScrollSpeed += action.amount1 * action.amount1;
     bool handled = false;
@@ -145,7 +145,7 @@ bool CGUIButtonScroller::OnAction(const CAction &action)
     }
     return handled;
   }
-  if (action.id == ACTION_SCROLL_DOWN)
+  if (action.actionId == ACTION_SCROLL_DOWN)
   {
     m_fAnalogScrollSpeed += action.amount1 * action.amount1;
     bool handled = false;
@@ -897,9 +897,9 @@ bool CGUIButtonScroller::OnMouseClick(int button, const CPoint &point)
       m_iCurrentSlot = (int)((point.x - m_posX) / (m_imgFocus.GetWidth() + m_buttonGap));
       CAction action;
       if (button == MOUSE_LEFT_BUTTON)
-        action.id = ACTION_SELECT_ITEM;
+        action.actionId = ACTION_SELECT_ITEM;
       if (button == MOUSE_RIGHT_BUTTON)
-        action.id = ACTION_CONTEXT_MENU;
+        action.actionId = ACTION_CONTEXT_MENU;
       OnAction(action);
       return true;
     }
@@ -911,9 +911,9 @@ bool CGUIButtonScroller::OnMouseClick(int button, const CPoint &point)
       m_iCurrentSlot = (int)((point.y - m_posY) / (m_imgFocus.GetHeight() + m_buttonGap));
       CAction action;
       if (button == MOUSE_LEFT_BUTTON)
-        action.id = ACTION_SELECT_ITEM;
+        action.actionId = ACTION_SELECT_ITEM;
       if (button == MOUSE_RIGHT_BUTTON)
-        action.id = ACTION_CONTEXT_MENU;
+        action.actionId = ACTION_CONTEXT_MENU;
       OnAction(action);
       return true;
     }

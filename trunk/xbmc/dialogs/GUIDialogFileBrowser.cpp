@@ -76,12 +76,12 @@ CGUIDialogFileBrowser::~CGUIDialogFileBrowser()
 
 bool CGUIDialogFileBrowser::OnAction(const CAction &action)
 {
-  if (action.id == ACTION_PARENT_DIR)
+  if (action.actionId == ACTION_PARENT_DIR)
   {
     GoParentFolder();
     return true;
   }
-  if ((action.id == ACTION_CONTEXT_MENU || action.id == ACTION_MOUSE_RIGHT_CLICK) && m_Directory->GetPath().IsEmpty())
+  if ((action.actionId == ACTION_CONTEXT_MENU || action.actionId == ACTION_MOUSE_RIGHT_CLICK) && m_Directory->GetPath().IsEmpty())
   {
     int iItem = m_viewControl.GetSelectedItem();
     if ((!m_addSourceType.IsEmpty() && iItem != m_vecItems->Size()-1))

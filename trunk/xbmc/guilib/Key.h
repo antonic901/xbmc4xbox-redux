@@ -401,13 +401,13 @@ class CAction
 public:
   CAction()
   {
-    id = 0;
+    actionId = 0;
     amount1 = amount2 = repeat = 0;
     buttonCode = 0;
     unicode = 0;
     holdTime = 0;
   };
-  int          id;
+  int          actionId;
   float        amount1;
   float        amount2;
   float        repeat;
