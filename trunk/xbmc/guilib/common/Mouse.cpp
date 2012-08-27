@@ -37,7 +37,7 @@ CMouse::CMouse()
 {
   m_mouseDevice = NULL;
   m_exclusiveWindowID = WINDOW_INVALID;
-  m_exclusiveControlID = WINDOW_INVALID;
+  m_exclusiveControl = NULL;
   m_pointerState = MOUSE_STATE_NORMAL;
   m_mouseEnabled = true;
   m_speedX = m_speedY = 0;
@@ -213,9 +213,9 @@ char CMouse::GetWheel() const
   return m_mouseState.dz;
 }
 
-void CMouse::SetExclusiveAccess(int controlID, int windowID, const CPoint &point)
+void CMouse::SetExclusiveAccess(const CGUIControl *control, int windowID, const CPoint &point)
 {
-  m_exclusiveControlID = controlID;
+  m_exclusiveControl = control;
   m_exclusiveWindowID = windowID;
   // convert posX, posY to screen coords...
   // NOTE: This relies on the window resolution having been set correctly beforehand in CGUIWindow::OnMouseAction()
@@ -224,10 +224,10 @@ void CMouse::SetExclusiveAccess(int controlID, int windowID, const CPoint &point
   m_exclusiveOffset = point - mouseCoords;
 }
 
-void CMouse::EndExclusiveAccess(int controlID, int windowID)
+void CMouse::EndExclusiveAccess(const CGUIControl *control, int windowID)
 {
-  if (m_exclusiveControlID == controlID && m_exclusiveWindowID == windowID)
-    SetExclusiveAccess(WINDOW_INVALID, WINDOW_INVALID, CPoint(0, 0));
+  if (m_exclusiveControl == control && m_exclusiveWindowID == windowID)
+    SetExclusiveAccess(NULL, WINDOW_INVALID, CPoint(0, 0));
 }
 
 void CMouse::Acquire()
