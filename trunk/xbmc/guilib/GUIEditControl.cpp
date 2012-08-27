@@ -120,6 +120,18 @@ bool CGUIEditControl::OnAction(const CAction &action)
   {
     // input from the keyboard (vkey, not ascii)
     BYTE b = action.actionId & 0xFF;
+    if (b == 0x24) // home
+    {
+      m_cursorPos = 0;
+      OnTextChanged();
+      return true;
+    }
+    else if (b == 0x23) // end
+    {
+      m_cursorPos = m_text2.length();
+      OnTextChanged();
+      return true;
+    }
     if (b == 0x25 && m_cursorPos > 0)
     { // left
       m_cursorPos--;

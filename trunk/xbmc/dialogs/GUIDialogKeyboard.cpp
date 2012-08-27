@@ -143,6 +143,14 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
     uint8_t b = action.actionId & 0xFF;
     if (b == 0x24) // home
     {
+      MoveCursor(-GetCursorPos());
+    }
+    else if (b == 0x23) // end
+    {
+      MoveCursor(m_strEdit.GetLength() - GetCursorPos());
+    }
+    else if (b == 0x25) // left
+    {
       if (g_advancedSettings.m_bNavVKeyboard)
       {
         CAction action;
