@@ -11,8 +11,10 @@
   <string id="31003">Opções de Power</string>
   <string id="31004">A trabalhar...</string>
   <string id="31005">Esconder INFO</string>
-
+  <string id="31006">Opções de Vistas</string>
   <string id="31007">Plugins</string>
+  <string id="31008">Ecrã Inteiro</string>
+  <string id="31009">Duração Total</string>
 
   <string id="31020">Adicionados recentemente</string>
   <string id="31021">Vídeo - Ficheiros</string>
@@ -42,6 +44,8 @@
   <string id="31047">Definição corrente</string>
   <string id="31048">Definições de visualização</string>
   <string id="31049">Tempo para terminar</string>
+  <string id="31050">Dispor: Ascendente</string>
+  <string id="31051">Dispor: Descendente</string>
 
   <!-- Playlist Editor labels -->
   <string id="31055">Abrir lista de reprodução</string>
@@ -79,18 +83,20 @@
   <string id="31123">Usar "Posters" en vez de "Faixas" para séries de TV</string>
   <string id="31124">Mostrar vídeo "A reproduzir" em fundo</string>
   <string id="31125">Mostrar visualização "A reproduzir" em fundo</string>
-  <string id="31126"></string>
-  <string id="31127"></string>
+  <string id="31126">Tocar música da série de TV na biblioteca de video [COLOR=grey3](XBMC/scripts/tvtunes)[/COLOR]</string>
+  
+  <string id="31127">TvTunes</string>
   <string id="31128">Letras</string>
-  <string id="31129"></string>
+  <string id="31129">Esconder Fanart na visualização de ecrã inteiro</string>
   <string id="31130"></string>
   <string id="31131"></string>
-  <string id="31132">Add-on de letras de música</string>
-  <string id="31133">Add-on de legendas</string>
-  <string id="31134">Submenu de Vídeos da Página Inicial</string>
-  <string id="31135">Submenu de Música da Página Inicial</string>
-  <string id="31136">Submenu de Fotos da Página Inicial</string> 
-
+  <string id="31132">Script de letras</string>
+  <string id="31133">Script de legendas</string>
+  <string id="31134">Submenu de Vídeos da Página Inicial [COLOR=grey2](insira 'pasta do plugin' ex. YouTube)[/COLOR]</string>
+  <string id="31135">Submenu de Música da Página Inicial [COLOR=grey2](insira 'pasta do plugin ' ex. GrooveShark)[/COLOR]</string>
+  <string id="31136">Submenu de Fotos da Página Inicial [COLOR=grey2](insira 'pasta do plugin' ex. Picasa)[/COLOR]</string> 
+  <string id="31137">Mostrars botão de Procura</string> 
+  
   <string id="31140">OSD de Música</string>
   <string id="31141">OSD de Vídeo</string>
 
@@ -101,12 +107,15 @@
   <string id="31203">Escolha a sua música</string>
   <string id="31204">Atalhos de secção</string>
   <string id="31205">Fonte das letras</string>
+  <string id="31206">Encontrado</string>
+  <string id="31207">Encontrar Mais Itens</string>
+  <string id="31208">Próximos Episódios</string>
 
   <!-- Extra labels -->
   <string id="31300">Temp corrente</string>
   <string id="31301">Última actualização</string>
   <string id="31302">Menu</string>
-  <string id="31303"></string>
+  <string id="31303">Fornecedor de Dados</string>
   <string id="31304">Imagem</string>
   <string id="31305">Disco de média não detectado</string>
   <string id="31306">Ejectar</string>
@@ -134,6 +143,7 @@
   <string id="31328">Adicionados recentemente</string>
   <string id="31329">[B]Definir temporizador![/B] [COLOR=grey2] - Sistema vai desligar em[/COLOR]</string>
   <string id="31330">Clique no botão para reproduzir o[CR][CR]Trailer do filme</string>
+  <string id="31331">Detalhes do Álbum</string>
 
   <!-- Video and Music OSD Labels  -->
   <string id="31351">Pausa</string>
@@ -158,7 +168,20 @@
   <string id="31405">[B]CONFIGURAR OPÇÕES DE REDE[/B][CR][CR]Gerir controlo do XBMC por UPnP e HTTP · Configurar partilha de ficheiros[CR]Definir opções de acesso à Internet</string>
   <string id="31406">[B]CONFIGURAR OPÇÕES DE SISTEMA[/B][CR][CR]Definir e calibrar ecrãs · Configurar saída de áudio · Configurar comando à distância[CR]Definir opções de poupança de energia · Ligar depuração · Definir bloqueio geral</string>
   <string id="31407">[B]CONFIGURAR OPÇÕES DO TEMA[/B][CR][CR]Gerir o tema Confluence · Adicionar ou remover itens do menu principal[CR]Mudar fundos do tema</string>
-  <string id="31408">[B]CONFIGURAR ADD-ONS[/B][CR][CR]Gerir Add-ons instalados · Procurar Add-ons em xbmc.org e instalar[CR]Alterar opções dos Add-ons</string>
-
+  <string id="31408">[B]CONFIGURAR OPÇÕES DE PROGRAMAS[/B][CR][CR]Aplicar Filtro de Taxa de Atualização nos Jogos · Configurar modo de Alteração de Video[CR]Escolher pasta de Trainers · Definir caminho customizado para Dashboard</string>
+  
   <string id="31421">Escolha o seu perfil de utilizador do XBMC[CR]para ligar e continuar</string>
+  
+  <!-- Weather plugin -->
+  <string id="31900">Mapas Metereológicos</string>
+  <string id="31901">Previsão de 36 Horas</string>
+  <string id="31902">Previsão Horária</string>
+  <string id="31903">Previsão Semanal</string>
+  <string id="31904">Previsão de 10 Horas</string>
+  <string id="31905">Previsão</string>
+  <string id="31906">Mapas &amp; Video</string>
+  <string id="31907">Previsão de Video[COLOR=grey2](Reprodução em Ecrã Inteiro)[/COLOR]</string>
+  <string id="31908">Probabilidade de Precipitação</string>
+  <string id="31909">Procurando dados de previsão...</string>
+  
 </strings>
