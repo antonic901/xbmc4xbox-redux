@@ -1,6 +1,8 @@
 #ifndef GUI_ACTION_DESCRIPTOR
 #define GUI_ACTION_DESCRIPTOR
 
+#include "utils/StdString.h"
+
 class CGUIActionDescriptor
 {
 public:
