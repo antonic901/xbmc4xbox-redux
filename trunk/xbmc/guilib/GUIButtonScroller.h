@@ -23,6 +23,7 @@
 
 #include "GUIControl.h"
 #include "GUITexture.h"
+#include "GUIActionDescriptor.h"
 #include "GUILabel.h"
 
 class CButton
@@ -42,7 +43,7 @@ public:
   int id;
   int info;
   std::string strLabel;
-  std::vector<CStdString> clickActions;
+  std::vector<CGUIActionDescriptor> clickActions;
   CGUITexture *imageFocus;
   CGUITexture *imageNoFocus;
 };

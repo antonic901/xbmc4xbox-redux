@@ -172,7 +172,10 @@ public:
   void RestoreMusicScanSettings();
   void UpdateLibraries();
   void CheckMusicPlaylist();
-  
+
+  bool ExecuteXBMCAction(std::string action);
+  bool ExecuteAction(CGUIActionDescriptor action);
+
   CGUIDialogVolumeBar m_guiDialogVolumeBar;
   CGUIDialogSeekBar m_guiDialogSeekBar;
   CGUIDialogKaiToast m_guiDialogKaiToast;

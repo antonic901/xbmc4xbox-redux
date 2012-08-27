@@ -4881,6 +4881,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
           CLibrefmScrobbler::GetInstance()->AddSong(*tag, CLastFmManager::GetInstance()->IsRadioEnabled());
         }
       }
+      
       return true;
     }
     break;
@@ -4987,6 +4988,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         ResetScreenSaverWindow();
         g_windowManager.PreviousWindow();
       }
+      
       return true;
     }
     break;
@@ -5004,21 +5006,35 @@ bool CApplication::OnMessage(CGUIMessage& message)
     }
     break;
   case GUI_MSG_EXECUTE:
+    if (message.GetStringParam().length() > 0)
+      return ExecuteXBMCAction(message.GetStringParam());
+    else {
+      CGUIActionDescriptor action = message.GetAction();
+      action.m_sourceWindowId = message.GetControlId(); // set source window id, 
+      return ExecuteAction(action);
+    }
+
+    break;
+  }
+  return false;
+}
+
+bool CApplication::ExecuteXBMCAction(std::string actionStr)
     {
       // see if it is a user set string
-      CLog::Log(LOGDEBUG,"%s : Translating %s", __FUNCTION__, message.GetStringParam().c_str());
-      CGUIInfoLabel info(message.GetStringParam(), "");
-      message.SetStringParam(info.GetLabel(0));
-      CLog::Log(LOGDEBUG,"%s : To %s", __FUNCTION__, message.GetStringParam().c_str());
+      CLog::Log(LOGDEBUG,"%s : Translating %s", __FUNCTION__, actionStr.c_str());
+      CGUIInfoLabel info(actionStr, "");
+      actionStr = info.GetLabel(0);
+      CLog::Log(LOGDEBUG,"%s : To %s", __FUNCTION__, actionStr.c_str());
 
       // user has asked for something to be executed
-      if (CBuiltins::HasCommand(message.GetStringParam()))
-        CBuiltins::Execute(message.GetStringParam());
+      if (CBuiltins::HasCommand(actionStr))
+        CBuiltins::Execute(actionStr);
       else
       {
         // try translating the action from our ButtonTranslator
         int actionID;
-        if (CButtonTranslator::TranslateActionString(message.GetStringParam().c_str(), actionID))
+        if (CButtonTranslator::TranslateActionString(actionStr.c_str(), actionID))
         {
           CAction action;
           action.id = actionID;
@@ -5026,7 +5042,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
           OnAction(action);
           return true;
         }
-        CFileItem item(message.GetStringParam(), false);
+        CFileItem item(actionStr, false);
         if (item.IsPythonScript())
         { // a python script
           unsigned int argc = 1;
@@ -5059,6 +5075,19 @@ bool CApplication::OnMessage(CGUIMessage& message)
       }
       return true;
     }
+
+bool CApplication::ExecuteAction(CGUIActionDescriptor action)
+{
+  if (action.m_lang == CGUIActionDescriptor::LANG_XBMC)
+  {
+    return ExecuteXBMCAction(action.m_action);
+  }
+  else if (action.m_lang == CGUIActionDescriptor::LANG_PYTHON)
+  {
+    // Determine the context of the action, if possible
+    g_pythonParser.evalString(action.m_action);
+
+    return true;
   }
   return false;
 }

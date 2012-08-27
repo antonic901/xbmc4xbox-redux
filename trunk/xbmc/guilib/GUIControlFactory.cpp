@@ -144,7 +144,7 @@ bool CGUIControlFactory::GetDimension(const TiXmlNode *pRootNode, const char* st
   return g_SkinInfo.ResolveConstant(pNode->FirstChild()->Value(), value);
 }
 
-bool CGUIControlFactory::GetMultipleString(const TiXmlNode* pRootNode, const char* strTag, vector<CStdString>& vecStringValue)
+bool CGUIControlFactory::GetMultipleString(const TiXmlNode* pRootNode, const char* strTag, std::vector<CGUIActionDescriptor>& vecStringValue)
 {
   const TiXmlNode* pNode = pRootNode->FirstChild(strTag );
   if (!pNode) return false;
@@ -152,10 +152,10 @@ bool CGUIControlFactory::GetMultipleString(const TiXmlNode* pRootNode, const cha
   bool bFound = false;
   while (pNode)
   {
-    const TiXmlNode *pChild = pNode->FirstChild();
-    if (pChild != NULL)
+    CGUIActionDescriptor action;
+    if (CGUIControlFactory::GetAction((const TiXmlElement*) pNode, action))
     {
-      vecStringValue.push_back(pChild->Value());
+      vecStringValue.push_back(action);
       bFound = true;
     }
     pNode = pNode->NextSibling(strTag);
@@ -170,6 +170,26 @@ bool CGUIControlFactory::GetPath(const TiXmlNode* pRootNode, const char* strTag,
   strStringPath = pNode->FirstChild() ? pNode->FirstChild()->Value() : "";
   strStringPath.Replace('/', '\\');
   return true;
+}
+
+bool CGUIControlFactory::GetAction(const TiXmlElement* pElement, CGUIActionDescriptor &action)
+{
+  CStdString langStr = pElement->Attribute("lang");
+  if (langStr.CompareNoCase("python") == 0 )
+    action.m_lang = CGUIActionDescriptor::LANG_PYTHON;
+  else
+    action.m_lang = CGUIActionDescriptor::LANG_XBMC;
+  
+  if (pElement->FirstChild())
+  {
+    action.m_action = pElement->FirstChild()->Value();
+    return true;
+  }
+  else
+  {
+    action.m_action = "";
+    return false;
+  }
 }
 
 bool CGUIControlFactory::GetAspectRatio(const TiXmlNode* pRootNode, const char* strTag, CAspectRatio &aspect)
@@ -425,13 +445,13 @@ bool CGUIControlFactory::GetInfoColor(const TiXmlNode *control, const char *strT
   return false;
 }
 
-bool CGUIControlFactory::GetNavigation(const TiXmlElement *node, const char *tag, int &direction, vector<CStdString> &actions)
+bool CGUIControlFactory::GetNavigation(const TiXmlElement *node, const char *tag, int &direction, vector<CGUIActionDescriptor> &actions)
 {
   if (!GetMultipleString(node, tag, actions))
     return false; // no tag specified
-  if (actions.size() == 1 && StringUtils::IsNaturalNumber(actions[0]))
+  if (actions.size() == 1 && StringUtils::IsNaturalNumber(actions[0].m_action))
   { // single numeric tag specified
-    direction = atol(actions[0].c_str());
+    direction = atol(actions[0].m_action.c_str());
     actions.clear();
   }
   else
@@ -563,8 +583,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   float width = 0, height = 0;
   float minWidth = 0;
 
-  int left = 0, right = 0, up = 0, down = 0;
-  vector<CStdString> leftActions, rightActions, upActions, downActions;
+  int left = 0, right = 0, up = 0, down = 0, next = 0, prev = 0;
+  vector<CGUIActionDescriptor> leftActions, rightActions, upActions, downActions, nextActions, prevActions;
 
   int pageControl = 0;
   CGUIInfoColor colorDiffuse(0xFFFFFFFF);
@@ -617,10 +637,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   float spaceBetweenItems = 2;
   bool bHasPath = false;
-  vector<CStdString> clickActions;
-  vector<CStdString> altclickActions;
-  vector<CStdString> focusActions;
-  vector<CStdString> unfocusActions;
+  vector<CGUIActionDescriptor> clickActions;
+  vector<CGUIActionDescriptor> altclickActions;
+  vector<CGUIActionDescriptor> focusActions;
+  vector<CGUIActionDescriptor> unfocusActions;
+  vector<CGUIActionDescriptor> textChangeActions;
   CStdString strTitle = "";
   CStdString strRSSTags = "";
 
@@ -691,6 +712,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   bool   hasCamera = false;
   int scrollSpeed = CScrollInfo::defaultSpeed;
   bool resetOnLabelChange = true;
+  bool bPassword = false;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -735,6 +757,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   if (!GetNavigation(pControlNode, "ondown", down, downActions)) down = id + 1;
   if (!GetNavigation(pControlNode, "onleft", left, leftActions)) left = id;
   if (!GetNavigation(pControlNode, "onright", right, rightActions)) right = id;
+  if (!GetNavigation(pControlNode, "onnext", next, nextActions)) next = id;
+  if (!GetNavigation(pControlNode, "onprev", prev, prevActions)) prev = id;
 
   if (XMLUtils::GetInt(pControlNode, "defaultcontrol", defaultControl))
   {
@@ -784,6 +808,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     labelInfo2.font = g_fontManager.GetFont(strFont);
 
   GetMultipleString(pControlNode, "onclick", clickActions);
+  GetMultipleString(pControlNode, "ontextchange", textChangeActions);
   GetMultipleString(pControlNode, "onfocus", focusActions);
   GetMultipleString(pControlNode, "onunfocus", unfocusActions);
   GetMultipleString(pControlNode, "altclick", altclickActions);
@@ -961,6 +986,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   XMLUtils::GetBoolean(pControlNode, "renderfocusedlast", renderFocusedLast);
   XMLUtils::GetBoolean(pControlNode, "resetonlabelchange", resetOnLabelChange);
 
+  XMLUtils::GetBoolean(pControlNode, "password", bPassword);
+
   // view type
   VIEW_TYPE viewType = VIEW_TYPE_NONE;
   CStdString viewLabel;
@@ -1060,6 +1087,10 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     control = new CGUIEditControl(
       parentID, id, posX, posY, width, height, textureFocus, textureNoFocus,
       labelInfo, strLabel);
+
+    if (bPassword)
+      ((CGUIEditControl *) control)->SetInputType(CGUIEditControl::INPUT_TYPE_PASSWORD, 0);
+    ((CGUIEditControl *) control)->SetTextChangeActions(textChangeActions);          
   }
   else if (strType == "videowindow")
   {
@@ -1337,6 +1368,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     control->SetAnimations(animations);
     control->SetColorDiffuse(colorDiffuse);
     control->SetNavigation(up, down, left, right);
+    control->SetTabNavigation(next,prev);
     control->SetNavigationActions(upActions, downActions, leftActions, rightActions);
     control->SetPulseOnSelect(bPulse);
     if (hasCamera)

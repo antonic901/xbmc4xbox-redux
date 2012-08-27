@@ -543,3 +543,35 @@ void XBPython::WaitForEvent(HANDLE hEvent, DWORD timeout)
   WaitForMultipleObjects(2, handles, FALSE, timeout);
   ResetEvent(m_globalEvent);
 }
+
+// execute script, returns -1 if script doesn't exist
+int XBPython::evalString(const char *src, const unsigned int argc, const char ** argv)
+{
+  CLog::Log(LOGDEBUG, "XBPython::evalString (python)");
+  CSingleLock lock(m_critSection);
+  
+  Initialize();
+
+  if (!m_bInitialized) 
+  {
+    CLog::Log(LOGERROR, "XBPython::evalString, python not initialized (python)");
+    return -1;
+  }
+
+  // Previous implementation would create a new thread for every script
+  nextid++;
+  XBPyThread *pyThread = new XBPyThread(this, mainThreadState, nextid);
+  if (argv != NULL)
+    pyThread->setArgv(argc, argv);
+  pyThread->evalString(src);
+  
+  PyElem inf;
+  inf.id = nextid;
+  inf.bDone = false;
+  inf.strFile = "<string>";
+  inf.pyThread = pyThread;
+
+  vecPyList.push_back(inf);
+
+  return nextid;
+}

@@ -30,10 +30,12 @@
 
 using namespace std;
 
+extern HWND g_hWnd;
+
 CGUIEditControl::CGUIEditControl(int parentID, int controlID, float posX, float posY,
-                                 float width, float height, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus,
+                                 float idth, float height, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus,
                                  const CLabelInfo& labelInfo, const std::string &text)
-    : CGUIButtonControl(parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo)
+    : CGUIButtonControl(parentID, controlID, posX, posY, idth, height, textureFocus, textureNoFocus, labelInfo)
 {
   DefaultConstructor();
   SetLabel(text);
@@ -81,7 +83,40 @@ bool CGUIEditControl::OnAction(const CAction &action)
 {
   ValidateCursor();
 
-  if (action.id >= KEY_VKEY && action.id < KEY_ASCII)
+  if (action.id == ACTION_BACKSPACE
+      || action.id == ACTION_PARENT_DIR
+      )
+  {
+    // backspace
+    if (m_cursorPos)
+    {
+      m_text2.erase(--m_cursorPos, 1);
+      OnTextChanged();
+    }
+    return true;
+  }
+  else if (action.id == ACTION_MOVE_LEFT)
+  {
+    if (m_cursorPos > 0) {
+      m_cursorPos--;
+      OnTextChanged();
+      return true;
+    }
+  }
+  else if (action.id == ACTION_MOVE_RIGHT)
+  {
+    if ((unsigned int) m_cursorPos < m_text2.size())
+    { 
+      m_cursorPos++;
+      OnTextChanged();
+      return true;
+    }
+  }
+  else if (action.id == ACTION_PASTE)
+  {
+    OnPasteClipboard();
+  }
+  else if (action.id >= KEY_VKEY && action.id < KEY_ASCII)
   {
     // input from the keyboard (vkey, not ascii)
     BYTE b = action.id & 0xFF;
@@ -97,10 +132,22 @@ bool CGUIEditControl::OnAction(const CAction &action)
       OnTextChanged();
       return true;
     }
-    if (b == 0x2e && m_cursorPos < m_text2.length())
+    if (b == 0x2e)
+    {
+      if (m_cursorPos < m_text2.length())
     { // delete
       m_text2.erase(m_cursorPos, 1);
       OnTextChanged();
+      return true;
+    }
+  }
+    if (b == 0x8)
+    {
+      if (m_cursorPos > 0)
+      { // backspace
+        m_text2.erase(--m_cursorPos, 1);
+        OnTextChanged();      
+      }    
       return true;
     }
   }
@@ -126,13 +173,17 @@ bool CGUIEditControl::OnAction(const CAction &action)
       {
         // backspace
         if (m_cursorPos)
+        {
           m_text2.erase(--m_cursorPos, 1);
+          OnTextChanged();
+        }
         break;
       }
     default:
       {
         m_text2.insert(m_text2.begin() + m_cursorPos, (WCHAR)action.unicode);
         m_cursorPos++;
+        OnTextChanged();
         break;
       }
     }
@@ -206,6 +257,7 @@ void CGUIEditControl::OnClick()
     g_charsetConverter.utf8ToW(utf8, m_text2);
     m_cursorPos = m_text2.size();
     OnTextChanged();
+    m_cursorPos = m_text2.size();
   }
 }
 
@@ -218,7 +270,7 @@ void CGUIEditControl::SetInputType(CGUIEditControl::INPUT_TYPE type, int heading
 
 void CGUIEditControl::RecalcLabelPosition()
 {
-  // ensure that our cursor is within our width
+  // ensure that our cursor is within our idth
   ValidateCursor();
 
   CStdStringW text = GetDisplayedText();
@@ -235,7 +287,7 @@ void CGUIEditControl::RecalcLabelPosition()
     m_height = m_label.GetLabelInfo().font->GetTextHeight(1);
 
   if (m_textWidth > maxTextWidth)
-  { // we render taking up the full width, so make sure our cursor position is
+  { // we render taking up the full idth, so make sure our cursor position is
     // within the render window
     if (m_textOffset + afterCursorWidth > maxTextWidth)
     {
@@ -336,6 +388,15 @@ void CGUIEditControl::ValidateCursor()
 void CGUIEditControl::OnTextChanged()
 {
   SEND_CLICK_MESSAGE(GetID(), GetParentID(), 0);
+  
+  vector<CGUIActionDescriptor> textChangeActions = m_textChangeActions;
+  for (unsigned int i = 0; i < textChangeActions.size(); i++)
+  {
+    CGUIMessage message(GUI_MSG_EXECUTE, GetID(), GetParentID());
+    message.SetAction(textChangeActions[i]);
+    g_windowManager.SendMessage(message);
+  }  
+  
   SetInvalid();
 }
 
@@ -362,4 +423,43 @@ CStdString CGUIEditControl::GetLabel2() const
   CStdString text;
   g_charsetConverter.wToUTF8(m_text2, text);
   return text;
+}
+
+unsigned int CGUIEditControl::GetCursorPosition() const
+{
+  return m_cursorPos;
+}
+
+void CGUIEditControl::SetCursorPosition(unsigned int iPosition)
+{
+  m_cursorPos = iPosition;
+}
+
+void CGUIEditControl::OnPasteClipboard()
+{
+#if defined(TARGET_DARWIN_OSX)
+  const char *szStr = Cocoa_Paste();
+  if (szStr)
+  {
+    m_text2 += szStr;
+    m_cursorPos+=strlen(szStr);
+    UpdateText();
+  }
+#elif defined WIN32
+  if (OpenClipboard(g_hWnd))
+  {
+    HGLOBAL hglb = GetClipboardData(CF_TEXT);
+    if (hglb != NULL)
+    {
+      LPTSTR lptstr = (LPTSTR)GlobalLock(hglb);
+      if (lptstr != NULL)
+      {
+        m_text2 = (char*)lptstr;
+        GlobalUnlock(hglb);
+      }
+    }
+    CloseClipboard();
+    UpdateText();
+  }
+#endif
 }

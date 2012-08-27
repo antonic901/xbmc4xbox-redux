@@ -154,6 +154,11 @@ public:
 
   virtual void ResetControlStates();
 
+  void       SetRunActionsManually();
+  void       RunLoadActions();
+  void       RunUnloadActions();
+  
+  bool HasProperty(const CStdString &strKey) const;
   void SetProperty(const CStdString &strKey, const char *strValue);
   void SetProperty(const CStdString &strKey, const CStdString &strValue);
   void SetProperty(const CStdString &strKey, int nVal);
@@ -212,6 +217,8 @@ protected:
   void ChangeButtonToEdit(int id, bool singleLabel = false);
 //#endif
 
+  void RunActions(std::vector<CGUIActionDescriptor>& actions);
+
   int m_idRange;
   bool m_bRelativeCoords;
   OVERLAY_STATE m_overlayState;
@@ -244,6 +251,10 @@ protected:
 
   std::map<CStdString, CStdString, icompare> m_mapProperties;
 
+  std::vector<CGUIActionDescriptor> m_loadActions;
+  std::vector<CGUIActionDescriptor> m_unloadActions;
+  
+  bool m_manualRunActions;
 };
 
 #endif

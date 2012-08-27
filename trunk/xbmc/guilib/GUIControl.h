@@ -33,6 +33,7 @@
 #include "GUIMessage.h"     // needed by practically all controls
 #include "VisibleEffect.h"  // needed for the CAnimation members
 #include "GUIInfoTypes.h"   // needed for CGUIInfoColor to handle infolabel'ed colors
+#include "GUIActionDescriptor.h"
 
 class CGUIListItem; // forward
 
@@ -80,6 +81,8 @@ public:
   virtual void OnDown();
   virtual void OnLeft();
   virtual void OnRight();
+  virtual void OnNextControl();
+  virtual void OnPrevControl();
   virtual void OnFocus() {};
   virtual void OnUnFocus() {};
 
@@ -126,9 +129,11 @@ public:
   virtual float GetWidth() const;
   virtual float GetHeight() const;
   virtual void SetNavigation(int up, int down, int left, int right);
-  virtual void SetNavigationActions(const std::vector<CStdString> &up, const std::vector<CStdString> &down,
-                                    const std::vector<CStdString> &left, const std::vector<CStdString> &right);
-  void ExecuteActions(const std::vector<CStdString> &actions);
+  virtual void SetTabNavigation(int next, int prev);
+  virtual void SetNavigationActions(const std::vector<CGUIActionDescriptor> &up, const std::vector<CGUIActionDescriptor> &down,
+                                    const std::vector<CGUIActionDescriptor> &left, const std::vector<CGUIActionDescriptor> &right);
+  void ExecuteActions(const std::vector<CGUIActionDescriptor> &actions);
+
   int GetControlIdUp() const { return m_controlUp;};
   int GetControlIdDown() const { return m_controlDown;};
   int GetControlIdLeft() const { return m_controlLeft;};
@@ -230,10 +235,14 @@ protected:
   int m_controlRight;
   int m_controlUp;
   int m_controlDown;
-  std::vector<CStdString> m_leftActions;
-  std::vector<CStdString> m_rightActions;
-  std::vector<CStdString> m_upActions;
-  std::vector<CStdString> m_downActions;
+  int m_controlNext;
+  int m_controlPrev;
+  std::vector<CGUIActionDescriptor> m_leftActions;
+  std::vector<CGUIActionDescriptor> m_rightActions;
+  std::vector<CGUIActionDescriptor> m_upActions;
+  std::vector<CGUIActionDescriptor> m_downActions;
+  std::vector<CGUIActionDescriptor> m_nextActions;
+  std::vector<CGUIActionDescriptor> m_prevActions;
 
   float m_posX;
   float m_posY;

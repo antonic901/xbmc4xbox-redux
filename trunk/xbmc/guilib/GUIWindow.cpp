@@ -58,6 +58,7 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_dynamicResourceAlloc = true;
   m_previousWindow = WINDOW_INVALID;
   m_animationsEnabled = true;
+  m_manualRunActions = false;
   m_clearBackground = 0xff000000; // opaque black -> always clear
 }
 
@@ -131,6 +132,10 @@ bool CGUIWindow::Load(TiXmlDocument &xmlDoc)
 
   CGUIControlFactory::GetInfoColor(pRootElement, "backgroundcolor", m_clearBackground);
 
+  
+  CGUIControlFactory::GetMultipleString(pRootElement, "onload", m_loadActions);
+  CGUIControlFactory::GetMultipleString(pRootElement, "onunload", m_unloadActions);
+    
   TiXmlElement *pChild = pRootElement->FirstChildElement();
   while (pChild)
   {
@@ -487,6 +492,11 @@ void CGUIWindow::OnInitWindow()
   SetInitialVisibility();
   QueueAnimation(ANIM_TYPE_WINDOW_OPEN);
   g_windowManager.ShowOverlay(m_overlayState);
+  
+  if (!m_manualRunActions)
+  {
+    RunLoadActions();
+  }
 }
 
 // Called on window close.
@@ -495,6 +505,11 @@ void CGUIWindow::OnInitWindow()
 // Override this function and call the base class before doing any dynamic memory freeing
 void CGUIWindow::OnDeinitWindow(int nextWindowID)
 {
+  if (!m_manualRunActions)
+  {
+    RunUnloadActions();
+  }
+  
   if (nextWindowID != WINDOW_FULLSCREEN_VIDEO)
   {
     // Dialog animations are handled in Close() rather than here
@@ -954,6 +969,15 @@ double CGUIWindow::GetPropertyDouble(const CStdString &strKey) const
   return atof(GetProperty(strKey).c_str()) ;
 }
 
+bool CGUIWindow::HasProperty(const CStdString &strKey) const
+{
+  std::map<CStdString,CStdString,icompare>::const_iterator iter = m_mapProperties.find(strKey);
+  if (iter == m_mapProperties.end())
+    return FALSE;
+
+  return TRUE;
+  }
+
 void CGUIWindow::ClearProperty(const CStdString &strKey)
 {
   std::map<CStdString,CStdString,icompare>::iterator iter = m_mapProperties.find(strKey);
@@ -972,4 +996,32 @@ void CGUIWindow::ClearBackground()
   color_t color = m_clearBackground;
   if (color)
     g_graphicsContext.Clear(color);
+}
+
+void CGUIWindow::RunActions(std::vector<CGUIActionDescriptor>& actions)
+{
+  vector<CGUIActionDescriptor> tempActions = actions;
+
+  // and execute our actions
+  for (unsigned int i = 0; i < tempActions.size(); i++)
+  {
+    CGUIMessage message(GUI_MSG_EXECUTE, 0, GetID());
+    message.SetAction(tempActions[i]);
+    g_windowManager.SendMessage(message);
+  }
+}
+
+void CGUIWindow::SetRunActionsManually()
+{
+  m_manualRunActions = true;
+}
+
+void CGUIWindow::RunLoadActions()
+{
+  RunActions(m_loadActions);  
+}
+ 
+void CGUIWindow::RunUnloadActions()
+{
+  RunActions(m_unloadActions);    
 }
