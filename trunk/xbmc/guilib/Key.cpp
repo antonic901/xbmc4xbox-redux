@@ -64,7 +64,7 @@ uint32_t CKey::GetButtonCode() const // for backwards compatibility only
 }
 
 uint32_t CKey::GetUnicode() const
-{  
+{
   if (m_buttonCode>=KEY_ASCII && m_buttonCode < KEY_UNICODE) // will need to change when Unicode is fully implemented
     return m_buttonCode-KEY_ASCII;
   else

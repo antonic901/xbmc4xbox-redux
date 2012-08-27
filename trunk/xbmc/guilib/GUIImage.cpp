@@ -99,7 +99,7 @@ void CGUIImage::Render()
   // check whether our image failed to allocate, and if so drop back to the fallback image
   if (m_texture.FailedToAlloc() && !m_texture.GetFileName().Equals(m_info.GetFallback()))
     m_texture.SetFileName(m_info.GetFallback());
-  
+
   if (m_crossFadeTime)
   {
     // make sure our texture has started allocating
@@ -196,7 +196,7 @@ void CGUIImage::AllocResources()
 {
   if (m_texture.GetFileName().IsEmpty())
     return;
-  
+
   CGUIControl::AllocResources();
   m_texture.AllocResources();
 }
@@ -268,7 +268,7 @@ void CGUIImage::SetFileName(const CStdString& strFileName, bool setConstant)
 {
   if (setConstant)
     m_info.SetLabel(strFileName, "");
-  
+
   if (m_crossFadeTime)
   {
     // set filename on the next texture

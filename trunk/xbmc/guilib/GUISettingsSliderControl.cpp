@@ -27,7 +27,7 @@ CGUISettingsSliderControl::CGUISettingsSliderControl(int parentID, int controlID
     , m_buttonControl(parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo)
     , m_label(posX, posY, width, height, labelInfo)
 {
-  m_label.SetAlign(XBFONT_CENTER_Y | XBFONT_RIGHT);  
+  m_label.SetAlign(XBFONT_CENTER_Y | XBFONT_RIGHT);
   ControlType = GUICONTROL_SETTINGS_SLIDER;
 }
 

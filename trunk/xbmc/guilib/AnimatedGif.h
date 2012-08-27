@@ -1,6 +1,6 @@
 /*!
 \file AnimatedGif.h
-\brief 
+\brief
 */
 
 
@@ -42,7 +42,7 @@ struct COLOR {unsigned char b,g,r,x;};	// Windows GDI expects 4bytes per color
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 typedef struct tagGUIRGBQUAD
 {
@@ -55,7 +55,7 @@ GUIRGBQUAD;
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 typedef struct tagGUIBITMAPINFOHEADER
 {
@@ -75,10 +75,10 @@ GUIBITMAPINFOHEADER;
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 #ifdef HAS_XBOX_D3D
-typedef struct tagGUIBITMAPINFO 
+typedef struct tagGUIBITMAPINFO
 {
     GUIBITMAPINFOHEADER    bmiHeader;
     GUIRGBQUAD						 bmiColors[1];

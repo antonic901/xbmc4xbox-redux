@@ -127,7 +127,7 @@ void CGUIFadeLabelControl::Render()
   float posY = m_posY;
   if (m_label.align & XBFONT_CENTER_Y)
     posY += m_height * 0.5f;
-  if (m_infoLabels.size() == 1 && m_shortText) 
+  if (m_infoLabels.size() == 1 && m_shortText)
   { // single label set and no scrolling required - just display
     float posX = m_posX + m_label.offsetX;
     if (m_label.align & XBFONT_CENTER_X)

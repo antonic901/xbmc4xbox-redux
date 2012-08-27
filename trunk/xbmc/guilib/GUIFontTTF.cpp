@@ -303,7 +303,7 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
 
     if ( alignment & XBFONT_TRUNCATED && w > maxPixelWidth + 0.5f ) // + 0.5f due to rounding issues
       w = maxPixelWidth;
-      
+
     if ( alignment & XBFONT_CENTER_X)
       w *= 0.5f;
     // Offset this line's starting position
@@ -312,7 +312,7 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
 
   float spacePerLetter = 0; // for justification effects
   if ( alignment & XBFONT_JUSTIFIED )
-  { 
+  {
     // first compute the size of the text to render in both characters and pixels
     unsigned int lineChars = 0;
     float linePixels = 0;
@@ -617,8 +617,8 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
     targetrect.bottom = targetrect.top + bitmap.rows;
     targetrect.right = targetrect.left + bitmap.width;
 
-    D3DXLoadSurfaceFromMemory( target, NULL, &targetrect, 
-      bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch, NULL, &sourcerect, 
+    D3DXLoadSurfaceFromMemory( target, NULL, &targetrect,
+      bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch, NULL, &sourcerect,
       D3DX_FILTER_NONE, 0x00000000);
 
     SAFE_RELEASE(target);

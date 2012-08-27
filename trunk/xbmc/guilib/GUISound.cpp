@@ -126,17 +126,17 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
 #endif
 
   //  Set up DSBUFFERDESC structure
-  DSBUFFERDESC dsbdesc; 
-  memset(&dsbdesc, 0, sizeof(DSBUFFERDESC)); 
+  DSBUFFERDESC dsbdesc;
+  memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
   dsbdesc.dwSize=sizeof(DSBUFFERDESC);
 #ifdef HAS_XBOX_AUDIO
-  dsbdesc.dwFlags=0; 
+  dsbdesc.dwFlags=0;
   dsbdesc.lpMixBins=&mixbins;
 #else
   // directsound requires ctrlvolume to be set
   dsbdesc.dwFlags = DSBCAPS_CTRLVOLUME;
 #endif
-  dsbdesc.dwBufferBytes=iLength; 
+  dsbdesc.dwBufferBytes=iLength;
   dsbdesc.lpwfxFormat=wfx;
 
   LPDIRECTSOUND directSound=g_audioContext.GetDirectSoundDevice();
@@ -161,7 +161,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
     directSound->SetMixBinHeadroom(i, DWORD(g_advancedSettings.m_audioHeadRoom / 6));
 #endif
 
-  return true; 
+  return true;
 }
 
 bool CGUISound::FillBuffer(LPBYTE pbData, int iLength)

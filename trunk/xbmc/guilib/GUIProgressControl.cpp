@@ -23,12 +23,12 @@
 #include "GUIProgressControl.h"
 #include "GUIInfoManager.h"
 
-CGUIProgressControl::CGUIProgressControl(int parentID, int controlID, 
-                                         float posX, float posY, float width, 
-                                         float height, const CTextureInfo& backGroundTexture, 
-                                         const CTextureInfo& leftTexture, 
-                                         const CTextureInfo& midTexture, 
-                                         const CTextureInfo& rightTexture, 
+CGUIProgressControl::CGUIProgressControl(int parentID, int controlID,
+                                         float posX, float posY, float width,
+                                         float height, const CTextureInfo& backGroundTexture,
+                                         const CTextureInfo& leftTexture,
+                                         const CTextureInfo& midTexture,
+                                         const CTextureInfo& rightTexture,
                                          const CTextureInfo& overlayTexture, float min, float max,
                                          bool reveal)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -68,7 +68,7 @@ void CGUIProgressControl::Render()
       {
         if (m_fPercent > m_RangeMax)
           m_fPercent = m_RangeMax;
-        if (m_fPercent < m_RangeMin) 
+        if (m_fPercent < m_RangeMin)
           m_fPercent = m_RangeMin;
         m_fPercent = ((100*(m_fPercent - m_RangeMin)) / (m_RangeMax - m_RangeMin));
       }

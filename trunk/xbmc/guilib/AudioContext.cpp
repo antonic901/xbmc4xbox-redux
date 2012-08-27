@@ -44,7 +44,7 @@ CAudioContext::CAudioContext()
   m_pAC97Device=NULL;
 #endif
   m_pDirectSoundDevice=NULL;
-#endif  
+#endif
 }
 
 CAudioContext::~CAudioContext()
@@ -99,7 +99,7 @@ void CAudioContext::SetActiveDevice(int iDevice)
       return;
     }
   }
-#endif  
+#endif
   g_audioManager.Initialize(m_iDevice);
 }
 
@@ -120,7 +120,7 @@ void CAudioContext::RemoveActiveDevice()
   SAFE_RELEASE(m_pAC97Device);
 #endif
   SAFE_RELEASE(m_pDirectSoundDevice);
-#endif  
+#endif
 }
 
 // \brief set a new speaker config
@@ -130,14 +130,14 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
   bAudioOnAllSpeakers = false;
 
 #ifdef HAS_AUDIO
-  DWORD spconfig = DSSPEAKER_USE_DEFAULT;  
+  DWORD spconfig = DSSPEAKER_USE_DEFAULT;
   if (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
     if (((g_guiSettings.GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (g_settings.m_currentVideoSettings.m_OutputToAllSpeakers && !bIsMusic))
     {
       if( g_audioConfig.GetAC3Enabled() )
       {
-        bAudioOnAllSpeakers = true;      
+        bAudioOnAllSpeakers = true;
         m_bAC3EncoderActive = true;
         spconfig = DSSPEAKER_USE_DEFAULT; //Allows ac3 encoder should it be enabled
       }
@@ -146,9 +146,9 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
         if (iChannels == 1)
           spconfig = DSSPEAKER_MONO;
         else
-        { 
+        {
 #ifdef HAS_XBOX_AUDIO
-          // check if surround mode is allowed, if not then use normal stereo  
+          // check if surround mode is allowed, if not then use normal stereo
           // don't always set it to default as that enabled ac3 encoder if that is allowed in dash
           // ruining quality
           if( XC_AUDIO_FLAGS_BASIC( XGetAudioFlags() ) == XC_AUDIO_FLAGS_SURROUND )
@@ -157,7 +157,7 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
 #endif
             spconfig = DSSPEAKER_STEREO;
         }
-      }        
+      }
     }
     else
     {
@@ -177,8 +177,8 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
     if (iChannels == 1)
       spconfig = DSSPEAKER_MONO;
     else
-    { 
-      // check if surround mode is allowed, if not then use normal stereo  
+    {
+      // check if surround mode is allowed, if not then use normal stereo
       // don't always set it to default as that enabled ac3 encoder if that is allowed in dash
       // ruining quality
 #ifdef HAS_XBOX_AUDIO
@@ -203,7 +203,7 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
 
   /* speaker config identical, no need to do anything */
   if(spconfig == spconfig_old) return;
-#endif  
+#endif
 
   /* speaker config has changed, caller need to recreate it */
   RemoveActiveDevice();
@@ -255,7 +255,7 @@ bool CAudioContext::GetMixBin(DSMIXBINVOLUMEPAIR* dsmbvp, int* MixBinCount, DWOR
         case 1:
           *dwChannelMask = SPEAKER_FRONT_CENTER;
           break;
-      }      
+      }
     }
     return true;
   }

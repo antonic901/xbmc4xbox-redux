@@ -1,6 +1,6 @@
 /*!
 \file GUIMessage.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_MESSAGE_H
@@ -91,7 +91,7 @@
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_SELECT(controlID) \
 do { \
@@ -101,7 +101,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_DESELECT(controlID) \
 do { \
@@ -112,7 +112,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_ENABLE(controlID) \
 do { \
@@ -122,7 +122,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_DISABLE(controlID) \
 do { \
@@ -133,7 +133,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_ENABLE_ON_CONDITION(controlID, bCondition) \
 do { \
@@ -144,7 +144,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define CONTROL_SELECT_ITEM(controlID,iItem) \
 do { \
@@ -176,7 +176,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define SET_CONTROL_HIDDEN(controlID) \
 do { \
@@ -186,7 +186,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define SET_CONTROL_FOCUS(controlID, dwParam) \
 do { \
@@ -196,7 +196,7 @@ do { \
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 #define SET_CONTROL_VISIBLE(controlID) \
 do { \
@@ -236,7 +236,7 @@ class CVisualisation;
 
 /*!
  \ingroup winmsg
- \brief 
+ \brief
  */
 class CGUIMessage
 {
@@ -277,7 +277,7 @@ private:
   int m_param1;
   int m_param2;
   CGUIListItemPtr m_item;
-  
+
   static CStdString empty_string;
 };
 #endif

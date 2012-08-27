@@ -1,6 +1,6 @@
 /*!
 \file GUIInfoTypes.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUIINFOTYPES_H

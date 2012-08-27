@@ -36,7 +36,7 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #define fopen_utf8 fopen
 #endif
 
-#pragma pack(1) 
+#pragma pack(1)
 // Error processing macro (NO-OP by default):
 #define ERRORMSG(PARAM) {}
 
@@ -45,7 +45,7 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
  #define BI_RLE8       1L
  #define BI_RLE4       2L
  #define BI_BITFIELDS  3L
-#endif 
+#endif
 
 // Use SDL macros to swap data endianness
 // This assumes that big endian systems use SDL
@@ -90,7 +90,7 @@ CAnimatedGif::~CAnimatedGif()
   delete [] Raster;
 }
 
-#ifdef _XBOX 
+#ifdef _XBOX
 // Round a number to the nearest power of 2 rounding up
 // runs pretty quickly - the only expensive op is the bsr
 // alternive would be to dec the source, round down and double the result
@@ -174,7 +174,7 @@ void CAnimatedGif::Init(int iWidth, int iHeight, int iBPP, int iLoops)
   pbmi->bmiHeader.biClrImportant = 0;
 }
 
-#ifndef _XBOX 
+#ifndef _XBOX
 // GDIPaint: Paint the raster image onto a DC
 int CAnimatedGif::GDIPaint (HDC hdc, int x, int y)
 {
@@ -391,7 +391,7 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
             }
             else
               nLoops = 0;
-            
+
             if (nLoops) nLoops++;
             getbyte(fd);
           }
@@ -471,7 +471,7 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       bool isPalRead = false;
       if (LocalColorMap && fread((char*)NextImage->Palette, 1, palSize, fd) == palSize)
         isPalRead = true;
-          
+
       // Copy global, if no palette
       if (!isPalRead)
         memcpy(NextImage->Palette, GlobalColorMap, palSize);
@@ -632,7 +632,7 @@ int LZWDecoder (char * bufIn, char * bufOut,
     // - Table Suffices contain the raw codes to be output
     while (OutCode >= FirstEntry)
     {
-      if (OutIndex > 4096 || OutCode >= 4096) 
+      if (OutIndex > 4096 || OutCode >= 4096)
         return 0;
       OutStack[OutIndex++] = Suffix[OutCode]; // Add suffix to Output Stack
       OutCode = Prefix[OutCode];       // Loop with preffix

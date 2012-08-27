@@ -1,6 +1,6 @@
 /*!
 \file guiImage.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUIIMAGECONTROL_H
@@ -34,7 +34,7 @@
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 
 class CGUIImage : public CGUIControl

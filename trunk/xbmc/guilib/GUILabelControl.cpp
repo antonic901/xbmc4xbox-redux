@@ -30,7 +30,7 @@ CGUILabelControl::CGUILabelControl(int parentID, int controlID, float posX, floa
     , m_label(posX, posY, width, height, labelInfo, wrapMultiLine ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE)
 {
   m_bHasPath = bHasPath;
-  m_iCursorPos = 0; 
+  m_iCursorPos = 0;
   m_bShowCursor = false;
   m_dwCounter = 0;
   ControlType = GUICONTROL_LABEL;
@@ -75,7 +75,7 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
   if (m_bShowCursor)
   { // cursor location assumes utf16 text, so deal with that (inefficient, but it's not as if it's a high-use area
     // virtual keyboard only)
-    CStdStringW utf16;  
+    CStdStringW utf16;
     g_charsetConverter.utf8ToW(label, utf16);
     CStdStringW col;
     if ((++m_dwCounter % 50) > 25)

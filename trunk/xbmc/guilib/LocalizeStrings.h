@@ -1,6 +1,6 @@
 /*!
 \file LocalizeStrings.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_LOCALIZESTRINGS_H
@@ -35,7 +35,7 @@
 
 /*!
  \ingroup strings
- \brief 
+ \brief
  */
 class CLocalizeStrings
 {
@@ -65,7 +65,7 @@ protected:
 
 /*!
  \ingroup strings
- \brief 
+ \brief
  */
 extern CLocalizeStrings g_localizeStrings;
 extern CLocalizeStrings g_localizeStringsTemp;

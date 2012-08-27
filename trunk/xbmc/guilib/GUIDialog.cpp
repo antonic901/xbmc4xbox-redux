@@ -45,7 +45,7 @@ CGUIDialog::~CGUIDialog(void)
 void CGUIDialog::OnWindowLoaded()
 {
   CGUIWindow::OnWindowLoaded();
-  
+
   // Clip labels to extents
   if (m_children.size())
   {
@@ -198,7 +198,7 @@ void CGUIDialog::Show_Internal()
     return; // don't do anything
 
   m_bModal = false;
-  
+
   // set running before it's added to the window manager, else the auto-show code
   // could show it as well if we are in a different thread from
   // the main rendering thread (this should really be handled via

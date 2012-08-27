@@ -108,7 +108,7 @@ bool CTextureBundle::OpenBundle()
     Cleanup();
 
   CStdString strPath;
-  
+
   if (m_themeBundle)
   {
     // if we are the theme bundle, we only load if the user has chosen

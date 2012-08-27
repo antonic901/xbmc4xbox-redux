@@ -1,6 +1,6 @@
 /*!
 \file GUIFont.h
-\brief 
+\brief
 */
 
 #ifndef CGUILIB_GUIFONTTTF_H
@@ -33,7 +33,7 @@ struct FT_FaceRec_;
 struct FT_LibraryRec_;
 struct FT_GlyphSlotRec_;
 typedef struct FT_BitmapGlyphRec_ *FT_BitmapGlyph;
- 
+
 typedef uint32_t character_t;
 typedef uint32_t color_t;
 typedef std::vector<character_t> vecText;
@@ -46,7 +46,7 @@ typedef struct FT_GlyphSlotRec_ *FT_GlyphSlot;
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 class CGUIFontTTF
 {
@@ -72,7 +72,7 @@ public:
 
   const CStdString& GetFileName() const { return m_strFileName; };
   void CopyReferenceCountFrom(CGUIFontTTF& ttf) { m_referenceCount = ttf.m_referenceCount; }
-  
+
 protected:
   void AddReference();
   void RemoveReference();

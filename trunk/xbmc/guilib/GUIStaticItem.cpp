@@ -94,7 +94,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     m_idepth = 0;  // no visibility condition
   }
 }
-    
+
 void CGUIStaticItem::UpdateProperties(int contextWindow)
 {
   for (InfoVector::const_iterator i = m_info.begin(); i != m_info.end(); i++)

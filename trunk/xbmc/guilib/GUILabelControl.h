@@ -1,6 +1,6 @@
 /*!
 \file GUILabelControl.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUILABELCONTROL_H
@@ -34,7 +34,7 @@
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 class CGUILabelControl :
       public CGUIControl
@@ -50,7 +50,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual CStdString GetDescription() const;
   virtual float GetWidth() const;
- 
+
   const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
   void SetLabel(const std::string &strLabel);
   void ShowCursor(bool bShow = true);

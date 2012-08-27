@@ -388,7 +388,7 @@ bool CGUIControlFactory::GetHitRect(const TiXmlNode *control, CRect &rect)
   {
     if (node->Attribute("x")) g_SkinInfo.ResolveConstant(node->Attribute("x"), rect.x1);
     if (node->Attribute("y")) g_SkinInfo.ResolveConstant(node->Attribute("y"), rect.y1);
-    if (node->Attribute("w")) 
+    if (node->Attribute("w"))
     {
       g_SkinInfo.ResolveConstant(node->Attribute("w"), rect.x2);
       rect.x2 += rect.x1;
@@ -907,7 +907,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   // fade label can have a whole bunch, but most just have one
   vector<CGUIInfoLabel> infoLabels;
   GetInfoLabels(pControlNode, "label", infoLabels);
-  
+
   GetString(pControlNode, "label", strLabel);
   GetString(pControlNode, "altlabel", altLabel);
   GetString(pControlNode, "label2", strLabel2);
@@ -1203,7 +1203,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUIProgressControl(
       parentID, id, posX, posY, width, height,
-      textureBackground, textureLeft, textureMid, textureRight, 
+      textureBackground, textureLeft, textureMid, textureRight,
       textureOverlay, rMin, rMax, bReveal);
     ((CGUIProgressControl *)control)->SetInfo(singleInfo);
   }

@@ -46,7 +46,7 @@ const short* CAudioBuffer::Get() const
 
 void CAudioBuffer::Set(const unsigned char* psBuffer, int iSize, int iBitsPerSample)
 {
-  if (iSize<0) 
+  if (iSize<0)
   {
     return;
   }
@@ -123,7 +123,7 @@ void CGUIVisualisationControl::FreeVisualisation()
     delete m_pVisualisation;
 
     g_graphicsContext.ApplyStateBlock();
-    
+
     /* we released the global vis spot */
     m_globalvis = false;
   }
@@ -142,7 +142,7 @@ void CGUIVisualisationControl::LoadVisualisation()
 
   /* check if any other control beat us to the punch */
   if(m_globalvis)
-    return;  
+    return;
 
   CVisualisationFactory factory;
   CStdString strVisz;

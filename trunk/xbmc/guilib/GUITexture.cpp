@@ -178,14 +178,14 @@ void CGUITextureBase::Render()
       Render(m_vertex.x1, m_vertex.y1, m_vertex.x1 + m_info.border.left, m_vertex.y1 + m_info.border.top, 0, 0, u1, v1, u3, v3);
     Render(m_vertex.x1, m_vertex.y1 + m_info.border.top, m_vertex.x1 + m_info.border.left, m_vertex.y2 - m_info.border.bottom, 0, v1, u1, v2, u3, v3);
     if (m_info.border.bottom)
-      Render(m_vertex.x1, m_vertex.y2 - m_info.border.bottom, m_vertex.x1 + m_info.border.left, m_vertex.y2, 0, v2, u1, v3, u3, v3); 
+      Render(m_vertex.x1, m_vertex.y2 - m_info.border.bottom, m_vertex.x1 + m_info.border.left, m_vertex.y2, 0, v2, u1, v3, u3, v3);
   }
   // middle segment (u1,0,u2,v3)
   if (m_info.border.top)
     Render(m_vertex.x1 + m_info.border.left, m_vertex.y1, m_vertex.x2 - m_info.border.right, m_vertex.y1 + m_info.border.top, u1, 0, u2, v1, u3, v3);
   Render(m_vertex.x1 + m_info.border.left, m_vertex.y1 + m_info.border.top, m_vertex.x2 - m_info.border.right, m_vertex.y2 - m_info.border.bottom, u1, v1, u2, v2, u3, v3);
   if (m_info.border.bottom)
-    Render(m_vertex.x1 + m_info.border.left, m_vertex.y2 - m_info.border.bottom, m_vertex.x2 - m_info.border.right, m_vertex.y2, u1, v2, u2, v3, u3, v3); 
+    Render(m_vertex.x1 + m_info.border.left, m_vertex.y2 - m_info.border.bottom, m_vertex.x2 - m_info.border.right, m_vertex.y2, u1, v2, u2, v3, u3, v3);
   // right segment
   if (m_info.border.right)
   { // have a left border
@@ -193,8 +193,8 @@ void CGUITextureBase::Render()
       Render(m_vertex.x2 - m_info.border.right, m_vertex.y1, m_vertex.x2, m_vertex.y1 + m_info.border.top, u2, 0, u3, v1, u3, v3);
     Render(m_vertex.x2 - m_info.border.right, m_vertex.y1 + m_info.border.top, m_vertex.x2, m_vertex.y2 - m_info.border.bottom, u2, v1, u3, v2, u3, v3);
     if (m_info.border.bottom)
-      Render(m_vertex.x2 - m_info.border.right, m_vertex.y2 - m_info.border.bottom, m_vertex.x2, m_vertex.y2, u2, v2, u3, v3, u3, v3); 
-  } 
+      Render(m_vertex.x2 - m_info.border.right, m_vertex.y2 - m_info.border.bottom, m_vertex.x2, m_vertex.y2, u2, v2, u3, v3, u3, v3);
+  }
 
   // close off our renderer
   End();
@@ -242,7 +242,7 @@ void CGUITextureBase::Render(float left, float top, float right, float bottom, f
   x[3] = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalXCoord(vertex.x1, vertex.y2));
   y[3] = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x1, vertex.y2));
   z[3] = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x1, vertex.y2));
-  
+
   if (y[2] == y[0]) y[2] += 1.0f; if (x[2] == x[0]) x[2] += 1.0f;
   if (y[3] == y[1]) y[3] += 1.0f; if (x[3] == x[1]) x[3] += 1.0f;
 
@@ -295,7 +295,7 @@ void CGUITextureBase::AllocResources()
       if (g_largeTextureManager.GetImage(m_info.filename, texture, m_largeOrientation, !IsAllocated()))
       {
         m_isAllocated = LARGE;
-        
+
         if (!texture.size()) // not ready as yet
           return;
 

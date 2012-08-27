@@ -244,7 +244,7 @@ bool CGraphicContext::SetViewPort(float fx, float fy , float fwidth, float fheig
   newviewport.Height = newBottom - newTop;
   m_pd3dDevice->SetViewport(&newviewport);
   m_viewStack.push(oldviewport);
- 
+
   UpdateCameraPosition(m_cameras.top());
   return true;
 }
@@ -343,7 +343,7 @@ bool CGraphicContext::IsValidResolution(RESOLUTION res)
 void CGraphicContext::GetAllowedResolutions(vector<RESOLUTION> &res, bool bAllowPAL60)
 {
   bool bCanDoWidescreen = g_videoConfig.HasWidescreen();
-  res.clear();  
+  res.clear();
   if (g_videoConfig.HasPAL())
   {
     res.push_back(PAL_4x3);
@@ -381,7 +381,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
     res = g_videoConfig.GetSafeMode();
   }
-  
+
   if (!m_pd3dParams)
   {
     m_Resolution = res;
@@ -389,7 +389,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
   }
   bool NeedReset = false;
 
-  UINT interval = D3DPRESENT_INTERVAL_ONE;  
+  UINT interval = D3DPRESENT_INTERVAL_ONE;
   //if( m_bFullScreenVideo )
   //  interval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
@@ -469,7 +469,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
 
   SetFullScreenViewWindow(res);
   SetScreenFilters(m_bFullScreenVideo);
-  
+
   m_Resolution = res;
   if (NeedReset)
   {
@@ -478,7 +478,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
       g_fontManager.ReloadTTFFonts();
   }
 
-  Unlock();  
+  Unlock();
 }
 
 RESOLUTION CGraphicContext::GetVideoResolution() const
@@ -668,21 +668,21 @@ void CGraphicContext::SetScalingResolution(RESOLUTION res, float posX, float pos
   m_windowResolution = res;
   if (needsScaling)
   {
-    // calculate necessary scalings    
+    // calculate necessary scalings
     float fFromWidth;
     float fFromHeight;
     float fToPosX;
     float fToPosY;
     float fToWidth;
     float fToHeight;
-    
+
     {
       fFromWidth = (float)g_settings.m_ResInfo[res].iWidth;
       fFromHeight = (float)g_settings.m_ResInfo[res].iHeight;
       fToPosX = (float)g_settings.m_ResInfo[m_Resolution].Overscan.left;
       fToPosY = (float)g_settings.m_ResInfo[m_Resolution].Overscan.top;
       fToWidth = (float)g_settings.m_ResInfo[m_Resolution].Overscan.right - fToPosX;
-      fToHeight = (float)g_settings.m_ResInfo[m_Resolution].Overscan.bottom - fToPosY;      
+      fToHeight = (float)g_settings.m_ResInfo[m_Resolution].Overscan.bottom - fToPosY;
     }
 
     // add additional zoom to compensate for any overskan built in skin
@@ -698,12 +698,12 @@ void CGraphicContext::SetScalingResolution(RESOLUTION res, float posX, float pos
     fToPosX -= fToWidth * fZoom * 0.5f;
     fToWidth *= fZoom + 1.0f;
 
-    // adjust for aspect ratio as zoom is given in the vertical direction and we don't 
-    // do aspect ratio corrections in the gui code 
+    // adjust for aspect ratio as zoom is given in the vertical direction and we don't
+    // do aspect ratio corrections in the gui code
     fZoom = fZoom / g_settings.m_ResInfo[m_Resolution].fPixelRatio;
     fToPosY -= fToHeight * fZoom * 0.5f;
     fToHeight *= fZoom + 1.0f;
-    
+
     m_guiScaleX = fFromWidth / fToWidth;
     m_guiScaleY = fFromHeight / fToHeight;
     TransformMatrix windowOffset = TransformMatrix::CreateTranslation(posX, posY);
@@ -801,7 +801,7 @@ void CGraphicContext::UpdateCameraPosition(const CPoint &camera)
   //       the camera has changed, and if so, changes it.  Similarly, it could set
   //       the world transform at that point as well (or even combine world + view
   //       to cut down on one setting)
- 
+
   // and calculate the offset from the screen center
   CPoint offset = camera - CPoint(m_iScreenWidth*0.5f, m_iScreenHeight*0.5f);
 

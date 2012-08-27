@@ -1,6 +1,6 @@
 /*!
 \file gui3d.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUI3D_H
@@ -63,7 +63,7 @@
 
 #define D3DPIXELSHADERDEF DWORD
 
-struct D3DTexture 
+struct D3DTexture
 {
   DWORD Common;
   DWORD Data;

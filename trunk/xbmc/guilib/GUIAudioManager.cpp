@@ -150,7 +150,7 @@ void CGUIAudioManager::PlayActionSound(const CAction& action)
   actionSoundMap::iterator it=m_actionSoundMap.find(action.id);
   if (it==m_actionSoundMap.end())
     return;
-  
+
   if (m_actionSound)
   {
     delete m_actionSound;
@@ -275,14 +275,14 @@ bool CGUIAudioManager::Load()
   }
   else
     m_strMediaDir = URIUtils::AddFileToFolder("special://xbmc/sounds", g_guiSettings.GetString("lookandfeel.soundskin"));
-    
+
   CStdString strSoundsXml = URIUtils::AddFileToFolder(m_strMediaDir, "sounds.xml");
 
   //  Load our xml file
   TiXmlDocument xmlDoc;
 
   CLog::Log(LOGINFO, "Loading %s", strSoundsXml.c_str());
-  
+
   //  Load the config file
   if (!xmlDoc.LoadFile(strSoundsXml))
   {

@@ -72,7 +72,7 @@ CGUIFont::CGUIFont(const CStdString& strFontName, uint32_t style, color_t textCo
   m_shadowColor = shadowColor;
   m_lineSpacing = lineSpacing;
   m_font = font;
-  
+
   if (m_font)
     m_font->AddReference();
 }
@@ -96,7 +96,7 @@ void CGUIFont::DrawText( float x, float y, const vecColors &colors, color_t shad
   bool clip = maxPixelWidth > 0;
   if (clip && ClippedRegionIsEmpty(x, y, maxPixelWidth, alignment))
     return;
-      
+
   maxPixelWidth = ROUND(maxPixelWidth / g_graphicsContext.GetGUIScaleX());
   vecColors renderColors;
   for (unsigned int i = 0; i < colors.size(); i++)
@@ -274,14 +274,14 @@ float CGUIFont::GetLineHeight() const
   return m_font->GetLineHeight(m_lineSpacing) * g_graphicsContext.GetGUIScaleY();
 }
 
-void CGUIFont::Begin() 
-{ 
+void CGUIFont::Begin()
+{
   if (!m_font) return;
-  m_font->Begin(); 
+  m_font->Begin();
 }
 
-void CGUIFont::End() 
-{ 
+void CGUIFont::End()
+{
   if (!m_font) return;
-  m_font->End(); 
+  m_font->End();
 }

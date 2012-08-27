@@ -116,7 +116,7 @@ void CTexture::Free()
   }
   m_textures.clear();
   m_delays.clear();
-  // Note that in SDL and Win32 we already convert the paletted textures into normal textures, 
+  // Note that in SDL and Win32 we already convert the paletted textures into normal textures,
   // so there's no chance of having m_palette as a real palette
 #ifdef HAS_XBOX_D3D
   if (m_palette)
@@ -522,7 +522,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
             // and set the transparent colour
             if (AnimatedGifSet.m_vecimg[0]->Transparency && AnimatedGifSet.m_vecimg[0]->Transparent >= 0)
               palette[AnimatedGifSet.m_vecimg[0]->Transparent].x = 0;
-            
+
             for (int y = 0; y < pImage->Height; y++)
             {
               BYTE *dest = (BYTE *)lr.pBits + y * lr.Pitch;
@@ -561,7 +561,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     m_vecTextures.push_back(pMap);
     return 1;
   } // of if (strPath.Right(4).ToLower()==".gif")
-  
+
   if (bundle >= 0)
   {
     if (FAILED(m_TexBundle[bundle].LoadTexture(g_graphicsContext.Get3DDevice(), strTextureName, &info, &pTexture, &pPal)))
@@ -592,7 +592,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
       HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
                                        D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
                                        D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
-    
+
       int checkWidth  = D3DX_DEFAULT;
       int checkHeight = D3DX_DEFAULT;
 
@@ -602,7 +602,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
 
       if ( info.Height > 720 )
         checkHeight = 720;
-      
+
       if (checkWidth != D3DX_DEFAULT || checkHeight != D3DX_DEFAULT )
       {
         // HACK!: If the picture/texture turns out to be too large try to load with a resolution equal to our screen
@@ -613,12 +613,12 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
           pTexture->Release();
           pTexture = NULL;
         }
-      
+
         result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
                                          checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
                                          D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
       }
-    
+
       if (result != D3D_OK)
       {
 //       if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
@@ -628,10 +628,10 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     }
   }
   CTextureMap* pMap = new CTextureMap(strTextureName, info.Width, info.Height, 0, pPal, bundle >= 0);
-  
+
   pMap->Add(pTexture, 100);
   m_vecTextures.push_back(pMap);
-  
+
 #ifdef _DEBUG
   LARGE_INTEGER end, freq;
   QueryPerformanceCounter(&end);

@@ -68,7 +68,7 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
 {
   if (m_windowLoaded)
     return true;      // no point loading if it's already there
-    
+
 #ifdef _DEBUG
   int64_t start;
   start = CurrentHostCounter();
@@ -107,7 +107,7 @@ bool CGUIWindow::LoadXML(const CStdString &strPath, const CStdString &strLowerPa
     SetID(WINDOW_INVALID);
     return false;
   }
-  
+
   return Load(xmlDoc);
 }
 
@@ -276,7 +276,7 @@ void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup)
   }
 }
 
-void CGUIWindow::OnWindowLoaded() 
+void CGUIWindow::OnWindowLoaded()
 {
   DynamicResourceAlloc(true);
 }

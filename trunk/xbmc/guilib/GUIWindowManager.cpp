@@ -671,7 +671,7 @@ void CGUIWindowManager::DispatchThreadMessages()
     // first remove the message from the queue,
     // else the message could be processed more then once
     it = messages.erase(it);
-    
+
     if (window)
       SendMessage( *pMsg, window );
     else
@@ -806,7 +806,7 @@ void CGUIWindowManager::AddToWindowHistory(int newWindowID)
   { // didn't find window in history - add it to the stack
     m_windowHistory.push(newWindowID);
   }
-} 
+}
 
 void CGUIWindowManager::GetActiveModelessWindows(vector<int> &ids)
 {

@@ -78,13 +78,13 @@ public:
    \sa GetTextWidth, CalcTextExtent
    */
   void GetTextExtent(float &width, float &height) const;
-  
+
   /*! \brief Returns the precalculated width of the text to be rendered (in constant time).
    \return width of text
    \sa GetTextExtent, CalcTextExtent
    */
   float GetTextWidth() const { return m_textWidth; };
-  
+
   float GetTextWidth(const CStdStringW &text) const;
   bool Update(const CStdString &text, float maxWidth = 0, bool forceLTRReadingOrder = false);
   void SetText(const CStdStringW &text, float maxWidth = 0, bool forceLTRReadingOrder = false);

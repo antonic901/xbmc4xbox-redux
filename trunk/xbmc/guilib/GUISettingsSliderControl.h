@@ -1,6 +1,6 @@
 /*!
 \file GUISliderControl.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUISettingsSliderCONTROL_H
@@ -38,7 +38,7 @@
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 class CGUISettingsSliderControl :
       public CGUISliderControl
@@ -69,7 +69,7 @@ public:
 
 protected:
   virtual void UpdateColors();
-  
+
 private:
   CGUIButtonControl m_buttonControl;
   CGUILabel m_label;

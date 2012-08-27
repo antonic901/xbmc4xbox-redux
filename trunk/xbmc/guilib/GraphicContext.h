@@ -1,6 +1,6 @@
 /*!
 \file GraphicContext.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GRAPHICCONTEXT_H
@@ -41,7 +41,7 @@
 
 /*!
  \ingroup graphics
- \brief 
+ \brief
  */
 enum RESOLUTION {
   INVALID = -1,
@@ -72,7 +72,7 @@ enum VIEW_TYPE { VIEW_TYPE_NONE = 0,
 
 /*!
  \ingroup graphics
- \brief 
+ \brief
  */
 struct OVERSCAN
 {
@@ -84,7 +84,7 @@ struct OVERSCAN
 
 /*!
  \ingroup graphics
- \brief 
+ \brief
  */
 struct RESOLUTION_INFO
 {
@@ -99,7 +99,7 @@ struct RESOLUTION_INFO
 
 /*!
  \ingroup graphics
- \brief 
+ \brief
  */
 class CGraphicContext : public CCriticalSection
 {
@@ -174,7 +174,7 @@ public:
    to indicate that no rendering need be performed.
 
    This call must be matched with a RestoreClipRegion call unless SetClipRegion returns false.
-   
+
    Usage should be of the form:
 
      if (SetClipRegion(x, y, w, h))
@@ -184,7 +184,7 @@ public:
        ...
        RestoreClipRegion();
      }
-   
+
    \param x the left-most coordinate of the clip region
    \param y the top-most coordinate of the clip region
    \param w the width of the clip region
@@ -241,7 +241,7 @@ protected:
   bool m_bFullScreenVideo;
   bool m_bCalibrating;
   RESOLUTION m_Resolution;
-  
+
 private:
   void UpdateCameraPosition(const CPoint &camera);
   void UpdateFinalTransform(const TransformMatrix &matrix);
@@ -261,7 +261,7 @@ private:
 
 /*!
  \ingroup graphics
- \brief 
+ \brief
  */
 extern CGraphicContext g_graphicsContext;
 #endif

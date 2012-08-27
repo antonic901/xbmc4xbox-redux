@@ -1,6 +1,6 @@
 /*!
 \file GUICheckMarkControl.h
-\brief 
+\brief
 */
 
 #ifndef CGUILIB_GUICHECKMARK_CONTROL_H
@@ -35,7 +35,7 @@
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 class CGUICheckMarkControl: public CGUIControl
 {
@@ -65,7 +65,7 @@ public:
 protected:
   virtual void UpdateColors();
   CGUILabel::COLOR GetTextColor() const;
-  
+
   CGUITexture m_imgCheckMark;
   CGUITexture m_imgCheckMarkNoFocus;
 

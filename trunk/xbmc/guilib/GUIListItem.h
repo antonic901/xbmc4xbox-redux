@@ -1,6 +1,6 @@
 /*!
 \file GUIListItem.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_GUILISTITEM_H
@@ -41,7 +41,7 @@ class CVariant;
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 class CGUIListItem
 {
@@ -142,7 +142,7 @@ protected:
       return s1.CompareNoCase(s2) < 0;
     }
   };
-  
+
   typedef std::map<CStdString, CStdString, icompare> PropertyMap;
   PropertyMap m_mapProperties;
 private:

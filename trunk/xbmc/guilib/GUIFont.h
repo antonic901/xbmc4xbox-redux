@@ -1,6 +1,6 @@
 /*!
 \file GUIFont.h
-\brief 
+\brief
 */
 
 #ifndef CGUILIB_GUIFONT_H
@@ -36,7 +36,7 @@ class CScrollInfo
 {
 public:
   CScrollInfo(unsigned int wait = 50, float pos = 0, int speed = defaultSpeed, const CStdStringW &scrollSuffix = L" | ")
-  { 
+  {
     initialWait = wait;
     initialPos = pos;
     SetSpeed(speed ? speed : defaultSpeed);
@@ -83,7 +83,7 @@ private:
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 class CGUIFont
 {
@@ -118,17 +118,17 @@ public:
   uint32_t GetStyle() const { return m_style; };
 
   static wchar_t RemapGlyph(wchar_t letter);
-  
+
   CGUIFontTTF* GetFont() const
   {
      return m_font;
   }
-  
+
   void SetFont(CGUIFontTTF* font)
   {
      m_font = font;
   }
-  
+
 protected:
   CStdString m_strFontName;
   uint32_t m_style;
@@ -136,7 +136,7 @@ protected:
   color_t m_textColor;
   float m_lineSpacing;
   CGUIFontTTF *m_font; // the font object has the size information
-  
+
 private:
   bool ClippedRegionIsEmpty(float x, float y, float width, uint32_t alignment) const;
 };

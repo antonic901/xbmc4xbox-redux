@@ -138,7 +138,7 @@ HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char *fileName)
       }
       // filesize = headersize + bytesPerLine * number of lines
       bh.filesize = bh.headersize + bytesPerLine * bh.height;
-        
+
       file.Write(&bh.id, sizeof(bh) - 2*sizeof(char));
 
       BYTE *lineBuf = new BYTE[bytesPerLine];

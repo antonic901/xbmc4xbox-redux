@@ -1,6 +1,6 @@
 /*!
 \file GUIListLabel.h
-\brief 
+\brief
 */
 
 #pragma once
@@ -31,7 +31,7 @@
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 class CGUIListLabel :
       public CGUIControl
@@ -55,7 +55,7 @@ public:
   {
     CGUILabel::CheckAndCorrectOverlap(label1.m_label, label2.m_label);
   }
-  
+
 protected:
   virtual void UpdateColors();
 

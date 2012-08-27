@@ -1,6 +1,6 @@
 /*!
 \file GUIListContainer.h
-\brief 
+\brief
 */
 
 #pragma once
@@ -35,7 +35,7 @@ typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
 /*!
  \ingroup controls
- \brief 
+ \brief
  */
 
 class CGUIBaseContainer : public CGUIControl
@@ -60,7 +60,7 @@ public:
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
 
   virtual unsigned int GetRows() const;
-  
+
   virtual bool HasNextPage() const;
   virtual bool HasPreviousPage() const;
 
@@ -85,7 +85,7 @@ public:
   CStdString GetLabel(int info) const;
 
   void SetStaticContent(const std::vector<CGUIListItemPtr> &items);
-  
+
   /*! \brief Set the offset of the first item in the container from the container's position
    Useful for lists/panels where the focused item may be larger than the non-focused items and thus
    normally cut off from the clipping window defined by the container's position + size.
@@ -124,7 +124,7 @@ protected:
   CGUIListItemLayout *GetFocusedLayout() const;
 
   CPoint m_renderOffset; ///< \brief render offset of the first item in the list \sa SetRenderOffset
-    
+
   int m_offset;
   int m_cursor;
   float m_analogScrollCount;

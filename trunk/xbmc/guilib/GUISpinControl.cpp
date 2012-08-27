@@ -444,7 +444,7 @@ void CGUISpinControl::Render()
       RenderText(m_posX - space - textWidth, textWidth);
     else
       RenderText(m_posX + m_imgspinDown.GetWidth() + m_imgspinUp.GetWidth() + space, textWidth);
- 
+
     // set our hit rectangle for MouseOver events
     m_hitRect = m_label.GetRenderRect();
   }
@@ -494,7 +494,7 @@ void CGUISpinControl::SetValueFromLabel(const CStdString &label)
 }
 
 void CGUISpinControl::SetValue(int iValue)
-{  
+{
   if (m_iType == SPIN_CONTROL_TYPE_TEXT)
   {
     m_iValue = 0;

@@ -21,7 +21,7 @@
 
 /*!
 \file TextureManager.h
-\brief 
+\brief
 */
 
 #ifndef GUILIB_TEXTUREMANAGER_H
@@ -75,7 +75,7 @@ public:
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 class CTextureMap
 {
@@ -104,7 +104,7 @@ protected:
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 class CGUITextureManager
 {
@@ -145,7 +145,7 @@ protected:
 
 /*!
  \ingroup textures
- \brief 
+ \brief
  */
 extern CGUITextureManager g_TextureManager;
 #endif
