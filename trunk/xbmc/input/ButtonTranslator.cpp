@@ -299,7 +299,7 @@ bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice
 }
 #endif
 
-void CButtonTranslator::GetAction(int window, const CKey &key, CAction &action)
+CAction CButtonTranslator::GetAction(int window, const CKey &key)
 {
   CStdString strAction;
   // try to get the action from the current window
@@ -308,6 +308,7 @@ void CButtonTranslator::GetAction(int window, const CKey &key, CAction &action)
   if (actionID == 0)
     actionID = GetActionCode( -1, key, strAction);
   // Now fill our action structure
+  CAction action;
   action.id = actionID;
   action.strAction = strAction;
   action.amount1 = 1; // digital button (could change this for repeat acceleration)
@@ -350,6 +351,7 @@ void CButtonTranslator::GetAction(int window, const CKey &key, CAction &action)
     action.amount1 = -key.GetRightThumbX();
   else if (key.GetButtonCode() == KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT)
     action.amount1 = key.GetRightThumbX();
+  return action;
 }
 
 int CButtonTranslator::GetActionCode(int window, const CKey &key, CStdString &strAction)

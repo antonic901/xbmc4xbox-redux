@@ -2308,14 +2308,13 @@ bool CApplication::OnKey(CKey& key)
 {
   // Turn the mouse off, as we've just got a keypress from controller or remote
   g_Mouse.SetInactive();
-  CAction action;
   
   // get the current active window
   int iWin = g_windowManager.GetActiveWindow() & WINDOW_ID_MASK;
 
   // this will be checked for certain keycodes that need
   // special handling if the screensaver is active
-  CButtonTranslator::GetInstance().GetAction(iWin, key, action);
+  CAction action = CButtonTranslator::GetInstance().GetAction(iWin, key);
 
   // a key has been pressed.
   // Reset the screensaver timer
@@ -2345,7 +2344,7 @@ bool CApplication::OnKey(CKey& key)
   }
   if (iWin == WINDOW_DIALOG_FULLSCREEN_INFO)
   { // fullscreen info dialog - special case
-    CButtonTranslator::GetInstance().GetAction(iWin, key, action);
+    action = CButtonTranslator::GetInstance().GetAction(iWin, key);
 
 #ifdef HAS_SDL
     g_Keyboard.Reset();
@@ -2362,12 +2361,12 @@ bool CApplication::OnKey(CKey& key)
     if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
     {
       // if player is in some sort of menu, (ie DVDMENU) map buttons differently
-      CButtonTranslator::GetInstance().GetAction(WINDOW_VIDEO_MENU, key, action);
+      action = CButtonTranslator::GetInstance().GetAction(WINDOW_DIALOG_KEYBOARD, key);
     }
     else
     {
       // no then use the fullscreen window section of keymap.xml to map key->action
-      CButtonTranslator::GetInstance().GetAction(iWin, key, action);
+      action = CButtonTranslator::GetInstance().GetAction(iWin, key);
     }
   }
   else
@@ -2420,13 +2419,10 @@ bool CApplication::OnKey(CKey& key)
     if (key.GetFromHttpApi())
     {
       if (key.GetButtonCode() != KEY_INVALID)
-      {
-        action.id = key.GetButtonCode();
-        CButtonTranslator::GetInstance().GetAction(iWin, key, action);
-      }
+        action = CButtonTranslator::GetInstance().GetAction(iWin, key);
     }
     else
-      CButtonTranslator::GetInstance().GetAction(iWin, key, action);
+      action = CButtonTranslator::GetInstance().GetAction(iWin, key);
   }
   if (!key.IsAnalogButton())
     CLog::Log(LOGDEBUG, "%s: %i pressed, action is %i", __FUNCTION__, (int) key.GetButtonCode(), action.id);
