@@ -43,6 +43,7 @@ struct OrigFontInfo
    float aspect;
    CStdString fontFilePath;
    CStdString fileName;
+   RESOLUTION sourceRes;
 };
 
 /*!
