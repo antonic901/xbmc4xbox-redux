@@ -34,9 +34,9 @@ public:
   virtual void FreeResources(bool forceUnLoad = false);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
-  virtual bool OnMouse(const CPoint &point);
   virtual void FrameMove();
 protected:
+  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   DWORD m_dwInitTimer;
   DWORD m_dwLockedTimer;
   bool m_bShowPreset;

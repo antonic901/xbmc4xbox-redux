@@ -68,15 +68,15 @@ bool CGUIWindowOSD::OnAction(const CAction &action)
   return CGUIDialog::OnAction(action);
 }
 
-bool CGUIWindowOSD::OnMouse(const CPoint &point)
+bool CGUIWindowOSD::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
-  if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
+  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
   { // pause
     CAction action;
     action.actionId = ACTION_PAUSE;
     return g_application.OnAction(action);
   }
-  return CGUIDialog::OnMouse(point);
+  return CGUIDialog::OnMouseEvent(point, event);
 }
 
 bool CGUIWindowOSD::OnMessage(CGUIMessage& message)

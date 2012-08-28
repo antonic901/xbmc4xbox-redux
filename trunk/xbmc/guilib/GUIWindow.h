@@ -110,8 +110,6 @@ public:
   // and does not need to be passed further down the line (to our global action handlers)
   virtual bool OnAction(const CAction &action);
 
-  virtual bool OnMouse(const CPoint &point);
-
   /*! \brief Clear the background (if necessary) prior to rendering the window
    */
   virtual void ClearBackground();
@@ -179,6 +177,7 @@ public:
   bool HasSaveLastControl() const { return m_saveLastControl; };
 
 protected:
+  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool LoadXML(const CStdString& strPath, const CStdString &strLowerPath);  ///< Loads from the given file
   bool Load(TiXmlDocument &xmlDoc);                 ///< Loads from the given XML document
   virtual void LoadAdditionalTags(TiXmlElement *root) {}; ///< Load additional information from the XML document

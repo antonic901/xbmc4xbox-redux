@@ -575,16 +575,16 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
   return CGUIWindow::OnMessage(message);
 }
 
-bool CGUIWindowFullScreen::OnMouse(const CPoint &point)
+bool CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
-  if (g_Mouse.bClick[MOUSE_RIGHT_BUTTON])
+  if (event.m_id == ACTION_MOUSE_RIGHT_CLICK)
   { // no control found to absorb this click - go back to GUI
     CAction action;
     action.actionId = ACTION_SHOW_GUI;
     OnAction(action);
     return true;
   }
-  if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
+  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
   { // no control found to absorb this click - pause video
     CAction action;
     action.actionId = ACTION_PAUSE;
