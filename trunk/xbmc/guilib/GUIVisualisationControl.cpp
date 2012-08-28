@@ -479,5 +479,5 @@ bool CGUIVisualisationControl::CanFocus() const
 
 bool CGUIVisualisationControl::CanFocusFromPoint(const CPoint &point) const
 { // mouse is allowed to focus this control, but it doesn't actually receive focus
-  return HitTest(point);
+  return IsVisible() && HitTest(point);
 }
