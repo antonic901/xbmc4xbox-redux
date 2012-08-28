@@ -25,11 +25,10 @@
 #include "GraphicContext.h"
 #include "utils/SingleLock.h"
 #include "utils/TimeUtils.h"
+#include "utils/MathUtils.h"
 
 using namespace std;
-namespace MathUtils {
-  inline int round_int (double x);
-}
+
 #define ROUND(x) (float)(MathUtils::round_int(x))
 
 void CScrollInfo::SetSpeed(int speed)

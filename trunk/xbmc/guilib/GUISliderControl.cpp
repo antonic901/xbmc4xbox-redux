@@ -22,7 +22,7 @@
 #include "include.h"
 #include "GUISliderControl.h"
 #include "GUIInfoManager.h"
-#include "Util.h"
+#include "utils/MathUtils.h"
 
 CGUISliderControl::CGUISliderControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& backGroundTexture, const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus, int iType)
     : CGUIControl(parentID, controlID, posX, posY, width, height)

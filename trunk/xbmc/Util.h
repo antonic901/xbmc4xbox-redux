@@ -81,15 +81,6 @@ struct XBOXDETECTION
   std::vector<bool> client_informed;
 };
 
-namespace MathUtils
-{
-  inline int round_int (double x);
-  inline int ceil_int (double x);
-  inline int truncate_int(double x);
-}
-
-
-
 class CUtil
 {
 public:

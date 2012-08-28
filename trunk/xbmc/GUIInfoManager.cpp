@@ -28,6 +28,7 @@
 #include "GUIUserMessages.h"
 #include "Application.h"
 #include "Util.h"
+#include "utils/MathUtils.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"
 #include "lib/libscrobbler/librefmscrobbler.h"
 #include "utils/TuxBoxUtil.h"

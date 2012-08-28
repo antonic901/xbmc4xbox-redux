@@ -29,7 +29,7 @@
 #include "DVDCodecs/DVDFactoryCodec.h"
 #include "DVDPerformanceCounter.h"
 #include "utils/TimeUtils.h"
-#include "Util.h"
+#include "utils/MathUtils.h"
 #include "utils/SingleLock.h"
 
 #include <sstream>
