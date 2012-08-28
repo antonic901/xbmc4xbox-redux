@@ -710,7 +710,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CRect hitRect;
   CPoint camera;
   bool   hasCamera = false;
-  int scrollSpeed = CScrollInfo::defaultSpeed;
   bool resetOnLabelChange = true;
   bool bPassword = false;
 
@@ -1039,7 +1038,13 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     g_SkinInfo.ResolveConstant(cam->Attribute("y"), camera.y);
   }
 
-  XMLUtils::GetInt(pControlNode, "scrollspeed", scrollSpeed);
+  XMLUtils::GetInt(pControlNode, "scrollspeed", labelInfo.scrollSpeed);
+  labelInfo2.scrollSpeed = labelInfo.scrollSpeed;
+  spinInfo.scrollSpeed = labelInfo.scrollSpeed;
+
+  GetString(pControlNode, "scrollsuffix", labelInfo.scrollSuffix);
+  labelInfo2.scrollSuffix = labelInfo.scrollSuffix;
+  spinInfo.scrollSuffix = labelInfo.scrollSuffix;
 
   /////////////////////////////////////////////////////////////////////////////
   // Instantiate a new control using the properties gathered above
@@ -1071,7 +1076,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     const CGUIInfoLabel &content = (infoLabels.size()) ? infoLabels[0] : CGUIInfoLabel("");
     if (insideContainer)
     { // inside lists we use CGUIListLabel
-      control = new CGUIListLabel(parentID, id, posX, posY, width, height, labelInfo, content, bScrollLabel, scrollSpeed);
+      control = new CGUIListLabel(parentID, id, posX, posY, width, height, labelInfo, content, bScrollLabel);
     }
     else
     {
@@ -1079,7 +1084,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
         parentID, id, posX, posY, width, height,
         labelInfo, wrapMultiLine, bHasPath);
       ((CGUILabelControl *)control)->SetInfo(content);
-      ((CGUILabelControl *)control)->SetWidthControl(minWidth, bScrollLabel, scrollSpeed);
+      ((CGUILabelControl *)control)->SetWidthControl(minWidth, bScrollLabel);
     }
   }
   else if (strType == "edit")
@@ -1101,7 +1106,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUIFadeLabelControl(
       parentID, id, posX, posY, width, height,
-      labelInfo, scrollOut, scrollSpeed, timeToPauseAtEnd, resetOnLabelChange);
+      labelInfo, scrollOut, timeToPauseAtEnd, resetOnLabelChange);
 
     ((CGUIFadeLabelControl *)control)->SetInfo(infoLabels);
   }
@@ -1109,7 +1114,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUIRSSControl(
       parentID, id, posX, posY, width, height,
-      labelInfo, textColor3, labelInfo2.textColor, strRSSTags, scrollSpeed);
+      labelInfo, textColor3, labelInfo2.textColor, strRSSTags);
 
     std::map<int,CSettings::RssSet>::iterator iter=g_settings.m_mapRssUrls.find(iUrlSet);
     if (iter != g_settings.m_mapRssUrls.end())
