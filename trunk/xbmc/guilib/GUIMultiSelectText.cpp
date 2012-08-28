@@ -245,12 +245,11 @@ bool CGUIMultiSelectTextControl::OnMouseOver(const CPoint &point)
   return CGUIControl::OnMouseOver(point);
 }
 
-bool CGUIMultiSelectTextControl::OnMouseClick(int button, const CPoint &point)
+bool CGUIMultiSelectTextControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
-  if (button == MOUSE_LEFT_BUTTON)
+  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
   {
     m_selectedItem = GetItemFromPoint(point);
-    g_Mouse.SetState(MOUSE_STATE_CLICK);
     CAction action;
     action.actionId = ACTION_SELECT_ITEM;
     OnAction(action);

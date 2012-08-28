@@ -57,12 +57,12 @@ public:
   const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
   void SetSelected(bool bOnOff);
   bool GetSelected() const;
-  bool OnMouseClick(int button, const CPoint &point);
 
   void PythonSetLabel(const CStdString &strFont, const std::string &strText, color_t textColor);
   void PythonSetDisabledColor(color_t disabledColor);
 
 protected:
+  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual void UpdateColors();
   CGUILabel::COLOR GetTextColor() const;
 

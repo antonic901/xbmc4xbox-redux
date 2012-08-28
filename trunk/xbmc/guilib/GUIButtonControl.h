@@ -50,7 +50,6 @@ public:
 
   virtual void Render();
   virtual bool OnAction(const CAction &action) ;
-  virtual bool OnMouseClick(int button, const CPoint &point);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void PreAllocResources();
   virtual void AllocResources();
@@ -81,6 +80,7 @@ public:
   virtual void UpdateColors();
 protected:
   friend class CGUISpinControlEx;
+  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   void OnFocus();
   void OnUnFocus();
   virtual void RenderText();
