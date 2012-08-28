@@ -303,16 +303,19 @@ void CGUIWindow::Render()
   // to occur.
   if (!m_bAllocated) return;
 
-  // find our origin point
-  CPoint pos = GetOrigin();
-  g_graphicsContext.SetRenderingResolution(m_coordsRes, pos.x, pos.y, m_needsScaling);
-  if (m_hasCamera)
-    g_graphicsContext.SetCameraPosition(m_camera);
+  g_graphicsContext.SetRenderingResolution(m_coordsRes, 0, 0, m_needsScaling);
 
   unsigned int currentTime = CTimeUtils::GetFrameTime();
   // render our window animation - returns false if it needs to stop rendering
   if (!RenderAnimation(currentTime))
     return;
+
+  if (m_hasCamera)
+    g_graphicsContext.SetCameraPosition(m_camera);
+
+  // find our origin point
+  CPoint pos = GetOrigin();
+  g_graphicsContext.SetOrigin(pos.x, pos.y);
 
   for (iControls i = m_children.begin(); i != m_children.end(); ++i)
   {
@@ -323,6 +326,8 @@ void CGUIWindow::Render()
       pControl->DoRender(currentTime);
     }
   }
+  
+  g_graphicsContext.RestoreOrigin();
   m_hasRendered = true;
 }
 
@@ -363,13 +368,9 @@ CPoint CGUIWindow::GetOrigin()
 // OnMouseAction - called by OnAction()
 bool CGUIWindow::OnMouseAction()
 {
-  // we need to convert the mouse coordinates to window coordinates
-  CPoint pos = GetOrigin();
-
-  g_graphicsContext.SetScalingResolution(m_coordsRes, pos.x, pos.y, m_needsScaling);
+  g_graphicsContext.SetScalingResolution(m_coordsRes, 0, 0, m_needsScaling);
   CPoint mousePoint(g_Mouse.GetLocation());
   g_graphicsContext.InvertFinalCoords(mousePoint.x, mousePoint.y);
-  m_transform.InverseTransformPosition(mousePoint.x, mousePoint.y);
 
   bool bHandled = false;
   // check if we have exclusive access
@@ -852,8 +853,8 @@ void CGUIWindow::SetDefaults()
 FRECT CGUIWindow::GetScaledBounds() const
 {
   CSingleLock lock(g_graphicsContext);
-  g_graphicsContext.SetScalingResolution(m_coordsRes, m_posX, m_posY, m_needsScaling);
-  FRECT rect = {0, 0, m_width, m_height};
+  g_graphicsContext.SetScalingResolution(m_coordsRes, 0, 0, m_needsScaling);
+  FRECT rect = {m_posX, m_posY, m_posX + m_width, m_posY + m_height};
   float z = 0;
   g_graphicsContext.ScaleFinalCoords(rect.left, rect.top, z);
   g_graphicsContext.ScaleFinalCoords(rect.right, rect.bottom, z);
