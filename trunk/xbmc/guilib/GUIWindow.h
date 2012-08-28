@@ -111,7 +111,6 @@ public:
   virtual bool OnAction(const CAction &action);
 
   virtual bool OnMouse(const CPoint &point);
-  bool HandleMouse(CGUIControl *pControl, const CPoint &point);
 
   /*! \brief Clear the background (if necessary) prior to rendering the window
    */
