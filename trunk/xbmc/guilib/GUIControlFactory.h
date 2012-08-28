@@ -78,6 +78,7 @@ public:
   static bool GetMultipleString(const TiXmlNode* pRootNode, const char* strTag, std::vector<CGUIActionDescriptor>& vecStringValue);
   static void GetRectFromString(const CStdString &string, FRECT &rect);
   static bool GetAction(const TiXmlElement* pElement, CGUIActionDescriptor &action);
+  static bool GetHitRect(const TiXmlNode* pRootNode, CRect &rect);
 private:
   bool GetNavigation(const TiXmlElement *node, const char *tag, int &direction, std::vector<CGUIActionDescriptor> &actions);
   bool GetCondition(const TiXmlNode *control, const char *tag, int &condition);
@@ -86,6 +87,5 @@ private:
   bool GetString(const TiXmlNode* pRootNode, const char* strTag, CStdString& strString);
   bool GetFloatRange(const TiXmlNode* pRootNode, const char* strTag, float& iMinValue, float& iMaxValue, float& iIntervalValue);
   bool GetIntRange(const TiXmlNode* pRootNode, const char* strTag, int& iMinValue, int& iMaxValue, int& iIntervalValue);
-  bool GetHitRect(const TiXmlNode* pRootNode, CRect &rect);
 };
 #endif
