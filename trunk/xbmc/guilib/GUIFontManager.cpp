@@ -48,22 +48,33 @@ GUIFontManager::~GUIFontManager(void)
   Clear();
 }
 
-void GUIFontManager::RescaleFontSizeAndAspect(float *size, float *aspect, RESOLUTION sourceRes) const
+void GUIFontManager::RescaleFontSizeAndAspect(float *size, float *aspect, RESOLUTION sourceRes, bool preserveAspect) const
 {
   // set scaling resolution so that we can scale our font sizes correctly
   // as fonts aren't scaled at render time (due to aliasing) we must scale
   // the size of the fonts before they are drawn to bitmaps
   g_graphicsContext.SetScalingResolution(sourceRes, true);
 
-  // adjust aspect ratio
-  if (sourceRes == PAL_16x9 || sourceRes == PAL60_16x9 || sourceRes == NTSC_16x9 || sourceRes == HDTV_480p_16x9)
-    *aspect *= 0.75f;
+  if (preserveAspect)
+  {
+    // font always displayed in the aspect specified by the aspect parameter
+    *aspect /= g_graphicsContext.GetPixelRatio(g_graphicsContext.GetVideoResolution());
+  }
+  else
+  {
+    // font streched like the rest of the UI, aspect parameter being the original aspect
 
-  *aspect *= g_graphicsContext.GetGUIScaleY() / g_graphicsContext.GetGUIScaleX();
+    // adjust aspect ratio
+    if (sourceRes == PAL_16x9 || sourceRes == PAL60_16x9 || sourceRes == NTSC_16x9 || sourceRes == HDTV_480p_16x9)
+      *aspect *= 0.75f;
+
+    *aspect *= g_graphicsContext.GetGUIScaleY() / g_graphicsContext.GetGUIScaleX();
+  }
+
   *size /= g_graphicsContext.GetGUIScaleY();
 }
 
-CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdString& strFilename, color_t textColor, color_t shadowColor, const int iSize, const int iStyle, float lineSpacing, float aspect, RESOLUTION sourceRes)
+CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdString& strFilename, color_t textColor, color_t shadowColor, const int iSize, const int iStyle, float lineSpacing, float aspect, RESOLUTION sourceRes, bool preserveAspect)
 {
   float originalAspect = aspect;
 
@@ -75,8 +86,8 @@ CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdStrin
   if (sourceRes == INVALID) // no source res specified, so assume the skin res
     sourceRes = m_skinResolution;
 
-  float newSize = iSize;
-  RescaleFontSizeAndAspect(&newSize, &aspect, sourceRes);
+  float newSize = (float)iSize;
+  RescaleFontSizeAndAspect(&newSize, &aspect, sourceRes, preserveAspect);
 
   CStdString strPath;
   if (!CURL::IsFullPath(strFilename))
@@ -136,6 +147,7 @@ CGUIFont* GUIFontManager::LoadTTF(const CStdString& strFontName, const CStdStrin
   fontInfo.fontFilePath = strPath;
   fontInfo.fileName = strFilename;
   fontInfo.sourceRes = sourceRes;
+  fontInfo.preserveAspect = preserveAspect;
   m_vecFontInfo.push_back(fontInfo);
 
   return pNewFont;
@@ -153,11 +165,11 @@ void GUIFontManager::ReloadTTFFonts(void)
     CGUIFontTTF* currentFontTTF = font->GetFont();
 
     float aspect = fontInfo.aspect;
-    float newSize = fontInfo.size;
+    float newSize = (float)fontInfo.size;
     CStdString& strPath = fontInfo.fontFilePath;
     CStdString& strFilename = fontInfo.fileName;
 
-    RescaleFontSizeAndAspect(&newSize, &aspect, fontInfo.sourceRes);
+    RescaleFontSizeAndAspect(&newSize, &aspect, fontInfo.sourceRes, fontInfo.preserveAspect);
 
     // check if we already have this font file loaded (font object could differ only by color or style)
     CStdString TTFfontName;
