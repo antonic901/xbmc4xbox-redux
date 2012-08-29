@@ -32,6 +32,7 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
+#include FT_STROKER_H
 
 #define USE_RELEASE_LIBS
 
@@ -119,12 +120,30 @@ public:
 
     return face;
   };
+  
+  FT_Stroker GetStroker()
+  {
+    if (!m_library)
+      return NULL;
+
+    FT_Stroker stroker;
+    if (FT_Stroker_New(m_library, &stroker))
+      return NULL;
+
+    return stroker;
+  };
 
   void ReleaseFont(FT_Face face)
   {
     assert(face);
     FT_Done_Face(face);
   };
+  
+  void ReleaseStroker(FT_Stroker stroker)
+  {
+    assert(stroker);
+    FT_Stroker_Done(stroker);
+  }
 
   unsigned int GetDPI() const
   {
@@ -144,6 +163,7 @@ CGUIFontTTF::CGUIFontTTF(const CStdString& strFileName)
   m_maxChars = 0;
   m_nestedBeginCount = 0;
   m_face = NULL;
+  m_stroker = NULL;
   memset(m_charquick, 0, sizeof(m_charquick));
   m_strFileName = strFileName;
   m_referenceCount = 0;
@@ -204,9 +224,12 @@ void CGUIFontTTF::Clear()
   if (m_face)
     g_freeTypeLibrary.ReleaseFont(m_face);
   m_face = NULL;
+  if (m_stroker)
+    g_freeTypeLibrary.ReleaseStroker(m_stroker);
+  m_stroker = NULL;
 }
 
-bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect, float lineSpacing)
+bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect, float lineSpacing, bool border)
 {
   // create our character texture + font shader
   m_pD3DDevice = g_graphicsContext.Get3DDevice();
@@ -217,6 +240,17 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
 
   if (!m_face)
     return false;
+
+  if (border)
+  {
+    m_stroker = g_freeTypeLibrary.GetStroker();
+
+    FT_Pos strength = FT_MulFix( m_face->units_per_EM, m_face->size->metrics.y_scale) / 16;
+    if (strength < 128) strength = 128;
+
+    if (m_stroker)
+      FT_Stroker_Set(m_stroker, strength, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+  }
 
   // grab the maximum cell height and width
   unsigned int m_cellWidth = m_face->bbox.xMax - m_face->bbox.xMin;
@@ -521,6 +555,8 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
     CLog::Log(LOGDEBUG, "%s Failed to get glyph %x", __FUNCTION__, letter);
     return false;
   }
+  if (m_stroker)
+    FT_Glyph_StrokeBorder(&glyph, m_stroker, 0, 1);
   // render the glyph
   if (FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, 1))
   {
