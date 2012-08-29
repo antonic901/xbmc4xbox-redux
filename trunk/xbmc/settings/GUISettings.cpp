@@ -282,12 +282,12 @@ void CGUISettings::Initialize()
   AddCategory(3, "scrobbler", 15221);
   AddBool(1, "scrobbler.lastfmsubmit", 15201, false);
   AddBool(2, "scrobbler.lastfmsubmitradio", 15250, false);
-  AddString(3,"scrobbler.lastfmusername", 15202, "", EDIT_CONTROL_INPUT, false, 15202);
-  AddString(4,"scrobbler.lastfmpassword", 15203, "", EDIT_CONTROL_HIDDEN_INPUT, false, 15203);
+  AddString(3, "scrobbler.lastfmusername", 15202, "", EDIT_CONTROL_INPUT, false, 15202);
+  AddString(4, "scrobbler.lastfmpass", 15203, "", EDIT_CONTROL_MD5_INPUT, false, 15203);
   AddSeparator(5, "scrobbler.sep1");
   AddBool(6, "scrobbler.librefmsubmit", 15217, false);
   AddString(7, "scrobbler.librefmusername", 15218, "", EDIT_CONTROL_INPUT, false, 15218);
-  AddString(8, "scrobbler.librefmpassword", 15219, "", EDIT_CONTROL_HIDDEN_INPUT, false, 15219);
+  AddString(8, "scrobbler.librefmpass", 15219, "", EDIT_CONTROL_MD5_INPUT, false, 15219);
 
   AddCategory(3, "audiocds", 620);
   AddBool(2, "audiocds.usecddb", 227, true);

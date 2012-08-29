@@ -130,7 +130,7 @@ bool CLastFmManager::RadioHandShake()
   CCurlFile http;
   CStdString html;
 
-  CStdString strPassword = g_guiSettings.GetString("scrobbler.lastfmpassword");
+  CStdString strPassword = g_guiSettings.GetString("scrobbler.lastfmpass");
   CStdString strUserName = g_guiSettings.GetString("scrobbler.lastfmusername");
   if (strUserName.IsEmpty() || strPassword.IsEmpty())
   {
@@ -138,8 +138,8 @@ bool CLastFmManager::RadioHandShake()
     return false;
   }
 
-  CStdString passwordmd5;
-  CreateMD5Hash(strPassword, passwordmd5);
+  CStdString passwordmd5(strPassword);
+  passwordmd5.ToLower();
 
   CStdString url;
   CURL::Encode(strUserName);
@@ -667,9 +667,7 @@ void CLastFmManager::StopRadio(bool bKillSession /*= true*/)
 
 void CLastFmManager::CreateMD5Hash(const CStdString& bufferToHash, CStdString& hash)
 {
-  XBMC::XBMC_MD5 md5state;
-  md5state.append(bufferToHash);
-  md5state.getDigest(hash);
+  hash = XBMC::XBMC_MD5::GetMD5(bufferToHash);
   hash.ToLower();
 }
 
@@ -689,7 +687,7 @@ void CLastFmManager::CreateMD5Hash(const CStdString& bufferToHash, CStdString& h
 bool CLastFmManager::CallXmlRpc(const CStdString& action, const CStdString& artist, const CStdString& title)
 {
   CStdString strUserName = g_guiSettings.GetString("scrobbler.lastfmusername");
-  CStdString strPassword = g_guiSettings.GetString("scrobbler.lastfmpassword");
+  CStdString strPassword = g_guiSettings.GetString("scrobbler.lastfmpass");
   if (strUserName.IsEmpty() || strPassword.IsEmpty())
   {
     CLog::Log(LOGERROR, "Last.fm CallXmlRpc no username or password set.");
@@ -713,8 +711,8 @@ bool CLastFmManager::CallXmlRpc(const CStdString& action, const CStdString& arti
   strftime(ti, sizeof(ti), "%Y-%m-%d %H:%M:%S", now);
   CStdString strChallenge = ti;
 
-  CStdString strAuth;
-  CreateMD5Hash(strPassword, strAuth);
+  CStdString strAuth(strPassword);
+  strAuth.ToLower();
   strAuth.append(strChallenge);
   CreateMD5Hash(strAuth, strAuth);
 
@@ -1015,7 +1013,7 @@ bool CLastFmManager::IsLastFmEnabled()
 {
   return (
     !g_guiSettings.GetString("scrobbler.lastfmusername").IsEmpty() && 
-    !g_guiSettings.GetString("scrobbler.lastfmpassword").IsEmpty()
+    !g_guiSettings.GetString("scrobbler.lastfmpass").IsEmpty()
   );
 }
 
