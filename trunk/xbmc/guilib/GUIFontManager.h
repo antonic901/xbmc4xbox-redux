@@ -69,6 +69,7 @@ public:
   void ReloadTTFFonts(void);
 
 protected:
+  void RescaleFontSizeAndAspect(float *size, float *aspect, RESOLUTION sourceRes) const;
   void LoadFonts(const TiXmlNode* fontNode);
   CGUIFontTTF* GetFontFile(const CStdString& strFontFile);
   bool OpenFontFile(TiXmlDocument& xmlDoc);
