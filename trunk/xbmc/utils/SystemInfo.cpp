@@ -304,7 +304,7 @@ struct Bios * CSysInfo::LoadBiosSigns()
 }
 char* CSysInfo::MD5Buffer(char *buffer, long PosizioneInizio,int KBytes)
 {
-  XBMC::MD5 mdContext;
+  XBMC::XBMC_MD5 mdContext;
   CStdString md5sumstring;
   mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
   mdContext.getDigest(md5sumstring);
@@ -1108,7 +1108,7 @@ CStdString CSysInfo::GetModCHIPDetected()
 CStdString CSysInfo::MD5BufferNew(char *buffer,long PosizioneInizio,int KBytes)
 {
   CStdString strReturn;
-  XBMC::MD5 mdContext;
+  XBMC::XBMC_MD5 mdContext;
   mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
   mdContext.getDigest(strReturn);
   return strReturn;

@@ -396,7 +396,7 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
                                              const char* file_path)
 {
     CStdString md5;
-    XBMC::MD5 md5state;
+    XBMC::XBMC_MD5 md5state;
     md5state.append(file_path);
     md5state.getDigest(md5);
     md5 += "/" + URIUtils::GetFileName(file_path);
