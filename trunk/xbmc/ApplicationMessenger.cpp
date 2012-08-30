@@ -41,6 +41,8 @@
 #include "FileItem.h"
 #include "GUIDialog.h"
 #include "SectionLoader.h"
+#include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
+#include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
 using namespace std;
 
@@ -521,6 +523,18 @@ case TMSG_POWERDOWN:
     case TMSG_NETWORKMESSAGE:
       {
         g_application.getNetwork().NetworkMessage((CNetwork::EMESSAGE)pMsg->dwParam1, pMsg->dwParam2);
+      }
+      break;
+
+    case TMSG_GUI_PYTHON_DIALOG:
+      {
+        if (pMsg->lpVoid)
+        { // TODO: This is ugly - really these python dialogs should just be normal XBMC dialogs
+          if (pMsg->dwParam1)
+            ((CGUIPythonWindowXMLDialog *)pMsg->lpVoid)->Show_Internal(pMsg->dwParam2 > 0);
+          else
+            ((CGUIPythonWindowDialog *)pMsg->lpVoid)->Show_Internal(pMsg->dwParam2 > 0);
+        }
       }
       break;
   }

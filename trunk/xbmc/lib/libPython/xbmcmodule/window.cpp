@@ -413,9 +413,9 @@ namespace PYXBMC
     PyXBMCGUILock();
     // if it's a dialog, we have to activate it a bit different
     if (WindowDialog_Check(self))
-  	  ((CGUIPythonWindowDialog*)self->pWindow)->Activate(ACTIVE_WINDOW);
+      ((CGUIPythonWindowDialog*)self->pWindow)->Show();
     else if (WindowXMLDialog_Check(self))
-  	  ((CGUIPythonWindowXMLDialog*)self->pWindow)->Activate(ACTIVE_WINDOW);
+      ((CGUIPythonWindowXMLDialog*)self->pWindow)->Show();
     else
       g_windowManager.ActivateWindow(self->iWindowId);
     PyXBMCGUIUnlock();
@@ -446,9 +446,9 @@ namespace PYXBMC
 
     // if it's a dialog, we have to close it a bit different
     if (WindowDialog_Check(self))
-  	  ((CGUIPythonWindowDialog*)self->pWindow)->Close();
+      ((CGUIPythonWindowDialog*)self->pWindow)->Show(false);
     else if (WindowXMLDialog_Check(self))
-      ((CGUIPythonWindowXMLDialog*)self->pWindow)->Close();
+      ((CGUIPythonWindowXMLDialog*)self->pWindow)->Show(false);
     else
       g_windowManager.ActivateWindow(self->iOldWindowId);
     self->iOldWindowId = 0;

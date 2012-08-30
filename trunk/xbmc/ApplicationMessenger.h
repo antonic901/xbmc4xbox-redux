@@ -22,6 +22,8 @@
  */
 
 #include "utils/SingleLock.h"
+#include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
+#include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
 #include <queue>
 
@@ -61,6 +63,8 @@ class CGUIDialog;
 #define TMSG_HTTPAPI              400
 
 #define TMSG_NETWORKMESSAGE         500
+
+#define TMSG_GUI_PYTHON_DIALOG        605
 
 typedef struct
 {
