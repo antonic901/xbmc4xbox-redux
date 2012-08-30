@@ -36,7 +36,7 @@ to maintain a single distribution point for the source code.
 #endif
 #include "Sntp.h"
 #include "network/DNSNameCache.h"
-#include "xbox/Network.h"
+#include "Application.h"
 #include "settings/GUISettings.h"
 #include "AutoPtrHandle.h"
 #include "log.h"
@@ -708,7 +708,7 @@ void CSNTPClient::Update()
   // update once every 5 minutes
   m_dwTimeout = GetTickCount() + 5*60*1000;
 
-  if(!g_network.IsAvailable())
+  if(!g_application.getNetwork().IsAvailable())
   {
     CLog::Log(LOGDEBUG, __FUNCTION__" - No network available");
     return;

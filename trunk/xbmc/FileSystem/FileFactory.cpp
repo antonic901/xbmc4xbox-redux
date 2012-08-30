@@ -42,7 +42,7 @@
 #include "MusicDatabaseFile.h"
 #include "SpecialProtocolFile.h"
 #include "MultiPathFile.h"
-#include "xbox/network.h"
+#include "Application.h"
 #include "TuxBoxFile.h"
 #include "HDHomeRunFile.h"
 #include "SlingboxFile.h"
@@ -85,7 +85,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   else if (strProtocol == "cdda") return new CFileCDDA();
   else if (strProtocol.Left(3) == "mem") return new CFileMemUnit();
 #endif
-  if( g_network.IsAvailable() )
+  if( g_application.getNetwork().IsAvailable() )
   {
     if (strProtocol == "http"
     ||  strProtocol == "https"

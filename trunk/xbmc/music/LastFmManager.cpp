@@ -916,7 +916,7 @@ bool CLastFmManager::Ban(const CMusicInfoTag& musicinfotag)
   if (CallXmlRpc("banTrack", musicinfotag.GetArtist(), musicinfotag.GetTitle()))
   {
     //we banned this track so skip to the next track
-    g_applicationMessenger.ExecBuiltIn("playercontrol(next)");
+    g_application.getApplicationMessenger().ExecBuiltIn("playercontrol(next)");
     m_CurrentSong.IsBanned = true;
     return true;
   }

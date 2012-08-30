@@ -47,7 +47,7 @@
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
-#include "xbox/Network.h"
+#include "Application.h"
 #include "utils/variant.h"
 #include "interfaces/AnnouncementManager.h"
 #include "utils/log.h"
@@ -2240,7 +2240,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
     return false;
 
   // check network connectivity
-  if (!g_network.IsAvailable())
+  if (!g_application.getNetwork().IsAvailable())
     return false;
 
   // Get information for the inserted disc

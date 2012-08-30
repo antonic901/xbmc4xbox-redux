@@ -86,7 +86,7 @@ namespace PYXBMC
   {
     Py_BEGIN_ALLOW_THREADS
     ThreadMessage tMsg = {message, param1, param2};
-    g_applicationMessenger.SendMessage(tMsg, true);
+    g_application.getApplicationMessenger().SendMessage(tMsg, true);
     Py_END_ALLOW_THREADS
   }
 

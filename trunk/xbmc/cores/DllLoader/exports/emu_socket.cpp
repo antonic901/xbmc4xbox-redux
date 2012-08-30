@@ -24,9 +24,9 @@
 #include "../DllLoaderContainer.h"
 
 #include "network/DNSNameCache.h"
-#include "xbox\Network.h"
 #include "emu_dummy.h"
 #include "emu_socket.h"
+#include "Application.h"
 
 
 #define MAX_SOCKETS 100
@@ -156,8 +156,8 @@ extern "C"
 
     if (!strcmp(hbn_hostname, name))
     {
-      if(g_network.IsAvailable())
-        hbn_dwList2[0] = inet_addr(g_network.m_networkinfo.ip);
+      if(g_application.getNetwork().IsAvailable())
+        hbn_dwList2[0] = inet_addr(g_application.getNetwork().m_networkinfo.ip);
 
       return &hbn_hostent;
     }
@@ -252,7 +252,7 @@ extern "C"
             address->sin_addr.S_un.S_un_b.s_b4);
 
       
-      if( address->sin_addr.S_un.S_addr == inet_addr(g_network.m_networkinfo.ip)
+      if( address->sin_addr.S_un.S_addr == inet_addr(g_application.getNetwork().m_networkinfo.ip)
       ||  address->sin_addr.S_un.S_addr == inet_addr("127.0.0.1") )
       {
         // local xbox, correct for xbox stack
@@ -480,8 +480,8 @@ extern "C"
         // unspecifed address will always be on local xbox ip
         // some dll's assume this will return a proper address
         // even if windows standard doesn't gurantee it
-        if( g_network.IsAvailable() )
-          addr->sin_addr.S_un.S_addr = inet_addr(g_network.m_networkinfo.ip);
+        if( g_application.getNetwork().IsAvailable() )
+          addr->sin_addr.S_un.S_addr = inet_addr(g_application.getNetwork().m_networkinfo.ip);
       }
     }
     return res;

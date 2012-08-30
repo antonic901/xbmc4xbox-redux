@@ -100,7 +100,7 @@ CWeather g_weatherManager;
 
 void CBackgroundWeatherLoader::GetInformation()
 {
-  if (!g_network.IsAvailable())
+  if (!g_application.getNetwork().IsAvailable())
     return;
 
   CWeather *callback = (CWeather *)m_callback;

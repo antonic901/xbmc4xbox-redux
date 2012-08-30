@@ -85,5 +85,3 @@ private:
   void NetworkUp();
   CCriticalSection  m_critSection;
 };
-
-extern CNetwork g_network;

@@ -29,7 +29,7 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "storage/MediaManager.h"
 #include "AutoSwitch.h"
-#include "xbox/network.h"
+#include "Application.h"
 #include "GUIPassword.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
@@ -522,7 +522,7 @@ bool CGUIDialogFileBrowser::HaveDiscOrConnection( int iDriveType )
   else if ( iDriveType == CMediaSource::SOURCE_TYPE_REMOTE )
   {
     // TODO: Handle not connected to a remote share
-    if ( !g_network.IsEthernetConnected() )
+    if ( !g_application.getNetwork().IsEthernetConnected() )
     {
       CGUIDialogOK::ShowAndGetInput(220, 221, 0, 0);
       return false;

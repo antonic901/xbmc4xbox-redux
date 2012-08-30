@@ -36,9 +36,6 @@
 #include "utils/Weather.h"
 #include "utils/log.h"
 
-// global network variable
-CNetwork g_network;
-
 // Time to wait before we give up on network init
 #define WAIT_TIME 10000
 
@@ -301,7 +298,7 @@ void CNetwork::NetworkDown()
   m_lastlink = 0;
   m_laststate = 0;
   m_networkup = false;
-  g_applicationMessenger.NetworkMessage(SERVICES_DOWN, 0);
+  g_application.getApplicationMessenger().NetworkMessage(SERVICES_DOWN, 0);
 }
 
 void CNetwork::NetworkUp()
@@ -326,7 +323,7 @@ void CNetwork::NetworkUp()
 
   m_networkup = true;
   
-  g_applicationMessenger.NetworkMessage(SERVICES_UP, 0);
+  g_application.getApplicationMessenger().NetworkMessage(SERVICES_UP, 0);
 }
 
 /* update network state, call repeatedly while return value is XNET_GET_XNADDR_PENDING */

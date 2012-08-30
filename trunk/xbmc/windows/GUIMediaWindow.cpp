@@ -952,7 +952,7 @@ bool CGUIMediaWindow::HaveDiscOrConnection(const CStdString& strPath, int iDrive
   else if (iDriveType==CMediaSource::SOURCE_TYPE_REMOTE)
   {
     // TODO: Handle not connected to a remote share
-    if ( !g_network.IsEthernetConnected() )
+    if ( !g_application.getNetwork().IsEthernetConnected() )
     {
       CGUIDialogOK::ShowAndGetInput(220, 221, 0, 0);
       return false;
@@ -1381,7 +1381,7 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CStdString action;
       action.Format("contextmenuaction(%i)", button - CONTEXT_BUTTON_USER1);
-      g_applicationMessenger.ExecBuiltIn(m_vecItems->Get(itemNumber)->GetProperty(action));
+      g_application.getApplicationMessenger().ExecBuiltIn(m_vecItems->Get(itemNumber)->GetProperty(action));
       return true;
     }
   default:
@@ -1402,7 +1402,7 @@ const CFileItemList& CGUIMediaWindow::CurrentDirectory() const
 
 bool CGUIMediaWindow::WaitForNetwork() const
 {
-  if (g_network.IsAvailable())
+  if (g_application.getNetwork().IsAvailable())
     return true;
 
   CGUIDialogProgress *progress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -1414,7 +1414,7 @@ bool CGUIMediaWindow::WaitForNetwork() const
   progress->SetLine(1, url.GetWithoutUserDetails());
   progress->ShowProgressBar(false);
   progress->StartModal();
-  while (!g_network.IsAvailable())
+  while (!g_application.getNetwork().IsAvailable())
   {
     progress->Progress();
     if (progress->IsCanceled())

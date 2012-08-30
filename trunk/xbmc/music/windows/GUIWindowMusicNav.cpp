@@ -47,6 +47,7 @@
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
+#include "Application.h"
 #include "ApplicationMessenger.h"
 #include "utils/log.h"
 
@@ -717,7 +718,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       database.Open();
       CVideoInfoTag details;
       database.GetMusicVideoInfo("",details,database.GetMatchingMusicVideo(item->GetMusicInfoTag()->GetArtist(),item->GetMusicInfoTag()->GetAlbum(),item->GetMusicInfoTag()->GetTitle()));
-      g_applicationMessenger.PlayFile(CFileItem(details));
+      g_application.getApplicationMessenger().PlayFile(CFileItem(details));
       return true;
     }
 

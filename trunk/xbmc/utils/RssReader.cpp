@@ -23,7 +23,7 @@
 #include "system.h"
 #include "RssReader.h"
 #include "utils/HTMLUtil.h"
-#include "xbox/network.h"
+#include "Application.h"
 #include "settings/GUISettings.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
@@ -140,7 +140,7 @@ void CRssReader::Process()
     CURL url(strUrl);
 
     // we wait for the network to come up
-    if ((url.GetProtocol() == "http" || url.GetProtocol() == "https") && !g_network.IsAvailable())
+    if ((url.GetProtocol() == "http" || url.GetProtocol() == "https") && !g_application.getNetwork().IsAvailable())
       strXML = "<rss><item><title>"+g_localizeStrings.Get(15301)+"</title></item></rss>";
     else
     {

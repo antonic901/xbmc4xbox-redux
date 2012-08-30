@@ -123,7 +123,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
   if (strProtocol.Left(3) == "mem") return new CMemUnitDirectory();
 #endif
 
-  if( g_network.IsAvailable(true) )
+  if( g_application.getNetwork().IsAvailable(true) )
   {
     if (strProtocol == "lastfm") return new CLastFMDirectory();
     if (strProtocol == "tuxbox") return new CDirectoryTuxBox();

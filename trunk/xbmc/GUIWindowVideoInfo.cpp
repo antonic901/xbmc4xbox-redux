@@ -45,6 +45,7 @@
 #include "settings/AdvancedSettings.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
+#include "Application.h"
 #include "ApplicationMessenger.h"
 
 using namespace std;
@@ -974,9 +975,9 @@ void CGUIWindowVideoInfo::PlayTrailer()
   Close(true);
 
   if (item.IsPlayList())
-    g_applicationMessenger.MediaPlay(item);
+    g_application.getApplicationMessenger().MediaPlay(item);
   else
-    g_applicationMessenger.PlayFile(item);
+    g_application.getApplicationMessenger().PlayFile(item);
 }
 
 void CGUIWindowVideoInfo::SetLabel(int iControl, const CStdString &strLabel)

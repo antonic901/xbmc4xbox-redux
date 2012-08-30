@@ -36,6 +36,7 @@ class CFileItemList;
 #include "dialogs/GUIDialogMuteBug.h"
 #include "windows/GUIWindowPointer.h"   // Mouse pointer
 
+#include "xbox/Network.h"
 #include "utils/Idle.h"
 #include "utils/DelayController.h"
 #include "cores/IPlayer.h"
@@ -45,6 +46,8 @@ class CFileItemList;
 #include "Autorun.h"
 #include "video/Bookmark.h"
 #include "utils/Stopwatch.h"
+#include "ApplicationMessenger.h"
+
 
 class CWebServer;
 class CXBFileZilla;
@@ -173,6 +176,9 @@ public:
   void UpdateLibraries();
   void CheckMusicPlaylist();
 
+  CApplicationMessenger& getApplicationMessenger();
+  CNetwork& getNetwork();
+
   bool ExecuteXBMCAction(std::string action);
   bool ExecuteAction(CGUIActionDescriptor action);
 
@@ -270,8 +276,11 @@ protected:
   static bool AlwaysProcess(const CAction& action);
 
   void SaveCurrentFileSettings();
-  
+
   void InitDirectoriesXbox();
+
+  CApplicationMessenger m_applicationMessenger;
+  CNetwork m_network;
   
 #ifdef HAS_EVENT_SERVER
   std::map<std::string, std::map<int, float> > m_lastAxisMap;

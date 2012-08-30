@@ -1379,7 +1379,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
                                                                         m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strTitle),
                                                                         song))
       {
-        g_applicationMessenger.PlayFile(song);
+        g_application.getApplicationMessenger().PlayFile(song);
       }
       return true;
     }

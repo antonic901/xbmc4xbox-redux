@@ -30,7 +30,7 @@
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/MythDirectory.h"
 #include "network/DNSNameCache.h"
-#include "xbox/network.h"
+#include "Application.h"
 #include "settings/Settings.h"
 #include "URL.h"
 #include "utils/StringUtils.h"
@@ -458,8 +458,8 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
   if(address != INADDR_NONE)
   {
     // check if we are on the local subnet
-    unsigned long subnet = ntohl(inet_addr(g_network.m_networkinfo.subnet));
-    unsigned long local  = ntohl(inet_addr(g_network.m_networkinfo.ip));
+    unsigned long subnet = ntohl(inet_addr(g_application.getNetwork().m_networkinfo.subnet));
+    unsigned long local  = ntohl(inet_addr(g_application.getNetwork().m_networkinfo.ip));
     if( (address & subnet) == (local & subnet) )
       return true;
   }

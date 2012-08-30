@@ -42,8 +42,6 @@
 #include "GUIDialog.h"
 #include "SectionLoader.h"
 
-CApplicationMessenger g_applicationMessenger;
-
 using namespace std;
 
 extern HWND g_hWnd;
@@ -453,19 +451,19 @@ case TMSG_POWERDOWN:
       switch (m_pXbmcHttp->xbmcCommand(pMsg->strParam))
       {
       case 1:
-        g_applicationMessenger.Restart();
+        g_application.getApplicationMessenger().Restart();
         break;
       case 2:
-        g_applicationMessenger.Shutdown();
+        g_application.getApplicationMessenger().Shutdown();
         break;
       case 3:
-        g_applicationMessenger.RebootToDashBoard();
+        g_application.getApplicationMessenger().RebootToDashBoard();
         break;
       case 4:
-        g_applicationMessenger.Reset();
+        g_application.getApplicationMessenger().Reset();
         break;
       case 5:
-        g_applicationMessenger.RestartApp();
+        g_application.getApplicationMessenger().RestartApp();
         break;
       }
     }
@@ -522,7 +520,7 @@ case TMSG_POWERDOWN:
 
     case TMSG_NETWORKMESSAGE:
       {
-        g_network.NetworkMessage((CNetwork::EMESSAGE)pMsg->dwParam1, pMsg->dwParam2);
+        g_application.getNetwork().NetworkMessage((CNetwork::EMESSAGE)pMsg->dwParam1, pMsg->dwParam2);
       }
       break;
   }

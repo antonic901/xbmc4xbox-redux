@@ -113,7 +113,7 @@ void CAlarmClock::stop(const CStdString& strName)
     g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
   else
   {
-    g_applicationMessenger.ExecBuiltIn(iter->second.m_strCommand);
+    g_application.getApplicationMessenger().ExecBuiltIn(iter->second.m_strCommand);
     if (iter->second.m_loop)
     {
       iter->second.watch.Reset();

@@ -121,25 +121,25 @@ LRESULT CXBMC_PC::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
           }
 					break;
         case ID_RESOLUTION_PAL4X3:
-          g_applicationMessenger.ExecBuiltIn("Resolution(PAL)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(PAL)");
           break;
         case ID_RESOLUTION_PAL16X9:
-          g_applicationMessenger.ExecBuiltIn("Resolution(PAL16x9)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(PAL16x9)");
           break;
         case ID_RESOLUTION_NTSC4X3:
-          g_applicationMessenger.ExecBuiltIn("Resolution(NTSC)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(NTSC)");
           break;
         case ID_RESOLUTION_NTSC16X9:
-          g_applicationMessenger.ExecBuiltIn("Resolution(NTSC16x9)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(NTSC16x9)");
           break;
         case ID_RESOLUTION_720P:
-          g_applicationMessenger.ExecBuiltIn("Resolution(720p)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(720p)");
           break;
         case ID_RESOLUTION_1080I:
-          g_applicationMessenger.ExecBuiltIn("Resolution(1080i)");
+          g_application.getApplicationMessenger().ExecBuiltIn("Resolution(1080i)");
           break;
         case ID_SKIN_RELOAD:
-          g_applicationMessenger.ExecBuiltIn("ReloadSkin");
+          g_application.getApplicationMessenger().ExecBuiltIn("ReloadSkin");
           break;
         case ID_SKIN_ACTIVATEWINDOW:
           OnActivateWindow();
@@ -179,7 +179,7 @@ void CXBMC_PC::OnActivateWindow()
     {
       CStdString command;
       command.Format("ActivateWindow(%s)", window.c_str());
-      g_applicationMessenger.ExecBuiltIn(command);
+      g_application.getApplicationMessenger().ExecBuiltIn(command);
     }
   }
   m_inDialog = false;
@@ -197,7 +197,7 @@ void CXBMC_PC::OnExecuteBuiltin()
     // now activate the window
     if (!command.IsEmpty())
     {
-      g_applicationMessenger.ExecBuiltIn(command);
+      g_application.getApplicationMessenger().ExecBuiltIn(command);
     }
   }
   m_inDialog = false;

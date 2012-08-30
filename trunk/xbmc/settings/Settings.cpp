@@ -215,7 +215,7 @@ bool CSettings::Load(bool& bXboxMediacenter, bool& bSettings)
       CLog::Log(LOGDEBUG, "Found <remote> tag");
       CLog::Log(LOGDEBUG, "Attempting to retrieve remote file: %s", strRemoteFile.c_str());
       // sometimes we have to wait for the network
-      if (!g_network.IsAvailable(true) && CFile::Exists(strRemoteFile))
+      if (!g_application.getNetwork().IsAvailable(true) && CFile::Exists(strRemoteFile))
       {
         if ( xmlDoc.LoadFile(strRemoteFile) )
         {

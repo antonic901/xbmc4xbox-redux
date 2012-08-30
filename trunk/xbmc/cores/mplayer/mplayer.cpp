@@ -21,6 +21,7 @@
 #include "ApplicationMessenger.h"
 #include "LangInfo.h"
 #include "utils/CharsetConverter.h"
+#include "Application.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1431,7 +1432,7 @@ void CMPlayer::Process()
         {
           //We need to restart now as interlacing mode has changed
           bWaitingRestart = true;
-          g_applicationMessenger.MediaRestart(false);
+          g_application.getApplicationMessenger().MediaRestart(false);
         }
       }
 
@@ -1915,7 +1916,7 @@ void CMPlayer::SetAudioStream(int iStream)
   g_settings.m_currentVideoSettings.m_AudioStream = mplayer_getAudioStreamInfo(iStream, NULL);
   options.SetAudioStream(g_settings.m_currentVideoSettings.m_AudioStream);
   //we need to restart after here for change to take effect
-  g_applicationMessenger.MediaRestart(false);
+  g_application.getApplicationMessenger().MediaRestart(false);
 }
 
 bool CMPlayer::CanSeek()
@@ -1943,7 +1944,7 @@ void CMPlayer::SeekTime(__int64 iTime)
     catch(win32_exception e)
     {
       e.writelog(__FUNCTION__);
-      g_applicationMessenger.MediaStop();
+      g_application.getApplicationMessenger().MediaStop();
     }
   }
   g_infoManager.m_performingSeek = false;
@@ -1967,7 +1968,7 @@ __int64 CMPlayer::GetTime()
     catch(win32_exception e)
     {
       e.writelog(__FUNCTION__);
-      g_applicationMessenger.MediaStop();
+      g_application.getApplicationMessenger().MediaStop();
     }
   }
 
@@ -1989,7 +1990,7 @@ int CMPlayer::GetTotalTime()
     catch(win32_exception e)
     {
       e.writelog(__FUNCTION__);
-      g_applicationMessenger.MediaStop();
+      g_application.getApplicationMessenger().MediaStop();
     }
   }
 

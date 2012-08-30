@@ -105,14 +105,14 @@ bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
               while (watch.GetElapsedMilliseconds() < 5000) ;
             if (iItem != 0 || g_settings.m_iLastLoadedProfileIndex != 0)
             {
-              g_network.NetworkMessage(CNetwork::SERVICES_DOWN,1);
-              g_network.Deinitialize();
+              g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+              g_application.getNetwork().Deinitialize();
 #ifdef HAS_XBOX_HARDWARE
               CLog::Log(LOGNOTICE, "stop fancontroller");
               CFanController::Instance()->Stop();
 #endif
               g_settings.LoadProfile(m_viewControl.GetSelectedItem());
-              g_network.SetupNetwork();
+              g_application.getNetwork().SetupNetwork();
             }
             else
             {
@@ -278,7 +278,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
       if (g_passwordManager.CheckLock(g_settings.m_vecProfiles[0].getLockMode(),g_settings.m_vecProfiles[0].getLockCode(),20075))
         g_passwordManager.iMasterLockRetriesLeft = g_guiSettings.GetInt("masterlock.maxretries");
       else // be inconvenient
-        g_applicationMessenger.Shutdown();
+        g_application.getApplicationMessenger().Shutdown();
 
       return true;
     }

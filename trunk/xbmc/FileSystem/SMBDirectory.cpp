@@ -41,7 +41,7 @@
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "PasswordManager.h"
-#include "ApplicationMessenger.h"
+#include "Application.h"
 #include "utils/SingleLock.h"
 
 struct CachedDirEntry
@@ -322,7 +322,7 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
           pDialog->SetLine(2, "");
 
           ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_OK, g_windowManager.GetActiveWindow()};
-          g_applicationMessenger.SendMessage(tMsg, false);
+          g_application.getApplicationMessenger().SendMessage(tMsg, false);
         }
         break;
       }

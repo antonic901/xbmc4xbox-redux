@@ -118,7 +118,7 @@ namespace PYXBMC
 
     ThreadMessage tMsg = {TMSG_WRITE_SCRIPT_OUTPUT};
     tMsg.strParam = s_line;
-    g_applicationMessenger.SendMessage(tMsg);
+    g_application.getApplicationMessenger().SendMessage(tMsg);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -182,7 +182,7 @@ namespace PYXBMC
   PyObject* XBMC_Shutdown(PyObject *self, PyObject *args)
   {
     ThreadMessage tMsg = {TMSG_SHUTDOWN};
-    g_applicationMessenger.SendMessage(tMsg);
+    g_application.getApplicationMessenger().SendMessage(tMsg);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -198,7 +198,7 @@ namespace PYXBMC
   PyObject* XBMC_Dashboard(PyObject *self, PyObject *args)
   {
     ThreadMessage tMsg = {TMSG_DASHBOARD};
-    g_applicationMessenger.SendMessage(tMsg);
+    g_application.getApplicationMessenger().SendMessage(tMsg);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -214,7 +214,7 @@ namespace PYXBMC
   PyObject* XBMC_Restart(PyObject *self, PyObject *args)
   {
     ThreadMessage tMsg = {TMSG_RESTART};
-    g_applicationMessenger.SendMessage(tMsg);
+    g_application.getApplicationMessenger().SendMessage(tMsg);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -236,7 +236,7 @@ namespace PYXBMC
 
     ThreadMessage tMsg = {TMSG_EXECUTE_SCRIPT};
     tMsg.strParam = cLine;
-    g_applicationMessenger.SendMessage(tMsg);
+    g_application.getApplicationMessenger().SendMessage(tMsg);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -258,7 +258,7 @@ namespace PYXBMC
     char *cLine = NULL;
     if (!PyArg_ParseTuple(args, (char*)"s", &cLine)) return NULL;
 
-    g_applicationMessenger.ExecBuiltIn(cLine);
+    g_application.getApplicationMessenger().ExecBuiltIn(cLine);
 
     Py_INCREF(Py_None);
     return Py_None;

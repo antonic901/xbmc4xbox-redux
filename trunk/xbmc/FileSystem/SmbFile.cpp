@@ -29,7 +29,7 @@
 #include "PasswordManager.h"
 #include "SMBDirectory.h"
 #include "Util.h"
-#include "xbox/Network.h"
+#include "Application.h"
 #include "utils/Win32Exception.h"
 #include "lib/libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
@@ -92,7 +92,7 @@ void CSMB::Init()
   CSingleLock lock(*this);
   if (!m_context)
   {
-    set_xbox_interface(g_network.m_networkinfo.ip, g_network.m_networkinfo.subnet);
+    set_xbox_interface(g_application.getNetwork().m_networkinfo.ip, g_application.getNetwork().m_networkinfo.subnet);
 #ifdef _WIN32
     // set the log function
     set_log_callback(xb_smbc_log);

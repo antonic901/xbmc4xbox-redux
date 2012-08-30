@@ -168,7 +168,7 @@ bool CGUIPassword::CheckStartUpLock()
   }
   else
   {
-    g_applicationMessenger.Shutdown(); // Turn off the box
+    g_application.getApplicationMessenger().Shutdown(); // Turn off the box
     return false;
   }
 }
@@ -286,7 +286,7 @@ void CGUIPassword::UpdateMasterLockRetryCount(bool bResetCount)
         {
           // Shutdown enabled, tell the user we're shutting off
           CGUIDialogOK::ShowAndGetInput(12345, 12346, 12347, 0);
-          g_applicationMessenger.Shutdown();
+          g_application.getApplicationMessenger().Shutdown();
           return ;
         }
         // Tell the user they ran out of retry attempts

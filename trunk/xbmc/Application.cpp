@@ -535,10 +535,10 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
       std::vector<int>::iterator it;
       for( it = netorder.begin();it != netorder.end(); it++)
       {
-        g_network.Deinitialize();
+        m_network.Deinitialize();
 
 #ifdef HAS_XBOX_NETWORK
-        if (!g_network.IsEthernetConnected())
+        if (!m_network.IsEthernetConnected())
         {
           FEH_TextOut(pFont, iLine, L"Network cable unplugged");
           break;
@@ -548,17 +548,17 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
         {
           case NETWORK_DASH:
             FEH_TextOut(pFont, iLine, L"Init network using dash settings...");
-            g_network.Initialize(NETWORK_DASH, "","","","");
+            m_network.Initialize(NETWORK_DASH, "","","","");
             break;
           case NETWORK_DHCP:
             FEH_TextOut(pFont, iLine, L"Init network using DHCP...");
-            g_network.Initialize(NETWORK_DHCP, "","","","");
+            m_network.Initialize(NETWORK_DHCP, "","","","");
             break;
           default:
             FEH_TextOut(pFont, iLine, L"Init network using static ip...");
             if( m_bXboxMediacenterLoaded )
             {
-              g_network.Initialize(NETWORK_STATIC,
+              m_network.Initialize(NETWORK_STATIC,
                     g_guiSettings.GetString("network.ipaddress").c_str(),
                     g_guiSettings.GetString("network.subnet").c_str(),
                     g_guiSettings.GetString("network.gateway").c_str(),
@@ -566,7 +566,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
             }
             else
             {
-              g_network.Initialize(NETWORK_STATIC,
+              m_network.Initialize(NETWORK_STATIC,
                     "192.168.0.42",
                     "255.255.255.0",
                     "192.168.0.1",
@@ -580,10 +580,10 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
 
         while (dwState == XNET_GET_XNADDR_PENDING)
         {
-          dwState = g_network.UpdateState();
+          dwState = m_network.UpdateState();
 
           if (HaveGamepad && AnyButtonDown())
-            g_applicationMessenger.Restart();
+            m_applicationMessenger.Restart();
 
           Sleep(50);
         }
@@ -613,7 +613,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
             Sleep(50);
 
             if (HaveGamepad && AnyButtonDown())
-              g_applicationMessenger.Restart();
+              m_applicationMessenger.Restart();
           }
         }
       }
@@ -622,7 +622,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
 
   if( NetworkUp )
   {
-    FEH_TextOut(pFont, iLine++, L"IP Address: %S", g_network.m_networkinfo.ip);
+    FEH_TextOut(pFont, iLine++, L"IP Address: %S", m_network.m_networkinfo.ip);
     ++iLine;
   }
 
@@ -1026,7 +1026,7 @@ HRESULT CApplication::Create(HWND hWnd)
         {
           // We do a hard reset to come back to default resolution and avoid infinite reboots
           CLog::Log(LOGINFO, "No infinite reboot loop...");
-          g_applicationMessenger.Reset();
+          m_applicationMessenger.Reset();
         }
       }
     }
@@ -1232,7 +1232,7 @@ HRESULT CApplication::Initialize()
 
   /* setup network based on our settings */
   /* network will start it's init procedure */
-  g_network.SetupNetwork();
+  m_network.SetupNetwork();
 
   StartServices();
 
@@ -1434,19 +1434,19 @@ void CApplication::StopIdleThread()
 
 void CApplication::StartWebServer()
 {
-  if (g_guiSettings.GetBool("services.webserver") && g_network.IsAvailable() )
+  if (g_guiSettings.GetBool("services.webserver") && m_network.IsAvailable() )
   {
     CLog::Log(LOGNOTICE, "Webserver: Starting...");
     CSectionLoader::Load("LIBHTTP");
     m_pWebServer = new CWebServer();
-    m_pWebServer->Start(g_network.m_networkinfo.ip, atoi(g_guiSettings.GetString("services.webserverport")), "Q:\\web", false);
+    m_pWebServer->Start(m_network.m_networkinfo.ip, atoi(g_guiSettings.GetString("services.webserverport")), "Q:\\web", false);
     if (m_pWebServer)
     {
       m_pWebServer->SetUserName(g_guiSettings.GetString("services.webserverusername").c_str());
        m_pWebServer->SetPassword(g_guiSettings.GetString("services.webserverpassword").c_str());
     }
     if (m_pWebServer && m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-      g_applicationMessenger.HttpApi("broadcastlevel; StartUp;1");
+      m_applicationMessenger.HttpApi("broadcastlevel; StartUp;1");
   }
 }
 
@@ -1466,7 +1466,7 @@ void CApplication::StopWebServer()
 void CApplication::StartFtpServer()
 {
 #ifdef HAS_FTP_SERVER
-  if ( g_guiSettings.GetBool("services.ftpserver") && g_network.IsAvailable() )
+  if ( g_guiSettings.GetBool("services.ftpserver") && m_network.IsAvailable() )
   {
     CLog::Log(LOGNOTICE, "XBFileZilla: Starting...");
     if (!m_pFileZilla)
@@ -1528,7 +1528,7 @@ void CApplication::StopFtpServer()
 void CApplication::StartTimeServer()
 {
 #ifdef HAS_TIME_SERVER
-  if (g_guiSettings.GetBool("locale.timeserver") && g_network.IsAvailable() )
+  if (g_guiSettings.GetBool("locale.timeserver") && m_network.IsAvailable() )
   {
     if( !m_psntpClient )
     {
@@ -1807,7 +1807,7 @@ void CApplication::CheckDate()
 
 void CApplication::StopServices()
 {
-  g_network.NetworkMessage(CNetwork::SERVICES_DOWN, 0);
+  m_network.NetworkMessage(CNetwork::SERVICES_DOWN, 0);
 
   CLog::Log(LOGNOTICE, "stop dvd detect media");
   m_DetectDVDType.StopThread();
@@ -2442,7 +2442,7 @@ bool CApplication::OnAction(CAction &action)
   {
     CStdString tmp;
     tmp.Format("%i",action.actionId);
-    g_applicationMessenger.HttpApi("broadcastlevel; OnAction:"+tmp+";2");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnAction:"+tmp+";2");
   }
 
   // special case for switching between GUI & fullscreen mode.
@@ -2499,7 +2499,7 @@ bool CApplication::OnAction(CAction &action)
     {
       if (GetTickCount() >= MarkTime + 3000)
       {
-        g_applicationMessenger.Shutdown();
+        m_applicationMessenger.Shutdown();
         return true;
       }
     }
@@ -3110,7 +3110,7 @@ void  CApplication::CheckForTitleChange()
         CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg && g_settings.m_HttpApiBroadcastLevel>=1)
         {
-          g_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
+          m_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
         }
       }
@@ -3127,7 +3127,7 @@ void  CApplication::CheckForTitleChange()
           msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+tagVal->GetArtist()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
         {
-          g_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
+          m_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
         }
       }
@@ -3511,7 +3511,7 @@ void CApplication::Stop()
     if (m_pXbmcHttp)
     {
       if(g_settings.m_HttpApiBroadcastLevel>=1)
-        g_applicationMessenger.HttpApi("broadcastlevel; ShutDown;1");
+        m_applicationMessenger.HttpApi("broadcastlevel; ShutDown;1");
 
       m_pXbmcHttp->shuttingDown=true;
       //Sleep(100);
@@ -3560,7 +3560,7 @@ void CApplication::Stop()
     g_DaapClient.Release();
 #endif
     //g_lcd->StopThread();
-    g_applicationMessenger.Cleanup();
+    m_applicationMessenger.Cleanup();
 
     CLog::Log(LOGNOTICE, "clean cached files!");
     g_RarManager.ClearCache(true);
@@ -4017,7 +4017,7 @@ void CApplication::OnPlayBackEnded()
   g_pythonParser.OnPlayBackEnded();
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-    g_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackEnded;1");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackEnded;1");
   
   if (IsPlayingAudio())
   {
@@ -4042,7 +4042,7 @@ void CApplication::OnPlayBackStarted()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-    g_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStarted;1");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStarted;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has started", __FUNCTION__);
 
@@ -4058,7 +4058,7 @@ void CApplication::OnQueueNextItem()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-  g_applicationMessenger.HttpApi("broadcastlevel; OnQueueNextItem;1");
+  m_applicationMessenger.HttpApi("broadcastlevel; OnQueueNextItem;1");
 
   CLog::Log(LOGDEBUG, "Player has asked for the next item");
 
@@ -4083,7 +4083,7 @@ void CApplication::OnPlayBackStopped()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-    g_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStopped;1");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStopped;1");
   
   if (IsPlayingAudio())
   {
@@ -4103,7 +4103,7 @@ void CApplication::OnPlayBackPaused()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-    g_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackPaused;1");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackPaused;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was paused", __FUNCTION__);
 }
@@ -4114,7 +4114,7 @@ void CApplication::OnPlayBackResumed()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-    g_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackResumed;1");
+    m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackResumed;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was resumed", __FUNCTION__);
 }
@@ -4128,7 +4128,7 @@ void CApplication::OnPlayBackSpeedChanged(int iSpeed)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSpeedChanged:%i;1",iSpeed);
-    g_applicationMessenger.HttpApi(tmp);
+    m_applicationMessenger.HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback speed changed", __FUNCTION__);
@@ -4143,7 +4143,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSeek:%i;1",iTime);
-    g_applicationMessenger.HttpApi(tmp);
+    m_applicationMessenger.HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
@@ -4159,7 +4159,7 @@ void CApplication::OnPlayBackSeekChapter(int iChapter)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSkeekChapter:%i;1",iChapter);
-    g_applicationMessenger.HttpApi(tmp);
+    m_applicationMessenger.HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
@@ -4581,7 +4581,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   {
     // reset our codec info - don't want that on screen
     g_infoManager.SetShowCodec(false);
-    g_applicationMessenger.PictureSlideShow(g_guiSettings.GetString("screensaver.slideshowpath"), true);
+    m_applicationMessenger.PictureSlideShow(g_guiSettings.GetString("screensaver.slideshowpath"), true);
     return;
   }
   else if (m_screenSaverMode == "Dim")
@@ -4646,7 +4646,7 @@ void CApplication::CheckShutdown()
 
   if ( m_shutdownTimer.GetElapsedSeconds() > g_guiSettings.GetInt("system.shutdowntime") * 60 )
   {
-    g_applicationMessenger.Shutdown(); // Turn off the box
+    m_applicationMessenger.Shutdown(); // Turn off the box
   }
 #endif
 }
@@ -5105,13 +5105,13 @@ void CApplication::Process()
 
   // process messages which have to be send to the gui
   // (this can only be done after g_windowManager.Render())
-  g_applicationMessenger.ProcessWindowMessages();
+  m_applicationMessenger.ProcessWindowMessages();
 
   // process any Python scripts
   g_pythonParser.Process();
 
   // process messages, even if a movie is playing
-  g_applicationMessenger.ProcessMessages();
+  m_applicationMessenger.ProcessMessages();
 
   // check for memory unit changes
 #ifdef HAS_XBOX_HARDWARE
@@ -5151,7 +5151,7 @@ void CApplication::Process()
 void CApplication::ProcessSlow()
 {
   // check our network state every 15 seconds or when net status changes
-  g_network.CheckNetwork(30);
+  m_network.CheckNetwork(30);
   
   // check if we need 2 spin down the harddisk
   CheckNetworkHDSpinDown();
@@ -5516,7 +5516,7 @@ void CApplication::SeekTime( double dTime )
             item.m_lStartOffset = (long)((dTime - startOfNewFile) * 75.0);
             // don't just call "PlayFile" here, as we are quite likely called from the
             // player thread, so we won't be able to delete ourselves.
-            g_applicationMessenger.PlayFile(item, true);
+            m_applicationMessenger.PlayFile(item, true);
           }
           return;
         }
@@ -5779,6 +5779,16 @@ void CApplication::SaveCurrentFileSettings()
       dbs.Close();
     }
   }
+}
+
+CApplicationMessenger& CApplication::getApplicationMessenger()
+{
+   return m_applicationMessenger;
+}
+
+CNetwork& CApplication::getNetwork()
+{
+   return m_network;
 }
 
 bool CApplication::IsCurrentThread() const

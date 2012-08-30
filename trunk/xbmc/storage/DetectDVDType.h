@@ -32,7 +32,7 @@
 #include "xbox/IoSupport.h"
 #include "FileSystem/cdioSupport.h"
 #include "utils/CriticalSection.h"
-
+#include "utils/event.h"
 #include "utils/Thread.h"
 
 namespace MEDIA_DETECT

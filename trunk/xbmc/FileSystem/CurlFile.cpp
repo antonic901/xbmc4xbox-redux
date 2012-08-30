@@ -28,7 +28,7 @@
 #include "settings/GUISettings.h"
 #include "utils/SystemInfo.h"
 #include "File.h"
-#include "xbox/network.h"
+#include "Application.h"
 
 #include <vector>
 #include <climits>
@@ -812,7 +812,7 @@ void CCurlFile::Reset()
 
 bool CCurlFile::Open(const CURL& url)
 {
-  if (!g_network.IsAvailable())
+  if (!g_application.getNetwork().IsAvailable())
     return false;
 
   m_opened = true;

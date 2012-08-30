@@ -105,7 +105,7 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
     g_application.StopPlaying();
     CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, g_windowManager.GetActiveWindow(), iCtrlID);
     g_windowManager.SendMessage(msg2);
-    g_network.NetworkMessage(CNetwork::SERVICES_DOWN,1);
+    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
     bool bOldMaster = g_passwordManager.bMasterUser;
     g_passwordManager.bMasterUser = true;
     g_settings.LoadProfile(iItem);
@@ -115,7 +115,7 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
 
     g_passwordManager.bMasterUser = bOldMaster;
     // Reinit network as the settings might have changed
-    g_network.SetupNetwork();
+    g_application.getNetwork().SetupNetwork();
     CGUIMessage msg3(GUI_MSG_SETFOCUS, g_windowManager.GetActiveWindow(), iCtrlID, 0);
     OnMessage(msg3);
     CGUIMessage msgSelect(GUI_MSG_ITEM_SELECT, g_windowManager.GetActiveWindow(), iCtrlID, msg2.GetParam1(), msg2.GetParam2());

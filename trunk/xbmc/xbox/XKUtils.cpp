@@ -146,7 +146,7 @@ void XKUtils::XBOXRebootToDash()
 {
   XLaunchNewImage( NULL, NULL );
 }
-// USE: g_applicationMessenger.Restart() or .Reset();
+// USE: g_application.getApplicationMessenger().Restart() or .Reset();
 // To Restart or Reset the box !!!
 void XKUtils::XBOXReset()
 {
@@ -161,7 +161,7 @@ void XKUtils::SetXBOXLEDStatus(UCHAR LEDStatus)
   Sleep(10);
   HalWriteSMBusValue(SMBDEV_PIC16L, PIC16L_CMD_LED_MODE, 0, 1);
 }
-// USE: g_applicationMessenger.Shutdown();
+// USE: g_application.getApplicationMessenger().Shutdown();
 // To Turn off the box !!!
 void XKUtils::XBOXPowerOff()
 {
@@ -170,7 +170,7 @@ void XKUtils::XBOXPowerOff()
   HalWriteSMBusValue(SMBDEV_PIC16L, PIC16L_CMD_POWER, 0, POWER_SUBCMD_POWER_OFF);
 }
 
-// USE: g_applicationMessenger.Restart() or .Reset();
+// USE: g_application.getApplicationMessenger().Restart() or .Reset();
 // To Restart or Reset the box !!!
 void XKUtils::XBOXPowerCycle()
 {

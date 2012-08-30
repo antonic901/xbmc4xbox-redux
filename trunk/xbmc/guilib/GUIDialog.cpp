@@ -183,7 +183,7 @@ void CGUIDialog::DoModalThreadSafe()
   ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, GetID(), g_windowManager.GetActiveWindow()};
   // first ensure we don't hold the graphics lock
   int numLocks = ExitCriticalSection(g_graphicsContext);
-  g_applicationMessenger.SendMessage(tMsg, true);
+  g_application.getApplicationMessenger().SendMessage(tMsg, true);
   RestoreCriticalSection(g_graphicsContext, numLocks);
 }
 

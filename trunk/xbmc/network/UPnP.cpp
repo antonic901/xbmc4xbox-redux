@@ -196,14 +196,14 @@ NPT_WinsockSystem NPT_WinsockSystem::Initializer;
 NPT_Result
 NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& interfaces)
 {
-    if (!g_network.IsAvailable(true))
+    if (!g_application.getNetwork().IsAvailable(true))
         return NPT_ERROR_NETWORK_DOWN;
 
     NPT_IpAddress primary_address;
-    primary_address.ResolveName(g_network.m_networkinfo.ip);
+    primary_address.ResolveName(g_application.getNetwork().m_networkinfo.ip);
 
     NPT_IpAddress netmask;
-    netmask.ResolveName(g_network.m_networkinfo.subnet);
+    netmask.ResolveName(g_application.getNetwork().m_networkinfo.subnet);
 
     NPT_IpAddress broadcast_address;        
     broadcast_address.ResolveName("255.255.255.255");
@@ -211,7 +211,7 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
     NPT_Flags flags = NPT_NETWORK_INTERFACE_FLAG_BROADCAST | NPT_NETWORK_INTERFACE_FLAG_MULTICAST;
 
     NPT_MacAddress mac;
-    //mac.SetAddress(NPT_MacAddress::TYPE_ETHERNET, g_network.m_networkinfo.mac, 6);
+    //mac.SetAddress(NPT_MacAddress::TYPE_ETHERNET, g_application.getNetwork().m_networkinfo.mac, 6);
 
     // create an interface object
     char iface_name[5];
@@ -1760,7 +1760,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
         // fetch the path to the thumbnail
         CStdString thumb = g_infoManager.GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
             
-        NPT_String ip = g_network.m_networkinfo.ip;
+        NPT_String ip = g_application.getNetwork().m_networkinfo.ip;
 
         // build url, use the internal device http server to serv the image
         NPT_HttpUrlQuery query;
@@ -1783,7 +1783,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
 NPT_Result
 CUPnPRenderer::OnNext(PLT_ActionReference& action)
 {
-    g_applicationMessenger.PlayListPlayerNext();
+    g_application.getApplicationMessenger().PlayListPlayerNext();
     return NPT_SUCCESS;
 }
 
@@ -1794,7 +1794,7 @@ NPT_Result
 CUPnPRenderer::OnPause(PLT_ActionReference& action)
 {
     if (!g_application.IsPaused())
-        g_applicationMessenger.MediaPause();
+        g_application.getApplicationMessenger().MediaPause();
     return NPT_SUCCESS;
 }
 
@@ -1805,7 +1805,7 @@ NPT_Result
 CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 {
     if (g_application.IsPaused()) {
-        g_applicationMessenger.MediaPause();
+        g_application.getApplicationMessenger().MediaPause();
     } else if (!g_application.IsPlaying()) {
         NPT_String uri, meta;
         PLT_Service* service;
@@ -1826,7 +1826,7 @@ CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 {
-    g_applicationMessenger.PlayListPlayerPrevious();
+    g_application.getApplicationMessenger().PlayListPlayerPrevious();
     return NPT_SUCCESS;
 }
 
@@ -1836,7 +1836,7 @@ CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnStop(PLT_ActionReference& action)
 {
-    g_applicationMessenger.MediaStop();
+    g_application.getApplicationMessenger().MediaStop();
     return NPT_SUCCESS;
 }
 
@@ -1927,13 +1927,13 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         } else if(object->m_ObjectClass.type.StartsWith("object.item.imageItem")) {
             bImageFile = true;
         }
-        bImageFile?g_applicationMessenger.PictureShow(item.GetPath())
-                  :g_applicationMessenger.MediaPlay(item);
+        bImageFile?g_application.getApplicationMessenger().PictureShow(item.GetPath())
+                  :g_application.getApplicationMessenger().MediaPlay(item);
     } else {
         bImageFile = NPT_String(PLT_MediaObject::GetUPnPClass(uri)).StartsWith("object.item.imageItem", true);
 
-        bImageFile?g_applicationMessenger.PictureShow((const char*)uri)
-                  :g_applicationMessenger.MediaPlay((const char*)uri);
+        bImageFile?g_application.getApplicationMessenger().PictureShow((const char*)uri)
+                  :g_application.getApplicationMessenger().MediaPlay((const char*)uri);
     }
 
     if (!g_application.IsPlaying()) {
@@ -2074,7 +2074,7 @@ CUPnP::CUPnP() :
     m_UPnP = new PLT_UPnP(1900, !broadcast);
 
     // keep main IP around
-    m_IP = g_network.m_networkinfo.ip;
+    m_IP = g_application.getNetwork().m_networkinfo.ip;
     NPT_List<NPT_IpAddress> list;
     if (NPT_SUCCEEDED(PLT_UPnPMessageHelper::GetIPAddresses(list))) {
         m_IP = (*(list.GetFirstItem())).ToString();

@@ -205,11 +205,11 @@ int CBuiltins::Execute(const CStdString& execString)
   
   if (execute.Equals("reboot") || execute.Equals("restart"))  //Will reboot the xbox, aka cold reboot
   {
-    g_applicationMessenger.Restart();
+    g_application.getApplicationMessenger().Restart();
   }
   else if (execute.Equals("shutdown"))
   {
-    g_applicationMessenger.Shutdown();
+    g_application.getApplicationMessenger().Shutdown();
   }
   else if (execute.Equals("dashboard"))
   {
@@ -220,23 +220,23 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("powerdown"))
   {
-    g_applicationMessenger.Powerdown();
+    g_application.getApplicationMessenger().Powerdown();
   }
   else if (execute.Equals("restartapp"))
   {
-    g_applicationMessenger.RestartApp();
+    g_application.getApplicationMessenger().RestartApp();
   }
   else if (execute.Equals("hibernate"))
   {
-    g_applicationMessenger.Hibernate();
+    g_application.getApplicationMessenger().Hibernate();
   }
   else if (execute.Equals("suspend"))
   {
-    g_applicationMessenger.Suspend();
+    g_application.getApplicationMessenger().Suspend();
   }
   else if (execute.Equals("quit"))
   {
-    g_applicationMessenger.Quit();
+    g_application.getApplicationMessenger().Quit();
   }
   else if (execute.Equals("loadprofile") && g_settings.m_vecProfiles[0].getLockMode() == LOCK_MODE_EVERYONE)
   {
@@ -244,9 +244,9 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if (g_settings.m_vecProfiles[i].getName().Equals(parameter))
       {
-        g_network.NetworkMessage(CNetwork::SERVICES_DOWN,1);
+        g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
         g_settings.LoadProfile(i);
-        g_network.SetupNetwork();
+        g_application.getNetwork().SetupNetwork();
       }
     }
   }
@@ -281,7 +281,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("reset")) //Will reset the xbox, aka soft reset
   {
-    g_applicationMessenger.Reset();
+    g_application.getApplicationMessenger().Reset();
   }
   else if (execute.Equals("activatewindow") || execute.Equals("replacewindow"))
   {
@@ -616,7 +616,7 @@ int CBuiltins::Execute(const CStdString& execString)
       if( g_application.IsPlaying() && g_application.m_pPlayer && g_application.m_pPlayer->CanRecord())
       {
         if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
-          g_applicationMessenger.HttpApi(g_application.m_pPlayer->IsRecording()?"broadcastlevel; RecordStopping;1":"broadcastlevel; RecordStarting;1");
+          g_application.getApplicationMessenger().HttpApi(g_application.m_pPlayer->IsRecording()?"broadcastlevel; RecordStopping;1":"broadcastlevel; RecordStarting;1");
         g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
       }
     }
@@ -1009,8 +1009,8 @@ int CBuiltins::Execute(const CStdString& execString)
     if (musicScan && musicScan->IsScanning())
       musicScan->StopScanning();
 
-    g_network.NetworkMessage(CNetwork::SERVICES_DOWN,1);
-    g_network.Deinitialize();
+    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+    g_application.getNetwork().Deinitialize();
 #ifdef HAS_XBOX_HARDWARE
     CLog::Log(LOGNOTICE, "stop fancontroller");
     CFanController::Instance()->Stop();
@@ -1018,7 +1018,7 @@ int CBuiltins::Execute(const CStdString& execString)
     g_settings.LoadProfile(0); // login screen always runs as default user
     g_passwordManager.bMasterUser = false;
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
-    g_network.SetupNetwork();
+    g_application.getNetwork().SetupNetwork();
   }
   else if (execute.Left(18).Equals("system.pwmcontrol"))
   {
@@ -1313,7 +1313,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("wakeonlan"))
   {
-    g_network.WakeOnLan((char*)params[0].c_str());
+    g_application.getNetwork().WakeOnLan((char*)params[0].c_str());
   }
   else
     return -1;

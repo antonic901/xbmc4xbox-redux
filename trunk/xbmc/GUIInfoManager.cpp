@@ -1566,37 +1566,37 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
 #endif
   case NETWORK_IP_ADDRESS:
     {
-      return g_network.m_networkinfo.ip;
+      return g_application.getNetwork().m_networkinfo.ip;
     }
     break;
   case NETWORK_SUBNET_ADDRESS:
     {
-      return g_network.m_networkinfo.subnet;
+      return g_application.getNetwork().m_networkinfo.subnet;
     }
     break;
   case NETWORK_GATEWAY_ADDRESS:
     {
-      return g_network.m_networkinfo.gateway;
+      return g_application.getNetwork().m_networkinfo.gateway;
     }
     break;
   case NETWORK_DNS1_ADDRESS:
     {
-      return g_network.m_networkinfo.DNS1;
+      return g_application.getNetwork().m_networkinfo.DNS1;
     }
     break;
   case NETWORK_DNS2_ADDRESS:
     {
-      return g_network.m_networkinfo.DNS2;
+      return g_application.getNetwork().m_networkinfo.DNS2;
     }
     break;
   case NETWORK_DHCP_ADDRESS:
     {
-      return g_network.m_networkinfo.dhcpserver;
+      return g_application.getNetwork().m_networkinfo.dhcpserver;
     }
     break;
   case NETWORK_IS_DHCP:
     {
-      if(g_network.m_networkinfo.DHCP)
+      if(g_application.getNetwork().m_networkinfo.DHCP)
         return g_localizeStrings.Get(148); // is dhcp ip
       else
         return g_localizeStrings.Get(147); // is fixed ip

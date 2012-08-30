@@ -442,7 +442,7 @@ bool CGUIDialogPluginSettings::ShowVirtualKeyboard(int iControl)
             CStdString action = NormalizePath(setting->Attribute("action"));
             if (option)
               bCloseDialog = (strcmpi(option, "close") == 0);
-            g_applicationMessenger.ExecBuiltIn(action);
+            g_application.getApplicationMessenger().ExecBuiltIn(action);
           }
         }
         else if (strcmp(type, "date") == 0)

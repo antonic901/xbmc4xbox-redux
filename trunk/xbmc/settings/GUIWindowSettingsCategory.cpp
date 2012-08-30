@@ -978,13 +978,13 @@ void CGUIWindowSettingsCategory::UpdateSettings()
         {
           //We are in non Static Mode! Setting the Received IP Information
           if(strSetting.Equals("network.ipaddress"))
-            pControl->SetLabel2(g_network.m_networkinfo.ip);
+            pControl->SetLabel2(g_application.getNetwork().m_networkinfo.ip);
           else if(strSetting.Equals("network.subnet"))
-            pControl->SetLabel2(g_network.m_networkinfo.subnet);
+            pControl->SetLabel2(g_application.getNetwork().m_networkinfo.subnet);
           else if(strSetting.Equals("network.gateway"))
-            pControl->SetLabel2(g_network.m_networkinfo.gateway);
+            pControl->SetLabel2(g_application.getNetwork().m_networkinfo.gateway);
           else if(strSetting.Equals("network.dns"))
-            pControl->SetLabel2(g_network.m_networkinfo.DNS1);
+            pControl->SetLabel2(g_application.getNetwork().m_networkinfo.DNS1);
         }
         pControl->SetEnabled(g_guiSettings.GetInt("network.assignment") == NETWORK_STATIC);
       }
@@ -2020,7 +2020,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     if (dlg->IsConfirmed())
     {
       g_settings.Save();
-      g_applicationMessenger.RestartApp();
+      g_application.getApplicationMessenger().RestartApp();
     }
   }
   else if (strSetting.Equals("services.upnpserver"))
@@ -2272,13 +2272,13 @@ void CGUIWindowSettingsCategory::CheckNetworkSettings()
     if (CGUIDialogYesNo::ShowAndGetInput(14038, 14039, 14040, 0))
     {
       // reset settings
-      g_applicationMessenger.RestartApp();
+      g_application.getApplicationMessenger().RestartApp();
       // Todo: aquire new network settings without restart app!
     }
     else*/
     {
-      g_network.NetworkMessage(CNetwork::SERVICES_DOWN,1);
-      g_network.SetupNetwork();
+      g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+      g_application.getNetwork().SetupNetwork();
     }
 
     // update our settings variables    
