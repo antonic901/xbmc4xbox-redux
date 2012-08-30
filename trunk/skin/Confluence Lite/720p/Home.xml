@@ -376,14 +376,13 @@
 				<height>60</height>
 				<onleft>9000</onleft>
 				<onright>9000</onright>
-				<onup>603</onup>
+				<onup>610</onup>
 				<ondown>9001</ondown>
 				<pagecontrol>-</pagecontrol>
 				<scrolltime>300</scrolltime>
 				<focusposition>2</focusposition>
 				<movement>1</movement>
 				<orientation>Horizontal</orientation>
-				<visible>Player.HasMedia</visible>
 				<itemlayout height="60" width="300">
 					<control type="image">
 						<posx>0</posx>
@@ -516,153 +515,6 @@
 					</item>
 				</content>
 			</control>
-			<control type="fixedlist" id="9000">
-				<posx>-110</posx>
-				<posy>5</posy>
-				<width>1500</width>
-				<height>60</height>
-				<onleft>9000</onleft>
-				<onright>9000</onright>
-				<onup>608</onup>
-				<ondown>9001</ondown>
-				<pagecontrol>-</pagecontrol>
-				<scrolltime>300</scrolltime>
-				<focusposition>2</focusposition>
-				<movement>1</movement>
-				<orientation>Horizontal</orientation>
-				<visible>!Player.HasMedia</visible>
-				<itemlayout height="60" width="300">
-					<control type="image">
-						<posx>0</posx>
-						<posy>4</posy>
-						<width>1</width>
-						<height>52</height>
-						<texture>HomeSeperator.png</texture>
-					</control>
-					<control type="image">
-						<posx>299</posx>
-						<posy>4</posy>
-						<width>1</width>
-						<height>52</height>
-						<texture>HomeSeperator.png</texture>
-					</control>
-					<control type="label">
-						<posx>150</posx>
-						<posy>0</posy>
-						<width>290</width>
-						<height>60</height>
-						<font>font_MainMenu</font>
-						<textcolor>grey3</textcolor>
-						<align>center</align>
-						<aligny>center</aligny>
-						<label>$INFO[ListItem.Label]</label>
-					</control>
-				</itemlayout>
-				<focusedlayout height="60" width="300">
-					<control type="image">
-						<posx>0</posx>
-						<posy>4</posy>
-						<width>1</width>
-						<height>52</height>
-						<texture>HomeSeperator.png</texture>
-					</control>
-					<control type="image">
-						<posx>299</posx>
-						<posy>4</posy>
-						<width>1</width>
-						<height>52</height>
-						<texture>HomeSeperator.png</texture>
-					</control>
-					<control type="label">
-						<posx>150</posx>
-						<posy>0</posy>
-						<width>290</width>
-						<height>60</height>
-						<font>font_MainMenu</font>
-						<textcolor>grey3</textcolor>
-						<align>center</align>
-						<aligny>center</aligny>
-						<label>$INFO[ListItem.Label]</label>
-					</control>
-					<control type="label">
-						<posx>150</posx>
-						<posy>0</posy>
-						<width>290</width>
-						<height>60</height>
-						<font>font_MainMenu</font>
-						<textcolor>blue</textcolor>
-						<align>center</align>
-						<aligny>center</aligny>
-						<label>$INFO[ListItem.Label]</label>
-						<visible>Control.HasFocus(9000)</visible>
-						<include>VisibleFadeEffect</include>
-					</control>
-				</focusedlayout>
-				<content>
-					<item id="7">
-						<label>8</label>
-						<onclick>ActivateWindow(Weather)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
-					</item>
-					<item id="4">
-						<label>1</label>
-						<onclick>ActivateWindow(Pictures)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoPicturesButton)</visible>
-					</item>
-					<item id="2">
-						<label>3</label>
-						<onclick>ActivateWindow(Videos,root)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
-					</item>
-					<item id="10">
-						<label>20342</label>
-						<onclick>ActivateWindow(VideoLibrary,Movies,return)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoMoviesButton) + Library.HasContent(Movies)</visible>
-					</item>
-					<item id="11">
-						<label>20343</label>
-						<onclick>ActivateWindow(VideoLibrary,TVShows,return)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton) + Library.HasContent(TVShows)</visible>
-					</item>
-					<item id="3">
-						<label>2</label>
-						<onclick>ActivateWindow(Music,root)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
-					</item>
-					<item id="1">
-						<label>0</label>
-						<onclick>ActivateWindow(Programs)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
-					</item>
-					<item id="6">
-						<label>341</label>
-						<onclick>XBMC.PlayDVD()</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-						<visible>System.HasMediaDVD</visible>
-					</item>
-					<item id="5">
-						<label>13000</label>
-						<onclick>ActivateWindow(Settings)</onclick>
-						<icon>-</icon>
-						<thumb>-</thumb>
-					</item>
-				</content>
-			</control>
 			<control type="image">
 				<posx>0</posx>
 				<posy>6</posy>
@@ -694,7 +546,6 @@
 			<ondown>-</ondown>
 			<visible>false</visible>
 		</control>
-		
 		<control type="group" id="9002">
 			<onup>9001</onup>
 			<ondown>20</ondown>
@@ -751,7 +602,6 @@
 				</content>
 			</control>
 		</control>
-		
 		<control type="group">
 			<posx>0</posx>
 			<posy>33r</posy>
@@ -778,7 +628,6 @@
 				<texture>icon-rss.png</texture>
 			</control>
 		</control>
-
 		<control type="group" id="10">
 			<posx>20</posx>
 			<posy>55r</posy>
