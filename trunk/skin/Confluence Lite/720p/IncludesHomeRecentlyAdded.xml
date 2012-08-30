@@ -2,7 +2,7 @@
 	<include name="HomeRecentlyAddedInfo">
 		<control type="group" id="9003">
 			<onup>20</onup>
-			<ondown>603</ondown>
+			<ondown>608</ondown>
 			<visible>!Window.IsVisible(Favourites)</visible>
 			<include>VisibleFadeEffect</include>
 			<animation effect="fade" time="300" delay="1000">WindowOpen</animation>

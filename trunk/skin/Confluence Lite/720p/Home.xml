@@ -249,8 +249,8 @@
 			<font>-</font>
 			<texturefocus>-</texturefocus>
 			<texturenofocus>-</texturenofocus>
-			<onleft>9000</onleft>
-			<onright>9000</onright>
+			<onleft>-</onleft>
+			<onright>-</onright>
 			<onup>20</onup>
 			<ondown>608</ondown>
 			<visible>false</visible>
@@ -268,11 +268,25 @@
 			<font>-</font>
 			<texturefocus>-</texturefocus>
 			<texturenofocus>-</texturenofocus>
-			<onleft>9000</onleft>
-			<onright>9000</onright>
-			<onup>603</onup>
-			<ondown>603</ondown>
-			<visible>false</visible>
+			<onfocus>SetFocus(603)</onfocus>
+			<visible>Skin.HasSetting(HomepageHideGlobalSearchButton)</visible>
+		</control>
+		
+		<control type="button" id="603">
+			<description>Hidden Button to pass through navigation when media playback is stopped</description>
+			<posx>-20</posx>
+			<posy>-20</posy>
+			<width>1</width>
+			<height>1</height>
+			<label>-</label>
+			<font>-</font>
+			<texturefocus>-</texturefocus>
+			<texturenofocus>-</texturenofocus>
+			<onleft>-</onleft>
+			<onright>-</onright>
+			<onup>9003</onup>
+			<ondown>9000</ondown>
+			<enable>!Player.HasMedia</enable>
 		</control>
 		
 		<control type="group">
@@ -535,8 +549,8 @@
 			<texturenofocus>-</texturenofocus>
 			<onleft>-</onleft>
 			<onright>-</onright>
-			<onup>9001</onup>
-			<ondown>20</ondown>
+			<onup>-</onup>
+			<ondown>-</ondown>
 			<visible>false</visible>
 		</control>
 		
@@ -668,7 +682,7 @@
 				<texturenofocus border="5">floor_button.png</texturenofocus>
 				<onleft>20</onleft>
 				<onright>20</onright>
-				<onup>9004</onup>
+				<onup>9002</onup>
 				<ondown>9003</ondown>
 			</control>
 			<control type="image">
