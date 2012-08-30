@@ -461,7 +461,7 @@
 						<texturefocus>MenuItemFO.png</texturefocus>
 						<texturenofocus>MenuItemNF.png</texturenofocus>
 					</control>
-					
+					<!--
 					<control type="radiobutton" id="207">
 						<description>Show Search button</description>
 						<width>750</width>
@@ -475,7 +475,7 @@
 						<texturefocus>MenuItemFO.png</texturefocus>
 						<texturenofocus>MenuItemNF.png</texturenofocus>
 					</control>
-					
+					-->
 					<control type="label" id="220">
 						<width>750</width>
 						<height>45</height>
