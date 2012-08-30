@@ -22,8 +22,6 @@
  */
 
 #include "utils/SingleLock.h"
-#include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
-#include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
 #include <queue>
 
