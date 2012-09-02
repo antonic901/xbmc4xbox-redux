@@ -264,7 +264,6 @@
 			</control>
 			<control type="spincontrol" id="121">
 				<description>Next page button</description>
-				<description>Next page button</description>
 				<posx>520</posx>
 				<posy>650</posy>
 				<subtype>page</subtype>
