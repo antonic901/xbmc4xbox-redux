@@ -277,9 +277,6 @@
 			<font>-</font>
 			<texturefocus>-</texturefocus>
 			<texturenofocus>-</texturenofocus>
-			<onleft>-</onleft>
-			<onright>-</onright>
-			<onup>9003</onup>
 			<onfocus>SetFocus(603)</onfocus>
 			<visible>Player.HasMedia</visible>
 		</control>
