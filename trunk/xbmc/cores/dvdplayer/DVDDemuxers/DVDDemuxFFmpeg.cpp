@@ -781,7 +781,7 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
   if (!pPacket) return NULL;
 
   // check streams, can we make this a bit more simple?
-  if (pPacket && pPacket->iStreamId >= 0 && pPacket->iStreamId <= MAX_STREAMS)
+  if (pPacket && pPacket->iStreamId >= 0 && pPacket->iStreamId < MAX_STREAMS)
   {
     if (!m_streams[pPacket->iStreamId] ||
         m_streams[pPacket->iStreamId]->pPrivate != m_pFormatContext->streams[pPacket->iStreamId] ||
@@ -1018,8 +1018,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
         {
           CDemuxStreamSubtitleFFmpeg* st = new CDemuxStreamSubtitleFFmpeg(this, pStream);
           m_streams[iId] = st;
-          if(pStream->codec)
-            st->identifier = pStream->codec->sub_id;
+          st->identifier = pStream->codec->sub_id;
 	    
           if(m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0))
             st->m_description = m_dllAvUtil.av_dict_get(pStream->metadata, "title", NULL, 0)->value;
