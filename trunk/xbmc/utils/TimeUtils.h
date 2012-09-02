@@ -32,8 +32,11 @@ int64_t CurrentHostFrequency(void);
 class CTimeUtils
 {
 public:
-  static unsigned int GetFrameTime();
+  static void UpdateFrameTime();      ///< update the frame time.  Not threadsafe
+  static unsigned int GetFrameTime(); ///< returns the frame time in MS.  Not threadsafe
   static unsigned int GetTimeMS();
   static CDateTime GetLocalTime(time_t time);
+private:
+  static unsigned int frameTime;
 };
 

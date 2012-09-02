@@ -45,9 +45,9 @@
 #endif
 #else
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
-  #pragma comment (lib,"../../xbmc/guilib/freetype2/freetype221_D.lib")
+  #pragma comment (lib,"../../xbmc/lib/freetype/libs/freetype2410_D.li")
 #elif !defined(__GNUC__)
-  #pragma comment (lib,"../../xbmc/guilib/freetype2/freetype221.lib")
+  #pragma comment (lib,"../../xbmc/lib/freetype/libs/freetype2410.lib")
 #endif
 #endif
 

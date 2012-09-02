@@ -23,7 +23,7 @@
 #include "DirectInputMouse.h"
 #include "DirectInput.h"
 
-#include "../../Tools/Win32/XBMC_PC.h"
+#include "../Tools/Win32/XBMC_PC.h"
 extern CXBMC_PC *g_xbmcPC;
 
 CDirectInputMouse::CDirectInputMouse()

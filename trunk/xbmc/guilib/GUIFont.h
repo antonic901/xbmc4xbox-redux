@@ -9,6 +9,8 @@
 
 #include "utils/StdString.h"
 
+#include <assert.h>
+
 typedef uint32_t character_t;
 typedef uint32_t color_t;
 typedef std::vector<character_t> vecText;

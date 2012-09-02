@@ -1,6 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBMC_PC", "XBMC_PC.vcproj", "{3A68081D-E8F9-4523-9436-530DE9E5530A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2246C042-AF11-42A3-8E1E-0CE462F0FA99} = {2246C042-AF11-42A3-8E1E-0CE462F0FA99}
 		{B2975495-FBE4-4F94-AAC5-B21A9842BF50} = {B2975495-FBE4-4F94-AAC5-B21A9842BF50}
 		{510441AC-B9E1-4B31-9C0C-EB3AD39D90C4} = {510441AC-B9E1-4B31-9C0C-EB3AD39D90C4}
 		{FE0A91C0-E30A-47CD-8A92-A508C9292452} = {FE0A91C0-E30A-47CD-8A92-A508C9292452}
@@ -15,6 +16,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libPlatinum_PC", "..\..\xbm
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnrarXLib", "..\..\xbmc\lib\UnrarXLib\UnrarXLib.vcproj", "{FE0A91C0-E30A-47CD-8A92-A508C9292452}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapetag", "..\..\xbmc\lib\libapetag\libapetag.vcproj", "{2246C042-AF11-42A3-8E1E-0CE462F0FA99}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -40,6 +45,10 @@ Global
 		{FE0A91C0-E30A-47CD-8A92-A508C9292452}.Debug.Build.0 = Debug (Win32)|Win32
 		{FE0A91C0-E30A-47CD-8A92-A508C9292452}.Release.ActiveCfg = Release (Win32)|Win32
 		{FE0A91C0-E30A-47CD-8A92-A508C9292452}.Release.Build.0 = Release (Win32)|Win32
+		{2246C042-AF11-42A3-8E1E-0CE462F0FA99}.Debug.ActiveCfg = Debug|Xbox
+		{2246C042-AF11-42A3-8E1E-0CE462F0FA99}.Debug.Build.0 = Debug|Xbox
+		{2246C042-AF11-42A3-8E1E-0CE462F0FA99}.Release.ActiveCfg = Release|Xbox
+		{2246C042-AF11-42A3-8E1E-0CE462F0FA99}.Release.Build.0 = Release|Xbox
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

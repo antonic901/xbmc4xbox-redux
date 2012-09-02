@@ -20,7 +20,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;freetype2/include;../lib/boost;../guilib;../utils"
+				AdditionalIncludeDirectories="..;../lib/freetype/include;../lib/boost;../guilib;../utils"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				StringPooling="FALSE"
 				MinimalRebuild="TRUE"
@@ -64,7 +64,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../;freetype2/include;../lib/boost"
+				AdditionalIncludeDirectories="..;../lib/freetype/include;../lib/boost;../guilib;../utils"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -184,6 +184,9 @@
 				RelativePath=".\GUIInfoTypes.h">
 			</File>
 			<File
+				RelativePath=".\GUILabel.cpp">
+			</File>
+			<File
 				RelativePath=".\GUILabelControl.cpp">
 			</File>
 			<File
@@ -251,6 +254,9 @@
 			</File>
 			<File
 				RelativePath=".\GUIStandardWindow.cpp">
+			</File>
+			<File
+				RelativePath=".\GUIStaticItem.cpp">
 			</File>
 			<File
 				RelativePath=".\GUITextBox.cpp">
@@ -405,6 +411,9 @@
 				RelativePath=".\GUIInfoColor.h">
 			</File>
 			<File
+				RelativePath=".\GUILabel.h">
+			</File>
+			<File
 				RelativePath=".\GUILabelControl.h">
 			</File>
 			<File
@@ -472,6 +481,9 @@
 			</File>
 			<File
 				RelativePath=".\GUIStandardWindow.h">
+			</File>
+			<File
+				RelativePath=".\GUIStaticItem.h">
 			</File>
 			<File
 				RelativePath=".\GUITextBox.h">

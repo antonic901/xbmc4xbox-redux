@@ -18,10 +18,11 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
- 
+
 #include "utils/log.h"
 #include "DummyVideoPlayer.h"
 #include "GUIFontManager.h"
+#include "GUIFont.h"
 #include "GUITextLayout.h"
 #include "Application.h"
 #include "settings/AdvancedSettings.h"

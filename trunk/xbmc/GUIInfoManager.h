@@ -29,7 +29,7 @@
 
 #include "utils/StringUtils.h"
 #include "Temperature.h"
-#include "CriticalSection.h"
+#include "utils/CriticalSection.h"
 #include "IMsgTargetCallback.h"
 #include "inttypes.h"
 

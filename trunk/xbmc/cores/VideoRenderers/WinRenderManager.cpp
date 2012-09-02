@@ -22,6 +22,7 @@
 #include "utils/log.h"
 #include "WinRenderManager.h"
 #include "ApplicationMessenger.h"
+#include "Application.h"
 
 
 CWinRenderManager g_renderManager;

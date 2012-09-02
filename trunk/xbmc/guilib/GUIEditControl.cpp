@@ -497,7 +497,7 @@ void CGUIEditControl::OnPasteClipboard()
       }
     }
     CloseClipboard();
-    UpdateText();
+    OnTextChanged();
   }
 #endif
 }
