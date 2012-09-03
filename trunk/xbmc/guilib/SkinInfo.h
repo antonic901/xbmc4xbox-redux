@@ -74,6 +74,8 @@ public:
 
   inline float GetSkinZoom() { return m_skinzoom; };
 
+  inline float GetLegacy() { return m_bLegacy; };
+
   inline const RESOLUTION& GetDefaultWideResolution() { return m_DefaultResolutionWide; };
   inline const RESOLUTION& GetDefaultResolution() { return m_DefaultResolution; };
 
@@ -97,6 +99,8 @@ protected:
   bool m_onlyAnimateToHome;
 
   float m_skinzoom;
+
+  bool m_bLegacy;
 };
 
 extern CSkinInfo g_SkinInfo;

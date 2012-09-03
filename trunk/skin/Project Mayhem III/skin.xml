@@ -5,6 +5,9 @@
   
   <!-- amount to zoom skin to remove overscan compensation -->
   <zoom>1</zoom>
+	
+	<!-- legacy skin mode - to allow old skin behaviour such as button overflow without scrolling -->
+	<legacy>true</legacy>
   
   <credits>
     <skinname>Project Mayhem III</skinname>

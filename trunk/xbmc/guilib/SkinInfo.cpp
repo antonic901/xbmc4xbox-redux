@@ -28,6 +28,7 @@
 #include "utils/URIUtils.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
+#include "XMLUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -46,6 +47,7 @@ CSkinInfo::CSkinInfo()
   m_onlyAnimateToHome = true;
   m_Version = 1.0;
   m_skinzoom = 1.0f;
+  m_bLegacy = false;
 }
 
 CSkinInfo::~CSkinInfo()
@@ -107,6 +109,9 @@ void CSkinInfo::Load(const CStdString& strSkinDir)
         m_Version = StringUtils::GetFloat(pChild->FirstChild()->Value());
         CLog::Log(LOGINFO, "Skin version is: %s", pChild->FirstChild()->Value());
       }
+
+      // get the legacy parameter to tweak the control behaviour for old skins such as PM3
+      XMLUtils::GetBoolean(pRootElement, "legacy", m_bLegacy);    
 
       // get the effects slowdown parameter
       pChild = pRootElement->FirstChild("effectslowdown");

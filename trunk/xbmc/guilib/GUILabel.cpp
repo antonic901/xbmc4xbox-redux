@@ -21,6 +21,7 @@
 
 #define NOMINMAX
 #include "GUILabel.h"
+#include "SkinInfo.h"
 #include "utils/CharsetConverter.h"
 #include <limits>
 
@@ -74,6 +75,18 @@ void CGUILabel::Render()
   color_t color = GetColor();
   bool renderSolid = (m_color == COLOR_DISABLED);
   bool overFlows = (m_renderRect.Width() + 0.5f < m_textLayout.GetTextWidth()); // 0.5f to deal with floating point rounding issues
+
+  // compatibility for old skins like pm3 where text overflowed even if a width set,
+  // and with no width set, the right alignment was based on calculated length.
+  if (g_SkinInfo.GetLegacy() && overFlows && !m_renderRect.Width()) {
+    overFlows = false;
+    m_renderRect.x2 = m_renderRect.x1 + m_textLayout.GetTextWidth();
+    if (m_label.align & XBFONT_RIGHT) {
+      m_renderRect.x1 -= m_textLayout.GetTextWidth();
+      m_renderRect.x2 -= m_textLayout.GetTextWidth();
+    }
+  }
+
   if (overFlows && m_scrolling && !renderSolid)
     m_textLayout.RenderScrolling(m_renderRect.x1, m_renderRect.y1, m_label.angle, color, m_label.shadowColor, 0, m_renderRect.Width(), m_scrollInfo);
   else

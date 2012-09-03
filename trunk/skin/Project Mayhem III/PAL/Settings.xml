@@ -184,7 +184,7 @@
 			<description>My Videos</description>
 			<posx>210</posx>
 			<posy>150</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-videos-focus.png</texturefocus>
 			<texturenofocus>settings-videos-nofocus.png</texturenofocus>
@@ -206,7 +206,7 @@
 			<description>My Music</description>
 			<posx>330</posx>
 			<posy>150</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-music-focus.png</texturefocus>
 			<texturenofocus>settings-music-nofocus.png</texturenofocus>
@@ -228,7 +228,7 @@
 			<description>My Pictures</description>
 			<posx>450</posx>
 			<posy>150</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-pictures-focus.png</texturefocus>
 			<texturenofocus>settings-pictures-nofocus.png</texturenofocus>
@@ -250,7 +250,7 @@
 			<description>My Programs</description>
 			<posx>570</posx>
 			<posy>150</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-programs-focus.png</texturefocus>
 			<texturenofocus>settings-programs-nofocus.png</texturenofocus>
@@ -272,7 +272,7 @@
 			<description>My Weather</description>
 			<posx>210</posx>
 			<posy>325</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-weather-focus.png</texturefocus>
 			<texturenofocus>settings-weather-nofocus.png</texturenofocus>
@@ -294,7 +294,7 @@
 			<description>Network</description>
 			<posx>330</posx>
 			<posy>325</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-network-focus.png</texturefocus>
 			<texturenofocus>settings-network-nofocus.png</texturenofocus>
@@ -316,7 +316,7 @@
 			<description>System</description>
 			<posx>450</posx>
 			<posy>325</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-system-focus.png</texturefocus>
 			<texturenofocus>settings-system-nofocus.png</texturenofocus>
@@ -338,7 +338,7 @@
 			<description>Appearance</description>
 			<posx>570</posx>
 			<posy>325</posy>
-			<width>100</width>
+			<width>120</width>
 			<height>100</height>
 			<texturefocus>settings-appearance-focus.png</texturefocus>
 			<texturenofocus>settings-appearance-nofocus.png</texturenofocus>
