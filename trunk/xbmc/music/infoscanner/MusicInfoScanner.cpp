@@ -124,7 +124,7 @@ void CMusicInfoScanner::Process()
 
       if (commit)
       {
-        g_infoManager.ResetLibraryBools();
+        g_infoManager.ResetPersistentCache();
 
         if (m_needsCleanup)
         {

@@ -4325,7 +4325,7 @@ void CMusicDatabase::ImportFromXML(const CStdString &xmlFile)
     }
     CommitTransaction();
 
-    g_infoManager.ResetLibraryBools();
+    g_infoManager.ResetPersistentCache();
   }
   catch (...)
   {
