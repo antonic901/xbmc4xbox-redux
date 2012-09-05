@@ -1834,7 +1834,6 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
       m_pDS->close();
       return true;
     }
-    std::vector<int> ids;
     CStdString strSongsToDelete = "(";
     while (!m_pDS->eof())
     { // get the full song path
@@ -1856,7 +1855,6 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
       if (!CFile::Exists(strFileName))
       { // file no longer exists, so add to deletion list
         strSongsToDelete += m_pDS->fv("song.idSong").get_asString() + ",";
-        ids.push_back(m_pDS->fv("song.idSong").get_asInt());
       }
       m_pDS->next();
     }
@@ -1872,9 +1870,6 @@ bool CMusicDatabase::CleanupSongsByIds(const CStdString &strSongIds)
     m_pDS->exec(strSQL.c_str());
     strSQL = "delete from karaokedata where idSong in " + strSongsToDelete;
     m_pDS->exec(strSQL.c_str());
-
-    for (unsigned int i = 0; i < ids.size(); i++)
-      AnnounceRemove("song", ids[i]);
 
     m_pDS->close();
     return true;
@@ -3811,12 +3806,14 @@ bool CMusicDatabase::RemoveSongsFromPath(const CStdString &path1, CSongMap &song
     int iRowsFound = m_pDS->num_rows();
     if (iRowsFound > 0)
     {
+      std::vector<int> ids;
       CStdString songIds = "(";
       while (!m_pDS->eof())
       {
         CSong song = GetSongFromDataset();
         songs.Add(song.strFileName, song);
         songIds += PrepareSQL("%i,", song.idSong);
+        ids.push_back(song.idSong);
         m_pDS->next();
       }
       songIds.TrimRight(",");
@@ -3833,6 +3830,9 @@ bool CMusicDatabase::RemoveSongsFromPath(const CStdString &path1, CSongMap &song
       m_pDS->exec(sql.c_str());
       sql = "delete from karaokedata where idSong in " + songIds;
       m_pDS->exec(sql.c_str());
+
+      for (unsigned int i = 0; i < ids.size(); i++)
+        AnnounceRemove("song", ids[i]);
     }
     // and remove the path as well (it'll be re-added later on with the new hash if it's non-empty)
     sql = PrepareSQL("delete from path where strPath like '%s%s'", path.c_str(), (exact?"":"%"));
