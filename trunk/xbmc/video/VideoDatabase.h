@@ -611,7 +611,13 @@ protected:
 private:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 39; };
+
+  /*! \brief (Re)Create the generic database views for movies, tvshows,
+     episodes and music videos
+   */
+  void CreateViews();
+
+  virtual int GetMinVersion() const { return 40; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
