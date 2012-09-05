@@ -979,6 +979,7 @@ int CGUIInfoManager::TranslateListItem(const CStdString &info)
   else if (info.Equals("lastplayed")) return LISTITEM_LASTPLAYED;
   else if (info.Equals("playcount")) return LISTITEM_PLAYCOUNT;
   else if (info.Equals("discnumber")) return LISTITEM_DISC_NUMBER;
+  else if (info.Equals("isresumable")) return LISTITEM_IS_RESUMABLE;
   else if (info.Left(9).Equals("property(")) return AddListItemProp(info.Mid(9, info.GetLength() - 10));
   return 0;
 }
@@ -4227,6 +4228,8 @@ bool CGUIInfoManager::GetItemBool(const CGUIListItem *item, int condition) const
     return item->IsSelected();
   else if (condition == LISTITEM_IS_FOLDER)
     return item->m_bIsFolder;
+  else if (condition == LISTITEM_IS_RESUMABLE)
+    return (item->IsFileItem() && ((const CFileItem *)item)->HasVideoInfoTag() && ((const CFileItem *)item)->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds > 0);
   return false;
 }
 
