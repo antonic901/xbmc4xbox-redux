@@ -124,7 +124,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
 
     CLog::Log(LOGINFO, "create actorlinkmovie table");
-    m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text, iOrder integer)\n");
+    m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkmovie_1 ON actorlinkmovie ( idActor, idMovie )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkmovie_2 ON actorlinkmovie ( idMovie, idActor )\n");
 
@@ -166,7 +166,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_directorlinktvshow_2 ON directorlinktvshow ( idShow, idDirector )\n");
 
     CLog::Log(LOGINFO, "create actorlinktvshow table");
-    m_pDS->exec("CREATE TABLE actorlinktvshow ( idActor integer, idShow integer, strRole text, iOrder integer)\n");
+    m_pDS->exec("CREATE TABLE actorlinktvshow ( idActor integer, idShow integer, strRole text)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinktvshow_1 ON actorlinktvshow ( idActor, idShow )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinktvshow_2 ON actorlinktvshow ( idShow, idActor )\n");
 
@@ -204,7 +204,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_tvshowlinkpath_2 ON tvshowlinkpath ( idPath, idShow )\n");
 
     CLog::Log(LOGINFO, "create actorlinkepisode table");
-    m_pDS->exec("CREATE TABLE actorlinkepisode ( idActor integer, idEpisode integer, strRole text, iOrder integer)\n");
+    m_pDS->exec("CREATE TABLE actorlinkepisode ( idActor integer, idEpisode integer, strRole text)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkepisode_1 ON actorlinkepisode ( idActor, idEpisode )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkepisode_2 ON actorlinkepisode ( idEpisode, idActor )\n");
 
@@ -1143,7 +1143,7 @@ int CVideoDatabase::AddActor(const CStdString& strActor, const CStdString& strTh
 
 
 
-void CVideoDatabase::AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role, int order)
+void CVideoDatabase::AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role)
 {
   try
   {
@@ -1196,19 +1196,19 @@ void CVideoDatabase::AddSetToMovie(int idMovie, int idSet)
 }
 
 //****Actors****
-void CVideoDatabase::AddActorToMovie(int idMovie, int idActor, const CStdString& strRole, int order)
+void CVideoDatabase::AddActorToMovie(int idMovie, int idActor, const CStdString& strRole)
 {
-  AddLinkToActor("actorlinkmovie", idActor, "idMovie", idMovie, strRole, order);
+  AddLinkToActor("actorlinkmovie", idActor, "idMovie", idMovie, strRole);
 }
 
-void CVideoDatabase::AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole, int order)
+void CVideoDatabase::AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole)
 {
-  AddLinkToActor("actorlinktvshow", idActor, "idShow", idTvShow, strRole, order);
+  AddLinkToActor("actorlinktvshow", idActor, "idShow", idTvShow, strRole);
 }
 
-void CVideoDatabase::AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole, int order)
+void CVideoDatabase::AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole)
 {
-  AddLinkToActor("actorlinkepisode", idActor, "idEpisode", idEpisode, strRole, order);
+  AddLinkToActor("actorlinkepisode", idActor, "idEpisode", idEpisode, strRole);
 }
 
 void CVideoDatabase::AddArtistToMusicVideo(int idMVideo, int idArtist)
@@ -1730,11 +1730,10 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
     }
 
     // add cast...
-    int order = 0;
     for (CVideoInfoTag::iCast it = info.m_cast.begin(); it != info.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToMovie(idMovie, idActor, it->strRole, order++);
+      AddActorToMovie(idMovie, idActor, it->strRole);
     }
 
     // add sets...
@@ -1805,11 +1804,10 @@ int CVideoDatabase::SetDetailsForTvShow(const CStdString& strPath, const CVideoI
     AddGenreAndDirectorsAndStudios(details,vecDirectors,vecGenres,vecStudios);
 
     // add cast...
-    int order = 0;
     for (CVideoInfoTag::iCast it = details.m_cast.begin(); it != details.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToTvShow(idTvShow, idActor, it->strRole, order++);
+      AddActorToTvShow(idTvShow, idActor, it->strRole);
     }
 
     unsigned int i;
@@ -1868,11 +1866,10 @@ int CVideoDatabase::SetDetailsForEpisode(const CStdString& strFilenameAndPath, c
     AddGenreAndDirectorsAndStudios(details,vecDirectors,vecGenres,vecStudios);
 
     // add cast...
-    int order = 0;
     for (CVideoInfoTag::iCast it = details.m_cast.begin(); it != details.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToEpisode(idEpisode, idActor, it->strRole, order++);
+      AddActorToEpisode(idEpisode, idActor, it->strRole);
     }
 
     // add writers...
@@ -3808,14 +3805,6 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
     if (iVersion < 40)
     {
       CreateViews();
-    }
-    if (iVersion < 51)
-    {
-      // Add iOrder fields to actorlink* tables to be able to list
-      // actors by importance
-      m_pDS->exec("ALTER TABLE actorlinkmovie ADD iOrder integer");
-      m_pDS->exec("ALTER TABLE actorlinktvshow ADD iOrder integer");
-      m_pDS->exec("ALTER TABLE actorlinkepisode ADD iOrder integer");
     }
   }
   catch (...)
