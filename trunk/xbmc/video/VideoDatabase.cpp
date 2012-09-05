@@ -6674,10 +6674,10 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       pObserver->OnStateChanged(CLEANING_UP_DATABASE);
     }
 
-    CStdString filesToDelete = "(";
-    CStdString moviesToDelete = "(";
-    CStdString episodesToDelete = "(";
-    CStdString musicVideosToDelete = "(";
+    CStdString filesToDelete = "";
+    CStdString moviesToDelete = "";
+    CStdString episodesToDelete = "";
+    CStdString musicVideosToDelete = "";
 
     std::vector<int> movieIDs;
     std::vector<int> episodeIDs;
@@ -6735,46 +6735,41 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       current++;
     }
     m_pDS->close();
-    filesToDelete.TrimRight(",");
-    filesToDelete += ")";
-    // now grab them movies
-    sql = PrepareSQL("select idMovie from movie where idFile in %s",filesToDelete.c_str());
-    m_pDS->query(sql.c_str());
-    while (!m_pDS->eof())
+    if ( ! filesToDelete.IsEmpty() )
     {
-      movieIDs.push_back(m_pDS->fv(0).get_asInt());
-      moviesToDelete += m_pDS->fv(0).get_asString() + ",";
-      m_pDS->next();
-    }
-    m_pDS->close();
-    // now grab them episodes
-    sql = PrepareSQL("select idEpisode from episode where idFile in %s",filesToDelete.c_str());
-    m_pDS->query(sql.c_str());
-    while (!m_pDS->eof())
-    {
-      episodeIDs.push_back(m_pDS->fv(0).get_asInt());
-      episodesToDelete += m_pDS->fv(0).get_asString() + ",";
-      m_pDS->next();
-    }
-    m_pDS->close();
+      filesToDelete.TrimRight(",");
+      // now grab them movies
+      sql = PrepareSQL("select idMovie from movie where idFile in (%s)",filesToDelete.c_str());
+      m_pDS->query(sql.c_str());
+      while (!m_pDS->eof())
+      {
+        movieIDs.push_back(m_pDS->fv(0).get_asInt());
+        moviesToDelete += m_pDS->fv(0).get_asString() + ",";
+        m_pDS->next();
+      }
+      m_pDS->close();
+      // now grab them episodes
+      sql = PrepareSQL("select idEpisode from episode where idFile in (%s)",filesToDelete.c_str());
+       m_pDS->query(sql.c_str());
+      while (!m_pDS->eof())
+      {
+        episodeIDs.push_back(m_pDS->fv(0).get_asInt());
+        episodesToDelete += m_pDS->fv(0).get_asString() + ",";
+        m_pDS->next();
+      }
+      m_pDS->close();
 
-    // now grab them musicvideos
-    sql = PrepareSQL("select idMVideo from musicvideo where idFile in %s",filesToDelete.c_str());
-    m_pDS->query(sql.c_str());
-    while (!m_pDS->eof())
-    {
-      musicVideoIDs.push_back(m_pDS->fv(0).get_asInt());
-      musicVideosToDelete += m_pDS->fv(0).get_asString() + ",";
-      m_pDS->next();
+      // now grab them musicvideos
+      sql = PrepareSQL("select idMVideo from musicvideo where idFile in (%s)",filesToDelete.c_str());
+      m_pDS->query(sql.c_str());
+      while (!m_pDS->eof())
+      {
+        musicVideoIDs.push_back(m_pDS->fv(0).get_asInt());
+        musicVideosToDelete += m_pDS->fv(0).get_asString() + ",";
+        m_pDS->next();
+      }
+      m_pDS->close();
     }
-    m_pDS->close();
-
-    moviesToDelete.TrimRight(",");
-    moviesToDelete += ")";
-    episodesToDelete.TrimRight(",");
-    episodesToDelete += ")";
-    musicVideosToDelete.TrimRight(",");
-    musicVideosToDelete += ")";
 
     if (progress)
     {
@@ -6782,77 +6777,91 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       progress->Progress();
     }
 
-    CLog::Log(LOGDEBUG, "%s Cleaning files table", __FUNCTION__);
-    sql = "delete from files where idFile in " + filesToDelete;
-    m_pDS->exec(sql.c_str());
+    if ( ! filesToDelete.IsEmpty() )
+    {
+      filesToDelete = "(" + filesToDelete + ")";
+      CLog::Log(LOGDEBUG, "%s Cleaning files table", __FUNCTION__);
+      sql = "delete from files where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning streamdetails table", __FUNCTION__);
-    sql = "delete from streamdetails where idFile in " + filesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning streamdetails table", __FUNCTION__);
+      sql = "delete from streamdetails where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning bookmark table", __FUNCTION__);
-    sql = "delete from bookmark where idFile in " + filesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning bookmark table", __FUNCTION__);
+      sql = "delete from bookmark where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning settings table", __FUNCTION__);
-    sql = "delete from settings where idFile in " + filesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning settings table", __FUNCTION__);
+      sql = "delete from settings where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning stacktimes table", __FUNCTION__);
-    sql = "delete from stacktimes where idFile in " + filesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning stacktimes table", __FUNCTION__);
+      sql = "delete from stacktimes where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
+    }
 
-    CLog::Log(LOGDEBUG, "%s Cleaning movie table", __FUNCTION__);
-    sql = "delete from movie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+    if ( ! moviesToDelete.IsEmpty() )
+    {
+      moviesToDelete = "(" + moviesToDelete.TrimRight(",") + ")";
 
-    CLog::Log(LOGDEBUG, "%s Cleaning actorlinkmovie table", __FUNCTION__);
-    sql = "delete from actorlinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning movie table", __FUNCTION__);
+      sql = "delete from movie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning directorlinkmovie table", __FUNCTION__);
-    sql = "delete from directorlinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning actorlinkmovie table", __FUNCTION__);
+      sql = "delete from actorlinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning writerlinkmovie table", __FUNCTION__);
-    sql = "delete from writerlinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning directorlinkmovie table", __FUNCTION__);
+      sql = "delete from directorlinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning genrelinkmovie table", __FUNCTION__);
-    sql = "delete from genrelinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning writerlinkmovie table", __FUNCTION__);
+      sql = "delete from writerlinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning countrylinkmovie table", __FUNCTION__);
-    sql = "delete from countrylinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning genrelinkmovie table", __FUNCTION__);
+      sql = "delete from genrelinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning studiolinkmovie table", __FUNCTION__);
-    sql = "delete from studiolinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning countrylinkmovie table", __FUNCTION__);
+      sql = "delete from countrylinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning episode table", __FUNCTION__);
-    sql = "delete from episode where idEpisode in " + episodesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning studiolinkmovie table", __FUNCTION__);
+      sql = "delete from studiolinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning actorlinkepisode table", __FUNCTION__);
-    sql = "delete from actorlinkepisode where idEpisode in " + episodesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning setlinkmovie table", __FUNCTION__);
+      sql = "delete from setlinkmovie where idMovie in " + moviesToDelete;
+      m_pDS->exec(sql.c_str());
+    }
 
-    CLog::Log(LOGDEBUG, "%s Cleaning directorlinkepisode table", __FUNCTION__);
-    sql = "delete from directorlinkepisode where idEpisode in " + episodesToDelete;
-    m_pDS->exec(sql.c_str());
+    if ( ! episodesToDelete.IsEmpty() )
+    {
+      episodesToDelete = "(" + episodesToDelete.TrimRight(",") + ")";
 
-    CLog::Log(LOGDEBUG, "%s Cleaning writerlinkepisode table", __FUNCTION__);
-    sql = "delete from writerlinkepisode where idEpisode in " + episodesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning episode table", __FUNCTION__);
+      sql = "delete from episode where idEpisode in " + episodesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning tvshowlinkepisode table", __FUNCTION__);
-    sql = "delete from tvshowlinkepisode where idEpisode in " + episodesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning actorlinkepisode table", __FUNCTION__);
+      sql = "delete from actorlinkepisode where idEpisode in " + episodesToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning setlinkmovie table", __FUNCTION__);
-    sql = "delete from setlinkmovie where idMovie in " + moviesToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s Cleaning directorlinkepisode table", __FUNCTION__);
+      sql = "delete from directorlinkepisode where idEpisode in " + episodesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning writerlinkepisode table", __FUNCTION__);
+      sql = "delete from writerlinkepisode where idEpisode in " + episodesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning tvshowlinkepisode table", __FUNCTION__);
+      sql = "delete from tvshowlinkepisode where idEpisode in " + episodesToDelete;
+      m_pDS->exec(sql.c_str());
+    }
 
     CLog::Log(LOGDEBUG, "Cleaning paths that don't exist and don't have content set...");
     sql = "select * from path where strContent not like ''";
