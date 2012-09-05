@@ -564,14 +564,14 @@ protected:
   int AddMusicVideo(const CStdString& strFilenameAndPath);
 
   // link functions - these two do all the work
-  void AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role);
+  void AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role, int order);
   void AddToLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID);
 
   void AddSetToMovie(int idMovie, int idSet);
 
-  void AddActorToMovie(int idMovie, int idActor, const CStdString& strRole);
-  void AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole);
-  void AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole);
+  void AddActorToMovie(int idMovie, int idActor, const CStdString& strRole, int order);
+  void AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole, int order);
+  void AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole, int order);
   void AddArtistToMusicVideo(int lMVideo, int idArtist);
 
   void AddDirectorToMovie(int idMovie, int idDirector);
@@ -617,7 +617,7 @@ private:
    */
   void CreateViews();
 
-  virtual int GetMinVersion() const { return 40; };
+  virtual int GetMinVersion() const { return 41; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);

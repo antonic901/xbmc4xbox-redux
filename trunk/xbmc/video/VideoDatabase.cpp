@@ -124,7 +124,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
 
     CLog::Log(LOGINFO, "create actorlinkmovie table");
-    m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text)\n");
+    m_pDS->exec("CREATE TABLE actorlinkmovie ( idActor integer, idMovie integer, strRole text, iOrder integer)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkmovie_1 ON actorlinkmovie ( idActor, idMovie )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkmovie_2 ON actorlinkmovie ( idMovie, idActor )\n");
 
@@ -166,7 +166,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_directorlinktvshow_2 ON directorlinktvshow ( idShow, idDirector )\n");
 
     CLog::Log(LOGINFO, "create actorlinktvshow table");
-    m_pDS->exec("CREATE TABLE actorlinktvshow ( idActor integer, idShow integer, strRole text)\n");
+    m_pDS->exec("CREATE TABLE actorlinktvshow ( idActor integer, idShow integer, strRole text, iOrder integer)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinktvshow_1 ON actorlinktvshow ( idActor, idShow )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinktvshow_2 ON actorlinktvshow ( idShow, idActor )\n");
 
@@ -204,7 +204,7 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_tvshowlinkpath_2 ON tvshowlinkpath ( idPath, idShow )\n");
 
     CLog::Log(LOGINFO, "create actorlinkepisode table");
-    m_pDS->exec("CREATE TABLE actorlinkepisode ( idActor integer, idEpisode integer, strRole text)\n");
+    m_pDS->exec("CREATE TABLE actorlinkepisode ( idActor integer, idEpisode integer, strRole text, iOrder integer)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkepisode_1 ON actorlinkepisode ( idActor, idEpisode )\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_actorlinkepisode_2 ON actorlinkepisode ( idEpisode, idActor )\n");
 
@@ -1143,7 +1143,7 @@ int CVideoDatabase::AddActor(const CStdString& strActor, const CStdString& strTh
 
 
 
-void CVideoDatabase::AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role)
+void CVideoDatabase::AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role, int order)
 {
   try
   {
@@ -1155,7 +1155,7 @@ void CVideoDatabase::AddLinkToActor(const char *table, int actorID, const char *
     if (m_pDS->num_rows() == 0)
     {
       // doesnt exists, add it
-      strSQL=PrepareSQL("insert into %s (idActor, %s, strRole) values(%i,%i,'%s')", table, secondField, actorID, secondID, role.c_str());
+      strSQL=PrepareSQL("insert into %s (idActor, %s, strRole, iOrder) values(%i,%i,'%s',%i)", table, secondField, actorID, secondID, role.c_str(), order);
       m_pDS->exec(strSQL.c_str());
     }
     m_pDS->close();
@@ -1196,19 +1196,19 @@ void CVideoDatabase::AddSetToMovie(int idMovie, int idSet)
 }
 
 //****Actors****
-void CVideoDatabase::AddActorToMovie(int idMovie, int idActor, const CStdString& strRole)
+void CVideoDatabase::AddActorToMovie(int idMovie, int idActor, const CStdString& strRole, int order)
 {
-  AddLinkToActor("actorlinkmovie", idActor, "idMovie", idMovie, strRole);
+  AddLinkToActor("actorlinkmovie", idActor, "idMovie", idMovie, strRole, order);
 }
 
-void CVideoDatabase::AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole)
+void CVideoDatabase::AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole, int order)
 {
-  AddLinkToActor("actorlinktvshow", idActor, "idShow", idTvShow, strRole);
+  AddLinkToActor("actorlinktvshow", idActor, "idShow", idTvShow, strRole, order);
 }
 
-void CVideoDatabase::AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole)
+void CVideoDatabase::AddActorToEpisode(int idEpisode, int idActor, const CStdString& strRole, int order)
 {
-  AddLinkToActor("actorlinkepisode", idActor, "idEpisode", idEpisode, strRole);
+  AddLinkToActor("actorlinkepisode", idActor, "idEpisode", idEpisode, strRole, order);
 }
 
 void CVideoDatabase::AddArtistToMusicVideo(int idMVideo, int idArtist)
@@ -1730,10 +1730,11 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
     }
 
     // add cast...
+    int order = 0;
     for (CVideoInfoTag::iCast it = info.m_cast.begin(); it != info.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToMovie(idMovie, idActor, it->strRole);
+      AddActorToMovie(idMovie, idActor, it->strRole, order++);
     }
 
     // add sets...
@@ -1804,10 +1805,11 @@ int CVideoDatabase::SetDetailsForTvShow(const CStdString& strPath, const CVideoI
     AddGenreAndDirectorsAndStudios(details,vecDirectors,vecGenres,vecStudios);
 
     // add cast...
+    int order = 0;
     for (CVideoInfoTag::iCast it = details.m_cast.begin(); it != details.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToTvShow(idTvShow, idActor, it->strRole);
+      AddActorToTvShow(idTvShow, idActor, it->strRole, order++);
     }
 
     unsigned int i;
@@ -1866,10 +1868,11 @@ int CVideoDatabase::SetDetailsForEpisode(const CStdString& strFilenameAndPath, c
     AddGenreAndDirectorsAndStudios(details,vecDirectors,vecGenres,vecStudios);
 
     // add cast...
+    int order = 0;
     for (CVideoInfoTag::iCast it = details.m_cast.begin(); it != details.m_cast.end(); ++it)
     {
       int idActor = AddActor(it->strName,it->thumbUrl.m_xml);
-      AddActorToEpisode(idEpisode, idActor, it->strRole);
+      AddActorToEpisode(idEpisode, idActor, it->strRole, order++);
     }
 
     // add writers...
@@ -2777,7 +2780,8 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(auto_ptr<Dataset> &pDS, bool ne
     GetResumePoint(details);
 
     // create cast string
-    CStdString strSQL = PrepareSQL("select  actors.strActor,actorlinkmovie.strRole,actors.strThumb from  actorlinkmovie,actors where actorlinkmovie.idMovie=%i and actorlinkmovie.idActor  = actors.idActor order by actorlinkmovie.ROWID",idMovie);
+    CStdString strSQL = PrepareSQL("SELECT actors.strActor,actorlinkmovie.strRole,actors.strThumb FROM actorlinkmovie,actors WHERE actorlinkmovie.idMovie=%i AND actorlinkmovie.idActor=actors.idActor ORDER BY actorlinkmovie.iOrder",idMovie);
+
     m_pDS2->query(strSQL.c_str());
     while (!m_pDS2->eof())
     {
@@ -2843,7 +2847,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(auto_ptr<Dataset> &pDS, bool n
   if (needsCast)
   {
     // create cast string
-    CStdString strSQL = PrepareSQL("select actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor",idTvShow);
+    CStdString strSQL = PrepareSQL("select actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor ORDER BY actorlinktvshow.iOrder",idTvShow);
     m_pDS2->query(strSQL.c_str());
     while (!m_pDS2->eof())
     {
@@ -2888,7 +2892,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
     set<int>::iterator it;
 
     // create cast string
-    CStdString strSQL = PrepareSQL("select actors.idActor,actors.strActor,actorlinkepisode.strRole,actors.strThumb from actorlinkepisode,actors where actorlinkepisode.idEpisode=%i and actorlinkepisode.idActor = actors.idActor",idEpisode);
+    CStdString strSQL = PrepareSQL("select actors.idActor,actors.strActor,actorlinkepisode.strRole,actors.strThumb from actorlinkepisode,actors where actorlinkepisode.idEpisode=%i and actorlinkepisode.idActor = actors.idActor ORDER BY actorlinkepisode.iOrder",idEpisode);
     m_pDS2->query(strSQL.c_str());
     bool showCast=false;
     while (!m_pDS2->eof() || !showCast)
@@ -2915,7 +2919,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
         int idShow = GetTvShowForEpisode(details.m_iDbId);
         if (idShow > -1)
         {
-          strSQL = PrepareSQL("select actors.idActor,actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor",idShow);
+          strSQL = PrepareSQL("select actors.idActor,actors.strActor,actorlinktvshow.strRole,actors.strThumb from actorlinktvshow,actors where actorlinktvshow.idShow=%i and actorlinktvshow.idActor = actors.idActor ORDER BY actorlinktvshow.iOrder",idShow);
           m_pDS2->query(strSQL.c_str());
         }
       }
@@ -3805,6 +3809,14 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
     if (iVersion < 40)
     {
       CreateViews();
+    }
+    if (iVersion < 41)
+    {
+      // Add iOrder fields to actorlink* tables to be able to list
+      // actors by importance
+      m_pDS->exec("ALTER TABLE actorlinkmovie ADD iOrder integer");
+      m_pDS->exec("ALTER TABLE actorlinktvshow ADD iOrder integer");
+      m_pDS->exec("ALTER TABLE actorlinkepisode ADD iOrder integer");
     }
   }
   catch (...)
