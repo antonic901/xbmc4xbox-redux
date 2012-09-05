@@ -3782,7 +3782,7 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
     }
     if (iVersion < 39)
     { // Change INDEX for bookmark table
-      m_pDS->exec("DROP INDEX ix_bookmark on bookmark");
+      m_pDS->exec("DROP INDEX ix_bookmark");
       m_pDS->exec("CREATE INDEX ix_bookmark ON bookmark (idFile, type)");
     }
   }
