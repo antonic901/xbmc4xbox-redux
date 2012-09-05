@@ -3846,6 +3846,42 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
   return true;
 }
 
+bool CVideoDatabase::GetPlayCounts(CFileItemList &items)
+{
+  int pathID = GetPathId(items.GetPath());
+  if (pathID < 0)
+    return false; // path (and thus files) aren't in the database
+
+  try
+  {
+    // error!
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    // TODO: also test a single query for the above and below
+    CStdString sql = PrepareSQL("select strFilename,playCount from files where idPath=%i", pathID);
+    if (RunQuery(sql) <= 0)
+      return false;
+
+    items.SetFastLookup(true); // note: it's possibly quicker the other way around (map on db returned items)?
+    while (!m_pDS->eof())
+    {
+      CStdString path;
+      ConstructPath(path, items.GetPath(), m_pDS->fv(0).get_asString());
+      CFileItemPtr item = items.Get(path);
+      if (item)
+        item->GetVideoInfoTag()->m_playCount = m_pDS->fv(1).get_asInt();
+      m_pDS->next();
+    }
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return false;
+}
+
 int CVideoDatabase::GetPlayCount(const CFileItem &item)
 {
   int id = GetFileId(item);
