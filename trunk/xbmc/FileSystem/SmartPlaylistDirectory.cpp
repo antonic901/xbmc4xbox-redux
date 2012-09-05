@@ -51,7 +51,7 @@ namespace XFILE
     {
       CVideoDatabase db;
       db.Open();
-      CStdString whereOrder = playlist.GetWhereClause() + " " + playlist.GetOrderClause();
+      CStdString whereOrder = playlist.GetWhereClause(&db) + " " + playlist.GetOrderClause(&db);
       success = db.GetTvShowsByWhere("videodb://2/2/", whereOrder, items);
       items.SetContent("tvshows");
       db.Close();
@@ -60,7 +60,7 @@ namespace XFILE
     {
       CVideoDatabase db;
       db.Open();
-      CStdString whereOrder = playlist.GetWhereClause() + " " + playlist.GetOrderClause();
+      CStdString whereOrder = playlist.GetWhereClause(&db) + " " + playlist.GetOrderClause(&db);
       success = db.GetEpisodesByWhere("videodb://2/2/", whereOrder, items);
       items.SetContent("episodes");
       db.Close();
@@ -69,7 +69,7 @@ namespace XFILE
     {
       CVideoDatabase db;
       db.Open();
-      success = db.GetMoviesByWhere("videodb://1/2/", playlist.GetWhereClause(), playlist.GetOrderClause(), items, true);
+      success = db.GetMoviesByWhere("videodb://1/2/", playlist.GetWhereClause(&db), playlist.GetOrderClause(&db), items, true);
       items.SetContent("movies");
       db.Close();
     }
@@ -77,7 +77,7 @@ namespace XFILE
     {
       CMusicDatabase db;
       db.Open();
-      success = db.GetAlbumsByWhere("musicdb://3/", playlist.GetWhereClause(), playlist.GetOrderClause(), items);
+      success = db.GetAlbumsByWhere("musicdb://3/", playlist.GetWhereClause(&db), playlist.GetOrderClause(&db), items);
       items.SetContent("albums");
       db.Close();
     }
@@ -91,7 +91,7 @@ namespace XFILE
       if (playlist.GetType().Equals("mixed"))
         playlist.SetType("songs");
 
-      CStdString whereOrder = playlist.GetWhereClause() + " " + playlist.GetOrderClause();
+      CStdString whereOrder = playlist.GetWhereClause(&db) + " " + playlist.GetOrderClause(&db);
       success = db.GetSongsByWhere("", whereOrder, items);
       items.SetContent("songs");
       db.Close();
@@ -104,7 +104,7 @@ namespace XFILE
       CStdString type=playlist.GetType();
       if (playlist.GetType().Equals("mixed"))
         playlist.SetType("musicvideos");
-      CStdString whereOrder = playlist.GetWhereClause() + " " + playlist.GetOrderClause();
+      CStdString whereOrder = playlist.GetWhereClause(&db) + " " + playlist.GetOrderClause(&db);
       CFileItemList items2;
       success2 = db.GetMusicVideosByWhere("videodb://3/2/", whereOrder, items2, false); // TODO: SMARTPLAYLISTS Don't check locks???
       db.Close();

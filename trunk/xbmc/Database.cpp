@@ -138,7 +138,7 @@ bool CDatabase::DeleteValues(const CStdString &strTable, const CStdString &strWh
   if (!strWhereClause.IsEmpty())
     strQueryBase.AppendFormat(" WHERE %s", strWhereClause.c_str());
 
-  CStdString strQuery = FormatSQL(strQueryBase, strTable.c_str());
+  CStdString strQuery = PrepareSQL(strQueryBase, strTable.c_str());
 
   bReturn = ExecuteQuery(strQuery);
 
@@ -339,7 +339,7 @@ bool CDatabase::Compress(bool bForce /* =true */)
         if (iCount > MAX_COMPRESS_COUNT)
           iCount = -1;
         m_pDS->close();
-        CStdString strSQL=FormatSQL("update version set iCompressCount=%i\n",++iCount);
+        CStdString strSQL=PrepareSQL("update version set iCompressCount=%i\n",++iCount);
         m_pDS->exec(strSQL.c_str());
         if (iCount != 0)
           return true;
@@ -424,7 +424,7 @@ bool CDatabase::CreateTables()
 
     CLog::Log(LOGINFO, "creating version table");
     m_pDS->exec("CREATE TABLE version (idVersion integer, iCompressCount integer)\n");
-    CStdString strSQL=FormatSQL("INSERT INTO version (idVersion,iCompressCount) values(%i,0)\n", GetMinVersion());
+    CStdString strSQL=PrepareSQL("INSERT INTO version (idVersion,iCompressCount) values(%i,0)\n", GetMinVersion());
     m_pDS->exec(strSQL.c_str());
 
     return true;
@@ -434,7 +434,7 @@ bool CDatabase::UpdateVersionNumber()
 {
   try
   {
-    CStdString strSQL=FormatSQL("UPDATE version SET idVersion=%i\n", GetMinVersion());
+    CStdString strSQL=PrepareSQL("UPDATE version SET idVersion=%i\n", GetMinVersion());
     m_pDS->exec(strSQL.c_str());
   }
   catch(...)

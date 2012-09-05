@@ -47,7 +47,7 @@ public:
 
   /*!
    * @brief Get a single value from a table.
-   * @remarks The values of the strWhereClause and strOrderBy parameters have to be FormatSQL'ed when used.
+   * @remarks The values of the strWhereClause and strOrderBy parameters have to be PrepareSQL'ed when used.
    * @param strTable The table to get the value from.
    * @param strColumn The column to get.
    * @param strWhereClause If set, use this WHERE clause.
@@ -65,7 +65,7 @@ public:
 
   /*!
    * @brief Delete values from a table.
-   * @remarks The value of the strWhereClause parameter has to be FormatSQL'ed when used.
+   * @remarks The value of the strWhereClause parameter has to be PrepareSQL'ed when used.
    * @param strTable The table to delete the values from.
    * @param strWhereClause If set, use this WHERE clause.
    * @return True if the query was executed successfully, false otherwise.

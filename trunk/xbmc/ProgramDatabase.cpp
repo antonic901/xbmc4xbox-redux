@@ -92,7 +92,7 @@ int CProgramDatabase::GetRegion(const CStdString& strFilenameAndPath)
 
   try
   {
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFilenameAndPath.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFilenameAndPath.c_str());
     if (!m_pDS->query(strSQL.c_str()))
       return 0;
 
@@ -121,7 +121,7 @@ int CProgramDatabase::GetTitleId(const CStdString& strFilenameAndPath)
 
   try
   {
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFilenameAndPath.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFilenameAndPath.c_str());
     if (!m_pDS->query(strSQL.c_str()))
       return 0;
 
@@ -149,7 +149,7 @@ bool CProgramDatabase::SetRegion(const CStdString& strFileName, int iRegion)
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS->num_rows();
     if (iRowsFound == 0)
@@ -163,7 +163,7 @@ bool CProgramDatabase::SetRegion(const CStdString& strFileName, int iRegion)
     CLog::Log(LOGDEBUG, "CProgramDatabase::SetRegion(%s), idFile=%i, region=%i",
               strFileName.c_str(), idFile,iRegion);
 
-    strSQL=FormatSQL("update files set iRegion=%i where idFile=%i",
+    strSQL=PrepareSQL("update files set iRegion=%i where idFile=%i",
                   iRegion, idFile);
     m_pDS->exec(strSQL.c_str());
     return true;
@@ -183,7 +183,7 @@ bool CProgramDatabase::SetTitleId(const CStdString& strFileName, int idTitle)
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS->num_rows();
     if (iRowsFound == 0)
@@ -197,7 +197,7 @@ bool CProgramDatabase::SetTitleId(const CStdString& strFileName, int idTitle)
     CLog::Log(LOGDEBUG, "CProgramDatabase::SetTitle(%s), idFile=%i, region=%i",
               strFileName.c_str(), idFile, idTitle);
 
-    strSQL=FormatSQL("update files set titleId=%i where idFile=%i",
+    strSQL=PrepareSQL("update files set titleId=%i where idFile=%i",
                   idTitle, idFile);
     m_pDS->exec(strSQL.c_str());
     return true;
@@ -217,7 +217,7 @@ bool CProgramDatabase::GetXBEPathByTitleId(const int idTitle, CStdString& strPat
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL=FormatSQL("select files.strFilename from files where files.titleId=%i", idTitle);
+    CStdString strSQL=PrepareSQL("select files.strFilename from files where files.titleId=%i", idTitle);
     m_pDS->query(strSQL.c_str());
     if (m_pDS->num_rows() > 0)
     {
@@ -241,7 +241,7 @@ bool CProgramDatabase::ItemHasTrainer(unsigned int iTitleId)
   CStdString strSQL;
   try
   {
-    strSQL = FormatSQL("select * from trainers where idTitle=%u", iTitleId);
+    strSQL = PrepareSQL("select * from trainers where idTitle=%u", iTitleId);
     if (!m_pDS->query(strSQL.c_str()))
       return false;
     if (m_pDS->num_rows())
@@ -262,7 +262,7 @@ bool CProgramDatabase::HasTrainer(const CStdString& strTrainerPath)
   Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
   try
   {
-    strSQL = FormatSQL("select * from trainers where idCRC=%u", (unsigned __int32) crc);
+    strSQL = PrepareSQL("select * from trainers where idCRC=%u", (unsigned __int32) crc);
     if (!m_pDS->query(strSQL.c_str()))
       return false;
     if (m_pDS->num_rows())
@@ -287,7 +287,7 @@ bool CProgramDatabase::AddTrainer(int iTitleId, const CStdString& strTrainerPath
     for( int i=0;i<100;++i)
       temp[i] = '0';
     temp[100] = '\0';
-    strSQL=FormatSQL("insert into trainers (idKey,idCRC,idTitle,strTrainerPath,strSettings,Active) values(NULL,%u,%u,'%s','%s',%i)",(unsigned __int32)crc,iTitleId,strTrainerPath.c_str(),temp,0);
+    strSQL=PrepareSQL("insert into trainers (idKey,idCRC,idTitle,strTrainerPath,strSettings,Active) values(NULL,%u,%u,'%s','%s',%i)",(unsigned __int32)crc,iTitleId,strTrainerPath.c_str(),temp,0);
     if (!m_pDS->exec(strSQL.c_str()))
       return false;
 
@@ -306,7 +306,7 @@ bool CProgramDatabase::RemoveTrainer(const CStdString& strTrainerPath)
   Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
   try
   {
-    strSQL=FormatSQL("delete from trainers where idCRC=%u", (unsigned __int32)crc);
+    strSQL=PrepareSQL("delete from trainers where idCRC=%u", (unsigned __int32)crc);
     if (!m_pDS->exec(strSQL.c_str()))
       return false;
 
@@ -325,7 +325,7 @@ bool CProgramDatabase::GetTrainers(unsigned int iTitleId, std::vector<CStdString
   CStdString strSQL;
   try
   {
-    strSQL = FormatSQL("select * from trainers where idTitle=%u", iTitleId);
+    strSQL = PrepareSQL("select * from trainers where idTitle=%u", iTitleId);
     if (!m_pDS->query(strSQL.c_str()))
       return false;
 
@@ -351,7 +351,7 @@ bool CProgramDatabase::GetAllTrainers(std::vector<CStdString>& vecTrainers)
   CStdString strSQL;
   try
   {
-    strSQL = FormatSQL("select distinct strTrainerPath from trainers");//FormatSQL("select * from trainers");
+    strSQL = PrepareSQL("select distinct strTrainerPath from trainers");//PrepareSQL("select * from trainers");
     if (!m_pDS->query(strSQL.c_str()))
       return false;
 
@@ -387,7 +387,7 @@ bool CProgramDatabase::SetTrainerOptions(const CStdString& strTrainerPath, unsig
     }
     temp[i] = '\0';
 
-    strSQL = FormatSQL("update trainers set strSettings='%s' where idCRC=%u and idTitle=%u", temp, (unsigned __int32)crc,iTitleId);
+    strSQL = PrepareSQL("update trainers set strSettings='%s' where idCRC=%u and idTitle=%u", temp, (unsigned __int32)crc,iTitleId);
     if (m_pDS->exec(strSQL.c_str()))
       return true;
 
@@ -407,7 +407,7 @@ void CProgramDatabase::SetTrainerActive(const CStdString& strTrainerPath, unsign
   Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
   try
   {
-    strSQL = FormatSQL("update trainers set Active=%u where idCRC=%u and idTitle=%u", bActive?1:0, (unsigned __int32)crc, iTitleId);
+    strSQL = PrepareSQL("update trainers set Active=%u where idCRC=%u and idTitle=%u", bActive?1:0, (unsigned __int32)crc, iTitleId);
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
@@ -421,7 +421,7 @@ CStdString CProgramDatabase::GetActiveTrainer(unsigned int iTitleId)
   CStdString strSQL;
   try
   {
-    strSQL = FormatSQL("select * from trainers where idTitle=%u and Active=1", iTitleId);
+    strSQL = PrepareSQL("select * from trainers where idTitle=%u and Active=1", iTitleId);
     if (!m_pDS->query(strSQL.c_str()))
       return "";
 
@@ -442,7 +442,7 @@ bool CProgramDatabase::GetTrainerOptions(const CStdString& strTrainerPath, unsig
   Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
   try
   {
-    strSQL = FormatSQL("select * from trainers where idCRC=%u and idTitle=%u", (unsigned __int32)crc, iTitleId);
+    strSQL = PrepareSQL("select * from trainers where idCRC=%u and idTitle=%u", (unsigned __int32)crc, iTitleId);
     if (m_pDS->query(strSQL.c_str()))
     {
       CStdString strSettings = m_pDS->fv("strSettings").get_asString();
@@ -470,7 +470,7 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select xbedescription,iTimesPlayed,lastAccessed,titleId,iSize from files where strFileName like '%s'", item->GetPath().c_str());
+    CStdString strSQL = PrepareSQL("select xbedescription,iTimesPlayed,lastAccessed,titleId,iSize from files where strFileName like '%s'", item->GetPath().c_str());
     m_pDS->query(strSQL.c_str());
     if (!m_pDS->eof())
     { // get info - only set the label if not preformatted
@@ -486,7 +486,7 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
         CStdString strPath;
         URIUtils::GetDirectory(item->GetPath(),strPath);
         __int64 iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
-        CStdString strSQL=FormatSQL("update files set iSize=%I64u where strFileName like '%s'",iSize,item->GetPath().c_str());
+        CStdString strSQL=PrepareSQL("update files set iSize=%I64u where strFileName like '%s'",iSize,item->GetPath().c_str());
         m_pDS->exec(strSQL.c_str());
       }
     }
@@ -538,7 +538,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
       iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
     if (titleID == 0)
       titleID = (unsigned int) -1;
-    CStdString strSQL=FormatSQL("insert into files (idFile, strFileName, titleId, xbedescription, iTimesPlayed, lastAccessed, iRegion, iSize) values(NULL, '%s', %u, '%s', %i, %I64u, %i, %I64u)", item->GetPath().c_str(), titleID, item->GetLabel().c_str(), 0, lastAccessed.QuadPart, iRegion, iSize);
+    CStdString strSQL=PrepareSQL("insert into files (idFile, strFileName, titleId, xbedescription, iTimesPlayed, lastAccessed, iRegion, iSize) values(NULL, '%s', %u, '%s', %i, %I64u, %i, %I64u)", item->GetPath().c_str(), titleID, item->GetLabel().c_str(), 0, lastAccessed.QuadPart, iRegion, iSize);
     m_pDS->exec(strSQL.c_str());
     item->m_dwSize = iSize;
   }
@@ -563,7 +563,7 @@ bool CProgramDatabase::IncTimesPlayed(const CStdString& strFileName)
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS->num_rows();
     if (iRowsFound == 0)
@@ -578,7 +578,7 @@ bool CProgramDatabase::IncTimesPlayed(const CStdString& strFileName)
     CLog::Log(LOGDEBUG, "CProgramDatabase::IncTimesPlayed(%s), idFile=%i, iTimesPlayed=%i",
               strFileName.c_str(), idFile, iTimesPlayed);
 
-    strSQL=FormatSQL("update files set iTimesPlayed=%i where idFile=%i",
+    strSQL=PrepareSQL("update files set iTimesPlayed=%i where idFile=%i",
                   ++iTimesPlayed, idFile);
     m_pDS->exec(strSQL.c_str());
     return true;
@@ -598,7 +598,7 @@ bool CProgramDatabase::SetDescription(const CStdString& strFileName, const CStdS
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = FormatSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
+    CStdString strSQL = PrepareSQL("select * from files where files.strFileName like '%s'", strFileName.c_str());
     if (!m_pDS->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS->num_rows();
     if (iRowsFound == 0)
@@ -612,7 +612,7 @@ bool CProgramDatabase::SetDescription(const CStdString& strFileName, const CStdS
     CLog::Log(LOGDEBUG, "CProgramDatabase::SetDescription(%s), idFile=%i, description=%s",
               strFileName.c_str(), idFile,strDescription.c_str());
 
-    strSQL=FormatSQL("update files set xbedescription='%s' where idFile=%i",
+    strSQL=PrepareSQL("update files set xbedescription='%s' where idFile=%i",
                   strDescription.c_str(), idFile);
     m_pDS->exec(strSQL.c_str());
     return true;
