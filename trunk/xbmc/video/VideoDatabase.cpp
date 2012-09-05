@@ -6930,25 +6930,30 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     sql = "delete from movielinktvshow where idMovie not in (select distinct idMovie from movie)";
     m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning musicvideo table", __FUNCTION__);
-    sql = "delete from musicvideo where idmvideo in " + musicVideosToDelete;
-    m_pDS->exec(sql.c_str());
+    if ( ! musicVideosToDelete.IsEmpty() )
+    {
+      musicVideosToDelete = "(" + musicVideosToDelete.TrimRight(",") + ")";
 
-    CLog::Log(LOGDEBUG, "%s Cleaning artistlinkmusicvideo table", __FUNCTION__);
-    sql = "delete from artistlinkmusicvideo where idMVideo in " + musicVideosToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s: Cleaning musicvideo table", __FUNCTION__);
+      sql = "delete from musicvideo where idMVideo in " + musicVideosToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning directorlinkmusicvideo table" ,__FUNCTION__);
-    sql = "delete from directorlinkmusicvideo where idMVideo in " + musicVideosToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s: Cleaning artistlinkmusicvideo table", __FUNCTION__);
+      sql = "delete from artistlinkmusicvideo where idMVideo in " + musicVideosToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning genrelinkmusicvideo table" ,__FUNCTION__);
-    sql = "delete from genrelinkmusicvideo where idMVideo in " + musicVideosToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s: Cleaning directorlinkmusicvideo table" ,__FUNCTION__);
+      sql = "delete from directorlinkmusicvideo where idMVideo in " + musicVideosToDelete;
+      m_pDS->exec(sql.c_str());
 
-    CLog::Log(LOGDEBUG, "%s Cleaning studiolinkmusicvideo table", __FUNCTION__);
-    sql = "delete from studiolinkmusicvideo where idMVideo in " + musicVideosToDelete;
-    m_pDS->exec(sql.c_str());
+      CLog::Log(LOGDEBUG, "%s: Cleaning genrelinkmusicvideo table" ,__FUNCTION__);
+      sql = "delete from genrelinkmusicvideo where idMVideo in " + musicVideosToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s: Cleaning studiolinkmusicvideo table", __FUNCTION__);
+      sql = "delete from studiolinkmusicvideo where idMVideo in " + musicVideosToDelete;
+      m_pDS->exec(sql.c_str());
+    }
 
     CLog::Log(LOGDEBUG, "%s Cleaning path table", __FUNCTION__);
     sql = "delete from path where idPath not in (select distinct idPath from files) and idPath not in (select distinct idPath from tvshowlinkpath) and strContent=''";
