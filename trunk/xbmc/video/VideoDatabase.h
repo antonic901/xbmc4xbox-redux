@@ -606,11 +606,12 @@ protected:
   void GetDetailsFromDB(std::auto_ptr<dbiplus::Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset = 2);
   CStdString GetValueString(const CVideoInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const;
   bool GetStreamDetails(CVideoInfoTag& tag) const;
+  bool GetResumePoint(CVideoInfoTag& tag) const;
 
 private:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 38; };
+  virtual int GetMinVersion() const { return 39; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
