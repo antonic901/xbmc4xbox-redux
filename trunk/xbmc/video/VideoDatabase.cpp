@@ -247,9 +247,6 @@ bool CVideoDatabase::CreateTables()
     columns += ")";
     m_pDS->exec(columns.c_str());
 
-    // create views
-    CreateViews();
-
     m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_1 on musicvideo (idMVideo, idFile)");
     m_pDS->exec("CREATE UNIQUE INDEX ix_musicvideo_file_2 on musicvideo (idFile, idMVideo)");
 
@@ -286,6 +283,9 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE TABLE setlinkmovie ( idSet integer, idMovie integer)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_1 ON setlinkmovie ( idSet, idMovie)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_2 ON setlinkmovie ( idMovie, idSet)\n");
+
+    // we create views last to ensure all indexes are rolled in
+    CreateViews();
   }
   catch (...)
   {
@@ -3290,6 +3290,9 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
 {
   BeginTransaction();
 
+  // when adding/removing an index or altering the table ensure that you call
+  // CreateViews() after all modifications.
+
   try
   {
     if (iVersion < 4)
@@ -3834,6 +3837,10 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("ALTER TABLE actorlinkmovie ADD iOrder integer");
       m_pDS->exec("ALTER TABLE actorlinktvshow ADD iOrder integer");
       m_pDS->exec("ALTER TABLE actorlinkepisode ADD iOrder integer");
+    }
+    if ( iVersion < 42 )
+    {
+      CreateViews();
     }
   }
   catch (...)

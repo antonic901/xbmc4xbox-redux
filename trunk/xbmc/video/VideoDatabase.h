@@ -630,7 +630,7 @@ private:
    */
   void CreateViews();
 
-  virtual int GetMinVersion() const { return 41; };
+  virtual int GetMinVersion() const { return 42; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
