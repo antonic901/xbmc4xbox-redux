@@ -462,7 +462,7 @@
 			</control>
 			<control type="radiobutton" id="608">
 				<colordiffuse>CCFFFFFF</colordiffuse>
-				<description>Global Search</description>
+				<description>Content Search</description>
 				<posx>35</posx>
 				<posy>0</posy>
 				<height>35</height>
@@ -478,7 +478,7 @@
 				<texturenofocus flipy="true" border="5">HomeSubNF.png</texturenofocus>
 				<pulseonselect>false</pulseonselect>
 				<label>137</label>
-				<onclick>XBMC.RunScript(special://skin/scripts/GlobalSearch.py)</onclick>
+				<onclick>XBMC.RunScript(special://skin/scripts/content.search.py)</onclick>
 				<textureradiofocus>icon_search.png</textureradiofocus>
 				<textureradionofocus>icon_search.png</textureradionofocus>
 				<onleft>607</onleft>

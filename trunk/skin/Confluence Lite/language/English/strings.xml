@@ -179,6 +179,13 @@
 
   <string id="31421">Select your XBMC user Profile[CR]to login and continue</string>
   
+  <!-- Content search script -->
+  <string id="31800">Select content to search for...</string>
+  <string id="31801">Enter new search string...</string>
+  <string id="31802">Xbox Content Search Cancelled, Content not selected!</string>
+  <string id="31803">Search your Xbox for content...</string>
+  <string id="31804">Xbox Content Search Cancelled, Invalid search string!</string>
+  
   <!-- Weather plugin -->
   <string id="31900">Weather Maps</string>
   <string id="31901">36 Hour Forecast</string>
@@ -191,4 +198,4 @@
   <string id="31908">Chance of Precipitation</string>
   <string id="31909">Fetching forecast info...</string>
   
-  </strings>
+</strings>
