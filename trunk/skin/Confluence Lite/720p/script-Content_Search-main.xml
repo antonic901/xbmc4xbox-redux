@@ -253,7 +253,7 @@
 							<visible>Control.IsVisible(129)</visible>
 						</item>
 						<item id="3">
-							<label>$LOCALIZE[33054]</label>
+							<label>$LOCALIZE[344]</label>
 							<label2>$LOCALIZE[31206] $INFO[Control.GetLabel(130)] $LOCALIZE[31025]</label2>
 							<onclick>-</onclick>
 							<visible>Control.IsVisible(139)</visible>
