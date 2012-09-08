@@ -28,6 +28,8 @@ ECHO Building Skin Directory...
 xcopy "720p" "BUILD\Confluence Lite\720p" /E /Q /I /Y /EXCLUDE:exclude.txt
 xcopy "NTSC16x9" "BUILD\Confluence Lite\NTSC16x9" /E /Q /I /Y /EXCLUDE:exclude.txt
 xcopy "PAL16x9" "BUILD\Confluence Lite\PAL16x9" /E /Q /I /Y /EXCLUDE:exclude.txt
+xcopy "NTSC" "BUILD\Confluence Lite\NTSC" /E /Q /I /Y /EXCLUDE:exclude.txt
+xcopy "PAL" "BUILD\Confluence Lite\PAL" /E /Q /I /Y /EXCLUDE:exclude.txt
 xcopy "fonts" "BUILD\Confluence Lite\fonts" /E /Q /I /Y /EXCLUDE:exclude.txt
 xcopy "backgrounds" "BUILD\Confluence Lite\backgrounds" /E /Q /I /Y /EXCLUDE:exclude.txt
 xcopy "sounds\*.*" "BUILD\Confluence Lite\sounds\" /Q /I /Y /EXCLUDE:exclude.txt
