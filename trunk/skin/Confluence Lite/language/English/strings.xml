@@ -181,10 +181,12 @@
   
   <!-- Content search script -->
   <string id="31800">Select content to search for...</string>
-  <string id="31801">Enter new search string...</string>
-  <string id="31802">Xbox Content Search Cancelled, Content not selected!</string>
-  <string id="31803">Search your Xbox for content...</string>
-  <string id="31804">Xbox Content Search Cancelled, Invalid search string!</string>
+  <string id="31801">Enter content search string...</string>
+  <string id="31802">Content search cancelled!</string>
+  <string id="31803">No search string provided!</string>
+  <string id="31804">Content not selected!</string>
+  <string id="31805">User request...</string>
+  <string id="31806">New search</string>
   
   <!-- Weather plugin -->
   <string id="31900">Weather Maps</string>
