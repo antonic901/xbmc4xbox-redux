@@ -300,7 +300,11 @@ bool CVideoDatabase::CreateTables()
 void CVideoDatabase::CreateViews()
 {
   CLog::Log(LOGINFO, "create episodeview");
-  m_pDS->exec("DROP VIEW episodeview");
+  try
+  {
+    m_pDS->exec("DROP VIEW episodeview");
+  }
+  catch (...) {}
   CStdString episodeview = PrepareSQL("CREATE VIEW episodeview AS SELECT "
                                       "  episode.*,"
                                       "  files.strFileName AS strFileName,"
@@ -324,7 +328,11 @@ void CVideoDatabase::CreateViews()
   m_pDS->exec(episodeview.c_str());
 
   CLog::Log(LOGINFO, "create tvshowview");
-  m_pDS->exec("DROP VIEW tvshowview");
+  try
+  {
+    m_pDS->exec("DROP VIEW tvshowview");
+  }
+  catch (...) {}
   CStdString tvshowview = PrepareSQL("CREATE VIEW tvshowview AS SELECT "
                                      "  tvshow.*,"
                                      "  path.strPath AS strPath,"
@@ -346,7 +354,11 @@ void CVideoDatabase::CreateViews()
   m_pDS->exec(tvshowview.c_str());
 
   CLog::Log(LOGINFO, "create musicvideoview");
-  m_pDS->exec("DROP VIEW musicvideoview");
+  try
+  {
+    m_pDS->exec("DROP VIEW musicvideoview");
+  }
+  catch (...) {}
   m_pDS->exec("CREATE VIEW musicvideoview AS SELECT"
               "  musicvideo.*,"
               "  files.strFileName as strFileName,"
@@ -360,9 +372,11 @@ void CVideoDatabase::CreateViews()
               "    path.idPath=files.idPath");
 
   CLog::Log(LOGINFO, "create movieview");
-  m_pDS->exec("DROP VIEW movieview");
-  m_pDS->exec("create view movieview as select movie.*,files.strFileName as strFileName,path.strPath as strPath,files.playCount as playCount,files.lastPlayed as lastPlayed "
-              "from movie join files on files.idFile=movie.idFile join path on path.idPath=files.idPath");
+  try
+  {
+    m_pDS->exec("DROP VIEW movieview");
+  }
+  catch (...) {}
   m_pDS->exec("CREATE VIEW movieview AS SELECT"
               "  movie.*,"
               "  files.strFileName AS strFileName,"

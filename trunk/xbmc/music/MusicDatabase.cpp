@@ -193,11 +193,19 @@ bool CMusicDatabase::CreateTables()
 void CMusicDatabase::CreateViews()
 {
   CLog::Log(LOGINFO, "create song view");
-  m_pDS->exec("DROP VIEW songview");
+  try
+  {
+    m_pDS->exec("DROP VIEW songview");
+  }
+  catch (...) {}
   m_pDS->exec("create view songview as select song.idSong as idSong, song.strExtraArtists as strExtraArtists, song.strExtraGenres as strExtraGenres, strTitle, iTrack, iDuration, song.iYear as iYear, dwFileNameCRC, strFileName, strMusicBrainzTrackID, strMusicBrainzArtistID, strMusicBrainzAlbumID, strMusicBrainzAlbumArtistID, strMusicBrainzTRMID, iTimesPlayed, iStartOffset, iEndOffset, lastplayed, rating, comment, song.idAlbum as idAlbum, strAlbum, strPath, song.idArtist as idArtist, strArtist, song.idGenre as idGenre, strGenre, strThumb, iKaraNumber, iKaraDelay, strKaraEncoding from song join album on song.idAlbum=album.idAlbum join path on song.idPath=path.idPath join  artist on song.idArtist=artist.idArtist join genre on song.idGenre=genre.idGenre join thumb on song.idThumb=thumb.idThumb left outer join karaokedata on song.idSong=karaokedata.idSong");
 
   CLog::Log(LOGINFO, "create album view");
-  m_pDS->exec("DROP VIEW albumview");
+  try
+  {
+    m_pDS->exec("DROP VIEW albumview");
+  }
+  catch (...) {}
   m_pDS->exec("create view albumview as select album.idAlbum as idAlbum, strAlbum, strExtraArtists, "
               "album.idArtist as idArtist, album.strExtraGenres as strExtraGenres, album.idGenre as idGenre, "
               "strArtist, strGenre, album.iYear as iYear, strThumb, idAlbumInfo, strMoods, strStyles, strThemes, "
