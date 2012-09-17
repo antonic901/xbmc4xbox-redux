@@ -702,400 +702,390 @@
 						<enable>Skin.HasSetting(UseCustomBackground)</enable>
 					</control>
 				</control>
-				<control type="group">
-					<control type="grouplist" id="9004">
-						<visible>Container(9000).Hasfocus(4)</visible>
-						<posx>290</posx>
-						<posy>60</posy>
+				<control type="grouplist" id="9004">
+					<visible>Container(9000).Hasfocus(4)</visible>
+					<posx>290</posx>
+					<posy>60</posy>
+					<width>750</width>
+					<height>530</height>
+					<itemgap>-1</itemgap>
+					<pagecontrol>60</pagecontrol>
+					<onleft>9000</onleft>
+					<onright>60</onright>
+					<onup>9004</onup>
+					<ondown>9004</ondown>
+					<control type="label" id="453">
 						<width>750</width>
-						<height>530</height>
-						<itemgap>-1</itemgap>
-						<pagecontrol>61</pagecontrol>
-						<onleft>9000</onleft>
-						<onright>61</onright>
-						<onup>9004</onup>
-						<ondown>9004</ondown>
-						
-						<control type="label" id="453">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31140</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						<control type="button" id="455">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31132]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(LyricScript_Path)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(LyricScript_Path)</onclick>
-							<onclick>Skin.SetFile(LyricScript_Path,,special://xbmc/scripts/)</onclick>
-						</control>
-						<control type="button" id="456">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>- $LOCALIZE[31260]</label>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<enable>!IsEmpty(Skin.String(LyricScript_Path))</enable>
-							<onclick>XBMC.RunScript($INFO[Skin.String(LyricScript_Path)])</onclick>
-						</control>
-						
-						<control type="label" id="457">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31141</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						<control type="button" id="458">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31133]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(SubtitleScript_Path)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(SubtitleScript_Path)</onclick>
-							<onclick>Skin.SetFile(SubtitleScript_Path,,special://xbmc/scripts/)</onclick>
-						</control>
-						<control type="button" id="459">					
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>- $LOCALIZE[31260]</label>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<enable>!IsEmpty(Skin.String(SubtitleScript_Path))</enable>
-							<onclick>XBMC.RunScript($INFO[Skin.String(SubtitleScript_Path)])</onclick>
-						</control> 
-
-						<control type="label" id="410">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31134</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						
-						<control type="button" id="411">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]1[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton1)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeVideosButton1)</onclick>
-							<onclick>Skin.SetString(HomeVideosButton1)</onclick>
-						</control>
-						
-						<control type="button" id="412">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]2[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton2)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeVideosButton2)</onclick>
-							<onclick>Skin.SetString(HomeVideosButton2)</onclick>
-						</control>
-						<control type="button" id="413">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]3[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton3)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeVideosButton3)</onclick>
-							<onclick>Skin.SetString(HomeVideosButton3)</onclick>
-						</control>
-						<control type="button" id="414">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]4[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton4)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeVideosButton4)</onclick>
-							<onclick>Skin.SetString(HomeVideosButton4)</onclick>
-						</control>
-						<control type="button" id="415">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]5[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton5)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeVideosButton5)</onclick>
-							<onclick>Skin.SetString(HomeVideosButton5)</onclick>
-						</control>
-
-						<control type="label" id="420">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31135</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						<control type="button" id="421">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]1[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton1)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeMusicButton1)</onclick>
-							<onclick>Skin.SetString(HomeMusicButton1)</onclick>
-						</control>
-						<control type="button" id="422">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]2[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton2)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeMusicButton2)</onclick>
-							<onclick>Skin.SetString(HomeMusicButton2)</onclick>
-						</control>
-						<control type="button" id="423">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]3[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton3)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeMusicButton3)</onclick>
-							<onclick>Skin.SetString(HomeMusicButton3)</onclick>
-						</control>
-						<control type="button" id="424">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]4[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton4)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeMusicButton4)</onclick>
-							<onclick>Skin.SetString(HomeMusicButton4)</onclick>
-						</control>
-						<control type="button" id="425">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31250] [B]5[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton5)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeMusicButton5)</onclick>
-							<onclick>Skin.SetString(HomeMusicButton5)</onclick>
-						</control>
-
-						<control type="label" id="430">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31136</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						<control type="button" id="431">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]1[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton1)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomePictureButton1)</onclick>
-							<onclick>Skin.SetString(HomePictureButton1)</onclick>
-						</control>
-						<control type="button" id="432">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]2[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton2)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomePictureButton2)</onclick>
-							<onclick>Skin.SetString(HomePictureButton2)</onclick>
-						</control>
-						<control type="button" id="433">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]3[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton3)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomePictureButton3)</onclick>
-							<onclick>Skin.SetString(HomePictureButton3)</onclick>
-						</control>
-						<control type="button" id="434">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]4[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton4)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomePictureButton4)</onclick>
-							<onclick>Skin.SetString(HomePictureButton4)</onclick>
-						</control>
-						<control type="button" id="435">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]5[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton5)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomePictureButton5)</onclick>
-							<onclick>Skin.SetString(HomePictureButton5)</onclick>
-						</control>
-
-						<control type="label" id="440">
-							<width>750</width>
-							<height>45</height>
-							<font>font13_title</font>
-							<label>31118</label>
-							<textcolor>blue</textcolor>
-							<shadowcolor>black</shadowcolor>
-							<align>left</align>
-							<aligny>center</aligny>
-						</control>
-						<control type="button" id="441">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]1[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton1)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeProgramButton1)</onclick>
-							<onclick>Skin.SetString(HomeProgramButton1)</onclick>
-						</control>
-						<control type="button" id="442">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]2[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton2)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeProgramButton2)</onclick>
-							<onclick>Skin.SetString(HomeProgramButton2)</onclick>
-						</control>
-						<control type="button" id="443">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]3[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton3)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeProgramButton3)</onclick>
-							<onclick>Skin.SetString(HomeProgramButton3)</onclick>
-						</control>
-						<control type="button" id="444">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]4[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton4)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeProgramButton4)</onclick>
-							<onclick>Skin.SetString(HomeProgramButton4)</onclick>
-						</control>
-						<control type="button" id="445">
-							<width>750</width>
-							<height>40</height>
-							<font>font13</font>
-							<label>$LOCALIZE[31240] [B]5[/B]</label>
-							<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton5)][/COLOR]</label2>
-							<textcolor>grey2</textcolor>
-							<focusedcolor>white</focusedcolor>
-							<texturefocus>MenuItemFO.png</texturefocus>
-							<texturenofocus>MenuItemNF.png</texturenofocus>
-							<onclick>Skin.Reset(HomeProgramButton5)</onclick>
-							<onclick>Skin.SetString(HomeProgramButton5)</onclick>
-						</control>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31140</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="455">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31132]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(LyricScript_Path)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(LyricScript_Path)</onclick>
+						<onclick>Skin.SetFile(LyricScript_Path,,special://xbmc/scripts/)</onclick>
+					</control>
+					<control type="button" id="456">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>- $LOCALIZE[31260]</label>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<enable>!IsEmpty(Skin.String(LyricScript_Path))</enable>
+						<onclick>XBMC.RunScript($INFO[Skin.String(LyricScript_Path)])</onclick>
+					</control>
+					<control type="label" id="457">
+						<width>750</width>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31141</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="458">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31133]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(SubtitleScript_Path)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(SubtitleScript_Path)</onclick>
+						<onclick>Skin.SetFile(SubtitleScript_Path,,special://xbmc/scripts/)</onclick>
+					</control>
+					<control type="button" id="459">					
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>- $LOCALIZE[31260]</label>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<enable>!IsEmpty(Skin.String(SubtitleScript_Path))</enable>
+						<onclick>XBMC.RunScript($INFO[Skin.String(SubtitleScript_Path)])</onclick>
+					</control> 
+					<control type="label" id="410">
+						<width>750</width>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31134</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="411">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]1[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton1)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeVideosButton1)</onclick>
+						<onclick>Skin.SetString(HomeVideosButton1)</onclick>
+					</control>
+					<control type="button" id="412">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]2[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton2)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeVideosButton2)</onclick>
+						<onclick>Skin.SetString(HomeVideosButton2)</onclick>
+					</control>
+					<control type="button" id="413">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]3[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton3)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeVideosButton3)</onclick>
+						<onclick>Skin.SetString(HomeVideosButton3)</onclick>
+					</control>
+					<control type="button" id="414">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]4[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton4)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeVideosButton4)</onclick>
+						<onclick>Skin.SetString(HomeVideosButton4)</onclick>
+					</control>
+					<control type="button" id="415">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]5[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeVideosButton5)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeVideosButton5)</onclick>
+						<onclick>Skin.SetString(HomeVideosButton5)</onclick>
+					</control>
+					<control type="label" id="420">
+						<width>750</width>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31135</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="421">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]1[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton1)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeMusicButton1)</onclick>
+						<onclick>Skin.SetString(HomeMusicButton1)</onclick>
+					</control>
+					<control type="button" id="422">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]2[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton2)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeMusicButton2)</onclick>
+						<onclick>Skin.SetString(HomeMusicButton2)</onclick>
+					</control>
+					<control type="button" id="423">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]3[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton3)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeMusicButton3)</onclick>
+						<onclick>Skin.SetString(HomeMusicButton3)</onclick>
+					</control>
+					<control type="button" id="424">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]4[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton4)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeMusicButton4)</onclick>
+						<onclick>Skin.SetString(HomeMusicButton4)</onclick>
+					</control>
+					<control type="button" id="425">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31250] [B]5[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeMusicButton5)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeMusicButton5)</onclick>
+						<onclick>Skin.SetString(HomeMusicButton5)</onclick>
+					</control>
+					<control type="label" id="430">
+						<width>750</width>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31136</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="431">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]1[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton1)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomePictureButton1)</onclick>
+						<onclick>Skin.SetString(HomePictureButton1)</onclick>
+					</control>
+					<control type="button" id="432">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]2[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton2)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomePictureButton2)</onclick>
+						<onclick>Skin.SetString(HomePictureButton2)</onclick>
+					</control>
+					<control type="button" id="433">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]3[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton3)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomePictureButton3)</onclick>
+						<onclick>Skin.SetString(HomePictureButton3)</onclick>
+					</control>
+					<control type="button" id="434">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]4[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton4)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomePictureButton4)</onclick>
+						<onclick>Skin.SetString(HomePictureButton4)</onclick>
+					</control>
+					<control type="button" id="435">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]5[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomePictureButton5)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomePictureButton5)</onclick>
+						<onclick>Skin.SetString(HomePictureButton5)</onclick>
+					</control>
+					<control type="label" id="440">
+						<width>750</width>
+						<height>45</height>
+						<font>font13_title</font>
+						<label>31118</label>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+					</control>
+					<control type="button" id="441">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]1[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton1)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeProgramButton1)</onclick>
+						<onclick>Skin.SetString(HomeProgramButton1)</onclick>
+					</control>
+					<control type="button" id="442">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]2[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton2)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeProgramButton2)</onclick>
+						<onclick>Skin.SetString(HomeProgramButton2)</onclick>
+					</control>
+					<control type="button" id="443">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]3[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton3)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeProgramButton3)</onclick>
+						<onclick>Skin.SetString(HomeProgramButton3)</onclick>
+					</control>
+					<control type="button" id="444">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]4[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton4)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeProgramButton4)</onclick>
+						<onclick>Skin.SetString(HomeProgramButton4)</onclick>
+					</control>
+					<control type="button" id="445">
+						<width>750</width>
+						<height>40</height>
+						<font>font13</font>
+						<label>$LOCALIZE[31240] [B]5[/B]</label>
+						<label2>[COLOR=selected]$INFO[Skin.String(HomeProgramButton5)][/COLOR]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<onclick>Skin.Reset(HomeProgramButton5)</onclick>
+						<onclick>Skin.SetString(HomeProgramButton5)</onclick>
 					</control>
 				</control>
-				<control type="scrollbar" id="61">
+				<control type="scrollbar" id="60">
 					<posx>1060</posx>
 					<posy>60</posy>
 					<width>25</width>
