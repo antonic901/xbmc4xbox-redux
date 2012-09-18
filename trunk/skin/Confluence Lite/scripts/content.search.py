@@ -18,9 +18,7 @@ def log(txt):
 def selectContentType():
 	log( '|==================================|' )
 	log( 'searchSelect().start' )
-
 	contentList = [ 'All Content', 'Movies', 'Tv Shows', 'Tv Episodes', 'Actors', 'Albums', 'Songs', 'Artists', 'Games' ]
-
 	content = xbmcgui.Dialog().select( 'Select content to search for...', contentList )
 	if content in (0,1,2,3,4,5,6,7,8,):
 		return content
@@ -31,16 +29,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	def __init__( self, *args, **kwargs ):
 		log( '|==================================|' )
 		log( '__init__().start' )
-		self.SEARCH_STRING = 	kwargs[ 'searchSTRING' ]
-		self.CONTENT_TYPE =		kwargs[ 'contentTYPE' ]
+		self.SEARCH_STRING 	= kwargs[ 'searchSTRING' ]
+		self.CONTENT_TYPE 	= kwargs[ 'contentTYPE' ]
+		self.CONTENT_FOUND 	= 'false'
 		
 	def onInit(self):
 		log( '|==================================|' )
 		log( 'onInit().start' )
-		
 		self.reset()
-		self.hideControls()
-		self.resetControls()
 		self.searchContent()
 	
 	def searchContent( self ):
@@ -67,6 +63,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.searchMusicArtists()
 		elif content == 8:
 			self.searchGames()
+		self.cleanUp()
 		
 	def searchAll( self ):
 		log( '|==================================|' )
@@ -90,20 +87,28 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	def newSearch( self ):
 		log( '|==================================|' )
 		log( 'newSearch().start' )
-		
-		self.hideControls()
-		self.resetControls()
+		self.reset()
 		self.CONTENT_TYPE = selectContentType()
-		if self.CONTENT_TYPE != None:
-			keyboard = xbmc.Keyboard( '', 'Enter new search string...' , False )
+		if self.CONTENT_TYPE == None:
+			xbmc.executebuiltin( 'XBMC.Notification(Xbox Content Search Cancelled!,Content not selected!)' )
+			self.cleanUp()
+		else:
+			keyboard = xbmc.Keyboard( '', 'Enter content search string...' , False )
 			keyboard.doModal()
 			if ( keyboard.isConfirmed() ):
 				self.SEARCH_STRING = keyboard.getText()
-				self.searchContent()
+				if (self.SEARCH_STRING == '') or (self.SEARCH_STRING == ' '):
+					xbmc.executebuiltin( 'XBMC.Notification(Xbox Content Search Cancelled!,No search string provided!)' )
+					self.cleanUp()
+				else:
+					self.searchContent()
+			else:
+				xbmc.executebuiltin( 'XBMC.Notification(Xbox Content Search Cancelled!,User request...)' )
+				self.cleanUp()
 			log( 'newSearch().end' )
 		
 	def hideControls( self ):
-		log( 'hideControls(): initialized' )
+		log( 'hideControls().start' )
 		self.getControl( 119 ).setVisible( False )
 		self.getControl( 129 ).setVisible( False )
 		self.getControl( 139 ).setVisible( False )
@@ -112,11 +117,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		self.getControl( 169 ).setVisible( False )
 		self.getControl( 179 ).setVisible( False )
 		self.getControl( 189 ).setVisible( False )
-		#self.getControl( 198 ).setVisible( False )
+		self.getControl( 198 ).setVisible( False )
 		self.getControl( 199 ).setVisible( False )
+		self.getControl( 209 ).setVisible( False )
 
 	def resetControls( self ):
-		log( 'resetControls(): initialized' )
+		log( 'resetControls().start' )
 		self.getControl( 111 ).reset()
 		self.getControl( 121 ).reset()
 		self.getControl( 131 ).reset()
@@ -125,11 +131,25 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		self.getControl( 161 ).reset()
 		self.getControl( 171 ).reset()
 		self.getControl( 181 ).reset()
+		self.getControl( 201 ).reset()
 	
 	def reset( self ):
+		self.getControl( 190 ).setLabel( '[B]' + xbmc.getLocalizedString(194) + '[/B]' )
+		self.getControl( 198 ).setLabel( '[B]' + xbmc.getLocalizedString(32299) + '[/B]' )
+		self.hideControls()
+		self.resetControls()
+		self.CONTENT_FOUND 		= 'false'
 		self.GET_ACTOR_MOVIES 	= 'false'
 		self.GET_ACTOR_TVSHOWS 	= 'false'
 		self.GET_ACTOR_EPISODES = 'false'
+	
+	def cleanUp( self ):
+		self.getControl( 190 ).setLabel( '' )
+		self.getControl( 191 ).setLabel( '' )
+		if self.CONTENT_FOUND == 'false':
+			self.getControl( 199 ).setVisible( True )
+			self.setFocus( self.getControl( 198 ) )
+		self.getControl( 198 ).setVisible( True )
 	
 	def onFocus(self, controlID):
 		log( '|==================================|' )
@@ -147,10 +167,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			focusId = self.getFocusId()
 			if focusId in ( 111, 121, 141 ):
 				fanart = self.getFocus().getSelectedItem().getProperty( 'fanart_image' )
-				print fanart
 				self.getControl( 99 ).setImage( fanart )
 		
 	def onClick( self, controlId ):
+		log( '|==================================|' )
 		log( 'onClick()' )
 		log( 'onClick().controlId: ' + str( controlId ) )
 		
@@ -182,8 +202,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.searchMovies()
 			self.searchTvShows()
 			self.searchTvEpisodes()
-			#self.close()
-			#xbmc.executebuiltin('ActivateWindow(VideoLibrary,' + path + ',return)')
 		elif controlId ==141:	# episode.play
 			listItem = self.getControl( 141 ).getSelectedItem()
 			path = listItem.getProperty( 'path' )
@@ -208,6 +226,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			log( 'onClick().songs.play( ' + path + ' )' )
 			self.close()
 			xbmc.Player().play( path, listItem )
+		elif controlId == 201:
+			listItem = self.getControl( 201 ).getSelectedItem()
+			path = listItem.getProperty( 'path' )
+			log( 'onClick().runXBE( ' + path + ' )' )
+			xbmc.executebuiltin('runXBE(' + path + ')' )
 		elif controlId == 198:	# newSearch
 			self.newSearch()
 		
@@ -256,6 +279,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 111 ).addItems( listItems )
 			self.getControl( 110 ).setLabel( str( results ) )
 			self.getControl( 119 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchMovies().end' )
 		
 	def searchTvShows( self ):
@@ -305,6 +329,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 121 ).addItems( listItems )
 			self.getControl( 120 ).setLabel( str( results ) )
 			self.getControl( 129 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchTvShows().end' )
 		
 	def searchTvEpisodes( self ):
@@ -354,6 +379,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 141 ).addItems( listItems )
 			self.getControl( 140 ).setLabel( str( results ) )
 			self.getControl( 149 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchTvEpisodes().terminate' )
 	
 	def searchMusicAlbums( self ):
@@ -392,6 +418,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 171 ).addItems( listItems )
 			self.getControl( 170 ).setLabel( str( results ) )
 			self.getControl( 179 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchMusicAlbums().end' )
 	
 	def searchMusicSongs( self ):
@@ -432,6 +459,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 181 ).addItems( listItems )
 			self.getControl( 180 ).setLabel( str( results ) )
 			self.getControl( 189 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchMusicSongs().end' )
 
 	def searchActors( self ):
@@ -440,7 +468,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 		listItems = []
 		self.getControl( 191 ).setLabel( '[B]' + xbmc.getLocalizedString(20337) + '[/B]' )
-		#self.getControl( 191 ).setLabel( '[B] Movie Actors[/B]' )
 		# fields: 0=actorID, 1=actor
 		actorsSQL = 'SELECT idActor, strActor FROM actors WHERE strActor LIKE "%' + self.SEARCH_STRING + '%"'
 		#actorsSQL = 'SELECT DISTINCT actors.idActor, actors.strActor FROM actors INNER JOIN actorlinkmovie ON actors.idActor = actorlinkmovie.idActor WHERE actors.strActor LIKE "%' + self.SEARCH_STRING + '%"'
@@ -472,6 +499,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 131 ).addItems( listItems )
 			self.getControl( 130 ).setLabel( str( results ) )
 			self.getControl( 139 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchMovieActors().end' )
 		
 	def searchMusicArtists( self ):
@@ -508,16 +536,19 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.getControl( 161 ).addItems( listItems )
 			self.getControl( 160 ).setLabel( str( results ) )
 			self.getControl( 169 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchMusicArtists().end' )
 		
 	def searchGames( self ):
 		log( '|==================================|' )
-		log( 'searchGames()' )
+		log( 'searchGames().start' )
 		
 		listItems = []
-		sql_games = 'select xbeDescription, strFileName from files WHERE xbeDescription LIKE "%' + self.SEARCH_STRING + '%"' 
-		games_xml = xbmc.executehttpapi( "QueryProgramDatabase(%s)" % quote_plus( sql_games ), )
-		games = re.findall( "<record>(.+?)</record>", games_xml, re.DOTALL )
+		self.getControl( 191 ).setLabel( '[B]Games[/B]' )
+		gamesSQL = 'SELECT xbeDescription, strFileName FROM files WHERE strFileName LIKE "F:\GAMES%" AND xbeDescription LIKE "%' + self.SEARCH_STRING + '%"' 
+		log( 'searchGames().sql = ' + gamesSQL )
+		gamesXML = xbmc.executehttpapi( "QueryProgramDatabase(%s)" % quote_plus( gamesSQL ), )
+		games = re.findall( "<record>(.+?)</record>", gamesXML, re.DOTALL )
 		results = len( games )
 		
 		log( 'searchGames().results: ' + str( results ) )
@@ -526,16 +557,17 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			fields = re.findall( "<field>(.*?)</field>", game, re.DOTALL )
 			thumb_cache = xbmc.getCacheThumbName( fields[1] )
 			thumb = "special://profile/Thumbnails/Programs/%s/%s" % ( thumb_cache[ 0 ], thumb_cache, )			
-			listItem = xbmcgui.ListItem( fields[0], fields[0], thumb, thumb, fields[1] )
-			listItem.setProperty( 'path', fields[8] + fields[7] )
+			listItem = xbmcgui.ListItem( fields[0], fields[0], thumb, thumb )
+			listItem.setProperty( 'path', fields[1] )
 			listItem.setProperty( 'content', 'game' )
 			listItems.append( listItem )
 		
 		if results > 0:
 			log( 'searchGames().success' )
-			#self.getControl( ??? ).addItems( listItems )
-			#self.getControl( ??? ).setLabel( str( results ) )
-			#self.getControl( ??? ).setVisible( True )
+			self.getControl( 201 ).addItems( listItems )
+			self.getControl( 200 ).setLabel( str( results ) )
+			self.getControl( 209 ).setVisible( True )
+			self.CONTENT_FOUND = 'true'
 		log( 'searchGames().end' )
 	
 	def getCacheThumb( self, path, file ):
@@ -557,13 +589,14 @@ if ( __name__ == "__main__" ):
 		keyboard.doModal()     
 		if ( keyboard.isConfirmed() ):         
 			_searchString = keyboard.getText()
-			if _searchString == '':
+			log( '__main__()._searchString = ' + _searchString )
+			if ( _searchString == '' ) or ( _searchString == ' ' ):
 				xbmc.executebuiltin( 'XBMC.Notification(Xbox Content Search Cancelled, Invalid search string!)' )
 			else:
 				xbmc.executehttpapi( "SetResponseFormat()" )
 				xbmc.executehttpapi( "SetResponseFormat(OpenRecord,%s)" % ( "<record>", ) )
 				xbmc.executehttpapi( "SetResponseFormat(CloseRecord,%s)" % ( "</record>", ) )
-				w = GUI( 'script-Content_Search-main.xml', os.getcwd(), searchSTRING=_searchString, contentTYPE=_searchContentType )
+				w = GUI( 'script-globalsearch-main.xml', os.getcwd(), searchSTRING=_searchString, contentTYPE=_searchContentType )
 				w.doModal()
 				
 				del w
