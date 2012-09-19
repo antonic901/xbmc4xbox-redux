@@ -596,7 +596,7 @@ if ( __name__ == "__main__" ):
 				xbmc.executehttpapi( "SetResponseFormat()" )
 				xbmc.executehttpapi( "SetResponseFormat(OpenRecord,%s)" % ( "<record>", ) )
 				xbmc.executehttpapi( "SetResponseFormat(CloseRecord,%s)" % ( "</record>", ) )
-				w = GUI( 'script-globalsearch-main.xml', os.getcwd(), searchSTRING=_searchString, contentTYPE=_searchContentType )
+				w = GUI( 'script-Content_Search-main.xml', os.getcwd(), searchSTRING=_searchString, contentTYPE=_searchContentType )
 				w.doModal()
 				
 				del w
