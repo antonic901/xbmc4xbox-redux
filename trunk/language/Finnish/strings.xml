@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--Translator: Mika Pirinen -->
-<!--Date of translation: 4/6/2010 -->
-<!--Finnish strings based on English strings revision 28135 -->
+<!--Date of translation: 15/9/2012 -->
+<!--Finnish strings based on English strings revision 31144 -->
 <strings>
   <string id="0">Ohjelmat</string>
   <string id="1">Kuvat</string>
@@ -88,7 +88,7 @@
   <string id="127">Kohdetta</string>
   <string id="128">Yleiset</string>
   <string id="129">Kuvaesitys</string>
-  <string id="130">Järjestelmän tiedot</string>
+  <string id="130">Tietoja</string>
   <string id="131">Näyttö</string>
   <string id="132">Albumit</string>
   <string id="133">Esittäjät</string>
@@ -518,6 +518,7 @@
   <string id="571">Oletus</string>
   <string id="572">Studio</string>
   <string id="573">Polku</string>
+  <string id="574">Maa</string>
   <string id="575">Käynnissä</string>
 
   <string id="580">Järjestelyn suunta</string>
@@ -662,7 +663,7 @@
   <string id="765">Sinivihreä</string>
   <string id="766">Vaaleanharmaa</string>
   <string id="767">Harmaa</string>
- <!-- strings 768 and 769 reserved for more subtitle colors -->
+  <!-- strings 768 and 769 reserved for more subtitle colors -->
 
   <string id="770">Virhe %i: sijaintia ei ole saatavilla</string>
   <string id="771">Automaattinen FATX-rajoitus</string>
@@ -1361,8 +1362,18 @@
   <string id="14092">Debugging</string>
   <string id="14093">Turvallisuus</string>
   <string id="14094">Syöttölaitteet</string>
-  <string id="14095">Tehonsäästö</string>
-
+  <string id="14095">Virransäästö</string>
+  <string id="14096">Video välimuisti</string>
+  <string id="14097">Video välimuisti - kesto</string>
+  <string id="14098">Audio välimuisti</string>
+  <string id="14099">Audio välimuisti - kesto</string>
+  <string id="14100">H.264 Skip Loop -suodin</string>
+  <string id="14101">Oletus</string>
+  <string id="14102">Ohita Non-reference -kuvat</string>
+  <string id="14103">Ohita B-kuvat</string>
+  <string id="14104">Ohita Non-key -kuvat</string>
+  <string id="14105">Ohita kaikki</string>
+  
   <string id="15000"></string>
   <string id="15001"></string>
   <string id="15002"></string>
@@ -1647,7 +1658,7 @@
   <string id="20052">Huomautus</string>
   <string id="20053">Poistuit pääkäyttäjätilaan</string>
   <string id="20054">Siirryit pääkäyttäjätilasta</string>
-  <string id="20055">Allmusic.com- pienoiskuva</string>
+  <string id="20055">Allmusic.com-pienoiskuva</string>
   <string id="20056"></string>
   <string id="20057">Poista pienoiskuva</string>
   <string id="20058">Lisää uusi profiili...</string>
@@ -1669,7 +1680,7 @@
   <string id="20074">MPAA-luokitus</string>
   <string id="20075">Anna pääkäyttäjän lukituskoodi</string>
   <string id="20076">Kysy pääkäyttäjän lukituskoodia käynnistyessä</string>
-  <string id="20077">Ulkoasun asetukset</string>
+  <string id="20077">Ulkoasu</string>
   <string id="20078">- Linkkiä ei ole -</string>
   <string id="20079">Animoinnit käytössä</string>
   <string id="20080">Älä näytä RSS-tietoja musiikin aikana</string>
@@ -1799,6 +1810,7 @@
   <string id="20252">Valmiina aloittamaan elokuvanäytös</string>
   <string id="20253">WebDAV palvelin (HTTP)</string>
   <string id="20254">WebDAV palvelin (HTTPS)</string>
+  <string id="20258">MythTV-asiakassovellus</string>
 
   <string id="20300">Web-palvelimen hakemisto (HTTP)</string>
   <string id="20301">Web-palvelimen hakemisto (HTTPS)</string>
@@ -1952,11 +1964,12 @@
   <string id="20448">Tietoja ei voida ladata</string>
   <string id="20449">Palvelin ei ole saatavilla</string>
   <string id="20450">Haluatko jatkaa hakua?</string>
+  <string id="20451">Maat</string>
   <!-- up to 21329 is reserved for the video db !! !-->
 
   <string id="21330">Näytä piilotetut tiedostot ja kansiot</string>
 
-  <string id="21331">TuxBox-asiakas</string>
+  <string id="21331">TuxBox-asiakassovellus</string>
   <string id="21332">Varoitus:TuxBox-laite on nauhoitustilassa!</string>
   <string id="21333">Ohjelman katselu täytyy pysäyttää!</string>
   <string id="21334">Vaihto kanavalle: %s epäonnistui!</string>
@@ -2170,7 +2183,6 @@
   <string id="22027">PAPlayer</string>
   <string id="22028">DVDPlayer</string>
   <string id="22029">MPlayer</string>
-  <string id="22030">Oletussoitin</string>
 
   <!-- strings 22030 thru 22060 reserved for karaoke -->
   <string id="22030">Kirjasin</string>
@@ -2193,7 +2205,7 @@
 
   <string id="23050">Teksti-tv käytössä</string>
   <string id="23051">Osa %i</string>
-  <string id="23052">Puskuroidaan %i tavua</string>
+  <string id="23052">Puskurointi %i t</string>
   <string id="23053">Pysäytetään</string>
   <string id="23054">Käynnissä</string>
 
@@ -2205,6 +2217,17 @@
   <string id="23104">Paina OK kun toisto on loppunut</string>
   <string id="23105"></string>
   <string id="23106"></string>
+
+  <!-- strings 24000 thru 24299 reserved for the Add-ons framework -->
+  <string id="24000">Lisäosa</string>
+  <string id="24001">Lisäosat</string>
+
+  <string id="24020">Asetukset</string>
+  <string id="24021">Poista käytöstä</string>
+  <string id="24022">Ota käyttöön</string>
+  <string id="24023">Lisäosa ei käytössä</string>
+
+  <string id="24030">Lisäosan asetukset tekemättä</string>
 
   <!-- strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code -->
   <string id="29800">Kirjasto tila</string>
@@ -2247,7 +2270,7 @@
   <string id="33028">Aurinko laskee</string>
   <string id="33029">Yksityiskohdat</string>
   <string id="33030">Ulkoasu</string>
-  <string id="33031">Kuorivirta</string>
+  <string id="33031">Kansien selaus</string>
   <string id="33032">Käännä teksti</string>
   <string id="33033">Karttaluettelon %s-kategoria</string>
   <string id="33034">36 tuntia</string>
