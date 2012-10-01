@@ -292,75 +292,145 @@
 	<include name="HomeAddonItemsVideos">
 		<item>
 			<label>$INFO[Skin.String(HomeVideosButton1)]</label>
+			<onclick>ActivateWindow(25,plugin://video/$INFO[Skin.String(HomeVideosButton1)])</onclick>
+			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton1)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton1)) + Library.HasContent(Video)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeVideosButton1)]</label>
 			<onclick>ActivateWindow(24,plugin://video/$INFO[Skin.String(HomeVideosButton1)])</onclick>
 			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton1)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeVideosButton1))</visible>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton1)) + !Library.HasContent(Video)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeVideosButton2)]</label>
+			<onclick>ActivateWindow(25,plugin://video/$INFO[Skin.String(HomeVideosButton2)])</onclick>
+			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton2)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton2)) + Library.HasContent(Video)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeVideosButton2)]</label>
 			<onclick>ActivateWindow(24,plugin://video/$INFO[Skin.String(HomeVideosButton2)])</onclick>
 			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton2)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeVideosButton2))</visible>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton2)) + !Library.HasContent(Video)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeVideosButton3)]</label>
+			<onclick>ActivateWindow(25,plugin://video/$INFO[Skin.String(HomeVideosButton3)])</onclick>
+			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton3)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton3)) + Library.HasContent(Video)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeVideosButton3)]</label>
 			<onclick>ActivateWindow(24,plugin://video/$INFO[Skin.String(HomeVideosButton3)])</onclick>
 			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton3)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeVideosButton3))</visible>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton3)) + !Library.HasContent(Video)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeVideosButton4)]</label>
+			<onclick>ActivateWindow(25,plugin://video/$INFO[Skin.String(HomeVideosButton4)])</onclick>
+			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton4)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton4)) + Library.HasContent(Video)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeVideosButton4)]</label>
 			<onclick>ActivateWindow(24,plugin://video/$INFO[Skin.String(HomeVideosButton4)])</onclick>
 			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton4)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeVideosButton4))</visible>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton4)) + !Library.HasContent(Video)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeVideosButton5)]</label>
+			<onclick>ActivateWindow(25,plugin://video/$INFO[Skin.String(HomeVideosButton5)])</onclick>
+			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton5)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton5)) + Library.HasContent(Video)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeVideosButton5)]</label>
 			<onclick>ActivateWindow(24,plugin://video/$INFO[Skin.String(HomeVideosButton5)])</onclick>
 			<icon>special://xbmc/plugins/video/$INFO[Skin.String(HomeVideosButton5)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeVideosButton5))</visible>
+			<visible>!IsEmpty(Skin.String(HomeVideosButton5)) + !Library.HasContent(Video)</visible>
 		</item>
 	</include>
 	<include name="HomeAddonItemsMusic">
 		<item>
 			<label>$INFO[Skin.String(HomeMusicButton1)]</label>
+			<onclick>ActivateWindow(502,plugin://music/$INFO[Skin.String(HomeMusicButton1)])</onclick>
+			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton1)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton1)) + Library.HasContent(Music)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeMusicButton1)]</label>
 			<onclick>ActivateWindow(501,plugin://music/$INFO[Skin.String(HomeMusicButton1)])</onclick>
 			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton1)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeMusicButton1))</visible>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton1)) + !Library.HasContent(Music)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeMusicButton2)]</label>
+			<onclick>ActivateWindow(502,plugin://music/$INFO[Skin.String(HomeMusicButton2)])</onclick>
+			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton2)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton2)) + Library.HasContent(Music)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeMusicButton2)]</label>
 			<onclick>ActivateWindow(501,plugin://music/$INFO[Skin.String(HomeMusicButton2)])</onclick>
 			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton2)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeMusicButton2))</visible>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton2)) + !Library.HasContent(Music)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeMusicButton3)]</label>
+			<onclick>ActivateWindow(502,plugin://music/$INFO[Skin.String(HomeMusicButton3)])</onclick>
+			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton3)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton3)) + Library.HasContent(Music)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeMusicButton3)]</label>
 			<onclick>ActivateWindow(501,plugin://music/$INFO[Skin.String(HomeMusicButton3)])</onclick>
 			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton3)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeMusicButton3))</visible>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton3)) + !Library.HasContent(Music)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeMusicButton4)]</label>
+			<onclick>ActivateWindow(502,plugin://music/$INFO[Skin.String(HomeMusicButton4)])</onclick>
+			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton4)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton4)) + Library.HasContent(Music)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeMusicButton4)]</label>
 			<onclick>ActivateWindow(501,plugin://music/$INFO[Skin.String(HomeMusicButton4)])</onclick>
 			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton4)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeMusicButton4))</visible>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton4)) + !Library.HasContent(Music)</visible>
 		</item>
 		<item>
 			<label>$INFO[Skin.String(HomeMusicButton5)]</label>
+			<onclick>ActivateWindow(502,plugin://music/$INFO[Skin.String(HomeMusicButton5)])</onclick>
+			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton5)]/default.tbn</icon>
+			<thumb>-</thumb>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton5)) + Library.HasContent(Music)</visible>
+		</item>
+		<item>
+			<label>$INFO[Skin.String(HomeMusicButton5)]</label> 
 			<onclick>ActivateWindow(501,plugin://music/$INFO[Skin.String(HomeMusicButton5)])</onclick>
 			<icon>special://xbmc/plugins/music/$INFO[Skin.String(HomeMusicButton5)]/default.tbn</icon>
 			<thumb>-</thumb>
-			<visible>!IsEmpty(Skin.String(HomeMusicButton5))</visible>
+			<visible>!IsEmpty(Skin.String(HomeMusicButton5)) + !Library.HasContent(Music)</visible>
 		</item>
 	</include>
 	<include name="HomeAddonItemsPictures">
