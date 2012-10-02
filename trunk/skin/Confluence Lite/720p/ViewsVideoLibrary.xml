@@ -25,7 +25,7 @@
 				<scrolltime>200</scrolltime>
 				<focusposition>3</focusposition>
 				<orientation>horizontal</orientation>
-				<preloaditems>4</preloaditems>
+				<preloaditems>2</preloaditems>
 				<itemlayout height="310" width="218">
 					<control type="image">
 						<posx>2</posx>
@@ -322,7 +322,7 @@
 				<focusposition>5</focusposition>
 				<movement>3</movement>
 				<orientation>horizontal</orientation>
-				<preloaditems>4</preloaditems>
+				<preloaditems>2</preloaditems>
 				<itemlayout height="200" width="120">
 					<control type="image">
 						<posx>2</posx>

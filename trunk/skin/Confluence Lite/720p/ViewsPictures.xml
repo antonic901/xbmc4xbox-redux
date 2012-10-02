@@ -19,7 +19,7 @@
 				<scrolltime>200</scrolltime>
 				<focusposition>3</focusposition>
 				<orientation>horizontal</orientation>
-				<preloaditems>4</preloaditems>
+				<preloaditems>2</preloaditems>
 				<itemlayout height="200" width="190">
 					<control type="image">
 						<posx>15</posx>
