@@ -1363,7 +1363,7 @@
 					<height>286</height>
 					<aspectratio>scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 					<visible>Container.Content(Movies)</visible>
 					<bordertexture border="8">ThumbShadow.png</bordertexture>
 					<bordersize>8</bordersize>
@@ -1375,7 +1375,7 @@
 					<height>325</height>
 					<aspectratio>scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 					<visible>Container.Content(TVShows)</visible>
 					<bordertexture border="8">ThumbShadow.png</bordertexture>
 					<bordersize>8</bordersize>
@@ -1707,7 +1707,7 @@
 					<height>420</height>
 					<aspectratio scalediffuse="false">scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 				</control>
 				<control type="label">
 					<posx>10</posx>
@@ -1770,7 +1770,7 @@
 					<height>420</height>
 					<aspectratio scalediffuse="false">scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 				</control>
 				<control type="label">
 					<posx>10</posx>
@@ -1808,7 +1808,7 @@
 					<height>420</height>
 					<aspectratio scalediffuse="false">scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 				</control>
 				<control type="label">
 					<posx>10</posx>
@@ -1857,7 +1857,7 @@
 					<height>420</height>
 					<aspectratio scalediffuse="false">scale</aspectratio>
 					<fadetime>IconCrossfadeTime</fadetime>
-					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
+					<texture diffuse="Fanart_Diffuse.png" background="true" fallback="special://skin/backgrounds/Fanart_Fallback_Small.jpg" >$INFO[ListItem.Property(fanart_image)]</texture>
 				</control>
 				<control type="label">
 					<posx>10</posx>

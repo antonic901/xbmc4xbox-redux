@@ -86,7 +86,7 @@
 							<posy>0</posy>
 							<width>675</width>
 							<height>380</height>
-							<texture>Fanart_Fallback_Music_Small.jpg</texture>
+							<texture background="true">special://skin/backgrounds/Fanart_Fallback_Music_Small.jpg</texture>
 							<bordertexture border="5">button-nofocus.png</bordertexture>
 							<bordersize>4</bordersize>
 							<aspectratio>stretch</aspectratio>
