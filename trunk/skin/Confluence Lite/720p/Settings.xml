@@ -37,23 +37,6 @@
 				<height>64</height>
 				<texture border="15">ContentPanelMirror.png</texture>
 			</control>
-			<control type="button">
-				<description>Close Window button</description>
-				<posx>980</posx>
-				<posy>11</posy>
-				<width>64</width>
-				<height>32</height>
-				<label>-</label>
-				<font>-</font>
-				<onclick>PreviousMenu</onclick>
-				<texturefocus>DialogCloseButton-focus.png</texturefocus>
-				<texturenofocus>DialogCloseButton.png</texturenofocus>
-				<onleft>1</onleft>
-				<onright>1</onright>
-				<onup>1</onup>
-				<ondown>1</ondown>
-				<visible>system.getbool(input.enablemouse)</visible>
-			</control>
 			<control type="image">
 				<description>LOGO</description>
 				<posx>30</posx>
@@ -245,7 +228,6 @@
 			</control>
 		</control>
 		<include>CommonNowPlaying</include>
-		<include>MainWindowMouseButtons</include>
 		<include>BehindDialogFadeOut</include>
 		<control type="image">
 			<description>Section header image</description>

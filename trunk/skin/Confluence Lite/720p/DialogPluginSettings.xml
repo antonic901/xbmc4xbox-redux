@@ -36,23 +36,6 @@
 			<textcolor>selected</textcolor>
 			<shadowcolor>black</shadowcolor>
 		</control>
-		<control type="button">
-			<description>Close Window button</description>
-			<posx>710</posx>
-			<posy>15</posy>
-			<width>64</width>
-			<height>32</height>
-			<label>-</label>
-			<font>-</font>
-			<onclick>PreviousMenu</onclick>
-			<texturefocus>DialogCloseButton-focus.png</texturefocus>
-			<texturenofocus>DialogCloseButton.png</texturenofocus>
-			<onleft>3</onleft>
-			<onright>3</onright>
-			<onup>3</onup>
-			<ondown>3</ondown>
-			<visible>system.getbool(input.enablemouse)</visible>
-		</control>
 		<control type="grouplist" id="9">
 			<description>button area</description>
 			<posx>45</posx>

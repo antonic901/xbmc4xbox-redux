@@ -97,22 +97,10 @@
 		<pulseonselect>false</pulseonselect>
 	</include>
 	<include name="SideBladeLeft">
-		<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | Control.HasFocus(9001) | Control.HasFocus(8999)">Conditional</animation>
+		<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | Control.HasFocus(9001)">Conditional</animation>
 		<animation effect="slide" start="0,0" end="-300,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | Control.HasFocus(9001)">WindowClose</animation>
 		<animation effect="slide" start="0,0" end="-50,0" time="300" tween="quadratic" easing="out" condition="![ControlGroup(9000).HasFocus | Control.HasFocus(9001)]">WindowClose</animation>
 		<animation effect="slide" start="-50,0" end="0,0" time="300" tween="quadratic" easing="out">WindowOpen</animation>
-		<control type="button" id="8999">
-			<description>Fake button for mouse control</description>
-			<posx>0</posx>
-			<posy>0</posy>
-			<width>250</width>
-			<height>720</height>
-			<label>-</label>
-			<font>-</font>
-			<texturenofocus>-</texturenofocus>
-			<texturefocus>-</texturefocus>
-			<visible>true</visible>
-		</control>
 		<control type="button" id="9001">
 			<posx>250</posx>
 			<posy>260</posy>
@@ -137,67 +125,6 @@
 			<height>80</height>
 			<aspectratio>keep</aspectratio>
 			<texture>Confluence_Logo.png</texture>
-		</control>
-	</include>
-	<include name="MainWindowMouseButtons">
-		<control type="group">
-			<posx>120r</posx>
-			<posy>55r</posy>
-			<animation effect="fade" time="250" condition="Window.Previous(Home)">WindowOpen</animation>
-			<animation effect="fade" time="250" condition="Window.Next(Home)">WindowClose</animation>
-			<visible>system.getbool(input.enablemouse)</visible>
-			<control type="button">
-				<description>Back push button</description>
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>45</width>
-				<height>45</height>
-				<label>1036</label>
-				<font>-</font>
-				<aligny>-</aligny>
-				<onclick>back</onclick>
-				<texturefocus border="5">floor_buttonFO.png</texturefocus>
-				<texturenofocus border="5">floor_button.png</texturenofocus>
-				<onleft>50</onleft>
-				<onright>50</onright>
-				<onup>50</onup>
-				<ondown>50</ondown>
-			</control>
-			<control type="image">
-				<description>Back Icon</description>
-				<posx>5</posx>
-				<posy>5</posy>
-				<width>35</width>
-				<height>35</height>
-				<aspectratio>keep</aspectratio>
-				<texture>icon_back.png</texture>
-			</control>
-			<control type="button">
-				<description>Home push button</description>
-				<posx>55</posx>
-				<posy>0</posy>
-				<width>45</width>
-				<height>45</height>
-				<label>31003</label>
-				<font>-</font>
-				<aligny>-</aligny>
-				<onclick>ActivateWindow(home)</onclick>
-				<texturefocus border="5">floor_buttonFO.png</texturefocus>
-				<texturenofocus border="5">floor_button.png</texturenofocus>
-				<onleft>50</onleft>
-				<onright>50</onright>
-				<onup>50</onup>
-				<ondown>50</ondown>
-			</control>
-			<control type="image">
-				<description>Home Icon</description>
-				<posx>60</posx>
-				<posy>5</posy>
-				<width>35</width>
-				<height>35</height>
-				<aspectratio>keep</aspectratio>
-				<texture>icon_home.png</texture>
-			</control>
 		</control>
 	</include>
 	<include name="CommonNowPlaying">
@@ -301,7 +228,6 @@
 	</include>
 	<include name="CommonPageCount">
 		<control type="group">
-			<animation effect="slide" start="0,0" end="-90,0" time="0" condition="system.getbool(input.enablemouse)">Conditional</animation>
 			<control type="label">
 				<description>Page Count Label</description>
 				<posx>40r</posx>

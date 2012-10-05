@@ -627,7 +627,7 @@
 		</control>
 		<include>ScrollOffsetLabel</include>
 		<control type="group">
-			<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus | Control.HasFocus(8999)">Conditional</animation>
+			<animation effect="slide" start="0,0" end="250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus">Conditional</animation>
 			<animation effect="slide" start="0,0" end="-250,0" time="400" tween="quadratic" easing="out" condition="ControlGroup(9000).HasFocus | ControlGroup(9001).HasFocus">WindowClose</animation>
 			<control type="group">
 				<animation effect="slide" end="-240,0" time="300" tween="quadratic" easing="out">WindowClose</animation>
@@ -656,18 +656,6 @@
 				<animation effect="fade" start="0" end="100" delay="300" time="200" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">conditional</animation>
 				<animation effect="fade" start="100" end="0" time="0" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">WindowClose</animation>
 				<animation effect="slide" end="220,0" time="300" tween="quadratic" easing="out" condition="Control.HasFocus(98) | ControlGroup(9001).HasFocus">conditional</animation>
-				<control type="button">
-					<description>Fake button for mouse control</description>
-					<posx>-15</posx>
-					<posy>0</posy>
-					<width>245</width>
-					<height>720</height>
-					<label>-</label>
-					<font>-</font>
-					<texturenofocus>-</texturenofocus>
-					<texturefocus>-</texturefocus>
-					<visible>true</visible>
-				</control>
 				<control type="image">
 					<posx>185</posx>
 					<posy>200</posy>
@@ -742,18 +730,6 @@
 				</control>
 			</control>
 			<include>BehindDialogFadeOut</include>
-			<control type="button" id="8999">
-				<description>Fake button for mouse control</description>
-				<posx>-250</posx>
-				<posy>0</posy>
-				<width>265</width>
-				<height>720</height>
-				<label>-</label>
-				<font>-</font>
-				<texturenofocus>-</texturenofocus>
-				<texturefocus>-</texturefocus>
-				<visible>true</visible>
-			</control>
 			<include>SideBladeLeft</include>
 			<control type="image">
 				<description>LOGO</description>

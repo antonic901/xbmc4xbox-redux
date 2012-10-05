@@ -40,23 +40,6 @@
 				<textcolor>selected</textcolor>
 				<shadowcolor>black</shadowcolor>
 			</control>
-			<control type="button">
-				<description>Close Window button</description>
-				<posx>710</posx>
-				<posy>9</posy>
-				<width>64</width>
-				<height>32</height>
-				<label>-</label>
-				<font>-</font>
-				<onclick>PreviousMenu</onclick>
-				<texturefocus>DialogCloseButton-focus.png</texturefocus>
-				<texturenofocus>DialogCloseButton.png</texturenofocus>
-				<onleft>22</onleft>
-				<onright>22</onright>
-				<onup>22</onup>
-				<ondown>22</ondown>
-				<visible>system.getbool(input.enablemouse)</visible>
-			</control>
 			<control type="spincontrolex" id="22">
 				<description>Set Playlist type</description>
 				<posx>30</posx>

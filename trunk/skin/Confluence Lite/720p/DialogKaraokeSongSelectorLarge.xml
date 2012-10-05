@@ -35,23 +35,6 @@
 				<textcolor>selected</textcolor>
 				<shadowcolor>black</shadowcolor>
 			</control>
-			<control type="button">
-				<description>Close Window button</description>
-				<posx>360</posx>
-				<posy>15</posy>
-				<width>64</width>
-				<height>32</height>
-				<label>-</label>
-				<font>-</font>
-				<onclick>PreviousMenu</onclick>
-				<texturefocus>DialogCloseButton-focus.png</texturefocus>
-				<texturenofocus>DialogCloseButton.png</texturenofocus>
-				<onleft>10</onleft>
-				<onright>10</onright>
-				<onup>10</onup>
-				<ondown>10</ondown>
-				<visible>system.getbool(input.enablemouse)</visible>
-			</control>
 			<control type="label" id="401">
 				<description>Song Number Label</description>
 				<posx>30</posx>
