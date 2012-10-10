@@ -408,7 +408,7 @@
 		<control type="group">
 			<posx>180</posx>
 			<posy>40</posy>
-			<visible>Control.IsVisible(508) + ![ListItem.IsFolder + Container.Content(Movies)] + !Skin.HasSetting(View508HideInfo)</visible>
+			<visible>Window.IsVisible(VideoLibrary) + Control.IsVisible(508) + ![ListItem.IsFolder + Container.Content(Movies)] + !Skin.HasSetting(View508HideInfo)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="image">
 				<posx>0</posx>
