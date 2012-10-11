@@ -402,13 +402,12 @@
 				<ondown>2</ondown>
 				<showonepage>false</showonepage>
 				<orientation>horizontal</orientation>
-				<visible>Control.IsVisible(508)</visible>
 			</control>
 		</control>
 		<control type="group">
 			<posx>180</posx>
 			<posy>40</posy>
-			<visible>Window.IsVisible(VideoLibrary) + Control.IsVisible(508) + ![ListItem.IsFolder + Container.Content(Movies)] + !Skin.HasSetting(View508HideInfo)</visible>
+			<visible>Control.IsVisible(508) + ![ListItem.IsFolder + Container.Content(Movies)] + !Skin.HasSetting(View508HideInfo)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="image">
 				<posx>0</posx>
