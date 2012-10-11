@@ -55,7 +55,7 @@
 				<font>-</font>
 				<texturefocus>OSDPrevTrackFO.png</texturefocus>
 				<texturenofocus>OSDPrevTrackNF.png</texturenofocus>
-				<onleft>704</onleft>
+				<onleft>706</onleft>
 				<onright>601</onright>
 				<onup>1000</onup>
 				<ondown>1000</ondown>
@@ -232,6 +232,7 @@
 			<posx>250r</posx>
 			<posy>50r</posy>
 			<animation effect="fade" time="200">VisibleChange</animation>
+			<animation effect="slide" start="0,0" end="100,0" delay="0" time="0" condition="LastFM.RadioPlaying">conditional</animation>
 			<visible>![Window.IsVisible(PluginSettings) | Window.IsVisible(SelectDialog) | Window.IsVisible(VisualisationPresetList)]</visible>
 			<control type="togglebutton" id="701">
 				<posx>0</posx>
@@ -309,15 +310,50 @@
 				<texturefocus>OSDRecordFO.png</texturefocus>
 				<texturenofocus>OSDRecordNF.png</texturenofocus>
 				<onleft>703</onleft>
-				<onright>600</onright>
+				<onright>705</onright>
 				<onup>1000</onup>
 				<ondown>1000</ondown>
 				<onclick>XBMC.PlayerControl(record)</onclick>
 				<enable>Player.CanRecord</enable>
 				<animation effect="fade" start="100" end="50" time="100" condition="!Player.CanRecord">Conditional</animation>
 			</control>
+			<control type="button" id="705">
+				<posx>230</posx>
+				<posy>5</posy>
+				<width>35</width>
+				<height>35</height>
+				<label>31001</label>
+				<font>-</font>
+				<texturefocus>lastfm-love-focus.png</texturefocus>
+				<texturenofocus>lastfm-love-nofocus.png</texturenofocus>
+				<onleft>704</onleft>
+				<onright>706</onright>
+				<onup>1000</onup>
+				<ondown>1000</ondown>
+				<onclick>XBMC.LastFM.Love(false)</onclick>
+				<enable>LastFM.CanLove</enable>
+				<animation effect="fade" start="100" end="50" time="100" condition="!LastFM.CanLove">Conditional</animation>
+				<visible>LastFM.RadioPlaying</visible>
+			</control>
+			<control type="button" id="706">
+				<posx>275</posx>
+				<posy>5</posy>
+				<width>35</width>
+				<height>35</height>
+				<label>31002</label>
+				<font>-</font>
+				<texturefocus>lastfm-hate-focus.png</texturefocus>
+				<texturenofocus>lastfm-hate-nofocus.png</texturenofocus>
+				<onleft>705</onleft>
+				<onright>600</onright>
+				<onup>1000</onup>
+				<ondown>1000</ondown>
+				<onclick>XBMC.LastFM.Ban(false)</onclick>
+				<enable>LastFM.CanBan</enable>
+				<animation effect="fade" start="100" end="50" time="100" condition="!LastFM.CanBan">Conditional</animation>
+				<visible>LastFM.RadioPlaying</visible>
+			</control>
 		</control>
-		
 		<control type="selectbutton" id="503">
 			<description>Visualisation Select Button</description>
 			<posx>440</posx>
@@ -332,6 +368,5 @@
 			<ondown>500</ondown>
 			<include>VisibleFadeEffect</include>
 		</control>
-		
 	</controls>
- </window>
+</window>

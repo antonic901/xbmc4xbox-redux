@@ -131,6 +131,32 @@
 					<label>589</label>
 					<include>ButtonCommonValues</include>
 				</control>
+				<control type="label" id="203">
+					<width>250</width>
+					<height>35</height>
+					<font>font12</font>
+					<label>15200</label>
+					<textcolor>blue</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<visible>LastFM.RadioPlaying</visible>
+				</control>
+				<control type="button" id="20">
+					<description>lastfm love</description>
+					<label>31001</label>
+					<onclick>XBMC.LastFM.Love(false)</onclick>
+					<include>ButtonCommonValues</include>
+					<enable>LastFM.CanLove</enable>
+					<visible>LastFM.RadioPlaying</visible>
+				</control>
+				<control type="button" id="21">
+					<description>lastfm ban</description>
+					<label>31002</label>
+					<onclick>XBMC.LastFM.Ban(false)</onclick>
+					<include>ButtonCommonValues</include>
+					<enable>LastFM.CanBan</enable>
+					<visible>LastFM.RadioPlaying</visible>
+				</control>
 				<include>CommonNowPlaying_Controls</include>
 			</control>
 		</control>
