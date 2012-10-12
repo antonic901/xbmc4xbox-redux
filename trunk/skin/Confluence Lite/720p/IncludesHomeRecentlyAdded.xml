@@ -2,7 +2,7 @@
 	<include name="HomeRecentlyAddedInfo">
 		<control type="group" id="9003">
 			<onup>20</onup>
-			<ondown>608</ondown>
+			<ondown>610</ondown>
 			<visible>!Window.IsVisible(Favourites)</visible>
 			<include>VisibleFadeEffect</include>
 			<animation effect="fade" time="300" delay="1000">WindowOpen</animation>
@@ -38,7 +38,7 @@
 					<onleft>8000</onleft>
 					<onright>8000</onright>
 					<onup>20</onup>
-					<ondown>608</ondown>
+					<ondown>610</ondown>
 					<viewtype label="535">list</viewtype>
 					<pagecontrol>-</pagecontrol>
 					<scrolltime>200</scrolltime>
@@ -269,7 +269,7 @@
 					<onleft>8001</onleft>
 					<onright>8001</onright>
 					<onup>20</onup>
-					<ondown>608</ondown>
+					<ondown>610</ondown>
 					<viewtype label="535">list</viewtype>
 					<pagecontrol>-</pagecontrol>
 					<scrolltime>200</scrolltime>
@@ -532,7 +532,7 @@
 					<onleft>8002</onleft>
 					<onright>8002</onright>
 					<onup>20</onup>
-					<ondown>608</ondown>
+					<ondown>610</ondown>
 					<viewtype label="535">list</viewtype>
 					<pagecontrol>-</pagecontrol>
 					<scrolltime>200</scrolltime>

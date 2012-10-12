@@ -250,7 +250,7 @@
 			<onleft>-</onleft>
 			<onright>-</onright>
 			<onup>20</onup>
-			<ondown>608</ondown>
+			<ondown>610</ondown>
 			<visible>false</visible>
 		</control>
 		<include>CurrentlyPlayingMediaControls</include> <!-- Global Search and Currently Playing Media Control -->
