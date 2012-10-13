@@ -134,22 +134,14 @@
 			<include>VisibleFadeEffect</include>
 			<animation effect="fade" time="250" condition="Window.Previous(Home)">WindowOpen</animation>
 			<animation effect="fade" time="250" condition="Window.Next(Home)">WindowClose</animation>
-			<control type="button">
-				<description>push button</description>
+			<control type="image">
+				<description>Player Icon background</description>
 				<posx>30</posx>
 				<posy>55r</posy>
 				<width>45</width>
 				<height>45</height>
-				<label>31003</label>
-				<font>-</font>
-				<aligny>-</aligny>
-				<onclick>ActivateWindow(PlayerControls)</onclick>
-				<texturefocus border="5">floor_buttonFO.png</texturefocus>
-				<texturenofocus border="5">floor_button.png</texturenofocus>
-				<onleft>50</onleft>
-				<onright>50</onright>
-				<onup>50</onup>
-				<ondown>50</ondown>
+				<aspectratio>keep</aspectratio>
+				<texture>floor_button.png</texture>
 			</control>
 			<control type="image">
 				<description>Player Icon</description>
