@@ -261,7 +261,6 @@
 			<posy>450</posy>
 			<control type="fixedlist" id="509">
 				<visible>Container.Content(Albums)</visible>
-				<hitrect x="0" y="-10" w="1280" h="190" />
 				<posx>-80</posx>
 				<posy>0</posy>
 				<width>1360</width>

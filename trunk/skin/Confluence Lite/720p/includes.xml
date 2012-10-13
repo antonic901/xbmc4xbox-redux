@@ -767,7 +767,6 @@
 			<effect type="zoom" start="100" end="70" center="auto" easing="in" tween="quadratic" time="300" />
 			<effect type="fade" start="100" end="0" time="300" />
 		</animation>
-		<hitrect x="0" y="530" w="1280" h="120" />
 		<posx>0</posx>
 		<posy>190r</posy>
 		<width>1280</width>
