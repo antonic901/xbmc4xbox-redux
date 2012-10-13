@@ -232,7 +232,7 @@
 			<posx>250r</posx>
 			<posy>50r</posy>
 			<animation effect="fade" time="200">VisibleChange</animation>
-			<animation effect="slide" start="0,0" end="100,0" delay="0" time="0" condition="LastFM.RadioPlaying">conditional</animation>
+			<animation effect="slide" start="0,0" end="-100,0" delay="0" time="0" condition="LastFM.RadioPlaying">conditional</animation>
 			<visible>![Window.IsVisible(PluginSettings) | Window.IsVisible(SelectDialog) | Window.IsVisible(VisualisationPresetList)]</visible>
 			<control type="togglebutton" id="701">
 				<posx>0</posx>
