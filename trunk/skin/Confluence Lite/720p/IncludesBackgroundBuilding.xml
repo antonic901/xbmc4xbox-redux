@@ -36,7 +36,7 @@
 				<include>backgroundfade</include>
 				<fadetime>FanartCrossfadeTime</fadetime>
 				<visible>!Skin.HasSetting(HideBackGroundFanart) + !IsEmpty(ListItem.Property(Fanart_Image))</visible>
-				<visible>![Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)] + ![Player.HasAudio + !Skin.HasSetting(ShowBackgroundVis)]</visible>
+				<visible>![Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)]</visible>
 				<include>Window_OpenClose_Animation</include>
 			</control>
 			<control type="image">
