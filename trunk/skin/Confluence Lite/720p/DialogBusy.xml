@@ -39,13 +39,6 @@
 				<label>$LOCALIZE[31004]</label>
 				<font>font12</font>
 			</control>
-			<control type="progress" id="10">
-				<description>Progressbar</description>
-				<posx>20</posx>
-				<posy>53</posy>
-				<width>160</width>
-				<height>10</height>
-			</control>
 		</control>
 	</controls>
 </window>
