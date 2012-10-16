@@ -77,7 +77,15 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<posx>665</posx>
+						<posy>14</posy>
+						<width>16</width>
+						<height>16</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="580">
@@ -160,7 +168,15 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<posx>665</posx>
+						<posy>14</posy>
+						<width>16</width>
+						<height>16</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
 					</control>
 				</focusedlayout>
 			</control>
@@ -550,7 +566,15 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<posx>1050</posx>
+						<posy>14</posy>
+						<width>16</width>
+						<height>16</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="1080">
@@ -640,7 +664,15 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<posx>1050</posx>
+						<posy>14</posy>
+						<width>16</width>
+						<height>16</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
 					</control>
 				</focusedlayout>
 			</control>
