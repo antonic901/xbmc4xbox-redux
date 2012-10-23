@@ -2,29 +2,31 @@
 	<include name="CommonBackground">
 		<control type="group">
 			<visible>!IntegerGreaterThan(system.memory(used.percent),85)</visible>
-			<control type="image">
-				<description>Normal Default Background Image</description>
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>1280</width>
-				<height>720</height>
-				<aspectratio>scale</aspectratio>
-				<texture background="true">special://skin/backgrounds/skindefault.jpg</texture>
-				<visible>IsEmpty(ListItem.Property(Fanart_Image)) | Skin.HasSetting(HideBackGroundFanart)</visible>
-				<visible>![Skin.HasSetting(UseCustomBackground) + !IsEmpty(Skin.String(CustomBackgroundPath))]</visible>
-				<include>VisibleFadeEffect</include>
-			</control>
-			<control type="image">
-				<description>User Set Background Image</description>
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>1280</width>
-				<height>720</height>
-				<aspectratio>scale</aspectratio>
-				<texture background="true">$INFO[Skin.String(CustomBackgroundPath)]</texture>
-				<visible>IsEmpty(ListItem.Property(Fanart_Image)) | Skin.HasSetting(HideBackGroundFanart)</visible>
-				<visible>Skin.HasSetting(UseCustomBackground) + !IsEmpty(Skin.String(CustomBackgroundPath))</visible>
-				<include>VisibleFadeEffect</include>
+			<control type="group">
+				<visible>Skin.HasSetting(HideBackGroundFanart) | IsEmpty(ListItem.Property(Fanart_Image))</visible>
+				<visible>![Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)]</visible>
+				<control type="image">
+					<description>Normal Default Background Image</description>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>1280</width>
+					<height>720</height>
+					<aspectratio>scale</aspectratio>
+					<texture background="true">special://skin/backgrounds/skindefault.jpg</texture>
+					<visible>![Skin.HasSetting(UseCustomBackground) + !IsEmpty(Skin.String(CustomBackgroundPath))]</visible>
+					<include>VisibleFadeEffect</include>
+				</control>
+				<control type="image">
+					<description>User Set Background Image</description>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>1280</width>
+					<height>720</height>
+					<aspectratio>scale</aspectratio>
+					<texture background="true">$INFO[Skin.String(CustomBackgroundPath)]</texture>
+					<visible>Skin.HasSetting(UseCustomBackground) + !IsEmpty(Skin.String(CustomBackgroundPath))</visible>
+					<include>VisibleFadeEffect</include>
+				</control>
 			</control>
 			<control type="image">
 				<description>Fanart Image</description>
