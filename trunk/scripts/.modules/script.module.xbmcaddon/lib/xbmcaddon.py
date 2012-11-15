@@ -33,7 +33,14 @@ class Addon:
         # parse addon.xml and set all addon info
         self._set_addon_info( xbmc.translatePath( cwd ), id )
 
-        #check to make sure we are in the right plugin dir
+        # check in script .modules
+        if self._info.get( 'id', '' ) != id:
+            cwd = "Q:\scripts\.modules/%s" % ( id )
+            xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
+            # parse addon.xml and reset all addon info
+            self._set_addon_info( xbmc.translatePath( cwd ), id )
+
+        # check to make sure we are in the right plugin dir
         if self._info.get( 'id', '' ) != id:
             #try using id to find correct dir
             parts = id.split( '.' )
@@ -42,7 +49,7 @@ class Addon:
             # parse addon.xml and reset all addon info
             self._set_addon_info( xbmc.translatePath( cwd ), id )
 
-        #have we got the right dir now?
+        # have we got the right dir now?
         if self._info.get( 'id', '' ) != id:
             #walk plugin directories to try to find correct one
             base_path = os.path.dirname( xbmc.translatePath( cwd ) ) + os.sep
