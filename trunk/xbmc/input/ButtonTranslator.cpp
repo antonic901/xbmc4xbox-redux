@@ -182,7 +182,9 @@ static const ActionMapping actions[] =
         {"filtersms8"        , ACTION_FILTER_SMS8},
         {"filtersms9"        , ACTION_FILTER_SMS9},
         {"firstpage"         , ACTION_FIRST_PAGE},
-        {"lastpage"          , ACTION_LAST_PAGE}};
+        {"lastpage"          , ACTION_LAST_PAGE},
+        {"increasepar"       , ACTION_INCREASE_PAR},
+        {"decreasepar"       , ACTION_DECREASE_PAR}};
 
 CButtonTranslator& CButtonTranslator::GetInstance()
 {

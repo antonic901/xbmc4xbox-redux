@@ -275,6 +275,9 @@
 #define ACTION_TOGGLE_DIGITAL_ANALOG  202 // switch digital <-> analog
 #define ACTION_RELOAD_KEYMAPS         203 // reloads CButtonTranslator's keymaps
 
+#define ACTION_INCREASE_PAR           219
+#define ACTION_DECREASE_PAR           220
+
 // Window ID defines to make the code a bit more readable
 #define WINDOW_INVALID                     9999
 #define WINDOW_HOME                       10000
