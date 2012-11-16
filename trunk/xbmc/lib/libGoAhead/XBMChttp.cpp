@@ -2193,11 +2193,8 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
   case 1:
     if (showingSlideshow) {
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
-      if (pSlideShow) {
-        CAction action;
-        action.actionId = ACTION_PAUSE;
-        pSlideShow->OnAction(action);    
-      }
+      if (pSlideShow)
+        pSlideShow->OnAction(CAction(ACTION_PAUSE));
     }
     else
       g_application.getApplicationMessenger().MediaPause();
@@ -2206,11 +2203,8 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
   case 2:
     if (showingSlideshow) {
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
-      if (pSlideShow) {
-        CAction action;
-        action.actionId = ACTION_STOP;
-        pSlideShow->OnAction(action);    
-      }
+      if (pSlideShow)
+        pSlideShow->OnAction(CAction(ACTION_STOP));
     }
     else
       //g_application.StopPlaying();
@@ -2220,11 +2214,8 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
   case 3:
     if (showingSlideshow) {
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
-      if (pSlideShow) {
-        CAction action;
-        action.actionId = ACTION_NEXT_PICTURE;
-        pSlideShow->OnAction(action);
-      }
+      if (pSlideShow)
+        pSlideShow->OnAction(CAction(ACTION_NEXT_PICTURE));
     }
     else
       g_playlistPlayer.PlayNext();
@@ -2233,11 +2224,8 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
   case 4:
     if (showingSlideshow) {
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
-      if (pSlideShow) {
-        CAction action;
-        action.actionId = ACTION_PREV_PICTURE;
-        pSlideShow->OnAction(action);    
-      }
+      if (pSlideShow)
+        pSlideShow->OnAction(CAction(ACTION_PREV_PICTURE));
     }
     else
       g_playlistPlayer.PlayPrevious();
@@ -2248,9 +2236,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
     {
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
       if (pSlideShow) {
-        CAction action;
-        action.actionId = ACTION_ROTATE_PICTURE;
-        pSlideShow->OnAction(action);  
+        pSlideShow->OnAction(CAction(ACTION_ROTATE_PICTURE));
         return SetResponse(openTag+"OK");
       }
       else
@@ -2265,11 +2251,8 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
       if (pSlideShow) {
         if (numParas>1) {
-          CAction action;
-          action.actionId = ACTION_ANALOG_MOVE;
-          action.amount1=(float) atof(paras[0]);
-          action.amount2=(float) atof(paras[1]);
-          pSlideShow->OnAction(action);    
+          CAction action(ACTION_ANALOG_MOVE, (float)atof(paras[0]), (float)atof(paras[1]));
+          pSlideShow->OnAction(action);
           return SetResponse(openTag+"OK");
         }
         else
@@ -2288,9 +2271,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
       if (pSlideShow) {
         if (numParas>0)
         {
-          CAction action;
-          action.actionId = ACTION_ZOOM_LEVEL_NORMAL+atoi(paras[0]);
-          pSlideShow->OnAction(action);    
+          pSlideShow->OnAction(CAction(ACTION_ZOOM_LEVEL_NORMAL+atoi(paras[0])));
           return SetResponse(openTag+"OK");
         }
         else
@@ -3083,14 +3064,8 @@ int CXbmcHttp::xbmcOnAction(int numParas, CStdString paras[])
 {
   if (numParas!=1)
     return SetResponse(openTag+"Error:There must be one and only one parameter");
-  else
-  {
-    CAction action;
-    action.actionId = atoi(paras[0]);
-    action.amount1 = 1; // digital button (could change this for repeat acceleration)
-    g_application.OnAction(action);
-    return SetResponse(openTag+"OK");
-  }
+  g_application.OnAction(CAction(atoi(paras[0])));
+  return SetResponse(openTag+"OK");
 }
 
 int CXbmcHttp::xbmcRecordStatus(int numParas, CStdString paras[])

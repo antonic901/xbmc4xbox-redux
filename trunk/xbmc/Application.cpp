@@ -3090,12 +3090,7 @@ bool CApplication::ProcessMouse()
   if (ResetScreenSaverWindow())
     return true;
 
-  // call OnAction with ACTION_MOUSE
-  CAction action;
-  action.actionId = ACTION_MOUSE;
-  action.amount1 = (float) m_guiPointer.GetXPosition();
-  action.amount2 = (float) m_guiPointer.GetYPosition();
-  return g_windowManager.OnAction(action);
+  return g_windowManager.OnAction(CAction(ACTION_MOUSE, m_guiPointer.GetXPosition(), m_guiPointer.GetYPosition()));
 }
 
 void  CApplication::CheckForTitleChange()
@@ -3147,15 +3142,12 @@ bool CApplication::ProcessHTTPApiButtons()
     {
       if (keyHttp.GetButtonCode() == KEY_VMOUSE) //virtual mouse
       {
-        CAction action;
-        action.actionId = ACTION_MOUSE;
         g_Mouse.SetLocation(CPoint(keyHttp.GetLeftThumbX(), keyHttp.GetLeftThumbY()));
         if (keyHttp.GetLeftTrigger()!=0)
           g_Mouse.bClick[keyHttp.GetLeftTrigger()-1]=true;
         if (keyHttp.GetRightTrigger()!=0)
           g_Mouse.bDoubleClick[keyHttp.GetRightTrigger()-1]=true;
-        action.amount1 = keyHttp.GetLeftThumbX();
-        action.amount2 = keyHttp.GetLeftThumbY();
+        CAction action(ACTION_MOUSE, keyHttp.GetLeftThumbX(), keyHttp.GetLeftThumbY());
         g_windowManager.OnAction(action);
       }
       else
@@ -3243,16 +3235,11 @@ bool CApplication::ProcessEventServer(float frameTime)
   }
 
   {
-    CAction action;
-    action.actionId = ACTION_MOUSE;
-    if (es->GetMousePos(action.amount1, action.amount2) && g_Mouse.IsEnabled())
+    CPoint pos;
+    if (es->GetMousePos(pos.x, pos.y) && g_Mouse.IsEnabled())
     {
-      CPoint point;
-      point.x = action.amount1;
-      point.y = action.amount2;
-      g_Mouse.SetLocation(point, true);
-
-      return g_windowManager.OnAction(action);
+      g_Mouse.SetLocation(pos, true);
+      return g_windowManager.OnAction(CAction(ACTION_MOUSE, pos.x, pos.y));
     }
   }
 #endif
@@ -3288,17 +3275,14 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
      iWin = WINDOW_VIDEO_MENU;
    }
 
+   int actionID;
+   CStdString actionName;
    bool fullRange = false;
-   CAction action;
-   action.amount1 = fAmount;
-
-   //if (action.amount1 < 0.0)
-   // wKeyID = -wKeyID;
 
    // Translate using regular joystick translator.
-   if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, joystickName.c_str(), wKeyID, isAxis, action.actionId, action.strAction, fullRange))
+   if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, joystickName.c_str(), wKeyID, isAxis, actionID, actionName, fullRange))
    {
-     action.repeat = 0.0f;
+     CAction action(actionID, fAmount, 0.0f, actionName);
      g_audioManager.PlayActionSound(action);
      return OnAction(action);
    }
@@ -5036,10 +5020,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
         int actionID;
         if (CButtonTranslator::TranslateActionString(actionStr.c_str(), actionID))
         {
-          CAction action;
-          action.actionId = actionID;
-          action.amount1 = 1.0f;
-          OnAction(action);
+          OnAction(CAction(actionID));
           return true;
         }
         CFileItem item(actionStr, false);

@@ -383,12 +383,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
           channelNr = atoi(strChannel.c_str());
 
         if (channelNr > 0)
-        {
-          CAction action;
-          action.actionId = ACTION_CHANNEL_SWITCH;
-          action.amount1 = (float)channelNr;
-          OnAction(action);
-        }
+          OnAction(CAction(ACTION_CHANNEL_SWITCH, (float)channelNr));
       }
       else
       {
@@ -578,15 +573,16 @@ bool CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMouseEvent &
 {
   if (event.m_id == ACTION_MOUSE_RIGHT_CLICK)
   { // no control found to absorb this click - go back to GUI
-    CAction action;
-    action.actionId = ACTION_SHOW_GUI;
-    OnAction(action);
+    OnAction(CAction(ACTION_SHOW_GUI));
     return true;
   }
   if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
   { // no control found to absorb this click - pause video
-    CAction action;
-    action.actionId = ACTION_PAUSE;
+    return g_application.OnAction(CAction(ACTION_PAUSE));
+  }
+  if (event.m_id == ACTION_MOUSE_WHEEL)
+  { // Mouse wheel
+    CAction action(event.m_wheel > 0 ? ACTION_ANALOG_SEEK_FORWARD : ACTION_ANALOG_SEEK_BACK, 0.5f * abs(event.m_wheel));
     return g_application.OnAction(action);
   }
   if (g_Mouse.HasMoved())

@@ -153,43 +153,33 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
     {
       if (g_advancedSettings.m_bNavVKeyboard)
       {
-        CAction action;
-        action.actionId = ACTION_MOVE_LEFT;
-        return OnAction(action);
+        return OnAction(CAction(ACTION_MOVE_LEFT));
       }
       else
        MoveCursor( -1);
     }
     else if (b == 0x26 && g_advancedSettings.m_bNavVKeyboard)
     {
-      CAction action;
-      action.actionId = ACTION_MOVE_UP;
-      return OnAction(action);
+      return OnAction(CAction(ACTION_MOVE_UP));
     }
     else if (b == 0x27) // right
     {
       if (g_advancedSettings.m_bNavVKeyboard)
       {
-        CAction action;
-        action.actionId = ACTION_MOVE_RIGHT;
-        return OnAction(action);
+        return OnAction(CAction(ACTION_MOVE_RIGHT));
       }
       else
        MoveCursor(1);
     }
     else if (b == 0x28 && g_advancedSettings.m_bNavVKeyboard)
     {
-      CAction action;
-      action.actionId = ACTION_MOVE_DOWN;
-      return OnAction(action);
+      return OnAction(CAction(ACTION_MOVE_DOWN));
     }
     else if (b == 0x0D) // enter
     {
       if (g_advancedSettings.m_bNavVKeyboard)
       {
-        CAction action;
-        action.actionId = ACTION_SELECT_ITEM;
-        return OnAction(action);
+        return OnAction(CAction(ACTION_SELECT_ITEM));
       }
       else
         OnOK();
@@ -215,9 +205,7 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
     case 10:  // enter
       if (g_advancedSettings.m_bNavVKeyboard)
       {
-        CAction action;
-        action.actionId = ACTION_SELECT_ITEM;
-        return OnAction(action);
+        return OnAction(CAction(ACTION_SELECT_ITEM));
       }
       else
         OnOK();
