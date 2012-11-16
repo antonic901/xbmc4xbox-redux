@@ -36,7 +36,7 @@ extern CStdString g_LoadErrorStr;
 
 typedef struct
 {
-  char name[32];
+  const char* name;
   int action;
 } ActionMapping;
 
