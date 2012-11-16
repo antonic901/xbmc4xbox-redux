@@ -469,6 +469,8 @@
       <info>Info</info>
       <enter>AspectRatio</enter>
       <select>AspectRatio</select>
+      <subtitle>ShowSubtitles</subtitle>
+      <language>AudioNextLanguage</language>
    </remote>
 
     <gamepad>
