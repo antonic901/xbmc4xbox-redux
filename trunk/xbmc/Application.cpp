@@ -1942,7 +1942,7 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   }
 
   // Load the user windows
-  LoadUserWindows(strSkinPath);
+  LoadUserWindows();
 
   LARGE_INTEGER end, freq;
   QueryPerformanceCounter(&end);
@@ -2028,34 +2028,21 @@ void CApplication::UnloadSkin()
   g_infoManager.Clear();
 }
 
-bool CApplication::LoadUserWindows(const CStdString& strSkinPath)
+bool CApplication::LoadUserWindows()
 {
-  WIN32_FIND_DATA FindFileData;
-  WIN32_FIND_DATA NextFindFileData;
-  HANDLE hFind;
-  TiXmlDocument xmlDoc;
-  RESOLUTION resToUse = INVALID;
-
   // Start from wherever home.xml is
-  g_SkinInfo.GetSkinPath("Home.xml", &resToUse);
+
   std::vector<CStdString> vecSkinPath;
-  if (resToUse == HDTV_1080i)
-    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_1080i)));
-  if (resToUse == HDTV_720p)
-    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(HDTV_720p)));
-  if (resToUse == PAL_16x9 || resToUse == NTSC_16x9 || resToUse == HDTV_480p_16x9 || resToUse == HDTV_720p || resToUse == HDTV_1080i)
-    vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultWideResolution())));
-  vecSkinPath.push_back(URIUtils::AddFileToFolder(strSkinPath, g_SkinInfo.GetDirFromRes(g_SkinInfo.GetDefaultResolution())));
+  g_SkinInfo.GetSkinPaths(vecSkinPath);
   for (unsigned int i = 0;i < vecSkinPath.size();++i)
   {
     CStdString strPath = URIUtils::AddFileToFolder(vecSkinPath[i], "custom*.xml");
     CLog::Log(LOGINFO, "Loading user windows, path %s", vecSkinPath[i].c_str());
-    hFind = FindFirstFile(_P(strPath).c_str(), &NextFindFileData);
-
-    CStdString strFileName;
+    WIN32_FIND_DATA NextFindFileData;
+    HANDLE hFind = FindFirstFile(_P(strPath).c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
-      FindFileData = NextFindFileData;
+      WIN32_FIND_DATA FindFileData = NextFindFileData;
 
       if (!FindNextFile(hFind, &NextFindFileData))
       {
@@ -2067,11 +2054,12 @@ bool CApplication::LoadUserWindows(const CStdString& strSkinPath)
       if (!strcmp(FindFileData.cFileName, ".") || !strcmp(FindFileData.cFileName, ".."))
         continue;
 
-      strFileName = URIUtils::AddFileToFolder(vecSkinPath[i], FindFileData.cFileName);
+      CStdString strFileName = URIUtils::AddFileToFolder(vecSkinPath[i], FindFileData.cFileName);
       CLog::Log(LOGINFO, "Loading skin file: %s", strFileName.c_str());
       CStdString strLower(FindFileData.cFileName);
       strLower.MakeLower();
       strLower = URIUtils::AddFileToFolder(vecSkinPath[i], strLower);
+      TiXmlDocument xmlDoc;
       if (!xmlDoc.LoadFile(strFileName) && !xmlDoc.LoadFile(strLower))
       {
         CLog::Log(LOGERROR, "unable to load:%s, Line %d\n%s", strFileName.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());

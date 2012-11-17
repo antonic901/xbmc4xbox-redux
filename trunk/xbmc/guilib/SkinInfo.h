@@ -50,42 +50,43 @@ public:
    \param loadIncludes whether the includes from the skin should also be loaded (defaults to true)
    */
   void Load(const CStdString& skinDir, bool loadIncludes = true);
-  bool Check(const CStdString& strSkinDir); // checks if everything is present and accounted for without loading the skin
 
-  bool HasSkinFile(const CStdString &strFile);
-  CStdString GetSkinPath(const CStdString& strFile, RESOLUTION *res, const CStdString& strBaseDir="");  // retrieve the best skin file for the resolution we are in - res will be made the resolution we are loading from
+  bool HasSkinFile(const CStdString &strFile) const;
+  CStdString GetSkinPath(const CStdString& strFile, RESOLUTION *res, const CStdString& strBaseDir="") const;  // retrieve the best skin file for the resolution we are in - res will be made the resolution we are loading from
   wchar_t* GetCreditsLine(int i);
 
-  CStdString GetDirFromRes(RESOLUTION res);
+  CStdString GetBaseDir() const;
+  double GetVersion() const { return m_Version; };
+  int GetStartWindow() const;
+
   /*! \brief Translate a resolution string
    \param res the string to translate
    \param def the default to use if res is invalid
    \return the translated resolution
    */
   static RESOLUTION TranslateResolution(const CStdString &res, RESOLUTION def);
-  CStdString GetBaseDir();
-  double GetMinVersion();
-  double GetVersion(){ return m_Version;};
-  int GetStartWindow();
 
   void ResolveIncludes(TiXmlElement *node, const CStdString &type = "");
-  bool ResolveConstant(const CStdString &constant, float &value);
-  bool ResolveConstant(const CStdString &constant, unsigned int &value);
+  bool ResolveConstant(const CStdString &constant, float &value) const;
+  bool ResolveConstant(const CStdString &constant, unsigned int &value) const;
 
   float GetEffectsSlowdown() const { return m_effectsSlowDown; };
 
-  const std::vector<CStartupWindow> &GetStartupWindows() { return m_startupWindows; };
+  const std::vector<CStartupWindow> &GetStartupWindows() const { return m_startupWindows; };
 
-  bool OnlyAnimateToHome() { return m_onlyAnimateToHome; };
+  bool OnlyAnimateToHome() const { return m_onlyAnimateToHome; };
 
-  inline float GetSkinZoom() { return m_skinzoom; };
+  inline float GetSkinZoom() const { return m_skinzoom; };
 
   inline float GetLegacy() { return m_bLegacy; };
 
-  inline const RESOLUTION& GetDefaultWideResolution() { return m_DefaultResolutionWide; };
-  inline const RESOLUTION& GetDefaultResolution() { return m_DefaultResolution; };
+  /*! \brief Retrieve the skin paths to search for skin XML files
+   \param paths [out] vector of paths to search, in order.
+   */
+  void GetSkinPaths(std::vector<CStdString> &paths) const;;
 
-  void SetDefaults();
+  static bool Check(const CStdString& strSkinDir); // checks if everything is present and accounted for without loading the skin
+  static double GetMinVersion();
 protected:
   /*! \brief grab a resolution tag from an XML node
    \param node XML node to look for the given tag
@@ -94,6 +95,12 @@ protected:
    \return true if we find a valid XML node containing a valid resolution, false otherwise
    */
   bool GetResolution(const TiXmlNode *node, const char *tag, RESOLUTION &res) const;
+
+  /*! \brief Given a resolution, retrieve the corresponding directory name
+   \param res RESOLUTION to translate
+   \return directory name for res
+   */
+  CStdString GetDirFromRes(RESOLUTION res) const;
 
   void LoadIncludes();
   bool LoadStartupWindows(const TiXmlElement *startup);
