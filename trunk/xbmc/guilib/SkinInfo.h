@@ -26,6 +26,8 @@
 
 #define CREDIT_LINE_LENGTH 50
 
+class TiXmlNode;
+
 class CSkinInfo
 {
 public:
@@ -43,7 +45,11 @@ public:
   CSkinInfo();
   ~CSkinInfo();
 
-  void Load(const CStdString& strSkinDir); // load the skin.xml file if it exists, and configure our directories etc.
+  /*! \brief Load information regarding the skin from the given skin directory
+   \param skinDir name of the skin to load
+   \param loadIncludes whether the includes from the skin should also be loaded (defaults to true)
+   */
+  void Load(const CStdString& skinDir, bool loadIncludes = true);
   bool Check(const CStdString& strSkinDir); // checks if everything is present and accounted for without loading the skin
 
   bool HasSkinFile(const CStdString &strFile);
@@ -66,7 +72,7 @@ public:
   bool ResolveConstant(const CStdString &constant, float &value);
   bool ResolveConstant(const CStdString &constant, unsigned int &value);
 
-  double GetEffectsSlowdown() const { return m_effectsSlowDown; };
+  float GetEffectsSlowdown() const { return m_effectsSlowDown; };
 
   const std::vector<CStartupWindow> &GetStartupWindows() { return m_startupWindows; };
 
@@ -81,6 +87,14 @@ public:
 
   void SetDefaults();
 protected:
+  /*! \brief grab a resolution tag from an XML node
+   \param node XML node to look for the given tag
+   \param tag name of the tag to look for
+   \param res resolution to return
+   \return true if we find a valid XML node containing a valid resolution, false otherwise
+   */
+  bool GetResolution(const TiXmlNode *node, const char *tag, RESOLUTION &res) const;
+
   void LoadIncludes();
   bool LoadStartupWindows(const TiXmlElement *startup);
   bool IsWide(RESOLUTION res) const;
@@ -92,7 +106,7 @@ protected:
   CStdString m_strBaseDir;
   double m_Version;
 
-  double m_effectsSlowDown;
+  float m_effectsSlowDown;
   CGUIIncludes m_includes;
 
   std::vector<CStartupWindow> m_startupWindows;

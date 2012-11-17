@@ -43,7 +43,7 @@ CSkinInfo::CSkinInfo()
   m_DefaultResolutionWide = INVALID;
   m_strBaseDir = "";
   m_iNumCreditLines = 0;
-  m_effectsSlowDown = 1.0;
+  m_effectsSlowDown = 1.0f;
   m_onlyAnimateToHome = true;
   m_Version = 1.0;
   m_skinzoom = 1.0f;
@@ -53,76 +53,41 @@ CSkinInfo::CSkinInfo()
 CSkinInfo::~CSkinInfo()
 {}
 
-void CSkinInfo::Load(const CStdString& strSkinDir)
+void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
 {
   m_strBaseDir = strSkinDir;
   m_DefaultResolution = INVALID;  // set to INVALID to denote that there is no default res here
   m_DefaultResolutionWide = INVALID;
-  m_effectsSlowDown = 1.0;
+  m_effectsSlowDown = 1.0f;
+  m_skinzoom = 1.0f;
+  m_Version = 1.0;
   // Load from skin.xml
   TiXmlDocument xmlDoc;
   CStdString strFile = m_strBaseDir + "\\skin.xml";
   if (xmlDoc.LoadFile(strFile))
   { // ok - get the default skin folder out of it...
-    TiXmlElement* pRootElement = xmlDoc.RootElement();
-    CStdString strValue = pRootElement->Value();
-    if (strValue != "skin")
+    const TiXmlNode* root = xmlDoc.RootElement();
+    if (root && root->ValueStr() == "skin")
     {
-      CLog::Log(LOGERROR, "file :%s doesnt contain <skin>", strFile.c_str());
-    }
-    else
-    { // get the default resolution
-      TiXmlNode *pChild = pRootElement->FirstChild("defaultresolution");
-      if (pChild)
-      { // found the defaultresolution tag
-        CStdString strDefaultDir = pChild->FirstChild()->Value();
-        strDefaultDir = strDefaultDir.ToLower();
-        if (strDefaultDir == "pal") m_DefaultResolution = PAL_4x3;
-        else if (strDefaultDir == "pal16x9") m_DefaultResolution = PAL_16x9;
-        else if (strDefaultDir == "ntsc") m_DefaultResolution = NTSC_4x3;
-        else if (strDefaultDir == "ntsc16x9") m_DefaultResolution = NTSC_16x9;
-        else if (strDefaultDir == "720p") m_DefaultResolution = HDTV_720p;
-        else if (strDefaultDir == "1080i") m_DefaultResolution = HDTV_1080i;
-      }
-      CLog::Log(LOGINFO, "Default 4:3 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolution)).c_str());
+      GetResolution(root, "defaultresolution", m_DefaultResolution);
+      if (!GetResolution(root, "defaultwideresolution", m_DefaultResolutionWide))
+        m_DefaultResolutionWide = m_DefaultResolution;
 
-      pChild = pRootElement->FirstChild("defaultresolutionwide");
-      if (pChild && pChild->FirstChild())
-      { // found the defaultresolution tag
-        CStdString strDefaultDir = pChild->FirstChild()->Value();
-        strDefaultDir = strDefaultDir.ToLower();
-        if (strDefaultDir == "pal") m_DefaultResolutionWide = PAL_4x3;
-        else if (strDefaultDir == "pal16x9") m_DefaultResolutionWide = PAL_16x9;
-        else if (strDefaultDir == "ntsc") m_DefaultResolutionWide = NTSC_4x3;
-        else if (strDefaultDir == "ntsc16x9") m_DefaultResolutionWide = NTSC_16x9;
-        else if (strDefaultDir == "720p") m_DefaultResolutionWide = HDTV_720p;
-        else if (strDefaultDir == "1080i") m_DefaultResolutionWide = HDTV_1080i;
-      }
-      else
-        m_DefaultResolutionWide = m_DefaultResolution; // default to same as 4:3
+      CLog::Log(LOGINFO, "Default 4:3 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolution)).c_str());
       CLog::Log(LOGINFO, "Default 16:9 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolutionWide)).c_str());
 
-      // get the version
-      pChild = pRootElement->FirstChild("version");
-      if (pChild && pChild->FirstChild())
-      {
-        m_Version = StringUtils::GetFloat(pChild->FirstChild()->Value());
-        CLog::Log(LOGINFO, "Skin version is: %s", pChild->FirstChild()->Value());
-      }
+      XMLUtils::GetDouble(root, "version", m_Version);
+      XMLUtils::GetFloat(root, "effectsslowdown", m_effectsSlowDown);
+      XMLUtils::GetFloat(root, "zoom", m_skinzoom);
 
       // get the legacy parameter to tweak the control behaviour for old skins such as PM3
-      XMLUtils::GetBoolean(pRootElement, "legacy", m_bLegacy);    
-
-      // get the effects slowdown parameter
-      pChild = pRootElement->FirstChild("effectslowdown");
-      if (pChild && pChild->FirstChild())
-        m_effectsSlowDown = StringUtils::GetFloat(pChild->FirstChild()->Value());
+      XMLUtils::GetBoolean(root, "legacy", m_bLegacy);   
 
       // now load the credits information
-      pChild = pRootElement->FirstChild("credits");
+      const TiXmlNode *pChild = root->FirstChild("credits");
       if (pChild)
       { // ok, run through the credits
-        TiXmlNode *pGrandChild = pChild->FirstChild("skinname");
+        const TiXmlNode *pGrandChild = pChild->FirstChild("skinname");
         if (pGrandChild && pGrandChild->FirstChild())
         {
           CStdString strName = pGrandChild->FirstChild()->Value();
@@ -139,62 +104,34 @@ void CSkinInfo::Load(const CStdString& strSkinDir)
         }
       }
 
-      // get the skin zoom parameter. it's how much skin should be enlarged to get rid of overscan
-      pChild = pRootElement->FirstChild("zoom");
-      if (pChild && pChild->FirstChild())
-        m_skinzoom = StringUtils::GetFloat(pChild->FirstChild()->Value());
-      else
-        m_skinzoom = 1.0f;
-
       // now load the startupwindow information
-      LoadStartupWindows(pRootElement->FirstChildElement("startupwindows"));
+      LoadStartupWindows(root->FirstChildElement("startupwindows"));
     }
+    else
+      CLog::Log(LOGERROR, "%s - %s doesnt contain <skin>", __FUNCTION__, strFile.c_str());
   }
   // Load the skin includes
-  LoadIncludes();
+  if (loadIncludes)
+    LoadIncludes();
 }
 
 bool CSkinInfo::Check(const CStdString& strSkinDir)
 {
-  bool bVersionOK = false;
-  // Load from skin.xml
-  TiXmlDocument xmlDoc;
-  CStdString strFile = URIUtils::AddFileToFolder(strSkinDir, "skin.xml");
-  CStdString strGoodPath = strSkinDir;
-  if (xmlDoc.LoadFile(strFile))
-  { // ok - get the default res folder out of it...
-    TiXmlElement* pRootElement = xmlDoc.RootElement();
-    CStdString strValue = pRootElement->Value();
-    if (strValue == "skin")
-    { // get the default resolution
-      TiXmlNode *pChild = pRootElement->FirstChild("defaultresolution");
-      if (pChild)
-      { // found the defaultresolution tag
-        strGoodPath += "\\";
-        CStdString resolution =  pChild->FirstChild()->Value();
-        strGoodPath = URIUtils::AddFileToFolder(strGoodPath, resolution);
-      }
-      // get the version
-      pChild = pRootElement->FirstChild("version");
-      if (pChild)
-      {
-        float parsedVersion;
-        parsedVersion = StringUtils::GetFloat(pChild->FirstChild()->Value());
-        bVersionOK = parsedVersion >= SKIN_MIN_VERSION;
-
-        CLog::Log(LOGINFO, "Skin version is: %s (%f)", pChild->FirstChild()->Value(), parsedVersion);
-      }
-    }
-  }
-  // Check to see if we have a good path
-  CStdString strFontXML = URIUtils::AddFileToFolder(strGoodPath, "Font.xml");
-  CStdString strHomeXML = URIUtils::AddFileToFolder(strGoodPath, "Home.xml");
-  if ( CFile::Exists(strFontXML) &&
-       CFile::Exists(strHomeXML) && bVersionOK )
+  CSkinInfo info;
+  info.Load(strSkinDir, false);
+  if (info.GetVersion() < GetMinVersion())
   {
-    return true;
+    CLog::Log(LOGERROR, "%s(%s) version is to old (%f versus %f)", __FUNCTION__, strSkinDir.c_str(), info.GetVersion(), GetMinVersion());
+    return false;
   }
-  return false;
+  RESOLUTION res;
+  if (!CFile::Exists(info.GetSkinPath("Home.xml", &res))
+   || !CFile::Exists(info.GetSkinPath("Font.xml", &res)))
+  {
+    CLog::Log(LOGERROR, "%s(%s) does not contain Home.xml or Font.xml", __FUNCTION__, strSkinDir.c_str());
+    return false;
+  }
+  return true;
 }
 
 CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, const CStdString& strBaseDir /* = "" */)
@@ -391,4 +328,32 @@ void CSkinInfo::SetDefaults()
 {
   m_DefaultResolution = PAL_4x3;
   m_DefaultResolutionWide = PAL_16x9;
+}
+
+bool CSkinInfo::GetResolution(const TiXmlNode *root, const char *tag, RESOLUTION &res) const
+{
+  CStdString strRes;
+  if (XMLUtils::GetString(root, tag, strRes))
+  {
+    strRes.ToLower();
+    if (strRes == "pal")
+      res = PAL_4x3;
+    else if (strRes == "pal16x9")
+      res = PAL_16x9;
+    else if (strRes == "ntsc")
+      res = NTSC_4x3;
+    else if (strRes == "ntsc16x9")
+      res = NTSC_16x9;
+    else if (strRes == "720p")
+      res = HDTV_720p;
+    else if (strRes == "1080i")
+      res = HDTV_1080i;
+    else
+    {
+      CLog::Log(LOGERROR, "%s invalid resolution specified for <%s>, %s", __FUNCTION__, tag, strRes.c_str());
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
