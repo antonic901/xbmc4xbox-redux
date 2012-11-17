@@ -36,6 +36,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
 #include "GUIUserMessages.h"
+#include "windows/GUIWindowLoginScreen.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "music/LastFmManager.h"
 #include "LCD.h"
@@ -244,9 +245,7 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if (g_settings.m_vecProfiles[i].getName().Equals(parameter))
       {
-        g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
-        g_settings.LoadProfile(i);
-        g_application.getNetwork().SetupNetwork();
+        CGUIWindowLoginScreen::LoadProfile(i);
       }
     }
   }

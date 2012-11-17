@@ -28,6 +28,7 @@
 #include "xbox/network.h"
 #include "utils/Weather.h"
 #include "GUIPassword.h"
+#include "windows/GUIWindowLoginScreen.h"
 #include "GUIWindowManager.h"
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
@@ -106,21 +107,9 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
     CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, g_windowManager.GetActiveWindow(), iCtrlID);
     g_windowManager.SendMessage(msg2);
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
-    bool bOldMaster = g_passwordManager.bMasterUser;
-    g_passwordManager.bMasterUser = true;
-    g_settings.LoadProfile(iItem);
 
-    g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].setDate();
-    g_settings.SaveProfiles("q:\\system\\profiles.xml"); // to set last loaded
-
-    g_passwordManager.bMasterUser = bOldMaster;
-    // Reinit network as the settings might have changed
-    g_application.getNetwork().SetupNetwork();
-    CGUIMessage msg3(GUI_MSG_SETFOCUS, g_windowManager.GetActiveWindow(), iCtrlID, 0);
-    OnMessage(msg3);
-    CGUIMessage msgSelect(GUI_MSG_ITEM_SELECT, g_windowManager.GetActiveWindow(), iCtrlID, msg2.GetParam1(), msg2.GetParam2());
-    OnMessage(msgSelect);
-    g_weatherManager.Refresh();
+    CGUIWindowLoginScreen::LoadProfile(iItem);
+    return;
   }
 
   if (iButton == btnDelete)
