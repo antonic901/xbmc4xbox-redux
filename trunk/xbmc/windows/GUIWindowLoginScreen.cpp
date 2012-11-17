@@ -303,11 +303,7 @@ void CGUIWindowLoginScreen::LoadProfile(int profile)
   g_weatherManager.Refresh();
   g_pythonParser.bLogin = true;
 
-  // test for a startup window, and activate that instead of home
-  int startWindow = g_guiSettings.GetInt("lookandfeel.startupwindow");
-  if (g_SkinInfo.HasSkinFile("Startup.xml") && (!g_SkinInfo.OnlyAnimateToHome() || startWindow == WINDOW_HOME))
-    startWindow = WINDOW_STARTUP;
-  g_windowManager.ChangeActiveWindow(startWindow);
+  g_windowManager.ChangeActiveWindow(g_SkinInfo.GetFirstWindow());
 
   g_application.UpdateLibraries();
 }

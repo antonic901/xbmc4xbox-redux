@@ -65,6 +65,18 @@ public:
   wchar_t* GetCreditsLine(int i);
   CStdString GetBaseDir() const;
   double GetVersion() const { return m_Version; };
+
+  /*! \brief Get the id of the first window to load
+   The first window is generally Startup.xml unless it doesn't exist or if the skinner
+   has specified which start windows they support and the user is going to somewhere other
+   than the home screen.
+   \return id of the first window to load
+   */
+  int GetFirstWindow() const;
+
+  /*! \brief Get the id of the window the user wants to start in after any skin animation
+   \return id of the start window
+   */
   int GetStartWindow() const;
 
   /*! \brief Translate a resolution string
@@ -81,8 +93,6 @@ public:
   float GetEffectsSlowdown() const { return m_effectsSlowDown; };
 
   const std::vector<CStartupWindow> &GetStartupWindows() const { return m_startupWindows; };
-
-  bool OnlyAnimateToHome() const { return m_onlyAnimateToHome; };
 
   inline float GetSkinZoom() const { return m_skinzoom; };
 

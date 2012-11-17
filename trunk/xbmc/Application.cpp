@@ -1337,10 +1337,7 @@ HRESULT CApplication::Initialize()
   }
   else
   {
-    int startWindow = g_guiSettings.GetInt("lookandfeel.startupwindow");
-    if (g_SkinInfo.HasSkinFile("Startup.xml") && (!g_SkinInfo.OnlyAnimateToHome() || startWindow == WINDOW_HOME))
-      startWindow = WINDOW_STARTUP;
-    g_windowManager.ActivateWindow(startWindow);
+    g_windowManager.ActivateWindow(g_SkinInfo.GetFirstWindow());
   }
 
   g_pythonParser.bStartup = true;
