@@ -503,7 +503,7 @@ void CGUISettings::Initialize()
   AddBool(15,  "services.ftpautofatx",      771, true);
 
   AddCategory(6,"autodetect",           1250  );
-  AddBool(1,    "autodetect.onoff",     1251, true);
+  AddBool(1,    "autodetect.onoff",     1251, false);
   AddBool(2,    "autodetect.popupinfo", 1254, true);
   AddString(3,  "autodetect.nickname",  1252, "XBMC-NickName",EDIT_CONTROL_INPUT, false, 1252);
   AddSeparator(4, "autodetect.sep1");
