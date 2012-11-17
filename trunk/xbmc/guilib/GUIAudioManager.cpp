@@ -339,7 +339,7 @@ bool CGUIAudioManager::Load()
       if (pIdNode)
       {
         if (pIdNode->FirstChild())
-          id = CButtonTranslator::TranslateWindowString(pIdNode->FirstChild()->Value());
+          id = CButtonTranslator::TranslateWindow(pIdNode->FirstChild()->Value());
       }
 
       CWindowSounds sounds;

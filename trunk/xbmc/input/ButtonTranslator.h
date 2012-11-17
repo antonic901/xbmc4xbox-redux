@@ -63,8 +63,18 @@ public:
 
   CAction GetAction(int window, const CKey &key);
 
-  //static helpers
-  static int TranslateWindowString(const char *szWindow);
+  /*! \brief Translate between a window name and it's id
+   \param window name of the window
+   \return id of the window, or WINDOW_INVALID if not found
+   */
+  static int TranslateWindow(const CStdString &window);
+
+  /*! \brief Translate between a window id and it's name
+   \param window id of the window
+   \return name of the window, or an empty string if not found
+   */
+  static CStdString TranslateWindow(int window);
+
   static bool TranslateActionString(const char *szAction, int &action);
 
 #if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)

@@ -294,7 +294,7 @@ int CBuiltins::Execute(const CStdString& execString)
     }
 
     // confirm the window destination is valid prior to switching
-    int iWindow = CButtonTranslator::TranslateWindowString(strWindow.c_str());
+    int iWindow = CButtonTranslator::TranslateWindow(strWindow);
     if (iWindow != WINDOW_INVALID)
     {
       // disable the screensaver
@@ -980,7 +980,7 @@ int CBuiltins::Execute(const CStdString& execString)
     }
     else
     {
-      DWORD id = CButtonTranslator::TranslateWindowString(params[0]);
+      DWORD id = CButtonTranslator::TranslateWindow(params[0]);
       CGUIWindow *window = (CGUIWindow *)g_windowManager.GetWindow(id);
       if (window && window->IsDialog())
         ((CGUIDialog *)window)->Close(bForce);
@@ -1240,7 +1240,7 @@ int CBuiltins::Execute(const CStdString& execString)
   else if (execute.Equals("control.message") && params.size() >= 2)
   {
     int controlID = atoi(params[0].c_str());
-    int windowID = (params.size() == 3) ? CButtonTranslator::TranslateWindowString(params[2].c_str()) : g_windowManager.GetActiveWindow();
+    int windowID = (params.size() == 3) ? CButtonTranslator::TranslateWindow(params[2]) : g_windowManager.GetActiveWindow();
     if (params[1] == "moveup")
       g_windowManager.SendMessage(GUI_MSG_MOVE_OFFSET, windowID, controlID, 1);
     else if (params[1] == "movedown")
@@ -1257,7 +1257,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (params.size() == 2)
     {
       // have a window - convert it
-      int windowID = CButtonTranslator::TranslateWindowString(params[0].c_str());
+      int windowID = CButtonTranslator::TranslateWindow(params[0]);
       CGUIMessage message(GUI_MSG_CLICKED, atoi(params[1].c_str()), windowID);
       g_windowManager.SendMessage(message);
     }
@@ -1275,7 +1275,7 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if (params.size() == 2)
       { // have a window - convert it and send to it.
-        int windowID = CButtonTranslator::TranslateWindowString(params[1].c_str());
+        int windowID = CButtonTranslator::TranslateWindow(params[1].c_str());
         CGUIWindow *window = g_windowManager.GetWindow(windowID);
         if (window)
           window->OnAction(CAction(actionID));
