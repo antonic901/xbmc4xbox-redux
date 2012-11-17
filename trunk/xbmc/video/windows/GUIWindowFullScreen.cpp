@@ -110,6 +110,7 @@ CGUIWindowFullScreen::CGUIWindowFullScreen(void)
   m_dwShowViewModeTimeout = 0;
   m_bShowCurrentTime = false;
   m_subsLayout = NULL;
+  m_sliderAction = 0;
   // audio
   //  - language
   //  - volume
