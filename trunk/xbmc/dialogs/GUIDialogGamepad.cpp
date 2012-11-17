@@ -43,12 +43,12 @@ CGUIDialogGamepad::~CGUIDialogGamepad(void)
 
 bool CGUIDialogGamepad::OnAction(const CAction &action)
 {
-  if ((action.buttonCode >= KEY_BUTTON_A &&
-       action.buttonCode <= KEY_BUTTON_RIGHT_TRIGGER) ||
-      (action.buttonCode >= KEY_BUTTON_DPAD_UP &&
-       action.buttonCode <= KEY_BUTTON_DPAD_RIGHT))
+  if ((action.GetButtonCode() >= KEY_BUTTON_A &&
+       action.GetButtonCode() <= KEY_BUTTON_RIGHT_TRIGGER) ||
+      (action.GetButtonCode() >= KEY_BUTTON_DPAD_UP &&
+       action.GetButtonCode() <= KEY_BUTTON_DPAD_RIGHT))
   {
-    switch (action.buttonCode)
+    switch (action.GetButtonCode())
     {
     case KEY_BUTTON_A : m_strUserInput += "A"; break;
     case KEY_BUTTON_B : m_strUserInput += "B"; break;
@@ -73,7 +73,7 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
     SetLine(2, strHiddenInput);
     return true;
   }
-  else if (action.buttonCode == KEY_BUTTON_BACK || action.actionId == ACTION_CLOSE_DIALOG || action.actionId == ACTION_PREVIOUS_MENU || action.actionId == ACTION_PARENT_DIR)
+  else if (action.GetButtonCode() == KEY_BUTTON_BACK || action.GetID() == ACTION_CLOSE_DIALOG || action.GetID() == ACTION_PREVIOUS_MENU || action.GetID() == ACTION_PARENT_DIR)
   {
     m_bConfirmed = false;
     m_bCanceled = true;
@@ -82,7 +82,7 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
     Close();
     return true;
   }
-  else if (action.buttonCode == KEY_BUTTON_START)
+  else if (action.GetButtonCode() == KEY_BUTTON_START)
   {
     m_bConfirmed = false;
     m_bCanceled = false;
@@ -116,7 +116,7 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
     Close();
     return true;
   }
-  else if (action.actionId >= REMOTE_0 && action.actionId <= REMOTE_9)
+  else if (action.GetID() >= REMOTE_0 && action.GetID() <= REMOTE_9)
   {
     return true; // unhandled
   }

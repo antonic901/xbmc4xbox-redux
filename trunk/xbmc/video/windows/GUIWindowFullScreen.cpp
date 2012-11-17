@@ -185,7 +185,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   if (g_application.m_pPlayer != NULL && g_application.m_pPlayer->OnAction(action))
     return true;
 
-  switch (action.actionId)
+  switch (action.GetID())
   {
   case ACTION_SHOW_OSD:
     ToggleOSD();
@@ -307,7 +307,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     if (g_application.m_pPlayer)
       g_application.m_pPlayer->SetSubTitleDelay(g_settings.m_currentVideoSettings.m_SubtitleDelay);
 
-    ShowSlider(action.actionId, 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
+    ShowSlider(action.GetID(), 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
                                       -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                        g_advancedSettings.m_videoSubsDelayRange);
     return true;
@@ -319,19 +319,19 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     if (g_application.m_pPlayer)
       g_application.m_pPlayer->SetSubTitleDelay(g_settings.m_currentVideoSettings.m_SubtitleDelay);
 
-    ShowSlider(action.actionId, 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
+    ShowSlider(action.GetID(), 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
                                       -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                        g_advancedSettings.m_videoSubsDelayRange);
     return true;
     break;
   case ACTION_SUBTITLE_DELAY:
-    ShowSlider(action.actionId, 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
+    ShowSlider(action.GetID(), 22006, g_settings.m_currentVideoSettings.m_SubtitleDelay,
                                       -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                        g_advancedSettings.m_videoSubsDelayRange, true);
     return true;
     break;
   case ACTION_AUDIO_DELAY:
-    ShowSlider(action.actionId, 297, g_settings.m_currentVideoSettings.m_AudioDelay,
+    ShowSlider(action.GetID(), 297, g_settings.m_currentVideoSettings.m_AudioDelay,
                                     -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                      g_advancedSettings.m_videoAudioDelayRange, true);
     return true;
@@ -343,7 +343,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     if (g_application.m_pPlayer)
       g_application.m_pPlayer->SetAVDelay(g_settings.m_currentVideoSettings.m_AudioDelay);
 
-    ShowSlider(action.actionId, 297, g_settings.m_currentVideoSettings.m_AudioDelay,
+    ShowSlider(action.GetID(), 297, g_settings.m_currentVideoSettings.m_AudioDelay,
                                     -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                      g_advancedSettings.m_videoAudioDelayRange);
     return true;
@@ -355,7 +355,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     if (g_application.m_pPlayer)
       g_application.m_pPlayer->SetAVDelay(g_settings.m_currentVideoSettings.m_AudioDelay);
 
-    ShowSlider(action.actionId, 297, g_settings.m_currentVideoSettings.m_AudioDelay,
+    ShowSlider(action.GetID(), 297, g_settings.m_currentVideoSettings.m_AudioDelay,
                                     -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                      g_advancedSettings.m_videoAudioDelayRange);
     return true;
@@ -391,7 +391,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         int channelNr = -1;
 
         CStdString strChannel;
-        strChannel.Format("%i", action.actionId - REMOTE_0);
+        strChannel.Format("%i", action.GetID() - REMOTE_0);
         if (CGUIDialogNumeric::ShowAndGetNumber(strChannel, g_localizeStrings.Get(19000)))
           channelNr = atoi(strChannel.c_str());
 
@@ -400,7 +400,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       }
       else
       {
-        ChangetheTimeCode(action.actionId);
+        ChangetheTimeCode(action.GetID());
       }
       return true;
     }
@@ -438,7 +438,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         g_settings.m_currentVideoSettings.m_CustomZoomAmount = 2.f;
       g_settings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
       g_renderManager.SetViewMode(VIEW_MODE_CUSTOM);
-      ShowSlider(action.actionId, 216, g_settings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 216, g_settings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
     }
     return true;
     break;
@@ -449,7 +449,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         g_settings.m_currentVideoSettings.m_CustomZoomAmount = 0.5f;
       g_settings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
       g_renderManager.SetViewMode(VIEW_MODE_CUSTOM);
-      ShowSlider(action.actionId, 216, g_settings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 216, g_settings.m_currentVideoSettings.m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
     }
     return true;
     break;
@@ -460,7 +460,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         g_settings.m_currentVideoSettings.m_CustomZoomAmount = 2.f;
       g_settings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
       g_renderManager.SetViewMode(VIEW_MODE_CUSTOM);
-      ShowSlider(action.actionId, 217, g_settings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 217, g_settings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
     }
     return true;
     break;
@@ -471,7 +471,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         g_settings.m_currentVideoSettings.m_CustomPixelRatio = 0.5f;
       g_settings.m_currentVideoSettings.m_ViewMode = VIEW_MODE_CUSTOM;
       g_renderManager.SetViewMode(VIEW_MODE_CUSTOM);
-      ShowSlider(action.actionId, 217, g_settings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 217, g_settings.m_currentVideoSettings.m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
     }
     return true;
     break;

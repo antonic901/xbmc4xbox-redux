@@ -2370,23 +2370,13 @@ bool CApplication::OnKey(CKey& key)
     if (useKeyboard)
     {
       if (key.GetFromHttpApi())
-      {
-        if (key.GetButtonCode() != KEY_INVALID)
-          action.actionId = key.GetButtonCode();
-        action.unicode = key.GetUnicode();
-      }
+        action = CAction(key.GetButtonCode() != KEY_INVALID ? key.GetButtonCode() : 0, key.GetUnicode());
       else
       { // see if we've got an ascii key
         if (g_Keyboard.GetUnicode())
-        {
-          action.actionId = g_Keyboard.GetAscii() | KEY_ASCII; // Only for backwards compatibility
-          action.unicode = g_Keyboard.GetUnicode();
-        }
+          action = CAction(g_Keyboard.GetAscii() | KEY_ASCII, g_Keyboard.GetUnicode());
         else
-        {
-          action.actionId = g_Keyboard.GetKey() | KEY_VKEY;
-          action.unicode = 0;
-        }
+          action = CAction(g_Keyboard.GetKey() | KEY_VKEY);
       }
 #ifdef HAS_SDL
       g_Keyboard.Reset();
@@ -2404,7 +2394,7 @@ bool CApplication::OnKey(CKey& key)
       action = CButtonTranslator::GetInstance().GetAction(iWin, key);
   }
   if (!key.IsAnalogButton())
-    CLog::Log(LOGDEBUG, "%s: %i pressed, action is %i", __FUNCTION__, (int) key.GetButtonCode(), action.actionId);
+    CLog::Log(LOGDEBUG, "%s: %i pressed, action is %i", __FUNCTION__, (int) key.GetButtonCode(), action.GetID());
 
   //  Play a sound based on the action
   g_audioManager.PlayActionSound(action);
@@ -2418,12 +2408,12 @@ bool CApplication::OnAction(CAction &action)
   if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=2)
   {
     CStdString tmp;
-    tmp.Format("%i",action.actionId);
+    tmp.Format("%i",action.GetID());
     m_applicationMessenger.HttpApi("broadcastlevel; OnAction:"+tmp+";2");
   }
 
   // special case for switching between GUI & fullscreen mode.
-  if (action.actionId == ACTION_SHOW_GUI)
+  if (action.GetID() == ACTION_SHOW_GUI)
   { // Switch to fullscreen mode if we can
     if (SwitchToFullScreen())
     {
@@ -2443,15 +2433,15 @@ bool CApplication::OnAction(CAction &action)
   // handle extra global presses
 
   // screenshot : take a screenshot :)
-  if (action.actionId == ACTION_TAKE_SCREENSHOT)
+  if (action.GetID() == ACTION_TAKE_SCREENSHOT)
   {
     CUtil::TakeScreenshot();
     return true;
   }
   // built in functions : execute the built-in
-  if (action.actionId == ACTION_BUILT_IN_FUNCTION)
+  if (action.GetID() == ACTION_BUILT_IN_FUNCTION)
   {
-    CBuiltins::Execute(action.strAction);
+    CBuiltins::Execute(action.GetName());
     m_navigationTimer.StartZero();
     return true;
   }
@@ -2460,14 +2450,14 @@ bool CApplication::OnAction(CAction &action)
   static bool PowerButtonDown = false;
   static DWORD PowerButtonCode;
   static DWORD MarkTime;
-  if (action.actionId == ACTION_POWERDOWN)
+  if (action.GetID() == ACTION_POWERDOWN)
   {
     // Hold button for 3 secs to power down
     if (!PowerButtonDown)
     {
       MarkTime = GetTickCount();
       PowerButtonDown = true;
-      PowerButtonCode = action.buttonCode;
+      PowerButtonCode = action.GetButtonCode();
     }
   }
   if (PowerButtonDown)
@@ -2484,27 +2474,27 @@ bool CApplication::OnAction(CAction &action)
       PowerButtonDown = false;
   }
   // reload keymaps
-  if (action.actionId == ACTION_RELOAD_KEYMAPS)
+  if (action.GetID() == ACTION_RELOAD_KEYMAPS)
   {
     CButtonTranslator::GetInstance().Clear();
     CButtonTranslator::GetInstance().Load();
   }
 
   // show info : Shows the current video or song information
-  if (action.actionId == ACTION_SHOW_INFO)
+  if (action.GetID() == ACTION_SHOW_INFO)
   {
     g_infoManager.ToggleShowInfo();
     return true;
   }
 
   // codec info : Shows the current song, video or picture codec information
-  if (action.actionId == ACTION_SHOW_CODEC)
+  if (action.GetID() == ACTION_SHOW_CODEC)
   {
     g_infoManager.ToggleShowCodec();
     return true;
   }
 
-  if ((action.actionId == ACTION_INCREASE_RATING || action.actionId == ACTION_DECREASE_RATING) && IsPlayingAudio())
+  if ((action.GetID() == ACTION_INCREASE_RATING || action.GetID() == ACTION_DECREASE_RATING) && IsPlayingAudio())
   {
     const CMusicInfoTag *tag = g_infoManager.GetCurrentSongTag();
     if (tag)
@@ -2512,12 +2502,12 @@ bool CApplication::OnAction(CAction &action)
       *m_itemCurrentFile->GetMusicInfoTag() = *tag;
       char rating = tag->GetRating();
       bool needsUpdate(false);
-      if (rating > '0' && action.actionId == ACTION_DECREASE_RATING)
+      if (rating > '0' && action.GetID() == ACTION_DECREASE_RATING)
       {
         m_itemCurrentFile->GetMusicInfoTag()->SetRating(rating - 1);
         needsUpdate = true;
       }
-      else if (rating < '5' && action.actionId == ACTION_INCREASE_RATING)
+      else if (rating < '5' && action.GetID() == ACTION_INCREASE_RATING)
       {
         m_itemCurrentFile->GetMusicInfoTag()->SetRating(rating + 1);
         needsUpdate = true;
@@ -2539,14 +2529,14 @@ bool CApplication::OnAction(CAction &action)
   }
 
   // stop : stops playing current audio song
-  if (action.actionId == ACTION_STOP)
+  if (action.GetID() == ACTION_STOP)
   {
     StopPlaying();
     return true;
   }
 
   // previous : play previous song from playlist
-  if (action.actionId == ACTION_PREV_ITEM)
+  if (action.GetID() == ACTION_PREV_ITEM)
   {
     // first check whether we're within 3 seconds of the start of the track
     // if not, we just revert to the start of the track
@@ -2563,7 +2553,7 @@ bool CApplication::OnAction(CAction &action)
   }
 
   // next : play next song from playlist
-  if (action.actionId == ACTION_NEXT_ITEM)
+  if (action.GetID() == ACTION_NEXT_ITEM)
   {
     if (IsPlaying() && m_pPlayer->SkipNext())
       return true;
@@ -2576,7 +2566,7 @@ bool CApplication::OnAction(CAction &action)
   if ( IsPlaying())
   {
     // pause : pauses current audio song
-    if (action.actionId == ACTION_PAUSE)
+    if (action.GetID() == ACTION_PAUSE)
     {
       m_pPlayer->Pause();
       if (!m_pPlayer->IsPaused())
@@ -2590,7 +2580,7 @@ bool CApplication::OnAction(CAction &action)
     {
       // if we do a FF/RW in my music then map PLAY action togo back to normal speed
       // if we are playing at normal speed, then allow play to pause
-      if (action.actionId == ACTION_PLAYER_PLAY)
+      if (action.GetID() == ACTION_PLAYER_PLAY)
       {
         if (m_iPlaySpeed != 1)
         {
@@ -2602,19 +2592,19 @@ bool CApplication::OnAction(CAction &action)
         }
         return true;
       }
-      if (action.actionId == ACTION_PLAYER_FORWARD || action.actionId == ACTION_PLAYER_REWIND)
+      if (action.GetID() == ACTION_PLAYER_FORWARD || action.GetID() == ACTION_PLAYER_REWIND)
       {
         int iPlaySpeed = m_iPlaySpeed;
-        if (action.actionId == ACTION_PLAYER_REWIND && iPlaySpeed == 1) // Enables Rewinding
+        if (action.GetID() == ACTION_PLAYER_REWIND && iPlaySpeed == 1) // Enables Rewinding
           iPlaySpeed *= -2;
-        else if (action.actionId == ACTION_PLAYER_REWIND && iPlaySpeed > 1) //goes down a notch if you're FFing
+        else if (action.GetID() == ACTION_PLAYER_REWIND && iPlaySpeed > 1) //goes down a notch if you're FFing
           iPlaySpeed /= 2;
-        else if (action.actionId == ACTION_PLAYER_FORWARD && iPlaySpeed < 1) //goes up a notch if you're RWing
+        else if (action.GetID() == ACTION_PLAYER_FORWARD && iPlaySpeed < 1) //goes up a notch if you're RWing
           iPlaySpeed /= 2;
         else
           iPlaySpeed *= 2;
 
-        if (action.actionId == ACTION_PLAYER_FORWARD && iPlaySpeed == -1) //sets iSpeed back to 1 if -1 (didn't plan for a -1)
+        if (action.GetID() == ACTION_PLAYER_FORWARD && iPlaySpeed == -1) //sets iSpeed back to 1 if -1 (didn't plan for a -1)
           iPlaySpeed = 1;
         if (iPlaySpeed > 32 || iPlaySpeed < -32)
           iPlaySpeed = 1;
@@ -2622,13 +2612,13 @@ bool CApplication::OnAction(CAction &action)
         SetPlaySpeed(iPlaySpeed);
         return true;
       }
-      else if ((action.amount1 || GetPlaySpeed() != 1) && (action.actionId == ACTION_ANALOG_REWIND || action.actionId == ACTION_ANALOG_FORWARD))
+      else if ((action.GetAmount() || GetPlaySpeed() != 1) && (action.GetID() == ACTION_ANALOG_REWIND || action.GetID() == ACTION_ANALOG_FORWARD))
       {
         // calculate the speed based on the amount the button is held down
-        int iPower = (int)(action.amount1 * MAX_FFWD_SPEED + 0.5f);
+        int iPower = (int)(action.GetAmount() * MAX_FFWD_SPEED + 0.5f);
         // returns 0 -> MAX_FFWD_SPEED
         int iSpeed = 1 << iPower;
-        if (iSpeed != 1 && action.actionId == ACTION_ANALOG_REWIND)
+        if (iSpeed != 1 && action.GetID() == ACTION_ANALOG_REWIND)
           iSpeed = -iSpeed;
         g_application.SetPlaySpeed(iSpeed);
         if (iSpeed == 1)
@@ -2639,7 +2629,7 @@ bool CApplication::OnAction(CAction &action)
     // allow play to unpause
     else
     {
-      if (action.actionId == ACTION_PLAYER_PLAY)
+      if (action.GetID() == ACTION_PLAYER_PLAY)
       {
         // unpause, and set the playspeed back to normal
         m_pPlayer->Pause();
@@ -2650,13 +2640,13 @@ bool CApplication::OnAction(CAction &action)
       }
     }
   }
-  if (action.actionId == ACTION_MUTE)
+  if (action.GetID() == ACTION_MUTE)
   {
     Mute();
     return true;
   }
  
-  if (action.actionId == ACTION_TOGGLE_DIGITAL_ANALOG)
+  if (action.GetID() == ACTION_TOGGLE_DIGITAL_ANALOG)
   { 
     if(g_guiSettings.GetInt("audiooutput.mode")==AUDIO_DIGITAL)
       g_guiSettings.SetInt("audiooutput.mode", AUDIO_ANALOG);
@@ -2672,21 +2662,21 @@ bool CApplication::OnAction(CAction &action)
   }
 
   // Check for global volume control
-  if (action.amount1 && (action.actionId == ACTION_VOLUME_UP || action.actionId == ACTION_VOLUME_DOWN))
+  if (action.GetAmount() && (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN))
   {
     // increase or decrease the volume
     int volume = g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel;
 
     // calculate speed so that a full press will equal 1 second from min to max
     float speed = float(VOLUME_MAXIMUM - VOLUME_MINIMUM);
-    if( action.repeat )
-      speed *= action.repeat;
+    if( action.GetRepeat() )
+      speed *= action.GetRepeat();
     else
       speed /= 50; //50 fps
     if (g_settings.m_bMute)
     {
       // only unmute if volume is to be increased, otherwise leave muted
-      if (action.actionId == ACTION_VOLUME_DOWN)
+      if (action.GetID() == ACTION_VOLUME_DOWN)
         return true;
       
       if (g_settings.m_iPreMuteVolumeLevel == 0) 
@@ -2696,13 +2686,13 @@ bool CApplication::OnAction(CAction &action)
         Mute();
       return true;
     }
-    if (action.actionId == ACTION_VOLUME_UP)
+    if (action.GetID() == ACTION_VOLUME_UP)
     {
-      volume += (int)((float)fabs(action.amount1) * action.amount1 * speed);
+      volume += (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
     }
     else
     {
-      volume -= (int)((float)fabs(action.amount1) * action.amount1 * speed);
+      volume -= (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
     }
 
     SetHardwareVolume(volume);
@@ -2718,7 +2708,7 @@ bool CApplication::OnAction(CAction &action)
     return true;
   }
   // Check for global seek control
-  if (IsPlaying() && action.amount1 && (action.actionId == ACTION_ANALOG_SEEK_FORWARD || action.actionId == ACTION_ANALOG_SEEK_BACK))
+  if (IsPlaying() && action.GetAmount() && (action.GetID() == ACTION_ANALOG_SEEK_FORWARD || action.GetID() == ACTION_ANALOG_SEEK_BACK))
   {
     if (!m_pPlayer->CanSeek()) return false;
     m_guiDialogSeekBar.OnAction(action);

@@ -35,7 +35,7 @@ CGUIWindowSystemInfo::~CGUIWindowSystemInfo(void)
 }
 bool CGUIWindowSystemInfo::OnAction(const CAction &action)
 {
-  if (action.actionId == ACTION_PREVIOUS_MENU)
+  if (action.GetID() == ACTION_PREVIOUS_MENU)
   {
     g_windowManager.PreviousWindow();
     return true;

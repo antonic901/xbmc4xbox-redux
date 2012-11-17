@@ -2936,7 +2936,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
   {
     if( m_dvd.state == DVDSTATE_STILL && m_dvd.iDVDStillTime != 0 && pMenus->GetTotalButtons() == 0 )
     {
-      switch(action.actionId)
+      switch(action.GetID())
       {
         case ACTION_NEXT_ITEM:
         case ACTION_MOVE_RIGHT:
@@ -2954,7 +2954,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
     }
 
 
-    switch (action.actionId)
+    switch (action.GetID())
     {
 /* this code is disabled to allow switching playlist items (dvdimage "stacks") */
 #if 0
@@ -2992,7 +2992,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
     if (pMenus->IsInMenu())
     {
-      switch (action.actionId)
+      switch (action.GetID())
       {
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
@@ -3046,25 +3046,24 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
       case ACTION_MOUSE:
         {
-          // check the action
-          CAction action2 = action;
-          action2.buttonCode = g_Mouse.bClick[MOUSE_LEFT_BUTTON] ? 1 : 0;
-          action2.amount1 = g_Mouse.GetLocation().x;
-          action2.amount2 = g_Mouse.GetLocation().y;
-
+          // TODO: This is not strictly correct, as we process the action in the dvdplayer thread,
+          //       by which time g_Mouse.bClick may no longer be true. Instead, we need to differentiate
+          //       an actual click message from a simple move message at the app level rather than at
+          //       the CGUIWindow level
+          bool mouseClick = g_Mouse.bClick[MOUSE_LEFT_BUTTON];
           RECT rs, rd;
           GetVideoRect(rs, rd);
-          if (action2.amount1 < rd.left || action2.amount1 > rd.right ||
-              action2.amount2 < rd.top || action2.amount2 > rd.bottom)
+          if (action.GetAmount() < rd.left || action.GetAmount() > rd.right ||
+              action.GetAmount(1) < rd.top || action.GetAmount(1) > rd.bottom)
             return false; // out of bounds
-          THREAD_ACTION(action2);
+          THREAD_ACTION(action);
           // convert to video coords...
-          CPoint pt(action2.amount1, action2.amount2);
+          CPoint pt(action.GetAmount(), action.GetAmount(1));
           pt -= CPoint(rd.left, rd.top);
           pt.x *= (float)(rs.right - rs.left) / (rd.right - rd.left);
           pt.y *= (float)(rs.bottom - rs.top) / (rd.bottom - rd.top);
           pt += CPoint(rs.left, rs.top);
-          if (action2.buttonCode)
+          if (mouseClick)
             return pMenus->OnMouseClick(pt);
           return pMenus->OnMouseMove(pt);
         }
@@ -3093,7 +3092,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         {
           THREAD_ACTION(action);
           // Offset from key codes back to button number
-          int button = action.actionId - REMOTE_0;
+          int button = action.GetID() - REMOTE_0;
           CLog::Log(LOGDEBUG, " - button pressed %d", button);
           pMenus->SelectButton(button);
         }
@@ -3108,7 +3107,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
 
   if (dynamic_cast<CDVDInputStream::IChannel*>(m_pInputStream))
   {
-    switch (action.actionId)
+    switch (action.GetID())
     {
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
@@ -3127,7 +3126,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       case ACTION_CHANNEL_SWITCH:
       {
         // Offset from key codes back to button number
-        int channel = action.amount1;
+        int channel = action.GetAmount();
         m_messenger.Put(new CDVDMsgInt(CDVDMsg::PLAYER_CHANNEL_SELECT, channel));
         g_infoManager.SetDisplayAfterSeek();
         return true;
@@ -3136,7 +3135,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
     }
   }
 
-  switch (action.actionId)
+  switch (action.GetID())
   {
     case ACTION_NEXT_ITEM:
     case ACTION_PAGE_UP:
