@@ -329,7 +329,7 @@ void CGUISettings::Initialize()
   AddInt(1, "videooutput.aspect", 21374, VIDEO_NORMAL, VIDEO_NORMAL, 1, VIDEO_WIDESCREEN, SPIN_CONTROL_TEXT);
   AddBool(2,  "videooutput.hd480p", 21378, true);
   AddBool(3,  "videooutput.hd720p", 21379, true);
-  AddBool(4,  "videooutput.hd1080i", 21380, true);
+  AddBool(4,  "videooutput.hd1080i", 21380, false);
 
   AddCategory(4, "audiooutput", 772);
   AddInt(3, "audiooutput.mode", 337, AUDIO_ANALOG, AUDIO_ANALOG, 1, AUDIO_DIGITAL, SPIN_CONTROL_TEXT);
