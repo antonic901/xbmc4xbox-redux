@@ -77,7 +77,7 @@ void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
       CLog::Log(LOGINFO, "Default 16:9 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolutionWide)).c_str());
 
       XMLUtils::GetDouble(root, "version", m_Version);
-      XMLUtils::GetFloat(root, "effectsslowdown", m_effectsSlowDown);
+      XMLUtils::GetFloat(root, "effectslowdown", m_effectsSlowDown);
       XMLUtils::GetFloat(root, "zoom", m_skinzoom);
 
       // get the legacy parameter to tweak the control behaviour for old skins such as PM3
