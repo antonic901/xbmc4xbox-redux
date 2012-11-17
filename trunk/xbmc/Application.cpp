@@ -1337,8 +1337,7 @@ HRESULT CApplication::Initialize()
   }
   else
   {
-    RESOLUTION res = INVALID;
-    CStdString startupPath = g_SkinInfo.GetSkinPath("startup.xml", &res);
+    CStdString startupPath = g_SkinInfo.GetSkinPath("Startup.xml");
     int startWindow = g_guiSettings.GetInt("lookandfeel.startupwindow");
     if (CFile::Exists(startupPath) && (!g_SkinInfo.OnlyAnimateToHome() || startWindow == WINDOW_HOME))
       startWindow = WINDOW_STARTUP;
@@ -1963,14 +1962,9 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   g_audioManager.Initialize(CAudioContext::DEFAULT_DEVICE);
   g_audioManager.Load();
 
-  CGUIDialogFullScreenInfo* pDialog = NULL;
-  RESOLUTION res = INVALID;
-  CStdString strPath = g_SkinInfo.GetSkinPath("DialogFullScreenInfo.xml", &res);
+  CStdString strPath = g_SkinInfo.GetSkinPath("DialogFullScreenInfo.xml");
   if (CFile::Exists(strPath))
-    pDialog = new CGUIDialogFullScreenInfo;
-   
-  if (pDialog)
-    g_windowManager.Add(pDialog); // window id = 142
+    g_windowManager.Add(new CGUIDialogFullScreenInfo);
 
   CLog::Log(LOGINFO, "  skin loaded...");
 
