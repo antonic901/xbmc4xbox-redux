@@ -30,6 +30,7 @@
 #include "utils/URIUtils.h"
 #include "settings/GUISettings.h"
 #include "settings/Settings.h"
+#include "SkinInfo.h"
 #include "utils/SingleLock.h"
 
 #ifndef _XBOX
@@ -364,6 +365,10 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
     if (GetActiveWindow() == WINDOW_INVALID && iWindowID != WINDOW_HOME)
       ActivateWindow(WINDOW_HOME);
     return;
+  }
+  if (iWindowID == WINDOW_START)
+  { // virtual start window
+    iWindowID = g_SkinInfo.GetStartWindow();
   }
 
   // first check existence of the window we wish to activate.

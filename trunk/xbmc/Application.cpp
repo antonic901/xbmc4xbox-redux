@@ -3384,7 +3384,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
     g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
 
-    g_windowManager.Delete(WINDOW_STARTUP);
+    g_windowManager.Delete(WINDOW_STARTUP_ANIM);
     g_windowManager.Delete(WINDOW_LOGIN_SCREEN);
     g_windowManager.Delete(WINDOW_VISUALISATION);
     g_windowManager.Delete(WINDOW_SETTINGS_MENU);
