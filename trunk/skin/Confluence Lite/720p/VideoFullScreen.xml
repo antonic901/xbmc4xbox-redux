@@ -158,15 +158,15 @@
 						<aspectratio align="left">keep</aspectratio>
 						<texture>$INFO[VideoPlayer.VideoCodec,flagging/video/,.png]</texture>
 						<!-- Don't show if its one of the 500 divx codecs -->
-						<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(ListItem.VideoCodec,dx50)]</visible>
+						<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image" id="1">
 						<description>Divx Codec Image</description>
 						<width>80</width>
 						<height>35</height>
 						<aspectratio align="left">keep</aspectratio>
-						<texture>$INFO[VideoPlayer.VideoCodec,flagging/video/divx.png]</texture>
-						<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(ListItem.VideoCodec,dx50)]</visible>
+						<texture>flagging/video/divx.png</texture>
+						<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
 					</control>
 					<control type="image" id="1">
 						<description>Audio Codec Image</description>

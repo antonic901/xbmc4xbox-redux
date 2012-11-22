@@ -21,7 +21,7 @@
 			<width>80</width>
 			<height>35</height>
 			<aspectratio align="left">keep</aspectratio>
-			<texture>$INFO[ListItem.VideoCodec,flagging/video/divx.png]</texture>
+			<texture>flagging/video/divx.png</texture>
 			<visible>[substring(ListItem.VideoCodec,div,left) | stringcompare(ListItem.VideoCodec,dx50)]</visible>
 		</control>
 	</include>
