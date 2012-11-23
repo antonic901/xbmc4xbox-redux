@@ -495,7 +495,7 @@
 		<item>
 			<label>$INFO[Skin.String(HomeProgramButton4)]</label>
 			<onclick>ActivateWindow(1,plugin://programs/$INFO[Skin.String(HomeProgramButton4)])</onclick>
-			<icon>special://xbmc/plugins/programs/$INFO[Skin.String(ProgramButton4)]/default.tbn</icon>
+			<icon>special://xbmc/plugins/programs/$INFO[Skin.String(HomeProgramButton4)]/default.tbn</icon>
 			<thumb>-</thumb>
 			<visible>!IsEmpty(Skin.String(HomeProgramButton4))</visible>
 		</item>
