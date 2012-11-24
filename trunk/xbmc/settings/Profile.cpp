@@ -22,8 +22,10 @@
 #include "settings/Profile.h"
 #include "GUIInfoManager.h"
 
-CProfile::CProfile(void)
+CProfile::CProfile(const CStdString &directory, const CStdString &name)
 {
+  _directory = directory;
+  _name = name;
   _bDatabases = true;
   _bCanWrite = true;
   _bSources = true;
