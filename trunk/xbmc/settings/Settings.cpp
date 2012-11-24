@@ -125,7 +125,7 @@ void CSettings::Initialize()
   m_HttpApiBroadcastLevel = 0;
   m_HttpApiBroadcastPort = 8278;
 
-  bUseLoginScreen = false;
+  m_usingLoginScreen = false;
 }
 
 CSettings::~CSettings(void)
@@ -1354,7 +1354,7 @@ void CSettings::LoadProfiles(const CStdString& profilesFile)
       if (rootElement && strcmpi(rootElement->Value(),"profiles") == 0)
       {
         GetInteger(rootElement, "lastloaded", m_iLastLoadedProfileIndex, 0, 0, 1000);
-        XMLUtils::GetBoolean(rootElement, "useloginscreen", bUseLoginScreen);
+        XMLUtils::GetBoolean(rootElement, "useloginscreen", m_usingLoginScreen);
 
         TiXmlElement* pProfile = rootElement->FirstChildElement("profile");
         while (pProfile)
@@ -1472,7 +1472,7 @@ bool CSettings::SaveProfiles(const CStdString& profilesFile) const
   TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
   if (!pRoot) return false;
   XMLUtils::SetInt(pRoot,"lastloaded",m_iLastLoadedProfileIndex);
-  XMLUtils::SetBoolean(pRoot,"useloginscreen",bUseLoginScreen);
+  XMLUtils::SetBoolean(pRoot,"useloginscreen",m_usingLoginScreen);
   for (unsigned int iProfile=0;iProfile<GetNumProfiles();++iProfile)
   {
     const CProfile *profile = GetProfile(iProfile);
