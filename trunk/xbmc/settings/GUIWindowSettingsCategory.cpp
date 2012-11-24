@@ -1133,7 +1133,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     else if (strSetting.Equals("autodetect.nickname") || strSetting.Equals("autodetect.senduserpw"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("autodetect.onoff") && (g_settings.m_iLastLoadedProfileIndex == 0));
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("autodetect.onoff") && (g_settings.GetCurrentProfileIndex() == 0));
     }
     else if ( strSetting.Equals("autodetect.popupinfo"))
     {
