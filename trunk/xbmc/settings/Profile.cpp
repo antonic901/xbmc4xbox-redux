@@ -24,6 +24,28 @@
 #include "XMLUtils.h"
 #include "tinyXML/tinyxml.h"
 
+CProfile::CLock::CLock(LockType type, const CStdString &password)
+{
+  programs = false;
+  pictures = false;
+  files = false;
+  video = false;
+  music = false;
+  settings = false;
+  addonManager = false;
+  mode = type;
+  code = password;
+}
+
+void CProfile::CLock::Validate()
+{
+  if (mode != LOCK_MODE_EVERYONE && (code == "-" || code.IsEmpty()))
+    mode = LOCK_MODE_EVERYONE;
+  
+  if (code.IsEmpty() || mode == LOCK_MODE_EVERYONE)
+    code = "-";
+}
+
 CProfile::CProfile(const CStdString &directory, const CStdString &name)
 {
   _directory = directory;
@@ -33,14 +55,6 @@ CProfile::CProfile(const CStdString &directory, const CStdString &name)
   _bSources = true;
   _bCanWriteSources = true;
   _bUseAvpackSettings = false;
-
-  _bLockPrograms = false;
-  _bLockPictures = false;
-  _bLockFiles = false;
-  _bLockVideo = false;
-  _bLockMusic = false;
-  _bLockSettings = false;
-  _iLockMode = LOCK_MODE_EVERYONE;
 }
 
 CProfile::~CProfile(void)
@@ -65,21 +79,21 @@ void CProfile::Load(const TiXmlNode *node)
   XMLUtils::GetBoolean(node, "canwritedatabases", _bCanWrite);
   XMLUtils::GetBoolean(node, "hassources", _bSources);
   XMLUtils::GetBoolean(node, "canwritesources", _bCanWriteSources);
-  XMLUtils::GetBoolean(node, "locksettings", _bLockSettings);
-  XMLUtils::GetBoolean(node, "lockfiles", _bLockFiles);
-  XMLUtils::GetBoolean(node, "lockmusic", _bLockMusic);
-  XMLUtils::GetBoolean(node, "lockvideo", _bLockVideo);
-  XMLUtils::GetBoolean(node, "lockpictures", _bLockPictures);
-  XMLUtils::GetBoolean(node, "lockprograms", _bLockPrograms);
   XMLUtils::GetBoolean(node, "useavpacksettings", _bUseAvpackSettings);
+  XMLUtils::GetBoolean(node, "locksettings", m_locks.settings);
+  XMLUtils::GetBoolean(node, "lockfiles", m_locks.files);
+  XMLUtils::GetBoolean(node, "lockmusic", m_locks.music);
+  XMLUtils::GetBoolean(node, "lockvideo", m_locks.video);
+  XMLUtils::GetBoolean(node, "lockpictures", m_locks.pictures);
+  XMLUtils::GetBoolean(node, "lockprograms", m_locks.programs);
   
-  int lockMode = _iLockMode;
+  int lockMode = m_locks.mode;
   XMLUtils::GetInt(node, "lockmode", lockMode);
-  _iLockMode = (LockType)lockMode;
-  if (_iLockMode > LOCK_MODE_QWERTY || _iLockMode < LOCK_MODE_EVERYONE)
-    _iLockMode = LOCK_MODE_EVERYONE;
+  m_locks.mode = (LockType)lockMode;
+  if (m_locks.mode > LOCK_MODE_QWERTY || m_locks.mode < LOCK_MODE_EVERYONE)
+    m_locks.mode = LOCK_MODE_EVERYONE;
   
-  XMLUtils::GetString(node, "lockcode", _strLockCode);
+  XMLUtils::GetString(node, "lockcode", m_locks.code);
   XMLUtils::GetString(node, "lastdate", _date);
 }
 
@@ -95,15 +109,22 @@ void CProfile::Save(TiXmlNode *root) const
   XMLUtils::SetBoolean(node, "canwritedatabases", _bCanWrite);
   XMLUtils::SetBoolean(node, "hassources", _bSources);
   XMLUtils::SetBoolean(node, "canwritesources", _bCanWriteSources);
-  XMLUtils::SetBoolean(node, "locksettings", _bLockSettings);
-  XMLUtils::SetBoolean(node, "lockfiles", _bLockFiles);
-  XMLUtils::SetBoolean(node, "lockmusic", _bLockMusic);
-  XMLUtils::SetBoolean(node, "lockvideo", _bLockVideo);
-  XMLUtils::SetBoolean(node, "lockpictures", _bLockPictures);
-  XMLUtils::SetBoolean(node, "lockprograms", _bLockPrograms);
   XMLUtils::SetBoolean(node, "useavpacksettings", _bUseAvpackSettings);
+  XMLUtils::SetBoolean(node, "lockaddonmanager", m_locks.addonManager);
+  XMLUtils::SetBoolean(node, "locksettings", m_locks.settings);
+  XMLUtils::SetBoolean(node, "lockfiles", m_locks.files);
+  XMLUtils::SetBoolean(node, "lockmusic", m_locks.music);
+  XMLUtils::SetBoolean(node, "lockvideo", m_locks.video);
+  XMLUtils::SetBoolean(node, "lockpictures", m_locks.pictures);
+  XMLUtils::SetBoolean(node, "lockprograms", m_locks.programs);
 
-  XMLUtils::SetInt(node, "lockmode", _iLockMode);
-  XMLUtils::SetString(node,"lockcode", _strLockCode);
+  XMLUtils::SetInt(node, "lockmode", m_locks.mode);
+  XMLUtils::SetString(node,"lockcode", m_locks.code);
   XMLUtils::SetString(node, "lastdate", _date);
+}
+
+void CProfile::SetLocks(const CProfile::CLock &locks)
+{
+  m_locks = locks;
+  m_locks.Validate();
 }
