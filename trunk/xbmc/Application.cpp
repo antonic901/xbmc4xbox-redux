@@ -765,7 +765,10 @@ HRESULT CApplication::Create(HWND hWnd)
       for (int i=0;i<items.Size();++i)
           CFile::Cache(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
     }
-    g_settings.m_vecProfiles[0].setDirectory("special://masterprofile/");
+    // TODO: PROFILE A setter method may be better here?
+    CProfile *profile = g_settings.GetProfile(0);
+    if (profile)
+      profile->setDirectory("special://masterprofile/");
     g_settings.m_logFolder = "special://masterprofile/";
   }
   else
@@ -874,7 +877,7 @@ HRESULT CApplication::Create(HWND hWnd)
       CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"profiles\\"));
       CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"visualisations\\"));
       CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"avpacksettings.xml"));
-      g_settings.m_vecProfiles.erase(g_settings.m_vecProfiles.begin()+1,g_settings.m_vecProfiles.end());
+      g_settings.DeleteAllProfiles();
 
       g_settings.SaveProfiles("q:\\system\\profiles.xml");
 
@@ -932,8 +935,10 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGNOTICE, "load settings...");
   g_LoadErrorStr = "Unable to load settings";
+  
+  // TODO: PROFILE what (if any) of this is needed - we're on startup, so surely this stuff is unknown?
   g_settings.m_iLastUsedProfileIndex = g_settings.m_iLastLoadedProfileIndex;
-  if (g_settings.bUseLoginScreen && g_settings.m_iLastLoadedProfileIndex != 0)
+  if (g_settings.UsingLoginScreen() && g_settings.m_iLastLoadedProfileIndex != 0)
     g_settings.m_iLastLoadedProfileIndex = 0;
 
   m_bAllSettingsLoaded = g_settings.Load(m_bXboxMediacenterLoaded, m_bSettingsLoaded);
@@ -1324,14 +1329,14 @@ HRESULT CApplication::Initialize()
   SAFE_DELETE(m_splash);
 
   if (g_guiSettings.GetBool("masterlock.startuplock") && 
-      g_settings.m_vecProfiles[0].getLockMode() != LOCK_MODE_EVERYONE && 
-     !g_settings.m_vecProfiles[0].getLockCode().IsEmpty())
+      g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+     !g_settings.GetMasterProfile().getLockCode().IsEmpty())
   {
      g_passwordManager.CheckStartUpLock();
   }
 
   // check if we should use the login screen
-  if (g_settings.bUseLoginScreen)
+  if (g_settings.UsingLoginScreen())
   {
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
   }
@@ -1374,7 +1379,7 @@ HRESULT CApplication::Initialize()
     RestoreMusicScanSettings();
   }
 
-  if (!g_settings.bUseLoginScreen)
+  if (!g_settings.UsingLoginScreen())
     UpdateLibraries();
 
   m_slowTimer.StartZero();
@@ -4407,11 +4412,10 @@ bool CApplication::ResetScreenSaverWindow()
   // if Screen saver is active
   if (m_bScreenSave)
   {
-    int iProfile = g_settings.m_iLastLoadedProfileIndex;
     if (m_iScreenSaveLock == 0)
-      if (g_settings.m_vecProfiles[0].getLockMode() != LOCK_MODE_EVERYONE &&
-          (g_settings.bUseLoginScreen || g_guiSettings.GetBool("masterlock.startuplock")) &&
-          g_settings.m_vecProfiles[iProfile].getLockMode() != LOCK_MODE_EVERYONE &&
+      if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+          (g_settings.UsingLoginScreen() || g_guiSettings.GetBool("masterlock.startuplock")) &&
+          g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
           m_screenSaverMode != "Dim" && m_screenSaverMode != "Black" && m_screenSaverMode != "Visualisation")
       {
         m_iScreenSaveLock = 2;
@@ -5765,9 +5769,8 @@ void CApplication::InitDirectoriesXbox()
   CSpecialProtocol::SetHomePath(install_path);
   CSpecialProtocol::SetTempPath("Z:\\");
 
-  g_settings.m_vecProfiles.clear();
   g_settings.LoadProfiles("q:\\system\\profiles.xml");
-  if (g_settings.m_vecProfiles.size() == 0)
+  if (g_settings.GetNumProfiles()==0)
   {
     //no profiles yet, make one based on the default settings
     CLog::Log(LOGDEBUG, "%s - Master profile is not defined, reverting to default", __FUNCTION__);
@@ -5778,9 +5781,9 @@ void CApplication::InitDirectoriesXbox()
     profile.setLockMode(LOCK_MODE_EVERYONE);
     profile.setLockCode("");
     profile.setDate("");
-    g_settings.m_vecProfiles.push_back(profile);
+    g_settings.AddProfile(profile);
   }
 
   // First profile is always the Master Profile
-  CSpecialProtocol::SetMasterProfilePath(g_settings.m_vecProfiles[0].getDirectory());
+  CSpecialProtocol::SetMasterProfilePath(g_settings.GetUserDataFolder());
 }

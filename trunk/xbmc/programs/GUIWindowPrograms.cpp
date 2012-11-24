@@ -233,7 +233,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
         if (g_guiSettings.GetBool("myprograms.gameautoregion"))
           buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519); // launch in video mode
   
-        if (g_passwordManager.IsMasterLockUnlocked(false) || g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].canWriteDatabases())
+        if (g_passwordManager.IsMasterLockUnlocked(false) || g_settings.GetCurrentProfile().canWriteDatabases())
         {
           if (item->IsShortCut())
             buttons.Add(CONTEXT_BUTTON_RENAME, 16105); // rename

@@ -57,7 +57,7 @@ VECSOURCES& CGUIViewStateWindowScripts::GetSources()
   m_sources.clear();
 
   CMediaSource share;
-  if (g_settings.m_vecProfiles.size() > 1)
+  if (g_settings.GetNumProfiles() > 1)
   {
     if (CDirectory::Exists("P:\\scripts"))
     {

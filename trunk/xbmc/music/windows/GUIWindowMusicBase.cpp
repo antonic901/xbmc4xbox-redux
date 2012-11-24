@@ -393,7 +393,7 @@ void CGUIWindowMusicBase::OnManualAlbumInfo()
 void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString& path, bool bRefresh, bool bShowInfo)
 {
   bool saveDb = artist.idArtist != -1;
-  if (!g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].canWriteDatabases() && !g_passwordManager.bMasterUser)
+  if (!g_settings.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
     saveDb = false;
 
   // check cache
@@ -491,7 +491,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
 void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& path, bool bRefresh, bool bShowInfo)
 {
   bool saveDb = album.idAlbum != -1;
-  if (!g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].canWriteDatabases() && !g_passwordManager.bMasterUser)
+  if (!g_settings.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
     saveDb = false;
 
   // check cache
@@ -1221,7 +1221,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
   // check user permissions
   bool saveDb = album.idAlbum != -1;
   bool saveDirThumb = true;
-  if (!g_settings.m_vecProfiles[g_settings.m_iLastLoadedProfileIndex].canWriteDatabases() && !g_passwordManager.bMasterUser)
+  if (!g_settings.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
   {
     saveDb = false;
     saveDirThumb = false;
