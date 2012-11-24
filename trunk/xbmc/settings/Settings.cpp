@@ -1463,6 +1463,12 @@ void CSettings::LoadProfiles(const CStdString& profilesFile)
   if (m_iLastLoadedProfileIndex >= m_vecProfiles.size() || m_iLastLoadedProfileIndex < 0)
     m_iLastLoadedProfileIndex = 0;
 
+  m_iLastUsedProfileIndex = m_iLastLoadedProfileIndex;
+
+  // the login screen runs as the master profile, so if we're using this, we need to ensure
+  // we switch to the master profile
+  if (m_usingLoginScreen)
+    m_iLastLoadedProfileIndex = 0;
 }
 
 bool CSettings::SaveProfiles(const CStdString& profilesFile) const
@@ -2374,4 +2380,12 @@ int CSettings::GetProfileIndex(const CStdString &name) const
 void CSettings::AddProfile(const CProfile &profile)
 {
   m_vecProfiles.push_back(profile);
+}
+
+void CSettings::LoadMasterForLogin()
+{
+  // save the previous user
+  m_iLastUsedProfileIndex = m_iLastLoadedProfileIndex;
+  if (m_iLastLoadedProfileIndex != 0)
+    LoadProfile(0);
 }
