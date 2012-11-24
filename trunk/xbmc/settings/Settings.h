@@ -104,7 +104,6 @@ public:
   void Clear();
 
   bool LoadProfile(unsigned int index);
-  bool SaveSettingsToProfile(unsigned int index);
   bool DeleteProfile(unsigned int index);
   void DeleteAllProfiles();
   void CreateProfileFolders();
