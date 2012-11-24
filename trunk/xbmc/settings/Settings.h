@@ -103,9 +103,9 @@ public:
 
   void Clear();
 
-  bool LoadProfile(int index);
-  bool SaveSettingsToProfile(int index);
-  bool DeleteProfile(int index);
+  bool LoadProfile(unsigned int index);
+  bool SaveSettingsToProfile(unsigned int index);
+  bool DeleteProfile(unsigned int index);
   void DeleteAllProfiles();
   void CreateProfileFolders();
 
@@ -454,7 +454,7 @@ public:
   /*! \brief Are we the master user?
    \return true if the current profile is the master user, false otherwise
    */
-  bool IsMasterUser() const { return 0 == m_iLastLoadedProfileIndex; };
+  bool IsMasterUser() const { return 0 == m_currentProfile; };
 
   /*! \brief Update the date of the current profile
    */
@@ -468,12 +468,12 @@ public:
   /*! \brief Retreive the last used profile index
    \return the last used profile that logged in.  Does not count the master user during login.
    */
-  int GetLastUsedProfileIndex() const { return m_iLastUsedProfileIndex; };
+  unsigned int GetLastUsedProfileIndex() const { return m_lastUsedProfile; };
 
   /*! \brief Retrieve the current profile index
    \return the index of the currently logged in profile.
    */
-  int GetCurrentProfileIndex() const { return m_iLastLoadedProfileIndex; };
+  unsigned int GetCurrentProfileIndex() const { return m_currentProfile; };
 
   RESOLUTION_INFO m_ResInfo[10];
 
@@ -569,8 +569,8 @@ protected:
 private:
   std::vector<CProfile> m_vecProfiles;
   bool m_usingLoginScreen;
-  int m_iLastUsedProfileIndex;
-  int m_iLastLoadedProfileIndex;
+  unsigned int m_lastUsedProfile;
+  unsigned int m_currentProfile;
 };
 
 extern class CSettings g_settings;
