@@ -75,6 +75,7 @@ public:
   void setPicturesLocked(bool bLocked) { _bLockPictures = bLocked; }
   void setProgramsLocked(bool bLocked) { _bLockPrograms = bLocked; }
 
+private:
   CStdString _directory;
   CStdString _name;
   CStdString _date;
@@ -85,6 +86,7 @@ public:
   bool _bCanWriteSources;
   bool _bUseAvpackSettings;
 
+public:
   // lock stuff
   LockType _iLockMode;
   CStdString _strLockCode;
