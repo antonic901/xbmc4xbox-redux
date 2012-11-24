@@ -191,7 +191,7 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
       else if (iControl == CONTROL_LOGINSCREEN)
       {
         g_settings.ToggleLoginScreen();
-        g_settings.SaveProfiles("q:\\system\\profiles.xml");
+        g_settings.SaveProfiles(PROFILES_FILE);
         return true;
       }
     }

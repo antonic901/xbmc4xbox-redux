@@ -1196,7 +1196,7 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SaveAvpackXML();
 
   // For mastercode
-  SaveProfiles("Q:\\system\\profiles.xml");
+  SaveProfiles(PROFILES_FILE);
 
   // save the file
   return xmlDoc.SaveFile(strSettingsFile);
@@ -1324,7 +1324,7 @@ bool CSettings::DeleteProfile(int index)
       return false;
   }
 
-  SaveProfiles("Q:\\system\\profiles.xml");
+  SaveProfiles(PROFILES_FILE);
   return true;
 }
 

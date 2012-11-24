@@ -879,7 +879,7 @@ HRESULT CApplication::Create(HWND hWnd)
       CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"avpacksettings.xml"));
       g_settings.DeleteAllProfiles();
 
-      g_settings.SaveProfiles("q:\\system\\profiles.xml");
+      g_settings.SaveProfiles(PROFILES_FILE);
 
       char szXBEFileName[1024];
 
@@ -5769,21 +5769,8 @@ void CApplication::InitDirectoriesXbox()
   CSpecialProtocol::SetHomePath(install_path);
   CSpecialProtocol::SetTempPath("Z:\\");
 
-  g_settings.LoadProfiles("q:\\system\\profiles.xml");
-  if (g_settings.GetNumProfiles()==0)
-  {
-    //no profiles yet, make one based on the default settings
-    CLog::Log(LOGDEBUG, "%s - Master profile is not defined, reverting to default", __FUNCTION__);
-    
-    CProfile profile;
-    profile.setDirectory("q:\\UserData");
-    profile.setName("Master user");
-    profile.setLockMode(LOCK_MODE_EVERYONE);
-    profile.setLockCode("");
-    profile.setDate("");
-    g_settings.AddProfile(profile);
-  }
-
   // First profile is always the Master Profile
-  CSpecialProtocol::SetMasterProfilePath(g_settings.GetUserDataFolder());
+  CSpecialProtocol::SetMasterProfilePath("Q:\\UserData");
+
+  g_settings.LoadProfiles(PROFILES_FILE);
 }
