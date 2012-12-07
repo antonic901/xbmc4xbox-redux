@@ -111,14 +111,6 @@ void CGUIDialogMusicOSD::OnInitWindow()
   CGUIDialog::OnInitWindow();
 }
 
-bool CGUIDialogMusicOSD::OnAction(const CAction &action)
-{
-  // keyboard or controller movement should prevent autoclosing
-  if (action.GetID() != ACTION_MOUSE && m_autoClosing)
-    SetAutoClose(3000);
-  return CGUIDialog::OnAction(action);
-}
-
 bool CGUIDialogMusicOSD::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
   if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
