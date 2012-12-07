@@ -36,7 +36,6 @@ public:
   virtual void FreeResources(bool forceUnLoad = false);
 
 protected:
-  virtual bool OnMouseAction();
   void NextControl();
   void ResetControls();
   void EnableControl(int iControl);
