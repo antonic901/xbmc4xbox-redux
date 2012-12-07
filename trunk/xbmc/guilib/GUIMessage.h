@@ -111,6 +111,10 @@ do { \
  OnMessage(msg); \
 } while(0)
 
+/*!
+ \brief A control wishes to have (or release) exclusive access to mouse actions
+ */
+#define GUI_MSG_EXCLUSIVE_MOUSE 37
 
 /*!
  \ingroup winmsg

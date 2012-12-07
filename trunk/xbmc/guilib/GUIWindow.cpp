@@ -59,6 +59,7 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_previousWindow = WINDOW_INVALID;
   m_animationsEnabled = true;
   m_manualRunActions = false;
+  m_exclusiveMouseControl = 0;
   m_clearBackground = 0xff000000; // opaque black -> always clear
 }
 
@@ -358,27 +359,34 @@ bool CGUIWindow::OnMouseAction()
   CPoint mousePoint(g_Mouse.GetLocation());
   g_graphicsContext.InvertFinalCoords(mousePoint.x, mousePoint.y);
 
-  UnfocusFromPoint(mousePoint);
   // create the mouse event
-  CMouseEvent *event = NULL;
+  CMouseEvent event(0); // mouse move only
   if (g_Mouse.bClick[MOUSE_LEFT_BUTTON])
-    event = new CMouseEvent(ACTION_MOUSE_LEFT_CLICK);
+    event = CMouseEvent(ACTION_MOUSE_LEFT_CLICK);
   else if (g_Mouse.bClick[MOUSE_RIGHT_BUTTON])
-    event = new CMouseEvent(ACTION_MOUSE_RIGHT_CLICK);
+    event = CMouseEvent(ACTION_MOUSE_RIGHT_CLICK);
   else if (g_Mouse.bClick[MOUSE_MIDDLE_BUTTON])
-    event = new CMouseEvent(ACTION_MOUSE_MIDDLE_CLICK);
+    event = CMouseEvent(ACTION_MOUSE_MIDDLE_CLICK);
   else if (g_Mouse.bDoubleClick[MOUSE_LEFT_BUTTON])
-    event = new CMouseEvent(ACTION_MOUSE_DOUBLE_CLICK);
-  else if (g_Mouse.bHold[MOUSE_LEFT_BUTTON] && g_Mouse.HasMoved())
-    event = new CMouseEvent(ACTION_MOUSE_DRAG, 0, g_Mouse.GetLastMove().x, g_Mouse.GetLastMove().y);
+    event = CMouseEvent(ACTION_MOUSE_DOUBLE_CLICK);
+  else if (g_Mouse.bHold[MOUSE_LEFT_BUTTON])
+    event = CMouseEvent(ACTION_MOUSE_DRAG, g_Mouse.bHold[MOUSE_LEFT_BUTTON], 0, g_Mouse.GetLastMove().x, g_Mouse.GetLastMove().y);
   else if (g_Mouse.GetWheel())
-    event = new CMouseEvent(ACTION_MOUSE_WHEEL, g_Mouse.GetWheel());
-  else
-    event = new CMouseEvent(0); // mouse move only
+    event = CMouseEvent(ACTION_MOUSE_WHEEL, 0, g_Mouse.GetWheel());
 
-  bool handled = SendMouseEvent(mousePoint, *event);
-  delete event;
-  return handled;
+  if (m_exclusiveMouseControl)
+  {
+    CGUIControl *child = (CGUIControl *)GetControl(m_exclusiveMouseControl);
+    if (child)
+    {
+      CPoint renderPos = child->GetRenderPosition() - CPoint(child->GetXPosition(), child->GetYPosition());
+      return child->OnMouseEvent(mousePoint - renderPos, event);
+    }
+  }
+
+  UnfocusFromPoint(mousePoint);
+
+  return SendMouseEvent(mousePoint, event);
 }
 
 bool CGUIWindow::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
@@ -540,6 +548,12 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
         if (pFocusedControl)
           return pFocusedControl->OnMessage(message);
       }
+      return true;
+    }
+    break;
+  case GUI_MSG_EXCLUSIVE_MOUSE:
+    {
+      m_exclusiveMouseControl = message.GetSenderId();
       return true;
     }
     break;

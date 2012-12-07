@@ -295,33 +295,34 @@ void CGUISliderControl::SetFromPosition(const CPoint &point)
   SEND_CLICK_MESSAGE(GetID(), GetParentID(), MathUtils::round_int(fPercent));
 }
 
-bool CGUISliderControl::OnMouseClick(int button, const CPoint &point)
+bool CGUISliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
-  g_Mouse.SetState(MOUSE_STATE_CLICK);
-  // turn off any exclusive access, if it's on...
-  g_Mouse.EndExclusiveAccess(this, GetParentID());
-  if (m_guiBackground.HitTest(point))
-  { // set the position
+  if (event.m_id == ACTION_MOUSE_DRAG)
+  {
+    if (event.m_state == 1)
+    { // grab exclusive access
+      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
+      SendWindowMessage(msg);
+    }
+    else if (event.m_state == 3)
+    { // release exclusive access
+      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
+      SendWindowMessage(msg);
+    }
     SetFromPosition(point);
     return true;
   }
+  else if (event.m_id == ACTION_MOUSE_CLICK && m_guiBackground.HitTest(point))
+  {
+    SetFromPosition(point);
+    return true;
+  }
+  else if (event.m_id == ACTION_MOUSE_WHEEL)
+  {
+    Move(event.m_wheel*10);
+    return true;
+  }
   return false;
-}
-
-bool CGUISliderControl::OnMouseDrag(const CPoint &offset, const CPoint &point)
-{
-  g_Mouse.SetState(MOUSE_STATE_DRAG);
-  // get exclusive access to the mouse
-  g_Mouse.SetExclusiveAccess(this, GetParentID(), point);
-  // get the position of the mouse
-  SetFromPosition(point);
-  return true;
-}
-
-bool CGUISliderControl::OnMouseWheel(char wheel, const CPoint &point)
-{ // move the slider 10 steps in the appropriate direction
-  Move(wheel*10);
-  return true;
 }
 
 void CGUISliderControl::SetInfo(int iInfo)
