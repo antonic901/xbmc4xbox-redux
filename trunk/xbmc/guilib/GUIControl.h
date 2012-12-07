@@ -109,7 +109,7 @@ public:
    \return true if the control has handled this event, false otherwise
    \sa SendMouseEvent, HitTest, CanFocusFromPoint, CMouseEvent
    */
-  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event) { return false; };
 
   /*! \brief Unfocus the control if the given point on screen is not within it's boundary
    \param point the location in transformed skin coordinates from the upper left corner of the parent control.
