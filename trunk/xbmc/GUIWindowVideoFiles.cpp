@@ -97,7 +97,7 @@ bool CGUIWindowVideoFiles::OnMessage(CGUIMessage& message)
       if (!strDestination.IsEmpty())
       {
         // open root
-        if (strDestination.Equals("$ROOT"))
+        if (strDestination.Equals("$ROOT") || strDestination.Equals("Root"))
         {
           m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
@@ -108,6 +108,8 @@ bool CGUIWindowVideoFiles::OnMessage(CGUIMessage& message)
           m_vecItems->SetPath("special://videoplaylists/");
           CLog::Log(LOGINFO, "  Success! Opening destination path: %s", m_vecItems->GetPath().c_str());
         }
+        else if (strDestination.Equals("Plugins"))
+          m_vecItems->SetPath("plugin://video/");
         else
         {
           // default parameters if the jump fails

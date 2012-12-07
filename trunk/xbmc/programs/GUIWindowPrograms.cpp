@@ -103,7 +103,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
       if (!strDestination.IsEmpty())
       {
         // open root
-        if (strDestination.Equals("$ROOT"))
+        if (strDestination.Equals("$ROOT") || strDestination.Equals("Root"))
         {
           m_vecItems->SetPath("");
           CLog::Log(LOGINFO, "  Success! Opening root listing.");
