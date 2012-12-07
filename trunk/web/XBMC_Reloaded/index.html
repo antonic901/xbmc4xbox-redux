@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB">
+	<head>
+	<script>
+		
+	</script>
+		<meta http-equiv="content-type" content="text/html;charset=ISO-8859-1">
+		<title>XBMC</title>
+		<link type="text/css" href="css/ui-darkness/jquery-ui-1.8.17.custom.css" rel="stylesheet" />	
+		<link type="text/css" href="css/style.css" rel="stylesheet" />	
+		<link type="text/css" href="css/bootstrap.css" rel="stylesheet" />	
+		<link type="text/css" href="css/bootstrap-responsive.min.css" rel="stylesheet" />	
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui.js"></script>
+		<script type="text/javascript" src="js/functions.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+		<script type="text/javascript" src="js/xbox.js"></script>
+		<script type="text/javascript" src="js/keyboardControl.js"></script>
+		
+</head>
+<script>
+$(document).ready(function(){
+
+
+	
+	setInterval("GetVolume()",5300);
+	setInterval("GetCurrentlyPlaying()",1100);
+	doCommand("ExecBuiltIn(PlayerControl(RepeatOff))");
+	doCommand("ExecBuiltIn(PlayerControl(RandomOff))")
+	$('.dropdown-toggle').dropdown()
+})
+var KeyboardShortcut = new Object();
+var KeyboardController = new Object();
+</script>
+<body>
+
+<div id="navbar" class="navbar navbar-static">
+            <div class="navbar-inner">
+              <div class="container" style="width: auto;">
+                <a class="brand" href="#">XBMC Reloaded</a>
+				<form class="navbar-search pull-left">
+				  <input type="text" class="search-query" placeholder="Search Music" id="search">
+				</form>
+				  <ul class="nav pull-right">
+					<li id="fat-menu" class="dropdown">
+					   <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog icon-white "></i>Settings<b class="caret"></b></a>
+						<ul class="dropdown-menu" style="opacity: 1.0">
+							<li><a href="#" onclick="ShowSettings(); return false;">Settings</a></li> 
+							<li><a href="#" onclick="KeyboardControlModal(); return false;">Keyboard Control</a></li> 
+							<li class="divider"></li>
+							<li><a href="#" onclick="Restart(); return false;">Reboot XBMC</a></li>
+							<li><a href="#" onclick="Shutdown(); return false;">Shutdown XBMC</a></li>
+							<li><a href="#" onclick="ToDash(); return false;">Quit to Dashboard</a></li> 
+						</ul>
+					</li>
+				</ul>
+              </div>
+         </div>
+</div> 
+				
+				
+<div id="nowplaying" title="Now Playing">
+<span id="curplaying"></span><br />
+<span id="Time">0:00 / 0:00</span> Volume: <span id="volume"></span>%
+</div>
+<div id="controls" title="Control">
+<div id="ProgressBar"></div><br />
+ <span style="margin: 50px; padding-top: 30px;">
+	<a href="#" onclick="PlayPrev(); return false;"><img src="images/prev.png"></a>
+	<a href="#" onclick="SeekBackward(); return false;"><img src="images/backward.png"></a>
+	<a href="#" onclick="Stop(); return false;"><img src="images/stop.png"></a>
+	<a href="#" onclick="PlayPause(); return false;"><img src="images/play.png" id="Playimg"></a>
+	<a href="#" onclick="SeekForward(); return false;"><img src="images/forward.png"></a>
+	<a href="#" onclick="Next(); return false;"><img src="images/next.png"></a>
+	<a href="#" onclick="Voldown(); return false;"><img src="images/vollow.png"></a>
+	<a href="#" onclick="Volup(); return false;"><img src="images/volhigh.png"></a>
+	<a href="#" onclick="Mute(); return false;"><img src="images/volmute.png"></a>
+	<span class="button small-button" style="width: 85px; margin-top: -30px;" id="repeattoggle">Repeat None</span>
+	<span class="button small-button" style="width: 85px; margin-top: -30px;" id="shuffletoggle">Shuffle Off</span>
+</span>
+</div>
+<div id="explorer" title="File explorer">
+<span class="button" id="Music">Music</span> |  <span class="button" id="Video">Video</span> | <span class="button">Pictures</span>
+<hr>
+<span id="navi"></span>
+<br />
+<span id="fileexplorer">
+</span>
+
+</div>
+<div id="playlist" title="Playlist">
+
+<ul id="playlistContent">
+
+</ul>
+</div>
+<div class="modal" id="SettingsModal" style="display: none;">
+  
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Settings</h3>
+  </div>
+  
+  <div class="modal-body">
+    <ul class="nav nav-tabs">
+	  <li><a href="#keyboardsettings" data-toggle="tab">Keyboard shortcuts</a></li>
+	  <li><a href="#settings" data-toggle="tab">Backup</a></li>
+	</ul>
+	<div class="tab-content">
+	  <div class="tab-pane active" id="keyboardsettings">
+	  <h3>Keyboard shortcuts</h3>
+		<table>	
+			<tr>
+				<td>Action</td><td>&nbsp;</td><td>Key</td><td>Key code</td><td>&nbsp;</td><td>Action</td><td>&nbsp;</td><td>Key</td><td>Key code</td>
+			</tr>
+			 
+			<tr>
+				<td>Play/Pause</td><td>&nbsp;</td><td><input type="text" id="s-PlayPause" class="keyconfig"></td><td><span id='kc-s-PlayPause'></span></td>
+				<td>&nbsp;</td>
+				<td>Volume up</td><td>&nbsp;</td><td><input type="text" id="s-Volup" class="keyconfig"></td><td><span id='kc-s-Volup'></span></td>
+			</tr>
+			<tr>
+				<td>Next</td><td>&nbsp;</td><td><input type="text" id="s-Next" class="keyconfig"></td><td><span id='kc-s-Next'></span></td>
+				<td>&nbsp;</td>
+				<td>Volume Down</td><td>&nbsp;</td><td><input type="text" id="s-Voldown" class="keyconfig"></td><td><span id='kc-s-Voldown'></span></td>
+			</tr>
+			<tr>
+				<td>Previous</td><td>&nbsp;</td><td><input type="text" id="s-PlayPrev" class="keyconfig"></td><td><span id='kc-s-PlayPrev'></span></td>
+				<td>&nbsp;</td>
+				<td>Mute</td><td>&nbsp;</td><td><input type="text" id="s-Mute" class="keyconfig"></td><td><span id='kc-s-Mute'></span></td>
+			</tr>	
+			<tr>
+				<td>Toggle Repeat</td><td>&nbsp;</td><td><input type="text" id="s-ToggleRepeat" class="keyconfig"></td><td><span id='kc-s-ToggleRepeat'></span></td>
+				<td>&nbsp;</td>
+				<td>Toggle Shuffle</td><td>&nbsp;</td><td><input type="text" id="s-ToggleShuffle" class="keyconfig"></td><td><span id='kc-s-ToggleShuffle'></span></td>
+			</tr>
+		</table>
+	  </div>
+	  <div class="tab-pane" id="settings">
+	  <h3>Backup</h3>
+	  <br />
+	  <table>
+	  	<tr>
+			<td>Backup Profiles</td><td>&nbsp;</td><td><span id="profilebackup"><a href="#" onclick="ProfileBackup(); return false; ">Click to start backup</a></span></td>
+		</tr> 
+		<tr>
+			<td>Backup Video Database</td><td>&nbsp;</td><td><span id="VideoBackup"><a href="#" onclick="Backup('Video'); return false; ">Click to start backup</a></span></td>
+		</tr>	
+		<tr>
+			<td>Backup Music Database</td><td>&nbsp;</td><td><span id="MusicBackup"><a href="#" onclick="Backup('Music'); return false; ">Click to start backup</a></span></td>
+		</tr>
+	  </table>
+	  </div>
+	</div>
+  </div>
+  
+  <div class="modal-footer">
+     <a href="#" class="btn" onclick="javascript:$('#SettingsModal').modal('hide')">Close</a>
+  </div>
+</div>
+
+<div class="modal" id="KeyboardControl" style="display: none;">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Control XBMC with keyboard</h3>
+  </div>
+  <div class="modal-body">
+	<ul class="nav nav-tabs">
+	  <li class="active"><a href="#home" data-toggle="tab">Control</a></li>
+	  <li id="bsettings"><a href="#bindsettings" data-toggle="tab" >Bind settings</a></li>
+	</ul>
+	 
+	<div class="tab-content">
+	  <div class="tab-pane active" id="home" style="height: 450px;">
+	      <p style="width: 300px;">You can bind the key's at the settings tab.<br />As long you leave this open, your keyboard will act as a controller for XBMC</p>
+		  <div style="float: right; position: absolute; top: 100px; right: 5px; width: 170px; padding: 10px; display: block; border:1px solid gray;">Controls: <br/><span id="keyboardcontroller-Legend"></span></div>
+		  <textarea id="keySendlog" rows="12" style="width: 300px; background-color: #ffffff; color: #000000;" disabled></textarea>
+		  
+	  </div>
+
+	  <div class="tab-pane" id="bindsettings">
+		<table>	
+			<tr>
+				<td>Action</td><td>&nbsp;</td><td>Key</td><td>&nbsp;</td><td>Key code</td><td>&nbsp;</td><td>Action</td><td>&nbsp;</td><td>Key</td><td>&nbsp;</td><td>Key code</td><td>&nbsp;</td><td>Action</td><td>&nbsp;</td><td>Key</td><td>&nbsp;</td><td>Key code</td>
+			</tr>
+			 
+			<tr>
+				<td>Button A</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_A" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_A'></span></td>
+				<td>&nbsp;</td>
+				<td>Button B</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_B" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_B'></span></td>
+				<td>&nbsp;</td>
+				<td>Black Button</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_BLACK" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_BLACK'></span></td>
+			</tr>
+			<tr>
+				<td>Button X</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_X" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_X'></span></td>
+				<td>&nbsp;</td>
+				<td>Button Y</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_Y" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_Y'></span></td>
+				<td>&nbsp;</td>
+				<td>White Button</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_WHITE" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_WHITE'></span></td>
+			</tr>		
+			<tr>
+				<td>D-pad Up</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_DPAD_UP" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_DPAD_UP'></span></td>
+				<td>&nbsp;</td>
+				<td>D-pad Down</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_DPAD_DOWN" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_DPAD_DOWN'></span></td>
+				<td>&nbsp;</td>
+				<td>Start Button</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_START" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_START'></span></td>
+			</tr>
+			<tr>
+				<td>D-pad Left</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_DPAD_LEFT" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_DPAD_LEFT'></span></td>
+				<td>&nbsp;</td>
+				<td>D-pad Right</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_DPAD_RIGHT" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_DPAD_RIGHT'></span></td>
+				<td>&nbsp;</td>
+				<td>Back Button</td><td>&nbsp;</td><td><input type="text" id="c-KEY_BUTTON_BACK" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-KEY_BUTTON_BACK'></span></td>
+			</tr>
+			<tr>
+				<td>Volume up</td><td>&nbsp;</td><td><input type="text" id="c-ACTION_VOLUME_UP" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-ACTION_VOLUME_UP'></span></td>
+				<td>&nbsp;</td>
+				<td>Volume Down</td><td>&nbsp;</td><td><input type="text" id="c-ACTION_VOLUME_DOWN" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-ACTION_VOLUME_DOWN'></span></td>
+				<td>&nbsp;</td>
+				<td>Mute</td><td>&nbsp;</td><td><input type="text" id="c-ACTION_MUTE" class="keyboardcontroller"></td><td>&nbsp;</td><td><span id='kc-c-ACTION_MUTE'></span></td>
+			</tr>
+		</table>
+	  
+	  </div>
+	</div>
+  </div>
+  <div class="modal-footer">
+          <a href="#" class="btn" onclick="javascript:$('#KeyboardControl').modal('hide')">Close</a>
+  </div>
+</div>
+
+
+</body>
+</html>
