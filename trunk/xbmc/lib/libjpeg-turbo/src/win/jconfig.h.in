@@ -39,6 +39,8 @@ typedef signed int INT32;
 
 #endif /* JPEG_INTERNALS */
 
+#define NO_GETENV
+
 #define jcopy_block_row tb_jcopy_block_row
 #define jcopy_sample_rows tb_jcopy_sample_rows
 #define jdiv_round_up tb_jdiv_round_up
