@@ -37,7 +37,7 @@
 		<control type="button" id="90107">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>31251</label>
-			<onclick>ActivateWindow(VideoLibrary,Plugins,return)</onclick>
+			<onclick>ActivateWindow(VideoPlugins,Plugins,return)</onclick>
 			<visible>Library.HasContent(Video)</visible>
 		</control>
 		<control type="button" id="90108">
