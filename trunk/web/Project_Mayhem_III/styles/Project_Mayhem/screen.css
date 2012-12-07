@@ -12,6 +12,11 @@ body
     border : 0;
 }	
 
+a
+{
+    outline: none;
+}
+
 #SiteContainer
 { 
     margin : auto;
@@ -55,22 +60,7 @@ div.SiteBackgroundConfiguration
         float : left;
     
     }
-    
-    
-        #SiteContainer #SiteLeftContainer #SiteInfoContainer div
-        { 
-            position : absolute;
-            
-            width : 183px;
-            height : 98px;
-            
-            top : 38px;
-            left : 64px;
-            
-            background-image : url('images/InfoLogo.png');
-
-        }
-    
+        
     
     
         #SiteContainer #SiteLeftContainer #SiteMenuContainer
@@ -78,8 +68,8 @@ div.SiteBackgroundConfiguration
             position : absolute;
             width : 200px;
             height : 330px;
-            top : 140px;
-            left : 70px;
+            top : 150px;
+            left : 40px;
 
             /* Fix for buggy IE */
             font-size : 1px;        
@@ -95,9 +85,9 @@ div.SiteBackgroundConfiguration
                 #SiteContainer #SiteLeftContainer #SiteMenuContainer ul li a
                 {
                     display: block;
-                    margin : 0px 0px 13px 0px;
-                    width: 169px;
-                    height : 32px;
+                    margin : 0px 0px 2px 0px;
+                    width: 220px;
+                    height : 34px;
                 }
     
                     #SiteContainer #SiteLeftContainer #SiteMenuContainer ul li a span
@@ -484,6 +474,7 @@ div.SiteBackgroundConfiguration
                     height : 25px;
                     left : 16px;
                     top : 0px;
+                    background: none;
                 }   
                 #SiteContainer #SiteLeftContainer #SiteVolumeContainer ul li.vol10 a:hover
 		{                   
@@ -623,10 +614,10 @@ div.SiteBackgroundConfiguration
         {
             
             position : absolute;
-            width : 310px;
-            height : 47px;
-            left : 55px;
-            top : 2px;
+            width : 200px;
+            height : 40px;
+            left : 0px;
+            top : 4px;
         }
         
         
@@ -646,23 +637,23 @@ div.SiteBackgroundConfiguration
         {
             position : absolute;
             width : 685px;
-            height : 420px;
+            height : 430px;
             left : 8px;
-            top : 56px;
+            top : 60px;
             
             float : left;
             
             color : #FFFFFF;
             
             overflow : auto;
-            scrollbar-base-color : #091C20;
+            scrollbar-base-color : #c7c7c7;
             scrollbar-3dlight-color : #000000;
-            scrollbar-arrow-color : #FFFFFF;
+            scrollbar-arrow-color : #FF00000;
             scrollbar-darkshadow-color : #000000;
-            scrollbar-face-color : #324A51;
-            scrollbar-highlight-color : #324A51;
-            scrollbar-shadow-color : #324A51;
-            scrollbar-track-color : #000000;  
+            scrollbar-face-color : #bdbdbd;
+            scrollbar-highlight-color : #bdbdbd;
+            scrollbar-shadow-color : #bdbdbd;
+            scrollbar-track-color : #8b8b8b;  
 
 
         }
@@ -764,18 +755,13 @@ div.SiteBackgroundConfiguration
                     }
 
 
-                    #SiteContainer #SiteRightContainer #SiteContentContainer #ItemList li div.FileName
+                    #SiteContainer #SiteRightContainer #SiteContentContainer #ItemList li div.FileName a
                     {
-                        float : left ;
+                        font-family : Trebuchet MS, Verdana, Arial, Helvetica;
+                        font-size : 16px;
+                        color : #ffffff;
+                        text-decoration : none;
                     }
-
-                        #SiteContainer #SiteRightContainer #SiteContentContainer #ItemList li div.FileName a
-                        {
-                            font-family : Trebuchet MS, Verdana, Arial, Helvetica;
-                            font-size : 16px;
-                            color : #ffffff;
-                            text-decoration : none;
-                        }
 
 
                     #SiteContainer #SiteRightContainer #SiteContentContainer #ItemList li div.AddQueue
