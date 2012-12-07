@@ -26,18 +26,18 @@
 		<control type="button" id="90105">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>744</label>
-			<onclick>ActivateWindow(VideoFiles,root)</onclick>
+			<onclick>ActivateWindow(VideoFiles,Root)</onclick>
 		</control>
 		<control type="button" id="90106">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>14022</label>
-			<onclick>ActivateWindow(VideoLibrary,root)</onclick>
+			<onclick>ActivateWindow(VideoLibrary,Root)</onclick>
 			<visible>Library.HasContent(Video)</visible>
 		</control>
 		<control type="button" id="90107">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>31251</label>
-			<onclick>ActivateWindow(VideoPlugins,Plugins,return)</onclick>
+			<onclick>ActivateWindow(VideoLibrary,Plugins,return)</onclick>
 			<visible>Library.HasContent(Video)</visible>
 		</control>
 		<control type="button" id="90108">
@@ -196,12 +196,12 @@
 		<control type="button" id="90115">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>744</label>
-			<onclick>ActivateWindow(MusicFiles,root)</onclick>
+			<onclick>ActivateWindow(MusicFiles,Root)</onclick>
 		</control>
 		<control type="button" id="90116">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>14022</label>
-			<onclick>ActivateWindow(MusicLibrary,root)</onclick>
+			<onclick>ActivateWindow(MusicLibrary,Root)</onclick>
 			<visible>Library.HasContent(Music)</visible>
 		</control>
 		<control type="button" id="90117">
