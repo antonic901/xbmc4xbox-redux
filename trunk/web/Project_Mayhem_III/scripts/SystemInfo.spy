@@ -1,0 +1,77 @@
+<html>
+<head>
+ <title> Xbox Media Center - SystemInfo</title>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <!-- <meta http-equiv="refresh" content="5">!-->
+ <link rel="shortcut icon" href="/styles/Project_Mayhem/images/ShortcutIcon.ico" type="image/x-icon" />
+ <style type="text/css">
+ body
+   {
+     font-family : Arial, Helvetica, Verdana;
+     font-size : 12px;
+     background-color : #000000;
+     color: #FFFFFF;
+     margin : 0;
+     padding : 0;
+     border : 0;
+     text-align : center;
+   }
+ </style>
+</head>
+<body>
+[[
+import xbmc
+print '<STRONG><h2>Xbox Media Center - System Informations</h2></STRONG>'
+print '<STRONG><br/>System Info:</STRONG>'
+print '<br/>Free Memory: ',xbmc.getInfoLabel('system.freememory')
+print '<br/>Time: ',xbmc.getInfoLabel('system.time')
+print '<br/>XBMC Version: ',xbmc.getInfoLabel('system.buildversion'),' Compiled: ',xbmc.getInfoLabel('system.builddate')
+print '<br/>',xbmc.getInfoLabel('system.mplayerversion')
+
+print '<br/><STRONG><br/>Temperature:</STRONG>'
+print '<br/>',xbmc.getInfoLabel('system.cputemperature')
+print '<br/>',xbmc.getInfoLabel('system.gputemperature')
+print '<br/>',xbmc.getInfoLabel('system.hddtemperature')
+print '<br/>',xbmc.getInfoLabel('system.fanspeed')
+
+print '<br/><STRONG><br/>HardDisk:</STRONG>'
+print '<br/>',xbmc.getInfoLabel('system.freespace(c)')
+print '<br/>',xbmc.getInfoLabel('system.freespace(e)')
+print '<br/>',xbmc.getInfoLabel('system.freespace(f)')
+print '<br/>',xbmc.getInfoLabel('system.freespace(g)')
+print '<br/>',xbmc.getInfoLabel('system.hddinfomodel')
+print '<br/>',xbmc.getInfoLabel('system.hddinfofirmware')
+print '<br/>',xbmc.getInfoLabel('system.hddinfoserial')
+print '<br/>',xbmc.getInfoLabel('system.hddinfopw')
+print '<br/>',xbmc.getInfoLabel('system.hddinfolockstate')
+print '<br/>',xbmc.getInfoLabel('system.hddlockkey')
+print '<br/>',xbmc.getInfoLabel('system.hddbootdate')
+print '<br/>',xbmc.getInfoLabel('system.hddcyclecount')
+
+print '<br/><STRONG><br/>DVD-ROM:</STRONG>'
+print '<br/>',xbmc.getInfoLabel('system.dvdinfomodel')
+print '<br/>',xbmc.getInfoLabel('system.dvdinfofirmware')
+
+print '<br/><STRONG><br/>Hardware:</STRONG>'
+print '<br/>',xbmc.getInfoLabel('system.xboxversion')
+print '<br/>',xbmc.getInfoLabel('system.cpufrequency')
+print '<br/>',xbmc.getInfoLabel('system.modchip')
+print '<br/>',xbmc.getInfoLabel('system.bios')
+print '<br/>',xbmc.getInfoLabel('system.avcablepackinfo')
+print '<br/>',xbmc.getInfoLabel('system.xboxserial')
+print '<br/>',xbmc.getInfoLabel('system.videoxberegion')
+print '<br/>',xbmc.getInfoLabel('system.videodvdzone')
+print '<br/>',xbmc.getInfoLabel('system.screenresolution')
+print '<br/>',xbmc.getInfoLabel('system.videoencoderinfo')
+print '<br/>',xbmc.getInfoLabel('system.kernelversion')
+print '<br/>',xbmc.getInfoLabel('system.uptime')
+print '<br/>',xbmc.getInfoLabel('system.totaluptime')
+]]
+<p/>
+<form action="0">
+	<input type="button" value="Refresh" onclick="window.location.reload()">
+	<input type="button" value="Close Window" onclick="window.close()">
+</form>
+
+</body>
+</html>

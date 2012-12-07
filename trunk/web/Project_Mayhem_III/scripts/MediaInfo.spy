@@ -1,0 +1,77 @@
+<html>
+<head>
+ <title> Xbox Media Center - MediaInfo</title>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <meta http-equiv="refresh" content="1">
+ <link rel="shortcut icon" href="/styles/Project_Mayhem/images/ShortcutIcon.ico" type="image/x-icon" />
+ <style type="text/css">
+ body
+   {
+     font-family : Arial, Helvetica, Verdana;
+     font-size : 12px;
+     background-color : #000000;
+     color: #FFFFFF;
+     margin : 0;
+     padding : 0;
+     border : 0;
+     text-align : center;
+   }
+ </style>
+</head>
+[[
+import xbmc
+import string
+player = xbmc.Player()
+print '<h3>Media Status:</h3>'
+if player.isPlaying() == 1: {
+	mediatime = player.getTime();
+	if player.isPlayingAudio() == 1: {
+		tag = player.getMusicInfoTag()
+		audiototal = player.getTotalTime()
+		min = (int)(mediatime/60)
+		seconds = (int)(mediatime%60)
+		zerofix=''
+		if (int)(seconds/10) == 0: zerofix='0'  
+		min2 = (int)(audiototal/60)
+		seconds2 = (int)(audiototal%60)
+		zerofix2=''
+		if (int)(seconds2/10) == 0: zerofix2='0' 
+		dif=audiototal-mediatime
+		min3 = (int)(dif/60)
+		seconds3 = (int)(dif%60)
+		zerofix3=''
+		if (int)(seconds3/10) == 0: zerofix3='0' 
+		artist = tag.getArtist()
+		title = tag.getTitle()
+		print '<b>Media Type:</b> <i>Audio</i> <br> <b>Artist:</b> <i>',artist,'</i><br> <b>Title:</b><i> ',title,'</i><br>'
+		print '<b>Time: </b><i> ',min,':',zerofix,seconds,' / ',min2,':',zerofix2,seconds2,' </i><br>'
+		print '<b>Remaining Time:</b><i> ',min3,':',zerofix3,seconds3,'</i><br>'
+	}
+	elif player.isPlayingVideo() == 1: {
+		vidtag = player.getVideoInfoTag()
+		vidtotal = player.getTotalTime()
+		min = (int)(mediatime/60)
+		seconds = (int)(mediatime%60)
+		zerofix=''
+		if (int)(seconds/10) == 0: zerofix='0'  
+		min2 = (int)(vidtotal/60)
+		seconds2 = (int)(vidtotal%60)
+		zerofix2=''
+		if (int)(seconds2/10) == 0: zerofix2='0' 
+		dif=vidtotal-mediatime
+		min3 = (int)(dif/60)
+		seconds3 = (int)(dif%60)
+		zerofix3=''
+		if (int)(seconds3/10) == 0: zerofix3='0'  
+		print '<b>Media Type:</b> <i>Video</i> <br> <b>Title:</b> <i>',vidtag.getTitle(),'</i><br><b>File Name:</b> <i>',player.getPlayingFile(),'</i><br>'
+		print '<b>Time: </b><i> ',min,':',zerofix,seconds,' / ',min2,':',zerofix2,seconds2,' </i><br>'
+		print '<b>Remaining Time:</b><i> ',min3,':',zerofix3,seconds3,'</i><br>'
+	}
+}
+else: {
+	print '<b><i>Currently Not Playing</i></b>' 
+}
+]]
+<br>
+<form action="0"><input type="button" value="Close Window" onclick="window.close()"></form>
+</html>
