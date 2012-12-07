@@ -128,7 +128,7 @@ IF NOT EXIST Release_LTCG\default.xbe GOTO COMPILE
   xcopy screensavers BUILD\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy visualisations BUILD\visualisations /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy system BUILD\system /E /Q /I /Y /EXCLUDE:exclude.txt
-  rem %rar% x web\Project_Mayhem_webserver*.rar build\web\
+  xcopy web\XBMC_Reloaded BUILD\web /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy media   BUILD\media   /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy plugins BUILD\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy sounds  BUILD\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
