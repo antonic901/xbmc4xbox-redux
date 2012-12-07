@@ -74,7 +74,7 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title> Xbox Media Center - Remote Control </title>
+        <title> XBMC - Remote Control </title>
         <link href="styles/Project_Mayhem/screen.css" rel="stylesheet" type="text/css" />
         <link rel="shortcut icon" href="/styles/Project_Mayhem/images/ShortcutIcon.ico" type="image/x-icon" />        
 
@@ -107,8 +107,8 @@
                         <li class="Pause"><a href="/xbmcCmds/xbmcForm?command=pause" target="CommandFrame"><span>Pause</span></a></li>
                         <li class="Previous"><a href="/xbmcCmds/xbmcForm?command=previous" target="CommandFrame"><span>Previous</span></a></li>
                         <li class="Next"><a href="/xbmcCmds/xbmcForm?command=next" target="CommandFrame"><span>Next</span></a></li>
-                        <li class="SkipForward"><a href="/scripts/seek.spy?seek=5" target="CommandFrame"><span>Skip Forward</span></a></li>
-                        <li class="SkipBackward"><a href="/scripts/seek.spy?seek=-5" target="CommandFrame"><span>Skip Backward</span></a></li>
+                        <li class="SkipForward"><a href="/xbmcCmds/xbmcHttp?command=SeekPercentageRelative(5)" target="CommandFrame"><span>Skip Forward</span></a></li>
+                        <li class="SkipBackward"><a href="/xbmcCmds/xbmcHttp?command=SeekPercentageRelative(-5)" target="CommandFrame"><span>Skip Backward</span></a></li>
                     </ul>
                 </div>
             
@@ -123,7 +123,7 @@
                             </ul>
                         </li>
 						<li class="Info"><a href="default.asp?DisplayInfo=true"><span>Info</span></a></li>                  
-						<li class="Configuration"><a href="default.asp?DisplayConfiguration=true"><span>Configuration</span></a></li>
+						<li class="Configuration"><a href="default.asp?DisplayConfiguration=true&amp;page=bookmarks"><span>Configuration</span></a></li>
 						<li class="Dash"><a href="/xbmcCmds/xbmcForm?command=exit" target="CommandFrame"><span>Dashboard</span></a></li>
 						<li class="Reboot"><a href="/xbmcCmds/xbmcForm?command=restart" target="CommandFrame"><span>Reboot</span></a></li>
 						<li class="Shutdown"><a href="/xbmcCmds/xbmcForm?command=shutdown" target="CommandFrame"><span>Shutdown</span></a></li>
@@ -177,11 +177,7 @@
     
      */
     
-    write("<a href='default.asp?DisplayConfiguration=true&amp;page=bookmarks'>bookmarks</a> \n");
-    /*
-	write("<a href='default.asp?DisplayConfiguration=true&amp;page=options'>xbmc options</a> \n");
-	*/
-    write("<a href='default.asp?DisplayConfiguration=true&amp;page=load_save'>load / save</a> \n");
+    write("<a href='default.asp?DisplayConfiguration=true&amp;page=bookmarks'>Sources</a> \n");
 
     write("<br />\n");
     write("<br />\n");
@@ -271,12 +267,12 @@
     
         /* Add new Bookmark button */
         write("<form name='new_bookmark' method='post' action='default.asp?DisplayConfiguration=true&amp;page=addbookmark'>\n");
-        write("  <input type='submit' name='addnewbookmark' value='Add new bookmark'><br>\n");
+        write("  <input type='submit' name='addnewbookmark' value='Add new source'><br>\n");
         write("</form>\n");
     
         /* Display Music Bookmarks */
         write("<form name='music_bookmarks' method='post' action='default.asp?DisplayConfiguration=true&amp;page=editbookmark&amp;type=music'>\n");
-        write("  Music Bookmarks:<br>\n");
+        write("<br/>Music Sources:<br>\n");
         write("  <input type='submit' name='action' value='edit'>\n");
         write("  <input type='submit' name='action' value='remove'>\n");
         write("  <select name='position'>\n");
@@ -290,7 +286,7 @@
     
         /* Display Picture Bookmarks */
         write("<form name='picture_bookmarks' method='post' action='default.asp?DisplayConfiguration=true&amp;page=editbookmark&amp;type=pictures'>\n");
-        write("Picture Bookmarks:<br>\n");
+        write("<br/>Picture Sources:<br>\n");
         write("  <input type='submit' name='action' value='edit'>\n");
         write("  <input type='submit' name='action' value='remove'>\n");
         write("  <select name='position'>\n");
@@ -304,7 +300,7 @@
     
         /* Display Video Bookmarks */
         write("<form name='video_bookmarks' method='post' action='default.asp?DisplayConfiguration=true&amp;page=editbookmark&amp;type=video'>\n");
-        write("Video Bookmarks:<br>\n");
+        write("<br/>Video Sources:<br>\n");
         write("  <input type='submit' name='action' value='edit'>\n");
         write("  <input type='submit' name='action' value='remove'>\n");
         write("  <select name='position'>\n");
@@ -314,11 +310,10 @@
           write("    <option value=" + i + ">" + xbmcCfgGetBookmark("video", "name", i) + "</option>\n");
         }
         write("  </select>\n");
-        write("</form>\n");
-    
+        write("</form>\n");    
         /* Display File Bookmarks */
         write("<form name='file_bookmarks' method='post' action='default.asp?DisplayConfiguration=true&amp;page=editbookmark&amp;type=files'>\n");
-        write("File Bookmarks:<br>\n");
+        write("<br/>File Sources:<br>\n");
         write("  <input type='submit' name='action' value='edit'>\n");
         write("  <input type='submit' name='action' value='remove'>\n");
         write("  <select name='position'>\n");
@@ -332,7 +327,7 @@
     
         /* Display Program Bookmarks */
         write("<form name='program_bookmarks' method='post' action='default.asp?DisplayConfiguration=true&amp;page=editbookmark&amp;type=myprograms'>\n");
-        write("Program Bookmarks:<br>\n");
+        write("<br/>Program Sources:<br>\n");
         write("  <input type='submit' name='action' value='edit'>\n");
         write("  <input type='submit' name='action' value='remove'>\n");
         write("  <select name='position'>\n");
