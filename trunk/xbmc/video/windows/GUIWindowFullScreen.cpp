@@ -645,14 +645,12 @@ bool CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMouseEvent &
     CAction action(event.m_wheel > 0 ? ACTION_ANALOG_SEEK_FORWARD : ACTION_ANALOG_SEEK_BACK, 0.5f * abs(event.m_wheel));
     return g_application.OnAction(action);
   }
-  if (g_Mouse.HasMoved())
-  { // movement - toggle the OSD
-    CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
-    if (pOSD)
-    {
-      pOSD->SetAutoClose(3000);
-      pOSD->DoModal();
-    }
+  // some other mouse action has occurred - bring up the OSD
+  CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
+  if (pOSD)
+  {
+    pOSD->SetAutoClose(3000);
+    pOSD->DoModal();
   }
   return true;
 }

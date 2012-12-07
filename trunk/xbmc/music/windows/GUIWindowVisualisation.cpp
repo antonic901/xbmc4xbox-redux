@@ -229,14 +229,12 @@ bool CGUIWindowVisualisation::OnMouseEvent(const CPoint &point, const CMouseEven
   { // no control found to absorb this click - toggle the track INFO
     return g_application.OnAction(CAction(ACTION_PAUSE));
   }
-  if (g_Mouse.HasMoved())
-  { // movement - toggle the OSD
-    CGUIDialog *pOSD = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
-    if (pOSD)
-    {
-      pOSD->SetAutoClose(3000);
-      pOSD->DoModal();
-    }
+  // some other mouse action has occurred - bring up the OSD
+  CGUIDialog *pOSD = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
+  if (pOSD)
+  {
+    pOSD->SetAutoClose(3000);
+    pOSD->DoModal();
   }
   return true;
 }
