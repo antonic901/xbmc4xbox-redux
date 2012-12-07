@@ -165,6 +165,6 @@ protected:
   static void ClearDefault(const CStdString &strType);
 
 private:
-  int m_iClickedButton;
+  int m_clickedButton;
   CContextButtons m_buttons;
 };
