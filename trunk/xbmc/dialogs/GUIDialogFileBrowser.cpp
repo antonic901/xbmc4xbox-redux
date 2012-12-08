@@ -39,6 +39,7 @@
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
+#include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace XFILE;
@@ -78,7 +79,10 @@ bool CGUIDialogFileBrowser::OnAction(const CAction &action)
 {
   if (action.GetID() == ACTION_PARENT_DIR)
   {
-    GoParentFolder();
+    if (m_vecItems->IsVirtualDirectoryRoot() && g_advancedSettings.m_bUseEvilB)
+      Close();
+    else
+      GoParentFolder();
     return true;
   }
   if ((action.GetID() == ACTION_CONTEXT_MENU || action.GetID() == ACTION_MOUSE_RIGHT_CLICK) && m_Directory->GetPath().IsEmpty())

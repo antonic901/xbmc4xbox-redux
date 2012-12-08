@@ -79,7 +79,7 @@ CGUIWindowWeather::~CGUIWindowWeather(void)
 
 bool CGUIWindowWeather::OnAction(const CAction &action)
 {
-  if (action.GetID() == ACTION_PREVIOUS_MENU)
+  if (action.GetID() == ACTION_PREVIOUS_MENU || action.GetID() == ACTION_PARENT_DIR)
   {
     g_windowManager.PreviousWindow();
     return true;
