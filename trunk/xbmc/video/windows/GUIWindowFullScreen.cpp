@@ -648,14 +648,17 @@ bool CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMouseEvent &
   {
     return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_FORWARD, 0.5f));
   }
-  // some other mouse action has occurred - bring up the OSD
-  CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
-  if (pOSD)
-  {
-    pOSD->SetAutoClose(3000);
-    pOSD->DoModal();
+  if (event.m_id || event.m_offsetX || event.m_offsetY)
+  { // some other mouse action has occurred - bring up the OSD
+    CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
+    if (pOSD)
+    {
+      pOSD->SetAutoClose(3000);
+      pOSD->DoModal();
+    }
+    return true;
   }
-  return true;
+  return false;
 }
 
 // Override of Render() - RenderFullScreen() is where the action takes place
