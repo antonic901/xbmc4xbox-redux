@@ -360,7 +360,7 @@ bool CGUIWindow::OnMouseAction(const CAction &action)
   g_graphicsContext.InvertFinalCoords(mousePoint.x, mousePoint.y);
 
   // create the mouse event
-  CMouseEvent event(action.GetID(), action.GetHoldTime(), 0, action.GetAmount(2), action.GetAmount(3));
+  CMouseEvent event(action.GetID(), action.GetHoldTime(), action.GetAmount(2), action.GetAmount(3));
   if (m_exclusiveMouseControl)
   {
     CGUIControl *child = (CGUIControl *)GetControl(m_exclusiveMouseControl);
