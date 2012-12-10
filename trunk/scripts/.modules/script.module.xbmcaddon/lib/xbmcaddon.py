@@ -29,42 +29,33 @@ class Addon:
         """
         # get root dir
         cwd = self._get_root_dir( sysargv[0] )
-        xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
-        # parse addon.xml and set all addon info
-        self._set_addon_info( xbmc.translatePath( cwd ), id )
+        parts = id.split( '.' )
 
-        # check in script .modules
-        if self._info.get( 'id', '' ) != id:
-            cwd = "Q:\scripts\.modules/%s" % ( id )
-            xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
-            # parse addon.xml and reset all addon info
-            self._set_addon_info( xbmc.translatePath( cwd ), id )
+        # search locations for the addon
+        locations = [
+            cwd,
+            "%s/%s" % (cwd, id),
+            "Q:\scripts\.modules\%s" % ( id ),
+            "plugin://%s/%s" % ( parts[ 1 ], parts[ 2 ] )
+        ]
 
-        # check to make sure we are in the right plugin dir
-        if self._info.get( 'id', '' ) != id:
-            #try using id to find correct dir
-            parts = id.split( '.' )
-            cwd = "plugin://%s/%s" % ( parts[ 1 ], parts[ 2 ] )
-            xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
-            # parse addon.xml and reset all addon info
-            self._set_addon_info( xbmc.translatePath( cwd ), id )
+        for location in locations:
+            if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
+                break
 
         # have we got the right dir now?
         if self._info.get( 'id', '' ) != id:
-            #walk plugin directories to try to find correct one
+            # walk plugin directories to try to find correct one
             base_path = os.path.dirname( xbmc.translatePath( cwd ) ) + os.sep
             for directory in os.listdir(base_path):
-                cwd = "plugin://%s/%s" % ( parts[ 1 ], directory )
-                xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
+                location = "plugin://%s/%s" % ( parts[ 1 ], directory )
                 # parse addon.xml and reset all addon info
-                self._set_addon_info( xbmc.translatePath( cwd ), id )
-                #surely we must have found it by now
-                if self._info.get( 'id', '' ) == id:
+                if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
                     break
-                    
+
         # get settings and language methods
-        self._get_methods( cwd )
-        xbmc.log( "xbmcaddon: using " + cwd, xbmc.LOGDEBUG )
+        self._get_methods( location )
+        xbmc.log( "xbmcaddon: using " + location, xbmc.LOGDEBUG )
 
     def _get_root_dir( self, path ):
         # get current working directory, we need to reset sys.argv[ 0 ] to a plugin for weather plugins as they aren't run as plugins, but they are categorized as plugins
@@ -86,6 +77,7 @@ class Addon:
             self._settings_ = None
 
     def _set_addon_info( self, cwd, id ):
+        xbmc.log( "xbmcaddon: trying " + cwd, xbmc.LOGDEBUG )
         # get source
         try:
             xml_file = os.path.join( cwd, "addon.xml" )
@@ -98,6 +90,8 @@ class Addon:
             self._info = {}
             # set info
             self._info[ "id" ] = item.getAttribute( "id" )
+            if self._info[ "id" ] != id:
+                return None
             self._info[ "name" ] = item.getAttribute( "name" )
             self._info[ "version" ] = item.getAttribute( "version" )
             self._info[ "author" ] = item.getAttribute( "provider-name" )
@@ -141,6 +135,9 @@ class Addon:
             dom.unlink()
         except:
             xbmc.log( "xbmcaddon: could not open " + xml_file, xbmc.LOGDEBUG )
+            return None
+
+        return id
 
     def getAddonInfo( self, id ):
         """
@@ -176,7 +173,10 @@ class Addon:
             example:
               - username = self.Addon.getSetting(id="username")
         """
-        return self._settings_.getSetting( id )
+        if self._settings_:
+            return self._settings_.getSetting( id )
+        else:
+            return None
 
     def setSetting( self, id, value ):
         """
