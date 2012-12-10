@@ -1411,3 +1411,11 @@ void CGUIWindowMusicBase::SetupFanart(CFileItemList& items)
   }
 }
 
+CStdString CGUIWindowMusicBase::GetStartFolder(const CStdString &dir)
+{
+  if (dir.Equals("Plugins") || dir.Equals("Addons"))
+    return "plugin://music/";
+  else if (dir.Equals("$PLAYLISTS") || dir.Equals("Playlists"))
+    return "special://musicplaylists/";
+  return "";
+}

@@ -74,87 +74,9 @@ bool CGUIWindowVideoFiles::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      // check for a passed destination path
-      CStdString strDestination = message.GetStringParam();
-      if (!strDestination.IsEmpty())
-      {
-        message.SetStringParam("");
-        g_settings.m_iVideoStartWindow = GetID();
-        CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
-        // reset directory path, as we have effectively cleared it here
-        m_history.ClearPathHistory();
-      }
-
       // is this the first time accessing this window?
-      // a quickpath overrides the a default parameter
-      if (m_vecItems->GetPath() == "?" && strDestination.IsEmpty())
-      {
-        m_vecItems->SetPath(strDestination = g_settings.m_defaultVideoSource);
-        CLog::Log(LOGINFO, "Attempting to default to: %s", strDestination.c_str());
-      }
-
-      // try to open the destination path
-      if (!strDestination.IsEmpty())
-      {
-        // open root
-        if (strDestination.Equals("$ROOT") || strDestination.Equals("Root"))
-        {
-          m_vecItems->SetPath("");
-          CLog::Log(LOGINFO, "  Success! Opening root listing.");
-        }
-        // open playlists location
-        else if (strDestination.Equals("$PLAYLISTS"))
-        {
-          m_vecItems->SetPath("special://videoplaylists/");
-          CLog::Log(LOGINFO, "  Success! Opening destination path: %s", m_vecItems->GetPath().c_str());
-        }
-        else if (strDestination.Equals("Plugins"))
-          m_vecItems->SetPath("plugin://video/");
-        else
-        {
-          // default parameters if the jump fails
-          m_vecItems->SetPath("");
-
-          bool bIsSourceName = false;
-
-          SetupShares();
-          VECSOURCES shares;
-          m_rootDir.GetSources(shares);
-          int iIndex = CUtil::GetMatchingSource(strDestination, shares, bIsSourceName);
-          if (iIndex > -1)
-          {
-            bool bDoStuff = true;
-            if (iIndex < (int)shares.size() && shares[iIndex].m_iHasLock == 2)
-            {
-              CFileItem item(shares[iIndex]);
-              if (!g_passwordManager.IsItemUnlocked(&item,"video"))
-              {
-                m_vecItems->SetPath(""); // no u don't
-                bDoStuff = false;
-                CLog::Log(LOGINFO, "  Failure! Failed to unlock destination path: %s", strDestination.c_str());
-              }
-            }
-            // set current directory to matching share
-            if (bDoStuff)
-            {
-              if (bIsSourceName)
-                m_vecItems->SetPath(shares[iIndex].strPath);
-              else
-                m_vecItems->SetPath(strDestination);
-              CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
-            }
-          }
-          else
-          {
-            CLog::Log(LOGERROR, "  Failed! Destination parameter (%s) does not match a valid source!", strDestination.c_str());
-          }
-        }
-
-        // check for network up
-        if (URIUtils::IsRemote(m_vecItems->GetPath()) && !WaitForNetwork())
-          m_vecItems->SetPath("");
-        SetHistoryForPath(m_vecItems->GetPath());
-      }
+      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
+        m_vecItems->SetPath(g_settings.m_defaultVideoSource);
 
       return CGUIWindowVideoBase::OnMessage(message);
     }
@@ -649,4 +571,27 @@ bool CGUIWindowVideoFiles::OnContextButton(int itemNumber, CONTEXT_BUTTON button
 void CGUIWindowVideoFiles::OnQueueItem(int iItem)
 {
   CGUIWindowVideoBase::OnQueueItem(iItem);
+}
+
+CStdString CGUIWindowVideoFiles::GetStartFolder(const CStdString &dir)
+{
+  SetupShares();
+  VECSOURCES shares;
+  m_rootDir.GetSources(shares);
+  bool bIsSourceName = false;
+  int iIndex = CUtil::GetMatchingSource(dir, shares, bIsSourceName);
+  if (iIndex > -1)
+  {
+    if (iIndex < (int)shares.size() && shares[iIndex].m_iHasLock == 2)
+    {
+      CFileItem item(shares[iIndex]);
+      if (!g_passwordManager.IsItemUnlocked(&item,"video"))
+        return "";
+    }
+    // set current directory to matching share
+    if (bIsSourceName)
+      return shares[iIndex].strPath;
+    return dir;
+  }
+  return CGUIWindowVideoBase::GetStartFolder(dir);
 }

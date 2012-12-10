@@ -83,80 +83,9 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_INIT:
     {
-      // check for a passed destination path
-      CStdString strDestination = message.GetStringParam();
-      if (!strDestination.IsEmpty())
-      {
-        message.SetStringParam("");
-        CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
-        m_history.ClearPathHistory();
-      }
-      // otherwise, is this the first time accessing this window?
-      else if (m_vecItems->GetPath() == "?")
-      {
-        m_vecItems->SetPath(strDestination = g_settings.m_defaultPictureSource);
-        CLog::Log(LOGINFO, "Attempting to default to: %s", strDestination.c_str());
-      }
-
-      // try to open the destination path
-      if (!strDestination.IsEmpty())
-      {
-        // open root
-        if (strDestination.Equals("$ROOT"))
-        {
-          m_vecItems->SetPath("");
-          CLog::Log(LOGINFO, "  Success! Opening root listing.");
-        }
-        else if (strDestination.Equals("Plugins"))
-          m_vecItems->SetPath("plugin://pictures/");
-        else
-        {
-          // default parameters if the jump fails
-          m_vecItems->SetPath("");
-
-          bool bIsSourceName = false;
-
-          SetupShares();
-          VECSOURCES shares;
-          m_rootDir.GetSources(shares);
-          int iIndex = CUtil::GetMatchingSource(strDestination, shares, bIsSourceName);
-          if (iIndex > -1)
-          {
-            bool bDoStuff = true;
-            if (iIndex < (int)shares.size() && shares[iIndex].m_iHasLock == 2)
-            {
-              CFileItem item(shares[iIndex]);
-              if (!g_passwordManager.IsItemUnlocked(&item,"pictures"))
-              {
-                m_vecItems->SetPath(""); // no u don't
-                bDoStuff = false;
-                CLog::Log(LOGINFO, "  Failure! Failed to unlock destination path: %s", strDestination.c_str());
-              }
-            }
-            // set current directory to matching share
-            CStdString path;
-            if (bDoStuff)
-            {
-              if (bIsSourceName)
-                path = shares[iIndex].strPath;
-              else
-                path = strDestination;
-              URIUtils::RemoveSlashAtEnd(path);
-              m_vecItems->SetPath(path);
-              CLog::Log(LOGINFO, "  Success! Opened destination path: %s", strDestination.c_str());
-            }
-          }
-          else
-          {
-            CLog::Log(LOGERROR, "  Failed! Destination parameter (%s) does not match a valid share!", strDestination.c_str());
-          }
-        }
-
-        // check for network up
-        if (URIUtils::IsRemote(m_vecItems->GetPath()) && !WaitForNetwork())
-          m_vecItems->SetPath("");
-        SetHistoryForPath(m_vecItems->GetPath());
-      }
+      // is this the first time accessing this window?
+      if (m_vecItems->GetPath() == "?" || message.GetStringParam())
+        m_vecItems->SetPath(g_settings.m_defaultPictureSource);
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
@@ -717,3 +646,27 @@ void CGUIWindowPictures::OnInfo(int itemNumber)
   }
 }
 
+CStdString CGUIWindowPictures::GetStartFolder(const CStdString &dir)
+{
+  if (dir.Equals("Plugins") || dir.Equals("Addons"))
+    return "plugin://pictures/";
+
+  SetupShares();
+  VECSOURCES shares;
+  m_rootDir.GetSources(shares);
+  bool bIsSourceName = false;
+  int iIndex = CUtil::GetMatchingSource(dir, shares, bIsSourceName);
+  if (iIndex > -1)
+  {
+    if (iIndex < (int)shares.size() && shares[iIndex].m_iHasLock == 2)
+    {
+      CFileItem item(shares[iIndex]);
+      if (!g_passwordManager.IsItemUnlocked(&item,"pictures"))
+        return "";
+    }
+    if (bIsSourceName)
+      return shares[iIndex].strPath;
+    return dir;
+  }
+  return CGUIMediaWindow::GetStartFolder(dir);
+}

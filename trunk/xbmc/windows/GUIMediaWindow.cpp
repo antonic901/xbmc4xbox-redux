@@ -146,7 +146,7 @@ bool CGUIMediaWindow::OnAction(const CAction &action)
 {
   if (action.GetID() == ACTION_PARENT_DIR)
   {
-    if (m_vecItems->IsVirtualDirectoryRoot() && g_advancedSettings.m_bUseEvilB)
+    if ((m_vecItems->IsVirtualDirectoryRoot() || m_vecItems->GetPath() == m_startDirectory) && g_advancedSettings.m_bUseEvilB)
       g_windowManager.PreviousWindow();
     else
       GoParentFolder();
@@ -440,6 +440,31 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
         m_guiState->SetNextSortOrder();
       UpdateFileList();
       return true;
+    }
+    break;
+    case GUI_MSG_WINDOW_INIT:
+    {
+      CStdString dir = message.GetStringParam(0);
+      const CStdString &ret = message.GetStringParam(1);
+      bool returning = ret.CompareNoCase("return") == 0;
+      if (!dir.IsEmpty())
+      {
+        m_history.ClearPathHistory();
+        // ensure our directory is valid
+        dir = GetStartFolder(dir);
+        if (!returning || m_vecItems->GetPath().Left(dir.GetLength()) != dir)
+        { // we're not returning to the same path, so set our directory to the requested path
+          m_vecItems->SetPath(dir);
+        }
+        // check for network up
+        if (URIUtils::IsRemote(m_vecItems->GetPath()) && !WaitForNetwork())
+          m_vecItems->SetPath("");
+        SetHistoryForPath(m_vecItems->GetPath());
+      }
+      if (message.GetParam1() != WINDOW_INVALID)
+      { // first time to this window - make sure we set the root path
+        m_startDirectory = returning ? dir : "";
+      }
     }
     break;
   }
@@ -1473,4 +1498,11 @@ void CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &
     if (pos != CStdString::npos)
       items.Add(item);
   }
+}
+
+CStdString CGUIMediaWindow::GetStartFolder(const CStdString &dir)
+{
+  if (dir.Equals("$ROOT") || dir.Equals("Root"))
+    return "";
+  return dir;
 }
