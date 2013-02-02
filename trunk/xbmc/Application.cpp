@@ -431,15 +431,13 @@ void CApplication::InitBasicD3D()
 }
 
 // This function does not return!
-void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork)
+void CApplication::FatalErrorHandler(bool MapDrives, bool InitNetwork)
 {
   // XBMC couldn't start for some reason...
   // g_LoadErrorStr should contain the reason
   CLog::Log(LOGWARNING, "Emergency recovery console starting...");
 
   bool HaveGamepad = true; // should always have the gamepad when we get here
-  if (InitD3D)
-    InitBasicD3D();
 
   if (m_splash)
   {
@@ -929,13 +927,13 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGINFO, "Drives are mapped");
 
-  CLog::Log(LOGNOTICE, "load settings...");
-  g_LoadErrorStr = "Unable to load settings";
-  
+  CLog::Log(LOGNOTICE, "load settings...");  
   m_bAllSettingsLoaded = g_settings.Load(m_bXboxMediacenterLoaded, m_bSettingsLoaded);
   if (!m_bAllSettingsLoaded)
-    FatalErrorHandler(true, true, true);
-
+  {
+    g_LoadErrorStr = "Unable to load settings";
+    FatalErrorHandler(true, true);
+  }
   update_emu_environ();//apply the GUI settings
 
   // Check for WHITE + Y for forced Error Handler (to recover if something screwy happens)
@@ -943,7 +941,7 @@ HRESULT CApplication::Create(HWND hWnd)
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_WHITE])
   {
     g_LoadErrorStr = "Key code detected for Error Recovery mode";
-    FatalErrorHandler(true, true, true);
+    FatalErrorHandler(true, true);
   }
 #endif
 
@@ -1035,18 +1033,57 @@ HRESULT CApplication::Create(HWND hWnd)
   }
 #endif
 
-  CStdString strHomePath = "Q:";
-  CLog::Log(LOGINFO, "Checking skinpath existence, and existence of keymap.xml:%s...", (strHomePath + "\\skin").c_str());
+  // initialize our charset converter
+  g_charsetConverter.reset();
 
-  CStdString systemKeymapPath = "Q:\\system\\Keymap.xml";
-  CStdString userKeymapPath = g_settings.GetUserDataItem("Keymap.xml");
-#ifdef _XBOX
-  if (access(strHomePath + "\\skin", 0) || (access(systemKeymapPath.c_str(), 0) && access(userKeymapPath.c_str(), 0)))
+  // Load the langinfo to have user charset <-> utf-8 conversion
+  CStdString strLanguage = g_guiSettings.GetString("locale.language");
+  strLanguage[0] = toupper(strLanguage[0]);
+
+  // Load the langinfo to have user charset <-> utf-8 conversion
+  CStdString strLangInfoPath;
+  strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
+
+  CLog::Log(LOGINFO, "load language info file:%s", strLangInfoPath.c_str());
+  g_langInfo.Load(strLangInfoPath);
+
+  CStdString strKeyboardLayoutConfigurationPath;
+  strKeyboardLayoutConfigurationPath.Format("Q:\\language\\%s\\keyboardmap.xml", g_guiSettings.GetString("locale.language"));
+  CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
+  g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
+
+  CStdString strLanguagePath;
+  strLanguagePath.Format("special://xbmc/language/%s/strings.xml", strLanguage.c_str());
+
+  CLog::Log(LOGINFO, "load language file:%s", strLanguagePath.c_str());
+  if (!g_localizeStrings.Load(strLanguagePath))
   {
-    g_LoadErrorStr = "Unable to find skin or Keymap.xml.  Make sure you have System/Keymap.xml and Skin/ folder";
-    FatalErrorHandler(true, false, true);
+    g_LoadErrorStr.Format("Unable to load language file: %s", strLanguagePath.c_str());
+    FatalErrorHandler(false, true);
   }
-#endif
+
+  CLog::Log(LOGINFO, "load keymapping");
+  if (!CButtonTranslator::GetInstance().Load())
+  {
+    g_LoadErrorStr = "Unable to load keymaps";
+    FatalErrorHandler(false, true);
+  }
+
+  // check the skin file for testing purposes
+  CStdString strSkinBase = "special://xbmc/skin/";
+  CStdString strSkinPath = strSkinBase + g_guiSettings.GetString("lookandfeel.skin");
+  CLog::Log(LOGINFO, "Checking skin version of: %s", g_guiSettings.GetString("lookandfeel.skin").c_str());
+  if (!g_SkinInfo.Check(strSkinPath))
+  {
+    // reset to the default skin (DEFAULT_SKIN)
+    CLog::Log(LOGINFO, "The above skin isn't suitable - checking the version of the default: %s", DEFAULT_SKIN);
+    strSkinPath = strSkinBase + DEFAULT_SKIN;
+    if (!g_SkinInfo.Check(strSkinPath))
+    {
+      g_LoadErrorStr.Format("No suitable skin version found.\nWe require at least version %5.4f \n", g_SkinInfo.GetMinVersion());
+      FatalErrorHandler(false, true);
+    }
+  }
 
   if (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
   {
@@ -1106,54 +1143,9 @@ HRESULT CApplication::Create(HWND hWnd)
   // set GUI res and force the clear of the screen
   g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE, true);
 
-  // initialize our charset converter
-  g_charsetConverter.reset();
-
-  // Load the langinfo to have user charset <-> utf-8 conversion
-  CStdString strLanguage = g_guiSettings.GetString("locale.language");
-  strLanguage[0] = toupper(strLanguage[0]);
-
-  // Load the langinfo to have user charset <-> utf-8 conversion
-  CStdString strLangInfoPath;
-  strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
-
-  CLog::Log(LOGINFO, "load language info file:%s", strLangInfoPath.c_str());
-  g_langInfo.Load(strLangInfoPath);
-
-  CStdString strKeyboardLayoutConfigurationPath;
-  strKeyboardLayoutConfigurationPath.Format("Q:\\language\\%s\\keyboardmap.xml", g_guiSettings.GetString("locale.language"));
-  CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
-  g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
-
   m_splash = new CSplash("Q:\\media\\splash.png");
   m_splash->Start();
 
-  CStdString strLanguagePath;
-  strLanguagePath.Format("special://xbmc/language/%s/strings.xml", strLanguage.c_str());
-
-  CLog::Log(LOGINFO, "load language file:%s", strLanguagePath.c_str());
-  if (!g_localizeStrings.Load(strLanguagePath))
-    FatalErrorHandler(false, false, true);
-
-  CLog::Log(LOGINFO, "load keymapping");
-  if (!CButtonTranslator::GetInstance().Load())
-    FatalErrorHandler(false, false, true);
-
-  // check the skin file for testing purposes
-  CStdString strSkinBase = "special://xbmc/skin/";
-  CStdString strSkinPath = strSkinBase + g_guiSettings.GetString("lookandfeel.skin");
-  CLog::Log(LOGINFO, "Checking skin version of: %s", g_guiSettings.GetString("lookandfeel.skin").c_str());
-  if (!g_SkinInfo.Check(strSkinPath))
-  {
-    // reset to the default skin (DEFAULT_SKIN)
-    CLog::Log(LOGINFO, "The above skin isn't suitable - checking the version of the default: %s", DEFAULT_SKIN);
-    strSkinPath = strSkinBase + DEFAULT_SKIN;
-    if (!g_SkinInfo.Check(strSkinPath))
-    {
-      g_LoadErrorStr.Format("No suitable skin version found.\nWe require at least version %5.4f \n", g_SkinInfo.GetMinVersion());
-      FatalErrorHandler(false, false, true);
-    }
-  }
   int iResolution = g_graphicsContext.GetVideoResolution();
   CLog::Log(LOGINFO, "GUI format %ix%i %s",
             g_settings.m_ResInfo[iResolution].iWidth,

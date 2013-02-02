@@ -255,7 +255,7 @@ protected:
 
   void SetHardwareVolume(long hardwareVolume);
   void UpdateLCD();
-  void FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork);
+  void FatalErrorHandler(bool MapDrives, bool InitNetwork);
   void InitBasicD3D();
 
   bool PlayStack(const CFileItem& item, bool bRestart);
