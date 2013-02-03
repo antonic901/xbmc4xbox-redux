@@ -33,11 +33,14 @@ class Addon:
 
         # search locations for the addon
         locations = [
-            cwd,
-            "%s/%s" % (cwd, id),
-            "Q:\scripts\.modules\%s" % ( id ),
-            "plugin://%s/%s" % ( parts[ 1 ], parts[ 2 ] )
+            cwd, # current directory
+            "%s/%s" % (cwd, id), # subdirectory in current directory
+            "Q:\scripts\.modules\%s" % ( id ) # script modules
         ]
+
+        # plugin.music|video|etc.something addons
+        if len( parts ) == 3 and parts[ 0 ] == "plugin":
+            locations.append("plugin://%s/%s" % ( parts[ 0 ], parts[ 1 ] ))
 
         for location in locations:
             if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
