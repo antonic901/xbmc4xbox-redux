@@ -2361,6 +2361,7 @@ bool CApplication::OnKey(CKey& key)
     }
     if (useKeyboard)
     {
+      action = CAction(0); // reset our action
       if (key.GetFromHttpApi())
         action = CAction(key.GetButtonCode() != KEY_INVALID ? key.GetButtonCode() : 0, key.GetUnicode());
       else
