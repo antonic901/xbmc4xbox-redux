@@ -2316,6 +2316,10 @@ bool CApplication::OnKey(CKey& key)
 #ifdef HAS_SDL
     g_Keyboard.Reset();
 #endif
+
+    if (!key.IsAnalogButton())
+      CLog::Log(LOGDEBUG, "%s: %i pressed, trying fullscreen info action %s", __FUNCTION__, (int) key.GetButtonCode(), action.GetName().c_str());
+
     if (OnAction(action))
       return true;
 
@@ -2369,6 +2373,9 @@ bool CApplication::OnKey(CKey& key)
 #ifdef HAS_SDL
       g_Keyboard.Reset();
 #endif
+
+      CLog::Log(LOGDEBUG, "%s: %i pressed, trying keyboard action %i", __FUNCTION__, (int) key.GetButtonCode(), action.GetID());
+
       if (OnAction(action))
         return true;
       // failed to handle the keyboard action, drop down through to standard action
@@ -2382,7 +2389,7 @@ bool CApplication::OnKey(CKey& key)
       action = CButtonTranslator::GetInstance().GetAction(iWin, key);
   }
   if (!key.IsAnalogButton())
-    CLog::Log(LOGDEBUG, "%s: %i pressed, action is %i", __FUNCTION__, (int) key.GetButtonCode(), action.GetID());
+    CLog::Log(LOGDEBUG, "%s: %i pressed, action is %s", __FUNCTION__, (int) key.GetButtonCode(), action.GetName().c_str());
 
   //  Play a sound based on the action
   g_audioManager.PlayActionSound(action);
