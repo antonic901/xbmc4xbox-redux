@@ -2328,7 +2328,7 @@ bool CApplication::OnKey(CKey& key)
     if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
     {
       // if player is in some sort of menu, (ie DVDMENU) map buttons differently
-      action = CButtonTranslator::GetInstance().GetAction(WINDOW_DIALOG_KEYBOARD, key);
+      action = CButtonTranslator::GetInstance().GetAction(WINDOW_VIDEO_MENU, key);
     }
     else
     {
