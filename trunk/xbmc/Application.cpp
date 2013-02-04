@@ -431,13 +431,15 @@ void CApplication::InitBasicD3D()
 }
 
 // This function does not return!
-void CApplication::FatalErrorHandler(bool MapDrives, bool InitNetwork)
+void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork)
 {
   // XBMC couldn't start for some reason...
   // g_LoadErrorStr should contain the reason
   CLog::Log(LOGWARNING, "Emergency recovery console starting...");
 
   bool HaveGamepad = true; // should always have the gamepad when we get here
+  if (InitD3D)
+    InitBasicD3D();
 
   if (m_splash)
   {
@@ -927,13 +929,13 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGINFO, "Drives are mapped");
 
-  CLog::Log(LOGNOTICE, "load settings...");  
+  CLog::Log(LOGNOTICE, "load settings...");
+  g_LoadErrorStr = "Unable to load settings";
+  
   m_bAllSettingsLoaded = g_settings.Load(m_bXboxMediacenterLoaded, m_bSettingsLoaded);
   if (!m_bAllSettingsLoaded)
-  {
-    g_LoadErrorStr = "Unable to load settings";
-    FatalErrorHandler(true, true);
-  }
+    FatalErrorHandler(true, true, true);
+
   update_emu_environ();//apply the GUI settings
 
   // Check for WHITE + Y for forced Error Handler (to recover if something screwy happens)
@@ -941,7 +943,7 @@ HRESULT CApplication::Create(HWND hWnd)
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_WHITE])
   {
     g_LoadErrorStr = "Key code detected for Error Recovery mode";
-    FatalErrorHandler(true, true);
+    FatalErrorHandler(true, true, true);
   }
 #endif
 
@@ -1057,17 +1059,11 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGINFO, "load language file:%s", strLanguagePath.c_str());
   if (!g_localizeStrings.Load(strLanguagePath))
-  {
-    g_LoadErrorStr.Format("Unable to load language file: %s", strLanguagePath.c_str());
-    FatalErrorHandler(false, true);
-  }
+    FatalErrorHandler(true, false, true);
 
   CLog::Log(LOGINFO, "load keymapping");
   if (!CButtonTranslator::GetInstance().Load())
-  {
-    g_LoadErrorStr = "Unable to load keymaps";
-    FatalErrorHandler(false, true);
-  }
+    FatalErrorHandler(true, false, true);
 
   // check the skin file for testing purposes
   CStdString strSkinBase = "special://xbmc/skin/";
@@ -1081,7 +1077,7 @@ HRESULT CApplication::Create(HWND hWnd)
     if (!g_SkinInfo.Check(strSkinPath))
     {
       g_LoadErrorStr.Format("No suitable skin version found.\nWe require at least version %5.4f \n", g_SkinInfo.GetMinVersion());
-      FatalErrorHandler(false, true);
+      FatalErrorHandler(true, false, true);
     }
   }
 
@@ -1133,6 +1129,7 @@ HRESULT CApplication::Create(HWND hWnd)
       }
     }
   }
+
   g_graphicsContext.SetD3DDevice(m_pd3dDevice);
   g_graphicsContext.CaptureStateBlock();
   // set filters
