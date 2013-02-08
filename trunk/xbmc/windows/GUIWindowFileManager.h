@@ -41,6 +41,7 @@ public:
   virtual ~CGUIWindowFileManager(void);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
   virtual void Render();
   virtual bool OnFileCallback(void* pContext, int ipercent, float avgSpeed);
   const CFileItem &CurrentDirectory(int indx) const;

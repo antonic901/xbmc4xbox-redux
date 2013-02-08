@@ -34,7 +34,7 @@ public:
   virtual void DoModal(int iWindowID = WINDOW_INVALID, const CStdString &param = "");  ///< Override that just starts the window up.  Needs Close() to close it
   void StartModal(bool threadSafe = false);  ///< Thread safe routine wrapping DoModal() if set to true
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
   virtual void OnWindowLoaded();
   void Progress();
   void ProgressKeys();

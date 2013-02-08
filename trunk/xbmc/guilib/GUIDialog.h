@@ -47,6 +47,8 @@ public:
   virtual void DoModal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal
   void DoModalThreadSafe(); // threadsafe version of DoModal
   void Show(); // modeless
+  
+  virtual bool OnBack(int actionID);
 
   virtual void Close(bool forceClose = false);
   virtual bool IsDialogRunning() const { return m_bRunning; };

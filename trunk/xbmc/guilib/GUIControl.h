@@ -82,6 +82,7 @@ public:
   virtual void OnDown();
   virtual void OnLeft();
   virtual void OnRight();
+  virtual bool OnBack();
   virtual void OnNextControl();
   virtual void OnPrevControl();
   virtual void OnFocus() {};
@@ -149,7 +150,8 @@ public:
   virtual float GetYPosition() const;
   virtual float GetWidth() const;
   virtual float GetHeight() const;
-  virtual void SetNavigation(int up, int down, int left, int right);
+
+  virtual void SetNavigation(int up, int down, int left, int right, int back = 0);
   virtual void SetTabNavigation(int next, int prev);
 
   /*! \brief Set actions to perform on navigation
@@ -158,17 +160,20 @@ public:
    \param down vector of CGUIActionDescriptors to execute on down
    \param left vector of CGUIActionDescriptors to execute on left
    \param right vector of CGUIActionDescriptors to execute on right
+   \param back vector of CGUIActionDescriptors to execute on back
    \param replace Actions are set only if replace is true or there is no previously set action.  Defaults to true
    \sa SetNavigation, ExecuteActions
    */
   virtual void SetNavigationActions(const std::vector<CGUIActionDescriptor> &up, const std::vector<CGUIActionDescriptor> &down,
-                                    const std::vector<CGUIActionDescriptor> &left, const std::vector<CGUIActionDescriptor> &right, bool replace = true);
+                                    const std::vector<CGUIActionDescriptor> &left, const std::vector<CGUIActionDescriptor> &right,
+                                    const std::vector<CGUIActionDescriptor> &back, bool replace = true);
   void ExecuteActions(const std::vector<CGUIActionDescriptor> &actions);
 
   int GetControlIdUp() const { return m_controlUp;};
   int GetControlIdDown() const { return m_controlDown;};
   int GetControlIdLeft() const { return m_controlLeft;};
   int GetControlIdRight() const { return m_controlRight;};
+  int GetControlIdBack() const { return m_controlBack; };
   virtual int GetNextControl(int direction) const;
   virtual void SetFocus(bool focus);
   virtual void SetWidth(float width);
@@ -280,12 +285,14 @@ protected:
   int m_controlRight;
   int m_controlUp;
   int m_controlDown;
+  int m_controlBack;
   int m_controlNext;
   int m_controlPrev;
   std::vector<CGUIActionDescriptor> m_leftActions;
   std::vector<CGUIActionDescriptor> m_rightActions;
   std::vector<CGUIActionDescriptor> m_upActions;
   std::vector<CGUIActionDescriptor> m_downActions;
+  std::vector<CGUIActionDescriptor> m_backActions;
   std::vector<CGUIActionDescriptor> m_nextActions;
   std::vector<CGUIActionDescriptor> m_prevActions;
 

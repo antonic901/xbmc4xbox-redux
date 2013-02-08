@@ -35,6 +35,7 @@ public:
   virtual ~CGUIPythonWindowXML(void);
   virtual bool      OnMessage(CGUIMessage& message);
   virtual bool      OnAction(const CAction &action);
+  virtual bool      OnBack(int actionID);
   virtual void      AllocResources(bool forceLoad = false);
   virtual void      FreeResources(bool forceUnLoad = false);
   virtual void      Render();
