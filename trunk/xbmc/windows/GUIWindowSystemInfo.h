@@ -29,7 +29,6 @@ public:
   CGUIWindowSystemInfo(void);
   virtual ~CGUIWindowSystemInfo(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
   virtual void FrameMove();
 private:
   #define CONTROL_BT_HDD			92

@@ -21,7 +21,6 @@
 
 #include "system.h"
 #include "settings/GUIWindowSettings.h"
-#include "GUIWindowManager.h"
 #ifdef HAS_CREDITS
 #include "Credits.h"
 #endif
@@ -35,17 +34,6 @@ CGUIWindowSettings::CGUIWindowSettings(void)
 
 CGUIWindowSettings::~CGUIWindowSettings(void)
 {
-}
-
-bool CGUIWindowSettings::OnAction(const CAction &action)
-{
-  if (action.GetID() == ACTION_PREVIOUS_MENU || action.GetID() == ACTION_PARENT_DIR)
-  {
-    g_windowManager.PreviousWindow();
-    return true;
-  }
-
-  return CGUIWindow::OnAction(action);
 }
 
 bool CGUIWindowSettings::OnMessage(CGUIMessage& message)

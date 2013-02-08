@@ -92,8 +92,6 @@ bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
 
           return bResult;
         }
-        else if (iAction == ACTION_PREVIOUS_MENU) // oh no u don't
-          return false;
         else if (iAction == ACTION_SELECT_ITEM || iAction == ACTION_MOUSE_LEFT_CLICK)
         {
           int iItem = m_viewControl.GetSelectedItem();
@@ -140,6 +138,8 @@ bool CGUIWindowLoginScreen::OnAction(const CAction &action)
   // this forces only navigation type actions to be performed.
   if (action.GetID() == ACTION_BUILT_IN_FUNCTION)
     return true;  // pretend we handled it
+  if (action.GetID() == ACTION_PREVIOUS_MENU || action.GetID() == ACTION_NAV_BACK)
+    return false; // no escape from the login window
   return CGUIWindow::OnAction(action);
 }
 

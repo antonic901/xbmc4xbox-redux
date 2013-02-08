@@ -181,8 +181,6 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryImportWatchedState = false;
   m_bVideoScannerIgnoreErrors = false;
 
-  m_bUseEvilB = true;
-
   m_iTuxBoxStreamtsPort = 31339;
   m_bTuxBoxAudioChannelSelection = false;
   m_bTuxBoxSubMenuSelection = false;
@@ -448,7 +446,6 @@ bool CAdvancedSettings::Load()
   XMLUtils::GetInt(pRootElement, "playlistretries", m_playlistRetries, -1, 5000);
   XMLUtils::GetInt(pRootElement, "playlisttimeout", m_playlistTimeout, 0, 5000);
 
-  XMLUtils::GetBoolean(pRootElement,"rootovershoot",m_bUseEvilB);
   XMLUtils::GetBoolean(pRootElement,"virtualshares", m_bVirtualShares);
   XMLUtils::GetBoolean(pRootElement,"navigatevirtualkeyboard", m_bNavVKeyboard);
 
