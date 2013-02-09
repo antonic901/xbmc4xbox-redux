@@ -144,7 +144,7 @@ CStdString CGUIToggleButtonControl::GetLabel() const
   return CGUIButtonControl::GetLabel();
 }
 
-void CGUIToggleButtonControl::SetAltClickActions(const vector<CGUIActionDescriptor> &clickActions)
+void CGUIToggleButtonControl::SetAltClickActions(const CGUIAction &clickActions)
 {
   m_selectButton.SetClickActions(clickActions);
 }

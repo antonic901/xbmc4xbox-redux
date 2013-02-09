@@ -144,25 +144,6 @@ bool CGUIControlFactory::GetDimension(const TiXmlNode *pRootNode, const char* st
   return g_SkinInfo.ResolveConstant(pNode->FirstChild()->Value(), value);
 }
 
-bool CGUIControlFactory::GetMultipleString(const TiXmlNode* pRootNode, const char* strTag, std::vector<CGUIActionDescriptor>& vecStringValue)
-{
-  const TiXmlNode* pNode = pRootNode->FirstChild(strTag );
-  if (!pNode) return false;
-  vecStringValue.clear();
-  bool bFound = false;
-  while (pNode)
-  {
-    CGUIActionDescriptor action;
-    if (CGUIControlFactory::GetAction((const TiXmlElement*) pNode, action))
-    {
-      vecStringValue.push_back(action);
-      bFound = true;
-    }
-    pNode = pNode->NextSibling(strTag);
-  }
-  return bFound;
-}
-
 bool CGUIControlFactory::GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringPath)
 {
   const TiXmlNode* pNode = pRootNode->FirstChild(strTag );
@@ -170,26 +151,6 @@ bool CGUIControlFactory::GetPath(const TiXmlNode* pRootNode, const char* strTag,
   strStringPath = pNode->FirstChild() ? pNode->FirstChild()->Value() : "";
   strStringPath.Replace('/', '\\');
   return true;
-}
-
-bool CGUIControlFactory::GetAction(const TiXmlElement* pElement, CGUIActionDescriptor &action)
-{
-  CStdString langStr = pElement->Attribute("lang");
-  if (langStr.CompareNoCase("python") == 0 )
-    action.m_lang = CGUIActionDescriptor::LANG_PYTHON;
-  else
-    action.m_lang = CGUIActionDescriptor::LANG_XBMC;
-  
-  if (pElement->FirstChild())
-  {
-    action.m_action = pElement->FirstChild()->Value();
-    return true;
-  }
-  else
-  {
-    action.m_action = "";
-    return false;
-  }
 }
 
 bool CGUIControlFactory::GetAspectRatio(const TiXmlNode* pRootNode, const char* strTag, CAspectRatio &aspect)
@@ -401,6 +362,24 @@ bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &re
   return ret;
 }
 
+bool CGUIControlFactory::GetActions(const TiXmlNode* pRootNode, const char* strTag, CGUIAction& action)
+{
+  action.m_actions.clear();
+  const TiXmlElement* pElement = pRootNode->FirstChildElement(strTag);
+  while (pElement)
+  {
+    if (pElement->FirstChild())
+    {
+      CGUIAction::cond_action_pair pair;
+      pair.condition = pElement->Attribute("condition");
+      pair.action = pElement->FirstChild()->Value();
+      action.m_actions.push_back(pair);
+    }
+    pElement = pElement->NextSiblingElement(strTag);
+  }
+  return action.m_actions.size() > 0;
+}
+
 bool CGUIControlFactory::GetHitRect(const TiXmlNode *control, CRect &rect)
 {
   const TiXmlElement* node = control->FirstChildElement("hitrect");
@@ -443,20 +422,6 @@ bool CGUIControlFactory::GetInfoColor(const TiXmlNode *control, const char *strT
     return true;
   }
   return false;
-}
-
-bool CGUIControlFactory::GetNavigation(const TiXmlElement *node, const char *tag, int &direction, vector<CGUIActionDescriptor> &actions)
-{
-  if (!GetMultipleString(node, tag, actions))
-    return false; // no tag specified
-  if (actions.size() == 1 && StringUtils::IsNaturalNumber(actions[0].m_action))
-  { // single numeric tag specified
-    direction = atol(actions[0].m_action.c_str());
-    actions.clear();
-  }
-  else
-    direction = 0;
-  return true;
 }
 
 void CGUIControlFactory::GetInfoLabel(const TiXmlNode *pControlNode, const CStdString &labelTag, CGUIInfoLabel &infoLabel)
@@ -583,8 +548,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   float width = 0, height = 0;
   float minWidth = 0;
 
-  int left = 0, right = 0, up = 0, down = 0, back = 0, next = 0, prev = 0;
-  vector<CGUIActionDescriptor> leftActions, rightActions, upActions, downActions, backActions, nextActions, prevActions;
+  CGUIAction leftActions, rightActions, upActions, downActions, backActions, nextActions, prevActions;
 
   int pageControl = 0;
   CGUIInfoColor colorDiffuse(0xFFFFFFFF);
@@ -637,11 +601,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   float spaceBetweenItems = 2;
   bool bHasPath = false;
-  vector<CGUIActionDescriptor> clickActions;
-  vector<CGUIActionDescriptor> altclickActions;
-  vector<CGUIActionDescriptor> focusActions;
-  vector<CGUIActionDescriptor> unfocusActions;
-  vector<CGUIActionDescriptor> textChangeActions;
+  CGUIAction clickActions;
+  CGUIAction altclickActions;
+  CGUIAction focusActions;
+  CGUIAction unfocusActions;
+  CGUIAction textChangeActions;
   CStdString strTitle = "";
   CStdString strRSSTags = "";
 
@@ -752,13 +716,13 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   hitRect.SetRect(posX, posY, posX + width, posY + height);
   GetHitRect(pControlNode, hitRect);
 
-  if (!GetNavigation(pControlNode, "onup", up, upActions)) up = id;
-  if (!GetNavigation(pControlNode, "ondown", down, downActions)) down = id;
-  if (!GetNavigation(pControlNode, "onleft", left, leftActions)) left = id;
-  if (!GetNavigation(pControlNode, "onright", right, rightActions)) right = id;
-  if (!GetNavigation(pControlNode, "onback", back, backActions)) back = 0;
-  if (!GetNavigation(pControlNode, "onnext", next, nextActions)) next = id;
-  if (!GetNavigation(pControlNode, "onprev", prev, prevActions)) prev = id;
+  if (!GetActions(pControlNode, "onup",    upActions))    upActions.SetNavigation(id);
+  if (!GetActions(pControlNode, "ondown",  downActions))  downActions.SetNavigation(id);
+  if (!GetActions(pControlNode, "onleft",  leftActions))  leftActions.SetNavigation(id);
+  if (!GetActions(pControlNode, "onright", rightActions)) rightActions.SetNavigation(id);
+  if (!GetActions(pControlNode, "onnext",  nextActions))  nextActions.SetNavigation(id);
+  if (!GetActions(pControlNode, "onprev",  prevActions))  prevActions.SetNavigation(id);
+  GetActions(pControlNode, "onback",  backActions);
 
   if (XMLUtils::GetInt(pControlNode, "defaultcontrol", defaultControl))
   {
@@ -807,11 +771,12 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   if (XMLUtils::GetString(pControlNode, "font2", strFont))
     labelInfo2.font = g_fontManager.GetFont(strFont);
 
-  GetMultipleString(pControlNode, "onclick", clickActions);
-  GetMultipleString(pControlNode, "ontextchange", textChangeActions);
-  GetMultipleString(pControlNode, "onfocus", focusActions);
-  GetMultipleString(pControlNode, "onunfocus", unfocusActions);
-  GetMultipleString(pControlNode, "altclick", altclickActions);
+  GetActions(pControlNode, "onclick", clickActions);
+  GetActions(pControlNode, "ontextchange", textChangeActions);
+  GetActions(pControlNode, "onfocus", focusActions);
+  GetActions(pControlNode, "onunfocus", unfocusActions);
+  focusActions.m_sendThreadMessages = unfocusActions.m_sendThreadMessages = true;
+  GetActions(pControlNode, "altclick", altclickActions);
 
   CStdString infoString;
   if (XMLUtils::GetString(pControlNode, "info", infoString))
@@ -1373,8 +1338,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     control->SetEnableCondition(enableCondition);
     control->SetAnimations(animations);
     control->SetColorDiffuse(colorDiffuse);
-    control->SetNavigation(up, down, left, right, back);
-    control->SetTabNavigation(next,prev);
     control->SetNavigationActions(upActions, downActions, leftActions, rightActions, backActions);
     control->SetPulseOnSelect(bPulse);
     if (hasCamera)

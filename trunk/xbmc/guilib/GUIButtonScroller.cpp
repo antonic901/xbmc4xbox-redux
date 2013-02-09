@@ -114,15 +114,8 @@ bool CGUIButtonScroller::OnAction(const CAction &action)
 {
   if (action.GetID() == ACTION_SELECT_ITEM)
   {
-    // send the appropriate message to the parent window
-    vector<CGUIActionDescriptor> actions = m_vecButtons[GetActiveButton()]->clickActions;
-    for (unsigned int i = 0; i < actions.size(); i++)
-    {
-      CGUIMessage message(GUI_MSG_EXECUTE, GetID(), GetParentID());
-      // find our currently highlighted item
-      message.SetAction(actions[i]);
-      g_windowManager.SendMessage(message);
-    }
+    CGUIAction actions = m_vecButtons[GetActiveButton()]->clickActions;
+    actions.Execute(GetID(), GetParentID());
     return true;
   }
   if (action.GetID() == ACTION_CONTEXT_MENU)
@@ -231,21 +224,12 @@ void CGUIButtonScroller::LoadButtons(TiXmlNode *node)
     {
       button->info = g_infoManager.TranslateString(childNode->FirstChild()->Value());
     }
-    childNode = buttonNode->FirstChild("execute");
-    if (childNode && childNode->FirstChild())
-    {
-      CGUIActionDescriptor action;
-      CGUIControlFactory::GetAction((const TiXmlElement*) childNode, action);
-      button->clickActions.push_back(action);
-    }
+
+    CGUIAction action;
+    CGUIControlFactory::GetActions(buttonNode, "execute", button->clickActions); 
+    CGUIControlFactory::GetActions(buttonNode, "onclick", button->clickActions); 
     childNode = buttonNode->FirstChild("onclick");
-    while (childNode && childNode->FirstChild())
-    {
-      CGUIActionDescriptor action;
-      CGUIControlFactory::GetAction((const TiXmlElement*) childNode, action);
-      button->clickActions.push_back(action);
-      childNode = childNode->NextSibling("onclick");
-    }
+
     childNode = buttonNode->FirstChild("texturefocus");
     if (childNode && childNode->FirstChild())
       button->imageFocus = new CGUITexture(m_posX, m_posY, m_width, m_height, (CStdString)childNode->FirstChild()->Value());
@@ -567,7 +551,7 @@ void CGUIButtonScroller::OnUp()
     CGUIControl::OnUp();
   else if (!m_bWrapAround && m_iOffset + m_iCurrentSlot == 0)
   {
-    if (m_controlUp != GetID())
+    if (m_actionUp.GetNavigation() != GetID())
       CGUIControl::OnUp();  // not wrapping around, and we're up the top + our next control is different
     else
       SetActiveButton((int)m_vecButtons.size() - 1);   // move to the last button in the list
@@ -582,7 +566,7 @@ void CGUIButtonScroller::OnDown()
     CGUIControl::OnDown();
   else if (!m_bWrapAround && (unsigned int) (m_iOffset + m_iCurrentSlot) == m_vecButtons.size() - 1)
   {
-    if (m_controlUp != GetID())
+    if (m_actionUp.GetNavigation() != GetID())
       CGUIControl::OnDown();  // not wrapping around, and we're down the bottom + our next control is different
     else
       SetActiveButton(0);   // move to the first button in the list
@@ -595,7 +579,7 @@ void CGUIButtonScroller::OnLeft()
 {
   if (!m_bHorizontal)
     CGUIControl::OnLeft();
-  else if (!m_bWrapAround && m_iOffset + m_iCurrentSlot == 0 && m_controlLeft != GetID())
+  else if (!m_bWrapAround && m_iOffset + m_iCurrentSlot == 0 && m_actionLeft.GetNavigation() == GetID())
     CGUIControl::OnLeft();  // not wrapping around, and we're at the left + our next control is different
   else
     DoUp();
@@ -605,7 +589,7 @@ void CGUIButtonScroller::OnRight()
 {
   if (!m_bHorizontal)
     CGUIControl::OnRight();
-  else if (!m_bWrapAround && (unsigned int) (m_iOffset + m_iCurrentSlot) == m_vecButtons.size() - 1 && m_controlRight != GetID())
+  else if (!m_bWrapAround && (unsigned int) (m_iOffset + m_iCurrentSlot) == m_vecButtons.size() - 1 && m_actionRight.GetNavigation() != GetID())
     CGUIControl::OnRight();  // not wrapping around, and we're at the right + our next control is different
   else
     DoDown();

@@ -180,7 +180,6 @@ public:
   CNetwork& getNetwork();
 
   bool ExecuteXBMCAction(std::string action);
-  bool ExecuteAction(CGUIActionDescriptor action);
 
   CGUIDialogVolumeBar m_guiDialogVolumeBar;
   CGUIDialogSeekBar m_guiDialogSeekBar;

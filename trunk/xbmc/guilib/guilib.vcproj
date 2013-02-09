@@ -229,6 +229,9 @@
 				RelativePath=".\GraphicContext.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIAction.cpp">
+			</File>
+			<File
 				RelativePath=".\GUIAudioManager.cpp">
 			</File>
 			<File
@@ -445,6 +448,9 @@
 			</File>
 			<File
 				RelativePath=".\gui3d.h">
+			</File>
+			<File
+				RelativePath=".\GUIAction.h">
 			</File>
 			<File
 				RelativePath=".\GUIAudioManager.h">

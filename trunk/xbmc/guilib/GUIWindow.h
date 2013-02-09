@@ -248,8 +248,6 @@ protected:
   void ChangeButtonToEdit(int id, bool singleLabel = false);
 //#endif
 
-  void RunActions(std::vector<CGUIActionDescriptor>& actions);
-
   int m_idRange;
   bool m_bRelativeCoords;
   OVERLAY_STATE m_overlayState;
@@ -288,8 +286,8 @@ protected:
 
   std::map<CStdString, CStdString, icompare> m_mapProperties;
 
-  std::vector<CGUIActionDescriptor> m_loadActions;
-  std::vector<CGUIActionDescriptor> m_unloadActions;
+  CGUIAction m_loadActions;
+  CGUIAction m_unloadActions;
   
   bool m_manualRunActions;
 

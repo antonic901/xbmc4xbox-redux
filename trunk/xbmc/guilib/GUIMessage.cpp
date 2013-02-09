@@ -126,7 +126,6 @@ const CGUIMessage& CGUIMessage::operator = (const CGUIMessage& msg)
   m_senderID = msg.m_senderID;
   m_params = msg.m_params;
   m_item = msg.m_item;
-  m_action = msg.m_action;
   return *this;
 }
 
@@ -178,16 +177,6 @@ const CStdString& CGUIMessage::GetStringParam(size_t param) const
   if (param >= m_params.size())
     return empty_string;
   return m_params[param];
-}
-
-void CGUIMessage::SetAction(const CGUIActionDescriptor& action)
-{
-  m_action = action;
-}
-
-const CGUIActionDescriptor& CGUIMessage::GetAction() const
-{
-  return m_action;
 }
 
 size_t CGUIMessage::GetNumStringParams() const

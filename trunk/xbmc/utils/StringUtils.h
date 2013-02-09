@@ -60,6 +60,7 @@ public:
   static CStdString SecondsToTimeString(long seconds, TIME_FORMAT format = TIME_FORMAT_GUESS);
 
   static bool IsNaturalNumber(const CStdString& str);
+  static bool IsInteger(const CStdString& str);
   static CStdString SizeToString(__int64 size);
   static const CStdString EmptyString;
   static size_t FindWords(const char *str, const char *wordLowerCase);

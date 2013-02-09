@@ -35,6 +35,7 @@ class CTextureInfo; // forward
 class CAspectRatio;
 class CGUIInfoLabel;
 class TiXmlNode;
+class CGUIAction;
 
 /*!
  \ingroup controls
@@ -88,12 +89,10 @@ public:
   static bool GetInfoColor(const TiXmlNode* pRootNode, const char* strTag, CGUIInfoColor &value);
   static CStdString FilterLabel(const CStdString &label);
   static bool GetConditionalVisibility(const TiXmlNode* control, int &condition);
-  static bool GetMultipleString(const TiXmlNode* pRootNode, const char* strTag, std::vector<CGUIActionDescriptor>& vecStringValue);
+  static bool GetActions(const TiXmlNode* pRootNode, const char* strTag, CGUIAction& actions);
   static void GetRectFromString(const CStdString &string, FRECT &rect);
-  static bool GetAction(const TiXmlElement* pElement, CGUIActionDescriptor &action);
   static bool GetHitRect(const TiXmlNode* pRootNode, CRect &rect);
 private:
-  bool GetNavigation(const TiXmlElement *node, const char *tag, int &direction, std::vector<CGUIActionDescriptor> &actions);
   bool GetCondition(const TiXmlNode *control, const char *tag, int &condition);
   static bool GetConditionalVisibility(const TiXmlNode* control, int &condition, CGUIInfoBool &allowHiddenFocus);
   bool GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringPath);

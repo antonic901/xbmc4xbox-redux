@@ -4973,11 +4973,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
   case GUI_MSG_EXECUTE:
     if (message.GetStringParam().length() > 0)
       return ExecuteXBMCAction(message.GetStringParam());
-    else {
-      CGUIActionDescriptor action = message.GetAction();
-      action.m_sourceWindowId = message.GetControlId(); // set source window id, 
-      return ExecuteAction(action);
-    }
 
     break;
   }
@@ -5037,22 +5032,6 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
       }
       return true;
     }
-
-bool CApplication::ExecuteAction(CGUIActionDescriptor action)
-{
-  if (action.m_lang == CGUIActionDescriptor::LANG_XBMC)
-  {
-    return ExecuteXBMCAction(action.m_action);
-  }
-  else if (action.m_lang == CGUIActionDescriptor::LANG_PYTHON)
-  {
-    // Determine the context of the action, if possible
-    g_pythonParser.evalString(action.m_action);
-
-    return true;
-  }
-  return false;
-}
 
 void CApplication::Process()
 {

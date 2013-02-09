@@ -44,20 +44,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     const char *id = item->Attribute("id");
     int visibleCondition = 0;
     CGUIControlFactory::GetConditionalVisibility(item, visibleCondition);
-    // multiple action strings are concat'd together, separated with " , "
-    vector<CGUIActionDescriptor> actions;
-    CGUIControlFactory::GetMultipleString(item, "onclick", actions);
-    CStdString path;
-    for (vector<CGUIActionDescriptor>::iterator it = actions.begin(); it != actions.end(); ++it)
-    {
-      (*it).m_action.Replace(",", ",,");
-      if (!path.IsEmpty())
-      {
-        path += " , ";
-      }
-      path += (*it).m_action;
-    }
-    SetPath(path);
+    CGUIControlFactory::GetActions(item, "onclick", m_clickActions);
     SetLabel(label.GetLabel(parentID));
     SetLabel2(label2.GetLabel(parentID));
     SetThumbnailImage(thumb.GetLabel(parentID, true));
