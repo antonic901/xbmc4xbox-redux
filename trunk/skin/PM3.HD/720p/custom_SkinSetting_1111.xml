@@ -203,7 +203,7 @@
 					<font>font12</font>
 					<label>20082</label>
 					<onclick>Skin.ToggleSetting(ProgramsInHome)</onclick>
-					<selected>Skin.HasSetting(ProgramsInHome)</selected>
+					<selected>!Skin.HasSetting(ProgramsInHome)</selected>
 					<textcolor>grey2</textcolor>
 					<focusedcolor>white</focusedcolor>
 					<texturefocus border="7">list-focus.png</texturefocus>

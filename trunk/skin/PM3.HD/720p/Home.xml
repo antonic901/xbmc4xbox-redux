@@ -394,7 +394,7 @@
 			<height>400</height>
 			<texture>Home-Menu-Back.png</texture>
 			<include>Window_OpenClose_Home_Panel_Animation</include>
-			<visible>!Skin.HasSetting(ProgramsInHome)</visible>
+			<visible>Skin.HasSetting(ProgramsInHome)</visible>
 		</control>
 		<control type="image">
 			<posx>70</posx>
@@ -403,7 +403,7 @@
 			<height>455</height>
 			<texture>Home-Menu-Back-2.png</texture>
 			<include>Window_OpenClose_Home_Panel_Animation</include>
-			<visible>Skin.HasSetting(ProgramsInHome)</visible>
+			<visible>!Skin.HasSetting(ProgramsInHome)</visible>
 		</control>
 		<control type="list" id="9000">
 			<posx>130</posx>
@@ -417,7 +417,7 @@
 			<pagecontrol>-</pagecontrol>
 			<scrolltime>0</scrolltime>
 			<include>Window_OpenClose_Home_Panel_Animation</include>
-			<animation effect="slide" end="0,-28" time="0" condition="Skin.HasSetting(ProgramsInHome)">Conditional</animation>
+			<animation effect="slide" end="0,-28" time="0" condition="!Skin.HasSetting(ProgramsInHome)">Conditional</animation>
 			<itemlayout height="57" width="345">
 				<control type="image">
 					<posx>0</posx>
@@ -506,7 +506,7 @@
 					<onclick>ActivateWindow(Programs)</onclick>
 					<icon>special://skin/backgrounds/programs.jpg</icon>
 					<thumb>$INFO[Skin.String(Home_Custom_Back_Programs_Folder)]</thumb>
-					<visible>Skin.HasSetting(ProgramsInHome)</visible>
+					<visible>!Skin.HasSetting(ProgramsInHome)</visible>
 				</item>
 				<item id="5">
 					<label>8</label>
