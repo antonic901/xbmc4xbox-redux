@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <!-- GENERAL -->
+    <setting id="first_run" type="bool" visible="false" label="first_run" default="true"/>
+    <setting id="wiki_server" label="30501" type="enum"  lvalues="30502|30503" default="0" />
+</settings>

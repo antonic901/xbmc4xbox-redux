@@ -1,0 +1,64 @@
+﻿2013-02-11 Version 0.10 by BuZz
+- Added new addons4xbox repository
+- Cleanups and less verbosity
+- Fix up installing of dependant addons (not recursive yet)
+- Other misc bug fixes and improvements
+
+2012-03-13 Version 0.9.3 by Temhil
+- Added alternative source for repositories list and selection of the source in the plugin settings
+
+2011-08-21 Version 0.9.2 by Temhil
+- Fixed extractor creating too short subdirectorie names: 
+  only the name of the root directory (i.e anarchintosh-projects repository) will be shorten, not the subdirs names
+
+2011-08-20 Version 0.9.1 by Temhil
+- Fixed anarchintosh-projects repository install (patch by exobuzz)
+- Install automatically required addons, if install fails let the user to chose between keep going
+  and install it manually or cancel the install
+  Note: this does not apply to addons installed from zip
+- Added 'Manage installed Addons' options, this for example provide a way to list the required addons on which install failed
+- Fixed on parsing wiki page of unofficial addons when an addons does not have a link to the zip file, now we ignore it
+
+2011-07-06 Version 0.9 by Temhil
+- Refactored code in order to improve loading performances
+- Added Unofficial Add-on Repositories install from XBMC Wiki page
+- Fixed some encoding issues
+
+2011-06-19 Version 0.8.1 by Temhil
+- Fixed zip issue appearing with some zip format used
+- Fixed install issue for SVN/GIT install
+
+2011-06-12 Version 0.8 by Temhil
+- Added Window info describing addons (via context menu)
+
+2011-06-04 Version 0.7 by Temhil
+- New plugin icon (Thank you to Maxoo)
+- Repositories are not anymore hardcoded but can be installed (from zip file)
+- Fixed install from zip
+- When the name of an addon stored in addon.xml is not a valid directory name, the user will be prompted to type a valid name (before it would fail)
+- Added Weather addons support
+
+2011-02-27 Version 0.6 by Temhil
+- Added loop for renaming addon when name is not valid
+- Display icons of addons available in a repository
+- Fixed few other bugs
+
+2011-02-25 Version 0.5 by Temhil
+- Removed xbmcaddon library since it is part of xbmc4xbox, 
+- Fixed filename lenght issue in extractor.
+- Removed xbmcaddon install at 1st start
+
+2010-11-28 Version 0.4 by Temhil
+- Added dummy __init__.py files for local modules imports in order to ensure we are compatible with latest version of XBMC4XBOX (issue with sys.append in current version of XBMC4XBOX)
+- Minor changes
+
+2010-11-14 Version 0.3 by Temhil
+- Added support of repositories using files instead of zip (i.e google code), reusing SVN repo installer code (still need to be fully adapted to current design)
+- Some fixes
+- Added few google code repos (hardcoded)
+
+2010-11-08 Version 0.2 by Temhil
+- Quick fix on non ascii addon name, for now those addons are ignored (waiting for a better solution)
+
+2010-11-08 Version 0.1 by Temhil
+- Initial version, alpha version still very incomplete. This version support install from local zip file or addon with zip file (official repo and passion XBMC repo). Default module are currently include with the plugin, in the future they will be install remotely if they are available online.

@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="110">Please wait...</string>
+    <string id="111">Error</string>
+    <string id="112">Exception during initialization</string>
+    <string id="113">Update settings and exit</string>
+    <string id="114">Update settings and restart</string>
+    <string id="115">Exit without changes</string>
+    <string id="116">Changes in sources.xml, what do you want to do?</string>
+    <string id="117">Impossible action</string>
+
+    <string id="122">Download: %s</string>
+    <string id="123">Total download: %d%%</string>
+    <string id="124">Download cancelled</string>
+    <string id="125">Download cancelled while it was in progress</string>
+    <string id="126">Do you want to delete files already downloaded?</string>
+    <string id="127">Directory deleted</string>
+    <string id="128">Directory:</string>
+    <string id="129">has been deleted</string>
+    <string id="130">Impossible to delete this directory</string>
+    <string id="131">File deleted</string>
+    <string id="132">File:</string>
+    <string id="133">Impossible to delete this file</string>
+    <string id="134">Download completed</string>
+    <string id="135">has been downloaded in the directory:</string>
+    <string id="136">Install: %s</string>
+    <string id="137">Install in progress ...</string>
+    <string id="138">Installing %s</string>
+    <string id="139">Error during %s extraction</string>
+    <string id="140">Exception during %s extraction</string>
+    <string id="141">Install completed</string>
+    <string id="142">%s install</string>
+    <string id="143">is completed</string>
+    <string id="144">Error - Install impossible</string>
+    <string id="145">Please check the logs</string>
+    <string id="146">Install cancelled</string>
+    <string id="147">%s install has been cancelled</string>
+    <string id="148">Unknown error</string>
+    <string id="149">%s is already here, what do you want to do?</string>
+    <string id="150">Delete the directory</string>
+    <string id="151">Rename the directory</string>
+    <string id="152">Overwrite the directory</string>
+    <string id="153">Cancel</string>
+    <string id="154">Enter the new name:</string>
+    <string id="155">Element has been renamed:</string>
+    <string id="156">Delete</string>
+    <string id="157">Rename</string>
+    <string id="158">Delete of %s</string>
+    <string id="159">Are you sure you want to delete %s ?</string>
+    <string id="160">Type of Addon not supported</string>
+
+    <string id="184">Refresh</string>
+    <string id="185">Calculate Size</string>
+    <string id="186">Calculating folder size</string>
+    <string id="187">UnRar: %i of %i items</string>
+    <string id="188">UnZip: %i of %i items</string>
+    <string id="189">Size: %.2f / %.2f Mb</string>
+    <string id="190">Size: %.2f / ? Mb</string>
+    <string id="191">kb/s</string>
+
+    <!-- Les strings de 30000 à 30999 sont réservées aux paramètres plug-in  -->
+    
+    <!--GENERAL STRINGS -->
+    <string id="30000">Addons4xbox Installer</string>
+
+    <!--DIALOG STRINGS -->
+    <string id="30001">Installing XBMC Addon Library ...</string>
+    <string id="30002">XBMC Addon Libraries already installed</string>
+    <string id="30003">Do you want to install XBMC Addon Libraries?</string>
+    <string id="30004">Installation Cancelled</string>
+    <string id="30005">Installation done</string>
+    <string id="30006">Error during the installation</string>
+    <string id="30007">Please check the logs</string>
+    
+    <string id="30011">Repository</string>
+    <string id="30012">Repository Info</string>
+    
+    <string id="30020">Add-on Zip path</string>
+    <string id="30021">First plugin startup</string>
+    
+    <string id="30050">Would you like to install this item?</string>
+    <string id="30051">Fetching file ...</string>
+    <string id="30052">Fetching file list...</string>
+    <string id="30053">Please wait...</string>
+    <string id="30054">Backup Created</string>
+    <string id="30055">Fetching:</string>
+    <string id="30056">Path:</string>
+    <string id="30057">File:</string>
+    <string id="30058">Your new item was installed to:</string>
+
+    <string id="30070">Impossible to install this library</string>
+    <string id="30071">Do you want to continue the install?</string>
+    <string id="30072">(if yes you will need to install it manually)</string>
+
+    <!-- Update error messages -->
+    <string id="30090">There was an error installing item!</string>
+    <string id="30091">xbmcaddon Library is missing</string>
+    <string id="30092">The version of XBMC4XBOX you are running is probably too old</string>
+    
+    
+    <!--ADDONS TYPE STRINGS -->
+    <string id="30100">Add-ons</string>
+    <string id="30101">Scripts Add-ons</string>
+    <string id="30102">Music Add-ons</string>
+    <string id="30103">Pictures Add-ons</string>
+    <string id="30104">Programs Add-ons</string>
+    <string id="30105">Video Add-ons</string>
+    <string id="30106">Weather Add-ons</string>
+    <string id="30107">All Add-ons</string>
+    <string id="30108">Script Modules Add-ons (Libraries)</string>
+    <string id="30109">Add-ons Repository</string>
+
+    <!--ADDONS ACTION STRINGS -->
+    <string id="30200">Available Updates</string>
+    <string id="30201">Enabled Add-ons</string>
+    <string id="30202">Get Add-ons</string>
+    <string id="30203">Install from zip file</string>
+    <string id="30204">Install Unofficial Add-on Repositories</string>
+    <string id="30205">Manage installed Addons</string>
+    
+    <string id="30250">List of missing libraries (need to be installed manually)</string>
+
+    <string id="30300">Add-on Info</string>
+    <string id="30301">Repository Info</string>
+    <string id="30302">Type</string>
+    <string id="30303">Version</string>
+    <string id="30304">Creator</string>
+    <string id="30305">Description</string>
+    
+    <!-- REPO INFO WINDOW STRINGS -->
+    <string id="30400">Install</string>
+
+    <!-- SETTINGS -->
+    <string id="30501">Repositories list source</string>
+    <string id="30502">Official XBMC</string>
+    <string id="30503">XBMC4XBOX 1</string>
+ 
+    <!-- compatible messages -->
+    <string id="30900">version</string>
+    <string id="30901">This version of %s requires an</string>
+    <string id="30902">XBMC revision of %s or greater to run.</string>
+    <string id="30903">Please update your XBMC.</string>
+    <string id="30904">Error</string>
+    <string id="30905">This plugin run under[CR][COLOR=ffe2ff43]%s[/COLOR] only.</string>    
+
+</strings>
