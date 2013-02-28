@@ -200,6 +200,11 @@ ICodec* CodecFactory::CreateOGGCodec(const CStdString& strFile,
   // it provides better timings for Karaoke. However OGGCodec() cannot handle 
   // ogg-flac and ogg videos, that's why this block.
   ICodec* codec = new OGGCodec();
+
+  // hack - force DVDPlayer for now - there is a memory leak with our ogg player - 
+  // http://redmine.exotica.org.uk/issues/228
+  return new DVDPlayerCodec();
+
   try
   {
     if (codec->Init(strFile, filecache))
