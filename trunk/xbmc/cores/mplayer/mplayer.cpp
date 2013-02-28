@@ -1631,11 +1631,6 @@ void CMPlayer::SeekRelativeTime(int iSeconds)
   WaitOnCommand();
 }
 
-void CMPlayer::ToggleFrameDrop()
-{
-  mplayer_put_key('d');
-}
-
 void CMPlayer::SetVolume(long nVolume)
 {
   mplayer_setVolume(nVolume);

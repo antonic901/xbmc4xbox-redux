@@ -41,7 +41,6 @@ public:
   virtual bool IsPaused() const;
   virtual bool HasVideo() const;
   virtual bool HasAudio() const;
-  virtual void ToggleFrameDrop();
   virtual void Seek(bool bPlus = true, bool bLargeStep = false);
   virtual void SetVolume(long nVolume);
   virtual void GetAudioInfo( CStdString& strAudioInfo);

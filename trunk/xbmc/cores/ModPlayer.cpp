@@ -198,9 +198,6 @@ bool ModPlayer::HasAudio() const
 void ModPlayer::Seek(bool bPlus, bool bLargeStep)
 {}
 
-void ModPlayer::ToggleFrameDrop()
-{}
-
 void ModPlayer::SetVolume(long nVolume)
 {
   // mikxbox uses a range of (0 -> 127).  Convert our mB range to this...

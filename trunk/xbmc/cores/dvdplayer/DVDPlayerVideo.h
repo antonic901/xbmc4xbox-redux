@@ -70,9 +70,6 @@ public:
   void EnableSubtitle(bool bEnable)                 { m_bRenderSubs = bEnable; }
   bool IsSubtitleEnabled()                          { return m_bRenderSubs; }
 
-  void EnableFrameDrop(bool bEnabled)               { m_bDropFrames = bEnabled; }
-  bool IsFrameDropEnabled()                         { return m_bDropFrames; }
-
   void EnableFullscreen(bool bEnable)               { m_bAllowFullscreen = bEnable; }
 
 #ifdef HAS_VIDEO_PLAYBACK
@@ -132,7 +129,6 @@ protected:
 
   int m_iLateFrames;
   int m_iDroppedFrames;
-  bool m_bDropFrames;
   int m_iDroppedRequest;
 
   float m_fFrameRate;
