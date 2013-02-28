@@ -687,11 +687,8 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
 
   m_history.SetSelectedItem(strSelectedItem, strOldDirectory);
 
-  ClearFileItems();
-  m_vecItems->ClearProperties();
-  m_vecItems->SetThumbnailImage("");
-
-  if (!GetDirectory(strDirectory, *m_vecItems))
+  CFileItemList items;
+  if (!GetDirectory(strDirectory, items))
   {
     CLog::Log(LOGERROR,"CGUIMediaWindow::GetDirectory(%s) failed", strDirectory.c_str());
     // if the directory is the same as the old directory, then we'll return
@@ -709,8 +706,11 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     return false;
   }
 
-  if (m_vecItems->GetLabel().IsEmpty())
-    m_vecItems->SetLabel(CUtil::GetTitleFromPath(m_vecItems->GetPath(), true));
+  if (items.GetLabel().IsEmpty())
+    items.SetLabel(CUtil::GetTitleFromPath(items.GetPath(), true));
+
+  ClearFileItems();
+  m_vecItems->Copy(items);
 
   // if we're getting the root source listing
   // make sure the path history is clean
