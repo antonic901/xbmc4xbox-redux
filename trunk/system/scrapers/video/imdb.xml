@@ -56,15 +56,21 @@
 				<expression clear="yes">/title/([t0-9]*)/(combined|faq|releaseinfo|vote)</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\1&lt;/title&gt;&lt;year&gt;\2&lt;/year&gt;&lt;url cache=&quot;$$7-main.html&quot;&gt;http://akas.imdb.com/title/$$7/&lt;/url&gt;&lt;id&gt;$$7&lt;/id&gt;&lt;/entity&gt;" dest="5">
-				<expression  clear="yes" noclean="1">&lt;meta name=&quot;title&quot; content=&quot;(?:&amp;#x22;)?([^&quot;]*?)(?:&amp;#x22;)? \([^\(]*?([0-9]{4})\)</expression>
+				<expression clear="yes" noclean="1">&lt;meta name=&quot;title&quot; content=&quot;(?:&amp;#x22;)?([^&quot;]*?)(?:&amp;#x22;)? \([^\(]*?([0-9]{4})(?:–\s)?\)</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;year&gt;\1&lt;/year&gt;&lt;url cache=&quot;$$7-main.html&quot;&gt;http://akas.imdb.com/title/$$7/&lt;/url&gt;&lt;id&gt;$$7&lt;/id&gt;&lt;/entity&gt;" dest="5+">
+				<expression fixchars="2" noclean="1">&lt;meta name=&quot;title&quot; content=&quot;(?:&amp;#x22;)?[^&quot;]*?(?:&amp;#x22;)? \([^\(]*?([0-9]{4})(?:–\s)?\).*?Also Known As:&lt;/h4&gt;([^\n]*)</expression>
 			</RegExp>
 			<RegExp input="$$1" output="\1" dest="4">
-				<expression noclean="1">(&gt;&lt;a href=&quot;/title.*)</expression>
+				<expression noclean="1">&lt;table class=&quot;findList&quot;(.*?)&lt;/div</expression>
 			</RegExp>
 			<RegExp input="$$4" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;year&gt;\3&lt;/year&gt;&lt;url cache=&quot;\1-main.html&quot;&gt;http://akas.imdb.com/title/\1/&lt;/url&gt;&lt;id&gt;\1&lt;/id&gt;&lt;/entity&gt;" dest="5+">
-				<expression repeat="yes" noclean="1,2">&gt;&lt;a href=&quot;/title/([t0-9]*)/[^&gt;]*&gt;([^&lt;]*)&lt;/a&gt; *\(([0-9]*)</expression>
+				<expression repeat="yes" noclean="1,2">&lt;td\sclass=&quot;result_text&quot;&gt;\s&lt;a\shref=&quot;/title/([t0-9]*)/[^&gt;]*&gt;(?:&amp;#x22;)?([^&lt;]*?)(?:&amp;#x22;)?&lt;/a&gt;\s*(?:\([IV]+\) )?\([^\(]*?([0-9]{4})[^\)]*\)\s(?:\(TV\sMovie\)\s|\(TV\sSpecial\)\s|\(Video\)\s)?&lt;</expression>
 			</RegExp>
-			<expression  clear="yes" noclean="1"/>
+			<RegExp input="$$4" output="&lt;entity&gt;&lt;title&gt;\4&lt;/title&gt;&lt;year&gt;\3&lt;/year&gt;&lt;url cache=&quot;\1-main.html&quot;&gt;http://akas.imdb.com/title/\1/&lt;/url&gt;&lt;id&gt;\1&lt;/id&gt;&lt;/entity&gt;" dest="5+">
+				<expression repeat="yes" noclean="1,2">&lt;td\sclass=&quot;result_text&quot;&gt;\s&lt;a\shref=&quot;/title/([t0-9]*)/[^&gt;]*&gt;(?:&amp;#x22;)?([^&lt;]*?)(?:&amp;#x22;)?&lt;/a&gt;\s*(?:\([IV]+\) )?\([^\(]*?([0-9]{4})[^\)]*\)\s&lt;br/&gt;aka\s&lt;i&gt;&quot;([^&quot;]*)</expression>
+			</RegExp>
+			<expression clear="yes" noclean="1"/>
 		</RegExp>
 	</GetSearchResults>
 	<GetDetails dest="3">
@@ -72,8 +78,8 @@
 			<RegExp input="$$2" output="&lt;id&gt;\1&lt;/id&gt;" dest="5">
 				<expression />
 			</RegExp>
-			<RegExp input="$$1" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
-				<expression trim="1" noclean="1">&lt;h1 class="header" itemprop="name"&gt;([^&lt;]*)</expression>
+			<RegExp input="$$1" output="&lt;title&gt;\2&lt;/title&gt;" dest="5+">
+				<expression>&lt;meta name=&quot;title&quot; content=&quot;(IMDb - )?(?:&amp;#x22;)?([^&quot;]*?)(?:&amp;#x22;)? \([^\(]*?([0-9]{4})\)</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;year&gt;\1&lt;/year&gt;" dest="5+">
 				<expression>a href=&quot;/year/([0-9]*)</expression>
@@ -120,13 +126,13 @@
 			<RegExp conditional="!fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-credits.html&quot; function=&quot;GetIMDBWriters&quot;&gt;$$3&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBCast&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
+			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBFullCast&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBDirectors&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
+			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBFullDirectors&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBWriters&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
+			<RegExp conditional="fullcredits" input="$$2" output="&lt;url cache=&quot;$$2-fullcredits.html&quot; function=&quot;GetIMDBFullWriters&quot;&gt;$$3fullcredits&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
 			<RegExp conditional="tmdbthumbs" input="$$2" output="&lt;url function=&quot;GetTMDBThumbsById&quot;&gt;$$3&lt;/url&gt;" dest="5+">
