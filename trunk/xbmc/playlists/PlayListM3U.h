@@ -31,5 +31,11 @@ public:
   virtual ~CPlayListM3U(void);
   virtual bool Load(const CStdString& strFileName);
   virtual void Save(const CStdString& strFileName) const;
+
+  static CStdString GetBestBandwidthStream(const CStdString &strFileName, size_t bandwidth);
+
+protected:
+
+  static std::map< CStdString, CStdString > ParseStreamLine(const CStdString &streamLine);
 };
 }
