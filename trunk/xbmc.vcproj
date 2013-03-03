@@ -3676,6 +3676,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Overlay\DVDOverlay.h">
 						</File>
 						<File
+							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Overlay\DVDOverlayCodec.cpp">
+						</File>
+						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Overlay\DVDOverlayCodec.h">
 						</File>
 						<File
