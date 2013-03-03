@@ -174,6 +174,7 @@ bool CDVDPlayerSubtitle::OpenStream(CDVDStreamInfo &hints, string &filename)
       CloseStream(false);
       return false;
     }
+    m_pSubtitleFileParser->Reset();
     return true;
   }
 
