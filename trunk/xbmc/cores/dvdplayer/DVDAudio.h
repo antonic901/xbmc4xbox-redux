@@ -65,6 +65,8 @@ public:
   void Destroy();
   DWORD AddPackets(const DVDAudioFrame &audioframe);
   double GetDelay(); // returns the time it takes to play a packet if we add one at this time
+  double GetPlayingPts() { return m_time.Current(); }
+  void   SetPlayingPts(double pts);
   double GetCacheTime();  // returns total amount of data cached in audio output at this time
   double GetCacheTotal(); // returns total amount the audio device can buffer
   void Flush();
@@ -73,6 +75,7 @@ public:
 
   IDirectSoundRenderer* m_pAudioDecoder;
 protected:
+  CPTSOutputQueue m_time;
   DWORD AddPacketsRenderer(unsigned char* data, DWORD len, CSingleLock &lock);
   IAudioCallback* m_pCallback;
   BYTE* m_pBuffer; // should be [m_dwPacketSize]

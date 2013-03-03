@@ -209,6 +209,7 @@ void CDVDAudio::Destroy()
   m_iBitsPerSample = 0;
   m_bPassthrough = false;
   m_bPaused = true;
+  m_time.Flush();
 }
 
 DWORD CDVDAudio::AddPacketsRenderer(unsigned char* data, DWORD len, CSingleLock &lock)
@@ -307,6 +308,10 @@ DWORD CDVDAudio::AddPackets(const DVDAudioFrame &audioframe)
     m_iBufferSize = len;
     memcpy(m_pBuffer, data, len);
   }
+
+  double time_added = DVD_SEC_TO_TIME(m_SecondsPerByte * (data - audioframe.data));
+  m_time.Add(audioframe.pts, GetDelay() - time_added, audioframe.duration);
+
   return total;
 }
 
@@ -357,6 +362,7 @@ void CDVDAudio::Pause()
   CSingleLock lock (m_critSection);
   m_bPaused = true;
   if (m_pAudioDecoder) m_pAudioDecoder->Pause();
+  m_time.Flush();
 }
 
 void CDVDAudio::Resume()
@@ -389,6 +395,7 @@ void CDVDAudio::Flush()
     m_pAudioDecoder->Resume();
   }
   m_iBufferSize = 0;
+  m_time.Flush();
 }
 
 bool CDVDAudio::IsValidFormat(const DVDAudioFrame &audioframe)
@@ -428,4 +435,11 @@ double CDVDAudio::GetCacheTotal()
   if(!m_pAudioDecoder)
     return 0.0;
   return m_pAudioDecoder->GetCacheTotal();
+}
+
+void CDVDAudio::SetPlayingPts(double pts)
+{
+  CSingleLock lock (m_critSection);
+  m_time.Flush();
+  m_time.Add(pts, GetDelay(), 0);
 }
