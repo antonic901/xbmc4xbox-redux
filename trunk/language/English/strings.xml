@@ -1307,7 +1307,7 @@
   <string id="14039">XBMC requires to restart to change your</string>
   <string id="14040">network setup.  Would you like to restart now?</string>
   <string id="14041">Post processing</string>
-  <string id="14042"></string>
+  <string id="14042">Internet connection bandwidth limitation</string>
   <string id="14043">- Shutdown while playing</string>
   <string id="14044">%i min</string>
   <string id="14045">%i sec</string>

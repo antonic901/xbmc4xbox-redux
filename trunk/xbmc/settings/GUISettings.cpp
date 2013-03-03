@@ -520,6 +520,7 @@ void CGUISettings::Initialize()
   AddString(4, "network.gateway", 721, "0.0.0.0", EDIT_CONTROL_IP_INPUT);
   AddString(5, "network.dns", 722, "0.0.0.0", EDIT_CONTROL_IP_INPUT);
   AddString(6, "network.dnssuffix", 22002, "", EDIT_CONTROL_INPUT, true);
+  AddInt(7, "network.bandwidth", 14042, 0, 0, 512, 100*1024, SPIN_CONTROL_INT_PLUS, MASK_KBPS, TEXT_OFF);
 
   AddSeparator(12, "network.sep1");
   AddBool(13, "network.usehttpproxy", 708, false);
