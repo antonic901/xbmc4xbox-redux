@@ -20,6 +20,7 @@
  */
 
 #include "DVDInputStream.h"
+#include "URL.h"
 
 CDVDInputStream::CDVDInputStream(DVDStreamType streamType)
 {
@@ -32,7 +33,13 @@ CDVDInputStream::~CDVDInputStream()
 
 bool CDVDInputStream::Open(const char* strFile, const std::string &content)
 {
-  m_strFileName = strFile;
+  CURL url = CURL(strFile);
+
+  // get rid of any |option parameters which might have sneaked in here
+  // those are only handled by our curl impl.
+  url.SetProtocolOptions("");
+  m_strFileName = url.Get();
+
   m_content = content;
   return true;
 }
