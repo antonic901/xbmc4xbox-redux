@@ -489,7 +489,7 @@ namespace VIDEO
 
       if (!pItem->m_bIsFolder || info2.strContent.Equals("tvshows"))
       {
-        if ((pItem->IsVideo() && !pItem->IsNFO() && !pItem->IsPlayList()) || info2.strContent.Equals("tvshows") )
+        if ((pItem->IsVideo() && !pItem->IsNFO() && (!pItem->IsPlayList() || URIUtils::GetExtension(pItem->GetPath()).Equals(".strm")) ) || info2.strContent.Equals("tvshows") )
         {
           if (pDlgProgress)
           {
