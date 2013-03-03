@@ -1009,6 +1009,9 @@ void CDVDPlayer::Process()
       if(next == CDVDInputStream::NEXTSTREAM_OPEN)
       {
         SAFE_DELETE(m_pDemuxer);
+        m_CurrentAudio.stream = NULL;
+        m_CurrentVideo.stream = NULL;
+        m_CurrentSubtitle.stream = NULL;
         continue;
       }
 
@@ -2880,6 +2883,8 @@ int CDVDPlayer::OnDVDNavResult(void* pData, int iMessage)
 
         m_SelectionStreams.Clear(STREAM_NONE, STREAM_SOURCE_NAV);
         m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
+
+        return NAVRESULT_HOLD;
       }
       break;
     case DVDNAV_CELL_CHANGE:
