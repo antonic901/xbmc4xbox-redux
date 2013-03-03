@@ -53,6 +53,7 @@ public:
   bool vfr; // variable framerate
   bool stills; // there may be odd still frames in video
   bool ptsinvalid;  // pts cannot be trusted (avi's).
+  int bitsperpixel;
 
   // AUDIO
   int channels;

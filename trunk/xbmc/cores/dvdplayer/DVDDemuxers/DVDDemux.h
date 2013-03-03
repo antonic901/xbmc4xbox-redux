@@ -126,6 +126,7 @@ public:
     bVFR = false;
     bPTSInvalid = false;
     type = STREAM_VIDEO;
+    iBitsPerPixel = 0;
   }
 
   virtual ~CDemuxStreamVideo() {}
@@ -136,6 +137,7 @@ public:
   float fAspect; // display aspect of stream
   bool bVFR;  // variable framerate
   bool bPTSInvalid; // pts cannot be trusted (avi's).
+  int iBitsPerPixel;
 };
 
 class CDemuxStreamAudio : public CDemuxStream
