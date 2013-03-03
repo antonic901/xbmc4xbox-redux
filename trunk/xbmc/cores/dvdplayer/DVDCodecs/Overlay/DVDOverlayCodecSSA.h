@@ -42,6 +42,7 @@ public:
 private:
   CDVDSubtitlesLibass* m_libass;
   CDVDOverlaySSA*      m_pOverlay;
+  bool                 m_output;
   CDVDStreamInfo       m_hints;
   int                  m_order;
 };
