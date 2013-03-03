@@ -35,7 +35,7 @@ public:
   virtual ~CDVDOverlayCodecFFmpeg();
   virtual bool Open(CDVDStreamInfo &hints, CDVDCodecOptions &options);
   virtual void Dispose();
-  virtual int Decode(BYTE* data, int size, double pts, double duration);
+  virtual int Decode(DemuxPacket *pPacket);
   virtual void Reset();
   virtual void Flush();
   virtual CDVDOverlay* GetOverlay();
@@ -46,6 +46,8 @@ private:
   AVCodecContext* m_pCodecContext;
   AVSubtitle      m_Subtitle;
   int             m_SubtitleIndex;
+  double          m_StartTime;
+  double          m_StopTime;
 
   int             m_width;
   int             m_height;

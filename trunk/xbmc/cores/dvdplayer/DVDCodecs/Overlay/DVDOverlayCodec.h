@@ -23,6 +23,7 @@
 
 #include "system.h"
 #include "DVDOverlay.h"
+#include "cores/dvdplayer/DVDDemuxers/DVDDemux.h"
 
 // VC_ messages, messages can be combined
 #define OC_ERROR    0x00000001  // an error occured, no other messages will be returned
@@ -58,7 +59,7 @@ public:
    * returns one or a combination of VC_ messages
    * pData and iSize can be NULL, this means we should flush the rest of the data.
    */
-  virtual int Decode(BYTE* data, int size, double pts, double duration) = 0;
+  virtual int Decode(DemuxPacket *pPacket) = 0;
   
   /*
    * Reset the decoder.
