@@ -13,7 +13,7 @@ xbmc_clean ()
 xbmc_configure ()
 {
   echo "Configuring ..."
-  CFLAGS="-D_XBOX -msse -mfpmath=sse -pipe"
+  CFLAGS="-D_XBOX -msse -mfpmath=sse"
   LDFLAGS="-Wl,--enable-auto-import"
   PARAMS=" \
   --cpu=pentium3 \
@@ -70,7 +70,7 @@ xbmc_make ()
 {
   set -e
   echo "Making ..."
-  make -j2
+  make
   [ ! -d .libs ] && mkdir .libs
   cp lib*/*.dll .libs/
   if [ "$1" != "" ]; then
