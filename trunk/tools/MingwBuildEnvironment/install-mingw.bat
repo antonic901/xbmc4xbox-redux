@@ -9,6 +9,7 @@ mingw-get install msys-coreutils
 mingw-get install msys-patch
 mingw-get install msys-diffutils
 mingw-get install msys-automake
+mingw-get install msys-libtool
 
 :: get yasm
 mingw-get install msys-wget
