@@ -5,6 +5,7 @@ cd libdvdcss
 echo "***** Cleaning libdvdcss *****"
 make distclean
 echo "***** Building libdvdcss *****"
+./bootstrap
 ./configure \
       CFLAGS="-DNDEBUG -D_XBOX" \
       --disable-doc \
