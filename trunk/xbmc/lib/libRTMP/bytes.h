@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://www.xbmc.org
  *      Copyright (C) 2008-2009 Andrej Stepanchuk
  *      Copyright (C) 2009-2010 Howard Chu

@@ -2,7 +2,7 @@
 #define ARABICSHAPING_H
 
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://www.xbmc.org
  *
  *  A port of Mohammed Yousif's C Arabic shaping code
