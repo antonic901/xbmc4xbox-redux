@@ -714,6 +714,19 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+#ifdef HAS_XBOX_HARDWARE
+  // better 128mb ram support
+  // set MTRRDefType memory type to write-back as done in other XBox apps - seems a bit of a hack as really the def type
+  // should be uncachable and the mtrr/mask for ram instead set up for 128MB with writeback as is done in cromwell.
+  __asm
+  {
+    mov ecx, 0x2ff
+    rdmsr
+    mov al, 0x06
+    wrmsr
+  }
+#endif
+
   g_guiSettings.Initialize();  // Initialize default Settings
   g_settings.Initialize(); //Initialize default AdvancedSettings
 
