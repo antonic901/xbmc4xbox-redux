@@ -203,22 +203,22 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     break;
 
   case ACTION_STEP_BACK:
-    Seek(false, false);
+    g_application.m_pPlayer->Seek(false, false);
     return true;
     break;
 
   case ACTION_STEP_FORWARD:
-    Seek(true, false);
+    g_application.m_pPlayer->Seek(true, false);
     return true;
     break;
 
   case ACTION_BIG_STEP_BACK:
-    Seek(false, true);
+    g_application.m_pPlayer->Seek(false, true);
     return true;
     break;
 
   case ACTION_BIG_STEP_FORWARD:
-    Seek(true, true);
+    g_application.m_pPlayer->Seek(true, true);
     return true;
     break;
 
@@ -426,9 +426,6 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       int jumpsize = g_advancedSettings.m_videoSmallStepBackSeconds; // secs
       int setpos = (orgpos > jumpsize) ? orgpos - jumpsize : 0;
       g_application.SeekTime((double)setpos);
-
-      //Make sure gui items are visible
-      g_infoManager.SetDisplayAfterSeek();
     }
     return true;
     break;
@@ -931,14 +928,6 @@ void CGUIWindowFullScreen::ChangetheTimeCode(int remote)
       m_timeCodeShow = false;
     }
   }
-}
-
-void CGUIWindowFullScreen::Seek(bool bPlus, bool bLargeStep)
-{
-  g_application.m_pPlayer->Seek(bPlus, bLargeStep);
-
-  //Make sure gui items are visible
-  g_infoManager.SetDisplayAfterSeek();
 }
 
 void CGUIWindowFullScreen::SeekChapter(int iChapter)
