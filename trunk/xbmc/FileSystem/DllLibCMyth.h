@@ -132,7 +132,7 @@ public:
 
 class DllLibCMyth : public DllDynamic, DllLibCMythInterface
 {
-  DECLARE_DLL_WRAPPER(DllLibCMyth, DLL_PATH_LIBCMYTH)
+  DECLARE_DLL_WRAPPER(DllLibCMyth, Q:\\system\\libcmyth.dll)
   DEFINE_METHOD4(cmyth_conn_t,        conn_connect_ctrl,        (char *p1, unsigned short p2, unsigned p3, int p4))
   DEFINE_METHOD4(cmyth_conn_t,        conn_connect_event,       (char *p1, unsigned short p2, unsigned p3, int p4))
   DEFINE_METHOD4(cmyth_file_t,        conn_connect_file,        (cmyth_proginfo_t p1, cmyth_conn_t p2, unsigned p3, int p4))
