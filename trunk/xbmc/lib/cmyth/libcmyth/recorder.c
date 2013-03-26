@@ -497,7 +497,7 @@ cmyth_recorder_pause(cmyth_recorder_t rec)
 		goto err;
 	}
 
-	if ((ret=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((ret=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR, "%s: cmyth_rcv_okay() failed\n",
 			  __FUNCTION__);
 		goto err;
@@ -613,7 +613,7 @@ cmyth_recorder_change_channel(cmyth_recorder_t rec,
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);
@@ -680,7 +680,7 @@ cmyth_recorder_set_channel(cmyth_recorder_t rec, char *channame)
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);
@@ -870,9 +870,9 @@ cmyth_recorder_check_channel(cmyth_recorder_t rec,
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "1")) < 0) {
+	if ((err=cmyth_rcv_match(rec->rec_conn, "1")) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
-			  "%s: cmyth_rcv_okay() failed (%d)\n",
+			  "%s: cmyth_rcv_match() failed (%d)\n",
 			  __FUNCTION__, err);
 		goto fail;
 	}
@@ -1341,7 +1341,7 @@ cmyth_recorder_spawn_livetv(cmyth_recorder_t rec)
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);
@@ -1400,7 +1400,7 @@ cmyth_recorder_spawn_chain_livetv(cmyth_recorder_t rec, char* channame)
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);
@@ -1446,7 +1446,7 @@ cmyth_recorder_stop_livetv(cmyth_recorder_t rec)
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);
@@ -1489,7 +1489,7 @@ cmyth_recorder_done_ringbuf(cmyth_recorder_t rec)
 		goto fail;
 	}
 
-	if ((err=cmyth_rcv_okay(rec->rec_conn, "OK")) < 0) {
+	if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR,
 			  "%s: cmyth_rcv_okay() failed (%d)\n",
 			  __FUNCTION__, err);

@@ -51,6 +51,7 @@ typedef SOCKET cmyth_socket_t;
 typedef int socklen_t;
 
 #define snprintf _snprintf
+#define strcasecmp _stricmp
 #define sleep(a) Sleep(a*1000)
 #define usleep(a) Sleep(a/1000)
 

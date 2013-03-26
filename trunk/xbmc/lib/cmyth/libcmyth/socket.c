@@ -172,7 +172,10 @@ cmyth_rcv_length(cmyth_conn_t conn)
 			conn->conn_hang = 0;
 			r = recv(conn->conn_fd, &buf[rtot], 8 - rtot, 0);
 		}
-		if (r <= 0) {
+		if (r < 0) {
+			if (errno == EINTR) {
+				continue;
+			}
 			cmyth_dbg(CMYTH_DBG_ERROR, "%s: read() failed (%d)\n",
 				  __FUNCTION__, errno);
 			return -errno;
@@ -242,6 +245,9 @@ cmyth_conn_refill(cmyth_conn_t conn, int len)
 			r = recv(conn->conn_fd, p, len, 0);
 		}
 		if (r <= 0) {
+			if (errno == EINTR) {
+				continue;
+			}
 			if (total == 0) {
 				cmyth_dbg(CMYTH_DBG_ERROR,
 					  "%s: read failed (%d)\n",
@@ -617,7 +623,7 @@ cmyth_rcv_long(cmyth_conn_t conn, int *err, long *buf, int count)
  * Failure: -(errno)
  */
 int
-cmyth_rcv_okay(cmyth_conn_t conn, char *ok)
+cmyth_rcv_okay(cmyth_conn_t conn)
 {
 	int len;
 	int consumed;
@@ -630,8 +636,43 @@ cmyth_rcv_okay(cmyth_conn_t conn, char *ok)
 			  __FUNCTION__);
 		return len;
 	}
-	if (!ok) {
-		ok = "OK";
+	consumed = cmyth_rcv_string(conn, &err, buf, sizeof(buf), len);
+	if (err) {
+		cmyth_dbg(CMYTH_DBG_ERROR, "%s: cmyth_rcv_string() failed\n",
+			  __FUNCTION__);
+		return -err;
+	}
+	if (consumed < len) {
+		cmyth_dbg(CMYTH_DBG_ERROR,
+			  "%s: did not consume everything %d < %d\n",
+			  __FUNCTION__, consumed, len);
+	}
+	return (strcasecmp(buf, "ok") == 0) ? 0 : -1;
+}
+
+int
+cmyth_rcv_match(cmyth_conn_t conn, const char *match)
+{
+	int len;
+	int consumed;
+	char *buf;
+	int err;
+
+	if (match == NULL) {
+		return -1;
+	}
+
+	buf = alloca(strlen(match)+1);
+
+	if (buf == NULL) {
+		return -1;
+	}
+
+	len = cmyth_rcv_length(conn);
+	if (len < 0) {
+		cmyth_dbg(CMYTH_DBG_ERROR, "%s: cmyth_rcv_length() failed\n",
+			  __FUNCTION__);
+		return len;
 	}
 	consumed = cmyth_rcv_string(conn, &err, buf, sizeof(buf), len);
 	if (err) {
@@ -644,7 +685,7 @@ cmyth_rcv_okay(cmyth_conn_t conn, char *ok)
 			  "%s: did not consume everything %d < %d\n",
 			  __FUNCTION__, consumed, len);
 	}
-	return (strcmp(buf, ok) == 0) ? 0 : -1;
+	return (strcmp(buf, match) == 0) ? 0 : -1;
 }
 
 /*
@@ -2978,14 +3019,17 @@ cmyth_rcv_data(cmyth_conn_t conn, int *err, unsigned char *buf, int count)
 		tv.tv_usec = 0;
 		FD_ZERO(&fds);
 		FD_SET(conn->conn_fd, &fds);
-		if (select((int)conn->conn_fd+1, &fds, NULL, NULL, &tv) == 0) {
+		if ((r=select((int)conn->conn_fd+1, &fds, NULL, NULL, &tv)) == 0) {
 			conn->conn_hang = 1;
 			continue;
-		} else {
+		} else if (r > 0) {
 			conn->conn_hang = 0;
 		}
 		r = recv(conn->conn_fd, p, count, 0);
 		if (r < 0) {
+			if (errno == EINTR) {
+				continue;
+			}
 			if (total == 0) {
 				cmyth_dbg(CMYTH_DBG_ERROR,
 					  "%s: read failed (%d)\n",

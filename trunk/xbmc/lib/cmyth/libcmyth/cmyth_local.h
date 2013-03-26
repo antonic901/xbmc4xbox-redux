@@ -280,7 +280,10 @@ extern int cmyth_rcv_string(cmyth_conn_t conn,
 			    int count);
 
 #define cmyth_rcv_okay __cmyth_rcv_okay
-extern int cmyth_rcv_okay(cmyth_conn_t conn, char *ok);
+extern int cmyth_rcv_okay(cmyth_conn_t conn);
+
+#define cmyth_rcv_match __cmyth_rcv_match
+extern int cmyth_rcv_match(cmyth_conn_t conn, const char *match);
 
 #define cmyth_rcv_version __cmyth_rcv_version
 extern int cmyth_rcv_version(cmyth_conn_t conn, unsigned long *vers);

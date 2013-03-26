@@ -130,6 +130,9 @@
 				RelativePath="..\libcmyth\cmyth_local.h">
 			</File>
 			<File
+				RelativePath="..\libcmyth\cmyth_msc.h">
+			</File>
+			<File
 				RelativePath="..\libcmyth\commbreak.c">
 			</File>
 			<File

@@ -1335,7 +1335,7 @@ int cmyth_livetv_keep_recording(cmyth_recorder_t rec, cmyth_database_t db, int k
 			return -1;
 		}
 
-		if ((err=cmyth_rcv_okay(rec->rec_conn, "ok")) < 0) {
+		if ((err=cmyth_rcv_okay(rec->rec_conn)) < 0) {
 			cmyth_dbg(CMYTH_DBG_ERROR,
 			    "%s: cmyth_rcv_okay() failed (%d)\n",
 			    __FUNCTION__, err);

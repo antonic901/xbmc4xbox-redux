@@ -421,7 +421,7 @@ cmyth_conn_connect(char *server, unsigned short port, unsigned buflen,
 			  __FUNCTION__, announcement);
 		goto shut;
 	}
-	if (cmyth_rcv_okay(conn, "OK") < 0) {
+	if (cmyth_rcv_okay(conn) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR, "%s: cmyth_rcv_okay() failed\n",
 			  __FUNCTION__);
 		goto shut;
@@ -528,6 +528,11 @@ cmyth_conn_connect_file(cmyth_proginfo_t prog,  cmyth_conn_t control,
 	int ann_size = sizeof("ANN FileTransfer  0[]:[][]:[]");
 	cmyth_file_t ret = NULL;
 
+	if (!control) {
+		cmyth_dbg(CMYTH_DBG_ERROR, "%s: control is NULL\n",
+			  __FUNCTION__);
+		goto shut;
+	}
 	if (!prog) {
 		cmyth_dbg(CMYTH_DBG_ERROR, "%s: prog is NULL\n", __FUNCTION__);
 		goto shut;
@@ -874,7 +879,7 @@ cmyth_conn_connect_ring(cmyth_recorder_t rec, unsigned buflen, int tcp_rcvbuf)
 		goto shut;
 	}
 	free(announcement);
-	if (cmyth_rcv_okay(conn, "OK") < 0) {
+	if (cmyth_rcv_okay(conn) < 0) {
 		cmyth_dbg(CMYTH_DBG_ERROR, "%s: cmyth_rcv_okay() failed\n",
 			  __FUNCTION__);
 		goto shut;
