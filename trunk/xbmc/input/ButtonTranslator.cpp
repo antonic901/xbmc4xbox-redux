@@ -268,6 +268,7 @@ static const ActionMapping windows[] =
         {"screensaver"              , WINDOW_SCREENSAVER},
         {"videoosd"                 , WINDOW_OSD},
         {"videomenu"                , WINDOW_VIDEO_MENU},
+        {"videotimeseek"            , WINDOW_VIDEO_TIME_SEEK},
         {"musicoverlay"             , WINDOW_MUSIC_OVERLAY},
         {"videooverlay"             , WINDOW_VIDEO_OVERLAY},
         {"trainersettings"          , WINDOW_DIALOG_TRAINER_SETTINGS},

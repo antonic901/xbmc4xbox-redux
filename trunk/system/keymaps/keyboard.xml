@@ -150,6 +150,12 @@
       <escape>Fullscreen</escape>
     </keyboard>
   </FullscreenVideo>
+  <VideoTimeSeek>
+    <keyboard>
+      <return>Select</return>
+      <enter>Select</enter>
+    </keyboard>
+</VideoTimeSeek>
   <FullscreenInfo>
     <keyboard>
       <f>FastForward</f>

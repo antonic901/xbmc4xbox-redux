@@ -44,6 +44,7 @@
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/SingleLock.h"
+#include "input/ButtonTranslator.h"
 
 #include <stdio.h>
 
@@ -186,6 +187,17 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   if (g_application.m_pPlayer != NULL && g_application.m_pPlayer->OnAction(action))
     return true;
 
+  if (m_timeCodePosition > 0 && action.GetButtonCode())
+  { // check whether we have a mapping in our virtual videotimeseek "window" and have a select action
+    CKey key(action.GetButtonCode());
+    CAction timeSeek = CButtonTranslator::GetInstance().GetAction(WINDOW_VIDEO_TIME_SEEK, key);
+    if (timeSeek.GetID() == ACTION_SELECT_ITEM)
+    {
+      SeekToTimeCodeStamp(SEEK_ABSOLUTE);
+      return true;
+    }
+  }
+
   switch (action.GetID())
   {
   case ACTION_SHOW_OSD:
@@ -202,7 +214,6 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_SELECT_ITEM:
   case ACTION_PLAYER_PLAY:
   case ACTION_PAUSE:
     if (m_timeCodePosition > 0)

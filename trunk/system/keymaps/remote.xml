@@ -136,14 +136,19 @@
       <back>SmallStepBack</back>
       <menu>OSD</menu>
       <start>OSD</start>
+      <select>AspectRatio</select>
       <title>CodecInfo</title>
       <info>Info</info>
-      <enter>AspectRatio</enter>
-      <select>AspectRatio</select>
       <subtitle>ShowSubtitles</subtitle>
       <language>AudioNextLanguage</language>
     </remote>
   </FullscreenVideo>
+  <VideoTimeSeek>
+    <remote>
+      <select>Select</select>
+      <enter>Select</enter>
+    </remote>
+  </VideoTimeSeek>
   <FullscreenInfo>
     <remote>
       <title>CodecInfo</title>
