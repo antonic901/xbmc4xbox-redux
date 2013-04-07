@@ -39,9 +39,36 @@
 <keymap>
   <global>
     <remote>
+      <play>Play</play>
+      <pause>Pause</pause>
+      <stop>Stop</stop>
+      <forward>FastForward</forward>
+      <reverse>Rewind</reverse>
+      <left>Left</left>
+      <right>Right</right>
+      <up>Up</up>
+      <down>Down</down>
+      <select>Select</select>
+      <pageplus>PageUp</pageplus>
+      <pageminus>PageDown</pageminus>
+      <back>Back</back>
+      <menu>PreviousMenu</menu>
+      <title>ContextMenu</title>
+      <info>Info</info>
+      <skipplus>SkipNext</skipplus>
+      <skipminus>SkipPrevious</skipminus>
+      <display>FullScreen</display>
+      <start>PreviousMenu</start>
+      <record>Screenshot</record>
+      <volumeplus>VolumeUp</volumeplus>
+      <volumeminus>VolumeDown</volumeminus>
+      <mute>Mute</mute>
       <three>VolumeUp</three>
       <six>VolumeDown</six>
       <nine>Mute</nine>
+    </remote>
+    
+    <remote name="mce">
       <play>Play</play>
       <pause>Pause</pause>
       <stop>Stop</stop>
@@ -70,15 +97,25 @@
       <myvideo>XBMC.ActivateWindow(MyVideos)</myvideo>
       <mymusic>XBMC.ActivateWindow(MyMusic)</mymusic>
       <mypictures>XBMC.ActivateWindow(MyPictures)</mypictures>
-      <mytv>XBMC.ActivateWindow(Home)</mytv>
+      <mytv>XBMC.ActivateWindow(MyPrograms)</mytv>
+      <livetv>XBMC.ActivateWindow(Scripts)</livetv>
+      <hash>XBMC.ActivateWindow(Settings)</hash>
+      <zero>Number0</zero>
+      <one>Number1</one>
+      <two>Number2</two>
+      <three>Number3</three>
+      <four>Number4</four>
+      <five>Number5</five>
+      <six>Number6</six>
+      <seven>Number7</seven>
+      <eight>Number8</eight>
+      <nine>Number9</nine>
     </remote>
   </global>
   <Home>
     <remote>
-      <menu>XBMC.Skin.ToggleSetting(HomeViewToggle)</menu>
       <info>XBMC.ActivateWindow(SystemInfo)</info>
       <clear>XBMC.ActivateWindow(Weather)</clear>
-      <hash>XBMC.ActivateWindow(Settings)</hash>
     </remote>
   </Home>
   <MyFiles>
@@ -88,9 +125,6 @@
       <four>Copy</four>
       <seven>Move</seven>
       <clear>Delete</clear>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyFiles>
   <MyMusicPlaylist>
@@ -99,9 +133,6 @@
       <zero>Delete</zero>
       <two>MoveItemUp</two>
       <five>MoveItemDown</five>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyMusicPlaylist>
   <MyMusicPlaylistEditor>
@@ -113,18 +144,12 @@
     <remote>
       <zero>Queue</zero>
       <star>Queue</star>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyMusicFiles>
   <MyMusicLibrary>
     <remote>
       <zero>Queue</zero>
       <star>Queue</star>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyMusicLibrary>
   <FullscreenVideo>
@@ -273,18 +298,12 @@
     <remote>
       <zero>Queue</zero>
       <clear>Delete</clear>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyVideoLibrary>
   <MyVideoFiles>
     <remote>
       <zero>Queue</zero>
       <star>Queue</star>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyVideoFiles>
   <MyVideoPlaylist>
@@ -293,9 +312,6 @@
       <zero>Delete</zero>
       <two>MoveItemUp</two>
       <five>MoveItemDown</five>
-      <three>VolumeUp</three>
-      <six>VolumeDown</six>
-      <nine>Mute</nine>
     </remote>
   </MyVideoPlaylist>
   <VirtualKeyboard>

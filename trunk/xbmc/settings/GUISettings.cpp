@@ -312,6 +312,7 @@ void CGUISettings::Initialize()
   AddGroup(4, 13000);
 #ifdef HAS_XBOX_HARDWARE
   AddCategory(4, "system", 128);
+  AddBool(3, "system.mceremote", 13601, false);
   AddInt(4, "system.shutdowntime", 357, 0, 0, 5, 120, SPIN_CONTROL_INT_PLUS, MASK_MINS, TEXT_OFF);
   AddInt(5, "system.ledcolour", 13339, LED_COLOUR_NO_CHANGE, LED_COLOUR_NO_CHANGE, 1, LED_COLOUR_OFF, SPIN_CONTROL_TEXT);
   AddInt(6, "system.leddisableonplayback", 13345, LED_PLAYBACK_OFF, LED_PLAYBACK_OFF, 1, LED_PLAYBACK_VIDEO_MUSIC, SPIN_CONTROL_TEXT);
