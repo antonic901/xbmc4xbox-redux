@@ -2085,6 +2085,10 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
   {
     CUtil::DeleteVideoDatabaseDirectoryCache();
   }
+  else if (strSetting.Equals("system.mceremote"))
+  {
+    CBuiltins::Execute("Action(reloadkeymaps)");
+  }
   UpdateSettings();
 }
 
