@@ -164,8 +164,6 @@
       <select>AspectRatio</select>
       <title>CodecInfo</title>
       <info>Info</info>
-      <subtitle>ShowSubtitles</subtitle>
-      <language>AudioNextLanguage</language>
     </remote>
   </FullscreenVideo>
   <VideoTimeSeek>
