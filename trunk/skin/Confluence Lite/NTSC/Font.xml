@@ -16,13 +16,13 @@
 	 	<font>
 			<name>font13</name>
 			<filename>Roboto-Regular.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 		</font>
 		
 		<font>
 			<name>font14</name>
 			<filename>Roboto-Regular.ttf</filename>
-			<size>17</size>
+			<size>16</size>
 		</font>
 	 	
 	 	<font>
@@ -57,7 +57,7 @@
 	 	<font>
 			<name>font13_title</name>
 			<filename>Roboto-Bold.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 		</font>
 	 	<font>
 			<name>font24_title</name>
@@ -117,13 +117,13 @@
 	 	<font>
 			<name>font13</name>
 			<filename>Roboto-Regular.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 		</font>
 	 	
 		<font>
 			<name>font14</name>
 			<filename>Roboto-Regular.ttf</filename>
-			<size>17</size>
+			<size>16</size>
 		</font>
 		
 	 	<font>
@@ -158,7 +158,7 @@
 	 	<font>
 			<name>font13_title</name>
 			<filename>Roboto-Bold.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 		</font>
 	 	<font>
 			<name>font24_title</name>
@@ -221,13 +221,13 @@
 	 	<font>
 			<name>font13</name>
 			<filename>Arial.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 		</font>
 		
 		<font>
 			<name>font14</name>
 			<filename>Arial.ttf</filename>
-			<size>17</size>
+			<size>16</size>
 		</font>
 	 	
 	 	<font>
@@ -265,7 +265,7 @@
 	 	<font>
 			<name>font13_title</name>
 			<filename>Arial.ttf</filename>
-			<size>15</size>
+			<size>14</size>
 			<style>bold</style>
 		</font>
 	 	<font>
