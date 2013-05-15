@@ -84,7 +84,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       // is this the first time accessing this window?
-      if (m_vecItems->GetPath() == "?" || message.GetStringParam())
+      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
         message.SetStringParam(g_settings.m_defaultPictureSource);
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -278,14 +278,6 @@ bool CGUIWindowPictures::GetDirectory(const CStdString &strDirectory, CFileItemL
 {
   if (!CGUIMediaWindow::GetDirectory(strDirectory, items))
     return false;
-
-  if (strDirectory.Equals("plugin://pictures/"))
-  {
-    items.SetContent("plugins");
-    items.SetLabel(g_localizeStrings.Get(24001)); 
-  }
-  else if (strDirectory.IsEmpty())
-    items.SetLabel("");
 
   CStdString label;
   if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("pictures"), &label)) 
@@ -648,6 +640,7 @@ void CGUIWindowPictures::OnInfo(int itemNumber)
 
 CStdString CGUIWindowPictures::GetStartFolder(const CStdString &dir)
 {
+  CLog::Log(LOGDEBUG, "exobuzz %s", dir.c_str());
   if (dir.Equals("Plugins") || dir.Equals("Addons"))
     return "plugin://pictures/";
 
