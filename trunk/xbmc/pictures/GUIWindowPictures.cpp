@@ -85,7 +85,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
     {
       // is this the first time accessing this window?
       if (m_vecItems->GetPath() == "?" || message.GetStringParam())
-        m_vecItems->SetPath(g_settings.m_defaultPictureSource);
+        message.SetStringParam(g_settings.m_defaultPictureSource);
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 

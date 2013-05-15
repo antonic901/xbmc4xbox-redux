@@ -443,8 +443,10 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
       return true;
     }
     break;
-    case GUI_MSG_WINDOW_INIT:
+  case GUI_MSG_WINDOW_INIT:
     {
+      if (m_vecItems->GetPath() == "?")
+        m_vecItems->SetPath("");
       CStdString dir = message.GetStringParam(0);
       const CStdString &ret = message.GetStringParam(1);
       bool returning = ret.CompareNoCase("return") == 0;

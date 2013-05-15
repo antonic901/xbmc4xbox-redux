@@ -83,7 +83,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
 
       // is this the first time accessing this window?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
-        m_vecItems->SetPath(g_settings.m_defaultProgramSource);
+        message.SetStringParam(g_settings.m_defaultProgramSource);
 
       m_database.Open();
 

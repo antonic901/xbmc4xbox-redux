@@ -81,7 +81,7 @@ bool CGUIWindowMusicSongs::OnMessage(CGUIMessage& message)
 
       // is this the first time the window is opened?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
-        m_vecItems->SetPath(g_settings.m_defaultMusicSource);
+        message.SetStringParam(g_settings.m_defaultMusicSource);
 
       return CGUIWindowMusicBase::OnMessage(message);
     }
