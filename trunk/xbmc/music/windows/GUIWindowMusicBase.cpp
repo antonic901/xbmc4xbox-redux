@@ -1406,5 +1406,5 @@ CStdString CGUIWindowMusicBase::GetStartFolder(const CStdString &dir)
     return "plugin://music/";
   else if (dir.Equals("$PLAYLISTS") || dir.Equals("Playlists"))
     return "special://musicplaylists/";
-  return "";
+  return CGUIMediaWindow::GetStartFolder(dir);
 }
