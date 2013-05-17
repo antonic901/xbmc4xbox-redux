@@ -199,54 +199,39 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
     CJpegIO jpegImage;
     DllImageLib dll;
 
+    CStdString tempFile(sourceUrl);
+    bool isTemp(false);
     if (URIUtils::IsInternetStream(sourceUrl, true))
     {
       Crc32 crc;
       crc.ComputeFromLowerCase(sourceUrl);
-      CStdString tempFile;
       tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, URIUtils::GetExtension(sourceUrl).c_str());
-
       CCurlFile stream;
       if (stream.Download(sourceUrl, tempFile))
-      {
-        if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))
-        {
-          if (jpegImage.CreateThumbnail(tempFile, destFile, width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
-          {
-            CFile::Delete(tempFile);
-            return true;
-          }
-        }
-        if (!dll.Load()) return false;
-        if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
-        {
-          CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
-          CFile::Delete(tempFile);
-          return false;
-        }
-        CFile::Delete(tempFile);
-        return true;
-      }
-      return false;
+        return false;
+      isTemp = true;
     }
 
     if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))
     {
-      if (jpegImage.CreateThumbnail(sourceUrl, destFile, width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
-        return true;
+      if (!jpegImage.CreateThumbnail(tempFile, destFile, width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
+      {
+        if (!dll.Load()) return false;
+        if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
+        {
+          CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
+          return false;
+        }
+      }
+      if (isTemp)
+        CFile::Delete(tempFile);
+      return true;
     }
-    if (!dll.Load()) return false;
-    if (!dll.CreateThumbnail(sourceUrl.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
-    {
-      CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
-      return false;
-    }
-    return true;
   }
   else
   {
     CLog::Log(LOGINFO, "Caching image from: %s to %s", sourceUrl.c_str(), destFile.c_str());
-      return CFile::Cache(sourceUrl, destFile);
+    return CFile::Cache(sourceUrl, destFile);
   }
 }
 
