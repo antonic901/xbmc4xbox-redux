@@ -156,7 +156,7 @@
 		<control type="button" id="90185">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>247</label>
-			<onclick>ActivateWindow(Scripts,return)</onclick>
+			<onclick>ActivateWindow(Scripts)</onclick>
 		</control>
 		<control type="button" id="90186">
 			<include>ButtonHomeSubCommonValues</include>
