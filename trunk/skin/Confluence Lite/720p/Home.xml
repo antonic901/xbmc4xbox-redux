@@ -464,7 +464,7 @@
 					</item>
 					<item id="2">
 						<label>3</label>
-						<onclick>ActivateWindow(Videos,root)</onclick>
+						<onclick>ActivateWindow(Videos)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
@@ -485,7 +485,7 @@
 					</item>
 					<item id="3">
 						<label>2</label>
-						<onclick>ActivateWindow(Music,root)</onclick>
+						<onclick>ActivateWindow(Music)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
