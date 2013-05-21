@@ -111,6 +111,17 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
   {
     tb_jpeg_save_markers(&m_cinfo, JPEG_APP0 + 1, 0xFFFF);
     tb_jpeg_read_header(&m_cinfo, true);
+
+    if (m_cinfo.marker_list)
+      m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
+
+    // fail on images with orientation (fall back to cximage)
+    if (g_guiSettings.GetBool("pictures.useexifrotation") && m_orientation > 1 )
+    {
+      CLog::Log(LOGDEBUG, "JpegIO::Read - Exif orientation > 1 so falling back to CXImage");
+      return false;
+    }
+
     m_originalwidth = m_cinfo.image_width;
     m_originalheight = m_cinfo.image_height;
 
@@ -156,8 +167,6 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     m_height = m_cinfo.output_height;
     CLog::Log(LOGDEBUG, "JpegIO::Read - Using scale_num of %i, %u x %u", m_cinfo.scale_num, m_width, m_height);
 
-    if (m_cinfo.marker_list)
-      m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
     return true;
   }
 }
@@ -218,7 +227,7 @@ bool CJpegIO::Decode(const unsigned char *pixels, unsigned int pitch, unsigned i
   return true;
 }
 
-bool CJpegIO::CreateThumbnail(const CStdString& sourceFile, const CStdString& destFile, int minx, int miny, bool rotateExif)
+bool CJpegIO::CreateThumbnail(const CStdString& sourceFile, const CStdString& destFile, int minx, int miny)
 {
   //Copy sourceFile to buffer, pass to CreateThumbnailFromMemory for decode+re-encode
   if (!Open(sourceFile, minx, miny, false))

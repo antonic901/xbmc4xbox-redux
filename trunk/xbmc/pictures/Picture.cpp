@@ -214,7 +214,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
 
     if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))
     {
-      if (!jpegImage.CreateThumbnail(tempFile, destFile, width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
+      if (!jpegImage.CreateThumbnail(tempFile, destFile, width, height))
       {
         if (!dll.Load()) return false;
         if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
@@ -225,7 +225,6 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       }
       if (isTemp)
         CFile::Delete(tempFile);
-      return true;
     }
   }
   else
@@ -239,6 +238,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
     else
       return CFile::Cache(sourceUrl, destFile);
   }
+  return true;
 }
 
 bool CPicture::CacheThumb(const CStdString& sourceUrl, const CStdString& destFile)
