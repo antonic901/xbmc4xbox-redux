@@ -1592,7 +1592,6 @@
   <string id="16304">Lanczos2</string>
   <string id="16305">Lanczos3</string>
   <string id="16306">Sinc8</string>
-
   <string id="16307">Bicubic (ohjelmallinen)</string>
   <string id="16308">Lanczos (ohjelmallinen)</string>
   <string id="16309">Sinc (ohjelmallinen)</string>
@@ -2041,6 +2040,7 @@
   <string id="21416">Palaute pohjautuu hakupaikan kieleen</string>
   <string id="21417">- Asetukset</string>
   <string id="21418">Monikielinen</string>
+  <string id="21419">Hakupaikalle ei ole asetuksia</string>
 
   <string id="21420">Ehtoihin sopiva</string>
   <string id="21421">Älykkään toistolistan ehdot</string>

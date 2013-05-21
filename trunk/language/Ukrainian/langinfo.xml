@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <language>
   <charsets>
     <gui unicodefont="true">CP1251</gui>
     <subtitle>CP1251</subtitle>
   </charsets>
   <dvd>
-    <menu>ru</menu>
-    <audio>ru</audio>
-    <subtitle>ru</subtitle>
+    <menu>uk</menu>
+    <audio>uk</audio>
+    <subtitle>uk</subtitle>
   </dvd>
   <regions>
     <region>
