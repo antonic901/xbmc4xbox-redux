@@ -207,7 +207,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       crc.ComputeFromLowerCase(sourceUrl);
       tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, URIUtils::GetExtension(sourceUrl).c_str());
       CCurlFile stream;
-      if (stream.Download(sourceUrl, tempFile))
+      if (!stream.Download(sourceUrl, tempFile))
         return false;
       isTemp = true;
     }
@@ -231,7 +231,13 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
   else
   {
     CLog::Log(LOGINFO, "Caching image from: %s to %s", sourceUrl.c_str(), destFile.c_str());
-    return CFile::Cache(sourceUrl, destFile);
+    if (URIUtils::IsInternetStream(sourceUrl, true))
+    {
+      CCurlFile stream;
+      return stream.Download(sourceUrl, destFile);
+    }
+    else
+      return CFile::Cache(sourceUrl, destFile);
   }
 }
 
