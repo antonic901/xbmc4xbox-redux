@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <language>
   <charsets>
     <gui unicodefont="true">ISO-8859-2</gui>
@@ -16,6 +16,7 @@
       <time symbolAM="" symbolPM="">HH:mm:ss</time>
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
+      <timezone>CEST</timezone>
     </region>
   </regions>
 </language>

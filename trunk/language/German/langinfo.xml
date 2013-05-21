@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <language>
 
   <charsets>
@@ -14,6 +14,38 @@
 
   <regions>
     <region name="Deutschland">
+      <dateshort>DD.MM.YYYY</dateshort>
+      <datelong>DDDD, D. MMMM YYYY</datelong>
+      <time symbolAM="" symbolPM="">HH:mm:ss</time>
+      <tempunit>C</tempunit>
+      <speedunit>kmh</speedunit>
+      <timezone>CEST</timezone>
+    </region>
+    <region name="Lichtenstein">
+      <dateshort>DD.MM.YYYY</dateshort>
+      <datelong>DDDD, D. MMMM YYYY</datelong>
+      <time symbolAM="" symbolPM="">HH:mm:ss</time>
+      <tempunit>C</tempunit>
+      <speedunit>kmh</speedunit>
+      <timezone>CEST</timezone>
+    </region>
+    <region name="Südtirol">
+      <dateshort>DD.MM.YYYY</dateshort>
+      <datelong>DDDD, D. MMMM YYYY</datelong>
+      <time symbolAM="" symbolPM="">HH:mm:ss</time>
+      <tempunit>C</tempunit>
+      <speedunit>kmh</speedunit>
+      <timezone>CEST</timezone>
+    </region>
+    <region name="Luxemburg">
+      <dateshort>DD.MM.YYYY</dateshort>
+      <datelong>DDDD, D. MMMM YYYY</datelong>
+      <time symbolAM="" symbolPM="">HH:mm:ss</time>
+      <tempunit>C</tempunit>
+      <speedunit>kmh</speedunit>
+      <timezone>CEST</timezone>
+    </region>
+    <region name="Belgien">
       <dateshort>DD.MM.YYYY</dateshort>
       <datelong>DDDD, D. MMMM YYYY</datelong>
       <time symbolAM="" symbolPM="">HH:mm:ss</time>
