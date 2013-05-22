@@ -130,7 +130,7 @@ int CCircularCache::ReadFromCache(char *buf, size_t len)
   if(avail == 0)
   {
     if(IsEndOfInput())
-      return CACHE_RC_EOF;
+      return 0;
     else
       return CACHE_RC_WOULD_BLOCK;
   }

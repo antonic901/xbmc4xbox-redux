@@ -79,7 +79,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_musicPercentSeekBackwardBig = -10;
   m_musicResample = 48000;
 
-  m_cacheMemBufferSize = 1024 * 1024;
+  m_cacheMemBufferSize = 2 * 1024 * 1024;
 
   m_slideshowPanAmount = 2.5f;
   m_slideshowZoomAmount = 5.0f;
