@@ -32,8 +32,6 @@
   <string id="31043">PAUSA</string>
   <string id="31044">AVANCE RAPIDO</string>
   <string id="31045">RETROCESO</string>
-  <string id="31046">Propiedades de audio</string>
-  <string id="31047">Opciones preestablecidas actuales</string>
   <string id="31048">Visualización preestablecida</string>
   <string id="31049">Hora de finalización</string>
   <string id="31050">Ordenar: Ascendente</string>
@@ -152,4 +150,16 @@
   <string id="31907">Pronóstico de video [COLOR=grey2](A pantalla completa)[/COLOR]</string>
   <string id="31908">Probabilidada de precipitación</string>
   <string id="31909">Obteniendo información</string>
+
+  <string id="31950">EL TIEMPO</string>
+  <string id="31951">IMÁGENES</string>
+  <string id="31952">TV EN DIRECTO</string>
+  <string id="31953">VÍDEOS</string>
+  <string id="31954">PELÍCULAS</string>
+  <string id="31955">SERIES TV</string>
+  <string id="31956">MÚSICA</string>
+  <string id="31957">PROGRAMAS</string>
+  <string id="31958">REPRODUCIR DISCO</string>
+  <string id="31959">SISTEMA</string>
+
 </strings>

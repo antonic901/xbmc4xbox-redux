@@ -36,8 +36,7 @@
   <string id="31043">PAUSED</string>
   <string id="31044">FAST FORWARD</string>
   <string id="31045">REWIND</string>
-  <string id="31046">Audio Properties</string>
-  <string id="31047">Current Preset</string>
+  <string id="31046">SEEKING</string>
   <string id="31048">Visualization Presets</string>
   <string id="31049">End Time</string>
   <string id="31050">Sort: Ascending</string>
@@ -199,5 +198,16 @@
   <string id="31907">Video Forecast [COLOR=grey2](Fullscreen Playback)[/COLOR]</string>
   <string id="31908">Chance of Precipitation</string>
   <string id="31909">Fetching forecast info...</string>
+  
+  <string id="31950">WEATHER</string>
+  <string id="31951">PICTURES</string>
+  <string id="31952">LIVE TV</string>
+  <string id="31953">VIDEOS</string>
+  <string id="31954">MOVIES</string>
+  <string id="31955">TV SHOWS</string>
+  <string id="31956">MUSIC</string>
+  <string id="31957">PROGRAMS</string>
+  <string id="31958">PLAY DISC</string>
+  <string id="31959">SYSTEM</string>
   
 </strings>

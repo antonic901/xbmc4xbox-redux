@@ -449,63 +449,63 @@
 				</focusedlayout>
 				<content>
 					<item id="7">
-						<label>8</label>
+						<label>31950</label>
 						<onclick>ActivateWindow(Weather)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
 					</item>
 					<item id="4">
-						<label>1</label>
+						<label>31951</label>
 						<onclick>ActivateWindow(Pictures)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoPicturesButton)</visible>
 					</item>
 					<item id="2">
-						<label>3</label>
+						<label>31953</label>
 						<onclick>ActivateWindow(Videos)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
 					</item>
 					<item id="10">
-						<label>20342</label>
+						<label>31954</label>
 						<onclick>ActivateWindow(VideoLibrary,Movies,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMoviesButton) + Library.HasContent(Movies)</visible>
 					</item>
 					<item id="11">
-						<label>20343</label>
+						<label>31955</label>
 						<onclick>ActivateWindow(VideoLibrary,TvShows,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton) + Library.HasContent(TVShows)</visible>
 					</item>
 					<item id="3">
-						<label>2</label>
+						<label>31956</label>
 						<onclick>ActivateWindow(Music)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
 					</item>
 					<item id="1">
-						<label>0</label>
+						<label>31957</label>
 						<onclick>ActivateWindow(Programs)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
 					</item>
 					<item id="6">
-						<label>341</label>
+						<label>31958</label>
 						<onclick>XBMC.PlayDVD()</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>System.HasMediaDVD</visible>
 					</item>
 					<item id="5">
-						<label>13000</label>
+						<label>31959</label>
 						<onclick>ActivateWindow(Settings)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
