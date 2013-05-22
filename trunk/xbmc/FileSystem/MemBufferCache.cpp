@@ -193,9 +193,6 @@ int64_t MemBufferCache::Seek(int64_t iFilePosition)
     if (nToCopy > 0)
       m_forwardBuffer.Copy(saveUnRead);
 
-    SEEK_CHECK_RET(m_HistoryBuffer.Copy(saveHist));
-    m_HistoryBuffer.Clear();
-
     m_nStartPosition = iFilePosition;
     m_space.PulseEvent();
     return m_nStartPosition;
