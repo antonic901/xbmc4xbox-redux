@@ -38,6 +38,7 @@
   <string id="31043">MEGÁLLÍTVA</string>
   <string id="31044">ELŐRETEKERÉS</string>
   <string id="31045">VISSZATEKERÉS</string>
+  <string id="31046">KERESÉS</string>
   <string id="31048">Vizualizáció altípus</string>
   <string id="31049">Befejezés időpontja</string>
   <string id="31050">Sorrend: Növekvő</string>
@@ -177,5 +178,15 @@
   <string id="31907">Videó előrejelzés [COLOR=grey2](Teljesképernyős lejátszás)[/COLOR]</string>
   <string id="31908">Csapadék esélye</string>
   <string id="31909">Előrejelzési információ letöltése...</string>
+
+  <string id="31950">IDŐJÁRÁS</string>
+  <string id="31951">KÉPEK</string>
+  <string id="31953">VIDEÓ</string>
+  <string id="31954">FILMEK</string>
+  <string id="31955">TV MŰSOR</string>
+  <string id="31956">ZENE</string>
+  <string id="31957">PROGRAM</string>
+  <string id="31958">LEMEZ LEJÁTSZÁSA</string>
+  <string id="31959">RENDSZER</string>
 
 </strings>

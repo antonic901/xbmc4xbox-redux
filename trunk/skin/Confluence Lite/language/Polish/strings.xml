@@ -33,6 +33,7 @@
   <string id="31043">PAUZA</string>
   <string id="31044">PRZEWIŃ</string>
   <string id="31045">COFNIJ</string>
+  <string id="31046">SZUKANIE</string>
   <string id="31048">Efekty wizualizacji</string>
   <string id="31049">Koniec o godzinie</string>
   <string id="31050">Sortuj: rosnąco</string>
@@ -152,4 +153,14 @@
   <string id="31907">Pogoda wideo [COLOR=grey2](na pełnym ekranie)[/COLOR]</string>
   <string id="31908">Możliwość opadów</string>
   <string id="31909">Prognozuję pogodę...</string>
+  <string id="31950">POGODA</string>
+  <string id="31951">ZDJĘCIA</string>
+  <string id="31953">WIDEO</string>
+  <string id="31954">FILMY</string>
+  <string id="31955">SERIALE TV</string>
+  <string id="31956">MUZYKA</string>
+  <string id="31957">PROGRAMY</string>
+  <string id="31958">ODTWARZAJ PŁYTĘ</string>
+  <string id="31959">SYSTEM</string>
+
 </strings>

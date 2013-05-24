@@ -35,6 +35,7 @@
   <string id="31043">EN PAUSA</string>
   <string id="31044">AVANÇA RÀPID</string>
   <string id="31045">REBOBINA</string>
+  <string id="31046">BUSCANT</string>
   <string id="31048">Visualitzacions predefinides</string>
   <string id="31049">Hora de finalització</string>
   <string id="31050">Ordena: Ascendent</string>
@@ -174,5 +175,13 @@
   <string id="31907">Vídeo de la predicció [COLOR=grey2](Reproducció a pantalla completa)[/COLOR]</string>
   <string id="31908">Possibilitat de precipitació</string>
   <string id="31909">S'està obtenint la informació de la predicció...</string>
+
+  <string id="31950">EL TEMPS</string>
+  <string id="31951">IMATGES</string>
+  <string id="31953">PEL.LÍCULES</string>
+  <string id="31956">MÚSICA</string>
+  <string id="31957">PROGRAMES</string>
+  <string id="31958">REPROD. DVD</string>
+  <string id="31959">SISTEMA</string>
 
 </strings>

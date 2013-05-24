@@ -39,6 +39,7 @@
   <string id="31043">POZASTAVENO</string>
   <string id="31044">PŘETÁČÍ SE VPŘED</string>
   <string id="31045">PŘETÁČÍ SE ZPĚT</string>
+  <string id="31046">PROBÍHÁ VYHLEDÁVÁNÍ</string>
   <string id="31048">Předvolby vizualizace</string>
   <string id="31049">Čas ukončení</string>
   <string id="31050">Seřadit: vzestupně</string>
@@ -179,4 +180,14 @@
   <string id="31908">Pravděpodobnost srážek</string>
   <string id="31909">Načítání informací o předpovědi...</string>
 
-  </strings>
+    <string id="31950">POČASÍ</string>
+  <string id="31951">OBRÁZKY</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILMY</string>
+  <string id="31955">TV SERIÁLY</string>
+  <string id="31956">HUDBA</string>
+  <string id="31957">PROGRAMY</string>
+  <string id="31958">PŘEHRÁT DVD</string>
+  <string id="31959">SYSTÉM</string>
+
+</strings>

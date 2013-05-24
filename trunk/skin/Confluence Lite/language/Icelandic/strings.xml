@@ -39,6 +39,7 @@
   <string id="31043">Í BIÐ</string>
   <string id="31044">HRATT ÁFRAM</string>
   <string id="31045">TIL BAKA</string>
+  <string id="31046">LEITA</string>
   <string id="31048">Forstillingar myndskreytinga</string>
   <string id="31049">Lokatími</string>
   <string id="31050">Raða: Hækkandi</string>
@@ -177,4 +178,14 @@
   <string id="31907">Myndbandaveðurspá [COLOR=grey2](Spila á öllum skjánum)[/COLOR]</string>
   <string id="31908">Líkur á úrkomu</string>
   <string id="31909">Næ í veðurspá...</string>
+  <string id="31950">VEÐUR</string>
+  <string id="31951">LJÓSMYNDIR</string>
+  <string id="31953">MYNDEFNI</string>
+  <string id="31954">KVIKMYNDIR</string>
+  <string id="31955">SJÓNVARPSÞÆTTIR</string>
+  <string id="31956">TÓNLIST</string>
+  <string id="31957">FORRIT</string>
+  <string id="31958">SPILA DISK</string>
+  <string id="31959">KERFI</string>
+
 </strings>

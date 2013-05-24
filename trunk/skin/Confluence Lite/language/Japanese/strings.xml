@@ -39,6 +39,7 @@
   <string id="31043">静止中</string>
   <string id="31044">早送り</string>
   <string id="31045">巻戻し</string>
+  <string id="31046">シーク中</string>
   <string id="31048">Visualization Presets</string>
   <string id="31049">End Time</string>
   <string id="31050">ソート: 昇順</string>
@@ -176,5 +177,15 @@
   <string id="31907">ビデオ予報 [COLOR=grey2](フルスクリーン再生)[/COLOR]</string>
   <string id="31908">降水確率</string>
   <string id="31909">天気予報データ取得中...</string>
+
+  <string id="31950">天気予報</string>
+  <string id="31951">ピクチャ</string>
+  <string id="31953">ビデオ</string>
+  <string id="31954">MOVIES</string>
+  <string id="31955">テレビ番組</string>
+  <string id="31956">ミュージック</string>
+  <string id="31957">プログラム</string>
+  <string id="31958">DISCの再生</string>
+  <string id="31959">システム</string>
 
 </strings>

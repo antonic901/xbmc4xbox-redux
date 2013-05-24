@@ -29,6 +29,7 @@
   <string id="31043">PAUSE</string>
   <string id="31044">SPOL FREM</string>
   <string id="31045">SPOL TILBAGE</string>
+  <string id="31046">SØGER</string>
   <string id="31048">Standard til visualisering</string>
   <string id="31049">Sluttid</string>
   <string id="31055">Åbn afspilningsliste</string>
@@ -110,4 +111,14 @@
   <string id="31407">[B]SKIFT SKIN-INDSTILLINGER[/B][CR][CR]Indstil Confluence · Konfigurer hovedsiden[CR]Skift baggrunde i skinnet</string>
   <string id="31420">[B][COLOR=white]XBMC kunne ikke finde en skive.[/COLOR][/B][CR][CR]Indsæt en skive i drevet og forsøg igen eller annuler</string>
   <string id="31421">Vælg din XBMC-brugerprofil[CR]for at logge ind og fortsætte</string>
+  <string id="31950">VEJRET</string>
+  <string id="31951">BILLEDER</string>
+  <string id="31953">VIDEOER</string>
+  <string id="31954">FILM</string>
+  <string id="31955">TV-SERIER</string>
+  <string id="31956">MUSIK</string>
+  <string id="31957">PROGRAMMER</string>
+  <string id="31958">AFSPIL MEDIE</string>
+  <string id="31959">SYSTEM</string>
+
 </strings>

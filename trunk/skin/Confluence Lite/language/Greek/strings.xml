@@ -35,6 +35,7 @@
   <string id="31043">ΠΑΥΣΗ</string>
   <string id="31044">ΜΠΡΟΣΤΑ</string>
   <string id="31045">ΠΙΣΩ</string>
+  <string id="31046">ΑΝΑΖΉΤΗΣΗ</string>
   <string id="31048">Προκαθορισμένες Οπτικοποιήσεις</string>
   <string id="31049">Χρόνος λήξης</string>
   <string id="31050">Ταξ.: Αύξουσα</string>
@@ -175,4 +176,14 @@
   <string id="31908">Πιθανότητα Υετού</string>
   <string id="31909">Ανάκτηση πρόβλεψης καιρού...</string>
 
-  </strings>
+    <string id="31950">ΚΑΙΡΌΣ</string>
+  <string id="31951">ΦΩΤΟΓΡΑΦΊΕΣ</string>
+  <string id="31953">ΒΊΝΤΕΟ</string>
+  <string id="31954">ΤΑΙΝΊΕΣ</string>
+  <string id="31955">ΤΗΛΕΟΠΤΙΚΈΣ ΣΕΙΡΈΣ</string>
+  <string id="31956">ΜΟΥΣΙΚΉ</string>
+  <string id="31957">ΕΦΑΡΜΟΓΈΣ</string>
+  <string id="31958">ΈΝΑΡΞΗ DVD</string>
+  <string id="31959">ΣΎΣΤΗΜΑ</string>
+
+</strings>

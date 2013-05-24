@@ -32,6 +32,7 @@
   <string id="31043">PAUSE</string>
   <string id="31044">SCHNELL VORLAUF</string>
   <string id="31045">RÜCKLAUF</string>
+  <string id="31046">POSITIONIEREN</string>
   <string id="31048">Visualisierungs Einstellungen</string>
   <string id="31049">Schluss Zeit</string>
   <string id="31050">Sortieren: Aufsteigend</string>
@@ -159,4 +160,14 @@
   <string id="31907">Video Prognose [COLOR=grey2](Vollbild Wiedergabe)[/COLOR]</string>
   <string id="31908">Niederschlagswahrscheinlichkeit</string>
   <string id="31909">Lade Wetterbericht...</string>
+  <string id="31950">WETTER</string>
+  <string id="31951">BILDER</string>
+  <string id="31953">VIDEOS</string>
+  <string id="31954">FILME</string>
+  <string id="31955">TV-SERIEN</string>
+  <string id="31956">MUSIK</string>
+  <string id="31957">PROGRAMME</string>
+  <string id="31958">CD/DVD ABSPIELEN</string>
+  <string id="31959">SYSTEM</string>
+
 </strings>

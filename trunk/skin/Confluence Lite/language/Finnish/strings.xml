@@ -37,6 +37,7 @@
   <string id="31043">TAUKO</string>
   <string id="31044">KELAUS ETEENPÄIN</string>
   <string id="31045">KELAUS TAAKSEPÄIN</string>
+  <string id="31046">HAKU</string>
   <string id="31048">Visualisoinnin esiasetukset</string>
   <string id="31049">Päättymisaika</string>
   <string id="31050">Järjestä: Nousevasti</string>
@@ -176,5 +177,15 @@
   <string id="31907">Videoennuste [COLOR=grey2](Kokoruututila)[/COLOR]</string>
   <string id="31908">Sateen mahdollisuus</string>
   <string id="31909">Noudetaan ennusteen tietoja...</string>
+
+  <string id="31950">SÄÄ</string>
+  <string id="31951">KUVAT</string>
+  <string id="31953">VIDEOT</string>
+  <string id="31954">ELOKUVAT</string>
+  <string id="31955">TV-OHJELMAT</string>
+  <string id="31956">MUSIIKKI</string>
+  <string id="31957">OHJELMAT</string>
+  <string id="31958">TOISTA LEVY</string>
+  <string id="31959">JÄRJESTELMÄ</string>
 
 </strings>

@@ -39,6 +39,7 @@
   <string id="31043">НА ПАУЗА</string>
   <string id="31044">НАПРЕД</string>
   <string id="31045">НАЗАД</string>
+  <string id="31046">ИСКАНЕ</string>
   <string id="31048">Настроени Визуализации</string>
   <string id="31049">Крайно Време</string>
   <string id="31050">Сортиране: Възходящ</string>
@@ -178,5 +179,15 @@
   <string id="31907">Видео Прогноза [COLOR=grey2](Fullscreen Playback)[/COLOR]</string>
   <string id="31908">Възможност от превалявания</string>
   <string id="31909">Извличане информация за прогноза...</string>
+
+  <string id="31950">ВРЕМЕТО</string>
+  <string id="31951">СНИМКИ</string>
+  <string id="31953">ВИДЕО</string>
+  <string id="31954">ФИЛМИ</string>
+  <string id="31955">ТВ ШОУ</string>
+  <string id="31956">МУЗИКА</string>
+  <string id="31957">ПРОГРАМИ</string>
+  <string id="31958">ВЪЗПРОИЗВЕДИ ДИСК</string>
+  <string id="31959">СИСТЕМА</string>
 
 </strings>

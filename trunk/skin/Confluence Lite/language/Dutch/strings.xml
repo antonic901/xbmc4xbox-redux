@@ -36,6 +36,7 @@
   <string id="31043">PAUZE</string>
   <string id="31044">VOORUITSPOELEN</string>
   <string id="31045">TERUGSPOELEN</string>
+  <string id="31046">UITPAKKEN</string>
   <string id="31048">Visualisatiestijl</string>
   <string id="31049">Eindigt om</string>
 
@@ -179,4 +180,14 @@
   <string id="31908">Kans Op Neerslag</string>
   <string id="31909">Weersvoorspelling ophalen...</string>
   
+  <string id="31950">WEER</string>
+  <string id="31951">FOTO'S</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILMS</string>
+  <string id="31955">TV-SERIES</string>
+  <string id="31956">MUZIEK</string>
+  <string id="31957">PROGRAMMA'S</string>
+  <string id="31958">DVD AFSPELEN</string>
+  <string id="31959">SYSTEEM</string>
+
 </strings>

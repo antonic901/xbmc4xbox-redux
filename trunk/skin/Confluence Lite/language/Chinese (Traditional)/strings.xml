@@ -31,6 +31,7 @@
   <string id="31043">暫停</string>
   <string id="31044">快轉</string>
   <string id="31045">倒轉</string>
+  <string id="31046">搜尋中</string>
   <string id="31048">視覺效果設定</string>
   <string id="31049">結束時間</string>
   <string id="31050">排序：遞增</string>
@@ -156,4 +157,14 @@
   <string id="31907">影片預報 [COLOR=grey2]〈全螢幕播放〉[/COLOR]</string>
   <string id="31908">降雨機率</string>
   <string id="31909">正在擷取預報資訊...</string>
+  <string id="31950">氣象</string>
+  <string id="31951">圖片</string>
+  <string id="31953">視訊</string>
+  <string id="31954">影片</string>
+  <string id="31955">電視節目</string>
+  <string id="31956">音樂</string>
+  <string id="31957">程式</string>
+  <string id="31958">播放光碟</string>
+  <string id="31959">系統設定</string>
+
 </strings>

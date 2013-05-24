@@ -36,6 +36,7 @@
   <string id="31043">暂停</string>
   <string id="31044">快进</string>
   <string id="31045">回退</string>
+  <string id="31046">搜索中</string>
   <string id="31048">可视化效果设置</string>
   <string id="31049">结束时间</string>
   <string id="31050">排序：升序</string>
@@ -175,4 +176,14 @@
   <string id="31907">视频预报 [COLOR=grey2]（全屏播放）[/COLOR]</string>
   <string id="31908">降雨概率</string>
   <string id="31909">获取天气信息...</string>
+  <string id="31950">天气</string>
+  <string id="31951">图片</string>
+  <string id="31953">视频</string>
+  <string id="31954">电影</string>
+  <string id="31955">剧集</string>
+  <string id="31956">音乐</string>
+  <string id="31957">程序</string>
+  <string id="31958">播放光盘</string>
+  <string id="31959">系统设置</string>
+
 </strings>

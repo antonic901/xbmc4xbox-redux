@@ -34,6 +34,7 @@
   <string id="31043">PAUZIRANO</string>
   <string id="31044">PREMOTAVANjE UNAPRED</string>
   <string id="31045">PREMOTAVANjE</string>
+  <string id="31046">POZICIONIRANJE</string>
   <string id="31048">Postojeće vizualizacije</string>
   <string id="31049">Vreme završetka</string>
 
@@ -151,4 +152,14 @@
   <string id="31408">[B]KONFIGURISANjE DODATNIH PROGRAMA[/B][CR][CR]Upravljajte vašim instaliranim dodatnim programima · Potražite i instalirajte dodatne prog. sa xbmc.org[CR]Prilagodite podešavanje dodatnog programa</string>
 
   <string id="31421">Izaberite vaš XBMC korisnički[CR]profil za prijavu, a potom nastavite dalje</string>
+  <string id="31950">VREME</string>
+  <string id="31951">SLIKE</string>
+  <string id="31953">FILMOVI</string>
+  <string id="31954">FILMOVI</string>
+  <string id="31955">TV SERIJE</string>
+  <string id="31956">MUZIKA</string>
+  <string id="31957">PROGRAMI</string>
+  <string id="31958">REPRODUKUJ DISK</string>
+  <string id="31959">SISTEM</string>
+
 </strings>

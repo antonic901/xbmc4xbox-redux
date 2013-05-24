@@ -35,6 +35,7 @@
   <string id="31043">PREKINJENO</string>
   <string id="31044">PREVIJANJE NAPREJ</string>
   <string id="31045">NAZAJ</string>
+  <string id="31046">IŠČEM</string>
   <string id="31048">Prednastavitve vizualizacije</string>
   <string id="31049">Čas zaključka</string>
   <string id="31050">Razvrsti: Naraščajoče</string>
@@ -175,4 +176,14 @@
   <string id="31908">Možnost padavin</string>
   <string id="31909">Prenašam vremenske informacije...</string>
 
-  </strings>
+    <string id="31950">VREME</string>
+  <string id="31951">SLIKE</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILMI</string>
+  <string id="31955">TV SHOWS</string>
+  <string id="31956">GLASBA</string>
+  <string id="31957">PROGRAMI</string>
+  <string id="31958">PREDVAJAJ DISK</string>
+  <string id="31959">SISTEM</string>
+
+</strings>

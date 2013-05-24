@@ -39,6 +39,7 @@
   <string id="31043">DURAKLATILDI</string>
   <string id="31044">İLERİ SAR</string>
   <string id="31045">GERİ SAR</string>
+  <string id="31046">ATLA</string>
   <string id="31048">Görsel Öğe Önayarları</string>
   <string id="31049">Bitiş Zamanı</string>
   <string id="31050">Sırala: Artan</string>
@@ -179,5 +180,15 @@
   <string id="31907">Video Hava Tahmini [COLOR=grey2](Tam ekran oynatım)[/COLOR]</string>
   <string id="31908">Chance of Precipitation</string>
   <string id="31909">Hava tahmini bilgisi getiriliyor...</string>
+
+  <string id="31950">HAVA DURUMU</string>
+  <string id="31951">RESIMLER</string>
+  <string id="31953">VIDEOLAR</string>
+  <string id="31954">FILMLER</string>
+  <string id="31955">TV PROGRAMLARI</string>
+  <string id="31956">MÜZIK</string>
+  <string id="31957">PROGRAMLAR</string>
+  <string id="31958">DISKI OYNAT</string>
+  <string id="31959">SISTEM</string>
 
 </strings>

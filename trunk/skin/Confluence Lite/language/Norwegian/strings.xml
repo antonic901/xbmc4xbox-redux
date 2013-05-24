@@ -28,6 +28,7 @@
   <string id="31043">PAUSE</string>
   <string id="31044">SPOL FRAM</string>
   <string id="31045">SPOL TILBAKE</string>
+  <string id="31046">SØKER</string>
   <string id="31048">Visualiseringsforvalg</string>
   <string id="31049">Slutt tid</string>
   <string id="31055">Åpne spilleliste</string>
@@ -128,4 +129,14 @@
   <string id="31407">[B]ENDRE SKINNINNSTILLINGER:[/B][CR][CR]Legge til og ta bort hovedmenyknapper · Endre bakgrunner for hver seksjon · Skape sti til skript i hele skinnet</string>
   <string id="31408">[B]KONFIGURER TILLEGG[/B][CR][CR]Håndter installerte tillegg · Let etter og installer tillegg fra xbmc.org[CR]Endre tilleggsinnstillinger</string> 
   <string id="31421">Velg din XBMC brukerprofil[CR]for å logge inn og fortsette</string>
+  <string id="31950">VÆR</string>
+  <string id="31951">BILDER</string>
+  <string id="31953">VIDEOER</string>
+  <string id="31954">FILMER</string>
+  <string id="31955">TV-SERIER</string>
+  <string id="31956">MUSIKK</string>
+  <string id="31957">PROGRAMMER</string>
+  <string id="31958">SPILL PLATE</string>
+  <string id="31959">SYSTEM</string>
+
 </strings>

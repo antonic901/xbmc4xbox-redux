@@ -39,6 +39,7 @@
   <string id="31043">PAUSADO</string>
   <string id="31044">AVANÇO RÁPIDO</string>
   <string id="31045">RETROCEDER</string>
+  <string id="31046">PROCURANDO</string>
   <string id="31048">Visualizar pré-configurações</string>
   <string id="31049">Tempo de término</string>
   <string id="31050">Ordem: Ascendente</string>
@@ -164,4 +165,14 @@
   <string id="31908">Chance de precipitação</string>
   <string id="31909">Buscando informações da previsão...</string>
   
+  <string id="31950">TEMPO</string>
+  <string id="31951">IMAGENS</string>
+  <string id="31953">VÍDEOS</string>
+  <string id="31954">FILMES</string>
+  <string id="31955">SERIADOS</string>
+  <string id="31956">MÚSICAS</string>
+  <string id="31957">PROGRAMAS</string>
+  <string id="31958">INICIAR DVD/CD</string>
+  <string id="31959">SISTEMA</string>
+
 </strings>

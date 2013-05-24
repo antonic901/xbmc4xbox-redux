@@ -35,6 +35,7 @@
   <string id="31043">PAUSE</string>
   <string id="31044">AVANCE RAPIDE</string>
   <string id="31045">RETOUR RAPIDE</string>
+  <string id="31046">CHERCHER</string>
   <string id="31048">Préréglages Visualisation</string>
   <string id="31049">Echéance</string>
   <string id="31050">Tri : Ascendant</string>
@@ -173,5 +174,15 @@
   <string id="31907">Bulletin vidéo [COLOR=grey2](affichage en plein écran)[/COLOR]</string>
   <string id="31908">Risque de pluie</string>
   <string id="31909">Récupération des prévisions météo...</string>
+
+  <string id="31950">MÉTÉO</string>
+  <string id="31951">IMAGES</string>
+  <string id="31953">VIDÉOS</string>
+  <string id="31954">FILMS</string>
+  <string id="31955">SÉRIES TV</string>
+  <string id="31956">MUSIQUE</string>
+  <string id="31957">PROGRAMMES</string>
+  <string id="31958">LIRE LE DISQUE</string>
+  <string id="31959">SYSTÈME</string>
 
 </strings>

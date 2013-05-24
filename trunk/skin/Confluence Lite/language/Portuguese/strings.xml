@@ -40,6 +40,7 @@
   <string id="31043">PAUSADO</string>
   <string id="31044">FAST FORWARD</string>
   <string id="31045">REWIND</string>
+  <string id="31046">PROCURANDO</string>
   <string id="31048">Definições de visualização</string>
   <string id="31049">Tempo para terminar</string>
   <string id="31050">Dispor: Ascendente</string>
@@ -202,4 +203,14 @@
   <string id="31908">Probabilidade de Precipitação</string>
   <string id="31909">Procurando dados de previsão...</string>
   
+  <string id="31950">METEOROLOGIA</string>
+  <string id="31951">IMAGENS</string>
+  <string id="31953">VÍDEOS</string>
+  <string id="31954">FILMES</string>
+  <string id="31955">SÉRIES DE TV</string>
+  <string id="31956">MÚSICA</string>
+  <string id="31957">PROGRAMAS</string>
+  <string id="31958">INICIAR DVD</string>
+  <string id="31959">SISTEMA</string>
+
 </strings>

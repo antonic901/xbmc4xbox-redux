@@ -38,6 +38,7 @@
   <string id="31043">IN PAUSA</string>
   <string id="31044">AVANTI VELOCE</string>
   <string id="31045">INDIETRO</string>
+  <string id="31046">CERCANDO</string>
   <string id="31048">Preset Visualizzazione</string>
   <string id="31049">Orario fine riproduzione</string>
   <string id="31050">Ordina: Crescente</string>
@@ -177,5 +178,15 @@
   <string id="31907">Previsioni Video [COLOR=grey2](Riproduzione a schermo intero)[/COLOR]</string>
   <string id="31908">Percentuale di precipitazioni</string>
   <string id="31909">Recuper informazioni previsioni...</string>
+
+  <string id="31950">METEO</string>
+  <string id="31951">IMMAGINI</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILM</string>
+  <string id="31955">SERIE TV</string>
+  <string id="31956">MUSICA</string>
+  <string id="31957">PROGRAMMI</string>
+  <string id="31958">AVVIA DISCO</string>
+  <string id="31959">SISTEMA</string>
 
 </strings>

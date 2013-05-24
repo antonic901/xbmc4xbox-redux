@@ -33,6 +33,7 @@
   <string id="31043">PAUZA</string>
   <string id="31044">PRETÁČA SA DOPREDU</string>
   <string id="31045">PRETÁČA SA DOZADU</string>
+  <string id="31046">VYHĽADÁVAM</string>
   <string id="31048">Predvolby Vizualizácií</string>
   <string id="31049">Koniec filmu</string>
   <string id="31050">Ukázať: Vzostupne</string>
@@ -159,4 +160,14 @@
   <string id="31907">Video Predpoveď [COLOR=grey2](Prehrávanie na celej obrazovke)[/COLOR]</string>
   <string id="31908">Šanca zrážok</string>
   <string id="31909">Zisťujem informácie o počasí...</string>
+  <string id="31950">POČASIE</string>
+  <string id="31951">OBRÁZKY</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILMY</string>
+  <string id="31955">SERIÁLY</string>
+  <string id="31956">HUDBA</string>
+  <string id="31957">PROGRAMY</string>
+  <string id="31958">PREHRAŤ DISK</string>
+  <string id="31959">SYSTÉM</string>
+
 </strings>

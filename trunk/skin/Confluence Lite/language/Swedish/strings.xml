@@ -33,6 +33,7 @@
   <string id="31043">PAUSAD</string>
   <string id="31044">SPOLA FRAMÅT</string>
   <string id="31045">SPOLA BAKÅT</string>
+  <string id="31046">SÖKER</string>
   <string id="31048">Visualiseringsförval</string>
   <string id="31049">Sluttid</string>
   <string id="31050">Sort: stigande</string>
@@ -145,4 +146,14 @@
   <string id="31907">Videoprognost [COLOR=grey2](Helskärmsuppspelning)[/COLOR]</string>
   <string id="31908">Chans till nederbörd</string>
   <string id="31909">Hämtar prognosinfo...</string>
+  <string id="31950">VÄDER</string>
+  <string id="31951">BILDER</string>
+  <string id="31953">VIDEO</string>
+  <string id="31954">FILMER</string>
+  <string id="31955">TV-SERIER</string>
+  <string id="31956">MUSIK</string>
+  <string id="31957">PROGRAM</string>
+  <string id="31958">SPELA SKIVA</string>
+  <string id="31959">SYSTEM</string>
+
 </strings>

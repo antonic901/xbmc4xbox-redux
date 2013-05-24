@@ -35,6 +35,7 @@
   <string id="31043">ПАУЗА</string>
   <string id="31044">ПЕРЕМОТКА ВПЕРЕД</string>
   <string id="31045">ПЕРЕМОТКА НАЗАД</string>
+  <string id="31046">ПОИСК</string>
   <string id="31048">Настройки визуализации</string>
   <string id="31049">Время окончания</string>
   <string id="31050">По возрастанию</string>
@@ -175,4 +176,14 @@
   <string id="31908">Возможны осадки</string>
   <string id="31909">Получение прогноза…</string>
 
-  </strings>
+    <string id="31950">ПОГОДА</string>
+  <string id="31951">ФОТО</string>
+  <string id="31953">ВИДЕО</string>
+  <string id="31954">ФИЛЬМЫ</string>
+  <string id="31955">СЕРИАЛЫ</string>
+  <string id="31956">МУЗЫКА</string>
+  <string id="31957">ПРОГРАММЫ</string>
+  <string id="31958">ПРОИГРАТЬ ДИСК</string>
+  <string id="31959">СИСТЕМА</string>
+
+</strings>
