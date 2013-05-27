@@ -22,8 +22,8 @@
 			<include>CommonRootView</include> <!-- view id = 50 -->
 			<include>FullWidthList</include> <!-- view id = 51 -->
 			<include>ThumbnailView</include> <!-- view id = 500 -->
-			<include>PictureWrapView</include> <!-- view id = 510 -->
 			<include>PictureThumbView</include> <!-- view id = 514 -->
+			<include>PictureWrapView</include> <!-- view id = 510 -->
 		</control>
 		<include>CommonPageCount</include>
 		<include>CommonNowPlaying</include>

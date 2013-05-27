@@ -10,8 +10,8 @@
 			<include>CommonRootView</include> <!-- view id = 50 -->
 			<include>FullWidthList</include> <!-- view id = 51 -->
 			<include>ThumbnailView</include> <!-- view id = 500 -->
-			<include>MusicInfoListView</include> <!-- view id = 506 -->
 			<include>AlbumWrapView2_Fanart</include> <!-- view id = 509 -->
+			<include>MusicInfoListView</include> <!-- view id = 506 -->
 			<include>MusicVideoInfoListView</include> <!-- view id = 511 -->
 			<include>ArtistMediaListView</include> <!-- view id = 512 -->
 			<include>AlbumInfoListView</include> <!-- view id = 513 -->
