@@ -68,7 +68,7 @@ public:
     return 0.f;
   }
 
-  void stop(const CStdString& strName);
+  void stop(const CStdString& strName, bool bSilent = false);
   virtual void Process();
 private:
   std::map<CStdString,SAlarmClockEvent> m_event;
