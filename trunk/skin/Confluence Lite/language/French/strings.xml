@@ -102,6 +102,11 @@
   <string id="31204">Section Liens</string>
   <string id="31205">Lyrics Source</string>
 
+  <!-- Xbox labels -->
+  <string id="31260">Configurer</string>
+  <string id="31271">Logiciels</string>
+  <string id="31272">Emulateurs</string>
+
   <!-- Extra labels -->
   <string id="31300">Temp. Actuelle</string>
   <string id="31301">Dernière mise à jour</string>
@@ -174,7 +179,8 @@
   <string id="31907">Bulletin vidéo [COLOR=grey2](affichage en plein écran)[/COLOR]</string>
   <string id="31908">Risque de pluie</string>
   <string id="31909">Récupération des prévisions météo...</string>
-
+ 
+  <!-- Menu -->
   <string id="31950">MÉTÉO</string>
   <string id="31951">IMAGES</string>
   <string id="31953">VIDÉOS</string>
