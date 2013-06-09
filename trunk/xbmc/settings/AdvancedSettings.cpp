@@ -399,7 +399,7 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetInt(pElement, "curlclienttimeout", m_curlconnecttimeout, 1, 1000);
     XMLUtils::GetInt(pElement, "curllowspeedtime", m_curllowspeedtime, 1, 1000);
     XMLUtils::GetInt(pElement, "curlretries", m_curlretries, 0, 10);
-    XMLUtils::GetUInt(pRootElement, "cachemembuffersize", m_cacheMemBufferSize);
+    XMLUtils::GetUInt(pElement, "cachemembuffersize", m_cacheMemBufferSize);
   }
 
   pElement = pRootElement->FirstChildElement("samba");
