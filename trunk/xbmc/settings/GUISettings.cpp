@@ -515,7 +515,7 @@ void CGUISettings::Initialize()
   AddString(4, "smb.workgroup",   1202,   "WORKGROUP", EDIT_CONTROL_INPUT, false, 1202);
 
   AddCategory(6, "network", 705);
-  AddInt(1, "network.assignment", 715, NETWORK_DASH, NETWORK_DASH, 1, NETWORK_STATIC, SPIN_CONTROL_TEXT);
+  AddInt(1, "network.assignment", 715, NETWORK_DHCP, NETWORK_DASH, 1, NETWORK_STATIC, SPIN_CONTROL_TEXT);
   AddString(2, "network.ipaddress", 719, "0.0.0.0", EDIT_CONTROL_IP_INPUT);
   AddString(3, "network.subnet", 720, "255.255.255.0", EDIT_CONTROL_IP_INPUT);
   AddString(4, "network.gateway", 721, "0.0.0.0", EDIT_CONTROL_IP_INPUT);
