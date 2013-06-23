@@ -7,7 +7,7 @@
 			<posx>0</posx>
 			<posy>30</posy>
 			<width>1280</width>
-			<height>130</height>
+			<height>150</height>
 			<texture>black-back.png</texture>
 		</control>
 		<control type="label" id="10">
@@ -22,7 +22,7 @@
 		<control type="label" id="11">
 			<description>row 2 label</description>
 			<posx>50</posx>
-			<posy>70</posy>
+			<posy>85</posy>
 			<label>-</label>
 			<align>left</align>
 			<font>font12</font>
@@ -31,7 +31,7 @@
 		<control type="label" id="12">
 			<description>row 3 label</description>
 			<posx>50</posx>
-			<posy>100</posy>
+			<posy>130</posy>
 			<label>-</label>
 			<align>left</align>
 			<font>font12</font>
