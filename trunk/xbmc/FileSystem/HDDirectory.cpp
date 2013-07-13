@@ -34,6 +34,10 @@
 #include "utils/CharsetConverter.h"
 #include "utils/CriticalSection.h"
 
+#ifndef INVALID_FILE_ATTRIBUTES
+#define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
+#endif
+
 using namespace AUTOPTR;
 using namespace XFILE;
 
@@ -168,6 +172,8 @@ bool CHDDirectory::Exists(const char* strPath)
   CUtil::GetFatXQualifiedPath(strReplaced);
   URIUtils::AddSlashAtEnd(strReplaced);
   DWORD attributes = GetFileAttributes(strReplaced.c_str());
-  if (FILE_ATTRIBUTE_DIRECTORY == attributes) return true;
+  if(attributes == INVALID_FILE_ATTRIBUTES)
+    return false;
+  if (FILE_ATTRIBUTE_DIRECTORY & attributes) return true;
   return false;
 }
