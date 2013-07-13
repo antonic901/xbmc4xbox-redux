@@ -299,7 +299,12 @@ IF %Silent%==1 GOTO COMPILE
   CALL build.bat
   cd ..\..
   xcopy "skin\Confluence\BUILD\Confluence" "BUILD_WIN32\Xbmc_pc\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
-  
+
+  cd "skin\Confluence Lite"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "BUILD_WIN32\Xbmc_pc\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
+
   xcopy credits BUILD_WIN32\Xbmc_pc\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language BUILD_WIN32\Xbmc_pc\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers BUILD_WIN32\Xbmc_pc\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
