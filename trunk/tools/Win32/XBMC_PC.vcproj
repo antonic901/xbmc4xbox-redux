@@ -1359,7 +1359,7 @@
 					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoBase.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowVideoFiles.cpp">
+					RelativePath="..\..\xbmc\\video\windows\GUIWindowVideoFiles.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.cpp">
@@ -3328,7 +3328,7 @@
 				RelativePath="..\..\xbmc\video\windows\GUIWindowVideoBase.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\GUIWindowVideoFiles.h">
+				RelativePath="..\..\xbmc\\video\windows\GUIWindowVideoFiles.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.h">

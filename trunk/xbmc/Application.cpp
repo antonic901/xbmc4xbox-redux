@@ -135,7 +135,7 @@
 #include "video/windows/GUIWindowVideoPlaylist.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
-#include "GUIWindowVideoFiles.h"
+#include "video/windows/GUIWindowVideoFiles.h"
 #include "video/windows/GUIWindowVideoNav.h"
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"

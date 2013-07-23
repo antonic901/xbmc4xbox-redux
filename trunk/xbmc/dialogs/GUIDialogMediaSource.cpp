@@ -24,7 +24,7 @@
 #include "GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/GUIDialogContentSettings.h"
-#include "GUIWindowVideoFiles.h"
+#include "video/windows/GUIWindowVideoFiles.h"
 #include "GUIWindowManager.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
