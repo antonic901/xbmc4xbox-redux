@@ -19,7 +19,7 @@
  *
  */
 
-#include "GUIWindowMusicInfo.h"
+#include "music/dialogs/GUIDialogMusicInfo.h"
 #include "GUIWindowManager.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

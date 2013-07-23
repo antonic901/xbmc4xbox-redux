@@ -21,7 +21,7 @@
 
 #include "system.h"
 #include "music/windows/GUIWindowMusicBase.h"
-#include "GUIWindowMusicInfo.h"
+#include "music/dialogs/GUIDialogMusicInfo.h"
 #include "FileSystem/ZipManager.h"
 #ifdef HAS_FILESYSTEM
 #include "FileSystem/DAAPDirectory.h"

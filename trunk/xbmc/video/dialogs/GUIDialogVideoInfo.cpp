@@ -20,7 +20,7 @@
  */
 
 #include "GUIWindow.h"
-#include "GUIWindowVideoInfo.h"
+#include "video/dialogs/GUIDialogVideoInfo.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "pictures/Picture.h"
