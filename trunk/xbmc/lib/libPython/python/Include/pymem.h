@@ -30,6 +30,8 @@ extern "C" {
    debugging info to dynamic memory blocks.  The system routines have no idea
    what to do with that stuff, and the Python wrappers have no idea what to do
    with raw blocks obtained directly by the system routines then.
+
+   The GIL must be held when using these APIs.
 */
 
 /*
@@ -57,8 +59,9 @@ PyAPI_FUNC(void) PyMem_Free(void *);
 /* Macros. */
 #ifdef PYMALLOC_DEBUG
 /* Redirect all memory operations to Python's debugging allocator. */
-#define PyMem_MALLOC		PyObject_MALLOC
-#define PyMem_REALLOC		PyObject_REALLOC
+#define PyMem_MALLOC		_PyMem_DebugMalloc
+#define PyMem_REALLOC		_PyMem_DebugRealloc
+#define PyMem_FREE		_PyMem_DebugFree
 
 #else	/* ! PYMALLOC_DEBUG */
 
@@ -68,17 +71,13 @@ PyAPI_FUNC(void) PyMem_Free(void *);
    pymalloc. To solve these problems, allocate an extra byte. */
 /* Returns NULL to indicate error if a negative size or size larger than
    Py_ssize_t can represent is supplied.  Helps prevents security holes. */
-#define PyMem_MALLOC(n)		(((n) < 0 || (n) > INT_MAX) ? NULL \
+#define PyMem_MALLOC(n)		((size_t)(n) > (size_t)PY_SSIZE_T_MAX ? NULL \
 				: malloc((n) ? (n) : 1))
-#define PyMem_REALLOC(p, n)	(((n) < 0 || (n) > INT_MAX) ? NULL \
+#define PyMem_REALLOC(p, n)	((size_t)(n) > (size_t)PY_SSIZE_T_MAX  ? NULL \
 				: realloc((p), (n) ? (n) : 1))
+#define PyMem_FREE		free
 
 #endif	/* PYMALLOC_DEBUG */
-
-/* In order to avoid breaking old code mixing PyObject_{New, NEW} with
-   PyMem_{Del, DEL} and PyMem_{Free, FREE}, the PyMem "release memory"
-   functions have to be redirected to the object deallocator. */
-#define PyMem_FREE           	PyObject_FREE
 
 /*
  * Type-oriented memory interface
@@ -91,10 +90,10 @@ PyAPI_FUNC(void) PyMem_Free(void *);
  */
 
 #define PyMem_New(type, n) \
-  ( ((n) > INT_MAX / sizeof(type)) ? NULL : \
+  ( ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :	\
 	( (type *) PyMem_Malloc((n) * sizeof(type)) ) )
 #define PyMem_NEW(type, n) \
-  ( ((n) > INT_MAX / sizeof(type)) ? NULL : \
+  ( ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :	\
 	( (type *) PyMem_MALLOC((n) * sizeof(type)) ) )
 
 /*
@@ -104,17 +103,17 @@ PyAPI_FUNC(void) PyMem_Free(void *);
  * caller's memory error handler to not lose track of it.
  */
 #define PyMem_Resize(p, type, n) \
-  ( (p) = ((n) > INT_MAX / sizeof(type)) ? NULL : \
+  ( (p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :	\
 	(type *) PyMem_Realloc((p), (n) * sizeof(type)) )
 #define PyMem_RESIZE(p, type, n) \
-  ( (p) = ((n) > INT_MAX / sizeof(type)) ? NULL : \
+  ( (p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :	\
 	(type *) PyMem_REALLOC((p), (n) * sizeof(type)) )
 
-/* In order to avoid breaking old code mixing PyObject_{New, NEW} with
-   PyMem_{Del, DEL} and PyMem_{Free, FREE}, the PyMem "release memory"
-   functions have to be redirected to the object deallocator. */
-#define PyMem_Del		PyObject_Free
-#define PyMem_DEL		PyObject_FREE
+/* PyMem{Del,DEL} are left over from ancient days, and shouldn't be used
+ * anymore.  They're just confusing aliases for PyMem_{Free,FREE} now.
+ */
+#define PyMem_Del		PyMem_Free
+#define PyMem_DEL		PyMem_FREE
 
 #ifdef __cplusplus
 }

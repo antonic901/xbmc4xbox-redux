@@ -14,6 +14,10 @@ So bottom line: the processes() stuff does not work on < MacOS9
 
 Mostly written by erik@letterror.com
 """
+
+from warnings import warnpy3k
+warnpy3k("In 3.x, the findertools module is removed.", stacklevel=2)
+
 import Finder
 from Carbon import AppleEvents
 import aetools
@@ -124,8 +128,8 @@ def update(file):
 def comment(object, comment=None):
     """comment: get or set the Finder-comment of the item, displayed in the 'Get Info' window."""
     object = Carbon.File.FSRef(object)
-    object_alias = object.FSNewAliasMonimal()
-    if comment == None:
+    object_alias = object.FSNewAliasMinimal()
+    if comment is None:
         return _getcomment(object_alias)
     else:
         return _setcomment(object_alias, comment)
@@ -139,9 +143,9 @@ def _setcomment(object_alias, comment):
     args['----'] = aeobj_01
     args["data"] = comment
     _reply, args, attrs = finder.send("core", "setd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def _getcomment(object_alias):
@@ -152,9 +156,9 @@ def _getcomment(object_alias):
     aeobj_01 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('comt'), fr=aeobj_00)
     args['----'] = aeobj_01
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 
@@ -174,10 +178,10 @@ def processes():
     ## get the processnames or else the processnumbers
     args['----'] = aetypes.ObjectSpecifier(want=aetypes.Type('prcs'), form="indx", seld=aetypes.Unknown('abso', "all "), fr=None)
     _reply, args, attrs = finder.send('core', 'getd', args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
     p = []
-    if args.has_key('----'):
+    if '----' in args:
         p =  args['----']
         for proc in p:
             if hasattr(proc, 'seld'):
@@ -193,9 +197,9 @@ def processes():
     aeobj_0 = aetypes.ObjectSpecifier(want=aetypes.Type('prcs'), form="indx", seld=aetypes.Unknown('abso', "all "), fr=None)
     args['----'] =  aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('fcrt'), fr=aeobj_0)
     _reply, args, attrs = finder.send('core', 'getd', args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(_arg)
-    if args.has_key('----'):
+    if '----' in args:
         p =  args['----']
         creators = p[:]
     ## concatenate in one dict
@@ -248,9 +252,9 @@ def _processproperty(processname, property):
     aeobj_01 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type(property), fr=aeobj_00)
     args['----'] = aeobj_01
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 
@@ -269,7 +273,7 @@ def openwindow(object):
     aeobj_0 = aetypes.ObjectSpecifier(want=aetypes.Type('cfol'), form="alis", seld=object_alias, fr=None)
     args['----'] = aeobj_0
     _reply, args, attrs = finder.send(_code, _subcode, args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
 
 def closewindow(object):
@@ -284,7 +288,7 @@ def closewindow(object):
     aeobj_0 = aetypes.ObjectSpecifier(want=aetypes.Type('cfol'), form="alis", seld=object_alias, fr=None)
     args['----'] = aeobj_0
     _reply, args, attrs = finder.send(_code, _subcode, args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
 
 def location(object, pos=None):
@@ -306,7 +310,7 @@ def _setlocation(object_alias, (x, y)):
     args['----'] = aeobj_01
     args["data"] = [x, y]
     _reply, args, attrs = finder.send("core", "setd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
     return (x,y)
 
@@ -319,9 +323,9 @@ def _getlocation(object_alias):
     aeobj_01 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('posn'), fr=aeobj_00)
     args['----'] = aeobj_01
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         pos = args['----']
         return pos.h, pos.v
 
@@ -329,7 +333,7 @@ def label(object, index=None):
     """label: set or get the label of the item. Specify file by name or fsspec."""
     object = Carbon.File.FSRef(object)
     object_alias = object.FSNewAliasMinimal()
-    if index == None:
+    if index is None:
         return _getlabel(object_alias)
     if index < 0 or index > 7:
         index = 0
@@ -344,9 +348,9 @@ def _getlabel(object_alias):
     aeobj_01 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('labi'), fr=aeobj_00)
     args['----'] = aeobj_01
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def _setlabel(object_alias, index):
@@ -363,7 +367,7 @@ def _setlabel(object_alias, index):
     args['----'] = aeobj_1
     args["data"] = index
     _reply, args, attrs = finder.send(_code, _subcode, args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
     return index
 
@@ -375,7 +379,7 @@ def windowview(folder, view=None):
     """
     fsr = Carbon.File.FSRef(folder)
     folder_alias = fsr.FSNewAliasMinimal()
-    if view == None:
+    if view is None:
         return _getwindowview(folder_alias)
     return _setwindowview(folder_alias, view)
 
@@ -403,9 +407,9 @@ def _setwindowview(folder_alias, view=0):
     args['----'] = aeobj_2
     args['data'] = aeobj_3
     _reply, args, attrs = finder.send(_code, _subcode, args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def _getwindowview(folder_alias):
@@ -420,10 +424,10 @@ def _getwindowview(folder_alias):
     aeobj_02 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('pvew'), fr=aeobj_01)
     args['----'] = aeobj_02
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
     views = {'iimg':0, 'pnam':1, 'lgbu':2}
-    if args.has_key('----'):
+    if '----' in args:
         return views[args['----'].enum]
 
 def windowsize(folder, size=None):
@@ -455,7 +459,7 @@ def _setwindowsize(folder_alias, (w, h)):
     args['----'] = aeobj_2
     args["data"] = aevar00
     _reply, args, attrs = finder.send(_code, _subcode, args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
     return (w, h)
 
@@ -472,9 +476,9 @@ def _getwindowsize(folder_alias):
             form="prop", seld=aetypes.Type('posn'), fr=aeobj_1)
     args['----'] = aeobj_2
     _reply, args, attrs = finder.send('core', 'getd', args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def windowposition(folder, pos=None):
@@ -503,9 +507,9 @@ def _setwindowposition(folder_alias, (x, y)):
     args['----'] = aeobj_2
     args["data"] = [x, y]
     _reply, args, attrs = finder.send('core', 'setd', args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def _getwindowposition(folder_alias):
@@ -521,9 +525,9 @@ def _getwindowposition(folder_alias):
             form="prop", seld=aetypes.Type('ptsz'), fr=aeobj_1)
     args['----'] = aeobj_2
     _reply, args, attrs = finder.send('core', 'getd', args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def icon(object, icondata=None):
@@ -533,7 +537,7 @@ def icon(object, icondata=None):
     Development opportunity: get and set the data as PICT."""
     fsr = Carbon.File.FSRef(object)
     object_alias = fsr.FSNewAliasMinimal()
-    if icondata == None:
+    if icondata is None:
         return _geticon(object_alias)
     return _seticon(object_alias, icondata)
 
@@ -548,9 +552,9 @@ def _geticon(object_alias):
             form="prop", seld=aetypes.Type('iimg'), fr=aeobj_00)
     args['----'] = aeobj_01
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def _seticon(object_alias, icondata):
@@ -565,9 +569,9 @@ def _seticon(object_alias, icondata):
     args['----'] = aeobj_01
     args["data"] = icondata
     _reply, args, attrs = finder.send("core", "setd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----'].data
 
 
@@ -590,9 +594,9 @@ def mountvolume(volume, server=None, username=None, password=None):
         args["SRVR"] = server
     args['----'] = volume
     _reply, args, attrs = finder.send("aevt", "mvol", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def unmountvolume(volume):
@@ -606,9 +610,9 @@ def putaway(object):
     attrs = {}
     args['----'] = aetypes.ObjectSpecifier(want=aetypes.Type('cdis'), form="name", seld=object, fr=None)
     _reply, args, attrs = talker.send("fndr", "ptwy", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 
@@ -627,9 +631,9 @@ def volumelevel(level):
         level = 7
     args['----'] = level
     _reply, args, attrs = finder.send("aevt", "stvl", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def OSversion():
@@ -640,9 +644,9 @@ def OSversion():
     aeobj_00 = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('ver2'), fr=None)
     args['----'] = aeobj_00
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         return args['----']
 
 def filesharing():
@@ -657,9 +661,9 @@ def filesharing():
     attrs = {}
     args['----'] = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('fshr'), fr=None)
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         if args['----'] == 0:
             status = -1
         else:
@@ -669,9 +673,9 @@ def filesharing():
     attrs = {}
     args['----'] = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('fsup'), fr=None)
     _reply, args, attrs = finder.send("core", "getd", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise Error, aetools.decodeerror(args)
-    if args.has_key('----'):
+    if '----' in args:
         if args['----'] == 1:
             status = 0
     return status
@@ -689,7 +693,7 @@ def emptytrash():
     attrs = {}
     args['----'] = aetypes.ObjectSpecifier(want=aetypes.Type('prop'), form="prop", seld=aetypes.Type('trsh'), fr=None)
     _reply, args, attrs = finder.send("fndr", "empt", args, attrs)
-    if args.has_key('errn'):
+    if 'errn' in args:
         raise aetools.Error, aetools.decodeerror(args)
 
 

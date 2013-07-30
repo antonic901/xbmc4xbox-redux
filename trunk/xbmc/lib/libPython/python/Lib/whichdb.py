@@ -62,7 +62,7 @@ def whichdb(filename):
             return "dumbdbm"
         f = open(filename + os.extsep + "dir", "rb")
         try:
-            if f.read(1) in ["'", '"']:
+            if f.read(1) in ("'", '"'):
                 return "dumbdbm"
         finally:
             f.close()
@@ -91,7 +91,7 @@ def whichdb(filename):
         return ""
 
     # Check for GNU dbm
-    if magic == 0x13579ace:
+    if magic in (0x13579ace, 0x13579acd, 0x13579acf):
         return "gdbm"
 
     # Check for old Berkeley db hash file format v2

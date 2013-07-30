@@ -1,6 +1,7 @@
 #!/bin/sh
 cd Lib/
-zip ../python24.zlib \
+rm ../python27.zlib
+zip ../python27.zlib \
   -r . \
   -i \*.py \
   -x \
@@ -8,5 +9,10 @@ zip ../python24.zlib \
     distutils/\* \
     curses/\* \
     lib-tk/\* \
+    lib2to3/\* \
     idlelib/\* \
-    test/\*
+    test/\* \
+    unittest/\* \
+    multiprocessing/\* \
+    \*/tests/\* \
+    \*/test/\*

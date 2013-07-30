@@ -2,12 +2,41 @@
 
 import unittest
 from test import test_support
-import winsound, time
+test_support.requires('audio')
+import time
 import os
 import subprocess
 
+winsound = test_support.import_module('winsound')
+ctypes = test_support.import_module('ctypes')
+import _winreg
+
+def has_sound(sound):
+    """Find out if a particular event is configured with a default sound"""
+    try:
+        # Ask the mixer API for the number of devices it knows about.
+        # When there are no devices, PlaySound will fail.
+        if ctypes.windll.winmm.mixerGetNumDevs() is 0:
+            return False
+
+        key = _winreg.OpenKeyEx(_winreg.HKEY_CURRENT_USER,
+                "AppEvents\Schemes\Apps\.Default\{0}\.Default".format(sound))
+        value = _winreg.EnumValue(key, 0)[1]
+        if value is not u"":
+            return True
+        else:
+            return False
+    except WindowsError:
+        return False
 
 class BeepTest(unittest.TestCase):
+    # As with PlaySoundTest, incorporate the _have_soundcard() check
+    # into our test methods.  If there's no audio device present,
+    # winsound.Beep returns 0 and GetLastError() returns 127, which
+    # is: ERROR_PROC_NOT_FOUND ("The specified procedure could not
+    # be found").  (FWIW, virtual/Hyper-V systems fall under this
+    # scenario as they have no sound devices whatsoever  (not even
+    # a legacy Beep device).)
 
     def test_errors(self):
         self.assertRaises(TypeError, winsound.Beep)
@@ -15,12 +44,27 @@ class BeepTest(unittest.TestCase):
         self.assertRaises(ValueError, winsound.Beep, 32768, 75)
 
     def test_extremes(self):
-        winsound.Beep(37, 75)
-        winsound.Beep(32767, 75)
+        self._beep(37, 75)
+        self._beep(32767, 75)
 
     def test_increasingfrequency(self):
         for i in xrange(100, 2000, 100):
-            winsound.Beep(i, 75)
+            self._beep(i, 75)
+
+    def _beep(self, *args):
+        # these tests used to use _have_soundcard(), but it's quite
+        # possible to have a soundcard, and yet have the beep driver
+        # disabled. So basically, we have no way of knowing whether
+        # a beep should be produced or not, so currently if these
+        # tests fail we're ignoring them
+        #
+        # XXX the right fix for this is to define something like
+        # _have_enabled_beep_driver() and use that instead of the
+        # try/except below
+        try:
+            winsound.Beep(*args)
+        except RuntimeError:
+            pass
 
 class MessageBeepTest(unittest.TestCase):
 
@@ -59,6 +103,7 @@ class PlaySoundTest(unittest.TestCase):
             "none", winsound.SND_ASYNC | winsound.SND_MEMORY
         )
 
+    @unittest.skipUnless(has_sound("SystemAsterisk"), "No default SystemAsterisk")
     def test_alias_asterisk(self):
         if _have_soundcard():
             winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
@@ -69,6 +114,7 @@ class PlaySoundTest(unittest.TestCase):
                 'SystemAsterisk', winsound.SND_ALIAS
             )
 
+    @unittest.skipUnless(has_sound("SystemExclamation"), "No default SystemExclamation")
     def test_alias_exclamation(self):
         if _have_soundcard():
             winsound.PlaySound('SystemExclamation', winsound.SND_ALIAS)
@@ -79,6 +125,7 @@ class PlaySoundTest(unittest.TestCase):
                 'SystemExclamation', winsound.SND_ALIAS
             )
 
+    @unittest.skipUnless(has_sound("SystemExit"), "No default SystemExit")
     def test_alias_exit(self):
         if _have_soundcard():
             winsound.PlaySound('SystemExit', winsound.SND_ALIAS)
@@ -89,6 +136,7 @@ class PlaySoundTest(unittest.TestCase):
                 'SystemExit', winsound.SND_ALIAS
             )
 
+    @unittest.skipUnless(has_sound("SystemHand"), "No default SystemHand")
     def test_alias_hand(self):
         if _have_soundcard():
             winsound.PlaySound('SystemHand', winsound.SND_ALIAS)
@@ -99,6 +147,7 @@ class PlaySoundTest(unittest.TestCase):
                 'SystemHand', winsound.SND_ALIAS
             )
 
+    @unittest.skipUnless(has_sound("SystemQuestion"), "No default SystemQuestion")
     def test_alias_question(self):
         if _have_soundcard():
             winsound.PlaySound('SystemQuestion', winsound.SND_ALIAS)
@@ -169,11 +218,9 @@ class PlaySoundTest(unittest.TestCase):
                 pass
             winsound.PlaySound(None, winsound.SND_PURGE)
         else:
-            self.assertRaises(
-                RuntimeError,
-                winsound.PlaySound,
-                None, winsound.SND_PURGE
-            )
+            # Issue 8367: PlaySound(None, winsound.SND_PURGE)
+            # does not raise on systems without a sound card.
+            pass
 
 
 def _get_cscript_path():

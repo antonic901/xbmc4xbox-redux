@@ -45,7 +45,7 @@
 
 XBPython g_pythonParser;
 
-#define PYTHON_DLL "Q:\\system\\python\\python24.dll"
+#define PYTHON_DLL "Q:\\system\\python\\python27.dll"
 #define PYTHON_LIBDIR "Q:\\system\\python\\lib\\"
 #define PYTHON_EXT "Q:\\system\\python\\lib\\*.pyd"
 
@@ -197,20 +197,20 @@ void XBPython::Initialize()
       LibraryLoader* pDll = DllLoaderContainer::GetModule(m_hModule);
       if (!pDll || !python_load_dll(*pDll))
       {
-        CLog::Log(LOGFATAL, "Python: error loading python24.dll");
+        CLog::Log(LOGFATAL, "Python: error loading python27.dll");
         Finalize();
         return;
       }
 
       // first we check if all necessary files are installed
-      if (!FileExist("Q:\\system\\python\\python24.zlib") ||
+      if (!FileExist("Q:\\system\\python\\python27.zlib") ||
         !FileExist("Q:\\system\\python\\DLLs\\_socket.pyd") ||
+        !FileExist("Q:\\system\\python\\DLLs\\_sqlite3.pyd") ||
         !FileExist("Q:\\system\\python\\DLLs\\_ssl.pyd") ||
         !FileExist("Q:\\system\\python\\DLLs\\bz2.pyd") ||
         !FileExist("Q:\\system\\python\\DLLs\\pyexpat.pyd") ||
         !FileExist("Q:\\system\\python\\DLLs\\select.pyd") ||
-        !FileExist("Q:\\system\\python\\DLLs\\unicodedata.pyd") ||
-        !FileExist("Q:\\system\\python\\DLLs\\zlib.pyd"))
+        !FileExist("Q:\\system\\python\\DLLs\\unicodedata.pyd"))
       {
         CLog::Log(LOGERROR, "Python: Missing files, unable to execute script");
         Finalize();
@@ -239,12 +239,12 @@ void XBPython::Initialize()
       if (PyRun_SimpleString(""
         "import xbmc\n"
         "class xbmcout:\n"
-        "	def write(self, data):\n"
-        "		xbmc.output(data)\n"
-        "	def close(self):\n"
-        "		xbmc.output('.')\n"
-        "	def flush(self):\n"
-        "		xbmc.output('.')\n"
+        "\tdef write(self, data):\n"
+        "\t\txbmc.output(data)\n"
+        "\tdef close(self):\n"
+        "\t\txbmc.output('.')\n"
+        "\tdef flush(self):\n"
+        "\t\txbmc.output('.')\n"
         "\n"
         "import sys\n"
         "sys.stdout = xbmcout()\n"
@@ -286,12 +286,12 @@ void XBPython::Finalize()
   if (m_iDllScriptCounter == 0 && m_bInitialized)
   {
     m_bInitialized = false;
-    CLog::Log(LOGINFO, "Python, unloading python24.dll because no scripts are running anymore");
+    CLog::Log(LOGINFO, "Python, unloading python27.dll because no scripts are running anymore");
     PyEval_AcquireLock();
     PyThreadState_Swap(mainThreadState);
     Py_Finalize();
     PyEval_ReleaseLock();
-    // first free all dlls loaded by python, after that python24.dll (this is done by UnloadPythonDlls
+    // first free all dlls loaded by python, after that python27.dll (this is done by UnloadPythonDlls
     DllLoaderContainer::UnloadPythonDlls();
     m_hModule = NULL;
     mainThreadState = NULL;
@@ -306,7 +306,7 @@ void XBPython::FreeResources()
     // cleanup threads that are still running
     PyList::iterator it = vecPyList.begin();
     while (it != vecPyList.end())
-    { 
+    {
       lock.Leave(); //unlock here because the python thread might lock when it exits
       delete it->pyThread;
       lock.Enter();
@@ -329,7 +329,7 @@ void XBPython::Process()
   if (bStartup)
   {
     bStartup = false;
-    
+
     // autoexec.py - system
     strAutoExecPy = "special://xbmc/scripts/autoexec.py";
 
@@ -337,7 +337,7 @@ void XBPython::Process()
     {
       // We need to make sure the network is up in case the start scripts require network
       g_application.getNetwork().WaitForSetup(5000);
-      
+
       evalFile(strAutoExecPy);
     }
     else
@@ -449,7 +449,7 @@ void XBPython::stopScript(int id)
 
 PyThreadState *XBPython::getMainThreadState()
 {
-  CSingleLock lock(m_critSection);  
+  CSingleLock lock(m_critSection);
   return mainThreadState;
 }
 
@@ -462,7 +462,7 @@ int XBPython::ScriptsSize()
 const char* XBPython::getFileName(int scriptId)
 {
   const char* cFileName = NULL;
-  
+
   CSingleLock lock(m_critSection);
   PyList::iterator it = vecPyList.begin();
   while (it != vecPyList.end())
@@ -478,7 +478,7 @@ const char* XBPython::getFileName(int scriptId)
 int XBPython::getScriptId(const char* strFile)
 {
   int iId = -1;
-  
+
   CSingleLock lock(m_critSection);
 
   PyList::iterator it = vecPyList.begin();
@@ -488,7 +488,7 @@ int XBPython::getScriptId(const char* strFile)
       iId = it->id;
     ++it;
   }
-  
+
   return iId;
 }
 
@@ -512,7 +512,7 @@ bool XBPython::isRunning(int scriptId)
 bool XBPython::isStopping(int scriptId)
 {
   bool bStopping = false;
-  
+
   CSingleLock lock(m_critSection);
   PyList::iterator it = vecPyList.begin();
   while (it != vecPyList.end())
@@ -521,7 +521,7 @@ bool XBPython::isStopping(int scriptId)
       bStopping = it->pyThread->isStopping();
     ++it;
   }
-  
+
   return bStopping;
 }
 
@@ -549,10 +549,10 @@ int XBPython::evalString(const char *src, const unsigned int argc, const char **
 {
   CLog::Log(LOGDEBUG, "XBPython::evalString (python)");
   CSingleLock lock(m_critSection);
-  
+
   Initialize();
 
-  if (!m_bInitialized) 
+  if (!m_bInitialized)
   {
     CLog::Log(LOGERROR, "XBPython::evalString, python not initialized (python)");
     return -1;
@@ -564,7 +564,7 @@ int XBPython::evalString(const char *src, const unsigned int argc, const char **
   if (argv != NULL)
     pyThread->setArgv(argc, argv);
   pyThread->evalString(src);
-  
+
   PyElem inf;
   inf.id = nextid;
   inf.bDone = false;

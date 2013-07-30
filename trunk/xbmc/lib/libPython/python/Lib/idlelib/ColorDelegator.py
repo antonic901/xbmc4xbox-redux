@@ -3,33 +3,35 @@ import re
 import keyword
 import __builtin__
 from Tkinter import *
-from Delegator import Delegator
-from configHandler import idleConf
+from idlelib.Delegator import Delegator
+from idlelib.configHandler import idleConf
 
 DEBUG = False
 
-def any(name, list):
-    return "(?P<%s>" % name + "|".join(list) + ")"
+def any(name, alternates):
+    "Return a named group pattern matching list of alternates."
+    return "(?P<%s>" % name + "|".join(alternates) + ")"
 
 def make_pat():
     kw = r"\b" + any("KEYWORD", keyword.kwlist) + r"\b"
     builtinlist = [str(name) for name in dir(__builtin__)
                                         if not name.startswith('_')]
     # self.file = file("file") :
-    # 1st 'file' colorized normal, 2nd as builtin, 3rd as comment
-    builtin = r"([^.'\"\\]\b|^)" + any("BUILTIN", builtinlist) + r"\b"
+    # 1st 'file' colorized normal, 2nd as builtin, 3rd as string
+    builtin = r"([^.'\"\\#]\b|^)" + any("BUILTIN", builtinlist) + r"\b"
     comment = any("COMMENT", [r"#[^\n]*"])
-    sqstring = r"(\b[rR])?'[^'\\\n]*(\\.[^'\\\n]*)*'?"
-    dqstring = r'(\b[rR])?"[^"\\\n]*(\\.[^"\\\n]*)*"?'
-    sq3string = r"(\b[rR])?'''[^'\\]*((\\.|'(?!''))[^'\\]*)*(''')?"
-    dq3string = r'(\b[rR])?"""[^"\\]*((\\.|"(?!""))[^"\\]*)*(""")?'
+    stringprefix = r"(\br|u|ur|R|U|UR|Ur|uR|b|B|br|Br|bR|BR)?"
+    sqstring = stringprefix + r"'[^'\\\n]*(\\.[^'\\\n]*)*'?"
+    dqstring = stringprefix + r'"[^"\\\n]*(\\.[^"\\\n]*)*"?'
+    sq3string = stringprefix + r"'''[^'\\]*((\\.|'(?!''))[^'\\]*)*(''')?"
+    dq3string = stringprefix + r'"""[^"\\]*((\\.|"(?!""))[^"\\]*)*(""")?'
     string = any("STRING", [sq3string, dq3string, sqstring, dqstring])
     return kw + "|" + builtin + "|" + comment + "|" + string +\
            "|" + any("SYNC", [r"\n"])
 
 prog = re.compile(make_pat(), re.S)
 idprog = re.compile(r"\s+(\w+)", re.S)
-asprog = re.compile(r".*?\b(as)\b", re.S)
+asprog = re.compile(r".*?\b(as)\b")
 
 class ColorDelegator(Delegator):
 
@@ -48,6 +50,10 @@ class ColorDelegator(Delegator):
             self.config_colors()
             self.bind("<<toggle-auto-coloring>>", self.toggle_colorize_event)
             self.notify_range("1.0", "end")
+        else:
+            # No delegate - stop any colorizing
+            self.stop_colorizing = True
+            self.allow_colorizing = False
 
     def config_colors(self):
         for tag, cnf in self.tagdefs.items():
@@ -208,10 +214,15 @@ class ColorDelegator(Delegator):
                                                  head + "+%dc" % a,
                                                  head + "+%dc" % b)
                             elif value == "import":
-                                # color all the "as" words on same line;
-                                # cheap approximation to the truth
+                                # color all the "as" words on same line, except
+                                # if in a comment; cheap approximation to the
+                                # truth
+                                if '#' in chars:
+                                    endpos = chars.index('#')
+                                else:
+                                    endpos = len(chars)
                                 while True:
-                                    m1 = self.asprog.match(chars, b)
+                                    m1 = self.asprog.match(chars, b, endpos)
                                     if not m1:
                                         break
                                     a, b = m1.span(1)
@@ -237,9 +248,12 @@ class ColorDelegator(Delegator):
                     if DEBUG: print "colorizing stopped"
                     return
 
+    def removecolors(self):
+        for tag in self.tagdefs.keys():
+            self.tag_remove(tag, "1.0", "end")
 
 def main():
-    from Percolator import Percolator
+    from idlelib.Percolator import Percolator
     root = Tk()
     root.wm_protocol("WM_DELETE_WINDOW", root.quit)
     text = Text(background="white")

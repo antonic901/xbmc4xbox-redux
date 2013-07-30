@@ -1,3 +1,8 @@
+# -coding=latin1-
+
+from warnings import warnpy3k
+warnpy3k("In 3.x, the macerrors module is removed.", stacklevel=2)
+
 svTempDisable   =   -32768  #svTempDisable
 svDisabled  =   -32640  #Reserve range -32640 to -32768 for Apple temp disables.
 fontNotOutlineErr   =   -32615  #bitmap font passed to routine that does outlines only
@@ -1574,7 +1579,7 @@ smFHBlkDispErr  =   -311    #Error occurred during _sDisposePtr (Dispose of FHea
 smFHBlockRdErr  =   -310    #Error occurred during _sGetFHeader.
 smBLFieldBad    =   -309    #ByteLanes field was bad.
 smUnExBusErr    =   -308    #Unexpected BusError
-smResrvErr  =   -307    #Fatal reserved error. Resreved field <> 0.
+smResrvErr  =   -307    #Fatal reserved error. Reserved field != 0.
 smNosInfoArray  =   -306    #No sInfoArray. Memory Mgr error.
 smDisabledSlot  =   -305    #This slot is disabled (-305 use to be smLWTstBad)
 smNoDir =   -304    #Directory offset is Nil

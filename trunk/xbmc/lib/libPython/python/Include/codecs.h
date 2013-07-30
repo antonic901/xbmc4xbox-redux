@@ -29,15 +29,15 @@ PyAPI_FUNC(int) PyCodec_Register(
 
 /* Codec register lookup API.
 
-   Looks up the given encoding and returns a tuple (encoder, decoder,
-   stream reader, stream writer) of functions which implement the
-   different aspects of processing the encoding.
+   Looks up the given encoding and returns a CodecInfo object with
+   function attributes which implement the different aspects of
+   processing the encoding.
 
    The encoding string is looked up converted to all lower-case
    characters. This makes encodings looked up through this mechanism
    effectively case-insensitive.
 
-   If no codec is found, a KeyError is set and NULL returned. 
+   If no codec is found, a KeyError is set and NULL returned.
 
    As side effect, this tries to load the encodings package, if not
    yet done. This is part of the lazy load strategy for the encodings
@@ -101,6 +101,20 @@ PyAPI_FUNC(PyObject *) PyCodec_Decoder(
        const char *encoding
        );
 
+/* Get a IncrementalEncoder object for the given encoding. */
+
+PyAPI_FUNC(PyObject *) PyCodec_IncrementalEncoder(
+       const char *encoding,
+       const char *errors
+       );
+
+/* Get a IncrementalDecoder object function for the given encoding. */
+
+PyAPI_FUNC(PyObject *) PyCodec_IncrementalDecoder(
+       const char *encoding,
+       const char *errors
+       );
+
 /* Get a StreamReader factory function for the given encoding. */
 
 PyAPI_FUNC(PyObject *) PyCodec_StreamReader(
@@ -119,7 +133,7 @@ PyAPI_FUNC(PyObject *) PyCodec_StreamWriter(
 
 /* Unicode encoding error handling callback registry API */
 
-/* Register the error handling callback function error under the name
+/* Register the error handling callback function error under the given
    name. This function will be called by the codec when it encounters
    unencodable characters/undecodable bytes and doesn't know the
    callback name, when name is specified as the error parameter
@@ -127,8 +141,8 @@ PyAPI_FUNC(PyObject *) PyCodec_StreamWriter(
    Return 0 on success, -1 on error */
 PyAPI_FUNC(int) PyCodec_RegisterError(const char *name, PyObject *error);
 
-/* Lookup the error handling callback function registered under the
-   name error. As a special case NULL can be passed, in which case
+/* Lookup the error handling callback function registered under the given
+   name. As a special case NULL can be passed, in which case
    the error handling callback for "strict" will be returned. */
 PyAPI_FUNC(PyObject *) PyCodec_LookupError(const char *name);
 
@@ -138,7 +152,7 @@ PyAPI_FUNC(PyObject *) PyCodec_StrictErrors(PyObject *exc);
 /* ignore the unicode error, skipping the faulty input */
 PyAPI_FUNC(PyObject *) PyCodec_IgnoreErrors(PyObject *exc);
 
-/* replace the unicode error with ? or U+FFFD */
+/* replace the unicode encode error with ? or U+FFFD */
 PyAPI_FUNC(PyObject *) PyCodec_ReplaceErrors(PyObject *exc);
 
 /* replace the unicode encode error with XML character references */

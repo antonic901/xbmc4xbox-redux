@@ -49,6 +49,7 @@ __getstate__() and __setstate__().  See the documentation for module
 """
 
 import types
+import weakref
 from copy_reg import dispatch_table
 
 class Error(Exception):
@@ -62,16 +63,6 @@ except ImportError:
 
 __all__ = ["Error", "copy", "deepcopy"]
 
-import inspect
-def _getspecial(cls, name):
-    for basecls in inspect.getmro(cls):
-        try:
-            return basecls.__dict__[name]
-        except:
-            pass
-    else:
-        return None
-
 def copy(x):
     """Shallow copy operation on arbitrary Python objects.
 
@@ -84,7 +75,7 @@ def copy(x):
     if copier:
         return copier(x)
 
-    copier = _getspecial(cls, "__copy__")
+    copier = getattr(cls, "__copy__", None)
     if copier:
         return copier(x)
 
@@ -100,9 +91,6 @@ def copy(x):
             if reductor:
                 rv = reductor()
             else:
-                copier = getattr(x, "__copy__", None)
-                if copier:
-                    return copier()
                 raise Error("un(shallow)copyable object of type %s" % cls)
 
     return _reconstruct(x, rv, 0)
@@ -112,9 +100,10 @@ _copy_dispatch = d = {}
 
 def _copy_immutable(x):
     return x
-for t in (types.NoneType, int, long, float, bool, str, tuple,
+for t in (type(None), int, long, float, bool, str, tuple,
           frozenset, type, xrange, types.ClassType,
-          types.BuiltinFunctionType):
+          types.BuiltinFunctionType, type(Ellipsis),
+          types.FunctionType, weakref.ref):
     d[t] = _copy_immutable
 for name in ("ComplexType", "UnicodeType", "CodeType"):
     t = getattr(types, name, None)
@@ -180,9 +169,9 @@ def deepcopy(x, memo=None, _nil=[]):
         if issc:
             y = _deepcopy_atomic(x, memo)
         else:
-            copier = _getspecial(cls, "__deepcopy__")
+            copier = getattr(x, "__deepcopy__", None)
             if copier:
-                y = copier(x, memo)
+                y = copier(memo)
             else:
                 reductor = dispatch_table.get(cls)
                 if reductor:
@@ -196,9 +185,6 @@ def deepcopy(x, memo=None, _nil=[]):
                         if reductor:
                             rv = reductor()
                         else:
-                            copier = getattr(x, "__deepcopy__", None)
-                            if copier:
-                                return copier(memo)
                             raise Error(
                                 "un(deep)copyable object of type %s" % cls)
                 y = _reconstruct(x, rv, 1, memo)
@@ -211,28 +197,31 @@ _deepcopy_dispatch = d = {}
 
 def _deepcopy_atomic(x, memo):
     return x
-d[types.NoneType] = _deepcopy_atomic
-d[types.IntType] = _deepcopy_atomic
-d[types.LongType] = _deepcopy_atomic
-d[types.FloatType] = _deepcopy_atomic
-d[types.BooleanType] = _deepcopy_atomic
+d[type(None)] = _deepcopy_atomic
+d[type(Ellipsis)] = _deepcopy_atomic
+d[int] = _deepcopy_atomic
+d[long] = _deepcopy_atomic
+d[float] = _deepcopy_atomic
+d[bool] = _deepcopy_atomic
 try:
-    d[types.ComplexType] = _deepcopy_atomic
-except AttributeError:
+    d[complex] = _deepcopy_atomic
+except NameError:
     pass
-d[types.StringType] = _deepcopy_atomic
+d[str] = _deepcopy_atomic
 try:
-    d[types.UnicodeType] = _deepcopy_atomic
-except AttributeError:
+    d[unicode] = _deepcopy_atomic
+except NameError:
     pass
 try:
     d[types.CodeType] = _deepcopy_atomic
 except AttributeError:
     pass
-d[types.TypeType] = _deepcopy_atomic
-d[types.XRangeType] = _deepcopy_atomic
+d[type] = _deepcopy_atomic
+d[xrange] = _deepcopy_atomic
 d[types.ClassType] = _deepcopy_atomic
 d[types.BuiltinFunctionType] = _deepcopy_atomic
+d[types.FunctionType] = _deepcopy_atomic
+d[weakref.ref] = _deepcopy_atomic
 
 def _deepcopy_list(x, memo):
     y = []
@@ -240,7 +229,7 @@ def _deepcopy_list(x, memo):
     for a in x:
         y.append(deepcopy(a, memo))
     return y
-d[types.ListType] = _deepcopy_list
+d[list] = _deepcopy_list
 
 def _deepcopy_tuple(x, memo):
     y = []
@@ -259,7 +248,7 @@ def _deepcopy_tuple(x, memo):
         y = x
     memo[d] = y
     return y
-d[types.TupleType] = _deepcopy_tuple
+d[tuple] = _deepcopy_tuple
 
 def _deepcopy_dict(x, memo):
     y = {}
@@ -267,9 +256,13 @@ def _deepcopy_dict(x, memo):
     for key, value in x.iteritems():
         y[deepcopy(key, memo)] = deepcopy(value, memo)
     return y
-d[types.DictionaryType] = _deepcopy_dict
+d[dict] = _deepcopy_dict
 if PyStringMap is not None:
     d[PyStringMap] = _deepcopy_dict
+
+def _deepcopy_method(x, memo): # Copy instance methods
+    return type(x)(x.im_func, deepcopy(x.im_self, memo), x.im_class)
+_deepcopy_dispatch[types.MethodType] = _deepcopy_method
 
 def _keep_alive(x, memo):
     """Keeps a reference to the object x in the memo.
@@ -335,17 +328,7 @@ def _reconstruct(x, info, deep, memo=None):
         args = deepcopy(args, memo)
     y = callable(*args)
     memo[id(x)] = y
-    if listiter is not None:
-        for item in listiter:
-            if deep:
-                item = deepcopy(item, memo)
-            y.append(item)
-    if dictiter is not None:
-        for key, value in dictiter:
-            if deep:
-                key = deepcopy(key, memo)
-                value = deepcopy(value, memo)
-            y[key] = value
+
     if state:
         if deep:
             state = deepcopy(state, memo)
@@ -361,6 +344,18 @@ def _reconstruct(x, info, deep, memo=None):
             if slotstate is not None:
                 for key, value in slotstate.iteritems():
                     setattr(y, key, value)
+
+    if listiter is not None:
+        for item in listiter:
+            if deep:
+                item = deepcopy(item, memo)
+            y.append(item)
+    if dictiter is not None:
+        for key, value in dictiter:
+            if deep:
+                key = deepcopy(key, memo)
+                value = deepcopy(value, memo)
+            y[key] = value
     return y
 
 del d
@@ -423,6 +418,16 @@ def _test():
     print map(repr.repr, l1)
     print map(repr.repr, l2)
     print map(repr.repr, l3)
+    class odict(dict):
+        def __init__(self, d = {}):
+            self.a = 99
+            dict.__init__(self, d)
+        def __setitem__(self, k, i):
+            dict.__setitem__(self, k, i)
+            self.a
+    o = odict({"A" : "B"})
+    x = deepcopy(o)
+    print(o, x)
 
 if __name__ == '__main__':
     _test()

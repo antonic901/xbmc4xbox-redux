@@ -207,6 +207,9 @@ class Rat(object):
         """Compare two Rats for inequality."""
         return not self == other
 
+    # Silence Py3k warning
+    __hash__ = None
+
 class RatTestCase(unittest.TestCase):
     """Unit tests for Rat class and its support utilities."""
 
@@ -220,10 +223,10 @@ class RatTestCase(unittest.TestCase):
         self.assertEqual(gcd(-10, -2), -2)
         for i in range(1, 20):
             for j in range(1, 20):
-                self.assert_(gcd(i, j) > 0)
-                self.assert_(gcd(-i, j) < 0)
-                self.assert_(gcd(i, -j) > 0)
-                self.assert_(gcd(-i, -j) < 0)
+                self.assertTrue(gcd(i, j) > 0)
+                self.assertTrue(gcd(-i, j) < 0)
+                self.assertTrue(gcd(i, -j) > 0)
+                self.assertTrue(gcd(-i, -j) < 0)
 
     def test_constructor(self):
         a = Rat(10, 15)

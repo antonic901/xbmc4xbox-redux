@@ -87,6 +87,12 @@ ConfigParser -- responsible for parsing a list of
         write the configuration state in .ini format
 """
 
+try:
+    from collections import OrderedDict as _default_dict
+except ImportError:
+    # fallback for setup.py which hasn't yet built _collections
+    _default_dict = dict
+
 import re
 
 __all__ = ["NoSectionError", "DuplicateSectionError", "NoOptionError",
@@ -106,6 +112,21 @@ MAX_INTERPOLATION_DEPTH = 10
 class Error(Exception):
     """Base class for ConfigParser exceptions."""
 
+    def _get_message(self):
+        """Getter for 'message'; needed only to override deprecation in
+        BaseException."""
+        return self.__message
+
+    def _set_message(self, value):
+        """Setter for 'message'; needed only to override deprecation in
+        BaseException."""
+        self.__message = value
+
+    # BaseException.message has been deprecated since Python 2.6.  To prevent
+    # DeprecationWarning from popping up over this pre-existing attribute, use
+    # a new property that takes lookup precedence.
+    message = property(_get_message, _set_message)
+
     def __init__(self, msg=''):
         self.message = msg
         Exception.__init__(self, msg)
@@ -121,6 +142,7 @@ class NoSectionError(Error):
     def __init__(self, section):
         Error.__init__(self, 'No section: %r' % (section,))
         self.section = section
+        self.args = (section, )
 
 class DuplicateSectionError(Error):
     """Raised when a section is multiply-created."""
@@ -128,6 +150,7 @@ class DuplicateSectionError(Error):
     def __init__(self, section):
         Error.__init__(self, "Section %r already exists" % section)
         self.section = section
+        self.args = (section, )
 
 class NoOptionError(Error):
     """A requested option was not found."""
@@ -137,6 +160,7 @@ class NoOptionError(Error):
                        (option, section))
         self.option = option
         self.section = section
+        self.args = (option, section)
 
 class InterpolationError(Error):
     """Base class for interpolation-related exceptions."""
@@ -145,6 +169,7 @@ class InterpolationError(Error):
         Error.__init__(self, msg)
         self.option = option
         self.section = section
+        self.args = (option, section, msg)
 
 class InterpolationMissingOptionError(InterpolationError):
     """A string substitution required a setting which was not available."""
@@ -158,6 +183,7 @@ class InterpolationMissingOptionError(InterpolationError):
                % (section, option, reference, rawval))
         InterpolationError.__init__(self, option, section, msg)
         self.reference = reference
+        self.args = (option, section, rawval, reference)
 
 class InterpolationSyntaxError(InterpolationError):
     """Raised when the source text into which substitutions are made
@@ -173,6 +199,7 @@ class InterpolationDepthError(InterpolationError):
                "\trawval : %s\n"
                % (section, option, rawval))
         InterpolationError.__init__(self, option, section, msg)
+        self.args = (option, section, rawval)
 
 class ParsingError(Error):
     """Raised when a configuration file does not follow legal syntax."""
@@ -181,6 +208,7 @@ class ParsingError(Error):
         Error.__init__(self, 'File contains parsing errors: %s' % filename)
         self.filename = filename
         self.errors = []
+        self.args = (filename, )
 
     def append(self, lineno, line):
         self.errors.append((lineno, line))
@@ -197,13 +225,19 @@ class MissingSectionHeaderError(ParsingError):
         self.filename = filename
         self.lineno = lineno
         self.line = line
-
+        self.args = (filename, lineno, line)
 
 
 class RawConfigParser:
-    def __init__(self, defaults=None):
-        self._sections = {}
-        self._defaults = {}
+    def __init__(self, defaults=None, dict_type=_default_dict,
+                 allow_no_value=False):
+        self._dict = dict_type
+        self._sections = self._dict()
+        self._defaults = self._dict()
+        if allow_no_value:
+            self._optcre = self.OPTCRE_NV
+        else:
+            self._optcre = self.OPTCRE
         if defaults:
             for key, value in defaults.items():
                 self._defaults[self.optionxform(key)] = value
@@ -220,11 +254,15 @@ class RawConfigParser:
         """Create a new section in the configuration.
 
         Raise DuplicateSectionError if a section by the specified name
-        already exists.
+        already exists. Raise ValueError if name is DEFAULT or any of it's
+        case-insensitive variants.
         """
+        if section.lower() == "default":
+            raise ValueError, 'Invalid section name: %s' % section
+
         if section in self._sections:
             raise DuplicateSectionError(section)
-        self._sections[section] = {}
+        self._sections[section] = self._dict()
 
     def has_section(self, section):
         """Indicate whether the named section is present in the configuration.
@@ -307,7 +345,7 @@ class RawConfigParser:
         except KeyError:
             if section != DEFAULTSECT:
                 raise NoSectionError(section)
-            d2 = {}
+            d2 = self._dict()
         d = self._defaults.copy()
         d.update(d2)
         if "__name__" in d:
@@ -347,7 +385,7 @@ class RawConfigParser:
             return (option in self._sections[section]
                     or option in self._defaults)
 
-    def set(self, section, option, value):
+    def set(self, section, option, value=None):
         """Set an option."""
         if not section or section == DEFAULTSECT:
             sectdict = self._defaults
@@ -368,9 +406,11 @@ class RawConfigParser:
         for section in self._sections:
             fp.write("[%s]\n" % section)
             for (key, value) in self._sections[section].items():
-                if key != "__name__":
-                    fp.write("%s = %s\n" %
-                             (key, str(value).replace('\n', '\n\t')))
+                if key == "__name__":
+                    continue
+                if (value is not None) or (self._optcre == self.OPTCRE):
+                    key = " = ".join((key, str(value).replace('\n', '\n\t')))
+                fp.write("%s\n" % (key))
             fp.write("\n")
 
     def remove_option(self, section, option):
@@ -411,6 +451,15 @@ class RawConfigParser:
                                               # by any # space/tab
         r'(?P<value>.*)$'                     # everything up to eol
         )
+    OPTCRE_NV = re.compile(
+        r'(?P<option>[^:=\s][^:=]*)'          # very permissive!
+        r'\s*(?:'                             # any number of space/tab,
+        r'(?P<vi>[:=])\s*'                    # optionally followed by
+                                              # separator (either : or
+                                              # =), followed by any #
+                                              # space/tab
+        r'(?P<value>.*))?$'                   # everything up to eol
+        )
 
     def _read(self, fp, fpname):
         """Parse a sectioned setup file.
@@ -422,10 +471,10 @@ class RawConfigParser:
         leading whitespace.  Blank lines, lines beginning with a '#',
         and just about everything else are ignored.
         """
-        cursect = None                            # None, or a dictionary
+        cursect = None                        # None, or a dictionary
         optname = None
         lineno = 0
-        e = None                                  # None, or an exception
+        e = None                              # None, or an exception
         while True:
             line = fp.readline()
             if not line:
@@ -441,7 +490,7 @@ class RawConfigParser:
             if line[0].isspace() and cursect is not None and optname:
                 value = line.strip()
                 if value:
-                    cursect[optname] = "%s\n%s" % (cursect[optname], value)
+                    cursect[optname].append(value)
             # a section header or option header?
             else:
                 # is it a section header?
@@ -453,7 +502,8 @@ class RawConfigParser:
                     elif sectname == DEFAULTSECT:
                         cursect = self._defaults
                     else:
-                        cursect = {'__name__': sectname}
+                        cursect = self._dict()
+                        cursect['__name__'] = sectname
                         self._sections[sectname] = cursect
                     # So sections can't start with a continuation line
                     optname = None
@@ -462,21 +512,27 @@ class RawConfigParser:
                     raise MissingSectionHeaderError(fpname, lineno, line)
                 # an option line?
                 else:
-                    mo = self.OPTCRE.match(line)
+                    mo = self._optcre.match(line)
                     if mo:
                         optname, vi, optval = mo.group('option', 'vi', 'value')
-                        if vi in ('=', ':') and ';' in optval:
-                            # ';' is a comment delimiter only if it follows
-                            # a spacing character
-                            pos = optval.find(';')
-                            if pos != -1 and optval[pos-1].isspace():
-                                optval = optval[:pos]
-                        optval = optval.strip()
-                        # allow empty values
-                        if optval == '""':
-                            optval = ''
                         optname = self.optionxform(optname.rstrip())
-                        cursect[optname] = optval
+                        # This check is fine because the OPTCRE cannot
+                        # match if it would set optval to None
+                        if optval is not None:
+                            if vi in ('=', ':') and ';' in optval:
+                                # ';' is a comment delimiter only if it follows
+                                # a spacing character
+                                pos = optval.find(';')
+                                if pos != -1 and optval[pos-1].isspace():
+                                    optval = optval[:pos]
+                            optval = optval.strip()
+                            # allow empty values
+                            if optval == '""':
+                                optval = ''
+                            cursect[optname] = [optval]
+                        else:
+                            # valueless option handling
+                            cursect[optname] = optval
                     else:
                         # a non-fatal parsing error occurred.  set up the
                         # exception but keep going. the exception will be
@@ -489,37 +545,79 @@ class RawConfigParser:
         if e:
             raise e
 
+        # join the multi-line values collected while reading
+        all_sections = [self._defaults]
+        all_sections.extend(self._sections.values())
+        for options in all_sections:
+            for name, val in options.items():
+                if isinstance(val, list):
+                    options[name] = '\n'.join(val)
+
+import UserDict as _UserDict
+
+class _Chainmap(_UserDict.DictMixin):
+    """Combine multiple mappings for successive lookups.
+
+    For example, to emulate Python's normal lookup sequence:
+
+        import __builtin__
+        pylookup = _Chainmap(locals(), globals(), vars(__builtin__))
+    """
+
+    def __init__(self, *maps):
+        self._maps = maps
+
+    def __getitem__(self, key):
+        for mapping in self._maps:
+            try:
+                return mapping[key]
+            except KeyError:
+                pass
+        raise KeyError(key)
+
+    def keys(self):
+        result = []
+        seen = set()
+        for mapping in self._maps:
+            for key in mapping:
+                if key not in seen:
+                    result.append(key)
+                    seen.add(key)
+        return result
 
 class ConfigParser(RawConfigParser):
 
     def get(self, section, option, raw=False, vars=None):
         """Get an option value for a given section.
 
-        All % interpolations are expanded in the return values, based on the
-        defaults passed into the constructor, unless the optional argument
-        `raw' is true.  Additional substitutions may be provided using the
-        `vars' argument, which must be a dictionary whose contents overrides
-        any pre-existing defaults.
+        If `vars' is provided, it must be a dictionary. The option is looked up
+        in `vars' (if provided), `section', and in `defaults' in that order.
+
+        All % interpolations are expanded in the return values, unless the
+        optional argument `raw' is true. Values for interpolation keys are
+        looked up in the same manner as the option.
 
         The section DEFAULT is special.
         """
-        d = self._defaults.copy()
+        sectiondict = {}
         try:
-            d.update(self._sections[section])
+            sectiondict = self._sections[section]
         except KeyError:
             if section != DEFAULTSECT:
                 raise NoSectionError(section)
         # Update with the entry specific variables
+        vardict = {}
         if vars:
             for key, value in vars.items():
-                d[self.optionxform(key)] = value
+                vardict[self.optionxform(key)] = value
+        d = _Chainmap(vardict, sectiondict, self._defaults)
         option = self.optionxform(option)
         try:
             value = d[option]
         except KeyError:
             raise NoOptionError(option, section)
 
-        if raw:
+        if raw or value is None:
             return value
         else:
             return self._interpolate(section, option, value, d)
@@ -562,16 +660,16 @@ class ConfigParser(RawConfigParser):
         depth = MAX_INTERPOLATION_DEPTH
         while depth:                    # Loop through this until it's done
             depth -= 1
-            if "%(" in value:
+            if value and "%(" in value:
                 value = self._KEYCRE.sub(self._interpolation_replace, value)
                 try:
                     value = value % vars
                 except KeyError, e:
                     raise InterpolationMissingOptionError(
-                        option, section, rawval, e[0])
+                        option, section, rawval, e.args[0])
             else:
                 break
-        if "%(" in value:
+        if value and "%(" in value:
             raise InterpolationDepthError(option, section, rawval)
         return value
 
@@ -593,7 +691,7 @@ class SafeConfigParser(ConfigParser):
         self._interpolate_some(option, L, rawval, section, vars, 1)
         return ''.join(L)
 
-    _interpvar_match = re.compile(r"%\(([^)]+)\)s").match
+    _interpvar_re = re.compile(r"%\(([^)]+)\)s")
 
     def _interpolate_some(self, option, accum, rest, section, map, depth):
         if depth > MAX_INTERPOLATION_DEPTH:
@@ -612,7 +710,7 @@ class SafeConfigParser(ConfigParser):
                 accum.append("%")
                 rest = rest[2:]
             elif c == "(":
-                m = self._interpvar_match(rest)
+                m = self._interpvar_re.match(rest)
                 if m is None:
                     raise InterpolationSyntaxError(option, section,
                         "bad interpolation variable reference %r" % rest)
@@ -633,8 +731,23 @@ class SafeConfigParser(ConfigParser):
                     option, section,
                     "'%%' must be followed by '%%' or '(', found: %r" % (rest,))
 
-    def set(self, section, option, value):
+    def set(self, section, option, value=None):
         """Set an option.  Extend ConfigParser.set: check for string values."""
-        if not isinstance(value, basestring):
-            raise TypeError("option values must be strings")
+        # The only legal non-string value if we allow valueless
+        # options is None, so we need to check if the value is a
+        # string if:
+        # - we do not allow valueless options, or
+        # - we allow valueless options but the value is not None
+        if self._optcre is self.OPTCRE or value:
+            if not isinstance(value, basestring):
+                raise TypeError("option values must be strings")
+        if value is not None:
+            # check for bad percent signs:
+            # first, replace all "good" interpolations
+            tmp_value = value.replace('%%', '')
+            tmp_value = self._interpvar_re.sub('', tmp_value)
+            # then, check if there's a lone percent sign left
+            if '%' in tmp_value:
+                raise ValueError("invalid interpolation syntax in %r at "
+                                "position %d" % (value, tmp_value.find('%')))
         ConfigParser.set(self, section, option, value)

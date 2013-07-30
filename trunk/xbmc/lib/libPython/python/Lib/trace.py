@@ -35,32 +35,50 @@ Sample use, command line:
   trace.py --trackcalls spam.py eggs
 
 Sample use, programmatically
-   # create a Trace object, telling it what to ignore, and whether to
-   # do tracing or line-counting or both.
-   trace = trace.Trace(ignoredirs=[sys.prefix, sys.exec_prefix,], trace=0,
-                       count=1)
-   # run the new command using the given trace
-   trace.run('main()')
-   # make a report, telling it where you want output
-   r = trace.results()
-   r.write_results(show_missing=True)
+  import sys
+
+  # create a Trace object, telling it what to ignore, and whether to
+  # do tracing or line-counting or both.
+  tracer = trace.Trace(ignoredirs=[sys.prefix, sys.exec_prefix,], trace=0,
+                    count=1)
+  # run the new command using the given tracer
+  tracer.run('main()')
+  # make a report, placing output in /tmp
+  r = tracer.results()
+  r.write_results(show_missing=True, coverdir="/tmp")
 """
 
 import linecache
 import os
 import re
 import sys
-import threading
+import time
 import token
 import tokenize
-import types
+import inspect
 import gc
-
+import dis
 try:
     import cPickle
     pickle = cPickle
 except ImportError:
     import pickle
+
+try:
+    import threading
+except ImportError:
+    _settrace = sys.settrace
+
+    def _unsettrace():
+        sys.settrace(None)
+else:
+    def _settrace(func):
+        threading.settrace(func)
+        sys.settrace(func)
+
+    def _unsettrace():
+        sys.settrace(None)
+        threading.settrace(None)
 
 def usage(outfile):
     outfile.write("""Usage: %s [OPTIONS] <file> [ARGS]
@@ -96,10 +114,13 @@ Modifiers:
                       with '>>>>>> '.
 -s, --summary         Write a brief summary on stdout for each file.
                       (Can only be used with --count or --report.)
+-g, --timing          Prefix each line with the time since the program started.
+                      Only used while tracing.
 
 Filters, may be repeated multiple times:
---ignore-module=<mod> Ignore the given module and its submodules
-                      (if it is a package).
+--ignore-module=<mod> Ignore the given module(s) and its submodules
+                      (if it is a package).  Accepts comma separated
+                      list of module names
 --ignore-dir=<dir>    Ignore files in the given directory (multiple
                       directories can be joined by os.pathsep).
 """ % sys.argv[0])
@@ -118,7 +139,7 @@ class Ignore:
         self._ignore = { '<string>': 1 }
 
     def names(self, filename, modulename):
-        if self._ignore.has_key(modulename):
+        if modulename in self._ignore:
             return self._ignore[modulename]
 
         # haven't seen this one before, so see if the module name is
@@ -177,9 +198,11 @@ def fullmodname(path):
     # looking in sys.path for the longest matching prefix.  We'll
     # assume that the rest is the package name.
 
+    comparepath = os.path.normcase(path)
     longest = ""
     for dir in sys.path:
-        if path.startswith(dir) and path[len(dir)] == os.path.sep:
+        dir = os.path.normcase(dir)
+        if comparepath.startswith(dir) and comparepath[len(dir)] == os.sep:
             if len(dir) > len(longest):
                 longest = dir
 
@@ -187,11 +210,13 @@ def fullmodname(path):
         base = path[len(longest) + 1:]
     else:
         base = path
+    # the drive letter is never part of the module name
+    drive, base = os.path.splitdrive(base)
     base = base.replace(os.sep, ".")
     if os.altsep:
         base = base.replace(os.altsep, ".")
     filename, ext = os.path.splitext(base)
-    return filename
+    return filename.lstrip(".")
 
 class CoverageResults:
     def __init__(self, counts=None, calledfuncs=None, infile=None,
@@ -282,8 +307,10 @@ class CoverageResults:
             # skip some "files" we don't care about...
             if filename == "<string>":
                 continue
+            if filename.startswith("<doctest "):
+                continue
 
-            if filename.endswith(".pyc") or filename.endswith(".pyo"):
+            if filename.endswith((".pyc", ".pyo")):
                 filename = filename[:-1]
 
             if coverdir is None:
@@ -308,7 +335,7 @@ class CoverageResults:
                                                       lnotab, count)
 
             if summary and n_lines:
-                percent = int(100 * n_hits / n_lines)
+                percent = 100 * n_hits // n_lines
                 sums[modulename] = n_lines, percent, modulename, filename
 
         if summary and sums:
@@ -367,13 +394,7 @@ def find_lines_from_code(code, strs):
     """Return dict where keys are lines in the line number table."""
     linenos = {}
 
-    line_increments = [ord(c) for c in code.co_lnotab[1::2]]
-    table_length = len(line_increments)
-    docstring = False
-
-    lineno = code.co_firstlineno
-    for li in line_increments:
-        lineno += li
+    for _, lineno in dis.findlinestarts(code):
         if lineno not in strs:
             linenos[lineno] = 1
 
@@ -386,7 +407,7 @@ def find_lines(code, strs):
 
     # and check the constants for references to other code objects
     for c in code.co_consts:
-        if isinstance(c, types.CodeType):
+        if inspect.iscode(c):
             # find another code object, so recurse into it
             linenos.update(find_lines(c, strs))
     return linenos
@@ -428,7 +449,8 @@ def find_executable_linenos(filename):
 
 class Trace:
     def __init__(self, count=1, trace=1, countfuncs=0, countcallers=0,
-                 ignoremods=(), ignoredirs=(), infile=None, outfile=None):
+                 ignoremods=(), ignoredirs=(), infile=None, outfile=None,
+                 timing=False):
         """
         @param count true iff it should count number of times each
                      line is executed
@@ -444,6 +466,7 @@ class Trace:
         @param infile file from which to read stored counts to be
                      added into the results
         @param outfile file in which to write the results
+        @param timing true iff timing information be displayed
         """
         self.infile = infile
         self.outfile = outfile
@@ -456,6 +479,9 @@ class Trace:
         self._calledfuncs = {}
         self._callers = {}
         self._caller_cache = {}
+        self.start_time = None
+        if timing:
+            self.start_time = time.time()
         if countcallers:
             self.globaltrace = self.globaltrace_trackcallers
         elif countfuncs:
@@ -476,28 +502,18 @@ class Trace:
     def run(self, cmd):
         import __main__
         dict = __main__.__dict__
-        if not self.donothing:
-            sys.settrace(self.globaltrace)
-            threading.settrace(self.globaltrace)
-        try:
-            exec cmd in dict, dict
-        finally:
-            if not self.donothing:
-                sys.settrace(None)
-                threading.settrace(None)
+        self.runctx(cmd, dict, dict)
 
     def runctx(self, cmd, globals=None, locals=None):
         if globals is None: globals = {}
         if locals is None: locals = {}
         if not self.donothing:
-            sys.settrace(self.globaltrace)
-            threading.settrace(self.globaltrace)
+            _settrace(self.globaltrace)
         try:
             exec cmd in globals, locals
         finally:
             if not self.donothing:
-                sys.settrace(None)
-                threading.settrace(None)
+                _unsettrace()
 
     def runfunc(self, func, *args, **kw):
         result = None
@@ -528,7 +544,7 @@ class Trace:
             ## use of gc.get_referrers() was suggested by Michael Hudson
             # all functions which refer to this code object
             funcs = [f for f in gc.get_referrers(code)
-                         if hasattr(f, "func_doc")]
+                         if inspect.isfunction(f)]
             # require len(func) == 1 to avoid ambiguity caused by calls to
             # new.function(): "In the face of ambiguity, refuse the
             # temptation to guess."
@@ -540,17 +556,13 @@ class Trace:
                                    if hasattr(c, "__bases__")]
                     if len(classes) == 1:
                         # ditto for new.classobj()
-                        clsname = str(classes[0])
+                        clsname = classes[0].__name__
                         # cache the result - assumption is that new.* is
                         # not called later to disturb this relationship
                         # _caller_cache could be flushed if functions in
                         # the new module get called.
                         self._caller_cache[code] = clsname
         if clsname is not None:
-            # final hack - module name shows up in str(cls), but we've already
-            # computed module name, so remove it
-            clsname = clsname.split(".")[1:]
-            clsname = ".".join(clsname)
             funcname = "%s.%s" % (clsname, funcname)
 
         return filename, modulename, funcname
@@ -583,7 +595,7 @@ class Trace:
         """
         if why == 'call':
             code = frame.f_code
-            filename = code.co_filename
+            filename = frame.f_globals.get('__file__', None)
             if filename:
                 # XXX modname() doesn't work right for packages, so
                 # the ignore support won't work right for packages
@@ -606,6 +618,8 @@ class Trace:
             key = filename, lineno
             self.counts[key] = self.counts.get(key, 0) + 1
 
+            if self.start_time:
+                print '%.2f' % (time.time() - self.start_time),
             bname = os.path.basename(filename)
             print "%s(%d): %s" % (bname, lineno,
                                   linecache.getline(filename, lineno)),
@@ -617,6 +631,8 @@ class Trace:
             filename = frame.f_code.co_filename
             lineno = frame.f_lineno
 
+            if self.start_time:
+                print '%.2f' % (time.time() - self.start_time),
             bname = os.path.basename(filename)
             print "%s(%d): %s" % (bname, lineno,
                                   linecache.getline(filename, lineno)),
@@ -646,13 +662,13 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
     try:
-        opts, prog_argv = getopt.getopt(argv[1:], "tcrRf:d:msC:lT",
+        opts, prog_argv = getopt.getopt(argv[1:], "tcrRf:d:msC:lTg",
                                         ["help", "version", "trace", "count",
                                          "report", "no-report", "summary",
                                          "file=", "missing",
                                          "ignore-module=", "ignore-dir=",
                                          "coverdir=", "listfuncs",
-                                         "trackcalls"])
+                                         "trackcalls", "timing"])
 
     except getopt.error, msg:
         sys.stderr.write("%s: %s\n" % (sys.argv[0], msg))
@@ -672,6 +688,7 @@ def main(argv=None):
     summary = 0
     listfuncs = False
     countcallers = False
+    timing = False
 
     for opt, val in opts:
         if opt == "--help":
@@ -688,6 +705,10 @@ def main(argv=None):
 
         if opt == "-l" or opt == "--listfuncs":
             listfuncs = True
+            continue
+
+        if opt == "-g" or opt == "--timing":
+            timing = True
             continue
 
         if opt == "-t" or opt == "--trace":
@@ -723,7 +744,8 @@ def main(argv=None):
             continue
 
         if opt == "--ignore-module":
-            ignore_modules.append(val)
+            for mod in val.split(","):
+                ignore_modules.append(mod.strip())
             continue
 
         if opt == "--ignore-dir":
@@ -771,9 +793,18 @@ def main(argv=None):
         t = Trace(count, trace, countfuncs=listfuncs,
                   countcallers=countcallers, ignoremods=ignore_modules,
                   ignoredirs=ignore_dirs, infile=counts_file,
-                  outfile=counts_file)
+                  outfile=counts_file, timing=timing)
         try:
-            t.run('execfile(%r)' % (progname,))
+            with open(progname) as fp:
+                code = compile(fp.read(), progname, 'exec')
+            # try to emulate __main__ namespace as much as possible
+            globs = {
+                '__file__': progname,
+                '__name__': '__main__',
+                '__package__': None,
+                '__cached__': None,
+            }
+            t.runctx(code, globs, globs)
         except IOError, err:
             _err_exit("Cannot run file %r because: %s" % (sys.argv[0], err))
         except SystemExit:

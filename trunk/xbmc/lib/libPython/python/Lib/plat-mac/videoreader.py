@@ -5,6 +5,11 @@
 #
 # Jack Jansen, August 2000
 #
+
+from warnings import warnpy3k
+warnpy3k("In 3.x, the videoreader module is removed.", stacklevel=2)
+
+
 import sys
 from Carbon import Qt
 from Carbon import QuickTime
@@ -13,7 +18,7 @@ from Carbon import Qdoffs
 from Carbon import QDOffscreen
 from Carbon import Res
 try:
-    import MediaDescr
+    from Carbon import MediaDescr
 except ImportError:
     def _audiodescr(data):
         return None
@@ -188,7 +193,7 @@ class _Reader:
 
     def GetVideoFrameRate(self):
         tv = self.videocurtime
-        if tv == None:
+        if tv is None:
             tv = 0
         flags = QuickTime.nextTimeStep|QuickTime.nextTimeEdgeOK
         tv, dur = self.videomedia.GetMediaNextInterestingTime(flags, tv, 1.0)
@@ -199,7 +204,7 @@ class _Reader:
         if not time is None:
             self.audiocurtime = time
         flags = QuickTime.nextTimeStep|QuickTime.nextTimeEdgeOK
-        if self.audiocurtime == None:
+        if self.audiocurtime is None:
             self.audiocurtime = 0
         tv = self.audiomedia.GetMediaNextInterestingTimeOnly(flags, self.audiocurtime, 1.0)
         if tv < 0 or (self.audiocurtime and tv < self.audiocurtime):
@@ -215,7 +220,7 @@ class _Reader:
         if not time is None:
             self.videocurtime = time
         flags = QuickTime.nextTimeStep
-        if self.videocurtime == None:
+        if self.videocurtime is None:
             flags = flags | QuickTime.nextTimeEdgeOK
             self.videocurtime = 0
         tv = self.videomedia.GetMediaNextInterestingTimeOnly(flags, self.videocurtime, 1.0)
@@ -233,12 +238,12 @@ class _Reader:
         width = self.videodescr['width']
         height = self.videodescr['height']
         start = 0
-        rv = ''
+        rv = []
         for i in range(height):
             nextline = Qdoffs.GetPixMapBytes(self.pixmap, start, width*4)
             start = start + rowbytes
-            rv = rv + nextline
-        return rv
+            rv.append(nextline)
+        return ''.join(rv)
 
 def reader(url):
     try:
@@ -250,9 +255,9 @@ def reader(url):
 def _test():
     import EasyDialogs
     try:
-        import img
+        from PIL import Image
     except ImportError:
-        img = None
+        Image = None
     import MacOS
     Qt.EnterMovies()
     path = EasyDialogs.AskFileForOpen(message='Video to convert')
@@ -272,13 +277,11 @@ def _test():
         fname = 'frame%04.4d.jpg'%num
         num = num+1
         pname = os.path.join(dstdir, fname)
-        if not img: print 'Not',
+        if not Image: print 'Not',
         print 'Writing %s, size %dx%d, %d bytes'%(fname, imgw, imgh, len(data))
-        if img:
-            wrt = img.writer(imgfmt, pname)
-            wrt.width = imgw
-            wrt.height = imgh
-            wrt.write(data)
+        if Image:
+            img = Image.fromstring("RGBA", (imgw, imgh), data)
+            img.save(pname, 'JPEG')
             timestamp, data = rdr.ReadVideo()
             MacOS.SetCreatorAndType(pname, 'ogle', 'JPEG')
             if num > 20:

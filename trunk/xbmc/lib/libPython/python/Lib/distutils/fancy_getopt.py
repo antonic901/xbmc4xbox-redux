@@ -8,14 +8,13 @@ additional features:
   * options set attributes of a passed-in object
 """
 
-# This module should be kept compatible with Python 2.1.
+__revision__ = "$Id$"
 
-__revision__ = "$Id: fancy_getopt.py 37828 2004-11-10 22:23:15Z loewis $"
-
-import sys, string, re
-from types import *
+import sys
+import string
+import re
 import getopt
-from distutils.errors import *
+from distutils.errors import DistutilsGetoptError, DistutilsArgError
 
 # Much like command_re in distutils.core, this is close to but not quite
 # the same as a Python NAME -- except, in the spirit of most GNU
@@ -97,7 +96,7 @@ class FancyGetopt:
         self._build_index()
 
     def add_option (self, long_option, short_option=None, help_string=None):
-        if self.option_index.has_key(long_option):
+        if long_option in self.option_index:
             raise DistutilsGetoptError, \
                   "option conflict: already an option '%s'" % long_option
         else:
@@ -109,7 +108,7 @@ class FancyGetopt:
     def has_option (self, long_option):
         """Return true if the option table for this parser has an
         option with long name 'long_option'."""
-        return self.option_index.has_key(long_option)
+        return long_option in self.option_index
 
     def get_attr_name (self, long_option):
         """Translate long option name 'long_option' to the form it
@@ -119,13 +118,13 @@ class FancyGetopt:
 
 
     def _check_alias_dict (self, aliases, what):
-        assert type(aliases) is DictionaryType
+        assert isinstance(aliases, dict)
         for (alias, opt) in aliases.items():
-            if not self.option_index.has_key(alias):
+            if alias not in self.option_index:
                 raise DistutilsGetoptError, \
                       ("invalid %s '%s': "
                        "option '%s' not defined") % (what, alias, alias)
-            if not self.option_index.has_key(opt):
+            if opt not in self.option_index:
                 raise DistutilsGetoptError, \
                       ("invalid %s '%s': "
                        "aliased option '%s' not defined") % (what, alias, opt)
@@ -166,13 +165,13 @@ class FancyGetopt:
                 raise ValueError, "invalid option tuple: %r" % (option,)
 
             # Type- and value-check the option names
-            if type(long) is not StringType or len(long) < 2:
+            if not isinstance(long, str) or len(long) < 2:
                 raise DistutilsGetoptError, \
                       ("invalid long option '%s': "
                        "must be a string of length >= 2") % long
 
             if (not ((short is None) or
-                     (type(short) is StringType and len(short) == 1))):
+                     (isinstance(short, str) and len(short) == 1))):
                 raise DistutilsGetoptError, \
                       ("invalid short option '%s': "
                        "must a single character or None") % short
@@ -466,10 +465,8 @@ def wrap_text (text, width):
 
     return lines
 
-# wrap_text ()
 
-
-def translate_longopt (opt):
+def translate_longopt(opt):
     """Convert a long option name to a valid Python identifier by
     changing "-" to "_".
     """
@@ -485,18 +482,3 @@ class OptionDummy:
         'options' will be initialized to None."""
         for opt in options:
             setattr(self, opt, None)
-
-# class OptionDummy
-
-
-if __name__ == "__main__":
-    text = """\
-Tra-la-la, supercalifragilisticexpialidocious.
-How *do* you spell that odd word, anyways?
-(Someone ask Mary -- she'll know [or she'll
-say, "How should I know?"].)"""
-
-    for w in (10, 20, 30, 40):
-        print "width: %d" % w
-        print string.join(wrap_text(text, w), "\n")
-        print

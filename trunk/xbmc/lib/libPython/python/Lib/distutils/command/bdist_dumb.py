@@ -4,20 +4,21 @@ Implements the Distutils 'bdist_dumb' command (create a "dumb" built
 distribution -- i.e., just an archive to be unpacked under $prefix or
 $exec_prefix)."""
 
-# This module should be kept compatible with Python 2.1.
-
-__revision__ = "$Id: bdist_dumb.py 37828 2004-11-10 22:23:15Z loewis $"
+__revision__ = "$Id$"
 
 import os
-from distutils.core import Command
+
+from sysconfig import get_python_version
+
 from distutils.util import get_platform
-from distutils.dir_util import create_tree, remove_tree, ensure_relative
-from distutils.errors import *
+from distutils.core import Command
+from distutils.dir_util import remove_tree, ensure_relative
+from distutils.errors import DistutilsPlatformError
 from distutils import log
 
 class bdist_dumb (Command):
 
-    description = "create a \"dumb\" built distribution"
+    description = 'create a "dumb" built distribution'
 
     user_options = [('bdist-dir=', 'd',
                      "temporary directory for creating the distribution"),
@@ -36,6 +37,12 @@ class bdist_dumb (Command):
                     ('relative', None,
                      "build the archive using relative paths"
                      "(default: false)"),
+                    ('owner=', 'u',
+                     "Owner name used when creating a tar file"
+                     " [default: current user]"),
+                    ('group=', 'g',
+                     "Group name used when creating a tar file"
+                     " [default: current group]"),
                    ]
 
     boolean_options = ['keep-temp', 'skip-build', 'relative']
@@ -51,14 +58,12 @@ class bdist_dumb (Command):
         self.format = None
         self.keep_temp = 0
         self.dist_dir = None
-        self.skip_build = 0
+        self.skip_build = None
         self.relative = 0
+        self.owner = None
+        self.group = None
 
-    # initialize_options()
-
-
-    def finalize_options (self):
-
+    def finalize_options(self):
         if self.bdist_dir is None:
             bdist_base = self.get_finalized_command('bdist').bdist_base
             self.bdist_dir = os.path.join(bdist_base, 'dumb')
@@ -73,13 +78,10 @@ class bdist_dumb (Command):
 
         self.set_undefined_options('bdist',
                                    ('dist_dir', 'dist_dir'),
-                                   ('plat_name', 'plat_name'))
+                                   ('plat_name', 'plat_name'),
+                                   ('skip_build', 'skip_build'))
 
-    # finalize_options()
-
-
-    def run (self):
-
+    def run(self):
         if not self.skip_build:
             self.run_command('build')
 
@@ -117,12 +119,15 @@ class bdist_dumb (Command):
                                    ensure_relative(install.install_base))
 
         # Make the archive
-        self.make_archive(pseudoinstall_root,
-                          self.format, root_dir=archive_root)
+        filename = self.make_archive(pseudoinstall_root,
+                                     self.format, root_dir=archive_root,
+                                     owner=self.owner, group=self.group)
+        if self.distribution.has_ext_modules():
+            pyversion = get_python_version()
+        else:
+            pyversion = 'any'
+        self.distribution.dist_files.append(('bdist_dumb', pyversion,
+                                             filename))
 
         if not self.keep_temp:
             remove_tree(self.bdist_dir, dry_run=self.dry_run)
-
-    # run()
-
-# class bdist_dumb

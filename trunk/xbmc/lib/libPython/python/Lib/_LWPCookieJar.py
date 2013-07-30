@@ -11,10 +11,11 @@ libwww-perl, I hope.
 
 """
 
-import time, re, logging
-from cookielib import (reraise_unmasked_exceptions, FileCookieJar, LoadError,
-     Cookie, MISSING_FILENAME_TEXT, join_header_words, split_header_words,
-     iso2time, time2isoz)
+import time, re
+from cookielib import (_warn_unhandled_exception, FileCookieJar, LoadError,
+                       Cookie, MISSING_FILENAME_TEXT,
+                       join_header_words, split_header_words,
+                       iso2time, time2isoz)
 
 def lwp_cookie_str(cookie):
     """Return string representation of Cookie in an the LWP cookie file format.
@@ -47,7 +48,7 @@ def lwp_cookie_str(cookie):
 
 class LWPCookieJar(FileCookieJar):
     """
-    The LWPCookieJar saves a sequence of"Set-Cookie3" lines.
+    The LWPCookieJar saves a sequence of "Set-Cookie3" lines.
     "Set-Cookie3" is the format used by the libwww-perl libary, not known
     to be compatible with any browser, but which is easy to read and
     doesn't lose information about RFC 2965 cookies.
@@ -59,7 +60,7 @@ class LWPCookieJar(FileCookieJar):
     """
 
     def as_lwp_str(self, ignore_discard=True, ignore_expires=True):
-        """Return cookies as a string of "\n"-separated "Set-Cookie3" headers.
+        """Return cookies as a string of "\\n"-separated "Set-Cookie3" headers.
 
         ignore_discard and ignore_expires: see docstring for FileCookieJar.save
 
@@ -92,7 +93,8 @@ class LWPCookieJar(FileCookieJar):
     def _really_load(self, f, filename, ignore_discard, ignore_expires):
         magic = f.readline()
         if not re.search(self.magic_re, magic):
-            msg = "%s does not seem to contain cookies" % filename
+            msg = ("%r does not look like a Set-Cookie3 (LWP) format "
+                   "file" % filename)
             raise LoadError(msg)
 
         now = time.time()
@@ -159,6 +161,10 @@ class LWPCookieJar(FileCookieJar):
                     if not ignore_expires and c.is_expired(now):
                         continue
                     self.set_cookie(c)
-        except:
-            reraise_unmasked_exceptions((IOError,))
-            raise LoadError("invalid Set-Cookie3 format file %s" % filename)
+
+        except IOError:
+            raise
+        except Exception:
+            _warn_unhandled_exception()
+            raise LoadError("invalid Set-Cookie3 format file %r: %r" %
+                            (filename, line))

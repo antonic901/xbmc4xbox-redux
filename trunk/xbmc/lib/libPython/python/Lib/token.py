@@ -7,7 +7,7 @@
 #  To update the symbols in this file, 'cd' to the top directory of
 #  the python source tree after building the interpreter and run:
 #
-#    python Lib/token.py
+#    ./python Lib/token.py
 
 #--start constants--
 ENDMARKER = 0
@@ -71,6 +71,7 @@ tok_name = {}
 for _name, _value in globals().items():
     if type(_value) is type(0):
         tok_name[_value] = _name
+del _name, _value
 
 
 def ISTERMINAL(x):

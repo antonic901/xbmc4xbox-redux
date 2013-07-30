@@ -3,9 +3,7 @@
 Package containing implementation of all the standard Distutils
 commands."""
 
-# This module should be kept compatible with Python 2.1.
-
-__revision__ = "$Id: __init__.py 37828 2004-11-10 22:23:15Z loewis $"
+__revision__ = "$Id$"
 
 __all__ = ['build',
            'build_py',
@@ -24,6 +22,8 @@ __all__ = ['build',
            'bdist_dumb',
            'bdist_rpm',
            'bdist_wininst',
+           'upload',
+           'check',
            # These two are reserved for future use:
            #'bdist_sdux',
            #'bdist_pkgtool',

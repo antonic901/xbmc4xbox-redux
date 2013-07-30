@@ -8,19 +8,17 @@ extern "C" {
 /* Interface to random parts in ceval.c */
 
 PyAPI_FUNC(PyObject *) PyEval_CallObjectWithKeywords(
-	PyObject *, PyObject *, PyObject *);
-
-/* DLL-level Backwards compatibility: */
-#undef PyEval_CallObject
-PyAPI_FUNC(PyObject *) PyEval_CallObject(PyObject *, PyObject *);
+    PyObject *, PyObject *, PyObject *);
 
 /* Inline this */
 #define PyEval_CallObject(func,arg) \
-        PyEval_CallObjectWithKeywords(func, arg, (PyObject *)NULL)
+    PyEval_CallObjectWithKeywords(func, arg, (PyObject *)NULL)
 
-PyAPI_FUNC(PyObject *) PyEval_CallFunction(PyObject *obj, char *format, ...);
+PyAPI_FUNC(PyObject *) PyEval_CallFunction(PyObject *obj,
+                                           const char *format, ...);
 PyAPI_FUNC(PyObject *) PyEval_CallMethod(PyObject *obj,
-                                        char *methodname, char *format, ...);
+                                         const char *methodname,
+                                         const char *format, ...);
 
 PyAPI_FUNC(void) PyEval_SetProfile(Py_tracefunc, PyObject *);
 PyAPI_FUNC(void) PyEval_SetTrace(Py_tracefunc, PyObject *);
@@ -48,10 +46,10 @@ PyAPI_FUNC(void) Py_SetRecursionLimit(int);
 PyAPI_FUNC(int) Py_GetRecursionLimit(void);
 
 #define Py_EnterRecursiveCall(where)                                    \
-	    (_Py_MakeRecCheck(PyThreadState_GET()->recursion_depth) &&  \
-	     _Py_CheckRecursiveCall(where))
-#define Py_LeaveRecursiveCall()				\
-	    (--PyThreadState_GET()->recursion_depth)
+            (_Py_MakeRecCheck(PyThreadState_GET()->recursion_depth) &&  \
+             _Py_CheckRecursiveCall(where))
+#define Py_LeaveRecursiveCall()                         \
+            (--PyThreadState_GET()->recursion_depth)
 PyAPI_FUNC(int) _Py_CheckRecursiveCall(char *where);
 PyAPI_DATA(int) _Py_CheckRecursionLimit;
 #ifdef USE_STACKCHECK
@@ -60,11 +58,12 @@ PyAPI_DATA(int) _Py_CheckRecursionLimit;
 #  define _Py_MakeRecCheck(x)  (++(x) > _Py_CheckRecursionLimit)
 #endif
 
-PyAPI_FUNC(char *) PyEval_GetFuncName(PyObject *);
-PyAPI_FUNC(char *) PyEval_GetFuncDesc(PyObject *);
+PyAPI_FUNC(const char *) PyEval_GetFuncName(PyObject *);
+PyAPI_FUNC(const char *) PyEval_GetFuncDesc(PyObject *);
 
 PyAPI_FUNC(PyObject *) PyEval_GetCallStats(PyObject *);
 PyAPI_FUNC(PyObject *) PyEval_EvalFrame(struct _frame *);
+PyAPI_FUNC(PyObject *) PyEval_EvalFrameEx(struct _frame *f, int exc);
 
 /* this used to be handled on a per-thread basis - now just two globals */
 PyAPI_DATA(volatile int) _Py_Ticker;
@@ -76,31 +75,31 @@ PyAPI_DATA(int) _Py_CheckInterval;
    that lasts a long time and doesn't touch Python data) can allow other
    threads to run as follows:
 
-	...preparations here...
-	Py_BEGIN_ALLOW_THREADS
-	...blocking system call here...
-	Py_END_ALLOW_THREADS
-	...interpret result here...
+    ...preparations here...
+    Py_BEGIN_ALLOW_THREADS
+    ...blocking system call here...
+    Py_END_ALLOW_THREADS
+    ...interpret result here...
 
    The Py_BEGIN_ALLOW_THREADS/Py_END_ALLOW_THREADS pair expands to a
    {}-surrounded block.
    To leave the block in the middle (e.g., with return), you must insert
    a line containing Py_BLOCK_THREADS before the return, e.g.
 
-	if (...premature_exit...) {
-		Py_BLOCK_THREADS
-		PyErr_SetFromErrno(PyExc_IOError);
-		return NULL;
-	}
+    if (...premature_exit...) {
+        Py_BLOCK_THREADS
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
 
    An alternative is:
 
-	Py_BLOCK_THREADS
-	if (...premature_exit...) {
-		PyErr_SetFromErrno(PyExc_IOError);
-		return NULL;
-	}
-	Py_UNBLOCK_THREADS
+    Py_BLOCK_THREADS
+    if (...premature_exit...) {
+        PyErr_SetFromErrno(PyExc_IOError);
+        return NULL;
+    }
+    Py_UNBLOCK_THREADS
 
    For convenience, that the value of 'errno' is restored across
    Py_END_ALLOW_THREADS and Py_BLOCK_THREADS.
@@ -129,12 +128,12 @@ PyAPI_FUNC(void) PyEval_ReleaseThread(PyThreadState *tstate);
 PyAPI_FUNC(void) PyEval_ReInitThreads(void);
 
 #define Py_BEGIN_ALLOW_THREADS { \
-			PyThreadState *_save; \
-			_save = PyEval_SaveThread();
-#define Py_BLOCK_THREADS	PyEval_RestoreThread(_save);
-#define Py_UNBLOCK_THREADS	_save = PyEval_SaveThread();
-#define Py_END_ALLOW_THREADS	PyEval_RestoreThread(_save); \
-		 }
+                        PyThreadState *_save; \
+                        _save = PyEval_SaveThread();
+#define Py_BLOCK_THREADS        PyEval_RestoreThread(_save);
+#define Py_UNBLOCK_THREADS      _save = PyEval_SaveThread();
+#define Py_END_ALLOW_THREADS    PyEval_RestoreThread(_save); \
+                 }
 
 #else /* !WITH_THREAD */
 
@@ -145,7 +144,7 @@ PyAPI_FUNC(void) PyEval_ReInitThreads(void);
 
 #endif /* !WITH_THREAD */
 
-PyAPI_FUNC(int) _PyEval_SliceIndex(PyObject *, int *);
+PyAPI_FUNC(int) _PyEval_SliceIndex(PyObject *, Py_ssize_t *);
 
 
 #ifdef __cplusplus

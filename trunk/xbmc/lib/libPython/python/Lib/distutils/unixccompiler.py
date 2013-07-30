@@ -13,11 +13,10 @@ the "typical" Unix-style command-line C compiler:
   * link shared library handled by 'cc -shared'
 """
 
-__revision__ = "$Id: unixccompiler.py 52231 2006-10-08 17:41:25Z ronald.oussoren $"
+__revision__ = "$Id$"
 
-import os, sys
+import os, sys, re
 from types import StringType, NoneType
-from copy import copy
 
 from distutils import sysconfig
 from distutils.dep_util import newer
@@ -26,6 +25,9 @@ from distutils.ccompiler import \
 from distutils.errors import \
      DistutilsExecError, CompileError, LibError, LinkError
 from distutils import log
+
+if sys.platform == 'darwin':
+    import _osx_support
 
 # XXX Things not currently handled:
 #   * optimization/debug/warning flags; we just use whatever's in Python's
@@ -41,48 +43,6 @@ from distutils import log
 #     current system, they can be as system-dependent as they like, and we
 #     should just happily stuff them into the preprocessor/compiler/linker
 #     options and carry on.
-
-def _darwin_compiler_fixup(compiler_so, cc_args):
-    """
-    This function will strip '-isysroot PATH' and '-arch ARCH' from the
-    compile flag if the user has specified one of them in extra_compile_flags.
-
-    This is needed because '-arch ARCH' adds another architecture to the
-    build, without a way to remove an architecture. Furthermore GCC will
-    barf if multiple '-isysroot' arguments are present.
-    """
-    stripArch = stripSysroot = 0
-
-    compiler_so = list(compiler_so)
-    kernel_version = os.uname()[2] # 8.4.3
-    major_version = int(kernel_version.split('.')[0])
-
-    if major_version < 8:
-        # OSX before 10.4.0, these don't support -arch and -isysroot at
-        # all.
-        stripArch = stripSysroot = True
-    else:
-        stripArch = '-arch' in cc_args
-        stripSysroot = '-isysroot' in cc_args
-
-    if stripArch:
-        while 1:
-            try:
-                index = compiler_so.index('-arch')
-                # Strip this argument and the next one:
-                del compiler_so[index:index+2]
-            except ValueError:
-                break
-
-    if stripSysroot:
-        try:
-            index = compiler_so.index('-isysroot')
-            # Strip this argument and the next one:
-            del compiler_so[index:index+2]
-        except ValueError:
-            pass
-
-    return compiler_so
 
 
 class UnixCCompiler(CCompiler):
@@ -153,7 +113,8 @@ class UnixCCompiler(CCompiler):
     def _compile(self, obj, src, ext, cc_args, extra_postargs, pp_opts):
         compiler_so = self.compiler_so
         if sys.platform == 'darwin':
-            compiler_so = _darwin_compiler_fixup(compiler_so, cc_args + extra_postargs)
+            compiler_so = _osx_support.compiler_fixup(compiler_so,
+                                                    cc_args + extra_postargs)
         try:
             self.spawn(compiler_so + cc_args + [src, '-o', obj] +
                        extra_postargs)
@@ -218,10 +179,21 @@ class UnixCCompiler(CCompiler):
                 else:
                     linker = self.linker_so[:]
                 if target_lang == "c++" and self.compiler_cxx:
-                    linker[0] = self.compiler_cxx[0]
+                    # skip over environment variable settings if /usr/bin/env
+                    # is used to set up the linker's environment.
+                    # This is needed on OSX. Note: this assumes that the
+                    # normal and C++ compiler have the same environment
+                    # settings.
+                    i = 0
+                    if os.path.basename(linker[0]) == "env":
+                        i = 1
+                        while '=' in linker[i]:
+                            i = i + 1
+
+                    linker[i] = self.compiler_cxx[i]
 
                 if sys.platform == 'darwin':
-                    linker = _darwin_compiler_fixup(linker, ld_args)
+                    linker = _osx_support.compiler_fixup(linker, ld_args)
 
                 self.spawn(linker + ld_args)
             except DistutilsExecError, msg:
@@ -235,6 +207,9 @@ class UnixCCompiler(CCompiler):
 
     def library_dir_option(self, dir):
         return "-L" + dir
+
+    def _is_gcc(self, compiler_name):
+        return "gcc" in compiler_name or "g++" in compiler_name
 
     def runtime_library_dir_option(self, dir):
         # XXX Hackish, at the very least.  See Python bug #445902:
@@ -254,10 +229,12 @@ class UnixCCompiler(CCompiler):
             # MacOSX's linker doesn't understand the -R flag at all
             return "-L" + dir
         elif sys.platform[:5] == "hp-ux":
-            return "+s -L" + dir
+            if self._is_gcc(compiler):
+                return ["-Wl,+s", "-L" + dir]
+            return ["+s", "-L" + dir]
         elif sys.platform[:7] == "irix646" or sys.platform[:6] == "osf1V5":
             return ["-rpath", dir]
-        elif compiler[:3] == "gcc" or compiler[:3] == "g++":
+        elif self._is_gcc(compiler):
             return "-Wl,-R" + dir
         else:
             return "-R" + dir
@@ -270,10 +247,32 @@ class UnixCCompiler(CCompiler):
         dylib_f = self.library_filename(lib, lib_type='dylib')
         static_f = self.library_filename(lib, lib_type='static')
 
+        if sys.platform == 'darwin':
+            # On OSX users can specify an alternate SDK using
+            # '-isysroot', calculate the SDK root if it is specified
+            # (and use it further on)
+            cflags = sysconfig.get_config_var('CFLAGS')
+            m = re.search(r'-isysroot\s+(\S+)', cflags)
+            if m is None:
+                sysroot = '/'
+            else:
+                sysroot = m.group(1)
+
+
+
         for dir in dirs:
             shared = os.path.join(dir, shared_f)
             dylib = os.path.join(dir, dylib_f)
             static = os.path.join(dir, static_f)
+
+            if sys.platform == 'darwin' and (
+                dir.startswith('/System/') or (
+                dir.startswith('/usr/') and not dir.startswith('/usr/local/'))):
+
+                shared = os.path.join(sysroot, dir[1:], shared_f)
+                dylib = os.path.join(sysroot, dir[1:], dylib_f)
+                static = os.path.join(sysroot, dir[1:], static_f)
+
             # We're second-guessing the linker here, with not much hard
             # data to go on: GCC seems to prefer the shared library, so I'm
             # assuming that *all* Unix C compilers do.  And of course I'm

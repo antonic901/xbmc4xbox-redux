@@ -17,32 +17,49 @@ redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 #include "Python.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /* -- ADDMODULE MARKER 1 -- */
 
 extern void PyMarshal_Init(void);
 extern void initimp(void);
 extern void initgc(void);
+extern void init_ast(void);
+extern void _PyWarnings_Init(void);
 
 struct _inittab _PyImport_Inittab[] = {
 
 /* -- ADDMODULE MARKER 2 -- */
 
-	/* This module lives in marshal.c */
-	{"marshal", PyMarshal_Init},
+    /* This module lives in marshal.c */
+    {"marshal", PyMarshal_Init},
 
-	/* This lives in import.c */
-	{"imp", initimp},
+    /* This lives in import.c */
+    {"imp", initimp},
 
-	/* These entries are here for sys.builtin_module_names */
-	{"__main__", NULL},
-	{"__builtin__", NULL},
-	{"sys", NULL},
-	{"exceptions", NULL},
+    /* This lives in Python/Python-ast.c */
+    {"_ast", init_ast},
 
-	/* This lives in gcmodule.c */
-	{"gc", initgc},
+    /* These entries are here for sys.builtin_module_names */
+    {"__main__", NULL},
+    {"__builtin__", NULL},
+    {"sys", NULL},
+    {"exceptions", NULL},
 
-	/* Sentinel */
-	{0, 0}
+    /* This lives in gcmodule.c */
+    {"gc", initgc},
+
+    /* This lives in _warnings.c */
+    {"_warnings", _PyWarnings_Init},
+
+    /* Sentinel */
+    {0, 0}
 };
+
+
+#ifdef __cplusplus
+}
+#endif

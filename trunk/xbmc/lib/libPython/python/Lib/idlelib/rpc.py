@@ -2,7 +2,7 @@
 
 For security reasons, GvR requested that Idle's Python execution server process
 connect to the Idle process, which listens for the connection.  Since Idle has
-has only one client per server, this was not a limitation.
+only one client per server, this was not a limitation.
 
    +---------------------------------+ +-------------+
    | SocketServer.BaseRequestHandler | | SocketIO    |
@@ -121,7 +121,7 @@ request_queue = Queue.Queue(0)
 response_queue = Queue.Queue(0)
 
 
-class SocketIO:
+class SocketIO(object):
 
     nextseq = 0
 
@@ -144,7 +144,7 @@ class SocketIO:
 
     def exithook(self):
         "override for specific exit action"
-        os._exit()
+        os._exit(0)
 
     def debug(self, *args):
         if not self.debugging:
@@ -169,7 +169,7 @@ class SocketIO:
             how, (oid, methodname, args, kwargs) = request
         except TypeError:
             return ("ERROR", "Bad request format")
-        if not self.objtable.has_key(oid):
+        if oid not in self.objtable:
             return ("ERROR", "Unknown object id: %r" % (oid,))
         obj = self.objtable[oid]
         if methodname == "__methods__":
@@ -199,7 +199,9 @@ class SocketIO:
         except socket.error:
             raise
         except:
-            self.debug("localcall:EXCEPTION")
+            msg = "*** Internal Error: rpc.py:SocketIO.localcall()\n\n"\
+                  " Object: %s \n Method: %s \n Args: %s\n"
+            print>>sys.__stderr__, msg % (oid, method, args)
             traceback.print_exc(file=sys.__stderr__)
             return ("EXCEPTION", None)
 
@@ -302,7 +304,7 @@ class SocketIO:
             # wait for notification from socket handling thread
             cvar = self.cvars[myseq]
             cvar.acquire()
-            while not self.responses.has_key(myseq):
+            while myseq not in self.responses:
                 cvar.wait()
             response = self.responses[myseq]
             self.debug("_getresponse:%s: thread woke up: response: %s" %
@@ -328,9 +330,10 @@ class SocketIO:
             try:
                 r, w, x = select.select([], [self.sock], [])
                 n = self.sock.send(s[:BUFSIZE])
-            except (AttributeError, socket.error):
-                # socket was closed
-                raise IOError
+            except (AttributeError, TypeError):
+                raise IOError, "socket no longer exists"
+            except socket.error:
+                raise
             else:
                 s = s[n:]
 
@@ -475,7 +478,7 @@ class SocketIO:
 
 #----------------- end class SocketIO --------------------
 
-class RemoteObject:
+class RemoteObject(object):
     # Token mix-in class
     pass
 
@@ -484,7 +487,7 @@ def remoteref(obj):
     objecttable[oid] = obj
     return RemoteProxy(oid)
 
-class RemoteProxy:
+class RemoteProxy(object):
 
     def __init__(self, oid):
         self.oid = oid
@@ -515,8 +518,6 @@ class RPCClient(SocketIO):
 
     def __init__(self, address, family=socket.AF_INET, type=socket.SOCK_STREAM):
         self.listening_sock = socket.socket(family, type)
-        self.listening_sock.setsockopt(socket.SOL_SOCKET,
-                                       socket.SO_REUSEADDR, 1)
         self.listening_sock.bind(address)
         self.listening_sock.listen(1)
 
@@ -533,7 +534,7 @@ class RPCClient(SocketIO):
     def get_remote_proxy(self, oid):
         return RPCProxy(self, oid)
 
-class RPCProxy:
+class RPCProxy(object):
 
     __methods = None
     __attributes = None
@@ -549,7 +550,11 @@ class RPCProxy:
             return MethodProxy(self.sockio, self.oid, name)
         if self.__attributes is None:
             self.__getattributes()
-        if not self.__attributes.has_key(name):
+        if name in self.__attributes:
+            value = self.sockio.remotecall(self.oid, '__getattribute__',
+                                           (name,), {})
+            return value
+        else:
             raise AttributeError, name
 
     def __getattributes(self):
@@ -565,7 +570,7 @@ def _getmethods(obj, methods):
     # Adds names to dictionary argument 'methods'
     for name in dir(obj):
         attr = getattr(obj, name)
-        if callable(attr):
+        if hasattr(attr, '__call__'):
             methods[name] = 1
     if type(obj) == types.InstanceType:
         _getmethods(obj.__class__, methods)
@@ -576,10 +581,10 @@ def _getmethods(obj, methods):
 def _getattributes(obj, attributes):
     for name in dir(obj):
         attr = getattr(obj, name)
-        if not callable(attr):
+        if not hasattr(attr, '__call__'):
             attributes[name] = 1
 
-class MethodProxy:
+class MethodProxy(object):
 
     def __init__(self, sockio, oid, name):
         self.sockio = sockio
@@ -592,4 +597,4 @@ class MethodProxy:
 
 
 # XXX KBK 09Sep03  We need a proper unit test for this module.  Previously
-#                  existing test code was removed at Rev 1.27.
+#                  existing test code was removed at Rev 1.27 (r34098).

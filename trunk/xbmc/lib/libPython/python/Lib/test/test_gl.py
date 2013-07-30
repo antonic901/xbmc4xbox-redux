@@ -3,8 +3,11 @@
     taken mostly from the documentation.
     Roger E. Masse
 """
-from test.test_support import verbose, TestSkipped
-import gl, GL, time
+import unittest
+from test.test_support import verbose, import_module
+import time
+gl = import_module('gl')
+GL = import_module('GL')
 
 glattrs = ['RGBcolor', 'RGBcursor', 'RGBmode', 'RGBrange', 'RGBwritemask',
 '__doc__', '__name__', 'addtopup', 'altgetmatrix', 'arc', 'arcf',
@@ -81,13 +84,13 @@ glattrs = ['RGBcolor', 'RGBcursor', 'RGBmode', 'RGBrange', 'RGBwritemask',
 'xfpt4s', 'xfpti', 'xfpts', 'zbuffer', 'zclear', 'zdraw', 'zfunction',
 'zsource', 'zwritemask']
 
-def main():
+def test_main():
     # insure that we at least have an X display before continuing.
     import os
     try:
         display = os.environ['DISPLAY']
     except:
-        raise TestSkipped, "No $DISPLAY -- skipping gl test"
+        raise unittest.SkipTest, "No $DISPLAY -- skipping gl test"
 
     # touch all the attributes of gl without doing anything
     if verbose:
@@ -147,4 +150,6 @@ def main():
         print 'winclose'
     gl.winclose(w)
 
-main()
+
+if __name__ == '__main__':
+    test_main()

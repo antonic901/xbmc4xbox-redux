@@ -115,10 +115,14 @@ class CVaPassNext{
     void* (__cdecl* p_##function)(void* a, void* b, void* c, void* d, void* e); \
     void* function(void* a, void* b, void* c, void* d, void* e) { return p_##function(a, b, c, d, e); }
 
+#define FUNCTION28(function) \
+    void* (__cdecl* p_##function)(void* a, void* b, void* c, void* d, void* e, void* f, void* g); \
+    void* function(void* a, void* b, void* c, void* d, void* e, void* f, void* g) { return p_##function(a, b, c, d, e, f, g); }
+
 extern "C"
 {
   /*****************************************
-   * python24.dll
+   * python27.dll
    */
 
   FUNCTION(PyEval_ReleaseLock)
@@ -249,6 +253,10 @@ extern "C"
   FUNCTION8(PySys_SetArgv)
   FUNCTION12(PyObject_RichCompare)
 
+  FUNCTION8(PyRun_SimpleStringFlags)
+  FUNCTION20(PyRun_StringFlags)
+  FUNCTION28(PyRun_FileExFlags)
+
   // PyFloat_FromDouble(double)
   void* (__cdecl* p_PyFloat_FromDouble)(double a); \
   void* PyFloat_FromDouble(double a) { return p_PyFloat_FromDouble(a); }
@@ -356,6 +364,10 @@ extern "C"
       dll.ResolveExport(DLL_OBJECT_DATA(PyUnicode_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyTuple_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyDict_Type)) &&
+
+      dll.ResolveExport(DLL_FUNCTION(PyRun_SimpleStringFlags)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyRun_StringFlags)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyRun_FileExFlags)) &&
 
       dll.ResolveExport(DLL_FUNCTION(PyRun_String)) &&
       dll.ResolveExport(DLL_FUNCTION(PyImport_AddModule)) &&

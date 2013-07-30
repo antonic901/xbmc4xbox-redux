@@ -7,16 +7,21 @@
 
    Andrew Kuchling (amk@amk.ca)
    Greg Stein (gstein@lyra.org)
+
+   Copyright (C) 2005   Gregory P. Smith (greg@krypto.org)
+   Licensed to PSF under a Contributor Agreement.
+
 */
 
 /* SHA objects */
 
 #include "Python.h"
+#include "structmember.h"
 
 
 /* Endianness testing and definitions */
 #define TestEndianness(variable) {int i=1; variable=PCT_BIG_ENDIAN;\
-	if (*((char*)&i)==1) variable=PCT_LITTLE_ENDIAN;}
+        if (*((char*)&i)==1) variable=PCT_LITTLE_ENDIAN;}
 
 #define PCT_LITTLE_ENDIAN 1
 #define PCT_BIG_ENDIAN 0
@@ -26,7 +31,7 @@
 typedef unsigned char SHA_BYTE;
 
 #if SIZEOF_INT == 4
-typedef unsigned int SHA_INT32;	/* 32-bit integer */
+typedef unsigned int SHA_INT32; /* 32-bit integer */
 #else
 /* not defined. compilation will die. */
 #endif
@@ -40,11 +45,11 @@ typedef unsigned int SHA_INT32;	/* 32-bit integer */
 
 typedef struct {
     PyObject_HEAD
-    SHA_INT32 digest[5];		/* Message digest */
-    SHA_INT32 count_lo, count_hi;	/* 64-bit bit count */
-    SHA_BYTE data[SHA_BLOCKSIZE];	/* SHA data buffer */
+    SHA_INT32 digest[5];                /* Message digest */
+    SHA_INT32 count_lo, count_hi;       /* 64-bit bit count */
+    SHA_BYTE data[SHA_BLOCKSIZE];       /* SHA data buffer */
     int Endianness;
-    int local;				/* unprocessed amount in data */
+    int local;                          /* unprocessed amount in data */
 } SHAobject;
 
 /* When run on a little-endian CPU we need to perform byte reversal on an
@@ -55,7 +60,7 @@ static void longReverse(SHA_INT32 *buffer, int byteCount, int Endianness)
     SHA_INT32 value;
 
     if ( Endianness == PCT_BIG_ENDIAN )
-	return;
+        return;
 
     byteCount /= sizeof(*buffer);
     while (byteCount--) {
@@ -106,48 +111,48 @@ static void SHAcopy(SHAobject *src, SHAobject *dest)
    save one boolean operation each - thanks to Rich Schroeppel,
    rcs@cs.arizona.edu for discovering this */
 
-/*#define f1(x,y,z)	((x & y) | (~x & z))		// Rounds  0-19 */
-#define f1(x,y,z)	(z ^ (x & (y ^ z)))		/* Rounds  0-19 */
-#define f2(x,y,z)	(x ^ y ^ z)			/* Rounds 20-39 */
-/*#define f3(x,y,z)	((x & y) | (x & z) | (y & z))	// Rounds 40-59 */
-#define f3(x,y,z)	((x & y) | (z & (x | y)))	/* Rounds 40-59 */
-#define f4(x,y,z)	(x ^ y ^ z)			/* Rounds 60-79 */
+/*#define f1(x,y,z)     ((x & y) | (~x & z))            // Rounds  0-19 */
+#define f1(x,y,z)       (z ^ (x & (y ^ z)))             /* Rounds  0-19 */
+#define f2(x,y,z)       (x ^ y ^ z)                     /* Rounds 20-39 */
+/*#define f3(x,y,z)     ((x & y) | (x & z) | (y & z))   // Rounds 40-59 */
+#define f3(x,y,z)       ((x & y) | (z & (x | y)))       /* Rounds 40-59 */
+#define f4(x,y,z)       (x ^ y ^ z)                     /* Rounds 60-79 */
 
 /* SHA constants */
 
-#define CONST1		0x5a827999L			/* Rounds  0-19 */
-#define CONST2		0x6ed9eba1L			/* Rounds 20-39 */
-#define CONST3		0x8f1bbcdcL			/* Rounds 40-59 */
-#define CONST4		0xca62c1d6L			/* Rounds 60-79 */
+#define CONST1          0x5a827999L                     /* Rounds  0-19 */
+#define CONST2          0x6ed9eba1L                     /* Rounds 20-39 */
+#define CONST3          0x8f1bbcdcL                     /* Rounds 40-59 */
+#define CONST4          0xca62c1d6L                     /* Rounds 60-79 */
 
 /* 32-bit rotate */
 
-#define R32(x,n)	((x << n) | (x >> (32 - n)))
+#define R32(x,n)        ((x << n) | (x >> (32 - n)))
 
 /* the generic case, for when the overall rotation is not unraveled */
 
-#define FG(n)	\
-    T = R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n;	\
+#define FG(n)   \
+    T = R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n;  \
     E = D; D = C; C = R32(B,30); B = A; A = T
 
 /* specific cases, for when the overall rotation is unraveled */
 
-#define FA(n)	\
+#define FA(n)   \
     T = R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n; B = R32(B,30)
 
-#define FB(n)	\
+#define FB(n)   \
     E = R32(T,5) + f##n(A,B,C) + D + *WP++ + CONST##n; A = R32(A,30)
 
-#define FC(n)	\
+#define FC(n)   \
     D = R32(E,5) + f##n(T,A,B) + C + *WP++ + CONST##n; T = R32(T,30)
 
-#define FD(n)	\
+#define FD(n)   \
     C = R32(D,5) + f##n(E,T,A) + B + *WP++ + CONST##n; E = R32(E,30)
 
-#define FE(n)	\
+#define FE(n)   \
     B = R32(C,5) + f##n(D,E,T) + A + *WP++ + CONST##n; D = R32(D,30)
 
-#define FT(n)	\
+#define FT(n)   \
     A = R32(B,5) + f##n(C,D,E) + T + *WP++ + CONST##n; C = R32(C,30)
 
 /* do SHA transformation */
@@ -162,10 +167,10 @@ sha_transform(SHAobject *sha_info)
     longReverse(W, (int)sizeof(sha_info->data), sha_info->Endianness);
 
     for (i = 16; i < 80; ++i) {
-	W[i] = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
+        W[i] = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
 
-	/* extra rotation fix */
-	W[i] = R32(W[i], 1);
+        /* extra rotation fix */
+        W[i] = R32(W[i], 1);
     }
     A = sha_info->digest[0];
     B = sha_info->digest[1];
@@ -231,9 +236,9 @@ sha_init(SHAobject *sha_info)
 /* update the SHA digest */
 
 static void
-sha_update(SHAobject *sha_info, SHA_BYTE *buffer, int count)
+sha_update(SHAobject *sha_info, SHA_BYTE *buffer, unsigned int count)
 {
-    int i;
+    unsigned int i;
     SHA_INT32 clo;
 
     clo = sha_info->count_lo + ((SHA_INT32) count << 3);
@@ -281,14 +286,14 @@ sha_final(unsigned char digest[20], SHAobject *sha_info)
     count = (int) ((lo_bit_count >> 3) & 0x3f);
     ((SHA_BYTE *) sha_info->data)[count++] = 0x80;
     if (count > SHA_BLOCKSIZE - 8) {
-	memset(((SHA_BYTE *) sha_info->data) + count, 0,
-	       SHA_BLOCKSIZE - count);
-	sha_transform(sha_info);
-	memset((SHA_BYTE *) sha_info->data, 0, SHA_BLOCKSIZE - 8);
+        memset(((SHA_BYTE *) sha_info->data) + count, 0,
+               SHA_BLOCKSIZE - count);
+        sha_transform(sha_info);
+        memset((SHA_BYTE *) sha_info->data, 0, SHA_BLOCKSIZE - 8);
     }
     else {
-	memset(((SHA_BYTE *) sha_info->data) + count, 0,
-	       SHA_BLOCKSIZE - 8 - count);
+        memset(((SHA_BYTE *) sha_info->data) + count, 0,
+               SHA_BLOCKSIZE - 8 - count);
     }
 
     /* GJS: note that we add the hi/lo in big-endian. sha_transform will
@@ -353,13 +358,10 @@ SHA_dealloc(PyObject *ptr)
 PyDoc_STRVAR(SHA_copy__doc__, "Return a copy of the hashing object.");
 
 static PyObject *
-SHA_copy(SHAobject *self, PyObject *args)
+SHA_copy(SHAobject *self, PyObject *unused)
 {
     SHAobject *newobj;
 
-    if (!PyArg_ParseTuple(args, ":copy")) {
-        return NULL;
-    }
     if ( (newobj = newSHAobject())==NULL)
         return NULL;
 
@@ -371,13 +373,10 @@ PyDoc_STRVAR(SHA_digest__doc__,
 "Return the digest value as a string of binary data.");
 
 static PyObject *
-SHA_digest(SHAobject *self, PyObject *args)
+SHA_digest(SHAobject *self, PyObject *unused)
 {
     unsigned char digest[SHA_DIGESTSIZE];
     SHAobject temp;
-
-    if (!PyArg_ParseTuple(args, ":digest"))
-        return NULL;
 
     SHAcopy(self, &temp);
     sha_final(digest, &temp);
@@ -388,16 +387,13 @@ PyDoc_STRVAR(SHA_hexdigest__doc__,
 "Return the digest value as a string of hexadecimal digits.");
 
 static PyObject *
-SHA_hexdigest(SHAobject *self, PyObject *args)
+SHA_hexdigest(SHAobject *self, PyObject *unused)
 {
     unsigned char digest[SHA_DIGESTSIZE];
     SHAobject temp;
     PyObject *retval;
     char *hex_digest;
     int i, j;
-
-    if (!PyArg_ParseTuple(args, ":hexdigest"))
-        return NULL;
 
     /* Get the raw (binary) digest value */
     SHAcopy(self, &temp);
@@ -406,21 +402,21 @@ SHA_hexdigest(SHAobject *self, PyObject *args)
     /* Create a new string */
     retval = PyString_FromStringAndSize(NULL, sizeof(digest) * 2);
     if (!retval)
-	    return NULL;
+            return NULL;
     hex_digest = PyString_AsString(retval);
     if (!hex_digest) {
-	    Py_DECREF(retval);
-	    return NULL;
+            Py_DECREF(retval);
+            return NULL;
     }
 
     /* Make hex version of the digest */
     for(i=j=0; i<sizeof(digest); i++) {
         char c;
         c = (digest[i] >> 4) & 0xf;
-	c = (c>9) ? c+'a'-10 : c + '0';
+        c = (c>9) ? c+'a'-10 : c + '0';
         hex_digest[j++] = c;
         c = (digest[i] & 0xf);
-	c = (c>9) ? c+'a'-10 : c + '0';
+        c = (c>9) ? c+'a'-10 : c + '0';
         hex_digest[j++] = c;
     }
     return retval;
@@ -432,47 +428,111 @@ PyDoc_STRVAR(SHA_update__doc__,
 static PyObject *
 SHA_update(SHAobject *self, PyObject *args)
 {
-    unsigned char *cp;
-    int len;
+    Py_buffer view;
+    Py_ssize_t n;
+    unsigned char *buf;
 
-    if (!PyArg_ParseTuple(args, "s#:update", &cp, &len))
+    if (!PyArg_ParseTuple(args, "s*:update", &view))
         return NULL;
 
-    sha_update(self, cp, len);
+    n = view.len;
+    buf = (unsigned char *) view.buf;
+    while (n > 0) {
+        Py_ssize_t nbytes;
+        if (n > INT_MAX)
+            nbytes = INT_MAX;
+        else
+            nbytes = n;
+        sha_update(self, buf,
+                   Py_SAFE_DOWNCAST(nbytes, Py_ssize_t, unsigned int));
+        buf += nbytes;
+        n -= nbytes;
+    }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    PyBuffer_Release(&view);
+    Py_RETURN_NONE;
 }
 
 static PyMethodDef SHA_methods[] = {
-    {"copy",	  (PyCFunction)SHA_copy,      METH_VARARGS, SHA_copy__doc__},
-    {"digest",	  (PyCFunction)SHA_digest,    METH_VARARGS, SHA_digest__doc__},
-    {"hexdigest", (PyCFunction)SHA_hexdigest, METH_VARARGS, SHA_hexdigest__doc__},
-    {"update",	  (PyCFunction)SHA_update,    METH_VARARGS, SHA_update__doc__},
-    {NULL,	  NULL}		/* sentinel */
+    {"copy",      (PyCFunction)SHA_copy,      METH_NOARGS,  SHA_copy__doc__},
+    {"digest",    (PyCFunction)SHA_digest,    METH_NOARGS,  SHA_digest__doc__},
+    {"hexdigest", (PyCFunction)SHA_hexdigest, METH_NOARGS,  SHA_hexdigest__doc__},
+    {"update",    (PyCFunction)SHA_update,    METH_VARARGS, SHA_update__doc__},
+    {NULL,        NULL}         /* sentinel */
 };
 
 static PyObject *
-SHA_getattr(PyObject *self, char *name)
+SHA_get_block_size(PyObject *self, void *closure)
 {
-    if (strcmp(name, "blocksize")==0)
-        return PyInt_FromLong(1);
-    if (strcmp(name, "digest_size")==0 || strcmp(name, "digestsize")==0)
-        return PyInt_FromLong(20);
-
-    return Py_FindMethod(SHA_methods, self, name);
+    return PyInt_FromLong(SHA_BLOCKSIZE);
 }
 
+static PyObject *
+SHA_get_digest_size(PyObject *self, void *closure)
+{
+    return PyInt_FromLong(SHA_DIGESTSIZE);
+}
+
+static PyObject *
+SHA_get_name(PyObject *self, void *closure)
+{
+    return PyString_FromStringAndSize("SHA1", 4);
+}
+
+static PyGetSetDef SHA_getseters[] = {
+    {"digest_size",
+     (getter)SHA_get_digest_size, NULL,
+     NULL,
+     NULL},
+    {"block_size",
+     (getter)SHA_get_block_size, NULL,
+     NULL,
+     NULL},
+    {"name",
+     (getter)SHA_get_name, NULL,
+     NULL,
+     NULL},
+    /* the old md5 and sha modules support 'digest_size' as in PEP 247.
+     * the old sha module also supported 'digestsize'.  ugh. */
+    {"digestsize",
+     (getter)SHA_get_digest_size, NULL,
+     NULL,
+     NULL},
+    {NULL}  /* Sentinel */
+};
+
 static PyTypeObject SHAtype = {
-    PyObject_HEAD_INIT(NULL)
-    0,			/*ob_size*/
-    "sha.SHA",		/*tp_name*/
-    sizeof(SHAobject),	/*tp_size*/
-    0,			/*tp_itemsize*/
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "_sha.sha",         /*tp_name*/
+    sizeof(SHAobject),  /*tp_size*/
+    0,                  /*tp_itemsize*/
     /* methods */
-    SHA_dealloc,	/*tp_dealloc*/
-    0,			/*tp_print*/
-    SHA_getattr,	/*tp_getattr*/
+    SHA_dealloc,        /*tp_dealloc*/
+    0,                  /*tp_print*/
+    0,                  /*tp_getattr*/
+    0,                  /*tp_setattr*/
+    0,                  /*tp_compare*/
+    0,                  /*tp_repr*/
+    0,                  /*tp_as_number*/
+    0,                  /*tp_as_sequence*/
+    0,                  /*tp_as_mapping*/
+    0,                  /*tp_hash*/
+    0,                  /*tp_call*/
+    0,                  /*tp_str*/
+    0,                  /*tp_getattro*/
+    0,                  /*tp_setattro*/
+    0,                  /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT, /*tp_flags*/
+    0,                  /*tp_doc*/
+    0,                  /*tp_traverse*/
+    0,                  /*tp_clear*/
+    0,                  /*tp_richcompare*/
+    0,                  /*tp_weaklistoffset*/
+    0,                  /*tp_iter*/
+    0,                  /*tp_iternext*/
+    SHA_methods,        /* tp_methods */
+    0,                  /* tp_members */
+    SHA_getseters,      /* tp_getset */
 };
 
 
@@ -488,25 +548,43 @@ SHA_new(PyObject *self, PyObject *args, PyObject *kwdict)
 {
     static char *kwlist[] = {"string", NULL};
     SHAobject *new;
-    unsigned char *cp = NULL;
-    int len;
+    Py_buffer view = { 0 };
+    Py_ssize_t n;
+    unsigned char *buf;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwdict, "|s#:new", kwlist,
-                                     &cp, &len)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwdict, "|s*:new", kwlist,
+                                     &view)) {
         return NULL;
     }
 
-    if ((new = newSHAobject()) == NULL)
+    if ((new = newSHAobject()) == NULL) {
+        PyBuffer_Release(&view);
         return NULL;
+    }
 
     sha_init(new);
 
     if (PyErr_Occurred()) {
         Py_DECREF(new);
+        PyBuffer_Release(&view);
         return NULL;
     }
-    if (cp)
-        sha_update(new, cp, len);
+
+    n = view.len;
+    buf = (unsigned char *) view.buf;
+    while (n > 0) {
+        Py_ssize_t nbytes;
+        if (n > INT_MAX)
+            nbytes = INT_MAX;
+        else
+            nbytes = n;
+        sha_update(new, buf,
+                   Py_SAFE_DOWNCAST(nbytes, Py_ssize_t, unsigned int));
+        buf += nbytes;
+        n -= nbytes;
+    }
+
+    PyBuffer_Release(&view);
 
     return (PyObject *)new;
 }
@@ -516,8 +594,7 @@ SHA_new(PyObject *self, PyObject *args, PyObject *kwdict)
 
 static struct PyMethodDef SHA_functions[] = {
     {"new", (PyCFunction)SHA_new, METH_VARARGS|METH_KEYWORDS, SHA_new__doc__},
-    {"sha", (PyCFunction)SHA_new, METH_VARARGS|METH_KEYWORDS, SHA_new__doc__},
-    {NULL,	NULL}		 /* Sentinel */
+    {NULL,      NULL}            /* Sentinel */
 };
 
 
@@ -526,19 +603,21 @@ static struct PyMethodDef SHA_functions[] = {
 #define insint(n,v) { PyModule_AddIntConstant(m,n,v); }
 
 PyMODINIT_FUNC
-initsha(void)
+init_sha(void)
 {
     PyObject *m;
 
-    SHAtype.ob_type = &PyType_Type;
-    m = Py_InitModule("sha", SHA_functions);
+    Py_TYPE(&SHAtype) = &PyType_Type;
+    if (PyType_Ready(&SHAtype) < 0)
+        return;
+    m = Py_InitModule("_sha", SHA_functions);
     if (m == NULL)
-	return;
+        return;
 
     /* Add some symbolic constants to the module */
     insint("blocksize", 1);  /* For future use, in case some hash
                                 functions require an integral number of
-                                blocks */ 
+                                blocks */
     insint("digestsize", 20);
     insint("digest_size", 20);
 }

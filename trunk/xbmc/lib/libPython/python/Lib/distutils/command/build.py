@@ -2,21 +2,19 @@
 
 Implements the Distutils 'build' command."""
 
-# This module should be kept compatible with Python 2.1.
-
-__revision__ = "$Id: build.py 37828 2004-11-10 22:23:15Z loewis $"
+__revision__ = "$Id$"
 
 import sys, os
-from distutils.core import Command
+
 from distutils.util import get_platform
+from distutils.core import Command
+from distutils.errors import DistutilsOptionError
 
-
-def show_compilers ():
+def show_compilers():
     from distutils.ccompiler import show_compilers
     show_compilers()
 
-
-class build (Command):
+class build(Command):
 
     description = "build everything needed to install"
 
@@ -34,6 +32,9 @@ class build (Command):
          "build directory for scripts"),
         ('build-temp=', 't',
          "temporary build directory"),
+        ('plat-name=', 'p',
+         "platform name to build for, if supported "
+         "(default: %s)" % get_platform()),
         ('compiler=', 'c',
          "specify the compiler type"),
         ('debug', 'g',
@@ -51,7 +52,7 @@ class build (Command):
          "list available compilers", show_compilers),
         ]
 
-    def initialize_options (self):
+    def initialize_options(self):
         self.build_base = 'build'
         # these are decided only after 'build_base' has its final value
         # (unless overridden by the user or client)
@@ -61,13 +62,30 @@ class build (Command):
         self.build_temp = None
         self.build_scripts = None
         self.compiler = None
+        self.plat_name = None
         self.debug = None
         self.force = 0
         self.executable = None
 
-    def finalize_options (self):
+    def finalize_options(self):
+        if self.plat_name is None:
+            self.plat_name = get_platform()
+        else:
+            # plat-name only supported for windows (other platforms are
+            # supported via ./configure flags, if at all).  Avoid misleading
+            # other platforms.
+            if os.name != 'nt':
+                raise DistutilsOptionError(
+                            "--plat-name only supported on Windows (try "
+                            "using './configure --help' on your platform)")
 
-        plat_specifier = ".%s-%s" % (get_platform(), sys.version[0:3])
+        plat_specifier = ".%s-%s" % (self.plat_name, sys.version[0:3])
+
+        # Make it so Python 2.x and Python 2.x with --with-pydebug don't
+        # share the same build directories. Doing so confuses the build
+        # process for C modules
+        if hasattr(sys, 'gettotalrefcount'):
+            plat_specifier += '-pydebug'
 
         # 'build_purelib' and 'build_platlib' just default to 'lib' and
         # 'lib.<plat>' under the base build directory.  We only use one of
@@ -98,11 +116,8 @@ class build (Command):
 
         if self.executable is None:
             self.executable = os.path.normpath(sys.executable)
-    # finalize_options ()
 
-
-    def run (self):
-
+    def run(self):
         # Run all relevant sub-commands.  This will be some subset of:
         #  - build_py      - pure Python modules
         #  - build_clib    - standalone C libraries
@@ -110,7 +125,6 @@ class build (Command):
         #  - build_scripts - (Python) scripts
         for cmd_name in self.get_sub_commands():
             self.run_command(cmd_name)
-
 
     # -- Predicates for the sub-command list ---------------------------
 
@@ -126,11 +140,8 @@ class build (Command):
     def has_scripts (self):
         return self.distribution.has_scripts()
 
-
     sub_commands = [('build_py',      has_pure_modules),
                     ('build_clib',    has_c_libraries),
                     ('build_ext',     has_ext_modules),
                     ('build_scripts', has_scripts),
                    ]
-
-# class build

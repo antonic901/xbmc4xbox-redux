@@ -1,7 +1,7 @@
-import rfc822
-import sys
 import unittest
 from test import test_support
+
+rfc822 = test_support.import_module("rfc822", deprecated=True)
 
 try:
     from cStringIO import StringIO
@@ -16,23 +16,23 @@ class MessageTestCase(unittest.TestCase):
     def test_get(self):
         msg = self.create_message(
             'To: "last, first" <userid@foo.net>\n\ntest\n')
-        self.assert_(msg.get("to") == '"last, first" <userid@foo.net>')
-        self.assert_(msg.get("TO") == '"last, first" <userid@foo.net>')
-        self.assert_(msg.get("No-Such-Header") is None)
-        self.assert_(msg.get("No-Such-Header", "No-Such-Value")
+        self.assertTrue(msg.get("to") == '"last, first" <userid@foo.net>')
+        self.assertTrue(msg.get("TO") == '"last, first" <userid@foo.net>')
+        self.assertTrue(msg.get("No-Such-Header") is None)
+        self.assertTrue(msg.get("No-Such-Header", "No-Such-Value")
                      == "No-Such-Value")
 
     def test_setdefault(self):
         msg = self.create_message(
             'To: "last, first" <userid@foo.net>\n\ntest\n')
-        self.assert_(not msg.has_key("New-Header"))
-        self.assert_(msg.setdefault("New-Header", "New-Value") == "New-Value")
-        self.assert_(msg.setdefault("New-Header", "Different-Value")
+        self.assertTrue(not msg.has_key("New-Header"))
+        self.assertTrue(msg.setdefault("New-Header", "New-Value") == "New-Value")
+        self.assertTrue(msg.setdefault("New-Header", "Different-Value")
                      == "New-Value")
-        self.assert_(msg["new-header"] == "New-Value")
+        self.assertTrue(msg["new-header"] == "New-Value")
 
-        self.assert_(msg.setdefault("Another-Header") == "")
-        self.assert_(msg["another-header"] == "")
+        self.assertTrue(msg.setdefault("Another-Header") == "")
+        self.assertTrue(msg["another-header"] == "")
 
     def check(self, msg, results):
         """Check addresses and the date."""
@@ -46,9 +46,9 @@ class MessageTestCase(unittest.TestCase):
                 continue
             i = i + 1
             self.assertEqual(mn, n,
-                             "Un-expected name: %s != %s" % (`mn`, `n`))
+                             "Un-expected name: %r != %r" % (mn, n))
             self.assertEqual(ma, a,
-                             "Un-expected address: %s != %s" % (`ma`, `a`))
+                             "Un-expected address: %r != %r" % (ma, a))
             if mn == n and ma == a:
                 pass
             else:

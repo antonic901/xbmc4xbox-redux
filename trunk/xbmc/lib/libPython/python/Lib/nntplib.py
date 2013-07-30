@@ -103,14 +103,13 @@ class NNTP:
 
         readermode is sometimes necessary if you are connecting to an
         NNTP server on the local machine and intend to call
-        reader-specific comamnds, such as `group'.  If you get
+        reader-specific commands, such as `group'.  If you get
         unexpected NNTPPermanentErrors, you might need to set
         readermode.
         """
         self.host = host
         self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.host, self.port))
+        self.sock = socket.create_connection((host, port))
         self.file = self.sock.makefile('rb')
         self.debugging = 0
         self.welcome = self.getresp()

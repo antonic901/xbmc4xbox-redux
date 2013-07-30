@@ -3,18 +3,17 @@
 Implements the Distutils 'bdist_rpm' command (create RPM source and binary
 distributions)."""
 
-# This module should be kept compatible with Python 2.1.
+__revision__ = "$Id$"
 
-__revision__ = "$Id: bdist_rpm.py 47214 2006-07-03 12:29:51Z martin.v.loewis $"
+import sys
+import os
+import string
 
-import sys, os, string
-import glob
-from types import *
 from distutils.core import Command
 from distutils.debug import DEBUG
-from distutils.util import get_platform
 from distutils.file_util import write_file
-from distutils.errors import *
+from distutils.errors import (DistutilsOptionError, DistutilsPlatformError,
+                              DistutilsFileError, DistutilsExecError)
 from distutils import log
 
 class bdist_rpm (Command):
@@ -125,10 +124,13 @@ class bdist_rpm (Command):
         # Allow a packager to explicitly force an architecture
         ('force-arch=', None,
          "Force an architecture onto the RPM build process"),
-       ]
+
+        ('quiet', 'q',
+         "Run the INSTALL phase of RPM building in quiet mode"),
+        ]
 
     boolean_options = ['keep-temp', 'use-rpm-opt-flags', 'rpm3-mode',
-                       'no-autoreq']
+                       'no-autoreq', 'quiet']
 
     negative_opt = {'no-keep-temp': 'keep-temp',
                     'no-rpm-opt-flags': 'use-rpm-opt-flags',
@@ -178,6 +180,7 @@ class bdist_rpm (Command):
         self.no_autoreq = 0
 
         self.force_arch = None
+        self.quiet = 0
 
     # initialize_options()
 
@@ -223,7 +226,7 @@ class bdist_rpm (Command):
                                         self.distribution.get_contact_email()))
         self.ensure_string('packager')
         self.ensure_string_list('doc_files')
-        if type(self.doc_files) is ListType:
+        if isinstance(self.doc_files, list):
             for readme in ('README', 'README.txt'):
                 if os.path.exists(readme) and readme not in self.doc_files:
                     self.doc_files.append(readme)
@@ -297,12 +300,14 @@ class bdist_rpm (Command):
 
         # Make a source distribution and copy to SOURCES directory with
         # optional icon.
+        saved_dist_files = self.distribution.dist_files[:]
         sdist = self.reinitialize_command('sdist')
         if self.use_bzip2:
             sdist.formats = ['bztar']
         else:
             sdist.formats = ['gztar']
         self.run_command('sdist')
+        self.distribution.dist_files = saved_dist_files
 
         source = sdist.get_archive_files()[0]
         source_dir = rpm_dir['SOURCES']
@@ -322,6 +327,7 @@ class bdist_rpm (Command):
         if os.path.exists('/usr/bin/rpmbuild') or \
            os.path.exists('/bin/rpmbuild'):
             rpm_cmd = ['rpmbuild']
+
         if self.source_only: # what kind of RPMs?
             rpm_cmd.append('-bs')
         elif self.binary_only:
@@ -333,32 +339,72 @@ class bdist_rpm (Command):
                              '_topdir %s' % os.path.abspath(self.rpm_base)])
         if not self.keep_temp:
             rpm_cmd.append('--clean')
+
+        if self.quiet:
+            rpm_cmd.append('--quiet')
+
         rpm_cmd.append(spec_path)
+        # Determine the binary rpm names that should be built out of this spec
+        # file
+        # Note that some of these may not be really built (if the file
+        # list is empty)
+        nvr_string = "%{name}-%{version}-%{release}"
+        src_rpm = nvr_string + ".src.rpm"
+        non_src_rpm = "%{arch}/" + nvr_string + ".%{arch}.rpm"
+        q_cmd = r"rpm -q --qf '%s %s\n' --specfile '%s'" % (
+            src_rpm, non_src_rpm, spec_path)
+
+        out = os.popen(q_cmd)
+        try:
+            binary_rpms = []
+            source_rpm = None
+            while 1:
+                line = out.readline()
+                if not line:
+                    break
+                l = string.split(string.strip(line))
+                assert(len(l) == 2)
+                binary_rpms.append(l[1])
+                # The source rpm is named after the first entry in the spec file
+                if source_rpm is None:
+                    source_rpm = l[0]
+
+            status = out.close()
+            if status:
+                raise DistutilsExecError("Failed to execute: %s" % repr(q_cmd))
+
+        finally:
+            out.close()
+
         self.spawn(rpm_cmd)
 
-        # XXX this is a nasty hack -- we really should have a proper way to
-        # find out the names of the RPM files created; also, this assumes
-        # that RPM creates exactly one source and one binary RPM.
         if not self.dry_run:
+            if self.distribution.has_ext_modules():
+                pyversion = get_python_version()
+            else:
+                pyversion = 'any'
+
             if not self.binary_only:
-                srpms = glob.glob(os.path.join(rpm_dir['SRPMS'], "*.rpm"))
-                assert len(srpms) == 1, \
-                       "unexpected number of SRPM files found: %s" % srpms
-                self.move_file(srpms[0], self.dist_dir)
+                srpm = os.path.join(rpm_dir['SRPMS'], source_rpm)
+                assert(os.path.exists(srpm))
+                self.move_file(srpm, self.dist_dir)
+                filename = os.path.join(self.dist_dir, source_rpm)
+                self.distribution.dist_files.append(
+                    ('bdist_rpm', pyversion, filename))
 
             if not self.source_only:
-                rpms = glob.glob(os.path.join(rpm_dir['RPMS'], "*/*.rpm"))
-                debuginfo = glob.glob(os.path.join(rpm_dir['RPMS'], \
-                                                   "*/*debuginfo*.rpm"))
-                if debuginfo:
-                    rpms.remove(debuginfo[0])
-                assert len(rpms) == 1, \
-                       "unexpected number of RPM files found: %s" % rpms
-                self.move_file(rpms[0], self.dist_dir)
-                if debuginfo:
-                    self.move_file(debuginfo[0], self.dist_dir)
+                for rpm in binary_rpms:
+                    rpm = os.path.join(rpm_dir['RPMS'], rpm)
+                    if os.path.exists(rpm):
+                        self.move_file(rpm, self.dist_dir)
+                        filename = os.path.join(self.dist_dir,
+                                                os.path.basename(rpm))
+                        self.distribution.dist_files.append(
+                            ('bdist_rpm', pyversion, filename))
     # run()
 
+    def _dist_path(self, path):
+        return os.path.join(self.dist_dir, os.path.basename(path))
 
     def _make_spec_file(self):
         """Generate the text of an RPM spec file and return it as a
@@ -368,6 +414,7 @@ class bdist_rpm (Command):
         spec_file = [
             '%define name ' + self.distribution.get_name(),
             '%define version ' + self.distribution.get_version().replace('-','_'),
+            '%define unmangled_version ' + self.distribution.get_version(),
             '%define release ' + self.release.replace('-','_'),
             '',
             'Summary: ' + self.distribution.get_description(),
@@ -389,9 +436,9 @@ class bdist_rpm (Command):
         # but only after it has run: and we create the spec file before
         # running "sdist", in case of --spec-only.
         if self.use_bzip2:
-            spec_file.append('Source0: %{name}-%{version}.tar.bz2')
+            spec_file.append('Source0: %{name}-%{unmangled_version}.tar.bz2')
         else:
-            spec_file.append('Source0: %{name}-%{version}.tar.gz')
+            spec_file.append('Source0: %{name}-%{unmangled_version}.tar.gz')
 
         spec_file.extend([
             'License: ' + self.distribution.get_license(),
@@ -414,7 +461,7 @@ class bdist_rpm (Command):
                       'Obsoletes',
                       ):
             val = getattr(self, string.lower(field))
-            if type(val) is ListType:
+            if isinstance(val, list):
                 spec_file.append('%s: %s' % (field, string.join(val)))
             elif val is not None:
                 spec_file.append('%s: %s' % (field, val))
@@ -465,13 +512,13 @@ class bdist_rpm (Command):
         # that we open and interpolate into the spec file, but the defaults
         # are just text that we drop in as-is.  Hmmm.
 
+        install_cmd = ('%s install -O1 --root=$RPM_BUILD_ROOT '
+                       '--record=INSTALLED_FILES') % def_setup_call
+
         script_options = [
-            ('prep', 'prep_script', "%setup"),
+            ('prep', 'prep_script', "%setup -n %{name}-%{unmangled_version}"),
             ('build', 'build_script', def_build),
-            ('install', 'install_script',
-             ("%s install "
-              "--root=$RPM_BUILD_ROOT "
-              "--record=INSTALLED_FILES") % def_setup_call),
+            ('install', 'install_script', install_cmd),
             ('clean', 'clean_script', "rm -rf $RPM_BUILD_ROOT"),
             ('verifyscript', 'verify_script', None),
             ('pre', 'pre_install', None),

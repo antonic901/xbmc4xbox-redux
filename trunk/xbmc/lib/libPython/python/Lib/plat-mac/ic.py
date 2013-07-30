@@ -1,5 +1,8 @@
 """IC wrapper module, based on Internet Config 1.3"""
 
+from warnings import warnpy3k
+warnpy3k("In 3.x, the ic module is removed.", stacklevel=2)
+
 import icglue
 import string
 import sys
@@ -138,7 +141,7 @@ def _decode(data, key):
         key2 = key[:string.index(key, '\245')+1]
     else:
         key2 = key
-    if _decoder_table.has_key(key2):
+    if key2 in _decoder_table:
         decoder = _decoder_table[key2][0]
     else:
         decoder = _decode_default
@@ -151,7 +154,7 @@ def _code(data, key):
         key2 = key[:string.index(key, '\245')+1]
     else:
         key2 = key
-    if _decoder_table.has_key(key2):
+    if key2 in _decoder_table:
         coder = _decoder_table[key2][1]
     else:
         coder = _code_default
@@ -202,12 +205,12 @@ class IC:
         self.ic.ICLaunchURL(hint, url, 0, len(url))
 
     def parseurl(self, data, start=None, end=None, hint=""):
-        if start == None:
+        if start is None:
             selStart = 0
             selEnd = len(data)
         else:
             selStart = selEnd = start
-        if end != None:
+        if end is not None:
             selEnd = end
         selStart, selEnd = self.ic.ICParseURL(hint, data, selStart, selEnd, self.h)
         return self.h.data, selStart, selEnd
@@ -231,27 +234,27 @@ _dft_ic = None
 
 def launchurl(url, hint=""):
     global _dft_ic
-    if _dft_ic == None: _dft_ic = IC()
+    if _dft_ic is None: _dft_ic = IC()
     return _dft_ic.launchurl(url, hint)
 
 def parseurl(data, start=None, end=None, hint=""):
     global _dft_ic
-    if _dft_ic == None: _dft_ic = IC()
+    if _dft_ic is None: _dft_ic = IC()
     return _dft_ic.parseurl(data, start, end, hint)
 
 def mapfile(filename):
     global _dft_ic
-    if _dft_ic == None: _dft_ic = IC()
+    if _dft_ic is None: _dft_ic = IC()
     return _dft_ic.mapfile(filename)
 
 def maptypecreator(type, creator, filename=""):
     global _dft_ic
-    if _dft_ic == None: _dft_ic = IC()
+    if _dft_ic is None: _dft_ic = IC()
     return _dft_ic.maptypecreator(type, creator, filename)
 
 def settypecreator(file):
     global _dft_ic
-    if _dft_ic == None: _dft_ic = IC()
+    if _dft_ic is None: _dft_ic = IC()
     return _dft_ic.settypecreator(file)
 
 def _test():

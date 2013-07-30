@@ -10,9 +10,7 @@ dis(pickle, out=None, memo=None, indentlevel=4)
    Print a symbolic disassembly of a pickle.
 '''
 
-__all__ = ['dis',
-           'genops',
-          ]
+__all__ = ['dis', 'genops', 'optimize']
 
 # Other ideas:
 #
@@ -1216,10 +1214,11 @@ opcodes = [
       stack_before=[anyobject],
       stack_after=[pytuple],
       proto=2,
-      doc="""One-tuple.
+      doc="""Build a one-tuple out of the topmost item on the stack.
 
       This code pops one value off the stack and pushes a tuple of
-      length 1 whose one item is that value back onto it.  IOW:
+      length 1 whose one item is that value back onto it.  In other
+      words:
 
           stack[-1] = tuple(stack[-1:])
       """),
@@ -1230,10 +1229,11 @@ opcodes = [
       stack_before=[anyobject, anyobject],
       stack_after=[pytuple],
       proto=2,
-      doc="""One-tuple.
+      doc="""Build a two-tuple out of the top two items on the stack.
 
-      This code pops two values off the stack and pushes a tuple
-      of length 2 whose items are those values back onto it.  IOW:
+      This code pops two values off the stack and pushes a tuple of
+      length 2 whose items are those values back onto it.  In other
+      words:
 
           stack[-2:] = [tuple(stack[-2:])]
       """),
@@ -1244,10 +1244,11 @@ opcodes = [
       stack_before=[anyobject, anyobject, anyobject],
       stack_after=[pytuple],
       proto=2,
-      doc="""One-tuple.
+      doc="""Build a three-tuple out of the top three items on the stack.
 
-      This code pops three values off the stack and pushes a tuple
-      of length 3 whose items are those values back onto it.  IOW:
+      This code pops three values off the stack and pushes a tuple of
+      length 3 whose items are those values back onto it.  In other
+      words:
 
           stack[-3:] = [tuple(stack[-3:])]
       """),
@@ -1350,7 +1351,7 @@ opcodes = [
       arg=None,
       stack_before=[markobject, stackslice],
       stack_after=[],
-      proto=0,
+      proto=1,
       doc="""Pop all the stack objects at and above the topmost markobject.
 
       When an opcode using a variable number of stack objects is done,
@@ -1369,7 +1370,7 @@ opcodes = [
       proto=0,
       doc="""Read an object from the memo and push it on the stack.
 
-      The index of the memo object to push is given by the newline-teriminated
+      The index of the memo object to push is given by the newline-terminated
       decimal string following.  BINGET and LONG_BINGET are space-optimized
       versions.
       """),
@@ -1525,11 +1526,6 @@ opcodes = [
       argument to be passed to the object's __setstate__, and then the REDUCE
       opcode is followed by code to create setstate's argument, and then a
       BUILD opcode to apply  __setstate__ to that argument.
-
-      There are lots of special cases here.  The argtuple can be None, in
-      which case callable.__basicnew__() is called instead to produce the
-      object to be pushed on the stack.  This appears to be a trick unique
-      to ExtensionClasses, and is deprecated regardless.
 
       If type(callable) is not ClassType, REDUCE complains unless the
       callable has been registered with the copy_reg module's
@@ -1863,6 +1859,33 @@ def genops(pickle):
             break
 
 ##############################################################################
+# A pickle optimizer.
+
+def optimize(p):
+    'Optimize a pickle string by removing unused PUT opcodes'
+    gets = set()            # set of args used by a GET opcode
+    puts = []               # (arg, startpos, stoppos) for the PUT opcodes
+    prevpos = None          # set to pos if previous opcode was a PUT
+    for opcode, arg, pos in genops(p):
+        if prevpos is not None:
+            puts.append((prevarg, prevpos, pos))
+            prevpos = None
+        if 'PUT' in opcode.name:
+            prevarg, prevpos = arg, pos
+        elif 'GET' in opcode.name:
+            gets.add(arg)
+
+    # Copy the pickle string except for PUTS without a corresponding GET
+    s = []
+    i = 0
+    for arg, start, stop in puts:
+        j = stop if (arg in gets) else start
+        s.append(p[i:j])
+        i = stop
+    s.append(p[i:])
+    return ''.join(s)
+
+##############################################################################
 # A symbolic pickle disassembler.
 
 def dis(pickle, out=None, memo=None, indentlevel=4):
@@ -2001,6 +2024,11 @@ def dis(pickle, out=None, memo=None, indentlevel=4):
     if stack:
         raise ValueError("stack not empty after STOP: %r" % stack)
 
+# For use in the doctest, simply as an example of a class to pickle.
+class _Example:
+    def __init__(self, value):
+        self.value = value
+
 _dis_test = r"""
 >>> import pickle
 >>> x = [1, 2, (3, 4), {'abc': u"def"}]
@@ -2058,34 +2086,34 @@ highest protocol among opcodes = 1
 
 Exercise the INST/OBJ/BUILD family.
 
->>> import random
->>> dis(pickle.dumps(random.random, 0))
-    0: c    GLOBAL     'random random'
-   15: p    PUT        0
-   18: .    STOP
+>>> import pickletools
+>>> dis(pickle.dumps(pickletools.dis, 0))
+    0: c    GLOBAL     'pickletools dis'
+   17: p    PUT        0
+   20: .    STOP
 highest protocol among opcodes = 0
 
->>> x = [pickle.PicklingError()] * 2
+>>> from pickletools import _Example
+>>> x = [_Example(42)] * 2
 >>> dis(pickle.dumps(x, 0))
     0: (    MARK
     1: l        LIST       (MARK at 0)
     2: p    PUT        0
     5: (    MARK
-    6: i        INST       'pickle PicklingError' (MARK at 5)
+    6: i        INST       'pickletools _Example' (MARK at 5)
    28: p    PUT        1
    31: (    MARK
    32: d        DICT       (MARK at 31)
    33: p    PUT        2
-   36: S    STRING     'args'
-   44: p    PUT        3
-   47: (    MARK
-   48: t        TUPLE      (MARK at 47)
-   49: s    SETITEM
-   50: b    BUILD
-   51: a    APPEND
-   52: g    GET        1
-   55: a    APPEND
-   56: .    STOP
+   36: S    STRING     'value'
+   45: p    PUT        3
+   48: I    INT        42
+   52: s    SETITEM
+   53: b    BUILD
+   54: a    APPEND
+   55: g    GET        1
+   58: a    APPEND
+   59: .    STOP
 highest protocol among opcodes = 0
 
 >>> dis(pickle.dumps(x, 1))
@@ -2093,20 +2121,20 @@ highest protocol among opcodes = 0
     1: q    BINPUT     0
     3: (    MARK
     4: (        MARK
-    5: c            GLOBAL     'pickle PicklingError'
+    5: c            GLOBAL     'pickletools _Example'
    27: q            BINPUT     1
    29: o            OBJ        (MARK at 4)
    30: q        BINPUT     2
    32: }        EMPTY_DICT
    33: q        BINPUT     3
-   35: U        SHORT_BINSTRING 'args'
-   41: q        BINPUT     4
-   43: )        EMPTY_TUPLE
-   44: s        SETITEM
-   45: b        BUILD
-   46: h        BINGET     2
-   48: e        APPENDS    (MARK at 3)
-   49: .    STOP
+   35: U        SHORT_BINSTRING 'value'
+   42: q        BINPUT     4
+   44: K        BININT1    42
+   46: s        SETITEM
+   47: b        BUILD
+   48: h        BINGET     2
+   50: e        APPENDS    (MARK at 3)
+   51: .    STOP
 highest protocol among opcodes = 1
 
 Try "the canonical" recursive-object test.

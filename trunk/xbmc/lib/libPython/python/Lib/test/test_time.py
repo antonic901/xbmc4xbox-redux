@@ -1,6 +1,7 @@
 from test import test_support
 import time
 import unittest
+import sys
 
 
 class TimeTestCase(unittest.TestCase):
@@ -18,9 +19,9 @@ class TimeTestCase(unittest.TestCase):
         time.clock()
 
     def test_conversions(self):
-        self.assert_(time.ctime(self.t)
+        self.assertTrue(time.ctime(self.t)
                      == time.asctime(time.localtime(self.t)))
-        self.assert_(long(time.mktime(time.localtime(self.t)))
+        self.assertTrue(long(time.mktime(time.localtime(self.t)))
                      == long(self.t))
 
     def test_sleep(self):
@@ -37,11 +38,18 @@ class TimeTestCase(unittest.TestCase):
             except ValueError:
                 self.fail('conversion specifier: %r failed.' % format)
 
+        # Issue #10762: Guard against invalid/non-supported format string
+        # so that Python don't crash (Windows crashes when the format string
+        # input to [w]strftime is not kosher.
+        if sys.platform.startswith('win'):
+            with self.assertRaises(ValueError):
+                time.strftime('%f')
+
     def test_strftime_bounds_checking(self):
         # Make sure that strftime() checks the bounds of the various parts
-        #of the time tuple.
+        #of the time tuple (0 is valid for *all* values).
 
-        # Check year
+        # Check year [1900, max(int)]
         self.assertRaises(ValueError, time.strftime, '',
                             (1899, 1, 1, 0, 0, 0, 0, 1, -1))
         if time.accept2dyear:
@@ -49,27 +57,27 @@ class TimeTestCase(unittest.TestCase):
                                 (-1, 1, 1, 0, 0, 0, 0, 1, -1))
             self.assertRaises(ValueError, time.strftime, '',
                                 (100, 1, 1, 0, 0, 0, 0, 1, -1))
-        # Check month
+        # Check month [1, 12] + zero support
         self.assertRaises(ValueError, time.strftime, '',
-                            (1900, 0, 1, 0, 0, 0, 0, 1, -1))
+                            (1900, -1, 1, 0, 0, 0, 0, 1, -1))
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 13, 1, 0, 0, 0, 0, 1, -1))
-        # Check day of month
+        # Check day of month [1, 31] + zero support
         self.assertRaises(ValueError, time.strftime, '',
-                            (1900, 1, 0, 0, 0, 0, 0, 1, -1))
+                            (1900, 1, -1, 0, 0, 0, 0, 1, -1))
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 32, 0, 0, 0, 0, 1, -1))
-        # Check hour
+        # Check hour [0, 23]
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, -1, 0, 0, 0, 1, -1))
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 24, 0, 0, 0, 1, -1))
-        # Check minute
+        # Check minute [0, 59]
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 0, -1, 0, 0, 1, -1))
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 0, 60, 0, 0, 1, -1))
-        # Check second
+        # Check second [0, 61]
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 0, 0, -1, 0, 1, -1))
         # C99 only requires allowing for one leap second, but Python's docs say
@@ -82,35 +90,52 @@ class TimeTestCase(unittest.TestCase):
         #  modulo.
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 0, 0, 0, -2, 1, -1))
-        # Check day of the year
+        # Check day of the year [1, 366] + zero support
         self.assertRaises(ValueError, time.strftime, '',
-                            (1900, 1, 1, 0, 0, 0, 0, 0, -1))
+                            (1900, 1, 1, 0, 0, 0, 0, -1, -1))
         self.assertRaises(ValueError, time.strftime, '',
                             (1900, 1, 1, 0, 0, 0, 0, 367, -1))
-        # Check daylight savings flag
-        self.assertRaises(ValueError, time.strftime, '',
-                            (1900, 1, 1, 0, 0, 0, 0, 1, -2))
-        self.assertRaises(ValueError, time.strftime, '',
-                            (1900, 1, 1, 0, 0, 0, 0, 1, 2))
+
+    def test_default_values_for_zero(self):
+        # Make sure that using all zeros uses the proper default values.
+        # No test for daylight savings since strftime() does not change output
+        # based on its value.
+        expected = "2000 01 01 00 00 00 1 001"
+        result = time.strftime("%Y %m %d %H %M %S %w %j", (0,)*9)
+        self.assertEqual(expected, result)
 
     def test_strptime(self):
+        # Should be able to go round-trip from strftime to strptime without
+        # raising an exception.
         tt = time.gmtime(self.t)
         for directive in ('a', 'A', 'b', 'B', 'c', 'd', 'H', 'I',
                           'j', 'm', 'M', 'p', 'S',
                           'U', 'w', 'W', 'x', 'X', 'y', 'Y', 'Z', '%'):
-            format = ' %' + directive
+            format = '%' + directive
+            strf_output = time.strftime(format, tt)
             try:
-                time.strptime(time.strftime(format, tt), format)
+                time.strptime(strf_output, format)
             except ValueError:
-                self.fail('conversion specifier: %r failed.' % format)
+                self.fail("conversion specifier %r failed with '%s' input." %
+                          (format, strf_output))
 
     def test_asctime(self):
         time.asctime(time.gmtime(self.t))
         self.assertRaises(TypeError, time.asctime, 0)
+        self.assertRaises(TypeError, time.asctime, ())
+        # XXX: Posix compiant asctime should refuse to convert
+        # year > 9999, but Linux implementation does not.
+        # self.assertRaises(ValueError, time.asctime,
+        #                  (12345, 1, 0, 0, 0, 0, 0, 0, 0))
+        # XXX: For now, just make sure we don't have a crash:
+        try:
+            time.asctime((12345, 1, 1, 0, 0, 0, 0, 1, 0))
+        except ValueError:
+            pass
 
+    @unittest.skipIf(not hasattr(time, "tzset"),
+        "time module has no attribute tzset")
     def test_tzset(self):
-        if not hasattr(time, "tzset"):
-            return # Can't test this; don't want the test suite to fail
 
         from os import environ
 
@@ -136,36 +161,41 @@ class TimeTestCase(unittest.TestCase):
             time.tzset()
             environ['TZ'] = utc
             time.tzset()
-            self.failUnlessEqual(
+            self.assertEqual(
                 time.gmtime(xmas2002), time.localtime(xmas2002)
                 )
-            self.failUnlessEqual(time.daylight, 0)
-            self.failUnlessEqual(time.timezone, 0)
-            self.failUnlessEqual(time.localtime(xmas2002).tm_isdst, 0)
+            self.assertEqual(time.daylight, 0)
+            self.assertEqual(time.timezone, 0)
+            self.assertEqual(time.localtime(xmas2002).tm_isdst, 0)
 
             # Make sure we can switch to US/Eastern
             environ['TZ'] = eastern
             time.tzset()
-            self.failIfEqual(time.gmtime(xmas2002), time.localtime(xmas2002))
-            self.failUnlessEqual(time.tzname, ('EST', 'EDT'))
-            self.failUnlessEqual(len(time.tzname), 2)
-            self.failUnlessEqual(time.daylight, 1)
-            self.failUnlessEqual(time.timezone, 18000)
-            self.failUnlessEqual(time.altzone, 14400)
-            self.failUnlessEqual(time.localtime(xmas2002).tm_isdst, 0)
-            self.failUnlessEqual(len(time.tzname), 2)
+            self.assertNotEqual(time.gmtime(xmas2002), time.localtime(xmas2002))
+            self.assertEqual(time.tzname, ('EST', 'EDT'))
+            self.assertEqual(len(time.tzname), 2)
+            self.assertEqual(time.daylight, 1)
+            self.assertEqual(time.timezone, 18000)
+            self.assertEqual(time.altzone, 14400)
+            self.assertEqual(time.localtime(xmas2002).tm_isdst, 0)
+            self.assertEqual(len(time.tzname), 2)
 
             # Now go to the southern hemisphere.
             environ['TZ'] = victoria
             time.tzset()
-            self.failIfEqual(time.gmtime(xmas2002), time.localtime(xmas2002))
-            self.failUnless(time.tzname[0] == 'AEST', str(time.tzname[0]))
-            self.failUnless(time.tzname[1] == 'AEDT', str(time.tzname[1]))
-            self.failUnlessEqual(len(time.tzname), 2)
-            self.failUnlessEqual(time.daylight, 1)
-            self.failUnlessEqual(time.timezone, -36000)
-            self.failUnlessEqual(time.altzone, -39600)
-            self.failUnlessEqual(time.localtime(xmas2002).tm_isdst, 1)
+            self.assertNotEqual(time.gmtime(xmas2002), time.localtime(xmas2002))
+
+            # Issue #11886: Australian Eastern Standard Time (UTC+10) is called
+            # "EST" (as Eastern Standard Time, UTC-5) instead of "AEST" on some
+            # operating systems (e.g. FreeBSD), which is wrong. See for example
+            # this bug: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=93810
+            self.assertIn(time.tzname[0], ('AEST' 'EST'), time.tzname[0])
+            self.assertTrue(time.tzname[1] == 'AEDT', str(time.tzname[1]))
+            self.assertEqual(len(time.tzname), 2)
+            self.assertEqual(time.daylight, 1)
+            self.assertEqual(time.timezone, -36000)
+            self.assertEqual(time.altzone, -39600)
+            self.assertEqual(time.localtime(xmas2002).tm_isdst, 1)
 
         finally:
             # Repair TZ environment variable in case any other tests
@@ -193,14 +223,29 @@ class TimeTestCase(unittest.TestCase):
         time.ctime(None)
 
     def test_gmtime_without_arg(self):
-        t0 = time.mktime(time.gmtime())
-        t1 = time.mktime(time.gmtime(None))
-        self.assert_(0 <= (t1-t0) < 0.2)
+        gt0 = time.gmtime()
+        gt1 = time.gmtime(None)
+        t0 = time.mktime(gt0)
+        t1 = time.mktime(gt1)
+        self.assertTrue(0 <= (t1-t0) < 0.2)
 
     def test_localtime_without_arg(self):
-        t0 = time.mktime(time.localtime())
-        t1 = time.mktime(time.localtime(None))
-        self.assert_(0 <= (t1-t0) < 0.2)
+        lt0 = time.localtime()
+        lt1 = time.localtime(None)
+        t0 = time.mktime(lt0)
+        t1 = time.mktime(lt1)
+        self.assertTrue(0 <= (t1-t0) < 0.2)
+
+    def test_mktime(self):
+        # Issue #1726687
+        for t in (-2, -1, 0, 1):
+            try:
+                tt = time.localtime(t)
+            except (OverflowError, ValueError):
+                pass
+            else:
+                self.assertEqual(time.mktime(tt), t)
+
 
 def test_main():
     test_support.run_unittest(TimeTestCase)

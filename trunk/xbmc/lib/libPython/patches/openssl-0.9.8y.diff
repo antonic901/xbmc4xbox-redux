@@ -1,0 +1,40 @@
+diff -ru openssl-0.9.8y/crypto/rand/rand_win.c openssl/crypto/rand/rand_win.c
+--- openssl-0.9.8y/crypto/rand/rand_win.c	2013-02-05 02:36:25.000000000 +0000
++++ openssl/crypto/rand/rand_win.c	2013-07-29 00:52:40.945700700 +0100
+@@ -203,7 +203,14 @@
+         osverinfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO) ;
+         GetVersionEx( &osverinfo ) ;
+ 
+-#if defined(OPENSSL_SYS_WINCE)
++#if defined(_XBOX)
++	{
++	BYTE buf[64];
++	// not a real API function, so hProvider is not used.
++	if (CryptGenRandom(hProvider, sizeof(buf), buf))
++		RAND_add(buf, sizeof(buf), sizeof(buf));
++	}
++#elif defined(OPENSSL_SYS_WINCE)
+ # if defined(_WIN32_WCE) && _WIN32_WCE>=300
+ /* Even though MSDN says _WIN32_WCE>=210, it doesn't seem to be available
+  * in commonly available implementations prior 300... */
+diff -ru openssl-0.9.8y/util/pl/VC-32.pl openssl/util/pl/VC-32.pl
+--- openssl-0.9.8y/util/pl/VC-32.pl	2013-02-05 11:58:59.000000000 +0000
++++ openssl/util/pl/VC-32.pl	2013-07-29 00:54:31.454604700 +0100
+@@ -116,7 +116,7 @@
+     $base_cflags.=' -D_CRT_NONSTDC_NO_DEPRECATE';	# shut up VC8
+     my $f = $shlib || $fips ?' /MD':' /MT';
+     $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
+-    $opt_cflags=$f.' /Ox /O2 /Ob2';
++    $opt_cflags=$f.' /O1 /Ob1';
+     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
+     $lflags="/nologo /subsystem:console /opt:ref";
+     }
+@@ -242,7 +242,7 @@
+ 	$rmd160_asm_src='crypto\ripemd\asm\rm_win32.asm';
+ 	$cpuid_asm_obj='crypto\cpu_win32.obj';
+ 	$cpuid_asm_src='crypto\cpu_win32.asm';
+-	$cflags.=" -DOPENSSL_CPUID_OBJ -DOPENSSL_IA32_SSE2 -DAES_ASM -DBN_ASM -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_BN_ASM_MONT -DMD5_ASM -DSHA1_ASM -DRMD160_ASM";
++	$cflags.=" -D_XBOX -DOPENSSL_CPUID_OBJ -DAES_ASM -DBN_ASM -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_BN_ASM_MONT -DMD5_ASM -DSHA1_ASM -DRMD160_ASM";
+ 	}
+     elsif ($FLAVOR =~ "WIN64A")
+ 	{

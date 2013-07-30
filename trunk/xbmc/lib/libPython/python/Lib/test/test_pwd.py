@@ -1,7 +1,8 @@
+import sys
 import unittest
 from test import test_support
 
-import pwd
+pwd = test_support.import_module('pwd')
 
 class PwdTest(unittest.TestCase):
 
@@ -13,19 +14,19 @@ class PwdTest(unittest.TestCase):
         for e in entries:
             self.assertEqual(len(e), 7)
             self.assertEqual(e[0], e.pw_name)
-            self.assert_(isinstance(e.pw_name, basestring))
+            self.assertIsInstance(e.pw_name, basestring)
             self.assertEqual(e[1], e.pw_passwd)
-            self.assert_(isinstance(e.pw_passwd, basestring))
+            self.assertIsInstance(e.pw_passwd, basestring)
             self.assertEqual(e[2], e.pw_uid)
-            self.assert_(isinstance(e.pw_uid, int))
+            self.assertIsInstance(e.pw_uid, (int, long))
             self.assertEqual(e[3], e.pw_gid)
-            self.assert_(isinstance(e.pw_gid, int))
+            self.assertIsInstance(e.pw_gid, (int, long))
             self.assertEqual(e[4], e.pw_gecos)
-            self.assert_(isinstance(e.pw_gecos, basestring))
+            self.assertIsInstance(e.pw_gecos, basestring)
             self.assertEqual(e[5], e.pw_dir)
-            self.assert_(isinstance(e.pw_dir, basestring))
+            self.assertIsInstance(e.pw_dir, basestring)
             self.assertEqual(e[6], e.pw_shell)
-            self.assert_(isinstance(e.pw_shell, basestring))
+            self.assertIsInstance(e.pw_shell, basestring)
 
             # The following won't work, because of duplicate entries
             # for one uid
@@ -35,15 +36,22 @@ class PwdTest(unittest.TestCase):
             entriesbyname.setdefault(e.pw_name, []).append(e)
             entriesbyuid.setdefault(e.pw_uid, []).append(e)
 
+        if len(entries) > 1000:  # Huge passwd file (NIS?) -- skip the rest
+            return
+
         # check whether the entry returned by getpwuid()
         # for each uid is among those from getpwall() for this uid
         for e in entries:
-            self.assert_(pwd.getpwnam(e.pw_name) in entriesbyname[e.pw_name])
-            self.assert_(pwd.getpwuid(e.pw_uid) in entriesbyuid[e.pw_uid])
+            if not e[0] or e[0] == '+':
+                continue # skip NIS entries etc.
+            self.assertIn(pwd.getpwnam(e.pw_name), entriesbyname[e.pw_name])
+            self.assertIn(pwd.getpwuid(e.pw_uid), entriesbyuid[e.pw_uid])
 
     def test_errors(self):
         self.assertRaises(TypeError, pwd.getpwuid)
+        self.assertRaises(TypeError, pwd.getpwuid, 3.14)
         self.assertRaises(TypeError, pwd.getpwnam)
+        self.assertRaises(TypeError, pwd.getpwnam, 42)
         self.assertRaises(TypeError, pwd.getpwall, 42)
 
         # try to get some errors
@@ -57,7 +65,7 @@ class PwdTest(unittest.TestCase):
         namei = 0
         fakename = allnames[namei]
         while fakename in bynames:
-            chars = map(None, fakename)
+            chars = list(fakename)
             for i in xrange(len(chars)):
                 if chars[i] == 'z':
                     chars[i] = 'A'
@@ -74,16 +82,25 @@ class PwdTest(unittest.TestCase):
                 except IndexError:
                     # should never happen... if so, just forget it
                     break
-            fakename = ''.join(map(None, chars))
+            fakename = ''.join(chars)
 
         self.assertRaises(KeyError, pwd.getpwnam, fakename)
 
-        # Choose a non-existent uid.
-        fakeuid = 4127
-        while fakeuid in byuids:
-            fakeuid = (fakeuid * 3) % 0x10000
-
+        # In some cases, byuids isn't a complete list of all users in the
+        # system, so if we try to pick a value not in byuids (via a perturbing
+        # loop, say), pwd.getpwuid() might still be able to find data for that
+        # uid. Using sys.maxint may provoke the same problems, but hopefully
+        # it will be a more repeatable failure.
+        fakeuid = sys.maxint
+        self.assertNotIn(fakeuid, byuids)
         self.assertRaises(KeyError, pwd.getpwuid, fakeuid)
+
+        # -1 shouldn't be a valid uid because it has a special meaning in many
+        # uid-related functions
+        self.assertRaises(KeyError, pwd.getpwuid, -1)
+        # should be out of uid_t range
+        self.assertRaises(KeyError, pwd.getpwuid, 2**128)
+        self.assertRaises(KeyError, pwd.getpwuid, -2**128)
 
 def test_main():
     test_support.run_unittest(PwdTest)

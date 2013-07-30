@@ -64,9 +64,9 @@ def print_tb(tb, limit=None, file=None):
         filename = co.co_filename
         name = co.co_name
         _print(file,
-               '  File "%s", line %d, in %s' % (filename,lineno,name))
+               '  File "%s", line %d, in %s' % (filename, lineno, name))
         linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno)
+        line = linecache.getline(filename, lineno, f.f_globals)
         if line: _print(file, '    ' + line.strip())
         tb = tb.tb_next
         n = n+1
@@ -98,7 +98,7 @@ def extract_tb(tb, limit = None):
         filename = co.co_filename
         name = co.co_name
         linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno)
+        line = linecache.getline(filename, lineno, f.f_globals)
         if line: line = line.strip()
         else: line = None
         list.append((filename, lineno, name, line))
@@ -124,9 +124,8 @@ def print_exception(etype, value, tb, limit=None, file=None):
         _print(file, 'Traceback (most recent call last):')
         print_tb(tb, limit, file)
     lines = format_exception_only(etype, value)
-    for line in lines[:-1]:
-        _print(file, line, ' ')
-    _print(file, lines[-1], '')
+    for line in lines:
+        _print(file, line, '')
 
 def format_exception(etype, value, tb, limit = None):
     """Format a stack trace and the exception information.
@@ -150,55 +149,76 @@ def format_exception_only(etype, value):
 
     The arguments are the exception type and value such as given by
     sys.last_type and sys.last_value. The return value is a list of
-    strings, each ending in a newline.  Normally, the list contains a
-    single string; however, for SyntaxError exceptions, it contains
-    several lines that (when printed) display detailed information
-    about where the syntax error occurred.  The message indicating
-    which exception occurred is the always last string in the list.
+    strings, each ending in a newline.
+
+    Normally, the list contains a single string; however, for
+    SyntaxError exceptions, it contains several lines that (when
+    printed) display detailed information about where the syntax
+    error occurred.
+
+    The message indicating which exception occurred is always the last
+    string in the list.
+
     """
-    list = []
-    if type(etype) == types.ClassType:
-        stype = etype.__name__
+
+    # An instance should not have a meaningful value parameter, but
+    # sometimes does, particularly for string exceptions, such as
+    # >>> raise string1, string2  # deprecated
+    #
+    # Clear these out first because issubtype(string1, SyntaxError)
+    # would raise another exception and mask the original problem.
+    if (isinstance(etype, BaseException) or
+        isinstance(etype, types.InstanceType) or
+        etype is None or type(etype) is str):
+        return [_format_final_exc_line(etype, value)]
+
+    stype = etype.__name__
+
+    if not issubclass(etype, SyntaxError):
+        return [_format_final_exc_line(stype, value)]
+
+    # It was a syntax error; show exactly where the problem was found.
+    lines = []
+    try:
+        msg, (filename, lineno, offset, badline) = value.args
+    except Exception:
+        pass
     else:
-        stype = etype
-    if value is None:
-        list.append(str(stype) + '\n')
+        filename = filename or "<string>"
+        lines.append('  File "%s", line %d\n' % (filename, lineno))
+        if badline is not None:
+            lines.append('    %s\n' % badline.strip())
+            if offset is not None:
+                caretspace = badline.rstrip('\n')[:offset].lstrip()
+                # non-space whitespace (likes tabs) must be kept for alignment
+                caretspace = ((c.isspace() and c or ' ') for c in caretspace)
+                # only three spaces to account for offset1 == pos 0
+                lines.append('   %s^\n' % ''.join(caretspace))
+        value = msg
+
+    lines.append(_format_final_exc_line(stype, value))
+    return lines
+
+def _format_final_exc_line(etype, value):
+    """Return a list of a single line -- normal case for format_exception_only"""
+    valuestr = _some_str(value)
+    if value is None or not valuestr:
+        line = "%s\n" % etype
     else:
-        if etype is SyntaxError:
-            try:
-                msg, (filename, lineno, offset, line) = value
-            except:
-                pass
-            else:
-                if not filename: filename = "<string>"
-                list.append('  File "%s", line %d\n' %
-                            (filename, lineno))
-                if line is not None:
-                    i = 0
-                    while i < len(line) and line[i].isspace():
-                        i = i+1
-                    list.append('    %s\n' % line.strip())
-                    if offset is not None:
-                        s = '    '
-                        for c in line[i:offset-1]:
-                            if c.isspace():
-                                s = s + c
-                            else:
-                                s = s + ' '
-                        list.append('%s^\n' % s)
-                    value = msg
-        s = _some_str(value)
-        if s:
-            list.append('%s: %s\n' % (str(stype), s))
-        else:
-            list.append('%s\n' % str(stype))
-    return list
+        line = "%s: %s\n" % (etype, valuestr)
+    return line
 
 def _some_str(value):
     try:
         return str(value)
-    except:
-        return '<unprintable %s object>' % type(value).__name__
+    except Exception:
+        pass
+    try:
+        value = unicode(value)
+        return value.encode("ascii", "backslashreplace")
+    except Exception:
+        pass
+    return '<unprintable %s object>' % type(value).__name__
 
 
 def print_exc(limit=None, file=None):
@@ -226,6 +246,8 @@ def format_exc(limit=None):
 def print_last(limit=None, file=None):
     """This is a shorthand for 'print_exception(sys.last_type,
     sys.last_value, sys.last_traceback, limit, file)'."""
+    if not hasattr(sys, "last_type"):
+        raise ValueError("no last exception")
     if file is None:
         file = sys.stderr
     print_exception(sys.last_type, sys.last_value, sys.last_traceback,
@@ -280,7 +302,7 @@ def extract_stack(f=None, limit = None):
         filename = co.co_filename
         name = co.co_name
         linecache.checkcache(filename)
-        line = linecache.getline(filename, lineno)
+        line = linecache.getline(filename, lineno, f.f_globals)
         if line: line = line.strip()
         else: line = None
         list.append((filename, lineno, name, line))

@@ -122,7 +122,7 @@ aliases = {
     'ibm500'             : 'cp500',
 
     # cp775 codec
-    '775'              : 'cp775',
+    '775'                : 'cp775',
     'cspc775baltic'      : 'cp775',
     'ibm775'             : 'cp775',
 
@@ -145,6 +145,11 @@ aliases = {
     '857'                : 'cp857',
     'csibm857'           : 'cp857',
     'ibm857'             : 'cp857',
+
+    # cp858 codec
+    '858'                : 'cp858',
+    'csibm858'           : 'cp858',
+    'ibm858'             : 'cp858',
 
     # cp860 codec
     '860'                : 'cp860',
@@ -294,8 +299,15 @@ aliases = {
     'l6'                 : 'iso8859_10',
     'latin6'             : 'iso8859_10',
 
+    # iso8859_11 codec
+    'thai'               : 'iso8859_11',
+    'iso_8859_11'        : 'iso8859_11',
+    'iso_8859_11_2001'   : 'iso8859_11',
+
     # iso8859_13 codec
     'iso_8859_13'        : 'iso8859_13',
+    'l7'                 : 'iso8859_13',
+    'latin7'             : 'iso8859_13',
 
     # iso8859_14 codec
     'iso_8859_14'        : 'iso8859_14',
@@ -307,6 +319,15 @@ aliases = {
 
     # iso8859_15 codec
     'iso_8859_15'        : 'iso8859_15',
+    'l9'                 : 'iso8859_15',
+    'latin9'             : 'iso8859_15',
+
+    # iso8859_16 codec
+    'iso_8859_16'        : 'iso8859_16',
+    'iso_8859_16_2001'   : 'iso8859_16',
+    'iso_ir_226'         : 'iso8859_16',
+    'l10'                : 'iso8859_16',
+    'latin10'            : 'iso8859_16',
 
     # iso8859_2 codec
     'csisolatin2'        : 'iso8859_2',
@@ -373,18 +394,6 @@ aliases = {
     'l5'                 : 'iso8859_9',
     'latin5'             : 'iso8859_9',
 
-    # iso8859_11 codec
-    'thai'               : 'iso8859_11',
-    'iso_8859_11'        : 'iso8859_11',
-    'iso_8859_11_2001'   : 'iso8859_11',
-
-    # iso8859_16 codec
-    'iso_8859_16'        : 'iso8859_16',
-    'iso_8859_16_2001'   : 'iso8859_16',
-    'iso_ir_226'         : 'iso8859_16',
-    'l10'                : 'iso8859_16',
-    'latin10'            : 'iso8859_16',
-
     # johab codec
     'cp1361'             : 'johab',
     'ms1361'             : 'johab',
@@ -393,11 +402,18 @@ aliases = {
     'cskoi8r'            : 'koi8_r',
 
     # latin_1 codec
+    #
+    # Note that the latin_1 codec is implemented internally in C and a
+    # lot faster than the charmap codec iso8859_1 which uses the same
+    # encoding. This is why we discourage the use of the iso8859_1
+    # codec and alias it to latin_1 instead.
+    #
     '8859'               : 'latin_1',
     'cp819'              : 'latin_1',
     'csisolatin1'        : 'latin_1',
     'ibm819'             : 'latin_1',
     'iso8859'            : 'latin_1',
+    'iso8859_1'          : 'latin_1',
     'iso_8859_1'         : 'latin_1',
     'iso_8859_1_1987'    : 'latin_1',
     'iso_ir_100'         : 'latin_1',
@@ -431,7 +447,7 @@ aliases = {
     'csptcp154'          : 'ptcp154',
     'pt154'              : 'ptcp154',
     'cp154'              : 'ptcp154',
-    'cyrillic-asian'     : 'ptcp154',
+    'cyrillic_asian'     : 'ptcp154',
 
     # quopri_codec codec
     'quopri'             : 'quopri_codec',
@@ -479,9 +495,20 @@ aliases = {
     'unicodelittleunmarked' : 'utf_16_le',
     'utf_16le'           : 'utf_16_le',
 
+    # utf_32 codec
+    'u32'                : 'utf_32',
+    'utf32'              : 'utf_32',
+
+    # utf_32_be codec
+    'utf_32be'           : 'utf_32_be',
+
+    # utf_32_le codec
+    'utf_32le'           : 'utf_32_le',
+
     # utf_7 codec
     'u7'                 : 'utf_7',
     'utf7'               : 'utf_7',
+    'unicode_1_1_utf_7'  : 'utf_7',
 
     # utf_8 codec
     'u8'                 : 'utf_8',

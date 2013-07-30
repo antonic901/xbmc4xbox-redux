@@ -20,6 +20,7 @@ configuration problem notification and resolution.
 import os
 import sys
 import string
+from idlelib import macosxSupport
 from ConfigParser import ConfigParser, NoOptionError, NoSectionError
 
 class InvalidConfigType(Exception): pass
@@ -38,22 +39,19 @@ class IdleConfParser(ConfigParser):
         self.file=cfgFile
         ConfigParser.__init__(self,defaults=cfgDefaults)
 
-    def Get(self, section, option, type=None, default=None):
+    def Get(self, section, option, type=None, default=None, raw=False):
         """
         Get an option value for given section/option or return default.
         If type is specified, return as type.
         """
-        if type=='bool':
-            getVal=self.getboolean
-        elif type=='int':
-            getVal=self.getint
-        else:
-            getVal=self.get
-        if self.has_option(section,option):
-            #return getVal(section, option, raw, vars, default)
-            return getVal(section, option)
-        else:
+        if not self.has_option(section, option):
             return default
+        if type=='bool':
+            return self.getboolean(section, option)
+        elif type=='int':
+            return self.getint(section, option)
+        else:
+            return self.get(section, option, raw=raw)
 
     def GetOptionList(self,section):
         """
@@ -141,7 +139,12 @@ class IdleUserConfParser(IdleConfParser):
 
         """
         if not self.IsEmpty():
-            cfgFile=open(self.file,'w')
+            fname = self.file
+            try:
+                cfgFile = open(fname, 'w')
+            except IOError:
+                os.unlink(fname)
+                cfgFile = open(fname, 'w')
             self.write(cfgFile)
         else:
             self.RemoveFile()
@@ -201,7 +204,10 @@ class IdleConf:
             if not os.path.exists(userDir):
                 warn = ('\n Warning: os.path.expanduser("~") points to\n '+
                         userDir+',\n but the path does not exist.\n')
-                sys.stderr.write(warn)
+                try:
+                    sys.stderr.write(warn)
+                except IOError:
+                    pass
                 userDir = '~'
         if userDir == "~": # still no path to home!
             # traditionally IDLE has defaulted to os.getcwd(), is this adequate?
@@ -218,7 +224,7 @@ class IdleConf:
         return userDir
 
     def GetOption(self, configType, section, option, default=None, type=None,
-                  warn_on_default=True):
+                  warn_on_default=True, raw=False):
         """
         Get an option value for given config type and given general
         configuration section/option or return a default. If type is specified,
@@ -231,19 +237,39 @@ class IdleConf:
         printed to stderr.
 
         """
-        if self.userCfg[configType].has_option(section,option):
-            return self.userCfg[configType].Get(section, option, type=type)
-        elif self.defaultCfg[configType].has_option(section,option):
-            return self.defaultCfg[configType].Get(section, option, type=type)
-        else: #returning default, print warning
-            if warn_on_default:
-                warning = ('\n Warning: configHandler.py - IdleConf.GetOption -\n'
-                           ' problem retrieving configration option %r\n'
-                           ' from section %r.\n'
-                           ' returning default value: %r\n' %
-                           (option, section, default))
+        try:
+            if self.userCfg[configType].has_option(section,option):
+                return self.userCfg[configType].Get(section, option,
+                                                    type=type, raw=raw)
+        except ValueError:
+            warning = ('\n Warning: configHandler.py - IdleConf.GetOption -\n'
+                       ' invalid %r value for configuration option %r\n'
+                       ' from section %r: %r\n' %
+                       (type, option, section,
+                        self.userCfg[configType].Get(section, option,
+                                                     raw=raw)))
+            try:
                 sys.stderr.write(warning)
-            return default
+            except IOError:
+                pass
+        try:
+            if self.defaultCfg[configType].has_option(section,option):
+                return self.defaultCfg[configType].Get(section, option,
+                                                       type=type, raw=raw)
+        except ValueError:
+            pass
+        #returning default, print warning
+        if warn_on_default:
+            warning = ('\n Warning: configHandler.py - IdleConf.GetOption -\n'
+                       ' problem retrieving configuration option %r\n'
+                       ' from section %r.\n'
+                       ' returning default value: %r\n' %
+                       (option, section, default))
+            try:
+                sys.stderr.write(warning)
+            except IOError:
+                pass
+        return default
 
     def SetOption(self, configType, section, option, value):
         """In user's config file, set section's option to value.
@@ -351,7 +377,10 @@ class IdleConf:
                            '\n from theme %r.\n'
                            ' returning default value: %r\n' %
                            (element, themeName, theme[element]))
-                sys.stderr.write(warning)
+                try:
+                    sys.stderr.write(warning)
+                except IOError:
+                    pass
             colour=cfgParser.Get(themeName,element,default=theme[element])
             theme[element]=colour
         return theme
@@ -406,7 +435,7 @@ class IdleConf:
         names=extnNameList
         kbNameIndicies=[]
         for name in names:
-            if name.endswith('_bindings') or name.endswith('_cfgBindings'):
+            if name.endswith(('_bindings', '_cfgBindings')):
                 kbNameIndicies.append(names.index(name))
         kbNameIndicies.sort()
         kbNameIndicies.reverse()
@@ -495,7 +524,18 @@ class IdleConf:
         return binding
 
     def GetCurrentKeySet(self):
-        return self.GetKeySet(self.CurrentKeys())
+        result = self.GetKeySet(self.CurrentKeys())
+
+        if macosxSupport.runningAsOSXApp():
+            # We're using AquaTk, replace all keybingings that use the
+            # Alt key by ones that use the Option key because the former
+            # don't work reliably.
+            for k, v in result.items():
+                v2 = [ x.replace('<Alt-', '<Option-') for x in v ]
+                if v != v2:
+                    result[k] = v2
+
+        return result
 
     def GetKeySet(self,keySetName):
         """
@@ -570,7 +610,7 @@ class IdleConf:
             '<<replace>>': ['<Control-h>'],
             '<<goto-line>>': ['<Alt-g>'],
             '<<smart-backspace>>': ['<Key-BackSpace>'],
-            '<<newline-and-indent>>': ['<Key-Return> <Key-KP_Enter>'],
+            '<<newline-and-indent>>': ['<Key-Return>', '<Key-KP_Enter>'],
             '<<smart-indent>>': ['<Key-Tab>'],
             '<<indent-region>>': ['<Control-Key-bracketright>'],
             '<<dedent-region>>': ['<Control-Key-bracketleft>'],
@@ -579,7 +619,9 @@ class IdleConf:
             '<<tabify-region>>': ['<Alt-Key-5>'],
             '<<untabify-region>>': ['<Alt-Key-6>'],
             '<<toggle-tabs>>': ['<Alt-Key-t>'],
-            '<<change-indentwidth>>': ['<Alt-Key-u>']
+            '<<change-indentwidth>>': ['<Alt-Key-u>'],
+            '<<del-word-left>>': ['<Control-Key-BackSpace>'],
+            '<<del-word-right>>': ['<Control-Key-Delete>']
             }
         if keySetName:
             for event in keyBindings.keys():
@@ -592,7 +634,10 @@ class IdleConf:
                                '\n from key set %r.\n'
                                ' returning default value: %r\n' %
                                (event, keySetName, keyBindings[event]))
-                    sys.stderr.write(warning)
+                    try:
+                        sys.stderr.write(warning)
+                    except IOError:
+                        pass
         return keyBindings
 
     def GetExtraHelpSourceList(self,configSet):
@@ -624,16 +669,8 @@ class IdleConf:
                 helpPath=value[1].strip()
             if menuItem and helpPath: #neither are empty strings
                 helpSources.append( (menuItem,helpPath,option) )
-        helpSources.sort(self.__helpsort)
+        helpSources.sort(key=lambda x: int(x[2]))
         return helpSources
-
-    def __helpsort(self, h1, h2):
-        if int(h1[2]) < int(h2[2]):
-            return -1
-        elif int(h1[2]) > int(h2[2]):
-            return 1
-        else:
-            return 0
 
     def GetAllExtraHelpSourcesList(self):
         """

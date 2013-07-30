@@ -30,20 +30,18 @@ button.pack(side=BOTTOM)
 tk.mainloop()
 """
 
-__version__ = "$Revision: 39220 $"
+__version__ = "$Revision: 81008 $"
 
 import sys
 if sys.platform == "win32":
-    import FixTk # Attempt to configure Tcl/Tk without requiring PATH
+    # Attempt to configure Tcl/Tk without requiring PATH
+    import FixTk
 import _tkinter # If this fails your Python may not be configured for Tk
 tkinter = _tkinter # b/w compat for export
 TclError = _tkinter.TclError
 from types import *
 from Tkconstants import *
-try:
-    import MacOS; _MacOS = MacOS; del MacOS
-except ImportError:
-    _MacOS = None
+import re
 
 wantobjects = 1
 
@@ -60,6 +58,37 @@ except AttributeError: _tkinter.createfilehandler = None
 try: _tkinter.deletefilehandler
 except AttributeError: _tkinter.deletefilehandler = None
 
+
+_magic_re = re.compile(r'([\\{}])')
+_space_re = re.compile(r'([\s])')
+
+def _join(value):
+    """Internal function."""
+    return ' '.join(map(_stringify, value))
+
+def _stringify(value):
+    """Internal function."""
+    if isinstance(value, (list, tuple)):
+        if len(value) == 1:
+            value = _stringify(value[0])
+            if value[0] == '{':
+                value = '{%s}' % value
+        else:
+            value = '{%s}' % _join(value)
+    else:
+        if isinstance(value, basestring):
+            value = unicode(value)
+        else:
+            value = str(value)
+        if not value:
+            value = '{}'
+        elif _magic_re.search(value):
+            # add '\' before special characters and spaces
+            value = _magic_re.sub(r'\\\1', value)
+            value = _space_re.sub(r'\\\1', value)
+        elif value[0] == '"' or _space_re.search(value):
+            value = '{%s}' % value
+    return value
 
 def _flatten(tuple):
     """Internal function."""
@@ -130,7 +159,7 @@ class Event:
              (ButtonPress, ButtonRelease, KeyPress, KeyRelease, Motion)
     char - pressed character (KeyPress, KeyRelease)
     send_event - see X/Windows documentation
-    keysym - keysym of the the event as a string (KeyPress, KeyRelease)
+    keysym - keysym of the event as a string (KeyPress, KeyRelease)
     keysym_num - keysym of the event as a number (KeyPress, KeyRelease)
     type - type of the event as a number
     widget - widget in which the event occurred
@@ -157,8 +186,12 @@ def _tkerror(err):
     """Internal function."""
     pass
 
-def _exit(code='0'):
-    """Internal function. Calling it will throw the exception SystemExit."""
+def _exit(code=0):
+    """Internal function. Calling it will raise the exception SystemExit."""
+    try:
+        code = int(code)
+    except ValueError:
+        pass
     raise SystemExit, code
 
 _varnum = 0
@@ -168,18 +201,30 @@ class Variable:
     Subclasses StringVar, IntVar, DoubleVar, BooleanVar are specializations
     that constrain the type of the value returned from get()."""
     _default = ""
-    def __init__(self, master=None):
-        """Construct a variable with an optional MASTER as master widget.
-        The variable is named PY_VAR_number in Tcl.
+    def __init__(self, master=None, value=None, name=None):
+        """Construct a variable
+
+        MASTER can be given as master widget.
+        VALUE is an optional value (defaults to "")
+        NAME is an optional Tcl name (defaults to PY_VARnum).
+
+        If NAME matches an existing variable and VALUE is omitted
+        then the existing value is retained.
         """
         global _varnum
         if not master:
             master = _default_root
         self._master = master
         self._tk = master.tk
-        self._name = 'PY_VAR' + repr(_varnum)
-        _varnum = _varnum + 1
-        self.set(self._default)
+        if name:
+            self._name = name
+        else:
+            self._name = 'PY_VAR' + repr(_varnum)
+            _varnum += 1
+        if value is not None:
+            self.set(value)
+        elif not self._tk.call("info", "exists", self._name):
+            self.set(self._default)
     def __del__(self):
         """Unset the variable in Tcl."""
         self._tk.globalunsetvar(self._name)
@@ -217,15 +262,29 @@ class Variable:
         """Return all trace callback information."""
         return map(self._tk.split, self._tk.splitlist(
             self._tk.call("trace", "vinfo", self._name)))
+    def __eq__(self, other):
+        """Comparison for equality (==).
+
+        Note: if the Variable's master matters to behavior
+        also compare self._master == other._master
+        """
+        return self.__class__.__name__ == other.__class__.__name__ \
+            and self._name == other._name
 
 class StringVar(Variable):
     """Value holder for strings variables."""
     _default = ""
-    def __init__(self, master=None):
+    def __init__(self, master=None, value=None, name=None):
         """Construct a string variable.
 
-        MASTER can be given as master widget."""
-        Variable.__init__(self, master)
+        MASTER can be given as master widget.
+        VALUE is an optional value (defaults to "")
+        NAME is an optional Tcl name (defaults to PY_VARnum).
+
+        If NAME matches an existing variable and VALUE is omitted
+        then the existing value is retained.
+        """
+        Variable.__init__(self, master, value, name)
 
     def get(self):
         """Return value of variable as string."""
@@ -237,11 +296,17 @@ class StringVar(Variable):
 class IntVar(Variable):
     """Value holder for integer variables."""
     _default = 0
-    def __init__(self, master=None):
+    def __init__(self, master=None, value=None, name=None):
         """Construct an integer variable.
 
-        MASTER can be given as master widget."""
-        Variable.__init__(self, master)
+        MASTER can be given as master widget.
+        VALUE is an optional value (defaults to 0)
+        NAME is an optional Tcl name (defaults to PY_VARnum).
+
+        If NAME matches an existing variable and VALUE is omitted
+        then the existing value is retained.
+        """
+        Variable.__init__(self, master, value, name)
 
     def set(self, value):
         """Set the variable to value, converting booleans to integers."""
@@ -256,11 +321,17 @@ class IntVar(Variable):
 class DoubleVar(Variable):
     """Value holder for float variables."""
     _default = 0.0
-    def __init__(self, master=None):
+    def __init__(self, master=None, value=None, name=None):
         """Construct a float variable.
 
-        MASTER can be given as a master widget."""
-        Variable.__init__(self, master)
+        MASTER can be given as master widget.
+        VALUE is an optional value (defaults to 0.0)
+        NAME is an optional Tcl name (defaults to PY_VARnum).
+
+        If NAME matches an existing variable and VALUE is omitted
+        then the existing value is retained.
+        """
+        Variable.__init__(self, master, value, name)
 
     def get(self):
         """Return the value of the variable as a float."""
@@ -268,12 +339,18 @@ class DoubleVar(Variable):
 
 class BooleanVar(Variable):
     """Value holder for boolean variables."""
-    _default = "false"
-    def __init__(self, master=None):
+    _default = False
+    def __init__(self, master=None, value=None, name=None):
         """Construct a boolean variable.
 
-        MASTER can be given as a master widget."""
-        Variable.__init__(self, master)
+        MASTER can be given as master widget.
+        VALUE is an optional value (defaults to False)
+        NAME is an optional Tcl name (defaults to PY_VARnum).
+
+        If NAME matches an existing variable and VALUE is omitted
+        then the existing value is retained.
+        """
+        Variable.__init__(self, master, value, name)
 
     def get(self):
         """Return the value of the variable as a bool."""
@@ -449,18 +526,15 @@ class Misc:
             # I'd rather use time.sleep(ms*0.001)
             self.tk.call('after', ms)
         else:
-            # XXX Disgusting hack to clean up after calling func
-            tmp = []
-            def callit(func=func, args=args, self=self, tmp=tmp):
+            def callit():
                 try:
                     func(*args)
                 finally:
                     try:
-                        self.deletecommand(tmp[0])
+                        self.deletecommand(name)
                     except TclError:
                         pass
             name = self._register(callit)
-            tmp.append(name)
             return self.tk.call('after', ms, name)
     def after_idle(self, func, *args):
         """Call FUNC once if the Tcl main loop has no event to
@@ -486,13 +560,37 @@ class Misc:
     def bell(self, displayof=0):
         """Ring a display's bell."""
         self.tk.call(('bell',) + self._displayof(displayof))
+
     # Clipboard handling:
+    def clipboard_get(self, **kw):
+        """Retrieve data from the clipboard on window's display.
+
+        The window keyword defaults to the root window of the Tkinter
+        application.
+
+        The type keyword specifies the form in which the data is
+        to be returned and should be an atom name such as STRING
+        or FILE_NAME.  Type defaults to STRING, except on X11, where the default
+        is to try UTF8_STRING and fall back to STRING.
+
+        This command is equivalent to:
+
+        selection_get(CLIPBOARD)
+        """
+        if 'type' not in kw and self._windowingsystem == 'x11':
+            try:
+                kw['type'] = 'UTF8_STRING'
+                return self.tk.call(('clipboard', 'get') + self._options(kw))
+            except TclError:
+                del kw['type']
+        return self.tk.call(('clipboard', 'get') + self._options(kw))
+
     def clipboard_clear(self, **kw):
         """Clear the data in the Tk clipboard.
 
         A widget specified for the optional displayof keyword
         argument specifies the target display."""
-        if not kw.has_key('displayof'): kw['displayof'] = self._w
+        if 'displayof' not in kw: kw['displayof'] = self._w
         self.tk.call(('clipboard', 'clear') + self._options(kw))
     def clipboard_append(self, string, **kw):
         """Append STRING to the Tk clipboard.
@@ -500,7 +598,7 @@ class Misc:
         A widget specified at the optional displayof keyword
         argument specifies the target display. The clipboard
         can be retrieved with selection_get."""
-        if not kw.has_key('displayof'): kw['displayof'] = self._w
+        if 'displayof' not in kw: kw['displayof'] = self._w
         self.tk.call(('clipboard', 'append') + self._options(kw)
               + ('--', string))
     # XXX grab current w/o window argument
@@ -532,9 +630,6 @@ class Misc:
         status = self.tk.call('grab', 'status', self._w)
         if status == 'none': status = None
         return status
-    def lower(self, belowThis=None):
-        """Lower this widget in the stacking order."""
-        self.tk.call('lower', self._w, belowThis)
     def option_add(self, pattern, value, priority = None):
         """Set a VALUE (second parameter) for an option
         PATTERN (first parameter).
@@ -561,7 +656,7 @@ class Misc:
         self.tk.call('option', 'readfile', fileName, priority)
     def selection_clear(self, **kw):
         """Clear the current X selection."""
-        if not kw.has_key('displayof'): kw['displayof'] = self._w
+        if 'displayof' not in kw: kw['displayof'] = self._w
         self.tk.call(('selection', 'clear') + self._options(kw))
     def selection_get(self, **kw):
         """Return the contents of the current X selection.
@@ -569,8 +664,16 @@ class Misc:
         A keyword parameter selection specifies the name of
         the selection and defaults to PRIMARY.  A keyword
         parameter displayof specifies a widget on the display
-        to use."""
-        if not kw.has_key('displayof'): kw['displayof'] = self._w
+        to use. A keyword parameter type specifies the form of data to be
+        fetched, defaulting to STRING except on X11, where UTF8_STRING is tried
+        before STRING."""
+        if 'displayof' not in kw: kw['displayof'] = self._w
+        if 'type' not in kw and self._windowingsystem == 'x11':
+            try:
+                kw['type'] = 'UTF8_STRING'
+                return self.tk.call(('selection', 'get') + self._options(kw))
+            except TclError:
+                del kw['type']
         return self.tk.call(('selection', 'get') + self._options(kw))
     def selection_handle(self, command, **kw):
         """Specify a function COMMAND to call if the X
@@ -601,7 +704,7 @@ class Misc:
         be provided:
         selection - name of the selection (default PRIMARY),
         type - type of the selection (e.g. STRING, FILE_NAME)."""
-        if not kw.has_key('displayof'): kw['displayof'] = self._w
+        if 'displayof' not in kw: kw['displayof'] = self._w
         name = self.tk.call(('selection', 'own') + self._options(kw))
         if not name: return None
         return self._nametowidget(name)
@@ -985,6 +1088,15 @@ class Misc:
         if displayof is None:
             return ('-displayof', self._w)
         return ()
+    @property
+    def _windowingsystem(self):
+        """Internal function."""
+        try:
+            return self._root()._windowingsystem_cached
+        except AttributeError:
+            ws = self._root()._windowingsystem_cached = \
+                        self.tk.call('tk', 'windowingsystem')
+            return ws
     def _options(self, cnf, kw = None):
         """Internal function."""
         if kw:
@@ -995,25 +1107,37 @@ class Misc:
         for k, v in cnf.items():
             if v is not None:
                 if k[-1] == '_': k = k[:-1]
-                if callable(v):
+                if hasattr(v, '__call__'):
                     v = self._register(v)
+                elif isinstance(v, (tuple, list)):
+                    nv = []
+                    for item in v:
+                        if not isinstance(item, (basestring, int)):
+                            break
+                        elif isinstance(item, int):
+                            nv.append('%d' % item)
+                        else:
+                            # format it to proper Tcl code if it contains space
+                            nv.append(_stringify(item))
+                    else:
+                        v = ' '.join(nv)
                 res = res + ('-'+k, v)
         return res
     def nametowidget(self, name):
         """Return the Tkinter instance of a widget identified by
         its Tcl name NAME."""
+        name = str(name).split('.')
         w = self
-        if name[0] == '.':
+
+        if not name[0]:
             w = w._root()
             name = name[1:]
-        while name:
-            i = name.find('.')
-            if i >= 0:
-                name, tail = name[:i], name[i+1:]
-            else:
-                tail = ''
-            w = w.children[name]
-            name = tail
+
+        for n in name:
+            if not n:
+                break
+            w = w.children[n]
+
         return w
     _nametowidget = nametowidget
     def _register(self, func, subst=None, needcleanup=1):
@@ -1036,7 +1160,6 @@ class Misc:
             if self._tclCommands is None:
                 self._tclCommands = []
             self._tclCommands.append(name)
-        #print '+ Tkinter created command', name
         return name
     register = _register
     def _root(self):
@@ -1144,6 +1267,8 @@ class Misc:
     __getitem__ = cget
     def __setitem__(self, key, value):
         self.configure({key: value})
+    def __contains__(self, key):
+        raise TypeError("Tkinter objects don't support 'in' tests.")
     def keys(self):
         """Return a list of all resource names of this widget."""
         return map(lambda x: x[0][1:],
@@ -1349,6 +1474,48 @@ class CallWrapper:
             self.widget._report_exception()
 
 
+class XView:
+    """Mix-in class for querying and changing the horizontal position
+    of a widget's window."""
+
+    def xview(self, *args):
+        """Query and change the horizontal position of the view."""
+        res = self.tk.call(self._w, 'xview', *args)
+        if not args:
+            return self._getdoubles(res)
+
+    def xview_moveto(self, fraction):
+        """Adjusts the view in the window so that FRACTION of the
+        total width of the canvas is off-screen to the left."""
+        self.tk.call(self._w, 'xview', 'moveto', fraction)
+
+    def xview_scroll(self, number, what):
+        """Shift the x-view according to NUMBER which is measured in "units"
+        or "pages" (WHAT)."""
+        self.tk.call(self._w, 'xview', 'scroll', number, what)
+
+
+class YView:
+    """Mix-in class for querying and changing the vertical position
+    of a widget's window."""
+
+    def yview(self, *args):
+        """Query and change the vertical position of the view."""
+        res = self.tk.call(self._w, 'yview', *args)
+        if not args:
+            return self._getdoubles(res)
+
+    def yview_moveto(self, fraction):
+        """Adjusts the view in the window so that FRACTION of the
+        total height of the canvas is off-screen to the top."""
+        self.tk.call(self._w, 'yview', 'moveto', fraction)
+
+    def yview_scroll(self, number, what):
+        """Shift the y-view according to NUMBER which is measured in
+        "units" or "pages" (WHAT)."""
+        self.tk.call(self._w, 'yview', 'scroll', number, what)
+
+
 class Wm:
     """Provides functions for the communication with the window manager."""
 
@@ -1442,10 +1609,19 @@ class Wm:
         the group leader of this widget if None is given."""
         return self.tk.call('wm', 'group', self._w, pathName)
     group = wm_group
-    def wm_iconbitmap(self, bitmap=None):
+    def wm_iconbitmap(self, bitmap=None, default=None):
         """Set bitmap for the iconified widget to BITMAP. Return
-        the bitmap if None is given."""
-        return self.tk.call('wm', 'iconbitmap', self._w, bitmap)
+        the bitmap if None is given.
+
+        Under Windows, the DEFAULT parameter can be used to set the icon
+        for the widget and any descendents that don't have an icon set
+        explicitly.  DEFAULT can be the relative path to a .ico file
+        (example: root.iconbitmap(default='myicon.ico') ).  See Tk
+        documentation for more information."""
+        if default:
+            return self.tk.call('wm', 'iconbitmap', self._w, '-default', default)
+        else:
+            return self.tk.call('wm', 'iconbitmap', self._w, bitmap)
     iconbitmap = wm_iconbitmap
     def wm_iconify(self):
         """Display widget as icon."""
@@ -1503,7 +1679,7 @@ class Wm:
         """Bind function FUNC to command NAME for this widget.
         Return the function bound to NAME if None is given. NAME could be
         e.g. "WM_SAVE_YOURSELF" or "WM_DELETE_WINDOW"."""
-        if callable(func):
+        if hasattr(func, '__call__'):
             command = self._register(func)
         else:
             command = func
@@ -1544,7 +1720,7 @@ class Wm:
 
 class Tk(Misc, Wm):
     """Toplevel widget of Tk which represents mostly the main window
-    of an appliation. It has an associated Tcl interpreter."""
+    of an application. It has an associated Tcl interpreter."""
     _w = '.'
     def __init__(self, screenName=None, baseName=None, className='Tk',
                  useTk=1, sync=0, use=None):
@@ -1569,7 +1745,9 @@ class Tk(Misc, Wm):
         self.tk = _tkinter.create(screenName, baseName, className, interactive, wantobjects, useTk, sync, use)
         if useTk:
             self._loadtk()
-        self.readprofile(baseName, className)
+        if not sys.flags.ignore_environment:
+            # Issue #16248: Honor the -E flag to avoid code injection.
+            self.readprofile(baseName, className)
     def loadtk(self):
         if not self._tkloaded:
             self.tk.loadtk()
@@ -1577,12 +1755,6 @@ class Tk(Misc, Wm):
     def _loadtk(self):
         self._tkloaded = 1
         global _default_root
-        if _MacOS and hasattr(_MacOS, 'SchedParams'):
-            # Disable event scanning except for Command-Period
-            _MacOS.SchedParams(1, 0)
-            # Work around nasty MacTk bug
-            # XXX Is this one still needed?
-            self.update()
         # Version sanity checks
         tk_version = self.tk.getvar('tk_version')
         if tk_version != _tkinter.TK_VERSION:
@@ -1625,7 +1797,7 @@ class Tk(Misc, Wm):
         the Tcl Interpreter and calls execfile on BASENAME.py and CLASSNAME.py if
         such a file exists in the home directory."""
         import os
-        if os.environ.has_key('HOME'): home = os.environ['HOME']
+        if 'HOME' in os.environ: home = os.environ['HOME']
         else: home = os.curdir
         class_tcl = os.path.join(home, '.%s.tcl' % className)
         class_py = os.path.join(home, '.%s.py' % className)
@@ -1680,10 +1852,11 @@ class Pack:
         after=widget - pack it after you have packed widget
         anchor=NSEW (or subset) - position widget according to
                                   given direction
-                before=widget - pack it before you will pack widget
+        before=widget - pack it before you will pack widget
         expand=bool - expand widget if parent size grows
         fill=NONE or X or Y or BOTH - fill widget if widget grows
         in=master - use master to contain this widget
+        in_=master - see 'in' option description
         ipadx=amount - add internal padding in x direction
         ipady=amount - add internal padding in y direction
         padx=amount - add padding in x direction
@@ -1721,29 +1894,26 @@ class Place:
     Base class to use the methods place_* in every widget."""
     def place_configure(self, cnf={}, **kw):
         """Place a widget in the parent widget. Use as options:
-        in=master - master relative to which the widget is placed.
+        in=master - master relative to which the widget is placed
+        in_=master - see 'in' option description
         x=amount - locate anchor of this widget at position x of master
         y=amount - locate anchor of this widget at position y of master
         relx=amount - locate anchor of this widget between 0.0 and 1.0
                       relative to width of master (1.0 is right edge)
-            rely=amount - locate anchor of this widget between 0.0 and 1.0
+        rely=amount - locate anchor of this widget between 0.0 and 1.0
                       relative to height of master (1.0 is bottom edge)
-            anchor=NSEW (or subset) - position anchor according to given direction
+        anchor=NSEW (or subset) - position anchor according to given direction
         width=amount - width of this widget in pixel
         height=amount - height of this widget in pixel
         relwidth=amount - width of this widget between 0.0 and 1.0
                           relative to width of master (1.0 is the same width
-                  as the master)
-            relheight=amount - height of this widget between 0.0 and 1.0
+                          as the master)
+        relheight=amount - height of this widget between 0.0 and 1.0
                            relative to height of master (1.0 is the same
-                   height as the master)
-            bordermode="inside" or "outside" - whether to take border width of master widget
-                                               into account
-            """
-        for k in ['in_']:
-            if kw.has_key(k):
-                kw[k[:-1]] = kw[k]
-                del kw[k]
+                           height as the master)
+        bordermode="inside" or "outside" - whether to take border width of
+                                           master widget into account
+        """
         self.tk.call(
               ('place', 'configure', self._w)
               + self._options(cnf, kw))
@@ -1778,6 +1948,7 @@ class Grid:
         column=number - use cell identified with given column (starting with 0)
         columnspan=number - this widget will span several columns
         in=master - use master to contain this widget
+        in_=master - see 'in' option description
         ipadx=amount - add internal padding in x direction
         ipady=amount - add internal padding in y direction
         padx=amount - add padding in x direction
@@ -1833,7 +2004,7 @@ class BaseWidget(Misc):
         self.master = master
         self.tk = master.tk
         name = None
-        if cnf.has_key('name'):
+        if 'name' in cnf:
             name = cnf['name']
             del cnf['name']
         if not name:
@@ -1844,7 +2015,7 @@ class BaseWidget(Misc):
         else:
             self._w = master._w + '.' + name
         self.children = {}
-        if self.master.children.has_key(self._name):
+        if self._name in self.master.children:
             self.master.children[self._name].destroy()
         self.master.children[self._name] = self
     def __init__(self, master, widgetName, cnf={}, kw={}, extra=()):
@@ -1854,6 +2025,8 @@ class BaseWidget(Misc):
             cnf = _cnfmerge((cnf, kw))
         self.widgetName = widgetName
         BaseWidget._setup(self, master, cnf)
+        if self._tclCommands is None:
+            self._tclCommands = []
         classes = []
         for k in cnf.keys():
             if type(k) is ClassType:
@@ -1866,9 +2039,9 @@ class BaseWidget(Misc):
     def destroy(self):
         """Destroy this and all descendants widgets."""
         for c in self.children.values(): c.destroy()
-        if self.master.children.has_key(self._name):
-            del self.master.children[self._name]
         self.tk.call('destroy', self._w)
+        if self._name in self.master.children:
+            del self.master.children[self._name]
         Misc.destroy(self)
     def _do(self, name, args=()):
         # XXX Obsolete -- better use self.tk.call directly!
@@ -1895,7 +2068,7 @@ class Toplevel(BaseWidget, Wm):
         extra = ()
         for wmkey in ['screen', 'class_', 'class', 'visual',
                   'colormap']:
-            if cnf.has_key(wmkey):
+            if wmkey in cnf:
                 val = cnf[wmkey]
                 # TBD: a hack needed because some keys
                 # are not valid as keyword arguments
@@ -1988,7 +2161,7 @@ def At(x, y=None):
     else:
         return '@%r,%r' % (x, y)
 
-class Canvas(Widget):
+class Canvas(Widget, XView, YView):
     """Canvas widget to display graphical elements like lines or text."""
     def __init__(self, master=None, cnf={}, **kw):
         """Construct a canvas widget with the parent MASTER.
@@ -2228,30 +2401,6 @@ class Canvas(Widget):
     def type(self, tagOrId):
         """Return the type of the item TAGORID."""
         return self.tk.call(self._w, 'type', tagOrId) or None
-    def xview(self, *args):
-        """Query and change horizontal position of the view."""
-        if not args:
-            return self._getdoubles(self.tk.call(self._w, 'xview'))
-        self.tk.call((self._w, 'xview') + args)
-    def xview_moveto(self, fraction):
-        """Adjusts the view in the window so that FRACTION of the
-        total width of the canvas is off-screen to the left."""
-        self.tk.call(self._w, 'xview', 'moveto', fraction)
-    def xview_scroll(self, number, what):
-        """Shift the x-view according to NUMBER which is measured in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'xview', 'scroll', number, what)
-    def yview(self, *args):
-        """Query and change vertical position of the view."""
-        if not args:
-            return self._getdoubles(self.tk.call(self._w, 'yview'))
-        self.tk.call((self._w, 'yview') + args)
-    def yview_moveto(self, fraction):
-        """Adjusts the view in the window so that FRACTION of the
-        total height of the canvas is off-screen to the top."""
-        self.tk.call(self._w, 'yview', 'moveto', fraction)
-    def yview_scroll(self, number, what):
-        """Shift the y-view according to NUMBER which is measured in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'yview', 'scroll', number, what)
 
 class Checkbutton(Widget):
     """Checkbutton widget which is either in on- or off-state."""
@@ -2282,7 +2431,7 @@ class Checkbutton(Widget):
         """Toggle the button."""
         self.tk.call(self._w, 'toggle')
 
-class Entry(Widget):
+class Entry(Widget, XView):
     """Entry widget which allows to display simple text."""
     def __init__(self, master=None, cnf={}, **kw):
         """Construct an entry widget with the parent MASTER.
@@ -2333,7 +2482,8 @@ class Entry(Widget):
         self.tk.call(self._w, 'selection', 'from', index)
     select_from = selection_from
     def selection_present(self):
-        """Return whether the widget has the selection."""
+        """Return True if there are characters selected in the entry, False
+        otherwise."""
         return self.tk.getboolean(
             self.tk.call(self._w, 'selection', 'present'))
     select_present = selection_present
@@ -2345,16 +2495,6 @@ class Entry(Widget):
         """Set the variable end of a selection to INDEX."""
         self.tk.call(self._w, 'selection', 'to', index)
     select_to = selection_to
-    def xview(self, index):
-        """Query and change horizontal position of the view."""
-        self.tk.call(self._w, 'xview', index)
-    def xview_moveto(self, fraction):
-        """Adjust the view in the window so that FRACTION of the
-        total width of the entry is off-screen to the left."""
-        self.tk.call(self._w, 'xview', 'moveto', fraction)
-    def xview_scroll(self, number, what):
-        """Shift the x-view according to NUMBER which is measured in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'xview', 'scroll', number, what)
 
 class Frame(Widget):
     """Frame widget which may contain other widgets and can have a 3D border."""
@@ -2366,10 +2506,10 @@ class Frame(Widget):
         highlightcolor, highlightthickness, relief, takefocus, visual, width."""
         cnf = _cnfmerge((cnf, kw))
         extra = ()
-        if cnf.has_key('class_'):
+        if 'class_' in cnf:
             extra = ('-class', cnf['class_'])
             del cnf['class_']
-        elif cnf.has_key('class'):
+        elif 'class' in cnf:
             extra = ('-class', cnf['class'])
             del cnf['class']
         Widget.__init__(self, master, 'frame', cnf, {}, extra)
@@ -2396,7 +2536,7 @@ class Label(Widget):
         """
         Widget.__init__(self, master, 'label', cnf, kw)
 
-class Listbox(Widget):
+class Listbox(Widget, XView, YView):
     """Listbox widget which can display a list of strings."""
     def __init__(self, master=None, cnf={}, **kw):
         """Construct a listbox widget with the parent MASTER.
@@ -2475,30 +2615,6 @@ class Listbox(Widget):
     def size(self):
         """Return the number of elements in the listbox."""
         return getint(self.tk.call(self._w, 'size'))
-    def xview(self, *what):
-        """Query and change horizontal position of the view."""
-        if not what:
-            return self._getdoubles(self.tk.call(self._w, 'xview'))
-        self.tk.call((self._w, 'xview') + what)
-    def xview_moveto(self, fraction):
-        """Adjust the view in the window so that FRACTION of the
-        total width of the entry is off-screen to the left."""
-        self.tk.call(self._w, 'xview', 'moveto', fraction)
-    def xview_scroll(self, number, what):
-        """Shift the x-view according to NUMBER which is measured in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'xview', 'scroll', number, what)
-    def yview(self, *what):
-        """Query and change vertical position of the view."""
-        if not what:
-            return self._getdoubles(self.tk.call(self._w, 'yview'))
-        self.tk.call((self._w, 'yview') + what)
-    def yview_moveto(self, fraction):
-        """Adjust the view in the window so that FRACTION of the
-        total width of the entry is off-screen to the top."""
-        self.tk.call(self._w, 'yview', 'moveto', fraction)
-    def yview_scroll(self, number, what):
-        """Shift the y-view according to NUMBER which is measured in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'yview', 'scroll', number, what)
     def itemcget(self, index, option):
         """Return the resource value for an ITEM and an OPTION."""
         return self.tk.call(
@@ -2591,7 +2707,19 @@ class Menu(Widget):
         """Add separator at INDEX."""
         self.insert(index, 'separator', cnf or kw)
     def delete(self, index1, index2=None):
-        """Delete menu items between INDEX1 and INDEX2 (not included)."""
+        """Delete menu items between INDEX1 and INDEX2 (included)."""
+        if index2 is None:
+            index2 = index1
+
+        num_index1, num_index2 = self.index(index1), self.index(index2)
+        if (num_index1 is None) or (num_index2 is None):
+            num_index1, num_index2 = 0, -1
+
+        for i in range(num_index1, num_index2 + 1):
+            if 'command' in self.entryconfig(i):
+                c = str(self.entrycget(i, 'command'))
+                if c:
+                    self.deletecommand(c)
         self.tk.call(self._w, 'delete', index1, index2)
     def entrycget(self, index, option):
         """Return the resource value of an menu item for OPTION at INDEX."""
@@ -2733,7 +2861,7 @@ class Scrollbar(Widget):
 
 
 
-class Text(Widget):
+class Text(Widget, XView, YView):
     """Text widget which can display text in various forms."""
     def __init__(self, master=None, cnf={}, **kw):
         """Construct a text widget with the parent MASTER.
@@ -2843,8 +2971,7 @@ class Text(Widget):
         and edit_undo
 
         """
-        return self._getints(
-            self.tk.call((self._w, 'edit') + args)) or ()
+        return self.tk.call(self._w, 'edit', *args)
 
     def edit_modified(self, arg=None):
         """Get or Set the modified flag
@@ -2914,7 +3041,7 @@ class Text(Widget):
         return self.tk.call(self._w, "image", "names")
     def index(self, index):
         """Return the index in the form line.char for INDEX."""
-        return self.tk.call(self._w, 'index', index)
+        return str(self.tk.call(self._w, 'index', index))
     def insert(self, index, chars, *args):
         """Insert CHARS before the characters at INDEX. An additional
         tag can be given in ARGS. Additional CHARS and tags can follow in ARGS."""
@@ -2950,21 +3077,23 @@ class Text(Widget):
         self.tk.call(self._w, 'scan', 'dragto', x, y)
     def search(self, pattern, index, stopindex=None,
            forwards=None, backwards=None, exact=None,
-           regexp=None, nocase=None, count=None):
+           regexp=None, nocase=None, count=None, elide=None):
         """Search PATTERN beginning from INDEX until STOPINDEX.
-        Return the index of the first character of a match or an empty string."""
+        Return the index of the first character of a match or an
+        empty string."""
         args = [self._w, 'search']
         if forwards: args.append('-forwards')
         if backwards: args.append('-backwards')
         if exact: args.append('-exact')
         if regexp: args.append('-regexp')
         if nocase: args.append('-nocase')
+        if elide: args.append('-elide')
         if count: args.append('-count'); args.append(count)
-        if pattern[0] == '-': args.append('--')
+        if pattern and pattern[0] == '-': args.append('--')
         args.append(pattern)
         args.append(index)
         if stopindex: args.append(stopindex)
-        return self.tk.call(tuple(args))
+        return str(self.tk.call(tuple(args)))
     def see(self, index):
         """Scroll such that the character at INDEX is visible."""
         self.tk.call(self._w, 'see', index)
@@ -3054,32 +3183,6 @@ class Text(Widget):
         """Return all names of embedded windows in this widget."""
         return self.tk.splitlist(
             self.tk.call(self._w, 'window', 'names'))
-    def xview(self, *what):
-        """Query and change horizontal position of the view."""
-        if not what:
-            return self._getdoubles(self.tk.call(self._w, 'xview'))
-        self.tk.call((self._w, 'xview') + what)
-    def xview_moveto(self, fraction):
-        """Adjusts the view in the window so that FRACTION of the
-        total width of the canvas is off-screen to the left."""
-        self.tk.call(self._w, 'xview', 'moveto', fraction)
-    def xview_scroll(self, number, what):
-        """Shift the x-view according to NUMBER which is measured
-        in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'xview', 'scroll', number, what)
-    def yview(self, *what):
-        """Query and change vertical position of the view."""
-        if not what:
-            return self._getdoubles(self.tk.call(self._w, 'yview'))
-        self.tk.call((self._w, 'yview') + what)
-    def yview_moveto(self, fraction):
-        """Adjusts the view in the window so that FRACTION of the
-        total height of the canvas is off-screen to the top."""
-        self.tk.call(self._w, 'yview', 'moveto', fraction)
-    def yview_scroll(self, number, what):
-        """Shift the y-view according to NUMBER which is measured
-        in "units" or "pages" (WHAT)."""
-        self.tk.call(self._w, 'yview', 'scroll', number, what)
     def yview_pickplace(self, *what):
         """Obsolete function, use see."""
         self.tk.call((self._w, 'yview', '-pickplace') + what)
@@ -3112,7 +3215,7 @@ class OptionMenu(Menubutton):
         self.menuname = menu._w
         # 'command' is the only supported keyword
         callback = kwargs.get('command')
-        if kwargs.has_key('command'):
+        if 'command' in kwargs:
             del kwargs['command']
         if kwargs:
             raise TclError, 'unknown option -'+kwargs.keys()[0]
@@ -3153,7 +3256,7 @@ class Image:
         elif kw: cnf = kw
         options = ()
         for k, v in cnf.items():
-            if callable(v):
+            if hasattr(v, '__call__'):
                 v = self._register(v)
             options = options + ('-'+k, v)
         self.tk.call(('image', 'create', imgtype, name,) + options)
@@ -3176,7 +3279,7 @@ class Image:
         for k, v in _cnfmerge(kw).items():
             if v is not None:
                 if k[-1] == '_': k = k[:-1]
-                if callable(v):
+                if hasattr(v, '__call__'):
                     v = self._register(v)
                 res = res + ('-'+k, v)
         self.tk.call((self.name, 'config') + res)
@@ -3234,7 +3337,7 @@ class PhotoImage(Image):
         """Return the color (red, green, blue) of the pixel at X,Y."""
         return self.tk.call(self.name, 'get', x, y)
     def put(self, data, to=None):
-        """Put row formated colors to image starting from
+        """Put row formatted colors to image starting from
         position TO, e.g. image.put("{red green} {blue yellow}", to=(4,6))"""
         args = (self.name, 'put', data)
         if to:
@@ -3265,7 +3368,7 @@ def image_names(): return _default_root.tk.call('image', 'names')
 def image_types(): return _default_root.tk.call('image', 'types')
 
 
-class Spinbox(Widget):
+class Spinbox(Widget, XView):
     """spinbox widget."""
     def __init__(self, master=None, cnf={}, **kw):
         """Construct a spinbox widget with the parent MASTER.
@@ -3468,8 +3571,8 @@ class PanedWindow(Widget):
 
         The child argument is the name of the child widget
         followed by pairs of arguments that specify how to
-        manage the windows. Options may have any of the values
-        accepted by the configure subcommand.
+        manage the windows. The possible options and values
+        are the ones accepted by the paneconfigure method.
         """
         self.tk.call((self._w, 'add', child) + self._options(kw))
 

@@ -4,7 +4,7 @@ import shutil
 import gettext
 import unittest
 
-from test.test_support import run_suite
+from test import test_support
 
 
 # TODO:
@@ -58,29 +58,26 @@ LOCALEDIR = os.path.join('xx', 'LC_MESSAGES')
 MOFILE = os.path.join(LOCALEDIR, 'gettext.mo')
 UMOFILE = os.path.join(LOCALEDIR, 'ugettext.mo')
 MMOFILE = os.path.join(LOCALEDIR, 'metadata.mo')
-try:
-    LANG = os.environ['LANGUAGE']
-except:
-    LANG = 'en'
 
 
 class GettextBaseTest(unittest.TestCase):
     def setUp(self):
         if not os.path.isdir(LOCALEDIR):
             os.makedirs(LOCALEDIR)
-        fp = open(MOFILE, 'wb')
-        fp.write(base64.decodestring(GNU_MO_DATA))
-        fp.close()
-        fp = open(UMOFILE, 'wb')
-        fp.write(base64.decodestring(UMO_DATA))
-        fp.close()
-        fp = open(MMOFILE, 'wb')
-        fp.write(base64.decodestring(MMO_DATA))
-        fp.close()
-        os.environ['LANGUAGE'] = 'xx'
+        with open(MOFILE, 'wb') as fp:
+            fp.write(base64.decodestring(GNU_MO_DATA))
+        with open(UMOFILE, 'wb') as fp:
+            fp.write(base64.decodestring(UMO_DATA))
+        with open(MMOFILE, 'wb') as fp:
+            fp.write(base64.decodestring(MMO_DATA))
+
+        self.env = test_support.EnvironmentVarGuard()
+        self.env['LANGUAGE'] = 'xx'
+        gettext._translations.clear()
 
     def tearDown(self):
-        os.environ['LANGUAGE'] = LANG
+        self.env.__exit__()
+        del self.env
         shutil.rmtree(os.path.split(LOCALEDIR)[0])
 
 
@@ -136,15 +133,22 @@ trggrkg zrffntr pngnybt yvoenel.''')
     def test_the_alternative_interface(self):
         eq = self.assertEqual
         # test the alternative interface
-        fp = open(self.mofile, 'rb')
-        t = gettext.GNUTranslations(fp)
-        fp.close()
+        with open(self.mofile, 'rb') as fp:
+            t = gettext.GNUTranslations(fp)
         # Install the translation object
         t.install()
         eq(_('nudge nudge'), 'wink wink')
         # Try unicode return type
         t.install(unicode=True)
         eq(_('mullusk'), 'bacon')
+        # Test installation of other methods
+        import __builtin__
+        t.install(unicode=True, names=["gettext", "lgettext"])
+        eq(_, t.ugettext)
+        eq(__builtin__.gettext, t.ugettext)
+        eq(lgettext, t.lgettext)
+        del __builtin__.gettext
+        del __builtin__.lgettext
 
 
 class GettextTestCase2(GettextBaseTest):
@@ -220,9 +224,8 @@ class PluralFormsTestCase(GettextBaseTest):
 
     def test_plural_forms2(self):
         eq = self.assertEqual
-        fp = open(self.mofile, 'rb')
-        t = gettext.GNUTranslations(fp)
-        fp.close()
+        with open(self.mofile, 'rb') as fp:
+            t = gettext.GNUTranslations(fp)
         x = t.ngettext('There is %s file', 'There are %s files', 1)
         eq(x, 'Hay %s fichero')
         x = t.ngettext('There is %s file', 'There are %s files', 2)
@@ -292,15 +295,12 @@ class PluralFormsTestCase(GettextBaseTest):
 class UnicodeTranslationsTest(GettextBaseTest):
     def setUp(self):
         GettextBaseTest.setUp(self)
-        fp = open(UMOFILE, 'rb')
-        try:
+        with open(UMOFILE, 'rb') as fp:
             self.t = gettext.GNUTranslations(fp)
-        finally:
-            fp.close()
         self._ = self.t.ugettext
 
     def test_unicode_msgid(self):
-        unless = self.failUnless
+        unless = self.assertTrue
         unless(isinstance(self._(''), unicode))
         unless(isinstance(self._(u''), unicode))
 
@@ -312,15 +312,12 @@ class UnicodeTranslationsTest(GettextBaseTest):
 class WeirdMetadataTest(GettextBaseTest):
     def setUp(self):
         GettextBaseTest.setUp(self)
-        fp = open(MMOFILE, 'rb')
-        try:
+        with open(MMOFILE, 'rb') as fp:
             try:
                 self.t = gettext.GNUTranslations(fp)
             except:
                 self.tearDown()
                 raise
-        finally:
-            fp.close()
 
     def test_weird_metadata(self):
         info = self.t.info()
@@ -328,19 +325,39 @@ class WeirdMetadataTest(GettextBaseTest):
            'John Doe <jdoe@example.com>\nJane Foobar <jfoobar@example.com>')
 
 
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(GettextTestCase1))
-    suite.addTest(unittest.makeSuite(GettextTestCase2))
-    suite.addTest(unittest.makeSuite(PluralFormsTestCase))
-    suite.addTest(unittest.makeSuite(UnicodeTranslationsTest))
-    suite.addTest(unittest.makeSuite(WeirdMetadataTest))
-    return suite
+class DummyGNUTranslations(gettext.GNUTranslations):
+    def foo(self):
+        return 'foo'
+
+
+class GettextCacheTestCase(GettextBaseTest):
+    def test_cache(self):
+        self.localedir = os.curdir
+        self.mofile = MOFILE
+
+        self.assertEqual(len(gettext._translations), 0)
+
+        t = gettext.translation('gettext', self.localedir)
+
+        self.assertEqual(len(gettext._translations), 1)
+
+        t = gettext.translation('gettext', self.localedir,
+                                class_=DummyGNUTranslations)
+
+        self.assertEqual(len(gettext._translations), 2)
+        self.assertEqual(t.__class__, DummyGNUTranslations)
+
+        # Calling it again doesn't add to the cache
+
+        t = gettext.translation('gettext', self.localedir,
+                                class_=DummyGNUTranslations)
+
+        self.assertEqual(len(gettext._translations), 2)
+        self.assertEqual(t.__class__, DummyGNUTranslations)
 
 
 def test_main():
-    run_suite(suite())
-
+    test_support.run_unittest(__name__)
 
 if __name__ == '__main__':
     test_main()

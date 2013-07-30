@@ -8,6 +8,10 @@
 #include "winconfig.h"
 #elif defined(MACOS_CLASSIC)
 #include "macconfig.h"
+#elif defined(__amigaos__)
+#include "amigaconfig.h"
+#elif defined(__WATCOMC__)
+#include "watcomconfig.h"
 #else
 #ifdef HAVE_EXPAT_CONFIG_H
 #include <expat_config.h>
@@ -51,12 +55,16 @@ static const char KW_IDREF[] = {
     ASCII_I, ASCII_D, ASCII_R, ASCII_E, ASCII_F, '\0' };
 static const char KW_IDREFS[] = {
     ASCII_I, ASCII_D, ASCII_R, ASCII_E, ASCII_F, ASCII_S, '\0' };
+#ifdef XML_DTD
 static const char KW_IGNORE[] = {
     ASCII_I, ASCII_G, ASCII_N, ASCII_O, ASCII_R, ASCII_E, '\0' };
+#endif
 static const char KW_IMPLIED[] = {
     ASCII_I, ASCII_M, ASCII_P, ASCII_L, ASCII_I, ASCII_E, ASCII_D, '\0' };
+#ifdef XML_DTD
 static const char KW_INCLUDE[] = {
     ASCII_I, ASCII_N, ASCII_C, ASCII_L, ASCII_U, ASCII_D, ASCII_E, '\0' };
+#endif
 static const char KW_NDATA[] = {
     ASCII_N, ASCII_D, ASCII_A, ASCII_T, ASCII_A, '\0' };
 static const char KW_NMTOKEN[] = {
@@ -793,7 +801,7 @@ attlist2(PROLOG_STATE *state,
     return XML_ROLE_ATTLIST_NONE;
   case XML_TOK_NAME:
     {
-      static const char *types[] = {
+      static const char * const types[] = {
         KW_CDATA,
         KW_ID,
         KW_IDREF,

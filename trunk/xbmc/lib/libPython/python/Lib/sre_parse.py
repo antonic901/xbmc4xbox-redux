@@ -15,16 +15,17 @@
 import sys
 
 from sre_constants import *
+from _sre import MAXREPEAT
 
 SPECIAL_CHARS = ".\\[{()*+?^$|"
 REPEAT_CHARS = "*+?{"
 
-DIGITS = tuple("0123456789")
+DIGITS = set("0123456789")
 
-OCTDIGITS = tuple("01234567")
-HEXDIGITS = tuple("0123456789abcdefABCDEF")
+OCTDIGITS = set("01234567")
+HEXDIGITS = set("0123456789abcdefABCDEF")
 
-WHITESPACE = tuple(" \t\n\r\v\f")
+WHITESPACE = set(" \t\n\r\v\f")
 
 ESCAPES = {
     r"\a": (LITERAL, ord("\a")),
@@ -128,11 +129,11 @@ class SubPattern:
     def __delitem__(self, index):
         del self.data[index]
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return SubPattern(self.pattern, self.data[index])
         return self.data[index]
     def __setitem__(self, index, code):
         self.data[index] = code
-    def __getslice__(self, start, stop):
-        return SubPattern(self.pattern, self.data[start:stop])
     def insert(self, index, code):
         self.data.insert(index, code)
     def append(self, code):
@@ -228,7 +229,7 @@ def _class_escape(source, escape):
     if code:
         return code
     code = CATEGORIES.get(escape)
-    if code:
+    if code and code[0] == IN:
         return code
     try:
         c = escape[1:2]
@@ -371,6 +372,11 @@ def _parse_sub_cond(source, state, condgroup):
     subpattern.append((GROUPREF_EXISTS, (condgroup, item_yes, item_no)))
     return subpattern
 
+_PATTERNENDERS = set("|)")
+_ASSERTCHARS = set("=!<")
+_LOOKBEHINDASSERTCHARS = set("=!")
+_REPEATCODES = set([MIN_REPEAT, MAX_REPEAT])
+
 def _parse(source, state):
     # parse a simple pattern
     subpattern = SubPattern(state)
@@ -380,10 +386,10 @@ def _parse(source, state):
     sourceget = source.get
     sourcematch = source.match
     _len = len
-    PATTERNENDERS = ("|", ")")
-    ASSERTCHARS = ("=", "!", "<")
-    LOOKBEHINDASSERTCHARS = ("=", "!")
-    REPEATCODES = (MIN_REPEAT, MAX_REPEAT)
+    PATTERNENDERS = _PATTERNENDERS
+    ASSERTCHARS = _ASSERTCHARS
+    LOOKBEHINDASSERTCHARS = _LOOKBEHINDASSERTCHARS
+    REPEATCODES = _REPEATCODES
 
     while 1:
 
@@ -493,10 +499,14 @@ def _parse(source, state):
                     continue
                 if lo:
                     min = int(lo)
+                    if min >= MAXREPEAT:
+                        raise OverflowError("the repetition number is too large")
                 if hi:
                     max = int(hi)
-                if max < min:
-                    raise error, "bad repeat interval"
+                    if max >= MAXREPEAT:
+                        raise OverflowError("the repetition number is too large")
+                    if max < min:
+                        raise error("bad repeat interval")
             else:
                 raise error, "not supported"
             # figure out which item to repeat
@@ -536,8 +546,11 @@ def _parse(source, state):
                                 break
                             name = name + char
                         group = 1
+                        if not name:
+                            raise error("missing group name")
                         if not isname(name):
-                            raise error, "bad character in group name"
+                            raise error("bad character in group name %r" %
+                                        name)
                     elif sourcematch("="):
                         # named backreference
                         name = ""
@@ -548,8 +561,11 @@ def _parse(source, state):
                             if char == ")":
                                 break
                             name = name + char
+                        if not name:
+                            raise error("missing group name")
                         if not isname(name):
-                            raise error, "bad character in group name"
+                            raise error("bad character in backref group name "
+                                        "%r" % name)
                         gid = state.groupdict.get(name)
                         if gid is None:
                             raise error, "unknown group name"
@@ -600,6 +616,8 @@ def _parse(source, state):
                             break
                         condname = condname + char
                     group = 2
+                    if not condname:
+                        raise error("missing group name")
                     if isname(condname):
                         condgroup = state.groupdict.get(condname)
                         if condgroup is None:
@@ -718,7 +736,7 @@ def parse_template(source, pattern):
                             break
                         name = name + char
                 if not name:
-                    raise error, "bad group name"
+                    raise error, "missing group name"
                 try:
                     index = int(name)
                     if index < 0:

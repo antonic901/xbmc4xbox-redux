@@ -1,60 +1,79 @@
-from test.test_support import verify, TestFailed, TESTFN
+import unittest
+from test import test_support as support
 
-# Simple test to ensure that optimizations in fileobject.c deliver
-# the expected results.  For best testing, run this under a debug-build
-# Python too (to exercise asserts in the C code).
+import io # C implementation.
+import _pyio as pyio # Python implementation.
 
-# Repeat string 'pattern' as often as needed to reach total length
-# 'length'.  Then call try_one with that string, a string one larger
-# than that, and a string one smaller than that.  The main driver
-# feeds this all small sizes and various powers of 2, so we exercise
-# all likely stdio buffer sizes, and "off by one" errors on both
-# sides.
-def drive_one(pattern, length):
-    q, r = divmod(length, len(pattern))
-    teststring = pattern * q + pattern[:r]
-    verify(len(teststring) == length)
-    try_one(teststring)
-    try_one(teststring + "x")
-    try_one(teststring[:-1])
+# Simple test to ensure that optimizations in the IO library deliver the
+# expected results.  For best testing, run this under a debug-build Python too
+# (to exercise asserts in the C code).
 
-# Write s + "\n" + s to file, then open it and ensure that successive
-# .readline()s deliver what we wrote.
-def try_one(s):
-    # Since C doesn't guarantee we can write/read arbitrary bytes in text
-    # files, use binary mode.
-    f = open(TESTFN, "wb")
-    # write once with \n and once without
-    f.write(s)
-    f.write("\n")
-    f.write(s)
-    f.close()
-    f = open(TESTFN, "rb")
-    line = f.readline()
-    if line != s + "\n":
-        raise TestFailed("Expected %r got %r" % (s + "\n", line))
-    line = f.readline()
-    if line != s:
-        raise TestFailed("Expected %r got %r" % (s, line))
-    line = f.readline()
-    if line:
-        raise TestFailed("Expected EOF but got %r" % line)
-    f.close()
+lengths = list(range(1, 257)) + [512, 1000, 1024, 2048, 4096, 8192, 10000,
+                                 16384, 32768, 65536, 1000000]
 
-# A pattern with prime length, to avoid simple relationships with
-# stdio buffer sizes.
-primepat = "1234567890\00\01\02\03\04\05\06"
+class BufferSizeTest(unittest.TestCase):
+    def try_one(self, s):
+        # Write s + "\n" + s to file, then open it and ensure that successive
+        # .readline()s deliver what we wrote.
 
-nullpat = "\0" * 1000
+        # Ensure we can open TESTFN for writing.
+        support.unlink(support.TESTFN)
 
-try:
-    for size in range(1, 257) + [512, 1000, 1024, 2048, 4096, 8192, 10000,
-                      16384, 32768, 65536, 1000000]:
-        drive_one(primepat, size)
-        drive_one(nullpat, size)
-finally:
-    try:
-        import os
-        os.unlink(TESTFN)
-    except:
-        pass
+        # Since C doesn't guarantee we can write/read arbitrary bytes in text
+        # files, use binary mode.
+        f = self.open(support.TESTFN, "wb")
+        try:
+            # write once with \n and once without
+            f.write(s)
+            f.write(b"\n")
+            f.write(s)
+            f.close()
+            f = open(support.TESTFN, "rb")
+            line = f.readline()
+            self.assertEqual(line, s + b"\n")
+            line = f.readline()
+            self.assertEqual(line, s)
+            line = f.readline()
+            self.assertTrue(not line) # Must be at EOF
+            f.close()
+        finally:
+            support.unlink(support.TESTFN)
+
+    def drive_one(self, pattern):
+        for length in lengths:
+            # Repeat string 'pattern' as often as needed to reach total length
+            # 'length'.  Then call try_one with that string, a string one larger
+            # than that, and a string one smaller than that.  Try this with all
+            # small sizes and various powers of 2, so we exercise all likely
+            # stdio buffer sizes, and "off by one" errors on both sides.
+            q, r = divmod(length, len(pattern))
+            teststring = pattern * q + pattern[:r]
+            self.assertEqual(len(teststring), length)
+            self.try_one(teststring)
+            self.try_one(teststring + b"x")
+            self.try_one(teststring[:-1])
+
+    def test_primepat(self):
+        # A pattern with prime length, to avoid simple relationships with
+        # stdio buffer sizes.
+        self.drive_one(b"1234567890\00\01\02\03\04\05\06")
+
+    def test_nullpat(self):
+        self.drive_one(bytes(1000))
+
+
+class CBufferSizeTest(BufferSizeTest):
+    open = io.open
+
+class PyBufferSizeTest(BufferSizeTest):
+    open = staticmethod(pyio.open)
+
+class BuiltinBufferSizeTest(BufferSizeTest):
+    open = open
+
+
+def test_main():
+    support.run_unittest(CBufferSizeTest, PyBufferSizeTest, BuiltinBufferSizeTest)
+
+if __name__ == "__main__":
+    test_main()

@@ -2,7 +2,7 @@
 
 This module is an implementation of PEP 205:
 
-http://python.sourceforge.net/peps/pep-0205.html
+http://www.python.org/dev/peps/pep-0205/
 """
 
 # Naming convention: Variables named "wr" are weak reference objects;
@@ -20,14 +20,16 @@ from _weakref import (
      ProxyType,
      ReferenceType)
 
+from _weakrefset import WeakSet
+
 from exceptions import ReferenceError
 
 
 ProxyTypes = (ProxyType, CallableProxyType)
 
 __all__ = ["ref", "proxy", "getweakrefcount", "getweakrefs",
-           "WeakKeyDictionary", "ReferenceType", "ProxyType",
-           "CallableProxyType", "ProxyTypes", "WeakValueDictionary"]
+           "WeakKeyDictionary", "ReferenceError", "ReferenceType", "ProxyType",
+           "CallableProxyType", "ProxyTypes", "WeakValueDictionary", 'WeakSet']
 
 
 class WeakValueDictionary(UserDict.UserDict):
@@ -85,6 +87,17 @@ class WeakValueDictionary(UserDict.UserDict):
                 new[key] = o
         return new
 
+    __copy__ = copy
+
+    def __deepcopy__(self, memo):
+        from copy import deepcopy
+        new = self.__class__()
+        for key, wr in self.data.items():
+            o = wr()
+            if o is not None:
+                new[deepcopy(key, memo)] = o
+        return new
+
     def get(self, key, default=None):
         try:
             wr = self.data[key]
@@ -117,6 +130,18 @@ class WeakValueDictionary(UserDict.UserDict):
 
     def __iter__(self):
         return self.data.iterkeys()
+
+    def itervaluerefs(self):
+        """Return an iterator that yields the weak references to the values.
+
+        The references are not guaranteed to be 'live' at the time
+        they are used, so the result of calling the references needs
+        to be checked before being used.  This can be used to avoid
+        creating references that will cause the garbage collector to
+        keep the values around longer than needed.
+
+        """
+        return self.data.itervalues()
 
     def itervalues(self):
         for wr in self.data.itervalues():
@@ -161,6 +186,18 @@ class WeakValueDictionary(UserDict.UserDict):
                 d[key] = KeyedRef(o, self._remove, key)
         if len(kwargs):
             self.update(kwargs)
+
+    def valuerefs(self):
+        """Return a list of weak references to the values.
+
+        The references are not guaranteed to be 'live' at the time
+        they are used, so the result of calling the references needs
+        to be checked before being used.  This can be used to avoid
+        creating references that will cause the garbage collector to
+        keep the values around longer than needed.
+
+        """
+        return self.data.values()
 
     def values(self):
         L = []
@@ -232,6 +269,17 @@ class WeakKeyDictionary(UserDict.UserDict):
                 new[o] = value
         return new
 
+    __copy__ = copy
+
+    def __deepcopy__(self, memo):
+        from copy import deepcopy
+        new = self.__class__()
+        for key, value in self.data.items():
+            o = key()
+            if o is not None:
+                new[o] = deepcopy(value, memo)
+        return new
+
     def get(self, key, default=None):
         return self.data.get(ref(key),default)
 
@@ -263,6 +311,18 @@ class WeakKeyDictionary(UserDict.UserDict):
             if key is not None:
                 yield key, value
 
+    def iterkeyrefs(self):
+        """Return an iterator that yields the weak references to the keys.
+
+        The references are not guaranteed to be 'live' at the time
+        they are used, so the result of calling the references needs
+        to be checked before being used.  This can be used to avoid
+        creating references that will cause the garbage collector to
+        keep the keys around longer than needed.
+
+        """
+        return self.data.iterkeys()
+
     def iterkeys(self):
         for wr in self.data.iterkeys():
             obj = wr()
@@ -274,6 +334,18 @@ class WeakKeyDictionary(UserDict.UserDict):
 
     def itervalues(self):
         return self.data.itervalues()
+
+    def keyrefs(self):
+        """Return a list of weak references to the keys.
+
+        The references are not guaranteed to be 'live' at the time
+        they are used, so the result of calling the references needs
+        to be checked before being used.  This can be used to avoid
+        creating references that will cause the garbage collector to
+        keep the keys around longer than needed.
+
+        """
+        return self.data.keys()
 
     def keys(self):
         L = []

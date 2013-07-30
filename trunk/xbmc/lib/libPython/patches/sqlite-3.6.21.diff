@@ -1,0 +1,80 @@
+diff -ru d/sqlite-3.6.21/sqlite3.c sqlite-3.6.21/sqlite3.c
+--- d/sqlite-3.6.21/sqlite3.c	2013-07-26 03:28:41.955000500 +0100
++++ sqlite-3.6.21/sqlite3.c	2013-07-26 03:34:58.546512500 +0100
+@@ -27335,6 +27335,8 @@
+ */
+ #if SQLITE_OS_WINCE
+ # define isNT()  (1)
++#elseif defined(_XBOX)
++# define isNT()  (0)
+ #else
+   static int isNT(void){
+     if( sqlite3_os_type==0 ){
+@@ -28358,6 +28360,11 @@
+ */
+ static void *convertUtf8Filename(const char *zFilename){
+   void *zConverted = 0;
++#ifdef _XBOX
++  zConverted = malloc(strlen(zFilename)+1);
++  strcpy(zConverted, zFilename);
++  return zConverted;
++#endif
+   if( isNT() ){
+     zConverted = utf8ToUnicode(zFilename);
+ /* isNT() is 1 if SQLITE_OS_WINCE==1, so this else is never executed. 
+@@ -28381,6 +28388,15 @@
+     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+     "0123456789";
+   size_t i, j;
++#ifdef _XBOX
++  sprintf(zBuf, "Z:\\"SQLITE_TEMP_FILE_PREFIX);
++  j = strlen(zBuf);
++  sqlite3_randomness(15, &zBuf[j]);
++  for(i=0; i<15; i++, j++){
++    zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
++  }
++  zBuf[j] = 0;
++#else
+   char zTempPath[MAX_PATH+1];
+   if( sqlite3_temp_directory ){
+     sqlite3_snprintf(MAX_PATH-30, zTempPath, "%s", sqlite3_temp_directory);
+@@ -28424,6 +28440,7 @@
+   }
+   zBuf[j] = 0;
+   OSTRACE2("TEMP FILENAME: %s\n", zBuf);
++#endif // XBOX
+   return SQLITE_OK; 
+ }
+ 
+@@ -28748,6 +28765,12 @@
+   char *zFull                   /* Output buffer */
+ ){
+   
++#ifdef _XBOX
++  UNUSED_PARAMETER(nFull);
++  sqlite3_snprintf(nFull, zFull, "%s", zRelative);
++  return SQLITE_OK;
++#else
++
+ #if defined(__CYGWIN__)
+   UNUSED_PARAMETER(nFull);
+   cygwin_conv_to_full_win32_path(zRelative, zFull);
+@@ -28806,6 +28829,7 @@
+     return SQLITE_NOMEM;
+   }
+ #endif
++#endif // _XBOX
+ }
+ 
+ /*
+@@ -28827,6 +28851,10 @@
+   DWORD dwRet = 0;
+   DWORD dwDummy;
+ 
++#ifdef _XBOX
++  return SQLITE_DEFAULT_SECTOR_SIZE;
++#endif
++
+   /*
+   ** We need to get the full path name of the file
+   ** to get the drive letter to look up the sector

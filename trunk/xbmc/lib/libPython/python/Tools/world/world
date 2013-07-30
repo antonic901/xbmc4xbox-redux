@@ -79,7 +79,7 @@ Usage: %(PROGRAM)s [-d] [-p file] [-o] [-h] addr [addr ...]
     --help
         Print this message.
 """
-__version__ = '$Revision: 27624 $'
+__version__ = '$Revision$'
 
 
 import sys

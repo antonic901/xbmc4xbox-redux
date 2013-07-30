@@ -23,7 +23,7 @@ class CodeopTests(unittest.TestCase):
         '''succeed iff str is a valid piece of code'''
         if is_jython:
             code = compile_command(str, "<input>", symbol)
-            self.assert_(code)
+            self.assertTrue(code)
             if symbol == "single":
                 d,r = {},{}
                 saved_stdout = sys.stdout
@@ -37,36 +37,36 @@ class CodeopTests(unittest.TestCase):
                 ctx = {'a': 2}
                 d = { 'value': eval(code,ctx) }
                 r = { 'value': eval(str,ctx) }
-            self.assertEquals(unify_callables(r),unify_callables(d))
+            self.assertEqual(unify_callables(r),unify_callables(d))
         else:
             expected = compile(str, "<input>", symbol, PyCF_DONT_IMPLY_DEDENT)
-            self.assertEquals( compile_command(str, "<input>", symbol), expected)
+            self.assertEqual(compile_command(str, "<input>", symbol), expected)
 
     def assertIncomplete(self, str, symbol='single'):
         '''succeed iff str is the start of a valid piece of code'''
-        self.assertEquals( compile_command(str, symbol=symbol), None)
+        self.assertEqual(compile_command(str, symbol=symbol), None)
 
     def assertInvalid(self, str, symbol='single', is_syntax=1):
         '''succeed iff str is the start of an invalid piece of code'''
         try:
             compile_command(str,symbol=symbol)
-            self.fail("No exception thrown for invalid code")
+            self.fail("No exception raised for invalid code")
         except SyntaxError:
-            self.assert_(is_syntax)
+            self.assertTrue(is_syntax)
         except OverflowError:
-            self.assert_(not is_syntax)
+            self.assertTrue(not is_syntax)
 
     def test_valid(self):
         av = self.assertValid
 
         # special case
         if not is_jython:
-            self.assertEquals(compile_command(""),
-                            compile("pass", "<input>", 'single',
-                                    PyCF_DONT_IMPLY_DEDENT))
-            self.assertEquals(compile_command("\n"),
-                            compile("pass", "<input>", 'single',
-                                    PyCF_DONT_IMPLY_DEDENT))
+            self.assertEqual(compile_command(""),
+                             compile("pass", "<input>", 'single',
+                                     PyCF_DONT_IMPLY_DEDENT))
+            self.assertEqual(compile_command("\n"),
+                             compile("pass", "<input>", 'single',
+                                     PyCF_DONT_IMPLY_DEDENT))
         else:
             av("")
             av("\n")
@@ -107,6 +107,20 @@ class CodeopTests(unittest.TestCase):
         av("\n\na**3","eval")
         av("\n \na**3","eval")
         av("#a\n#b\na**3","eval")
+
+        av("\n\na = 1\n\n")
+        av("\n\nif 1: a=1\n\n")
+
+        av("if 1:\n pass\n if 1:\n  pass\n else:\n  pass\n")
+        av("#a\n\n   \na=3\n\n")
+
+        av("\n\na**3","eval")
+        av("\n \na**3","eval")
+        av("#a\n#b\na**3","eval")
+
+        av("def f():\n try: pass\n finally: [x for x in (1,2)]\n")
+        av("def f():\n pass\n#foo\n")
+        av("@a.b.c\ndef f():\n pass\n")
 
     def test_incomplete(self):
         ai = self.assertIncomplete
@@ -149,6 +163,93 @@ class CodeopTests(unittest.TestCase):
         ai("9+ \\","eval")
         ai("lambda z: \\","eval")
 
+        ai("if True:\n if True:\n  if True:   \n")
+
+        ai("@a(")
+        ai("@a(b")
+        ai("@a(b,")
+        ai("@a(b,c")
+        ai("@a(b,c,")
+
+        ai("from a import (")
+        ai("from a import (b")
+        ai("from a import (b,")
+        ai("from a import (b,c")
+        ai("from a import (b,c,")
+
+        ai("[");
+        ai("[a");
+        ai("[a,");
+        ai("[a,b");
+        ai("[a,b,");
+
+        ai("{");
+        ai("{a");
+        ai("{a:");
+        ai("{a:b");
+        ai("{a:b,");
+        ai("{a:b,c");
+        ai("{a:b,c:");
+        ai("{a:b,c:d");
+        ai("{a:b,c:d,");
+
+        ai("a(")
+        ai("a(b")
+        ai("a(b,")
+        ai("a(b,c")
+        ai("a(b,c,")
+
+        ai("a[")
+        ai("a[b")
+        ai("a[b,")
+        ai("a[b:")
+        ai("a[b:c")
+        ai("a[b:c:")
+        ai("a[b:c:d")
+
+        ai("def a(")
+        ai("def a(b")
+        ai("def a(b,")
+        ai("def a(b,c")
+        ai("def a(b,c,")
+
+        ai("(")
+        ai("(a")
+        ai("(a,")
+        ai("(a,b")
+        ai("(a,b,")
+
+        ai("if a:\n pass\nelif b:")
+        ai("if a:\n pass\nelif b:\n pass\nelse:")
+
+        ai("while a:")
+        ai("while a:\n pass\nelse:")
+
+        ai("for a in b:")
+        ai("for a in b:\n pass\nelse:")
+
+        ai("try:")
+        ai("try:\n pass\nexcept:")
+        ai("try:\n pass\nfinally:")
+        ai("try:\n pass\nexcept:\n pass\nfinally:")
+
+        ai("with a:")
+        ai("with a as b:")
+
+        ai("class a:")
+        ai("class a(")
+        ai("class a(b")
+        ai("class a(b,")
+        ai("class a():")
+
+        ai("[x for")
+        ai("[x for x in")
+        ai("[x for x in (")
+
+        ai("(x for")
+        ai("(x for x in")
+        ai("(x for x in (")
+
     def test_invalid(self):
         ai = self.assertInvalid
         ai("a b")
@@ -177,11 +278,22 @@ class CodeopTests(unittest.TestCase):
         ai("lambda z:","eval")
         ai("a b","eval")
 
+        ai("return 2.3")
+        ai("if (a == 1 and b = 2): pass")
+
+        ai("del 1")
+        ai("del ()")
+        ai("del (1,)")
+        ai("del [1]")
+        ai("del '1'")
+
+        ai("[i for i in range(10)] = (1, 2, 3)")
+
     def test_filename(self):
-        self.assertEquals(compile_command("a = 1\n", "abc").co_filename,
-                          compile("a = 1\n", "abc", 'single').co_filename)
-        self.assertNotEquals(compile_command("a = 1\n", "abc").co_filename,
-                             compile("a = 1\n", "def", 'single').co_filename)
+        self.assertEqual(compile_command("a = 1\n", "abc").co_filename,
+                         compile("a = 1\n", "abc", 'single').co_filename)
+        self.assertNotEqual(compile_command("a = 1\n", "abc").co_filename,
+                            compile("a = 1\n", "def", 'single').co_filename)
 
 
 def test_main():

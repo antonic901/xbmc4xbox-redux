@@ -77,7 +77,10 @@ def c2py(plural):
     Python lambda function that implements an equivalent expression.
     """
     # Security check, allow only the "n" identifier
-    from StringIO import StringIO
+    try:
+        from cStringIO import StringIO
+    except ImportError:
+        from StringIO import StringIO
     import token, tokenize
     tokens = tokenize.generate_tokens(StringIO(plural).readline)
     try:
@@ -236,9 +239,19 @@ class NullTranslations:
     def set_output_charset(self, charset):
         self._output_charset = charset
 
-    def install(self, unicode=False):
+    def install(self, unicode=False, names=None):
         import __builtin__
         __builtin__.__dict__['_'] = unicode and self.ugettext or self.gettext
+        if hasattr(names, "__contains__"):
+            if "gettext" in names:
+                __builtin__.__dict__['gettext'] = __builtin__.__dict__['_']
+            if "ngettext" in names:
+                __builtin__.__dict__['ngettext'] = (unicode and self.ungettext
+                                                             or self.ngettext)
+            if "lgettext" in names:
+                __builtin__.__dict__['lgettext'] = self.lgettext
+            if "lngettext" in names:
+                __builtin__.__dict__['lngettext'] = self.lngettext
 
 
 class GNUTranslations(NullTranslations):
@@ -303,7 +316,7 @@ class GNUTranslations(NullTranslations):
             # Note: we unconditionally convert both msgids and msgstrs to
             # Unicode using the character encoding specified in the charset
             # parameter of the Content-Type header.  The gettext documentation
-            # strongly encourages msgids to be us-ascii, but some appliations
+            # strongly encourages msgids to be us-ascii, but some applications
             # require alternative encodings (e.g. Zope's ZCML and ZPT).  For
             # traditional gettext applications, the msgid conversion will
             # cause no problems since us-ascii should always be a subset of
@@ -454,15 +467,15 @@ def translation(domain, localedir=None, languages=None,
         if fallback:
             return NullTranslations()
         raise IOError(ENOENT, 'No translation file found for domain', domain)
-    # TBD: do we need to worry about the file pointer getting collected?
     # Avoid opening, reading, and parsing the .mo file after it's been done
     # once.
     result = None
     for mofile in mofiles:
-        key = os.path.abspath(mofile)
+        key = (class_, os.path.abspath(mofile))
         t = _translations.get(key)
         if t is None:
-            t = _translations.setdefault(key, class_(open(mofile, 'rb')))
+            with open(mofile, 'rb') as fp:
+                t = _translations.setdefault(key, class_(fp))
         # Copy the translation object to allow setting fallbacks and
         # output charset. All other instance data is shared with the
         # cached object.
@@ -476,9 +489,9 @@ def translation(domain, localedir=None, languages=None,
     return result
 
 
-def install(domain, localedir=None, unicode=False, codeset=None):
+def install(domain, localedir=None, unicode=False, codeset=None, names=None):
     t = translation(domain, localedir, fallback=True, codeset=codeset)
-    t.install(unicode)
+    t.install(unicode, names)
 
 
 

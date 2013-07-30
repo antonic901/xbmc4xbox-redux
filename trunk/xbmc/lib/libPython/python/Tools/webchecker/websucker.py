@@ -2,7 +2,7 @@
 
 """A variant on webchecker that creates a mirror copy of a remote site."""
 
-__version__ = "$Revision: 28654 $"
+__version__ = "$Revision$"
 
 import os
 import sys
@@ -97,8 +97,6 @@ class Sucker(webchecker.Checker):
             path = path + "index.html"
         if os.sep != "/":
             path = os.sep.join(path.split("/"))
-            if os.name == "mac":
-                path = os.sep + path
         path = os.path.join(host, path)
         return path
 

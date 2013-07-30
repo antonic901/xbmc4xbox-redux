@@ -1,4 +1,4 @@
-"""TELNET client class.
+r"""TELNET client class.
 
 Based on RFC 854: TELNET Protocol Specification, by J. Postel and
 J. Reynolds
@@ -34,6 +34,7 @@ To do:
 
 
 # Imported modules
+import errno
 import sys
 import socket
 import select
@@ -184,17 +185,18 @@ class Telnet:
 
     """
 
-    def __init__(self, host=None, port=0):
+    def __init__(self, host=None, port=0,
+                 timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
         """Constructor.
 
         When called without arguments, create an unconnected instance.
-        With a hostname argument, it connects the instance; a port
-        number is optional.
-
+        With a hostname argument, it connects the instance; port number
+        and timeout are optional.
         """
         self.debuglevel = DEBUGLEVEL
         self.host = host
         self.port = port
+        self.timeout = timeout
         self.sock = None
         self.rawq = ''
         self.irawq = 0
@@ -204,37 +206,25 @@ class Telnet:
         self.sb = 0 # flag for SB and SE sequence.
         self.sbdataq = ''
         self.option_callback = None
+        self._has_poll = hasattr(select, 'poll')
         if host is not None:
-            self.open(host, port)
+            self.open(host, port, timeout)
 
-    def open(self, host, port=0):
+    def open(self, host, port=0, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
         """Connect to a host.
 
         The optional second argument is the port number, which
         defaults to the standard telnet port (23).
 
         Don't try to reopen an already connected instance.
-
         """
         self.eof = 0
         if not port:
             port = TELNET_PORT
         self.host = host
         self.port = port
-        msg = "getaddrinfo returns an empty list"
-        for res in socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
-            try:
-                self.sock = socket.socket(af, socktype, proto)
-                self.sock.connect(sa)
-            except socket.error, msg:
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                continue
-            break
-        if not self.sock:
-            raise socket.error, msg
+        self.timeout = timeout
+        self.sock = socket.create_connection((host, port), timeout)
 
     def __del__(self):
         """Destructor -- close the connection."""
@@ -248,7 +238,7 @@ class Telnet:
 
         """
         if self.debuglevel > 0:
-            print 'Telnet(%s,%d):' % (self.host, self.port),
+            print 'Telnet(%s,%s):' % (self.host, self.port),
             if args:
                 print msg % args
             else:
@@ -298,6 +288,61 @@ class Telnet:
         possibly the empty string.  Raise EOFError if the connection
         is closed and no cooked data is available.
 
+        """
+        if self._has_poll:
+            return self._read_until_with_poll(match, timeout)
+        else:
+            return self._read_until_with_select(match, timeout)
+
+    def _read_until_with_poll(self, match, timeout):
+        """Read until a given string is encountered or until timeout.
+
+        This method uses select.poll() to implement the timeout.
+        """
+        n = len(match)
+        call_timeout = timeout
+        if timeout is not None:
+            from time import time
+            time_start = time()
+        self.process_rawq()
+        i = self.cookedq.find(match)
+        if i < 0:
+            poller = select.poll()
+            poll_in_or_priority_flags = select.POLLIN | select.POLLPRI
+            poller.register(self, poll_in_or_priority_flags)
+            while i < 0 and not self.eof:
+                try:
+                    ready = poller.poll(call_timeout)
+                except select.error as e:
+                    if e.errno == errno.EINTR:
+                        if timeout is not None:
+                            elapsed = time() - time_start
+                            call_timeout = timeout-elapsed
+                        continue
+                    raise
+                for fd, mode in ready:
+                    if mode & poll_in_or_priority_flags:
+                        i = max(0, len(self.cookedq)-n)
+                        self.fill_rawq()
+                        self.process_rawq()
+                        i = self.cookedq.find(match, i)
+                if timeout is not None:
+                    elapsed = time() - time_start
+                    if elapsed >= timeout:
+                        break
+                    call_timeout = timeout-elapsed
+            poller.unregister(self)
+        if i >= 0:
+            i = i + n
+            buf = self.cookedq[:i]
+            self.cookedq = self.cookedq[i:]
+            return buf
+        return self.read_very_lazy()
+
+    def _read_until_with_select(self, match, timeout=None):
+        """Read until a given string is encountered or until timeout.
+
+        The timeout is implemented using select.select().
         """
         n = len(match)
         self.process_rawq()
@@ -445,7 +490,7 @@ class Telnet:
                     else:
                         self.iacseq += c
                 elif len(self.iacseq) == 1:
-                    'IAC: IAC CMD [OPTION only for WILL/WONT/DO/DONT]'
+                    # 'IAC: IAC CMD [OPTION only for WILL/WONT/DO/DONT]'
                     if c in (DO, DONT, WILL, WONT):
                         self.iacseq += c
                         continue
@@ -601,6 +646,79 @@ class Telnet:
         results are undeterministic, and may depend on the I/O timing.
 
         """
+        if self._has_poll:
+            return self._expect_with_poll(list, timeout)
+        else:
+            return self._expect_with_select(list, timeout)
+
+    def _expect_with_poll(self, expect_list, timeout=None):
+        """Read until one from a list of a regular expressions matches.
+
+        This method uses select.poll() to implement the timeout.
+        """
+        re = None
+        expect_list = expect_list[:]
+        indices = range(len(expect_list))
+        for i in indices:
+            if not hasattr(expect_list[i], "search"):
+                if not re: import re
+                expect_list[i] = re.compile(expect_list[i])
+        call_timeout = timeout
+        if timeout is not None:
+            from time import time
+            time_start = time()
+        self.process_rawq()
+        m = None
+        for i in indices:
+            m = expect_list[i].search(self.cookedq)
+            if m:
+                e = m.end()
+                text = self.cookedq[:e]
+                self.cookedq = self.cookedq[e:]
+                break
+        if not m:
+            poller = select.poll()
+            poll_in_or_priority_flags = select.POLLIN | select.POLLPRI
+            poller.register(self, poll_in_or_priority_flags)
+            while not m and not self.eof:
+                try:
+                    ready = poller.poll(call_timeout)
+                except select.error as e:
+                    if e.errno == errno.EINTR:
+                        if timeout is not None:
+                            elapsed = time() - time_start
+                            call_timeout = timeout-elapsed
+                        continue
+                    raise
+                for fd, mode in ready:
+                    if mode & poll_in_or_priority_flags:
+                        self.fill_rawq()
+                        self.process_rawq()
+                        for i in indices:
+                            m = expect_list[i].search(self.cookedq)
+                            if m:
+                                e = m.end()
+                                text = self.cookedq[:e]
+                                self.cookedq = self.cookedq[e:]
+                                break
+                if timeout is not None:
+                    elapsed = time() - time_start
+                    if elapsed >= timeout:
+                        break
+                    call_timeout = timeout-elapsed
+            poller.unregister(self)
+        if m:
+            return (i, m, text)
+        text = self.read_very_lazy()
+        if not text and self.eof:
+            raise EOFError
+        return (-1, None, text)
+
+    def _expect_with_select(self, list, timeout=None):
+        """Read until one from a list of a regular expressions matches.
+
+        The timeout is implemented using select.select().
+        """
         re = None
         list = list[:]
         indices = range(len(list))
@@ -661,7 +779,7 @@ def test():
             port = socket.getservbyname(portstr, 'tcp')
     tn = Telnet()
     tn.set_debuglevel(debuglevel)
-    tn.open(host, port)
+    tn.open(host, port, timeout=0.5)
     tn.interact()
     tn.close()
 

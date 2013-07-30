@@ -2,13 +2,10 @@
 
 Implements the Distutils 'build_scripts' command."""
 
-# This module should be kept compatible with Python 2.1.
+__revision__ = "$Id$"
 
-__revision__ = "$Id: build_scripts.py 37828 2004-11-10 22:23:15Z loewis $"
-
-import sys, os, re
+import os, re
 from stat import ST_MODE
-from distutils import sysconfig
 from distutils.core import Command
 from distutils.dep_util import newer
 from distutils.util import convert_path
@@ -59,6 +56,7 @@ class build_scripts (Command):
         ie. starts with "\#!" and contains "python"), then adjust the first
         line to refer to the current Python interpreter as we copy.
         """
+        _sysconfig = __import__('sysconfig')
         self.mkpath(self.build_dir)
         outfiles = []
         for script in self.scripts:
@@ -96,22 +94,24 @@ class build_scripts (Command):
                          self.build_dir)
                 if not self.dry_run:
                     outf = open(outfile, "w")
-                    if not sysconfig.python_build:
+                    if not _sysconfig.is_python_build():
                         outf.write("#!%s%s\n" %
                                    (self.executable,
                                     post_interp))
                     else:
                         outf.write("#!%s%s\n" %
                                    (os.path.join(
-                            sysconfig.get_config_var("BINDIR"),
-                            "python" + sysconfig.get_config_var("EXE")),
+                            _sysconfig.get_config_var("BINDIR"),
+                           "python%s%s" % (_sysconfig.get_config_var("VERSION"),
+                                           _sysconfig.get_config_var("EXE"))),
                                     post_interp))
                     outf.writelines(f.readlines())
                     outf.close()
                 if f:
                     f.close()
             else:
-                f.close()
+                if f:
+                    f.close()
                 self.copy_file(script, outfile)
 
         if os.name == 'posix':

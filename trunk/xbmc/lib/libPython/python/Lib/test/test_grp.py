@@ -1,8 +1,9 @@
 """Test script for the grp module."""
 
-import grp
 import unittest
 from test import test_support
+
+grp = test_support.import_module('grp')
 
 class GroupDatabaseTestCase(unittest.TestCase):
 
@@ -11,13 +12,13 @@ class GroupDatabaseTestCase(unittest.TestCase):
         # attributes promised by the docs
         self.assertEqual(len(value), 4)
         self.assertEqual(value[0], value.gr_name)
-        self.assert_(isinstance(value.gr_name, basestring))
+        self.assertIsInstance(value.gr_name, basestring)
         self.assertEqual(value[1], value.gr_passwd)
-        self.assert_(isinstance(value.gr_passwd, basestring))
+        self.assertIsInstance(value.gr_passwd, basestring)
         self.assertEqual(value[2], value.gr_gid)
-        self.assert_(isinstance(value.gr_gid, int))
+        self.assertIsInstance(value.gr_gid, (long, int))
         self.assertEqual(value[3], value.gr_mem)
-        self.assert_(isinstance(value.gr_mem, list))
+        self.assertIsInstance(value.gr_mem, list)
 
     def test_values(self):
         entries = grp.getgrall()
@@ -25,13 +26,23 @@ class GroupDatabaseTestCase(unittest.TestCase):
         for e in entries:
             self.check_value(e)
 
+        if len(entries) > 1000:  # Huge group file (NIS?) -- skip the rest
+            return
+
         for e in entries:
             e2 = grp.getgrgid(e.gr_gid)
             self.check_value(e2)
             self.assertEqual(e2.gr_gid, e.gr_gid)
-            e2 = grp.getgrnam(e.gr_name)
+            name = e.gr_name
+            if name.startswith('+') or name.startswith('-'):
+                # NIS-related entry
+                continue
+            e2 = grp.getgrnam(name)
             self.check_value(e2)
-            self.assertEqual(e2.gr_name, e.gr_name)
+            # There are instances where getgrall() returns group names in
+            # lowercase while getgrgid() returns proper casing.
+            # Discovered on Ubuntu 5.04 (custom).
+            self.assertEqual(e2.gr_name.lower(), name.lower())
 
     def test_errors(self):
         self.assertRaises(TypeError, grp.getgrgid)
@@ -42,6 +53,8 @@ class GroupDatabaseTestCase(unittest.TestCase):
         bynames = {}
         bygids = {}
         for (n, p, g, mem) in grp.getgrall():
+            if not n or n == '+':
+                continue # skip NIS entries etc.
             bynames[n] = g
             bygids[g] = n
 
@@ -49,7 +62,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
         namei = 0
         fakename = allnames[namei]
         while fakename in bynames:
-            chars = map(None, fakename)
+            chars = list(fakename)
             for i in xrange(len(chars)):
                 if chars[i] == 'z':
                     chars[i] = 'A'
@@ -66,7 +79,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
                 except IndexError:
                     # should never happen... if so, just forget it
                     break
-            fakename = ''.join(map(None, chars))
+            fakename = ''.join(chars)
 
         self.assertRaises(KeyError, grp.getgrnam, fakename)
 

@@ -1,30 +1,23 @@
 import unittest
-from test import test_support
-import zlib
+from test.test_support import TESTFN, run_unittest, import_module, unlink, requires
+import binascii
 import random
+from test.test_support import precisionbigmemtest, _1G, _4G
+import sys
 
-# print test_support.TESTFN
+try:
+    import mmap
+except ImportError:
+    mmap = None
 
-def getbuf():
-    # This was in the original.  Avoid non-repeatable sources.
-    # Left here (unused) in case something wants to be done with it.
-    import imp
-    try:
-        t = imp.find_module('test_zlib')
-        file = t[0]
-    except ImportError:
-        file = open(__file__)
-    buf = file.read() * 8
-    file.close()
-    return buf
-
+zlib = import_module('zlib')
 
 
 class ChecksumTestCase(unittest.TestCase):
     # checksum test cases
     def test_crc32start(self):
         self.assertEqual(zlib.crc32(""), zlib.crc32("", 0))
-        self.assert_(zlib.crc32("abc", 0xffffffff))
+        self.assertTrue(zlib.crc32("abc", 0xffffffff))
 
     def test_crc32empty(self):
         self.assertEqual(zlib.crc32("", 0), 0)
@@ -33,7 +26,7 @@ class ChecksumTestCase(unittest.TestCase):
 
     def test_adler32start(self):
         self.assertEqual(zlib.adler32(""), zlib.adler32("", 1))
-        self.assert_(zlib.adler32("abc", 0xffffffff))
+        self.assertTrue(zlib.adler32("abc", 0xffffffff))
 
     def test_adler32empty(self):
         self.assertEqual(zlib.adler32("", 0), 0)
@@ -54,26 +47,89 @@ class ChecksumTestCase(unittest.TestCase):
         self.assertEqual(zlib.crc32("penguin"), zlib.crc32("penguin", 0))
         self.assertEqual(zlib.adler32("penguin"),zlib.adler32("penguin",1))
 
+    def test_abcdefghijklmnop(self):
+        """test issue1202 compliance: signed crc32, adler32 in 2.x"""
+        foo = 'abcdefghijklmnop'
+        # explicitly test signed behavior
+        self.assertEqual(zlib.crc32(foo), -1808088941)
+        self.assertEqual(zlib.crc32('spam'), 1138425661)
+        self.assertEqual(zlib.adler32(foo+foo), -721416943)
+        self.assertEqual(zlib.adler32('spam'), 72286642)
+
+    def test_same_as_binascii_crc32(self):
+        foo = 'abcdefghijklmnop'
+        self.assertEqual(binascii.crc32(foo), zlib.crc32(foo))
+        self.assertEqual(binascii.crc32('spam'), zlib.crc32('spam'))
+
+    def test_negative_crc_iv_input(self):
+        # The range of valid input values for the crc state should be
+        # -2**31 through 2**32-1 to allow inputs artifically constrained
+        # to a signed 32-bit integer.
+        self.assertEqual(zlib.crc32('ham', -1), zlib.crc32('ham', 0xffffffffL))
+        self.assertEqual(zlib.crc32('spam', -3141593),
+                         zlib.crc32('spam',  0xffd01027L))
+        self.assertEqual(zlib.crc32('spam', -(2**31)),
+                         zlib.crc32('spam',  (2**31)))
 
 
 class ExceptionTestCase(unittest.TestCase):
     # make sure we generate some expected errors
-    def test_bigbits(self):
-        # specifying total bits too large causes an error
-        self.assertRaises(zlib.error,
-                zlib.compress, 'ERROR', zlib.MAX_WBITS + 1)
+    def test_badlevel(self):
+        # specifying compression level out of range causes an error
+        # (but -1 is Z_DEFAULT_COMPRESSION and apparently the zlib
+        # accepts 0 too)
+        self.assertRaises(zlib.error, zlib.compress, 'ERROR', 10)
 
     def test_badcompressobj(self):
         # verify failure on building compress object with bad params
         self.assertRaises(ValueError, zlib.compressobj, 1, zlib.DEFLATED, 0)
+        # specifying total bits too large causes an error
+        self.assertRaises(ValueError,
+                zlib.compressobj, 1, zlib.DEFLATED, zlib.MAX_WBITS + 1)
 
     def test_baddecompressobj(self):
         # verify failure on building decompress object with bad params
-        self.assertRaises(ValueError, zlib.decompressobj, 0)
+        self.assertRaises(ValueError, zlib.decompressobj, -1)
+
+    def test_decompressobj_badflush(self):
+        # verify failure on calling decompressobj.flush with bad params
+        self.assertRaises(ValueError, zlib.decompressobj().flush, 0)
+        self.assertRaises(ValueError, zlib.decompressobj().flush, -1)
 
 
+class BaseCompressTestCase(object):
+    def check_big_compress_buffer(self, size, compress_func):
+        _1M = 1024 * 1024
+        fmt = "%%0%dx" % (2 * _1M)
+        # Generate 10MB worth of random, and expand it by repeating it.
+        # The assumption is that zlib's memory is not big enough to exploit
+        # such spread out redundancy.
+        data = ''.join([binascii.a2b_hex(fmt % random.getrandbits(8 * _1M))
+                        for i in range(10)])
+        data = data * (size // len(data) + 1)
+        try:
+            compress_func(data)
+        finally:
+            # Release memory
+            data = None
 
-class CompressTestCase(unittest.TestCase):
+    def check_big_decompress_buffer(self, size, decompress_func):
+        data = 'x' * size
+        try:
+            compressed = zlib.compress(data, 1)
+        finally:
+            # Release memory
+            data = None
+        data = decompress_func(compressed)
+        # Sanity check
+        try:
+            self.assertEqual(len(data), size)
+            self.assertEqual(len(data.strip('x')), 0)
+        finally:
+            data = None
+
+
+class CompressTestCase(BaseCompressTestCase, unittest.TestCase):
     # Test compression in one go (whole message compression)
     def test_speech(self):
         x = zlib.compress(HAMLET_SCENE)
@@ -85,10 +141,26 @@ class CompressTestCase(unittest.TestCase):
         x = zlib.compress(data)
         self.assertEqual(zlib.decompress(x), data)
 
+    def test_incomplete_stream(self):
+        # An useful error message is given
+        x = zlib.compress(HAMLET_SCENE)
+        self.assertRaisesRegexp(zlib.error,
+            "Error -5 while decompressing data: incomplete or truncated stream",
+            zlib.decompress, x[:-1])
+
+    # Memory use of the following functions takes into account overallocation
+
+    @precisionbigmemtest(size=_1G + 1024 * 1024, memuse=3)
+    def test_big_compress_buffer(self, size):
+        compress = lambda s: zlib.compress(s, 1)
+        self.check_big_compress_buffer(size, compress)
+
+    @precisionbigmemtest(size=_1G + 1024 * 1024, memuse=2)
+    def test_big_decompress_buffer(self, size):
+        self.check_big_decompress_buffer(size, zlib.decompress)
 
 
-
-class CompressObjectTestCase(unittest.TestCase):
+class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
     # Test compression object
     def test_pair(self):
         # straightforward compress/decompress objects
@@ -190,7 +262,7 @@ class CompressObjectTestCase(unittest.TestCase):
         while cb:
             #max_length = 1 + len(cb)//10
             chunk = dco.decompress(cb, dcx)
-            self.failIf(len(chunk) > dcx,
+            self.assertFalse(len(chunk) > dcx,
                     'chunk too big (%d>%d)' % (len(chunk), dcx))
             bufs.append(chunk)
             cb = dco.unconsumed_tail
@@ -215,7 +287,7 @@ class CompressObjectTestCase(unittest.TestCase):
         while cb:
             max_length = 1 + len(cb)//10
             chunk = dco.decompress(cb, max_length)
-            self.failIf(len(chunk) > max_length,
+            self.assertFalse(len(chunk) > max_length,
                         'chunk too big (%d>%d)' % (len(chunk),max_length))
             bufs.append(chunk)
             cb = dco.unconsumed_tail
@@ -224,7 +296,7 @@ class CompressObjectTestCase(unittest.TestCase):
         else:
             while chunk:
                 chunk = dco.decompress('', max_length)
-                self.failIf(len(chunk) > max_length,
+                self.assertFalse(len(chunk) > max_length,
                             'chunk too big (%d>%d)' % (len(chunk),max_length))
                 bufs.append(chunk)
         self.assertEqual(data, ''.join(bufs), 'Wrong data retrieved')
@@ -237,6 +309,15 @@ class CompressObjectTestCase(unittest.TestCase):
         dco = zlib.decompressobj()
         self.assertRaises(ValueError, dco.decompress, "", -1)
         self.assertEqual('', dco.unconsumed_tail)
+
+    def test_clear_unconsumed_tail(self):
+        # Issue #12050: calling decompress() without providing max_length
+        # should clear the unconsumed_tail attribute.
+        cdata = "x\x9cKLJ\x06\x00\x02M\x01"     # "abc"
+        dco = zlib.decompressobj()
+        ddata = dco.decompress(cdata, 1)
+        ddata += dco.decompress(dco.unconsumed_tail)
+        self.assertEqual(dco.unconsumed_tail, "")
 
     def test_flushes(self):
         # Test flush() with the various options, using all the
@@ -298,9 +379,133 @@ class CompressObjectTestCase(unittest.TestCase):
         # caused a core dump.)
 
         co = zlib.compressobj(zlib.Z_BEST_COMPRESSION)
-        self.failUnless(co.flush())  # Returns a zlib header
+        self.assertTrue(co.flush())  # Returns a zlib header
         dco = zlib.decompressobj()
         self.assertEqual(dco.flush(), "") # Returns nothing
+
+    def test_decompress_incomplete_stream(self):
+        # This is 'foo', deflated
+        x = 'x\x9cK\xcb\xcf\x07\x00\x02\x82\x01E'
+        # For the record
+        self.assertEqual(zlib.decompress(x), 'foo')
+        self.assertRaises(zlib.error, zlib.decompress, x[:-5])
+        # Omitting the stream end works with decompressor objects
+        # (see issue #8672).
+        dco = zlib.decompressobj()
+        y = dco.decompress(x[:-5])
+        y += dco.flush()
+        self.assertEqual(y, 'foo')
+
+    def test_flush_with_freed_input(self):
+        # Issue #16411: decompressor accesses input to last decompress() call
+        # in flush(), even if this object has been freed in the meanwhile.
+        input1 = 'abcdefghijklmnopqrstuvwxyz'
+        input2 = 'QWERTYUIOPASDFGHJKLZXCVBNM'
+        data = zlib.compress(input1)
+        dco = zlib.decompressobj()
+        dco.decompress(data, 1)
+        del data
+        data = zlib.compress(input2)
+        self.assertEqual(dco.flush(), input1[1:])
+
+    if hasattr(zlib.compressobj(), "copy"):
+        def test_compresscopy(self):
+            # Test copying a compression object
+            data0 = HAMLET_SCENE
+            data1 = HAMLET_SCENE.swapcase()
+            c0 = zlib.compressobj(zlib.Z_BEST_COMPRESSION)
+            bufs0 = []
+            bufs0.append(c0.compress(data0))
+
+            c1 = c0.copy()
+            bufs1 = bufs0[:]
+
+            bufs0.append(c0.compress(data0))
+            bufs0.append(c0.flush())
+            s0 = ''.join(bufs0)
+
+            bufs1.append(c1.compress(data1))
+            bufs1.append(c1.flush())
+            s1 = ''.join(bufs1)
+
+            self.assertEqual(zlib.decompress(s0),data0+data0)
+            self.assertEqual(zlib.decompress(s1),data0+data1)
+
+        def test_badcompresscopy(self):
+            # Test copying a compression object in an inconsistent state
+            c = zlib.compressobj()
+            c.compress(HAMLET_SCENE)
+            c.flush()
+            self.assertRaises(ValueError, c.copy)
+
+    def test_decompress_unused_data(self):
+        # Repeated calls to decompress() after EOF should accumulate data in
+        # dco.unused_data, instead of just storing the arg to the last call.
+        source = b'abcdefghijklmnopqrstuvwxyz'
+        remainder = b'0123456789'
+        y = zlib.compress(source)
+        x = y + remainder
+        for maxlen in 0, 1000:
+            for step in 1, 2, len(y), len(x):
+                dco = zlib.decompressobj()
+                data = b''
+                for i in range(0, len(x), step):
+                    if i < len(y):
+                        self.assertEqual(dco.unused_data, b'')
+                    if maxlen == 0:
+                        data += dco.decompress(x[i : i + step])
+                        self.assertEqual(dco.unconsumed_tail, b'')
+                    else:
+                        data += dco.decompress(
+                                dco.unconsumed_tail + x[i : i + step], maxlen)
+                data += dco.flush()
+                self.assertEqual(data, source)
+                self.assertEqual(dco.unconsumed_tail, b'')
+                self.assertEqual(dco.unused_data, remainder)
+
+    if hasattr(zlib.decompressobj(), "copy"):
+        def test_decompresscopy(self):
+            # Test copying a decompression object
+            data = HAMLET_SCENE
+            comp = zlib.compress(data)
+
+            d0 = zlib.decompressobj()
+            bufs0 = []
+            bufs0.append(d0.decompress(comp[:32]))
+
+            d1 = d0.copy()
+            bufs1 = bufs0[:]
+
+            bufs0.append(d0.decompress(comp[32:]))
+            s0 = ''.join(bufs0)
+
+            bufs1.append(d1.decompress(comp[32:]))
+            s1 = ''.join(bufs1)
+
+            self.assertEqual(s0,s1)
+            self.assertEqual(s0,data)
+
+        def test_baddecompresscopy(self):
+            # Test copying a compression object in an inconsistent state
+            data = zlib.compress(HAMLET_SCENE)
+            d = zlib.decompressobj()
+            d.decompress(data)
+            d.flush()
+            self.assertRaises(ValueError, d.copy)
+
+    # Memory use of the following functions takes into account overallocation
+
+    @precisionbigmemtest(size=_1G + 1024 * 1024, memuse=3)
+    def test_big_compress_buffer(self, size):
+        c = zlib.compressobj(1)
+        compress = lambda s: c.compress(s) + c.flush()
+        self.check_big_compress_buffer(size, compress)
+
+    @precisionbigmemtest(size=_1G + 1024 * 1024, memuse=2)
+    def test_big_decompress_buffer(self, size):
+        d = zlib.decompressobj()
+        decompress = lambda s: d.decompress(s) + d.flush()
+        self.check_big_decompress_buffer(size, decompress)
 
 
 def genblock(seed, length, step=1024, generator=random):
@@ -393,7 +598,7 @@ LAERTES
 
 
 def test_main():
-    test_support.run_unittest(
+    run_unittest(
         ChecksumTestCase,
         ExceptionTestCase,
         CompressTestCase,
@@ -402,21 +607,3 @@ def test_main():
 
 if __name__ == "__main__":
     test_main()
-
-def test(tests=''):
-    if not tests: tests = 'o'
-    testcases = []
-    if 'k' in tests: testcases.append(ChecksumTestCase)
-    if 'x' in tests: testcases.append(ExceptionTestCase)
-    if 'c' in tests: testcases.append(CompressTestCase)
-    if 'o' in tests: testcases.append(CompressObjectTestCase)
-    test_support.run_unittest(*testcases)
-
-if False:
-    import sys
-    sys.path.insert(1, '/Py23Src/python/dist/src/Lib/test')
-    import test_zlib as tz
-    ts, ut = tz.test_support, tz.unittest
-    su = ut.TestSuite()
-    su.addTest(ut.makeSuite(tz.CompressTestCase))
-    ts.run_suite(su)

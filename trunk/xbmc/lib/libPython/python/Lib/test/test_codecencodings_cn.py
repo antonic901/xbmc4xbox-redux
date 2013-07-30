@@ -3,7 +3,6 @@
 # test_codecencodings_cn.py
 #   Codec encoding tests for PRC encodings.
 #
-# $CJKCodecs: test_codecencodings_cn.py,v 1.2 2004/06/19 06:09:55 perky Exp $
 
 from test import test_support
 from test import test_multibytecodec_support
@@ -51,12 +50,37 @@ class Test_GB18030(test_multibytecodec_support.TestBase, unittest.TestCase):
     )
     has_iso10646 = True
 
+class Test_HZ(test_multibytecodec_support.TestBase, unittest.TestCase):
+    encoding = 'hz'
+    tstring = test_multibytecodec_support.load_teststring('hz')
+    codectests = (
+        # test '~\n' (3 lines)
+        (b'This sentence is in ASCII.\n'
+         b'The next sentence is in GB.~{<:Ky2;S{#,~}~\n'
+         b'~{NpJ)l6HK!#~}Bye.\n',
+         'strict',
+         u'This sentence is in ASCII.\n'
+         u'The next sentence is in GB.'
+         u'\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002'
+         u'Bye.\n'),
+        # test '~\n' (4 lines)
+        (b'This sentence is in ASCII.\n'
+         b'The next sentence is in GB.~\n'
+         b'~{<:Ky2;S{#,NpJ)l6HK!#~}~\n'
+         b'Bye.\n',
+         'strict',
+         u'This sentence is in ASCII.\n'
+         u'The next sentence is in GB.'
+         u'\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002'
+         u'Bye.\n'),
+        # invalid bytes
+        (b'ab~cd', 'replace', u'ab\uFFFDd'),
+        (b'ab\xffcd', 'replace', u'ab\uFFFDcd'),
+        (b'ab~{\x81\x81\x41\x44~}cd', 'replace', u'ab\uFFFD\uFFFD\u804Acd'),
+    )
+
 def test_main():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test_GB2312))
-    suite.addTest(unittest.makeSuite(Test_GBK))
-    suite.addTest(unittest.makeSuite(Test_GB18030))
-    test_support.run_suite(suite)
+    test_support.run_unittest(__name__)
 
 if __name__ == "__main__":
     test_main()

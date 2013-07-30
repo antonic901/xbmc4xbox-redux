@@ -2,6 +2,21 @@
 
 #ifdef WITH_PYMALLOC
 
+#ifdef WITH_VALGRIND
+#include <valgrind/valgrind.h>
+
+/* If we're using GCC, use __builtin_expect() to reduce overhead of
+   the valgrind checks */
+#if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
+#  define UNLIKELY(value) __builtin_expect((value), 0)
+#else
+#  define UNLIKELY(value) (value)
+#endif
+
+/* -1 indicates that we haven't checked that we're running on valgrind yet. */
+static int running_on_valgrind = -1;
+#endif
+
 /* An object allocator for Python.
 
    Here is an introduction to the layers of the Python memory architecture,
@@ -12,7 +27,7 @@
    the cyclic garbage collector operates selectively on container objects.
 
 
-        Object-specific allocators
+    Object-specific allocators
     _____   ______   ______       ________
    [ int ] [ dict ] [ list ] ... [ string ]       Python core         |
 +3 | <----- Object-specific memory -----> | <-- Non-object memory --> |
@@ -52,7 +67,7 @@
  *    in Proc. 1995 Int'l. Workshop on Memory Management, September 1995.
  */
 
-/* #undef WITH_MEMORY_LIMITS */		/* disable mem limit checks  */
+/* #undef WITH_MEMORY_LIMITS */         /* disable mem limit checks  */
 
 /*==========================================================================*/
 
@@ -80,22 +95,22 @@
  *
  * For small requests we have the following table:
  *
- * Request in bytes	Size of allocated block      Size class idx
+ * Request in bytes     Size of allocated block      Size class idx
  * ----------------------------------------------------------------
  *        1-8                     8                       0
- *	  9-16                   16                       1
- *	 17-24                   24                       2
- *	 25-32                   32                       3
- *	 33-40                   40                       4
- *	 41-48                   48                       5
- *	 49-56                   56                       6
- *	 57-64                   64                       7
- *	 65-72                   72                       8
- *	  ...                   ...                     ...
- *	241-248                 248                      30
- *	249-256                 256                      31
+ *        9-16                   16                       1
+ *       17-24                   24                       2
+ *       25-32                   32                       3
+ *       33-40                   40                       4
+ *       41-48                   48                       5
+ *       49-56                   56                       6
+ *       57-64                   64                       7
+ *       65-72                   72                       8
+ *        ...                   ...                     ...
+ *      241-248                 248                      30
+ *      249-256                 256                      31
  *
- *	0, 257 and up: routed to the underlying allocator.
+ *      0, 257 and up: routed to the underlying allocator.
  */
 
 /*==========================================================================*/
@@ -112,9 +127,9 @@
  *
  * You shouldn't change this unless you know what you are doing.
  */
-#define ALIGNMENT		8		/* must be 2^N */
-#define ALIGNMENT_SHIFT		3
-#define ALIGNMENT_MASK		(ALIGNMENT - 1)
+#define ALIGNMENT               8               /* must be 2^N */
+#define ALIGNMENT_SHIFT         3
+#define ALIGNMENT_MASK          (ALIGNMENT - 1)
 
 /* Return the number of bytes in size class I, as a uint. */
 #define INDEX2SIZE(I) (((uint)(I) + 1) << ALIGNMENT_SHIFT)
@@ -125,14 +140,14 @@
  * this value according to your application behaviour and memory needs.
  *
  * The following invariants must hold:
- *	1) ALIGNMENT <= SMALL_REQUEST_THRESHOLD <= 256
- *	2) SMALL_REQUEST_THRESHOLD is evenly divisible by ALIGNMENT
+ *      1) ALIGNMENT <= SMALL_REQUEST_THRESHOLD <= 256
+ *      2) SMALL_REQUEST_THRESHOLD is evenly divisible by ALIGNMENT
  *
  * Although not required, for better performance and space efficiency,
  * it is recommended that SMALL_REQUEST_THRESHOLD is set to a power of 2.
  */
-#define SMALL_REQUEST_THRESHOLD	256
-#define NB_SMALL_SIZE_CLASSES	(SMALL_REQUEST_THRESHOLD / ALIGNMENT)
+#define SMALL_REQUEST_THRESHOLD 256
+#define NB_SMALL_SIZE_CLASSES   (SMALL_REQUEST_THRESHOLD / ALIGNMENT)
 
 /*
  * The system's VMM page size can be obtained on most unices with a
@@ -144,15 +159,15 @@
  * violation fault.  4K is apparently OK for all the platforms that python
  * currently targets.
  */
-#define SYSTEM_PAGE_SIZE	(4 * 1024)
-#define SYSTEM_PAGE_SIZE_MASK	(SYSTEM_PAGE_SIZE - 1)
+#define SYSTEM_PAGE_SIZE        (4 * 1024)
+#define SYSTEM_PAGE_SIZE_MASK   (SYSTEM_PAGE_SIZE - 1)
 
 /*
  * Maximum amount of memory managed by the allocator for small requests.
  */
 #ifdef WITH_MEMORY_LIMITS
 #ifndef SMALL_MEMORY_LIMIT
-#define SMALL_MEMORY_LIMIT	(64 * 1024 * 1024)	/* 64 MB -- more? */
+#define SMALL_MEMORY_LIMIT      (64 * 1024 * 1024)      /* 64 MB -- more? */
 #endif
 #endif
 
@@ -169,18 +184,18 @@
  * some address space wastage, but this is the most portable way to request
  * memory from the system across various platforms.
  */
-#define ARENA_SIZE		(256 << 10)	/* 256KB */
+#define ARENA_SIZE              (256 << 10)     /* 256KB */
 
 #ifdef WITH_MEMORY_LIMITS
-#define MAX_ARENAS		(SMALL_MEMORY_LIMIT / ARENA_SIZE)
+#define MAX_ARENAS              (SMALL_MEMORY_LIMIT / ARENA_SIZE)
 #endif
 
 /*
  * Size of the pools used for small blocks. Should be a power of 2,
  * between 1K and SYSTEM_PAGE_SIZE, that is: 1k, 2k, 4k.
  */
-#define POOL_SIZE		SYSTEM_PAGE_SIZE	/* must be 2^N */
-#define POOL_SIZE_MASK		SYSTEM_PAGE_SIZE_MASK
+#define POOL_SIZE               SYSTEM_PAGE_SIZE        /* must be 2^N */
+#define POOL_SIZE_MASK          SYSTEM_PAGE_SIZE_MASK
 
 /*
  * -- End of tunable settings section --
@@ -206,51 +221,92 @@
 /*
  * Python's threads are serialized, so object malloc locking is disabled.
  */
-#define SIMPLELOCK_DECL(lock)	/* simple lock declaration		*/
-#define SIMPLELOCK_INIT(lock)	/* allocate (if needed) and initialize	*/
-#define SIMPLELOCK_FINI(lock)	/* free/destroy an existing lock 	*/
-#define SIMPLELOCK_LOCK(lock)	/* acquire released lock */
-#define SIMPLELOCK_UNLOCK(lock)	/* release acquired lock */
+#define SIMPLELOCK_DECL(lock)   /* simple lock declaration              */
+#define SIMPLELOCK_INIT(lock)   /* allocate (if needed) and initialize  */
+#define SIMPLELOCK_FINI(lock)   /* free/destroy an existing lock        */
+#define SIMPLELOCK_LOCK(lock)   /* acquire released lock */
+#define SIMPLELOCK_UNLOCK(lock) /* release acquired lock */
 
 /*
  * Basic types
  * I don't care if these are defined in <sys/types.h> or elsewhere. Axiom.
  */
 #undef  uchar
-#define uchar			unsigned char	/* assuming == 8 bits  */
+#define uchar   unsigned char   /* assuming == 8 bits  */
 
 #undef  uint
-#define uint			unsigned int	/* assuming >= 16 bits */
+#define uint    unsigned int    /* assuming >= 16 bits */
 
 #undef  ulong
-#define ulong			unsigned long	/* assuming >= 32 bits */
+#define ulong   unsigned long   /* assuming >= 32 bits */
 
 #undef uptr
-#define uptr			Py_uintptr_t
+#define uptr    Py_uintptr_t
 
 /* When you say memory, my mind reasons in terms of (pointers to) blocks */
 typedef uchar block;
 
 /* Pool for small blocks. */
 struct pool_header {
-	union { block *_padding;
-		uint count; } ref;	/* number of allocated blocks    */
-	block *freeblock;		/* pool's free list head         */
-	struct pool_header *nextpool;	/* next pool of this size class  */
-	struct pool_header *prevpool;	/* previous pool       ""        */
-	uint arenaindex;		/* index into arenas of base adr */
-	uint szidx;			/* block size class index	 */
-	uint nextoffset;		/* bytes to virgin block	 */
-	uint maxnextoffset;		/* largest valid nextoffset	 */
+    union { block *_padding;
+            uint count; } ref;          /* number of allocated blocks    */
+    block *freeblock;                   /* pool's free list head         */
+    struct pool_header *nextpool;       /* next pool of this size class  */
+    struct pool_header *prevpool;       /* previous pool       ""        */
+    uint arenaindex;                    /* index into arenas of base adr */
+    uint szidx;                         /* block size class index        */
+    uint nextoffset;                    /* bytes to virgin block         */
+    uint maxnextoffset;                 /* largest valid nextoffset      */
 };
 
 typedef struct pool_header *poolp;
 
-#undef  ROUNDUP
-#define ROUNDUP(x)		(((x) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
-#define POOL_OVERHEAD		ROUNDUP(sizeof(struct pool_header))
+/* Record keeping for arenas. */
+struct arena_object {
+    /* The address of the arena, as returned by malloc.  Note that 0
+     * will never be returned by a successful malloc, and is used
+     * here to mark an arena_object that doesn't correspond to an
+     * allocated arena.
+     */
+    uptr address;
 
-#define DUMMY_SIZE_IDX		0xffff	/* size class of newly cached pools */
+    /* Pool-aligned pointer to the next pool to be carved off. */
+    block* pool_address;
+
+    /* The number of available pools in the arena:  free pools + never-
+     * allocated pools.
+     */
+    uint nfreepools;
+
+    /* The total number of pools in the arena, whether or not available. */
+    uint ntotalpools;
+
+    /* Singly-linked list of available pools. */
+    struct pool_header* freepools;
+
+    /* Whenever this arena_object is not associated with an allocated
+     * arena, the nextarena member is used to link all unassociated
+     * arena_objects in the singly-linked `unused_arena_objects` list.
+     * The prevarena member is unused in this case.
+     *
+     * When this arena_object is associated with an allocated arena
+     * with at least one available pool, both members are used in the
+     * doubly-linked `usable_arenas` list, which is maintained in
+     * increasing order of `nfreepools` values.
+     *
+     * Else this arena_object is associated with an allocated arena
+     * all of whose pools are in use.  `nextarena` and `prevarena`
+     * are both meaningless in this case.
+     */
+    struct arena_object* nextarena;
+    struct arena_object* prevarena;
+};
+
+#undef  ROUNDUP
+#define ROUNDUP(x)              (((x) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
+#define POOL_OVERHEAD           ROUNDUP(sizeof(struct pool_header))
+
+#define DUMMY_SIZE_IDX          0xffff  /* size class of newly cached pools */
 
 /* Round pointer P down to the closest pool-aligned address <= P, as a poolp */
 #define POOL_ADDR(P) ((poolp)((uptr)(P) & ~(uptr)POOL_SIZE_MASK))
@@ -264,10 +320,10 @@ typedef struct pool_header *poolp;
  * This malloc lock
  */
 SIMPLELOCK_DECL(_malloc_lock)
-#define LOCK()		SIMPLELOCK_LOCK(_malloc_lock)
-#define UNLOCK()	SIMPLELOCK_UNLOCK(_malloc_lock)
-#define LOCK_INIT()	SIMPLELOCK_INIT(_malloc_lock)
-#define LOCK_FINI()	SIMPLELOCK_FINI(_malloc_lock)
+#define LOCK()          SIMPLELOCK_LOCK(_malloc_lock)
+#define UNLOCK()        SIMPLELOCK_UNLOCK(_malloc_lock)
+#define LOCK_INIT()     SIMPLELOCK_INIT(_malloc_lock)
+#define LOCK_FINI()     SIMPLELOCK_FINI(_malloc_lock)
 
 /*
  * Pool table -- headed, circular, doubly-linked lists of partially used pools.
@@ -277,8 +333,9 @@ all partially used pools holding small blocks with "size class idx" i. So
 usedpools[0] corresponds to blocks of size 8, usedpools[2] to blocks of size
 16, and so on:  index 2*i <-> blocks of size (i+1)<<ALIGNMENT_SHIFT.
 
-Pools are carved off the current arena highwater mark (file static arenabase)
-as needed.  Once carved off, a pool is in one of three states forever after:
+Pools are carved off an arena's highwater mark (an arena_object's pool_address
+member) as needed.  Once carved off, a pool is in one of three states forever
+after:
 
 used == partially used, neither empty nor full
     At least one block in the pool is currently allocated, and at least one
@@ -303,7 +360,7 @@ full == all the pool's blocks are currently allocated
 
 empty == all the pool's blocks are currently available for allocation
     On transition to empty, a pool is unlinked from its usedpools[] list,
-    and linked to the front of the (file static) singly-linked freepools list,
+    and linked to the front of its arena_object's singly-linked freepools list,
     via its nextpool member.  The prevpool member has no meaning in this case.
     Empty pools have no inherent size class:  the next time a malloc finds
     an empty list in usedpools[], it takes the first pool off of freepools.
@@ -346,9 +403,9 @@ nextpool and prevpool members.  The "- 2*sizeof(block *)" gibberish is
 compensating for that a pool_header's nextpool and prevpool members
 immediately follow a pool_header's first two members:
 
-	union { block *_padding;
-		uint count; } ref;
-	block *freeblock;
+    union { block *_padding;
+            uint count; } ref;
+    block *freeblock;
 
 each of which consume sizeof(block *) bytes.  So what usedpools[i+i] really
 contains is a fudged-up pointer p such that *if* C believes it's a poolp
@@ -364,25 +421,25 @@ on that C doesn't insert any padding anywhere in a pool_header at or before
 the prevpool member.
 **************************************************************************** */
 
-#define PTA(x)	((poolp )((uchar *)&(usedpools[2*(x)]) - 2*sizeof(block *)))
-#define PT(x)	PTA(x), PTA(x)
+#define PTA(x)  ((poolp )((uchar *)&(usedpools[2*(x)]) - 2*sizeof(block *)))
+#define PT(x)   PTA(x), PTA(x)
 
 static poolp usedpools[2 * ((NB_SMALL_SIZE_CLASSES + 7) / 8) * 8] = {
-	PT(0), PT(1), PT(2), PT(3), PT(4), PT(5), PT(6), PT(7)
+    PT(0), PT(1), PT(2), PT(3), PT(4), PT(5), PT(6), PT(7)
 #if NB_SMALL_SIZE_CLASSES > 8
-	, PT(8), PT(9), PT(10), PT(11), PT(12), PT(13), PT(14), PT(15)
+    , PT(8), PT(9), PT(10), PT(11), PT(12), PT(13), PT(14), PT(15)
 #if NB_SMALL_SIZE_CLASSES > 16
-	, PT(16), PT(17), PT(18), PT(19), PT(20), PT(21), PT(22), PT(23)
+    , PT(16), PT(17), PT(18), PT(19), PT(20), PT(21), PT(22), PT(23)
 #if NB_SMALL_SIZE_CLASSES > 24
-	, PT(24), PT(25), PT(26), PT(27), PT(28), PT(29), PT(30), PT(31)
+    , PT(24), PT(25), PT(26), PT(27), PT(28), PT(29), PT(30), PT(31)
 #if NB_SMALL_SIZE_CLASSES > 32
-	, PT(32), PT(33), PT(34), PT(35), PT(36), PT(37), PT(38), PT(39)
+    , PT(32), PT(33), PT(34), PT(35), PT(36), PT(37), PT(38), PT(39)
 #if NB_SMALL_SIZE_CLASSES > 40
-	, PT(40), PT(41), PT(42), PT(43), PT(44), PT(45), PT(46), PT(47)
+    , PT(40), PT(41), PT(42), PT(43), PT(44), PT(45), PT(46), PT(47)
 #if NB_SMALL_SIZE_CLASSES > 48
-	, PT(48), PT(49), PT(50), PT(51), PT(52), PT(53), PT(54), PT(55)
+    , PT(48), PT(49), PT(50), PT(51), PT(52), PT(53), PT(54), PT(55)
 #if NB_SMALL_SIZE_CLASSES > 56
-	, PT(56), PT(57), PT(58), PT(59), PT(60), PT(61), PT(62), PT(63)
+    , PT(56), PT(57), PT(58), PT(59), PT(60), PT(61), PT(62), PT(63)
 #endif /* NB_SMALL_SIZE_CLASSES > 56 */
 #endif /* NB_SMALL_SIZE_CLASSES > 48 */
 #endif /* NB_SMALL_SIZE_CLASSES > 40 */
@@ -392,151 +449,253 @@ static poolp usedpools[2 * ((NB_SMALL_SIZE_CLASSES + 7) / 8) * 8] = {
 #endif /* NB_SMALL_SIZE_CLASSES >  8 */
 };
 
-/*
- * Free (cached) pools
- */
-static poolp freepools = NULL;		/* free list for cached pools */
+/*==========================================================================
+Arena management.
 
-/*==========================================================================*/
-/* Arena management. */
+`arenas` is a vector of arena_objects.  It contains maxarenas entries, some of
+which may not be currently used (== they're arena_objects that aren't
+currently associated with an allocated arena).  Note that arenas proper are
+separately malloc'ed.
 
-/* arenas is a vector of arena base addresses, in order of allocation time.
- * arenas currently contains narenas entries, and has space allocated
- * for at most maxarenas entries.
- *
- * CAUTION:  See the long comment block about thread safety in new_arena():
- * the code currently relies in deep ways on that this vector only grows,
- * and only grows by appending at the end.  For now we never return an arena
- * to the OS.
- */
-static uptr *volatile arenas = NULL;	/* the pointer itself is volatile */
-static volatile uint narenas = 0;
+Prior to Python 2.5, arenas were never free()'ed.  Starting with Python 2.5,
+we do try to free() arenas, and use some mild heuristic strategies to increase
+the likelihood that arenas eventually can be freed.
+
+unused_arena_objects
+
+    This is a singly-linked list of the arena_objects that are currently not
+    being used (no arena is associated with them).  Objects are taken off the
+    head of the list in new_arena(), and are pushed on the head of the list in
+    PyObject_Free() when the arena is empty.  Key invariant:  an arena_object
+    is on this list if and only if its .address member is 0.
+
+usable_arenas
+
+    This is a doubly-linked list of the arena_objects associated with arenas
+    that have pools available.  These pools are either waiting to be reused,
+    or have not been used before.  The list is sorted to have the most-
+    allocated arenas first (ascending order based on the nfreepools member).
+    This means that the next allocation will come from a heavily used arena,
+    which gives the nearly empty arenas a chance to be returned to the system.
+    In my unscientific tests this dramatically improved the number of arenas
+    that could be freed.
+
+Note that an arena_object associated with an arena all of whose pools are
+currently in use isn't on either list.
+*/
+
+/* Array of objects used to track chunks of memory (arenas). */
+static struct arena_object* arenas = NULL;
+/* Number of slots currently allocated in the `arenas` vector. */
 static uint maxarenas = 0;
 
-/* Number of pools still available to be allocated in the current arena. */
-static uint nfreepools = 0;
-
-/* Free space start address in current arena.  This is pool-aligned. */
-static block *arenabase = NULL;
-
-/* Allocate a new arena and return its base address.  If we run out of
- * memory, return NULL.
+/* The head of the singly-linked, NULL-terminated list of available
+ * arena_objects.
  */
-static block *
-new_arena(void)
-{
-	uint excess;	/* number of bytes above pool alignment */
-	block *bp = (block *)malloc(ARENA_SIZE);
-	if (bp == NULL)
-		return NULL;
+static struct arena_object* unused_arena_objects = NULL;
+
+/* The head of the doubly-linked, NULL-terminated at each end, list of
+ * arena_objects associated with arenas that have pools available.
+ */
+static struct arena_object* usable_arenas = NULL;
+
+/* How many arena_objects do we initially allocate?
+ * 16 = can allocate 16 arenas = 16 * ARENA_SIZE = 4MB before growing the
+ * `arenas` vector.
+ */
+#define INITIAL_ARENA_OBJECTS 16
+
+/* Number of arenas allocated that haven't been free()'d. */
+static size_t narenas_currently_allocated = 0;
 
 #ifdef PYMALLOC_DEBUG
-	if (Py_GETENV("PYTHONMALLOCSTATS"))
-		_PyObject_DebugMallocStats();
+/* Total number of times malloc() called to allocate an arena. */
+static size_t ntimes_arena_allocated = 0;
+/* High water mark (max value ever seen) for narenas_currently_allocated. */
+static size_t narenas_highwater = 0;
 #endif
 
-	/* arenabase <- first pool-aligned address in the arena
-	   nfreepools <- number of whole pools that fit after alignment */
-	arenabase = bp;
-	nfreepools = ARENA_SIZE / POOL_SIZE;
-	assert(POOL_SIZE * nfreepools == ARENA_SIZE);
-	excess = (uint) ((Py_uintptr_t)bp & POOL_SIZE_MASK);
-	if (excess != 0) {
-		--nfreepools;
-		arenabase += POOL_SIZE - excess;
-	}
+/* Allocate a new arena.  If we run out of memory, return NULL.  Else
+ * allocate a new arena, and return the address of an arena_object
+ * describing the new arena.  It's expected that the caller will set
+ * `usable_arenas` to the return value.
+ */
+static struct arena_object*
+new_arena(void)
+{
+    struct arena_object* arenaobj;
+    uint excess;        /* number of bytes above pool alignment */
 
-	/* Make room for a new entry in the arenas vector. */
-	if (arenas == NULL) {
-		assert(narenas == 0 && maxarenas == 0);
-		arenas = (uptr *)malloc(16 * sizeof(*arenas));
-		if (arenas == NULL)
-			goto error;
-		maxarenas = 16;
-	}
-	else if (narenas == maxarenas) {
-		/* Grow arenas.
-		 *
-		 * Exceedingly subtle:  Someone may be calling the pymalloc
-		 * free via PyMem_{DEL, Del, FREE, Free} without holding the
-		 *.GIL.  Someone else may simultaneously be calling the
-		 * pymalloc malloc while holding the GIL via, e.g.,
-		 * PyObject_New.  Now the pymalloc free may index into arenas
-		 * for an address check, while the pymalloc malloc calls
-		 * new_arena and we end up here to grow a new arena *and*
-		 * grow the arenas vector.  If the value for arenas pymalloc
-		 * free picks up "vanishes" during this resize, anything may
-		 * happen, and it would be an incredibly rare bug.  Therefore
-		 * the code here takes great pains to make sure that, at every
-		 * moment, arenas always points to an intact vector of
-		 * addresses.  It doesn't matter whether arenas points to a
-		 * wholly up-to-date vector when pymalloc free checks it in
-		 * this case, because the only legal (and that even this is
-		 * legal is debatable) way to call PyMem_{Del, etc} while not
-		 * holding the GIL is if the memory being released is not
-		 * object memory, i.e. if the address check in pymalloc free
-		 * is supposed to fail.  Having an incomplete vector can't
-		 * make a supposed-to-fail case succeed by mistake (it could
-		 * only make a supposed-to-succeed case fail by mistake).
-		 *
-		 * In addition, without a lock we can't know for sure when
-		 * an old vector is no longer referenced, so we simply let
-		 * old vectors leak.
-		 *
-		 * And on top of that, since narenas and arenas can't be
-		 * changed as-a-pair atomically without a lock, we're also
-		 * careful to declare them volatile and ensure that we change
-		 * arenas first.  This prevents another thread from picking
-		 * up an narenas value too large for the arenas value it
-		 * reads up (arenas never shrinks).
-		 *
-		 * Read the above 50 times before changing anything in this
-		 * block.
-		 */
-		uptr *p;
-		uint newmax = maxarenas << 1;
-		if (newmax <= maxarenas)	/* overflow */
-			goto error;
-		p = (uptr *)malloc(newmax * sizeof(*arenas));
-		if (p == NULL)
-			goto error;
-		memcpy(p, arenas, narenas * sizeof(*arenas));
-		arenas = p;	/* old arenas deliberately leaked */
-		maxarenas = newmax;
-	}
+#ifdef PYMALLOC_DEBUG
+    if (Py_GETENV("PYTHONMALLOCSTATS"))
+        _PyObject_DebugMallocStats();
+#endif
+    if (unused_arena_objects == NULL) {
+        uint i;
+        uint numarenas;
+        size_t nbytes;
 
-	/* Append the new arena address to arenas. */
-	assert(narenas < maxarenas);
-	arenas[narenas] = (uptr)bp;
-	++narenas;	/* can't overflow, since narenas < maxarenas before */
-	return bp;
+        /* Double the number of arena objects on each allocation.
+         * Note that it's possible for `numarenas` to overflow.
+         */
+        numarenas = maxarenas ? maxarenas << 1 : INITIAL_ARENA_OBJECTS;
+        if (numarenas <= maxarenas)
+            return NULL;                /* overflow */
+#if SIZEOF_SIZE_T <= SIZEOF_INT
+        if (numarenas > PY_SIZE_MAX / sizeof(*arenas))
+            return NULL;                /* overflow */
+#endif
+        nbytes = numarenas * sizeof(*arenas);
+        arenaobj = (struct arena_object *)realloc(arenas, nbytes);
+        if (arenaobj == NULL)
+            return NULL;
+        arenas = arenaobj;
 
-error:
-	free(bp);
-	nfreepools = 0;
-	return NULL;
+        /* We might need to fix pointers that were copied.  However,
+         * new_arena only gets called when all the pages in the
+         * previous arenas are full.  Thus, there are *no* pointers
+         * into the old array. Thus, we don't have to worry about
+         * invalid pointers.  Just to be sure, some asserts:
+         */
+        assert(usable_arenas == NULL);
+        assert(unused_arena_objects == NULL);
+
+        /* Put the new arenas on the unused_arena_objects list. */
+        for (i = maxarenas; i < numarenas; ++i) {
+            arenas[i].address = 0;              /* mark as unassociated */
+            arenas[i].nextarena = i < numarenas - 1 ?
+                                   &arenas[i+1] : NULL;
+        }
+
+        /* Update globals. */
+        unused_arena_objects = &arenas[maxarenas];
+        maxarenas = numarenas;
+    }
+
+    /* Take the next available arena object off the head of the list. */
+    assert(unused_arena_objects != NULL);
+    arenaobj = unused_arena_objects;
+    unused_arena_objects = arenaobj->nextarena;
+    assert(arenaobj->address == 0);
+    arenaobj->address = (uptr)malloc(ARENA_SIZE);
+    if (arenaobj->address == 0) {
+        /* The allocation failed: return NULL after putting the
+         * arenaobj back.
+         */
+        arenaobj->nextarena = unused_arena_objects;
+        unused_arena_objects = arenaobj;
+        return NULL;
+    }
+
+    ++narenas_currently_allocated;
+#ifdef PYMALLOC_DEBUG
+    ++ntimes_arena_allocated;
+    if (narenas_currently_allocated > narenas_highwater)
+        narenas_highwater = narenas_currently_allocated;
+#endif
+    arenaobj->freepools = NULL;
+    /* pool_address <- first pool-aligned address in the arena
+       nfreepools <- number of whole pools that fit after alignment */
+    arenaobj->pool_address = (block*)arenaobj->address;
+    arenaobj->nfreepools = ARENA_SIZE / POOL_SIZE;
+    assert(POOL_SIZE * arenaobj->nfreepools == ARENA_SIZE);
+    excess = (uint)(arenaobj->address & POOL_SIZE_MASK);
+    if (excess != 0) {
+        --arenaobj->nfreepools;
+        arenaobj->pool_address += POOL_SIZE - excess;
+    }
+    arenaobj->ntotalpools = arenaobj->nfreepools;
+
+    return arenaobj;
 }
 
-/* Return true if and only if P is an address that was allocated by
- * pymalloc.  I must be the index into arenas that the address claims
- * to come from.
- *
- * Tricky:  Letting B be the arena base address in arenas[I], P belongs to the
- * arena if and only if
- *	B <= P < B + ARENA_SIZE
- * Subtracting B throughout, this is true iff
- *	0 <= P-B < ARENA_SIZE
- * By using unsigned arithmetic, the "0 <=" half of the test can be skipped.
- *
- * Obscure:  A PyMem "free memory" function can call the pymalloc free or
- * realloc before the first arena has been allocated.  arenas is still
- * NULL in that case.  We're relying on that narenas is also 0 in that case,
- * so the (I) < narenas must be false, saving us from trying to index into
- * a NULL arenas.
- */
-#define Py_ADDRESS_IN_RANGE(P, POOL)	\
-	((POOL)->arenaindex < narenas &&		\
-	 (uptr)(P) - arenas[(POOL)->arenaindex] < (uptr)ARENA_SIZE)
+/*
+Py_ADDRESS_IN_RANGE(P, POOL)
+
+Return true if and only if P is an address that was allocated by pymalloc.
+POOL must be the pool address associated with P, i.e., POOL = POOL_ADDR(P)
+(the caller is asked to compute this because the macro expands POOL more than
+once, and for efficiency it's best for the caller to assign POOL_ADDR(P) to a
+variable and pass the latter to the macro; because Py_ADDRESS_IN_RANGE is
+called on every alloc/realloc/free, micro-efficiency is important here).
+
+Tricky:  Let B be the arena base address associated with the pool, B =
+arenas[(POOL)->arenaindex].address.  Then P belongs to the arena if and only if
+
+    B <= P < B + ARENA_SIZE
+
+Subtracting B throughout, this is true iff
+
+    0 <= P-B < ARENA_SIZE
+
+By using unsigned arithmetic, the "0 <=" half of the test can be skipped.
+
+Obscure:  A PyMem "free memory" function can call the pymalloc free or realloc
+before the first arena has been allocated.  `arenas` is still NULL in that
+case.  We're relying on that maxarenas is also 0 in that case, so that
+(POOL)->arenaindex < maxarenas  must be false, saving us from trying to index
+into a NULL arenas.
+
+Details:  given P and POOL, the arena_object corresponding to P is AO =
+arenas[(POOL)->arenaindex].  Suppose obmalloc controls P.  Then (barring wild
+stores, etc), POOL is the correct address of P's pool, AO.address is the
+correct base address of the pool's arena, and P must be within ARENA_SIZE of
+AO.address.  In addition, AO.address is not 0 (no arena can start at address 0
+(NULL)).  Therefore Py_ADDRESS_IN_RANGE correctly reports that obmalloc
+controls P.
+
+Now suppose obmalloc does not control P (e.g., P was obtained via a direct
+call to the system malloc() or realloc()).  (POOL)->arenaindex may be anything
+in this case -- it may even be uninitialized trash.  If the trash arenaindex
+is >= maxarenas, the macro correctly concludes at once that obmalloc doesn't
+control P.
+
+Else arenaindex is < maxarena, and AO is read up.  If AO corresponds to an
+allocated arena, obmalloc controls all the memory in slice AO.address :
+AO.address+ARENA_SIZE.  By case assumption, P is not controlled by obmalloc,
+so P doesn't lie in that slice, so the macro correctly reports that P is not
+controlled by obmalloc.
+
+Finally, if P is not controlled by obmalloc and AO corresponds to an unused
+arena_object (one not currently associated with an allocated arena),
+AO.address is 0, and the second test in the macro reduces to:
+
+    P < ARENA_SIZE
+
+If P >= ARENA_SIZE (extremely likely), the macro again correctly concludes
+that P is not controlled by obmalloc.  However, if P < ARENA_SIZE, this part
+of the test still passes, and the third clause (AO.address != 0) is necessary
+to get the correct result:  AO.address is 0 in this case, so the macro
+correctly reports that P is not controlled by obmalloc (despite that P lies in
+slice AO.address : AO.address + ARENA_SIZE).
+
+Note:  The third (AO.address != 0) clause was added in Python 2.5.  Before
+2.5, arenas were never free()'ed, and an arenaindex < maxarena always
+corresponded to a currently-allocated arena, so the "P is not controlled by
+obmalloc, AO corresponds to an unused arena_object, and P < ARENA_SIZE" case
+was impossible.
+
+Note that the logic is excruciating, and reading up possibly uninitialized
+memory when P is not controlled by obmalloc (to get at (POOL)->arenaindex)
+creates problems for some memory debuggers.  The overwhelming advantage is
+that this test determines whether an arbitrary address is controlled by
+obmalloc in a small constant time, independent of the number of arenas
+obmalloc controls.  Since this test is needed at every entry point, it's
+extremely desirable that it be this fast.
+
+Since Py_ADDRESS_IN_RANGE may be reading from memory which was not allocated
+by Python, it is important that (POOL)->arenaindex is read only once, as
+another thread may be concurrently modifying the value without holding the
+GIL.  To accomplish this, the arenaindex_temp variable is used to store
+(POOL)->arenaindex for the duration of the Py_ADDRESS_IN_RANGE macro's
+execution.  The caller of the macro is responsible for declaring this
+variable.
+*/
+#define Py_ADDRESS_IN_RANGE(P, POOL)                    \
+    ((arenaindex_temp = (POOL)->arenaindex) < maxarenas &&              \
+     (uptr)(P) - arenas[arenaindex_temp].address < (uptr)ARENA_SIZE && \
+     arenas[arenaindex_temp].address != 0)
+
 
 /* This is only useful when running memory debuggers such as
  * Purify or Valgrind.  Uncomment to use.
@@ -557,8 +716,16 @@ error:
 
 #undef Py_ADDRESS_IN_RANGE
 
-/* Don't make static, to ensure this isn't inlined. */
-int Py_ADDRESS_IN_RANGE(void *P, poolp pool);
+#if defined(__GNUC__) && ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1) || \
+                          (__GNUC__ >= 4))
+#define Py_NO_INLINE __attribute__((__noinline__))
+#else
+#define Py_NO_INLINE
+#endif
+
+/* Don't make static, to try to ensure this isn't inlined. */
+int Py_ADDRESS_IN_RANGE(void *P, poolp pool) Py_NO_INLINE;
+#undef Py_NO_INLINE
 #endif
 
 /*==========================================================================*/
@@ -579,151 +746,201 @@ int Py_ADDRESS_IN_RANGE(void *P, poolp pool);
 void *
 PyObject_Malloc(size_t nbytes)
 {
-	block *bp;
-	poolp pool;
-	poolp next;
-	uint size;
+    block *bp;
+    poolp pool;
+    poolp next;
+    uint size;
 
-	/*
-	 * Limit ourselves to INT_MAX bytes to prevent security holes.
-	 * Most python internals blindly use a signed Py_ssize_t to track
-	 * things without checking for overflows or negatives.
-	 * As size_t is unsigned, checking for nbytes < 0 is not required.
-	 */
-	if (nbytes > INT_MAX)
-		return NULL;
-
-	/*
-	 * This implicitly redirects malloc(0).
-	 */
-	if ((nbytes - 1) < SMALL_REQUEST_THRESHOLD) {
-		LOCK();
-		/*
-		 * Most frequent paths first
-		 */
-		size = (uint )(nbytes - 1) >> ALIGNMENT_SHIFT;
-		pool = usedpools[size + size];
-		if (pool != pool->nextpool) {
-			/*
-			 * There is a used pool for this size class.
-			 * Pick up the head block of its free list.
-			 */
-			++pool->ref.count;
-			bp = pool->freeblock;
-			assert(bp != NULL);
-			if ((pool->freeblock = *(block **)bp) != NULL) {
-				UNLOCK();
-				return (void *)bp;
-			}
-			/*
-			 * Reached the end of the free list, try to extend it
-			 */
-			if (pool->nextoffset <= pool->maxnextoffset) {
-				/*
-				 * There is room for another block
-				 */
-				pool->freeblock = (block *)pool +
-						  pool->nextoffset;
-				pool->nextoffset += INDEX2SIZE(size);
-				*(block **)(pool->freeblock) = NULL;
-				UNLOCK();
-				return (void *)bp;
-			}
-			/*
-			 * Pool is full, unlink from used pools
-			 */
-			next = pool->nextpool;
-			pool = pool->prevpool;
-			next->prevpool = pool;
-			pool->nextpool = next;
-			UNLOCK();
-			return (void *)bp;
-		}
-		/*
-		 * Try to get a cached free pool
-		 */
-		pool = freepools;
-		if (pool != NULL) {
-			/*
-			 * Unlink from cached pools
-			 */
-			freepools = pool->nextpool;
-		init_pool:
-			/*
-			 * Frontlink to used pools
-			 */
-			next = usedpools[size + size]; /* == prev */
-			pool->nextpool = next;
-			pool->prevpool = next;
-			next->nextpool = pool;
-			next->prevpool = pool;
-			pool->ref.count = 1;
-			if (pool->szidx == size) {
-				/*
-				 * Luckily, this pool last contained blocks
-				 * of the same size class, so its header
-				 * and free list are already initialized.
-				 */
-				bp = pool->freeblock;
-				pool->freeblock = *(block **)bp;
-				UNLOCK();
-				return (void *)bp;
-			}
-			/*
-			 * Initialize the pool header, set up the free list to
-			 * contain just the second block, and return the first
-			 * block.
-			 */
-			pool->szidx = size;
-			size = INDEX2SIZE(size);
-			bp = (block *)pool + POOL_OVERHEAD;
-			pool->nextoffset = POOL_OVERHEAD + (size << 1);
-			pool->maxnextoffset = POOL_SIZE - size;
-			pool->freeblock = bp + size;
-			*(block **)(pool->freeblock) = NULL;
-			UNLOCK();
-			return (void *)bp;
-		}
-		/*
-		 * Allocate new pool
-		 */
-		if (nfreepools) {
-		commit_pool:
-			--nfreepools;
-			pool = (poolp)arenabase;
-			arenabase += POOL_SIZE;
-			pool->arenaindex = narenas - 1;
-			pool->szidx = DUMMY_SIZE_IDX;
-			goto init_pool;
-		}
-		/*
-		 * Allocate new arena
-		 */
-#ifdef WITH_MEMORY_LIMITS
-		if (!(narenas < MAX_ARENAS)) {
-			UNLOCK();
-			goto redirect;
-		}
+#ifdef WITH_VALGRIND
+    if (UNLIKELY(running_on_valgrind == -1))
+        running_on_valgrind = RUNNING_ON_VALGRIND;
+    if (UNLIKELY(running_on_valgrind))
+        goto redirect;
 #endif
-		bp = new_arena();
-		if (bp != NULL)
-			goto commit_pool;
-		UNLOCK();
-		goto redirect;
-	}
 
-        /* The small block allocator ends here. */
+    /*
+     * Limit ourselves to PY_SSIZE_T_MAX bytes to prevent security holes.
+     * Most python internals blindly use a signed Py_ssize_t to track
+     * things without checking for overflows or negatives.
+     * As size_t is unsigned, checking for nbytes < 0 is not required.
+     */
+    if (nbytes > PY_SSIZE_T_MAX)
+        return NULL;
+
+    /*
+     * This implicitly redirects malloc(0).
+     */
+    if ((nbytes - 1) < SMALL_REQUEST_THRESHOLD) {
+        LOCK();
+        /*
+         * Most frequent paths first
+         */
+        size = (uint)(nbytes - 1) >> ALIGNMENT_SHIFT;
+        pool = usedpools[size + size];
+        if (pool != pool->nextpool) {
+            /*
+             * There is a used pool for this size class.
+             * Pick up the head block of its free list.
+             */
+            ++pool->ref.count;
+            bp = pool->freeblock;
+            assert(bp != NULL);
+            if ((pool->freeblock = *(block **)bp) != NULL) {
+                UNLOCK();
+                return (void *)bp;
+            }
+            /*
+             * Reached the end of the free list, try to extend it.
+             */
+            if (pool->nextoffset <= pool->maxnextoffset) {
+                /* There is room for another block. */
+                pool->freeblock = (block*)pool +
+                                  pool->nextoffset;
+                pool->nextoffset += INDEX2SIZE(size);
+                *(block **)(pool->freeblock) = NULL;
+                UNLOCK();
+                return (void *)bp;
+            }
+            /* Pool is full, unlink from used pools. */
+            next = pool->nextpool;
+            pool = pool->prevpool;
+            next->prevpool = pool;
+            pool->nextpool = next;
+            UNLOCK();
+            return (void *)bp;
+        }
+
+        /* There isn't a pool of the right size class immediately
+         * available:  use a free pool.
+         */
+        if (usable_arenas == NULL) {
+            /* No arena has a free pool:  allocate a new arena. */
+#ifdef WITH_MEMORY_LIMITS
+            if (narenas_currently_allocated >= MAX_ARENAS) {
+                UNLOCK();
+                goto redirect;
+            }
+#endif
+            usable_arenas = new_arena();
+            if (usable_arenas == NULL) {
+                UNLOCK();
+                goto redirect;
+            }
+            usable_arenas->nextarena =
+                usable_arenas->prevarena = NULL;
+        }
+        assert(usable_arenas->address != 0);
+
+        /* Try to get a cached free pool. */
+        pool = usable_arenas->freepools;
+        if (pool != NULL) {
+            /* Unlink from cached pools. */
+            usable_arenas->freepools = pool->nextpool;
+
+            /* This arena already had the smallest nfreepools
+             * value, so decreasing nfreepools doesn't change
+             * that, and we don't need to rearrange the
+             * usable_arenas list.  However, if the arena has
+             * become wholly allocated, we need to remove its
+             * arena_object from usable_arenas.
+             */
+            --usable_arenas->nfreepools;
+            if (usable_arenas->nfreepools == 0) {
+                /* Wholly allocated:  remove. */
+                assert(usable_arenas->freepools == NULL);
+                assert(usable_arenas->nextarena == NULL ||
+                       usable_arenas->nextarena->prevarena ==
+                       usable_arenas);
+
+                usable_arenas = usable_arenas->nextarena;
+                if (usable_arenas != NULL) {
+                    usable_arenas->prevarena = NULL;
+                    assert(usable_arenas->address != 0);
+                }
+            }
+            else {
+                /* nfreepools > 0:  it must be that freepools
+                 * isn't NULL, or that we haven't yet carved
+                 * off all the arena's pools for the first
+                 * time.
+                 */
+                assert(usable_arenas->freepools != NULL ||
+                       usable_arenas->pool_address <=
+                       (block*)usable_arenas->address +
+                           ARENA_SIZE - POOL_SIZE);
+            }
+        init_pool:
+            /* Frontlink to used pools. */
+            next = usedpools[size + size]; /* == prev */
+            pool->nextpool = next;
+            pool->prevpool = next;
+            next->nextpool = pool;
+            next->prevpool = pool;
+            pool->ref.count = 1;
+            if (pool->szidx == size) {
+                /* Luckily, this pool last contained blocks
+                 * of the same size class, so its header
+                 * and free list are already initialized.
+                 */
+                bp = pool->freeblock;
+                pool->freeblock = *(block **)bp;
+                UNLOCK();
+                return (void *)bp;
+            }
+            /*
+             * Initialize the pool header, set up the free list to
+             * contain just the second block, and return the first
+             * block.
+             */
+            pool->szidx = size;
+            size = INDEX2SIZE(size);
+            bp = (block *)pool + POOL_OVERHEAD;
+            pool->nextoffset = POOL_OVERHEAD + (size << 1);
+            pool->maxnextoffset = POOL_SIZE - size;
+            pool->freeblock = bp + size;
+            *(block **)(pool->freeblock) = NULL;
+            UNLOCK();
+            return (void *)bp;
+        }
+
+        /* Carve off a new pool. */
+        assert(usable_arenas->nfreepools > 0);
+        assert(usable_arenas->freepools == NULL);
+        pool = (poolp)usable_arenas->pool_address;
+        assert((block*)pool <= (block*)usable_arenas->address +
+                               ARENA_SIZE - POOL_SIZE);
+        pool->arenaindex = usable_arenas - arenas;
+        assert(&arenas[pool->arenaindex] == usable_arenas);
+        pool->szidx = DUMMY_SIZE_IDX;
+        usable_arenas->pool_address += POOL_SIZE;
+        --usable_arenas->nfreepools;
+
+        if (usable_arenas->nfreepools == 0) {
+            assert(usable_arenas->nextarena == NULL ||
+                   usable_arenas->nextarena->prevarena ==
+                   usable_arenas);
+            /* Unlink the arena:  it is completely allocated. */
+            usable_arenas = usable_arenas->nextarena;
+            if (usable_arenas != NULL) {
+                usable_arenas->prevarena = NULL;
+                assert(usable_arenas->address != 0);
+            }
+        }
+
+        goto init_pool;
+    }
+
+    /* The small block allocator ends here. */
 
 redirect:
-	/*
-	 * Redirect the original request to the underlying (libc) allocator.
-	 * We jump here on bigger requests, on error in the code above (as a
-	 * last chance to serve the request) or when the max memory limit
-	 * has been reached.
-	 */
-	if (nbytes == 0)
-		nbytes = 1;
-	return (void *)malloc(nbytes);
+    /* Redirect the original request to the underlying (libc) allocator.
+     * We jump here on bigger requests, on error in the code above (as a
+     * last chance to serve the request) or when the max memory limit
+     * has been reached.
+     */
+    if (nbytes == 0)
+        nbytes = 1;
+    return (void *)malloc(nbytes);
 }
 
 /* free */
@@ -732,79 +949,221 @@ redirect:
 void
 PyObject_Free(void *p)
 {
-	poolp pool;
-	block *lastfree;
-	poolp next, prev;
-	uint size;
+    poolp pool;
+    block *lastfree;
+    poolp next, prev;
+    uint size;
+#ifndef Py_USING_MEMORY_DEBUGGER
+    uint arenaindex_temp;
+#endif
 
-	if (p == NULL)	/* free(NULL) has no effect */
-		return;
+    if (p == NULL)      /* free(NULL) has no effect */
+        return;
 
-	pool = POOL_ADDR(p);
-	if (Py_ADDRESS_IN_RANGE(p, pool)) {
-		/* We allocated this address. */
-		LOCK();
-		/*
-		 * Link p to the start of the pool's freeblock list.  Since
-		 * the pool had at least the p block outstanding, the pool
-		 * wasn't empty (so it's already in a usedpools[] list, or
-		 * was full and is in no list -- it's not in the freeblocks
-		 * list in any case).
-		 */
-		assert(pool->ref.count > 0);	/* else it was empty */
-		*(block **)p = lastfree = pool->freeblock;
-		pool->freeblock = (block *)p;
-		if (lastfree) {
-			/*
-			 * freeblock wasn't NULL, so the pool wasn't full,
-			 * and the pool is in a usedpools[] list.
-			 */
-			if (--pool->ref.count != 0) {
-				/* pool isn't empty:  leave it in usedpools */
-				UNLOCK();
-				return;
-			}
-			/*
-			 * Pool is now empty:  unlink from usedpools, and
-			 * link to the front of freepools.  This ensures that
-			 * previously freed pools will be allocated later
-			 * (being not referenced, they are perhaps paged out).
-			 */
-			next = pool->nextpool;
-			prev = pool->prevpool;
-			next->prevpool = prev;
-			prev->nextpool = next;
-			/* Link to freepools.  This is a singly-linked list,
-			 * and pool->prevpool isn't used there.
-			 */
-			pool->nextpool = freepools;
-			freepools = pool;
-			UNLOCK();
-			return;
-		}
-		/*
-		 * Pool was full, so doesn't currently live in any list:
-		 * link it to the front of the appropriate usedpools[] list.
-		 * This mimics LRU pool usage for new allocations and
-		 * targets optimal filling when several pools contain
-		 * blocks of the same size class.
-		 */
-		--pool->ref.count;
-		assert(pool->ref.count > 0);	/* else the pool is empty */
-		size = pool->szidx;
-		next = usedpools[size + size];
-		prev = next->prevpool;
-		/* insert pool before next:   prev <-> pool <-> next */
-		pool->nextpool = next;
-		pool->prevpool = prev;
-		next->prevpool = pool;
-		prev->nextpool = pool;
-		UNLOCK();
-		return;
-	}
+#ifdef WITH_VALGRIND
+    if (UNLIKELY(running_on_valgrind > 0))
+        goto redirect;
+#endif
 
-	/* We didn't allocate this address. */
-	free(p);
+    pool = POOL_ADDR(p);
+    if (Py_ADDRESS_IN_RANGE(p, pool)) {
+        /* We allocated this address. */
+        LOCK();
+        /* Link p to the start of the pool's freeblock list.  Since
+         * the pool had at least the p block outstanding, the pool
+         * wasn't empty (so it's already in a usedpools[] list, or
+         * was full and is in no list -- it's not in the freeblocks
+         * list in any case).
+         */
+        assert(pool->ref.count > 0);            /* else it was empty */
+        *(block **)p = lastfree = pool->freeblock;
+        pool->freeblock = (block *)p;
+        if (lastfree) {
+            struct arena_object* ao;
+            uint nf;  /* ao->nfreepools */
+
+            /* freeblock wasn't NULL, so the pool wasn't full,
+             * and the pool is in a usedpools[] list.
+             */
+            if (--pool->ref.count != 0) {
+                /* pool isn't empty:  leave it in usedpools */
+                UNLOCK();
+                return;
+            }
+            /* Pool is now empty:  unlink from usedpools, and
+             * link to the front of freepools.  This ensures that
+             * previously freed pools will be allocated later
+             * (being not referenced, they are perhaps paged out).
+             */
+            next = pool->nextpool;
+            prev = pool->prevpool;
+            next->prevpool = prev;
+            prev->nextpool = next;
+
+            /* Link the pool to freepools.  This is a singly-linked
+             * list, and pool->prevpool isn't used there.
+             */
+            ao = &arenas[pool->arenaindex];
+            pool->nextpool = ao->freepools;
+            ao->freepools = pool;
+            nf = ++ao->nfreepools;
+
+            /* All the rest is arena management.  We just freed
+             * a pool, and there are 4 cases for arena mgmt:
+             * 1. If all the pools are free, return the arena to
+             *    the system free().
+             * 2. If this is the only free pool in the arena,
+             *    add the arena back to the `usable_arenas` list.
+             * 3. If the "next" arena has a smaller count of free
+             *    pools, we have to "slide this arena right" to
+             *    restore that usable_arenas is sorted in order of
+             *    nfreepools.
+             * 4. Else there's nothing more to do.
+             */
+            if (nf == ao->ntotalpools) {
+                /* Case 1.  First unlink ao from usable_arenas.
+                 */
+                assert(ao->prevarena == NULL ||
+                       ao->prevarena->address != 0);
+                assert(ao ->nextarena == NULL ||
+                       ao->nextarena->address != 0);
+
+                /* Fix the pointer in the prevarena, or the
+                 * usable_arenas pointer.
+                 */
+                if (ao->prevarena == NULL) {
+                    usable_arenas = ao->nextarena;
+                    assert(usable_arenas == NULL ||
+                           usable_arenas->address != 0);
+                }
+                else {
+                    assert(ao->prevarena->nextarena == ao);
+                    ao->prevarena->nextarena =
+                        ao->nextarena;
+                }
+                /* Fix the pointer in the nextarena. */
+                if (ao->nextarena != NULL) {
+                    assert(ao->nextarena->prevarena == ao);
+                    ao->nextarena->prevarena =
+                        ao->prevarena;
+                }
+                /* Record that this arena_object slot is
+                 * available to be reused.
+                 */
+                ao->nextarena = unused_arena_objects;
+                unused_arena_objects = ao;
+
+                /* Free the entire arena. */
+                free((void *)ao->address);
+                ao->address = 0;                        /* mark unassociated */
+                --narenas_currently_allocated;
+
+                UNLOCK();
+                return;
+            }
+            if (nf == 1) {
+                /* Case 2.  Put ao at the head of
+                 * usable_arenas.  Note that because
+                 * ao->nfreepools was 0 before, ao isn't
+                 * currently on the usable_arenas list.
+                 */
+                ao->nextarena = usable_arenas;
+                ao->prevarena = NULL;
+                if (usable_arenas)
+                    usable_arenas->prevarena = ao;
+                usable_arenas = ao;
+                assert(usable_arenas->address != 0);
+
+                UNLOCK();
+                return;
+            }
+            /* If this arena is now out of order, we need to keep
+             * the list sorted.  The list is kept sorted so that
+             * the "most full" arenas are used first, which allows
+             * the nearly empty arenas to be completely freed.  In
+             * a few un-scientific tests, it seems like this
+             * approach allowed a lot more memory to be freed.
+             */
+            if (ao->nextarena == NULL ||
+                         nf <= ao->nextarena->nfreepools) {
+                /* Case 4.  Nothing to do. */
+                UNLOCK();
+                return;
+            }
+            /* Case 3:  We have to move the arena towards the end
+             * of the list, because it has more free pools than
+             * the arena to its right.
+             * First unlink ao from usable_arenas.
+             */
+            if (ao->prevarena != NULL) {
+                /* ao isn't at the head of the list */
+                assert(ao->prevarena->nextarena == ao);
+                ao->prevarena->nextarena = ao->nextarena;
+            }
+            else {
+                /* ao is at the head of the list */
+                assert(usable_arenas == ao);
+                usable_arenas = ao->nextarena;
+            }
+            ao->nextarena->prevarena = ao->prevarena;
+
+            /* Locate the new insertion point by iterating over
+             * the list, using our nextarena pointer.
+             */
+            while (ao->nextarena != NULL &&
+                            nf > ao->nextarena->nfreepools) {
+                ao->prevarena = ao->nextarena;
+                ao->nextarena = ao->nextarena->nextarena;
+            }
+
+            /* Insert ao at this point. */
+            assert(ao->nextarena == NULL ||
+                ao->prevarena == ao->nextarena->prevarena);
+            assert(ao->prevarena->nextarena == ao->nextarena);
+
+            ao->prevarena->nextarena = ao;
+            if (ao->nextarena != NULL)
+                ao->nextarena->prevarena = ao;
+
+            /* Verify that the swaps worked. */
+            assert(ao->nextarena == NULL ||
+                      nf <= ao->nextarena->nfreepools);
+            assert(ao->prevarena == NULL ||
+                      nf > ao->prevarena->nfreepools);
+            assert(ao->nextarena == NULL ||
+                ao->nextarena->prevarena == ao);
+            assert((usable_arenas == ao &&
+                ao->prevarena == NULL) ||
+                ao->prevarena->nextarena == ao);
+
+            UNLOCK();
+            return;
+        }
+        /* Pool was full, so doesn't currently live in any list:
+         * link it to the front of the appropriate usedpools[] list.
+         * This mimics LRU pool usage for new allocations and
+         * targets optimal filling when several pools contain
+         * blocks of the same size class.
+         */
+        --pool->ref.count;
+        assert(pool->ref.count > 0);            /* else the pool is empty */
+        size = pool->szidx;
+        next = usedpools[size + size];
+        prev = next->prevpool;
+        /* insert pool before next:   prev <-> pool <-> next */
+        pool->nextpool = next;
+        pool->prevpool = prev;
+        next->prevpool = pool;
+        prev->nextpool = pool;
+        UNLOCK();
+        return;
+    }
+
+#ifdef WITH_VALGRIND
+redirect:
+#endif
+    /* We didn't allocate this address. */
+    free(p);
 }
 
 /* realloc.  If p is NULL, this acts like malloc(nbytes).  Else if nbytes==0,
@@ -816,72 +1175,84 @@ PyObject_Free(void *p)
 void *
 PyObject_Realloc(void *p, size_t nbytes)
 {
-	void *bp;
-	poolp pool;
-	uint size;
+    void *bp;
+    poolp pool;
+    size_t size;
+#ifndef Py_USING_MEMORY_DEBUGGER
+    uint arenaindex_temp;
+#endif
 
-	if (p == NULL)
-		return PyObject_Malloc(nbytes);
+    if (p == NULL)
+        return PyObject_Malloc(nbytes);
 
-	/*
-	 * Limit ourselves to INT_MAX bytes to prevent security holes.
-	 * Most python internals blindly use a signed Py_ssize_t to track
-	 * things without checking for overflows or negatives.
-	 * As size_t is unsigned, checking for nbytes < 0 is not required.
-	 */
-	if (nbytes > INT_MAX)
-		return NULL;
+    /*
+     * Limit ourselves to PY_SSIZE_T_MAX bytes to prevent security holes.
+     * Most python internals blindly use a signed Py_ssize_t to track
+     * things without checking for overflows or negatives.
+     * As size_t is unsigned, checking for nbytes < 0 is not required.
+     */
+    if (nbytes > PY_SSIZE_T_MAX)
+        return NULL;
 
-	pool = POOL_ADDR(p);
-	if (Py_ADDRESS_IN_RANGE(p, pool)) {
-		/* We're in charge of this block */
-		size = INDEX2SIZE(pool->szidx);
-		if (nbytes <= size) {
-			/* The block is staying the same or shrinking.  If
-			 * it's shrinking, there's a tradeoff:  it costs
-			 * cycles to copy the block to a smaller size class,
-			 * but it wastes memory not to copy it.  The
-			 * compromise here is to copy on shrink only if at
-			 * least 25% of size can be shaved off.
-			 */
-			if (4 * nbytes > 3 * size) {
-				/* It's the same,
-				 * or shrinking and new/old > 3/4.
-				 */
-				return p;
-			}
-			size = nbytes;
-		}
-		bp = PyObject_Malloc(nbytes);
-		if (bp != NULL) {
-			memcpy(bp, p, size);
-			PyObject_Free(p);
-		}
-		return bp;
-	}
-	/* We're not managing this block.  If nbytes <=
-	 * SMALL_REQUEST_THRESHOLD, it's tempting to try to take over this
-	 * block.  However, if we do, we need to copy the valid data from
-	 * the C-managed block to one of our blocks, and there's no portable
-	 * way to know how much of the memory space starting at p is valid.
-	 * As bug 1185883 pointed out the hard way, it's possible that the
-	 * C-managed block is "at the end" of allocated VM space, so that
-	 * a memory fault can occur if we try to copy nbytes bytes starting
-	 * at p.  Instead we punt:  let C continue to manage this block.
-         */
-	if (nbytes)
-		return realloc(p, nbytes);
-	/* C doesn't define the result of realloc(p, 0) (it may or may not
-	 * return NULL then), but Python's docs promise that nbytes==0 never
-	 * returns NULL.  We don't pass 0 to realloc(), to avoid that endcase
-	 * to begin with.  Even then, we can't be sure that realloc() won't
-	 * return NULL.
-	 */
-	bp = realloc(p, 1);
-   	return bp ? bp : p;
+#ifdef WITH_VALGRIND
+    /* Treat running_on_valgrind == -1 the same as 0 */
+    if (UNLIKELY(running_on_valgrind > 0))
+        goto redirect;
+#endif
+
+    pool = POOL_ADDR(p);
+    if (Py_ADDRESS_IN_RANGE(p, pool)) {
+        /* We're in charge of this block */
+        size = INDEX2SIZE(pool->szidx);
+        if (nbytes <= size) {
+            /* The block is staying the same or shrinking.  If
+             * it's shrinking, there's a tradeoff:  it costs
+             * cycles to copy the block to a smaller size class,
+             * but it wastes memory not to copy it.  The
+             * compromise here is to copy on shrink only if at
+             * least 25% of size can be shaved off.
+             */
+            if (4 * nbytes > 3 * size) {
+                /* It's the same,
+                 * or shrinking and new/old > 3/4.
+                 */
+                return p;
+            }
+            size = nbytes;
+        }
+        bp = PyObject_Malloc(nbytes);
+        if (bp != NULL) {
+            memcpy(bp, p, size);
+            PyObject_Free(p);
+        }
+        return bp;
+    }
+#ifdef WITH_VALGRIND
+ redirect:
+#endif
+    /* We're not managing this block.  If nbytes <=
+     * SMALL_REQUEST_THRESHOLD, it's tempting to try to take over this
+     * block.  However, if we do, we need to copy the valid data from
+     * the C-managed block to one of our blocks, and there's no portable
+     * way to know how much of the memory space starting at p is valid.
+     * As bug 1185883 pointed out the hard way, it's possible that the
+     * C-managed block is "at the end" of allocated VM space, so that
+     * a memory fault can occur if we try to copy nbytes bytes starting
+     * at p.  Instead we punt:  let C continue to manage this block.
+     */
+    if (nbytes)
+        return realloc(p, nbytes);
+    /* C doesn't define the result of realloc(p, 0) (it may or may not
+     * return NULL then), but Python's docs promise that nbytes==0 never
+     * returns NULL.  We don't pass 0 to realloc(), to avoid that endcase
+     * to begin with.  Even then, we can't be sure that realloc() won't
+     * return NULL.
+     */
+    bp = realloc(p, 1);
+    return bp ? bp : p;
 }
 
-#else	/* ! WITH_PYMALLOC */
+#else   /* ! WITH_PYMALLOC */
 
 /*==========================================================================*/
 /* pymalloc not enabled:  Redirect the entry points to malloc.  These will
@@ -890,19 +1261,19 @@ PyObject_Realloc(void *p, size_t nbytes)
 void *
 PyObject_Malloc(size_t n)
 {
-	return PyMem_MALLOC(n);
+    return PyMem_MALLOC(n);
 }
 
 void *
 PyObject_Realloc(void *p, size_t n)
 {
-	return PyMem_REALLOC(p, n);
+    return PyMem_REALLOC(p, n);
 }
 
 void
 PyObject_Free(void *p)
 {
-	PyMem_FREE(p);
+    PyMem_FREE(p);
 }
 #endif /* WITH_PYMALLOC */
 
@@ -923,39 +1294,49 @@ PyObject_Free(void *p)
 #define DEADBYTE       0xDB    /* dead (newly freed) memory */
 #define FORBIDDENBYTE  0xFB    /* untouchable bytes at each end of a block */
 
-static ulong serialno = 0;	/* incremented on each debug {m,re}alloc */
+/* We tag each block with an API ID in order to tag API violations */
+#define _PYMALLOC_MEM_ID 'm'   /* the PyMem_Malloc() API */
+#define _PYMALLOC_OBJ_ID 'o'   /* The PyObject_Malloc() API */
+
+static size_t serialno = 0;     /* incremented on each debug {m,re}alloc */
 
 /* serialno is always incremented via calling this routine.  The point is
-   to supply a single place to set a breakpoint.
-*/
+ * to supply a single place to set a breakpoint.
+ */
 static void
 bumpserialno(void)
 {
-	++serialno;
+    ++serialno;
 }
 
+#define SST SIZEOF_SIZE_T
 
-/* Read 4 bytes at p as a big-endian ulong. */
-static ulong
-read4(const void *p)
+/* Read sizeof(size_t) bytes at p as a big-endian size_t. */
+static size_t
+read_size_t(const void *p)
 {
-	const uchar *q = (const uchar *)p;
-	return ((ulong)q[0] << 24) |
-	       ((ulong)q[1] << 16) |
-	       ((ulong)q[2] <<  8) |
-	        (ulong)q[3];
+    const uchar *q = (const uchar *)p;
+    size_t result = *q++;
+    int i;
+
+    for (i = SST; --i > 0; ++q)
+        result = (result << 8) | *q;
+    return result;
 }
 
-/* Write the 4 least-significant bytes of n as a big-endian unsigned int,
-   MSB at address p, LSB at p+3. */
+/* Write n as a big-endian size_t, MSB at address p, LSB at
+ * p + sizeof(size_t) - 1.
+ */
 static void
-write4(void *p, ulong n)
+write_size_t(void *p, size_t n)
 {
-	uchar *q = (uchar *)p;
-	q[0] = (uchar)((n >> 24) & 0xff);
-	q[1] = (uchar)((n >> 16) & 0xff);
-	q[2] = (uchar)((n >>  8) & 0xff);
-	q[3] = (uchar)( n        & 0xff);
+    uchar *q = (uchar *)p + SST - 1;
+    int i;
+
+    for (i = SST; --i >= 0; --q) {
+        *q = (uchar)(n & 0xff);
+        n >>= 8;
+    }
 }
 
 #ifdef Py_DEBUG
@@ -966,320 +1347,387 @@ write4(void *p, ulong n)
 static int
 pool_is_in_list(const poolp target, poolp list)
 {
-	poolp origlist = list;
-	assert(target != NULL);
-	if (list == NULL)
-		return 0;
-	do {
-		if (target == list)
-			return 1;
-		list = list->nextpool;
-	} while (list != NULL && list != origlist);
-	return 0;
+    poolp origlist = list;
+    assert(target != NULL);
+    if (list == NULL)
+        return 0;
+    do {
+        if (target == list)
+            return 1;
+        list = list->nextpool;
+    } while (list != NULL && list != origlist);
+    return 0;
 }
 
 #else
 #define pool_is_in_list(X, Y) 1
 
-#endif	/* Py_DEBUG */
+#endif  /* Py_DEBUG */
 
-/* The debug malloc asks for 16 extra bytes and fills them with useful stuff,
-   here calling the underlying malloc's result p:
+/* Let S = sizeof(size_t).  The debug malloc asks for 4*S extra bytes and
+   fills them with useful stuff, here calling the underlying malloc's result p:
 
-p[0:4]
-    Number of bytes originally asked for.  4-byte unsigned integer,
-    big-endian (easier to read in a memory dump).
-p[4:8]
+p[0: S]
+    Number of bytes originally asked for.  This is a size_t, big-endian (easier
+    to read in a memory dump).
+p[S: 2*S]
     Copies of FORBIDDENBYTE.  Used to catch under- writes and reads.
-p[8:8+n]
+p[2*S: 2*S+n]
     The requested memory, filled with copies of CLEANBYTE.
     Used to catch reference to uninitialized memory.
-    &p[8] is returned.  Note that this is 8-byte aligned if pymalloc
+    &p[2*S] is returned.  Note that this is 8-byte aligned if pymalloc
     handled the request itself.
-p[8+n:8+n+4]
+p[2*S+n: 2*S+n+S]
     Copies of FORBIDDENBYTE.  Used to catch over- writes and reads.
-p[8+n+4:8+n+8]
+p[2*S+n+S: 2*S+n+2*S]
     A serial number, incremented by 1 on each call to _PyObject_DebugMalloc
     and _PyObject_DebugRealloc.
-    4-byte unsigned integer, big-endian.
+    This is a big-endian size_t.
     If "bad memory" is detected later, the serial number gives an
     excellent way to set a breakpoint on the next run, to capture the
     instant at which this block was passed out.
 */
 
+/* debug replacements for the PyMem_* memory API */
+void *
+_PyMem_DebugMalloc(size_t nbytes)
+{
+    return _PyObject_DebugMallocApi(_PYMALLOC_MEM_ID, nbytes);
+}
+void *
+_PyMem_DebugRealloc(void *p, size_t nbytes)
+{
+    return _PyObject_DebugReallocApi(_PYMALLOC_MEM_ID, p, nbytes);
+}
+void
+_PyMem_DebugFree(void *p)
+{
+    _PyObject_DebugFreeApi(_PYMALLOC_MEM_ID, p);
+}
+
+/* debug replacements for the PyObject_* memory API */
 void *
 _PyObject_DebugMalloc(size_t nbytes)
 {
-	uchar *p;	/* base address of malloc'ed block */
-	uchar *tail;	/* p + 8 + nbytes == pointer to tail pad bytes */
-	size_t total;	/* nbytes + 16 */
-
-	bumpserialno();
-	total = nbytes + 16;
-	if (total < nbytes || (total >> 31) > 1) {
-		/* overflow, or we can't represent it in 4 bytes */
-		/* Obscure:  can't do (total >> 32) != 0 instead, because
-		   C doesn't define what happens for a right-shift of 32
-		   when size_t is a 32-bit type.  At least C guarantees
-		   size_t is an unsigned type. */
-		return NULL;
-	}
-
-	p = (uchar *)PyObject_Malloc(total);
-	if (p == NULL)
-		return NULL;
-
-	write4(p, nbytes);
-	p[4] = p[5] = p[6] = p[7] = FORBIDDENBYTE;
-
-	if (nbytes > 0)
-		memset(p+8, CLEANBYTE, nbytes);
-
-	tail = p + 8 + nbytes;
-	tail[0] = tail[1] = tail[2] = tail[3] = FORBIDDENBYTE;
-	write4(tail + 4, serialno);
-
-	return p+8;
+    return _PyObject_DebugMallocApi(_PYMALLOC_OBJ_ID, nbytes);
+}
+void *
+_PyObject_DebugRealloc(void *p, size_t nbytes)
+{
+    return _PyObject_DebugReallocApi(_PYMALLOC_OBJ_ID, p, nbytes);
+}
+void
+_PyObject_DebugFree(void *p)
+{
+    _PyObject_DebugFreeApi(_PYMALLOC_OBJ_ID, p);
+}
+void
+_PyObject_DebugCheckAddress(const void *p)
+{
+    _PyObject_DebugCheckAddressApi(_PYMALLOC_OBJ_ID, p);
 }
 
-/* The debug free first checks the 8 bytes on each end for sanity (in
-   particular, that the FORBIDDENBYTEs are still intact).
+
+/* generic debug memory api, with an "id" to identify the API in use */
+void *
+_PyObject_DebugMallocApi(char id, size_t nbytes)
+{
+    uchar *p;           /* base address of malloc'ed block */
+    uchar *tail;        /* p + 2*SST + nbytes == pointer to tail pad bytes */
+    size_t total;       /* nbytes + 4*SST */
+
+    bumpserialno();
+    total = nbytes + 4*SST;
+    if (total < nbytes)
+        /* overflow:  can't represent total as a size_t */
+        return NULL;
+
+    p = (uchar *)PyObject_Malloc(total);
+    if (p == NULL)
+        return NULL;
+
+    /* at p, write size (SST bytes), id (1 byte), pad (SST-1 bytes) */
+    write_size_t(p, nbytes);
+    p[SST] = (uchar)id;
+    memset(p + SST + 1 , FORBIDDENBYTE, SST-1);
+
+    if (nbytes > 0)
+        memset(p + 2*SST, CLEANBYTE, nbytes);
+
+    /* at tail, write pad (SST bytes) and serialno (SST bytes) */
+    tail = p + 2*SST + nbytes;
+    memset(tail, FORBIDDENBYTE, SST);
+    write_size_t(tail + SST, serialno);
+
+    return p + 2*SST;
+}
+
+/* The debug free first checks the 2*SST bytes on each end for sanity (in
+   particular, that the FORBIDDENBYTEs with the api ID are still intact).
    Then fills the original bytes with DEADBYTE.
    Then calls the underlying free.
 */
 void
-_PyObject_DebugFree(void *p)
+_PyObject_DebugFreeApi(char api, void *p)
 {
-	uchar *q = (uchar *)p;
-	size_t nbytes;
+    uchar *q = (uchar *)p - 2*SST;  /* address returned from malloc */
+    size_t nbytes;
 
-	if (p == NULL)
-		return;
-	_PyObject_DebugCheckAddress(p);
-	nbytes = read4(q-8);
-	if (nbytes > 0)
-		memset(q, DEADBYTE, nbytes);
-	PyObject_Free(q-8);
+    if (p == NULL)
+        return;
+    _PyObject_DebugCheckAddressApi(api, p);
+    nbytes = read_size_t(q);
+    nbytes += 4*SST;
+    if (nbytes > 0)
+        memset(q, DEADBYTE, nbytes);
+    PyObject_Free(q);
 }
 
 void *
-_PyObject_DebugRealloc(void *p, size_t nbytes)
+_PyObject_DebugReallocApi(char api, void *p, size_t nbytes)
 {
-	uchar *q = (uchar *)p;
-	uchar *tail;
-	size_t total;	/* nbytes + 16 */
-	size_t original_nbytes;
+    uchar *q = (uchar *)p;
+    uchar *tail;
+    size_t total;       /* nbytes + 4*SST */
+    size_t original_nbytes;
+    int i;
 
-	if (p == NULL)
-		return _PyObject_DebugMalloc(nbytes);
+    if (p == NULL)
+        return _PyObject_DebugMallocApi(api, nbytes);
 
-	_PyObject_DebugCheckAddress(p);
-	bumpserialno();
-	original_nbytes = read4(q-8);
-	total = nbytes + 16;
-	if (total < nbytes || (total >> 31) > 1) {
-		/* overflow, or we can't represent it in 4 bytes */
-		return NULL;
-	}
+    _PyObject_DebugCheckAddressApi(api, p);
+    bumpserialno();
+    original_nbytes = read_size_t(q - 2*SST);
+    total = nbytes + 4*SST;
+    if (total < nbytes)
+        /* overflow:  can't represent total as a size_t */
+        return NULL;
 
-	if (nbytes < original_nbytes) {
-		/* shrinking:  mark old extra memory dead */
-		memset(q + nbytes, DEADBYTE, original_nbytes - nbytes);
-	}
+    if (nbytes < original_nbytes) {
+        /* shrinking:  mark old extra memory dead */
+        memset(q + nbytes, DEADBYTE, original_nbytes - nbytes + 2*SST);
+    }
 
-	/* Resize and add decorations. */
-	q = (uchar *)PyObject_Realloc(q-8, total);
-	if (q == NULL)
-		return NULL;
+    /* Resize and add decorations. We may get a new pointer here, in which
+     * case we didn't get the chance to mark the old memory with DEADBYTE,
+     * but we live with that.
+     */
+    q = (uchar *)PyObject_Realloc(q - 2*SST, total);
+    if (q == NULL)
+        return NULL;
 
-	write4(q, nbytes);
-	assert(q[4] == FORBIDDENBYTE &&
-	       q[5] == FORBIDDENBYTE &&
-	       q[6] == FORBIDDENBYTE &&
-	       q[7] == FORBIDDENBYTE);
-	q += 8;
-	tail = q + nbytes;
-	tail[0] = tail[1] = tail[2] = tail[3] = FORBIDDENBYTE;
-	write4(tail + 4, serialno);
+    write_size_t(q, nbytes);
+    assert(q[SST] == (uchar)api);
+    for (i = 1; i < SST; ++i)
+        assert(q[SST + i] == FORBIDDENBYTE);
+    q += 2*SST;
+    tail = q + nbytes;
+    memset(tail, FORBIDDENBYTE, SST);
+    write_size_t(tail + SST, serialno);
 
-	if (nbytes > original_nbytes) {
-		/* growing:  mark new extra memory clean */
-		memset(q + original_nbytes, CLEANBYTE,
-			nbytes - original_nbytes);
-	}
+    if (nbytes > original_nbytes) {
+        /* growing:  mark new extra memory clean */
+        memset(q + original_nbytes, CLEANBYTE,
+               nbytes - original_nbytes);
+    }
 
-	return q;
+    return q;
 }
 
 /* Check the forbidden bytes on both ends of the memory allocated for p.
  * If anything is wrong, print info to stderr via _PyObject_DebugDumpAddress,
  * and call Py_FatalError to kill the program.
+ * The API id, is also checked.
  */
  void
-_PyObject_DebugCheckAddress(const void *p)
+_PyObject_DebugCheckAddressApi(char api, const void *p)
 {
-	const uchar *q = (const uchar *)p;
-	char *msg;
-	ulong nbytes;
-	const uchar *tail;
-	int i;
+    const uchar *q = (const uchar *)p;
+    char msgbuf[64];
+    char *msg;
+    size_t nbytes;
+    const uchar *tail;
+    int i;
+    char id;
 
-	if (p == NULL) {
-		msg = "didn't expect a NULL pointer";
-		goto error;
-	}
+    if (p == NULL) {
+        msg = "didn't expect a NULL pointer";
+        goto error;
+    }
 
-	/* Check the stuff at the start of p first:  if there's underwrite
-	 * corruption, the number-of-bytes field may be nuts, and checking
-	 * the tail could lead to a segfault then.
-	 */
-	for (i = 4; i >= 1; --i) {
-		if (*(q-i) != FORBIDDENBYTE) {
-			msg = "bad leading pad byte";
-			goto error;
-		}
-	}
+    /* Check the API id */
+    id = (char)q[-SST];
+    if (id != api) {
+        msg = msgbuf;
+        snprintf(msg, sizeof(msgbuf), "bad ID: Allocated using API '%c', verified using API '%c'", id, api);
+        msgbuf[sizeof(msgbuf)-1] = 0;
+        goto error;
+    }
 
-	nbytes = read4(q-8);
-	tail = q + nbytes;
-	for (i = 0; i < 4; ++i) {
-		if (tail[i] != FORBIDDENBYTE) {
-			msg = "bad trailing pad byte";
-			goto error;
-		}
-	}
+    /* Check the stuff at the start of p first:  if there's underwrite
+     * corruption, the number-of-bytes field may be nuts, and checking
+     * the tail could lead to a segfault then.
+     */
+    for (i = SST-1; i >= 1; --i) {
+        if (*(q-i) != FORBIDDENBYTE) {
+            msg = "bad leading pad byte";
+            goto error;
+        }
+    }
 
-	return;
+    nbytes = read_size_t(q - 2*SST);
+    tail = q + nbytes;
+    for (i = 0; i < SST; ++i) {
+        if (tail[i] != FORBIDDENBYTE) {
+            msg = "bad trailing pad byte";
+            goto error;
+        }
+    }
+
+    return;
 
 error:
-	_PyObject_DebugDumpAddress(p);
-	Py_FatalError(msg);
+    _PyObject_DebugDumpAddress(p);
+    Py_FatalError(msg);
 }
 
 /* Display info to stderr about the memory block at p. */
 void
 _PyObject_DebugDumpAddress(const void *p)
 {
-	const uchar *q = (const uchar *)p;
-	const uchar *tail;
-	ulong nbytes, serial;
-	int i;
+    const uchar *q = (const uchar *)p;
+    const uchar *tail;
+    size_t nbytes, serial;
+    int i;
+    int ok;
+    char id;
 
-	fprintf(stderr, "Debug memory block at address p=%p:\n", p);
-	if (p == NULL)
-		return;
+    fprintf(stderr, "Debug memory block at address p=%p:", p);
+    if (p == NULL) {
+        fprintf(stderr, "\n");
+        return;
+    }
+    id = (char)q[-SST];
+    fprintf(stderr, " API '%c'\n", id);
 
-	nbytes = read4(q-8);
-	fprintf(stderr, "    %lu bytes originally requested\n", nbytes);
+    nbytes = read_size_t(q - 2*SST);
+    fprintf(stderr, "    %" PY_FORMAT_SIZE_T "u bytes originally "
+                    "requested\n", nbytes);
 
-	/* In case this is nuts, check the leading pad bytes first. */
-	fputs("    The 4 pad bytes at p-4 are ", stderr);
-	if (*(q-4) == FORBIDDENBYTE &&
-	    *(q-3) == FORBIDDENBYTE &&
-	    *(q-2) == FORBIDDENBYTE &&
-	    *(q-1) == FORBIDDENBYTE) {
-		fputs("FORBIDDENBYTE, as expected.\n", stderr);
-	}
-	else {
-		fprintf(stderr, "not all FORBIDDENBYTE (0x%02x):\n",
-			FORBIDDENBYTE);
-		for (i = 4; i >= 1; --i) {
-			const uchar byte = *(q-i);
-			fprintf(stderr, "        at p-%d: 0x%02x", i, byte);
-			if (byte != FORBIDDENBYTE)
-				fputs(" *** OUCH", stderr);
-			fputc('\n', stderr);
-		}
+    /* In case this is nuts, check the leading pad bytes first. */
+    fprintf(stderr, "    The %d pad bytes at p-%d are ", SST-1, SST-1);
+    ok = 1;
+    for (i = 1; i <= SST-1; ++i) {
+        if (*(q-i) != FORBIDDENBYTE) {
+            ok = 0;
+            break;
+        }
+    }
+    if (ok)
+        fputs("FORBIDDENBYTE, as expected.\n", stderr);
+    else {
+        fprintf(stderr, "not all FORBIDDENBYTE (0x%02x):\n",
+            FORBIDDENBYTE);
+        for (i = SST-1; i >= 1; --i) {
+            const uchar byte = *(q-i);
+            fprintf(stderr, "        at p-%d: 0x%02x", i, byte);
+            if (byte != FORBIDDENBYTE)
+                fputs(" *** OUCH", stderr);
+            fputc('\n', stderr);
+        }
 
-		fputs("    Because memory is corrupted at the start, the "
-		      "count of bytes requested\n"
-		      "       may be bogus, and checking the trailing pad "
-		      "bytes may segfault.\n", stderr);
-	}
+        fputs("    Because memory is corrupted at the start, the "
+              "count of bytes requested\n"
+              "       may be bogus, and checking the trailing pad "
+              "bytes may segfault.\n", stderr);
+    }
 
-	tail = q + nbytes;
-	fprintf(stderr, "    The 4 pad bytes at tail=%p are ", tail);
-	if (tail[0] == FORBIDDENBYTE &&
-	    tail[1] == FORBIDDENBYTE &&
-	    tail[2] == FORBIDDENBYTE &&
-	    tail[3] == FORBIDDENBYTE) {
-		fputs("FORBIDDENBYTE, as expected.\n", stderr);
-	}
-	else {
-		fprintf(stderr, "not all FORBIDDENBYTE (0x%02x):\n",
-			FORBIDDENBYTE);
-		for (i = 0; i < 4; ++i) {
-			const uchar byte = tail[i];
-			fprintf(stderr, "        at tail+%d: 0x%02x",
-				i, byte);
-			if (byte != FORBIDDENBYTE)
-				fputs(" *** OUCH", stderr);
-			fputc('\n', stderr);
-		}
-	}
+    tail = q + nbytes;
+    fprintf(stderr, "    The %d pad bytes at tail=%p are ", SST, tail);
+    ok = 1;
+    for (i = 0; i < SST; ++i) {
+        if (tail[i] != FORBIDDENBYTE) {
+            ok = 0;
+            break;
+        }
+    }
+    if (ok)
+        fputs("FORBIDDENBYTE, as expected.\n", stderr);
+    else {
+        fprintf(stderr, "not all FORBIDDENBYTE (0x%02x):\n",
+                FORBIDDENBYTE);
+        for (i = 0; i < SST; ++i) {
+            const uchar byte = tail[i];
+            fprintf(stderr, "        at tail+%d: 0x%02x",
+                    i, byte);
+            if (byte != FORBIDDENBYTE)
+                fputs(" *** OUCH", stderr);
+            fputc('\n', stderr);
+        }
+    }
 
-	serial = read4(tail+4);
-	fprintf(stderr, "    The block was made by call #%lu to "
-	                "debug malloc/realloc.\n", serial);
+    serial = read_size_t(tail + SST);
+    fprintf(stderr, "    The block was made by call #%" PY_FORMAT_SIZE_T
+                    "u to debug malloc/realloc.\n", serial);
 
-	if (nbytes > 0) {
-		int i = 0;
-		fputs("    Data at p:", stderr);
-		/* print up to 8 bytes at the start */
-		while (q < tail && i < 8) {
-			fprintf(stderr, " %02x", *q);
-			++i;
-			++q;
-		}
-		/* and up to 8 at the end */
-		if (q < tail) {
-			if (tail - q > 8) {
-				fputs(" ...", stderr);
-				q = tail - 8;
-			}
-			while (q < tail) {
-				fprintf(stderr, " %02x", *q);
-				++q;
-			}
-		}
-		fputc('\n', stderr);
-	}
+    if (nbytes > 0) {
+        i = 0;
+        fputs("    Data at p:", stderr);
+        /* print up to 8 bytes at the start */
+        while (q < tail && i < 8) {
+            fprintf(stderr, " %02x", *q);
+            ++i;
+            ++q;
+        }
+        /* and up to 8 at the end */
+        if (q < tail) {
+            if (tail - q > 8) {
+                fputs(" ...", stderr);
+                q = tail - 8;
+            }
+            while (q < tail) {
+                fprintf(stderr, " %02x", *q);
+                ++q;
+            }
+        }
+        fputc('\n', stderr);
+    }
 }
 
-static ulong
-printone(const char* msg, ulong value)
+static size_t
+printone(const char* msg, size_t value)
 {
-	int i, k;
-	char buf[100];
-	ulong origvalue = value;
+    int i, k;
+    char buf[100];
+    size_t origvalue = value;
 
-	fputs(msg, stderr);
-	for (i = (int)strlen(msg); i < 35; ++i)
-		fputc(' ', stderr);
-	fputc('=', stderr);
+    fputs(msg, stderr);
+    for (i = (int)strlen(msg); i < 35; ++i)
+        fputc(' ', stderr);
+    fputc('=', stderr);
 
-	/* Write the value with commas. */
-	i = 22;
-	buf[i--] = '\0';
-	buf[i--] = '\n';
-	k = 3;
-	do {
-		ulong nextvalue = value / 10UL;
-		uint digit = value - nextvalue * 10UL;
-		value = nextvalue;
-		buf[i--] = (char)(digit + '0');
-		--k;
-		if (k == 0 && value && i >= 0) {
-			k = 3;
-			buf[i--] = ',';
-		}
-	} while (value && i >= 0);
+    /* Write the value with commas. */
+    i = 22;
+    buf[i--] = '\0';
+    buf[i--] = '\n';
+    k = 3;
+    do {
+        size_t nextvalue = value / 10;
+        unsigned int digit = (unsigned int)(value - nextvalue * 10);
+        value = nextvalue;
+        buf[i--] = (char)(digit + '0');
+        --k;
+        if (k == 0 && value && i >= 0) {
+            k = 3;
+            buf[i--] = ',';
+        }
+    } while (value && i >= 0);
 
-	while (i >= 0)
-		buf[i--] = ' ';
-	fputs(buf, stderr);
+    while (i >= 0)
+        buf[i--] = ' ';
+    fputs(buf, stderr);
 
-	return origvalue;
+    return origvalue;
 }
 
 /* Print summary info to stderr about the state of pymalloc's structures.
@@ -1289,136 +1737,152 @@ printone(const char* msg, ulong value)
 void
 _PyObject_DebugMallocStats(void)
 {
-	uint i;
-	const uint numclasses = SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT;
-	/* # of pools, allocated blocks, and free blocks per class index */
-	ulong numpools[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
-	ulong numblocks[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
-	ulong numfreeblocks[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
-	/* total # of allocated bytes in used and full pools */
-	ulong allocated_bytes = 0;
-	/* total # of available bytes in used pools */
-	ulong available_bytes = 0;
-	/* # of free pools + pools not yet carved out of current arena */
-	uint numfreepools = 0;
-	/* # of bytes for arena alignment padding */
-	ulong arena_alignment = 0;
-	/* # of bytes in used and full pools used for pool_headers */
-	ulong pool_header_bytes = 0;
-	/* # of bytes in used and full pools wasted due to quantization,
-	 * i.e. the necessarily leftover space at the ends of used and
-	 * full pools.
-	 */
-	ulong quantization = 0;
-	/* running total -- should equal narenas * ARENA_SIZE */
-	ulong total;
-	char buf[128];
+    uint i;
+    const uint numclasses = SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT;
+    /* # of pools, allocated blocks, and free blocks per class index */
+    size_t numpools[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
+    size_t numblocks[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
+    size_t numfreeblocks[SMALL_REQUEST_THRESHOLD >> ALIGNMENT_SHIFT];
+    /* total # of allocated bytes in used and full pools */
+    size_t allocated_bytes = 0;
+    /* total # of available bytes in used pools */
+    size_t available_bytes = 0;
+    /* # of free pools + pools not yet carved out of current arena */
+    uint numfreepools = 0;
+    /* # of bytes for arena alignment padding */
+    size_t arena_alignment = 0;
+    /* # of bytes in used and full pools used for pool_headers */
+    size_t pool_header_bytes = 0;
+    /* # of bytes in used and full pools wasted due to quantization,
+     * i.e. the necessarily leftover space at the ends of used and
+     * full pools.
+     */
+    size_t quantization = 0;
+    /* # of arenas actually allocated. */
+    size_t narenas = 0;
+    /* running total -- should equal narenas * ARENA_SIZE */
+    size_t total;
+    char buf[128];
 
-	fprintf(stderr, "Small block threshold = %d, in %u size classes.\n",
-		SMALL_REQUEST_THRESHOLD, numclasses);
+    fprintf(stderr, "Small block threshold = %d, in %u size classes.\n",
+            SMALL_REQUEST_THRESHOLD, numclasses);
 
-	for (i = 0; i < numclasses; ++i)
-		numpools[i] = numblocks[i] = numfreeblocks[i] = 0;
+    for (i = 0; i < numclasses; ++i)
+        numpools[i] = numblocks[i] = numfreeblocks[i] = 0;
 
-	/* Because full pools aren't linked to from anything, it's easiest
-	 * to march over all the arenas.  If we're lucky, most of the memory
-	 * will be living in full pools -- would be a shame to miss them.
-	 */
-	for (i = 0; i < narenas; ++i) {
-		uint poolsinarena;
-		uint j;
-		uptr base = arenas[i];
+    /* Because full pools aren't linked to from anything, it's easiest
+     * to march over all the arenas.  If we're lucky, most of the memory
+     * will be living in full pools -- would be a shame to miss them.
+     */
+    for (i = 0; i < maxarenas; ++i) {
+        uint j;
+        uptr base = arenas[i].address;
 
-		/* round up to pool alignment */
-		poolsinarena = ARENA_SIZE / POOL_SIZE;
-		if (base & (uptr)POOL_SIZE_MASK) {
-			--poolsinarena;
-			arena_alignment += POOL_SIZE;
-			base &= ~(uptr)POOL_SIZE_MASK;
-			base += POOL_SIZE;
-		}
+        /* Skip arenas which are not allocated. */
+        if (arenas[i].address == (uptr)NULL)
+            continue;
+        narenas += 1;
 
-		if (i == narenas - 1) {
-			/* current arena may have raw memory at the end */
-			numfreepools += nfreepools;
-			poolsinarena -= nfreepools;
-		}
+        numfreepools += arenas[i].nfreepools;
 
-		/* visit every pool in the arena */
-		for (j = 0; j < poolsinarena; ++j, base += POOL_SIZE) {
-			poolp p = (poolp)base;
-			const uint sz = p->szidx;
-			uint freeblocks;
+        /* round up to pool alignment */
+        if (base & (uptr)POOL_SIZE_MASK) {
+            arena_alignment += POOL_SIZE;
+            base &= ~(uptr)POOL_SIZE_MASK;
+            base += POOL_SIZE;
+        }
 
-			if (p->ref.count == 0) {
-				/* currently unused */
-				++numfreepools;
-				assert(pool_is_in_list(p, freepools));
-				continue;
-			}
-			++numpools[sz];
-			numblocks[sz] += p->ref.count;
-			freeblocks = NUMBLOCKS(sz) - p->ref.count;
-			numfreeblocks[sz] += freeblocks;
+        /* visit every pool in the arena */
+        assert(base <= (uptr) arenas[i].pool_address);
+        for (j = 0;
+                    base < (uptr) arenas[i].pool_address;
+                    ++j, base += POOL_SIZE) {
+            poolp p = (poolp)base;
+            const uint sz = p->szidx;
+            uint freeblocks;
+
+            if (p->ref.count == 0) {
+                /* currently unused */
+                assert(pool_is_in_list(p, arenas[i].freepools));
+                continue;
+            }
+            ++numpools[sz];
+            numblocks[sz] += p->ref.count;
+            freeblocks = NUMBLOCKS(sz) - p->ref.count;
+            numfreeblocks[sz] += freeblocks;
 #ifdef Py_DEBUG
-			if (freeblocks > 0)
-				assert(pool_is_in_list(p, usedpools[sz + sz]));
+            if (freeblocks > 0)
+                assert(pool_is_in_list(p, usedpools[sz + sz]));
 #endif
-		}
-	}
+        }
+    }
+    assert(narenas == narenas_currently_allocated);
 
-	fputc('\n', stderr);
-	fputs("class   size   num pools   blocks in use  avail blocks\n"
-	      "-----   ----   ---------   -------------  ------------\n",
-		stderr);
+    fputc('\n', stderr);
+    fputs("class   size   num pools   blocks in use  avail blocks\n"
+          "-----   ----   ---------   -------------  ------------\n",
+          stderr);
 
-	for (i = 0; i < numclasses; ++i) {
-		ulong p = numpools[i];
-		ulong b = numblocks[i];
-		ulong f = numfreeblocks[i];
-		uint size = INDEX2SIZE(i);
-		if (p == 0) {
-			assert(b == 0 && f == 0);
-			continue;
-		}
-		fprintf(stderr, "%5u %6u %11lu %15lu %13lu\n",
-			i, size, p, b, f);
-		allocated_bytes += b * size;
-		available_bytes += f * size;
-		pool_header_bytes += p * POOL_OVERHEAD;
-		quantization += p * ((POOL_SIZE - POOL_OVERHEAD) % size);
-	}
-	fputc('\n', stderr);
-	(void)printone("# times object malloc called", serialno);
+    for (i = 0; i < numclasses; ++i) {
+        size_t p = numpools[i];
+        size_t b = numblocks[i];
+        size_t f = numfreeblocks[i];
+        uint size = INDEX2SIZE(i);
+        if (p == 0) {
+            assert(b == 0 && f == 0);
+            continue;
+        }
+        fprintf(stderr, "%5u %6u "
+                        "%11" PY_FORMAT_SIZE_T "u "
+                        "%15" PY_FORMAT_SIZE_T "u "
+                        "%13" PY_FORMAT_SIZE_T "u\n",
+                i, size, p, b, f);
+        allocated_bytes += b * size;
+        available_bytes += f * size;
+        pool_header_bytes += p * POOL_OVERHEAD;
+        quantization += p * ((POOL_SIZE - POOL_OVERHEAD) % size);
+    }
+    fputc('\n', stderr);
+    (void)printone("# times object malloc called", serialno);
 
-	PyOS_snprintf(buf, sizeof(buf),
-		"%u arenas * %d bytes/arena", narenas, ARENA_SIZE);
-	(void)printone(buf, (ulong)narenas * ARENA_SIZE);
+    (void)printone("# arenas allocated total", ntimes_arena_allocated);
+    (void)printone("# arenas reclaimed", ntimes_arena_allocated - narenas);
+    (void)printone("# arenas highwater mark", narenas_highwater);
+    (void)printone("# arenas allocated current", narenas);
 
-	fputc('\n', stderr);
+    PyOS_snprintf(buf, sizeof(buf),
+        "%" PY_FORMAT_SIZE_T "u arenas * %d bytes/arena",
+        narenas, ARENA_SIZE);
+    (void)printone(buf, narenas * ARENA_SIZE);
 
-	total = printone("# bytes in allocated blocks", allocated_bytes);
-	total += printone("# bytes in available blocks", available_bytes);
+    fputc('\n', stderr);
 
-	PyOS_snprintf(buf, sizeof(buf),
-		"%u unused pools * %d bytes", numfreepools, POOL_SIZE);
-	total += printone(buf, (ulong)numfreepools * POOL_SIZE);
+    total = printone("# bytes in allocated blocks", allocated_bytes);
+    total += printone("# bytes in available blocks", available_bytes);
 
-	total += printone("# bytes lost to pool headers", pool_header_bytes);
-	total += printone("# bytes lost to quantization", quantization);
-	total += printone("# bytes lost to arena alignment", arena_alignment);
-	(void)printone("Total", total);
+    PyOS_snprintf(buf, sizeof(buf),
+        "%u unused pools * %d bytes", numfreepools, POOL_SIZE);
+    total += printone(buf, (size_t)numfreepools * POOL_SIZE);
+
+    total += printone("# bytes lost to pool headers", pool_header_bytes);
+    total += printone("# bytes lost to quantization", quantization);
+    total += printone("# bytes lost to arena alignment", arena_alignment);
+    (void)printone("Total", total);
 }
 
-#endif	/* PYMALLOC_DEBUG */
+#endif  /* PYMALLOC_DEBUG */
 
 #ifdef Py_USING_MEMORY_DEBUGGER
-/* Make this function last so gcc won't inline it
-   since the definition is after the reference. */
+/* Make this function last so gcc won't inline it since the definition is
+ * after the reference.
+ */
 int
 Py_ADDRESS_IN_RANGE(void *P, poolp pool)
 {
-	return ((pool->arenaindex) < narenas &&
-		(uptr)(P) - arenas[pool->arenaindex] < (uptr)ARENA_SIZE);
+    uint arenaindex_temp = pool->arenaindex;
+
+    return arenaindex_temp < maxarenas &&
+           (uptr)P - arenas[arenaindex_temp].address < (uptr)ARENA_SIZE &&
+           arenas[arenaindex_temp].address != 0;
 }
 #endif

@@ -2,8 +2,8 @@
    See the file COPYING for copying permission.
 */
 
-#ifndef XmlParse_INCLUDED
-#define XmlParse_INCLUDED 1
+#ifndef Expat_INCLUDED
+#define Expat_INCLUDED 1
 
 #ifdef __VMS
 /*      0        1         2         3      0        1         2         3
@@ -16,6 +16,10 @@
 
 #include <stdlib.h>
 #include "expat_external.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct XML_ParserStruct;
 typedef struct XML_ParserStruct *XML_Parser;
@@ -43,7 +47,7 @@ enum XML_Status {
 #define XML_STATUS_ERROR XML_STATUS_ERROR
   XML_STATUS_OK = 1,
 #define XML_STATUS_OK XML_STATUS_OK
-  XML_STATUS_SUSPENDED = 2,
+  XML_STATUS_SUSPENDED = 2
 #define XML_STATUS_SUSPENDED XML_STATUS_SUSPENDED
 };
 
@@ -87,7 +91,11 @@ enum XML_Error {
   XML_ERROR_NOT_SUSPENDED,
   XML_ERROR_ABORTED,
   XML_ERROR_FINISHED,
-  XML_ERROR_SUSPEND_PE
+  XML_ERROR_SUSPEND_PE,
+  /* Added in 2.0. */
+  XML_ERROR_RESERVED_PREFIX_XML,
+  XML_ERROR_RESERVED_PREFIX_XMLNS,
+  XML_ERROR_RESERVED_NAMESPACE_URI
 };
 
 enum XML_Content_Type {
@@ -205,8 +213,8 @@ XML_ParserCreate(const XML_Char *encoding);
    URI, the namespace separator character, and the local part of the
    name.  If the namespace separator is '\0' then the namespace URI
    and the local part will be concatenated without any separator.
-   When a namespace is not declared, the name and prefix will be
-   passed through without expansion.
+   It is a programming error to use the separator '\0' with namespace
+   triplets (see XML_SetReturnNSTriplet).
 */
 XMLPARSEAPI(XML_Parser)
 XML_ParserCreateNS(const XML_Char *encoding, XML_Char namespaceSeparator);
@@ -734,6 +742,29 @@ XML_GetSpecifiedAttributeCount(XML_Parser parser);
 XMLPARSEAPI(int)
 XML_GetIdAttributeIndex(XML_Parser parser);
 
+#ifdef XML_ATTR_INFO
+/* Source file byte offsets for the start and end of attribute names and values.
+   The value indices are exclusive of surrounding quotes; thus in a UTF-8 source
+   file an attribute value of "blah" will yield:
+   info->valueEnd - info->valueStart = 4 bytes.
+*/
+typedef struct {
+  XML_Index  nameStart;  /* Offset to beginning of the attribute name. */
+  XML_Index  nameEnd;    /* Offset after the attribute name's last byte. */
+  XML_Index  valueStart; /* Offset to beginning of the attribute value. */
+  XML_Index  valueEnd;   /* Offset after the attribute value's last byte. */
+} XML_AttrInfo;
+
+/* Returns an array of XML_AttrInfo structures for the attribute/value pairs
+   passed in last call to the XML_StartElementHandler that were specified
+   in the start-tag rather than defaulted. Each attribute/value pair counts
+   as 1; thus the number of entries in the array is
+   XML_GetSpecifiedAttributeCount(parser) / 2.
+*/
+XMLPARSEAPI(const XML_AttrInfo *)
+XML_GetAttributeInfo(XML_Parser parser);
+#endif
+
 /* Parses some input. Returns XML_STATUS_ERROR if a fatal error is
    detected.  The last call to XML_Parse must have isFinal true; len
    may be zero for this call (or any other).
@@ -875,6 +906,17 @@ XMLPARSEAPI(int)
 XML_SetParamEntityParsing(XML_Parser parser,
                           enum XML_ParamEntityParsing parsing);
 
+/* Sets the hash salt to use for internal hash calculations.
+   Helps in preventing DoS attacks based on predicting hash
+   function behavior. This must be called before parsing is started.
+   Returns 1 if successful, 0 when called after parsing has started.
+*/
+XMLPARSEAPI(int)
+XML_SetHashSalt(XML_Parser parser,
+                unsigned long hash_salt);
+
+#define XML_HAS_SET_HASH_SALT  /* Python Only: Defined for pyexpat.c. */
+
 /* If XML_Parse or XML_ParseBuffer have returned XML_STATUS_ERROR, then
    XML_GetErrorCode returns information about the error.
 */
@@ -897,9 +939,9 @@ XML_GetErrorCode(XML_Parser parser);
    was detected; otherwise the location is the location of the last
    parse event, as described above.
 */
-XMLPARSEAPI(int) XML_GetCurrentLineNumber(XML_Parser parser);
-XMLPARSEAPI(int) XML_GetCurrentColumnNumber(XML_Parser parser);
-XMLPARSEAPI(long) XML_GetCurrentByteIndex(XML_Parser parser);
+XMLPARSEAPI(XML_Size) XML_GetCurrentLineNumber(XML_Parser parser);
+XMLPARSEAPI(XML_Size) XML_GetCurrentColumnNumber(XML_Parser parser);
+XMLPARSEAPI(XML_Index) XML_GetCurrentByteIndex(XML_Parser parser);
 
 /* Return the number of bytes in the current event.
    Returns 0 if the event is in an internal entity.
@@ -974,7 +1016,10 @@ enum XML_FeatureEnum {
   XML_FEATURE_CONTEXT_BYTES,
   XML_FEATURE_MIN_SIZE,
   XML_FEATURE_SIZEOF_XML_CHAR,
-  XML_FEATURE_SIZEOF_XML_LCHAR
+  XML_FEATURE_SIZEOF_XML_LCHAR,
+  XML_FEATURE_NS,
+  XML_FEATURE_LARGE_SIZE,
+  XML_FEATURE_ATTR_INFO
   /* Additional features must be added to the end of this enum. */
 };
 
@@ -993,12 +1038,12 @@ XML_GetFeatureList(void);
    releases. Micro is bumped with each release, and set to 0 with each
    change to major or minor version.
 */
-#define XML_MAJOR_VERSION 1
-#define XML_MINOR_VERSION 95
-#define XML_MICRO_VERSION 8
+#define XML_MAJOR_VERSION 2
+#define XML_MINOR_VERSION 1
+#define XML_MICRO_VERSION 0
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* not XmlParse_INCLUDED */
+#endif /* not Expat_INCLUDED */

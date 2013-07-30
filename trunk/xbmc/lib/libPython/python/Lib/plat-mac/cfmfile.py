@@ -5,6 +5,10 @@
 __version__ = "0.8b3"
 __author__ = "jvr"
 
+import warnings
+warnings.warnpy3k("the cfmfile module is deprecated and is removed in 3,0",
+              stacklevel=2)
+
 import Carbon.File
 import struct
 from Carbon import Res
@@ -73,7 +77,7 @@ class CfrgResource:
                 Res.CloseResFile(resref)
                 Res.UseResFile(currentresref)
             self.parse(data)
-            if self.version <> 1:
+            if self.version != 1:
                 raise error, "unknown 'cfrg' resource format"
 
     def parse(self, data):
@@ -143,7 +147,7 @@ class FragmentDescriptor:
         return data
 
     def getfragment(self):
-        if self.where <> 1:
+        if self.where != 1:
             raise error, "can't read fragment, unsupported location"
         f = open(self.path, "rb")
         f.seek(self.offset)
@@ -155,7 +159,7 @@ class FragmentDescriptor:
         return frag
 
     def copydata(self, outfile):
-        if self.where <> 1:
+        if self.where != 1:
             raise error, "can't read fragment, unsupported location"
         infile = open(self.path, "rb")
         if self.length == 0:

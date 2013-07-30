@@ -8,6 +8,10 @@
 #include "winconfig.h"
 #elif defined(MACOS_CLASSIC)
 #include "macconfig.h"
+#elif defined(__amigaos__)
+#include "amigaconfig.h"
+#elif defined(__WATCOMC__)
+#include "watcomconfig.h"
 #else
 #ifdef HAVE_EXPAT_CONFIG_H
 #include <expat_config.h>
@@ -293,7 +297,9 @@ sb_charMatches(const ENCODING *enc, const char *p, int c)
 #endif
 
 #define PREFIX(ident) normal_ ## ident
+#define XML_TOK_IMPL_C
 #include "xmltok_impl.c"
+#undef XML_TOK_IMPL_C
 
 #undef MINBPC
 #undef BYTE_TYPE
@@ -690,7 +696,9 @@ little2_isNmstrtMin(const ENCODING *enc, const char *p)
 #define IS_NMSTRT_CHAR(enc, p, n) (0)
 #define IS_NMSTRT_CHAR_MINBPC(enc, p) LITTLE2_IS_NMSTRT_CHAR_MINBPC(enc, p)
 
+#define XML_TOK_IMPL_C
 #include "xmltok_impl.c"
+#undef XML_TOK_IMPL_C
 
 #undef MINBPC
 #undef BYTE_TYPE
@@ -829,7 +837,9 @@ big2_isNmstrtMin(const ENCODING *enc, const char *p)
 #define IS_NMSTRT_CHAR(enc, p, n) (0)
 #define IS_NMSTRT_CHAR_MINBPC(enc, p) BIG2_IS_NMSTRT_CHAR_MINBPC(enc, p)
 
+#define XML_TOK_IMPL_C
 #include "xmltok_impl.c"
+#undef XML_TOK_IMPL_C
 
 #undef MINBPC
 #undef BYTE_TYPE
@@ -1335,7 +1345,7 @@ unknown_toUtf16(const ENCODING *enc,
 ENCODING *
 XmlInitUnknownEncoding(void *mem,
                        int *table,
-                       CONVERTER convert, 
+                       CONVERTER convert,
                        void *userData)
 {
   int i;
@@ -1451,7 +1461,7 @@ static const char KW_UTF_16LE[] = {
 static int FASTCALL
 getEncodingIndex(const char *name)
 {
-  static const char *encodingNames[] = {
+  static const char * const encodingNames[] = {
     KW_ISO_8859_1,
     KW_US_ASCII,
     KW_UTF_8,
@@ -1484,7 +1494,7 @@ getEncodingIndex(const char *name)
 
 
 static int
-initScan(const ENCODING **encodingTable,
+initScan(const ENCODING * const *encodingTable,
          const INIT_ENCODING *enc,
          int state,
          const char *ptr,
@@ -1574,7 +1584,7 @@ initScan(const ENCODING **encodingTable,
       if (ptr[0] == '\0') {
         /* 0 isn't a legal data character. Furthermore a document
            entity can only start with ASCII characters.  So the only
-           way this can fail to be big-endian UTF-16 if it it's an
+           way this can fail to be big-endian UTF-16 is if it is an
            external parsed general entity that's labelled as
            UTF-16LE.
         */
@@ -1608,7 +1618,9 @@ initScan(const ENCODING **encodingTable,
 
 #define NS(x) x
 #define ns(x) x
+#define XML_TOK_NS_C
 #include "xmltok_ns.c"
+#undef XML_TOK_NS_C
 #undef NS
 #undef ns
 
@@ -1617,7 +1629,9 @@ initScan(const ENCODING **encodingTable,
 #define NS(x) x ## NS
 #define ns(x) x ## _ns
 
+#define XML_TOK_NS_C
 #include "xmltok_ns.c"
+#undef XML_TOK_NS_C
 
 #undef NS
 #undef ns
@@ -1625,7 +1639,7 @@ initScan(const ENCODING **encodingTable,
 ENCODING *
 XmlInitUnknownEncodingNS(void *mem,
                          int *table,
-                         CONVERTER convert, 
+                         CONVERTER convert,
                          void *userData)
 {
   ENCODING *enc = XmlInitUnknownEncoding(mem, table, convert, userData);

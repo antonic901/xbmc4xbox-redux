@@ -113,7 +113,7 @@ extern "C" void __stdcall init_emu_environ()
 #else
   dll_putenv("OS=unknown");
 #endif
-  dll_putenv("PYTHONPATH=Q:\\system\\python\\python24.zlib;Q:\\system\\python\\DLLs;Q:\\system\\python\\Lib;Q:\\system\\python\\spyce");
+  dll_putenv("PYTHONPATH=Q:\\system\\python\\python27.zlib;Q:\\system\\python\\DLLs;Q:\\system\\python\\Lib;Q:\\system\\python\\spyce");
   dll_putenv("PYTHONHOME=Q:\\system\\python");
   dll_putenv("PATH=.;Q:\\;Q:\\system\\python");
   //dll_putenv("PYTHONCASEOK=1");

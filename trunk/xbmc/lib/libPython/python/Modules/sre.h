@@ -14,16 +14,26 @@
 #include "sre_constants.h"
 
 /* size of a code word (must be unsigned short or larger, and
-   large enough to hold a Py_UNICODE character) */
-#ifdef Py_UNICODE_WIDE
-#define SRE_CODE Py_UCS4
+   large enough to hold a UCS4 character) */
+#ifdef Py_USING_UNICODE
+# define SRE_CODE Py_UCS4
+# if SIZEOF_SIZE_T > 4
+#  define SRE_MAXREPEAT (~(SRE_CODE)0)
+# else
+#  define SRE_MAXREPEAT ((SRE_CODE)PY_SSIZE_T_MAX + 1u)
+# endif
 #else
-#define SRE_CODE unsigned short
+# define SRE_CODE unsigned long
+# if SIZEOF_SIZE_T > SIZEOF_LONG
+#  define SRE_MAXREPEAT (~(SRE_CODE)0)
+# else
+#  define SRE_MAXREPEAT ((SRE_CODE)PY_SSIZE_T_MAX + 1u)
+# endif
 #endif
 
 typedef struct {
     PyObject_VAR_HEAD
-    int groups; /* must be first! */
+    Py_ssize_t groups; /* must be first! */
     PyObject* groupindex;
     PyObject* indexgroup;
     /* compatibility */
@@ -31,7 +41,7 @@ typedef struct {
     int flags; /* flags used when compiling pattern source */
     PyObject *weakreflist; /* List of weak references */
     /* pattern code */
-    int codesize;
+    Py_ssize_t codesize;
     SRE_CODE code[1];
 } PatternObject;
 
@@ -42,10 +52,10 @@ typedef struct {
     PyObject* string; /* link to the target string (must be first) */
     PyObject* regs; /* cached list of matching spans */
     PatternObject* pattern; /* link to the regex (pattern) object */
-    int pos, endpos; /* current target slice */
-    int lastindex; /* last index marker seen by the engine (-1 if none) */
-    int groups; /* number of groups (start/end marks) */
-    int mark[1];
+    Py_ssize_t pos, endpos; /* current target slice */
+    Py_ssize_t lastindex; /* last index marker seen by the engine (-1 if none) */
+    Py_ssize_t groups; /* number of groups (start/end marks) */
+    Py_ssize_t mark[1];
 } MatchObject;
 
 typedef unsigned int (*SRE_TOLOWER_HOOK)(unsigned int ch);
@@ -54,7 +64,7 @@ typedef unsigned int (*SRE_TOLOWER_HOOK)(unsigned int ch);
 #define SRE_MARK_SIZE 200
 
 typedef struct SRE_REPEAT_T {
-    int count;
+    Py_ssize_t count;
     SRE_CODE* pattern; /* points to REPEAT operator arguments */
     void* last_ptr; /* helper to check for infinite loops */
     struct SRE_REPEAT_T *prev; /* points to previous repeat context */
@@ -68,17 +78,17 @@ typedef struct {
     void* end; /* end of original string */
     /* attributes for the match object */
     PyObject* string;
-    int pos, endpos;
+    Py_ssize_t pos, endpos;
     /* character size */
     int charsize;
     /* registers */
-    int lastindex;
-    int lastmark;
+    Py_ssize_t lastindex;
+    Py_ssize_t lastmark;
     void* mark[SRE_MARK_SIZE];
     /* dynamically allocated stuff */
     char* data_stack;
-    unsigned int data_stack_size;
-    unsigned int data_stack_base;
+    size_t data_stack_size;
+    size_t data_stack_base;
     /* current repeat context */
     SRE_REPEAT *repeat;
     /* hooks */
