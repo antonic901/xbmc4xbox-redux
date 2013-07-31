@@ -1604,9 +1604,12 @@ posix_do_stat(PyObject *self, PyObject *args,
     char *pathfree = NULL;  /* this memory must be free'd */
     int res;
     PyObject *result;
+#ifdef _XBOX
+	int pathlen;
+	char pathcopy[MAX_PATH];
+#endif
 
-#ifndef _XBOX
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
     PyUnicodeObject *po;
     if (PyArg_ParseTuple(args, wformat, &po)) {
         Py_UNICODE *wpath = PyUnicode_AS_UNICODE(po);
@@ -1625,12 +1628,47 @@ posix_do_stat(PyObject *self, PyObject *args,
        are also valid. */
     PyErr_Clear();
 #endif
-#endif
 
     if (!PyArg_ParseTuple(args, format,
                           Py_FileSystemDefaultEncoding, &path))
         return NULL;
     pathfree = path;
+
+#ifdef _XBOX
+	pathlen = strlen(path);
+	/* the library call can blow up if the file name is too long! */
+	if (pathlen > MAX_PATH) {
+		PyMem_Free(pathfree);
+		errno = ENAMETOOLONG;
+		return posix_error();
+	}
+
+	/* Remove trailing slash or backslash, unless it's the current
+	   drive root (/ or \) or a specific drive's root (like c:\ or c:/).
+	*/
+	if (pathlen > 0) {
+		if (ISSLASHA(path[pathlen-1])) {
+			/* It does end with a slash -- exempt the root drive cases. */
+			if (pathlen == 1 || (pathlen == 3 && path[1] == ':') ||
+				IsUNCRootA(path, pathlen))
+	    			/* leave it alone */;
+			else {
+				/* nuke the trailing backslash */
+				strncpy(pathcopy, path, pathlen);
+				pathcopy[pathlen-1] = '\0';
+				path = pathcopy;
+			}
+		}
+		else if (ISSLASHA(path[1]) && pathlen < ARRAYSIZE(pathcopy)-1 &&
+			IsUNCRootA(path, pathlen)) {
+			/* UNC root w/o trailing slash: add one when there's room */
+			strncpy(pathcopy, path, pathlen);
+			pathcopy[pathlen++] = '\\';
+			pathcopy[pathlen] = '\0';
+			path = pathcopy;
+		}
+	}
+#endif
 
     Py_BEGIN_ALLOW_THREADS
     res = (*statfunc)(path, &st);
