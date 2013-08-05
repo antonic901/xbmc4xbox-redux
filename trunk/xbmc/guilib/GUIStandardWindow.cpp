@@ -24,7 +24,7 @@
 #include "GUIWindowManager.h"
 #include "settings/AdvancedSettings.h"
 
-CGUIStandardWindow::CGUIStandardWindow(void) : CGUIWindow(0, "")
+CGUIStandardWindow::CGUIStandardWindow(int id, const CStdString &xmlFile) : CGUIWindow(id, xmlFile)
 {
 }
 
