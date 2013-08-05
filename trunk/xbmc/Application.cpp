@@ -195,6 +195,7 @@
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "dialogs/GUIDialogSlider.h"
 #include "cores/dlgcache.h"
+#include "guilib/GUIControlFactory.h"
 
 #ifdef _LINUX
 #include "XHandle.h"
@@ -2081,6 +2082,9 @@ bool CApplication::LoadUserWindows()
         if (pType && pType->FirstChild())
           id = atol(pType->FirstChild()->Value());
       }
+      int visibleCondition = 0;
+      CGUIControlFactory::GetConditionalVisibility(pRootElement, visibleCondition);
+
       if (strType.Equals("dialog"))
         pWindow = new CGUIDialog(id, FindFileData.cFileName);
       else if (strType.Equals("submenu"))
@@ -2101,6 +2105,7 @@ bool CApplication::LoadUserWindows()
         delete pWindow;
         continue;
       }
+      pWindow->SetVisibleCondition(visibleCondition, false);
       g_windowManager.AddCustomWindow(pWindow);
     }
     CloseHandle(hFind);
