@@ -17,7 +17,7 @@ SET XBE_PATCH=tools\xbepatch\xbepatch.exe
 
 SET COMPRESS_FILE=XBMC4XBOX.zip
 SET COMPRESS=C:\Program Files\7-zip\7z.exe
-SET COMPRESS_OPTS=a %COMPRESS_FILE% -r
+SET COMPRESS_OPTS=a %COMPRESS_FILE%
 
 SET Silent=0
 SET SkipCompression=0
@@ -269,6 +269,7 @@ GOTO:EOF
   
 :VIEWLOG
   SET /P XBMC_BUILD_ANSWER=View the build log in your HTML browser? [y/n]
-  if /I %XBMC_BUILD_ANSWER% NEQ y GOTO:EOF
-  start /D"%~dp0%VS_PATH%\%VS_CONF%" BuildLog.htm"
+  if /I "%XBMC_BUILD_ANSWER%" EQU "y" (
+    start /D"%~dp0%VS_PATH%\%VS_CONF%" BuildLog.htm"
+  )
   GOTO:EOF
