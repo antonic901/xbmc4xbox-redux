@@ -31,16 +31,21 @@ class Addon:
         cwd = self._get_root_dir( sysargv[0] )
         parts = id.split( '.' )
 
+        xbmc.log( "xbmcaddon: cwd = " + cwd, xbmc.LOGDEBUG )
+        xbmc.log( "xbmcaddon: id  = " + id,  xbmc.LOGDEBUG )
+
         # search locations for the addon
-        locations = [
-            cwd, # current directory
-            "%s/%s" % (cwd, id), # subdirectory in current directory
-            "Q:\scripts\.modules\%s" % ( id ) # script modules
-        ]
+        locations = []
+        if cwd:
+            locations.append(cwd)                            # current directory
+            locations.append("%s/%s" % (cwd, id))            # subdirectory in current directory
+        locations.append("Q:\scripts\.modules\%s" % ( id ))  # script modules
 
         # plugin.music|video|etc.something addons
         if len( parts ) == 3 and parts[ 0 ] == "plugin":
-            locations.append("plugin://%s/%s" % ( parts[ 0 ], parts[ 1 ] ))
+            locations.append("plugin://%s/%s" % ( parts[ 1 ], parts[ 2 ] ))
+
+        xbmc.log( "xbmcaddon: locations = " + str(locations), xbmc.LOGDEBUG )
 
         for location in locations:
             if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
