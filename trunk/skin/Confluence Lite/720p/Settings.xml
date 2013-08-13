@@ -196,7 +196,7 @@
 				<height>446</height>
 				<aspectratio>stretch</aspectratio>
 				<fadetime>600</fadetime>
-				<texture background="true">special://skin/backgrounds/settings.jpg</texture>
+				<texture background="true">special://skin/backgrounds/$INFO[Skin.CurrentTheme]/settings.jpg</texture>
 			</control>
 			<control type="image">
 				<posx>272</posx>

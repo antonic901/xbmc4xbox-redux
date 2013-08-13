@@ -13,14 +13,17 @@ Echo exclude.txt>>exclude.txt
 ECHO ----------------------------------------
 ECHO Creating XPR File...
 START /B /WAIT ..\..\Tools\XBMCTex\XBMCTex -input media -output media -noprotect
+START /B /WAIT ..\..\Tools\XBMCTex\XBMCTex -input themes/green -output themes -noprotect
 
 ECHO ----------------------------------------
 ECHO Copying XPR File...
 xcopy "media\Textures.xpr" "BUILD\Confluence Lite\media\" /Q /I /Y
+copy "themes\Textures.xpr" "BUILD\Confluence Lite\media\Green.xpr"
 
 ECHO ----------------------------------------
 ECHO Cleaning Up...
 del "media\Textures.xpr"
+del "themes\Textures.xpr"
 
 ECHO ----------------------------------------
 ECHO XPR Texture Files Created...
