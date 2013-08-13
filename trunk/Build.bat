@@ -221,12 +221,12 @@ GOTO:EOF
   )
 
   cd "skin\PM3.HD"
-  rem CALL build.bat
+  CALL build.bat
   cd ..\..
   xcopy "skin\PM3.HD\BUILD\PM3.HD" "%~1\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
 
   cd "skin\Confluence Lite"
-  rem CALL build.bat
+  CALL build.bat
   cd ..\..
   xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "%~1\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
 
