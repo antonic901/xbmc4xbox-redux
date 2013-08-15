@@ -220,16 +220,26 @@ GOTO:EOF
     ECHO subst q: /D >>%RUN_ME%
   )
 
+  cd "skin\Project Mayhem III"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Project Mayhem III\BUILD\Project Mayhem III" "%~1\skin\Project Mayhem III" /E /Q /I /Y /EXCLUDE:exclude.txt
+
   cd "skin\PM3.HD"
   CALL build.bat
   cd ..\..
   xcopy "skin\PM3.HD\BUILD\PM3.HD" "%~1\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
 
+  cd "skin\Confluence"
+  CALL build.bat
+  cd ..\..
+  xcopy "skin\Confluence\BUILD\Confluence" "%~1\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
+
   cd "skin\Confluence Lite"
   CALL build.bat
   cd ..\..
   xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "%~1\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
-
+  
   xcopy credits %~1\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language %~1\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers %~1\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
