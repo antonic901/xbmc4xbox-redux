@@ -1551,13 +1551,13 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
 
   case SKIN_THEME:
     if (g_guiSettings.GetString("lookandfeel.skintheme").Equals("skindefault"))
-      strLabel = g_localizeStrings.Get(15109);
+      strLabel = "skindefault";
     else
       strLabel = g_guiSettings.GetString("lookandfeel.skintheme");
     break;
   case SKIN_COLOUR_THEME:
     if (g_guiSettings.GetString("lookandfeel.skincolors").Equals("skindefault"))
-      strLabel = g_localizeStrings.Get(15109);
+      strLabel = "skindefault";
     else
       strLabel = g_guiSettings.GetString("lookandfeel.skincolors");
     break;
