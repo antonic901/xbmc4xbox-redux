@@ -198,6 +198,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
 
     CJpegIO jpegImage;
     DllImageLib dll;
+    bool ret;
 
     CStdString tempFile(sourceUrl);
     bool isTemp(false);
@@ -212,20 +213,21 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       isTemp = true;
     }
 
+    ret = false;
     if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))
+      ret = jpegImage.CreateThumbnail(tempFile, destFile, width, height);
+
+    if (!ret)
     {
-      if (!jpegImage.CreateThumbnail(tempFile, destFile, width, height))
+      if (!dll.Load()) return false;
+      if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
       {
-        if (!dll.Load()) return false;
-        if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
-        {
-          CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
-          return false;
-        }
+        CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
+        return false;
       }
-      if (isTemp)
-        CFile::Delete(tempFile);
     }
+    if (isTemp)
+      CFile::Delete(tempFile);
   }
   else
   {
