@@ -138,10 +138,10 @@
 			<RegExp conditional="tmdbthumbs" input="$$2" output="&lt;url function=&quot;GetTMDBThumbsById&quot;&gt;$$3&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-			<RegExp conditional="impawards" input="$$2" output="&lt;url cache=&quot;$$2-posters.html&quot; function=&quot;GetIMPALink&quot;&gt;$$3posters&lt;/url&gt;" dest="5+">
+			<RegExp conditional="impawards" input="$$2" output="&lt;url cache=&quot;$$2-impawards.html&quot; function=&quot;GetIMPALink&quot;&gt;$$3posters&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-			<RegExp conditional="movieposterdb" input="$$1" output="&lt;url function=&quot;GetMoviePosterDBLink&quot;&gt;http://www.movieposterdb.com/browse/search?type=movies&amp;amp;query=\1&lt;/url&gt;" dest="5+">
+			<RegExp conditional="movieposterdb" input="$$1" output="&lt;url function=&quot;GetMoviePosterDBLink&quot;&gt;http://www.movieposterdb.com/search?type=movies&amp;amp;query=\1&lt;/url&gt;" dest="5+">
 				<expression >/title/tt([t0-9]*)/faq</expression>
 			</RegExp>
 			<RegExp conditional="trailer" input="$$1" output="&lt;url function=&quot;GetIMDBTrailer&quot;&gt;http://akas.imdb.com/video/imdb/vi\1/player&lt;/url&gt;" dest="5+">
@@ -156,7 +156,7 @@
 				</RegExp>
 				<expression />
 			</RegExp>
-			<RegExp input="$$2" output="&lt;url cache=&quot;$$2-posters.html&quot; function=&quot;GetIMDBThumbs&quot;&gt;$$3posters&lt;/url&gt;" dest="5+">
+			<RegExp input="$$2" output="&lt;url cache=&quot;$$2-posters.html&quot; function=&quot;GetIMDBThumbs&quot;&gt;$$3mediaindex?refine=poster&amp;ref_=ttmi_ref_pos&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
 			<RegExp conditional="fanart" input="$$2" output="&lt;url function=&quot;GetTMDBFanartById&quot;&gt;$$3&lt;/url&gt;" dest="5+">

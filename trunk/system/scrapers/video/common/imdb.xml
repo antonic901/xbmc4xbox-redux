@@ -1,11 +1,11 @@
 <scraperfunctions>
 	<GetIMDBThumbs dest="5">
 		<RegExp input="$$6" output="&lt;details&gt;\1&lt;/details&gt;" dest="5">
-			<RegExp input="$$1" output="\1_SX$INFO[imdbscale]_SY$INFO[imdbscale]_\2" dest="4">
-				<expression noclean="1,2">&lt;a name=&quot;poster&quot;.*?src=&quot;(.*?)_S.*?(.jpg)&quot;.*?&lt;/a&gt;</expression>
+			<RegExp input="$$1" output="&lt;thumb&gt;\1_SX$INFO[imdbscale]_SY$INFO[imdbscale]_\2&lt;/thumb&gt;" dest="6">
+				<expression noclean="1,2">&lt;img.*?class=&quot;poster&quot;.*?src=&quot;([^&quot;]*?)_S[^&quot;]*?(.jpg)&quot;</expression>
 			</RegExp>
-			<RegExp input="$$4" output="&lt;thumb&gt;\1&lt;/thumb&gt;" dest="6">
-				<expression noclean="1">(.*?_SX[0-9]+_SY[0-9]+_.jpg)</expression>
+			<RegExp input="$$1" output="&lt;thumb&gt;\1_SX$INFO[imdbscale]_SY$INFO[imdbscale]_\2&lt;/thumb&gt;" dest="6+">
+				<expression repeat="yes" noclean="1">&lt;a href=.*?itemprop=.thumbnailUrl.*?src=&quot;([^&quot;]*?)_S[^&quot;]*?(.jpg)&quot;</expression>
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
@@ -106,7 +106,7 @@
 	<GetIMDBPlot dest="5">
 		<RegExp input="$$2" output="&lt;details&gt;\1&lt;/details&gt;" dest="5">
 			<RegExp input="$$1" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="2">
-				<expression clear="yes">&lt;p class="plotpar"&gt;\n([^\n]*)</expression>
+				<expression clear="yes">&lt;div class="desc"&gt;.*?&lt;p&gt;\n([^\n]*)</expression>
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
