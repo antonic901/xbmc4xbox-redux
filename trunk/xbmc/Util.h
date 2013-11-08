@@ -128,7 +128,7 @@ public:
   static void PlayDVD();
   static CStdString GetNextFilename(const CStdString &fn_template, int max);
   static void TakeScreenshot();
-  static void TakeScreenshot(const char* fn, bool flash);
+  static void TakeScreenshot(const CStdString& strFileName, bool flash);
   static void SetBrightnessContrastGamma(float Brightness, float Contrast, float Gamma, bool bImmediate);
   static void SetBrightnessContrastGammaPercent(float brightness, float contrast, float gamma, bool immediate);
   static void Tokenize(const CStdString& path, std::vector<CStdString>& tokens, const std::string& delimiters);

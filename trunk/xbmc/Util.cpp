@@ -2138,11 +2138,11 @@ void CUtil::FlashScreen(bool bImmediate, bool bOn)
   g_graphicsContext.Unlock();
 }
 
-void CUtil::TakeScreenshot(const char* fn, bool flashScreen)
+void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
 {
     LPDIRECT3DSURFACE8 lpSurface = NULL;
-
     g_graphicsContext.Lock();
+    CStdString strFileNameTranslated = CSpecialProtocol::TranslatePath(strFileName);
     if (g_application.IsPlayingVideo())
     {
 #ifdef HAS_VIDEO_PLAYBACK
@@ -2168,13 +2168,18 @@ void CUtil::TakeScreenshot(const char* fn, bool flashScreen)
     if (SUCCEEDED(g_graphicsContext.Get3DDevice()->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &lpSurface)))
 #endif
     {
-      if (FAILED(XGWriteSurfaceToFile(lpSurface, _P(fn).c_str())))
+      if (FAILED(XGWriteSurfaceToFile(lpSurface, strFileNameTranslated.c_str())))
       {
         CLog::Log(LOGERROR, "Failed to Generate Screenshot");
       }
       else
       {
-        CLog::Log(LOGINFO, "Screen shot saved as %s", fn);
+        // hack - need to add it manually to the directory cache for both the special:// and the mapped
+        // folder due to CFile::Open on a special:// path being checked against both. Ideally we would use
+        // the XBMC Fileystem for writing the file. TODO.
+        g_directoryCache.AddFile(strFileName);
+        g_directoryCache.AddFile(strFileNameTranslated);
+        CLog::Log(LOGINFO, "Screen shot saved as %s", strFileNameTranslated.c_str());
       }
       lpSurface->Release();
     }
