@@ -27,16 +27,16 @@ using namespace XFILE;
 //////////////////////////////////////////////////////////////////////
 
 //*********************************************************************************************
-CFileSndtrk::CFileSndtrk()
+CSndtrkFile::CSndtrkFile()
     : m_hFile(INVALID_HANDLE_VALUE)
 {}
 
 //*********************************************************************************************
-CFileSndtrk::~CFileSndtrk()
+CSndtrkFile::~CSndtrkFile()
 {
 }
 //*********************************************************************************************
-bool CFileSndtrk::Open(const CURL& url)
+bool CSndtrkFile::Open(const CURL& url)
 {
   m_hFile.attach( CreateFile(url.GetFileName(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
   if ( !m_hFile.isValid() ) return false;
@@ -50,7 +50,7 @@ bool CFileSndtrk::Open(const CURL& url)
   return true;
 }
 //*********************************************************************************************
-bool CFileSndtrk::OpenForWrite(const char* strFileName)
+bool CSndtrkFile::OpenForWrite(const char* strFileName)
 {
   m_hFile.attach(CreateFile(strFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
   if (!m_hFile.isValid()) return false;
@@ -65,7 +65,7 @@ bool CFileSndtrk::OpenForWrite(const char* strFileName)
 }
 
 //*********************************************************************************************
-unsigned int CFileSndtrk::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CSndtrkFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return 0;
   DWORD nBytesRead;
@@ -78,7 +78,7 @@ unsigned int CFileSndtrk::Read(void *lpBuf, int64_t uiBufSize)
 }
 
 //*********************************************************************************************
-unsigned int CFileSndtrk::Write(void *lpBuf, int64_t uiBufSize)
+unsigned int CSndtrkFile::Write(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return 0;
   DWORD nBytesWriten;
@@ -90,13 +90,13 @@ unsigned int CFileSndtrk::Write(void *lpBuf, int64_t uiBufSize)
 }
 
 //*********************************************************************************************
-void CFileSndtrk::Close()
+void CSndtrkFile::Close()
 {
   m_hFile.reset();
 }
 
 //*********************************************************************************************
-int64_t CFileSndtrk::Seek(int64_t iFilePosition, int iWhence)
+int64_t CSndtrkFile::Seek(int64_t iFilePosition, int iWhence)
 {
   LARGE_INTEGER lPos, lNewPos;
   lPos.QuadPart = iFilePosition;
@@ -121,7 +121,7 @@ int64_t CFileSndtrk::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileSndtrk::GetLength()
+int64_t CSndtrkFile::GetLength()
 {
   LARGE_INTEGER i64Size;
   GetFileSizeEx((HANDLE)m_hFile, &i64Size);
@@ -131,13 +131,13 @@ int64_t CFileSndtrk::GetLength()
 }
 
 //*********************************************************************************************
-int64_t CFileSndtrk::GetPosition()
+int64_t CSndtrkFile::GetPosition()
 {
   return m_i64FilePos;
 }
 
 
-int CFileSndtrk::Write(const void* lpBuf, int64_t uiBufSize)
+int CSndtrkFile::Write(const void* lpBuf, int64_t uiBufSize)
 {
   if (!m_hFile.isValid()) return -1;
   DWORD dwNumberOfBytesWritten = 0;

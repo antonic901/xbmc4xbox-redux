@@ -24,13 +24,13 @@
 namespace XFILE
 {
 
-CFileLastFM::CFileLastFM() : CCurlFile()
+CLastFMFile::CLastFMFile() : CCurlFile()
 {
   SetUserAgent("");
   SetBufferSize(8192);
 }
 
-CFileLastFM::~CFileLastFM()
+CLastFMFile::~CLastFMFile()
 {
 }
 

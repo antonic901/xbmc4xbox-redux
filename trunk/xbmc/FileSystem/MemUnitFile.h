@@ -25,11 +25,11 @@ class IFileSystem;
 
 namespace XFILE
 {
-  class CFileMemUnit : public IFile
+  class CMemUnitFile : public IFile
   {
   public:
-    CFileMemUnit();
-    virtual ~CFileMemUnit();
+    CMemUnitFile();
+    virtual ~CMemUnitFile();
     virtual int64_t GetPosition();
     virtual int64_t GetLength();
     virtual bool Open(const CURL& url);

@@ -1593,13 +1593,25 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\CDDADirectory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\CDDADirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\CDDAFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\CDDAFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\cddb.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\cddb.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\cdioSupport.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\cdioSupport.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\CircularCache.cpp">
@@ -1635,6 +1647,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\Directory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\Directory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\DirectoryCache.cpp">
 				</File>
 				<File
@@ -1642,6 +1657,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\Directoryfactory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\Directoryfactory.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\DirectoryHistory.cpp">
@@ -1675,6 +1693,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\FileFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\FileFactory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileItem.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\FileReaderFile.cpp">
@@ -1743,7 +1767,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\ISO9660Directory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\ISO9660Directory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\ISOFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\ISOFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\LastFMDirectory.cpp">
@@ -1896,7 +1926,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\ShoutcastFile.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\ShoutcastFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\ShoutcastRipFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\ShoutcastRipFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\SIDFileDirectory.cpp">
@@ -1926,7 +1962,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\SMBDirectory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\SMBDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\SmbFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\SmbFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\SndtrkDirectory.cpp">
@@ -1998,6 +2040,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\VirtualDirectory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\VirtualDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\VirtualPathDirectory.cpp">
 				</File>
 				<File
@@ -2007,7 +2052,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\XBMSDirectory.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\XBMSDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\XBMSPFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\XBMSPFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\zconf.h">
@@ -2823,15 +2874,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\input\ButtonTranslator.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\FileSystem\CDDADirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\CDDAFile.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\cddb.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\Cdg.h">
 			</File>
 			<File
@@ -2839,9 +2881,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\CdgVoiceManager.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\cdioSupport.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\CharsetConverter.h">
@@ -2866,12 +2905,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\storage\DetectDVDType.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\Directory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\Directoryfactory.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\DirectoryHistory.h">
@@ -2914,12 +2947,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\File.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\FileFactory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileItem.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\FilterFlickerPatch.h">
@@ -3126,12 +3153,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\iso9660.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\FileSystem\ISO9660Directory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\ISOFile.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
 			</File>
 			<File
@@ -3264,19 +3285,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\Shortcut.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\FileSystem\ShoutcastFile.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\ShoutcastRipFile.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\SingleLock.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\SMBDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\SmbFile.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Sntp.h">
@@ -3339,9 +3348,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\ViewState.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\FileSystem\VirtualDirectory.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\Weather.h">
 			</File>
 			<File
@@ -3361,12 +3367,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\input\XBIRRemote.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\XBMSDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\XBMSPFile.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\mplayer\xbox_video.h">

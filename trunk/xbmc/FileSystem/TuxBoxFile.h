@@ -24,11 +24,11 @@
 
 namespace XFILE
 {
-  class CFileTuxBox : public IFile
+  class CTuxBoxFile : public IFile
   {
     public:
-      CFileTuxBox();
-      virtual ~CFileTuxBox();
+      CTuxBoxFile();
+      virtual ~CTuxBoxFile();
       virtual int64_t GetPosition();
       virtual int64_t GetLength();
       virtual bool Open(const CURL& url);

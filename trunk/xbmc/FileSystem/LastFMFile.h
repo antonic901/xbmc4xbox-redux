@@ -25,11 +25,11 @@
 namespace XFILE
 {
 
-  class CFileLastFM : public CCurlFile
+  class CLastFMFile : public CCurlFile
   {
   public:
-    CFileLastFM();
-    virtual ~CFileLastFM();
+    CLastFMFile();
+    virtual ~CLastFMFile();
   protected:
   };
 

@@ -18,7 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// ISOFile.h: interface for the CFileISO class.
+// ISOFile.h: interface for the CISOFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -37,11 +37,11 @@
 namespace XFILE
 {
 
-class CFileISO : public IFile
+class CISOFile : public IFile
 {
 public:
-  CFileISO();
-  virtual ~CFileISO();
+  CISOFile();
+  virtual ~CISOFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

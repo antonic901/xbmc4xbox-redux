@@ -17,7 +17,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-// FileXBMSP.h: interface for the CFileXBMSP class.
+// FileXBMSP.h: interface for the CXBMSPFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -39,11 +39,11 @@ extern "C"
 namespace XFILE
 {
 
-class CFileXBMSP : public IFile
+class CXBMSPFile : public IFile
 {
 public:
-  CFileXBMSP();
-  virtual ~CFileXBMSP();
+  CXBMSPFile();
+  virtual ~CXBMSPFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

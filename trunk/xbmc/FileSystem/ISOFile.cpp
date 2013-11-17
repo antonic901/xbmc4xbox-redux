@@ -30,13 +30,13 @@ using namespace XFILE;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 //*********************************************************************************************
-CFileISO::CFileISO()
+CISOFile::CISOFile()
 {
   m_bOpened = false;
 }
 
 //*********************************************************************************************
-CFileISO::~CFileISO()
+CISOFile::~CISOFile()
 {
   if (m_bOpened)
   {
@@ -44,7 +44,7 @@ CFileISO::~CFileISO()
   }
 }
 //*********************************************************************************************
-bool CFileISO::Open(const CURL& url)
+bool CISOFile::Open(const CURL& url)
 {
   string strFName = "\\";
   strFName += url.GetFileName();
@@ -64,7 +64,7 @@ bool CFileISO::Open(const CURL& url)
 }
 
 //*********************************************************************************************
-unsigned int CFileISO::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CISOFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_bOpened) return 0;
   char *pData = (char *)lpBuf;
@@ -103,14 +103,14 @@ unsigned int CFileISO::Read(void *lpBuf, int64_t uiBufSize)
 }
 
 //*********************************************************************************************
-void CFileISO::Close()
+void CISOFile::Close()
 {
   if (!m_bOpened) return ;
   m_isoReader.CloseFile( m_hFile);
 }
 
 //*********************************************************************************************
-int64_t CFileISO::Seek(int64_t iFilePosition, int iWhence)
+int64_t CISOFile::Seek(int64_t iFilePosition, int iWhence)
 {
   if (!m_bOpened) return -1;
   int64_t lNewPos = m_isoReader.Seek(m_hFile, iFilePosition, iWhence);
@@ -120,20 +120,20 @@ int64_t CFileISO::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileISO::GetLength()
+int64_t CISOFile::GetLength()
 {
   if (!m_bOpened) return -1;
   return m_isoReader.GetFileSize(m_hFile);
 }
 
 //*********************************************************************************************
-int64_t CFileISO::GetPosition()
+int64_t CISOFile::GetPosition()
 {
   if (!m_bOpened) return -1;
   return m_isoReader.GetFilePosition(m_hFile);
 }
 
-bool CFileISO::Exists(const CURL& url)
+bool CISOFile::Exists(const CURL& url)
 {
   string strFName = "\\";
   strFName += url.GetFileName();
@@ -149,7 +149,7 @@ bool CFileISO::Exists(const CURL& url)
   return true;
 }
 
-int CFileISO::Stat(const CURL& url, struct __stat64* buffer)
+int CISOFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   string strFName = "\\";
   strFName += url.GetFileName();

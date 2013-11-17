@@ -25,11 +25,11 @@
 
 namespace XFILE
 {
-class CFileCDDA : public IFile
+class CCDDAFile : public IFile
 {
 public:
-  CFileCDDA(void);
-  virtual ~CFileCDDA(void);
+  CCDDAFile(void);
+  virtual ~CCDDAFile(void);
   virtual bool Open(const CURL& url);
   virtual bool Exists(const CURL& url);
   virtual int Stat(const CURL& url, struct __stat64* buffer);

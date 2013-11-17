@@ -17,7 +17,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-// DAAPFile.h: interface for the CFileDAAP class.
+// DAAPFile.h: interface for the CDAAPFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -62,11 +62,11 @@ extern CDaapClient g_DaapClient;
 
 namespace XFILE
 {
-class CFileDAAP : public IFile
+class CDAAPFile : public IFile
 {
 public:
-  CFileDAAP();
-  virtual ~CFileDAAP();
+  CDAAPFile();
+  virtual ~CDAAPFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

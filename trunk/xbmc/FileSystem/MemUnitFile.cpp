@@ -30,18 +30,18 @@ using namespace XFILE;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 //*********************************************************************************************
-CFileMemUnit::CFileMemUnit()
+CMemUnitFile::CMemUnitFile()
 {
   m_fileSystem = NULL;
 }
 
 //*********************************************************************************************
-CFileMemUnit::~CFileMemUnit()
+CMemUnitFile::~CMemUnitFile()
 {
   Close();
 }
 //*********************************************************************************************
-bool CFileMemUnit::Open(const CURL& url)
+bool CMemUnitFile::Open(const CURL& url)
 {
   Close();
 
@@ -51,7 +51,7 @@ bool CFileMemUnit::Open(const CURL& url)
   return m_fileSystem->Open(GetPath(url));
 }
 
-bool CFileMemUnit::OpenForWrite(const CURL& url, bool bOverWrite)
+bool CMemUnitFile::OpenForWrite(const CURL& url, bool bOverWrite)
 {
   Close();
 
@@ -62,20 +62,20 @@ bool CFileMemUnit::OpenForWrite(const CURL& url, bool bOverWrite)
 }
 
 //*********************************************************************************************
-unsigned int CFileMemUnit::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CMemUnitFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_fileSystem) return 0;
   return m_fileSystem->Read(lpBuf, uiBufSize);
 }
 
-int CFileMemUnit::Write(const void* lpBuf, int64_t uiBufSize)
+int CMemUnitFile::Write(const void* lpBuf, int64_t uiBufSize)
 {
   if (!m_fileSystem) return 0;
   return m_fileSystem->Write(lpBuf, uiBufSize);
 }
 
 //*********************************************************************************************
-void CFileMemUnit::Close()
+void CMemUnitFile::Close()
 {
   if (m_fileSystem)
   {
@@ -86,7 +86,7 @@ void CFileMemUnit::Close()
 }
 
 //*********************************************************************************************
-int64_t CFileMemUnit::Seek(int64_t iFilePosition, int iWhence)
+int64_t CMemUnitFile::Seek(int64_t iFilePosition, int iWhence)
 {
   if (!m_fileSystem) return -1;
   int64_t position = iFilePosition;
@@ -103,20 +103,20 @@ int64_t CFileMemUnit::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileMemUnit::GetLength()
+int64_t CMemUnitFile::GetLength()
 {
   if (!m_fileSystem) return -1;
   return m_fileSystem->GetLength();
 }
 
 //*********************************************************************************************
-int64_t CFileMemUnit::GetPosition()
+int64_t CMemUnitFile::GetPosition()
 {
   if (!m_fileSystem) return -1;
   return m_fileSystem->GetPosition();
 }
 
-bool CFileMemUnit::Exists(const CURL& url)
+bool CMemUnitFile::Exists(const CURL& url)
 {
   if (Open(url))
   {
@@ -126,7 +126,7 @@ bool CFileMemUnit::Exists(const CURL& url)
   return false;
 }
 
-int CFileMemUnit::Stat(const CURL& url, struct __stat64* buffer)
+int CMemUnitFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   if (Open(url))
   {
@@ -136,7 +136,7 @@ int CFileMemUnit::Stat(const CURL& url, struct __stat64* buffer)
   return -1;
 }
 
-bool CFileMemUnit::Delete(const CURL& url)
+bool CMemUnitFile::Delete(const CURL& url)
 {
   IFileSystem *fileSystem = GetFileSystem(url);
   if (fileSystem)
@@ -144,7 +144,7 @@ bool CFileMemUnit::Delete(const CURL& url)
   return false;
 }
 
-bool CFileMemUnit::Rename(const CURL& url, const CURL& urlnew)
+bool CMemUnitFile::Rename(const CURL& url, const CURL& urlnew)
 {
   IFileSystem *fileSystem = GetFileSystem(url);
   if (fileSystem)
@@ -152,13 +152,13 @@ bool CFileMemUnit::Rename(const CURL& url, const CURL& urlnew)
   return false;
 }
 
-IFileSystem *CFileMemUnit::GetFileSystem(const CURL& url)
+IFileSystem *CMemUnitFile::GetFileSystem(const CURL& url)
 {
   unsigned char unit = url.GetProtocol()[3] - '0';
   return g_memoryUnitManager.GetFileSystem(unit);
 }
 
-CStdString CFileMemUnit::GetPath(const CURL& url)
+CStdString CMemUnitFile::GetPath(const CURL& url)
 {
   CStdString path = url.GetFileName();
   path.Replace("\\", "/");

@@ -849,7 +849,7 @@ bool CCurlFile::Open(const CURL& url)
      || !m_state->m_httpheader.GetValue("icy-br").IsEmpty()) && !m_skipshout)
   {
     CLog::Log(LOGDEBUG,"CurlFile - file <%s> is a shoutcast stream. re-opening", m_url.c_str());
-    throw new CRedirectException(new CFileShoutcast);
+    throw new CRedirectException(new CShoutcastFile);
   }
 
   m_multisession = false;

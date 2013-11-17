@@ -39,7 +39,7 @@
 
 using namespace XFILE;
 
-extern CFileShoutcast* m_pShoutCastRipper;
+extern CShoutcastFile* m_pShoutCastRipper;
 
 // PAP: Psycho-acoustic Audio Player
 // Supporting all open  audio codec standards.

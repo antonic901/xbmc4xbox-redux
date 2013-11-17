@@ -29,16 +29,16 @@
 
 using namespace XFILE;
 
-CFileMusicDatabase::CFileMusicDatabase(void)
+CMusicDatabaseFile::CMusicDatabaseFile(void)
 {
 }
 
-CFileMusicDatabase::~CFileMusicDatabase(void)
+CMusicDatabaseFile::~CMusicDatabaseFile(void)
 {
   Close();
 }
 
-CStdString CFileMusicDatabase::TranslateUrl(const CURL& url)
+CStdString CMusicDatabaseFile::TranslateUrl(const CURL& url)
 {
   CMusicDatabase musicDatabase;
   if (!musicDatabase.Open())
@@ -67,42 +67,42 @@ CStdString CFileMusicDatabase::TranslateUrl(const CURL& url)
   return song.strFileName; 
 }
 
-bool CFileMusicDatabase::Open(const CURL& url)
+bool CMusicDatabaseFile::Open(const CURL& url)
 {
   return m_file.Open(TranslateUrl(url));
 }
 
-bool CFileMusicDatabase::Exists(const CURL& url)
+bool CMusicDatabaseFile::Exists(const CURL& url)
 {
   return !TranslateUrl(url).IsEmpty();
 }
 
-int CFileMusicDatabase::Stat(const CURL& url, struct __stat64* buffer)
+int CMusicDatabaseFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   return m_file.Stat(TranslateUrl(url), buffer);
 }
 
-unsigned int CFileMusicDatabase::Read(void* lpBuf, int64_t uiBufSize)
+unsigned int CMusicDatabaseFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   return m_file.Read(lpBuf, uiBufSize);
 }
 
-int64_t CFileMusicDatabase::Seek(int64_t iFilePosition, int iWhence /*=SEEK_SET*/)
+int64_t CMusicDatabaseFile::Seek(int64_t iFilePosition, int iWhence /*=SEEK_SET*/)
 {
   return m_file.Seek(iFilePosition, iWhence);
 }
 
-void CFileMusicDatabase::Close()
+void CMusicDatabaseFile::Close()
 {
   m_file.Close();
 }
 
-int64_t CFileMusicDatabase::GetPosition()
+int64_t CMusicDatabaseFile::GetPosition()
 {
   return m_file.GetPosition();
 }
 
-int64_t CFileMusicDatabase::GetLength()
+int64_t CMusicDatabaseFile::GetLength()
 {
   return m_file.GetLength();
 }

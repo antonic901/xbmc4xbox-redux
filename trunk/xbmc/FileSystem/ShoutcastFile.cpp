@@ -20,7 +20,7 @@
  */
 
 
-// FileShoutcast.cpp: implementation of the CFileShoutcast class.
+// FileShoutcast.cpp: implementation of the CShoutcastFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -121,9 +121,9 @@ error_code filelib_write(char *buf, u_long size)
   m_ripFile.Write( buf, size ); //will only write, if it has to
   return SR_SUCCESS;
 }
-CFileShoutcast* m_pShoutCastRipper = NULL;
+CShoutcastFile* m_pShoutCastRipper = NULL;
 
-CFileShoutcast::CFileShoutcast()
+CShoutcastFile::CShoutcastFile()
 {
   // FIXME: without this check
   // the playback stops when CFile::Stat()
@@ -142,7 +142,7 @@ CFileShoutcast::CFileShoutcast()
   }
 }
 
-CFileShoutcast::~CFileShoutcast()
+CShoutcastFile::~CShoutcastFile()
 {
   // FIXME: without this check
   // the playback stops when CFile::Stat()
@@ -158,36 +158,36 @@ CFileShoutcast::~CFileShoutcast()
   }
 }
 
-bool CFileShoutcast::CanRecord()
+bool CShoutcastFile::CanRecord()
 {
   if ( !m_fileState.bRipStarted )
     return false;
   return m_ripFile.CanRecord();
 }
 
-bool CFileShoutcast::Record()
+bool CShoutcastFile::Record()
 {
   return m_ripFile.Record();
 }
 
-void CFileShoutcast::StopRecording()
+void CShoutcastFile::StopRecording()
 {
   m_ripFile.StopRecording();
 }
 
 
-int64_t CFileShoutcast::GetPosition()
+int64_t CShoutcastFile::GetPosition()
 {
   return 0;
 }
 
-int64_t CFileShoutcast::GetLength()
+int64_t CShoutcastFile::GetLength()
 {
   return 0;
 }
 
 
-bool CFileShoutcast::Open(const CURL& url)
+bool CShoutcastFile::Open(const CURL& url)
 {
   m_dwLastTime = timeGetTime();
   int ret;
@@ -330,7 +330,7 @@ bool CFileShoutcast::Open(const CURL& url)
   return true;
 }
 
-unsigned int CFileShoutcast::Read(void* lpBuf, int64_t uiBufSize)
+unsigned int CShoutcastFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   if (m_fileState.bRipDone)
   {
@@ -360,7 +360,7 @@ unsigned int CFileShoutcast::Read(void* lpBuf, int64_t uiBufSize)
   return iRead;
 }
 
-void CFileShoutcast::outputTimeoutMessage(const char* message)
+void CShoutcastFile::outputTimeoutMessage(const char* message)
 {
   //g_dialog.SetCaption(0, "Shoutcast"  );
   //g_dialog.SetMessage(0,  message );
@@ -368,12 +368,12 @@ void CFileShoutcast::outputTimeoutMessage(const char* message)
   Sleep(1500);
 }
 
-int64_t CFileShoutcast::Seek(int64_t iFilePosition, int iWhence)
+int64_t CShoutcastFile::Seek(int64_t iFilePosition, int iWhence)
 {
   return -1;
 }
 
-void CFileShoutcast::Close()
+void CShoutcastFile::Close()
 {
   OutputDebugString("Shoutcast Stopping\n");
   if ( m_ripFile.IsRecording() )
@@ -384,20 +384,20 @@ void CFileShoutcast::Close()
   OutputDebugString("Shoutcast Stopped\n");
 }
 
-bool CFileShoutcast::IsRecording()
+bool CShoutcastFile::IsRecording()
 {
   return m_ripFile.IsRecording();
 }
 
 
 
-bool CFileShoutcast::GetMusicInfoTag(CMusicInfoTag& tag)
+bool CShoutcastFile::GetMusicInfoTag(CMusicInfoTag& tag)
 {
   m_ripFile.GetMusicInfoTag(tag);
   return true;
 }
 
-CStdString CFileShoutcast::GetContent()
+CStdString CShoutcastFile::GetContent()
 {
   return m_mimetype;
 }

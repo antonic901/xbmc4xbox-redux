@@ -45,7 +45,7 @@ using namespace std;
 
 #define SEEKTIMOUT 30000
 
-CFileRarExtractThread::CFileRarExtractThread()
+CRarFileExtractThread::CRarFileExtractThread()
 {
   m_pArc = NULL;
   m_pCmd = NULL;
@@ -57,7 +57,7 @@ CFileRarExtractThread::CFileRarExtractThread()
   Create();
 }
 
-CFileRarExtractThread::~CFileRarExtractThread()
+CRarFileExtractThread::~CRarFileExtractThread()
 {
   SetEvent(hQuit);
   WaitForSingleObject(hRestart,INFINITE);
@@ -68,7 +68,7 @@ CFileRarExtractThread::~CFileRarExtractThread()
   CloseHandle(hRestart);
 }
 
-void CFileRarExtractThread::Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize)
+void CRarFileExtractThread::Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize)
 {
   m_pArc = pArc;
   m_pCmd = pCmd;
@@ -85,15 +85,15 @@ void CFileRarExtractThread::Start(Archive* pArc, CommandData* pCmd, CmdExtract* 
   SetEvent(hRestart);
 }
 
-void CFileRarExtractThread::OnStartup()
+void CRarFileExtractThread::OnStartup()
 {
 }
 
-void CFileRarExtractThread::OnExit()
+void CRarFileExtractThread::OnExit()
 {
 }
 
-void CFileRarExtractThread::Process()
+void CRarFileExtractThread::Process()
 {
   while (WaitForSingleObject(hQuit,1) != WAIT_OBJECT_0)
   {
@@ -107,7 +107,7 @@ void CFileRarExtractThread::Process()
   SetEvent(hRestart);
 }
 
-CFileRar::CFileRar()
+CRarFile::CRarFile()
 {
   m_strCacheDir.Empty();
   m_strRarPath.Empty();
@@ -127,7 +127,7 @@ CFileRar::CFileRar()
 }
 
 //*********************************************************************************************
-CFileRar::~CFileRar()
+CRarFile::~CRarFile()
 {
   if (!m_bOpen)
     return;
@@ -148,7 +148,7 @@ CFileRar::~CFileRar()
   }
 }
 //*********************************************************************************************
-bool CFileRar::Open(const CURL& url)
+bool CRarFile::Open(const CURL& url)
 {
   InitFromUrl(url);
   CFileItemList items;
@@ -192,7 +192,7 @@ bool CFileRar::Open(const CURL& url)
       if (items[i]->m_dwSize > ((int64_t)4)*1024*1024*1024) // 4 gig limit of fat-x
       {
         CGUIDialogOK::ShowAndGetInput(257,21395,-1,-1);
-        CLog::Log(LOGERROR,"CFileRar::Open: Can't cache files bigger than 4GB due to fat-x limits.");
+        CLog::Log(LOGERROR,"CRarFile::Open: Can't cache files bigger than 4GB due to fat-x limits.");
         return false;
       }
       m_bUseFile = true;
@@ -219,7 +219,7 @@ bool CFileRar::Open(const CURL& url)
   return false;
 }
 
-bool CFileRar::Exists(const CURL& url)
+bool CRarFile::Exists(const CURL& url)
 {
   InitFromUrl(url);
   CStdString strPathInCache;
@@ -231,7 +231,7 @@ bool CFileRar::Exists(const CURL& url)
   return bResult;
 }
 //*********************************************************************************************
-int CFileRar::Stat(const CURL& url, struct __stat64* buffer)
+int CRarFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   memset(buffer, 0, sizeof(struct __stat64));
   if (Open(url))
@@ -255,13 +255,13 @@ int CFileRar::Stat(const CURL& url, struct __stat64* buffer)
 
 
 //*********************************************************************************************
-bool CFileRar::OpenForWrite(const CURL& url)
+bool CRarFile::OpenForWrite(const CURL& url)
 {
   return false;
 }
 
 //*********************************************************************************************
-unsigned int CFileRar::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CRarFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   if (!m_bOpen)
     return 0;
@@ -346,13 +346,13 @@ unsigned int CFileRar::Read(void *lpBuf, int64_t uiBufSize)
 }
 
 //*********************************************************************************************
-unsigned int CFileRar::Write(void *lpBuf, int64_t uiBufSize)
+unsigned int CRarFile::Write(void *lpBuf, int64_t uiBufSize)
 {
   return 0;
 }
 
 //*********************************************************************************************
-void CFileRar::Close()
+void CRarFile::Close()
 {
   if (!m_bOpen)
     return;
@@ -376,7 +376,7 @@ void CFileRar::Close()
 }
 
 //*********************************************************************************************
-int64_t CFileRar::Seek(int64_t iFilePosition, int iWhence)
+int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
 { 
   if (!m_bOpen)
     return -1;
@@ -491,7 +491,7 @@ int64_t CFileRar::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileRar::GetLength()
+int64_t CRarFile::GetLength()
 {
   if (!m_bOpen)
     return 0;
@@ -503,7 +503,7 @@ int64_t CFileRar::GetLength()
 }
 
 //*********************************************************************************************
-int64_t CFileRar::GetPosition()
+int64_t CRarFile::GetPosition()
 {
   if (!m_bOpen)
     return -1;
@@ -514,17 +514,17 @@ int64_t CFileRar::GetPosition()
   return m_iFilePosition;
 }
 
-int CFileRar::Write(const void* lpBuf, int64_t uiBufSize)
+int CRarFile::Write(const void* lpBuf, int64_t uiBufSize)
 {
   return -1;
 }
 
-void CFileRar::Flush()
+void CRarFile::Flush()
 {
   if (m_bUseFile)
     m_File.Flush();
 }
-void CFileRar::InitFromUrl(const CURL& url)
+void CRarFile::InitFromUrl(const CURL& url)
 {
   m_strCacheDir = g_advancedSettings.m_cachePath;//url.GetDomain();
   URIUtils::AddSlashAtEnd(m_strCacheDir);
@@ -554,7 +554,7 @@ void CFileRar::InitFromUrl(const CURL& url)
 
 }
 
-void CFileRar::CleanUp()
+void CRarFile::CleanUp()
 {
   if (m_pExtractThread)
   {
@@ -594,7 +594,7 @@ void CFileRar::CleanUp()
   }
 }
 
-bool CFileRar::OpenInArchive()
+bool CRarFile::OpenInArchive()
 {
   int iHeaderSize;
 
@@ -698,7 +698,7 @@ bool CFileRar::OpenInArchive()
   m_iBufferStart = 0;
   
   delete m_pExtractThread;
-  m_pExtractThread = new CFileRarExtractThread();
+  m_pExtractThread = new CRarFileExtractThread();
   m_pExtractThread->Start(m_pArc,m_pCmd,m_pExtract,iHeaderSize);
   
   return true;

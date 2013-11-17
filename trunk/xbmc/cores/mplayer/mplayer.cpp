@@ -93,7 +93,7 @@ void audio_pause();
 void audio_resume();
 
 extern void tracker_free_mplayer_dlls(void);
-extern CFileShoutcast* m_pShoutCastRipper;
+extern CShoutcastFile* m_pShoutCastRipper;
 extern "C" void dllReleaseAll( );
 
 const char * dvd_audio_stream_types[8] =

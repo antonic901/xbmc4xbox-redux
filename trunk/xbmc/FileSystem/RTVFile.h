@@ -19,7 +19,7 @@
  *
  */
 
-// FileRTV.h: interface for the CFileRTV class.
+// FileRTV.h: interface for the CRTVFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -37,11 +37,11 @@ typedef struct rtv_data * RTVD;
 namespace XFILE
 {
 
-class CFileRTV : public IFile
+class CRTVFile : public IFile
 {
 public:
-  CFileRTV();
-  virtual ~CFileRTV();
+  CRTVFile();
+  virtual ~CRTVFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-// FileSndtrk.h: interface for the CFileSndtrk class.
+// FileSndtrk.h: interface for the CSndtrkFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -33,11 +33,11 @@
 
 namespace XFILE
 {
-class CFileSndtrk : public IFile
+class CSndtrkFile : public IFile
 {
 public:
-  CFileSndtrk();
-  virtual ~CFileSndtrk();
+  CSndtrkFile();
+  virtual ~CSndtrkFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

@@ -138,7 +138,7 @@ void CDaapClient::StatusCallback(DAAP_SClient *pClient, DAAP_Status status, int 
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CFileDAAP::CFileDAAP()
+CDAAPFile::CDAAPFile()
 {  
   m_thisHost = NULL;
   m_thisClient = NULL;
@@ -146,7 +146,7 @@ CFileDAAP::CFileDAAP()
   m_bOpened = false;
 }
 
-CFileDAAP::~CFileDAAP()
+CDAAPFile::~CDAAPFile()
 {
   Close();  
 }
@@ -154,7 +154,7 @@ CFileDAAP::~CFileDAAP()
 
 
 //*********************************************************************************************
-bool CFileDAAP::Open(const CURL& url)
+bool CDAAPFile::Open(const CURL& url)
 {
   CSingleLock lock(g_DaapClient);
 
@@ -162,7 +162,7 @@ bool CFileDAAP::Open(const CURL& url)
 
   m_url = url;
 
-  CLog::Log(LOGDEBUG, "CFileDAAP::Open(%s)", url.GetFileName().c_str());
+  CLog::Log(LOGDEBUG, "CDAAPFile::Open(%s)", url.GetFileName().c_str());
   CStdString host = url.GetHostName();
   if (url.HasPort())
     host.Format("%s:%i",url.GetHostName(),url.GetPort());
@@ -198,20 +198,20 @@ bool CFileDAAP::Open(const CURL& url)
 
 
 //*********************************************************************************************
-unsigned int CFileDAAP::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CDAAPFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   return m_curl.Read(lpBuf, uiBufSize);
 }
 
 //*********************************************************************************************
-void CFileDAAP::Close()
+void CDAAPFile::Close()
 {
   m_curl.Close();
   m_bOpened = false;
 }
 
 //*********************************************************************************************
-int64_t CFileDAAP::Seek(int64_t iFilePosition, int iWhence)
+int64_t CDAAPFile::Seek(int64_t iFilePosition, int iWhence)
 {
   CSingleLock lock(g_DaapClient);
 
@@ -227,28 +227,28 @@ int64_t CFileDAAP::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileDAAP::GetLength()
+int64_t CDAAPFile::GetLength()
 {
   return m_curl.GetLength();
 }
 
 //*********************************************************************************************
-int64_t CFileDAAP::GetPosition()
+int64_t CDAAPFile::GetPosition()
 {
   return m_curl.GetPosition();
 }
 
-bool CFileDAAP::Exists(const CURL& url)
+bool CDAAPFile::Exists(const CURL& url)
 {
   return false;
 }
 
-int CFileDAAP::Stat(const CURL& url, struct __stat64* buffer)
+int CDAAPFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   return -1;
 }
 
-int CFileDAAP::IoControl(EIoControl request, void* param)
+int CDAAPFile::IoControl(EIoControl request, void* param)
 {
   if(request == IOCTRL_SEEK_POSSIBLE)
     return 1;

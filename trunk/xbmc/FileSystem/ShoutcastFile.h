@@ -19,7 +19,7 @@
  *
  */
 
-// FileShoutcast.h: interface for the CFileShoutcast class.
+// FileShoutcast.h: interface for the CShoutcastFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -49,11 +49,11 @@ typedef struct FileStateSt
 }
 FileState;
 
-class CFileShoutcast : public IFile
+class CShoutcastFile : public IFile
 {
 public:
-  CFileShoutcast();
-  virtual ~CFileShoutcast();
+  CShoutcastFile();
+  virtual ~CShoutcastFile();
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);

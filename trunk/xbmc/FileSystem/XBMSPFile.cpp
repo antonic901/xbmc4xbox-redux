@@ -56,21 +56,21 @@ static UINT64 strtouint64(const char *s)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CFileXBMSP::CFileXBMSP()
+CXBMSPFile::CXBMSPFile()
 {
   CSectionLoader::Load("LIBXBMS");
   m_fileSize = 0;
   m_bOpened = false;
 }
 
-CFileXBMSP::~CFileXBMSP()
+CXBMSPFile::~CXBMSPFile()
 {
   Close();
   CSectionLoader::Unload("LIBXBMS");
 }
 
 //*********************************************************************************************
-bool CFileXBMSP::Open(const CURL& urlUtf8)
+bool CXBMSPFile::Open(const CURL& urlUtf8)
 {
   CStdString strURL = urlUtf8.Get();
   g_charsetConverter.utf8ToStringCharset(strURL);
@@ -220,15 +220,15 @@ bool CFileXBMSP::Open(const CURL& urlUtf8)
   return true;
 }
 
-bool CFileXBMSP::Exists(const CURL& url)
+bool CXBMSPFile::Exists(const CURL& url)
 {
   bool exist(true);
-  exist = CFileXBMSP::Open(url);
+  exist = CXBMSPFile::Open(url);
   Close();
   return exist;
 }
 
-int CFileXBMSP::Stat(const CURL& url, struct __stat64* buffer)
+int CXBMSPFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   memset(buffer, 0, sizeof(struct __stat64));
   if (Open(url))
@@ -254,7 +254,7 @@ int CFileXBMSP::Stat(const CURL& url, struct __stat64* buffer)
 }
 
 //*********************************************************************************************
-unsigned int CFileXBMSP::Read(void *lpBuf, int64_t uiBufSize)
+unsigned int CXBMSPFile::Read(void *lpBuf, int64_t uiBufSize)
 {
   unsigned char *buf = NULL;
   size_t buflen = 0;
@@ -284,7 +284,7 @@ unsigned int CFileXBMSP::Read(void *lpBuf, int64_t uiBufSize)
 }
 
 //*********************************************************************************************
-void CFileXBMSP::Close()
+void CXBMSPFile::Close()
 {
 
   if (m_bOpened)
@@ -297,7 +297,7 @@ void CFileXBMSP::Close()
 }
 
 //*********************************************************************************************
-int64_t CFileXBMSP::Seek(int64_t iFilePosition, int iWhence)
+int64_t CXBMSPFile::Seek(int64_t iFilePosition, int iWhence)
 {
   UINT64 newpos;
 
@@ -383,14 +383,14 @@ int64_t CFileXBMSP::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CFileXBMSP::GetLength()
+int64_t CXBMSPFile::GetLength()
 {
   if (!m_bOpened) return 0;
   return m_fileSize;
 }
 
 //*********************************************************************************************
-int64_t CFileXBMSP::GetPosition()
+int64_t CXBMSPFile::GetPosition()
 {
   if (!m_bOpened) return 0;
   return m_filePos;

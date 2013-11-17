@@ -19,7 +19,7 @@
  *
  */
 
-// FileRar.h: interface for the CFileRar class.
+// FileRar.h: interface for the CRarFile class.
 
 #pragma once
 #ifndef FILERAR_H_
@@ -31,11 +31,11 @@
 
 namespace XFILE
 {	
-  class CFileRarExtractThread : public CThread
+  class CRarFileExtractThread : public CThread
   {
   public:
-    CFileRarExtractThread();
-    ~CFileRarExtractThread();
+    CRarFileExtractThread();
+    ~CRarFileExtractThread();
     
     void Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize); 
     
@@ -54,12 +54,12 @@ namespace XFILE
     int m_iSize;
   };
 
-  class CFileRar : public IFile  
+  class CRarFile : public IFile  
 	{
 	public:
-		CFileRar();
-    CFileRar(bool bSeekable); // used for caching files
-    virtual ~CFileRar();
+		CRarFile();
+    CRarFile(bool bSeekable); // used for caching files
+    virtual ~CRarFile();
     virtual int64_t       GetPosition();
     virtual int64_t       GetLength();
     virtual bool          Open(const CURL& url);
@@ -95,7 +95,7 @@ namespace XFILE
     Archive* m_pArc;
     CommandData* m_pCmd;
     CmdExtract* m_pExtract;
-    CFileRarExtractThread* m_pExtractThread;
+    CRarFileExtractThread* m_pExtractThread;
     byte* m_szBuffer;
     byte* m_szStartOfBuffer;
     int64_t m_iDataInBuffer;

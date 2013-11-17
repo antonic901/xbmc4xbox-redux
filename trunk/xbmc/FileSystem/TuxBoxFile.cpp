@@ -25,39 +25,39 @@
 
 using namespace XFILE;
 
-CFileTuxBox::CFileTuxBox()
+CTuxBoxFile::CTuxBoxFile()
 {}
 
-CFileTuxBox::~CFileTuxBox()
+CTuxBoxFile::~CTuxBoxFile()
 {
 }
 
-int64_t CFileTuxBox::GetPosition()
-{
-  return 0;
-}
-
-int64_t CFileTuxBox::GetLength()
+int64_t CTuxBoxFile::GetPosition()
 {
   return 0;
 }
 
-bool CFileTuxBox::Open(const CURL& url)
+int64_t CTuxBoxFile::GetLength()
+{
+  return 0;
+}
+
+bool CTuxBoxFile::Open(const CURL& url)
 {
   return true;
 }
 
-unsigned int CFileTuxBox::Read(void* lpBuf, int64_t uiBufSize)
+unsigned int CTuxBoxFile::Read(void* lpBuf, int64_t uiBufSize)
 {
   return 0;
 }
 
-int64_t CFileTuxBox::Seek(int64_t iFilePosition, int iWhence)
+int64_t CTuxBoxFile::Seek(int64_t iFilePosition, int iWhence)
 {
   return 0;
 }
 
-void CFileTuxBox::Close()
+void CTuxBoxFile::Close()
 {
 }
 
