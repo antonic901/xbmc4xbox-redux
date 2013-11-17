@@ -19,12 +19,15 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="1"
+				GlobalOptimizations="FALSE"
 				InlineFunctionExpansion="1"
+				OptimizeForProcessor="2"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
 				PrecompiledHeaderFile=".\Release/jbig.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"

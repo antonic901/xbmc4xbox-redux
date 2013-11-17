@@ -29,7 +29,7 @@
 #define CXIMAGE_SUPPORT_JPG 1
 #define CXIMAGE_SUPPORT_PNG 1
 #define CXIMAGE_SUPPORT_ICO 1
-#define CXIMAGE_SUPPORT_TIF 1
+#define CXIMAGE_SUPPORT_TIF 0
 #define CXIMAGE_SUPPORT_TGA 1
 #define CXIMAGE_SUPPORT_PCX 1
 #define CXIMAGE_SUPPORT_WBMP 1
@@ -44,7 +44,7 @@
 #define CXIMAGE_SUPPORT_JBG 0		// GPL'd see ../jbig/copying.txt & ../jbig/patents.htm
 
 #ifdef _WIN32
-#define CXIMAGE_SUPPORT_MNG 1
+#define CXIMAGE_SUPPORT_MNG 0
 #else
 #define CXIMAGE_SUPPORT_MNG 0
 #endif

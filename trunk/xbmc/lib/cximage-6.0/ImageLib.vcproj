@@ -146,9 +146,10 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				GlobalOptimizations="TRUE"
+				Optimization="1"
+				GlobalOptimizations="FALSE"
 				InlineFunctionExpansion="1"
+				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\zlib;..\zlib\win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JAS_WIN_MSVC_BUILD;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="TRUE"
@@ -284,9 +285,6 @@
 				RelativePath=".\CxImage\DllInterface.cpp">
 			</File>
 			<File
-				RelativePath=".\CxImage\tif_xfile.cpp">
-			</File>
-			<File
 				RelativePath=".\CxImage\ximabmp.cpp">
 			</File>
 			<File
@@ -320,9 +318,6 @@
 				RelativePath=".\CxImage\ximajas.cpp">
 			</File>
 			<File
-				RelativePath=".\CxImage\ximajbg.cpp">
-			</File>
-			<File
 				RelativePath=".\CxImage\ximajpg.cpp">
 			</File>
 			<File
@@ -330,9 +325,6 @@
 			</File>
 			<File
 				RelativePath=".\CxImage\ximalyr.cpp">
-			</File>
-			<File
-				RelativePath=".\CxImage\ximamng.cpp">
 			</File>
 			<File
 				RelativePath=".\CxImage\ximapal.cpp">
@@ -357,9 +349,6 @@
 			</File>
 			<File
 				RelativePath=".\CxImage\ximath.cpp">
-			</File>
-			<File
-				RelativePath=".\CxImage\ximatif.cpp">
 			</File>
 			<File
 				RelativePath=".\CxImage\ximatran.cpp">
@@ -417,9 +406,6 @@
 				RelativePath=".\CxImage\ximajpg.h">
 			</File>
 			<File
-				RelativePath=".\CxImage\ximamng.h">
-			</File>
-			<File
 				RelativePath=".\CxImage\ximapcx.h">
 			</File>
 			<File
@@ -436,9 +422,6 @@
 			</File>
 			<File
 				RelativePath=".\CxImage\ximath.h">
-			</File>
-			<File
-				RelativePath=".\CxImage\ximatif.h">
 			</File>
 			<File
 				RelativePath=".\CxImage\ximawbmp.h">
