@@ -250,13 +250,25 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
       SAFE_DELETE(m_pFile);
       if (pRedirectEx && pRedirectEx->m_pNewFileImp)
       {
+        auto_ptr<CURL> pNewUrl(pRedirectEx->m_pNewUrl);
         m_pFile = pRedirectEx->m_pNewFileImp;
         delete pRedirectEx;
 
-        if (!m_pFile->Open(url))
+        if (pNewUrl.get())
         {
-          SAFE_DELETE(m_pFile);
-          return false;
+          if (!m_pFile->Open(*pNewUrl))
+          {
+            SAFE_DELETE(m_pFile);
+            return false;
+          }
+        }
+        else
+        {        
+          if (!m_pFile->Open(url))
+          {
+            SAFE_DELETE(m_pFile);
+            return false;
+          }
         }      
       }
     }
@@ -326,6 +338,8 @@ bool CFile::OpenForWrite(const CStdString& strFileName, bool bOverWrite)
 
 bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
 {
+  CURL url;
+  
   try
   {
     if (strFileName.IsEmpty())
@@ -340,7 +354,7 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
         return false;
     }
 
-    CURL url(strFileName);
+    url = URIUtils::SubstitutePath(strFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get())
@@ -354,6 +368,33 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
     e.writelog(__FUNCTION__);
   }
 #endif
+  catch (CRedirectException *pRedirectEx)
+  {
+    // the file implementation decided this item should use a different implementation.
+    // the exception will contain the new implementation and optional a redirected URL.
+    CLog::Log(LOGDEBUG,"File::Exists - redirecting implementation for %s", strFileName.c_str());
+    if (pRedirectEx && pRedirectEx->m_pNewFileImp)
+    {
+      auto_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
+      auto_ptr<CURL> pNewUrl(pRedirectEx->m_pNewUrl);
+      delete pRedirectEx;
+        
+      if (pNewUrl.get())
+      {
+        if (pImp.get() && !pImp->Exists(*pNewUrl))
+        {
+          return false;
+        }
+      }
+      else     
+      {
+        if (pImp.get() && !pImp->Exists(url))
+        {
+          return false;
+        }
+      }
+    }
+  }
   catch(...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
@@ -369,14 +410,15 @@ int CFile::Stat(struct __stat64 *buffer)
 
 int CFile::Stat(const CStdString& strFileName, struct __stat64* buffer)
 {
+  CURL url;
+
   try
   {
-    CURL url(strFileName);
+    url = URIUtils::SubstitutePath(strFileName);
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get())
       return false;
-
     return pFile->Stat(url, buffer);
   }
 #ifndef _LINUX
@@ -385,6 +427,33 @@ int CFile::Stat(const CStdString& strFileName, struct __stat64* buffer)
     e.writelog(__FUNCTION__);
   }
 #endif
+  catch (CRedirectException *pRedirectEx)
+  {
+    // the file implementation decided this item should use a different implementation.
+    // the exception will contain the new implementation and optional a redirected URL.
+    CLog::Log(LOGDEBUG,"File::Stat - redirecting implementation for %s", strFileName.c_str());
+    if (pRedirectEx && pRedirectEx->m_pNewFileImp)
+    {
+      auto_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
+      auto_ptr<CURL> pNewUrl(pRedirectEx->m_pNewUrl);
+      delete pRedirectEx;
+        
+      if (pNewUrl.get())
+      {
+        if (pImp.get() && !pImp->Stat(*pNewUrl, buffer))
+        {
+          return false;
+        }
+      }
+      else     
+      {
+        if (pImp.get() && !pImp->Stat(url, buffer))
+        {
+          return false;
+        }
+      }
+    }
+  }
   catch(...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);

@@ -39,6 +39,7 @@
 #endif
 #include "ZipFile.h"
 #include "RarFile.h"
+#include "UPnPFile.h"
 #include "MusicDatabaseFile.h"
 #include "SpecialProtocolFile.h"
 #include "MultiPathFile.h"
@@ -107,6 +108,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     else if (strProtocol == "xbms") return new CFileXBMSP();
     else if (strProtocol == "rtv") return new CFileRTV();
     else if (strProtocol == "daap") return new CFileDAAP();
+    else if (strProtocol == "upnp") return new CUPnPFile();
 #endif
   }
 
