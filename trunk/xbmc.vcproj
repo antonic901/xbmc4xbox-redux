@@ -2061,9 +2061,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\XBMSPFile.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\zconf.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\ZipDirectory.cpp">
 				</File>
 				<File
@@ -2080,9 +2077,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\ZipManager.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\zlib.h">
 				</File>
 				<Filter
 					Name="MusicDatabaseDirectory"
