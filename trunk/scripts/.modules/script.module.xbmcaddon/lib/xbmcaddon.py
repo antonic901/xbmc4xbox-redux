@@ -43,7 +43,9 @@ class Addon:
 
         # plugin.music|video|etc.something addons
         if len( parts ) == 3 and parts[ 0 ] == "plugin":
-            locations.append("plugin://%s/%s" % ( parts[ 1 ], parts[ 2 ] ))
+            pluginType = parts[ 1 ].replace("audio", "music")
+            pluginName = parts[ 2 ]
+            locations.append("plugin://%s/%s" % ( pluginType, pluginName ))
 
         xbmc.log( "xbmcaddon: locations = " + str(locations), xbmc.LOGDEBUG )
 
