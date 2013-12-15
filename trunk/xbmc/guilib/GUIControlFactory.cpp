@@ -649,17 +649,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CGUIInfoLabel texturePath;
   FRECT borderSize = { 0, 0, 0, 0};
 
-  float itemWidth = 16, itemHeight = 16;
   float sliderWidth = 150, sliderHeight = 16;
-  float textureWidthBig = 128;
-  float textureHeightBig = 128;
-  float textureHeight = 30;
-  float textureWidth = 80;
-  float itemWidthBig = 150;
-  float itemHeightBig = 150;
   CPoint offset;
 
-  float spaceBetweenItems = 2;
   bool bHasPath = false;
   CGUIAction clickActions;
   CGUIAction altclickActions;
@@ -669,15 +661,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CStdString strTitle = "";
   CStdString strRSSTags = "";
 
-  float thumbXPos = 4;
-  float thumbYPos = 10;
-  float thumbWidth = 64;
-  float thumbHeight = 64;
-
-  float thumbXPosBig = 14;
-  float thumbYPosBig = 14;
-  float thumbWidthBig = 100;
-  float thumbHeightBig = 100;
   DWORD dwBuddyControlID = 0;
   int iNumSlots = 7;
   float buttonGap = 5;
@@ -713,10 +696,10 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   int preloadItems = 0;
 
   CLabelInfo labelInfo;
-  CLabelInfo labelInfo2;
   CLabelInfo spinInfo;
 
   CGUIInfoColor textColor3;
+  CGUIInfoColor headlineColor;
 
   float radioWidth = 0;
   float radioHeight = 0;
@@ -808,10 +791,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetInfoColor(pControlNode, "selectedcolor", labelInfo.selectedColor, parentID);
   GetFloat(pControlNode, "textoffsetx", labelInfo.offsetX);
   GetFloat(pControlNode, "textoffsety", labelInfo.offsetY);
-  GetFloat(pControlNode, "textxoff", labelInfo.offsetX);
-  GetFloat(pControlNode, "textyoff", labelInfo.offsetY);
-  GetFloat(pControlNode, "textxoff2", labelInfo2.offsetX);
-  GetFloat(pControlNode, "textyoff2", labelInfo2.offsetY);
   int angle = 0;  // use the negative angle to compensate for our vertically flipped cartesian plane
   if (XMLUtils::GetInt(pControlNode, "angle", angle)) labelInfo.angle = (float)-angle;
   CStdString strFont;
@@ -823,13 +802,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     labelInfo.align |= alignY;
   if (GetFloat(pControlNode, "textwidth", labelInfo.width))
     labelInfo.align |= XBFONT_TRUNCATED;
-  labelInfo2.selectedColor = labelInfo.selectedColor;
-  GetInfoColor(pControlNode, "selectedcolor2", labelInfo2.selectedColor);
-  GetInfoColor(pControlNode, "textcolor2", labelInfo2.textColor);
-  GetInfoColor(pControlNode, "focusedcolor2", labelInfo2.focusedColor);
-  labelInfo2.font = labelInfo.font;
-  if (XMLUtils::GetString(pControlNode, "font2", strFont))
-    labelInfo2.font = g_fontManager.GetFont(strFont);
 
   GetActions(pControlNode, "onclick", clickActions);
   GetActions(pControlNode, "ontextchange", textChangeActions);
@@ -928,29 +900,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   GetTexture(pControlNode, "bordertexture", borderTexture);
 
-  GetFloat(pControlNode, "itemwidth", itemWidth);
-  GetFloat(pControlNode, "itemheight", itemHeight);
-  GetFloat(pControlNode, "spacebetweenitems", spaceBetweenItems);
-
   GetTexture(pControlNode, "imagefolder", imageNoFocus);
   GetTexture(pControlNode, "imagefolderfocus", imageFocus);
-  GetFloat(pControlNode, "texturewidth", textureWidth);
-  GetFloat(pControlNode, "textureheight", textureHeight);
-
-  GetFloat(pControlNode, "thumbwidth", thumbWidth);
-  GetFloat(pControlNode, "thumbheight", thumbHeight);
-  GetFloat(pControlNode, "thumbposx", thumbXPos);
-  GetFloat(pControlNode, "thumbposy", thumbYPos);
-
-  GetFloat(pControlNode, "thumbwidthbig", thumbWidthBig);
-  GetFloat(pControlNode, "thumbheightbig", thumbHeightBig);
-  GetFloat(pControlNode, "thumbposxbig", thumbXPosBig);
-  GetFloat(pControlNode, "thumbposybig", thumbYPosBig);
-
-  GetFloat(pControlNode, "texturewidthbig", textureWidthBig);
-  GetFloat(pControlNode, "textureheightbig", textureHeightBig);
-  GetFloat(pControlNode, "itemwidthbig", itemWidthBig);
-  GetFloat(pControlNode, "itemheightbig", itemHeightBig);
 
   // fade label can have a whole bunch, but most just have one
   vector<CGUIInfoLabel> infoLabels;
@@ -997,7 +948,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetFloat(pControlNode, "radioheight", radioHeight);
   GetFloat(pControlNode, "radioposx", radioPosX);
   GetFloat(pControlNode, "radioposy", radioPosY);
-  GetFloat(pControlNode, "spinposx", radioPosX);
   CStdString borderStr;
   if (XMLUtils::GetString(pControlNode, "bordersize", borderStr))
     GetRectFromString(borderStr, borderSize);
@@ -1065,11 +1015,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   }
 
   XMLUtils::GetInt(pControlNode, "scrollspeed", labelInfo.scrollSpeed);
-  labelInfo2.scrollSpeed = labelInfo.scrollSpeed;
   spinInfo.scrollSpeed = labelInfo.scrollSpeed;
 
   GetString(pControlNode, "scrollsuffix", labelInfo.scrollSuffix);
-  labelInfo2.scrollSuffix = labelInfo.scrollSuffix;
   spinInfo.scrollSuffix = labelInfo.scrollSuffix;
 
   /////////////////////////////////////////////////////////////////////////////
@@ -1144,7 +1092,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUIRSSControl(
       parentID, id, posX, posY, width, height,
-      labelInfo, textColor3, labelInfo2.textColor, strRSSTags);
+      labelInfo, textColor3, headlineColor, strRSSTags);
 
     std::map<int,CSettings::RssSet>::iterator iter=g_settings.m_mapRssUrls.find(iUrlSet);
     if (iter != g_settings.m_mapRssUrls.end())
@@ -1385,7 +1333,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       labelInfo, textureFocus, textureNoFocus, textureUp, textureDown, textureUpFocus, textureDownFocus,
       labelInfo, iType);
 
-    ((CGUISpinControlEx *)control)->SetSpinPosition(radioPosX);
+    ((CGUISpinControlEx *)control)->SetSpinPosition(spinPosX);
     ((CGUISpinControlEx *)control)->SetText(strLabel);
     ((CGUISpinControlEx *)control)->SetReverse(bReverse);
   }
@@ -1421,24 +1369,12 @@ void CGUIControlFactory::ScaleElement(TiXmlElement *element, RESOLUTION fileRes,
       CStdString name = element->Value();
       if (name == "posx" ||
           name == "width" ||
-          name == "gfxthumbwidth" ||
-          name == "gfxthumbspacex" ||
           name == "textoffsetx" ||
-          name == "textxoff" ||
-          name == "textxoff2" ||
           name == "textwidth" ||
           name == "spinwidth" ||
           name == "spinposx" ||
           name == "markwidth" ||
           name == "sliderwidth" ||
-          name == "itemwidth" ||
-          name == "texturewidth" ||
-          name == "thumbwidth" ||
-          name == "thumbposx" ||
-          name == "thumbwidthbig" ||
-          name == "thumbposxbig" ||
-          name == "texturewidthbig" ||
-          name == "itemwidthbig" ||
           name == "radiowidth" ||
           name == "radioposx")
       {
@@ -1450,24 +1386,11 @@ void CGUIControlFactory::ScaleElement(TiXmlElement *element, RESOLUTION fileRes,
       }
       else if (name == "posy" ||
           name == "height" ||
-          name == "textspacey" ||
-          name == "gfxthumbheight" ||
-          name == "gfxthumbspacey" ||
           name == "textoffsety" ||
-          name == "textyoff" ||
-          name == "textyoff2" ||
           name == "spinheight" ||
           name == "spinposy" ||
           name == "markheight" ||
           name == "sliderheight" ||
-          name == "spacebetweenitems" ||
-          name == "textureheight" ||
-          name == "thumbheight" ||
-          name == "thumbposy" ||
-          name == "thumbheightbig" ||
-          name == "thumbposybig" ||
-          name == "textureheightbig" ||
-          name == "itemheightbig" ||
           name == "buttongap" ||  // should really depend on orientation
           name == "radioheight" ||
           name == "radioposy")

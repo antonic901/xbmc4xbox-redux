@@ -105,7 +105,7 @@ void CGUIInfoColor::Parse(const CStdString &label, int context)
     label2 = label.Mid(5, label.length() - 6);
     m_info = g_infoManager.TranslateSkinVariableString(label2, context);
     if (!m_info)
-      m_info = g_infoManager.RegisterSkinVariableString(g_SkinInfo->CreateSkinVariable(label2, context));
+      m_info = g_infoManager.RegisterSkinVariableString(g_SkinInfo.CreateSkinVariable(label2, context));
     return;
   }
 
