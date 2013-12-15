@@ -40,7 +40,8 @@ public:
   operator bool() const { return m_value; };
 
   void Update(int parentID = 0, const CGUIListItem *item = NULL);
-  void Parse(const CStdString &info);
+  void Parse(const CStdString &label, int context);
+
 private:
   int m_info;
   bool m_value;
