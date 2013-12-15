@@ -384,12 +384,20 @@ void CGUIEditControl::RenderText()
     }
 
     m_label2.SetMaxRect(posX + m_textOffset, m_posY, maxTextWidth - m_textOffset, m_height);
-    m_label2.SetTextW(text);
+    if (text.IsEmpty())
+      m_label2.SetText(m_hintInfo.GetLabel(GetParentID()));
+    else
+      m_label2.SetTextW(text);
     m_label2.SetAlign(align);
     m_label2.SetColor(GetTextColor());
     m_label2.Render();
     g_graphicsContext.RestoreClipRegion();
   }
+}
+
+void CGUIEditControl::SetHint(const CGUIInfoLabel& hint)
+{
+  m_hintInfo = hint;
 }
 
 CStdStringW CGUIEditControl::GetDisplayedText() const

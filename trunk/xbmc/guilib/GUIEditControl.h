@@ -64,6 +64,7 @@ public:
 
   virtual void SetLabel(const std::string &text);
   virtual void SetLabel2(const std::string &text);
+  void SetHint(const CGUIInfoLabel& hint);
 
   virtual CStdString GetLabel2() const;
 
@@ -92,6 +93,7 @@ protected:
   
   CStdStringW m_text2;
   CStdString  m_text;
+  CGUIInfoLabel m_hintInfo;
   float m_textOffset;
   float m_textWidth;
 
