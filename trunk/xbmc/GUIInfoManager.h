@@ -708,7 +708,7 @@ public:
 
   int RegisterSkinVariableString(const INFO::CSkinVariableString* info);
   int TranslateSkinVariableString(const CStdString& name, int context);
-  CStdString GetSkinVariableString(int info, int contextWindow, bool preferImage = false, const CGUIListItem *item=NULL);
+  CStdString GetSkinVariableString(int info, bool preferImage = false, const CGUIListItem *item=NULL);
 protected:
   // routines for window retrieval
   bool CheckWindowCondition(CGUIWindow *window, int condition) const;
