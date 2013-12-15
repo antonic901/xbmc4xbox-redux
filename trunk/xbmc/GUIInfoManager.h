@@ -32,6 +32,7 @@
 #include "utils/CriticalSection.h"
 #include "IMsgTargetCallback.h"
 #include "inttypes.h"
+#include "interfaces/info/SkinVariable.h"
 
 #include <list>
 #include <map>
@@ -529,6 +530,9 @@ namespace INFO
 
 #define MUSICPLAYER_PROPERTY_OFFSET 900 // last 100 id's reserved for musicplayer props.
 
+#define CONDITIONAL_LABEL_START       LISTITEM_END + 1 // 36001
+#define CONDITIONAL_LABEL_END         37000
+
 // the multiple information vector
 #define MULTI_INFO_START              40000
 #define MULTI_INFO_END                99999
@@ -641,12 +645,12 @@ public:
   const CVideoInfoTag* GetCurrentMovieTag() const;
 
   CStdString GetMusicLabel(int item);
-  CStdString GetMusicTagLabel(int info, const CFileItem *item) const;
+  CStdString GetMusicTagLabel(int info, const CFileItem *item);
   CStdString GetVideoLabel(int item);
   CStdString GetPlaylistLabel(int item) const;
   CStdString GetMusicPartyModeLabel(int item);
-  const CStdString GetMusicPlaylistInfo(const GUIInfo& info) const;
-  CStdString GetPictureLabel(int item) const;
+  const CStdString GetMusicPlaylistInfo(const GUIInfo& info);
+  CStdString GetPictureLabel(int item);
 
   __int64 GetPlayTime() const;  // in ms
   CStdString GetCurrentPlayTime(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
@@ -677,8 +681,8 @@ public:
   void ResetCache();
   void ResetPersistentCache();
 
-  CStdString GetItemLabel(const CFileItem *item, int info) const;
-  CStdString GetItemImage(const CFileItem *item, int info) const;
+  CStdString GetItemLabel(const CFileItem *item, int info);
+  CStdString GetItemImage(const CFileItem *item, int info);
 
   // Called from tuxbox service thread to update current status
   void UpdateFromTuxBox();
@@ -702,13 +706,16 @@ public:
 
   int TranslateSingleString(const CStdString &strCondition);
 
+  int RegisterSkinVariableString(const INFO::CSkinVariableString& info);
+  int TranslateSkinVariableString(const CStdString& name);
+  CStdString GetSkinVariableString(int info, int contextWindow, bool preferImage = false, const CGUIListItem *item=NULL);
 protected:
   // routines for window retrieval
   bool CheckWindowCondition(CGUIWindow *window, int condition) const;
   CGUIWindow *GetWindowWithCondition(int contextWindow, int condition) const;
 
   bool GetMultiInfoBool(const GUIInfo &info, int contextWindow = 0, const CGUIListItem *item = NULL);
-  CStdString GetMultiInfoLabel(const GUIInfo &info, int contextWindow = 0) const;
+  CStdString GetMultiInfoLabel(const GUIInfo &info, int contextWindow = 0);
   int TranslateListItem(const CStdString &info);
   int TranslateMusicPlayerString(const CStdString &info) const;
   TIME_FORMAT TranslateTimeFormat(const CStdString &format);
@@ -786,6 +793,7 @@ protected:
   void CacheBool(int condition, int contextWindow, bool result, bool persistent=false);
   std::map<int, bool> m_boolCache;
   std::vector<INFO::InfoBool*> m_bools;
+  std::vector<INFO::CSkinVariableString> m_skinVariableStrings;
   unsigned int m_updateTime;
 
   // persistent cache

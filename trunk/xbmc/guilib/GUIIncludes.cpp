@@ -23,6 +23,7 @@
 #include "GUIIncludes.h"
 #include "SkinInfo.h"
 #include "GUIInfoManager.h"
+#include "interfaces/info/SkinVariable.h"
 
 using namespace std;
 
@@ -106,6 +107,9 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
     }
     node = node->NextSiblingElement("constant");
   }
+
+  INFO::CSkinVariable::LoadFromXML(root);
+
   return true;
 }
 

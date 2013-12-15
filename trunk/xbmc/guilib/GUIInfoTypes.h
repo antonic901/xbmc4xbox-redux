@@ -29,6 +29,8 @@
  *
  */
 
+#include "utils/StdString.h"
+
 class CGUIListItem;
 
 class CGUIInfoBool

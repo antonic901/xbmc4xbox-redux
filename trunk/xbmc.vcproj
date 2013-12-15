@@ -2804,6 +2804,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\interfaces\info\InfoBool.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\interfaces\info\SkinVariable.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\interfaces\info\SkinVariable.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
