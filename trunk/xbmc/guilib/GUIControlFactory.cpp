@@ -253,11 +253,11 @@ bool CGUIControlFactory::GetAspectRatio(const TiXmlNode* pRootNode, const char* 
   return true;
 }
 
-bool CGUIControlFactory::GetInfoTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image, CGUIInfoLabel &info)
+bool CGUIControlFactory::GetInfoTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image, CGUIInfoLabel &info, int parentID)
 {
   GetTexture(pRootNode, strTag, image);
   image.filename = "";
-  GetInfoLabel(pRootNode, strTag, info);
+  GetInfoLabel(pRootNode, strTag, info, parentID);
   return true;
 }
 
@@ -483,15 +483,15 @@ bool CGUIControlFactory::GetInfoColor(const TiXmlNode *control, const char *strT
   return false;
 }
 
-void CGUIControlFactory::GetInfoLabel(const TiXmlNode *pControlNode, const CStdString &labelTag, CGUIInfoLabel &infoLabel)
+void CGUIControlFactory::GetInfoLabel(const TiXmlNode *pControlNode, const CStdString &labelTag, CGUIInfoLabel &infoLabel, int parentID)
 {
   vector<CGUIInfoLabel> labels;
-  GetInfoLabels(pControlNode, labelTag, labels);
+  GetInfoLabels(pControlNode, labelTag, labels, parentID);
   if (labels.size())
     infoLabel = labels[0];
 }
 
-bool CGUIControlFactory::GetInfoLabelFromElement(const TiXmlElement *element, CGUIInfoLabel &infoLabel)
+bool CGUIControlFactory::GetInfoLabelFromElement(const TiXmlElement *element, CGUIInfoLabel &infoLabel, int parentID)
 {
   if (!element || !element->FirstChild())
     return false;
@@ -509,11 +509,11 @@ bool CGUIControlFactory::GetInfoLabelFromElement(const TiXmlElement *element, CG
     fallback = g_localizeStrings.Get(atoi(fallback));
   else
     g_charsetConverter.unknownToUTF8(fallback);
-  infoLabel.SetLabel(label, fallback);
+  infoLabel.SetLabel(label, fallback, parentID);
   return true;
 }
 
-void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStdString &labelTag, vector<CGUIInfoLabel> &infoLabels)
+void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStdString &labelTag, vector<CGUIInfoLabel> &infoLabels, int parentID)
 {
   // we can have the following infolabels:
   // 1.  <number>1234</number> -> direct number
@@ -532,7 +532,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
   while (labelNode)
   {
     CGUIInfoLabel label;
-    if (GetInfoLabelFromElement(labelNode, label))
+    if (GetInfoLabelFromElement(labelNode, label, parentID))
       infoLabels.push_back(label);
     labelNode = labelNode->NextSiblingElement(labelTag);
   }
@@ -549,7 +549,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
       {
         CStdString info;
         info.Format("$INFO[%s]", infoNode->FirstChild()->Value());
-        infoLabels.push_back(CGUIInfoLabel(info, fallback));
+        infoLabels.push_back(CGUIInfoLabel(info, fallback, parentID));
       }
       infoNode = infoNode->NextSibling("info");
     }
@@ -924,7 +924,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetTexture(pControlNode, "overlaytexture", textureOverlay);
 
   // the <texture> tag can be overridden by the <info> tag
-  GetInfoTexture(pControlNode, "texture", texture, textureFile);
+  GetInfoTexture(pControlNode, "texture", texture, textureFile, parentID);
 
   GetTexture(pControlNode, "bordertexture", borderTexture);
 
@@ -954,7 +954,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   // fade label can have a whole bunch, but most just have one
   vector<CGUIInfoLabel> infoLabels;
-  GetInfoLabels(pControlNode, "label", infoLabels);
+  GetInfoLabels(pControlNode, "label", infoLabels, parentID);
 
   GetString(pControlNode, "label", strLabel);
   GetString(pControlNode, "altlabel", altLabel);
@@ -984,7 +984,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   XMLUtils::GetBoolean(pControlNode, "scroll", bScrollLabel);
   XMLUtils::GetBoolean(pControlNode,"pulseonselect", bPulse);
 
-  GetInfoTexture(pControlNode, "imagepath", texture, texturePath);
+  GetInfoTexture(pControlNode, "imagepath", texture, texturePath, parentID);
 
   GetUnsigned(pControlNode,"timeperimage", timePerImage);
   GetUnsigned(pControlNode,"fadetime", fadeTime);
@@ -1120,7 +1120,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       labelInfo, strLabel);
 
     CGUIInfoLabel hint_text;
-    GetInfoLabel(pControlNode, "hinttext", hint_text);
+    GetInfoLabel(pControlNode, "hinttext", hint_text, parentID);
     ((CGUIEditControl *) control)->SetHint(hint_text);
 
     if (bPassword)

@@ -105,7 +105,7 @@ public:
 
   static bool Check(const CStdString& strSkinDir); // checks if everything is present and accounted for without loading the skin
   static double GetMinVersion();
-  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name);
+  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name, int context);
 protected:
   /*! \brief grab a resolution tag from an XML node
    \param node XML node to look for the given tag

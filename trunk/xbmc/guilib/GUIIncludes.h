@@ -40,7 +40,7 @@ public:
   void ClearIncludes();
   bool LoadIncludes(const CStdString &includeFile);
   void ResolveIncludes(TiXmlElement *node, const CStdString &type);
-  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name);
+  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name, int context);
   bool ResolveConstant(const CStdString &constant, float &value) const;
   bool LoadIncludesFromXML(const TiXmlElement *root);
 
