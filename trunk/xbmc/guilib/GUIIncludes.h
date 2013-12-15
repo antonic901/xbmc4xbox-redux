@@ -26,6 +26,10 @@
 
 // forward definitions
 class TiXmlElement;
+namespace INFO
+{
+  class CSkinVariableString;
+}
 
 class CGUIIncludes
 {
@@ -36,6 +40,7 @@ public:
   void ClearIncludes();
   bool LoadIncludes(const CStdString &includeFile);
   void ResolveIncludes(TiXmlElement *node, const CStdString &type);
+  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name);
   bool ResolveConstant(const CStdString &constant, float &value) const;
   bool LoadIncludesFromXML(const TiXmlElement *root);
 

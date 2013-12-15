@@ -26,6 +26,7 @@
 #include "LocalizeStrings.h"
 #include "GUIColorManager.h"
 #include "GUIListItem.h"
+#include "guilib/SkinInfo.h"
 
 using namespace std;
 
@@ -296,10 +297,9 @@ void CGUIInfoLabel::Parse(const CStdString &label)
         {
           info = g_infoManager.TranslateSkinVariableString(params[0]);
           if (info == 0)
-          {
-            // we didn't register this conditional label yet!
-            CLog::Log(LOGWARNING, "Label Formating: $VAR[%s] is not yet defined", params[0].c_str());
-          }
+            info = g_infoManager.RegisterSkinVariableString(g_SkinInfo.CreateSkinVariable(params[0]));
+          if (info == 0) // skinner didn't define this conditional label!
+            CLog::Log(LOGWARNING, "Label Formating: $VAR[%s] is not defined", params[0].c_str());
         }
         else
           info = g_infoManager.TranslateString(params[0]);

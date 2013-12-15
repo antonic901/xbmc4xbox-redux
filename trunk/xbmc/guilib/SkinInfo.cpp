@@ -381,3 +381,9 @@ int CSkinInfo::GetFirstWindow() const
     startWindow = WINDOW_STARTUP_ANIM;
   return startWindow;
 }
+
+const INFO::CSkinVariableString* CSkinInfo::CreateSkinVariable(const CStdString& name)
+{
+  return m_includes.CreateSkinVariable(name);
+}
+

@@ -119,7 +119,6 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
     }
     node = node->NextSiblingElement("variable");
   }
-  INFO::CSkinVariable::LoadFromXML(root);
 
   return true;
 }
@@ -206,3 +205,10 @@ bool CGUIIncludes::ResolveConstant(const CStdString &constant, float &value) con
   return true;
 }
 
+const INFO::CSkinVariableString* CGUIIncludes::CreateSkinVariable(const CStdString& name)
+{
+  map<CStdString, TiXmlElement>::const_iterator it = m_skinvariables.find(name);
+  if (it != m_skinvariables.end())
+    return INFO::CSkinVariable::CreateFromXML(it->second);
+  return NULL;
+}
