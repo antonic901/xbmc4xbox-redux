@@ -40,6 +40,7 @@ void CGUIIncludes::ClearIncludes()
   m_includes.clear();
   m_defaults.clear();
   m_constants.clear();
+  m_skinvariables.clear();
   m_files.clear();
 }
 
@@ -108,6 +109,16 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
     node = node->NextSiblingElement("constant");
   }
 
+  node = root->FirstChildElement("variable");
+  while (node)
+  {
+    if (node->Attribute("name") && node->FirstChild())
+    {
+      CStdString tagName = node->Attribute("name");
+      m_skinvariables.insert(make_pair(tagName, *node));
+    }
+    node = node->NextSiblingElement("variable");
+  }
   INFO::CSkinVariable::LoadFromXML(root);
 
   return true;
