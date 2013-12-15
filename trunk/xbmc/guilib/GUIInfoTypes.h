@@ -40,7 +40,7 @@ public:
   operator bool() const { return m_value; };
 
   void Update(int parentID = 0, const CGUIListItem *item = NULL);
-  void Parse(const CStdString &label, int context);
+  void Parse(const CStdString &label);
 
 private:
   int m_info;
@@ -59,7 +59,7 @@ public:
   operator color_t() const { return m_color; };
 
   void Update();
-  void Parse(const CStdString &label);
+  void Parse(const CStdString &label, int context);
 
 private:
   color_t GetColor() const;
