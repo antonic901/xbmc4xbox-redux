@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "libavutil/internal.h"
 #include "libavutil/intreadwrite.h"
 #include "avcodec.h"
 
@@ -83,7 +84,7 @@ static void rpza_decode_stream(RpzaContext *s)
     unsigned short *pixels = (unsigned short *)s->frame.data[0];
 
     int row_ptr = 0;
-    int pixel_ptr = 0;
+    int pixel_ptr = -4;
     int block_ptr;
     int pixel_x, pixel_y;
     int total_blocks;
@@ -139,6 +140,7 @@ static void rpza_decode_stream(RpzaContext *s)
             colorA = AV_RB16 (&s->buf[stream_ptr]);
             stream_ptr += 2;
             while (n_blocks--) {
+                ADVANCE_BLOCK()
                 block_ptr = row_ptr + pixel_ptr;
                 for (pixel_y = 0; pixel_y < 4; pixel_y++) {
                     for (pixel_x = 0; pixel_x < 4; pixel_x++){
@@ -147,7 +149,6 @@ static void rpza_decode_stream(RpzaContext *s)
                     }
                     block_ptr += row_inc;
                 }
-                ADVANCE_BLOCK();
             }
             break;
 
@@ -186,6 +187,7 @@ static void rpza_decode_stream(RpzaContext *s)
             if (s->size - stream_ptr < n_blocks * 4)
                 return;
             while (n_blocks--) {
+                ADVANCE_BLOCK();
                 block_ptr = row_ptr + pixel_ptr;
                 for (pixel_y = 0; pixel_y < 4; pixel_y++) {
                     index = s->buf[stream_ptr++];
@@ -196,7 +198,6 @@ static void rpza_decode_stream(RpzaContext *s)
                     }
                     block_ptr += row_inc;
                 }
-                ADVANCE_BLOCK();
             }
             break;
 
@@ -204,6 +205,7 @@ static void rpza_decode_stream(RpzaContext *s)
         case 0x00:
             if (s->size - stream_ptr < 16)
                 return;
+            ADVANCE_BLOCK();
             block_ptr = row_ptr + pixel_ptr;
             for (pixel_y = 0; pixel_y < 4; pixel_y++) {
                 for (pixel_x = 0; pixel_x < 4; pixel_x++){
@@ -217,7 +219,6 @@ static void rpza_decode_stream(RpzaContext *s)
                 }
                 block_ptr += row_inc;
             }
-            ADVANCE_BLOCK();
             break;
 
         /* Unknown opcode */
@@ -235,7 +236,7 @@ static av_cold int rpza_decode_init(AVCodecContext *avctx)
     RpzaContext *s = avctx->priv_data;
 
     s->avctx = avctx;
-    avctx->pix_fmt = PIX_FMT_RGB555;
+    avctx->pix_fmt = AV_PIX_FMT_RGB555;
 
     avcodec_get_frame_defaults(&s->frame);
     s->frame.data[0] = NULL;
@@ -244,26 +245,27 @@ static av_cold int rpza_decode_init(AVCodecContext *avctx)
 }
 
 static int rpza_decode_frame(AVCodecContext *avctx,
-                             void *data, int *data_size,
+                             void *data, int *got_frame,
                              AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
     RpzaContext *s = avctx->priv_data;
+    int ret;
 
     s->buf = buf;
     s->size = buf_size;
 
     s->frame.reference = 3;
     s->frame.buffer_hints = FF_BUFFER_HINTS_VALID | FF_BUFFER_HINTS_PRESERVE | FF_BUFFER_HINTS_REUSABLE;
-    if (avctx->reget_buffer(avctx, &s->frame)) {
+    if ((ret = avctx->reget_buffer(avctx, &s->frame)) < 0) {
         av_log(avctx, AV_LOG_ERROR, "reget_buffer() failed\n");
-        return -1;
+        return ret;
     }
 
     rpza_decode_stream(s);
 
-    *data_size = sizeof(AVFrame);
+    *got_frame      = 1;
     *(AVFrame*)data = s->frame;
 
     /* always report that the buffer was completely consumed */
@@ -283,11 +285,11 @@ static av_cold int rpza_decode_end(AVCodecContext *avctx)
 AVCodec ff_rpza_decoder = {
     .name           = "rpza",
     .type           = AVMEDIA_TYPE_VIDEO,
-    .id             = CODEC_ID_RPZA,
+    .id             = AV_CODEC_ID_RPZA,
     .priv_data_size = sizeof(RpzaContext),
     .init           = rpza_decode_init,
     .close          = rpza_decode_end,
     .decode         = rpza_decode_frame,
     .capabilities   = CODEC_CAP_DR1,
-    .long_name = NULL_IF_CONFIG_SMALL("QuickTime video (RPZA)"),
+    .long_name      = NULL_IF_CONFIG_SMALL("QuickTime video (RPZA)"),
 };

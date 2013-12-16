@@ -1,3 +1,6 @@
-f99ae18e1212ee184188243107a4b824 *./tests/data/lavf/lavf.mkv
-320521 ./tests/data/lavf/lavf.mkv
-./tests/data/lavf/lavf.mkv CRC=0x2a83e6b0
+1748c0b3221977509c62a158236d2492 *./tests/data/lavf/lavf.mkv
+472533 ./tests/data/lavf/lavf.mkv
+./tests/data/lavf/lavf.mkv CRC=0x4780846b
+0f78dd9299210a51b18faafc971e71f2 *./tests/data/lavf/lavf.mkv
+320265 ./tests/data/lavf/lavf.mkv
+./tests/data/lavf/lavf.mkv CRC=0x4780846b

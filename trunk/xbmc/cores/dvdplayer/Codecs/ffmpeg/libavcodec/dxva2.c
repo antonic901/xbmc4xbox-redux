@@ -76,7 +76,7 @@ int ff_dxva2_commit_buffer(AVCodecContext *avctx,
     return result;
 }
 
-int ff_dxva2_common_end_frame(AVCodecContext *avctx, MpegEncContext *s,
+int ff_dxva2_common_end_frame(AVCodecContext *avctx, Picture *pic,
                               const void *pp, unsigned pp_size,
                               const void *qm, unsigned qm_size,
                               int (*commit_bs_si)(AVCodecContext *,
@@ -86,11 +86,11 @@ int ff_dxva2_common_end_frame(AVCodecContext *avctx, MpegEncContext *s,
     struct dxva_context *ctx = avctx->hwaccel_context;
     unsigned               buffer_count = 0;
     DXVA2_DecodeBufferDesc buffer[4];
-    DXVA2_DecodeExecuteParams exec;
+    DXVA2_DecodeExecuteParams exec = { 0 };
     int      result;
 
     if (FAILED(IDirectXVideoDecoder_BeginFrame(ctx->decoder,
-                                               ff_dxva2_get_surface(s->current_picture_ptr),
+                                               ff_dxva2_get_surface(pic),
                                                NULL))) {
         av_log(avctx, AV_LOG_ERROR, "Failed to begin frame\n");
         return -1;
@@ -132,7 +132,6 @@ int ff_dxva2_common_end_frame(AVCodecContext *avctx, MpegEncContext *s,
 
     assert(buffer_count == 1 + (qm_size > 0) + 2);
 
-    memset(&exec, 0, sizeof(exec));
     exec.NumCompBuffers      = buffer_count;
     exec.pCompressedBuffers  = buffer;
     exec.pExtensionData      = NULL;
@@ -147,8 +146,5 @@ end:
         result = -1;
     }
 
-    if (!result)
-        ff_draw_horiz_band(s, 0, s->avctx->height);
     return result;
 }
-

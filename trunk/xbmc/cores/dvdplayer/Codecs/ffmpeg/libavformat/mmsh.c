@@ -309,14 +309,16 @@ static int mmsh_open_internal(URLContext *h, const char *uri, int flags, int tim
     return 0;
 fail:
     av_freep(&stream_selection);
-    mmsh_close(h);
     av_dlog(NULL, "Connection failed with error %d\n", err);
     return err;
 }
 
 static int mmsh_open(URLContext *h, const char *uri, int flags)
 {
-    return mmsh_open_internal(h, uri, flags, 0, 0);
+    int ret = mmsh_open_internal(h, uri, flags, 0, 0);
+    if (ret < 0)
+        mmsh_close(h);
+    return ret;
 }
 
 static int handle_chunk_type(MMSHContext *mmsh)
@@ -394,7 +396,7 @@ static int64_t mmsh_seek(URLContext *h, int64_t pos, int whence)
     MMSContext *mms   = &mmsh->mms;
 
     if(pos == 0 && whence == SEEK_CUR)
-        return mms->asf_header_read_size + mms->remaining_in_len + mmsh->chunk_seq * mms->asf_packet_len;
+        return mms->asf_header_read_size + mms->remaining_in_len + mmsh->chunk_seq * (int64_t)mms->asf_packet_len;
     return AVERROR(ENOSYS);
 }
 
