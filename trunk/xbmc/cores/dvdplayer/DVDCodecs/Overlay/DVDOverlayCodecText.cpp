@@ -44,6 +44,8 @@ bool CDVDOverlayCodecText::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   m_bIsSSA = (hints.codec == AV_CODEC_ID_SSA);
   if(hints.codec == AV_CODEC_ID_TEXT || hints.codec == AV_CODEC_ID_SSA)
     return true;
+  if(hints.codec == AV_CODEC_ID_SUBRIP)
+    return true;
   return false;
 }
 
