@@ -1,0 +1,44 @@
+Index: ffmpeg/libavutil/common.h
+===================================================================
+--- ffmpeg/libavutil/common.h	(revision 32616)
++++ ffmpeg/libavutil/common.h	(working copy)
+@@ -62,6 +62,10 @@
+ #define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
+ #define FFALIGN(x, a) (((x)+(a)-1)&~((a)-1))
+ 
++#if defined(_MSC_VER) && ! defined(UINT64_C)
++  #define UINT64_C(val) val##ui64
++#endif
++
+ /* misc math functions */
+ 
+ /**
+@@ -378,8 +382,9 @@
+     }\
+ 
+ 
+-
++#ifndef _MSC_VER
+ #include "mem.h"
++#endif
+ 
+ #ifdef HAVE_AV_CONFIG_H
+ #    include "internal.h"
+Index: ffmpeg/libavutil/log.h
+===================================================================
+--- ffmpeg/libavutil/log.h	(revision 32616)
++++ ffmpeg/libavutil/log.h	(working copy)
+@@ -202,11 +202,13 @@
+  * Useful to print debug messages that shouldn't get compiled in normally.
+  */
+ 
++#ifndef _MSC_VER
+ #ifdef DEBUG
+ #    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
+ #else
+ #    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
+ #endif
++#endif
+ 
+ /**
+  * Skip repeated messages, this requires the user app to use av_log() instead of
