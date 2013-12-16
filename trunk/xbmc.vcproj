@@ -4460,6 +4460,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllPostProc.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllSwResample.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\cores\dvdplayer\Codecs\DllSwScale.h">
 				</File>
 			</Filter>
