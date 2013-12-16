@@ -39,8 +39,9 @@ xbmc_configure ()
   --disable-bsfs \
   \
   --enable-postproc \
-  \
-  --disable-filters \
+  --disable-avdevice \
+  --disable-avfilter \
+  --disable-swresample \
   \
   --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte \
   \
@@ -51,14 +52,15 @@ xbmc_configure ()
   --disable-altivec \
   --disable-amd3dnow \
   --disable-amd3dnowext \
+  --disable-sse2 \
+  --disable-sse3 \
   --disable-ssse3 \
   --disable-avx \
+  --disable-fma4 \
   --disable-armv5te \
   --disable-armv6 \
   --disable-armv6t2 \
-  --disable-armvfp \
-  --disable-iwmmxt \
-  --disable-mmi \
+  --disable-vfp \
   --disable-neon \
   --disable-vis"
   echo "--extra-cflags=\"$CFLAGS\" --extra-ldflags=\"$LDFLAGS\" $PARAMS $1"
@@ -76,9 +78,9 @@ xbmc_make ()
   if [ "$1" != "" ]; then
     echo "Copying libraries to $1 ..."
     [ ! -d "$1" ] && mkdir -p "$1"
-    cp .libs/avcodec-53.dll "$1"
-    cp .libs/avformat-53.dll "$1"
-    cp .libs/avutil-51.dll "$1"
+    cp .libs/avcodec-54.dll "$1"
+    cp .libs/avformat-54.dll "$1"
+    cp .libs/avutil-52.dll "$1"
     cp .libs/postproc-52.dll "$1"
     cp .libs/swscale-2.dll "$1"
   fi
@@ -90,7 +92,7 @@ xbmc_all ()
   xbmc_configure "\
     --disable-decoders \
     --enable-decoder=mpeg4,msmpeg4v1,msmpeg4v2,msmpeg4v3 \
-    --enable-decoder=vp6,vp6a,vp6f \
+    --enable-decoder=vp6,vp6a,vp6f,vp8 \
     --enable-decoder=mp1,mp2,mp3,mpegvideo,mpeg1video,mpeg2video \
     --enable-decoder=mjpeg,mjpegb,rawvideo \
     --enable-decoder=wmav1,wmav2,wmapro,wmv1,wmv2,wmv3 \
@@ -99,7 +101,7 @@ xbmc_all ()
     --disable-demuxers \
     --enable-demuxer=mp1,mp2,mp3,mpegps,mpegts,mpegtsraw,mpegvideo \
     --enable-demuxer=aac,ac3,dts,asf,avi,flv,h263,h264,ogg,matroska,mov \
-    --enable-demuxer=nuv,sdp,rtsp,applehttp \
+    --enable-demuxer=nuv,sdp,rtsp,applehttp,xmv \
   "
   xbmc_make ../../../../../system/players/dvdplayer/
   xbmc_clean
