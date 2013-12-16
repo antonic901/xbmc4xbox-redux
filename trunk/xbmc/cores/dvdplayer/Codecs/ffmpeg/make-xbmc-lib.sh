@@ -42,7 +42,7 @@ xbmc_configure ()
   --disable-avdevice \
   --disable-avfilter \
   \
-  --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte \
+  --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte,ffrtmphttp \
   \
   --disable-vdpau \
   --disable-vaapi \
