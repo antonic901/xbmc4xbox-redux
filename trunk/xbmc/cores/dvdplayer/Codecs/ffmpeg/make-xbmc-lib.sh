@@ -41,7 +41,6 @@ xbmc_configure ()
   --enable-postproc \
   --disable-avdevice \
   --disable-avfilter \
-  --disable-swresample \
   \
   --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte \
   \
@@ -83,6 +82,7 @@ xbmc_make ()
     cp .libs/avutil-52.dll "$1"
     cp .libs/postproc-52.dll "$1"
     cp .libs/swscale-2.dll "$1"
+    cp .libs/swresample-0.dll "$1"
   fi
 }
 
