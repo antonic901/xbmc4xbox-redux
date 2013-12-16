@@ -94,6 +94,8 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   // set acceleration
   m_pCodecContext->dsp_mask = AV_CPU_FLAG_FORCE | AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE;
 
+  m_pCodecContext->request_sample_fmt = AV_SAMPLE_FMT_S16;
+
   if (m_dllAvCodec.avcodec_open2(m_pCodecContext, pCodec, NULL) < 0)
   {
     CLog::Log(LOGDEBUG,"CDVDAudioCodecFFmpeg::Open() Unable to open codec");
