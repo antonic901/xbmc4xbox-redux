@@ -185,14 +185,13 @@ int CDVDAudioCodecFFmpeg::Decode(BYTE* pData, int iSize)
                       m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), AV_SAMPLE_FMT_S16, m_pCodecContext->sample_rate,
                       m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), m_pCodecContext->sample_fmt, m_pCodecContext->sample_rate,
                       0, NULL);
-    }
-
-    if(!m_pConvert || m_dllSwResample.swr_init(m_pConvert) < 0)
-    {
-      CLog::Log(LOGERROR, "CDVDAudioCodecFFmpeg::Decode - Unable to convert %d to AV_SAMPLE_FMT_S16", m_pCodecContext->sample_fmt);
-      m_iBufferSize1 = 0;
-      m_iBufferSize2 = 0;
-      return iBytesUsed;
+      if(!m_pConvert || m_dllSwResample.swr_init(m_pConvert) < 0)
+      {
+        CLog::Log(LOGERROR, "CDVDAudioCodecFFmpeg::Decode - Unable to convert %d to AV_SAMPLE_FMT_S16", m_pCodecContext->sample_fmt);
+        m_iBufferSize1 = 0;
+        m_iBufferSize2 = 0;
+        return iBytesUsed;
+      }
     }
 
     int len = m_iBufferSize1 / m_dllAvUtil.av_get_bytes_per_sample(m_pCodecContext->sample_fmt);
