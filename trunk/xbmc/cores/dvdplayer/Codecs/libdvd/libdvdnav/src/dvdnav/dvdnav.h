@@ -32,11 +32,11 @@
 extern "C" {
 #endif
 
-#  include <dvdnav/dvd_types.h>
-#  include <dvdread/dvd_reader.h>
-#  include <dvdread/nav_types.h>
-#  include <dvdread/ifo_types.h> /* For vm_cmd_t */
-#  include <dvdnav/dvdnav_events.h>
+#include <dvdnav/dvd_types.h>
+#include <dvdread/dvd_reader.h>
+#include <dvdread/nav_types.h>
+#include <dvdread/ifo_types.h> /* For vm_cmd_t */
+#include <dvdnav/dvdnav_events.h>
 
 
 
@@ -62,12 +62,6 @@ typedef int32_t dvdnav_status_t;
  */
 #define DVDNAV_STATUS_ERR 0
 #define DVDNAV_STATUS_OK  1
-
-#define DVDNAV_FORMAT_AC3 0
-#define DVDNAV_FORMAT_MPEGAUDIO 3
-#define DVDNAV_FORMAT_LPCM 4
-#define DVDNAV_FORMAT_DTS 5
-#define DVDNAV_FORMAT_SDDS 6
 
 /*********************************************************************
  * initialisation & housekeeping functions                           *
@@ -377,6 +371,14 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *self,
  divide it by 90000 to get the current play time in seconds
  */
 int64_t dvdnav_get_current_time(dvdnav_t *self);
+
+/*
+ * Find the nearest vobu and jump to it
+ *
+ * Alternative to dvdnav_time_search
+ */
+dvdnav_status_t dvdnav_jump_to_sector_by_time(dvdnav_t *this,
+            uint64_t time_in_pts_ticks, int32_t mode);
 
 /*
  * Stop playing the current position and start playback of the title
