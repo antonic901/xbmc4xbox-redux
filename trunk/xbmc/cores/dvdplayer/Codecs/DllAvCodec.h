@@ -65,7 +65,6 @@ public:
                                const void * const  in[6], const int  in_stride[6], int len)=0;
   virtual int av_dup_packet(AVPacket *pkt)=0;
   virtual int av_init_packet(AVPacket *pkt)=0;
-  virtual void av_destruct_packet_nofree(AVPacket *pkt)=0;
   virtual void av_free_packet(AVPacket *pkt)=0;
 };
 
@@ -130,7 +129,6 @@ public:
           { return ::av_audio_convert(ctx, out, out_stride, in, in_stride, len); }
 
   virtual void av_packet_free(AVPacket *pkt) { ::av_free_packet(pkt); )
-  virtual void av_destruct_packet_nofree(AVPacket *pkt) { ::av_destruct_packet_nofree(pkt); }
   virtual int av_dup_packet(AVPacket *pkt) { return ::av_dup_packet(pkt); }
   virtual int av_init_packet(AVPacket *pkt) { return ::av_init_packet(pkt); }
 
@@ -182,7 +180,6 @@ public:
                                                const void * const p4[6], const int p5[6], int p6))
   DEFINE_METHOD1(int, av_dup_packet, (AVPacket *p1))
   DEFINE_METHOD1(int, av_init_packet, (AVPacket *p1))
-  DEFINE_METHOD1(void, av_destruct_packet_nofree, (AVPacket *p1))
   DEFINE_METHOD1(void, av_free_packet,        (AVPacket *p1))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(avcodec_flush_buffers)
@@ -211,7 +208,6 @@ public:
     RESOLVE_METHOD(av_audio_convert_free)
     RESOLVE_METHOD(av_audio_convert)
     RESOLVE_METHOD(av_dup_packet)
-    RESOLVE_METHOD(av_destruct_packet_nofree)
     RESOLVE_METHOD(av_free_packet)
     RESOLVE_METHOD(av_init_packet)
   END_METHOD_RESOLVE()
