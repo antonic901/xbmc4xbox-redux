@@ -559,7 +559,7 @@ static int gxf_seek(AVFormatContext *s, int stream_index, int64_t timestamp, int
     idx = av_index_search_timestamp(st, timestamp - start_time,
                                     AVSEEK_FLAG_ANY | AVSEEK_FLAG_BACKWARD);
     if (idx < 0)
-        return -1;
+        return AVERROR(ENOSYS);
     pos = st->index_entries[idx].pos;
     if (idx < st->nb_index_entries - 2)
         maxlen = st->index_entries[idx + 2].pos - pos;
@@ -569,7 +569,7 @@ static int gxf_seek(AVFormatContext *s, int stream_index, int64_t timestamp, int
         return res;
     found = gxf_resync_media(s, maxlen, -1, timestamp);
     if (FFABS(found - timestamp) > 4)
-        return -1;
+        return AVERROR(ENOSYS);
     return 0;
 }
 

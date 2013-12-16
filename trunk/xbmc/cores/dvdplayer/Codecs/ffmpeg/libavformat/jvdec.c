@@ -209,7 +209,7 @@ static int read_seek(AVFormatContext *s, int stream_index,
     }
 
     if (i < 0 || i >= ast->nb_index_entries)
-        return 0;
+        return -1;
     if (avio_seek(s->pb, ast->index_entries[i].pos, SEEK_SET) < 0)
         return -1;
 

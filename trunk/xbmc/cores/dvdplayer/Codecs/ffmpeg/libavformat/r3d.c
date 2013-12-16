@@ -371,7 +371,7 @@ static int r3d_seek(AVFormatContext *s, int stream_index, int64_t sample_time, i
     int frame_num;
 
     if (!st->avg_frame_rate.num)
-        return -1;
+        return AVERROR(ENOSYS);
 
     frame_num = av_rescale_q(sample_time, st->time_base,
                              av_inv_q(st->avg_frame_rate));
