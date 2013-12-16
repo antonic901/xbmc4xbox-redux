@@ -25,7 +25,9 @@
 #include "system.h"
 
 class CDVDInputStream;
-enum AVCodecID;
+
+#include "Codecs/DllAvCodec.h"
+
 enum AVDiscard;
 
 enum StreamType

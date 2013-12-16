@@ -37,8 +37,6 @@ class CDVDAudioCodec;
 class IAudioCallback;
 class CDVDAudioCodec;
 
-enum AVCodecID;
-
 #define DECODE_FLAG_DROP    1
 #define DECODE_FLAG_RESYNC  2
 #define DECODE_FLAG_ERROR   4

@@ -21,8 +21,9 @@
 
 #pragma once
 
-enum StreamType;
-enum AVCodecID;
+#include "DVDDemuxers/DVDDemux.h"
+#include "Codecs/DllAvCodec.h"
+
 class CDemuxStream;
 
 class CDVDStreamInfo

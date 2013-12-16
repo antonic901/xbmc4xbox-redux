@@ -21,8 +21,6 @@
  *
  */
 
-// enum AVCodecID
-
 #include <string>
 #include <vector>
 
