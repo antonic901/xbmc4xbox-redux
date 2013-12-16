@@ -25,6 +25,7 @@
 #include "Codecs/DllAvCodec.h"
 #include "Codecs/DllAvFormat.h"
 #include "Codecs/DllAvUtil.h"
+#include "Codecs/DllSwResample.h"
 
 class CDVDAudioCodecFFmpeg : public CDVDAudioCodec
 {
@@ -44,8 +45,8 @@ public:
   virtual int GetBitRate();
 
 protected:
-  AVCodecContext* m_pCodecContext;
-  AVAudioConvert* m_pConvert;;
+  AVCodecContext*     m_pCodecContext;
+  SwrContext*         m_pConvert;
   enum AVSampleFormat m_iSampleFormat;
 
   AVFrame* m_pFrame1;
@@ -59,6 +60,7 @@ protected:
   
   DllAvCodec m_dllAvCodec;
   DllAvUtil m_dllAvUtil;
+  DllSwResample m_dllSwResample;
 
 };
 
