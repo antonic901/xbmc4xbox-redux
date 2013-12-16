@@ -26,7 +26,7 @@
 #include "utils/CriticalSection.h"
 #include <queue>
 
-enum CodecID;
+enum AVCodecID;
 typedef struct stDVDAudioFrame DVDAudioFrame;
 
 
@@ -60,7 +60,7 @@ public:
   void SetDynamicRangeCompression(long drc);
   void Pause();
   void Resume();
-  bool Create(const DVDAudioFrame &audioframe, CodecID codec);
+  bool Create(const DVDAudioFrame &audioframe, AVCodecID codec);
   bool IsValidFormat(const DVDAudioFrame &audioframe);
   void Destroy();
   DWORD AddPackets(const DVDAudioFrame &audioframe);

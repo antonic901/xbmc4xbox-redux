@@ -442,7 +442,7 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
     if (iErr < 0)
     {
       CLog::Log(LOGWARNING,"could not find codec parameters for %s", strFile.c_str());
-      if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) || (m_pFormatContext->nb_streams == 1 && m_pFormatContext->streams[0]->codec->codec_id == CODEC_ID_AC3))
+      if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) || (m_pFormatContext->nb_streams == 1 && m_pFormatContext->streams[0]->codec->codec_id == AV_CODEC_ID_AC3))
       {
         // special case, our codecs can still handle it.
       }
@@ -724,7 +724,7 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
         }
 
         // we need to get duration slightly different for matroska embedded text subtitels
-        if(m_bMatroska && stream->codec->codec_id == CODEC_ID_TEXT && pkt.convergence_duration != 0)
+        if(m_bMatroska && stream->codec->codec_id == AV_CODEC_ID_TEXT && pkt.convergence_duration != 0)
           pkt.duration = pkt.convergence_duration;
 
         if(m_bAVI && stream->codec && stream->codec->codec_type == AVMEDIA_TYPE_VIDEO)
@@ -958,7 +958,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
           st->bVFR = false;
 
         // never trust pts in avi files with h264.
-        if (m_bAVI && pStream->codec->codec_id == CODEC_ID_H264)
+        if (m_bAVI && pStream->codec->codec_id == AV_CODEC_ID_H264)
           st->bPTSInvalid = true;
 
         //average fps is more accurate for mkv files
@@ -997,15 +997,15 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
 
         if ( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
         {
-          if (pStream->codec->codec_id == CODEC_ID_PROBE)
+          if (pStream->codec->codec_id == AV_CODEC_ID_PROBE)
           {
-            // fix MPEG-1/MPEG-2 video stream probe returning CODEC_ID_PROBE for still frames.
+            // fix MPEG-1/MPEG-2 video stream probe returning AV_CODEC_ID_PROBE for still frames.
             // ffmpeg issue 1871, regression from ffmpeg r22831.
             if ((pStream->id & 0xF0) == 0xE0)
             {
-              pStream->codec->codec_id = CODEC_ID_MPEG2VIDEO;
+              pStream->codec->codec_id = AV_CODEC_ID_MPEG2VIDEO;
               pStream->codec->codec_tag = MKTAG('M','P','2','V');
-              CLog::Log(LOGERROR, "%s - CODEC_ID_PROBE detected, forcing CODEC_ID_MPEG2VIDEO", __FUNCTION__);
+              CLog::Log(LOGERROR, "%s - AV_CODEC_ID_PROBE detected, forcing AV_CODEC_ID_MPEG2VIDEO", __FUNCTION__);
             }
           }
         }
@@ -1032,7 +1032,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
       }
     case AVMEDIA_TYPE_ATTACHMENT:
       { //mkv attachments. Only bothering with fonts for now.
-        if(pStream->codec->codec_id == CODEC_ID_TTF)
+        if(pStream->codec->codec_id == AV_CODEC_ID_TTF)
         {
           std::string fileName = "special://temp/fonts/";
           XFILE::CDirectory::Create(fileName);
@@ -1106,19 +1106,19 @@ void CDVDDemuxFFmpeg::AddStream(int iId)
       // id's reported from libdvdnav
       switch(m_streams[iId]->codec)
       {
-        case CODEC_ID_AC3:
+        case AV_CODEC_ID_AC3:
           m_streams[iId]->iPhysicalId = pStream->id - 128;
           break;
-        case CODEC_ID_DTS:
+        case AV_CODEC_ID_DTS:
           m_streams[iId]->iPhysicalId = pStream->id - 136;
           break;
-        case CODEC_ID_MP2:
+        case AV_CODEC_ID_MP2:
           m_streams[iId]->iPhysicalId = pStream->id - 448;
           break;
-        case CODEC_ID_PCM_S16BE:
+        case AV_CODEC_ID_PCM_S16BE:
           m_streams[iId]->iPhysicalId = pStream->id - 160;
           break;
-        case CODEC_ID_DVD_SUBTITLE:
+        case AV_CODEC_ID_DVD_SUBTITLE:
           m_streams[iId]->iPhysicalId = pStream->id - 0x20;
           break;
         default:

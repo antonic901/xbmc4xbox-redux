@@ -79,7 +79,7 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   /* if we need to downmix, do it in ffmpeg as codecs are smarter then we can ever be */
   if(g_guiSettings.GetBool("audiooutput.downmixmultichannel"))
   {
-    m_pCodecContext->request_channel_layout = CH_LAYOUT_STEREO;
+    m_pCodecContext->request_channel_layout = AV_CH_LAYOUT_STEREO;
     m_pCodecContext->request_channels       = 2;
   }
 
@@ -180,7 +180,7 @@ int CDVDAudioCodecFFmpeg::Decode(BYTE* pData, int iSize)
     if(!m_pConvert)
     {
       m_iSampleFormat = m_pCodecContext->sample_fmt;
-      m_pConvert = m_dllAvCodec.av_audio_convert_alloc(SAMPLE_FMT_S16, 1, m_pCodecContext->sample_fmt, 1, NULL, 0);
+      m_pConvert = m_dllAvCodec.av_audio_convert_alloc(AV_SAMPLE_FMT_S16, 1, m_pCodecContext->sample_fmt, 1, NULL, 0);
     }
 
     if(!m_pConvert)

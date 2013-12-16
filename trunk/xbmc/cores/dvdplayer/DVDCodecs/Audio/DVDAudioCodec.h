@@ -25,7 +25,7 @@
 
 #include <vector>
 
-enum CodecID;
+enum AVCodecID;
 struct AVStream;
 
 class CDVDStreamInfo;

@@ -22,7 +22,7 @@
 #pragma once
 
 enum StreamType;
-enum CodecID;
+enum AVCodecID;
 class CDemuxStream;
 
 class CDVDStreamInfo
@@ -41,7 +41,7 @@ public:
   void Assign(const CDVDStreamInfo &right, bool withextradata);
   void Assign(const CDemuxStream &right, bool withextradata);
 
-  CodecID codec;
+  AVCodecID codec;
   StreamType type;
 
   // VIDEO

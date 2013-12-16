@@ -129,7 +129,7 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
   CDVDCodecOptions options;
 
   // dvd's have weird still-frames in it, which is not fully supported in ffmpeg
-  if(hint.stills && (hint.codec == CODEC_ID_MPEG2VIDEO || hint.codec == CODEC_ID_MPEG1VIDEO))
+  if(hint.stills && (hint.codec == AV_CODEC_ID_MPEG2VIDEO || hint.codec == AV_CODEC_ID_MPEG1VIDEO))
   {
     if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
   }
@@ -137,7 +137,7 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
   // try to decide if we want to try halfres decoding - note some codecs such as vp8 may return bad data for fpsrate (1000)/fpsscale (1),
   // so check for sensible values, as well as for vp8 codec as it doesn't support the lowres flag.
   float pixelrate = (float)hint.width*hint.height*hint.fpsrate/hint.fpsscale;
-  if( pixelrate > 1400.0f*720.0f*30.0f && (hint.fpsrate/hint.fpsscale) < 100 && hint.codec != CODEC_ID_VP8)
+  if( pixelrate > 1400.0f*720.0f*30.0f && (hint.fpsrate/hint.fpsscale) < 100 && hint.codec != AV_CODEC_ID_VP8)
   {
     CLog::Log(LOGINFO, "CDVDFactoryCodec - High video resolution detected %dx%d, trying half resolution decoding ", hint.width, hint.height);    
     options.m_keys.push_back(CDVDCodecOption("lowres","1"));
@@ -167,7 +167,7 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
   switch (hint.codec)
   {
 #ifdef USE_LIBA52_DECODER
-  case CODEC_ID_AC3:
+  case AV_CODEC_ID_AC3:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLiba52(), hint, options );
       if( pCodec ) return pCodec;
@@ -175,7 +175,7 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
     }
 #endif
 #ifdef USE_LIBDTS_DECODER
-  case CODEC_ID_DTS:
+  case AV_CODEC_ID_DTS:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLibDts(), hint, options );
       if( pCodec ) return pCodec;
@@ -183,8 +183,8 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
     }
 #endif
 #ifdef USE_LIBMAD
-  case CODEC_ID_MP2:
-  case CODEC_ID_MP3:
+  case AV_CODEC_ID_MP2:
+  case AV_CODEC_ID_MP3:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLibMad(), hint, options );
       if( pCodec ) return pCodec;
@@ -192,40 +192,40 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
     }
 #endif
 #ifdef USE_LIBFAAD
-  case CODEC_ID_AAC:
-  //case CODEC_ID_MPEG4AAC:
+  case AV_CODEC_ID_AAC:
+  //case AV_CODEC_ID_MPEG4AAC:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLibFaad(), hint, options );
       if( pCodec ) return pCodec;
       break;
     }
 #endif
-  case CODEC_ID_PCM_S32LE:
-  case CODEC_ID_PCM_S32BE:
-  case CODEC_ID_PCM_U32LE:
-  case CODEC_ID_PCM_U32BE:
-  case CODEC_ID_PCM_S24LE:
-  case CODEC_ID_PCM_S24BE:
-  case CODEC_ID_PCM_U24LE:
-  case CODEC_ID_PCM_U24BE:
-  case CODEC_ID_PCM_S24DAUD:
-  case CODEC_ID_PCM_S16LE:
-  case CODEC_ID_PCM_S16BE:
-  case CODEC_ID_PCM_U16LE:
-  case CODEC_ID_PCM_U16BE:
-  case CODEC_ID_PCM_S8:
-  case CODEC_ID_PCM_U8:
-  case CODEC_ID_PCM_ALAW:
-  case CODEC_ID_PCM_MULAW:
+  case AV_CODEC_ID_PCM_S32LE:
+  case AV_CODEC_ID_PCM_S32BE:
+  case AV_CODEC_ID_PCM_U32LE:
+  case AV_CODEC_ID_PCM_U32BE:
+  case AV_CODEC_ID_PCM_S24LE:
+  case AV_CODEC_ID_PCM_S24BE:
+  case AV_CODEC_ID_PCM_U24LE:
+  case AV_CODEC_ID_PCM_U24BE:
+  case AV_CODEC_ID_PCM_S24DAUD:
+  case AV_CODEC_ID_PCM_S16LE:
+  case AV_CODEC_ID_PCM_S16BE:
+  case AV_CODEC_ID_PCM_U16LE:
+  case AV_CODEC_ID_PCM_U16BE:
+  case AV_CODEC_ID_PCM_S8:
+  case AV_CODEC_ID_PCM_U8:
+  case AV_CODEC_ID_PCM_ALAW:
+  case AV_CODEC_ID_PCM_MULAW:
     {
       pCodec = OpenCodec( new CDVDAudioCodecPcm(), hint, options );
       if( pCodec ) return pCodec;
       break;
     }
 #if 0
-  //case CODEC_ID_LPCM_S16BE:
-  //case CODEC_ID_LPCM_S20BE:
-  case CODEC_ID_LPCM_S24BE:
+  //case AV_CODEC_ID_LPCM_S16BE:
+  //case AV_CODEC_ID_LPCM_S20BE:
+  case AV_CODEC_ID_LPCM_S24BE:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLPcm(), hint, options );
       if( pCodec ) return pCodec;
@@ -252,11 +252,11 @@ CDVDOverlayCodec* CDVDFactoryCodec::CreateOverlayCodec( CDVDStreamInfo &hint )
 
   switch (hint.codec)
   {
-    case CODEC_ID_TEXT:
+    case AV_CODEC_ID_TEXT:
       pCodec = OpenCodec(new CDVDOverlayCodecText(), hint, options);
       if( pCodec ) return pCodec;
 
-    case CODEC_ID_SSA:
+    case AV_CODEC_ID_SSA:
       pCodec = OpenCodec(new CDVDOverlayCodecSSA(), hint, options);
       if( pCodec ) return pCodec;
 

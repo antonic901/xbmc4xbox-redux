@@ -31,7 +31,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 
-enum CodecID;
+enum AVCodecID;
 class CDemuxStreamVideo;
 class CDVDOverlayCodecCC;
 

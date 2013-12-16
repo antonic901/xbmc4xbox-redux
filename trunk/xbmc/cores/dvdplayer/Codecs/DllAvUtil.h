@@ -42,9 +42,9 @@ extern "C" {
 #endif
 
 #include "libavutil/avutil.h"
+#include "libavutil/channel_layout.h"
 #include "libavutil/crc.h"
 #include "libavutil/opt.h"
-#include "libavutil/mem.h"
 #include "libavutil/fifo.h"
 #include "libavutil/samplefmt.h"
 
@@ -115,7 +115,7 @@ public:
 class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
 {
 public:
-  DllAvUtilBase() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avutil-51.dll") {}
+  DllAvUtilBase() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avutil-52.dll") {}
 
   LOAD_SYMBOLS()
 

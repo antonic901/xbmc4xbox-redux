@@ -27,9 +27,9 @@ void CDemuxStreamAudio::GetStreamType(std::string& strInfo)
 {
   char sInfo[64];
   
-  if (codec == CODEC_ID_AC3) strcpy(sInfo, "AC3 ");
-  else if (codec == CODEC_ID_DTS) strcpy(sInfo, "DTS ");
-  else if (codec == CODEC_ID_MP2) strcpy(sInfo, "MP2 ");
+  if (codec == AV_CODEC_ID_AC3) strcpy(sInfo, "AC3 ");
+  else if (codec == AV_CODEC_ID_DTS) strcpy(sInfo, "DTS ");
+  else if (codec == AV_CODEC_ID_MP2) strcpy(sInfo, "MP2 ");
   else strcpy(sInfo, "");
     
   if (iChannels == 1) strcat(sInfo, "Mono");

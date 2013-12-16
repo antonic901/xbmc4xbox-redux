@@ -56,8 +56,8 @@ public:
   virtual int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic)=0;
   virtual void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic)=0;
   virtual AVCodec *av_codec_next(AVCodec *c)=0;
-  virtual AVAudioConvert *av_audio_convert_alloc(enum SampleFormat out_fmt, int out_channels,
-                                                 enum SampleFormat in_fmt , int in_channels,
+  virtual AVAudioConvert *av_audio_convert_alloc(enum AVSampleFormat out_fmt, int out_channels,
+                                                 enum AVSampleFormat in_fmt , int in_channels,
                                                  const float *matrix      , int flags)=0;
   virtual void av_audio_convert_free(AVAudioConvert *ctx)=0;
   virtual int av_audio_convert(AVAudioConvert *ctx,
@@ -117,8 +117,8 @@ public:
   virtual int avcodec_default_get_buffer(AVCodecContext *s, AVFrame *pic) { return ::avcodec_default_get_buffer(s, pic); }
   virtual void avcodec_default_release_buffer(AVCodecContext *s, AVFrame *pic) { ::avcodec_default_release_buffer(s, pic); }
   virtual AVCodec *av_codec_next(AVCodec *c) { return ::av_codec_next(c); }
-  virtual AVAudioConvert *av_audio_convert_alloc(enum SampleFormat out_fmt, int out_channels,
-                                                 enum SampleFormat in_fmt , int in_channels,
+  virtual AVAudioConvert *av_audio_convert_alloc(enum AVSampleFormat out_fmt, int out_channels,
+                                                 enum AVSampleFormat in_fmt , int in_channels,
                                                  const float *matrix      , int flags) 
           { return ::av_audio_convert_alloc(out_fmt, out_channels, in_fmt, in_channels, matrix, flags); }
   virtual void av_audio_convert_free(AVAudioConvert *ctx)
@@ -146,7 +146,7 @@ public:
 class DllAvCodec : public DllDynamic, DllAvCodecInterface
 {
 public:
-  DllAvCodec() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avcodec-53.dll") {}
+  DllAvCodec() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avcodec-54.dll") {}
 
   DEFINE_FUNC_ALIGNED1(void, __cdecl, avcodec_flush_buffers, AVCodecContext*)
   DEFINE_FUNC_ALIGNED3(int, __cdecl, avcodec_open2_dont_call, AVCodecContext*, AVCodec *, AVDictionary **)
@@ -173,8 +173,8 @@ public:
   DEFINE_METHOD2(int, avcodec_default_get_buffer, (AVCodecContext *p1, AVFrame *p2))
   DEFINE_METHOD2(void, avcodec_default_release_buffer, (AVCodecContext *p1, AVFrame *p2))
   DEFINE_METHOD1(AVCodec*, av_codec_next, (AVCodec *p1))
-  DEFINE_METHOD6(AVAudioConvert*, av_audio_convert_alloc, (enum SampleFormat p1, int p2,
-                                                           enum SampleFormat p3, int p4,
+  DEFINE_METHOD6(AVAudioConvert*, av_audio_convert_alloc, (enum AVSampleFormat p1, int p2,
+                                                           enum AVSampleFormat p3, int p4,
                                                            const float *p5, int p6))
   DEFINE_METHOD1(void, av_audio_convert_free, (AVAudioConvert *p1))
   DEFINE_METHOD6(int,  av_audio_convert,      (AVAudioConvert *p1,

@@ -46,7 +46,7 @@ public:
 protected:
   AVCodecContext* m_pCodecContext;
   AVAudioConvert* m_pConvert;;
-  enum SampleFormat m_iSampleFormat;
+  enum AVSampleFormat m_iSampleFormat;
 
   AVFrame* m_pFrame1;
   int   m_iBufferSize1;

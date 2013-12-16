@@ -28,7 +28,7 @@
 
 /* I really don't want to include ffmpeg headers here, could */
 /* potentially interfere with libmpeg2's, so let's just define this */
-const int CODEC_ID_MPEG1VIDEO = 1;
+const int AV_CODEC_ID_MPEG1VIDEO = 1;
 
 enum MPEGProfile
 {
