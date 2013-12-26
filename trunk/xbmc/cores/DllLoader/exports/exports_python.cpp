@@ -137,8 +137,21 @@ int xbp_rmdir(const char *dirname)
 int xbp_utime(const char *filename, struct utimbuf *times)
 {
   char* p = strdup(filename);
+  struct stat s;
+  int res;
   CORRECT_SEP_STR(p);
-  int res = utime(_P(p).c_str(), times);
+
+  // don't try to do utime on directories as it doesn't work. helps with
+  // python compatibility including python 2.7 shutil.copytree (which has
+  // additional handling for for windows, but not for us).
+  if (stat(p, &s) == 0)
+    if ((s.st_mode & S_IFDIR))
+      res = 0;
+    else
+      res = utime(_P(p).c_str(), times);
+  else
+    res = -1;
+
   free(p);
   return res;
 }
