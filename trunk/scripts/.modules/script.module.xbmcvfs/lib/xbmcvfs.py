@@ -106,3 +106,16 @@ def rmdir( path ):
         msg = "ERROR"
     xbmc.log( "[xbmcvfs] %s, rmdir(%s)" % ( msg, path ), xbmc.LOGDEBUG )
     return ( not os.path.exists( path ) )
+
+
+def listdir ( path ):
+    """ listdir(path) -- returns a tuple containing separate lists of directory and file names in given path.
+
+        example:
+          dirs, files = xbmcfs.listdir(path)
+    """
+    xbmc.log( "[xbmcvfs] listdir(%s)" % ( path ), xbmc.LOGDEBUG )
+    listdir = os.listdir( path )
+    dirs    = [ d for d in listdir if os.path.isdir ( os.path.join( path, d ) ) ]
+    files   = [ f for f in listdir if os.path.isfile( os.path.join( path, f ) ) ]
+    return dirs, files
