@@ -1,7 +1,8 @@
 #!/bin/sh
+OUT="../../../../../system/python/python27.zlib"
 cd Lib/
-rm ../python27.zlib
-zip ../python27.zlib \
+rm "$OUT"
+zip ../../../../../system/python/python27.zlib \
   -r . \
   -i \*.py \
   -x \
