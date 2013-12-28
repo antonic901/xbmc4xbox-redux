@@ -51,6 +51,7 @@
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "storage/MediaManager.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1542,7 +1543,10 @@ void CGUIWindowFileManager::SetInitialPath(const CStdString &path)
 {
   // check for a passed destination path
   CStdString strDestination = path;
-  m_rootDir.SetSources(*g_settings.GetSourcesFromType("files"));
+  VECSOURCES *shares = NULL;
+  shares = g_settings.GetSourcesFromType("files");
+  g_mediaManager.GetLocalDrives(*shares);
+  m_rootDir.SetSources(*shares);
   if (!strDestination.IsEmpty())
   {
     CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
