@@ -5001,7 +5001,7 @@ bool CVideoDatabase::GetMoviesByWhere(const CStdString& strBaseDir, const CStdSt
     if (NULL == m_pDS.get()) return false;
 
     CStdString strSQL = "select * from movieview ";
-    if (fetchSets)
+    if (fetchSets && g_guiSettings.GetBool("videolibrary.groupmoviesets"))
     {
       // not getting a set, so grab all sets that match this where clause first
       CStdString setsWhere;
