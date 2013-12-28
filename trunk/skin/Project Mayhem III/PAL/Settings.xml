@@ -182,9 +182,10 @@
 		</control>
 		<control type="button" id="6">
 			<description>My Videos</description>
+			<font>font101</font>
 			<posx>210</posx>
 			<posy>150</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-videos-focus.png</texturefocus>
 			<texturenofocus>settings-videos-nofocus.png</texturenofocus>
@@ -204,9 +205,10 @@
 		</control>
 		<control type="button" id="7">
 			<description>My Music</description>
+			<font>font101</font>
 			<posx>330</posx>
 			<posy>150</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-music-focus.png</texturefocus>
 			<texturenofocus>settings-music-nofocus.png</texturenofocus>
@@ -226,9 +228,10 @@
 		</control>
 		<control type="button" id="9">
 			<description>My Pictures</description>
+			<font>font101</font>
 			<posx>450</posx>
 			<posy>150</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-pictures-focus.png</texturefocus>
 			<texturenofocus>settings-pictures-nofocus.png</texturenofocus>
@@ -248,9 +251,10 @@
 		</control>
 		<control type="button" id="8">
 			<description>My Programs</description>
+			<font>font101</font>
 			<posx>570</posx>
 			<posy>150</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-programs-focus.png</texturefocus>
 			<texturenofocus>settings-programs-nofocus.png</texturenofocus>
@@ -270,9 +274,10 @@
 		</control>
 		<control type="button" id="10">
 			<description>My Weather</description>
+			<font>font101</font>
 			<posx>210</posx>
 			<posy>325</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-weather-focus.png</texturefocus>
 			<texturenofocus>settings-weather-nofocus.png</texturenofocus>
@@ -292,9 +297,10 @@
 		</control>
 		<control type="button" id="2">
 			<description>Network</description>
+			<font>font101</font>
 			<posx>330</posx>
 			<posy>325</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-network-focus.png</texturefocus>
 			<texturenofocus>settings-network-nofocus.png</texturenofocus>
@@ -314,9 +320,10 @@
 		</control>
 		<control type="button" id="4">
 			<description>System</description>
+			<font>font101</font>
 			<posx>450</posx>
 			<posy>325</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-system-focus.png</texturefocus>
 			<texturenofocus>settings-system-nofocus.png</texturenofocus>
@@ -336,9 +343,10 @@
 		</control>
 		<control type="button" id="3">
 			<description>Appearance</description>
+			<font>font101</font>
 			<posx>570</posx>
 			<posy>325</posy>
-			<width>120</width>
+			<width>100</width>
 			<height>100</height>
 			<texturefocus>settings-appearance-focus.png</texturefocus>
 			<texturenofocus>settings-appearance-nofocus.png</texturenofocus>
