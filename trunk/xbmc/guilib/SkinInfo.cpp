@@ -70,7 +70,7 @@ void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
     if (root && root->ValueStr() == "skin")
     {
       GetResolution(root, "defaultresolution", m_DefaultResolution);
-      if (!GetResolution(root, "defaultwideresolution", m_DefaultResolutionWide))
+      if (!GetResolution(root, "defaultresolutionwide", m_DefaultResolutionWide))
         m_DefaultResolutionWide = m_DefaultResolution;
 
       CLog::Log(LOGINFO, "Default 4:3 resolution directory is %s", URIUtils::AddFileToFolder(m_strBaseDir, GetDirFromRes(m_DefaultResolution)).c_str());
