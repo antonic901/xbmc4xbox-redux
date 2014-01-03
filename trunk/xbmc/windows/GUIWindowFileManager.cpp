@@ -1544,9 +1544,11 @@ void CGUIWindowFileManager::SetInitialPath(const CStdString &path)
   // check for a passed destination path
   CStdString strDestination = path;
   VECSOURCES *shares = NULL;
+  VECSOURCES localShares;
   shares = g_settings.GetSourcesFromType("files");
-  g_mediaManager.GetLocalDrives(*shares);
-  m_rootDir.SetSources(*shares);
+  localShares = *shares;
+  g_mediaManager.GetLocalDrives(localShares);
+  m_rootDir.SetSources(localShares);
   if (!strDestination.IsEmpty())
   {
     CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
