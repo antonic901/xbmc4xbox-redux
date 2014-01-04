@@ -449,4 +449,6 @@ protected:
   } m_EdlAutoSkipMarkers;
 
   CPlayerOptions m_PlayerOptions;
+  
+  bool m_DemuxerPausePending;
 };

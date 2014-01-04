@@ -342,7 +342,8 @@ CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
       m_messenger("player"),
       m_dvdPlayerVideo(&m_clock, &m_overlayContainer, m_messenger),
       m_dvdPlayerAudio(&m_clock, m_messenger),
-      m_dvdPlayerSubtitle(&m_overlayContainer)
+      m_dvdPlayerSubtitle(&m_overlayContainer),
+      m_DemuxerPausePending(false)
 {
   m_pDemuxer = NULL;
   m_pSubtitleDemuxer = NULL;
@@ -957,6 +958,12 @@ void CDVDPlayer::Process()
     if ((!m_dvdPlayerAudio.AcceptsData() && m_CurrentAudio.id >= 0)
     ||  (!m_dvdPlayerVideo.AcceptsData() && m_CurrentVideo.id >= 0))
     {
+      if(m_pDemuxer && m_DemuxerPausePending)
+      {
+        m_DemuxerPausePending = false;
+        m_pDemuxer->SetSpeed(DVD_PLAYSPEED_PAUSE);
+      }
+
       Sleep(10);
       continue;
     }
@@ -1952,10 +1959,14 @@ void CDVDPlayer::HandleMessages()
         m_dvdPlayerAudio.SetSpeed(speed);
         m_dvdPlayerVideo.SetSpeed(speed);
 
-        // TODO - we really shouldn't pause demuxer
-        //        until our buffers are somewhat filled
+        // We can't pause demuxer until our buffers are full. Doing so will result in continued
+        // calls to Read() which may then block indefinitely (CDVDInputStreamRTMP for example).
         if(m_pDemuxer)
-          m_pDemuxer->SetSpeed(speed);
+        {
+          m_DemuxerPausePending = (speed == DVD_PLAYSPEED_PAUSE);
+          if (!m_DemuxerPausePending)
+            m_pDemuxer->SetSpeed(speed);
+        }
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_NEXT) ||
                pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_PREV) ||
