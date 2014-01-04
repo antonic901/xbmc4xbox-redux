@@ -411,9 +411,6 @@ bool CWeather::LoadWeather(const CStdString &weatherXML)
         TiXmlElement *pDayTimeElement = pOneDayElement->FirstChildElement("part"); //grab the first day/night part (should be day)
         if (pDayTimeElement)
         {
-          if (i == 0 && (time.wHour < 7 || time.wHour >= 19)) //weather.com works on a 7am to 7pm basis so grab night if its late in the day
-            pDayTimeElement = pDayTimeElement->NextSiblingElement("part");
-
           GetString(pDayTimeElement, "icon", iTmpStr, ""); //string cause i've seen it return N/A
           if (iTmpStr == "N/A")
             m_dfForcast[i].m_icon.Format("%s128x128/na.png", WEATHER_BASE_PATH);
