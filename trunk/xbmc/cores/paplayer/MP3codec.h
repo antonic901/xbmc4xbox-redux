@@ -51,6 +51,7 @@ private:
   IAudioDecoder* m_pDecoder;    // handle to the codec.
   bool    m_Decoding;
   bool    m_CallAgainWithSameBuffer;
+  int     m_readRetries;
 
   // Input buffer to read our mp3 data into
   BYTE*         m_InputBuffer;
