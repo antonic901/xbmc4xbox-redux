@@ -1268,6 +1268,9 @@
 				Name="GUI Music"
 				Filter="">
 				<File
+					RelativePath="..\..\xbmc\\music\dialogs\GUIDialogMusicInfo.cpp">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\music\dialogs\GUIDialogMusicScan.cpp">
 				</File>
 				<File
@@ -1310,9 +1313,6 @@
 					RelativePath="..\..\xbmc\music\windows\GUIWindowMusicBase.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\\music\dialogs\GUIDialogMusicInfo.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\music\windows\GUIWindowMusicNav.cpp">
 				</File>
 				<File
@@ -1344,6 +1344,9 @@
 				Name="GUI Video"
 				Filter="">
 				<File
+					RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.cpp">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoScan.cpp">
 				</File>
 				<File
@@ -1360,9 +1363,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\\video\windows\GUIWindowVideoFiles.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\video\windows\GUIWindowVideoNav.cpp">
@@ -3100,6 +3100,12 @@
 				<File
 					RelativePath="..\..\xbmc\interfaces\info\InfoBool.h">
 				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\info\SkinVariable.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\interfaces\info\SkinVariable.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -3223,6 +3229,9 @@
 				RelativePath="..\..\xbmc\dialogs\GUIDialogKeyboard.h">
 			</File>
 			<File
+				RelativePath="..\..\xbmc\\music\dialogs\GUIDialogMusicInfo.h">
+			</File>
+			<File
 				RelativePath="..\..\xbmc\music\dialogs\GUIDialogMusicScan.h">
 			</File>
 			<File
@@ -3242,6 +3251,9 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogSubMenu.h">
+			</File>
+			<File
+				RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogVolumeBar.h">
@@ -3272,9 +3284,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\windows\GUIWindowMusicBase.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\\music\dialogs\GUIDialogMusicInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GuiWindowMusicOverlay.h">
@@ -3329,9 +3338,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\\video\windows\GUIWindowVideoFiles.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\\video\dialogs\GUIDialogVideoInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GuiWindowVideoOverlay.h">
