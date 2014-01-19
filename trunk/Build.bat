@@ -67,6 +67,9 @@ IF %XBMC_COMPILE_ANSWER% EQU 1 (
 )
 
 IF %XBMC_COMPILE_ANSWER% EQU 2 (
+  ECHO "Sorry, LTCG building is currently disabled"
+  PAUSE
+  EXIT
   SET VS_PATH=.
   SET VS_SOL=xbmc.sln
   SET VS_CONF=Release_LTCG
@@ -142,11 +145,11 @@ GOTO:EOF
   ECHO XBMC prepare menu
   ECHO ------------------------------------------------------------
   ECHO [1] Build XBMC XBE      ( for XBOX use )
-  ECHO [2] Build LTCG XBMC XBE ( for XBOX use )
+  ECHO [2] Build LTCG XBMC XBE ( for XBOX use - DISABLED/DO NOT USE)
   ECHO [3] Build DEBUG XBE     ( for XBOX use )
   ECHO [4] Build XBMC_WIN32    ( for Windows use)
   ECHO ------------------------------------------------------------
-  SET /P XBMC_COMPILE_ANSWER=Please enter the number you want to build [1/2/3/4]:
+  SET /P XBMC_COMPILE_ANSWER=Please enter the number you want to build [1/3/4]:
   GOTO:EOF
 
 :BIN_EXISTS
