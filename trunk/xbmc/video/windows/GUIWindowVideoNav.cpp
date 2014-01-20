@@ -1288,6 +1288,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       else
         item->ClearProperty("fanart_image");
 
+      Update(m_vecItems->GetPath());
       return true;
     }
   case CONTEXT_BUTTON_UPDATE_LIBRARY:
