@@ -21,10 +21,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa"
-				Optimization="3"
-				GlobalOptimizations="TRUE"
+				Optimization="1"
 				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
