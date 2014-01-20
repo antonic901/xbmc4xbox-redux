@@ -20,22 +20,18 @@ xbmc_configure ()
   --enable-gpl \
   --enable-shared \
   --disable-static \
-  --enable-w32threads \
-  --enable-memalign-hack \
+  --disable-runtime-cpudetect \
   --enable-small \
-  --enable-zlib \
   --disable-debug \
   \
+  --disable-programs \
   --disable-doc \
-  --disable-ffmpeg \
-  --disable-ffplay \
-  --disable-ffprobe \
-  --disable-ffserver \
   \
   --disable-muxers \
   --enable-muxer=spdif,adts \
   --disable-encoders \
   --disable-devices \
+  --disable-filters \
   --disable-bsfs \
   \
   --enable-postproc \
@@ -44,24 +40,11 @@ xbmc_configure ()
   \
   --disable-protocol=rtmp,rtmpe,rtmps,rtmpt,rtmpte,ffrtmphttp \
   \
-  --disable-vdpau \
-  --disable-vaapi \
-  --disable-dxva2 \
-  \
-  --disable-altivec \
   --disable-amd3dnow \
   --disable-amd3dnowext \
   --disable-sse2 \
   --disable-sse3 \
-  --disable-ssse3 \
-  --disable-avx \
-  --disable-fma4 \
-  --disable-armv5te \
-  --disable-armv6 \
-  --disable-armv6t2 \
-  --disable-vfp \
-  --disable-neon \
-  --disable-vis"
+  --disable-ssse3"
   echo "--extra-cflags=\"$CFLAGS\" --extra-ldflags=\"$LDFLAGS\" $PARAMS $1"
   ./configure --extra-cflags="$CFLAGS" --extra-ldflags="$LDFLAGS" $PARAMS $1
 }
@@ -90,11 +73,12 @@ xbmc_all ()
 {
   xbmc_clean
   xbmc_configure "\
+    --disable-parsers \
     --disable-decoders \
     --enable-decoder=mpeg4,msmpeg4v1,msmpeg4v2,msmpeg4v3 \
-    --enable-decoder=vp6,vp6a,vp6f,vp8 \
+    --enable-decoder=vp6,vp6f,vp8 \
     --enable-decoder=mp1,mp2,mp3,mpegvideo,mpeg1video,mpeg2video \
-    --enable-decoder=mjpeg,mjpegb,rawvideo \
+    --enable-decoder=mjpeg,mjpegb \
     --enable-decoder=wmav1,wmav2,wmapro,wmv1,wmv2,wmv3 \
     --enable-decoder=aac,ac3,dca,dvbsub,dvdsub,flv,h263,h264,rtp,vorbis \
     \
