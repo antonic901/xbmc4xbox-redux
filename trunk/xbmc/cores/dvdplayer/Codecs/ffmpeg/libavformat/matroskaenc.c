@@ -512,7 +512,7 @@ static int mkv_write_codecprivate(AVFormatContext *s, AVIOContext *pb, AVCodecCo
                 ret = AVERROR(EINVAL);
             }
 
-            ff_put_bmp_header(dyn_cp, codec, ff_codec_bmp_tags, 0);
+            ff_put_bmp_header(dyn_cp, codec, ff_codec_bmp_tags, 0, 0);
         }
 
     } else if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -567,7 +567,7 @@ static int mkv_write_tracks(AVFormatContext *s)
             continue;
         }
 
-        if (!bit_depth)
+        if (!bit_depth && codec->codec_id != AV_CODEC_ID_ADPCM_G726)
             bit_depth = av_get_bytes_per_sample(codec->sample_fmt) << 3;
         if (!bit_depth)
             bit_depth = codec->bits_per_coded_sample;
