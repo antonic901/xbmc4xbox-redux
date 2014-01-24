@@ -82,7 +82,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
 
   // allow non spec compliant speedup tricks
   if (g_guiSettings.GetBool("videoplayer.fast"))
-    m_pCodecContext->flags |= CODEC_FLAG2_FAST;
+    m_pCodecContext->flags2 |= CODEC_FLAG2_FAST;
 
   // if we don't do this, then some codecs seem to fail.
   m_pCodecContext->coded_height = hints.height;
