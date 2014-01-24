@@ -93,9 +93,6 @@ bool CDVDAudioCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
       memcpy(m_pCodecContext->extradata, hints.extradata, hints.extrasize);
     }
   }
-  
-  // set acceleration
-  m_pCodecContext->dsp_mask = AV_CPU_FLAG_FORCE | AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE;
 
   m_pCodecContext->request_sample_fmt = AV_SAMPLE_FMT_S16;
 

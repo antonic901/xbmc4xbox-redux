@@ -96,9 +96,6 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
     memcpy(m_pCodecContext->extradata, hints.extradata, hints.extrasize);
   }
 
-  // set acceleration
-  m_pCodecContext->dsp_mask = AV_CPU_FLAG_FORCE | AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE;
-
   AVDiscard discardVals[] = {AVDISCARD_DEFAULT, AVDISCARD_NONREF, AVDISCARD_BIDIR, AVDISCARD_NONKEY, AVDISCARD_ALL};
   AVDiscard avDiscard = discardVals[g_guiSettings.GetInt("videoplayer.skiploopfilter")];
   if (avDiscard != AVDISCARD_DEFAULT)

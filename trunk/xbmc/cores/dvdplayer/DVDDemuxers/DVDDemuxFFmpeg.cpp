@@ -241,6 +241,8 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
     return false;
   }
 
+  m_dllAvUtil.av_force_cpu_flags(AV_CPU_FLAG_MMX | AV_CPU_FLAG_MMXEXT | AV_CPU_FLAG_SSE);
+
   // register codecs
   m_dllAvFormat.av_register_all();
 
