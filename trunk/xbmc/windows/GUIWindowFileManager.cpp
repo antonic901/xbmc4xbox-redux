@@ -544,7 +544,7 @@ void CGUIWindowFileManager::OnClick(int iList, int iItem)
   {
     if (CGUIDialogMediaSource::ShowAndAddMediaSource("files"))
     {
-      m_rootDir.SetSources(g_settings.m_fileSources);
+      SetSourcesWithLocal(*g_settings.GetSourcesFromType("files"));
       Update(0,m_Directory[0]->GetPath());
       Update(1,m_Directory[1]->GetPath());
     }
@@ -1235,7 +1235,7 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     // and do the popup menu
     if (CGUIDialogContextMenu::SourcesMenu("files", pItem, posX, posY))
     {
-      m_rootDir.SetSources(g_settings.m_fileSources);
+      SetSourcesWithLocal(*g_settings.GetSourcesFromType("files"));
       if (m_Directory[1 - list]->IsVirtualDirectoryRoot())
         Refresh();
       else
@@ -1543,12 +1543,7 @@ void CGUIWindowFileManager::SetInitialPath(const CStdString &path)
 {
   // check for a passed destination path
   CStdString strDestination = path;
-  VECSOURCES *shares = NULL;
-  VECSOURCES localShares;
-  shares = g_settings.GetSourcesFromType("files");
-  localShares = *shares;
-  g_mediaManager.GetLocalDrives(localShares);
-  m_rootDir.SetSources(localShares);
+  SetSourcesWithLocal(*g_settings.GetSourcesFromType("files"));
   if (!strDestination.IsEmpty())
   {
     CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
@@ -1667,4 +1662,10 @@ bool CGUIWindowFileManager::MoveItem(const CFileItem *pItem, const CStdString& s
 const CFileItem& CGUIWindowFileManager::CurrentDirectory(int indx) const
 {
   return *m_Directory[indx];
+}
+
+void CGUIWindowFileManager::SetSourcesWithLocal(VECSOURCES sources)
+{
+  g_mediaManager.GetLocalDrives(sources);
+  m_rootDir.SetSources(sources);
 }

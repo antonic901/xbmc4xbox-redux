@@ -93,6 +93,7 @@ protected:
   void OnPopupMenu(int iList, int iItem, bool bContextDriven = true);
   void ShowShareErrorMessage(CFileItem* pItem);
   void UpdateItemCounts();
+  void SetSourcesWithLocal(VECSOURCES sources);
 
   // 
   bool bCheckShareConnectivity;
