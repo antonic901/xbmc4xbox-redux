@@ -85,7 +85,7 @@ xbmc_all ()
     --disable-demuxers \
     --enable-demuxer=mp1,mp2,mp3,mpegps,mpegts,mpegtsraw,mpegvideo \
     --enable-demuxer=aac,ac3,dts,asf,avi,flv,h263,h264,ogg,matroska,mov \
-    --enable-demuxer=nuv,sdp,rtsp,applehttp,xmv \
+    --enable-demuxer=hls,nuv,sdp,rtsp,applehttp,xmv \
   "
   xbmc_make ../../../../../system/players/dvdplayer/
   xbmc_clean
