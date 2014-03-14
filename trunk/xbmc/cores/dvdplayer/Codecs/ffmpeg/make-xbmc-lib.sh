@@ -73,7 +73,6 @@ xbmc_all ()
 {
   xbmc_clean
   xbmc_configure "\
-    --disable-parsers \
     --disable-decoders \
     --enable-decoder=mpeg4,msmpeg4v1,msmpeg4v2,msmpeg4v3 \
     --enable-decoder=vp6,vp6f,vp8 \
