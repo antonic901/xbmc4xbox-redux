@@ -221,7 +221,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
         g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
 
         CStdString strLanguagePath;
-        strLanguagePath.Format("special://xbmc/language/%s/strings.xml", m_strNewLanguage.c_str());
+        strLanguagePath.Format("special://xbmc/language/%s", m_strNewLanguage.c_str());
         g_localizeStrings.Load(strLanguagePath);
 
         // also tell our weather to reload, as this must be localized

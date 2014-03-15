@@ -223,8 +223,6 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CStdString& path, bool saveToDisk
     URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
     URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
     URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
-    URIUtils::AddFileToFolder(pathToLanguageFile, "strings.xml", pathToLanguageFile);
-    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "strings.xml", pathToFallbackLanguageFile);
     // Load language strings temporarily
     g_localizeStringsTemp.Load(pathToLanguageFile, pathToFallbackLanguageFile);
 

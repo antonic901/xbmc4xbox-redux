@@ -380,6 +380,7 @@ public:
   void LoadXML(TiXmlElement *pRootElement, bool hideSettings = false);
   void SaveXML(TiXmlNode *pRootNode);
   void LoadMasterLock(TiXmlElement *pRootElement);
+  bool SetLanguage(const CStdString &strLanguage);
 
   //m_LookAndFeelResolution holds the real gui resolution,
   //also when g_guiSettings.GetInt("videoscreen.resolution") is set to AUTORES

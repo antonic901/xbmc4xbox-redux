@@ -85,8 +85,6 @@ namespace PYXBMC
     URIUtils::AddFileToFolder(languageFallbackPath, "language", languageFallbackPath);
     URIUtils::AddFileToFolder(languagePath, g_guiSettings.GetString("locale.language"), languagePath);
     URIUtils::AddFileToFolder(languageFallbackPath, defaultLanguage, languageFallbackPath);
-    URIUtils::AddFileToFolder(languagePath, "strings.xml", languagePath);
-    URIUtils::AddFileToFolder(languageFallbackPath, "strings.xml", languageFallbackPath);
 
     // Load language strings
     self->pLanguage->Clear();
