@@ -1,0 +1,8274 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+
+msgctxt "#0"
+msgid "Programs"
+msgstr "プログラム"
+
+msgctxt "#1"
+msgid "Pictures"
+msgstr "ピクチャ"
+
+msgctxt "#2"
+msgid "Music"
+msgstr "ミュージック"
+
+msgctxt "#3"
+msgid "Videos"
+msgstr "ビデオ"
+
+msgctxt "#4"
+msgid "TV-Guide"
+msgstr "テレビガイド"
+
+msgctxt "#5"
+msgid "Settings"
+msgstr "設定"
+
+msgctxt "#6"
+msgid "XBMC SVN"
+msgstr "XBMC SVN"
+
+msgctxt "#7"
+msgid "File manager"
+msgstr "ファイル"
+
+msgctxt "#8"
+msgid "Weather"
+msgstr "天気予報"
+
+msgctxt "#9"
+msgid "xbmc media center"
+msgstr "xbmc media center"
+
+msgctxt "#11"
+msgid "Monday"
+msgstr "月曜日"
+
+msgctxt "#12"
+msgid "Tuesday"
+msgstr "火曜日"
+
+msgctxt "#13"
+msgid "Wednesday"
+msgstr "水曜日"
+
+msgctxt "#14"
+msgid "Thursday"
+msgstr "木曜日"
+
+msgctxt "#15"
+msgid "Friday"
+msgstr "金曜日"
+
+msgctxt "#16"
+msgid "Saturday"
+msgstr "土曜日"
+
+msgctxt "#17"
+msgid "Sunday"
+msgstr "日曜日"
+
+msgctxt "#21"
+msgid "January"
+msgstr "1月"
+
+msgctxt "#22"
+msgid "February"
+msgstr "2月"
+
+msgctxt "#23"
+msgid "March"
+msgstr "3月"
+
+msgctxt "#24"
+msgid "April"
+msgstr "4月"
+
+msgctxt "#25"
+msgid "May"
+msgstr "5月"
+
+msgctxt "#26"
+msgid "June"
+msgstr "6月"
+
+msgctxt "#27"
+msgid "July"
+msgstr "7月"
+
+msgctxt "#28"
+msgid "August"
+msgstr "8月"
+
+msgctxt "#29"
+msgid "September"
+msgstr "9月"
+
+msgctxt "#30"
+msgid "October"
+msgstr "10月"
+
+msgctxt "#31"
+msgid "November"
+msgstr "11月"
+
+msgctxt "#32"
+msgid "December"
+msgstr "12月"
+
+msgctxt "#41"
+msgid "Mon"
+msgstr ""
+
+msgctxt "#42"
+msgid "Tue"
+msgstr ""
+
+msgctxt "#43"
+msgid "Wed"
+msgstr ""
+
+msgctxt "#44"
+msgid "Thu"
+msgstr ""
+
+msgctxt "#45"
+msgid "Fri"
+msgstr ""
+
+msgctxt "#46"
+msgid "Sat"
+msgstr ""
+
+msgctxt "#47"
+msgid "Sun"
+msgstr ""
+
+msgctxt "#51"
+msgid "Jan"
+msgstr ""
+
+msgctxt "#52"
+msgid "Feb"
+msgstr ""
+
+msgctxt "#53"
+msgid "Mar"
+msgstr ""
+
+msgctxt "#54"
+msgid "Apr"
+msgstr ""
+
+msgctxt "#55"
+msgid "May"
+msgstr ""
+
+msgctxt "#56"
+msgid "Jun"
+msgstr ""
+
+msgctxt "#57"
+msgid "Jul"
+msgstr ""
+
+msgctxt "#58"
+msgid "Aug"
+msgstr ""
+
+msgctxt "#59"
+msgid "Sep"
+msgstr ""
+
+msgctxt "#60"
+msgid "Oct"
+msgstr ""
+
+msgctxt "#61"
+msgid "Nov"
+msgstr ""
+
+msgctxt "#62"
+msgid "Dec"
+msgstr ""
+
+msgctxt "#98"
+msgid "View: Auto"
+msgstr "表示: 自動"
+
+msgctxt "#99"
+msgid "View: Auto big"
+msgstr "表示: 自動(大)"
+
+msgctxt "#100"
+msgid "View: Icons"
+msgstr "表示: アイコン(小)"
+
+msgctxt "#101"
+msgid "View: List"
+msgstr "表示: リスト"
+
+msgctxt "#102"
+msgid "Scan"
+msgstr "スキャン"
+
+msgctxt "#103"
+msgid "Sort by: Name"
+msgstr "ソート: 名前"
+
+msgctxt "#104"
+msgid "Sort by: Date"
+msgstr "ソート: 日付"
+
+msgctxt "#105"
+msgid "Sort by: Size"
+msgstr "ソート: サイズ"
+
+msgctxt "#106"
+msgid "No"
+msgstr "いいえ"
+
+msgctxt "#107"
+msgid "Yes"
+msgstr "はい"
+
+msgctxt "#108"
+msgid "Slideshow"
+msgstr "スライドショー"
+
+msgctxt "#109"
+msgid "Create thumbs"
+msgstr "サムネイル作成"
+
+msgctxt "#110"
+msgid "Create thumbnails"
+msgstr "サムネイル(複数)作成"
+
+msgctxt "#111"
+msgid "Shortcuts"
+msgstr "ショートカット"
+
+msgctxt "#112"
+msgid "Paused"
+msgstr "一時停止"
+
+msgctxt "#115"
+msgid "Copy"
+msgstr "コピー"
+
+msgctxt "#116"
+msgid "Move"
+msgstr "移動"
+
+msgctxt "#117"
+msgid "Delete"
+msgstr "削除"
+
+msgctxt "#118"
+msgid "Rename"
+msgstr "名前の変更"
+
+msgctxt "#119"
+msgid "New folder"
+msgstr "新しいフォルダ"
+
+msgctxt "#120"
+msgid "Confirm file copy"
+msgstr "コピーの確認"
+
+msgctxt "#121"
+msgid "Confirm file move"
+msgstr "移動の確認"
+
+msgctxt "#122"
+msgid "Confirm file delete?"
+msgstr "削除の確認"
+
+msgctxt "#123"
+msgid "Copy these files?"
+msgstr "コピーしますか？"
+
+msgctxt "#124"
+msgid "Move these files?"
+msgstr "移動しますか？"
+
+msgctxt "#125"
+msgid "Delete these files? - Deleting files cannot be undone!"
+msgstr "削除しますか？"
+
+msgctxt "#126"
+msgid "Status"
+msgstr "ステータス"
+
+msgctxt "#127"
+msgid "Objects"
+msgstr "オブジェクト"
+
+msgctxt "#128"
+msgid "General"
+msgstr "一般"
+
+msgctxt "#129"
+msgid "Slideshow"
+msgstr "スライドショー"
+
+msgctxt "#130"
+msgid "System info"
+msgstr "システム情報"
+
+msgctxt "#131"
+msgid "Display"
+msgstr "画面"
+
+msgctxt "#132"
+msgid "Albums"
+msgstr "アルバム"
+
+msgctxt "#133"
+msgid "Artists"
+msgstr "アーティスト"
+
+msgctxt "#134"
+msgid "Songs"
+msgstr "曲"
+
+msgctxt "#135"
+msgid "Genres"
+msgstr "ジャンル"
+
+msgctxt "#136"
+msgid "Playlists"
+msgstr "プレイリスト"
+
+msgctxt "#137"
+msgid "Search"
+msgstr "検索"
+
+msgctxt "#138"
+msgid "System Information"
+msgstr "システム情報"
+
+msgctxt "#139"
+msgid "Temperatures:"
+msgstr "温度:"
+
+msgctxt "#140"
+msgid "CPU:"
+msgstr "CPU:"
+
+msgctxt "#141"
+msgid "GPU:"
+msgstr "GPU:"
+
+msgctxt "#142"
+msgid "Time:"
+msgstr "時間:"
+
+msgctxt "#143"
+msgid "Current:"
+msgstr "現在:"
+
+msgctxt "#144"
+msgid "Build:"
+msgstr "ビルド:"
+
+msgctxt "#145"
+msgid "Network:"
+msgstr "ネットワーク:"
+
+msgctxt "#146"
+msgid "Type:"
+msgstr "タイプ:"
+
+msgctxt "#147"
+msgid "Static"
+msgstr "固定"
+
+msgctxt "#148"
+msgid "DHCP"
+msgstr "DHCP"
+
+msgctxt "#149"
+msgid "MAC address"
+msgstr "MACアドレス"
+
+msgctxt "#150"
+msgid "IP address"
+msgstr "IPアドレス"
+
+msgctxt "#151"
+msgid "Link:"
+msgstr "リンク: "
+
+msgctxt "#152"
+msgid "Half duplex"
+msgstr "半二重"
+
+msgctxt "#153"
+msgid "Full duplex"
+msgstr "全二重"
+
+msgctxt "#154"
+msgid "Storage"
+msgstr "ストレージ"
+
+msgctxt "#155"
+msgid "Drive"
+msgstr "ドライブ"
+
+msgctxt "#156"
+msgid "Free"
+msgstr "空き"
+
+msgctxt "#157"
+msgid "Video"
+msgstr "ビデオ"
+
+msgctxt "#158"
+msgid "Free memory"
+msgstr "空きメモリー"
+
+msgctxt "#159"
+msgid "No link"
+msgstr "リンクしていません"
+
+msgctxt "#160"
+msgid "Free"
+msgstr "空き"
+
+msgctxt "#161"
+msgid "Unavailable"
+msgstr "利用不可"
+
+msgctxt "#162"
+msgid "Tray open"
+msgstr "ﾄﾚｰは開いています"
+
+msgctxt "#163"
+msgid "Reading"
+msgstr "読み込み中..."
+
+msgctxt "#164"
+msgid "No disc"
+msgstr "ディスク無し"
+
+msgctxt "#165"
+msgid "Disc present"
+msgstr "ディスク有り"
+
+msgctxt "#166"
+msgid "Skin"
+msgstr "スキン"
+
+msgctxt "#167"
+msgid "Enable FTP server"
+msgstr "FTPサーバーを有効"
+
+msgctxt "#168"
+msgid "Enable Internet time synchronization"
+msgstr "自動時刻合わせを有効"
+
+msgctxt "#169"
+msgid "Resolution"
+msgstr "映像方式・サイズ"
+
+msgctxt "#170"
+msgid "Adjust display refresh rate to match video"
+msgstr ""
+
+msgctxt "#172"
+msgid "Release date"
+msgstr "発売日"
+
+msgctxt "#173"
+msgid "Display 4:3 videos as"
+msgstr ""
+
+msgctxt "#175"
+msgid "Moods"
+msgstr "トーン"
+
+msgctxt "#176"
+msgid "Styles"
+msgstr "スタイル"
+
+msgctxt "#179"
+msgid "Song"
+msgstr "曲"
+
+msgctxt "#180"
+msgid "Duration"
+msgstr "長さ"
+
+msgctxt "#181"
+msgid "Select album"
+msgstr "アルバムの選択"
+
+msgctxt "#182"
+msgid "Tracks"
+msgstr "トラック"
+
+msgctxt "#183"
+msgid "Review"
+msgstr "批評"
+
+msgctxt "#184"
+msgid "Refresh"
+msgstr "更新"
+
+msgctxt "#185"
+msgid "Searching album"
+msgstr "アルバムの検索"
+
+msgctxt "#186"
+msgid "OK"
+msgstr "OK"
+
+msgctxt "#187"
+msgid "No albums found!"
+msgstr "アルバムが見つかりません！"
+
+msgctxt "#188"
+msgid "Select all"
+msgstr "全て選択"
+
+msgctxt "#189"
+msgid "Scanning media info"
+msgstr "メディア情報のスキャン"
+
+msgctxt "#190"
+msgid "Save"
+msgstr "保存"
+
+msgctxt "#191"
+msgid "Shuffle"
+msgstr "シャッフル"
+
+msgctxt "#192"
+msgid "Clear"
+msgstr "削除"
+
+msgctxt "#193"
+msgid "Scan"
+msgstr "スキャン"
+
+msgctxt "#194"
+msgid "Searching..."
+msgstr "検索中..."
+
+msgctxt "#195"
+msgid "No info found!"
+msgstr "No info found!"
+
+msgctxt "#196"
+msgid "Select movie:"
+msgstr "ビデオの選択:"
+
+msgctxt "#197"
+msgid "Querying %s info"
+msgstr "Querying %s info"
+
+msgctxt "#198"
+msgid "Loading movie details"
+msgstr "ビデオの詳細を読込中..."
+
+msgctxt "#202"
+msgid "Tagline"
+msgstr "公開時コピー"
+
+msgctxt "#203"
+msgid "Plot outline"
+msgstr "概要"
+
+msgctxt "#205"
+msgid "Votes:"
+msgstr "投票結果:"
+
+msgctxt "#206"
+msgid "Cast"
+msgstr "出演者"
+
+msgctxt "#207"
+msgid "Plot"
+msgstr "ストーリー"
+
+msgctxt "#208"
+msgid "Play"
+msgstr "再生"
+
+msgctxt "#209"
+msgid "Next"
+msgstr "次へ"
+
+msgctxt "#210"
+msgid "Previous"
+msgstr "前へ"
+
+msgctxt "#213"
+msgid "Calibrate user interface..."
+msgstr "UI設定"
+
+msgctxt "#214"
+msgid "Video calibration..."
+msgstr "画面の補正"
+
+msgctxt "#215"
+msgid "Soften"
+msgstr "ソフト化"
+
+msgctxt "#216"
+msgid "Zoom amount"
+msgstr "拡大"
+
+msgctxt "#217"
+msgid "Pixel ratio"
+msgstr "ピクセル比"
+
+msgctxt "#218"
+msgid "DVD drive"
+msgstr "DVDドライブ"
+
+msgctxt "#219"
+msgid "Please insert disc"
+msgstr "ディスクを入れて下さい"
+
+msgctxt "#220"
+msgid "Remote share"
+msgstr "リモート共有"
+
+msgctxt "#221"
+msgid "Network is not connected"
+msgstr "ネットワークに接続されていません"
+
+msgctxt "#222"
+msgid "Cancel"
+msgstr "中止"
+
+msgctxt "#224"
+msgid "Speed"
+msgstr "表示時間"
+
+msgctxt "#226"
+msgid "Test patterns..."
+msgstr ""
+
+msgctxt "#227"
+msgid "Lookup audio CD track names from freedb.org"
+msgstr "Lookup audio CDs on freedb"
+
+msgctxt "#228"
+msgid "Shuffle playlist on load"
+msgstr "プレイリストのランダム再生"
+
+msgctxt "#229"
+msgid "HDD spindown time"
+msgstr "HDD停止までの時間(分)"
+
+msgctxt "#230"
+msgid "Video filters"
+msgstr "フィルタ"
+
+msgctxt "#231"
+msgid "None"
+msgstr "無し"
+
+msgctxt "#232"
+msgid "Point"
+msgstr "ポイントフィルタ"
+
+msgctxt "#233"
+msgid "Linear"
+msgstr "バイリニア補間(ｼｬｰﾌﾟ)"
+
+msgctxt "#234"
+msgid "Anisotropic"
+msgstr "異方性ﾌｨﾙﾀﾘﾝｸﾞ(ﾉｰﾏﾙ)"
+
+msgctxt "#235"
+msgid "Quincunx"
+msgstr "クインカンクス(ｿﾌﾄ)"
+
+msgctxt "#236"
+msgid "Gaussian cubic"
+msgstr "ガウスｷｭｰﾋﾞｯｸ(ﾍﾞﾘ-ｿﾌﾄ)"
+
+msgctxt "#237"
+msgid "Minification"
+msgstr "縮小ﾌｨﾙﾀﾘﾝｸﾞ"
+
+msgctxt "#238"
+msgid "Magnification"
+msgstr "拡大ﾌｨﾙﾀﾘﾝｸﾞ"
+
+msgctxt "#239"
+msgid "Clear playlist on finish"
+msgstr "終了時 プレイリストを消去"
+
+msgctxt "#240"
+msgid "Autoplay DVD-Video"
+msgstr ""
+
+msgctxt "#241"
+msgid "Autoplay VCD/SVCD"
+msgstr ""
+
+msgctxt "#242"
+msgid "Autoplay Audio-CD"
+msgstr ""
+
+msgctxt "#243"
+msgid "Autoplay Xbox games"
+msgstr ""
+
+msgctxt "#244"
+msgid "Autoplay videos"
+msgstr ""
+
+msgctxt "#245"
+msgid "Autoplay music"
+msgstr ""
+
+msgctxt "#246"
+msgid "Autoplay pictures"
+msgstr ""
+
+msgctxt "#247"
+msgid "Scripts"
+msgstr "スクリプト"
+
+msgctxt "#248"
+msgid "Language"
+msgstr "言語"
+
+msgctxt "#249"
+msgid "Music"
+msgstr "音楽"
+
+msgctxt "#250"
+msgid "Visualization"
+msgstr "視覚エフェクト"
+
+msgctxt "#251"
+msgid "Select destination directory"
+msgstr "ディレクトリの選択"
+
+msgctxt "#252"
+msgid "Output stereo to all speakers"
+msgstr "すべてのスピーカーへ出力"
+
+msgctxt "#253"
+msgid "Number of channels"
+msgstr "チャンネル数"
+
+msgctxt "#254"
+msgid "- DTS capable receiver"
+msgstr "- DTSレシーバーを有効"
+
+msgctxt "#255"
+msgid "CDDB"
+msgstr "CDDB"
+
+msgctxt "#256"
+msgid "Fetching CD information"
+msgstr "CDDB情報をフリーサーバーから検索"
+
+msgctxt "#257"
+msgid "Error"
+msgstr "エラー"
+
+msgctxt "#258"
+msgid "Enable tag reading"
+msgstr "タグを読み込む"
+
+msgctxt "#259"
+msgid "Opening"
+msgstr "開始"
+
+msgctxt "#260"
+msgid "Shoutcast"
+msgstr "SHOUTcast"
+
+msgctxt "#261"
+msgid "Waiting for start..."
+msgstr "お待ち下さい..."
+
+msgctxt "#262"
+msgid "Scripts output"
+msgstr "スクリプト出力"
+
+msgctxt "#263"
+msgid "Allow control of XBMC via HTTP"
+msgstr "Webサーバーを有効"
+
+msgctxt "#264"
+msgid "Record"
+msgstr "録音"
+
+msgctxt "#265"
+msgid "Stop Rec."
+msgstr "録音の停止"
+
+msgctxt "#266"
+msgid "Sort by: Track"
+msgstr "ソート: トラック"
+
+msgctxt "#267"
+msgid "Sort by: Time"
+msgstr "ソート: 時間"
+
+msgctxt "#268"
+msgid "Sort by: Title"
+msgstr "ソート: タイトル"
+
+msgctxt "#269"
+msgid "Sort by: Artist"
+msgstr "ソート: アーティスト"
+
+msgctxt "#270"
+msgid "Sort by: Album"
+msgstr "ソート: アルバム"
+
+msgctxt "#271"
+msgid "Top 100"
+msgstr "トップ100"
+
+msgctxt "#272"
+msgid "Top-Left overscan compensation"
+msgstr "左側上部枠の補正"
+
+msgctxt "#273"
+msgid "Bottom-Right overscan compensation"
+msgstr "右側下部枠の補正"
+
+msgctxt "#274"
+msgid "Subtitle positioning"
+msgstr "字幕の位置"
+
+msgctxt "#275"
+msgid "Pixel ratio adjustment"
+msgstr "ピクセル比の調整"
+
+msgctxt "#276"
+msgid "Adjust the arrow to change the amount of overscan"
+msgstr "画面位置の調整"
+
+msgctxt "#277"
+msgid "Adjust the bar to change the subtitles position"
+msgstr "字幕位置の調整"
+
+msgctxt "#278"
+msgid "Adjust the rectangle so it is perfectly square"
+msgstr "正方形になるように調整して下さい"
+
+msgctxt "#279"
+msgid "Unable to load settings"
+msgstr "設定が読み込めません"
+
+msgctxt "#280"
+msgid "Using default settings"
+msgstr "設定の初期化"
+
+msgctxt "#281"
+msgid "Please check the XML files"
+msgstr ".xmlファイルをチェックして下さい"
+
+msgctxt "#282"
+msgid "Found %i items"
+msgstr "%iアイテムを発見しました"
+
+msgctxt "#283"
+msgid "Search results"
+msgstr "検索結果"
+
+msgctxt "#284"
+msgid "No results found"
+msgstr "見つかりませんでした"
+
+msgctxt "#286"
+msgid "Post-processing filter"
+msgstr "ポスト処理フィルタ"
+
+msgctxt "#287"
+msgid "Subtitles"
+msgstr "字幕"
+
+msgctxt "#288"
+msgid "Font"
+msgstr "フォント"
+
+msgctxt "#289"
+msgid "- Size"
+msgstr "- サイズ:"
+
+msgctxt "#290"
+msgid "Dynamic range compression"
+msgstr "Dynamic Range Compression"
+
+msgctxt "#291"
+msgid "Video"
+msgstr "ビデオ"
+
+msgctxt "#292"
+msgid "Audio"
+msgstr "オーディオ"
+
+msgctxt "#293"
+msgid "Browse for subtitles"
+msgstr "Browse for Subtitles"
+
+msgctxt "#294"
+msgid "Create bookmark"
+msgstr "ﾌﾞｯｸﾏｰｸの作成"
+
+msgctxt "#296"
+msgid "Clear bookmarks"
+msgstr "ﾌﾞｯｸﾏｰｸの削除"
+
+msgctxt "#297"
+msgid "Audio offset"
+msgstr "音声遅延"
+
+msgctxt "#298"
+msgid "Bookmarks"
+msgstr "Bookmarks"
+
+msgctxt "#299"
+msgid "- AAC capable receiver"
+msgstr ""
+
+msgctxt "#300"
+msgid "- MP1 capable receiver"
+msgstr ""
+
+msgctxt "#301"
+msgid "- MP2 capable receiver"
+msgstr ""
+
+msgctxt "#302"
+msgid "- MP3 capable receiver"
+msgstr ""
+
+msgctxt "#303"
+msgid "Delay"
+msgstr "字幕遅延"
+
+msgctxt "#304"
+msgid "Language"
+msgstr "言語"
+
+msgctxt "#305"
+msgid "Enabled"
+msgstr "字幕有効"
+
+msgctxt "#306"
+msgid "Non-interleaved"
+msgstr "非インターリーブ"
+
+msgctxt "#307"
+msgid "- Automatic post-processing"
+msgstr "- 自動ポスト処理"
+
+msgctxt "#308"
+msgid "- Vertical deblocking filter"
+msgstr "- 垂直方向ﾌﾞﾛｯｸ軽減ﾌｨﾙﾀ"
+
+msgctxt "#309"
+msgid "- Horizontal deblocking filter"
+msgstr "- 水平方向ﾌﾞﾛｯｸ軽減ﾌｨﾙﾀ"
+
+msgctxt "#310"
+msgid "- Auto brightness/contrast"
+msgstr "- 明るさ/コントラストの自動化"
+
+msgctxt "#311"
+msgid "- Dering"
+msgstr "- ﾘﾝｷﾞﾝｸﾞﾉｲｽﾞ軽減ﾌｨﾙﾀ"
+
+msgctxt "#312"
+msgid "(0=auto)"
+msgstr "(0=自動)"
+
+msgctxt "#313"
+msgid "Cleaning database"
+msgstr "データベースを更新します"
+
+msgctxt "#314"
+msgid "Preparing..."
+msgstr "準備中..."
+
+msgctxt "#315"
+msgid "Database error"
+msgstr "データベースエラー"
+
+msgctxt "#316"
+msgid "Searching songs..."
+msgstr "曲の検索中..."
+
+msgctxt "#317"
+msgid "Cleaned database successfully"
+msgstr "データベースを更新しました"
+
+msgctxt "#318"
+msgid "Cleaning songs..."
+msgstr "曲の更新中..."
+
+msgctxt "#319"
+msgid "Error cleaning songs"
+msgstr "曲を更新できません"
+
+msgctxt "#320"
+msgid "Cleaning artists..."
+msgstr "アーティストの更新中..."
+
+msgctxt "#321"
+msgid "Error cleaning artists"
+msgstr "アーティストを更新できません"
+
+msgctxt "#322"
+msgid "Cleaning genres..."
+msgstr "ジャンルの更新中..."
+
+msgctxt "#323"
+msgid "Error cleaning genres"
+msgstr "ジャンルを更新できません"
+
+msgctxt "#324"
+msgid "Cleaning paths..."
+msgstr "パスの更新中..."
+
+msgctxt "#325"
+msgid "Error cleaning paths"
+msgstr "パスを更新できません"
+
+msgctxt "#326"
+msgid "Cleaning albums..."
+msgstr "アルバムの更新中..."
+
+msgctxt "#327"
+msgid "Error cleaning albums"
+msgstr "アルバムを更新できません"
+
+msgctxt "#328"
+msgid "Writing changes..."
+msgstr "変更を書き込み中..."
+
+msgctxt "#329"
+msgid "Error writing changes"
+msgstr "書き込みができません"
+
+msgctxt "#330"
+msgid "This may take some time..."
+msgstr "しばらくお待ち下さい..."
+
+msgctxt "#331"
+msgid "Compressing database..."
+msgstr "データベースの圧縮中..."
+
+msgctxt "#332"
+msgid "Error compressing database"
+msgstr "データベースを圧縮できません"
+
+msgctxt "#333"
+msgid "Do you want to clean the library?"
+msgstr "データベースを消去しますか？"
+
+msgctxt "#334"
+msgid "Clean library..."
+msgstr "データベースの更新"
+
+msgctxt "#335"
+msgid "Start"
+msgstr "実行"
+
+msgctxt "#336"
+msgid "Framerate conversion"
+msgstr "フレームレートの調整"
+
+msgctxt "#337"
+msgid "Audio output"
+msgstr "音声の出力"
+
+msgctxt "#338"
+msgid "Analog"
+msgstr "アナログ"
+
+msgctxt "#339"
+msgid "Digital"
+msgstr "デジタル"
+
+msgctxt "#340"
+msgid "Various artists"
+msgstr "色々なアーティスト"
+
+msgctxt "#341"
+msgid "Play disc"
+msgstr "Discの再生"
+
+msgctxt "#342"
+msgid "Movies"
+msgstr "映画"
+
+msgctxt "#343"
+msgid "Adjust framerate"
+msgstr "フレームレートの調整"
+
+msgctxt "#344"
+msgid "Actors"
+msgstr "俳優"
+
+msgctxt "#345"
+msgid "Year"
+msgstr "公開年"
+
+msgctxt "#350"
+msgid "Programs"
+msgstr "プログラム"
+
+msgctxt "#351"
+msgid "Off"
+msgstr "OFF"
+
+msgctxt "#352"
+msgid "Dim"
+msgstr "薄"
+
+msgctxt "#353"
+msgid "Black"
+msgstr "黒"
+
+msgctxt "#354"
+msgid "Matrix trails"
+msgstr "マトリックス"
+
+msgctxt "#355"
+msgid "Screensaver time"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰ起動時間"
+
+msgctxt "#356"
+msgid "Screensaver mode"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰモード"
+
+msgctxt "#357"
+msgid "Shutdown function timer"
+msgstr "ｼｬｯﾄﾀﾞｳﾝまでの時間"
+
+msgctxt "#358"
+msgid "All albums"
+msgstr "全てのアルバム"
+
+msgctxt "#359"
+msgid "Recently added albums"
+msgstr "最近追加されたアルバム"
+
+msgctxt "#360"
+msgid "Screensaver"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰ"
+
+msgctxt "#361"
+msgid "R. Slideshow"
+msgstr "R.ｽﾗｲﾄﾞｼｮｰ"
+
+msgctxt "#362"
+msgid "Screensaver dim level"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰのﾌｪｰﾄﾞﾚﾍﾞﾙ(%)"
+
+msgctxt "#363"
+msgid "Sort by: File"
+msgstr "ソート: ファイル"
+
+msgctxt "#364"
+msgid "- Dolby Digital (AC3) capable receiver"
+msgstr "- AC3レシーバーを有効"
+
+msgctxt "#365"
+msgid "Sort by: Name"
+msgstr "ソート: 名前"
+
+msgctxt "#366"
+msgid "Sort by: Year"
+msgstr "ソート: 公開年"
+
+msgctxt "#367"
+msgid "Sort by: Rating"
+msgstr "ソート: 評価"
+
+msgctxt "#368"
+msgid "IMDb"
+msgstr "IMDb"
+
+msgctxt "#369"
+msgid "Title"
+msgstr "タイトル"
+
+msgctxt "#370"
+msgid "Thunderstorms"
+msgstr "雷雨"
+
+msgctxt "#371"
+msgid "Partly"
+msgstr "時々"
+
+msgctxt "#372"
+msgid "Mostly"
+msgstr "ほぼ"
+
+msgctxt "#373"
+msgid "Sunny"
+msgstr "晴れ"
+
+msgctxt "#374"
+msgid "Cloudy"
+msgstr "曇り"
+
+msgctxt "#375"
+msgid "Snow"
+msgstr "雪"
+
+msgctxt "#376"
+msgid "Rain"
+msgstr "雨"
+
+msgctxt "#377"
+msgid "Light"
+msgstr "小"
+
+msgctxt "#378"
+msgid "AM"
+msgstr "午前中"
+
+msgctxt "#379"
+msgid "PM"
+msgstr "午後から"
+
+msgctxt "#380"
+msgid "Showers"
+msgstr "にわか雨"
+
+msgctxt "#381"
+msgid "Few"
+msgstr "わずかな"
+
+msgctxt "#382"
+msgid "Scattered"
+msgstr "所々"
+
+msgctxt "#383"
+msgid "Wind"
+msgstr "風"
+
+msgctxt "#384"
+msgid "Strong"
+msgstr "強い"
+
+msgctxt "#385"
+msgid "Fair"
+msgstr "好天"
+
+msgctxt "#386"
+msgid "Clear"
+msgstr "快晴"
+
+msgctxt "#387"
+msgid "Clouds"
+msgstr "曇り"
+
+msgctxt "#388"
+msgid "Early"
+msgstr "早朝"
+
+msgctxt "#389"
+msgid "Shower"
+msgstr "にわか雨"
+
+msgctxt "#390"
+msgid "Flurries"
+msgstr "曇り一時雨又は雪"
+
+msgctxt "#391"
+msgid "Low"
+msgstr "Low"
+
+msgctxt "#392"
+msgid "Medium"
+msgstr "Medium"
+
+msgctxt "#393"
+msgid "High"
+msgstr "High"
+
+msgctxt "#394"
+msgid "Fog"
+msgstr "霧"
+
+msgctxt "#395"
+msgid "Haze"
+msgstr "もや"
+
+msgctxt "#396"
+msgid "Select location"
+msgstr "場所の選択"
+
+msgctxt "#397"
+msgid "Refresh time"
+msgstr "更新時間"
+
+msgctxt "#398"
+msgid "Temperature units"
+msgstr "気温単位"
+
+msgctxt "#399"
+msgid "Speed units"
+msgstr "風速単位"
+
+msgctxt "#400"
+msgid "Weather"
+msgstr "天気"
+
+msgctxt "#401"
+msgid "Temp"
+msgstr "現在の気温"
+
+msgctxt "#402"
+msgid "Feels like"
+msgstr "体感温度"
+
+msgctxt "#403"
+msgid "UV index"
+msgstr "紫外線指数"
+
+msgctxt "#404"
+msgid "Wind"
+msgstr "風"
+
+msgctxt "#405"
+msgid "Dew point"
+msgstr "結露点"
+
+msgctxt "#406"
+msgid "Humidity"
+msgstr "湿度"
+
+msgctxt "#407"
+msgid "From"
+msgstr "From"
+
+msgctxt "#408"
+msgid "at"
+msgstr "at"
+
+msgctxt "#409"
+msgid "Defaults"
+msgstr "Defaults"
+
+msgctxt "#410"
+msgid "Accessing weather service"
+msgstr "Weather.comへ接続中"
+
+msgctxt "#411"
+msgid "Getting weather for:"
+msgstr "天気を取得中:"
+
+msgctxt "#412"
+msgid "Unable to get weather data"
+msgstr "天気を取得できません"
+
+msgctxt "#413"
+msgid "Manual"
+msgstr "マニュアル"
+
+msgctxt "#414"
+msgid "No review for this album"
+msgstr "このアルバムのレビューはありません"
+
+msgctxt "#415"
+msgid "Downloading thumbnail..."
+msgstr "サムネイルの取得中..."
+
+msgctxt "#416"
+msgid "Not available"
+msgstr "利用できません"
+
+msgctxt "#417"
+msgid "View: Big icons"
+msgstr "表示: アイコン(大)"
+
+msgctxt "#418"
+msgid "Enable Library"
+msgstr ""
+
+msgctxt "#422"
+msgid "Delete album info"
+msgstr "アルバム情報の削除"
+
+msgctxt "#423"
+msgid "Delete CD information"
+msgstr "CDDB情報の削除"
+
+msgctxt "#424"
+msgid "Select"
+msgstr "選択"
+
+msgctxt "#425"
+msgid "No album information found"
+msgstr "アルバム情報が見つかりません"
+
+msgctxt "#426"
+msgid "No CD information found"
+msgstr "CDDB情報が見つかりません"
+
+msgctxt "#427"
+msgid "Disc"
+msgstr "ディスク"
+
+msgctxt "#428"
+msgid "Insert correct CD/DVD"
+msgstr "正しいCD/DVDを入れて下さい"
+
+msgctxt "#429"
+msgid "Please insert the following CD/DVD"
+msgstr "次のCD/DVDを挿入して下さい"
+
+msgctxt "#430"
+msgid "Sort by: DVD#"
+msgstr "ソート: DVD#"
+
+msgctxt "#431"
+msgid "No cache"
+msgstr "ｷｬｯｼｭしない"
+
+msgctxt "#432"
+msgid "Remove movie from library"
+msgstr "Remove Movie from library"
+
+msgctxt "#433"
+msgid "Really remove '%s'?"
+msgstr "Really remove '%s'?"
+
+msgctxt "#437"
+msgid "Removable disk"
+msgstr "Removable Disk"
+
+msgctxt "#438"
+msgid "Opening file"
+msgstr "ファイルを開く"
+
+msgctxt "#439"
+msgid "MPlayer cache"
+msgstr "キャッシュ"
+
+msgctxt "#440"
+msgid "Harddisk"
+msgstr "ハードディスク"
+
+msgctxt "#441"
+msgid "UDF"
+msgstr "UDF"
+
+msgctxt "#442"
+msgid "Local network"
+msgstr "LAN"
+
+msgctxt "#443"
+msgid "Internet"
+msgstr "インターネット"
+
+msgctxt "#444"
+msgid "Video"
+msgstr "ビデオ"
+
+msgctxt "#445"
+msgid "Audio"
+msgstr "ｵｰﾃﾞｨｵ"
+
+msgctxt "#446"
+msgid "DVD"
+msgstr "DVD"
+
+msgctxt "#447"
+msgid "Autorun media"
+msgstr "自動再生"
+
+msgctxt "#448"
+msgid "LCD"
+msgstr "LCD"
+
+msgctxt "#449"
+msgid "Enabled"
+msgstr "LCD有効"
+
+msgctxt "#450"
+msgid "Columns"
+msgstr "文字数"
+
+msgctxt "#451"
+msgid "Row 1 address"
+msgstr "１行目のアドレス"
+
+msgctxt "#452"
+msgid "Row 2 address"
+msgstr "２行目のアドレス"
+
+msgctxt "#453"
+msgid "Row 3 address"
+msgstr "３行目のアドレス"
+
+msgctxt "#454"
+msgid "Row 4 address"
+msgstr "４行目のアドレス"
+
+msgctxt "#455"
+msgid "Rows"
+msgstr "行数"
+
+msgctxt "#456"
+msgid "Mode"
+msgstr "モード"
+
+msgctxt "#457"
+msgid "Switch view"
+msgstr "スイッチビュー"
+
+msgctxt "#459"
+msgid "Subs"
+msgstr "サブ"
+
+msgctxt "#460"
+msgid "Audio stream"
+msgstr "音声"
+
+msgctxt "#461"
+msgid "[active]"
+msgstr "[アクティブ]"
+
+msgctxt "#462"
+msgid "Subtitle"
+msgstr "字幕"
+
+msgctxt "#463"
+msgid "Backlight"
+msgstr "バックライト"
+
+msgctxt "#464"
+msgid "Brightness"
+msgstr "明るさ"
+
+msgctxt "#465"
+msgid "Contrast"
+msgstr "ｺﾝﾄﾗｽﾄ"
+
+msgctxt "#466"
+msgid "Gamma"
+msgstr "ガンマ"
+
+msgctxt "#467"
+msgid "Type"
+msgstr "タイプ"
+
+msgctxt "#468"
+msgid "Move the bar to change the OSD position"
+msgstr "OSD位置の調節"
+
+msgctxt "#469"
+msgid "OSD position"
+msgstr "OSDの位置"
+
+msgctxt "#470"
+msgid "Credits"
+msgstr "クレジット"
+
+msgctxt "#471"
+msgid "Modchip"
+msgstr "MODチップ"
+
+msgctxt "#474"
+msgid "Off"
+msgstr "OFF"
+
+msgctxt "#475"
+msgid "Music only"
+msgstr "音楽のみ"
+
+msgctxt "#476"
+msgid "Music & video"
+msgstr "音楽 & ビデオ"
+
+msgctxt "#477"
+msgid "Unable to load playlist"
+msgstr "プレイリストをロードできません"
+
+msgctxt "#478"
+msgid "OSD"
+msgstr "OSD"
+
+msgctxt "#479"
+msgid "Skin & language"
+msgstr "スキン＆言語"
+
+msgctxt "#480"
+msgid "Appearance"
+msgstr "外観"
+
+msgctxt "#481"
+msgid "Audio options"
+msgstr "ｵｰﾃﾞｨｵ設定"
+
+msgctxt "#482"
+msgid "About XBMC"
+msgstr "XBMCについて"
+
+msgctxt "#483"
+msgid "DVDPlayer cache"
+msgstr ""
+
+msgctxt "#485"
+msgid "Delete album"
+msgstr "アルバムの削除"
+
+msgctxt "#486"
+msgid "Repeat"
+msgstr "リピート"
+
+msgctxt "#487"
+msgid "Repeat one"
+msgstr "個別リピート"
+
+msgctxt "#488"
+msgid "Repeat folder"
+msgstr "フォルダごとのリピート"
+
+msgctxt "#489"
+msgid "Play the next song automatically"
+msgstr "次のアイテムを自動再生"
+
+msgctxt "#491"
+msgid "- Use big icons"
+msgstr "- アイコン大の使用"
+
+msgctxt "#492"
+msgid "Resize VobSubs"
+msgstr "字幕の大きさ"
+
+msgctxt "#493"
+msgid "Advanced options (Experts Only!)"
+msgstr "高度な設定 (エキスパート専用)"
+
+msgctxt "#494"
+msgid "Overall audio headroom"
+msgstr "全体の音量(dB)"
+
+msgctxt "#495"
+msgid "Upsample videos to GUI resolution"
+msgstr "ビデオをGUIの解像度に合わせる"
+
+msgctxt "#496"
+msgid "Calibration"
+msgstr "設定"
+
+msgctxt "#497"
+msgid "Show file extensions"
+msgstr "拡張子を隠す"
+
+msgctxt "#498"
+msgid "Sort by: Type"
+msgstr "ソート: タイプ"
+
+msgctxt "#499"
+msgid "Unable to connect to online lookup service"
+msgstr "www.allmusic.comに接続できません"
+
+msgctxt "#500"
+msgid "Downloading album information failed"
+msgstr "アルバム情報の取得に失敗しました"
+
+msgctxt "#501"
+msgid "Looking for album names..."
+msgstr "アルバム名を探しています..."
+
+msgctxt "#502"
+msgid "Open"
+msgstr "開"
+
+msgctxt "#503"
+msgid "Busy"
+msgstr "ビジー"
+
+msgctxt "#504"
+msgid "Empty"
+msgstr "空"
+
+msgctxt "#505"
+msgid "Loading media info from files..."
+msgstr "ファイルからメディア情報を読み込んでいます..."
+
+msgctxt "#507"
+msgid "Sort by: Usage"
+msgstr "ソート: 回数"
+
+msgctxt "#510"
+msgid "Enable visualizations"
+msgstr "視覚エフェクトを有効"
+
+msgctxt "#511"
+msgid "Enable video mode switching"
+msgstr "ビデオモードを変更"
+
+msgctxt "#512"
+msgid "Startup window"
+msgstr "起動画面"
+
+msgctxt "#513"
+msgid "Home window"
+msgstr "メニュー画面"
+
+msgctxt "#514"
+msgid "Manual settings"
+msgstr "手動設定"
+
+msgctxt "#515"
+msgid "Genre"
+msgstr "ジャンル"
+
+msgctxt "#516"
+msgid "Make stored archives with one file transparent"
+msgstr ""
+
+msgctxt "#517"
+msgid "Recently played albums"
+msgstr "最近再生されたアルバム"
+
+msgctxt "#518"
+msgid "Launch"
+msgstr "実行"
+
+msgctxt "#519"
+msgid "Launch in..."
+msgstr "Launch in..."
+
+msgctxt "#520"
+msgid "Edit XBE title"
+msgstr "XBEタイトル編集"
+
+msgctxt "#521"
+msgid "Compilations"
+msgstr "コンピレーション"
+
+msgctxt "#522"
+msgid "Remove source"
+msgstr "このソースを削除"
+
+msgctxt "#523"
+msgid "Switch media"
+msgstr "Switch Media"
+
+msgctxt "#524"
+msgid "Select playlist"
+msgstr "Select Playlist"
+
+msgctxt "#525"
+msgid "New playlist..."
+msgstr "New Playlist..."
+
+msgctxt "#526"
+msgid "Add to playlist"
+msgstr "Add To Playlist"
+
+msgctxt "#527"
+msgid "Manually add to library"
+msgstr "Manually Add To Library"
+
+msgctxt "#528"
+msgid "Enter title"
+msgstr "Enter Title"
+
+msgctxt "#529"
+msgid "Error: Duplicate title"
+msgstr "Error: Duplicate title"
+
+msgctxt "#530"
+msgid "Select genre"
+msgstr "Select Genre"
+
+msgctxt "#531"
+msgid "New genre"
+msgstr "New Genre"
+
+msgctxt "#532"
+msgid "Manual addition"
+msgstr "Manual Addition"
+
+msgctxt "#533"
+msgid "Enter genre"
+msgstr "Enter Genre"
+
+msgctxt "#534"
+msgid "View: %s"
+msgstr "View: %s"
+
+msgctxt "#535"
+msgid "List"
+msgstr "List"
+
+msgctxt "#536"
+msgid "Icons"
+msgstr "Icons"
+
+msgctxt "#537"
+msgid "Big list"
+msgstr "Big List"
+
+msgctxt "#538"
+msgid "Big icons"
+msgstr "Big Icons"
+
+msgctxt "#539"
+msgid "Wide"
+msgstr "Wide"
+
+msgctxt "#540"
+msgid "Big wide"
+msgstr "Big Wide"
+
+msgctxt "#541"
+msgid "Album icons"
+msgstr "Album Icons"
+
+msgctxt "#542"
+msgid "DVD icons"
+msgstr "DVD Icons"
+
+msgctxt "#543"
+msgid "DVD"
+msgstr "DVD"
+
+msgctxt "#544"
+msgid "Media info"
+msgstr "Media Info"
+
+msgctxt "#545"
+msgid "Audio output device"
+msgstr "Audio Output Device"
+
+msgctxt "#546"
+msgid "Passthrough output device"
+msgstr "Passthrough Output Device"
+
+msgctxt "#547"
+msgid "No biography for this artist"
+msgstr "No biography for this artist"
+
+msgctxt "#548"
+msgid "Downmix multichannel audio to stereo"
+msgstr ""
+
+msgctxt "#550"
+msgid "Sort by: %s"
+msgstr "Sort by: %s"
+
+msgctxt "#551"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "#552"
+msgid "Date"
+msgstr "Date"
+
+msgctxt "#553"
+msgid "Size"
+msgstr "Size"
+
+msgctxt "#554"
+msgid "Track"
+msgstr "Track"
+
+msgctxt "#555"
+msgid "Time"
+msgstr "Time"
+
+msgctxt "#556"
+msgid "Title"
+msgstr "Title"
+
+msgctxt "#557"
+msgid "Artist"
+msgstr "アーティスト"
+
+msgctxt "#558"
+msgid "Album"
+msgstr "Album"
+
+msgctxt "#559"
+msgid "Playlist"
+msgstr "Playlist"
+
+msgctxt "#560"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "#561"
+msgid "File"
+msgstr "File"
+
+msgctxt "#562"
+msgid "Year"
+msgstr "公開年"
+
+msgctxt "#563"
+msgid "Rating"
+msgstr "評価"
+
+msgctxt "#564"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "#565"
+msgid "Usage"
+msgstr "Usage"
+
+msgctxt "#566"
+msgid "Album artist"
+msgstr "Album Artist"
+
+msgctxt "#567"
+msgid "Play count"
+msgstr "Play Count"
+
+msgctxt "#568"
+msgid "Last played"
+msgstr "Last Played"
+
+msgctxt "#569"
+msgid "Comment"
+msgstr "Comment"
+
+msgctxt "#570"
+msgid "Date added"
+msgstr "Date Added"
+
+msgctxt "#571"
+msgid "Default"
+msgstr "Default"
+
+msgctxt "#572"
+msgid "Studio"
+msgstr "スタジオ"
+
+msgctxt "#573"
+msgid "Path"
+msgstr "Path"
+
+msgctxt "#574"
+msgid "Country"
+msgstr ""
+
+msgctxt "#575"
+msgid "In progress"
+msgstr ""
+
+msgctxt "#580"
+msgid "Sort direction"
+msgstr "ソート順"
+
+msgctxt "#581"
+msgid "Sort method"
+msgstr "ソート方法"
+
+msgctxt "#582"
+msgid "View mode"
+msgstr "表示モード"
+
+msgctxt "#583"
+msgid "Remember views for different folders"
+msgstr "Remember views for different folders"
+
+msgctxt "#584"
+msgid "Ascending"
+msgstr "昇順"
+
+msgctxt "#585"
+msgid "Descending"
+msgstr "降順"
+
+msgctxt "#586"
+msgid "Edit playlist"
+msgstr "プレイリストを編集"
+
+msgctxt "#587"
+msgid "Filter"
+msgstr "Filter"
+
+msgctxt "#588"
+msgid "Cancel party mode"
+msgstr "Cancel Party Mode"
+
+msgctxt "#589"
+msgid "Party mode"
+msgstr "Party Mode"
+
+msgctxt "#590"
+msgid "Random"
+msgstr "Random"
+
+msgctxt "#591"
+msgid "Off"
+msgstr "Off"
+
+msgctxt "#592"
+msgid "One"
+msgstr "One"
+
+msgctxt "#593"
+msgid "All"
+msgstr "All"
+
+msgctxt "#594"
+msgid "Off"
+msgstr "Off"
+
+msgctxt "#595"
+msgid "Repeat: Off"
+msgstr "Repeat: Off"
+
+msgctxt "#596"
+msgid "Repeat: One"
+msgstr "Repeat: One"
+
+msgctxt "#597"
+msgid "Repeat: All"
+msgstr "Repeat: All"
+
+msgctxt "#600"
+msgid "Rip audio CD"
+msgstr "CD録音"
+
+msgctxt "#601"
+msgid "Medium"
+msgstr "ミディアム(低音質)"
+
+msgctxt "#602"
+msgid "Standard"
+msgstr "スタンダード(中音質)"
+
+msgctxt "#603"
+msgid "Extreme"
+msgstr "エクストリーム(高音質)"
+
+msgctxt "#604"
+msgid "Constant bitrate"
+msgstr "固定ビットレート"
+
+msgctxt "#605"
+msgid "Ripping..."
+msgstr "リッピング中..."
+
+msgctxt "#607"
+msgid "To:"
+msgstr "保存先:"
+
+msgctxt "#608"
+msgid "Could not rip CD or track"
+msgstr "CD or Trackを録音できません"
+
+msgctxt "#609"
+msgid "CDDARipPath is not set."
+msgstr "XboxMediaCenter.xmlの中にCDDARipパスが設定されていません"
+
+msgctxt "#610"
+msgid "Rip audio track"
+msgstr "Rip Audio Track"
+
+msgctxt "#611"
+msgid "Enter number"
+msgstr "Enter number"
+
+msgctxt "#620"
+msgid "Audio CDs"
+msgstr "CDリッピング"
+
+msgctxt "#621"
+msgid "Encoder"
+msgstr "エンコーダ"
+
+msgctxt "#622"
+msgid "Quality"
+msgstr "品質"
+
+msgctxt "#623"
+msgid "Bitrate"
+msgstr "ビットレート"
+
+msgctxt "#624"
+msgid "Include track number"
+msgstr "トラック番号を含む"
+
+msgctxt "#625"
+msgid "All songs of"
+msgstr "全ての曲"
+
+msgctxt "#629"
+msgid "View mode"
+msgstr "画面モード"
+
+msgctxt "#630"
+msgid "Normal"
+msgstr "ノーマル"
+
+msgctxt "#631"
+msgid "Zoom"
+msgstr "ズーム"
+
+msgctxt "#632"
+msgid "Stretch 4:3"
+msgstr "画面比 4:3"
+
+msgctxt "#633"
+msgid "Stretch 14:9"
+msgstr "画面比 14:9"
+
+msgctxt "#634"
+msgid "Stretch 16:9"
+msgstr "画面比 16:9"
+
+msgctxt "#635"
+msgid "Original Size"
+msgstr "オリジナルサイズ"
+
+msgctxt "#636"
+msgid "Custom"
+msgstr "カスタム"
+
+msgctxt "#637"
+msgid "Replay gain"
+msgstr "再生音量平均化"
+
+msgctxt "#638"
+msgid "Replaygain volume adjustments"
+msgstr "モード"
+
+msgctxt "#639"
+msgid "Use track levels"
+msgstr "トラックレベル使用"
+
+msgctxt "#640"
+msgid "Use album levels"
+msgstr "アルバムレベル使用"
+
+msgctxt "#641"
+msgid "PreAmp Level - Replay gained files"
+msgstr "ﾌﾟﾘｱﾝﾌﾟﾚﾍﾞﾙ - 平均化したﾌｧｲﾙを基準"
+
+msgctxt "#642"
+msgid "PreAmp Level - Non replay gained files"
+msgstr "ﾌﾟﾘｱﾝﾌﾟﾚﾍﾞﾙ - 平均化ﾌｧｲﾙを基準にしない"
+
+msgctxt "#643"
+msgid "Avoid clipping on replay gained files"
+msgstr "平均化したﾌｧｲﾙのｸﾘｯﾋﾟﾝｸﾞを避ける"
+
+msgctxt "#644"
+msgid "Crop black bars"
+msgstr "ｸﾛｯﾌﾟ ﾌﾞﾗｯｸ ﾊﾞｰ"
+
+msgctxt "#645"
+msgid "Need to unpack a big file. Continue?"
+msgstr "大きなﾌｧｲﾙを解凍する必要があります。続けますか?"
+
+msgctxt "#646"
+msgid "Remove from library"
+msgstr "ライブラリから削除"
+
+msgctxt "#647"
+msgid "Export video library"
+msgstr "Export Video Library"
+
+msgctxt "#648"
+msgid "Import video library"
+msgstr "Import Video Library"
+
+msgctxt "#649"
+msgid "Importing"
+msgstr "Importing"
+
+msgctxt "#650"
+msgid "Exporting"
+msgstr "Exporting"
+
+msgctxt "#651"
+msgid "Browse for library"
+msgstr "Browse for Library"
+
+msgctxt "#652"
+msgid "Years"
+msgstr "製作年"
+
+msgctxt "#653"
+msgid "Update library"
+msgstr "ライブラリを更新"
+
+msgctxt "#654"
+msgid "Show debug info"
+msgstr "Show Debug Info"
+
+msgctxt "#655"
+msgid "Browse for executable"
+msgstr "Browse for Executable"
+
+msgctxt "#656"
+msgid "Browse for playlist"
+msgstr "Browse for Playlist"
+
+msgctxt "#657"
+msgid "Browse for folder"
+msgstr "Browse for Folder"
+
+msgctxt "#658"
+msgid "Song information"
+msgstr "詳細情報"
+
+msgctxt "#660"
+msgid "Volume amplification"
+msgstr "Volume Amplification"
+
+msgctxt "#661"
+msgid "Choose export folder"
+msgstr "Choose Export Folder"
+
+msgctxt "#662"
+msgid "This file is no longer available."
+msgstr ""
+
+msgctxt "#663"
+msgid "Would you like to remove it from the library?"
+msgstr ""
+
+msgctxt "#664"
+msgid "Browse for Script"
+msgstr ""
+
+msgctxt "#665"
+msgid "Compression level"
+msgstr ""
+
+msgctxt "#700"
+msgid "Cleaning up library"
+msgstr "データベースの整理"
+
+msgctxt "#701"
+msgid "Removing old songs from the library"
+msgstr "データベースから古い曲を削除します"
+
+msgctxt "#702"
+msgid "This path has been scanned before"
+msgstr "このパスは以前にスキャンしました"
+
+msgctxt "#705"
+msgid "Network"
+msgstr "ネットワーク"
+
+msgctxt "#706"
+msgid "- Server"
+msgstr "- HTTPプロキシ ホスト"
+
+msgctxt "#707"
+msgid "HTTP proxy port"
+msgstr ""
+
+msgctxt "#708"
+msgid "Use an HTTP proxy server to access the internet"
+msgstr "HTTPプロキシを有効"
+
+msgctxt "#709"
+msgid "HTTP proxy username"
+msgstr ""
+
+msgctxt "#710"
+msgid "HTTP proxy password"
+msgstr ""
+
+msgctxt "#711"
+msgid "Internet Protocol (IP)"
+msgstr "インターネット プロトコル(IP)"
+
+msgctxt "#712"
+msgid "Invalid port specified. Value must be between 1 and 65535."
+msgstr "無効なポートです。1から65535の間で設定して下さい"
+
+msgctxt "#713"
+msgid "HTTP proxy"
+msgstr "HTTPプロキシ"
+
+msgctxt "#715"
+msgid "- Assignment"
+msgstr "接続方式"
+
+msgctxt "#716"
+msgid "Automatic (DHCP)"
+msgstr "自動 (DHCP)"
+
+msgctxt "#717"
+msgid "Manual (Static)"
+msgstr "手動 (固定)"
+
+msgctxt "#718"
+msgid "Default (Dashboard)"
+msgstr "ﾃﾞﾌｫﾙﾄ(ﾀﾞｯｼｭﾎﾞｰﾄﾞ)"
+
+msgctxt "#719"
+msgid "- IP address"
+msgstr "- IPアドレス"
+
+msgctxt "#720"
+msgid "- Netmask"
+msgstr "- ネットマスク"
+
+msgctxt "#721"
+msgid "- Default gateway"
+msgstr "- デフォルト ゲートウェイ"
+
+msgctxt "#722"
+msgid "- DNS server"
+msgstr "- DNSサーバー"
+
+msgctxt "#723"
+msgid "Save & restart"
+msgstr "設定の保存 & 再起動"
+
+msgctxt "#724"
+msgid "Invalid address specified. Value must be AAA.BBB.CCC.DDD"
+msgstr "無効なｱﾄﾞﾚｽです。AAA.BBB.CCC.DDDの様に記述して下さい"
+
+msgctxt "#725"
+msgid "with numbers between 0 and 255."
+msgstr "0から255の間から選んで下さい"
+
+msgctxt "#726"
+msgid "Changes not saved. Continue without saving?"
+msgstr "変更は保存されません 本当によろしいですか？"
+
+msgctxt "#727"
+msgid "Web server"
+msgstr "Webサーバー"
+
+msgctxt "#728"
+msgid "FTP server"
+msgstr "FTPサーバー"
+
+msgctxt "#729"
+msgid "Internet time"
+msgstr "インターネット タイム"
+
+msgctxt "#730"
+msgid "- Port"
+msgstr "- Webサーバー ポート"
+
+msgctxt "#731"
+msgid "Time server host"
+msgstr "- タイムサーバー ホスト"
+
+msgctxt "#732"
+msgid "Save & apply"
+msgstr "設定の保存"
+
+msgctxt "#733"
+msgid "- Password"
+msgstr "- Webサーバー ﾊﾟｽﾜｰﾄﾞ"
+
+msgctxt "#734"
+msgid "No pass"
+msgstr "No Pass"
+
+msgctxt "#735"
+msgid "- Character set"
+msgstr "文字コード"
+
+msgctxt "#736"
+msgid "- Style"
+msgstr "- スタイル:"
+
+msgctxt "#737"
+msgid "- Colour"
+msgstr "- カラー:"
+
+msgctxt "#738"
+msgid "Normal"
+msgstr "ノーマル"
+
+msgctxt "#739"
+msgid "Bold"
+msgstr "太字"
+
+msgctxt "#740"
+msgid "Italics"
+msgstr "斜体"
+
+msgctxt "#741"
+msgid "Bold italics"
+msgstr "太字+斜体"
+
+msgctxt "#742"
+msgid "White"
+msgstr "白色"
+
+msgctxt "#743"
+msgid "Yellow"
+msgstr "黄色"
+
+msgctxt "#744"
+msgid "Files"
+msgstr "ファイル"
+
+msgctxt "#745"
+msgid "No scanned information for this view"
+msgstr "スキャン情報はありませんでした"
+
+msgctxt "#746"
+msgid "Please turn off library mode"
+msgstr "ファイルビューに切り替えます"
+
+msgctxt "#747"
+msgid "Error loading image"
+msgstr "イメージロード出来ません"
+
+msgctxt "#748"
+msgid "Edit path"
+msgstr "パスの編集"
+
+msgctxt "#749"
+msgid "Mirror image"
+msgstr "Mirror Image"
+
+msgctxt "#750"
+msgid "Are you sure?"
+msgstr "よろしいですか？"
+
+msgctxt "#751"
+msgid "Removing source"
+msgstr "Removing Source"
+
+msgctxt "#754"
+msgid "Add program link"
+msgstr "プログラムリンクの追加"
+
+msgctxt "#755"
+msgid "Edit program path"
+msgstr "プログラムパスの編集"
+
+msgctxt "#756"
+msgid "Edit program name"
+msgstr "プログラム名の編集"
+
+msgctxt "#757"
+msgid "Edit path depth"
+msgstr "パスの階層の編集"
+
+msgctxt "#759"
+msgid "View: Big list"
+msgstr "表示: リスト(大)"
+
+msgctxt "#760"
+msgid "Yellow"
+msgstr "黄色"
+
+msgctxt "#761"
+msgid "White"
+msgstr "白色"
+
+msgctxt "#762"
+msgid "Blue"
+msgstr "青色"
+
+msgctxt "#763"
+msgid "Bright green"
+msgstr "明るい緑色"
+
+msgctxt "#764"
+msgid "Yellow green"
+msgstr "黄緑色"
+
+msgctxt "#765"
+msgid "Cyan"
+msgstr "青緑色"
+
+msgctxt "#766"
+msgid "Light grey"
+msgstr "Reserved"
+
+msgctxt "#767"
+msgid "Grey"
+msgstr "Reserved"
+
+msgctxt "#770"
+msgid "Error %i: share not available"
+msgstr "エラー %i: 利用不可"
+
+msgctxt "#771"
+msgid "- Auto FATX limiter"
+msgstr "- FTP転送時 FATX制限に沿わせる"
+
+msgctxt "#772"
+msgid "Audio output"
+msgstr "ｵｰﾃﾞｨｵ ﾊｰﾄﾞｳｪｱ"
+
+msgctxt "#773"
+msgid "Seeking"
+msgstr "シーク中"
+
+msgctxt "#774"
+msgid "Slideshow folder"
+msgstr "スライドショーフォルダ"
+
+msgctxt "#775"
+msgid "Network interface"
+msgstr ""
+
+msgctxt "#776"
+msgid "- Wireless network name (ESSID)"
+msgstr ""
+
+msgctxt "#777"
+msgid "- Wireless password"
+msgstr ""
+
+msgctxt "#778"
+msgid "- Wireless security"
+msgstr ""
+
+msgctxt "#779"
+msgid "Save and apply network interface settings"
+msgstr ""
+
+msgctxt "#780"
+msgid "No encryption"
+msgstr ""
+
+msgctxt "#781"
+msgid "WEP"
+msgstr ""
+
+msgctxt "#782"
+msgid "WPA"
+msgstr ""
+
+msgctxt "#783"
+msgid "WPA2"
+msgstr ""
+
+msgctxt "#784"
+msgid "Applying network interface settings. Please wait."
+msgstr ""
+
+msgctxt "#785"
+msgid "Network interface restarted successfully."
+msgstr ""
+
+msgctxt "#786"
+msgid "Network interface did not start successfully."
+msgstr ""
+
+msgctxt "#787"
+msgid "Interface disabled"
+msgstr ""
+
+msgctxt "#788"
+msgid "Network interface disabled successfully."
+msgstr ""
+
+msgctxt "#789"
+msgid "Wireless network name (ESSID)"
+msgstr ""
+
+msgctxt "#790"
+msgid "Event server"
+msgstr ""
+
+msgctxt "#791"
+msgid "Allow programs on this system to control XBMC"
+msgstr "Enable Event Server"
+
+msgctxt "#792"
+msgid "Port"
+msgstr "Event Server Port"
+
+msgctxt "#793"
+msgid "Port range"
+msgstr "Event Server Port Range"
+
+msgctxt "#794"
+msgid "Allow programs on other systems to control XBMC"
+msgstr "Allow other computers to connect"
+
+msgctxt "#795"
+msgid "Initial repeat delay (ms)"
+msgstr "Initial Repeat Delay (ms)"
+
+msgctxt "#796"
+msgid "Continuous repeat delay (ms)"
+msgstr "Continuous Repeat Delay (ms)"
+
+msgctxt "#797"
+msgid "Maximum number of clients"
+msgstr "Maximum Number of Clients"
+
+msgctxt "#798"
+msgid "Internet access"
+msgstr ""
+
+msgctxt "#850"
+msgid "Invalid port number entered"
+msgstr ""
+
+msgctxt "#851"
+msgid "Valid port range is 1-65535"
+msgstr ""
+
+msgctxt "#852"
+msgid "Valid port range is 1024-65535"
+msgstr ""
+
+msgctxt "#1000"
+msgid "Screensaver preview"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰプレビュー"
+
+msgctxt "#1001"
+msgid "Unable to connect"
+msgstr "Unable to connect"
+
+msgctxt "#1002"
+msgid "XBMC was unable to connect to the network location."
+msgstr "XBMC was unable to connect to the network location."
+
+msgctxt "#1003"
+msgid "This could be due to the network not being connected."
+msgstr "This could be due to the network not being connected."
+
+msgctxt "#1004"
+msgid "Would you like to add it anyway?"
+msgstr "Would you like to add it anyway?"
+
+msgctxt "#1006"
+msgid "IP address"
+msgstr "IP Address"
+
+msgctxt "#1007"
+msgid "Add network location"
+msgstr "Add Network Location"
+
+msgctxt "#1008"
+msgid "Protocol"
+msgstr "Protocol"
+
+msgctxt "#1009"
+msgid "Server address"
+msgstr "Server Address"
+
+msgctxt "#1010"
+msgid "Server name"
+msgstr "Server Name"
+
+msgctxt "#1011"
+msgid "Remote path"
+msgstr "Remote Path"
+
+msgctxt "#1012"
+msgid "Shared folder"
+msgstr "Shared Folder"
+
+msgctxt "#1013"
+msgid "Port"
+msgstr "Port"
+
+msgctxt "#1014"
+msgid "Username"
+msgstr "Username"
+
+msgctxt "#1015"
+msgid "Browse for network server"
+msgstr "Browse for Network Server"
+
+msgctxt "#1016"
+msgid "Enter the network address of the server"
+msgstr "Enter the network address of the server"
+
+msgctxt "#1017"
+msgid "Enter the path on the server"
+msgstr "Enter the path on the server"
+
+msgctxt "#1018"
+msgid "Enter the port number"
+msgstr "Enter the port number"
+
+msgctxt "#1019"
+msgid "Enter the username"
+msgstr "Enter the username"
+
+msgctxt "#1020"
+msgid "Add %s source"
+msgstr "Add %s Source"
+
+msgctxt "#1021"
+msgid "Enter the paths or browse for the media locations."
+msgstr "Enter the paths or browse for the media locations."
+
+msgctxt "#1022"
+msgid "Enter a name for this media Source."
+msgstr "Enter a name for this Media Source."
+
+msgctxt "#1023"
+msgid "Browse for new share"
+msgstr "Browse for new share"
+
+msgctxt "#1024"
+msgid "Browse"
+msgstr "Browse"
+
+msgctxt "#1025"
+msgid "Could not retrieve directory information."
+msgstr "Could not retrieve directory information."
+
+msgctxt "#1026"
+msgid "Add source"
+msgstr "ソースを追加"
+
+msgctxt "#1027"
+msgid "Edit source"
+msgstr "ソースを編集"
+
+msgctxt "#1028"
+msgid "Edit %s source"
+msgstr "Edit %s Source"
+
+msgctxt "#1029"
+msgid "Enter the new label"
+msgstr "Enter the new label"
+
+msgctxt "#1030"
+msgid "Browse for image"
+msgstr "Browse for Image"
+
+msgctxt "#1031"
+msgid "Browse for image folder"
+msgstr "Browse for Image Folder"
+
+msgctxt "#1032"
+msgid "Add network location..."
+msgstr "Add Network Location..."
+
+msgctxt "#1033"
+msgid "Browse for file"
+msgstr "Browse for file"
+
+msgctxt "#1034"
+msgid "Submenu"
+msgstr "Submenu"
+
+msgctxt "#1035"
+msgid "Enable submenu buttons"
+msgstr "Enable Submenu Buttons"
+
+msgctxt "#1036"
+msgid "Favourites"
+msgstr "お気に入り"
+
+msgctxt "#1037"
+msgid "Video plugins"
+msgstr "Video Plugins"
+
+msgctxt "#1038"
+msgid "Music plugins"
+msgstr "Music Plugins"
+
+msgctxt "#1039"
+msgid "Picture plugins"
+msgstr "Picture Plugins"
+
+msgctxt "#1040"
+msgid "Loading directory"
+msgstr "Loading directory"
+
+msgctxt "#1041"
+msgid "Retrieved %i items"
+msgstr "Retrieved %i items"
+
+msgctxt "#1042"
+msgid "Retrieved %i of %i items"
+msgstr "Retrieved %i of %i items"
+
+msgctxt "#1043"
+msgid "Program plugins"
+msgstr "Program Plugins"
+
+msgctxt "#1044"
+msgid "Set plugin thumb"
+msgstr "Set Plugin Thumb"
+
+msgctxt "#1045"
+msgid "Plugin settings"
+msgstr "Plugin Settings"
+
+msgctxt "#1046"
+msgid "Access points"
+msgstr ""
+
+msgctxt "#1047"
+msgid "Other..."
+msgstr ""
+
+msgctxt "#1048"
+msgid "- Username"
+msgstr ""
+
+msgctxt "#1049"
+msgid "Script settings"
+msgstr ""
+
+msgctxt "#1050"
+msgid "Singles"
+msgstr "シングル"
+
+msgctxt "#1200"
+msgid "SMB client"
+msgstr "SMB ｼｪｱ"
+
+msgctxt "#1202"
+msgid "Workgroup"
+msgstr "SMB ﾜｰｸｸﾞﾙｰﾌﾟ"
+
+msgctxt "#1203"
+msgid "Default username"
+msgstr "SMB ﾕｰｻﾞｰﾈｰﾑ"
+
+msgctxt "#1204"
+msgid "Default password"
+msgstr "SMB ﾊﾟｽﾜｰﾄﾞ"
+
+msgctxt "#1207"
+msgid "WINS server"
+msgstr "SMB WINS-ｻｰﾊﾞ"
+
+msgctxt "#1208"
+msgid "Mount SMB shares"
+msgstr "Mount SMB Shares"
+
+msgctxt "#1210"
+msgid "Remove"
+msgstr "移動"
+
+msgctxt "#1211"
+msgid "Music"
+msgstr "ﾐｭｰｼﾞｯｸ"
+
+msgctxt "#1212"
+msgid "Video"
+msgstr "ﾋﾞﾃﾞｵ"
+
+msgctxt "#1213"
+msgid "Pictures"
+msgstr "ﾋﾟｸﾁｬｰ"
+
+msgctxt "#1214"
+msgid "Files"
+msgstr "ﾌｧｲﾙ"
+
+msgctxt "#1215"
+msgid "Music & video "
+msgstr "ﾐｭｰｼﾞｯｸ & ﾋﾞﾃﾞｵ"
+
+msgctxt "#1216"
+msgid "Music & pictures"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾋﾟｸﾁｬｰ"
+
+msgctxt "#1217"
+msgid "Music & files"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾌｧｲﾙ"
+
+msgctxt "#1218"
+msgid "Video & pictures"
+msgstr "ﾋﾞﾃﾞｵ & ﾋﾟｸﾁｬｰ"
+
+msgctxt "#1219"
+msgid "Video & files"
+msgstr "ﾋﾞﾃﾞｵ & ﾌｧｲﾙ"
+
+msgctxt "#1220"
+msgid "Pictures & files"
+msgstr "ﾋﾟｸﾁｬｰ & ﾌｧｲﾙ"
+
+msgctxt "#1221"
+msgid "Music & video & pictures"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾋﾞﾃﾞｵ & ﾋﾟｸﾁｬｰ"
+
+msgctxt "#1222"
+msgid "Music & video & pictures & files"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾋﾞﾃﾞｵ & ﾋﾟｸﾁｬｰ & ﾌｧｲﾙ"
+
+msgctxt "#1223"
+msgid "Disabled"
+msgstr "無効"
+
+msgctxt "#1226"
+msgid "Files & music & video"
+msgstr "ﾌｧｲﾙ & ﾐｭｰｼﾞｯｸ & ﾋﾞﾃﾞｵ"
+
+msgctxt "#1227"
+msgid "Files & pictures & music"
+msgstr "ﾌｧｲﾙ & ﾋﾟｸﾁｬｰ & ﾐｭｰｼﾞｯｸ"
+
+msgctxt "#1228"
+msgid "Files & pictures & video"
+msgstr "ﾌｧｲﾙ & ﾋﾟｸﾁｬｰ & ﾋﾞﾃﾞｵ"
+
+msgctxt "#1229"
+msgid "Music & programs"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾌﾟﾛｸﾞﾗﾑ"
+
+msgctxt "#1230"
+msgid "Video & programs"
+msgstr "ﾋﾞﾃﾞｵ & ﾌﾟﾛｸﾞﾗﾑ"
+
+msgctxt "#1231"
+msgid "Pictures & programs"
+msgstr "ﾋﾟｸﾁｬｰ & ﾌﾟﾛｸﾞﾗﾑ"
+
+msgctxt "#1232"
+msgid "Music & video & pictures & programs"
+msgstr "ﾐｭｰｼﾞｯｸ & ﾋﾞﾃﾞｵ & ﾋﾟｸﾁｬｰ & ﾌﾟﾛｸﾞﾗﾑ"
+
+msgctxt "#1233"
+msgid "Programs & video & music"
+msgstr "ﾌﾟﾛｸﾞﾗﾑ & ﾋﾞﾃﾞｵ & ﾐｭｰｼﾞｯｸ"
+
+msgctxt "#1234"
+msgid "Programs & pictures & music"
+msgstr "ﾌﾟﾛｸﾞﾗﾑ & ﾋﾟｸﾁｬｰ & ﾐｭｰｼﾞｯｸ"
+
+msgctxt "#1235"
+msgid "Programs & pictures & video"
+msgstr "ﾌﾟﾛｸﾞﾗﾑ & ﾋﾟｸﾁｬｰ & ﾋﾞﾃﾞｵ"
+
+msgctxt "#1245"
+msgid "FTP username"
+msgstr " - FTP ユーザーネーム"
+
+msgctxt "#1246"
+msgid "FTP password"
+msgstr " - FTP ユーザーﾊﾟｽﾜｰﾄﾞ"
+
+msgctxt "#1247"
+msgid "Password has been set successfully"
+msgstr "FTPｻｰﾊﾞｰのﾊﾟｽﾜｰﾄﾞ設定が完了しました"
+
+msgctxt "#1250"
+msgid "Auto-detection"
+msgstr "自動検出"
+
+msgctxt "#1251"
+msgid "Auto-detect system"
+msgstr "system 自動検出"
+
+msgctxt "#1252"
+msgid "Nickname"
+msgstr "ニックネーム"
+
+msgctxt "#1254"
+msgid "Ask to connect"
+msgstr "Ask to Connect"
+
+msgctxt "#1255"
+msgid "Send FTP user and password"
+msgstr "FTPﾕｰｻﾞｰ・ﾊﾟｽﾜｰﾄﾞを送る"
+
+msgctxt "#1256"
+msgid "Ping interval"
+msgstr "PINGをかける間隔"
+
+msgctxt "#1257"
+msgid "Would you like to connect to the auto-detected system?"
+msgstr "Would you like to connect to the Autodetected system?"
+
+msgctxt "#1260"
+msgid "Announce these services to other systems via Zeroconf"
+msgstr ""
+
+msgctxt "#1300"
+msgid "Custom audio device"
+msgstr ""
+
+msgctxt "#1301"
+msgid "Custom passthrough device"
+msgstr ""
+
+msgctxt "#1396"
+msgid "Drifting"
+msgstr "漂う"
+
+msgctxt "#1397"
+msgid "and"
+msgstr "and"
+
+msgctxt "#1398"
+msgid "Freezing"
+msgstr "凍った"
+
+msgctxt "#1399"
+msgid "Late"
+msgstr "遅くなって"
+
+msgctxt "#1400"
+msgid "Isolated"
+msgstr "局地的な"
+
+msgctxt "#1401"
+msgid "Thundershowers"
+msgstr "雷雨"
+
+msgctxt "#1402"
+msgid "Thunder"
+msgstr "雷"
+
+msgctxt "#1403"
+msgid "Sun"
+msgstr "晴れ"
+
+msgctxt "#1404"
+msgid "Heavy"
+msgstr "まとまった"
+
+msgctxt "#1405"
+msgid "in"
+msgstr "近"
+
+msgctxt "#1406"
+msgid "the"
+msgstr "辺"
+
+msgctxt "#1407"
+msgid "Vicinity"
+msgstr "で"
+
+msgctxt "#1408"
+msgid "Ice"
+msgstr "氷"
+
+msgctxt "#1409"
+msgid "Crystals"
+msgstr "晶"
+
+msgctxt "#1410"
+msgid "Calm"
+msgstr "おだやか"
+
+msgctxt "#1411"
+msgid "with"
+msgstr "with"
+
+msgctxt "#1412"
+msgid "windy"
+msgstr "windy"
+
+msgctxt "#1413"
+msgid "drizzle"
+msgstr "drizzle"
+
+msgctxt "#1414"
+msgid "Thunderstorm"
+msgstr "T-Storm"
+
+msgctxt "#1415"
+msgid "Drizzle"
+msgstr "Drizzle"
+
+msgctxt "#1416"
+msgid "Foggy"
+msgstr "Foggy"
+
+msgctxt "#1417"
+msgid "Grains"
+msgstr ""
+
+msgctxt "#1418"
+msgid "T-Storms"
+msgstr ""
+
+msgctxt "#1419"
+msgid "T-Showers"
+msgstr ""
+
+msgctxt "#1450"
+msgid "Put display to sleep when idle"
+msgstr ""
+
+msgctxt "#2050"
+msgid "Runtime"
+msgstr "上映時間"
+
+msgctxt "#2100"
+msgid "Script failed! : %s"
+msgstr ""
+
+msgctxt "#4501"
+msgid "Enable LCD/VFD"
+msgstr "LCD Type"
+
+msgctxt "#10000"
+msgid "Home"
+msgstr "ホーム"
+
+msgctxt "#10001"
+msgid "Programs"
+msgstr "プログラム"
+
+msgctxt "#10002"
+msgid "Pictures"
+msgstr "ピクチャー"
+
+msgctxt "#10003"
+msgid "File manager"
+msgstr "ファイル"
+
+msgctxt "#10004"
+msgid "Settings"
+msgstr "設定"
+
+msgctxt "#10005"
+msgid "Music"
+msgstr "ミュージック"
+
+msgctxt "#10006"
+msgid "Videos"
+msgstr "ビデオ"
+
+msgctxt "#10007"
+msgid "System information"
+msgstr "システム情報"
+
+msgctxt "#10008"
+msgid "Settings - General"
+msgstr "設定 - 一般"
+
+msgctxt "#10009"
+msgid "Settings - Screen"
+msgstr "設定 - 画面"
+
+msgctxt "#10010"
+msgid "Settings - Appearance - GUI Calibration"
+msgstr "設定 - 外観 - GUI設定"
+
+msgctxt "#10011"
+msgid "Settings - Videos - Screen Calibration"
+msgstr "設定 - 画面 - スクリーン設定"
+
+msgctxt "#10012"
+msgid "Settings - Pictures"
+msgstr "設定 - ピクチャー"
+
+msgctxt "#10013"
+msgid "Settings - Programs"
+msgstr "設定 - プログラム"
+
+msgctxt "#10014"
+msgid "Settings - Weather"
+msgstr "設定 - 天気"
+
+msgctxt "#10015"
+msgid "Settings - Music"
+msgstr "設定 - ミュージック"
+
+msgctxt "#10016"
+msgid "Settings - System"
+msgstr "設定 - システム"
+
+msgctxt "#10017"
+msgid "Settings - Videos"
+msgstr "設定 - ビデオ"
+
+msgctxt "#10018"
+msgid "Settings - Network"
+msgstr "設定 - ﾈｯﾄﾜｰｸ"
+
+msgctxt "#10019"
+msgid "Settings - Appearance"
+msgstr "設定 - 外観"
+
+msgctxt "#10020"
+msgid "Scripts"
+msgstr "スクリプト"
+
+msgctxt "#10028"
+msgid "Videos/Playlist"
+msgstr "ビデオ/プレイリスト"
+
+msgctxt "#10034"
+msgid "Settings - Profiles"
+msgstr "設定 - ﾌﾟﾛﾌｨｰﾙ"
+
+msgctxt "#10100"
+msgid "Yes/No dialog"
+msgstr "はい/いいえ ダイアログ"
+
+msgctxt "#10101"
+msgid "Progress dialog"
+msgstr "進行ダイアログ"
+
+msgctxt "#10210"
+msgid "Looking for subtitles..."
+msgstr "Looking for subtitles..."
+
+msgctxt "#10211"
+msgid "Looking for or caching subtitles..."
+msgstr "Caching subtitles..."
+
+msgctxt "#10212"
+msgid "terminating"
+msgstr "terminating"
+
+msgctxt "#10213"
+msgid "buffering"
+msgstr "buffering"
+
+msgctxt "#10214"
+msgid "Opening stream"
+msgstr "Opening stream"
+
+msgctxt "#10500"
+msgid "Music/Playlist"
+msgstr "ミュージック/プレイリスト"
+
+msgctxt "#10501"
+msgid "Music/Files"
+msgstr "ミュージック/ファイルリスト"
+
+msgctxt "#10502"
+msgid "Music/Library"
+msgstr "ミュージック/アルバム"
+
+msgctxt "#10503"
+msgid "Playlist editor"
+msgstr "Playlist Editor"
+
+msgctxt "#10504"
+msgid "Top 100 songs"
+msgstr "Top 100 曲"
+
+msgctxt "#10505"
+msgid "Top 100 albums"
+msgstr "Top 100 アルバム"
+
+msgctxt "#10506"
+msgid "Programs"
+msgstr "プログラム"
+
+msgctxt "#10507"
+msgid "Configuration"
+msgstr "設定"
+
+msgctxt "#10508"
+msgid "Weather forecast"
+msgstr "天気予報"
+
+msgctxt "#10509"
+msgid "Network gaming"
+msgstr "ネットワーク・ゲーム"
+
+msgctxt "#10510"
+msgid "Extensions"
+msgstr "エクステンション"
+
+msgctxt "#10511"
+msgid "System info"
+msgstr "システム情報"
+
+msgctxt "#10516"
+msgid "Music - Library"
+msgstr "ミュージック - ライブラリ"
+
+msgctxt "#10517"
+msgid "Now Playing - Music"
+msgstr "ミュージック - 再生中"
+
+msgctxt "#10522"
+msgid "Now Playing - Videos"
+msgstr "ビデオ - 再生中"
+
+msgctxt "#10523"
+msgid "Album info"
+msgstr "アルバム情報"
+
+msgctxt "#10524"
+msgid "Movie info"
+msgstr "ムービー情報"
+
+msgctxt "#12000"
+msgid "Select dialog"
+msgstr "ダイアログの選択"
+
+msgctxt "#12001"
+msgid "Music/Info"
+msgstr "ミュージック/情報"
+
+msgctxt "#12002"
+msgid "Dialog OK"
+msgstr "ダイアログOK"
+
+msgctxt "#12003"
+msgid "Videos/Info"
+msgstr "ビデオ/情報"
+
+msgctxt "#12004"
+msgid "Scripts/Info"
+msgstr "スクリプト/情報"
+
+msgctxt "#12005"
+msgid "Fullscreen video"
+msgstr "フルスクリーンビデオ"
+
+msgctxt "#12006"
+msgid "Audio visualization"
+msgstr "オーディオ視覚化"
+
+msgctxt "#12008"
+msgid "File stacking dialog"
+msgstr "ファイルスタッキング ダイアログ"
+
+msgctxt "#12009"
+msgid "Rebuild index..."
+msgstr "Rebuild index..."
+
+msgctxt "#12010"
+msgid "Return to music window"
+msgstr "Return to Music Window"
+
+msgctxt "#12011"
+msgid "Return to videos window"
+msgstr "Return to Videos Window"
+
+msgctxt "#12012"
+msgid "Update trainer list"
+msgstr "チートリストを更新"
+
+msgctxt "#12013"
+msgid "Trainer"
+msgstr "Trainer"
+
+msgctxt "#12014"
+msgid "No trainers found"
+msgstr "No trainers found"
+
+msgctxt "#12015"
+msgid "Trainer settings"
+msgstr "Trainer settings"
+
+msgctxt "#12016"
+msgid "All registered trainers are missing. Update your list"
+msgstr "All registered trainers are missing. Update your list"
+
+msgctxt "#12017"
+msgid "Resume from where last stopped"
+msgstr "前回停止位置から再生"
+
+msgctxt "#12018"
+msgid "No"
+msgstr "No"
+
+msgctxt "#12019"
+msgid "Yes"
+msgstr "Yes"
+
+msgctxt "#12020"
+msgid "Ask"
+msgstr "Ask"
+
+msgctxt "#12021"
+msgid "Start from beginning"
+msgstr "Start from beginning"
+
+msgctxt "#12022"
+msgid "Resume from %s"
+msgstr "Resume from %s"
+
+msgctxt "#12023"
+msgid "Validating existing trainers..."
+msgstr "Validating existing trainers..."
+
+msgctxt "#12310"
+msgid "0"
+msgstr "0"
+
+msgctxt "#12311"
+msgid "1"
+msgstr "1"
+
+msgctxt "#12312"
+msgid "2"
+msgstr "2"
+
+msgctxt "#12313"
+msgid "3"
+msgstr "3"
+
+msgctxt "#12314"
+msgid "4"
+msgstr "4"
+
+msgctxt "#12315"
+msgid "5"
+msgstr "5"
+
+msgctxt "#12316"
+msgid "6"
+msgstr "6"
+
+msgctxt "#12317"
+msgid "7"
+msgstr "7"
+
+msgctxt "#12318"
+msgid "8"
+msgstr "8"
+
+msgctxt "#12319"
+msgid "9"
+msgstr "9"
+
+msgctxt "#12320"
+msgid "c"
+msgstr "c"
+
+msgctxt "#12321"
+msgid "Ok"
+msgstr "ok"
+
+msgctxt "#12322"
+msgid "*"
+msgstr "*"
+
+msgctxt "#12325"
+msgid "Locked! Enter code..."
+msgstr "フォルダーロック"
+
+msgctxt "#12326"
+msgid "Enter password"
+msgstr "パスワード入力"
+
+msgctxt "#12327"
+msgid "Enter master code"
+msgstr "マスターコードを入力しエンターを押してください"
+
+msgctxt "#12328"
+msgid "Enter unlock code"
+msgstr "アンロックコードを入力しエンターを押してください"
+
+msgctxt "#12329"
+msgid "or press C to cancel"
+msgstr "C を押すとキャンセル"
+
+msgctxt "#12330"
+msgid "Enter gamepad button combo and"
+msgstr "ボタンパスワードを入力し"
+
+msgctxt "#12331"
+msgid "press Start, or Back to cancel"
+msgstr "Startを押してください。Backでキャンセル"
+
+msgctxt "#12332"
+msgid "Set lock"
+msgstr "セット ロック"
+
+msgctxt "#12333"
+msgid "Unlock"
+msgstr "アンロック"
+
+msgctxt "#12334"
+msgid "Reset lock"
+msgstr "リセット ロック"
+
+msgctxt "#12335"
+msgid "Remove lock"
+msgstr "ロック削除"
+
+msgctxt "#12337"
+msgid "Numeric password"
+msgstr "数字パスワード"
+
+msgctxt "#12338"
+msgid "Gamepad button combo"
+msgstr "ボタンパスワード"
+
+msgctxt "#12339"
+msgid "Full-text password"
+msgstr "テキストパスワード"
+
+msgctxt "#12340"
+msgid "Enter new password"
+msgstr "新しいパスワードを入力"
+
+msgctxt "#12341"
+msgid "Re-Enter new password"
+msgstr "新しいパスワードを再入力"
+
+msgctxt "#12342"
+msgid "Incorrect password,"
+msgstr "パスワードが正しくありません"
+
+msgctxt "#12343"
+msgid "retries left "
+msgstr "リトライ　停止"
+
+msgctxt "#12344"
+msgid "Passwords entered did not match."
+msgstr "パスワードが合いません"
+
+msgctxt "#12345"
+msgid "Access denied"
+msgstr "アクセスが否定されます"
+
+msgctxt "#12346"
+msgid "Password retry limit exceeded."
+msgstr "パスワードリトライの限界を超えました"
+
+msgctxt "#12347"
+msgid "The system will now shut off."
+msgstr "Systemを停止します"
+
+msgctxt "#12348"
+msgid "Item locked"
+msgstr "アイテム ロック"
+
+msgctxt "#12353"
+msgid "Reactivate lock"
+msgstr "シェアロックが復活します"
+
+msgctxt "#12356"
+msgid "Change lock"
+msgstr "ロック変更"
+
+msgctxt "#12357"
+msgid "Source lock"
+msgstr "Source Lock"
+
+msgctxt "#12358"
+msgid "Password entry was blank. Try again."
+msgstr "ﾊﾟｽﾜｰﾄﾞが未記入です 再び試みてください"
+
+msgctxt "#12360"
+msgid "Master lock"
+msgstr "ﾏｽﾀｰ ﾛｯｸ"
+
+msgctxt "#12362"
+msgid "Shutdown system if Master Lock retries exceeded"
+msgstr "Shutdown system if Master Lock retries exceeded"
+
+msgctxt "#12367"
+msgid "Master code is not valid"
+msgstr "ﾏｽﾀｰ ｺｰﾄﾞが有効ではありません!"
+
+msgctxt "#12368"
+msgid "Please enter a valid master code"
+msgstr "正しいﾏｽﾀｰ ｺｰﾄﾞを入力して下さい!"
+
+msgctxt "#12373"
+msgid "Settings & file manager"
+msgstr "Settings &  Filemanager"
+
+msgctxt "#12376"
+msgid "Set as default for all movies"
+msgstr "Set as default for all Movies"
+
+msgctxt "#12377"
+msgid "This will reset any previously saved values"
+msgstr "This will reset any previously saved values"
+
+msgctxt "#12378"
+msgid "Amount of time to display each image"
+msgstr "一枚の表示時間"
+
+msgctxt "#12379"
+msgid "Use pan and zoom effects"
+msgstr "パン/ズームエフェクトの使用"
+
+msgctxt "#12380"
+msgid "Play NTSC videos at PAL rates"
+msgstr "Play NTSC videos at PAL rates"
+
+msgctxt "#12381"
+msgid "Play PAL videos at NTSC rates"
+msgstr "Play PAL videos at NTSC rates"
+
+msgctxt "#12382"
+msgid "Play NTSC videos in PAL60"
+msgstr "Play NTSC videos in PAL60"
+
+msgctxt "#12383"
+msgid "12 hour clock"
+msgstr "12 hour clock"
+
+msgctxt "#12384"
+msgid "24 hour clock"
+msgstr "24 hour clock"
+
+msgctxt "#12385"
+msgid "Day/Month"
+msgstr "Day/Month"
+
+msgctxt "#12386"
+msgid "Month/Day"
+msgstr "Month/Day"
+
+msgctxt "#12390"
+msgid "System uptime"
+msgstr "システム使用可能時間"
+
+msgctxt "#12391"
+msgid "Minutes"
+msgstr "分"
+
+msgctxt "#12392"
+msgid "Hours"
+msgstr "時間"
+
+msgctxt "#12393"
+msgid "Days"
+msgstr "日"
+
+msgctxt "#12394"
+msgid "Total uptime"
+msgstr "Total Uptime"
+
+msgctxt "#12600"
+msgid "Weather"
+msgstr "天気予報"
+
+msgctxt "#12900"
+msgid "Screensaver"
+msgstr "ｽｸﾘｰﾝｾｰﾊﾞｰ"
+
+msgctxt "#12901"
+msgid "Fullscreen OSD"
+msgstr "フルスクリーンOSD"
+
+msgctxt "#13000"
+msgid "System"
+msgstr "システム"
+
+msgctxt "#13001"
+msgid "Immediate HD spindown"
+msgstr "HDDの停止"
+
+msgctxt "#13002"
+msgid "Video only"
+msgstr "ビデオのみ"
+
+msgctxt "#13003"
+msgid "- Delay"
+msgstr "- 遅延"
+
+msgctxt "#13004"
+msgid "- Minimum file duration"
+msgstr "- 最小ﾌｧｲﾙ再生時間"
+
+msgctxt "#13005"
+msgid "Shutdown"
+msgstr "シャットダウン"
+
+msgctxt "#13006"
+msgid "Dashboard"
+msgstr "ダッシュボード"
+
+msgctxt "#13007"
+msgid "Use custom dashboard path"
+msgstr "標準以外のダッシュボードを使用"
+
+msgctxt "#13008"
+msgid "Shutdown function"
+msgstr "Default Shutdown mode"
+
+msgctxt "#13009"
+msgid "Quit"
+msgstr "Quit"
+
+msgctxt "#13010"
+msgid "Hibernate"
+msgstr "Hibernate"
+
+msgctxt "#13011"
+msgid "Suspend"
+msgstr "Suspend"
+
+msgctxt "#13012"
+msgid "Exit"
+msgstr "Exit"
+
+msgctxt "#13013"
+msgid "Reboot"
+msgstr "Reboot"
+
+msgctxt "#13014"
+msgid "Minimize"
+msgstr ""
+
+msgctxt "#13015"
+msgid "Power button action"
+msgstr ""
+
+msgctxt "#13020"
+msgid "Is another session active, perhaps over ssh?"
+msgstr ""
+
+msgctxt "#13021"
+msgid "Mounted removable harddrive"
+msgstr ""
+
+msgctxt "#13022"
+msgid "Unsafe device removal"
+msgstr ""
+
+msgctxt "#13023"
+msgid "Successfully removed device"
+msgstr ""
+
+msgctxt "#13024"
+msgid "Joystick plugged"
+msgstr ""
+
+msgctxt "#13025"
+msgid "Joystick unplugged"
+msgstr ""
+
+msgctxt "#13100"
+msgid "Flicker filter"
+msgstr "フリッカーフィルタ"
+
+msgctxt "#13101"
+msgid "Let driver choose (requires restart)"
+msgstr ""
+
+msgctxt "#13105"
+msgid "Vertical blank sync"
+msgstr "Vertical Blank Sync"
+
+msgctxt "#13106"
+msgid "Disabled"
+msgstr "Disabled"
+
+msgctxt "#13107"
+msgid "Enabled during video playback"
+msgstr "Enabled During Video Playback"
+
+msgctxt "#13108"
+msgid "Always enabled"
+msgstr "Always Enabled"
+
+msgctxt "#13109"
+msgid "Test & apply resolution"
+msgstr ""
+
+msgctxt "#13110"
+msgid "Save resolution?"
+msgstr ""
+
+msgctxt "#13111"
+msgid "Would you like to keep this resolution?"
+msgstr ""
+
+msgctxt "#13112"
+msgid "High quality upscaling"
+msgstr ""
+
+msgctxt "#13113"
+msgid "Disabled"
+msgstr ""
+
+msgctxt "#13114"
+msgid "Enabled for SD content"
+msgstr ""
+
+msgctxt "#13115"
+msgid "Always enabled"
+msgstr ""
+
+msgctxt "#13116"
+msgid "Upscaling method"
+msgstr ""
+
+msgctxt "#13117"
+msgid "Bicubic"
+msgstr ""
+
+msgctxt "#13118"
+msgid "Lanczos"
+msgstr ""
+
+msgctxt "#13119"
+msgid "Sinc"
+msgstr ""
+
+msgctxt "#13120"
+msgid "VDPAU"
+msgstr ""
+
+msgctxt "#13121"
+msgid "VDPAU HQ Upscaling level"
+msgstr ""
+
+msgctxt "#13122"
+msgid "VDPAU Studio level color conversion"
+msgstr ""
+
+msgctxt "#13130"
+msgid "Blank other displays"
+msgstr ""
+
+msgctxt "#13131"
+msgid "Disabled"
+msgstr ""
+
+msgctxt "#13132"
+msgid "Blank displays"
+msgstr ""
+
+msgctxt "#13140"
+msgid "Active connections detected!"
+msgstr "Active Connections Detected!"
+
+msgctxt "#13141"
+msgid "If you proceed, you might not be able to control XBMC"
+msgstr "If you proceed, you might not be able to control XBMC"
+
+msgctxt "#13142"
+msgid "any longer. Are you sure you want to stop the Event server?"
+msgstr "any longer. Are you sure you to stop the Event Server?"
+
+msgctxt "#13144"
+msgid "Change Apple Remote mode?"
+msgstr "Change Apple Remote Mode?"
+
+msgctxt "#13145"
+msgid "If you are currently using the Apple Remote to control"
+msgstr "If you are currently using the Apple Remote to control"
+
+msgctxt "#13146"
+msgid "XBMC, changing this setting might affect your ability"
+msgstr "XBMC, changing this setting might affect your ability"
+
+msgctxt "#13147"
+msgid "to continue controlling it. Do you want to proceed?"
+msgstr "to continue controlling it. Do you want to proceed?"
+
+msgctxt "#13150"
+msgid "HDD key:"
+msgstr "HDD Key:"
+
+msgctxt "#13151"
+msgid "HDD temp:"
+msgstr "HDD Temp:"
+
+msgctxt "#13152"
+msgid "DVD model:"
+msgstr "DVD Model:"
+
+msgctxt "#13153"
+msgid "DVD firmware:"
+msgstr "DVD Firmware:"
+
+msgctxt "#13154"
+msgid "HDD model:"
+msgstr "HDD Model:"
+
+msgctxt "#13155"
+msgid "HDD serial:"
+msgstr "HDD Serial:"
+
+msgctxt "#13156"
+msgid "HDD firmware:"
+msgstr "HDD Firmware:"
+
+msgctxt "#13157"
+msgid "HDD password:"
+msgstr "HDD Password:"
+
+msgctxt "#13158"
+msgid "HDD lock state:"
+msgstr "HDD Lock State:"
+
+msgctxt "#13159"
+msgid "Subnet mask"
+msgstr "サブネットマスク"
+
+msgctxt "#13160"
+msgid "Gateway"
+msgstr "デフォルトゲートウェイ"
+
+msgctxt "#13161"
+msgid "Primary DNS"
+msgstr "プライマリDNS"
+
+msgctxt "#13162"
+msgid "Initialize failed"
+msgstr "Initialize failed"
+
+msgctxt "#13163"
+msgid "Gamepad"
+msgstr "GamePad"
+
+msgctxt "#13164"
+msgid "Keyboard"
+msgstr "Keyboard"
+
+msgctxt "#13165"
+msgid "Mouse"
+msgstr "Mouse"
+
+msgctxt "#13166"
+msgid "Head/Microphone"
+msgstr "Head/MicroPhone"
+
+msgctxt "#13167"
+msgid "Memory unit"
+msgstr "MemoryStick"
+
+msgctxt "#13168"
+msgid "IR-Remote"
+msgstr "IR-Remote"
+
+msgctxt "#13169"
+msgid "Controller port"
+msgstr "Controller Port"
+
+msgctxt "#13170"
+msgid "Never"
+msgstr "Never"
+
+msgctxt "#13171"
+msgid "Immediately"
+msgstr "Immediately"
+
+msgctxt "#13172"
+msgid "After %i secs"
+msgstr "After %i secs"
+
+msgctxt "#13173"
+msgid "HDD install date:"
+msgstr "HDD Install Date:"
+
+msgctxt "#13174"
+msgid "HDD power cycle count:"
+msgstr "HDD Power Cycle Count:"
+
+msgctxt "#13200"
+msgid "Profiles"
+msgstr "プロフィール"
+
+msgctxt "#13201"
+msgid "Delete profile '%s'?"
+msgstr "ﾌﾟﾛﾌｨｰﾙ '%s'を削除しますか？"
+
+msgctxt "#13204"
+msgid "Last loaded profile:"
+msgstr "最後にﾛｰﾄﾞしたﾌﾟﾛﾌｨｰﾙ:"
+
+msgctxt "#13205"
+msgid "Unknown"
+msgstr "不明"
+
+msgctxt "#13206"
+msgid "Overwrite"
+msgstr "上書き"
+
+msgctxt "#13208"
+msgid "Alarm clock"
+msgstr "アラーム クロック"
+
+msgctxt "#13209"
+msgid "Alarm clock interval (in minutes)"
+msgstr "アラーム クロック 間隔 (分)"
+
+msgctxt "#13210"
+msgid "Started, alarm in %im"
+msgstr "%im 分後にアラーム開始"
+
+msgctxt "#13211"
+msgid "Alarm!"
+msgstr "アラーム!"
+
+msgctxt "#13212"
+msgid "Canceled with %im%is left"
+msgstr "%im%is でキャンセル"
+
+msgctxt "#13249"
+msgid "Search for subtitles in RARs"
+msgstr "RARファイルから字幕を探す"
+
+msgctxt "#13250"
+msgid "Browse for subtitle..."
+msgstr "Browse for subtitle..."
+
+msgctxt "#13251"
+msgid "Move item"
+msgstr "Move Item"
+
+msgctxt "#13252"
+msgid "Move item here"
+msgstr "Move Item Here"
+
+msgctxt "#13253"
+msgid "Cancel move"
+msgstr "Cancel Move"
+
+msgctxt "#13270"
+msgid "Hardware:"
+msgstr "Hardware:"
+
+msgctxt "#13271"
+msgid "CPU Usage:"
+msgstr "CPU Usage:"
+
+msgctxt "#13274"
+msgid "Connected, but no DNS is available."
+msgstr "Xbox is Connected, but no DNS is available."
+
+msgctxt "#13275"
+msgid "Hard Disk"
+msgstr "Hard Disk"
+
+msgctxt "#13276"
+msgid "DVD-ROM"
+msgstr "DVD-ROM"
+
+msgctxt "#13277"
+msgid "Storage"
+msgstr "Storage"
+
+msgctxt "#13278"
+msgid "Default"
+msgstr "Default"
+
+msgctxt "#13279"
+msgid "Network"
+msgstr "Network"
+
+msgctxt "#13280"
+msgid "Video"
+msgstr "Video"
+
+msgctxt "#13281"
+msgid "Hardware"
+msgstr "Hardware"
+
+msgctxt "#13282"
+msgid "_"
+msgstr ""
+
+msgctxt "#13283"
+msgid "Operating system:"
+msgstr "Operating System:"
+
+msgctxt "#13284"
+msgid "CPU speed:"
+msgstr "CPU Speed:"
+
+msgctxt "#13285"
+msgid "Detected BIOS:"
+msgstr "Detected BIOS:"
+
+msgctxt "#13286"
+msgid "Video encoder:"
+msgstr "Video Encoder:"
+
+msgctxt "#13287"
+msgid "Screen resolution:"
+msgstr "Screen Resolution:"
+
+msgctxt "#13288"
+msgid "Xbox version:"
+msgstr "Xbox Version:"
+
+msgctxt "#13289"
+msgid "Xbox serial number:"
+msgstr "Xbox Serial Number:"
+
+msgctxt "#13290"
+msgid "Xbox manufacturer:"
+msgstr "Xbox Manufacturer:"
+
+msgctxt "#13291"
+msgid "Modchip:"
+msgstr "ModChip:"
+
+msgctxt "#13292"
+msgid "A/V cable:"
+msgstr "A/V Cable:"
+
+msgctxt "#13293"
+msgid "Video & XBE region:"
+msgstr "Video & XBE Region:"
+
+msgctxt "#13294"
+msgid "DVD region:"
+msgstr "DVD Region:"
+
+msgctxt "#13295"
+msgid "Internet:"
+msgstr "インターネット:"
+
+msgctxt "#13296"
+msgid "Connected"
+msgstr "Xbox is Connected"
+
+msgctxt "#13297"
+msgid "Not connected. Check network settings."
+msgstr "Xbox is not Connected. Check Network Settings."
+
+msgctxt "#13298"
+msgid "Xbox Live key:"
+msgstr "XBLIVE Key:"
+
+msgctxt "#13299"
+msgid "Target temperature"
+msgstr "- 目標温度"
+
+msgctxt "#13300"
+msgid "Fan speed"
+msgstr "- ファンスピード"
+
+msgctxt "#13301"
+msgid "Auto temperature control"
+msgstr "自動温度コントロール"
+
+msgctxt "#13302"
+msgid "Fan speed override"
+msgstr "ﾌｧﾝｽﾋﾟｰﾄﾞ コントロール"
+
+msgctxt "#13303"
+msgid "- Fonts"
+msgstr "スキンフォント"
+
+msgctxt "#13304"
+msgid "Enable flipping bi-directional strings"
+msgstr "Flipping双方向ストリングスを有効"
+
+msgctxt "#13305"
+msgid "Show RSS news feeds"
+msgstr "RSS Feedsを有効"
+
+msgctxt "#13306"
+msgid "Show parent folder items"
+msgstr "親フォルダーの項目を隠す"
+
+msgctxt "#13307"
+msgid "Track naming template"
+msgstr "トラック命名テンプレート"
+
+msgctxt "#13308"
+msgid "Do you wish to reboot your system"
+msgstr "Systemをリブートしますか?"
+
+msgctxt "#13309"
+msgid "instead of just XBMC?"
+msgstr "XBMCをリスタートしますか?"
+
+msgctxt "#13310"
+msgid "Zoom effect"
+msgstr "ズーム エフェクト"
+
+msgctxt "#13311"
+msgid "Float effect"
+msgstr "フロート エフェクト"
+
+msgctxt "#13312"
+msgid "Black bar reduction"
+msgstr "ブラックバー 縮小"
+
+msgctxt "#13313"
+msgid "Restart"
+msgstr "リスタート"
+
+msgctxt "#13314"
+msgid "Crossfade between songs"
+msgstr "クロスフェード"
+
+msgctxt "#13315"
+msgid "Regenerate thumbnails"
+msgstr "サムネイルの作成"
+
+msgctxt "#13316"
+msgid "Recursive thumbnails"
+msgstr "サムネイル(複数)の作成"
+
+msgctxt "#13317"
+msgid "View slideshow"
+msgstr "ビュー スライドショー"
+
+msgctxt "#13318"
+msgid "Recursive slideshow"
+msgstr "スライドショー繰返し"
+
+msgctxt "#13319"
+msgid "Randomize"
+msgstr "無作為化"
+
+msgctxt "#13320"
+msgid "Stereo"
+msgstr "ステレオ"
+
+msgctxt "#13321"
+msgid "Left only"
+msgstr "左のみ"
+
+msgctxt "#13322"
+msgid "Right only"
+msgstr "右のみ"
+
+msgctxt "#13323"
+msgid "Enable karaoke support"
+msgstr "CD+G 再生　有効"
+
+msgctxt "#13324"
+msgid "Background transparency"
+msgstr "バックグラウンド透明"
+
+msgctxt "#13325"
+msgid "Foreground transparency"
+msgstr "フォアグラウンド透明"
+
+msgctxt "#13326"
+msgid "A/V delay"
+msgstr "A/V 遅延"
+
+msgctxt "#13327"
+msgid "Karaoke"
+msgstr "カラオケ"
+
+msgctxt "#13328"
+msgid "%s not found"
+msgstr "%s が見つかりません"
+
+msgctxt "#13329"
+msgid "Error opening %s"
+msgstr "オープン エラー %s"
+
+msgctxt "#13330"
+msgid "Unable to load %s"
+msgstr "ロードできません %s"
+
+msgctxt "#13331"
+msgid "Error: Out of memory"
+msgstr "エラー: メモリー不足"
+
+msgctxt "#13332"
+msgid "Move up"
+msgstr "上へ"
+
+msgctxt "#13333"
+msgid "Move down"
+msgstr "下へ"
+
+msgctxt "#13334"
+msgid "Edit label"
+msgstr "ラベル編集"
+
+msgctxt "#13335"
+msgid "Make default"
+msgstr "デフォルト作成"
+
+msgctxt "#13336"
+msgid "Remove button"
+msgstr "削除ボタン"
+
+msgctxt "#13338"
+msgid "Front LED"
+msgstr "フロントLED"
+
+msgctxt "#13339"
+msgid "Front LED colour"
+msgstr "フロントLED カラー"
+
+msgctxt "#13340"
+msgid "Leave as is"
+msgstr "現状"
+
+msgctxt "#13341"
+msgid "Green"
+msgstr "緑"
+
+msgctxt "#13342"
+msgid "Orange"
+msgstr "橙"
+
+msgctxt "#13343"
+msgid "Red"
+msgstr "赤"
+
+msgctxt "#13344"
+msgid "Cycle"
+msgstr "サイクル"
+
+msgctxt "#13345"
+msgid "Switch LED off on playback"
+msgstr "再生でLEDのON/OFFをする"
+
+msgctxt "#13346"
+msgid "Movie information"
+msgstr "映画情報"
+
+msgctxt "#13347"
+msgid "Queue item"
+msgstr "キュー項目"
+
+msgctxt "#13348"
+msgid "Search IMDb..."
+msgstr "IMDbを検索..."
+
+msgctxt "#13349"
+msgid "Scan for new content"
+msgstr "新しいコンテンツをスキャン"
+
+msgctxt "#13350"
+msgid "Now playing..."
+msgstr "プレイ中..."
+
+msgctxt "#13351"
+msgid "Album information"
+msgstr "アルバム情報"
+
+msgctxt "#13352"
+msgid "Scan item to library"
+msgstr "ライブラリへ追加"
+
+msgctxt "#13353"
+msgid "Stop scanning"
+msgstr "スキャン停止"
+
+msgctxt "#13354"
+msgid "Render method"
+msgstr "描画方法:"
+
+msgctxt "#13355"
+msgid "Low quality pixel shader"
+msgstr "低品質ピクセルシェーダ"
+
+msgctxt "#13356"
+msgid "Hardware overlays"
+msgstr "ハードウェア オーバーレイ"
+
+msgctxt "#13357"
+msgid "High quality pixel shader"
+msgstr "高品質ピクセルシェーダ"
+
+msgctxt "#13358"
+msgid "Play item"
+msgstr "項目再生"
+
+msgctxt "#13359"
+msgid "Set artist thumb"
+msgstr "ｱｲｰﾃｨｽﾄｻﾑﾈｲﾙ付加"
+
+msgctxt "#13360"
+msgid "Automatically generate thumbnails"
+msgstr "サムネイル作成"
+
+msgctxt "#13361"
+msgid "Enable voice"
+msgstr "音声 有効"
+
+msgctxt "#13375"
+msgid "Enable device"
+msgstr "デバイスを有効"
+
+msgctxt "#13376"
+msgid "Volume"
+msgstr "ボリューム"
+
+msgctxt "#13377"
+msgid "Default view mode"
+msgstr "デフォルト ビューモード"
+
+msgctxt "#13378"
+msgid "Default brightness"
+msgstr "デフォルト 輝度"
+
+msgctxt "#13379"
+msgid "Default contrast"
+msgstr "デフォルト コントラスト"
+
+msgctxt "#13380"
+msgid "Default gamma"
+msgstr "デフォルト ガンマ"
+
+msgctxt "#13381"
+msgid "Resume video"
+msgstr "停止履歴から再生"
+
+msgctxt "#13382"
+msgid "Voice mask - Port 1"
+msgstr "Voice Mask - Port 1"
+
+msgctxt "#13383"
+msgid "Voice mask - Port 2"
+msgstr "Voice Mask - Port 2"
+
+msgctxt "#13384"
+msgid "Voice mask - Port 3"
+msgstr "Voice Mask - Port 3"
+
+msgctxt "#13385"
+msgid "Voice mask - Port 4"
+msgstr "Voice Mask - Port 4"
+
+msgctxt "#13386"
+msgid "Use time based seeking"
+msgstr "タイムベースシーク使用"
+
+msgctxt "#13387"
+msgid "Track naming template - right"
+msgstr "ﾄﾗｯｸ名 詳細情報 表示"
+
+msgctxt "#13388"
+msgid "Preset"
+msgstr "Preset"
+
+msgctxt "#13389"
+msgid "There are no presets available\nfor this visualization"
+msgstr "視覚化可能なﾌﾟﾘｾｯﾄではありません"
+
+msgctxt "#13390"
+msgid "There are no settings available\nfor this visualization"
+msgstr "視覚化可能な設定ではありません"
+
+msgctxt "#13391"
+msgid "Eject/Load"
+msgstr "イジェクト/ロード"
+
+msgctxt "#13392"
+msgid "Use visualization if playing audio"
+msgstr "音楽再生時 視覚化使用"
+
+msgctxt "#13393"
+msgid "Calculate size"
+msgstr "容量算出"
+
+msgctxt "#13394"
+msgid "Calculating folder size"
+msgstr "フォルダー容量算出"
+
+msgctxt "#13395"
+msgid "Video settings"
+msgstr "ビデオ 設定"
+
+msgctxt "#13396"
+msgid "Audio and subtitle settings"
+msgstr "オーディオ･字幕 設定"
+
+msgctxt "#13397"
+msgid "Enable subtitles"
+msgstr "字幕有効"
+
+msgctxt "#13398"
+msgid "Shortcuts"
+msgstr "ショートカット"
+
+msgctxt "#13399"
+msgid "Ignore articles when sorting (e.g. \"the\")"
+msgstr "トークンをソート対象から外す"
+
+msgctxt "#13400"
+msgid "Crossfade between songs on the same album"
+msgstr "クロスフェード ｱﾙﾊﾞﾑﾄﾗｯｸ"
+
+msgctxt "#13401"
+msgid "Browse for %s"
+msgstr "Browse for %s"
+
+msgctxt "#13402"
+msgid "Show track position"
+msgstr "Show track position"
+
+msgctxt "#13403"
+msgid "Clear default"
+msgstr "Clear Default"
+
+msgctxt "#13404"
+msgid "Resume"
+msgstr "Resume"
+
+msgctxt "#13405"
+msgid "Get thumb"
+msgstr "Get Thumb"
+
+msgctxt "#13406"
+msgid "Picture information"
+msgstr "Picture Information"
+
+msgctxt "#13407"
+msgid "%s presets"
+msgstr "%s Presets"
+
+msgctxt "#13408"
+msgid "(IMDb user rating)"
+msgstr "(IMDb User Rating)"
+
+msgctxt "#13409"
+msgid "Top 250"
+msgstr "Top 250"
+
+msgctxt "#13410"
+msgid "Tune in on Last.fm"
+msgstr "Tune in on Last.FM"
+
+msgctxt "#13411"
+msgid "Minimum fan speed"
+msgstr "Minimum fanspeed"
+
+msgctxt "#13413"
+msgid "Downloading"
+msgstr "Downloading"
+
+msgctxt "#13414"
+msgid "Include artists who appear only on compilations"
+msgstr "コンピレーションのみに登場するアーティストを含める"
+
+msgctxt "#13415"
+msgid "Render method"
+msgstr ""
+
+msgctxt "#13416"
+msgid "Auto detect"
+msgstr ""
+
+msgctxt "#13417"
+msgid "Basic shaders (ARB)"
+msgstr ""
+
+msgctxt "#13418"
+msgid "Advanced shaders (GLSL)"
+msgstr ""
+
+msgctxt "#13419"
+msgid "Software"
+msgstr ""
+
+msgctxt "#13420"
+msgid "Remove safely"
+msgstr ""
+
+msgctxt "#13421"
+msgid "VDPAU"
+msgstr ""
+
+msgctxt "#13422"
+msgid "Start slideshow here"
+msgstr ""
+
+msgctxt "#13423"
+msgid "Remember for this path"
+msgstr ""
+
+msgctxt "#13424"
+msgid "Use pixel buffer objects"
+msgstr ""
+
+msgctxt "#13500"
+msgid "A/V sync method"
+msgstr ""
+
+msgctxt "#13501"
+msgid "Audio clock"
+msgstr ""
+
+msgctxt "#13502"
+msgid "Video clock (Drop/Dupe audio)"
+msgstr ""
+
+msgctxt "#13503"
+msgid "Video clock (Resample audio)"
+msgstr ""
+
+msgctxt "#13504"
+msgid "Maximum resample amount (%)"
+msgstr ""
+
+msgctxt "#13505"
+msgid "Resample quality"
+msgstr ""
+
+msgctxt "#13506"
+msgid "Low(fast)"
+msgstr ""
+
+msgctxt "#13507"
+msgid "Medium"
+msgstr ""
+
+msgctxt "#13508"
+msgid "High"
+msgstr ""
+
+msgctxt "#13509"
+msgid "Really high(slow!)"
+msgstr ""
+
+msgctxt "#13510"
+msgid "Sync playback to display"
+msgstr ""
+
+msgctxt "#13600"
+msgid "Apple remote"
+msgstr "Apple Remote"
+
+msgctxt "#13601"
+msgid "Use MCE/Universal Remote"
+msgstr ""
+
+msgctxt "#13602"
+msgid "Allow start of XBMC using the remote"
+msgstr "Always Running"
+
+msgctxt "#13603"
+msgid "Sequence delay time"
+msgstr "Sequence Delay Time"
+
+msgctxt "#13610"
+msgid "Disabled"
+msgstr "Disabled"
+
+msgctxt "#13611"
+msgid "Standard"
+msgstr "Standard"
+
+msgctxt "#13612"
+msgid "Universal Remote"
+msgstr "Universal Remote"
+
+msgctxt "#13613"
+msgid "Multi Remote (Harmony)"
+msgstr ""
+
+msgctxt "#13620"
+msgid "Apple Remote Error"
+msgstr "Apple Remote Error"
+
+msgctxt "#13621"
+msgid "Apple Remote support could be enabled."
+msgstr "Apple Remote support could be enabled."
+
+msgctxt "#14000"
+msgid "Stack"
+msgstr "スタック"
+
+msgctxt "#14001"
+msgid "Unstack"
+msgstr "スタック解除"
+
+msgctxt "#14003"
+msgid "Downloading playlist file..."
+msgstr "プレイリストを取得中..."
+
+msgctxt "#14004"
+msgid "Downloading streams list..."
+msgstr "ストリームリストを取得中..."
+
+msgctxt "#14005"
+msgid "Parsing streams list..."
+msgstr "ストリームリストを解析中..."
+
+msgctxt "#14006"
+msgid "Downloading streams list failed"
+msgstr "ストリームリストを取得出来ません"
+
+msgctxt "#14007"
+msgid "Downloading playlist file failed"
+msgstr "プレイリストを取得出来ません"
+
+msgctxt "#14009"
+msgid "Games directory"
+msgstr "ゲームディレクトリ"
+
+msgctxt "#14010"
+msgid "Auto switch to thumbs based on"
+msgstr "ｻﾑﾈｲﾙ表示のｵｰﾄｽｲｯﾁ"
+
+msgctxt "#14011"
+msgid "Enable auto switching to thumbs view"
+msgstr "ｻﾑﾈｲﾙ表示のｵｰﾄｽｲｯﾁを有効"
+
+msgctxt "#14012"
+msgid "- Use large icons"
+msgstr "- 大きなアイコンの使用"
+
+msgctxt "#14013"
+msgid "- Switch based on"
+msgstr "- 方法"
+
+msgctxt "#14014"
+msgid "- Percentage"
+msgstr "- 割合(%)"
+
+msgctxt "#14015"
+msgid "No files and at least one thumb"
+msgstr "全てをｻﾑﾈｲﾙ表示"
+
+msgctxt "#14016"
+msgid "At least one file and thumb"
+msgstr "最小限にｻﾑﾈｲﾙ表示"
+
+msgctxt "#14017"
+msgid "Percentage of thumbs"
+msgstr "ｻﾑﾈｲﾙ表示の割合"
+
+msgctxt "#14018"
+msgid "View options"
+msgstr "ﾋﾞｭｰｵﾌﾟｼｮﾝ"
+
+msgctxt "#14019"
+msgid "Change area code 1"
+msgstr "エリアコード 1"
+
+msgctxt "#14020"
+msgid "Change area code 2"
+msgstr "エリアコード 2"
+
+msgctxt "#14021"
+msgid "Change area code 3"
+msgstr "エリアコード 3"
+
+msgctxt "#14022"
+msgid "Library"
+msgstr "ライブラリ"
+
+msgctxt "#14023"
+msgid "No TV"
+msgstr "No TV"
+
+msgctxt "#14024"
+msgid "Enter the nearest large town"
+msgstr "最も近くの大都市 またはｴﾘｱｺｰﾄﾞを入力して下さい"
+
+msgctxt "#14025"
+msgid "Video/Audio/DVD cache - Harddisk"
+msgstr "ﾋﾞﾃﾞｵ/ｵｰﾃﾞｨｵ/DVD ｷｬｯｼｭ - HDD"
+
+msgctxt "#14026"
+msgid "Video cache - DVD-ROM"
+msgstr "ﾋﾞﾃﾞｵ ｷｬｯｼｭ - DVDRom"
+
+msgctxt "#14027"
+msgid "- Local Network"
+msgstr "ﾋﾞﾃﾞｵ ｷｬｯｼｭ - Local Network"
+
+msgctxt "#14028"
+msgid "- Internet"
+msgstr "ﾋﾞﾃﾞｵ ｷｬｯｼｭ - Internet"
+
+msgctxt "#14030"
+msgid "Audio cache - DVD-ROM"
+msgstr "ｵｰﾃﾞｨｵ ｷｬｯｼｭ - DVDRom"
+
+msgctxt "#14031"
+msgid "- Local Network"
+msgstr "ｵｰﾃﾞｨｵ ｷｬｯｼｭ - Local Network"
+
+msgctxt "#14032"
+msgid "- Internet"
+msgstr "ｵｰﾃﾞｨｵ ｷｬｯｼｭ - Internet"
+
+msgctxt "#14034"
+msgid "DVD cache - DVD-ROM"
+msgstr "DVD ｷｬｯｼｭ - DVDRom"
+
+msgctxt "#14035"
+msgid "- Local Network"
+msgstr "DVD ｷｬｯｼｭ - Local Network"
+
+msgctxt "#14036"
+msgid "Services"
+msgstr "サーバー"
+
+msgctxt "#14038"
+msgid "Network settings changed"
+msgstr "ネットワーク設定が変わりました"
+
+msgctxt "#14039"
+msgid "XBMC requires to restart to change your"
+msgstr "設定を反映する為に再始動が必要です"
+
+msgctxt "#14040"
+msgid "network setup.  Would you like to restart now?"
+msgstr "ネットワーク設定  今再始動しますか？"
+
+msgctxt "#14041"
+msgid "Post processing"
+msgstr "ポスト処理"
+
+msgctxt "#14042"
+msgid "Internet connection bandwidth limitation"
+msgstr ""
+
+msgctxt "#14043"
+msgid "- Shutdown while playing"
+msgstr "- プレー中でもシャットダウン"
+
+msgctxt "#14044"
+msgid "%i min"
+msgstr "%i 分"
+
+msgctxt "#14045"
+msgid "%i sec"
+msgstr "%i 秒"
+
+msgctxt "#14046"
+msgid "%i ms"
+msgstr "%i ms"
+
+msgctxt "#14047"
+msgid "%i %%"
+msgstr "%i %%"
+
+msgctxt "#14048"
+msgid "%i kbps"
+msgstr "%i kbps"
+
+msgctxt "#14049"
+msgid "%i kb"
+msgstr "%i kb"
+
+msgctxt "#14050"
+msgid "%i.0 dB"
+msgstr "%i.0 dB"
+
+msgctxt "#14051"
+msgid "Time format"
+msgstr "Time Format"
+
+msgctxt "#14052"
+msgid "Date format"
+msgstr "Date Format"
+
+msgctxt "#14053"
+msgid "GUI filters"
+msgstr "GUIフィルター"
+
+msgctxt "#14055"
+msgid "Use background scanning"
+msgstr "バックグラウンドスキャンの使用"
+
+msgctxt "#14056"
+msgid "Stop scan"
+msgstr "スキャン停止"
+
+msgctxt "#14057"
+msgid "Not possible while scanning for media info"
+msgstr "メディア情報スキャン中は不可能"
+
+msgctxt "#14058"
+msgid "Film grain effect"
+msgstr "フィルム粒子エフェクト"
+
+msgctxt "#14059"
+msgid "Search for thumbnails on remote shares"
+msgstr "Look for thumbs on remote shares"
+
+msgctxt "#14060"
+msgid "Unknown type cache - Internet"
+msgstr "不明なｷｬｯｼｭ - Internet"
+
+msgctxt "#14061"
+msgid "Auto"
+msgstr "自動"
+
+msgctxt "#14062"
+msgid "Enter username for"
+msgstr "ユーザーネーム入力"
+
+msgctxt "#14063"
+msgid "Date & time"
+msgstr "日付 & 時間"
+
+msgctxt "#14064"
+msgid "Set date"
+msgstr "日付 設定"
+
+msgctxt "#14065"
+msgid "Set time"
+msgstr "時間 設定"
+
+msgctxt "#14066"
+msgid "Enter the time in 24 hour HH:MM format"
+msgstr "24時間表示 時:分 で入力"
+
+msgctxt "#14067"
+msgid "Enter the date in DD/MM/YYYY format"
+msgstr "日付 日/月/年 で入力"
+
+msgctxt "#14068"
+msgid "Enter the IP address"
+msgstr "IPアドレス入力"
+
+msgctxt "#14069"
+msgid "Apply these settings now?"
+msgstr "この設定を適用しますか?"
+
+msgctxt "#14070"
+msgid "Apply changes now"
+msgstr "設定適用"
+
+msgctxt "#14071"
+msgid "Allow file renaming and deletion"
+msgstr "ファイル名変更・削除 許可"
+
+msgctxt "#14074"
+msgid "Set timezone"
+msgstr "タイムゾーン"
+
+msgctxt "#14075"
+msgid "Use daylight saving time"
+msgstr "サマータイムを有効"
+
+msgctxt "#14076"
+msgid "Add to favourites"
+msgstr "お気に入りに追加"
+
+msgctxt "#14077"
+msgid "Remove from favourites"
+msgstr "お気に入りから削除"
+
+msgctxt "#14078"
+msgid "- Colours"
+msgstr "スキンカラー"
+
+msgctxt "#14079"
+msgid "Timezone country"
+msgstr ""
+
+msgctxt "#14080"
+msgid "Timezone"
+msgstr ""
+
+msgctxt "#14081"
+msgid "File lists"
+msgstr ""
+
+msgctxt "#14082"
+msgid "Show EXIF picture information"
+msgstr ""
+
+msgctxt "#14083"
+msgid "Use a fullscreen window rather than true fullscreen"
+msgstr ""
+
+msgctxt "#14084"
+msgid "Queue songs on selection"
+msgstr ""
+
+msgctxt "#14085"
+msgid "Play audio CDs automatically"
+msgstr ""
+
+msgctxt "#14086"
+msgid "Playback"
+msgstr ""
+
+msgctxt "#14087"
+msgid "DVDs"
+msgstr ""
+
+msgctxt "#14088"
+msgid "Play DVDs automatically"
+msgstr ""
+
+msgctxt "#14089"
+msgid "Font to use for text subtitles"
+msgstr ""
+
+msgctxt "#14090"
+msgid "International"
+msgstr ""
+
+msgctxt "#14091"
+msgid "Character set"
+msgstr ""
+
+msgctxt "#14092"
+msgid "Debugging"
+msgstr ""
+
+msgctxt "#14093"
+msgid "Security"
+msgstr ""
+
+msgctxt "#14094"
+msgid "Input devices"
+msgstr ""
+
+msgctxt "#14095"
+msgid "Power saving"
+msgstr ""
+
+msgctxt "#14096"
+msgid "Video cache"
+msgstr ""
+
+msgctxt "#14097"
+msgid "Video cache - max time"
+msgstr ""
+
+msgctxt "#14098"
+msgid "Audio cache"
+msgstr ""
+
+msgctxt "#14099"
+msgid "Audio cache - max time"
+msgstr ""
+
+msgctxt "#14100"
+msgid "H.264 Skip Loop Filter"
+msgstr ""
+
+msgctxt "#14101"
+msgid "Default"
+msgstr ""
+
+msgctxt "#14102"
+msgid "Skip Non-reference Frames"
+msgstr ""
+
+msgctxt "#14103"
+msgid "Skip Bidirectional Frames"
+msgstr ""
+
+msgctxt "#14104"
+msgid "Skip Non-key frames"
+msgstr ""
+
+msgctxt "#14105"
+msgid "Skip Everything"
+msgstr ""
+
+msgctxt "#15015"
+msgid "Remove"
+msgstr "Remove"
+
+msgctxt "#15016"
+msgid "Games"
+msgstr "Games"
+
+msgctxt "#15019"
+msgid "Add"
+msgstr "追加"
+
+msgctxt "#15052"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#15100"
+msgid "Library"
+msgstr "ライブラリー"
+
+msgctxt "#15101"
+msgid "Database"
+msgstr "データベース"
+
+msgctxt "#15102"
+msgid "* All albums"
+msgstr "* 全てのアルバム"
+
+msgctxt "#15103"
+msgid "* All artists"
+msgstr "* 全てのアーティスト"
+
+msgctxt "#15104"
+msgid "* All songs"
+msgstr "* 全ての曲"
+
+msgctxt "#15105"
+msgid "* All genres"
+msgstr "* 全てのジャンル"
+
+msgctxt "#15107"
+msgid "Buffering..."
+msgstr "バッファリング..."
+
+msgctxt "#15108"
+msgid "Navigation sounds"
+msgstr "ﾅﾋﾞｹﾞｰｼｮﾝ ｻｳﾝﾄﾞ"
+
+msgctxt "#15109"
+msgid "Skin default"
+msgstr "スキン デフォルト"
+
+msgctxt "#15111"
+msgid "- Theme"
+msgstr "スキンテーマ"
+
+msgctxt "#15112"
+msgid "Default theme"
+msgstr "Default Theme"
+
+msgctxt "#15200"
+msgid "Last.fm"
+msgstr "Last.FM"
+
+msgctxt "#15201"
+msgid "Submit songs to Last.fm"
+msgstr "Submit songs to Last.FM"
+
+msgctxt "#15202"
+msgid "Last.fm username"
+msgstr "Last.FM Username"
+
+msgctxt "#15203"
+msgid "Last.fm password"
+msgstr "Last.FM Password"
+
+msgctxt "#15204"
+msgid "Unable to handshake: sleeping..."
+msgstr "操作不可: 停止中..."
+
+msgctxt "#15205"
+msgid "Please update XBMC"
+msgstr "XBMCを更新してください"
+
+msgctxt "#15206"
+msgid "Bad authorization: Check username and password"
+msgstr "Bad authorisation: Check username and password"
+
+msgctxt "#15207"
+msgid "Connected"
+msgstr "接続しました"
+
+msgctxt "#15208"
+msgid "Not connected"
+msgstr "接続できません"
+
+msgctxt "#15209"
+msgid "Submit interval %i"
+msgstr "送信間隔 %i"
+
+msgctxt "#15210"
+msgid "Cached %i songs"
+msgstr "キャッシュ済み曲 %i"
+
+msgctxt "#15211"
+msgid "Submitting..."
+msgstr "送信中..."
+
+msgctxt "#15212"
+msgid "Submitting in %i secs"
+msgstr "送信 %i 秒"
+
+msgctxt "#15213"
+msgid "Play using..."
+msgstr "Play Using..."
+
+msgctxt "#15214"
+msgid "Use smoothed A/V synchronization"
+msgstr "Use Smoothed A/V Synchronisation"
+
+msgctxt "#15215"
+msgid "Hide file names in thumbs view"
+msgstr "Hide File Names in Thumbs View"
+
+msgctxt "#15216"
+msgid "Play in party mode"
+msgstr "Play in Party Mode"
+
+msgctxt "#15217"
+msgid "Submit songs to Libre.fm"
+msgstr ""
+
+msgctxt "#15218"
+msgid "Libre.fm username"
+msgstr ""
+
+msgctxt "#15219"
+msgid "Libre.fm password"
+msgstr ""
+
+msgctxt "#15220"
+msgid "Libre.fm"
+msgstr ""
+
+msgctxt "#15221"
+msgid "Song submission"
+msgstr ""
+
+msgctxt "#15250"
+msgid "Submit Last.fm radio to Last.fm"
+msgstr "Submit Last.FM Radio to Last.FM"
+
+msgctxt "#15251"
+msgid "Connecting to Last.fm..."
+msgstr "Connecting to Last.FM..."
+
+msgctxt "#15252"
+msgid "Selecting station..."
+msgstr "Selecting station..."
+
+msgctxt "#15253"
+msgid "Search similar artists..."
+msgstr "Search similar artists..."
+
+msgctxt "#15254"
+msgid "Search similar tags..."
+msgstr "Search similar tags..."
+
+msgctxt "#15255"
+msgid "Your profile (%name%)"
+msgstr "Your profile (%name%)"
+
+msgctxt "#15256"
+msgid "Overall top tags"
+msgstr "Overall top tags"
+
+msgctxt "#15257"
+msgid "Top artists for tag %name%"
+msgstr "Top artists for tag %name%"
+
+msgctxt "#15258"
+msgid "Top albums for tag %name%"
+msgstr "Top albums for tag %name%"
+
+msgctxt "#15259"
+msgid "Top tracks for tag %name%"
+msgstr "Top tracks for tag %name%"
+
+msgctxt "#15260"
+msgid "Listen to tag %name% Last.fm radio"
+msgstr "Listen to tag %name% Last.FM radio"
+
+msgctxt "#15261"
+msgid "Similar artists as %name%"
+msgstr "Similar artists as %name%"
+
+msgctxt "#15262"
+msgid "Top %name% albums"
+msgstr "Top %name% albums"
+
+msgctxt "#15263"
+msgid "Top %name% tracks"
+msgstr "Top %name% tracks"
+
+msgctxt "#15264"
+msgid "Top %name% tags"
+msgstr "Top %name% tags"
+
+msgctxt "#15265"
+msgid "Biggest fans of %name%"
+msgstr "Biggest fans of %name%"
+
+msgctxt "#15266"
+msgid "Listen to %name% fans Last.fm radio"
+msgstr "Listen to %name% fans Last.FM radio"
+
+msgctxt "#15267"
+msgid "Listen to %name% similar artists Last.fm radio"
+msgstr "Listen to %name% similar artists Last.FM radio"
+
+msgctxt "#15268"
+msgid "Top artists for user %name%"
+msgstr "Top artists for user %name%"
+
+msgctxt "#15269"
+msgid "Top albums for user %name%"
+msgstr "Top albums for user %name%"
+
+msgctxt "#15270"
+msgid "Top tracks for user %name%"
+msgstr "Top tracks for user %name%"
+
+msgctxt "#15271"
+msgid "Friends of user %name%"
+msgstr "Friends of user %name%"
+
+msgctxt "#15272"
+msgid "Neighbours of user %name%"
+msgstr "Neighbours of user %name%"
+
+msgctxt "#15273"
+msgid "Weekly artist chart for %name%"
+msgstr "Weekly artist chart for %name%"
+
+msgctxt "#15274"
+msgid "Weekly album chart for %name%"
+msgstr "Weekly album chart for %name%"
+
+msgctxt "#15275"
+msgid "Weekly track chart for %name%"
+msgstr "Weekly track chart for %name%"
+
+msgctxt "#15276"
+msgid "Listen to %name%'s neighbours Last.fm radio"
+msgstr "Listen to %name%'s neighbours Last.FM radio"
+
+msgctxt "#15277"
+msgid "Listen to %name%'s personal Last.fm radio"
+msgstr "Listen to %name%'s personal Last.FM radio"
+
+msgctxt "#15278"
+msgid "Listen to %name%'s mix Last.fm radio"
+msgstr "Listen to %name%'s loved tracks Last.FM radio"
+
+msgctxt "#15279"
+msgid "Retrieving list from Last.fm..."
+msgstr "Retrieving list from Last.FM..."
+
+msgctxt "#15280"
+msgid "Can't retrieve list from Last.fm..."
+msgstr "Can't retrieve list from Last.FM..."
+
+msgctxt "#15281"
+msgid "Enter an artist name to find related ones"
+msgstr "Enter an artist name to find related ones"
+
+msgctxt "#15282"
+msgid "Enter a tag name to find similar ones"
+msgstr "Enter a tag name to find similar ones"
+
+msgctxt "#15283"
+msgid "Tracks recently listened by %name%"
+msgstr "Tracks recently listened by %name%"
+
+msgctxt "#15284"
+msgid "Listen to %name%'s recommendations Last.fm radio"
+msgstr "Listen to %name%'s recommendations Last.FM radio"
+
+msgctxt "#15285"
+msgid "Top tags for user %name%"
+msgstr "Top tags for user %name%"
+
+msgctxt "#15287"
+msgid "Do you want to add the current track to your loved tracks?"
+msgstr "Do you want to add the current track to your loved tracks?"
+
+msgctxt "#15288"
+msgid "Do you want to ban the current track?"
+msgstr "Do you want to ban the current track?"
+
+msgctxt "#15289"
+msgid "Added to your loved tracks: '%s'."
+msgstr "Added to your loved tracks: '%s'."
+
+msgctxt "#15290"
+msgid "Could not add '%s' to your loved tracks."
+msgstr "Could not add '%s' to your loved tracks."
+
+msgctxt "#15291"
+msgid "Banned: '%s'."
+msgstr "Banned: '%s'."
+
+msgctxt "#15292"
+msgid "Could not ban '%s'."
+msgstr "Could not ban '%s'."
+
+msgctxt "#15293"
+msgid "Tracks recently loved by %name%"
+msgstr "Tracks recently loved by %name%"
+
+msgctxt "#15294"
+msgid "Tracks recently banned by %name%"
+msgstr "Tracks recently banned by %name%"
+
+msgctxt "#15295"
+msgid "Remove from loved tracks"
+msgstr "Remove from loved tracks"
+
+msgctxt "#15296"
+msgid "Un-ban"
+msgstr "Un-ban"
+
+msgctxt "#15297"
+msgid "Do you want to remove this track from your loved tracks?"
+msgstr "Do you want to remove this track from your loved tracks?"
+
+msgctxt "#15298"
+msgid "Do you want to un-ban this track?"
+msgstr "Do you want to un-ban this track?"
+
+msgctxt "#15300"
+msgid "Path not found or invalid"
+msgstr "パスが見つかりません or 無効です"
+
+msgctxt "#15301"
+msgid "Could not connect to network server"
+msgstr "ﾈｯﾄﾜｰｸｻｰﾊﾞｰに接続できません"
+
+msgctxt "#15302"
+msgid "No servers found"
+msgstr "ｻｰﾊﾞｰが見つかりません"
+
+msgctxt "#15303"
+msgid "Workgroup not found"
+msgstr "ﾜｰｸｸﾞﾙｰﾌﾟが見つかりません"
+
+msgctxt "#15310"
+msgid "Opening multi-path source"
+msgstr "Opening multi-path source"
+
+msgctxt "#15311"
+msgid "Path:"
+msgstr "プレイリスト指定:"
+
+msgctxt "#16000"
+msgid "General"
+msgstr "一般設定"
+
+msgctxt "#16001"
+msgid "Configure audio hardware..."
+msgstr ""
+
+msgctxt "#16002"
+msgid "Internet lookup"
+msgstr "CDDB 検索"
+
+msgctxt "#16003"
+msgid "Player"
+msgstr "プレイヤー"
+
+msgctxt "#16004"
+msgid "Play media from disc"
+msgstr "Play media from disc"
+
+msgctxt "#16008"
+msgid "Enter new title"
+msgstr "Enter New Title"
+
+msgctxt "#16009"
+msgid "Enter the movie name"
+msgstr "動画名　入力"
+
+msgctxt "#16010"
+msgid "Enter the profile name"
+msgstr "ﾌﾟﾛﾌｨｰﾙ名　入力"
+
+msgctxt "#16011"
+msgid "Enter the album name"
+msgstr "アルバム名　入力"
+
+msgctxt "#16012"
+msgid "Enter the playlist name"
+msgstr "プレイリスト名　入力"
+
+msgctxt "#16013"
+msgid "Enter new filename"
+msgstr "新しいファイル名　入力"
+
+msgctxt "#16014"
+msgid "Enter folder name"
+msgstr "フォルダ名　入力"
+
+msgctxt "#16015"
+msgid "Enter directory"
+msgstr "ディレクトリ　入力"
+
+msgctxt "#16016"
+msgid "Available options: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
+msgstr "使用可能ｵﾌﾟｼｮﾝ: %A, %T, %N, %B, %D, %G, %Y, %F"
+
+msgctxt "#16017"
+msgid "Enter search string"
+msgstr "検索文字列　入力"
+
+msgctxt "#16018"
+msgid "None"
+msgstr "None"
+
+msgctxt "#16019"
+msgid "Auto select"
+msgstr "自動選択"
+
+msgctxt "#16020"
+msgid "De-interlace"
+msgstr "インターレース解除"
+
+msgctxt "#16021"
+msgid "Bob"
+msgstr "ODDﾌｨｰﾙﾄﾞ表示"
+
+msgctxt "#16022"
+msgid "Bob (inverted)"
+msgstr "EVENﾌｨｰﾙﾄﾞ表示"
+
+msgctxt "#16023"
+msgid "Interlaced handling"
+msgstr "インターレース処理"
+
+msgctxt "#16024"
+msgid "Canceling..."
+msgstr "キャンセル中..."
+
+msgctxt "#16025"
+msgid "Enter the artist name"
+msgstr "Enter the Artist Name"
+
+msgctxt "#16026"
+msgid "Playback failed"
+msgstr "Playlist playback aborted"
+
+msgctxt "#16027"
+msgid "One or more items failed to play."
+msgstr "Too many consecutive failed items"
+
+msgctxt "#16028"
+msgid "Enter value"
+msgstr "Enter value"
+
+msgctxt "#16029"
+msgid "Check the log file for details."
+msgstr ""
+
+msgctxt "#16030"
+msgid "Party mode aborted."
+msgstr "Party Mode aborted."
+
+msgctxt "#16031"
+msgid "No matching songs in the library."
+msgstr "No matching songs in the Library."
+
+msgctxt "#16032"
+msgid "Could not initialize database."
+msgstr "Could not initialise database."
+
+msgctxt "#16033"
+msgid "Could not open database."
+msgstr "Could not open database."
+
+msgctxt "#16034"
+msgid "Could not get songs from database."
+msgstr "Could not get songs from database."
+
+msgctxt "#16035"
+msgid "Party mode playlist"
+msgstr "Party Mode Playlist"
+
+msgctxt "#16100"
+msgid "All Videos"
+msgstr "All Videos"
+
+msgctxt "#16101"
+msgid "Unwatched"
+msgstr "UnWatched"
+
+msgctxt "#16102"
+msgid "Watched"
+msgstr "Watched"
+
+msgctxt "#16103"
+msgid "Mark as watched"
+msgstr "視聴済みにする"
+
+msgctxt "#16104"
+msgid "Mark as unwatched"
+msgstr "視聴済みを解除"
+
+msgctxt "#16105"
+msgid "Edit title"
+msgstr "タイトルを編集"
+
+msgctxt "#16106"
+msgid "Use NTSC-M & NTSC-J"
+msgstr "Use NTSC-M & NTSC-J"
+
+msgctxt "#16107"
+msgid "Use only NTSC-M"
+msgstr "Use only NTSC-M"
+
+msgctxt "#16108"
+msgid "Use only NTSC-J"
+msgstr "Use only NTSC-J"
+
+msgctxt "#16109"
+msgid "Use only PAL-60"
+msgstr "Use only PAL-60"
+
+msgctxt "#16110"
+msgid "For 60hz games"
+msgstr "For 60hz Games"
+
+msgctxt "#16200"
+msgid "Operation was aborted"
+msgstr "Operation was aborted"
+
+msgctxt "#16201"
+msgid "Copy failed"
+msgstr "Copy failed"
+
+msgctxt "#16202"
+msgid "Failed to copy at least one file"
+msgstr "Failed to copy atleast one file"
+
+msgctxt "#16203"
+msgid "Move failed"
+msgstr "Move failed"
+
+msgctxt "#16204"
+msgid "Failed to move at least one file"
+msgstr "Failed to move atleast one file"
+
+msgctxt "#16205"
+msgid "Delete failed"
+msgstr "Delete failed"
+
+msgctxt "#16206"
+msgid "Failed to delete at least one file"
+msgstr "Failed to delete atleast one file"
+
+msgctxt "#16300"
+msgid "Video scaling method"
+msgstr ""
+
+msgctxt "#16301"
+msgid "Nearest neighbour"
+msgstr ""
+
+msgctxt "#16302"
+msgid "Bilinear"
+msgstr ""
+
+msgctxt "#16303"
+msgid "Bicubic"
+msgstr ""
+
+msgctxt "#16304"
+msgid "Lanczos2"
+msgstr ""
+
+msgctxt "#16305"
+msgid "Lanczos3"
+msgstr ""
+
+msgctxt "#16306"
+msgid "Sinc8"
+msgstr ""
+
+msgctxt "#16307"
+msgid "Bicubic (software)"
+msgstr ""
+
+msgctxt "#16308"
+msgid "Lanczos (software)"
+msgstr ""
+
+msgctxt "#16309"
+msgid "Sinc (software)"
+msgstr ""
+
+msgctxt "#16310"
+msgid "(VDPAU)Temporal"
+msgstr ""
+
+msgctxt "#16311"
+msgid "(VDPAU)Temporal/Spatial"
+msgstr ""
+
+msgctxt "#16312"
+msgid "(VDPAU)Noise Reduction"
+msgstr ""
+
+msgctxt "#16313"
+msgid "(VDPAU)Sharpness"
+msgstr ""
+
+msgctxt "#16314"
+msgid "Inverse Telecine"
+msgstr ""
+
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr ""
+
+msgctxt "#17500"
+msgid "Display sleep timeout"
+msgstr ""
+
+msgctxt "#19000"
+msgid "Switch to channel"
+msgstr ""
+
+msgctxt "#20000"
+msgid "Saved music folder"
+msgstr "CDDA Rip Folder"
+
+msgctxt "#20001"
+msgid "Use external DVD player"
+msgstr "外部DVDプレイヤを使用"
+
+msgctxt "#20002"
+msgid "External DVD player"
+msgstr "外部DVDプレイヤ指定"
+
+msgctxt "#20003"
+msgid "Trainers folder"
+msgstr "チートフォルダ設定"
+
+msgctxt "#20004"
+msgid "Screenshot folder"
+msgstr "スクリーンショットフォルダ設定"
+
+msgctxt "#20006"
+msgid "Playlists folder"
+msgstr "Playlists Folder"
+
+msgctxt "#20007"
+msgid "Recordings"
+msgstr "Recordings"
+
+msgctxt "#20008"
+msgid "Screenshots"
+msgstr "Screenshots"
+
+msgctxt "#20009"
+msgid "Use XBMC"
+msgstr "Use XBMC"
+
+msgctxt "#20011"
+msgid "Music playlists"
+msgstr "Music Playlists"
+
+msgctxt "#20012"
+msgid "Video playlists"
+msgstr "Video Playlists"
+
+msgctxt "#20013"
+msgid "Do you wish to launch the game?"
+msgstr "Do you wish to launch the game?"
+
+msgctxt "#20014"
+msgid "Sort by: Playlist"
+msgstr "Sort by: Playlist"
+
+msgctxt "#20015"
+msgid "Remote thumb"
+msgstr "Remote Thumb"
+
+msgctxt "#20016"
+msgid "Current thumb"
+msgstr "Current Thumb"
+
+msgctxt "#20017"
+msgid "Local thumb"
+msgstr "Local Thumb"
+
+msgctxt "#20018"
+msgid "No thumb"
+msgstr "No Thumb"
+
+msgctxt "#20019"
+msgid "Choose thumbnail"
+msgstr "サムネイルを選択"
+
+msgctxt "#20023"
+msgid "Conflict"
+msgstr "Conflict"
+
+msgctxt "#20024"
+msgid "Scan new"
+msgstr "Scan new"
+
+msgctxt "#20025"
+msgid "Scan all"
+msgstr "Scan all"
+
+msgctxt "#20026"
+msgid "Region"
+msgstr "Region"
+
+msgctxt "#20037"
+msgid "Summary"
+msgstr ""
+
+msgctxt "#20038"
+msgid "Lock music window"
+msgstr "Lock music window"
+
+msgctxt "#20039"
+msgid "Lock videos window"
+msgstr "Lock videos window"
+
+msgctxt "#20040"
+msgid "Lock pictures window"
+msgstr "Lock pictures window"
+
+msgctxt "#20041"
+msgid "Lock programs, saves & scripts windows"
+msgstr "Lock programs, saves & scripts windows"
+
+msgctxt "#20042"
+msgid "Lock file manager"
+msgstr "Lock filemanager"
+
+msgctxt "#20043"
+msgid "Lock settings"
+msgstr "Lock settings"
+
+msgctxt "#20044"
+msgid "Start fresh"
+msgstr "Start fresh"
+
+msgctxt "#20045"
+msgid "Enter master mode"
+msgstr "Enter Master Mode"
+
+msgctxt "#20046"
+msgid "Leave master mode"
+msgstr "Leave Master Mode"
+
+msgctxt "#20047"
+msgid "Create profile '%s'?"
+msgstr "Create profile '%s' ?"
+
+msgctxt "#20048"
+msgid "Start with fresh settings"
+msgstr "Start with fresh settings"
+
+msgctxt "#20049"
+msgid "Best available"
+msgstr "Best Available"
+
+msgctxt "#20050"
+msgid "Auto-switch between 16x9 and 4x3"
+msgstr "Autoswitch between 16x9 and 4x3"
+
+msgctxt "#20051"
+msgid "Treat stacked files as single file"
+msgstr "Treat stacked files as single file"
+
+msgctxt "#20052"
+msgid "Caution"
+msgstr "Caution"
+
+msgctxt "#20053"
+msgid "Left master mode"
+msgstr "Left Master Mode"
+
+msgctxt "#20054"
+msgid "Entered master mode"
+msgstr "Entered Master Mode"
+
+msgctxt "#20055"
+msgid "Allmusic.com thumb"
+msgstr "Allmusic.com Thumb"
+
+msgctxt "#20057"
+msgid "Remove thumbnail"
+msgstr "Remove Thumbnail"
+
+msgctxt "#20058"
+msgid "Add profile..."
+msgstr "Add Profile..."
+
+msgctxt "#20059"
+msgid "Query info for all albums"
+msgstr "Query Info For All Albums"
+
+msgctxt "#20060"
+msgid "Media info"
+msgstr "Media info"
+
+msgctxt "#20061"
+msgid "Separate"
+msgstr "Separate"
+
+msgctxt "#20062"
+msgid "Shares with default"
+msgstr "Shares with default"
+
+msgctxt "#20063"
+msgid "Shares with default (read only)"
+msgstr "Shares with default (read only)"
+
+msgctxt "#20064"
+msgid "Copy default"
+msgstr "Copy default"
+
+msgctxt "#20065"
+msgid "Profile picture"
+msgstr "Profile picture"
+
+msgctxt "#20066"
+msgid "Lock preferences"
+msgstr "Lock preferences"
+
+msgctxt "#20067"
+msgid "Edit profile"
+msgstr "Edit profile"
+
+msgctxt "#20068"
+msgid "Profile lock"
+msgstr "Profile lock"
+
+msgctxt "#20069"
+msgid "Could not create folder"
+msgstr "Could not create folder"
+
+msgctxt "#20070"
+msgid "Profile directory"
+msgstr "Profile directory"
+
+msgctxt "#20071"
+msgid "Start with fresh media sources"
+msgstr "Start with fresh media sources"
+
+msgctxt "#20072"
+msgid "Make sure the selected folder is writable"
+msgstr "Make sure the selected folder is writable"
+
+msgctxt "#20073"
+msgid "and that the new folder name is valid"
+msgstr "and that the new folder name is valid"
+
+msgctxt "#20074"
+msgid "MPAA rating"
+msgstr "MPAA Rating"
+
+msgctxt "#20075"
+msgid "Enter master lock code"
+msgstr "Enter Master Lock Code"
+
+msgctxt "#20076"
+msgid "Ask for master lock code on startup"
+msgstr "Ask for Master Lock Code on startup"
+
+msgctxt "#20077"
+msgid "Skin settings"
+msgstr "スキン設定"
+
+msgctxt "#20078"
+msgid "- no link set -"
+msgstr "- 未設定 -"
+
+msgctxt "#20079"
+msgid "Enable animations"
+msgstr "アニメーション表示有効"
+
+msgctxt "#20080"
+msgid "Disable RSS during music"
+msgstr "音楽再生中はRSSを停止"
+
+msgctxt "#20081"
+msgid "Enable shortcut buttons"
+msgstr "ショートカットボタン有効"
+
+msgctxt "#20082"
+msgid "Show programs in main menu"
+msgstr "Show Programs in Main Menu"
+
+msgctxt "#20083"
+msgid "Show music info"
+msgstr "Show Music info"
+
+msgctxt "#20084"
+msgid "Show weather info"
+msgstr "Show Weather info"
+
+msgctxt "#20085"
+msgid "Show system info"
+msgstr "Show System info"
+
+msgctxt "#20086"
+msgid "Show available disc space C: E: F:"
+msgstr "Show Available Disc Space C: E: F:"
+
+msgctxt "#20087"
+msgid "Show available disc space E: F: G:"
+msgstr "Show Available Disc Space E: F: G:"
+
+msgctxt "#20088"
+msgid "Weather info"
+msgstr "Weather Info"
+
+msgctxt "#20089"
+msgid "Drive space free"
+msgstr "Drive Space Free"
+
+msgctxt "#20090"
+msgid "Enter the name of an existing share"
+msgstr "Enter the name of an existing Share"
+
+msgctxt "#20091"
+msgid "Lock code"
+msgstr "Lock Code"
+
+msgctxt "#20092"
+msgid "Load profile"
+msgstr "Load profile"
+
+msgctxt "#20093"
+msgid "Profile name"
+msgstr "Profile name"
+
+msgctxt "#20094"
+msgid "Media sources"
+msgstr "Media sources"
+
+msgctxt "#20095"
+msgid "Enter profile lock code"
+msgstr "Enter profile lock code"
+
+msgctxt "#20096"
+msgid "Login screen"
+msgstr "Login screen"
+
+msgctxt "#20097"
+msgid "Fetching album info"
+msgstr "Fetching album info"
+
+msgctxt "#20098"
+msgid "Fetching info for album"
+msgstr "Fetching info for album"
+
+msgctxt "#20099"
+msgid "Can't rip CD or track while playing from CD"
+msgstr "Can't rip CD or Track while playing from CD"
+
+msgctxt "#20100"
+msgid "Master lock code and settings"
+msgstr "Master Lock Code and Settings"
+
+msgctxt "#20101"
+msgid "Entering master lock code always enables master mode"
+msgstr "Entering Master Lock Code always enables Master Mode"
+
+msgctxt "#20102"
+msgid "or copy from default?"
+msgstr "or copy from default?"
+
+msgctxt "#20103"
+msgid "Save changes to profile?"
+msgstr "Save changes to profile?"
+
+msgctxt "#20104"
+msgid "Old settings found."
+msgstr "Old settings found."
+
+msgctxt "#20105"
+msgid "Do you want to use them?"
+msgstr "Do you want to use them?"
+
+msgctxt "#20106"
+msgid "Old media sources found."
+msgstr "Old media sources found."
+
+msgctxt "#20107"
+msgid "Separate (locked)"
+msgstr "Separate (locked)"
+
+msgctxt "#20108"
+msgid "Root"
+msgstr "Root"
+
+msgctxt "#20109"
+msgid "- Zoom"
+msgstr "スキンを拡大・縮小"
+
+msgctxt "#20110"
+msgid "UPnP settings"
+msgstr "UPnP Settings"
+
+msgctxt "#20111"
+msgid "Autostart UPnP client"
+msgstr "Autostart UPnP Client"
+
+msgctxt "#20112"
+msgid "Last login: %s"
+msgstr "Last login: %s"
+
+msgctxt "#20113"
+msgid "Never logged on"
+msgstr "Never logged on"
+
+msgctxt "#20114"
+msgid "Profile %i / %i"
+msgstr "Profile %i / %i"
+
+msgctxt "#20115"
+msgid "User login / Select a profile"
+msgstr "User Login / Select a Profile"
+
+msgctxt "#20116"
+msgid "Use lock on login screen"
+msgstr "Use lock on login screen"
+
+msgctxt "#20117"
+msgid "Invalid lock code."
+msgstr "Invalid lock code."
+
+msgctxt "#20118"
+msgid "This requires the master lock to be set."
+msgstr "This requires the Master Lock to be set."
+
+msgctxt "#20119"
+msgid "Would you like to set it now?"
+msgstr "Would you like to set it now?"
+
+msgctxt "#20120"
+msgid "Loading program information"
+msgstr "Loading program information"
+
+msgctxt "#20121"
+msgid "Party on!"
+msgstr "Party on!"
+
+msgctxt "#20122"
+msgid "True"
+msgstr "True"
+
+msgctxt "#20123"
+msgid "Mixing drinks"
+msgstr "Mixing drinks"
+
+msgctxt "#20124"
+msgid "Filling glasses"
+msgstr "Filling glasses"
+
+msgctxt "#20125"
+msgid "Logged on as"
+msgstr "Logged on as"
+
+msgctxt "#20126"
+msgid "Log off"
+msgstr "Log off"
+
+msgctxt "#20128"
+msgid "Go to root"
+msgstr "一番上の階層へ"
+
+msgctxt "#20129"
+msgid "Weave"
+msgstr "Weave"
+
+msgctxt "#20130"
+msgid "Weave (inverted)"
+msgstr "Weave (inverted)"
+
+msgctxt "#20131"
+msgid "Blend"
+msgstr "Blend"
+
+msgctxt "#20132"
+msgid "Restart video"
+msgstr "Restart Video"
+
+msgctxt "#20133"
+msgid "Edit network location"
+msgstr "Edit Network Location"
+
+msgctxt "#20134"
+msgid "Remove network location"
+msgstr "Remove Network Location"
+
+msgctxt "#20135"
+msgid "Do you want to scan the folder?"
+msgstr "Do you want to scan the folder?"
+
+msgctxt "#20136"
+msgid "Memory unit"
+msgstr "Memory Unit"
+
+msgctxt "#20137"
+msgid "Memory unit mounted"
+msgstr "Memory Unit mounted"
+
+msgctxt "#20138"
+msgid "Unable to mount memory unit"
+msgstr "Unable to mount Memory Unit"
+
+msgctxt "#20139"
+msgid "In port %i, slot %i"
+msgstr "In port %i, slot %i"
+
+msgctxt "#20140"
+msgid "Lock screensaver"
+msgstr "Lock Screensaver"
+
+msgctxt "#20141"
+msgid "Set"
+msgstr "Set"
+
+msgctxt "#20142"
+msgid "Username"
+msgstr "Username"
+
+msgctxt "#20143"
+msgid "Enter password for"
+msgstr "Enter password for"
+
+msgctxt "#20144"
+msgid "Shutdown timer"
+msgstr "シャットダウンタイマ"
+
+msgctxt "#20145"
+msgid "Shutdown interval (in minutes)"
+msgstr "シャットダウンまでの時間 (単位:分)"
+
+msgctxt "#20146"
+msgid "Started, shutdown in %im"
+msgstr "タイマスタート, %i分後にシャットダウン"
+
+msgctxt "#20147"
+msgid "Shutdown in 30 minutes"
+msgstr "30分後にシャットダウン"
+
+msgctxt "#20148"
+msgid "Shutdown in 60 minutes"
+msgstr "1時間後にシャットダウン"
+
+msgctxt "#20149"
+msgid "Shutdown in 120 minutes"
+msgstr "2時間後にシャットダウン"
+
+msgctxt "#20150"
+msgid "Custom shutdown timer"
+msgstr "シャットダウンタイマを設定"
+
+msgctxt "#20151"
+msgid "Cancel shutdown timer"
+msgstr "シャットダウンタイマをキャンセル"
+
+msgctxt "#20152"
+msgid "Lock preferences for %s"
+msgstr "Lock preferences for %s"
+
+msgctxt "#20153"
+msgid "Browse..."
+msgstr "Browse..."
+
+msgctxt "#20154"
+msgid "Summary information"
+msgstr "Basic Information"
+
+msgctxt "#20155"
+msgid "Storage information"
+msgstr "Storage Information"
+
+msgctxt "#20156"
+msgid "Hard disk information"
+msgstr "Hard Disk Information"
+
+msgctxt "#20157"
+msgid "DVD-ROM information"
+msgstr "DVD-ROM Information"
+
+msgctxt "#20158"
+msgid "Network information"
+msgstr "Network Information"
+
+msgctxt "#20159"
+msgid "Video information"
+msgstr "Video Information"
+
+msgctxt "#20160"
+msgid "Hardware information"
+msgstr "Hardware Information"
+
+msgctxt "#20161"
+msgid "Total"
+msgstr "Total"
+
+msgctxt "#20162"
+msgid "Used"
+msgstr "Used"
+
+msgctxt "#20163"
+msgid "of"
+msgstr "of"
+
+msgctxt "#20164"
+msgid "Locking not supported"
+msgstr "Locking Not Supported"
+
+msgctxt "#20165"
+msgid "Not locked"
+msgstr "Not Locked"
+
+msgctxt "#20166"
+msgid "Locked"
+msgstr "Locked"
+
+msgctxt "#20167"
+msgid "Frozen"
+msgstr "Frozen"
+
+msgctxt "#20168"
+msgid "Requires reset"
+msgstr "Requires Reset"
+
+msgctxt "#20169"
+msgid "Week"
+msgstr "Week"
+
+msgctxt "#20170"
+msgid "Line"
+msgstr "Line"
+
+msgctxt "#20171"
+msgid "Windows network (SMB)"
+msgstr "Windows Network (SMB)"
+
+msgctxt "#20172"
+msgid "XBMSP server"
+msgstr "XBMSP Server"
+
+msgctxt "#20173"
+msgid "FTP server"
+msgstr "FTP Server"
+
+msgctxt "#20174"
+msgid "iTunes music share (DAAP)"
+msgstr "iTunes music share (DAAP)"
+
+msgctxt "#20175"
+msgid "UPnP server"
+msgstr "UPnP Server"
+
+msgctxt "#20176"
+msgid "Show video info"
+msgstr "Show Video Info"
+
+msgctxt "#20177"
+msgid "Done"
+msgstr "Done"
+
+msgctxt "#20178"
+msgid "Shift"
+msgstr "Shift"
+
+msgctxt "#20179"
+msgid "Caps Lock"
+msgstr "Caps Lock"
+
+msgctxt "#20180"
+msgid "Symbols"
+msgstr "Symbols"
+
+msgctxt "#20181"
+msgid "Backspace"
+msgstr "Backspace"
+
+msgctxt "#20182"
+msgid "Space"
+msgstr "Space"
+
+msgctxt "#20183"
+msgid "Reload skin"
+msgstr "スキンを再ロード"
+
+msgctxt "#20184"
+msgid "Rotate pictures using EXIF information"
+msgstr "Rotate using EXIF information"
+
+msgctxt "#20185"
+msgid "Use poster view styles for TV shows"
+msgstr "Use Poster View Styles for TV Shows"
+
+msgctxt "#20186"
+msgid "Please wait"
+msgstr "Please Wait"
+
+msgctxt "#20187"
+msgid "Backing up EEPROM"
+msgstr "Backing up EEPROM"
+
+msgctxt "#20188"
+msgid "Backing up BIOS"
+msgstr "Backing up BIOS"
+
+msgctxt "#20189"
+msgid "Enable auto scrolling for plot & review"
+msgstr "Enable Auto Scrolling for Plot & Review"
+
+msgctxt "#20190"
+msgid "Custom"
+msgstr "Custom"
+
+msgctxt "#20191"
+msgid "Enable debug logging"
+msgstr "Enable debug logging"
+
+msgctxt "#20192"
+msgid "Download additional information during updates"
+msgstr "Fetch Album Information when adding to Library"
+
+msgctxt "#20194"
+msgid "Default service for music information"
+msgstr "Default Scraper"
+
+msgctxt "#20195"
+msgid "Change scraper"
+msgstr "Change Scraper"
+
+msgctxt "#20196"
+msgid "Export music library"
+msgstr "Export Music Library"
+
+msgctxt "#20197"
+msgid "Import music library"
+msgstr "Import Music Library"
+
+msgctxt "#20198"
+msgid "No artist found!"
+msgstr "No Artist found!"
+
+msgctxt "#20199"
+msgid "Downloading artist info failed"
+msgstr "Downloading artist info failed"
+
+msgctxt "#20250"
+msgid "Party on! (videos)"
+msgstr "Party on! (videos)"
+
+msgctxt "#20251"
+msgid "Mixing drinks (videos)"
+msgstr "Mixing drinks (videos)"
+
+msgctxt "#20252"
+msgid "Filling glasses (videos)"
+msgstr "Filling glasses (videos)"
+
+msgctxt "#20253"
+msgid "WebDAV server (HTTP)"
+msgstr ""
+
+msgctxt "#20254"
+msgid "WebDAV server (HTTPS)"
+msgstr ""
+
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr ""
+
+msgctxt "#20300"
+msgid "Web server directory (HTTP)"
+msgstr "Web Server Directory (HTTP)"
+
+msgctxt "#20301"
+msgid "Web server directory (HTTPS)"
+msgstr "Web Server Directory (HTTPS)"
+
+msgctxt "#20302"
+msgid "Unable to write to folder:"
+msgstr ""
+
+msgctxt "#20303"
+msgid "Do you want to skip and proceed?"
+msgstr ""
+
+msgctxt "#20304"
+msgid "RSS Feed"
+msgstr ""
+
+msgctxt "#20306"
+msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
+msgstr "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
+
+msgctxt "#20307"
+msgid "Secondary DNS"
+msgstr "セカンダリDNS"
+
+msgctxt "#20308"
+msgid "DHCP server:"
+msgstr "DHCPサーバ:"
+
+msgctxt "#20309"
+msgid "Make new folder"
+msgstr "Make New Folder"
+
+msgctxt "#20310"
+msgid "Dim LCD on playback"
+msgstr "Dim LCD on Playback"
+
+msgctxt "#20311"
+msgid "Unknown or onboard (protected)"
+msgstr "Unknown or Onboard (protected)"
+
+msgctxt "#20312"
+msgid "Dim LCD on paused"
+msgstr "Dim LCD on Paused"
+
+msgctxt "#20313"
+msgid "Switch LED back on if paused"
+msgstr "ポーズ時にLEDを点灯"
+
+msgctxt "#20314"
+msgid "Videos - Library"
+msgstr "Videos - Library"
+
+msgctxt "#20315"
+msgid "Game saves"
+msgstr "セーブデータ"
+
+msgctxt "#20316"
+msgid "Sort by: ID"
+msgstr "Sort by: ID"
+
+msgctxt "#20317"
+msgid "Download saves"
+msgstr "Download Saves"
+
+msgctxt "#20318"
+msgid "Save game installed On HDD"
+msgstr "Save Game Installed On HDD"
+
+msgctxt "#20319"
+msgid "Failed to download game save"
+msgstr "Failed to Download Game Save"
+
+msgctxt "#20320"
+msgid "Select game save to download and install"
+msgstr "Select Game Save to Download and Install"
+
+msgctxt "#20321"
+msgid "No online save found for specified game"
+msgstr "No online save found for specified game"
+
+msgctxt "#20322"
+msgid "Go to game save"
+msgstr "セーブデータ"
+
+msgctxt "#20323"
+msgid "Game saves"
+msgstr "セーブデータ"
+
+msgctxt "#20324"
+msgid "Play part..."
+msgstr "Play part..."
+
+msgctxt "#20325"
+msgid "Calibration reset"
+msgstr "Calibration Reset"
+
+msgctxt "#20326"
+msgid "This will reset the calibration values for %s"
+msgstr "This will reset the calibration values for %s"
+
+msgctxt "#20327"
+msgid "to it's default values."
+msgstr "to it's default values."
+
+msgctxt "#20328"
+msgid "Browse for destination"
+msgstr "Browse for destination"
+
+msgctxt "#20330"
+msgid "Use folder names for lookups"
+msgstr "Use Folder Names For Lookups"
+
+msgctxt "#20331"
+msgid "File"
+msgstr "File"
+
+msgctxt "#20332"
+msgid "Use file or folder names in lookups?"
+msgstr "Use file or folder names in lookups?"
+
+msgctxt "#20333"
+msgid "Set content"
+msgstr "コンテンツを設定"
+
+msgctxt "#20334"
+msgid "Folder"
+msgstr "Folder"
+
+msgctxt "#20335"
+msgid "Look for content recursively?"
+msgstr "Look for content recursively?"
+
+msgctxt "#20336"
+msgid "Unlock sources"
+msgstr "Unlock Sources"
+
+msgctxt "#20337"
+msgid "Actor"
+msgstr "Actor"
+
+msgctxt "#20338"
+msgid "Movie"
+msgstr "Movie"
+
+msgctxt "#20339"
+msgid "Director"
+msgstr "監督"
+
+msgctxt "#20340"
+msgid "Do you want to remove all items within"
+msgstr "Do you want to remove all items within"
+
+msgctxt "#20341"
+msgid "this path from the library?"
+msgstr "this path from the library?"
+
+msgctxt "#20342"
+msgid "Movies"
+msgstr "Movies"
+
+msgctxt "#20343"
+msgid "TV shows"
+msgstr "テレビ番組"
+
+msgctxt "#20344"
+msgid "This directory contains"
+msgstr "This directory contains"
+
+msgctxt "#20345"
+msgid "Run automated scan"
+msgstr "Run Automated Scan"
+
+msgctxt "#20346"
+msgid "Scan recursively"
+msgstr "Scan Recursively"
+
+msgctxt "#20347"
+msgid "as"
+msgstr "as"
+
+msgctxt "#20348"
+msgid "Directors"
+msgstr "監督"
+
+msgctxt "#20349"
+msgid "No video files found in this path!"
+msgstr "No video files found in this path!"
+
+msgctxt "#20350"
+msgid "votes"
+msgstr "votes"
+
+msgctxt "#20351"
+msgid "TV show information"
+msgstr "TV番組情報"
+
+msgctxt "#20352"
+msgid "Episode information"
+msgstr "エピソード情報"
+
+msgctxt "#20353"
+msgid "Loading TV show details"
+msgstr "Loading TV Show details"
+
+msgctxt "#20354"
+msgid "Fetching episode guide"
+msgstr "Fetching Episode Guide"
+
+msgctxt "#20355"
+msgid "Loading info for episodes in directory"
+msgstr "Loading Info For Episodes In Directory"
+
+msgctxt "#20356"
+msgid "Select TV show:"
+msgstr "Select TV Show:"
+
+msgctxt "#20357"
+msgid "Enter the TV show name"
+msgstr "Enter the TV Show Name"
+
+msgctxt "#20358"
+msgid "Season %i"
+msgstr "Season %i"
+
+msgctxt "#20359"
+msgid "Episode"
+msgstr "Episode"
+
+msgctxt "#20360"
+msgid "Episodes"
+msgstr "Episodes"
+
+msgctxt "#20361"
+msgid "Loading episode details"
+msgstr "Loading Episode details"
+
+msgctxt "#20362"
+msgid "Remove episode from library"
+msgstr "Remove Episode from library"
+
+msgctxt "#20363"
+msgid "Remove TV show from library"
+msgstr "Remove TV Show from library"
+
+msgctxt "#20364"
+msgid "TV show"
+msgstr "TV Show"
+
+msgctxt "#20365"
+msgid "Episode plot"
+msgstr "Episode Plot"
+
+msgctxt "#20366"
+msgid "* All seasons"
+msgstr "* All Seasons"
+
+msgctxt "#20367"
+msgid "Hide watched"
+msgstr "視聴済みを除外"
+
+msgctxt "#20368"
+msgid "Prod code"
+msgstr "Prod Code"
+
+msgctxt "#20369"
+msgid "Show plot for unwatched items"
+msgstr "未視聴アイテムのあらすじを表示する"
+
+msgctxt "#20370"
+msgid "* Hidden to prevent spoilers *"
+msgstr "* Hidden to prevent spoilers *"
+
+msgctxt "#20371"
+msgid "Set season thumb"
+msgstr "Set Season Thumb"
+
+msgctxt "#20372"
+msgid "Season image"
+msgstr "Season Image"
+
+msgctxt "#20373"
+msgid "Season"
+msgstr "Season"
+
+msgctxt "#20374"
+msgid "Downloading movie information"
+msgstr "Downloading Movie information"
+
+msgctxt "#20375"
+msgid "Unassign content"
+msgstr "Unassign Content"
+
+msgctxt "#20376"
+msgid "Original title"
+msgstr ""
+
+msgctxt "#20377"
+msgid "Refresh TV show information"
+msgstr "TV番組情報を更新"
+
+msgctxt "#20378"
+msgid "Refresh info for all episodes?"
+msgstr "Refresh info for all episodes?"
+
+msgctxt "#20379"
+msgid "Selected folder contains a single TV show"
+msgstr "Selected folder contains a single TV Show"
+
+msgctxt "#20380"
+msgid "Exclude selected folder from scans"
+msgstr "Exclude selected folder from scans"
+
+msgctxt "#20381"
+msgid "Specials"
+msgstr "Specials"
+
+msgctxt "#20382"
+msgid "Automatically grab season thumbs"
+msgstr "Automatically grab season thumbs"
+
+msgctxt "#20383"
+msgid "Selected folder contains a single video"
+msgstr "Selected folder contains a single Video"
+
+msgctxt "#20384"
+msgid "Link to TV show"
+msgstr "Link to TV Show"
+
+msgctxt "#20385"
+msgid "Remove link to TV show"
+msgstr "Remove Link to TV Show"
+
+msgctxt "#20386"
+msgid "Recently added movies"
+msgstr "最近追加された映画"
+
+msgctxt "#20387"
+msgid "Recently added episodes"
+msgstr "最近追加されたエピソード"
+
+msgctxt "#20388"
+msgid "Studios"
+msgstr "スタジオ"
+
+msgctxt "#20389"
+msgid "Music videos"
+msgstr "ミュージックビデオ"
+
+msgctxt "#20390"
+msgid "Recently added music videos"
+msgstr "最近追加されたミュージックビデオ"
+
+msgctxt "#20391"
+msgid "Music video"
+msgstr "Music Video"
+
+msgctxt "#20392"
+msgid "Remove music video from library"
+msgstr "Remove Music Video from library"
+
+msgctxt "#20393"
+msgid "Music video information"
+msgstr "Music Video Information"
+
+msgctxt "#20394"
+msgid "Loading music video information"
+msgstr "Loading Music Video information"
+
+msgctxt "#20395"
+msgid "Mixed"
+msgstr "Mixed"
+
+msgctxt "#20396"
+msgid "Go to albums by artist"
+msgstr "Go To Albums by Artist"
+
+msgctxt "#20397"
+msgid "Go to album"
+msgstr "Go To Album"
+
+msgctxt "#20398"
+msgid "Play song"
+msgstr "Play Song"
+
+msgctxt "#20399"
+msgid "Go to music videos from album"
+msgstr "Go To Music Videos from Album"
+
+msgctxt "#20400"
+msgid "Go to music videos by artist"
+msgstr "Go To Music Videos by Artist"
+
+msgctxt "#20401"
+msgid "Play music video"
+msgstr "Play Music Video"
+
+msgctxt "#20402"
+msgid "Download actor thumbnails when adding to library"
+msgstr ""
+
+msgctxt "#20403"
+msgid "Set actor thumb"
+msgstr "Set Actor Thumb"
+
+msgctxt "#20405"
+msgid "Remove episode bookmark"
+msgstr "Remove Episode Bookmark"
+
+msgctxt "#20406"
+msgid "Set episode bookmark"
+msgstr "Set Episode Bookmark"
+
+msgctxt "#20407"
+msgid "Scraper settings"
+msgstr "Scraper Settings"
+
+msgctxt "#20408"
+msgid "Downloading music video information"
+msgstr "Downloading Music Video information"
+
+msgctxt "#20409"
+msgid "Downloading TV show information"
+msgstr "Downloading TV Show information"
+
+msgctxt "#20410"
+msgid "Trailer"
+msgstr "Trailer"
+
+msgctxt "#20411"
+msgid "Flatten"
+msgstr "Flatten"
+
+msgctxt "#20412"
+msgid "Flatten TV shows"
+msgstr "Flatten TV Shows"
+
+msgctxt "#20413"
+msgid "Get Fanart"
+msgstr "Get FanArt"
+
+msgctxt "#20414"
+msgid "Show Fanart in video and music libraries"
+msgstr "Show Fanart in Video and Music Libraries"
+
+msgctxt "#20415"
+msgid "Scanning for new content"
+msgstr "新しいコンテンツをスキャン中"
+
+msgctxt "#20416"
+msgid "First aired"
+msgstr "First Aired"
+
+msgctxt "#20417"
+msgid "Writer"
+msgstr "Writer"
+
+msgctxt "#20418"
+msgid "Clean file and folder names"
+msgstr "Clean File and Folder Names"
+
+msgctxt "#20420"
+msgid "Never"
+msgstr "Never"
+
+msgctxt "#20421"
+msgid "If only one season"
+msgstr "If Only One Season"
+
+msgctxt "#20422"
+msgid "Always"
+msgstr "Always"
+
+msgctxt "#20423"
+msgid "Has trailer"
+msgstr "Has Trailer"
+
+msgctxt "#20424"
+msgid "False"
+msgstr "False"
+
+msgctxt "#20425"
+msgid "Fanart slideshow"
+msgstr "Fanart Slideshow"
+
+msgctxt "#20426"
+msgid "Export to a single file or separate"
+msgstr "Export to a single file or separate"
+
+msgctxt "#20427"
+msgid "files per entry?"
+msgstr "files per entry?"
+
+msgctxt "#20428"
+msgid "Single file"
+msgstr "Single file"
+
+msgctxt "#20429"
+msgid "Separate"
+msgstr "Separate"
+
+msgctxt "#20430"
+msgid "Export thumbnails and fanart?"
+msgstr "Export thumbs and fanart?"
+
+msgctxt "#20431"
+msgid "Overwrite old files?"
+msgstr "Overwrite old files?"
+
+msgctxt "#20432"
+msgid "Exclude path from library updates"
+msgstr "Exclude path from library updates"
+
+msgctxt "#20433"
+msgid "Extract thumbnails and video information"
+msgstr ""
+
+msgctxt "#20434"
+msgid "Sets"
+msgstr ""
+
+msgctxt "#20435"
+msgid "Set movieset thumb"
+msgstr ""
+
+msgctxt "#20436"
+msgid "Export actor thumbs?"
+msgstr ""
+
+msgctxt "#20437"
+msgid "Choose fanart"
+msgstr ""
+
+msgctxt "#20438"
+msgid "Local fanart"
+msgstr ""
+
+msgctxt "#20439"
+msgid "No fanart"
+msgstr ""
+
+msgctxt "#20440"
+msgid "Current fanart"
+msgstr ""
+
+msgctxt "#20441"
+msgid "Remote fanart"
+msgstr ""
+
+msgctxt "#20442"
+msgid "Change content"
+msgstr ""
+
+msgctxt "#20443"
+msgid "Do you want to refresh info for all"
+msgstr ""
+
+msgctxt "#20444"
+msgid "items within this path?"
+msgstr ""
+
+msgctxt "#20445"
+msgid "Fanart"
+msgstr ""
+
+msgctxt "#20446"
+msgid "Locally stored information found."
+msgstr ""
+
+msgctxt "#20447"
+msgid "Ignore and refresh from internet?"
+msgstr ""
+
+msgctxt "#20448"
+msgid "Could not download information"
+msgstr ""
+
+msgctxt "#20449"
+msgid "Server is most likely unavailable."
+msgstr ""
+
+msgctxt "#20450"
+msgid "Would you like to continue scanning?"
+msgstr ""
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr ""
+
+msgctxt "#20456"
+msgid "Set movieset fanart"
+msgstr ""
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr ""
+
+msgctxt "#21330"
+msgid "Show hidden files and directories"
+msgstr "隠しファイル/フォルダを表示"
+
+msgctxt "#21331"
+msgid "TuxBox client"
+msgstr "TuxBox Client"
+
+msgctxt "#21332"
+msgid "WARNING: Target TuxBox device is in recording-mode!"
+msgstr "WARNING: Target TuxBox device is in Recording-Mode!"
+
+msgctxt "#21333"
+msgid "The stream will be stopped!"
+msgstr "The Stream will be Stopped!"
+
+msgctxt "#21334"
+msgid "Zap to channel: %s failed!"
+msgstr "Zap to Channel: %s Failed!"
+
+msgctxt "#21335"
+msgid "Are you sure to start the stream?"
+msgstr "Are you sure to start the stream?"
+
+msgctxt "#21336"
+msgid "Connecting to: %s"
+msgstr "Connecting to: %s"
+
+msgctxt "#21337"
+msgid "TuxBox device"
+msgstr "TuxBox Device"
+
+msgctxt "#21359"
+msgid "Add media share..."
+msgstr "Add Media Share..."
+
+msgctxt "#21360"
+msgid "Share video and music libraries through UPnP"
+msgstr "UPnPサーバ有効"
+
+msgctxt "#21364"
+msgid "Edit media share"
+msgstr "Edit Media Share"
+
+msgctxt "#21365"
+msgid "Remove media share"
+msgstr "Remove Media Share"
+
+msgctxt "#21366"
+msgid "Subtitle folder"
+msgstr "字幕ディレクトリ設定"
+
+msgctxt "#21367"
+msgid "Movie & alternate subtitle directory"
+msgstr "Movie & Alternate Subtitle Directory"
+
+msgctxt "#21369"
+msgid "Enable mouse"
+msgstr "Enable Mouse"
+
+msgctxt "#21370"
+msgid "Play navigation sounds during media playback"
+msgstr "再生時もﾅﾋﾞｹﾞｰｼｮﾝｻｳﾝﾄﾞを有効"
+
+msgctxt "#21371"
+msgid "Thumbnail"
+msgstr "Thumbnail"
+
+msgctxt "#21372"
+msgid "Forced DVD player region"
+msgstr "Forced DVD Player Region"
+
+msgctxt "#21373"
+msgid "Video output"
+msgstr "Video Hardware"
+
+msgctxt "#21374"
+msgid "Video aspect"
+msgstr "アスペクト比"
+
+msgctxt "#21375"
+msgid "Normal"
+msgstr "Normal"
+
+msgctxt "#21376"
+msgid "Letterbox"
+msgstr "Letterbox"
+
+msgctxt "#21377"
+msgid "Widescreen"
+msgstr "Widescreen"
+
+msgctxt "#21378"
+msgid "Enable 480p"
+msgstr "480p 有効"
+
+msgctxt "#21379"
+msgid "Enable 720p"
+msgstr "720p 有効"
+
+msgctxt "#21380"
+msgid "Enable 1080i"
+msgstr "1080i 有効"
+
+msgctxt "#21381"
+msgid "Enter name of new playlist"
+msgstr "Enter Name of New Playlist"
+
+msgctxt "#21382"
+msgid "Show \"Add source\" buttons in file lists"
+msgstr "Add Sourceボタンを無効"
+
+msgctxt "#21383"
+msgid "Enable scrollbars"
+msgstr "スクロールバー表示"
+
+msgctxt "#21384"
+msgid "Make watched filtering a toggle in video library"
+msgstr "視聴済み除外ボタンをビデオライブラリに追加"
+
+msgctxt "#21385"
+msgid "Open"
+msgstr "Open"
+
+msgctxt "#21386"
+msgid "Acoustic management level"
+msgstr "Acoustic Management Level"
+
+msgctxt "#21387"
+msgid "Fast"
+msgstr "Fast"
+
+msgctxt "#21388"
+msgid "Quiet"
+msgstr "Quiet"
+
+msgctxt "#21389"
+msgid "Enable custom background"
+msgstr "Enable Custom Background"
+
+msgctxt "#21390"
+msgid "Power management level"
+msgstr "Power Management Level"
+
+msgctxt "#21391"
+msgid "High power"
+msgstr "High Power"
+
+msgctxt "#21392"
+msgid "Low power"
+msgstr "Low Power"
+
+msgctxt "#21393"
+msgid "High standby"
+msgstr "High Standby"
+
+msgctxt "#21394"
+msgid "Low standby"
+msgstr "Low Standby"
+
+msgctxt "#21395"
+msgid "Unable to cache files bigger than 4GB"
+msgstr "Unable to cache files bigger than 4 gb"
+
+msgctxt "#21396"
+msgid "Chapter"
+msgstr "Chapter"
+
+msgctxt "#21397"
+msgid "High quality pixel shader v2"
+msgstr "High Quality Pixel Shader V2"
+
+msgctxt "#21398"
+msgid "Enable playlist at startup"
+msgstr "起動時後プレイリストを再生"
+
+msgctxt "#21399"
+msgid "Use tween animations"
+msgstr "Tweenアニメーション表示有効"
+
+msgctxt "#21400"
+msgid "contains"
+msgstr "contains"
+
+msgctxt "#21401"
+msgid "does not contain"
+msgstr "does not contain"
+
+msgctxt "#21402"
+msgid "is"
+msgstr "is"
+
+msgctxt "#21403"
+msgid "is not"
+msgstr "is not"
+
+msgctxt "#21404"
+msgid "starts with"
+msgstr "starts with"
+
+msgctxt "#21405"
+msgid "ends with"
+msgstr "ends with"
+
+msgctxt "#21406"
+msgid "greater than"
+msgstr "greater than"
+
+msgctxt "#21407"
+msgid "less than"
+msgstr "less than"
+
+msgctxt "#21408"
+msgid "after"
+msgstr "after"
+
+msgctxt "#21409"
+msgid "before"
+msgstr "before"
+
+msgctxt "#21410"
+msgid "in the last"
+msgstr "in the last"
+
+msgctxt "#21411"
+msgid "not in the last"
+msgstr "not in the last"
+
+msgctxt "#21412"
+msgid "Scrapers"
+msgstr ""
+
+msgctxt "#21413"
+msgid "Default movie scraper"
+msgstr ""
+
+msgctxt "#21414"
+msgid "Default tvshow scraper"
+msgstr ""
+
+msgctxt "#21415"
+msgid "Default musicvideo scraper"
+msgstr ""
+
+msgctxt "#21416"
+msgid "Enable fallback based on scraper language"
+msgstr ""
+
+msgctxt "#21417"
+msgid "- Settings"
+msgstr ""
+
+msgctxt "#21418"
+msgid "Multilingual"
+msgstr ""
+
+msgctxt "#21420"
+msgid "Value to match"
+msgstr "Value to match"
+
+msgctxt "#21421"
+msgid "Smart playlist rule"
+msgstr "Smart Playlist Rule"
+
+msgctxt "#21422"
+msgid "Match items where"
+msgstr "Match items where"
+
+msgctxt "#21423"
+msgid "New rule..."
+msgstr "New Rule..."
+
+msgctxt "#21424"
+msgid "Items must match"
+msgstr "Items must match"
+
+msgctxt "#21425"
+msgid "all of the rules"
+msgstr "all of the rules"
+
+msgctxt "#21426"
+msgid "one or more of the rules"
+msgstr "one or more of the rules"
+
+msgctxt "#21427"
+msgid "Limit to"
+msgstr "Limit to"
+
+msgctxt "#21428"
+msgid "No limit"
+msgstr "No Limit"
+
+msgctxt "#21429"
+msgid "Order by"
+msgstr "Order by"
+
+msgctxt "#21430"
+msgid "ascending"
+msgstr "ascending"
+
+msgctxt "#21431"
+msgid "descending"
+msgstr "descending"
+
+msgctxt "#21432"
+msgid "Edit smart playlist"
+msgstr "Edit Smart Playlist"
+
+msgctxt "#21433"
+msgid "Name of the playlist"
+msgstr "Name of the playlist"
+
+msgctxt "#21434"
+msgid "Find items where"
+msgstr "Find items where"
+
+msgctxt "#21435"
+msgid "Edit"
+msgstr "Edit"
+
+msgctxt "#21436"
+msgid "%i items"
+msgstr "%i items"
+
+msgctxt "#21437"
+msgid "New smart playlist..."
+msgstr "New Smart Playlist..."
+
+msgctxt "#21438"
+msgid "%c Drive"
+msgstr "%c Drive"
+
+msgctxt "#21439"
+msgid "Edit party mode rules"
+msgstr "Edit Party Mode Rules"
+
+msgctxt "#21440"
+msgid "Home folder"
+msgstr ""
+
+msgctxt "#21441"
+msgid "Watched count"
+msgstr "Watched count"
+
+msgctxt "#21442"
+msgid "Episode title"
+msgstr "Episode Title"
+
+msgctxt "#21443"
+msgid "Video resolution"
+msgstr ""
+
+msgctxt "#21444"
+msgid "Audio channels"
+msgstr ""
+
+msgctxt "#21445"
+msgid "Video codec"
+msgstr ""
+
+msgctxt "#21446"
+msgid "Audio codec"
+msgstr ""
+
+msgctxt "#21447"
+msgid "Audio language"
+msgstr ""
+
+msgctxt "#21448"
+msgid "Subtitle language"
+msgstr ""
+
+msgctxt "#21449"
+msgid "Remote control sends keyboard presses"
+msgstr ""
+
+msgctxt "#21450"
+msgid "- Edit"
+msgstr ""
+
+msgctxt "#21800"
+msgid "File name"
+msgstr "File Name"
+
+msgctxt "#21801"
+msgid "File path"
+msgstr "File Path"
+
+msgctxt "#21802"
+msgid "File size"
+msgstr "File Size"
+
+msgctxt "#21803"
+msgid "File date/time"
+msgstr "File Date/Time"
+
+msgctxt "#21804"
+msgid "Slide index"
+msgstr "Slide Index"
+
+msgctxt "#21805"
+msgid "Resolution"
+msgstr "Resolution"
+
+msgctxt "#21806"
+msgid "Comment"
+msgstr "Comment"
+
+msgctxt "#21807"
+msgid "Colour/B&W"
+msgstr "Colour/bw"
+
+msgctxt "#21808"
+msgid "JPEG process"
+msgstr "Jpeg Process"
+
+msgctxt "#21820"
+msgid "Date/Time"
+msgstr "Date/Time"
+
+msgctxt "#21821"
+msgid "Description"
+msgstr "Description"
+
+msgctxt "#21822"
+msgid "Camera make"
+msgstr "Camera Make"
+
+msgctxt "#21823"
+msgid "Camera model"
+msgstr "Camera Model"
+
+msgctxt "#21824"
+msgid "EXIF comment"
+msgstr "Exif Comment"
+
+msgctxt "#21825"
+msgid "Firmware"
+msgstr "Firmware"
+
+msgctxt "#21826"
+msgid "Aperture"
+msgstr "Aperture"
+
+msgctxt "#21827"
+msgid "Focal length"
+msgstr "Focal Length"
+
+msgctxt "#21828"
+msgid "Focus distance"
+msgstr "Focus Distance"
+
+msgctxt "#21829"
+msgid "Exposure"
+msgstr "Exposure"
+
+msgctxt "#21830"
+msgid "Exposure time"
+msgstr "Exposure Time"
+
+msgctxt "#21831"
+msgid "Exposure bias"
+msgstr "Exposure Bias"
+
+msgctxt "#21832"
+msgid "Exposure mode"
+msgstr "Exposure Mode"
+
+msgctxt "#21833"
+msgid "Flash used"
+msgstr "Flash Used"
+
+msgctxt "#21834"
+msgid "White-balance"
+msgstr "Whitebalance"
+
+msgctxt "#21835"
+msgid "Light source"
+msgstr "Light Source"
+
+msgctxt "#21836"
+msgid "Metering mode"
+msgstr "Metering Mode"
+
+msgctxt "#21837"
+msgid "ISO"
+msgstr "ISO"
+
+msgctxt "#21838"
+msgid "Digital zoom"
+msgstr "Digital Zoom"
+
+msgctxt "#21839"
+msgid "CCD width"
+msgstr "CCD Width"
+
+msgctxt "#21840"
+msgid "GPS latitude"
+msgstr "GPS Latitude"
+
+msgctxt "#21841"
+msgid "GPS longitude"
+msgstr "GPS Longitude"
+
+msgctxt "#21842"
+msgid "GPS altitude"
+msgstr "GPS Altitude"
+
+msgctxt "#21843"
+msgid "Orientation"
+msgstr "Orientation"
+
+msgctxt "#21860"
+msgid "Supplemental categories"
+msgstr "Supplemental Categories"
+
+msgctxt "#21861"
+msgid "Keywords"
+msgstr "Keywords"
+
+msgctxt "#21862"
+msgid "Caption"
+msgstr "Caption"
+
+msgctxt "#21863"
+msgid "Author"
+msgstr "Author"
+
+msgctxt "#21864"
+msgid "Headline"
+msgstr "Headline"
+
+msgctxt "#21865"
+msgid "Special instructions"
+msgstr "Special Instructions"
+
+msgctxt "#21866"
+msgid "Category"
+msgstr "Category"
+
+msgctxt "#21867"
+msgid "Byline"
+msgstr "Byline"
+
+msgctxt "#21868"
+msgid "Byline title"
+msgstr "Byline Title"
+
+msgctxt "#21869"
+msgid "Credit"
+msgstr "Credit"
+
+msgctxt "#21870"
+msgid "Source"
+msgstr "Source"
+
+msgctxt "#21871"
+msgid "Copyright notice"
+msgstr "Copyright Notice"
+
+msgctxt "#21872"
+msgid "Object name"
+msgstr "Object Name"
+
+msgctxt "#21873"
+msgid "City"
+msgstr "City"
+
+msgctxt "#21874"
+msgid "State"
+msgstr "State"
+
+msgctxt "#21875"
+msgid "Country"
+msgstr "Country"
+
+msgctxt "#21876"
+msgid "Original Tx Reference"
+msgstr "Original Tx Reference"
+
+msgctxt "#21877"
+msgid "Date created"
+msgstr "Date Created"
+
+msgctxt "#21878"
+msgid "Copyright flag"
+msgstr "Copyright Flag"
+
+msgctxt "#21879"
+msgid "Country code"
+msgstr "Country Code"
+
+msgctxt "#21880"
+msgid "Reference service"
+msgstr "Reference Service"
+
+msgctxt "#21881"
+msgid "Allow control of XBMC via UPnP"
+msgstr "Enable UPnP Renderer"
+
+msgctxt "#21882"
+msgid "Attempt to skip introduction before DVD menu"
+msgstr "Attempt to skip introduction before DVD Menu"
+
+msgctxt "#21883"
+msgid "Saved music"
+msgstr "Ripped Audio CDs"
+
+msgctxt "#21884"
+msgid "Query info for all artists"
+msgstr "Query Info For All Artists"
+
+msgctxt "#21885"
+msgid "Downloading album information"
+msgstr "Downloading Album Information"
+
+msgctxt "#21886"
+msgid "Downloading artist information"
+msgstr "Downloading Artist Information"
+
+msgctxt "#21887"
+msgid "Biography"
+msgstr "Biography"
+
+msgctxt "#21888"
+msgid "Discography"
+msgstr "Discography"
+
+msgctxt "#21889"
+msgid "Searching artist"
+msgstr "Searching Artist"
+
+msgctxt "#21890"
+msgid "Select artist"
+msgstr "Select Artist"
+
+msgctxt "#21891"
+msgid "Artist information"
+msgstr "アーティスト情報"
+
+msgctxt "#21892"
+msgid "Instruments"
+msgstr "Instruments"
+
+msgctxt "#21893"
+msgid "Born"
+msgstr "Born"
+
+msgctxt "#21894"
+msgid "Formed"
+msgstr "Formed"
+
+msgctxt "#21895"
+msgid "Themes"
+msgstr "Themes"
+
+msgctxt "#21896"
+msgid "Disbanded"
+msgstr "Disbanded"
+
+msgctxt "#21897"
+msgid "Died"
+msgstr "Died"
+
+msgctxt "#21898"
+msgid "Years active"
+msgstr "Years Active"
+
+msgctxt "#21899"
+msgid "Label"
+msgstr "Label"
+
+msgctxt "#21900"
+msgid "Born/Formed"
+msgstr "Born/Formed"
+
+msgctxt "#22000"
+msgid "Update library on startup"
+msgstr "Update library on startup"
+
+msgctxt "#22001"
+msgid "Always update library in background"
+msgstr "Always update library in background"
+
+msgctxt "#22002"
+msgid "- DNS suffix"
+msgstr "- DNS Suffix"
+
+msgctxt "#22003"
+msgid "Default player"
+msgstr ""
+
+msgctxt "#22004"
+msgid "Delayed by: %2.3fs"
+msgstr "Delayed by: %2.3fs"
+
+msgctxt "#22005"
+msgid "Ahead by: %2.3fs"
+msgstr "Ahead by: %2.3fs"
+
+msgctxt "#22006"
+msgid "Subtitle offset"
+msgstr "Subtitle Offset"
+
+msgctxt "#22007"
+msgid "OpenGL vendor:"
+msgstr "OpenGL Vendor:"
+
+msgctxt "#22008"
+msgid "OpenGL renderer:"
+msgstr "OpenGL Renderer:"
+
+msgctxt "#22009"
+msgid "OpenGL version:"
+msgstr "OpenGL Version:"
+
+msgctxt "#22010"
+msgid "GPU temperature:"
+msgstr "GPU Temperature:"
+
+msgctxt "#22011"
+msgid "CPU temperature:"
+msgstr "CPU Temperature:"
+
+msgctxt "#22012"
+msgid "Total memory"
+msgstr "Total Memory"
+
+msgctxt "#22013"
+msgid "Profile data"
+msgstr "Profile Data"
+
+msgctxt "#22014"
+msgid "Use dim if paused during video playback"
+msgstr "Use Dim if paused during video playback"
+
+msgctxt "#22015"
+msgid "All recordings"
+msgstr "All Recordings"
+
+msgctxt "#22016"
+msgid "By title"
+msgstr "By Title"
+
+msgctxt "#22017"
+msgid "By group"
+msgstr "By Group"
+
+msgctxt "#22018"
+msgid "Live channels"
+msgstr "Live Channels"
+
+msgctxt "#22019"
+msgid "Recordings by title"
+msgstr "Recordings by title"
+
+msgctxt "#22020"
+msgid "Guide"
+msgstr "Guide"
+
+msgctxt "#22021"
+msgid "Allowed error in aspect ratio to minimize black bars"
+msgstr ""
+
+msgctxt "#22022"
+msgid "Show video files in listings"
+msgstr ""
+
+msgctxt "#22023"
+msgid "DirectX vendor"
+msgstr ""
+
+msgctxt "#22024"
+msgid "Direct3D version"
+msgstr ""
+
+msgctxt "#22025"
+msgid "DVDPlayer full codec support"
+msgstr ""
+
+msgctxt "#22026"
+msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
+msgstr ""
+
+msgctxt "#22027"
+msgid "PAPlayer"
+msgstr ""
+
+msgctxt "#22028"
+msgid "DVDPlayer"
+msgstr ""
+
+msgctxt "#22029"
+msgid "MPlayer"
+msgstr ""
+
+msgctxt "#22030"
+msgid "Font"
+msgstr ""
+
+msgctxt "#22031"
+msgid "- Size"
+msgstr ""
+
+msgctxt "#22032"
+msgid "- Colours"
+msgstr ""
+
+msgctxt "#22033"
+msgid "- Charset"
+msgstr ""
+
+msgctxt "#22034"
+msgid "Export karaoke titles as HTML"
+msgstr ""
+
+msgctxt "#22035"
+msgid "Export karaoke titles as CSV"
+msgstr ""
+
+msgctxt "#22036"
+msgid "Import karaoke titles..."
+msgstr ""
+
+msgctxt "#22037"
+msgid "Show song selector automatically"
+msgstr ""
+
+msgctxt "#22038"
+msgid "Export karaoke titles..."
+msgstr ""
+
+msgctxt "#22039"
+msgid "Enter song number"
+msgstr ""
+
+msgctxt "#22040"
+msgid "white/green"
+msgstr ""
+
+msgctxt "#22041"
+msgid "white/red"
+msgstr ""
+
+msgctxt "#22042"
+msgid "white/blue"
+msgstr ""
+
+msgctxt "#22043"
+msgid "black/white"
+msgstr ""
+
+msgctxt "#23000"
+msgid "Weather plugin"
+msgstr ""
+
+msgctxt "#23001"
+msgid "- Plugin settings"
+msgstr ""
+
+msgctxt "#23050"
+msgid "Activate Teletext"
+msgstr ""
+
+msgctxt "#23051"
+msgid "Part %i"
+msgstr ""
+
+msgctxt "#23052"
+msgid "Buffering %i bytes"
+msgstr ""
+
+msgctxt "#23053"
+msgid "Stopping"
+msgstr ""
+
+msgctxt "#23054"
+msgid "Running"
+msgstr ""
+
+msgctxt "#23100"
+msgid "External Player Active"
+msgstr ""
+
+msgctxt "#23101"
+msgid "Click OK to terminate the player"
+msgstr ""
+
+msgctxt "#23104"
+msgid "Click OK when playback has ended"
+msgstr ""
+
+msgctxt "#24000"
+msgid "Add-on"
+msgstr ""
+
+msgctxt "#24001"
+msgid "Plugins"
+msgstr ""
+
+msgctxt "#24020"
+msgid "Configure"
+msgstr ""
+
+msgctxt "#24021"
+msgid "Disable"
+msgstr ""
+
+msgctxt "#24022"
+msgid "Enable"
+msgstr ""
+
+msgctxt "#24023"
+msgid "Add-on disabled"
+msgstr ""
+
+msgctxt "#24030"
+msgid "This Add-on can not be configured"
+msgstr ""
+
+msgctxt "#29800"
+msgid "Library Mode"
+msgstr "Library Mode"
+
+msgctxt "#29801"
+msgid "QWERTY keyboard"
+msgstr "QWERTY Keyboard"
+
+msgctxt "#29802"
+msgid "Passthrough Audio in use"
+msgstr ""
+
+msgctxt "#29999"
+msgid "Apply flicker filter setting to games"
+msgstr "Apply Flicker Filter Setting to Games"
+
+msgctxt "#33001"
+msgid "Trailer quality"
+msgstr ""
+
+msgctxt "#33002"
+msgid "Stream"
+msgstr ""
+
+msgctxt "#33003"
+msgid "Download"
+msgstr ""
+
+msgctxt "#33004"
+msgid "Download & play"
+msgstr ""
+
+msgctxt "#33005"
+msgid "Download & save"
+msgstr ""
+
+msgctxt "#33006"
+msgid "Today"
+msgstr ""
+
+msgctxt "#33007"
+msgid "Tomorrow"
+msgstr ""
+
+msgctxt "#33008"
+msgid "Saving"
+msgstr ""
+
+msgctxt "#33009"
+msgid "Copying"
+msgstr ""
+
+msgctxt "#33010"
+msgid "Set download directory"
+msgstr ""
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr ""
+
+msgctxt "#33012"
+msgid "Short"
+msgstr ""
+
+msgctxt "#33013"
+msgid "Long"
+msgstr ""
+
+msgctxt "#33014"
+msgid "Use DVD player instead of regular player"
+msgstr ""
+
+msgctxt "#33015"
+msgid "Ask for download before playing video"
+msgstr ""
+
+msgctxt "#33016"
+msgid "Clips"
+msgstr ""
+
+msgctxt "#33017"
+msgid "Restart plugin to enable"
+msgstr ""
+
+msgctxt "#33018"
+msgid "Tonight"
+msgstr ""
+
+msgctxt "#33019"
+msgid "Tomorrow Night"
+msgstr ""
+
+msgctxt "#33020"
+msgid "Condition"
+msgstr ""
+
+msgctxt "#33021"
+msgid "Precipitation"
+msgstr ""
+
+msgctxt "#33022"
+msgid "Precip"
+msgstr ""
+
+msgctxt "#33023"
+msgid "Humid"
+msgstr ""
+
+msgctxt "#33024"
+msgid "Feels"
+msgstr ""
+
+msgctxt "#33025"
+msgid "Observed"
+msgstr ""
+
+msgctxt "#33026"
+msgid "Departure from normal"
+msgstr ""
+
+msgctxt "#33027"
+msgid "Sunrise"
+msgstr ""
+
+msgctxt "#33028"
+msgid "Sunset"
+msgstr ""
+
+msgctxt "#33029"
+msgid "Details"
+msgstr ""
+
+msgctxt "#33030"
+msgid "Outlook"
+msgstr ""
+
+msgctxt "#33031"
+msgid "Coverflow"
+msgstr ""
+
+msgctxt "#33032"
+msgid "Translate text"
+msgstr ""
+
+msgctxt "#33033"
+msgid "Map list %s category"
+msgstr ""
+
+msgctxt "#33034"
+msgid "36 Hour"
+msgstr ""
+
+msgctxt "#33035"
+msgid "Maps"
+msgstr ""
+
+msgctxt "#33036"
+msgid "Hourly"
+msgstr ""
+
+msgctxt "#33037"
+msgid "Weekend"
+msgstr ""
+
+msgctxt "#33038"
+msgid "%s day"
+msgstr ""
+
+msgctxt "#33049"
+msgid "Alert"
+msgstr ""
+
+msgctxt "#33050"
+msgid "Alerts"
+msgstr ""
+
+msgctxt "#33051"
+msgid "Choose Your"
+msgstr ""
+
+msgctxt "#33052"
+msgid "Check"
+msgstr ""
+
+msgctxt "#33053"
+msgid "Configure the"
+msgstr ""
+
+msgctxt "#33054"
+msgid "Seasons"
+msgstr ""
+
+msgctxt "#33055"
+msgid "Use your"
+msgstr ""
+
+msgctxt "#33056"
+msgid "Watch your"
+msgstr ""
+
+msgctxt "#33057"
+msgid "Listen to"
+msgstr ""
+
+msgctxt "#33058"
+msgid "View your"
+msgstr ""
+
+msgctxt "#33059"
+msgid "Configure the"
+msgstr ""
+
+msgctxt "#33060"
+msgid "Power"
+msgstr ""
+
+msgctxt "#33061"
+msgid "Menu"
+msgstr "メニュー"
+
+msgctxt "#33062"
+msgid "Play the"
+msgstr ""
+
+msgctxt "#33063"
+msgid "Options"
+msgstr ""
+
+msgctxt "#33065"
+msgid "Editor"
+msgstr ""
+
+msgctxt "#33066"
+msgid "About your"
+msgstr ""
+
+msgctxt "#33067"
+msgid "Star rating"
+msgstr ""
+
+msgctxt "#33068"
+msgid "Background"
+msgstr ""
+
+msgctxt "#33069"
+msgid "Backgrounds"
+msgstr ""
+
+msgctxt "#33070"
+msgid "Custom background"
+msgstr ""
+
+msgctxt "#33071"
+msgid "Custom backgrounds"
+msgstr ""
+
+msgctxt "#33072"
+msgid "View Readme"
+msgstr ""
+
+msgctxt "#33073"
+msgid "View Changelog"
+msgstr ""
+
+msgctxt "#33074"
+msgid "This version of %s requires an"
+msgstr ""
+
+msgctxt "#33075"
+msgid "XBMC revision of %s or greater to run."
+msgstr ""
+
+msgctxt "#33076"
+msgid "Please update XBMC."
+msgstr ""
+
+msgctxt "#33077"
+msgid "No data found!"
+msgstr ""
+
+msgctxt "#33078"
+msgid "Next page"
+msgstr ""
+
+msgctxt "#33079"
+msgid "Love"
+msgstr ""
+
+msgctxt "#33080"
+msgid "Hate"
+msgstr ""
+
+msgctxt "#33081"
+msgid "This file is stacked, select the part you want to play from."
+msgstr ""
+
+msgctxt "#33082"
+msgid "Path to script"
+msgstr ""
+
+msgctxt "#33083"
+msgid "Enable custom script button"
+msgstr ""
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr ""
