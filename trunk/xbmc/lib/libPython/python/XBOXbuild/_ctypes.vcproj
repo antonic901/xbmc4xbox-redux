@@ -107,7 +107,9 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc"
+				Optimization="1"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
 				RuntimeLibrary="2"/>
 			<Tool
@@ -116,6 +118,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/EXPORT:DllGetClassObject,PRIVATE /EXPORT:DllCanUnloadNow,PRIVATE"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
+				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
 				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
 				SubSystem="0"
 				BaseAddress="0x1D1A0000"
