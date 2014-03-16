@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Maltese (http://www.transifex.com/projects/p/xbmc4xbox/language/mt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: mt\n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3)\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -36,10 +36,6 @@ msgstr "Il-Gwida"
 msgctxt "#5"
 msgid "Settings"
 msgstr "Settings"
-
-msgctxt "#6"
-msgid "XBMC SVN"
-msgstr ""
 
 msgctxt "#7"
 msgid "File manager"
@@ -128,82 +124,6 @@ msgstr "Novembru"
 msgctxt "#32"
 msgid "December"
 msgstr "Diċembru"
-
-msgctxt "#41"
-msgid "Mon"
-msgstr ""
-
-msgctxt "#42"
-msgid "Tue"
-msgstr ""
-
-msgctxt "#43"
-msgid "Wed"
-msgstr ""
-
-msgctxt "#44"
-msgid "Thu"
-msgstr ""
-
-msgctxt "#45"
-msgid "Fri"
-msgstr ""
-
-msgctxt "#46"
-msgid "Sat"
-msgstr ""
-
-msgctxt "#47"
-msgid "Sun"
-msgstr ""
-
-msgctxt "#51"
-msgid "Jan"
-msgstr ""
-
-msgctxt "#52"
-msgid "Feb"
-msgstr ""
-
-msgctxt "#53"
-msgid "Mar"
-msgstr ""
-
-msgctxt "#54"
-msgid "Apr"
-msgstr ""
-
-msgctxt "#55"
-msgid "May"
-msgstr ""
-
-msgctxt "#56"
-msgid "Jun"
-msgstr ""
-
-msgctxt "#57"
-msgid "Jul"
-msgstr ""
-
-msgctxt "#58"
-msgid "Aug"
-msgstr ""
-
-msgctxt "#59"
-msgid "Sep"
-msgstr ""
-
-msgctxt "#60"
-msgid "Oct"
-msgstr ""
-
-msgctxt "#61"
-msgid "Nov"
-msgstr ""
-
-msgctxt "#62"
-msgid "Dec"
-msgstr ""
 
 msgctxt "#98"
 msgid "View: Auto"
@@ -661,10 +581,6 @@ msgctxt "#224"
 msgid "Speed"
 msgstr "Veloċita'"
 
-msgctxt "#226"
-msgid "Test patterns..."
-msgstr ""
-
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
 msgstr "Uza CDDB"
@@ -944,22 +860,6 @@ msgstr "Delay tal-Awdjo"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Bukmarks"
-
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr ""
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr ""
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr ""
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr ""
 
 msgctxt "#303"
 msgid "Delay"
@@ -1857,22 +1757,6 @@ msgctxt "#544"
 msgid "Media info"
 msgstr "Info tal-Media"
 
-msgctxt "#545"
-msgid "Audio output device"
-msgstr ""
-
-msgctxt "#546"
-msgid "Passthrough output device"
-msgstr ""
-
-msgctxt "#547"
-msgid "No biography for this artist"
-msgstr ""
-
-msgctxt "#548"
-msgid "Downmix multichannel audio to stereo"
-msgstr ""
-
 msgctxt "#550"
 msgid "Sort by: %s"
 msgstr "Ordni: %s"
@@ -1964,18 +1848,6 @@ msgstr "Default"
 msgctxt "#572"
 msgid "Studio"
 msgstr "Studjo"
-
-msgctxt "#573"
-msgid "Path"
-msgstr ""
-
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2088,10 +1960,6 @@ msgstr "CDDARipPath mhux issettjat."
 msgctxt "#610"
 msgid "Rip audio track"
 msgstr "Nirripja Trekk tal-Awdjo"
-
-msgctxt "#611"
-msgid "Enter number"
-msgstr ""
 
 msgctxt "#620"
 msgid "Audio CDs"
@@ -2244,22 +2112,6 @@ msgstr "Amplifikazzjoni tal-Volum"
 msgctxt "#661"
 msgid "Choose export folder"
 msgstr "Għażel Fowlder tal-Export"
-
-msgctxt "#662"
-msgid "This file is no longer available."
-msgstr ""
-
-msgctxt "#663"
-msgid "Would you like to remove it from the library?"
-msgstr ""
-
-msgctxt "#664"
-msgid "Browse for Script"
-msgstr ""
-
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2445,10 +2297,6 @@ msgctxt "#748"
 msgid "Edit path"
 msgstr "Edit Path"
 
-msgctxt "#749"
-msgid "Mirror image"
-msgstr ""
-
 msgctxt "#750"
 msgid "Are you sure?"
 msgstr "Tikkonferma?"
@@ -2529,66 +2377,6 @@ msgctxt "#774"
 msgid "Slideshow folder"
 msgstr "Slideshow Folder"
 
-msgctxt "#775"
-msgid "Network interface"
-msgstr ""
-
-msgctxt "#776"
-msgid "- Wireless network name (ESSID)"
-msgstr ""
-
-msgctxt "#777"
-msgid "- Wireless password"
-msgstr ""
-
-msgctxt "#778"
-msgid "- Wireless security"
-msgstr ""
-
-msgctxt "#779"
-msgid "Save and apply network interface settings"
-msgstr ""
-
-msgctxt "#780"
-msgid "No encryption"
-msgstr ""
-
-msgctxt "#781"
-msgid "WEP"
-msgstr ""
-
-msgctxt "#782"
-msgid "WPA"
-msgstr ""
-
-msgctxt "#783"
-msgid "WPA2"
-msgstr ""
-
-msgctxt "#784"
-msgid "Applying network interface settings. Please wait."
-msgstr ""
-
-msgctxt "#785"
-msgid "Network interface restarted successfully."
-msgstr ""
-
-msgctxt "#786"
-msgid "Network interface did not start successfully."
-msgstr ""
-
-msgctxt "#787"
-msgid "Interface disabled"
-msgstr ""
-
-msgctxt "#788"
-msgid "Network interface disabled successfully."
-msgstr ""
-
-msgctxt "#789"
-msgid "Wireless network name (ESSID)"
-msgstr ""
-
 msgctxt "#790"
 msgid "Event server"
 msgstr "Remote Events"
@@ -2608,34 +2396,6 @@ msgstr "Port Range tar-Remote Events"
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
 msgstr "Irċievi events minn kompjuters oħra"
-
-msgctxt "#795"
-msgid "Initial repeat delay (ms)"
-msgstr ""
-
-msgctxt "#796"
-msgid "Continuous repeat delay (ms)"
-msgstr ""
-
-msgctxt "#797"
-msgid "Maximum number of clients"
-msgstr ""
-
-msgctxt "#798"
-msgid "Internet access"
-msgstr ""
-
-msgctxt "#850"
-msgid "Invalid port number entered"
-msgstr ""
-
-msgctxt "#851"
-msgid "Valid port range is 1-65535"
-msgstr ""
-
-msgctxt "#852"
-msgid "Valid port range is 1024-65535"
-msgstr ""
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -2817,26 +2577,6 @@ msgctxt "#1045"
 msgid "Plugin settings"
 msgstr "Settings tal-Plagin"
 
-msgctxt "#1046"
-msgid "Access points"
-msgstr ""
-
-msgctxt "#1047"
-msgid "Other..."
-msgstr ""
-
-msgctxt "#1048"
-msgid "- Username"
-msgstr ""
-
-msgctxt "#1049"
-msgid "Script settings"
-msgstr ""
-
-msgctxt "#1050"
-msgid "Singles"
-msgstr ""
-
 msgctxt "#1200"
 msgid "SMB client"
 msgstr "SMB Client"
@@ -2856,10 +2596,6 @@ msgstr "Sigriet Difolt"
 msgctxt "#1207"
 msgid "WINS server"
 msgstr "WINS-Server"
-
-msgctxt "#1208"
-msgid "Mount SMB shares"
-msgstr ""
 
 msgctxt "#1210"
 msgid "Remove"
@@ -2997,18 +2733,6 @@ msgctxt "#1257"
 msgid "Would you like to connect to the auto-detected system?"
 msgstr "Trid taqbad biex taqra dettalji tal-Xbox awtomatikament?"
 
-msgctxt "#1260"
-msgid "Announce these services to other systems via Zeroconf"
-msgstr ""
-
-msgctxt "#1300"
-msgid "Custom audio device"
-msgstr ""
-
-msgctxt "#1301"
-msgid "Custom passthrough device"
-msgstr ""
-
 msgctxt "#1396"
 msgid "Drifting"
 msgstr "Drifting"
@@ -3085,37 +2809,9 @@ msgctxt "#1414"
 msgid "Thunderstorm"
 msgstr "T-Storm"
 
-msgctxt "#1415"
-msgid "Drizzle"
-msgstr ""
-
-msgctxt "#1416"
-msgid "Foggy"
-msgstr ""
-
-msgctxt "#1417"
-msgid "Grains"
-msgstr ""
-
-msgctxt "#1418"
-msgid "T-Storms"
-msgstr ""
-
-msgctxt "#1419"
-msgid "T-Showers"
-msgstr ""
-
-msgctxt "#1450"
-msgid "Put display to sleep when idle"
-msgstr ""
-
 msgctxt "#2050"
 msgid "Runtime"
 msgstr "Tul:"
-
-msgctxt "#2100"
-msgid "Script failed! : %s"
-msgstr ""
 
 msgctxt "#4501"
 msgid "Enable LCD/VFD"
@@ -3220,26 +2916,6 @@ msgstr "Kaxxa Iva/Le"
 msgctxt "#10101"
 msgid "Progress dialog"
 msgstr "Kaxxa Progress"
-
-msgctxt "#10210"
-msgid "Looking for subtitles..."
-msgstr ""
-
-msgctxt "#10211"
-msgid "Looking for or caching subtitles..."
-msgstr ""
-
-msgctxt "#10212"
-msgid "terminating"
-msgstr ""
-
-msgctxt "#10213"
-msgid "buffering"
-msgstr ""
-
-msgctxt "#10214"
-msgid "Opening stream"
-msgstr ""
 
 msgctxt "#10500"
 msgid "Music/Playlist"
@@ -3689,73 +3365,9 @@ msgctxt "#13007"
 msgid "Use custom dashboard path"
 msgstr "Uża Lokazzjoni Preferuta għad-Daxbord"
 
-msgctxt "#13008"
-msgid "Shutdown function"
-msgstr ""
-
-msgctxt "#13009"
-msgid "Quit"
-msgstr ""
-
-msgctxt "#13010"
-msgid "Hibernate"
-msgstr ""
-
-msgctxt "#13011"
-msgid "Suspend"
-msgstr ""
-
-msgctxt "#13012"
-msgid "Exit"
-msgstr ""
-
-msgctxt "#13013"
-msgid "Reboot"
-msgstr ""
-
-msgctxt "#13014"
-msgid "Minimize"
-msgstr ""
-
-msgctxt "#13015"
-msgid "Power button action"
-msgstr ""
-
-msgctxt "#13020"
-msgid "Is another session active, perhaps over ssh?"
-msgstr ""
-
-msgctxt "#13021"
-msgid "Mounted removable harddrive"
-msgstr ""
-
-msgctxt "#13022"
-msgid "Unsafe device removal"
-msgstr ""
-
-msgctxt "#13023"
-msgid "Successfully removed device"
-msgstr ""
-
-msgctxt "#13024"
-msgid "Joystick plugged"
-msgstr ""
-
-msgctxt "#13025"
-msgid "Joystick unplugged"
-msgstr ""
-
 msgctxt "#13100"
 msgid "Flicker filter"
 msgstr "Filter Teptip"
-
-msgctxt "#13101"
-msgid "Let driver choose (requires restart)"
-msgstr ""
-
-msgctxt "#13105"
-msgid "Vertical blank sync"
-msgstr ""
 
 msgctxt "#13106"
 msgid "Disabled"
@@ -3768,102 +3380,6 @@ msgstr "Attiva waqt li tara l-Vidjo"
 msgctxt "#13108"
 msgid "Always enabled"
 msgstr "Dejjem attiv"
-
-msgctxt "#13109"
-msgid "Test & apply resolution"
-msgstr ""
-
-msgctxt "#13110"
-msgid "Save resolution?"
-msgstr ""
-
-msgctxt "#13111"
-msgid "Would you like to keep this resolution?"
-msgstr ""
-
-msgctxt "#13112"
-msgid "High quality upscaling"
-msgstr ""
-
-msgctxt "#13113"
-msgid "Disabled"
-msgstr ""
-
-msgctxt "#13114"
-msgid "Enabled for SD content"
-msgstr ""
-
-msgctxt "#13115"
-msgid "Always enabled"
-msgstr ""
-
-msgctxt "#13116"
-msgid "Upscaling method"
-msgstr ""
-
-msgctxt "#13117"
-msgid "Bicubic"
-msgstr ""
-
-msgctxt "#13118"
-msgid "Lanczos"
-msgstr ""
-
-msgctxt "#13119"
-msgid "Sinc"
-msgstr ""
-
-msgctxt "#13120"
-msgid "VDPAU"
-msgstr ""
-
-msgctxt "#13121"
-msgid "VDPAU HQ Upscaling level"
-msgstr ""
-
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr ""
-
-msgctxt "#13130"
-msgid "Blank other displays"
-msgstr ""
-
-msgctxt "#13131"
-msgid "Disabled"
-msgstr ""
-
-msgctxt "#13132"
-msgid "Blank displays"
-msgstr ""
-
-msgctxt "#13140"
-msgid "Active connections detected!"
-msgstr ""
-
-msgctxt "#13141"
-msgid "If you proceed, you might not be able to control XBMC"
-msgstr ""
-
-msgctxt "#13142"
-msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr ""
-
-msgctxt "#13144"
-msgid "Change Apple Remote mode?"
-msgstr ""
-
-msgctxt "#13145"
-msgid "If you are currently using the Apple Remote to control"
-msgstr ""
-
-msgctxt "#13146"
-msgid "XBMC, changing this setting might affect your ability"
-msgstr ""
-
-msgctxt "#13147"
-msgid "to continue controlling it. Do you want to proceed?"
-msgstr ""
 
 msgctxt "#13150"
 msgid "HDD key:"
@@ -4153,10 +3669,6 @@ msgctxt "#13303"
 msgid "- Fonts"
 msgstr "Fonts tal-Qoxra"
 
-msgctxt "#13304"
-msgid "Enable flipping bi-directional strings"
-msgstr ""
-
 msgctxt "#13305"
 msgid "Show RSS news feeds"
 msgstr "Attiva RSS Feeds"
@@ -4164,10 +3676,6 @@ msgstr "Attiva RSS Feeds"
 msgctxt "#13306"
 msgid "Show parent folder items"
 msgstr "Aħbi Kannestri Predeċessuri"
-
-msgctxt "#13307"
-msgid "Track naming template"
-msgstr ""
 
 msgctxt "#13308"
 msgid "Do you wish to reboot your system"
@@ -4212,10 +3720,6 @@ msgstr "Ara slajdxow"
 msgctxt "#13318"
 msgid "Recursive slideshow"
 msgstr "Ara slajdxow suċċessivi"
-
-msgctxt "#13319"
-msgid "Randomize"
-msgstr ""
 
 msgctxt "#13320"
 msgid "Stereo"
@@ -4521,145 +4025,9 @@ msgctxt "#13409"
 msgid "Top 250"
 msgstr "L-ewwel 250:"
 
-msgctxt "#13410"
-msgid "Tune in on Last.fm"
-msgstr ""
-
 msgctxt "#13411"
 msgid "Minimum fan speed"
 msgstr "fanspeed minimu"
-
-msgctxt "#13413"
-msgid "Downloading"
-msgstr ""
-
-msgctxt "#13414"
-msgid "Include artists who appear only on compilations"
-msgstr ""
-
-msgctxt "#13415"
-msgid "Render method"
-msgstr ""
-
-msgctxt "#13416"
-msgid "Auto detect"
-msgstr ""
-
-msgctxt "#13417"
-msgid "Basic shaders (ARB)"
-msgstr ""
-
-msgctxt "#13418"
-msgid "Advanced shaders (GLSL)"
-msgstr ""
-
-msgctxt "#13419"
-msgid "Software"
-msgstr ""
-
-msgctxt "#13420"
-msgid "Remove safely"
-msgstr ""
-
-msgctxt "#13421"
-msgid "VDPAU"
-msgstr ""
-
-msgctxt "#13422"
-msgid "Start slideshow here"
-msgstr ""
-
-msgctxt "#13423"
-msgid "Remember for this path"
-msgstr ""
-
-msgctxt "#13424"
-msgid "Use pixel buffer objects"
-msgstr ""
-
-msgctxt "#13500"
-msgid "A/V sync method"
-msgstr ""
-
-msgctxt "#13501"
-msgid "Audio clock"
-msgstr ""
-
-msgctxt "#13502"
-msgid "Video clock (Drop/Dupe audio)"
-msgstr ""
-
-msgctxt "#13503"
-msgid "Video clock (Resample audio)"
-msgstr ""
-
-msgctxt "#13504"
-msgid "Maximum resample amount (%)"
-msgstr ""
-
-msgctxt "#13505"
-msgid "Resample quality"
-msgstr ""
-
-msgctxt "#13506"
-msgid "Low(fast)"
-msgstr ""
-
-msgctxt "#13507"
-msgid "Medium"
-msgstr ""
-
-msgctxt "#13508"
-msgid "High"
-msgstr ""
-
-msgctxt "#13509"
-msgid "Really high(slow!)"
-msgstr ""
-
-msgctxt "#13510"
-msgid "Sync playback to display"
-msgstr ""
-
-msgctxt "#13600"
-msgid "Apple remote"
-msgstr ""
-
-msgctxt "#13601"
-msgid "Use MCE/Universal Remote"
-msgstr ""
-
-msgctxt "#13602"
-msgid "Allow start of XBMC using the remote"
-msgstr ""
-
-msgctxt "#13603"
-msgid "Sequence delay time"
-msgstr ""
-
-msgctxt "#13610"
-msgid "Disabled"
-msgstr ""
-
-msgctxt "#13611"
-msgid "Standard"
-msgstr ""
-
-msgctxt "#13612"
-msgid "Universal Remote"
-msgstr ""
-
-msgctxt "#13613"
-msgid "Multi Remote (Harmony)"
-msgstr ""
-
-msgctxt "#13620"
-msgid "Apple Remote Error"
-msgstr ""
-
-msgctxt "#13621"
-msgid "Apple Remote support could be enabled."
-msgstr ""
 
 msgctxt "#14000"
 msgid "Stack"
@@ -4945,114 +4313,6 @@ msgctxt "#14078"
 msgid "- Colours"
 msgstr "Kuluri tal-qoxra"
 
-msgctxt "#14079"
-msgid "Timezone country"
-msgstr ""
-
-msgctxt "#14080"
-msgid "Timezone"
-msgstr ""
-
-msgctxt "#14081"
-msgid "File lists"
-msgstr ""
-
-msgctxt "#14082"
-msgid "Show EXIF picture information"
-msgstr ""
-
-msgctxt "#14083"
-msgid "Use a fullscreen window rather than true fullscreen"
-msgstr ""
-
-msgctxt "#14084"
-msgid "Queue songs on selection"
-msgstr ""
-
-msgctxt "#14085"
-msgid "Play audio CDs automatically"
-msgstr ""
-
-msgctxt "#14086"
-msgid "Playback"
-msgstr ""
-
-msgctxt "#14087"
-msgid "DVDs"
-msgstr ""
-
-msgctxt "#14088"
-msgid "Play DVDs automatically"
-msgstr ""
-
-msgctxt "#14089"
-msgid "Font to use for text subtitles"
-msgstr ""
-
-msgctxt "#14090"
-msgid "International"
-msgstr ""
-
-msgctxt "#14091"
-msgid "Character set"
-msgstr ""
-
-msgctxt "#14092"
-msgid "Debugging"
-msgstr ""
-
-msgctxt "#14093"
-msgid "Security"
-msgstr ""
-
-msgctxt "#14094"
-msgid "Input devices"
-msgstr ""
-
-msgctxt "#14095"
-msgid "Power saving"
-msgstr ""
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
-
 msgctxt "#15015"
 msgid "Remove"
 msgstr "Neħħi"
@@ -5180,26 +4440,6 @@ msgstr "Aħbi l-ismijiet tal-fajls meta tara Thumbs"
 msgctxt "#15216"
 msgid "Play in party mode"
 msgstr "Doqq fil-Partymode"
-
-msgctxt "#15217"
-msgid "Submit songs to Libre.fm"
-msgstr ""
-
-msgctxt "#15218"
-msgid "Libre.fm username"
-msgstr ""
-
-msgctxt "#15219"
-msgid "Libre.fm password"
-msgstr ""
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr ""
-
-msgctxt "#15221"
-msgid "Song submission"
-msgstr ""
 
 msgctxt "#15250"
 msgid "Submit Last.fm radio to Last.fm"
@@ -5517,14 +4757,6 @@ msgctxt "#16027"
 msgid "One or more items failed to play."
 msgstr "Ħafna problemi konsekuttivi"
 
-msgctxt "#16028"
-msgid "Enter value"
-msgstr ""
-
-msgctxt "#16029"
-msgid "Check the log file for details."
-msgstr ""
-
 msgctxt "#16030"
 msgid "Party mode aborted."
 msgstr "Ħriġt minn Party Mode."
@@ -5621,78 +4853,6 @@ msgctxt "#16206"
 msgid "Failed to delete at least one file"
 msgstr "Problema - Tal-inqas Fajl wieħed mhux iħassar"
 
-msgctxt "#16300"
-msgid "Video scaling method"
-msgstr ""
-
-msgctxt "#16301"
-msgid "Nearest neighbour"
-msgstr ""
-
-msgctxt "#16302"
-msgid "Bilinear"
-msgstr ""
-
-msgctxt "#16303"
-msgid "Bicubic"
-msgstr ""
-
-msgctxt "#16304"
-msgid "Lanczos2"
-msgstr ""
-
-msgctxt "#16305"
-msgid "Lanczos3"
-msgstr ""
-
-msgctxt "#16306"
-msgid "Sinc8"
-msgstr ""
-
-msgctxt "#16307"
-msgid "Bicubic (software)"
-msgstr ""
-
-msgctxt "#16308"
-msgid "Lanczos (software)"
-msgstr ""
-
-msgctxt "#16309"
-msgid "Sinc (software)"
-msgstr ""
-
-msgctxt "#16310"
-msgid "(VDPAU)Temporal"
-msgstr ""
-
-msgctxt "#16311"
-msgid "(VDPAU)Temporal/Spatial"
-msgstr ""
-
-msgctxt "#16312"
-msgid "(VDPAU)Noise Reduction"
-msgstr ""
-
-msgctxt "#16313"
-msgid "(VDPAU)Sharpness"
-msgstr ""
-
-msgctxt "#16314"
-msgid "Inverse Telecine"
-msgstr ""
-
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
-
-msgctxt "#17500"
-msgid "Display sleep timeout"
-msgstr ""
-
-msgctxt "#19000"
-msgid "Switch to channel"
-msgstr ""
-
 msgctxt "#20000"
 msgid "Saved music folder"
 msgstr "CDDA Rip Fowlder"
@@ -5780,10 +4940,6 @@ msgstr "Fittex Kollox"
 msgctxt "#20026"
 msgid "Region"
 msgstr "Reġjun"
-
-msgctxt "#20037"
-msgid "Summary"
-msgstr ""
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -6381,21 +5537,9 @@ msgctxt "#20188"
 msgid "Backing up BIOS"
 msgstr "Qari minn EEPROM Lest"
 
-msgctxt "#20189"
-msgid "Enable auto scrolling for plot & review"
-msgstr ""
-
 msgctxt "#20190"
 msgid "Custom"
 msgstr "Custom"
-
-msgctxt "#20191"
-msgid "Enable debug logging"
-msgstr ""
-
-msgctxt "#20192"
-msgid "Download additional information during updates"
-msgstr ""
 
 msgctxt "#20194"
 msgid "Default service for music information"
@@ -6432,18 +5576,6 @@ msgstr "Nħallat xorb (vidjos)"
 msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Nimla t-tazzi (vidjos)"
-
-msgctxt "#20253"
-msgid "WebDAV server (HTTP)"
-msgstr ""
-
-msgctxt "#20254"
-msgid "WebDAV server (HTTPS)"
-msgstr ""
-
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
 
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
@@ -6717,10 +5849,6 @@ msgctxt "#20369"
 msgid "Show plot for unwatched items"
 msgstr "Aħbi plot tal-oġġetti li ma rajtx"
 
-msgctxt "#20370"
-msgid "* Hidden to prevent spoilers *"
-msgstr ""
-
 msgctxt "#20371"
 msgid "Set season thumb"
 msgstr "Issettja Tambnejl tal-iStaġun"
@@ -6861,189 +5989,9 @@ msgctxt "#20406"
 msgid "Set episode bookmark"
 msgstr "Issettja Bookmark tal-Episodju"
 
-msgctxt "#20407"
-msgid "Scraper settings"
-msgstr ""
-
-msgctxt "#20408"
-msgid "Downloading music video information"
-msgstr ""
-
-msgctxt "#20409"
-msgid "Downloading TV show information"
-msgstr ""
-
-msgctxt "#20410"
-msgid "Trailer"
-msgstr ""
-
 msgctxt "#20411"
 msgid "Flatten"
 msgstr "Flatten"
-
-msgctxt "#20412"
-msgid "Flatten TV shows"
-msgstr ""
-
-msgctxt "#20413"
-msgid "Get Fanart"
-msgstr ""
-
-msgctxt "#20414"
-msgid "Show Fanart in video and music libraries"
-msgstr ""
-
-msgctxt "#20415"
-msgid "Scanning for new content"
-msgstr ""
-
-msgctxt "#20416"
-msgid "First aired"
-msgstr ""
-
-msgctxt "#20417"
-msgid "Writer"
-msgstr ""
-
-msgctxt "#20418"
-msgid "Clean file and folder names"
-msgstr ""
-
-msgctxt "#20420"
-msgid "Never"
-msgstr ""
-
-msgctxt "#20421"
-msgid "If only one season"
-msgstr ""
-
-msgctxt "#20422"
-msgid "Always"
-msgstr ""
-
-msgctxt "#20423"
-msgid "Has trailer"
-msgstr ""
-
-msgctxt "#20424"
-msgid "False"
-msgstr ""
-
-msgctxt "#20425"
-msgid "Fanart slideshow"
-msgstr ""
-
-msgctxt "#20426"
-msgid "Export to a single file or separate"
-msgstr ""
-
-msgctxt "#20427"
-msgid "files per entry?"
-msgstr ""
-
-msgctxt "#20428"
-msgid "Single file"
-msgstr ""
-
-msgctxt "#20429"
-msgid "Separate"
-msgstr ""
-
-msgctxt "#20430"
-msgid "Export thumbnails and fanart?"
-msgstr ""
-
-msgctxt "#20431"
-msgid "Overwrite old files?"
-msgstr ""
-
-msgctxt "#20432"
-msgid "Exclude path from library updates"
-msgstr ""
-
-msgctxt "#20433"
-msgid "Extract thumbnails and video information"
-msgstr ""
-
-msgctxt "#20434"
-msgid "Sets"
-msgstr ""
-
-msgctxt "#20435"
-msgid "Set movieset thumb"
-msgstr ""
-
-msgctxt "#20436"
-msgid "Export actor thumbs?"
-msgstr ""
-
-msgctxt "#20437"
-msgid "Choose fanart"
-msgstr ""
-
-msgctxt "#20438"
-msgid "Local fanart"
-msgstr ""
-
-msgctxt "#20439"
-msgid "No fanart"
-msgstr ""
-
-msgctxt "#20440"
-msgid "Current fanart"
-msgstr ""
-
-msgctxt "#20441"
-msgid "Remote fanart"
-msgstr ""
-
-msgctxt "#20442"
-msgid "Change content"
-msgstr ""
-
-msgctxt "#20443"
-msgid "Do you want to refresh info for all"
-msgstr ""
-
-msgctxt "#20444"
-msgid "items within this path?"
-msgstr ""
-
-msgctxt "#20445"
-msgid "Fanart"
-msgstr ""
-
-msgctxt "#20446"
-msgid "Locally stored information found."
-msgstr ""
-
-msgctxt "#20447"
-msgid "Ignore and refresh from internet?"
-msgstr ""
-
-msgctxt "#20448"
-msgid "Could not download information"
-msgstr ""
-
-msgctxt "#20449"
-msgid "Server is most likely unavailable."
-msgstr ""
-
-msgctxt "#20450"
-msgid "Would you like to continue scanning?"
-msgstr ""
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7105,10 +6053,6 @@ msgctxt "#21369"
 msgid "Enable mouse"
 msgstr "Attiva l-Maws"
 
-msgctxt "#21370"
-msgid "Play navigation sounds during media playback"
-msgstr ""
-
 msgctxt "#21371"
 msgid "Thumbnail"
 msgstr "Tambnejl"
@@ -7161,17 +6105,9 @@ msgctxt "#21383"
 msgid "Enable scrollbars"
 msgstr "Attiva Żbarri"
 
-msgctxt "#21384"
-msgid "Make watched filtering a toggle in video library"
-msgstr ""
-
 msgctxt "#21385"
 msgid "Open"
 msgstr "Iftaħ"
-
-msgctxt "#21386"
-msgid "Acoustic management level"
-msgstr ""
 
 msgctxt "#21387"
 msgid "Fast"
@@ -7212,10 +6148,6 @@ msgstr "Unable to cache files bigger than 4 gb"
 msgctxt "#21396"
 msgid "Chapter"
 msgstr "Kapitolu"
-
-msgctxt "#21397"
-msgid "High quality pixel shader v2"
-msgstr ""
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
@@ -7272,34 +6204,6 @@ msgstr "fl-aħħar"
 msgctxt "#21411"
 msgid "not in the last"
 msgstr "mhux fl-aħħar"
-
-msgctxt "#21412"
-msgid "Scrapers"
-msgstr ""
-
-msgctxt "#21413"
-msgid "Default movie scraper"
-msgstr ""
-
-msgctxt "#21414"
-msgid "Default tvshow scraper"
-msgstr ""
-
-msgctxt "#21415"
-msgid "Default musicvideo scraper"
-msgstr ""
-
-msgctxt "#21416"
-msgid "Enable fallback based on scraper language"
-msgstr ""
-
-msgctxt "#21417"
-msgid "- Settings"
-msgstr ""
-
-msgctxt "#21418"
-msgid "Multilingual"
-msgstr ""
 
 msgctxt "#21420"
 msgid "Value to match"
@@ -7381,50 +6285,6 @@ msgctxt "#21439"
 msgid "Edit party mode rules"
 msgstr "Biddel Regoli tal-Party Mode"
 
-msgctxt "#21440"
-msgid "Home folder"
-msgstr ""
-
-msgctxt "#21441"
-msgid "Watched count"
-msgstr ""
-
-msgctxt "#21442"
-msgid "Episode title"
-msgstr ""
-
-msgctxt "#21443"
-msgid "Video resolution"
-msgstr ""
-
-msgctxt "#21444"
-msgid "Audio channels"
-msgstr ""
-
-msgctxt "#21445"
-msgid "Video codec"
-msgstr ""
-
-msgctxt "#21446"
-msgid "Audio codec"
-msgstr ""
-
-msgctxt "#21447"
-msgid "Audio language"
-msgstr ""
-
-msgctxt "#21448"
-msgid "Subtitle language"
-msgstr ""
-
-msgctxt "#21449"
-msgid "Remote control sends keyboard presses"
-msgstr ""
-
-msgctxt "#21450"
-msgid "- Edit"
-msgstr ""
-
 msgctxt "#21800"
 msgid "File name"
 msgstr "Isem tal-Fajl"
@@ -7440,10 +6300,6 @@ msgstr "Kobor tal-Fajl"
 msgctxt "#21803"
 msgid "File date/time"
 msgstr "Data/Ħin tal-Fajl"
-
-msgctxt "#21804"
-msgid "Slide index"
-msgstr ""
 
 msgctxt "#21805"
 msgid "Resolution"
@@ -7497,29 +6353,9 @@ msgctxt "#21828"
 msgid "Focus distance"
 msgstr "Distanza Fokali"
 
-msgctxt "#21829"
-msgid "Exposure"
-msgstr ""
-
-msgctxt "#21830"
-msgid "Exposure time"
-msgstr ""
-
-msgctxt "#21831"
-msgid "Exposure bias"
-msgstr ""
-
-msgctxt "#21832"
-msgid "Exposure mode"
-msgstr ""
-
 msgctxt "#21833"
 msgid "Flash used"
 msgstr "Bil-flexx"
-
-msgctxt "#21834"
-msgid "White-balance"
-msgstr ""
 
 msgctxt "#21835"
 msgid "Light source"
@@ -7561,10 +6397,6 @@ msgctxt "#21860"
 msgid "Supplemental categories"
 msgstr "Kategoriji Supplimentari"
 
-msgctxt "#21861"
-msgid "Keywords"
-msgstr ""
-
 msgctxt "#21862"
 msgid "Caption"
 msgstr "Titlu"
@@ -7584,14 +6416,6 @@ msgstr "Istruzzjoni Speċjali"
 msgctxt "#21866"
 msgid "Category"
 msgstr "Kategorija"
-
-msgctxt "#21867"
-msgid "Byline"
-msgstr ""
-
-msgctxt "#21868"
-msgid "Byline title"
-msgstr ""
 
 msgctxt "#21869"
 msgid "Credit"
@@ -7733,542 +6557,6 @@ msgctxt "#22002"
 msgid "- DNS suffix"
 msgstr "- DNS Suffix"
 
-msgctxt "#22003"
-msgid "Default player"
-msgstr ""
-
-msgctxt "#22004"
-msgid "Delayed by: %2.3fs"
-msgstr ""
-
-msgctxt "#22005"
-msgid "Ahead by: %2.3fs"
-msgstr ""
-
-msgctxt "#22006"
-msgid "Subtitle offset"
-msgstr ""
-
-msgctxt "#22007"
-msgid "OpenGL vendor:"
-msgstr ""
-
-msgctxt "#22008"
-msgid "OpenGL renderer:"
-msgstr ""
-
-msgctxt "#22009"
-msgid "OpenGL version:"
-msgstr ""
-
-msgctxt "#22010"
-msgid "GPU temperature:"
-msgstr ""
-
-msgctxt "#22011"
-msgid "CPU temperature:"
-msgstr ""
-
-msgctxt "#22012"
-msgid "Total memory"
-msgstr ""
-
-msgctxt "#22013"
-msgid "Profile data"
-msgstr ""
-
-msgctxt "#22014"
-msgid "Use dim if paused during video playback"
-msgstr ""
-
-msgctxt "#22015"
-msgid "All recordings"
-msgstr ""
-
-msgctxt "#22016"
-msgid "By title"
-msgstr ""
-
-msgctxt "#22017"
-msgid "By group"
-msgstr ""
-
-msgctxt "#22018"
-msgid "Live channels"
-msgstr ""
-
-msgctxt "#22019"
-msgid "Recordings by title"
-msgstr ""
-
-msgctxt "#22020"
-msgid "Guide"
-msgstr ""
-
-msgctxt "#22021"
-msgid "Allowed error in aspect ratio to minimize black bars"
-msgstr ""
-
-msgctxt "#22022"
-msgid "Show video files in listings"
-msgstr ""
-
-msgctxt "#22023"
-msgid "DirectX vendor"
-msgstr ""
-
-msgctxt "#22024"
-msgid "Direct3D version"
-msgstr ""
-
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
-
-msgctxt "#22030"
-msgid "Font"
-msgstr ""
-
-msgctxt "#22031"
-msgid "- Size"
-msgstr ""
-
-msgctxt "#22032"
-msgid "- Colours"
-msgstr ""
-
-msgctxt "#22033"
-msgid "- Charset"
-msgstr ""
-
-msgctxt "#22034"
-msgid "Export karaoke titles as HTML"
-msgstr ""
-
-msgctxt "#22035"
-msgid "Export karaoke titles as CSV"
-msgstr ""
-
-msgctxt "#22036"
-msgid "Import karaoke titles..."
-msgstr ""
-
-msgctxt "#22037"
-msgid "Show song selector automatically"
-msgstr ""
-
-msgctxt "#22038"
-msgid "Export karaoke titles..."
-msgstr ""
-
-msgctxt "#22039"
-msgid "Enter song number"
-msgstr ""
-
-msgctxt "#22040"
-msgid "white/green"
-msgstr ""
-
-msgctxt "#22041"
-msgid "white/red"
-msgstr ""
-
-msgctxt "#22042"
-msgid "white/blue"
-msgstr ""
-
-msgctxt "#22043"
-msgid "black/white"
-msgstr ""
-
-msgctxt "#23000"
-msgid "Weather plugin"
-msgstr ""
-
-msgctxt "#23001"
-msgid "- Plugin settings"
-msgstr ""
-
-msgctxt "#23050"
-msgid "Activate Teletext"
-msgstr ""
-
-msgctxt "#23051"
-msgid "Part %i"
-msgstr ""
-
-msgctxt "#23052"
-msgid "Buffering %i bytes"
-msgstr ""
-
-msgctxt "#23053"
-msgid "Stopping"
-msgstr ""
-
-msgctxt "#23054"
-msgid "Running"
-msgstr ""
-
-msgctxt "#23100"
-msgid "External Player Active"
-msgstr ""
-
-msgctxt "#23101"
-msgid "Click OK to terminate the player"
-msgstr ""
-
-msgctxt "#23104"
-msgid "Click OK when playback has ended"
-msgstr ""
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
-
-msgctxt "#29800"
-msgid "Library Mode"
-msgstr ""
-
-msgctxt "#29801"
-msgid "QWERTY keyboard"
-msgstr ""
-
-msgctxt "#29802"
-msgid "Passthrough Audio in use"
-msgstr ""
-
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
 msgstr "Flicker Filter Patch Awtomatiku"
-
-msgctxt "#33001"
-msgid "Trailer quality"
-msgstr ""
-
-msgctxt "#33002"
-msgid "Stream"
-msgstr ""
-
-msgctxt "#33003"
-msgid "Download"
-msgstr ""
-
-msgctxt "#33004"
-msgid "Download & play"
-msgstr ""
-
-msgctxt "#33005"
-msgid "Download & save"
-msgstr ""
-
-msgctxt "#33006"
-msgid "Today"
-msgstr ""
-
-msgctxt "#33007"
-msgid "Tomorrow"
-msgstr ""
-
-msgctxt "#33008"
-msgid "Saving"
-msgstr ""
-
-msgctxt "#33009"
-msgid "Copying"
-msgstr ""
-
-msgctxt "#33010"
-msgid "Set download directory"
-msgstr ""
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
-
-msgctxt "#33012"
-msgid "Short"
-msgstr ""
-
-msgctxt "#33013"
-msgid "Long"
-msgstr ""
-
-msgctxt "#33014"
-msgid "Use DVD player instead of regular player"
-msgstr ""
-
-msgctxt "#33015"
-msgid "Ask for download before playing video"
-msgstr ""
-
-msgctxt "#33016"
-msgid "Clips"
-msgstr ""
-
-msgctxt "#33017"
-msgid "Restart plugin to enable"
-msgstr ""
-
-msgctxt "#33018"
-msgid "Tonight"
-msgstr ""
-
-msgctxt "#33019"
-msgid "Tomorrow Night"
-msgstr ""
-
-msgctxt "#33020"
-msgid "Condition"
-msgstr ""
-
-msgctxt "#33021"
-msgid "Precipitation"
-msgstr ""
-
-msgctxt "#33022"
-msgid "Precip"
-msgstr ""
-
-msgctxt "#33023"
-msgid "Humid"
-msgstr ""
-
-msgctxt "#33024"
-msgid "Feels"
-msgstr ""
-
-msgctxt "#33025"
-msgid "Observed"
-msgstr ""
-
-msgctxt "#33026"
-msgid "Departure from normal"
-msgstr ""
-
-msgctxt "#33027"
-msgid "Sunrise"
-msgstr ""
-
-msgctxt "#33028"
-msgid "Sunset"
-msgstr ""
-
-msgctxt "#33029"
-msgid "Details"
-msgstr ""
-
-msgctxt "#33030"
-msgid "Outlook"
-msgstr ""
-
-msgctxt "#33031"
-msgid "Coverflow"
-msgstr ""
-
-msgctxt "#33032"
-msgid "Translate text"
-msgstr ""
-
-msgctxt "#33033"
-msgid "Map list %s category"
-msgstr ""
-
-msgctxt "#33034"
-msgid "36 Hour"
-msgstr ""
-
-msgctxt "#33035"
-msgid "Maps"
-msgstr ""
-
-msgctxt "#33036"
-msgid "Hourly"
-msgstr ""
-
-msgctxt "#33037"
-msgid "Weekend"
-msgstr ""
-
-msgctxt "#33038"
-msgid "%s day"
-msgstr ""
-
-msgctxt "#33049"
-msgid "Alert"
-msgstr ""
-
-msgctxt "#33050"
-msgid "Alerts"
-msgstr ""
-
-msgctxt "#33051"
-msgid "Choose Your"
-msgstr ""
-
-msgctxt "#33052"
-msgid "Check"
-msgstr ""
-
-msgctxt "#33053"
-msgid "Configure the"
-msgstr ""
-
-msgctxt "#33054"
-msgid "Seasons"
-msgstr ""
-
-msgctxt "#33055"
-msgid "Use your"
-msgstr ""
-
-msgctxt "#33056"
-msgid "Watch your"
-msgstr ""
-
-msgctxt "#33057"
-msgid "Listen to"
-msgstr ""
-
-msgctxt "#33058"
-msgid "View your"
-msgstr ""
-
-msgctxt "#33059"
-msgid "Configure the"
-msgstr ""
-
-msgctxt "#33060"
-msgid "Power"
-msgstr ""
-
-msgctxt "#33061"
-msgid "Menu"
-msgstr ""
-
-msgctxt "#33062"
-msgid "Play the"
-msgstr ""
-
-msgctxt "#33063"
-msgid "Options"
-msgstr ""
-
-msgctxt "#33065"
-msgid "Editor"
-msgstr ""
-
-msgctxt "#33066"
-msgid "About your"
-msgstr ""
-
-msgctxt "#33067"
-msgid "Star rating"
-msgstr ""
-
-msgctxt "#33068"
-msgid "Background"
-msgstr ""
-
-msgctxt "#33069"
-msgid "Backgrounds"
-msgstr ""
-
-msgctxt "#33070"
-msgid "Custom background"
-msgstr ""
-
-msgctxt "#33071"
-msgid "Custom backgrounds"
-msgstr ""
-
-msgctxt "#33072"
-msgid "View Readme"
-msgstr ""
-
-msgctxt "#33073"
-msgid "View Changelog"
-msgstr ""
-
-msgctxt "#33074"
-msgid "This version of %s requires an"
-msgstr ""
-
-msgctxt "#33075"
-msgid "XBMC revision of %s or greater to run."
-msgstr ""
-
-msgctxt "#33076"
-msgid "Please update XBMC."
-msgstr ""
-
-msgctxt "#33077"
-msgid "No data found!"
-msgstr ""
-
-msgctxt "#33078"
-msgid "Next page"
-msgstr ""
-
-msgctxt "#33079"
-msgid "Love"
-msgstr ""
-
-msgctxt "#33080"
-msgid "Hate"
-msgstr ""
-
-msgctxt "#33081"
-msgid "This file is stacked, select the part you want to play from."
-msgstr ""
-
-msgctxt "#33082"
-msgid "Path to script"
-msgstr ""
-
-msgctxt "#33083"
-msgid "Enable custom script button"
-msgstr ""
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

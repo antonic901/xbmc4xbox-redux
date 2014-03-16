@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/xbmc4xbox/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -36,10 +36,6 @@ msgstr "TV Guide"
 msgctxt "#5"
 msgid "Settings"
 msgstr "Настройки"
-
-msgctxt "#6"
-msgid "XBMC SVN"
-msgstr ""
 
 msgctxt "#7"
 msgid "File manager"
@@ -128,82 +124,6 @@ msgstr "ноября"
 msgctxt "#32"
 msgid "December"
 msgstr "декабря"
-
-msgctxt "#41"
-msgid "Mon"
-msgstr ""
-
-msgctxt "#42"
-msgid "Tue"
-msgstr ""
-
-msgctxt "#43"
-msgid "Wed"
-msgstr ""
-
-msgctxt "#44"
-msgid "Thu"
-msgstr ""
-
-msgctxt "#45"
-msgid "Fri"
-msgstr ""
-
-msgctxt "#46"
-msgid "Sat"
-msgstr ""
-
-msgctxt "#47"
-msgid "Sun"
-msgstr ""
-
-msgctxt "#51"
-msgid "Jan"
-msgstr ""
-
-msgctxt "#52"
-msgid "Feb"
-msgstr ""
-
-msgctxt "#53"
-msgid "Mar"
-msgstr ""
-
-msgctxt "#54"
-msgid "Apr"
-msgstr ""
-
-msgctxt "#55"
-msgid "May"
-msgstr ""
-
-msgctxt "#56"
-msgid "Jun"
-msgstr ""
-
-msgctxt "#57"
-msgid "Jul"
-msgstr ""
-
-msgctxt "#58"
-msgid "Aug"
-msgstr ""
-
-msgctxt "#59"
-msgid "Sep"
-msgstr ""
-
-msgctxt "#60"
-msgid "Oct"
-msgstr ""
-
-msgctxt "#61"
-msgid "Nov"
-msgstr ""
-
-msgctxt "#62"
-msgid "Dec"
-msgstr ""
 
 msgctxt "#98"
 msgid "View: Auto"
@@ -776,10 +696,6 @@ msgstr "Количество каналов"
 msgctxt "#254"
 msgid "- DTS capable receiver"
 msgstr "- выводить звук в формате DTS®"
-
-msgctxt "#255"
-msgid "CDDB"
-msgstr ""
 
 msgctxt "#256"
 msgid "Fetching CD information"
@@ -1629,10 +1545,6 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Об XBMC"
 
-msgctxt "#483"
-msgid "DVDPlayer cache"
-msgstr ""
-
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Удалить альбом"
@@ -1969,14 +1881,6 @@ msgctxt "#573"
 msgid "Path"
 msgstr "Путь"
 
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
-
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Направление сортировки"
@@ -2252,14 +2156,6 @@ msgstr "Этот файл больше недоступен."
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
 msgstr "Хотите удалить его из медиатеки?"
-
-msgctxt "#664"
-msgid "Browse for Script"
-msgstr ""
-
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2625,18 +2521,6 @@ msgctxt "#798"
 msgid "Internet access"
 msgstr "Интернет"
 
-msgctxt "#850"
-msgid "Invalid port number entered"
-msgstr ""
-
-msgctxt "#851"
-msgid "Valid port range is 1-65535"
-msgstr ""
-
-msgctxt "#852"
-msgid "Valid port range is 1024-65535"
-msgstr ""
-
 msgctxt "#1000"
 msgid "Screensaver preview"
 msgstr "Посмотреть заставку"
@@ -2833,10 +2717,6 @@ msgctxt "#1049"
 msgid "Script settings"
 msgstr "Настройки скриптов"
 
-msgctxt "#1050"
-msgid "Singles"
-msgstr ""
-
 msgctxt "#1200"
 msgid "SMB client"
 msgstr "SMB-клиент"
@@ -2997,18 +2877,6 @@ msgctxt "#1257"
 msgid "Would you like to connect to the auto-detected system?"
 msgstr "Вы хотите подключиться к найденной системе?"
 
-msgctxt "#1260"
-msgid "Announce these services to other systems via Zeroconf"
-msgstr ""
-
-msgctxt "#1300"
-msgid "Custom audio device"
-msgstr ""
-
-msgctxt "#1301"
-msgid "Custom passthrough device"
-msgstr ""
-
 msgctxt "#1396"
 msgid "Drifting"
 msgstr "гололед"
@@ -3112,10 +2980,6 @@ msgstr "Использовать энергосбережение"
 msgctxt "#2050"
 msgid "Runtime"
 msgstr "Длительность"
-
-msgctxt "#2100"
-msgid "Script failed! : %s"
-msgstr ""
 
 msgctxt "#4501"
 msgid "Enable LCD/VFD"
@@ -3717,10 +3581,6 @@ msgctxt "#13014"
 msgid "Minimize"
 msgstr "Свернуть"
 
-msgctxt "#13015"
-msgid "Power button action"
-msgstr ""
-
 msgctxt "#13020"
 msgid "Is another session active, perhaps over ssh?"
 msgstr "Активна другая сессия, возможно через SSH?"
@@ -3805,10 +3665,6 @@ msgctxt "#13117"
 msgid "Bicubic"
 msgstr "Бикубический"
 
-msgctxt "#13118"
-msgid "Lanczos"
-msgstr ""
-
 msgctxt "#13119"
 msgid "Sinc"
 msgstr "Sinc"
@@ -3816,14 +3672,6 @@ msgstr "Sinc"
 msgctxt "#13120"
 msgid "VDPAU"
 msgstr "Strict Pixmap-Texture Binding (перезагрузить)"
-
-msgctxt "#13121"
-msgid "VDPAU HQ Upscaling level"
-msgstr ""
-
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr ""
 
 msgctxt "#13130"
 msgid "Blank other displays"
@@ -4561,22 +4409,6 @@ msgctxt "#13420"
 msgid "Remove safely"
 msgstr "Удалить безопасно"
 
-msgctxt "#13421"
-msgid "VDPAU"
-msgstr ""
-
-msgctxt "#13422"
-msgid "Start slideshow here"
-msgstr ""
-
-msgctxt "#13423"
-msgid "Remember for this path"
-msgstr ""
-
-msgctxt "#13424"
-msgid "Use pixel buffer objects"
-msgstr ""
-
 msgctxt "#13500"
 msgid "A/V sync method"
 msgstr "Синхронизация A/V"
@@ -4809,10 +4641,6 @@ msgctxt "#14041"
 msgid "Post processing"
 msgstr "Постобработка"
 
-msgctxt "#14042"
-msgid "Internet connection bandwidth limitation"
-msgstr ""
-
 msgctxt "#14043"
 msgid "- Shutdown while playing"
 msgstr "- Выключать во время проигрывания"
@@ -4957,10 +4785,6 @@ msgctxt "#14081"
 msgid "File lists"
 msgstr "Списки файлов"
 
-msgctxt "#14082"
-msgid "Show EXIF picture information"
-msgstr ""
-
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
 msgstr "Использовать полноэкранное окно"
@@ -4968,10 +4792,6 @@ msgstr "Использовать полноэкранное окно"
 msgctxt "#14084"
 msgid "Queue songs on selection"
 msgstr "Помещать песни в очередь при выборе"
-
-msgctxt "#14085"
-msgid "Play audio CDs automatically"
-msgstr ""
 
 msgctxt "#14086"
 msgid "Playback"
@@ -4993,17 +4813,9 @@ msgctxt "#14090"
 msgid "International"
 msgstr "Регион"
 
-msgctxt "#14091"
-msgid "Character set"
-msgstr ""
-
 msgctxt "#14092"
 msgid "Debugging"
 msgstr "Режим отладки"
-
-msgctxt "#14093"
-msgid "Security"
-msgstr ""
 
 msgctxt "#14094"
 msgid "Input devices"
@@ -5012,46 +4824,6 @@ msgstr "Устройства ввода"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Питание"
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5192,10 +4964,6 @@ msgstr "Имя пользователя для Libre.fm"
 msgctxt "#15219"
 msgid "Libre.fm password"
 msgstr "Пароль для Libre.fm"
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr ""
 
 msgctxt "#15221"
 msgid "Song submission"
@@ -5521,10 +5289,6 @@ msgctxt "#16028"
 msgid "Enter value"
 msgstr "Введите значение"
 
-msgctxt "#16029"
-msgid "Check the log file for details."
-msgstr ""
-
 msgctxt "#16030"
 msgid "Party mode aborted."
 msgstr "Режим 'party' отключен"
@@ -5681,17 +5445,9 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Обратный Telecine"
 
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
-
 msgctxt "#17500"
 msgid "Display sleep timeout"
 msgstr "Переход экрана в спящий режим через"
-
-msgctxt "#19000"
-msgid "Switch to channel"
-msgstr ""
 
 msgctxt "#20000"
 msgid "Saved music folder"
@@ -5780,10 +5536,6 @@ msgstr "Сканировать все"
 msgctxt "#20026"
 msgid "Region"
 msgstr "Регион"
-
-msgctxt "#20037"
-msgid "Summary"
-msgstr ""
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -6433,18 +6185,6 @@ msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Наполнение бокалов (Видео)"
 
-msgctxt "#20253"
-msgid "WebDAV server (HTTP)"
-msgstr ""
-
-msgctxt "#20254"
-msgid "WebDAV server (HTTPS)"
-msgstr ""
-
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
-
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "Папка Web-сервера (HTTP)"
@@ -6460,10 +6200,6 @@ msgstr "Невозможно записать в папку:"
 msgctxt "#20303"
 msgid "Do you want to skip and proceed?"
 msgstr "Хотите пропустить и продолжить?"
-
-msgctxt "#20304"
-msgid "RSS Feed"
-msgstr ""
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6741,10 +6477,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Не указывать содержимое"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Обновить информацию о сериале"
@@ -6964,86 +6696,6 @@ msgstr "Исключить путь из обновлений медиатеки
 msgctxt "#20433"
 msgid "Extract thumbnails and video information"
 msgstr "Извлечь мета-данные из медиафайла"
-
-msgctxt "#20434"
-msgid "Sets"
-msgstr ""
-
-msgctxt "#20435"
-msgid "Set movieset thumb"
-msgstr ""
-
-msgctxt "#20436"
-msgid "Export actor thumbs?"
-msgstr ""
-
-msgctxt "#20437"
-msgid "Choose fanart"
-msgstr ""
-
-msgctxt "#20438"
-msgid "Local fanart"
-msgstr ""
-
-msgctxt "#20439"
-msgid "No fanart"
-msgstr ""
-
-msgctxt "#20440"
-msgid "Current fanart"
-msgstr ""
-
-msgctxt "#20441"
-msgid "Remote fanart"
-msgstr ""
-
-msgctxt "#20442"
-msgid "Change content"
-msgstr ""
-
-msgctxt "#20443"
-msgid "Do you want to refresh info for all"
-msgstr ""
-
-msgctxt "#20444"
-msgid "items within this path?"
-msgstr ""
-
-msgctxt "#20445"
-msgid "Fanart"
-msgstr ""
-
-msgctxt "#20446"
-msgid "Locally stored information found."
-msgstr ""
-
-msgctxt "#20447"
-msgid "Ignore and refresh from internet?"
-msgstr ""
-
-msgctxt "#20448"
-msgid "Could not download information"
-msgstr ""
-
-msgctxt "#20449"
-msgid "Server is most likely unavailable."
-msgstr ""
-
-msgctxt "#20450"
-msgid "Would you like to continue scanning?"
-msgstr ""
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7293,14 +6945,6 @@ msgctxt "#21416"
 msgid "Enable fallback based on scraper language"
 msgstr "Разрешить исправления на языке инфо-ресурса"
 
-msgctxt "#21417"
-msgid "- Settings"
-msgstr ""
-
-msgctxt "#21418"
-msgid "Multilingual"
-msgstr ""
-
 msgctxt "#21420"
 msgid "Value to match"
 msgstr "Значение слишком большое"
@@ -7393,37 +7037,9 @@ msgctxt "#21442"
 msgid "Episode title"
 msgstr "Название эпизода"
 
-msgctxt "#21443"
-msgid "Video resolution"
-msgstr ""
-
-msgctxt "#21444"
-msgid "Audio channels"
-msgstr ""
-
-msgctxt "#21445"
-msgid "Video codec"
-msgstr ""
-
-msgctxt "#21446"
-msgid "Audio codec"
-msgstr ""
-
-msgctxt "#21447"
-msgid "Audio language"
-msgstr ""
-
-msgctxt "#21448"
-msgid "Subtitle language"
-msgstr ""
-
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "Пульт ДУ посылает сигналы нажатия клавиш клавиатуры"
-
-msgctxt "#21450"
-msgid "- Edit"
-msgstr ""
 
 msgctxt "#21800"
 msgid "File name"
@@ -7813,34 +7429,6 @@ msgctxt "#22022"
 msgid "Show video files in listings"
 msgstr "Показывать видео файлы в списке"
 
-msgctxt "#22023"
-msgid "DirectX vendor"
-msgstr ""
-
-msgctxt "#22024"
-msgid "Direct3D version"
-msgstr ""
-
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
-
 msgctxt "#22030"
 msgid "Font"
 msgstr "Шрифт"
@@ -7913,18 +7501,6 @@ msgctxt "#23051"
 msgid "Part %i"
 msgstr "Часть %i"
 
-msgctxt "#23052"
-msgid "Buffering %i bytes"
-msgstr ""
-
-msgctxt "#23053"
-msgid "Stopping"
-msgstr ""
-
-msgctxt "#23054"
-msgid "Running"
-msgstr ""
-
 msgctxt "#23100"
 msgid "External Player Active"
 msgstr "Активирован внешний проигрыватель"
@@ -7936,34 +7512,6 @@ msgstr "Нажмите ОК для завершения плеера"
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
 msgstr "Нажмите ОК когда проигрывание завершится"
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -8020,10 +7568,6 @@ msgstr "Копируем"
 msgctxt "#33010"
 msgid "Set download directory"
 msgstr "Установка пути для скачивания"
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
 
 msgctxt "#33012"
 msgid "Short"
@@ -8268,7 +7812,3 @@ msgstr "Путь к скрипту"
 msgctxt "#33083"
 msgid "Enable custom script button"
 msgstr "Дополнительная кнопка для скрипта"
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

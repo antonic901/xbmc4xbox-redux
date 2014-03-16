@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Dutch (http://www.transifex.com/projects/p/xbmc4xbox/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -156,54 +156,6 @@ msgstr "Zat"
 msgctxt "#47"
 msgid "Sun"
 msgstr "Zon"
-
-msgctxt "#51"
-msgid "Jan"
-msgstr ""
-
-msgctxt "#52"
-msgid "Feb"
-msgstr ""
-
-msgctxt "#53"
-msgid "Mar"
-msgstr ""
-
-msgctxt "#54"
-msgid "Apr"
-msgstr ""
-
-msgctxt "#55"
-msgid "May"
-msgstr ""
-
-msgctxt "#56"
-msgid "Jun"
-msgstr ""
-
-msgctxt "#57"
-msgid "Jul"
-msgstr ""
-
-msgctxt "#58"
-msgid "Aug"
-msgstr ""
-
-msgctxt "#59"
-msgid "Sep"
-msgstr ""
-
-msgctxt "#60"
-msgid "Oct"
-msgstr ""
-
-msgctxt "#61"
-msgid "Nov"
-msgstr ""
-
-msgctxt "#62"
-msgid "Dec"
-msgstr ""
 
 msgctxt "#98"
 msgid "View: Auto"
@@ -717,34 +669,6 @@ msgctxt "#239"
 msgid "Clear playlist on finish"
 msgstr "Afspeellijst wissen na afspelen"
 
-msgctxt "#240"
-msgid "Autoplay DVD-Video"
-msgstr ""
-
-msgctxt "#241"
-msgid "Autoplay VCD/SVCD"
-msgstr ""
-
-msgctxt "#242"
-msgid "Autoplay Audio-CD"
-msgstr ""
-
-msgctxt "#243"
-msgid "Autoplay Xbox games"
-msgstr ""
-
-msgctxt "#244"
-msgid "Autoplay videos"
-msgstr ""
-
-msgctxt "#245"
-msgid "Autoplay music"
-msgstr ""
-
-msgctxt "#246"
-msgid "Autoplay pictures"
-msgstr ""
-
 msgctxt "#247"
 msgid "Scripts"
 msgstr "Scripts"
@@ -944,22 +868,6 @@ msgstr "Synchroniseer geluid"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Favorieten"
-
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr ""
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr ""
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr ""
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr ""
 
 msgctxt "#303"
 msgid "Delay"
@@ -1629,10 +1537,6 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Over XBMC"
 
-msgctxt "#483"
-msgid "DVDPlayer cache"
-msgstr ""
-
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Verwijder album"
@@ -1740,10 +1644,6 @@ msgstr "Handmatige instellingen"
 msgctxt "#515"
 msgid "Genre"
 msgstr "Genre"
-
-msgctxt "#516"
-msgid "Make stored archives with one file transparent"
-msgstr ""
 
 msgctxt "#517"
 msgid "Recently played albums"
@@ -1968,14 +1868,6 @@ msgstr "Filmstudio"
 msgctxt "#573"
 msgid "Path"
 msgstr "Pad"
-
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2257,10 +2149,6 @@ msgctxt "#664"
 msgid "Browse for Script"
 msgstr "Zoeken naar een Script"
 
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
-
 msgctxt "#700"
 msgid "Cleaning up library"
 msgstr "Bibliotheek opschonen"
@@ -2281,21 +2169,9 @@ msgctxt "#706"
 msgid "- Server"
 msgstr "- Host"
 
-msgctxt "#707"
-msgid "HTTP proxy port"
-msgstr ""
-
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "HTTP-proxy gebruiken"
-
-msgctxt "#709"
-msgid "HTTP proxy username"
-msgstr ""
-
-msgctxt "#710"
-msgid "HTTP proxy password"
-msgstr ""
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
@@ -2588,10 +2464,6 @@ msgstr "Verbinding uitgeschakelen succesvol."
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "Naam Draadloos Netwerk (ESSID)"
-
-msgctxt "#790"
-msgid "Event server"
-msgstr ""
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
@@ -3817,14 +3689,6 @@ msgctxt "#13120"
 msgid "VDPAU"
 msgstr "Strikte Pixmap-Texture Binding (opnieuw opstarten vereist)"
 
-msgctxt "#13121"
-msgid "VDPAU HQ Upscaling level"
-msgstr ""
-
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr ""
-
 msgctxt "#13130"
 msgid "Blank other displays"
 msgstr "Beeldscherm blanking"
@@ -4064,10 +3928,6 @@ msgstr "Video"
 msgctxt "#13281"
 msgid "Hardware"
 msgstr "Hardware"
-
-msgctxt "#13282"
-msgid "_"
-msgstr ""
 
 msgctxt "#13283"
 msgid "Operating system:"
@@ -4625,10 +4485,6 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple afstandsbediening"
 
-msgctxt "#13601"
-msgid "Use MCE/Universal Remote"
-msgstr ""
-
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "Altijd draaiend"
@@ -4808,10 +4664,6 @@ msgstr "te wijzigen. Wilt u nu herstarten?"
 msgctxt "#14041"
 msgid "Post processing"
 msgstr "Voorbewerking"
-
-msgctxt "#14042"
-msgid "Internet connection bandwidth limitation"
-msgstr ""
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
@@ -4997,10 +4849,6 @@ msgctxt "#14091"
 msgid "Character set"
 msgstr "Tekenset"
 
-msgctxt "#14092"
-msgid "Debugging"
-msgstr ""
-
 msgctxt "#14093"
 msgid "Security"
 msgstr "Beveiliging"
@@ -5012,46 +4860,6 @@ msgstr "Invoer apparaten"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Energie beheer"
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5421,10 +5229,6 @@ msgctxt "#16000"
 msgid "General"
 msgstr "Algemeen"
 
-msgctxt "#16001"
-msgid "Configure audio hardware..."
-msgstr ""
-
 msgctxt "#16002"
 msgid "Internet lookup"
 msgstr "Zoeken op CDDB"
@@ -5680,10 +5484,6 @@ msgstr "(VDPAU)Scherpte"
 msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse telecine"
-
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
 
 msgctxt "#17500"
 msgid "Display sleep timeout"
@@ -6433,18 +6233,6 @@ msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Glazen vullen (video's)"
 
-msgctxt "#20253"
-msgid "WebDAV server (HTTP)"
-msgstr ""
-
-msgctxt "#20254"
-msgid "WebDAV server (HTTPS)"
-msgstr ""
-
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
-
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "Web server directory (HTTP)"
@@ -6741,10 +6529,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Inhoud ontkoppelen"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Vernieuw TV-serie informatie"
@@ -7020,30 +6804,6 @@ msgstr "Lokaal opgeslagen informatie gevonden."
 msgctxt "#20447"
 msgid "Ignore and refresh from internet?"
 msgstr "Negeren en verversen van internet?"
-
-msgctxt "#20448"
-msgid "Could not download information"
-msgstr ""
-
-msgctxt "#20449"
-msgid "Server is most likely unavailable."
-msgstr ""
-
-msgctxt "#20450"
-msgid "Would you like to continue scanning?"
-msgstr ""
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7420,10 +7180,6 @@ msgstr "Taal ondertiteling"
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "Afstandsbediening stuurt toetsenbord toetsen"
-
-msgctxt "#21450"
-msgid "- Edit"
-msgstr ""
 
 msgctxt "#21800"
 msgid "File name"
@@ -7813,33 +7569,9 @@ msgctxt "#22022"
 msgid "Show video files in listings"
 msgstr "Voeg video bestanden in lijsten"
 
-msgctxt "#22023"
-msgid "DirectX vendor"
-msgstr ""
-
 msgctxt "#22024"
 msgid "Direct3D version"
 msgstr "Direct3D versie"
-
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
 
 msgctxt "#22030"
 msgid "Font"
@@ -7897,14 +7629,6 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr "zwart/wit"
 
-msgctxt "#23000"
-msgid "Weather plugin"
-msgstr ""
-
-msgctxt "#23001"
-msgid "- Plugin settings"
-msgstr ""
-
 msgctxt "#23050"
 msgid "Activate Teletext"
 msgstr "Activeer Teletext"
@@ -7917,14 +7641,6 @@ msgctxt "#23052"
 msgid "Buffering %i bytes"
 msgstr "Bufferen %i bytes"
 
-msgctxt "#23053"
-msgid "Stopping"
-msgstr ""
-
-msgctxt "#23054"
-msgid "Running"
-msgstr ""
-
 msgctxt "#23100"
 msgid "External Player Active"
 msgstr "Externe Player actief"
@@ -7936,34 +7652,6 @@ msgstr "Klik op OK om de speler te beëindigen"
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
 msgstr "Klik op OK als afspelen beëindigd is"
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -8020,10 +7708,6 @@ msgstr "Kopiëren"
 msgctxt "#33010"
 msgid "Set download directory"
 msgstr "Stel download directory in"
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
 
 msgctxt "#33012"
 msgid "Short"
@@ -8268,7 +7952,3 @@ msgstr "Pad naar script"
 msgctxt "#33083"
 msgid "Enable custom script button"
 msgstr "Stel custom script knop in"
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

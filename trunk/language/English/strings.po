@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc4xbox/language/en/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -2583,8 +2583,8 @@ msgctxt "#767"
 msgid "Grey"
 msgstr ""
 
-#strings 768 and 769 reserved for more subtitle colors
 #empty strings from id 768 to 769
+#strings 768 and 769 reserved for more subtitle colors
 
 msgctxt "#770"
 msgid "Error %i: share not available"
@@ -3210,15 +3210,15 @@ msgctxt "#1419"
 msgid "T-Showers"
 msgstr ""
 
-#strings through to 1450 reserved for weather translation
 #empty strings from id 1420 to 1449
+#strings through to 1450 reserved for weather translation
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
 msgstr ""
 
-#strings through to 1470 reserved for power-saving
 #empty strings from id 1451 to 2049
+#strings through to 1470 reserved for power-saving
 
 msgctxt "#2050"
 msgid "Runtime"
@@ -6046,8 +6046,8 @@ msgctxt "#20026"
 msgid "Region"
 msgstr ""
 
-#string id's 20027 thru 20034 are reserved for temperature strings (LocalizeStrings.cpp)
 #empty strings from id 20027 to 20036
+#string id's 20027 thru 20034 are reserved for temperature strings (LocalizeStrings.cpp)
 
 msgctxt "#20037"
 msgid "Summary"
@@ -6695,8 +6695,8 @@ msgctxt "#20199"
 msgid "Downloading artist info failed"
 msgstr ""
 
-#string id's 20200 thru 20211 are reserved for speedstrings (LocalizeStrings.cpp)
 #empty strings from id 20200 to 20249
+#string id's 20200 thru 20211 are reserved for speedstrings (LocalizeStrings.cpp)
 
 msgctxt "#20250"
 msgid "Party on! (videos)"
@@ -7338,8 +7338,8 @@ msgctxt "#20458"
 msgid "Group movies in sets"
 msgstr ""
 
-#up to 21329 is reserved for the video db !! !
 #empty strings from id 20459 to 21329
+#up to 21329 is reserved for the video db !! !
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7373,8 +7373,8 @@ msgctxt "#21337"
 msgid "TuxBox device"
 msgstr ""
 
-#up to 21355 is reserved for the TuxBox Client!! !
 #empty strings from id 21338 to 21358
+#up to 21355 is reserved for the TuxBox Client!! !
 
 msgctxt "#21359"
 msgid "Add media share..."
@@ -8032,8 +8032,8 @@ msgctxt "#21900"
 msgid "Born/Formed"
 msgstr ""
 
-#strings 21900 thru 21999 reserved for slideshow info
 #empty strings from id 21901 to 21999
+#strings 21900 thru 21999 reserved for slideshow info
 
 msgctxt "#22000"
 msgid "Update library on startup"
@@ -8245,8 +8245,8 @@ msgctxt "#23054"
 msgid "Running"
 msgstr ""
 
-#strings 23100 thru 23150 reserved for external player
 #empty strings from id 23055 to 23099
+#strings 23100 thru 23150 reserved for external player
 
 msgctxt "#23100"
 msgid "External Player Active"
@@ -8296,8 +8296,8 @@ msgctxt "#24030"
 msgid "This Add-on can not be configured"
 msgstr ""
 
-#strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 #empty strings from id 24031 to 29799
+#strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -8317,11 +8317,11 @@ msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
 msgstr ""
 
+#empty strings from id 30000 to 33000
 #strings 30000 thru 30999 reserved for plugins and plugin settings
 #strings 31000 thru 31999 reserved for skins
 #strings 32000 thru 32999 reserved for scripts
 #strings 33000 thru 33999 reserved for common strings used in addons
-#empty strings from id 30000 to 33000
 
 msgctxt "#33001"
 msgid "Trailer quality"

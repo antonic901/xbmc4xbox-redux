@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Spanish (Mexico) (http://www.transifex.com/projects/p/xbmc4xbox/language/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -36,10 +36,6 @@ msgstr "Guía-TV"
 msgctxt "#5"
 msgid "Settings"
 msgstr "Ajustes"
-
-msgctxt "#6"
-msgid "XBMC SVN"
-msgstr ""
 
 msgctxt "#7"
 msgid "File manager"
@@ -128,82 +124,6 @@ msgstr "Noviembre"
 msgctxt "#32"
 msgid "December"
 msgstr "Diciembre"
-
-msgctxt "#41"
-msgid "Mon"
-msgstr ""
-
-msgctxt "#42"
-msgid "Tue"
-msgstr ""
-
-msgctxt "#43"
-msgid "Wed"
-msgstr ""
-
-msgctxt "#44"
-msgid "Thu"
-msgstr ""
-
-msgctxt "#45"
-msgid "Fri"
-msgstr ""
-
-msgctxt "#46"
-msgid "Sat"
-msgstr ""
-
-msgctxt "#47"
-msgid "Sun"
-msgstr ""
-
-msgctxt "#51"
-msgid "Jan"
-msgstr ""
-
-msgctxt "#52"
-msgid "Feb"
-msgstr ""
-
-msgctxt "#53"
-msgid "Mar"
-msgstr ""
-
-msgctxt "#54"
-msgid "Apr"
-msgstr ""
-
-msgctxt "#55"
-msgid "May"
-msgstr ""
-
-msgctxt "#56"
-msgid "Jun"
-msgstr ""
-
-msgctxt "#57"
-msgid "Jul"
-msgstr ""
-
-msgctxt "#58"
-msgid "Aug"
-msgstr ""
-
-msgctxt "#59"
-msgid "Sep"
-msgstr ""
-
-msgctxt "#60"
-msgid "Oct"
-msgstr ""
-
-msgctxt "#61"
-msgid "Nov"
-msgstr ""
-
-msgctxt "#62"
-msgid "Dec"
-msgstr ""
 
 msgctxt "#98"
 msgid "View: Auto"
@@ -492,10 +412,6 @@ msgstr "Ajustar frecuencia refresco"
 msgctxt "#172"
 msgid "Release date"
 msgstr "Fecha de publicación"
-
-msgctxt "#173"
-msgid "Display 4:3 videos as"
-msgstr ""
 
 msgctxt "#175"
 msgid "Moods"
@@ -944,22 +860,6 @@ msgstr "Retardo de sonido"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Marcadores"
-
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr ""
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr ""
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr ""
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr ""
 
 msgctxt "#303"
 msgid "Delay"
@@ -1629,10 +1529,6 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Acerca de XBMC"
 
-msgctxt "#483"
-msgid "DVDPlayer cache"
-msgstr ""
-
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Eliminar álbum"
@@ -1969,14 +1865,6 @@ msgctxt "#573"
 msgid "Path"
 msgstr "Ruta"
 
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
-
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Dirección de ordenación"
@@ -2252,14 +2140,6 @@ msgstr "Éste archivo ya no está disponible"
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
 msgstr "¿Le gustaría eliminarlo de la biblioteca?"
-
-msgctxt "#664"
-msgid "Browse for Script"
-msgstr ""
-
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2621,22 +2501,6 @@ msgctxt "#797"
 msgid "Maximum number of clients"
 msgstr "Número máximo de clientes"
 
-msgctxt "#798"
-msgid "Internet access"
-msgstr ""
-
-msgctxt "#850"
-msgid "Invalid port number entered"
-msgstr ""
-
-msgctxt "#851"
-msgid "Valid port range is 1-65535"
-msgstr ""
-
-msgctxt "#852"
-msgid "Valid port range is 1024-65535"
-msgstr ""
-
 msgctxt "#1000"
 msgid "Screensaver preview"
 msgstr "Vista previa del salvapantallas"
@@ -2829,14 +2693,6 @@ msgctxt "#1048"
 msgid "- Username"
 msgstr "Usuario de Servidor Web"
 
-msgctxt "#1049"
-msgid "Script settings"
-msgstr ""
-
-msgctxt "#1050"
-msgid "Singles"
-msgstr ""
-
 msgctxt "#1200"
 msgid "SMB client"
 msgstr "Cliente SMB"
@@ -3001,14 +2857,6 @@ msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
 msgstr "Zeroconf publishing"
 
-msgctxt "#1300"
-msgid "Custom audio device"
-msgstr ""
-
-msgctxt "#1301"
-msgid "Custom passthrough device"
-msgstr ""
-
 msgctxt "#1396"
 msgid "Drifting"
 msgstr "A la deriva"
@@ -3097,25 +2945,9 @@ msgctxt "#1417"
 msgid "Grains"
 msgstr "Granos"
 
-msgctxt "#1418"
-msgid "T-Storms"
-msgstr ""
-
-msgctxt "#1419"
-msgid "T-Showers"
-msgstr ""
-
-msgctxt "#1450"
-msgid "Put display to sleep when idle"
-msgstr ""
-
 msgctxt "#2050"
 msgid "Runtime"
 msgstr "Duración:"
-
-msgctxt "#2100"
-msgid "Script failed! : %s"
-msgstr ""
 
 msgctxt "#4501"
 msgid "Enable LCD/VFD"
@@ -3717,10 +3549,6 @@ msgctxt "#13014"
 msgid "Minimize"
 msgstr "Minimizar"
 
-msgctxt "#13015"
-msgid "Power button action"
-msgstr ""
-
 msgctxt "#13020"
 msgid "Is another session active, perhaps over ssh?"
 msgstr "Existe otra sesión activa, ¿tal vez ssh?"
@@ -3816,14 +3644,6 @@ msgstr "Sinc"
 msgctxt "#13120"
 msgid "VDPAU"
 msgstr "Enlace Pixmap-Textura estricto (requiere reinicio)"
-
-msgctxt "#13121"
-msgid "VDPAU HQ Upscaling level"
-msgstr ""
-
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr ""
 
 msgctxt "#13130"
 msgid "Blank other displays"
@@ -4565,62 +4385,6 @@ msgctxt "#13421"
 msgid "VDPAU"
 msgstr "VDPAU"
 
-msgctxt "#13422"
-msgid "Start slideshow here"
-msgstr ""
-
-msgctxt "#13423"
-msgid "Remember for this path"
-msgstr ""
-
-msgctxt "#13424"
-msgid "Use pixel buffer objects"
-msgstr ""
-
-msgctxt "#13500"
-msgid "A/V sync method"
-msgstr ""
-
-msgctxt "#13501"
-msgid "Audio clock"
-msgstr ""
-
-msgctxt "#13502"
-msgid "Video clock (Drop/Dupe audio)"
-msgstr ""
-
-msgctxt "#13503"
-msgid "Video clock (Resample audio)"
-msgstr ""
-
-msgctxt "#13504"
-msgid "Maximum resample amount (%)"
-msgstr ""
-
-msgctxt "#13505"
-msgid "Resample quality"
-msgstr ""
-
-msgctxt "#13506"
-msgid "Low(fast)"
-msgstr ""
-
-msgctxt "#13507"
-msgid "Medium"
-msgstr ""
-
-msgctxt "#13508"
-msgid "High"
-msgstr ""
-
-msgctxt "#13509"
-msgid "Really high(slow!)"
-msgstr ""
-
-msgctxt "#13510"
-msgid "Sync playback to display"
-msgstr ""
-
 msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple Remote"
@@ -4648,10 +4412,6 @@ msgstr "Estándar"
 msgctxt "#13612"
 msgid "Universal Remote"
 msgstr "Universal Remote"
-
-msgctxt "#13613"
-msgid "Multi Remote (Harmony)"
-msgstr ""
 
 msgctxt "#13620"
 msgid "Apple Remote Error"
@@ -4809,10 +4569,6 @@ msgctxt "#14041"
 msgid "Post processing"
 msgstr "Postprocesado"
 
-msgctxt "#14042"
-msgid "Internet connection bandwidth limitation"
-msgstr ""
-
 msgctxt "#14043"
 msgid "- Shutdown while playing"
 msgstr "- Apagar mientras está reproduciendo"
@@ -4953,106 +4709,6 @@ msgctxt "#14080"
 msgid "Timezone"
 msgstr "Huso horario"
 
-msgctxt "#14081"
-msgid "File lists"
-msgstr ""
-
-msgctxt "#14082"
-msgid "Show EXIF picture information"
-msgstr ""
-
-msgctxt "#14083"
-msgid "Use a fullscreen window rather than true fullscreen"
-msgstr ""
-
-msgctxt "#14084"
-msgid "Queue songs on selection"
-msgstr ""
-
-msgctxt "#14085"
-msgid "Play audio CDs automatically"
-msgstr ""
-
-msgctxt "#14086"
-msgid "Playback"
-msgstr ""
-
-msgctxt "#14087"
-msgid "DVDs"
-msgstr ""
-
-msgctxt "#14088"
-msgid "Play DVDs automatically"
-msgstr ""
-
-msgctxt "#14089"
-msgid "Font to use for text subtitles"
-msgstr ""
-
-msgctxt "#14090"
-msgid "International"
-msgstr ""
-
-msgctxt "#14091"
-msgid "Character set"
-msgstr ""
-
-msgctxt "#14092"
-msgid "Debugging"
-msgstr ""
-
-msgctxt "#14093"
-msgid "Security"
-msgstr ""
-
-msgctxt "#14094"
-msgid "Input devices"
-msgstr ""
-
-msgctxt "#14095"
-msgid "Power saving"
-msgstr ""
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
-
 msgctxt "#15015"
 msgid "Remove"
 msgstr "Eliminar"
@@ -5180,26 +4836,6 @@ msgstr "Ocultar nombres de fichero en vista de miniaturas"
 msgctxt "#15216"
 msgid "Play in party mode"
 msgstr "Reproducir en modo fiesta"
-
-msgctxt "#15217"
-msgid "Submit songs to Libre.fm"
-msgstr ""
-
-msgctxt "#15218"
-msgid "Libre.fm username"
-msgstr ""
-
-msgctxt "#15219"
-msgid "Libre.fm password"
-msgstr ""
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr ""
-
-msgctxt "#15221"
-msgid "Song submission"
-msgstr ""
 
 msgctxt "#15250"
 msgid "Submit Last.fm radio to Last.fm"
@@ -5521,10 +5157,6 @@ msgctxt "#16028"
 msgid "Enter value"
 msgstr "Introducir valor"
 
-msgctxt "#16029"
-msgid "Check the log file for details."
-msgstr ""
-
 msgctxt "#16030"
 msgid "Party mode aborted."
 msgstr "Modo fiesta abortado."
@@ -5681,17 +5313,9 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Telecine inverso"
 
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
-
 msgctxt "#17500"
 msgid "Display sleep timeout"
 msgstr "Mostrar cuenta atrás para el reposo"
-
-msgctxt "#19000"
-msgid "Switch to channel"
-msgstr ""
 
 msgctxt "#20000"
 msgid "Saved music folder"
@@ -5780,10 +5404,6 @@ msgstr "Explorar todo"
 msgctxt "#20026"
 msgid "Region"
 msgstr "Región"
-
-msgctxt "#20037"
-msgid "Summary"
-msgstr ""
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -6433,18 +6053,6 @@ msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Llenando vasos (vídeos)"
 
-msgctxt "#20253"
-msgid "WebDAV server (HTTP)"
-msgstr ""
-
-msgctxt "#20254"
-msgid "WebDAV server (HTTPS)"
-msgstr ""
-
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
-
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "Carpeta Servidor Web (HTTP)"
@@ -6452,18 +6060,6 @@ msgstr "Carpeta Servidor Web (HTTP)"
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
 msgstr "Carpeta Servidor Web (HTTPS)"
-
-msgctxt "#20302"
-msgid "Unable to write to folder:"
-msgstr ""
-
-msgctxt "#20303"
-msgid "Do you want to skip and proceed?"
-msgstr ""
-
-msgctxt "#20304"
-msgid "RSS Feed"
-msgstr ""
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6741,10 +6337,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Desasignar contenido"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Actualizar información del programa de TV"
@@ -6960,90 +6552,6 @@ msgstr "¿Sobreescribir archivos antiguos?"
 msgctxt "#20432"
 msgid "Exclude path from library updates"
 msgstr "Excluir ruta de actualizaciones de biblioteca"
-
-msgctxt "#20433"
-msgid "Extract thumbnails and video information"
-msgstr ""
-
-msgctxt "#20434"
-msgid "Sets"
-msgstr ""
-
-msgctxt "#20435"
-msgid "Set movieset thumb"
-msgstr ""
-
-msgctxt "#20436"
-msgid "Export actor thumbs?"
-msgstr ""
-
-msgctxt "#20437"
-msgid "Choose fanart"
-msgstr ""
-
-msgctxt "#20438"
-msgid "Local fanart"
-msgstr ""
-
-msgctxt "#20439"
-msgid "No fanart"
-msgstr ""
-
-msgctxt "#20440"
-msgid "Current fanart"
-msgstr ""
-
-msgctxt "#20441"
-msgid "Remote fanart"
-msgstr ""
-
-msgctxt "#20442"
-msgid "Change content"
-msgstr ""
-
-msgctxt "#20443"
-msgid "Do you want to refresh info for all"
-msgstr ""
-
-msgctxt "#20444"
-msgid "items within this path?"
-msgstr ""
-
-msgctxt "#20445"
-msgid "Fanart"
-msgstr ""
-
-msgctxt "#20446"
-msgid "Locally stored information found."
-msgstr ""
-
-msgctxt "#20447"
-msgid "Ignore and refresh from internet?"
-msgstr ""
-
-msgctxt "#20448"
-msgid "Could not download information"
-msgstr ""
-
-msgctxt "#20449"
-msgid "Server is most likely unavailable."
-msgstr ""
-
-msgctxt "#20450"
-msgid "Would you like to continue scanning?"
-msgstr ""
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7293,14 +6801,6 @@ msgctxt "#21416"
 msgid "Enable fallback based on scraper language"
 msgstr "Habilitar vuelta atrás basada en lenguaje de Scraper"
 
-msgctxt "#21417"
-msgid "- Settings"
-msgstr ""
-
-msgctxt "#21418"
-msgid "Multilingual"
-msgstr ""
-
 msgctxt "#21420"
 msgid "Value to match"
 msgstr "Valor a encontrar"
@@ -7392,38 +6892,6 @@ msgstr "Veces visto"
 msgctxt "#21442"
 msgid "Episode title"
 msgstr "Título del episodio"
-
-msgctxt "#21443"
-msgid "Video resolution"
-msgstr ""
-
-msgctxt "#21444"
-msgid "Audio channels"
-msgstr ""
-
-msgctxt "#21445"
-msgid "Video codec"
-msgstr ""
-
-msgctxt "#21446"
-msgid "Audio codec"
-msgstr ""
-
-msgctxt "#21447"
-msgid "Audio language"
-msgstr ""
-
-msgctxt "#21448"
-msgid "Subtitle language"
-msgstr ""
-
-msgctxt "#21449"
-msgid "Remote control sends keyboard presses"
-msgstr ""
-
-msgctxt "#21450"
-msgid "- Edit"
-msgstr ""
 
 msgctxt "#21800"
 msgid "File name"
@@ -7805,42 +7273,6 @@ msgctxt "#22020"
 msgid "Guide"
 msgstr "Guía"
 
-msgctxt "#22021"
-msgid "Allowed error in aspect ratio to minimize black bars"
-msgstr ""
-
-msgctxt "#22022"
-msgid "Show video files in listings"
-msgstr ""
-
-msgctxt "#22023"
-msgid "DirectX vendor"
-msgstr ""
-
-msgctxt "#22024"
-msgid "Direct3D version"
-msgstr ""
-
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
-
 msgctxt "#22030"
 msgid "Font"
 msgstr "Fuente"
@@ -7897,74 +7329,6 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr "Blanco/Negro"
 
-msgctxt "#23000"
-msgid "Weather plugin"
-msgstr ""
-
-msgctxt "#23001"
-msgid "- Plugin settings"
-msgstr ""
-
-msgctxt "#23050"
-msgid "Activate Teletext"
-msgstr ""
-
-msgctxt "#23051"
-msgid "Part %i"
-msgstr ""
-
-msgctxt "#23052"
-msgid "Buffering %i bytes"
-msgstr ""
-
-msgctxt "#23053"
-msgid "Stopping"
-msgstr ""
-
-msgctxt "#23054"
-msgid "Running"
-msgstr ""
-
-msgctxt "#23100"
-msgid "External Player Active"
-msgstr ""
-
-msgctxt "#23101"
-msgid "Click OK to terminate the player"
-msgstr ""
-
-msgctxt "#23104"
-msgid "Click OK when playback has ended"
-msgstr ""
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
-
 msgctxt "#29800"
 msgid "Library Mode"
 msgstr "Modo biblioteca"
@@ -7973,302 +7337,6 @@ msgctxt "#29801"
 msgid "QWERTY keyboard"
 msgstr "Teclado QWERTY"
 
-msgctxt "#29802"
-msgid "Passthrough Audio in use"
-msgstr ""
-
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
 msgstr "Aplicar ajustes del filtro de parpadeo a los juegos"
-
-msgctxt "#33001"
-msgid "Trailer quality"
-msgstr ""
-
-msgctxt "#33002"
-msgid "Stream"
-msgstr ""
-
-msgctxt "#33003"
-msgid "Download"
-msgstr ""
-
-msgctxt "#33004"
-msgid "Download & play"
-msgstr ""
-
-msgctxt "#33005"
-msgid "Download & save"
-msgstr ""
-
-msgctxt "#33006"
-msgid "Today"
-msgstr ""
-
-msgctxt "#33007"
-msgid "Tomorrow"
-msgstr ""
-
-msgctxt "#33008"
-msgid "Saving"
-msgstr ""
-
-msgctxt "#33009"
-msgid "Copying"
-msgstr ""
-
-msgctxt "#33010"
-msgid "Set download directory"
-msgstr ""
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
-
-msgctxt "#33012"
-msgid "Short"
-msgstr ""
-
-msgctxt "#33013"
-msgid "Long"
-msgstr ""
-
-msgctxt "#33014"
-msgid "Use DVD player instead of regular player"
-msgstr ""
-
-msgctxt "#33015"
-msgid "Ask for download before playing video"
-msgstr ""
-
-msgctxt "#33016"
-msgid "Clips"
-msgstr ""
-
-msgctxt "#33017"
-msgid "Restart plugin to enable"
-msgstr ""
-
-msgctxt "#33018"
-msgid "Tonight"
-msgstr ""
-
-msgctxt "#33019"
-msgid "Tomorrow Night"
-msgstr ""
-
-msgctxt "#33020"
-msgid "Condition"
-msgstr ""
-
-msgctxt "#33021"
-msgid "Precipitation"
-msgstr ""
-
-msgctxt "#33022"
-msgid "Precip"
-msgstr ""
-
-msgctxt "#33023"
-msgid "Humid"
-msgstr ""
-
-msgctxt "#33024"
-msgid "Feels"
-msgstr ""
-
-msgctxt "#33025"
-msgid "Observed"
-msgstr ""
-
-msgctxt "#33026"
-msgid "Departure from normal"
-msgstr ""
-
-msgctxt "#33027"
-msgid "Sunrise"
-msgstr ""
-
-msgctxt "#33028"
-msgid "Sunset"
-msgstr ""
-
-msgctxt "#33029"
-msgid "Details"
-msgstr ""
-
-msgctxt "#33030"
-msgid "Outlook"
-msgstr ""
-
-msgctxt "#33031"
-msgid "Coverflow"
-msgstr ""
-
-msgctxt "#33032"
-msgid "Translate text"
-msgstr ""
-
-msgctxt "#33033"
-msgid "Map list %s category"
-msgstr ""
-
-msgctxt "#33034"
-msgid "36 Hour"
-msgstr ""
-
-msgctxt "#33035"
-msgid "Maps"
-msgstr ""
-
-msgctxt "#33036"
-msgid "Hourly"
-msgstr ""
-
-msgctxt "#33037"
-msgid "Weekend"
-msgstr ""
-
-msgctxt "#33038"
-msgid "%s day"
-msgstr ""
-
-msgctxt "#33049"
-msgid "Alert"
-msgstr ""
-
-msgctxt "#33050"
-msgid "Alerts"
-msgstr ""
-
-msgctxt "#33051"
-msgid "Choose Your"
-msgstr ""
-
-msgctxt "#33052"
-msgid "Check"
-msgstr ""
-
-msgctxt "#33053"
-msgid "Configure the"
-msgstr ""
-
-msgctxt "#33054"
-msgid "Seasons"
-msgstr ""
-
-msgctxt "#33055"
-msgid "Use your"
-msgstr ""
-
-msgctxt "#33056"
-msgid "Watch your"
-msgstr ""
-
-msgctxt "#33057"
-msgid "Listen to"
-msgstr ""
-
-msgctxt "#33058"
-msgid "View your"
-msgstr ""
-
-msgctxt "#33059"
-msgid "Configure the"
-msgstr ""
-
-msgctxt "#33060"
-msgid "Power"
-msgstr ""
-
-msgctxt "#33061"
-msgid "Menu"
-msgstr ""
-
-msgctxt "#33062"
-msgid "Play the"
-msgstr ""
-
-msgctxt "#33063"
-msgid "Options"
-msgstr ""
-
-msgctxt "#33065"
-msgid "Editor"
-msgstr ""
-
-msgctxt "#33066"
-msgid "About your"
-msgstr ""
-
-msgctxt "#33067"
-msgid "Star rating"
-msgstr ""
-
-msgctxt "#33068"
-msgid "Background"
-msgstr ""
-
-msgctxt "#33069"
-msgid "Backgrounds"
-msgstr ""
-
-msgctxt "#33070"
-msgid "Custom background"
-msgstr ""
-
-msgctxt "#33071"
-msgid "Custom backgrounds"
-msgstr ""
-
-msgctxt "#33072"
-msgid "View Readme"
-msgstr ""
-
-msgctxt "#33073"
-msgid "View Changelog"
-msgstr ""
-
-msgctxt "#33074"
-msgid "This version of %s requires an"
-msgstr ""
-
-msgctxt "#33075"
-msgid "XBMC revision of %s or greater to run."
-msgstr ""
-
-msgctxt "#33076"
-msgid "Please update XBMC."
-msgstr ""
-
-msgctxt "#33077"
-msgid "No data found!"
-msgstr ""
-
-msgctxt "#33078"
-msgid "Next page"
-msgstr ""
-
-msgctxt "#33079"
-msgid "Love"
-msgstr ""
-
-msgctxt "#33080"
-msgid "Hate"
-msgstr ""
-
-msgctxt "#33081"
-msgid "This file is stacked, select the part you want to play from."
-msgstr ""
-
-msgctxt "#33082"
-msgid "Path to script"
-msgstr ""
-
-msgctxt "#33083"
-msgid "Enable custom script button"
-msgstr ""
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

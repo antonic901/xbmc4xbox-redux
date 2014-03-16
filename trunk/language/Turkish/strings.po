@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/xbmc4xbox/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: tr\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -477,10 +477,6 @@ msgctxt "#167"
 msgid "Enable FTP server"
 msgstr "FTP sunucusunu etkinleştir"
 
-msgctxt "#168"
-msgid "Enable Internet time synchronization"
-msgstr ""
-
 msgctxt "#169"
 msgid "Resolution"
 msgstr "Çözünürlük"
@@ -716,34 +712,6 @@ msgstr "Büyültmek"
 msgctxt "#239"
 msgid "Clear playlist on finish"
 msgstr "Oynatma bittiğinde çalma listesini temizle"
-
-msgctxt "#240"
-msgid "Autoplay DVD-Video"
-msgstr ""
-
-msgctxt "#241"
-msgid "Autoplay VCD/SVCD"
-msgstr ""
-
-msgctxt "#242"
-msgid "Autoplay Audio-CD"
-msgstr ""
-
-msgctxt "#243"
-msgid "Autoplay Xbox games"
-msgstr ""
-
-msgctxt "#244"
-msgid "Autoplay videos"
-msgstr ""
-
-msgctxt "#245"
-msgid "Autoplay music"
-msgstr ""
-
-msgctxt "#246"
-msgid "Autoplay pictures"
-msgstr ""
 
 msgctxt "#247"
 msgid "Scripts"
@@ -1361,14 +1329,6 @@ msgctxt "#406"
 msgid "Humidity"
 msgstr "Nem oranı"
 
-msgctxt "#407"
-msgid "From"
-msgstr ""
-
-msgctxt "#408"
-msgid "at"
-msgstr ""
-
 msgctxt "#409"
 msgid "Defaults"
 msgstr "Varsayılanlar"
@@ -1629,10 +1589,6 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "XBMC Hakkında"
 
-msgctxt "#483"
-msgid "DVDPlayer cache"
-msgstr ""
-
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Albümü sil"
@@ -1740,10 +1696,6 @@ msgstr "Kişisel ayarlar"
 msgctxt "#515"
 msgid "Genre"
 msgstr "Tarz"
-
-msgctxt "#516"
-msgid "Make stored archives with one file transparent"
-msgstr ""
 
 msgctxt "#517"
 msgid "Recently played albums"
@@ -1968,14 +1920,6 @@ msgstr "Stüdyo"
 msgctxt "#573"
 msgid "Path"
 msgstr "Yol"
-
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2257,10 +2201,6 @@ msgctxt "#664"
 msgid "Browse for Script"
 msgstr "Betiklere gözat"
 
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
-
 msgctxt "#700"
 msgid "Cleaning up library"
 msgstr "Kitaplık temizleniyor"
@@ -2281,21 +2221,9 @@ msgctxt "#706"
 msgid "- Server"
 msgstr "- Sunucu"
 
-msgctxt "#707"
-msgid "HTTP proxy port"
-msgstr ""
-
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "İnternet erişimi için HTTP vekil sunucusu kullan"
-
-msgctxt "#709"
-msgid "HTTP proxy username"
-msgstr ""
-
-msgctxt "#710"
-msgid "HTTP proxy password"
-msgstr ""
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
@@ -2365,17 +2293,9 @@ msgctxt "#728"
 msgid "FTP server"
 msgstr "FTP sunucusu"
 
-msgctxt "#729"
-msgid "Internet time"
-msgstr ""
-
 msgctxt "#730"
 msgid "- Port"
 msgstr "- Port"
-
-msgctxt "#731"
-msgid "Time server host"
-msgstr ""
 
 msgctxt "#732"
 msgid "Save & apply"
@@ -2588,10 +2508,6 @@ msgstr "Ağ arabirimi başarıyla devre dışı bırakıldı."
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "Kablosuz ağın adı (ESSID)"
-
-msgctxt "#790"
-msgid "Event server"
-msgstr ""
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
@@ -4065,10 +3981,6 @@ msgctxt "#13281"
 msgid "Hardware"
 msgstr "Donanım"
 
-msgctxt "#13282"
-msgid "_"
-msgstr ""
-
 msgctxt "#13283"
 msgid "Operating system:"
 msgstr "İşletim sistemi:"
@@ -4625,10 +4537,6 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple kumanda"
 
-msgctxt "#13601"
-msgid "Use MCE/Universal Remote"
-msgstr ""
-
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "XBMC'nin kumandayı kullanarak başlamasına izin ver"
@@ -4808,10 +4716,6 @@ msgstr "XBMC'yi yeniden başlatmak istiyor musunuz?"
 msgctxt "#14041"
 msgid "Post processing"
 msgstr "Post processing"
-
-msgctxt "#14042"
-msgid "Internet connection bandwidth limitation"
-msgstr ""
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
@@ -5012,46 +4916,6 @@ msgstr "Giriş aygıtları"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Güç tasarrufu"
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5421,10 +5285,6 @@ msgctxt "#16000"
 msgid "General"
 msgstr "Genel"
 
-msgctxt "#16001"
-msgid "Configure audio hardware..."
-msgstr ""
-
 msgctxt "#16002"
 msgid "Internet lookup"
 msgstr "İnternet'te ara"
@@ -5680,10 +5540,6 @@ msgstr "(VDPAU)Sharpness"
 msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse Telecine"
-
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
 
 msgctxt "#17500"
 msgid "Display sleep timeout"
@@ -6441,10 +6297,6 @@ msgctxt "#20254"
 msgid "WebDAV server (HTTPS)"
 msgstr "WebDAV sunucu (HTTPS)"
 
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
-
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "Web sunucu dizini (HTTP)"
@@ -6741,10 +6593,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Atanmamış içerik"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "TV programının bilgilerini yenile"
@@ -7032,18 +6880,6 @@ msgstr "Sunucu büyük olasılıkla kullanılamaz."
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Taramaya devam etmek istiyor musunuz?"
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7733,10 +7569,6 @@ msgctxt "#22002"
 msgid "- DNS suffix"
 msgstr "- DNS soneki"
 
-msgctxt "#22003"
-msgid "Default player"
-msgstr ""
-
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
 msgstr "Geriye :% 2.3fs"
@@ -7821,26 +7653,6 @@ msgctxt "#22024"
 msgid "Direct3D version"
 msgstr "Direct3D sürümü"
 
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
-
 msgctxt "#22030"
 msgid "Font"
 msgstr "Yazı tipi"
@@ -7896,14 +7708,6 @@ msgstr "beyaz/mavi"
 msgctxt "#22043"
 msgid "black/white"
 msgstr "siyah/beyaz"
-
-msgctxt "#23000"
-msgid "Weather plugin"
-msgstr ""
-
-msgctxt "#23001"
-msgid "- Plugin settings"
-msgstr ""
 
 msgctxt "#23050"
 msgid "Activate Teletext"
@@ -8020,10 +7824,6 @@ msgstr "Kopyalanıyor"
 msgctxt "#33010"
 msgid "Set download directory"
 msgstr "İndirme klasörünü ayarla"
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
 
 msgctxt "#33012"
 msgid "Short"
@@ -8268,7 +8068,3 @@ msgstr "Betik yolu"
 msgctxt "#33083"
 msgid "Enable custom script button"
 msgstr "Özel betik tuşunu etkinleştir"
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Hebrew (http://www.transifex.com/projects/p/xbmc4xbox/language/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: he\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -37,10 +37,6 @@ msgctxt "#5"
 msgid "Settings"
 msgstr "הגדרות"
 
-msgctxt "#6"
-msgid "XBMC SVN"
-msgstr ""
-
 msgctxt "#7"
 msgid "File manager"
 msgstr "מנהל קבצים"
@@ -48,10 +44,6 @@ msgstr "מנהל קבצים"
 msgctxt "#8"
 msgid "Weather"
 msgstr "מזג האויר"
-
-msgctxt "#9"
-msgid "xbmc media center"
-msgstr ""
 
 msgctxt "#11"
 msgid "Monday"
@@ -156,54 +148,6 @@ msgstr "תבש םוי"
 msgctxt "#47"
 msgid "Sun"
 msgstr "ןושאר םוי"
-
-msgctxt "#51"
-msgid "Jan"
-msgstr ""
-
-msgctxt "#52"
-msgid "Feb"
-msgstr ""
-
-msgctxt "#53"
-msgid "Mar"
-msgstr ""
-
-msgctxt "#54"
-msgid "Apr"
-msgstr ""
-
-msgctxt "#55"
-msgid "May"
-msgstr ""
-
-msgctxt "#56"
-msgid "Jun"
-msgstr ""
-
-msgctxt "#57"
-msgid "Jul"
-msgstr ""
-
-msgctxt "#58"
-msgid "Aug"
-msgstr ""
-
-msgctxt "#59"
-msgid "Sep"
-msgstr ""
-
-msgctxt "#60"
-msgid "Oct"
-msgstr ""
-
-msgctxt "#61"
-msgid "Nov"
-msgstr ""
-
-msgctxt "#62"
-msgid "Dec"
-msgstr ""
 
 msgctxt "#98"
 msgid "View: Auto"
@@ -944,22 +888,6 @@ msgstr "השהיית קול הנומתו"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "סימניות"
-
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr ""
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr ""
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr ""
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr ""
 
 msgctxt "#303"
 msgid "Delay"
@@ -1861,10 +1789,6 @@ msgctxt "#545"
 msgid "Audio output device"
 msgstr "התקן פלט אודיו"
 
-msgctxt "#546"
-msgid "Passthrough output device"
-msgstr ""
-
 msgctxt "#547"
 msgid "No biography for this artist"
 msgstr "אין ביוגרפיה לאמןז זה"
@@ -1968,14 +1892,6 @@ msgstr "אולפן"
 msgctxt "#573"
 msgid "Path"
 msgstr "נתיב"
-
-msgctxt "#574"
-msgid "Country"
-msgstr ""
-
-msgctxt "#575"
-msgid "In progress"
-msgstr ""
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2256,10 +2172,6 @@ msgstr "?האם תרצה להסיר אותו מהספריה"
 msgctxt "#664"
 msgid "Browse for Script"
 msgstr "חפש סקריפט"
-
-msgctxt "#665"
-msgid "Compression level"
-msgstr ""
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2553,18 +2465,6 @@ msgctxt "#780"
 msgid "No encryption"
 msgstr "ללא הצפנה"
 
-msgctxt "#781"
-msgid "WEP"
-msgstr ""
-
-msgctxt "#782"
-msgid "WPA"
-msgstr ""
-
-msgctxt "#783"
-msgid "WPA2"
-msgstr ""
-
 msgctxt "#784"
 msgid "Applying network interface settings. Please wait."
 msgstr "מגדיר הגדרות ממשק רשת. אנא המתן."
@@ -2589,10 +2489,6 @@ msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "שם רשת אלחוטית (ESSID)"
 
-msgctxt "#790"
-msgid "Event server"
-msgstr ""
-
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
 msgstr "אפשר לתוכנות על מערכת זו לשלוט על XBMC"
@@ -2609,14 +2505,6 @@ msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
 msgstr "אפשר לתוכנות במערכות אחרות לשלוט על XBMC"
 
-msgctxt "#795"
-msgid "Initial repeat delay (ms)"
-msgstr ""
-
-msgctxt "#796"
-msgid "Continuous repeat delay (ms)"
-msgstr ""
-
 msgctxt "#797"
 msgid "Maximum number of clients"
 msgstr "מספר קליינטים מירבי"
@@ -2624,18 +2512,6 @@ msgstr "מספר קליינטים מירבי"
 msgctxt "#798"
 msgid "Internet access"
 msgstr "גישת אינטרנט"
-
-msgctxt "#850"
-msgid "Invalid port number entered"
-msgstr ""
-
-msgctxt "#851"
-msgid "Valid port range is 1-65535"
-msgstr ""
-
-msgctxt "#852"
-msgid "Valid port range is 1024-65535"
-msgstr ""
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -3005,10 +2881,6 @@ msgctxt "#1300"
 msgid "Custom audio device"
 msgstr "התקן אודיו מותאם אישית"
 
-msgctxt "#1301"
-msgid "Custom passthrough device"
-msgstr ""
-
 msgctxt "#1396"
 msgid "Drifting"
 msgstr "זולג"
@@ -3092,22 +2964,6 @@ msgstr "טפטוף"
 msgctxt "#1416"
 msgid "Foggy"
 msgstr "ערפלי"
-
-msgctxt "#1417"
-msgid "Grains"
-msgstr ""
-
-msgctxt "#1418"
-msgid "T-Storms"
-msgstr ""
-
-msgctxt "#1419"
-msgid "T-Showers"
-msgstr ""
-
-msgctxt "#1450"
-msgid "Put display to sleep when idle"
-msgstr ""
 
 msgctxt "#2050"
 msgid "Runtime"
@@ -3681,14 +3537,6 @@ msgctxt "#13005"
 msgid "Shutdown"
 msgstr "כיבוי"
 
-msgctxt "#13006"
-msgid "Dashboard"
-msgstr ""
-
-msgctxt "#13007"
-msgid "Use custom dashboard path"
-msgstr ""
-
 msgctxt "#13008"
 msgid "Shutdown function"
 msgstr "פעולת כיבוי"
@@ -3721,41 +3569,9 @@ msgctxt "#13015"
 msgid "Power button action"
 msgstr "פעולת כפתור הכיבוי"
 
-msgctxt "#13020"
-msgid "Is another session active, perhaps over ssh?"
-msgstr ""
-
-msgctxt "#13021"
-msgid "Mounted removable harddrive"
-msgstr ""
-
-msgctxt "#13022"
-msgid "Unsafe device removal"
-msgstr ""
-
-msgctxt "#13023"
-msgid "Successfully removed device"
-msgstr ""
-
-msgctxt "#13024"
-msgid "Joystick plugged"
-msgstr ""
-
-msgctxt "#13025"
-msgid "Joystick unplugged"
-msgstr ""
-
 msgctxt "#13100"
 msgid "Flicker filter"
 msgstr "פילטר הבהובים"
-
-msgctxt "#13101"
-msgid "Let driver choose (requires restart)"
-msgstr ""
-
-msgctxt "#13105"
-msgid "Vertical blank sync"
-msgstr ""
 
 msgctxt "#13106"
 msgid "Disabled"
@@ -3781,10 +3597,6 @@ msgctxt "#13111"
 msgid "Would you like to keep this resolution?"
 msgstr "האם תרצה לשמור את הרזולוציה הזו?"
 
-msgctxt "#13112"
-msgid "High quality upscaling"
-msgstr ""
-
 msgctxt "#13113"
 msgid "Disabled"
 msgstr "לא מאופשר"
@@ -3801,69 +3613,9 @@ msgctxt "#13116"
 msgid "Upscaling method"
 msgstr "שיטת הגדלה"
 
-msgctxt "#13117"
-msgid "Bicubic"
-msgstr ""
-
-msgctxt "#13118"
-msgid "Lanczos"
-msgstr ""
-
-msgctxt "#13119"
-msgid "Sinc"
-msgstr ""
-
-msgctxt "#13120"
-msgid "VDPAU"
-msgstr ""
-
-msgctxt "#13121"
-msgid "VDPAU HQ Upscaling level"
-msgstr ""
-
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr ""
-
-msgctxt "#13130"
-msgid "Blank other displays"
-msgstr ""
-
 msgctxt "#13131"
 msgid "Disabled"
 msgstr "לא מאופשר"
-
-msgctxt "#13132"
-msgid "Blank displays"
-msgstr ""
-
-msgctxt "#13140"
-msgid "Active connections detected!"
-msgstr ""
-
-msgctxt "#13141"
-msgid "If you proceed, you might not be able to control XBMC"
-msgstr ""
-
-msgctxt "#13142"
-msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr ""
-
-msgctxt "#13144"
-msgid "Change Apple Remote mode?"
-msgstr ""
-
-msgctxt "#13145"
-msgid "If you are currently using the Apple Remote to control"
-msgstr ""
-
-msgctxt "#13146"
-msgid "XBMC, changing this setting might affect your ability"
-msgstr ""
-
-msgctxt "#13147"
-msgid "to continue controlling it. Do you want to proceed?"
-msgstr ""
 
 msgctxt "#13150"
 msgid "HDD key:"
@@ -3941,10 +3693,6 @@ msgctxt "#13168"
 msgid "IR-Remote"
 msgstr "שלט רחוק בפורט:"
 
-msgctxt "#13169"
-msgid "Controller port"
-msgstr ""
-
 msgctxt "#13170"
 msgid "Never"
 msgstr "לעולם"
@@ -3956,14 +3704,6 @@ msgstr "מיידי"
 msgctxt "#13172"
 msgid "After %i secs"
 msgstr "שניות %i לאחר"
-
-msgctxt "#13173"
-msgid "HDD install date:"
-msgstr ""
-
-msgctxt "#13174"
-msgid "HDD power cycle count:"
-msgstr ""
 
 msgctxt "#13200"
 msgid "Profiles"
@@ -4509,10 +4249,6 @@ msgctxt "#13406"
 msgid "Picture information"
 msgstr "מידע תמונה"
 
-msgctxt "#13407"
-msgid "%s presets"
-msgstr ""
-
 msgctxt "#13408"
 msgid "(IMDb user rating)"
 msgstr "(דירוג משתמשים IMDB)"
@@ -4525,97 +4261,21 @@ msgctxt "#13410"
 msgid "Tune in on Last.fm"
 msgstr "התחבר ל LAST.FM"
 
-msgctxt "#13411"
-msgid "Minimum fan speed"
-msgstr ""
-
 msgctxt "#13413"
 msgid "Downloading"
 msgstr "מוריד"
-
-msgctxt "#13414"
-msgid "Include artists who appear only on compilations"
-msgstr ""
-
-msgctxt "#13415"
-msgid "Render method"
-msgstr ""
 
 msgctxt "#13416"
 msgid "Auto detect"
 msgstr "זהה אוטומטית"
 
-msgctxt "#13417"
-msgid "Basic shaders (ARB)"
-msgstr ""
-
-msgctxt "#13418"
-msgid "Advanced shaders (GLSL)"
-msgstr ""
-
 msgctxt "#13419"
 msgid "Software"
 msgstr "תוכנתי"
 
-msgctxt "#13420"
-msgid "Remove safely"
-msgstr ""
-
-msgctxt "#13421"
-msgid "VDPAU"
-msgstr ""
-
-msgctxt "#13422"
-msgid "Start slideshow here"
-msgstr ""
-
-msgctxt "#13423"
-msgid "Remember for this path"
-msgstr ""
-
-msgctxt "#13424"
-msgid "Use pixel buffer objects"
-msgstr ""
-
 msgctxt "#13500"
 msgid "A/V sync method"
 msgstr "שיטת סינכרון ניגון למסך"
-
-msgctxt "#13501"
-msgid "Audio clock"
-msgstr ""
-
-msgctxt "#13502"
-msgid "Video clock (Drop/Dupe audio)"
-msgstr ""
-
-msgctxt "#13503"
-msgid "Video clock (Resample audio)"
-msgstr ""
-
-msgctxt "#13504"
-msgid "Maximum resample amount (%)"
-msgstr ""
-
-msgctxt "#13505"
-msgid "Resample quality"
-msgstr ""
-
-msgctxt "#13506"
-msgid "Low(fast)"
-msgstr ""
-
-msgctxt "#13507"
-msgid "Medium"
-msgstr ""
-
-msgctxt "#13508"
-msgid "High"
-msgstr ""
-
-msgctxt "#13509"
-msgid "Really high(slow!)"
-msgstr ""
 
 msgctxt "#13510"
 msgid "Sync playback to display"
@@ -4633,10 +4293,6 @@ msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "אפשר הפעלת XBMC בעזרת השלט"
 
-msgctxt "#13603"
-msgid "Sequence delay time"
-msgstr ""
-
 msgctxt "#13610"
 msgid "Disabled"
 msgstr "לא מאופשר"
@@ -4644,22 +4300,6 @@ msgstr "לא מאופשר"
 msgctxt "#13611"
 msgid "Standard"
 msgstr "סטנדרטי"
-
-msgctxt "#13612"
-msgid "Universal Remote"
-msgstr ""
-
-msgctxt "#13613"
-msgid "Multi Remote (Harmony)"
-msgstr ""
-
-msgctxt "#13620"
-msgid "Apple Remote Error"
-msgstr ""
-
-msgctxt "#13621"
-msgid "Apple Remote support could be enabled."
-msgstr ""
 
 msgctxt "#14000"
 msgid "Stack"
@@ -4957,29 +4597,9 @@ msgctxt "#14081"
 msgid "File lists"
 msgstr "רשימות קבצים"
 
-msgctxt "#14082"
-msgid "Show EXIF picture information"
-msgstr ""
-
-msgctxt "#14083"
-msgid "Use a fullscreen window rather than true fullscreen"
-msgstr ""
-
-msgctxt "#14084"
-msgid "Queue songs on selection"
-msgstr ""
-
-msgctxt "#14085"
-msgid "Play audio CDs automatically"
-msgstr ""
-
 msgctxt "#14086"
 msgid "Playback"
 msgstr "ניגון"
-
-msgctxt "#14087"
-msgid "DVDs"
-msgstr ""
 
 msgctxt "#14088"
 msgid "Play DVDs automatically"
@@ -4997,61 +4617,9 @@ msgctxt "#14091"
 msgid "Character set"
 msgstr "ערכת התווים"
 
-msgctxt "#14092"
-msgid "Debugging"
-msgstr ""
-
 msgctxt "#14093"
 msgid "Security"
 msgstr "אבטחה"
-
-msgctxt "#14094"
-msgid "Input devices"
-msgstr ""
-
-msgctxt "#14095"
-msgid "Power saving"
-msgstr ""
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5180,26 +4748,6 @@ msgstr "הסתר שמות קבצים בתצוגת צלימיות"
 msgctxt "#15216"
 msgid "Play in party mode"
 msgstr "נגן במצב מסיבה"
-
-msgctxt "#15217"
-msgid "Submit songs to Libre.fm"
-msgstr ""
-
-msgctxt "#15218"
-msgid "Libre.fm username"
-msgstr ""
-
-msgctxt "#15219"
-msgid "Libre.fm password"
-msgstr ""
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr ""
-
-msgctxt "#15221"
-msgid "Song submission"
-msgstr ""
 
 msgctxt "#15250"
 msgid "Submit Last.fm radio to Last.fm"
@@ -5340,10 +4888,6 @@ msgstr "%name% רצועות שנשמעו לאחרונה ע\"י"
 msgctxt "#15284"
 msgid "Listen to %name%'s recommendations Last.fm radio"
 msgstr "האזן להמלצות %name%'s  רדיו  Last.FM"
-
-msgctxt "#15285"
-msgid "Top tags for user %name%"
-msgstr ""
 
 msgctxt "#15287"
 msgid "Do you want to add the current track to your loved tracks?"
@@ -5620,78 +5164,6 @@ msgstr "מחיקה נכשלה"
 msgctxt "#16206"
 msgid "Failed to delete at least one file"
 msgstr "נכשל במחיקת קובץ אחד לפחות"
-
-msgctxt "#16300"
-msgid "Video scaling method"
-msgstr ""
-
-msgctxt "#16301"
-msgid "Nearest neighbour"
-msgstr ""
-
-msgctxt "#16302"
-msgid "Bilinear"
-msgstr ""
-
-msgctxt "#16303"
-msgid "Bicubic"
-msgstr ""
-
-msgctxt "#16304"
-msgid "Lanczos2"
-msgstr ""
-
-msgctxt "#16305"
-msgid "Lanczos3"
-msgstr ""
-
-msgctxt "#16306"
-msgid "Sinc8"
-msgstr ""
-
-msgctxt "#16307"
-msgid "Bicubic (software)"
-msgstr ""
-
-msgctxt "#16308"
-msgid "Lanczos (software)"
-msgstr ""
-
-msgctxt "#16309"
-msgid "Sinc (software)"
-msgstr ""
-
-msgctxt "#16310"
-msgid "(VDPAU)Temporal"
-msgstr ""
-
-msgctxt "#16311"
-msgid "(VDPAU)Temporal/Spatial"
-msgstr ""
-
-msgctxt "#16312"
-msgid "(VDPAU)Noise Reduction"
-msgstr ""
-
-msgctxt "#16313"
-msgid "(VDPAU)Sharpness"
-msgstr ""
-
-msgctxt "#16314"
-msgid "Inverse Telecine"
-msgstr ""
-
-msgctxt "#16400"
-msgid "Post-processing"
-msgstr ""
-
-msgctxt "#17500"
-msgid "Display sleep timeout"
-msgstr ""
-
-msgctxt "#19000"
-msgid "Switch to channel"
-msgstr ""
 
 msgctxt "#20000"
 msgid "Saved music folder"
@@ -6433,18 +5905,6 @@ msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "ממלא כוסות (וידאו)"
 
-msgctxt "#20253"
-msgid "WebDAV server (HTTP)"
-msgstr ""
-
-msgctxt "#20254"
-msgid "WebDAV server (HTTPS)"
-msgstr ""
-
-msgctxt "#20258"
-msgid "MythTV client"
-msgstr ""
-
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "נתיב שרת הווב (HTTP)"
@@ -6460,10 +5920,6 @@ msgstr "לא יכול לרשום לתיקייה:"
 msgctxt "#20303"
 msgid "Do you want to skip and proceed?"
 msgstr "האם תרצה לוותר ולהמשיך?"
-
-msgctxt "#20304"
-msgid "RSS Feed"
-msgstr ""
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6741,10 +6197,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "תוכן לא מוקצה"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "רענן מידע תוכנית טלויזיה"
@@ -6937,10 +6389,6 @@ msgctxt "#20426"
 msgid "Export to a single file or separate"
 msgstr "?ליצא לקובץ בודד או קבצים ניפרדים"
 
-msgctxt "#20427"
-msgid "files per entry?"
-msgstr ""
-
 msgctxt "#20428"
 msgid "Single file"
 msgstr "קובץ בודד"
@@ -7004,46 +6452,6 @@ msgstr "שנה תוכן"
 msgctxt "#20443"
 msgid "Do you want to refresh info for all"
 msgstr "האם ברצונך לרענן את כל המידע"
-
-msgctxt "#20444"
-msgid "items within this path?"
-msgstr ""
-
-msgctxt "#20445"
-msgid "Fanart"
-msgstr ""
-
-msgctxt "#20446"
-msgid "Locally stored information found."
-msgstr ""
-
-msgctxt "#20447"
-msgid "Ignore and refresh from internet?"
-msgstr ""
-
-msgctxt "#20448"
-msgid "Could not download information"
-msgstr ""
-
-msgctxt "#20449"
-msgid "Server is most likely unavailable."
-msgstr ""
-
-msgctxt "#20450"
-msgid "Would you like to continue scanning?"
-msgstr ""
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7121,34 +6529,6 @@ msgctxt "#21373"
 msgid "Video output"
 msgstr "פלט וידאו"
 
-msgctxt "#21374"
-msgid "Video aspect"
-msgstr ""
-
-msgctxt "#21375"
-msgid "Normal"
-msgstr ""
-
-msgctxt "#21376"
-msgid "Letterbox"
-msgstr ""
-
-msgctxt "#21377"
-msgid "Widescreen"
-msgstr ""
-
-msgctxt "#21378"
-msgid "Enable 480p"
-msgstr ""
-
-msgctxt "#21379"
-msgid "Enable 720p"
-msgstr ""
-
-msgctxt "#21380"
-msgid "Enable 1080i"
-msgstr ""
-
 msgctxt "#21381"
 msgid "Enter name of new playlist"
 msgstr "הכנס שם רשימת השמעה חדשה"
@@ -7213,17 +6593,9 @@ msgctxt "#21396"
 msgid "Chapter"
 msgstr "פרק"
 
-msgctxt "#21397"
-msgid "High quality pixel shader v2"
-msgstr ""
-
 msgctxt "#21398"
 msgid "Enable playlist at startup"
 msgstr "אפר רשימת ניגון בהפעלה"
-
-msgctxt "#21399"
-msgid "Use tween animations"
-msgstr ""
 
 msgctxt "#21400"
 msgid "contains"
@@ -7421,10 +6793,6 @@ msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "שלט רחוק שולח לחיצות מקלדת"
 
-msgctxt "#21450"
-msgid "- Edit"
-msgstr ""
-
 msgctxt "#21800"
 msgid "File name"
 msgstr "שם קובץ"
@@ -7441,10 +6809,6 @@ msgctxt "#21803"
 msgid "File date/time"
 msgstr "תאריך/שעה קובץ"
 
-msgctxt "#21804"
-msgid "Slide index"
-msgstr ""
-
 msgctxt "#21805"
 msgid "Resolution"
 msgstr "רזולוציה"
@@ -7456,10 +6820,6 @@ msgstr "הערות"
 msgctxt "#21807"
 msgid "Colour/B&W"
 msgstr "צבעוני/שחור-לבן"
-
-msgctxt "#21808"
-msgid "JPEG process"
-msgstr ""
 
 msgctxt "#21820"
 msgid "Date/Time"
@@ -7477,57 +6837,21 @@ msgctxt "#21823"
 msgid "Camera model"
 msgstr "דגם המצלמה"
 
-msgctxt "#21824"
-msgid "EXIF comment"
-msgstr ""
-
 msgctxt "#21825"
 msgid "Firmware"
 msgstr "קושחה"
-
-msgctxt "#21826"
-msgid "Aperture"
-msgstr ""
-
-msgctxt "#21827"
-msgid "Focal length"
-msgstr ""
 
 msgctxt "#21828"
 msgid "Focus distance"
 msgstr "מרחק הפוקוס"
 
-msgctxt "#21829"
-msgid "Exposure"
-msgstr ""
-
-msgctxt "#21830"
-msgid "Exposure time"
-msgstr ""
-
-msgctxt "#21831"
-msgid "Exposure bias"
-msgstr ""
-
-msgctxt "#21832"
-msgid "Exposure mode"
-msgstr ""
-
 msgctxt "#21833"
 msgid "Flash used"
 msgstr "פלאש בשימוש"
 
-msgctxt "#21834"
-msgid "White-balance"
-msgstr ""
-
 msgctxt "#21835"
 msgid "Light source"
 msgstr "מקור האור"
-
-msgctxt "#21836"
-msgid "Metering mode"
-msgstr ""
 
 msgctxt "#21837"
 msgid "ISO"
@@ -7536,114 +6860,6 @@ msgstr "ISO"
 msgctxt "#21838"
 msgid "Digital zoom"
 msgstr "זום דיגיטלי"
-
-msgctxt "#21839"
-msgid "CCD width"
-msgstr ""
-
-msgctxt "#21840"
-msgid "GPS latitude"
-msgstr ""
-
-msgctxt "#21841"
-msgid "GPS longitude"
-msgstr ""
-
-msgctxt "#21842"
-msgid "GPS altitude"
-msgstr ""
-
-msgctxt "#21843"
-msgid "Orientation"
-msgstr ""
-
-msgctxt "#21860"
-msgid "Supplemental categories"
-msgstr ""
-
-msgctxt "#21861"
-msgid "Keywords"
-msgstr ""
-
-msgctxt "#21862"
-msgid "Caption"
-msgstr ""
-
-msgctxt "#21863"
-msgid "Author"
-msgstr ""
-
-msgctxt "#21864"
-msgid "Headline"
-msgstr ""
-
-msgctxt "#21865"
-msgid "Special instructions"
-msgstr ""
-
-msgctxt "#21866"
-msgid "Category"
-msgstr ""
-
-msgctxt "#21867"
-msgid "Byline"
-msgstr ""
-
-msgctxt "#21868"
-msgid "Byline title"
-msgstr ""
-
-msgctxt "#21869"
-msgid "Credit"
-msgstr ""
-
-msgctxt "#21870"
-msgid "Source"
-msgstr ""
-
-msgctxt "#21871"
-msgid "Copyright notice"
-msgstr ""
-
-msgctxt "#21872"
-msgid "Object name"
-msgstr ""
-
-msgctxt "#21873"
-msgid "City"
-msgstr ""
-
-msgctxt "#21874"
-msgid "State"
-msgstr ""
-
-msgctxt "#21875"
-msgid "Country"
-msgstr ""
-
-msgctxt "#21876"
-msgid "Original Tx Reference"
-msgstr ""
-
-msgctxt "#21877"
-msgid "Date created"
-msgstr ""
-
-msgctxt "#21878"
-msgid "Copyright flag"
-msgstr ""
-
-msgctxt "#21879"
-msgid "Country code"
-msgstr ""
-
-msgctxt "#21880"
-msgid "Reference service"
-msgstr ""
-
-msgctxt "#21881"
-msgid "Allow control of XBMC via UPnP"
-msgstr ""
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
@@ -7729,45 +6945,13 @@ msgctxt "#22001"
 msgid "Always update library in background"
 msgstr "תמיד עדכן ספרייה ברקע"
 
-msgctxt "#22002"
-msgid "- DNS suffix"
-msgstr ""
-
 msgctxt "#22003"
 msgid "Default player"
 msgstr "אפשר רשימת עריכה"
 
-msgctxt "#22004"
-msgid "Delayed by: %2.3fs"
-msgstr ""
-
-msgctxt "#22005"
-msgid "Ahead by: %2.3fs"
-msgstr ""
-
 msgctxt "#22006"
 msgid "Subtitle offset"
 msgstr "השהיית כתוביות"
-
-msgctxt "#22007"
-msgid "OpenGL vendor:"
-msgstr ""
-
-msgctxt "#22008"
-msgid "OpenGL renderer:"
-msgstr ""
-
-msgctxt "#22009"
-msgid "OpenGL version:"
-msgstr ""
-
-msgctxt "#22010"
-msgid "GPU temperature:"
-msgstr ""
-
-msgctxt "#22011"
-msgid "CPU temperature:"
-msgstr ""
 
 msgctxt "#22012"
 msgid "Total memory"
@@ -7805,65 +6989,9 @@ msgctxt "#22020"
 msgid "Guide"
 msgstr "מדריך"
 
-msgctxt "#22021"
-msgid "Allowed error in aspect ratio to minimize black bars"
-msgstr ""
-
-msgctxt "#22022"
-msgid "Show video files in listings"
-msgstr ""
-
-msgctxt "#22023"
-msgid "DirectX vendor"
-msgstr ""
-
-msgctxt "#22024"
-msgid "Direct3D version"
-msgstr ""
-
-msgctxt "#22025"
-msgid "DVDPlayer full codec support"
-msgstr ""
-
-msgctxt "#22026"
-msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
-msgstr ""
-
-msgctxt "#22027"
-msgid "PAPlayer"
-msgstr ""
-
-msgctxt "#22028"
-msgid "DVDPlayer"
-msgstr ""
-
-msgctxt "#22029"
-msgid "MPlayer"
-msgstr ""
-
 msgctxt "#22030"
 msgid "Font"
 msgstr "פונט"
-
-msgctxt "#22031"
-msgid "- Size"
-msgstr ""
-
-msgctxt "#22032"
-msgid "- Colours"
-msgstr ""
-
-msgctxt "#22033"
-msgid "- Charset"
-msgstr ""
-
-msgctxt "#22034"
-msgid "Export karaoke titles as HTML"
-msgstr ""
-
-msgctxt "#22035"
-msgid "Export karaoke titles as CSV"
-msgstr ""
 
 msgctxt "#22036"
 msgid "Import karaoke titles..."
@@ -7881,22 +7009,6 @@ msgctxt "#22039"
 msgid "Enter song number"
 msgstr "הכנס מספר שיר"
 
-msgctxt "#22040"
-msgid "white/green"
-msgstr ""
-
-msgctxt "#22041"
-msgid "white/red"
-msgstr ""
-
-msgctxt "#22042"
-msgid "white/blue"
-msgstr ""
-
-msgctxt "#22043"
-msgid "black/white"
-msgstr ""
-
 msgctxt "#23000"
 msgid "Weather plugin"
 msgstr "תוסף מזג האויר"
@@ -7909,62 +7021,6 @@ msgctxt "#23050"
 msgid "Activate Teletext"
 msgstr "הפעל טלטקסט"
 
-msgctxt "#23051"
-msgid "Part %i"
-msgstr ""
-
-msgctxt "#23052"
-msgid "Buffering %i bytes"
-msgstr ""
-
-msgctxt "#23053"
-msgid "Stopping"
-msgstr ""
-
-msgctxt "#23054"
-msgid "Running"
-msgstr ""
-
-msgctxt "#23100"
-msgid "External Player Active"
-msgstr ""
-
-msgctxt "#23101"
-msgid "Click OK to terminate the player"
-msgstr ""
-
-msgctxt "#23104"
-msgid "Click OK when playback has ended"
-msgstr ""
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
-
 msgctxt "#29800"
 msgid "Library Mode"
 msgstr "מצב ספריה"
@@ -7972,10 +7028,6 @@ msgstr "מצב ספריה"
 msgctxt "#29801"
 msgid "QWERTY keyboard"
 msgstr "מקלדת QWERTY"
-
-msgctxt "#29802"
-msgid "Passthrough Audio in use"
-msgstr ""
 
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
@@ -8020,10 +7072,6 @@ msgstr "מעתיק"
 msgctxt "#33010"
 msgid "Set download directory"
 msgstr "הגדר תיקיית הורדות"
-
-msgctxt "#33011"
-msgid "Search duration"
-msgstr ""
 
 msgctxt "#33012"
 msgid "Short"
@@ -8228,47 +7276,3 @@ msgstr "צפה בקובץ README"
 msgctxt "#33073"
 msgid "View Changelog"
 msgstr "צפה בקובץ שינויים"
-
-msgctxt "#33074"
-msgid "This version of %s requires an"
-msgstr ""
-
-msgctxt "#33075"
-msgid "XBMC revision of %s or greater to run."
-msgstr ""
-
-msgctxt "#33076"
-msgid "Please update XBMC."
-msgstr ""
-
-msgctxt "#33077"
-msgid "No data found!"
-msgstr ""
-
-msgctxt "#33078"
-msgid "Next page"
-msgstr ""
-
-msgctxt "#33079"
-msgid "Love"
-msgstr ""
-
-msgctxt "#33080"
-msgid "Hate"
-msgstr ""
-
-msgctxt "#33081"
-msgid "This file is stacked, select the part you want to play from."
-msgstr ""
-
-msgctxt "#33082"
-msgid "Path to script"
-msgstr ""
-
-msgctxt "#33083"
-msgid "Enable custom script button"
-msgstr ""
-
-msgctxt "#34005"
-msgid "Flac"
-msgstr ""

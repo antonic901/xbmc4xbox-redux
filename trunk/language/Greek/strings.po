@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-03-15 21:34+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/xbmc4xbox/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: el\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#0"
 msgid "Programs"
@@ -1629,10 +1629,6 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Περί XBMC"
 
-msgctxt "#483"
-msgid "DVDPlayer cache"
-msgstr ""
-
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Διαγραφή άλμπουμ"
@@ -1968,10 +1964,6 @@ msgstr "Εταιρεία (studio)"
 msgctxt "#573"
 msgid "Path"
 msgstr "Διαδρομή"
-
-msgctxt "#574"
-msgid "Country"
-msgstr ""
 
 msgctxt "#575"
 msgid "In progress"
@@ -4625,10 +4617,6 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple Remote"
 
-msgctxt "#13601"
-msgid "Use MCE/Universal Remote"
-msgstr ""
-
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "Έγκριση έναρξης του XBMC μέσου απομακρυσμένου ελέγχου"
@@ -4808,10 +4796,6 @@ msgstr "οι ρυθμίσεις δικτύου. Να γίνει επανεκκί
 msgctxt "#14041"
 msgid "Post processing"
 msgstr "Post Processing"
-
-msgctxt "#14042"
-msgid "Internet connection bandwidth limitation"
-msgstr ""
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
@@ -5012,46 +4996,6 @@ msgstr "Συσκευές εισόδου"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Εξοικονόμηση ενέργειας"
-
-msgctxt "#14096"
-msgid "Video cache"
-msgstr ""
-
-msgctxt "#14097"
-msgid "Video cache - max time"
-msgstr ""
-
-msgctxt "#14098"
-msgid "Audio cache"
-msgstr ""
-
-msgctxt "#14099"
-msgid "Audio cache - max time"
-msgstr ""
-
-msgctxt "#14100"
-msgid "H.264 Skip Loop Filter"
-msgstr ""
-
-msgctxt "#14101"
-msgid "Default"
-msgstr ""
-
-msgctxt "#14102"
-msgid "Skip Non-reference Frames"
-msgstr ""
-
-msgctxt "#14103"
-msgid "Skip Bidirectional Frames"
-msgstr ""
-
-msgctxt "#14104"
-msgid "Skip Non-key frames"
-msgstr ""
-
-msgctxt "#14105"
-msgid "Skip Everything"
-msgstr ""
 
 msgctxt "#15015"
 msgid "Remove"
@@ -6741,10 +6685,6 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Εκχώρηση περιεχόμενου"
 
-msgctxt "#20376"
-msgid "Original title"
-msgstr ""
-
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Ανανέωση πληροφοριών τηλεοπτικής σειράς"
@@ -7032,18 +6972,6 @@ msgstr "Ίσως ο διακομιστής να είναι πλέον μη δι�
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Επιθυμείτε, να συνεχίσετε  την αναζήτηση;"
-
-msgctxt "#20451"
-msgid "Countries"
-msgstr ""
-
-msgctxt "#20456"
-msgid "Set movieset fanart"
-msgstr ""
-
-msgctxt "#20458"
-msgid "Group movies in sets"
-msgstr ""
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -7733,10 +7661,6 @@ msgctxt "#22002"
 msgid "- DNS suffix"
 msgstr "- Κατάληξη DNS"
 
-msgctxt "#22003"
-msgid "Default player"
-msgstr ""
-
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
 msgstr "Καθυστέρηση κατά: %2.3fs"
@@ -7936,34 +7860,6 @@ msgstr "Πιέστε το 'Εντάξει' για να τερματίσετε τ
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
 msgstr "Πιέστε το 'Εντάξει' όταν η αναπαραγωγή ολοκληρωθεί"
-
-msgctxt "#24000"
-msgid "Add-on"
-msgstr ""
-
-msgctxt "#24001"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#24020"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#24021"
-msgid "Disable"
-msgstr ""
-
-msgctxt "#24022"
-msgid "Enable"
-msgstr ""
-
-msgctxt "#24023"
-msgid "Add-on disabled"
-msgstr ""
-
-msgctxt "#24030"
-msgid "This Add-on can not be configured"
-msgstr ""
 
 msgctxt "#29800"
 msgid "Library Mode"
