@@ -3479,7 +3479,7 @@ msgstr "Anna peliohjaimen painikeyhdistelmä ja\npaina lopuksi Start-painiketta.
 
 msgctxt "#12331"
 msgid "press Start, or Back to cancel"
-msgstr "\nPaina Back peruuttaaksesi."
+msgstr "Paina Back peruuttaaksesi."
 
 msgctxt "#12332"
 msgid "Set lock"

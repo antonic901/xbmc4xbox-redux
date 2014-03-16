@@ -5275,15 +5275,15 @@ msgstr "Stacja: Wykonawcy podobni do %name%"
 
 msgctxt "#15268"
 msgid "Top artists for user %name%"
-msgstr "%name% - Ogólny ranking\Ulubieni wykonawcy"
+msgstr "%name% - Ogólny ranking"
 
 msgctxt "#15269"
 msgid "Top albums for user %name%"
-msgstr "%name% - Ogólny ranking\Ulubione albumy"
+msgstr "%name% - Ogólny ranking"
 
 msgctxt "#15270"
 msgid "Top tracks for user %name%"
-msgstr "%name% - Ogólny ranking\Ulubione utwory"
+msgstr "%name% - Ogólny ranking"
 
 msgctxt "#15271"
 msgid "Friends of user %name%"
@@ -5295,15 +5295,15 @@ msgstr "%name% - Sąsiedzi"
 
 msgctxt "#15273"
 msgid "Weekly artist chart for %name%"
-msgstr "%name% - Tygodniowy ranking\Ulubieni wykonawcy"
+msgstr "%name% - Tygodniowy ranking"
 
 msgctxt "#15274"
 msgid "Weekly album chart for %name%"
-msgstr "%name% - Tygodniowy ranking\Ulubione albumy"
+msgstr "%name% - Tygodniowy ranking"
 
 msgctxt "#15275"
 msgid "Weekly track chart for %name%"
-msgstr "%name% - Tygodniowy ranking\Ulubione utwory"
+msgstr "%name% - Tygodniowy ranking"
 
 msgctxt "#15276"
 msgid "Listen to %name%'s neighbours Last.fm radio"
