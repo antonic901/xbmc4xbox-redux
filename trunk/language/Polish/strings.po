@@ -37,10 +37,6 @@ msgctxt "#5"
 msgid "Settings"
 msgstr "Ustawienia"
 
-msgctxt "#6"
-msgid "XBMC SVN"
-msgstr ""
-
 msgctxt "#7"
 msgid "File manager"
 msgstr "Eksplorator"
