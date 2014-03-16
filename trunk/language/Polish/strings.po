@@ -39,7 +39,7 @@ msgstr "Ustawienia"
 
 msgctxt "#6"
 msgid "XBMC SVN"
-msgstr "XBMC SVN"
+msgstr ""
 
 msgctxt "#7"
 msgid "File manager"
