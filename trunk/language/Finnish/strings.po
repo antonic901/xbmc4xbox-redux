@@ -15,7 +15,7 @@ msgstr ""
 
 msgctxt "#0"
 msgid "Programs"
-msgstr "Ohjelmat"
+msgstr "Sovellukset"
 
 msgctxt "#1"
 msgid "Pictures"
@@ -327,7 +327,7 @@ msgstr "Kuvaesitys"
 
 msgctxt "#130"
 msgid "System info"
-msgstr "Tietoja"
+msgstr "Järjestelmän tiedot"
 
 msgctxt "#131"
 msgid "Display"
@@ -491,7 +491,7 @@ msgstr "Julkaistu"
 
 msgctxt "#173"
 msgid "Display 4:3 videos as"
-msgstr "4:3 videoiden näyttömuoto"
+msgstr "4:3-videoiden näyttömuoto"
 
 msgctxt "#175"
 msgid "Moods"
@@ -1139,7 +1139,7 @@ msgstr "Ei käytössä"
 
 msgctxt "#352"
 msgid "Dim"
-msgstr "Himmeä"
+msgstr "Tummennus"
 
 msgctxt "#353"
 msgid "Black"
@@ -1231,15 +1231,15 @@ msgstr "pilvistä"
 
 msgctxt "#375"
 msgid "Snow"
-msgstr "lunta"
+msgstr "lumisadetta"
 
 msgctxt "#376"
 msgid "Rain"
-msgstr "sataa"
+msgstr "vesisadetta"
 
 msgctxt "#377"
 msgid "Light"
-msgstr "heikosti"
+msgstr "heikkoa"
 
 msgctxt "#378"
 msgid "AM"
@@ -1263,7 +1263,7 @@ msgstr "hajanaisia"
 
 msgctxt "#383"
 msgid "Wind"
-msgstr "tuulta"
+msgstr "tuulista"
 
 msgctxt "#384"
 msgid "Strong"
@@ -1295,7 +1295,7 @@ msgstr "lumipyryä"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "matala"
+msgstr "alhainen"
 
 msgctxt "#392"
 msgid "Medium"
@@ -1303,7 +1303,7 @@ msgstr "keskimääräinen"
 
 msgctxt "#393"
 msgid "High"
-msgstr "korkea"
+msgstr "voimakas"
 
 msgctxt "#394"
 msgid "Fog"
@@ -1679,7 +1679,7 @@ msgstr "Järjestä: Tyyppi"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
-msgstr "Tietojen hakuosoitteeseen\nei saada yhteyttä"
+msgstr "Tietojen hakuosoitteeseen ei saada yhteyttä"
 
 msgctxt "#500"
 msgid "Downloading album information failed"
@@ -1803,7 +1803,7 @@ msgstr "Oma lisäys"
 
 msgctxt "#533"
 msgid "Enter genre"
-msgstr "Anna Lajityyppi"
+msgstr "Anna lajityyppi"
 
 msgctxt "#534"
 msgid "View: %s"
@@ -1855,7 +1855,7 @@ msgstr "Äänen ulostulo"
 
 msgctxt "#546"
 msgid "Passthrough output device"
-msgstr "Äänen ulostulon laite"
+msgstr "Pakatun äänen ulostulo"
 
 msgctxt "#547"
 msgid "No biography for this artist"
@@ -1967,7 +1967,7 @@ msgstr "Maa"
 
 msgctxt "#575"
 msgid "In progress"
-msgstr "Käynnissä"
+msgstr "Katselu kesken"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -1975,7 +1975,7 @@ msgstr "Järjestelyn suunta"
 
 msgctxt "#581"
 msgid "Sort method"
-msgstr "Järjestelyn peruste"
+msgstr "Järjestelymenetelmä"
 
 msgctxt "#582"
 msgid "View mode"
@@ -2139,7 +2139,7 @@ msgstr "Alkuperäinen koko"
 
 msgctxt "#636"
 msgid "Custom"
-msgstr "Oma asetus"
+msgstr "Mukautettu"
 
 msgctxt "#637"
 msgid "Replay gain"
@@ -2339,7 +2339,7 @@ msgstr "Tallenna ja uudelleenkäynnistä"
 
 msgctxt "#724"
 msgid "Invalid address specified. Value must be AAA.BBB.CCC.DDD"
-msgstr "Osoite on oltava muodossa AAA.BBB.CCC.DDD"
+msgstr "Osoitteen on oltava muodossa AAA.BBB.CCC.DDD"
 
 msgctxt "#725"
 msgid "with numbers between 0 and 255."
@@ -2579,7 +2579,7 @@ msgstr "Ohjaustapahtumat"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
-msgstr "Tämän järjestelmän ohjelmat voi ohjata XBMC:aa"
+msgstr "Salli tämän järjestelmän ohjelmien ohjata XBMC:iä"
 
 msgctxt "#792"
 msgid "Port"
@@ -2591,7 +2591,7 @@ msgstr "Porttialue"
 
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
-msgstr "Muiden järjestelmien ohjelmat voi ohjata XBMC:aa"
+msgstr "Salli muiden järjestelmien ohjelmien ohjata XBMC:iä"
 
 msgctxt "#795"
 msgid "Initial repeat delay (ms)"
@@ -2615,11 +2615,11 @@ msgstr "Syötetty portin arvo on sopimaton"
 
 msgctxt "#851"
 msgid "Valid port range is 1-65535"
-msgstr "Sallittu portin alue on 1-65535"
+msgstr "Portin oltava väliltä 1-65535"
 
 msgctxt "#852"
 msgid "Valid port range is 1024-65535"
-msgstr "Sallittu portin alue on 1024-65535"
+msgstr "Portin oltava väliltä 1024-65535"
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -2983,15 +2983,15 @@ msgstr "Yhdistetäänkö havaittuun järjestelmään?"
 
 msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
-msgstr "Julkista nämä palvelut toisiin järjestelmiin Zeroconf publishing:in kautta"
+msgstr "Julkista nämä palvelut toisiin järjestelmiin Zeroconf-julkaisujärjestelmän kautta"
 
 msgctxt "#1300"
 msgid "Custom audio device"
-msgstr "Valinnainen äänilaite"
+msgstr "Mukautettu äänilaite"
 
 msgctxt "#1301"
 msgid "Custom passthrough device"
-msgstr "Valinnainen äänen ulostulon laite"
+msgstr "Mukautettu pakatun äänen laite"
 
 msgctxt "#1396"
 msgid "Drifting"
@@ -3051,7 +3051,7 @@ msgstr "jääkiteitä"
 
 msgctxt "#1410"
 msgid "Calm"
-msgstr "tyyntä"
+msgstr "Tyyntä"
 
 msgctxt "#1411"
 msgid "with"
@@ -3459,7 +3459,7 @@ msgstr "tai paina C peruuttaaksesi"
 
 msgctxt "#12330"
 msgid "Enter gamepad button combo and"
-msgstr "Anna peliohjaimen painikeyhdistelmä ja\npaina lopuksi Start-painiketta."
+msgstr "Anna peliohjaimen painikeyhdistelmä ja"
 
 msgctxt "#12331"
 msgid "press Start, or Back to cancel"
@@ -3631,7 +3631,7 @@ msgstr "Kokonaiskäyntiaika"
 
 msgctxt "#12600"
 msgid "Weather"
-msgstr "Sää"
+msgstr "Säätila"
 
 msgctxt "#12900"
 msgid "Screensaver"
@@ -3639,7 +3639,7 @@ msgstr "Näytönsäästäjä"
 
 msgctxt "#12901"
 msgid "Fullscreen OSD"
-msgstr "Koko ruudun kuvaruutuvalikko"
+msgstr "Kokoruudun kuvaruutuvalikko"
 
 msgctxt "#13000"
 msgid "System"
@@ -4515,7 +4515,7 @@ msgstr "Tuulettimen vähimmäisnopeus"
 
 msgctxt "#13413"
 msgid "Downloading"
-msgstr "Ladataan ..."
+msgstr "Ladataan..."
 
 msgctxt "#13414"
 msgid "Include artists who appear only on compilations"
@@ -4531,11 +4531,11 @@ msgstr "Automaattinen tunnistus"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Basic Shaders (ARB)"
+msgstr "Yksinkertaiset varjostimet (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
-msgstr "Advanced Shaders (GLSL)"
+msgstr "Edistyneet varjostimet (GLSL)"
 
 msgctxt "#13419"
 msgid "Software"
@@ -4559,7 +4559,7 @@ msgstr "Muista tämä polku"
 
 msgctxt "#13424"
 msgid "Use pixel buffer objects"
-msgstr "Pixel buffer objects käytössä"
+msgstr "Käytä pikselipuskuriobjekteja"
 
 msgctxt "#13500"
 msgid "A/V sync method"
@@ -4571,7 +4571,7 @@ msgstr "Äänen kello"
 
 msgctxt "#13502"
 msgid "Video clock (Drop/Dupe audio)"
-msgstr "Videon kello (poista/lisää ääntä)"
+msgstr "Videon kello (poista/kopioi ääninäytteitä)"
 
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
@@ -4587,7 +4587,7 @@ msgstr "Uudellennäytteistyksen laatu"
 
 msgctxt "#13506"
 msgid "Low(fast)"
-msgstr "Matala(nopea)"
+msgstr "Matala (nopea)"
 
 msgctxt "#13507"
 msgid "Medium"
@@ -4599,7 +4599,7 @@ msgstr "Korkea"
 
 msgctxt "#13509"
 msgid "Really high(slow!)"
-msgstr "Todella korkea(hidas)"
+msgstr "Todella korkea (hidas)"
 
 msgctxt "#13510"
 msgid "Sync playback to display"
@@ -4615,7 +4615,7 @@ msgstr "XBMC voidaan käynnistää kauko-ohjaimella"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
-msgstr "Jaksottainen viive"
+msgstr "Jaksoittainen viive"
 
 msgctxt "#13610"
 msgid "Disabled"
@@ -4739,7 +4739,7 @@ msgstr "Video-/Musiikki-/DVD-välimuisti: Kiintolevy"
 
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
-msgstr "Videovälimuisti: DVD-ROM"
+msgstr "Videovälimuisti - DVD-ROM"
 
 msgctxt "#14027"
 msgid "- Local Network"
@@ -4751,7 +4751,7 @@ msgstr "Videovälimuisti: Internet"
 
 msgctxt "#14030"
 msgid "Audio cache - DVD-ROM"
-msgstr "Musiikkivälimuisti: DVD-ROM"
+msgstr "Musiikkivälimuisti - DVD-ROM"
 
 msgctxt "#14031"
 msgid "- Local Network"
@@ -4763,7 +4763,7 @@ msgstr "Musiikkivälimuisti: Internet"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
-msgstr "DVD-välimuisti: DVD-ROM"
+msgstr "DVD-välimuisti - DVD-ROM"
 
 msgctxt "#14035"
 msgid "- Local Network"
@@ -4791,7 +4791,7 @@ msgstr "Jälkikäsittely"
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
-msgstr "Sammuta kun toistettu"
+msgstr "- Sammuta kesken toiston"
 
 msgctxt "#14044"
 msgid "%i min"
@@ -4987,7 +4987,7 @@ msgstr "Syöttölaitteet"
 
 msgctxt "#14095"
 msgid "Power saving"
-msgstr "Virransäästö"
+msgstr "Tehonsäästö"
 
 msgctxt "#14096"
 msgid "Video cache"
@@ -5531,11 +5531,11 @@ msgstr "Kaikki videot"
 
 msgctxt "#16101"
 msgid "Unwatched"
-msgstr "Katsomattomat"
+msgstr "katsomatonta"
 
 msgctxt "#16102"
 msgid "Watched"
-msgstr "Katsotut"
+msgstr "katsottua"
 
 msgctxt "#16103"
 msgid "Mark as watched"
@@ -5647,11 +5647,11 @@ msgstr "(VDPAU)Temporal/Spatial"
 
 msgctxt "#16312"
 msgid "(VDPAU)Noise Reduction"
-msgstr "(VDPAU)Noise Reduction"
+msgstr "(VDPAU) Kohinanvähennys"
 
 msgctxt "#16313"
 msgid "(VDPAU)Sharpness"
-msgstr "(VDPAU)Sharpness"
+msgstr "(VDPAU) Terävyys"
 
 msgctxt "#16314"
 msgid "Inverse Telecine"
@@ -5659,7 +5659,7 @@ msgstr "Inverse Telecine"
 
 msgctxt "#16400"
 msgid "Post-processing"
-msgstr "Jälkikäsittely"
+msgstr "Videon jälkikäsittely"
 
 msgctxt "#17500"
 msgid "Display sleep timeout"
@@ -5823,15 +5823,15 @@ msgstr "Huomautus"
 
 msgctxt "#20053"
 msgid "Left master mode"
-msgstr "Poistuit pääkäyttäjätilaan"
+msgstr "Poistuit pääkäyttäjätilasta"
 
 msgctxt "#20054"
 msgid "Entered master mode"
-msgstr "Siirryit pääkäyttäjätilasta"
+msgstr "Siirryit pääkäyttäjätilaan"
 
 msgctxt "#20055"
 msgid "Allmusic.com thumb"
-msgstr "Allmusic.com-pienoiskuva"
+msgstr "Allmusic.com- pienoiskuva"
 
 msgctxt "#20057"
 msgid "Remove thumbnail"
@@ -5915,7 +5915,7 @@ msgstr "Kysy pääkäyttäjän lukituskoodia käynnistyessä"
 
 msgctxt "#20077"
 msgid "Skin settings"
-msgstr "Ulkoasu"
+msgstr "Ulkoasun asetukset"
 
 msgctxt "#20078"
 msgid "- no link set -"
@@ -5983,7 +5983,7 @@ msgstr "Profiilin nimi"
 
 msgctxt "#20094"
 msgid "Media sources"
-msgstr "Median sijainnit"
+msgstr "Medialähteet"
 
 msgctxt "#20095"
 msgid "Enter profile lock code"
@@ -6107,11 +6107,11 @@ msgstr "Valmiina nauttimaan musiikista"
 
 msgctxt "#20125"
 msgid "Logged on as"
-msgstr "Kirjautuneena :"
+msgstr "Kirjautuneena:"
 
 msgctxt "#20126"
 msgid "Log off"
-msgstr "Kirjaudu ulos :"
+msgstr "Kirjaudu ulos:"
 
 msgctxt "#20128"
 msgid "Go to root"
@@ -6419,7 +6419,7 @@ msgstr "WebDAV palvelin (HTTPS)"
 
 msgctxt "#20258"
 msgid "MythTV client"
-msgstr "MythTV-asiakassovellus"
+msgstr "MythTV -asiakas"
 
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
@@ -6431,7 +6431,7 @@ msgstr "Web-palvelimen hakemisto (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
-msgstr "Kansioon kirjoitus epäonnistui:"
+msgstr "Kansioon ei voi kirjoittaa:"
 
 msgctxt "#20303"
 msgid "Do you want to skip and proceed?"
@@ -6519,7 +6519,7 @@ msgstr "Toista osa..."
 
 msgctxt "#20325"
 msgid "Calibration reset"
-msgstr "Kalibroinnin palautus"
+msgstr "Kalibroinnin nollaus"
 
 msgctxt "#20326"
 msgid "This will reset the calibration values for %s"
@@ -6717,6 +6717,10 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Määrittelemätön sisältö"
 
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Alkuperäinen nimi"
+
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Päivitä TV-ohjelmatiedot"
@@ -6871,7 +6875,7 @@ msgstr "Etsitään uutta sisältöä"
 
 msgctxt "#20416"
 msgid "First aired"
-msgstr "Ensimmäinen esitys"
+msgstr "Ensiesitys"
 
 msgctxt "#20417"
 msgid "Writer"
@@ -7009,13 +7013,17 @@ msgctxt "#20451"
 msgid "Countries"
 msgstr "Maat"
 
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Ryhmittele elokuvat settien mukaan"
+
 msgctxt "#21330"
 msgid "Show hidden files and directories"
 msgstr "Näytä piilotetut tiedostot ja kansiot"
 
 msgctxt "#21331"
 msgid "TuxBox client"
-msgstr "TuxBox-asiakassovellus"
+msgstr "TuxBox-asiakas"
 
 msgctxt "#21332"
 msgid "WARNING: Target TuxBox device is in recording-mode!"
@@ -7095,7 +7103,7 @@ msgstr "Normaali"
 
 msgctxt "#21376"
 msgid "Letterbox"
-msgstr "Postiluukku"
+msgstr "Letterbox"
 
 msgctxt "#21377"
 msgid "Widescreen"
@@ -7711,11 +7719,11 @@ msgstr "Tekstityksen ajoitus"
 
 msgctxt "#22007"
 msgid "OpenGL vendor:"
-msgstr "OpenGL-valmistaja:"
+msgstr "OpenGL-toimittaja:"
 
 msgctxt "#22008"
 msgid "OpenGL renderer:"
-msgstr "OpenGL-renderoija:"
+msgstr "OpenGL-renderöijä:"
 
 msgctxt "#22009"
 msgid "OpenGL version:"
@@ -7739,11 +7747,11 @@ msgstr "Profiilin tiedot"
 
 msgctxt "#22014"
 msgid "Use dim if paused during video playback"
-msgstr "Himmennä jos videon toisto keskeytetään"
+msgstr "Himmennä keskeytettäessä videon toisto"
 
 msgctxt "#22015"
 msgid "All recordings"
-msgstr "Kaikki nauhoitukset"
+msgstr "Kaikki tallennukset"
 
 msgctxt "#22016"
 msgid "By title"
@@ -7759,7 +7767,7 @@ msgstr "Lähetyskanavat"
 
 msgctxt "#22019"
 msgid "Recordings by title"
-msgstr "Levytykset nimen mukaan"
+msgstr "Tallennukset nimen mukaan"
 
 msgctxt "#22020"
 msgid "Guide"
@@ -7771,7 +7779,7 @@ msgstr "Sallittu kuvasuhdevirhe maksimi kuva-alan säädössä"
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "Näytä videotiedostot listauksessa"
+msgstr "Näytä videotiedostot listauksissa"
 
 msgctxt "#22023"
 msgid "DirectX vendor"
@@ -7827,7 +7835,7 @@ msgstr "Tallenna CSV-muodossa"
 
 msgctxt "#22036"
 msgid "Import karaoke titles..."
-msgstr "Tuo karaoke kappaleet..."
+msgstr "Tuo karaokekappaleet..."
 
 msgctxt "#22037"
 msgid "Show song selector automatically"
@@ -7835,7 +7843,7 @@ msgstr "Näytä kappaleenvalintaikkuna"
 
 msgctxt "#22038"
 msgid "Export karaoke titles..."
-msgstr "Vie karaoke kappaleet..."
+msgstr "Vie karaokekappaleet..."
 
 msgctxt "#22039"
 msgid "Enter song number"
@@ -7875,11 +7883,11 @@ msgstr "Osa %i"
 
 msgctxt "#23052"
 msgid "Buffering %i bytes"
-msgstr "Puskurointi %i t"
+msgstr "Puskuroidaan, %i tavua"
 
 msgctxt "#23053"
 msgid "Stopping"
-msgstr "Pysäytetään"
+msgstr "Pysähtyy"
 
 msgctxt "#23054"
 msgid "Running"
@@ -7895,7 +7903,7 @@ msgstr "Paina OK sulkeaksesi toisto-ohjelman"
 
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
-msgstr "Paina OK kun toisto on loppunut"
+msgstr "Paina OK kun toisto on päättynyt"
 
 msgctxt "#24000"
 msgid "Add-on"
@@ -7923,11 +7931,11 @@ msgstr "Lisäosa ei käytössä"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
-msgstr "Lisäosan asetukset tekemättä"
+msgstr "Tällä lisäosalla ei ole asetuksia"
 
 msgctxt "#29800"
 msgid "Library Mode"
-msgstr "Kirjasto tila"
+msgstr "Kirjastotila"
 
 msgctxt "#29801"
 msgid "QWERTY keyboard"
@@ -7980,6 +7988,10 @@ msgstr "Kopioidaan"
 msgctxt "#33010"
 msgid "Set download directory"
 msgstr "Aseta latauskansio"
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Haun kesto"
 
 msgctxt "#33012"
 msgid "Short"
@@ -8043,11 +8055,11 @@ msgstr "Poikkeama normaalista"
 
 msgctxt "#33027"
 msgid "Sunrise"
-msgstr "Aurinko nousee"
+msgstr "Aurinko nous."
 
 msgctxt "#33028"
 msgid "Sunset"
-msgstr "Aurinko laskee"
+msgstr "Aurinko lask."
 
 msgctxt "#33029"
 msgid "Details"
@@ -8055,11 +8067,11 @@ msgstr "Yksityiskohdat"
 
 msgctxt "#33030"
 msgid "Outlook"
-msgstr "Ulkoasu"
+msgstr "Odotettavissa"
 
 msgctxt "#33031"
 msgid "Coverflow"
-msgstr "Kansien selaus"
+msgstr "Kuorivirta"
 
 msgctxt "#33032"
 msgid "Translate text"
@@ -8111,7 +8123,7 @@ msgstr "Määritä"
 
 msgctxt "#33054"
 msgid "Seasons"
-msgstr "Vuodenajat"
+msgstr "Tuotantokaudet"
 
 msgctxt "#33055"
 msgid "Use your"
@@ -8159,7 +8171,7 @@ msgstr "Tietoja"
 
 msgctxt "#33067"
 msgid "Star rating"
-msgstr "Arviointi tähdet"
+msgstr "Arviointitähdet"
 
 msgctxt "#33068"
 msgid "Background"
@@ -8207,7 +8219,7 @@ msgstr "Seuraava sivu"
 
 msgctxt "#33079"
 msgid "Love"
-msgstr "Pitää"
+msgstr "Tykkää"
 
 msgctxt "#33080"
 msgid "Hate"
@@ -8223,7 +8235,7 @@ msgstr "Polku"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "Skriptin omavalintainen painike käytössä"
+msgstr "Oma skripti -painike käytössä"
 
 msgctxt "#34005"
 msgid "Flac"

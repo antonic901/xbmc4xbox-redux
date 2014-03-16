@@ -31,11 +31,15 @@ msgstr "비디오"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "TV-가이드"
+msgstr "TV 가이드"
 
 msgctxt "#5"
 msgid "Settings"
 msgstr "설정"
+
+msgctxt "#6"
+msgid "XBMC SVN"
+msgstr "XBMC SVN"
 
 msgctxt "#7"
 msgid "File manager"
@@ -223,15 +227,15 @@ msgstr "검색"
 
 msgctxt "#103"
 msgid "Sort by: Name"
-msgstr "정렬: 이름"
+msgstr "정렬기준: 이름"
 
 msgctxt "#104"
 msgid "Sort by: Date"
-msgstr "정렬: 날짜"
+msgstr "정렬기준: 날짜"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "정렬: 크기"
+msgstr "정렬기준: 크기"
 
 msgctxt "#106"
 msgid "No"
@@ -247,11 +251,11 @@ msgstr "슬라이드쇼"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "미리보기 만들기"
+msgstr "썸네일 만들기"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "미리보기 만들기"
+msgstr "썸네일 만들기"
 
 msgctxt "#111"
 msgid "Shortcuts"
@@ -259,7 +263,7 @@ msgstr "바로가기"
 
 msgctxt "#112"
 msgid "Paused"
-msgstr "일시중지"
+msgstr "일시정지"
 
 msgctxt "#115"
 msgid "Copy"
@@ -291,19 +295,19 @@ msgstr "파일 이동 확인"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
-msgstr "파일 삭제 확인?"
+msgstr "파일 삭제 확인"
 
 msgctxt "#123"
 msgid "Copy these files?"
-msgstr "이 파일을 복사 하시겠습니까?"
+msgstr "이 파일을 복사 하겠습니까?"
 
 msgctxt "#124"
 msgid "Move these files?"
-msgstr "이 파일을 이동 하시겠습니까?"
+msgstr "이 파일을 이동 하겠습니까?"
 
 msgctxt "#125"
 msgid "Delete these files? - Deleting files cannot be undone!"
-msgstr "이 파일을 삭제 하시겠습니까? 삭제되는 파일은 되돌릴수 없음!"
+msgstr "파일을 삭제하겠습니까? 삭제하면 되돌릴 수 없습니다!"
 
 msgctxt "#126"
 msgid "Status"
@@ -447,7 +451,7 @@ msgstr "사용가능"
 
 msgctxt "#161"
 msgid "Unavailable"
-msgstr "사용불가"
+msgstr "정보 없음"
 
 msgctxt "#162"
 msgid "Tray open"
@@ -479,7 +483,7 @@ msgstr "해상도"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "비디오에 맞게 화면 새로고침 비율 조정"
+msgstr "비디오에 맞게 화면 새로고침 빈도 조정"
 
 msgctxt "#172"
 msgid "Release date"
@@ -559,7 +563,7 @@ msgstr "검색"
 
 msgctxt "#194"
 msgid "Searching..."
-msgstr "찾는중..."
+msgstr "찾는 중..."
 
 msgctxt "#195"
 msgid "No info found!"
@@ -575,7 +579,7 @@ msgstr "%s 정보 요청"
 
 msgctxt "#198"
 msgid "Loading movie details"
-msgstr "영화 상세정보 읽기"
+msgstr "영화 상세정보 가져오는 중"
 
 msgctxt "#202"
 msgid "Tagline"
@@ -623,7 +627,7 @@ msgstr "부드럽게"
 
 msgctxt "#216"
 msgid "Zoom amount"
-msgstr "축소/확대량"
+msgstr "확대/축소량"
 
 msgctxt "#217"
 msgid "Pixel ratio"
@@ -655,11 +659,11 @@ msgstr "속도"
 
 msgctxt "#226"
 msgid "Test patterns..."
-msgstr "패턴 테스트..."
+msgstr "테스트 패턴..."
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "freedb.org 에서 오디오 CD 트렉 이름 검색"
+msgstr "freedb.org 에서 오디오 CD 트랙 이름 검색"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
@@ -727,7 +731,7 @@ msgstr "시각화"
 
 msgctxt "#251"
 msgid "Select destination directory"
-msgstr "대상 디렉토리 선택"
+msgstr "대상 디렉터리 선택"
 
 msgctxt "#252"
 msgid "Output stereo to all speakers"
@@ -775,35 +779,35 @@ msgstr "스크립트 출력"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "HTTP 를 통해 XBMC 제어 허용"
+msgstr "HTTP를 통해 XBMC 제어 허용"
 
 msgctxt "#264"
 msgid "Record"
-msgstr "녹음"
+msgstr "녹화"
 
 msgctxt "#265"
 msgid "Stop Rec."
-msgstr "녹음 중지"
+msgstr "녹화 중지"
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "정렬: 트랙"
+msgstr "정렬기준: 트랙"
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "정렬: 시간"
+msgstr "정렬기준: 시간"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "정렬: 제목"
+msgstr "정렬기준: 제목"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "정렬: 아티스트"
+msgstr "정렬기준: 아티스트"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "정렬: 앨범"
+msgstr "정렬기준: 앨범"
 
 msgctxt "#271"
 msgid "Top 100"
@@ -839,7 +843,7 @@ msgstr "사각형이 정사각형이 되도록 조정하세요"
 
 msgctxt "#279"
 msgid "Unable to load settings"
-msgstr "설정을 읽을수 없음"
+msgstr "설정을 읽을 수 없음"
 
 msgctxt "#280"
 msgid "Using default settings"
@@ -859,7 +863,7 @@ msgstr "검색 결과"
 
 msgctxt "#284"
 msgid "No results found"
-msgstr "결과 찾지 못함"
+msgstr "결과 없음"
 
 msgctxt "#286"
 msgid "Post-processing filter"
@@ -895,19 +899,19 @@ msgstr "자막 찾기"
 
 msgctxt "#294"
 msgid "Create bookmark"
-msgstr "북마크 만들기"
+msgstr "책갈피 만들기"
 
 msgctxt "#296"
 msgid "Clear bookmarks"
-msgstr "북마크 지우기"
+msgstr "책갈피 모두 지우기"
 
 msgctxt "#297"
 msgid "Audio offset"
-msgstr "오디오 오프셋"
+msgstr "오디오 싱크"
 
 msgctxt "#298"
 msgid "Bookmarks"
-msgstr "북마크"
+msgstr "책갈피"
 
 msgctxt "#299"
 msgid "- AAC capable receiver"
@@ -979,7 +983,7 @@ msgstr "데이터베이스 오류"
 
 msgctxt "#316"
 msgid "Searching songs..."
-msgstr "노래 찾는중..."
+msgstr "노래 찾는 중..."
 
 msgctxt "#317"
 msgid "Cleaned database successfully"
@@ -987,7 +991,7 @@ msgstr "정상적으로 데이터베이스 정리됨"
 
 msgctxt "#318"
 msgid "Cleaning songs..."
-msgstr "노래 정리중..."
+msgstr "노래 정리 중..."
 
 msgctxt "#319"
 msgid "Error cleaning songs"
@@ -995,7 +999,7 @@ msgstr "노래 정리 오류"
 
 msgctxt "#320"
 msgid "Cleaning artists..."
-msgstr "아티스트 정리중..."
+msgstr "아티스트 정리 중..."
 
 msgctxt "#321"
 msgid "Error cleaning artists"
@@ -1003,7 +1007,7 @@ msgstr "아티스트 정리 오류"
 
 msgctxt "#322"
 msgid "Cleaning genres..."
-msgstr "장르 정리중..."
+msgstr "장르 정리 중..."
 
 msgctxt "#323"
 msgid "Error cleaning genres"
@@ -1011,7 +1015,7 @@ msgstr "장르 정리 오류"
 
 msgctxt "#324"
 msgid "Cleaning paths..."
-msgstr "경로 정리중..."
+msgstr "경로 정리 중..."
 
 msgctxt "#325"
 msgid "Error cleaning paths"
@@ -1019,7 +1023,7 @@ msgstr "경로 정리 오류"
 
 msgctxt "#326"
 msgid "Cleaning albums..."
-msgstr "앨범 정리중..."
+msgstr "앨범 정리 중..."
 
 msgctxt "#327"
 msgid "Error cleaning albums"
@@ -1103,7 +1107,7 @@ msgstr "프로그램"
 
 msgctxt "#351"
 msgid "Off"
-msgstr "사용안함"
+msgstr "끔"
 
 msgctxt "#352"
 msgid "Dim"
@@ -1135,7 +1139,7 @@ msgstr "모든 앨범"
 
 msgctxt "#359"
 msgid "Recently added albums"
-msgstr "최근 추가된 앨범"
+msgstr "최근 추가한 앨범"
 
 msgctxt "#360"
 msgid "Screensaver"
@@ -1151,7 +1155,7 @@ msgstr "화면보호기 흐림 정도"
 
 msgctxt "#363"
 msgid "Sort by: File"
-msgstr "정렬: 파일"
+msgstr "정렬기준: 파일"
 
 msgctxt "#364"
 msgid "- Dolby Digital (AC3) capable receiver"
@@ -1159,19 +1163,19 @@ msgstr "- 돌비 디지털 (AC3) 지원 리시버"
 
 msgctxt "#365"
 msgid "Sort by: Name"
-msgstr "정렬: 이름"
+msgstr "정렬기준: 이름"
 
 msgctxt "#366"
 msgid "Sort by: Year"
-msgstr "정렬: 연도"
+msgstr "정렬기준: 연도"
 
 msgctxt "#367"
 msgid "Sort by: Rating"
-msgstr "정렬: 등급"
+msgstr "정렬기준: 평점"
 
 msgctxt "#368"
 msgid "IMDb"
-msgstr "평점"
+msgstr "IMDb"
 
 msgctxt "#369"
 msgid "Title"
@@ -1263,7 +1267,7 @@ msgstr "눈보라"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "최저"
+msgstr "낮음"
 
 msgctxt "#392"
 msgid "Medium"
@@ -1271,7 +1275,7 @@ msgstr "보통"
 
 msgctxt "#393"
 msgid "High"
-msgstr "최고"
+msgstr "높음"
 
 msgctxt "#394"
 msgid "Fog"
@@ -1307,7 +1311,7 @@ msgstr "온도"
 
 msgctxt "#402"
 msgid "Feels like"
-msgstr "체감"
+msgstr "체감 온도"
 
 msgctxt "#403"
 msgid "UV index"
@@ -1359,11 +1363,11 @@ msgstr "이 앨범의 리뷰 없음"
 
 msgctxt "#415"
 msgid "Downloading thumbnail..."
-msgstr "미리보기 다운로드중..."
+msgstr "썸네일 다운로드 중..."
 
 msgctxt "#416"
 msgid "Not available"
-msgstr "사용할수 없음"
+msgstr "사용할 수 없음"
 
 msgctxt "#417"
 msgid "View: Big icons"
@@ -1407,7 +1411,7 @@ msgstr "다음 CD/DVD 를 넣어 주세요"
 
 msgctxt "#430"
 msgid "Sort by: DVD#"
-msgstr "정렬: DVD번호"
+msgstr "정렬기준: DVD번호"
 
 msgctxt "#431"
 msgid "No cache"
@@ -1419,7 +1423,7 @@ msgstr "라이브러리에서 영화 제거"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
-msgstr " '%s' 를 제거 하시겠습니까?"
+msgstr " '%s' 을(를) 제거 하시겠습니까?"
 
 msgctxt "#437"
 msgid "Removable disk"
@@ -1559,7 +1563,7 @@ msgstr "모드칩"
 
 msgctxt "#474"
 msgid "Off"
-msgstr "끄기"
+msgstr "끔"
 
 msgctxt "#475"
 msgid "Music only"
@@ -1639,15 +1643,15 @@ msgstr "조정"
 
 msgctxt "#497"
 msgid "Show file extensions"
-msgstr "파일 확장자 보이기"
+msgstr "파일 확장자 보기"
 
 msgctxt "#498"
 msgid "Sort by: Type"
-msgstr "정렬: 형식"
+msgstr "정렬기준: 형식"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
-msgstr "온라인 검색 서비스에 연결할수 없음"
+msgstr "온라인 검색 서비스에 연결할 수 없음"
 
 msgctxt "#500"
 msgid "Downloading album information failed"
@@ -1655,7 +1659,7 @@ msgstr "앨범 정보 다운로드 실패"
 
 msgctxt "#501"
 msgid "Looking for album names..."
-msgstr "앨범 이름 찾는중..."
+msgstr "앨범 이름 찾는 중..."
 
 msgctxt "#502"
 msgid "Open"
@@ -1675,7 +1679,7 @@ msgstr "파일에서 미디어 정보 읽는중..."
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "정렬: 사용량"
+msgstr "정렬기준: 사용량"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1687,11 +1691,11 @@ msgstr "비디오 모드 변경 사용"
 
 msgctxt "#512"
 msgid "Startup window"
-msgstr "시작 윈도우"
+msgstr "시작 화면"
 
 msgctxt "#513"
 msgid "Home window"
-msgstr "홈 윈도우"
+msgstr "홈 화면"
 
 msgctxt "#514"
 msgid "Manual settings"
@@ -1831,7 +1835,7 @@ msgstr "다채널 오디오를 스테레오로 다운믹스"
 
 msgctxt "#550"
 msgid "Sort by: %s"
-msgstr "정렬: %s"
+msgstr "정렬기준: %s"
 
 msgctxt "#551"
 msgid "Name"
@@ -1883,7 +1887,7 @@ msgstr "연도"
 
 msgctxt "#563"
 msgid "Rating"
-msgstr "등급"
+msgstr "평점"
 
 msgctxt "#564"
 msgid "Type"
@@ -1911,7 +1915,7 @@ msgstr "설명"
 
 msgctxt "#570"
 msgid "Date added"
-msgstr "날짜 추가됨"
+msgstr "추가한 날짜"
 
 msgctxt "#571"
 msgid "Default"
@@ -1924,6 +1928,14 @@ msgstr "스튜디오"
 msgctxt "#573"
 msgid "Path"
 msgstr "경로"
+
+msgctxt "#574"
+msgid "Country"
+msgstr "국가"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "감상 중"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2027,7 +2039,7 @@ msgstr "대상:"
 
 msgctxt "#608"
 msgid "Could not rip CD or track"
-msgstr "CD나 트랙을 추출 할수 없음"
+msgstr "CD나 트랙을 추출할 수 없음"
 
 msgctxt "#609"
 msgid "CDDARipPath is not set."
@@ -2075,7 +2087,7 @@ msgstr "보통"
 
 msgctxt "#631"
 msgid "Zoom"
-msgstr "축소/확대"
+msgstr "확대/축소"
 
 msgctxt "#632"
 msgid "Stretch 4:3"
@@ -2167,7 +2179,7 @@ msgstr "라이브러리 업데이트"
 
 msgctxt "#654"
 msgid "Show debug info"
-msgstr "디버그 정보 보이기"
+msgstr "디버그 정보 보기"
 
 msgctxt "#655"
 msgid "Browse for executable"
@@ -2195,7 +2207,7 @@ msgstr "내보내기 폴더 선택"
 
 msgctxt "#662"
 msgid "This file is no longer available."
-msgstr "이 파일은 더 이상 사용할수 없습니다."
+msgstr "이 파일은 더 이상 사용할 수 없습니다."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
@@ -2204,6 +2216,10 @@ msgstr "라이브러리에서 제거 하시겠습니까?"
 msgctxt "#664"
 msgid "Browse for Script"
 msgstr "스크립트 찾기"
+
+msgctxt "#665"
+msgid "Compression level"
+msgstr "압축 수준"
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2435,7 +2451,7 @@ msgstr "회색"
 
 msgctxt "#770"
 msgid "Error %i: share not available"
-msgstr "오류 %i: 공유를 사용할수 없음"
+msgstr "오류 %i: 공유를 사용할 수 없음"
 
 msgctxt "#771"
 msgid "- Auto FATX limiter"
@@ -2515,7 +2531,7 @@ msgstr "무선 네트워크 이름 (ESSID)"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
-msgstr "XBMC 를 제어하기 위해 이 시스템의 프로그램 허용"
+msgstr "이 시스템의 프로그램이 XBMC를 제어하는 것을 허용"
 
 msgctxt "#792"
 msgid "Port"
@@ -2527,15 +2543,15 @@ msgstr "포트 범위"
 
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
-msgstr "XBMC 를 제어 하기 위해 다른 시스템의 프로그램 허용"
+msgstr "다른 시스템의 프로그램이 XBMC를 제어하는 것을 허용"
 
 msgctxt "#795"
 msgid "Initial repeat delay (ms)"
-msgstr "초기 반복 지연(밀리초)"
+msgstr "초기 반복 지연 (밀리초)"
 
 msgctxt "#796"
 msgid "Continuous repeat delay (ms)"
-msgstr "연속 반복 지연(밀리초)"
+msgstr "연속 반복 지연 (밀리초)"
 
 msgctxt "#797"
 msgid "Maximum number of clients"
@@ -2563,11 +2579,11 @@ msgstr "화면보호기 미리보기"
 
 msgctxt "#1001"
 msgid "Unable to connect"
-msgstr "연결할수 없음"
+msgstr "연결할 수 없음"
 
 msgctxt "#1002"
 msgid "XBMC was unable to connect to the network location."
-msgstr "XBMC가 네트워크에 연결할수 없습니다."
+msgstr "XBMC가 네트워크 위치에 연결할 수 없습니다."
 
 msgctxt "#1003"
 msgid "This could be due to the network not being connected."
@@ -2651,11 +2667,11 @@ msgstr "새 공유 찾기"
 
 msgctxt "#1024"
 msgid "Browse"
-msgstr "찾기"
+msgstr "탐색"
 
 msgctxt "#1025"
 msgid "Could not retrieve directory information."
-msgstr "디렉토리 정보를 검색할수 없습니다."
+msgstr "디렉터리 정보를 검색할 수 없습니다."
 
 msgctxt "#1026"
 msgid "Add source"
@@ -2683,7 +2699,7 @@ msgstr "이미지 폴더 찾기"
 
 msgctxt "#1032"
 msgid "Add network location..."
-msgstr "네트워크 추가..."
+msgstr "네트워크 위치 추가..."
 
 msgctxt "#1033"
 msgid "Browse for file"
@@ -2715,7 +2731,7 @@ msgstr "사진 플러그인"
 
 msgctxt "#1040"
 msgid "Loading directory"
-msgstr "디렉토리 읽기"
+msgstr "디렉터리 읽기"
 
 msgctxt "#1041"
 msgid "Retrieved %i items"
@@ -2835,7 +2851,7 @@ msgstr "음악 & 비디오 & 사진 & 파일"
 
 msgctxt "#1223"
 msgid "Disabled"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#1226"
 msgid "Files & music & video"
@@ -2919,7 +2935,7 @@ msgstr "자동감지된 시스템에 연결 하시겠습니까?"
 
 msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
-msgstr "제로컨프를 통해 이 서비스를 다른 시스템에 알림"
+msgstr "Zeroconf를 통해 이 서비스를 다른 시스템에 알림"
 
 msgctxt "#1300"
 msgid "Custom audio device"
@@ -2965,9 +2981,17 @@ msgctxt "#1404"
 msgid "Heavy"
 msgstr "많은"
 
+msgctxt "#1405"
+msgid "in"
+msgstr ":"
+
+msgctxt "#1406"
+msgid "the"
+msgstr ":"
+
 msgctxt "#1407"
 msgid "Vicinity"
-msgstr "부근에"
+msgstr "국지적인"
 
 msgctxt "#1408"
 msgid "Ice"
@@ -2979,7 +3003,7 @@ msgstr "눈"
 
 msgctxt "#1410"
 msgid "Calm"
-msgstr "온화함"
+msgstr "고요함"
 
 msgctxt "#1411"
 msgid "with"
@@ -3019,7 +3043,7 @@ msgstr "뇌우"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
-msgstr "대기일때 화면 끄기"
+msgstr "유휴상태일 때 화면 끄기"
 
 msgctxt "#2050"
 msgid "Runtime"
@@ -3135,7 +3159,7 @@ msgstr "진행 대화창"
 
 msgctxt "#10210"
 msgid "Looking for subtitles..."
-msgstr "자막 찾는중..."
+msgstr "자막 찾는 중..."
 
 msgctxt "#10211"
 msgid "Looking for or caching subtitles..."
@@ -3507,7 +3531,7 @@ msgstr "각각의 이미지를 표시할 시간"
 
 msgctxt "#12379"
 msgid "Use pan and zoom effects"
-msgstr "회전 및 축소/확대 효과 사용"
+msgstr "이동 및 확대/축소 효과 사용"
 
 msgctxt "#12380"
 msgid "Play NTSC videos at PAL rates"
@@ -3591,7 +3615,7 @@ msgstr "- 최소 파일 재생시간:"
 
 msgctxt "#13005"
 msgid "Shutdown"
-msgstr "종료"
+msgstr "시스템 끄기"
 
 msgctxt "#13006"
 msgid "Dashboard"
@@ -3607,7 +3631,7 @@ msgstr "종료 기능"
 
 msgctxt "#13009"
 msgid "Quit"
-msgstr "나가기"
+msgstr "종료"
 
 msgctxt "#13010"
 msgid "Hibernate"
@@ -3619,11 +3643,11 @@ msgstr "대기"
 
 msgctxt "#13012"
 msgid "Exit"
-msgstr "종료"
+msgstr "나가기"
 
 msgctxt "#13013"
 msgid "Reboot"
-msgstr "재시작"
+msgstr "시스템 재시작"
 
 msgctxt "#13014"
 msgid "Minimize"
@@ -3671,7 +3695,7 @@ msgstr "수직동기"
 
 msgctxt "#13106"
 msgid "Disabled"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#13107"
 msgid "Enabled during video playback"
@@ -3687,7 +3711,7 @@ msgstr "해상도 테스트 & 적용"
 
 msgctxt "#13110"
 msgid "Save resolution?"
-msgstr "해상도를 저장 하시겠습니까?"
+msgstr "해상도를 저장 하겠습니까?"
 
 msgctxt "#13111"
 msgid "Would you like to keep this resolution?"
@@ -3699,7 +3723,7 @@ msgstr "고품질 업스케일링"
 
 msgctxt "#13113"
 msgid "Disabled"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#13114"
 msgid "Enabled for SD content"
@@ -3743,7 +3767,7 @@ msgstr "다른 화면 비우기"
 
 msgctxt "#13131"
 msgid "Disabled"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#13132"
 msgid "Blank displays"
@@ -3755,11 +3779,11 @@ msgstr "활성 연결 감지됨!"
 
 msgctxt "#13141"
 msgid "If you proceed, you might not be able to control XBMC"
-msgstr "진행할경우, XBMC 제어를 할수 없음"
+msgstr "진행할 경우, XBMC를 제어할 수 없음"
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "사용안함. 이벤트 서버를 중지 하시겠습니까?"
+msgstr "사용 안 함. 이벤트 서버를 중지 하시겠습니까?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
@@ -3767,7 +3791,7 @@ msgstr "애플 리모트 모드를 변경 하시겠습니까?"
 
 msgctxt "#13145"
 msgid "If you are currently using the Apple Remote to control"
-msgstr "만약 현재 XMBC 를 제어하는데 애플 리모트를"
+msgstr "만약 현재 XBMC 를 제어하는데 애플 리모트를"
 
 msgctxt "#13146"
 msgid "XBMC, changing this setting might affect your ability"
@@ -3859,7 +3883,7 @@ msgstr "컨트롤러 포트"
 
 msgctxt "#13170"
 msgid "Never"
-msgstr "안함"
+msgstr "안 함"
 
 msgctxt "#13171"
 msgid "Immediately"
@@ -3891,7 +3915,7 @@ msgstr "마지막 읽은 프로파일:"
 
 msgctxt "#13205"
 msgid "Unknown"
-msgstr "알수없음"
+msgstr "알 수 없음"
 
 msgctxt "#13206"
 msgid "Overwrite"
@@ -3903,11 +3927,11 @@ msgstr "알람 시계"
 
 msgctxt "#13209"
 msgid "Alarm clock interval (in minutes)"
-msgstr "알람 간격(분)"
+msgstr "알람 시계 간격(분)"
 
 msgctxt "#13210"
 msgid "Started, alarm in %im"
-msgstr "%i 분에 알람 시작됨"
+msgstr "시작됨, %i분 후 알람"
 
 msgctxt "#13211"
 msgid "Alarm!"
@@ -3947,7 +3971,7 @@ msgstr "CPU 사용량:"
 
 msgctxt "#13274"
 msgid "Connected, but no DNS is available."
-msgstr "연결됨, 그러나 DNS 사용할수 없습니다."
+msgstr "연결됨, 그러나 DNS를 사용할 수 없습니다."
 
 msgctxt "#13275"
 msgid "Hard Disk"
@@ -4067,11 +4091,11 @@ msgstr "역방향 문자열의 뒤집기 사용"
 
 msgctxt "#13305"
 msgid "Show RSS news feeds"
-msgstr "RSS 뉴스 피드 보이기"
+msgstr "RSS 뉴스 피드 보기"
 
 msgctxt "#13306"
 msgid "Show parent folder items"
-msgstr "상위 폴더 항목 보이기"
+msgstr "상위 폴더 항목 보기"
 
 msgctxt "#13307"
 msgid "Track naming template"
@@ -4087,7 +4111,7 @@ msgstr "시스템을 재시작하기를 원하십니까?"
 
 msgctxt "#13310"
 msgid "Zoom effect"
-msgstr "축소/확대 효과"
+msgstr "확대/축소 효과"
 
 msgctxt "#13311"
 msgid "Float effect"
@@ -4103,15 +4127,15 @@ msgstr "재시작"
 
 msgctxt "#13314"
 msgid "Crossfade between songs"
-msgstr "노래간에 크로스페이드"
+msgstr "노래 사이에 크로스페이드"
 
 msgctxt "#13315"
 msgid "Regenerate thumbnails"
-msgstr "미리보기 다시 만들기"
+msgstr "썸네일 다시 만들기"
 
 msgctxt "#13316"
 msgid "Recursive thumbnails"
-msgstr "순환 미리보기"
+msgstr "순환 썸네일"
 
 msgctxt "#13317"
 msgid "View slideshow"
@@ -4203,7 +4227,7 @@ msgstr "전면 LED 색깔"
 
 msgctxt "#13340"
 msgid "Leave as is"
-msgstr "변경안함"
+msgstr "변경 안 함"
 
 msgctxt "#13341"
 msgid "Green"
@@ -4231,7 +4255,7 @@ msgstr "영화 정보"
 
 msgctxt "#13347"
 msgid "Queue item"
-msgstr "항목 추가"
+msgstr "대기열에 추가"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
@@ -4279,11 +4303,11 @@ msgstr "항목 재생"
 
 msgctxt "#13359"
 msgid "Set artist thumb"
-msgstr "아티스트 미리보기 설정"
+msgstr "아티스트 썸네일 설정"
 
 msgctxt "#13360"
 msgid "Automatically generate thumbnails"
-msgstr "자동 미리보기 생성"
+msgstr "썸네일 자동 생성"
 
 msgctxt "#13361"
 msgid "Enable voice"
@@ -4391,7 +4415,7 @@ msgstr "정렬시 관사 무시 (예 \"the\")"
 
 msgctxt "#13400"
 msgid "Crossfade between songs on the same album"
-msgstr "같은 앨범 노래간에 크로스페이드"
+msgstr "같은 앨범의 노래 사이에 크로스페이드"
 
 msgctxt "#13401"
 msgid "Browse for %s"
@@ -4399,7 +4423,7 @@ msgstr "%s 찾기"
 
 msgctxt "#13402"
 msgid "Show track position"
-msgstr "트랙 위치 보이기"
+msgstr "트랙 위치 보기"
 
 msgctxt "#13403"
 msgid "Clear default"
@@ -4411,7 +4435,7 @@ msgstr "되시작"
 
 msgctxt "#13405"
 msgid "Get thumb"
-msgstr "미리보기 가져오기"
+msgstr "썸네일 가져오기"
 
 msgctxt "#13406"
 msgid "Picture information"
@@ -4427,7 +4451,7 @@ msgstr "(사용자 평점)"
 
 msgctxt "#13409"
 msgid "Top 250"
-msgstr "인기 250"
+msgstr "Top 250"
 
 msgctxt "#13410"
 msgid "Tune in on Last.fm"
@@ -4543,7 +4567,7 @@ msgstr "순차 지연 시간"
 
 msgctxt "#13610"
 msgid "Disabled"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#13611"
 msgid "Standard"
@@ -4551,7 +4575,7 @@ msgstr "표준"
 
 msgctxt "#13612"
 msgid "Universal Remote"
-msgstr "유니버셜 리모트"
+msgstr "유니버설 리모트"
 
 msgctxt "#13613"
 msgid "Multi Remote (Harmony)"
@@ -4595,15 +4619,15 @@ msgstr "재생목록 파일 다운로드 실패"
 
 msgctxt "#14009"
 msgid "Games directory"
-msgstr "게임 디렉토리"
+msgstr "게임 디렉터리"
 
 msgctxt "#14010"
 msgid "Auto switch to thumbs based on"
-msgstr "미리보기 자동 변경"
+msgstr "썸네일로 자동 변경할 기준: "
 
 msgctxt "#14011"
 msgid "Enable auto switching to thumbs view"
-msgstr "미리보기 자동 변경 사용"
+msgstr "썸네일 보기로 자동 변경"
 
 msgctxt "#14012"
 msgid "- Use large icons"
@@ -4619,15 +4643,15 @@ msgstr "- 비율"
 
 msgctxt "#14015"
 msgid "No files and at least one thumb"
-msgstr "파일없고 최소한 한개의 미리보기"
+msgstr "파일없고 최소한 한개의 썸네일"
 
 msgctxt "#14016"
 msgid "At least one file and thumb"
-msgstr "최소한 한개의 파일과 미리보기"
+msgstr "최소한 한개의 파일과 썸네일"
 
 msgctxt "#14017"
 msgid "Percentage of thumbs"
-msgstr "미리보기 비율"
+msgstr "썸네일 비율"
 
 msgctxt "#14018"
 msgid "View options"
@@ -4651,7 +4675,7 @@ msgstr "라이브러리"
 
 msgctxt "#14023"
 msgid "No TV"
-msgstr "TV 사용 안함"
+msgstr "TV 사용 안 함"
 
 msgctxt "#14024"
 msgid "Enter the nearest large town"
@@ -4703,7 +4727,7 @@ msgstr "네트워크 설정이 변경되었습니다"
 
 msgctxt "#14039"
 msgid "XBMC requires to restart to change your"
-msgstr "네트워크 설정을 변경하려면 XBMC"
+msgstr "다음 설정을 변경하려면 XBMC를 다시 시작하여야 합니다: "
 
 msgctxt "#14040"
 msgid "network setup.  Would you like to restart now?"
@@ -4775,7 +4799,7 @@ msgstr "필름 입자 효과"
 
 msgctxt "#14059"
 msgid "Search for thumbnails on remote shares"
-msgstr "원격 공유에서 미리보기 찾기"
+msgstr "원격 공유에서 썸네일 찾기"
 
 msgctxt "#14060"
 msgid "Unknown type cache - Internet"
@@ -4859,7 +4883,7 @@ msgstr "파일 목록"
 
 msgctxt "#14082"
 msgid "Show EXIF picture information"
-msgstr "EXIF 사진 정보 보이기"
+msgstr "EXIF 사진 정보 보기"
 
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
@@ -4891,7 +4915,7 @@ msgstr "텍스트 자막에 사용할 글끌"
 
 msgctxt "#14090"
 msgid "International"
-msgstr "국제"
+msgstr "언어"
 
 msgctxt "#14091"
 msgid "Character set"
@@ -4955,11 +4979,11 @@ msgstr "* 모든 장르"
 
 msgctxt "#15107"
 msgid "Buffering..."
-msgstr "버퍼링중..."
+msgstr "버퍼링..."
 
 msgctxt "#15108"
 msgid "Navigation sounds"
-msgstr "네비게이션 사운드"
+msgstr "탐색 효과음"
 
 msgctxt "#15109"
 msgid "Skin default"
@@ -5035,7 +5059,7 @@ msgstr "부드러운 A/V 동기화 사용"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
-msgstr "미리보기에서 파일 이름 숨기기"
+msgstr "썸네일 보기에서 파일 이름 숨기기"
 
 msgctxt "#15216"
 msgid "Play in party mode"
@@ -5259,7 +5283,7 @@ msgstr "경로를 찾지 못하거나 잘못됨"
 
 msgctxt "#15301"
 msgid "Could not connect to network server"
-msgstr "네트워크 서버에 접속할수 없습니다"
+msgstr "네트워크 서버에 접속할 수 없습니다"
 
 msgctxt "#15302"
 msgid "No servers found"
@@ -5323,7 +5347,7 @@ msgstr "폴더 이름 입력"
 
 msgctxt "#16015"
 msgid "Enter directory"
-msgstr "디렉토리 입력"
+msgstr "디렉터리 입력"
 
 msgctxt "#16016"
 msgid "Available options: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
@@ -5335,7 +5359,7 @@ msgstr "검색어 입력"
 
 msgctxt "#16018"
 msgid "None"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#16019"
 msgid "Auto select"
@@ -5527,7 +5551,7 @@ msgstr "시간적/공간적"
 
 msgctxt "#16312"
 msgid "(VDPAU)Noise Reduction"
-msgstr "(VDPAU)잡음 제거"
+msgstr "(VDPAU)노이즈 제거"
 
 msgctxt "#16313"
 msgid "(VDPAU)Sharpness"
@@ -5536,6 +5560,10 @@ msgstr "(VDPAU)선명도"
 msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "역 텔레시네"
+
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "후처리"
 
 msgctxt "#17500"
 msgid "Display sleep timeout"
@@ -5571,7 +5599,7 @@ msgstr "재생목록 폴더"
 
 msgctxt "#20007"
 msgid "Recordings"
-msgstr "녹음"
+msgstr "녹화"
 
 msgctxt "#20008"
 msgid "Screenshots"
@@ -5595,27 +5623,27 @@ msgstr "이 게임을 실행 하시겠습니까?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "정렬: 재생목록"
+msgstr "정렬기준: 재생목록"
 
 msgctxt "#20015"
 msgid "Remote thumb"
-msgstr "원격 미리보기"
+msgstr "원격 썸네일"
 
 msgctxt "#20016"
 msgid "Current thumb"
-msgstr "현재 미리보기"
+msgstr "현재 썸네일"
 
 msgctxt "#20017"
 msgid "Local thumb"
-msgstr "로컬 미리보기"
+msgstr "로컬 썸네일"
 
 msgctxt "#20018"
 msgid "No thumb"
-msgstr "미리보기 없음"
+msgstr "썸네일 없음"
 
 msgctxt "#20019"
 msgid "Choose thumbnail"
-msgstr "미리보기 선택"
+msgstr "썸네일 선택"
 
 msgctxt "#20023"
 msgid "Conflict"
@@ -5663,7 +5691,7 @@ msgstr "설정 잠금"
 
 msgctxt "#20044"
 msgid "Start fresh"
-msgstr "새로 고침 시작"
+msgstr "새로 시작"
 
 msgctxt "#20045"
 msgid "Enter master mode"
@@ -5675,7 +5703,7 @@ msgstr "마스터 모드 나가기"
 
 msgctxt "#20047"
 msgid "Create profile '%s'?"
-msgstr "프로파일 '%s' 을 만드시겠습니까?"
+msgstr "프로파일 '%s' 을(를) 만드시겠습니까?"
 
 msgctxt "#20048"
 msgid "Start with fresh settings"
@@ -5707,11 +5735,11 @@ msgstr "마스터 모드 들어감"
 
 msgctxt "#20055"
 msgid "Allmusic.com thumb"
-msgstr "Allmusic.com 미리보기"
+msgstr "Allmusic.com 썸네일"
 
 msgctxt "#20057"
 msgid "Remove thumbnail"
-msgstr "미리보기 제거"
+msgstr "썸네일 제거"
 
 msgctxt "#20058"
 msgid "Add profile..."
@@ -5763,11 +5791,11 @@ msgstr "폴더를 만들수 없음"
 
 msgctxt "#20070"
 msgid "Profile directory"
-msgstr "프로파일 디렉토리"
+msgstr "프로파일 디렉터리"
 
 msgctxt "#20071"
 msgid "Start with fresh media sources"
-msgstr "시작시 미디어 소스 갱신"
+msgstr "새 미디어 소스로 시작"
 
 msgctxt "#20072"
 msgid "Make sure the selected folder is writable"
@@ -5779,7 +5807,7 @@ msgstr "새 폴더명이 정확한지 확인하세요"
 
 msgctxt "#20074"
 msgid "MPAA rating"
-msgstr "관람등급"
+msgstr "등급"
 
 msgctxt "#20075"
 msgid "Enter master lock code"
@@ -5787,7 +5815,7 @@ msgstr "마스터 잠금 코드 입력"
 
 msgctxt "#20076"
 msgid "Ask for master lock code on startup"
-msgstr "시작때 마스터 잠금 코드 묻기"
+msgstr "시작할 때 마스터 잠금 코드 묻기"
 
 msgctxt "#20077"
 msgid "Skin settings"
@@ -5803,7 +5831,7 @@ msgstr "애니메이션 사용"
 
 msgctxt "#20080"
 msgid "Disable RSS during music"
-msgstr "음악재생중 RSS 사용안함"
+msgstr "음악 재생중 RSS 사용 안 함"
 
 msgctxt "#20081"
 msgid "Enable shortcut buttons"
@@ -5811,19 +5839,19 @@ msgstr "바로가기 버튼 사용"
 
 msgctxt "#20082"
 msgid "Show programs in main menu"
-msgstr "메인메뉴에 프로그램 보이기"
+msgstr "메인메뉴에 프로그램 표시"
 
 msgctxt "#20083"
 msgid "Show music info"
-msgstr "음악 정보 보이기"
+msgstr "음악 정보 보기"
 
 msgctxt "#20084"
 msgid "Show weather info"
-msgstr "날씨 정보 보이기"
+msgstr "날씨 정보 보기"
 
 msgctxt "#20085"
 msgid "Show system info"
-msgstr "시스템 정보 보이기"
+msgstr "시스템 정보 보기"
 
 msgctxt "#20086"
 msgid "Show available disc space C: E: F:"
@@ -5851,7 +5879,7 @@ msgstr "잠금 코드"
 
 msgctxt "#20092"
 msgid "Load profile"
-msgstr "프로파일 읽기"
+msgstr "프로파일 불러오기"
 
 msgctxt "#20093"
 msgid "Profile name"
@@ -5879,7 +5907,7 @@ msgstr "앨범 정보 가져오기"
 
 msgctxt "#20099"
 msgid "Can't rip CD or track while playing from CD"
-msgstr "CD 재생중에는 CD나 트랙을 추출할수 없음"
+msgstr "CD 재생중에는 CD나 트랙을 추출할 수 없음"
 
 msgctxt "#20100"
 msgid "Master lock code and settings"
@@ -5935,7 +5963,7 @@ msgstr "마지막 로그인: %s"
 
 msgctxt "#20113"
 msgid "Never logged on"
-msgstr "로그인한적 없음"
+msgstr "로그인한 적 없음"
 
 msgctxt "#20114"
 msgid "Profile %i / %i"
@@ -6011,11 +6039,11 @@ msgstr "비디오 재시작"
 
 msgctxt "#20133"
 msgid "Edit network location"
-msgstr "네트워크 수정"
+msgstr "네트워크 위치 수정"
 
 msgctxt "#20134"
 msgid "Remove network location"
-msgstr "네트워크 제거"
+msgstr "네트워크 위치 제거"
 
 msgctxt "#20135"
 msgid "Do you want to scan the folder?"
@@ -6031,7 +6059,7 @@ msgstr "장착된 메모리 유닛"
 
 msgctxt "#20138"
 msgid "Unable to mount memory unit"
-msgstr "메모리 유닛을 장착할수 없음"
+msgstr "메모리 유닛을 장착할 수 없음"
 
 msgctxt "#20139"
 msgid "In port %i, slot %i"
@@ -6055,7 +6083,7 @@ msgstr "비밀번호 입력"
 
 msgctxt "#20144"
 msgid "Shutdown timer"
-msgstr "종료 타이머"
+msgstr "시스템 종료 타이머"
 
 msgctxt "#20145"
 msgid "Shutdown interval (in minutes)"
@@ -6063,7 +6091,7 @@ msgstr "종료 시간(분)"
 
 msgctxt "#20146"
 msgid "Started, shutdown in %im"
-msgstr "시작됨, %i 분후 종료"
+msgstr "시작됨, %i분 후 종료"
 
 msgctxt "#20147"
 msgid "Shutdown in 30 minutes"
@@ -6163,7 +6191,7 @@ msgstr "라인"
 
 msgctxt "#20171"
 msgid "Windows network (SMB)"
-msgstr "윈도우즈 네트워크(SMB)"
+msgstr "윈도우즈 네트워크 (SMB)"
 
 msgctxt "#20172"
 msgid "XBMSP server"
@@ -6183,7 +6211,7 @@ msgstr "UPnP 서버"
 
 msgctxt "#20176"
 msgid "Show video info"
-msgstr "비디오 정보 보이기"
+msgstr "비디오 정보 보기"
 
 msgctxt "#20177"
 msgid "Done"
@@ -6243,7 +6271,7 @@ msgstr "사용자 지정"
 
 msgctxt "#20191"
 msgid "Enable debug logging"
-msgstr "디버그 로그인 사용"
+msgstr "디버그 로그 사용"
 
 msgctxt "#20192"
 msgid "Download additional information during updates"
@@ -6293,13 +6321,17 @@ msgctxt "#20254"
 msgid "WebDAV server (HTTPS)"
 msgstr "WebDAV 서버 (HTTPS)"
 
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV 클라이언트"
+
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
-msgstr "웹 서버 디렉토리 (HTTP)"
+msgstr "웹 서버 디렉터리 (HTTP)"
 
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
-msgstr "웹 서버 디렉토리 (HTTPS)"
+msgstr "웹 서버 디렉터리 (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
@@ -6319,7 +6351,7 @@ msgstr "알수없음. xbmc.log 의 MD5 를 BiosIDs.ini 에 추가해 주세요."
 
 msgctxt "#20307"
 msgid "Secondary DNS"
-msgstr "보조 DNS 서버"
+msgstr "보조 DNS"
 
 msgctxt "#20308"
 msgid "DHCP server:"
@@ -6335,7 +6367,7 @@ msgstr "재생때 LCD 흐리게"
 
 msgctxt "#20311"
 msgid "Unknown or onboard (protected)"
-msgstr "알수없음 또는 온보드(보호됨)"
+msgstr "알 수 없음 또는 온보드(보호됨)"
 
 msgctxt "#20312"
 msgid "Dim LCD on paused"
@@ -6355,7 +6387,7 @@ msgstr "게임 세이브"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
-msgstr "정렬: 아이디"
+msgstr "정렬기준: 아이디"
 
 msgctxt "#20317"
 msgid "Download saves"
@@ -6463,7 +6495,7 @@ msgstr "TV 쇼"
 
 msgctxt "#20344"
 msgid "This directory contains"
-msgstr "이 디렉토리에 포함"
+msgstr "이 디렉터리에 포함"
 
 msgctxt "#20345"
 msgid "Run automated scan"
@@ -6499,7 +6531,7 @@ msgstr "에피소드 정보"
 
 msgctxt "#20353"
 msgid "Loading TV show details"
-msgstr "TV 쇼 상세정보 읽기"
+msgstr "TV 쇼 상세정보 가져오는 중"
 
 msgctxt "#20354"
 msgid "Fetching episode guide"
@@ -6507,7 +6539,7 @@ msgstr "에피소드 가이드 가져오기"
 
 msgctxt "#20355"
 msgid "Loading info for episodes in directory"
-msgstr "디렉토리의 에피소드 정보 읽기"
+msgstr "디렉터리의 에피소드 정보 가져오는 중"
 
 msgctxt "#20356"
 msgid "Select TV show:"
@@ -6531,11 +6563,11 @@ msgstr "에피소드"
 
 msgctxt "#20361"
 msgid "Loading episode details"
-msgstr "에피소드 상세정보 읽기"
+msgstr "에피소드 상세정보 가져오는 중"
 
 msgctxt "#20362"
 msgid "Remove episode from library"
-msgstr "라이브러리에서 에피소트 제거"
+msgstr "라이브러리에서 에피소드 제거"
 
 msgctxt "#20363"
 msgid "Remove TV show from library"
@@ -6563,7 +6595,7 @@ msgstr "제품 코드"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
-msgstr "미시청 항목의 줄거리 보이기"
+msgstr "미시청 항목의 줄거리 보기"
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"
@@ -6571,7 +6603,7 @@ msgstr "* 스포일러 방지위해 숨김 *"
 
 msgctxt "#20371"
 msgid "Set season thumb"
-msgstr "시즌 미리보기 설정"
+msgstr "시즌 썸네일 설정"
 
 msgctxt "#20372"
 msgid "Season image"
@@ -6589,13 +6621,17 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "컨텐츠 할당해제"
 
+msgctxt "#20376"
+msgid "Original title"
+msgstr "원제"
+
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "TV 쇼 정보 새로고침"
 
 msgctxt "#20378"
 msgid "Refresh info for all episodes?"
-msgstr "모든 에피소트 정보를 새로고치겠습니까?"
+msgstr "모든 에피소드 정보를 새로고치겠습니까?"
 
 msgctxt "#20379"
 msgid "Selected folder contains a single TV show"
@@ -6627,11 +6663,11 @@ msgstr "TV 쇼 연결 제거"
 
 msgctxt "#20386"
 msgid "Recently added movies"
-msgstr "최근 추가된 영화"
+msgstr "최근 추가한 영화"
 
 msgctxt "#20387"
 msgid "Recently added episodes"
-msgstr "최근 추가된 에피소드"
+msgstr "최근 추가한 에피소드"
 
 msgctxt "#20388"
 msgid "Studios"
@@ -6643,7 +6679,7 @@ msgstr "뮤직비디오"
 
 msgctxt "#20390"
 msgid "Recently added music videos"
-msgstr "최근 추가된 뮤직비디오"
+msgstr "최근 추가한 뮤직비디오"
 
 msgctxt "#20391"
 msgid "Music video"
@@ -6659,7 +6695,7 @@ msgstr "뮤직비디오 정보"
 
 msgctxt "#20394"
 msgid "Loading music video information"
-msgstr "뮤직비디오 정보 읽기"
+msgstr "뮤직비디오 정보 가져오는 중"
 
 msgctxt "#20395"
 msgid "Mixed"
@@ -6691,19 +6727,19 @@ msgstr "뮤직비디오 재생"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "라이브러리에 추가할때 배우 미리보기 다운로드"
+msgstr "라이브러리에 추가할 때 배우 썸네일 다운로드"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
-msgstr "배우 미리보기 설정"
+msgstr "배우 썸네일 설정"
 
 msgctxt "#20405"
 msgid "Remove episode bookmark"
-msgstr "에피소드 북마크 제거"
+msgstr "에피소드 책갈피 지우기"
 
 msgctxt "#20406"
 msgid "Set episode bookmark"
-msgstr "에피소드 북마크 설정"
+msgstr "에피소드 책갈피 설정"
 
 msgctxt "#20407"
 msgid "Scraper settings"
@@ -6755,11 +6791,11 @@ msgstr "파일 및 폴더 이름 정리"
 
 msgctxt "#20420"
 msgid "Never"
-msgstr "안함"
+msgstr "안 함"
 
 msgctxt "#20421"
 msgid "If only one season"
-msgstr "한 시즌 일때만"
+msgstr "한 시즌일 때만"
 
 msgctxt "#20422"
 msgid "Always"
@@ -6779,7 +6815,7 @@ msgstr "팬아트 슬라이드쇼"
 
 msgctxt "#20426"
 msgid "Export to a single file or separate"
-msgstr "항목당 단일 파일로 내보낼까요 분리"
+msgstr "단일 파일로 내보낼까요 항목별 분리"
 
 msgctxt "#20427"
 msgid "files per entry?"
@@ -6795,7 +6831,7 @@ msgstr "분리 파일"
 
 msgctxt "#20430"
 msgid "Export thumbnails and fanart?"
-msgstr "미리보기 및 팬아트를 내보내시겠습니까?"
+msgstr "썸네일 및 팬아트를 내보내시겠습니까?"
 
 msgctxt "#20431"
 msgid "Overwrite old files?"
@@ -6807,11 +6843,11 @@ msgstr "라이브러리 업데이트 제외 경로"
 
 msgctxt "#20433"
 msgid "Extract thumbnails and video information"
-msgstr "미리보기 및 비디오 정보 추출"
+msgstr "썸네일 및 비디오 정보 추출"
 
 msgctxt "#20434"
 msgid "Sets"
-msgstr "세트"
+msgstr "시리즈"
 
 msgctxt "#20435"
 msgid "Set movieset thumb"
@@ -6819,7 +6855,7 @@ msgstr "영화세트 미리보기 설정"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
-msgstr "배우 미리보기 내보내기?"
+msgstr "배우 썸네일 내보내기?"
 
 msgctxt "#20437"
 msgid "Choose fanart"
@@ -6867,7 +6903,7 @@ msgstr "무시하고 인터넷에서 새로고침 할까요?"
 
 msgctxt "#20448"
 msgid "Could not download information"
-msgstr "정보를 다운로드할수 없음"
+msgstr "정보를 다운로드할 수 없음"
 
 msgctxt "#20449"
 msgid "Server is most likely unavailable."
@@ -6877,9 +6913,17 @@ msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "검색을 계속 하시겠습니까?"
 
+msgctxt "#20451"
+msgid "Countries"
+msgstr "국가"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "시리즈 영화 묶기"
+
 msgctxt "#21330"
 msgid "Show hidden files and directories"
-msgstr "숨김 파일 및 디렉토리 보이기"
+msgstr "숨김 파일 및 디렉터리 보기"
 
 msgctxt "#21331"
 msgid "TuxBox client"
@@ -6887,7 +6931,7 @@ msgstr "TuxBox 클라이언트"
 
 msgctxt "#21332"
 msgid "WARNING: Target TuxBox device is in recording-mode!"
-msgstr "경고: 대상 TuxBox 장치가 녹음-모드 입니다!"
+msgstr "경고: 대상 TuxBox 장치가 레코딩-모드 입니다!"
 
 msgctxt "#21333"
 msgid "The stream will be stopped!"
@@ -6915,7 +6959,7 @@ msgstr "미디어 공유 추가..."
 
 msgctxt "#21360"
 msgid "Share video and music libraries through UPnP"
-msgstr "UPnP 를 통해 비디오 및 음악 라이브러리 공유"
+msgstr "UPnP를 통해 비디오 및 음악 라이브러리 공유"
 
 msgctxt "#21364"
 msgid "Edit media share"
@@ -6931,7 +6975,7 @@ msgstr "자막 폴더"
 
 msgctxt "#21367"
 msgid "Movie & alternate subtitle directory"
-msgstr "영화 & 추가 자막 디렉토리"
+msgstr "영화 & 추가 자막 디렉터리"
 
 msgctxt "#21369"
 msgid "Enable mouse"
@@ -6939,15 +6983,15 @@ msgstr "마우스 사용"
 
 msgctxt "#21370"
 msgid "Play navigation sounds during media playback"
-msgstr "미디어 재생중 네비게이션 사운드 사용"
+msgstr "미디어 재생중 탐색 효과음 사용"
 
 msgctxt "#21371"
 msgid "Thumbnail"
-msgstr "미리보기"
+msgstr "썸네일"
 
 msgctxt "#21372"
 msgid "Forced DVD player region"
-msgstr "강제된 DVD 플레이어 지역"
+msgstr "DVD 지역코드 강제 지정"
 
 msgctxt "#21373"
 msgid "Video output"
@@ -6987,7 +7031,7 @@ msgstr "새 재생목록 이름 입력"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
-msgstr "파일 목록에서 \"소스 추가\" 버튼 보이기"
+msgstr "파일 목록에서 \"소스 추가\" 버튼 보기"
 
 msgctxt "#21383"
 msgid "Enable scrollbars"
@@ -7039,7 +7083,7 @@ msgstr "최소 대기"
 
 msgctxt "#21395"
 msgid "Unable to cache files bigger than 4GB"
-msgstr "4GB 이상의 파일을 캐시할수 없음"
+msgstr "4GB 이상의 파일을 캐시할 수 없음"
 
 msgctxt "#21396"
 msgid "Chapter"
@@ -7051,7 +7095,7 @@ msgstr "고화질 픽셀 셰이더 V2"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
-msgstr "시작시 재생목록 사용"
+msgstr "시작할 때 재생목록 사용"
 
 msgctxt "#21399"
 msgid "Use tween animations"
@@ -7139,7 +7183,7 @@ msgstr "일치하는 값"
 
 msgctxt "#21421"
 msgid "Smart playlist rule"
-msgstr "지능형 재생목록 규칙"
+msgstr "스마트 재생목록 규칙"
 
 msgctxt "#21422"
 msgid "Match items where"
@@ -7159,7 +7203,7 @@ msgstr "모든 규칙"
 
 msgctxt "#21426"
 msgid "one or more of the rules"
-msgstr "한개 또는 그이상의 규칙"
+msgstr "한개 또는 그 이상의 규칙"
 
 msgctxt "#21427"
 msgid "Limit to"
@@ -7171,7 +7215,7 @@ msgstr "무제한"
 
 msgctxt "#21429"
 msgid "Order by"
-msgstr "정렬"
+msgstr "정렬순서"
 
 msgctxt "#21430"
 msgid "ascending"
@@ -7183,7 +7227,7 @@ msgstr "내림차순"
 
 msgctxt "#21432"
 msgid "Edit smart playlist"
-msgstr "지능형 재생목록 수정"
+msgstr "스마트 재생목록 수정"
 
 msgctxt "#21433"
 msgid "Name of the playlist"
@@ -7203,7 +7247,7 @@ msgstr "%i 항목"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
-msgstr "새 지능형 재생목록..."
+msgstr "새 스마트 재생목록..."
 
 msgctxt "#21438"
 msgid "%c Drive"
@@ -7223,7 +7267,7 @@ msgstr "시청 횟수"
 
 msgctxt "#21442"
 msgid "Episode title"
-msgstr "에피소트 제목"
+msgstr "에피소드 제목"
 
 msgctxt "#21443"
 msgid "Video resolution"
@@ -7251,7 +7295,7 @@ msgstr "자막 언어"
 
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
-msgstr "리모콘이 키보드 누름 보냄"
+msgstr "리모컨이 키보드 누름 보냄"
 
 msgctxt "#21450"
 msgid "- Edit"
@@ -7367,7 +7411,7 @@ msgstr "ISO"
 
 msgctxt "#21838"
 msgid "Digital zoom"
-msgstr "디지털 축소/확대"
+msgstr "디지털 확대/축소"
 
 msgctxt "#21839"
 msgid "CCD width"
@@ -7399,7 +7443,7 @@ msgstr "키워드"
 
 msgctxt "#21862"
 msgid "Caption"
-msgstr "제목"
+msgstr "설명"
 
 msgctxt "#21863"
 msgid "Author"
@@ -7475,7 +7519,7 @@ msgstr "참고 업무"
 
 msgctxt "#21881"
 msgid "Allow control of XBMC via UPnP"
-msgstr "UPnP 를 통해 XBMC 제어 허용"
+msgstr "UPnP를 통해 XBMC 제어 허용"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
@@ -7503,7 +7547,7 @@ msgstr "약력"
 
 msgctxt "#21888"
 msgid "Discography"
-msgstr "목차"
+msgstr "디스코그래피"
 
 msgctxt "#21889"
 msgid "Searching artist"
@@ -7555,7 +7599,7 @@ msgstr "출생/결성"
 
 msgctxt "#22000"
 msgid "Update library on startup"
-msgstr "시작때 라이브러리 업데이트"
+msgstr "시작할 때 라이브러리 업데이트"
 
 msgctxt "#22001"
 msgid "Always update library in background"
@@ -7567,27 +7611,27 @@ msgstr "- DNS 접미사"
 
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
-msgstr "%2.3f 초 느리게"
+msgstr "%2.3f초 느리게"
 
 msgctxt "#22005"
 msgid "Ahead by: %2.3fs"
-msgstr "%2.3f 초 빠르게"
+msgstr "%2.3f초 빠르게"
 
 msgctxt "#22006"
 msgid "Subtitle offset"
-msgstr "자막 오프셋"
+msgstr "자막 싱크"
 
 msgctxt "#22007"
 msgid "OpenGL vendor:"
-msgstr "오픈GL 공급자:"
+msgstr "OpenGL 공급자:"
 
 msgctxt "#22008"
 msgid "OpenGL renderer:"
-msgstr "오픈GL 렌더러:"
+msgstr "OpenGL 렌더러:"
 
 msgctxt "#22009"
 msgid "OpenGL version:"
-msgstr "오픈GL 버전:"
+msgstr "OpenGL 버전:"
 
 msgctxt "#22010"
 msgid "GPU temperature:"
@@ -7607,11 +7651,11 @@ msgstr "프로파일 데이터"
 
 msgctxt "#22014"
 msgid "Use dim if paused during video playback"
-msgstr "비디오 재생중 일시중지되면 흐림 사용"
+msgstr "비디오 재생중 일시정지되면 흐림 사용"
 
 msgctxt "#22015"
 msgid "All recordings"
-msgstr "모든 녹음"
+msgstr "모든 녹화"
 
 msgctxt "#22016"
 msgid "By title"
@@ -7627,7 +7671,7 @@ msgstr "라이브 채널"
 
 msgctxt "#22019"
 msgid "Recordings by title"
-msgstr "제목별 녹음"
+msgstr "제목별 녹화"
 
 msgctxt "#22020"
 msgid "Guide"
@@ -7639,7 +7683,7 @@ msgstr "검은 여백 최소화시 가로세로 비 허용 오류"
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "목록에 비디오 파일 보이기"
+msgstr "목록에 비디오 파일 보기"
 
 msgctxt "#22023"
 msgid "DirectX vendor"
@@ -7679,7 +7723,7 @@ msgstr "노래방 제목 가져오기..."
 
 msgctxt "#22037"
 msgid "Show song selector automatically"
-msgstr "자동으로 노래 선택기 보이기"
+msgstr "자동으로 노래 선택기 보기"
 
 msgctxt "#22038"
 msgid "Export karaoke titles..."
@@ -7715,7 +7759,15 @@ msgstr "파트 %i"
 
 msgctxt "#23052"
 msgid "Buffering %i bytes"
-msgstr "%i 바이트 버퍼링"
+msgstr "%i bytes 버퍼링"
+
+msgctxt "#23053"
+msgid "Stopping"
+msgstr "중지중"
+
+msgctxt "#23054"
+msgid "Running"
+msgstr "실행중"
 
 msgctxt "#23100"
 msgid "External Player Active"
@@ -7743,7 +7795,7 @@ msgstr "설정"
 
 msgctxt "#24021"
 msgid "Disable"
-msgstr "사용안함"
+msgstr "사용 안 함"
 
 msgctxt "#24022"
 msgid "Enable"
@@ -7755,7 +7807,7 @@ msgstr "추가기능 중지됨"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
-msgstr "이 추가기능은 설정할수 없음"
+msgstr "이 추가기능은 설정할 수 없음"
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -7811,7 +7863,11 @@ msgstr "복사"
 
 msgctxt "#33010"
 msgid "Set download directory"
-msgstr "다운로드 디렉토리 설정"
+msgstr "다운로드 디렉터리 설정"
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "검색 기간"
 
 msgctxt "#33012"
 msgid "Short"
@@ -7899,7 +7955,7 @@ msgstr "문자 번역"
 
 msgctxt "#33033"
 msgid "Map list %s category"
-msgstr "지도 목록 %s 카테고리"
+msgstr "%s 카테고리 지도 목록"
 
 msgctxt "#33034"
 msgid "36 Hour"
@@ -8011,7 +8067,7 @@ msgstr "사용자 지정 배경"
 
 msgctxt "#33072"
 msgid "View Readme"
-msgstr "읽어보기 보기"
+msgstr "Readme 보기"
 
 msgctxt "#33073"
 msgid "View Changelog"
@@ -8023,7 +8079,7 @@ msgstr "이 버전의 %s 는 실행하려면"
 
 msgctxt "#33075"
 msgid "XBMC revision of %s or greater to run."
-msgstr "XBMC 리비전 %s 또는 이상이 필요합니다"
+msgstr "실행에 XBMC 리비전 %s 또는 이상이 필요합니다."
 
 msgctxt "#33076"
 msgid "Please update XBMC."
@@ -8055,4 +8111,8 @@ msgstr "스크립트 경로"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "사용자 지정 스크립트 버튼 사용"
+msgstr "사용자 스크립트 버튼 사용"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "Flac"

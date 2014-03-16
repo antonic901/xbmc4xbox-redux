@@ -19,7 +19,7 @@ msgstr "Programma's"
 
 msgctxt "#1"
 msgid "Pictures"
-msgstr "Foto's"
+msgstr "Afbeeldingen"
 
 msgctxt "#2"
 msgid "Music"
@@ -27,11 +27,11 @@ msgstr "Muziek"
 
 msgctxt "#3"
 msgid "Videos"
-msgstr "Video"
+msgstr "Video's"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "TV-gids"
+msgstr "TV gids"
 
 msgctxt "#5"
 msgid "Settings"
@@ -55,31 +55,31 @@ msgstr "XBMC Media Center"
 
 msgctxt "#11"
 msgid "Monday"
-msgstr "maandag"
+msgstr "Maandag"
 
 msgctxt "#12"
 msgid "Tuesday"
-msgstr "dinsdag"
+msgstr "Dinsdag"
 
 msgctxt "#13"
 msgid "Wednesday"
-msgstr "woensdag"
+msgstr "Woensdag"
 
 msgctxt "#14"
 msgid "Thursday"
-msgstr "donderdag"
+msgstr "Donderdag"
 
 msgctxt "#15"
 msgid "Friday"
-msgstr "vrijdag"
+msgstr "Vrijdag"
 
 msgctxt "#16"
 msgid "Saturday"
-msgstr "zaterdag"
+msgstr "Zaterdag"
 
 msgctxt "#17"
 msgid "Sunday"
-msgstr "zondag"
+msgstr "Zondag"
 
 msgctxt "#21"
 msgid "January"
@@ -131,47 +131,95 @@ msgstr "december"
 
 msgctxt "#41"
 msgid "Mon"
-msgstr "Maa"
+msgstr "Ma"
 
 msgctxt "#42"
 msgid "Tue"
-msgstr "Din"
+msgstr "Di"
 
 msgctxt "#43"
 msgid "Wed"
-msgstr "Woe"
+msgstr "Wo"
 
 msgctxt "#44"
 msgid "Thu"
-msgstr "Don"
+msgstr "Do"
 
 msgctxt "#45"
 msgid "Fri"
-msgstr "Vri"
+msgstr "Vr"
 
 msgctxt "#46"
 msgid "Sat"
-msgstr "Zat"
+msgstr "Za"
 
 msgctxt "#47"
 msgid "Sun"
-msgstr "Zon"
+msgstr "Zo"
+
+msgctxt "#51"
+msgid "Jan"
+msgstr "jan"
+
+msgctxt "#52"
+msgid "Feb"
+msgstr "feb"
+
+msgctxt "#53"
+msgid "Mar"
+msgstr "mrt"
+
+msgctxt "#54"
+msgid "Apr"
+msgstr "apr"
+
+msgctxt "#55"
+msgid "May"
+msgstr "mei"
+
+msgctxt "#56"
+msgid "Jun"
+msgstr "jun"
+
+msgctxt "#57"
+msgid "Jul"
+msgstr "jul"
+
+msgctxt "#58"
+msgid "Aug"
+msgstr "aug"
+
+msgctxt "#59"
+msgid "Sep"
+msgstr "sep"
+
+msgctxt "#60"
+msgid "Oct"
+msgstr "okt"
+
+msgctxt "#61"
+msgid "Nov"
+msgstr "nov"
+
+msgctxt "#62"
+msgid "Dec"
+msgstr "dec"
 
 msgctxt "#98"
 msgid "View: Auto"
-msgstr "Layout: Automatisch"
+msgstr "Weergave: Automatisch"
 
 msgctxt "#99"
 msgid "View: Auto big"
-msgstr "Layout: Autom. Groot"
+msgstr "Weergave: Autom. groot"
 
 msgctxt "#100"
 msgid "View: Icons"
-msgstr "Layout: Klein"
+msgstr "Weergave: Icoontjes"
 
 msgctxt "#101"
 msgid "View: List"
-msgstr "Layout: Lijst"
+msgstr "Weergave: Lijst"
 
 msgctxt "#102"
 msgid "Scan"
@@ -187,7 +235,7 @@ msgstr "Sorteer op: Datum"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "Sorteer op: Formaat"
+msgstr "Sorteer op: Grootte"
 
 msgctxt "#106"
 msgid "No"
@@ -203,11 +251,11 @@ msgstr "Diavoorstelling"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Thumbnail maken"
+msgstr "Miniaturen aanmaken"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "Thumbnails maken"
+msgstr "Miniaturen aanmaken"
 
 msgctxt "#111"
 msgid "Shortcuts"
@@ -219,7 +267,7 @@ msgstr "Pauze"
 
 msgctxt "#115"
 msgid "Copy"
-msgstr "Kopiëer"
+msgstr "Kopieer"
 
 msgctxt "#116"
 msgid "Move"
@@ -239,27 +287,27 @@ msgstr "Nieuwe map"
 
 msgctxt "#120"
 msgid "Confirm file copy"
-msgstr "Bevestig bestand(en) kopiëren"
+msgstr "Bevestig kopieeropdracht"
 
 msgctxt "#121"
 msgid "Confirm file move"
-msgstr "Bevestig bestand(en) verplaatsen"
+msgstr "Bevestig verplaatsopdracht"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
-msgstr "Bevestig bestand(en) verwijderen"
+msgstr "Bevestig verwijderingsopdracht"
 
 msgctxt "#123"
 msgid "Copy these files?"
-msgstr "Kopiëer deze bestanden?"
+msgstr "Deze bestanden kopiëren?"
 
 msgctxt "#124"
 msgid "Move these files?"
-msgstr "Verplaats deze bestanden?"
+msgstr "Deze bestanden verplaatsen?"
 
 msgctxt "#125"
 msgid "Delete these files? - Deleting files cannot be undone!"
-msgstr "Verwijder deze bestanden? Dit kan niet meer ongedaan worden gemaakt!"
+msgstr "Deze bestanden verwijderen? Dit kan niet meer ongedaan worden gemaakt!"
 
 msgctxt "#126"
 msgid "Status"
@@ -267,7 +315,7 @@ msgstr "Status"
 
 msgctxt "#127"
 msgid "Objects"
-msgstr "items"
+msgstr "Items"
 
 msgctxt "#128"
 msgid "General"
@@ -275,7 +323,7 @@ msgstr "Algemeen"
 
 msgctxt "#129"
 msgid "Slideshow"
-msgstr "Voorstelling"
+msgstr "Diavoorstelling"
 
 msgctxt "#130"
 msgid "System info"
@@ -295,7 +343,7 @@ msgstr "Artiesten"
 
 msgctxt "#134"
 msgid "Songs"
-msgstr "Alle nummers"
+msgstr "Liedjes"
 
 msgctxt "#135"
 msgid "Genres"
@@ -311,7 +359,7 @@ msgstr "Zoeken"
 
 msgctxt "#138"
 msgid "System Information"
-msgstr "SYSTEEMINFORMATIE"
+msgstr "Systeeminformatie"
 
 msgctxt "#139"
 msgid "Temperatures:"
@@ -319,7 +367,7 @@ msgstr "Temperaturen:"
 
 msgctxt "#140"
 msgid "CPU:"
-msgstr "CPU:"
+msgstr "Processor:"
 
 msgctxt "#141"
 msgid "GPU:"
@@ -379,11 +427,11 @@ msgstr "Opslag"
 
 msgctxt "#155"
 msgid "Drive"
-msgstr "Drive"
+msgstr "Schijf"
 
 msgctxt "#156"
 msgid "Free"
-msgstr "vrij"
+msgstr "Vrij"
 
 msgctxt "#157"
 msgid "Video"
@@ -391,7 +439,7 @@ msgstr "Video"
 
 msgctxt "#158"
 msgid "Free memory"
-msgstr "Vrij geheugen"
+msgstr "Beschikbaar geheugen"
 
 msgctxt "#159"
 msgid "No link"
@@ -415,11 +463,11 @@ msgstr "Inlezen"
 
 msgctxt "#164"
 msgid "No disc"
-msgstr "Geen disk"
+msgstr "Geen schijf"
 
 msgctxt "#165"
 msgid "Disc present"
-msgstr "Disk aanwezig"
+msgstr "Schijf aanwezig"
 
 msgctxt "#166"
 msgid "Skin"
@@ -439,19 +487,19 @@ msgstr "Resolutie"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "Aanpassen refresh rate"
+msgstr "Verversingsfrequentie scherm aanpassen aan video"
 
 msgctxt "#172"
 msgid "Release date"
-msgstr "Release datum:"
+msgstr "Releasedatum:"
 
 msgctxt "#173"
 msgid "Display 4:3 videos as"
-msgstr "Laat 4:3 videos zien als"
+msgstr "Geef 4:3 video's weer als"
 
 msgctxt "#175"
 msgid "Moods"
-msgstr "Moods"
+msgstr "Stemmingen"
 
 msgctxt "#176"
 msgid "Styles"
@@ -459,7 +507,7 @@ msgstr "Stijlen"
 
 msgctxt "#179"
 msgid "Song"
-msgstr "Tracklist"
+msgstr "Lied"
 
 msgctxt "#180"
 msgid "Duration"
@@ -471,11 +519,11 @@ msgstr "Selecteer album"
 
 msgctxt "#182"
 msgid "Tracks"
-msgstr "Nummer"
+msgstr "Nummers"
 
 msgctxt "#183"
 msgid "Review"
-msgstr "Beschrijving"
+msgstr "Review"
 
 msgctxt "#184"
 msgid "Refresh"
@@ -531,19 +579,19 @@ msgstr "Kies film:"
 
 msgctxt "#197"
 msgid "Querying %s info"
-msgstr "Zoek %s voor informatie"
+msgstr "%s raadplegen voor informatie"
 
 msgctxt "#198"
 msgid "Loading movie details"
-msgstr "Filmgegevens downloaden"
+msgstr "Filmgegevens ophalen"
 
 msgctxt "#202"
 msgid "Tagline"
-msgstr "Tagline"
+msgstr "Slagzin"
 
 msgctxt "#203"
 msgid "Plot outline"
-msgstr "Plot:"
+msgstr "Plot"
 
 msgctxt "#205"
 msgid "Votes:"
@@ -575,7 +623,7 @@ msgstr "Gebruikersomgeving kalibreren"
 
 msgctxt "#214"
 msgid "Video calibration..."
-msgstr "Beeldscherm kalibreren..."
+msgstr "Beeld kalibreren..."
 
 msgctxt "#215"
 msgid "Soften"
@@ -595,7 +643,7 @@ msgstr "DVD-station"
 
 msgctxt "#219"
 msgid "Please insert disc"
-msgstr "Plaats een disk"
+msgstr "Plaats een schijf"
 
 msgctxt "#220"
 msgid "Remote share"
@@ -607,19 +655,19 @@ msgstr "Netwerk is niet verbonden"
 
 msgctxt "#222"
 msgid "Cancel"
-msgstr "Afbreken"
+msgstr "Annuleren"
 
 msgctxt "#224"
 msgid "Speed"
-msgstr "Wisseltijd"
+msgstr "Snelheid"
 
 msgctxt "#226"
 msgid "Test patterns..."
-msgstr "Test patronen"
+msgstr "Testbeeld..."
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "CD informatie opzoeken op internet"
+msgstr "Bij muziek CD's namen van nummers via internet opzoeken"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
@@ -627,7 +675,7 @@ msgstr "Afspeellijst willekeurig afspelen"
 
 msgctxt "#229"
 msgid "HDD spindown time"
-msgstr "schakel harddisk uit na"
+msgstr "Schakel harde schijf uit na"
 
 msgctxt "#230"
 msgid "Video filters"
@@ -669,6 +717,34 @@ msgctxt "#239"
 msgid "Clear playlist on finish"
 msgstr "Afspeellijst wissen na afspelen"
 
+msgctxt "#240"
+msgid "Autoplay DVD-Video"
+msgstr "Automatisch afspelen van DVD-Video"
+
+msgctxt "#241"
+msgid "Autoplay VCD/SVCD"
+msgstr "Automatisch afspelen van VCD/SVCD"
+
+msgctxt "#242"
+msgid "Autoplay Audio-CD"
+msgstr "Automatisch afspelen van Audio-CD"
+
+msgctxt "#243"
+msgid "Autoplay Xbox games"
+msgstr "Automatisch afspelen van XBOX spellen"
+
+msgctxt "#244"
+msgid "Autoplay videos"
+msgstr "Automatisch afspelen video's"
+
+msgctxt "#245"
+msgid "Autoplay music"
+msgstr "Automatisch afspelen muziek"
+
+msgctxt "#246"
+msgid "Autoplay pictures"
+msgstr "Automatisch afspelen afbeeldingen"
+
 msgctxt "#247"
 msgid "Scripts"
 msgstr "Scripts"
@@ -687,7 +763,7 @@ msgstr "Visualisatie"
 
 msgctxt "#251"
 msgid "Select destination directory"
-msgstr "Selecteer doellocatie"
+msgstr "Selecteer doelmap"
 
 msgctxt "#252"
 msgid "Output stereo to all speakers"
@@ -715,7 +791,7 @@ msgstr "Fout"
 
 msgctxt "#258"
 msgid "Enable tag reading"
-msgstr "Tags in muziek uitlezen"
+msgstr "Metadata uitlezen (ID3v2, APEv2)"
 
 msgctxt "#259"
 msgid "Opening"
@@ -731,7 +807,7 @@ msgstr "Wachten op start..."
 
 msgctxt "#262"
 msgid "Scripts output"
-msgstr "Scripts uitvoer"
+msgstr "Uitvoer scripts"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
@@ -747,23 +823,23 @@ msgstr "Stop opname"
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "Sorteer op: Naam"
+msgstr "Sorteer: Naam"
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "Sorteer op: Tijd"
+msgstr "Sorteer: Tijd"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "Sorteer op: Titel"
+msgstr "Sorteer: Titel"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "Sorteer op: Artiest"
+msgstr "Sorteer: Artiest"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "Sorteer op: Album"
+msgstr "Sorteer: Album"
 
 msgctxt "#271"
 msgid "Top 100"
@@ -779,11 +855,11 @@ msgstr "Beeldpositie rechtsonder"
 
 msgctxt "#274"
 msgid "Subtitle positioning"
-msgstr "Positie van ondertiteling"
+msgstr "Positie ondertitels"
 
 msgctxt "#275"
 msgid "Pixel ratio adjustment"
-msgstr "Pixelratio aanpassing"
+msgstr "Aanpassing pixelratio"
 
 msgctxt "#276"
 msgid "Adjust the arrow to change the amount of overscan"
@@ -791,7 +867,7 @@ msgstr "Beweeg de pijlen om de overscan aan te passen"
 
 msgctxt "#277"
 msgid "Adjust the bar to change the subtitles position"
-msgstr "Beweeg de balk om de ondertiteling te verplaatsen"
+msgstr "Beweeg de balk om de ondertitels te verplaatsen"
 
 msgctxt "#278"
 msgid "Adjust the rectangle so it is perfectly square"
@@ -803,11 +879,11 @@ msgstr "Fout tijdens het laden van de instellingen"
 
 msgctxt "#280"
 msgid "Using default settings"
-msgstr "Gebruik standaardinstellingen"
+msgstr "Standaardinstellingen actief"
 
 msgctxt "#281"
 msgid "Please check the XML files"
-msgstr "Controleer de .xml bestanden"
+msgstr "Controleer de XML-bestanden"
 
 msgctxt "#282"
 msgid "Found %i items"
@@ -851,7 +927,7 @@ msgstr "Geluid"
 
 msgctxt "#293"
 msgid "Browse for subtitles"
-msgstr "Ondertiteling zoeken"
+msgstr "Ondertitels zoeken"
 
 msgctxt "#294"
 msgid "Create bookmark"
@@ -863,11 +939,27 @@ msgstr "Posities verwijderen"
 
 msgctxt "#297"
 msgid "Audio offset"
-msgstr "Synchroniseer geluid"
+msgstr "Geluid synchroniseren"
 
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Favorieten"
+
+msgctxt "#299"
+msgid "- AAC capable receiver"
+msgstr "- AAC geschikte receiver"
+
+msgctxt "#300"
+msgid "- MP1 capable receiver"
+msgstr "- MP1 compatible versterker"
+
+msgctxt "#301"
+msgid "- MP2 capable receiver"
+msgstr "- MP2 compatible versterker"
+
+msgctxt "#302"
+msgid "- MP3 capable receiver"
+msgstr "- MP3 compatible versterker"
 
 msgctxt "#303"
 msgid "Delay"
@@ -879,7 +971,7 @@ msgstr "Taal"
 
 msgctxt "#305"
 msgid "Enabled"
-msgstr "Aan"
+msgstr "Ingeschakeld"
 
 msgctxt "#306"
 msgid "Non-interleaved"
@@ -919,7 +1011,7 @@ msgstr "Voorbereiden..."
 
 msgctxt "#315"
 msgid "Database error"
-msgstr "Databasefout"
+msgstr "Blbliotheekfout"
 
 msgctxt "#316"
 msgid "Searching songs..."
@@ -927,11 +1019,11 @@ msgstr "Zoeken op nummers..."
 
 msgctxt "#317"
 msgid "Cleaned database successfully"
-msgstr "Klaar met opschonen"
+msgstr "Klaar met bibliotheek opschonen"
 
 msgctxt "#318"
 msgid "Cleaning songs..."
-msgstr "Markeer verwijderde nummers"
+msgstr "Verwijderde nummers markeren"
 
 msgctxt "#319"
 msgid "Error cleaning songs"
@@ -939,7 +1031,7 @@ msgstr "Fout tijdens reorganiseren nummers"
 
 msgctxt "#320"
 msgid "Cleaning artists..."
-msgstr "Opschonen artiesten..."
+msgstr "Artiesten opschonen..."
 
 msgctxt "#321"
 msgid "Error cleaning artists"
@@ -947,7 +1039,7 @@ msgstr "Fout tijdens opschonen artiesten"
 
 msgctxt "#322"
 msgid "Cleaning genres..."
-msgstr "Opschonen genres..."
+msgstr "Genres opschonen..."
 
 msgctxt "#323"
 msgid "Error cleaning genres"
@@ -955,7 +1047,7 @@ msgstr "Fout tijdens opschonen genres"
 
 msgctxt "#324"
 msgid "Cleaning paths..."
-msgstr "Opschonen locaties..."
+msgstr "Locaties opschonen..."
 
 msgctxt "#325"
 msgid "Error cleaning paths"
@@ -963,7 +1055,7 @@ msgstr "Fout tijdens opschonen locaties"
 
 msgctxt "#326"
 msgid "Cleaning albums..."
-msgstr "Opschonen albums..."
+msgstr "Albums opschonen..."
 
 msgctxt "#327"
 msgid "Error cleaning albums"
@@ -983,7 +1075,7 @@ msgstr "Een moment geduld a.u.b."
 
 msgctxt "#331"
 msgid "Compressing database..."
-msgstr "Comprimeren bibliotheek..."
+msgstr "Bibliotheek comprimeren..."
 
 msgctxt "#332"
 msgid "Error compressing database"
@@ -995,7 +1087,7 @@ msgstr "Wilt u de mediabibliotheek opschonen?"
 
 msgctxt "#334"
 msgid "Clean library..."
-msgstr "Bibliotheek opschonen"
+msgstr "Bibliotheek opschonen..."
 
 msgctxt "#335"
 msgid "Start"
@@ -1003,7 +1095,7 @@ msgstr "Start"
 
 msgctxt "#336"
 msgid "Framerate conversion"
-msgstr "Framerate-conversie"
+msgstr "Framerateconversie"
 
 msgctxt "#337"
 msgid "Audio output"
@@ -1019,7 +1111,7 @@ msgstr "Digitaal"
 
 msgctxt "#340"
 msgid "Various artists"
-msgstr "Diverse Artiesten"
+msgstr "Diverse artiesten"
 
 msgctxt "#341"
 msgid "Play disc"
@@ -1027,7 +1119,7 @@ msgstr "DVD afspelen"
 
 msgctxt "#342"
 msgid "Movies"
-msgstr "Films"
+msgstr "Speelfilms"
 
 msgctxt "#343"
 msgid "Adjust framerate"
@@ -1063,15 +1155,15 @@ msgstr "Matrix Sporen"
 
 msgctxt "#355"
 msgid "Screensaver time"
-msgstr "Schermbeveiliging wachttijd"
+msgstr "Schermbeveiliging inschakelen na:"
 
 msgctxt "#356"
 msgid "Screensaver mode"
-msgstr "Schermbeveiliging type"
+msgstr "Schermbeveiliging mode"
 
 msgctxt "#357"
 msgid "Shutdown function timer"
-msgstr "XBMC afsluiten na"
+msgstr "Uitschakel timer functie"
 
 msgctxt "#358"
 msgid "All albums"
@@ -1079,7 +1171,7 @@ msgstr "Alle albums"
 
 msgctxt "#359"
 msgid "Recently added albums"
-msgstr "Recent toegevoegde albums"
+msgstr "Onlangs toegevoegde albums"
 
 msgctxt "#360"
 msgid "Screensaver"
@@ -1095,7 +1187,7 @@ msgstr "Doorzichtigheid schermbeveiliging"
 
 msgctxt "#363"
 msgid "Sort by: File"
-msgstr "Sorteer op: Bestand"
+msgstr "Sorteer: Bestand"
 
 msgctxt "#364"
 msgid "- Dolby Digital (AC3) capable receiver"
@@ -1103,15 +1195,15 @@ msgstr "- Versterker AC3 compatible"
 
 msgctxt "#365"
 msgid "Sort by: Name"
-msgstr "Sorteer op: Naam"
+msgstr "Sorteer: Naam"
 
 msgctxt "#366"
 msgid "Sort by: Year"
-msgstr "Sorteer op: Jaar"
+msgstr "Sorteer: Jaar"
 
 msgctxt "#367"
 msgid "Sort by: Rating"
-msgstr "Sorteer op: Waardering"
+msgstr "Sorteer: Waardering"
 
 msgctxt "#368"
 msgid "IMDb"
@@ -1151,15 +1243,15 @@ msgstr "Regen"
 
 msgctxt "#377"
 msgid "Light"
-msgstr "Lichtelijk"
+msgstr "Lichte"
 
 msgctxt "#378"
 msgid "AM"
-msgstr "AM"
+msgstr "'s Ochtends"
 
 msgctxt "#379"
 msgid "PM"
-msgstr "PM"
+msgstr "'s Middags"
 
 msgctxt "#380"
 msgid "Showers"
@@ -1171,7 +1263,7 @@ msgstr "Lichte"
 
 msgctxt "#382"
 msgid "Scattered"
-msgstr "Verspreid"
+msgstr "Verstrooide"
 
 msgctxt "#383"
 msgid "Wind"
@@ -1203,31 +1295,31 @@ msgstr "Buien"
 
 msgctxt "#390"
 msgid "Flurries"
-msgstr "Sneeuwbuien"
+msgstr "Natte Sneeuw"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "min."
+msgstr "Min"
 
 msgctxt "#392"
 msgid "Medium"
-msgstr "gem."
+msgstr "Gem."
 
 msgctxt "#393"
 msgid "High"
-msgstr "max"
+msgstr "Max."
 
 msgctxt "#394"
 msgid "Fog"
-msgstr "Nevel"
+msgstr "Mist"
 
 msgctxt "#395"
 msgid "Haze"
-msgstr "Mist"
+msgstr "Nevel"
 
 msgctxt "#396"
 msgid "Select location"
-msgstr "Selecteer locatie"
+msgstr "Locatie selecteren"
 
 msgctxt "#397"
 msgid "Refresh time"
@@ -1235,15 +1327,15 @@ msgstr "Vernieuwingstijd"
 
 msgctxt "#398"
 msgid "Temperature units"
-msgstr "Eenheid temperatuur"
+msgstr "Temperatuur eenheden"
 
 msgctxt "#399"
 msgid "Speed units"
-msgstr "Eenheid windsnelheid"
+msgstr "Windsnelheid eenheden"
 
 msgctxt "#400"
 msgid "Weather"
-msgstr "Het Weer"
+msgstr "Het weer"
 
 msgctxt "#401"
 msgid "Temp"
@@ -1283,11 +1375,11 @@ msgstr "Standaard"
 
 msgctxt "#410"
 msgid "Accessing weather service"
-msgstr "Weather.com openen"
+msgstr "Weersverwachting opzoeken"
 
 msgctxt "#411"
 msgid "Getting weather for:"
-msgstr "Weergegevens ophalen voor"
+msgstr "Weersverwachting ophalen voor"
 
 msgctxt "#412"
 msgid "Unable to get weather data"
@@ -1303,7 +1395,7 @@ msgstr "Geen recensie voor dit album"
 
 msgctxt "#415"
 msgid "Downloading thumbnail..."
-msgstr "Thumbnail downloaden..."
+msgstr "Miniatuur downloaden..."
 
 msgctxt "#416"
 msgid "Not available"
@@ -1339,7 +1431,7 @@ msgstr "Geen CDDB-informatie gevonden."
 
 msgctxt "#427"
 msgid "Disc"
-msgstr "Disk:"
+msgstr "Schijf:"
 
 msgctxt "#428"
 msgid "Insert correct CD/DVD"
@@ -1351,7 +1443,7 @@ msgstr "Voer de volgende CD/DVD in"
 
 msgctxt "#430"
 msgid "Sort by: DVD#"
-msgstr "Sorteer op: DVD#"
+msgstr "Sorteer: DVD#"
 
 msgctxt "#431"
 msgid "No cache"
@@ -1359,7 +1451,7 @@ msgstr "Data niet bufferen"
 
 msgctxt "#432"
 msgid "Remove movie from library"
-msgstr "Verwijder video uit database"
+msgstr "Speelfilm uit bibliotheek verwijderen"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
@@ -1367,7 +1459,7 @@ msgstr "'%s' zeker verwijderen?"
 
 msgctxt "#437"
 msgid "Removable disk"
-msgstr "Verwijderbare schijf"
+msgstr "Verwisselbare schijf"
 
 msgctxt "#438"
 msgid "Opening file"
@@ -1379,7 +1471,7 @@ msgstr "Buffer"
 
 msgctxt "#440"
 msgid "Harddisk"
-msgstr "hardeschijf"
+msgstr "Hardeschijf"
 
 msgctxt "#441"
 msgid "UDF"
@@ -1447,11 +1539,11 @@ msgstr "Modus"
 
 msgctxt "#457"
 msgid "Switch view"
-msgstr "Wijzig layout"
+msgstr "Layout wijzigen"
 
 msgctxt "#459"
 msgid "Subs"
-msgstr "Ondertiteling"
+msgstr "Ondertitels"
 
 msgctxt "#460"
 msgid "Audio stream"
@@ -1463,7 +1555,7 @@ msgstr "[actief]"
 
 msgctxt "#462"
 msgid "Subtitle"
-msgstr "Ondertiteling"
+msgstr "Ondertitels"
 
 msgctxt "#463"
 msgid "Backlight"
@@ -1515,7 +1607,7 @@ msgstr "Geluid en video"
 
 msgctxt "#477"
 msgid "Unable to load playlist"
-msgstr "Playlist kon niet worden geladen"
+msgstr "Afspeellijst kon niet worden geladen"
 
 msgctxt "#478"
 msgid "OSD"
@@ -1539,15 +1631,15 @@ msgstr "Over XBMC"
 
 msgctxt "#485"
 msgid "Delete album"
-msgstr "Verwijder album"
+msgstr "Album verwijderen"
 
 msgctxt "#486"
 msgid "Repeat"
-msgstr "Herhaal"
+msgstr "Herhalen"
 
 msgctxt "#487"
 msgid "Repeat one"
-msgstr "Herhaal één"
+msgstr "Nummer herhalen"
 
 msgctxt "#488"
 msgid "Repeat folder"
@@ -1555,15 +1647,15 @@ msgstr "Mappen herhalen"
 
 msgctxt "#489"
 msgid "Play the next song automatically"
-msgstr "Volgend nummer automatisch afspelen"
+msgstr "Automatisch het volgende nummer in de lijst afspelen"
 
 msgctxt "#491"
 msgid "- Use big icons"
-msgstr "- Gebruik grote iconen"
+msgstr "- Grote iconen gebruiken"
 
 msgctxt "#492"
 msgid "Resize VobSubs"
-msgstr "Vergroot ondertiteling"
+msgstr "Ondertitels vergroten"
 
 msgctxt "#493"
 msgid "Advanced options (Experts Only!)"
@@ -1571,11 +1663,11 @@ msgstr "Geavanceerde opties (alleen experts!)"
 
 msgctxt "#494"
 msgid "Overall audio headroom"
-msgstr "Algemene audio headroom"
+msgstr "Algemene audio hoofdruimte"
 
 msgctxt "#495"
 msgid "Upsample videos to GUI resolution"
-msgstr "Video naar GUI resolutie upsamplen"
+msgstr "Video naar GUI-resolutie upsamplen"
 
 msgctxt "#496"
 msgid "Calibration"
@@ -1583,11 +1675,11 @@ msgstr "Kalibratie"
 
 msgctxt "#497"
 msgid "Show file extensions"
-msgstr "Extenties mediabestanden tonen"
+msgstr "Extensies mediabestanden tonen"
 
 msgctxt "#498"
 msgid "Sort by: Type"
-msgstr "Sorteer op:Type"
+msgstr "Sorteer: Type"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
@@ -1619,7 +1711,7 @@ msgstr "Media-info van bestanden inlezen..."
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "Sorteer op: Gebruik"
+msgstr "Sorteer: Gebruik"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1627,11 +1719,11 @@ msgstr "Visualisaties weergeven"
 
 msgctxt "#511"
 msgid "Enable video mode switching"
-msgstr "Automatisch videoweergave aanpassen aan regiocode"
+msgstr "Videoweergave automatisch aanpassen aan regiocode"
 
 msgctxt "#512"
 msgid "Startup window"
-msgstr "Opstartscherm"
+msgstr "Start met venster"
 
 msgctxt "#513"
 msgid "Home window"
@@ -1667,23 +1759,23 @@ msgstr "Compilaties"
 
 msgctxt "#522"
 msgid "Remove source"
-msgstr "Snelkoppeling verwijderen"
+msgstr "Locatie verwijderen"
 
 msgctxt "#523"
 msgid "Switch media"
-msgstr "Verander van media"
+msgstr "Media veranderen"
 
 msgctxt "#524"
 msgid "Select playlist"
-msgstr "Kies playlist"
+msgstr "Afspeellijst kiezen"
 
 msgctxt "#525"
 msgid "New playlist..."
-msgstr "Nieuwe playlist"
+msgstr "Nieuwe afspeellijst"
 
 msgctxt "#526"
 msgid "Add to playlist"
-msgstr "Toevoegen aan playlist"
+msgstr "Aan afspeellijst toevoegen"
 
 msgctxt "#527"
 msgid "Manually add to library"
@@ -1759,15 +1851,15 @@ msgstr "Media-info"
 
 msgctxt "#545"
 msgid "Audio output device"
-msgstr "Geluidsuitvoerapparaat"
+msgstr "Apparaat voor geluidsuitvoer"
 
 msgctxt "#546"
 msgid "Passthrough output device"
-msgstr "Doorgifte Geluidsuitvoer Apparaat"
+msgstr "Doorgifte Geluidsuitvoerapparaat"
 
 msgctxt "#547"
 msgid "No biography for this artist"
-msgstr "Geen biografie beschikbaar voor artiest"
+msgstr "Geen biografie beschikbaar voor deze artiest"
 
 msgctxt "#548"
 msgid "Downmix multichannel audio to stereo"
@@ -1839,7 +1931,7 @@ msgstr "Gebruik"
 
 msgctxt "#566"
 msgid "Album artist"
-msgstr "Album Artiest"
+msgstr "Album artiest"
 
 msgctxt "#567"
 msgid "Play count"
@@ -1869,6 +1961,14 @@ msgctxt "#573"
 msgid "Path"
 msgstr "Pad"
 
+msgctxt "#574"
+msgid "Country"
+msgstr "Land"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "Bezig"
+
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Sorteerrichting"
@@ -1887,11 +1987,11 @@ msgstr "Layout van elke map onthouden"
 
 msgctxt "#584"
 msgid "Ascending"
-msgstr "A - Z"
+msgstr "Oplopend"
 
 msgctxt "#585"
 msgid "Descending"
-msgstr "Z - A"
+msgstr "Aflopend"
 
 msgctxt "#586"
 msgid "Edit playlist"
@@ -1987,7 +2087,7 @@ msgstr "Voer nummer in"
 
 msgctxt "#620"
 msgid "Audio CDs"
-msgstr "CD's kopiëren"
+msgstr "Muziek CD's"
 
 msgctxt "#621"
 msgid "Encoder"
@@ -2011,7 +2111,7 @@ msgstr "Alle nummers van"
 
 msgctxt "#629"
 msgid "View mode"
-msgstr "Weergave"
+msgstr "Weergave modus"
 
 msgctxt "#630"
 msgid "Normal"
@@ -2079,15 +2179,15 @@ msgstr "Er moet een groot bestand uitgepakt worden. Doorgaan?"
 
 msgctxt "#646"
 msgid "Remove from library"
-msgstr "Verwijder uit bibliotheek"
+msgstr "Uit bibliotheek verwijderen"
 
 msgctxt "#647"
 msgid "Export video library"
-msgstr "Videobibliotheek exporteren"
+msgstr "Videobibliotheek exporteren..."
 
 msgctxt "#648"
 msgid "Import video library"
-msgstr "Videobibliotheek importeren"
+msgstr "Videobibliotheek importeren..."
 
 msgctxt "#649"
 msgid "Importing"
@@ -2107,7 +2207,7 @@ msgstr "Jaren"
 
 msgctxt "#653"
 msgid "Update library"
-msgstr "Bibliotheek updaten"
+msgstr "Bibliotheek bijwerken"
 
 msgctxt "#654"
 msgid "Show debug info"
@@ -2135,7 +2235,7 @@ msgstr "Volumeversterking"
 
 msgctxt "#661"
 msgid "Choose export folder"
-msgstr "Kies exporteerlocatie"
+msgstr "Exporteerlocatie kiezen"
 
 msgctxt "#662"
 msgid "This file is no longer available."
@@ -2143,11 +2243,15 @@ msgstr "Dit bestand is niet langer beschikbaar."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
-msgstr "Wilt u verwijderen uit de bibliotheek?"
+msgstr "Wilt u het verwijderen uit de bibliotheek?"
 
 msgctxt "#664"
 msgid "Browse for Script"
-msgstr "Zoeken naar een Script"
+msgstr "Naar script zoeken"
+
+msgctxt "#665"
+msgid "Compression level"
+msgstr "Compressieniveau"
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2155,11 +2259,11 @@ msgstr "Bibliotheek opschonen"
 
 msgctxt "#701"
 msgid "Removing old songs from the library"
-msgstr "Oude nummers uit bibiotheek verwijderen"
+msgstr "Oude nummers uit bibliotheek verwijderen"
 
 msgctxt "#702"
 msgid "This path has been scanned before"
-msgstr "Deze locatie is al eerder gescant"
+msgstr "Deze locatie is al eerder gescand"
 
 msgctxt "#705"
 msgid "Network"
@@ -2171,7 +2275,7 @@ msgstr "- Host"
 
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
-msgstr "HTTP-proxy gebruiken"
+msgstr "Gebruik een HTTP-proxy-server voor toegang tot het internet"
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
@@ -2311,7 +2415,7 @@ msgstr "Geen gescande informatie in deze weergave"
 
 msgctxt "#746"
 msgid "Please turn off library mode"
-msgstr "Wissel naar bestandsweergave"
+msgstr "Bibliotheek modus uitschakelen a.u.b."
 
 msgctxt "#747"
 msgid "Error loading image"
@@ -2319,11 +2423,11 @@ msgstr "Fout tijdens het laden van de afbeelding"
 
 msgctxt "#748"
 msgid "Edit path"
-msgstr "Snelkoppeling wijzingen"
+msgstr "Locatie wijzigen"
 
 msgctxt "#749"
 msgid "Mirror image"
-msgstr "Spiegel Afbeelding"
+msgstr "Spiegel afbeelding"
 
 msgctxt "#750"
 msgid "Are you sure?"
@@ -2331,7 +2435,7 @@ msgstr "Weet u het zeker?"
 
 msgctxt "#751"
 msgid "Removing source"
-msgstr "Snelkoppeling verwijderen"
+msgstr "Locatie verwijderen"
 
 msgctxt "#754"
 msgid "Add program link"
@@ -2339,7 +2443,7 @@ msgstr "Programmalink toevoegen"
 
 msgctxt "#755"
 msgid "Edit program path"
-msgstr "Programalink wijzigen"
+msgstr "Programmalink wijzigen"
 
 msgctxt "#756"
 msgid "Edit program name"
@@ -2379,11 +2483,11 @@ msgstr "Cyaan"
 
 msgctxt "#766"
 msgid "Light grey"
-msgstr "Reserved"
+msgstr "Lichtgrijs"
 
 msgctxt "#767"
 msgid "Grey"
-msgstr "Reserved"
+msgstr "Grijs"
 
 msgctxt "#770"
 msgid "Error %i: share not available"
@@ -2399,15 +2503,15 @@ msgstr "Geluidshardware"
 
 msgctxt "#773"
 msgid "Seeking"
-msgstr "Uitpakken"
+msgstr "Zoeken"
 
 msgctxt "#774"
 msgid "Slideshow folder"
-msgstr "Map schermbeveiliging door diavoorstelling"
+msgstr "Map voor diavoorstelling"
 
 msgctxt "#775"
 msgid "Network interface"
-msgstr "Netwerk Verbinding"
+msgstr "Netwerkverbinding"
 
 msgctxt "#776"
 msgid "- Wireless network name (ESSID)"
@@ -2423,11 +2527,11 @@ msgstr "Draadloos Netwerk Beveiligingsniveau"
 
 msgctxt "#779"
 msgid "Save and apply network interface settings"
-msgstr "Opslaan en Toepassen Netwerk Instellingen"
+msgstr "Opslaan en toepassen netwerk instellingen"
 
 msgctxt "#780"
 msgid "No encryption"
-msgstr "Geen Encryptie"
+msgstr "Geen versleuteling"
 
 msgctxt "#781"
 msgid "WEP"
@@ -2443,15 +2547,15 @@ msgstr "WPA2"
 
 msgctxt "#784"
 msgid "Applying network interface settings. Please wait."
-msgstr "Netwerk instellingen toepassen. Een ogenblik geduld."
+msgstr "Netwerkinstellingen toepassen. Een ogenblik geduld."
 
 msgctxt "#785"
 msgid "Network interface restarted successfully."
-msgstr "Herstarten netwerk verbinding succesvol."
+msgstr "Netwerkverbinding succesvol herstart."
 
 msgctxt "#786"
 msgid "Network interface did not start successfully."
-msgstr "Herstarten netwerk verbinding niet succesvol."
+msgstr "Netwerkverbinding kon niet herstart worden."
 
 msgctxt "#787"
 msgid "Interface disabled"
@@ -2459,31 +2563,31 @@ msgstr "Verbinding uitgeschakeld"
 
 msgctxt "#788"
 msgid "Network interface disabled successfully."
-msgstr "Verbinding uitgeschakelen succesvol."
+msgstr "Verbinding succesvol uitgeschakeld."
 
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
-msgstr "Naam Draadloos Netwerk (ESSID)"
+msgstr "Naam draadloos netwerk (ESSID)"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
-msgstr "Activeer gebeurtenissen op afstand"
+msgstr "Programma's op dit systeem toestaan XBMC te besturen"
 
 msgctxt "#792"
 msgid "Port"
-msgstr "Gebeurtenissen op afstand-poort"
+msgstr "Poort"
 
 msgctxt "#793"
 msgid "Port range"
-msgstr "Gebeurtenissen op afstand-poortbereik"
+msgstr "Poortbereik"
 
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
-msgstr "Ontvang gebeurtenissen van andere computers"
+msgstr "Programma's op andere systemen toestaan XBMC te besturen"
 
 msgctxt "#795"
 msgid "Initial repeat delay (ms)"
-msgstr "Initiële Herhalingsvertraging (ms)"
+msgstr "Initiële herhalingsvertraging (ms)"
 
 msgctxt "#796"
 msgid "Continuous repeat delay (ms)"
@@ -2491,23 +2595,23 @@ msgstr "Doorgaande herhalingsvertraging (ms)"
 
 msgctxt "#797"
 msgid "Maximum number of clients"
-msgstr "Maximaal aantal clients"
+msgstr "Maximaal aantal gebruikers"
 
 msgctxt "#798"
 msgid "Internet access"
-msgstr "Internet toegang"
+msgstr "Internettoegang"
 
 msgctxt "#850"
 msgid "Invalid port number entered"
-msgstr "Ongeldige poort nummer ingevoerd"
+msgstr "Ongeldig poortnummer ingevoerd"
 
 msgctxt "#851"
 msgid "Valid port range is 1-65535"
-msgstr "Geldig poort bereik is 1-65535"
+msgstr "Geldig poortbereik is 1-65535"
 
 msgctxt "#852"
 msgid "Valid port range is 1024-65535"
-msgstr "Geldig poort bereik is 1024-65535"
+msgstr "Geldig poortbereik is 1024-65535"
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -2515,11 +2619,11 @@ msgstr "Test schermbeveiliging"
 
 msgctxt "#1001"
 msgid "Unable to connect"
-msgstr "Verbinden niet mogelijk"
+msgstr "Verbinding mislukt"
 
 msgctxt "#1002"
 msgid "XBMC was unable to connect to the network location."
-msgstr "XBMC kon niet verbinden met de netwerk locatie."
+msgstr "XBMC kon niet verbinden met de netwerklocatie."
 
 msgctxt "#1003"
 msgid "This could be due to the network not being connected."
@@ -2535,7 +2639,7 @@ msgstr "IP-adres"
 
 msgctxt "#1007"
 msgid "Add network location"
-msgstr "Voeg netwerklocatie toe"
+msgstr "Netwerklocatie toevoegen"
 
 msgctxt "#1008"
 msgid "Protocol"
@@ -2543,19 +2647,19 @@ msgstr "Protocol"
 
 msgctxt "#1009"
 msgid "Server address"
-msgstr "Server Adres"
+msgstr "Serveradres"
 
 msgctxt "#1010"
 msgid "Server name"
-msgstr "Server Naam"
+msgstr "Servernaam"
 
 msgctxt "#1011"
 msgid "Remote path"
-msgstr "Remote Pad"
+msgstr "Remote pad"
 
 msgctxt "#1012"
 msgid "Shared folder"
-msgstr "Gedeelde Map"
+msgstr "Gedeelde map"
 
 msgctxt "#1013"
 msgid "Port"
@@ -2567,7 +2671,7 @@ msgstr "Gebruikersnaam"
 
 msgctxt "#1015"
 msgid "Browse for network server"
-msgstr "Netwerkserver"
+msgstr "Bladeren naar netwerkserver"
 
 msgctxt "#1016"
 msgid "Enter the network address of the server"
@@ -2587,11 +2691,11 @@ msgstr "Voer de gebruikersnaam in"
 
 msgctxt "#1020"
 msgid "Add %s source"
-msgstr "%s bron toevoegen"
+msgstr "%s locatie toevoegen"
 
 msgctxt "#1021"
 msgid "Enter the paths or browse for the media locations."
-msgstr "Voer locatie's in of blader naar de locatie's."
+msgstr "Voer locaties in of blader naar de locaties."
 
 msgctxt "#1022"
 msgid "Enter a name for this media Source."
@@ -2623,7 +2727,7 @@ msgstr "Pas %s locatie aan"
 
 msgctxt "#1029"
 msgid "Enter the new label"
-msgstr "Voer nieuwe label in"
+msgstr "Nieuw label opgeven"
 
 msgctxt "#1030"
 msgid "Browse for image"
@@ -2719,11 +2823,11 @@ msgstr "Werkgroep"
 
 msgctxt "#1203"
 msgid "Default username"
-msgstr "Standaard gebruikersnaam"
+msgstr "Standaardgebruikersnaam"
 
 msgctxt "#1204"
 msgid "Default password"
-msgstr "Standaard wachtwoord"
+msgstr "Standaardwachtwoord"
 
 msgctxt "#1207"
 msgid "WINS server"
@@ -2771,7 +2875,7 @@ msgstr "Video en afbeeldingen"
 
 msgctxt "#1219"
 msgid "Video & files"
-msgstr "Video en bestanden"
+msgstr "Video - Bestanden"
 
 msgctxt "#1220"
 msgid "Pictures & files"
@@ -2875,15 +2979,15 @@ msgstr "Zeroconf publishing"
 
 msgctxt "#1300"
 msgid "Custom audio device"
-msgstr "Aangepaste geluidskaart"
+msgstr "Aangepaste audio apparaat"
 
 msgctxt "#1301"
 msgid "Custom passthrough device"
-msgstr "Aangepaste Passthrough apparaat"
+msgstr "Aangepast doorvoerapparaat"
 
 msgctxt "#1396"
 msgid "Drifting"
-msgstr "Driftsneeuw"
+msgstr "Stuifsneeuw"
 
 msgctxt "#1397"
 msgid "and"
@@ -2979,11 +3083,11 @@ msgstr "T-Showers"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
-msgstr "Energiebezuiniging inschakelen bij niet gebruik"
+msgstr "Schakel beeldscherm uit bij inactiviteit"
 
 msgctxt "#2050"
 msgid "Runtime"
-msgstr "Speelduur:"
+msgstr "Speelduur"
 
 msgctxt "#2100"
 msgid "Script failed! : %s"
@@ -2995,7 +3099,7 @@ msgstr "Gebruik LCD"
 
 msgctxt "#10000"
 msgid "Home"
-msgstr "Home"
+msgstr "Beginscherm"
 
 msgctxt "#10001"
 msgid "Programs"
@@ -3019,7 +3123,7 @@ msgstr "Muziek"
 
 msgctxt "#10006"
 msgid "Videos"
-msgstr "Video's"
+msgstr "Video"
 
 msgctxt "#10007"
 msgid "System information"
@@ -3027,51 +3131,51 @@ msgstr "Systeeminformatie"
 
 msgctxt "#10008"
 msgid "Settings - General"
-msgstr "Instellingen->Algemeen"
+msgstr "Instellingen - Algemeen"
 
 msgctxt "#10009"
 msgid "Settings - Screen"
-msgstr "Instellingen->Beeld"
+msgstr "Instellingen - Beeld"
 
 msgctxt "#10010"
 msgid "Settings - Appearance - GUI Calibration"
-msgstr " Instellingen->Uiterlijk->GUI-kalibratie"
+msgstr "Instellingen - Interface-kalibratie"
 
 msgctxt "#10011"
 msgid "Settings - Videos - Screen Calibration"
-msgstr " Instellingen->Films->Schermkalibratie"
+msgstr "Instellingen - Schermkalibratie"
 
 msgctxt "#10012"
 msgid "Settings - Pictures"
-msgstr "Instellingen->Afbeeldingen"
+msgstr "Instellingen - Afbeeldingen"
 
 msgctxt "#10013"
 msgid "Settings - Programs"
-msgstr "Instellingen->Programma'"
+msgstr "Instellingen - Programma's"
 
 msgctxt "#10014"
 msgid "Settings - Weather"
-msgstr "Instellingen->Weer"
+msgstr "Instellingen - Weer"
 
 msgctxt "#10015"
 msgid "Settings - Music"
-msgstr "Instellingen->Muziek"
+msgstr "Instellingen - Muziek"
 
 msgctxt "#10016"
 msgid "Settings - System"
-msgstr "Instellingen->Systeem"
+msgstr "Instellingen - Systeem"
 
 msgctxt "#10017"
 msgid "Settings - Videos"
-msgstr "Instellingen->Films"
+msgstr "Instellingen - Video's"
 
 msgctxt "#10018"
 msgid "Settings - Network"
-msgstr "Instellingen->Netwerk"
+msgstr "Instellingen - Netwerk"
 
 msgctxt "#10019"
 msgid "Settings - Appearance"
-msgstr "Instellingen->Uiterlijk"
+msgstr "Instellingen - Uiterlijk"
 
 msgctxt "#10020"
 msgid "Scripts"
@@ -3083,7 +3187,7 @@ msgstr "Video/Afspeellijst"
 
 msgctxt "#10034"
 msgid "Settings - Profiles"
-msgstr "Instellingen->Profielen"
+msgstr "Instellingen - Profielen"
 
 msgctxt "#10100"
 msgid "Yes/No dialog"
@@ -3371,7 +3475,7 @@ msgstr "Vergrendeling verwijderen"
 
 msgctxt "#12337"
 msgid "Numeric password"
-msgstr "Nummeriek wachtwoord"
+msgstr "Numeriek wachtwoord"
 
 msgctxt "#12338"
 msgid "Gamepad button combo"
@@ -3407,7 +3511,7 @@ msgstr "Toegang geweigerd"
 
 msgctxt "#12346"
 msgid "Password retry limit exceeded."
-msgstr "Wachtwoord invoerpogingen overschreden"
+msgstr "Maximaal aantal pogingen bereikt"
 
 msgctxt "#12347"
 msgid "The system will now shut off."
@@ -3463,11 +3567,11 @@ msgstr "Dit zal alle voorgaande opgeslagen waarden resetten"
 
 msgctxt "#12378"
 msgid "Amount of time to display each image"
-msgstr "Elke afbeelding weergeven gedurende"
+msgstr "Afbeeldingen weergeven gedurende"
 
 msgctxt "#12379"
 msgid "Use pan and zoom effects"
-msgstr "Gebruik panning en zooming effecten"
+msgstr "Pan- en zoomeffecten gebruiken"
 
 msgctxt "#12380"
 msgid "Play NTSC videos at PAL rates"
@@ -3483,11 +3587,11 @@ msgstr "Speel NTSC videos op PAL60 af"
 
 msgctxt "#12383"
 msgid "12 hour clock"
-msgstr "12 uurs klok"
+msgstr "12-uursformaat"
 
 msgctxt "#12384"
 msgid "24 hour clock"
-msgstr "24 uurs klok"
+msgstr "24-uursformaat"
 
 msgctxt "#12385"
 msgid "Day/Month"
@@ -3499,7 +3603,7 @@ msgstr "Maand/Dag"
 
 msgctxt "#12390"
 msgid "System uptime"
-msgstr "Systeem draatijd"
+msgstr "Systeem actief"
 
 msgctxt "#12391"
 msgid "Minutes"
@@ -3507,7 +3611,7 @@ msgstr "minuten"
 
 msgctxt "#12392"
 msgid "Hours"
-msgstr "uur"
+msgstr "uren"
 
 msgctxt "#12393"
 msgid "Days"
@@ -3515,7 +3619,7 @@ msgstr "dagen"
 
 msgctxt "#12394"
 msgid "Total uptime"
-msgstr "Totale draaitijd"
+msgstr "Totale activiteit"
 
 msgctxt "#12600"
 msgid "Weather"
@@ -3535,7 +3639,7 @@ msgstr "Systeem"
 
 msgctxt "#13001"
 msgid "Immediate HD spindown"
-msgstr "Hardeschijf onmiddelijk uitschakelen"
+msgstr "Harde schijf onmiddellijk uitschakelen"
 
 msgctxt "#13002"
 msgid "Video only"
@@ -3551,7 +3655,7 @@ msgstr "- Minimale bestandsduur"
 
 msgctxt "#13005"
 msgid "Shutdown"
-msgstr "Uitschakelen"
+msgstr "Computer uitschakelen"
 
 msgctxt "#13006"
 msgid "Dashboard"
@@ -3563,7 +3667,7 @@ msgstr "Aangepast dashboard gebruiken"
 
 msgctxt "#13008"
 msgid "Shutdown function"
-msgstr "Standaard afsluitmodus"
+msgstr "Standaard afsluitmethode"
 
 msgctxt "#13009"
 msgid "Quit"
@@ -3571,11 +3675,11 @@ msgstr "Afsluiten"
 
 msgctxt "#13010"
 msgid "Hibernate"
-msgstr "Slaapstand"
+msgstr "Sluimerstand"
 
 msgctxt "#13011"
 msgid "Suspend"
-msgstr "Annuleren"
+msgstr "Slaapstand"
 
 msgctxt "#13012"
 msgid "Exit"
@@ -3591,23 +3695,23 @@ msgstr "minimaliseer"
 
 msgctxt "#13015"
 msgid "Power button action"
-msgstr "Actie voor Aan/Uit knop"
+msgstr "Actie voor aan/uitknop"
 
 msgctxt "#13020"
 msgid "Is another session active, perhaps over ssh?"
-msgstr "is er een andere sessie actief, wellicht SSH ?"
+msgstr "Er is een andere sessie actief, wellicht SSH?"
 
 msgctxt "#13021"
 msgid "Mounted removable harddrive"
-msgstr "Mount verwisselbare hardeschijf ?"
+msgstr "Verwisselbare harde schijf aankoppelen?"
 
 msgctxt "#13022"
 msgid "Unsafe device removal"
-msgstr "Onveilig apparaat verwijderd"
+msgstr "Apparaat onveilig verwijderd"
 
 msgctxt "#13023"
 msgid "Successfully removed device"
-msgstr "Succesvol verwijderd apparaat"
+msgstr "Apparaat succesvol verwijderd"
 
 msgctxt "#13024"
 msgid "Joystick plugged"
@@ -3615,11 +3719,11 @@ msgstr "Joystick aangesloten"
 
 msgctxt "#13025"
 msgid "Joystick unplugged"
-msgstr "Joystick unplugged"
+msgstr "Joystick los gekoppeld"
 
 msgctxt "#13100"
 msgid "Flicker filter"
-msgstr "flikkerfilter"
+msgstr "Flikkerfilter"
 
 msgctxt "#13101"
 msgid "Let driver choose (requires restart)"
@@ -3643,11 +3747,11 @@ msgstr "Altijd aan"
 
 msgctxt "#13109"
 msgid "Test & apply resolution"
-msgstr "Test Resolutie"
+msgstr "Resolutie testen en toepassen"
 
 msgctxt "#13110"
 msgid "Save resolution?"
-msgstr "Resolutie Opslaan ?"
+msgstr "Resolutie behouden?"
 
 msgctxt "#13111"
 msgid "Would you like to keep this resolution?"
@@ -3655,7 +3759,7 @@ msgstr "Wilt u deze resolutie behouden?"
 
 msgctxt "#13112"
 msgid "High quality upscaling"
-msgstr "Softwarematige Hoge Kwaliteit Beeldverbetering"
+msgstr "Hoge kwaliteit beeldverbetering"
 
 msgctxt "#13113"
 msgid "Disabled"
@@ -3663,19 +3767,19 @@ msgstr "Uitgeschakeld"
 
 msgctxt "#13114"
 msgid "Enabled for SD content"
-msgstr "Inschakelen voor SD beelden"
+msgstr "Inschakelen voor SD-beelden"
 
 msgctxt "#13115"
 msgid "Always enabled"
-msgstr "Altijd Inschakelen"
+msgstr "Altijd inschakelen"
 
 msgctxt "#13116"
 msgid "Upscaling method"
-msgstr "Beeldverbeterings Methode"
+msgstr "Beeldverbeteringsmethode"
 
 msgctxt "#13117"
 msgid "Bicubic"
-msgstr "Bicubic"
+msgstr "Bicubisch"
 
 msgctxt "#13118"
 msgid "Lanczos"
@@ -3687,11 +3791,15 @@ msgstr "Sinc"
 
 msgctxt "#13120"
 msgid "VDPAU"
-msgstr "Strikte Pixmap-Texture Binding (opnieuw opstarten vereist)"
+msgstr "VDPAU"
+
+msgctxt "#13121"
+msgid "VDPAU HQ Upscaling level"
+msgstr "VDPAU HQ Upscaling level"
 
 msgctxt "#13130"
 msgid "Blank other displays"
-msgstr "Beeldscherm blanking"
+msgstr "Stop doorgifte videosignaal aan andere beeldschermen"
 
 msgctxt "#13131"
 msgid "Disabled"
@@ -3699,27 +3807,27 @@ msgstr "Uitgeschakeld"
 
 msgctxt "#13132"
 msgid "Blank displays"
-msgstr "Blank Beeldscherm"
+msgstr "Stop doorgifte videosignaal"
 
 msgctxt "#13140"
 msgid "Active connections detected!"
-msgstr "Actieve connecties gedetecteerd!"
+msgstr "Actieve verbindingen gedetecteerd!"
 
 msgctxt "#13141"
 msgid "If you proceed, you might not be able to control XBMC"
-msgstr "Als je doorgaat, kan je XBMC mogelijk niet meer"
+msgstr "Als u doorgaat, kunt u XBMC mogelijk niet meer"
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "besturen. Weet je zeker dat je de Event Server wilt stoppen?"
+msgstr "besturen. Weet u zeker dat u de Event Server wilt stoppen?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
-msgstr "Verander Apple afstandsbediengsmodus?"
+msgstr "Verander Apple afstandsbedieningsmodus?"
 
 msgctxt "#13145"
 msgid "If you are currently using the Apple Remote to control"
-msgstr "Als je op dit moment de Apple afstandsbediening gebruikt"
+msgstr "Als u op dit moment de Apple afstandsbediening gebruikt"
 
 msgctxt "#13146"
 msgid "XBMC, changing this setting might affect your ability"
@@ -3855,7 +3963,7 @@ msgstr "Alarmklok"
 
 msgctxt "#13209"
 msgid "Alarm clock interval (in minutes)"
-msgstr "Alarmklok interval (in minuten)"
+msgstr "Alarmklokinterval (in minuten)"
 
 msgctxt "#13210"
 msgid "Started, alarm in %im"
@@ -3871,11 +3979,11 @@ msgstr "Gestopt met nog %im%is te gaan"
 
 msgctxt "#13249"
 msgid "Search for subtitles in RARs"
-msgstr "Zoeken naar ondertiteling in RARbestanden"
+msgstr "Naar ondertitels zoeken in RAR-archieven"
 
 msgctxt "#13250"
 msgid "Browse for subtitle..."
-msgstr "Ondertiteling zoeken"
+msgstr "Ondertitels zoeken"
 
 msgctxt "#13251"
 msgid "Move item"
@@ -3895,15 +4003,15 @@ msgstr "Hardware:"
 
 msgctxt "#13271"
 msgid "CPU Usage:"
-msgstr "CPU-gebruik:"
+msgstr "Belasting:"
 
 msgctxt "#13274"
 msgid "Connected, but no DNS is available."
-msgstr "XBMC is verbonden, maar geen DNS is beschikbaar."
+msgstr "XBMC is verbonden, maar geen DNS beschikbaar."
 
 msgctxt "#13275"
 msgid "Hard Disk"
-msgstr "hardeschijf"
+msgstr "Harde schijf"
 
 msgctxt "#13276"
 msgid "DVD-ROM"
@@ -3931,11 +4039,11 @@ msgstr "Hardware"
 
 msgctxt "#13283"
 msgid "Operating system:"
-msgstr "Kernelversie:"
+msgstr "Besturingssysteem:"
 
 msgctxt "#13284"
 msgid "CPU speed:"
-msgstr "CPU-snelheid:"
+msgstr "CPU snelheid:"
 
 msgctxt "#13285"
 msgid "Detected BIOS:"
@@ -3943,7 +4051,7 @@ msgstr "Gedetecteerde BIOS:"
 
 msgctxt "#13286"
 msgid "Video encoder:"
-msgstr "Video Encoder:"
+msgstr "Video-encoder:"
 
 msgctxt "#13287"
 msgid "Screen resolution:"
@@ -3967,7 +4075,7 @@ msgstr "Modchip:"
 
 msgctxt "#13292"
 msgid "A/V cable:"
-msgstr "A/V Kabel:"
+msgstr "A/V-kabel:"
 
 msgctxt "#13293"
 msgid "Video & XBE region:"
@@ -3975,7 +4083,7 @@ msgstr "Video & XBE regio:"
 
 msgctxt "#13294"
 msgid "DVD region:"
-msgstr "DVD regio:"
+msgstr "DVD-regio:"
 
 msgctxt "#13295"
 msgid "Internet:"
@@ -3983,11 +4091,11 @@ msgstr "Internet:"
 
 msgctxt "#13296"
 msgid "Connected"
-msgstr "XBMC is verbonden"
+msgstr "Ja, verbonden met internet"
 
 msgctxt "#13297"
 msgid "Not connected. Check network settings."
-msgstr "XBMC is niet verbonden. Controleer netwerkinstellingen."
+msgstr "Nee, niet verbonden met internet. Controleer uw netwerkinstellingen."
 
 msgctxt "#13298"
 msgid "Xbox Live key:"
@@ -4007,7 +4115,7 @@ msgstr "Automatische ventilatorsnelheid"
 
 msgctxt "#13302"
 msgid "Fan speed override"
-msgstr "Ventilator snelheidsregeling"
+msgstr "Snelheidsregeling ventilator"
 
 msgctxt "#13303"
 msgid "- Fonts"
@@ -4015,7 +4123,7 @@ msgstr "Lettertype voor skin"
 
 msgctxt "#13304"
 msgid "Enable flipping bi-directional strings"
-msgstr "Bi-directionale tekst omdraaien"
+msgstr "Bidirectionele tekst omdraaien"
 
 msgctxt "#13305"
 msgid "Show RSS news feeds"
@@ -4023,15 +4131,15 @@ msgstr "RSS-feeds inschakelen"
 
 msgctxt "#13306"
 msgid "Show parent folder items"
-msgstr "Hoofdmap tonen"
+msgstr "Hoofdmap items tonen"
 
 msgctxt "#13307"
 msgid "Track naming template"
-msgstr "Tracks weergeven als"
+msgstr "Nummers in lijst weergeven als"
 
 msgctxt "#13308"
 msgid "Do you wish to reboot your system"
-msgstr "Wilt u XBMC opnieuw opstarten"
+msgstr "Wilt u het systeem herstarten"
 
 msgctxt "#13309"
 msgid "instead of just XBMC?"
@@ -4039,27 +4147,27 @@ msgstr "in plaats van alleen XBMC?"
 
 msgctxt "#13310"
 msgid "Zoom effect"
-msgstr "Zoom effect"
+msgstr "Zoomeffect"
 
 msgctxt "#13311"
 msgid "Float effect"
-msgstr "Zweef effect"
+msgstr "Zweefeffect"
 
 msgctxt "#13312"
 msgid "Black bar reduction"
-msgstr "Rand reductie"
+msgstr "Randreductie"
 
 msgctxt "#13313"
 msgid "Restart"
-msgstr "Reset/Reboot"
+msgstr "Herinitialiseer/Herstart"
 
 msgctxt "#13314"
 msgid "Crossfade between songs"
-msgstr "Nummers overvloeien"
+msgstr "Nummers in elkaar laten overvloeien"
 
 msgctxt "#13315"
 msgid "Regenerate thumbnails"
-msgstr "Thumbnails heraanmaken"
+msgstr "Miniaturen regenereren"
 
 msgctxt "#13316"
 msgid "Recursive thumbnails"
@@ -4095,15 +4203,15 @@ msgstr "CD+G (karaoke) inschakelen"
 
 msgctxt "#13324"
 msgid "Background transparency"
-msgstr "Achtergrond doorzichtigheid"
+msgstr "Doorzichtigheid achtergrond"
 
 msgctxt "#13325"
 msgid "Foreground transparency"
-msgstr "Voorgrond doorzichtigheid"
+msgstr "Doorzichtigheid voorgrond"
 
 msgctxt "#13326"
 msgid "A/V delay"
-msgstr "Synchronisatie"
+msgstr "A/V synchronisatie"
 
 msgctxt "#13327"
 msgid "Karaoke"
@@ -4183,7 +4291,7 @@ msgstr "Filminformatie"
 
 msgctxt "#13347"
 msgid "Queue item"
-msgstr "Toevoegen aan afspeellijst"
+msgstr "Aan afspeellijst toevoegen"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
@@ -4191,7 +4299,7 @@ msgstr "IMDb doorzoeken..."
 
 msgctxt "#13349"
 msgid "Scan for new content"
-msgstr "Scan voor nieuwe inhoud"
+msgstr "Naar nieuwe inhoud scannen"
 
 msgctxt "#13350"
 msgid "Now playing..."
@@ -4203,11 +4311,11 @@ msgstr "Albuminformatie"
 
 msgctxt "#13352"
 msgid "Scan item to library"
-msgstr "Aan database toevoegen"
+msgstr "Aan bibliotheek toevoegen"
 
 msgctxt "#13353"
 msgid "Stop scanning"
-msgstr "Stop scannen"
+msgstr "Scan annuleren"
 
 msgctxt "#13354"
 msgid "Render method"
@@ -4235,7 +4343,7 @@ msgstr "Afbeelding artiest instellen"
 
 msgctxt "#13360"
 msgid "Automatically generate thumbnails"
-msgstr "Thumbnails automatisch aanmaken"
+msgstr "Miniaturen automatisch aanmaken"
 
 msgctxt "#13361"
 msgid "Enable voice"
@@ -4291,7 +4399,7 @@ msgstr "Op tijd gebaseerd zoeken"
 
 msgctxt "#13387"
 msgid "Track naming template - right"
-msgstr "Track weergeven als (rechts)"
+msgstr "In rechter kolom van lijst weergeven:"
 
 msgctxt "#13388"
 msgid "Preset"
@@ -4307,7 +4415,7 @@ msgstr "Er zijn geen instellingen beschikbaar voor deze visualisatie"
 
 msgctxt "#13391"
 msgid "Eject/Load"
-msgstr "Tray open/dicht"
+msgstr "Lade open/dicht"
 
 msgctxt "#13392"
 msgid "Use visualization if playing audio"
@@ -4319,19 +4427,19 @@ msgstr "Bereken grootte"
 
 msgctxt "#13394"
 msgid "Calculating folder size"
-msgstr "Bereken map grootte"
+msgstr "Bereken mapgrootte"
 
 msgctxt "#13395"
 msgid "Video settings"
-msgstr "Video instellingen"
+msgstr "Videoinstellingen"
 
 msgctxt "#13396"
 msgid "Audio and subtitle settings"
-msgstr "Geluids en ondertiteling instellingen"
+msgstr "Geluids- en ondertitelinstellingen"
 
 msgctxt "#13397"
 msgid "Enable subtitles"
-msgstr "Ondertiteling gebruiken"
+msgstr "Ondertitels gebruiken"
 
 msgctxt "#13398"
 msgid "Shortcuts"
@@ -4339,11 +4447,11 @@ msgstr "Posities"
 
 msgctxt "#13399"
 msgid "Ignore articles when sorting (e.g. \"the\")"
-msgstr "Negeer 'The' tijdens sorteren"
+msgstr "Lidwoorden negeren tijdens sorteren (bijv. The & De)"
 
 msgctxt "#13400"
 msgid "Crossfade between songs on the same album"
-msgstr "Albums laten overvloeien"
+msgstr "Nummers van hetzelfde album in elkaar laten overvloeien"
 
 msgctxt "#13401"
 msgid "Browse for %s"
@@ -4355,7 +4463,7 @@ msgstr "Trackpositie weergeven"
 
 msgctxt "#13403"
 msgid "Clear default"
-msgstr "Default leegmaken"
+msgstr "Standaard leegmaken"
 
 msgctxt "#13404"
 msgid "Resume"
@@ -4363,7 +4471,7 @@ msgstr "Hervatten"
 
 msgctxt "#13405"
 msgid "Get thumb"
-msgstr "Thumbnails"
+msgstr "Miniaturen"
 
 msgctxt "#13406"
 msgid "Picture information"
@@ -4383,23 +4491,23 @@ msgstr "Top 250"
 
 msgctxt "#13410"
 msgid "Tune in on Last.fm"
-msgstr "Beluister het op Last.FM"
+msgstr "Op Last.FM beluisteren"
 
 msgctxt "#13411"
 msgid "Minimum fan speed"
-msgstr "Minimum ventilatorsnelheid"
+msgstr "Minimale ventilatorsnelheid"
 
 msgctxt "#13413"
 msgid "Downloading"
-msgstr "Download"
+msgstr "Downloaden"
 
 msgctxt "#13414"
 msgid "Include artists who appear only on compilations"
-msgstr "Verberg artiest die alleen op compilatie's voorkomen"
+msgstr "Artiesten weergeven die alleen op verzamel CD's voorkomen"
 
 msgctxt "#13415"
 msgid "Render method"
-msgstr "Render Methode"
+msgstr "Rendermethode"
 
 msgctxt "#13416"
 msgid "Auto detect"
@@ -4407,11 +4515,11 @@ msgstr "Automatisch detecteren"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Eenvoudige Shaders (ARB)"
+msgstr "Eenvoudige shaders (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
-msgstr "Geavanceerde Shaders (GLSL)"
+msgstr "Geavanceerde shaders (GLSL)"
 
 msgctxt "#13419"
 msgid "Software"
@@ -4427,31 +4535,31 @@ msgstr "VDPAU"
 
 msgctxt "#13422"
 msgid "Start slideshow here"
-msgstr "Start diavoorstelling"
+msgstr "Diavoorstelling starten"
 
 msgctxt "#13423"
 msgid "Remember for this path"
-msgstr "Herinner voor dit pad"
+msgstr "Onthouden voor dit pad"
 
 msgctxt "#13424"
 msgid "Use pixel buffer objects"
-msgstr "Gebruik pixel buffer objecten"
+msgstr "Gebruik pixelbufferobjecten"
 
 msgctxt "#13500"
 msgid "A/V sync method"
-msgstr "A/V sync methode"
+msgstr "A/V-synchronisatiemethode"
 
 msgctxt "#13501"
 msgid "Audio clock"
-msgstr "Audio klok"
+msgstr "Audiosignaal"
 
 msgctxt "#13502"
 msgid "Video clock (Drop/Dupe audio)"
-msgstr "Video klok (Drop/Dupe audio)"
+msgstr "Videosignaal (Drop/Dupe audio)"
 
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
-msgstr "Video klok (Resample audio)"
+msgstr "Videosignaal (Resample audio)"
 
 msgctxt "#13504"
 msgid "Maximum resample amount (%)"
@@ -4459,11 +4567,11 @@ msgstr "Maximum resample amount (%)"
 
 msgctxt "#13505"
 msgid "Resample quality"
-msgstr "Resample quality"
+msgstr "Resamplingkwaliteit"
 
 msgctxt "#13506"
 msgid "Low(fast)"
-msgstr "Laag"
+msgstr "Laag (snel)"
 
 msgctxt "#13507"
 msgid "Medium"
@@ -4475,11 +4583,11 @@ msgstr "Hoog"
 
 msgctxt "#13509"
 msgid "Really high(slow!)"
-msgstr "Echt hoog"
+msgstr "Echt hoog (traag!)"
 
 msgctxt "#13510"
 msgid "Sync playback to display"
-msgstr "Sync playback to display"
+msgstr "Synchroniseer video met beeldschermfrequentie"
 
 msgctxt "#13600"
 msgid "Apple remote"
@@ -4487,11 +4595,11 @@ msgstr "Apple afstandsbediening"
 
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
-msgstr "Altijd draaiend"
+msgstr "Gebruik afstandsbediening om XBMC zelf op te staren"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
-msgstr "Start ondertiteling eerder/later"
+msgstr "Ondertitel eerder/later starten"
 
 msgctxt "#13610"
 msgid "Disabled"
@@ -4531,15 +4639,15 @@ msgstr "Afspeellijst downloaden..."
 
 msgctxt "#14004"
 msgid "Downloading streams list..."
-msgstr "Streams lijst downloaden..."
+msgstr "Streamlijst downloaden..."
 
 msgctxt "#14005"
 msgid "Parsing streams list..."
-msgstr "Steam lijst verwerken..."
+msgstr "Streamlijst verwerken..."
 
 msgctxt "#14006"
 msgid "Downloading streams list failed"
-msgstr "Streams lijst downloaden mislukt"
+msgstr "Streamlijst downloaden mislukt"
 
 msgctxt "#14007"
 msgid "Downloading playlist file failed"
@@ -4551,11 +4659,11 @@ msgstr "Spellocatie"
 
 msgctxt "#14010"
 msgid "Auto switch to thumbs based on"
-msgstr "Automatisch omschakelen naar thumbnails als"
+msgstr "Automatisch overschakelen naar miniaturen als"
 
 msgctxt "#14011"
 msgid "Enable auto switching to thumbs view"
-msgstr "Automatisch omschakelen naar thumbnails"
+msgstr "Automatisch overschakelen naar miniaturen"
 
 msgctxt "#14012"
 msgid "- Use large icons"
@@ -4571,15 +4679,15 @@ msgstr "- Percentage"
 
 msgctxt "#14015"
 msgid "No files and at least one thumb"
-msgstr "Geen bestanden en minimaal 1 thumb"
+msgstr "Geen bestanden en minimaal 1 miniatuur"
 
 msgctxt "#14016"
 msgid "At least one file and thumb"
-msgstr "Tenminste 1 thumbnail"
+msgstr "Tenminste 1 miniatuur"
 
 msgctxt "#14017"
 msgid "Percentage of thumbs"
-msgstr "Het percentage thumbnails"
+msgstr "Het percentage miniaturen"
 
 msgctxt "#14018"
 msgid "View options"
@@ -4607,15 +4715,15 @@ msgstr "Geen TV"
 
 msgctxt "#14024"
 msgid "Enter the nearest large town"
-msgstr "De dichtstbijzijnde grote plaats"
+msgstr "Voer dichtstbijzijnde grote plaats in"
 
 msgctxt "#14025"
 msgid "Video/Audio/DVD cache - Harddisk"
-msgstr "Video/Geluid/DVD buffer - hardeschijf"
+msgstr "Video/Geluid/DVD buffer - Hardeschijf"
 
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
-msgstr "Video buffer - DVD"
+msgstr "Videobuffer - DVD"
 
 msgctxt "#14027"
 msgid "- Local Network"
@@ -4639,7 +4747,7 @@ msgstr "- Internet"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
-msgstr "DVD buffer"
+msgstr "DVD-buffer"
 
 msgctxt "#14035"
 msgid "- Local Network"
@@ -4647,7 +4755,7 @@ msgstr "- Lokaal netwerk"
 
 msgctxt "#14036"
 msgid "Services"
-msgstr "Servers"
+msgstr "Diensten"
 
 msgctxt "#14038"
 msgid "Network settings changed"
@@ -4707,27 +4815,27 @@ msgstr "Datumnotatie"
 
 msgctxt "#14053"
 msgid "GUI filters"
-msgstr "GUI filters"
+msgstr "Interface-filters"
 
 msgctxt "#14055"
 msgid "Use background scanning"
-msgstr "Gebruik scannen op achtergrond"
+msgstr "Scannen op de achtergrond inschakelen"
 
 msgctxt "#14056"
 msgid "Stop scan"
-msgstr "Scan stoppen"
+msgstr "Scan annuleren"
 
 msgctxt "#14057"
 msgid "Not possible while scanning for media info"
-msgstr "Niet mogelijk tijdens scannen naar media	info"
+msgstr "Niet mogelijk tijdens scannen naar media-info"
 
 msgctxt "#14058"
 msgid "Film grain effect"
-msgstr "Filmkorrel effect"
+msgstr "Filmkorreleffect"
 
 msgctxt "#14059"
 msgid "Search for thumbnails on remote shares"
-msgstr "Thumbnails in netwerkmappen zoeken"
+msgstr "Miniaturen in netwerkmappen zoeken"
 
 msgctxt "#14060"
 msgid "Unknown type cache - Internet"
@@ -4755,7 +4863,7 @@ msgstr "Tijd instellen"
 
 msgctxt "#14066"
 msgid "Enter the time in 24 hour HH:MM format"
-msgstr "Geef de tijd in 24 uurs formaat (HH:MM)"
+msgstr "Geef de tijd in 24-uursformaat (HH:MM)"
 
 msgctxt "#14067"
 msgid "Enter the date in DD/MM/YYYY format"
@@ -4763,7 +4871,7 @@ msgstr "Geef de datum in DD/MM/YYYY formaat"
 
 msgctxt "#14068"
 msgid "Enter the IP address"
-msgstr "Geef het IP adres"
+msgstr "Voer IP-adres in"
 
 msgctxt "#14069"
 msgid "Apply these settings now?"
@@ -4775,7 +4883,7 @@ msgstr "Instellingen toepassen"
 
 msgctxt "#14071"
 msgid "Allow file renaming and deletion"
-msgstr "Bestanden hernoemen en verwijderen toestaan"
+msgstr "Hernoemen en verwijderen van bestanden toestaan"
 
 msgctxt "#14074"
 msgid "Set timezone"
@@ -4787,11 +4895,11 @@ msgstr "Automatische zomer-/wintertijd"
 
 msgctxt "#14076"
 msgid "Add to favourites"
-msgstr "Toevoegen aan favorieten"
+msgstr "Aan favorieten toevoegen"
 
 msgctxt "#14077"
 msgid "Remove from favourites"
-msgstr "Verwijderen uit favorieten"
+msgstr "Uit favorieten verwijderen"
 
 msgctxt "#14078"
 msgid "- Colours"
@@ -4799,7 +4907,7 @@ msgstr "Skinkleuren"
 
 msgctxt "#14079"
 msgid "Timezone country"
-msgstr "Tijdzone Land"
+msgstr "Tijdzone land"
 
 msgctxt "#14080"
 msgid "Timezone"
@@ -4807,19 +4915,19 @@ msgstr "Tijdzone"
 
 msgctxt "#14081"
 msgid "File lists"
-msgstr "Bestand lijsten"
+msgstr "Bestandslijsten"
 
 msgctxt "#14082"
 msgid "Show EXIF picture information"
-msgstr "Gebruik EXIF afbeelding informatie"
+msgstr "Toon EXIF afbeeldingsinformatie"
 
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
-msgstr "Gebruik een volledigscherm venster in plaats van een volledigscherm"
+msgstr "Gemaximaliseerd venster in plaats van volledig scherm"
 
 msgctxt "#14084"
 msgid "Queue songs on selection"
-msgstr "Zet nummers in wachtrij na selectie"
+msgstr "Bij selecteren nummers in de afspeellijst zetten "
 
 msgctxt "#14085"
 msgid "Play audio CDs automatically"
@@ -4835,19 +4943,23 @@ msgstr "DVD's"
 
 msgctxt "#14088"
 msgid "Play DVDs automatically"
-msgstr "Speel DVD's automatisch af"
+msgstr "DVD's automatisch afspelen"
 
 msgctxt "#14089"
 msgid "Font to use for text subtitles"
-msgstr "Lettertype voor text ondertiteling"
+msgstr "Lettertype voor ondertiteling"
 
 msgctxt "#14090"
 msgid "International"
-msgstr "Internationaal"
+msgstr "Land en Taal"
 
 msgctxt "#14091"
 msgid "Character set"
-msgstr "Tekenset"
+msgstr "Tekencodering (Unicode, UTF-8, ISO)"
+
+msgctxt "#14092"
+msgid "Debugging"
+msgstr "Fout registratie"
 
 msgctxt "#14093"
 msgid "Security"
@@ -4855,11 +4967,11 @@ msgstr "Beveiliging"
 
 msgctxt "#14094"
 msgid "Input devices"
-msgstr "Invoer apparaten"
+msgstr "Invoerapparaten"
 
 msgctxt "#14095"
 msgid "Power saving"
-msgstr "Energie beheer"
+msgstr "Energiebeheer"
 
 msgctxt "#15015"
 msgid "Remove"
@@ -4911,7 +5023,7 @@ msgstr "Navigatiegeluiden"
 
 msgctxt "#15109"
 msgid "Skin default"
-msgstr "Standaarduiterlijk"
+msgstr "Standaarduiterijk"
 
 msgctxt "#15111"
 msgid "- Theme"
@@ -4919,7 +5031,7 @@ msgstr "Thema"
 
 msgctxt "#15112"
 msgid "Default theme"
-msgstr "Standaardthema"
+msgstr "Standaard thema"
 
 msgctxt "#15200"
 msgid "Last.fm"
@@ -4983,7 +5095,7 @@ msgstr "Geleidelijke A/V Syncronisatie gebruiken"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
-msgstr "Bestandsnamen in thumbnail-weergave verbergen"
+msgstr "Bestandsnamen in miniatuurweergave verbergen"
 
 msgctxt "#15216"
 msgid "Play in party mode"
@@ -5219,7 +5331,7 @@ msgstr "Werkgroep niet gevonden"
 
 msgctxt "#15310"
 msgid "Opening multi-path source"
-msgstr "Openen multi-pad favoriet"
+msgstr "Openen multi-pad locatie"
 
 msgctxt "#15311"
 msgid "Path:"
@@ -5247,27 +5359,27 @@ msgstr "Geef een nieuwe titel"
 
 msgctxt "#16009"
 msgid "Enter the movie name"
-msgstr "Geef naam van de film op"
+msgstr "Geef naam van de film"
 
 msgctxt "#16010"
 msgid "Enter the profile name"
-msgstr "Geef profielnaam op"
+msgstr "Geef profielnaam"
 
 msgctxt "#16011"
 msgid "Enter the album name"
-msgstr "Geef albumnaam op"
+msgstr "Geef titel album"
 
 msgctxt "#16012"
 msgid "Enter the playlist name"
-msgstr "Geef naam afspeellijst op"
+msgstr "Geef naam afspeellijst"
 
 msgctxt "#16013"
 msgid "Enter new filename"
-msgstr "Geef nieuwe bestandsnaam op"
+msgstr "Geef nieuwe bestandsnaam"
 
 msgctxt "#16014"
 msgid "Enter folder name"
-msgstr "Geef mapnaam op"
+msgstr "Geef mapnaam"
 
 msgctxt "#16015"
 msgid "Enter directory"
@@ -5279,7 +5391,7 @@ msgstr "Beschikbare opties: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
 
 msgctxt "#16017"
 msgid "Enter search string"
-msgstr "Geef zoekwoord op"
+msgstr "Geef zoekopdracht"
 
 msgctxt "#16018"
 msgid "None"
@@ -5291,7 +5403,7 @@ msgstr "Automatisch selecteren"
 
 msgctxt "#16020"
 msgid "De-interlace"
-msgstr "DeInterlace"
+msgstr "Deinterlace"
 
 msgctxt "#16021"
 msgid "Bob"
@@ -5315,11 +5427,11 @@ msgstr "Geef de artiest op"
 
 msgctxt "#16026"
 msgid "Playback failed"
-msgstr "Playlist afspelen afgebroken"
+msgstr "Afspeellijst afspelen afgebroken"
 
 msgctxt "#16027"
 msgid "One or more items failed to play."
-msgstr "Te veel onderbroken punten"
+msgstr "Eén of meer item kan niet worden afgespeeld."
 
 msgctxt "#16028"
 msgid "Enter value"
@@ -5327,7 +5439,7 @@ msgstr "Voer waarde in"
 
 msgctxt "#16029"
 msgid "Check the log file for details."
-msgstr "Controleer het log bestand voor details."
+msgstr "Controleer het logbestand voor details."
 
 msgctxt "#16030"
 msgid "Party mode aborted."
@@ -5335,7 +5447,7 @@ msgstr "Feestmix afgebroken."
 
 msgctxt "#16031"
 msgid "No matching songs in the library."
-msgstr "Geen overeenkomstige nummers in database."
+msgstr "Geen overeenkomstige nummers in bibliotheek."
 
 msgctxt "#16032"
 msgid "Could not initialize database."
@@ -5343,11 +5455,11 @@ msgstr "Kon database niet initialiseren."
 
 msgctxt "#16033"
 msgid "Could not open database."
-msgstr "Kon database niet openen."
+msgstr "Kan database niet openen."
 
 msgctxt "#16034"
 msgid "Could not get songs from database."
-msgstr "Kon geen nummers van database verkrijgen."
+msgstr "Kan geen nummers uit database verkrijgen."
 
 msgctxt "#16035"
 msgid "Party mode playlist"
@@ -5359,19 +5471,19 @@ msgstr "Alle video's"
 
 msgctxt "#16101"
 msgid "Unwatched"
-msgstr "Niet bekeken video's"
+msgstr "Niet bekeken"
 
 msgctxt "#16102"
 msgid "Watched"
-msgstr "Bekeken video's"
+msgstr "Bekeken"
 
 msgctxt "#16103"
 msgid "Mark as watched"
-msgstr "Markeren als bekeken"
+msgstr "Als bekeken markeren"
 
 msgctxt "#16104"
 msgid "Mark as unwatched"
-msgstr "Markeren als niet-bekeken"
+msgstr "Als niet-bekeken markeren"
 
 msgctxt "#16105"
 msgid "Edit title"
@@ -5407,7 +5519,7 @@ msgstr "Kopiëren mislukt"
 
 msgctxt "#16202"
 msgid "Failed to copy at least one file"
-msgstr "Tenminste 1 bestand is niet gekopiëerd"
+msgstr "Tenminste 1 bestand is niet gekopieerd"
 
 msgctxt "#16203"
 msgid "Move failed"
@@ -5427,11 +5539,11 @@ msgstr "Tenminste 1 bestand is niet verwijderd"
 
 msgctxt "#16300"
 msgid "Video scaling method"
-msgstr "Video Verbeter Methode"
+msgstr "Videoschalingsmethode"
 
 msgctxt "#16301"
 msgid "Nearest neighbour"
-msgstr "Nearest Neighbour"
+msgstr "Naaste buur"
 
 msgctxt "#16302"
 msgid "Bilinear"
@@ -5485,21 +5597,25 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse telecine"
 
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "Kwaliteitsverbetering video"
+
 msgctxt "#17500"
 msgid "Display sleep timeout"
-msgstr "Beeldscherm Uitschakel Tijd"
+msgstr "Uitschakeltijd beeldscherm"
 
 msgctxt "#19000"
 msgid "Switch to channel"
-msgstr "Verander van kanaal"
+msgstr "Kanaal wijzigen"
 
 msgctxt "#20000"
 msgid "Saved music folder"
-msgstr "CD-ripmap"
+msgstr "Opgeslagen muziek map..."
 
 msgctxt "#20001"
 msgid "Use external DVD player"
-msgstr "Gebruik andere DVD-speler"
+msgstr "Andere DVD-speler gebruiken"
 
 msgctxt "#20002"
 msgid "External DVD player"
@@ -5515,7 +5631,7 @@ msgstr "Screenshotmap"
 
 msgctxt "#20006"
 msgid "Playlists folder"
-msgstr "Playlistmap"
+msgstr "Afspeellijstmap"
 
 msgctxt "#20007"
 msgid "Recordings"
@@ -5527,7 +5643,7 @@ msgstr "Screenshots"
 
 msgctxt "#20009"
 msgid "Use XBMC"
-msgstr "Gebruik XBMC"
+msgstr "XBMC gebruiken"
 
 msgctxt "#20011"
 msgid "Music playlists"
@@ -5535,7 +5651,7 @@ msgstr "Muziekafspeellijsten"
 
 msgctxt "#20012"
 msgid "Video playlists"
-msgstr "Video-afspeellijsten"
+msgstr "Videoafspeellijsten"
 
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
@@ -5543,7 +5659,7 @@ msgstr "Wilt u het spel starten?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "Sorteer op: Afspeellijst"
+msgstr "Sorteer: afspeellijst"
 
 msgctxt "#20015"
 msgid "Remote thumb"
@@ -5563,7 +5679,7 @@ msgstr "Geen afbeelding"
 
 msgctxt "#20019"
 msgid "Choose thumbnail"
-msgstr "Thumbnail kiezen"
+msgstr "Miniatuur kiezen"
 
 msgctxt "#20023"
 msgid "Conflict"
@@ -5579,23 +5695,23 @@ msgstr "Scan alles"
 
 msgctxt "#20026"
 msgid "Region"
-msgstr "Land"
+msgstr "Regio"
 
 msgctxt "#20037"
 msgid "Summary"
-msgstr "Samenvatting"
+msgstr "Overzicht"
 
 msgctxt "#20038"
 msgid "Lock music window"
-msgstr "Vergrendel muzieksectie"
+msgstr "Muzieksectie vergrendelen"
 
 msgctxt "#20039"
 msgid "Lock videos window"
-msgstr "Vergrendel Videosectie"
+msgstr "Videosectie vergrendelen"
 
 msgctxt "#20040"
 msgid "Lock pictures window"
-msgstr "Vergrendel afbeeldingensectie"
+msgstr "Afbeeldingensectie vergrendelen"
 
 msgctxt "#20041"
 msgid "Lock programs, saves & scripts windows"
@@ -5603,23 +5719,23 @@ msgstr "Vergrendel programma en scripts-secties"
 
 msgctxt "#20042"
 msgid "Lock file manager"
-msgstr "Vergrendel bestandsbeheer"
+msgstr "Bestandsbeheer vergrendelen"
 
 msgctxt "#20043"
 msgid "Lock settings"
-msgstr "Vergrendel instellingen"
+msgstr "Instellingen vergrendelen"
 
 msgctxt "#20044"
 msgid "Start fresh"
-msgstr "Start vernieuwd"
+msgstr "Met schone lei starten"
 
 msgctxt "#20045"
 msgid "Enter master mode"
-msgstr "Schakel om naar ontgrendelde modus"
+msgstr "Naar ontgrendelde modus overschakelen"
 
 msgctxt "#20046"
 msgid "Leave master mode"
-msgstr "Verlaat ontgrendelde modus"
+msgstr "Ontgrendelde modus verlaten"
 
 msgctxt "#20047"
 msgid "Create profile '%s'?"
@@ -5627,19 +5743,19 @@ msgstr "Profiel '%s' maken?"
 
 msgctxt "#20048"
 msgid "Start with fresh settings"
-msgstr "Begin met verse begin instellingen"
+msgstr "Begin met standaardinstellingen"
 
 msgctxt "#20049"
 msgid "Best available"
-msgstr "Beste beschikbaar"
+msgstr "Best beschikbare"
 
 msgctxt "#20050"
 msgid "Auto-switch between 16x9 and 4x3"
-msgstr "Schakel auto. om tussen 16x9 en 4x3"
+msgstr "Schakel autom. tussen 16:9 & 4:3"
 
 msgctxt "#20051"
 msgid "Treat stacked files as single file"
-msgstr "Behandel gesplitste bestanden als één"
+msgstr "Gesplitste bestanden als één behandelen"
 
 msgctxt "#20052"
 msgid "Caution"
@@ -5655,11 +5771,11 @@ msgstr "Ontgrendelde modus inschakelen"
 
 msgctxt "#20055"
 msgid "Allmusic.com thumb"
-msgstr "Allmusic.com thumbnail"
+msgstr "Allmusic.com-miniatuur"
 
 msgctxt "#20057"
 msgid "Remove thumbnail"
-msgstr "Thumbnail verwijderen"
+msgstr "Miniatuur verwijderen"
 
 msgctxt "#20058"
 msgid "Add profile..."
@@ -5667,11 +5783,11 @@ msgstr "Profiel toevoegen..."
 
 msgctxt "#20059"
 msgid "Query info for all albums"
-msgstr "Vraag info op voor alle albums"
+msgstr "Info opvragen voor alle albums"
 
 msgctxt "#20060"
 msgid "Media info"
-msgstr "Media info"
+msgstr "Media-info"
 
 msgctxt "#20061"
 msgid "Separate"
@@ -5683,7 +5799,7 @@ msgstr "Gebruik standaard"
 
 msgctxt "#20063"
 msgid "Shares with default (read only)"
-msgstr "Gebruik standaard (alleen lezen)"
+msgstr "Gebruik standaard (alleen-lezen)"
 
 msgctxt "#20064"
 msgid "Copy default"
@@ -5703,7 +5819,7 @@ msgstr "Profiel wijzigen"
 
 msgctxt "#20068"
 msgid "Profile lock"
-msgstr "Profiel vergrendeling"
+msgstr "Profielvergrendeling"
 
 msgctxt "#20069"
 msgid "Could not create folder"
@@ -5715,19 +5831,19 @@ msgstr "Profiellocatie"
 
 msgctxt "#20071"
 msgid "Start with fresh media sources"
-msgstr "Begin met verse mediabronnen"
+msgstr "Met verse medialocaties beginnen"
 
 msgctxt "#20072"
 msgid "Make sure the selected folder is writable"
-msgstr "Controleer of de gekozen locatie beschrijfbaar is"
+msgstr "Controleer of u schrijfrechten heeft op de gekozen locatie"
 
 msgctxt "#20073"
 msgid "and that the new folder name is valid"
-msgstr "is en dat de nieuwe mapnaam geldig is"
+msgstr "en of de nieuwe mapnaam geldig is"
 
 msgctxt "#20074"
 msgid "MPAA rating"
-msgstr "MPAA waardering:"
+msgstr "MPAA-waardering:"
 
 msgctxt "#20075"
 msgid "Enter master lock code"
@@ -5735,15 +5851,15 @@ msgstr "Voer vergrendelcode in"
 
 msgctxt "#20076"
 msgid "Ask for master lock code on startup"
-msgstr "Vraag om vergrendelcode bij opstarten"
+msgstr "Om vergrendelcode vragen bij opstarten"
 
 msgctxt "#20077"
 msgid "Skin settings"
-msgstr "Skin-instellingen"
+msgstr "Skininstellingen"
 
 msgctxt "#20078"
 msgid "- no link set -"
-msgstr "- geen link ingesteld -"
+msgstr "- Geen link ingesteld -"
 
 msgctxt "#20079"
 msgid "Enable animations"
@@ -5795,11 +5911,11 @@ msgstr "Voer de naam van een bestaande gedeelde map in"
 
 msgctxt "#20091"
 msgid "Lock code"
-msgstr "Vergrendel code"
+msgstr "Vergrendelcode"
 
 msgctxt "#20092"
 msgid "Load profile"
-msgstr "Laad profiel"
+msgstr "Profiel laden"
 
 msgctxt "#20093"
 msgid "Profile name"
@@ -5807,11 +5923,11 @@ msgstr "Profielnaam"
 
 msgctxt "#20094"
 msgid "Media sources"
-msgstr "Mediabronnen"
+msgstr "Medialocaties"
 
 msgctxt "#20095"
 msgid "Enter profile lock code"
-msgstr "Geef profiel vergrendelcode"
+msgstr "Geef profielvergrendelcode"
 
 msgctxt "#20096"
 msgid "Login screen"
@@ -5819,11 +5935,11 @@ msgstr "Inlogscherm"
 
 msgctxt "#20097"
 msgid "Fetching album info"
-msgstr "Ophalen albuminfo"
+msgstr "Albuminfo ophalen"
 
 msgctxt "#20098"
 msgid "Fetching info for album"
-msgstr "Ophalen info over album"
+msgstr "Info over album ophalen"
 
 msgctxt "#20099"
 msgid "Can't rip CD or track while playing from CD"
@@ -5843,7 +5959,7 @@ msgstr "of maak een kopie van de huidige instellingen?"
 
 msgctxt "#20103"
 msgid "Save changes to profile?"
-msgstr "Wijzigingen opslaan in profiel?"
+msgstr "Wijzigingen aan profiel opslaan?"
 
 msgctxt "#20104"
 msgid "Old settings found."
@@ -5855,11 +5971,11 @@ msgstr "Wilt u deze gebruiken?"
 
 msgctxt "#20106"
 msgid "Old media sources found."
-msgstr "Oude media bronnen gevonden."
+msgstr "Oude medialocaties gevonden."
 
 msgctxt "#20107"
 msgid "Separate (locked)"
-msgstr "Afzonderlijk (vergrendelt)"
+msgstr "Afzonderlijk (vergrendeld)"
 
 msgctxt "#20108"
 msgid "Root"
@@ -5871,15 +5987,15 @@ msgstr "Zoom skin"
 
 msgctxt "#20110"
 msgid "UPnP settings"
-msgstr "UPnP-client"
+msgstr "UPnP instellingen"
 
 msgctxt "#20111"
 msgid "Autostart UPnP client"
-msgstr "Automatisch starten"
+msgstr "UPnP automatisch starten"
 
 msgctxt "#20112"
 msgid "Last login: %s"
-msgstr "Vorige login: %s"
+msgstr "Vorige aanmelding: %s"
 
 msgctxt "#20113"
 msgid "Never logged on"
@@ -5891,11 +6007,11 @@ msgstr "Profiel %i / %i"
 
 msgctxt "#20115"
 msgid "User login / Select a profile"
-msgstr "Gebruiker Login / Selecteer een Profiel"
+msgstr "Gebruikersaanmelding / Selecteer een profiel"
 
 msgctxt "#20116"
 msgid "Use lock on login screen"
-msgstr "Gebruik vergendeling in Login scherm"
+msgstr "Inlogscherm vergrendelen"
 
 msgctxt "#20117"
 msgid "Invalid lock code."
@@ -5903,7 +6019,7 @@ msgstr "Ongeldige vergrendelcode."
 
 msgctxt "#20118"
 msgid "This requires the master lock to be set."
-msgstr "Dit vereist een actieve Hoofdvergrendeling."
+msgstr "Dit vereist een actieve hoofdvergrendeling."
 
 msgctxt "#20119"
 msgid "Would you like to set it now?"
@@ -5911,7 +6027,7 @@ msgstr "Wilt u deze nu instellen?"
 
 msgctxt "#20120"
 msgid "Loading program information"
-msgstr "Programma-informatie wordt geladen"
+msgstr "Programmainformatie wordt geladen"
 
 msgctxt "#20121"
 msgid "Party on!"
@@ -5939,7 +6055,7 @@ msgstr "Uitloggen"
 
 msgctxt "#20128"
 msgid "Go to root"
-msgstr "Ga naar beginscherm"
+msgstr "Naar beginscherm gaan"
 
 msgctxt "#20129"
 msgid "Weave"
@@ -5955,7 +6071,7 @@ msgstr "Overgaan"
 
 msgctxt "#20132"
 msgid "Restart video"
-msgstr "Herstart Video"
+msgstr "Herstart video"
 
 msgctxt "#20133"
 msgid "Edit network location"
@@ -5987,7 +6103,7 @@ msgstr "In poort %i, slot %i"
 
 msgctxt "#20140"
 msgid "Lock screensaver"
-msgstr "Vergrendel schermbeveiliging"
+msgstr "Schermbeveiliging vergrendelen"
 
 msgctxt "#20141"
 msgid "Set"
@@ -6011,31 +6127,31 @@ msgstr "Uitschakelingsinterval (in minuten)"
 
 msgctxt "#20146"
 msgid "Started, shutdown in %im"
-msgstr "Gestart, shutdown in %im"
+msgstr "Gestart, afsluiten in %im"
 
 msgctxt "#20147"
 msgid "Shutdown in 30 minutes"
-msgstr "Uitschakeling in 30 minuten"
+msgstr "Uitschakeling over 30 minuten"
 
 msgctxt "#20148"
 msgid "Shutdown in 60 minutes"
-msgstr "Uitschakeling in 60 minuten"
+msgstr "Uitschakeling over 60 minuten"
 
 msgctxt "#20149"
 msgid "Shutdown in 120 minutes"
-msgstr "Uitschakeling in 120 minuten"
+msgstr "Uitschakeling over 120 minuten"
 
 msgctxt "#20150"
 msgid "Custom shutdown timer"
-msgstr "Aangepaste Uitschakeltimer"
+msgstr "Aangepaste uitschakeltimer"
 
 msgctxt "#20151"
 msgid "Cancel shutdown timer"
-msgstr "Annuleer Uitschakeltimer"
+msgstr "Uitschakeltimer annuleren"
 
 msgctxt "#20152"
 msgid "Lock preferences for %s"
-msgstr "Vergrendel opties voor %s"
+msgstr "Vergrendelopties voor %s"
 
 msgctxt "#20153"
 msgid "Browse..."
@@ -6051,19 +6167,19 @@ msgstr "Opslaginformatie"
 
 msgctxt "#20156"
 msgid "Hard disk information"
-msgstr "Hardeschijf-informatie"
+msgstr "Hardeschijf informatie"
 
 msgctxt "#20157"
 msgid "DVD-ROM information"
-msgstr "DVD-ROM Informatie"
+msgstr "DVD-ROM-informatie"
 
 msgctxt "#20158"
 msgid "Network information"
-msgstr "Netwerk-informatie"
+msgstr "Netwerkinformatie"
 
 msgctxt "#20159"
 msgid "Video information"
-msgstr "Video-informatie"
+msgstr "Videoinformatie"
 
 msgctxt "#20160"
 msgid "Hardware information"
@@ -6099,7 +6215,7 @@ msgstr "Bevroren"
 
 msgctxt "#20168"
 msgid "Requires reset"
-msgstr "Herstart nodig"
+msgstr "Herstart vereist"
 
 msgctxt "#20169"
 msgid "Week"
@@ -6111,7 +6227,7 @@ msgstr "Regel"
 
 msgctxt "#20171"
 msgid "Windows network (SMB)"
-msgstr "Windows Netwerk (SMB)"
+msgstr "Windowsnetwerk (SMB)"
 
 msgctxt "#20172"
 msgid "XBMSP server"
@@ -6131,11 +6247,11 @@ msgstr "UPnP-server"
 
 msgctxt "#20176"
 msgid "Show video info"
-msgstr "Video-informatie weergeven"
+msgstr "Videoinformatie weergeven"
 
 msgctxt "#20177"
 msgid "Done"
-msgstr "Klaar"
+msgstr "OK"
 
 msgctxt "#20178"
 msgid "Shift"
@@ -6163,15 +6279,15 @@ msgstr "Skin herladen"
 
 msgctxt "#20184"
 msgid "Rotate pictures using EXIF information"
-msgstr "Draaien m.b.v. EXIF-informatie"
+msgstr "Afbeeldingen draaien op basis van EXIF-informatie"
 
 msgctxt "#20185"
 msgid "Use poster view styles for TV shows"
-msgstr "Gebruik Poster-stijl voor TV-serie"
+msgstr "Posterstijl voor tv-series gebruiken"
 
 msgctxt "#20186"
 msgid "Please wait"
-msgstr "Even geduld"
+msgstr "Even geduld..."
 
 msgctxt "#20187"
 msgid "Backing up EEPROM"
@@ -6183,7 +6299,7 @@ msgstr "Bezig met het backuppen van het BIOS"
 
 msgctxt "#20189"
 msgid "Enable auto scrolling for plot & review"
-msgstr "Plot en review automatisch scrollen"
+msgstr "Plot en bespreking automatisch scrollen"
 
 msgctxt "#20190"
 msgid "Custom"
@@ -6191,11 +6307,11 @@ msgstr "Handmatig"
 
 msgctxt "#20191"
 msgid "Enable debug logging"
-msgstr "Activeer het registreren van fouten"
+msgstr "Foutregistratie inschakelen"
 
 msgctxt "#20192"
 msgid "Download additional information during updates"
-msgstr "Albuminformatie ophalen bij scan"
+msgstr "Extra informatie downloaden tijdens het scannen"
 
 msgctxt "#20194"
 msgid "Default service for music information"
@@ -6203,15 +6319,15 @@ msgstr "Standaard-scraper"
 
 msgctxt "#20195"
 msgid "Change scraper"
-msgstr "Verander scraper"
+msgstr "Scanner wijzigen"
 
 msgctxt "#20196"
 msgid "Export music library"
-msgstr "Exporteer muziekbibliotheek"
+msgstr "Muziekbibliotheek exporteren..."
 
 msgctxt "#20197"
 msgid "Import music library"
-msgstr "Importeer muziekbibliotheek"
+msgstr "Muziekbibliotheek importeren..."
 
 msgctxt "#20198"
 msgid "No artist found!"
@@ -6233,13 +6349,25 @@ msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Glazen vullen (video's)"
 
+msgctxt "#20253"
+msgid "WebDAV server (HTTP)"
+msgstr "WebDAV-server (HTTP)"
+
+msgctxt "#20254"
+msgid "WebDAV server (HTTPS)"
+msgstr "WebDAV-server (HTTPS)"
+
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV client"
+
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
-msgstr "Web server directory (HTTP)"
+msgstr "Webservermap (HTTP)"
 
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
-msgstr "Web server directory (HTTPS)"
+msgstr "Webservermap (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
@@ -6251,7 +6379,7 @@ msgstr "Overslaan en verdergaan?"
 
 msgctxt "#20304"
 msgid "RSS Feed"
-msgstr "RSS Feed"
+msgstr "RSS-feed"
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6275,7 +6403,7 @@ msgstr "LCD dimmen tijdens afspelen"
 
 msgctxt "#20311"
 msgid "Unknown or onboard (protected)"
-msgstr "Ongekend of Onboard (beveiligd)"
+msgstr "Onbekend of onboard (beveiligd)"
 
 msgctxt "#20312"
 msgid "Dim LCD on paused"
@@ -6287,7 +6415,7 @@ msgstr "LED aan tijdens pauze"
 
 msgctxt "#20314"
 msgid "Videos - Library"
-msgstr "Video's - Bibliotheek"
+msgstr "Video - Bibliotheek"
 
 msgctxt "#20315"
 msgid "Game saves"
@@ -6295,7 +6423,7 @@ msgstr "Savegames"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
-msgstr "Sorteer op: ID"
+msgstr "Sorteer: ID"
 
 msgctxt "#20317"
 msgid "Download saves"
@@ -6335,7 +6463,7 @@ msgstr "Kalibratie herstellen"
 
 msgctxt "#20326"
 msgid "This will reset the calibration values for %s"
-msgstr "Dit herstelt de standaard waardes voor %s"
+msgstr "Dit zet de kalibratiewaarden voor %s"
 
 msgctxt "#20327"
 msgid "to it's default values."
@@ -6343,11 +6471,11 @@ msgstr "naar de standaard waardes."
 
 msgctxt "#20328"
 msgid "Browse for destination"
-msgstr "een locatie om naar te kopiëren"
+msgstr "Bladeren naar een bestemming"
 
 msgctxt "#20330"
 msgid "Use folder names for lookups"
-msgstr "Gebruik mapnamen met zoeken"
+msgstr "Gebruik mapnamen bij zoeken"
 
 msgctxt "#20331"
 msgid "File"
@@ -6371,7 +6499,7 @@ msgstr "Ook in onderliggende mappen zoeken?"
 
 msgctxt "#20336"
 msgid "Unlock sources"
-msgstr "Unlock bronnen"
+msgstr "Locaties vrijgeven"
 
 msgctxt "#20337"
 msgid "Actor"
@@ -6387,7 +6515,7 @@ msgstr "Regisseur"
 
 msgctxt "#20340"
 msgid "Do you want to remove all items within"
-msgstr "Wilt u alle items in deze map"
+msgstr "Wilt u alle ingesloten items verwijderen"
 
 msgctxt "#20341"
 msgid "this path from the library?"
@@ -6395,11 +6523,11 @@ msgstr "uit de bibliotheek verwijderen?"
 
 msgctxt "#20342"
 msgid "Movies"
-msgstr "Films"
+msgstr "Speelfilms"
 
 msgctxt "#20343"
 msgid "TV shows"
-msgstr "TV-series"
+msgstr "TV-Series"
 
 msgctxt "#20344"
 msgid "This directory contains"
@@ -6407,7 +6535,7 @@ msgstr "Deze map bevat"
 
 msgctxt "#20345"
 msgid "Run automated scan"
-msgstr "Uitvoeren van automatische scan"
+msgstr "Automatisch scannen"
 
 msgctxt "#20346"
 msgid "Scan recursively"
@@ -6423,7 +6551,7 @@ msgstr "Regisseurs"
 
 msgctxt "#20349"
 msgid "No video files found in this path!"
-msgstr "Geen videobestanden gevonden in dit pad!"
+msgstr "Geen videobestanden gevonden in deze map!"
 
 msgctxt "#20350"
 msgid "votes"
@@ -6431,31 +6559,31 @@ msgstr "stemmen"
 
 msgctxt "#20351"
 msgid "TV show information"
-msgstr "TV-serie informatie"
+msgstr "Serie-info"
 
 msgctxt "#20352"
 msgid "Episode information"
-msgstr "Afleveringsinformatie"
+msgstr "Afleveringsinfo"
 
 msgctxt "#20353"
 msgid "Loading TV show details"
-msgstr "Laden van details TV-serie"
+msgstr "Details serie laden"
 
 msgctxt "#20354"
 msgid "Fetching episode guide"
-msgstr "Ophalen afleveringengids"
+msgstr "Afleveringengids ophalen"
 
 msgctxt "#20355"
 msgid "Loading info for episodes in directory"
-msgstr "Alfeveringinformatie naar map laden"
+msgstr "Afleveringsinfo naar map laden"
 
 msgctxt "#20356"
 msgid "Select TV show:"
-msgstr "Selecteer TV-serie:"
+msgstr "Selecteer serie:"
 
 msgctxt "#20357"
 msgid "Enter the TV show name"
-msgstr "Geef de naam van de TV-serie"
+msgstr "Geef de naam van de serie"
 
 msgctxt "#20358"
 msgid "Season %i"
@@ -6463,27 +6591,27 @@ msgstr "Seizoen %i"
 
 msgctxt "#20359"
 msgid "Episode"
-msgstr "Afl."
+msgstr "Aflevering"
 
 msgctxt "#20360"
 msgid "Episodes"
-msgstr "Afl."
+msgstr "Afleveringen"
 
 msgctxt "#20361"
 msgid "Loading episode details"
-msgstr "Laden Afleveringsdetails"
+msgstr "Afleveringsdetails laden"
 
 msgctxt "#20362"
 msgid "Remove episode from library"
-msgstr "Verwijder aflevering uit bibiotheek"
+msgstr "Aflevering uit bibliotheek verwijderen"
 
 msgctxt "#20363"
 msgid "Remove TV show from library"
-msgstr "Verwijder TV-serie uit bibiotheek"
+msgstr "Serie uit bibliotheek verwijderen"
 
 msgctxt "#20364"
 msgid "TV show"
-msgstr "TV-serie"
+msgstr "Serie"
 
 msgctxt "#20365"
 msgid "Episode plot"
@@ -6495,15 +6623,15 @@ msgstr "* Alle seizoenen"
 
 msgctxt "#20367"
 msgid "Hide watched"
-msgstr "Verberg bekeken"
+msgstr "Bekeken verbergen"
 
 msgctxt "#20368"
 msgid "Prod code"
-msgstr "Prod."
+msgstr "Prod. code"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
-msgstr "Toon plot van niet-bekeken items"
+msgstr "Plot van niet bekeken video's weergeven"
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"
@@ -6515,7 +6643,7 @@ msgstr "Afbeelding seizoen selecteren"
 
 msgctxt "#20372"
 msgid "Season image"
-msgstr "Afbeelding van Seizoen"
+msgstr "Afbeelding van seizoen"
 
 msgctxt "#20373"
 msgid "Season"
@@ -6523,15 +6651,19 @@ msgstr "Seizoen"
 
 msgctxt "#20374"
 msgid "Downloading movie information"
-msgstr "Ophalen van Video-informatie"
+msgstr "Speelfilm informatie downloaden"
 
 msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Inhoud ontkoppelen"
 
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Originele titel"
+
 msgctxt "#20377"
 msgid "Refresh TV show information"
-msgstr "Vernieuw TV-serie informatie"
+msgstr "Serie-informatie vernieuwen"
 
 msgctxt "#20378"
 msgid "Refresh info for all episodes?"
@@ -6539,11 +6671,11 @@ msgstr "Alle afleveringen vernieuwen?"
 
 msgctxt "#20379"
 msgid "Selected folder contains a single TV show"
-msgstr "Geselecteerde map bevat 1 TV-serie"
+msgstr "Geselecteerde map bevat één enkele serie"
 
 msgctxt "#20380"
 msgid "Exclude selected folder from scans"
-msgstr "Map uitsluiten van scans"
+msgstr "Locatie uitsluiten van scans"
 
 msgctxt "#20381"
 msgid "Specials"
@@ -6559,19 +6691,19 @@ msgstr "Geselecteerde map bevat 1 video"
 
 msgctxt "#20384"
 msgid "Link to TV show"
-msgstr "Link naar TV-serie"
+msgstr "Aan serie koppelen"
 
 msgctxt "#20385"
 msgid "Remove link to TV show"
-msgstr "Link naar TV-serie verwijderen"
+msgstr "Van serie loskoppelen"
 
 msgctxt "#20386"
 msgid "Recently added movies"
-msgstr "Recent toegevoegde speelfilms"
+msgstr "Onlangs toegevoegde speelfilms"
 
 msgctxt "#20387"
 msgid "Recently added episodes"
-msgstr "Recent toegevoegde afleveringen TV-series"
+msgstr "Onlangs toegevoegde afleveringen van tv-series"
 
 msgctxt "#20388"
 msgid "Studios"
@@ -6583,7 +6715,7 @@ msgstr "Muziekvideo's"
 
 msgctxt "#20390"
 msgid "Recently added music videos"
-msgstr "Recent toegevoegde muziekvideo's"
+msgstr "Onlangs toegevoegde muziekvideo's"
 
 msgctxt "#20391"
 msgid "Music video"
@@ -6631,7 +6763,7 @@ msgstr "Muziekvideo afspelen"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "Automatisch afbeeldingen van acteurs laden"
+msgstr "Afbeeldingen van acteurs automatisch downloaden"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
@@ -6643,19 +6775,19 @@ msgstr "Afl. uit favorieten verwijderen"
 
 msgctxt "#20406"
 msgid "Set episode bookmark"
-msgstr "Voeg afl. toe aan favorieten"
+msgstr "Afl. aan favorieten toevoegen"
 
 msgctxt "#20407"
 msgid "Scraper settings"
-msgstr "Scraper instellingen"
+msgstr "Scannerinstellingen"
 
 msgctxt "#20408"
 msgid "Downloading music video information"
-msgstr "Muziekvideo-informatie ophalen"
+msgstr "Muziekvideo-informatie downloaden"
 
 msgctxt "#20409"
 msgid "Downloading TV show information"
-msgstr "TV-serieinformatie ophalen"
+msgstr "TV-Serie informatie downloaden"
 
 msgctxt "#20410"
 msgid "Trailer"
@@ -6663,7 +6795,7 @@ msgstr "Trailer"
 
 msgctxt "#20411"
 msgid "Flatten"
-msgstr "Eenvoudig beeld"
+msgstr "Eenvoudige weergave"
 
 msgctxt "#20412"
 msgid "Flatten TV shows"
@@ -6683,7 +6815,7 @@ msgstr "Bezig met scannen naar nieuwe inhoud"
 
 msgctxt "#20416"
 msgid "First aired"
-msgstr "Eerste keer op TV"
+msgstr "Eerst uitgez."
 
 msgctxt "#20417"
 msgid "Writer"
@@ -6699,7 +6831,7 @@ msgstr "Nooit"
 
 msgctxt "#20421"
 msgid "If only one season"
-msgstr "Alleen bij één seizoen"
+msgstr "Alleen indien één seizoen"
 
 msgctxt "#20422"
 msgid "Always"
@@ -6715,7 +6847,7 @@ msgstr "Onwaar"
 
 msgctxt "#20425"
 msgid "Fanart slideshow"
-msgstr "Fanart Diavoorstelling"
+msgstr "Fanart diavoorstelling"
 
 msgctxt "#20426"
 msgid "Export to a single file or separate"
@@ -6723,7 +6855,7 @@ msgstr "Exporteer naar 1 bestand of meerdere"
 
 msgctxt "#20427"
 msgid "files per entry?"
-msgstr "bestanden per entry?"
+msgstr "bestanden per invoer?"
 
 msgctxt "#20428"
 msgid "Single file"
@@ -6731,23 +6863,23 @@ msgstr "Enkel bestand"
 
 msgctxt "#20429"
 msgid "Separate"
-msgstr "Apart"
+msgstr "Aparte"
 
 msgctxt "#20430"
 msgid "Export thumbnails and fanart?"
-msgstr "Exporteer thumbs en fanart?"
+msgstr "Miniaturen en fanart exporteren?"
 
 msgctxt "#20431"
 msgid "Overwrite old files?"
-msgstr "Oude bestande overschrijven?"
+msgstr "Oude bestanden overschrijven?"
 
 msgctxt "#20432"
 msgid "Exclude path from library updates"
-msgstr "Sluit pad uit van bibliotheek updates"
+msgstr "Locatie uitsluiten van bibliotheekupdates"
 
 msgctxt "#20433"
 msgid "Extract thumbnails and video information"
-msgstr "Extract thumbs en vlaggen"
+msgstr "Miniaturen en codec informatie uitlezen"
 
 msgctxt "#20434"
 msgid "Sets"
@@ -6759,11 +6891,11 @@ msgstr "Zet filmset thumb"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
-msgstr "Exporteer acteur thumbs"
+msgstr "Acteurminiaturen exporteren"
 
 msgctxt "#20437"
 msgid "Choose fanart"
-msgstr "Kies fanart"
+msgstr "Fanart kiezen"
 
 msgctxt "#20438"
 msgid "Local fanart"
@@ -6779,15 +6911,15 @@ msgstr "Huidige fanart"
 
 msgctxt "#20441"
 msgid "Remote fanart"
-msgstr "fanart op afstand"
+msgstr "Fanart op afstand"
 
 msgctxt "#20442"
 msgid "Change content"
-msgstr "Verander inhoud"
+msgstr "Inhoud wijzigen"
 
 msgctxt "#20443"
 msgid "Do you want to refresh info for all"
-msgstr "Wilt u info voor alles verversen"
+msgstr "Wilt u info verversen voor alle"
 
 msgctxt "#20444"
 msgid "items within this path?"
@@ -6804,6 +6936,22 @@ msgstr "Lokaal opgeslagen informatie gevonden."
 msgctxt "#20447"
 msgid "Ignore and refresh from internet?"
 msgstr "Negeren en verversen van internet?"
+
+msgctxt "#20448"
+msgid "Could not download information"
+msgstr "De informatie kan niet worden gedownload"
+
+msgctxt "#20450"
+msgid "Would you like to continue scanning?"
+msgstr "Wilt u doorgaan met scannen?"
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Landen"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Groepeer films in sets"
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -6823,7 +6971,7 @@ msgstr "De stream wordt gestopt!"
 
 msgctxt "#21334"
 msgid "Zap to channel: %s failed!"
-msgstr "Zappen naar kanaal %s mislukt!"
+msgstr "Schakelen naar kanaal %s mislukt!"
 
 msgctxt "#21335"
 msgid "Are you sure to start the stream?"
@@ -6843,7 +6991,7 @@ msgstr "Gedeelde media toevoegen..."
 
 msgctxt "#21360"
 msgid "Share video and music libraries through UPnP"
-msgstr "UPnP-server inschakelen"
+msgstr "Video en muziek delen met UPnP"
 
 msgctxt "#21364"
 msgid "Edit media share"
@@ -6859,7 +7007,7 @@ msgstr "Ondertitelingmap"
 
 msgctxt "#21367"
 msgid "Movie & alternate subtitle directory"
-msgstr "Video- & alternatieve  ondertitelingmap"
+msgstr "Video - alternatieve ondertitelmap"
 
 msgctxt "#21369"
 msgid "Enable mouse"
@@ -6871,11 +7019,11 @@ msgstr "Navigatiegeluiden afspelen tijdens afspelen van media"
 
 msgctxt "#21371"
 msgid "Thumbnail"
-msgstr "Thumbnail"
+msgstr "Miniatuur"
 
 msgctxt "#21372"
 msgid "Forced DVD player region"
-msgstr "DVD regiocode forceren"
+msgstr "DVD-regiocode forceren"
 
 msgctxt "#21373"
 msgid "Video output"
@@ -6915,7 +7063,7 @@ msgstr "Geef naam voor de intelligente afspeellijst"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
-msgstr "'Bron toevoegen'-knoppen weergeven"
+msgstr "Knop 'Locatie toevoegen' weergeven in bestandslijst"
 
 msgctxt "#21383"
 msgid "Enable scrollbars"
@@ -6923,7 +7071,7 @@ msgstr "Schuifbalken weergeven"
 
 msgctxt "#21384"
 msgid "Make watched filtering a toggle in video library"
-msgstr "'Verberg bekeken'-knop toevoegen in bibliotheek"
+msgstr "'Bekeken verbergen'-knop toevoegen in bibliotheek"
 
 msgctxt "#21385"
 msgid "Open"
@@ -6947,27 +7095,27 @@ msgstr "Gebruik achtergrond naar keuze"
 
 msgctxt "#21390"
 msgid "Power management level"
-msgstr "Stroombeheer niveau"
+msgstr "Stroombeheerniveau"
 
 msgctxt "#21391"
 msgid "High power"
-msgstr "Hoog Energie"
+msgstr "Hoge energie"
 
 msgctxt "#21392"
 msgid "Low power"
-msgstr "Laag Energie"
+msgstr "Lage energie"
 
 msgctxt "#21393"
 msgid "High standby"
-msgstr "Hoog Standby"
+msgstr "Hoog standby"
 
 msgctxt "#21394"
 msgid "Low standby"
-msgstr "Laag Standby"
+msgstr "Laag standby"
 
 msgctxt "#21395"
 msgid "Unable to cache files bigger than 4GB"
-msgstr "Niet mogelijk bestanden groter dan 4 GiB te laden"
+msgstr "Niet mogelijk bestanden groter dan 4 GB te laden"
 
 msgctxt "#21396"
 msgid "Chapter"
@@ -6975,7 +7123,7 @@ msgstr "Hoofdstuk"
 
 msgctxt "#21397"
 msgid "High quality pixel shader v2"
-msgstr "Hoge kwaliteit Pixel Shader V2"
+msgstr "Hoge kwaliteit Pixel Shader v2"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
@@ -7035,15 +7183,15 @@ msgstr "niet in laatste"
 
 msgctxt "#21412"
 msgid "Scrapers"
-msgstr "Scrapers"
+msgstr "Scanners"
 
 msgctxt "#21413"
 msgid "Default movie scraper"
-msgstr "Standaard film scraper"
+msgstr "Standaard speelfilm scanner"
 
 msgctxt "#21414"
 msgid "Default tvshow scraper"
-msgstr "Standaard tv-serie scraper"
+msgstr "Standaard tv-serie scanner"
 
 msgctxt "#21415"
 msgid "Default musicvideo scraper"
@@ -7067,7 +7215,7 @@ msgstr "Waarde gelijk aan"
 
 msgctxt "#21421"
 msgid "Smart playlist rule"
-msgstr "Intelligente afspeellijst regel"
+msgstr "Intelligente-afspeellijstregel"
 
 msgctxt "#21422"
 msgid "Match items where"
@@ -7091,7 +7239,7 @@ msgstr "een of meer van deze regels"
 
 msgctxt "#21427"
 msgid "Limit to"
-msgstr "Beperk tot"
+msgstr "Beperken tot"
 
 msgctxt "#21428"
 msgid "No limit"
@@ -7099,7 +7247,7 @@ msgstr "Geen beperking"
 
 msgctxt "#21429"
 msgid "Order by"
-msgstr "Rangschik op"
+msgstr "Sorteren op"
 
 msgctxt "#21430"
 msgid "ascending"
@@ -7111,11 +7259,11 @@ msgstr "aflopend"
 
 msgctxt "#21432"
 msgid "Edit smart playlist"
-msgstr "Wijzig intelligente afspeellijst"
+msgstr "Intelligente afspeellijst wijzigen"
 
 msgctxt "#21433"
 msgid "Name of the playlist"
-msgstr "Naam van de afspeelijst"
+msgstr "Naam van de afspeellijst"
 
 msgctxt "#21434"
 msgid "Find items where"
@@ -7127,7 +7275,7 @@ msgstr "Wijzigen"
 
 msgctxt "#21436"
 msgid "%i items"
-msgstr "%i muzieknummers"
+msgstr "%i nummers"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
@@ -7143,7 +7291,7 @@ msgstr "Feestmix instellen"
 
 msgctxt "#21440"
 msgid "Home folder"
-msgstr "Home Map"
+msgstr "Startmap"
 
 msgctxt "#21441"
 msgid "Watched count"
@@ -7151,35 +7299,35 @@ msgstr "Aantal bekeken"
 
 msgctxt "#21442"
 msgid "Episode title"
-msgstr "Afl. titel"
+msgstr "Titel afl."
 
 msgctxt "#21443"
 msgid "Video resolution"
-msgstr "Video resolutie"
+msgstr "Videoresolutie"
 
 msgctxt "#21444"
 msgid "Audio channels"
-msgstr "Audio kanalen"
+msgstr "Audiokanalen"
 
 msgctxt "#21445"
 msgid "Video codec"
-msgstr "Video codec"
+msgstr "Videocodec"
 
 msgctxt "#21446"
 msgid "Audio codec"
-msgstr "Audio codec"
+msgstr "Audiocodec"
 
 msgctxt "#21447"
 msgid "Audio language"
-msgstr "Taal Audio"
+msgstr "Audiotaal"
 
 msgctxt "#21448"
 msgid "Subtitle language"
-msgstr "Taal ondertiteling"
+msgstr "Ondertiteltaal"
 
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
-msgstr "Afstandsbediening stuurt toetsenbord toetsen"
+msgstr "Afstandsbediening stuurt toetsenbordaanslagen"
 
 msgctxt "#21800"
 msgid "File name"
@@ -7199,7 +7347,7 @@ msgstr "Laatst gewijzigd"
 
 msgctxt "#21804"
 msgid "Slide index"
-msgstr "Dia index"
+msgstr "Dia-index"
 
 msgctxt "#21805"
 msgid "Resolution"
@@ -7235,7 +7383,7 @@ msgstr "Cameramodel"
 
 msgctxt "#21824"
 msgid "EXIF comment"
-msgstr "EXIF opmerking"
+msgstr "EXIF-opmerking"
 
 msgctxt "#21825"
 msgid "Firmware"
@@ -7311,7 +7459,7 @@ msgstr "GPS-hoogte"
 
 msgctxt "#21843"
 msgid "Orientation"
-msgstr "Orientatie"
+msgstr "Oriëntatie"
 
 msgctxt "#21860"
 msgid "Supplemental categories"
@@ -7399,27 +7547,27 @@ msgstr "Brondiensten"
 
 msgctxt "#21881"
 msgid "Allow control of XBMC via UPnP"
-msgstr "UPnP-rendering inschakelen"
+msgstr "Besturing van XBMC via UPnP toestaan"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
-msgstr "Probeer direct naar het DVD-menu gaan"
+msgstr "Direct naar het DVD-menu proberen te gaan"
 
 msgctxt "#21883"
 msgid "Saved music"
-msgstr "Geripte muziek CD's"
+msgstr "Opgeslagen muziek"
 
 msgctxt "#21884"
 msgid "Query info for all artists"
-msgstr "Zoek info over alle artiesten"
+msgstr "Info over alle artiesten zoeken"
 
 msgctxt "#21885"
 msgid "Downloading album information"
-msgstr "Ophalen van Albuminformatie"
+msgstr "Albuminformatie downloaden"
 
 msgctxt "#21886"
 msgid "Downloading artist information"
-msgstr "Ophalen van Artiestinformatie"
+msgstr "Artiestinformatie downloaden"
 
 msgctxt "#21887"
 msgid "Biography"
@@ -7431,11 +7579,11 @@ msgstr "Discografie"
 
 msgctxt "#21889"
 msgid "Searching artist"
-msgstr "Zoekt Artiest"
+msgstr "Zoekt artiest"
 
 msgctxt "#21890"
 msgid "Select artist"
-msgstr "Selecteer Artiest"
+msgstr "Artiest selecteren"
 
 msgctxt "#21891"
 msgid "Artist information"
@@ -7443,15 +7591,15 @@ msgstr "Artiestinformatie"
 
 msgctxt "#21892"
 msgid "Instruments"
-msgstr "Instrumenten:"
+msgstr "Instrumenten"
 
 msgctxt "#21893"
 msgid "Born"
-msgstr "Geboren in:"
+msgstr "Geboren"
 
 msgctxt "#21894"
 msgid "Formed"
-msgstr "Ontstaan"
+msgstr "Gevormed"
 
 msgctxt "#21895"
 msgid "Themes"
@@ -7463,11 +7611,11 @@ msgstr "Uit elkaar"
 
 msgctxt "#21897"
 msgid "Died"
-msgstr "Gestorven op:"
+msgstr "Gestorven op"
 
 msgctxt "#21898"
 msgid "Years active"
-msgstr "Jaren actief:"
+msgstr "Periode"
 
 msgctxt "#21899"
 msgid "Label"
@@ -7475,11 +7623,11 @@ msgstr "Platenlabel"
 
 msgctxt "#21900"
 msgid "Born/Formed"
-msgstr "Geboren/gevormd"
+msgstr "Geboren/Opgericht"
 
 msgctxt "#22000"
 msgid "Update library on startup"
-msgstr "Bibliotheek updaten bij het opstarten"
+msgstr "Bibliotheek bijwerken bij het opstarten"
 
 msgctxt "#22001"
 msgid "Always update library in background"
@@ -7495,23 +7643,23 @@ msgstr "Standaard speler"
 
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
-msgstr "Eerder %2.3fs"
+msgstr "Later %2.3fs"
 
 msgctxt "#22005"
 msgid "Ahead by: %2.3fs"
-msgstr "Later %2.3fs"
+msgstr "Eerder %2.3fs"
 
 msgctxt "#22006"
 msgid "Subtitle offset"
-msgstr "Synchroniseer ondertitel"
+msgstr "Ondertitels synchroniseren"
 
 msgctxt "#22007"
 msgid "OpenGL vendor:"
-msgstr "OpenGL-leverancier:"
+msgstr "OpenGL leverancier:"
 
 msgctxt "#22008"
 msgid "OpenGL renderer:"
-msgstr "OpenGL-render:"
+msgstr "OpenGL renderer:"
 
 msgctxt "#22009"
 msgid "OpenGL version:"
@@ -7519,15 +7667,15 @@ msgstr "OpenGL versie:"
 
 msgctxt "#22010"
 msgid "GPU temperature:"
-msgstr "GPU-temperatuur:"
+msgstr "GPU Temperatuur:"
 
 msgctxt "#22011"
 msgid "CPU temperature:"
-msgstr "CPU-temperatuur:"
+msgstr "CPU Temperatuur:"
 
 msgctxt "#22012"
 msgid "Total memory"
-msgstr "Totale geheugenhoeveelheid:"
+msgstr "Aanwezig geheugen"
 
 msgctxt "#22013"
 msgid "Profile data"
@@ -7535,11 +7683,11 @@ msgstr "Profieldata"
 
 msgctxt "#22014"
 msgid "Use dim if paused during video playback"
-msgstr "\"dimmen\" bij gepauzeerde video"
+msgstr "Beeldscherm dimmen tijdens pauzeren van video's"
 
 msgctxt "#22015"
 msgid "All recordings"
-msgstr "Alle Opnames"
+msgstr "Alle opnames"
 
 msgctxt "#22016"
 msgid "By title"
@@ -7547,15 +7695,15 @@ msgstr "Op titel"
 
 msgctxt "#22017"
 msgid "By group"
-msgstr "Op Groep"
+msgstr "Op groep"
 
 msgctxt "#22018"
 msgid "Live channels"
-msgstr "Live Kanalen"
+msgstr "Live kanalen"
 
 msgctxt "#22019"
 msgid "Recordings by title"
-msgstr "Opnames op Titel"
+msgstr "Opnames op titel"
 
 msgctxt "#22020"
 msgid "Guide"
@@ -7567,7 +7715,7 @@ msgstr "Toegestane afwijking in beeldverhouding (%)"
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "Voeg video bestanden in lijsten"
+msgstr "Toon videobestanden in lijst met afbeeldingen"
 
 msgctxt "#22024"
 msgid "Direct3D version"
@@ -7575,7 +7723,7 @@ msgstr "Direct3D versie"
 
 msgctxt "#22030"
 msgid "Font"
-msgstr "Standaard speler"
+msgstr "Lettertype"
 
 msgctxt "#22031"
 msgid "- Size"
@@ -7591,27 +7739,27 @@ msgstr "- Karakterset"
 
 msgctxt "#22034"
 msgid "Export karaoke titles as HTML"
-msgstr "Exporteer karaoke titels als HTML"
+msgstr "Karaoketitels als HTML exporteren"
 
 msgctxt "#22035"
 msgid "Export karaoke titles as CSV"
-msgstr "Exporteer karaoke titels als CSV"
+msgstr "Karaoketitels als CSV exporteren"
 
 msgctxt "#22036"
 msgid "Import karaoke titles..."
-msgstr "Importeer karaoke titels"
+msgstr "Karaoketitels importeren..."
 
 msgctxt "#22037"
 msgid "Show song selector automatically"
-msgstr "Auto popup song selector"
+msgstr "Auto popup nummerselectie"
 
 msgctxt "#22038"
 msgid "Export karaoke titles..."
-msgstr "Exporteer karaoke titels..."
+msgstr "Karaoketitels exporteren..."
 
 msgctxt "#22039"
 msgid "Enter song number"
-msgstr "Voer nummer in"
+msgstr "Nummer invoeren"
 
 msgctxt "#22040"
 msgid "white/green"
@@ -7623,7 +7771,7 @@ msgstr "wit/rood"
 
 msgctxt "#22042"
 msgid "white/blue"
-msgstr "wit/blau"
+msgstr "wit/blauw"
 
 msgctxt "#22043"
 msgid "black/white"
@@ -7631,7 +7779,7 @@ msgstr "zwart/wit"
 
 msgctxt "#23050"
 msgid "Activate Teletext"
-msgstr "Activeer Teletext"
+msgstr "Teletekst activeren"
 
 msgctxt "#23051"
 msgid "Part %i"
@@ -7639,11 +7787,19 @@ msgstr "Stuk %i"
 
 msgctxt "#23052"
 msgid "Buffering %i bytes"
-msgstr "Bufferen %i bytes"
+msgstr "%i bytes bufferen"
+
+msgctxt "#23053"
+msgid "Stopping"
+msgstr "Instellingen ontbreken"
+
+msgctxt "#23054"
+msgid "Running"
+msgstr "Instellingen verkeerd"
 
 msgctxt "#23100"
 msgid "External Player Active"
-msgstr "Externe Player actief"
+msgstr "Externe speler actief"
 
 msgctxt "#23101"
 msgid "Click OK to terminate the player"
@@ -7653,17 +7809,37 @@ msgctxt "#23104"
 msgid "Click OK when playback has ended"
 msgstr "Klik op OK als afspelen beëindigd is"
 
+msgctxt "#24000"
+msgid "Add-on"
+msgstr "Add-on"
+
+msgctxt "#24020"
+msgid "Configure"
+msgstr "Configureren"
+
+msgctxt "#24021"
+msgid "Disable"
+msgstr "Uitschakelen"
+
+msgctxt "#24022"
+msgid "Enable"
+msgstr "Inschakelen"
+
+msgctxt "#24030"
+msgid "This Add-on can not be configured"
+msgstr "Deze add-on kan niet worden geconfigureerd"
+
 msgctxt "#29800"
 msgid "Library Mode"
 msgstr "Bibliotheekmodus"
 
 msgctxt "#29801"
 msgid "QWERTY keyboard"
-msgstr "QWERTY-indeling toetsenbord"
+msgstr "QWERTY-toetsenbordindeling "
 
 msgctxt "#29802"
 msgid "Passthrough Audio in use"
-msgstr "Passthrough Audio in gebruik"
+msgstr "Passthrough audio in gebruik"
 
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
@@ -7671,7 +7847,7 @@ msgstr "Flikkerfilter toepassen op spellen"
 
 msgctxt "#33001"
 msgid "Trailer quality"
-msgstr "Trailer kwaliteit"
+msgstr "Trailerkwaliteit"
 
 msgctxt "#33002"
 msgid "Stream"
@@ -7679,15 +7855,15 @@ msgstr "Stream"
 
 msgctxt "#33003"
 msgid "Download"
-msgstr "Download"
+msgstr "Downloaden"
 
 msgctxt "#33004"
 msgid "Download & play"
-msgstr "Download & afspelen"
+msgstr "Downloaden & afspelen"
 
 msgctxt "#33005"
 msgid "Download & save"
-msgstr "Download & opslaan"
+msgstr "Downloaden & opslaan"
 
 msgctxt "#33006"
 msgid "Today"
@@ -7707,7 +7883,11 @@ msgstr "Kopiëren"
 
 msgctxt "#33010"
 msgid "Set download directory"
-msgstr "Stel download directory in"
+msgstr "Geef downloadmap op"
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Zoek tijdsduur"
 
 msgctxt "#33012"
 msgid "Short"
@@ -7719,7 +7899,7 @@ msgstr "Lang"
 
 msgctxt "#33014"
 msgid "Use DVD player instead of regular player"
-msgstr "Gebruik DVD-speler in plaats van standaard speler"
+msgstr "Gebruik DVD-speler in plaats van standaardspeler"
 
 msgctxt "#33015"
 msgid "Ask for download before playing video"
@@ -7743,31 +7923,31 @@ msgstr "Morgennacht"
 
 msgctxt "#33020"
 msgid "Condition"
-msgstr "Condition"
+msgstr "Voorwaarde"
 
 msgctxt "#33021"
 msgid "Precipitation"
-msgstr "Precipitation"
+msgstr "Neerslag"
 
 msgctxt "#33022"
 msgid "Precip"
-msgstr "Precip"
+msgstr "Neersl."
 
 msgctxt "#33023"
 msgid "Humid"
-msgstr "Humid"
+msgstr "Vochtigheid"
 
 msgctxt "#33024"
 msgid "Feels"
-msgstr "Feels"
+msgstr "Voelt"
 
 msgctxt "#33025"
 msgid "Observed"
-msgstr "Observed"
+msgstr "Waargenomen"
 
 msgctxt "#33026"
 msgid "Departure from normal"
-msgstr "Departure from normal"
+msgstr "Vertrek van normaal"
 
 msgctxt "#33027"
 msgid "Sunrise"
@@ -7803,11 +7983,11 @@ msgstr "36 Uur"
 
 msgctxt "#33035"
 msgid "Maps"
-msgstr "Maps"
+msgstr "Kaarten"
 
 msgctxt "#33036"
 msgid "Hourly"
-msgstr "Hourly"
+msgstr "Elk uur"
 
 msgctxt "#33037"
 msgid "Weekend"
@@ -7851,7 +8031,7 @@ msgstr "Bekijk je"
 
 msgctxt "#33057"
 msgid "Listen to"
-msgstr "Luister naar"
+msgstr "Beluister"
 
 msgctxt "#33058"
 msgid "View your"
@@ -7859,7 +8039,7 @@ msgstr "Bekijk je"
 
 msgctxt "#33059"
 msgid "Configure the"
-msgstr "Configure the"
+msgstr "Configureer de"
 
 msgctxt "#33060"
 msgid "Power"
@@ -7887,7 +8067,7 @@ msgstr "Over je"
 
 msgctxt "#33067"
 msgid "Star rating"
-msgstr "Star rating"
+msgstr "Waardering"
 
 msgctxt "#33068"
 msgid "Background"
@@ -7899,11 +8079,11 @@ msgstr "Achtergronden"
 
 msgctxt "#33070"
 msgid "Custom background"
-msgstr "Custom achtergrond"
+msgstr "Aangepaste achtergrond"
 
 msgctxt "#33071"
 msgid "Custom backgrounds"
-msgstr "Custom achtergronden"
+msgstr "Aangepaste achtergronden"
 
 msgctxt "#33072"
 msgid "View Readme"
@@ -7911,19 +8091,19 @@ msgstr "Bekijk Readme"
 
 msgctxt "#33073"
 msgid "View Changelog"
-msgstr "Bekijk Changelog"
+msgstr "Bekijk wijzigingen"
 
 msgctxt "#33074"
 msgid "This version of %s requires an"
-msgstr "Deze versie van %s heeft een"
+msgstr "Deze versie van %s vereist een"
 
 msgctxt "#33075"
 msgid "XBMC revision of %s or greater to run."
-msgstr "XBMC revisie van %s of meer om uit te kunnen voeren."
+msgstr "XBMC-revisie %s of meer vereist om uit te kunnen voeren."
 
 msgctxt "#33076"
 msgid "Please update XBMC."
-msgstr "Gelieve XBMC updaten."
+msgstr "Gelieve XBMC bij te werken."
 
 msgctxt "#33077"
 msgid "No data found!"
@@ -7935,15 +8115,15 @@ msgstr "Volgende pagina"
 
 msgctxt "#33079"
 msgid "Love"
-msgstr "Liefde"
+msgstr "Leuk!"
 
 msgctxt "#33080"
 msgid "Hate"
-msgstr "Haat"
+msgstr "Niet leuk!"
 
 msgctxt "#33081"
 msgid "This file is stacked, select the part you want to play from."
-msgstr "Dit bestand bestaat uit meer delen, selecteer het juiste gedeelte. "
+msgstr "Dit bestand bestaat uit meerdere delen, selecteer het deel dat u wilt afspelen."
 
 msgctxt "#33082"
 msgid "Path to script"
@@ -7951,4 +8131,8 @@ msgstr "Pad naar script"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "Stel custom script knop in"
+msgstr "Stel aangepaste scriptknop in"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "FLAC"

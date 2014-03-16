@@ -1933,6 +1933,14 @@ msgctxt "#573"
 msgid "Path"
 msgstr "Putanja"
 
+msgctxt "#574"
+msgid "Country"
+msgstr "Zemlja"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "U toku"
+
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Smer slaganja"
@@ -6305,6 +6313,10 @@ msgctxt "#20254"
 msgid "WebDAV server (HTTPS)"
 msgstr "WebDAV server (HTTPS)"
 
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV kijent"
+
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
 msgstr "Fascikla Web servera (HTTP)"
@@ -6601,6 +6613,10 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Neodređen sadržaj"
 
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Originalni naziv"
+
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "Osveži podatke TV serije"
@@ -6888,6 +6904,14 @@ msgstr "Server je najverovatnije nedostupan."
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Želite li da nastavite analiziranje?"
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Države"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Grupiši filmove u komplet"
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"

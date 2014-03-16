@@ -15,7 +15,7 @@ msgstr ""
 
 msgctxt "#0"
 msgid "Programs"
-msgstr "Program"
+msgstr "Programok"
 
 msgctxt "#1"
 msgid "Pictures"
@@ -27,11 +27,11 @@ msgstr "Zene"
 
 msgctxt "#3"
 msgid "Videos"
-msgstr "Videó"
+msgstr "Videók"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "TV Műsor"
+msgstr "TV Műsor kalauz"
 
 msgctxt "#5"
 msgid "Settings"
@@ -251,11 +251,11 @@ msgstr "Diavetítés"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Bélyegkép létrehozása"
+msgstr "Miniképek létrehozása"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "Bélyegképek létrehozása"
+msgstr "Miniképek létrehozása"
 
 msgctxt "#111"
 msgid "Shortcuts"
@@ -295,7 +295,7 @@ msgstr "Áthelyezés megerősítése"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
-msgstr "Törlés megerősítése"
+msgstr "Fájltörlés megerősítése?"
 
 msgctxt "#123"
 msgid "Copy these files?"
@@ -315,7 +315,7 @@ msgstr "Állapot"
 
 msgctxt "#127"
 msgid "Objects"
-msgstr "Objektum"
+msgstr "Elem"
 
 msgctxt "#128"
 msgid "General"
@@ -359,7 +359,7 @@ msgstr "Keresés"
 
 msgctxt "#138"
 msgid "System Information"
-msgstr "Rendszerinfó"
+msgstr "Rendszerinformáció"
 
 msgctxt "#139"
 msgid "Temperatures:"
@@ -415,15 +415,15 @@ msgstr "Kapcsolat: "
 
 msgctxt "#152"
 msgid "Half duplex"
-msgstr "Half duplex"
+msgstr "Fél-duplex"
 
 msgctxt "#153"
 msgid "Full duplex"
-msgstr "Full duplex"
+msgstr "Teljes-duplex"
 
 msgctxt "#154"
 msgid "Storage"
-msgstr "Tároló"
+msgstr "Háttértár"
 
 msgctxt "#155"
 msgid "Drive"
@@ -447,7 +447,7 @@ msgstr "Nincs kapcsolat"
 
 msgctxt "#160"
 msgid "Free"
-msgstr "szabad"
+msgstr "Szabad"
 
 msgctxt "#161"
 msgid "Unavailable"
@@ -467,11 +467,11 @@ msgstr "Nincs lemez"
 
 msgctxt "#165"
 msgid "Disc present"
-msgstr "OK"
+msgstr "Lemezt találtam"
 
 msgctxt "#166"
 msgid "Skin"
-msgstr "Skin"
+msgstr "Felszín"
 
 msgctxt "#167"
 msgid "Enable FTP server"
@@ -487,11 +487,15 @@ msgstr "Felbontás"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "Képfrissítésfrekvencia igazítása a film-képkockasebességhez"
+msgstr "Képfrissítési frekvencia igazítása a filmhez"
 
 msgctxt "#172"
 msgid "Release date"
-msgstr "Megjelenés dátuma:"
+msgstr "Megjelenés dátuma"
+
+msgctxt "#173"
+msgid "Display 4:3 videos as"
+msgstr "4:3 képarányú videók megjelenítési módja"
 
 msgctxt "#175"
 msgid "Moods"
@@ -567,11 +571,11 @@ msgstr "Keresés..."
 
 msgctxt "#195"
 msgid "No info found!"
-msgstr "Nincs találat!"
+msgstr "Információ nem található!"
 
 msgctxt "#196"
 msgid "Select movie:"
-msgstr "Film választás"
+msgstr "Film választás:"
 
 msgctxt "#197"
 msgid "Querying %s info"
@@ -583,7 +587,7 @@ msgstr "Filminformációk betöltése"
 
 msgctxt "#202"
 msgid "Tagline"
-msgstr "Címszavakban"
+msgstr "Röviden"
 
 msgctxt "#203"
 msgid "Plot outline"
@@ -615,7 +619,7 @@ msgstr "Előző"
 
 msgctxt "#213"
 msgid "Calibrate user interface..."
-msgstr "UI kalibrálása"
+msgstr "Felhasználói felület kalibrálása..."
 
 msgctxt "#214"
 msgid "Video calibration..."
@@ -623,15 +627,15 @@ msgstr "Képernyő kalibrálása"
 
 msgctxt "#215"
 msgid "Soften"
-msgstr "Mérsékel"
+msgstr "Lágyítás"
 
 msgctxt "#216"
 msgid "Zoom amount"
-msgstr "Nagyítás"
+msgstr "Nagyítási arány"
 
 msgctxt "#217"
 msgid "Pixel ratio"
-msgstr "Pixel arány"
+msgstr "Képpontarány"
 
 msgctxt "#218"
 msgid "DVD drive"
@@ -639,7 +643,7 @@ msgstr "DVD meghajtó"
 
 msgctxt "#219"
 msgid "Please insert disc"
-msgstr "Tegyél be egy lemezt"
+msgstr "Helyezz be egy lemezt"
 
 msgctxt "#220"
 msgid "Remote share"
@@ -659,19 +663,19 @@ msgstr "Sebesség"
 
 msgctxt "#226"
 msgid "Test patterns..."
-msgstr "Teszt minták"
+msgstr "Teszt minták..."
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "Zene CD-k keresése a freedb.org-on"
+msgstr "Zenei CD-k keresése a freedb.org-on"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
-msgstr "Lejátszáslista keverése betöltéskor"
+msgstr "Véletlenszerû lejátszáslista betöltéskor"
 
 msgctxt "#229"
 msgid "HDD spindown time"
-msgstr "Merevlemez kikapcsolása"
+msgstr "Merevlemez kikapcsolási ideje"
 
 msgctxt "#230"
 msgid "Video filters"
@@ -715,7 +719,7 @@ msgstr "Lejátszáslista törlése kilépéskor"
 
 msgctxt "#247"
 msgid "Scripts"
-msgstr "Szkriptek"
+msgstr "Programok"
 
 msgctxt "#248"
 msgid "Language"
@@ -759,7 +763,7 @@ msgstr "Hiba"
 
 msgctxt "#258"
 msgid "Enable tag reading"
-msgstr "Metaadatok figyelembevétele a fájlokban"
+msgstr "Címkeolvasás engedélyezése"
 
 msgctxt "#259"
 msgid "Opening"
@@ -775,11 +779,11 @@ msgstr "Indulásra vár..."
 
 msgctxt "#262"
 msgid "Scripts output"
-msgstr "Szkriptek kimenete"
+msgstr "Programok kimenete"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "XBMC távoli vezérelhetősége HTTP-vel"
+msgstr "XBMC távoli vezérelhetősége HTTP-n"
 
 msgctxt "#264"
 msgid "Record"
@@ -815,11 +819,11 @@ msgstr "Top 100 "
 
 msgctxt "#272"
 msgid "Top-Left overscan compensation"
-msgstr "Bal-felső túlpásztázás kompenzálása"
+msgstr "Bal-felső túllógás javítása"
 
 msgctxt "#273"
 msgid "Bottom-Right overscan compensation"
-msgstr "Jobb-alsó túlpásztázás kompenzálása"
+msgstr "Jobb-alsó túllógás javítása"
 
 msgctxt "#274"
 msgid "Subtitle positioning"
@@ -827,11 +831,11 @@ msgstr "Felirat pozicionálása"
 
 msgctxt "#275"
 msgid "Pixel ratio adjustment"
-msgstr "Képpontarány igazítás"
+msgstr "Képpontarány igazítása"
 
 msgctxt "#276"
 msgid "Adjust the arrow to change the amount of overscan"
-msgstr "Használd a nyilakat a túlpásztázás beállításához"
+msgstr "Használd a nyilakat a túllógás beállításához"
 
 msgctxt "#277"
 msgid "Adjust the bar to change the subtitles position"
@@ -907,7 +911,7 @@ msgstr "Könyvjelzők törlése"
 
 msgctxt "#297"
 msgid "Audio offset"
-msgstr "Hang csúsztatás"
+msgstr "Hang eltolás"
 
 msgctxt "#298"
 msgid "Bookmarks"
@@ -927,7 +931,7 @@ msgstr "Engedélyezve"
 
 msgctxt "#306"
 msgid "Non-interleaved"
-msgstr "Nem interleaved"
+msgstr "Nem interleave típusú"
 
 msgctxt "#307"
 msgid "- Automatic post-processing"
@@ -959,7 +963,7 @@ msgstr "Adatbázis tisztítása"
 
 msgctxt "#314"
 msgid "Preparing..."
-msgstr "Előkészítés"
+msgstr "Előkészítés..."
 
 msgctxt "#315"
 msgid "Database error"
@@ -1043,11 +1047,11 @@ msgstr "Médiatár tisztítása..."
 
 msgctxt "#335"
 msgid "Start"
-msgstr "Start "
+msgstr "Indítás"
 
 msgctxt "#336"
 msgid "Framerate conversion"
-msgstr "Framerate konvertálás"
+msgstr "Képkockasebesség konvertálás"
 
 msgctxt "#337"
 msgid "Audio output"
@@ -1067,7 +1071,7 @@ msgstr "Különböző előadók"
 
 msgctxt "#341"
 msgid "Play disc"
-msgstr "Lemez lejátszása"
+msgstr "Lemezek"
 
 msgctxt "#342"
 msgid "Movies"
@@ -1075,7 +1079,7 @@ msgstr "Filmek"
 
 msgctxt "#343"
 msgid "Adjust framerate"
-msgstr "Framerate igazítás"
+msgstr "Képkockasebesség igazítás"
 
 msgctxt "#344"
 msgid "Actors"
@@ -1111,7 +1115,7 @@ msgstr "Képernyőkímélő késleltetés beállítás"
 
 msgctxt "#356"
 msgid "Screensaver mode"
-msgstr "Képernyőkímélő módja"
+msgstr "Képernyőkímélő típusa"
 
 msgctxt "#357"
 msgid "Shutdown function timer"
@@ -1131,11 +1135,11 @@ msgstr "Képernyőkímélő"
 
 msgctxt "#361"
 msgid "R. Slideshow"
-msgstr "R. Diavetítés"
+msgstr "Rekurzív diavetítés"
 
 msgctxt "#362"
 msgid "Screensaver dim level"
-msgstr "Képernyőkímélő elhalványodás szintje"
+msgstr "Képernyőkímélő elhalványodási szintje"
 
 msgctxt "#363"
 msgid "Sort by: File"
@@ -1167,7 +1171,7 @@ msgstr "Cím"
 
 msgctxt "#370"
 msgid "Thunderstorms"
-msgstr "Viharok, villámok"
+msgstr "Viharos"
 
 msgctxt "#371"
 msgid "Partly"
@@ -1191,7 +1195,7 @@ msgstr "Havazás"
 
 msgctxt "#376"
 msgid "Rain"
-msgstr "Esős"
+msgstr "Eső"
 
 msgctxt "#377"
 msgid "Light"
@@ -1199,11 +1203,11 @@ msgstr "Enyhe"
 
 msgctxt "#378"
 msgid "AM"
-msgstr "Délelőtt"
+msgstr "délelőtt"
 
 msgctxt "#379"
 msgid "PM"
-msgstr "Délután"
+msgstr "délután"
 
 msgctxt "#380"
 msgid "Showers"
@@ -1227,7 +1231,7 @@ msgstr "Erős"
 
 msgctxt "#385"
 msgid "Fair"
-msgstr "Kedvező"
+msgstr "Szép idő"
 
 msgctxt "#386"
 msgid "Clear"
@@ -1239,7 +1243,7 @@ msgstr "Felhők"
 
 msgctxt "#388"
 msgid "Early"
-msgstr "Korai"
+msgstr "Hajnalban"
 
 msgctxt "#389"
 msgid "Shower"
@@ -1247,31 +1251,31 @@ msgstr "Zápor"
 
 msgctxt "#390"
 msgid "Flurries"
-msgstr "Szélroham"
+msgstr "Széllökések"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "Min."
+msgstr "Alacsony"
 
 msgctxt "#392"
 msgid "Medium"
-msgstr "Közép"
+msgstr "Közepes"
 
 msgctxt "#393"
 msgid "High"
-msgstr "Max."
+msgstr "Magas"
 
 msgctxt "#394"
 msgid "Fog"
-msgstr "Ködös"
+msgstr "Köd"
 
 msgctxt "#395"
 msgid "Haze"
-msgstr "Párás"
+msgstr "Pára"
 
 msgctxt "#396"
 msgid "Select location"
-msgstr "Területválasztás"
+msgstr "Hely kiválasztása"
 
 msgctxt "#397"
 msgid "Refresh time"
@@ -1295,11 +1299,11 @@ msgstr "Hőmérséklet"
 
 msgctxt "#402"
 msgid "Feels like"
-msgstr "Érzet"
+msgstr "Hőérzet"
 
 msgctxt "#403"
 msgid "UV index"
-msgstr "UV Index"
+msgstr "UV index"
 
 msgctxt "#404"
 msgid "Wind"
@@ -1347,7 +1351,7 @@ msgstr "Nincs ismertető ehhez az albumhoz"
 
 msgctxt "#415"
 msgid "Downloading thumbnail..."
-msgstr "Bélyegkép letöltése..."
+msgstr "Minikép letöltése..."
 
 msgctxt "#416"
 msgid "Not available"
@@ -1355,7 +1359,7 @@ msgstr "Nem elérhető"
 
 msgctxt "#417"
 msgid "View: Big icons"
-msgstr "Nézet: N. Ikon"
+msgstr "Nézet: Nagy ikon"
 
 msgctxt "#422"
 msgid "Delete album info"
@@ -1371,11 +1375,11 @@ msgstr "Kiválaszt"
 
 msgctxt "#425"
 msgid "No album information found"
-msgstr "Nincs találat."
+msgstr "Album információ nem található"
 
 msgctxt "#426"
 msgid "No CD information found"
-msgstr "Nincs találat."
+msgstr "CD információ nem található"
 
 msgctxt "#427"
 msgid "Disc"
@@ -1403,7 +1407,7 @@ msgstr "Film eltávolítása a médiatárból"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
-msgstr "Biztos el akarod távolítani a %s-t?"
+msgstr "Biztos el akarod távolítani a '%s'-t?"
 
 msgctxt "#437"
 msgid "Removable disk"
@@ -1439,7 +1443,7 @@ msgstr "Videó"
 
 msgctxt "#445"
 msgid "Audio"
-msgstr "Audio"
+msgstr "Hang"
 
 msgctxt "#446"
 msgid "DVD"
@@ -1447,7 +1451,7 @@ msgstr "DVD"
 
 msgctxt "#447"
 msgid "Autorun media"
-msgstr "Autoindítás "
+msgstr "Média autoindítás"
 
 msgctxt "#448"
 msgid "LCD"
@@ -1495,7 +1499,7 @@ msgstr "Feliratok"
 
 msgctxt "#460"
 msgid "Audio stream"
-msgstr "Audiofolyam"
+msgstr "Hangfolyam"
 
 msgctxt "#461"
 msgid "[active]"
@@ -1527,11 +1531,11 @@ msgstr "Típus"
 
 msgctxt "#468"
 msgid "Move the bar to change the OSD position"
-msgstr "OSD pozíció beállítása a sáv mozgatásával"
+msgstr "Navigációs-tálca (OSD) pozíció beállítása a sáv mozgatásával"
 
 msgctxt "#469"
 msgid "OSD position"
-msgstr "OSD pozíció"
+msgstr "Navigációs-tálca (OSD) pozíció"
 
 msgctxt "#470"
 msgid "Credits"
@@ -1559,11 +1563,11 @@ msgstr "Lejátszáslista nem tölthető be"
 
 msgctxt "#478"
 msgid "OSD"
-msgstr "OSD"
+msgstr "Navigációs tálca"
 
 msgctxt "#479"
 msgid "Skin & language"
-msgstr "Skin és Nyelv"
+msgstr "Felszín és Nyelv"
 
 msgctxt "#480"
 msgid "Appearance"
@@ -1587,7 +1591,7 @@ msgstr "Ismétlés"
 
 msgctxt "#487"
 msgid "Repeat one"
-msgstr "Egyszer ismétlés"
+msgstr "Egy ismétlése"
 
 msgctxt "#488"
 msgid "Repeat folder"
@@ -1623,7 +1627,7 @@ msgstr "Kalibrálás"
 
 msgctxt "#497"
 msgid "Show file extensions"
-msgstr "Fájl kiterjesztések megjelenítése"
+msgstr "Fájlkiterjesztések megjelenítése"
 
 msgctxt "#498"
 msgid "Sort by: Type"
@@ -1659,7 +1663,7 @@ msgstr "Médiainformáció betöltése fájlokból..."
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "Haszn. szerint"
+msgstr "Használat alapján"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1727,7 +1731,7 @@ msgstr "Hozzáadás a lejátszáslistához"
 
 msgctxt "#527"
 msgid "Manually add to library"
-msgstr "Médiatárba kézileg"
+msgstr "Kézi hozzáadás a Médiatárhoz"
 
 msgctxt "#528"
 msgid "Enter title"
@@ -1735,7 +1739,7 @@ msgstr "Cím"
 
 msgctxt "#529"
 msgid "Error: Duplicate title"
-msgstr "Hiba: duplikált cím"
+msgstr "Hiba: már létező cím"
 
 msgctxt "#530"
 msgid "Select genre"
@@ -1799,11 +1803,11 @@ msgstr "Médiainfó"
 
 msgctxt "#545"
 msgid "Audio output device"
-msgstr "Hangkimenet"
+msgstr "Hanglejátszás eszköze"
 
 msgctxt "#546"
 msgid "Passthrough output device"
-msgstr "Passthrough kimenet"
+msgstr "Közvetlen-hangtovábbítás (passthrough) eszköze"
 
 msgctxt "#547"
 msgid "No biography for this artist"
@@ -1811,7 +1815,7 @@ msgstr "Nincs életrajz ehhez az előadóhoz"
 
 msgctxt "#548"
 msgid "Downmix multichannel audio to stereo"
-msgstr "A dekódolt többcsatornás hangok lekeverése sztereóra"
+msgstr "A többcsatornás hangok lekeverése sztereóra"
 
 msgctxt "#550"
 msgid "Sort by: %s"
@@ -1851,7 +1855,7 @@ msgstr "Album"
 
 msgctxt "#559"
 msgid "Playlist"
-msgstr "Lejátszáslista"
+msgstr "Lejátszási lista"
 
 msgctxt "#560"
 msgid "ID"
@@ -1867,7 +1871,7 @@ msgstr "Év"
 
 msgctxt "#563"
 msgid "Rating"
-msgstr "Értékelés"
+msgstr "Pontszám"
 
 msgctxt "#564"
 msgid "Type"
@@ -1879,7 +1883,7 @@ msgstr "Használat"
 
 msgctxt "#566"
 msgid "Album artist"
-msgstr "Előadó albuma"
+msgstr "Album előadó"
 
 msgctxt "#567"
 msgid "Play count"
@@ -1895,11 +1899,11 @@ msgstr "Leírás"
 
 msgctxt "#570"
 msgid "Date added"
-msgstr "Hozzáadás-dátum"
+msgstr "Hozzáadás"
 
 msgctxt "#571"
 msgid "Default"
-msgstr "Alapbeállítás"
+msgstr "Eredeti"
 
 msgctxt "#572"
 msgid "Studio"
@@ -1908,6 +1912,14 @@ msgstr "Stúdió"
 msgctxt "#573"
 msgid "Path"
 msgstr "Elérési út"
+
+msgctxt "#574"
+msgid "Country"
+msgstr "Ország"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "Folyamatban"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -1919,11 +1931,11 @@ msgstr "Rendezés módja"
 
 msgctxt "#582"
 msgid "View mode"
-msgstr "Nézet mód"
+msgstr "Nézetmód"
 
 msgctxt "#583"
 msgid "Remember views for different folders"
-msgstr "Mappák nézetének megjegyzése"
+msgstr "Mappanézet megjegyzése"
 
 msgctxt "#584"
 msgid "Ascending"
@@ -1983,7 +1995,7 @@ msgstr "Ismétlés: Mind"
 
 msgctxt "#600"
 msgid "Rip audio CD"
-msgstr "Zene CD rippelése"
+msgstr "Zenei CD bemásolása (rip)"
 
 msgctxt "#601"
 msgid "Medium"
@@ -1999,11 +2011,11 @@ msgstr "Extrém"
 
 msgctxt "#604"
 msgid "Constant bitrate"
-msgstr "Állandó bitráta"
+msgstr "Állandó bitarány"
 
 msgctxt "#605"
 msgid "Ripping..."
-msgstr "Rippelés..."
+msgstr "Bemásolás..."
 
 msgctxt "#607"
 msgid "To:"
@@ -2011,15 +2023,15 @@ msgstr "Ide:"
 
 msgctxt "#608"
 msgid "Could not rip CD or track"
-msgstr "CD vagy zeneszám nem rippelhető."
+msgstr "CD vagy zeneszám nem bemásolható"
 
 msgctxt "#609"
 msgid "CDDARipPath is not set."
-msgstr "CDDA rip mappa nincs beállítva."
+msgstr "CDDA bemásolási mappa nincs beállítva."
 
 msgctxt "#610"
 msgid "Rip audio track"
-msgstr "Zeneszám rippelése"
+msgstr "Zeneszám bemásolása"
 
 msgctxt "#611"
 msgid "Enter number"
@@ -2027,7 +2039,7 @@ msgstr "Szám megadása"
 
 msgctxt "#620"
 msgid "Audio CDs"
-msgstr "Zene CD"
+msgstr "Zenei CD"
 
 msgctxt "#621"
 msgid "Encoder"
@@ -2039,7 +2051,7 @@ msgstr "Minőség"
 
 msgctxt "#623"
 msgid "Bitrate"
-msgstr "Bitráta"
+msgstr "Bitarány"
 
 msgctxt "#624"
 msgid "Include track number"
@@ -2063,7 +2075,7 @@ msgstr "Nagyítás"
 
 msgctxt "#632"
 msgid "Stretch 4:3"
-msgstr "4:3 teljes képernyő"
+msgstr "Széthúzás 4:3-ra"
 
 msgctxt "#633"
 msgid "Stretch 14:9"
@@ -2071,7 +2083,7 @@ msgstr "14:9 teljes képernyő"
 
 msgctxt "#634"
 msgid "Stretch 16:9"
-msgstr "16:9 teljes képernyő"
+msgstr "Széthúzás 16:9-re"
 
 msgctxt "#635"
 msgid "Original Size"
@@ -2111,11 +2123,11 @@ msgstr "Túlvezérelt torzítás elkerülése hangerőkiegyenlítésnél"
 
 msgctxt "#644"
 msgid "Crop black bars"
-msgstr "Fekete sávok levágása"
+msgstr "Feketesávok levágása"
 
 msgctxt "#645"
 msgid "Need to unpack a big file. Continue?"
-msgstr "Nagy fájl kitömörítése szükséges. Folytatás?"
+msgstr "Egy nagy fájl kitömörítése szükséges. Folytatod?"
 
 msgctxt "#646"
 msgid "Remove from library"
@@ -2123,11 +2135,11 @@ msgstr "Eltávolítás a médiatárból"
 
 msgctxt "#647"
 msgid "Export video library"
-msgstr "Médiatár (video) exportálása"
+msgstr "Médiatár (videó) exportálása"
 
 msgctxt "#648"
 msgid "Import video library"
-msgstr "Médiatár (video) importálása"
+msgstr "Médiatár (videó) importálása"
 
 msgctxt "#649"
 msgid "Importing"
@@ -2151,7 +2163,7 @@ msgstr "Médiatár frissítése"
 
 msgctxt "#654"
 msgid "Show debug info"
-msgstr "Debug-infó megjelenítése"
+msgstr "Hibakeresési-infó megjelenítése"
 
 msgctxt "#655"
 msgid "Browse for executable"
@@ -2171,7 +2183,7 @@ msgstr "Dal információ"
 
 msgctxt "#660"
 msgid "Volume amplification"
-msgstr "Hangerő erősítés"
+msgstr "Hang előerősítés"
 
 msgctxt "#661"
 msgid "Choose export folder"
@@ -2179,7 +2191,7 @@ msgstr "Export mappa választása"
 
 msgctxt "#662"
 msgid "This file is no longer available."
-msgstr "A fájl már nem elérhető"
+msgstr "A fájl már nem elérhető."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
@@ -2187,7 +2199,11 @@ msgstr "Eltávolítás a médiatárból?"
 
 msgctxt "#664"
 msgid "Browse for Script"
-msgstr "Szkript keresése"
+msgstr "Program keresése"
+
+msgctxt "#665"
+msgid "Compression level"
+msgstr "Tömörítés erőssége"
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -2199,7 +2215,7 @@ msgstr "Régi dalok eltávolítása a médiatárból"
 
 msgctxt "#702"
 msgid "This path has been scanned before"
-msgstr "Ez az elérési út már át lett vizsgálva korábban."
+msgstr "Ez az elérési út már át lett vizsgálva korábban"
 
 msgctxt "#705"
 msgid "Network"
@@ -2211,19 +2227,19 @@ msgstr "- Kiszolgáló"
 
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
-msgstr "HTTP Proxy kiszolgáló használata az Internet eléréséhez"
+msgstr "HTTP proxykiszolgáló használata az internet eléréséhez"
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
-msgstr "Internet protokoll (IP)"
+msgstr "Internetprotokoll (IP)"
 
 msgctxt "#712"
 msgid "Invalid port specified. Value must be between 1 and 65535."
-msgstr "Érvénytelen port! Az értéknek 1 és 65535 között kell lennie."
+msgstr "Érvénytelen port. Az értéknek 1 és 65535 között kell lennie."
 
 msgctxt "#713"
 msgid "HTTP proxy"
-msgstr "HTTP Proxy"
+msgstr "HTTP proxy"
 
 msgctxt "#715"
 msgid "- Assignment"
@@ -2235,7 +2251,7 @@ msgstr "Automatikus (DHCP)"
 
 msgctxt "#717"
 msgid "Manual (Static)"
-msgstr "Kézi (Statikus)"
+msgstr "Kézi (Állandó)"
 
 msgctxt "#718"
 msgid "Default (Dashboard)"
@@ -2271,15 +2287,15 @@ msgstr "0 és 255 közötti számokkal."
 
 msgctxt "#726"
 msgid "Changes not saved. Continue without saving?"
-msgstr "A változtatások nincsenek elmentve. Folytatás?"
+msgstr "A változtatások nincsenek elmentve. Folytatás mentés nélkül?"
 
 msgctxt "#727"
 msgid "Web server"
-msgstr "Web szerver"
+msgstr "Webkiszolgáló"
 
 msgctxt "#728"
 msgid "FTP server"
-msgstr "FTP szerver"
+msgstr "FTP kiszolgáló"
 
 msgctxt "#729"
 msgid "Internet time"
@@ -2375,7 +2391,7 @@ msgstr "Forrás eltávolítása"
 
 msgctxt "#754"
 msgid "Add program link"
-msgstr "Program hivatkozás hozzáadása"
+msgstr "Programhivatkozás hozzáadása"
 
 msgctxt "#755"
 msgid "Edit program path"
@@ -2419,7 +2435,7 @@ msgstr "Cián"
 
 msgctxt "#766"
 msgid "Light grey"
-msgstr "Világos szürke"
+msgstr "Világosszürke"
 
 msgctxt "#767"
 msgid "Grey"
@@ -2439,15 +2455,15 @@ msgstr "Hangkimenet"
 
 msgctxt "#773"
 msgid "Seeking"
-msgstr "Keresés"
+msgstr "POZÍCIÓKERESÉS"
 
 msgctxt "#774"
 msgid "Slideshow folder"
-msgstr "Diavetítő mappa"
+msgstr "Diavetítés mappa"
 
 msgctxt "#775"
 msgid "Network interface"
-msgstr "Hálózati csatoló"
+msgstr "Hálózati eszköz"
 
 msgctxt "#776"
 msgid "- Wireless network name (ESSID)"
@@ -2463,7 +2479,7 @@ msgstr "- Vezeték nélküli biztonság"
 
 msgctxt "#779"
 msgid "Save and apply network interface settings"
-msgstr "Hálózati csatoló beállításainak mentése"
+msgstr "Hálózati eszköz beállításainak mentése"
 
 msgctxt "#780"
 msgid "No encryption"
@@ -2483,23 +2499,23 @@ msgstr "WPA2"
 
 msgctxt "#784"
 msgid "Applying network interface settings. Please wait."
-msgstr "Hálózati csatoló beállításainak mentése."
+msgstr "Hálózati eszköz beállításainak mentése. Kérlek várj."
 
 msgctxt "#785"
 msgid "Network interface restarted successfully."
-msgstr "Hálózati csatoló sikeresen újraindult."
+msgstr "Hálózati eszköz sikeresen újraindult."
 
 msgctxt "#786"
 msgid "Network interface did not start successfully."
-msgstr "Hálózati csatoló nem indult el."
+msgstr "Hálózati eszköz nem indult el."
 
 msgctxt "#787"
 msgid "Interface disabled"
-msgstr "Csatoló letiltva"
+msgstr "Eszköz letiltva"
 
 msgctxt "#788"
 msgid "Network interface disabled successfully."
-msgstr "Hálózati csatoló letiltva."
+msgstr "Hálózati eszköz letiltva."
 
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
@@ -2527,11 +2543,11 @@ msgstr "Kezdeti ismétlés késleltetés (ms)"
 
 msgctxt "#796"
 msgid "Continuous repeat delay (ms)"
-msgstr "folyamatos ismétlés késleltetése (ms)"
+msgstr "Folyamatos ismétlés késleltetése (ms)"
 
 msgctxt "#797"
 msgid "Maximum number of clients"
-msgstr "Kliensek maximális száma"
+msgstr "Ügyfelek maximális száma"
 
 msgctxt "#798"
 msgid "Internet access"
@@ -2563,7 +2579,7 @@ msgstr "Sikertelen csatlakozás a hálózati helyhez."
 
 msgctxt "#1003"
 msgid "This could be due to the network not being connected."
-msgstr "Hálózat csatlakozási hiba"
+msgstr "Ez a hálózati kapcsolat hiánya miatt lehet."
 
 msgctxt "#1004"
 msgid "Would you like to add it anyway?"
@@ -2583,11 +2599,11 @@ msgstr "Protokoll"
 
 msgctxt "#1009"
 msgid "Server address"
-msgstr "Szerver címe"
+msgstr "Kiszolgáló címe"
 
 msgctxt "#1010"
 msgid "Server name"
-msgstr "Szerver neve"
+msgstr "Kiszolgáló neve"
 
 msgctxt "#1011"
 msgid "Remote path"
@@ -2611,11 +2627,11 @@ msgstr "Hálózati megosztások tallózása"
 
 msgctxt "#1016"
 msgid "Enter the network address of the server"
-msgstr "Szerver IP címe"
+msgstr "Kiszolgáló IP címe"
 
 msgctxt "#1017"
 msgid "Enter the path on the server"
-msgstr "Szerver elérési útja"
+msgstr "Kiszolgáló elérési útja"
 
 msgctxt "#1018"
 msgid "Enter the port number"
@@ -2635,7 +2651,7 @@ msgstr "Elérési-út megadása, vagy médiamappák tallózása"
 
 msgctxt "#1022"
 msgid "Enter a name for this media Source."
-msgstr "Médiaforrás nevének megadása."
+msgstr "Médiaforrás nevének megadása"
 
 msgctxt "#1023"
 msgid "Browse for new share"
@@ -2671,11 +2687,11 @@ msgstr "Kép keresése"
 
 msgctxt "#1031"
 msgid "Browse for image folder"
-msgstr "Kép mappa keresése"
+msgstr "Képmappa keresése"
 
 msgctxt "#1032"
 msgid "Add network location..."
-msgstr "Hálózati hely hozzáadása"
+msgstr "Hálózati hely hozzáadása..."
 
 msgctxt "#1033"
 msgid "Browse for file"
@@ -2715,7 +2731,7 @@ msgstr "%i elem letöltve"
 
 msgctxt "#1042"
 msgid "Retrieved %i of %i items"
-msgstr "%i elemből %i letöltve "
+msgstr "%i elemből %i letöltve"
 
 msgctxt "#1043"
 msgid "Program plugins"
@@ -2731,7 +2747,7 @@ msgstr "Beépülő beállítások"
 
 msgctxt "#1046"
 msgid "Access points"
-msgstr "Hozzáférési pont"
+msgstr "Hozzáférési pontok"
 
 msgctxt "#1047"
 msgid "Other..."
@@ -2743,7 +2759,7 @@ msgstr "Web szerver felhasználónév"
 
 msgctxt "#1049"
 msgid "Script settings"
-msgstr "Szkript beállítások"
+msgstr "Program beállítások"
 
 msgctxt "#1050"
 msgid "Singles"
@@ -2751,7 +2767,7 @@ msgstr "Kislemezek"
 
 msgctxt "#1200"
 msgid "SMB client"
-msgstr "SMB kliens"
+msgstr "SMB ügyfél"
 
 msgctxt "#1202"
 msgid "Workgroup"
@@ -2767,11 +2783,11 @@ msgstr "Alapértelmezett jelszó"
 
 msgctxt "#1207"
 msgid "WINS server"
-msgstr "WINS szerver"
+msgstr "WINS kiszolgáló"
 
 msgctxt "#1208"
 msgid "Mount SMB shares"
-msgstr "Csatlakozás SMB megosztásra"
+msgstr "SMB megosztás felcsatolása"
 
 msgctxt "#1210"
 msgid "Remove"
@@ -2911,19 +2927,19 @@ msgstr "Kapcsolódás az automatikusan felismert rendszerhez?"
 
 msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
-msgstr "Szolgáltatások hirdetése más rendszerek felé a Zeroconf által"
+msgstr "Szolgáltatások hirdetése más rendszerek felé a Zeroconf segítségével"
 
 msgctxt "#1300"
 msgid "Custom audio device"
-msgstr "Egyedi hangeszköz megadása"
+msgstr "Egyedi hanglejátszó eszköz megadása"
 
 msgctxt "#1301"
 msgid "Custom passthrough device"
-msgstr "Egyedi passthrough megadása"
+msgstr "Egyedi hangtovábbító eszköz megadása"
 
 msgctxt "#1396"
 msgid "Drifting"
-msgstr "Hófúvásos"
+msgstr "Viharos"
 
 msgctxt "#1397"
 msgid "and"
@@ -2943,11 +2959,11 @@ msgstr "Helyi"
 
 msgctxt "#1401"
 msgid "Thundershowers"
-msgstr "Záporok"
+msgstr "Zivatar"
 
 msgctxt "#1402"
 msgid "Thunder"
-msgstr "Villámok"
+msgstr "Villámlás"
 
 msgctxt "#1403"
 msgid "Sun"
@@ -2959,23 +2975,23 @@ msgstr "Erős"
 
 msgctxt "#1405"
 msgid "in"
-msgstr "-en/on"
+msgstr "-"
 
 msgctxt "#1406"
 msgid "the"
-msgstr "a(z)"
+msgstr "-"
 
 msgctxt "#1407"
 msgid "Vicinity"
-msgstr "Környékén"
+msgstr "Környéken"
 
 msgctxt "#1408"
 msgid "Ice"
-msgstr "Jeges"
+msgstr "Jég"
 
 msgctxt "#1409"
 msgid "Crystals"
-msgstr "Kristályos"
+msgstr "Kristályok"
 
 msgctxt "#1410"
 msgid "Calm"
@@ -3019,7 +3035,7 @@ msgstr "Viharos esőzések"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
-msgstr "Kijelző altatásba üresjárat esetén"
+msgstr "Kijelző altatása üresjárat esetén"
 
 msgctxt "#2050"
 msgid "Runtime"
@@ -3027,7 +3043,7 @@ msgstr "Hossz"
 
 msgctxt "#2100"
 msgid "Script failed! : %s"
-msgstr "Szkript hiba: %s"
+msgstr "Program hiba: %s"
 
 msgctxt "#4501"
 msgid "Enable LCD/VFD"
@@ -3115,7 +3131,7 @@ msgstr "Beállítások - Megjelenítés"
 
 msgctxt "#10020"
 msgid "Scripts"
-msgstr "Szkriptek"
+msgstr "Programok"
 
 msgctxt "#10028"
 msgid "Videos/Playlist"
@@ -3139,7 +3155,7 @@ msgstr "Feliratok keresése..."
 
 msgctxt "#10211"
 msgid "Looking for or caching subtitles..."
-msgstr "Feliratok keresése..."
+msgstr "Feliratok keresése vagy gyorsítótárazása..."
 
 msgctxt "#10212"
 msgid "terminating"
@@ -3155,15 +3171,15 @@ msgstr "Adatfolyam megnyitása"
 
 msgctxt "#10500"
 msgid "Music/Playlist"
-msgstr "Zenék/lejátszáslista"
+msgstr "Zene/Lejátszáslista"
 
 msgctxt "#10501"
 msgid "Music/Files"
-msgstr "Zenék/fájlok"
+msgstr "Zene/Fájlok"
 
 msgctxt "#10502"
 msgid "Music/Library"
-msgstr "Zenék/Médiatár"
+msgstr "Zene/Médiatár"
 
 msgctxt "#10503"
 msgid "Playlist editor"
@@ -3207,19 +3223,19 @@ msgstr "Zene - Médiatár"
 
 msgctxt "#10517"
 msgid "Now Playing - Music"
-msgstr "Lejátszási lista - Zene"
+msgstr "Játszásra jelölt zenék"
 
 msgctxt "#10522"
 msgid "Now Playing - Videos"
-msgstr "Lejátszási lista - Videók"
+msgstr "Játszásra jelölt videók"
 
 msgctxt "#10523"
 msgid "Album info"
-msgstr "Album infó"
+msgstr "Albuminfó"
 
 msgctxt "#10524"
 msgid "Movie info"
-msgstr "Film infó"
+msgstr "Filminfó"
 
 msgctxt "#12000"
 msgid "Select dialog"
@@ -3227,7 +3243,7 @@ msgstr "Párbeszédpanel választása"
 
 msgctxt "#12001"
 msgid "Music/Info"
-msgstr "Zenék/Infó"
+msgstr "Zene/Infó"
 
 msgctxt "#12002"
 msgid "Dialog OK"
@@ -3239,11 +3255,11 @@ msgstr "Videók/Infó"
 
 msgctxt "#12004"
 msgid "Scripts/Info"
-msgstr "Szkriptek/Infó"
+msgstr "Programok/Infó"
 
 msgctxt "#12005"
 msgid "Fullscreen video"
-msgstr "Teljes képernyő (videó)"
+msgstr "Teljesképernyős videó"
 
 msgctxt "#12006"
 msgid "Audio visualization"
@@ -3303,7 +3319,7 @@ msgstr "Kérdezzen"
 
 msgctxt "#12021"
 msgid "Start from beginning"
-msgstr "Lejátszás elölről"
+msgstr "Lejátszás az elejéről"
 
 msgctxt "#12022"
 msgid "Resume from %s"
@@ -3435,7 +3451,7 @@ msgstr "Érvénytelen jelszó,"
 
 msgctxt "#12343"
 msgid "retries left "
-msgstr "lehetőséged maradt"
+msgstr "lehetőséged maradt "
 
 msgctxt "#12344"
 msgid "Passwords entered did not match."
@@ -3467,11 +3483,11 @@ msgstr "Változtatás zárolása"
 
 msgctxt "#12357"
 msgid "Source lock"
-msgstr "Forrás zárolás"
+msgstr "Források zárolása"
 
 msgctxt "#12358"
 msgid "Password entry was blank. Try again."
-msgstr "Érvénytelen jelszó. Próbálja újra."
+msgstr "Érvénytelen jelszó. Próbáld újra."
 
 msgctxt "#12360"
 msgid "Master lock"
@@ -3487,7 +3503,7 @@ msgstr "Érvénytelen mesterkód"
 
 msgctxt "#12368"
 msgid "Please enter a valid master code"
-msgstr "Adj meg érvényes mesterkódot!"
+msgstr "Adj meg érvényes mesterkódot"
 
 msgctxt "#12373"
 msgid "Settings & file manager"
@@ -3543,15 +3559,15 @@ msgstr "Rendszer üzemidő"
 
 msgctxt "#12391"
 msgid "Minutes"
-msgstr "Perc"
+msgstr "perc"
 
 msgctxt "#12392"
 msgid "Hours"
-msgstr "Óra"
+msgstr "óra"
 
 msgctxt "#12393"
 msgid "Days"
-msgstr "Nap"
+msgstr "nap"
 
 msgctxt "#12394"
 msgid "Total uptime"
@@ -3639,7 +3655,7 @@ msgstr "Lehet hogy egy másik bejelentkezés aktív (ssh)?"
 
 msgctxt "#13021"
 msgid "Mounted removable harddrive"
-msgstr "Külső tároló csatlakozott"
+msgstr "Külső meghajtó csatlakoztatva"
 
 msgctxt "#13022"
 msgid "Unsafe device removal"
@@ -3659,7 +3675,7 @@ msgstr "Joystick eltávolítva"
 
 msgctxt "#13100"
 msgid "Flicker filter"
-msgstr "Villogás szűrés"
+msgstr "Villogásszűrő"
 
 msgctxt "#13101"
 msgid "Let driver choose (requires restart)"
@@ -3747,23 +3763,23 @@ msgstr "Letiltva"
 
 msgctxt "#13132"
 msgid "Blank displays"
-msgstr "Képernyő törlése"
+msgstr "Megjelenítők sötétítése"
 
 msgctxt "#13140"
 msgid "Active connections detected!"
-msgstr "Aktív kapcsolatok vannak!"
+msgstr "Aktív kapcsolatok észlelhetők!"
 
 msgctxt "#13141"
 msgid "If you proceed, you might not be able to control XBMC"
-msgstr "Továbblépés esetén az XBMC nem lesz irányítható"
+msgstr "Továbblépés esetén az XBMC esetleg nem lesz irányítható."
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "a továbbiakban. Eseményszerver leállítása?"
+msgstr "Eseménykiszolgáló leállítása?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
-msgstr "Apple távirányító módra váltás?"
+msgstr "Apple távirányítómód váltása?"
 
 msgctxt "#13145"
 msgid "If you are currently using the Apple Remote to control"
@@ -3771,11 +3787,11 @@ msgstr "Ha jelenleg az Apple távirányító van használatban,"
 
 msgctxt "#13146"
 msgid "XBMC, changing this setting might affect your ability"
-msgstr "ennek a beállításnak a használata a távirányítás "
+msgstr "ennek a beállításnak a használata a távirányítás"
 
 msgctxt "#13147"
 msgid "to continue controlling it. Do you want to proceed?"
-msgstr "lehetőségének elvesztését jelentheti. Folytatás?"
+msgstr "lehetőségének elvesztését jelentheti. Folytatod?"
 
 msgctxt "#13150"
 msgid "HDD key:"
@@ -3871,11 +3887,11 @@ msgstr "%i másodperc után"
 
 msgctxt "#13173"
 msgid "HDD install date:"
-msgstr "HDD beszerelés dátuma:"
+msgstr "HDD telepítés dátuma:"
 
 msgctxt "#13174"
 msgid "HDD power cycle count:"
-msgstr "HDD indulások száma:"
+msgstr "HDD indítások száma:"
 
 msgctxt "#13200"
 msgid "Profiles"
@@ -3883,7 +3899,7 @@ msgstr "Profilok"
 
 msgctxt "#13201"
 msgid "Delete profile '%s'?"
-msgstr "Letörlöd a(z) '%s' profilt?"
+msgstr "Törlöd ezt a profilt: '%s'?"
 
 msgctxt "#13204"
 msgid "Last loaded profile:"
@@ -3919,7 +3935,7 @@ msgstr "Megszakítva, %i perc %i mp volt még hátra"
 
 msgctxt "#13249"
 msgid "Search for subtitles in RARs"
-msgstr "Feliratok keresése RAR-ban"
+msgstr "Feliratok keresése RAR fájlokban"
 
 msgctxt "#13250"
 msgid "Browse for subtitle..."
@@ -3943,7 +3959,7 @@ msgstr "Hardver:"
 
 msgctxt "#13271"
 msgid "CPU Usage:"
-msgstr "CPU használat:"
+msgstr "CPU Terhelés:"
 
 msgctxt "#13274"
 msgid "Connected, but no DNS is available."
@@ -3959,7 +3975,7 @@ msgstr "DVD-ROM"
 
 msgctxt "#13277"
 msgid "Storage"
-msgstr "Tárolók"
+msgstr "Háttértárak"
 
 msgctxt "#13278"
 msgid "Default"
@@ -3991,7 +4007,7 @@ msgstr "BIOS:"
 
 msgctxt "#13286"
 msgid "Video encoder:"
-msgstr "Videochip:"
+msgstr "Videó kódoló:"
 
 msgctxt "#13287"
 msgid "Screen resolution:"
@@ -4015,7 +4031,7 @@ msgstr "Modchip:"
 
 msgctxt "#13292"
 msgid "A/V cable:"
-msgstr "A/V kábel:"
+msgstr "Hang/Kép kábel:"
 
 msgctxt "#13293"
 msgid "Video & XBE region:"
@@ -4043,11 +4059,11 @@ msgstr "Xbox Live kulcs:"
 
 msgctxt "#13299"
 msgid "Target temperature"
-msgstr "Cél hőmérséklet"
+msgstr "Célhőmérséklet"
 
 msgctxt "#13300"
 msgid "Fan speed"
-msgstr "Ventilátor sebesség"
+msgstr "Ventilátorsebesség"
 
 msgctxt "#13301"
 msgid "Auto temperature control"
@@ -4055,7 +4071,7 @@ msgstr "Automata hőmérséklet-vezérlés"
 
 msgctxt "#13302"
 msgid "Fan speed override"
-msgstr "Ventilátor-sebesség felülbírálása"
+msgstr "Ventilátorsebesség felülbírálása"
 
 msgctxt "#13303"
 msgid "- Fonts"
@@ -4063,7 +4079,7 @@ msgstr "- Betűtípus"
 
 msgctxt "#13304"
 msgid "Enable flipping bi-directional strings"
-msgstr "Kétirányú sztringek megfordításának bekapcs."
+msgstr "Kétirányú szövegek megfordítása"
 
 msgctxt "#13305"
 msgid "Show RSS news feeds"
@@ -4071,11 +4087,11 @@ msgstr "RSS hírek bekapcsolása"
 
 msgctxt "#13306"
 msgid "Show parent folder items"
-msgstr "Szülő mappa elemek megjelenítése"
+msgstr "Szülőmappaelemek megjelenítése"
 
 msgctxt "#13307"
 msgid "Track naming template"
-msgstr "Zeneszám formátum sablon"
+msgstr "Zeneszám elnevezés-sablon"
 
 msgctxt "#13308"
 msgid "Do you wish to reboot your system"
@@ -4083,11 +4099,11 @@ msgstr "Teljes rendszer újraindítása"
 
 msgctxt "#13309"
 msgid "instead of just XBMC?"
-msgstr "az XBMC helyett?"
+msgstr "csak az XBMC helyett?"
 
 msgctxt "#13310"
 msgid "Zoom effect"
-msgstr "Nagyító hatás"
+msgstr "Nagyítás hatás"
 
 msgctxt "#13311"
 msgid "Float effect"
@@ -4107,11 +4123,11 @@ msgstr "Zeneszámok egymásbakeverése"
 
 msgctxt "#13315"
 msgid "Regenerate thumbnails"
-msgstr "Bélyegek újragenerálása"
+msgstr "Miniképek újragenerálása"
 
 msgctxt "#13316"
 msgid "Recursive thumbnails"
-msgstr "Rekurzív bélyegképek"
+msgstr "Rekurzív miniképek"
 
 msgctxt "#13317"
 msgid "View slideshow"
@@ -4139,7 +4155,7 @@ msgstr "Csak a jobb"
 
 msgctxt "#13323"
 msgid "Enable karaoke support"
-msgstr "Karaoke támogatás engedélyezése"
+msgstr "Karaoke-támogatás engedélyezése"
 
 msgctxt "#13324"
 msgid "Background transparency"
@@ -4151,7 +4167,7 @@ msgstr "Előtér átlátszósága"
 
 msgctxt "#13326"
 msgid "A/V delay"
-msgstr "A/V késleltetés"
+msgstr "Hang/Kép késleltetés"
 
 msgctxt "#13327"
 msgid "Karaoke"
@@ -4159,7 +4175,7 @@ msgstr "Karaoke"
 
 msgctxt "#13328"
 msgid "%s not found"
-msgstr "%s nem található."
+msgstr "%s nem található"
 
 msgctxt "#13329"
 msgid "Error opening %s"
@@ -4171,7 +4187,7 @@ msgstr "Hiba a(z) %s betöltése közben"
 
 msgctxt "#13331"
 msgid "Error: Out of memory"
-msgstr "Hiba: Nincs memória."
+msgstr "Hiba: Kevés a memória."
 
 msgctxt "#13332"
 msgid "Move up"
@@ -4183,7 +4199,7 @@ msgstr "Mozgatás le"
 
 msgctxt "#13334"
 msgid "Edit label"
-msgstr "cím szerkesztése"
+msgstr "Cím szerkesztése"
 
 msgctxt "#13335"
 msgid "Make default"
@@ -4235,7 +4251,7 @@ msgstr "Lejátszási sorba tesz"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
-msgstr "Keresés IMDB-ben..."
+msgstr "Keresés az IMDB-n..."
 
 msgctxt "#13349"
 msgid "Scan for new content"
@@ -4263,15 +4279,15 @@ msgstr "Renderelés módja"
 
 msgctxt "#13355"
 msgid "Low quality pixel shader"
-msgstr "Low quality pixel shader"
+msgstr "Alacsony minőségű pixel-árnyékoló"
 
 msgctxt "#13356"
 msgid "Hardware overlays"
-msgstr "Hardware overlays"
+msgstr "Hardveres képréteg-átfedések"
 
 msgctxt "#13357"
 msgid "High quality pixel shader"
-msgstr "High quality pixel shader"
+msgstr "Magas minőségű pixel-árnyékoló"
 
 msgctxt "#13358"
 msgid "Play item"
@@ -4279,11 +4295,11 @@ msgstr "Elem lejátszása"
 
 msgctxt "#13359"
 msgid "Set artist thumb"
-msgstr "Előadó bélyegkép"
+msgstr "Előadó minikép"
 
 msgctxt "#13360"
 msgid "Automatically generate thumbnails"
-msgstr "Bélyegkép generálás"
+msgstr "Automatikus minikép generálás"
 
 msgctxt "#13361"
 msgid "Enable voice"
@@ -4319,19 +4335,19 @@ msgstr "Videó folytatása"
 
 msgctxt "#13382"
 msgid "Voice mask - Port 1"
-msgstr "Hangtorzítás - 1 port"
+msgstr "Hangmaszk - 1. port"
 
 msgctxt "#13383"
 msgid "Voice mask - Port 2"
-msgstr "Hangtorzítás - 2 port"
+msgstr "Hangmaszk - 2. port"
 
 msgctxt "#13384"
 msgid "Voice mask - Port 3"
-msgstr "Hangtorzítás - 3 port"
+msgstr "Hangmaszk - 3. port"
 
 msgctxt "#13385"
 msgid "Voice mask - Port 4"
-msgstr "Hangtorzítás - 4 port"
+msgstr "Hangmaszk - 4. port"
 
 msgctxt "#13386"
 msgid "Use time based seeking"
@@ -4339,11 +4355,11 @@ msgstr "Idő-alapú pörgetés"
 
 msgctxt "#13387"
 msgid "Track naming template - right"
-msgstr "Zeneszám formátum sablon (jobb oldalt megjelenő oszlopra)"
+msgstr "Zeneszám formátum-sablon (jobb oldalt megjelenő oszlopra)"
 
 msgctxt "#13388"
 msgid "Preset"
-msgstr "Gyári értékek"
+msgstr "Előbeállítások"
 
 msgctxt "#13389"
 msgid "There are no presets available\nfor this visualization"
@@ -4371,7 +4387,7 @@ msgstr "Mappa méretének kiszámolása"
 
 msgctxt "#13395"
 msgid "Video settings"
-msgstr "Videó beállítások"
+msgstr "Kép beállítások"
 
 msgctxt "#13396"
 msgid "Audio and subtitle settings"
@@ -4411,11 +4427,11 @@ msgstr "Folytatás"
 
 msgctxt "#13405"
 msgid "Get thumb"
-msgstr "Bélyeg letöltés"
+msgstr "Minikép"
 
 msgctxt "#13406"
 msgid "Picture information"
-msgstr "Kép információ"
+msgstr "Képinformáció"
 
 msgctxt "#13407"
 msgid "%s presets"
@@ -4431,11 +4447,11 @@ msgstr "Top 250"
 
 msgctxt "#13410"
 msgid "Tune in on Last.fm"
-msgstr "Hangolás a Last.fm-en"
+msgstr "Keresés a Last.fm-en"
 
 msgctxt "#13411"
 msgid "Minimum fan speed"
-msgstr "Minimum ventilátor sebesség"
+msgstr "Minimum ventilátor-sebesség"
 
 msgctxt "#13413"
 msgid "Downloading"
@@ -4455,11 +4471,11 @@ msgstr "Automatikus"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Basic shaders (ARB)"
+msgstr "Alap árnyékolók (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
-msgstr "Advanced shaders (GLSL)"
+msgstr "Fejlett árnyékolók (GLSL)"
 
 msgctxt "#13419"
 msgid "Software"
@@ -4479,7 +4495,7 @@ msgstr "Diavetítés indítása innen"
 
 msgctxt "#13423"
 msgid "Remember for this path"
-msgstr "Elérési út megjegyzése"
+msgstr "Megjegyzés ennél a helynél"
 
 msgctxt "#13424"
 msgid "Use pixel buffer objects"
@@ -4487,19 +4503,19 @@ msgstr "Pixel buffer objektumok használata"
 
 msgctxt "#13500"
 msgid "A/V sync method"
-msgstr "A/V szinkronizáció ehhez"
+msgstr "Hang/Kép szinkron ehhez"
 
 msgctxt "#13501"
 msgid "Audio clock"
-msgstr "Audio-órajel (hang érintetlen)"
+msgstr "Hang-órajel (hang érintetlen)"
 
 msgctxt "#13502"
 msgid "Video clock (Drop/Dupe audio)"
-msgstr "Video-órajel (hang duplázás/kiejtés)"
+msgstr "Kép-órajel (hang duplázás/kiejtés)"
 
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
-msgstr "Video-órajel (hang sebesség váltás)"
+msgstr "Kép-órajel (hang sebesség váltás)"
 
 msgctxt "#13504"
 msgid "Maximum resample amount (%)"
@@ -4507,7 +4523,7 @@ msgstr "Maximális újrakeverés (%)"
 
 msgctxt "#13505"
 msgid "Resample quality"
-msgstr "Újrakeverés minősége"
+msgstr "Újramintavételezés minősége"
 
 msgctxt "#13506"
 msgid "Low(fast)"
@@ -4539,7 +4555,7 @@ msgstr "XBMC indítható legyen távirányítóval"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
-msgstr "Szekvenciális késleltetési idő"
+msgstr "Szekvencia késleltetési idő"
 
 msgctxt "#13610"
 msgid "Disabled"
@@ -4599,11 +4615,11 @@ msgstr "Játék könyvtár"
 
 msgctxt "#14010"
 msgid "Auto switch to thumbs based on"
-msgstr "Automatikus váltás bélyegképekre a következő alapján"
+msgstr "Automatikus váltás miniképekre a következő alapján"
 
 msgctxt "#14011"
 msgid "Enable auto switching to thumbs view"
-msgstr "Automatikus váltás bélyegképek nézetre"
+msgstr "Automatikus váltás miniképek nézetre"
 
 msgctxt "#14012"
 msgid "- Use large icons"
@@ -4619,15 +4635,15 @@ msgstr "- Százalék"
 
 msgctxt "#14015"
 msgid "No files and at least one thumb"
-msgstr "Nincs fájl, de minimum egy bélyegkép"
+msgstr "Nincs fájl, de minimum egy minikép"
 
 msgctxt "#14016"
 msgid "At least one file and thumb"
-msgstr "Minimum egy fájl és bélyegkép"
+msgstr "Minimum egy fájl és minikép"
 
 msgctxt "#14017"
 msgid "Percentage of thumbs"
-msgstr "Bélyegképek mérete"
+msgstr "Miniképek mérete"
 
 msgctxt "#14018"
 msgid "View options"
@@ -4663,7 +4679,7 @@ msgstr "Video/Audio/DVD gyorsítótár - Merevlemez"
 
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
-msgstr "Videó gyorsítótár - DVDRom"
+msgstr "Videó gyorsítótár - DVD-ROM"
 
 msgctxt "#14027"
 msgid "- Local Network"
@@ -4675,7 +4691,7 @@ msgstr "- Internet"
 
 msgctxt "#14030"
 msgid "Audio cache - DVD-ROM"
-msgstr "Audio gyorsítótár - DVDRom"
+msgstr "Hang gyorsítótár - DVD-ROM"
 
 msgctxt "#14031"
 msgid "- Local Network"
@@ -4687,7 +4703,7 @@ msgstr "- Internet"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
-msgstr "DVD gyorsítótár - DVDRom"
+msgstr "DVD gyorsítótár - DVD-ROM"
 
 msgctxt "#14035"
 msgid "- Local Network"
@@ -4759,7 +4775,7 @@ msgstr "GUI szűrők"
 
 msgctxt "#14055"
 msgid "Use background scanning"
-msgstr "Átvizsgálás háttérben"
+msgstr "Átvizsgálás a háttérben"
 
 msgctxt "#14056"
 msgid "Stop scan"
@@ -4771,15 +4787,15 @@ msgstr "Médiainfó átvizsgálása közben nem lehetséges"
 
 msgctxt "#14058"
 msgid "Film grain effect"
-msgstr "Film szemcsézet (grain) hatás"
+msgstr "Filmszemcsézet (grain) hatás"
 
 msgctxt "#14059"
 msgid "Search for thumbnails on remote shares"
-msgstr "Bélyegképek keresése távoli megosztásokon"
+msgstr "Miniképek keresése távoli megosztásokon"
 
 msgctxt "#14060"
 msgid "Unknown type cache - Internet"
-msgstr "Ismeretlen cache típus - Internet"
+msgstr "Ismeretlen típusú gyorsítótár - Internet"
 
 msgctxt "#14061"
 msgid "Auto"
@@ -4803,11 +4819,11 @@ msgstr "Idő beállítása"
 
 msgctxt "#14066"
 msgid "Enter the time in 24 hour HH:MM format"
-msgstr "Idő beállítása (HH:MM formátumban)"
+msgstr "Idő beállítása (ÓÓ:PP formátumban)"
 
 msgctxt "#14067"
 msgid "Enter the date in DD/MM/YYYY format"
-msgstr "Dátum beállítása (DD/MM/YYYY formátumban)"
+msgstr "Dátum beállítása (NN/HH/ÉÉÉÉ formátumban)"
 
 msgctxt "#14068"
 msgid "Enter the IP address"
@@ -4819,11 +4835,11 @@ msgstr "Változások érvényesítése?"
 
 msgctxt "#14070"
 msgid "Apply changes now"
-msgstr "Változások azonnali érvényesítése"
+msgstr "Változások érvényesítése"
 
 msgctxt "#14071"
 msgid "Allow file renaming and deletion"
-msgstr "Fájl törlés és átnevezés engedélyezése"
+msgstr "Fájltörlés és átnevezés engedélyezése"
 
 msgctxt "#14074"
 msgid "Set timezone"
@@ -4855,19 +4871,19 @@ msgstr "Időzóna"
 
 msgctxt "#14081"
 msgid "File lists"
-msgstr "Fájl listák"
+msgstr "Fájllisták"
 
 msgctxt "#14082"
 msgid "Show EXIF picture information"
-msgstr "EXIF kép információk megjelenítése"
+msgstr "EXIF képinformációk megjelenítése"
 
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
-msgstr "Maximált ablak használata, igazi teljesképernyős mód helyett"
+msgstr "Maximált ablak használata, igazi teljesképernyős-mód helyett"
 
 msgctxt "#14084"
 msgid "Queue songs on selection"
-msgstr "Zeneszám választására hozzáadás a lejátszási listához"
+msgstr "Zeneszám kiválasztására hozzáadás a játszáslistához"
 
 msgctxt "#14085"
 msgid "Play audio CDs automatically"
@@ -4879,7 +4895,7 @@ msgstr "Lejátszás"
 
 msgctxt "#14087"
 msgid "DVDs"
-msgstr "DVD"
+msgstr "DVD lemezek"
 
 msgctxt "#14088"
 msgid "Play DVDs automatically"
@@ -4907,7 +4923,7 @@ msgstr "Biztonság"
 
 msgctxt "#14094"
 msgid "Input devices"
-msgstr "Beviteli eszközök"
+msgstr "Beviteli-eszközök"
 
 msgctxt "#14095"
 msgid "Power saving"
@@ -4963,7 +4979,7 @@ msgstr "Navigációs hangok"
 
 msgctxt "#15109"
 msgid "Skin default"
-msgstr "Skin alapértelmezett"
+msgstr "Felszín alapértelmezése"
 
 msgctxt "#15111"
 msgid "- Theme"
@@ -5027,7 +5043,7 @@ msgstr "Küldés %i mp. múlva"
 
 msgctxt "#15213"
 msgid "Play using..."
-msgstr "Egyéb lejátszó..."
+msgstr "Egyéb lejátszóval..."
 
 msgctxt "#15214"
 msgid "Use smoothed A/V synchronization"
@@ -5035,7 +5051,7 @@ msgstr "Egyenletesített A/V szinkronizáció"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
-msgstr "Fájl nevek rejtése bélyegkép nézetben"
+msgstr "Fájlnevek elrejtése minikép nézetben"
 
 msgctxt "#15216"
 msgid "Play in party mode"
@@ -5259,7 +5275,7 @@ msgstr "Az elérési út érvénytelen, vagy nem található"
 
 msgctxt "#15301"
 msgid "Could not connect to network server"
-msgstr "Sikertelen csatlakozás a szerverhez"
+msgstr "Sikertelen csatlakozás a kiszolgálóhoz"
 
 msgctxt "#15302"
 msgid "No servers found"
@@ -5271,7 +5287,7 @@ msgstr "A munkacsoport nem elérhető"
 
 msgctxt "#15310"
 msgid "Opening multi-path source"
-msgstr "Többirányú forrás megnyitása"
+msgstr "Több elérésiúttal rendelkező forrás megnyitása"
 
 msgctxt "#15311"
 msgid "Path:"
@@ -5343,7 +5359,7 @@ msgstr "Automatikus kiválasztás"
 
 msgctxt "#16020"
 msgid "De-interlace"
-msgstr "De-interlace"
+msgstr "Teljes képkockasebességgel"
 
 msgctxt "#16021"
 msgid "Bob"
@@ -5367,7 +5383,7 @@ msgstr "Előadó neve"
 
 msgctxt "#16026"
 msgid "Playback failed"
-msgstr "Lejátszás megszakítva"
+msgstr "Lejátszás sikertelen"
 
 msgctxt "#16027"
 msgid "One or more items failed to play."
@@ -5451,7 +5467,7 @@ msgstr "60Hz-es játékhoz"
 
 msgctxt "#16200"
 msgid "Operation was aborted"
-msgstr "Művelet megszakítva"
+msgstr "Művelet megszakadt"
 
 msgctxt "#16201"
 msgid "Copy failed"
@@ -5537,6 +5553,10 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse Telecine"
 
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "Videó minőségjavítás (post processing)"
+
 msgctxt "#17500"
 msgid "Display sleep timeout"
 msgstr "Alvó üzemmódig hátralévő idő kijelzése"
@@ -5547,7 +5567,7 @@ msgstr "Csatornára váltás"
 
 msgctxt "#20000"
 msgid "Saved music folder"
-msgstr "Zene rip-mappa"
+msgstr "Bemásolt (rip-elt) zene mappája"
 
 msgctxt "#20001"
 msgid "Use external DVD player"
@@ -5559,11 +5579,11 @@ msgstr "Külső DVD-lejátszó"
 
 msgctxt "#20003"
 msgid "Trainers folder"
-msgstr "Trainerek mappája"
+msgstr "Bemutatók (Trailerek) mappája"
 
 msgctxt "#20004"
 msgid "Screenshot folder"
-msgstr "Pillanatképek mappája"
+msgstr "Képernyőmentések mappája"
 
 msgctxt "#20006"
 msgid "Playlists folder"
@@ -5575,7 +5595,7 @@ msgstr "Felvételek"
 
 msgctxt "#20008"
 msgid "Screenshots"
-msgstr "Pillanatképek "
+msgstr "Képernyőmentések "
 
 msgctxt "#20009"
 msgid "Use XBMC"
@@ -5587,7 +5607,7 @@ msgstr "Zenei lejátszáslista"
 
 msgctxt "#20012"
 msgid "Video playlists"
-msgstr "Video lejátszáslista"
+msgstr "Videó lejátszáslista"
 
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
@@ -5595,27 +5615,27 @@ msgstr "Játék futtatása?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "Rendezés: Lista"
+msgstr "Játszáslista szerint"
 
 msgctxt "#20015"
 msgid "Remote thumb"
-msgstr "Távoli bélyegkép"
+msgstr "Letölthető minikép"
 
 msgctxt "#20016"
 msgid "Current thumb"
-msgstr "Jelenlegi bélyegkép"
+msgstr "Jelenlegi minikép"
 
 msgctxt "#20017"
 msgid "Local thumb"
-msgstr "Helyi bélyegkép"
+msgstr "Helyi minikép"
 
 msgctxt "#20018"
 msgid "No thumb"
-msgstr "Nincs bélyegkép"
+msgstr "Nincs minikép"
 
 msgctxt "#20019"
 msgid "Choose thumbnail"
-msgstr "Bélyegkép választása"
+msgstr "Minikép választása"
 
 msgctxt "#20023"
 msgid "Conflict"
@@ -5635,7 +5655,7 @@ msgstr "Régió"
 
 msgctxt "#20037"
 msgid "Summary"
-msgstr "Összefoglaló"
+msgstr "Rövid infó"
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -5663,7 +5683,7 @@ msgstr "Beállítások zárolása"
 
 msgctxt "#20044"
 msgid "Start fresh"
-msgstr "Frissítés"
+msgstr "Friss adatokkal"
 
 msgctxt "#20045"
 msgid "Enter master mode"
@@ -5679,7 +5699,7 @@ msgstr "A(z) '%s' profil létrehozása?"
 
 msgctxt "#20048"
 msgid "Start with fresh settings"
-msgstr "Létrehozás alapbeállításokkal"
+msgstr "Létrehozás friss beállításokkal"
 
 msgctxt "#20049"
 msgid "Best available"
@@ -5707,11 +5727,11 @@ msgstr "Belépés mester-módba"
 
 msgctxt "#20055"
 msgid "Allmusic.com thumb"
-msgstr "Allmusic.com bélyegkép"
+msgstr "Allmusic.com minikép"
 
 msgctxt "#20057"
 msgid "Remove thumbnail"
-msgstr "Bélyegkép eltávolítása"
+msgstr "Minikép eltávolítása"
 
 msgctxt "#20058"
 msgid "Add profile..."
@@ -5719,7 +5739,7 @@ msgstr "Új profil..."
 
 msgctxt "#20059"
 msgid "Query info for all albums"
-msgstr "Albumok lekérdezése"
+msgstr "Minden album lekérdezése"
 
 msgctxt "#20060"
 msgid "Media info"
@@ -5727,23 +5747,23 @@ msgstr "Médiainformáció"
 
 msgctxt "#20061"
 msgid "Separate"
-msgstr "Külön"
+msgstr "Saját"
 
 msgctxt "#20062"
 msgid "Shares with default"
-msgstr "Alapért. megosztás"
+msgstr "Megosztott"
 
 msgctxt "#20063"
 msgid "Shares with default (read only)"
-msgstr "Alapért. megosztás (csak olvasás)"
+msgstr "Megosztott (csak olvasva)"
 
 msgctxt "#20064"
 msgid "Copy default"
-msgstr "Alapért. másolása"
+msgstr "Másolás"
 
 msgctxt "#20065"
 msgid "Profile picture"
-msgstr "Avatar"
+msgstr "Profilkép"
 
 msgctxt "#20066"
 msgid "Lock preferences"
@@ -5763,7 +5783,7 @@ msgstr "Mappa nem hozható létre"
 
 msgctxt "#20070"
 msgid "Profile directory"
-msgstr "Profil mappa"
+msgstr "Profilmappa"
 
 msgctxt "#20071"
 msgid "Start with fresh media sources"
@@ -5791,7 +5811,7 @@ msgstr "Mesterkód bekérése induláskor"
 
 msgctxt "#20077"
 msgid "Skin settings"
-msgstr "Skin beállítások"
+msgstr "Felszín beállítások"
 
 msgctxt "#20078"
 msgid "- no link set -"
@@ -5815,7 +5835,7 @@ msgstr "\"Programok\" megjelenítése a főmenüben"
 
 msgctxt "#20083"
 msgid "Show music info"
-msgstr "Zene információ megjelenítése"
+msgstr "Zeneinformáció megjelenítése"
 
 msgctxt "#20084"
 msgid "Show weather info"
@@ -5867,7 +5887,7 @@ msgstr "Adja meg a profil zárolási kódját"
 
 msgctxt "#20096"
 msgid "Login screen"
-msgstr "Login ablak"
+msgstr "Belépőablak"
 
 msgctxt "#20097"
 msgid "Fetching album info"
@@ -5875,11 +5895,11 @@ msgstr "Albuminformáció lekérése"
 
 msgctxt "#20098"
 msgid "Fetching info for album"
-msgstr "Információ az albumhoz"
+msgstr "Információlekérés az albumról"
 
 msgctxt "#20099"
 msgid "Can't rip CD or track while playing from CD"
-msgstr "Lejátszás közben nem lehet rip-elni a lemezt"
+msgstr "Lejátszás közben nem lehet bemásolni a lemezt"
 
 msgctxt "#20100"
 msgid "Master lock code and settings"
@@ -5887,11 +5907,11 @@ msgstr "Mesterkód és beállításai"
 
 msgctxt "#20101"
 msgid "Entering master lock code always enables master mode"
-msgstr " A Mesterkód megadása után Mester-módban marad "
+msgstr "A Mesterkód megadása után Mester-módban marad"
 
 msgctxt "#20102"
 msgid "or copy from default?"
-msgstr "vagy alapértelmezett másolása?"
+msgstr "vagy a megosztottak másolása?"
 
 msgctxt "#20103"
 msgid "Save changes to profile?"
@@ -5911,7 +5931,7 @@ msgstr "Korábbi médiaforrások találhatók."
 
 msgctxt "#20107"
 msgid "Separate (locked)"
-msgstr "Külön (zárolt)"
+msgstr "Saját (zárolt)"
 
 msgctxt "#20108"
 msgid "Root"
@@ -5927,7 +5947,7 @@ msgstr "UPnP beállítások"
 
 msgctxt "#20111"
 msgid "Autostart UPnP client"
-msgstr "UPnP kliens automatikus indítása"
+msgstr "UPnP ügyfél automatikus indítása"
 
 msgctxt "#20112"
 msgid "Last login: %s"
@@ -6027,15 +6047,15 @@ msgstr "Memóriakártya"
 
 msgctxt "#20137"
 msgid "Memory unit mounted"
-msgstr "Memóriakártya betöltve"
+msgstr "Memóriakártya felcsatolva"
 
 msgctxt "#20138"
 msgid "Unable to mount memory unit"
-msgstr "Memóriakártya betöltése sikertelen"
+msgstr "Memóriakártya felcsatolása sikertelen"
 
 msgctxt "#20139"
 msgid "In port %i, slot %i"
-msgstr "%i porton, %i slotban"
+msgstr "Port %i, csatlakozó %i"
 
 msgctxt "#20140"
 msgid "Lock screensaver"
@@ -6063,7 +6083,7 @@ msgstr "Leállítás ideje (percben)"
 
 msgctxt "#20146"
 msgid "Started, shutdown in %im"
-msgstr "Leállítás %im perc után"
+msgstr "Leállítás %i perc után"
 
 msgctxt "#20147"
 msgid "Shutdown in 30 minutes"
@@ -6087,7 +6107,7 @@ msgstr "Időzített leállítás megszakítása"
 
 msgctxt "#20152"
 msgid "Lock preferences for %s"
-msgstr "Tulajdonságok zárolása: %s"
+msgstr "Tulajdonságok zárolása %s számára"
 
 msgctxt "#20153"
 msgid "Browse..."
@@ -6127,7 +6147,7 @@ msgstr "Teljes"
 
 msgctxt "#20162"
 msgid "Used"
-msgstr "Foglalt"
+msgstr "Használatban"
 
 msgctxt "#20163"
 msgid "of"
@@ -6167,23 +6187,23 @@ msgstr "Windows hálózat (SMB)"
 
 msgctxt "#20172"
 msgid "XBMSP server"
-msgstr "XBSMP szerver"
+msgstr "XBSMP kiszolgáló"
 
 msgctxt "#20173"
 msgid "FTP server"
-msgstr "FTP szerver"
+msgstr "FTP kiszolgáló"
 
 msgctxt "#20174"
 msgid "iTunes music share (DAAP)"
-msgstr "iTunes zene megosztás (DAAP)"
+msgstr "iTunes zenei megosztás (DAAP)"
 
 msgctxt "#20175"
 msgid "UPnP server"
-msgstr "UPnP szerver"
+msgstr "UPnP kiszolgáló"
 
 msgctxt "#20176"
 msgid "Show video info"
-msgstr "Videó információ megjelenítése"
+msgstr "Videóinformáció megjelenítése"
 
 msgctxt "#20177"
 msgid "Done"
@@ -6211,7 +6231,7 @@ msgstr "Szóköz"
 
 msgctxt "#20183"
 msgid "Reload skin"
-msgstr "Skin újraindítása"
+msgstr "Felhasználói felület újraindítása"
 
 msgctxt "#20184"
 msgid "Rotate pictures using EXIF information"
@@ -6219,7 +6239,7 @@ msgstr "Forgatás EXIF információ alapján"
 
 msgctxt "#20185"
 msgid "Use poster view styles for TV shows"
-msgstr "Poszter nézet használata TV műsoroknál"
+msgstr "Poszter nézet használata sorozatoknál"
 
 msgctxt "#20186"
 msgid "Please wait"
@@ -6235,7 +6255,7 @@ msgstr "BIOS mentése"
 
 msgctxt "#20189"
 msgid "Enable auto scrolling for plot & review"
-msgstr "Automatikus görgetés a tartalom és értékelés esetén"
+msgstr "Automatikus sorgörgetés a filmtartalom megjelenítésekor"
 
 msgctxt "#20190"
 msgid "Custom"
@@ -6255,7 +6275,7 @@ msgstr "Alapértelmezett scraper"
 
 msgctxt "#20195"
 msgid "Change scraper"
-msgstr "Scraper váltása"
+msgstr "Leolvasó váltása"
 
 msgctxt "#20196"
 msgid "Export music library"
@@ -6287,23 +6307,27 @@ msgstr "poharak megtöltése (videók)"
 
 msgctxt "#20253"
 msgid "WebDAV server (HTTP)"
-msgstr "WebDAV szerver (HTTP)"
+msgstr "WebDAV kiszolgáló (HTTP)"
 
 msgctxt "#20254"
 msgid "WebDAV server (HTTPS)"
-msgstr "WebDAV szerver (HTTPS)"
+msgstr "WebDAV kiszolgáló (HTTPS)"
+
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV PVR ügyfél"
 
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
-msgstr "Web szerver könyvtár (HTTP)"
+msgstr "Webkiszolgáló könyvtár (HTTP)"
 
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
-msgstr "Web szerver könyvtár (HTTPS)"
+msgstr "Webkiszolgáló könyvtár (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
-msgstr "Mentése a következő mappába sikertelen:"
+msgstr "Mentés a következő mappába sikertelen:"
 
 msgctxt "#20303"
 msgid "Do you want to skip and proceed?"
@@ -6311,7 +6335,7 @@ msgstr "Kihagyod és továbblépsz?"
 
 msgctxt "#20304"
 msgid "RSS Feed"
-msgstr "RSS Feed"
+msgstr "RSS forrás"
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6323,7 +6347,7 @@ msgstr "Másodlagos DNS"
 
 msgctxt "#20308"
 msgid "DHCP server:"
-msgstr "DHCP szerver:"
+msgstr "DHCP kiszolgáló:"
 
 msgctxt "#20309"
 msgid "Make new folder"
@@ -6355,7 +6379,7 @@ msgstr "Játékok mentései"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
-msgstr "ID: szerint"
+msgstr "ID szerint"
 
 msgctxt "#20317"
 msgid "Download saves"
@@ -6395,7 +6419,7 @@ msgstr "Kalibráció visszaállítása"
 
 msgctxt "#20326"
 msgid "This will reset the calibration values for %s"
-msgstr "Kalibráció értéke visszaáll %-ra"
+msgstr "Kalibrációs értékek törlése %s számára"
 
 msgctxt "#20327"
 msgid "to it's default values."
@@ -6407,15 +6431,15 @@ msgstr "Tallózás"
 
 msgctxt "#20330"
 msgid "Use folder names for lookups"
-msgstr "Használja a mappa nevét keresésekre"
+msgstr "Használja a mappanevet a keresésekhez"
 
 msgctxt "#20331"
 msgid "File"
-msgstr "Fájl "
+msgstr "Fájl"
 
 msgctxt "#20332"
 msgid "Use file or folder names in lookups?"
-msgstr "Mappa nevek használata kereséskor?"
+msgstr "Mappa- vagy fájlnevek használata kereséskor?"
 
 msgctxt "#20333"
 msgid "Set content"
@@ -6431,7 +6455,7 @@ msgstr "Tartalom rekurzív keresése?"
 
 msgctxt "#20336"
 msgid "Unlock sources"
-msgstr "Forrás zárolás feloldása"
+msgstr "Forrászárolás feloldása"
 
 msgctxt "#20337"
 msgid "Actor"
@@ -6459,7 +6483,7 @@ msgstr "Filmek"
 
 msgctxt "#20343"
 msgid "TV shows"
-msgstr "Tv műsor"
+msgstr "Sorozatok"
 
 msgctxt "#20344"
 msgid "This directory contains"
@@ -6483,15 +6507,15 @@ msgstr "Rendezők"
 
 msgctxt "#20349"
 msgid "No video files found in this path!"
-msgstr "Nem található videófájl a megadott elérési úton!"
+msgstr "Nem található videófájl a megadott elérésiúton!"
 
 msgctxt "#20350"
 msgid "votes"
-msgstr "szavazatok"
+msgstr "szavazat"
 
 msgctxt "#20351"
 msgid "TV show information"
-msgstr "Tv műsor információ"
+msgstr "Sorozat információ"
 
 msgctxt "#20352"
 msgid "Episode information"
@@ -6499,11 +6523,11 @@ msgstr "Epizód információ"
 
 msgctxt "#20353"
 msgid "Loading TV show details"
-msgstr "Tv műsor információ betöltése"
+msgstr "Sorozat információ betöltése"
 
 msgctxt "#20354"
 msgid "Fetching episode guide"
-msgstr "Epizód kalauz letöltése"
+msgstr "Epizódkalauz letöltése"
 
 msgctxt "#20355"
 msgid "Loading info for episodes in directory"
@@ -6511,11 +6535,11 @@ msgstr "Információ betöltése a könyvtárban található epizódokhoz"
 
 msgctxt "#20356"
 msgid "Select TV show:"
-msgstr "TV műsor választása:"
+msgstr "Sorozat választása:"
 
 msgctxt "#20357"
 msgid "Enter the TV show name"
-msgstr "TV műsor"
+msgstr "Sorozat neve"
 
 msgctxt "#20358"
 msgid "Season %i"
@@ -6531,7 +6555,7 @@ msgstr "Epizód"
 
 msgctxt "#20361"
 msgid "Loading episode details"
-msgstr "Epizód információ betöltése"
+msgstr "Epizódrészletek betöltése"
 
 msgctxt "#20362"
 msgid "Remove episode from library"
@@ -6539,11 +6563,11 @@ msgstr "Epizód eltávolítása a médiatárból"
 
 msgctxt "#20363"
 msgid "Remove TV show from library"
-msgstr "TV műsor eltávolítása a médiatárból"
+msgstr "Sorozat eltávolítása a médiatárból"
 
 msgctxt "#20364"
 msgid "TV show"
-msgstr "TV műsor"
+msgstr "Sorozat"
 
 msgctxt "#20365"
 msgid "Episode plot"
@@ -6563,19 +6587,19 @@ msgstr "Prod kód"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
-msgstr "Tartalom elrejtése nem látott filmek esetén"
+msgstr "Tartalom megjelenítése nem látott filmek esetén"
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"
-msgstr "* Elrejtve, spoiler védelem miatt *"
+msgstr "* Elrejtve, spoiler-védelem miatt *"
 
 msgctxt "#20371"
 msgid "Set season thumb"
-msgstr "Évad bélyegkép beállítása"
+msgstr "Évad minikép beállítása"
 
 msgctxt "#20372"
 msgid "Season image"
-msgstr "Évad képe"
+msgstr "Évad kép"
 
 msgctxt "#20373"
 msgid "Season"
@@ -6587,11 +6611,15 @@ msgstr "Film információ letöltése"
 
 msgctxt "#20375"
 msgid "Unassign content"
-msgstr "Tartalom törlése"
+msgstr "Tartalom hozzárendelés megszüntetése"
+
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Eredeti cím"
 
 msgctxt "#20377"
 msgid "Refresh TV show information"
-msgstr "TV műsor információ frissítése"
+msgstr "Sorozat információ frissítése"
 
 msgctxt "#20378"
 msgid "Refresh info for all episodes?"
@@ -6599,15 +6627,15 @@ msgstr "Minden epizód frissítése?"
 
 msgctxt "#20379"
 msgid "Selected folder contains a single TV show"
-msgstr "A kiválasztott könyvtár egyetlen TV műsort tartalmaz"
+msgstr "A kiválasztott mappa egyetlen sorozatot tartalmaz"
 
 msgctxt "#20380"
 msgid "Exclude selected folder from scans"
-msgstr "A kiválasztott könyvtár kihagyása az átvizsgálásokból"
+msgstr "A kiválasztott mappa kihagyása az átvizsgálásokból"
 
 msgctxt "#20381"
 msgid "Specials"
-msgstr "Specials"
+msgstr "Egyediek"
 
 msgctxt "#20382"
 msgid "Automatically grab season thumbs"
@@ -6619,19 +6647,19 @@ msgstr "A kiválasztott mappa egyetlen videót tartalmaz"
 
 msgctxt "#20384"
 msgid "Link to TV show"
-msgstr "Hivatkozás TV műsorokba"
+msgstr "Hivatkozás a sorozathoz"
 
 msgctxt "#20385"
 msgid "Remove link to TV show"
-msgstr "TV műsor hivatkozás törl."
+msgstr "Sorozat hivatkozás törlése"
 
 msgctxt "#20386"
 msgid "Recently added movies"
-msgstr "Új filmek"
+msgstr "Nemrég bekerült filmek"
 
 msgctxt "#20387"
 msgid "Recently added episodes"
-msgstr "Új epizódok"
+msgstr "Nemrég bekerült epizódok"
 
 msgctxt "#20388"
 msgid "Studios"
@@ -6639,27 +6667,27 @@ msgstr "Stúdiók"
 
 msgctxt "#20389"
 msgid "Music videos"
-msgstr "Klipek"
+msgstr "Videóklipek"
 
 msgctxt "#20390"
 msgid "Recently added music videos"
-msgstr "Mostanában hozzáadott klippek"
+msgstr "Nemrég bekerült videóklipek"
 
 msgctxt "#20391"
 msgid "Music video"
-msgstr "Klip"
+msgstr "Videóklip"
 
 msgctxt "#20392"
 msgid "Remove music video from library"
-msgstr "Klip eltávolítása a médiatárból"
+msgstr "Videóklip eltávolítása a médiatárból"
 
 msgctxt "#20393"
 msgid "Music video information"
-msgstr "Klip információ"
+msgstr "Videóklip információ"
 
 msgctxt "#20394"
 msgid "Loading music video information"
-msgstr "Klip információ betöltése"
+msgstr "Videóklip információ betöltése"
 
 msgctxt "#20395"
 msgid "Mixed"
@@ -6679,43 +6707,43 @@ msgstr "Zeneszám lejátszása"
 
 msgctxt "#20399"
 msgid "Go to music videos from album"
-msgstr "Klipekhez, az albumból"
+msgstr "Videóklipekhez, az albumról"
 
 msgctxt "#20400"
 msgid "Go to music videos by artist"
-msgstr "Klipekhez, előadó szerint"
+msgstr "Videóklipekhez, előadótól"
 
 msgctxt "#20401"
 msgid "Play music video"
-msgstr "Klip lejátszása"
+msgstr "Videóklip lejátszása"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "Színész bélyegkép automatikus letöltése"
+msgstr "Színész miniképek letöltése médiatárhoz való hozzáadáskor"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
-msgstr "Színész bélyegkép beállítás"
+msgstr "Színész minikép beállítás"
 
 msgctxt "#20405"
 msgid "Remove episode bookmark"
-msgstr "Epizód könyvjelző eltávolítása"
+msgstr "Epizód-könyvj. törlése"
 
 msgctxt "#20406"
 msgid "Set episode bookmark"
-msgstr "Epizód könyvjelző beállítása"
+msgstr "Epizód-könyvjelző"
 
 msgctxt "#20407"
 msgid "Scraper settings"
-msgstr "Scraper beállítások"
+msgstr "Leolvasó beállításai"
 
 msgctxt "#20408"
 msgid "Downloading music video information"
-msgstr "Klip információ letöltése"
+msgstr "Videóklip információ letöltése"
 
 msgctxt "#20409"
 msgid "Downloading TV show information"
-msgstr "TV műsor információ letöltése"
+msgstr "Sorozat információ letöltése"
 
 msgctxt "#20410"
 msgid "Trailer"
@@ -6723,7 +6751,7 @@ msgstr "Filmajánló"
 
 msgctxt "#20411"
 msgid "Flatten"
-msgstr "Szűkítés"
+msgstr "Listák szűkítése"
 
 msgctxt "#20412"
 msgid "Flatten TV shows"
@@ -6775,7 +6803,7 @@ msgstr "Hamis"
 
 msgctxt "#20425"
 msgid "Fanart slideshow"
-msgstr "Fanart vetítés"
+msgstr "Fanartkép vetítés"
 
 msgctxt "#20426"
 msgid "Export to a single file or separate"
@@ -6795,7 +6823,7 @@ msgstr "Külön-külön"
 
 msgctxt "#20430"
 msgid "Export thumbnails and fanart?"
-msgstr "Bélyegképek és fanartok exportálása ?"
+msgstr "Miniképek és fanartképek exportálása?"
 
 msgctxt "#20431"
 msgid "Overwrite old files?"
@@ -6803,15 +6831,15 @@ msgstr "Korábbi fájlok felülírása?"
 
 msgctxt "#20432"
 msgid "Exclude path from library updates"
-msgstr "Elérési út kihagyása a médiatár frissítésekor"
+msgstr "Elérési út kihagyása a médiatár-frissítésekor"
 
 msgctxt "#20433"
 msgid "Extract thumbnails and video information"
-msgstr "Média metaadatok és bélyegképek kinyerése fájlokból"
+msgstr "Média információk és miniképek kinyerése"
 
 msgctxt "#20434"
 msgid "Sets"
-msgstr "BOXSET"
+msgstr "Lemezgyűjtemény"
 
 msgctxt "#20435"
 msgid "Set movieset thumb"
@@ -6819,27 +6847,27 @@ msgstr "BOXSET bélyegkép"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
-msgstr "Színész bélyegképek exportálása"
+msgstr "Színész-miniképek exportálása?"
 
 msgctxt "#20437"
 msgid "Choose fanart"
-msgstr "Fanart választás"
+msgstr "Fanartkép választás"
 
 msgctxt "#20438"
 msgid "Local fanart"
-msgstr "Helyi fanart"
+msgstr "Helyi fanartkép"
 
 msgctxt "#20439"
 msgid "No fanart"
-msgstr "Nincs fanart"
+msgstr "Nincs fanartkép"
 
 msgctxt "#20440"
 msgid "Current fanart"
-msgstr "Jelenlegi fanart"
+msgstr "Jelenlegi fanartkép"
 
 msgctxt "#20441"
 msgid "Remote fanart"
-msgstr "Távoli fanart"
+msgstr "Távoli fanartkép"
 
 msgctxt "#20442"
 msgid "Change content"
@@ -6851,11 +6879,35 @@ msgstr "Akarod frissíteni az infó-t minden"
 
 msgctxt "#20444"
 msgid "items within this path?"
-msgstr "elemhez ezen az útvonalon ?"
+msgstr "elemhez ezen az útvonalon?"
 
 msgctxt "#20445"
 msgid "Fanart"
-msgstr "Fanart"
+msgstr "Fanartkép"
+
+msgctxt "#20446"
+msgid "Locally stored information found."
+msgstr "Helyben tárolt információt találtam."
+
+msgctxt "#20447"
+msgid "Ignore and refresh from internet?"
+msgstr "Elvetés és frissítés az internetről?"
+
+msgctxt "#20448"
+msgid "Could not download information"
+msgstr "Nem tudtam letölteni az információt"
+
+msgctxt "#20450"
+msgid "Would you like to continue scanning?"
+msgstr "Szeretnéd a keresést folytatni?"
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Országok"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Filmek csoportosítása készletekbe"
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -6863,7 +6915,7 @@ msgstr "Rejtett fájlok és mappák megjelenítése"
 
 msgctxt "#21331"
 msgid "TuxBox client"
-msgstr "TuxBox kliens"
+msgstr "TuxBox PVR ügyfél"
 
 msgctxt "#21332"
 msgid "WARNING: Target TuxBox device is in recording-mode!"
@@ -6875,7 +6927,7 @@ msgstr "Az adatfolyam megáll!"
 
 msgctxt "#21334"
 msgid "Zap to channel: %s failed!"
-msgstr "A csatornára váltás nem sikerült erre: %s"
+msgstr "Erre a csatornára váltás nem sikerült: %s"
 
 msgctxt "#21335"
 msgid "Are you sure to start the stream?"
@@ -6891,19 +6943,19 @@ msgstr "TuxBox eszköz"
 
 msgctxt "#21359"
 msgid "Add media share..."
-msgstr "Média megosztás hozzáadása..."
+msgstr "Médiamegosztás hozzáadása..."
 
 msgctxt "#21360"
 msgid "Share video and music libraries through UPnP"
-msgstr "Video és zene megosztás UPnP-n keresztül"
+msgstr "Videó és zene megosztás UPnP-n keresztül"
 
 msgctxt "#21364"
 msgid "Edit media share"
-msgstr "Média megosztás szerkesztése"
+msgstr "Médiamegosztás szerkesztése"
 
 msgctxt "#21365"
 msgid "Remove media share"
-msgstr "Média megosztás eltávolítása"
+msgstr "Médiamegosztás eltávolítása"
 
 msgctxt "#21366"
 msgid "Subtitle folder"
@@ -6923,7 +6975,7 @@ msgstr "Navigációs hangok lejátszás közben"
 
 msgctxt "#21371"
 msgid "Thumbnail"
-msgstr "Bélyegkép"
+msgstr "Minikép"
 
 msgctxt "#21372"
 msgid "Forced DVD player region"
@@ -6931,7 +6983,7 @@ msgstr "Kényszerített DVD régiókód használata"
 
 msgctxt "#21373"
 msgid "Video output"
-msgstr "Videó kimenet"
+msgstr "Képkimenet"
 
 msgctxt "#21374"
 msgid "Video aspect"
@@ -6967,7 +7019,7 @@ msgstr "Lejátszáslista nevének megadása"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
-msgstr "\"Forrás\" gomb megjelenítése a fájl listában"
+msgstr "A \"Forrás hozzáadása\" gomb megjelenítése a fájllistában"
 
 msgctxt "#21383"
 msgid "Enable scrollbars"
@@ -6975,7 +7027,7 @@ msgstr "Görgetősávok engedélyezése"
 
 msgctxt "#21384"
 msgid "Make watched filtering a toggle in video library"
-msgstr "A látott státusz kapcsolóként értelmezése a médiatárban"
+msgstr "A látott-státusz kapcsolóként értelmezése a médiatárban"
 
 msgctxt "#21385"
 msgid "Open"
@@ -6999,7 +7051,7 @@ msgstr "Saját háttér"
 
 msgctxt "#21390"
 msgid "Power management level"
-msgstr "Energiagazdálkodás "
+msgstr "Energiagazdálkodási szint"
 
 msgctxt "#21391"
 msgid "High power"
@@ -7011,15 +7063,15 @@ msgstr "Energiatakarékos"
 
 msgctxt "#21393"
 msgid "High standby"
-msgstr "High standby"
+msgstr "Magas készenlét"
 
 msgctxt "#21394"
 msgid "Low standby"
-msgstr "Low standby"
+msgstr "Alacsony készenlét"
 
 msgctxt "#21395"
 msgid "Unable to cache files bigger than 4GB"
-msgstr "4GB-nál nagyobb fájl-ok nem cache-elhetőek"
+msgstr "4GB-nál nagyobb fájlok nem gyorsítótárazhatók"
 
 msgctxt "#21396"
 msgid "Chapter"
@@ -7027,7 +7079,7 @@ msgstr "Fejezet"
 
 msgctxt "#21397"
 msgid "High quality pixel shader v2"
-msgstr "High quality pixel shader v2"
+msgstr "Magas minőségű pixel árnyékoló v2"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
@@ -7079,23 +7131,23 @@ msgstr "előtt"
 
 msgctxt "#21410"
 msgid "in the last"
-msgstr "Az utolsó X-ben van"
+msgstr "az utolsó X-ben van"
 
 msgctxt "#21411"
 msgid "not in the last"
-msgstr "Korábbi mint az utolsó"
+msgstr "nincs az utolsó X-ben"
 
 msgctxt "#21412"
 msgid "Scrapers"
-msgstr "Scrapers"
+msgstr "Leolvasók"
 
 msgctxt "#21413"
 msgid "Default movie scraper"
-msgstr "Alapértelmezett film scraper"
+msgstr "Alapértelmezett film leolvasó"
 
 msgctxt "#21414"
 msgid "Default tvshow scraper"
-msgstr "Alapértelmezett TV műsor scraper"
+msgstr "Alapértelmezett sorozat leolvasó"
 
 msgctxt "#21415"
 msgid "Default musicvideo scraper"
@@ -7155,11 +7207,11 @@ msgstr "Rendezés"
 
 msgctxt "#21430"
 msgid "ascending"
-msgstr "Növekvő"
+msgstr "növekvő"
 
 msgctxt "#21431"
 msgid "descending"
-msgstr "Csökkenő"
+msgstr "csökkenő"
 
 msgctxt "#21432"
 msgid "Edit smart playlist"
@@ -7183,7 +7235,7 @@ msgstr "%i elemre"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
-msgstr "Új intelligens lejátszáslista"
+msgstr "Új intelligens lejátszáslista..."
 
 msgctxt "#21438"
 msgid "%c Drive"
@@ -7199,7 +7251,7 @@ msgstr "Saját mappa"
 
 msgctxt "#21441"
 msgid "Watched count"
-msgstr "Lejátszási számláló"
+msgstr "Lejátszás számláló"
 
 msgctxt "#21442"
 msgid "Episode title"
@@ -7215,15 +7267,15 @@ msgstr "Hangcsatornák"
 
 msgctxt "#21445"
 msgid "Video codec"
-msgstr "Video codec"
+msgstr "Videó codec"
 
 msgctxt "#21446"
 msgid "Audio codec"
-msgstr "Audio codec"
+msgstr "Hang codec"
 
 msgctxt "#21447"
 msgid "Audio language"
-msgstr "Audio nyelve"
+msgstr "Hang nyelve"
 
 msgctxt "#21448"
 msgid "Subtitle language"
@@ -7303,7 +7355,7 @@ msgstr "Gyújtótáv"
 
 msgctxt "#21828"
 msgid "Focus distance"
-msgstr "Gyújtótáv"
+msgstr "Fókusztáv"
 
 msgctxt "#21829"
 msgid "Exposure"
@@ -7363,7 +7415,7 @@ msgstr "GPS magasság"
 
 msgctxt "#21843"
 msgid "Orientation"
-msgstr "Elrendezés"
+msgstr "Tájolás"
 
 msgctxt "#21860"
 msgid "Supplemental categories"
@@ -7395,11 +7447,11 @@ msgstr "Kategória"
 
 msgctxt "#21867"
 msgid "Byline"
-msgstr "Byline"
+msgstr "Cikkszerző"
 
 msgctxt "#21868"
 msgid "Byline title"
-msgstr "Byline cím"
+msgstr "Cikkszerző beosztás"
 
 msgctxt "#21869"
 msgid "Credit"
@@ -7411,11 +7463,11 @@ msgstr "Forrás"
 
 msgctxt "#21871"
 msgid "Copyright notice"
-msgstr "Copyright megjegyzés"
+msgstr "Szerzői jogi megjegyzés"
 
 msgctxt "#21872"
 msgid "Object name"
-msgstr "Objektum neve"
+msgstr "Elem neve"
 
 msgctxt "#21873"
 msgid "City"
@@ -7455,11 +7507,11 @@ msgstr "XBMC távoli vezérelhetősége UPnP-n keresztül"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
-msgstr "Kísérlet a DVD menü előtti bemutató átugrására"
+msgstr "Kísérlet a DVD főmenü előtti előzetes átugrására"
 
 msgctxt "#21883"
 msgid "Saved music"
-msgstr "Rippelt zene"
+msgstr "Bemásolt (rip-elt), vagy felvett zene"
 
 msgctxt "#21884"
 msgid "Query info for all artists"
@@ -7523,7 +7575,7 @@ msgstr "Aktív évek"
 
 msgctxt "#21899"
 msgid "Label"
-msgstr "Címke"
+msgstr "Kiadó"
 
 msgctxt "#21900"
 msgid "Born/Formed"
@@ -7543,11 +7595,11 @@ msgstr "- DNS utótag"
 
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
-msgstr "Késleltet: %2.2fs"
+msgstr "Késleltet: %2.3fmp"
 
 msgctxt "#22005"
 msgid "Ahead by: %2.3fs"
-msgstr "Előrehoz: %2.2fs"
+msgstr "Előrehoz: %2.3fmp"
 
 msgctxt "#22006"
 msgid "Subtitle offset"
@@ -7583,7 +7635,7 @@ msgstr "Profil adatok"
 
 msgctxt "#22014"
 msgid "Use dim if paused during video playback"
-msgstr "Elhalványítás videólejátszás szüneteltetés esetén"
+msgstr "Elhalványítás videólejátszás pillanatmegállítása közben"
 
 msgctxt "#22015"
 msgid "All recordings"
@@ -7607,7 +7659,7 @@ msgstr "Felvételek cím szerint"
 
 msgctxt "#22020"
 msgid "Guide"
-msgstr "Műsor"
+msgstr "Műsorkalauz"
 
 msgctxt "#22021"
 msgid "Allowed error in aspect ratio to minimize black bars"
@@ -7615,7 +7667,7 @@ msgstr "Max. képarányhiba, feketesávok minimalizálásához (%)"
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "Videófájlokat is megjelenít"
+msgstr "Videófájlokat is megjelenít a listázáskor"
 
 msgctxt "#22023"
 msgid "DirectX vendor"
@@ -7715,11 +7767,31 @@ msgstr "Külső lejátszó aktív"
 
 msgctxt "#23101"
 msgid "Click OK to terminate the player"
-msgstr "A lejátszó megszakításához klikkelj az OK-ra"
+msgstr "A lejátszó megszakításához nyomj az OK-ra"
 
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
-msgstr "Lejátszás végén klikkelj az OK-ra"
+msgstr "Lejátszás végén nyomj az OK-ra"
+
+msgctxt "#24000"
+msgid "Add-on"
+msgstr "Kiegészítő"
+
+msgctxt "#24020"
+msgid "Configure"
+msgstr "Beállítás"
+
+msgctxt "#24021"
+msgid "Disable"
+msgstr "Kikapcsolás"
+
+msgctxt "#24022"
+msgid "Enable"
+msgstr "Engedélyezés"
+
+msgctxt "#24030"
+msgid "This Add-on can not be configured"
+msgstr "Ez a kiegészítő nem konfigurálható"
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -7731,7 +7803,7 @@ msgstr "QWERTY billentyűzet"
 
 msgctxt "#29802"
 msgid "Passthrough Audio in use"
-msgstr "Passthrough esetén tiltva"
+msgstr "Hangtovábbítás-módban tiltva"
 
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
@@ -7739,7 +7811,7 @@ msgstr "Villogás szűrő alkalmazása játékokra"
 
 msgctxt "#33001"
 msgid "Trailer quality"
-msgstr "Trailer minőség"
+msgstr "Filmelőzetes minőség"
 
 msgctxt "#33002"
 msgid "Stream"
@@ -7775,7 +7847,11 @@ msgstr "Másolás"
 
 msgctxt "#33010"
 msgid "Set download directory"
-msgstr "Letöltési könyvtár megadása"
+msgstr "Letöltési mappa megadása"
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Keresési idő"
 
 msgctxt "#33012"
 msgid "Short"
@@ -7795,7 +7871,7 @@ msgstr "Kérdezzen rá a letöltésre a videó lejátszása előtt"
 
 msgctxt "#33016"
 msgid "Clips"
-msgstr "Klippek"
+msgstr "Klipek"
 
 msgctxt "#33017"
 msgid "Restart plugin to enable"
@@ -7855,7 +7931,7 @@ msgstr "Összefoglaló"
 
 msgctxt "#33031"
 msgid "Coverflow"
-msgstr "Coverflow"
+msgstr "Borítófolyam"
 
 msgctxt "#33032"
 msgid "Translate text"
@@ -7907,7 +7983,7 @@ msgstr "Állítsd be a(z)"
 
 msgctxt "#33054"
 msgid "Seasons"
-msgstr "Évszakok"
+msgstr "Évad"
 
 msgctxt "#33055"
 msgid "Use your"
@@ -7951,7 +8027,7 @@ msgstr "Szerkesztő"
 
 msgctxt "#33066"
 msgid "About your"
-msgstr "Add hozzá"
+msgstr "Erről"
 
 msgctxt "#33067"
 msgid "Star rating"
@@ -7975,7 +8051,7 @@ msgstr "Testreszabott hátterek"
 
 msgctxt "#33072"
 msgid "View Readme"
-msgstr "Readme megtekintése"
+msgstr "Az 'Olvass el' megtekintése"
 
 msgctxt "#33073"
 msgid "View Changelog"
@@ -7983,7 +8059,7 @@ msgstr "Változási napló megtekintése"
 
 msgctxt "#33074"
 msgid "This version of %s requires an"
-msgstr "A %s ezen verziójához"
+msgstr "A(z) %s ezen verziójához"
 
 msgctxt "#33075"
 msgid "XBMC revision of %s or greater to run."
@@ -7991,7 +8067,7 @@ msgstr "%s vagy magasabb XBMC verzió szükséges."
 
 msgctxt "#33076"
 msgid "Please update XBMC."
-msgstr "Frissítsd az XBMC-t!"
+msgstr "Frissítsd az XBMC-t."
 
 msgctxt "#33077"
 msgid "No data found!"
@@ -8011,12 +8087,16 @@ msgstr "Utálom"
 
 msgctxt "#33081"
 msgid "This file is stacked, select the part you want to play from."
-msgstr "Ez egy egyesített fájl, melyik részt akarod játszani ?"
+msgstr "Ez egy egyesített fájl, melyik részt akarod játszani?"
 
 msgctxt "#33082"
 msgid "Path to script"
-msgstr "Szkript útvonal"
+msgstr "Program útvonal"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "Egyedi szkript gomb engedélyezése"
+msgstr "Egyedi program gomb engedélyezése"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "Flac"

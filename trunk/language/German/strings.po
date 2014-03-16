@@ -37,6 +37,10 @@ msgctxt "#5"
 msgid "Settings"
 msgstr "Einstellungen"
 
+msgctxt "#6"
+msgid "XBMC SVN"
+msgstr "XBMC SVN"
+
 msgctxt "#7"
 msgid "File manager"
 msgstr "Dateimanager"
@@ -153,6 +157,54 @@ msgctxt "#47"
 msgid "Sun"
 msgstr "So"
 
+msgctxt "#51"
+msgid "Jan"
+msgstr "Jan"
+
+msgctxt "#52"
+msgid "Feb"
+msgstr "Feb"
+
+msgctxt "#53"
+msgid "Mar"
+msgstr "Mär"
+
+msgctxt "#54"
+msgid "Apr"
+msgstr "Apr"
+
+msgctxt "#55"
+msgid "May"
+msgstr "Mai"
+
+msgctxt "#56"
+msgid "Jun"
+msgstr "Jun"
+
+msgctxt "#57"
+msgid "Jul"
+msgstr "Jul"
+
+msgctxt "#58"
+msgid "Aug"
+msgstr "Aug"
+
+msgctxt "#59"
+msgid "Sep"
+msgstr "Sep"
+
+msgctxt "#60"
+msgid "Oct"
+msgstr "Okt"
+
+msgctxt "#61"
+msgid "Nov"
+msgstr "Nov"
+
+msgctxt "#62"
+msgid "Dec"
+msgstr "Dez"
+
 msgctxt "#98"
 msgid "View: Auto"
 msgstr "Autoansicht"
@@ -175,15 +227,15 @@ msgstr "Durchsuchen"
 
 msgctxt "#103"
 msgid "Sort by: Name"
-msgstr "Nach Name"
+msgstr "Nach Name sortieren"
 
 msgctxt "#104"
 msgid "Sort by: Date"
-msgstr "Nach Datum"
+msgstr "Nach Datum sortieren"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "Nach Größe"
+msgstr "Nach Größe sortieren"
 
 msgctxt "#106"
 msgid "No"
@@ -195,15 +247,15 @@ msgstr "Ja"
 
 msgctxt "#108"
 msgid "Slideshow"
-msgstr "Diaschau"
+msgstr "Diashow"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Thumbnail erstellen"
+msgstr "Thumbnails erzeugen"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "Thumbnail wird erstellt"
+msgstr "Thumbnails erzeugen"
 
 msgctxt "#111"
 msgid "Shortcuts"
@@ -211,7 +263,7 @@ msgstr "Verknüpfungen"
 
 msgctxt "#112"
 msgid "Paused"
-msgstr "Pause"
+msgstr "Pausiert"
 
 msgctxt "#115"
 msgid "Copy"
@@ -271,7 +323,7 @@ msgstr "Allgemein"
 
 msgctxt "#129"
 msgid "Slideshow"
-msgstr "Diaschau"
+msgstr "Diashow"
 
 msgctxt "#130"
 msgid "System info"
@@ -299,7 +351,7 @@ msgstr "Genre"
 
 msgctxt "#136"
 msgid "Playlists"
-msgstr "Playlisten"
+msgstr "Wiedergabelisten"
 
 msgctxt "#137"
 msgid "Search"
@@ -311,15 +363,15 @@ msgstr "System-Informationen"
 
 msgctxt "#139"
 msgid "Temperatures:"
-msgstr "Temperatur:"
+msgstr "Temperaturen:"
 
 msgctxt "#140"
 msgid "CPU:"
-msgstr "CPU-Temperatur:"
+msgstr "CPU:"
 
 msgctxt "#141"
 msgid "GPU:"
-msgstr "GPU-Temperatur:"
+msgstr "GPU:"
 
 msgctxt "#142"
 msgid "Time:"
@@ -327,7 +379,7 @@ msgstr "Uhrzeit:"
 
 msgctxt "#143"
 msgid "Current:"
-msgstr "Lokal:"
+msgstr "Aktuell:"
 
 msgctxt "#144"
 msgid "Build:"
@@ -371,7 +423,7 @@ msgstr "Vollduplex"
 
 msgctxt "#154"
 msgid "Storage"
-msgstr "Laufwerke"
+msgstr "Speicher"
 
 msgctxt "#155"
 msgid "Drive"
@@ -383,11 +435,11 @@ msgstr "Frei"
 
 msgctxt "#157"
 msgid "Video"
-msgstr "Bildschirm"
+msgstr "Video"
 
 msgctxt "#158"
 msgid "Free memory"
-msgstr "Freier Hauptspeicher"
+msgstr "Freier RAM"
 
 msgctxt "#159"
 msgid "No link"
@@ -435,15 +487,19 @@ msgstr "Auflösung"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "Bildwiederholungsrate anpassen"
+msgstr "Bildwiederholfrequenz automatisch an Video anpassen"
 
 msgctxt "#172"
 msgid "Release date"
-msgstr "Veröffentlichung"
+msgstr "Veröffentlichungsdatum"
+
+msgctxt "#173"
+msgid "Display 4:3 videos as"
+msgstr "4:3 Videos darstellen als"
 
 msgctxt "#175"
 msgid "Moods"
-msgstr "Stimmung"
+msgstr "Stimmungen"
 
 msgctxt "#176"
 msgid "Styles"
@@ -451,7 +507,7 @@ msgstr "Stil"
 
 msgctxt "#179"
 msgid "Song"
-msgstr "Titel"
+msgstr "Song"
 
 msgctxt "#180"
 msgid "Duration"
@@ -463,7 +519,7 @@ msgstr "Album auswählen"
 
 msgctxt "#182"
 msgid "Tracks"
-msgstr "Titel-Liste"
+msgstr "Song-Liste"
 
 msgctxt "#183"
 msgid "Review"
@@ -483,7 +539,7 @@ msgstr "OK"
 
 msgctxt "#187"
 msgid "No albums found!"
-msgstr "Kein Album gefunden!"
+msgstr "Keine Alben gefunden!"
 
 msgctxt "#188"
 msgid "Select all"
@@ -511,7 +567,7 @@ msgstr "Durchsuchen"
 
 msgctxt "#194"
 msgid "Searching..."
-msgstr "Durchsuche..."
+msgstr "Suche..."
 
 msgctxt "#195"
 msgid "No info found!"
@@ -519,11 +575,11 @@ msgstr "Keine Informationen gefunden!"
 
 msgctxt "#196"
 msgid "Select movie:"
-msgstr "Film-Auswahl:"
+msgstr "Titel wählen:"
 
 msgctxt "#197"
 msgid "Querying %s info"
-msgstr "Online-Datenbank wird abgefragt..."
+msgstr "Suche %s in Online-Datenbank..."
 
 msgctxt "#198"
 msgid "Loading movie details"
@@ -531,11 +587,11 @@ msgstr "Lade Filminformationen"
 
 msgctxt "#202"
 msgid "Tagline"
-msgstr "Kurzinfo"
+msgstr "Zusammenfassung"
 
 msgctxt "#203"
 msgid "Plot outline"
-msgstr "Handlung"
+msgstr "Handlungs-Übersicht"
 
 msgctxt "#205"
 msgid "Votes:"
@@ -555,11 +611,11 @@ msgstr "Abspielen"
 
 msgctxt "#209"
 msgid "Next"
-msgstr "Nächste"
+msgstr "Weiter"
 
 msgctxt "#210"
 msgid "Previous"
-msgstr "Vorherige"
+msgstr "Zurück"
 
 msgctxt "#213"
 msgid "Calibrate user interface..."
@@ -579,7 +635,7 @@ msgstr "Vergrößerung"
 
 msgctxt "#217"
 msgid "Pixel ratio"
-msgstr "Bild-Verhältnis"
+msgstr "Pixel-Seitenverhältnis"
 
 msgctxt "#218"
 msgid "DVD drive"
@@ -591,11 +647,11 @@ msgstr "Bitte eine Disc einlegen"
 
 msgctxt "#220"
 msgid "Remote share"
-msgstr "Netzwerkquelle"
+msgstr "Netzwerklaufwerk"
 
 msgctxt "#221"
 msgid "Network is not connected"
-msgstr "Netzwerk ist nicht verbunden"
+msgstr "Keine Verbindung zum Netzwerk"
 
 msgctxt "#222"
 msgid "Cancel"
@@ -603,7 +659,7 @@ msgstr "Abbrechen"
 
 msgctxt "#224"
 msgid "Speed"
-msgstr "Abfolgezeit"
+msgstr "Geschwindigkeit"
 
 msgctxt "#226"
 msgid "Test patterns..."
@@ -615,7 +671,7 @@ msgstr "Audio CD Titelnamen mit freedb.org abgleichen"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
-msgstr "Zufällige Reihenfolge der Playliste nach dem Laden"
+msgstr "Zufällige Reihenfolge der Wiedergabeliste nach dem Laden"
 
 msgctxt "#229"
 msgid "HDD spindown time"
@@ -659,7 +715,7 @@ msgstr "Vergrößerung"
 
 msgctxt "#239"
 msgid "Clear playlist on finish"
-msgstr "Playliste nach der Wiedergabe löschen"
+msgstr "Wiedergabeliste nach der Wiedergabe löschen"
 
 msgctxt "#247"
 msgid "Scripts"
@@ -727,7 +783,7 @@ msgstr "Skript-Ausgabe"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "Webserver aktivieren"
+msgstr "Steuerung über HTTP zulassen"
 
 msgctxt "#264"
 msgid "Record"
@@ -735,27 +791,27 @@ msgstr "Aufnehmen"
 
 msgctxt "#265"
 msgid "Stop Rec."
-msgstr "Aufnahme-Stop"
+msgstr "Aufnahme beenden"
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "Nach: Titel-Nr."
+msgstr "Sortie nach: Titel-Nr."
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "Nach: Zeit"
+msgstr "Sortiere nach: Zeit"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "Nach: Titel"
+msgstr "Sortiere nach: Titel"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "Nach: Interpret"
+msgstr "Sortiere nach: Interpret"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "Nach: Album"
+msgstr "Sortiere nach: Album"
 
 msgctxt "#271"
 msgid "Top 100"
@@ -775,7 +831,7 @@ msgstr "Position der Untertitel"
 
 msgctxt "#275"
 msgid "Pixel ratio adjustment"
-msgstr "Bildverhältnis einstellen"
+msgstr "Pixel-Seitenverhältnis anpassen"
 
 msgctxt "#276"
 msgid "Adjust the arrow to change the amount of overscan"
@@ -787,7 +843,7 @@ msgstr "Bewege den Balken um die Position der Untertitel einzustellen"
 
 msgctxt "#278"
 msgid "Adjust the rectangle so it is perfectly square"
-msgstr "Ändere das Rechteck so, daß es ein perfektes Quadrat ergibt"
+msgstr "Ändere das Rechteck so, dass es ein perfektes Quadrat ergibt"
 
 msgctxt "#279"
 msgid "Unable to load settings"
@@ -799,7 +855,7 @@ msgstr "Standardeinstellungen verwenden"
 
 msgctxt "#281"
 msgid "Please check the XML files"
-msgstr "Bitte überprüfe die .xml-Dateien"
+msgstr "Bitte überprüfe die XML-Dateien"
 
 msgctxt "#282"
 msgid "Found %i items"
@@ -831,11 +887,11 @@ msgstr "- Schriftgröße"
 
 msgctxt "#290"
 msgid "Dynamic range compression"
-msgstr "Dynamische kompression"
+msgstr "Lautstärke dynamisch anpassen (DRC)"
 
 msgctxt "#291"
 msgid "Video"
-msgstr "Videos"
+msgstr "Video"
 
 msgctxt "#292"
 msgid "Audio"
@@ -855,7 +911,7 @@ msgstr "Lesezeichen löschen"
 
 msgctxt "#297"
 msgid "Audio offset"
-msgstr "Audio-Verzögerung"
+msgstr "Tonspur-Verschiebung"
 
 msgctxt "#298"
 msgid "Bookmarks"
@@ -863,7 +919,7 @@ msgstr "Lesezeichen"
 
 msgctxt "#303"
 msgid "Delay"
-msgstr "Untertitel-Verzögerung"
+msgstr "Verzögerung"
 
 msgctxt "#304"
 msgid "Language"
@@ -875,7 +931,7 @@ msgstr "Aktiviert"
 
 msgctxt "#306"
 msgid "Non-interleaved"
-msgstr "Paralleles Audio/Video"
+msgstr "Nicht-interleaved"
 
 msgctxt "#307"
 msgid "- Automatic post-processing"
@@ -903,11 +959,11 @@ msgstr "(0=auto)"
 
 msgctxt "#313"
 msgid "Cleaning database"
-msgstr "Datenbank wird bereinigt"
+msgstr "Verwaiste Einträge entfernen"
 
 msgctxt "#314"
 msgid "Preparing..."
-msgstr "Vorbereitung..."
+msgstr "Bereite vor..."
 
 msgctxt "#315"
 msgid "Database error"
@@ -923,43 +979,43 @@ msgstr "Die Datenbank wurde erfolgreich bereinigt"
 
 msgctxt "#318"
 msgid "Cleaning songs..."
-msgstr "Titel werden aktualisiert..."
+msgstr "Titel werden bereinigt..."
 
 msgctxt "#319"
 msgid "Error cleaning songs"
-msgstr "Fehler beim Aktualisieren der Titel"
+msgstr "Fehler beim Bereinigen der Titel"
 
 msgctxt "#320"
 msgid "Cleaning artists..."
-msgstr "Interpreten werden aktualisiert..."
+msgstr "Interpreten werden bereinigt..."
 
 msgctxt "#321"
 msgid "Error cleaning artists"
-msgstr "Fehler beim Aktualisieren der Interpreten"
+msgstr "Fehler beim Bereinigen der Interpreten"
 
 msgctxt "#322"
 msgid "Cleaning genres..."
-msgstr "Genres werden aktualisiert..."
+msgstr "Genres werden bereinigt..."
 
 msgctxt "#323"
 msgid "Error cleaning genres"
-msgstr "Fehler beim Aktualisieren der Genres"
+msgstr "Fehler beim Bereinigen der Genres"
 
 msgctxt "#324"
 msgid "Cleaning paths..."
-msgstr "Pfade werden aktualisiert..."
+msgstr "Pfade werden bereinigt..."
 
 msgctxt "#325"
 msgid "Error cleaning paths"
-msgstr "Fehler beim Aktualisieren der Pfade"
+msgstr "Fehler beim Bereinigen der Pfade"
 
 msgctxt "#326"
 msgid "Cleaning albums..."
-msgstr "Alben werden aktualisiert..."
+msgstr "Alben werden bereinigt..."
 
 msgctxt "#327"
 msgid "Error cleaning albums"
-msgstr "Fehler beim Aktualisieren der Alben"
+msgstr "Fehler beim Bereinigen der Alben"
 
 msgctxt "#328"
 msgid "Writing changes..."
@@ -971,7 +1027,7 @@ msgstr "Fehler beim Speichern der Änderungen"
 
 msgctxt "#330"
 msgid "This may take some time..."
-msgstr "Einen Moment Geduld bitte..."
+msgstr "Dieser Vorgang kann etwas dauern..."
 
 msgctxt "#331"
 msgid "Compressing database..."
@@ -983,11 +1039,11 @@ msgstr "Fehler beim Komprimieren der Datenbank"
 
 msgctxt "#333"
 msgid "Do you want to clean the library?"
-msgstr "Soll die Datenbank bereinigt werden?"
+msgstr "Soll die Bibliothek bereinigt werden?"
 
 msgctxt "#334"
 msgid "Clean library..."
-msgstr "Ungültige Datenbank-Einträge entfernen..."
+msgstr "Bereinige Bibliothek..."
 
 msgctxt "#335"
 msgid "Start"
@@ -1015,7 +1071,7 @@ msgstr "Verschiedene Interpreten"
 
 msgctxt "#341"
 msgid "Play disc"
-msgstr "CD/DVD abspielen"
+msgstr "Disc abspielen"
 
 msgctxt "#342"
 msgid "Movies"
@@ -1051,7 +1107,7 @@ msgstr "Schwarz"
 
 msgctxt "#354"
 msgid "Matrix trails"
-msgstr "Matrix Spalten"
+msgstr "Matrix Effekt"
 
 msgctxt "#355"
 msgid "Screensaver time"
@@ -1063,7 +1119,7 @@ msgstr "Bildschirmschoner"
 
 msgctxt "#357"
 msgid "Shutdown function timer"
-msgstr "System automatisch ausschalten"
+msgstr "System automatisch ausschalten in"
 
 msgctxt "#358"
 msgid "All albums"
@@ -1071,7 +1127,7 @@ msgstr "Alle Alben"
 
 msgctxt "#359"
 msgid "Recently added albums"
-msgstr "Zuletzt hinzugefügte Alben"
+msgstr "Kürzlich hinzugefügte Alben"
 
 msgctxt "#360"
 msgid "Screensaver"
@@ -1079,7 +1135,7 @@ msgstr "Bildschirmschoner"
 
 msgctxt "#361"
 msgid "R. Slideshow"
-msgstr "Rekurs. Diaschau"
+msgstr "Rekurs. Diashow"
 
 msgctxt "#362"
 msgid "Screensaver dim level"
@@ -1087,7 +1143,7 @@ msgstr "Bildschirm verdunkeln um"
 
 msgctxt "#363"
 msgid "Sort by: File"
-msgstr "Nach Datei"
+msgstr "Sortiere nach: Datei"
 
 msgctxt "#364"
 msgid "- Dolby Digital (AC3) capable receiver"
@@ -1095,15 +1151,15 @@ msgstr "- Receiver unterstützt AC3"
 
 msgctxt "#365"
 msgid "Sort by: Name"
-msgstr "Nach Namen"
+msgstr "Sortiere nach: Namen"
 
 msgctxt "#366"
 msgid "Sort by: Year"
-msgstr "Nach Jahr"
+msgstr "Sortiere nach: Jahr"
 
 msgctxt "#367"
 msgid "Sort by: Rating"
-msgstr "Nach Bewertung"
+msgstr "Sortiere nach: Bewertung"
 
 msgctxt "#368"
 msgid "IMDb"
@@ -1131,7 +1187,7 @@ msgstr "sonnig"
 
 msgctxt "#374"
 msgid "Cloudy"
-msgstr "wolkig"
+msgstr "bewölkt"
 
 msgctxt "#375"
 msgid "Snow"
@@ -1191,15 +1247,15 @@ msgstr "morgens"
 
 msgctxt "#389"
 msgid "Shower"
-msgstr "Regen"
+msgstr "Regenschauer"
 
 msgctxt "#390"
 msgid "Flurries"
-msgstr "Böen"
+msgstr "Windböen"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "niedrig"
+msgstr "tief"
 
 msgctxt "#392"
 msgid "Medium"
@@ -1259,7 +1315,7 @@ msgstr "Taupunkt"
 
 msgctxt "#406"
 msgid "Humidity"
-msgstr "Feuchtigkeit"
+msgstr "Luftfeuchtigkeit"
 
 msgctxt "#407"
 msgid "From"
@@ -1271,7 +1327,7 @@ msgstr "mit"
 
 msgctxt "#409"
 msgid "Defaults"
-msgstr "Standards"
+msgstr "Standard"
 
 msgctxt "#410"
 msgid "Accessing weather service"
@@ -1339,7 +1395,7 @@ msgstr "Bitte folgende CD/DVD einlegen"
 
 msgctxt "#430"
 msgid "Sort by: DVD#"
-msgstr "Sortieren nach DVD#"
+msgstr "Sortieren nach: DVD#"
 
 msgctxt "#431"
 msgid "No cache"
@@ -1347,7 +1403,7 @@ msgstr "Keinen Cache verwenden"
 
 msgctxt "#432"
 msgid "Remove movie from library"
-msgstr "Film aus der Datenbank entfernen"
+msgstr "Film aus der Bibliothek entfernen"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
@@ -1395,7 +1451,7 @@ msgstr "DVD"
 
 msgctxt "#447"
 msgid "Autorun media"
-msgstr "Medien automatisch starten"
+msgstr "Medien automatisch abspielen"
 
 msgctxt "#448"
 msgid "LCD"
@@ -1443,7 +1499,7 @@ msgstr "Untertitel"
 
 msgctxt "#460"
 msgid "Audio stream"
-msgstr "Audiospur"
+msgstr "Tonspur"
 
 msgctxt "#461"
 msgid "[active]"
@@ -1483,7 +1539,7 @@ msgstr "OSD-Position"
 
 msgctxt "#470"
 msgid "Credits"
-msgstr "Credits"
+msgstr "Anerkennung"
 
 msgctxt "#471"
 msgid "Modchip"
@@ -1503,7 +1559,7 @@ msgstr "Musik & Video"
 
 msgctxt "#477"
 msgid "Unable to load playlist"
-msgstr "Playliste konnte nicht geladen werden"
+msgstr "Wiedergabeliste konnte nicht geladen werden"
 
 msgctxt "#478"
 msgid "OSD"
@@ -1535,7 +1591,7 @@ msgstr "Wiederholen"
 
 msgctxt "#487"
 msgid "Repeat one"
-msgstr "Wiederhole"
+msgstr "Ein Stück wiederholen"
 
 msgctxt "#488"
 msgid "Repeat folder"
@@ -1543,11 +1599,11 @@ msgstr "Inhalt eines Ordners wiederholen"
 
 msgctxt "#489"
 msgid "Play the next song automatically"
-msgstr "Automatisch nächsten Titel im Ordner abspielen"
+msgstr "Automatisch nächstes Stück abspielen"
 
 msgctxt "#491"
 msgid "- Use big icons"
-msgstr "- Große Symbole wechseln"
+msgstr "- Große Symbole"
 
 msgctxt "#492"
 msgid "Resize VobSubs"
@@ -1563,7 +1619,7 @@ msgstr "Übersteuerungsreserve"
 
 msgctxt "#495"
 msgid "Upsample videos to GUI resolution"
-msgstr "Videos in GUI-Auflösung abspielen"
+msgstr "Videos in Auflösung der Benutzeroberfläche abspielen"
 
 msgctxt "#496"
 msgid "Calibration"
@@ -1575,11 +1631,11 @@ msgstr "Dateityp-Erweiterungen anzeigen"
 
 msgctxt "#498"
 msgid "Sort by: Type"
-msgstr "Nach Typ"
+msgstr "Sortiere nach: Typ"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
-msgstr "Verbindung mit Online-Service nicht möglich"
+msgstr "Verbindung mit Online-Service konnte nicht hergestellt werden"
 
 msgctxt "#500"
 msgid "Downloading album information failed"
@@ -1607,7 +1663,7 @@ msgstr "Metainformationen werden geladen..."
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "Nach: Gebrauch"
+msgstr "Sortiere nach: Gebrauch"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1615,7 +1671,7 @@ msgstr "Visualisierung verwenden"
 
 msgctxt "#511"
 msgid "Enable video mode switching"
-msgstr "Video-Modus auf Basis der Spiele-Region wechseln"
+msgstr "Video-Modus auf Basis der Abspiel-Region wechseln"
 
 msgctxt "#512"
 msgid "Startup window"
@@ -1627,7 +1683,7 @@ msgstr "Hauptfenster"
 
 msgctxt "#514"
 msgid "Manual settings"
-msgstr "Manuell einstellen"
+msgstr "Manuelle Einstellungen"
 
 msgctxt "#515"
 msgid "Genre"
@@ -1635,15 +1691,15 @@ msgstr "Genre"
 
 msgctxt "#517"
 msgid "Recently played albums"
-msgstr "Zuletzt gespielte Alben"
+msgstr "Kürzlich gespielte Alben"
 
 msgctxt "#518"
 msgid "Launch"
-msgstr "Starten"
+msgstr "Ausführen"
 
 msgctxt "#519"
 msgid "Launch in..."
-msgstr "Starten als..."
+msgstr "Ausführen in..."
 
 msgctxt "#520"
 msgid "Edit XBE title"
@@ -1663,19 +1719,19 @@ msgstr "Medium wechseln"
 
 msgctxt "#524"
 msgid "Select playlist"
-msgstr "Playliste wählen"
+msgstr "Wiedergabeliste auswählen"
 
 msgctxt "#525"
 msgid "New playlist..."
-msgstr "Neue Playliste..."
+msgstr "Neue Wiedergabeliste..."
 
 msgctxt "#526"
 msgid "Add to playlist"
-msgstr "Zur Playliste hinzufügen"
+msgstr "Zur Wiedergabeliste hinzufügen"
 
 msgctxt "#527"
 msgid "Manually add to library"
-msgstr "Zur Datenbank hinzufügen"
+msgstr "Manuell zur Bibliothek hinzufügen"
 
 msgctxt "#528"
 msgid "Enter title"
@@ -1683,11 +1739,11 @@ msgstr "Titel eingeben"
 
 msgctxt "#529"
 msgid "Error: Duplicate title"
-msgstr "Fehler: Titel doppelt"
+msgstr "Fehler: Doppelter Titel"
 
 msgctxt "#530"
 msgid "Select genre"
-msgstr "Genre wählen"
+msgstr "Genre auswählen"
 
 msgctxt "#531"
 msgid "New genre"
@@ -1715,19 +1771,19 @@ msgstr "Symbole"
 
 msgctxt "#537"
 msgid "Big list"
-msgstr "Liste 2"
+msgstr "Große Liste"
 
 msgctxt "#538"
 msgid "Big icons"
-msgstr "Symbole 2"
+msgstr "Große Symbole"
 
 msgctxt "#539"
 msgid "Wide"
-msgstr "Wide"
+msgstr "Breit"
 
 msgctxt "#540"
 msgid "Big wide"
-msgstr "Wide 2"
+msgstr "Große, breite Liste"
 
 msgctxt "#541"
 msgid "Album icons"
@@ -1743,7 +1799,7 @@ msgstr "DVD"
 
 msgctxt "#544"
 msgid "Media info"
-msgstr "Infos"
+msgstr "Medien Informationen"
 
 msgctxt "#545"
 msgid "Audio output device"
@@ -1755,15 +1811,15 @@ msgstr "Digitales Ausgabegerät für Passthrough"
 
 msgctxt "#547"
 msgid "No biography for this artist"
-msgstr "Keine Biografie für diesen Interpreten"
+msgstr "Keine Biografie für diesen Interpreten vorhanden"
 
 msgctxt "#548"
 msgid "Downmix multichannel audio to stereo"
-msgstr "Mehrkanal-Audio auf Stereo reduzieren"
+msgstr "Mehrkanal-Ton auf Stereo reduzieren"
 
 msgctxt "#550"
 msgid "Sort by: %s"
-msgstr "Nach: %s"
+msgstr "Sortiere nach: %s"
 
 msgctxt "#551"
 msgid "Name"
@@ -1799,7 +1855,7 @@ msgstr "Album"
 
 msgctxt "#559"
 msgid "Playlist"
-msgstr "Playlist"
+msgstr "Wiedergabeliste"
 
 msgctxt "#560"
 msgid "ID"
@@ -1819,7 +1875,7 @@ msgstr "Bewertung"
 
 msgctxt "#564"
 msgid "Type"
-msgstr "Typ"
+msgstr "Video-Modus auf Basis der Abspiel-Region wechseln"
 
 msgctxt "#565"
 msgid "Usage"
@@ -1831,11 +1887,11 @@ msgstr "Album-Interpret"
 
 msgctxt "#567"
 msgid "Play count"
-msgstr "Spielzähler"
+msgstr "Abspielzähler"
 
 msgctxt "#568"
 msgid "Last played"
-msgstr "Zuletzt gespielt"
+msgstr "Zuletzt abgespielt am"
 
 msgctxt "#569"
 msgid "Comment"
@@ -1843,7 +1899,7 @@ msgstr "Kommentar"
 
 msgctxt "#570"
 msgid "Date added"
-msgstr "Datum (hinzugefügt)"
+msgstr "Hinzugefügt am"
 
 msgctxt "#571"
 msgid "Default"
@@ -1856,6 +1912,14 @@ msgstr "Studio"
 msgctxt "#573"
 msgid "Path"
 msgstr "Pfad"
+
+msgctxt "#574"
+msgid "Country"
+msgstr "Land"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "Im Gange"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -1883,7 +1947,7 @@ msgstr "Absteigend"
 
 msgctxt "#586"
 msgid "Edit playlist"
-msgstr "Playliste editieren"
+msgstr "Wiedergabeliste bearbeiten"
 
 msgctxt "#587"
 msgid "Filter"
@@ -1899,7 +1963,7 @@ msgstr "Partymodus"
 
 msgctxt "#590"
 msgid "Random"
-msgstr "Zufall"
+msgstr "Zufällig"
 
 msgctxt "#591"
 msgid "Off"
@@ -1919,19 +1983,19 @@ msgstr "Aus"
 
 msgctxt "#595"
 msgid "Repeat: Off"
-msgstr "Wiederholen aus"
+msgstr "Wiederholung: Aus"
 
 msgctxt "#596"
 msgid "Repeat: One"
-msgstr "Wiederholen eins"
+msgstr "Wiederholung: Eins"
 
 msgctxt "#597"
 msgid "Repeat: All"
-msgstr "Wiederholen alle"
+msgstr "Wiederholung: Alle"
 
 msgctxt "#600"
 msgid "Rip audio CD"
-msgstr "Audio-CD kopieren"
+msgstr "Audio-CD rippen"
 
 msgctxt "#601"
 msgid "Medium"
@@ -1951,7 +2015,7 @@ msgstr "konstante Bitrate"
 
 msgctxt "#605"
 msgid "Ripping..."
-msgstr "Kopieren..."
+msgstr "Rippe..."
 
 msgctxt "#607"
 msgid "To:"
@@ -1959,7 +2023,7 @@ msgstr "Zielordner:"
 
 msgctxt "#608"
 msgid "Could not rip CD or track"
-msgstr "CD oder Titel konnte nicht kopiert werden!"
+msgstr "CD oder Titel konnte nicht gerippt werden!"
 
 msgctxt "#609"
 msgid "CDDARipPath is not set."
@@ -1967,7 +2031,7 @@ msgstr "CD Ziel-Pfad ist nicht konfiguriert."
 
 msgctxt "#610"
 msgid "Rip audio track"
-msgstr "Titel kopieren"
+msgstr "Titel rippen"
 
 msgctxt "#611"
 msgid "Enter number"
@@ -1975,11 +2039,11 @@ msgstr "Nummer eingeben"
 
 msgctxt "#620"
 msgid "Audio CDs"
-msgstr "Musik CDs"
+msgstr "Audio CDs"
 
 msgctxt "#621"
 msgid "Encoder"
-msgstr "Encoder für Umwandlung"
+msgstr "Wiedergabeliste"
 
 msgctxt "#622"
 msgid "Quality"
@@ -1991,7 +2055,7 @@ msgstr "Bitrate"
 
 msgctxt "#624"
 msgid "Include track number"
-msgstr "Titelnummer einbeziehen"
+msgstr "Titelnummer mit einbeziehen"
 
 msgctxt "#625"
 msgid "All songs of"
@@ -2039,11 +2103,11 @@ msgstr "Modus für Wiedergabeverstärkung"
 
 msgctxt "#639"
 msgid "Use track levels"
-msgstr "Titel-Niveau"
+msgstr "Benutze Titel-Lautstärke"
 
 msgctxt "#640"
 msgid "Use album levels"
-msgstr "Album-Niveau"
+msgstr "Benutze Album-Lautstärke"
 
 msgctxt "#641"
 msgid "PreAmp Level - Replay gained files"
@@ -2067,27 +2131,27 @@ msgstr "Eine große Datei muss entpackt werden. Fortfahren?"
 
 msgctxt "#646"
 msgid "Remove from library"
-msgstr "Aus Datenbank entfernen"
+msgstr "Aus Bibliothek entfernen"
 
 msgctxt "#647"
 msgid "Export video library"
-msgstr "Videodatenbank exportieren"
+msgstr "Videobibliothek exportieren"
 
 msgctxt "#648"
 msgid "Import video library"
-msgstr "Videodatenbank importieren"
+msgstr "Videobibliothek importieren"
 
 msgctxt "#649"
 msgid "Importing"
-msgstr "Datenbank wird importiert"
+msgstr "Importiere"
 
 msgctxt "#650"
 msgid "Exporting"
-msgstr "Datenbank wird exportiert"
+msgstr "Exportiere"
 
 msgctxt "#651"
 msgid "Browse for library"
-msgstr "Nach Datenbank durchsuchen"
+msgstr "Suche nach Bibliothek"
 
 msgctxt "#652"
 msgid "Years"
@@ -2095,23 +2159,23 @@ msgstr "Jahre"
 
 msgctxt "#653"
 msgid "Update library"
-msgstr "Datenbank aktualisieren"
+msgstr "Bibliothek aktualisieren"
 
 msgctxt "#654"
 msgid "Show debug info"
-msgstr "Debug-Info anzeigen"
+msgstr "Debug-Informationen anzeigen"
 
 msgctxt "#655"
 msgid "Browse for executable"
-msgstr "Nach einem Programm durchsuchen"
+msgstr "Ausführbare Datei suchen"
 
 msgctxt "#656"
 msgid "Browse for playlist"
-msgstr "Nach einer Playliste durchsuchen"
+msgstr "Nach einer Wiedergabeliste durchsuchen"
 
 msgctxt "#657"
 msgid "Browse for folder"
-msgstr "Nach einem Ordner durchsuchen"
+msgstr "Nach einem Ordner suchen"
 
 msgctxt "#658"
 msgid "Song information"
@@ -2119,7 +2183,7 @@ msgstr "Titelinformationen"
 
 msgctxt "#660"
 msgid "Volume amplification"
-msgstr "Lautstärkeanpassung"
+msgstr "Lautstärkeverstärkung"
 
 msgctxt "#661"
 msgid "Choose export folder"
@@ -2131,19 +2195,23 @@ msgstr "Diese Datei ist nicht mehr verfügbar."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
-msgstr "Soll der Eintrag aus der Datenbank entfernt werden?"
+msgstr "Soll der Eintrag aus der Bibliothek entfernt werden?"
 
 msgctxt "#664"
 msgid "Browse for Script"
 msgstr "Nach Skript suchen"
 
+msgctxt "#665"
+msgid "Compression level"
+msgstr "Komprimierungsgrad"
+
 msgctxt "#700"
 msgid "Cleaning up library"
-msgstr "Datenbank wird bereinigt"
+msgstr "Bibliothek wird bereinigt"
 
 msgctxt "#701"
 msgid "Removing old songs from the library"
-msgstr "Alte Musikdaten aus der Datenbank löschen"
+msgstr "Alte Musikdaten aus der Bibliothek löschen"
 
 msgctxt "#702"
 msgid "This path has been scanned before"
@@ -2167,7 +2235,7 @@ msgstr "Internet-Protokoll (IP)"
 
 msgctxt "#712"
 msgid "Invalid port specified. Value must be between 1 and 65535."
-msgstr "Es wurde ein ungültiger Port festgelegt. Der Port muß zwischen 1 und 65535 liegen."
+msgstr "Es wurde ein ungültiger Port festgelegt. Der Port muss zwischen 1 und 65535 liegen."
 
 msgctxt "#713"
 msgid "HTTP proxy"
@@ -2183,7 +2251,7 @@ msgstr "Automatisch (DHCP)"
 
 msgctxt "#717"
 msgid "Manual (Static)"
-msgstr "Manuell (Statisch)"
+msgstr "Titelnummer mit einbeziehen"
 
 msgctxt "#718"
 msgid "Default (Dashboard)"
@@ -2215,11 +2283,11 @@ msgstr "Ungültige Adresse. Das Format muss AAA.BBB.CCC.DDD entsprechen"
 
 msgctxt "#725"
 msgid "with numbers between 0 and 255."
-msgstr "mit Zahlen zwischen 0 und 255 sein."
+msgstr "mit Zahlen zwischen 0 und 255."
 
 msgctxt "#726"
 msgid "Changes not saved. Continue without saving?"
-msgstr "Änderungen nicht gespeichert. Weiter ohne Speichern?"
+msgstr "Änderungen nicht gespeichert. Ohne Speichern fortfahren?"
 
 msgctxt "#727"
 msgid "Web server"
@@ -2299,7 +2367,7 @@ msgstr "Es sind keine Informationen in der Datenbank verfügbar"
 
 msgctxt "#746"
 msgid "Please turn off library mode"
-msgstr "Bitte wieder zur Datei-Ansicht wechseln"
+msgstr "Bitte den Bibliotheks-Modus abschalten"
 
 msgctxt "#747"
 msgid "Error loading image"
@@ -2311,11 +2379,11 @@ msgstr "Pfad bearbeiten"
 
 msgctxt "#749"
 msgid "Mirror image"
-msgstr "Quelle hinzufügen"
+msgstr "Spiegelbild"
 
 msgctxt "#750"
 msgid "Are you sure?"
-msgstr "Sicher?"
+msgstr "Bist du dir sicher?"
 
 msgctxt "#751"
 msgid "Removing source"
@@ -2323,7 +2391,7 @@ msgstr "Quelle entfernen"
 
 msgctxt "#754"
 msgid "Add program link"
-msgstr "Programmlink hinzufügen"
+msgstr "Programmverknüpfung hinzufügen"
 
 msgctxt "#755"
 msgid "Edit program path"
@@ -2331,7 +2399,7 @@ msgstr "Programmpfad bearbeiten"
 
 msgctxt "#756"
 msgid "Edit program name"
-msgstr "Programnamen bearbeiten"
+msgstr "Programmnamen bearbeiten"
 
 msgctxt "#757"
 msgid "Edit path depth"
@@ -2367,11 +2435,11 @@ msgstr "Blaugrün"
 
 msgctxt "#766"
 msgid "Light grey"
-msgstr "Reserviert"
+msgstr "Hellgrau"
 
 msgctxt "#767"
 msgid "Grey"
-msgstr "Reserviert"
+msgstr "Grau"
 
 msgctxt "#770"
 msgid "Error %i: share not available"
@@ -2383,15 +2451,15 @@ msgstr "FatX-Limitierung im FTP-Server umgehen"
 
 msgctxt "#772"
 msgid "Audio output"
-msgstr "Audio-Hardware"
+msgstr "Audio-Ausgabe"
 
 msgctxt "#773"
 msgid "Seeking"
-msgstr "Positionieren"
+msgstr "Suche"
 
 msgctxt "#774"
 msgid "Slideshow folder"
-msgstr "Diaschau-Ordner"
+msgstr "Diashow-Ordner"
 
 msgctxt "#775"
 msgid "Network interface"
@@ -2455,7 +2523,7 @@ msgstr "Wireless Netzwerkname (ESSID)"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
-msgstr "Programmen auf diesem System Kontrolle über XBMC erlauben"
+msgstr "Steuerung über lokale Programme zulassen"
 
 msgctxt "#792"
 msgid "Port"
@@ -2467,7 +2535,7 @@ msgstr "Port-Bereich"
 
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
-msgstr "Programmen auf anderen Systemen Kontrolle über XBMC erlauben"
+msgstr "Steuerung über entfernte Programme zulassen"
 
 msgctxt "#795"
 msgid "Initial repeat delay (ms)"
@@ -2484,6 +2552,18 @@ msgstr "Maximale Anzahl der Clients"
 msgctxt "#798"
 msgid "Internet access"
 msgstr "Internetzugriff"
+
+msgctxt "#850"
+msgid "Invalid port number entered"
+msgstr "Ungültige Portnummer eingegeben"
+
+msgctxt "#851"
+msgid "Valid port range is 1-65535"
+msgstr "Gültige Ports: 1-65535"
+
+msgctxt "#852"
+msgid "Valid port range is 1024-65535"
+msgstr "Gültige Ports: 1024-65535"
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -2567,7 +2647,7 @@ msgstr "Quelle für %s hinzufügen"
 
 msgctxt "#1021"
 msgid "Enter the paths or browse for the media locations."
-msgstr "Bitte den Pfad eingeben oder 'Suchen' wählen."
+msgstr "Diashow-Ordner"
 
 msgctxt "#1022"
 msgid "Enter a name for this media Source."
@@ -2579,7 +2659,7 @@ msgstr "Nach einer neuen Quelle suchen"
 
 msgctxt "#1024"
 msgid "Browse"
-msgstr "Suchen"
+msgstr "Durchsuchen"
 
 msgctxt "#1025"
 msgid "Could not retrieve directory information."
@@ -2867,7 +2947,7 @@ msgstr "und"
 
 msgctxt "#1398"
 msgid "Freezing"
-msgstr "frierend"
+msgstr "eiskalt"
 
 msgctxt "#1399"
 msgid "Late"
@@ -2955,11 +3035,11 @@ msgstr "Gewitterregen"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
-msgstr "Aktiviere Energiesparmodus bei Leerlauf"
+msgstr "Energiesparmodus des Bildschirms aktivieren"
 
 msgctxt "#2050"
 msgid "Runtime"
-msgstr "Länge"
+msgstr "Laufzeit"
 
 msgctxt "#2100"
 msgid "Script failed! : %s"
@@ -3011,7 +3091,7 @@ msgstr "Einstellungen->Bildschirm"
 
 msgctxt "#10010"
 msgid "Settings - Appearance - GUI Calibration"
-msgstr "Einstellungen->Darstellung->GUI-Kalibrierung"
+msgstr "Einstellungen->Darstellung->Benutzeroberflächen-Kalibrierung"
 
 msgctxt "#10011"
 msgid "Settings - Videos - Screen Calibration"
@@ -3055,7 +3135,7 @@ msgstr "Skripte"
 
 msgctxt "#10028"
 msgid "Videos/Playlist"
-msgstr "Videos/Playlisten"
+msgstr "Videos/Wiedergabelisten"
 
 msgctxt "#10034"
 msgid "Settings - Profiles"
@@ -3075,7 +3155,7 @@ msgstr "Suche nach Untertiteln..."
 
 msgctxt "#10211"
 msgid "Looking for or caching subtitles..."
-msgstr "Zwischenspeichern der Untertitel..."
+msgstr "Suchen oder Zwischenspeichern der Untertitel..."
 
 msgctxt "#10212"
 msgid "terminating"
@@ -3083,7 +3163,7 @@ msgstr "Abbruch"
 
 msgctxt "#10213"
 msgid "buffering"
-msgstr "buffering"
+msgstr "Zwischenspeichern..."
 
 msgctxt "#10214"
 msgid "Opening stream"
@@ -3091,7 +3171,7 @@ msgstr "Öffne Stream"
 
 msgctxt "#10500"
 msgid "Music/Playlist"
-msgstr "Musik/Playlisten"
+msgstr "Musik/Wiedergabelisten"
 
 msgctxt "#10501"
 msgid "Music/Files"
@@ -3103,7 +3183,7 @@ msgstr "Musik/Datenbank"
 
 msgctxt "#10503"
 msgid "Playlist editor"
-msgstr "Playlist-Editor"
+msgstr "Editor für Wiedergabelisten"
 
 msgctxt "#10504"
 msgid "Top 100 songs"
@@ -3599,11 +3679,11 @@ msgstr "Flicker-Filter"
 
 msgctxt "#13101"
 msgid "Let driver choose (requires restart)"
-msgstr "Wähle Treiber (benötigt Neustart)"
+msgstr "Wie Treiber (benötigt Neustart)"
 
 msgctxt "#13105"
 msgid "Vertical blank sync"
-msgstr "Vertical Blank Sync"
+msgstr "Vertical Blank Synchronisation"
 
 msgctxt "#13106"
 msgid "Disabled"
@@ -3611,7 +3691,7 @@ msgstr "Deaktiviert"
 
 msgctxt "#13107"
 msgid "Enabled during video playback"
-msgstr "Aktiviere während der Videowiedergabe"
+msgstr "Aktiviert während der Videowiedergabe"
 
 msgctxt "#13108"
 msgid "Always enabled"
@@ -3695,7 +3775,7 @@ msgstr "Wird fortgefahren, kann XBMC möglicherweise nicht mehr"
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "gesteuert werden. Fernsteuerung wirklich stoppen?"
+msgstr "gesteuert werden. Fernsteuerung wirklich beenden?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
@@ -3807,11 +3887,11 @@ msgstr "Nach %i Sek"
 
 msgctxt "#13173"
 msgid "HDD install date:"
-msgstr "Herstellungsdatum:"
+msgstr "Festplatte hinzugefügt am:"
 
 msgctxt "#13174"
 msgid "HDD power cycle count:"
-msgstr "Einschaltanzahl:"
+msgstr "Anzahl Festplattenstarts:"
 
 msgctxt "#13200"
 msgid "Profiles"
@@ -4175,7 +4255,7 @@ msgstr "In Abspielliste einreihen"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
-msgstr "Film in IMDb suchen..."
+msgstr "Film auf IMDb suchen..."
 
 msgctxt "#13349"
 msgid "Scan for new content"
@@ -4351,7 +4431,7 @@ msgstr "Fortsetzen"
 
 msgctxt "#13405"
 msgid "Get thumb"
-msgstr "Cover Download"
+msgstr "Lade Poster"
 
 msgctxt "#13406"
 msgid "Picture information"
@@ -4395,7 +4475,7 @@ msgstr "Auto-Erkennung"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Basis Shader (ARB)"
+msgstr "Einfache Shader (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
@@ -4415,11 +4495,15 @@ msgstr "VDPAU"
 
 msgctxt "#13422"
 msgid "Start slideshow here"
-msgstr "Diaschau hier starten"
+msgstr "Diashow hier starten"
 
 msgctxt "#13423"
 msgid "Remember for this path"
 msgstr "Für diesen Pfad merken"
+
+msgctxt "#13424"
+msgid "Use pixel buffer objects"
+msgstr "Verwende 'pixel buffer objects'"
 
 msgctxt "#13500"
 msgid "A/V sync method"
@@ -4447,11 +4531,11 @@ msgstr "Qualität der Anpassung"
 
 msgctxt "#13506"
 msgid "Low(fast)"
-msgstr "Gering(schnell)"
+msgstr "Gering (schnell)"
 
 msgctxt "#13507"
 msgid "Medium"
-msgstr "Medium"
+msgstr "Mittel"
 
 msgctxt "#13508"
 msgid "High"
@@ -4459,11 +4543,11 @@ msgstr "Hoch"
 
 msgctxt "#13509"
 msgid "Really high(slow!)"
-msgstr "Sehr Hoch(langsam!)"
+msgstr "Sehr Hoch (langsam!)"
 
 msgctxt "#13510"
 msgid "Sync playback to display"
-msgstr "Synchronisiere Wiedergabe zur Anzeige"
+msgstr "Synchronisiere Wiedergabe mit Anzeige"
 
 msgctxt "#13600"
 msgid "Apple remote"
@@ -4471,7 +4555,7 @@ msgstr "Apple-Remote"
 
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
-msgstr "XBMC Start mit Fernbedienung erlauben"
+msgstr "Starten von XBMC über Fernbedienung erlauben"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
@@ -4487,7 +4571,7 @@ msgstr "Standard"
 
 msgctxt "#13612"
 msgid "Universal Remote"
-msgstr "Universal-Fernbedieung"
+msgstr "Universal-Fernbedienung"
 
 msgctxt "#13613"
 msgid "Multi Remote (Harmony)"
@@ -4511,7 +4595,7 @@ msgstr "Stapeln deaktivieren"
 
 msgctxt "#14003"
 msgid "Downloading playlist file..."
-msgstr "Playliste wird heruntergeladen..."
+msgstr "Wiedergabeliste wird heruntergeladen..."
 
 msgctxt "#14004"
 msgid "Downloading streams list..."
@@ -4527,7 +4611,7 @@ msgstr "Herunterladen der Streamliste ist fehlgeschlagen"
 
 msgctxt "#14007"
 msgid "Downloading playlist file failed"
-msgstr "Herunterladen der Playliste ist fehlgeschlagen"
+msgstr "Herunterladen der Wiedergabeliste fehlgeschlagen"
 
 msgctxt "#14009"
 msgid "Games directory"
@@ -4631,7 +4715,7 @@ msgstr "- Lokales Netzwerk"
 
 msgctxt "#14036"
 msgid "Services"
-msgstr "Server"
+msgstr "Dienste"
 
 msgctxt "#14038"
 msgid "Network settings changed"
@@ -4691,15 +4775,15 @@ msgstr "Datumsformat"
 
 msgctxt "#14053"
 msgid "GUI filters"
-msgstr "GUI-Filter"
+msgstr "Benutzeroberflächen-Filter"
 
 msgctxt "#14055"
 msgid "Use background scanning"
-msgstr "Durchsuchen im Hintergrund"
+msgstr "Durchsuche im Hintergrund"
 
 msgctxt "#14056"
 msgid "Stop scan"
-msgstr "Scan unterbrechen"
+msgstr "Scan beenden"
 
 msgctxt "#14057"
 msgid "Not possible while scanning for media info"
@@ -4799,7 +4883,7 @@ msgstr "EXIF Bildinformationen zeigen"
 
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
-msgstr "Benutze Vollbild Fenster anstatt echtes Vollbild"
+msgstr "Benutze Vollbildfenster anstatt echtes Vollbild"
 
 msgctxt "#14084"
 msgid "Queue songs on selection"
@@ -4939,7 +5023,7 @@ msgstr "Authorisierung fehlgeschlagen: Bitte Benutzerdaten prüfen!"
 
 msgctxt "#15207"
 msgid "Connected"
-msgstr "Verbunden"
+msgstr "Hergestellt"
 
 msgctxt "#15208"
 msgid "Not connected"
@@ -5231,11 +5315,11 @@ msgstr "Inhalt der CD/DVD abspielen"
 
 msgctxt "#16008"
 msgid "Enter new title"
-msgstr "Bitte einen neuen Titel eingeben"
+msgstr "Neuen Titel eingeben"
 
 msgctxt "#16009"
 msgid "Enter the movie name"
-msgstr "Bitte den Namen des Films eingeben"
+msgstr "Titel eingeben"
 
 msgctxt "#16010"
 msgid "Enter the profile name"
@@ -5247,7 +5331,7 @@ msgstr "Bitte den Namen des Albums eingeben"
 
 msgctxt "#16012"
 msgid "Enter the playlist name"
-msgstr "Bitte einen Namen für die Playliste eingeben"
+msgstr "Namen der Wiedergabeliste eingeben"
 
 msgctxt "#16013"
 msgid "Enter new filename"
@@ -5339,7 +5423,7 @@ msgstr "Es konnten keine Titel aus der Datenbank geladen werden."
 
 msgctxt "#16035"
 msgid "Party mode playlist"
-msgstr "Party-Modus Playliste"
+msgstr "Party-Modus Wiedergabeliste"
 
 msgctxt "#16100"
 msgid "All Videos"
@@ -5473,6 +5557,10 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse Telecine"
 
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "Video Nachbearbeitung"
+
 msgctxt "#17500"
 msgid "Display sleep timeout"
 msgstr "Bildschirm Sleep Timeout"
@@ -5503,7 +5591,7 @@ msgstr "Ordner für Screenshots"
 
 msgctxt "#20006"
 msgid "Playlists folder"
-msgstr "Ordner für Playlisten"
+msgstr "Ordner für Wiedergabelisten"
 
 msgctxt "#20007"
 msgid "Recordings"
@@ -5519,11 +5607,11 @@ msgstr "XBMC verwenden"
 
 msgctxt "#20011"
 msgid "Music playlists"
-msgstr "Musik-Playlisten"
+msgstr "Musik-Wiedergabelisten"
 
 msgctxt "#20012"
 msgid "Video playlists"
-msgstr "Video-Playlisten"
+msgstr "Video-Wiedergabelisten"
 
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
@@ -5531,7 +5619,7 @@ msgstr "Das Spiel jetzt starten?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "Nach Playlisten"
+msgstr "Nach Wiedergabeliste"
 
 msgctxt "#20015"
 msgid "Remote thumb"
@@ -5571,7 +5659,7 @@ msgstr "Region"
 
 msgctxt "#20037"
 msgid "Summary"
-msgstr "Zusammenfassung"
+msgstr "Info"
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -6015,7 +6103,7 @@ msgstr "Ausschalten in 120 Minuten"
 
 msgctxt "#20150"
 msgid "Custom shutdown timer"
-msgstr "Eigener Ausschalt-Timer"
+msgstr "Benutzerdefinierter Ausschalt-Timer"
 
 msgctxt "#20151"
 msgid "Cancel shutdown timer"
@@ -6183,7 +6271,7 @@ msgstr "Debug-Logging aktivieren"
 
 msgctxt "#20192"
 msgid "Download additional information during updates"
-msgstr "Zusätzliche Informationen wärend des Updates herunterladen"
+msgstr "Zusätzliche Informationen während des Updates herunterladen"
 
 msgctxt "#20194"
 msgid "Default service for music information"
@@ -6220,6 +6308,18 @@ msgstr "Titel werden gefiltert..."
 msgctxt "#20252"
 msgid "Filling glasses (videos)"
 msgstr "Titel werden hinzugefügt..."
+
+msgctxt "#20253"
+msgid "WebDAV server (HTTP)"
+msgstr "WebDAV server (HTTP)"
+
+msgctxt "#20254"
+msgid "WebDAV server (HTTPS)"
+msgstr "WebDAV server (HTTPS)"
+
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV client"
 
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
@@ -6517,6 +6617,10 @@ msgctxt "#20375"
 msgid "Unassign content"
 msgstr "Inhalt zurücksetzen"
 
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Originaltitel"
+
 msgctxt "#20377"
 msgid "Refresh TV show information"
 msgstr "TV-Serien-Informationen aktualisieren"
@@ -6555,11 +6659,11 @@ msgstr "Link zur TV-Serie entfernen"
 
 msgctxt "#20386"
 msgid "Recently added movies"
-msgstr "Kürzlich hinzugefügte Filme"
+msgstr "Neu hinzugefügte Filme"
 
 msgctxt "#20387"
 msgid "Recently added episodes"
-msgstr "Kürzlich hinzugefügte Episoden"
+msgstr "Neu hinzugefügte Episoden"
 
 msgctxt "#20388"
 msgid "Studios"
@@ -6571,7 +6675,7 @@ msgstr "Musikvideos"
 
 msgctxt "#20390"
 msgid "Recently added music videos"
-msgstr "Kürzlich hinzugefügte Musikvideos"
+msgstr "Neu hinzugefügte Musikvideos"
 
 msgctxt "#20391"
 msgid "Music video"
@@ -6619,11 +6723,11 @@ msgstr "Musikvideo abspielen"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "Bilder der Schauspieler automatisch herunterladen"
+msgstr "Bilder der Darsteller automatisch herunterladen"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
-msgstr "Schauspieler Bild setzen"
+msgstr "Bild des Darstellers festlegen"
 
 msgctxt "#20405"
 msgid "Remove episode bookmark"
@@ -6667,7 +6771,7 @@ msgstr "Zeige Fanart in Video & Musik-Datenbanken"
 
 msgctxt "#20415"
 msgid "Scanning for new content"
-msgstr "Neue Inhalte suchen"
+msgstr "Suche neue Inhalte"
 
 msgctxt "#20416"
 msgid "First aired"
@@ -6747,7 +6851,7 @@ msgstr "Filmset Bild setzen"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
-msgstr "Schauspieler Bilder exportieren"
+msgstr "Bilder der Darsteller exportieren?"
 
 msgctxt "#20437"
 msgid "Choose fanart"
@@ -6775,19 +6879,43 @@ msgstr "Inhalt wechseln"
 
 msgctxt "#20443"
 msgid "Do you want to refresh info for all"
-msgstr "Für alle Inhalt aktualisieren"
+msgstr "Wollen Sie die Informationen für alle Einträge"
 
 msgctxt "#20444"
 msgid "items within this path?"
-msgstr "Einträge im Pfad?"
+msgstr "in diesem Pfad aktualisieren?"
 
 msgctxt "#20445"
 msgid "Fanart"
 msgstr "Fanart"
 
+msgctxt "#20446"
+msgid "Locally stored information found."
+msgstr "Lokal gespeicherte Informationen gefunden."
+
+msgctxt "#20447"
+msgid "Ignore and refresh from internet?"
+msgstr "Ignorieren und neu aus dem Internet laden?"
+
+msgctxt "#20448"
+msgid "Could not download information"
+msgstr "Informationen können nicht herunter geladen werden"
+
+msgctxt "#20450"
+msgid "Would you like to continue scanning?"
+msgstr "Möchtest Du mit der Aktualisierung fortfahren?"
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Länder"
+
 msgctxt "#20456"
 msgid "Set movieset fanart"
 msgstr "Filmset Fanart setzen"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Gruppiere Filme nach Zusammenstellungen"
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -6803,7 +6931,7 @@ msgstr "WARNUNG: Ziel-TuxBox-Laufwerk ist im Aufnahme-Modus!"
 
 msgctxt "#21333"
 msgid "The stream will be stopped!"
-msgstr "Der Stream wird gestoppt!"
+msgstr "Der Stream wird beendet!"
 
 msgctxt "#21334"
 msgid "Zap to channel: %s failed!"
@@ -6895,7 +7023,7 @@ msgstr "1080i-Auflösung aktivieren"
 
 msgctxt "#21381"
 msgid "Enter name of new playlist"
-msgstr "Bitte einen Namen für die Playliste eingeben"
+msgstr "Namen der neuen Wiedergabelliste eingeben"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
@@ -6927,7 +7055,7 @@ msgstr "Leise"
 
 msgctxt "#21389"
 msgid "Enable custom background"
-msgstr "Eigenen Hintergrund aktivieren"
+msgstr "Benutzerdefinierten Hintergrund aktivieren"
 
 msgctxt "#21390"
 msgid "Power management level"
@@ -6963,7 +7091,7 @@ msgstr "Pixelshader V2 (Hohe Qualität)"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
-msgstr "Playliste beim Einschalten abspielen"
+msgstr "Wiedergabeliste bei Programmstart abspielen"
 
 msgctxt "#21399"
 msgid "Use tween animations"
@@ -7047,11 +7175,11 @@ msgstr "Mehrsprachig"
 
 msgctxt "#21420"
 msgid "Value to match"
-msgstr "Wert zum angleichen"
+msgstr "Vergleichswert"
 
 msgctxt "#21421"
 msgid "Smart playlist rule"
-msgstr "Smart-Playlist-Regel"
+msgstr "Intelligente Wiedergabelisten-Regel"
 
 msgctxt "#21422"
 msgid "Match items where"
@@ -7095,11 +7223,11 @@ msgstr "Absteigend"
 
 msgctxt "#21432"
 msgid "Edit smart playlist"
-msgstr "Smart-Playlist-Editor"
+msgstr "Intelligente Wiedergabeliste bearbeiten"
 
 msgctxt "#21433"
 msgid "Name of the playlist"
-msgstr "Name der Playliste"
+msgstr "Name der Wiedergabeliste"
 
 msgctxt "#21434"
 msgid "Find items where"
@@ -7107,7 +7235,7 @@ msgstr "Suche passende Titel anhand"
 
 msgctxt "#21435"
 msgid "Edit"
-msgstr "- Bearbeiten"
+msgstr "Bearbeiten"
 
 msgctxt "#21436"
 msgid "%i items"
@@ -7115,7 +7243,7 @@ msgstr "%i Titel"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
-msgstr "Neue Smart Playliste..."
+msgstr "Neue Intelligente Wiedergabeliste..."
 
 msgctxt "#21438"
 msgid "%c Drive"
@@ -7159,7 +7287,7 @@ msgstr "Audio Sprache"
 
 msgctxt "#21448"
 msgid "Subtitle language"
-msgstr "Untertitlesprache"
+msgstr "Untertitelsprache"
 
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
@@ -7279,7 +7407,7 @@ msgstr "Digitalzoom"
 
 msgctxt "#21839"
 msgid "CCD width"
-msgstr "CCD Weite"
+msgstr "CCD-Weite"
 
 msgctxt "#21840"
 msgid "GPS latitude"
@@ -7383,7 +7511,7 @@ msgstr "Auskunftsdienst"
 
 msgctxt "#21881"
 msgid "Allow control of XBMC via UPnP"
-msgstr "UPnP Renderer aktivieren"
+msgstr "Steuerung über UPnP zulassen"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
@@ -7507,7 +7635,7 @@ msgstr "CPU-Temperatur:"
 
 msgctxt "#22012"
 msgid "Total memory"
-msgstr "Gesamter Speicher"
+msgstr "Gesamter RAM"
 
 msgctxt "#22013"
 msgid "Profile data"
@@ -7627,11 +7755,19 @@ msgstr "Videotext aktivieren"
 
 msgctxt "#23051"
 msgid "Part %i"
-msgstr "Teil"
+msgstr "Teil %i"
 
 msgctxt "#23052"
 msgid "Buffering %i bytes"
 msgstr "Zwischenspeichern - %i Bytes"
+
+msgctxt "#23053"
+msgid "Stopping"
+msgstr "Wird beendet"
+
+msgctxt "#23054"
+msgid "Running"
+msgstr "Läuft"
 
 msgctxt "#23100"
 msgid "External Player Active"
@@ -7645,13 +7781,33 @@ msgctxt "#23104"
 msgid "Click OK when playback has ended"
 msgstr "Drücke OK wenn die Wiedergabe beendet ist"
 
+msgctxt "#24000"
+msgid "Add-on"
+msgstr "Addon"
+
+msgctxt "#24020"
+msgid "Configure"
+msgstr "Konfigurieren"
+
+msgctxt "#24021"
+msgid "Disable"
+msgstr "Deaktivieren"
+
+msgctxt "#24022"
+msgid "Enable"
+msgstr "Aktivieren"
+
+msgctxt "#24030"
+msgid "This Add-on can not be configured"
+msgstr "Dieses Addon kann nicht konfiguriert werden"
+
 msgctxt "#29800"
 msgid "Library Mode"
 msgstr "Datenbankmodus"
 
 msgctxt "#29801"
 msgid "QWERTY keyboard"
-msgstr "QWERTY Tastatur"
+msgstr "QWERTZ Tastatur"
 
 msgctxt "#29802"
 msgid "Passthrough Audio in use"
@@ -7701,6 +7857,10 @@ msgctxt "#33010"
 msgid "Set download directory"
 msgstr "Download-Ordner wählen"
 
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Suchdauer"
+
 msgctxt "#33012"
 msgid "Short"
 msgstr "Kurz"
@@ -7743,7 +7903,7 @@ msgstr "Niederschlag"
 
 msgctxt "#33022"
 msgid "Precip"
-msgstr "regnen"
+msgstr "Niederschlag"
 
 msgctxt "#33023"
 msgid "Humid"
@@ -7775,7 +7935,7 @@ msgstr "Details"
 
 msgctxt "#33030"
 msgid "Outlook"
-msgstr "Outlook"
+msgstr "Ausblick"
 
 msgctxt "#33031"
 msgid "Coverflow"
@@ -7903,7 +8063,7 @@ msgstr "Readme lesen"
 
 msgctxt "#33073"
 msgid "View Changelog"
-msgstr "Changelog lesen"
+msgstr "Änderungen anzeigen"
 
 msgctxt "#33074"
 msgid "This version of %s requires an"
@@ -7944,3 +8104,7 @@ msgstr "Skriptpfad"
 msgctxt "#33083"
 msgid "Enable custom script button"
 msgstr "Benutzerdefinierten Skript Button aktivieren"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "Flac"

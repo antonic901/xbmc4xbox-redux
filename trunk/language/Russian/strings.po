@@ -31,15 +31,19 @@ msgstr "Видео"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "TV Guide"
+msgstr "ТВ-гид"
 
 msgctxt "#5"
 msgid "Settings"
 msgstr "Настройки"
 
+msgctxt "#6"
+msgid "XBMC SVN"
+msgstr "XBMC SVN"
+
 msgctxt "#7"
 msgid "File manager"
-msgstr "Файл-менеджер"
+msgstr "Менеджер файлов"
 
 msgctxt "#8"
 msgid "Weather"
@@ -51,31 +55,31 @@ msgstr "Медиацентр XBMC"
 
 msgctxt "#11"
 msgid "Monday"
-msgstr "Пн"
+msgstr "Понедельник"
 
 msgctxt "#12"
 msgid "Tuesday"
-msgstr "Вт"
+msgstr "Вторник"
 
 msgctxt "#13"
 msgid "Wednesday"
-msgstr "Ср"
+msgstr "Среда"
 
 msgctxt "#14"
 msgid "Thursday"
-msgstr "Чт"
+msgstr "Четверг"
 
 msgctxt "#15"
 msgid "Friday"
-msgstr "Пт"
+msgstr "Пятница"
 
 msgctxt "#16"
 msgid "Saturday"
-msgstr "Сб"
+msgstr "Суббота"
 
 msgctxt "#17"
 msgid "Sunday"
-msgstr "Вс"
+msgstr "Воскресенье"
 
 msgctxt "#21"
 msgid "January"
@@ -125,21 +129,97 @@ msgctxt "#32"
 msgid "December"
 msgstr "декабря"
 
+msgctxt "#41"
+msgid "Mon"
+msgstr "Пн"
+
+msgctxt "#42"
+msgid "Tue"
+msgstr "Вт"
+
+msgctxt "#43"
+msgid "Wed"
+msgstr "Ср"
+
+msgctxt "#44"
+msgid "Thu"
+msgstr "Чт"
+
+msgctxt "#45"
+msgid "Fri"
+msgstr "Пт"
+
+msgctxt "#46"
+msgid "Sat"
+msgstr "Сб"
+
+msgctxt "#47"
+msgid "Sun"
+msgstr "Вс"
+
+msgctxt "#51"
+msgid "Jan"
+msgstr "янв."
+
+msgctxt "#52"
+msgid "Feb"
+msgstr "фев."
+
+msgctxt "#53"
+msgid "Mar"
+msgstr "марта"
+
+msgctxt "#54"
+msgid "Apr"
+msgstr "апр."
+
+msgctxt "#55"
+msgid "May"
+msgstr "мая"
+
+msgctxt "#56"
+msgid "Jun"
+msgstr "июня"
+
+msgctxt "#57"
+msgid "Jul"
+msgstr "июля"
+
+msgctxt "#58"
+msgid "Aug"
+msgstr "авг."
+
+msgctxt "#59"
+msgid "Sep"
+msgstr "сент."
+
+msgctxt "#60"
+msgid "Oct"
+msgstr "окт."
+
+msgctxt "#61"
+msgid "Nov"
+msgstr "нояб."
+
+msgctxt "#62"
+msgid "Dec"
+msgstr "дек."
+
 msgctxt "#98"
 msgid "View: Auto"
-msgstr "Вид: Авто"
+msgstr "Вид: авто"
 
 msgctxt "#99"
 msgid "View: Auto big"
-msgstr "Вид: Авто крупн."
+msgstr "Вид: авто крупн."
 
 msgctxt "#100"
 msgid "View: Icons"
-msgstr "Вид: Значки"
+msgstr "Вид: значки"
 
 msgctxt "#101"
 msgid "View: List"
-msgstr "Вид: Список"
+msgstr "Вид: список"
 
 msgctxt "#102"
 msgid "Scan"
@@ -147,15 +227,15 @@ msgstr "Сканировать"
 
 msgctxt "#103"
 msgid "Sort by: Name"
-msgstr "Сорт. по Имени"
+msgstr "Сорт. по имени"
 
 msgctxt "#104"
 msgid "Sort by: Date"
-msgstr "Сорт. по Дате"
+msgstr "Сорт. по дате"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "Сорт. по Размеру"
+msgstr "Сорт. по размеру"
 
 msgctxt "#106"
 msgid "No"
@@ -167,7 +247,7 @@ msgstr "Да"
 
 msgctxt "#108"
 msgid "Slideshow"
-msgstr "Слайдшоу"
+msgstr "Слайд-шоу"
 
 msgctxt "#109"
 msgid "Create thumbs"
@@ -183,7 +263,7 @@ msgstr "Ярлыки"
 
 msgctxt "#112"
 msgid "Paused"
-msgstr "На паузе"
+msgstr "Пауза"
 
 msgctxt "#115"
 msgid "Copy"
@@ -215,7 +295,7 @@ msgstr "Подтверждение перемещения"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
-msgstr "Подтверждаете удаление?"
+msgstr "Удалить файл?"
 
 msgctxt "#123"
 msgid "Copy these files?"
@@ -227,27 +307,27 @@ msgstr "Переместить файлы?"
 
 msgctxt "#125"
 msgid "Delete these files? - Deleting files cannot be undone!"
-msgstr "Удалить файлы? (восстановление будет невозможно)"
+msgstr "Удалить файлы? Их нельзя будет восстановить!"
 
 msgctxt "#126"
 msgid "Status"
-msgstr "Статус"
+msgstr "Состояние"
 
 msgctxt "#127"
 msgid "Objects"
-msgstr "Объект(-ов)"
+msgstr "Объектов"
 
 msgctxt "#128"
 msgid "General"
-msgstr "Основные"
+msgstr "Общие"
 
 msgctxt "#129"
 msgid "Slideshow"
-msgstr "Слайдшоу"
+msgstr "Слайд-шоу"
 
 msgctxt "#130"
 msgid "System info"
-msgstr "Информация о системе"
+msgstr "Сведения о системе"
 
 msgctxt "#131"
 msgid "Display"
@@ -279,7 +359,7 @@ msgstr "Поиск"
 
 msgctxt "#138"
 msgid "System Information"
-msgstr "Информация о системе"
+msgstr "Сведения о системе"
 
 msgctxt "#139"
 msgid "Temperatures:"
@@ -315,7 +395,7 @@ msgstr "Тип:"
 
 msgctxt "#147"
 msgid "Static"
-msgstr "Static"
+msgstr "Статический"
 
 msgctxt "#148"
 msgid "DHCP"
@@ -331,15 +411,15 @@ msgstr "IP-адрес"
 
 msgctxt "#151"
 msgid "Link:"
-msgstr "Соединение: "
+msgstr "Соединение:"
 
 msgctxt "#152"
 msgid "Half duplex"
-msgstr "Half duplex"
+msgstr "Полудуплекс"
 
 msgctxt "#153"
 msgid "Full duplex"
-msgstr "Full duplex"
+msgstr "Полный дуплекс"
 
 msgctxt "#154"
 msgid "Storage"
@@ -347,7 +427,7 @@ msgstr "Накопители"
 
 msgctxt "#155"
 msgid "Drive"
-msgstr "лоток DVD привода"
+msgstr "Диск"
 
 msgctxt "#156"
 msgid "Free"
@@ -367,7 +447,7 @@ msgstr "Нет соединения"
 
 msgctxt "#160"
 msgid "Free"
-msgstr "свободно"
+msgstr "Свободно"
 
 msgctxt "#161"
 msgid "Unavailable"
@@ -379,7 +459,7 @@ msgstr "Лоток открыт"
 
 msgctxt "#163"
 msgid "Reading"
-msgstr "Чтение"
+msgstr "Чтение…"
 
 msgctxt "#164"
 msgid "No disc"
@@ -391,7 +471,7 @@ msgstr "Диск в приводе"
 
 msgctxt "#166"
 msgid "Skin"
-msgstr "Оформление"
+msgstr "Обложка"
 
 msgctxt "#167"
 msgid "Enable FTP server"
@@ -403,11 +483,11 @@ msgstr "Включить синхронизацию времени через In
 
 msgctxt "#169"
 msgid "Resolution"
-msgstr "Разрешение экрана"
+msgstr "Разрешение"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "Настроить частоту обновления экрана"
+msgstr "Настроить частоту дисплея согласно видео"
 
 msgctxt "#172"
 msgid "Release date"
@@ -415,7 +495,7 @@ msgstr "Дата выпуска"
 
 msgctxt "#173"
 msgid "Display 4:3 videos as"
-msgstr "Отображение видео формата 4:3"
+msgstr "Режим показа видео формата 4:3"
 
 msgctxt "#175"
 msgid "Moods"
@@ -455,11 +535,11 @@ msgstr "Поиск альбома"
 
 msgctxt "#186"
 msgid "OK"
-msgstr "Ok"
+msgstr "ОК"
 
 msgctxt "#187"
 msgid "No albums found!"
-msgstr "Альбомы не найдены!"
+msgstr "Альбомы не найдены"
 
 msgctxt "#188"
 msgid "Select all"
@@ -467,7 +547,7 @@ msgstr "Выбрать все"
 
 msgctxt "#189"
 msgid "Scanning media info"
-msgstr "Сканирование медиаданных"
+msgstr "Получение информации…"
 
 msgctxt "#190"
 msgid "Save"
@@ -487,11 +567,11 @@ msgstr "Сканировать"
 
 msgctxt "#194"
 msgid "Searching..."
-msgstr "Поиск..."
+msgstr "Поиск…"
 
 msgctxt "#195"
 msgid "No info found!"
-msgstr "Информации не найдено!"
+msgstr "Информация не найдена."
 
 msgctxt "#196"
 msgid "Select movie:"
@@ -511,7 +591,7 @@ msgstr "Девиз"
 
 msgctxt "#203"
 msgid "Plot outline"
-msgstr "Сюжет"
+msgstr "Описание"
 
 msgctxt "#205"
 msgid "Votes:"
@@ -519,7 +599,7 @@ msgstr "Голосов:"
 
 msgctxt "#206"
 msgid "Cast"
-msgstr "Актеры"
+msgstr "В ролях"
 
 msgctxt "#207"
 msgid "Plot"
@@ -531,7 +611,7 @@ msgstr "Воспроизвести"
 
 msgctxt "#209"
 msgid "Next"
-msgstr "Следующий"
+msgstr "Следующ."
 
 msgctxt "#210"
 msgid "Previous"
@@ -539,11 +619,11 @@ msgstr "Предыдущий"
 
 msgctxt "#213"
 msgid "Calibrate user interface..."
-msgstr "Калибровка интерфейса..."
+msgstr "Калибровка интерфейса…"
 
 msgctxt "#214"
 msgid "Video calibration..."
-msgstr "Калибровка экрана..."
+msgstr "Калибровка дисплея…"
 
 msgctxt "#215"
 msgid "Soften"
@@ -563,11 +643,11 @@ msgstr "DVD-привод"
 
 msgctxt "#219"
 msgid "Please insert disc"
-msgstr "Пожалуйста, вставьте диск..."
+msgstr "Вставьте диск"
 
 msgctxt "#220"
 msgid "Remote share"
-msgstr "Удаленный ресурс"
+msgstr "Удалённый ресурс"
 
 msgctxt "#221"
 msgid "Network is not connected"
@@ -579,15 +659,15 @@ msgstr "Отмена"
 
 msgctxt "#224"
 msgid "Speed"
-msgstr "Длительность показа слайда"
+msgstr "Скорость"
 
 msgctxt "#226"
 msgid "Test patterns..."
-msgstr "Тестовые шаблоны..."
+msgstr "Тестовые шаблоны…"
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "Искать информацию об audioCD в Internet"
+msgstr "Искать названия композиций аудио-CD на freedb.org"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
@@ -595,7 +675,7 @@ msgstr "Перемешать плейлист при загрузке"
 
 msgctxt "#229"
 msgid "HDD spindown time"
-msgstr "Останавливать HDD через (мин)"
+msgstr "Останавливать HDD через (мин.)"
 
 msgctxt "#230"
 msgid "Video filters"
@@ -603,7 +683,7 @@ msgstr "Видеофильтры"
 
 msgctxt "#231"
 msgid "None"
-msgstr "Пусто"
+msgstr "Нет"
 
 msgctxt "#232"
 msgid "Point"
@@ -635,7 +715,7 @@ msgstr "Увеличение"
 
 msgctxt "#239"
 msgid "Clear playlist on finish"
-msgstr "Очищать плейлист после проигрывания "
+msgstr "Очищать плейлист после воспроизведения"
 
 msgctxt "#240"
 msgid "Autoplay DVD-Video"
@@ -675,7 +755,7 @@ msgstr "Язык"
 
 msgctxt "#249"
 msgid "Music"
-msgstr "музыкальных файлов"
+msgstr "Музыка"
 
 msgctxt "#250"
 msgid "Visualization"
@@ -697,9 +777,13 @@ msgctxt "#254"
 msgid "- DTS capable receiver"
 msgstr "- выводить звук в формате DTS®"
 
+msgctxt "#255"
+msgid "CDDB"
+msgstr "CDDB"
+
 msgctxt "#256"
 msgid "Fetching CD information"
-msgstr "Запрос данных о CD"
+msgstr "Получение данных о CD…"
 
 msgctxt "#257"
 msgid "Error"
@@ -707,11 +791,11 @@ msgstr "Ошибка"
 
 msgctxt "#258"
 msgid "Enable tag reading"
-msgstr "Читать информацию из тэгов"
+msgstr "Считывать информацию из тегов"
 
 msgctxt "#259"
 msgid "Opening"
-msgstr "Открытие"
+msgstr "Открытие…"
 
 msgctxt "#260"
 msgid "Shoutcast"
@@ -719,15 +803,15 @@ msgstr "Shoutcast"
 
 msgctxt "#261"
 msgid "Waiting for start..."
-msgstr "Ожидание запуска...."
+msgstr "Ожидание запуска…"
 
 msgctxt "#262"
 msgid "Scripts output"
-msgstr "Лог работы скриптов"
+msgstr "Журнал работы скриптов"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "Включить Web-сервер"
+msgstr "Разрешить управление XBMC по HTTP"
 
 msgctxt "#264"
 msgid "Record"
@@ -739,27 +823,27 @@ msgstr "Остановить запись"
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "Сорт. по: Треку"
+msgstr "Сорт. по трекам"
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "Сорт. по: Времени"
+msgstr "Сорт. по времени"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "Сорт. по: Названию"
+msgstr "Сорт. по названию"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "Сорт. по: Исполнителю"
+msgstr "Сорт. по исполнителю"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "Сорт. по: Альбому"
+msgstr "Сорт. по альбомам"
 
 msgctxt "#271"
 msgid "Top 100"
-msgstr "Top 100"
+msgstr "Топ 100"
 
 msgctxt "#272"
 msgid "Top-Left overscan compensation"
@@ -775,7 +859,7 @@ msgstr "Позиция субтитров"
 
 msgctxt "#275"
 msgid "Pixel ratio adjustment"
-msgstr "Регулировка соотношения высоты и ширины"
+msgstr "Настройка пропорций"
 
 msgctxt "#276"
 msgid "Adjust the arrow to change the amount of overscan"
@@ -791,19 +875,19 @@ msgstr "Измените прямоугольник так, чтобы доби�
 
 msgctxt "#279"
 msgid "Unable to load settings"
-msgstr "Невозможно загрузить настройки"
+msgstr "Не удалось загрузить настройки"
 
 msgctxt "#280"
 msgid "Using default settings"
-msgstr "Использование стандартных настроек"
+msgstr "Используются стандартные настройки"
 
 msgctxt "#281"
 msgid "Please check the XML files"
-msgstr "Пожалуйста, проверьте .xml-файлы"
+msgstr "Проверьте файлы XML"
 
 msgctxt "#282"
 msgid "Found %i items"
-msgstr "Найдено %i объект(-ов)"
+msgstr "Найдено объектов: %i"
 
 msgctxt "#283"
 msgid "Search results"
@@ -835,11 +919,11 @@ msgstr "Сжатие динамического диапазона"
 
 msgctxt "#291"
 msgid "Video"
-msgstr "видеофайлов"
+msgstr "Видео"
 
 msgctxt "#292"
 msgid "Audio"
-msgstr "Звук"
+msgstr "Аудио"
 
 msgctxt "#293"
 msgid "Browse for subtitles"
@@ -847,7 +931,7 @@ msgstr "Выбрать субтитры"
 
 msgctxt "#294"
 msgid "Create bookmark"
-msgstr "Поставить закладку"
+msgstr "Создать закладку"
 
 msgctxt "#296"
 msgid "Clear bookmarks"
@@ -887,11 +971,11 @@ msgstr "Язык"
 
 msgctxt "#305"
 msgid "Enabled"
-msgstr "Включено"
+msgstr "Вкл."
 
 msgctxt "#306"
 msgid "Non-interleaved"
-msgstr "Non-interleaved"
+msgstr "Без чередования"
 
 msgctxt "#307"
 msgid "- Automatic post-processing"
@@ -919,11 +1003,11 @@ msgstr "(0=авто)"
 
 msgctxt "#313"
 msgid "Cleaning database"
-msgstr "Очистка базы данных"
+msgstr "Очистка базы данных…"
 
 msgctxt "#314"
 msgid "Preparing..."
-msgstr "Подготовка..."
+msgstr "Подготовка…"
 
 msgctxt "#315"
 msgid "Database error"
@@ -931,7 +1015,7 @@ msgstr "Ошибка базы данных"
 
 msgctxt "#316"
 msgid "Searching songs..."
-msgstr "Поиск песен..."
+msgstr "Поиск песен…"
 
 msgctxt "#317"
 msgid "Cleaned database successfully"
@@ -939,7 +1023,7 @@ msgstr "Очистка базы данных выполнена"
 
 msgctxt "#318"
 msgid "Cleaning songs..."
-msgstr "Очистка песен..."
+msgstr "Очистка песен…"
 
 msgctxt "#319"
 msgid "Error cleaning songs"
@@ -947,7 +1031,7 @@ msgstr "Ошибка очистки песен"
 
 msgctxt "#320"
 msgid "Cleaning artists..."
-msgstr "Очистка исполнителей..."
+msgstr "Очистка исполнителей…"
 
 msgctxt "#321"
 msgid "Error cleaning artists"
@@ -955,7 +1039,7 @@ msgstr "Ошибка очистки исполнителей"
 
 msgctxt "#322"
 msgid "Cleaning genres..."
-msgstr "Очистка жанров..."
+msgstr "Очистка жанров…"
 
 msgctxt "#323"
 msgid "Error cleaning genres"
@@ -971,7 +1055,7 @@ msgstr "Ошибка очистки путей"
 
 msgctxt "#326"
 msgid "Cleaning albums..."
-msgstr "Очистка альбомов..."
+msgstr "Очистка альбомов…"
 
 msgctxt "#327"
 msgid "Error cleaning albums"
@@ -979,7 +1063,7 @@ msgstr "Ошибка очистки альбомов"
 
 msgctxt "#328"
 msgid "Writing changes..."
-msgstr "Запись изменений..."
+msgstr "Запись изменений…"
 
 msgctxt "#329"
 msgid "Error writing changes"
@@ -987,11 +1071,11 @@ msgstr "Ошибка записи изменений"
 
 msgctxt "#330"
 msgid "This may take some time..."
-msgstr "Это займет некоторое время..."
+msgstr "Это займет некоторое время…"
 
 msgctxt "#331"
 msgid "Compressing database..."
-msgstr "Сжатие базы данных..."
+msgstr "Сжатие базы данных…"
 
 msgctxt "#332"
 msgid "Error compressing database"
@@ -999,11 +1083,11 @@ msgstr "Ошибка сжатия базы данных"
 
 msgctxt "#333"
 msgid "Do you want to clean the library?"
-msgstr "Вы хотите очистить медиатеку?"
+msgstr "Очистить медиатеку?"
 
 msgctxt "#334"
 msgid "Clean library..."
-msgstr "Очистка медиатеки..."
+msgstr "Очистка медиатеки…"
 
 msgctxt "#335"
 msgid "Start"
@@ -1031,7 +1115,7 @@ msgstr "Различные исполнители"
 
 msgctxt "#341"
 msgid "Play disc"
-msgstr "Проиграть диск"
+msgstr "Играть диск"
 
 msgctxt "#342"
 msgid "Movies"
@@ -1055,7 +1139,7 @@ msgstr "Программы"
 
 msgctxt "#351"
 msgid "Off"
-msgstr "отключено"
+msgstr "Выкл."
 
 msgctxt "#352"
 msgid "Dim"
@@ -1067,7 +1151,7 @@ msgstr "Черный экран"
 
 msgctxt "#354"
 msgid "Matrix trails"
-msgstr "Следы 'Матрицы'"
+msgstr "Следы «Матрицы»"
 
 msgctxt "#355"
 msgid "Screensaver time"
@@ -1075,7 +1159,7 @@ msgstr "Включать заставку через"
 
 msgctxt "#356"
 msgid "Screensaver mode"
-msgstr "Режим заставки"
+msgstr "Заставка"
 
 msgctxt "#357"
 msgid "Shutdown function timer"
@@ -1087,7 +1171,7 @@ msgstr "Все альбомы"
 
 msgctxt "#359"
 msgid "Recently added albums"
-msgstr "Свежие альбомы"
+msgstr "Последние альбомы"
 
 msgctxt "#360"
 msgid "Screensaver"
@@ -1095,7 +1179,7 @@ msgstr "Заставка"
 
 msgctxt "#361"
 msgid "R. Slideshow"
-msgstr "Рекурс. Слайдшоу"
+msgstr "Рекурс. слайд-шоу"
 
 msgctxt "#362"
 msgid "Screensaver dim level"
@@ -1103,7 +1187,7 @@ msgstr "Уровень затемнения экрана"
 
 msgctxt "#363"
 msgid "Sort by: File"
-msgstr "Сорт. по: Файлу"
+msgstr "Сорт. по файлам"
 
 msgctxt "#364"
 msgid "- Dolby Digital (AC3) capable receiver"
@@ -1111,19 +1195,19 @@ msgstr "- выводить звук в формате Dolby Digital® (AC3)"
 
 msgctxt "#365"
 msgid "Sort by: Name"
-msgstr "Сорт. по: Имени"
+msgstr "Сорт. по имени"
 
 msgctxt "#366"
 msgid "Sort by: Year"
-msgstr "Сорт. по: Году"
+msgstr "Сорт. по году"
 
 msgctxt "#367"
 msgid "Sort by: Rating"
-msgstr "Сорт. по: Рейтингу"
+msgstr "Сорт. по рейтингу"
 
 msgctxt "#368"
 msgid "IMDb"
-msgstr "IMDB"
+msgstr "IMDb"
 
 msgctxt "#369"
 msgid "Title"
@@ -1139,7 +1223,7 @@ msgstr "местами"
 
 msgctxt "#372"
 msgid "Mostly"
-msgstr "преимущественно"
+msgstr "преимущ."
 
 msgctxt "#373"
 msgid "Sunny"
@@ -1159,19 +1243,19 @@ msgstr "дождь"
 
 msgctxt "#377"
 msgid "Light"
-msgstr "небольшой"
+msgstr "небольш."
 
 msgctxt "#378"
 msgid "AM"
-msgstr "утром"
+msgstr "Утром"
 
 msgctxt "#379"
 msgid "PM"
-msgstr "днем"
+msgstr "Днем"
 
 msgctxt "#380"
 msgid "Showers"
-msgstr "ливень"
+msgstr "ливни"
 
 msgctxt "#381"
 msgid "Few"
@@ -1179,7 +1263,7 @@ msgstr "немного"
 
 msgctxt "#382"
 msgid "Scattered"
-msgstr "местами"
+msgstr "одиночные"
 
 msgctxt "#383"
 msgid "Wind"
@@ -1191,39 +1275,39 @@ msgstr "сильный"
 
 msgctxt "#385"
 msgid "Fair"
-msgstr "ясно"
+msgstr "безоблачно"
 
 msgctxt "#386"
 msgid "Clear"
-msgstr "безоблачно"
+msgstr "ясно"
 
 msgctxt "#387"
 msgid "Clouds"
-msgstr "облачно"
+msgstr "облака"
 
 msgctxt "#388"
 msgid "Early"
-msgstr "рано"
+msgstr "ранние"
 
 msgctxt "#389"
 msgid "Shower"
-msgstr "обильный"
+msgstr "ливень"
 
 msgctxt "#390"
 msgid "Flurries"
-msgstr "шквалы"
+msgstr "снегопад"
 
 msgctxt "#391"
 msgid "Low"
-msgstr "min"
+msgstr "Мин."
 
 msgctxt "#392"
 msgid "Medium"
-msgstr "med"
+msgstr "Средн."
 
 msgctxt "#393"
 msgid "High"
-msgstr "max"
+msgstr "Макс."
 
 msgctxt "#394"
 msgid "Fog"
@@ -1235,7 +1319,7 @@ msgstr "дымка"
 
 msgctxt "#396"
 msgid "Select location"
-msgstr "Местность"
+msgstr "Выберите местность"
 
 msgctxt "#397"
 msgid "Refresh time"
@@ -1255,7 +1339,7 @@ msgstr "Погода"
 
 msgctxt "#401"
 msgid "Temp"
-msgstr "Температура"
+msgstr "Темп."
 
 msgctxt "#402"
 msgid "Feels like"
@@ -1291,7 +1375,7 @@ msgstr "По умолчанию"
 
 msgctxt "#410"
 msgid "Accessing weather service"
-msgstr "Подключение к Гидрометеоцентру"
+msgstr "Подключение к службе погоды…"
 
 msgctxt "#411"
 msgid "Getting weather for:"
@@ -1299,7 +1383,7 @@ msgstr "Получение прогноза для:"
 
 msgctxt "#412"
 msgid "Unable to get weather data"
-msgstr "Невозможно получить прогноз"
+msgstr "Не удалось получить прогноз"
 
 msgctxt "#413"
 msgid "Manual"
@@ -1311,7 +1395,7 @@ msgstr "Нет описания этого альбома"
 
 msgctxt "#415"
 msgid "Downloading thumbnail..."
-msgstr "Загрузка эскизов..."
+msgstr "Загрузка эскизов…"
 
 msgctxt "#416"
 msgid "Not available"
@@ -1319,7 +1403,7 @@ msgstr "Нет данных"
 
 msgctxt "#417"
 msgid "View: Big icons"
-msgstr "Вид: Значки крупн."
+msgstr "Вид: крупн. значки"
 
 msgctxt "#418"
 msgid "Enable Library"
@@ -1327,11 +1411,11 @@ msgstr "Включить медиатеку"
 
 msgctxt "#422"
 msgid "Delete album info"
-msgstr "Удалить данные об альбоме"
+msgstr "Удалить сведения об альбоме"
 
 msgctxt "#423"
 msgid "Delete CD information"
-msgstr "Удалить данные о CD"
+msgstr "Удалить сведения о CD"
 
 msgctxt "#424"
 msgid "Select"
@@ -1339,11 +1423,11 @@ msgstr "Выбор"
 
 msgctxt "#425"
 msgid "No album information found"
-msgstr "Данные об альбоме не найдены"
+msgstr "Сведения об альбоме не найдены"
 
 msgctxt "#426"
 msgid "No CD information found"
-msgstr "Данные о CD не найдены"
+msgstr "Сведения о CD не найдены"
 
 msgctxt "#427"
 msgid "Disc"
@@ -1351,7 +1435,7 @@ msgstr "Диск"
 
 msgctxt "#428"
 msgid "Insert correct CD/DVD"
-msgstr "Вставьте правильный CD/DVD диск"
+msgstr "Вставьте правильный CD/DVD-диск"
 
 msgctxt "#429"
 msgid "Please insert the following CD/DVD"
@@ -1359,7 +1443,7 @@ msgstr "Вставьте следующий CD/DVD диск"
 
 msgctxt "#430"
 msgid "Sort by: DVD#"
-msgstr "Сорт. по: №DVD"
+msgstr "Сорт. по № DVD"
 
 msgctxt "#431"
 msgid "No cache"
@@ -1371,7 +1455,7 @@ msgstr "Удалить фильм из медиатеки"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
-msgstr "Действительно удалить '%s'?"
+msgstr "Действительно удалить[CR]\"%s\"?"
 
 msgctxt "#437"
 msgid "Removable disk"
@@ -1379,7 +1463,7 @@ msgstr "Съемный диск"
 
 msgctxt "#438"
 msgid "Opening file"
-msgstr "Открытие файла"
+msgstr "Открытие файла…"
 
 msgctxt "#439"
 msgid "MPlayer cache"
@@ -1399,7 +1483,7 @@ msgstr "Локальная сеть"
 
 msgctxt "#443"
 msgid "Internet"
-msgstr "Internet"
+msgstr "Интернет"
 
 msgctxt "#444"
 msgid "Video"
@@ -1423,7 +1507,7 @@ msgstr "LCD-экран"
 
 msgctxt "#449"
 msgid "Enabled"
-msgstr "Включено"
+msgstr "Вкл."
 
 msgctxt "#450"
 msgid "Columns"
@@ -1431,19 +1515,19 @@ msgstr "Количество знакомест в строке"
 
 msgctxt "#451"
 msgid "Row 1 address"
-msgstr "Адрес 1-ой строки"
+msgstr "Адрес 1-й строки"
 
 msgctxt "#452"
 msgid "Row 2 address"
-msgstr "Адрес 2-ой строки"
+msgstr "Адрес 2-й строки"
 
 msgctxt "#453"
 msgid "Row 3 address"
-msgstr "Адрес 3-ой строки"
+msgstr "Адрес 3-й строки"
 
 msgctxt "#454"
 msgid "Row 4 address"
-msgstr "Адрес 4-ой строки"
+msgstr "Адрес 4-й строки"
 
 msgctxt "#455"
 msgid "Rows"
@@ -1495,11 +1579,11 @@ msgstr "Тип"
 
 msgctxt "#468"
 msgid "Move the bar to change the OSD position"
-msgstr "Двигайте полоску чтобы изменить положение экранного меню (OSD)"
+msgstr "Двигайте полоску, чтобы изменить положение экранного меню (OSD)"
 
 msgctxt "#469"
 msgid "OSD position"
-msgstr "Позиция экранного меню (OSD)"
+msgstr "Положение экранного меню (OSD)"
 
 msgctxt "#470"
 msgid "Credits"
@@ -1511,7 +1595,7 @@ msgstr "МOD-чип"
 
 msgctxt "#474"
 msgid "Off"
-msgstr "Выключено"
+msgstr "Выкл."
 
 msgctxt "#475"
 msgid "Music only"
@@ -1519,11 +1603,11 @@ msgstr "Только музыка"
 
 msgctxt "#476"
 msgid "Music & video"
-msgstr "Музыка & видео"
+msgstr "Музыка и видео"
 
 msgctxt "#477"
 msgid "Unable to load playlist"
-msgstr "Невозможно загрузить плейлист"
+msgstr "Не удалось загрузить плейлист"
 
 msgctxt "#478"
 msgid "OSD"
@@ -1531,7 +1615,7 @@ msgstr "Экранное меню (OSD)"
 
 msgctxt "#479"
 msgid "Skin & language"
-msgstr "Оформление и язык"
+msgstr "Обложка и язык"
 
 msgctxt "#480"
 msgid "Appearance"
@@ -1539,7 +1623,7 @@ msgstr "Внешний вид"
 
 msgctxt "#481"
 msgid "Audio options"
-msgstr "Настройки аудио"
+msgstr "Параметры аудио"
 
 msgctxt "#482"
 msgid "About XBMC"
@@ -1563,11 +1647,11 @@ msgstr "Повтор папки"
 
 msgctxt "#489"
 msgid "Play the next song automatically"
-msgstr "Проигрывать следующий файл автоматически"
+msgstr "Воспроизводить следующий файл автоматически"
 
 msgctxt "#491"
 msgid "- Use big icons"
-msgstr "- использовать большие значки"
+msgstr "- Использовать большие значки"
 
 msgctxt "#492"
 msgid "Resize VobSubs"
@@ -1575,7 +1659,7 @@ msgstr "Масштабировать субтитры"
 
 msgctxt "#493"
 msgid "Advanced options (Experts Only!)"
-msgstr "Расширенные опции (только для экспертов!)"
+msgstr "Расширенные параметры (только для экспертов!)"
 
 msgctxt "#494"
 msgid "Overall audio headroom"
@@ -1583,7 +1667,7 @@ msgstr "Общий уровень шума в комнате (dB)"
 
 msgctxt "#495"
 msgid "Upsample videos to GUI resolution"
-msgstr "Пересчитывать видео до разрешения GUI"
+msgstr "Масштабировать видео до разрешения GUI"
 
 msgctxt "#496"
 msgid "Calibration"
@@ -1591,43 +1675,43 @@ msgstr "Калибровка"
 
 msgctxt "#497"
 msgid "Show file extensions"
-msgstr "Скрывать тип в названиях файлов"
+msgstr "Показывать расширения файлов"
 
 msgctxt "#498"
 msgid "Sort by: Type"
-msgstr "Сорт. по: Типу"
+msgstr "Сорт. по типу"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
-msgstr "Невозможно соединиться с поисковым сервисом"
+msgstr "Не удалось подключиться к поисковой службе"
 
 msgctxt "#500"
 msgid "Downloading album information failed"
-msgstr "Неудачная загрузка данных об альбоме"
+msgstr "Не удалось загрузить данные об альбоме"
 
 msgctxt "#501"
 msgid "Looking for album names..."
-msgstr "Проверка названий альбомов..."
+msgstr "Поиск названий альбомов…"
 
 msgctxt "#502"
 msgid "Open"
-msgstr "Открыт"
+msgstr "Открыть"
 
 msgctxt "#503"
 msgid "Busy"
-msgstr "Обработка..."
+msgstr "Ждите…"
 
 msgctxt "#504"
 msgid "Empty"
-msgstr "пуст"
+msgstr "Пуст"
 
 msgctxt "#505"
 msgid "Loading media info from files..."
-msgstr "Загрузка информации из файлов..."
+msgstr "Загрузка информации из файлов…"
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "Сорт. по Частоте"
+msgstr "Сорт. по частоте"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1635,11 +1719,11 @@ msgstr "Включить видео эффекты"
 
 msgctxt "#511"
 msgid "Enable video mode switching"
-msgstr "Автопереключение PAL/NTSC"
+msgstr "Автопереключение видеорежима"
 
 msgctxt "#512"
 msgid "Startup window"
-msgstr "После запуска переходить в меню:"
+msgstr "Стартовое окно"
 
 msgctxt "#513"
 msgid "Home window"
@@ -1683,7 +1767,7 @@ msgstr "Удалить источник"
 
 msgctxt "#523"
 msgid "Switch media"
-msgstr "Перейти к разделу..."
+msgstr "Перейти к разделу…"
 
 msgctxt "#524"
 msgid "Select playlist"
@@ -1691,7 +1775,7 @@ msgstr "Выбрать плейлист"
 
 msgctxt "#525"
 msgid "New playlist..."
-msgstr "Создать новый плейлист..."
+msgstr "Создать новый плейлист…"
 
 msgctxt "#526"
 msgid "Add to playlist"
@@ -1707,7 +1791,7 @@ msgstr "Введите название"
 
 msgctxt "#529"
 msgid "Error: Duplicate title"
-msgstr "Ошибка: Одинаковые названия"
+msgstr "Ошибка: одинаковые названия"
 
 msgctxt "#530"
 msgid "Select genre"
@@ -1739,7 +1823,7 @@ msgstr "Значки"
 
 msgctxt "#537"
 msgid "Big list"
-msgstr "Полный список"
+msgstr "Широкий список"
 
 msgctxt "#538"
 msgid "Big icons"
@@ -1747,7 +1831,7 @@ msgstr "Крупные значки"
 
 msgctxt "#539"
 msgid "Wide"
-msgstr "Широкий"
+msgstr "Баннеры"
 
 msgctxt "#540"
 msgid "Big wide"
@@ -1767,7 +1851,7 @@ msgstr "DVD"
 
 msgctxt "#544"
 msgid "Media info"
-msgstr "Сведения"
+msgstr "Информация"
 
 msgctxt "#545"
 msgid "Audio output device"
@@ -1775,7 +1859,7 @@ msgstr "Устройство вывода звука"
 
 msgctxt "#546"
 msgid "Passthrough output device"
-msgstr "Устройство передачи звука"
+msgstr "Устройство прямого вывода звука"
 
 msgctxt "#547"
 msgid "No biography for this artist"
@@ -1787,23 +1871,23 @@ msgstr "Сводить многоканальный звук в стерео"
 
 msgctxt "#550"
 msgid "Sort by: %s"
-msgstr "Сорт. по: %s "
+msgstr "Сорт. по: %s"
 
 msgctxt "#551"
 msgid "Name"
-msgstr "Названию"
+msgstr "Название"
 
 msgctxt "#552"
 msgid "Date"
-msgstr "Дате"
+msgstr "Дата"
 
 msgctxt "#553"
 msgid "Size"
-msgstr "Размеру"
+msgstr "Размер"
 
 msgctxt "#554"
 msgid "Track"
-msgstr "№ Трека"
+msgstr "Трек"
 
 msgctxt "#555"
 msgid "Time"
@@ -1831,7 +1915,7 @@ msgstr "ID"
 
 msgctxt "#561"
 msgid "File"
-msgstr "Имени файла"
+msgstr "Файл"
 
 msgctxt "#562"
 msgid "Year"
@@ -1859,11 +1943,11 @@ msgstr "Кол-во проигрываний"
 
 msgctxt "#568"
 msgid "Last played"
-msgstr "Последний проигранный"
+msgstr "Последнее проигрывание"
 
 msgctxt "#569"
 msgid "Comment"
-msgstr "Коммент."
+msgstr "Комментарий"
 
 msgctxt "#570"
 msgid "Date added"
@@ -1875,11 +1959,19 @@ msgstr "По умолчанию"
 
 msgctxt "#572"
 msgid "Studio"
-msgstr "Киностудия"
+msgstr "Студия"
 
 msgctxt "#573"
 msgid "Path"
 msgstr "Путь"
+
+msgctxt "#574"
+msgid "Country"
+msgstr "Страна"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "Неоконченные"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -1907,7 +1999,7 @@ msgstr "По убыванию"
 
 msgctxt "#586"
 msgid "Edit playlist"
-msgstr "Исправить плейлист"
+msgstr "Изменить плейлист"
 
 msgctxt "#587"
 msgid "Filter"
@@ -1915,11 +2007,11 @@ msgstr "Фильтр"
 
 msgctxt "#588"
 msgid "Cancel party mode"
-msgstr "Отключить режим 'party'"
+msgstr "Отключить режим \"Вечеринка\""
 
 msgctxt "#589"
 msgid "Party mode"
-msgstr "Режим 'party'"
+msgstr "Режим \"Вечеринка\""
 
 msgctxt "#590"
 msgid "Random"
@@ -1927,35 +2019,35 @@ msgstr "Случайно"
 
 msgctxt "#591"
 msgid "Off"
-msgstr "Выключено"
+msgstr "Выкл."
 
 msgctxt "#592"
 msgid "One"
-msgstr "Один"
+msgstr "Один трек"
 
 msgctxt "#593"
 msgid "All"
-msgstr "Все"
+msgstr "Все треки"
 
 msgctxt "#594"
 msgid "Off"
-msgstr "Выключено"
+msgstr "Выкл."
 
 msgctxt "#595"
 msgid "Repeat: Off"
-msgstr "Повтор: Выключен"
+msgstr "Повтор: выкл."
 
 msgctxt "#596"
 msgid "Repeat: One"
-msgstr "Повтор: Один трек"
+msgstr "Повтор: один трек"
 
 msgctxt "#597"
 msgid "Repeat: All"
-msgstr "Повтор: Все треки"
+msgstr "Повтор: все треки"
 
 msgctxt "#600"
 msgid "Rip audio CD"
-msgstr "Оцифровать AudioCD"
+msgstr "Оцифровать аудио-CD"
 
 msgctxt "#601"
 msgid "Medium"
@@ -1967,7 +2059,7 @@ msgstr "Стандартное"
 
 msgctxt "#603"
 msgid "Extreme"
-msgstr "Экстремальное"
+msgstr "Максимальное"
 
 msgctxt "#604"
 msgid "Constant bitrate"
@@ -1975,7 +2067,7 @@ msgstr "Постоянный битрейт"
 
 msgctxt "#605"
 msgid "Ripping..."
-msgstr "Оцифровка..."
+msgstr "Оцифровка…"
 
 msgctxt "#607"
 msgid "To:"
@@ -1983,15 +2075,15 @@ msgstr "В:"
 
 msgctxt "#608"
 msgid "Could not rip CD or track"
-msgstr "Оцифровать CD или трек невозможно"
+msgstr "Не удалось оцифровать CD или трек"
 
 msgctxt "#609"
 msgid "CDDARipPath is not set."
-msgstr "Значение CDDARipPath не задано"
+msgstr "Путь для оцифровки CD не задан"
 
 msgctxt "#610"
 msgid "Rip audio track"
-msgstr "Оцифровать аудиотрек"
+msgstr "Оцифровать звуковую дорожку"
 
 msgctxt "#611"
 msgid "Enter number"
@@ -1999,7 +2091,7 @@ msgstr "Введите номер"
 
 msgctxt "#620"
 msgid "Audio CDs"
-msgstr "Оцифровка CD"
+msgstr "Аудио-CD"
 
 msgctxt "#621"
 msgid "Encoder"
@@ -2019,7 +2111,7 @@ msgstr "Добавить номер трека"
 
 msgctxt "#625"
 msgid "All songs of"
-msgstr "Все песни "
+msgstr "Все песни"
 
 msgctxt "#629"
 msgid "View mode"
@@ -2027,15 +2119,15 @@ msgstr "Режим просмотра"
 
 msgctxt "#630"
 msgid "Normal"
-msgstr "Нормально"
+msgstr "Нормальный"
 
 msgctxt "#631"
 msgid "Zoom"
-msgstr "Увеличенно"
+msgstr "Увеличенный"
 
 msgctxt "#632"
 msgid "Stretch 4:3"
-msgstr "Растянуто 4:3"
+msgstr "Растянутый 4:3"
 
 msgctxt "#633"
 msgid "Stretch 14:9"
@@ -2043,7 +2135,7 @@ msgstr "Растянуто 14:9"
 
 msgctxt "#634"
 msgid "Stretch 16:9"
-msgstr "Растянуто 16:9"
+msgstr "Растянутый 16:9"
 
 msgctxt "#635"
 msgid "Original Size"
@@ -2051,7 +2143,7 @@ msgstr "Оригинальный размер"
 
 msgctxt "#636"
 msgid "Custom"
-msgstr "Особый"
+msgstr "Заданный"
 
 msgctxt "#637"
 msgid "Replay gain"
@@ -2063,11 +2155,11 @@ msgstr "Режим 'Replay Gain'"
 
 msgctxt "#639"
 msgid "Use track levels"
-msgstr "по уровням трека"
+msgstr "По уровням композиции"
 
 msgctxt "#640"
 msgid "Use album levels"
-msgstr "по уровням альбома"
+msgstr "По уровням альбома"
 
 msgctxt "#641"
 msgid "PreAmp Level - Replay gained files"
@@ -2095,23 +2187,23 @@ msgstr "Удалить из медиатеки"
 
 msgctxt "#647"
 msgid "Export video library"
-msgstr "Экспортировать видео медиатеку"
+msgstr "Экспорт медиатеки видео…"
 
 msgctxt "#648"
 msgid "Import video library"
-msgstr "Импортировать видео медиатеку"
+msgstr "Импорт медиатеки видео…"
 
 msgctxt "#649"
 msgid "Importing"
-msgstr "Импорт"
+msgstr "Импорт…"
 
 msgctxt "#650"
 msgid "Exporting"
-msgstr "Экспорт"
+msgstr "Экспорт…"
 
 msgctxt "#651"
 msgid "Browse for library"
-msgstr "Укажите медиатеку"
+msgstr "Выберите медиатеку"
 
 msgctxt "#652"
 msgid "Years"
@@ -2139,7 +2231,7 @@ msgstr "Укажите папку"
 
 msgctxt "#658"
 msgid "Song information"
-msgstr "Информация о песне"
+msgstr "Сведения о песне"
 
 msgctxt "#660"
 msgid "Volume amplification"
@@ -2155,15 +2247,23 @@ msgstr "Этот файл больше недоступен."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
-msgstr "Хотите удалить его из медиатеки?"
+msgstr "Удалить его из медиатеки?"
+
+msgctxt "#664"
+msgid "Browse for Script"
+msgstr "Выбрать скрипт"
+
+msgctxt "#665"
+msgid "Compression level"
+msgstr "Степень сжатия"
 
 msgctxt "#700"
 msgid "Cleaning up library"
-msgstr "Очистка медиатеки"
+msgstr "Очистка медиатеки…"
 
 msgctxt "#701"
 msgid "Removing old songs from the library"
-msgstr "Удаление старых песен из медиатеки"
+msgstr "Удаление старых песен из медиатеки…"
 
 msgctxt "#702"
 msgid "This path has been scanned before"
@@ -2183,7 +2283,7 @@ msgstr "Порт HTTP-proxy сервера"
 
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
-msgstr "Использовать HTTP-proxy сервер"
+msgstr "Использовать HTTP-прокси для доступа к Интернету"
 
 msgctxt "#709"
 msgid "HTTP proxy username"
@@ -2195,15 +2295,15 @@ msgstr "Пароль пользователя для HTTP-proxy сервера"
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
-msgstr "Internet Protocol (IP)"
+msgstr "Интернет-протокол (IP)"
 
 msgctxt "#712"
 msgid "Invalid port specified. Value must be between 1 and 65535."
-msgstr "Неправильный порт. Должно быть от 1 до 65535."
+msgstr "Неправильный порт. Введите значение от 1 до 65535."
 
 msgctxt "#713"
 msgid "HTTP proxy"
-msgstr "HTTP-proxy "
+msgstr "HTTP-прокси"
 
 msgctxt "#715"
 msgid "- Assignment"
@@ -2215,7 +2315,7 @@ msgstr "Автоматически (DHCP)"
 
 msgctxt "#717"
 msgid "Manual (Static)"
-msgstr "Вручную (Static)"
+msgstr "Вручную (статический)"
 
 msgctxt "#718"
 msgid "Default (Dashboard)"
@@ -2243,7 +2343,7 @@ msgstr "Сохранить и перезапустить"
 
 msgctxt "#724"
 msgid "Invalid address specified. Value must be AAA.BBB.CCC.DDD"
-msgstr "Неправильный адрес. Должно быть в виде AAA.BBB.CCC.DDD"
+msgstr "Неправильный адрес. Введите значение в виде AAA.BBB.CCC.DDD"
 
 msgctxt "#725"
 msgid "with numbers between 0 and 255."
@@ -2255,11 +2355,11 @@ msgstr "Изменения не сохранены. Продолжить без 
 
 msgctxt "#727"
 msgid "Web server"
-msgstr "Web сервер"
+msgstr "Веб-сервер"
 
 msgctxt "#728"
 msgid "FTP server"
-msgstr "FTP сервер"
+msgstr "FTP-сервер"
 
 msgctxt "#729"
 msgid "Internet time"
@@ -2283,7 +2383,7 @@ msgstr "Пароль для доступа к Web серверу"
 
 msgctxt "#734"
 msgid "No pass"
-msgstr "без пароля"
+msgstr "Без пароля"
 
 msgctxt "#735"
 msgid "- Character set"
@@ -2299,27 +2399,27 @@ msgstr "- цвет"
 
 msgctxt "#738"
 msgid "Normal"
-msgstr "Normal"
+msgstr "Нормальный"
 
 msgctxt "#739"
 msgid "Bold"
-msgstr "Bold"
+msgstr "Жирный"
 
 msgctxt "#740"
 msgid "Italics"
-msgstr "Italic"
+msgstr "Курсив"
 
 msgctxt "#741"
 msgid "Bold italics"
-msgstr "Bold Italic"
+msgstr "Жирный курсив"
 
 msgctxt "#742"
 msgid "White"
-msgstr "белый"
+msgstr "Белый"
 
 msgctxt "#743"
 msgid "Yellow"
-msgstr "желтый"
+msgstr "Желтый"
 
 msgctxt "#744"
 msgid "Files"
@@ -2331,7 +2431,7 @@ msgstr "Нет сканированных данных для этого вид�
 
 msgctxt "#746"
 msgid "Please turn off library mode"
-msgstr "Пожалуйста, выключите режим медиатеки"
+msgstr "Выключите режим медиатеки"
 
 msgctxt "#747"
 msgid "Error loading image"
@@ -2371,39 +2471,39 @@ msgstr "Изменить глубину пути"
 
 msgctxt "#759"
 msgid "View: Big list"
-msgstr "Вид: Крупный Список"
+msgstr "Вид: широкий список"
 
 msgctxt "#760"
 msgid "Yellow"
-msgstr "желтый"
+msgstr "Желтый"
 
 msgctxt "#761"
 msgid "White"
-msgstr "белый"
+msgstr "Белый"
 
 msgctxt "#762"
 msgid "Blue"
-msgstr "синий"
+msgstr "Синий"
 
 msgctxt "#763"
 msgid "Bright green"
-msgstr "светло-зеленый"
+msgstr "Светло-зеленый"
 
 msgctxt "#764"
 msgid "Yellow green"
-msgstr "желто-зеленый"
+msgstr "Желто-зеленый"
 
 msgctxt "#765"
 msgid "Cyan"
-msgstr "голубой"
+msgstr "Голубой"
 
 msgctxt "#766"
 msgid "Light grey"
-msgstr "зарезервировано"
+msgstr "Светло-серый"
 
 msgctxt "#767"
 msgid "Grey"
-msgstr "зарезервировано"
+msgstr "Серый"
 
 msgctxt "#770"
 msgid "Error %i: share not available"
@@ -2415,15 +2515,15 @@ msgstr "- соблюдать ограничения файловой систе�
 
 msgctxt "#772"
 msgid "Audio output"
-msgstr "Аудио"
+msgstr "Вывод звука"
 
 msgctxt "#773"
 msgid "Seeking"
-msgstr "Поиск"
+msgstr "Поиск…"
 
 msgctxt "#774"
 msgid "Slideshow folder"
-msgstr "Папка для слайдшоу"
+msgstr "Папка для слайд-шоу"
 
 msgctxt "#775"
 msgid "Network interface"
@@ -2463,15 +2563,15 @@ msgstr "WPA2"
 
 msgctxt "#784"
 msgid "Applying network interface settings. Please wait."
-msgstr "Применение настроек сетевого интерфейса, подождите..."
+msgstr "Применение сетевых настроек. Подождите…"
 
 msgctxt "#785"
 msgid "Network interface restarted successfully."
-msgstr "Сетевой интерфейс перезапущен успешно"
+msgstr "Сетевой интерфейс перезапущен."
 
 msgctxt "#786"
 msgid "Network interface did not start successfully."
-msgstr "Неудачный запуск сетевого интерфейса"
+msgstr "Не удалось запустить сетевой интерфейс."
 
 msgctxt "#787"
 msgid "Interface disabled"
@@ -2479,7 +2579,7 @@ msgstr "Интерфейс отключен"
 
 msgctxt "#788"
 msgid "Network interface disabled successfully."
-msgstr "Сетевой интерфейс успешно отключен"
+msgstr "Сетевой интерфейс отключен."
 
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
@@ -2491,7 +2591,7 @@ msgstr "Сервер событий"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
-msgstr "Включить сервер событий"
+msgstr "Разрешить программам на этой системе управлять XBMC"
 
 msgctxt "#792"
 msgid "Port"
@@ -2503,15 +2603,15 @@ msgstr "Диапазон портов"
 
 msgctxt "#794"
 msgid "Allow programs on other systems to control XBMC"
-msgstr "Разрешить подключаться другим компьютерам"
+msgstr "Разрешить программам на других системах управлять XBMC"
 
 msgctxt "#795"
 msgid "Initial repeat delay (ms)"
-msgstr "Задержка начального повтора (ms)"
+msgstr "Задержка начального повтора (мс)"
 
 msgctxt "#796"
 msgid "Continuous repeat delay (ms)"
-msgstr "Задержка последующих повторов (ms)"
+msgstr "Задержка последующих повторов (мс)"
 
 msgctxt "#797"
 msgid "Maximum number of clients"
@@ -2519,7 +2619,19 @@ msgstr "Максимальное количество клиентов"
 
 msgctxt "#798"
 msgid "Internet access"
-msgstr "Интернет"
+msgstr "Доступ[CR]в Интернет"
+
+msgctxt "#850"
+msgid "Invalid port number entered"
+msgstr "Неправильный номер порта."
+
+msgctxt "#851"
+msgid "Valid port range is 1-65535"
+msgstr "Доступный диапазон портов: 1–65535"
+
+msgctxt "#852"
+msgid "Valid port range is 1024-65535"
+msgstr "Доступный диапазон портов: 1024–65535"
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -2527,11 +2639,11 @@ msgstr "Посмотреть заставку"
 
 msgctxt "#1001"
 msgid "Unable to connect"
-msgstr "Невозможно подключиться"
+msgstr "Не удалось подключиться"
 
 msgctxt "#1002"
 msgid "XBMC was unable to connect to the network location."
-msgstr "XBMC не может подключиться к сети."
+msgstr "XBMC не удалось подключиться к сети."
 
 msgctxt "#1003"
 msgid "This could be due to the network not being connected."
@@ -2539,7 +2651,7 @@ msgstr "Возможно, сеть не подключена."
 
 msgctxt "#1004"
 msgid "Would you like to add it anyway?"
-msgstr "Добавить в любом случае?"
+msgstr "Всё равно добавить?"
 
 msgctxt "#1006"
 msgid "IP address"
@@ -2547,7 +2659,7 @@ msgstr "IP-адрес"
 
 msgctxt "#1007"
 msgid "Add network location"
-msgstr "Добавить сетевое расположение"
+msgstr "Добавить сетевой адрес"
 
 msgctxt "#1008"
 msgid "Protocol"
@@ -2567,7 +2679,7 @@ msgstr "Сетевой путь"
 
 msgctxt "#1012"
 msgid "Shared folder"
-msgstr "Доступная папка"
+msgstr "Общая папка"
 
 msgctxt "#1013"
 msgid "Port"
@@ -2583,11 +2695,11 @@ msgstr "Укажите сетевой сервер"
 
 msgctxt "#1016"
 msgid "Enter the network address of the server"
-msgstr "Введите сетевой адрес сервера"
+msgstr "Введите адрес сервера"
 
 msgctxt "#1017"
 msgid "Enter the path on the server"
-msgstr "Введите путь к серверу"
+msgstr "Введите путь на сервере"
 
 msgctxt "#1018"
 msgid "Enter the port number"
@@ -2599,47 +2711,47 @@ msgstr "Введите имя пользователя"
 
 msgctxt "#1020"
 msgid "Add %s source"
-msgstr "Добавить источник %s"
+msgstr "Добавление источника - %s"
 
 msgctxt "#1021"
 msgid "Enter the paths or browse for the media locations."
-msgstr "Введите путь или выберите местонахождение файлов"
+msgstr "Введите путь или укажите расположение файлов"
 
 msgctxt "#1022"
 msgid "Enter a name for this media Source."
-msgstr "Задайте имя для этого медиаисточника"
+msgstr "Введите название медиаисточника"
 
 msgctxt "#1023"
 msgid "Browse for new share"
-msgstr "Укажите новый источник"
+msgstr "Выберите новый ресурс"
 
 msgctxt "#1024"
 msgid "Browse"
-msgstr "Просмотр"
+msgstr "Обзор"
 
 msgctxt "#1025"
 msgid "Could not retrieve directory information."
-msgstr "Невозможно получить информацию о папке"
+msgstr "Не удалось получить информацию о папке"
 
 msgctxt "#1026"
 msgid "Add source"
-msgstr "Добавить источник"
+msgstr "Добавить источник…"
 
 msgctxt "#1027"
 msgid "Edit source"
-msgstr "Изменить источник"
+msgstr "Изменить источник…"
 
 msgctxt "#1028"
 msgid "Edit %s source"
-msgstr "Изменить источник %s "
+msgstr "Изменение источника - %s"
 
 msgctxt "#1029"
 msgid "Enter the new label"
-msgstr "Введите новую метку"
+msgstr "Введите новое название"
 
 msgctxt "#1030"
 msgid "Browse for image"
-msgstr "Укажите изображение"
+msgstr "Укажите картинку"
 
 msgctxt "#1031"
 msgid "Browse for image folder"
@@ -2647,7 +2759,7 @@ msgstr "Укажите папку с картинками"
 
 msgctxt "#1032"
 msgid "Add network location..."
-msgstr "Добавить сетевое расположение…"
+msgstr "Добавить сетевой адрес…"
 
 msgctxt "#1033"
 msgid "Browse for file"
@@ -2679,15 +2791,15 @@ msgstr "Фото дополнения"
 
 msgctxt "#1040"
 msgid "Loading directory"
-msgstr "Загрузка папки"
+msgstr "Загрузка папки…"
 
 msgctxt "#1041"
 msgid "Retrieved %i items"
-msgstr "Восстановлено %i объект(-ов)"
+msgstr "Получено объектов: %i"
 
 msgctxt "#1042"
 msgid "Retrieved %i of %i items"
-msgstr "Восстановлено %i из %i объект(-ов)"
+msgstr "Получено объектов: %i из %i"
 
 msgctxt "#1043"
 msgid "Program plugins"
@@ -2707,7 +2819,7 @@ msgstr "Точки доступа"
 
 msgctxt "#1047"
 msgid "Other..."
-msgstr "Прочее..."
+msgstr "Прочее…"
 
 msgctxt "#1048"
 msgid "- Username"
@@ -2716,6 +2828,10 @@ msgstr "Имя пользователя для WEB сервера"
 msgctxt "#1049"
 msgid "Script settings"
 msgstr "Настройки скриптов"
+
+msgctxt "#1050"
+msgid "Singles"
+msgstr "Синглы"
 
 msgctxt "#1200"
 msgid "SMB client"
@@ -2735,11 +2851,11 @@ msgstr "Пароль пользователя по умолчанию"
 
 msgctxt "#1207"
 msgid "WINS server"
-msgstr "WINS сервер"
+msgstr "WINS-сервер"
 
 msgctxt "#1208"
 msgid "Mount SMB shares"
-msgstr "Монтировать SMB ресурсы"
+msgstr "Монтировать SMB-ресурсы"
 
 msgctxt "#1210"
 msgid "Remove"
@@ -2755,7 +2871,7 @@ msgstr "Видео"
 
 msgctxt "#1213"
 msgid "Pictures"
-msgstr "Фотографии"
+msgstr "Фото"
 
 msgctxt "#1214"
 msgid "Files"
@@ -2763,7 +2879,7 @@ msgstr "Файлы"
 
 msgctxt "#1215"
 msgid "Music & video "
-msgstr "Музыка и видео"
+msgstr "Музыка и видео "
 
 msgctxt "#1216"
 msgid "Music & pictures"
@@ -2835,7 +2951,7 @@ msgstr "Программы, фото и музыка"
 
 msgctxt "#1235"
 msgid "Programs & pictures & video"
-msgstr "Программы, фото и видео "
+msgstr "Программы, фото и видео"
 
 msgctxt "#1245"
 msgid "FTP username"
@@ -2877,6 +2993,18 @@ msgctxt "#1257"
 msgid "Would you like to connect to the auto-detected system?"
 msgstr "Вы хотите подключиться к найденной системе?"
 
+msgctxt "#1260"
+msgid "Announce these services to other systems via Zeroconf"
+msgstr "Объявлять эти сервисы другим системам по Zeroconf"
+
+msgctxt "#1300"
+msgid "Custom audio device"
+msgstr "Другое аудиоустройство"
+
+msgctxt "#1301"
+msgid "Custom passthrough device"
+msgstr "Другое устройство прямого вывода звука"
+
 msgctxt "#1396"
 msgid "Drifting"
 msgstr "гололед"
@@ -2887,11 +3015,11 @@ msgstr "и"
 
 msgctxt "#1398"
 msgid "Freezing"
-msgstr "заморозки"
+msgstr "холодн."
 
 msgctxt "#1399"
 msgid "Late"
-msgstr "позже"
+msgstr "поздний"
 
 msgctxt "#1400"
 msgid "Isolated"
@@ -2899,15 +3027,15 @@ msgstr "местами"
 
 msgctxt "#1401"
 msgid "Thundershowers"
-msgstr "грозовой ливень"
+msgstr "ливень с грозами"
 
 msgctxt "#1402"
 msgid "Thunder"
-msgstr "гром"
+msgstr "гроза"
 
 msgctxt "#1403"
 msgid "Sun"
-msgstr "Солнце"
+msgstr "солнце"
 
 msgctxt "#1404"
 msgid "Heavy"
@@ -2919,7 +3047,7 @@ msgstr "в"
 
 msgctxt "#1406"
 msgid "the"
-msgstr ".."
+msgstr " "
 
 msgctxt "#1407"
 msgid "Vicinity"
@@ -2935,7 +3063,7 @@ msgstr "кристаллы"
 
 msgctxt "#1410"
 msgid "Calm"
-msgstr "безветренно"
+msgstr "спокойно"
 
 msgctxt "#1411"
 msgid "with"
@@ -2955,15 +3083,15 @@ msgstr "гроза"
 
 msgctxt "#1415"
 msgid "Drizzle"
-msgstr "дождь"
+msgstr "изморось"
 
 msgctxt "#1416"
 msgid "Foggy"
-msgstr "Туманно"
+msgstr "туманно"
 
 msgctxt "#1417"
 msgid "Grains"
-msgstr "Зерна"
+msgstr "град"
 
 msgctxt "#1418"
 msgid "T-Storms"
@@ -2975,11 +3103,15 @@ msgstr "Грозовые ливни"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
-msgstr "Использовать энергосбережение"
+msgstr "Выключать экран во время простоя"
 
 msgctxt "#2050"
 msgid "Runtime"
 msgstr "Длительность"
+
+msgctxt "#2100"
+msgid "Script failed! : %s"
+msgstr "Ошибка скрипта: %s"
 
 msgctxt "#4501"
 msgid "Enable LCD/VFD"
@@ -2987,7 +3119,7 @@ msgstr "Тип LCD-экрана"
 
 msgctxt "#10000"
 msgid "Home"
-msgstr "Основной"
+msgstr "Главное меню"
 
 msgctxt "#10001"
 msgid "Programs"
@@ -2995,11 +3127,11 @@ msgstr "Программы"
 
 msgctxt "#10002"
 msgid "Pictures"
-msgstr "Фотографии"
+msgstr "Фото"
 
 msgctxt "#10003"
 msgid "File manager"
-msgstr "Файл-менеджер"
+msgstr "Менеджер файлов"
 
 msgctxt "#10004"
 msgid "Settings"
@@ -3015,55 +3147,55 @@ msgstr "Видео"
 
 msgctxt "#10007"
 msgid "System information"
-msgstr "Информация о системе"
+msgstr "Сведения о системе"
 
 msgctxt "#10008"
 msgid "Settings - General"
-msgstr "Настройки -> Основные"
+msgstr "Настройки - Основные"
 
 msgctxt "#10009"
 msgid "Settings - Screen"
-msgstr "Настройки -> Экран"
+msgstr "Настройки - Экран"
 
 msgctxt "#10010"
 msgid "Settings - Appearance - GUI Calibration"
-msgstr "Настройки -> Внешний вид -> Калибровка GUI"
+msgstr "Настройки - Внешний вид - Калибровка интерфейса"
 
 msgctxt "#10011"
 msgid "Settings - Videos - Screen Calibration"
-msgstr "Настройки -> Видео -> Калибровка экрана "
+msgstr "Настройки - Видео - Калибровка дисплея"
 
 msgctxt "#10012"
 msgid "Settings - Pictures"
-msgstr "Настройки -> Фотографии"
+msgstr "Настройки - Фото"
 
 msgctxt "#10013"
 msgid "Settings - Programs"
-msgstr "Настройки -> Программы"
+msgstr "Настройки - Программы"
 
 msgctxt "#10014"
 msgid "Settings - Weather"
-msgstr "Настройки -> Погода"
+msgstr "Настройки - Погода"
 
 msgctxt "#10015"
 msgid "Settings - Music"
-msgstr "Настройки -> Музыка"
+msgstr "Настройки - Музыка"
 
 msgctxt "#10016"
 msgid "Settings - System"
-msgstr "Настройки -> Система"
+msgstr "Настройки - Система"
 
 msgctxt "#10017"
 msgid "Settings - Videos"
-msgstr "Настройки -> Видео"
+msgstr "Настройки - Видео"
 
 msgctxt "#10018"
 msgid "Settings - Network"
-msgstr "Настройки -> Сеть"
+msgstr "Настройки - Сеть"
 
 msgctxt "#10019"
 msgid "Settings - Appearance"
-msgstr "Настройки -> Внешний вид"
+msgstr "Настройки - Внешний вид"
 
 msgctxt "#10020"
 msgid "Scripts"
@@ -3075,7 +3207,7 @@ msgstr "Видео/плейлист"
 
 msgctxt "#10034"
 msgid "Settings - Profiles"
-msgstr "Настройки -> Профили"
+msgstr "Настройки - Профили"
 
 msgctxt "#10100"
 msgid "Yes/No dialog"
@@ -3087,19 +3219,19 @@ msgstr "Диалог выполнения"
 
 msgctxt "#10210"
 msgid "Looking for subtitles..."
-msgstr "Поиск субтитров..."
+msgstr "Поиск субтитров…"
 
 msgctxt "#10211"
 msgid "Looking for or caching subtitles..."
-msgstr "Поиск или кэширование субтитров..."
+msgstr "Поиск или кэширование субтитров…"
 
 msgctxt "#10212"
 msgid "terminating"
-msgstr "завершение"
+msgstr "завершение…"
 
 msgctxt "#10213"
 msgid "buffering"
-msgstr "буферизация"
+msgstr "буферизация…"
 
 msgctxt "#10214"
 msgid "Opening stream"
@@ -3107,15 +3239,15 @@ msgstr "Открытие потока"
 
 msgctxt "#10500"
 msgid "Music/Playlist"
-msgstr "Музыка/Плейлист"
+msgstr "Музыка/плейлист"
 
 msgctxt "#10501"
 msgid "Music/Files"
-msgstr "Музыка/Файлы"
+msgstr "Музыка/файлы"
 
 msgctxt "#10502"
 msgid "Music/Library"
-msgstr "Музыка/Медиатека"
+msgstr "Музыка/медиатека"
 
 msgctxt "#10503"
 msgid "Playlist editor"
@@ -3123,11 +3255,11 @@ msgstr "Редактор плейлиста"
 
 msgctxt "#10504"
 msgid "Top 100 songs"
-msgstr "Top 100 - Песни"
+msgstr "Топ 100 - песни"
 
 msgctxt "#10505"
 msgid "Top 100 albums"
-msgstr "Top 100 - Альбомы"
+msgstr "Топ 100 - альбомы"
 
 msgctxt "#10506"
 msgid "Programs"
@@ -3135,7 +3267,7 @@ msgstr "Программы"
 
 msgctxt "#10507"
 msgid "Configuration"
-msgstr "Настройка профиля"
+msgstr "Настройка"
 
 msgctxt "#10508"
 msgid "Weather forecast"
@@ -3151,7 +3283,7 @@ msgstr "Дополнения"
 
 msgctxt "#10511"
 msgid "System info"
-msgstr "Информация о системе"
+msgstr "Сведения о системе"
 
 msgctxt "#10516"
 msgid "Music - Library"
@@ -3159,19 +3291,19 @@ msgstr "Музыка - Медиатека"
 
 msgctxt "#10517"
 msgid "Now Playing - Music"
-msgstr "Музыка - Текущий плейлист"
+msgstr "Музыка: текущий плейлист"
 
 msgctxt "#10522"
 msgid "Now Playing - Videos"
-msgstr "Видео - Текущий плейлист"
+msgstr "Видео: текущий плейлист"
 
 msgctxt "#10523"
 msgid "Album info"
-msgstr "Информация об альбоме"
+msgstr "Сведения об альбоме"
 
 msgctxt "#10524"
 msgid "Movie info"
-msgstr "Информация о фильме"
+msgstr "Сведения о фильме"
 
 msgctxt "#12000"
 msgid "Select dialog"
@@ -3179,7 +3311,7 @@ msgstr "Диалог выбора"
 
 msgctxt "#12001"
 msgid "Music/Info"
-msgstr "Музыка/Данные"
+msgstr "Музыка/данные"
 
 msgctxt "#12002"
 msgid "Dialog OK"
@@ -3187,11 +3319,11 @@ msgstr "Диалог 'Ok'"
 
 msgctxt "#12003"
 msgid "Videos/Info"
-msgstr "Видео/Данные"
+msgstr "Видео/данные"
 
 msgctxt "#12004"
 msgid "Scripts/Info"
-msgstr "Скрипты/Данные"
+msgstr "Скрипты/данные"
 
 msgctxt "#12005"
 msgid "Fullscreen video"
@@ -3211,11 +3343,11 @@ msgstr "Переиндексация…"
 
 msgctxt "#12010"
 msgid "Return to music window"
-msgstr "Вернуться в раздел 'Музыка'"
+msgstr "Вернуться в раздел \"Музыка\""
 
 msgctxt "#12011"
 msgid "Return to videos window"
-msgstr "Вернуться в раздел 'Видео'"
+msgstr "Вернуться в раздел \"Видео\""
 
 msgctxt "#12012"
 msgid "Update trainer list"
@@ -3255,7 +3387,7 @@ msgstr "Спрашивать"
 
 msgctxt "#12021"
 msgid "Start from beginning"
-msgstr "Начинать с начала"
+msgstr "Начать с начала"
 
 msgctxt "#12022"
 msgid "Resume from %s"
@@ -3311,7 +3443,7 @@ msgstr "c"
 
 msgctxt "#12321"
 msgid "Ok"
-msgstr "Ok"
+msgstr "ОК"
 
 msgctxt "#12322"
 msgid "*"
@@ -3319,7 +3451,7 @@ msgstr "*"
 
 msgctxt "#12325"
 msgid "Locked! Enter code..."
-msgstr "Заблокировано! Введите код..."
+msgstr "Заблокировано. Введите код…"
 
 msgctxt "#12326"
 msgid "Enter password"
@@ -3335,11 +3467,11 @@ msgstr "Введите код разблокирования"
 
 msgctxt "#12329"
 msgid "or press C to cancel"
-msgstr "или выберите 'C' для отмены"
+msgstr "или нажмите \"C\" для отмены"
 
 msgctxt "#12330"
 msgid "Enter gamepad button combo and"
-msgstr "Нажимайте нужные кнопки на джойстике,"
+msgstr "Нажмите нужные кнопки на джойстике,"
 
 msgctxt "#12331"
 msgid "press Start, or Back to cancel"
@@ -3387,7 +3519,7 @@ msgstr "Неверный пароль,"
 
 msgctxt "#12343"
 msgid "retries left "
-msgstr "попыток осталось"
+msgstr "осталось попыток "
 
 msgctxt "#12344"
 msgid "Passwords entered did not match."
@@ -3411,7 +3543,7 @@ msgstr "Заблокировано"
 
 msgctxt "#12353"
 msgid "Reactivate lock"
-msgstr "Переустановить защиту"
+msgstr "Восстановить защиту"
 
 msgctxt "#12356"
 msgid "Change lock"
@@ -3423,27 +3555,27 @@ msgstr "Защита источника"
 
 msgctxt "#12358"
 msgid "Password entry was blank. Try again."
-msgstr "Поле ввода пароля пусто. Повторите ввод."
+msgstr "Пустой пароль. Повторите ввод."
 
 msgctxt "#12360"
 msgid "Master lock"
-msgstr "Главная защита"
+msgstr "Общая защита"
 
 msgctxt "#12362"
 msgid "Shutdown system if Master Lock retries exceeded"
-msgstr "Выключить систему если количество неудачных попыток исчерпано"
+msgstr "Выключить систему, если количество неудачных попыток исчерпано"
 
 msgctxt "#12367"
 msgid "Master code is not valid"
-msgstr "Код защиты неправильный!"
+msgstr "Неправильный код защиты"
 
 msgctxt "#12368"
 msgid "Please enter a valid master code"
-msgstr "Введите правильный код защиты!"
+msgstr "Введите правильный код защиты"
 
 msgctxt "#12373"
 msgid "Settings & file manager"
-msgstr "Настройки и файл-менеджер"
+msgstr "Настройки и менеджер файлов"
 
 msgctxt "#12376"
 msgid "Set as default for all movies"
@@ -3475,19 +3607,19 @@ msgstr "NTSC -> PAL60"
 
 msgctxt "#12383"
 msgid "12 hour clock"
-msgstr "12-ти часовой"
+msgstr "12-часовой"
 
 msgctxt "#12384"
 msgid "24 hour clock"
-msgstr "24-х часовой"
+msgstr "24-часовой"
 
 msgctxt "#12385"
 msgid "Day/Month"
-msgstr "День/Месяц"
+msgstr "День/месяц"
 
 msgctxt "#12386"
 msgid "Month/Day"
-msgstr "Месяц/День"
+msgstr "Месяц/день"
 
 msgctxt "#12390"
 msgid "System uptime"
@@ -3499,11 +3631,11 @@ msgstr "мин."
 
 msgctxt "#12392"
 msgid "Hours"
-msgstr "час."
+msgstr "ч."
 
 msgctxt "#12393"
 msgid "Days"
-msgstr "дней"
+msgstr "дн."
 
 msgctxt "#12394"
 msgid "Total uptime"
@@ -3519,7 +3651,7 @@ msgstr "Заставка"
 
 msgctxt "#12901"
 msgid "Fullscreen OSD"
-msgstr "Полноэкранная OSD"
+msgstr "Полноэкранный OSD"
 
 msgctxt "#13000"
 msgid "System"
@@ -3535,11 +3667,11 @@ msgstr "Только видео"
 
 msgctxt "#13003"
 msgid "- Delay"
-msgstr "- задержка"
+msgstr "- Задержка"
 
 msgctxt "#13004"
 msgid "- Minimum file duration"
-msgstr "- минимальная длительность файла"
+msgstr "- Минимальная длительность файла"
 
 msgctxt "#13005"
 msgid "Shutdown"
@@ -3563,15 +3695,15 @@ msgstr "Выход"
 
 msgctxt "#13010"
 msgid "Hibernate"
-msgstr "Hibernate"
+msgstr "Спящий режим"
 
 msgctxt "#13011"
 msgid "Suspend"
-msgstr "Suspend"
+msgstr "Ждущий режим"
 
 msgctxt "#13012"
 msgid "Exit"
-msgstr "Выход из"
+msgstr "Выход"
 
 msgctxt "#13013"
 msgid "Reboot"
@@ -3581,9 +3713,13 @@ msgctxt "#13014"
 msgid "Minimize"
 msgstr "Свернуть"
 
+msgctxt "#13015"
+msgid "Power button action"
+msgstr "Реакция на кнопку питания"
+
 msgctxt "#13020"
 msgid "Is another session active, perhaps over ssh?"
-msgstr "Активна другая сессия, возможно через SSH?"
+msgstr "Проверьте, не активен ли другой сеанс (напр., SSH)."
 
 msgctxt "#13021"
 msgid "Mounted removable harddrive"
@@ -3607,11 +3743,11 @@ msgstr "Джойстик отключен"
 
 msgctxt "#13100"
 msgid "Flicker filter"
-msgstr "Уровень уменьшения мерцания"
+msgstr "Фильтр мерцания"
 
 msgctxt "#13101"
 msgid "Let driver choose (requires restart)"
-msgstr "По выбору драйвера (перезагрузить)"
+msgstr "По выбору драйвера (требуется перезапуск)"
 
 msgctxt "#13105"
 msgid "Vertical blank sync"
@@ -3619,19 +3755,19 @@ msgstr "Вертикальная синхронизация"
 
 msgctxt "#13106"
 msgid "Disabled"
-msgstr "Отключено"
+msgstr "Отключена"
 
 msgctxt "#13107"
 msgid "Enabled during video playback"
-msgstr "Только при проигрывании видео"
+msgstr "Только при просмотре видео"
 
 msgctxt "#13108"
 msgid "Always enabled"
-msgstr "Всегда включено"
+msgstr "Всегда включена"
 
 msgctxt "#13109"
 msgid "Test & apply resolution"
-msgstr "Проверка разрешения"
+msgstr "Проверить и применить разрешение"
 
 msgctxt "#13110"
 msgid "Save resolution?"
@@ -3663,7 +3799,11 @@ msgstr "Метод масштабирования"
 
 msgctxt "#13117"
 msgid "Bicubic"
-msgstr "Бикубический"
+msgstr "Bicubic"
+
+msgctxt "#13118"
+msgid "Lanczos"
+msgstr "Lanczos"
 
 msgctxt "#13119"
 msgid "Sinc"
@@ -3671,11 +3811,15 @@ msgstr "Sinc"
 
 msgctxt "#13120"
 msgid "VDPAU"
-msgstr "Strict Pixmap-Texture Binding (перезагрузить)"
+msgstr "VDPAU"
+
+msgctxt "#13121"
+msgid "VDPAU HQ Upscaling level"
+msgstr "Высококачественное масштабирование VDPAU"
 
 msgctxt "#13130"
 msgid "Blank other displays"
-msgstr "Гашение экрана"
+msgstr "Гасить другие дисплеи"
 
 msgctxt "#13131"
 msgid "Disabled"
@@ -3683,19 +3827,19 @@ msgstr "Отключено"
 
 msgctxt "#13132"
 msgid "Blank displays"
-msgstr "Погасить экраны"
+msgstr "Погасить дисплеи"
 
 msgctxt "#13140"
 msgid "Active connections detected!"
-msgstr "Обнаружено активное соединение!"
+msgstr "Обнаружены активные соединения."
 
 msgctxt "#13141"
 msgid "If you proceed, you might not be able to control XBMC"
-msgstr "Если вы продолжите, то можете потерять возможность управлять"
+msgstr "В случае продолжения возможна потеря управления"
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "XBMC. Вы действительно хотите остановить сервер событий?"
+msgstr "XBMC. Остановить сервер событий?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
@@ -3703,15 +3847,15 @@ msgstr "Изменить режим пульта Apple?"
 
 msgctxt "#13145"
 msgid "If you are currently using the Apple Remote to control"
-msgstr "Если вы сейчас используете пульт Apple, чтобы управлять"
+msgstr "Если вы используете пульт Apple для управления"
 
 msgctxt "#13146"
 msgid "XBMC, changing this setting might affect your ability"
-msgstr "XBMC, то изменение этих настроек может отключить"
+msgstr "XBMC, изменение этих настроек может отключить"
 
 msgctxt "#13147"
 msgid "to continue controlling it. Do you want to proceed?"
-msgstr "возможность управлять им. Вы хотите продолжить?"
+msgstr "возможность управления. Продолжить?"
 
 msgctxt "#13150"
 msgid "HDD key:"
@@ -3795,15 +3939,15 @@ msgstr "Порт контроллера"
 
 msgctxt "#13170"
 msgid "Never"
-msgstr "никогда"
+msgstr "Никогда"
 
 msgctxt "#13171"
 msgid "Immediately"
-msgstr "немедленно"
+msgstr "Немедленно"
 
 msgctxt "#13172"
 msgid "After %i secs"
-msgstr "через %i сек."
+msgstr "Через %i с"
 
 msgctxt "#13173"
 msgid "HDD install date:"
@@ -3819,7 +3963,7 @@ msgstr "Профили"
 
 msgctxt "#13201"
 msgid "Delete profile '%s'?"
-msgstr "Удалить профиль '%s'?"
+msgstr "Удалить профиль \"%s\"?"
 
 msgctxt "#13204"
 msgid "Last loaded profile:"
@@ -3839,11 +3983,11 @@ msgstr "Таймер напоминаний"
 
 msgctxt "#13209"
 msgid "Alarm clock interval (in minutes)"
-msgstr "Период таймера напоминаний (в минутах)"
+msgstr "Период таймера напоминаний (в мин.)"
 
 msgctxt "#13210"
 msgid "Started, alarm in %im"
-msgstr "Запущен, сработает в %im"
+msgstr "Запущен; сработает через %i мин."
 
 msgctxt "#13211"
 msgid "Alarm!"
@@ -3855,11 +3999,11 @@ msgstr "Отменено за %im%is до срабатывания"
 
 msgctxt "#13249"
 msgid "Search for subtitles in RARs"
-msgstr "Искать субтитры в rar-архивах"
+msgstr "Искать субтитры в архивах RAR"
 
 msgctxt "#13250"
 msgid "Browse for subtitle..."
-msgstr "Укажите субтитры..."
+msgstr "Выбрать субтитры…"
 
 msgctxt "#13251"
 msgid "Move item"
@@ -3879,11 +4023,11 @@ msgstr "Оборудование:"
 
 msgctxt "#13271"
 msgid "CPU Usage:"
-msgstr "Загруженность CPU:"
+msgstr "Загрузка CPU:"
 
 msgctxt "#13274"
 msgid "Connected, but no DNS is available."
-msgstr "Подключено, но DNS сервер недоступен"
+msgstr "Подключено, но DNS-сервер недоступен."
 
 msgctxt "#13275"
 msgid "Hard Disk"
@@ -3931,7 +4075,7 @@ msgstr "Обнаружен BIOS:"
 
 msgctxt "#13286"
 msgid "Video encoder:"
-msgstr "Видеокодировщик:"
+msgstr "Кодировщик видео:"
 
 msgctxt "#13287"
 msgid "Screen resolution:"
@@ -3955,7 +4099,7 @@ msgstr "MOD-чип:"
 
 msgctxt "#13292"
 msgid "A/V cable:"
-msgstr "Кабель A/V:"
+msgstr "Кабель А/В:"
 
 msgctxt "#13293"
 msgid "Video & XBE region:"
@@ -3967,15 +4111,15 @@ msgstr "Регион DVD:"
 
 msgctxt "#13295"
 msgid "Internet:"
-msgstr "Internet:"
+msgstr "Интернет:"
 
 msgctxt "#13296"
 msgid "Connected"
-msgstr "Подключено"
+msgstr "подключен"
 
 msgctxt "#13297"
 msgid "Not connected. Check network settings."
-msgstr "Не подключена. Проверьте настройки сети."
+msgstr "не подключен. Проверьте настройки сети."
 
 msgctxt "#13298"
 msgid "Xbox Live key:"
@@ -4011,15 +4155,15 @@ msgstr "Включить RSS-новости"
 
 msgctxt "#13306"
 msgid "Show parent folder items"
-msgstr "Скрывать значок перехода на верхний уровень"
+msgstr "Показывать значок родительской папки"
 
 msgctxt "#13307"
 msgid "Track naming template"
-msgstr "Шаблон для имени трека"
+msgstr "Шаблон именования треков"
 
 msgctxt "#13308"
 msgid "Do you wish to reboot your system"
-msgstr "Вы хотите перезагрузить систему"
+msgstr "Перезагрузить систему"
 
 msgctxt "#13309"
 msgid "instead of just XBMC?"
@@ -4043,7 +4187,7 @@ msgstr "Перезапуск"
 
 msgctxt "#13314"
 msgid "Crossfade between songs"
-msgstr "Время наложения треков"
+msgstr "Плавный переход между песнями"
 
 msgctxt "#13315"
 msgid "Regenerate thumbnails"
@@ -4055,11 +4199,11 @@ msgstr "Рекурсивные эскизы"
 
 msgctxt "#13317"
 msgid "View slideshow"
-msgstr "Просмотр слайдшоу"
+msgstr "Просмотр слайд-шоу"
 
 msgctxt "#13318"
 msgid "Recursive slideshow"
-msgstr "Рекурсивное слайдшоу"
+msgstr "Рекурсивное слайд-шоу"
 
 msgctxt "#13319"
 msgid "Randomize"
@@ -4071,15 +4215,15 @@ msgstr "Стерео"
 
 msgctxt "#13321"
 msgid "Left only"
-msgstr "только Левый"
+msgstr "Только левый"
 
 msgctxt "#13322"
 msgid "Right only"
-msgstr "только Правый"
+msgstr "Только правый"
 
 msgctxt "#13323"
 msgid "Enable karaoke support"
-msgstr "Разрешить поддержку караоке (CD+G)"
+msgstr "Разрешить поддержку караоке"
 
 msgctxt "#13324"
 msgid "Background transparency"
@@ -4107,11 +4251,11 @@ msgstr "Ошибка открытия %s"
 
 msgctxt "#13330"
 msgid "Unable to load %s"
-msgstr "Невозможно загрузить %s"
+msgstr "Не удалось загрузить %s"
 
 msgctxt "#13331"
 msgid "Error: Out of memory"
-msgstr "Ошибка: не хватает памяти"
+msgstr "Ошибка: недостаточно памяти"
 
 msgctxt "#13332"
 msgid "Move up"
@@ -4123,7 +4267,7 @@ msgstr "Переместить вниз"
 
 msgctxt "#13334"
 msgid "Edit label"
-msgstr "Изменить метку"
+msgstr "Изменить название"
 
 msgctxt "#13335"
 msgid "Make default"
@@ -4143,31 +4287,31 @@ msgstr "Цвет индикатора лицевой панели"
 
 msgctxt "#13340"
 msgid "Leave as is"
-msgstr "оставить как есть"
+msgstr "Оставить как есть"
 
 msgctxt "#13341"
 msgid "Green"
-msgstr "зеленый"
+msgstr "Зеленый"
 
 msgctxt "#13342"
 msgid "Orange"
-msgstr "оранжевый"
+msgstr "Оранжевый"
 
 msgctxt "#13343"
 msgid "Red"
-msgstr "красный"
+msgstr "Красный"
 
 msgctxt "#13344"
 msgid "Cycle"
-msgstr "все циклически"
+msgstr "Циклически"
 
 msgctxt "#13345"
 msgid "Switch LED off on playback"
-msgstr "Выключать при проигрывании"
+msgstr "Выключать индикатор при воспроизведении"
 
 msgctxt "#13346"
 msgid "Movie information"
-msgstr "Данные о фильме"
+msgstr "Сведения о фильме"
 
 msgctxt "#13347"
 msgid "Queue item"
@@ -4175,11 +4319,11 @@ msgstr "Добавить в плейлист"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
-msgstr "Найти в IMDb..."
+msgstr "Поиск в IMDb…"
 
 msgctxt "#13349"
 msgid "Scan for new content"
-msgstr "Сканировать новое содержимое"
+msgstr "Сканировать содержимое"
 
 msgctxt "#13350"
 msgid "Now playing..."
@@ -4187,7 +4331,7 @@ msgstr "Текущий плейлист..."
 
 msgctxt "#13351"
 msgid "Album information"
-msgstr "Данные об альбоме"
+msgstr "Сведения об альбоме"
 
 msgctxt "#13352"
 msgid "Scan item to library"
@@ -4203,7 +4347,7 @@ msgstr "Метод обработки"
 
 msgctxt "#13355"
 msgid "Low quality pixel shader"
-msgstr "Пикс.шейдер низ.качества"
+msgstr "Пикс. шейдер низк. качества"
 
 msgctxt "#13356"
 msgid "Hardware overlays"
@@ -4211,7 +4355,7 @@ msgstr "Аппаратное наложение"
 
 msgctxt "#13357"
 msgid "High quality pixel shader"
-msgstr "Пикс.шейдер выс.качества"
+msgstr "Пикс. шейдер высок. качества"
 
 msgctxt "#13358"
 msgid "Play item"
@@ -4219,11 +4363,11 @@ msgstr "Воспроизвести объект"
 
 msgctxt "#13359"
 msgid "Set artist thumb"
-msgstr "Установить эскиз исполнителя"
+msgstr "Выбрать эскиз исполнителя"
 
 msgctxt "#13360"
 msgid "Automatically generate thumbnails"
-msgstr "Создавать эскизы"
+msgstr "Автоматически создавать эскизы"
 
 msgctxt "#13361"
 msgid "Enable voice"
@@ -4243,15 +4387,15 @@ msgstr "Основной режим просмотра"
 
 msgctxt "#13378"
 msgid "Default brightness"
-msgstr "Стандартная Яркость"
+msgstr "Стандартная яркость"
 
 msgctxt "#13379"
 msgid "Default contrast"
-msgstr "Стандартная Контрастность"
+msgstr "Стандартная контрастность"
 
 msgctxt "#13380"
 msgid "Default gamma"
-msgstr "Стандартная Гамма"
+msgstr "Стандартная гамма"
 
 msgctxt "#13381"
 msgid "Resume video"
@@ -4295,7 +4439,7 @@ msgstr "Для этого видео эффекта\nнет настроек"
 
 msgctxt "#13391"
 msgid "Eject/Load"
-msgstr "Открыть / закрыть"
+msgstr "Открыть/закрыть"
 
 msgctxt "#13392"
 msgid "Use visualization if playing audio"
@@ -4303,11 +4447,11 @@ msgstr "Включать видео эффекты при проигрывани
 
 msgctxt "#13393"
 msgid "Calculate size"
-msgstr "Вычислить объем"
+msgstr "Вычислить размер"
 
 msgctxt "#13394"
 msgid "Calculating folder size"
-msgstr "Вычисляется объем папки"
+msgstr "Вычисляется размер папки…"
 
 msgctxt "#13395"
 msgid "Video settings"
@@ -4315,7 +4459,7 @@ msgstr "Настройки видео"
 
 msgctxt "#13396"
 msgid "Audio and subtitle settings"
-msgstr "Настройки субтитров и звука"
+msgstr "Настройки звука и субтитров"
 
 msgctxt "#13397"
 msgid "Enable subtitles"
@@ -4327,19 +4471,19 @@ msgstr "Ярлыки"
 
 msgctxt "#13399"
 msgid "Ignore articles when sorting (e.g. \"the\")"
-msgstr "Не учитывать артикли при сортировке"
+msgstr "Не учитывать артикли при сортировке (напр., \"the\")"
 
 msgctxt "#13400"
 msgid "Crossfade between songs on the same album"
-msgstr "Плавный переход к следующему треку"
+msgstr "Переход между песнями в том же альбоме"
 
 msgctxt "#13401"
 msgid "Browse for %s"
-msgstr "Поиск %s"
+msgstr "Выбрать %s"
 
 msgctxt "#13402"
 msgid "Show track position"
-msgstr "Показать позицию трека"
+msgstr "Показать положение трека"
 
 msgctxt "#13403"
 msgid "Clear default"
@@ -4351,15 +4495,15 @@ msgstr "Продолжить"
 
 msgctxt "#13405"
 msgid "Get thumb"
-msgstr "Получить эскиз"
+msgstr "Эскиз"
 
 msgctxt "#13406"
 msgid "Picture information"
-msgstr "Данные о фотографии"
+msgstr "Сведения о фото"
 
 msgctxt "#13407"
 msgid "%s presets"
-msgstr "%s предустановки"
+msgstr "Предустановок: %s"
 
 msgctxt "#13408"
 msgid "(IMDb user rating)"
@@ -4367,7 +4511,7 @@ msgstr "(Рейтинг пользователей IMDb)"
 
 msgctxt "#13409"
 msgid "Top 250"
-msgstr "Top 250"
+msgstr "Топ 250"
 
 msgctxt "#13410"
 msgid "Tune in on Last.fm"
@@ -4379,11 +4523,11 @@ msgstr "Минимальная скорость вентиляторов"
 
 msgctxt "#13413"
 msgid "Downloading"
-msgstr "Загрузка"
+msgstr "Загрузка…"
 
 msgctxt "#13414"
 msgid "Include artists who appear only on compilations"
-msgstr "Не показывать исполнителей в сборниках"
+msgstr "Включать исполнителей из сборников"
 
 msgctxt "#13415"
 msgid "Render method"
@@ -4395,11 +4539,11 @@ msgstr "Автоопределение"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Основные шейдеры (ARB)"
+msgstr "Базовые шейдеры (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
-msgstr "Дополнительные шейдеры (GLSL)"
+msgstr "Расширенные шейдеры (GLSL)"
 
 msgctxt "#13419"
 msgid "Software"
@@ -4407,23 +4551,39 @@ msgstr "Программный"
 
 msgctxt "#13420"
 msgid "Remove safely"
-msgstr "Удалить безопасно"
+msgstr "Безопасное удаление"
+
+msgctxt "#13421"
+msgid "VDPAU"
+msgstr "VDPAU"
+
+msgctxt "#13422"
+msgid "Start slideshow here"
+msgstr "Начать слайдшоу отсюда"
+
+msgctxt "#13423"
+msgid "Remember for this path"
+msgstr "Запомнить путь"
+
+msgctxt "#13424"
+msgid "Use pixel buffer objects"
+msgstr "Использовать объекты пиксельного буфера"
 
 msgctxt "#13500"
 msgid "A/V sync method"
-msgstr "Синхронизация A/V"
+msgstr "Синхронизация А/В"
 
 msgctxt "#13501"
 msgid "Audio clock"
-msgstr "по частоте звука"
+msgstr "По частоте звука"
 
 msgctxt "#13502"
 msgid "Video clock (Drop/Dupe audio)"
-msgstr "по частоте видео (пропускать звук)"
+msgstr "По частоте видео (пропуск/дублирование звука)"
 
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
-msgstr "по частоте видео (преобразовывать звук)"
+msgstr "По частоте видео (преобразование звука)"
 
 msgctxt "#13504"
 msgid "Maximum resample amount (%)"
@@ -4435,7 +4595,7 @@ msgstr "Качество преобразования"
 
 msgctxt "#13506"
 msgid "Low(fast)"
-msgstr "Низкое"
+msgstr "Низкое (быстро)"
 
 msgctxt "#13507"
 msgid "Medium"
@@ -4447,15 +4607,15 @@ msgstr "Высокое"
 
 msgctxt "#13509"
 msgid "Really high(slow!)"
-msgstr "Действительно высокое"
+msgstr "Очень высокое (медленно!)"
 
 msgctxt "#13510"
 msgid "Sync playback to display"
-msgstr "Синхронизировать с частотой экрана"
+msgstr "Синхронизировать видео с частотой дисплея"
 
 msgctxt "#13600"
 msgid "Apple remote"
-msgstr "Пульт Apple"
+msgstr "ДУ Apple"
 
 msgctxt "#13601"
 msgid "Use MCE/Universal Remote"
@@ -4463,15 +4623,15 @@ msgstr "Режим"
 
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
-msgstr "Всегда работает"
+msgstr "Разрешить запуск XBMC с ДУ"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
-msgstr "Время задержки последовательности"
+msgstr "Интервал последовательности"
 
 msgctxt "#13610"
 msgid "Disabled"
-msgstr "Отключено"
+msgstr "Откл."
 
 msgctxt "#13611"
 msgid "Standard"
@@ -4479,15 +4639,15 @@ msgstr "Стандартный"
 
 msgctxt "#13612"
 msgid "Universal Remote"
-msgstr "Универсальный пульт"
+msgstr "Универсальный пульт ДУ"
 
 msgctxt "#13613"
 msgid "Multi Remote (Harmony)"
-msgstr "Мульти-пульт (Harmony)"
+msgstr "Мульти-ДУ (Harmony)"
 
 msgctxt "#13620"
 msgid "Apple Remote Error"
-msgstr "Ошибка пульта Apple"
+msgstr "Ошибка ДУ Apple"
 
 msgctxt "#13621"
 msgid "Apple Remote support could be enabled."
@@ -4503,23 +4663,23 @@ msgstr "Разгруппировать"
 
 msgctxt "#14003"
 msgid "Downloading playlist file..."
-msgstr "Загружается файл плейлиста..."
+msgstr "Загружается файл плейлиста…"
 
 msgctxt "#14004"
 msgid "Downloading streams list..."
-msgstr "Загружается список потоков..."
+msgstr "Загружается список потоков…"
 
 msgctxt "#14005"
 msgid "Parsing streams list..."
-msgstr "Анализ списка потоков..."
+msgstr "Анализ списка потоков…"
 
 msgctxt "#14006"
 msgid "Downloading streams list failed"
-msgstr "Ошибка загрузки списка потоков"
+msgstr "Не удалось загрузить список потоков"
 
 msgctxt "#14007"
 msgid "Downloading playlist file failed"
-msgstr "Ошибка загрузки файла плейлиста"
+msgstr "Не удалось загрузить файл плейлиста"
 
 msgctxt "#14009"
 msgid "Games directory"
@@ -4535,27 +4695,27 @@ msgstr "Включить автопереключение вида на эски
 
 msgctxt "#14012"
 msgid "- Use large icons"
-msgstr "- использовать большие значки"
+msgstr "- Использовать большие значки"
 
 msgctxt "#14013"
 msgid "- Switch based on"
-msgstr "- переключать по"
+msgstr "- Переключать по"
 
 msgctxt "#14014"
 msgid "- Percentage"
-msgstr "- процентное соотношение"
+msgstr "- Процентное соотношение"
 
 msgctxt "#14015"
 msgid "No files and at least one thumb"
-msgstr "нет файлов и хотя бы один эскиз"
+msgstr "Нет файлов и хотя бы один эскиз"
 
 msgctxt "#14016"
 msgid "At least one file and thumb"
-msgstr "хотя бы один файл и эскиз"
+msgstr "Хотя бы один файл и эскиз"
 
 msgctxt "#14017"
 msgid "Percentage of thumbs"
-msgstr "процентное соотношение эскизов"
+msgstr "Процентное соотношение эскизов"
 
 msgctxt "#14018"
 msgid "View options"
@@ -4563,15 +4723,15 @@ msgstr "Настройки просмотра"
 
 msgctxt "#14019"
 msgid "Change area code 1"
-msgstr "Первый регион"
+msgstr "Местность 1"
 
 msgctxt "#14020"
 msgid "Change area code 2"
-msgstr "Второй регион"
+msgstr "Местность 2"
 
 msgctxt "#14021"
 msgid "Change area code 3"
-msgstr "Третий регион"
+msgstr "Местность 3"
 
 msgctxt "#14022"
 msgid "Library"
@@ -4583,7 +4743,7 @@ msgstr "Без ТВ"
 
 msgctxt "#14024"
 msgid "Enter the nearest large town"
-msgstr "Впишите ближайший большой город"
+msgstr "Введите ближайший крупный город"
 
 msgctxt "#14025"
 msgid "Video/Audio/DVD cache - Harddisk"
@@ -4591,7 +4751,7 @@ msgstr "Кэш для аудио/видео/DVD - с HDD"
 
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
-msgstr "Кэш видео - с DVD диска"
+msgstr "Кэш видео - с DVD-диска"
 
 msgctxt "#14027"
 msgid "- Local Network"
@@ -4603,7 +4763,7 @@ msgstr "- из Internet"
 
 msgctxt "#14030"
 msgid "Audio cache - DVD-ROM"
-msgstr "Кэш аудио - с DVD диска"
+msgstr "Кэш аудио - с DVD-диска"
 
 msgctxt "#14031"
 msgid "- Local Network"
@@ -4615,7 +4775,7 @@ msgstr "- из Internet"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
-msgstr "Кэш DVD - с DVD диска"
+msgstr "Кэш DVD - с DVD-диска"
 
 msgctxt "#14035"
 msgid "- Local Network"
@@ -4623,7 +4783,7 @@ msgstr "- из локальной сети"
 
 msgctxt "#14036"
 msgid "Services"
-msgstr "Серверы"
+msgstr "Службы"
 
 msgctxt "#14038"
 msgid "Network settings changed"
@@ -4631,11 +4791,11 @@ msgstr "Настройки локальной сети изменены."
 
 msgctxt "#14039"
 msgid "XBMC requires to restart to change your"
-msgstr "Для применения изменений требуется перезапуск"
+msgstr "Для изменения настроек сети требуется"
 
 msgctxt "#14040"
 msgid "network setup.  Would you like to restart now?"
-msgstr "XBMC. Хотите перезапустить сейчас?"
+msgstr "перезапуск XBMC. Перезапустить сейчас?"
 
 msgctxt "#14041"
 msgid "Post processing"
@@ -4643,15 +4803,15 @@ msgstr "Постобработка"
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
-msgstr "- Выключать во время проигрывания"
+msgstr "- Выключать при воспроизведении"
 
 msgctxt "#14044"
 msgid "%i min"
-msgstr "%i мин"
+msgstr "%i мин."
 
 msgctxt "#14045"
 msgid "%i sec"
-msgstr "%i сек"
+msgstr "%i с."
 
 msgctxt "#14046"
 msgid "%i ms"
@@ -4663,15 +4823,15 @@ msgstr "%i %%"
 
 msgctxt "#14048"
 msgid "%i kbps"
-msgstr "%i Кб/сек"
+msgstr "%i Кбит/с"
 
 msgctxt "#14049"
 msgid "%i kb"
-msgstr "%i Кб"
+msgstr "%i Кбит"
 
 msgctxt "#14050"
 msgid "%i.0 dB"
-msgstr "%i.0 dB"
+msgstr "%i.0 дБ"
 
 msgctxt "#14051"
 msgid "Time format"
@@ -4707,11 +4867,11 @@ msgstr "Искать эскизы на внешних ресурсах"
 
 msgctxt "#14060"
 msgid "Unknown type cache - Internet"
-msgstr "Кэш неизвестных файлов - из Internet"
+msgstr "Кэш неизвестных файлов - из Интернета"
 
 msgctxt "#14061"
 msgid "Auto"
-msgstr "Автоматически"
+msgstr "Авто"
 
 msgctxt "#14062"
 msgid "Enter username for"
@@ -4755,7 +4915,7 @@ msgstr "Разрешить переименование и удаление фа
 
 msgctxt "#14074"
 msgid "Set timezone"
-msgstr "Установить часовой пояс"
+msgstr "Выбрать часовой пояс"
 
 msgctxt "#14075"
 msgid "Use daylight saving time"
@@ -4763,11 +4923,11 @@ msgstr "Учитывать летнее/зимнее время"
 
 msgctxt "#14076"
 msgid "Add to favourites"
-msgstr "Добавить в 'Избранное'"
+msgstr "Добавить в \"Избранное\""
 
 msgctxt "#14077"
 msgid "Remove from favourites"
-msgstr "Удалить из 'Избранного'"
+msgstr "Удалить из \"\"Избранного\""
 
 msgctxt "#14078"
 msgid "- Colours"
@@ -4785,13 +4945,17 @@ msgctxt "#14081"
 msgid "File lists"
 msgstr "Списки файлов"
 
+msgctxt "#14082"
+msgid "Show EXIF picture information"
+msgstr "Показывать сведения о фото из EXIF"
+
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
-msgstr "Использовать полноэкранное окно"
+msgstr "Использовать окно на весь экран вместо полного экрана"
 
 msgctxt "#14084"
 msgid "Queue songs on selection"
-msgstr "Помещать песни в очередь при выборе"
+msgstr "Добавлять треки в очередь при выборе"
 
 msgctxt "#14086"
 msgid "Playback"
@@ -4799,23 +4963,31 @@ msgstr "Воспроизведение"
 
 msgctxt "#14087"
 msgid "DVDs"
-msgstr "DVD диски"
+msgstr "DVD"
 
 msgctxt "#14088"
 msgid "Play DVDs automatically"
-msgstr "Проигрывать DVD автоматически"
+msgstr "Воспроизводить DVD автоматически"
 
 msgctxt "#14089"
 msgid "Font to use for text subtitles"
-msgstr "Шрифт для субтитров"
+msgstr "Шрифт текстовых субтитров"
 
 msgctxt "#14090"
 msgid "International"
-msgstr "Регион"
+msgstr "Языковые[CR]настройки"
+
+msgctxt "#14091"
+msgid "Character set"
+msgstr "Кодировка"
 
 msgctxt "#14092"
 msgid "Debugging"
-msgstr "Режим отладки"
+msgstr "Отладка"
+
+msgctxt "#14093"
+msgid "Security"
+msgstr "Безопасность"
 
 msgctxt "#14094"
 msgid "Input devices"
@@ -4823,11 +4995,11 @@ msgstr "Устройства ввода"
 
 msgctxt "#14095"
 msgid "Power saving"
-msgstr "Питание"
+msgstr "Экономия[CR]энергии"
 
 msgctxt "#15015"
 msgid "Remove"
-msgstr "Убрать"
+msgstr "Удалить"
 
 msgctxt "#15016"
 msgid "Games"
@@ -4867,7 +5039,7 @@ msgstr "* Все жанры"
 
 msgctxt "#15107"
 msgid "Buffering..."
-msgstr "Буферизация..."
+msgstr "Буферизация…"
 
 msgctxt "#15108"
 msgid "Navigation sounds"
@@ -4875,7 +5047,7 @@ msgstr "Звуки интерфейса"
 
 msgctxt "#15109"
 msgid "Skin default"
-msgstr "Стандартное оформление"
+msgstr "Стандартн."
 
 msgctxt "#15111"
 msgid "- Theme"
@@ -4915,11 +5087,11 @@ msgstr "Неверная авторизация: Проверьте имя по�
 
 msgctxt "#15207"
 msgid "Connected"
-msgstr "подключен"
+msgstr "Подключено"
 
 msgctxt "#15208"
 msgid "Not connected"
-msgstr "Не подключен"
+msgstr "Не подключено"
 
 msgctxt "#15209"
 msgid "Submit interval %i"
@@ -4939,7 +5111,7 @@ msgstr "Подключение через %i сек."
 
 msgctxt "#15213"
 msgid "Play using..."
-msgstr "Использовать проигрыватель..."
+msgstr "Воспроизвести с помощью…"
 
 msgctxt "#15214"
 msgid "Use smoothed A/V synchronization"
@@ -4951,7 +5123,7 @@ msgstr "Скрывать имена файлов в режиме эскизов"
 
 msgctxt "#15216"
 msgid "Play in party mode"
-msgstr "Играть в режиме 'party'"
+msgstr "Воспроизводить в режиме \"Вечеринка\""
 
 msgctxt "#15217"
 msgid "Submit songs to Libre.fm"
@@ -5163,15 +5335,15 @@ msgstr "Вы хотите разблокировать этот трек?"
 
 msgctxt "#15300"
 msgid "Path not found or invalid"
-msgstr "Неверный или несуществующий путь "
+msgstr "Неверный или несуществующий путь"
 
 msgctxt "#15301"
 msgid "Could not connect to network server"
-msgstr "Невозможно подключиться с серверу"
+msgstr "Не удалось подключиться к серверу"
 
 msgctxt "#15302"
 msgid "No servers found"
-msgstr "Серверов не найдено"
+msgstr "Серверы не найдены"
 
 msgctxt "#15303"
 msgid "Workgroup not found"
@@ -5195,7 +5367,7 @@ msgstr "Настройка аудиооборудования..."
 
 msgctxt "#16002"
 msgid "Internet lookup"
-msgstr "Поиск в Internet"
+msgstr "Поиск в Интернете"
 
 msgctxt "#16003"
 msgid "Player"
@@ -5203,7 +5375,7 @@ msgstr "Проигрыватель"
 
 msgctxt "#16004"
 msgid "Play media from disc"
-msgstr "Проиграть файл с диска"
+msgstr "Воспроизвести файл с диска"
 
 msgctxt "#16008"
 msgid "Enter new title"
@@ -5239,7 +5411,7 @@ msgstr "Введите папку"
 
 msgctxt "#16016"
 msgid "Available options: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
-msgstr "Доступные опции: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
+msgstr "Доступные значения: %A, %T, %N, %B, %D, %G, %Y, %F, %S"
 
 msgctxt "#16017"
 msgid "Enter search string"
@@ -5247,7 +5419,7 @@ msgstr "Строка поиска"
 
 msgctxt "#16018"
 msgid "None"
-msgstr "Ничего"
+msgstr "Нет"
 
 msgctxt "#16019"
 msgid "Auto select"
@@ -5255,7 +5427,7 @@ msgstr "Автовыбор"
 
 msgctxt "#16020"
 msgid "De-interlace"
-msgstr "De-interlace"
+msgstr "Деинтерлейсинг"
 
 msgctxt "#16021"
 msgid "Bob"
@@ -5263,7 +5435,7 @@ msgstr "Bob"
 
 msgctxt "#16022"
 msgid "Bob (inverted)"
-msgstr "Bob (inverted)"
+msgstr "Bob (обратный)"
 
 msgctxt "#16023"
 msgid "Interlaced handling"
@@ -5275,27 +5447,31 @@ msgstr "Отменяется..."
 
 msgctxt "#16025"
 msgid "Enter the artist name"
-msgstr "Введите название исполнителя"
+msgstr "Введите имя исполнителя"
 
 msgctxt "#16026"
 msgid "Playback failed"
-msgstr "Проигрывание плейлиста прервано"
+msgstr "Воспроизведение плейлиста прервано"
 
 msgctxt "#16027"
 msgid "One or more items failed to play."
-msgstr "Слишком много ошибок подряд"
+msgstr "Не удалось воспроизвести как минимум один файл."
 
 msgctxt "#16028"
 msgid "Enter value"
 msgstr "Введите значение"
 
+msgctxt "#16029"
+msgid "Check the log file for details."
+msgstr "Для получения доп. сведений просмотрите журнал."
+
 msgctxt "#16030"
 msgid "Party mode aborted."
-msgstr "Режим 'party' отключен"
+msgstr "Режим \"Вечеринка\" отключен."
 
 msgctxt "#16031"
 msgid "No matching songs in the library."
-msgstr "Нет соответствующих песен в медиатеке"
+msgstr "Нет похожих песен в медиатеке."
 
 msgctxt "#16032"
 msgid "Could not initialize database."
@@ -5303,35 +5479,35 @@ msgstr "Невозможно инициализировать базу данн�
 
 msgctxt "#16033"
 msgid "Could not open database."
-msgstr "Невозможно открыть базу данных"
+msgstr "Не удалось открыть базу данных."
 
 msgctxt "#16034"
 msgid "Could not get songs from database."
-msgstr "Невозможно получить песни из базы данных"
+msgstr "Не удалось получить песни из базы данных."
 
 msgctxt "#16035"
 msgid "Party mode playlist"
-msgstr "Плейлист режима 'party'"
+msgstr "Плейлист режима \"Вечеринка\""
 
 msgctxt "#16100"
 msgid "All Videos"
-msgstr "Все видео"
+msgstr "Всё видео"
 
 msgctxt "#16101"
 msgid "Unwatched"
-msgstr "Непросмотренное"
+msgstr "Не просмотрено"
 
 msgctxt "#16102"
 msgid "Watched"
-msgstr "Просмотренное"
+msgstr "Просмотрено"
 
 msgctxt "#16103"
 msgid "Mark as watched"
-msgstr "Отметить как просмотренное"
+msgstr "Отмет. как просмотренное"
 
 msgctxt "#16104"
 msgid "Mark as unwatched"
-msgstr "Отметить как непросмотренное"
+msgstr "Отмет. как непросмотренное"
 
 msgctxt "#16105"
 msgid "Edit title"
@@ -5367,7 +5543,7 @@ msgstr "Не удалось скопировать"
 
 msgctxt "#16202"
 msgid "Failed to copy at least one file"
-msgstr "Не удалось скопировать ни одного файла"
+msgstr "Не удалось скопировать как минимум один файл"
 
 msgctxt "#16203"
 msgid "Move failed"
@@ -5375,7 +5551,7 @@ msgstr "Не удалось переместить"
 
 msgctxt "#16204"
 msgid "Failed to move at least one file"
-msgstr "Не удалось переместить ни одного файла"
+msgstr "Не удалось переместить как минимум один файл"
 
 msgctxt "#16205"
 msgid "Delete failed"
@@ -5383,7 +5559,7 @@ msgstr "Не удалось удалить"
 
 msgctxt "#16206"
 msgid "Failed to delete at least one file"
-msgstr "Не удалось удалить ни одного файла"
+msgstr "Не удалось удалить как минимум один файл"
 
 msgctxt "#16300"
 msgid "Video scaling method"
@@ -5391,15 +5567,15 @@ msgstr "Метод масштабирования видео"
 
 msgctxt "#16301"
 msgid "Nearest neighbour"
-msgstr "Ближайший соседний"
+msgstr "Nearest neighbour"
 
 msgctxt "#16302"
 msgid "Bilinear"
-msgstr "Билинейный"
+msgstr "Bilinear"
 
 msgctxt "#16303"
 msgid "Bicubic"
-msgstr "Бикубический"
+msgstr "Bicubic"
 
 msgctxt "#16304"
 msgid "Lanczos2"
@@ -5435,23 +5611,31 @@ msgstr "(VDPAU) Временный / Пространственный"
 
 msgctxt "#16312"
 msgid "(VDPAU)Noise Reduction"
-msgstr "(VDPAU) Уменьшение шумов"
+msgstr "Шумоподавление (VDPAU)"
 
 msgctxt "#16313"
 msgid "(VDPAU)Sharpness"
-msgstr "(VDPAU) Чёткость"
+msgstr "Резкость (VDPAU)"
 
 msgctxt "#16314"
 msgid "Inverse Telecine"
-msgstr "Обратный Telecine"
+msgstr "Обратный пуллдаун (3:2)"
+
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "Постобработка"
 
 msgctxt "#17500"
 msgid "Display sleep timeout"
-msgstr "Переход экрана в спящий режим через"
+msgstr "Переход дисплея в спящий режим через"
+
+msgctxt "#19000"
+msgid "Switch to channel"
+msgstr "Переключиться на канал"
 
 msgctxt "#20000"
 msgid "Saved music folder"
-msgstr "Папка для оцифровки AudioCD"
+msgstr "Папка сохраненной музыки"
 
 msgctxt "#20001"
 msgid "Use external DVD player"
@@ -5495,11 +5679,11 @@ msgstr "Плейлисты видео"
 
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
-msgstr "Хотите запустить игру?"
+msgstr "Запустить игру?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "Сорт. по: Плейлисту"
+msgstr "Сорт. по плейлисту"
 
 msgctxt "#20015"
 msgid "Remote thumb"
@@ -5531,23 +5715,27 @@ msgstr "Сканировать новое"
 
 msgctxt "#20025"
 msgid "Scan all"
-msgstr "Сканировать все"
+msgstr "Сканировать всё"
 
 msgctxt "#20026"
 msgid "Region"
 msgstr "Регион"
 
+msgctxt "#20037"
+msgid "Summary"
+msgstr "Сведения"
+
 msgctxt "#20038"
 msgid "Lock music window"
-msgstr "Заблокировать раздел 'Музыка'"
+msgstr "Заблокировать раздел \"Музыка\""
 
 msgctxt "#20039"
 msgid "Lock videos window"
-msgstr "Заблокировать раздел 'Видео'"
+msgstr "Заблокировать раздел \"Видео\""
 
 msgctxt "#20040"
 msgid "Lock pictures window"
-msgstr "Заблокировать раздел 'Фотографии'"
+msgstr "Заблокировать раздел \"Фото\""
 
 msgctxt "#20041"
 msgid "Lock programs, saves & scripts windows"
@@ -5555,11 +5743,11 @@ msgstr "Заблокировать раздел 'Программы' и 'Скр�
 
 msgctxt "#20042"
 msgid "Lock file manager"
-msgstr "Заблокировать 'Файл-менеджер'"
+msgstr "Заблокировать \"Менеджер файлов\""
 
 msgctxt "#20043"
 msgid "Lock settings"
-msgstr "Заблокировать 'Настройки'"
+msgstr "Заблокировать \"Настройки\""
 
 msgctxt "#20044"
 msgid "Start fresh"
@@ -5567,15 +5755,15 @@ msgstr "Чистый старт"
 
 msgctxt "#20045"
 msgid "Enter master mode"
-msgstr "Включить режим 'Полного доступа'"
+msgstr "Включить режим полного доступа"
 
 msgctxt "#20046"
 msgid "Leave master mode"
-msgstr "Выключить режим 'Полного доступа'"
+msgstr "Выключить режим полного доступа"
 
 msgctxt "#20047"
 msgid "Create profile '%s'?"
-msgstr "Создать профиль  '%s' ?"
+msgstr "Создать профиль \"%s\"?"
 
 msgctxt "#20048"
 msgid "Start with fresh settings"
@@ -5587,11 +5775,11 @@ msgstr "Лучший из доступных"
 
 msgctxt "#20050"
 msgid "Auto-switch between 16x9 and 4x3"
-msgstr "Автоматически переключать 16:9 или 4:3"
+msgstr "Автоматический выбор 16:9 или 4:3"
 
 msgctxt "#20051"
 msgid "Treat stacked files as single file"
-msgstr "Рассматривать последовательные файлы как единый файл"
+msgstr "Рассматривать составные файлы как единый файл"
 
 msgctxt "#20052"
 msgid "Caution"
@@ -5599,11 +5787,11 @@ msgstr "Внимание"
 
 msgctxt "#20053"
 msgid "Left master mode"
-msgstr "Оставить режим 'Полного доступа'"
+msgstr "Отключен режим полного доступа"
 
 msgctxt "#20054"
 msgid "Entered master mode"
-msgstr "Включен режим 'Полного доступа'"
+msgstr "Включен режим полного доступа"
 
 msgctxt "#20055"
 msgid "Allmusic.com thumb"
@@ -5611,23 +5799,23 @@ msgstr "Эскиз с Allmusic.com"
 
 msgctxt "#20057"
 msgid "Remove thumbnail"
-msgstr "Убрать эскиз"
+msgstr "Удалить эскиз"
 
 msgctxt "#20058"
 msgid "Add profile..."
-msgstr "Добавить профиль..."
+msgstr "Добавить профиль…"
 
 msgctxt "#20059"
 msgid "Query info for all albums"
-msgstr "Данные о всех альбомах"
+msgstr "Получить сведения обо всех альбомах"
 
 msgctxt "#20060"
 msgid "Media info"
-msgstr "Данные о медиафайле"
+msgstr "Информация"
 
 msgctxt "#20061"
 msgid "Separate"
-msgstr "Раздельно"
+msgstr "Разделять"
 
 msgctxt "#20062"
 msgid "Shares with default"
@@ -5659,7 +5847,7 @@ msgstr "Заблокировать профиль"
 
 msgctxt "#20069"
 msgid "Could not create folder"
-msgstr "Невозможно создать папку"
+msgstr "Не удалось создать папку"
 
 msgctxt "#20070"
 msgid "Profile directory"
@@ -5671,11 +5859,11 @@ msgstr "Стартовать с новыми источниками"
 
 msgctxt "#20072"
 msgid "Make sure the selected folder is writable"
-msgstr "Убедитесь, что выбранная папка открыта"
+msgstr "Убедитесь, что выбранная папка доступна для записи"
 
 msgctxt "#20073"
 msgid "and that the new folder name is valid"
-msgstr "для записи и ее название верное"
+msgstr "и указано правильное имя новой папки"
 
 msgctxt "#20074"
 msgid "MPAA rating"
@@ -5687,15 +5875,15 @@ msgstr "Введите код защиты"
 
 msgctxt "#20076"
 msgid "Ask for master lock code on startup"
-msgstr "Спрашивать код защиты при старте"
+msgstr "Запрашивать код защиты при старте"
 
 msgctxt "#20077"
 msgid "Skin settings"
-msgstr "Настройки вида"
+msgstr "Настройки обложки"
 
 msgctxt "#20078"
 msgid "- no link set -"
-msgstr " - нет связи -"
+msgstr "- нет связи -"
 
 msgctxt "#20079"
 msgid "Enable animations"
@@ -5703,27 +5891,27 @@ msgstr "Использовать анимацию"
 
 msgctxt "#20080"
 msgid "Disable RSS during music"
-msgstr "Отключить RSS во время воспроизведения музыки"
+msgstr "Отключить RSS-ленту при воспроизведении музыки"
 
 msgctxt "#20081"
 msgid "Enable shortcut buttons"
-msgstr "*Включить пункты Ссылок"
+msgstr "Включить кнопки ярлыков"
 
 msgctxt "#20082"
 msgid "Show programs in main menu"
-msgstr "Показывать пункт 'Программы' в главном меню"
+msgstr "Показывать \"Программы\" в главном меню"
 
 msgctxt "#20083"
 msgid "Show music info"
-msgstr "Показывать информацию о музыке"
+msgstr "Показывать сведения о музыке"
 
 msgctxt "#20084"
 msgid "Show weather info"
-msgstr "Показывать информацию о погоде"
+msgstr "Показывать сведения о погоде"
 
 msgctxt "#20085"
 msgid "Show system info"
-msgstr "Показывать информацию о системе"
+msgstr "Показывать сведения о системе"
 
 msgctxt "#20086"
 msgid "Show available disc space C: E: F:"
@@ -5743,7 +5931,7 @@ msgstr "Свободное место на диске"
 
 msgctxt "#20090"
 msgid "Enter the name of an existing share"
-msgstr "Введите название существующего ресурса"
+msgstr "Введите имя существующего ресурса"
 
 msgctxt "#20091"
 msgid "Lock code"
@@ -5759,11 +5947,11 @@ msgstr "Название профиля"
 
 msgctxt "#20094"
 msgid "Media sources"
-msgstr "Источники медиафайлов"
+msgstr "Источники данных"
 
 msgctxt "#20095"
 msgid "Enter profile lock code"
-msgstr "Введите кода защиты профиля"
+msgstr "Введите код защиты профиля"
 
 msgctxt "#20096"
 msgid "Login screen"
@@ -5771,15 +5959,15 @@ msgstr "Экран входа"
 
 msgctxt "#20097"
 msgid "Fetching album info"
-msgstr "Запрос данных об альбоме"
+msgstr "Запрос данных об альбоме…"
 
 msgctxt "#20098"
 msgid "Fetching info for album"
-msgstr "Запрос данных для альбома"
+msgstr "Запрос данных для альбома…"
 
 msgctxt "#20099"
 msgid "Can't rip CD or track while playing from CD"
-msgstr "Невозможно оцифровывать во время проигрывания"
+msgstr "Во время воспроизведения оцифровка невозможна"
 
 msgctxt "#20100"
 msgid "Master lock code and settings"
@@ -5787,7 +5975,7 @@ msgstr "Код защиты и его настройки"
 
 msgctxt "#20101"
 msgid "Entering master lock code always enables master mode"
-msgstr "Ввод кода защиты всегда переключает в режим 'Полного доступа'"
+msgstr "Ввод кода защиты всегда переключает в режим полного доступа"
 
 msgctxt "#20102"
 msgid "or copy from default?"
@@ -5803,7 +5991,7 @@ msgstr "Найдены старые настройки"
 
 msgctxt "#20105"
 msgid "Do you want to use them?"
-msgstr "Вы хотите их использовать?"
+msgstr "Использовать их?"
 
 msgctxt "#20106"
 msgid "Old media sources found."
@@ -5843,11 +6031,11 @@ msgstr "Профиль %i / %i"
 
 msgctxt "#20115"
 msgid "User login / Select a profile"
-msgstr "Вход пользователя / Выбор профиля"
+msgstr "Вход пользователя / выбор профиля"
 
 msgctxt "#20116"
 msgid "Use lock on login screen"
-msgstr "Использовать защиту на экране входа"
+msgstr "Использовать защиту экрана входа"
 
 msgctxt "#20117"
 msgid "Invalid lock code."
@@ -5855,7 +6043,7 @@ msgstr "Неверный код защиты."
 
 msgctxt "#20118"
 msgid "This requires the master lock to be set."
-msgstr "Для этого код защиты должен быть установлен."
+msgstr "Необходимо установить код защиты."
 
 msgctxt "#20119"
 msgid "Would you like to set it now?"
@@ -5863,7 +6051,7 @@ msgstr "Установить его сейчас?"
 
 msgctxt "#20120"
 msgid "Loading program information"
-msgstr "Загрузка данных о программе"
+msgstr "Загрузка сведений о программе…"
 
 msgctxt "#20121"
 msgid "Party on!"
@@ -5871,7 +6059,7 @@ msgstr "Вечеринка началась!"
 
 msgctxt "#20122"
 msgid "True"
-msgstr "Истина"
+msgstr "Да"
 
 msgctxt "#20123"
 msgid "Mixing drinks"
@@ -5883,7 +6071,7 @@ msgstr "Наполнение бокалов"
 
 msgctxt "#20125"
 msgid "Logged on as"
-msgstr "Вход произведен от имени"
+msgstr "Текущий пользователь"
 
 msgctxt "#20126"
 msgid "Log off"
@@ -5891,7 +6079,7 @@ msgstr "Выход"
 
 msgctxt "#20128"
 msgid "Go to root"
-msgstr "Перейти к корню"
+msgstr "Перейти в корневую папку"
 
 msgctxt "#20129"
 msgid "Weave"
@@ -5899,7 +6087,7 @@ msgstr "Weave"
 
 msgctxt "#20130"
 msgid "Weave (inverted)"
-msgstr "Weave (inverted)"
+msgstr "Weave (обратный)"
 
 msgctxt "#20131"
 msgid "Blend"
@@ -5911,15 +6099,15 @@ msgstr "Перезапустить видео"
 
 msgctxt "#20133"
 msgid "Edit network location"
-msgstr "Изменить сетевое расположение"
+msgstr "Изменить сетевой ресурс"
 
 msgctxt "#20134"
 msgid "Remove network location"
-msgstr "Удалить сетевое расположение"
+msgstr "Удалить сетевой ресурс"
 
 msgctxt "#20135"
 msgid "Do you want to scan the folder?"
-msgstr "Хотите просканировать папку?"
+msgstr "Сканировать папку?"
 
 msgctxt "#20136"
 msgid "Memory unit"
@@ -5931,7 +6119,7 @@ msgstr "Карта памяти подключена"
 
 msgctxt "#20138"
 msgid "Unable to mount memory unit"
-msgstr "Невозможно подключить карту памяти"
+msgstr "Не удалось подключить карту памяти"
 
 msgctxt "#20139"
 msgid "In port %i, slot %i"
@@ -5939,7 +6127,7 @@ msgstr "в порт %i, слот %i"
 
 msgctxt "#20140"
 msgid "Lock screensaver"
-msgstr "Заблокировать хранитель экрана"
+msgstr "Заблокировать заставку"
 
 msgctxt "#20141"
 msgid "Set"
@@ -5963,7 +6151,7 @@ msgstr "Интервал выключения (мин.)"
 
 msgctxt "#20146"
 msgid "Started, shutdown in %im"
-msgstr "Запущен, выключение через %im"
+msgstr "Запущен, выключение через %i мин."
 
 msgctxt "#20147"
 msgid "Shutdown in 30 minutes"
@@ -5971,19 +6159,19 @@ msgstr "Выключение через 30 мин."
 
 msgctxt "#20148"
 msgid "Shutdown in 60 minutes"
-msgstr "Выключение через 1 час"
+msgstr "Выключение через 60 мин."
 
 msgctxt "#20149"
 msgid "Shutdown in 120 minutes"
-msgstr "Выключение через 2 часа"
+msgstr "Выключение через 120 мин."
 
 msgctxt "#20150"
 msgid "Custom shutdown timer"
-msgstr "Особый таймер выключения"
+msgstr "Выключение по таймеру"
 
 msgctxt "#20151"
 msgid "Cancel shutdown timer"
-msgstr "Отключить таймер выключения"
+msgstr "Отменить таймер выключения"
 
 msgctxt "#20152"
 msgid "Lock preferences for %s"
@@ -5991,35 +6179,35 @@ msgstr "Заблокировать предпочтения для %s"
 
 msgctxt "#20153"
 msgid "Browse..."
-msgstr "Просмотр..."
+msgstr "Обзор…"
 
 msgctxt "#20154"
 msgid "Summary information"
-msgstr "Основная информация"
+msgstr "Основные сведения"
 
 msgctxt "#20155"
 msgid "Storage information"
-msgstr "Информация о накопителях"
+msgstr "Сведения о накопителях"
 
 msgctxt "#20156"
 msgid "Hard disk information"
-msgstr "Информация о HDD"
+msgstr "Сведения о ЖД"
 
 msgctxt "#20157"
 msgid "DVD-ROM information"
-msgstr "Информация о DVD-ROM"
+msgstr "Сведения о DVD-ROM"
 
 msgctxt "#20158"
 msgid "Network information"
-msgstr "Информация о сети"
+msgstr "Сведения о сети"
 
 msgctxt "#20159"
 msgid "Video information"
-msgstr "Информация о видеоподсистеме"
+msgstr "Сведения о видеоподсистеме"
 
 msgctxt "#20160"
 msgid "Hardware information"
-msgstr "Информация об оборудовании"
+msgstr "Сведения об оборудовании"
 
 msgctxt "#20161"
 msgid "Total"
@@ -6067,27 +6255,27 @@ msgstr "Сеть Windows (SMB)"
 
 msgctxt "#20172"
 msgid "XBMSP server"
-msgstr "Сервер XBMSP"
+msgstr "XBMSP-сервер"
 
 msgctxt "#20173"
 msgid "FTP server"
-msgstr "Сервер FTP"
+msgstr "FTP-сервер"
 
 msgctxt "#20174"
 msgid "iTunes music share (DAAP)"
-msgstr "iTunes (DAAP)"
+msgstr "Ресурс iTunes (DAAP)"
 
 msgctxt "#20175"
 msgid "UPnP server"
-msgstr "Сервер UPnP"
+msgstr "UPnP-сервер"
 
 msgctxt "#20176"
 msgid "Show video info"
-msgstr "Показывать информацию о видео"
+msgstr "Показывать сведения о видео"
 
 msgctxt "#20177"
 msgid "Done"
-msgstr "Enter"
+msgstr "Готово"
 
 msgctxt "#20178"
 msgid "Shift"
@@ -6099,11 +6287,11 @@ msgstr "Caps Lock"
 
 msgctxt "#20180"
 msgid "Symbols"
-msgstr "Символы"
+msgstr "Симв."
 
 msgctxt "#20181"
 msgid "Backspace"
-msgstr "<--- Backspace"
+msgstr "<---"
 
 msgctxt "#20182"
 msgid "Space"
@@ -6111,19 +6299,19 @@ msgstr "Пробел"
 
 msgctxt "#20183"
 msgid "Reload skin"
-msgstr "Обновить вид"
+msgstr "Обновить обложку"
 
 msgctxt "#20184"
 msgid "Rotate pictures using EXIF information"
-msgstr "Поворачивать изображения по информации из EXIF"
+msgstr "Поворачивать фото по информации из EXIF"
 
 msgctxt "#20185"
 msgid "Use poster view styles for TV shows"
-msgstr "Использовать вид постеров для сериалов"
+msgstr "Использовать представления с постерами для сериалов"
 
 msgctxt "#20186"
 msgid "Please wait"
-msgstr "Пожалуйста, подождите"
+msgstr "Подождите…"
 
 msgctxt "#20187"
 msgid "Backing up EEPROM"
@@ -6135,7 +6323,7 @@ msgstr "Резервное копирование BIOS"
 
 msgctxt "#20189"
 msgid "Enable auto scrolling for plot & review"
-msgstr "Включить автоматическую прокрутку для сюжетов и обзоров"
+msgstr "Включить автопрокрутку для сюжетов и обзоров"
 
 msgctxt "#20190"
 msgid "Custom"
@@ -6143,11 +6331,11 @@ msgstr "Дополнительно"
 
 msgctxt "#20191"
 msgid "Enable debug logging"
-msgstr "Включить протоколирование"
+msgstr "Включить журнал отладки"
 
 msgctxt "#20192"
 msgid "Download additional information during updates"
-msgstr "Искать данные об альбоме при добавлении в медиатеку"
+msgstr "Загружать доп. информацию во время обновлений"
 
 msgctxt "#20194"
 msgid "Default service for music information"
@@ -6155,23 +6343,23 @@ msgstr "Стандартный инфо-ресурс"
 
 msgctxt "#20195"
 msgid "Change scraper"
-msgstr "Изменить инфо-ресурс"
+msgstr "Изменить инфоресурс"
 
 msgctxt "#20196"
 msgid "Export music library"
-msgstr "Экспортировать музыкальную медиатеку"
+msgstr "Экспорт медиатеки музыки…"
 
 msgctxt "#20197"
 msgid "Import music library"
-msgstr "Импортировать музыкальную медиатеку"
+msgstr "Импорт медиатеки музыки…"
 
 msgctxt "#20198"
 msgid "No artist found!"
-msgstr "Исполнитель не найден!"
+msgstr "Исполнитель не найден."
 
 msgctxt "#20199"
 msgid "Downloading artist info failed"
-msgstr "Загрузка данных об исполнителе не удалась"
+msgstr "Не удалось загрузить сведения об исполнителе"
 
 msgctxt "#20250"
 msgid "Party on! (videos)"
@@ -6179,27 +6367,43 @@ msgstr "Вечеринка началась! (Видео)"
 
 msgctxt "#20251"
 msgid "Mixing drinks (videos)"
-msgstr "Смешивание напитков (Видео)"
+msgstr "Смешивание напитков (видео)"
 
 msgctxt "#20252"
 msgid "Filling glasses (videos)"
-msgstr "Наполнение бокалов (Видео)"
+msgstr "Наполнение бокалов (видео)"
+
+msgctxt "#20253"
+msgid "WebDAV server (HTTP)"
+msgstr "WebDAV-сервер (HTTP)"
+
+msgctxt "#20254"
+msgid "WebDAV server (HTTPS)"
+msgstr "WebDAV-сервер (HTTPS)"
+
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "Клиент MythTV"
 
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
-msgstr "Папка Web-сервера (HTTP)"
+msgstr "Папка веб-сервера (HTTP)"
 
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
-msgstr "Папка Web-сервера (HTTPS)"
+msgstr "Папка веб-сервера (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
-msgstr "Невозможно записать в папку:"
+msgstr "Не удалось записать в папку:"
 
 msgctxt "#20303"
 msgid "Do you want to skip and proceed?"
-msgstr "Хотите пропустить и продолжить?"
+msgstr "Пропустить и продолжить?"
+
+msgctxt "#20304"
+msgid "RSS Feed"
+msgstr "RSS-лента"
 
 msgctxt "#20306"
 msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
@@ -6207,7 +6411,7 @@ msgstr "Неизвестно. Добавьте сигнатуру MD5 из xbmc.
 
 msgctxt "#20307"
 msgid "Secondary DNS"
-msgstr "Вторичный DNS"
+msgstr "Дополнительный DNS"
 
 msgctxt "#20308"
 msgid "DHCP server:"
@@ -6243,7 +6447,7 @@ msgstr "Сохранения игр"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
-msgstr "Сорт. по: ID"
+msgstr "Сорт. по ID"
 
 msgctxt "#20317"
 msgid "Download saves"
@@ -6275,7 +6479,7 @@ msgstr "Сохранения игр"
 
 msgctxt "#20324"
 msgid "Play part..."
-msgstr "Играть часть..."
+msgstr "Играть часть…"
 
 msgctxt "#20325"
 msgid "Calibration reset"
@@ -6283,7 +6487,7 @@ msgstr "Сброс калибровки"
 
 msgctxt "#20326"
 msgid "This will reset the calibration values for %s"
-msgstr "Это сбросит калибровочное значение для %s"
+msgstr "Это сбросит калибровочные значения для %s"
 
 msgctxt "#20327"
 msgid "to it's default values."
@@ -6291,7 +6495,7 @@ msgstr "на значение по умолчанию"
 
 msgctxt "#20328"
 msgid "Browse for destination"
-msgstr "Укажите цель"
+msgstr "Укажите назначение"
 
 msgctxt "#20330"
 msgid "Use folder names for lookups"
@@ -6307,7 +6511,7 @@ msgstr "Использовать имена файлов или папок дл�
 
 msgctxt "#20333"
 msgid "Set content"
-msgstr "Содержимое"
+msgstr "Выбрать тип содержимого"
 
 msgctxt "#20334"
 msgid "Folder"
@@ -6335,7 +6539,7 @@ msgstr "Режиссер"
 
 msgctxt "#20340"
 msgid "Do you want to remove all items within"
-msgstr "Вы хотите удалить все объекты внутри"
+msgstr "Удалить все объекты внутри"
 
 msgctxt "#20341"
 msgid "this path from the library?"
@@ -6371,31 +6575,31 @@ msgstr "Режиссеры"
 
 msgctxt "#20349"
 msgid "No video files found in this path!"
-msgstr "По этому пути видеофайлы не найдены!"
+msgstr "Не найдено видеофайлов по этому пути."
 
 msgctxt "#20350"
 msgid "votes"
-msgstr "проголосовали"
+msgstr "проголосовало"
 
 msgctxt "#20351"
 msgid "TV show information"
-msgstr "Информация о сериале"
+msgstr "Сведения о сериале"
 
 msgctxt "#20352"
 msgid "Episode information"
-msgstr "Информация об эпизоде"
+msgstr "Сведения о серии"
 
 msgctxt "#20353"
 msgid "Loading TV show details"
-msgstr "Загрузка подробностей о сериале"
+msgstr "Загрузка сведений о сериале…"
 
 msgctxt "#20354"
 msgid "Fetching episode guide"
-msgstr "Руководство по выбору эпизода"
+msgstr "Получение расписания серий…"
 
 msgctxt "#20355"
 msgid "Loading info for episodes in directory"
-msgstr "Загрузка данных об эпизодах в папке"
+msgstr "Загрузка сведений об серий в папке…"
 
 msgctxt "#20356"
 msgid "Select TV show:"
@@ -6411,19 +6615,19 @@ msgstr "Сезон %i"
 
 msgctxt "#20359"
 msgid "Episode"
-msgstr "Эпизод"
+msgstr "Серия"
 
 msgctxt "#20360"
 msgid "Episodes"
-msgstr "Эпизоды"
+msgstr "Серии"
 
 msgctxt "#20361"
 msgid "Loading episode details"
-msgstr "Загрузка подробностей об эпизоде"
+msgstr "Загрузка сведений о серии…"
 
 msgctxt "#20362"
 msgid "Remove episode from library"
-msgstr "Удалить эпизод из медиатеки"
+msgstr "Удалить серию из медиатеки"
 
 msgctxt "#20363"
 msgid "Remove TV show from library"
@@ -6435,7 +6639,7 @@ msgstr "Сериал"
 
 msgctxt "#20365"
 msgid "Episode plot"
-msgstr "Сюжет эпизода"
+msgstr "Сюжет серии"
 
 msgctxt "#20366"
 msgid "* All seasons"
@@ -6451,15 +6655,15 @@ msgstr "Код продукта"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
-msgstr "Не показывать сюжет для непросмотренных"
+msgstr "Показывать сюжет для непросмотренного"
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"
-msgstr "* Скрыто для предотвращения спойлеров *"
+msgstr "* Скрыто, чтобы избежать спойлеров *"
 
 msgctxt "#20371"
 msgid "Set season thumb"
-msgstr "Установить эскиз для сезона"
+msgstr "Выбрать эскиз для сезона"
 
 msgctxt "#20372"
 msgid "Season image"
@@ -6471,19 +6675,23 @@ msgstr "Сезон"
 
 msgctxt "#20374"
 msgid "Downloading movie information"
-msgstr "Загрузка информации о фильме"
+msgstr "Загрузка сведений о фильме…"
 
 msgctxt "#20375"
 msgid "Unassign content"
-msgstr "Не указывать содержимое"
+msgstr "Очистить тип содержимого"
+
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Оригинальное название"
 
 msgctxt "#20377"
 msgid "Refresh TV show information"
-msgstr "Обновить информацию о сериале"
+msgstr "Обновить сведения о сериале"
 
 msgctxt "#20378"
 msgid "Refresh info for all episodes?"
-msgstr "Обновить информацию о всех эпизодах?"
+msgstr "Обновить сведения обо всех сериях?"
 
 msgctxt "#20379"
 msgid "Selected folder contains a single TV show"
@@ -6495,7 +6703,7 @@ msgstr "Не сканировать выбранную папку"
 
 msgctxt "#20381"
 msgid "Specials"
-msgstr "Специальное"
+msgstr "Дополнения"
 
 msgctxt "#20382"
 msgid "Automatically grab season thumbs"
@@ -6503,7 +6711,7 @@ msgstr "Автоматически создавать эскизы для сез
 
 msgctxt "#20383"
 msgid "Selected folder contains a single video"
-msgstr "Указанная папка содержит отдельное видео"
+msgstr "Указанная папка содержит отдельный видеофайл"
 
 msgctxt "#20384"
 msgid "Link to TV show"
@@ -6515,47 +6723,47 @@ msgstr "Убрать связь с сериалом"
 
 msgctxt "#20386"
 msgid "Recently added movies"
-msgstr "Свежие фильмы"
+msgstr "Последние фильмы"
 
 msgctxt "#20387"
 msgid "Recently added episodes"
-msgstr "Свежие эпизоды"
+msgstr "Последние серии"
 
 msgctxt "#20388"
 msgid "Studios"
-msgstr "Киностудии"
+msgstr "Студии"
 
 msgctxt "#20389"
 msgid "Music videos"
-msgstr "Музыкальные видео"
+msgstr "Муз. клипы"
 
 msgctxt "#20390"
 msgid "Recently added music videos"
-msgstr "Свежие музыкальные видео"
+msgstr "Последние клипы"
 
 msgctxt "#20391"
 msgid "Music video"
-msgstr "Музыкальное видео"
+msgstr "Музыкальный клип"
 
 msgctxt "#20392"
 msgid "Remove music video from library"
-msgstr "Удалить музыкальное видео из медиатеки"
+msgstr "Удалить музыкальный клип из медиатеки"
 
 msgctxt "#20393"
 msgid "Music video information"
-msgstr "Данные о музыкальном видео"
+msgstr "Сведения о клипе"
 
 msgctxt "#20394"
 msgid "Loading music video information"
-msgstr "Загрузка данных о музыкальном видео"
+msgstr "Загрузка сведений о клипе…"
 
 msgctxt "#20395"
 msgid "Mixed"
-msgstr "Смешанное"
+msgstr "Муз. микс"
 
 msgctxt "#20396"
 msgid "Go to albums by artist"
-msgstr "Перейти к альбому по исполнителю"
+msgstr "Перейти к альбомам по исполнителям"
 
 msgctxt "#20397"
 msgid "Go to album"
@@ -6567,43 +6775,43 @@ msgstr "Играть песню"
 
 msgctxt "#20399"
 msgid "Go to music videos from album"
-msgstr "Перейти к музыкальным видео из альбома"
+msgstr "Перейти к музыкальным клипам из альбома"
 
 msgctxt "#20400"
 msgid "Go to music videos by artist"
-msgstr "Перейти к музыкальным видео по исполнителю"
+msgstr "Перейти к музыкальным клипам по исполнителю"
 
 msgctxt "#20401"
 msgid "Play music video"
-msgstr "Играть музыкальное видео"
+msgstr "Играть музыкальный клип"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "Автоматически создавать эскизы для актеров"
+msgstr "Автоматически загружать эскизы для актеров"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
-msgstr "Установить эскиз для актера"
+msgstr "Выбрать эскиз для актера"
 
 msgctxt "#20405"
 msgid "Remove episode bookmark"
-msgstr "Удалить закладку эпизода"
+msgstr "Удалить закладку серии"
 
 msgctxt "#20406"
 msgid "Set episode bookmark"
-msgstr "Установить закладку эпизода"
+msgstr "Создать закладку серии"
 
 msgctxt "#20407"
 msgid "Scraper settings"
-msgstr "Настройки инфо-ресурса"
+msgstr "Настройки инфоресурса"
 
 msgctxt "#20408"
 msgid "Downloading music video information"
-msgstr "Загрузка данных о музыкальном видео"
+msgstr "Загрузка сведений о музыкальном клипе…"
 
 msgctxt "#20409"
 msgid "Downloading TV show information"
-msgstr "Загрузка данных о сериале"
+msgstr "Загрузка сведений о сериале…"
 
 msgctxt "#20410"
 msgid "Trailer"
@@ -6611,7 +6819,7 @@ msgstr "Трейлер"
 
 msgctxt "#20411"
 msgid "Flatten"
-msgstr "Объединить"
+msgstr "Скрыть категории"
 
 msgctxt "#20412"
 msgid "Flatten TV shows"
@@ -6627,15 +6835,15 @@ msgstr "Показывать FanArt в медиатеке"
 
 msgctxt "#20415"
 msgid "Scanning for new content"
-msgstr "Сканирование нового содержимого"
+msgstr "Сканирование нового содержимого…"
 
 msgctxt "#20416"
 msgid "First aired"
-msgstr "Первый переданный"
+msgstr "Премьера"
 
 msgctxt "#20417"
 msgid "Writer"
-msgstr "Автор сценария"
+msgstr "Сценарий"
 
 msgctxt "#20418"
 msgid "Clean file and folder names"
@@ -6647,7 +6855,7 @@ msgstr "Никогда"
 
 msgctxt "#20421"
 msgid "If only one season"
-msgstr "только если один сезон"
+msgstr "Если один сезон"
 
 msgctxt "#20422"
 msgid "Always"
@@ -6659,15 +6867,15 @@ msgstr "Есть трейлер"
 
 msgctxt "#20424"
 msgid "False"
-msgstr "Ложь"
+msgstr "Нет"
 
 msgctxt "#20425"
 msgid "Fanart slideshow"
-msgstr "Слайдшоу FanArt-ов"
+msgstr "Слайд-шоу фанартов"
 
 msgctxt "#20426"
 msgid "Export to a single file or separate"
-msgstr "Экспортировать одним файлом или разделять"
+msgstr "Экспортировать в одну папку или разделять?"
 
 msgctxt "#20427"
 msgid "files per entry?"
@@ -6675,7 +6883,7 @@ msgstr "на отдельные файлы для каждой записи?"
 
 msgctxt "#20428"
 msgid "Single file"
-msgstr "Одним файлом"
+msgstr "В одну папку"
 
 msgctxt "#20429"
 msgid "Separate"
@@ -6683,11 +6891,11 @@ msgstr "Разделять"
 
 msgctxt "#20430"
 msgid "Export thumbnails and fanart?"
-msgstr "Экспортировать эскизы и FanArt?"
+msgstr "Экспортировать эскизы и фанарт?"
 
 msgctxt "#20431"
 msgid "Overwrite old files?"
-msgstr "Перезаписывать старые файлы?"
+msgstr "Перезаписать файлы?"
 
 msgctxt "#20432"
 msgid "Exclude path from library updates"
@@ -6695,7 +6903,75 @@ msgstr "Исключить путь из обновлений медиатеки
 
 msgctxt "#20433"
 msgid "Extract thumbnails and video information"
-msgstr "Извлечь мета-данные из медиафайла"
+msgstr "Извлекать метаданные из медиафайлов"
+
+msgctxt "#20434"
+msgid "Sets"
+msgstr "Киноциклы"
+
+msgctxt "#20436"
+msgid "Export actor thumbs?"
+msgstr "Экспортировать эскизы актеров?"
+
+msgctxt "#20437"
+msgid "Choose fanart"
+msgstr "Выбрать фанарт"
+
+msgctxt "#20438"
+msgid "Local fanart"
+msgstr "Локальный фанарт"
+
+msgctxt "#20439"
+msgid "No fanart"
+msgstr "Без фанарта"
+
+msgctxt "#20440"
+msgid "Current fanart"
+msgstr "Текущий фанарт"
+
+msgctxt "#20441"
+msgid "Remote fanart"
+msgstr "Внешний фанарт"
+
+msgctxt "#20442"
+msgid "Change content"
+msgstr "Изменить тип содержимого"
+
+msgctxt "#20443"
+msgid "Do you want to refresh info for all"
+msgstr "Обновить сведения для всех"
+
+msgctxt "#20444"
+msgid "items within this path?"
+msgstr "объектов в данной папке?"
+
+msgctxt "#20445"
+msgid "Fanart"
+msgstr "Фанарт"
+
+msgctxt "#20446"
+msgid "Locally stored information found."
+msgstr "Найдены локальные сведения."
+
+msgctxt "#20447"
+msgid "Ignore and refresh from internet?"
+msgstr "Игнорировать и обновить из Интернета?"
+
+msgctxt "#20448"
+msgid "Could not download information"
+msgstr "Не удалось загрузить сведения"
+
+msgctxt "#20450"
+msgid "Would you like to continue scanning?"
+msgstr "Продолжить сканирование?"
+
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Страны"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Объединять фильмы в циклы"
 
 msgctxt "#21330"
 msgid "Show hidden files and directories"
@@ -6707,7 +6983,7 @@ msgstr "Клиент TuxBox"
 
 msgctxt "#21332"
 msgid "WARNING: Target TuxBox device is in recording-mode!"
-msgstr "ВНИМАНИЕ: Целевое устройство TuxBox находится в режиме записи!"
+msgstr "ВНИМАНИЕ. Целевое устройство TuxBox находится в режиме записи!"
 
 msgctxt "#21333"
 msgid "The stream will be stopped!"
@@ -6715,11 +6991,11 @@ msgstr "Поток будет остановлен!"
 
 msgctxt "#21334"
 msgid "Zap to channel: %s failed!"
-msgstr "Неудачное переключение на канал %s!"
+msgstr "Не удалось переключиться на канал %s."
 
 msgctxt "#21335"
 msgid "Are you sure to start the stream?"
-msgstr "Вы уверены, что хотите включить поток?"
+msgstr "Включить поток?"
 
 msgctxt "#21336"
 msgid "Connecting to: %s"
@@ -6731,11 +7007,11 @@ msgstr "Устройство TuxBox"
 
 msgctxt "#21359"
 msgid "Add media share..."
-msgstr "Добавить медиаресурс..."
+msgstr "Добавить медиаресурс…"
 
 msgctxt "#21360"
 msgid "Share video and music libraries through UPnP"
-msgstr "Включить сервер UPnP"
+msgstr "Включить доступ к медиатеке по UPnP"
 
 msgctxt "#21364"
 msgid "Edit media share"
@@ -6771,7 +7047,7 @@ msgstr "Установить регион DVD-проигрывателя"
 
 msgctxt "#21373"
 msgid "Video output"
-msgstr "Видео"
+msgstr "Вывод видео"
 
 msgctxt "#21374"
 msgid "Video aspect"
@@ -6779,15 +7055,15 @@ msgstr "Соотношение сторон видео"
 
 msgctxt "#21375"
 msgid "Normal"
-msgstr "Normal"
+msgstr "Нормальное"
 
 msgctxt "#21376"
 msgid "Letterbox"
-msgstr "Letterbox"
+msgstr "4:3"
 
 msgctxt "#21377"
 msgid "Widescreen"
-msgstr "Widescreen"
+msgstr "Широкоформатное"
 
 msgctxt "#21378"
 msgid "Enable 480p"
@@ -6807,7 +7083,7 @@ msgstr "Введите имя нового плейлиста"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
-msgstr "Влючить пункт 'Добавить источник' в списках файлов"
+msgstr "Показывать \"Добавить источник\" в списках файлов"
 
 msgctxt "#21383"
 msgid "Enable scrollbars"
@@ -6815,7 +7091,7 @@ msgstr "Включить полосы прокрутки"
 
 msgctxt "#21384"
 msgid "Make watched filtering a toggle in video library"
-msgstr "Отмечать галочкой просмотренное видео в медиатеке"
+msgstr "Отмечать просмотренное видео в медиатеке"
 
 msgctxt "#21385"
 msgid "Open"
@@ -6835,7 +7111,7 @@ msgstr "Тишина"
 
 msgctxt "#21389"
 msgid "Enable custom background"
-msgstr "Разрешить свои фоновые изображения"
+msgstr "Использовать собственный фон"
 
 msgctxt "#21390"
 msgid "Power management level"
@@ -6859,7 +7135,7 @@ msgstr "Пониженное ожидание"
 
 msgctxt "#21395"
 msgid "Unable to cache files bigger than 4GB"
-msgstr "Невозможно кэшировать файлы размером более 4 гигабайт"
+msgstr "Не удалось кэшировать файлы размером более 4 ГБ"
 
 msgctxt "#21396"
 msgid "Chapter"
@@ -6867,7 +7143,7 @@ msgstr "Глава"
 
 msgctxt "#21397"
 msgid "High quality pixel shader v2"
-msgstr "Высококачественные пиксельные шейдеры v2"
+msgstr "Качеств. пиксельные шейдеры в. 2"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
@@ -6903,11 +7179,11 @@ msgstr "заканчивается на"
 
 msgctxt "#21406"
 msgid "greater than"
-msgstr "больше чем"
+msgstr "больше, чем"
 
 msgctxt "#21407"
 msgid "less than"
-msgstr "меньше чем"
+msgstr "меньше, чем"
 
 msgctxt "#21408"
 msgid "after"
@@ -6927,15 +7203,15 @@ msgstr "не в конце"
 
 msgctxt "#21412"
 msgid "Scrapers"
-msgstr "Инфо-ресурсы"
+msgstr "Инфоресурсы"
 
 msgctxt "#21413"
 msgid "Default movie scraper"
-msgstr "Стандартный инфо-ресурс для фильмов"
+msgstr "Инфоресурс для фильмов по умолчанию"
 
 msgctxt "#21414"
 msgid "Default tvshow scraper"
-msgstr "Стандартный инфо-ресурс для сериалов"
+msgstr "Инфоресурс для сериалов по умолчанию"
 
 msgctxt "#21415"
 msgid "Default musicvideo scraper"
@@ -6945,13 +7221,17 @@ msgctxt "#21416"
 msgid "Enable fallback based on scraper language"
 msgstr "Разрешить исправления на языке инфо-ресурса"
 
+msgctxt "#21418"
+msgid "Multilingual"
+msgstr "Многоязычность"
+
 msgctxt "#21420"
 msgid "Value to match"
-msgstr "Значение слишком большое"
+msgstr "Значение для поиска"
 
 msgctxt "#21421"
 msgid "Smart playlist rule"
-msgstr "Правило smart-плейлиста"
+msgstr "Правило смарт-плейлиста"
 
 msgctxt "#21422"
 msgid "Match items where"
@@ -6959,11 +7239,11 @@ msgstr "Выбрать объекты, в которых"
 
 msgctxt "#21423"
 msgid "New rule..."
-msgstr "Новое правило..."
+msgstr "Новое правило…"
 
 msgctxt "#21424"
 msgid "Items must match"
-msgstr "Объекты должны удовлетворять"
+msgstr "Объекты должны соответствовать"
 
 msgctxt "#21425"
 msgid "all of the rules"
@@ -6995,7 +7275,7 @@ msgstr "убыванию"
 
 msgctxt "#21432"
 msgid "Edit smart playlist"
-msgstr "Изменить smart-плейлист"
+msgstr "Изменить смарт-плейлист"
 
 msgctxt "#21433"
 msgid "Name of the playlist"
@@ -7007,15 +7287,15 @@ msgstr "Найти объекты, у которых"
 
 msgctxt "#21435"
 msgid "Edit"
-msgstr "Исправить"
+msgstr "Изменить"
 
 msgctxt "#21436"
 msgid "%i items"
-msgstr "%i объект(ов)"
+msgstr "Объектов: %i"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
-msgstr "Создать новый smart-плейлист"
+msgstr "Новый смарт-плейлист"
 
 msgctxt "#21438"
 msgid "%c Drive"
@@ -7023,7 +7303,7 @@ msgstr "Диск %c"
 
 msgctxt "#21439"
 msgid "Edit party mode rules"
-msgstr "Изменить правила режима 'party'"
+msgstr "Изменить правила режима \"Вечеринка\""
 
 msgctxt "#21440"
 msgid "Home folder"
@@ -7035,11 +7315,35 @@ msgstr "Количество просмотров"
 
 msgctxt "#21442"
 msgid "Episode title"
-msgstr "Название эпизода"
+msgstr "Название серии"
+
+msgctxt "#21443"
+msgid "Video resolution"
+msgstr "Разрешение видео"
+
+msgctxt "#21444"
+msgid "Audio channels"
+msgstr "Каналов аудио"
+
+msgctxt "#21445"
+msgid "Video codec"
+msgstr "Кодек видео"
+
+msgctxt "#21446"
+msgid "Audio codec"
+msgstr "Кодек аудио"
+
+msgctxt "#21447"
+msgid "Audio language"
+msgstr "Язык аудио"
+
+msgctxt "#21448"
+msgid "Subtitle language"
+msgstr "Язык субтитров"
 
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
-msgstr "Пульт ДУ посылает сигналы нажатия клавиш клавиатуры"
+msgstr "Пульт ДУ посылает коды нажатий клавиш"
 
 msgctxt "#21800"
 msgid "File name"
@@ -7063,7 +7367,7 @@ msgstr "№ в слайдшоу"
 
 msgctxt "#21805"
 msgid "Resolution"
-msgstr "Размеры"
+msgstr "Разрешение"
 
 msgctxt "#21806"
 msgid "Comment"
@@ -7071,7 +7375,7 @@ msgstr "Комментарий"
 
 msgctxt "#21807"
 msgid "Colour/B&W"
-msgstr "Цветная / Ч-Б"
+msgstr "Цвет / Ч-Б"
 
 msgctxt "#21808"
 msgid "JPEG process"
@@ -7079,7 +7383,7 @@ msgstr "Алгоритм JPEG"
 
 msgctxt "#21820"
 msgid "Date/Time"
-msgstr "Дата съемки"
+msgstr "Дата/время"
 
 msgctxt "#21821"
 msgid "Description"
@@ -7095,7 +7399,7 @@ msgstr "Модель фотоаппарата"
 
 msgctxt "#21824"
 msgid "EXIF comment"
-msgstr "EXIF комментарий"
+msgstr "Комментарий EXIF"
 
 msgctxt "#21825"
 msgid "Firmware"
@@ -7107,11 +7411,11 @@ msgstr "Диафрагма"
 
 msgctxt "#21827"
 msgid "Focal length"
-msgstr "Фокальная длинна"
+msgstr "Фокусное расстояние"
 
 msgctxt "#21828"
 msgid "Focus distance"
-msgstr "Фокусное расстояние"
+msgstr "Дистанция фокусировки"
 
 msgctxt "#21829"
 msgid "Exposure"
@@ -7147,11 +7451,11 @@ msgstr "Режим измерения"
 
 msgctxt "#21837"
 msgid "ISO"
-msgstr "Значение ISO"
+msgstr "Чувствительность ISO"
 
 msgctxt "#21838"
 msgid "Digital zoom"
-msgstr "Цифровой zoom"
+msgstr "Цифровое увеличение"
 
 msgctxt "#21839"
 msgid "CCD width"
@@ -7159,15 +7463,15 @@ msgstr "Ширина CCD"
 
 msgctxt "#21840"
 msgid "GPS latitude"
-msgstr "GPS широта"
+msgstr "Широта GPS"
 
 msgctxt "#21841"
 msgid "GPS longitude"
-msgstr "GPS долгота"
+msgstr "Долгота GPS"
 
 msgctxt "#21842"
 msgid "GPS altitude"
-msgstr "GPS высота"
+msgstr "Высота GPS"
 
 msgctxt "#21843"
 msgid "Orientation"
@@ -7231,7 +7535,7 @@ msgstr "Город"
 
 msgctxt "#21874"
 msgid "State"
-msgstr "Штат"
+msgstr "Область"
 
 msgctxt "#21875"
 msgid "Country"
@@ -7239,7 +7543,7 @@ msgstr "Страна"
 
 msgctxt "#21876"
 msgid "Original Tx Reference"
-msgstr "*Оригинальный Tx Reference"
+msgstr "Оригинальный Tx Reference"
 
 msgctxt "#21877"
 msgid "Date created"
@@ -7259,27 +7563,27 @@ msgstr "Справочная служба"
 
 msgctxt "#21881"
 msgid "Allow control of XBMC via UPnP"
-msgstr "Включить UPnP обработчик"
+msgstr "Разрешить управление XBMC по UPnP"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
-msgstr "Попытаться пропустить вступление перед DVD-меню"
+msgstr "Пытаться пропустить вступление перед меню DVD"
 
 msgctxt "#21883"
 msgid "Saved music"
-msgstr "Оцифрованные AudioCD диски"
+msgstr "Оцифрованные аудио-CD"
 
 msgctxt "#21884"
 msgid "Query info for all artists"
-msgstr "Данные о всех исполнителях"
+msgstr "Данные обо всех исполнителях"
 
 msgctxt "#21885"
 msgid "Downloading album information"
-msgstr "Загрузка данных об альбоме"
+msgstr "Загрузка данных об альбоме…"
 
 msgctxt "#21886"
 msgid "Downloading artist information"
-msgstr "Загрузка данных об исполнителе"
+msgstr "Загрузка данных об исполнителе…"
 
 msgctxt "#21887"
 msgid "Biography"
@@ -7291,7 +7595,7 @@ msgstr "Дискография"
 
 msgctxt "#21889"
 msgid "Searching artist"
-msgstr "Поиск исполнителя"
+msgstr "Поиск исполнителя…"
 
 msgctxt "#21890"
 msgid "Select artist"
@@ -7299,7 +7603,7 @@ msgstr "Выберите исполнителя"
 
 msgctxt "#21891"
 msgid "Artist information"
-msgstr "Данные об исполнителе"
+msgstr "Сведения об исполнителе"
 
 msgctxt "#21892"
 msgid "Instruments"
@@ -7307,11 +7611,11 @@ msgstr "Инструменты"
 
 msgctxt "#21893"
 msgid "Born"
-msgstr "Родился(ась)"
+msgstr "Рождение"
 
 msgctxt "#21894"
 msgid "Formed"
-msgstr "Образовались"
+msgstr "Формирование"
 
 msgctxt "#21895"
 msgid "Themes"
@@ -7319,23 +7623,23 @@ msgstr "Темы"
 
 msgctxt "#21896"
 msgid "Disbanded"
-msgstr "Распались"
+msgstr "Распад"
 
 msgctxt "#21897"
 msgid "Died"
-msgstr "Умер(ла)"
+msgstr "Смерть"
 
 msgctxt "#21898"
 msgid "Years active"
-msgstr "Годы творч-ва"
+msgstr "Годы активности"
 
 msgctxt "#21899"
 msgid "Label"
-msgstr "Метка"
+msgstr "Студия"
 
 msgctxt "#21900"
 msgid "Born/Formed"
-msgstr "Родился(ась)/Образовались"
+msgstr "Рождение/формирование"
 
 msgctxt "#22000"
 msgid "Update library on startup"
@@ -7355,11 +7659,11 @@ msgstr "Включить списки изменений и решений"
 
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
-msgstr "Задержано на: %2.3fs"
+msgstr "Задержка на %2.3f с."
 
 msgctxt "#22005"
 msgid "Ahead by: %2.3fs"
-msgstr "Опережает на: %2.3fs"
+msgstr "Опережение на %2.3f с."
 
 msgctxt "#22006"
 msgid "Subtitle offset"
@@ -7371,7 +7675,7 @@ msgstr "Производитель OpenGL:"
 
 msgctxt "#22008"
 msgid "OpenGL renderer:"
-msgstr "Рендерер OpenGL:"
+msgstr "Обработчик OpenGL:"
 
 msgctxt "#22009"
 msgid "OpenGL version:"
@@ -7395,7 +7699,7 @@ msgstr "Данные профиля"
 
 msgctxt "#22014"
 msgid "Use dim if paused during video playback"
-msgstr "Затемнять, в паузе при воспроизведение видео"
+msgstr "Затемнять при паузе во время просмотра видео"
 
 msgctxt "#22015"
 msgid "All recordings"
@@ -7407,7 +7711,7 @@ msgstr "По имени"
 
 msgctxt "#22017"
 msgid "By group"
-msgstr "По групппе"
+msgstr "По группе"
 
 msgctxt "#22018"
 msgid "Live channels"
@@ -7419,7 +7723,7 @@ msgstr "Записи по имени"
 
 msgctxt "#22020"
 msgid "Guide"
-msgstr "Руководство"
+msgstr "Программа"
 
 msgctxt "#22021"
 msgid "Allowed error in aspect ratio to minimize black bars"
@@ -7427,7 +7731,7 @@ msgstr "Ошибка в ракурсе при минимизации черны�
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "Показывать видео файлы в списке"
+msgstr "Показывать видеофайлы в списках"
 
 msgctxt "#22030"
 msgid "Font"
@@ -7447,23 +7751,23 @@ msgstr "- набор символов"
 
 msgctxt "#22034"
 msgid "Export karaoke titles as HTML"
-msgstr "Экспортировать текст караоке в формате HTML"
+msgstr "Экспорт в формате HTML"
 
 msgctxt "#22035"
 msgid "Export karaoke titles as CSV"
-msgstr "Экспортировать текст караоке в формате CSV"
+msgstr "Экспорт в формате CSV"
 
 msgctxt "#22036"
 msgid "Import karaoke titles..."
-msgstr "Импортировать текст караоке..."
+msgstr "Импорт текста караоке…"
 
 msgctxt "#22037"
 msgid "Show song selector automatically"
-msgstr "Автоматически всплывающий выбор песни"
+msgstr "Показывать выбор песни автоматически"
 
 msgctxt "#22038"
 msgid "Export karaoke titles..."
-msgstr "Экспортировать текст караоке..."
+msgstr "Экспорт текста караоке…"
 
 msgctxt "#22039"
 msgid "Enter song number"
@@ -7501,17 +7805,49 @@ msgctxt "#23051"
 msgid "Part %i"
 msgstr "Часть %i"
 
+msgctxt "#23052"
+msgid "Buffering %i bytes"
+msgstr "Буферизация: %i байт"
+
+msgctxt "#23053"
+msgid "Stopping"
+msgstr "Остановка…"
+
+msgctxt "#23054"
+msgid "Running"
+msgstr "Запуск…"
+
 msgctxt "#23100"
 msgid "External Player Active"
 msgstr "Активирован внешний проигрыватель"
 
 msgctxt "#23101"
 msgid "Click OK to terminate the player"
-msgstr "Нажмите ОК для завершения плеера"
+msgstr "Нажмите ОК для закрытия проигрывателя"
 
 msgctxt "#23104"
 msgid "Click OK when playback has ended"
-msgstr "Нажмите ОК когда проигрывание завершится"
+msgstr "Нажмите ОК по завершении проигрывания"
+
+msgctxt "#24000"
+msgid "Add-on"
+msgstr "Дополнение"
+
+msgctxt "#24020"
+msgid "Configure"
+msgstr "Настроить"
+
+msgctxt "#24021"
+msgid "Disable"
+msgstr "Отключить"
+
+msgctxt "#24022"
+msgid "Enable"
+msgstr "Включить"
+
+msgctxt "#24030"
+msgid "This Add-on can not be configured"
+msgstr "Невозможно настроить данное дополнение"
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -7523,7 +7859,7 @@ msgstr "Клавиатура QWERTY"
 
 msgctxt "#29802"
 msgid "Passthrough Audio in use"
-msgstr "Включен режим Passthrough Audio"
+msgstr "Прямой вывод звука"
 
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
@@ -7539,15 +7875,15 @@ msgstr "Поток"
 
 msgctxt "#33003"
 msgid "Download"
-msgstr "Скачать"
+msgstr "Загрузить"
 
 msgctxt "#33004"
 msgid "Download & play"
-msgstr "Скачать и проиграть"
+msgstr "Загрузить и воспроизвести"
 
 msgctxt "#33005"
 msgid "Download & save"
-msgstr "Скачать и сохранить"
+msgstr "Загрузить и сохранить"
 
 msgctxt "#33006"
 msgid "Today"
@@ -7559,15 +7895,19 @@ msgstr "Завтра"
 
 msgctxt "#33008"
 msgid "Saving"
-msgstr "Сохраняем"
+msgstr "Сохранение…"
 
 msgctxt "#33009"
 msgid "Copying"
-msgstr "Копируем"
+msgstr "Копирование…"
 
 msgctxt "#33010"
 msgid "Set download directory"
-msgstr "Установка пути для скачивания"
+msgstr "Выбрать папку для загрузки"
+
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Длительность поиска"
 
 msgctxt "#33012"
 msgid "Short"
@@ -7579,11 +7919,11 @@ msgstr "Длинная"
 
 msgctxt "#33014"
 msgid "Use DVD player instead of regular player"
-msgstr "Использовать DVD player вместо обычного"
+msgstr "Использовать проигрыватель DVD вместо обычного"
 
 msgctxt "#33015"
 msgid "Ask for download before playing video"
-msgstr "Предлагать скачать видео перед проигрыванием"
+msgstr "Предлагать загрузку видео перед проигрыванием"
 
 msgctxt "#33016"
 msgid "Clips"
@@ -7603,7 +7943,7 @@ msgstr "Завтра вечером"
 
 msgctxt "#33020"
 msgid "Condition"
-msgstr "Условие"
+msgstr "Условия"
 
 msgctxt "#33021"
 msgid "Precipitation"
@@ -7619,11 +7959,11 @@ msgstr "Влажность"
 
 msgctxt "#33024"
 msgid "Feels"
-msgstr "Ощущается как"
+msgstr "Ощущается"
 
 msgctxt "#33025"
 msgid "Observed"
-msgstr "Соблюдается"
+msgstr "Наблюдается"
 
 msgctxt "#33026"
 msgid "Departure from normal"
@@ -7639,27 +7979,27 @@ msgstr "Закат"
 
 msgctxt "#33029"
 msgid "Details"
-msgstr "Подробности"
+msgstr "Сведения"
 
 msgctxt "#33030"
 msgid "Outlook"
-msgstr "Outlook"
+msgstr "Прогноз"
 
 msgctxt "#33031"
 msgid "Coverflow"
-msgstr "Coverflow"
+msgstr "Карусель постеров"
 
 msgctxt "#33032"
 msgid "Translate text"
-msgstr "Translate text"
+msgstr "Перевести текст"
 
 msgctxt "#33033"
 msgid "Map list %s category"
-msgstr "Map list %s category"
+msgstr "Категория списка карт: %s"
 
 msgctxt "#33034"
 msgid "36 Hour"
-msgstr "36 Hour"
+msgstr "36 часов"
 
 msgctxt "#33035"
 msgid "Maps"
@@ -7667,27 +8007,27 @@ msgstr "Карты"
 
 msgctxt "#33036"
 msgid "Hourly"
-msgstr "Hourly"
+msgstr "Ежечасно"
 
 msgctxt "#33037"
 msgid "Weekend"
-msgstr "Weekend"
+msgstr "Выходные"
 
 msgctxt "#33038"
 msgid "%s day"
-msgstr "%s day"
+msgstr "%s дн."
 
 msgctxt "#33049"
 msgid "Alert"
-msgstr "Alert"
+msgstr "Предупреждение"
 
 msgctxt "#33050"
 msgid "Alerts"
-msgstr "Alerts"
+msgstr "Предупреждения"
 
 msgctxt "#33051"
 msgid "Choose Your"
-msgstr "Choose Your"
+msgstr "Выберите"
 
 msgctxt "#33052"
 msgid "Check"
@@ -7695,35 +8035,35 @@ msgstr "Проверить"
 
 msgctxt "#33053"
 msgid "Configure the"
-msgstr "Configure the"
+msgstr "Настройте"
 
 msgctxt "#33054"
 msgid "Seasons"
-msgstr "Seasons"
+msgstr "Сезоны"
 
 msgctxt "#33055"
 msgid "Use your"
-msgstr "Use your"
+msgstr "Используйте"
 
 msgctxt "#33056"
 msgid "Watch your"
-msgstr "Watch your"
+msgstr "Смотрите"
 
 msgctxt "#33057"
 msgid "Listen to"
-msgstr "Listen to"
+msgstr "Слушайте"
 
 msgctxt "#33058"
 msgid "View your"
-msgstr "View your"
+msgstr "Просматривайте"
 
 msgctxt "#33059"
 msgid "Configure the"
-msgstr "Configure the"
+msgstr "Настройте"
 
 msgctxt "#33060"
 msgid "Power"
-msgstr "Вкл/выкл"
+msgstr "Вкл./выкл."
 
 msgctxt "#33061"
 msgid "Menu"
@@ -7731,11 +8071,11 @@ msgstr "Меню"
 
 msgctxt "#33062"
 msgid "Play the"
-msgstr "Play the"
+msgstr "Воспроизводите"
 
 msgctxt "#33063"
 msgid "Options"
-msgstr "Настройки"
+msgstr "Параметры"
 
 msgctxt "#33065"
 msgid "Editor"
@@ -7743,11 +8083,11 @@ msgstr "Редактор"
 
 msgctxt "#33066"
 msgid "About your"
-msgstr "About your"
+msgstr "Сведения о"
 
 msgctxt "#33067"
 msgid "Star rating"
-msgstr "Star rating"
+msgstr "Рейтинг"
 
 msgctxt "#33068"
 msgid "Background"
@@ -7759,35 +8099,35 @@ msgstr "Варианты фона"
 
 msgctxt "#33070"
 msgid "Custom background"
-msgstr "Custom background"
+msgstr "Собственный фон"
 
 msgctxt "#33071"
 msgid "Custom backgrounds"
-msgstr "Custom backgrounds"
+msgstr "Собственные фоны"
 
 msgctxt "#33072"
 msgid "View Readme"
-msgstr "Просмотреть Readme"
+msgstr "Просмотреть информацию"
 
 msgctxt "#33073"
 msgid "View Changelog"
-msgstr "Просмотреть Changelog"
+msgstr "Просмотреть список изменений"
 
 msgctxt "#33074"
 msgid "This version of %s requires an"
-msgstr "Данная версия %s требует"
+msgstr "Для данной версии %s требуется"
 
 msgctxt "#33075"
 msgid "XBMC revision of %s or greater to run."
-msgstr "версию XBMC revision %s или новее."
+msgstr "версия XBMC %s или новее."
 
 msgctxt "#33076"
 msgid "Please update XBMC."
-msgstr "Пожалуйста обновите XBMC."
+msgstr "Обновите XBMC."
 
 msgctxt "#33077"
 msgid "No data found!"
-msgstr "Данные не найдены!"
+msgstr "Данных не найдено."
 
 msgctxt "#33078"
 msgid "Next page"
@@ -7803,7 +8143,7 @@ msgstr "Не нравится"
 
 msgctxt "#33081"
 msgid "This file is stacked, select the part you want to play from."
-msgstr "Этом файл состоит из нескольких, выберите часть для проигрывания."
+msgstr "Составной файл; выберите часть для проигрывания."
 
 msgctxt "#33082"
 msgid "Path to script"
@@ -7811,4 +8151,8 @@ msgstr "Путь к скрипту"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "Дополнительная кнопка для скрипта"
+msgstr "Включить кнопку выбранного скрипта"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "Flac"

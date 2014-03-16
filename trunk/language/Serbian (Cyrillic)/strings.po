@@ -1933,6 +1933,10 @@ msgctxt "#573"
 msgid "Path"
 msgstr "Путања"
 
+msgctxt "#574"
+msgid "Country"
+msgstr "Држава"
+
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Смер слагања"

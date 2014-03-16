@@ -15,31 +15,31 @@ msgstr ""
 
 msgctxt "#0"
 msgid "Programs"
-msgstr "Mia Softvaroj"
+msgstr "Programaroj"
 
 msgctxt "#1"
 msgid "Pictures"
-msgstr "Mia Bildoj"
+msgstr "Bildoj"
 
 msgctxt "#2"
 msgid "Music"
-msgstr "Mia Mizuko"
+msgstr "Muziko"
 
 msgctxt "#3"
 msgid "Videos"
-msgstr "Mia Filmoj"
+msgstr "Videoj"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "Televido Gvido"
+msgstr "Televidgvido"
 
 msgctxt "#5"
 msgid "Settings"
-msgstr "Preferoj"
+msgstr "Agordoj"
 
 msgctxt "#7"
 msgid "File manager"
-msgstr "Mia Vicoj"
+msgstr "Dosiermastrumilo"
 
 msgctxt "#8"
 msgid "Weather"
@@ -121,21 +121,29 @@ msgctxt "#32"
 msgid "December"
 msgstr "Decembro"
 
+msgctxt "#47"
+msgid "Sun"
+msgstr "Sunbrilo"
+
+msgctxt "#55"
+msgid "May"
+msgstr "Majo"
+
 msgctxt "#98"
 msgid "View: Auto"
-msgstr "Vido: Auto"
+msgstr "Vido: aŭtomata"
 
 msgctxt "#99"
 msgid "View: Auto big"
-msgstr "Vido: Auto Big"
+msgstr "Vido: aŭtomate granda"
 
 msgctxt "#100"
 msgid "View: Icons"
-msgstr "Vido: Icons"
+msgstr "Vido: piktogramoj"
 
 msgctxt "#101"
 msgid "View: List"
-msgstr "Vido: List"
+msgstr "Vido: listo"
 
 msgctxt "#102"
 msgid "Scan"
@@ -143,15 +151,15 @@ msgstr "Skani"
 
 msgctxt "#103"
 msgid "Sort by: Name"
-msgstr "ordigi je: Nomo"
+msgstr "Ordigi laŭ: nomo"
 
 msgctxt "#104"
 msgid "Sort by: Date"
-msgstr "ordigi je: Dati"
+msgstr "Ordigi laŭ: dato"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "ordigi je: amplekso"
+msgstr "Ordigi laŭ: grando"
 
 msgctxt "#106"
 msgid "No"
@@ -167,19 +175,19 @@ msgstr "SlideShow"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Verki Thumbs"
+msgstr "Krei miniaturojn"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "Verki Thumbnails"
+msgstr "Krei miniaturojn"
 
 msgctxt "#111"
 msgid "Shortcuts"
-msgstr "Shortcuts"
+msgstr "Klavkombinoj"
 
 msgctxt "#112"
 msgid "Paused"
-msgstr "Paŭzis"
+msgstr "Paŭzigita"
 
 msgctxt "#115"
 msgid "Copy"
@@ -191,51 +199,51 @@ msgstr "Movi"
 
 msgctxt "#117"
 msgid "Delete"
-msgstr "Forviŝi"
+msgstr "Forigi"
 
 msgctxt "#118"
 msgid "Rename"
-msgstr "Rebapti"
+msgstr "Alinomigi"
 
 msgctxt "#119"
 msgid "New folder"
-msgstr "Nova Dosiero"
+msgstr "Nova dosierujo"
 
 msgctxt "#120"
 msgid "Confirm file copy"
-msgstr "Confirm vico kopii"
+msgstr "Konfirmi kopion de dosiero"
 
 msgctxt "#121"
 msgid "Confirm file move"
-msgstr "Confirm vico movi"
+msgstr "Konfirmi movon de dosiero"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
-msgstr "Confirm vico forviŝi"
+msgstr "Ĉu konfirmi forigon de dosiero?"
 
 msgctxt "#123"
 msgid "Copy these files?"
-msgstr "Kopii lase vicos?"
+msgstr "Ĉu kopii ĉi tiujn dosierojn?"
 
 msgctxt "#124"
 msgid "Move these files?"
-msgstr "Movi lase vicos?"
+msgstr "Ĉu movi ĉi tiujn dosierojn?"
 
 msgctxt "#125"
 msgid "Delete these files? - Deleting files cannot be undone!"
-msgstr "Forviŝi lase vicos?"
+msgstr "Ĉu forigi ĉi tiujn dosierojn?"
 
 msgctxt "#126"
 msgid "Status"
-msgstr "Kondiĉo"
+msgstr "Stato"
 
 msgctxt "#127"
 msgid "Objects"
-msgstr "Objects"
+msgstr "Objecktoj"
 
 msgctxt "#128"
 msgid "General"
-msgstr "Generalo"
+msgstr "Ĝenerala"
 
 msgctxt "#129"
 msgid "Slideshow"
@@ -243,7 +251,7 @@ msgstr "Slideshow"
 
 msgctxt "#130"
 msgid "System info"
-msgstr "Sistemo Informaĵo"
+msgstr "Informoj de sistemo"
 
 msgctxt "#131"
 msgid "Display"
@@ -251,11 +259,11 @@ msgstr "Ekrano"
 
 msgctxt "#132"
 msgid "Albums"
-msgstr "Albumos"
+msgstr "Albumoj"
 
 msgctxt "#133"
 msgid "Artists"
-msgstr "Muzikisto"
+msgstr "Artisto"
 
 msgctxt "#134"
 msgid "Songs"
@@ -263,23 +271,23 @@ msgstr "Kantoj"
 
 msgctxt "#135"
 msgid "Genres"
-msgstr "Gxenroj"
+msgstr "Ĝenroj"
 
 msgctxt "#136"
 msgid "Playlists"
-msgstr "Kantoj-listo"
+msgstr "Ludlistoj"
 
 msgctxt "#137"
 msgid "Search"
-msgstr "Traserĉi"
+msgstr "Serĉi"
 
 msgctxt "#138"
 msgid "System Information"
-msgstr "SISTEMO informaĵo"
+msgstr "Infomoj de sistemo"
 
 msgctxt "#139"
 msgid "Temperatures:"
-msgstr "Temperaturoj:"
+msgstr "Temperaturo:"
 
 msgctxt "#140"
 msgid "CPU:"
@@ -295,11 +303,11 @@ msgstr "Tempo:"
 
 msgctxt "#143"
 msgid "Current:"
-msgstr "Current:"
+msgstr "Aktuale:"
 
 msgctxt "#144"
 msgid "Build:"
-msgstr "Eldono:"
+msgstr "Konstruo:"
 
 msgctxt "#145"
 msgid "Network:"
@@ -307,11 +315,11 @@ msgstr "Reto:"
 
 msgctxt "#146"
 msgid "Type:"
-msgstr "Type:"
+msgstr "Speco:"
 
 msgctxt "#147"
 msgid "Static"
-msgstr "Static"
+msgstr "Statika"
 
 msgctxt "#148"
 msgid "DHCP"
@@ -323,7 +331,7 @@ msgstr "MAC"
 
 msgctxt "#150"
 msgid "IP address"
-msgstr "IP"
+msgstr "IP-adreso"
 
 msgctxt "#151"
 msgid "Link:"
@@ -331,15 +339,15 @@ msgstr "Link: "
 
 msgctxt "#152"
 msgid "Half duplex"
-msgstr "Half duplex"
+msgstr "Alterne direkta"
 
 msgctxt "#153"
 msgid "Full duplex"
-msgstr "Full duplex"
+msgstr "Plene direkta"
 
 msgctxt "#154"
 msgid "Storage"
-msgstr "Diskmemoro"
+msgstr "Memoro"
 
 msgctxt "#155"
 msgid "Drive"
@@ -347,27 +355,27 @@ msgstr "Ingo"
 
 msgctxt "#156"
 msgid "Free"
-msgstr "Havebla"
+msgstr "Libera"
 
 msgctxt "#157"
 msgid "Video"
-msgstr "Filmoj"
+msgstr "Video"
 
 msgctxt "#158"
 msgid "Free memory"
-msgstr "Havebla labormemoro"
+msgstr "Libera memoro"
 
 msgctxt "#159"
 msgid "No link"
-msgstr "No link"
+msgstr "Neniu ligilo"
 
 msgctxt "#160"
 msgid "Free"
-msgstr "Havebla"
+msgstr "Libera"
 
 msgctxt "#161"
 msgid "Unavailable"
-msgstr "Malhavebla"
+msgstr "Nedisponebla"
 
 msgctxt "#162"
 msgid "Tray open"
@@ -375,19 +383,19 @@ msgstr "KD-ingo malfermi"
 
 msgctxt "#163"
 msgid "Reading"
-msgstr "Sxakis KD"
+msgstr "Legado"
 
 msgctxt "#164"
 msgid "No disc"
-msgstr "Ne KD"
+msgstr "Neniu disko"
 
 msgctxt "#165"
 msgid "Disc present"
-msgstr "KD Present"
+msgstr "Ĉeestanta disko"
 
 msgctxt "#166"
 msgid "Skin"
-msgstr "Skin"
+msgstr "Etoso"
 
 msgctxt "#167"
 msgid "Enable FTP server"
@@ -407,19 +415,19 @@ msgstr "Albumo:"
 
 msgctxt "#172"
 msgid "Release date"
-msgstr "Dati of Ellasi:"
+msgstr "Dato de publikigo:"
 
 msgctxt "#173"
 msgid "Display 4:3 videos as"
-msgstr "Rating:"
+msgstr "Montri 4:3-videojn kiel"
 
 msgctxt "#175"
 msgid "Moods"
-msgstr "Tones:"
+msgstr "Sentemoj"
 
 msgctxt "#176"
 msgid "Styles"
-msgstr "Styles:"
+msgstr "Stiloj"
 
 msgctxt "#179"
 msgid "Song"
@@ -427,83 +435,83 @@ msgstr "Kanto"
 
 msgctxt "#180"
 msgid "Duration"
-msgstr "Tempo grando"
+msgstr "Daŭro"
 
 msgctxt "#181"
 msgid "Select album"
-msgstr "Elekti albumo"
+msgstr "Elektu albumon"
 
 msgctxt "#182"
 msgid "Tracks"
-msgstr "Tracks"
+msgstr "Trakoj"
 
 msgctxt "#183"
 msgid "Review"
-msgstr "ReVido"
+msgstr "Recenzo"
 
 msgctxt "#184"
 msgid "Refresh"
-msgstr "Refresh"
+msgstr "Reaktualigi"
 
 msgctxt "#185"
 msgid "Searching album"
-msgstr "Searching albumo"
+msgstr "Serĉado de albumo"
 
 msgctxt "#186"
 msgid "OK"
-msgstr "OK"
+msgstr "Bone"
 
 msgctxt "#187"
 msgid "No albums found!"
-msgstr "No albumos found!"
+msgstr "Neniu albumo trovita!"
 
 msgctxt "#188"
 msgid "Select all"
-msgstr "Elekti cxio"
+msgstr "Elekti ĉion"
 
 msgctxt "#189"
 msgid "Scanning media info"
-msgstr "Scanning media info"
+msgstr "Skanado de informoj pri aŭdvidaĵo"
 
 msgctxt "#190"
 msgid "Save"
-msgstr "Save"
+msgstr "Konservi"
 
 msgctxt "#191"
 msgid "Shuffle"
-msgstr "Shuffle"
+msgstr "Miksi"
 
 msgctxt "#192"
 msgid "Clear"
-msgstr "Clear"
+msgstr "Vakigi"
 
 msgctxt "#193"
 msgid "Scan"
-msgstr "Scan"
+msgstr "Skani"
 
 msgctxt "#194"
 msgid "Searching..."
-msgstr "Trasercxis..."
+msgstr "Serĉado..."
 
 msgctxt "#195"
 msgid "No info found!"
-msgstr "No IMDB info found!"
+msgstr "Neniu informo trovata!"
 
 msgctxt "#196"
 msgid "Select movie:"
-msgstr "Elekti movie:"
+msgstr "Elektu filmeton:"
 
 msgctxt "#197"
 msgid "Querying %s info"
-msgstr "Querying IMDB info"
+msgstr "Informpetado por %s"
 
 msgctxt "#198"
 msgid "Loading movie details"
-msgstr "Loading Filmo details"
+msgstr "Ŝargado de detaloj de filmeto"
 
 msgctxt "#202"
 msgid "Tagline"
-msgstr "Tagline:"
+msgstr "Frapfrazo"
 
 msgctxt "#203"
 msgid "Plot outline"
@@ -515,19 +523,19 @@ msgstr "Voxcoj:"
 
 msgctxt "#206"
 msgid "Cast"
-msgstr "Aktoroj	"
+msgstr "Aktoraro"
 
 msgctxt "#207"
 msgid "Plot"
-msgstr "Komploti"
+msgstr "Intrigo"
 
 msgctxt "#208"
 msgid "Play"
-msgstr "Iniciati"
+msgstr "Ludi"
 
 msgctxt "#209"
 msgid "Next"
-msgstr "Sekvonta"
+msgstr "Sekva"
 
 msgctxt "#210"
 msgid "Previous"
@@ -535,11 +543,11 @@ msgstr "Antaŭa"
 
 msgctxt "#213"
 msgid "Calibrate user interface..."
-msgstr "Calibrate uzulinterfaco..."
+msgstr "Kalibri uzantinterfacon..."
 
 msgctxt "#214"
 msgid "Video calibration..."
-msgstr "Filmoj Calibration..."
+msgstr "Kalibrado de video..."
 
 msgctxt "#215"
 msgid "Soften"
@@ -555,27 +563,27 @@ msgstr "Pixel Ratio"
 
 msgctxt "#218"
 msgid "DVD drive"
-msgstr "KD-ingo"
+msgstr "DVD-ingo"
 
 msgctxt "#219"
 msgid "Please insert disc"
-msgstr "Plaĉi insert KD"
+msgstr "Bonvole enmetu diskon"
 
 msgctxt "#220"
 msgid "Remote share"
-msgstr "Remote Share"
+msgstr "Fora kunhavigo"
 
 msgctxt "#221"
 msgid "Network is not connected"
-msgstr "Network is not connected"
+msgstr "Reto ne estas konektita"
 
 msgctxt "#222"
 msgid "Cancel"
-msgstr "Renonci"
+msgstr "Nuligi"
 
 msgctxt "#224"
 msgid "Speed"
-msgstr "Rapideco"
+msgstr "Rapido"
 
 msgctxt "#226"
 msgid "Test patterns..."
@@ -587,7 +595,7 @@ msgstr "Enable CDDB"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
-msgstr "Shuffle Playlist on Load"
+msgstr "Miksi ludliston dum serĉo"
 
 msgctxt "#229"
 msgid "HDD spindown time"
@@ -595,7 +603,7 @@ msgstr "HD Spindown Time"
 
 msgctxt "#230"
 msgid "Video filters"
-msgstr "Filmoj Filters"
+msgstr "Filtriloj por videoj"
 
 msgctxt "#231"
 msgid "None"
@@ -603,7 +611,7 @@ msgstr "Neniu"
 
 msgctxt "#232"
 msgid "Point"
-msgstr "Point"
+msgstr "Punkta"
 
 msgctxt "#233"
 msgid "Linear"
@@ -611,27 +619,27 @@ msgstr "Rekta"
 
 msgctxt "#234"
 msgid "Anisotropic"
-msgstr "Anisotropic"
+msgstr "Neizotropia"
 
 msgctxt "#235"
 msgid "Quincunx"
-msgstr "Quincunx"
+msgstr "Kinkunkso"
 
 msgctxt "#236"
 msgid "Gaussian cubic"
-msgstr "Gaussian Cubic"
+msgstr "Kubiko de Gaŭso"
 
 msgctxt "#237"
 msgid "Minification"
-msgstr "Minification"
+msgstr "Malgrandigo"
 
 msgctxt "#238"
 msgid "Magnification"
-msgstr "Magnification"
+msgstr "Grandigo"
 
 msgctxt "#239"
 msgid "Clear playlist on finish"
-msgstr "Clear playlist on finish"
+msgstr "Vakigi ludliston je fino"
 
 msgctxt "#240"
 msgid "Autoplay DVD-Video"
@@ -663,7 +671,7 @@ msgstr "Autorun Bildoj"
 
 msgctxt "#247"
 msgid "Scripts"
-msgstr "Scripts"
+msgstr "Skriptoj"
 
 msgctxt "#248"
 msgid "Language"
@@ -679,7 +687,7 @@ msgstr "Visualisation"
 
 msgctxt "#251"
 msgid "Select destination directory"
-msgstr "Elekti destination directory"
+msgstr "Elektu celdosierujon"
 
 msgctxt "#252"
 msgid "Output stereo to all speakers"
@@ -687,7 +695,7 @@ msgstr "Output Stereo to ĉiom Speakers"
 
 msgctxt "#253"
 msgid "Number of channels"
-msgstr "Number of channels"
+msgstr "Nombro de kanaloj"
 
 msgctxt "#254"
 msgid "- DTS capable receiver"
@@ -699,7 +707,7 @@ msgstr "CDDB"
 
 msgctxt "#256"
 msgid "Fetching CD information"
-msgstr "Querying freedb for CDDB info"
+msgstr "Obtenado de informoj pri KD"
 
 msgctxt "#257"
 msgid "Error"
@@ -711,7 +719,7 @@ msgstr "Enable ID3 Tags"
 
 msgctxt "#259"
 msgid "Opening"
-msgstr "Opening"
+msgstr "Malfermado"
 
 msgctxt "#260"
 msgid "Shoutcast"
@@ -719,15 +727,15 @@ msgstr "Shoutcast"
 
 msgctxt "#261"
 msgid "Waiting for start..."
-msgstr "Waiting for start...."
+msgstr "Atendado por komenci..."
 
 msgctxt "#262"
 msgid "Scripts output"
-msgstr "Scripts Output"
+msgstr "Eligo de skriptoj"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "Enable Web Server"
+msgstr "Permesi kontrolon de XBMC per HTTP"
 
 msgctxt "#264"
 msgid "Record"
@@ -735,27 +743,27 @@ msgstr "Registri"
 
 msgctxt "#265"
 msgid "Stop Rec."
-msgstr "Registri Rec."
+msgstr "Haltigi registradon"
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "ordigi je: Track"
+msgstr "Ordigi laŭ: trako"
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "ordigi je: Time"
+msgstr "Ordigi laŭ: tempo"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "ordigi je: Title"
+msgstr "Ordigi laŭ: titolo"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "ordigi je: Artist"
+msgstr "Ordigi laŭ: artisto"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "ordigi je: Albumo"
+msgstr "Ordigi laŭ: albumo"
 
 msgctxt "#271"
 msgid "Top 100"
@@ -791,27 +799,27 @@ msgstr "Change la rectangle so that it is perfectly square"
 
 msgctxt "#279"
 msgid "Unable to load settings"
-msgstr "Unable to load Preferoj"
+msgstr "Agordoj ne ŝargeblas"
 
 msgctxt "#280"
 msgid "Using default settings"
-msgstr "Using default fĉiombacks"
+msgstr "Uzado de aprioraj agordoj"
 
 msgctxt "#281"
 msgid "Please check the XML files"
-msgstr "Plaĉi check la .xml vicos"
+msgstr "Bonvole kontrolu la XML-dosierojn"
 
 msgctxt "#282"
 msgid "Found %i items"
-msgstr "found %i items"
+msgstr "%i eroj trovataj"
 
 msgctxt "#283"
 msgid "Search results"
-msgstr "Search Results"
+msgstr "Serĉrezultoj"
 
 msgctxt "#284"
 msgid "No results found"
-msgstr "No results found"
+msgstr "Neniu rezulto trovata"
 
 msgctxt "#286"
 msgid "Post-processing filter"
@@ -819,7 +827,7 @@ msgstr "Postprocessing Filter"
 
 msgctxt "#287"
 msgid "Subtitles"
-msgstr "Subtitles"
+msgstr "Subteksto"
 
 msgctxt "#288"
 msgid "Font"
@@ -835,23 +843,23 @@ msgstr "Dynamic Range Compression"
 
 msgctxt "#291"
 msgid "Video"
-msgstr "Filmoj"
+msgstr "Video"
 
 msgctxt "#292"
 msgid "Audio"
-msgstr "Soni"
+msgstr "Sono"
 
 msgctxt "#293"
 msgid "Browse for subtitles"
-msgstr "Subtitles"
+msgstr "Foliumi por subtekstoj"
 
 msgctxt "#294"
 msgid "Create bookmark"
-msgstr "Verki bookmark"
+msgstr "Krei legosignon"
 
 msgctxt "#296"
 msgid "Clear bookmarks"
-msgstr "Clear bookmarks"
+msgstr "Vakigi legosignojn"
 
 msgctxt "#297"
 msgid "Audio offset"
@@ -859,7 +867,7 @@ msgstr "Soni malfruiĝo"
 
 msgctxt "#298"
 msgid "Bookmarks"
-msgstr "Slider"
+msgstr "Legosignoj"
 
 msgctxt "#300"
 msgid "- MP1 capable receiver"
@@ -1281,6 +1289,10 @@ msgctxt "#408"
 msgid "at"
 msgstr "at"
 
+msgctxt "#409"
+msgid "Defaults"
+msgstr "Standard"
+
 msgctxt "#410"
 msgid "Accessing weather service"
 msgstr "Accessing Wealar.com"
@@ -1676,6 +1688,30 @@ msgstr "Compilations"
 msgctxt "#522"
 msgid "Remove source"
 msgstr "ReMovi Source"
+
+msgctxt "#543"
+msgid "DVD"
+msgstr "KD"
+
+msgctxt "#556"
+msgid "Title"
+msgstr "Nomo"
+
+msgctxt "#562"
+msgid "Year"
+msgstr "Jaro"
+
+msgctxt "#564"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "#571"
+msgid "Default"
+msgstr "Default"
+
+msgctxt "#582"
+msgid "View mode"
+msgstr "Vido Mode"
 
 msgctxt "#588"
 msgid "Cancel party mode"
@@ -2116,6 +2152,10 @@ msgstr "Seeking"
 msgctxt "#774"
 msgid "Slideshow folder"
 msgstr "Slideshow Folder"
+
+msgctxt "#792"
+msgid "Port"
+msgstr "Port"
 
 msgctxt "#1000"
 msgid "Screensaver preview"
@@ -3013,6 +3053,18 @@ msgctxt "#13100"
 msgid "Flicker filter"
 msgstr "Flicker Filter"
 
+msgctxt "#13106"
+msgid "Disabled"
+msgstr "Disabled"
+
+msgctxt "#13113"
+msgid "Disabled"
+msgstr "Disabled"
+
+msgctxt "#13131"
+msgid "Disabled"
+msgstr "Disabled"
+
 msgctxt "#13150"
 msgid "HDD key:"
 msgstr "Durdisko Key:"
@@ -3644,6 +3696,26 @@ msgstr "Resume"
 msgctxt "#13405"
 msgid "Get thumb"
 msgstr "Get Thumb"
+
+msgctxt "#13415"
+msgid "Render method"
+msgstr "Render Method"
+
+msgctxt "#13507"
+msgid "Medium"
+msgstr "Medium"
+
+msgctxt "#13508"
+msgid "High"
+msgstr "Nobla"
+
+msgctxt "#13610"
+msgid "Disabled"
+msgstr "Disabled"
+
+msgctxt "#13611"
+msgid "Standard"
+msgstr "Standard"
 
 msgctxt "#14000"
 msgid "Stack"
@@ -4352,3 +4424,43 @@ msgstr "Use only PAL-60"
 msgctxt "#16110"
 msgid "For 60hz games"
 msgstr "For 60hz Games"
+
+msgctxt "#20142"
+msgid "Username"
+msgstr "Uzulonomo"
+
+msgctxt "#20173"
+msgid "FTP server"
+msgstr "FTP Server"
+
+msgctxt "#20177"
+msgid "Done"
+msgstr "Bone"
+
+msgctxt "#20190"
+msgid "Custom"
+msgstr "Custom"
+
+msgctxt "#20342"
+msgid "Movies"
+msgstr "Filmoj"
+
+msgctxt "#20420"
+msgid "Never"
+msgstr "Never"
+
+msgctxt "#21375"
+msgid "Normal"
+msgstr "Normal"
+
+msgctxt "#21385"
+msgid "Open"
+msgstr "Open"
+
+msgctxt "#21805"
+msgid "Resolution"
+msgstr "Distingivo"
+
+msgctxt "#22030"
+msgid "Font"
+msgstr "Tiparo"

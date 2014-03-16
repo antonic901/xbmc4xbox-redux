@@ -27,15 +27,19 @@ msgstr "Musik"
 
 msgctxt "#3"
 msgid "Videos"
-msgstr "Video"
+msgstr "Videor"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "TV-guide"
+msgstr "TV-Guide"
 
 msgctxt "#5"
 msgid "Settings"
 msgstr "Inställningar"
+
+msgctxt "#6"
+msgid "XBMC SVN"
+msgstr "XBMC SVN"
 
 msgctxt "#7"
 msgid "File manager"
@@ -223,15 +227,15 @@ msgstr "Skanna"
 
 msgctxt "#103"
 msgid "Sort by: Name"
-msgstr "Sort: Namn"
+msgstr "Sortering: Namn"
 
 msgctxt "#104"
 msgid "Sort by: Date"
-msgstr "Sort: Datum"
+msgstr "Sortering: Datum"
 
 msgctxt "#105"
 msgid "Sort by: Size"
-msgstr "Sort: Storlek"
+msgstr "Sortering: Storlek"
 
 msgctxt "#106"
 msgid "No"
@@ -247,7 +251,7 @@ msgstr "Bildspel"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Skapa minibilder"
+msgstr "Skapa miniatyrbilder"
 
 msgctxt "#110"
 msgid "Create thumbnails"
@@ -287,7 +291,7 @@ msgstr "Bekräfta kopiering"
 
 msgctxt "#121"
 msgid "Confirm file move"
-msgstr "Bekräfta flyttning"
+msgstr "Bekräfta flytt av fil"
 
 msgctxt "#122"
 msgid "Confirm file delete?"
@@ -391,7 +395,7 @@ msgstr "Typ:"
 
 msgctxt "#147"
 msgid "Static"
-msgstr "Statiskt"
+msgstr "Statisk"
 
 msgctxt "#148"
 msgid "DHCP"
@@ -431,7 +435,7 @@ msgstr "Ledigt"
 
 msgctxt "#157"
 msgid "Video"
-msgstr "Grafik"
+msgstr "Video"
 
 msgctxt "#158"
 msgid "Free memory"
@@ -439,7 +443,7 @@ msgstr "Ledigt minne"
 
 msgctxt "#159"
 msgid "No link"
-msgstr "Inget nätverk"
+msgstr "Ingen länk"
 
 msgctxt "#160"
 msgid "Free"
@@ -479,7 +483,7 @@ msgstr "Upplösning"
 
 msgctxt "#170"
 msgid "Adjust display refresh rate to match video"
-msgstr "Justera uppdateringsfrekvens till att matcha video"
+msgstr "Justera uppdateringsfrekvens för att matcha video"
 
 msgctxt "#172"
 msgid "Release date"
@@ -487,11 +491,11 @@ msgstr "Utgivningsdatum"
 
 msgctxt "#173"
 msgid "Display 4:3 videos as"
-msgstr "Visa 4:3 filmer som"
+msgstr "Visa 4:3 videor som"
 
 msgctxt "#175"
 msgid "Moods"
-msgstr "Sinnesstämning"
+msgstr "Sinnesstämningar"
 
 msgctxt "#176"
 msgid "Styles"
@@ -583,7 +587,7 @@ msgstr "Slogan"
 
 msgctxt "#203"
 msgid "Plot outline"
-msgstr "Handling"
+msgstr "Sammanfattning"
 
 msgctxt "#205"
 msgid "Votes:"
@@ -611,11 +615,11 @@ msgstr "Föregående"
 
 msgctxt "#213"
 msgid "Calibrate user interface..."
-msgstr "Kalibrera gränssnitt..."
+msgstr "Kalibrera användargränssnitt..."
 
 msgctxt "#214"
 msgid "Video calibration..."
-msgstr "Kalibrera bildskärm..."
+msgstr "Videokalibrering..."
 
 msgctxt "#215"
 msgid "Soften"
@@ -639,11 +643,11 @@ msgstr "Var god sätt i skiva"
 
 msgctxt "#220"
 msgid "Remote share"
-msgstr "Fjärrdisk"
+msgstr "Fjärrutdelning"
 
 msgctxt "#221"
 msgid "Network is not connected"
-msgstr "Det finns inget nätverk"
+msgstr "Nätverk inte anslutet"
 
 msgctxt "#222"
 msgid "Cancel"
@@ -659,15 +663,15 @@ msgstr "Testmönster..."
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "Slå upp låtnamn till musikskivor på freedb.org"
+msgstr "Slå upp låtnamn för musikskivor på freedb.org"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
-msgstr "Blanda spellistor när de laddas"
+msgstr "Blanda spellistor under laddning"
 
 msgctxt "#229"
 msgid "HDD spindown time"
-msgstr "Tid innan hårddisken går till energiläge"
+msgstr "Tid för hårddiskens energiläge"
 
 msgctxt "#230"
 msgid "Video filters"
@@ -675,7 +679,7 @@ msgstr "Videofilter"
 
 msgctxt "#231"
 msgid "None"
-msgstr "Inget"
+msgstr "Ingen"
 
 msgctxt "#232"
 msgid "Point"
@@ -695,11 +699,11 @@ msgstr "Quincunx"
 
 msgctxt "#236"
 msgid "Gaussian cubic"
-msgstr "Gaussisk-kubiskt"
+msgstr "Gaussisk-kubisk"
 
 msgctxt "#237"
 msgid "Minification"
-msgstr "Förminskning"
+msgstr "Minimering"
 
 msgctxt "#238"
 msgid "Magnification"
@@ -707,7 +711,7 @@ msgstr "Förstoring"
 
 msgctxt "#239"
 msgid "Clear playlist on finish"
-msgstr "Rensa efter spellistans slut"
+msgstr "Rensa spellistan vid avslut"
 
 msgctxt "#247"
 msgid "Scripts"
@@ -771,7 +775,7 @@ msgstr "Väntar på start..."
 
 msgctxt "#262"
 msgid "Scripts output"
-msgstr "Skript utdata"
+msgstr "Skriptutdata"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
@@ -787,23 +791,23 @@ msgstr "Stoppa insp."
 
 msgctxt "#266"
 msgid "Sort by: Track"
-msgstr "Sort: Låtar"
+msgstr "Sortering: Låtar"
 
 msgctxt "#267"
 msgid "Sort by: Time"
-msgstr "Sort: Speltid"
+msgstr "Sortering: Speltid"
 
 msgctxt "#268"
 msgid "Sort by: Title"
-msgstr "Sort: Titel"
+msgstr "Sortering: Titel"
 
 msgctxt "#269"
 msgid "Sort by: Artist"
-msgstr "Sort: Artist"
+msgstr "Sortering: Artist"
 
 msgctxt "#270"
 msgid "Sort by: Album"
-msgstr "Sort: Album"
+msgstr "Sortering: Album"
 
 msgctxt "#271"
 msgid "Top 100"
@@ -831,11 +835,11 @@ msgstr "Flytta pilen för att ändra översvepsmängd"
 
 msgctxt "#277"
 msgid "Adjust the bar to change the subtitles position"
-msgstr "Flytta pilen för att flytta undertextsposition"
+msgstr "Flytta pilen för att ändra undertextsposition"
 
 msgctxt "#278"
 msgid "Adjust the rectangle so it is perfectly square"
-msgstr "Ändra rektangeln till en perfekt fyrkant"
+msgstr "Justera rektangeln till en perfekt fyrkant"
 
 msgctxt "#279"
 msgid "Unable to load settings"
@@ -879,7 +883,7 @@ msgstr "- Storlek"
 
 msgctxt "#290"
 msgid "Dynamic range compression"
-msgstr "Dynamisk registerkompression"
+msgstr "Dynamisk omfångskompression"
 
 msgctxt "#291"
 msgid "Video"
@@ -967,7 +971,7 @@ msgstr "(0 = auto)"
 
 msgctxt "#313"
 msgid "Cleaning database"
-msgstr "Rensar databas"
+msgstr "Städar databas"
 
 msgctxt "#314"
 msgid "Preparing..."
@@ -983,47 +987,47 @@ msgstr "Söker låtar..."
 
 msgctxt "#317"
 msgid "Cleaned database successfully"
-msgstr "Rensning av databasen lyckades"
+msgstr "Städning av databasen lyckades"
 
 msgctxt "#318"
 msgid "Cleaning songs..."
-msgstr "Rensar låtar..."
+msgstr "Städar låtar..."
 
 msgctxt "#319"
 msgid "Error cleaning songs"
-msgstr "Fel vid rensning av låtar"
+msgstr "Fel vid städning av låtar"
 
 msgctxt "#320"
 msgid "Cleaning artists..."
-msgstr "Rensar artister..."
+msgstr "Städar artister..."
 
 msgctxt "#321"
 msgid "Error cleaning artists"
-msgstr "Fel vid rensning av artister"
+msgstr "Fel vid städning av artister"
 
 msgctxt "#322"
 msgid "Cleaning genres..."
-msgstr "Rensar genre..."
+msgstr "Städar genre..."
 
 msgctxt "#323"
 msgid "Error cleaning genres"
-msgstr "Fel vid rensning av genre"
+msgstr "Fel vid städning av genre"
 
 msgctxt "#324"
 msgid "Cleaning paths..."
-msgstr "Rensar sökvägar..."
+msgstr "Städar sökvägar..."
 
 msgctxt "#325"
 msgid "Error cleaning paths"
-msgstr "Fel vid rensning av sökvägar"
+msgstr "Fel vid städning av sökvägar"
 
 msgctxt "#326"
 msgid "Cleaning albums..."
-msgstr "Rensar album..."
+msgstr "Städar album..."
 
 msgctxt "#327"
 msgid "Error cleaning albums"
-msgstr "Fel vid rensning av album"
+msgstr "Fel vid städning av album"
 
 msgctxt "#328"
 msgid "Writing changes..."
@@ -1047,11 +1051,11 @@ msgstr "Fel vid komprimering av databas"
 
 msgctxt "#333"
 msgid "Do you want to clean the library?"
-msgstr "Vill du rensa biblioteket?"
+msgstr "Vill du städa biblioteket?"
 
 msgctxt "#334"
 msgid "Clean library..."
-msgstr "Rensa biblioteket..."
+msgstr "Städa biblioteket..."
 
 msgctxt "#335"
 msgid "Start"
@@ -1059,7 +1063,7 @@ msgstr "Starta"
 
 msgctxt "#336"
 msgid "Framerate conversion"
-msgstr "Justera bildfrekvens"
+msgstr "Bildfrekvenskonvertering"
 
 msgctxt "#337"
 msgid "Audio output"
@@ -1119,7 +1123,7 @@ msgstr "Matrix-spår"
 
 msgctxt "#355"
 msgid "Screensaver time"
-msgstr "Tid innan skärmsläckare startar"
+msgstr "Skärmsläckare startar efter"
 
 msgctxt "#356"
 msgid "Screensaver mode"
@@ -1127,7 +1131,7 @@ msgstr "Skärmsläckarläge"
 
 msgctxt "#357"
 msgid "Shutdown function timer"
-msgstr "Avstängningsfunktionstimer"
+msgstr "Timer för avstängningsfunktion"
 
 msgctxt "#358"
 msgid "All albums"
@@ -1147,11 +1151,11 @@ msgstr "Starta bildspel"
 
 msgctxt "#362"
 msgid "Screensaver dim level"
-msgstr "Skärmsläckarnivå"
+msgstr "Nedtoningsnivå"
 
 msgctxt "#363"
 msgid "Sort by: File"
-msgstr "Sort: Filer"
+msgstr "Sortering: Filer"
 
 msgctxt "#364"
 msgid "- Dolby Digital (AC3) capable receiver"
@@ -1159,15 +1163,15 @@ msgstr "- Dolby Digital (AC3)-kapabel förstärkare"
 
 msgctxt "#365"
 msgid "Sort by: Name"
-msgstr "Sort: Namn"
+msgstr "Sortering: Namn"
 
 msgctxt "#366"
 msgid "Sort by: Year"
-msgstr "Sort: År"
+msgstr "Sortering: År"
 
 msgctxt "#367"
 msgid "Sort by: Rating"
-msgstr "Sort: Betyg"
+msgstr "Sortering: Betyg"
 
 msgctxt "#368"
 msgid "IMDb"
@@ -1211,11 +1215,11 @@ msgstr "Lätt"
 
 msgctxt "#378"
 msgid "AM"
-msgstr "Förmiddag"
+msgstr "fm"
 
 msgctxt "#379"
 msgid "PM"
-msgstr "Eftermiddag"
+msgstr "em"
 
 msgctxt "#380"
 msgid "Showers"
@@ -1235,7 +1239,7 @@ msgstr "Vind"
 
 msgctxt "#384"
 msgid "Strong"
-msgstr "Starka"
+msgstr "Stark"
 
 msgctxt "#385"
 msgid "Fair"
@@ -1375,7 +1379,7 @@ msgstr "Låg"
 
 msgctxt "#422"
 msgid "Delete album info"
-msgstr "Radera albuminfo"
+msgstr "Radera albuminformation"
 
 msgctxt "#423"
 msgid "Delete CD information"
@@ -1387,7 +1391,7 @@ msgstr "Välj"
 
 msgctxt "#425"
 msgid "No album information found"
-msgstr "Ingen albuminfo hittad"
+msgstr "Ingen albuminformation hittad"
 
 msgctxt "#426"
 msgid "No CD information found"
@@ -1407,7 +1411,7 @@ msgstr "Var god sätt i följande CD/DVD"
 
 msgctxt "#430"
 msgid "Sort by: DVD#"
-msgstr "Sort: DVD#"
+msgstr "Sortering: DVD#"
 
 msgctxt "#431"
 msgid "No cache"
@@ -1415,11 +1419,11 @@ msgstr "Ingen buffert"
 
 msgctxt "#432"
 msgid "Remove movie from library"
-msgstr "Radera filmen från biblioteket"
+msgstr "Ta bort filmen från biblioteket"
 
 msgctxt "#433"
 msgid "Really remove '%s'?"
-msgstr "Är du säker på att ta bort '%s'?"
+msgstr "Verkligen radera '%s'?"
 
 msgctxt "#437"
 msgid "Removable disk"
@@ -1471,7 +1475,7 @@ msgstr "LCD"
 
 msgctxt "#449"
 msgid "Enabled"
-msgstr "På"
+msgstr "Aktiverad"
 
 msgctxt "#450"
 msgid "Columns"
@@ -1551,7 +1555,7 @@ msgstr "OSD-position"
 
 msgctxt "#470"
 msgid "Credits"
-msgstr "Credits"
+msgstr "Medverkande"
 
 msgctxt "#471"
 msgid "Modchip"
@@ -1579,7 +1583,7 @@ msgstr "OSD"
 
 msgctxt "#479"
 msgid "Skin & language"
-msgstr "Skal och språk"
+msgstr "Skal & språk"
 
 msgctxt "#480"
 msgid "Appearance"
@@ -1607,7 +1611,7 @@ msgstr "Repetera en"
 
 msgctxt "#488"
 msgid "Repeat folder"
-msgstr "Repetera mappar"
+msgstr "Repetera mapp"
 
 msgctxt "#489"
 msgid "Play the next song automatically"
@@ -1619,19 +1623,19 @@ msgstr "- Använd stora ikoner"
 
 msgctxt "#492"
 msgid "Resize VobSubs"
-msgstr "Förstora VOB-undertexter"
+msgstr "Storleksändra VOB-undertexter"
 
 msgctxt "#493"
 msgid "Advanced options (Experts Only!)"
-msgstr "Avancerade alternativ (bara för experter!)"
+msgstr "Avancerade alternativ (endast experter!)"
 
 msgctxt "#494"
 msgid "Overall audio headroom"
-msgstr "Totalt ljudutrymme (dB)"
+msgstr "Totalt ljudutrymme"
 
 msgctxt "#495"
 msgid "Upsample videos to GUI resolution"
-msgstr "Sampla upp video till GUI-upplösning"
+msgstr "Skala upp video till gränssnittsupplösning"
 
 msgctxt "#496"
 msgid "Calibration"
@@ -1643,7 +1647,7 @@ msgstr "Visa filändelser"
 
 msgctxt "#498"
 msgid "Sort by: Type"
-msgstr "Sort: Typ"
+msgstr "Sortering: Typ"
 
 msgctxt "#499"
 msgid "Unable to connect to online lookup service"
@@ -1651,7 +1655,7 @@ msgstr "Kunde inte kontakta informationsserver"
 
 msgctxt "#500"
 msgid "Downloading album information failed"
-msgstr "Nedladdning av albuminfo misslyckades"
+msgstr "Nedladdning av albuminformation misslyckades"
 
 msgctxt "#501"
 msgid "Looking for album names..."
@@ -1675,7 +1679,7 @@ msgstr "Laddar mediainfo från filer..."
 
 msgctxt "#507"
 msgid "Sort by: Usage"
-msgstr "Sort: Använd."
+msgstr "Sortering: Användning"
 
 msgctxt "#510"
 msgid "Enable visualizations"
@@ -1743,7 +1747,7 @@ msgstr "Lägg till i spellista"
 
 msgctxt "#527"
 msgid "Manually add to library"
-msgstr "Lägg till i databas"
+msgstr "Lägg till i bibliotek"
 
 msgctxt "#528"
 msgid "Enter title"
@@ -1751,7 +1755,7 @@ msgstr "Ange titel"
 
 msgctxt "#529"
 msgid "Error: Duplicate title"
-msgstr "Fel: Dublett-titel"
+msgstr "Fel: titeln finns redan"
 
 msgctxt "#530"
 msgid "Select genre"
@@ -1763,11 +1767,11 @@ msgstr "Ny genre"
 
 msgctxt "#532"
 msgid "Manual addition"
-msgstr "Manuellt tillägg"
+msgstr "Lägg till manuellt"
 
 msgctxt "#533"
 msgid "Enter genre"
-msgstr "Lägg in genre"
+msgstr "Ange genre"
 
 msgctxt "#534"
 msgid "View: %s"
@@ -1831,7 +1835,7 @@ msgstr "Mixa ned flerkanalsljud till stereo"
 
 msgctxt "#550"
 msgid "Sort by: %s"
-msgstr "Sort: %s"
+msgstr "Sortering: %s"
 
 msgctxt "#551"
 msgid "Name"
@@ -1899,7 +1903,7 @@ msgstr "Albumartist"
 
 msgctxt "#567"
 msgid "Play count"
-msgstr "Spelad räknare"
+msgstr "Spelningar"
 
 msgctxt "#568"
 msgid "Last played"
@@ -1911,7 +1915,7 @@ msgstr "Kommentar"
 
 msgctxt "#570"
 msgid "Date added"
-msgstr "Datum tillagt"
+msgstr "Tillagd datum"
 
 msgctxt "#571"
 msgid "Default"
@@ -1924,6 +1928,14 @@ msgstr "Studio"
 msgctxt "#573"
 msgid "Path"
 msgstr "Sökväg"
+
+msgctxt "#574"
+msgid "Country"
+msgstr "Land"
+
+msgctxt "#575"
+msgid "In progress"
+msgstr "Pågår"
 
 msgctxt "#580"
 msgid "Sort direction"
@@ -2015,7 +2027,7 @@ msgstr "Extrem"
 
 msgctxt "#604"
 msgid "Constant bitrate"
-msgstr "Konstant bitrate"
+msgstr "Konstant bithastighet"
 
 msgctxt "#605"
 msgid "Ripping..."
@@ -2031,7 +2043,7 @@ msgstr "Kunde inte rippa CD eller spår"
 
 msgctxt "#609"
 msgid "CDDARipPath is not set."
-msgstr "CDDA-sökväg inte angiven."
+msgstr "CDDA-målmapp ej angiven."
 
 msgctxt "#610"
 msgid "Rip audio track"
@@ -2055,7 +2067,7 @@ msgstr "Kvalitet"
 
 msgctxt "#623"
 msgid "Bitrate"
-msgstr "Bitrate"
+msgstr "Bithastighet"
 
 msgctxt "#624"
 msgid "Include track number"
@@ -2095,7 +2107,7 @@ msgstr "Originalstorlek"
 
 msgctxt "#636"
 msgid "Custom"
-msgstr "Anpassad storlek"
+msgstr "Anpassad"
 
 msgctxt "#637"
 msgid "Replay gain"
@@ -2127,7 +2139,7 @@ msgstr "Undvik klippning på Replay Gain filer"
 
 msgctxt "#644"
 msgid "Crop black bars"
-msgstr "Klipp bort svarta ramar"
+msgstr "Beskär svarta ramar"
 
 msgctxt "#645"
 msgid "Need to unpack a big file. Continue?"
@@ -2139,11 +2151,11 @@ msgstr "Ta bort från bibliotek"
 
 msgctxt "#647"
 msgid "Export video library"
-msgstr "Exportera filmbibliotek"
+msgstr "Exportera videobibliotek"
 
 msgctxt "#648"
 msgid "Import video library"
-msgstr "Importera filmbibliotek"
+msgstr "Importera videobibliotek"
 
 msgctxt "#649"
 msgid "Importing"
@@ -2191,11 +2203,11 @@ msgstr "Volymförstärkning"
 
 msgctxt "#661"
 msgid "Choose export folder"
-msgstr "Välj exporteringsmapp"
+msgstr "Välj mapp för exportering"
 
 msgctxt "#662"
 msgid "This file is no longer available."
-msgstr "Denna fil är inte tillgänglig längre."
+msgstr "Denna fil är inte längre tillgänglig."
 
 msgctxt "#663"
 msgid "Would you like to remove it from the library?"
@@ -2205,13 +2217,17 @@ msgctxt "#664"
 msgid "Browse for Script"
 msgstr "Bläddra efter skript"
 
+msgctxt "#665"
+msgid "Compression level"
+msgstr "Kompressionsnivå"
+
 msgctxt "#700"
 msgid "Cleaning up library"
-msgstr "Rensar bibliotek"
+msgstr "Städar bibliotek"
 
 msgctxt "#701"
 msgid "Removing old songs from the library"
-msgstr "Raderar gamla låtar från databasen"
+msgstr "Raderar gamla låtar från bibliotek"
 
 msgctxt "#702"
 msgid "This path has been scanned before"
@@ -2235,7 +2251,7 @@ msgstr "Internetprotokoll (IP)"
 
 msgctxt "#712"
 msgid "Invalid port specified. Value must be between 1 and 65535."
-msgstr "Felaktig port angiven. Värde måste vara mellan 1 och 65535."
+msgstr "Felaktig port angiven. Värdet måste vara mellan 1 och 65535."
 
 msgctxt "#713"
 msgid "HTTP proxy"
@@ -2279,15 +2295,15 @@ msgstr "Spara & starta om"
 
 msgctxt "#724"
 msgid "Invalid address specified. Value must be AAA.BBB.CCC.DDD"
-msgstr "Felaktig adress angiven. Formatet skall vara"
+msgstr "Felaktig adress angiven. Formatet skall vara AAA.BBB.CCC.DDD"
 
 msgctxt "#725"
 msgid "with numbers between 0 and 255."
-msgstr "AAA.BBB.CCC.DDD med siffror mellan 0 och 255."
+msgstr "med siffror mellan 0 och 255."
 
 msgctxt "#726"
 msgid "Changes not saved. Continue without saving?"
-msgstr "Inställningar sparades inte. Fortsätt utan att spara?"
+msgstr "Ändringar sparades inte. Fortsätt utan att spara?"
 
 msgctxt "#727"
 msgid "Web server"
@@ -2303,7 +2319,7 @@ msgstr "- Port"
 
 msgctxt "#732"
 msgid "Save & apply"
-msgstr "Spara & ange"
+msgstr "Spara & tillämpa"
 
 msgctxt "#733"
 msgid "- Password"
@@ -2311,7 +2327,7 @@ msgstr "- Lösenord"
 
 msgctxt "#734"
 msgid "No pass"
-msgstr "Inget lösenord"
+msgstr "Inget lösen"
 
 msgctxt "#735"
 msgid "- Character set"
@@ -2359,11 +2375,11 @@ msgstr "Ingen skannad information för denna vy"
 
 msgctxt "#746"
 msgid "Please turn off library mode"
-msgstr "Byt tillbaka till fil-vyn"
+msgstr "Stäng av biblioteksläge"
 
 msgctxt "#747"
 msgid "Error loading image"
-msgstr "Fel vid laddning av bilden"
+msgstr "Fel vid laddning av bild"
 
 msgctxt "#748"
 msgid "Edit path"
@@ -2451,7 +2467,7 @@ msgstr "Söker"
 
 msgctxt "#774"
 msgid "Slideshow folder"
-msgstr "Mapp för bildspelsskärmsläckare"
+msgstr "Bildspelsmapp"
 
 msgctxt "#775"
 msgid "Network interface"
@@ -2471,7 +2487,7 @@ msgstr "- Trådlös säkerhet"
 
 msgctxt "#779"
 msgid "Save and apply network interface settings"
-msgstr "Spara och applicera inställningar för nätversgränssnittet"
+msgstr "Spara och tillämpa inställningar för nätverksgränssnittet"
 
 msgctxt "#780"
 msgid "No encryption"
@@ -2491,19 +2507,19 @@ msgstr "WPA2"
 
 msgctxt "#784"
 msgid "Applying network interface settings. Please wait."
-msgstr "Applicerar inställningar för nätverksgränssnitt. Var god vänta."
+msgstr "Tillämpar inställningar för nätverksgränssnitt. Var god vänta."
 
 msgctxt "#785"
 msgid "Network interface restarted successfully."
-msgstr "Lyckad omstart av nätversgränssnittet."
+msgstr "Omstart av nätverksgränssnittet lyckades."
 
 msgctxt "#786"
 msgid "Network interface did not start successfully."
-msgstr "Nätverkgränssnittet lyckades inte starta."
+msgstr "Nätverkgränssnittet startades inte."
 
 msgctxt "#787"
 msgid "Interface disabled"
-msgstr "Gränssnitt inaktiverat"
+msgstr "Gränssnittet inaktiverat"
 
 msgctxt "#788"
 msgid "Network interface disabled successfully."
@@ -2535,7 +2551,7 @@ msgstr "Begynnande repetitionsfördröjning (ms)"
 
 msgctxt "#796"
 msgid "Continuous repeat delay (ms)"
-msgstr "Kontinuerligt repititionsfördröjning (ms)"
+msgstr "Kontinuerlig repetitionsfördröjning (ms)"
 
 msgctxt "#797"
 msgid "Maximum number of clients"
@@ -2575,7 +2591,7 @@ msgstr "Detta kan bero på att nätverket inte är anslutet."
 
 msgctxt "#1004"
 msgid "Would you like to add it anyway?"
-msgstr "Vill du lägga till detta i alla fall?"
+msgstr "Vill du lägga till den ändå?"
 
 msgctxt "#1006"
 msgid "IP address"
@@ -2619,11 +2635,11 @@ msgstr "Bläddra efter nätverksserver"
 
 msgctxt "#1016"
 msgid "Enter the network address of the server"
-msgstr "Ange nätverksadress för denna server"
+msgstr "Ange nätverksadress för servern"
 
 msgctxt "#1017"
 msgid "Enter the path on the server"
-msgstr "Ange sökvägen på servern"
+msgstr "Ange sökväg på servern"
 
 msgctxt "#1018"
 msgid "Enter the port number"
@@ -2635,15 +2651,15 @@ msgstr "Ange användarnamn"
 
 msgctxt "#1020"
 msgid "Add %s source"
-msgstr "Lägg till %s-källa"
+msgstr "Lägg till %s källa"
 
 msgctxt "#1021"
 msgid "Enter the paths or browse for the media locations."
-msgstr "Skriv in sökväg eller bläddra efter mediaplatser."
+msgstr "Ange sökväg eller bläddra efter mediaplatser."
 
 msgctxt "#1022"
 msgid "Enter a name for this media Source."
-msgstr "Skriv in namn för denna mediakälla."
+msgstr "Ange namn för denna mediakälla."
 
 msgctxt "#1023"
 msgid "Browse for new share"
@@ -2667,11 +2683,11 @@ msgstr "Redigera källa"
 
 msgctxt "#1028"
 msgid "Edit %s source"
-msgstr "Redigera %s-källa"
+msgstr "Redigera %s källa"
 
 msgctxt "#1029"
 msgid "Enter the new label"
-msgstr "Skriv in den nya beskrivningen"
+msgstr "Skriv in den nya etiketten"
 
 msgctxt "#1030"
 msgid "Browse for image"
@@ -2803,35 +2819,35 @@ msgstr "Filer"
 
 msgctxt "#1215"
 msgid "Music & video "
-msgstr "Musik & Video"
+msgstr "Musik & video"
 
 msgctxt "#1216"
 msgid "Music & pictures"
-msgstr "Musik & Bilder"
+msgstr "Musik & bilder"
 
 msgctxt "#1217"
 msgid "Music & files"
-msgstr "Musik & Filer"
+msgstr "Musik & filer"
 
 msgctxt "#1218"
 msgid "Video & pictures"
-msgstr "Video & Bilder"
+msgstr "Video & bilder"
 
 msgctxt "#1219"
 msgid "Video & files"
-msgstr "Video & Filer"
+msgstr "Video & filer"
 
 msgctxt "#1220"
 msgid "Pictures & files"
-msgstr "Bilder & Filer"
+msgstr "Bilder & filer"
 
 msgctxt "#1221"
 msgid "Music & video & pictures"
-msgstr "Musik & Video & Bilder"
+msgstr "Musik & video & bilder"
 
 msgctxt "#1222"
 msgid "Music & video & pictures & files"
-msgstr "Musik & Video & Bilder & Filer"
+msgstr "Musik & video & bilder & filer"
 
 msgctxt "#1223"
 msgid "Disabled"
@@ -2839,43 +2855,43 @@ msgstr "Inaktiverad"
 
 msgctxt "#1226"
 msgid "Files & music & video"
-msgstr "Filer & Musik & Video"
+msgstr "Filer & musik & video"
 
 msgctxt "#1227"
 msgid "Files & pictures & music"
-msgstr "Filer & Bilder & Musik"
+msgstr "Filer & bilder & musik"
 
 msgctxt "#1228"
 msgid "Files & pictures & video"
-msgstr "Filer & Bilder & Video"
+msgstr "Filer & bilder & video"
 
 msgctxt "#1229"
 msgid "Music & programs"
-msgstr "Musik & Program"
+msgstr "Musik & program"
 
 msgctxt "#1230"
 msgid "Video & programs"
-msgstr "Video & Program"
+msgstr "Video & program"
 
 msgctxt "#1231"
 msgid "Pictures & programs"
-msgstr "Bilder & Program"
+msgstr "Bilder & program"
 
 msgctxt "#1232"
 msgid "Music & video & pictures & programs"
-msgstr "Musik & Video & Bilder & Program"
+msgstr "Musik & video & bilder & program"
 
 msgctxt "#1233"
 msgid "Programs & video & music"
-msgstr "Program & Video & Musik"
+msgstr "Program & video & musik"
 
 msgctxt "#1234"
 msgid "Programs & pictures & music"
-msgstr "Program & Bilder & Musik"
+msgstr "Program & bilder & musik"
 
 msgctxt "#1235"
 msgid "Programs & pictures & video"
-msgstr "Program & Bilder & Video"
+msgstr "Program & bilder & video"
 
 msgctxt "#1245"
 msgid "FTP username"
@@ -2969,9 +2985,13 @@ msgctxt "#1405"
 msgid "in"
 msgstr "i"
 
+msgctxt "#1406"
+msgid "the"
+msgstr " "
+
 msgctxt "#1407"
 msgid "Vicinity"
-msgstr "närområdet"
+msgstr "Närområdet"
 
 msgctxt "#1408"
 msgid "Ice"
@@ -3063,7 +3083,7 @@ msgstr "Musik"
 
 msgctxt "#10006"
 msgid "Videos"
-msgstr "Filmer"
+msgstr "Videor"
 
 msgctxt "#10007"
 msgid "System information"
@@ -3079,11 +3099,11 @@ msgstr "Inställningar - Bildskärm"
 
 msgctxt "#10010"
 msgid "Settings - Appearance - GUI Calibration"
-msgstr "Inställningar - Utseende - GUI-kalibrering"
+msgstr "Inställningar - Utseende - Gränssnittskalibrering"
 
 msgctxt "#10011"
 msgid "Settings - Videos - Screen Calibration"
-msgstr "Inställningar - Filmer - Skärmkalibrering"
+msgstr "Inställningar - Videor - Skärmkalibrering"
 
 msgctxt "#10012"
 msgid "Settings - Pictures"
@@ -3107,7 +3127,7 @@ msgstr "Inställningar - System"
 
 msgctxt "#10017"
 msgid "Settings - Videos"
-msgstr "Inställningar - Filmer"
+msgstr "Inställningar - Videor"
 
 msgctxt "#10018"
 msgid "Settings - Network"
@@ -3123,7 +3143,7 @@ msgstr "Skript"
 
 msgctxt "#10028"
 msgid "Videos/Playlist"
-msgstr "Filmer/Spellista"
+msgstr "Videor/Spellista"
 
 msgctxt "#10034"
 msgid "Settings - Profiles"
@@ -3171,15 +3191,15 @@ msgstr "Musik/Bibliotek"
 
 msgctxt "#10503"
 msgid "Playlist editor"
-msgstr "Spellistsredigerare"
+msgstr "Redigerare för spellista"
 
 msgctxt "#10504"
 msgid "Top 100 songs"
-msgstr "Topp 100 låtar"
+msgstr "Topp 100-låtar"
 
 msgctxt "#10505"
 msgid "Top 100 albums"
-msgstr "Topp 100 album"
+msgstr "Topp 100-album"
 
 msgctxt "#10506"
 msgid "Programs"
@@ -3199,7 +3219,7 @@ msgstr "Nätverksspel"
 
 msgctxt "#10510"
 msgid "Extensions"
-msgstr "Tillägg"
+msgstr "Förlängning"
 
 msgctxt "#10511"
 msgid "System info"
@@ -3215,7 +3235,7 @@ msgstr "Nu spelas - Musik"
 
 msgctxt "#10522"
 msgid "Now Playing - Videos"
-msgstr "Nu spelas - Filmer"
+msgstr "Nu spelas - Videor"
 
 msgctxt "#10523"
 msgid "Album info"
@@ -3239,7 +3259,7 @@ msgstr "Dialog OK"
 
 msgctxt "#12003"
 msgid "Videos/Info"
-msgstr "Filmer/Info"
+msgstr "Videor/Info"
 
 msgctxt "#12004"
 msgid "Scripts/Info"
@@ -3263,11 +3283,11 @@ msgstr "Återuppbygg index..."
 
 msgctxt "#12010"
 msgid "Return to music window"
-msgstr "Återgå till Musik"
+msgstr "Återgå till musikfönstret"
 
 msgctxt "#12011"
 msgid "Return to videos window"
-msgstr "Återgå till Filmer"
+msgstr "Återgå till videofönstret"
 
 msgctxt "#12012"
 msgid "Update trainer list"
@@ -3411,7 +3431,7 @@ msgstr "Återställ lås"
 
 msgctxt "#12335"
 msgid "Remove lock"
-msgstr "Ta bort låset"
+msgstr "Ta bort lås"
 
 msgctxt "#12337"
 msgid "Numeric password"
@@ -3439,7 +3459,7 @@ msgstr "Felaktigt lösenord,"
 
 msgctxt "#12343"
 msgid "retries left "
-msgstr "försök kvar"
+msgstr "försök återstår"
 
 msgctxt "#12344"
 msgid "Passwords entered did not match."
@@ -3451,7 +3471,7 @@ msgstr "Åtkomst nekad"
 
 msgctxt "#12346"
 msgid "Password retry limit exceeded."
-msgstr "Antal lösenordsförsök har överstigits."
+msgstr "Antal lösenordsförsök har överskridits."
 
 msgctxt "#12347"
 msgid "The system will now shut off."
@@ -3479,11 +3499,11 @@ msgstr "Lösenordet var tomt. Försök igen."
 
 msgctxt "#12360"
 msgid "Master lock"
-msgstr "Huvudlås"
+msgstr "Huvudkod"
 
 msgctxt "#12362"
 msgid "Shutdown system if Master Lock retries exceeded"
-msgstr "Stäng av systemet om låsförsök överskrids"
+msgstr "Stäng av systemet om antal huvudlås-försök överskridits"
 
 msgctxt "#12367"
 msgid "Master code is not valid"
@@ -3495,7 +3515,7 @@ msgstr "Var god ange korrekt huvudkod"
 
 msgctxt "#12373"
 msgid "Settings & file manager"
-msgstr "Inställningar & Filhanterare"
+msgstr "Inställningar & filhanterare"
 
 msgctxt "#12376"
 msgid "Set as default for all movies"
@@ -3503,15 +3523,15 @@ msgstr "Använd som standard för alla filmer"
 
 msgctxt "#12377"
 msgid "This will reset any previously saved values"
-msgstr "Detta tar bort alla tidigare sparade värden"
+msgstr "Detta raderar tidigare sparade värden"
 
 msgctxt "#12378"
 msgid "Amount of time to display each image"
-msgstr "Tid att visa varje bild"
+msgstr "Tid för att visa varje bild"
 
 msgctxt "#12379"
 msgid "Use pan and zoom effects"
-msgstr "Använd pan- och zoomeffekter"
+msgstr "Använd panorerings- och zoomeffekter"
 
 msgctxt "#12380"
 msgid "Play NTSC videos at PAL rates"
@@ -3543,23 +3563,23 @@ msgstr "Månad/Dag"
 
 msgctxt "#12390"
 msgid "System uptime"
-msgstr "Driftstid"
+msgstr "Systemets drifttid"
 
 msgctxt "#12391"
 msgid "Minutes"
-msgstr "minuter"
+msgstr "Minuter"
 
 msgctxt "#12392"
 msgid "Hours"
-msgstr "timmar"
+msgstr "Timmar"
 
 msgctxt "#12393"
 msgid "Days"
-msgstr "dagar"
+msgstr "Dagar"
 
 msgctxt "#12394"
 msgid "Total uptime"
-msgstr "Total driftstid"
+msgstr "Total drifttid"
 
 msgctxt "#12600"
 msgid "Weather"
@@ -3583,7 +3603,7 @@ msgstr "Omedelbar HD-nedvarvning"
 
 msgctxt "#13002"
 msgid "Video only"
-msgstr "Bara Video"
+msgstr "Endast video"
 
 msgctxt "#13003"
 msgid "- Delay"
@@ -3591,7 +3611,7 @@ msgstr "- Fördröjning"
 
 msgctxt "#13004"
 msgid "- Minimum file duration"
-msgstr "- Minimal speltid"
+msgstr "- Minsta speltid"
 
 msgctxt "#13005"
 msgid "Shutdown"
@@ -3635,7 +3655,7 @@ msgstr "Minimera"
 
 msgctxt "#13015"
 msgid "Power button action"
-msgstr "Funktion för avstängningsknapp"
+msgstr "Avstängningsknappens funktion"
 
 msgctxt "#13020"
 msgid "Is another session active, perhaps over ssh?"
@@ -3643,7 +3663,7 @@ msgstr "Är en annan session aktiv, kanske över ssh?"
 
 msgctxt "#13021"
 msgid "Mounted removable harddrive"
-msgstr "Monterade flyttbar hårddisk"
+msgstr "Flyttbar hårddisk monterades"
 
 msgctxt "#13022"
 msgid "Unsafe device removal"
@@ -3655,11 +3675,11 @@ msgstr "Borttagning av enhet lyckades"
 
 msgctxt "#13024"
 msgid "Joystick plugged"
-msgstr "Joystick ansluten"
+msgstr "Joystick inkopplad"
 
 msgctxt "#13025"
 msgid "Joystick unplugged"
-msgstr "Joystick borttagen"
+msgstr "Joystick urkopplad"
 
 msgctxt "#13100"
 msgid "Flicker filter"
@@ -3687,7 +3707,7 @@ msgstr "Alltid aktiverad"
 
 msgctxt "#13109"
 msgid "Test & apply resolution"
-msgstr "Prova och ange upplösning"
+msgstr "Prova & tillämpa upplösning"
 
 msgctxt "#13110"
 msgid "Save resolution?"
@@ -3707,7 +3727,7 @@ msgstr "Inaktiverad"
 
 msgctxt "#13114"
 msgid "Enabled for SD content"
-msgstr "Aktiverad för SD-innehåll"
+msgstr "Aktiverad för SD-material"
 
 msgctxt "#13115"
 msgid "Always enabled"
@@ -3743,7 +3763,7 @@ msgstr "Studionivåfärgkonvertering (VDPAU)"
 
 msgctxt "#13130"
 msgid "Blank other displays"
-msgstr "Mörka övriga skärmar"
+msgstr "Rensa övriga skärmar"
 
 msgctxt "#13131"
 msgid "Disabled"
@@ -3759,27 +3779,27 @@ msgstr "Aktiva anslutningar detekterade!"
 
 msgctxt "#13141"
 msgid "If you proceed, you might not be able to control XBMC"
-msgstr "Om du fortsätter kommer du kanske inte att kunna kontrollera"
+msgstr "Om du fortsätter kanske du inte kan kontrollera XBMC"
 
 msgctxt "#13142"
 msgid "any longer. Are you sure you want to stop the Event server?"
-msgstr "XBMC längre. Är du säker att du vill stoppa händelseservern?"
+msgstr "längre. Är det säkert du vill stoppa händelseservern?"
 
 msgctxt "#13144"
 msgid "Change Apple Remote mode?"
-msgstr "Ändra Apple-fjärrläge?"
+msgstr "Ändra läge för Apple-fjärren?"
 
 msgctxt "#13145"
 msgid "If you are currently using the Apple Remote to control"
-msgstr "Om du för närvarande använder Apple-fjärr för att kontrollera"
+msgstr "Om du för närvarande använder Apple-fjärren för att kontrollera"
 
 msgctxt "#13146"
 msgid "XBMC, changing this setting might affect your ability"
-msgstr "XBMC, ändra denna inställning kan påverka din möjlighet"
+msgstr "XBMC, om du ändrar denna inställning kan det påverka din förmåga"
 
 msgctxt "#13147"
 msgid "to continue controlling it. Do you want to proceed?"
-msgstr "för fortsatt kontroll av XBMC. Vill du fortsätta?"
+msgstr "att kontrollera XBMC. Vill du fortsätta?"
 
 msgctxt "#13150"
 msgid "HDD key:"
@@ -3875,11 +3895,11 @@ msgstr "Efter %i sek"
 
 msgctxt "#13173"
 msgid "HDD install date:"
-msgstr "HDD-installationsdatum:"
+msgstr "HDD installerades:"
 
 msgctxt "#13174"
 msgid "HDD power cycle count:"
-msgstr "HDD-strömcykelräkning:"
+msgstr "Antal HDD-avstängningar:"
 
 msgctxt "#13200"
 msgid "Profiles"
@@ -3891,7 +3911,7 @@ msgstr "Radera profil '%s'?"
 
 msgctxt "#13204"
 msgid "Last loaded profile:"
-msgstr "Senast laddade profil:"
+msgstr "Senast laddad profil:"
 
 msgctxt "#13205"
 msgid "Unknown"
@@ -3923,7 +3943,7 @@ msgstr "Avbruten med %im%is kvar"
 
 msgctxt "#13249"
 msgid "Search for subtitles in RARs"
-msgstr "Sök efter undertexter i rar-filer"
+msgstr "Sök efter undertexter i RAR-arkiv"
 
 msgctxt "#13250"
 msgid "Browse for subtitle..."
@@ -3939,7 +3959,7 @@ msgstr "Flytta objekt hit"
 
 msgctxt "#13253"
 msgid "Cancel move"
-msgstr "Avbryt flyttning"
+msgstr "Avbryt flytt"
 
 msgctxt "#13270"
 msgid "Hardware:"
@@ -3951,7 +3971,7 @@ msgstr "CPU-användning:"
 
 msgctxt "#13274"
 msgid "Connected, but no DNS is available."
-msgstr "Ansluten, men ingen DNS är tillgänglig."
+msgstr "Ansluten, men ingen DNS tillgänglig."
 
 msgctxt "#13275"
 msgid "Hard Disk"
@@ -3959,7 +3979,7 @@ msgstr "Hårddisk"
 
 msgctxt "#13276"
 msgid "DVD-ROM"
-msgstr "DVD-Rom"
+msgstr "DVD-ROM"
 
 msgctxt "#13277"
 msgid "Storage"
@@ -3975,7 +3995,7 @@ msgstr "Nätverk"
 
 msgctxt "#13280"
 msgid "Video"
-msgstr "Grafik"
+msgstr "Video"
 
 msgctxt "#13281"
 msgid "Hardware"
@@ -3995,7 +4015,7 @@ msgstr "Igenkänt BIOS:"
 
 msgctxt "#13286"
 msgid "Video encoder:"
-msgstr "Grafikchip:"
+msgstr "Video-kodare:"
 
 msgctxt "#13287"
 msgid "Screen resolution:"
@@ -4039,7 +4059,7 @@ msgstr "Ansluten"
 
 msgctxt "#13297"
 msgid "Not connected. Check network settings."
-msgstr "Inte uppkopplad. Kontrollera nätverksinställningar."
+msgstr "Inte ansluten. Kontrollera nätverksinställningarna."
 
 msgctxt "#13298"
 msgid "Xbox Live key:"
@@ -4051,15 +4071,15 @@ msgstr "Måltemperatur"
 
 msgctxt "#13300"
 msgid "Fan speed"
-msgstr "Fläktfart"
+msgstr "Fläkthastighet"
 
 msgctxt "#13301"
 msgid "Auto temperature control"
-msgstr "Automatisk tempkontroll"
+msgstr "Automatisk temperaturkontroll"
 
 msgctxt "#13302"
 msgid "Fan speed override"
-msgstr "Styr fläkthastighet"
+msgstr "Åsidosätt fläkthastighet"
 
 msgctxt "#13303"
 msgid "- Fonts"
@@ -4067,27 +4087,27 @@ msgstr "- Typsnitt"
 
 msgctxt "#13304"
 msgid "Enable flipping bi-directional strings"
-msgstr "Vänd textriktning"
+msgstr "Aktivera inverterad textriktning"
 
 msgctxt "#13305"
 msgid "Show RSS news feeds"
-msgstr "Visa RSS-nyheter"
+msgstr "Visa RSS-nyhetsflöden"
 
 msgctxt "#13306"
 msgid "Show parent folder items"
-msgstr "Visa föremål i överordnad mapp"
+msgstr "Visa objekt i överordnad mapp"
 
 msgctxt "#13307"
 msgid "Track naming template"
-msgstr "Låtnamn enligt"
+msgstr "Låtnamn enligt mall"
 
 msgctxt "#13308"
 msgid "Do you wish to reboot your system"
-msgstr "Vill du starta om systemet"
+msgstr "Vill du starta om hela systemet"
 
 msgctxt "#13309"
 msgid "instead of just XBMC?"
-msgstr "istället för endast XBMC?"
+msgstr "istället för bara XBMC?"
 
 msgctxt "#13310"
 msgid "Zoom effect"
@@ -4099,7 +4119,7 @@ msgstr "Flyteffekt"
 
 msgctxt "#13312"
 msgid "Black bar reduction"
-msgstr "Reducera svart ram"
+msgstr "Svart ram-reduktion"
 
 msgctxt "#13313"
 msgid "Restart"
@@ -4135,23 +4155,23 @@ msgstr "Stereo"
 
 msgctxt "#13321"
 msgid "Left only"
-msgstr "Endast vänster"
+msgstr "Vänster endast"
 
 msgctxt "#13322"
 msgid "Right only"
-msgstr "Endast höger"
+msgstr "Höger endast"
 
 msgctxt "#13323"
 msgid "Enable karaoke support"
-msgstr "Aktivera karaoke"
+msgstr "Aktivera stöd för karaoke"
 
 msgctxt "#13324"
 msgid "Background transparency"
-msgstr "Bakgrundstransparens"
+msgstr "Bakgrundens transparens"
 
 msgctxt "#13325"
 msgid "Foreground transparency"
-msgstr "Förgrundstransparens"
+msgstr "Förgrundens transparens"
 
 msgctxt "#13326"
 msgid "A/V delay"
@@ -4207,7 +4227,7 @@ msgstr "Front-LED-färg"
 
 msgctxt "#13340"
 msgid "Leave as is"
-msgstr "Låt vara"
+msgstr "Ingen ändring"
 
 msgctxt "#13341"
 msgid "Green"
@@ -4227,7 +4247,7 @@ msgstr "Cykla"
 
 msgctxt "#13345"
 msgid "Switch LED off on playback"
-msgstr "Stäng av LED under uppspelning"
+msgstr "Stäng av LED vid uppspelning"
 
 msgctxt "#13346"
 msgid "Movie information"
@@ -4235,7 +4255,7 @@ msgstr "Filminformation"
 
 msgctxt "#13347"
 msgid "Queue item"
-msgstr "Lägg till i spellistan"
+msgstr "Köa objekt"
 
 msgctxt "#13348"
 msgid "Search IMDb..."
@@ -4255,7 +4275,7 @@ msgstr "Albuminformation"
 
 msgctxt "#13352"
 msgid "Scan item to library"
-msgstr "Skanna objekt > databas"
+msgstr "Skanna objekt till bibliotek"
 
 msgctxt "#13353"
 msgid "Stop scanning"
@@ -4267,7 +4287,7 @@ msgstr "Renderingsmetod"
 
 msgctxt "#13355"
 msgid "Low quality pixel shader"
-msgstr "Lågkvalitets-pixelshader"
+msgstr "Lågkvalitets-pixelskuggning"
 
 msgctxt "#13356"
 msgid "Hardware overlays"
@@ -4275,7 +4295,7 @@ msgstr "Hårdvaruöverlägg"
 
 msgctxt "#13357"
 msgid "High quality pixel shader"
-msgstr "Högkvalitets-pixelshader"
+msgstr "Högkvalitets-pixelskuggning"
 
 msgctxt "#13358"
 msgid "Play item"
@@ -4323,19 +4343,19 @@ msgstr "Återuppta film"
 
 msgctxt "#13382"
 msgid "Voice mask - Port 1"
-msgstr "Röst förvr. - Port 0"
+msgstr "Röst förvr. - Port 1"
 
 msgctxt "#13383"
 msgid "Voice mask - Port 2"
-msgstr "Röst förvr. - Port 1"
+msgstr "Röst förvr. - Port 2"
 
 msgctxt "#13384"
 msgid "Voice mask - Port 3"
-msgstr "Röst förvr. - Port 2"
+msgstr "Röst förvr. - Port 3"
 
 msgctxt "#13385"
 msgid "Voice mask - Port 4"
-msgstr "Röst förvr. - Port 3"
+msgstr "Röst förvr. - Port 4"
 
 msgctxt "#13386"
 msgid "Use time based seeking"
@@ -4343,7 +4363,7 @@ msgstr "Använd tidsbaserad sökning"
 
 msgctxt "#13387"
 msgid "Track naming template - right"
-msgstr "Mall för spårnamn - höger sida"
+msgstr "Spårnamnsmall - höger sida"
 
 msgctxt "#13388"
 msgid "Preset"
@@ -4375,11 +4395,11 @@ msgstr "Beräknar mappstorlek"
 
 msgctxt "#13395"
 msgid "Video settings"
-msgstr "Grafikinställningar"
+msgstr "Videoinställningar"
 
 msgctxt "#13396"
 msgid "Audio and subtitle settings"
-msgstr "Ljud- och textinställningar"
+msgstr "Ljud- och undertextinställningar"
 
 msgctxt "#13397"
 msgid "Enable subtitles"
@@ -4391,11 +4411,11 @@ msgstr "Genvägar"
 
 msgctxt "#13399"
 msgid "Ignore articles when sorting (e.g. \"the\")"
-msgstr "Ignorera \"tokens\" i sortering (ex: \"the\")"
+msgstr "Ignorera bestämd form vid sortering (ex: \"the\")"
 
 msgctxt "#13400"
 msgid "Crossfade between songs on the same album"
-msgstr "Använd övertoning på låtar från samma album"
+msgstr "Använd övertoning på låtar i samma album"
 
 msgctxt "#13401"
 msgid "Browse for %s"
@@ -4435,11 +4455,11 @@ msgstr "Topp 250"
 
 msgctxt "#13410"
 msgid "Tune in on Last.fm"
-msgstr "Ställ in på Last.fm"
+msgstr "Lyssna på Last.fm"
 
 msgctxt "#13411"
 msgid "Minimum fan speed"
-msgstr "Minsta fläkthastighet"
+msgstr "Lägsta fläkthastighet"
 
 msgctxt "#13413"
 msgid "Downloading"
@@ -4459,11 +4479,11 @@ msgstr "Autodetektera"
 
 msgctxt "#13417"
 msgid "Basic shaders (ARB)"
-msgstr "Grundläggande shaders (ARB)"
+msgstr "Grundläggande skuggning (ARB)"
 
 msgctxt "#13418"
 msgid "Advanced shaders (GLSL)"
-msgstr "Avancerade shaders (GLSL)"
+msgstr "Avancerad skuggning (GLSL)"
 
 msgctxt "#13419"
 msgid "Software"
@@ -4499,11 +4519,11 @@ msgstr "Ljudklocka"
 
 msgctxt "#13502"
 msgid "Video clock (Drop/Dupe audio)"
-msgstr "Videoklocka (tappat/dubblerat ljud)"
+msgstr "Videoklocka (tappad/dubblett ljud)"
 
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
-msgstr "Videoklocka (omsamplat ljud)"
+msgstr "Videoklocka (omsampla ljud)"
 
 msgctxt "#13504"
 msgid "Maximum resample amount (%)"
@@ -4531,7 +4551,7 @@ msgstr "Riktigt hög (långsam!)"
 
 msgctxt "#13510"
 msgid "Sync playback to display"
-msgstr "Synkronisera uppspelning till display"
+msgstr "Synkronisera uppspelning till bildskärm"
 
 msgctxt "#13600"
 msgid "Apple remote"
@@ -4539,7 +4559,7 @@ msgstr "Apple-fjärrkontroll"
 
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
-msgstr "Tillåt start av XBMC med fjärrkontroll"
+msgstr "Tillåt att starta XBMC med fjärrkontrollen"
 
 msgctxt "#13603"
 msgid "Sequence delay time"
@@ -4555,7 +4575,7 @@ msgstr "Standard"
 
 msgctxt "#13612"
 msgid "Universal Remote"
-msgstr "Universiell fjärrkontroll"
+msgstr "Universell fjärrkontroll"
 
 msgctxt "#13613"
 msgid "Multi Remote (Harmony)"
@@ -4575,7 +4595,7 @@ msgstr "Slå samman"
 
 msgctxt "#14001"
 msgid "Unstack"
-msgstr "Slå samman: Av"
+msgstr "Slå isär"
 
 msgctxt "#14003"
 msgid "Downloading playlist file..."
@@ -4607,7 +4627,7 @@ msgstr "Autoväxla till miniatyrer baserat på"
 
 msgctxt "#14011"
 msgid "Enable auto switching to thumbs view"
-msgstr "Aktivera autoväxling till miniatyrer"
+msgstr "Aktivera autoväxling till miniatyrvy"
 
 msgctxt "#14012"
 msgid "- Use large icons"
@@ -4627,7 +4647,7 @@ msgstr "Inga filer men minst en miniatyr"
 
 msgctxt "#14016"
 msgid "At least one file and thumb"
-msgstr "Minst en fil och en miniatyr"
+msgstr "Minst en fil och miniatyr"
 
 msgctxt "#14017"
 msgid "Percentage of thumbs"
@@ -4659,7 +4679,7 @@ msgstr "Ingen TV"
 
 msgctxt "#14024"
 msgid "Enter the nearest large town"
-msgstr "Skriv in din närmsta storstad"
+msgstr "Ange din närmsta stora tätort"
 
 msgctxt "#14025"
 msgid "Video/Audio/DVD cache - Harddisk"
@@ -4667,7 +4687,7 @@ msgstr "Video/Ljud/DVDbuffert - Hårddisk"
 
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
-msgstr "Videobuffert - DVDRom"
+msgstr "Videobuffert - DVD-ROM"
 
 msgctxt "#14027"
 msgid "- Local Network"
@@ -4679,7 +4699,7 @@ msgstr "- Internet"
 
 msgctxt "#14030"
 msgid "Audio cache - DVD-ROM"
-msgstr "Ljudbuffert - DVDRom"
+msgstr "Ljudbuffert - DVD-ROM"
 
 msgctxt "#14031"
 msgid "- Local Network"
@@ -4691,7 +4711,7 @@ msgstr "- Internet"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
-msgstr "DVDbuffert - DVDRom"
+msgstr "DVD-buffert - DVD-ROM"
 
 msgctxt "#14035"
 msgid "- Local Network"
@@ -4759,11 +4779,11 @@ msgstr "Datumformat"
 
 msgctxt "#14053"
 msgid "GUI filters"
-msgstr "GUI-filter"
+msgstr "Gränsnittsfilter"
 
 msgctxt "#14055"
 msgid "Use background scanning"
-msgstr "Använd bakgrundskanning"
+msgstr "Använd bakgrundsskanning"
 
 msgctxt "#14056"
 msgid "Stop scan"
@@ -4779,11 +4799,11 @@ msgstr "Filmbruseffekt"
 
 msgctxt "#14059"
 msgid "Search for thumbnails on remote shares"
-msgstr "Leta miniatyrer på utdelningar"
+msgstr "Leta efter miniatyrer på fjärrutdelningar"
 
 msgctxt "#14060"
 msgid "Unknown type cache - Internet"
-msgstr "Okänd buffert - Internet"
+msgstr "Buffert för okänd typ - Internet"
 
 msgctxt "#14061"
 msgid "Auto"
@@ -4807,7 +4827,7 @@ msgstr "Ange klockslag"
 
 msgctxt "#14066"
 msgid "Enter the time in 24 hour HH:MM format"
-msgstr "Ange tiden i formatet TT:MM"
+msgstr "Ange tiden i 24-timmarsformatet TT:MM"
 
 msgctxt "#14067"
 msgid "Enter the date in DD/MM/YYYY format"
@@ -4819,15 +4839,15 @@ msgstr "Ange IP-adress"
 
 msgctxt "#14069"
 msgid "Apply these settings now?"
-msgstr "Vill du spara inställningarna nu?"
+msgstr "Tillämpa inställningarna nu?"
 
 msgctxt "#14070"
 msgid "Apply changes now"
-msgstr "Spara inställningar"
+msgstr "Tillämpa inställningar"
 
 msgctxt "#14071"
 msgid "Allow file renaming and deletion"
-msgstr "Tillåt omdöpning och radering av filer"
+msgstr "Tillåt namnbyte och radering av filer"
 
 msgctxt "#14074"
 msgid "Set timezone"
@@ -4863,15 +4883,15 @@ msgstr "Fillistor"
 
 msgctxt "#14082"
 msgid "Show EXIF picture information"
-msgstr "Visa EXIF-information"
+msgstr "Visa bildens EXIF-information"
 
 msgctxt "#14083"
 msgid "Use a fullscreen window rather than true fullscreen"
-msgstr "Använd helskärmsfönster istället för äkta helskärm"
+msgstr "Använd hellre helskärmsfönster än äkta helskärm"
 
 msgctxt "#14084"
 msgid "Queue songs on selection"
-msgstr "Köa låtar vid markering"
+msgstr "Köa låtar vid val"
 
 msgctxt "#14085"
 msgid "Play audio CDs automatically"
@@ -4883,15 +4903,15 @@ msgstr "Uppspelning"
 
 msgctxt "#14087"
 msgid "DVDs"
-msgstr "DVDer"
+msgstr "DVD'er"
 
 msgctxt "#14088"
 msgid "Play DVDs automatically"
-msgstr "Spela DVDer automatiskt"
+msgstr "Spela upp DVD'er automatiskt"
 
 msgctxt "#14089"
 msgid "Font to use for text subtitles"
-msgstr "Typsnitt att använda för undertexter"
+msgstr "Typsnitt för textbaserade undertexter"
 
 msgctxt "#14090"
 msgid "International"
@@ -4955,7 +4975,7 @@ msgstr "* Alla låtar"
 
 msgctxt "#15105"
 msgid "* All genres"
-msgstr "* Alla genrer"
+msgstr "* Alla genre"
 
 msgctxt "#15107"
 msgid "Buffering..."
@@ -5039,7 +5059,7 @@ msgstr "Använd utjämnad A/V-synkronisering"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
-msgstr "Göm filnamn i miniatyrläget"
+msgstr "Göm filnamn i miniatyrvyn"
 
 msgctxt "#15216"
 msgid "Play in party mode"
@@ -5267,15 +5287,15 @@ msgstr "Kunde inte ansluta till nätverksserver"
 
 msgctxt "#15302"
 msgid "No servers found"
-msgstr "Inga servrar hittade"
+msgstr "Inga servrar funna"
 
 msgctxt "#15303"
 msgid "Workgroup not found"
-msgstr "Arbetsgrupp hittades inte"
+msgstr "Arbetsgruppen hittades inte"
 
 msgctxt "#15310"
 msgid "Opening multi-path source"
-msgstr "Öppnar multi-sökvägskälla"
+msgstr "Öppnar flersökvägskälla"
 
 msgctxt "#15311"
 msgid "Path:"
@@ -5299,19 +5319,19 @@ msgstr "Spela media från skiva"
 
 msgctxt "#16008"
 msgid "Enter new title"
-msgstr "Lägg till ny titel"
+msgstr "Ange ny titel"
 
 msgctxt "#16009"
 msgid "Enter the movie name"
-msgstr "Ange filmtitel"
+msgstr "Ange filmens titel"
 
 msgctxt "#16010"
 msgid "Enter the profile name"
-msgstr "Ange profilnamn"
+msgstr "Ange profilens namn"
 
 msgctxt "#16011"
 msgid "Enter the album name"
-msgstr "Ange albumtitel"
+msgstr "Ange albumets namn"
 
 msgctxt "#16012"
 msgid "Enter the playlist name"
@@ -5355,7 +5375,7 @@ msgstr "Bob"
 
 msgctxt "#16022"
 msgid "Bob (inverted)"
-msgstr "Bob (Inverted)"
+msgstr "Bob (inverterad)"
 
 msgctxt "#16023"
 msgid "Interlaced handling"
@@ -5367,7 +5387,7 @@ msgstr "Avbryter..."
 
 msgctxt "#16025"
 msgid "Enter the artist name"
-msgstr "Ange artistnamnet"
+msgstr "Ange artistens namn"
 
 msgctxt "#16026"
 msgid "Playback failed"
@@ -5375,7 +5395,7 @@ msgstr "Uppspelning misslyckades"
 
 msgctxt "#16027"
 msgid "One or more items failed to play."
-msgstr "En eller flera objekt spelades inte."
+msgstr "Ett eller flera objekt lyckades inte spela."
 
 msgctxt "#16028"
 msgid "Enter value"
@@ -5387,7 +5407,7 @@ msgstr "Kontrollera loggfilen för detaljer."
 
 msgctxt "#16030"
 msgid "Party mode aborted."
-msgstr "Festläge avbrutet."
+msgstr "Partyläge avbrutet."
 
 msgctxt "#16031"
 msgid "No matching songs in the library."
@@ -5407,11 +5427,11 @@ msgstr "Kunde inte hämta låtar från databasen."
 
 msgctxt "#16035"
 msgid "Party mode playlist"
-msgstr "Partylägespellista"
+msgstr "Spellista för partyläge"
 
 msgctxt "#16100"
 msgid "All Videos"
-msgstr "Alla filmer"
+msgstr "Alla videor"
 
 msgctxt "#16101"
 msgid "Unwatched"
@@ -5455,7 +5475,7 @@ msgstr "För 60Hz-spel"
 
 msgctxt "#16200"
 msgid "Operation was aborted"
-msgstr "Operationen blev avbruten"
+msgstr "Operationen avbröts"
 
 msgctxt "#16201"
 msgid "Copy failed"
@@ -5463,23 +5483,23 @@ msgstr "Kopieringen misslyckades"
 
 msgctxt "#16202"
 msgid "Failed to copy at least one file"
-msgstr "Misslyckades kopiera minst en fil"
+msgstr "Kopiering av minst en fil misslyckades"
 
 msgctxt "#16203"
 msgid "Move failed"
-msgstr "Flyttning misslyckades"
+msgstr "Lyckades inte flytta"
 
 msgctxt "#16204"
 msgid "Failed to move at least one file"
-msgstr "Misslyckades flytta minst en fil"
+msgstr "Flytt av minst en fil misslyckades"
 
 msgctxt "#16205"
 msgid "Delete failed"
-msgstr "Radering misslyckades"
+msgstr "Raderingen misslyckades"
 
 msgctxt "#16206"
 msgid "Failed to delete at least one file"
-msgstr "Misslyckades radera minst en fil"
+msgstr "Radering av minst en fil misslyckades"
 
 msgctxt "#16300"
 msgid "Video scaling method"
@@ -5487,7 +5507,7 @@ msgstr "Videoskalningsmetod"
 
 msgctxt "#16301"
 msgid "Nearest neighbour"
-msgstr "Närmsta granne"
+msgstr "Nearest neighbour"
 
 msgctxt "#16302"
 msgid "Bilinear"
@@ -5531,19 +5551,23 @@ msgstr "Temporal/Spatial"
 
 msgctxt "#16312"
 msgid "(VDPAU)Noise Reduction"
-msgstr "(VDPAU)Noise Reduction"
+msgstr "(VDPAU)Brusreducering"
 
 msgctxt "#16313"
 msgid "(VDPAU)Sharpness"
-msgstr "(VDPAU)Sharpness"
+msgstr "(VDPAU)Skärpa"
 
 msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Inverse Telecine"
 
+msgctxt "#16400"
+msgid "Post-processing"
+msgstr "Efterbearbetning"
+
 msgctxt "#17500"
 msgid "Display sleep timeout"
-msgstr "Visa insommningstimeout"
+msgstr "Visa timeout för viloläge"
 
 msgctxt "#19000"
 msgid "Switch to channel"
@@ -5563,15 +5587,15 @@ msgstr "Extern DVD-spelare"
 
 msgctxt "#20003"
 msgid "Trainers folder"
-msgstr "Mapp för hjälpprogram"
+msgstr "Mapp för trainers"
 
 msgctxt "#20004"
 msgid "Screenshot folder"
-msgstr "Skärmdumpsmapp"
+msgstr "Mapp för skärmdumpar"
 
 msgctxt "#20006"
 msgid "Playlists folder"
-msgstr "Spellistsmapp"
+msgstr "Mapp för spellistor"
 
 msgctxt "#20007"
 msgid "Recordings"
@@ -5591,7 +5615,7 @@ msgstr "Musikspellistor"
 
 msgctxt "#20012"
 msgid "Video playlists"
-msgstr "Filmspellistor"
+msgstr "Videospellistor"
 
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
@@ -5599,7 +5623,7 @@ msgstr "Vill du starta spelet?"
 
 msgctxt "#20014"
 msgid "Sort by: Playlist"
-msgstr "Sort: Spellista"
+msgstr "Sortering: Spellista"
 
 msgctxt "#20015"
 msgid "Remote thumb"
@@ -5639,7 +5663,7 @@ msgstr "Region"
 
 msgctxt "#20037"
 msgid "Summary"
-msgstr "Sammanfattning"
+msgstr "Översikt"
 
 msgctxt "#20038"
 msgid "Lock music window"
@@ -5647,7 +5671,7 @@ msgstr "Lås musikfönster"
 
 msgctxt "#20039"
 msgid "Lock videos window"
-msgstr "Lås filmfönster"
+msgstr "Lås videofönster"
 
 msgctxt "#20040"
 msgid "Lock pictures window"
@@ -5663,7 +5687,7 @@ msgstr "Lås filhanteraren"
 
 msgctxt "#20043"
 msgid "Lock settings"
-msgstr "Lås inställningar"
+msgstr "Låsinställningar"
 
 msgctxt "#20044"
 msgid "Start fresh"
@@ -5691,7 +5715,7 @@ msgstr "Bästa möjliga"
 
 msgctxt "#20050"
 msgid "Auto-switch between 16x9 and 4x3"
-msgstr "Autoväxling mellan 16x9 och 4x3"
+msgstr "Autoväxla mellan 16x9 och 4x3"
 
 msgctxt "#20051"
 msgid "Treat stacked files as single file"
@@ -5735,11 +5759,11 @@ msgstr "Separata"
 
 msgctxt "#20062"
 msgid "Shares with default"
-msgstr "Källor med standard"
+msgstr "Utdelningar med standard"
 
 msgctxt "#20063"
 msgid "Shares with default (read only)"
-msgstr "Källor med standard (endast läsning)"
+msgstr "Utdelningar med standard (endast läsning)"
 
 msgctxt "#20064"
 msgid "Copy default"
@@ -5775,7 +5799,7 @@ msgstr "Starta med nya mediakällor"
 
 msgctxt "#20072"
 msgid "Make sure the selected folder is writable"
-msgstr "Säkerställ att mappen är skrivbar"
+msgstr "Se till att mappen är skrivbar"
 
 msgctxt "#20073"
 msgid "and that the new folder name is valid"
@@ -5803,11 +5827,11 @@ msgstr "- ingen länk -"
 
 msgctxt "#20079"
 msgid "Enable animations"
-msgstr "Aktivera animationer"
+msgstr "Aktivera animeringar"
 
 msgctxt "#20080"
 msgid "Disable RSS during music"
-msgstr "Inaktivera RSS under musik"
+msgstr "Inaktivera RSS vid musikuppspelning"
 
 msgctxt "#20081"
 msgid "Enable shortcut buttons"
@@ -5847,7 +5871,7 @@ msgstr "Ledigt diskutrymme"
 
 msgctxt "#20090"
 msgid "Enter the name of an existing share"
-msgstr "Ange namnet på en befintlig delning"
+msgstr "Ange namnet på en befintlig utdelning"
 
 msgctxt "#20091"
 msgid "Lock code"
@@ -5871,7 +5895,7 @@ msgstr "Mata in profilens låskod"
 
 msgctxt "#20096"
 msgid "Login screen"
-msgstr "Inlogg. skärm"
+msgstr "Inloggningsskärm"
 
 msgctxt "#20097"
 msgid "Fetching album info"
@@ -5883,7 +5907,7 @@ msgstr "Hämtar info för album"
 
 msgctxt "#20099"
 msgid "Can't rip CD or track while playing from CD"
-msgstr "Kan inte rippa CD eller spår medan CDn spelar"
+msgstr "Kan inte rippa CD eller spår under uppspelning av CD"
 
 msgctxt "#20100"
 msgid "Master lock code and settings"
@@ -5891,7 +5915,7 @@ msgstr "Huvudkod och lås"
 
 msgctxt "#20101"
 msgid "Entering master lock code always enables master mode"
-msgstr "Logga in som huvudanv. aktiverar huvudläge"
+msgstr "Om man anger huvudkod aktiveras huvudläget"
 
 msgctxt "#20102"
 msgid "or copy from default?"
@@ -5903,11 +5927,11 @@ msgstr "Spara ändringar till profil?"
 
 msgctxt "#20104"
 msgid "Old settings found."
-msgstr "Gamla inställningar hittade."
+msgstr "Gamla inställningar hittades."
 
 msgctxt "#20105"
 msgid "Do you want to use them?"
-msgstr "Vill du använda dom?"
+msgstr "Vill du använda dem?"
 
 msgctxt "#20106"
 msgid "Old media sources found."
@@ -5919,7 +5943,7 @@ msgstr "Separata (låsta)"
 
 msgctxt "#20108"
 msgid "Root"
-msgstr "Huvudmapp"
+msgstr "Rot"
 
 msgctxt "#20109"
 msgid "- Zoom"
@@ -5931,11 +5955,11 @@ msgstr "UPnP-inställningar"
 
 msgctxt "#20111"
 msgid "Autostart UPnP client"
-msgstr "Autostarta UPnP-klient"
+msgstr "Starta UPnP-klient automatiskt"
 
 msgctxt "#20112"
 msgid "Last login: %s"
-msgstr "Sist inloggad: %s"
+msgstr "Senaste inloggning: %s"
 
 msgctxt "#20113"
 msgid "Never logged on"
@@ -5959,11 +5983,11 @@ msgstr "Ogiltig låskod."
 
 msgctxt "#20118"
 msgid "This requires the master lock to be set."
-msgstr "Detta kräver att huvudkoden är satt."
+msgstr "Detta kräver att huvudkoden är angiven."
 
 msgctxt "#20119"
 msgid "Would you like to set it now?"
-msgstr "Vill du sätta den nu?"
+msgstr "Vill du ange den nu?"
 
 msgctxt "#20120"
 msgid "Loading program information"
@@ -5995,7 +6019,7 @@ msgstr "Logga ut"
 
 msgctxt "#20128"
 msgid "Go to root"
-msgstr "Gå till huvudmapp"
+msgstr "Gå till roten"
 
 msgctxt "#20129"
 msgid "Weave"
@@ -6031,7 +6055,7 @@ msgstr "Minnesenhet"
 
 msgctxt "#20137"
 msgid "Memory unit mounted"
-msgstr "Minnesenhet monterad"
+msgstr "Monterade minnesenheten"
 
 msgctxt "#20138"
 msgid "Unable to mount memory unit"
@@ -6047,7 +6071,7 @@ msgstr "Lås skärmsläckare"
 
 msgctxt "#20141"
 msgid "Set"
-msgstr "Satt"
+msgstr "Angiven"
 
 msgctxt "#20142"
 msgid "Username"
@@ -6083,7 +6107,7 @@ msgstr "Stäng av om 120 minuter"
 
 msgctxt "#20150"
 msgid "Custom shutdown timer"
-msgstr "Ange avstängningstimer"
+msgstr "Anpassad avstängningstimer"
 
 msgctxt "#20151"
 msgid "Cancel shutdown timer"
@@ -6111,7 +6135,7 @@ msgstr "Hårddiskinformation"
 
 msgctxt "#20157"
 msgid "DVD-ROM information"
-msgstr "DVD-Rom-information"
+msgstr "DVD-ROM-information"
 
 msgctxt "#20158"
 msgid "Network information"
@@ -6131,7 +6155,7 @@ msgstr "Totalt"
 
 msgctxt "#20162"
 msgid "Used"
-msgstr "använt"
+msgstr "Använt"
 
 msgctxt "#20163"
 msgid "of"
@@ -6219,7 +6243,7 @@ msgstr "Ladda om skal"
 
 msgctxt "#20184"
 msgid "Rotate pictures using EXIF information"
-msgstr "Vrid som angivet i EXIF-information"
+msgstr "Vrid enligt EXIF-information"
 
 msgctxt "#20185"
 msgid "Use poster view styles for TV shows"
@@ -6251,7 +6275,7 @@ msgstr "Aktivera debugloggning"
 
 msgctxt "#20192"
 msgid "Download additional information during updates"
-msgstr "Hämta tilläggsinformation under uppdateringar"
+msgstr "Hämta tilläggsinformation vid uppdateringar"
 
 msgctxt "#20194"
 msgid "Default service for music information"
@@ -6271,7 +6295,7 @@ msgstr "Importera musikbibliotek"
 
 msgctxt "#20198"
 msgid "No artist found!"
-msgstr "Ingen artist hittad!"
+msgstr "Ingen artist hittades!"
 
 msgctxt "#20199"
 msgid "Downloading artist info failed"
@@ -6279,15 +6303,15 @@ msgstr "Nedladdning av artistinfo misslyckades"
 
 msgctxt "#20250"
 msgid "Party on! (videos)"
-msgstr "Festa på! (filmer)"
+msgstr "Festa på! (videor)"
 
 msgctxt "#20251"
 msgid "Mixing drinks (videos)"
-msgstr "Blandar drinkar (filmer)"
+msgstr "Blandar drinkar (videor)"
 
 msgctxt "#20252"
 msgid "Filling glasses (videos)"
-msgstr "Fyller glasen (filmer)"
+msgstr "Fyller glasen (videor)"
 
 msgctxt "#20253"
 msgid "WebDAV server (HTTP)"
@@ -6297,13 +6321,17 @@ msgctxt "#20254"
 msgid "WebDAV server (HTTPS)"
 msgstr "WebDAV-server (HTTPS)"
 
+msgctxt "#20258"
+msgid "MythTV client"
+msgstr "MythTV-klient"
+
 msgctxt "#20300"
 msgid "Web server directory (HTTP)"
-msgstr "Webserver katalog (HTTP)"
+msgstr "Webbserver-katalog (HTTP)"
 
 msgctxt "#20301"
 msgid "Web server directory (HTTPS)"
-msgstr "Webserver katalog (HTTPS)"
+msgstr "Webbserver-katalog (HTTPS)"
 
 msgctxt "#20302"
 msgid "Unable to write to folder:"
@@ -6339,7 +6367,7 @@ msgstr "Tona ned LCD under uppspelning"
 
 msgctxt "#20311"
 msgid "Unknown or onboard (protected)"
-msgstr "Okänd eller inbyggd (skyddad)"
+msgstr "Okänd eller integrerad (skyddad)"
 
 msgctxt "#20312"
 msgid "Dim LCD on paused"
@@ -6359,7 +6387,7 @@ msgstr "Sparade spel"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
-msgstr "Sort: ID"
+msgstr "Sortering: ID"
 
 msgctxt "#20317"
 msgid "Download saves"
@@ -6419,11 +6447,11 @@ msgstr "Fil"
 
 msgctxt "#20332"
 msgid "Use file or folder names in lookups?"
-msgstr "Använd fil- eller mappnamn i förfrågningar?"
+msgstr "Använd fil- eller mappnamn i sökningar?"
 
 msgctxt "#20333"
 msgid "Set content"
-msgstr "Sätt innehåll"
+msgstr "Ange innehåll"
 
 msgctxt "#20334"
 msgid "Folder"
@@ -6511,7 +6539,7 @@ msgstr "Hämtar avsnittsguide"
 
 msgctxt "#20355"
 msgid "Loading info for episodes in directory"
-msgstr "Laddar info för avsnitt i mappen"
+msgstr "Laddar info för avsnitten i mappen"
 
 msgctxt "#20356"
 msgid "Select TV show:"
@@ -6551,7 +6579,7 @@ msgstr "TV-serie"
 
 msgctxt "#20365"
 msgid "Episode plot"
-msgstr "Handling i avsnitt"
+msgstr "Handling för avsnitt"
 
 msgctxt "#20366"
 msgid "* All seasons"
@@ -6559,7 +6587,7 @@ msgstr "* Alla säsonger"
 
 msgctxt "#20367"
 msgid "Hide watched"
-msgstr "Dölj sedda"
+msgstr "Dölj visade"
 
 msgctxt "#20368"
 msgid "Prod code"
@@ -6567,7 +6595,7 @@ msgstr "Prod. kod"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
-msgstr "Visa handling för osedda objekt"
+msgstr "Visa handling för icke visade objekt"
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"
@@ -6575,7 +6603,7 @@ msgstr "* Dold för att inte förstöra handlingen *"
 
 msgctxt "#20371"
 msgid "Set season thumb"
-msgstr "Sätt säsongsminiatyr"
+msgstr "Ange säsongsminiatyr"
 
 msgctxt "#20372"
 msgid "Season image"
@@ -6591,7 +6619,11 @@ msgstr "Hämtar filminformation"
 
 msgctxt "#20375"
 msgid "Unassign content"
-msgstr "Oassocierat innehåll"
+msgstr "Frigör innehållet"
+
+msgctxt "#20376"
+msgid "Original title"
+msgstr "Originaltitel"
 
 msgctxt "#20377"
 msgid "Refresh TV show information"
@@ -6603,15 +6635,15 @@ msgstr "Uppdatera alla avsnitt?"
 
 msgctxt "#20379"
 msgid "Selected folder contains a single TV show"
-msgstr "Mappen innehåller en enda TV-serie"
+msgstr "Vald mapp innehåller en enda TV-serie"
 
 msgctxt "#20380"
 msgid "Exclude selected folder from scans"
-msgstr "Ignorera mapp vid skanning"
+msgstr "Ignorera vald mapp vid skanning"
 
 msgctxt "#20381"
 msgid "Specials"
-msgstr "Specialer"
+msgstr "Specialavsnitt"
 
 msgctxt "#20382"
 msgid "Automatically grab season thumbs"
@@ -6619,7 +6651,7 @@ msgstr "Hämta säsongsminiatyrer automatiskt"
 
 msgctxt "#20383"
 msgid "Selected folder contains a single video"
-msgstr "Mappen innehåller en enstaka film"
+msgstr "Vald mapp innehåller en enstaka film"
 
 msgctxt "#20384"
 msgid "Link to TV show"
@@ -6671,7 +6703,7 @@ msgstr "Blandad"
 
 msgctxt "#20396"
 msgid "Go to albums by artist"
-msgstr "Gå till album av artist"
+msgstr "Gå till album av artisten"
 
 msgctxt "#20397"
 msgid "Go to album"
@@ -6683,11 +6715,11 @@ msgstr "Spela låt"
 
 msgctxt "#20399"
 msgid "Go to music videos from album"
-msgstr "Gå till musikvideor från album"
+msgstr "Gå till musikvideor från albumet"
 
 msgctxt "#20400"
 msgid "Go to music videos by artist"
-msgstr "Gå till musikvideor av artist"
+msgstr "Gå till musikvideor av artisten"
 
 msgctxt "#20401"
 msgid "Play music video"
@@ -6695,7 +6727,7 @@ msgstr "Spela musikvideo"
 
 msgctxt "#20402"
 msgid "Download actor thumbnails when adding to library"
-msgstr "Hämta automatiskt skådespelarminiatyrer under tilläggning till biblioteket"
+msgstr "Hämta skådespelarminiatyrer vid addering till biblioteket"
 
 msgctxt "#20403"
 msgid "Set actor thumb"
@@ -6703,15 +6735,15 @@ msgstr "Ange skådespelarminiatyr"
 
 msgctxt "#20405"
 msgid "Remove episode bookmark"
-msgstr "Ta bort avsnittsbokmärke"
+msgstr "Ta bort bokmärke för avsnittet"
 
 msgctxt "#20406"
 msgid "Set episode bookmark"
-msgstr "Lägg till avsnittsbokmärke"
+msgstr "Ange bokmärke för avsnittet"
 
 msgctxt "#20407"
 msgid "Scraper settings"
-msgstr "Skrap-inställningar"
+msgstr "Inställningar för skrapa"
 
 msgctxt "#20408"
 msgid "Downloading music video information"
@@ -6747,7 +6779,7 @@ msgstr "Skannar efter nytt innehåll"
 
 msgctxt "#20416"
 msgid "First aired"
-msgstr "Först sänt"
+msgstr "Sändes först"
 
 msgctxt "#20417"
 msgid "Writer"
@@ -6783,19 +6815,19 @@ msgstr "Fanart-bildspel"
 
 msgctxt "#20426"
 msgid "Export to a single file or separate"
-msgstr "Exportera till en ensam fil eller"
+msgstr "Exportera till en enda fil eller"
 
 msgctxt "#20427"
 msgid "files per entry?"
-msgstr "separata filer per post?"
+msgstr "en fil per post?"
 
 msgctxt "#20428"
 msgid "Single file"
-msgstr "Ensam fil"
+msgstr "En fil"
 
 msgctxt "#20429"
 msgid "Separate"
-msgstr "Separata"
+msgstr "En fil per post"
 
 msgctxt "#20430"
 msgid "Export thumbnails and fanart?"
@@ -6823,7 +6855,7 @@ msgstr "Ange filmuppsättningsminiatyr"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
-msgstr "Exportera skådespelarminiatyrer"
+msgstr "Exportera skådespelarminiatyrer?"
 
 msgctxt "#20437"
 msgid "Choose fanart"
@@ -6843,7 +6875,7 @@ msgstr "Nuvarande fanart"
 
 msgctxt "#20441"
 msgid "Remote fanart"
-msgstr "Fjärr-fanart"
+msgstr "Fanart på fjärrutdelning"
 
 msgctxt "#20442"
 msgid "Change content"
@@ -6881,6 +6913,14 @@ msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Vill du fortsätta skanna?"
 
+msgctxt "#20451"
+msgid "Countries"
+msgstr "Länder"
+
+msgctxt "#20458"
+msgid "Group movies in sets"
+msgstr "Gruppera filmer i samlingar"
+
 msgctxt "#21330"
 msgid "Show hidden files and directories"
 msgstr "Visa dolda filer och mappar"
@@ -6903,7 +6943,7 @@ msgstr "Byte till kanal: %s misslyckades!"
 
 msgctxt "#21335"
 msgid "Are you sure to start the stream?"
-msgstr "Är du säker att du vill starta strömmen?"
+msgstr "Är du säker på att starta strömmen?"
 
 msgctxt "#21336"
 msgid "Connecting to: %s"
@@ -6991,7 +7031,7 @@ msgstr "Ange namn på den nya spellistan"
 
 msgctxt "#21382"
 msgid "Show \"Add source\" buttons in file lists"
-msgstr "Visa knapp för \"Lägg till källa\" i fillistan"
+msgstr "Visa knapp för \"Lägg till källa\" i fillistor"
 
 msgctxt "#21383"
 msgid "Enable scrollbars"
@@ -6999,7 +7039,7 @@ msgstr "Aktivera rullningslister"
 
 msgctxt "#21384"
 msgid "Make watched filtering a toggle in video library"
-msgstr "Gör visad-filter ett val i filmbibliotek"
+msgstr "Gör en knapp för visad-filtret i filmbibliotek"
 
 msgctxt "#21385"
 msgid "Open"
@@ -7007,7 +7047,7 @@ msgstr "Öppna"
 
 msgctxt "#21386"
 msgid "Acoustic management level"
-msgstr "Ljudnivåhantering"
+msgstr "Akustisk nivåhantering"
 
 msgctxt "#21387"
 msgid "Fast"
@@ -7019,11 +7059,11 @@ msgstr "Tyst"
 
 msgctxt "#21389"
 msgid "Enable custom background"
-msgstr "Aktivera annpassad bakgrund"
+msgstr "Aktivera anpassad bakgrund"
 
 msgctxt "#21390"
 msgid "Power management level"
-msgstr "Energibesparingshantering"
+msgstr "Energisparshantering"
 
 msgctxt "#21391"
 msgid "High power"
@@ -7051,7 +7091,7 @@ msgstr "Kapitel"
 
 msgctxt "#21397"
 msgid "High quality pixel shader v2"
-msgstr "Högkvalitets pixelshader v2"
+msgstr "Högkvalitets-pixelskuggning v2"
 
 msgctxt "#21398"
 msgid "Enable playlist at startup"
@@ -7103,11 +7143,11 @@ msgstr "före"
 
 msgctxt "#21410"
 msgid "in the last"
-msgstr "i det senaste"
+msgstr "i de senaste"
 
 msgctxt "#21411"
 msgid "not in the last"
-msgstr "inte i det senaste"
+msgstr "inte i de senaste"
 
 msgctxt "#21412"
 msgid "Scrapers"
@@ -7115,11 +7155,11 @@ msgstr "Skrapor"
 
 msgctxt "#21413"
 msgid "Default movie scraper"
-msgstr "Standard-filmskrapa"
+msgstr "Standardskrapa för film"
 
 msgctxt "#21414"
 msgid "Default tvshow scraper"
-msgstr "Standard-TV-serieskrapa"
+msgstr "Standardskrapa för TV-serier"
 
 msgctxt "#21415"
 msgid "Default musicvideo scraper"
@@ -7143,11 +7183,11 @@ msgstr "Värde att matcha"
 
 msgctxt "#21421"
 msgid "Smart playlist rule"
-msgstr "Smart spellistregel"
+msgstr "Regel för smart spellista"
 
 msgctxt "#21422"
 msgid "Match items where"
-msgstr "Matcha objekt som"
+msgstr "Matcha objekt där"
 
 msgctxt "#21423"
 msgid "New rule..."
@@ -7195,15 +7235,15 @@ msgstr "Namn på spellista"
 
 msgctxt "#21434"
 msgid "Find items where"
-msgstr "Hitta objekt som matchar"
+msgstr "Hitta objekt där"
 
 msgctxt "#21435"
 msgid "Edit"
-msgstr "- Redigera"
+msgstr "Redigera"
 
 msgctxt "#21436"
 msgid "%i items"
-msgstr "%i låtar"
+msgstr "%i objekt"
 
 msgctxt "#21437"
 msgid "New smart playlist..."
@@ -7215,7 +7255,7 @@ msgstr "%c disk"
 
 msgctxt "#21439"
 msgid "Edit party mode rules"
-msgstr "Redigera partylägesregler"
+msgstr "Redigera regler för partyläge"
 
 msgctxt "#21440"
 msgid "Home folder"
@@ -7223,7 +7263,7 @@ msgstr "Hemmapp"
 
 msgctxt "#21441"
 msgid "Watched count"
-msgstr "Visad-räkning"
+msgstr "Visningar"
 
 msgctxt "#21442"
 msgid "Episode title"
@@ -7251,7 +7291,7 @@ msgstr "Ljudspråk"
 
 msgctxt "#21448"
 msgid "Subtitle language"
-msgstr "Undertextsspråk"
+msgstr "Undertextspråk"
 
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
@@ -7315,11 +7355,11 @@ msgstr "Kameramodell"
 
 msgctxt "#21824"
 msgid "EXIF comment"
-msgstr "Exif-kommentar"
+msgstr "EXIF-kommentar"
 
 msgctxt "#21825"
 msgid "Firmware"
-msgstr "Hårdvaruprogram"
+msgstr "Firmware"
 
 msgctxt "#21826"
 msgid "Aperture"
@@ -7351,7 +7391,7 @@ msgstr "Exponeringsläge"
 
 msgctxt "#21833"
 msgid "Flash used"
-msgstr "Blixt använd"
+msgstr "Blixt användes"
 
 msgctxt "#21834"
 msgid "White-balance"
@@ -7363,7 +7403,7 @@ msgstr "Ljuskälla"
 
 msgctxt "#21836"
 msgid "Metering mode"
-msgstr "Mätningsläge"
+msgstr "Mätläge"
 
 msgctxt "#21837"
 msgid "ISO"
@@ -7403,7 +7443,7 @@ msgstr "Nyckelord"
 
 msgctxt "#21862"
 msgid "Caption"
-msgstr "Överskrift"
+msgstr "Etikett"
 
 msgctxt "#21863"
 msgid "Author"
@@ -7427,7 +7467,7 @@ msgstr "Upphovsman"
 
 msgctxt "#21868"
 msgid "Byline title"
-msgstr "Titel på upphovman"
+msgstr "Upphovmanstitel"
 
 msgctxt "#21869"
 msgid "Credit"
@@ -7443,7 +7483,7 @@ msgstr "Upphovsrättsnotering"
 
 msgctxt "#21872"
 msgid "Object name"
-msgstr "Objektsnamn"
+msgstr "Objektnamn"
 
 msgctxt "#21873"
 msgid "City"
@@ -7483,7 +7523,7 @@ msgstr "Tillåt kontroll av XBMC via UPnP"
 
 msgctxt "#21882"
 msgid "Attempt to skip introduction before DVD menu"
-msgstr "Försök hoppa över introduktion före DVD-menyn"
+msgstr "Försök hoppa över introduktionen innan DVD-menyn"
 
 msgctxt "#21883"
 msgid "Saved music"
@@ -7531,7 +7571,7 @@ msgstr "Född"
 
 msgctxt "#21894"
 msgid "Formed"
-msgstr "Bildat"
+msgstr "Bildades"
 
 msgctxt "#21895"
 msgid "Themes"
@@ -7551,11 +7591,11 @@ msgstr "Aktiva år"
 
 msgctxt "#21899"
 msgid "Label"
-msgstr "Etikett"
+msgstr "Förlag"
 
 msgctxt "#21900"
 msgid "Born/Formed"
-msgstr "Född/bildat"
+msgstr "Född/bildades"
 
 msgctxt "#22000"
 msgid "Update library on startup"
@@ -7575,7 +7615,7 @@ msgstr "Fördröjd med: %2.3fs"
 
 msgctxt "#22005"
 msgid "Ahead by: %2.3fs"
-msgstr "Förväg med: %2.3fs"
+msgstr "I förväg med: %2.3fs"
 
 msgctxt "#22006"
 msgid "Subtitle offset"
@@ -7643,7 +7683,7 @@ msgstr "Felmarginal i bildförhållande för att minska svarta ränder"
 
 msgctxt "#22022"
 msgid "Show video files in listings"
-msgstr "Visa videofiler i listningar"
+msgstr "Visa videofiler i listor"
 
 msgctxt "#22023"
 msgid "DirectX vendor"
@@ -7683,7 +7723,7 @@ msgstr "Importera karaoketitlar..."
 
 msgctxt "#22037"
 msgid "Show song selector automatically"
-msgstr "Visa låtväljare automatiskt"
+msgstr "Visa låtväljaren automatiskt"
 
 msgctxt "#22038"
 msgid "Export karaoke titles..."
@@ -7719,7 +7759,7 @@ msgstr "- Tilläggsinställningar"
 
 msgctxt "#23050"
 msgid "Activate Teletext"
-msgstr "Aktivera teletext"
+msgstr "Aktivera text-TV"
 
 msgctxt "#23051"
 msgid "Part %i"
@@ -7759,15 +7799,15 @@ msgstr "Tillägg"
 
 msgctxt "#24020"
 msgid "Configure"
-msgstr "Konfigurera Tillägg"
+msgstr "Konfigurera"
 
 msgctxt "#24021"
 msgid "Disable"
-msgstr "Avaktivera Tillägg"
+msgstr "Inaktivera"
 
 msgctxt "#24022"
 msgid "Enable"
-msgstr "Aktivera Tillägg"
+msgstr "Aktivera"
 
 msgctxt "#24023"
 msgid "Add-on disabled"
@@ -7775,7 +7815,7 @@ msgstr "Tillägg avaktiverat"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
-msgstr "Detta tillägg kan ej konfigureras"
+msgstr "Detta tillägg kan inte konfigureras"
 
 msgctxt "#29800"
 msgid "Library Mode"
@@ -7807,7 +7847,7 @@ msgstr "Ladda ned"
 
 msgctxt "#33004"
 msgid "Download & play"
-msgstr "ladda ned & spela"
+msgstr "Ladda ned & spela upp"
 
 msgctxt "#33005"
 msgid "Download & save"
@@ -7833,6 +7873,10 @@ msgctxt "#33010"
 msgid "Set download directory"
 msgstr "Ange nedladdningsmapp"
 
+msgctxt "#33011"
+msgid "Search duration"
+msgstr "Söklängd"
+
 msgctxt "#33012"
 msgid "Short"
 msgstr "Kort"
@@ -7843,7 +7887,7 @@ msgstr "Lång"
 
 msgctxt "#33014"
 msgid "Use DVD player instead of regular player"
-msgstr "Använd DVD-spelare istället för den vanliga spelaren"
+msgstr "Använd DVD-spelaren istället för den vanliga spelaren"
 
 msgctxt "#33015"
 msgid "Ask for download before playing video"
@@ -8067,7 +8111,7 @@ msgstr "Hata"
 
 msgctxt "#33081"
 msgid "This file is stacked, select the part you want to play from."
-msgstr "Denna fil är sammanslagen, välj den del du vill spela."
+msgstr "Denna fil är sammanslagen, välj den del du vill spela upp från."
 
 msgctxt "#33082"
 msgid "Path to script"
@@ -8075,4 +8119,8 @@ msgstr "Sökväg till skript"
 
 msgctxt "#33083"
 msgid "Enable custom script button"
-msgstr "Aktivera egen skriptknapp"
+msgstr "Aktivera knapp för anpassade skript"
+
+msgctxt "#34005"
+msgid "Flac"
+msgstr "Flac"

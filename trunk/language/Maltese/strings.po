@@ -125,6 +125,18 @@ msgctxt "#32"
 msgid "December"
 msgstr "Diċembru"
 
+msgctxt "#47"
+msgid "Sun"
+msgstr "Xemx"
+
+msgctxt "#55"
+msgid "May"
+msgstr "Mejju"
+
+msgctxt "#59"
+msgid "Sep"
+msgstr "Issettja"
+
 msgctxt "#98"
 msgid "View: Auto"
 msgstr "Uri: Awto"
@@ -1849,6 +1861,10 @@ msgctxt "#572"
 msgid "Studio"
 msgstr "Studjo"
 
+msgctxt "#574"
+msgid "Country"
+msgstr "Pajjiż"
+
 msgctxt "#580"
 msgid "Sort direction"
 msgstr "Direzzjoni tal-Ordni"
@@ -3381,6 +3397,18 @@ msgctxt "#13108"
 msgid "Always enabled"
 msgstr "Dejjem attiv"
 
+msgctxt "#13113"
+msgid "Disabled"
+msgstr "Mhux attiv"
+
+msgctxt "#13115"
+msgid "Always enabled"
+msgstr "Dejjem attiv"
+
+msgctxt "#13131"
+msgid "Disabled"
+msgstr "Mhux attiv"
+
 msgctxt "#13150"
 msgid "HDD key:"
 msgstr "HDD Key"
@@ -4028,6 +4056,26 @@ msgstr "L-ewwel 250:"
 msgctxt "#13411"
 msgid "Minimum fan speed"
 msgstr "fanspeed minimu"
+
+msgctxt "#13415"
+msgid "Render method"
+msgstr "Metodu ta' Render"
+
+msgctxt "#13507"
+msgid "Medium"
+msgstr "Medju"
+
+msgctxt "#13508"
+msgid "High"
+msgstr "Għoli"
+
+msgctxt "#13610"
+msgid "Disabled"
+msgstr "Mhux attiv"
+
+msgctxt "#13611"
+msgid "Standard"
+msgstr "Standard"
 
 msgctxt "#14000"
 msgid "Stack"
@@ -5993,6 +6041,18 @@ msgctxt "#20411"
 msgid "Flatten"
 msgstr "Flatten"
 
+msgctxt "#20420"
+msgid "Never"
+msgstr "Qatt"
+
+msgctxt "#20429"
+msgid "Separate"
+msgstr "Separati"
+
+msgctxt "#20434"
+msgid "Sets"
+msgstr "Issettja"
+
 msgctxt "#21330"
 msgid "Show hidden files and directories"
 msgstr "Uri kannestri u fajls moħbija"
@@ -6556,6 +6616,10 @@ msgstr "Dejjem aġġorna librerija wara l-kwinti"
 msgctxt "#22002"
 msgid "- DNS suffix"
 msgstr "- DNS Suffix"
+
+msgctxt "#22030"
+msgid "Font"
+msgstr "Font"
 
 msgctxt "#29999"
 msgid "Apply flicker filter setting to games"
