@@ -945,6 +945,10 @@ msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Semne de carte"
 
+msgctxt "#299"
+msgid "- AAC capable receiver"
+msgstr "Receptor capabil AAC"
+
 msgctxt "#300"
 msgid "- MP1 capable receiver"
 msgstr "1. Limba"
@@ -1713,6 +1717,10 @@ msgctxt "#507"
 msgid "Sort by: Usage"
 msgstr "Sortează după: Utilizare"
 
+msgctxt "#510"
+msgid "Enable visualizations"
+msgstr "Porneste efecte vizuale"
+
 msgctxt "#511"
 msgid "Enable video mode switching"
 msgstr "Activează schimbare mod video"
@@ -1733,6 +1741,10 @@ msgctxt "#515"
 msgid "Genre"
 msgstr "Gen"
 
+msgctxt "#516"
+msgid "Make stored archives with one file transparent"
+msgstr "Arhivele cu un singur fisier sunt transparente"
+
 msgctxt "#517"
 msgid "Recently played albums"
 msgstr "Albume redate recent"
@@ -1744,6 +1756,10 @@ msgstr "Lansează"
 msgctxt "#519"
 msgid "Launch in..."
 msgstr "Lansează în..."
+
+msgctxt "#520"
+msgid "Edit XBE title"
+msgstr "Editeaza titlu XBE"
 
 msgctxt "#521"
 msgid "Compilations"
@@ -2133,6 +2149,14 @@ msgctxt "#636"
 msgid "Custom"
 msgstr "Particularizat"
 
+msgctxt "#637"
+msgid "Replay gain"
+msgstr "Replay gain"
+
+msgctxt "#638"
+msgid "Replaygain volume adjustments"
+msgstr "Ajustari de volum pentru Replaygain"
+
 msgctxt "#639"
 msgid "Use track levels"
 msgstr "Folosește nivele pistă"
@@ -2140,6 +2164,18 @@ msgstr "Folosește nivele pistă"
 msgctxt "#640"
 msgid "Use album levels"
 msgstr "Folosește nivele album"
+
+msgctxt "#641"
+msgid "PreAmp Level - Replay gained files"
+msgstr "Nivel de preamplificare - Fisierele replay gain"
+
+msgctxt "#642"
+msgid "PreAmp Level - Non replay gained files"
+msgstr "Nivel de preamplificare - Fisierele nonreplay gain"
+
+msgctxt "#643"
+msgid "Avoid clipping on replay gained files"
+msgstr "Evita cliping pentru fisierele replay gain"
 
 msgctxt "#644"
 msgid "Crop black bars"
@@ -2477,6 +2513,10 @@ msgctxt "#770"
 msgid "Error %i: share not available"
 msgstr "Eroare %i: partajarea nu este disponibilă"
 
+msgctxt "#771"
+msgid "- Auto FATX limiter"
+msgstr "Auto limitator FATX"
+
 msgctxt "#772"
 msgid "Audio output"
 msgstr "Ieșire audio"
@@ -2492,6 +2532,18 @@ msgstr "Dosar prezentare diapozitive"
 msgctxt "#775"
 msgid "Network interface"
 msgstr "Interfață rețea"
+
+msgctxt "#776"
+msgid "- Wireless network name (ESSID)"
+msgstr "Numele retelei fara fir (SSID)"
+
+msgctxt "#777"
+msgid "- Wireless password"
+msgstr "Parola retelei fara fir"
+
+msgctxt "#778"
+msgid "- Wireless security"
+msgstr "Securitatea retelei fara fir"
 
 msgctxt "#779"
 msgid "Save and apply network interface settings"
@@ -2537,6 +2589,10 @@ msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "Nume rețea fără fir (ESSID)"
 
+msgctxt "#790"
+msgid "Event server"
+msgstr "Server de evenimente"
+
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
 msgstr "Permite programelor din acest sistem să controleze XBMC"
@@ -2580,6 +2636,10 @@ msgstr "Interval valid de porturi este 1-65535"
 msgctxt "#852"
 msgid "Valid port range is 1024-65535"
 msgstr "Interval valid de porturi este 1024-65535"
+
+msgctxt "#1000"
+msgid "Screensaver preview"
+msgstr "Previzualizare economizor ecran"
 
 msgctxt "#1001"
 msgid "Unable to connect"
@@ -2721,6 +2781,18 @@ msgctxt "#1036"
 msgid "Favourites"
 msgstr "Favorite"
 
+msgctxt "#1037"
+msgid "Video plugins"
+msgstr "Plugin-uri video"
+
+msgctxt "#1038"
+msgid "Music plugins"
+msgstr "Plugin-uri audio"
+
+msgctxt "#1039"
+msgid "Picture plugins"
+msgstr "Plugin-uri pentru imagini"
+
 msgctxt "#1040"
 msgid "Loading directory"
 msgstr "Se încarcă directorul"
@@ -2733,6 +2805,18 @@ msgctxt "#1042"
 msgid "Retrieved %i of %i items"
 msgstr "S-au obținut %i din %i elemente"
 
+msgctxt "#1043"
+msgid "Program plugins"
+msgstr "Plugin-uri pentru programe"
+
+msgctxt "#1044"
+msgid "Set plugin thumb"
+msgstr "Seteaza iconita pentru plugin"
+
+msgctxt "#1045"
+msgid "Plugin settings"
+msgstr "Setari plugin"
+
 msgctxt "#1046"
 msgid "Access points"
 msgstr "Puncte de acces"
@@ -2740,6 +2824,10 @@ msgstr "Puncte de acces"
 msgctxt "#1047"
 msgid "Other..."
 msgstr "Altele..."
+
+msgctxt "#1048"
+msgid "- Username"
+msgstr "Numele utilizatorului"
 
 msgctxt "#1049"
 msgid "Script settings"
@@ -2869,6 +2957,46 @@ msgctxt "#1235"
 msgid "Programs & pictures & video"
 msgstr "Programe, imagini și video"
 
+msgctxt "#1245"
+msgid "FTP username"
+msgstr "Numele utilizatorului FTP"
+
+msgctxt "#1246"
+msgid "FTP password"
+msgstr "Parola FTP"
+
+msgctxt "#1247"
+msgid "Password has been set successfully"
+msgstr "Parola a fost setata cu succes"
+
+msgctxt "#1250"
+msgid "Auto-detection"
+msgstr "Auto detectare"
+
+msgctxt "#1251"
+msgid "Auto-detect system"
+msgstr "Detectare auto de sistem"
+
+msgctxt "#1252"
+msgid "Nickname"
+msgstr "Porecla"
+
+msgctxt "#1254"
+msgid "Ask to connect"
+msgstr "Cerere pentru conectare"
+
+msgctxt "#1255"
+msgid "Send FTP user and password"
+msgstr "Trimite numele si parola utilizatorului FTP"
+
+msgctxt "#1256"
+msgid "Ping interval"
+msgstr "Interval de ping"
+
+msgctxt "#1257"
+msgid "Would you like to connect to the auto-detected system?"
+msgstr "Vrei sa te conectezi la sistemul autodetectat?"
+
 msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
 msgstr "Anunță aceste servicii către celelalte sisteme prin Zeroconf"
@@ -2949,6 +3077,10 @@ msgctxt "#1412"
 msgid "windy"
 msgstr "mult vânt"
 
+msgctxt "#1413"
+msgid "drizzle"
+msgstr "Burnita"
+
 msgctxt "#1414"
 msgid "Thunderstorm"
 msgstr "furtună cu trăznete"
@@ -2964,6 +3096,14 @@ msgstr "încețoșat"
 msgctxt "#1417"
 msgid "Grains"
 msgstr "picățele"
+
+msgctxt "#1418"
+msgid "T-Storms"
+msgstr "Furtuni"
+
+msgctxt "#1419"
+msgid "T-Showers"
+msgstr "Averse"
 
 msgctxt "#1450"
 msgid "Put display to sleep when idle"
@@ -3213,6 +3353,42 @@ msgctxt "#12011"
 msgid "Return to videos window"
 msgstr "Revino la fereastra de filme"
 
+msgctxt "#12012"
+msgid "Update trainer list"
+msgstr "Updateaza lista cu cheat-uri"
+
+msgctxt "#12013"
+msgid "Trainer"
+msgstr "Cheat-uri"
+
+msgctxt "#12014"
+msgid "No trainers found"
+msgstr "Nu s-au gasit cheat-uri"
+
+msgctxt "#12015"
+msgid "Trainer settings"
+msgstr "Setari cheat-uri"
+
+msgctxt "#12016"
+msgid "All registered trainers are missing. Update your list"
+msgstr "Toate cheat-urile inregistrate lipsesc. Updateaza lista"
+
+msgctxt "#12017"
+msgid "Resume from where last stopped"
+msgstr "Incepe de unde a ramas"
+
+msgctxt "#12018"
+msgid "No"
+msgstr "Nu"
+
+msgctxt "#12019"
+msgid "Yes"
+msgstr "Da"
+
+msgctxt "#12020"
+msgid "Ask"
+msgstr "Intreaba"
+
 msgctxt "#12021"
 msgid "Start from beginning"
 msgstr "Pornește de la început"
@@ -3220,6 +3396,10 @@ msgstr "Pornește de la început"
 msgctxt "#12022"
 msgid "Resume from %s"
 msgstr "Reia de la %s"
+
+msgctxt "#12023"
+msgid "Validating existing trainers..."
+msgstr "Valideaza cheat-uri existente"
 
 msgctxt "#12310"
 msgid "0"
@@ -3297,6 +3477,10 @@ msgctxt "#12330"
 msgid "Enter gamepad button combo and"
 msgstr "Introduceți combinație de butoane gamepad"
 
+msgctxt "#12331"
+msgid "press Start, or Back to cancel"
+msgstr "Apasa Start sau Back pentru a renunta"
+
 msgctxt "#12332"
 msgid "Set lock"
 msgstr "Setează blocare"
@@ -3353,6 +3537,10 @@ msgctxt "#12346"
 msgid "Password retry limit exceeded."
 msgstr "S-a ajuns la limita de încercări."
 
+msgctxt "#12347"
+msgid "The system will now shut off."
+msgstr "Sistemul o sa se opreasca"
+
 msgctxt "#12348"
 msgid "Item locked"
 msgstr "Element blocat"
@@ -3393,6 +3581,10 @@ msgctxt "#12373"
 msgid "Settings & file manager"
 msgstr "Setări și gestionar de fișiere"
 
+msgctxt "#12376"
+msgid "Set as default for all movies"
+msgstr "Seteaza implicit pentru toate filmele"
+
 msgctxt "#12377"
 msgid "This will reset any previously saved values"
 msgstr "Vor fi resetate toate valorile salvate anterior."
@@ -3404,6 +3596,18 @@ msgstr "Durată de afișare pentru fiecare imagine"
 msgctxt "#12379"
 msgid "Use pan and zoom effects"
 msgstr "Folosește efecte de mișcare și mărire"
+
+msgctxt "#12380"
+msgid "Play NTSC videos at PAL rates"
+msgstr "Ruleaza video NTSC la frecventa PAL"
+
+msgctxt "#12381"
+msgid "Play PAL videos at NTSC rates"
+msgstr "Ruleaza video PAL la frecvente NTSC"
+
+msgctxt "#12382"
+msgid "Play NTSC videos in PAL60"
+msgstr "Ruleaza video NTSC la frecventa PAL60"
 
 msgctxt "#12383"
 msgid "12 hour clock"
@@ -3477,6 +3681,14 @@ msgctxt "#13005"
 msgid "Shutdown"
 msgstr "Închidere"
 
+msgctxt "#13006"
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgctxt "#13007"
+msgid "Use custom dashboard path"
+msgstr "Foloseste o alta cale pentru dashboard"
+
 msgctxt "#13008"
 msgid "Shutdown function"
 msgstr "Tip de închidere"
@@ -3500,6 +3712,10 @@ msgstr "Ieșire"
 msgctxt "#13013"
 msgid "Reboot"
 msgstr "Repornire"
+
+msgctxt "#13014"
+msgid "Minimize"
+msgstr "Minimizeaza"
 
 msgctxt "#13015"
 msgid "Power button action"
@@ -3561,6 +3777,10 @@ msgctxt "#13110"
 msgid "Save resolution?"
 msgstr "Salvare rezoluție"
 
+msgctxt "#13111"
+msgid "Would you like to keep this resolution?"
+msgstr "Vrei sa pastrezi rezolutia aceasta?"
+
 msgctxt "#13112"
 msgid "High quality upscaling"
 msgstr "Mărire cu calitate înaltă"
@@ -3600,6 +3820,10 @@ msgstr "VDPAU"
 msgctxt "#13121"
 msgid "VDPAU HQ Upscaling level"
 msgstr "Nivel de mărire VDPAU HQ"
+
+msgctxt "#13122"
+msgid "VDPAU Studio level color conversion"
+msgstr "Valoarea conversiei de culoare a VDPAU Studio"
 
 msgctxt "#13130"
 msgid "Blank other displays"
@@ -3641,6 +3865,42 @@ msgctxt "#13147"
 msgid "to continue controlling it. Do you want to proceed?"
 msgstr "de a continua să îl controlați. Doriți să continuați?"
 
+msgctxt "#13150"
+msgid "HDD key:"
+msgstr "Cheia HDD-ului"
+
+msgctxt "#13151"
+msgid "HDD temp:"
+msgstr "Temperatura HDD-ului"
+
+msgctxt "#13152"
+msgid "DVD model:"
+msgstr "Modelul DVD-Rom"
+
+msgctxt "#13153"
+msgid "DVD firmware:"
+msgstr "Firmware DVD-ROM"
+
+msgctxt "#13154"
+msgid "HDD model:"
+msgstr "Model HDD"
+
+msgctxt "#13155"
+msgid "HDD serial:"
+msgstr "Seria HDD-ului"
+
+msgctxt "#13156"
+msgid "HDD firmware:"
+msgstr "Firmwareul HDD-ului"
+
+msgctxt "#13157"
+msgid "HDD password:"
+msgstr "Parola HDD-ului"
+
+msgctxt "#13158"
+msgid "HDD lock state:"
+msgstr "Situatia blocarii/deblocarii HDD-ului"
+
 msgctxt "#13159"
 msgid "Subnet mask"
 msgstr "Mască de rețea"
@@ -3652,6 +3912,38 @@ msgstr "Gateway"
 msgctxt "#13161"
 msgid "Primary DNS"
 msgstr "DNS primar"
+
+msgctxt "#13162"
+msgid "Initialize failed"
+msgstr "Initializare esuata"
+
+msgctxt "#13163"
+msgid "Gamepad"
+msgstr "Gamepad"
+
+msgctxt "#13164"
+msgid "Keyboard"
+msgstr "Tastatura"
+
+msgctxt "#13165"
+msgid "Mouse"
+msgstr "Maus"
+
+msgctxt "#13166"
+msgid "Head/Microphone"
+msgstr "Microphone"
+
+msgctxt "#13167"
+msgid "Memory unit"
+msgstr "Card de memorie"
+
+msgctxt "#13168"
+msgid "IR-Remote"
+msgstr "Telecomanda"
+
+msgctxt "#13169"
+msgid "Controller port"
+msgstr "Port Gamepad"
 
 msgctxt "#13170"
 msgid "Never"
@@ -3708,6 +4000,10 @@ msgstr "Pornit, alarmă în %i minute"
 msgctxt "#13211"
 msgid "Alarm!"
 msgstr "Alarmă!"
+
+msgctxt "#13212"
+msgid "Canceled with %im%is left"
+msgstr "Oprit cu %im%is left"
 
 msgctxt "#13249"
 msgid "Search for subtitles in RARs"
@@ -3769,6 +4065,10 @@ msgctxt "#13281"
 msgid "Hardware"
 msgstr "Componente"
 
+msgctxt "#13282"
+msgid "_"
+msgstr "_"
+
 msgctxt "#13283"
 msgid "Operating system:"
 msgstr "Sistem de operare:"
@@ -3776,6 +4076,10 @@ msgstr "Sistem de operare:"
 msgctxt "#13284"
 msgid "CPU speed:"
 msgstr "Viteză CPU:"
+
+msgctxt "#13285"
+msgid "Detected BIOS:"
+msgstr "Bios detectat:"
 
 msgctxt "#13286"
 msgid "Video encoder:"
@@ -3785,9 +4089,29 @@ msgctxt "#13287"
 msgid "Screen resolution:"
 msgstr "Rezoluție ecran:"
 
+msgctxt "#13288"
+msgid "Xbox version:"
+msgstr "Versiune Xbox"
+
+msgctxt "#13289"
+msgid "Xbox serial number:"
+msgstr "Numarul serial al Xbox-ului"
+
+msgctxt "#13290"
+msgid "Xbox manufacturer:"
+msgstr "Producatorul Xbox"
+
+msgctxt "#13291"
+msgid "Modchip:"
+msgstr "Chip de modare"
+
 msgctxt "#13292"
 msgid "A/V cable:"
 msgstr "Cablu A/V:"
+
+msgctxt "#13293"
+msgid "Video & XBE region:"
+msgstr "Regiunea video si XBE"
 
 msgctxt "#13294"
 msgid "DVD region:"
@@ -3804,6 +4128,10 @@ msgstr "conectat"
 msgctxt "#13297"
 msgid "Not connected. Check network settings."
 msgstr "Neconectat. Verificați setările rețelei."
+
+msgctxt "#13298"
+msgid "Xbox Live key:"
+msgstr "Cheia Xbox Live"
 
 msgctxt "#13299"
 msgid "Target temperature"
@@ -3957,6 +4285,14 @@ msgctxt "#13336"
 msgid "Remove button"
 msgstr "Elimină buton"
 
+msgctxt "#13338"
+msgid "Front LED"
+msgstr "LED-ul din fata"
+
+msgctxt "#13339"
+msgid "Front LED colour"
+msgstr "Culoarea LED-ului din fata"
+
 msgctxt "#13340"
 msgid "Leave as is"
 msgstr "Lasă-l așa"
@@ -3996,6 +4332,10 @@ msgstr "Caută pe IMDb..."
 msgctxt "#13349"
 msgid "Scan for new content"
 msgstr "Scanează pentru conținut nou"
+
+msgctxt "#13350"
+msgid "Now playing..."
+msgstr "Ruland acum"
 
 msgctxt "#13351"
 msgid "Album information"
@@ -4097,9 +4437,21 @@ msgctxt "#13388"
 msgid "Preset"
 msgstr "Predefinit"
 
+msgctxt "#13389"
+msgid "There are no presets available\nfor this visualization"
+msgstr "Nu sunt disponibile presetari\npentru aceste efecte vizuale"
+
+msgctxt "#13390"
+msgid "There are no settings available\nfor this visualization"
+msgstr "Nu sunt disponibile setari\npentru aceste efecte vizuale"
+
 msgctxt "#13391"
 msgid "Eject/Load"
 msgstr "Scoate/Încarcă"
+
+msgctxt "#13392"
+msgid "Use visualization if playing audio"
+msgstr "Foloseste efecte viuale\ndaca rulezi audio"
 
 msgctxt "#13393"
 msgid "Calculate size"
@@ -4241,6 +4593,10 @@ msgctxt "#13503"
 msgid "Video clock (Resample audio)"
 msgstr "ceas video (reeșantionează audio)"
 
+msgctxt "#13504"
+msgid "Maximum resample amount (%)"
+msgstr "Cantitatea maxima de resample (%)"
+
 msgctxt "#13505"
 msgid "Resample quality"
 msgstr "Calitate reeșantionare"
@@ -4269,6 +4625,10 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Telecomandă Apple"
 
+msgctxt "#13601"
+msgid "Use MCE/Universal Remote"
+msgstr "Foloseste telecomanda MCE sau universala"
+
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "Permite pornirea XBMC folosind telecomanda"
@@ -4296,6 +4656,10 @@ msgstr "Multi-telecomandă (Harmony)"
 msgctxt "#13620"
 msgid "Apple Remote Error"
 msgstr "Eroare telecomandă Apple"
+
+msgctxt "#13621"
+msgid "Apple Remote support could be enabled."
+msgstr "Suportul pentru telecomanda Apple \npoate fi pornit"
 
 msgctxt "#14000"
 msgid "Stack"
@@ -4577,6 +4941,10 @@ msgctxt "#14077"
 msgid "Remove from favourites"
 msgstr "Elimină din favorite"
 
+msgctxt "#14078"
+msgid "- Colours"
+msgstr "Culori"
+
 msgctxt "#14079"
 msgid "Timezone country"
 msgstr "Țară fus orar"
@@ -4600,6 +4968,10 @@ msgstr "Folosește o fereastră pe tot ecranul în loc de ecran complet adevăra
 msgctxt "#14084"
 msgid "Queue songs on selection"
 msgstr "La selectare pune cântecele la coadă"
+
+msgctxt "#14085"
+msgid "Play audio CDs automatically"
+msgstr "Ruleaza CD-uri audio automat"
 
 msgctxt "#14086"
 msgid "Playback"
@@ -4640,6 +5012,46 @@ msgstr "Dispozitive intrare"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Reducere consum"
+
+msgctxt "#14096"
+msgid "Video cache"
+msgstr "Preincarcare video"
+
+msgctxt "#14097"
+msgid "Video cache - max time"
+msgstr "Preincarcare video - timp maxim"
+
+msgctxt "#14098"
+msgid "Audio cache"
+msgstr "Preincarcare audio"
+
+msgctxt "#14099"
+msgid "Audio cache - max time"
+msgstr "Preincarcare audio - timp maxim"
+
+msgctxt "#14100"
+msgid "H.264 Skip Loop Filter"
+msgstr "H.264 Skip Loop Filter"
+
+msgctxt "#14101"
+msgid "Default"
+msgstr "Implicit"
+
+msgctxt "#14102"
+msgid "Skip Non-reference Frames"
+msgstr "Sari peste cadre non-referinta"
+
+msgctxt "#14103"
+msgid "Skip Bidirectional Frames"
+msgstr "Sari peste cadre bidirectionale"
+
+msgctxt "#14104"
+msgid "Skip Non-key frames"
+msgstr "Sari peste cadre non-cheie"
+
+msgctxt "#14105"
+msgid "Skip Everything"
+msgstr "Sari peste tot"
 
 msgctxt "#15015"
 msgid "Remove"
@@ -4693,6 +5105,10 @@ msgctxt "#15109"
 msgid "Skin default"
 msgstr "Standard pentru costum"
 
+msgctxt "#15111"
+msgid "- Theme"
+msgstr "Tema"
+
 msgctxt "#15112"
 msgid "Default theme"
 msgstr "Temă implicită"
@@ -4700,6 +5116,30 @@ msgstr "Temă implicită"
 msgctxt "#15200"
 msgid "Last.fm"
 msgstr "Last.fm"
+
+msgctxt "#15201"
+msgid "Submit songs to Last.fm"
+msgstr "Incarca melodii pe Last.fm"
+
+msgctxt "#15202"
+msgid "Last.fm username"
+msgstr "Username pentru Last.fm"
+
+msgctxt "#15203"
+msgid "Last.fm password"
+msgstr "Parola pentru Last.fm"
+
+msgctxt "#15204"
+msgid "Unable to handshake: sleeping..."
+msgstr "Nu se poate face sincronizarea"
+
+msgctxt "#15205"
+msgid "Please update XBMC"
+msgstr "Va rugam faceti update la XBMC"
+
+msgctxt "#15206"
+msgid "Bad authorization: Check username and password"
+msgstr "Autorizare esuata: Verifica username sau parola"
 
 msgctxt "#15207"
 msgid "Connected"
@@ -4709,9 +5149,29 @@ msgctxt "#15208"
 msgid "Not connected"
 msgstr "Neconectat"
 
+msgctxt "#15209"
+msgid "Submit interval %i"
+msgstr "Interval pentru upload %i"
+
+msgctxt "#15210"
+msgid "Cached %i songs"
+msgstr "Cantece %i preincarcate"
+
+msgctxt "#15211"
+msgid "Submitting..."
+msgstr "Incarcand..."
+
+msgctxt "#15212"
+msgid "Submitting in %i secs"
+msgstr "Incarcand in %i secunde"
+
 msgctxt "#15213"
 msgid "Play using..."
 msgstr "Redă folosind..."
+
+msgctxt "#15214"
+msgid "Use smoothed A/V synchronization"
+msgstr "Foloseste sincronizare A/V neteda"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
@@ -4720,6 +5180,218 @@ msgstr "Ascunde numele fișierelor în vizualizare miniaturi"
 msgctxt "#15216"
 msgid "Play in party mode"
 msgstr "Redă în mod petrecere"
+
+msgctxt "#15217"
+msgid "Submit songs to Libre.fm"
+msgstr "Incarca melodii pe Libre.fm"
+
+msgctxt "#15218"
+msgid "Libre.fm username"
+msgstr "Username pentru Libre.fm"
+
+msgctxt "#15219"
+msgid "Libre.fm password"
+msgstr "Parola pentru Libre.fm"
+
+msgctxt "#15220"
+msgid "Libre.fm"
+msgstr "Libre.fm"
+
+msgctxt "#15221"
+msgid "Song submission"
+msgstr "Incarcare melodii"
+
+msgctxt "#15250"
+msgid "Submit Last.fm radio to Last.fm"
+msgstr "Incarca radio Last.fm catre Last.fm"
+
+msgctxt "#15251"
+msgid "Connecting to Last.fm..."
+msgstr "Se conecteaza la Last.fm..."
+
+msgctxt "#15252"
+msgid "Selecting station..."
+msgstr "Se selecteaza statia..."
+
+msgctxt "#15253"
+msgid "Search similar artists..."
+msgstr "Cauta artisti similari..."
+
+msgctxt "#15254"
+msgid "Search similar tags..."
+msgstr "Cauta tag-uri similare..."
+
+msgctxt "#15255"
+msgid "Your profile (%name%)"
+msgstr "Profilul tau (%name%)"
+
+msgctxt "#15256"
+msgid "Overall top tags"
+msgstr "Tag-urile principale"
+
+msgctxt "#15257"
+msgid "Top artists for tag %name%"
+msgstr "Artisti pringipali pentru tag %name%"
+
+msgctxt "#15258"
+msgid "Top albums for tag %name%"
+msgstr "Albume principale pentru tag %name%"
+
+msgctxt "#15259"
+msgid "Top tracks for tag %name%"
+msgstr "Melodii principale pentru tag %name%"
+
+msgctxt "#15260"
+msgid "Listen to tag %name% Last.fm radio"
+msgstr "Asculta tag %name% radio Last.fm"
+
+msgctxt "#15261"
+msgid "Similar artists as %name%"
+msgstr "Artisti similari ca %name%"
+
+msgctxt "#15262"
+msgid "Top %name% albums"
+msgstr "Albume %name%  top"
+
+msgctxt "#15263"
+msgid "Top %name% tracks"
+msgstr "Top %name% melodii"
+
+msgctxt "#15264"
+msgid "Top %name% tags"
+msgstr "Top %name% tag-uri"
+
+msgctxt "#15265"
+msgid "Biggest fans of %name%"
+msgstr "Cei mai mari fani ai %name%"
+
+msgctxt "#15266"
+msgid "Listen to %name% fans Last.fm radio"
+msgstr "Asculta  la %name% radio Last.fm"
+
+msgctxt "#15267"
+msgid "Listen to %name% similar artists Last.fm radio"
+msgstr "Asculta la %name% artisti similari de pe Last.fm radio"
+
+msgctxt "#15268"
+msgid "Top artists for user %name%"
+msgstr "Top artisti pentru utilizatorul %name%"
+
+msgctxt "#15269"
+msgid "Top albums for user %name%"
+msgstr "Top albume pentru utilizatorul %name%"
+
+msgctxt "#15270"
+msgid "Top tracks for user %name%"
+msgstr "Top melodii pentru utilizatorul %name%"
+
+msgctxt "#15271"
+msgid "Friends of user %name%"
+msgstr "Prieteni pentru utilizatorul %name%"
+
+msgctxt "#15272"
+msgid "Neighbours of user %name%"
+msgstr "Vecini pentru utilizatorul  %name%"
+
+msgctxt "#15273"
+msgid "Weekly artist chart for %name%"
+msgstr "Artisti saptamanali pentru %name%"
+
+msgctxt "#15274"
+msgid "Weekly album chart for %name%"
+msgstr "Albume saptamanale pentru %name%"
+
+msgctxt "#15275"
+msgid "Weekly track chart for %name%"
+msgstr "Melodii saptamanale pentru %name%"
+
+msgctxt "#15276"
+msgid "Listen to %name%'s neighbours Last.fm radio"
+msgstr "Asculta la vecinii lui  %name% radio Last.fm"
+
+msgctxt "#15277"
+msgid "Listen to %name%'s personal Last.fm radio"
+msgstr "Asculta la %name% radio Last.fm"
+
+msgctxt "#15278"
+msgid "Listen to %name%'s mix Last.fm radio"
+msgstr " Asculta la mixul lui  %name% radio Last.fm"
+
+msgctxt "#15279"
+msgid "Retrieving list from Last.fm..."
+msgstr "Descarca din lista Last.fm..."
+
+msgctxt "#15280"
+msgid "Can't retrieve list from Last.fm..."
+msgstr "Nu se poate obtine lista de pe Last.fm..."
+
+msgctxt "#15281"
+msgid "Enter an artist name to find related ones"
+msgstr "Introduce numele artistului \npentru a afla nume similare"
+
+msgctxt "#15282"
+msgid "Enter a tag name to find similar ones"
+msgstr "Introduce un nume de tag pentru a afla similare"
+
+msgctxt "#15283"
+msgid "Tracks recently listened by %name%"
+msgstr "Melodii ascultate recent de %name%"
+
+msgctxt "#15284"
+msgid "Listen to %name%'s recommendations Last.fm radio"
+msgstr "Asculta recomandarile lui %name% de pe radio Last.fm"
+
+msgctxt "#15285"
+msgid "Top tags for user %name%"
+msgstr "Top taguri pentru utilizatorul %name%"
+
+msgctxt "#15287"
+msgid "Do you want to add the current track to your loved tracks?"
+msgstr "Vrei sa adaugi melodia actuala la favorite?"
+
+msgctxt "#15288"
+msgid "Do you want to ban the current track?"
+msgstr "Vrei sa blochezi melodia actuala?"
+
+msgctxt "#15289"
+msgid "Added to your loved tracks: '%s'."
+msgstr "Adaugata melodiilor favorite: '%s'."
+
+msgctxt "#15290"
+msgid "Could not add '%s' to your loved tracks."
+msgstr "Nu s-a putut adauga '%s' melodiilor favorite."
+
+msgctxt "#15291"
+msgid "Banned: '%s'."
+msgstr "Blocat: '%s'."
+
+msgctxt "#15292"
+msgid "Could not ban '%s'."
+msgstr "Nu s-a putut bloca '%s'."
+
+msgctxt "#15293"
+msgid "Tracks recently loved by %name%"
+msgstr "Melodii apreciate recent de %name%"
+
+msgctxt "#15294"
+msgid "Tracks recently banned by %name%"
+msgstr "Melodii blocate recent de %name%"
+
+msgctxt "#15295"
+msgid "Remove from loved tracks"
+msgstr "Sterge de la favorite"
+
+msgctxt "#15296"
+msgid "Un-ban"
+msgstr "Debaneaza"
+
+msgctxt "#15297"
+msgid "Do you want to remove this track from your loved tracks?"
+msgstr "Vrei sa stergi melodia de la favorite?"
+
+msgctxt "#15298"
+msgid "Do you want to un-ban this track?"
+msgstr "Vrei sa deblochezi aceasta melodie?"
 
 msgctxt "#15300"
 msgid "Path not found or invalid"
@@ -4748,6 +5420,10 @@ msgstr "Cale:"
 msgctxt "#16000"
 msgid "General"
 msgstr "General"
+
+msgctxt "#16001"
+msgid "Configure audio hardware..."
+msgstr "Configureaza hardware audio"
 
 msgctxt "#16002"
 msgid "Internet lookup"
@@ -4821,6 +5497,14 @@ msgctxt "#16022"
 msgid "Bob (inverted)"
 msgstr "Bob (inversat)"
 
+msgctxt "#16023"
+msgid "Interlaced handling"
+msgstr "Manipulare intretesuta"
+
+msgctxt "#16024"
+msgid "Canceling..."
+msgstr "Renuntand..."
+
 msgctxt "#16025"
 msgid "Enter the artist name"
 msgstr "Introduceți nume artist"
@@ -4848,6 +5532,10 @@ msgstr "Mod petrecere anulat."
 msgctxt "#16031"
 msgid "No matching songs in the library."
 msgstr "Niciun cântec care să se potrivească în mediatecă."
+
+msgctxt "#16032"
+msgid "Could not initialize database."
+msgstr "Baza de date nu s-a putut initializa."
 
 msgctxt "#16033"
 msgid "Could not open database."
@@ -4884,6 +5572,26 @@ msgstr "Marchează ca nevăzut"
 msgctxt "#16105"
 msgid "Edit title"
 msgstr "Modifică numele"
+
+msgctxt "#16106"
+msgid "Use NTSC-M & NTSC-J"
+msgstr "Foloseste NTSC-M & NTSC-J"
+
+msgctxt "#16107"
+msgid "Use only NTSC-M"
+msgstr "Foloseste doar NTSC-M"
+
+msgctxt "#16108"
+msgid "Use only NTSC-J"
+msgstr "Foloseste doar NTSC-J"
+
+msgctxt "#16109"
+msgid "Use only PAL-60"
+msgstr "Foloseste doar PAL-60"
+
+msgctxt "#16110"
+msgid "For 60hz games"
+msgstr "Pentru jocurile in 60hz"
 
 msgctxt "#16200"
 msgid "Operation was aborted"
@@ -4952,6 +5660,14 @@ msgstr "Lanczos (software)"
 msgctxt "#16309"
 msgid "Sinc (software)"
 msgstr "Sinc (software)"
+
+msgctxt "#16310"
+msgid "(VDPAU)Temporal"
+msgstr "(VDPAU)Temporal"
+
+msgctxt "#16311"
+msgid "(VDPAU)Temporal/Spatial"
+msgstr "(VDPAU)Temporal/Spatial"
 
 msgctxt "#16312"
 msgid "(VDPAU)Noise Reduction"
@@ -5080,6 +5796,10 @@ msgstr "Blochează fereastra de video"
 msgctxt "#20040"
 msgid "Lock pictures window"
 msgstr "Blochează fereastra de imagini"
+
+msgctxt "#20041"
+msgid "Lock programs, saves & scripts windows"
+msgstr "Incuie programe, salvari si fereastra cu script-uri"
 
 msgctxt "#20042"
 msgid "Lock file manager"
@@ -5253,6 +5973,14 @@ msgctxt "#20085"
 msgid "Show system info"
 msgstr "Afișează informații despre sistem"
 
+msgctxt "#20086"
+msgid "Show available disc space C: E: F:"
+msgstr "Arata spatiu disponibil C: E: F:"
+
+msgctxt "#20087"
+msgid "Show available disc space E: F: G:"
+msgstr "Arata spatiu disponibil E: F: G:"
+
 msgctxt "#20088"
 msgid "Weather info"
 msgstr "Informații despre vreme"
@@ -5336,6 +6064,10 @@ msgstr "Separă (blocat)"
 msgctxt "#20108"
 msgid "Root"
 msgstr "Rădăcină"
+
+msgctxt "#20109"
+msgid "- Zoom"
+msgstr "Marire"
 
 msgctxt "#20110"
 msgid "UPnP settings"
@@ -5641,6 +6373,14 @@ msgctxt "#20186"
 msgid "Please wait"
 msgstr "Vă rugăm așteptați"
 
+msgctxt "#20187"
+msgid "Backing up EEPROM"
+msgstr "Backup la EEPROM"
+
+msgctxt "#20188"
+msgid "Backing up BIOS"
+msgstr "Backup la Bios"
+
 msgctxt "#20189"
 msgid "Enable auto scrolling for plot & review"
 msgstr "Activează derulare automată pentru intrigă și recenzie"
@@ -5656,6 +6396,10 @@ msgstr "Activează jurnalizare depanare"
 msgctxt "#20192"
 msgid "Download additional information during updates"
 msgstr "Descarcă informații adiționale în timpul actualizărilor"
+
+msgctxt "#20194"
+msgid "Default service for music information"
+msgstr "Serviciu implicit pentru informatii despre muzica"
 
 msgctxt "#20195"
 msgid "Change scraper"
@@ -5721,6 +6465,10 @@ msgctxt "#20304"
 msgid "RSS Feed"
 msgstr "Flux RSS"
 
+msgctxt "#20306"
+msgid "Unknown. Please add MD5 from xbmc.log to BiosIDs.ini."
+msgstr "Necunoscut. Rugam sa adaugi MD5 din xbmc.log in BiosIDs.ini."
+
 msgctxt "#20307"
 msgid "Secondary DNS"
 msgstr "DNS secundar"
@@ -5733,17 +6481,61 @@ msgctxt "#20309"
 msgid "Make new folder"
 msgstr "Creează dosar nou"
 
+msgctxt "#20310"
+msgid "Dim LCD on playback"
+msgstr "Diminueaza LCD la redare"
+
 msgctxt "#20311"
 msgid "Unknown or onboard (protected)"
 msgstr "Necunoscut sau integrat (protejat)"
+
+msgctxt "#20312"
+msgid "Dim LCD on paused"
+msgstr "Diminueaza LCD la pauza"
+
+msgctxt "#20313"
+msgid "Switch LED back on if paused"
+msgstr "Porneste LED la pauza"
 
 msgctxt "#20314"
 msgid "Videos - Library"
 msgstr "Mediatecă video"
 
+msgctxt "#20315"
+msgid "Game saves"
+msgstr "Salvari"
+
 msgctxt "#20316"
 msgid "Sort by: ID"
 msgstr "Sort. după: ID"
+
+msgctxt "#20317"
+msgid "Download saves"
+msgstr "Descarca salvari"
+
+msgctxt "#20318"
+msgid "Save game installed On HDD"
+msgstr "Salvare instalata pe HDD"
+
+msgctxt "#20319"
+msgid "Failed to download game save"
+msgstr "Descarcarea de salvare a esuat"
+
+msgctxt "#20320"
+msgid "Select game save to download and install"
+msgstr "Selecteaza salvarea pentru descarcare si instalare"
+
+msgctxt "#20321"
+msgid "No online save found for specified game"
+msgstr "Nu s-a gasit salvare pentru jocul specificat"
+
+msgctxt "#20322"
+msgid "Go to game save"
+msgstr "Mergi la salvare"
+
+msgctxt "#20323"
+msgid "Game saves"
+msgstr "Salvari"
 
 msgctxt "#20324"
 msgid "Play part..."
@@ -5756,6 +6548,10 @@ msgstr "Resetare calibrare"
 msgctxt "#20326"
 msgid "This will reset the calibration values for %s"
 msgstr "Vor fi resetate valorile de calibrare pentru %s"
+
+msgctxt "#20327"
+msgid "to it's default values."
+msgstr "in valorile implicite."
 
 msgctxt "#20328"
 msgid "Browse for destination"
@@ -5804,6 +6600,10 @@ msgstr "Regizor"
 msgctxt "#20340"
 msgid "Do you want to remove all items within"
 msgstr "Doriți să eliminați toate elementele din interiorul"
+
+msgctxt "#20341"
+msgid "this path from the library?"
+msgstr "aceasta cale din librarie?"
 
 msgctxt "#20342"
 msgid "Movies"
@@ -5965,6 +6765,10 @@ msgctxt "#20381"
 msgid "Specials"
 msgstr "Speciale"
 
+msgctxt "#20382"
+msgid "Automatically grab season thumbs"
+msgstr "Descarca automat iconite pentru sezoane"
+
 msgctxt "#20383"
 msgid "Selected folder contains a single video"
 msgstr "Dosarul selectat conține un singur fișier video"
@@ -6077,6 +6881,18 @@ msgctxt "#20411"
 msgid "Flatten"
 msgstr "Netezește"
 
+msgctxt "#20412"
+msgid "Flatten TV shows"
+msgstr "Turteste TV shows"
+
+msgctxt "#20413"
+msgid "Get Fanart"
+msgstr "Obtine fanart"
+
+msgctxt "#20414"
+msgid "Show Fanart in video and music libraries"
+msgstr "Arata Fanart in librariile video si muzica"
+
 msgctxt "#20415"
 msgid "Scanning for new content"
 msgstr "Se scanează pentru conținut nou"
@@ -6088,6 +6904,10 @@ msgstr "Prima difuzare"
 msgctxt "#20417"
 msgid "Writer"
 msgstr "Scenarist"
+
+msgctxt "#20418"
+msgid "Clean file and folder names"
+msgstr "Curata numele fisierelor si folderelor"
 
 msgctxt "#20420"
 msgid "Never"
@@ -6149,6 +6969,10 @@ msgctxt "#20434"
 msgid "Sets"
 msgstr "Seturi"
 
+msgctxt "#20435"
+msgid "Set movieset thumb"
+msgstr "Seteaza iconite pentru movieset"
+
 msgctxt "#20436"
 msgid "Export actor thumbs?"
 msgstr "Exportare miniaturi actor?"
@@ -6201,6 +7025,10 @@ msgctxt "#20448"
 msgid "Could not download information"
 msgstr "Nu se pot descărca informații"
 
+msgctxt "#20449"
+msgid "Server is most likely unavailable."
+msgstr "Serverul este cel mai probabil indisponibil"
+
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Doriți să continuați scanarea?"
@@ -6208,6 +7036,10 @@ msgstr "Doriți să continuați scanarea?"
 msgctxt "#20451"
 msgid "Countries"
 msgstr "Țări"
+
+msgctxt "#20456"
+msgid "Set movieset fanart"
+msgstr "Seteaza fanart pentru movieset"
 
 msgctxt "#20458"
 msgid "Group movies in sets"
@@ -6261,9 +7093,17 @@ msgctxt "#21365"
 msgid "Remove media share"
 msgstr "Elimină partajare media"
 
+msgctxt "#21366"
+msgid "Subtitle folder"
+msgstr "Folder pentru subtitrari"
+
 msgctxt "#21367"
 msgid "Movie & alternate subtitle directory"
 msgstr "Director de film și subtitrare alternativă"
+
+msgctxt "#21369"
+msgid "Enable mouse"
+msgstr "Initializeaza mausul"
 
 msgctxt "#21370"
 msgid "Play navigation sounds during media playback"
@@ -6445,6 +7285,18 @@ msgctxt "#21414"
 msgid "Default tvshow scraper"
 msgstr "Catalog (scraper) implicit pentru seriale tv"
 
+msgctxt "#21415"
+msgid "Default musicvideo scraper"
+msgstr "Scraper implicit pentru muzica si video"
+
+msgctxt "#21416"
+msgid "Enable fallback based on scraper language"
+msgstr "Initialieaza rezerva bazata pe limba scraper"
+
+msgctxt "#21417"
+msgid "- Settings"
+msgstr "Setari"
+
 msgctxt "#21418"
 msgid "Multilingual"
 msgstr "Multilingual"
@@ -6568,6 +7420,10 @@ msgstr "Limbă subtitrare"
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "Telecomanda trimite apăsări de taste"
+
+msgctxt "#21450"
+msgid "- Edit"
+msgstr "Modifica"
 
 msgctxt "#21800"
 msgid "File name"
@@ -6773,6 +7629,10 @@ msgctxt "#21877"
 msgid "Date created"
 msgstr "Dată creare"
 
+msgctxt "#21878"
+msgid "Copyright flag"
+msgstr "Steag Copyright"
+
 msgctxt "#21879"
 msgid "Country code"
 msgstr "Cod țară"
@@ -6865,6 +7725,18 @@ msgctxt "#22000"
 msgid "Update library on startup"
 msgstr "Actualizează mediateca la pornire"
 
+msgctxt "#22001"
+msgid "Always update library in background"
+msgstr "Intotdeauna updateaza libraria in background"
+
+msgctxt "#22002"
+msgid "- DNS suffix"
+msgstr "Sufix DNS"
+
+msgctxt "#22003"
+msgid "Default player"
+msgstr "Player implicit"
+
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
 msgstr "în urmă cu: %2.3fs"
@@ -6933,13 +7805,57 @@ msgctxt "#22020"
 msgid "Guide"
 msgstr "Ghid"
 
+msgctxt "#22021"
+msgid "Allowed error in aspect ratio to minimize black bars"
+msgstr "Eroare permisa in raportul aspect pentru\nminimizarea black bars"
+
 msgctxt "#22022"
 msgid "Show video files in listings"
 msgstr "Arată fișierele video la listare"
 
+msgctxt "#22023"
+msgid "DirectX vendor"
+msgstr "Vanzator DirectX"
+
+msgctxt "#22024"
+msgid "Direct3D version"
+msgstr "Versiune Direct3D"
+
+msgctxt "#22025"
+msgid "DVDPlayer full codec support"
+msgstr "Suport deplin pentru codecurile DVDPlayer"
+
+msgctxt "#22026"
+msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
+msgstr "Mod rapid pentru DVDPlayer pentru MPEG2/MPEG4/H264"
+
+msgctxt "#22027"
+msgid "PAPlayer"
+msgstr "PAPlayer"
+
+msgctxt "#22028"
+msgid "DVDPlayer"
+msgstr "DVDPlayer"
+
+msgctxt "#22029"
+msgid "MPlayer"
+msgstr "MPlayer"
+
 msgctxt "#22030"
 msgid "Font"
 msgstr "Font"
+
+msgctxt "#22031"
+msgid "- Size"
+msgstr "Marime"
+
+msgctxt "#22032"
+msgid "- Colours"
+msgstr "Culori"
+
+msgctxt "#22033"
+msgid "- Charset"
+msgstr "Set de carcatere"
 
 msgctxt "#22034"
 msgid "Export karaoke titles as HTML"
@@ -6981,6 +7897,14 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr "negru/alb"
 
+msgctxt "#23000"
+msgid "Weather plugin"
+msgstr "Plugin pentru prognoza meteo"
+
+msgctxt "#23001"
+msgid "- Plugin settings"
+msgstr "Setari plugin"
+
 msgctxt "#23050"
 msgid "Activate Teletext"
 msgstr "Activează Teletext"
@@ -7017,6 +7941,10 @@ msgctxt "#24000"
 msgid "Add-on"
 msgstr "Supliment"
 
+msgctxt "#24001"
+msgid "Plugins"
+msgstr "Plugin-uri"
+
 msgctxt "#24020"
 msgid "Configure"
 msgstr "Configurează"
@@ -7028,6 +7956,10 @@ msgstr "Dezactivează"
 msgctxt "#24022"
 msgid "Enable"
 msgstr "Activează"
+
+msgctxt "#24023"
+msgid "Add-on disabled"
+msgstr "Add-on dezactivat"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
@@ -7044,6 +7976,10 @@ msgstr "Tastatură QWERTY"
 msgctxt "#29802"
 msgid "Passthrough Audio in use"
 msgstr "Traversare Audio în folosință"
+
+msgctxt "#29999"
+msgid "Apply flicker filter setting to games"
+msgstr "Aplica filtru de palpaire pentru jocuri"
 
 msgctxt "#33001"
 msgid "Trailer quality"
@@ -7108,6 +8044,10 @@ msgstr "Întreabă pentru descărcare înainte de a reda video"
 msgctxt "#33016"
 msgid "Clips"
 msgstr "Clipuri"
+
+msgctxt "#33017"
+msgid "Restart plugin to enable"
+msgstr "Restarteaza plugin-ul pentru a initializa"
 
 msgctxt "#33018"
 msgid "Tonight"

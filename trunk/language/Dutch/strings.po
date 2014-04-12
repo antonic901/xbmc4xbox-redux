@@ -1629,6 +1629,10 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Over XBMC"
 
+msgctxt "#483"
+msgid "DVDPlayer cache"
+msgstr "DVDPlayer buffer"
+
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Album verwijderen"
@@ -1736,6 +1740,10 @@ msgstr "Handmatige instellingen"
 msgctxt "#515"
 msgid "Genre"
 msgstr "Genre"
+
+msgctxt "#516"
+msgid "Make stored archives with one file transparent"
+msgstr "Maak opgeslagen archieven met een bestand transparant"
 
 msgctxt "#517"
 msgid "Recently played albums"
@@ -2273,9 +2281,21 @@ msgctxt "#706"
 msgid "- Server"
 msgstr "- Host"
 
+msgctxt "#707"
+msgid "HTTP proxy port"
+msgstr "HTTP-proxy poort"
+
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "Gebruik een HTTP-proxy-server voor toegang tot het internet"
+
+msgctxt "#709"
+msgid "HTTP proxy username"
+msgstr "HTTP-proxy gebruikersnaam"
+
+msgctxt "#710"
+msgid "HTTP proxy password"
+msgstr "HTTP-proxy wachtwoord"
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
@@ -2568,6 +2588,10 @@ msgstr "Verbinding succesvol uitgeschakeld."
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "Naam draadloos netwerk (ESSID)"
+
+msgctxt "#790"
+msgid "Event server"
+msgstr "Event server"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
@@ -3797,6 +3821,10 @@ msgctxt "#13121"
 msgid "VDPAU HQ Upscaling level"
 msgstr "VDPAU HQ Upscaling level"
 
+msgctxt "#13122"
+msgid "VDPAU Studio level color conversion"
+msgstr "VDPAU Studio niveau voor kleurconversie"
+
 msgctxt "#13130"
 msgid "Blank other displays"
 msgstr "Stop doorgifte videosignaal aan andere beeldschermen"
@@ -4036,6 +4064,10 @@ msgstr "Video"
 msgctxt "#13281"
 msgid "Hardware"
 msgstr "Hardware"
+
+msgctxt "#13282"
+msgid "_"
+msgstr "_"
 
 msgctxt "#13283"
 msgid "Operating system:"
@@ -4593,6 +4625,10 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple afstandsbediening"
 
+msgctxt "#13601"
+msgid "Use MCE/Universal Remote"
+msgstr "Gebruik MCE/Universal afstandsbediening"
+
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "Gebruik afstandsbediening om XBMC zelf op te staren"
@@ -4772,6 +4808,10 @@ msgstr "te wijzigen. Wilt u nu herstarten?"
 msgctxt "#14041"
 msgid "Post processing"
 msgstr "Voorbewerking"
+
+msgctxt "#14042"
+msgid "Internet connection bandwidth limitation"
+msgstr "Internetverbinding voor bandbreedtebeperking"
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
@@ -4972,6 +5012,46 @@ msgstr "Invoerapparaten"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Energiebeheer"
+
+msgctxt "#14096"
+msgid "Video cache"
+msgstr "Video buffer"
+
+msgctxt "#14097"
+msgid "Video cache - max time"
+msgstr "Video buffer - max. tijd"
+
+msgctxt "#14098"
+msgid "Audio cache"
+msgstr "Audio buffer"
+
+msgctxt "#14099"
+msgid "Audio cache - max time"
+msgstr "Audio buffer - max. tijd"
+
+msgctxt "#14100"
+msgid "H.264 Skip Loop Filter"
+msgstr "H.264 Loop Filter overslaan"
+
+msgctxt "#14101"
+msgid "Default"
+msgstr "Standaard"
+
+msgctxt "#14102"
+msgid "Skip Non-reference Frames"
+msgstr "Non-reference Frames overslaan"
+
+msgctxt "#14103"
+msgid "Skip Bidirectional Frames"
+msgstr "Bidirectionele Frames overslaan"
+
+msgctxt "#14104"
+msgid "Skip Non-key frames"
+msgstr "Non-key Frames overslaan"
+
+msgctxt "#14105"
+msgid "Skip Everything"
+msgstr "Alles overslaan"
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5340,6 +5420,10 @@ msgstr "Pad:"
 msgctxt "#16000"
 msgid "General"
 msgstr "Algemeen"
+
+msgctxt "#16001"
+msgid "Configure audio hardware..."
+msgstr "Configureer audio hardware..."
 
 msgctxt "#16002"
 msgid "Internet lookup"
@@ -6887,7 +6971,7 @@ msgstr "Sets"
 
 msgctxt "#20435"
 msgid "Set movieset thumb"
-msgstr "Zet filmset thumb"
+msgstr "Filmset miniatuur instellen"
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
@@ -6941,6 +7025,10 @@ msgctxt "#20448"
 msgid "Could not download information"
 msgstr "De informatie kan niet worden gedownload"
 
+msgctxt "#20449"
+msgid "Server is most likely unavailable."
+msgstr "Server waarschijnlijk niet beschikbaar."
+
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Wilt u doorgaan met scannen?"
@@ -6948,6 +7036,10 @@ msgstr "Wilt u doorgaan met scannen?"
 msgctxt "#20451"
 msgid "Countries"
 msgstr "Landen"
+
+msgctxt "#20456"
+msgid "Set movieset fanart"
+msgstr "Filmset fanart instellen"
 
 msgctxt "#20458"
 msgid "Group movies in sets"
@@ -7328,6 +7420,10 @@ msgstr "Ondertiteltaal"
 msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "Afstandsbediening stuurt toetsenbordaanslagen"
+
+msgctxt "#21450"
+msgid "- Edit"
+msgstr "- Bewerken"
 
 msgctxt "#21800"
 msgid "File name"
@@ -7717,9 +7813,33 @@ msgctxt "#22022"
 msgid "Show video files in listings"
 msgstr "Toon videobestanden in lijst met afbeeldingen"
 
+msgctxt "#22023"
+msgid "DirectX vendor"
+msgstr "DirectX aanbieder"
+
 msgctxt "#22024"
 msgid "Direct3D version"
 msgstr "Direct3D versie"
+
+msgctxt "#22025"
+msgid "DVDPlayer full codec support"
+msgstr "DVDPlayer volledige codec-ondersteuning"
+
+msgctxt "#22026"
+msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
+msgstr "DVDPlayer snelle modus voor MPEG2/MPEG4/H264"
+
+msgctxt "#22027"
+msgid "PAPlayer"
+msgstr "PAPlayer"
+
+msgctxt "#22028"
+msgid "DVDPlayer"
+msgstr "DVDPlayer"
+
+msgctxt "#22029"
+msgid "MPlayer"
+msgstr "Mplayer"
 
 msgctxt "#22030"
 msgid "Font"
@@ -7777,6 +7897,14 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr "zwart/wit"
 
+msgctxt "#23000"
+msgid "Weather plugin"
+msgstr "Weer plugin"
+
+msgctxt "#23001"
+msgid "- Plugin settings"
+msgstr "- Plugin instellingen"
+
 msgctxt "#23050"
 msgid "Activate Teletext"
 msgstr "Teletekst activeren"
@@ -7813,6 +7941,10 @@ msgctxt "#24000"
 msgid "Add-on"
 msgstr "Add-on"
 
+msgctxt "#24001"
+msgid "Plugins"
+msgstr "Plugins"
+
 msgctxt "#24020"
 msgid "Configure"
 msgstr "Configureren"
@@ -7824,6 +7956,10 @@ msgstr "Uitschakelen"
 msgctxt "#24022"
 msgid "Enable"
 msgstr "Inschakelen"
+
+msgctxt "#24023"
+msgid "Add-on disabled"
+msgstr "Add-on uitgeschakeld"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"

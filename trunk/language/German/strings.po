@@ -717,6 +717,34 @@ msgctxt "#239"
 msgid "Clear playlist on finish"
 msgstr "Wiedergabeliste nach der Wiedergabe löschen"
 
+msgctxt "#240"
+msgid "Autoplay DVD-Video"
+msgstr "Autostarte DVD-Video"
+
+msgctxt "#241"
+msgid "Autoplay VCD/SVCD"
+msgstr "Autostarte VCD/SVCD"
+
+msgctxt "#242"
+msgid "Autoplay Audio-CD"
+msgstr "Autostarte Audio-CD"
+
+msgctxt "#243"
+msgid "Autoplay Xbox games"
+msgstr "Autostarte Xbox-Spiele"
+
+msgctxt "#244"
+msgid "Autoplay videos"
+msgstr "Autostarte Videos"
+
+msgctxt "#245"
+msgid "Autoplay music"
+msgstr "Autostarte Musik"
+
+msgctxt "#246"
+msgid "Autoplay pictures"
+msgstr "Autostarte Bilder"
+
 msgctxt "#247"
 msgid "Scripts"
 msgstr "Skripte"
@@ -916,6 +944,22 @@ msgstr "Tonspur-Verschiebung"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Lesezeichen"
+
+msgctxt "#299"
+msgid "- AAC capable receiver"
+msgstr "- AAC-fähiger Receiver"
+
+msgctxt "#300"
+msgid "- MP1 capable receiver"
+msgstr "- MP1-fähiger Receiver"
+
+msgctxt "#301"
+msgid "- MP2 capable receiver"
+msgstr "- MP2-fähiger Receiver"
+
+msgctxt "#302"
+msgid "- MP3 capable receiver"
+msgstr "- MP3-fähiger Receiver"
 
 msgctxt "#303"
 msgid "Delay"
@@ -1361,6 +1405,10 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Große Symbole"
 
+msgctxt "#418"
+msgid "Enable Library"
+msgstr "Bibliothek aktivieren"
+
 msgctxt "#422"
 msgid "Delete album info"
 msgstr "Albuminformationen löschen"
@@ -1581,6 +1629,10 @@ msgctxt "#482"
 msgid "About XBMC"
 msgstr "Über XBMC"
 
+msgctxt "#483"
+msgid "DVDPlayer cache"
+msgstr "DVDPlayer Cache"
+
 msgctxt "#485"
 msgid "Delete album"
 msgstr "Lösche Album"
@@ -1688,6 +1740,10 @@ msgstr "Manuelle Einstellungen"
 msgctxt "#515"
 msgid "Genre"
 msgstr "Genre"
+
+msgctxt "#516"
+msgid "Make stored archives with one file transparent"
+msgstr "Zeige gespeicherte Archive mit einer Datei transparent an"
 
 msgctxt "#517"
 msgid "Recently played albums"
@@ -2225,9 +2281,21 @@ msgctxt "#706"
 msgid "- Server"
 msgstr "- Server"
 
+msgctxt "#707"
+msgid "HTTP proxy port"
+msgstr "HTTP Proxy-Port"
+
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "HTTP-Proxy für Internetzugriff verwenden"
+
+msgctxt "#709"
+msgid "HTTP proxy username"
+msgstr "HTTP Proxy-Benutzername"
+
+msgctxt "#710"
+msgid "HTTP proxy password"
+msgstr "HTTP Proxy-Passwort"
 
 msgctxt "#711"
 msgid "Internet Protocol (IP)"
@@ -2520,6 +2588,10 @@ msgstr "Netzwerkkarte erfolgreich deaktiviert."
 msgctxt "#789"
 msgid "Wireless network name (ESSID)"
 msgstr "Wireless Netzwerkname (ESSID)"
+
+msgctxt "#790"
+msgid "Event server"
+msgstr "Event-Server"
 
 msgctxt "#791"
 msgid "Allow programs on this system to control XBMC"
@@ -4553,6 +4625,10 @@ msgctxt "#13600"
 msgid "Apple remote"
 msgstr "Apple-Remote"
 
+msgctxt "#13601"
+msgid "Use MCE/Universal Remote"
+msgstr "Verwende MCE-/Universal-Fernbedienung"
+
 msgctxt "#13602"
 msgid "Allow start of XBMC using the remote"
 msgstr "Starten von XBMC über Fernbedienung erlauben"
@@ -4732,6 +4808,10 @@ msgstr "wirksam wird. Soll jetzt neu gestartet werden?"
 msgctxt "#14041"
 msgid "Post processing"
 msgstr "Nachbearbeitung"
+
+msgctxt "#14042"
+msgid "Internet connection bandwidth limitation"
+msgstr "Internet-Bandbreitenbeschränkung"
 
 msgctxt "#14043"
 msgid "- Shutdown while playing"
@@ -4932,6 +5012,46 @@ msgstr "Eingabegeräte"
 msgctxt "#14095"
 msgid "Power saving"
 msgstr "Energiesparen"
+
+msgctxt "#14096"
+msgid "Video cache"
+msgstr "Video-Cache"
+
+msgctxt "#14097"
+msgid "Video cache - max time"
+msgstr "Video-Cache - max. Zeit"
+
+msgctxt "#14098"
+msgid "Audio cache"
+msgstr "Audio-Cache"
+
+msgctxt "#14099"
+msgid "Audio cache - max time"
+msgstr "Audio-Cache - max. Zeit"
+
+msgctxt "#14100"
+msgid "H.264 Skip Loop Filter"
+msgstr "H.264 Schleifenfilter auslassen"
+
+msgctxt "#14101"
+msgid "Default"
+msgstr "Standard"
+
+msgctxt "#14102"
+msgid "Skip Non-reference Frames"
+msgstr "Nicht referenzierte Frames auslassen"
+
+msgctxt "#14103"
+msgid "Skip Bidirectional Frames"
+msgstr "Bidirektionale Frames auslassen"
+
+msgctxt "#14104"
+msgid "Skip Non-key frames"
+msgstr "Nicht-Key-Frames auslassen"
+
+msgctxt "#14105"
+msgid "Skip Everything"
+msgstr "Alles überspringen"
 
 msgctxt "#15015"
 msgid "Remove"
@@ -5300,6 +5420,10 @@ msgstr "Pfad:"
 msgctxt "#16000"
 msgid "General"
 msgstr "Allgemein"
+
+msgctxt "#16001"
+msgid "Configure audio hardware..."
+msgstr "Audio-Hardware einrichten..."
 
 msgctxt "#16002"
 msgid "Internet lookup"
@@ -6901,6 +7025,10 @@ msgctxt "#20448"
 msgid "Could not download information"
 msgstr "Informationen können nicht herunter geladen werden"
 
+msgctxt "#20449"
+msgid "Server is most likely unavailable."
+msgstr "Der Server ist höchstwahrscheinlich nicht erreichbar."
+
 msgctxt "#20450"
 msgid "Would you like to continue scanning?"
 msgstr "Möchtest Du mit der Aktualisierung fortfahren?"
@@ -7293,6 +7421,10 @@ msgctxt "#21449"
 msgid "Remote control sends keyboard presses"
 msgstr "Fernbedienung sendet Tastatureingaben"
 
+msgctxt "#21450"
+msgid "- Edit"
+msgstr "- Bearbeiten"
+
 msgctxt "#21800"
 msgid "File name"
 msgstr "Dateiname"
@@ -7601,6 +7733,10 @@ msgctxt "#22002"
 msgid "- DNS suffix"
 msgstr "DNS Suffix"
 
+msgctxt "#22003"
+msgid "Default player"
+msgstr "Standardplayer"
+
 msgctxt "#22004"
 msgid "Delayed by: %2.3fs"
 msgstr "Verzögert um: %2.3fs"
@@ -7684,6 +7820,26 @@ msgstr "DirectX Anbieter"
 msgctxt "#22024"
 msgid "Direct3D version"
 msgstr "Direct3D Version"
+
+msgctxt "#22025"
+msgid "DVDPlayer full codec support"
+msgstr "Volle Codec-Unterstützung für DVDPlayer"
+
+msgctxt "#22026"
+msgid "DVDPlayer fast mode for MPEG2/MPEG4/H264"
+msgstr "Schneller Modus (MPEG2/MPEG4/H264) für DVDPlayer"
+
+msgctxt "#22027"
+msgid "PAPlayer"
+msgstr "PAPlayer"
+
+msgctxt "#22028"
+msgid "DVDPlayer"
+msgstr "DVDPlayer"
+
+msgctxt "#22029"
+msgid "MPlayer"
+msgstr "MPlayer"
 
 msgctxt "#22030"
 msgid "Font"
@@ -7785,6 +7941,10 @@ msgctxt "#24000"
 msgid "Add-on"
 msgstr "Addon"
 
+msgctxt "#24001"
+msgid "Plugins"
+msgstr "Plugins"
+
 msgctxt "#24020"
 msgid "Configure"
 msgstr "Konfigurieren"
@@ -7796,6 +7956,10 @@ msgstr "Deaktivieren"
 msgctxt "#24022"
 msgid "Enable"
 msgstr "Aktivieren"
+
+msgctxt "#24023"
+msgid "Add-on disabled"
+msgstr "Add-on deaktiviert"
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
