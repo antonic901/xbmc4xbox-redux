@@ -3,6 +3,7 @@ set PATH=%PATH%;C:\MinGW\bin;C:\MinGW\MSYS\1.0\local\bin;C:\MinGW\msys\1.0\bin
 mingw-get update
 copy files\var\lib\mingw-get\data\*.xml C:\MinGW\var\lib\mingw-get\data\ /Y
 mingw-get install gcc
+mingw-get install g++
 mingw-get install libz
 mingw-get install msys
 mingw-get install msys-coreutils
