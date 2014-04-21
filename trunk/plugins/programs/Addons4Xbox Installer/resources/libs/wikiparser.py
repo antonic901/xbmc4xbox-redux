@@ -41,12 +41,18 @@ class ListItemFromWiki:
     def _parseRepoElement(self, repoElt, repoInfo):
         status = 'OK'
         try:
-            tdList = repoElt.findAll("td")
+            tdList = repoElt.findAll( ["th", "td"] )
             if tdList:
-                repoInfo[ "name" ]        = tdList[0].a.string.strip()
-                repoInfo[ "description" ] = tdList[1].string.strip()
-                repoInfo[ "author" ]      = tdList[2].string.strip()
+                try:
+                    repoInfo[ "name" ]        = tdList[0].a.string.strip()
+                    repoInfo[ "description" ] = tdList[1].string.strip()
+                    repoInfo[ "author" ]      = tdList[2].string.strip()
 
+                except:
+                    repoInfo[ "name" ]        = None
+                    repoInfo[ "description" ] = None
+                    repoInfo[ "author" ]      = None
+                
                 try:
                     repoInfo[ "repo_url" ] = tdList[3].a["href"]
                 except:
