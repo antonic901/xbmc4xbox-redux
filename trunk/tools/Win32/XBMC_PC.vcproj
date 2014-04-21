@@ -1801,6 +1801,12 @@
 					RelativePath="..\..\xbmc\pictures\Picture.cpp">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\utils\POUtils.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\utils\POUtils.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\settings\Profile.cpp">
 				</File>
 				<File
