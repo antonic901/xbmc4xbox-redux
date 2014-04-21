@@ -23,45 +23,50 @@ class Addon:
     # dictionary to hold addon info
     _info = {}
     
-    def __init__( self, id ):
+    def __init__( self, id = None):
         """
             Initializer for passing the addon's id and setting addon info.
         """
         # get root dir
         cwd = self._get_root_dir( sysargv[0] )
-        parts = id.split( '.' )
 
         xbmc.log( "xbmcaddon: cwd = " + cwd, xbmc.LOGDEBUG )
-        xbmc.log( "xbmcaddon: id  = " + id,  xbmc.LOGDEBUG )
 
-        # search locations for the addon
-        locations = []
-        if cwd:
-            locations.append(cwd)                            # current directory
-            locations.append("%s/%s" % (cwd, id))            # subdirectory in current directory
-        locations.append("Q:\scripts\.modules\%s" % ( id ))  # script modules
+        # if we have no plugin id we have to hope we can get it from the addon.xml (and that we are in the addon folder)
+        if id == None:
+            self._set_addon_info( xbmc.translatePath( cwd ), id )
+            location = cwd
+        else:
+            xbmc.log( "xbmcaddon: id  = " + id,  xbmc.LOGDEBUG )
+            parts = id.split( '.' )
+            # search locations for the addon
+            locations = []
+            if cwd:
+                locations.append(cwd)                            # current directory
+                locations.append("%s/%s" % (cwd, id))            # subdirectory in current directory
+            locations.append("Q:\scripts\.modules\%s" % ( id ))  # script modules
 
-        # plugin.music|video|etc.something addons
-        if len( parts ) == 3 and parts[ 0 ] == "plugin":
-            pluginType = parts[ 1 ].replace("audio", "music")
-            pluginName = parts[ 2 ]
-            locations.append("plugin://%s/%s" % ( pluginType, pluginName ))
+            # plugin.music|video|etc.something addons
+            if len( parts ) == 3 and parts[ 0 ] == "plugin":
+                pluginType = parts[ 1 ].replace("audio", "music")
+                pluginName = parts[ 2 ]
+                locations.append("plugin://%s/%s" % ( pluginType, pluginName ))
 
-        xbmc.log( "xbmcaddon: locations = " + str(locations), xbmc.LOGDEBUG )
+            xbmc.log( "xbmcaddon: locations = " + str(locations), xbmc.LOGDEBUG )
 
-        for location in locations:
-            if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
-                break
-
-        # have we got the right dir now?
-        if self._info.get( 'id', '' ) != id:
-            # walk plugin directories to try to find correct one
-            base_path = os.path.dirname( xbmc.translatePath( cwd ) ) + os.sep
-            for directory in os.listdir(base_path):
-                location = "plugin://%s/%s" % ( parts[ 1 ], directory )
-                # parse addon.xml and reset all addon info
+            for location in locations:
                 if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
                     break
+
+            # have we got the right dir now?
+            if self._info.get( 'id', '' ) != id:
+                # walk plugin directories to try to find correct one
+                base_path = os.path.dirname( xbmc.translatePath( cwd ) ) + os.sep
+                for directory in os.listdir(base_path):
+                    location = "plugin://%s/%s" % ( parts[ 1 ], directory )
+                    # parse addon.xml and reset all addon info
+                    if self._set_addon_info( xbmc.translatePath( location ), id ) != None:
+                        break
 
         # get settings and language methods
         self._get_methods( location )
@@ -100,7 +105,7 @@ class Addon:
             self._info = {}
             # set info
             self._info[ "id" ] = item.getAttribute( "id" )
-            if self._info[ "id" ] != id:
+            if id != None and self._info[ "id" ] != id:
                 return None
             self._info[ "name" ] = item.getAttribute( "name" )
             self._info[ "version" ] = item.getAttribute( "version" )
