@@ -47,7 +47,7 @@ struct day_forcast
   CStdString m_low;
 };
 
-#define NUM_DAYS 4
+#define NUM_DAYS 7
 
 class CWeather : public CInfoLoader
 {
