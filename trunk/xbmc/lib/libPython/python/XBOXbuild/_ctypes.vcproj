@@ -22,7 +22,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="FALSE"
-				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc"
+				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
 				RuntimeLibrary="3"/>
 			<Tool
@@ -64,7 +64,7 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc"
+				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
 				RuntimeLibrary="2"/>
 			<Tool
