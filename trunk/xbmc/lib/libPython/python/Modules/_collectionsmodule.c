@@ -8,9 +8,13 @@
 */
 
 /* The block length may be set to any number over 1.  Larger numbers
- * reduce the number of calls to the memory allocator but take more
- * memory.  Ideally, BLOCKLEN should be set with an eye to the
- * length of a cache line.
+ * reduce the number of calls to the memory allocator, give faster
+ * indexing and rotation, and reduce the link::data overhead ratio.
+ *
+ * Ideally, the block length will be set to two less than some
+ * multiple of the cache-line length (so that the full block
+ * including the leftlink and rightlink will fit neatly into
+ * cache lines).
  */
 
 #define BLOCKLEN 62
@@ -46,9 +50,9 @@
  */
 
 typedef struct BLOCK {
-    struct BLOCK *leftlink;
-    struct BLOCK *rightlink;
     PyObject *data[BLOCKLEN];
+    struct BLOCK *rightlink;
+    struct BLOCK *leftlink;
 } block;
 
 #define MAXFREEBLOCKS 10
@@ -58,13 +62,8 @@ static block *freeblocks[MAXFREEBLOCKS];
 static block *
 newblock(block *leftlink, block *rightlink, Py_ssize_t len) {
     block *b;
-    /* To prevent len from overflowing PY_SSIZE_T_MAX on 64-bit machines, we
-     * refuse to allocate new blocks if the current len is dangerously
-     * close.  There is some extra margin to prevent spurious arithmetic
-     * overflows at various places.  The following check ensures that
-     * the blocks allocated to the deque, in the worst case, can only
-     * have PY_SSIZE_T_MAX-2 entries in total.
-     */
+    /* To prevent len from overflowing PY_SSIZE_T_MAX on 32-bit machines, we
+     * refuse to allocate new blocks if the current len is nearing overflow. */
     if (len >= PY_SSIZE_T_MAX - 2*BLOCKLEN) {
         PyErr_SetString(PyExc_OverflowError,
                         "cannot add more blocks to the deque");
@@ -103,8 +102,8 @@ typedef struct {
     Py_ssize_t leftindex;       /* in range(BLOCKLEN) */
     Py_ssize_t rightindex;      /* in range(BLOCKLEN) */
     Py_ssize_t len;
-    Py_ssize_t maxlen;
     long state;         /* incremented whenever the indices move */
+    Py_ssize_t maxlen;
     PyObject *weakreflist; /* List of weak references */
 } dequeobject;
 

@@ -48,6 +48,9 @@ This module defines the following functions and objects:
    Return the number of :class:`Thread` objects currently alive.  The returned
    count is equal to the length of the list returned by :func:`.enumerate`.
 
+   .. versionchanged:: 2.6
+      Added ``active_count()`` spelling.
+
 
 .. function:: Condition()
    :noindex:
@@ -66,6 +69,9 @@ This module defines the following functions and objects:
    of control.  If the caller's thread of control was not created through the
    :mod:`threading` module, a dummy thread object with limited functionality is
    returned.
+
+   .. versionchanged:: 2.6
+      Added ``current_thread()`` spelling.
 
 
 .. function:: enumerate()
@@ -167,7 +173,7 @@ This module defines the following functions and objects:
 
    Set a trace function for all threads started from the :mod:`threading` module.
    The *func* will be passed to  :func:`sys.settrace` for each thread, before its
-   :meth:`run` method is called.
+   :meth:`~Thread.run` method is called.
 
    .. versionadded:: 2.3
 
@@ -178,7 +184,7 @@ This module defines the following functions and objects:
 
    Set a profile function for all threads started from the :mod:`threading` module.
    The *func* will be passed to  :func:`sys.setprofile` for each thread, before its
-   :meth:`run` method is called.
+   :meth:`~Thread.run` method is called.
 
    .. versionadded:: 2.3
 
@@ -201,6 +207,13 @@ This module defines the following functions and objects:
    Availability: Windows, systems with POSIX threads.
 
    .. versionadded:: 2.5
+
+
+.. exception:: ThreadError
+
+   Raised for various threading-related errors as described below.  Note that
+   many interfaces use :exc:`RuntimeError` instead of :exc:`ThreadError`.
+
 
 Detailed interfaces for the objects are documented below.
 
@@ -328,16 +341,18 @@ impossible to detect the termination of alien threads.
       :meth:`join` a thread before it has been started and attempts to do so
       raises the same exception.
 
-   .. method:: getName()
-               setName()
-
-      Old API for :attr:`~Thread.name`.
-
    .. attribute:: name
 
       A string used for identification purposes only. It has no semantics.
       Multiple threads may be given the same name.  The initial name is set by
       the constructor.
+
+      .. versionadded:: 2.6
+
+   .. method:: getName()
+               setName()
+
+      Pre-2.6 API for :attr:`~Thread.name`.
 
    .. attribute:: ident
 
@@ -358,10 +373,8 @@ impossible to detect the termination of alien threads.
       until just after the :meth:`run` method terminates.  The module function
       :func:`.enumerate` returns a list of all alive threads.
 
-   .. method:: isDaemon()
-               setDaemon()
-
-      Old API for :attr:`~Thread.daemon`.
+      .. versionchanged:: 2.6
+         Added ``is_alive()`` spelling.
 
    .. attribute:: daemon
 
@@ -373,6 +386,13 @@ impossible to detect the termination of alien threads.
       = ``False``.
 
       The entire Python program exits when no alive non-daemon threads are left.
+
+      .. versionadded:: 2.6
+
+   .. method:: isDaemon()
+               setDaemon()
+
+      Pre-2.6 API for :attr:`~Thread.daemon`.
 
 
 .. _lock-objects:
@@ -393,7 +413,7 @@ blocks until a call to :meth:`release` in another thread changes it to unlocked,
 then the :meth:`acquire` call resets it to locked and returns.  The
 :meth:`release` method should only be called in the locked state; it changes the
 state to unlocked and returns immediately. If an attempt is made to release an
-unlocked lock, a :exc:`RuntimeError` will be raised.
+unlocked lock, a :exc:`ThreadError` will be raised.
 
 When more than one thread is blocked in :meth:`acquire` waiting for the state to
 turn to unlocked, only one thread proceeds when a :meth:`release` call resets
@@ -602,6 +622,9 @@ needs to wake up one consumer thread.
       calling thread has not acquired the lock when this method is called, a
       :exc:`RuntimeError` is raised.
 
+      .. versionchanged:: 2.6
+         Added ``notify_all()`` spelling.
+
 
 .. _semaphore-objects:
 
@@ -701,7 +724,7 @@ An event object manages an internal flag that can be set to true with the
       Return true if and only if the internal flag is true.
 
       .. versionchanged:: 2.6
-         The ``is_set()`` syntax is new.
+         Added ``is_set()`` spelling.
 
    .. method:: set()
 
@@ -742,10 +765,11 @@ This class represents an action that should be run only after a certain amount
 of time has passed --- a timer.  :class:`Timer` is a subclass of :class:`Thread`
 and as such also functions as an example of creating custom threads.
 
-Timers are started, as with threads, by calling their :meth:`start` method.  The
-timer can be stopped (before its action has begun) by calling the :meth:`cancel`
-method.  The interval the timer will wait before executing its action may not be
-exactly the same as the interval specified by the user.
+Timers are started, as with threads, by calling their :meth:`~Timer.start`
+method.  The timer can be stopped (before its action has begun) by calling the
+:meth:`~Timer.cancel` method.  The interval the timer will wait before
+executing its action may not be exactly the same as the interval specified by
+the user.
 
 For example::
 

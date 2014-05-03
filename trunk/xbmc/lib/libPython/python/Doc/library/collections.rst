@@ -146,7 +146,7 @@ Common patterns for working with :class:`Counter` objects::
     dict(c)                         # convert to a regular dictionary
     c.items()                       # convert to a list of (elem, cnt) pairs
     Counter(dict(list_of_pairs))    # convert from a list of (elem, cnt) pairs
-    c.most_common()[:-n:-1]         # n least common elements
+    c.most_common()[:-n-1:-1]       # n least common elements
     c += Counter()                  # remove zero and negative counts
 
 Several mathematical operations are provided for combining :class:`Counter`
@@ -639,6 +639,12 @@ Example:
            'Return self as a plain tuple.   Used by copy and pickle.'
            return tuple(self)
    <BLANKLINE>
+       __dict__ = _property(_asdict)
+   <BLANKLINE>
+       def __getstate__(self):
+           'Exclude the OrderedDict from pickling'
+           pass
+   <BLANKLINE>
        x = _property(_itemgetter(0), doc='Alias for field number 0')
    <BLANKLINE>
        y = _property(_itemgetter(1), doc='Alias for field number 1')
@@ -812,9 +818,9 @@ reverse iteration using :func:`reversed`.
 Equality tests between :class:`OrderedDict` objects are order-sensitive
 and are implemented as ``list(od1.items())==list(od2.items())``.
 Equality tests between :class:`OrderedDict` objects and other
-:class:`Mapping` objects are order-insensitive like regular dictionaries.
-This allows :class:`OrderedDict` objects to be substituted anywhere a
-regular dictionary is used.
+:class:`Mapping` objects are order-insensitive like regular
+dictionaries.  This allows :class:`OrderedDict` objects to be substituted
+anywhere a regular dictionary is used.
 
 The :class:`OrderedDict` constructor and :meth:`update` method both accept
 keyword arguments, but their order is lost because Python's function call

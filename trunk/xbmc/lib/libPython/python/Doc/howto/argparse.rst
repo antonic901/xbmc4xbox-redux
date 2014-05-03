@@ -63,7 +63,7 @@ A few concepts we can learn from the four commands:
 
 * That's a snippet of the help text. It's very useful in that you can
   come across a program you have never used before, and can figure out
-  how it works simply by reading it's help text.
+  how it works simply by reading its help text.
 
 
 The basics
@@ -468,7 +468,7 @@ verbosity argument (check the output of ``python --help``)::
        print answer
 
 We have introduced another action, "count",
-to count the number of occurences of a specific optional arguments:
+to count the number of occurrences of a specific optional arguments:
 
 .. code-block:: sh
 

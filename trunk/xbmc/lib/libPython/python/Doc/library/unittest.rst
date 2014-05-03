@@ -91,7 +91,7 @@ need to derive from a specific class.
       Third-party unittest frameworks with a lighter-weight syntax for writing
       tests.  For example, ``assert func(10) == 42``.
 
-   `The Python Testing Tools Taxonomy <http://pycheesecake.org/wiki/PythonTestingToolsTaxonomy>`_
+   `The Python Testing Tools Taxonomy <http://wiki.python.org/moin/PythonTestingToolsTaxonomy>`_
       An extensive list of Python testing tools including functional testing
       frameworks and mock object libraries.
 
@@ -916,8 +916,8 @@ Test cases
    | :meth:`assertRaises(exc, fun, *args, **kwds)            | ``fun(*args, **kwds)`` raises *exc*  |            |
    | <TestCase.assertRaises>`                                |                                      |            |
    +---------------------------------------------------------+--------------------------------------+------------+
-   | :meth:`assertRaisesRegexp(exc, re, fun, *args, **kwds)  | ``fun(*args, **kwds)`` raises *exc*  | 2.7        |
-   | <TestCase.assertRaisesRegexp>`                          | and the message matches *re*         |            |
+   | :meth:`assertRaisesRegexp(exc, r, fun, *args, **kwds)   | ``fun(*args, **kwds)`` raises *exc*  | 2.7        |
+   | <TestCase.assertRaisesRegexp>`                          | and the message matches regex *r*    |            |
    +---------------------------------------------------------+--------------------------------------+------------+
 
    .. method:: assertRaises(exception, callable, *args, **kwds)
@@ -958,7 +958,7 @@ Test cases
       a regular expression object or a string containing a regular expression
       suitable for use by :func:`re.search`.  Examples::
 
-         self.assertRaisesRegexp(ValueError, 'invalid literal for.*XYZ$',
+         self.assertRaisesRegexp(ValueError, "invalid literal for.*XYZ'$",
                                  int, 'XYZ')
 
       or::
@@ -993,10 +993,10 @@ Test cases
    | :meth:`assertLessEqual(a, b)          | ``a <= b``                     | 2.7          |
    | <TestCase.assertLessEqual>`           |                                |              |
    +---------------------------------------+--------------------------------+--------------+
-   | :meth:`assertRegexpMatches(s, re)     | ``regex.search(s)``            | 2.7          |
+   | :meth:`assertRegexpMatches(s, r)      | ``r.search(s)``                | 2.7          |
    | <TestCase.assertRegexpMatches>`       |                                |              |
    +---------------------------------------+--------------------------------+--------------+
-   | :meth:`assertNotRegexpMatches(s, re)  | ``not regex.search(s)``        | 2.7          |
+   | :meth:`assertNotRegexpMatches(s, r)   | ``not r.search(s)``            | 2.7          |
    | <TestCase.assertNotRegexpMatches>`    |                                |              |
    +---------------------------------------+--------------------------------+--------------+
    | :meth:`assertItemsEqual(a, b)         | sorted(a) == sorted(b) and     | 2.7          |
@@ -1017,7 +1017,7 @@ Test cases
       like the :func:`round` function) and not *significant digits*.
 
       If *delta* is supplied instead of *places* then the difference
-      between *first* and *second* must be less (or more) than *delta*.
+      between *first* and *second* must be less or equal to (or greater than) *delta*.
 
       Supplying both *delta* and *places* raises a ``TypeError``.
 
@@ -1603,8 +1603,7 @@ Loading and running tests
 
       A list containing 2-tuples of :class:`TestCase` instances and strings
       holding formatted tracebacks. Each tuple represents a test where a failure
-      was explicitly signalled using the :meth:`TestCase.fail\*` or
-      :meth:`TestCase.assert\*` methods.
+      was explicitly signalled using the :meth:`TestCase.assert\*` methods.
 
       .. versionchanged:: 2.2
          Contains formatted tracebacks instead of :func:`sys.exc_info` results.
@@ -1704,7 +1703,7 @@ Loading and running tests
 
    .. method:: addError(test, err)
 
-      Called when the test case *test* raises an unexpected exception *err* is a
+      Called when the test case *test* raises an unexpected exception. *err* is a
       tuple of the form returned by :func:`sys.exc_info`: ``(type, value,
       traceback)``.
 

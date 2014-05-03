@@ -189,11 +189,22 @@ such objects are ordered arbitrarily but consistently. The ``<``, ``<=``, ``>``
 and ``>=`` operators will raise a :exc:`TypeError` exception when any operand is
 a complex number.
 
-.. index:: single: __cmp__() (instance method)
+.. index::
+   single: __cmp__() (instance method)
+   single: __eq__() (instance method)
+   single: __ne__() (instance method)
+   single: __lt__() (instance method)
+   single: __le__() (instance method)
+   single: __gt__() (instance method)
+   single: __ge__() (instance method)
 
-Instances of a class normally compare as non-equal unless the class defines the
-:meth:`__cmp__` method.  Refer to :ref:`customization`) for information on the
-use of this method to effect object comparisons.
+Non-identical instances of a class normally compare as non-equal unless the
+class defines the :meth:`__eq__` method or the :meth:`__cmp__` method.
+
+Instances of a class cannot be ordered with respect to other instances of the
+same class, or other types of object, unless the class defines either enough of
+the rich comparison methods (:meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, and
+:meth:`__ge__`) or the :meth:`__cmp__` method.
 
 .. impl-detail::
 
@@ -614,7 +625,7 @@ support:
    iterators for those iteration types.  (An example of an object supporting
    multiple forms of iteration would be a tree structure which supports both
    breadth-first and depth-first traversal.)  This method corresponds to the
-   :attr:`tp_iter` slot of the type structure for Python objects in the Python/C
+   :c:member:`~PyTypeObject.tp_iter` slot of the type structure for Python objects in the Python/C
    API.
 
 The iterator objects themselves are required to support the following two
@@ -625,7 +636,7 @@ methods, which together form the :dfn:`iterator protocol`:
 
    Return the iterator object itself.  This is required to allow both containers
    and iterators to be used with the :keyword:`for` and :keyword:`in` statements.
-   This method corresponds to the :attr:`tp_iter` slot of the type structure for
+   This method corresponds to the :c:member:`~PyTypeObject.tp_iter` slot of the type structure for
    Python objects in the Python/C API.
 
 
@@ -633,7 +644,7 @@ methods, which together form the :dfn:`iterator protocol`:
 
    Return the next item from the container.  If there are no further items, raise
    the :exc:`StopIteration` exception.  This method corresponds to the
-   :attr:`tp_iternext` slot of the type structure for Python objects in the
+   :c:member:`~PyTypeObject.tp_iternext` slot of the type structure for Python objects in the
    Python/C API.
 
 Python defines several iterator objects to support iteration over general and
@@ -743,10 +754,10 @@ are sequences of the same type; *n*, *i* and *j* are integers:
 +------------------+--------------------------------+----------+
 | ``max(s)``       | largest item of *s*            |          |
 +------------------+--------------------------------+----------+
-| ``s.index(i)``   | index of the first occurence   |          |
+| ``s.index(i)``   | index of the first occurrence  |          |
 |                  | of *i* in *s*                  |          |
 +------------------+--------------------------------+----------+
-| ``s.count(i)``   | total number of occurences of  |          |
+| ``s.count(i)``   | total number of occurrences of |          |
 |                  | *i* in *s*                     |          |
 +------------------+--------------------------------+----------+
 
@@ -1734,11 +1745,11 @@ other sequence-like behavior.
 
 There are currently two built-in set types, :class:`set` and :class:`frozenset`.
 The :class:`set` type is mutable --- the contents can be changed using methods
-like :meth:`add` and :meth:`remove`.  Since it is mutable, it has no hash value
-and cannot be used as either a dictionary key or as an element of another set.
-The :class:`frozenset` type is immutable and :term:`hashable` --- its contents
-cannot be altered after it is created; it can therefore be used as a dictionary
-key or as an element of another set.
+like :meth:`~set.add` and :meth:`~set.remove`.  Since it is mutable, it has no
+hash value and cannot be used as either a dictionary key or as an element of
+another set.  The :class:`frozenset` type is immutable and :term:`hashable` ---
+its contents cannot be altered after it is created; it can therefore be used as
+a dictionary key or as an element of another set.
 
 As of Python 2.7, non-empty sets (not frozensets) can be created by placing a
 comma-separated list of elements within braces, for example: ``{'jack',
@@ -2828,12 +2839,12 @@ statement is not, strictly speaking, an operation on a module object; ``import
 foo`` does not require a module object named *foo* to exist, rather it requires
 an (external) *definition* for a module named *foo* somewhere.)
 
-A special attribute of every module is :attr:`__dict__`. This is the dictionary
-containing the module's symbol table. Modifying this dictionary will actually
-change the module's symbol table, but direct assignment to the :attr:`__dict__`
-attribute is not possible (you can write ``m.__dict__['a'] = 1``, which defines
-``m.a`` to be ``1``, but you can't write ``m.__dict__ = {}``).  Modifying
-:attr:`__dict__` directly is not recommended.
+A special attribute of every module is :attr:`~object.__dict__`. This is the
+dictionary containing the module's symbol table. Modifying this dictionary will
+actually change the module's symbol table, but direct assignment to the
+:attr:`__dict__` attribute is not possible (you can write
+``m.__dict__['a'] = 1``, which defines ``m.a`` to be ``1``, but you can't write
+``m.__dict__ = {}``).  Modifying :attr:`__dict__` directly is not recommended.
 
 Modules built into the interpreter are written like this: ``<module 'sys'
 (built-in)>``.  If loaded from a file, they are written as ``<module 'os' from
@@ -3077,7 +3088,7 @@ The following attributes are only supported by :term:`new-style class`\ es.
 
    This method can be overridden by a metaclass to customize the method
    resolution order for its instances.  It is called at class instantiation, and
-   its result is stored in :attr:`__mro__`.
+   its result is stored in :attr:`~class.__mro__`.
 
 
 .. method:: class.__subclasses__

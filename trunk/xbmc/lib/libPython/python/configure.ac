@@ -145,6 +145,7 @@ fi
 AC_SUBST(UNIVERSALSDK)
 
 AC_SUBST(ARCH_RUN_32BIT)
+ARCH_RUN_32BIT=""
 
 UNIVERSAL_ARCHS="32-bit"
 AC_SUBST(LIPO_32BIT_FLAGS)
@@ -1518,7 +1519,7 @@ sys/param.h sys/poll.h sys/select.h sys/socket.h sys/statvfs.h sys/stat.h \
 sys/termio.h sys/time.h \
 sys/times.h sys/types.h sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
 sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
-bluetooth/bluetooth.h linux/tipc.h spawn.h util.h)
+bluetooth/bluetooth.h linux/tipc.h spawn.h util.h alloca.h)
 AC_HEADER_DIRENT
 AC_HEADER_MAJOR
 
@@ -1801,7 +1802,6 @@ case $ac_sys_system/$ac_sys_release in
 esac
 
 
-ARCH_RUN_32BIT=""
 AC_SUBST(LIBTOOL_CRUFT)
 case $ac_sys_system/$ac_sys_release in
   Darwin/@<:@01567@:>@\..*) 
@@ -2289,6 +2289,34 @@ AC_SUBST(LIBFFI_INCLUDEDIR)
 
 AC_MSG_RESULT($with_system_ffi)
 
+# Check for --with-tcltk-includes=path and --with-tcltk-libs=path
+AC_SUBST(TCLTK_INCLUDES)
+AC_SUBST(TCLTK_LIBS)
+AC_MSG_CHECKING(for --with-tcltk-includes)
+AC_ARG_WITH(tcltk-includes,
+            AS_HELP_STRING([--with-tcltk-includes='-I...'], [override search for Tcl and Tk include files]),
+            [],
+            [with_tcltk_includes="default"])
+AC_MSG_RESULT($with_tcltk_includes)
+AC_MSG_CHECKING(for --with-tcltk-libs)
+AC_ARG_WITH(tcltk-libs,
+            AS_HELP_STRING([--with-tcltk-libs='-L...'], [override search for Tcl and Tk libs]),
+            [],
+            [with_tcltk_libs="default"])
+AC_MSG_RESULT($with_tcltk_libs)
+if test "x$with_tcltk_includes" = xdefault || test "x$with_tcltk_libs" = xdefault
+then
+  if test "x$with_tcltk_includes" != "x$with_tcltk_libs"
+  then
+    AC_MSG_ERROR([use both --with-tcltk-includes='...' and --with-tcltk-libs='...' or neither])
+  fi
+  TCLTK_INCLUDES=""
+  TCLTK_LIBS=""
+else
+  TCLTK_INCLUDES="$with_tcltk_includes"
+  TCLTK_LIBS="$with_tcltk_libs"
+fi
+
 # Check for --with-dbmliborder
 AC_MSG_CHECKING(for --with-dbmliborder)
 AC_ARG_WITH(dbmliborder,
@@ -2569,6 +2597,7 @@ if test "$posix_threads" = "yes"; then
             [Define if pthread_sigmask() does not work on your system.])
             ;;
         esac])
+      AC_CHECK_FUNCS(pthread_atfork)
 fi
 
 

@@ -346,7 +346,7 @@ The following exceptions are the exceptions that are actually raised.
    it has another type (such as a string), the object's value is printed and the
    exit status is one.
 
-   Instances have an attribute :attr:`code` which is set to the proposed exit
+   Instances have an attribute :attr:`!code` which is set to the proposed exit
    status or error message (defaulting to ``None``). Also, this exception derives
    directly from :exc:`BaseException` and not :exc:`StandardError`, since it is not
    technically an error.
@@ -356,7 +356,7 @@ The following exceptions are the exceptions that are actually raised.
    executed, and so that a debugger can execute a script without running the risk
    of losing control.  The :func:`os._exit` function can be used if it is
    absolutely positively necessary to exit immediately (for example, in the child
-   process after a call to :func:`fork`).
+   process after a call to :func:`os.fork`).
 
    The exception inherits from :exc:`BaseException` instead of :exc:`StandardError`
    or :exc:`Exception` so that it is not accidentally caught by code that catches

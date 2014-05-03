@@ -319,6 +319,7 @@ typedef struct {
     int ufd_uptodate;
     int ufd_len;
     struct pollfd *ufds;
+    int poll_running;
 } pollObject;
 
 static PyTypeObject poll_Type;
@@ -514,15 +515,26 @@ poll_poll(pollObject *self, PyObject *args)
             return NULL;
     }
 
+    /* Avoid concurrent poll() invocation, issue 8865 */
+    if (self->poll_running) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "concurrent poll() invocation");
+        return NULL;
+    }
+
     /* Ensure the ufd array is up to date */
     if (!self->ufd_uptodate)
         if (update_ufd_array(self) == 0)
             return NULL;
 
+    self->poll_running = 1;
+
     /* call poll() */
     Py_BEGIN_ALLOW_THREADS
     poll_result = poll(self->ufds, self->ufd_len, timeout);
     Py_END_ALLOW_THREADS
+
+    self->poll_running = 0;
 
     if (poll_result < 0) {
         PyErr_SetFromErrno(SelectError);
@@ -600,6 +612,7 @@ newPollObject(void)
        array pointed to by ufds matches the contents of the dictionary. */
     self->ufd_uptodate = 0;
     self->ufds = NULL;
+    self->poll_running = 0;
     self->dict = PyDict_New();
     if (self->dict == NULL) {
         Py_DECREF(self);
@@ -1258,7 +1271,7 @@ kqueue_event_init(kqueue_event_Object *self, PyObject *args, PyObject *kwds)
     PyObject *pfd;
     static char *kwlist[] = {"ident", "filter", "flags", "fflags",
                              "data", "udata", NULL};
-    static char *fmt = "O|hhi" DATA_FMT_UNIT UINTPTRT_FMT_UNIT ":kevent";
+    static char *fmt = "O|hHI" DATA_FMT_UNIT UINTPTRT_FMT_UNIT ":kevent";
 
     EV_SET(&(self->e), 0, EVFILT_READ, EV_ADD, 0, 0, 0); /* defaults */
 

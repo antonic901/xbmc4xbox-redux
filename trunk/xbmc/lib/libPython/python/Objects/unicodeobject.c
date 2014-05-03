@@ -547,6 +547,37 @@ PyObject *PyUnicode_FromString(const char *u)
     return PyUnicode_FromStringAndSize(u, size);
 }
 
+/* _Py_UNICODE_NEXT is a private macro used to retrieve the character pointed
+ * by 'ptr', possibly combining surrogate pairs on narrow builds.
+ * 'ptr' and 'end' must be Py_UNICODE*, with 'ptr' pointing at the character
+ * that should be returned and 'end' pointing to the end of the buffer.
+ * ('end' is used on narrow builds to detect a lone surrogate at the
+ * end of the buffer that should be returned unchanged.)
+ * The ptr and end arguments should be side-effect free and ptr must an lvalue.
+ * The type of the returned char is always Py_UCS4.
+ *
+ * Note: the macro advances ptr to next char, so it might have side-effects
+ *       (especially if used with other macros).
+ */
+
+/* helper macros used by _Py_UNICODE_NEXT */
+#define _Py_UNICODE_IS_HIGH_SURROGATE(ch) (0xD800 <= ch && ch <= 0xDBFF)
+#define _Py_UNICODE_IS_LOW_SURROGATE(ch) (0xDC00 <= ch && ch <= 0xDFFF)
+/* Join two surrogate characters and return a single Py_UCS4 value. */
+#define _Py_UNICODE_JOIN_SURROGATES(high, low)  \
+    (((((Py_UCS4)(high) & 0x03FF) << 10) |      \
+      ((Py_UCS4)(low) & 0x03FF)) + 0x10000)
+
+#ifdef Py_UNICODE_WIDE
+#define _Py_UNICODE_NEXT(ptr, end) *(ptr)++
+#else
+#define _Py_UNICODE_NEXT(ptr, end)                                      \
+     (((_Py_UNICODE_IS_HIGH_SURROGATE(*(ptr)) && (ptr) < (end)) &&      \
+        _Py_UNICODE_IS_LOW_SURROGATE((ptr)[1])) ?                       \
+       ((ptr) += 2,_Py_UNICODE_JOIN_SURROGATES((ptr)[-2], (ptr)[-1])) : \
+       (Py_UCS4)*(ptr)++)
+#endif
+
 #ifdef HAVE_WCHAR_H
 
 #if (Py_UNICODE_SIZE == 2) && defined(SIZEOF_WCHAR_T) && (SIZEOF_WCHAR_T == 4)
@@ -740,8 +771,25 @@ PyUnicode_FromFormatV(const char *format, va_list vargs)
 
             switch (*f) {
             case 'c':
-                (void)va_arg(count, int);
+            {
+                int ordinal = va_arg(count, int);
+#ifdef Py_UNICODE_WIDE
+                if (ordinal < 0 || ordinal > 0x10ffff) {
+                    PyErr_SetString(PyExc_OverflowError,
+                                    "%c arg not in range(0x110000) "
+                                    "(wide Python build)");
+                    goto fail;
+                }
+#else
+                if (ordinal < 0 || ordinal > 0xffff) {
+                    PyErr_SetString(PyExc_OverflowError,
+                                    "%c arg not in range(0x10000) "
+                                    "(narrow Python build)");
+                    goto fail;
+                }
+#endif
                 /* fall through... */
+            }
             case '%':
                 n++;
                 break;
@@ -1623,6 +1671,7 @@ PyObject *PyUnicode_DecodeUTF7Stateful(const char *s,
                                        (base64buffer >> (base64bits-16));
                     base64bits -= 16;
                     base64buffer &= (1 << base64bits) - 1; /* clear high bits */
+                    assert(outCh <= 0xffff);
                     if (surrogate) {
                         /* expecting a second surrogate */
                         if (outCh >= 0xDC00 && outCh <= 0xDFFF) {
@@ -1689,6 +1738,7 @@ PyObject *PyUnicode_DecodeUTF7Stateful(const char *s,
                 inShift = 1;
                 shiftOutStart = p;
                 base64bits = 0;
+                base64buffer = 0;
             }
         }
         else if (DECODE_DIRECT(ch)) { /* character decodes as itself */
@@ -3625,26 +3675,22 @@ static PyObject *unicode_encode_ucs1(const Py_UNICODE *p,
             case 4: /* xmlcharrefreplace */
                 respos = str-PyString_AS_STRING(res);
                 /* determine replacement size (temporarily (mis)uses p) */
-                for (p = collstart, repsize = 0; p < collend; ++p) {
-                    if (*p<10)
+                for (p = collstart, repsize = 0; p < collend;) {
+                    Py_UCS4 ch = _Py_UNICODE_NEXT(p, collend);
+                    if (ch < 10)
                         repsize += 2+1+1;
-                    else if (*p<100)
+                    else if (ch < 100)
                         repsize += 2+2+1;
-                    else if (*p<1000)
+                    else if (ch < 1000)
                         repsize += 2+3+1;
-                    else if (*p<10000)
+                    else if (ch < 10000)
                         repsize += 2+4+1;
-#ifndef Py_UNICODE_WIDE
-                    else
+                    else if (ch < 100000)
                         repsize += 2+5+1;
-#else
-                    else if (*p<100000)
-                        repsize += 2+5+1;
-                    else if (*p<1000000)
+                    else if (ch < 1000000)
                         repsize += 2+6+1;
                     else
                         repsize += 2+7+1;
-#endif
                 }
                 requiredsize = respos+repsize+(endp-collend);
                 if (requiredsize > ressize) {
@@ -3656,8 +3702,9 @@ static PyObject *unicode_encode_ucs1(const Py_UNICODE *p,
                     ressize = requiredsize;
                 }
                 /* generate replacement (temporarily (mis)uses p) */
-                for (p = collstart; p < collend; ++p) {
-                    str += sprintf(str, "&#%d;", (int)*p);
+                for (p = collstart; p < collend;) {
+                    Py_UCS4 ch = _Py_UNICODE_NEXT(p, collend);
+                    str += sprintf(str, "&#%d;", (int)ch);
                 }
                 p = collend;
                 break;
@@ -4632,11 +4679,20 @@ int charmap_encoding_error(
         *inpos = collendpos;
         break;
     case 4: /* xmlcharrefreplace */
-        /* generate replacement (temporarily (mis)uses p) */
-        for (collpos = collstartpos; collpos < collendpos; ++collpos) {
+        /* generate replacement */
+        for (collpos = collstartpos; collpos < collendpos;) {
             char buffer[2+29+1+1];
             char *cp;
-            sprintf(buffer, "&#%d;", (int)p[collpos]);
+            Py_UCS4 ch = p[collpos++];
+#ifndef Py_UNICODE_WIDE
+            if ((0xD800 <= ch && ch <= 0xDBFF) &&
+                (collpos < collendpos) &&
+                (0xDC00 <= p[collpos] && p[collpos] <= 0xDFFF)) {
+                ch = ((((ch & 0x03FF) << 10) |
+                       ((Py_UCS4)p[collpos++] & 0x03FF)) + 0x10000);
+            }
+#endif
+            sprintf(buffer, "&#%d;", (int)ch);
             for (cp = buffer; *cp; ++cp) {
                 x = charmapencode_output(*cp, mapping, res, respos);
                 if (x==enc_EXCEPTION)
@@ -5051,10 +5107,11 @@ PyObject *PyUnicode_TranslateCharmap(const Py_UNICODE *p,
                 break;
             case 4: /* xmlcharrefreplace */
                 /* generate replacement (temporarily (mis)uses p) */
-                for (p = collstart; p < collend; ++p) {
+                for (p = collstart; p < collend;) {
                     char buffer[2+29+1+1];
                     char *cp;
-                    sprintf(buffer, "&#%d;", (int)*p);
+                    Py_UCS4 ch = _Py_UNICODE_NEXT(p, collend);
+                    sprintf(buffer, "&#%d;", (int)ch);
                     if (charmaptranslate_makespace(&res, &str,
                                                    (str-PyUnicode_AS_UNICODE(res))+strlen(buffer)+(endp-collend)))
                         goto onError;
@@ -5205,8 +5262,10 @@ int PyUnicode_EncodeDecimal(Py_UNICODE *s,
             break;
         case 4: /* xmlcharrefreplace */
             /* generate replacement (temporarily (mis)uses p) */
-            for (p = collstart; p < collend; ++p)
-                output += sprintf(output, "&#%d;", (int)*p);
+            for (p = collstart; p < collend;) {
+                Py_UCS4 ch = _Py_UNICODE_NEXT(p, collend);
+                output += sprintf(output, "&#%d;", ch);
+            }
             p = collend;
             break;
         default:

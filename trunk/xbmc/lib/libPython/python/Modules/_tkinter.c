@@ -47,6 +47,10 @@ Copyright (C) 1994 Steen Lumholt.
 #define PyBool_FromLong       PyInt_FromLong
 #endif
 
+#define CHECK_SIZE(size, elemsize) \
+    ((size_t)(size) <= (size_t)INT_MAX && \
+     (size_t)(size) <= UINT_MAX / (size_t)(elemsize))
+
 /* Starting with Tcl 8.4, many APIs offer const-correctness.  Unfortunately,
    making _tkinter correct for this API means to break earlier
    versions. USE_COMPAT_CONST allows to make _tkinter work with both 8.4 and
@@ -378,7 +382,7 @@ Merge(PyObject *args)
     char **argv = NULL;
     int fvStore[ARGSZ];
     int *fv = NULL;
-    int argc = 0, fvc = 0, i;
+    Py_ssize_t argc = 0, fvc = 0, i;
     char *res = NULL;
 
     if (!(tmp = PyList_New(0)))
@@ -400,8 +404,12 @@ Merge(PyObject *args)
         argc = PyTuple_Size(args);
 
         if (argc > ARGSZ) {
-            argv = (char **)ckalloc(argc * sizeof(char *));
-            fv = (int *)ckalloc(argc * sizeof(int));
+            if (!CHECK_SIZE(argc, sizeof(char *))) {
+                PyErr_SetString(PyExc_OverflowError, "tuple is too long");
+                goto finally;
+            }
+            argv = (char **)ckalloc((size_t)argc * sizeof(char *));
+            fv = (int *)ckalloc((size_t)argc * sizeof(int));
             if (argv == NULL || fv == NULL) {
                 PyErr_NoMemory();
                 goto finally;
@@ -545,6 +553,33 @@ SplitObj(PyObject *arg)
         Tcl_Free(FREECAST argv);
         if (argc > 1)
             return Split(PyString_AsString(arg));
+        /* Fall through, returning arg. */
+    }
+    else if (PyUnicode_Check(arg)) {
+        int argc;
+        char **argv;
+        char *list;
+        PyObject *s = PyUnicode_AsUTF8String(arg);
+
+        if (s == NULL) {
+            Py_INCREF(arg);
+            return arg;
+        }
+        list = PyString_AsString(s);
+
+        if (list == NULL ||
+            Tcl_SplitList((Tcl_Interp *)NULL, list, &argc, &argv) != TCL_OK) {
+            Py_DECREF(s);
+            Py_INCREF(arg);
+            return arg;
+        }
+        Tcl_Free(FREECAST argv);
+        if (argc > 1) {
+            PyObject *v = Split(list);
+            Py_DECREF(s);
+            return v;
+        }
+        Py_DECREF(s);
         /* Fall through, returning arg. */
     }
     Py_INCREF(arg);
@@ -956,12 +991,18 @@ AsObj(PyObject *value)
     else if (PyFloat_Check(value))
         return Tcl_NewDoubleObj(PyFloat_AS_DOUBLE(value));
     else if (PyTuple_Check(value)) {
-        Tcl_Obj **argv = (Tcl_Obj**)
-            ckalloc(PyTuple_Size(value)*sizeof(Tcl_Obj*));
-        int i;
+        Tcl_Obj **argv;
+        Py_ssize_t size, i;
+
+        size = PyTuple_Size(value);
+        if (!CHECK_SIZE(size, sizeof(Tcl_Obj *))) {
+            PyErr_SetString(PyExc_OverflowError, "tuple is too long");
+            return NULL;
+        }
+        argv = (Tcl_Obj **) ckalloc(((size_t)size) * sizeof(Tcl_Obj *));
         if(!argv)
           return 0;
-        for(i=0;i<PyTuple_Size(value);i++)
+        for (i = 0; i < size; i++)
           argv[i] = AsObj(PyTuple_GetItem(value,i));
         result = Tcl_NewListObj(PyTuple_Size(value), argv);
         ckfree(FREECAST argv);
@@ -976,7 +1017,12 @@ AsObj(PyObject *value)
 #if defined(Py_UNICODE_WIDE) && TCL_UTF_MAX == 3
         Tcl_UniChar *outbuf = NULL;
         Py_ssize_t i;
-        size_t allocsize = ((size_t)size) * sizeof(Tcl_UniChar);
+        size_t allocsize;
+        if (!CHECK_SIZE(size, sizeof(Tcl_UniChar))) {
+            PyErr_SetString(PyExc_OverflowError, "string is too long");
+            return NULL;
+        }
+        allocsize = ((size_t)size) * sizeof(Tcl_UniChar);
         if (allocsize >= size)
             outbuf = (Tcl_UniChar*)ckalloc(allocsize);
         /* Else overflow occurred, and we take the next exit */
@@ -1171,7 +1217,7 @@ static Tcl_Obj**
 Tkapp_CallArgs(PyObject *args, Tcl_Obj** objStore, int *pobjc)
 {
     Tcl_Obj **objv = objStore;
-    int objc = 0, i;
+    Py_ssize_t objc = 0, i;
     if (args == NULL)
         /* do nothing */;
 
@@ -1186,7 +1232,11 @@ Tkapp_CallArgs(PyObject *args, Tcl_Obj** objStore, int *pobjc)
         objc = PyTuple_Size(args);
 
         if (objc > ARGSZ) {
-            objv = (Tcl_Obj **)ckalloc(objc * sizeof(char *));
+            if (!CHECK_SIZE(objc, sizeof(Tcl_Obj *))) {
+                PyErr_SetString(PyExc_OverflowError, "tuple is too long");
+                return NULL;
+            }
+            objv = (Tcl_Obj **)ckalloc(((size_t)objc) * sizeof(Tcl_Obj *));
             if (objv == NULL) {
                 PyErr_NoMemory();
                 objc = 0;
@@ -1954,16 +2004,35 @@ Tkapp_SplitList(PyObject *self, PyObject *args)
     char *list;
     int argc;
     char **argv;
-    PyObject *v;
+    PyObject *arg, *v;
     int i;
 
-    if (PyTuple_Size(args) == 1) {
-        v = PyTuple_GetItem(args, 0);
-        if (PyTuple_Check(v)) {
-            Py_INCREF(v);
-            return v;
+    if (!PyArg_ParseTuple(args, "O:splitlist", &arg))
+        return NULL;
+    if (PyTclObject_Check(arg)) {
+        int objc;
+        Tcl_Obj **objv;
+        if (Tcl_ListObjGetElements(Tkapp_Interp(self),
+                                   ((PyTclObject*)arg)->value,
+                                   &objc, &objv) == TCL_ERROR) {
+            return Tkinter_Error(self);
         }
+        if (!(v = PyTuple_New(objc)))
+            return NULL;
+        for (i = 0; i < objc; i++) {
+            PyObject *s = FromObj(self, objv[i]);
+            if (!s || PyTuple_SetItem(v, i, s)) {
+                Py_DECREF(v);
+                return NULL;
+            }
+        }
+        return v;
     }
+    if (PyTuple_Check(arg)) {
+        Py_INCREF(arg);
+        return arg;
+    }
+
     if (!PyArg_ParseTuple(args, "et:splitlist", "utf-8", &list))
         return NULL;
 
@@ -1994,16 +2063,38 @@ Tkapp_SplitList(PyObject *self, PyObject *args)
 static PyObject *
 Tkapp_Split(PyObject *self, PyObject *args)
 {
-    PyObject *v;
+    PyObject *arg, *v;
     char *list;
 
-    if (PyTuple_Size(args) == 1) {
-        PyObject* o = PyTuple_GetItem(args, 0);
-        if (PyTuple_Check(o)) {
-            o = SplitObj(o);
-            return o;
+    if (!PyArg_ParseTuple(args, "O:split", &arg))
+        return NULL;
+    if (PyTclObject_Check(arg)) {
+        Tcl_Obj *value = ((PyTclObject*)arg)->value;
+        int objc;
+        Tcl_Obj **objv;
+        int i;
+        if (Tcl_ListObjGetElements(Tkapp_Interp(self), value,
+                                   &objc, &objv) == TCL_ERROR) {
+            return FromObj(self, value);
         }
+        if (objc == 0)
+            return PyString_FromString("");
+        if (objc == 1)
+            return FromObj(self, objv[0]);
+        if (!(v = PyTuple_New(objc)))
+            return NULL;
+        for (i = 0; i < objc; i++) {
+            PyObject *s = FromObj(self, objv[i]);
+            if (!s || PyTuple_SetItem(v, i, s)) {
+                Py_DECREF(v);
+                return NULL;
+            }
+        }
+        return v;
     }
+    if (PyTuple_Check(arg))
+        return SplitObj(arg);
+
     if (!PyArg_ParseTuple(args, "et:split", "utf-8", &list))
         return NULL;
     v = Split(list);
@@ -2723,7 +2814,7 @@ Tkapp_InterpAddr(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, ":interpaddr"))
         return NULL;
 
-    return PyInt_FromLong((long)Tkapp_Interp(self));
+    return PyLong_FromVoidPtr(Tkapp_Interp(self));
 }
 
 static PyObject *

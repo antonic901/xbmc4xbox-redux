@@ -882,9 +882,9 @@ string_print(PyStringObject *op, FILE *fp, int flags)
             size -= chunk_size;
         }
 #ifdef __VMS
-        if (size) fwrite(data, (int)size, 1, fp);
+        if (size) fwrite(data, (size_t)size, 1, fp);
 #else
-        fwrite(data, 1, (int)size, fp);
+        fwrite(data, 1, (size_t)size, fp);
 #endif
         Py_END_ALLOW_THREADS
         return 0;
@@ -1255,7 +1255,6 @@ _PyString_Eq(PyObject *o1, PyObject *o2)
     PyStringObject *a = (PyStringObject*) o1;
     PyStringObject *b = (PyStringObject*) o2;
     return Py_SIZE(a) == Py_SIZE(b)
-      && *a->ob_sval == *b->ob_sval
       && memcmp(a->ob_sval, b->ob_sval, Py_SIZE(a)) == 0;
 }
 
@@ -2332,7 +2331,7 @@ return_self(PyStringObject *self)
 }
 
 Py_LOCAL_INLINE(Py_ssize_t)
-countchar(const char *target, int target_len, char c, Py_ssize_t maxcount)
+countchar(const char *target, Py_ssize_t target_len, char c, Py_ssize_t maxcount)
 {
     Py_ssize_t count=0;
     const char *start=target;

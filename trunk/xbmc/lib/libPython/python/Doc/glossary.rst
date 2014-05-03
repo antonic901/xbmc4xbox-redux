@@ -365,6 +365,10 @@ Glossary
       fraction.  Integer division can be forced by using the ``//`` operator
       instead of the ``/`` operator.  See also :term:`__future__`.
 
+   importing
+      The process by which Python code in one module is made available to
+      Python code in another module.
+
    importer
       An object that both finds and loads a module; both a
       :term:`finder` and :term:`loader` object.
@@ -509,6 +513,13 @@ Glossary
       for a member during lookup. See `The Python 2.3 Method Resolution Order
       <http://www.python.org/download/releases/2.3/mro/>`_.
 
+   module
+      An object that serves as an organizational unit of Python code.  Modules
+      have a namespace containing arbitrary Python objects.  Modules are loaded
+      into Python by the process of :term:`importing`.
+
+      See also :term:`package`.
+
    MRO
       See :term:`method resolution order`.
 
@@ -552,7 +563,7 @@ Glossary
    new-style class
       Any class which inherits from :class:`object`.  This includes all built-in
       types like :class:`list` and :class:`dict`.  Only new-style classes can
-      use Python's newer, versatile features like :attr:`__slots__`,
+      use Python's newer, versatile features like :attr:`~object.__slots__`,
       descriptors, properties, and :meth:`__getattribute__`.
 
       More information can be found in :ref:`newstyle`.
@@ -561,6 +572,11 @@ Glossary
       Any data with state (attributes or value) and defined behavior
       (methods).  Also the ultimate base class of any :term:`new-style
       class`.
+
+   package
+      A Python :term:`module` which can contain submodules or recursively,
+      subpackages.  Technically, a package is a Python module with an
+      ``__path__`` attribute.
 
    parameter
       A named entity in a :term:`function` (or method) definition that
@@ -664,7 +680,7 @@ Glossary
 
    statement
       A statement is part of a suite (a "block" of code).  A statement is either
-      an :term:`expression` or a one of several constructs with a keyword, such
+      an :term:`expression` or one of several constructs with a keyword, such
       as :keyword:`if`, :keyword:`while` or :keyword:`for`.
 
    struct sequence
@@ -687,7 +703,8 @@ Glossary
    type
       The type of a Python object determines what kind of object it is; every
       object has a type.  An object's type is accessible as its
-      :attr:`__class__` attribute or can be retrieved with ``type(obj)``.
+      :attr:`~instance.__class__` attribute or can be retrieved with
+      ``type(obj)``.
 
    universal newlines
       A manner of interpreting text streams in which all of the following are

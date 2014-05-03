@@ -272,7 +272,7 @@ data_stack_grow(SRE_STATE* state, Py_ssize_t size)
     if (cursize < minsize) {
         void* stack;
         cursize = minsize+minsize/4+1024;
-        TRACE(("allocate/grow stack %d\n", cursize));
+        TRACE(("allocate/grow stack %" PY_FORMAT_SIZE_T "d\n", cursize));
         stack = PyMem_REALLOC(state->data_stack, cursize);
         if (!stack) {
             data_stack_dealloc(state);
@@ -592,12 +592,13 @@ SRE_COUNT(SRE_STATE* state, SRE_CODE* pattern, Py_ssize_t maxcount)
             if (!i)
                 break;
         }
-        TRACE(("|%p|%p|COUNT %d\n", pattern, ptr,
+        TRACE(("|%p|%p|COUNT %" PY_FORMAT_SIZE_T "d\n", pattern, ptr,
                (SRE_CHAR*) state->ptr - ptr));
         return (SRE_CHAR*) state->ptr - ptr;
     }
 
-    TRACE(("|%p|%p|COUNT %d\n", pattern, ptr, ptr - (SRE_CHAR*) state->ptr));
+    TRACE(("|%p|%p|COUNT %" PY_FORMAT_SIZE_T "d\n", pattern, ptr,
+           ptr - (SRE_CHAR*) state->ptr));
     return ptr - (SRE_CHAR*) state->ptr;
 }
 
@@ -684,7 +685,8 @@ SRE_INFO(SRE_STATE* state, SRE_CODE* pattern)
 #define DATA_STACK_ALLOC(state, type, ptr) \
 do { \
     alloc_pos = state->data_stack_base; \
-    TRACE(("allocating %s in %d (%d)\n", \
+    TRACE(("allocating %s in %" PY_FORMAT_SIZE_T "d " \
+           "(%" PY_FORMAT_SIZE_T "d)\n", \
            SFY(type), alloc_pos, sizeof(type))); \
     if (sizeof(type) > state->data_stack_size - alloc_pos) { \
         int j = data_stack_grow(state, sizeof(type)); \
@@ -698,13 +700,14 @@ do { \
 
 #define DATA_STACK_LOOKUP_AT(state, type, ptr, pos) \
 do { \
-    TRACE(("looking up %s at %d\n", SFY(type), pos)); \
+    TRACE(("looking up %s at %" PY_FORMAT_SIZE_T "d\n", SFY(type), pos)); \
     ptr = (type*)(state->data_stack+pos); \
 } while (0)
 
 #define DATA_STACK_PUSH(state, data, size) \
 do { \
-    TRACE(("copy data in %p to %d (%d)\n", \
+    TRACE(("copy data in %p to %" PY_FORMAT_SIZE_T "d " \
+           "(%" PY_FORMAT_SIZE_T "d)\n", \
            data, state->data_stack_base, size)); \
     if (size > state->data_stack_size - state->data_stack_base) { \
         int j = data_stack_grow(state, size); \
@@ -718,7 +721,8 @@ do { \
 
 #define DATA_STACK_POP(state, data, size, discard) \
 do { \
-    TRACE(("copy data to %p from %d (%d)\n", \
+    TRACE(("copy data to %p from %" PY_FORMAT_SIZE_T "d " \
+           "(%" PY_FORMAT_SIZE_T "d)\n", \
            data, state->data_stack_base-size, size)); \
     memcpy(data, state->data_stack+state->data_stack_base-size, size); \
     if (discard) \
@@ -727,7 +731,8 @@ do { \
 
 #define DATA_STACK_POP_DISCARD(state, size) \
 do { \
-    TRACE(("discard data from %d (%d)\n", \
+    TRACE(("discard data from %" PY_FORMAT_SIZE_T "d " \
+           "(%" PY_FORMAT_SIZE_T "d)\n", \
            state->data_stack_base-size, size)); \
     state->data_stack_base -= size; \
 } while(0)
@@ -831,8 +836,9 @@ entrance:
         /* optimization info block */
         /* <INFO> <1=skip> <2=flags> <3=min> ... */
         if (ctx->pattern[3] && (end - ctx->ptr) < ctx->pattern[3]) {
-            TRACE(("reject (got %d chars, need %d)\n",
-                   (end - ctx->ptr), ctx->pattern[3]));
+            TRACE(("reject (got %" PY_FORMAT_SIZE_T "d chars, "
+                   "need %" PY_FORMAT_SIZE_T "d)\n",
+                   (end - ctx->ptr), (Py_ssize_t) ctx->pattern[3]));
             RETURN_FAILURE;
         }
         ctx->pattern += ctx->pattern[1] + 1;
@@ -1028,7 +1034,7 @@ entrance:
             TRACE(("|%p|%p|REPEAT_ONE %d %d\n", ctx->pattern, ctx->ptr,
                    ctx->pattern[1], ctx->pattern[2]));
 
-            if (ctx->pattern[1] > end - ctx->ptr)
+            if ((Py_ssize_t) ctx->pattern[1] > end - ctx->ptr)
                 RETURN_FAILURE; /* cannot match */
 
             state->ptr = ctx->ptr;
@@ -1111,7 +1117,7 @@ entrance:
             TRACE(("|%p|%p|MIN_REPEAT_ONE %d %d\n", ctx->pattern, ctx->ptr,
                    ctx->pattern[1], ctx->pattern[2]));
 
-            if (ctx->pattern[1] > end - ctx->ptr)
+            if ((Py_ssize_t) ctx->pattern[1] > end - ctx->ptr)
                 RETURN_FAILURE; /* cannot match */
 
             state->ptr = ctx->ptr;
@@ -1207,10 +1213,10 @@ entrance:
 
             ctx->count = ctx->u.rep->count+1;
 
-            TRACE(("|%p|%p|MAX_UNTIL %d\n", ctx->pattern,
+            TRACE(("|%p|%p|MAX_UNTIL %" PY_FORMAT_SIZE_T "d\n", ctx->pattern,
                    ctx->ptr, ctx->count));
 
-            if (ctx->count < ctx->u.rep->pattern[1]) {
+            if (ctx->count < (Py_ssize_t) ctx->u.rep->pattern[1]) {
                 /* not enough matches */
                 ctx->u.rep->count = ctx->count;
                 DO_JUMP(JUMP_MAX_UNTIL_1, jump_max_until_1,
@@ -1224,7 +1230,7 @@ entrance:
                 RETURN_FAILURE;
             }
 
-            if ((ctx->count < ctx->u.rep->pattern[2] ||
+            if ((ctx->count < (Py_ssize_t) ctx->u.rep->pattern[2] ||
                 ctx->u.rep->pattern[2] == SRE_MAXREPEAT) &&
                 state->ptr != ctx->u.rep->last_ptr) {
                 /* we may have enough matches, but if we can
@@ -1270,10 +1276,10 @@ entrance:
 
             ctx->count = ctx->u.rep->count+1;
 
-            TRACE(("|%p|%p|MIN_UNTIL %d %p\n", ctx->pattern,
+            TRACE(("|%p|%p|MIN_UNTIL %" PY_FORMAT_SIZE_T "d %p\n", ctx->pattern,
                    ctx->ptr, ctx->count, ctx->u.rep->pattern));
 
-            if (ctx->count < ctx->u.rep->pattern[1]) {
+            if (ctx->count < (Py_ssize_t) ctx->u.rep->pattern[1]) {
                 /* not enough matches */
                 ctx->u.rep->count = ctx->count;
                 DO_JUMP(JUMP_MIN_UNTIL_1, jump_min_until_1,
@@ -1302,7 +1308,7 @@ entrance:
 
             LASTMARK_RESTORE();
 
-            if ((ctx->count >= ctx->u.rep->pattern[2]
+            if ((ctx->count >= (Py_ssize_t) ctx->u.rep->pattern[2]
                 && ctx->u.rep->pattern[2] != SRE_MAXREPEAT) ||
                 state->ptr == ctx->u.rep->last_ptr)
                 RETURN_FAILURE;
@@ -1483,7 +1489,8 @@ exit:
             TRACE(("|%p|%p|JUMP_ASSERT_NOT\n", ctx->pattern, ctx->ptr));
             goto jump_assert_not;
         case JUMP_NONE:
-            TRACE(("|%p|%p|RETURN %d\n", ctx->pattern, ctx->ptr, ret));
+            TRACE(("|%p|%p|RETURN %" PY_FORMAT_SIZE_T "d\n", ctx->pattern,
+                   ctx->ptr, ret));
             break;
     }
 
@@ -1532,7 +1539,8 @@ SRE_SEARCH(SRE_STATE* state, SRE_CODE* pattern)
         pattern += 1 + pattern[1];
     }
 
-    TRACE(("prefix = %p %d %d\n", prefix, prefix_len, prefix_skip));
+    TRACE(("prefix = %p %" PY_FORMAT_SIZE_T "d %" PY_FORMAT_SIZE_T "d\n",
+           prefix, prefix_len, prefix_skip));
     TRACE(("charset = %p\n", charset));
 
 #if defined(USE_FAST_SEARCH)

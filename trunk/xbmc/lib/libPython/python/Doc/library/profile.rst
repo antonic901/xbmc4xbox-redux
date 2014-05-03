@@ -267,14 +267,16 @@ functions:
    Directly using the :class:`Profile` class allows formatting profile results
    without writing the profile data to a file::
 
-      import cProfile, pstats, io
+      import cProfile, pstats, StringIO
       pr = cProfile.Profile()
       pr.enable()
-      ... do something ...
+      # ... do something ...
       pr.disable()
-      s = io.StringIO()
-      ps = pstats.Stats(pr, stream=s)
-      ps.print_results()
+      s = StringIO.StringIO()
+      sortby = 'cumulative'
+      ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+      ps.print_stats()
+      print s.getvalue()
 
    .. method:: enable()
 
@@ -623,8 +625,8 @@ your results will "less often" show up as negative in profile statistics.
 
 .. _profile-timers:
 
-Using a customer timer
-======================
+Using a custom timer
+====================
 
 If you want to change how current time is determined (for example, to force use
 of wall-clock time or elapsed process time), pass the timing function you want

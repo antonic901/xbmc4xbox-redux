@@ -185,8 +185,8 @@ encodings can be found in the Python Library Reference, in the section on
 
 For example, to write Unicode literals including the Euro currency symbol, the
 ISO-8859-15 encoding can be used, with the Euro symbol having the ordinal value
-164.  This script will print the value 8364 (the Unicode codepoint corresponding
-to the Euro symbol) and then exit::
+164.  This script, when saved in the ISO-8859-15 encoding, will print the value
+8364 (the Unicode codepoint corresponding to the Euro symbol) and then exit::
 
    # -*- coding: iso-8859-15 -*-
 
@@ -252,7 +252,7 @@ of your user site-packages directory.  Start Python and run this code:
 
    >>> import site
    >>> site.getusersitepackages()
-   '/home/user/.local/lib/python3.2/site-packages'
+   '/home/user/.local/lib/python2.7/site-packages'
 
 Now you can create a file named :file:`usercustomize.py` in that directory and
 put anything you want in it.  It will affect every invocation of Python, unless

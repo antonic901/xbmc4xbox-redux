@@ -661,7 +661,7 @@ Maildir, mbox, MH, Babyl, and MMDF.
 
       In Babyl mailboxes, the headers of a message are not stored contiguously
       with the body of the message. To generate a file-like representation, the
-      headers and body are copied together into a :class:`StringIO` instance
+      headers and body are copied together into a :class:`~StringIO.StringIO` instance
       (from the :mod:`StringIO` module), which has an API identical to that of a
       file. As a result, the file-like object is truly independent of the
       underlying mailbox but does not save memory compared to a string
@@ -994,7 +994,7 @@ When a :class:`MaildirMessage` instance is created based upon a
       Set the "From " line to *from_*, which should be specified without a
       leading "From " or trailing newline. For convenience, *time_* may be
       specified and will be formatted appropriately and appended to *from_*. If
-      *time_* is specified, it should be a :class:`struct_time` instance, a
+      *time_* is specified, it should be a :class:`time.struct_time` instance, a
       tuple suitable for passing to :meth:`time.strftime`, or ``True`` (to use
       :meth:`time.gmtime`).
 
@@ -1365,7 +1365,7 @@ When a :class:`BabylMessage` instance is created based upon an
       Set the "From " line to *from_*, which should be specified without a
       leading "From " or trailing newline. For convenience, *time_* may be
       specified and will be formatted appropriately and appended to *from_*. If
-      *time_* is specified, it should be a :class:`struct_time` instance, a
+      *time_* is specified, it should be a :class:`time.struct_time` instance, a
       tuple suitable for passing to :meth:`time.strftime`, or ``True`` (to use
       :meth:`time.gmtime`).
 

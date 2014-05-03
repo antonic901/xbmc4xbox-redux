@@ -437,9 +437,11 @@ class PyBuildExt(build_ext):
 
     def detect_modules(self):
         # Ensure that /usr/local is always used
-        add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
-        add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-        self.add_gcc_paths()
+        if not cross_compiling:
+            add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
+            add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
+        if cross_compiling:
+            self.add_gcc_paths()
         self.add_multiarch_paths()
 
         # Add paths specified in the environment variables LDFLAGS and
@@ -906,7 +908,7 @@ class PyBuildExt(build_ext):
                     if allow_db_ver((5, x)):
                         yield x
             elif major == 4:
-                for x in range(max_db_ver[1]+1):
+                for x in range(9):
                     if allow_db_ver((4, x)):
                         yield x
             elif major == 3:
@@ -1387,6 +1389,8 @@ class PyBuildExt(build_ext):
             zlib_h = zlib_inc[0] + '/zlib.h'
             version = '"0.0.0"'
             version_req = '"1.1.3"'
+            if host_platform == 'darwin' and is_macosx_sdk_path(zlib_h):
+                zlib_h = os.path.join(macosx_sdk_root(), zlib_h[1:])
             fp = open(zlib_h)
             while 1:
                 line = fp.readline()
@@ -1719,7 +1723,46 @@ class PyBuildExt(build_ext):
         if '_tkinter' not in [e.name for e in self.extensions]:
             missing.append('_tkinter')
 
+##         # Uncomment these lines if you want to play with xxmodule.c
+##         ext = Extension('xx', ['xxmodule.c'])
+##         self.extensions.append(ext)
+
         return missing
+
+    def detect_tkinter_explicitly(self):
+        # Build _tkinter using explicit locations for Tcl/Tk.
+        #
+        # This is enabled when both arguments are given to ./configure:
+        #
+        #     --with-tcltk-includes="-I/path/to/tclincludes \
+        #                            -I/path/to/tkincludes"
+        #     --with-tcltk-libs="-L/path/to/tcllibs -ltclm.n \
+        #                        -L/path/to/tklibs -ltkm.n"
+        #
+        # These values can also be specified or overriden via make:
+        #    make TCLTK_INCLUDES="..." TCLTK_LIBS="..."
+        #
+        # This can be useful for building and testing tkinter with multiple
+        # versions of Tcl/Tk.  Note that a build of Tk depends on a particular
+        # build of Tcl so you need to specify both arguments and use care when
+        # overriding.
+
+        # The _TCLTK variables are created in the Makefile sharedmods target.
+        tcltk_includes = os.environ.get('_TCLTK_INCLUDES')
+        tcltk_libs = os.environ.get('_TCLTK_LIBS')
+        if not (tcltk_includes and tcltk_libs):
+            # Resume default configuration search.
+            return 0
+
+        extra_compile_args = tcltk_includes.split()
+        extra_link_args = tcltk_libs.split()
+        ext = Extension('_tkinter', ['_tkinter.c', 'tkappinit.c'],
+                        define_macros=[('WITH_APPINIT', 1)],
+                        extra_compile_args = extra_compile_args,
+                        extra_link_args = extra_link_args,
+                        )
+        self.extensions.append(ext)
+        return 1
 
     def detect_tkinter_darwin(self, inc_dirs, lib_dirs):
         # The _tkinter module, using frameworks. Since frameworks are quite
@@ -1803,9 +1846,15 @@ class PyBuildExt(build_ext):
         self.extensions.append(ext)
         return 1
 
-
     def detect_tkinter(self, inc_dirs, lib_dirs):
         # The _tkinter module.
+
+        # Check whether --with-tcltk-includes and --with-tcltk-libs were
+        # configured or passed into the make target.  If so, use these values
+        # to build tkinter and bypass the searches for Tcl and TK in standard
+        # locations.
+        if self.detect_tkinter_explicitly():
+            return
 
         # Rather than complicate the code below, detecting and building
         # AquaTk is a separate method. Only one Tkinter will be built on
@@ -1908,10 +1957,6 @@ class PyBuildExt(build_ext):
                         library_dirs = added_lib_dirs,
                         )
         self.extensions.append(ext)
-
-##         # Uncomment these lines if you want to play with xxmodule.c
-##         ext = Extension('xx', ['xxmodule.c'])
-##         self.extensions.append(ext)
 
         # XXX handle these, but how to detect?
         # *** Uncomment and edit for PIL (TkImaging) extension only:

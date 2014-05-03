@@ -506,7 +506,7 @@ nfd_nfkd(PyObject *self, PyObject *input, int k)
 
     stackptr = 0;
     isize = PyUnicode_GET_SIZE(input);
-    /* Overallocate atmost 10 characters. */
+    /* Overallocate at most 10 characters. */
     space = (isize > 10 ? 10 : isize) + isize;
     result = PyUnicode_FromUnicode(NULL, space);
     if (!result)
@@ -520,7 +520,7 @@ nfd_nfkd(PyObject *self, PyObject *input, int k)
         while(stackptr) {
             Py_UNICODE code = stack[--stackptr];
             /* Hangul Decomposition adds three characters in
-               a single step, so we need atleast that much room. */
+               a single step, so we need at least that much room. */
             if (space < 3) {
                 Py_ssize_t newsize = PyString_GET_SIZE(result) + 10;
                 space += 10;

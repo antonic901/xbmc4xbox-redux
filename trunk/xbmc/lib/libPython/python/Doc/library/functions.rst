@@ -199,8 +199,10 @@ available.  They are listed here in alphabetical order.
 
    Compile the *source* into a code or AST object.  Code objects can be executed
    by an :keyword:`exec` statement or evaluated by a call to :func:`eval`.
-   *source* can either be a string or an AST object.  Refer to the :mod:`ast`
-   module documentation for information on how to work with AST objects.
+   *source* can either be a Unicode string, a *Latin-1* encoded string or an
+   AST object.
+   Refer to the :mod:`ast` module documentation for information on how to work
+   with AST objects.
 
    The *filename* argument should give the file from which the code was read;
    pass some recognizable value if it wasn't read from a file (``'<string>'`` is
@@ -224,8 +226,8 @@ available.  They are listed here in alphabetical order.
 
    Future statements are specified by bits which can be bitwise ORed together to
    specify multiple statements.  The bitfield required to specify a given feature
-   can be found as the :attr:`compiler_flag` attribute on the :class:`_Feature`
-   instance in the :mod:`__future__` module.
+   can be found as the :attr:`~__future__._Feature.compiler_flag` attribute on
+   the :class:`~__future__._Feature` instance in the :mod:`__future__` module.
 
    This function raises :exc:`SyntaxError` if the compiled source is invalid,
    and :exc:`TypeError` if the source contains null bytes.
@@ -388,9 +390,9 @@ available.  They are listed here in alphabetical order.
 
 .. function:: eval(expression[, globals[, locals]])
 
-   The arguments are a string and optional globals and locals.  If provided,
-   *globals* must be a dictionary.  If provided, *locals* can be any mapping
-   object.
+   The arguments are a Unicode or *Latin-1* encoded string and optional
+   globals and locals.  If provided, *globals* must be a dictionary.
+   If provided, *locals* can be any mapping object.
 
    .. versionchanged:: 2.4
       formerly *locals* was required to be a dictionary.
@@ -699,7 +701,7 @@ available.  They are listed here in alphabetical order.
 
    One useful application of the second form of :func:`iter` is to read lines of
    a file until a certain line is reached.  The following example reads a file
-   until the :meth:`readline` method returns an empty string::
+   until the :meth:`~io.TextIOBase.readline` method returns an empty string::
 
       with open('mydata.txt') as fp:
           for line in iter(fp.readline, ''):
@@ -1011,10 +1013,10 @@ available.  They are listed here in alphabetical order.
    turns the :meth:`voltage` method into a "getter" for a read-only attribute
    with the same name.
 
-   A property object has :attr:`getter`, :attr:`setter`, and :attr:`deleter`
-   methods usable as decorators that create a copy of the property with the
-   corresponding accessor function set to the decorated function.  This is
-   best explained with an example::
+   A property object has :attr:`~property.getter`, :attr:`~property.setter`,
+   and :attr:`~property.deleter` methods usable as decorators that create a
+   copy of the property with the corresponding accessor function set to the
+   decorated function.  This is best explained with an example::
 
       class C(object):
           def __init__(self):
@@ -1257,13 +1259,13 @@ available.  They are listed here in alphabetical order.
 
    Return a :term:`slice` object representing the set of indices specified by
    ``range(start, stop, step)``.  The *start* and *step* arguments default to
-   ``None``.  Slice objects have read-only data attributes :attr:`start`,
-   :attr:`stop` and :attr:`step` which merely return the argument values (or their
-   default).  They have no other explicit functionality; however they are used by
-   Numerical Python and other third party extensions.  Slice objects are also
-   generated when extended indexing syntax is used.  For example:
-   ``a[start:stop:step]`` or ``a[start:stop, i]``.  See :func:`itertools.islice`
-   for an alternate version that returns an iterator.
+   ``None``.  Slice objects have read-only data attributes :attr:`~slice.start`,
+   :attr:`~slice.stop` and :attr:`~slice.step` which merely return the argument
+   values (or their default).  They have no other explicit functionality;
+   however they are used by Numerical Python and other third party extensions.
+   Slice objects are also generated when extended indexing syntax is used.  For
+   example: ``a[start:stop:step]`` or ``a[start:stop, i]``.  See
+   :func:`itertools.islice` for an alternate version that returns an iterator.
 
 
 .. function:: sorted(iterable[, cmp[, key[, reverse]]])
@@ -1368,9 +1370,10 @@ available.  They are listed here in alphabetical order.
    been overridden in a class. The search order is same as that used by
    :func:`getattr` except that the *type* itself is skipped.
 
-   The :attr:`__mro__` attribute of the *type* lists the method resolution
-   search order used by both :func:`getattr` and :func:`super`.  The attribute
-   is dynamic and can change whenever the inheritance hierarchy is updated.
+   The :attr:`~class.__mro__` attribute of the *type* lists the method
+   resolution search order used by both :func:`getattr` and :func:`super`.  The
+   attribute is dynamic and can change whenever the inheritance hierarchy is
+   updated.
 
    If the second argument is omitted, the super object returned is unbound.  If
    the second argument is an object, ``isinstance(obj, type)`` must be true.  If
@@ -1444,10 +1447,10 @@ available.  They are listed here in alphabetical order.
 
    With three arguments, return a new type object.  This is essentially a
    dynamic form of the :keyword:`class` statement. The *name* string is the
-   class name and becomes the :attr:`__name__` attribute; the *bases* tuple
-   itemizes the base classes and becomes the :attr:`__bases__` attribute;
+   class name and becomes the :attr:`~class.__name__` attribute; the *bases* tuple
+   itemizes the base classes and becomes the :attr:`~class.__bases__` attribute;
    and the *dict* dictionary is the namespace containing definitions for class
-   body and becomes the :attr:`__dict__`  attribute.  For example, the
+   body and becomes the :attr:`~object.__dict__`  attribute.  For example, the
    following two statements create identical :class:`type` objects:
 
       >>> class X(object):
@@ -1511,7 +1514,7 @@ available.  They are listed here in alphabetical order.
 
 .. function:: vars([object])
 
-   Return the :attr:`__dict__` attribute for a module, class, instance,
+   Return the :attr:`~object.__dict__` attribute for a module, class, instance,
    or any other object with a :attr:`__dict__` attribute.
 
    Objects such as modules and instances have an updateable :attr:`__dict__`
