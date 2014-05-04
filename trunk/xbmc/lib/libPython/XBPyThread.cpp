@@ -308,7 +308,9 @@ void XBPyThread::OnExit()
   PyThreadState_Swap(NULL);
 
   // clear out any cruft from thread state object
-  PyThreadState_Clear(threadState);
+  // can cause a crash since we moved from python 2.4 so disabled for now
+  // PyThreadState_Clear(threadState);
+
   // delete my thread state object
   PyThreadState_Delete(threadState);
   // release the lock
