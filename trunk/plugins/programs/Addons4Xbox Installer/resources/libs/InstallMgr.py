@@ -47,7 +47,7 @@ __language__ = xbmc.Language( ROOTDIR ).getLocalizedString
 
 # Custom modules
 try:
-    from globalvars import SPECIAL_HOME_DIR, OFFICIAL_REPO_ID, DIR_CACHE, DIR_ADDON_REPO
+    from globalvars import SPECIAL_HOME_DIR, REPO_ID_XBMC4XBOX, REPO_ID_XBMC, DIR_CACHE, DIR_ADDON_REPO
     #from FileManager import fileMgr
     #from Item import *
     from Item import TYPE_ADDON_MODULE, get_install_path
@@ -127,17 +127,11 @@ class InstallMgr:
         #addonInstaller = None
         #addonInstaller = None
 
-        # For time being we will only look in the offcial repo
-
-        # List of repositories within we will look in order to find the required modules
+        # List of repositories we will look in order to find the required modules
+        repoList = [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, REPO_ID_XBMC4XBOX) ) ]
         if repoId:
-            repoList = [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, repoId) ),
-                         getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, OFFICIAL_REPO_ID) ) ]
-        else:
-            # if repoId is unknow (i.e install form zip) we will parse only official repo
-            repoList = [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, OFFICIAL_REPO_ID) )]
-
-
+            repoList.extend( [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, repoId) ) ] )
+        repoList.extend( [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, REPO_ID_XBMC) ) ] )
 
         # Check if required lib already exist
         addonIdCheck = [] # Create a copy of addonIdList (We remove an element of the list while looping on it)

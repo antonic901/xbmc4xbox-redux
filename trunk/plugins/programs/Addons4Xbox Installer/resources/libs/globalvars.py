@@ -44,7 +44,8 @@ __all__ = [
     "VALUE_LIST_ADDONS",
     "VALUE_DISPLAY_INFO",
     "REQUIRED_DEFAULT_LIB",
-    "OFFICIAL_REPO_ID",
+    "REPO_ID_XBMC",
+    "REPO_ID_XBMC4XBOX",
     "MISSING_MODULES_PATH"
     ]
 
@@ -131,4 +132,5 @@ VALUE_LIST_MANAGE_ADDONS   = 'manageaddons'
 VALUE_LIST_MISSING_MODULES = 'missingmodules'
 
 REQUIRED_DEFAULT_LIB = 'xbmc.python'
-OFFICIAL_REPO_ID = 'repository.xbmc.org'
+REPO_ID_XBMC4XBOX = 'repository.xbmc4xbox'
+REPO_ID_XBMC = 'repository.xbmc.org'
