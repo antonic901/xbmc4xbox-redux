@@ -345,14 +345,15 @@ def checkURL(url):
     #    return 0
     #===========================================================================
 
-def fileOlderThan(file, time):
+def fileOlderThan(file, offset):
     ret = False
     if os.path.exists(file):
         ctime = os.path.getctime(file)
-        if ctime < time:
+        if ctime < time.time() - offset:
             ret = True
+    else:
+        ret = True
     return ret
-
 
 def versionsCmp( version1, version2 ):
     """

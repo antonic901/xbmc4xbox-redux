@@ -72,7 +72,6 @@ class Main:
         # Retrieving addons.xml from remote repository
         xmlInfofPath = os.path.join( DIR_CACHE, repoId + "-addons.xml")
         if fileOlderThan(xmlInfofPath, 60 * 30):
-            os.remove(xmlInfofPath)
             data = readURL( repoInfo [ "repo_url" ], save=True, localPath=xmlInfofPath )
 
         if ( os.path.exists( xmlInfofPath ) ):

@@ -1,4 +1,7 @@
-﻿2014-05-06 Version 0.12.1 by BuZz
+﻿2014-05-06 Version 0.12.2 by BuZz
+- Brain glitch - Broken file time checking code
+
+2014-05-06 Version 0.12.1 by BuZz
 - Handle addon dependencies for locally installed addons from .zip
 
 2014-05-06 Version 0.12.0 by BuZz
