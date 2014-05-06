@@ -80,17 +80,10 @@ class Main:
             # Check if we install repo
             if "None" != repoId:
                 # Retrieve addon info from persitence
-                pdr = PersistentDataRetriever( os.path.join( DIR_CACHE, "addon_list.txt" ) )
+                pdr = PersistentDataRetriever( os.path.join( DIR_CACHE, repoId + "-addon_list.txt" ) )
                 addonDic = pdr.get_data()
                 requiredLibs = addonDic[addonId]['required_lib']
                 status = installMgr._getAddonRequiredLibs( requiredLibs, repoId )
-        #        for lib in requiredLibs:
-        #            if lib["id"] != REQUIRED_DEFAULT_LIB:
-        #                print "%s module required with version: %s"%(lib["id"], lib["version"])
-        #                # 1 - Look for matching repo
-        #                # 2 - install
-        #                # 3 - notify user if something when wrong or not
-
 
             if status == "OK":
                 # TODO: check repo ID

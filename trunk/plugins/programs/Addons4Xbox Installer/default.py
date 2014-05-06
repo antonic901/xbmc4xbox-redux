@@ -10,13 +10,13 @@ REMOTE_DBG       = False
 # Plugin constants
 __script__       = "Unknown"
 __plugin__       = "Addons4Xbox Installer"
-__author__       = "Temhil (http://passion-xbmc.org)"
+__author__       = "Temhil (http://passion-xbmc.org) / BuZz (http://www.xbmc4xbox.org.uk)"
 __url__          = "http://passion-xbmc.org/index.php"
 __svn_url__      = "http://passion-xbmc.googlecode.com/svn/trunk/plugins/programs/Addons4xbox/"
 __credits__      = "Team XBMC Passion"
 __platform__     = "xbmc media center [XBOX]"
-__date__         = "2012-02-11"
-__version__      = "0.10"
+__date__         = "2014-05-06"
+__version__      = "0.12.0"
 __svn_revision__ = 0
 __XBMC_Revision__= 30805
 

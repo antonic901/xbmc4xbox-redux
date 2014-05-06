@@ -131,9 +131,6 @@ class DialogRepoInfo( xbmcgui.WindowXMLDialog ):
         self.repo[ "Version" ] = unicode( xbmc.getInfoLabel( "ListItem.Property(Addon.Version)" ), "utf-8" )
         #self.repo[ "Version" ] = None
 
-        print self.repo[ "Name" ]
-        print self.repo
-
     def _show_repo_info( self ):
         # set initial apple trailer info
         self._set_repo_info(   name=self.repo[ "Name" ],

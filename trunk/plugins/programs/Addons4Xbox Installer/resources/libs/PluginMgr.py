@@ -78,31 +78,21 @@ class PluginMgr:
         """
         url = sys.argv[ 0 ]
         sep = '?'
-        print paramsDic
-        try:
-            for param in paramsDic:
-                #TODO: solve error on name with non ascii char (generate exception)
-                url = url + sep + urllib.quote_plus( param ) + '=' + urllib.quote_plus( paramsDic[param] )
-                sep = '&'
-        except:
-            url = None
-            print_exc()
+        for param in paramsDic:
+            url = url + sep + urllib.quote_plus( param ) + '=' + urllib.quote_plus( paramsDic[param].encode('utf-8') )
+            sep = '&'
+
         return url
 
     def addLink( self, name, url, iconimage="DefaultProgram.png" ):
         ok=True
-        print "_addLink"
         #TODO: reenable image downlaod, the checkURL freeze for whetever reason
         #if ( ( iconimage !="DefaultProgram.png" ) and ( not checkURL(iconimage) ) ):
         #    iconimage  = "DefaultProgram.png"
 
-        print "Icon: %s"%iconimage
         liz=xbmcgui.ListItem( name, iconImage=iconimage, thumbnailImage=iconimage )
-        print "List item created"
         liz.setInfo( type="Program", infoLabels={ "Title": name } )
-        print "List item Set Info done"
         ok=xbmcplugin.addDirectoryItem( handle=int(sys.argv[1]), url=url, listitem=liz )
-        print "Item added"
         return ok
 
 
@@ -111,8 +101,6 @@ class PluginMgr:
         Add a link to the list of items
         """
         ok=True
-
-        print itemInfo
 
         if itemInfo["ImageUrl"]:
             icon = itemInfo["ImageUrl"]
@@ -164,9 +152,6 @@ class PluginMgr:
         """
         Credit to ppic
         """
-        print name
-        print url
-        print iconimage
         #u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem( name, iconImage=iconimage, thumbnailImage=iconimage )

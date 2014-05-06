@@ -3,6 +3,7 @@
 import os
 #import urllib
 import sys
+import time
 #import xbmc
 #import xbmcplugin
 #import xbmcgui
@@ -31,7 +32,7 @@ try:
     from globalvars import DIR_CACHE, DIR_ADDON_REPO, PARAM_REPO_ID, PARAM_TYPE, PARAM_INSTALL_FROM_REPO, PARAM_ADDON_NAME, PARAM_ADDON_ID, PARAM_URL, PARAM_DATADIR, VALUE_LIST_ALL_ADDONS
     from PluginMgr import PluginMgr
     from Item import supportedAddonList #TYPE_ADDON_SCRIPT, TYPE_ADDON_MUSIC, TYPE_ADDON_PICTURES, TYPE_ADDON_PROGRAMS, TYPE_ADDON_VIDEO, TYPE_ADDON_WEATHER, TYPE_ADDON_MODULE
-    from utilities import readURL, PersistentDataCreator
+    from utilities import readURL, PersistentDataCreator, fileOlderThan
     from XmlParser import ListItemFromXML, parseAddonXml
     from AddonsMgr import getInstalledAddonInfo
 except:
@@ -69,10 +70,11 @@ class Main:
         addonDic = {}
 
         # Retrieving addons.xml from remote repository
-        xmlInfofPath = os.path.join( DIR_CACHE, "addons.xml")
-        if os.path.isfile(xmlInfofPath):
+        xmlInfofPath = os.path.join( DIR_CACHE, repoId + "-addons.xml")
+        if fileOlderThan(xmlInfofPath, 60 * 30):
             os.remove(xmlInfofPath)
-        data = readURL( repoInfo [ "repo_url" ], save=True, localPath=xmlInfofPath )
+            data = readURL( repoInfo [ "repo_url" ], save=True, localPath=xmlInfofPath )
+
         if ( os.path.exists( xmlInfofPath ) ):
             try:
                 xmlData = open( os.path.join( xmlInfofPath ), "r" )
@@ -110,7 +112,7 @@ class Main:
                         paramsAddons = {}
                         paramsAddons[PARAM_INSTALL_FROM_REPO]   = "true"
                         paramsAddons[PARAM_ADDON_ID]            = item[ "id" ]
-                        paramsAddons[PARAM_ADDON_NAME]          = item['name'].encode('utf8')
+                        paramsAddons[PARAM_ADDON_NAME]          = item['name']
                         paramsAddons[PARAM_URL]                 = downloadUrl
                         paramsAddons[PARAM_DATADIR]             = repoInfo[ "repo_datadir" ]
                         paramsAddons[PARAM_TYPE]                = repoInfo[ "repo_format" ]
@@ -126,5 +128,5 @@ class Main:
                 else:
                     keepParsing = False
             # Save the list of addons
-            PersistentDataCreator( addonDic, os.path.join( DIR_CACHE, "addon_list.txt" ) )
+            PersistentDataCreator( addonDic, os.path.join( DIR_CACHE, repoId + "-addon_list.txt" ) )
 
