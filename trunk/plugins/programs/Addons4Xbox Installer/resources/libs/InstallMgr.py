@@ -95,7 +95,7 @@ class InstallMgr:
         """
         Install an addon from a local zip file
         """
-        status = "CANCELED"
+        status = "OK"
         destination = None
         addonInstaller = None
 
@@ -116,7 +116,7 @@ class InstallMgr:
         return status, itemName, destination, addonInstaller
 
 
-    def _getAddonRequiredLibs ( self, addonIdList, repoId ):
+    def _getAddonRequiredLibs ( self, addonIdList, repoId = None):
         """
         Display the addons to install for a repository
         """

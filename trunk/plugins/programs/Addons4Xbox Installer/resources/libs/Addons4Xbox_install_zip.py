@@ -30,7 +30,7 @@ __version__      = sys.modules[ "__main__" ].__version__
 try:
     from PluginMgr import PluginMgr
     from InstallMgr import InstallMgr
-    from utilities import PersistentDataCreator
+    from utilities import PersistentDataCreator, PersistentDataRetriever
 except:
     print_exc()
 
@@ -58,15 +58,13 @@ class Main:
         # Install from zip file
         status, itemName, destination, addonInstaller = installMgr.install_from_zip()
 
-        #TODO: addd install of required lib
-#        requiredLibs = addonDic[addonId]['required_lib']
-#        print requiredLibs
-#        status = installMgr._getAddonRequiredLibs( requiredLibs, repoId )
-
         #Check if install went well
         status, destination = installMgr.check_install(status, itemName, destination, addonInstaller)
 
         if status == "OK":
+            requiredLibs = addonInstaller.itemInfo[ "required_lib" ]
+            status = installMgr._getAddonRequiredLibs( requiredLibs )
+            
             from datetime import datetime
 
             #Install OK so save information for future update
@@ -78,6 +76,7 @@ class Main:
             addonInfo['version'] = addonVersion
             addonInfo['repository'] = None
             addonInfo['installer_version'] = __version__
+
             PersistentDataCreator( addonInfo, os.path.join( destination, "a4x.psdt" ) )
 
         return status
