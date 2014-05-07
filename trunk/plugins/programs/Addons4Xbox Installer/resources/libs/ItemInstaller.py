@@ -76,7 +76,7 @@ class ItemInstaller:
         Returns the status of the retrieval attempt : OK | ERROR
         TO IMPLEMENT in a child class
         """
-        print "ItemInstaller::GetRawItem not implemented"
+        xbmc.log("ItemInstaller::GetRawItem not implemented", xbmc.LOGNOTICE)
         raise
 
     def isAlreadyInstalled( self ):
@@ -108,7 +108,7 @@ class ItemInstaller:
         Needs to be called after extractItem
         TO IMPLEMENT in a child class
         """
-        print "ItemInstaller::installItem not implemented"
+        xbmc.log("ItemInstaller::installItem not implemented", xbmc.LOGNOTICE)
         raise
 
 
@@ -169,11 +169,11 @@ class ItemInstaller:
             for path in item_paths:
                 result = self.fileMgr.deleteItem( path )
                 if result == False:
-                    print "deleteInstalledItem: Impossible to delete one of the element in the item: %s" %path
+                    xbmc.log("deleteInstalledItem: Impossible to delete one of the element in the item: %s" %path, xbmc.LOGNOTICE)
                     break
         else:
             result = False
-            print "deleteInstalledItem: Item invalid - error"
+            xbmc.log("deleteInstalledItem: Item invalid - error", xbmc.LOGNOTICE)
         return result
 
     def renameInstalledItem( self, inputText ):
@@ -188,18 +188,18 @@ class ItemInstaller:
 
         result = None
         item_paths = self._getItemPaths ()
-        print "renameInstalledItem"
+        xbmc.log("renameInstalledItem", xbmc.LOGDEBUG)
 
         if len( item_paths ) > None:
             for path in item_paths:
-                print u"Renaming %s by %s"%(path, path.replace( os.path.basename( path ), inputText))
+                xbmc.log(u"Renaming %s by %s"%(path, path.replace( os.path.basename( path ), inputText)), xbmc.LOGDEBUG)
                 result = self.fileMgr.renameItem( None, path, path.replace( os.path.basename( path ), inputText) )
                 if result == False:
-                    print "renameInstalledItem: Impossible to rename one of the element in the item: %s" % path
+                    xbmc.log("renameInstalledItem: Impossible to rename one of the element in the item: %s" % path, xbmc.LOGDEBUG)
                     break
         else:
             result = False
-            print "renameInstalledItem: Item invalid - error"
+            xbmc.log("renameInstalledItem: Item invalid - error" % path, xbmc.LOGNOTICEs)
         return result
 
     def copyItem( self, msgFunc=None,progressBar=None ):
@@ -211,8 +211,7 @@ class ItemInstaller:
         import extractor
         OK = False
 
-        print "copyItem"
-        print self.itemInfo
+        xbmc.log("copyItem", xbmc.LOGDEBUG)
         # get install path
         process_error = False
         percent = 0
@@ -220,20 +219,17 @@ class ItemInstaller:
             progressBar.update( percent, _( 176 ), self.itemInfo [ "temp_item_path" ] )
         if ( ( self.itemInfo [ "temp_item_path" ] != None ) and ( self.itemInfo [ "install_path" ] != None ) ):
             # Let's get the dir name in the archive
-            print "ItemInstaller::installItem - Starting item copy"
             try:
                 #if ( OK == bool( self.itemInfo [ "temp_item_path" ] ) ) and os.path.exists( self.itemInfo [ "temp_item_path" ] ):
                 if os.path.exists( self.itemInfo [ "temp_item_path" ] ):
                     self.fileMgr.copyDir( self.itemInfo [ "temp_item_path" ], self.itemInfo [ "install_path" ], progressBar=progressBar )
                     OK = True
                 else:
-                    print "ItemInstaller::installItem - self.itemInfo [ 'temp_item_path' ] does not exist"
-                    print "ItemInstaller::installItem - self.itemInfo [ 'temp_item_path' ] = %s"%self.itemInfo [ 'temp_item_path' ]
+                    xbmc.log("ItemInstaller::installItem - self.itemInfo [ 'temp_item_path' ] = %s does not exist"%self.itemInfo [ 'temp_item_path' ], xbmc.LOGNOTICE)
             except Exception, e:
-                print "ItemInstaller::installItem - Exception during copy of the directory %s" % self.itemInfo [ "temp_item_path" ]
+                xbmc.log("ItemInstaller::installItem - Exception during copy of the directory %s" % self.itemInfo [ "temp_item_path" ], xbmc.LOGNOTICE)
                 print_exc()
                 process_error = True
-            print "Install item completed"
 
         del extractor
         percent = 100
@@ -249,7 +245,7 @@ class ItemInstaller:
 
         # Rename directory
         if not self.fileMgr.renameItem( None, oldpath, newpath ):
-            print "  ** Impossible to rename the addon directory based on the name in addon.xml, need name from user"
+            xbmc.log("Impossible to rename the addon directory based on the name in addon.xml, need name from user", xbmc.LOGNOTICE)
             # Rename
             status = "INVALIDNAME"
         return status
@@ -261,29 +257,27 @@ class ItemInstaller:
         """
         status = "OK"
         if  item[ "type" ] not in [TYPE_ADDON_MODULE, TYPE_ADDON_REPO]:
-            print "_prepareItem4xbox - Renaming addon elements"
+            xbmc.log("_prepareItem4xbox - Renaming addon elements", xbmc.LOGDEBUG)
             # Rename python script
-            print "Renaming python script"
             oldScriptPath = os.path.join( item[ "temp_item_path" ], item[ "library" ] )
             newScriptPath = os.path.join( item[ "temp_item_path" ], "default.py" )
             if oldScriptPath != newScriptPath and os.path.exists( oldScriptPath ):
                 result = self.fileMgr.renameItem( None, oldScriptPath, newScriptPath )
                 if result == False:
                     status = "ERROR"
-                    print "Error renaming %s to %s"%(oldScriptPath, newScriptPath)
+                    xbmc.log("Error renaming %s to %s"%(oldScriptPath, newScriptPath), xbmc.LOGNOTICE)
                 else:
                     item[ "library" ] = "default.py"
-                    print "%s renamed to %s"%(oldScriptPath, newScriptPath)
+                    xbmc.log("%s renamed to %s"%(oldScriptPath, newScriptPath), xbmc.LOGDEBUG)
 
             # Rename logo
-            print "Renaming logo"
             oldLogoPath = os.path.join( item[ "temp_item_path" ], "icon.png" )
             newLogoPath = os.path.join( item[ "temp_item_path" ], "default.tbn" )
             if ( oldLogoPath != newLogoPath and os.path.exists( oldLogoPath ) ):
                 result = self.fileMgr.renameItem( None, oldLogoPath, newLogoPath, True )
                 if result == False:
                     status = "ERROR"
-                    print "Error renaming %s to %s"%(oldLogoPath, newLogoPath)
+                    xbmc.log("Error renaming %s to %s"%(oldLogoPath, newLogoPath), xbmc.LOGNOTICE)
         else:
             status = "UNCHANGED"
 
@@ -335,17 +329,17 @@ class ItemInstaller:
                     xmlData.close()
                     sleep(3)
                 else:
-                    print "setItemInfo - addon.xml not found"
+                    xbmc.log("setItemInfo - addon.xml not found", xbmc.LOGNOTICE)
                     status = 'ERROR'
 
                 # Renaming addon's internal files
                 if statusGetInfo == "OK":
                     status = self._prepareItem4xbox( self.itemInfo )
                 elif statusGetInfo == "NOT_SUPPORTED":
-                    print "setItemInfo - Addon not supported"
+                    xbmc.log("setItemInfo - Addon not supported", xbmc.LOGDEBUG)
                     status = 'NOT_SUPPORTED'
                 else:
-                    print "setItemInfo - Error parsing addon.xml"
+                    xbmc.log("setItemInfo - Error parsing addon.xml", xbmc.LOGNOTICE)
                     status = 'ERROR'
 
             except:
@@ -372,14 +366,13 @@ class ItemInstaller:
                     self.itemInfo[ "install_path" ]   = os.path.join( typeInstallPath, self.itemInfo [ "name" ] )
                 else:
                     # Rename failed
-                    print "Rename failed"
+                    xbmc.log("Rename failed", xbmc.LOGNOTICE)
                     self.itemInfo [ "install_path" ] = os.path.join( typeInstallPath, os.path.basename( self.itemInfo [ "temp_item_path" ] ) )
             else:
                 # We don't rename modules and repos
                 #self.itemInfo [ "install_path" ] = os.path.join( typeInstallPath, os.path.basename( self.itemInfo [ "id" ] ) )
                 self.itemInfo [ "install_path" ] = os.path.join( typeInstallPath, os.path.basename( self.itemInfo [ "id" ][:42] ) ) # xbox filename limitation
-        print self.itemInfo
-        print "setItemInfo - status: %s"%status
+        xbmc.log("setItemInfo - status: %s"%status, xbmc.LOGDEBUG)
         return status
 
 
@@ -411,8 +404,7 @@ class ArchItemInstaller(ItemInstaller):
         status  = "OK" # Status of download :[OK | ERROR | CANCELED]
         percent = 33
         # Check if the archive exists
-        print "extractItem"
-        print self.itemInfo
+        xbmc.log("extractItem", xbmc.LOGDEBUG)
         if ( os.path.exists( self.itemInfo[ "raw_item_path" ] ) and TYPE_SYSTEM_ARCHIVE == self.itemInfo[ "raw_item_sys_type" ] ):
             if progressBar != None:
                 progressBar.update( percent, "Extraction:", ( self.itemInfo [ "name" ] ) )
@@ -421,10 +413,10 @@ class ArchItemInstaller(ItemInstaller):
                 # Extraction in cache directory (if OK copy later on to the correct location)
                 file_path, OK = extractor.extract( self.itemInfo [ "raw_item_path" ], destination=self.CACHEDIR, report=True )
 
-                print "extractItem - file_path: %s"%file_path
+                xbmc.log("extractItem - file_path: %s"%file_path, xbmc.LOGDEBUG)
                 if file_path == "":
                     installError = _( 139 ) % os.path.basename( self.itemInfo[ "raw_item_path" ] )
-                    print "ArchItemInstaller - extractItem: Error during the extraction of %s - impossible to extract the name of the directory " % os.path.basename( self.itemInfo [ "raw_item_path" ] )
+                    xbmc.log("ArchItemInstaller - extractItem: Error during the extraction of %s - impossible to extract the name of the directory " % os.path.basename( self.itemInfo [ "raw_item_path" ] ), xbmc.LOGNOTICE)
                     status = "ERROR"
                 else:
                     # Extraction successful
@@ -435,9 +427,8 @@ class ArchItemInstaller(ItemInstaller):
             if progressBar != None:
                 progressBar.update( percent, _( 182 ), self.itemInfo [ "name" ] )
         else:
-            print "extractItem - Archive does not exist - extraction impossible"
+            xbmc.log("extractItem - Archive does not exist - extraction impossible", xbmc.LOGNOTICE)
             status = "ERROR"
-        print status
         return status
 
 
@@ -446,21 +437,17 @@ class ArchItemInstaller(ItemInstaller):
         Install item (download + extract + copy)
         Needs to be called after extractItem
         """
-        print "installItem: Download and install case"
+        xbmc.log("installItem: Download and install case", xbmc.LOGDEBUG)
         percent = 0
         result  = "OK" # result after install :[ OK | ERROR | ALREADYINSTALLED |CANCELED]
 
 
-        print "installItem: Get Item"
+        xbmc.log("installItem: Get Item", xbmc.LOGDEBUG)
         if ( self.status == "INIT" ) or ( self.status == "ERROR" ):
             #TODO: support message callback in addition of pb callback
             #statusDownload = self.GetRawItem( msgFunc=msgFunc, progressBar=progressBar )
             #statusDownload, self.itemInfo [ "raw_item_path" ] = self.GetRawItem( progressBar=progressBar )
             statusDownload = self.GetRawItem( progressBar=progressBar )
-            print "installItem: statusDownload"
-            print statusDownload
-            print self.itemInfo [ "raw_item_path" ]
-            print
             if statusDownload in ["OK", "ERRORFILENAME"]:
                 if self.extractItem( msgFunc=msgFunc, progressBar=progressBar ) == "OK":
                     # Download and extract successful
@@ -469,24 +456,24 @@ class ArchItemInstaller(ItemInstaller):
                     if self.status == "OK":
                         if not self.isAlreadyInstalled():
                             if not self.isInUse():
-                                print "installItem - Item is not yet installed - installing"
+                                xbmc.log("installItem - Item is not yet installed - installing", xbmc.LOGDEBUG)
                                 # TODO: in case of skin check skin is not the one currently used
                                 if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                                     result = "ERROR"
                                     self.status = "ERROR"
-                                    print "installItem - Error during copy"
+                                    xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
                                 else:
                                     self.status = "INSTALL_DONE"
                             else:
-                                print "installItem - Item is already currently used by XBMC - stopping install"
+                                xbmc.log("installItem - Item is already currently used by XBMC - stopping install", xbmc.LOGNOTICE)
                                 result = "ALREADYINUSE"
                                 self.status = "EXTRACTED"
                         else:
-                            print "installItem - Item is already installed - stopping install"
+                            xbmc.log("installItem - Item is already installed - stopping install", xbmc.LOGNOTICE)
                             result = "ALREADYINSTALLED"
                             self.status = "EXTRACTED"
                 else:
-                    print "installItem - unknown error during extraction"
+                    xbmc.log("installItem - unknown error during extraction", xbmc.LOGNOTICE)
                     result = "ERROR"
                     self.status = "ERROR"
 
@@ -495,18 +482,18 @@ class ArchItemInstaller(ItemInstaller):
             elif statusDownload == "CANCELED":
                 result      = "CANCELED"
                 self.status = "CANCELED"
-                print "installItem - Install cancelled by the user"
+                xbmc.log("installItem - Install cancelled by the user", xbmc.LOGDEBUG)
             else:
                 result      = "ERROR"
                 self.status = "ERROR"
-                print "installItem - Error during download"
+                xbmc.log("installItem - Error during download", xbmc.LOGNOTICE)
         elif self.status == "EXTRACTED":
-            print "installItem - continue install"
+            xbmc.log("installItem - continue install", xbmc.LOGDEBUG)
             # TODO: in case of skin check skin is not the one currently used
             if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                 result      = "ERROR"
                 self.status = "ERROR"
-                print "installItem - Error during copy"
+                xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
             else:
                 self.status = "INSTALL_DONE"
         elif self.status == "INVALIDNAME":
@@ -515,24 +502,24 @@ class ArchItemInstaller(ItemInstaller):
                 if self.status == "OK":
                     if not self.isAlreadyInstalled():
                         if not self.isInUse():
-                            print "installItem - Item is not yet installed - installing"
+                            xbmc.log("installItem - Item is not yet installed - installing", xbmc.LOGDEBUG)
                             # TODO: in case of skin check skin is not the one currently used
                             if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                                 result = "ERROR"
                                 self.status = "ERROR"
-                                print "installItem - Error during copy"
+                                xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
                             else:
                                 self.status = "INSTALL_DONE"
                         else:
-                            print "installItem - Item is already currently used by XBMC - stopping install"
+                            xbmc.log("installItem - Item is already currently used by XBMC - stopping install", xbmc.LOGNOTICE)
                             result = "ALREADYINUSE"
                             self.status = "EXTRACTED"
                     else:
-                        print "installItem - Item is already installed - stopping install"
+                        xbmc.log("installItem - Item is already installed - stopping install", xbmc.LOGNOTICE)
                         result = "ALREADYINSTALLED"
                         self.status = "EXTRACTED"
             else:
-                print "installItem - Item name missing after and INVALIDNAME state"
+                xbmc.log("installItem - Item name missing after and INVALIDNAME state", xbmc.LOGDEBUG)
                 self.status == "ERROR"
                 result = "ERROR"
 
@@ -565,18 +552,12 @@ class DirItemInstaller(ItemInstaller):
         Install item (download + extract + copy)
         Needs to be called after extractItem
         """
-        print "installItem: Download and install case"
-        print itemName
+        xbmc.log("installItem: Download and install %s"%itemName, xbmc.LOGDEBUG)
         percent = 0
         result  = "OK" # result after install :[ OK | ERROR | ALREADYINSTALLED |CANCELED]
-        print "installItem: Download via itemInstaller"
         if ( self.status == "INIT" ) or ( self.status == "ERROR" ):
             #TODO: support message callback in addition of pb callback
             statusGetFile = self.GetRawItem( progressBar=progressBar )
-            print "installItem: statusGetFile"
-            print statusGetFile
-            print self.itemInfo [ "raw_item_path" ]
-            print
             self.itemInfo [ "temp_item_path" ] = self.itemInfo [ "raw_item_path" ] #Since it is an directory those 2 path are identical
             if statusGetFile == "OK":
                 if os.path.exists( self.itemInfo [ "temp_item_path" ] ):
@@ -586,36 +567,36 @@ class DirItemInstaller(ItemInstaller):
                     if self.status == "OK":
                         if not self.isAlreadyInstalled():
                             if not self.isInUse():
-                                print "installItem - Item is not yet installed - installing"
+                                xbmc.log("installItem - Item is not yet installed - installing", xbmc.LOGDEBUG)
                                 # TODO: in case of skin check skin is not the one currently used
                                 if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                                     result = "ERROR"
-                                    print "installItem - Error during copy"
+                                    xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
                                 else:
                                     self.status = "INSTALL_DONE"
                             else:
-                                print "installItem - Item is already currently used by XBMC - stopping install"
+                                xbmc.log("installItem - Item is already currently used by XBMC - stopping install", xbmc.LOGNOTICE)
                                 result = "ALREADYINUSE"
                                 self.status = "EXTRACTED"
                         else:
-                            print "installItem - Item is already installed - stopping install"
+                            xbmc.log("installItem - Item is already installed - stopping install", xbmc.LOGNOTICE)
                             result = "ALREADYINSTALLED"
                             self.status = "DOWNLOADED"
             elif statusGetFile == "CANCELED":
                 result      = "CANCELED"
                 self.status = "CANCELED"
-                print "installItem - Install cancelled by the user"
+                xbmc.log("installItem - Install cancelled by the user", xbmc.LOGDEBUG)
             else:
                 result      = "ERROR"
                 self.status = "ERROR"
-                print "installItem - Error during download"
+                xbmc.log("installItem - Error during download", xbmc.LOGNOTICE)
         elif self.status == "DOWNLOADED":
-            print "installItem - continue install"
+            xbmc.log("installItem - continue install", xbmc.LOGDEBUG)
             # TODO: in case of skin check skin is not the one currently used
             if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                 result      = "ERROR"
                 self.status = "ERROR"
-                print "installItem - Error during copy"
+                xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
             else:
                 self.status = "INSTALL_DONE"
 
@@ -625,24 +606,24 @@ class DirItemInstaller(ItemInstaller):
                 if self.status == "OK":
                     if not self.isAlreadyInstalled():
                         if not self.isInUse():
-                            print "installItem - Item is not yet installed - installing"
+                            xbmc.log("installItem - Item is not yet installed - installing", xbmc.LOGDEBUG)
                             # TODO: in case of skin check skin is not the one currently used
                             if self.copyItem( msgFunc=msgFunc, progressBar=progressBar ) == False:
                                 result = "ERROR"
                                 self.status = "ERROR"
-                                print "installItem - Error during copy"
+                                xbmc.log("installItem - Error during copy", xbmc.LOGNOTICE)
                             else:
                                 self.status = "INSTALL_DONE"
                         else:
-                            print "installItem - Item is already currently used by XBMC - stopping install"
+                            xbmc.log("installItem - Item is already currently used by XBMC - stopping install", xbmc.LOGNOTICE)
                             result = "ALREADYINUSE"
                             self.status = "EXTRACTED"
                     else:
-                        print "installItem - Item is already installed - stopping install"
+                        xbmc.log("installItem - Item is already installed - stopping install", xbmc.LOGNOTICE)
                         result = "ALREADYINSTALLED"
                         self.status = "EXTRACTED"
             else:
-                print "installItem - Item name missing after and INVALIDNAME state"
+                xbmc.log("installItem - Item name missing after and INVALIDNAME state", xbmc.LOGNOTICE)
                 self.status == "ERROR"
                 result = "ERROR"
 

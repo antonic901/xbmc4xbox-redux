@@ -45,7 +45,7 @@ class LocalArchiveInstaller(ArchItemInstaller):
         """
         status      = "ERROR" # Status of download :[OK | ERROR | CANCELED | ERRORFILENAME]
 
-        print("LocalArchiveInstaller::GetRawItem - Item to install path: %s"%self.itemInfo [ "raw_item_path" ])
+        xbmc.log("LocalArchiveInstaller::GetRawItem - Item to install path: %s"%self.itemInfo [ "raw_item_path" ], xbmc.LOGDEBUG)
 
         if self.itemInfo [ "raw_item_path" ].endswith( 'zip' ) or self.itemInfo [ "raw_item_path" ].endswith( 'rar' ):
             status      = "OK"

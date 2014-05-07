@@ -102,7 +102,7 @@ class InstallMgr:
         dialog = xbmcgui.Dialog()
         zipPath = dialog.browse(1, 'XBMC', 'files', '', False, False, SPECIAL_HOME_DIR)
         itemName = os.path.basename(zipPath)
-        print("_install_from_zip - installing %s"%zipPath)
+        xbmc.log("_install_from_zip - installing %s"%zipPath, xbmc.LOGDEBUG)
 
         # install from zip file
         addonInstaller = LocalArchiveInstaller.LocalArchiveInstaller( zipPath )
@@ -137,14 +137,16 @@ class InstallMgr:
         for requiredlib in addonIdCheck:
             localLibVersion = isLibInstalled( requiredlib['id'] )
             if localLibVersion:
+                xbmc.log("Requested %s version %s - found version %s" % (requiredlib['id'], requiredlib["version"], localLibVersion), xbmc.LOGDEBUG)
                 if versionsCmp( localLibVersion, requiredlib["version"] ) >= 0:
                     addonIdList.remove(requiredlib)
+
                 else:
                     installPath = get_install_path( TYPE_ADDON_MODULE )
                     fileMgr().deleteDir( os.path.join( installPath, requiredlib['id'] ) )
 
         if len(addonIdList) == 0:
-            print "No required libs"
+            xbmc.log("No required libs", xbmc.LOGDEBUG)
             return "OK"
 
         # Parse each repository in the list and try to find in it the required module
@@ -152,7 +154,7 @@ class InstallMgr:
             allLibsFound = False
             for repoInfo in repoList:
                 # Retrieving addons.xml from remote repository
-                xmlInfofPath = os.path.join( DIR_CACHE, repoInfo [ "id" ] + "-addons.xml")
+                xmlInfofPath = os.path.join( DIR_CACHE, repoInfo [ "id" ] + ".xml")
                 if fileOlderThan(xmlInfofPath, 60 * 30):
                     data = readURL( repoInfo [ "repo_url" ], save=True, localPath=xmlInfofPath )
 
@@ -173,6 +175,7 @@ class InstallMgr:
                                     if lib["id"] == item['id']:
                                         localLibVersion = isLibInstalled( item['id'], item['type'], item['name'] )
                                         if localLibVersion:
+                                            xbmc.log("Requested %s version %s - found version %s" % (requiredlib['id'], requiredlib["version"], localLibVersion), xbmc.LOGDEBUG)
                                             if versionsCmp( localLibVersion, lib["version"] ) >= 0:
                                                 addonIdList.remove(lib)
                                                 continue
@@ -198,7 +201,7 @@ class InstallMgr:
                                         item["ImageUrl"] = iconimage
                                         item["changelog"] = changelog
 
-                                        print downloadUrl
+                                        xbmc.log("Download URL: %s" % (downloadUrl), xbmc.LOGDEBUG)
 
                                         # Install lib
                                         installMgr = InstallMgr()
@@ -219,11 +222,10 @@ class InstallMgr:
                                                 keepParsingCurrentRepo = False
                                                 allLibsFound = True
                                                 status = "CANCELED"
-                                                print "User cancelled due to error of a lib install"
+                                                xbmc.log("User cancelled due to error of a lib install", xbmc.LOGDEBUG)
                                             else:
                                                 # User wants to continue
                                                 status = "OK"
-                                        print status
                                         # Module installed or already installed - Remove it for the list of libs to install
                                         addonIdList.remove(lib)
                             else:
@@ -236,10 +238,10 @@ class InstallMgr:
                     # all libs found, no need to go to parse next repo
                     continue
             if len(addonIdList) > 0:
-                print "Not all required lib has been installed"
+                xbmc.log("Not all required lib has been installed", xbmc.LOGDEBUG)
 
                 if not xbmcgui.Dialog().yesno( lib['id'], __language__( 30070 ), __language__( 30071 ), __language__( 30072 ) ):
-                    print "User cancelled due to error of a lib install"
+                    xbmc.log("User cancelled due to error of a lib install", xbmc.LOGDEBUG)
                     allLibsFound = True
                     status = "CANCELED"
                 else:
@@ -306,7 +308,7 @@ class InstallMgr:
                             loop = False
                     else:
                         #installCancelled = True
-                        print "bypass: %s install has been cancelled by the user" % itemName
+                        xbmc.log("bypass: %s install has been cancelled by the user" % itemName, xbmc.LOGDEBUG)
                         title = __language__( 146 )
                         msg1  = __language__( 147 )%itemName
                         msg2  = ""
@@ -333,14 +335,14 @@ class InstallMgr:
                     del keyboard
 
                 elif status == "ALREADYINUSE":
-                    print "%s currently used by XBMC, install impossible" % itemName
+                    xbmc.log("%s currently used by XBMC, install impossible" % itemName, xbmc.LOGDEBUG)
                     title = __language__( 117 )
                     msg1  = __language__( 117 )
                     msg2  = __language__( 119 )
                     loop = False
 
                 elif status == "NOT_SUPPORTED":
-                    print "%s install impossible, type of addon not supported" % itemName
+                    xbmc.log("%s install impossible, type of addon not supported" % itemName, xbmc.LOGDEBUG)
                     title = __language__( 144 )
                     msg1  = __language__( 160)
                     msg2  = __language__( 136 )%itemName
@@ -383,7 +385,7 @@ class InstallMgr:
                 chosenIndex = dialog.select( __language__( 149 ) % itemInstallName, menuList )
                 if chosenIndex == 0:
                     # Delete
-                    print "Deleting:"
+                    xbmc.log("Deleting:", xbmc.LOGDEBUG)
                     OK = itemInstaller.deleteInstalledItem()
                     if OK == True:
                         exit = True
@@ -391,7 +393,7 @@ class InstallMgr:
                         xbmcgui.Dialog().ok( __language__(148), __language__( 117) )
                 elif chosenIndex == 1:
                     # Rename
-                    print "Renaming:"
+                    xbmc.log("Renaming:", xbmc.LOGDEBUG)
                     #dp = xbmcgui.DialogProgress()
                     #dp.create(__language__( 157 ))
                     #dp.update(50)
@@ -410,7 +412,7 @@ class InstallMgr:
                     #dp.close()
                 elif chosenIndex == 2:
                     # Overwrite
-                    print "Overwriting:"
+                    xbmc.log("Overwriting:", xbmc.LOGDEBUG)
                     exit = True
                 else:
                     # EXIT

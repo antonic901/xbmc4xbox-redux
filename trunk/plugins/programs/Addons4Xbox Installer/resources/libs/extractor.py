@@ -63,7 +63,6 @@ def unrar( filename, destination=None, report=False ):
         root_dir = namelist[ -1 ]
         is_root_dir = True
         # si root_dir n'est pas un dossier ou n'est pas la racine, on se base sur le nom de l'archive
-        #print root_dir
         if not rar.getinfo( root_dir ).isdir():
             is_root_dir = False
         else:
@@ -149,7 +148,6 @@ def unzip( filename, destination=None, report=False ):
                     is_root_dir = False
                 else:
                     for i in namelist:
-                        #print root_dir in i, i
                         if not root_dir in i:
                             is_root_dir = False
                             break
@@ -159,12 +157,9 @@ def unzip( filename, destination=None, report=False ):
             is_root_dir = False
 
         # si root_dir n'est pas un dossier ou n'est pas la racine, on se base sur le nom de l'archive
-        #print root_dir
-        #base_dir = os.path.join( destination, root_dir.rstrip( "/" ) )
         base_dir = os.path.join( destination, root_dir.rstrip( "/" )[:42] ) # xbox filename limitation
         if not is_root_dir:#root_dir.endswith( "/" ) and ( zip.getinfo( root_dir ).file_size > 0 ):
             root_dir = os.path.basename( os.path.splitext( filename )[ 0 ] )
-            #destination = os.path.join( destination, root_dir )
             destination = os.path.join( destination, root_dir[:42] )
             base_dir = destination
         if os.path.isdir( base_dir ):
@@ -176,16 +171,9 @@ def unzip( filename, destination=None, report=False ):
                 if DIALOG_PROGRESS.iscanceled():
                     break
                 DIALOG_PROGRESS.update( int( percent ), _( 188 ) % ( count + 1, total_items ), item, _( 110 ) )
-                #print round( percent, 2 ), item
             if not item.endswith( "/" ):
                 root, name = os.path.split( item )
-                #print "root: %s / name: %s"%(root,name)
-                #print root_dir
-                #print root_dir.rstrip( "/" )
-                #print root_dir.rstrip( "/" )[:42]
-                #print root.replace(root_dir.rstrip( "/" ),root_dir.rstrip( "/" )[:42])
                 directory = os.path.normpath( os.path.join( destination, root.replace(root_dir.rstrip( "/" ),root_dir.rstrip( "/" )[:42]) ) )
-                #directory = os.path.normpath( os.path.join( destination, root[:42] ) ) # xbox filename limitation
                 if not os.path.isdir( directory ): os.makedirs( directory )
                 filename = makeLegalFilename( os.path.join( directory, name ), True )
                 file( filename, "wb" ).write( zip.read( item ) )

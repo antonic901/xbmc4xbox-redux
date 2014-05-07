@@ -15,8 +15,8 @@ __url__          = "http://passion-xbmc.org/index.php"
 __svn_url__      = "http://passion-xbmc.googlecode.com/svn/trunk/plugins/programs/Addons4xbox/"
 __credits__      = "Team XBMC Passion"
 __platform__     = "xbmc media center [XBOX]"
-__date__         = "2014-05-06"
-__version__      = "0.12.2"
+__date__         = "2014-05-07"
+__version__      = "0.13.0"
 __svn_revision__ = 0
 __XBMC_Revision__= 30805
 
@@ -76,8 +76,7 @@ class Addons4xboxInstallerPlugin:
     def __init__( self, *args, **kwargs ):
         self.pluginMgr = PluginMgr()
         self.parameters = self.pluginMgr.parse_params()
-        print "Parameters"
-        print self.parameters
+        xbmc.log("Parameters %s"%self.parameters, xbmc.LOGDEBUG)
         self.select()
 
 
@@ -87,8 +86,6 @@ class Addons4xboxInstallerPlugin:
         Decides what to do based on the plugin URL
         """
         try:
-            print "select"
-            print self.parameters
 
             #
             # Create root list

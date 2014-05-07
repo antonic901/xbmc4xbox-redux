@@ -363,6 +363,10 @@ def versionsCmp( version1, version2 ):
       1 if version1 is newer than version2,
     Credit to jellybean (http://stackoverflow.com/questions/1714027/version-number-comparison)
     """
+    if version1 == None:
+        version1 = "0"
+    if version2 == None:
+        version2 = "0"
     parts1 = [int(x) for x in version1.split('.')]
     parts2 = [int(x) for x in version2.split('.')]
 

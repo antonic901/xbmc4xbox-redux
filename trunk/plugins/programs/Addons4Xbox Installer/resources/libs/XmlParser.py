@@ -131,12 +131,8 @@ def parseAddonElt( addonElt, itemInfo ):
     status = 'OK'
     try:
         if ( addonElt ):
-            #print "parseAddonElt"
-            #print ET.tostring(addonElt)
-            #print "--"
             libPoint = None
             itemInfo [ "id" ]      = addonElt.attrib.get( "id" )
-            #itemInfo [ "name" ]    = addonElt.attrib.get( "name" ).encode( "utf8" )
             itemInfo [ "name" ]    = addonElt.attrib.get( "name" )
             itemInfo [ "version" ] = addonElt.attrib.get( "version" )
             itemInfo [ "author" ]  = addonElt.attrib.get( "provider-name" )
@@ -166,7 +162,6 @@ def parseAddonElt( addonElt, itemInfo ):
                             datadir = extension.find( "datadir" )
                             itemInfo [ "repo_datadir" ] = datadir.text
                             zip = datadir.attrib.get( "zip" )
-                            print "Repo format zip attribute: %s"%zip
                             if zip == "true":
                                 itemInfo [ "repo_format" ] = "zip"
                             else:
@@ -264,13 +259,10 @@ class ListItemFromXML:
     def __init__( self, xmlData ):
         try:
             if ( xmlData ):
-                #print xmlData
                 rootXmlElt = ET.parse( xmlData ).getroot() # root: <addons>
 
                 if ( rootXmlElt ):
                     self.addons = rootXmlElt.findall("addon")
-                    #for i in range(len(self.addons)):
-                    #    print ET.tostring(self.addons[i])
         except:
             status = 'ItemList::__init__: ERROR'
             print_exc()

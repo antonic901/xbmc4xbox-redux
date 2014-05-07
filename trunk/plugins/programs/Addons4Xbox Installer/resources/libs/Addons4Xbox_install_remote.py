@@ -3,7 +3,7 @@
 import os
 #import urllib
 import sys
-#import xbmc
+import xbmc
 #import xbmcplugin
 import xbmcgui
 from traceback import print_exc
@@ -61,7 +61,7 @@ class Main:
         """
         Install an addon from a remote/web repository
         """
-        print "_install_addon_remote"
+        xbmc.log("_install_addon_remote", xbmc.LOGDEBUG)
         status = "OK"
         installMgr = InstallMgr()
 
@@ -80,7 +80,7 @@ class Main:
             # Check if we install repo
             if "None" != repoId:
                 # Retrieve addon info from persitence
-                pdr = PersistentDataRetriever( os.path.join( DIR_CACHE, repoId + "-addon_list.txt" ) )
+                pdr = PersistentDataRetriever( os.path.join( DIR_CACHE, repoId + ".txt" ) )
                 addonDic = pdr.get_data()
                 requiredLibs = addonDic[addonId]['required_lib']
                 status = installMgr._getAddonRequiredLibs( requiredLibs, repoId )

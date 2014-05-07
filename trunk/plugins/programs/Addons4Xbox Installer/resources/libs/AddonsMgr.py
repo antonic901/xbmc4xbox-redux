@@ -70,7 +70,7 @@ def getInstalledAddonInfo( addonpath ):
     itemInfo = {}
 
     # Open addon.xml
-    print "getInstalledAddonInfo: Addon path: %s"%addonpath
+    xbmc.log("getInstalledAddonInfo: Addon path: %s"%addonpath, xbmc.LOGDEBUG)
     xmlInfofPath = os.path.join( addonpath, "addon.xml")
     if os.path.exists( xmlInfofPath ):
         try:
@@ -208,7 +208,7 @@ class AddonsMgr:
         itemInfo = {}
 
         # Open addon.xml
-        print "Addon path: %s"%addonpath
+        xbmc.log("Addon path: %s"%addonpath, xbmc.LOGDEBUG)
         xmlInfofPath = os.path.join( addonpath, "addon.xml")
         if os.path.exists( xmlInfofPath ):
             try:
@@ -229,9 +229,7 @@ class AddonsMgr:
     def _run_addon( self, type, addon_basename ):
         """
         """
-        print "_run_addon"
-        print type
-        print addon_basename
+        xbmc.log("_run_addon %s", xbmc.LOGDEBUG)
         result = True
         if ( type == TYPE_ADDON_VIDEO ):
             #command = "XBMC.ActivateWindow(10025,plugin://addons/%s/)" % ( addon_basename, )
@@ -263,7 +261,6 @@ class AddonsMgr:
         @param message2: Message part 2
         @param message3: Message part 3
         """
-        #print("message_cb with %s STARTS"%msgType)
         result = None
 
         # Display the correct dialogBox according the type

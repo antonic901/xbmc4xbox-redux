@@ -49,7 +49,6 @@ class Main:
         self.pluginMgr = PluginMgr()
         self.parameters = self.pluginMgr.parse_params()
 
-        print "List of Add-ons"
         repoId = self.parameters[ PARAM_REPO_ID ]
         addonCat = self.parameters[ PARAM_TYPE ]
         self._createAddonsDir( repoId, addonCat )
@@ -70,7 +69,7 @@ class Main:
         addonDic = {}
 
         # Retrieving addons.xml from remote repository
-        xmlInfofPath = os.path.join( DIR_CACHE, repoId + "-addons.xml")
+        xmlInfofPath = os.path.join( DIR_CACHE, repoId + ".xml")
         if fileOlderThan(xmlInfofPath, 60 * 30):
             data = readURL( repoInfo [ "repo_url" ], save=True, localPath=xmlInfofPath )
 
@@ -127,5 +126,5 @@ class Main:
                 else:
                     keepParsing = False
             # Save the list of addons
-            PersistentDataCreator( addonDic, os.path.join( DIR_CACHE, repoId + "-addon_list.txt" ) )
+            PersistentDataCreator( addonDic, os.path.join( DIR_CACHE, repoId + ".txt" ) )
 

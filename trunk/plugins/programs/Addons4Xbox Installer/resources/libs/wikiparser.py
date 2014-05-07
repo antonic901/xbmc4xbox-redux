@@ -57,7 +57,6 @@ class ListItemFromWiki:
                     repoInfo[ "repo_url" ] = tdList[3].a["href"]
                 except:
                     repoInfo[ "repo_url" ] = None
-                    print "Invalid URL for the repository %s"%(repoInfo["name"])
 
                 repoInfo[ "version" ]     = None
                 repoInfo[ "type" ]        = TYPE_ADDON_REPO
@@ -67,7 +66,7 @@ class ListItemFromWiki:
                 except:
                     repoInfo[ "ImageUrl" ] = None
         except:
-            print "_parseRepoElement - error parsing html - impossible to retrieve Repos info"
+            xbmc.log("_parseRepoElement - error parsing html - impossible to retrieve Repos info", xbmc.LOGNOTICE)
             print_exc()
             result = "ERROR"
 
