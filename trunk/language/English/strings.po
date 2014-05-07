@@ -1465,21 +1465,21 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr ""
 
+#. Weather token
 msgctxt "#418"
-msgid "Enable Library"
-msgstr ""
-
-msgctxt "#419"
 msgid "Low"
 msgstr ""
 
-msgctxt "#420"
+#. Weather token
+msgctxt "#419"
 msgid "High"
 msgstr ""
 
-msgstr "High"
+#empty string with id 420
 
-#empty strings from id 419 to 421
+msgctxt "#421"
+msgid "Enable Library"
+msgstr ""
 
 msgctxt "#422"
 msgid "Delete album info"

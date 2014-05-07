@@ -365,7 +365,7 @@
 				<description>high label</description>
 				<posx>100</posx>
 				<posy>30</posy>
-				<label>$LOCALIZE[393] :</label>
+				<label>$LOCALIZE[419] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -380,7 +380,7 @@
 				<description>low label</description>
 				<posx>100</posx>
 				<posy>50</posy>
-				<label>$LOCALIZE[391] :</label>
+				<label>$LOCALIZE[418] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -444,7 +444,7 @@
 				<description>high label</description>
 				<posx>100</posx>
 				<posy>30</posy>
-				<label>$LOCALIZE[393] :</label>
+				<label>$LOCALIZE[419] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -459,7 +459,7 @@
 				<description>low label</description>
 				<posx>100</posx>
 				<posy>50</posy>
-				<label>$LOCALIZE[391] :</label>
+				<label>$LOCALIZE[418] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -523,7 +523,7 @@
 				<description>high label</description>
 				<posx>100</posx>
 				<posy>30</posy>
-				<label>$LOCALIZE[393] :</label>
+				<label>$LOCALIZE[419] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -538,7 +538,7 @@
 				<description>low label</description>
 				<posx>100</posx>
 				<posy>50</posy>
-				<label>$LOCALIZE[391] :</label>
+				<label>$LOCALIZE[418] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -602,7 +602,7 @@
 				<description>high label</description>
 				<posx>100</posx>
 				<posy>30</posy>
-				<label>$LOCALIZE[393] :</label>
+				<label>$LOCALIZE[419] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
@@ -617,7 +617,7 @@
 				<description>low label</description>
 				<posx>100</posx>
 				<posy>50</posy>
-				<label>$LOCALIZE[391] :</label>
+				<label>$LOCALIZE[418] :</label>
 				<font>font12</font>
 				<visible>Weather.IsFetched</visible>
 			</control>
