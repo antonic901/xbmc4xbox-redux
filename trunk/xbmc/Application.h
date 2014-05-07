@@ -96,7 +96,7 @@ public:
   void PrintXBEToLCD(const char* xbePath);
   void CheckDate();
   DWORD GetThreadId() const { return m_threadID; };
-  void Stop();
+  void Stop(bool bLCDStop = true);
   void RestartApp();
   void LoadSkin(const CStdString& strSkin);
   void UnloadSkin();

@@ -3948,7 +3948,7 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
       wsprintf(szXbePath, "d:\\%s", szXbe);
 
 #ifdef HAS_XBOX_HARDWARE
-      g_application.Stop();
+      g_application.Stop(false);
 
       CUtil::LaunchXbe(szDevicePath, szXbePath, szParameters, ForceVideo, ForceCountry, pData);
 #endif

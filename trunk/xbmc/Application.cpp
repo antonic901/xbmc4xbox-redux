@@ -3492,7 +3492,7 @@ HRESULT CApplication::Cleanup()
   }
 }
 
-void CApplication::Stop()
+void CApplication::Stop(bool bLCDStop)
 {
   try
   {
@@ -3560,7 +3560,7 @@ void CApplication::Stop()
     g_pythonParser.FreeResources();
 
 #ifdef HAS_LCD
-    if (g_lcd)
+    if (g_lcd && bLCDStop)
     {
       g_lcd->Stop();
       delete g_lcd;
