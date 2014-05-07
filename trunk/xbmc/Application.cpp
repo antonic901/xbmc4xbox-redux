@@ -759,7 +759,7 @@ HRESULT CApplication::Create(HWND hWnd)
   InitDirectoriesXbox();
   
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
-  CLog::Log(LOGNOTICE, "Starting XBMC4Xbox.  Built on %s (SVN:%s, compiler %i)", __DATE__, SVN_REV, _MSC_VER);
+  CLog::Log(LOGNOTICE, "Starting XBMC4Xbox %s (SVN:%s, compiler %i). Built on %s ", VERSION_STRING, SVN_REV, _MSC_VER, __DATE__);
   CSpecialProtocol::LogPaths();
 
   char szXBEFileName[1024];
