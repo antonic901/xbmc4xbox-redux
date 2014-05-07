@@ -403,6 +403,8 @@ bool CGUIWindowVideoNav::GetDirectory(const CStdString &strDirectory, CFileItemL
         items.SetContent("years");
       else if (node == NODE_TYPE_MUSICVIDEOS_ALBUM)
         items.SetContent("albums");
+      else if (node == NODE_TYPE_SETS)
+        items.SetContent("sets");
       else
         items.SetContent("");
     }
