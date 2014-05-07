@@ -29,7 +29,7 @@ var ACTION_VOLUME_UP    =       88
 var ACTION_VOLUME_DOWN     =     89
 var ACTION_MUTE         =       91
 
-function keyboardControl(e){
+function keyboardControl(event){
 	$.each(KeyboardController,function(theaction,key){
 				if(event.keyCode == key){
 					if(theaction.substr(0,3) == "KEY"){
