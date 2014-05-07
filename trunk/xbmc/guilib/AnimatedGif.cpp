@@ -29,6 +29,7 @@
 #include "include.h"
 #include "AnimatedGif.h"
 #include "FileSystem/SpecialProtocol.h"
+#include "utils/log.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -455,6 +456,10 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
 
       NextImage->Init(gifid.Width, gifid.Height, LocalColorMap ? (gifid.PackedFields&7) + 1 : GlobalBPP);
 
+      /* verify that all the image is inside the screen dimensions */
+      if (gifid.xPos + gifid.Width > giflsd.ScreenWidth || gifid.yPos + gifid.Height > giflsd.ScreenHeight)
+        return 0;
+
       // Fill NextImage Data
       NextImage->xPos = gifid.xPos;
       NextImage->yPos = gifid.yPos;
@@ -517,6 +522,7 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       else
       {
         delete NextImage;
+        CLog::Log(LOGERROR, "CAnimatedGifSet::LoadGIF: gif file corrupt: %s", szFileName);
         ERRORMSG("GIF File Corrupt");
       }
 
@@ -558,6 +564,8 @@ int LZWDecoder (char * bufIn, char * bufOut,
                 short InitCodeSize, int AlignedWidth,
                 int Width, int Height, const int Interlace)
 {
+  if (InitCodeSize < 1 || InitCodeSize >= LZW_MAXBITS)
+    return 0;
   int n;
   int row = 0, col = 0;    // used to point output if Interlaced
   int nPixels, maxPixels; // Output pixel counter
@@ -573,12 +581,12 @@ int LZWDecoder (char * bufIn, char * bufOut,
   short OutCode;      // Code to output
 
   // Translation Table:
-  short Prefix[4096] = {};    // Prefix: index of another Code
-  unsigned char Suffix[4096] = {};    // Suffix: terminating character
+  short Prefix[LZW_SIZETABLE] = {};    // Prefix: index of another Code
+  unsigned char Suffix[LZW_SIZETABLE] = {};    // Suffix: terminating character
   short FirstEntry;     // Index of first free entry in table
   short NextEntry;     // Index of next free entry in table
 
-  unsigned char OutStack[4097];   // Output buffer
+  unsigned char OutStack[LZW_SIZETABLE + 1];   // Output buffer
   int OutIndex;      // Characters in OutStack
 
   int RowOffset;     // Offset in output buffer for current row
@@ -636,14 +644,14 @@ int LZWDecoder (char * bufIn, char * bufOut,
     // - Table Suffices contain the raw codes to be output
     while (OutCode >= FirstEntry)
     {
-      if (OutIndex > 4096 || OutCode >= 4096)
+      if (OutIndex > LZW_SIZETABLE || OutCode >= LZW_SIZETABLE)
         return 0;
       OutStack[OutIndex++] = Suffix[OutCode]; // Add suffix to Output Stack
       OutCode = Prefix[OutCode];       // Loop with preffix
     }
 
     // NOW OutCode IS A RAW CODE, ADD IT TO OUTPUT STACK.
-    if (OutIndex > 4096)
+    if (OutIndex > LZW_SIZETABLE)
       return 0;
     OutStack[OutIndex++] = (unsigned char) OutCode;
 
@@ -651,18 +659,18 @@ int LZWDecoder (char * bufIn, char * bufOut,
     // (EXCEPT IF PREVIOUS CODE WAS A CLEARCODE)
     if (PrevCode != ClearCode)
     {
+      // Prevent Translation table overflow:
+      if (NextEntry >= LZW_SIZETABLE)
+        return 0;
+
       Prefix[NextEntry] = PrevCode;
       Suffix[NextEntry] = (unsigned char) OutCode;
       NextEntry++;
 
-      // Prevent Translation table overflow:
-      if (NextEntry >= 4096)
-        return 0;
-
       // INCREASE CodeSize IF NextEntry IS INVALID WITH CURRENT CodeSize
       if (NextEntry >= (1 << CodeSize))
       {
-        if (CodeSize < 12) CodeSize++;
+        if (CodeSize < LZW_MAXBITS) CodeSize++;
         else
         {
           ;

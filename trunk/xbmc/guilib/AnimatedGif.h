@@ -40,6 +40,9 @@
 struct COLOR {unsigned char b,g,r,x;};	// Windows GDI expects 4bytes per color
 #define ALIGN sizeof(int)         ///< Windows GDI expects all int-aligned
 
+#define LZW_MAXBITS   12
+#define LZW_SIZETABLE (1<<LZW_MAXBITS)
+
 /*!
  \ingroup textures
  \brief
