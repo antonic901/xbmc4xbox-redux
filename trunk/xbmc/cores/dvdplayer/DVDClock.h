@@ -42,6 +42,7 @@ public:
   ~CDVDClock();
 
   double GetClock();
+  double GetClock(double& absolute);
 
   void Discontinuity(double currentPts = 0LL);
  

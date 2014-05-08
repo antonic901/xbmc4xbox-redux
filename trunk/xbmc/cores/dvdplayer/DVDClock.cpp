@@ -61,6 +61,20 @@ double CDVDClock::GetClock()
   return SystemToPlaying(current);
 }
 
+double CDVDClock::GetClock(double& absolute)
+{
+  LARGE_INTEGER current;
+  QueryPerformanceCounter(&current);
+  {
+    CSingleLock lock(m_systemsection);
+    CheckSystemClock();
+    absolute = SystemToAbsolute(current);
+  }
+
+  CSharedLock lock(m_critSection);
+  return SystemToPlaying(current);
+}
+
 void CDVDClock::SetSpeed(int iSpeed)
 {
   // this will sometimes be a little bit of due to rounding errors, ie clock might jump abit when changing speed
