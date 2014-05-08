@@ -692,9 +692,6 @@
 				RelativePath=".\StdString.h">
 			</File>
 			<File
-				RelativePath=".\system.h">
-			</File>
-			<File
 				RelativePath=".\TextureBundle.h">
 			</File>
 			<File

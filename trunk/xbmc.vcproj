@@ -3316,6 +3316,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\StringUtils.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\system.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\SystemInfo.h">
 			</File>
 			<File
