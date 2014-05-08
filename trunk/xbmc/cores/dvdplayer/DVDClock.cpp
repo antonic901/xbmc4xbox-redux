@@ -95,8 +95,8 @@ void CDVDClock::SetSpeed(int iSpeed)
     m_pauseClock.QuadPart = 0;
   }
 
-  m_startClock.QuadPart = current.QuadPart - ( newfreq * (current.QuadPart - m_startClock.QuadPart) ) / m_systemUsed.QuadPart;
-  m_systemUsed.QuadPart = newfreq;    
+  m_startClock.QuadPart = current.QuadPart - (int64_t)((double)(current.QuadPart - m_startClock.QuadPart) * newfreq / m_systemUsed.QuadPart);
+  m_systemUsed.QuadPart = newfreq;
 }
 
 void CDVDClock::Discontinuity(double currentPts)
