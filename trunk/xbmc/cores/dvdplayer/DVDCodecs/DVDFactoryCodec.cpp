@@ -29,25 +29,12 @@
 #include "Overlay/DVDOverlayCodec.h"
 
 #include "Video/DVDVideoCodecFFmpeg.h"
-#include "Video/DVDVideoCodecLibMpeg2.h"
 #include "Audio/DVDAudioCodecFFmpeg.h"
-#ifdef USE_LIBA52_DECODER
-  #include "Audio/DVDAudioCodecLiba52.h"
-#endif
-#ifdef USE_LIBDTS_DECODER
-  #include "Audio/DVDAudioCodecLibDts.h"
-#endif
 #ifdef USE_LIBMAD
 #include "Audio/DVDAudioCodecLibMad.h"
 #endif
-#ifdef USE_LIBFAAD
-#include "Audio/DVDAudioCodecLibFaad.h"
-#endif
 #include "Audio/DVDAudioCodecPcm.h"
 #include "Audio/DVDAudioCodecLPcm.h"
-#if defined(USE_LIB52_DECODER) || defined(USE_LIBDTS_DECODER)
-  #include "Audio/DVDAudioCodecPassthrough.h"
-#endif
 #include "Audio/DVDAudioCodecPassthroughFFmpeg.h"
 #include "Overlay/DVDOverlayCodecSSA.h"
 #include "Overlay/DVDOverlayCodecText.h"
@@ -128,12 +115,6 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
   CDVDVideoCodec* pCodec = NULL;
   CDVDCodecOptions options;
 
-  // dvd's have weird still-frames in it, which is not fully supported in ffmpeg
-  if(hint.stills && (hint.codec == AV_CODEC_ID_MPEG2VIDEO || hint.codec == AV_CODEC_ID_MPEG1VIDEO))
-  {
-    if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
-  }
-
   // try to decide if we want to try halfres decoding - note some codecs such as vp8 may return bad data for fpsrate (1000)/fpsscale (1),
   // so check for sensible values, as well as for vp8 codec as it doesn't support the lowres flag.
   float pixelrate = (float)hint.width*hint.height*hint.fpsrate/hint.fpsscale;
@@ -155,47 +136,17 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
 
   if (passthrough)
   {
-#if defined(USE_LIBA52_DECODER) || defined(USE_LIBDTS_DECODER)
-    pCodec = OpenCodec( new CDVDAudioCodecPassthrough(), hint, options );
-    if( pCodec ) return pCodec;
-#endif
-
     pCodec = OpenCodec( new CDVDAudioCodecPassthroughFFmpeg(), hint, options);
     if ( pCodec ) return pCodec;
   }
 
   switch (hint.codec)
   {
-#ifdef USE_LIBA52_DECODER
-  case AV_CODEC_ID_AC3:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLiba52(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-#endif
-#ifdef USE_LIBDTS_DECODER
-  case AV_CODEC_ID_DTS:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLibDts(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-#endif
 #ifdef USE_LIBMAD
   case AV_CODEC_ID_MP2:
   case AV_CODEC_ID_MP3:
     {
       pCodec = OpenCodec( new CDVDAudioCodecLibMad(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-#endif
-#ifdef USE_LIBFAAD
-  case AV_CODEC_ID_AAC:
-  //case AV_CODEC_ID_MPEG4AAC:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLibFaad(), hint, options );
       if( pCodec ) return pCodec;
       break;
     }

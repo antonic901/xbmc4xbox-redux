@@ -3579,15 +3579,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						Name="Audio"
 						Filter="">
 						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLiba52.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibDts.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibFaad.h">
-						</File>
-						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibMad.h">
 						</File>
 						<File
@@ -3600,24 +3591,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecFFmpeg.h">
 						</File>
 						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLiba52.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLiba52.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibDts.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibDts.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.h">
-						</File>
-						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.cpp">
 						</File>
 						<File
@@ -3628,12 +3601,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLPcm.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthrough.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthrough.h">
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthroughFFmpeg.cpp">
@@ -3652,9 +3619,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						Name="Video"
 						Filter="">
 						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DllLibMpeg2.h">
-						</File>
-						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoCodec.h">
 						</File>
 						<File
@@ -3662,12 +3626,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoCodecFFmpeg.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoCodecLibMpeg2.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoCodecLibMpeg2.h">
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoPPFFmpeg.cpp">

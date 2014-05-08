@@ -109,9 +109,6 @@
 #endif
 
 #undef USE_LIBMAD
-#undef USE_LIBFAAD
-#undef USE_LIBDTS_DECODER
-#undef USE_LIBA52_DECODER
 
 #define XBMC_MAX_PATH 1024 // normal max path is 260, but smb shares and the like can be longer
 
