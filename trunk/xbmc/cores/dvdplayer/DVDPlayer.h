@@ -390,7 +390,6 @@ protected:
       time_offset   = 0;
       time_src      = ETIMESOURCE_CLOCK;
       dts           = DVD_NOPTS_VALUE;
-      dts_state     = DVD_NOPTS_VALUE;
       player_state  = "";
       chapter       = 0;
       chapter_count = 0;
@@ -413,7 +412,6 @@ protected:
     double time_total;        // total playback time
     ETimeSource time_src;     // current time source
     double dts;               // last known dts
-    double dts_state;         // dts of last update
 
     std::string player_state;  // full player state
 
