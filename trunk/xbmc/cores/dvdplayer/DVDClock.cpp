@@ -21,13 +21,17 @@
 
 #include "system.h"
 #include "DVDClock.h"
+#include "utils/SingleLock.h"
+
 #include <math.h>
 
 LARGE_INTEGER CDVDClock::m_systemFrequency;
+CCriticalSection CDVDClock::m_systemsection;
+
 CDVDClock::CDVDClock()
 {
-  if(!m_systemFrequency.QuadPart)
-    QueryPerformanceFrequency(&m_systemFrequency);
+  CSingleLock lock(m_systemsection);
+  CheckSystemClock();
 
   m_systemUsed = m_systemFrequency;
   m_pauseClock.QuadPart = 0;
@@ -41,8 +45,7 @@ CDVDClock::~CDVDClock()
 // Returns the current absolute clock in units of DVD_TIME_BASE (usually microseconds).
 double CDVDClock::GetAbsoluteClock()
 {
-  if(!m_systemFrequency.QuadPart)
-    QueryPerformanceFrequency(&m_systemFrequency);
+  CheckSystemClock();
 
   LARGE_INTEGER current;
   QueryPerformanceCounter(&current);
@@ -128,4 +131,12 @@ void CDVDClock::Resume()
     m_pauseClock.QuadPart = 0;
   }  
 }
+
+void CDVDClock::CheckSystemClock()
+{
+  if(!m_systemFrequency.QuadPart)
+    QueryPerformanceFrequency(&m_systemFrequency);
+}
+
+
 
