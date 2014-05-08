@@ -50,7 +50,7 @@ double CDVDClock::GetAbsoluteClock()
   LARGE_INTEGER current;
   QueryPerformanceCounter(&current);
 
-  return DVD_TIME_BASE * (double)current.QuadPart / m_systemFrequency.QuadPart;
+  return SystemToAbsolute(current);
 }
 
 double CDVDClock::GetClock()
@@ -138,5 +138,9 @@ void CDVDClock::CheckSystemClock()
     QueryPerformanceFrequency(&m_systemFrequency);
 }
 
+double CDVDClock::SystemToAbsolute(LARGE_INTEGER system)
+{
+  return DVD_TIME_BASE * (double)system.QuadPart / m_systemFrequency.QuadPart;
+}
 
 
