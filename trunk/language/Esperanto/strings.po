@@ -1325,7 +1325,7 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Vido: Big Icons"
 
-msgctxt "#418"
+msgctxt "#421"
 msgid "Enable Library"
 msgstr "Mia Filmoj/Gxenroj"
 

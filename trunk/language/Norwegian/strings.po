@@ -1373,7 +1373,7 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Viser: Store ikoner"
 
-msgctxt "#418"
+msgctxt "#421"
 msgid "Enable Library"
 msgstr "Lav"
 

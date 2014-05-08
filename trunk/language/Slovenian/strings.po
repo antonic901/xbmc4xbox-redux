@@ -1389,7 +1389,7 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Pogled: Velike ikone"
 
-msgctxt "#418"
+msgctxt "#421"
 msgid "Enable Library"
 msgstr "Moj Video/Žanr"
 

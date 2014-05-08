@@ -1405,7 +1405,7 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Vue: Affiches"
 
-msgctxt "#418"
+msgctxt "#421"
 msgid "Enable Library"
 msgstr "Faible"
 

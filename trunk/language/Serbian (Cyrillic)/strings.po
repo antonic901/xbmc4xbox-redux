@@ -1377,7 +1377,7 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Приказ: Велике иконе"
 
-msgctxt "#418"
+msgctxt "#421"
 msgid "Enable Library"
 msgstr "Мин."
 
