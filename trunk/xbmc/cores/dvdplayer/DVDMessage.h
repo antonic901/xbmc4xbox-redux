@@ -64,8 +64,6 @@ public:
     PLAYER_CHANNEL_SELECT,          // switches to given playback channel
     PLAYER_STARTED,                 // sent whenever a sub player has finished it's first frame after open
 
-    PLAYER_DISPLAYTIME,             // display time struct from av players
-
     // demuxer related messages
     
     DEMUXER_PACKET,                 // data packet
