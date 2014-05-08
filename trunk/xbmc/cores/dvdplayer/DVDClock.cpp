@@ -57,23 +57,8 @@ double CDVDClock::GetClock()
 {
   CSharedLock lock(m_critSection);
   LARGE_INTEGER current;
-    
-  if (m_bReset)
-  {
-    QueryPerformanceCounter(&m_startClock);
-    m_systemUsed = m_systemFrequency;
-    m_pauseClock.QuadPart = 0;
-    m_iDisc = 0;
-    m_bReset = false;
-  }
-
-  if (m_pauseClock.QuadPart)
-    current = m_pauseClock;
-  else
-    QueryPerformanceCounter(&current);
-
-  current.QuadPart -= m_startClock.QuadPart;
-  return DVD_TIME_BASE * (double)current.QuadPart / m_systemUsed.QuadPart + m_iDisc;
+  QueryPerformanceCounter(&current);
+  return SystemToPlaying(current);
 }
 
 void CDVDClock::SetSpeed(int iSpeed)
@@ -143,4 +128,24 @@ double CDVDClock::SystemToAbsolute(LARGE_INTEGER system)
   return DVD_TIME_BASE * (double)system.QuadPart / m_systemFrequency.QuadPart;
 }
 
+double CDVDClock::SystemToPlaying(LARGE_INTEGER system)
+{
+  LARGE_INTEGER current;
+
+  if (m_bReset)
+  {
+    m_startClock = system;
+    m_systemUsed = m_systemFrequency;
+    m_pauseClock.QuadPart = 0;
+    m_iDisc = 0;
+    m_bReset = false;
+  }
+  
+  if (m_pauseClock.QuadPart)
+    current = m_pauseClock;
+  else
+    current = system;
+
+  return DVD_TIME_BASE * (double)(current.QuadPart - m_startClock.QuadPart) / m_systemUsed.QuadPart + m_iDisc;
+}
 

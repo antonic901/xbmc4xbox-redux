@@ -55,6 +55,7 @@ public:
 protected:
   static void CheckSystemClock();
   static double SystemToAbsolute(LARGE_INTEGER system);
+  double SystemToPlaying(LARGE_INTEGER system);
 
   CSharedSection m_critSection;
   LARGE_INTEGER m_systemUsed;  
