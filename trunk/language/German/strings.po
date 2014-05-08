@@ -1405,6 +1405,14 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Große Symbole"
 
+msgctxt "#418"
+msgid "Low"
+msgstr "Tief"
+
+msgctxt "#419"
+msgid "High"
+msgstr "Hoch"
+
 msgctxt "#421"
 msgid "Enable Library"
 msgstr "Bibliothek aktivieren"

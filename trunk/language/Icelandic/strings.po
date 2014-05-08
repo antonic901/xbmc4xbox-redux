@@ -1405,6 +1405,14 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Sjá sem: Stór tákn"
 
+msgctxt "#418"
+msgid "Low"
+msgstr "Lágt"
+
+msgctxt "#419"
+msgid "High"
+msgstr "Hátt"
+
 msgctxt "#421"
 msgid "Enable Library"
 msgstr "Virkja safn"

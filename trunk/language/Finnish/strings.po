@@ -1401,6 +1401,14 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Näytä: Suuret kuvak."
 
+msgctxt "#418"
+msgid "Low"
+msgstr "Alin"
+
+msgctxt "#419"
+msgid "High"
+msgstr "Ylin"
+
 msgctxt "#421"
 msgid "Enable Library"
 msgstr "Kirjasto käytössä"

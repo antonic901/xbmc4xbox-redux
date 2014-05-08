@@ -1405,6 +1405,14 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Afișare: Pictograme mari"
 
+msgctxt "#418"
+msgid "Low"
+msgstr "Minim"
+
+msgctxt "#419"
+msgid "High"
+msgstr "Maxim"
+
 msgctxt "#421"
 msgid "Enable Library"
 msgstr "Filme/Tipuri"

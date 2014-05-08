@@ -1405,6 +1405,14 @@ msgctxt "#417"
 msgid "View: Big icons"
 msgstr "Προβολή: Μεγ. Εικονίδια"
 
+msgctxt "#418"
+msgid "Low"
+msgstr "Ελαχ."
+
+msgctxt "#419"
+msgid "High"
+msgstr "Μεγ."
+
 msgctxt "#421"
 msgid "Enable Library"
 msgstr "Ενεργοποίηση συλλογής"
