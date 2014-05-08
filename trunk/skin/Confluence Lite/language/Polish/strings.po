@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-05-08 00:55+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/xbmc4xbox/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgctxt "#31000"
 msgid "Change Your"
@@ -48,10 +48,6 @@ msgstr "Wtyczki"
 msgctxt "#31008"
 msgid "Fullscreen"
 msgstr "Pełny ekran"
-
-msgctxt "#31009"
-msgid "Total Duration"
-msgstr ""
 
 msgctxt "#31020"
 msgid "Recently Added"
@@ -233,10 +229,6 @@ msgctxt "#31115"
 msgid "Customizer"
 msgstr "Modyfikacja"
 
-msgctxt "#31116"
-msgid "Show Recently added Albums"
-msgstr ""
-
 msgctxt "#31117"
 msgid "Show Recently added Videos"
 msgstr "Pokazuj ostatnio dodane wideo"
@@ -273,17 +265,9 @@ msgctxt "#31126"
 msgid "Play TV theme songs in video library [COLOR=grey3](XBMC/scripts/tvtunes)[/COLOR]"
 msgstr "Odtwarzaj motyw TV w bibliotece wideo (wtyczka TvTunes)"
 
-msgctxt "#31127"
-msgid "TvTunes"
-msgstr ""
-
 msgctxt "#31128"
 msgid "Lyrics"
 msgstr "Teksty piosenek"
-
-msgctxt "#31129"
-msgid "Hide Fanart in full screen visualization"
-msgstr ""
 
 msgctxt "#31132"
 msgid "Lyrics Script"
@@ -304,10 +288,6 @@ msgstr "Podmenu muzyki Ekranu głównego"
 msgctxt "#31136"
 msgid "Home Page Pictures Submenu [COLOR=grey2](enter 'plugin folder' e.g. Picasa)[/COLOR]"
 msgstr "Podmenu zdjęć Ekranu głównego"
-
-msgctxt "#31137"
-msgid "Show Search button"
-msgstr ""
 
 msgctxt "#31140"
 msgid "Music OSD"
@@ -340,46 +320,6 @@ msgstr "Linki sekcji"
 msgctxt "#31205"
 msgid "Lyrics Source"
 msgstr "Źródło tekstów piosenek"
-
-msgctxt "#31206"
-msgid "Found"
-msgstr ""
-
-msgctxt "#31207"
-msgid "Find More Items"
-msgstr ""
-
-msgctxt "#31208"
-msgid "Upcoming Episodes"
-msgstr ""
-
-msgctxt "#31240"
-msgid "Addon"
-msgstr ""
-
-msgctxt "#31241"
-msgid "Addons"
-msgstr ""
-
-msgctxt "#31250"
-msgid "Plugin"
-msgstr ""
-
-msgctxt "#31251"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#31260"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#31271"
-msgid "Apps"
-msgstr ""
-
-msgctxt "#31272"
-msgid "Emulators"
-msgstr ""
 
 msgctxt "#31300"
 msgid "Current Temp"
@@ -581,34 +521,6 @@ msgctxt "#31421"
 msgid "Select your XBMC user Profile[CR]to login and continue"
 msgstr "Wybierz profil użytkownika"
 
-msgctxt "#31800"
-msgid "Select content to search for..."
-msgstr ""
-
-msgctxt "#31801"
-msgid "Enter content search string..."
-msgstr ""
-
-msgctxt "#31802"
-msgid "Content search cancelled!"
-msgstr ""
-
-msgctxt "#31803"
-msgid "No search string provided!"
-msgstr ""
-
-msgctxt "#31804"
-msgid "Content not selected!"
-msgstr ""
-
-msgctxt "#31805"
-msgid "User request..."
-msgstr ""
-
-msgctxt "#31806"
-msgid "New search"
-msgstr ""
-
 msgctxt "#31900"
 msgid "Weather Maps"
 msgstr "Mapy pogody"
@@ -656,10 +568,6 @@ msgstr "POGODA"
 msgctxt "#31951"
 msgid "PICTURES"
 msgstr "ZDJĘCIA"
-
-msgctxt "#31952"
-msgid "LIVE TV"
-msgstr ""
 
 msgctxt "#31953"
 msgid "VIDEOS"

@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-05-08 00:55+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc4xbox/language/en/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #Misc labels
 
@@ -115,8 +115,8 @@ msgctxt "#31033"
 msgid "Info"
 msgstr ""
 
-#Extra labels
 #empty strings from id 31034 to 31039
+#Extra labels
 
 msgctxt "#31040"
 msgid "Now Playing"
@@ -162,8 +162,8 @@ msgctxt "#31051"
 msgid "Sort: Descending"
 msgstr ""
 
-#Playlist Editor labels
 #empty strings from id 31052 to 31054
+#Playlist Editor labels
 
 msgctxt "#31055"
 msgid "Open playlist"
@@ -193,8 +193,8 @@ msgctxt "#31061"
 msgid "Current Selected"
 msgstr ""
 
-#Skin Settings labels
 #empty strings from id 31062 to 31100
+#Skin Settings labels
 
 msgctxt "#31101"
 msgid "Home screen options"
@@ -344,8 +344,8 @@ msgctxt "#31141"
 msgid "Video OSD"
 msgstr ""
 
-#Script labels
 #empty strings from id 31142 to 31199
+#Script labels
 
 msgctxt "#31200"
 msgid "Shortcuts"
@@ -383,8 +383,8 @@ msgctxt "#31208"
 msgid "Upcoming Episodes"
 msgstr ""
 
-#Xbox labels
 #empty strings from id 31209 to 31239
+#Xbox labels
 
 msgctxt "#31240"
 msgid "Addon"
@@ -420,8 +420,8 @@ msgctxt "#31272"
 msgid "Emulators"
 msgstr ""
 
-#Extra labels
 #empty strings from id 31273 to 31299
+#Extra labels
 
 msgctxt "#31300"
 msgid "Current Temp"
@@ -549,8 +549,8 @@ msgctxt "#31331"
 msgid "Album Details"
 msgstr ""
 
-#Video and Music OSD Labels
 #empty strings from id 31332 to 31350
+#Video and Music OSD Labels
 
 msgctxt "#31351"
 msgid "Pause"
@@ -590,8 +590,8 @@ msgctxt "#31392"
 msgid "Arial based"
 msgstr ""
 
-#Description Labels
 #empty strings from id 31393 to 31399
+#Description Labels
 
 msgctxt "#31400"
 msgid "[B]CONFIGURE APPEARANCE SETTINGS[/B][CR][CR]Change the skin · Set language and region · Change file listing options[CR]Set up a screensaver"
@@ -635,8 +635,8 @@ msgctxt "#31421"
 msgid "Select your XBMC user Profile[CR]to login and continue"
 msgstr ""
 
-#Content search script
 #empty strings from id 31422 to 31799
+#Content search script
 
 msgctxt "#31800"
 msgid "Select content to search for..."
@@ -666,8 +666,8 @@ msgctxt "#31806"
 msgid "New search"
 msgstr ""
 
-#Weather plugin
 #empty strings from id 31807 to 31899
+#Weather plugin
 
 msgctxt "#31900"
 msgid "Weather Maps"

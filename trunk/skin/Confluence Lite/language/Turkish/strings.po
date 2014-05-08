@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-05-08 00:55+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/xbmc4xbox/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: tr\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 msgctxt "#31000"
 msgid "Change Your"
@@ -48,10 +48,6 @@ msgstr "Eklentiler"
 msgctxt "#31008"
 msgid "Fullscreen"
 msgstr "Tam ekran"
-
-msgctxt "#31009"
-msgid "Total Duration"
-msgstr ""
 
 msgctxt "#31020"
 msgid "Recently Added"
@@ -233,10 +229,6 @@ msgctxt "#31115"
 msgid "Customizer"
 msgstr "Özelleştir"
 
-msgctxt "#31116"
-msgid "Show Recently added Albums"
-msgstr ""
-
 msgctxt "#31117"
 msgid "Show Recently added Videos"
 msgstr "Son Eklenen Videoları Göster"
@@ -281,10 +273,6 @@ msgctxt "#31128"
 msgid "Lyrics"
 msgstr "Şarkı Sözleri"
 
-msgctxt "#31129"
-msgid "Hide Fanart in full screen visualization"
-msgstr ""
-
 msgctxt "#31132"
 msgid "Lyrics Script"
 msgstr "Şarkı Sözleri Eklentisi"
@@ -304,10 +292,6 @@ msgstr "Ana Sayfa Müzik Alt Menüsü"
 msgctxt "#31136"
 msgid "Home Page Pictures Submenu [COLOR=grey2](enter 'plugin folder' e.g. Picasa)[/COLOR]"
 msgstr "Ana Sayfa Resimler Alt Menüsü"
-
-msgctxt "#31137"
-msgid "Show Search button"
-msgstr ""
 
 msgctxt "#31140"
 msgid "Music OSD"
@@ -340,46 +324,6 @@ msgstr "Bölüm Bağlantıları"
 msgctxt "#31205"
 msgid "Lyrics Source"
 msgstr "Şarkı Sözleri Kaynağı"
-
-msgctxt "#31206"
-msgid "Found"
-msgstr ""
-
-msgctxt "#31207"
-msgid "Find More Items"
-msgstr ""
-
-msgctxt "#31208"
-msgid "Upcoming Episodes"
-msgstr ""
-
-msgctxt "#31240"
-msgid "Addon"
-msgstr ""
-
-msgctxt "#31241"
-msgid "Addons"
-msgstr ""
-
-msgctxt "#31250"
-msgid "Plugin"
-msgstr ""
-
-msgctxt "#31251"
-msgid "Plugins"
-msgstr ""
-
-msgctxt "#31260"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#31271"
-msgid "Apps"
-msgstr ""
-
-msgctxt "#31272"
-msgid "Emulators"
-msgstr ""
 
 msgctxt "#31300"
 msgid "Current Temp"
@@ -561,10 +505,6 @@ msgctxt "#31404"
 msgid "[B]CONFIGURE WEATHER SETTINGS[/B][CR][CR]Set three cities to collect weather information"
 msgstr "[B]HAVA DURUMU AYARLARINI YAPILANDIR[/B][CR][CR]Hava Durumu bilgilerini almak için üç şehir seçin"
 
-msgctxt "#31405"
-msgid "[B]CONFIGURE NETWORK SETTINGS[/B][CR][CR]Setup control of XBMC via UPnP and HTTP · Configure file sharing[CR]Enable Zeroconf · Configure AirPlay"
-msgstr ""
-
 msgctxt "#31406"
 msgid "[B]CONFIGURE SYSTEM SETTINGS[/B][CR][CR]Setup and calibrate displays · Configure audio output · Setup remote controls[CR]Set power saving options · Enable debugging · Setup master lock"
 msgstr "[B]SİSTEM AYARLARINI YAPILANDIR[/B][CR][CR]Görünüm ayarları · Ses çıkış ayarlarını yapılandır · Uzaktan kumandaları ayarla[CR]Güç tasarrufu seçeneklerini ayarla · Hata ayıklamayı etkinleştir · Sistem kilit ayarları"
@@ -580,34 +520,6 @@ msgstr "[B]EKLENTİLERİ YAPILANDIR[/B][CR][CR]Yüklenmiş eklentileri yönet ·
 msgctxt "#31421"
 msgid "Select your XBMC user Profile[CR]to login and continue"
 msgstr "Oturum açıp devam etmek için[CR]XBMC kullanıcı profilinizi seçin"
-
-msgctxt "#31800"
-msgid "Select content to search for..."
-msgstr ""
-
-msgctxt "#31801"
-msgid "Enter content search string..."
-msgstr ""
-
-msgctxt "#31802"
-msgid "Content search cancelled!"
-msgstr ""
-
-msgctxt "#31803"
-msgid "No search string provided!"
-msgstr ""
-
-msgctxt "#31804"
-msgid "Content not selected!"
-msgstr ""
-
-msgctxt "#31805"
-msgid "User request..."
-msgstr ""
-
-msgctxt "#31806"
-msgid "New search"
-msgstr ""
 
 msgctxt "#31900"
 msgid "Weather Maps"
@@ -656,10 +568,6 @@ msgstr "HAVA DURUMU"
 msgctxt "#31951"
 msgid "PICTURES"
 msgstr "RESIMLER"
-
-msgctxt "#31952"
-msgid "LIVE TV"
-msgstr ""
 
 msgctxt "#31953"
 msgid "VIDEOS"

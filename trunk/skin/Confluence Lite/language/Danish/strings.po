@@ -1,17 +1,17 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC-Addons\n"
-"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
-"POT-Creation-Date: 2014-05-08 00:55+0000\n"
+"Project-Id-Version: xbmc4xbox\n"
+"Report-Msgid-Bugs-To: buzz@exotica.org.uk\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: Danish (http://www.transifex.com/projects/p/xbmc4xbox/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: da\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#31000"
 msgid "Change Your"
@@ -29,29 +29,9 @@ msgctxt "#31003"
 msgid "Power Options"
 msgstr "Strømstyring"
 
-msgctxt "#31004"
-msgid "Working..."
-msgstr ""
-
-msgctxt "#31005"
-msgid "Hide Information"
-msgstr ""
-
-msgctxt "#31006"
-msgid "View Options"
-msgstr ""
-
 msgctxt "#31007"
 msgid "Plugins"
 msgstr "Plugins"
-
-msgctxt "#31008"
-msgid "Fullscreen"
-msgstr ""
-
-msgctxt "#31009"
-msgid "Total Duration"
-msgstr ""
 
 msgctxt "#31020"
 msgid "Recently Added"
@@ -105,10 +85,6 @@ msgctxt "#31032"
 msgid "Image Wrap"
 msgstr "Billedevæg"
 
-msgctxt "#31033"
-msgid "Info"
-msgstr ""
-
 msgctxt "#31040"
 msgid "Now Playing"
 msgstr "Spiller nu"
@@ -141,14 +117,6 @@ msgctxt "#31049"
 msgid "End Time"
 msgstr "Sluttid"
 
-msgctxt "#31050"
-msgid "Sort: Ascending"
-msgstr ""
-
-msgctxt "#31051"
-msgid "Sort: Descending"
-msgstr ""
-
 msgctxt "#31055"
 msgid "Open playlist"
 msgstr "Åbn afspilningsliste"
@@ -173,10 +141,6 @@ msgctxt "#31060"
 msgid "This file is stacked, select the part you want to play from."
 msgstr "Denne fil er stakket. Vælg den del du vil afspille fra."
 
-msgctxt "#31061"
-msgid "Current Selected"
-msgstr ""
-
 msgctxt "#31101"
 msgid "Home screen options"
 msgstr "Indstillinger til hovedsiden"
@@ -189,17 +153,9 @@ msgctxt "#31103"
 msgid "Show \"Paused\" in picture slide show"
 msgstr "Vis \"PAUSE\" i  billedserier"
 
-msgctxt "#31104"
-msgid "Play Trailers in a window [COLOR=grey3](Video Information Dialog Only)[/COLOR]"
-msgstr ""
-
 msgctxt "#31106"
 msgid "Miscellaneous options"
 msgstr "Diverse indstillinger"
-
-msgctxt "#31107"
-msgid "Hide Flagging read from video filenames [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]"
-msgstr ""
 
 msgctxt "#31108"
 msgid "Hide Main Menu Buttons"
@@ -233,10 +189,6 @@ msgctxt "#31115"
 msgid "Customizer"
 msgstr "Tilpasningsprogram"
 
-msgctxt "#31116"
-msgid "Show Recently added Albums"
-msgstr ""
-
 msgctxt "#31117"
 msgid "Show Recently added Videos"
 msgstr "Vis nyligt tilføjne videoer"
@@ -244,10 +196,6 @@ msgstr "Vis nyligt tilføjne videoer"
 msgctxt "#31118"
 msgid "Home Page Programs Submenu [COLOR=grey2](enter 'plugin folder' e.g. SVN Repo Installer)[/COLOR]"
 msgstr "Undermenu til hovedsiden"
-
-msgctxt "#31119"
-msgid "Hide Background Fanart"
-msgstr ""
 
 msgctxt "#31120"
 msgid "BUTTON LABEL"
@@ -269,53 +217,9 @@ msgctxt "#31125"
 msgid "Show Background \"Now Playing\" Visualization"
 msgstr "Vis \"Spiller nu\" i baggrunden for visualisering"
 
-msgctxt "#31126"
-msgid "Play TV theme songs in video library [COLOR=grey3](XBMC/scripts/tvtunes)[/COLOR]"
-msgstr ""
-
-msgctxt "#31127"
-msgid "TvTunes"
-msgstr ""
-
 msgctxt "#31128"
 msgid "Lyrics"
 msgstr "XBMC Sangtekster"
-
-msgctxt "#31129"
-msgid "Hide Fanart in full screen visualization"
-msgstr ""
-
-msgctxt "#31132"
-msgid "Lyrics Script"
-msgstr ""
-
-msgctxt "#31133"
-msgid "Subtitles Script"
-msgstr ""
-
-msgctxt "#31134"
-msgid "Home Page Videos Submenu [COLOR=grey2](enter 'plugin folder' e.g. YouTube)[/COLOR]"
-msgstr ""
-
-msgctxt "#31135"
-msgid "Home Page Music Submenu [COLOR=grey2](enter 'plugin folder' e.g. GrooveShark)[/COLOR]"
-msgstr ""
-
-msgctxt "#31136"
-msgid "Home Page Pictures Submenu [COLOR=grey2](enter 'plugin folder' e.g. Picasa)[/COLOR]"
-msgstr ""
-
-msgctxt "#31137"
-msgid "Show Search button"
-msgstr ""
-
-msgctxt "#31140"
-msgid "Music OSD"
-msgstr ""
-
-msgctxt "#31141"
-msgid "Video OSD"
-msgstr ""
 
 msgctxt "#31200"
 msgid "Shortcuts"
@@ -341,26 +245,6 @@ msgctxt "#31205"
 msgid "Lyrics Source"
 msgstr "Sangtekstkilde"
 
-msgctxt "#31206"
-msgid "Found"
-msgstr ""
-
-msgctxt "#31207"
-msgid "Find More Items"
-msgstr ""
-
-msgctxt "#31208"
-msgid "Upcoming Episodes"
-msgstr ""
-
-msgctxt "#31240"
-msgid "Addon"
-msgstr ""
-
-msgctxt "#31241"
-msgid "Addons"
-msgstr ""
-
 msgctxt "#31250"
 msgid "Plugin"
 msgstr "Radar og prognose"
@@ -368,18 +252,6 @@ msgstr "Radar og prognose"
 msgctxt "#31251"
 msgid "Plugins"
 msgstr "Prognose"
-
-msgctxt "#31260"
-msgid "Configure"
-msgstr ""
-
-msgctxt "#31271"
-msgid "Apps"
-msgstr ""
-
-msgctxt "#31272"
-msgid "Emulators"
-msgstr ""
 
 msgctxt "#31300"
 msgid "Current Temp"
@@ -392,10 +264,6 @@ msgstr "Sidst opdateret"
 msgctxt "#31302"
 msgid "Menu"
 msgstr "Menu"
-
-msgctxt "#31303"
-msgid "Data provider"
-msgstr ""
 
 msgctxt "#31304"
 msgid "Picture"
@@ -497,50 +365,6 @@ msgctxt "#31329"
 msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
 msgstr "[B]TIMER STARTET![/B] [COLOR=grey2] - SYSTEMET LUKKER NED OM[/COLOR]"
 
-msgctxt "#31330"
-msgid "Click button to play[CR][CR]Movie trailer"
-msgstr ""
-
-msgctxt "#31331"
-msgid "Album Details"
-msgstr ""
-
-msgctxt "#31351"
-msgid "Pause"
-msgstr ""
-
-msgctxt "#31352"
-msgid "Stop"
-msgstr ""
-
-msgctxt "#31353"
-msgid "Fast Forward"
-msgstr ""
-
-msgctxt "#31354"
-msgid "Rewind"
-msgstr ""
-
-msgctxt "#31355"
-msgid "Movie menu"
-msgstr ""
-
-msgctxt "#31356"
-msgid "Download Subtitles"
-msgstr ""
-
-msgctxt "#31390"
-msgid "Skin default"
-msgstr ""
-
-msgctxt "#31391"
-msgid "Skin default with no Caps"
-msgstr ""
-
-msgctxt "#31392"
-msgid "Arial based"
-msgstr ""
-
 msgctxt "#31400"
 msgid "[B]CONFIGURE APPEARANCE SETTINGS[/B][CR][CR]Change the skin · Set language and region · Change file listing options[CR]Set up a screensaver"
 msgstr "[B]SKIFT INDSTILLINGER TIL UDSEENDE[/B][CR][CR]Skift skin · Vælg sprog og region · Skift indstillinger til fil-listen[CR]Indstil pauseskærm"
@@ -573,81 +397,9 @@ msgctxt "#31407"
 msgid "[B]CONFIGURE SKIN SETTINGS[/B][CR][CR]Setup the Confluence skin · Add and remove home menu items[CR]Change skin backgrounds"
 msgstr "[B]SKIFT SKIN-INDSTILLINGER[/B][CR][CR]Indstil Confluence · Konfigurer hovedsiden[CR]Skift baggrunde i skinnet"
 
-msgctxt "#31408"
-msgid "[B]CONFIGURE PROGRAM SETTINGS[/B][CR][CR]Apply Flicker Filter Settings in Games · Setup Video mode Switching · Choose your Trainers folder · Set a Custom Dashboard path"
-msgstr ""
-
 msgctxt "#31421"
 msgid "Select your XBMC user Profile[CR]to login and continue"
 msgstr "Vælg din XBMC-brugerprofil[CR]for at logge ind og fortsætte"
-
-msgctxt "#31800"
-msgid "Select content to search for..."
-msgstr ""
-
-msgctxt "#31801"
-msgid "Enter content search string..."
-msgstr ""
-
-msgctxt "#31802"
-msgid "Content search cancelled!"
-msgstr ""
-
-msgctxt "#31803"
-msgid "No search string provided!"
-msgstr ""
-
-msgctxt "#31804"
-msgid "Content not selected!"
-msgstr ""
-
-msgctxt "#31805"
-msgid "User request..."
-msgstr ""
-
-msgctxt "#31806"
-msgid "New search"
-msgstr ""
-
-msgctxt "#31900"
-msgid "Weather Maps"
-msgstr ""
-
-msgctxt "#31901"
-msgid "36 Hour Forecast"
-msgstr ""
-
-msgctxt "#31902"
-msgid "Hourly Forecast"
-msgstr ""
-
-msgctxt "#31903"
-msgid "Weekend Forecast"
-msgstr ""
-
-msgctxt "#31904"
-msgid "10 Day Forecast"
-msgstr ""
-
-msgctxt "#31905"
-msgid "Forecast"
-msgstr ""
-
-msgctxt "#31906"
-msgid "Maps & Video"
-msgstr ""
-
-msgctxt "#31907"
-msgid "Video Forecast [COLOR=grey2](Fullscreen Playback)[/COLOR]"
-msgstr ""
-
-msgctxt "#31908"
-msgid "Chance of Precipitation"
-msgstr ""
-
-msgctxt "#31909"
-msgid "Fetching forecast info..."
-msgstr ""
 
 msgctxt "#31950"
 msgid "WEATHER"
@@ -656,10 +408,6 @@ msgstr "VEJRET"
 msgctxt "#31951"
 msgid "PICTURES"
 msgstr "BILLEDER"
-
-msgctxt "#31952"
-msgid "LIVE TV"
-msgstr ""
 
 msgctxt "#31953"
 msgid "VIDEOS"
