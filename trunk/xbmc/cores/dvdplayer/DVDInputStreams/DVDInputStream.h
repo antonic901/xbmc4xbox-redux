@@ -140,8 +140,7 @@ public:
   virtual bool GetCacheStatus(XFILE::SCacheStatus *status) { return false; }
 
   bool IsStreamType(DVDStreamType type) const { return m_streamType == type; }
-  virtual bool IsEOF() = 0;  
-  virtual int GetCurrentGroupId() { return 0; }
+  virtual bool IsEOF() = 0;
   virtual BitstreamStats GetBitstreamStats() const { return m_stats; }
 
   void SetFileItem(const CFileItem& item);

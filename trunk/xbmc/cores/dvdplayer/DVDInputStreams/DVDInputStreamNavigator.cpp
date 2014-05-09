@@ -64,7 +64,6 @@ CDVDInputStreamNavigator::~CDVDInputStreamNavigator()
 bool CDVDInputStreamNavigator::Open(const char* strFile, const std::string& content)
 {
   char* strDVDFile;
-  m_icurrentGroupId = 0;
   if (!CDVDInputStream::Open(strFile, "video/x-dvd-mpeg")) 
     return false;
   
@@ -479,7 +478,6 @@ int CDVDInputStreamNavigator::ProcessBlock(BYTE* dest_buffer, int* read)
         m_iCellStart = cell_change_event->cell_start; // store cell time as we need that for time later
         m_iTime      = (int) (m_iCellStart / 90);
         m_iTotalTime = (int) (cell_change_event->pgc_length / 90);
-        m_icurrentGroupId = cell_change_event->pgN * 1000 + cell_change_event->cellN;
         
         iNavresult = m_pDVDPlayer->OnDVDNavResult(buf, DVDNAV_CELL_CHANGE);
       }

@@ -484,8 +484,6 @@ void CDVDPlayerVideo::Process()
           {
             sPostProcessType.clear();
 
-            picture.iGroupId = pPacket->iGroupId;
-
             if(picture.iDuration < 1.0 / DVD_TIME_BASE)
               picture.iDuration = frametime;
 
@@ -677,7 +675,6 @@ void CDVDPlayerVideo::ProcessVideoUserData(DVDVideoUserData* pVideoUserData, dou
         CDVDOverlay* overlay;
         while((overlay = m_pOverlayCodecCC->GetOverlay()) != NULL)
         {
-          overlay->iGroupId = 0;
           overlay->iPTSStartTime += pts;
           if(overlay->iPTSStopTime != 0.0)
             overlay->iPTSStopTime += pts;
@@ -794,9 +791,6 @@ void CDVDPlayerVideo::ProcessOverlays(DVDVideoPicture* pSource, YV12Image* pDest
   {
     CDVDOverlay* pOverlay = *it++;
     if(!pOverlay->bForced && !m_bRenderSubs)
-      continue;
-
-    if(pOverlay->iGroupId != pSource->iGroupId)
       continue;
 
     double pts2 = pOverlay->bForced ? pts : pts - m_iSubtitleDelay;

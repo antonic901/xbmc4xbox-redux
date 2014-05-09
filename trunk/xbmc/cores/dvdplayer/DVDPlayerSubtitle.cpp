@@ -75,7 +75,6 @@ void CDVDPlayerSubtitle::SendMessage(CDVDMsg* pMsg)
 
         while((overlay = m_pOverlayCodec->GetOverlay()) != NULL)
         {
-          overlay->iGroupId = pPacket->iGroupId;
           m_pOverlayContainer->Add(overlay);
           overlay->Release();
         }
@@ -87,7 +86,6 @@ void CDVDPlayerSubtitle::SendMessage(CDVDMsg* pMsg)
       if (pSPUInfo)
       {
         CLog::Log(LOGDEBUG, "CDVDPlayer::ProcessSubData: Got complete SPU packet");
-        pSPUInfo->iGroupId = pPacket->iGroupId;
         m_pOverlayContainer->Add(pSPUInfo);
         pSPUInfo->Release();
       }

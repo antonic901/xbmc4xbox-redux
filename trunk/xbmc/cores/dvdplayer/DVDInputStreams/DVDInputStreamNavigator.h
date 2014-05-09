@@ -123,7 +123,6 @@ public:
   float GetVideoAspectRatio();
 
   bool SeekTime(int iTimeInMsec); //seek within current pg(c)
-  virtual int GetCurrentGroupId() { return m_icurrentGroupId; }
 
   double GetTimeStampCorrection() { return (double)(m_iVobUnitCorrection * 1000) / 90; }
 protected:
@@ -150,7 +149,6 @@ protected:
   bool m_bCheckButtons;
   bool m_bEOF;
 
-  unsigned int m_icurrentGroupId;
   int m_holdmode;
 
   int m_iTotalTime;

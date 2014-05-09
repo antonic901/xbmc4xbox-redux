@@ -26,7 +26,6 @@ public:
     replace = false;
     
     m_references = 1;
-    iGroupId = 0;
   }
   
   virtual ~CDVDOverlay()
@@ -59,7 +58,6 @@ public:
   double iPTSStopTime;
   bool bForced; // display, no matter what
   bool replace; // replace by next nomatter what stoptime it has
-  int iGroupId;
   
 protected:
   DVDOverlayType m_type;
