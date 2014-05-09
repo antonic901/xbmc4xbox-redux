@@ -3579,9 +3579,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						Name="Audio"
 						Filter="">
 						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibMad.h">
-						</File>
-						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodec.h">
 						</File>
 						<File
@@ -3589,12 +3586,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecFFmpeg.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.h">
 						</File>
 						<File
 							RelativePath=".\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLPcm.cpp">

@@ -108,8 +108,6 @@
 
 #endif
 
-#undef USE_LIBMAD
-
 #define XBMC_MAX_PATH 1024 // normal max path is 260, but smb shares and the like can be longer
 
 #define DEBUG_MOUSE

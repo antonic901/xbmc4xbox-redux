@@ -30,9 +30,6 @@
 
 #include "Video/DVDVideoCodecFFmpeg.h"
 #include "Audio/DVDAudioCodecFFmpeg.h"
-#ifdef USE_LIBMAD
-#include "Audio/DVDAudioCodecLibMad.h"
-#endif
 #include "Audio/DVDAudioCodecPcm.h"
 #include "Audio/DVDAudioCodecLPcm.h"
 #include "Audio/DVDAudioCodecPassthroughFFmpeg.h"
@@ -142,15 +139,6 @@ CDVDAudioCodec* CDVDFactoryCodec::CreateAudioCodec( CDVDStreamInfo &hint, bool p
 
   switch (hint.codec)
   {
-#ifdef USE_LIBMAD
-  case AV_CODEC_ID_MP2:
-  case AV_CODEC_ID_MP3:
-    {
-      pCodec = OpenCodec( new CDVDAudioCodecLibMad(), hint, options );
-      if( pCodec ) return pCodec;
-      break;
-    }
-#endif
   case AV_CODEC_ID_PCM_S32LE:
   case AV_CODEC_ID_PCM_S32BE:
   case AV_CODEC_ID_PCM_U32LE:
