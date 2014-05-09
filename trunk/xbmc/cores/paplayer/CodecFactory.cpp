@@ -25,6 +25,7 @@
 #include "MP3codec.h"
 #include "CDDAcodec.h"
 #include "OGGcodec.h"
+#include "FLACcodec.h"
 #include "WAVcodec.h"
 #include "ModuleCodec.h"
 #include "NSFCodec.h"
@@ -55,7 +56,7 @@ ICodec* CodecFactory::CreateCodec(const CStdString& strFileType)
   else if (strFileType.Equals("mka"))
     return new DVDPlayerCodec();
   else if (strFileType.Equals("flac"))
-    return new DVDPlayerCodec();
+    return new FLACCodec();
   else if (strFileType.Equals("wav"))
     return new DVDPlayerCodec();
   else if (strFileType.Equals("dts") || strFileType.Equals("ac3") ||
@@ -111,12 +112,9 @@ ICodec* CodecFactory::CreateCodecDemux(const CStdString& strFile, const CStdStri
     return new DVDPlayerCodec();
   else if( strContent.Equals("application/ogg") || strContent.Equals("audio/ogg"))
     return CreateOGGCodec(strFile,filecache);
-  else if (strContent.Equals("audio/flac") || strContent.Equals("audio/x-flac") || strContent.Equals("application/x-flac"))
-  {
-    DVDPlayerCodec *dvdcodec = new DVDPlayerCodec();
-    dvdcodec->SetContentType(strContent);
-    return dvdcodec;
-  }
+   else if (strContent.Equals("audio/flac") || strContent.Equals("audio/x-flac") || strContent.Equals("application/x-flac"))
+     return new FLACCodec();
+
   if (urlFile.GetProtocol() == "lastfm" || urlFile.GetProtocol() == "shout")
   {
     return new MP3Codec(); // if we got this far with internet radio - content-type was wrong. gamble on mp3.
