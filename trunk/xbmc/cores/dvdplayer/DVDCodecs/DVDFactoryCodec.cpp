@@ -29,6 +29,7 @@
 #include "Overlay/DVDOverlayCodec.h"
 
 #include "Video/DVDVideoCodecFFmpeg.h"
+#include "Video/DVDVideoCodecLibMpeg2.h"
 #include "Audio/DVDAudioCodecFFmpeg.h"
 #include "Audio/DVDAudioCodecPcm.h"
 #include "Audio/DVDAudioCodecLPcm.h"
@@ -111,6 +112,12 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec( CDVDStreamInfo &hint )
 {
   CDVDVideoCodec* pCodec = NULL;
   CDVDCodecOptions options;
+
+  // dvd's have weird still-frames in it, which is not fully supported in ffmpeg
+  if(hint.stills && (hint.codec == AV_CODEC_ID_MPEG2VIDEO || hint.codec == AV_CODEC_ID_MPEG1VIDEO))
+  {
+    if( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
+  }
 
   // try to decide if we want to try halfres decoding - note some codecs such as vp8 may return bad data for fpsrate (1000)/fpsscale (1),
   // so check for sensible values, as well as for vp8 codec as it doesn't support the lowres flag.
