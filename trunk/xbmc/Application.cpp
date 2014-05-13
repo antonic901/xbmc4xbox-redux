@@ -1068,11 +1068,10 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
   g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
 
-  CStdString strLanguagePath;
-  strLanguagePath.Format("special://xbmc/language/%s", strLanguage.c_str());
+  CStdString strLanguagePath = "special://xbmc/language/";
 
-  CLog::Log(LOGINFO, "load language file from path: %s", strLanguagePath.c_str());
-  if (!g_localizeStrings.Load(strLanguagePath))
+  CLog::Log(LOGINFO, "load %s language file, from path: %s", strLanguage.c_str(), strLanguagePath.c_str());
+  if (!g_localizeStrings.Load(strLanguagePath, strLanguage))
     FatalErrorHandler(true, false, true);
 
   CLog::Log(LOGINFO, "load keymapping");
@@ -1906,14 +1905,11 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   g_fontManager.LoadFonts(g_guiSettings.GetString("lookandfeel.font"));
 
   // load in the skin strings
-  CStdString skinPath, skinEnglishPath;
-  URIUtils::AddFileToFolder(strSkinPath, "language", skinPath);
-  URIUtils::AddFileToFolder(skinPath, g_guiSettings.GetString("locale.language"), skinPath);
+  CStdString langPath;
+  URIUtils::AddFileToFolder(strSkinPath, "language", langPath);
+  URIUtils::AddSlashAtEnd(langPath);
 
-  URIUtils::AddFileToFolder(strSkinPath, "language", skinEnglishPath);
-  URIUtils::AddFileToFolder(skinEnglishPath, "English", skinEnglishPath);
-
-  g_localizeStrings.LoadSkinStrings(skinPath, skinEnglishPath);
+  g_localizeStrings.LoadSkinStrings(langPath, g_guiSettings.GetString("locale.language"));
 
   LARGE_INTEGER start;
   QueryPerformanceCounter(&start);

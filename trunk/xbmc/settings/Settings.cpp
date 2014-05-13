@@ -1215,11 +1215,8 @@ bool CSettings::LoadProfile(unsigned int index)
     g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
 #endif
 
-    CStdString strLanguagePath;
-    strLanguagePath.Format("special://xbmc/language/%s", strLanguage.c_str());
-
     CButtonTranslator::GetInstance().Load();
-    g_localizeStrings.Load(strLanguagePath);
+    g_localizeStrings.Load("special://xbmc/language/", strLanguage);
 
     g_infoManager.ResetCache();
     g_infoManager.ResetLibraryBools();

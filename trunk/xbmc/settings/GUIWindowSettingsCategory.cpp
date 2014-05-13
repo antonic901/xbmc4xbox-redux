@@ -220,9 +220,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
         CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
         g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
 
-        CStdString strLanguagePath;
-        strLanguagePath.Format("special://xbmc/language/%s", m_strNewLanguage.c_str());
-        g_localizeStrings.Load(strLanguagePath);
+        g_localizeStrings.Load("special://xbmc/language/", m_strNewLanguage);
 
         // also tell our weather to reload, as this must be localized
         g_weatherManager.Refresh();
