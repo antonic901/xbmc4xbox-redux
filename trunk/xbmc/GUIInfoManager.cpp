@@ -1013,7 +1013,6 @@ int CGUIInfoManager::TranslateMusicPlayerString(const CStdString &info) const
   else if (info.Equals("hasnext")) return MUSICPLAYER_HASNEXT;
   else if (info.Equals("playcount")) return MUSICPLAYER_PLAYCOUNT;
   else if (info.Equals("lastplayed")) return MUSICPLAYER_LASTPLAYED;
-  else if (info.Equals("filename")) return MUSICPLAYER_FILENAME;
   return 0;
 }
 
@@ -1173,7 +1172,6 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
   case MUSICPLAYER_LYRICS:
   case MUSICPLAYER_PLAYCOUNT:
   case MUSICPLAYER_LASTPLAYED:
-  case MUSICPLAYER_FILENAME:
     strLabel = GetMusicLabel(info);
   break;
   case VIDEOPLAYER_TITLE:
@@ -2727,7 +2725,7 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
         return ((CGUITextBox *)control)->GetLabel(info.m_info);
     }
   }
-  else if (info.m_info >= MUSICPLAYER_TITLE && info.m_info <= MUSICPLAYER_FILENAME)
+  else if (info.m_info >= MUSICPLAYER_TITLE && info.m_info <= MUSICPLAYER_ALBUM_ARTIST)
     return GetMusicPlaylistInfo(info);
   else if (info.m_info == CONTAINER_PROPERTY)
   {
@@ -3181,9 +3179,6 @@ CStdString CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item)
   {
   case MUSICPLAYER_TITLE:
     if (tag.GetTitle().size()) { return tag.GetTitle(); }
-    break;
-  case MUSICPLAYER_FILENAME:
-    if (tag.GetURL().size()) { return tag.GetURL(); }
     break;
   case MUSICPLAYER_LYRICS:
     if (tag.GetLyrics().size()) { return tag.GetLyrics(); }
