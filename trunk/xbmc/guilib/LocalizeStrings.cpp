@@ -65,12 +65,12 @@ bool CLocalizeStrings::LoadSkinStrings(const CStdString& path, const CStdString&
   CStdString encoding, error;
   if (!LoadStr2Mem(path, encoding, error))
   {
-    if (path == fallbackPath) // no fallback, nothing to do
+    if (path.Equals(fallbackPath)) // no fallback, nothing to do
       return false;
   }
 
   // load the fallback
-  if (path != fallbackPath)
+  if (!path.Equals(fallbackPath))
     LoadStr2Mem(fallbackPath, encoding, error);
 
   return true;
@@ -287,12 +287,12 @@ uint32_t CLocalizeStrings::LoadBlock(const CStdString &id, const CStdString &pat
   bool success = LoadStr2Mem(path, encoding, error, offset);
   if (!success)
   {
-    if (path == fallbackPath) // no fallback, nothing to do
+    if (path.Equals(fallbackPath)) // no fallback, nothing to do
       return 0;
   }
 
   // load the fallback
-  if (path != fallbackPath)
+  if (!path.Equals(fallbackPath))
     success |= LoadStr2Mem(fallbackPath, encoding, error, offset);
 
   return success ? offset : 0;
