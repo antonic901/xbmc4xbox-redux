@@ -61,6 +61,7 @@ public:
   const CStdString& GetComment() const;
   const CStdString& GetLyrics() const;
   char  GetRating() const;
+  int  GetListeners() const;
   int  GetPlayCount() const;
 
   void SetURL(const CStdString& strURL);
@@ -87,6 +88,7 @@ public:
   void SetComment(const CStdString& comment);
   void SetLyrics(const CStdString& lyrics);
   void SetRating(char rating);
+  void SetListeners(int listeners);
   void SetPlayCount(int playcount);
 
   /*! \brief Append a unique artist to the artist list
@@ -136,6 +138,7 @@ protected:
   long m_iDbId;
   bool m_bLoaded;
   char m_rating;
+  int m_listeners;
   int m_iTimesPlayed;
   SYSTEMTIME m_dwReleaseDate;
 };

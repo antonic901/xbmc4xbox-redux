@@ -61,6 +61,7 @@ const CMusicInfoTag& CMusicInfoTag::operator =(const CMusicInfoTag& tag)
   m_iTrack = tag.m_iTrack;
   m_bLoaded = tag.m_bLoaded;
   m_rating = tag.m_rating;
+  m_listeners = tag.m_listeners;
   m_iTimesPlayed = tag.m_iTimesPlayed;
   m_iDbId = tag.m_iDbId;
   memcpy(&m_dwReleaseDate, &tag.m_dwReleaseDate, sizeof(m_dwReleaseDate) );
@@ -172,6 +173,11 @@ int CMusicInfoTag::GetPlayCount() const
   return m_iTimesPlayed;
 }
 
+int CMusicInfoTag::GetListeners() const
+{
+ return m_listeners;
+}
+
 void CMusicInfoTag::SetURL(const CStdString& strURL)
 {
   m_strURL = strURL;
@@ -256,6 +262,11 @@ void CMusicInfoTag::SetRating(char rating)
 void CMusicInfoTag::SetPlayCount(int playcount)
 {
   m_iTimesPlayed = playcount;
+}
+
+void CMusicInfoTag::SetListeners(int listeners)
+{
+ m_listeners = listeners;
 }
 
 void CMusicInfoTag::SetLoaded(bool bOnOff)

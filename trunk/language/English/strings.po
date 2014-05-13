@@ -7386,6 +7386,14 @@ msgctxt "#20451"
 msgid "Countries"
 msgstr ""
 
+msgctxt "#20454"
+msgid "Listener"
+msgstr ""
+
+msgctxt "#20455"
+msgid "Listeners"
+msgstr ""
+
 #empty strings from id 20452 to 20455
 
 msgctxt "#20456"
