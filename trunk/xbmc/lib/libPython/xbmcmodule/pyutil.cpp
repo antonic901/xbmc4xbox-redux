@@ -143,15 +143,16 @@ namespace PYXBMC
 
   long PyXBMCLongAsStringOrLong(PyObject *value)
   {
-    if (PyLong_Check(value))
+    if (PyString_Check(value) || PyUnicode_Check(value))
     {
-      return PyLong_AsLong(value);
+      const char *s;
+      if ((s = PyString_AsString(value)) != NULL)
+        return atol(s);
+      else
+        return 0;
     }
     else
-    {
-      const char *s = PyString_AsString(value);
-      return atol(s);
-    }
+      return PyLong_AsLong(value);
   }
 
 }
