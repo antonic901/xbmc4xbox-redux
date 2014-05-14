@@ -43,6 +43,14 @@ namespace PYXBMC
 {
   int PyXBMCGetUnicodeString(string& buf, PyObject* pObject, int pos)
   {
+    // It's okay for a string to be "None". In this case the buf returned
+    // will be the emptyString.
+    if (pObject == Py_None)
+    {
+      buf = "";
+      return 1;
+    }
+
     // TODO: UTF-8: Does python use UTF-16?
     //              Do we need to convert from the string charset to UTF-8
     //              for non-unicode data?
@@ -60,7 +68,15 @@ namespace PYXBMC
       buf = utf8String;
       return 1;
     }
-    
+
+    PyObject* pyStrCast = PyObject_Str(pObject);
+    if (pyStrCast)
+    {
+       int ret = PyXBMCGetUnicodeString(buf, pyStrCast, pos);
+       Py_DECREF(pyStrCast);
+       return ret;
+    }
+
     // Object is not a unicode or a normal string.
     buf = "";
     if (pos != -1) PyErr_Format(PyExc_TypeError, "argument %.200i must be unicode or str", pos);
