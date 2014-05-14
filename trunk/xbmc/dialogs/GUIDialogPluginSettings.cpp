@@ -216,15 +216,12 @@ bool CGUIDialogPluginSettings::ShowAndGetInput(CStdString& path, bool saveToDisk
 
     // Path where the language strings reside
     CStdString pathToLanguageFile = path;
-    CStdString pathToFallbackLanguageFile = path;
     URIUtils::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
-    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
     URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
-    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
-    URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
-    URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
+    URIUtils::AddSlashAtEnd(pathToLanguageFile);
+
     // Load language strings temporarily
-    g_localizeStringsTemp.Load(pathToLanguageFile, pathToFallbackLanguageFile);
+    g_localizeStringsTemp.Load(pathToLanguageFile, g_guiSettings.GetString("locale.language"));
 
     pDialog->m_strHeading = pDialog->m_url.GetFileNameWithoutPath();
     URIUtils::RemoveSlashAtEnd(pDialog->m_strHeading);

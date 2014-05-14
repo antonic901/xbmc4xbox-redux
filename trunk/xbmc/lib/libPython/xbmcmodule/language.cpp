@@ -69,26 +69,14 @@ namespace PYXBMC
     if (URIUtils::IsPlugin(languagePath))
       languagePath.Replace("plugin://", "special://home/plugins/");
 
-    CStdString languageFallbackPath = languagePath;
-    CStdString defaultLanguage;
-
-    // set our default fallback language
-    if (!cDefaultLanguage)
-      defaultLanguage = "english";
-    else
-      defaultLanguage = cDefaultLanguage;
-
     // Path where the language strings reside
     URIUtils::AddFileToFolder(languagePath, "resources", languagePath);
-    URIUtils::AddFileToFolder(languageFallbackPath, "resources", languageFallbackPath);
     URIUtils::AddFileToFolder(languagePath, "language", languagePath);
-    URIUtils::AddFileToFolder(languageFallbackPath, "language", languageFallbackPath);
-    URIUtils::AddFileToFolder(languagePath, g_guiSettings.GetString("locale.language"), languagePath);
-    URIUtils::AddFileToFolder(languageFallbackPath, defaultLanguage, languageFallbackPath);
+    URIUtils::AddSlashAtEnd(languagePath);
 
     // Load language strings
     self->pLanguage->Clear();
-    self->pLanguage->Load(languagePath, languageFallbackPath);
+    self->pLanguage->Load(languagePath, g_guiSettings.GetString("locale.language"));
 
     return (PyObject*)self;
   }

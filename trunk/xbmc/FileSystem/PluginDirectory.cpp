@@ -671,16 +671,12 @@ void CPluginDirectory::LoadPluginStrings(const CURL &url)
 
   // Path where the language strings reside
   CStdString pathToLanguageFile = pathToPlugin;
-  CStdString pathToFallbackLanguageFile = pathToPlugin;
   URIUtils::AddFileToFolder(pathToLanguageFile, "resources", pathToLanguageFile);
-  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "resources", pathToFallbackLanguageFile);
   URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
-  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "language", pathToFallbackLanguageFile);
-  URIUtils::AddFileToFolder(pathToLanguageFile, g_guiSettings.GetString("locale.language"), pathToLanguageFile);
-  URIUtils::AddFileToFolder(pathToFallbackLanguageFile, "english", pathToFallbackLanguageFile);
+  URIUtils::AddSlashAtEnd(pathToLanguageFile);
 
   // Load language strings temporarily
-  g_localizeStringsTemp.Load(pathToLanguageFile, pathToFallbackLanguageFile);
+  g_localizeStringsTemp.Load(pathToLanguageFile, g_guiSettings.GetString("locale.language"));
 }
 
 void CPluginDirectory::ClearPluginStrings()
