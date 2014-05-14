@@ -419,28 +419,28 @@ namespace PYXBMC
       if (strcmpi(cType, "video") == 0)
       {
         if (strcmpi(PyString_AsString(key), "year") == 0)
-          self->item->GetVideoInfoTag()->m_iYear = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_iYear = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "episode") == 0)
-          self->item->GetVideoInfoTag()->m_iEpisode = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_iEpisode = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "season") == 0)
-          self->item->GetVideoInfoTag()->m_iSeason = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_iSeason = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "top250") == 0)
-          self->item->GetVideoInfoTag()->m_iTop250 = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_iTop250 = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "tracknumber") == 0)
-          self->item->GetVideoInfoTag()->m_iTrack = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_iTrack = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "count") == 0)
-          self->item->m_iprogramCount = PyInt_AsLong(value);
+          self->item->m_iprogramCount = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "rating") == 0)
           self->item->GetVideoInfoTag()->m_fRating = (float)PyFloat_AsDouble(value);
         else if (strcmpi(PyString_AsString(key), "size") == 0)
           self->item->m_dwSize = (int64_t)PyLong_AsLongLong(value);
         else if (strcmpi(PyString_AsString(key), "watched") == 0) // backward compat - do we need it?
-          self->item->GetVideoInfoTag()->m_playCount = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_playCount = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "playcount") == 0)
-          self->item->GetVideoInfoTag()->m_playCount = PyInt_AsLong(value);
+          self->item->GetVideoInfoTag()->m_playCount = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "overlay") == 0)
         {
-          long overlay = PyInt_AsLong(value);
+          long overlay = PyXBMCLongAsStringOrLong(value);
           if (overlay >= 0 && overlay <= 8)
             self->item->SetOverlayImage((CGUIListItem::GUIIconOverlay)overlay);
         }
@@ -523,19 +523,19 @@ namespace PYXBMC
       else if (strcmpi(cType, "music") == 0)
       {
         if (strcmpi(PyString_AsString(key), "tracknumber") == 0)
-          self->item->GetMusicInfoTag()->SetTrackNumber(PyInt_AsLong(value));
+          self->item->GetMusicInfoTag()->SetTrackNumber(PyXBMCLongAsStringOrLong(value));
         else if (strcmpi(PyString_AsString(key), "count") == 0)
-          self->item->m_iprogramCount = PyInt_AsLong(value);
+          self->item->m_iprogramCount = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "size") == 0)
           self->item->m_dwSize = (int64_t)PyLong_AsLongLong(value);
         else if (strcmpi(PyString_AsString(key), "duration") == 0)
-          self->item->GetMusicInfoTag()->SetDuration(PyInt_AsLong(value));
+          self->item->GetMusicInfoTag()->SetDuration(PyXBMCLongAsStringOrLong(value));
         else if (strcmpi(PyString_AsString(key), "year") == 0)
-          self->item->GetMusicInfoTag()->SetYear(PyInt_AsLong(value));
+          self->item->GetMusicInfoTag()->SetYear(PyXBMCLongAsStringOrLong(value));
         else if (strcmpi(PyString_AsString(key), "listeners") == 0)
-          self->item->GetMusicInfoTag()->SetListeners(PyInt_AsLong(value));
+          self->item->GetMusicInfoTag()->SetListeners(PyXBMCLongAsStringOrLong(value));
         else if (strcmpi(PyString_AsString(key), "playcount") == 0)
-          self->item->GetMusicInfoTag()->SetPlayCount(PyInt_AsLong(value));
+          self->item->GetMusicInfoTag()->SetPlayCount(PyXBMCLongAsStringOrLong(value));
         else
         {
           if (!PyXBMCGetUnicodeString(tmp, value, 1)) continue;
@@ -576,7 +576,7 @@ namespace PYXBMC
       else if (strcmpi(cType, "pictures") == 0)
       {
         if (strcmpi(PyString_AsString(key), "count") == 0)
-          self->item->m_iprogramCount = PyInt_AsLong(value);
+          self->item->m_iprogramCount = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "size") == 0)
           self->item->m_dwSize = (int64_t)PyLong_AsLongLong(value);
         else
@@ -677,11 +677,11 @@ namespace PYXBMC
         else if (strcmpi(PyString_AsString(key), "aspect") == 0)
           video->m_fAspect = (float)PyFloat_AsDouble(value);
         else if (strcmpi(PyString_AsString(key), "width") == 0)
-          video->m_iWidth = PyInt_AsLong(value);
+          video->m_iWidth = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "height") == 0)
-          video->m_iHeight = PyInt_AsLong(value);
+          video->m_iHeight = PyXBMCLongAsStringOrLong(value);
         else if (strcmpi(PyString_AsString(key), "duration") == 0)
-          video->m_iDuration = PyInt_AsLong(value);
+          video->m_iDuration = PyXBMCLongAsStringOrLong(value);
       }
       self->item->GetVideoInfoTag()->m_streamDetails.AddStream(video);
     }
@@ -701,7 +701,7 @@ namespace PYXBMC
             continue;
         }
         else if (strcmpi(PyString_AsString(key), "channels") == 0)
-          audio ->m_iChannels = PyInt_AsLong(value);
+          audio ->m_iChannels = PyXBMCLongAsStringOrLong(value);
       }
       self->item->GetVideoInfoTag()->m_streamDetails.AddStream(audio);
     }

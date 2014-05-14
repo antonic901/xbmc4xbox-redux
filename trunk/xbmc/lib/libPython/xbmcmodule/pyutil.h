@@ -44,6 +44,7 @@ namespace PYXBMC
   bool  PyXBMCWindowIsNull(void* pWindow);
 
   void  PyXBMCInitializeTypeObject(PyTypeObject* type_object);
+  long PyXBMCLongAsStringOrLong(PyObject *value);
   void  PyXBMCWaitForThreadMessage(int message, int param1, int param2);
 }
 

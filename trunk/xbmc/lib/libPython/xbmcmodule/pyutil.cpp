@@ -141,4 +141,17 @@ namespace PYXBMC
     memcpy(type_object, &py_type_object_header, size);
   }
 
+  long PyXBMCLongAsStringOrLong(PyObject *value)
+  {
+    if (PyLong_Check(value))
+    {
+      return PyLong_AsLong(value);
+    }
+    else
+    {
+      const char *s = PyString_AsString(value);
+      return atol(s);
+    }
+  }
+
 }
