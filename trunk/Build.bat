@@ -240,7 +240,7 @@ GOTO:EOF
   cd ..\..
   xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "%~1\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
   
-  xcopy credits %~1\credits /Q /I /Y /EXCLUDE:exclude.txt
+  rem xcopy credits %~1\credits /Q /I /Y /EXCLUDE:exclude.txt
   xcopy language %~1\language /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy screensavers %~1\screensavers /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy visualisations %~1\visualisations /E /Q /I /Y /EXCLUDE:exclude.txt
