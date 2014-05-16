@@ -264,7 +264,7 @@ void CGUIWindowMusicBase::OnInfoAll(int iItem, bool bCurrent)
     musicScan->StartArtistScan(strPath);
 }
 
-/// \brief Retrieves music info for albums from allmusic.com and displays them in CGUIWindowMusicInfo
+/// \brief Retrieves music info for albums from theaudiodb.com and displays them in CGUIWindowMusicInfo
 /// \param iItem Item in list/thumb control
 void CGUIWindowMusicBase::OnInfo(int iItem, bool bShowInfo)
 {
@@ -545,7 +545,7 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
     // download the album info
     if ( info.Loaded() )
     {
-      // set album title from musicinfotag, not the one we got from allmusic.com
+      // set album title from musicinfotag, not the one we got from theaudiodb.com
       info.SetTitle(album.strAlbum);
 
       if (saveDb)
