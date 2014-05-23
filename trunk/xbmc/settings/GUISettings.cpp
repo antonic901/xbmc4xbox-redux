@@ -903,9 +903,6 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
   CLog::Log(LOGINFO, "AC3 pass through is %s", GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
   CLog::Log(LOGINFO, "DTS pass through is %s", GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
   CLog::Log(LOGINFO, "AAC pass through is %s", GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "MP1 pass through is %s", GetBool("audiooutput.mp1passthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "MP2 pass through is %s", GetBool("audiooutput.mp2passthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "MP3 pass through is %s", GetBool("audiooutput.mp3passthrough") ? "enabled" : "disabled");
 
   if (g_videoConfig.HasLetterbox())
     SetInt("videooutput.aspect", VIDEO_LETTERBOX);
