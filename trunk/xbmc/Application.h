@@ -206,6 +206,7 @@ public:
   unsigned int m_skinReloadTime;
   bool m_bIsPaused;
   bool m_bPlaybackStarting;
+  bool m_128MBHack;
 
   CCdgParser* m_pCdgParser;
 

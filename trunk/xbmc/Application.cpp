@@ -715,16 +715,25 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+
 #ifdef HAS_XBOX_HARDWARE
   // better 128mb ram support
   // set MTRRDefType memory type to write-back as done in other XBox apps - seems a bit of a hack as really the def type
   // should be uncachable and the mtrr/mask for ram instead set up for 128MB with writeback as is done in cromwell.
-  __asm
+  m_128MBHack = false;
+  MEMORYSTATUS status;
+  GlobalMemoryStatus( &status );
+  // if we have more than 64MB free
+  if( status.dwTotalPhys > 67108864 )
   {
-    mov ecx, 0x2ff
-    rdmsr
-    mov al, 0x06
-    wrmsr
+    __asm
+    {
+      mov ecx, 0x2ff
+      rdmsr
+      mov al, 0x06
+      wrmsr
+    }
+    m_128MBHack = true;
   }
 #endif
 
@@ -794,6 +803,9 @@ HRESULT CApplication::Create(HWND hWnd)
     strcat(szDevicePath, &strMnt.c_str()[2]);
     CIoSupport::RemapDriveLetter('T', szDevicePath);
   }
+
+  if (m_128MBHack)
+    CLog::Log(LOGNOTICE, "128MB hack enabled");
 
   CLog::Log(LOGNOTICE, "Setup DirectX");
   // Create the Direct3D object
