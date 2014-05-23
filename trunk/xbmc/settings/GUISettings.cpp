@@ -915,7 +915,6 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
     SetInt("videooutput.aspect", VIDEO_NORMAL);
   SetBool("videooutput.hd480p", g_videoConfig.Has480p());
   SetBool("videooutput.hd720p", g_videoConfig.Has720p());
-  SetBool("videooutput.hd1080i", g_videoConfig.Has1080i());
 
   SetInt("locale.timezone", g_timezone.GetTimeZoneIndex());
   SetBool("locale.usedst", g_timezone.GetDST());
