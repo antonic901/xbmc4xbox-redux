@@ -1804,6 +1804,12 @@ void CDVDPlayer::HandleMessages()
       {
         CDVDMsgPlayerSeek &msg(*((CDVDMsgPlayerSeek*)pMsg));
 
+        if (!m_State.canseek)
+        {
+          pMsg->Release();
+          continue;
+        }
+
         if(!msg.GetTrickPlay())
         {
           g_infoManager.SetDisplayAfterSeek(100000);
@@ -2111,8 +2117,19 @@ void CDVDPlayer::SetPlaySpeed(int speed)
   SynchronizeDemuxer(100);
 }
 
+bool CDVDPlayer::CanPause()
+{
+  CSingleLock lock(m_StateSection);
+  return m_State.canpause;
+}
+
 void CDVDPlayer::Pause()
 {
+  CSingleLock lock(m_StateSection);
+  if (!m_State.canpause)
+    return;
+  lock.Leave();
+
   if(m_playSpeed != DVD_PLAYSPEED_PAUSE && m_caching == CACHESTATE_FULL)
   {
     SetCaching(CACHESTATE_DONE);
@@ -2149,7 +2166,8 @@ bool CDVDPlayer::HasAudio() const
 
 bool CDVDPlayer::CanSeek()
 {
-  return GetTotalTime() > 0;
+  CSingleLock lock(m_StateSection);
+  return m_State.canseek;
 }
 
 void CDVDPlayer::Seek(bool bPlus, bool bLargeStep)
@@ -2163,6 +2181,8 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep)
     return;
   }
 #endif
+  if (!m_State.canseek)
+    return;
 
   if(((bPlus && GetChapter() < GetChapterCount())
   || (!bPlus && GetChapter() > 1)) && bLargeStep)
@@ -3438,6 +3458,9 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     state.time_src   = ETIMESOURCE_CLOCK;
   }
 
+  state.canpause     = true;
+  state.canseek      = true;
+
   if(m_pInputStream)
   {
     // override from input stream if needed
@@ -3465,6 +3488,12 @@ void CDVDPlayer::UpdatePlayState(double timeout)
         state.time_src   = ETIMESOURCE_MENU;
       }
     }
+
+    if (CDVDInputStream::ISeekable* ptr = dynamic_cast<CDVDInputStream::ISeekable*>(m_pInputStream))
+    {
+      state.canpause = ptr->CanPause();
+      state.canseek  = ptr->CanSeek();
+    }
   }
 
   if (m_Edl.HasCut())
@@ -3473,10 +3502,13 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     state.time_total  = m_Edl.RemoveCutTime(llrint(state.time_total));
   }
 
+  if(state.time_total <= 0)
+    state.canseek  = false;
+
   state.player_state = "";
-  if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  if(CDVDInputStreamNavigator* ptr = dynamic_cast<CDVDInputStreamNavigator*>(m_pInputStream))
   {
-    if(!((CDVDInputStreamNavigator*)m_pInputStream)->GetNavigatorState(state.player_state))
+    if(!ptr->GetNavigatorState(state.player_state))
       state.player_state = "";
   }
 

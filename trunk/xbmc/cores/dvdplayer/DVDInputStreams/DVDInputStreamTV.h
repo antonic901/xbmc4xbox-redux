@@ -62,6 +62,9 @@ public:
   bool            IsRecording();
   bool            Record(bool bOnOff);
 
+  bool            CanPause() { return false; };
+  bool            CanSeek() { return false; };
+
   bool            UpdateItem(CFileItem& item);
 
 protected:

@@ -58,6 +58,8 @@ public:
     virtual bool PrevChannel() = 0;
     virtual bool SelectChannel(unsigned int channel) = 0;
     virtual bool UpdateItem(CFileItem& item) = 0;
+    virtual bool CanPause() = 0;
+    virtual bool CanSeek() = 0;
   };
 
   class IDisplayTime
@@ -105,6 +107,14 @@ public:
     virtual bool OnMouseClick(const CPoint &point) = 0;
     virtual bool IsInMenu() = 0;
     virtual double GetTimeStampCorrection() = 0;
+  };
+
+  class ISeekable
+  {
+    public:
+    virtual ~ISeekable() {};
+    virtual bool CanSeek()  = 0;
+    virtual bool CanPause() = 0;
   };
 
   enum ENextStream

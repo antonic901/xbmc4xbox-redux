@@ -48,6 +48,9 @@ public:
   bool            SelectChannel(unsigned int channel);
   bool            UpdateItem(CFileItem& item);
 
+  bool            CanPause()          { return false; }
+  bool            CanSeek()           { return false; }
+
   int             GetTotalTime();
   int             GetTime();
 
