@@ -121,7 +121,7 @@ namespace PYXBMC
   {
     PyObject *pObjectText;
     string strText;
-    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText))  return NULL;
     if (!PyXBMCGetUnicodeString(strText, pObjectText, 1)) return NULL;
 
     // create message

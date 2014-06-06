@@ -54,7 +54,7 @@ namespace PYXBMC
     new(&self->strFileName) string();    
 
     //if (!PyArg_ParseTuple(args, "lllls|l", &self->dwPosX, &self->dwPosY, &self->dwWidth, &self->dwHeight,
-    //	&cImage, &self->aspectRatio)) return NULL;
+    //  &cImage, &self->aspectRatio)) return NULL;
     // parse arguments to constructor
     if (!PyArg_ParseTupleAndKeywords(
       args, kwds,

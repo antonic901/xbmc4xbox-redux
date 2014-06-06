@@ -165,7 +165,7 @@ namespace PYXBMC
   {
     char *cDisabledColor = NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cDisabledColor))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cDisabledColor)) return NULL;
 
     if (cDisabledColor)
     {

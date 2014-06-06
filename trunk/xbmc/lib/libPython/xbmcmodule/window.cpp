@@ -34,7 +34,7 @@
 
 using namespace std;
 
-#define ACTIVE_WINDOW	g_windowManager.GetActiveWindow()
+#define ACTIVE_WINDOW g_windowManager.GetActiveWindow()
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -622,7 +622,7 @@ namespace PYXBMC
     pControl->iControlRight = pControl->iControlId;
 
     pControl->pGUIControl->SetNavigation(pControl->iControlUp,
-      pControl->iControlDown,	pControl->iControlLeft, pControl->iControlRight);
+      pControl->iControlDown, pControl->iControlLeft, pControl->iControlRight);
 
     PyXBMCGUILock();
 

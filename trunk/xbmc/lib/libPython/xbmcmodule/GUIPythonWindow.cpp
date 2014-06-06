@@ -189,7 +189,7 @@ int Py_XBMC_Event_OnAction(void* arg)
     }
     else {
       CLog::Log(LOGERROR,"Exception in python script's onAction");
-    	PyErr_Print();
+      PyErr_Print();
     }
     delete action;
   }

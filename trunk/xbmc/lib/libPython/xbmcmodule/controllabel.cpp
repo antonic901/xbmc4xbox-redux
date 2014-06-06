@@ -146,7 +146,7 @@ namespace PYXBMC
   {
     PyObject *pObjectText;
 
-    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText))  return NULL;
     if (!PyXBMCGetUnicodeString(self->strText, pObjectText, 1)) return NULL;
 
     ControlLabel *pControl = (ControlLabel*)self;

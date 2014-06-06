@@ -636,7 +636,7 @@ namespace PYXBMC
 
     pXbmcPluginModule = Py_InitModule((char*)"xbmcplugin", pluginMethods);
     if (pXbmcPluginModule == NULL) return;
-	
+  
     // constants
     PyModule_AddStringConstant(pXbmcPluginModule, (char*)"__author__", (char*)PY_XBMC_AUTHOR);
     PyModule_AddStringConstant(pXbmcPluginModule, (char*)"__date__", (char*)"20 August 2007");

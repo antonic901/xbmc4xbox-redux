@@ -115,7 +115,7 @@ namespace PYXBMC
   {
     char *cColor = NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cColor))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cColor))   return NULL;
 
     if (cColor) sscanf(cColor, "%x", &self->color);
 
@@ -141,7 +141,7 @@ namespace PYXBMC
   {
     char *cLine[4];
 
-    if (!PyArg_ParseTuple(args, (char*)"ssss", &cLine[0], &cLine[1], &cLine[2], &cLine[3]))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"ssss", &cLine[0], &cLine[1], &cLine[2], &cLine[3])) return NULL;
 
     self->strTextureUp = cLine[0];
     self->strTextureDown = cLine[1];

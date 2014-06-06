@@ -105,7 +105,7 @@ namespace PYXBMC
   {
     int iNr;
     PlayList *self;
-    if (!PyArg_ParseTuple(args, (char*)"i", &iNr))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"i", &iNr))  return NULL;
 
     self = (PlayList*)type->tp_alloc(type, 0);
     if (!self) return NULL;
@@ -217,7 +217,7 @@ namespace PYXBMC
   {
     char* cFileName = NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))  return NULL;
 
     CFileItem item(cFileName);
     item.SetPath(cFileName);
@@ -268,7 +268,7 @@ namespace PYXBMC
   PyObject* PlayList_Remove(PlayList *self, PyObject *args)
   {
     char *cFileName = NULL;
-    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))	return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))  return NULL;
 
     self->pPlayList->Remove(cFileName);
 
