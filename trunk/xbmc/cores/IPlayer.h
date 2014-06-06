@@ -118,6 +118,7 @@ public:
   virtual int  GetAudioStream()       { return -1; }
   virtual void GetAudioStreamName(int iStream, CStdString &strStreamName){};
   virtual void SetAudioStream(int iStream){};
+  virtual void GetAudioStreamLanguage(int iStream, CStdString &strLanguage){};
 
   virtual int  GetChapterCount()                               { return 0; }
   virtual int  GetChapter()                                    { return -1; }
