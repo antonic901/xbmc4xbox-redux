@@ -1170,7 +1170,7 @@ bool CDVDInputStreamNavigator::IsSubtitleStreamEnabled()
     return false;
 }
 
-bool CDVDInputStreamNavigator::GetNavigatorState(std::string &xmlstate)
+bool CDVDInputStreamNavigator::GetState(std::string &xmlstate)
 {
   if( !m_dvdnav ) 
     return false;
@@ -1191,7 +1191,7 @@ bool CDVDInputStreamNavigator::GetNavigatorState(std::string &xmlstate)
   return true;
 }
 
-bool CDVDInputStreamNavigator::SetNavigatorState(std::string &xmlstate)
+bool CDVDInputStreamNavigator::SetState(const std::string &xmlstate)
 {
   if( !m_dvdnav ) 
     return false;
