@@ -9,10 +9,10 @@ Content-Transfer-Encoding: 8bit
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavcodec/dcadec.c |   23 +++++++++++++++--------
+ lib/ffmpeg/libavcodec/dcadec.c |   23 +++++++++++++++--------
  1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/libavcodec/dcadec.c b/libavcodec/dcadec.c
+diff --git a/lib/ffmpeg/libavcodec/dcadec.c b/lib/ffmpeg/libavcodec/dcadec.c
 index 1b955e4..b648613 100644
 --- a/libavcodec/dcadec.c
 +++ b/libavcodec/dcadec.c

@@ -13,11 +13,11 @@ provided buffer.
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavformat/avio_internal.h |   17 +++++++++++++++++
- lib/libavformat/aviobuf.c       |   12 ++++++++++++
+ lib/ffmpeg/libavformat/avio_internal.h |   17 +++++++++++++++++
+ lib/ffmpeg/libavformat/aviobuf.c       |   12 ++++++++++++
  2 files changed, 29 insertions(+)
 
-diff --git a/libavformat/avio_internal.h b/libavformat/avio_internal.h
+diff --git a/lib/ffmpeg/libavformat/avio_internal.h b/lib/ffmpeg/libavformat/avio_internal.h
 index cf36764..e9ece57 100644
 --- a/libavformat/avio_internal.h
 +++ b/libavformat/avio_internal.h
@@ -45,7 +45,7 @@ index cf36764..e9ece57 100644
   * Read size bytes from AVIOContext into buf.
   * This reads at most 1 packet. If that is not enough fewer bytes will be
   * returned.
-diff --git a/libavformat/aviobuf.c b/libavformat/aviobuf.c
+diff --git a/lib/ffmpeg/libavformat/aviobuf.c b/lib/ffmpeg/libavformat/aviobuf.c
 index 7a73a17..465c46d 100644
 --- a/libavformat/aviobuf.c
 +++ b/libavformat/aviobuf.c

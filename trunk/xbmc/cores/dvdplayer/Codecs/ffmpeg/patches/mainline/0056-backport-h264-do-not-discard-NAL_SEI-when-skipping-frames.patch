@@ -1,4 +1,4 @@
-diff --git a/libavcodec/h264.c b/libavcodec/h264.c
+diff --git a/lib/ffmpeg/libavcodec/h264.c b/lib/ffmpeg/libavcodec/h264.c
 index 85f2372..1cab49f 100644
 --- a/libavcodec/h264.c
 +++ b/libavcodec/h264.c

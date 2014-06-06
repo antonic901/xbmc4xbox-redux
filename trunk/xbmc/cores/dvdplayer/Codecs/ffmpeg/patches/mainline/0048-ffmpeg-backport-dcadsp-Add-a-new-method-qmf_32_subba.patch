@@ -12,12 +12,12 @@ the static function qmf_32_subbands() in dcadec.c.
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavcodec/dcadec.c |   26 +++++---------------------
- lib/libavcodec/dcadsp.c |   30 ++++++++++++++++++++++++++++++
- lib/libavcodec/dcadsp.h |    9 +++++++++
+ lib/ffmpeg/libavcodec/dcadec.c |   26 +++++---------------------
+ lib/ffmpeg/libavcodec/dcadsp.c |   30 ++++++++++++++++++++++++++++++
+ lib/ffmpeg/libavcodec/dcadsp.h |    9 +++++++++
  3 files changed, 44 insertions(+), 21 deletions(-)
 
-diff --git a/libavcodec/dcadec.c b/libavcodec/dcadec.c
+diff --git a/lib/ffmpeg/libavcodec/dcadec.c b/lib/ffmpeg/libavcodec/dcadec.c
 index b648613..4054d63 100644
 --- a/libavcodec/dcadec.c
 +++ b/libavcodec/dcadec.c
@@ -63,7 +63,7 @@ index b648613..4054d63 100644
  }
 
  static void lfe_interpolation_fir(DCAContext *s, int decimation_select,
-diff --git a/libavcodec/dcadsp.c b/libavcodec/dcadsp.c
+diff --git a/lib/ffmpeg/libavcodec/dcadsp.c b/lib/ffmpeg/libavcodec/dcadsp.c
 index dd4994d..ab63f1b 100644
 --- a/libavcodec/dcadsp.c
 +++ b/libavcodec/dcadsp.c
@@ -113,7 +113,7 @@ index dd4994d..ab63f1b 100644
 +    s->qmf_32_subbands = dca_qmf_32_subbands;
      if (ARCH_ARM) ff_dcadsp_init_arm(s);
  }
-diff --git a/libavcodec/dcadsp.h b/libavcodec/dcadsp.h
+diff --git a/lib/ffmpeg/libavcodec/dcadsp.h b/lib/ffmpeg/libavcodec/dcadsp.h
 index bb157f7..d86c1f3 100644
 --- a/libavcodec/dcadsp.h
 +++ b/libavcodec/dcadsp.h

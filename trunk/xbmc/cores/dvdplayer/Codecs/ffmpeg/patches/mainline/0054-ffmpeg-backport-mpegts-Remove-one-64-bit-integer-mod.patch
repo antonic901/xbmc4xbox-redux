@@ -18,11 +18,11 @@ Overall    2773.2 25.6     2372.5 43.1     +16.9%
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavcodec/mathops.h |    9 +++++++++
- lib/libavformat/mpegts.c |    5 ++++-
+ lib/ffmpeg/libavcodec/mathops.h |    9 +++++++++
+ lib/ffmpeg/libavformat/mpegts.c |    5 ++++-
  2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/libavcodec/mathops.h b/libavcodec/mathops.h
+diff --git a/lib/ffmpeg/libavcodec/mathops.h b/lib/ffmpeg/libavcodec/mathops.h
 index 592f5a5..1d57342 100644
 --- a/libavcodec/mathops.h
 +++ b/libavcodec/mathops.h
@@ -42,7 +42,7 @@ index 592f5a5..1d57342 100644
  static inline av_const unsigned int ff_sqrt(unsigned int a)
  {
      unsigned int b;
-diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
+diff --git a/lib/ffmpeg/libavformat/mpegts.c b/lib/ffmpeg/libavformat/mpegts.c
 index 82dd209..b995f60 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c

@@ -15,11 +15,11 @@ ARMv6).
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavcodec/fmtconvert.c |   10 ++++++++++
- lib/libavcodec/fmtconvert.h |   16 ++++++++++++++++
+ lib/ffmpeg/libavcodec/fmtconvert.c |   10 ++++++++++
+ lib/ffmpeg/libavcodec/fmtconvert.h |   16 ++++++++++++++++
  2 files changed, 26 insertions(+)
 
-diff --git a/libavcodec/fmtconvert.c b/libavcodec/fmtconvert.c
+diff --git a/lib/ffmpeg/libavcodec/fmtconvert.c b/lib/ffmpeg/libavcodec/fmtconvert.c
 index 79e9645..1c45d35 100644
 --- a/libavcodec/fmtconvert.c
 +++ b/libavcodec/fmtconvert.c
@@ -47,10 +47,10 @@ index 79e9645..1c45d35 100644
      c->float_to_int16             = float_to_int16_c;
      c->float_to_int16_interleave  = float_to_int16_interleave_c;
      c->float_interleave           = ff_float_interleave_c;
-diff --git a/libavcodec/fmtconvert.h b/libavcodec/fmtconvert.h
+diff --git a/lib/ffmpeg/libavcodec/fmtconvert.h b/lib/ffmpeg/libavcodec/fmtconvert.h
 index 3fb9f4e..02468dc 100644
 --- a/libavcodec/fmtconvert.h
-+++ b/libavcodec/fmtconvert.h
++++ b//libavcodec/fmtconvert.h
 @@ -38,6 +38,22 @@ typedef struct FmtConvertContext {
      void (*int32_to_float_fmul_scalar)(float *dst, const int *src, float mul, int len);
 

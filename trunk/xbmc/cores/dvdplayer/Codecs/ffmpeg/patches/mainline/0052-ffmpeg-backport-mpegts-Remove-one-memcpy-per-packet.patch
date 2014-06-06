@@ -19,10 +19,10 @@ Overall  2372.7  46.1    2291.7  21.8    +3.5%
 
 Signed-off-by: Martin Storsjö <martin@martin.st>
 ---
- lib/libavformat/mpegts.c |   41 ++++++++++++++++++++++++++-------------
+ lib/ffmpeg/libavformat/mpegts.c |   41 ++++++++++++++++++++++++++-------------
  1 file changed, 28 insertions(+), 13 deletions(-)
 
-diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
+diff --git a/lib/ffmpeg/libavformat/mpegts.c b/lib/ffmpeg/libavformat/mpegts.c
 index b5f5d63..5307521 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c
