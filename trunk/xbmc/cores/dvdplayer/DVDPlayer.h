@@ -458,5 +458,7 @@ protected:
 
   CPlayerOptions m_PlayerOptions;
   
+  bool m_HasVideo;
+  
   bool m_DemuxerPausePending;
 };
