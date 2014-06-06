@@ -561,7 +561,7 @@ namespace PYXBMC
 
   // Player_getAvailableAudioStreams
   PyDoc_STRVAR(getAvailableAudioStreams__doc__,
-               "getAvailableAudioStreams() -- get Audio stream names\n");
+    "getAvailableAudioStreams() -- get Audio stream names\n");
   
   PyObject* Player_getAvailableAudioStreams(PyObject *self)
   {
@@ -587,12 +587,12 @@ namespace PYXBMC
 
   // Player_setAudioStream
   PyDoc_STRVAR(setAudioStream__doc__,
-               "setAudioStream(stream) -- set Audio Stream \n"
-               "\n"
-               "stream           : int\n"
-               "\n"
-               "example:\n"
-               "  - setAudioStream(1)\n");
+    "setAudioStream(stream) -- set Audio Stream \n"
+    "\n"
+    "stream           : int\n"
+    "\n"
+    "example:\n"
+    "  - setAudioStream(1)\n");
   
   PyObject* Player_setAudioStream(PyObject *self, PyObject *args)
   {
@@ -612,7 +612,7 @@ namespace PYXBMC
 
   // Player_getAvailableSubtitleStreams
   PyDoc_STRVAR(getAvailableSubtitleStreams__doc__,
-               "getAvailableSubtitleStreams() -- get Subtitle stream names\n");
+    "getAvailableSubtitleStreams() -- get Subtitle stream names\n");
 
   PyObject* Player_getAvailableSubtitleStreams(PyObject *self)
   {
@@ -637,12 +637,12 @@ namespace PYXBMC
 
   // Player_setSubtitleStream
   PyDoc_STRVAR(setSubtitleStream__doc__,
-               "setSubtitleStream(stream) -- set Subtitle Stream \n"
-               "\n"
-               "stream           : int\n"
-               "\n"
-               "example:\n"
-               "  - setSubtitleStream(1)\n");
+    "setSubtitleStream(stream) -- set Subtitle Stream \n"
+    "\n"
+    "stream           : int\n"
+    "\n"
+    "example:\n"
+    "  - setSubtitleStream(1)\n");
 
   PyObject* Player_setSubtitleStream(PyObject *self, PyObject *args)
   {
