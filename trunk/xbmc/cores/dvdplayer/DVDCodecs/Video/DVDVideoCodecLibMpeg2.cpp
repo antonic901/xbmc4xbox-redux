@@ -19,12 +19,10 @@
  *
  */
 
-#include "system.h"
-#include "utils/log.h"
 #include "DVDVideoCodecLibMpeg2.h"
 #include "DVDClock.h"
 #include "DVDStreamInfo.h"
-#include "utils/Win32Exception.h"
+#include "utils/log.h"
 
 enum MPEGProfile
 {
@@ -47,6 +45,7 @@ union TagUnion
 #define DVP_FLAG_LIBMPEG2_ALLOCATED 0x0000100 //Set to indicate that this has allocated data
 #define DVP_FLAG_LIBMPEG2_INUSE     0x0000200 //Set to show that libmpeg2 might need to read data from here again
 
+#undef ALIGN
 #define ALIGN(value, alignment) (((value)+(alignment-1))&~(alignment-1))
 
 CDVDVideoCodecLibMpeg2::CDVDVideoCodecLibMpeg2()
@@ -58,6 +57,7 @@ CDVDVideoCodecLibMpeg2::CDVDVideoCodecLibMpeg2()
   m_irffpattern = 0;
   m_bFilm = false;
   m_bIs422 = false;
+  m_hurry = 0;
   m_dts = DVD_NOPTS_VALUE;
   m_dts2 = DVD_NOPTS_VALUE;
 }
@@ -67,8 +67,8 @@ CDVDVideoCodecLibMpeg2::~CDVDVideoCodecLibMpeg2()
   Dispose();
 }
 
-//This call could possibly be moved outside of the codec, could allow us to do some type of 
-//direct rendering. problem is that that the buffer requested isn't allways the next one 
+//This call could possibly be moved outside of the codec, could allow us to do some type of
+//direct rendering. problem is that that the buffer requested isn't allways the next one
 //that should go to display.
 DVDVideoPicture* CDVDVideoCodecLibMpeg2::GetBuffer(unsigned int width, unsigned int height)
 {
@@ -80,7 +80,7 @@ DVDVideoPicture* CDVDVideoCodecLibMpeg2::GetBuffer(unsigned int width, unsigned 
       {
         DeleteBuffer(m_pVideoBuffer+i);
       }
-      
+
       if( !(m_pVideoBuffer[i].iFlags & DVP_FLAG_ALLOCATED) )
       { //Need to allocate
 
@@ -90,16 +90,16 @@ DVDVideoPicture* CDVDVideoCodecLibMpeg2::GetBuffer(unsigned int width, unsigned 
         //Allocate for YV12 frame
         unsigned int iPixels = width*height;
         unsigned int iChromaPixels = iPixels/4;
-        
+
         // If we're dealing with a 4:2:2 format, then we actually need more pixels to
-        // store the chroma, as "the two chroma components are sampled at half the 
+        // store the chroma, as "the two chroma components are sampled at half the
         // sample rate of luma, so horizontal chroma resolution is cut in half."
         //
         // FIXME: Do we need to handle 4:4:4 and 4:1:1 as well?
         //
         if (m_bIs422)
           iChromaPixels = iPixels/2;
-        
+
         m_pVideoBuffer[i].iLineSize[0] = width;   //Y
         m_pVideoBuffer[i].iLineSize[1] = width/2; //U
         m_pVideoBuffer[i].iLineSize[2] = width/2; //V
@@ -107,11 +107,11 @@ DVDVideoPicture* CDVDVideoCodecLibMpeg2::GetBuffer(unsigned int width, unsigned 
 
         m_pVideoBuffer[i].iWidth = width;
         m_pVideoBuffer[i].iHeight = height;
-        
-        m_pVideoBuffer[i].data[0] = (BYTE*)_aligned_malloc(iPixels, 16);    //Y
-        m_pVideoBuffer[i].data[1] = (BYTE*)_aligned_malloc(iChromaPixels, 16);  //U
-        m_pVideoBuffer[i].data[2] = (BYTE*)_aligned_malloc(iChromaPixels, 16);  //V
-      
+
+        m_pVideoBuffer[i].data[0] = (uint8_t*)_aligned_malloc(iPixels, 16);    //Y
+        m_pVideoBuffer[i].data[1] = (uint8_t*)_aligned_malloc(iChromaPixels, 16);  //U
+        m_pVideoBuffer[i].data[2] = (uint8_t*)_aligned_malloc(iChromaPixels, 16);  //V
+
         //Set all data to 0 for less artifacts.. hmm.. what is black in YUV??
         memset( m_pVideoBuffer[i].data[0], 0, iPixels );
         memset( m_pVideoBuffer[i].data[1], 0, iChromaPixels );
@@ -121,7 +121,7 @@ DVDVideoPicture* CDVDVideoCodecLibMpeg2::GetBuffer(unsigned int width, unsigned 
       m_pVideoBuffer[i].iFlags = DVP_FLAG_LIBMPEG2_INUSE | DVP_FLAG_ALLOCATED; //Mark as inuse
       return m_pVideoBuffer+i;
     }
-  }  
+  }
 
   //No free pictures found.
   return NULL;
@@ -134,15 +134,15 @@ void CDVDVideoCodecLibMpeg2::DeleteBuffer(DVDVideoPicture* pPic)
     _aligned_free(pPic->data[0]);
     _aligned_free(pPic->data[1]);
     _aligned_free(pPic->data[2]);
-       
+
     pPic->data[0] = 0;
     pPic->data[1] = 0;
     pPic->data[2] = 0;
-    
+
     pPic->iLineSize[0] = 0;
     pPic->iLineSize[1] = 0;
     pPic->iLineSize[2] = 0;
-    
+
     pPic->iFlags &= ~DVP_FLAG_ALLOCATED;
     pPic->iFlags &= ~DVP_FLAG_LIBMPEG2_ALLOCATED;
     if (m_pCurrentBuffer == pPic) m_pCurrentBuffer = NULL;
@@ -187,7 +187,7 @@ bool CDVDVideoCodecLibMpeg2::Open(CDVDStreamInfo &hints, CDVDCodecOptions &optio
 
 void CDVDVideoCodecLibMpeg2::Dispose()
 {
-  if (m_pHandle) 
+  if (m_pHandle)
     m_dll.mpeg2_close(m_pHandle);
 
   m_pHandle = NULL;
@@ -205,7 +205,7 @@ void CDVDVideoCodecLibMpeg2::SetDropState(bool bDrop)
   m_hurry = bDrop ? 1 : 0;
 }
 
-int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pts)
+int CDVDVideoCodecLibMpeg2::Decode(uint8_t* pData, int iSize, double dts, double pts)
 {
   int iState = 0;
   if (!m_pHandle) return VC_ERROR;
@@ -242,11 +242,11 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
         // Check for 4:2:2 here.
         if (m_pInfo->sequence->profile_level_id == MPEG_422_HL || m_pInfo->sequence->profile_level_id == MPEG_422_ML)
           m_bIs422 = true;
-        
+
         //New sequence of frames
         //Release all buffers
         ReleaseBuffer(NULL);
-        
+
         for (int i = 0; i < 3; i++)
         {
           //Setup all buffers we wish to use.
@@ -276,8 +276,8 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
         m_dts = DVD_NOPTS_VALUE;
 
         //Not too interesting really
-        //we can do everything when we get a full picture instead. simplifies things. 
-        
+        //we can do everything when we get a full picture instead. simplifies things.
+
         //if we want to we could setup the 3rd frame buffer here instead
         //but i see no point as of now.
 
@@ -295,7 +295,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             CLog::Log(LOGWARNING, "CDVDVideoCodecLibMpeg2::Decode - libmpeg2 discarded and internal frame");
         }
 
-        if( m_pInfo->display_fbuf && m_pInfo->display_picture && m_pInfo->sequence ) 
+        if( m_pInfo->display_fbuf && m_pInfo->display_picture && m_pInfo->sequence )
         {
           if(m_pInfo->display_fbuf->id)
           {
@@ -309,7 +309,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             //Detection of repeate frame patterns
             m_irffpattern = m_irffpattern << 1;
             if( pBuffer->iFlags & DVP_FLAG_REPEAT_TOP_FIELD ) m_irffpattern |= 1;
-            
+
             switch (m_pInfo->display_picture->flags & PIC_MASK_CODING_TYPE)
             {
               case PIC_FLAG_CODING_TYPE_I: pBuffer->iFrameType = FRAME_TYPE_I; break;
@@ -324,12 +324,14 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             else
               pBuffer->iFlags &= ~DVP_FLAG_DROPPED;
 
-            pBuffer->iDuration = m_pInfo->sequence->frame_period;            
+            pBuffer->iDuration = m_pInfo->sequence->frame_period;
 
             if( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) )  /* special case for ntsc 3:2 pulldown */
-              pBuffer->iDuration += pBuffer->iDuration / 4;
-            else if( pBuffer->iFlags & DVP_FLAG_REPEAT_TOP_FIELD ) 
-              pBuffer->iDuration = (pBuffer->iDuration * m_pInfo->current_picture->nb_fields) / 2;
+              pBuffer->iRepeatPicture = 0.25;
+            else if( pBuffer->iFlags & DVP_FLAG_REPEAT_TOP_FIELD )
+              pBuffer->iRepeatPicture = 0.5 * (m_pInfo->display_picture->nb_fields - 2);
+            else
+              pBuffer->iRepeatPicture = 0.0;
 
             //Mpeg frametime is calculated using a 27ghz clock.. pts and such normally a 90mhz clock
             pBuffer->iDuration /= (27000000 / DVD_TIME_BASE);
@@ -339,17 +341,17 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             //This is taken from how MPC handles it in Mpeg2DecFilter.cpp. Not sure this is entire correct
             //needs to be tested more
 
-            //First try to decide if we have film material            
-            if( !(m_pInfo->sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE) 
+            //First try to decide if we have film material
+            if( !(m_pInfo->sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE)
               && m_pInfo->display_picture->flags & PIC_FLAG_PROGRESSIVE_FRAME)
             { //We have a progressive frame in a nonprogressive sequence
 
                 if(!m_bFilm
 						  && ( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
-						    { 
+						    {
                   //We are not in film mode but we did find a repeat first frame
                   //Usually means material is in film and 3:2 pullup has been used
-                  //to generate the full ntsc format. 
+                  //to generate the full ntsc format.
                   //This also means the frames we get are usually progressive
 
                   CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::m_bFilm = true\n");
@@ -358,27 +360,27 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
 						    else if(m_bFilm
 						  && !( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
 						    {
-                  //Crap a progressive frame in a nonprogressive sequence that 
+                  //Crap a progressive frame in a nonprogressive sequence that
                   //doesn't have hte repeat flag set. No idea what format the
                   //material is in
 
 							    CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::m_bFilm = false\n");
 							    m_bFilm = false;
-						    }              
+						    }
               }
-            
+
             // Quoted from MPC Source (Mpeg2DecFilter.cpp)
 						//// big trouble here, the progressive_frame bit is not reliable :'(
-						//// frames without temporal field diffs can be only detected when ntsc 
-						//// uses the repeat field flag (signaled with m_fFilm), if it's not set 
-						//// or we have pal then we might end up blending the fields unnecessarily...            
+						//// frames without temporal field diffs can be only detected when ntsc
+						//// uses the repeat field flag (signaled with m_fFilm), if it's not set
+						//// or we have pal then we might end up blending the fields unnecessarily...
 
             if( m_pInfo->sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE )
             { //We've got a progressive sequence
               pBuffer->iFlags &= ~DVP_FLAG_INTERLACED;
             }
             else if( (m_pInfo->sequence->flags & SEQ_MASK_VIDEO_FORMAT) == SEQ_VIDEO_FORMAT_NTSC || (m_pInfo->sequence->flags & SEQ_MASK_VIDEO_FORMAT) == SEQ_VIDEO_FORMAT_UNSPECIFIED )
-            { 
+            {
               //This stuff can be quite messy as film based material can be 24 fps progressive
               if( m_bFilm )
               { //Film material, not interlaced
@@ -394,7 +396,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
               }
             }
             else
-            { 
+            {
               //Okey not a progressive sequence and we have no idea if this is really progressive
               //have to assume it is not
               pBuffer->iFlags |= DVP_FLAG_INTERLACED;
@@ -407,11 +409,11 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             pBuffer->iDisplayHeight = m_pInfo->sequence->display_height;
 
             //Try to figure out aspect ratio based on video frame
-            //in the case of dvd video, we should actually override this 
+            //in the case of dvd video, we should actually override this
             //based on what libdvdnav gives us.
             unsigned int pixel_x = m_pInfo->sequence->pixel_width;
             unsigned int pixel_y = m_pInfo->sequence->pixel_height;
-            
+
             GuessAspect(m_pInfo->sequence, &pixel_x, &pixel_y);
 
             // modify our displaywidth to suit
@@ -421,7 +423,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             // make sure we send the color coeficients with the image
             pBuffer->color_matrix = m_pInfo->sequence->matrix_coefficients;
             pBuffer->color_range = 0; // mpeg2 always have th 16->235/229 color range
-        
+
             TagUnion u;
             u.tag.l = m_pInfo->display_picture->tag;
             u.tag.u = m_pInfo->display_picture->tag2;
@@ -430,7 +432,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
             m_dts2 = DVD_NOPTS_VALUE;
 
             // only return this if it's not first image or an I frame
-            if(m_pCurrentBuffer || pBuffer->iFrameType == FRAME_TYPE_I || pBuffer->iFrameType == FRAME_TYPE_UNDEF )              
+            if(m_pCurrentBuffer || pBuffer->iFrameType == FRAME_TYPE_I || pBuffer->iFrameType == FRAME_TYPE_UNDEF )
             {
               m_pCurrentBuffer = pBuffer;
               return VC_PICTURE;
@@ -451,7 +453,7 @@ int CDVDVideoCodecLibMpeg2::Decode(BYTE* pData, int iSize, double dts, double pt
     iState = m_dll.mpeg2_parse(m_pHandle);
   }
 
-  if (iState == STATE_BUFFER) 
+  if (iState == STATE_BUFFER)
     return VC_BUFFER;
 
   CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::Decode error");
@@ -478,13 +480,13 @@ bool CDVDVideoCodecLibMpeg2::GetPicture(DVDVideoPicture* pDvdVideoPicture)
   if(m_pCurrentBuffer && m_pCurrentBuffer->iFlags & DVP_FLAG_ALLOCATED)
   {
     memcpy(pDvdVideoPicture, m_pCurrentBuffer, sizeof(DVDVideoPicture));
-    
+
     // If we're decoding a 4:2:2 image, we need to skip every other line to get
     // down to 4:2:0. We lose image quality, but hopefully nobody will notice.
     //
     if (m_bIs422)
       pDvdVideoPicture->iLineSize[2] <<= 1;
-    
+
     pDvdVideoPicture->format = DVDVideoPicture::FMT_YUV420P;
     return true;
   }
@@ -496,7 +498,7 @@ bool CDVDVideoCodecLibMpeg2::GetUserData(DVDVideoUserData* pDvdVideoUserData)
 {
   if (pDvdVideoUserData && m_pInfo && m_pInfo->user_data && m_pInfo->user_data_len > 0)
   {
-    pDvdVideoUserData->data = (BYTE*)m_pInfo->user_data;
+    pDvdVideoUserData->data = (uint8_t*)m_pInfo->user_data;
     pDvdVideoUserData->size = m_pInfo->user_data_len;
     return true;
   }
