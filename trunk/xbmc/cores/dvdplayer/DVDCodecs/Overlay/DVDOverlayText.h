@@ -38,6 +38,7 @@ public:
   public:
     CElement(ElementType type)
     {
+      pNext = NULL;
       m_type = type;
     }
     

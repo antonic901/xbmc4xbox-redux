@@ -34,6 +34,7 @@ CDVDAudioCodecFFmpeg::CDVDAudioCodecFFmpeg() : CDVDAudioCodec()
   m_pConvert = NULL;
   m_bOpenedCodec = false;
   m_pFrame1 = NULL;
+  m_iSampleFormat = AV_SAMPLE_FMT_NONE;
 }
 
 CDVDAudioCodecFFmpeg::~CDVDAudioCodecFFmpeg()

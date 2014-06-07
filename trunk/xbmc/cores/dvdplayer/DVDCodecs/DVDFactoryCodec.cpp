@@ -201,17 +201,21 @@ CDVDOverlayCodec* CDVDFactoryCodec::CreateOverlayCodec( CDVDStreamInfo &hint )
     case AV_CODEC_ID_SUBRIP:
       pCodec = OpenCodec(new CDVDOverlayCodecText(), hint, options);
       if( pCodec ) return pCodec;
+      break;
 
     case AV_CODEC_ID_SSA:
       pCodec = OpenCodec(new CDVDOverlayCodecSSA(), hint, options);
       if( pCodec ) return pCodec;
+      break;
 
       pCodec = OpenCodec(new CDVDOverlayCodecText(), hint, options);
       if( pCodec ) return pCodec;
+      break;
 
     default:
       pCodec = OpenCodec(new CDVDOverlayCodecFFmpeg(), hint, options);
       if( pCodec ) return pCodec;
+      break;
   }
 
   return NULL;
