@@ -110,7 +110,8 @@ CDVDPlayerAudio::CDVDPlayerAudio(CDVDClock* pClock, CDVDMessageQueue& parent)
   m_syncclock = true;
 
   m_freq = CurrentHostFrequency();
-  m_decode.Release();
+
+  m_decode.msg = NULL;
   m_messageQueue.SetMaxDataSize(g_guiSettings.GetInt("dvdplayercache.audio") * 1024);
   m_messageQueue.SetMaxTimeSize(g_guiSettings.GetInt("dvdplayercache.audiotime"));
   g_dvdPerformanceCounter.EnableAudioQueue(&m_messageQueue);
