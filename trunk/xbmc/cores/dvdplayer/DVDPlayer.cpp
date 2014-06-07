@@ -694,16 +694,19 @@ bool CDVDPlayer::ReadPacket(DemuxPacket*& packet, CDemuxStream*& stream)
     if(packet->iStreamId < 0)
       return true;
 
-    stream = m_pDemuxer->GetStream(packet->iStreamId);
-    if (!stream)
+    if(m_pDemuxer)
     {
-      CLog::Log(LOGERROR, "%s - Error demux packet doesn't belong to a valid stream", __FUNCTION__);
-      return false;
-    }
-    if(stream->source == STREAM_SOURCE_NONE)
-    {
-      m_SelectionStreams.Clear(STREAM_NONE, STREAM_SOURCE_DEMUX);
-      m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
+      stream = m_pDemuxer->GetStream(packet->iStreamId);
+      if (!stream)
+      {
+        CLog::Log(LOGERROR, "%s - Error demux packet doesn't belong to a valid stream", __FUNCTION__);
+        return false;
+      }
+      if(stream->source == STREAM_SOURCE_NONE)
+      {
+        m_SelectionStreams.Clear(STREAM_NONE, STREAM_SOURCE_DEMUX);
+        m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
+      }
     }
     return true;
   }

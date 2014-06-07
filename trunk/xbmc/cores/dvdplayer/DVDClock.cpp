@@ -36,6 +36,7 @@ CDVDClock::CDVDClock()
   m_pauseClock.QuadPart = 0;
   m_bReset = true;
   m_iDisc = 0;
+  m_startClock.QuadPart = 0;
 }
 
 CDVDClock::~CDVDClock()
