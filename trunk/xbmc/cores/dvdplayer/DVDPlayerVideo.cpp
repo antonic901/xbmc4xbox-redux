@@ -91,7 +91,6 @@ CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
   m_fFrameRate = 25;
   m_droptime = 0.0;
   m_dropbase = 0.0;
-  m_autosync = 1;
   memset(&m_output, 0, sizeof(m_output));
 }
 
@@ -155,7 +154,6 @@ void CDVDPlayerVideo::OpenStream(CDVDStreamInfo &hint, CDVDVideoCodec* codec)
 
   m_iDroppedRequest = 0;
   m_iLateFrames = 0;
-  m_autosync = 1;
 
   if( m_fFrameRate > 100 || m_fFrameRate < 5 )
   {
@@ -903,7 +901,7 @@ int CDVDPlayerVideo::OutputPicture(DVDVideoPicture* pPicture, double pts)
   if( m_stalled )
     iSleepTime = iFrameSleep;
   else
-    iSleepTime = iFrameSleep + (iClockSleep - iFrameSleep) / m_autosync;
+    iSleepTime = iClockSleep;
 
 #ifdef PROFILE /* during profiling, try to play as fast as possible */
   iSleepTime = 0;
