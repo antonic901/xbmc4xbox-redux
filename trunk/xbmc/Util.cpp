@@ -40,6 +40,7 @@
 #include "ThumbnailCache.h"
 #include "FileSystem/ZipManager.h"
 #include "FileSystem/RarManager.h"
+#include "FileSystem/MythDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
 #ifdef HAS_UPNP
 #include "FileSystem/UPnPDirectory.h"
@@ -3551,8 +3552,12 @@ bool CUtil::SupportsFileOperations(const CStdString& strPath)
     return true;
   if (URIUtils::IsMythTV(strPath))
   {
-    CURL url(strPath);
-    return url.GetFileName().Left(11).Equals("recordings/") && url.GetFileName().length() > 11;
+    /*
+     * Can't use CFile::Exists() to check whether the myth:// path supports file operations because
+     * it hits the directory cache on the way through, which has the Live Channels and Guide
+     * items cached.
+     */
+    return CMythDirectory::SupportsFileOperations(strPath);
   }
   if (URIUtils::IsStack(strPath))
   {
