@@ -40,7 +40,7 @@ CPTSOutputQueue::CPTSOutputQueue()
   Flush();
 }
 
-void CPTSOutputQueue::Add(double pts, double delay, double duration)
+void CPTSOutputQueue::Add(double pts, double delay, double duration, double timestamp)
 {
   CSingleLock lock(m_sync);
 
@@ -51,7 +51,7 @@ void CPTSOutputQueue::Add(double pts, double delay, double duration)
 
   TPTSItem item;
   item.pts = pts;
-  item.timestamp = CDVDClock::GetAbsoluteClock() + delay;
+  item.timestamp = timestamp + delay;
   item.duration = duration;
 
   // first one is applied directly
@@ -62,7 +62,7 @@ void CPTSOutputQueue::Add(double pts, double delay, double duration)
 
   // call function to make sure the queue
   // doesn't grow should nobody call it
-  Current();
+  Current(timestamp);
 }
 void CPTSOutputQueue::Flush()
 {
@@ -74,7 +74,7 @@ void CPTSOutputQueue::Flush()
   m_current.duration = 0.0;
 }
 
-double CPTSOutputQueue::Current()
+double CPTSOutputQueue::Current(double timestamp)
 {
   CSingleLock lock(m_sync);
 
@@ -84,7 +84,7 @@ double CPTSOutputQueue::Current()
     m_queue.pop();
   }
 
-  while( !m_queue.empty() && CDVDClock::GetAbsoluteClock() >= m_queue.front().timestamp )
+  while( !m_queue.empty() && timestamp >= m_queue.front().timestamp )
   {
     m_current = m_queue.front();
     m_queue.pop();
@@ -92,7 +92,7 @@ double CPTSOutputQueue::Current()
 
   if( m_current.timestamp == 0 ) return m_current.pts;
 
-  return m_current.pts + min(m_current.duration, (CDVDClock::GetAbsoluteClock() - m_current.timestamp));
+  return m_current.pts + min(m_current.duration, (timestamp - m_current.timestamp));
 }
 
 
@@ -314,7 +314,9 @@ DWORD CDVDAudio::AddPackets(const DVDAudioFrame &audioframe)
   }
 
   double time_added = DVD_SEC_TO_TIME(m_SecondsPerByte * (data - audioframe.data));
-  m_time.Add(audioframe.pts, GetDelay() - time_added, audioframe.duration);
+  double delay      = GetDelay();
+  double timestamp  = CDVDClock::GetAbsoluteClock();
+  m_time.Add(audioframe.pts, delay - time_added, audioframe.duration, timestamp);
 
   return total;
 }
@@ -445,5 +447,12 @@ void CDVDAudio::SetPlayingPts(double pts)
 {
   CSingleLock lock (m_critSection);
   m_time.Flush();
-  m_time.Add(pts, GetDelay(), 0);
+  double delay     = GetDelay();
+  double timestamp = CDVDClock::GetAbsoluteClock();
+  m_time.Add(pts, delay, 0, timestamp);
+}
+
+double CDVDAudio::GetPlayingPts()
+{
+  return m_time.Current(CDVDClock::GetAbsoluteClock());
 }
