@@ -31,5 +31,7 @@ public:
   static void FreePicture(DVDVideoPicture* pPicture);
   static bool CopyPicture(DVDVideoPicture* pDst, DVDVideoPicture* pSrc);
   static bool CopyPicture(YV12Image* pDst, DVDVideoPicture *pSrc);
+  
+  static double NormalizeFrameduration(double framerate);
 };
 
