@@ -673,7 +673,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
       pItem->m_bIsFolder=true;
 
     if (g_guiSettings.GetBool("filelists.allowfiledeletion") &&
-        CUtil::SupportsFileOperations(strDeletePath))
+        CUtil::SupportsWriteFileOperations(strDeletePath))
     {
       pItem->SetPath(strDeletePath);
       CGUIWindowVideoBase::OnDeleteItem(pItem);

@@ -303,12 +303,12 @@ void CMultiPathDirectory::MergeItems(CFileItemList &items)
   CLog::Log(LOGDEBUG, "CMultiPathDirectory::MergeItems, items = %i,  took %ld ms", items.Size(), GetTickCount()-dwTime);
 }
 
-bool CMultiPathDirectory::SupportsFileOperations(const CStdString &strPath)
+bool CMultiPathDirectory::SupportsWriteFileOperations(const CStdString &strPath)
 {
   vector<CStdString> paths;
   GetPaths(strPath, paths);
   for (unsigned int i = 0; i < paths.size(); ++i)
-    if (CUtil::SupportsFileOperations(paths[i]))
+    if (CUtil::SupportsWriteFileOperations(paths[i]))
       return true;
   return false;
 }

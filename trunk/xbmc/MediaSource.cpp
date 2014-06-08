@@ -31,7 +31,7 @@ using namespace XFILE;
 
 bool CMediaSource::IsWritable() const
 {
-  return CUtil::IsWritable(strPath);
+  return CUtil::SupportsWriteFileOperations(strPath);
 }
 
 void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString &name, const vector<CStdString> &paths)

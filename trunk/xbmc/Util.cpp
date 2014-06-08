@@ -3541,7 +3541,7 @@ float CUtil::CurrentCpuUsage()
   return (1.0f - g_application.m_idleThread.GetRelativeUsage())*100;
 }
 
-bool CUtil::SupportsFileOperations(const CStdString& strPath)
+bool CUtil::SupportsWriteFileOperations(const CStdString& strPath)
 {
   // currently only hd and smb support delete and rename
   if (URIUtils::IsHD(strPath))
@@ -3555,17 +3555,25 @@ bool CUtil::SupportsFileOperations(const CStdString& strPath)
      * it hits the directory cache on the way through, which has the Live Channels and Guide
      * items cached.
      */
-    return CMythDirectory::SupportsFileOperations(strPath);
+    return CMythDirectory::SupportsWriteFileOperations(strPath);
   }
   if (URIUtils::IsStack(strPath))
-    return SupportsFileOperations(CStackDirectory::GetFirstStackedFile(strPath));
+    return SupportsWriteFileOperations(CStackDirectory::GetFirstStackedFile(strPath));
   if (URIUtils::IsMultiPath(strPath))
-    return CMultiPathDirectory::SupportsFileOperations(strPath);
+    return CMultiPathDirectory::SupportsWriteFileOperations(strPath);
 #ifdef HAS_XBOX_HARDWARE
   if (URIUtils::IsMemCard(strPath) && g_memoryUnitManager.IsDriveWriteable(strPath))
     return true;
 #endif
   return false;
+}
+
+bool CUtil::SupportsReadFileOperations(const CStdString& strPath)
+{
+  if (URIUtils::IsVideoDb(strPath))
+    return false;
+
+  return true;
 }
 
 CStdString CUtil::GetCachedAlbumThumb(const CStdString& album, const CStdString& artist)
