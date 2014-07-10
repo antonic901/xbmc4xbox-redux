@@ -507,7 +507,7 @@ CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
       if (strTemp[0] == '(')
       {
         // remove ((something))
-        int i = strTemp.find_first_of(')');
+        size_t i = strTemp.find_first_of("),;");
         strTemp.erase(0, i + 2);
       }
     }
