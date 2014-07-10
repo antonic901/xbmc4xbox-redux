@@ -775,8 +775,8 @@ void URIUtils::AddSlashAtEnd(CStdString& strFolder)
       AddSlashAtEnd(file);
       url.SetFileName(file);
       strFolder = url.Get();
-      return;
     }
+    return;
   }
 
   if (!HasSlashAtEnd(strFolder))
