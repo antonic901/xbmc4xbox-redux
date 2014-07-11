@@ -73,8 +73,7 @@ id3_ucs4_t* CID3Tag::StringCharsetToUcs4(const CStdString& str) const
 
 bool CID3Tag::Read(const CStdString& strFile)
 {
-  if (!m_dll.IsLoaded())
-    m_dll.Load();
+  m_dll.Load();
 
   CTag::Read(strFile);
 
@@ -202,8 +201,7 @@ bool CID3Tag::Parse()
 
 bool CID3Tag::Write(const CStdString& strFile)
 {
-  if (!m_dll.IsLoaded())
-    m_dll.Load();
+  m_dll.Load();
 
   CTag::Read(strFile);
 
@@ -482,8 +480,7 @@ void CID3Tag::SetCompilation(bool compilation)
 
 CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
 {
-  if (!m_dll.IsLoaded())
-    m_dll.Load();
+  m_dll.Load();
 
   CStdString strTemp = str;
   set<CStdString> setGenres;
