@@ -11,7 +11,6 @@ __all__ = [
 
 
 # Modules general
-#import os
 import sys
 
 from traceback import print_exc
@@ -20,14 +19,9 @@ import xml.etree.cElementTree as ET
 
 # Modules custom
 try:
-    #from specialpath import *
-    #from utilities import *
     from Item import TYPE_ADDON, TYPE_ADDON_MUSIC, TYPE_ADDON_PICTURES, TYPE_ADDON_PROGRAMS, TYPE_ADDON_VIDEO, TYPE_ADDON_MODULE, TYPE_ADDON_REPO, TYPE_ADDON_SCRIPT
 except:
     print_exc()
-
-#FONCTION POUR RECUPERER LES LABELS DE LA LANGUE.
-_ = sys.modules[ "__main__" ].__language__
 
 
 # Types of Extension
@@ -281,52 +275,4 @@ class ListItemFromXML:
             result = itemInfo
         return result
 
-
-#
-#    # List the main categories at the root level
-#    for entry in dicdata:
-#        if Item.isSupported( categories[ entry['xbmc_type'] ] ):
-#            item = {}
-#            item['id']                = int( entry['id'] )
-#            item['name']              = entry['title']#.encode( "utf8" )
-#            item['parent']            = int( entry['idparent'] )
-#            item['downloadurl']       = entry['fileurl']
-#            item['type']              = entry['type']#'CAT'
-#            item['totaldownloads']    = entry['totaldownloads']
-#            item['xbmc_type']         = categories[ entry['xbmc_type'] ]
-#            #item['cattype']           = entry
-#            if LANGUAGE_IS_FRENCH:
-#                item['description']       = self.strip_off_passionCDT( unescape( urllib.unquote( entry['description'] ) ) )#.encode("cp1252").
-#            else:
-#                item['description']       = self.strip_off_passionCDT( unescape( urllib.unquote( entry['description_en'] ) ) )#.encode("cp1252").decode('string_escape')
-#            if item['description'] == 'None':
-#                item['description'] = _( 604 )
-#            item['language']          = entry['script_language']
-#            item['version']           = entry['version']
-#            item['author']            = entry['author']
-#            item['date']              = entry['createdate']
-#            if entry['date'] != '':
-#                item['added'] = strftime( '%d-%m-%Y', localtime( int (entry['date'] ) ) )
-#            else:
-#                item['added'] = entry['date']
-#            if entry['filesize'] != '':
-#                item['filesize'] = int( entry['filesize'] )
-#            else:
-#                item['filesize'] = 0 # ''
-#            item['thumbnail']         = Item.get_thumb( item['xbmc_type'] )
-#            item['previewpictureurl'] = entry['image']
-#            item['previewpicture']    = ""#Item.get_thumb( entry )
-#            item['image2retrieve']    = False # Temporary patch for reseting the flag after downlaad (would be better in the thread in charge of the download)
-#
-#            item['orginalfilename']     = entry['orginalfilename']
-#            #TODO: deprecated??? Check server side
-#            item['fileexternurl']     = "None"
-#            self._setDefaultImages( item )
-#            list.append(item)
-#            print item
-#        else:
-#            print "Type not supported by the installer:"
-#            print entry
-#
-#    return list
 

@@ -17,46 +17,15 @@ import os
 import sys
 import pickle
 
-#import urllib
 import xbmc
 import xbmcgui
-#import xbmcplugin
 from traceback import print_exc
 
-
-__script__       = sys.modules[ "__main__" ].__script__
-__plugin__       = sys.modules[ "__main__" ].__plugin__
-__author__       = sys.modules[ "__main__" ].__author__
-__url__          = sys.modules[ "__main__" ].__url__
-__svn_url__      = sys.modules[ "__main__" ].__svn_url__
-__credits__      = sys.modules[ "__main__" ].__credits__
-__platform__     = sys.modules[ "__main__" ].__platform__
-__date__         = sys.modules[ "__main__" ].__date__
-__version__      = sys.modules[ "__main__" ].__version__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
-__XBMC_Revision__= sys.modules[ "__main__" ].__XBMC_Revision__
 __language__     = sys.modules[ "__main__" ].__language__
-
-ROOTDIR            = sys.modules[ "__main__" ].ROOTDIR
-BASE_RESOURCE_PATH = sys.modules[ "__main__" ].BASE_RESOURCE_PATH
-LIBS_PATH          = sys.modules[ "__main__" ].LIBS_PATH
-MEDIA_PATH         = sys.modules[ "__main__" ].MEDIA_PATH
-PERSIT_REPO_LIST   = sys.modules[ "__main__" ].PERSIT_REPO_LIST
-
-
-
-__platform__ = "xbmc media center, [%s]" % xbmc.__platform__
-__language__ = xbmc.Language( ROOTDIR ).getLocalizedString
-
 
 # Custom modules
 try:
-    #from globalvars import SPECIAL_HOME_DIR, DIR_ADDON_MODULE, DIR_ADDON_REPO, DIR_CACHE, VALUE_LIST_LOCAL_REPOS, PARAM_INSTALL_FROM_ZIP, PARAM_LISTTYPE
-    #from globalvars import SPECIAL_HOME_DIR
-    #from FileManager import fileMgr
     from Item import get_install_path, MISSING_MODULES_PATH, TYPE_ADDON_REPO, TYPE_ADDON_MODULE, TYPE_ADDON_VIDEO, TYPE_ADDON_MUSIC, TYPE_ADDON_PROGRAMS, TYPE_ADDON_PICTURES, TYPE_ADDON_SCRIPT
-    #from utilities import RecursiveDialogProgress
-    #from XmlParser import ListItemFromXML, parseAddonXml
     from XmlParser import parseAddonXml
     from utilities import versionsCmp, readURL, PersistentDataCreator, PersistentDataRetriever
 except:
@@ -232,8 +201,6 @@ class AddonsMgr:
         xbmc.log("_run_addon %s", xbmc.LOGDEBUG)
         result = True
         if ( type == TYPE_ADDON_VIDEO ):
-            #command = "XBMC.ActivateWindow(10025,plugin://addons/%s/)" % ( addon_basename, )
-            #command = "RunPlugin(%s)" % ( os.path.join( get_install_path( type ), addon_basename ))
             command = "XBMC.ActivateWindow(10025,%s/)" % ( os.path.join( get_install_path( type ), addon_basename) )
 
         elif ( type == TYPE_ADDON_MUSIC ):
@@ -271,28 +238,3 @@ class AddonsMgr:
             dialogYesNo = xbmcgui.Dialog()
             result = dialogYesNo.yesno(title, message1, message2, message3)
         return result
-
-#class AddonLocalInfo:
-#    import md5
-#    def _load_downloaded_property( self ):
-#        self.downloaded_property = set()
-#        try:
-#            file_path = os.path.join( SPECIAL_SCRIPT_DATA, "downloaded.txt" )
-#            if os.path.exists( file_path ):
-#                self.downloaded_property = eval( file( file_path, "r" ).read() )
-#        except:
-#            print_exc()
-#
-#    def _save_downloaded_property( self ):
-#        try:
-#            self._load_downloaded_property()
-#            selected_label = self.getListItem( self.getCurrentListPosition() ).getLabel()
-#            self.downloaded_property.update( [ md5.new( selected_label ).hexdigest() ] )
-#            file_path = os.path.join( SPECIAL_SCRIPT_DATA, "downloaded.txt" )
-#            file( file_path, "w" ).write( repr( self.downloaded_property ) )
-#        except:
-#            print_exc()
-#        else:
-#            self.getListItem( self.getCurrentListPosition() ).setProperty( "Downloaded", "isDownloaded" )
-
-

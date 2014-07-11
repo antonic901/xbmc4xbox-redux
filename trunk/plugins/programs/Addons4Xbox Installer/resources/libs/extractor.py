@@ -26,7 +26,7 @@ try:
     #FONCTION POUR RECUPERER LES LABELS DE LA LANGUE.
     _ = sys.modules[ "__main__" ].__language__
 except:
-    lang = { 110: "Please wait...", 187: "UnRar: %i of %i items", 188: "UnZip: %i of %i items" }
+    lang = { 30110: "Please wait...", 30187: "UnRar: %i of %i items", 30188: "UnZip: %i of %i items" }
     def _( id ): return lang[ id ]
 
 
@@ -110,7 +110,7 @@ def unrar( filename, destination=None, report=False ):
                     if report:
                         if DIALOG_PROGRESS.iscanceled():
                             break
-                        DIALOG_PROGRESS.update( int( percent ), _( 187 ) % ( list_size, total_items ), file, _( 110 ) )
+                        DIALOG_PROGRESS.update( int( percent ), _( 30187 ) % ( list_size, total_items ), file, _( 30110 ) )
                         #print round( percent, 2 ), file
                     if file in namelist:
                         size += os.path.getsize( os.path.join( root, file ) )
@@ -170,7 +170,7 @@ def unzip( filename, destination=None, report=False ):
             if report:
                 if DIALOG_PROGRESS.iscanceled():
                     break
-                DIALOG_PROGRESS.update( int( percent ), _( 188 ) % ( count + 1, total_items ), item, _( 110 ) )
+                DIALOG_PROGRESS.update( int( percent ), _( 30188 ) % ( count + 1, total_items ), item, _( 30110 ) )
             if not item.endswith( "/" ):
                 root, name = os.path.split( item )
                 directory = os.path.normpath( os.path.join( destination, root.replace(root_dir.rstrip( "/" ),root_dir.rstrip( "/" )[:42]) ) )
@@ -233,13 +233,6 @@ def extract( filename, destination=None, report=False ):
         return unrar( filename, destination, report )
     elif type == "is_tar":
         return extract_tarfile( filename, destination )
-    #elif type == "is_7z":
-    #    # test for future support 7-zip archive, not supported for a moment
-    #    # mais il semblerais que le librairie "pylzma" marche bien, http://www.joachim-bauch.de/projects/python/pylzma/
-    #    # reste a compiler cette lib pour xbmc linux, win32/xbox et osx semble pas etre supporter
-    #    # Note faut compiler cette lib avec python 2.4, sinon elle sera pas compatible avec xbmc, pas certain a 100 pour 100.
-    #    #ok = executebuiltin( 'XBMC.Extract(%s)' % ( filename, ) )
-    #    print "L'archive '%s' n'est pas pris en charge..." % os.path.basename( filename )
     else:
         print "L'archive '%s' n'est pas pris en charge..." % os.path.basename( filename )
 

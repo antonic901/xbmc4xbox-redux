@@ -16,7 +16,7 @@ __svn_url__      = "http://passion-xbmc.googlecode.com/svn/trunk/plugins/program
 __credits__      = "Team XBMC Passion"
 __platform__     = "xbmc media center [XBOX]"
 __date__         = "2014-05-07"
-__version__      = "0.13.0"
+__version__      = "0.13.1"
 __svn_revision__ = 0
 __XBMC_Revision__= 30805
 
@@ -48,8 +48,6 @@ LIBS_PATH          = os.path.join( BASE_RESOURCE_PATH, "libs" )
 MEDIA_PATH         = os.path.join( BASE_RESOURCE_PATH, "media" )
 PERSIT_REPO_LIST   = "repo_list.txt"
 
-# URLs
-#REPO_LIST_URL = "http://wiki.xbmc.org/index.php?title=Unofficial_Add-on_Repositories"
 REPO_LIST_URL_LIST = ["http://wiki.xbmc.org/index.php?title=Unofficial_Add-on_Repositories",
                       "http://home.brantje.com/xbmcrepositories/Unofficial-add-on-repositories-XBMC.htm" ]
 
@@ -63,10 +61,6 @@ try:
     from resources.libs.PluginMgr import PluginMgr
 except:
     print_exc()
-
-# get xbmc run under?
-#platform = os.environ.get( "OS", "xbox" )
-
 
 class Addons4xboxInstallerPlugin:
     """

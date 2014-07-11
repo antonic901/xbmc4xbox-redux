@@ -19,10 +19,6 @@ except:
     print_exc()
 
 
-#FONCTION POUR RECUPERER LES LABELS DE LA LANGUE.
-_ = sys.modules[ "__main__" ].__language__
-
-
 class LocalArchiveInstaller(ArchItemInstaller):
     """
     Download an item on Passion XBMC http server and install it

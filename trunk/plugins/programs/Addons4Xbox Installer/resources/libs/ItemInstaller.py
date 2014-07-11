@@ -12,10 +12,7 @@ from time import sleep
 try:
     from Item import *
     from FileManager import fileMgr
-    #from utilities import copy_dir, copy_inside_dir
-    #from specialpath import *
     from XmlParser import parseAddonXml
-    #from globalvars import DIR_CACHE
 except:
     print_exc()
 
@@ -116,9 +113,6 @@ class ItemInstaller:
         """
         Return the real name (not the path) of the item
         """
-#        name = None
-#        if hasattr( self.itemInfo, "name" ):
-#            name = self.itemInfo[ "name" ]
         return self.itemInfo[ "name" ]
 
     def getItemId( self ):
@@ -151,8 +145,6 @@ class ItemInstaller:
         #TODO: return path or name in both scenario
 
         paths = []
-        #if hasattr( self.itemInfo, "install_path" ):
-        # Directory case
         paths.append( self.itemInfo[ "install_path" ] )
         return paths
 
@@ -216,7 +208,7 @@ class ItemInstaller:
         process_error = False
         percent = 0
         if progressBar != None:
-            progressBar.update( percent, _( 176 ), self.itemInfo [ "temp_item_path" ] )
+            progressBar.update( percent, _( 30176 ), self.itemInfo [ "temp_item_path" ] )
         if ( ( self.itemInfo [ "temp_item_path" ] != None ) and ( self.itemInfo [ "install_path" ] != None ) ):
             # Let's get the dir name in the archive
             try:
@@ -234,7 +226,7 @@ class ItemInstaller:
         del extractor
         percent = 100
         if progressBar != None:
-            progressBar.update( percent, _( 176 ), ( self.itemInfo [ "temp_item_path" ] ) )
+            progressBar.update( percent, _( 30176 ), ( self.itemInfo [ "temp_item_path" ] ) )
         return OK
 
     def _renameItem4xbox( self, item, oldpath, newpath, itemName=None ):
@@ -282,14 +274,6 @@ class ItemInstaller:
             status = "UNCHANGED"
 
         return status
-
-#    def _save_addon_local_info( self ):
-#        #Install OK so save information for future update
-#        addonInfo = {}
-#        addonInfo['date']
-#        addonInfo['version']
-#        addonInfo['repository']
-
 
     def setItemInfo( self, itemName=None ):
         """
@@ -382,10 +366,7 @@ class ArchItemInstaller(ItemInstaller):
     Installer from an archive
     """
 
-    #def __init__( self , itemId, type, filesize ):
-    #def __init__( self , name, type ):
     def __init__( self ):
-        #ItemInstaller.__init__( self, itemId, type, filesize )
         ItemInstaller.__init__( self )
         self.itemInfo [ "install_path" ] = None
 
@@ -415,7 +396,7 @@ class ArchItemInstaller(ItemInstaller):
 
                 xbmc.log("extractItem - file_path: %s"%file_path, xbmc.LOGDEBUG)
                 if file_path == "":
-                    installError = _( 139 ) % os.path.basename( self.itemInfo[ "raw_item_path" ] )
+                    installError = _( 30139 ) % os.path.basename( self.itemInfo[ "raw_item_path" ] )
                     xbmc.log("ArchItemInstaller - extractItem: Error during the extraction of %s - impossible to extract the name of the directory " % os.path.basename( self.itemInfo [ "raw_item_path" ] ), xbmc.LOGNOTICE)
                     status = "ERROR"
                 else:
@@ -425,7 +406,7 @@ class ArchItemInstaller(ItemInstaller):
 
             percent = 100
             if progressBar != None:
-                progressBar.update( percent, _( 182 ), self.itemInfo [ "name" ] )
+                progressBar.update( percent, _( 30182 ), self.itemInfo [ "name" ] )
         else:
             xbmc.log("extractItem - Archive does not exist - extraction impossible", xbmc.LOGNOTICE)
             status = "ERROR"

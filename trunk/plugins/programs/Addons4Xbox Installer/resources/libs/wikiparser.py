@@ -11,11 +11,6 @@ from BeautifulSoup import SoupStrainer, BeautifulSoup
 from traceback import print_exc
 import re
 import urllib
-#
-# Constants
-#
-#__settings__ = sys.modules[ "__main__" ].__settings__
-#__language__ = sys.modules[ "__main__" ].__language__
 
 # Custom modules
 if ( __name__ != "__main__" ):

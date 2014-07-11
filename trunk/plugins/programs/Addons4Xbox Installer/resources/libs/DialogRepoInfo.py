@@ -52,12 +52,6 @@ __language__     = sys.modules[ "__main__" ].__language__
 
 ROOTDIR            = sys.modules[ "__main__" ].ROOTDIR
 
-#__settings__ = Addon( "repository.xbmc.builds" )
-#__addonDir__ = __settings__.getAddonInfo( "path" )
-
-#PROFILE_PATH = xbmc.translatePath( __settings__.getAddonInfo( "profile" ) )
-#DL_INFO_PATH = os.path.join( PROFILE_PATH, "iddl_data" )
-
 class Main:
     """
     Main plugin class
@@ -69,7 +63,6 @@ class Main:
         self.parameters = self.pluginMgr.parse_params()
 
         try:
-            #repoWindow = DialogRepoInfo( "DialogRepoInfo.xml", os.getcwd(), "Default", "720p" )
             repoWindow = DialogRepoInfo( "DialogRepoInfo.xml", ROOTDIR, "Default", "720p" )
 
             del repoWindow
@@ -84,7 +77,6 @@ class Main:
 
 class DialogRepoInfo( xbmcgui.WindowXMLDialog ):
 
-    #Addon = Addon( id=os.path.basename( os.getcwd() ) )
     ACTION_CLOSE_DIALOG_LIST = [ ACTION_PARENT_DIR, ACTION_PREVIOUS_MENU, ACTION_CONTEXT_MENU ]
 
     def __init__( self, *args, **kwargs ):

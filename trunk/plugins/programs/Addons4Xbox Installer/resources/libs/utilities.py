@@ -242,7 +242,7 @@ def get_infos_path( path, get_size=False, report_progress=None ):
                     size += os.path.getsize( path )
                     if report_progress:
                         #print "Size: %s", path
-                        report_progress.update( -1, sys.modules[ "__main__" ].__language__( 186 ), path, sys.modules[ "__main__" ].__language__( 361 ) + " %00s KB" % round( size / 1024.0, 2 ) )
+                        report_progress.update( -1, sys.modules[ "__main__" ].__language__( 30186 ), path, sys.modules[ "__main__" ].__language__( 361 ) + " %00s KB" % round( size / 1024.0, 2 ) )
                 except: pass
             elif get_size:
                 for root, dirs, files in os.walk( path ):#, topdown=False ):
@@ -253,7 +253,7 @@ def get_infos_path( path, get_size=False, report_progress=None ):
                                 size += os.path.getsize( fpath )
                                 if report_progress:
                                     #print "Size: %s", fpath
-                                    report_progress.update( -1, sys.modules[ "__main__" ].__language__( 186 ), fpath, sys.modules[ "__main__" ].__language__( 361 ) + " %00s KB" % round( size / 1024.0, 2 ) )
+                                    report_progress.update( -1, sys.modules[ "__main__" ].__language__( 30186 ), fpath, sys.modules[ "__main__" ].__language__( 361 ) + " %00s KB" % round( size / 1024.0, 2 ) )
                         except:
                             print "Size: %s" % fpath
         if size <= 0:
@@ -308,7 +308,7 @@ class RecursiveDialogProgress:
         try:
             #xbmcdp.update( percent )
             self._xbmcdp.update( percent, self._line1 % ( itemname ))
-            #xbmcdp.update( percent, _( 138 ) % ( filename ), _( 134 ) )
+            #xbmcdp.update( percent, _( 30138 ) % ( filename ), _( 30134 ) )
         except:
             percent = 100
             self._xbmcdp.update( percent )

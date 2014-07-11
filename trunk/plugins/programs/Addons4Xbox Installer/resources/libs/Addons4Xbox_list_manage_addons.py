@@ -1,7 +1,6 @@
 
 
 import os
-#import urllib
 import sys
 import xbmc
 import xbmcplugin

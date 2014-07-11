@@ -42,7 +42,7 @@ def copyfileobj(fsrc, fdst, reportcopy=None, size=1, length=16*1024, progressBar
         reportcopy(blocknum, length, size)
     if progressBar:
         percent = int( (blocknum * length * percentage) / size )
-        #progressBar.update( percent, _( 122 ) % ( self.name ), _( 134 ) )
+        #progressBar.update( percent, _( 30122 ) % ( self.name ), _( 30134 ) )
         progressBar.update( percent )
     while 1:
         buf = fsrc.read(length)

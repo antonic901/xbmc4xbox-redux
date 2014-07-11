@@ -14,9 +14,6 @@ from traceback import print_exc
 # timeout in seconds
 timeout = 3
 
-
-#modules XBMC
-#import xbmc
 import xbmcgui
 import xbmcplugin
 
@@ -26,17 +23,8 @@ try:
 except:
     print_exc()
 
-
-
-
-#BASE_SETTINGS_PATH = os.path.join( sys.modules[ "__main__" ].SPECIAL_SCRIPT_DATA, "settings.txt" )
-#RSS_FEEDS_XML = os.path.join( CWD, "resources", "RssFeeds.xml" )
-
-#BASE_THUMBS_PATH = os.path.join( sys.modules[ "__main__" ].SPECIAL_SCRIPT_DATA, "Thumbnails" )
 MEDIA_PATH   = sys.modules[ "__main__" ].MEDIA_PATH
 __language__ = sys.modules[ "__main__" ].__language__
-
-
 
 class PluginMgr:
     """
@@ -86,9 +74,6 @@ class PluginMgr:
 
     def addLink( self, name, url, iconimage="DefaultProgram.png" ):
         ok=True
-        #TODO: reenable image downlaod, the checkURL freeze for whetever reason
-        #if ( ( iconimage !="DefaultProgram.png" ) and ( not checkURL(iconimage) ) ):
-        #    iconimage  = "DefaultProgram.png"
 
         liz=xbmcgui.ListItem( name, iconImage=iconimage, thumbnailImage=iconimage )
         liz.setInfo( type="Program", infoLabels={ "Title": name } )
@@ -113,11 +98,7 @@ class PluginMgr:
             labelTxt = itemInfo["name"] + ((" ("+ itemInfo['version'] + ")") or "")
         else:
             labelTxt = itemInfo["name"]
-#        descriptColor = self.colorList[ int( __settings__.getSetting( "descolor" ) ) ]
-#        if self.shortTitleDisplay:
-#            labelTxt = itemInfo["name"]
-#        else:
-#            labelTxt = itemInfo["name"] + ": " + self._coloring( itemInfo["description"], descriptColor )
+
         liz=xbmcgui.ListItem( label=labelTxt, iconImage=icon, thumbnailImage=icon )
         liz.setInfo( type="addons",
                      infoLabels={ "title": itemInfo["name"], "Plot": itemInfo["description"] } )
@@ -152,7 +133,6 @@ class PluginMgr:
         """
         Credit to ppic
         """
-        #u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem( name, iconImage=iconimage, thumbnailImage=iconimage )
         if c_items :
@@ -169,8 +149,6 @@ class PluginMgr:
         if ( OK ):
             try:
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-                #xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-                #xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
             except:
                 print_exc()
 

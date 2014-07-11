@@ -1,4 +1,8 @@
-﻿2014-05-07 Version 0.13.0 by BuZz
+﻿2014-07-11 Version 0.13.1 by BuZz
+- moved low language string ids to avoid conflicts
+- remove old commented out / unused code
+
+2014-05-07 Version 0.13.0 by BuZz
 - Removed debug logging and use xbmc.log
 - treat "None" as "0" for version chec
 
