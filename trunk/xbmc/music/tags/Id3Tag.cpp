@@ -507,7 +507,7 @@ CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
       if (strTemp[0] == '(')
       {
         // remove ((something))
-        size_t i = strTemp.find_first_of("),;");
+        int i = strTemp.find_first_of(')');
         strTemp.erase(0, i + 2);
       }
     }
@@ -518,7 +518,7 @@ CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
     else
     {
       CStdString t;
-      int i = strTemp.find_first_of("),;");
+      size_t i = strTemp.find_first_of("),;");
       if (i != std::string::npos)
       {
         t = strTemp.Left(i);
