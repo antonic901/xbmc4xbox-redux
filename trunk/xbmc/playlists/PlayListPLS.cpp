@@ -135,6 +135,11 @@ bool CPlayListPLS::Load(const CStdString &strFile)
           bFailed = true;
           break;
         }
+
+        // Skip self - do not load playlist recursively
+        if (URIUtils::GetFileName(strValue).Equals(URIUtils::GetFileName(strFileName)))
+          continue;
+
         if (m_vecItems[idx - 1]->GetLabel().empty())
           m_vecItems[idx - 1]->SetLabel(URIUtils::GetFileName(strValue));
         CFileItem item(strValue, false);
