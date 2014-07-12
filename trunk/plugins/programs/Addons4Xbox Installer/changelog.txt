@@ -1,4 +1,8 @@
-﻿2014-07-11 Version 0.13.1 by BuZz
+﻿2014-07-12 Version 0.13.2 by BuZz
+- fixed: removed too many globals from AddonsMgr.py - __version__ is needed
+- removed: some more globals
+ 
+2014-07-11 Version 0.13.1 by BuZz
 - moved low language string ids to avoid conflicts
 - remove old commented out / unused code
 

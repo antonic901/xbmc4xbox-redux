@@ -14,9 +14,9 @@ __author__       = "Temhil (http://passion-xbmc.org) / BuZz (http://www.xbmc4xbo
 __url__          = "http://passion-xbmc.org/index.php"
 __svn_url__      = "http://passion-xbmc.googlecode.com/svn/trunk/plugins/programs/Addons4xbox/"
 __credits__      = "Team XBMC Passion"
-__platform__     = "xbmc media center [XBOX]"
-__date__         = "2014-05-07"
-__version__      = "0.13.1"
+__platform__     = "XBMC4Xbox"
+__date__         = "2014-07-12"
+__version__      = "0.13.2"
 __svn_revision__ = 0
 __XBMC_Revision__= 30805
 

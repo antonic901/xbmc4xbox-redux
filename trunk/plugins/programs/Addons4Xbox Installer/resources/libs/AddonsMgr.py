@@ -22,6 +22,7 @@ import xbmcgui
 from traceback import print_exc
 
 __language__     = sys.modules[ "__main__" ].__language__
+__version__      = sys.modules[ "__main__" ].__version__
 
 # Custom modules
 try:
