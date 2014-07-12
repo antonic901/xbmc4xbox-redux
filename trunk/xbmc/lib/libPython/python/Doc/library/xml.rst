@@ -28,11 +28,12 @@ definition of the Python bindings for the DOM and SAX interfaces.
 The XML handling submodules are:
 
 * :mod:`xml.etree.ElementTree`: the ElementTree API, a simple and lightweight
+  XML processor
 
 ..
 
 * :mod:`xml.dom`: the DOM API definition
-* :mod:`xml.dom.minidom`: a lightweight DOM implementation
+* :mod:`xml.dom.minidom`: a minimal DOM implementation
 * :mod:`xml.dom.pulldom`: support for building partial DOM trees
 
 ..
@@ -94,7 +95,7 @@ external entity expansion
   content into the XML document.
 
 DTD retrieval
-  Some XML libraries like Python's mod:'xml.dom.pulldom' retrieve document type
+  Some XML libraries like Python's :mod:`xml.dom.pulldom` retrieve document type
   definitions from remote or local locations. The feature has similar
   implications as the external entity expansion issue.
 

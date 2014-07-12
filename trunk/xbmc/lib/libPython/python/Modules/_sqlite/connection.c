@@ -152,7 +152,10 @@ int pysqlite_connection_init(pysqlite_Connection* self, PyObject* args, PyObject
         Py_INCREF(isolation_level);
     }
     self->isolation_level = NULL;
-    pysqlite_connection_set_isolation_level(self, isolation_level);
+    if (pysqlite_connection_set_isolation_level(self, isolation_level) < 0) {
+        Py_DECREF(isolation_level);
+        return -1;
+    }
     Py_DECREF(isolation_level);
 
     self->statement_cache = (pysqlite_Cache*)PyObject_CallFunction((PyObject*)&pysqlite_CacheType, "Oi", self, cached_statements);
@@ -366,8 +369,7 @@ PyObject* pysqlite_connection_close(pysqlite_Connection* self, PyObject* args)
         if (self->apsw_connection) {
             ret = PyObject_CallMethod(self->apsw_connection, "close", "");
             Py_XDECREF(ret);
-            Py_XDECREF(self->apsw_connection);
-            self->apsw_connection = NULL;
+            Py_CLEAR(self->apsw_connection);
             self->db = NULL;
         } else {
             Py_BEGIN_ALLOW_THREADS

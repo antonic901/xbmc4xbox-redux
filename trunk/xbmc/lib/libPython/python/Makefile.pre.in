@@ -750,7 +750,8 @@ PYTHON_HEADERS= \
 		Include/warnings.h \
 		Include/weakrefobject.h \
 		pyconfig.h \
-		$(PARSER_HEADERS)
+		$(PARSER_HEADERS) \
+		$(AST_H)
 
 $(LIBRARY_OBJS) $(MODOBJS) Modules/python.o: $(PYTHON_HEADERS)
 
@@ -930,7 +931,9 @@ PLATMACDIRS= plat-mac plat-mac/Carbon plat-mac/lib-scriptpackages \
 PLATMACPATH=:plat-mac:plat-mac/lib-scriptpackages
 LIBSUBDIRS=	lib-tk lib-tk/test lib-tk/test/test_tkinter \
 		lib-tk/test/test_ttk site-packages test test/audiodata test/data \
-		test/cjkencodings test/decimaltestdata test/xmltestdata test/subprocessdata \
+		test/cjkencodings test/decimaltestdata test/xmltestdata \
+		test/imghdrdata \
+		test/subprocessdata \
 		test/tracedmodules \
 		encodings compiler hotshot \
 		email email/mime email/test email/test/data \
@@ -939,7 +942,8 @@ LIBSUBDIRS=	lib-tk lib-tk/test lib-tk/test/test_tkinter \
 		logging bsddb bsddb/test csv importlib wsgiref \
 		lib2to3 lib2to3/fixes lib2to3/pgen2 lib2to3/tests \
 		lib2to3/tests/data lib2to3/tests/data/fixers lib2to3/tests/data/fixers/myfixes \
-		ctypes ctypes/test ctypes/macholib idlelib idlelib/Icons \
+		ctypes ctypes/test ctypes/macholib \
+		idlelib idlelib/Icons idlelib/idle_test \
 		distutils distutils/command distutils/tests $(XMLLIBSUBDIRS) \
 		multiprocessing multiprocessing/dummy \
 		unittest unittest/test \
@@ -1263,6 +1267,7 @@ TAGS::
 
 # Touch generated files
 touch:
+	cd $(srcdir); \
 	touch Include/Python-ast.h Python/Python-ast.c
 
 # Sanitation targets -- clean leaves libraries, executables and tags

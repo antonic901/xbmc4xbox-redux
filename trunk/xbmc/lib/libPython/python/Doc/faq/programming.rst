@@ -149,7 +149,7 @@ There is a page on the wiki devoted to `performance tips
 <http://wiki.python.org/moin/PythonSpeed/PerformanceTips>`_.
 
 Guido van Rossum has written up an anecdote related to optimization at
-http://www.python.org/doc/essays/list2str.html.
+http://www.python.org/doc/essays/list2str.
 
 One thing to notice is that function and (especially) method calls are rather
 expensive; if you have designed a purely OO interface with lots of tiny
@@ -910,7 +910,7 @@ ability, try converting the string to a list or use the array module::
    >>> a = array.array('c', s)
    >>> print a
    array('c', 'Hello, world')
-   >>> a[0] = 'y' ; print a
+   >>> a[0] = 'y'; print a
    array('c', 'yello, world')
    >>> a.tostring()
    'yello, world'

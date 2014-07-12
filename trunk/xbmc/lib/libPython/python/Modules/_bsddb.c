@@ -950,8 +950,7 @@ newDBObject(DBEnvObject* arg, int flags)
      * DBTxns and closing any open DBs first. */
     if (makeDBError(err)) {
         if (self->myenvobj) {
-            Py_DECREF(self->myenvobj);
-            self->myenvobj = NULL;
+            Py_CLEAR(self->myenvobj);
         }
         Py_DECREF(self);
         self = NULL;
@@ -983,20 +982,16 @@ DB_dealloc(DBObject* self)
         PyObject_ClearWeakRefs((PyObject *) self);
     }
     if (self->myenvobj) {
-        Py_DECREF(self->myenvobj);
-        self->myenvobj = NULL;
+        Py_CLEAR(self->myenvobj);
     }
     if (self->associateCallback != NULL) {
-        Py_DECREF(self->associateCallback);
-        self->associateCallback = NULL;
+        Py_CLEAR(self->associateCallback);
     }
     if (self->btCompareCallback != NULL) {
-        Py_DECREF(self->btCompareCallback);
-        self->btCompareCallback = NULL;
+        Py_CLEAR(self->btCompareCallback);
     }
     if (self->dupCompareCallback != NULL) {
-        Py_DECREF(self->dupCompareCallback);
-        self->dupCompareCallback = NULL;
+        Py_CLEAR(self->dupCompareCallback);
     }
     Py_DECREF(self->private_obj);
     PyObject_Del(self);
@@ -1161,8 +1156,7 @@ DBEnv_dealloc(DBEnvObject* self)
             PyErr_Clear();
     }
 
-    Py_XDECREF(self->event_notifyCallback);
-    self->event_notifyCallback = NULL;
+    Py_CLEAR(self->event_notifyCallback);
 
     if (self->in_weakreflist != NULL) {
         PyObject_ClearWeakRefs((PyObject *) self);
@@ -1641,8 +1635,7 @@ DB_associate(DBObject* self, PyObject* args, PyObject* kwargs)
     MYDB_END_ALLOW_THREADS;
 
     if (err) {
-        Py_XDECREF(secondaryDB->associateCallback);
-        secondaryDB->associateCallback = NULL;
+        Py_CLEAR(secondaryDB->associateCallback);
         secondaryDB->primaryDBType = 0;
     }
 

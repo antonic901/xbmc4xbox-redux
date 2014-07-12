@@ -84,7 +84,7 @@ Terms and conditions for accessing or otherwise using Python
    analyze, test, perform and/or display publicly, prepare derivative works,
    distribute, and otherwise use Python |release| alone or in any derivative
    version, provided, however, that PSF's License Agreement and PSF's notice of
-   copyright, i.e., "Copyright © 2001-2013 Python Software Foundation; All Rights
+   copyright, i.e., "Copyright © 2001-2014 Python Software Foundation; All Rights
    Reserved" are retained in Python |release| alone or in any derivative version
    prepared by Licensee.
 
@@ -746,8 +746,8 @@ OpenSSL license here::
      *
      */
 
- Original SSLeay License
- -----------------------
+  Original SSLeay License
+  -----------------------
 
     /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
      * All rights reserved.

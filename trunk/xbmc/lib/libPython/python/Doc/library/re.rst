@@ -433,8 +433,8 @@ form.
 .. function:: compile(pattern, flags=0)
 
    Compile a regular expression pattern into a regular expression object, which
-   can be used for matching using its :func:`match` and :func:`search` methods,
-   described below.
+   can be used for matching using its :func:`~RegexObject.match` and
+   :func:`~RegexObject.search` methods, described below.
 
    The expression's behaviour can be modified by specifying a *flags* value.
    Values can be any of the following variables, combined using bitwise OR (the
@@ -527,7 +527,7 @@ form.
 
 .. function:: search(pattern, string, flags=0)
 
-   Scan through *string* looking for a location where the regular expression
+   Scan through *string* looking for the first location where the regular expression
    *pattern* produces a match, and return a corresponding :class:`MatchObject`
    instance. Return ``None`` if no position in the string matches the pattern; note
    that this is different from finding a zero-length match at some point in the

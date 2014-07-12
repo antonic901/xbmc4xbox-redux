@@ -127,7 +127,7 @@ the :mod:`glob` module.)
    .. versionadded:: 1.5.2
 
    .. versionchanged:: 2.3
-      If :func:`os.stat_float_times` returns True, the result is a floating point
+      If :func:`os.stat_float_times` returns ``True``, the result is a floating point
       number.
 
 
@@ -140,7 +140,7 @@ the :mod:`glob` module.)
    .. versionadded:: 1.5.2
 
    .. versionchanged:: 2.3
-      If :func:`os.stat_float_times` returns True, the result is a floating point
+      If :func:`os.stat_float_times` returns ``True``, the result is a floating point
       number.
 
 
@@ -185,7 +185,7 @@ the :mod:`glob` module.)
 .. function:: islink(path)
 
    Return ``True`` if *path* refers to a directory entry that is a symbolic link.
-   Always ``False`` if symbolic links are not supported.
+   Always ``False`` if symbolic links are not supported by the python runtime.
 
 
 .. function:: ismount(path)
@@ -345,7 +345,7 @@ the :mod:`glob` module.)
 
 .. data:: supports_unicode_filenames
 
-   True if arbitrary Unicode strings can be used as file names (within limitations
+   ``True`` if arbitrary Unicode strings can be used as file names (within limitations
    imposed by the file system).
 
    .. versionadded:: 2.3

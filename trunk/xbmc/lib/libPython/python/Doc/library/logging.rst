@@ -114,6 +114,8 @@ is the module's name in the Python package namespace.
    If the root is reached, and it has a level of NOTSET, then all messages will be
    processed. Otherwise, the root's level will be used as the effective level.
 
+   See :ref:`levels` for a list of levels.
+
 
 .. method:: Logger.isEnabledFor(lvl)
 
@@ -220,7 +222,7 @@ is the module's name in the Python package namespace.
    interpreted as for :meth:`debug`.
 
 
-.. method:: Logger.exception(msg, *args)
+.. method:: Logger.exception(msg, *args, **kwargs)
 
    Logs a message with level :const:`ERROR` on this logger. The arguments are
    interpreted as for :meth:`debug`. Exception info is added to the logging
@@ -281,6 +283,35 @@ is the module's name in the Python package namespace.
    .. versionchanged:: 2.5
       *func* and *extra* were added.
 
+
+.. _levels:
+
+Logging Levels
+--------------
+
+The numeric values of logging levels are given in the following table. These are
+primarily of interest if you want to define your own levels, and need them to
+have specific values relative to the predefined levels. If you define a level
+with the same numeric value, it overwrites the predefined value; the predefined
+name is lost.
+
++--------------+---------------+
+| Level        | Numeric value |
++==============+===============+
+| ``CRITICAL`` | 50            |
++--------------+---------------+
+| ``ERROR``    | 40            |
++--------------+---------------+
+| ``WARNING``  | 30            |
++--------------+---------------+
+| ``INFO``     | 20            |
++--------------+---------------+
+| ``DEBUG``    | 10            |
++--------------+---------------+
+| ``NOTSET``   | 0             |
++--------------+---------------+
+
+
 .. _handler:
 
 Handler Objects
@@ -321,6 +352,7 @@ subclasses. However, the :meth:`__init__` method in subclasses needs to call
    severe than *lvl* will be ignored. When a handler is created, the level is set
    to :const:`NOTSET` (which causes all messages to be processed).
 
+   See :ref:`levels` for a list of levels.
 
 .. method:: Handler.setFormatter(form)
 
@@ -659,7 +691,7 @@ LoggerAdapter Objects
 ---------------------
 
 :class:`LoggerAdapter` instances are used to conveniently pass contextual
-information into logging calls. For a usage example , see the section on
+information into logging calls. For a usage example, see the section on
 :ref:`adding contextual information to your logging output <context-info>`.
 
 .. versionadded:: 2.6
@@ -679,16 +711,15 @@ information into logging calls. For a usage example , see the section on
       (possibly modified) versions of the arguments passed in.
 
 In addition to the above, :class:`LoggerAdapter` supports the following
-methods of :class:`Logger`, i.e. :meth:`debug`, :meth:`info`, :meth:`warning`,
-:meth:`error`, :meth:`exception`, :meth:`critical`, :meth:`log`,
-:meth:`isEnabledFor`, :meth:`getEffectiveLevel`, :meth:`setLevel`,
-:meth:`hasHandlers`. These methods have the same signatures as their
-counterparts in :class:`Logger`, so you can use the two types of instances
-interchangeably.
+methods of :class:`Logger`: :meth:`~Logger.debug`, :meth:`~Logger.info`,
+:meth:`~Logger.warning`, :meth:`~Logger.error`, :meth:`~Logger.exception`,
+:meth:`~Logger.critical`, :meth:`~Logger.log` and :meth:`~Logger.isEnabledFor`.
+These methods have the same signatures as their counterparts in :class:`Logger`,
+so you can use the two types of instances interchangeably for these calls.
 
 .. versionchanged:: 2.7
-   The :meth:`isEnabledFor` method was added to :class:`LoggerAdapter`.  This
-   method delegates to the underlying logger.
+   The :meth:`~Logger.isEnabledFor` method was added to :class:`LoggerAdapter`.
+   This method delegates to the underlying logger.
 
 
 Thread Safety
@@ -728,8 +759,8 @@ functions.
 
    Return either the standard :class:`Logger` class, or the last class passed to
    :func:`setLoggerClass`. This function may be called from within a new class
-   definition, to ensure that installing a customised :class:`Logger` class will
-   not undo customisations already applied by other code. For example::
+   definition, to ensure that installing a customized :class:`Logger` class will
+   not undo customizations already applied by other code. For example::
 
       class MyLogger(logging.getLoggerClass()):
           # ... override behaviour here
@@ -809,7 +840,7 @@ functions.
    are interpreted as for :func:`debug`.
 
 
-.. function:: exception(msg[, *args])
+.. function:: exception(msg[, *args[, **kwargs]])
 
    Logs a message with level :const:`ERROR` on the root logger. The arguments are
    interpreted as for :func:`debug`. Exception info is added to the logging
@@ -821,14 +852,15 @@ functions.
    Logs a message with level *level* on the root logger. The other arguments are
    interpreted as for :func:`debug`.
 
-   .. note:: The above module-level functions which delegate to the root
-      logger should *not* be used in threads, in versions of Python earlier
-      than 2.7.1 and 3.2, unless at least one handler has been added to the
-      root logger *before* the threads are started. These convenience functions
-      call :func:`basicConfig` to ensure that at least one handler is
-      available; in earlier versions of Python, this can (under rare
-      circumstances) lead to handlers being added multiple times to the root
-      logger, which can in turn lead to multiple messages for the same event.
+   .. note:: The above module-level convenience functions, which delegate to the
+      root logger, call :func:`basicConfig` to ensure that at least one handler
+      is available. Because of this, they should *not* be used in threads,
+      in versions of Python earlier than 2.7.1 and 3.2, unless at least one
+      handler has been added to the root logger *before* the threads are
+      started. In earlier versions of Python, due to a thread safety shortcoming
+      in :func:`basicConfig`, this can (under rare circumstances) lead to
+      handlers being added multiple times to the root logger, which can in turn
+      lead to multiple messages for the same event.
 
 .. function:: disable(lvl)
 
@@ -838,8 +870,10 @@ functions.
    effect is to disable all logging calls of severity *lvl* and below, so that
    if you call it with a value of INFO, then all INFO and DEBUG events would be
    discarded, whereas those of severity WARNING and above would be processed
-   according to the logger's effective level. To undo the effect of a call to
-   ``logging.disable(lvl)``, call ``logging.disable(logging.NOTSET)``.
+   according to the logger's effective level. If
+   ``logging.disable(logging.NOTSET)`` is called, it effectively removes this
+   overriding level, so that logging output again depends on the effective
+   levels of individual loggers.
 
 
 .. function:: addLevelName(lvl, levelName)

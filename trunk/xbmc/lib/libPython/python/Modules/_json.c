@@ -524,16 +524,10 @@ scanstring_str(PyObject *pystr, Py_ssize_t end, char *encoding, int strict, Py_s
             }
 #ifdef Py_UNICODE_WIDE
             /* Surrogate pair */
-            if ((c & 0xfc00) == 0xd800) {
+            if ((c & 0xfc00) == 0xd800 && end + 6 < len &&
+                buf[next++] == '\\' &&
+                buf[next++] == 'u') {
                 Py_UNICODE c2 = 0;
-                if (end + 6 >= len) {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
-                if (buf[next++] != '\\' || buf[next++] != 'u') {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
                 end += 6;
                 /* Decode 4 hex digits */
                 for (; next < end; next++) {
@@ -554,15 +548,10 @@ scanstring_str(PyObject *pystr, Py_ssize_t end, char *encoding, int strict, Py_s
                             goto bail;
                     }
                 }
-                if ((c2 & 0xfc00) != 0xdc00) {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
-                c = 0x10000 + (((c - 0xd800) << 10) | (c2 - 0xdc00));
-            }
-            else if ((c & 0xfc00) == 0xdc00) {
-                raise_errmsg("Unpaired low surrogate", pystr, end - 5);
-                goto bail;
+                if ((c2 & 0xfc00) == 0xdc00)
+                    c = 0x10000 + (((c - 0xd800) << 10) | (c2 - 0xdc00));
+                else
+                    end -= 6;
             }
 #endif
         }
@@ -703,16 +692,9 @@ scanstring_unicode(PyObject *pystr, Py_ssize_t end, int strict, Py_ssize_t *next
             }
 #ifdef Py_UNICODE_WIDE
             /* Surrogate pair */
-            if ((c & 0xfc00) == 0xd800) {
+            if ((c & 0xfc00) == 0xd800 && end + 6 < len &&
+                buf[next++] == '\\' && buf[next++] == 'u') {
                 Py_UNICODE c2 = 0;
-                if (end + 6 >= len) {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
-                if (buf[next++] != '\\' || buf[next++] != 'u') {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
                 end += 6;
                 /* Decode 4 hex digits */
                 for (; next < end; next++) {
@@ -733,15 +715,10 @@ scanstring_unicode(PyObject *pystr, Py_ssize_t end, int strict, Py_ssize_t *next
                             goto bail;
                     }
                 }
-                if ((c2 & 0xfc00) != 0xdc00) {
-                    raise_errmsg("Unpaired high surrogate", pystr, end - 5);
-                    goto bail;
-                }
-                c = 0x10000 + (((c - 0xd800) << 10) | (c2 - 0xdc00));
-            }
-            else if ((c & 0xfc00) == 0xdc00) {
-                raise_errmsg("Unpaired low surrogate", pystr, end - 5);
-                goto bail;
+                if ((c2 & 0xfc00) == 0xdc00)
+                    c = 0x10000 + (((c - 0xd800) << 10) | (c2 - 0xdc00));
+                else
+                    end -= 6;
             }
 #endif
         }
@@ -1491,6 +1468,10 @@ scan_once_str(PyScannerObject *s, PyObject *pystr, Py_ssize_t idx, Py_ssize_t *n
     PyObject *res;
     char *str = PyString_AS_STRING(pystr);
     Py_ssize_t length = PyString_GET_SIZE(pystr);
+    if (idx < 0) {
+        PyErr_SetString(PyExc_ValueError, "idx cannot be negative");
+        return NULL;
+    }
     if (idx >= length) {
         PyErr_SetNone(PyExc_StopIteration);
         return NULL;
@@ -1578,6 +1559,10 @@ scan_once_unicode(PyScannerObject *s, PyObject *pystr, Py_ssize_t idx, Py_ssize_
     PyObject *res;
     Py_UNICODE *str = PyUnicode_AS_UNICODE(pystr);
     Py_ssize_t length = PyUnicode_GET_SIZE(pystr);
+    if (idx < 0) {
+        PyErr_SetString(PyExc_ValueError, "idx cannot be negative");
+        return NULL;
+    }
     if (idx >= length) {
         PyErr_SetNone(PyExc_StopIteration);
         return NULL;

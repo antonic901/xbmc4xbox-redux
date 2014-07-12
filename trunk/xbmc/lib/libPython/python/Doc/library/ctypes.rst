@@ -215,7 +215,7 @@ more about :mod:`ctypes` data types.
 Fundamental data types
 ^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`ctypes` defines a number of primitive C compatible data types :
+:mod:`ctypes` defines a number of primitive C compatible data types:
 
 +----------------------+------------------------------------------+----------------------------+
 | ctypes type          | C type                                   | Python type                |
@@ -1080,12 +1080,18 @@ As we can easily check, our array is sorted now::
    1 5 7 33 99
    >>>
 
-**Important note for callback functions:**
+.. note::
 
-Make sure you keep references to CFUNCTYPE objects as long as they are used from
-C code. :mod:`ctypes` doesn't, and if you don't, they may be garbage collected,
-crashing your program when a callback is made.
+   Make sure you keep references to :func:`CFUNCTYPE` objects as long as they
+   are used from C code. :mod:`ctypes` doesn't, and if you don't, they may be
+   garbage collected, crashing your program when a callback is made.
 
+   Also, note that if the callback function is called in a thread created
+   outside of Python's control (e.g. by the foreign code that calls the
+   callback), ctypes creates a new dummy Python thread on every invocation. This
+   behavior is correct for most purposes, but it means that values stored with
+   `threading.local` will *not* survive across different callbacks, even when
+   those calls are made from the same C thread.
 
 .. _ctypes-accessing-values-exported-from-dlls:
 
@@ -1714,7 +1720,7 @@ the windows header file is this::
 
    WINUSERAPI int WINAPI
    MessageBoxA(
-       HWND hWnd ,
+       HWND hWnd,
        LPCSTR lpText,
        LPCSTR lpCaption,
        UINT uType);
@@ -2351,7 +2357,7 @@ These are the fundamental ctypes data types:
 .. class:: c_bool
 
    Represent the C :c:type:`bool` datatype (more accurately, :c:type:`_Bool` from
-   C99).  Its value can be True or False, and the constructor accepts any object
+   C99).  Its value can be ``True`` or ``False``, and the constructor accepts any object
    that has a truth value.
 
    .. versionadded:: 2.6

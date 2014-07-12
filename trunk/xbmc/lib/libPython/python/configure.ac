@@ -860,7 +860,7 @@ AC_MSG_CHECKING(LDLIBRARY)
 if test "$enable_framework"
 then
   LDLIBRARY='$(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)'
-  RUNSHARED=DYLD_FRAMEWORK_PATH="`pwd`:$DYLD_FRAMEWORK_PATH"
+  RUNSHARED=DYLD_FRAMEWORK_PATH=`pwd`${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}
   BLDLIBRARY=''
 else
   BLDLIBRARY='$(LDLIBRARY)'
@@ -880,13 +880,13 @@ if test $enable_shared = "yes"; then
     SunOS*)
 	  LDLIBRARY='libpython$(VERSION).so'
 	  BLDLIBRARY='-Wl,-R,$(LIBDIR) -L. -lpython$(VERSION)'
-	  RUNSHARED=LD_LIBRARY_PATH=`pwd`:${LD_LIBRARY_PATH}
+	  RUNSHARED=LD_LIBRARY_PATH=`pwd`${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 	  INSTSONAME="$LDLIBRARY".$SOVERSION
           ;;
     Linux*|GNU*|NetBSD*|FreeBSD*|DragonFly*|OpenBSD*)
 	  LDLIBRARY='libpython$(VERSION).so'
 	  BLDLIBRARY='-L. -lpython$(VERSION)'
-	  RUNSHARED=LD_LIBRARY_PATH=`pwd`:${LD_LIBRARY_PATH}
+	  RUNSHARED=LD_LIBRARY_PATH=`pwd`${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 	  case $ac_sys_system in
 	      FreeBSD*)
 		SOVERSION=`echo $SOVERSION|cut -d "." -f 1`
@@ -904,12 +904,12 @@ if test $enable_shared = "yes"; then
 			;;
 	  esac
 	  BLDLIBRARY='-Wl,+b,$(LIBDIR) -L. -lpython$(VERSION)'
-	  RUNSHARED=SHLIB_PATH=`pwd`:${SHLIB_PATH}
+	  RUNSHARED=SHLIB_PATH=`pwd`${SHLIB_PATH:+:${SHLIB_PATH}}
 	  ;;
     OSF*)
 	  LDLIBRARY='libpython$(VERSION).so'
 	  BLDLIBRARY='-rpath $(LIBDIR) -L. -lpython$(VERSION)'
-	  RUNSHARED=LD_LIBRARY_PATH=`pwd`:${LD_LIBRARY_PATH}
+	  RUNSHARED=LD_LIBRARY_PATH=`pwd`${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 	  ;;
     atheos*)
 	  LDLIBRARY='libpython$(VERSION).so'
@@ -919,11 +919,11 @@ if test $enable_shared = "yes"; then
     Darwin*)
     	LDLIBRARY='libpython$(VERSION).dylib'
 	BLDLIBRARY='-L. -lpython$(VERSION)'
-	RUNSHARED='DYLD_LIBRARY_PATH=`pwd`:${DYLD_LIBRARY_PATH}'
+	RUNSHARED=DYLD_LIBRARY_PATH=`pwd`${DYLD_LIBRARY_PATH:+:${DYLD_LIBRARY_PATH}}
 	;;
     AIX*)
 	LDLIBRARY='libpython$(VERSION).so'
-	RUNSHARED=LIBPATH=`pwd`:${LIBPATH}
+	RUNSHARED=LIBPATH=`pwd`${LIBPATH:+:${LIBPATH}}
 	;;
 
   esac
@@ -1149,8 +1149,14 @@ yes)
 
 	    # Calculate the right deployment target for this build.
 	    #
-	    cur_target=`sw_vers -productVersion | sed 's/\(10\.[[0-9]]*\).*/\1/'`
-	    if test ${cur_target} '>' 10.2; then
+		cur_target_major=`sw_vers -productVersion | \
+				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\1/'`
+		cur_target_minor=`sw_vers -productVersion | \
+				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\2/'`
+		cur_target="${cur_target_major}.${cur_target_minor}"
+		if test ${cur_target_major} -eq 10 && \
+		   test ${cur_target_minor} -ge 3
+		then
 		    cur_target=10.3
 		    if test ${enable_universalsdk}; then
 			    if test "${UNIVERSAL_ARCHS}" = "all"; then
@@ -1508,9 +1514,9 @@ dnl AC_MSG_RESULT($cpp_type)
 
 # checks for header files
 AC_HEADER_STDC
-AC_CHECK_HEADERS(asm/types.h conio.h curses.h direct.h dlfcn.h errno.h \
+AC_CHECK_HEADERS(asm/types.h conio.h direct.h dlfcn.h errno.h \
 fcntl.h grp.h \
-ieeefp.h io.h langinfo.h libintl.h ncurses.h poll.h process.h pthread.h \
+ieeefp.h io.h langinfo.h libintl.h poll.h process.h pthread.h \
 shadow.h signal.h stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/epoll.h sys/event.h sys/file.h sys/loadavg.h \
@@ -1522,13 +1528,6 @@ sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
 bluetooth/bluetooth.h linux/tipc.h spawn.h util.h alloca.h)
 AC_HEADER_DIRENT
 AC_HEADER_MAJOR
-
-# On Solaris, term.h requires curses.h
-AC_CHECK_HEADERS(term.h,,,[
-#ifdef HAVE_CURSES_H
-#include <curses.h>
-#endif
-])
 
 # On Linux, netlink.h requires asm/types.h
 AC_CHECK_HEADERS(linux/netlink.h,,,[
@@ -2000,15 +1999,14 @@ then
 		# Use -undefined dynamic_lookup whenever possible (10.3 and later).
 		# This allows an extension to be used in any Python
 
-		if test ${MACOSX_DEPLOYMENT_TARGET} '>' 10.2
+		dep_target_major=`echo ${MACOSX_DEPLOYMENT_TARGET} | \
+				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\1/'`
+		dep_target_minor=`echo ${MACOSX_DEPLOYMENT_TARGET} | \
+				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\2/'`
+		if test ${dep_target_major} -eq 10 && \
+		   test ${dep_target_minor} -le 2
 		then
-			if test "${enable_universalsdk}"; then
-				LDFLAGS="${UNIVERSAL_ARCH_FLAGS} -isysroot ${UNIVERSALSDK} ${LDFLAGS}"
-			fi
-			LDSHARED='$(CC) -bundle -undefined dynamic_lookup'
-			LDCXXSHARED='$(CXX) -bundle -undefined dynamic_lookup'
-			BLDSHARED="$LDSHARED"
-		else
+			# building for OS X 10.0 through 10.2
 			LDSHARED='$(CC) -bundle'
 			LDCXXSHARED='$(CXX) -bundle'
 			if test "$enable_framework" ; then
@@ -2022,6 +2020,14 @@ then
 				LDSHARED="$LDSHARED "'-bundle_loader $(BINDIR)/python$(VERSION)$(EXE)'
 				LDCXXSHARED="$LDCXXSHARED "'-bundle_loader $(BINDIR)/python$(VERSION)$(EXE)'
 			fi
+		else
+			# building for OS X 10.3 and later
+			if test "${enable_universalsdk}"; then
+				LDFLAGS="${UNIVERSAL_ARCH_FLAGS} -isysroot ${UNIVERSALSDK} ${LDFLAGS}"
+			fi
+			LDSHARED='$(CC) -bundle -undefined dynamic_lookup'
+			LDCXXSHARED='$(CXX) -bundle -undefined dynamic_lookup'
+			BLDSHARED="$LDSHARED"
 		fi
 		;;
 	Linux*|GNU*|QNX*)
@@ -2905,7 +2911,7 @@ AC_CHECK_FUNCS(alarm setitimer getitimer bind_textdomain_codeset chown \
  clock confstr ctermid execv fchmod fchown fork fpathconf ftime ftruncate \
  gai_strerror getgroups getlogin getloadavg getpeername getpgid getpid \
  getpriority getresuid getresgid getpwent getspnam getspent getsid getwd \
- initgroups kill killpg lchmod lchown lstat mkfifo mknod mktime \
+ initgroups kill killpg lchmod lchown lstat mkfifo mknod mktime mmap \
  mremap nice pathconf pause plock poll pthread_init \
  putenv readlink realpath \
  select sem_open sem_timedwait sem_getvalue sem_unlink setegid seteuid \
@@ -4296,6 +4302,19 @@ then
   [Define if you have struct stat.st_mtimensec])
 fi
 
+# first curses configure check
+ac_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"
+
+AC_CHECK_HEADERS(curses.h ncurses.h)
+
+# On Solaris, term.h requires curses.h
+AC_CHECK_HEADERS(term.h,,,[
+#ifdef HAVE_CURSES_H
+#include <curses.h>
+#endif
+])
+
 # On HP/UX 11.0, mvwdelch is a block with a return statement
 AC_MSG_CHECKING(whether mvwdelch is an expression)
 AC_CACHE_VAL(ac_cv_mvwdelch_is_expression,
@@ -4350,6 +4369,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[void *x=resizeterm
    AC_MSG_RESULT(yes)],
   [AC_MSG_RESULT(no)]
 )
+# last curses configure check
+CPPFLAGS=$ac_save_cppflags
 
 AC_MSG_NOTICE([checking for device files])
 

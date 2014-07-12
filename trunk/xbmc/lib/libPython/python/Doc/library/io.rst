@@ -278,7 +278,7 @@ I/O Base Classes
 
    .. method:: readable()
 
-      Return ``True`` if the stream can be read from.  If False, :meth:`read`
+      Return ``True`` if the stream can be read from.  If ``False``, :meth:`read`
       will raise :exc:`IOError`.
 
    .. method:: readline(limit=-1)
@@ -345,6 +345,12 @@ I/O Base Classes
       Write a list of lines to the stream.  Line separators are not added, so it
       is usual for each of the lines provided to have a line separator at the
       end.
+
+   .. method:: __del__()
+
+      Prepare for object destruction. :class:`IOBase` provides a default
+      implementation of this method that calls the instance's
+      :meth:`~IOBase.close` method.
 
 
 .. class:: RawIOBase
@@ -644,6 +650,7 @@ than raw I/O does.
    :exc:`UnsupportedOperation`.
 
    .. warning::
+
       :class:`BufferedRWPair` does not attempt to synchronize accesses to
       its underlying raw streams.  You should not pass it the same object
       as reader and writer; use :class:`BufferedRandom` instead.
@@ -791,14 +798,14 @@ Text I/O
       Whether line buffering is enabled.
 
 
-.. class:: StringIO(initial_value=u'', newline=None)
+.. class:: StringIO(initial_value=u'', newline=u'\\n')
 
    An in-memory stream for unicode text.  It inherits :class:`TextIOWrapper`.
 
    The initial value of the buffer (an empty unicode string by default) can
    be set by providing *initial_value*.  The *newline* argument works like
-   that of :class:`TextIOWrapper`.  The default is to do no newline
-   translation.
+   that of :class:`TextIOWrapper`.  The default is to consider only ``\n``
+   characters as end of lines and to do no newline translation.
 
    :class:`StringIO` provides this method in addition to those from
    :class:`TextIOWrapper` and its parents:

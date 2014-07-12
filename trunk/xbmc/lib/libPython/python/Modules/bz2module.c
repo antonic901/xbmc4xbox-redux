@@ -732,7 +732,8 @@ BZ2File_readlines(BZ2FileObject *self, PyObject *args)
             }
             else {
                 /* Grow the big buffer */
-                _PyString_Resize(&big_buffer, buffersize);
+                if (_PyString_Resize(&big_buffer, buffersize))
+                    goto error;
                 buffer = PyString_AS_STRING(big_buffer);
             }
             continue;
@@ -1206,12 +1207,16 @@ BZ2File_close(BZ2FileObject *self)
                              0, NULL, NULL);
             break;
     }
-    if (self->fp) {
-        PyFile_DecUseCount((PyFileObject *)self->file);
-        self->fp = NULL;
+    if (self->file) {
+        if (self->fp)
+            PyFile_DecUseCount((PyFileObject *)self->file);
+        ret = PyObject_CallMethod(self->file, "close", NULL);
+    } else {
+        Py_INCREF(Py_None);
+        ret = Py_None;
     }
+    self->fp = NULL;
     self->mode = MODE_CLOSED;
-    ret = PyObject_CallMethod(self->file, "close", NULL);
     if (bzerror != BZ_OK) {
         Util_CatchBZ2Error(bzerror);
         Py_XDECREF(ret);
@@ -1479,10 +1484,9 @@ BZ2File_dealloc(BZ2FileObject *self)
                              0, NULL, NULL);
             break;
     }
-    if (self->fp) {
+    if (self->fp != NULL && self->file != NULL)
         PyFile_DecUseCount((PyFileObject *)self->file);
-        self->fp = NULL;
-    }
+    self->fp = NULL;
     Util_DropReadAhead(self);
     Py_XDECREF(self->file);
     Py_TYPE(self)->tp_free((PyObject *)self);

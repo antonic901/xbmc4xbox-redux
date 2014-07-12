@@ -43,7 +43,7 @@ The :mod:`urllib2` module defines the following functions:
    timeout setting will be used).  This actually only works for HTTP, HTTPS and
    FTP connections.
 
-   This function returns a file-like object with two additional methods:
+   This function returns a file-like object with three additional methods:
 
    * :meth:`geturl` --- return the URL of the resource retrieved, commonly used to
      determine if a redirect was followed
@@ -166,7 +166,7 @@ The following classes are provided:
    should be the request-host of the request for the page containing the image.
 
    *unverifiable* should indicate whether the request is unverifiable, as defined
-   by RFC 2965.  It defaults to False.  An unverifiable request is one whose URL
+   by RFC 2965.  It defaults to ``False``.  An unverifiable request is one whose URL
    the user did not have the option to approve.  For example, if the request is for
    an image in an HTML document, and the user had no option to approve the
    automatic fetching of the image, this should be true.
