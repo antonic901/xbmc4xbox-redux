@@ -24,13 +24,13 @@
 #include "CriticalSection.h"
 #include "SingleLock.h"
 #include "settings/Settings.h"
-#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 
 FILE* CLog::fd = NULL;
 int         CLog::m_repeatCount     = 0;
 int         CLog::m_repeatLogLevel  = -1;
 CStdString  CLog::m_repeatLine      = "";
+int         CLog::m_logLevel        = LOG_LEVEL_DEBUG;
 
 static CCriticalSection critSec;
 
@@ -58,14 +58,14 @@ void CLog::Close()
 
 void CLog::Log(int loglevel, const char *format, ... )
 {
-  if (g_advancedSettings.m_logLevel > LOG_LEVEL_NORMAL ||
-     (g_advancedSettings.m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
+  CSingleLock waitLock(critSec);
+  if (m_logLevel > LOG_LEVEL_NORMAL ||
+     (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
   {
-    CSingleLock waitLock(critSec);
     if (!fd)
     {
-	  // We should only continue when the logfolder is set
-	  if (g_settings.m_logFolder.IsEmpty()) return;
+      // We should only continue when the logfolder is set
+      if (g_settings.m_logFolder.IsEmpty()) return;
 
       // g_settings.m_logFolder is initialized in the CSettings constructor to Q:\\
       // and if we are running from DVD, it's changed to T:\\ in CApplication::Create()
@@ -223,5 +223,17 @@ void CLog::MemDump(BYTE *pData, int length)
     }
     Log(LOGDEBUG, "%s", strLine.c_str());
   }
+}
+
+void CLog::SetLogLevel(int level)
+{
+  CSingleLock waitLock(critSec);
+  m_logLevel = level;
+  CLog::Log(LOGNOTICE, "Log level changed to %d", m_logLevel);
+}
+
+int CLog::GetLogLevel()
+{
+  return m_logLevel;
 }
 

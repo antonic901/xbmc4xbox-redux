@@ -5680,6 +5680,7 @@ void CApplication::CheckForDebugButtonCombo()
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_X] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y])
   {
     g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
+    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
     CLog::Log(LOGINFO, "Key combination detected for full debug logging (X+Y)");
   }
 #ifdef _DEBUG
