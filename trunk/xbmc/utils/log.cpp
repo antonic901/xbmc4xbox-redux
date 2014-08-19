@@ -180,17 +180,6 @@ void CLog::DebugLog(const char *format, ... )
 #endif
 }
 
-void CLog::DebugLogMemory()
-{
-  CSingleLock waitLock(critSec);
-  MEMORYSTATUS stat;
-  CStdString strData;
-
-  GlobalMemoryStatus(&stat);
-  strData.Format("%i bytes free\n", stat.dwAvailPhys);
-  OutputDebugString(strData.c_str());
-}
-
 void CLog::MemDump(BYTE *pData, int length)
 {
   Log(LOGDEBUG, "MEM_DUMP: Dumping from %x", (unsigned int)pData);
