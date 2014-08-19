@@ -95,7 +95,8 @@ CAdvancedSettings::CAdvancedSettings()
 
   m_songInfoDuration = 10;
   m_busyDialogDelay = 2000;
-  m_logLevel = LOG_LEVEL_NORMAL;
+  m_logLevel     = LOG_LEVEL_NORMAL;
+  m_logLevelHint = LOG_LEVEL_NORMAL;
   m_cddbAddress = "freedb.freedb.org";
   m_usePCDVDROM = false;
   m_fullScreenOnMovieStart = true;
@@ -419,12 +420,20 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetBoolean(pElement, "remotethumbs", m_bFTPThumbs);
   }
 
-  if (XMLUtils::GetInt(pRootElement, "loglevel", m_logLevel, LOG_LEVEL_NONE, LOG_LEVEL_MAX))
+  pElement = pRootElement->FirstChildElement("loglevel");
+  if (pElement)
   { // read the loglevel setting, so set the setting advanced to hide it in GUI
     // as altering it will do nothing - we don't write to advancedsettings.xml
+    XMLUtils::GetInt(pRootElement, "loglevel", m_logLevelHint, LOG_LEVEL_NONE, LOG_LEVEL_MAX);
+    g_advancedSettings.m_logLevel = g_advancedSettings.m_logLevelHint;
     CSetting *setting = g_guiSettings.GetSetting("debug.showloginfo");
     if (setting)
-      setting->SetAdvanced();
+    { // check the hide attribute.  If it doesn't exist, or is set to something other than false
+      // then hide the UI setting
+      const char* hide = pElement->Attribute("hide");
+      if (!hide || strnicmp("false", hide, 4) != 0)
+        setting->SetAdvanced();
+    }
   }
 
   pElement = pRootElement->FirstChildElement("python");

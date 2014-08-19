@@ -833,10 +833,10 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   CLog::Log(LOGNOTICE, "Default Audio Player: %s", GetDefaultAudioPlayerName().c_str());
 
   // setup logging...
-  if (g_guiSettings.GetBool("debug.showloginfo") && g_advancedSettings.m_logLevel < LOG_LEVEL_DEBUG_FREEMEM)
+  if (g_guiSettings.GetBool("debug.showloginfo"))
   {
-    g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
-    CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting");
+    g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
+    CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", g_advancedSettings.m_logLevel);
   }
   
   // Override settings with avpack settings

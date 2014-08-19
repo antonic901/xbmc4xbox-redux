@@ -114,6 +114,7 @@ class CAdvancedSettings
     int m_songInfoDuration;
     int m_busyDialogDelay;
     int m_logLevel;
+    int m_logLevelHint;
     CStdString m_cddbAddress;
     bool m_usePCDVDROM;
     bool m_fullScreenOnMovieStart;
