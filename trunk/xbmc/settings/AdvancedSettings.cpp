@@ -425,15 +425,14 @@ bool CAdvancedSettings::Load()
   { // read the loglevel setting, so set the setting advanced to hide it in GUI
     // as altering it will do nothing - we don't write to advancedsettings.xml
     XMLUtils::GetInt(pRootElement, "loglevel", m_logLevelHint, LOG_LEVEL_NONE, LOG_LEVEL_MAX);
-    g_advancedSettings.m_logLevel = g_advancedSettings.m_logLevelHint;
-    CSetting *setting = g_guiSettings.GetSetting("debug.showloginfo");
+    CSettingBool *setting = (CSettingBool *)g_guiSettings.GetSetting("debug.showloginfo");
     if (setting)
-    { // check the hide attribute.  If it doesn't exist, or is set to something other than false
-      // then hide the UI setting
-      const char* hide = pElement->Attribute("hide");
-      if (!hide || strnicmp("false", hide, 4) != 0)
+    {
+      const char* hide;
+      if (!((hide = pElement->Attribute("hide")) && strnicmp("false", hide, 4) == 0))
         setting->SetAdvanced();
     }
+    g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevel, g_advancedSettings.m_logLevelHint);
   }
 
   pElement = pRootElement->FirstChildElement("python");
