@@ -302,18 +302,6 @@
 						Name="Audio"
 						Filter="">
 						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLiba52.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibDts.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibFaad.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DllLibMad.h">
-						</File>
-						<File
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodec.h">
 						</File>
 						<File
@@ -323,40 +311,10 @@
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecFFmpeg.h">
 						</File>
 						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLiba52.cpp">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLiba52.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibDts.cpp">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibDts.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.cpp">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibFaad.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.cpp">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLibMad.h">
-						</File>
-						<File
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLPcm.cpp">
 						</File>
 						<File
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecLPcm.h">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthrough.cpp">
-						</File>
-						<File
-							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthrough.h">
 						</File>
 						<File
 							RelativePath="..\..\xbmc\cores\dvdplayer\DVDCodecs\Audio\DVDAudioCodecPassthroughFFmpeg.cpp">
@@ -690,24 +648,6 @@
 				Name="paplayer"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AACcodec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AACcodec.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AC3CDDACodec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AC3CDDACodec.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AC3Codec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\AC3Codec.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\cores\paplayer\ADPCMCodec.cpp">
 				</File>
 				<File
@@ -808,18 +748,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\DllWMA.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\DTSCDDACodec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\DTSCDDACodec.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\DTSCodec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\DTSCodec.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\cores\paplayer\DVDPlayerCodec.cpp">
@@ -1975,6 +1903,12 @@
 			<Filter
 				Name="Database"
 				Filter="">
+				<File
+					RelativePath="..\..\xbmc\AddonDatabase.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\AddonDatabase.h">
+				</File>
 				<File
 					RelativePath="..\..\xbmc\music\Album.cpp">
 				</File>
