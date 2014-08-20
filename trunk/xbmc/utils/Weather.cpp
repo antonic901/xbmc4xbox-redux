@@ -322,7 +322,7 @@ bool CWeather::LoadWeather(const CStdString &weatherXML)
     //GetString(pElement, "lsup", m_szLastUpdateTime, "");
 
     GetString(pElement, "icon", iTmpStr, ""); //string cause i've seen it return N/A
-    if (iTmpStr == "N/A")
+    if (iTmpStr == "")
       m_currentIcon.Format("%s128x128/na.png", WEATHER_BASE_PATH);
     else
       m_currentIcon.Format("%s128x128/%s.png", WEATHER_BASE_PATH, iTmpStr.c_str());
