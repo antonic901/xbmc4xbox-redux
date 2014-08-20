@@ -75,6 +75,7 @@
 #endif
 
 #include <vector>
+#include "settings/AdvancedSettings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -165,7 +166,8 @@ const BUILT_IN commands[] = {
   { "SetProperty",                true,   "Sets a window property for the current focused window/dialog (key,value)" },
   { "ClearProperty",              true,   "Clears a window property for the current focused window/dialog (key,value)" },
   { "PlayWith",                   true,   "Play the selected item with the specified core" },
-  { "WakeOnLan",                  true,   "Sends the wake-up packet to the broadcast address for the specified MAC address" }
+  { "WakeOnLan",                  true,   "Sends the wake-up packet to the broadcast address for the specified MAC address" },
+  { "toggledebug",                false,  "Enables/disables debug mode" },
 };
 
 bool CBuiltins::HasCommand(const CStdString& execString)
@@ -1293,6 +1295,12 @@ int CBuiltins::Execute(const CStdString& execString)
   else if (execute.Equals("wakeonlan"))
   {
     g_application.getNetwork().WakeOnLan((char*)params[0].c_str());
+  }
+  else if (execute.Equals("toggledebug"))
+  {
+    bool debug = g_guiSettings.GetBool("debug.showloginfo");
+    g_guiSettings.SetBool("debug.showloginfo", !debug);
+    g_advancedSettings.SetDebugMode(!debug);
   }
   else
     return -1;

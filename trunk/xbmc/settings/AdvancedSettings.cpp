@@ -822,3 +822,20 @@ void CAdvancedSettings::GetCustomExtensions(TiXmlElement *pRootElement, CStdStri
   }
 }
 
+void CAdvancedSettings::SetDebugMode(bool debug)
+{
+  if (debug)
+  {
+    int level = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
+    m_logLevel = level;
+    CLog::SetLogLevel(level);
+    CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting. Level %d.", level);
+  }
+  else
+  {
+    int level = std::min(m_logLevelHint, LOG_LEVEL_DEBUG/*LOG_LEVEL_NORMAL*/);
+    CLog::Log(LOGNOTICE, "Disabled debug logging due to GUI setting. Level %d.", level);
+    m_logLevel = level;
+    CLog::SetLogLevel(level);
+  }
+}

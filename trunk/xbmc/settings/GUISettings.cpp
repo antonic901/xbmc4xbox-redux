@@ -1026,6 +1026,3 @@ void CGUISettings::Clear()
     delete settingsGroups[i];
   settingsGroups.clear();
 }
-
-
-

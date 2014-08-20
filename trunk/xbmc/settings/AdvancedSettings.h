@@ -218,6 +218,8 @@ class CAdvancedSettings
     
     bool m_bPythonVerbose;
     int m_bgInfoLoaderMaxThreads;
+    
+    void SetDebugMode(bool debug);
 };
 
 extern CAdvancedSettings g_advancedSettings;
