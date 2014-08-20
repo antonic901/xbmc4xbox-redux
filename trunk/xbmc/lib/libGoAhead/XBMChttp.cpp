@@ -842,7 +842,7 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
   // options include the type, and pathsonly boolean
 
   int iStart = 0;
-  int iEnd   = 4;
+  int iEnd   = 5;
   bool bShowType = true;
   bool bShowName = true;
 
@@ -872,6 +872,12 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
       iEnd   = 4;
       bShowType = false;
     }
+    else if (paras[0].Equals("programs"))
+    {
+      iStart = 4;
+      iEnd   = 5;
+      bShowType = false;
+    }
     else
       numParas = 0;
   }
@@ -887,7 +893,7 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
   }
 
   CStdString strOutput;
-  enum SHARETYPES { MUSIC, VIDEO, PICTURES, FILES };
+  enum SHARETYPES { MUSIC, VIDEO, PICTURES, FILES, PROGRAMS };
   for (int i = iStart; i < iEnd; ++i)
   {
     CStdString strType;
@@ -916,6 +922,12 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
       {
         strType = "files";
         pShares = &g_settings.m_fileSources;
+      }
+      break;
+    case PROGRAMS:
+      {
+        strType = "programs";
+        pShares = &g_settings.m_programSources;
       }
       break;
     }
