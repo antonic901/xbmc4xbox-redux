@@ -454,7 +454,6 @@ void CSmartXXLCD::DisplaySetContrast(unsigned char level)
     if (iNewLevel==41) iNewLevel=42;
     // 42 =  x0101010 e.g half on
 
-    int itemp = iNewLevel&127|128;
 /*
 7 Bit Pulse Wide Modulation (PWM) output controll register:
 bit 7 not used
@@ -462,7 +461,7 @@ bit 6 - bit 0: Pulse Wide Modulation (PWM) Value
 Value Range: 0 - 127
 mask top bit (7)
 */
-    _outp(0xF701, itemp);
+    _outp(DISP_O_CONTRAST, iNewLevel&127|128);
   }
   else if ( g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX"))
   {
