@@ -408,6 +408,7 @@ namespace INFO
 #define SYSTEM_OPENGL_RENDERER      708
 #define SYSTEM_OPENGL_VERSION       709
 #define SYSTEM_SETTING              710
+#define SYSTEM_HAS_ADDON            711
 
 #define LIBRARY_HAS_MUSIC           720
 #define LIBRARY_HAS_VIDEO           721

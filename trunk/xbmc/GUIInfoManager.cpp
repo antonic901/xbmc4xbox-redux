@@ -85,6 +85,7 @@
 #include "utils/log.h"
 
 #include "interfaces/info/InfoBool.h"
+#include "AddonDatabase.h"
 
 using namespace std;
 using namespace XFILE;
@@ -449,6 +450,10 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
       return AddMultiInfo(GUIInfo(bNegate ? -SYSTEM_GET_BOOL : SYSTEM_GET_BOOL, ConditionalStringParameter(strTest.Mid(15,strTest.size()-16)), 0));
     else if (strTest.Left(15).Equals("system.setting(")) 
       return AddMultiInfo(GUIInfo(bNegate ? -SYSTEM_SETTING : SYSTEM_SETTING, ConditionalStringParameter(strTest.Mid(15,strTest.size()-16)), 0));
+    else if (strTest.Left(16).Equals("system.hasaddon(")) {
+      int addon = ConditionalStringParameter(strTest.Mid(16, strTest.GetLength() - 17));
+      return AddMultiInfo(GUIInfo(bNegate ? -SYSTEM_HAS_ADDON: SYSTEM_HAS_ADDON, addon));
+    }
   }
   // library test conditions
   else if (strTest.Left(7).Equals("library"))
@@ -2360,6 +2365,12 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
             bReturn = false;
         }
         break;
+      case SYSTEM_HAS_ADDON:
+        {
+          CStdString addon = m_stringParameters[info.GetData1()];
+          bReturn = CAddonDatabase::HasAddon(addon);
+        }
+	    break;
       case CONTROL_GROUP_HAS_FOCUS:
         {
           CGUIWindow *window = GetWindowWithCondition(contextWindow, 0);

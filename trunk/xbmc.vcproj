@@ -1218,6 +1218,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="Database"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\AddonDatabase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\AddonDatabase.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\music\Album.cpp">
 				</File>
 				<File
