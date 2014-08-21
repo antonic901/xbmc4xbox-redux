@@ -364,7 +364,7 @@ CStdString URIUtils::SubstitutePath(const CStdString& strFileName)
 
 bool URIUtils::IsRemote(const CStdString& strFile)
 {
-  if (IsMemCard(strFile) || IsCDDA(strFile) || IsISO9660(strFile) || IsPlugin(strFile))
+  if (IsMemCard(strFile) || IsCDDA(strFile) || IsISO9660(strFile) || IsPlugin(strFile) || IsMusicDb(strFile) || IsVideoDb(strFile))
     return false;
 
   if (IsSpecial(strFile))
