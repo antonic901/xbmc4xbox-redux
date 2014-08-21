@@ -36,7 +36,6 @@ CAdvancedSettings g_advancedSettings;
 
 CAdvancedSettings::CAdvancedSettings()
 {
-  m_useMultipaths = true;
   m_DisableModChipDetection = true;
 
   m_audioHeadRoom = 0;
@@ -446,7 +445,6 @@ bool CAdvancedSettings::Load()
 
   XMLUtils::GetBoolean(pRootElement, "usepcdvdrom", m_usePCDVDROM);
   XMLUtils::GetBoolean(pRootElement, "nodvdrom", m_noDVDROM);
-  XMLUtils::GetBoolean(pRootElement, "usemultipaths", m_useMultipaths);
   XMLUtils::GetBoolean(pRootElement, "disablemodchipdetection", m_DisableModChipDetection);
 
   XMLUtils::GetInt(pRootElement, "songinfoduration", m_songInfoDuration, 0, INT_MAX);

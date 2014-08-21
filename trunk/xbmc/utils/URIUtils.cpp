@@ -23,7 +23,6 @@
 #include "FileItem.h"
 #include "FileSystem/HDDirectory.h"
 #include "FileSystem/StackDirectory.h"
-#include "FileSystem/VirtualPathDirectory.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/SpecialProtocol.h"
@@ -374,18 +373,6 @@ bool URIUtils::IsRemote(const CStdString& strFile)
   if(IsStack(strFile))
     return IsRemote(CStackDirectory::GetFirstStackedFile(strFile));
 
-  if (IsVirtualPath(strFile))
-  { // virtual paths need to be checked separately
-    CVirtualPathDirectory dir;
-    vector<CStdString> paths;
-    if (dir.GetPathes(strFile, paths))
-    {
-      for (unsigned int i = 0; i < paths.size(); i++)
-        if (IsRemote(paths[i])) return true;
-    }
-    return false;
-  }
-
   if(IsMultiPath(strFile))
   { // virtual paths need to be checked separately
     vector<CStdString> paths;
@@ -524,11 +511,6 @@ bool URIUtils::IsDVD(const CStdString& strFile)
 bool URIUtils::IsStack(const CStdString& strFile)
 {
   return strFile.Left(6).Equals("stack:");
-}
-
-bool URIUtils::IsVirtualPath(const CStdString& strFile)
-{
-  return strFile.Left(12).Equals("virtualpath:");
 }
 
 bool URIUtils::IsRAR(const CStdString& strFile)

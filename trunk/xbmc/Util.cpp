@@ -33,7 +33,6 @@
 #include "Autorun.h"
 #include "FileSystem/HDDirectory.h"
 #include "FileSystem/StackDirectory.h"
-#include "FileSystem/VirtualPathDirectory.h"
 #include "FileSystem/MultiPathDirectory.h"
 #include "FileSystem/DirectoryCache.h"
 #include "FileSystem/SpecialProtocol.h"

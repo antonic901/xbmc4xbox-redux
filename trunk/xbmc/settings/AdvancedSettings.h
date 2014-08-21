@@ -51,9 +51,6 @@ class CAdvancedSettings
     static void GetCustomRegexpReplacers(TiXmlElement *pRootElement, CStdStringArray& settings);
     static void GetCustomExtensions(TiXmlElement *pRootElement, CStdString& extensions);
 
-    // multipath testing
-   // multipath testing
-    bool m_useMultipaths;
     bool m_DisableModChipDetection;
 
     int m_audioHeadRoom;
