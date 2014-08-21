@@ -185,6 +185,8 @@ bool CGUIWindow::Load(TiXmlDocument &xmlDoc)
 
       CGUIControlFactory::GetFloat(pChild, "posx", m_posX);
       CGUIControlFactory::GetFloat(pChild, "posy", m_posY);
+      CGUIControlFactory::GetFloat(pChild, "left", m_posX);
+      CGUIControlFactory::GetFloat(pChild, "top", m_posY);
 
       TiXmlElement *originElement = pChild->FirstChildElement("origin");
       while (originElement)
