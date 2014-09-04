@@ -1,8 +1,8 @@
 #ifndef __AMF_H__
 #define __AMF_H__
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2008 Team XBMC
+ *      http://www.xbmc.org
  *      Copyright (C) 2008-2009 Andrej Stepanchuk
  *      Copyright (C) 2009-2010 Howard Chu
  *
@@ -104,6 +104,9 @@ extern "C"
   double AMF_DecodeNumber(const char *data);
 
   char *AMF_Encode(AMFObject * obj, char *pBuffer, char *pBufEnd);
+  char *AMF_EncodeEcmaArray(AMFObject *obj, char *pBuffer, char *pBufEnd);
+  char *AMF_EncodeArray(AMFObject *obj, char *pBuffer, char *pBufEnd);
+
   int AMF_Decode(AMFObject * obj, const char *pBuffer, int nSize,
 		 int bDecodeName);
   int AMF_DecodeArray(AMFObject * obj, const char *pBuffer, int nSize,
