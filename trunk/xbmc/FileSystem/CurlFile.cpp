@@ -1050,7 +1050,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
   // if file is already running, get info from it
   if( m_opened )
   {
-    CLog::Log(LOGWARNING, "%s - Stat called on open file", __FUNCTION__);
+    CLog::Log(LOGWARNING, "%s - Stat called on open file %s", __FUNCTION__, url.Get().c_str());
     if (buffer)
     {
       memset(buffer, 0, sizeof(struct __stat64));
@@ -1080,7 +1080,6 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
   }
 
   CURLcode result = g_curlInterface.easy_perform(m_state->m_easyHandle);
-
 
   if(result == CURLE_HTTP_RETURNED_ERROR)
   {
@@ -1155,7 +1154,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
     long filetime;
     if (CURLE_OK != g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_FILETIME, &filetime))
     {
-      CLog::Log(LOGWARNING, "%s - Cannot get curl filetime", __FUNCTION__);
+      CLog::Log(LOGWARNING, "%s - Cannot get curl filetime for %s", __FUNCTION__, url.Get().c_str());
     }
     else
     {
