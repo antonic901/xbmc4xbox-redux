@@ -251,11 +251,11 @@ msgstr "Diashow"
 
 msgctxt "#109"
 msgid "Create thumbs"
-msgstr "Thumbnails erzeugen"
+msgstr "Vorschaubilder erzeugen"
 
 msgctxt "#110"
 msgid "Create thumbnails"
-msgstr "Thumbnails erzeugen"
+msgstr "Vorschaubilder erzeugen"
 
 msgctxt "#111"
 msgid "Shortcuts"
@@ -667,7 +667,7 @@ msgstr "Testbilder..."
 
 msgctxt "#227"
 msgid "Lookup audio CD track names from freedb.org"
-msgstr "Audio CD Titelnamen mit freedb.org abgleichen"
+msgstr "Audio CD-Titelnamen mit freedb.org abgleichen"
 
 msgctxt "#228"
 msgid "Shuffle playlist on load"
@@ -675,7 +675,7 @@ msgstr "Zufällige Reihenfolge der Wiedergabeliste nach dem Laden"
 
 msgctxt "#229"
 msgid "HDD spindown time"
-msgstr "Festplatten Abschaltzeit"
+msgstr "Festplatten-Abschaltzeit"
 
 msgctxt "#230"
 msgid "Video filters"
@@ -811,7 +811,7 @@ msgstr "Skript-Ausgabe"
 
 msgctxt "#263"
 msgid "Allow control of XBMC via HTTP"
-msgstr "Steuerung über HTTP zulassen"
+msgstr "XBMC-Steuerung über HTTP zulassen"
 
 msgctxt "#264"
 msgid "Record"
@@ -863,11 +863,11 @@ msgstr "Pixel-Seitenverhältnis anpassen"
 
 msgctxt "#276"
 msgid "Adjust the arrow to change the amount of overscan"
-msgstr "Bewege den Pfeil um den Bildbereich einzustellen"
+msgstr "Bewege den Pfeil, um den Bildbereich einzustellen"
 
 msgctxt "#277"
 msgid "Adjust the bar to change the subtitles position"
-msgstr "Bewege den Balken um die Position der Untertitel einzustellen"
+msgstr "Bewege den Balken, um die Position der Untertitel einzustellen"
 
 msgctxt "#278"
 msgid "Adjust the rectangle so it is perfectly square"
@@ -927,7 +927,7 @@ msgstr "Audio"
 
 msgctxt "#293"
 msgid "Browse for subtitles"
-msgstr "Nach Untertitel durchsuchen"
+msgstr "Nach Untertiteln durchsuchen"
 
 msgctxt "#294"
 msgid "Create bookmark"
@@ -1115,7 +1115,7 @@ msgstr "Verschiedene Interpreten"
 
 msgctxt "#341"
 msgid "Play disc"
-msgstr "Disc abspielen"
+msgstr "Disk abspielen"
 
 msgctxt "#342"
 msgid "Movies"
@@ -1439,7 +1439,7 @@ msgstr "Keine CD-Informationen gefunden"
 
 msgctxt "#427"
 msgid "Disc"
-msgstr "Disc"
+msgstr "Disk"
 
 msgctxt "#428"
 msgid "Insert correct CD/DVD"

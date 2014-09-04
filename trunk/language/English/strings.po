@@ -7386,6 +7386,8 @@ msgctxt "#20451"
 msgid "Countries"
 msgstr ""
 
+#empty strings from id 20452 to 20453
+
 msgctxt "#20454"
 msgid "Listener"
 msgstr ""
@@ -7393,8 +7395,6 @@ msgstr ""
 msgctxt "#20455"
 msgid "Listeners"
 msgstr ""
-
-#empty strings from id 20452 to 20455
 
 msgctxt "#20456"
 msgid "Set movieset fanart"
