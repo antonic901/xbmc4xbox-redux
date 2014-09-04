@@ -1,7 +1,7 @@
 /*
  *  Diffie-Hellman-Merkle key exchange (prime generation)
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2012, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,16 +23,17 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/bignum.h"
-#include "polarssl/havege.h"
+#include "polarssl/entropy.h"
+#include "polarssl/ctr_drbg.h"
 
 /*
  * Note: G = 4 is always a quadratic residue mod P,
@@ -41,31 +42,60 @@
 #define DH_P_SIZE 1024
 #define GENERATOR "4"
 
-#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_HAVEGE_C) ||   \
-    !defined(POLARSSL_FS_IO)
-int main( void )
+#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_ENTROPY_C) ||   \
+    !defined(POLARSSL_FS_IO) || !defined(POLARSSL_CTR_DRBG_C) ||     \
+    !defined(POLARSSL_GENPRIME)
+int main( int argc, char *argv[] )
 {
-    printf("POLARSSL_BIGNUM_C and/or POLARSSL_HAVEGE_C and/or "
-           "POLARSSL_FS_IO not defined.\n");
+    ((void) argc);
+    ((void) argv);
+
+    printf("POLARSSL_BIGNUM_C and/or POLARSSL_ENTROPY_C and/or "
+           "POLARSSL_FS_IO and/or POLARSSL_CTR_DRBG_C and/or "
+           "POLARSSL_GENPRIME not defined.\n");
     return( 0 );
 }
 #else
-int main( void )
+int main( int argc, char *argv[] )
 {
     int ret = 1;
-
-#if defined(POLARSSL_GENPRIME)
     mpi G, P, Q;
-    havege_state hs;
+    entropy_context entropy;
+    ctr_drbg_context ctr_drbg;
+    const char *pers = "dh_genprime";
     FILE *fout;
 
+    ((void) argc);
+    ((void) argv);
+
     mpi_init( &G ); mpi_init( &P ); mpi_init( &Q );
-    mpi_read_string( &G, 10, GENERATOR );
+    entropy_init( &entropy );
+
+    if( ( ret = mpi_read_string( &G, 10, GENERATOR ) ) != 0 )
+    {
+        printf( " failed\n  ! mpi_read_string returned %d\n", ret );
+        goto exit;
+    }
+
+    printf( "\nWARNING: You should not generate and use your own DHM primes\n" );
+    printf( "         unless you are very certain of what you are doing!\n" );
+    printf( "         Failing to follow this instruction may result in\n" );
+    printf( "         weak security for your connections! Use the\n" );
+    printf( "         predefined DHM parameters from dhm.h instead!\n\n" );
+    printf( "============================================================\n\n" );
+
+    printf( "  ! Generating large primes may take minutes!\n" );
 
     printf( "\n  . Seeding the random number generator..." );
     fflush( stdout );
 
-    havege_init( &hs );
+    if( ( ret = ctr_drbg_init( &ctr_drbg, entropy_func, &entropy,
+                               (const unsigned char *) pers,
+                               strlen( pers ) ) ) != 0 )
+    {
+        printf( " failed\n  ! ctr_drbg_init returned %d\n", ret );
+        goto exit;
+    }
 
     printf( " ok\n  . Generating the modulus, please wait..." );
     fflush( stdout );
@@ -74,7 +104,7 @@ int main( void )
      * This can take a long time...
      */
     if( ( ret = mpi_gen_prime( &P, DH_P_SIZE, 1,
-                               havege_rand, &hs ) ) != 0 )
+                               ctr_drbg_random, &ctr_drbg ) ) != 0 )
     {
         printf( " failed\n  ! mpi_gen_prime returned %d\n\n", ret );
         goto exit;
@@ -95,7 +125,7 @@ int main( void )
         goto exit;
     }
 
-    if( ( ret = mpi_is_prime( &Q, havege_rand, &hs ) ) != 0 )
+    if( ( ret = mpi_is_prime( &Q, ctr_drbg_random, &ctr_drbg ) ) != 0 )
     {
         printf( " failed\n  ! mpi_is_prime returned %d\n\n", ret );
         goto exit;
@@ -124,15 +154,15 @@ int main( void )
 exit:
 
     mpi_free( &G ); mpi_free( &P ); mpi_free( &Q );
-#else
-    printf( "\n  ! Prime-number generation is not available.\n\n" );
-#endif
+    ctr_drbg_free( &ctr_drbg );
+    entropy_free( &entropy );
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif
 
     return( ret );
 }
-#endif /* POLARSSL_BIGNUM_C && POLARSSL_HAVEGE_C && POLARSSL_FS_IO */
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_ENTROPY_C && POLARSSL_FS_IO &&
+          POLARSSL_CTR_DRBG_C && POLARSSL_GENPRIME */

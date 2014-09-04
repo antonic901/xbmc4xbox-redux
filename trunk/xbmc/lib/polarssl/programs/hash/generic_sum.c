@@ -1,7 +1,7 @@
 /*
  *  generic message digest layer demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,20 +23,23 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/md.h"
 
 #if !defined(POLARSSL_MD_C)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_MD_C not defined.\n");
     return( 0 );
 }
@@ -78,6 +81,7 @@ static int generic_check( const md_info_t *md_info, char *filename )
     int nb_tot1, nb_tot2;
     unsigned char sum[POLARSSL_MD_MAX_SIZE];
     char buf[POLARSSL_MD_MAX_SIZE * 2 + 1], line[1024];
+    char diff;
 
     if( ( f = fopen( filename, "rb" ) ) == NULL )
     {
@@ -124,7 +128,12 @@ static int generic_check( const md_info_t *md_info, char *filename )
         for( i = 0; i < md_info->size; i++ )
             sprintf( buf + i * 2, "%02x", sum[i] );
 
-        if( memcmp( line, buf, 2 * md_info->size ) != 0 )
+        /* Use constant-time buffer comparison */
+        diff = 0;
+        for( i = 0; i < 2 * md_info->size; i++ )
+            diff |= line[i] ^ buf[i];
+
+        if( diff != 0 )
         {
             nb_err2++;
             fprintf( stderr, "wrong checksum: %s\n", line + 66 );
@@ -145,6 +154,8 @@ static int generic_check( const md_info_t *md_info, char *filename )
                 "not match\n", nb_err2, nb_tot2 );
     }
 
+    fclose( f );
+
     return( nb_err1 != 0 || nb_err2 != 0 );
 }
 
@@ -154,7 +165,7 @@ int main( int argc, char *argv[] )
     const md_info_t *md_info;
     md_context_t md_ctx;
 
-    memset( &md_ctx, 0, sizeof( md_context_t ));
+    md_init( &md_ctx );
 
     if( argc == 1 )
     {
@@ -172,7 +183,7 @@ int main( int argc, char *argv[] )
             list++;
         }
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n  Press Enter to exit this program.\n" );
         fflush( stdout ); getchar();
 #endif
@@ -206,7 +217,7 @@ int main( int argc, char *argv[] )
         ret |= generic_print( md_info, argv[i] );
 
 exit:
-    md_free_ctx( &md_ctx );
+    md_free( &md_ctx );
 
     return( ret );
 }

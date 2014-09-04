@@ -1,7 +1,7 @@
 /*
  *  An implementation of the ARCFOUR algorithm
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -28,16 +28,47 @@
  *  http://groups.google.com/group/sci.crypt/msg/10a300c9d21afca0
  */
 
+#if !defined(POLARSSL_CONFIG_FILE)
 #include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
 
 #if defined(POLARSSL_ARC4_C)
 
 #include "polarssl/arc4.h"
 
+#if defined(POLARSSL_PLATFORM_C)
+#include "polarssl/platform.h"
+#else
+#define polarssl_printf printf
+#endif
+
+#if !defined(POLARSSL_ARC4_ALT)
+
+/* Implementation that should never be optimized out by the compiler */
+static void polarssl_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
+
+void arc4_init( arc4_context *ctx )
+{
+    memset( ctx, 0, sizeof( arc4_context ) );
+}
+
+void arc4_free( arc4_context *ctx )
+{
+    if( ctx == NULL )
+        return;
+
+    polarssl_zeroize( ctx, sizeof( arc4_context ) );
+}
+
 /*
  * ARC4 key schedule
  */
-void arc4_setup( arc4_context *ctx, const unsigned char *key, unsigned int keylen )
+void arc4_setup( arc4_context *ctx, const unsigned char *key,
+                 unsigned int keylen )
 {
     int i, j, a;
     unsigned int k;
@@ -95,6 +126,8 @@ int arc4_crypt( arc4_context *ctx, size_t length, const unsigned char *input,
     return( 0 );
 }
 
+#endif /* !POLARSSL_ARC4_ALT */
+
 #if defined(POLARSSL_SELF_TEST)
 
 #include <string.h>
@@ -131,39 +164,45 @@ static const unsigned char arc4_test_ct[3][8] =
  */
 int arc4_self_test( int verbose )
 {
-    int i;
+    int i, ret = 0;
     unsigned char ibuf[8];
     unsigned char obuf[8];
     arc4_context ctx;
 
+    arc4_init( &ctx );
+
     for( i = 0; i < 3; i++ )
     {
         if( verbose != 0 )
-            printf( "  ARC4 test #%d: ", i + 1 );
+            polarssl_printf( "  ARC4 test #%d: ", i + 1 );
 
         memcpy( ibuf, arc4_test_pt[i], 8 );
 
-        arc4_setup( &ctx, (unsigned char *) arc4_test_key[i], 8 );
+        arc4_setup( &ctx, arc4_test_key[i], 8 );
         arc4_crypt( &ctx, 8, ibuf, obuf );
 
         if( memcmp( obuf, arc4_test_ct[i], 8 ) != 0 )
         {
             if( verbose != 0 )
-                printf( "failed\n" );
+                polarssl_printf( "failed\n" );
 
-            return( 1 );
+            ret = 1;
+            goto exit;
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
 
-    return( 0 );
+exit:
+    arc4_free( &ctx );
+
+    return( ret );
 }
 
-#endif
+#endif /* POLARSSL_SELF_TEST */
 
-#endif
+#endif /* POLARSSL_ARC4_C */

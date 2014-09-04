@@ -1,7 +1,7 @@
 /*
  *  FIPS-197 compliant AES implementation
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -29,34 +29,61 @@
  *  http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
  */
 
+#if !defined(POLARSSL_CONFIG_FILE)
 #include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
 
 #if defined(POLARSSL_AES_C)
 
 #include "polarssl/aes.h"
+#if defined(POLARSSL_PADLOCK_C)
 #include "polarssl/padlock.h"
+#endif
+#if defined(POLARSSL_AESNI_C)
+#include "polarssl/aesni.h"
+#endif
+
+#if defined(POLARSSL_PLATFORM_C)
+#include "polarssl/platform.h"
+#else
+#define polarssl_printf printf
+#endif
+
+#if !defined(POLARSSL_AES_ALT)
+
+/* Implementation that should never be optimized out by the compiler */
+static void polarssl_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
 
 /*
  * 32-bit integer manipulation macros (little endian)
  */
-#ifndef GET_ULONG_LE
-#define GET_ULONG_LE(n,b,i)                             \
+#ifndef GET_UINT32_LE
+#define GET_UINT32_LE(n,b,i)                            \
 {                                                       \
-    (n) = ( (unsigned long) (b)[(i)    ]       )        \
-        | ( (unsigned long) (b)[(i) + 1] <<  8 )        \
-        | ( (unsigned long) (b)[(i) + 2] << 16 )        \
-        | ( (unsigned long) (b)[(i) + 3] << 24 );       \
+    (n) = ( (uint32_t) (b)[(i)    ]       )             \
+        | ( (uint32_t) (b)[(i) + 1] <<  8 )             \
+        | ( (uint32_t) (b)[(i) + 2] << 16 )             \
+        | ( (uint32_t) (b)[(i) + 3] << 24 );            \
 }
 #endif
 
-#ifndef PUT_ULONG_LE
-#define PUT_ULONG_LE(n,b,i)                             \
+#ifndef PUT_UINT32_LE
+#define PUT_UINT32_LE(n,b,i)                            \
 {                                                       \
     (b)[(i)    ] = (unsigned char) ( (n)       );       \
     (b)[(i) + 1] = (unsigned char) ( (n) >>  8 );       \
     (b)[(i) + 2] = (unsigned char) ( (n) >> 16 );       \
     (b)[(i) + 3] = (unsigned char) ( (n) >> 24 );       \
 }
+#endif
+
+#if defined(POLARSSL_PADLOCK_C) &&                      \
+    ( defined(POLARSSL_HAVE_X86) || defined(PADLOCK_ALIGN16) )
+static int aes_padlock_ace = -1;
 #endif
 
 #if defined(POLARSSL_AES_ROM_TABLES)
@@ -170,19 +197,19 @@ static const unsigned char FSb[256] =
     V(CB,B0,B0,7B), V(FC,54,54,A8), V(D6,BB,BB,6D), V(3A,16,16,2C)
 
 #define V(a,b,c,d) 0x##a##b##c##d
-static const unsigned long FT0[256] = { FT };
+static const uint32_t FT0[256] = { FT };
 #undef V
 
 #define V(a,b,c,d) 0x##b##c##d##a
-static const unsigned long FT1[256] = { FT };
+static const uint32_t FT1[256] = { FT };
 #undef V
 
 #define V(a,b,c,d) 0x##c##d##a##b
-static const unsigned long FT2[256] = { FT };
+static const uint32_t FT2[256] = { FT };
 #undef V
 
 #define V(a,b,c,d) 0x##d##a##b##c
-static const unsigned long FT3[256] = { FT };
+static const uint32_t FT3[256] = { FT };
 #undef V
 
 #undef FT
@@ -297,19 +324,19 @@ static const unsigned char RSb[256] =
     V(61,84,CB,7B), V(70,B6,32,D5), V(74,5C,6C,48), V(42,57,B8,D0)
 
 #define V(a,b,c,d) 0x##a##b##c##d
-static const unsigned long RT0[256] = { RT };
+static const uint32_t RT0[256] = { RT };
 #undef V
 
 #define V(a,b,c,d) 0x##b##c##d##a
-static const unsigned long RT1[256] = { RT };
+static const uint32_t RT1[256] = { RT };
 #undef V
 
 #define V(a,b,c,d) 0x##c##d##a##b
-static const unsigned long RT2[256] = { RT };
+static const uint32_t RT2[256] = { RT };
 #undef V
 
 #define V(a,b,c,d) 0x##d##a##b##c
-static const unsigned long RT3[256] = { RT };
+static const uint32_t RT3[256] = { RT };
 #undef V
 
 #undef RT
@@ -317,37 +344,37 @@ static const unsigned long RT3[256] = { RT };
 /*
  * Round constants
  */
-static const unsigned long RCON[10] =
+static const uint32_t RCON[10] =
 {
     0x00000001, 0x00000002, 0x00000004, 0x00000008,
     0x00000010, 0x00000020, 0x00000040, 0x00000080,
     0x0000001B, 0x00000036
 };
 
-#else
+#else /* POLARSSL_AES_ROM_TABLES */
 
 /*
  * Forward S-box & tables
  */
 static unsigned char FSb[256];
-static unsigned long FT0[256]; 
-static unsigned long FT1[256]; 
-static unsigned long FT2[256]; 
-static unsigned long FT3[256]; 
+static uint32_t FT0[256];
+static uint32_t FT1[256];
+static uint32_t FT2[256];
+static uint32_t FT3[256];
 
 /*
  * Reverse S-box & tables
  */
 static unsigned char RSb[256];
-static unsigned long RT0[256];
-static unsigned long RT1[256];
-static unsigned long RT2[256];
-static unsigned long RT3[256];
+static uint32_t RT0[256];
+static uint32_t RT1[256];
+static uint32_t RT2[256];
+static uint32_t RT3[256];
 
 /*
  * Round constants
  */
-static unsigned long RCON[10];
+static uint32_t RCON[10];
 
 /*
  * Tables generation code
@@ -379,7 +406,7 @@ static void aes_gen_tables( void )
      */
     for( i = 0, x = 1; i < 10; i++ )
     {
-        RCON[i] = (unsigned long) x;
+        RCON[i] = (uint32_t) x;
         x = XTIME( x ) & 0xFF;
     }
 
@@ -393,10 +420,10 @@ static void aes_gen_tables( void )
     {
         x = pow[255 - log[i]];
 
-        y  = x; y = ( (y << 1) | (y >> 7) ) & 0xFF;
-        x ^= y; y = ( (y << 1) | (y >> 7) ) & 0xFF;
-        x ^= y; y = ( (y << 1) | (y >> 7) ) & 0xFF;
-        x ^= y; y = ( (y << 1) | (y >> 7) ) & 0xFF;
+        y  = x; y = ( ( y << 1 ) | ( y >> 7 ) ) & 0xFF;
+        x ^= y; y = ( ( y << 1 ) | ( y >> 7 ) ) & 0xFF;
+        x ^= y; y = ( ( y << 1 ) | ( y >> 7 ) ) & 0xFF;
+        x ^= y; y = ( ( y << 1 ) | ( y >> 7 ) ) & 0xFF;
         x ^= y ^ 0x63;
 
         FSb[i] = (unsigned char) x;
@@ -412,10 +439,10 @@ static void aes_gen_tables( void )
         y = XTIME( x ) & 0xFF;
         z =  ( y ^ x ) & 0xFF;
 
-        FT0[i] = ( (unsigned long) y       ) ^
-                 ( (unsigned long) x <<  8 ) ^
-                 ( (unsigned long) x << 16 ) ^
-                 ( (unsigned long) z << 24 );
+        FT0[i] = ( (uint32_t) y       ) ^
+                 ( (uint32_t) x <<  8 ) ^
+                 ( (uint32_t) x << 16 ) ^
+                 ( (uint32_t) z << 24 );
 
         FT1[i] = ROTL8( FT0[i] );
         FT2[i] = ROTL8( FT1[i] );
@@ -423,10 +450,10 @@ static void aes_gen_tables( void )
 
         x = RSb[i];
 
-        RT0[i] = ( (unsigned long) MUL( 0x0E, x )       ) ^
-                 ( (unsigned long) MUL( 0x09, x ) <<  8 ) ^
-                 ( (unsigned long) MUL( 0x0D, x ) << 16 ) ^
-                 ( (unsigned long) MUL( 0x0B, x ) << 24 );
+        RT0[i] = ( (uint32_t) MUL( 0x0E, x )       ) ^
+                 ( (uint32_t) MUL( 0x09, x ) <<  8 ) ^
+                 ( (uint32_t) MUL( 0x0D, x ) << 16 ) ^
+                 ( (uint32_t) MUL( 0x0B, x ) << 24 );
 
         RT1[i] = ROTL8( RT0[i] );
         RT2[i] = ROTL8( RT1[i] );
@@ -434,21 +461,36 @@ static void aes_gen_tables( void )
     }
 }
 
-#endif
+#endif /* POLARSSL_AES_ROM_TABLES */
+
+void aes_init( aes_context *ctx )
+{
+    memset( ctx, 0, sizeof( aes_context ) );
+}
+
+void aes_free( aes_context *ctx )
+{
+    if( ctx == NULL )
+        return;
+
+    polarssl_zeroize( ctx, sizeof( aes_context ) );
+}
 
 /*
  * AES key schedule (encryption)
  */
-int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int keysize )
+int aes_setkey_enc( aes_context *ctx, const unsigned char *key,
+                    unsigned int keysize )
 {
     unsigned int i;
-    unsigned long *RK;
+    uint32_t *RK;
 
 #if !defined(POLARSSL_AES_ROM_TABLES)
     if( aes_init_done == 0 )
     {
         aes_gen_tables();
         aes_init_done = 1;
+
     }
 #endif
 
@@ -460,15 +502,24 @@ int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int key
         default : return( POLARSSL_ERR_AES_INVALID_KEY_LENGTH );
     }
 
-#if defined(PADLOCK_ALIGN16)
-    ctx->rk = RK = PADLOCK_ALIGN16( ctx->buf );
-#else
+#if defined(POLARSSL_PADLOCK_C) && defined(PADLOCK_ALIGN16)
+    if( aes_padlock_ace == -1 )
+        aes_padlock_ace = padlock_supports( PADLOCK_ACE );
+
+    if( aes_padlock_ace )
+        ctx->rk = RK = PADLOCK_ALIGN16( ctx->buf );
+    else
+#endif
     ctx->rk = RK = ctx->buf;
+
+#if defined(POLARSSL_AESNI_C) && defined(POLARSSL_HAVE_X86_64)
+    if( aesni_supports( POLARSSL_AESNI_AES ) )
+        return( aesni_setkey_enc( (unsigned char *) ctx->rk, key, keysize ) );
 #endif
 
-    for( i = 0; i < (keysize >> 5); i++ )
+    for( i = 0; i < ( keysize >> 5 ); i++ )
     {
-        GET_ULONG_LE( RK[i], key, i << 2 );
+        GET_UINT32_LE( RK[i], key, i << 2 );
     }
 
     switch( ctx->nr )
@@ -478,10 +529,10 @@ int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int key
             for( i = 0; i < 10; i++, RK += 4 )
             {
                 RK[4]  = RK[0] ^ RCON[i] ^
-                ( (unsigned long) FSb[ ( RK[3] >>  8 ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( RK[3] >> 16 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( RK[3] >> 24 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( RK[3]       ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( RK[3] >>  8 ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( RK[3] >> 16 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( RK[3] >> 24 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( RK[3]       ) & 0xFF ] << 24 );
 
                 RK[5]  = RK[1] ^ RK[4];
                 RK[6]  = RK[2] ^ RK[5];
@@ -494,10 +545,10 @@ int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int key
             for( i = 0; i < 8; i++, RK += 6 )
             {
                 RK[6]  = RK[0] ^ RCON[i] ^
-                ( (unsigned long) FSb[ ( RK[5] >>  8 ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( RK[5] >> 16 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( RK[5] >> 24 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( RK[5]       ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( RK[5] >>  8 ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( RK[5] >> 16 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( RK[5] >> 24 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( RK[5]       ) & 0xFF ] << 24 );
 
                 RK[7]  = RK[1] ^ RK[6];
                 RK[8]  = RK[2] ^ RK[7];
@@ -512,29 +563,25 @@ int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int key
             for( i = 0; i < 7; i++, RK += 8 )
             {
                 RK[8]  = RK[0] ^ RCON[i] ^
-                ( (unsigned long) FSb[ ( RK[7] >>  8 ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( RK[7] >> 16 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( RK[7] >> 24 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( RK[7]       ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( RK[7] >>  8 ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( RK[7] >> 16 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( RK[7] >> 24 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( RK[7]       ) & 0xFF ] << 24 );
 
                 RK[9]  = RK[1] ^ RK[8];
                 RK[10] = RK[2] ^ RK[9];
                 RK[11] = RK[3] ^ RK[10];
 
                 RK[12] = RK[4] ^
-                ( (unsigned long) FSb[ ( RK[11]       ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( RK[11] >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( RK[11] >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( RK[11] >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( RK[11]       ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( RK[11] >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( RK[11] >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( RK[11] >> 24 ) & 0xFF ] << 24 );
 
                 RK[13] = RK[5] ^ RK[12];
                 RK[14] = RK[6] ^ RK[13];
                 RK[15] = RK[7] ^ RK[14];
             }
-            break;
-
-        default:
-
             break;
     }
 
@@ -544,31 +591,40 @@ int aes_setkey_enc( aes_context *ctx, const unsigned char *key, unsigned int key
 /*
  * AES key schedule (decryption)
  */
-int aes_setkey_dec( aes_context *ctx, const unsigned char *key, unsigned int keysize )
+int aes_setkey_dec( aes_context *ctx, const unsigned char *key,
+                    unsigned int keysize )
 {
-    int i, j;
+    int i, j, ret;
     aes_context cty;
-    unsigned long *RK;
-    unsigned long *SK;
-    int ret;
+    uint32_t *RK;
+    uint32_t *SK;
 
-    switch( keysize )
-    {
-        case 128: ctx->nr = 10; break;
-        case 192: ctx->nr = 12; break;
-        case 256: ctx->nr = 14; break;
-        default : return( POLARSSL_ERR_AES_INVALID_KEY_LENGTH );
-    }
+    aes_init( &cty );
 
-#if defined(PADLOCK_ALIGN16)
-    ctx->rk = RK = PADLOCK_ALIGN16( ctx->buf );
-#else
-    ctx->rk = RK = ctx->buf;
+#if defined(POLARSSL_PADLOCK_C) && defined(PADLOCK_ALIGN16)
+    if( aes_padlock_ace == -1 )
+        aes_padlock_ace = padlock_supports( PADLOCK_ACE );
+
+    if( aes_padlock_ace )
+        ctx->rk = RK = PADLOCK_ALIGN16( ctx->buf );
+    else
 #endif
+    ctx->rk = RK = ctx->buf;
 
-    ret = aes_setkey_enc( &cty, key, keysize );
-    if( ret != 0 )
-        return( ret );
+    /* Also checks keysize */
+    if( ( ret = aes_setkey_enc( &cty, key, keysize ) ) != 0 )
+        goto exit;
+
+    ctx->nr = cty.nr;
+
+#if defined(POLARSSL_AESNI_C) && defined(POLARSSL_HAVE_X86_64)
+    if( aesni_supports( POLARSSL_AESNI_AES ) )
+    {
+        aesni_inverse_key( (unsigned char *) ctx->rk,
+                           (const unsigned char *) cty.rk, ctx->nr );
+        goto exit;
+    }
+#endif
 
     SK = cty.rk + cty.nr * 4;
 
@@ -593,9 +649,10 @@ int aes_setkey_dec( aes_context *ctx, const unsigned char *key, unsigned int key
     *RK++ = *SK++;
     *RK++ = *SK++;
 
-    memset( &cty, 0, sizeof( aes_context ) );
+exit:
+    aes_free( &cty );
 
-    return( 0 );
+    return( ret );
 }
 
 #define AES_FROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3)     \
@@ -653,10 +710,15 @@ int aes_crypt_ecb( aes_context *ctx,
                     unsigned char output[16] )
 {
     int i;
-    unsigned long *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
+    uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
+
+#if defined(POLARSSL_AESNI_C) && defined(POLARSSL_HAVE_X86_64)
+    if( aesni_supports( POLARSSL_AESNI_AES ) )
+        return( aesni_crypt_ecb( ctx, mode, input, output ) );
+#endif
 
 #if defined(POLARSSL_PADLOCK_C) && defined(POLARSSL_HAVE_X86)
-    if( padlock_supports( PADLOCK_ACE ) )
+    if( aes_padlock_ace )
     {
         if( padlock_xcryptecb( ctx, mode, input, output ) == 0 )
             return( 0 );
@@ -669,14 +731,14 @@ int aes_crypt_ecb( aes_context *ctx,
 
     RK = ctx->rk;
 
-    GET_ULONG_LE( X0, input,  0 ); X0 ^= *RK++;
-    GET_ULONG_LE( X1, input,  4 ); X1 ^= *RK++;
-    GET_ULONG_LE( X2, input,  8 ); X2 ^= *RK++;
-    GET_ULONG_LE( X3, input, 12 ); X3 ^= *RK++;
+    GET_UINT32_LE( X0, input,  0 ); X0 ^= *RK++;
+    GET_UINT32_LE( X1, input,  4 ); X1 ^= *RK++;
+    GET_UINT32_LE( X2, input,  8 ); X2 ^= *RK++;
+    GET_UINT32_LE( X3, input, 12 ); X3 ^= *RK++;
 
     if( mode == AES_DECRYPT )
     {
-        for( i = (ctx->nr >> 1) - 1; i > 0; i-- )
+        for( i = ( ctx->nr >> 1 ) - 1; i > 0; i-- )
         {
             AES_RROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );
             AES_RROUND( X0, X1, X2, X3, Y0, Y1, Y2, Y3 );
@@ -685,32 +747,32 @@ int aes_crypt_ecb( aes_context *ctx,
         AES_RROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );
 
         X0 = *RK++ ^ \
-                ( (unsigned long) RSb[ ( Y0       ) & 0xFF ]       ) ^
-                ( (unsigned long) RSb[ ( Y3 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) RSb[ ( Y2 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) RSb[ ( Y1 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) RSb[ ( Y0       ) & 0xFF ]       ) ^
+                ( (uint32_t) RSb[ ( Y3 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) RSb[ ( Y2 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) RSb[ ( Y1 >> 24 ) & 0xFF ] << 24 );
 
         X1 = *RK++ ^ \
-                ( (unsigned long) RSb[ ( Y1       ) & 0xFF ]       ) ^
-                ( (unsigned long) RSb[ ( Y0 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) RSb[ ( Y3 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) RSb[ ( Y2 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) RSb[ ( Y1       ) & 0xFF ]       ) ^
+                ( (uint32_t) RSb[ ( Y0 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) RSb[ ( Y3 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) RSb[ ( Y2 >> 24 ) & 0xFF ] << 24 );
 
         X2 = *RK++ ^ \
-                ( (unsigned long) RSb[ ( Y2       ) & 0xFF ]       ) ^
-                ( (unsigned long) RSb[ ( Y1 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) RSb[ ( Y0 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) RSb[ ( Y3 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) RSb[ ( Y2       ) & 0xFF ]       ) ^
+                ( (uint32_t) RSb[ ( Y1 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) RSb[ ( Y0 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) RSb[ ( Y3 >> 24 ) & 0xFF ] << 24 );
 
         X3 = *RK++ ^ \
-                ( (unsigned long) RSb[ ( Y3       ) & 0xFF ]       ) ^
-                ( (unsigned long) RSb[ ( Y2 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) RSb[ ( Y1 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) RSb[ ( Y0 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) RSb[ ( Y3       ) & 0xFF ]       ) ^
+                ( (uint32_t) RSb[ ( Y2 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) RSb[ ( Y1 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) RSb[ ( Y0 >> 24 ) & 0xFF ] << 24 );
     }
     else /* AES_ENCRYPT */
     {
-        for( i = (ctx->nr >> 1) - 1; i > 0; i-- )
+        for( i = ( ctx->nr >> 1 ) - 1; i > 0; i-- )
         {
             AES_FROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );
             AES_FROUND( X0, X1, X2, X3, Y0, Y1, Y2, Y3 );
@@ -719,38 +781,39 @@ int aes_crypt_ecb( aes_context *ctx,
         AES_FROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );
 
         X0 = *RK++ ^ \
-                ( (unsigned long) FSb[ ( Y0       ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( Y1 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( Y2 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( Y3 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( Y0       ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( Y1 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( Y2 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( Y3 >> 24 ) & 0xFF ] << 24 );
 
         X1 = *RK++ ^ \
-                ( (unsigned long) FSb[ ( Y1       ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( Y2 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( Y3 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( Y0 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( Y1       ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( Y2 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( Y3 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( Y0 >> 24 ) & 0xFF ] << 24 );
 
         X2 = *RK++ ^ \
-                ( (unsigned long) FSb[ ( Y2       ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( Y3 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( Y0 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( Y1 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( Y2       ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( Y3 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( Y0 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( Y1 >> 24 ) & 0xFF ] << 24 );
 
         X3 = *RK++ ^ \
-                ( (unsigned long) FSb[ ( Y3       ) & 0xFF ]       ) ^
-                ( (unsigned long) FSb[ ( Y0 >>  8 ) & 0xFF ] <<  8 ) ^
-                ( (unsigned long) FSb[ ( Y1 >> 16 ) & 0xFF ] << 16 ) ^
-                ( (unsigned long) FSb[ ( Y2 >> 24 ) & 0xFF ] << 24 );
+                ( (uint32_t) FSb[ ( Y3       ) & 0xFF ]       ) ^
+                ( (uint32_t) FSb[ ( Y0 >>  8 ) & 0xFF ] <<  8 ) ^
+                ( (uint32_t) FSb[ ( Y1 >> 16 ) & 0xFF ] << 16 ) ^
+                ( (uint32_t) FSb[ ( Y2 >> 24 ) & 0xFF ] << 24 );
     }
 
-    PUT_ULONG_LE( X0, output,  0 );
-    PUT_ULONG_LE( X1, output,  4 );
-    PUT_ULONG_LE( X2, output,  8 );
-    PUT_ULONG_LE( X3, output, 12 );
+    PUT_UINT32_LE( X0, output,  0 );
+    PUT_UINT32_LE( X1, output,  4 );
+    PUT_UINT32_LE( X2, output,  8 );
+    PUT_UINT32_LE( X3, output, 12 );
 
     return( 0 );
 }
 
+#if defined(POLARSSL_CIPHER_MODE_CBC)
 /*
  * AES-CBC buffer encryption/decryption
  */
@@ -768,11 +831,11 @@ int aes_crypt_cbc( aes_context *ctx,
         return( POLARSSL_ERR_AES_INVALID_INPUT_LENGTH );
 
 #if defined(POLARSSL_PADLOCK_C) && defined(POLARSSL_HAVE_X86)
-    if( padlock_supports( PADLOCK_ACE ) )
+    if( aes_padlock_ace )
     {
         if( padlock_xcryptcbc( ctx, mode, length, iv, input, output ) == 0 )
             return( 0 );
-        
+
         // If padlock data misaligned, we just fall back to
         // unaccelerated mode
         //
@@ -814,6 +877,7 @@ int aes_crypt_cbc( aes_context *ctx,
 
     return( 0 );
 }
+#endif /* POLARSSL_CIPHER_MODE_CBC */
 
 #if defined(POLARSSL_CIPHER_MODE_CFB)
 /*
@@ -841,7 +905,7 @@ int aes_crypt_cfb128( aes_context *ctx,
             *output++ = (unsigned char)( c ^ iv[n] );
             iv[n] = (unsigned char) c;
 
-            n = (n + 1) & 0x0F;
+            n = ( n + 1 ) & 0x0F;
         }
     }
     else
@@ -853,11 +917,44 @@ int aes_crypt_cfb128( aes_context *ctx,
 
             iv[n] = *output++ = (unsigned char)( iv[n] ^ *input++ );
 
-            n = (n + 1) & 0x0F;
+            n = ( n + 1 ) & 0x0F;
         }
     }
 
     *iv_off = n;
+
+    return( 0 );
+}
+
+/*
+ * AES-CFB8 buffer encryption/decryption
+ */
+#include <stdio.h>
+int aes_crypt_cfb8( aes_context *ctx,
+                       int mode,
+                       size_t length,
+                       unsigned char iv[16],
+                       const unsigned char *input,
+                       unsigned char *output )
+{
+    unsigned char c;
+    unsigned char ov[17];
+
+    while( length-- )
+    {
+        memcpy( ov, iv, 16 );
+        aes_crypt_ecb( ctx, AES_ENCRYPT, iv, iv );
+
+        if( mode == AES_DECRYPT )
+            ov[16] = *input;
+
+        c = *output++ = (unsigned char)( iv[0] ^ *input++ );
+
+        if( mode == AES_ENCRYPT )
+            ov[16] = c;
+
+        memcpy( iv, ov + 1, 16 );
+    }
 
     return( 0 );
 }
@@ -875,7 +972,7 @@ int aes_crypt_ctr( aes_context *ctx,
                        const unsigned char *input,
                        unsigned char *output )
 {
-    int c, i, cb;
+    int c, i;
     size_t n = *nc_off;
 
     while( length-- )
@@ -883,17 +980,14 @@ int aes_crypt_ctr( aes_context *ctx,
         if( n == 0 ) {
             aes_crypt_ecb( ctx, AES_ENCRYPT, nonce_counter, stream_block );
 
-            i = 15;
-            do {
-               nonce_counter[i]++;
-               cb = nonce_counter[i] == 0;
-            } while( i-- && cb );
-
+            for( i = 16; i > 0; i-- )
+                if( ++nonce_counter[i - 1] != 0 )
+                    break;
         }
         c = *input++;
         *output++ = (unsigned char)( c ^ stream_block[n] );
 
-        n = (n + 1) & 0x0F;
+        n = ( n + 1 ) & 0x0F;
     }
 
     *nc_off = n;
@@ -901,6 +995,8 @@ int aes_crypt_ctr( aes_context *ctx,
     return( 0 );
 }
 #endif /* POLARSSL_CIPHER_MODE_CTR */
+
+#endif /* !POLARSSL_AES_ALT */
 
 #if defined(POLARSSL_SELF_TEST)
 
@@ -931,6 +1027,7 @@ static const unsigned char aes_test_ecb_enc[3][16] =
       0xFF, 0x30, 0xB4, 0xEA, 0x21, 0x63, 0x6D, 0xA4 }
 };
 
+#if defined(POLARSSL_CIPHER_MODE_CBC)
 static const unsigned char aes_test_cbc_dec[3][16] =
 {
     { 0xFA, 0xCA, 0x37, 0xE0, 0xB0, 0xC8, 0x53, 0x73,
@@ -950,6 +1047,7 @@ static const unsigned char aes_test_cbc_enc[3][16] =
     { 0xFE, 0x3C, 0x53, 0x65, 0x3E, 0x2F, 0x45, 0xB5,
       0x6F, 0xCD, 0x88, 0xB2, 0xCC, 0x89, 0x8F, 0xF0 }
 };
+#endif /* POLARSSL_CIPHER_MODE_CBC */
 
 #if defined(POLARSSL_CIPHER_MODE_CFB)
 /*
@@ -1085,11 +1183,13 @@ static const int aes_test_ctr_len[3] =
  */
 int aes_self_test( int verbose )
 {
-    int i, j, u, v;
+    int ret = 0, i, j, u, v;
     unsigned char key[32];
     unsigned char buf[64];
-    unsigned char prv[16];
     unsigned char iv[16];
+#if defined(POLARSSL_CIPHER_MODE_CBC)
+    unsigned char prv[16];
+#endif
 #if defined(POLARSSL_CIPHER_MODE_CTR) || defined(POLARSSL_CIPHER_MODE_CFB)
     size_t offset;
 #endif
@@ -1101,6 +1201,7 @@ int aes_self_test( int verbose )
     aes_context ctx;
 
     memset( key, 0, 32 );
+    aes_init( &ctx );
 
     /*
      * ECB mode
@@ -1111,8 +1212,8 @@ int aes_self_test( int verbose )
         v = i  & 1;
 
         if( verbose != 0 )
-            printf( "  AES-ECB-%3d (%s): ", 128 + u * 64,
-                    ( v == AES_DECRYPT ) ? "dec" : "enc" );
+            polarssl_printf( "  AES-ECB-%3d (%s): ", 128 + u * 64,
+                             ( v == AES_DECRYPT ) ? "dec" : "enc" );
 
         memset( buf, 0, 16 );
 
@@ -1126,9 +1227,10 @@ int aes_self_test( int verbose )
             if( memcmp( buf, aes_test_ecb_dec[u], 16 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
         else
@@ -1141,19 +1243,21 @@ int aes_self_test( int verbose )
             if( memcmp( buf, aes_test_ecb_enc[u], 16 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
 
+#if defined(POLARSSL_CIPHER_MODE_CBC)
     /*
      * CBC mode
      */
@@ -1163,8 +1267,8 @@ int aes_self_test( int verbose )
         v = i  & 1;
 
         if( verbose != 0 )
-            printf( "  AES-CBC-%3d (%s): ", 128 + u * 64,
-                    ( v == AES_DECRYPT ) ? "dec" : "enc" );
+            polarssl_printf( "  AES-CBC-%3d (%s): ", 128 + u * 64,
+                             ( v == AES_DECRYPT ) ? "dec" : "enc" );
 
         memset( iv , 0, 16 );
         memset( prv, 0, 16 );
@@ -1180,9 +1284,10 @@ int aes_self_test( int verbose )
             if( memcmp( buf, aes_test_cbc_dec[u], 16 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
         else
@@ -1203,18 +1308,20 @@ int aes_self_test( int verbose )
             if( memcmp( prv, aes_test_cbc_enc[u], 16 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
+#endif /* POLARSSL_CIPHER_MODE_CBC */
 
 #if defined(POLARSSL_CIPHER_MODE_CFB)
     /*
@@ -1226,8 +1333,8 @@ int aes_self_test( int verbose )
         v = i  & 1;
 
         if( verbose != 0 )
-            printf( "  AES-CFB128-%3d (%s): ", 128 + u * 64,
-                    ( v == AES_DECRYPT ) ? "dec" : "enc" );
+            polarssl_printf( "  AES-CFB128-%3d (%s): ", 128 + u * 64,
+                             ( v == AES_DECRYPT ) ? "dec" : "enc" );
 
         memcpy( iv,  aes_test_cfb128_iv, 16 );
         memcpy( key, aes_test_cfb128_key[u], 16 + u * 8 );
@@ -1243,9 +1350,10 @@ int aes_self_test( int verbose )
             if( memcmp( buf, aes_test_cfb128_pt, 64 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
         else
@@ -1256,18 +1364,19 @@ int aes_self_test( int verbose )
             if( memcmp( buf, aes_test_cfb128_ct[u], 64 ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
 #endif /* POLARSSL_CIPHER_MODE_CFB */
 
 #if defined(POLARSSL_CIPHER_MODE_CTR)
@@ -1280,8 +1389,8 @@ int aes_self_test( int verbose )
         v = i  & 1;
 
         if( verbose != 0 )
-            printf( "  AES-CTR-128 (%s): ",
-                    ( v == AES_DECRYPT ) ? "dec" : "enc" );
+            polarssl_printf( "  AES-CTR-128 (%s): ",
+                             ( v == AES_DECRYPT ) ? "dec" : "enc" );
 
         memcpy( nonce_counter, aes_test_ctr_nonce_counter[u], 16 );
         memcpy( key, aes_test_ctr_key[u], 16 );
@@ -1294,14 +1403,16 @@ int aes_self_test( int verbose )
             len = aes_test_ctr_len[u];
             memcpy( buf, aes_test_ctr_ct[u], len );
 
-            aes_crypt_ctr( &ctx, len, &offset, nonce_counter, stream_block, buf, buf );
+            aes_crypt_ctr( &ctx, len, &offset, nonce_counter, stream_block,
+                           buf, buf );
 
             if( memcmp( buf, aes_test_ctr_pt[u], len ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
         else
@@ -1309,28 +1420,35 @@ int aes_self_test( int verbose )
             len = aes_test_ctr_len[u];
             memcpy( buf, aes_test_ctr_pt[u], len );
 
-            aes_crypt_ctr( &ctx, len, &offset, nonce_counter, stream_block, buf, buf );
+            aes_crypt_ctr( &ctx, len, &offset, nonce_counter, stream_block,
+                           buf, buf );
 
             if( memcmp( buf, aes_test_ctr_ct[u], len ) != 0 )
             {
                 if( verbose != 0 )
-                    printf( "failed\n" );
+                    polarssl_printf( "failed\n" );
 
-                return( 1 );
+                ret = 1;
+                goto exit;
             }
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
 #endif /* POLARSSL_CIPHER_MODE_CTR */
 
-    return( 0 );
+    ret = 0;
+
+exit:
+    aes_free( &ctx );
+
+    return( ret );
 }
 
-#endif
+#endif /* POLARSSL_SELF_TEST */
 
-#endif
+#endif /* POLARSSL_AES_C */

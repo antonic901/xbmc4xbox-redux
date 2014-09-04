@@ -1,7 +1,7 @@
 /*
  *  AES-256 file encryption program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,13 +23,17 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #if defined(_WIN32)
 #include <windows.h>
+#if !defined(_WIN32_WCE)
 #include <io.h>
+#endif
 #else
 #include <sys/types.h>
 #include <unistd.h>
@@ -40,10 +44,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/aes.h"
-#include "polarssl/sha2.h"
+#include "polarssl/sha256.h"
 
 #define MODE_ENCRYPT    0
 #define MODE_DECRYPT    1
@@ -54,10 +56,12 @@
     "\n  example: aescrypt2 0 file file.aes hex:E76B2413958B00E193\n" \
     "\n"
 
-#if !defined(POLARSSL_AES_C) || !defined(POLARSSL_SHA2_C)
-int main( void )
+#if !defined(POLARSSL_AES_C) || !defined(POLARSSL_SHA256_C)
+int main( int argc, char *argv[] )
 {
-    printf("POLARSSL_AES_C and/or POLARSSL_SHA2_C not defined.\n");
+    ((void) argc);
+    ((void) argv);
+    printf("POLARSSL_AES_C and/or POLARSSL_SHA256_C not defined.\n");
     return( 0 );
 }
 #else
@@ -75,16 +79,22 @@ int main( int argc, char *argv[] )
     unsigned char key[512];
     unsigned char digest[32];
     unsigned char buffer[1024];
+    unsigned char diff;
 
     aes_context aes_ctx;
-    sha2_context sha_ctx;
+    sha256_context sha_ctx;
 
-#if defined(WIN32)
+#if defined(_WIN32_WCE)
+    long filesize, offset;
+#elif defined(_WIN32)
        LARGE_INTEGER li_size;
     __int64 filesize, offset;
 #else
       off_t filesize, offset;
 #endif
+
+    aes_init( &aes_ctx );
+    sha256_init( &sha_ctx );
 
     /*
      * Parse the command-line arguments.
@@ -93,7 +103,7 @@ int main( int argc, char *argv[] )
     {
         printf( USAGE );
 
-#if defined(WIN32)
+#if defined(_WIN32)
         printf( "\n  Press Enter to exit this program.\n" );
         fflush( stdout ); getchar();
 #endif
@@ -162,7 +172,10 @@ int main( int argc, char *argv[] )
 
     memset( argv[4], 0, strlen( argv[4] ) );
 
-#if defined(WIN32)
+#if defined(_WIN32_WCE)
+    filesize = fseek( fin, 0L, SEEK_END );
+#else
+#if defined(_WIN32)
     /*
      * Support large files (> 2Gb) on Win32
      */
@@ -185,6 +198,7 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 #endif
+#endif
 
     if( fseek( fin, 0, SEEK_SET ) < 0 )
     {
@@ -203,10 +217,10 @@ int main( int argc, char *argv[] )
 
         p = argv[2];
 
-        sha2_starts( &sha_ctx, 0 );
-        sha2_update( &sha_ctx, buffer, 8 );
-        sha2_update( &sha_ctx, (unsigned char *) p, strlen( p ) );
-        sha2_finish( &sha_ctx, digest );
+        sha256_starts( &sha_ctx, 0 );
+        sha256_update( &sha_ctx, buffer, 8 );
+        sha256_update( &sha_ctx, (unsigned char *) p, strlen( p ) );
+        sha256_finish( &sha_ctx, digest );
 
         memcpy( IV, digest, 16 );
 
@@ -237,15 +251,15 @@ int main( int argc, char *argv[] )
 
         for( i = 0; i < 8192; i++ )
         {
-            sha2_starts( &sha_ctx, 0 );
-            sha2_update( &sha_ctx, digest, 32 );
-            sha2_update( &sha_ctx, key, keylen );
-            sha2_finish( &sha_ctx, digest );
+            sha256_starts( &sha_ctx, 0 );
+            sha256_update( &sha_ctx, digest, 32 );
+            sha256_update( &sha_ctx, key, keylen );
+            sha256_finish( &sha_ctx, digest );
         }
 
         memset( key, 0, sizeof( key ) );
-          aes_setkey_enc( &aes_ctx, digest, 256 );
-        sha2_hmac_starts( &sha_ctx, digest, 32, 0 );
+        aes_setkey_enc( &aes_ctx, digest, 256 );
+        sha256_hmac_starts( &sha_ctx, digest, 32, 0 );
 
         /*
          * Encrypt and write the ciphertext.
@@ -265,7 +279,7 @@ int main( int argc, char *argv[] )
                 buffer[i] = (unsigned char)( buffer[i] ^ IV[i] );
 
             aes_crypt_ecb( &aes_ctx, AES_ENCRYPT, buffer, buffer );
-            sha2_hmac_update( &sha_ctx, buffer, 16 );
+            sha256_hmac_update( &sha_ctx, buffer, 16 );
 
             if( fwrite( buffer, 1, 16, fout ) != 16 )
             {
@@ -279,7 +293,7 @@ int main( int argc, char *argv[] )
         /*
          * Finally write the HMAC.
          */
-        sha2_hmac_finish( &sha_ctx, digest );
+        sha256_hmac_finish( &sha_ctx, digest );
 
         if( fwrite( digest, 1, 32, fout ) != 32 )
         {
@@ -314,7 +328,7 @@ int main( int argc, char *argv[] )
         }
 
         /*
-         * Substract the IV + HMAC length.
+         * Subtract the IV + HMAC length.
          */
         filesize -= ( 16 + 32 );
 
@@ -339,15 +353,15 @@ int main( int argc, char *argv[] )
 
         for( i = 0; i < 8192; i++ )
         {
-            sha2_starts( &sha_ctx, 0 );
-            sha2_update( &sha_ctx, digest, 32 );
-            sha2_update( &sha_ctx, key, keylen );
-            sha2_finish( &sha_ctx, digest );
+            sha256_starts( &sha_ctx, 0 );
+            sha256_update( &sha_ctx, digest, 32 );
+            sha256_update( &sha_ctx, key, keylen );
+            sha256_finish( &sha_ctx, digest );
         }
 
         memset( key, 0, sizeof( key ) );
-          aes_setkey_dec( &aes_ctx, digest, 256 );
-        sha2_hmac_starts( &sha_ctx, digest, 32, 0 );
+        aes_setkey_dec( &aes_ctx, digest, 256 );
+        sha256_hmac_starts( &sha_ctx, digest, 32, 0 );
 
         /*
          * Decrypt and write the plaintext.
@@ -361,10 +375,10 @@ int main( int argc, char *argv[] )
             }
 
             memcpy( tmp, buffer, 16 );
- 
-            sha2_hmac_update( &sha_ctx, buffer, 16 );
+
+            sha256_hmac_update( &sha_ctx, buffer, 16 );
             aes_crypt_ecb( &aes_ctx, AES_DECRYPT, buffer, buffer );
-   
+
             for( i = 0; i < 16; i++ )
                 buffer[i] = (unsigned char)( buffer[i] ^ IV[i] );
 
@@ -383,7 +397,7 @@ int main( int argc, char *argv[] )
         /*
          * Verify the message authentication code.
          */
-        sha2_hmac_finish( &sha_ctx, digest );
+        sha256_hmac_finish( &sha_ctx, digest );
 
         if( fread( buffer, 1, 32, fin ) != 32 )
         {
@@ -391,7 +405,12 @@ int main( int argc, char *argv[] )
             goto exit;
         }
 
-        if( memcmp( digest, buffer, 32 ) != 0 )
+        /* Use constant-time buffer comparison */
+        diff = 0;
+        for( i = 0; i < 32; i++ )
+            diff |= digest[i] ^ buffer[i];
+
+        if( diff != 0 )
         {
             fprintf( stderr, "HMAC check failed: wrong key, "
                              "or file corrupted.\n" );
@@ -410,9 +429,9 @@ exit:
     memset( buffer, 0, sizeof( buffer ) );
     memset( digest, 0, sizeof( digest ) );
 
-    memset( &aes_ctx, 0, sizeof(  aes_context ) );
-    memset( &sha_ctx, 0, sizeof( sha2_context ) );
+    aes_free( &aes_ctx );
+    sha256_free( &sha_ctx );
 
     return( ret );
 }
-#endif /* POLARSSL_AES_C && POLARSSL_SHA2_C */
+#endif /* POLARSSL_AES_C && POLARSSL_SHA256_C */

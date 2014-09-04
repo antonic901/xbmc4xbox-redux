@@ -27,9 +27,9 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4485C157-39E7-4A97-93DC-80F794E37450}</ProjectGuid>
+    <ProjectGuid>{77834257-2878-A38D-AEBE-79423968B6DB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>dh_client</RootNamespace>
+    <RootNamespace>rsa_verify</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

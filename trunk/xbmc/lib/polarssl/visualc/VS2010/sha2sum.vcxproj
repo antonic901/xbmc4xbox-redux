@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{97A7EBB4-A76D-40CA-8E30-C10F2EB0B324}</ProjectGuid>
+    <ProjectGuid>{BAF92F6C-E5BE-95B7-6E36-823A1779A818}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>sha2sum</RootNamespace>
   </PropertyGroup>

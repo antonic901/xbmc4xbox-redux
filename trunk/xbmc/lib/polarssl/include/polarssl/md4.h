@@ -3,7 +3,7 @@
  *
  * \brief MD4 message digest algorithm (hash function)
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -27,15 +27,38 @@
 #ifndef POLARSSL_MD4_H
 #define POLARSSL_MD4_H
 
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
+
 #include <string.h>
+
+#if defined(_MSC_VER) && !defined(EFIX64) && !defined(EFI32)
+#include <basetsd.h>
+typedef UINT32 uint32_t;
+#else
+#include <inttypes.h>
+#endif
+
+#define POLARSSL_ERR_MD4_FILE_IO_ERROR                 -0x0072  /**< Read/write error in file. */
+
+#if !defined(POLARSSL_MD4_ALT)
+// Regular implementation
+//
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief          MD4 context structure
  */
 typedef struct
 {
-    unsigned long total[2];     /*!< number of bytes processed  */
-    unsigned long state[4];     /*!< intermediate digest state  */
+    uint32_t total[2];          /*!< number of bytes processed  */
+    uint32_t state[4];          /*!< intermediate digest state  */
     unsigned char buffer[64];   /*!< data block being processed */
 
     unsigned char ipad[64];     /*!< HMAC: inner padding        */
@@ -43,9 +66,19 @@ typedef struct
 }
 md4_context;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * \brief          Initialize MD4 context
+ *
+ * \param ctx      MD4 context to be initialized
+ */
+void md4_init( md4_context *ctx );
+
+/**
+ * \brief          Clear MD4 context
+ *
+ * \param ctx      MD4 context to be cleared
+ */
+void md4_free( md4_context *ctx );
 
 /**
  * \brief          MD4 context setup
@@ -71,6 +104,18 @@ void md4_update( md4_context *ctx, const unsigned char *input, size_t ilen );
  */
 void md4_finish( md4_context *ctx, unsigned char output[16] );
 
+#ifdef __cplusplus
+}
+#endif
+
+#else  /* POLARSSL_MD4_ALT */
+#include "md4_alt.h"
+#endif /* POLARSSL_MD4_ALT */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief          Output = MD4( input buffer )
  *
@@ -86,8 +131,7 @@ void md4( const unsigned char *input, size_t ilen, unsigned char output[16] );
  * \param path     input file name
  * \param output   MD4 checksum result
  *
- * \return         0 if successful, 1 if fopen failed,
- *                 or 2 if fread failed
+ * \return         0 if successful, or POLARSSL_ERR_MD4_FILE_IO_ERROR
  */
 int md4_file( const char *path, unsigned char output[16] );
 
@@ -98,7 +142,8 @@ int md4_file( const char *path, unsigned char output[16] );
  * \param key      HMAC secret key
  * \param keylen   length of the HMAC key
  */
-void md4_hmac_starts( md4_context *ctx, const unsigned char *key, size_t keylen );
+void md4_hmac_starts( md4_context *ctx, const unsigned char *key,
+                      size_t keylen );
 
 /**
  * \brief          MD4 HMAC process buffer
@@ -107,7 +152,8 @@ void md4_hmac_starts( md4_context *ctx, const unsigned char *key, size_t keylen 
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void md4_hmac_update( md4_context *ctx, const unsigned char *input, size_t ilen );
+void md4_hmac_update( md4_context *ctx, const unsigned char *input,
+                      size_t ilen );
 
 /**
  * \brief          MD4 HMAC final digest
@@ -143,6 +189,9 @@ void md4_hmac( const unsigned char *key, size_t keylen,
  * \return         0 if successful, or 1 if the test failed
  */
 int md4_self_test( int verbose );
+
+/* Internal use */
+void md4_process( md4_context *ctx, const unsigned char data[64] );
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 /*
  *  md5sum demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,20 +23,23 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/md5.h"
 
 #if !defined(POLARSSL_MD5_C) || !defined(POLARSSL_FS_IO)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_MD5_C and/or POLARSSL_FS_IO not defined.\n");
     return( 0 );
 }
@@ -78,6 +81,7 @@ static int md5_check( char *filename )
     int nb_tot1, nb_tot2;
     unsigned char sum[16];
     char buf[33], line[1024];
+    char diff;
 
     if( ( f = fopen( filename, "rb" ) ) == NULL )
     {
@@ -118,7 +122,12 @@ static int md5_check( char *filename )
         for( i = 0; i < 16; i++ )
             sprintf( buf + i * 2, "%02x", sum[i] );
 
-        if( memcmp( line, buf, 32 ) != 0 )
+        /* Use constant-time buffer comparison */
+        diff = 0;
+        for( i = 0; i < 32; i++ )
+            diff |= line[i] ^ buf[i];
+
+        if( diff != 0 )
         {
             nb_err2++;
             fprintf( stderr, "wrong checksum: %s\n", line + 34 );
@@ -126,6 +135,8 @@ static int md5_check( char *filename )
 
         n = sizeof( line );
     }
+
+    fclose( f );
 
     if( nb_err1 != 0 )
     {
@@ -151,7 +162,7 @@ int main( int argc, char *argv[] )
         printf( "print mode:  md5sum <file> <file> ...\n" );
         printf( "check mode:  md5sum -c <checksum file>\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n  Press Enter to exit this program.\n" );
         fflush( stdout ); getchar();
 #endif

@@ -3,7 +3,7 @@
  *
  * \brief DES block cipher
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -27,7 +27,20 @@
 #ifndef POLARSSL_DES_H
 #define POLARSSL_DES_H
 
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
+
 #include <string.h>
+
+#if defined(_MSC_VER) && !defined(EFIX64) && !defined(EFI32)
+#include <basetsd.h>
+typedef UINT32 uint32_t;
+#else
+#include <inttypes.h>
+#endif
 
 #define DES_ENCRYPT     1
 #define DES_DECRYPT     0
@@ -36,13 +49,21 @@
 
 #define DES_KEY_SIZE    8
 
+#if !defined(POLARSSL_DES_ALT)
+// Regular implementation
+//
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief          DES context structure
  */
 typedef struct
 {
     int mode;                   /*!<  encrypt/decrypt   */
-    unsigned long sk[32];       /*!<  DES subkeys       */
+    uint32_t sk[32];            /*!<  DES subkeys       */
 }
 des_context;
 
@@ -52,13 +73,37 @@ des_context;
 typedef struct
 {
     int mode;                   /*!<  encrypt/decrypt   */
-    unsigned long sk[96];       /*!<  3DES subkeys      */
+    uint32_t sk[96];            /*!<  3DES subkeys      */
 }
 des3_context;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * \brief          Initialize DES context
+ *
+ * \param ctx      DES context to be initialized
+ */
+void des_init( des_context *ctx );
+
+/**
+ * \brief          Clear DES context
+ *
+ * \param ctx      DES context to be cleared
+ */
+void des_free( des_context *ctx );
+
+/**
+ * \brief          Initialize Triple-DES context
+ *
+ * \param ctx      DES3 context to be initialized
+ */
+void des3_init( des3_context *ctx );
+
+/**
+ * \brief          Clear Triple-DES context
+ *
+ * \param ctx      DES3 context to be cleared
+ */
+void des3_free( des3_context *ctx );
 
 /**
  * \brief          Set key parity on the given key to odd.
@@ -87,7 +132,7 @@ int des_key_check_key_parity( const unsigned char key[DES_KEY_SIZE] );
  *
  * \param key      8-byte secret key
  *
- * \resurn         0 if no weak key was found, 1 if a weak key was identified.
+ * \return         0 if no weak key was found, 1 if a weak key was identified.
  */
 int des_key_check_weak( const unsigned char key[DES_KEY_SIZE] );
 
@@ -119,7 +164,8 @@ int des_setkey_dec( des_context *ctx, const unsigned char key[DES_KEY_SIZE] );
  *
  * \return         0
  */
-int des3_set2key_enc( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 2] );
+int des3_set2key_enc( des3_context *ctx,
+                      const unsigned char key[DES_KEY_SIZE * 2] );
 
 /**
  * \brief          Triple-DES key schedule (112-bit, decryption)
@@ -129,7 +175,8 @@ int des3_set2key_enc( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 
  *
  * \return         0
  */
-int des3_set2key_dec( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 2] );
+int des3_set2key_dec( des3_context *ctx,
+                      const unsigned char key[DES_KEY_SIZE * 2] );
 
 /**
  * \brief          Triple-DES key schedule (168-bit, encryption)
@@ -139,7 +186,8 @@ int des3_set2key_dec( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 
  *
  * \return         0
  */
-int des3_set3key_enc( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 3] );
+int des3_set3key_enc( des3_context *ctx,
+                      const unsigned char key[DES_KEY_SIZE * 3] );
 
 /**
  * \brief          Triple-DES key schedule (168-bit, decryption)
@@ -149,7 +197,8 @@ int des3_set3key_enc( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 
  *
  * \return         0
  */
-int des3_set3key_dec( des3_context *ctx, const unsigned char key[DES_KEY_SIZE * 3] );
+int des3_set3key_dec( des3_context *ctx,
+                      const unsigned char key[DES_KEY_SIZE * 3] );
 
 /**
  * \brief          DES-ECB block encryption/decryption
@@ -164,6 +213,7 @@ int des_crypt_ecb( des_context *ctx,
                     const unsigned char input[8],
                     unsigned char output[8] );
 
+#if defined(POLARSSL_CIPHER_MODE_CBC)
 /**
  * \brief          DES-CBC buffer encryption/decryption
  *
@@ -180,6 +230,7 @@ int des_crypt_cbc( des_context *ctx,
                     unsigned char iv[8],
                     const unsigned char *input,
                     unsigned char *output );
+#endif /* POLARSSL_CIPHER_MODE_CBC */
 
 /**
  * \brief          3DES-ECB block encryption/decryption
@@ -194,6 +245,7 @@ int des3_crypt_ecb( des3_context *ctx,
                      const unsigned char input[8],
                      unsigned char output[8] );
 
+#if defined(POLARSSL_CIPHER_MODE_CBC)
 /**
  * \brief          3DES-CBC buffer encryption/decryption
  *
@@ -212,8 +264,21 @@ int des3_crypt_cbc( des3_context *ctx,
                      unsigned char iv[8],
                      const unsigned char *input,
                      unsigned char *output );
+#endif /* POLARSSL_CIPHER_MODE_CBC */
 
-/*
+#ifdef __cplusplus
+}
+#endif
+
+#else  /* POLARSSL_DES_ALT */
+#include "des_alt.h"
+#endif /* POLARSSL_DES_ALT */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
  * \brief          Checkup routine
  *
  * \return         0 if successful, or 1 if the test failed

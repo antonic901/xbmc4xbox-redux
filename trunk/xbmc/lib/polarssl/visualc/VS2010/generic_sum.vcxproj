@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BE21679A-D26E-4A26-BC4F-382F57A33480}</ProjectGuid>
+    <ProjectGuid>{7036A174-35D6-54AE-7613-A50F5FD8AF86}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>generic_sum</RootNamespace>
   </PropertyGroup>

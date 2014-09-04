@@ -5,7 +5,7 @@
  *
  * \author Adriaan de Jong <dejong@fox-it.com>
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -26,17 +26,32 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#ifndef POLARSSL_PKCS11_H
+#define POLARSSL_PKCS11_H
 
-#ifndef PKCS11_H_
-#define PKCS11_H_
-
-#include "polarssl/config.h"
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
 
 #if defined(POLARSSL_PKCS11_C)
 
-#include "polarssl/x509.h"
+#include "x509_crt.h"
 
 #include <pkcs11-helper-1.0/pkcs11h-certificate.h>
+
+#if defined(_MSC_VER) && !defined(inline)
+#define inline _inline
+#else
+#if defined(__ARMCC_VERSION) && !defined(inline)
+#define inline __inline
+#endif /* __ARMCC_VERSION */
+#endif /*_MSC_VER */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Context for PKCS #11 private keys.
@@ -54,7 +69,7 @@ typedef struct {
  *
  * \return              0 on success.
  */
-int pkcs11_x509_cert_init( x509_cert *cert, pkcs11h_certificate_t pkcs11h_cert );
+int pkcs11_x509_cert_init( x509_crt *cert, pkcs11h_certificate_t pkcs11h_cert );
 
 /**
  * Initialise a pkcs11_context, storing the given certificate. Note that the
@@ -78,7 +93,8 @@ int pkcs11_priv_key_init( pkcs11_context *priv_key,
 void pkcs11_priv_key_free( pkcs11_context *priv_key );
 
 /**
- * \brief          Do an RSA private key decrypt, then remove the message padding
+ * \brief          Do an RSA private key decrypt, then remove the message
+ *                 padding
  *
  * \param ctx      PKCS #11 context
  * \param mode     must be RSA_PRIVATE, for compatibility with rsa.c's signature
@@ -97,15 +113,15 @@ int pkcs11_decrypt( pkcs11_context *ctx,
                        int mode, size_t *olen,
                        const unsigned char *input,
                        unsigned char *output,
-                       unsigned int output_max_len );
+                       size_t output_max_len );
 
 /**
  * \brief          Do a private RSA to sign a message digest
  *
  * \param ctx      PKCS #11 context
  * \param mode     must be RSA_PRIVATE, for compatibility with rsa.c's signature
- * \param hash_id  SIG_RSA_RAW, SIG_RSA_MD{2,4,5} or SIG_RSA_SHA{1,224,256,384,512}
- * \param hashlen  message digest length (for SIG_RSA_RAW only)
+ * \param md_alg   a POLARSSL_MD_* (use POLARSSL_MD_NONE for signing raw data)
+ * \param hashlen  message digest length (for POLARSSL_MD_NONE only)
  * \param hash     buffer holding the message digest
  * \param sig      buffer that will hold the ciphertext
  *
@@ -117,11 +133,42 @@ int pkcs11_decrypt( pkcs11_context *ctx,
  */
 int pkcs11_sign( pkcs11_context *ctx,
                     int mode,
-                    int hash_id,
+                    md_type_t md_alg,
                     unsigned int hashlen,
                     const unsigned char *hash,
                     unsigned char *sig );
 
+/**
+ * SSL/TLS wrappers for PKCS#11 functions
+ */
+static inline int ssl_pkcs11_decrypt( void *ctx, int mode, size_t *olen,
+                        const unsigned char *input, unsigned char *output,
+                        size_t output_max_len )
+{
+    return pkcs11_decrypt( (pkcs11_context *) ctx, mode, olen, input, output,
+                           output_max_len );
+}
+
+static inline int ssl_pkcs11_sign( void *ctx,
+                     int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+                     int mode, md_type_t md_alg, unsigned int hashlen,
+                     const unsigned char *hash, unsigned char *sig )
+{
+    ((void) f_rng);
+    ((void) p_rng);
+    return pkcs11_sign( (pkcs11_context *) ctx, mode, md_alg,
+                        hashlen, hash, sig );
+}
+
+static inline size_t ssl_pkcs11_key_len( void *ctx )
+{
+    return ( (pkcs11_context *) ctx )->len;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* POLARSSL_PKCS11_C */
 
-#endif /* PKCS11_H_ */
+#endif /* POLARSSL_PKCS11_H */

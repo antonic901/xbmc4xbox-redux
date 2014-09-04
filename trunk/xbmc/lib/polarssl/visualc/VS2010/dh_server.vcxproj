@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{17D1A1DA-6803-4AA1-A0DB-566E00D7593C}</ProjectGuid>
+    <ProjectGuid>{9BB33B8B-A1D3-ABEF-9071-D92289A4CEED}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>dh_server</RootNamespace>
   </PropertyGroup>

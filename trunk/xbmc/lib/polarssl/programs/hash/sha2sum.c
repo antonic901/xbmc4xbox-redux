@@ -1,7 +1,7 @@
 /*
- *  sha2sum demonstration program
+ *  sha256sum demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,27 +23,30 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
+#include "polarssl/sha256.h"
 
-#include "polarssl/sha2.h"
-
-#if !defined(POLARSSL_SHA2_C) || !defined(POLARSSL_FS_IO)
-int main( void )
+#if !defined(POLARSSL_SHA256_C) || !defined(POLARSSL_FS_IO)
+int main( int argc, char *argv[] )
 {
-    printf("POLARSSL_SHA2_C and/or POLARSSL_FS_IO not defined.\n");
+    ((void) argc);
+    ((void) argv);
+
+    printf("POLARSSL_SHA256_C and/or POLARSSL_FS_IO not defined.\n");
     return( 0 );
 }
 #else
-static int sha2_wrapper( char *filename, unsigned char *sum )
+static int sha256_wrapper( char *filename, unsigned char *sum )
 {
-    int ret = sha2_file( filename, sum, 0 );
+    int ret = sha256_file( filename, sum, 0 );
 
     if( ret == 1 )
         fprintf( stderr, "failed to open: %s\n", filename );
@@ -54,12 +57,12 @@ static int sha2_wrapper( char *filename, unsigned char *sum )
     return( ret );
 }
 
-static int sha2_print( char *filename )
+static int sha256_print( char *filename )
 {
     int i;
     unsigned char sum[32];
 
-    if( sha2_wrapper( filename, sum ) != 0 )
+    if( sha256_wrapper( filename, sum ) != 0 )
         return( 1 );
 
     for( i = 0; i < 32; i++ )
@@ -69,7 +72,7 @@ static int sha2_print( char *filename )
     return( 0 );
 }
 
-static int sha2_check( char *filename )
+static int sha256_check( char *filename )
 {
     int i;
     size_t n;
@@ -78,6 +81,7 @@ static int sha2_check( char *filename )
     int nb_tot1, nb_tot2;
     unsigned char sum[32];
     char buf[65], line[1024];
+    char diff;
 
     if( ( f = fopen( filename, "rb" ) ) == NULL )
     {
@@ -107,7 +111,7 @@ static int sha2_check( char *filename )
 
         nb_tot1++;
 
-        if( sha2_wrapper( line + 66, sum ) != 0 )
+        if( sha256_wrapper( line + 66, sum ) != 0 )
         {
             nb_err1++;
             continue;
@@ -118,7 +122,12 @@ static int sha2_check( char *filename )
         for( i = 0; i < 32; i++ )
             sprintf( buf + i * 2, "%02x", sum[i] );
 
-        if( memcmp( line, buf, 64 ) != 0 )
+        /* Use constant-time buffer comparison */
+        diff = 0;
+        for( i = 0; i < 64; i++ )
+            diff |= line[i] ^ buf[i];
+
+        if( diff != 0 )
         {
             nb_err2++;
             fprintf( stderr, "wrong checksum: %s\n", line + 66 );
@@ -126,6 +135,8 @@ static int sha2_check( char *filename )
 
         n = sizeof( line );
     }
+
+    fclose( f );
 
     if( nb_err1 != 0 )
     {
@@ -148,10 +159,10 @@ int main( int argc, char *argv[] )
 
     if( argc == 1 )
     {
-        printf( "print mode:  sha2sum <file> <file> ...\n" );
-        printf( "check mode:  sha2sum -c <checksum file>\n" );
+        printf( "print mode:  sha256sum <file> <file> ...\n" );
+        printf( "check mode:  sha256sum -c <checksum file>\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n  Press Enter to exit this program.\n" );
         fflush( stdout ); getchar();
 #endif
@@ -160,12 +171,12 @@ int main( int argc, char *argv[] )
     }
 
     if( argc == 3 && strcmp( "-c", argv[1] ) == 0 )
-        return( sha2_check( argv[2] ) );
+        return( sha256_check( argv[2] ) );
 
     ret = 0;
     for( i = 1; i < argc; i++ )
-        ret |= sha2_print( argv[i] );
+        ret |= sha256_print( argv[i] );
 
     return( ret );
 }
-#endif /* POLARSSL_SHA2_C && POLARSSL_FS_IO */
+#endif /* POLARSSL_SHA256_C && POLARSSL_FS_IO */

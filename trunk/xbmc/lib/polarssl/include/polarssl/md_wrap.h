@@ -1,11 +1,11 @@
 /**
  * \file md_wrap.h
- * 
+ *
  * \brief Message digest wrappers.
  *
  * \author Adriaan de Jong <dejong@fox-it.com>
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -26,12 +26,15 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-#include "polarssl/config.h"
-#include "polarssl/md.h"
-
 #ifndef POLARSSL_MD_WRAP_H
 #define POLARSSL_MD_WRAP_H
+
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
+#include "md.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,14 +49,17 @@ extern const md_info_t md4_info;
 #if defined(POLARSSL_MD5_C)
 extern const md_info_t md5_info;
 #endif
+#if defined(POLARSSL_RIPEMD160_C)
+extern const md_info_t ripemd160_info;
+#endif
 #if defined(POLARSSL_SHA1_C)
 extern const md_info_t sha1_info;
 #endif
-#if defined(POLARSSL_SHA2_C)
+#if defined(POLARSSL_SHA256_C)
 extern const md_info_t sha224_info;
 extern const md_info_t sha256_info;
 #endif
-#if defined(POLARSSL_SHA4_C)
+#if defined(POLARSSL_SHA512_C)
 extern const md_info_t sha384_info;
 extern const md_info_t sha512_info;
 #endif

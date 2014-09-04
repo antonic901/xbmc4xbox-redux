@@ -1,7 +1,7 @@
 /*
  *  Simple MPI demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,25 +23,32 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <stdio.h>
 
-#include "polarssl/config.h"
 #include "polarssl/bignum.h"
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_FS_IO)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_BIGNUM_C and/or POLARSSL_FS_IO not defined.\n");
     return( 0 );
 }
 #else
-int main( void )
+int main( int argc, char *argv[] )
 {
     mpi E, P, Q, N, H, D, X, Y, Z;
+
+    ((void) argc);
+    ((void) argv);
 
     mpi_init( &E ); mpi_init( &P ); mpi_init( &Q ); mpi_init( &N );
     mpi_init( &H ); mpi_init( &D ); mpi_init( &X ); mpi_init( &Y );
@@ -85,7 +92,7 @@ int main( void )
     mpi_free( &H ); mpi_free( &D ); mpi_free( &X ); mpi_free( &Y );
     mpi_free( &Z );
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif

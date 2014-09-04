@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7FEC406E-95C5-4CC7-9CE7-8EA014AF5E15}</ProjectGuid>
+    <ProjectGuid>{D4F79297-4960-6D63-D50E-5823C50ED124}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>md5sum</RootNamespace>
   </PropertyGroup>

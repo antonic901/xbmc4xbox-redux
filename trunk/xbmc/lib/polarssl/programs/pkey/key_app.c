@@ -1,7 +1,7 @@
 /*
  *  Key reading application
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,19 +23,32 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/error.h"
 #include "polarssl/rsa.h"
 #include "polarssl/x509.h"
+
+#if !defined(POLARSSL_BIGNUM_C) ||                                  \
+    !defined(POLARSSL_PK_PARSE_C) || !defined(POLARSSL_FS_IO)
+int main( int argc, char *argv[] )
+{
+    ((void) argc);
+    ((void) argv);
+
+    printf("POLARSSL_BIGNUM_C and/or "
+           "POLARSSL_PK_PARSE_C and/or POLARSSL_FS_IO not defined.\n");
+    return( 0 );
+}
+#else
 
 #define MODE_NONE               0
 #define MODE_PRIVATE            1
@@ -43,6 +56,8 @@
 
 #define DFL_MODE                MODE_NONE
 #define DFL_FILENAME            "keyfile.key"
+#define DFL_PASSWORD            ""
+#define DFL_PASSWORD_FILE       ""
 #define DFL_DEBUG_LEVEL         0
 
 /*
@@ -51,49 +66,33 @@
 struct options
 {
     int mode;                   /* the mode to run the application in   */
-    char *filename;             /* filename of the key file             */
-    int debug_level;            /* level of debugging                   */
+    const char *filename;       /* filename of the key file             */
+    const char *password;       /* password for the private key         */
+    const char *password_file;  /* password_file for the private key    */
 } opt;
-
-void my_debug( void *ctx, int level, const char *str )
-{
-    if( level < opt.debug_level )
-    {
-        fprintf( (FILE *) ctx, "%s", str );
-        fflush(  (FILE *) ctx  );
-    }
-}
 
 #define USAGE \
     "\n usage: key_app param=<>...\n"                   \
     "\n acceptable parameters:\n"                       \
     "    mode=private|public default: none\n"           \
     "    filename=%%s         default: keyfile.key\n"   \
-    "    debug_level=%%d      default: 0 (disabled)\n"  \
+    "    password=%%s         default: \"\"\n"          \
+    "    password_file=%%s    default: \"\"\n"          \
     "\n"
 
-#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_RSA_C) ||         \
-    !defined(POLARSSL_X509_PARSE_C) || !defined(POLARSSL_FS_IO)
-int main( void )
-{
-    printf("POLARSSL_BIGNUM_C and/or POLARSSL_RSA_C and/or "
-           "POLARSSL_X509_PARSE_C and/or POLARSSL_FS_IO not defined.\n");
-    return( 0 );
-}
-#else
 int main( int argc, char *argv[] )
 {
     int ret = 0;
-    rsa_context rsa;
+    pk_context pk;
     char buf[1024];
-    int i, j, n;
+    int i;
     char *p, *q;
 
     /*
      * Set to sane values
      */
-    memset( &rsa, 0, sizeof( rsa_context ) );
-    memset( buf, 0, 1024 );
+    pk_init( &pk );
+    memset( buf, 0, sizeof(buf) );
 
     if( argc == 0 )
     {
@@ -104,18 +103,11 @@ int main( int argc, char *argv[] )
 
     opt.mode                = DFL_MODE;
     opt.filename            = DFL_FILENAME;
-    opt.debug_level         = DFL_DEBUG_LEVEL;
+    opt.password            = DFL_PASSWORD;
+    opt.password_file       = DFL_PASSWORD_FILE;
 
     for( i = 1; i < argc; i++ )
     {
-        n = strlen( argv[i] );
-
-        for( j = 0; j < n; j++ )
-        {
-            if( argv[i][j] >= 'A' && argv[i][j] <= 'Z' )
-                argv[i][j] |= 0x20;
-        }
-
         p = argv[i];
         if( ( q = strchr( p, '=' ) ) == NULL )
             goto usage;
@@ -132,33 +124,57 @@ int main( int argc, char *argv[] )
         }
         else if( strcmp( p, "filename" ) == 0 )
             opt.filename = q;
-        else if( strcmp( p, "debug_level" ) == 0 )
-        {
-            opt.debug_level = atoi( q );
-            if( opt.debug_level < 0 || opt.debug_level > 65535 )
-                goto usage;
-        }
+        else if( strcmp( p, "password" ) == 0 )
+            opt.password = q;
+        else if( strcmp( p, "password_file" ) == 0 )
+            opt.password_file = q;
         else
             goto usage;
     }
 
     if( opt.mode == MODE_PRIVATE )
     {
+        if( strlen( opt.password ) && strlen( opt.password_file ) )
+        {
+            printf( "Error: cannot have both password and password_file\n" );
+            goto usage;
+        }
+
+        if( strlen( opt.password_file ) )
+        {
+            FILE *f;
+
+            printf( "\n  . Loading the password file ..." );
+            if( ( f = fopen( opt.password_file, "rb" ) ) == NULL )
+            {
+                printf( " failed\n  !  fopen returned NULL\n" );
+                goto exit;
+            }
+            if( fgets( buf, sizeof(buf), f ) == NULL )
+            {
+                fclose( f );
+                printf( "Error: fgets() failed to retrieve password\n" );
+                goto exit;
+            }
+            fclose( f );
+
+            i = (int) strlen( buf );
+            if( buf[i - 1] == '\n' ) buf[i - 1] = '\0';
+            if( buf[i - 2] == '\r' ) buf[i - 2] = '\0';
+            opt.password = buf;
+        }
+
         /*
          * 1.1. Load the key
          */
         printf( "\n  . Loading the private key ..." );
         fflush( stdout );
 
-        ret = x509parse_keyfile( &rsa, opt.filename, NULL );
+        ret = pk_parse_keyfile( &pk, opt.filename, opt.password );
 
         if( ret != 0 )
         {
-#ifdef POLARSSL_ERROR_C
-            error_strerror( ret, buf, 1024 );
-#endif
-            printf( " failed\n  !  x509parse_key returned %d - %s\n\n", ret, buf );
-            rsa_free( &rsa );
+            printf( " failed\n  !  pk_parse_keyfile returned -0x%04x\n", -ret );
             goto exit;
         }
 
@@ -168,14 +184,36 @@ int main( int argc, char *argv[] )
          * 1.2 Print the key
          */
         printf( "  . Key information    ...\n" );
-        mpi_write_file( "N:  ", &rsa.N, 16, NULL );
-        mpi_write_file( "E:  ", &rsa.E, 16, NULL );
-        mpi_write_file( "D:  ", &rsa.D, 16, NULL );
-        mpi_write_file( "P:  ", &rsa.P, 16, NULL );
-        mpi_write_file( "Q:  ", &rsa.Q, 16, NULL );
-        mpi_write_file( "DP: ", &rsa.DP, 16, NULL );
-        mpi_write_file( "DQ:  ", &rsa.DQ, 16, NULL );
-        mpi_write_file( "QP:  ", &rsa.QP, 16, NULL );
+#if defined(POLARSSL_RSA_C)
+        if( pk_get_type( &pk ) == POLARSSL_PK_RSA )
+        {
+            rsa_context *rsa = pk_rsa( pk );
+            mpi_write_file( "N:  ", &rsa->N, 16, NULL );
+            mpi_write_file( "E:  ", &rsa->E, 16, NULL );
+            mpi_write_file( "D:  ", &rsa->D, 16, NULL );
+            mpi_write_file( "P:  ", &rsa->P, 16, NULL );
+            mpi_write_file( "Q:  ", &rsa->Q, 16, NULL );
+            mpi_write_file( "DP: ", &rsa->DP, 16, NULL );
+            mpi_write_file( "DQ:  ", &rsa->DQ, 16, NULL );
+            mpi_write_file( "QP:  ", &rsa->QP, 16, NULL );
+        }
+        else
+#endif
+#if defined(POLARSSL_ECP_C)
+        if( pk_get_type( &pk ) == POLARSSL_PK_ECKEY )
+        {
+            ecp_keypair *ecp = pk_ec( pk );
+            mpi_write_file( "Q(X): ", &ecp->Q.X, 16, NULL );
+            mpi_write_file( "Q(Y): ", &ecp->Q.Y, 16, NULL );
+            mpi_write_file( "Q(Z): ", &ecp->Q.Z, 16, NULL );
+            mpi_write_file( "D   : ", &ecp->d  , 16, NULL );
+        }
+        else
+#endif
+        {
+            printf("Do not know how to print key information for this type\n" );
+            goto exit;
+        }
     }
     else if( opt.mode == MODE_PUBLIC )
     {
@@ -185,40 +223,58 @@ int main( int argc, char *argv[] )
         printf( "\n  . Loading the public key ..." );
         fflush( stdout );
 
-        ret = x509parse_public_keyfile( &rsa, opt.filename );
+        ret = pk_parse_public_keyfile( &pk, opt.filename );
 
         if( ret != 0 )
         {
-#ifdef POLARSSL_ERROR_C
-            error_strerror( ret, buf, 1024 );
-#endif
-            printf( " failed\n  !  x509parse_public_key returned %d - %s\n\n", ret, buf );
-            rsa_free( &rsa );
+            printf( " failed\n  !  pk_parse_public_keyfile returned -0x%04x\n", -ret );
             goto exit;
         }
 
         printf( " ok\n" );
 
-        /*
-         * 1.2 Print the key
-         */
         printf( "  . Key information    ...\n" );
-        mpi_write_file( "N: ", &rsa.N, 16, NULL );
-        mpi_write_file( "E:  ", &rsa.E, 16, NULL );
+#if defined(POLARSSL_RSA_C)
+        if( pk_get_type( &pk ) == POLARSSL_PK_RSA )
+        {
+            rsa_context *rsa = pk_rsa( pk );
+            mpi_write_file( "N:  ", &rsa->N, 16, NULL );
+            mpi_write_file( "E:  ", &rsa->E, 16, NULL );
+        }
+        else
+#endif
+#if defined(POLARSSL_ECP_C)
+        if( pk_get_type( &pk ) == POLARSSL_PK_ECKEY )
+        {
+            ecp_keypair *ecp = pk_ec( pk );
+            mpi_write_file( "Q(X): ", &ecp->Q.X, 16, NULL );
+            mpi_write_file( "Q(Y): ", &ecp->Q.Y, 16, NULL );
+            mpi_write_file( "Q(Z): ", &ecp->Q.Z, 16, NULL );
+        }
+        else
+#endif
+        {
+            printf("Do not know how to print key information for this type\n" );
+            goto exit;
+        }
     }
     else
         goto usage;
 
 exit:
 
-    rsa_free( &rsa );
+#if defined(POLARSSL_ERROR_C)
+    polarssl_strerror( ret, buf, sizeof(buf) );
+    printf( "  !  Last error was: %s\n", buf );
+#endif
 
-#ifdef WIN32
+    pk_free( &pk );
+
+#if defined(_WIN32)
     printf( "  + Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif
 
     return( ret );
 }
-#endif /* POLARSSL_BIGNUM_C && POLARSSL_RSA_C &&
-          POLARSSL_X509_PARSE_C && POLARSSL_FS_IO */
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_PK_PARSE_C && POLARSSL_FS_IO */

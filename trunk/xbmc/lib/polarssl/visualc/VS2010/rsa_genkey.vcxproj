@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{914C3FB6-43A6-4FB6-875C-870DF0553035}</ProjectGuid>
+    <ProjectGuid>{AD5B2F84-44A2-8D21-D47D-07E0ED7E0AAD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>rsa_genkey</RootNamespace>
   </PropertyGroup>

@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E6999C98-6F20-4ED8-A791-69930800728F}</ProjectGuid>
+    <ProjectGuid>{08A79AF8-5B8A-4343-D01A-B8AB47F3366C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>mpi_demo</RootNamespace>
   </PropertyGroup>

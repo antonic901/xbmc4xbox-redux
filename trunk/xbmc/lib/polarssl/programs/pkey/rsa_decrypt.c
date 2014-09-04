@@ -1,7 +1,7 @@
 /*
  *  RSA simple decryption program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,23 +23,30 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/rsa.h"
+#include "polarssl/entropy.h"
+#include "polarssl/ctr_drbg.h"
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_RSA_C) ||  \
-    !defined(POLARSSL_FS_IO)
-int main( void )
+    !defined(POLARSSL_FS_IO) || !defined(POLARSSL_ENTROPY_C) || \
+    !defined(POLARSSL_CTR_DRBG_C)
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_BIGNUM_C and/or POLARSSL_RSA_C and/or "
-           "POLARSSL_FS_IO not defined.\n");
+           "POLARSSL_FS_IO and/or POLARSSL_ENTROPY_C and/or "
+           "POLARSSL_CTR_DRBG_C not defined.\n");
     return( 0 );
 }
 #else
@@ -49,36 +56,59 @@ int main( int argc, char *argv[] )
     int ret, c;
     size_t i;
     rsa_context rsa;
+    entropy_context entropy;
+    ctr_drbg_context ctr_drbg;
     unsigned char result[1024];
     unsigned char buf[512];
+    const char *pers = "rsa_decrypt";
     ((void) argv);
 
+    memset(result, 0, sizeof( result ) );
     ret = 1;
+
     if( argc != 1 )
     {
         printf( "usage: rsa_decrypt\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n" );
 #endif
 
         goto exit;
     }
 
-    printf( "\n  . Reading public key from rsa_pub.txt" );
+    printf( "\n  . Seeding the random number generator..." );
     fflush( stdout );
 
-    if( ( f = fopen( "rsa_pub.txt", "rb" ) ) == NULL )
+    entropy_init( &entropy );
+    if( ( ret = ctr_drbg_init( &ctr_drbg, entropy_func, &entropy,
+                               (const unsigned char *) pers,
+                               strlen( pers ) ) ) != 0 )
     {
-        printf( " failed\n  ! Could not open rsa_pub.txt\n" \
+        printf( " failed\n  ! ctr_drbg_init returned %d\n", ret );
+        goto exit;
+    }
+
+    printf( "\n  . Reading private key from rsa_priv.txt" );
+    fflush( stdout );
+
+    if( ( f = fopen( "rsa_priv.txt", "rb" ) ) == NULL )
+    {
+        printf( " failed\n  ! Could not open rsa_priv.txt\n" \
                 "  ! Please run rsa_genkey first\n\n" );
         goto exit;
     }
 
     rsa_init( &rsa, RSA_PKCS_V15, 0 );
 
-    if( ( ret = mpi_read_file( &rsa.N, 16, f ) ) != 0 ||
-        ( ret = mpi_read_file( &rsa.E, 16, f ) ) != 0 )
+    if( ( ret = mpi_read_file( &rsa.N , 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.E , 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.D , 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.P , 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.Q , 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.DP, 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.DQ, 16, f ) ) != 0 ||
+        ( ret = mpi_read_file( &rsa.QP, 16, f ) ) != 0 )
     {
         printf( " failed\n  ! mpi_read_file returned %d\n\n", ret );
         goto exit;
@@ -119,7 +149,8 @@ int main( int argc, char *argv[] )
     printf( "\n  . Decrypting the encrypted data" );
     fflush( stdout );
 
-    if( ( ret = rsa_pkcs1_decrypt( &rsa, RSA_PUBLIC, &i, buf, result,
+    if( ( ret = rsa_pkcs1_decrypt( &rsa, ctr_drbg_random, &ctr_drbg,
+                                   RSA_PRIVATE, &i, buf, result,
                                    1024 ) ) != 0 )
     {
         printf( " failed\n  ! rsa_pkcs1_decrypt returned %d\n\n", ret );
@@ -133,8 +164,10 @@ int main( int argc, char *argv[] )
     ret = 0;
 
 exit:
+    ctr_drbg_free( &ctr_drbg );
+    entropy_free( &entropy );
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  + Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif

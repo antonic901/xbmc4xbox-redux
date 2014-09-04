@@ -1,7 +1,7 @@
 /*
  *  Self-test demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,21 +23,28 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
+#include "polarssl/entropy.h"
+#include "polarssl/hmac_drbg.h"
+#include "polarssl/ctr_drbg.h"
+#include "polarssl/dhm.h"
+#include "polarssl/gcm.h"
+#include "polarssl/ccm.h"
 #include "polarssl/md2.h"
 #include "polarssl/md4.h"
 #include "polarssl/md5.h"
+#include "polarssl/ripemd160.h"
 #include "polarssl/sha1.h"
-#include "polarssl/sha2.h"
-#include "polarssl/sha4.h"
+#include "polarssl/sha256.h"
+#include "polarssl/sha512.h"
 #include "polarssl/arc4.h"
 #include "polarssl/des.h"
 #include "polarssl/aes.h"
@@ -47,10 +54,21 @@
 #include "polarssl/rsa.h"
 #include "polarssl/x509.h"
 #include "polarssl/xtea.h"
+#include "polarssl/pkcs5.h"
+#include "polarssl/pbkdf2.h"
+#include "polarssl/ecp.h"
+#include "polarssl/timing.h"
+
+#if defined(POLARSSL_MEMORY_BUFFER_ALLOC_C)
+#include "polarssl/memory.h"
+#endif
 
 int main( int argc, char *argv[] )
 {
     int ret = 0, v;
+#if defined(POLARSSL_MEMORY_BUFFER_ALLOC_C)
+    unsigned char buf[1000000];
+#endif
 
     if( argc == 2 && strcmp( argv[1], "-quiet" ) == 0 )
         v = 0;
@@ -61,6 +79,10 @@ int main( int argc, char *argv[] )
     }
 
 #if defined(POLARSSL_SELF_TEST)
+
+#if defined(POLARSSL_MEMORY_BUFFER_ALLOC_C)
+    memory_buffer_alloc_init( buf, sizeof(buf) );
+#endif
 
 #if defined(POLARSSL_MD2_C)
     if( ( ret = md2_self_test( v ) ) != 0 )
@@ -77,18 +99,23 @@ int main( int argc, char *argv[] )
         return( ret );
 #endif
 
+#if defined(POLARSSL_RIPEMD160_C)
+    if( ( ret = ripemd160_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
 #if defined(POLARSSL_SHA1_C)
     if( ( ret = sha1_self_test( v ) ) != 0 )
         return( ret );
 #endif
 
-#if defined(POLARSSL_SHA2_C)
-    if( ( ret = sha2_self_test( v ) ) != 0 )
+#if defined(POLARSSL_SHA256_C)
+    if( ( ret = sha256_self_test( v ) ) != 0 )
         return( ret );
 #endif
 
-#if defined(POLARSSL_SHA4_C)
-    if( ( ret = sha4_self_test( v ) ) != 0 )
+#if defined(POLARSSL_SHA512_C)
+    if( ( ret = sha512_self_test( v ) ) != 0 )
         return( ret );
 #endif
 
@@ -107,6 +134,16 @@ int main( int argc, char *argv[] )
         return( ret );
 #endif
 
+#if defined(POLARSSL_GCM_C) && defined(POLARSSL_AES_C)
+    if( ( ret = gcm_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+#if defined(POLARSSL_CCM_C) && defined(POLARSSL_AES_C)
+    if( ( ret = ccm_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
 #if defined(POLARSSL_BASE64_C)
     if( ( ret = base64_self_test( v ) ) != 0 )
         return( ret );
@@ -117,12 +154,12 @@ int main( int argc, char *argv[] )
         return( ret );
 #endif
 
-#if defined(POLARSSL_RSA_C) && defined(POLARSSL_BIGNUM_C)
+#if defined(POLARSSL_RSA_C)
     if( ( ret = rsa_self_test( v ) ) != 0 )
         return( ret );
 #endif
 
-#if defined(POLARSSL_X509_PARSE_C) && defined(POLARSSL_BIGNUM_C)
+#if defined(POLARSSL_X509_USE_C)
     if( ( ret = x509_self_test( v ) ) != 0 )
         return( ret );
 #endif
@@ -137,18 +174,68 @@ int main( int argc, char *argv[] )
         return( ret );
 #endif
 
+#if defined(POLARSSL_CTR_DRBG_C)
+    if( ( ret = ctr_drbg_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+#if defined(POLARSSL_HMAC_DRBG_C)
+    if( ( ret = hmac_drbg_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+#if defined(POLARSSL_ECP_C)
+    if( ( ret = ecp_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+#if defined(POLARSSL_DHM_C)
+    if( ( ret = dhm_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+#if defined(POLARSSL_ENTROPY_C)
+    if( ( ret = entropy_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
+/* Slow tests last */
+
+#if defined(POLARSSL_PBKDF2_C)
+    if( ( ret = pbkdf2_self_test( v ) ) != 0 )
+        return( ret );
+#else
+#if defined(POLARSSL_PKCS5_C)
+    if( ( ret = pkcs5_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+#endif
+
+/* Not stable enough on Windows and FreeBSD yet */
+#if __linux__ && defined(POLARSSL_TIMING_C)
+    if( ( ret = timing_self_test( v ) ) != 0 )
+        return( ret );
+#endif
+
 #else
     printf( " POLARSSL_SELF_TEST not defined.\n" );
 #endif
 
     if( v != 0 )
     {
+#if defined(POLARSSL_MEMORY_BUFFER_ALLOC_C) && defined(POLARSSL_MEMORY_DEBUG)
+        memory_buffer_alloc_status();
+#endif
+
         printf( "  [ All tests passed ]\n\n" );
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "  Press Enter to exit this program.\n" );
         fflush( stdout ); getchar();
 #endif
     }
+#if defined(POLARSSL_MEMORY_BUFFER_ALLOC_C)
+    memory_buffer_alloc_free();
+#endif
 
     return( ret );
 }

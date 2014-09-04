@@ -1,7 +1,7 @@
 /*
  *  RSASSA-PSS/SHA-1 signature verification program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,18 +23,18 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
 #include "polarssl/md.h"
 #include "polarssl/pem.h"
-#include "polarssl/rsa.h"
+#include "polarssl/pk.h"
 #include "polarssl/sha1.h"
 #include "polarssl/x509.h"
 
@@ -43,12 +43,15 @@
 #endif
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_RSA_C) ||      \
-    !defined(POLARSSL_SHA1_C) || !defined(POLARSSL_X509_PARSE_C) || \
+    !defined(POLARSSL_SHA1_C) || !defined(POLARSSL_PK_PARSE_C) ||   \
     !defined(POLARSSL_FS_IO)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_BIGNUM_C and/or POLARSSL_RSA_C and/or "
-           "POLARSSL_SHA1_C and/or POLARSSL_X509_PARSE_C and/or "
+           "POLARSSL_SHA1_C and/or POLARSSL_PK_PARSE_C and/or "
            "POLARSSL_FS_IO not defined.\n");
     return( 0 );
 }
@@ -56,19 +59,20 @@ int main( void )
 int main( int argc, char *argv[] )
 {
     FILE *f;
-    int ret;
+    int ret = 1;
     size_t i;
-    rsa_context rsa;
+    pk_context pk;
     unsigned char hash[20];
-    unsigned char buf[512];
+    unsigned char buf[POLARSSL_MPI_MAX_SIZE];
     char filename[512];
 
-    ret = 1;
+    pk_init( &pk );
+
     if( argc != 3 )
     {
         printf( "usage: rsa_verify_pss <key_file> <filename>\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n" );
 #endif
 
@@ -78,13 +82,21 @@ int main( int argc, char *argv[] )
     printf( "\n  . Reading public key from '%s'", argv[1] );
     fflush( stdout );
 
-    rsa_init( &rsa, RSA_PKCS_V21, POLARSSL_MD_SHA1 );
-
-    if( ( ret = x509parse_public_keyfile( &rsa, argv[1] ) ) != 0 )
+    if( ( ret = pk_parse_public_keyfile( &pk, argv[1] ) ) != 0 )
     {
-        printf( " failed\n  ! x509parse_public_key returned %d\n\n", ret );
+        printf( " failed\n  ! Could not read key from '%s'\n", argv[1] );
+        printf( "  ! pk_parse_public_keyfile returned %d\n\n", ret );
         goto exit;
     }
+
+    if( !pk_can_do( &pk, POLARSSL_PK_RSA ) )
+    {
+        ret = 1;
+        printf( " failed\n  ! Key is not an RSA key\n" );
+        goto exit;
+    }
+
+    rsa_set_padding( pk_rsa( pk ), RSA_PKCS_V21, POLARSSL_MD_SHA1 );
 
     /*
      * Extract the RSA signature from the text file
@@ -98,15 +110,10 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    i = fread( buf, 1, rsa.len, f );
+
+    i = fread( buf, 1, POLARSSL_MPI_MAX_SIZE, f );
 
     fclose( f );
-
-    if( i != rsa.len )
-    {
-        printf( "\n  ! Invalid RSA signature format\n\n" );
-        goto exit;
-    }
 
     /*
      * Compute the SHA-1 hash of the input file and compare
@@ -121,10 +128,10 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    if( ( ret = rsa_pkcs1_verify( &rsa, RSA_PUBLIC, SIG_RSA_SHA1,
-                                  20, hash, buf ) ) != 0 )
+    if( ( ret = pk_verify( &pk, POLARSSL_MD_SHA1, hash, 0,
+                           buf, i ) ) != 0 )
     {
-        printf( " failed\n  ! rsa_pkcs1_verify returned %d\n\n", ret );
+        printf( " failed\n  ! pk_verify returned %d\n\n", ret );
         goto exit;
     }
 
@@ -133,8 +140,9 @@ int main( int argc, char *argv[] )
     ret = 0;
 
 exit:
+    pk_free( &pk );
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  + Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif
@@ -142,4 +150,4 @@ exit:
     return( ret );
 }
 #endif /* POLARSSL_BIGNUM_C && POLARSSL_RSA_C && POLARSSL_SHA1_C &&
-          POLARSSL_X509_PARSE_C && POLARSSL_FS_IO */
+          POLARSSL_PK_PARSE_C && POLARSSL_FS_IO */

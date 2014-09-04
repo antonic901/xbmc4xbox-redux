@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{22142D77-6986-4C71-8386-0184A8E7A1E6}</ProjectGuid>
+    <ProjectGuid>{DAD91B2F-DEC8-E94F-8D9A-66B6E237AF07}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>rsa_verify_pss</RootNamespace>
   </PropertyGroup>

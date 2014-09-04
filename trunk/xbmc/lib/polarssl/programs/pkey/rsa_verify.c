@@ -1,7 +1,7 @@
 /*
  *  RSA/SHA-1 signature verification program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,22 +23,25 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
-
-#include "polarssl/config.h"
 
 #include "polarssl/rsa.h"
 #include "polarssl/sha1.h"
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_RSA_C) ||  \
     !defined(POLARSSL_SHA1_C) || !defined(POLARSSL_FS_IO)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_BIGNUM_C and/or POLARSSL_RSA_C and/or "
            "POLARSSL_SHA1_C and/or POLARSSL_FS_IO not defined.\n");
     return( 0 );
@@ -51,14 +54,14 @@ int main( int argc, char *argv[] )
     size_t i;
     rsa_context rsa;
     unsigned char hash[20];
-    unsigned char buf[512];
+    unsigned char buf[POLARSSL_MPI_MAX_SIZE];
 
     ret = 1;
     if( argc != 2 )
     {
         printf( "usage: rsa_verify <filename>\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n" );
 #endif
 
@@ -128,10 +131,10 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    if( ( ret = rsa_pkcs1_verify( &rsa, RSA_PUBLIC, SIG_RSA_SHA1,
-                                  20, hash, buf ) ) != 0 )
+    if( ( ret = rsa_pkcs1_verify( &rsa, NULL, NULL, RSA_PUBLIC,
+                                  POLARSSL_MD_SHA1, 20, hash, buf ) ) != 0 )
     {
-        printf( " failed\n  ! rsa_pkcs1_verify returned %d\n\n", ret );
+        printf( " failed\n  ! rsa_pkcs1_verify returned -0x%0x\n\n", -ret );
         goto exit;
     }
 
@@ -141,7 +144,7 @@ int main( int argc, char *argv[] )
 
 exit:
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  + Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif

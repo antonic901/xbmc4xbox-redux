@@ -3,7 +3,7 @@
  *
  * \brief SHA-1 cryptographic hash function
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -27,15 +27,38 @@
 #ifndef POLARSSL_SHA1_H
 #define POLARSSL_SHA1_H
 
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
+
 #include <string.h>
+
+#if defined(_MSC_VER) && !defined(EFIX64) && !defined(EFI32)
+#include <basetsd.h>
+typedef UINT32 uint32_t;
+#else
+#include <inttypes.h>
+#endif
+
+#define POLARSSL_ERR_SHA1_FILE_IO_ERROR                -0x0076  /**< Read/write error in file. */
+
+#if !defined(POLARSSL_SHA1_ALT)
+// Regular implementation
+//
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief          SHA-1 context structure
  */
 typedef struct
 {
-    unsigned long total[2];     /*!< number of bytes processed  */
-    unsigned long state[5];     /*!< intermediate digest state  */
+    uint32_t total[2];          /*!< number of bytes processed  */
+    uint32_t state[5];          /*!< intermediate digest state  */
     unsigned char buffer[64];   /*!< data block being processed */
 
     unsigned char ipad[64];     /*!< HMAC: inner padding        */
@@ -43,9 +66,19 @@ typedef struct
 }
 sha1_context;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * \brief          Initialize SHA-1 context
+ *
+ * \param ctx      SHA-1 context to be initialized
+ */
+void sha1_init( sha1_context *ctx );
+
+/**
+ * \brief          Clear SHA-1 context
+ *
+ * \param ctx      SHA-1 context to be cleared
+ */
+void sha1_free( sha1_context *ctx );
 
 /**
  * \brief          SHA-1 context setup
@@ -71,6 +104,21 @@ void sha1_update( sha1_context *ctx, const unsigned char *input, size_t ilen );
  */
 void sha1_finish( sha1_context *ctx, unsigned char output[20] );
 
+/* Internal use */
+void sha1_process( sha1_context *ctx, const unsigned char data[64] );
+
+#ifdef __cplusplus
+}
+#endif
+
+#else  /* POLARSSL_SHA1_ALT */
+#include "sha1_alt.h"
+#endif /* POLARSSL_SHA1_ALT */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief          Output = SHA-1( input buffer )
  *
@@ -86,8 +134,7 @@ void sha1( const unsigned char *input, size_t ilen, unsigned char output[20] );
  * \param path     input file name
  * \param output   SHA-1 checksum result
  *
- * \return         0 if successful, 1 if fopen failed,
- *                 or 2 if fread failed
+ * \return         0 if successful, or POLARSSL_ERR_SHA1_FILE_IO_ERROR
  */
 int sha1_file( const char *path, unsigned char output[20] );
 
@@ -98,7 +145,8 @@ int sha1_file( const char *path, unsigned char output[20] );
  * \param key      HMAC secret key
  * \param keylen   length of the HMAC key
  */
-void sha1_hmac_starts( sha1_context *ctx, const unsigned char *key, size_t keylen );
+void sha1_hmac_starts( sha1_context *ctx, const unsigned char *key,
+                       size_t keylen );
 
 /**
  * \brief          SHA-1 HMAC process buffer
@@ -107,7 +155,8 @@ void sha1_hmac_starts( sha1_context *ctx, const unsigned char *key, size_t keyle
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void sha1_hmac_update( sha1_context *ctx, const unsigned char *input, size_t ilen );
+void sha1_hmac_update( sha1_context *ctx, const unsigned char *input,
+                       size_t ilen );
 
 /**
  * \brief          SHA-1 HMAC final digest

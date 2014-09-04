@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E3F6459F-183D-4604-8A42-3F1C84A7C119}</ProjectGuid>
+    <ProjectGuid>{92253FCF-72E1-7AF6-EAD1-E9037A194C9F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>dh_client</RootNamespace>
   </PropertyGroup>

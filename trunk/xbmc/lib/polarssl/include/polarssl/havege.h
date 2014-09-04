@@ -3,7 +3,7 @@
  *
  * \brief HAVEGE: HArdware Volatile Entropy Gathering and Expansion
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -27,7 +27,13 @@
 #ifndef POLARSSL_HAVEGE_H
 #define POLARSSL_HAVEGE_H
 
+#include <string.h>
+
 #define COLLECT_SIZE 1024
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief          HAVEGE state structure
@@ -40,10 +46,6 @@ typedef struct
 }
 havege_state;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * \brief          HAVEGE initialization
  *
@@ -52,13 +54,22 @@ extern "C" {
 void havege_init( havege_state *hs );
 
 /**
+ * \brief          Clear HAVEGE state
+ *
+ * \param hs       HAVEGE state to be cleared
+ */
+void havege_free( havege_state *hs );
+
+/**
  * \brief          HAVEGE rand function
  *
  * \param p_rng    A HAVEGE state
+ * \param output   Buffer to fill
+ * \param len      Length of buffer
  *
- * \return         A random int
+ * \return         0
  */
-int havege_rand( void *p_rng );
+int havege_random( void *p_rng, unsigned char *output, size_t len );
 
 #ifdef __cplusplus
 }

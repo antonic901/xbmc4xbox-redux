@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{83BCC55C-5216-41BD-865B-E38FAB399454}</ProjectGuid>
+    <ProjectGuid>{8972AF2C-6333-2827-F75D-3BAC5E07915A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>dh_genprime</RootNamespace>
   </PropertyGroup>

@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{27FA2978-988C-4918-AF10-FC9613B66CDB}</ProjectGuid>
+    <ProjectGuid>{CFC883CE-9BAE-B26F-B08B-7F194AD35929}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>rsa_sign</RootNamespace>
   </PropertyGroup>

@@ -1,18 +1,29 @@
-BEGIN_HEADER
+/* BEGIN_HEADER */
 #include <polarssl/error.h>
-END_HEADER
+/* END_HEADER */
 
-BEGIN_DEPENDENCIES
-depends_on:POLARSSL_ERROR_C
-END_DEPENDENCIES
+/* BEGIN_DEPENDENCIES
+ * depends_on:POLARSSL_ERROR_C
+ * END_DEPENDENCIES
+ */
 
-BEGIN_CASE
-error_strerror:code:result_str
+/* BEGIN_CASE */
+void error_strerror( int code, char *result_str )
 {
     char buf[500];
 
-    error_strerror( {code}, buf, 500 );
+    memset( buf, 0, sizeof( buf ) );
 
-    TEST_ASSERT( strcmp( buf, {result_str} ) == 0 );
+    polarssl_strerror( code, buf, 500 );
+
+    TEST_ASSERT( strcmp( buf, result_str ) == 0 );
+
+#if defined(POLARSSL_ERROR_STRERROR_BC)
+    memset( buf, 0, sizeof( buf ) );
+
+    error_strerror( code, buf, 500 );
+
+    TEST_ASSERT( strcmp( buf, result_str ) == 0 );
+#endif
 }
-END_CASE
+/* END_CASE */

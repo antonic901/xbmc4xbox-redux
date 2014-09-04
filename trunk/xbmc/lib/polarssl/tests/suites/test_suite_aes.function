@@ -1,13 +1,15 @@
-BEGIN_HEADER
+/* BEGIN_HEADER */
 #include <polarssl/aes.h>
-END_HEADER
+/* END_HEADER */
 
-BEGIN_DEPENDENCIES
-depends_on:POLARSSL_AES_C
-END_DEPENDENCIES
+/* BEGIN_DEPENDENCIES
+ * depends_on:POLARSSL_AES_C
+ * END_DEPENDENCIES
+ */
 
-BEGIN_CASE
-aes_encrypt_ecb:hex_key_string:hex_src_string:hex_dst_string:setkey_result
+/* BEGIN_CASE */
+void aes_encrypt_ecb( char *hex_key_string, char *hex_src_string,
+                      char *hex_dst_string, int setkey_result )
 {
     unsigned char key_str[100];
     unsigned char src_str[100];
@@ -20,23 +22,28 @@ aes_encrypt_ecb:hex_key_string:hex_src_string:hex_dst_string:setkey_result
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( src_str, hex_src_string );
 
-    TEST_ASSERT( aes_setkey_enc( &ctx, key_str, key_len * 8 ) == {setkey_result} );
-    if( {setkey_result} == 0 )
+    TEST_ASSERT( aes_setkey_enc( &ctx, key_str, key_len * 8 ) == setkey_result );
+    if( setkey_result == 0 )
     {
         TEST_ASSERT( aes_crypt_ecb( &ctx, AES_ENCRYPT, src_str, output ) == 0 );
         hexify( dst_str, output, 16 );
 
-        TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
+        TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
     }
-}
-END_CASE
 
-BEGIN_CASE
-aes_decrypt_ecb:hex_key_string:hex_src_string:hex_dst_string:setkey_result
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE */
+void aes_decrypt_ecb( char *hex_key_string, char *hex_src_string,
+                      char *hex_dst_string, int setkey_result )
 {
     unsigned char key_str[100];
     unsigned char src_str[100];
@@ -49,23 +56,29 @@ aes_decrypt_ecb:hex_key_string:hex_src_string:hex_dst_string:setkey_result
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( src_str, hex_src_string );
 
-    TEST_ASSERT( aes_setkey_dec( &ctx, key_str, key_len * 8 ) == {setkey_result} );
-    if( {setkey_result} == 0 )
+    TEST_ASSERT( aes_setkey_dec( &ctx, key_str, key_len * 8 ) == setkey_result );
+    if( setkey_result == 0 )
     {
         TEST_ASSERT( aes_crypt_ecb( &ctx, AES_DECRYPT, src_str, output ) == 0 );
         hexify( dst_str, output, 16 );
 
-        TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
+        TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
     }
-}
-END_CASE
 
-BEGIN_CASE
-aes_encrypt_cbc:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string:cbc_result
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CBC */
+void aes_encrypt_cbc( char *hex_key_string, char *hex_iv_string,
+                      char *hex_src_string, char *hex_dst_string,
+                      int cbc_result )
 {
     unsigned char key_str[100];
     unsigned char iv_str[100];
@@ -80,24 +93,30 @@ aes_encrypt_cbc:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string:cbc_r
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( iv_str, {hex_iv_string} );
-    data_len = unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    data_len = unhexify( src_str, hex_src_string );
 
     aes_setkey_enc( &ctx, key_str, key_len * 8 );
-    TEST_ASSERT( aes_crypt_cbc( &ctx, AES_ENCRYPT, data_len, iv_str, src_str, output ) == {cbc_result} );
-    if( {cbc_result} == 0 )
+    TEST_ASSERT( aes_crypt_cbc( &ctx, AES_ENCRYPT, data_len, iv_str, src_str, output ) == cbc_result );
+    if( cbc_result == 0 )
     {
         hexify( dst_str, output, data_len );
 
-        TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
+        TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
     }
-}
-END_CASE
 
-BEGIN_CASE
-aes_decrypt_cbc:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string:cbc_result
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CBC */
+void aes_decrypt_cbc( char *hex_key_string, char *hex_iv_string,
+                      char *hex_src_string, char *hex_dst_string,
+                      int cbc_result )
 {
     unsigned char key_str[100];
     unsigned char iv_str[100];
@@ -112,24 +131,29 @@ aes_decrypt_cbc:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string:cbc_r
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( iv_str, {hex_iv_string} );
-    data_len = unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    data_len = unhexify( src_str, hex_src_string );
 
     aes_setkey_dec( &ctx, key_str, key_len * 8 );
-    TEST_ASSERT( aes_crypt_cbc( &ctx, AES_DECRYPT, data_len, iv_str, src_str, output ) == {cbc_result} );
-    if( {cbc_result} == 0)
+    TEST_ASSERT( aes_crypt_cbc( &ctx, AES_DECRYPT, data_len, iv_str, src_str, output ) == cbc_result );
+    if( cbc_result == 0)
     {
         hexify( dst_str, output, data_len );
 
-        TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
+        TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
     }
-}
-END_CASE
 
-BEGIN_CASE
-aes_encrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CFB */
+void aes_encrypt_cfb128( char *hex_key_string, char *hex_iv_string,
+                         char *hex_src_string, char *hex_dst_string )
 {
     unsigned char key_str[100];
     unsigned char iv_str[100];
@@ -145,21 +169,26 @@ aes_encrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( iv_str, {hex_iv_string} );
-    unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    unhexify( src_str, hex_src_string );
 
     aes_setkey_enc( &ctx, key_str, key_len * 8 );
     TEST_ASSERT( aes_crypt_cfb128( &ctx, AES_ENCRYPT, 16, &iv_offset, iv_str, src_str, output ) == 0 );
     hexify( dst_str, output, 16 );
 
-    TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
-}
-END_CASE
+    TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
 
-BEGIN_CASE
-aes_decrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CFB */
+void aes_decrypt_cfb128( char *hex_key_string, char *hex_iv_string,
+                         char *hex_src_string, char *hex_dst_string )
 {
     unsigned char key_str[100];
     unsigned char iv_str[100];
@@ -175,22 +204,94 @@ aes_decrypt_cfb128:hex_key_string:hex_iv_string:hex_src_string:hex_dst_string
     memset(src_str, 0x00, 100);
     memset(dst_str, 0x00, 100);
     memset(output, 0x00, 100);
+    aes_init( &ctx );
 
-    key_len = unhexify( key_str, {hex_key_string} );
-    unhexify( iv_str, {hex_iv_string} );
-    unhexify( src_str, {hex_src_string} );
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    unhexify( src_str, hex_src_string );
 
     aes_setkey_enc( &ctx, key_str, key_len * 8 );
     TEST_ASSERT( aes_crypt_cfb128( &ctx, AES_DECRYPT, 16, &iv_offset, iv_str, src_str, output ) == 0 );
     hexify( dst_str, output, 16 );
 
-    TEST_ASSERT( strcmp( (char *) dst_str, {hex_dst_string} ) == 0 );
-}
-END_CASE
+    TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
 
-BEGIN_CASE
-aes_selftest:
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CFB */
+void aes_encrypt_cfb8( char *hex_key_string, char *hex_iv_string,
+                       char *hex_src_string, char *hex_dst_string )
+{
+    unsigned char key_str[100];
+    unsigned char iv_str[100];
+    unsigned char src_str[100];
+    unsigned char dst_str[100];
+    unsigned char output[100];
+    aes_context ctx;
+    int key_len, src_len;
+
+    memset(key_str, 0x00, 100);
+    memset(iv_str, 0x00, 100);
+    memset(src_str, 0x00, 100);
+    memset(dst_str, 0x00, 100);
+    memset(output, 0x00, 100);
+    aes_init( &ctx );
+
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    src_len = unhexify( src_str, hex_src_string );
+
+    aes_setkey_enc( &ctx, key_str, key_len * 8 );
+    TEST_ASSERT( aes_crypt_cfb8( &ctx, AES_ENCRYPT, src_len, iv_str, src_str, output ) == 0 );
+    hexify( dst_str, output, src_len );
+
+    TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
+
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_CIPHER_MODE_CFB */
+void aes_decrypt_cfb8( char *hex_key_string, char *hex_iv_string,
+                       char *hex_src_string, char *hex_dst_string )
+{
+    unsigned char key_str[100];
+    unsigned char iv_str[100];
+    unsigned char src_str[100];
+    unsigned char dst_str[100];
+    unsigned char output[100];
+    aes_context ctx;
+    int key_len, src_len;
+
+    memset(key_str, 0x00, 100);
+    memset(iv_str, 0x00, 100);
+    memset(src_str, 0x00, 100);
+    memset(dst_str, 0x00, 100);
+    memset(output, 0x00, 100);
+    aes_init( &ctx );
+
+    key_len = unhexify( key_str, hex_key_string );
+    unhexify( iv_str, hex_iv_string );
+    src_len = unhexify( src_str, hex_src_string );
+
+    aes_setkey_enc( &ctx, key_str, key_len * 8 );
+    TEST_ASSERT( aes_crypt_cfb8( &ctx, AES_DECRYPT, src_len, iv_str, src_str, output ) == 0 );
+    hexify( dst_str, output, src_len );
+
+    TEST_ASSERT( strcmp( (char *) dst_str, hex_dst_string ) == 0 );
+
+exit:
+    aes_free( &ctx );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:POLARSSL_SELF_TEST */
+void aes_selftest()
 {
     TEST_ASSERT( aes_self_test( 0 ) == 0 );
 }
-END_CASE
+/* END_CASE */

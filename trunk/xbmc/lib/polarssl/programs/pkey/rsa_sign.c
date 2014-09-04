@@ -1,7 +1,7 @@
 /*
  *  RSA/SHA-1 signature creation program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,22 +23,25 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
 #include <string.h>
 #include <stdio.h>
-
-#include "polarssl/config.h"
 
 #include "polarssl/rsa.h"
 #include "polarssl/sha1.h"
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_RSA_C) ||  \
     !defined(POLARSSL_SHA1_C) || !defined(POLARSSL_FS_IO)
-int main( void )
+int main( int argc, char *argv[] )
 {
+    ((void) argc);
+    ((void) argv);
+
     printf("POLARSSL_BIGNUM_C and/or POLARSSL_RSA_C and/or "
            "POLARSSL_SHA1_C and/or POLARSSL_FS_IO not defined.\n");
     return( 0 );
@@ -51,7 +54,7 @@ int main( int argc, char *argv[] )
     size_t i;
     rsa_context rsa;
     unsigned char hash[20];
-    unsigned char buf[512];
+    unsigned char buf[POLARSSL_MPI_MAX_SIZE];
 
     ret = 1;
 
@@ -59,7 +62,7 @@ int main( int argc, char *argv[] )
     {
         printf( "usage: rsa_sign <filename>\n" );
 
-#ifdef WIN32
+#if defined(_WIN32)
         printf( "\n" );
 #endif
 
@@ -96,6 +99,14 @@ int main( int argc, char *argv[] )
 
     fclose( f );
 
+    printf( "\n  . Checking the private key" );
+    fflush( stdout );
+    if( ( ret = rsa_check_privkey( &rsa ) ) != 0 )
+    {
+        printf( " failed\n  ! rsa_check_privkey failed with -0x%0x\n", -ret );
+        goto exit;
+    }
+
     /*
      * Compute the SHA-1 hash of the input file,
      * then calculate the RSA signature of the hash.
@@ -109,10 +120,10 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    if( ( ret = rsa_pkcs1_sign( &rsa, NULL, NULL, RSA_PRIVATE, SIG_RSA_SHA1,
+    if( ( ret = rsa_pkcs1_sign( &rsa, NULL, NULL, RSA_PRIVATE, POLARSSL_MD_SHA1,
                                 20, hash, buf ) ) != 0 )
     {
-        printf( " failed\n  ! rsa_pkcs1_sign returned %d\n\n", ret );
+        printf( " failed\n  ! rsa_pkcs1_sign returned -0x%0x\n\n", -ret );
         goto exit;
     }
 
@@ -138,7 +149,7 @@ int main( int argc, char *argv[] )
 
 exit:
 
-#ifdef WIN32
+#if defined(_WIN32)
     printf( "  + Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif

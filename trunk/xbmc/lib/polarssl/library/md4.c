@@ -1,7 +1,7 @@
 /*
  *  RFC 1186/1320 compliant MD4 implementation
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -29,7 +29,11 @@
  *  http://www.ietf.org/rfc/rfc1320.txt
  */
 
+#if !defined(POLARSSL_CONFIG_FILE)
 #include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
+#endif
 
 #if defined(POLARSSL_MD4_C)
 
@@ -39,21 +43,34 @@
 #include <stdio.h>
 #endif
 
+#if defined(POLARSSL_PLATFORM_C)
+#include "polarssl/platform.h"
+#else
+#define polarssl_printf printf
+#endif
+
+/* Implementation that should never be optimized out by the compiler */
+static void polarssl_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
+
+#if !defined(POLARSSL_MD4_ALT)
+
 /*
  * 32-bit integer manipulation macros (little endian)
  */
-#ifndef GET_ULONG_LE
-#define GET_ULONG_LE(n,b,i)                             \
+#ifndef GET_UINT32_LE
+#define GET_UINT32_LE(n,b,i)                            \
 {                                                       \
-    (n) = ( (unsigned long) (b)[(i)    ]       )        \
-        | ( (unsigned long) (b)[(i) + 1] <<  8 )        \
-        | ( (unsigned long) (b)[(i) + 2] << 16 )        \
-        | ( (unsigned long) (b)[(i) + 3] << 24 );       \
+    (n) = ( (uint32_t) (b)[(i)    ]       )             \
+        | ( (uint32_t) (b)[(i) + 1] <<  8 )             \
+        | ( (uint32_t) (b)[(i) + 2] << 16 )             \
+        | ( (uint32_t) (b)[(i) + 3] << 24 );            \
 }
 #endif
 
-#ifndef PUT_ULONG_LE
-#define PUT_ULONG_LE(n,b,i)                             \
+#ifndef PUT_UINT32_LE
+#define PUT_UINT32_LE(n,b,i)                            \
 {                                                       \
     (b)[(i)    ] = (unsigned char) ( (n)       );       \
     (b)[(i) + 1] = (unsigned char) ( (n) >>  8 );       \
@@ -61,6 +78,19 @@
     (b)[(i) + 3] = (unsigned char) ( (n) >> 24 );       \
 }
 #endif
+
+void md4_init( md4_context *ctx )
+{
+    memset( ctx, 0, sizeof( md4_context ) );
+}
+
+void md4_free( md4_context *ctx )
+{
+    if( ctx == NULL )
+        return;
+
+    polarssl_zeroize( ctx, sizeof( md4_context ) );
+}
 
 /*
  * MD4 context setup
@@ -76,26 +106,26 @@ void md4_starts( md4_context *ctx )
     ctx->state[3] = 0x10325476;
 }
 
-static void md4_process( md4_context *ctx, const unsigned char data[64] )
+void md4_process( md4_context *ctx, const unsigned char data[64] )
 {
-    unsigned long X[16], A, B, C, D;
+    uint32_t X[16], A, B, C, D;
 
-    GET_ULONG_LE( X[ 0], data,  0 );
-    GET_ULONG_LE( X[ 1], data,  4 );
-    GET_ULONG_LE( X[ 2], data,  8 );
-    GET_ULONG_LE( X[ 3], data, 12 );
-    GET_ULONG_LE( X[ 4], data, 16 );
-    GET_ULONG_LE( X[ 5], data, 20 );
-    GET_ULONG_LE( X[ 6], data, 24 );
-    GET_ULONG_LE( X[ 7], data, 28 );
-    GET_ULONG_LE( X[ 8], data, 32 );
-    GET_ULONG_LE( X[ 9], data, 36 );
-    GET_ULONG_LE( X[10], data, 40 );
-    GET_ULONG_LE( X[11], data, 44 );
-    GET_ULONG_LE( X[12], data, 48 );
-    GET_ULONG_LE( X[13], data, 52 );
-    GET_ULONG_LE( X[14], data, 56 );
-    GET_ULONG_LE( X[15], data, 60 );
+    GET_UINT32_LE( X[ 0], data,  0 );
+    GET_UINT32_LE( X[ 1], data,  4 );
+    GET_UINT32_LE( X[ 2], data,  8 );
+    GET_UINT32_LE( X[ 3], data, 12 );
+    GET_UINT32_LE( X[ 4], data, 16 );
+    GET_UINT32_LE( X[ 5], data, 20 );
+    GET_UINT32_LE( X[ 6], data, 24 );
+    GET_UINT32_LE( X[ 7], data, 28 );
+    GET_UINT32_LE( X[ 8], data, 32 );
+    GET_UINT32_LE( X[ 9], data, 36 );
+    GET_UINT32_LE( X[10], data, 40 );
+    GET_UINT32_LE( X[11], data, 44 );
+    GET_UINT32_LE( X[12], data, 48 );
+    GET_UINT32_LE( X[13], data, 52 );
+    GET_UINT32_LE( X[14], data, 56 );
+    GET_UINT32_LE( X[15], data, 60 );
 
 #define S(x,n) ((x << n) | ((x & 0xFFFFFFFF) >> (32 - n)))
 
@@ -185,18 +215,18 @@ static void md4_process( md4_context *ctx, const unsigned char data[64] )
 void md4_update( md4_context *ctx, const unsigned char *input, size_t ilen )
 {
     size_t fill;
-    unsigned long left;
+    uint32_t left;
 
-    if( ilen <= 0 )
+    if( ilen == 0 )
         return;
 
     left = ctx->total[0] & 0x3F;
     fill = 64 - left;
 
-    ctx->total[0] += (unsigned long) ilen;
+    ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
 
-    if( ctx->total[0] < (unsigned long) ilen )
+    if( ctx->total[0] < (uint32_t) ilen )
         ctx->total[1]++;
 
     if( left && ilen >= fill )
@@ -236,16 +266,16 @@ static const unsigned char md4_padding[64] =
  */
 void md4_finish( md4_context *ctx, unsigned char output[16] )
 {
-    unsigned long last, padn;
-    unsigned long high, low;
+    uint32_t last, padn;
+    uint32_t high, low;
     unsigned char msglen[8];
 
     high = ( ctx->total[0] >> 29 )
          | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
 
-    PUT_ULONG_LE( low,  msglen, 0 );
-    PUT_ULONG_LE( high, msglen, 4 );
+    PUT_UINT32_LE( low,  msglen, 0 );
+    PUT_UINT32_LE( high, msglen, 4 );
 
     last = ctx->total[0] & 0x3F;
     padn = ( last < 56 ) ? ( 56 - last ) : ( 120 - last );
@@ -253,11 +283,13 @@ void md4_finish( md4_context *ctx, unsigned char output[16] )
     md4_update( ctx, (unsigned char *) md4_padding, padn );
     md4_update( ctx, msglen, 8 );
 
-    PUT_ULONG_LE( ctx->state[0], output,  0 );
-    PUT_ULONG_LE( ctx->state[1], output,  4 );
-    PUT_ULONG_LE( ctx->state[2], output,  8 );
-    PUT_ULONG_LE( ctx->state[3], output, 12 );
+    PUT_UINT32_LE( ctx->state[0], output,  0 );
+    PUT_UINT32_LE( ctx->state[1], output,  4 );
+    PUT_UINT32_LE( ctx->state[2], output,  8 );
+    PUT_UINT32_LE( ctx->state[3], output, 12 );
 }
+
+#endif /* !POLARSSL_MD4_ALT */
 
 /*
  * output = MD4( input buffer )
@@ -266,11 +298,11 @@ void md4( const unsigned char *input, size_t ilen, unsigned char output[16] )
 {
     md4_context ctx;
 
+    md4_init( &ctx );
     md4_starts( &ctx );
     md4_update( &ctx, input, ilen );
     md4_finish( &ctx, output );
-
-    memset( &ctx, 0, sizeof( md4_context ) );
+    md4_free( &ctx );
 }
 
 #if defined(POLARSSL_FS_IO)
@@ -285,21 +317,21 @@ int md4_file( const char *path, unsigned char output[16] )
     unsigned char buf[1024];
 
     if( ( f = fopen( path, "rb" ) ) == NULL )
-        return( 1 );
+        return( POLARSSL_ERR_MD4_FILE_IO_ERROR );
 
+    md4_init( &ctx );
     md4_starts( &ctx );
 
     while( ( n = fread( buf, 1, sizeof( buf ), f ) ) > 0 )
         md4_update( &ctx, buf, n );
 
     md4_finish( &ctx, output );
-
-    memset( &ctx, 0, sizeof( md4_context ) );
+    md4_free( &ctx );
 
     if( ferror( f ) != 0 )
     {
         fclose( f );
-        return( 2 );
+        return( POLARSSL_ERR_MD4_FILE_IO_ERROR );
     }
 
     fclose( f );
@@ -310,7 +342,8 @@ int md4_file( const char *path, unsigned char output[16] )
 /*
  * MD4 HMAC context setup
  */
-void md4_hmac_starts( md4_context *ctx, const unsigned char *key, size_t keylen )
+void md4_hmac_starts( md4_context *ctx, const unsigned char *key,
+                      size_t keylen )
 {
     size_t i;
     unsigned char sum[16];
@@ -334,13 +367,14 @@ void md4_hmac_starts( md4_context *ctx, const unsigned char *key, size_t keylen 
     md4_starts( ctx );
     md4_update( ctx, ctx->ipad, 64 );
 
-    memset( sum, 0, sizeof( sum ) );
+    polarssl_zeroize( sum, sizeof( sum ) );
 }
 
 /*
  * MD4 HMAC process buffer
  */
-void md4_hmac_update( md4_context *ctx, const unsigned char *input, size_t ilen )
+void md4_hmac_update( md4_context *ctx, const unsigned char *input,
+                      size_t ilen )
 {
     md4_update( ctx, input, ilen );
 }
@@ -358,7 +392,7 @@ void md4_hmac_finish( md4_context *ctx, unsigned char output[16] )
     md4_update( ctx, tmpbuf, 16 );
     md4_finish( ctx, output );
 
-    memset( tmpbuf, 0, sizeof( tmpbuf ) );
+    polarssl_zeroize( tmpbuf, sizeof( tmpbuf ) );
 }
 
 /*
@@ -379,11 +413,11 @@ void md4_hmac( const unsigned char *key, size_t keylen,
 {
     md4_context ctx;
 
+    md4_init( &ctx );
     md4_hmac_starts( &ctx, key, keylen );
     md4_hmac_update( &ctx, input, ilen );
     md4_hmac_finish( &ctx, output );
-
-    memset( &ctx, 0, sizeof( md4_context ) );
+    md4_free( &ctx );
 }
 
 #if defined(POLARSSL_SELF_TEST)
@@ -393,7 +427,7 @@ void md4_hmac( const unsigned char *key, size_t keylen,
  */
 static const char md4_test_str[7][81] =
 {
-    { "" }, 
+    { "" },
     { "a" },
     { "abc" },
     { "message digest" },
@@ -432,7 +466,7 @@ int md4_self_test( int verbose )
     for( i = 0; i < 7; i++ )
     {
         if( verbose != 0 )
-            printf( "  MD4 test #%d: ", i + 1 );
+            polarssl_printf( "  MD4 test #%d: ", i + 1 );
 
         md4( (unsigned char *) md4_test_str[i],
              strlen( md4_test_str[i] ), md4sum );
@@ -440,21 +474,21 @@ int md4_self_test( int verbose )
         if( memcmp( md4sum, md4_test_sum[i], 16 ) != 0 )
         {
             if( verbose != 0 )
-                printf( "failed\n" );
+                polarssl_printf( "failed\n" );
 
             return( 1 );
         }
 
         if( verbose != 0 )
-            printf( "passed\n" );
+            polarssl_printf( "passed\n" );
     }
 
     if( verbose != 0 )
-        printf( "\n" );
+        polarssl_printf( "\n" );
 
     return( 0 );
 }
 
-#endif
+#endif /* POLARSSL_SELF_TEST */
 
-#endif
+#endif /* POLARSSL_MD4_C */

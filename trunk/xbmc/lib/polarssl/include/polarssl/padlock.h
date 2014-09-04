@@ -1,9 +1,10 @@
 /**
  * \file padlock.h
  *
- * \brief VIA PadLock ACE for HW encryption/decryption supported by some processors
+ * \brief VIA PadLock ACE for HW encryption/decryption supported by some
+ *        processors
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2014, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -27,7 +28,7 @@
 #ifndef POLARSSL_PADLOCK_H
 #define POLARSSL_PADLOCK_H
 
-#include "polarssl/aes.h"
+#include "aes.h"
 
 #define POLARSSL_ERR_PADLOCK_DATA_MISALIGNED               -0x0030  /**< Input data should be aligned. */
 
@@ -37,12 +38,20 @@
 #define POLARSSL_HAVE_X86
 #endif
 
+#if defined(_MSC_VER) && !defined(EFIX64) && !defined(EFI32)
+#include <basetsd.h>
+typedef INT32 int32_t;
+#else
+#include <inttypes.h>
+#endif
+
+
 #define PADLOCK_RNG 0x000C
 #define PADLOCK_ACE 0x00C0
 #define PADLOCK_PHE 0x0C00
 #define PADLOCK_PMM 0x3000
 
-#define PADLOCK_ALIGN16(x) (unsigned long *) (16 + ((long) x & ~15))
+#define PADLOCK_ALIGN16(x) (uint32_t *) (16 + ((int32_t) x & ~15))
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,7 +60,7 @@ extern "C" {
 /**
  * \brief          PadLock detection routine
  *
- * \param          The feature to detect
+ * \param feature  The feature to detect
  *
  * \return         1 if CPU has support for the feature, 0 otherwise
  */

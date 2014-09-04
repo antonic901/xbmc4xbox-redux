@@ -63,7 +63,16 @@
 				RelativePath="..\library\aes.c">
 			</File>
 			<File
+				RelativePath="..\library\aesni.c">
+			</File>
+			<File
 				RelativePath="..\library\arc4.c">
+			</File>
+			<File
+				RelativePath="..\library\asn1parse.c">
+			</File>
+			<File
+				RelativePath="..\library\asn1write.c">
 			</File>
 			<File
 				RelativePath="..\library\base64.c">
@@ -72,7 +81,13 @@
 				RelativePath="..\library\bignum.c">
 			</File>
 			<File
+				RelativePath="..\library\blowfish.c">
+			</File>
+			<File
 				RelativePath="..\library\camellia.c">
+			</File>
+			<File
+				RelativePath="..\library\ccm.c">
 			</File>
 			<File
 				RelativePath="..\library\certs.c">
@@ -84,6 +99,9 @@
 				RelativePath="..\library\cipher_wrap.c">
 			</File>
 			<File
+				RelativePath="..\library\ctr_drbg.c">
+			</File>
+			<File
 				RelativePath="..\library\debug.c">
 			</File>
 			<File
@@ -93,10 +111,34 @@
 				RelativePath="..\library\dhm.c">
 			</File>
 			<File
+				RelativePath="..\library\ecdh.c">
+			</File>
+			<File
+				RelativePath="..\library\ecdsa.c">
+			</File>
+			<File
+				RelativePath="..\library\ecp.c">
+			</File>
+			<File
+				RelativePath="..\library\ecp_curves.c">
+			</File>
+			<File
+				RelativePath="..\library\entropy.c">
+			</File>
+			<File
+				RelativePath="..\library\entropy_poll.c">
+			</File>
+			<File
 				RelativePath="..\library\error.c">
 			</File>
 			<File
+				RelativePath="..\library\gcm.c">
+			</File>
+			<File
 				RelativePath="..\library\havege.c">
+			</File>
+			<File
+				RelativePath="..\library\hmac_drbg.c">
 			</File>
 			<File
 				RelativePath="..\library\md.c">
@@ -114,16 +156,49 @@
 				RelativePath="..\library\md_wrap.c">
 			</File>
 			<File
+				RelativePath="..\library\memory_buffer_alloc.c">
+			</File>
+			<File
 				RelativePath="..\library\net.c">
+			</File>
+			<File
+				RelativePath="..\library\oid.c">
 			</File>
 			<File
 				RelativePath="..\library\padlock.c">
 			</File>
 			<File
+				RelativePath="..\library\pbkdf2.c">
+			</File>
+			<File
 				RelativePath="..\library\pem.c">
 			</File>
 			<File
+				RelativePath="..\library\pk.c">
+			</File>
+			<File
+				RelativePath="..\library\pk_wrap.c">
+			</File>
+			<File
 				RelativePath="..\library\pkcs11.c">
+			</File>
+			<File
+				RelativePath="..\library\pkcs12.c">
+			</File>
+			<File
+				RelativePath="..\library\pkcs5.c">
+			</File>
+			<File
+				RelativePath="..\library\pkparse.c">
+			</File>
+			<File
+				RelativePath="..\library\pkwrite.c">
+			</File>
+			<File
+				RelativePath="..\library\platform.c">
+			</File>
+			<File
+				RelativePath="..\library\ripemd160.c">
 			</File>
 			<File
 				RelativePath="..\library\rsa.c">
@@ -132,10 +207,16 @@
 				RelativePath="..\library\sha1.c">
 			</File>
 			<File
-				RelativePath="..\library\sha2.c">
+				RelativePath="..\library\sha256.c">
 			</File>
 			<File
-				RelativePath="..\library\sha4.c">
+				RelativePath="..\library\sha512.c">
+			</File>
+			<File
+				RelativePath="..\library\ssl_cache.c">
+			</File>
+			<File
+				RelativePath="..\library\ssl_ciphersuites.c">
 			</File>
 			<File
 				RelativePath="..\library\ssl_cli.c">
@@ -147,10 +228,37 @@
 				RelativePath="..\library\ssl_tls.c">
 			</File>
 			<File
+				RelativePath="..\library\threading.c">
+			</File>
+			<File
 				RelativePath="..\library\timing.c">
 			</File>
 			<File
-				RelativePath="..\library\x509parse.c">
+				RelativePath="..\library\version.c">
+			</File>
+			<File
+				RelativePath="..\library\version_features.c">
+			</File>
+			<File
+				RelativePath="..\library\x509.c">
+			</File>
+			<File
+				RelativePath="..\library\x509_create.c">
+			</File>
+			<File
+				RelativePath="..\library\x509_crl.c">
+			</File>
+			<File
+				RelativePath="..\library\x509_crt.c">
+			</File>
+			<File
+				RelativePath="..\library\x509_csr.c">
+			</File>
+			<File
+				RelativePath="..\library\x509write_crt.c">
+			</File>
+			<File
+				RelativePath="..\library\x509write_csr.c">
 			</File>
 			<File
 				RelativePath="..\library\xtea.c">
@@ -163,7 +271,16 @@
 				RelativePath="..\include\polarssl\aes.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\aesni.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\arc4.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\asn1.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\asn1write.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\base64.h">
@@ -172,13 +289,22 @@
 				RelativePath="..\include\polarssl\bignum.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\blowfish.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\bn_mul.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\camellia.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\ccm.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\certs.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\check_config.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\cipher.h">
@@ -187,7 +313,13 @@
 				RelativePath="..\include\polarssl\cipher_wrap.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\compat-1.2.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\config.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ctr_drbg.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\debug.h">
@@ -199,10 +331,31 @@
 				RelativePath="..\include\polarssl\dhm.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\ecdh.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ecdsa.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ecp.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\entropy.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\entropy_poll.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\error.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\gcm.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\havege.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\hmac_drbg.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\md.h">
@@ -220,7 +373,16 @@
 				RelativePath="..\include\polarssl\md_wrap.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\memory.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\memory_buffer_alloc.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\net.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\oid.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\openssl.h">
@@ -229,10 +391,31 @@
 				RelativePath="..\include\polarssl\padlock.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\pbkdf2.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\pem.h">
 			</File>
 			<File
+				RelativePath="..\include\polarssl\pk.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\pk_wrap.h">
+			</File>
+			<File
 				RelativePath="..\include\polarssl\pkcs11.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\pkcs12.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\pkcs5.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\platform.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ripemd160.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\rsa.h">
@@ -241,13 +424,22 @@
 				RelativePath="..\include\polarssl\sha1.h">
 			</File>
 			<File
-				RelativePath="..\include\polarssl\sha2.h">
+				RelativePath="..\include\polarssl\sha256.h">
 			</File>
 			<File
-				RelativePath="..\include\polarssl\sha4.h">
+				RelativePath="..\include\polarssl\sha512.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\ssl.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ssl_cache.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\ssl_ciphersuites.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\threading.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\timing.h">
@@ -257,6 +449,15 @@
 			</File>
 			<File
 				RelativePath="..\include\polarssl\x509.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\x509_crl.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\x509_crt.h">
+			</File>
+			<File
+				RelativePath="..\include\polarssl\x509_csr.h">
 			</File>
 			<File
 				RelativePath="..\include\polarssl\xtea.h">

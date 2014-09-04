@@ -1,7 +1,7 @@
 /*
  *  SSL server demonstration program
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2013, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -23,11 +23,13 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
+#if !defined(POLARSSL_CONFIG_FILE)
+#include "polarssl/config.h"
+#else
+#include POLARSSL_CONFIG_FILE
 #endif
 
-#ifdef WIN32
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -35,165 +37,84 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "polarssl/config.h"
-
-#include "polarssl/havege.h"
+#include "polarssl/entropy.h"
+#include "polarssl/ctr_drbg.h"
 #include "polarssl/certs.h"
 #include "polarssl/x509.h"
 #include "polarssl/ssl.h"
 #include "polarssl/net.h"
+#include "polarssl/error.h"
+#include "polarssl/debug.h"
+
+#if defined(POLARSSL_SSL_CACHE_C)
+#include "polarssl/ssl_cache.h"
+#endif
+
+#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_CERTS_C) ||    \
+    !defined(POLARSSL_ENTROPY_C) || !defined(POLARSSL_SSL_TLS_C) || \
+    !defined(POLARSSL_SSL_SRV_C) || !defined(POLARSSL_NET_C) ||     \
+    !defined(POLARSSL_RSA_C) || !defined(POLARSSL_CTR_DRBG_C) ||    \
+    !defined(POLARSSL_X509_CRT_PARSE_C)
+int main( int argc, char *argv[] )
+{
+    ((void) argc);
+    ((void) argv);
+
+    printf("POLARSSL_BIGNUM_C and/or POLARSSL_CERTS_C and/or POLARSSL_ENTROPY_C "
+           "and/or POLARSSL_SSL_TLS_C and/or POLARSSL_SSL_SRV_C and/or "
+           "POLARSSL_NET_C and/or POLARSSL_RSA_C and/or "
+           "POLARSSL_CTR_DRBG_C and/or POLARSSL_X509_CRT_PARSE_C "
+           "not defined.\n");
+    return( 0 );
+}
+#else
 
 #define HTTP_RESPONSE \
     "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" \
     "<h2>PolarSSL Test Server</h2>\r\n" \
     "<p>Successful connection using: %s</p>\r\n"
 
-/*
- * Computing a "safe" DH-1024 prime can take a very
- * long time, so a precomputed value is provided below.
- * You may run dh_genprime to generate a new value.
- */
-char *my_dhm_P = 
-    "E4004C1F94182000103D883A448B3F80" \
-    "2CE4B44A83301270002C20D0321CFD00" \
-    "11CCEF784C26A400F43DFB901BCA7538" \
-    "F2C6B176001CF5A0FD16D2C48B1D0C1C" \
-    "F6AC8E1DA6BCC3B4E1F96B0564965300" \
-    "FFA1D0B601EB2800F489AA512C4B248C" \
-    "01F76949A60BB7F00A40B1EAB64BDD48" \
-    "E8A700D60B7F1200FA8E77B0A979DABF";
-
-char *my_dhm_G = "4";
-
-/*
- * Sorted by order of preference
- */
-int my_ciphersuites[] =
-{
-    SSL_EDH_RSA_AES_256_SHA,
-    SSL_EDH_RSA_CAMELLIA_256_SHA,
-    SSL_EDH_RSA_AES_128_SHA,
-    SSL_EDH_RSA_CAMELLIA_128_SHA,
-    SSL_EDH_RSA_DES_168_SHA,
-    SSL_RSA_AES_256_SHA,
-    SSL_RSA_CAMELLIA_256_SHA,
-    SSL_RSA_AES_128_SHA,
-    SSL_RSA_CAMELLIA_128_SHA,
-    SSL_RSA_DES_168_SHA,
-    SSL_RSA_RC4_128_SHA,
-    SSL_RSA_RC4_128_MD5,
-    0
-};
-
 #define DEBUG_LEVEL 0
 
-void my_debug( void *ctx, int level, const char *str )
+static void my_debug( void *ctx, int level, const char *str )
 {
-    if( level < DEBUG_LEVEL )
-    {
-        fprintf( (FILE *) ctx, "%s", str );
-        fflush(  (FILE *) ctx  );
-    }
+    ((void) level);
+
+    fprintf( (FILE *) ctx, "%s", str );
+    fflush(  (FILE *) ctx  );
 }
 
-/*
- * These session callbacks use a simple chained list
- * to store and retrieve the session information.
- */
-ssl_session *s_list_1st = NULL;
-ssl_session *cur, *prv;
-
-static int my_get_session( ssl_context *ssl )
-{
-    time_t t = time( NULL );
-
-    if( ssl->resume == 0 )
-        return( 1 );
-
-    cur = s_list_1st;
-    prv = NULL;
-
-    while( cur != NULL )
-    {
-        prv = cur;
-        cur = cur->next;
-
-        if( ssl->timeout != 0 && t - prv->start > ssl->timeout )
-            continue;
-
-        if( ssl->session->ciphersuite != prv->ciphersuite ||
-            ssl->session->length != prv->length )
-            continue;
-
-        if( memcmp( ssl->session->id, prv->id, prv->length ) != 0 )
-            continue;
-
-        memcpy( ssl->session->master, prv->master, 48 );
-        return( 0 );
-    }
-
-    return( 1 );
-}
-
-static int my_set_session( ssl_context *ssl )
-{
-    time_t t = time( NULL );
-
-    cur = s_list_1st;
-    prv = NULL;
-
-    while( cur != NULL )
-    {
-        if( ssl->timeout != 0 && t - cur->start > ssl->timeout )
-            break; /* expired, reuse this slot */
-
-        if( memcmp( ssl->session->id, cur->id, cur->length ) == 0 )
-            break; /* client reconnected */
-
-        prv = cur;
-        cur = cur->next;
-    }
-
-    if( cur == NULL )
-    {
-        cur = (ssl_session *) malloc( sizeof( ssl_session ) );
-        if( cur == NULL )
-            return( 1 );
-
-        if( prv == NULL )
-              s_list_1st = cur;
-        else  prv->next  = cur;
-    }
-
-    memcpy( cur, ssl->session, sizeof( ssl_session ) );
-
-    return( 0 );
-}
-
-#if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_CERTS_C) ||    \
-    !defined(POLARSSL_HAVEGE_C) || !defined(POLARSSL_SSL_TLS_C) ||  \
-    !defined(POLARSSL_SSL_SRV_C) || !defined(POLARSSL_NET_C) ||   \
-    !defined(POLARSSL_RSA_C)
-int main( void )
-{
-    printf("POLARSSL_BIGNUM_C and/or POLARSSL_CERTS_C and/or POLARSSL_HAVEGE_C "
-           "and/or POLARSSL_SSL_TLS_C and/or POLARSSL_SSL_SRV_C and/or "
-           "POLARSSL_NET_C and/or POLARSSL_RSA_C not defined.\n");
-    return( 0 );
-}
-#else
-int main( void )
+int main( int argc, char *argv[] )
 {
     int ret, len;
     int listen_fd;
-    int client_fd;
+    int client_fd = -1;
     unsigned char buf[1024];
+    const char *pers = "ssl_server";
 
-    havege_state hs;
+    entropy_context entropy;
+    ctr_drbg_context ctr_drbg;
     ssl_context ssl;
-    ssl_session ssn;
-    x509_cert srvcert;
-    rsa_context rsa;
+    x509_crt srvcert;
+    pk_context pkey;
+#if defined(POLARSSL_SSL_CACHE_C)
+    ssl_cache_context cache;
+#endif
+
+    ((void) argc);
+    ((void) argv);
+
+    memset( &ssl, 0, sizeof(ssl_context) );
+#if defined(POLARSSL_SSL_CACHE_C)
+    ssl_cache_init( &cache );
+#endif
+    x509_crt_init( &srvcert );
+    pk_init( &pkey );
+    entropy_init( &entropy );
+
+#if defined(POLARSSL_DEBUG_C)
+    debug_set_threshold( DEBUG_LEVEL );
+#endif
 
     /*
      * 1. Load the certificates and private RSA key
@@ -201,35 +122,32 @@ int main( void )
     printf( "\n  . Loading the server cert. and key..." );
     fflush( stdout );
 
-    memset( &srvcert, 0, sizeof( x509_cert ) );
-
     /*
      * This demonstration program uses embedded test certificates.
-     * Instead, you may want to use x509parse_crtfile() to read the
-     * server and CA certificates, as well as x509parse_keyfile().
+     * Instead, you may want to use x509_crt_parse_file() to read the
+     * server and CA certificates, as well as pk_parse_keyfile().
      */
-    ret = x509parse_crt( &srvcert, (unsigned char *) test_srv_crt,
-                         strlen( test_srv_crt ) );
+    ret = x509_crt_parse( &srvcert, (const unsigned char *) test_srv_crt,
+                          strlen( test_srv_crt ) );
     if( ret != 0 )
     {
-        printf( " failed\n  !  x509parse_crt returned %d\n\n", ret );
+        printf( " failed\n  !  x509_crt_parse returned %d\n\n", ret );
         goto exit;
     }
 
-    ret = x509parse_crt( &srvcert, (unsigned char *) test_ca_crt,
-                         strlen( test_ca_crt ) );
+    ret = x509_crt_parse( &srvcert, (const unsigned char *) test_ca_list,
+                          strlen( test_ca_list ) );
     if( ret != 0 )
     {
-        printf( " failed\n  !  x509parse_crt returned %d\n\n", ret );
+        printf( " failed\n  !  x509_crt_parse returned %d\n\n", ret );
         goto exit;
     }
 
-    rsa_init( &rsa, RSA_PKCS_V15, 0 );
-    ret =  x509parse_key( &rsa, (unsigned char *) test_srv_key,
-                          strlen( test_srv_key ), NULL, 0 );
+    ret =  pk_parse_key( &pkey, (const unsigned char *) test_srv_key,
+                         strlen( test_srv_key ), NULL, 0 );
     if( ret != 0 )
     {
-        printf( " failed\n  !  x509parse_key returned %d\n\n", ret );
+        printf( " failed\n  !  pk_parse_key returned %d\n\n", ret );
         goto exit;
     }
 
@@ -250,20 +168,72 @@ int main( void )
     printf( " ok\n" );
 
     /*
-     * 3. Wait until a client connects
+     * 3. Seed the RNG
      */
-#ifdef WIN32
-    ShellExecute( NULL, "open", "https://localhost:4433/",
-                  NULL, NULL, SW_SHOWNORMAL );
+    printf( "  . Seeding the random number generator..." );
+    fflush( stdout );
+
+    if( ( ret = ctr_drbg_init( &ctr_drbg, entropy_func, &entropy,
+                               (const unsigned char *) pers,
+                               strlen( pers ) ) ) != 0 )
+    {
+        printf( " failed\n  ! ctr_drbg_init returned %d\n", ret );
+        goto exit;
+    }
+
+    printf( " ok\n" );
+
+    /*
+     * 4. Setup stuff
+     */
+    printf( "  . Setting up the SSL data...." );
+    fflush( stdout );
+
+    if( ( ret = ssl_init( &ssl ) ) != 0 )
+    {
+        printf( " failed\n  ! ssl_init returned %d\n\n", ret );
+        goto exit;
+    }
+
+    ssl_set_endpoint( &ssl, SSL_IS_SERVER );
+    ssl_set_authmode( &ssl, SSL_VERIFY_NONE );
+
+    ssl_set_rng( &ssl, ctr_drbg_random, &ctr_drbg );
+    ssl_set_dbg( &ssl, my_debug, stdout );
+
+#if defined(POLARSSL_SSL_CACHE_C)
+    ssl_set_session_cache( &ssl, ssl_cache_get, &cache,
+                                 ssl_cache_set, &cache );
 #endif
 
+    ssl_set_ca_chain( &ssl, srvcert.next, NULL, NULL );
+    if( ( ret = ssl_set_own_cert( &ssl, &srvcert, &pkey ) ) != 0 )
+    {
+        printf( " failed\n  ! ssl_set_own_cert returned %d\n\n", ret );
+        goto exit;
+    }
+
+    printf( " ok\n" );
+
+reset:
+#ifdef POLARSSL_ERROR_C
+    if( ret != 0 )
+    {
+        char error_buf[100];
+        polarssl_strerror( ret, error_buf, 100 );
+        printf("Last error was: %d - %s\n\n", ret, error_buf );
+    }
+#endif
+
+    if( client_fd != -1 )
+        net_close( client_fd );
+
+    ssl_session_reset( &ssl );
+
+    /*
+     * 3. Wait until a client connects
+     */
     client_fd = -1;
-    memset( &ssl, 0, sizeof( ssl ) );
-
-accept:
-
-    net_close( client_fd );
-    ssl_free( &ssl );
 
     printf( "  . Waiting for a remote connection ..." );
     fflush( stdout );
@@ -274,42 +244,10 @@ accept:
         goto exit;
     }
 
-    printf( " ok\n" );
-
-    /*
-     * 4. Setup stuff
-     */
-    printf( "  . Setting up the RNG and SSL data...." );
-    fflush( stdout );
-
-    havege_init( &hs );
-
-    if( ( ret = ssl_init( &ssl ) ) != 0 )
-    {
-        printf( " failed\n  ! ssl_init returned %d\n\n", ret );
-        goto accept;
-    }
-
-    printf( " ok\n" );
-
-    ssl_set_endpoint( &ssl, SSL_IS_SERVER );
-    ssl_set_authmode( &ssl, SSL_VERIFY_NONE );
-
-    ssl_set_rng( &ssl, havege_rand, &hs );
-    ssl_set_dbg( &ssl, my_debug, stdout );
     ssl_set_bio( &ssl, net_recv, &client_fd,
                        net_send, &client_fd );
-    ssl_set_scb( &ssl, my_get_session,
-                       my_set_session );
 
-    ssl_set_ciphersuites( &ssl, my_ciphersuites );
-    ssl_set_session( &ssl, 1, 0, &ssn );
-
-    memset( &ssn, 0, sizeof( ssl_session ) );
-
-    ssl_set_ca_chain( &ssl, srvcert.next, NULL, NULL );
-    ssl_set_own_cert( &ssl, &srvcert, &rsa );
-    ssl_set_dh_param( &ssl, my_dhm_P, my_dhm_G );
+    printf( " ok\n" );
 
     /*
      * 5. Handshake
@@ -322,7 +260,7 @@ accept:
         if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
         {
             printf( " failed\n  ! ssl_handshake returned %d\n\n", ret );
-            goto accept;
+            goto reset;
         }
     }
 
@@ -356,7 +294,7 @@ accept:
                     break;
 
                 default:
-                    printf( " ssl_read returned %d\n", ret );
+                    printf( " ssl_read returned -0x%x\n", -ret );
                     break;
             }
 
@@ -365,8 +303,11 @@ accept:
 
         len = ret;
         printf( " %d bytes read\n\n%s", len, (char *) buf );
+
+        if( ret > 0 )
+            break;
     }
-    while( 0 );
+    while( 1 );
 
     /*
      * 7. Write the 200 Response
@@ -382,7 +323,7 @@ accept:
         if( ret == POLARSSL_ERR_NET_CONN_RESET )
         {
             printf( " failed\n  ! peer closed the connection\n\n" );
-            goto accept;
+            goto reset;
         }
 
         if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
@@ -395,34 +336,53 @@ accept:
     len = ret;
     printf( " %d bytes written\n\n%s\n", len, (char *) buf );
 
-    ssl_close_notify( &ssl );
-    goto accept;
+    printf( "  . Closing the connection..." );
+
+    while( ( ret = ssl_close_notify( &ssl ) ) < 0 )
+    {
+        if( ret != POLARSSL_ERR_NET_WANT_READ &&
+            ret != POLARSSL_ERR_NET_WANT_WRITE )
+        {
+            printf( " failed\n  ! ssl_close_notify returned %d\n\n", ret );
+            goto reset;
+        }
+    }
+
+    printf( " ok\n" );
+
+    ret = 0;
+    goto reset;
 
 exit:
 
-    net_close( client_fd );
-    x509_free( &srvcert );
-    rsa_free( &rsa );
-    ssl_free( &ssl );
-
-    cur = s_list_1st;
-    while( cur != NULL )
+#ifdef POLARSSL_ERROR_C
+    if( ret != 0 )
     {
-        prv = cur;
-        cur = cur->next;
-        memset( prv, 0, sizeof( ssl_session ) );
-        free( prv );
+        char error_buf[100];
+        polarssl_strerror( ret, error_buf, 100 );
+        printf("Last error was: %d - %s\n\n", ret, error_buf );
     }
+#endif
 
-    memset( &ssl, 0, sizeof( ssl_context ) );
+    if( client_fd != -1 )
+        net_close( client_fd );
 
-#ifdef WIN32
+    x509_crt_free( &srvcert );
+    pk_free( &pkey );
+    ssl_free( &ssl );
+#if defined(POLARSSL_SSL_CACHE_C)
+    ssl_cache_free( &cache );
+#endif
+    ctr_drbg_free( &ctr_drbg );
+    entropy_free( &entropy );
+
+#if defined(_WIN32)
     printf( "  Press Enter to exit this program.\n" );
     fflush( stdout ); getchar();
 #endif
 
     return( ret );
 }
-#endif /* POLARSSL_BIGNUM_C && POLARSSL_CERTS_C && POLARSSL_HAVEGE_C &&
+#endif /* POLARSSL_BIGNUM_C && POLARSSL_CERTS_C && POLARSSL_ENTROPY_C &&
           POLARSSL_SSL_TLS_C && POLARSSL_SSL_SRV_C && POLARSSL_NET_C &&
-          POLARSSL_RSA_C */
+          POLARSSL_RSA_C && POLARSSL_CTR_DRBG_C */

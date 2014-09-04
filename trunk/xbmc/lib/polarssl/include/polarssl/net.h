@@ -1,9 +1,9 @@
 /**
  * \file net.h
  *
- * \brief MD5 message digest algorithm (hash function)
+ * \brief Network communication functions
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2006-2011, Brainspark B.V.
  *
  *  This file is part of PolarSSL (http://www.polarssl.org)
  *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
@@ -29,7 +29,7 @@
 
 #include <string.h>
 
-#define POLARSSL_ERR_NET_UNKNOWN_HOST                      -0x0040  /**< Failed to get an IP address for the given hostname. */
+#define POLARSSL_ERR_NET_UNKNOWN_HOST                      -0x0056  /**< Failed to get an IP address for the given hostname. */
 #define POLARSSL_ERR_NET_SOCKET_FAILED                     -0x0042  /**< Failed to open a socket. */
 #define POLARSSL_ERR_NET_CONNECT_FAILED                    -0x0044  /**< The connection to the given server / port failed. */
 #define POLARSSL_ERR_NET_BIND_FAILED                       -0x0046  /**< Binding of the socket failed. */
@@ -82,9 +82,10 @@ int net_bind( int *fd, const char *bind_ip, int port );
  * \param bind_fd   Relevant socket
  * \param client_fd Will contain the connected client socket
  * \param client_ip Will contain the client IP address
+ *                  Must be at least 4 bytes, or 16 if IPv6 is supported
  *
  * \return          0 if successful, POLARSSL_ERR_NET_ACCEPT_FAILED, or
- *                  POLARSSL_ERR_NET_WOULD_BLOCK is bind_fd was set to
+ *                  POLARSSL_ERR_NET_WANT_READ is bind_fd was set to
  *                  non-blocking and accept() is blocking.
  */
 int net_accept( int bind_fd, int *client_fd, void *client_ip );

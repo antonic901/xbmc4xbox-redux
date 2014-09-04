@@ -27,7 +27,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B9CD06FA-D063-4AFE-BF05-1348142274D7}</ProjectGuid>
+    <ProjectGuid>{84F76F01-FA6C-7C48-1979-06FD24B476C1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>crypt_and_hash</RootNamespace>
   </PropertyGroup>
