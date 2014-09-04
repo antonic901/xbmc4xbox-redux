@@ -2310,10 +2310,22 @@
 					RelativePath="..\..\xbmc\FileSystem\CurlFile.h">
 				</File>
 				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVCommon.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVCommon.h">
+				</File>
+				<File
 					RelativePath="..\..\xbmc\FileSystem\DAVDirectory.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\DAVDirectory.h">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVFile.cpp">
+				</File>
+				<File
+					RelativePath="..\..\xbmc\FileSystem\DAVFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\Directory.cpp">

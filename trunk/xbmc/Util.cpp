@@ -3542,10 +3542,12 @@ float CUtil::CurrentCpuUsage()
 
 bool CUtil::SupportsWriteFileOperations(const CStdString& strPath)
 {
-  // currently only hd and smb support delete and rename
+  // currently only hd,smb and dav support delete and rename
   if (URIUtils::IsHD(strPath))
     return true;
   if (URIUtils::IsSmb(strPath))
+    return true;
+  if (URIUtils::IsDAV(strPath))
     return true;
   if (URIUtils::IsMythTV(strPath))
   {
