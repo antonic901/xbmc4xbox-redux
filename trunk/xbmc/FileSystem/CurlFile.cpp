@@ -1273,11 +1273,8 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
     }
     else
     {
-      if (filetime != -1)
-      {
-        CLog::Log(LOGDEBUG, "%s - curl filetime: %d", __FUNCTION__, filetime);
-        buffer->st_mtime = filetime;
-      }
+       if (filetime != -1)
+         buffer->st_mtime = filetime;
     }
   }
   g_curlInterface.easy_release(&m_state->m_easyHandle, NULL);
