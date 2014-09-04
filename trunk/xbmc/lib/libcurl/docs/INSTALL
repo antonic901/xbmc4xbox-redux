@@ -115,18 +115,6 @@ UNIX
 
        ./configure --disable-thread
 
-     To build curl with kerberos4 support enabled, curl requires the krb4 libs
-     and headers installed. You can then use a set of options to tell
-     configure where those are:
-
-          --with-krb4-includes[=DIR]   Specify location of kerberos4 headers
-          --with-krb4-libs[=DIR]       Specify location of kerberos4 libs
-          --with-krb4[=DIR]            where to look for Kerberos4
-
-     In most cases, /usr/athena is the install prefix and then it works with
-
-       ./configure --with-krb4=/usr/athena
-
      If you're a curl developer and use gcc, you might want to enable more
      debug options with the --enable-debug option.
 
@@ -135,27 +123,27 @@ UNIX
      default. But if you want to alter it, you can select how to deal with
      each individual library.
 
-     To build with GnuTLS support instead of OpenSSL for SSL/TLS, note that
-     you need to use both --without-ssl and --with-gnutls.
+     To build with GnuTLS for SSL/TLS, use both --without-ssl and
+     --with-gnutls.
 
-     To build with yassl support instead of OpenSSL or GnuTLS, you must build
-     yassl with its OpenSSL emulation enabled and point to that directory root
-     with configure --with-ssl.
+     To build with Cyassl for SSL/TLS, use both --without-ssl and
+     --with-cyassl.
 
-     To build with NSS support instead of OpenSSL for SSL/TLS, note that
-     you need to use both --without-ssl and --with-nss.
+     To build with NSS for SSL/TLS, use both --without-ssl and --with-nss.
 
-     To build with PolarSSL support instead of OpenSSL for SSL/TLS, note that
-     you need to use both --without-ssl and --with-polarssl.
+     To build with PolarSSL for SSL/TLS, use both --without-ssl and
+     --with-polarssl.
 
-     To build with axTLS support instead of OpenSSL for TLS, note that you
-     need to use both --without-ssl and --with-axtls.
+     To build with axTLS for SSL/TLS, use both --without-ssl and --with-axtls.
 
      To get GSSAPI support, build with --with-gssapi and have the MIT or
      Heimdal Kerberos 5 packages installed.
 
      To get support for SCP and SFTP, build with --with-libssh2 and have
      libssh2 0.16 or later installed.
+
+     To get Metalink support, build with --with-libmetalink and have the
+     libmetalink packages installed.
 
    SPECIAL CASES
    -------------
@@ -197,6 +185,9 @@ Win32
    first to rebuild every single library your app uses as well as your
    app using the debug multithreaded dynamic C runtime.
 
+   If you get linkage errors read section 5.7 of the FAQ document.
+
+
    MingW32
    -------
 
@@ -217,9 +208,9 @@ Win32
    adjust as necessary. It is also possible to override these paths with
    environment variables, for example:
 
-     set ZLIB_PATH=c:\zlib-1.2.5
-     set OPENSSL_PATH=c:\openssl-0.9.8r
-     set LIBSSH2_PATH=c:\libssh2-1.2.8
+     set ZLIB_PATH=c:\zlib-1.2.8
+     set OPENSSL_PATH=c:\openssl-0.9.8y
+     set LIBSSH2_PATH=c:\libssh2-1.4.3
 
    ATTENTION: if you want to build with libssh2 support you have to use latest
    version 0.17 - previous versions will NOT work with 7.17.0 and later!
@@ -261,16 +252,16 @@ Win32
    MSVC 6 caveats
    --------------
 
-   If you use MSVC 6 it is required that you use the February 2003 edition PSDK:
-   http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdk-full.htm
+   If you use MSVC 6 it is required that you use the February 2003 edition of
+   the 'Platform SDK' which can be downloaded from:
+
+   http://www.microsoft.com/en-us/download/details.aspx?id=12261
 
    Building any software with MSVC 6 without having PSDK installed is just
    asking for trouble down the road once you have released it, you might notice
    the problems in the first corner or ten miles ahead, depending mostly on your
    choice of static vs dynamic runtime and third party libraries. Anyone using
    software built in such way will at some point regret having done so.
-
-   When someone uses MSVC 6 without PSDK he is using a compiler back from 1998.
 
    If the compiler has been updated with the installation of a service pack as
    those mentioned in http://support.microsoft.com/kb/194022 the compiler can be
@@ -280,13 +271,6 @@ Win32
    software generated in such an environment will be using outdated system
    header files and libraries with bugs and security issues which have already
    been addressed and fixed long time ago.
-
-   In order to make use of the updated system headers and fixed libraries
-   for MSVC 6, it is required that 'Platform SDK', PSDK from now onwards,
-   is installed. The specific PSDK that must be installed for MSVC 6 is the
-   February 2003 edition, which is the latest one supporting the MSVC 6 compiler,
-   this PSDK is also known as 'Windows Server 2003 PSDK' and can be downloaded
-   from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdk-full.htm
 
    So, building curl and libcurl with MSVC 6 without PSDK is absolutely
    discouraged for the benefit of anyone using software built in such
@@ -320,7 +304,7 @@ Win32
    documentation on how to compile zlib. Define the ZLIB_PATH environment
    variable to the location of zlib.h and zlib.lib, for example:
 
-     set ZLIB_PATH=c:\zlib-1.2.5
+     set ZLIB_PATH=c:\zlib-1.2.8
 
    Then run 'nmake vc-zlib' in curl's root directory.
 
@@ -334,7 +318,7 @@ Win32
    Before running nmake define the OPENSSL_PATH environment variable with
    the root/base directory of OpenSSL, for example:
 
-     set OPENSSL_PATH=c:\openssl-0.9.8q
+     set OPENSSL_PATH=c:\openssl-0.9.8y
 
    Then run 'nmake vc-ssl' or 'nmake vc-ssl-dll' in curl's root
    directory.  'nmake vc-ssl' will create a libcurl static and dynamic
@@ -349,39 +333,18 @@ Win32
    at runtime.
    Run 'nmake vc-ssl-zlib' to build with both ssl and zlib support.
 
-   MSVC 6 IDE
-   ----------
+   MSVC IDE
+   --------
 
-   A minimal VC++ 6.0 reference workspace (vc6curl.dsw) is available with the
-   source distribution archive to allow proper building of the two included
-   projects, the libcurl library and the curl tool.
+   A fairly comprehensive set of Visual Studio project files are available for
+   v6.0 through v12.0 and are located in the projects folder to allow proper
+   building of both the libcurl library as well as the curl tool.
 
-   1) Open the vc6curl.dsw workspace with MSVC6's IDE.
-   2) Select 'Build' from top menu.
-   3) Select 'Batch Build' from dropdown menu.
-   4) Make sure that the eight project configurations are 'checked'.
-   5) Click on the 'Build' button.
-   6) Once the eight project configurations are built you are done.
-
-   Dynamic and static libcurl libraries are built in debug and release flavours,
-   and can be located each one in its own subdirectory, DLL-Debug, DLL-Release,
-   LIB-Debug and LIB-Release, all of them below the 'lib' subdirectory.
-
-   In the same way four curl executables are created, each using its respective
-   library. The resulting curl executables are located in its own subdirectory,
-   DLL-Debug, DLL-Release, LIB-Debug and LIB-Release, below the 'src' subdir.
-
-   These reference VC++ 6.0 configurations are generated using the dynamic CRT.
-
-   Intentionally, these reference VC++ 6.0 projects and configurations don't use
-   third party libraries, such as OpenSSL or Zlib, to allow proper compilation
-   and configuration for all new users without further requirements.
-
-   If you need something more 'involved' you might adjust them for your own use,
-   or explore the world of makefiles described above 'MSVC from command line'.
+   For more information about these projects and building via Visual Studio
+   please see the README file located in the projects folder.
 
    Borland C++ compiler
-   ---------------------
+   --------------------
 
    Ensure that your build environment is properly set up to use the compiler
    and associated tools. PATH environment variable must include the path to
@@ -392,7 +355,7 @@ Win32
 
      set BCCDIR=c:\Borland\BCC55
 
-   In order to build a plain vanilla version of curl and libcurl run the 
+   In order to build a plain vanilla version of curl and libcurl run the
    following command from curl's root directory:
 
      make borland
@@ -461,7 +424,7 @@ Win32
    possibilities:
 
    - Modify lib/config-win32.h
-   - Modify lib/setup.h
+   - Modify lib/curl_setup.h
    - Modify lib/Makefile.vc6
    - Add defines to Project/Settings/C/C++/General/Preprocessor Definitions
      in the vc6libcurl.dsw/vc6libcurl.dsp Visual C++ 6 IDE project.
@@ -503,6 +466,38 @@ Win32
    dynamic import symbols.
 
 
+Apple iOS and Mac OS X
+======================
+   On recent Apple operating systems, curl can be built to use Apple's
+   SSL/TLS implementation, Secure Transport, instead of OpenSSL. To build with
+   Secure Transport for SSL/TLS, use the configure option --with-darwinssl. (It
+   is not necessary to use the option --without-ssl.) This feature requires iOS
+   5.0 or later, or OS X 10.5 ("Leopard") or later.
+
+   When Secure Transport is in use, the curl options --cacert and --capath and
+   their libcurl equivalents, will be ignored, because Secure Transport uses
+   the certificates stored in the Keychain to evaluate whether or not to trust
+   the server. This, of course, includes the root certificates that ship with
+   the OS. The --cert and --engine options, and their libcurl equivalents, are
+   currently unimplemented in curl with Secure Transport.
+
+   For OS X users: In OS X 10.8 ("Mountain Lion"), Apple made a major
+   overhaul to the Secure Transport API that, among other things, added
+   support for the newer TLS 1.1 and 1.2 protocols. To get curl to support
+   TLS 1.1 and 1.2, you must build curl on Mountain Lion or later, or by
+   using the equivalent SDK. If you set the MACOSX_DEPLOYMENT_TARGET
+   environmental variable to an earlier version of OS X prior to building curl,
+   then curl will use the new Secure Transport API on Mountain Lion and later,
+   and fall back on the older API when the same curl binary is executed on
+   older cats. For example, running these commands in curl's directory in the
+   shell will build the code such that it will run on cats as old as OS X 10.6
+   ("Snow Leopard") (using bash):
+
+      export MACOSX_DEPLOYMENT_TARGET="10.6"
+      ./configure --with-darwinssl
+      make
+
+
 IBM OS/2
 ========
    Building under OS/2 is not much different from building under unix.
@@ -540,7 +535,7 @@ VMS
    Curl seems to work with FTP & HTTP other protocols are not tested.  (the
    perl http/ftp testing server supplied as testing too cannot work on VMS
    because vms has no concept of fork(). [ I tried to give it a whack, but
-   thats of no use.
+   that's of no use.
 
    SSL stuff has not been ported.
 
@@ -673,7 +668,7 @@ NetWare
      you can find precompiled packages at:
      http://www.gknw.net/development/ossl/netware/
      for CLIB-based builds OpenSSL 0.9.8h or later is required  - earlier versions
-     dont support buildunf with CLIB BSD sockets.
+     don't support building with CLIB BSD sockets.
    - optional SSH2 sources (version 0.17 or later);
 
    Set a search path to your compiler, linker and tools; on Linux make
@@ -840,7 +835,44 @@ VxWorks
 
 Android
 =======
-   See the build notes in the Android.mk file.
+   Method using the static makefile:
+      - see the build notes in the packages/Android/Android.mk file.
+
+   Method using a configure cross-compile (tested with Android NDK r7c, r8):
+      - prepare the toolchain of the Android NDK for standalone use; this can
+        be done by invoking the script:
+        ./build/tools/make-standalone-toolchain.sh
+        which creates a usual cross-compile toolchain. Lets assume that you put
+        this toolchain below /opt then invoke configure with something like:
+        export PATH=/opt/arm-linux-androideabi-4.4.3/bin:$PATH
+        ./configure --host=arm-linux-androideabi [more configure options]
+        make
+      - if you want to compile directly from our GIT repo you might run into
+        this issue with older automake stuff:
+        checking host system type...
+        Invalid configuration `arm-linux-androideabi':
+        system `androideabi' not recognized
+        configure: error: /bin/sh ./config.sub arm-linux-androideabi failed
+        this issue can be fixed with using more recent versions of config.sub
+        and config.guess which can be obtained here:
+        http://git.savannah.gnu.org/gitweb/?p=config.git;a=tree
+        you need to replace your system-own versions which usually can be
+        found in your automake folder:
+        find /usr -name config.sub
+
+   Wrapper for pkg-config
+      - In order to make proper use of pkg-config so that configure is able to
+        find all dependencies you should create a wrapper script for pkg-config;
+        file /opt/arm-linux-androideabi-4.4.3/bin/arm-linux-androideabi-pkg-config:
+
+        #!/bin/sh
+        SYSROOT=$(dirname ${0%/*})/sysroot
+        export PKG_CONFIG_DIR=
+        export PKG_CONFIG_LIBDIR=${SYSROOT}/usr/local/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig
+        export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
+        exec pkg-config "$@"
+
+        also create a copy or symlink with name arm-unknown-linux-androideabi-pkg-config.
 
 
 CROSS COMPILE
@@ -921,14 +953,16 @@ REDUCING SIZE
      --disable-verbose (eliminates debugging strings and error code strings)
      --enable-hidden-symbols (eliminates unneeded symbols in the shared library)
      --without-libidn (disables support for the libidn DNS library)
+     --without-librtmp (disables support for RTMP)
      --without-ssl (disables support for SSL/TLS)
      --without-zlib (disables support for on-the-fly decompression)
 
    The GNU compiler and linker have a number of options that can reduce the
    size of the libcurl dynamic libraries on some platforms even further.
    Specify them by providing appropriate CFLAGS and LDFLAGS variables on the
-   configure command-line:
-     CFLAGS="-ffunction-sections -fdata-sections" \
+   configure command-line, e.g.
+     CFLAGS="-Os -ffunction-sections -fdata-sections \
+             -fno-unwind-tables -fno-asynchronous-unwind-tables" \
      LDFLAGS="-Wl,-s -Wl,-Bsymbolic -Wl,--gc-sections"
 
    Be sure also to strip debugging symbols from your binaries after
@@ -938,9 +972,9 @@ REDUCING SIZE
    .comment section).
 
    Using these techniques it is possible to create a basic HTTP-only shared
-   libcurl library for i386 Linux platforms that is only 101 KiB in size, and
-   an FTP-only library that is 105 KiB in size (as of libcurl version 7.21.5,
-   using gcc 4.4.3).
+   libcurl library for i386 Linux platforms that is only 114 KiB in size, and
+   an FTP-only library that is 115 KiB in size (as of libcurl version 7.35.0,
+   using gcc 4.8.2).
 
    You may find that statically linking libcurl to your application will
    result in a lower total size than dynamically linking.
@@ -952,7 +986,6 @@ REDUCING SIZE
    command line.  Following is a list of appropriate key words:
 
      --disable-cookies          !cookies
-     --disable-crypto-auth      !HTTP\ Digest\ auth !HTTP\ proxy\ Digest\ auth
      --disable-manual           !--manual
      --disable-proxy            !HTTP\ proxy !proxytunnel !SOCKS4 !SOCKS5
 
@@ -972,9 +1005,9 @@ PORTS
         - Alpha OpenVMS V7.1-1H2
         - Alpha Tru64 v5.0 5.1
         - AVR32 Linux
-        - ARM Android 1.5, 2.1
+        - ARM Android 1.5, 2.1, 2.3, 3.2, 4.x
         - ARM INTEGRITY
-        - ARM iPhone OS
+        - ARM iOS
         - Cell Linux
         - Cell Cell OS
         - HP-PA HP-UX 9.X 10.X 11.X
@@ -1012,6 +1045,7 @@ PORTS
         - i386 HURD
         - i386 Haiku OS
         - i386 Linux 1.3, 2.0, 2.2, 2.3, 2.4, 2.6
+        - i386 Mac OS X
         - i386 MINIX 3.1
         - i386 NetBSD
         - i386 Novell NetWare
@@ -1042,6 +1076,7 @@ GNU GSS      http://www.gnu.org/software/gss/
 GnuTLS       http://www.gnu.org/software/gnutls/
 Heimdal      http://www.pdc.kth.se/heimdal/
 libidn       http://www.gnu.org/software/libidn/
+libmetalink  https://launchpad.net/libmetalink/
 libssh2      http://www.libssh2.org/
 MIT Kerberos http://web.mit.edu/kerberos/www/dist/
 NSS          http://www.mozilla.org/projects/security/pki/nss/

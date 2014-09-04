@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,30 +20,20 @@
  *
  ***************************************************************************/
 
-/* Now include the setup.h file from libcurl's private libdir (the source
+/* Now include the curl_setup.h file from libcurl's private libdir (the source
    version, but that might include "curl_config.h" from the build dir so we
    need both of them in the include path), so that we get good in-depth
    knowledge about the system we're building this on */
 
 #define CURL_NO_OLDIES
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include <curl/curl.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
 #ifdef HAVE_SYS_SELECT_H
 /* since so many tests use select(), we can just as well include it here */
 #include <sys/select.h>
-#endif
-#ifdef HAVE_UNISTD_H
-/* at least somewhat oldish FreeBSD systems need this for select() */
-#include <unistd.h>
 #endif
 
 #ifdef TPF
@@ -67,6 +57,8 @@ extern struct timeval tv_test_start; /* for test timing */
 
 extern int select_wrapper(int nfds, fd_set *rd, fd_set *wr, fd_set *exc,
                           struct timeval *tv);
+
+extern void wait_ms(int ms); /* wait this many milliseconds */
 
 extern int test(char *URL); /* the actual test function provided by each
                                individual libXXX.c file */
@@ -239,6 +231,31 @@ extern int unitfail;
 
 #define multi_add_handle(A,B) \
   chk_multi_add_handle((A),(B),(__FILE__),(__LINE__))
+
+/* ---------------------------------------------------------------- */
+
+#define exe_multi_remove_handle(A,B,Y,Z) do {                   \
+  CURLMcode ec;                                                 \
+  if((ec = curl_multi_remove_handle((A),(B))) != CURLM_OK) {    \
+    fprintf(stderr, "%s:%d curl_multi_remove_handle() failed, " \
+            "with code %d (%s)\n",                              \
+            (Y), (Z), (int)ec, curl_multi_strerror(ec));        \
+    res = (int)ec;                                              \
+  }                                                             \
+} WHILE_FALSE
+
+#define res_multi_remove_handle(A,B) \
+  exe_multi_remove_handle((A),(B),(__FILE__),(__LINE__))
+
+#define chk_multi_remove_handle(A,B,Y,Z) do { \
+  exe_multi_remove_handle((A),(B),(Y),(Z));   \
+  if(res)                                     \
+    goto test_cleanup;                        \
+} WHILE_FALSE
+
+
+#define multi_remove_handle(A,B) \
+  chk_multi_remove_handle((A),(B),(__FILE__),(__LINE__))
 
 /* ---------------------------------------------------------------- */
 

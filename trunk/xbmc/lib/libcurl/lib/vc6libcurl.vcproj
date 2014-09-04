@@ -206,7 +206,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib wldap32.lib"
+				AdditionalDependencies="ws2_32.lib wldap32.lib zlib.lib"
 				OutputFile="DLL-Debug/libcurld.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -253,164 +253,28 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath=".\amigaos.c">
-			</File>
-			<File
 				RelativePath=".\asyn-ares.c">
 			</File>
 			<File
 				RelativePath=".\asyn-thread.c">
 			</File>
 			<File
-				RelativePath=".\axtls.c">
+				RelativePath=".\base64.c">
 			</File>
 			<File
-				RelativePath="base64.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\bundles.c">
 			</File>
 			<File
-				RelativePath="connect.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\conncache.c">
 			</File>
 			<File
-				RelativePath="content_encoding.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\connect.c">
 			</File>
 			<File
-				RelativePath="cookie.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\content_encoding.c">
+			</File>
+			<File
+				RelativePath=".\cookie.c">
 			</File>
 			<File
 				RelativePath=".\curl_addrinfo.c">
@@ -428,6 +292,9 @@
 				RelativePath=".\curl_memrchr.c">
 			</File>
 			<File
+				RelativePath=".\curl_multibyte.c">
+			</File>
+			<File
 				RelativePath=".\curl_ntlm.c">
 			</File>
 			<File
@@ -440,10 +307,13 @@
 				RelativePath=".\curl_ntlm_wb.c">
 			</File>
 			<File
-				RelativePath=".\curl_rand.c">
+				RelativePath=".\curl_rtmp.c">
 			</File>
 			<File
-				RelativePath=".\curl_rtmp.c">
+				RelativePath=".\curl_sasl.c">
+			</File>
+			<File
+				RelativePath=".\curl_sasl_sspi.c">
 			</File>
 			<File
 				RelativePath=".\curl_sspi.c">
@@ -452,685 +322,73 @@
 				RelativePath=".\curl_threads.c">
 			</File>
 			<File
-				RelativePath=".\cyassl.c">
+				RelativePath=".\dict.c">
 			</File>
 			<File
-				RelativePath="dict.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\dotdot.c">
 			</File>
 			<File
-				RelativePath="easy.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\easy.c">
 			</File>
 			<File
-				RelativePath="escape.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\escape.c">
 			</File>
 			<File
-				RelativePath="file.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\file.c">
 			</File>
 			<File
 				RelativePath=".\fileinfo.c">
 			</File>
 			<File
-				RelativePath="formdata.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\formdata.c">
 			</File>
 			<File
-				RelativePath="ftp.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\ftp.c">
 			</File>
 			<File
 				RelativePath=".\ftplistparser.c">
 			</File>
 			<File
-				RelativePath="getenv.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\getenv.c">
 			</File>
 			<File
-				RelativePath="getinfo.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\getinfo.c">
 			</File>
 			<File
 				RelativePath=".\gopher.c">
 			</File>
 			<File
-				RelativePath="gtls.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="hash.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hash.c">
 			</File>
 			<File
 				RelativePath=".\hmac.c">
 			</File>
 			<File
-				RelativePath="hostasyn.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hostasyn.c">
 			</File>
 			<File
-				RelativePath="hostip.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hostcheck.c">
 			</File>
 			<File
-				RelativePath="hostip4.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hostip.c">
 			</File>
 			<File
-				RelativePath="hostip6.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hostip4.c">
 			</File>
 			<File
-				RelativePath="hostsyn.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\hostsyn.c">
 			</File>
 			<File
-				RelativePath="http.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\http.c">
 			</File>
 			<File
-				RelativePath="http_chunks.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\http2.c">
 			</File>
 			<File
-				RelativePath="http_digest.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\http_chunks.c">
+			</File>
+			<File
+				RelativePath=".\http_digest.c">
 			</File>
 			<File
 				RelativePath=".\http_negotiate.c">
@@ -1145,497 +403,49 @@
 				RelativePath=".\idn_win32.c">
 			</File>
 			<File
-				RelativePath="if2ip.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\if2ip.c">
 			</File>
 			<File
 				RelativePath=".\imap.c">
 			</File>
 			<File
-				RelativePath="inet_ntop.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\inet_ntop.c">
 			</File>
 			<File
-				RelativePath="inet_pton.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\inet_pton.c">
 			</File>
 			<File
-				RelativePath="krb4.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\krb5.c">
 			</File>
 			<File
-				RelativePath="krb5.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\ldap.c">
 			</File>
 			<File
-				RelativePath="ldap.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="llist.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\llist.c">
 			</File>
 			<File
 				RelativePath=".\md4.c">
 			</File>
 			<File
-				RelativePath="md5.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\md5.c">
 			</File>
 			<File
-				RelativePath="memdebug.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\memdebug.c">
 			</File>
 			<File
-				RelativePath="mprintf.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\mprintf.c">
 			</File>
 			<File
-				RelativePath="multi.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\multi.c">
 			</File>
 			<File
-				RelativePath="netrc.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\netrc.c">
 			</File>
 			<File
 				RelativePath=".\non-ascii.c">
 			</File>
 			<File
 				RelativePath=".\nonblock.c">
-			</File>
-			<File
-				RelativePath="nss.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\nwlib.c">
@@ -1647,124 +457,19 @@
 				RelativePath=".\openldap.c">
 			</File>
 			<File
-				RelativePath="parsedate.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\parsedate.c">
 			</File>
 			<File
 				RelativePath=".\pingpong.c">
 			</File>
 			<File
-				RelativePath=".\polarssl.c">
+				RelativePath=".\pipeline.c">
 			</File>
 			<File
 				RelativePath=".\pop3.c">
 			</File>
 			<File
-				RelativePath="progress.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="qssl.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\progress.c">
 			</File>
 			<File
 				RelativePath=".\rawstr.c">
@@ -1773,152 +478,16 @@
 				RelativePath=".\rtsp.c">
 			</File>
 			<File
-				RelativePath="security.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\security.c">
 			</File>
 			<File
-				RelativePath="select.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\select.c">
 			</File>
 			<File
-				RelativePath="sendf.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\sendf.c">
 			</File>
 			<File
-				RelativePath="share.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\share.c">
 			</File>
 			<File
 				RelativePath=".\slist.c">
@@ -1927,41 +496,7 @@
 				RelativePath=".\smtp.c">
 			</File>
 			<File
-				RelativePath="socks.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\socks.c">
 			</File>
 			<File
 				RelativePath=".\socks_gssapi.c">
@@ -1970,596 +505,40 @@
 				RelativePath=".\socks_sspi.c">
 			</File>
 			<File
-				RelativePath="speedcheck.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\speedcheck.c">
 			</File>
 			<File
-				RelativePath="splay.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\splay.c">
 			</File>
 			<File
-				RelativePath="ssh.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\ssh.c">
 			</File>
 			<File
-				RelativePath="sslgen.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\strdup.c">
 			</File>
 			<File
-				RelativePath="ssluse.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\strequal.c">
 			</File>
 			<File
-				RelativePath="strdup.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\strerror.c">
 			</File>
 			<File
-				RelativePath="strequal.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\strtok.c">
 			</File>
 			<File
-				RelativePath="strerror.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\strtoofft.c">
 			</File>
 			<File
-				RelativePath="strtok.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\timeval.c">
 			</File>
 			<File
-				RelativePath="strtoofft.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\transfer.c">
 			</File>
 			<File
-				RelativePath="telnet.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\url.c">
 			</File>
 			<File
-				RelativePath="tftp.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="timeval.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="transfer.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="url.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="version.c">
-				<FileConfiguration
-					Name="DLL Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="LIB Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_MBCS;BUILDING_LIBCURL;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath=".\version.c">
 			</File>
 			<File
 				RelativePath=".\warnless.c">
@@ -2567,6 +546,85 @@
 			<File
 				RelativePath=".\wildcard.c">
 			</File>
+			<File
+				RelativePath=".\x509asn1.c">
+			</File>
+			<Filter
+				Name="vtls"
+				Filter="">
+				<File
+					RelativePath=".\vtls\axtls.c">
+				</File>
+				<File
+					RelativePath=".\vtls\axtls.h">
+				</File>
+				<File
+					RelativePath=".\vtls\curl_darwinssl.c">
+				</File>
+				<File
+					RelativePath=".\vtls\curl_darwinssl.h">
+				</File>
+				<File
+					RelativePath=".\vtls\curl_schannel.c">
+				</File>
+				<File
+					RelativePath=".\vtls\curl_schannel.h">
+				</File>
+				<File
+					RelativePath=".\vtls\cyassl.c">
+				</File>
+				<File
+					RelativePath=".\vtls\cyassl.h">
+				</File>
+				<File
+					RelativePath=".\vtls\gskit.c">
+				</File>
+				<File
+					RelativePath=".\vtls\gskit.h">
+				</File>
+				<File
+					RelativePath=".\vtls\gtls.c">
+				</File>
+				<File
+					RelativePath=".\vtls\gtls.h">
+				</File>
+				<File
+					RelativePath=".\vtls\nss.c">
+				</File>
+				<File
+					RelativePath=".\vtls\nssg.h">
+				</File>
+				<File
+					RelativePath=".\vtls\openssl.c">
+				</File>
+				<File
+					RelativePath=".\vtls\openssl.h">
+				</File>
+				<File
+					RelativePath=".\vtls\polarssl.c">
+				</File>
+				<File
+					RelativePath=".\vtls\polarssl.h">
+				</File>
+				<File
+					RelativePath=".\vtls\polarssl_threadlock.c">
+				</File>
+				<File
+					RelativePath=".\vtls\polarssl_threadlock.h">
+				</File>
+				<File
+					RelativePath=".\vtls\qssl.c">
+				</File>
+				<File
+					RelativePath=".\vtls\qssl.h">
+				</File>
+				<File
+					RelativePath=".\vtls\vtls.c">
+				</File>
+				<File
+					RelativePath=".\vtls\vtls.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -2575,61 +633,34 @@
 				RelativePath=".\amigaos.h">
 			</File>
 			<File
-				RelativePath="arpa_telnet.h">
+				RelativePath=".\arpa_telnet.h">
 			</File>
 			<File
 				RelativePath=".\asyn.h">
 			</File>
 			<File
-				RelativePath=".\axtls.h">
+				RelativePath=".\bundles.h">
 			</File>
 			<File
-				RelativePath=".\config-amigaos.h">
+				RelativePath=".\config-win32.h">
 			</File>
 			<File
-				RelativePath=".\config-dos.h">
+				RelativePath=".\conncache.h">
 			</File>
 			<File
-				RelativePath=".\config-mac.h">
+				RelativePath=".\connect.h">
 			</File>
 			<File
-				RelativePath=".\config-os400.h">
+				RelativePath=".\content_encoding.h">
 			</File>
 			<File
-				RelativePath=".\config-riscos.h">
-			</File>
-			<File
-				RelativePath=".\config-symbian.h">
-			</File>
-			<File
-				RelativePath=".\config-tpf.h">
-			</File>
-			<File
-				RelativePath=".\config-vms.h">
-			</File>
-			<File
-				RelativePath=".\config-vxworks.h">
-			</File>
-			<File
-				RelativePath="config-win32.h">
-			</File>
-			<File
-				RelativePath=".\config-win32ce.h">
-			</File>
-			<File
-				RelativePath="connect.h">
-			</File>
-			<File
-				RelativePath="content_encoding.h">
-			</File>
-			<File
-				RelativePath="cookie.h">
+				RelativePath=".\cookie.h">
 			</File>
 			<File
 				RelativePath=".\curl_addrinfo.h">
 			</File>
 			<File
-				RelativePath="curl_base64.h">
+				RelativePath=".\curl_base64.h">
 			</File>
 			<File
 				RelativePath=".\curl_fnmatch.h">
@@ -2644,19 +675,22 @@
 				RelativePath=".\curl_hmac.h">
 			</File>
 			<File
-				RelativePath="curl_ldap.h">
+				RelativePath=".\curl_ldap.h">
 			</File>
 			<File
 				RelativePath=".\curl_md4.h">
 			</File>
 			<File
-				RelativePath="curl_md5.h">
+				RelativePath=".\curl_md5.h">
 			</File>
 			<File
 				RelativePath=".\curl_memory.h">
 			</File>
 			<File
 				RelativePath=".\curl_memrchr.h">
+			</File>
+			<File
+				RelativePath=".\curl_multibyte.h">
 			</File>
 			<File
 				RelativePath=".\curl_ntlm.h">
@@ -2671,10 +705,19 @@
 				RelativePath=".\curl_ntlm_wb.h">
 			</File>
 			<File
-				RelativePath=".\curl_rand.h">
+				RelativePath=".\curl_rtmp.h">
 			</File>
 			<File
-				RelativePath=".\curl_rtmp.h">
+				RelativePath=".\curl_sasl.h">
+			</File>
+			<File
+				RelativePath=".\curl_sec.h">
+			</File>
+			<File
+				RelativePath=".\curl_setup.h">
+			</File>
+			<File
+				RelativePath=".\curl_setup_once.h">
 			</File>
 			<File
 				RelativePath=".\curl_sspi.h">
@@ -2683,100 +726,94 @@
 				RelativePath=".\curl_threads.h">
 			</File>
 			<File
-				RelativePath="curlx.h">
+				RelativePath=".\curlx.h">
 			</File>
 			<File
-				RelativePath=".\cyassl.h">
+				RelativePath=".\dict.h">
 			</File>
 			<File
-				RelativePath="dict.h">
+				RelativePath=".\dotdot.h">
 			</File>
 			<File
-				RelativePath="easyif.h">
+				RelativePath=".\easyif.h">
 			</File>
 			<File
-				RelativePath="escape.h">
+				RelativePath=".\escape.h">
 			</File>
 			<File
-				RelativePath="file.h">
+				RelativePath=".\file.h">
 			</File>
 			<File
 				RelativePath=".\fileinfo.h">
 			</File>
 			<File
-				RelativePath="formdata.h">
+				RelativePath=".\formdata.h">
 			</File>
 			<File
-				RelativePath="ftp.h">
+				RelativePath=".\ftp.h">
 			</File>
 			<File
 				RelativePath=".\ftplistparser.h">
 			</File>
 			<File
-				RelativePath="getinfo.h">
+				RelativePath=".\getinfo.h">
 			</File>
 			<File
 				RelativePath=".\gopher.h">
 			</File>
 			<File
-				RelativePath="gtls.h">
+				RelativePath=".\hash.h">
 			</File>
 			<File
-				RelativePath="hash.h">
+				RelativePath=".\hostcheck.h">
 			</File>
 			<File
-				RelativePath="hostip.h">
+				RelativePath=".\hostip.h">
 			</File>
 			<File
-				RelativePath="http.h">
+				RelativePath=".\http.h">
 			</File>
 			<File
-				RelativePath="http_chunks.h">
+				RelativePath=".\http2.h">
 			</File>
 			<File
-				RelativePath="http_digest.h">
+				RelativePath=".\http_chunks.h">
 			</File>
 			<File
-				RelativePath="http_negotiate.h">
+				RelativePath=".\http_digest.h">
 			</File>
 			<File
-				RelativePath="http_ntlm.h">
+				RelativePath=".\http_negotiate.h">
 			</File>
 			<File
 				RelativePath=".\http_proxy.h">
 			</File>
 			<File
-				RelativePath="if2ip.h">
+				RelativePath=".\if2ip.h">
 			</File>
 			<File
 				RelativePath=".\imap.h">
 			</File>
 			<File
-				RelativePath="inet_ntoa_r.h">
+				RelativePath=".\inet_ntop.h">
 			</File>
 			<File
-				RelativePath="inet_ntop.h">
+				RelativePath=".\inet_pton.h">
 			</File>
 			<File
-				RelativePath="inet_pton.h">
+				RelativePath=".\llist.h">
 			</File>
 			<File
-				RelativePath="krb4.h">
+				RelativePath=".\memdebug.h">
 			</File>
 			<File
-				RelativePath="llist.h">
+				RelativePath=".\multihandle.h">
 			</File>
 			<File
-				RelativePath="memdebug.h">
+				RelativePath=".\multiif.h">
 			</File>
 			<File
-				RelativePath="memory.h">
-			</File>
-			<File
-				RelativePath="multiif.h">
-			</File>
-			<File
-				RelativePath="netrc.h">
+				RelativePath=".\netrc.h">
 			</File>
 			<File
 				RelativePath=".\non-ascii.h">
@@ -2785,25 +822,19 @@
 				RelativePath=".\nonblock.h">
 			</File>
 			<File
-				RelativePath="nssg.h">
-			</File>
-			<File
-				RelativePath="parsedate.h">
+				RelativePath=".\parsedate.h">
 			</File>
 			<File
 				RelativePath=".\pingpong.h">
 			</File>
 			<File
-				RelativePath=".\polarssl.h">
+				RelativePath=".\pipeline.h">
 			</File>
 			<File
 				RelativePath=".\pop3.h">
 			</File>
 			<File
-				RelativePath="progress.h">
-			</File>
-			<File
-				RelativePath="qssl.h">
+				RelativePath=".\progress.h">
 			</File>
 			<File
 				RelativePath=".\rawstr.h">
@@ -2812,22 +843,22 @@
 				RelativePath=".\rtsp.h">
 			</File>
 			<File
-				RelativePath="select.h">
+				RelativePath=".\select.h">
 			</File>
 			<File
-				RelativePath="sendf.h">
+				RelativePath=".\sendf.h">
 			</File>
 			<File
 				RelativePath=".\setup-os400.h">
 			</File>
 			<File
-				RelativePath="setup.h">
+				RelativePath=".\setup-vms.h">
 			</File>
 			<File
-				RelativePath="setup_once.h">
+				RelativePath=".\share.h">
 			</File>
 			<File
-				RelativePath="share.h">
+				RelativePath=".\sigpipe.h">
 			</File>
 			<File
 				RelativePath=".\slist.h">
@@ -2836,64 +867,55 @@
 				RelativePath=".\smtp.h">
 			</File>
 			<File
-				RelativePath="sockaddr.h">
+				RelativePath=".\sockaddr.h">
 			</File>
 			<File
-				RelativePath="socks.h">
+				RelativePath=".\socks.h">
 			</File>
 			<File
-				RelativePath="speedcheck.h">
+				RelativePath=".\speedcheck.h">
 			</File>
 			<File
-				RelativePath="splay.h">
+				RelativePath=".\splay.h">
 			</File>
 			<File
-				RelativePath="ssh.h">
+				RelativePath=".\ssh.h">
 			</File>
 			<File
-				RelativePath="sslgen.h">
+				RelativePath=".\strdup.h">
 			</File>
 			<File
-				RelativePath="ssluse.h">
+				RelativePath=".\strequal.h">
 			</File>
 			<File
-				RelativePath="strdup.h">
+				RelativePath=".\strerror.h">
 			</File>
 			<File
-				RelativePath="strequal.h">
+				RelativePath=".\strtok.h">
 			</File>
 			<File
-				RelativePath="strerror.h">
+				RelativePath=".\strtoofft.h">
 			</File>
 			<File
-				RelativePath="strtok.h">
+				RelativePath=".\timeval.h">
 			</File>
 			<File
-				RelativePath="strtoofft.h">
+				RelativePath=".\transfer.h">
 			</File>
 			<File
-				RelativePath="telnet.h">
+				RelativePath=".\url.h">
 			</File>
 			<File
-				RelativePath="tftp.h">
-			</File>
-			<File
-				RelativePath="timeval.h">
-			</File>
-			<File
-				RelativePath="transfer.h">
-			</File>
-			<File
-				RelativePath="url.h">
-			</File>
-			<File
-				RelativePath="urldata.h">
+				RelativePath=".\urldata.h">
 			</File>
 			<File
 				RelativePath=".\warnless.h">
 			</File>
 			<File
 				RelativePath=".\wildcard.h">
+			</File>
+			<File
+				RelativePath=".\x509asn1.h">
 			</File>
 		</Filter>
 		<Filter

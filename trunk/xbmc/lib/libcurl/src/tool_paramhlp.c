@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -19,9 +19,7 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-#include "setup.h"
-
-#include <curl/curl.h>
+#include "tool_setup.h"
 
 #include "rawstr.h"
 
@@ -35,10 +33,11 @@
 #include "tool_homedir.h"
 #include "tool_msgs.h"
 #include "tool_paramhlp.h"
+#include "tool_version.h"
 
 #include "memdebug.h" /* keep this as LAST include */
 
-struct getout *new_getout(struct Configurable *config)
+struct getout *new_getout(struct OperationConfig *config)
 {
   struct getout *node = calloc(1, sizeof(struct getout));
   struct getout *last = config->url_last;
@@ -148,27 +147,87 @@ void cleanarg(char *str)
 }
 
 /*
- * Parse the string and write the integer in the given address. Return
- * non-zero on failure, zero on success.
- *
- * The string must start with a digit to be valid.
+ * Parse the string and write the long in the given address. Return PARAM_OK
+ * on success, otherwise a parameter specific error enum.
  *
  * Since this function gets called with the 'nextarg' pointer from within the
  * getparameter a lot, we must check it for NULL before accessing the str
  * data.
  */
 
-int str2num(long *val, const char *str)
+ParameterError str2num(long *val, const char *str)
 {
-  if(str && ISDIGIT(*str)) {
+  if(str) {
     char *endptr;
     long num = strtol(str, &endptr, 10);
     if((endptr != str) && (endptr == str + strlen(str))) {
       *val = num;
-      return 0;  /* Ok */
+      return PARAM_OK;  /* Ok */
     }
   }
-  return 1; /* badness */
+  return PARAM_BAD_NUMERIC; /* badness */
+}
+
+/*
+ * Parse the string and write the long in the given address. Return PARAM_OK
+ * on success, otherwise a parameter error enum. ONLY ACCEPTS POSITIVE NUMBERS!
+ *
+ * Since this function gets called with the 'nextarg' pointer from within the
+ * getparameter a lot, we must check it for NULL before accessing the str
+ * data.
+ */
+
+ParameterError str2unum(long *val, const char *str)
+{
+  ParameterError result = str2num(val, str);
+  if(result != PARAM_OK)
+    return result;
+  if(*val < 0)
+    return PARAM_NEGATIVE_NUMERIC;
+
+  return PARAM_OK;
+}
+
+/*
+ * Parse the string and write the double in the given address. Return PARAM_OK
+ * on success, otherwise a parameter specific error enum.
+ *
+ * Since this function gets called with the 'nextarg' pointer from within the
+ * getparameter a lot, we must check it for NULL before accessing the str
+ * data.
+ */
+
+ParameterError str2double(double *val, const char *str)
+{
+  if(str) {
+    char *endptr;
+    double num = strtod(str, &endptr);
+    if((endptr != str) && (endptr == str + strlen(str))) {
+      *val = num;
+      return PARAM_OK;  /* Ok */
+    }
+  }
+  return PARAM_BAD_NUMERIC; /* badness */
+}
+
+/*
+ * Parse the string and write the double in the given address. Return PARAM_OK
+ * on success, otherwise a parameter error enum. ONLY ACCEPTS POSITIVE NUMBERS!
+ *
+ * Since this function gets called with the 'nextarg' pointer from within the
+ * getparameter a lot, we must check it for NULL before accessing the str
+ * data.
+ */
+
+ParameterError str2udouble(double *val, const char *str)
+{
+  ParameterError result = str2double(val, str);
+  if(result != PARAM_OK)
+    return result;
+  if(*val < 0)
+    return PARAM_NEGATIVE_NUMERIC;
+
+  return PARAM_OK;
 }
 
 /*
@@ -182,7 +241,7 @@ int str2num(long *val, const char *str)
  * data.
  */
 
-long proto2num(struct Configurable *config, long *val, const char *str)
+long proto2num(struct OperationConfig *config, long *val, const char *str)
 {
   char *buffer;
   const char *sep = ",";
@@ -278,37 +337,53 @@ long proto2num(struct Configurable *config, long *val, const char *str)
 }
 
 /**
- * Parses the given string looking for an offset (which may be
- * a larger-than-integer value).
+ * Parses the given string looking for an offset (which may be a
+ * larger-than-integer value). The offset CANNOT be negative!
  *
  * @param val  the offset to populate
  * @param str  the buffer containing the offset
- * @return zero if successful, non-zero if failure.
+ * @return PARAM_OK if successful, a parameter specific error enum if failure.
  */
-int str2offset(curl_off_t *val, const char *str)
+ParameterError str2offset(curl_off_t *val, const char *str)
 {
+  char *endptr;
+  if(str[0] == '-')
+    /* offsets aren't negative, this indicates weird input */
+    return PARAM_NEGATIVE_NUMERIC;
+
 #if(CURL_SIZEOF_CURL_OFF_T > CURL_SIZEOF_LONG)
-  *val = curlx_strtoofft(str, NULL, 0);
+  *val = curlx_strtoofft(str, &endptr, 0);
   if((*val == CURL_OFF_T_MAX || *val == CURL_OFF_T_MIN) && (ERRNO == ERANGE))
-    return 1;
+    return PARAM_BAD_NUMERIC;
 #else
-  *val = strtol(str, NULL, 0);
+  *val = strtol(str, &endptr, 0);
   if((*val == LONG_MIN || *val == LONG_MAX) && ERRNO == ERANGE)
-    return 1;
+    return PARAM_BAD_NUMERIC;
 #endif
-  return 0;
-}
-
-ParameterError checkpasswd(const char *kind, /* for what purpose */
-                           char **userpwd)   /* pointer to allocated string */
-{
-  char *ptr;
-
-  if(!*userpwd)
+  if((endptr != str) && (endptr == str + strlen(str)))
     return PARAM_OK;
 
-  ptr = strchr(*userpwd, ':');
-  if(!ptr) {
+  return PARAM_BAD_NUMERIC;
+}
+
+static CURLcode checkpasswd(const char *kind, /* for what purpose */
+                            const size_t i,   /* operation index */
+                            const bool last,  /* TRUE if last operation */
+                            char **userpwd)   /* pointer to allocated string */
+{
+  char *psep;
+  char *osep;
+
+  if(!*userpwd)
+    return CURLE_OK;
+
+  /* Attempt to find the password separator */
+  psep = strchr(*userpwd, ':');
+
+  /* Attempt to find the options separator */
+  osep = strchr(*userpwd, ';');
+
+  if(!psep && **userpwd != ';') {
     /* no password present, prompt for one */
     char passwd[256] = "";
     char prompt[256];
@@ -316,28 +391,41 @@ ParameterError checkpasswd(const char *kind, /* for what purpose */
     size_t userlen = strlen(*userpwd);
     char *passptr;
 
+    if(osep)
+      *osep = '\0';
+
     /* build a nice-looking prompt */
-    curlx_msnprintf(prompt, sizeof(prompt),
-                    "Enter %s password for user '%s':",
-                    kind, *userpwd);
+    if(!i && last)
+      curlx_msnprintf(prompt, sizeof(prompt),
+                      "Enter %s password for user '%s':",
+                      kind, *userpwd);
+    else
+      curlx_msnprintf(prompt, sizeof(prompt),
+                      "Enter %s password for user '%s' on URL #%"
+                      CURL_FORMAT_CURL_OFF_TU ":",
+                      kind, *userpwd, i + 1);
 
     /* get password */
     getpass_r(prompt, passwd, sizeof(passwd));
     passwdlen = strlen(passwd);
+
+    if(osep)
+      *osep = ';';
 
     /* extend the allocated memory area to fit the password too */
     passptr = realloc(*userpwd,
                       passwdlen + 1 + /* an extra for the colon */
                       userlen + 1);   /* an extra for the zero */
     if(!passptr)
-      return PARAM_NO_MEM;
+      return CURLE_OUT_OF_MEMORY;
 
     /* append the password separated with a colon */
     passptr[userlen] = ':';
     memcpy(&passptr[userlen+1], passwd, passwdlen+1);
     *userpwd = passptr;
   }
-  return PARAM_OK;
+
+  return CURLE_OK;
 }
 
 ParameterError add2list(struct curl_slist **list, const char *ptr)
@@ -351,7 +439,7 @@ ParameterError add2list(struct curl_slist **list, const char *ptr)
   return PARAM_OK;
 }
 
-int ftpfilemethod(struct Configurable *config, const char *str)
+int ftpfilemethod(struct OperationConfig *config, const char *str)
 {
   if(curlx_raw_equal("singlecwd", str))
     return CURLFTPMETHOD_SINGLECWD;
@@ -363,7 +451,7 @@ int ftpfilemethod(struct Configurable *config, const char *str)
   return CURLFTPMETHOD_MULTICWD;
 }
 
-int ftpcccmethod(struct Configurable *config, const char *str)
+int ftpcccmethod(struct OperationConfig *config, const char *str)
 {
   if(curlx_raw_equal("passive", str))
     return CURLFTPSSL_CCC_PASSIVE;
@@ -373,7 +461,7 @@ int ftpcccmethod(struct Configurable *config, const char *str)
   return CURLFTPSSL_CCC_PASSIVE;
 }
 
-long delegation(struct Configurable *config, char *str)
+long delegation(struct OperationConfig *config, char *str)
 {
   if(curlx_raw_equal("none", str))
     return CURLGSSAPI_DELEGATION_NONE;
@@ -385,3 +473,41 @@ long delegation(struct Configurable *config, char *str)
   return CURLGSSAPI_DELEGATION_NONE;
 }
 
+/*
+ * my_useragent: returns allocated string with default user agent
+ */
+static char *my_useragent(void)
+{
+  return strdup(CURL_NAME "/" CURL_VERSION);
+}
+
+CURLcode get_args(struct OperationConfig *config, const size_t i)
+{
+  CURLcode result = CURLE_OK;
+  bool last = (config->next ? FALSE : TRUE);
+
+  /* Check we have a password for the given host user */
+  if(config->userpwd && !config->xoauth2_bearer) {
+    result = checkpasswd("host", i, last, &config->userpwd);
+    if(result)
+      return result;
+  }
+
+  /* Check we have a password for the given proxy user */
+  if(config->proxyuserpwd) {
+    result = checkpasswd("proxy", i, last, &config->proxyuserpwd);
+    if(result)
+      return result;
+  }
+
+  /* Check we have a user agent */
+  if(!config->useragent) {
+    config->useragent = my_useragent();
+    if(!config->useragent) {
+      helpf(config->global->errors, "out of memory\n");
+      result = CURLE_OUT_OF_MEMORY;
+    }
+  }
+
+  return result;
+}

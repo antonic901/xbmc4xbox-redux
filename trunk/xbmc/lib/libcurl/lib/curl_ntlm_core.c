@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #if defined(USE_NTLM) && !defined(USE_WINDOWS_SSPI)
 
@@ -63,6 +63,11 @@
 #    define DESKEY(x) &x
 #  endif
 
+#elif defined(USE_GNUTLS_NETTLE)
+
+#  include <nettle/des.h>
+#  include <nettle/md4.h>
+
 #elif defined(USE_GNUTLS)
 
 #  include <gcrypt.h>
@@ -77,6 +82,11 @@
 #  include "curl_md4.h"
 #  define MD5_DIGEST_LENGTH MD5_LENGTH
 
+#elif defined(USE_DARWINSSL)
+
+#  include <CommonCrypto/CommonCryptor.h>
+#  include <CommonCrypto/CommonDigest.h>
+
 #else
 #  error "Can't compile NTLM support without a crypto library."
 #endif
@@ -86,12 +96,19 @@
 #include "rawstr.h"
 #include "curl_memory.h"
 #include "curl_ntlm_core.h"
+#include "curl_md5.h"
+#include "curl_hmac.h"
+#include "warnless.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
 /* The last #include file should be: */
 #include "memdebug.h"
+
+#define NTLM_HMAC_MD5_LEN     (16)
+#define NTLMv2_BLOB_SIGNATURE "\x01\x01\x00\x00"
+#define NTLMv2_BLOB_LEN       (44 -16 + ntlm->target_info_len + 4)
 
 #ifdef USE_SSLEAY
 /*
@@ -133,7 +150,17 @@ static void extend_key_56_to_64(const unsigned char *key_56, char *key)
   key[7] = (unsigned char) ((key_56[6] << 1) & 0xFF);
 }
 
-#if defined(USE_GNUTLS)
+#if defined(USE_GNUTLS_NETTLE)
+
+static void setup_des_key(const unsigned char *key_56,
+                          struct des_ctx *des)
+{
+  char key[8];
+  extend_key_56_to_64(key_56, key);
+  des_set_key(des, (const uint8_t*)key);
+}
+
+#elif defined(USE_GNUTLS)
 
 /*
  * Turns a 56 bit key into the 64 bit, odd parity key and sets the key.
@@ -206,7 +233,23 @@ fail:
   return rv;
 }
 
-#endif /* defined(USE_NSS) */
+#elif defined(USE_DARWINSSL)
+
+static bool encrypt_des(const unsigned char *in, unsigned char *out,
+                        const unsigned char *key_56)
+{
+  char key[8];
+  size_t out_len;
+  CCCryptorStatus err;
+
+  extend_key_56_to_64(key_56, key);
+  err = CCCrypt(kCCEncrypt, kCCAlgorithmDES, kCCOptionECBMode, key,
+                kCCKeySizeDES, NULL, in, 8 /* inbuflen */, out,
+                8 /* outbuflen */, &out_len);
+  return err == kCCSuccess;
+}
+
+#endif /* defined(USE_DARWINSSL) */
 
 #endif /* defined(USE_SSLEAY) */
 
@@ -233,6 +276,14 @@ void Curl_ntlm_core_lm_resp(const unsigned char *keys,
   setup_des_key(keys + 14, DESKEY(ks));
   DES_ecb_encrypt((DES_cblock*) plaintext, (DES_cblock*) (results + 16),
                   DESKEY(ks), DES_ENCRYPT);
+#elif defined(USE_GNUTLS_NETTLE)
+  struct des_ctx des;
+  setup_des_key(keys, &des);
+  des_encrypt(&des, 8, results, plaintext);
+  setup_des_key(keys + 7, &des);
+  des_encrypt(&des, 8, results + 8, plaintext);
+  setup_des_key(keys + 14, &des);
+  des_encrypt(&des, 8, results + 16, plaintext);
 #elif defined(USE_GNUTLS)
   gcry_cipher_hd_t des;
 
@@ -250,7 +301,7 @@ void Curl_ntlm_core_lm_resp(const unsigned char *keys,
   setup_des_key(keys + 14, &des);
   gcry_cipher_encrypt(des, results + 16, 8, plaintext, 8);
   gcry_cipher_close(des);
-#elif defined(USE_NSS)
+#elif defined(USE_NSS) || defined(USE_DARWINSSL)
   encrypt_des(plaintext, results, keys);
   encrypt_des(plaintext, results + 8, keys + 7);
   encrypt_des(plaintext, results + 16, keys + 14);
@@ -295,6 +346,12 @@ void Curl_ntlm_core_mk_lm_hash(struct SessionHandle *data,
     setup_des_key(pw + 7, DESKEY(ks));
     DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)(lmbuffer + 8),
                     DESKEY(ks), DES_ENCRYPT);
+#elif defined(USE_GNUTLS_NETTLE)
+    struct des_ctx des;
+    setup_des_key(pw, &des);
+    des_encrypt(&des, 8, lmbuffer, magic);
+    setup_des_key(pw + 7, &des);
+    des_encrypt(&des, 8, lmbuffer + 8, magic);
 #elif defined(USE_GNUTLS)
     gcry_cipher_hd_t des;
 
@@ -307,7 +364,7 @@ void Curl_ntlm_core_mk_lm_hash(struct SessionHandle *data,
     setup_des_key(pw + 7, &des);
     gcry_cipher_encrypt(des, lmbuffer + 8, 8, magic, 8);
     gcry_cipher_close(des);
-#elif defined(USE_NSS)
+#elif defined(USE_NSS) || defined(USE_DARWINSSL)
     encrypt_des(magic, lmbuffer, pw);
     encrypt_des(magic, lmbuffer + 8, pw + 7);
 #endif
@@ -325,6 +382,34 @@ static void ascii_to_unicode_le(unsigned char *dest, const char *src,
     dest[2 * i] = (unsigned char)src[i];
     dest[2 * i + 1] = '\0';
   }
+}
+
+static void ascii_uppercase_to_unicode_le(unsigned char *dest,
+                                          const char *src, size_t srclen)
+{
+  size_t i;
+  for(i = 0; i < srclen; i++) {
+    dest[2 * i] = (unsigned char)(toupper(src[i]));
+    dest[2 * i + 1] = '\0';
+  }
+}
+
+static void write32_le(const int value, unsigned char *buffer)
+{
+  buffer[0] = (char)(value & 0x000000FF);
+  buffer[1] = (char)((value & 0x0000FF00) >> 8);
+  buffer[2] = (char)((value & 0x00FF0000) >> 16);
+  buffer[3] = (char)((value & 0xFF000000) >> 24);
+}
+
+#if defined(HAVE_LONGLONG)
+static void write64_le(const long long value, unsigned char *buffer)
+#else
+static void write64_le(const __int64 value, unsigned char *buffer)
+#endif
+{
+  write32_le((int)value, buffer);
+  write32_le((int)(value >> 32), buffer + 4);
 }
 
 /*
@@ -357,6 +442,11 @@ CURLcode Curl_ntlm_core_mk_nt_hash(struct SessionHandle *data,
     MD4_Init(&MD4pw);
     MD4_Update(&MD4pw, pw, 2 * len);
     MD4_Final(ntbuffer, &MD4pw);
+#elif defined(USE_GNUTLS_NETTLE)
+    struct md4_ctx MD4pw;
+    md4_init(&MD4pw);
+    md4_update(&MD4pw, (unsigned int)(2 * len), pw);
+    md4_digest(&MD4pw, MD4_DIGEST_SIZE, ntbuffer);
 #elif defined(USE_GNUTLS)
     gcry_md_hd_t MD4pw;
     gcry_md_open(&MD4pw, GCRY_MD_MD4, 0);
@@ -365,6 +455,8 @@ CURLcode Curl_ntlm_core_mk_nt_hash(struct SessionHandle *data,
     gcry_md_close(MD4pw);
 #elif defined(USE_NSS)
     Curl_md4it(ntbuffer, pw, 2 * len);
+#elif defined(USE_DARWINSSL)
+    (void)CC_MD4(pw, (CC_LONG)(2 * len), ntbuffer);
 #endif
 
     memset(ntbuffer + 16, 0, 21 - 16);
@@ -374,6 +466,186 @@ CURLcode Curl_ntlm_core_mk_nt_hash(struct SessionHandle *data,
 
   return CURLE_OK;
 }
+
+/* This returns the HMAC MD5 digest */
+CURLcode Curl_hmac_md5(const unsigned char *key, unsigned int keylen,
+                       const unsigned char *data, unsigned int datalen,
+                       unsigned char *output)
+{
+  HMAC_context *ctxt = Curl_HMAC_init(Curl_HMAC_MD5, key, keylen);
+
+  if(!ctxt)
+    return CURLE_OUT_OF_MEMORY;
+
+  /* Update the digest with the given challenge */
+  Curl_HMAC_update(ctxt, data, datalen);
+
+  /* Finalise the digest */
+  Curl_HMAC_final(ctxt, output);
+
+  return CURLE_OK;
+}
+
+/* This creates the NTLMv2 hash by using NTLM hash as the key and Unicode
+ * (uppercase UserName + Domain) as the data
+ */
+CURLcode Curl_ntlm_core_mk_ntlmv2_hash(const char *user, size_t userlen,
+                                       const char *domain, size_t domlen,
+                                       unsigned char *ntlmhash,
+                                       unsigned char *ntlmv2hash)
+{
+  /* Unicode representation */
+  size_t identity_len = (userlen + domlen) * 2;
+  unsigned char *identity = malloc(identity_len);
+  CURLcode res = CURLE_OK;
+
+  if(!identity)
+    return CURLE_OUT_OF_MEMORY;
+
+  ascii_uppercase_to_unicode_le(identity, user, userlen);
+  ascii_to_unicode_le(identity + (userlen << 1), domain, domlen);
+
+  res = Curl_hmac_md5(ntlmhash, 16, identity, curlx_uztoui(identity_len),
+                      ntlmv2hash);
+
+  Curl_safefree(identity);
+
+  return res;
+}
+
+/*
+ * Curl_ntlm_core_mk_ntlmv2_resp()
+ *
+ * This creates the NTLMv2 response as set in the ntlm type-3 message.
+ *
+ * Parameters:
+ *
+ * ntlmv2hash       [in] - The ntlmv2 hash (16 bytes)
+ * challenge_client [in] - The client nonce (8 bytes)
+ * ntlm             [in] - The ntlm data struct being used to read TargetInfo
+                           and Server challenge received in the type-2 message
+ * ntresp          [out] - The address where a pointer to newly allocated
+ *                         memory holding the NTLMv2 response.
+ * ntresp_len      [out] - The length of the output message.
+ *
+ * Returns CURLE_OK on success.
+ */
+CURLcode Curl_ntlm_core_mk_ntlmv2_resp(unsigned char *ntlmv2hash,
+                                       unsigned char *challenge_client,
+                                       struct ntlmdata *ntlm,
+                                       unsigned char **ntresp,
+                                       unsigned int *ntresp_len)
+{
+/* NTLMv2 response structure :
+------------------------------------------------------------------------------
+0     HMAC MD5         16 bytes
+------BLOB--------------------------------------------------------------------
+16    Signature        0x01010000
+20    Reserved         long (0x00000000)
+24    Timestamp        LE, 64-bit signed value representing the number of
+                       tenths of a microsecond since January 1, 1601.
+32    Client Nonce     8 bytes
+40    Unknown          4 bytes
+44    Target Info      N bytes (from the type-2 message)
+44+N  Unknown          4 bytes
+------------------------------------------------------------------------------
+*/
+
+  unsigned int len = 0;
+  unsigned char *ptr = NULL;
+  unsigned char hmac_output[NTLM_HMAC_MD5_LEN];
+#if defined(HAVE_LONGLONG)
+  long long tw;
+#else
+  __int64 tw;
+#endif
+  CURLcode res = CURLE_OK;
+
+  /* Calculate the timestamp */
+#ifdef DEBUGBUILD
+  char *force_timestamp = getenv("CURL_FORCETIME");
+  if(force_timestamp)
+    tw = 11644473600ULL * 10000000ULL;
+  else
+#endif
+  tw = ((long long)time(NULL) + 11644473600ULL) * 10000000ULL;
+
+  /* Calculate the response len */
+  len = NTLM_HMAC_MD5_LEN + NTLMv2_BLOB_LEN;
+
+  /* Allocate the response */
+  ptr = malloc(len);
+  if(!ptr)
+    return CURLE_OUT_OF_MEMORY;
+
+  memset(ptr, 0, len);
+
+  /* Create the BLOB structure */
+  snprintf((char *)ptr + NTLM_HMAC_MD5_LEN, NTLMv2_BLOB_LEN,
+           NTLMv2_BLOB_SIGNATURE
+           "%c%c%c%c",  /* Reserved = 0 */
+           0, 0, 0, 0);
+
+  write64_le(tw, ptr + 24);
+  memcpy(ptr + 32, challenge_client, 8);
+  memcpy(ptr + 44, ntlm->target_info, ntlm->target_info_len);
+
+  /* Concatenate the Type 2 challenge with the BLOB and do HMAC MD5 */
+  memcpy(ptr + 8, &ntlm->nonce[0], 8);
+  res = Curl_hmac_md5(ntlmv2hash, NTLM_HMAC_MD5_LEN, ptr + 8,
+                      NTLMv2_BLOB_LEN + 8, hmac_output);
+  if(res) {
+    Curl_safefree(ptr);
+    return res;
+  }
+
+  /* Concatenate the HMAC MD5 output  with the BLOB */
+  memcpy(ptr, hmac_output, NTLM_HMAC_MD5_LEN);
+
+  /* Return the response */
+  *ntresp = ptr;
+  *ntresp_len = len;
+
+  return res;
+}
+
+/*
+ * Curl_ntlm_core_mk_lmv2_resp()
+ *
+ * This creates the LMv2 response as used in the ntlm type-3 message.
+ *
+ * Parameters:
+ *
+ * ntlmv2hash        [in] - The ntlmv2 hash (16 bytes)
+ * challenge_client  [in] - The client nonce (8 bytes)
+ * challenge_client  [in] - The server challenge (8 bytes)
+ * lmresp           [out] - The LMv2 response (24 bytes)
+ *
+ * Returns CURLE_OK on success.
+ */
+CURLcode  Curl_ntlm_core_mk_lmv2_resp(unsigned char *ntlmv2hash,
+                                      unsigned char *challenge_client,
+                                      unsigned char *challenge_server,
+                                      unsigned char *lmresp)
+{
+  unsigned char data[16];
+  unsigned char hmac_output[16];
+  CURLcode res = CURLE_OK;
+
+  memcpy(&data[0], challenge_server, 8);
+  memcpy(&data[8], challenge_client, 8);
+
+  res = Curl_hmac_md5(ntlmv2hash, 16, &data[0], 16, hmac_output);
+  if(res)
+    return res;
+
+  /* Concatenate the HMAC MD5 output  with the client nonce */
+  memcpy(lmresp, hmac_output, 16);
+  memcpy(lmresp+16, challenge_client, 8);
+
+  return res;
+}
+
 #endif /* USE_NTRESPONSES */
 
 #endif /* USE_NTLM && !USE_WINDOWS_SSPI */

@@ -1,9 +1,9 @@
+<testcase>
 #
 # For this test the server rejects the EPRT command,
 # code in lib591 makes use of curl_multi_timeout()
 # and server does not establish data connection.
 #
-<testcase>
 <info>
 <keywords>
 FTP
@@ -63,8 +63,9 @@ TYPE I
 STOR 591
 QUIT
 </protocol>
+# CURLE_FTP_ACCEPT_FAILED = 10
 <errorcode>
-28
+10
 </errorcode>
 <upload>
 </upload>

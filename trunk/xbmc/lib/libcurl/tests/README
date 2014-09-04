@@ -39,6 +39,7 @@ The cURL Test Suite
  1.1 Requires to run
 
   perl (and a unix-style shell)
+  python (and a unix-style shell)
   diff (when a test fails, a diff is shown)
   stunnel (for HTTPS and FTPS tests)
   OpenSSH or SunSSH (for SCP, SFTP and SOCKS4/5 tests)
@@ -98,6 +99,21 @@ The cURL Test Suite
   3 to 9. Any test numbers starting with ! are disabled, as are any test
   numbers found in the file data/DISABLED (one per line).
 
+  When -s is not present, each successful test will display on one line the
+  test number and description and on the next line a set of flags, the test
+  result, current test sequence, total number of tests to be run and an
+  estimated amount of time to complete the test run. The flags consist of
+  these letters describing what is checked in this test:
+
+    s stdout
+    d data
+    u upload
+    p protocol
+    o output
+    e exit code
+    m memory
+    v valgrind
+
  1.5 Shell startup scripts
 
   Tests which use the ssh test server, SCP/SFTP/SOCKS tests, might be badly
@@ -128,7 +144,9 @@ The cURL Test Suite
   runtests.pl's -t option will enable torture testing mode, which runs each
   test many times and makes each different memory allocation fail on each
   successive run.  This tests the out of memory error handling code to ensure
-  that memory leaks do not occur even in those situations.
+  that memory leaks do not occur even in those situations. It can help to
+  compile curl with CPPFLAGS=-DMEMDEBUG_LOG_SYNC when using this option, to
+  ensure that the memory log file is properly written even if curl crashes.
 
  1.7 Debug
 
@@ -192,7 +210,9 @@ The cURL Test Suite
      800 - 899   POP3, IMAP, SMTP
      1000 - 1299 miscellaneous*
      1300 - 1399 unit tests*
-     1400 - 1999 miscellaneous*
+     1400 - 1499 miscellaneous*
+     1500 - 1599 libcurl source code tests, not using the curl command tool
+                 (same as 5xx)
      2000 - x    multiple sequential protocols per test case*
 
   Since 30-apr-2003, there's nothing in the system that requires us to keep

@@ -1,4 +1,11 @@
 <testcase>
+<info>
+<keywords>
+FTP
+EPRT
+</keywords>
+</info>
+
 # Server-side
 <reply>
 <data>

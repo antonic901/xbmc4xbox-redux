@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -97,7 +97,7 @@ int test(char *URL)
   test_setopt(curl, CURLOPT_READFUNCTION, read_callback);
 
   /* pointer to pass to our read function */
-  test_setopt(curl, CURLOPT_INFILE, &pooh);
+  test_setopt(curl, CURLOPT_READDATA, &pooh);
 
   /* get verbose debug output please */
   test_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -109,7 +109,7 @@ int test(char *URL)
   test_setopt(curl, CURLOPT_HTTPHEADER, slist);
 
 #ifdef LIB565
-  test_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+  test_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
   test_setopt(curl, CURLOPT_USERPWD, "foo:bar");
 #endif
 

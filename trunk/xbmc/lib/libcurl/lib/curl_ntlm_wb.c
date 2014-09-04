@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #if defined(USE_NTLM) && defined(NTLM_WB_ENABLED)
 
@@ -33,9 +33,6 @@
 
 #define DEBUG_ME 0
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -46,6 +43,7 @@
 #include "urldata.h"
 #include "sendf.h"
 #include "select.h"
+#include "curl_ntlm_msgs.h"
 #include "curl_ntlm_wb.h"
 #include "url.h"
 #include "strerror.h"
@@ -230,9 +228,10 @@ static CURLcode ntlm_wb_response(struct connectdata *conn,
                                  const char *input, curlntlm state)
 {
   ssize_t size;
-  char buf[200]; /* enough, type 1, 3 message length is less then 200 */
+  char buf[NTLM_BUFSIZE];
   char *tmpbuf = buf;
-  size_t len_in = strlen(input), len_out = sizeof(buf);
+  size_t len_in = strlen(input);
+  size_t len_out = sizeof(buf);
 
   while(len_in > 0) {
     ssize_t written = swrite(conn->ntlm_auth_hlpr_socket, input, len_in);
@@ -359,7 +358,7 @@ CURLcode Curl_output_ntlm_wb(struct connectdata *conn,
     conn->response_header = NULL;
     break;
   case NTLMSTATE_TYPE2:
-    input = aprintf("TT %s", conn->challenge_header);
+    input = aprintf("TT %s\n", conn->challenge_header);
     if(!input)
       return CURLE_OUT_OF_MEMORY;
     res = ntlm_wb_response(conn, input, ntlm->state);

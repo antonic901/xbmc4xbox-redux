@@ -56,6 +56,9 @@ ok
 <server>
 http
 </server>
+<features>
+crypto
+</features>
 # tool is what to use instead of 'curl'
 <tool>
 lib565
@@ -78,7 +81,6 @@ Host: %HOSTIP:%HTTPPORT
 Accept: */*
 Transfer-Encoding: chunked
 Content-Type: application/x-www-form-urlencoded
-
 
 0
 

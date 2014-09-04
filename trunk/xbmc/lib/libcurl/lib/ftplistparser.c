@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -35,18 +35,20 @@
  * 01-29-97 11:32PM <DIR> prog
  */
 
-#include "setup.h"
+#include "curl_setup.h"
 
-#include "ftplistparser.h"
-#include "curl_fnmatch.h"
+#ifndef CURL_DISABLE_FTP
+
+#include <curl/curl.h>
 
 #include "urldata.h"
-#include "ftp.h"
 #include "fileinfo.h"
 #include "llist.h"
 #include "strtoofft.h"
 #include "rawstr.h"
 #include "ftp.h"
+#include "ftplistparser.h"
+#include "curl_fnmatch.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -447,8 +449,11 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
             finfo->b_data[parser->item_length - 1] = 0;
             if(strncmp("total ", finfo->b_data, 6) == 0) {
               char *endptr = finfo->b_data+6;
-              /* here we can deal with directory size */
+              /* here we can deal with directory size, pass the leading white
+                 spaces and then the digits */
               while(ISSPACE(*endptr))
+                endptr++;
+              while(ISDIGIT(*endptr))
                 endptr++;
               if(*endptr != 0) {
                 PL_ERROR(conn, CURLE_FTP_BAD_FILE_LIST);
@@ -1044,3 +1049,5 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
 
   return bufflen;
 }
+
+#endif /* CURL_DISABLE_FTP */

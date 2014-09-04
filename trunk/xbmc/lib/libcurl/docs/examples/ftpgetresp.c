@@ -58,8 +58,12 @@ int main(void)
     /* If you intend to use this on windows with a libcurl DLL, you must use
        CURLOPT_WRITEFUNCTION as well */
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, write_response);
-    curl_easy_setopt(curl, CURLOPT_WRITEHEADER, respfile);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, respfile);
     res = curl_easy_perform(curl);
+    /* Check for errors */
+    if(res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
 
     /* always cleanup */
     curl_easy_cleanup(curl);

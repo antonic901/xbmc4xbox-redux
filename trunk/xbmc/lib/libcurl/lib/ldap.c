@@ -5,7 +5,7 @@
  *                | (__| |_| |  _ <| |___
  *                 \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #if !defined(CURL_DISABLE_LDAP) && !defined(USE_OPENLDAP)
 
@@ -54,10 +54,6 @@
 # endif /* HAVE_LDAP_SSL && HAVE_LDAP_SSL_H */
 #endif
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
 #include "urldata.h"
 #include <curl/curl.h>
 #include "sendf.h"
@@ -70,6 +66,7 @@
 #include "curl_memory.h"
 #include "curl_base64.h"
 #include "rawstr.h"
+#include "connect.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -81,13 +78,16 @@
 /* Use our own implementation. */
 
 typedef struct {
-    char   *lud_host;
-    int     lud_port;
-    char   *lud_dn;
-    char  **lud_attrs;
-    int     lud_scope;
-    char   *lud_filter;
-    char  **lud_exts;
+  char   *lud_host;
+  int     lud_port;
+  char   *lud_dn;
+  char  **lud_attrs;
+  int     lud_scope;
+  char   *lud_filter;
+  char  **lud_exts;
+  size_t    lud_attrs_dups; /* how many were dup'ed, this field is not in the
+                               "real" struct so can only be used in code
+                               without HAVE_LDAP_URL_PARSE defined */
 } CURL_LDAPURLDesc;
 
 #undef LDAPURLDesc
@@ -160,7 +160,7 @@ const struct Curl_handler Curl_handler_ldaps = {
   ZERO_NULL,                            /* disconnect */
   ZERO_NULL,                            /* readwrite */
   PORT_LDAPS,                           /* defport */
-  CURLPROTO_LDAP | CURLPROTO_LDAPS,     /* protocol */
+  CURLPROTO_LDAPS,                      /* protocol */
   PROTOPT_SSL                           /* flags */
 };
 #endif
@@ -264,7 +264,7 @@ static CURLcode Curl_ldap(struct connectdata *conn, bool *done)
     }
     server = ldapssl_init(conn->host.name, (int)conn->port, 1);
     if(server == NULL) {
-      failf(data, "LDAP local: Cannot connect to %s:%hu",
+      failf(data, "LDAP local: Cannot connect to %s:%ld",
               conn->host.name, conn->port);
       status = CURLE_COULDNT_CONNECT;
       goto quit;
@@ -305,7 +305,7 @@ static CURLcode Curl_ldap(struct connectdata *conn, bool *done)
     }
     server = ldap_init(conn->host.name, (int)conn->port);
     if(server == NULL) {
-      failf(data, "LDAP local: Cannot connect to %s:%hu",
+      failf(data, "LDAP local: Cannot connect to %s:%ld",
               conn->host.name, conn->port);
       status = CURLE_COULDNT_CONNECT;
       goto quit;
@@ -341,7 +341,7 @@ static CURLcode Curl_ldap(struct connectdata *conn, bool *done)
   else {
     server = ldap_init(conn->host.name, (int)conn->port);
     if(server == NULL) {
-      failf(data, "LDAP local: Cannot connect to %s:%hu",
+      failf(data, "LDAP local: Cannot connect to %s:%ld",
               conn->host.name, conn->port);
       status = CURLE_COULDNT_CONNECT;
       goto quit;
@@ -467,7 +467,7 @@ quit:
 
   /* no data to transfer */
   Curl_setup_transfer(conn, -1, -1, FALSE, NULL, -1, NULL);
-  conn->bits.close = TRUE;
+  connclose(conn, "LDAP connection always disable re-use");
 
   return status;
 }
@@ -543,19 +543,15 @@ static bool unescape_elements (void *data, LDAPURLDesc *ludp)
   if(ludp->lud_filter) {
     ludp->lud_filter = curl_easy_unescape(data, ludp->lud_filter, 0, NULL);
     if(!ludp->lud_filter)
-       return (FALSE);
+       return FALSE;
   }
 
   for(i = 0; ludp->lud_attrs && ludp->lud_attrs[i]; i++) {
-    ludp->lud_attrs[i] = curl_easy_unescape(data, ludp->lud_attrs[i], 0, NULL);
+    ludp->lud_attrs[i] = curl_easy_unescape(data, ludp->lud_attrs[i],
+                                            0, NULL);
     if(!ludp->lud_attrs[i])
-      return (FALSE);
-  }
-
-  for(i = 0; ludp->lud_exts && ludp->lud_exts[i]; i++) {
-    ludp->lud_exts[i] = curl_easy_unescape(data, ludp->lud_exts[i], 0, NULL);
-    if(!ludp->lud_exts[i])
-      return (FALSE);
+      return FALSE;
+    ludp->lud_attrs_dups++;
   }
 
   if(ludp->lud_dn) {
@@ -641,8 +637,9 @@ static int _ldap_url_parse2 (const struct connectdata *conn, LDAPURLDesc *ludp)
 
   if(*p && *p != '?') {
     ludp->lud_scope = str2scope(p);
-    if(ludp->lud_scope == -1)
+    if(ludp->lud_scope == -1) {
       return LDAP_INVALID_SYNTAX;
+    }
     LDAP_TRACE (("scope %d\n", ludp->lud_scope));
   }
 
@@ -655,24 +652,12 @@ static int _ldap_url_parse2 (const struct connectdata *conn, LDAPURLDesc *ludp)
   q = strchr(p, '?');
   if(q)
     *q++ = '\0';
-  if(!*p)
+  if(!*p) {
     return LDAP_INVALID_SYNTAX;
+  }
 
   ludp->lud_filter = p;
   LDAP_TRACE (("filter '%s'\n", ludp->lud_filter));
-
-  p = q;
-  if(!p)
-    goto success;
-
-  /* parse extensions
-   */
-  ludp->lud_exts = split_str(p);
-  if(!ludp->lud_exts)
-    return LDAP_NO_MEMORY;
-
-  for(i = 0; ludp->lud_exts[i]; i++)
-    LDAP_TRACE (("exts[%d] '%s'\n", i, ludp->lud_exts[i]));
 
   success:
   if(!unescape_elements(conn->data, ludp))
@@ -701,7 +686,7 @@ static int _ldap_url_parse (const struct connectdata *conn,
 
 static void _ldap_free_urldesc (LDAPURLDesc *ludp)
 {
-  int i;
+  size_t i;
 
   if(!ludp)
     return;
@@ -713,16 +698,11 @@ static void _ldap_free_urldesc (LDAPURLDesc *ludp)
     free(ludp->lud_filter);
 
   if(ludp->lud_attrs) {
-    for(i = 0; ludp->lud_attrs[i]; i++)
+    for(i = 0; i < ludp->lud_attrs_dups; i++)
       free(ludp->lud_attrs[i]);
     free(ludp->lud_attrs);
   }
 
-  if(ludp->lud_exts) {
-    for(i = 0; ludp->lud_exts[i]; i++)
-      free(ludp->lud_exts[i]);
-    free(ludp->lud_exts);
-  }
   free (ludp);
 }
 #endif  /* !HAVE_LDAP_URL_PARSE */

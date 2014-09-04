@@ -1,4 +1,12 @@
 <testcase>
+<info>
+<keywords>
+HTTP
+HTTP POST
+HTTP NTLM auth
+</keywords>
+</info>
+
 # Server-side
 <reply>
 # the first request has NTLM type-1 included, and then the 1001 is returned
@@ -40,6 +48,7 @@ content for you
 <client>
 <features>
 NTLM
+!SSPI
 </features>
 <server>
 http
