@@ -1762,6 +1762,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\HTTPDirectory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\HTTPFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\HTTPFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\IDirectory.cpp">
 				</File>
 				<File
