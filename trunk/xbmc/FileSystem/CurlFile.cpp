@@ -642,7 +642,10 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
   else if( strProtocol.Equals("http")
        ||  strProtocol.Equals("https"))
   {
-    if (g_guiSettings.GetBool("network.usehttpproxy") && m_proxy.IsEmpty())
+    if (g_guiSettings.GetBool("network.usehttpproxy")
+        && !g_guiSettings.GetString("network.httpproxyserver").empty()
+        && !g_guiSettings.GetString("network.httpproxyport").empty()
+        && m_proxy.IsEmpty())
     {
       m_proxy = "http://" + g_guiSettings.GetString("network.httpproxyserver");
       m_proxy += ":" + g_guiSettings.GetString("network.httpproxyport");
@@ -1060,10 +1063,10 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
 
   SetCommonOptions(m_state);
   SetRequestHeaders(m_state);
-  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 5);
+  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 10);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_NOBODY, 1);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_WRITEDATA, NULL); /* will cause write failure*/
-  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME , 1); 
+  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME, 1); 
 
   if(url2.GetProtocol() == "ftp")
   {
@@ -1090,10 +1093,10 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
     /* somehow curl doesn't reset CURLOPT_NOBODY properly so reset everything */
     SetCommonOptions(m_state);
     SetRequestHeaders(m_state);
-    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 5);
+    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, 10);
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_RANGE, "0-0");
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_WRITEDATA, NULL); /* will cause write failure*/
-    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME , 1); 
+    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME, 1); 
     result = g_curlInterface.easy_perform(m_state->m_easyHandle);
   }
 
