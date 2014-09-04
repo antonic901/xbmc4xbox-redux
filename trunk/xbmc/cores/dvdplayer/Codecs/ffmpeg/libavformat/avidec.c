@@ -327,6 +327,7 @@ static void avi_read_nikon(AVFormatContext *s, uint64_t end)
                 uint16_t size = avio_rl16(s->pb);
                 const char *name = NULL;
                 char buffer[64] = {0};
+                size = FFMIN(size, tag_end - avio_tell(s->pb));
                 size -= avio_read(s->pb, buffer,
                                    FFMIN(size, sizeof(buffer)-1));
                 switch (tag) {
@@ -1001,10 +1002,12 @@ start_sync:
                 }
             }
 
-
-            if(   (st->discard >= AVDISCARD_DEFAULT && size==0)
-               /*|| (st->discard >= AVDISCARD_NONKEY && !(pkt->flags & AV_PKT_FLAG_KEY))*/ //FIXME needs a little reordering
-               || st->discard >= AVDISCARD_ALL){
+            if (!avi->dv_demux &&
+                ((st->discard >= AVDISCARD_DEFAULT && size == 0) /* ||
+                 // FIXME: needs a little reordering
+                 (st->discard >= AVDISCARD_NONKEY &&
+                 !(pkt->flags & AV_PKT_FLAG_KEY)) */
+                || st->discard >= AVDISCARD_ALL)) {
                 if (!exit_early) {
                     ast->frame_offset += get_duration(ast, size);
                     avio_skip(pb, size);
@@ -1195,7 +1198,7 @@ resync:
                 int index;
                 av_assert0(st->index_entries);
 
-                index= av_index_search_timestamp(st, ast->frame_offset, 0);
+                index= av_index_search_timestamp(st, ast->frame_offset, AVSEEK_FLAG_ANY);
                 e= &st->index_entries[index];
 
                 if(index >= 0 && e->timestamp == ast->frame_offset){
@@ -1517,7 +1520,7 @@ static int avi_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
             continue;
 
 //        av_assert1(st2->codec->block_align);
-        av_assert0((int64_t)st2->time_base.num*ast2->rate == (int64_t)st2->time_base.den*ast2->scale);
+        av_assert0(fabs(av_q2d(st2->time_base) - ast2->scale / (double)ast2->rate) < av_q2d(st2->time_base) * 0.00000001);
         index = av_index_search_timestamp(
                 st2,
                 av_rescale_q(timestamp, st->time_base, st2->time_base) * FFMAX(ast2->sample_size, 1),

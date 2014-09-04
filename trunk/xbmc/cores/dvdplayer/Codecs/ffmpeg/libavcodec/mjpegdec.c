@@ -329,7 +329,7 @@ int ff_mjpeg_decode_sof(MJpegDecodeContext *s)
         s->first_picture = 0;
     }
 
-    if (s->interlaced && (s->bottom_field == !s->interlace_polarity)) {
+    if (s->got_picture && s->interlaced && (s->bottom_field == !s->interlace_polarity)) {
         if (s->progressive) {
             av_log_ask_for_sample(s->avctx, "progressively coded interlaced pictures not supported\n");
             return AVERROR_INVALIDDATA;
@@ -1144,7 +1144,7 @@ static int mjpeg_decode_scan_progressive_ac(MJpegDecodeContext *s, int ss,
     }
 
     if (!Al) {
-        s->coefs_finished[c] |= (1LL << (se + 1)) - (1LL << ss);
+        s->coefs_finished[c] |= (2LL << se) - (1LL << ss);
         last_scan = !~s->coefs_finished[c];
     }
 
@@ -1596,8 +1596,6 @@ int ff_mjpeg_find_marker(MJpegDecodeContext *s,
         int t = 0, b = 0;
         PutBitContext pb;
 
-        s->cur_scan++;
-
         /* find marker */
         while (src + t < buf_end) {
             uint8_t x = src[t++];
@@ -1661,7 +1659,7 @@ int ff_mjpeg_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
                                           &unescaped_buf_size);
         /* EOF */
         if (start_code < 0) {
-            goto the_end;
+            break;
         } else if (unescaped_buf_size > (1U<<28)) {
             av_log(avctx, AV_LOG_ERROR, "MJPEG packet 0x%x too big (0x%x/0x%x), corrupt data?\n",
                    start_code, unescaped_buf_size, buf_size);
@@ -1771,6 +1769,7 @@ eoi_parser:
 
                 goto the_end;
             case SOS:
+                s->cur_scan++;
                 if ((ret = ff_mjpeg_decode_sos(s, NULL, NULL)) < 0 &&
                     (avctx->err_recognition & AV_EF_EXPLODE))
                     goto fail;
@@ -1800,7 +1799,7 @@ eoi_parser:
                    (get_bits_count(&s->gb) + 7) / 8, get_bits_count(&s->gb));
         }
     }
-    if (s->got_picture) {
+    if (s->got_picture && s->cur_scan) {
         av_log(avctx, AV_LOG_WARNING, "EOI missing, emulating\n");
         goto eoi_parser;
     }
