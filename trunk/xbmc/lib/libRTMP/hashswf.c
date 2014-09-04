@@ -32,7 +32,13 @@
 
 #ifdef CRYPTO
 #ifdef USE_POLARSSL
+#include <polarssl/version.h>
+#if POLARSSL_VERSION_NUMBER < 0x01030000
 #include <polarssl/sha2.h>
+#else
+#include <polarssl/sha256.h>
+#include <polarssl/compat-1.2.h>
+#endif
 #ifndef SHA256_DIGEST_LENGTH
 #define SHA256_DIGEST_LENGTH	32
 #endif

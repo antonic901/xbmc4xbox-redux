@@ -260,6 +260,7 @@ RTMP_TLS_AllocServerContext(const char* cert, const char* key)
   if (!RTMP_TLS_ctx)
     RTMP_TLS_Init();
 #ifdef USE_POLARSSL
+  {
   tls_server_ctx *tc = ctx = calloc(1, sizeof(struct tls_server_ctx));
   tc->dhm_P = my_dhm_P;
   tc->dhm_G = my_dhm_G;
@@ -272,6 +273,7 @@ RTMP_TLS_AllocServerContext(const char* cert, const char* key)
       x509_free(&tc->cert);
       free(tc);
       return NULL;
+  }
   }
 #elif defined(USE_GNUTLS) && !defined(NO_SSL)
   gnutls_certificate_allocate_credentials((gnutls_certificate_credentials*) &ctx);

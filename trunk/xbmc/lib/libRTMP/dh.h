@@ -28,6 +28,7 @@
 #include <limits.h>
 
 #ifdef USE_POLARSSL
+#include <polarssl/version.h>
 #include <polarssl/dhm.h>
 typedef mpi * MP_t;
 #define MP_new(m)	m = malloc(sizeof(mpi)); mpi_init(m)
@@ -72,7 +73,11 @@ static int MDH_generate_key(MDH *dh)
 static int MDH_compute_key(uint8_t *secret, size_t len, MP_t pub, MDH *dh)
 {
   MP_set(&dh->ctx.GY, pub);
+#if POLARSSL_VERSION_NUMBER < 0x01030000
   dhm_calc_secret(&dh->ctx, secret, &len);
+#else
+  dhm_calc_secret(&dh->ctx, secret, &len, NULL, NULL);
+#endif
   return 0;
 }
 
