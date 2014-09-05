@@ -46,7 +46,7 @@
 #define CURL_DISABLE_RTSP
 #define CURL_DISABLE_GOPHER
 
-#define ALLOW_MSVC6_WITHOUT_PSDK
+#define USE_SYNC_DNS
 
 /* Define if you have the <arpa/inet.h> header file.  */
 /* #define HAVE_ARPA_INET_H 1 */
@@ -653,7 +653,7 @@
 /* Default define to enable threaded asynchronous DNS lookups. */
 #if !defined(USE_SYNC_DNS) && !defined(USE_ARES) && \
     !defined(USE_THREADS_WIN32)
-#  undef USE_THREADS_WIN32
+#  define USE_THREADS_WIN32 1
 #endif
 
 #if defined(USE_ARES) && defined(USE_THREADS_WIN32)
