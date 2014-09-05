@@ -81,6 +81,10 @@ xbmc_all ()
     --enable-decoder=wmav1,wmav2,wmapro,wmv1,wmv2,wmv3 \
     --enable-decoder=aac,ac3,dca,dvbsub,dvdsub,flv,h263,h264,rtp,vorbis \
     --enable-decoder=ape,flac,wavpack \
+    --enable-decoder=adpcm_4xm,adpcm_adx,adpcm_afc,adpcm_ct,adpcm_ea,adpcm_ea_maxis_xa,adpcm_ea_r1,adpcm_ea_r2 \
+    --enable-decoder=adpcm_ea_r3,adpcm_ea_xas,adpcm_g722,adpcm_g726,adpcm_ima_amv,adpcm_ima_apc,adpcm_ima_dk3 \
+    --enable-decoder=adpcm_ima_dk4,adpcm_ima_ea_eacs,adpcm_ima_ea_sead,adpcm_ima_iss,adpcm_ima_oki,adpcm_ima_qt,adpcm_ima_smjpeg \
+    --enable-decoder=adpcm_ima_wav,adpcm_ima_ws,adpcm_ms,adpcm_sbpro_2,adpcm_sbpro_3,adpcm_sbpro_4,adpcm_swf,adpcm_thp,adpcm_xa,adpcm_yamaha \
     \
     --disable-demuxers \
     --enable-demuxer=mp1,mp2,mp3,mpegps,mpegts,mpegtsraw,mpegvideo \
