@@ -216,10 +216,10 @@
 /* #define HAVE_GETPASS 1 */
 
 /* Define if you have the getservbyname function. */
-#define HAVE_GETSERVBYNAME 1
+//#define HAVE_GETSERVBYNAME 1
 
 /* Define if you have the getprotobyname function. */
-#define HAVE_GETPROTOBYNAME
+//#define HAVE_GETPROTOBYNAME
 
 /* Define if you have the gettimeofday function. */
 /* #define HAVE_GETTIMEOFDAY 1 */
