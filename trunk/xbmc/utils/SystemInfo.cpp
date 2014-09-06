@@ -1740,15 +1740,22 @@ CStdString CSysInfo::GetSystemUpTime(bool bTotalUptime)
 
 CStdString CSysInfo::GetInternetState()
 {
-  // Internet connection state!
-  XFILE::CCurlFile http;
-  m_bInternetState = http.IsInternet();
-  if (m_bInternetState)
-    return g_localizeStrings.Get(13296);
-  else if (http.IsInternet(false))
-    return g_localizeStrings.Get(13274);
-  else // NOT Connected to the Internet!
-    return g_localizeStrings.Get(13297);
+  CStdString status;
+  // check for ethernet link before checking for internet access
+  if (XNetGetEthernetLinkStatus() & XNET_ETHERNET_LINK_ACTIVE)
+  {
+    XFILE::CCurlFile http;
+    m_bInternetState = http.IsInternet();
+    if (m_bInternetState)
+      status = g_localizeStrings.Get(13296);
+    else if (http.IsInternet(false))
+      status = g_localizeStrings.Get(13274);
+    else
+      status = g_localizeStrings.Get(13297);
+  }
+  else
+    status = g_localizeStrings.Get(159);
+  return status;
 }
 
 CStdString CSysInfo::GetUserAgent()
