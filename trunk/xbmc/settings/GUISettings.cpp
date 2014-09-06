@@ -548,7 +548,7 @@ void CGUISettings::Initialize()
 
   AddCategory(7, "locale", 14090);
   AddString(1, "locale.language",248,"english", SPIN_CONTROL_TEXT);
-  AddString(2, "locale.country", 20026, "USA", SPIN_CONTROL_TEXT);
+  AddString(2, "locale.country", 20026, "UK (24h)", SPIN_CONTROL_TEXT);
   AddString(3, "locale.charset",14091,"DEFAULT", SPIN_CONTROL_TEXT); // charset is set by the language file
   AddSeparator(4, "locale.sep1");
   AddString(5, "locale.time", 14065, "", BUTTON_CONTROL_MISC_INPUT);
