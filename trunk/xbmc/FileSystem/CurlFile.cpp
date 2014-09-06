@@ -559,8 +559,6 @@ void CCurlFile::SetCommonOptions(CReadState* state)
 
   if (m_useOldHttpVersion)
     g_curlInterface.easy_setopt(h, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-  else
-    SetRequestHeader("Connection", "keep-alive");
 
   if (m_proxy.length() > 0)
   {
