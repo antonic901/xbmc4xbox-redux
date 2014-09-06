@@ -736,6 +736,15 @@ HRESULT CApplication::Create(HWND hWnd)
   }
 #endif
 
+#ifdef _DEBUG
+  g_advancedSettings.m_logLevel     = LOG_LEVEL_DEBUG;
+  g_advancedSettings.m_logLevelHint = LOG_LEVEL_DEBUG;
+#else
+  g_advancedSettings.m_logLevel     = LOG_LEVEL_NORMAL;
+  g_advancedSettings.m_logLevelHint = LOG_LEVEL_NORMAL;
+#endif
+  CLog::SetLogLevel(g_advancedSettings.m_logLevel);
+
   g_guiSettings.Initialize();  // Initialize default Settings
   g_settings.Initialize(); //Initialize default AdvancedSettings
 
