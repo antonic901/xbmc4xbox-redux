@@ -18,7 +18,6 @@
 			<visible>Window.IsVisible(Visualisation)</visible>
 		</control>
 		<control type="group">
-			<visible>!Window.IsVisible(script-Apple_Movie_Trailers-chooser.xml)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="image">
 				<description>background image</description>
