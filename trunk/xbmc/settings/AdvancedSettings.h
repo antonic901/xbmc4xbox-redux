@@ -52,6 +52,7 @@ class CAdvancedSettings
     static void GetCustomExtensions(TiXmlElement *pRootElement, CStdString& extensions);
 
     bool m_DisableModChipDetection;
+    bool m_bPowerSave;
 
     int m_audioHeadRoom;
     float m_karaokeSyncDelay;

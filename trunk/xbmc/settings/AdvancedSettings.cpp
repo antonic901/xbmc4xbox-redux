@@ -37,6 +37,7 @@ CAdvancedSettings g_advancedSettings;
 CAdvancedSettings::CAdvancedSettings()
 {
   m_DisableModChipDetection = true;
+  m_bPowerSave = true;
 
   m_audioHeadRoom = 0;
   m_ac3Gain = 12.0f;
@@ -446,6 +447,7 @@ bool CAdvancedSettings::Load()
   XMLUtils::GetBoolean(pRootElement, "usepcdvdrom", m_usePCDVDROM);
   XMLUtils::GetBoolean(pRootElement, "nodvdrom", m_noDVDROM);
   XMLUtils::GetBoolean(pRootElement, "disablemodchipdetection", m_DisableModChipDetection);
+  XMLUtils::GetBoolean(pRootElement, "powersave", m_bPowerSave);
 
   XMLUtils::GetInt(pRootElement, "songinfoduration", m_songInfoDuration, 0, INT_MAX);
   XMLUtils::GetInt(pRootElement, "busydialogdelay", m_busyDialogDelay, 0, 5000);

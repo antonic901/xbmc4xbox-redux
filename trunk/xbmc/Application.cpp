@@ -1727,7 +1727,13 @@ void CApplication::DimLCDOnPlayback(bool dim)
 void CApplication::StartServices()
 {
 #ifdef HAS_XBOX_HARDWARE
-  StartIdleThread();
+  if (g_advancedSettings.m_bPowerSave)
+  {
+    CLog::Log(LOGNOTICE, "Using idle thread with HLT (power saving)");
+    StartIdleThread();
+  }
+  else
+    CLog::Log(LOGNOTICE, "Not using idle thread with HLT (no power saving)");
 #endif
 
   CheckDate();
@@ -1829,7 +1835,8 @@ void CApplication::StopServices()
   CLog::Log(LOGNOTICE, "stop fancontroller");
   CFanController::Instance()->Stop();
   CFanController::RemoveInstance();
-  StopIdleThread();
+  if (g_advancedSettings.m_bPowerSave)
+    StopIdleThread();
 #endif  
 }
 
