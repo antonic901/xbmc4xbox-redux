@@ -169,7 +169,7 @@ protected:
   bool ScrollingUp() const { return m_scrollSpeed < 0; };
   void OnNextLetter();
   void OnPrevLetter();
-  void OnJumpLetter(char letter);
+  void OnJumpLetter(char letter, bool skip = false);
   void OnJumpSMS(int letter);
   std::vector< std::pair<int, CStdString> > m_letterOffsets;
 private:
