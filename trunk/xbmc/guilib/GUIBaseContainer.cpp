@@ -218,9 +218,9 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
       { // action is held down - repeat a number of times
         float speed = min(1.0f, (float)(action.GetHoldTime() - HOLD_TIME_START) / (HOLD_TIME_END - HOLD_TIME_START));
         unsigned int itemsPerFrame = 1;
+        if (m_lastHoldTime) // number of rows/10 items/second max speed
           itemsPerFrame = max((unsigned int)1, (unsigned int)(speed * 0.0001f * GetRows() * (CTimeUtils::GetFrameTime() - m_lastHoldTime)));
         m_lastHoldTime = CTimeUtils::GetFrameTime();
-        m_lastHoldTime = timeGetTime();
         if (action.GetID() == ACTION_MOVE_LEFT || action.GetID() == ACTION_MOVE_UP)
           while (itemsPerFrame--) MoveUp(false);
         else
