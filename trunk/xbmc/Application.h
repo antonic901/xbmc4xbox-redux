@@ -266,7 +266,7 @@ protected:
   bool ProcessGamepad(float frameTime);
   bool ProcessEventServer(float frameTime);
 
-  bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount);
+  bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
 
   void CheckForDebugButtonCombo();
   void StartFtpEmergencyRecoveryMode();

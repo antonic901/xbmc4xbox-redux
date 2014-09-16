@@ -3266,7 +3266,7 @@ bool CApplication::ProcessEventServer(float frameTime)
   return false;
 }
 
-bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKeyID, bool isAxis, float fAmount)
+bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKeyID, bool isAxis, float fAmount, unsigned int holdTime /*=0*/)
 {
 #ifdef HAS_EVENT_SERVER
   m_idleTimer.StartZero();
@@ -3302,7 +3302,7 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
    // Translate using regular joystick translator.
    if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, joystickName.c_str(), wKeyID, isAxis, actionID, actionName, fullRange))
    {
-     CAction action(actionID, fAmount, 0.0f, actionName);
+     CAction action(actionID, fAmount, 0.0f, actionName, holdTime);
      g_audioManager.PlayActionSound(action);
      return OnAction(action);
    }
