@@ -221,7 +221,7 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
         unsigned int frameDuration = CTimeUtils::GetFrameTime() - m_lastHoldTime;
 
         //scrollrate is minimum 4 items/sec and max rows/10 items/sec
-        m_scrollItemsPerFrame += std::max(0.004f*(float)frameDuration, (float)(speed * 0.0001f * GetRows() * frameDuration));
+        m_scrollItemsPerFrame += max(0.004f*(float)frameDuration, (float)(speed * 0.0001f * GetRows() * frameDuration));
 
         m_lastHoldTime = CTimeUtils::GetFrameTime();
 
