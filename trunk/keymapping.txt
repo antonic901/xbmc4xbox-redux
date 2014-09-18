@@ -1,7 +1,7 @@
 XBMC key mappings
 -----------------
 
-You can customise these settings by editing keymap.xml.
+You can customise these settings by editing the files in system/keymaps.
 ? means not defined by default.
 
 Global key mappings while in the menus:
