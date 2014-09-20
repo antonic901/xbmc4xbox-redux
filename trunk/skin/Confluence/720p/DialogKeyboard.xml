@@ -485,6 +485,9 @@
 					<ondown>304</ondown>
 					<texturenofocus border="3">KeyboardKeyNF.png</texturenofocus>
 					<texturefocus border="5">KeyboardKey.png</texturefocus>
+					<radioposy>5</radioposy>
+					<radiowidth>20</radiowidth>
+					<radioheight>20</radioheight>
 					<align>center</align>
 					<aligny>center</aligny>
 					<font>font13</font>
@@ -673,6 +676,9 @@
 					<ondown>307</ondown>
 					<texturenofocus border="3">KeyboardKeyNF.png</texturenofocus>
 					<texturefocus border="5">KeyboardKey.png</texturefocus>
+					<radioposy>5</radioposy>
+					<radiowidth>20</radiowidth>
+					<radioheight>20</radioheight>
 					<align>center</align>
 					<aligny>center</aligny>
 					<font>font13</font>
