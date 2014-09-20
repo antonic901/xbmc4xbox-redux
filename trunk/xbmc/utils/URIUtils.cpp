@@ -576,7 +576,7 @@ bool URIUtils::IsSpecial(const CStdString& strFile)
 bool URIUtils::IsPlugin(const CStdString& strFile)
 {
   CURL url(strFile);
-  return url.GetProtocol().Equals("plugin") && !url.GetFileName().IsEmpty();
+  return url.GetProtocol().Equals("plugin");
 }
 
 bool URIUtils::IsPluginRoot(const CStdString& strFile)
