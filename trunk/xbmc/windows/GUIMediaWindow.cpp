@@ -1323,7 +1323,7 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
     buttons.Add((CONTEXT_BUTTON)i, item->GetProperty(label));
   }
 
-  if (item->IsPlugin() && item->m_bIsFolder)
+  if (item->IsPlugin() && !item->IsPluginRoot() && item->m_bIsFolder)
   {
     if (CPluginSettings::SettingsExist(item->GetPath()))
       buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
