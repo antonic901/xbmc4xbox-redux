@@ -61,7 +61,7 @@ CStdString CInfoLoader::GetInfo(int info)
     m_busy = true;
     CJobManager::GetInstance().AddJob(new CInfoJob(this), this);
   }
-  if (m_busy)
+  if (m_busy && CTimeUtils::GetFrameTime() - m_refreshTime > 1000)
   {
     return BusyInfo(info);
   }
