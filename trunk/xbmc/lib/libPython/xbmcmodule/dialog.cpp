@@ -31,6 +31,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
+#include "storage/MediaManager.h"
 #include "ApplicationMessenger.h"
 
 using namespace std;
@@ -156,19 +157,23 @@ namespace PYXBMC
       if (unicodeLine[i] && !PyXBMCGetUnicodeString(utf8Line[i], unicodeLine[i], i+1))
         return NULL;
     }
-    VECSOURCES *shares = g_settings.GetSourcesFromType(utf8Line[1]);
+    VECSOURCES *shares = NULL;
+    shares = g_settings.GetSourcesFromType(utf8Line[1]);
     if (!shares) return NULL;
+    VECSOURCES localShares;
+    localShares = *shares;
+    g_mediaManager.GetLocalDrives(localShares);
 
     if (useFileDirectories && !utf8Line[2].size() == 0) 
       utf8Line[2] += "|.rar|.zip";
     
     value = cDefault;
     if (browsetype == 1)
-      CGUIDialogFileBrowser::ShowAndGetFile(*shares, utf8Line[2], utf8Line[0], value, 0 != useThumbs, 0 != useFileDirectories);
+      CGUIDialogFileBrowser::ShowAndGetFile(localShares, utf8Line[2], utf8Line[0], value, 0 != useThumbs, 0 != useFileDirectories);
     else if (browsetype == 2)
-      CGUIDialogFileBrowser::ShowAndGetImage(*shares, utf8Line[0], value);
+      CGUIDialogFileBrowser::ShowAndGetImage(localShares, utf8Line[0], value);
     else
-      CGUIDialogFileBrowser::ShowAndGetDirectory(*shares, utf8Line[0], value, browsetype != 0);
+      CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, utf8Line[0], value, browsetype != 0);
     return Py_BuildValue((char*)"s", value.c_str());
   }
 
