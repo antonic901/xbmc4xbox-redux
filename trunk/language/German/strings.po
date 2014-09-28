@@ -3719,7 +3719,7 @@ msgstr "Verlassen"
 
 msgctxt "#13013"
 msgid "Reboot"
-msgstr "Neustart"
+msgstr "Neustart (XBOX)"
 
 msgctxt "#13014"
 msgid "Minimize"
@@ -3995,7 +3995,7 @@ msgstr "Überschreiben"
 
 msgctxt "#13208"
 msgid "Alarm clock"
-msgstr "Wecker"
+msgstr "Abschaltzeit"
 
 msgctxt "#13209"
 msgid "Alarm clock interval (in minutes)"
@@ -4199,7 +4199,7 @@ msgstr "Schwarzen Rand reduzieren"
 
 msgctxt "#13313"
 msgid "Restart"
-msgstr "Neustart"
+msgstr "Neustart (XBMC)"
 
 msgctxt "#13314"
 msgid "Crossfade between songs"
@@ -6235,7 +6235,7 @@ msgstr "Ausschalten in 120 Minuten"
 
 msgctxt "#20150"
 msgid "Custom shutdown timer"
-msgstr "Benutzerdefinierter Ausschalt-Timer"
+msgstr "Ausschalt-Timer festlegen"
 
 msgctxt "#20151"
 msgid "Cancel shutdown timer"
@@ -7044,6 +7044,14 @@ msgstr "Möchtest Du mit der Aktualisierung fortfahren?"
 msgctxt "#20451"
 msgid "Countries"
 msgstr "Länder"
+
+msgctxt "#20454"
+msgid "Listener"
+msgstr "Hörer"
+
+msgctxt "#20455"
+msgid "Listeners"
+msgstr "Hörer"
 
 msgctxt "#20456"
 msgid "Set movieset fanart"
