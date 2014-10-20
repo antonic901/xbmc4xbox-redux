@@ -654,17 +654,6 @@ void CGUITextureManager::ReleaseTexture(const CStdString& strTextureName)
 {
   CSingleLock lock(g_graphicsContext);
 
-  MEMORYSTATUS stat;
-  GlobalMemoryStatus(&stat);
-  DWORD dwMegFree = stat.dwAvailPhys / (1024 * 1024);
-  if (dwMegFree > 29)
-  {
-    // dont release skin textures, they are reloaded each time
-    //if (strTextureName.GetAt(1) != ':') return;
-    //CLog::Log(LOGINFO, "release:%s", strTextureName.c_str());
-  }
-
-
   ivecTextures i;
   i = m_vecTextures.begin();
   while (i != m_vecTextures.end())
