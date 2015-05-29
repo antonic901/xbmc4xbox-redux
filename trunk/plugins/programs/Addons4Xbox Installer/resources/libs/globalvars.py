@@ -44,6 +44,7 @@ __all__ = [
     "VALUE_LIST_ADDONS",
     "VALUE_DISPLAY_INFO",
     "REQUIRED_DEFAULT_LIB",
+    "REPO_ID_HELIX",
     "REPO_ID_XBMC",
     "REPO_ID_XBMC4XBOX",
     "MISSING_MODULES_PATH"
@@ -104,6 +105,8 @@ DIR_CACHE           = os.path.join( SPECIAL_SCRIPT_DATA, "cache" )
 DIR_CACHE_ADDONS    = os.path.join( SPECIAL_SCRIPT_DATA, "dwl" )
 DIR_ADDON_REPO      = os.path.join( SPECIAL_SCRIPT_DATA, "repositories")
 
+VERSION_FILE        = os.path.join( SPECIAL_SCRIPT_DATA, "version.txt" )
+
 MISSING_MODULES_PATH = os.path.join( DIR_CACHE, "missing_modules.txt" )
 
 # define plugin param key names
@@ -134,3 +137,4 @@ VALUE_LIST_MISSING_MODULES = 'missingmodules'
 REQUIRED_DEFAULT_LIB = 'xbmc.python'
 REPO_ID_XBMC4XBOX = 'repository.xbmc4xbox'
 REPO_ID_XBMC = 'repository.xbmc.org'
+REPO_ID_HELIX = 'repository.kodi.tv'

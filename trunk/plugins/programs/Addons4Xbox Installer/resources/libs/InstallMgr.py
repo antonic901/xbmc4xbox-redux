@@ -25,7 +25,7 @@ REPO_LIST_URL = "http://wiki.xbmc.org/index.php?title=Unofficial_Add-on_Reposito
 
 # Custom modules
 try:
-    from globalvars import SPECIAL_HOME_DIR, REPO_ID_XBMC4XBOX, REPO_ID_XBMC, DIR_CACHE, DIR_ADDON_REPO
+    from globalvars import SPECIAL_HOME_DIR, REPO_ID_XBMC4XBOX, REPO_ID_HELIX, REPO_ID_XBMC, DIR_CACHE, DIR_ADDON_REPO
     from FileManager import fileMgr
     #from Item import *
     from Item import TYPE_ADDON_MODULE, get_install_path
@@ -104,6 +104,7 @@ class InstallMgr:
         repoList = [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, REPO_ID_XBMC4XBOX) ) ]
         if repoId:
             repoList.extend( [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, repoId) ) ] )
+        repoList.extend( [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, REPO_ID_HELIX) ) ] )
         repoList.extend( [ getInstalledAddonInfo( os.path.join( DIR_ADDON_REPO, REPO_ID_XBMC) ) ] )
 
         # Check if required lib already exist - we do an additional check later for non script modules once we have the module name from the addons repo

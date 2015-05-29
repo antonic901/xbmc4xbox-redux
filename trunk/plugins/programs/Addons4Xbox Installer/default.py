@@ -6,17 +6,11 @@
 
 REMOTE_DBG       = False
 
-
 # Plugin constants
-__script__       = "Unknown"
 __plugin__       = "Addons4Xbox Installer"
 __author__       = "Temhil (http://passion-xbmc.org) / BuZz (http://www.xbmc4xbox.org.uk)"
-__url__          = "http://passion-xbmc.org/index.php"
-__svn_url__      = "http://passion-xbmc.googlecode.com/svn/trunk/plugins/programs/Addons4xbox/"
-__credits__      = "Team XBMC Passion"
 __platform__     = "XBMC4Xbox"
-__date__         = "2014-07-12"
-__version__      = "0.13.2"
+__version__      = "0.14.0"
 __svn_revision__ = 0
 __XBMC_Revision__= 30805
 
@@ -48,8 +42,7 @@ LIBS_PATH          = os.path.join( BASE_RESOURCE_PATH, "libs" )
 MEDIA_PATH         = os.path.join( BASE_RESOURCE_PATH, "media" )
 PERSIT_REPO_LIST   = "repo_list.txt"
 
-REPO_LIST_URL_LIST = ["http://wiki.xbmc.org/index.php?title=Unofficial_Add-on_Repositories",
-                      "http://home.brantje.com/xbmcrepositories/Unofficial-add-on-repositories-XBMC.htm" ]
+REPO_LIST_URL_LIST = [ "http://wiki.xbmc.org/index.php?title=Unofficial_Add-on_Repositories" ]
 
 __platform__ = "xbmc media center, [%s]" % xbmc.__platform__
 __language__ = xbmc.Language( ROOTDIR ).getLocalizedString
