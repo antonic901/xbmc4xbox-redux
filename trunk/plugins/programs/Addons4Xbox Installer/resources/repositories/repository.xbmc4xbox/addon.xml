@@ -5,9 +5,9 @@
 		provider-name="Team XBMC4Xbox">
 	<extension point="xbmc.addon.repository"
 		name="XBMC4Xbox Add-on Repository">
-		<info compressed="false">http://addons4xbox.googlecode.com/svn/trunk/3.5/addons.xml</info>
-		<checksum>http://addons4xbox.googlecode.com/svn/trunk/3.5/addons.xml.md5</checksum>
-		<datadir zip="false">http://addons4xbox.googlecode.com/svn/trunk/3.5/</datadir>
+		<info compressed="false">http://www.xbmc4xbox.org.uk/files/addons//addons.xml</info>
+		<checksum>http://www.xbmc4xbox.org.uk/files/addons/addons.xml.md5</checksum>
+		<datadir zip="false">http://www.xbmc4xbox.org.uk/files/addons/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install Add-ons from xbmc4xbox.org.uk</summary>
