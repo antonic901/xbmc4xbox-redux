@@ -44,7 +44,7 @@ the information :func:`init` sets up.
 
    The optional *strict* argument is a flag specifying whether the list of known MIME types
    is limited to only the official types `registered with IANA
-   <http://www.iana.org/assignments/media-types/>`_.
+   <http://www.iana.org/assignments/media-types/media-types.xhtml>`_.
    When *strict* is ``True`` (the default), only the IANA types are supported; when
    *strict* is ``False``, some additional non-standard but commonly used MIME types
    are also recognized.
@@ -106,8 +106,8 @@ behavior of the module.
    extension is already known, the new type will replace the old one. When the type
    is already known the extension will be added to the list of known extensions.
 
-   When *strict* is ``True`` (the default), the mapping will added to the official MIME
-   types, otherwise to the non-standard ones.
+   When *strict* is ``True`` (the default), the mapping will be added to the
+   official MIME types, otherwise to the non-standard ones.
 
 
 .. data:: inited

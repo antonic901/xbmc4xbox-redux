@@ -23,11 +23,11 @@ In May 2000, Guido and the Python core development team moved to BeOpen.com to
 form the BeOpen PythonLabs team.  In October of the same year, the PythonLabs
 team moved to Digital Creations (now Zope Corporation; see
 http://www.zope.com/).  In 2001, the Python Software Foundation (PSF, see
-http://www.python.org/psf/) was formed, a non-profit organization created
+https://www.python.org/psf/) was formed, a non-profit organization created
 specifically to own Python-related Intellectual Property.  Zope Corporation is a
 sponsoring member of the PSF.
 
-All Python releases are Open Source (see http://www.opensource.org/ for the Open
+All Python releases are Open Source (see http://opensource.org/ for the Open
 Source Definition). Historically, most, but not all, Python releases have also
 been GPL-compatible; the table below summarizes the various releases.
 
@@ -84,7 +84,7 @@ Terms and conditions for accessing or otherwise using Python
    analyze, test, perform and/or display publicly, prepare derivative works,
    distribute, and otherwise use Python |release| alone or in any derivative
    version, provided, however, that PSF's License Agreement and PSF's notice of
-   copyright, i.e., "Copyright © 2001-2014 Python Software Foundation; All Rights
+   copyright, i.e., "Copyright © 2001-2015 Python Software Foundation; All Rights
    Reserved" are retained in Python |release| alone or in any derivative version
    prepared by Licensee.
 
@@ -675,9 +675,9 @@ OpenSSL
 
 The modules :mod:`hashlib`, :mod:`posix`, :mod:`ssl`, :mod:`crypt` use
 the OpenSSL library for added performance if made available by the
-operating system. Additionally, the Windows installers for Python
-include a copy of the OpenSSL libraries, so we include a copy of the
-OpenSSL license here::
+operating system. Additionally, the Windows and Mac OS X installers for
+Python may include a copy of the OpenSSL libraries, so we include a copy
+of the OpenSSL license here::
 
 
   LICENSE ISSUES

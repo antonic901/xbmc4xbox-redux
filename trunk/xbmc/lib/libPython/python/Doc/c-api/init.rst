@@ -642,7 +642,7 @@ with sub-interpreters:
    .. versionadded:: 2.3
 
 
-.. c:function:: PyThreadState PyGILState_GetThisThreadState()
+.. c:function:: PyThreadState* PyGILState_GetThisThreadState()
 
    Get the current thread state for this thread.  May return ``NULL`` if no
    GILState API has been used on the current thread.  Note that the main thread
@@ -1136,7 +1136,7 @@ These functions are only intended to be used by advanced debugging tools.
 
 .. c:function:: PyThreadState * PyInterpreterState_ThreadHead(PyInterpreterState *interp)
 
-   Return the a pointer to the first :c:type:`PyThreadState` object in the list of
+   Return the pointer to the first :c:type:`PyThreadState` object in the list of
    threads associated with the interpreter *interp*.
 
    .. versionadded:: 2.2

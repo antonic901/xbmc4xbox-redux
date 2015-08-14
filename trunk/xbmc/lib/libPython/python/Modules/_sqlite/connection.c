@@ -1192,6 +1192,9 @@ PyObject* pysqlite_connection_call(pysqlite_Connection* self, PyObject* args, Py
         return NULL;
     }
 
+    if (!_PyArg_NoKeywords(MODULE_NAME ".Connection()", kwargs))
+        return NULL;
+
     if (!PyArg_ParseTuple(args, "O", &sql)) {
         return NULL;
     }
@@ -1215,7 +1218,8 @@ PyObject* pysqlite_connection_call(pysqlite_Connection* self, PyObject* args, Py
         if (rc == PYSQLITE_TOO_MUCH_SQL) {
             PyErr_SetString(pysqlite_Warning, "You can only execute one statement at a time.");
         } else if (rc == PYSQLITE_SQL_WRONG_TYPE) {
-            PyErr_SetString(pysqlite_Warning, "SQL is of wrong type. Must be string or unicode.");
+            if (!PyErr_Occurred() || PyErr_ExceptionMatches(PyExc_TypeError))
+                PyErr_SetString(pysqlite_Warning, "SQL is of wrong type. Must be string or unicode.");
         } else {
             (void)pysqlite_statement_reset(statement);
             _pysqlite_seterror(self->db, NULL);
@@ -1241,7 +1245,7 @@ error:
     return (PyObject*)statement;
 }
 
-PyObject* pysqlite_connection_execute(pysqlite_Connection* self, PyObject* args, PyObject* kwargs)
+PyObject* pysqlite_connection_execute(pysqlite_Connection* self, PyObject* args)
 {
     PyObject* cursor = 0;
     PyObject* result = 0;
@@ -1270,7 +1274,7 @@ error:
     return cursor;
 }
 
-PyObject* pysqlite_connection_executemany(pysqlite_Connection* self, PyObject* args, PyObject* kwargs)
+PyObject* pysqlite_connection_executemany(pysqlite_Connection* self, PyObject* args)
 {
     PyObject* cursor = 0;
     PyObject* result = 0;
@@ -1299,7 +1303,7 @@ error:
     return cursor;
 }
 
-PyObject* pysqlite_connection_executescript(pysqlite_Connection* self, PyObject* args, PyObject* kwargs)
+PyObject* pysqlite_connection_executescript(pysqlite_Connection* self, PyObject* args)
 {
     PyObject* cursor = 0;
     PyObject* result = 0;

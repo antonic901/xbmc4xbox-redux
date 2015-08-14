@@ -547,7 +547,7 @@ These are the UTF-32 codec APIs:
    After completion, *\*byteorder* is set to the current byte order at the end
    of input data.
 
-   In a narrow build codepoints outside the BMP will be decoded as surrogate pairs.
+   In a narrow build code points outside the BMP will be decoded as surrogate pairs.
 
    If *byteorder* is *NULL*, the codec starts in native order mode.
 
@@ -580,7 +580,7 @@ These are the UTF-32 codec APIs:
    mark (U+FEFF). In the other two modes, no BOM mark is prepended.
 
    If *Py_UNICODE_WIDE* is not defined, surrogate pairs will be output
-   as a single codepoint.
+   as a single code point.
 
    Return *NULL* if an exception was raised by the codec.
 
@@ -1035,7 +1035,7 @@ They all return *NULL* or ``-1`` if an exception occurs.
    Unicode string.
 
 
-.. c:function:: int PyUnicode_Tailmatch(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
+.. c:function:: Py_ssize_t PyUnicode_Tailmatch(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
 
    Return 1 if *substr* matches ``str[start:end]`` at the given tail end
    (*direction* == -1 means to do a prefix match, *direction* == 1 a suffix match),
@@ -1108,7 +1108,7 @@ They all return *NULL* or ``-1`` if an exception occurs.
 .. c:function:: PyObject* PyUnicode_Format(PyObject *format, PyObject *args)
 
    Return a new string object from *format* and *args*; this is analogous to
-   ``format % args``.  The *args* argument must be a tuple.
+   ``format % args``.
 
 
 .. c:function:: int PyUnicode_Contains(PyObject *container, PyObject *element)

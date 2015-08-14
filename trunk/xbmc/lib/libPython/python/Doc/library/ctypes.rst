@@ -1090,7 +1090,7 @@ As we can easily check, our array is sorted now::
    outside of Python's control (e.g. by the foreign code that calls the
    callback), ctypes creates a new dummy Python thread on every invocation. This
    behavior is correct for most purposes, but it means that values stored with
-   `threading.local` will *not* survive across different callbacks, even when
+   :class:`threading.local` will *not* survive across different callbacks, even when
    those calls are made from the same C thread.
 
 .. _ctypes-accessing-values-exported-from-dlls:
@@ -1443,11 +1443,16 @@ copy of the windows error code.
    The default mode which is used to load shared libraries.  On OSX 10.3, this is
    *RTLD_GLOBAL*, otherwise it is the same as *RTLD_LOCAL*.
 
-Instances of these classes have no public methods, however :meth:`__getattr__`
-and :meth:`__getitem__` have special behavior: functions exported by the shared
-library can be accessed as attributes of by index.  Please note that both
-:meth:`__getattr__` and :meth:`__getitem__` cache their result, so calling them
-repeatedly returns the same object each time.
+Instances of these classes have no public methods.  Functions exported by the
+shared library can be accessed as attributes or by index.  Please note that
+accessing the function through an attribute caches the result and therefore
+accessing it repeatedly returns the same object each time.  On the other hand,
+accessing it through an index returns a new object each time:
+
+   >>> libc.time == libc.time
+   True
+   >>> libc['time'] == libc['time']
+   False
 
 The following public attributes are available, their name starts with an
 underscore to not clash with exported function names:
@@ -1904,7 +1909,7 @@ Utility functions
 .. function:: find_msvcrt()
    :module: ctypes.util
 
-   Windows only: return the filename of the VC runtype library used by Python,
+   Windows only: return the filename of the VC runtime library used by Python,
    and by the extension modules.  If the name of the library cannot be
    determined, ``None`` is returned.
 
@@ -2440,11 +2445,6 @@ other data types containing pointer type fields.
       type is first used (an instance is created, ``sizeof()`` is called on it,
       and so on).  Later assignments to the :attr:`_fields_` class variable will
       raise an AttributeError.
-
-      Structure and union subclass constructors accept both positional and named
-      arguments.  Positional arguments are used to initialize the fields in the
-      same order as they appear in the :attr:`_fields_` definition, named
-      arguments are used to initialize the fields with the corresponding name.
 
       It is possible to defined sub-subclasses of structure types, they inherit
       the fields of the base class plus the :attr:`_fields_` defined in the

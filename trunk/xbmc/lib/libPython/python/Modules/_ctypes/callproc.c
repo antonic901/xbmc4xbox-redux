@@ -1170,11 +1170,7 @@ PyObject *_ctypes_callproc(PPROC pProc,
     }
     for (i = 0; i < argcount; ++i) {
         atypes[i] = args[i].ffi_type;
-        if (atypes[i]->type == FFI_TYPE_STRUCT 
-#ifdef _WIN64
-            && atypes[i]->size <= sizeof(void *)
-#endif
-            )
+        if (atypes[i]->type == FFI_TYPE_STRUCT)
             avalues[i] = (void *)args[i].value.p;
         else
             avalues[i] = (void *)&args[i].value;
@@ -1807,7 +1803,9 @@ POINTER(PyObject *self, PyObject *cls)
         return result;
     }
     if (PyString_CheckExact(cls)) {
-        buf = alloca(strlen(PyString_AS_STRING(cls)) + 3 + 1);
+        buf = PyMem_Malloc(strlen(PyString_AS_STRING(cls)) + 3 + 1);
+        if (buf == NULL)
+            return PyErr_NoMemory();
         sprintf(buf, "LP_%s", PyString_AS_STRING(cls));
         result = PyObject_CallFunction((PyObject *)Py_TYPE(&PyCPointer_Type),
                                        "s(O){}",
@@ -1818,13 +1816,16 @@ POINTER(PyObject *self, PyObject *cls)
         key = PyLong_FromVoidPtr(result);
     } else if (PyType_Check(cls)) {
         typ = (PyTypeObject *)cls;
-        buf = alloca(strlen(typ->tp_name) + 3 + 1);
+        buf = PyMem_Malloc(strlen(typ->tp_name) + 3 + 1);
+        if (buf == NULL)
+            return PyErr_NoMemory();
         sprintf(buf, "LP_%s", typ->tp_name);
         result = PyObject_CallFunction((PyObject *)Py_TYPE(&PyCPointer_Type),
                                        "s(O){sO}",
                                        buf,
                                        &PyCPointer_Type,
                                        "_type_", cls);
+        PyMem_Free(buf);
         if (result == NULL)
             return result;
         Py_INCREF(cls);

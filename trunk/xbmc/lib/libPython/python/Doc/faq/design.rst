@@ -49,7 +49,7 @@ Why are floating point calculations so inaccurate?
 People are often very surprised by results like this::
 
    >>> 1.2 - 1.0
-   0.199999999999999996
+   0.19999999999999996
 
 and think it is a bug in Python. It's not.  This has nothing to do with Python,
 but with how the underlying C platform handles floating point numbers, and
@@ -398,13 +398,13 @@ calls into the Python run-time system, even for seemingly simple operations like
 ``x+1``.
 
 Several projects described in the Python newsgroup or at past `Python
-conferences <http://python.org/community/workshops/>`_ have shown that this
+conferences <https://www.python.org/community/workshops/>`_ have shown that this
 approach is feasible, although the speedups reached so far are only modest
 (e.g. 2x).  Jython uses the same strategy for compiling to Java bytecode.  (Jim
 Hugunin has demonstrated that in combination with whole-program analysis,
 speedups of 1000x are feasible for small demo programs.  See the proceedings
 from the `1997 Python conference
-<http://python.org/workshops/1997-10/proceedings/>`_ for more information.)
+<http://legacy.python.org/workshops/1997-10/proceedings/>`_ for more information.)
 
 Internally, Python source code is always translated into a bytecode
 representation, and this bytecode is then executed by the Python virtual
@@ -429,12 +429,12 @@ much speed.
 .. XXX check which of these projects are still alive
 
 There are also several programs which make it easier to intermingle Python and C
-code in various ways to increase performance.  See, for example, `Psyco
+code in various ways to increase performance.  See, for example, `Cython <http://cython.org/>`_ , `Psyco
 <http://psyco.sourceforge.net/>`_, `Pyrex
 <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_, `PyInline
 <http://pyinline.sourceforge.net/>`_, `Py2Cmod
-<http://sourceforge.net/projects/py2cmod/>`_, and `Weave
-<http://www.scipy.org/Weave>`_.
+<http://sourceforge.net/projects/py2cmod/>`_, and
+`Weave <http://docs.scipy.org/doc/scipy-dev/reference/tutorial/weave.html>`_.
 
 
 How does Python manage memory?
@@ -710,62 +710,6 @@ an eye to making it easily tested.  One increasingly popular technique,
 test-directed development, calls for writing parts of the test suite first,
 before you write any of the actual code.  Of course Python allows you to be
 sloppy and not write test cases at all.
-
-
-Why are default values shared between objects?
-----------------------------------------------
-
-This type of bug commonly bites neophyte programmers.  Consider this function::
-
-   def foo(mydict={}):  # Danger: shared reference to one dict for all calls
-       ... compute something ...
-       mydict[key] = value
-       return mydict
-
-The first time you call this function, ``mydict`` contains a single item.  The
-second time, ``mydict`` contains two items because when ``foo()`` begins
-executing, ``mydict`` starts out with an item already in it.
-
-It is often expected that a function call creates new objects for default
-values. This is not what happens. Default values are created exactly once, when
-the function is defined.  If that object is changed, like the dictionary in this
-example, subsequent calls to the function will refer to this changed object.
-
-By definition, immutable objects such as numbers, strings, tuples, and ``None``,
-are safe from change. Changes to mutable objects such as dictionaries, lists,
-and class instances can lead to confusion.
-
-Because of this feature, it is good programming practice to not use mutable
-objects as default values.  Instead, use ``None`` as the default value and
-inside the function, check if the parameter is ``None`` and create a new
-list/dictionary/whatever if it is.  For example, don't write::
-
-   def foo(mydict={}):
-       ...
-
-but::
-
-   def foo(mydict=None):
-       if mydict is None:
-           mydict = {}  # create a new dict for local namespace
-
-This feature can be useful.  When you have a function that's time-consuming to
-compute, a common technique is to cache the parameters and the resulting value
-of each call to the function, and return the cached value if the same value is
-requested again.  This is called "memoizing", and can be implemented like this::
-
-   # Callers will never provide a third parameter for this function.
-   def expensive(arg1, arg2, _cache={}):
-       if (arg1, arg2) in _cache:
-           return _cache[(arg1, arg2)]
-
-       # Calculate the value
-       result = ... expensive computation ...
-       _cache[(arg1, arg2)] = result           # Store result in the cache
-       return result
-
-You could use a global variable containing a dictionary instead of the default
-value; it's a matter of taste.
 
 
 Why is there no goto?

@@ -433,8 +433,7 @@ The priorities of the binary bitwise operations are all lower than the numeric
 operations and higher than the comparisons; the unary operation ``~`` has the
 same priority as the other unary numeric operations (``+`` and ``-``).
 
-This table lists the bitwise operations sorted in ascending priority
-(operations in the same box have the same priority):
+This table lists the bitwise operations sorted in ascending priority:
 
 +------------+--------------------------------+----------+
 | Operation  | Result                         | Notes    |
@@ -652,7 +651,7 @@ specific sequence types, dictionaries, and other more specialized forms.  The
 specific types are not important beyond their implementation of the iterator
 protocol.
 
-The intention of the protocol is that once an iterator's :meth:`next` method
+The intention of the protocol is that once an iterator's :meth:`~iterator.next` method
 raises :exc:`StopIteration`, it will continue to do so on subsequent calls.
 Implementations that do not obey this property are deemed broken.  (This
 constraint was added in Python 2.3; in Python 2.2, various iterators are broken
@@ -667,9 +666,9 @@ Generator Types
 Python's :term:`generator`\s provide a convenient way to implement the iterator
 protocol.  If a container object's :meth:`__iter__` method is implemented as a
 generator, it will automatically return an iterator object (technically, a
-generator object) supplying the :meth:`__iter__` and :meth:`next` methods.  More
-information about generators can be found in :ref:`the documentation for the
-yield expression <yieldexpr>`.
+generator object) supplying the :meth:`~iterator.__iter__` and
+:meth:`~iterator.next` methods.  More information about generators can be found
+in :ref:`the documentation for the yield expression <yieldexpr>`.
 
 
 .. _typesseq:
@@ -722,9 +721,8 @@ operations have the same priorities as the comparison operations.  The ``+`` and
 ``*`` operations have the same priority as the corresponding numeric operations.
 [3]_ Additional methods are provided for :ref:`typesseq-mutable`.
 
-This table lists the sequence operations sorted in ascending priority
-(operations in the same box have the same priority).  In the table, *s* and *t*
-are sequences of the same type; *n*, *i* and *j* are integers:
+This table lists the sequence operations sorted in ascending priority.
+In the table, *s* and *t* are sequences of the same type; *n*, *i* and *j* are integers:
 
 +------------------+--------------------------------+----------+
 | Operation        | Result                         | Notes    |
@@ -2033,16 +2031,32 @@ pairs within braces, for example: ``{'jack': 4098, 'sjoerd': 4127}`` or ``{4098:
       Return the item of *d* with key *key*.  Raises a :exc:`KeyError` if *key*
       is not in the map.
 
+      .. index:: __missing__()
+
+      If a subclass of dict defines a method :meth:`__missing__` and *key*
+      is not present, the ``d[key]`` operation calls that method with the key *key*
+      as argument.  The ``d[key]`` operation then returns or raises whatever is
+      returned or raised by the ``__missing__(key)`` call.
+      No other operations or methods invoke :meth:`__missing__`. If
+      :meth:`__missing__` is not defined, :exc:`KeyError` is raised.
+      :meth:`__missing__` must be a method; it cannot be an instance variable::
+
+          >>> class Counter(dict):
+          ...     def __missing__(self, key):
+          ...         return 0
+          >>> c = Counter()
+          >>> c['red']
+          0
+          >>> c['red'] += 1
+          >>> c['red']
+          1
+
+      The example above shows part of the implementation of
+      :class:`collections.Counter`.  A different ``__missing__`` method is used
+      by :class:`collections.defaultdict`.
+
       .. versionadded:: 2.5
-         If a subclass of dict defines a method :meth:`__missing__`, if the key
-         *key* is not present, the ``d[key]`` operation calls that method with
-         the key *key* as argument.  The ``d[key]`` operation then returns or
-         raises whatever is returned or raised by the ``__missing__(key)`` call
-         if the key is not present. No other operations or methods invoke
-         :meth:`__missing__`. If :meth:`__missing__` is not defined,
-         :exc:`KeyError` is raised.  :meth:`__missing__` must be a method; it
-         cannot be an instance variable. For an example, see
-         :class:`collections.defaultdict`.
+         Recognition of __missing__ methods of dict subclasses.
 
    .. describe:: d[key] = value
 

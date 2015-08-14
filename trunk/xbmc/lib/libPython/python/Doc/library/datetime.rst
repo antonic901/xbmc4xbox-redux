@@ -514,7 +514,7 @@ Instance methods:
    Return a 3-tuple, (ISO year, ISO week number, ISO weekday).
 
    The ISO calendar is a widely used variant of the Gregorian calendar. See
-   http://www.phys.uu.nl/~vgent/calendar/isocalendar.htm for a good
+   http://www.staff.science.uu.nl/~gent0113/calendar/isocalendar.htm for a good
    explanation.
 
    The ISO year consists of 52 or 53 full weeks, and where a week starts on a
@@ -619,8 +619,8 @@ Example of working with :class:`date`:
 
 .. _datetime-datetime:
 
-:class:`datetime` Objects
--------------------------
+:class:`.datetime` Objects
+--------------------------
 
 A :class:`.datetime` object is a single object containing all the information
 from a :class:`date` object and a :class:`.time` object.  Like a :class:`date`
@@ -1563,7 +1563,7 @@ EST (fixed offset -5 hours), or only EDT (fixed offset -4 hours)).
 
 .. seealso::
 
-   `pytz <http://pypi.python.org/pypi/pytz/>`_
+   `pytz <https://pypi.python.org/pypi/pytz/>`_
       The standard library has no :class:`tzinfo` instances, but
       there exists a third-party library which brings the *IANA timezone
       database* (also known as the Olson database) to Python: *pytz*.

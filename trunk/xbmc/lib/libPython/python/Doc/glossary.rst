@@ -75,7 +75,7 @@ Glossary
 
    BDFL
       Benevolent Dictator For Life, a.k.a. `Guido van Rossum
-      <http://www.python.org/~guido/>`_, Python's creator.
+      <https://www.python.org/~guido/>`_, Python's creator.
 
    bytes-like object
       An object that supports the :ref:`buffer protocol <bufferobjects>`,
@@ -140,7 +140,7 @@ Glossary
 
    CPython
       The canonical implementation of the Python programming language, as
-      distributed on `python.org <http://python.org>`_.  The term "CPython"
+      distributed on `python.org <https://www.python.org>`_.  The term "CPython"
       is used when necessary to distinguish this implementation from others
       such as Jython or IronPython.
 
@@ -284,7 +284,7 @@ Glossary
    generator
       A function which returns an iterator.  It looks like a normal function
       except that it contains :keyword:`yield` statements for producing a series
-      a values usable in a for-loop or that can be retrieved one at a time with
+      of values usable in a for-loop or that can be retrieved one at a time with
       the :func:`next` function. Each :keyword:`yield` temporarily suspends
       processing, remembering the location execution state (including local
       variables and pending try-statements).  When the generator resumes, it
@@ -408,10 +408,10 @@ Glossary
 
    iterator
       An object representing a stream of data.  Repeated calls to the iterator's
-      :meth:`next` method return successive items in the stream.  When no more
+      :meth:`~generator.next` method return successive items in the stream.  When no more
       data are available a :exc:`StopIteration` exception is raised instead.  At
       this point, the iterator object is exhausted and any further calls to its
-      :meth:`next` method just raise :exc:`StopIteration` again.  Iterators are
+      :meth:`~generator.next` method just raise :exc:`StopIteration` again.  Iterators are
       required to have an :meth:`__iter__` method that returns the iterator
       object itself so every iterator is also iterable and may be used in most
       places where other iterables are accepted.  One notable exception is code
@@ -511,7 +511,7 @@ Glossary
    method resolution order
       Method Resolution Order is the order in which base classes are searched
       for a member during lookup. See `The Python 2.3 Method Resolution Order
-      <http://www.python.org/download/releases/2.3/mro/>`_.
+      <https://www.python.org/download/releases/2.3/mro/>`_.
 
    module
       An object that serves as an organizational unit of Python code.  Modules
@@ -719,6 +719,12 @@ Glossary
       sequences that will see changes in the underlying dictionary.  To force
       the dictionary view to become a full list use ``list(dictview)``.  See
       :ref:`dict-views`.
+
+   virtual environment
+      A cooperatively isolated runtime environment that allows Python users
+      and applications to install and upgrade Python distribution packages
+      without interfering with the behaviour of other Python applications
+      running on the same system.
 
    virtual machine
       A computer defined entirely in software.  Python's virtual machine

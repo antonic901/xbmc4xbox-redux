@@ -24,6 +24,11 @@ built-in function :func:`open`, but accepts Universal Resource Locators (URLs)
 instead of filenames.  Some restrictions apply --- it can only open URLs for
 reading, and no seek operations are available.
 
+.. seealso::
+
+    The `Requests package <http://requests.readthedocs.org/>`_
+    is recommended for a higher-level http client interface.
+
 .. warning:: When opening HTTPS URLs, it does not attempt to validate the
    server certificate.  Use at your own risk!
 
@@ -31,7 +36,7 @@ reading, and no seek operations are available.
 High-level interface
 --------------------
 
-.. function:: urlopen(url[, data[, proxies]])
+.. function:: urlopen(url[, data[, proxies[, context]]])
 
    Open a network object denoted by a URL for reading.  If the URL does not
    have a scheme identifier, or if it has :file:`file:` as its scheme
@@ -122,8 +127,12 @@ High-level interface
       filehandle = urllib.urlopen(some_url, proxies=None)
       filehandle = urllib.urlopen(some_url)
 
-   Proxies which require authentication for use are not currently supported; this
-   is considered an implementation limitation.
+   Proxies which require authentication for use are not currently supported;
+   this is considered an implementation limitation.
+
+   The *context* parameter may be set to a :class:`ssl.SSLContext` instance to
+   configure the SSL settings that are used if :func:`urlopen` makes a HTTPS
+   connection.
 
    .. versionchanged:: 2.3
       Added the *proxies* support.
@@ -131,6 +140,9 @@ High-level interface
    .. versionchanged:: 2.6
       Added :meth:`getcode` to returned object and support for the
       :envvar:`no_proxy` environment variable.
+
+   .. versionchanged:: 2.7.9
+      The *context* parameter was added.
 
    .. deprecated:: 2.6
       The :func:`urlopen` function has been removed in Python 3 in favor
@@ -292,7 +304,7 @@ Utility functions
 URL Opener objects
 ------------------
 
-.. class:: URLopener([proxies[, **x509]])
+.. class:: URLopener([proxies[, context[, **x509]]])
 
    Base class for opening and reading URLs.  Unless you need to support opening
    objects using schemes other than :file:`http:`, :file:`ftp:`, or :file:`file:`,
@@ -308,6 +320,9 @@ URL Opener objects
    proxy URLs, where an empty dictionary turns proxies off completely.  Its default
    value is ``None``, in which case environmental proxy settings will be used if
    present, as discussed in the definition of :func:`urlopen`, above.
+
+   The *context* parameter may be a :class:`ssl.SSLContext` instance.  If given,
+   it defines the SSL settings the opener uses to make HTTPS connections.
 
    Additional keyword parameters, collected in *x509*, may be used for
    authentication of the client when using the :file:`https:` scheme.  The keywords

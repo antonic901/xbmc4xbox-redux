@@ -664,7 +664,7 @@ action
 actions can do just about anything with the command-line arguments associated with
 them, though most actions simply add an attribute to the object returned by
 :meth:`~ArgumentParser.parse_args`.  The ``action`` keyword argument specifies
-how the command-line arguments should be handled. The supported actions are:
+how the command-line arguments should be handled. The supplied actions are:
 
 * ``'store'`` - This just stores the argument's value.  This is the default
   action. For example::
@@ -740,28 +740,18 @@ how the command-line arguments should be handled. The supported actions are:
     >>> parser.parse_args(['--version'])
     PROG 2.0
 
-You can also specify an arbitrary action by passing an object that implements
-the Action API.  The easiest way to do this is to extend
-:class:`argparse.Action`, supplying an appropriate ``__call__`` method.  The
-``__call__`` method should accept four parameters:
-
-* ``parser`` - The ArgumentParser object which contains this action.
-
-* ``namespace`` - The :class:`Namespace` object that will be returned by
-  :meth:`~ArgumentParser.parse_args`.  Most actions add an attribute to this
-  object.
-
-* ``values`` - The associated command-line arguments, with any type conversions
-  applied.  (Type conversions are specified with the type_ keyword argument to
-  :meth:`~ArgumentParser.add_argument`.)
-
-* ``option_string`` - The option string that was used to invoke this action.
-  The ``option_string`` argument is optional, and will be absent if the action
-  is associated with a positional argument.
+You may also specify an arbitrary action by passing an Action subclass or
+other object that implements the same interface.  The recommended way to do
+this is to extend :class:`Action`, overriding the ``__call__`` method
+and optionally the ``__init__`` method.
 
 An example of a custom action::
 
    >>> class FooAction(argparse.Action):
+   ...     def __init__(self, option_strings, dest, nargs=None, **kwargs):
+   ...         if nargs is not None:
+   ...             raise ValueError("nargs not allowed")
+   ...         super(FooAction, self).__init__(option_strings, dest, **kwargs)
    ...     def __call__(self, parser, namespace, values, option_string=None):
    ...         print '%r %r %r' % (namespace, values, option_string)
    ...         setattr(namespace, self.dest, values)
@@ -775,6 +765,7 @@ An example of a custom action::
    >>> args
    Namespace(bar='1', foo='2')
 
+For more details, see :class:`Action`.
 
 nargs
 ^^^^^
@@ -1218,6 +1209,47 @@ behavior::
    >>> parser.parse_args('--foo XXX'.split())
    Namespace(bar='XXX')
 
+Action classes
+^^^^^^^^^^^^^^
+
+Action classes implement the Action API, a callable which returns a callable
+which processes arguments from the command-line. Any object which follows this
+API may be passed as the ``action`` parameter to :meth:`add_argument`.
+
+.. class:: Action(option_strings, dest, nargs=None, const=None, default=None, \
+                  type=None, choices=None, required=False, help=None, \
+                  metavar=None)
+
+Action objects are used by an ArgumentParser to represent the information needed
+to parse a single argument from one or more strings from the command line. The
+Action class must accept the two positional arguments plus any keyword arguments
+passed to :meth:`ArgumentParser.add_argument` except for the ``action`` itself.
+
+Instances of Action (or return value of any callable to the ``action``
+parameter) should have attributes "dest", "option_strings", "default", "type",
+"required", "help", etc. defined. The easiest way to ensure these attributes
+are defined is to call ``Action.__init__``.
+
+Action instances should be callable, so subclasses must override the
+``__call__`` method, which should accept four parameters:
+
+* ``parser`` - The ArgumentParser object which contains this action.
+
+* ``namespace`` - The :class:`Namespace` object that will be returned by
+  :meth:`~ArgumentParser.parse_args`.  Most actions add an attribute to this
+  object using :func:`setattr`.
+
+* ``values`` - The associated command-line arguments, with any type conversions
+  applied.  Type conversions are specified with the type_ keyword argument to
+  :meth:`~ArgumentParser.add_argument`.
+
+* ``option_string`` - The option string that was used to invoke this action.
+  The ``option_string`` argument is optional, and will be absent if the action
+  is associated with a positional argument.
+
+The ``__call__`` method may perform arbitrary actions, but will typically set
+attributes on the ``namespace`` based on ``dest`` and ``values``.
+
 
 The parse_args() method
 -----------------------
@@ -1467,12 +1499,15 @@ Sub-commands
    * parser_class - class which will be used to create sub-parser instances, by
      default the class of the current parser (e.g. ArgumentParser)
 
-   * dest - name of the attribute under which sub-command name will be
+   * action_ - the basic type of action to be taken when this argument is
+     encountered at the command line
+
+   * dest_ - name of the attribute under which sub-command name will be
      stored; by default None and no value is stored
 
-   * help - help for sub-parser group in help output, by default None
+   * help_ - help for sub-parser group in help output, by default None
 
-   * metavar - string presenting available sub-commands in help; by default it
+   * metavar_ - string presenting available sub-commands in help; by default it
      is None and presents sub-commands in form {cmd1, cmd2, ..}
 
    Some example usage::
@@ -1849,10 +1884,7 @@ Customizing file parsing
    as an argument::
 
     def convert_arg_line_to_args(self, arg_line):
-        for arg in arg_line.split():
-            if not arg.strip():
-                continue
-            yield arg
+        return arg_line.split()
 
 
 Exiting methods
@@ -1880,6 +1912,16 @@ transparently, particularly with the changes required to support the new
 ``nargs=`` specifiers and better usage messages.  When most everything in
 :mod:`optparse` had either been copy-pasted over or monkey-patched, it no
 longer seemed practical to try to maintain the backwards compatibility.
+
+The :mod:`argparse` module improves on the standard library :mod:`optparse`
+module in a number of ways including:
+
+* Handling positional arguments.
+* Supporting sub-commands.
+* Allowing alternative option prefixes like ``+`` and ``/``.
+* Handling zero-or-more and one-or-more style arguments.
+* Producing more informative usage messages.
+* Providing a much simpler interface for custom ``type`` and ``action``.
 
 A partial upgrade path from :mod:`optparse` to :mod:`argparse`:
 

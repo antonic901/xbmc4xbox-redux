@@ -26,7 +26,7 @@ of the most popular libraries is provided.
    While this HOWTO tries to give an overview of Python in the web, it cannot
    always be as up to date as desired.  Web development in Python is rapidly
    moving forward, so the wiki page on `Web Programming
-   <http://wiki.python.org/moin/WebProgramming>`_ may be more in sync with
+   <https://wiki.python.org/moin/WebProgramming>`_ may be more in sync with
    recent development.
 
 
@@ -86,7 +86,7 @@ available.
      applications, instead of presenting a "500 Internal Server Error" message
 
    The Python wiki features a page on `CGI scripts
-   <http://wiki.python.org/moin/CgiScripts>`_ with some additional information
+   <https://wiki.python.org/moin/CgiScripts>`_ with some additional information
    about CGI in Python.
 
 
@@ -146,7 +146,7 @@ server may not be needed.
   tutorial also describes the most common gotchas that might arise.
 
 * On lighttpd you need to use the `CGI module
-  <http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModCGI>`_\ , which can be configured
+  <http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModCGI>`_\ , which can be configured
   in a straightforward way.  It boils down to setting ``cgi.assign`` properly.
 
 
@@ -210,7 +210,7 @@ mod_python
 ----------
 
 People coming from PHP often find it hard to grasp how to use Python in the web.
-Their first thought is mostly `mod_python <http://www.modpython.org/>`_\ ,
+Their first thought is mostly `mod_python <http://modpython.org/>`_\ ,
 because they think that this is the equivalent to ``mod_php``.  Actually, there
 are many differences.  What ``mod_python`` does is embed the interpreter into
 the Apache process, thus speeding up requests by not having to start a Python
@@ -260,13 +260,6 @@ the latter.
 These days, FastCGI is never used directly.  Just like ``mod_python``, it is only
 used for the deployment of WSGI applications.
 
-.. seealso::
-
-   * `FastCGI, SCGI, and Apache: Background and Future
-     <http://www.vmunix.com/mark/blog/archives/2006/01/02/fastcgi-scgi-and-apache-background-and-future/>`_
-     is a discussion on why the concept of FastCGI and SCGI is better than that
-     of mod_python.
-
 
 Setting up FastCGI
 ^^^^^^^^^^^^^^^^^^
@@ -280,8 +273,8 @@ Each web server requires a specific module.
   to be loaded by Apache.
 
 * lighttpd ships its own `FastCGI module
-  <http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModFastCGI>`_ as well as an
-  `SCGI module <http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModSCGI>`_.
+  <http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI>`_ as well as an
+  `SCGI module <http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModSCGI>`_.
 
 * `nginx <http://nginx.org/>`_ also supports `FastCGI
   <http://wiki.nginx.org/NginxSimplePythonFCGI>`_.
@@ -308,13 +301,13 @@ following WSGI-application::
     WSGIServer(app).run()
 
 This is a simple WSGI application, but you need to install `flup
-<http://pypi.python.org/pypi/flup/1.0>`_ first, as flup handles the low level
+<https://pypi.python.org/pypi/flup/1.0>`_ first, as flup handles the low level
 FastCGI access.
 
 .. seealso::
 
    There is some documentation on `setting up Django with FastCGI
-   <http://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/>`_, most of
+   <https://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/>`_, most of
    which can be reused for other WSGI-compliant frameworks and libraries.
    Only the ``manage.py`` part has to be changed, the example used here can be
    used instead.  Django does more or less the exact same thing.
@@ -485,7 +478,7 @@ developing a web site.
 
    There are far more components than can be presented here.  The Python wiki
    has a page about these components, called
-   `Web Components <http://wiki.python.org/moin/WebComponents>`_.
+   `Web Components <https://wiki.python.org/moin/WebComponents>`_.
 
 
 Templates
@@ -526,13 +519,13 @@ Popular template engines include:
 
    * `Mako <http://www.makotemplates.org/>`_
    * `Genshi <http://genshi.edgewall.org/>`_
-   * `Jinja <http://jinja.pocoo.org/2/>`_
+   * `Jinja <http://jinja.pocoo.org/>`_
 
 .. seealso::
 
    There are many template engines competing for attention, because it is
    pretty easy to create them in Python.  The page `Templating
-   <http://wiki.python.org/moin/Templating>`_ in the wiki lists a big,
+   <https://wiki.python.org/moin/Templating>`_ in the wiki lists a big,
    ever-growing number of these.  The three listed above are considered "second
    generation" template engines and are a good place to start.
 
@@ -582,11 +575,11 @@ alternate storage mechanism.
 
 .. seealso::
 
-   * `Persistence Tools <http://wiki.python.org/moin/PersistenceTools>`_ lists
+   * `Persistence Tools <https://wiki.python.org/moin/PersistenceTools>`_ lists
      possibilities on how to save data in the file system.  Some of these
      modules are part of the standard library
 
-   * `Database Programming <http://wiki.python.org/moin/DatabaseProgramming>`_
+   * `Database Programming <https://wiki.python.org/moin/DatabaseProgramming>`_
      helps with choosing a method for saving data
 
    * `SQLAlchemy <http://www.sqlalchemy.org/>`_, the most powerful OR-Mapper
@@ -648,7 +641,7 @@ here.  Instead we will briefly touch on some of the most popular.
 Django
 ^^^^^^
 
-`Django <http://www.djangoproject.com/>`_ is a framework consisting of several
+`Django <https://www.djangoproject.com/>`_ is a framework consisting of several
 tightly coupled elements which were written from scratch and work together very
 well.  It includes an ORM which is quite powerful while being simple to use,
 and has a great online administration interface which makes it possible to edit
@@ -661,7 +654,7 @@ which make it possible to create web sites almost without writing any Python cod
 It has a big, international community, the members of which have created many
 web sites.  There are also a lot of add-on projects which extend Django's normal
 functionality.  This is partly due to Django's well written `online
-documentation <http://docs.djangoproject.com/>`_ and the `Django book
+documentation <https://docs.djangoproject.com/>`_ and the `Django book
 <http://www.djangobook.com/>`_.
 
 
@@ -669,7 +662,7 @@ documentation <http://docs.djangoproject.com/>`_ and the `Django book
 
    Although Django is an MVC-style framework, it names the elements
    differently, which is described in the `Django FAQ
-   <http://docs.djangoproject.com/en/dev/faq/general/#django-appears-to-be-a-mvc-framework-but-you-call-the-controller-the-view-and-the-view-the-template-how-come-you-don-t-use-the-standard-names>`_.
+   <https://docs.djangoproject.com/en/dev/faq/general/#django-appears-to-be-a-mvc-framework-but-you-call-the-controller-the-view-and-the-view-the-template-how-come-you-don-t-use-the-standard-names>`_.
 
 
 TurboGears
@@ -712,7 +705,7 @@ access to these components to the wider Python community.  There is even a
 separate framework based on the Zope components: `Grok
 <http://grok.zope.org/>`_.
 
-Zope is also the infrastructure used by the `Plone <http://plone.org/>`_ content
+Zope is also the infrastructure used by the `Plone <https://plone.org/>`_ content
 management system, one of the most powerful and popular content management
 systems available.
 
@@ -736,9 +729,7 @@ found in the Python wiki.
 .. seealso::
 
    The Python wiki contains an extensive list of `web frameworks
-   <http://wiki.python.org/moin/WebFrameworks>`_.
+   <https://wiki.python.org/moin/WebFrameworks>`_.
 
    Most frameworks also have their own mailing lists and IRC channels, look out
-   for these on the projects' web sites.  There is also a general "Python in the
-   Web" IRC channel on freenode called `#python.web
-   <http://wiki.python.org/moin/PoundPythonWeb>`_.
+   for these on the projects' web sites.

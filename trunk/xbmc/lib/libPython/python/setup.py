@@ -250,7 +250,9 @@ class PyBuildExt(build_ext):
 
         build_ext.build_extensions(self)
 
-        longest = max([len(e.name) for e in self.extensions])
+        longest = 0
+        if self.extensions:
+            longest = max([len(e.name) for e in self.extensions])
         if self.failed:
             longest = max(longest, max([len(name) for name in self.failed]))
 
@@ -694,7 +696,7 @@ class PyBuildExt(build_ext):
         exts.append( Extension('audioop', ['audioop.c']) )
 
         # Disabled on 64-bit platforms
-        if sys.maxint != 9223372036854775807L:
+        if sys.maxsize != 9223372036854775807L:
             # Operations on images
             exts.append( Extension('imageop', ['imageop.c']) )
         else:

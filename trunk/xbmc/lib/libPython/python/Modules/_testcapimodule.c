@@ -9,6 +9,7 @@
 #include <float.h>
 #include "structmember.h"
 #include "datetime.h"
+#include "marshal.h"
 
 #ifdef WITH_THREAD
 #include "pythread.h"
@@ -373,6 +374,105 @@ test_broken_memoryview(PyObject* self)
 
     PyErr_Clear();
     Py_DECREF(obj);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+test_to_contiguous(PyObject* self, PyObject *noargs)
+{
+    int data[9] = {0, -1, 1, -1, 2, -1,  3, -1, 4};
+    int result[5];
+    Py_ssize_t itemsize = sizeof(int);
+    Py_ssize_t shape = 5;
+    Py_ssize_t strides = 2 * itemsize;
+    Py_buffer view = {
+        data,
+        NULL,
+        5 * itemsize,
+        itemsize,
+        1,
+        1,
+        NULL,
+        &shape,
+        &strides,
+        NULL,
+        {0, 0},
+        NULL
+    };
+    int i;
+
+    PyBuffer_ToContiguous(result, &view, view.len, 'C');
+    for (i = 0; i < 5; i++) {
+        if (result[i] != i) {
+            PyErr_SetString(TestError,
+                "test_to_contiguous: incorrect result");
+            return NULL;
+        }
+    }
+
+    view.buf = &data[8];
+    view.strides[0] = -2 * itemsize;
+
+    PyBuffer_ToContiguous(result, &view, view.len, 'C');
+    for (i = 0; i < 5; i++) {
+        if (result[i] != 4-i) {
+            PyErr_SetString(TestError,
+                "test_to_contiguous: incorrect result");
+            return NULL;
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+test_from_contiguous(PyObject* self, PyObject *noargs)
+{
+    int data[9] = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    int init[5] = {0, 1, 2, 3, 4};
+    Py_ssize_t itemsize = sizeof(int);
+    Py_ssize_t shape = 5;
+    Py_ssize_t strides = 2 * itemsize;
+    Py_buffer view = {
+        data,
+        NULL,
+        5 * itemsize,
+        itemsize,
+        1,
+        1,
+        NULL,
+        &shape,
+        &strides,
+        NULL,
+        {0, 0},
+        NULL
+    };
+    int *ptr;
+    int i;
+
+    PyBuffer_FromContiguous(&view, init, view.len, 'C');
+    ptr = view.buf;
+    for (i = 0; i < 5; i++) {
+        if (ptr[2*i] != i) {
+            PyErr_SetString(TestError,
+                "test_from_contiguous: incorrect result");
+            return NULL;
+        }
+    }
+
+    view.buf = &data[8];
+    view.strides[0] = -2 * itemsize;
+
+    PyBuffer_FromContiguous(&view, init, view.len, 'C');
+    ptr = view.buf;
+    for (i = 0; i < 5; i++) {
+        if (*(ptr-2*i) != i) {
+            PyErr_SetString(TestError,
+                "test_from_contiguous: incorrect result");
+            return NULL;
+        }
+    }
+
     Py_RETURN_NONE;
 }
 
@@ -1776,6 +1876,159 @@ exit:
 }
 #endif   /* WITH_THREAD */
 
+/* marshal */
+
+static PyObject*
+pymarshal_write_long_to_file(PyObject* self, PyObject *args)
+{
+    long value;
+    char *filename;
+    int version;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "lsi:pymarshal_write_long_to_file",
+                          &value, &filename, &version))
+        return NULL;
+
+    fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    PyMarshal_WriteLongToFile(value, fp, version);
+
+    fclose(fp);
+    if (PyErr_Occurred())
+        return NULL;
+    Py_RETURN_NONE;
+}
+
+static PyObject*
+pymarshal_write_object_to_file(PyObject* self, PyObject *args)
+{
+    PyObject *obj;
+    char *filename;
+    int version;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "Osi:pymarshal_write_object_to_file",
+                          &obj, &filename, &version))
+        return NULL;
+
+    fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    PyMarshal_WriteObjectToFile(obj, fp, version);
+
+    fclose(fp);
+    if (PyErr_Occurred())
+        return NULL;
+    Py_RETURN_NONE;
+}
+
+static PyObject*
+pymarshal_read_short_from_file(PyObject* self, PyObject *args)
+{
+    int value;
+    long pos;
+    char *filename;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "s:pymarshal_read_short_from_file", &filename))
+        return NULL;
+
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    value = PyMarshal_ReadShortFromFile(fp);
+    pos = ftell(fp);
+
+    fclose(fp);
+    if (PyErr_Occurred())
+        return NULL;
+    return Py_BuildValue("il", value, pos);
+}
+
+static PyObject*
+pymarshal_read_long_from_file(PyObject* self, PyObject *args)
+{
+    long value, pos;
+    char *filename;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "s:pymarshal_read_long_from_file", &filename))
+        return NULL;
+
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    value = PyMarshal_ReadLongFromFile(fp);
+    pos = ftell(fp);
+
+    fclose(fp);
+    if (PyErr_Occurred())
+        return NULL;
+    return Py_BuildValue("ll", value, pos);
+}
+
+static PyObject*
+pymarshal_read_last_object_from_file(PyObject* self, PyObject *args)
+{
+    PyObject *obj;
+    long pos;
+    char *filename;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "s:pymarshal_read_last_object_from_file", &filename))
+        return NULL;
+
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    obj = PyMarshal_ReadLastObjectFromFile(fp);
+    pos = ftell(fp);
+
+    fclose(fp);
+    return Py_BuildValue("Nl", obj, pos);
+}
+
+static PyObject*
+pymarshal_read_object_from_file(PyObject* self, PyObject *args)
+{
+    PyObject *obj;
+    long pos;
+    char *filename;
+    FILE *fp;
+
+    if (!PyArg_ParseTuple(args, "s:pymarshal_read_object_from_file", &filename))
+        return NULL;
+
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return NULL;
+    }
+
+    obj = PyMarshal_ReadObjectFromFile(fp);
+    pos = ftell(fp);
+
+    fclose(fp);
+    return Py_BuildValue("Nl", obj, pos);
+}
+
 
 static PyMethodDef TestMethods[] = {
     {"raise_exception",         raise_exception,                 METH_VARARGS},
@@ -1785,6 +2038,8 @@ static PyMethodDef TestMethods[] = {
     {"test_dict_iteration",     (PyCFunction)test_dict_iteration,METH_NOARGS},
     {"test_lazy_hash_inheritance",      (PyCFunction)test_lazy_hash_inheritance,METH_NOARGS},
     {"test_broken_memoryview",          (PyCFunction)test_broken_memoryview,METH_NOARGS},
+    {"test_to_contiguous",      (PyCFunction)test_to_contiguous, METH_NOARGS},
+    {"test_from_contiguous",    (PyCFunction)test_from_contiguous, METH_NOARGS},
     {"test_long_api",           (PyCFunction)test_long_api,      METH_NOARGS},
     {"test_long_and_overflow", (PyCFunction)test_long_and_overflow,
      METH_NOARGS},
@@ -1839,6 +2094,18 @@ static PyMethodDef TestMethods[] = {
     {"call_in_temporary_c_thread", call_in_temporary_c_thread, METH_O,
      PyDoc_STR("set_error_class(error_class) -> None")},
 #endif
+    {"pymarshal_write_long_to_file",
+        pymarshal_write_long_to_file, METH_VARARGS},
+    {"pymarshal_write_object_to_file",
+        pymarshal_write_object_to_file, METH_VARARGS},
+    {"pymarshal_read_short_from_file",
+        pymarshal_read_short_from_file, METH_VARARGS},
+    {"pymarshal_read_long_from_file",
+        pymarshal_read_long_from_file, METH_VARARGS},
+    {"pymarshal_read_last_object_from_file",
+        pymarshal_read_last_object_from_file, METH_VARARGS},
+    {"pymarshal_read_object_from_file",
+        pymarshal_read_object_from_file, METH_VARARGS},
     {NULL, NULL} /* sentinel */
 };
 

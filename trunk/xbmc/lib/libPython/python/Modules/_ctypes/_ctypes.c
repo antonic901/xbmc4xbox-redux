@@ -642,7 +642,7 @@ CDataType_in_dll(PyObject *type, PyObject *args)
 #ifdef __CYGWIN__
 /* dlerror() isn't very helpful on cygwin */
         PyErr_Format(PyExc_ValueError,
-                     "symbol '%s' not found (%s) ",
+                     "symbol '%s' not found",
                      name);
 #else
         PyErr_SetString(PyExc_ValueError, ctypes_dlerror());
@@ -3393,7 +3393,7 @@ PyCFuncPtr_FromDll(PyTypeObject *type, PyObject *args, PyObject *kwds)
 #ifdef __CYGWIN__
 /* dlerror() isn't very helpful on cygwin */
         PyErr_Format(PyExc_AttributeError,
-                     "function '%s' not found (%s) ",
+                     "function '%s' not found",
                      name);
 #else
         PyErr_SetString(PyExc_AttributeError, ctypes_dlerror());
@@ -4469,8 +4469,11 @@ Array_subscript(PyObject *_self, PyObject *item)
                                               slicelen);
             }
 
-            dest = (wchar_t *)PyMem_Malloc(
-                                    slicelen * sizeof(wchar_t));
+            dest = PyMem_New(wchar_t, slicelen);
+            if (dest == NULL) {
+                PyErr_NoMemory();
+                return NULL;
+            }
 
             for (cur = start, i = 0; i < slicelen;
                  cur += step, i++) {
@@ -5060,7 +5063,7 @@ Pointer_set_contents(CDataObject *self, PyObject *value, void *closure)
     *(void **)self->b_ptr = dst->b_ptr;
 
     /*
-       A Pointer instance must keep a the value it points to alive.  So, a
+       A Pointer instance must keep the value it points to alive.  So, a
        pointer instance has b_length set to 2 instead of 1, and we set
        'value' itself as the second item of the b_objects list, additionally.
     */
@@ -5250,7 +5253,7 @@ Pointer_subscript(PyObject *_self, PyObject *item)
                 return PyUnicode_FromWideChar(ptr + start,
                                               len);
             }
-            dest = (wchar_t *)PyMem_Malloc(len * sizeof(wchar_t));
+            dest = PyMem_New(wchar_t, len);
             if (dest == NULL)
                 return PyErr_NoMemory();
             for (cur = start, i = 0; i < len; cur += step, i++) {

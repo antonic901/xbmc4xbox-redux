@@ -33,13 +33,6 @@ module-level functions and :class:`RegexObject` methods.  The functions are
 shortcuts that don't require you to compile a regex object first, but miss some
 fine-tuning parameters.
 
-.. seealso::
-
-   Mastering Regular Expressions
-      Book on regular expressions by Jeffrey Friedl, published by O'Reilly.  The
-      second edition of the book no longer covers Python at all, but the first
-      edition covered writing good regular expression patterns in great detail.
-
 
 .. _re-syntax:
 
@@ -283,7 +276,9 @@ The special characters are:
    assertion`. ``(?<=abc)def`` will find a match in ``abcdef``, since the
    lookbehind will back up 3 characters and check if the contained pattern matches.
    The contained pattern must only match strings of some fixed length, meaning that
-   ``abc`` or ``a|b`` are allowed, but ``a*`` and ``a{3,4}`` are not.  Note that
+   ``abc`` or ``a|b`` are allowed, but ``a*`` and ``a{3,4}`` are not.  Group
+   references are not supported even if they match strings of some fixed length.
+   Note that
    patterns which start with positive lookbehind assertions will not match at the
    beginning of the string being searched; you will most likely want to use the
    :func:`search` function rather than the :func:`match` function:
@@ -303,7 +298,8 @@ The special characters are:
    Matches if the current position in the string is not preceded by a match for
    ``...``.  This is called a :dfn:`negative lookbehind assertion`.  Similar to
    positive lookbehind assertions, the contained pattern must only match strings of
-   some fixed length.  Patterns which start with negative lookbehind assertions may
+   some fixed length and shouldn't contain group references.
+   Patterns which start with negative lookbehind assertions may
    match at the beginning of the string being searched.
 
 ``(?(id/name)yes-pattern|no-pattern)``
@@ -373,7 +369,7 @@ the second character.  For example, ``\$`` matches the character ``'$'``.
    database.
 
 ``\S``
-   When the :const:`UNICODE` flags is not specified, matches any non-whitespace
+   When the :const:`UNICODE` flag is not specified, matches any non-whitespace
    character; this is equivalent to the set ``[^ \t\n\r\f\v]`` The
    :const:`LOCALE` flag has no extra effect on non-whitespace match.  If
    :const:`UNICODE` is set, then any character not marked as space in the
@@ -393,7 +389,7 @@ the second character.  For example, ``\$`` matches the character ``'$'``.
    any non-alphanumeric character; this is equivalent to the set ``[^a-zA-Z0-9_]``.
    With :const:`LOCALE`, it will match any character not in the set ``[0-9_]``, and
    not defined as alphanumeric for the current locale. If :const:`UNICODE` is set,
-   this will match anything other than ``[0-9_]`` plus characters classied as
+   this will match anything other than ``[0-9_]`` plus characters classified as
    not alphanumeric in the Unicode character properties database.
 
 ``\Z``
@@ -417,6 +413,14 @@ Octal escapes are included in a limited form: If the first digit is a 0, or if
 there are three octal digits, it is considered an octal escape. Otherwise, it is
 a group reference.  As for string literals, octal escapes are always at most
 three digits in length.
+
+.. seealso::
+
+   Mastering Regular Expressions
+      Book on regular expressions by Jeffrey Friedl, published by O'Reilly.  The
+      second edition of the book no longer covers Python at all, but the first
+      edition covered writing good regular expression patterns in great detail.
+
 
 
 .. _contents-of-module-re:

@@ -179,14 +179,14 @@ There are three built-in functions that are very useful when used with lists:
 
 ``filter(function, sequence)`` returns a sequence consisting of those items from
 the sequence for which ``function(item)`` is true. If *sequence* is a
-:class:`string` or :class:`tuple`, the result will be of the same type;
-otherwise, it is always a :class:`list`. For example, to compute a sequence of
-numbers not divisible by 2 or 3::
+:class:`str`, :class:`unicode` or :class:`tuple`, the result will be of the
+same type; otherwise, it is always a :class:`list`.  For example, to compute a
+sequence of numbers divisible by 3 or 5::
 
-   >>> def f(x): return x % 2 != 0 and x % 3 != 0
+   >>> def f(x): return x % 3 == 0 or x % 5 == 0
    ...
    >>> filter(f, range(2, 25))
-   [5, 7, 11, 13, 17, 19, 23]
+   [3, 5, 6, 9, 10, 12, 15, 18, 20, 21, 24]
 
 ``map(function, sequence)`` calls ``function(item)`` for each of the sequence's
 items and returns a list of the return values.  For example, to compute some

@@ -18,16 +18,18 @@ The :mod:`urllib2` module defines functions and classes which help in opening
 URLs (mostly HTTP) in a complex world --- basic and digest authentication,
 redirections, cookies and more.
 
+.. seealso::
+
+    The `Requests package <http://requests.readthedocs.org/>`_
+    is recommended for a higher-level http client interface.
+
 
 The :mod:`urllib2` module defines the following functions:
 
 
-.. function:: urlopen(url[, data][, timeout])
+.. function:: urlopen(url[, data[, timeout[, cafile[, capath[, cadefault[, context]]]]])
 
    Open the URL *url*, which can be either a string or a :class:`Request` object.
-
-   .. warning::
-      HTTPS requests do not do any verification of the server's certificate.
 
    *data* may be a string specifying additional data to send to the server, or
    ``None`` if no such data is needed.  Currently HTTP requests are the only ones
@@ -42,6 +44,18 @@ The :mod:`urllib2` module defines the following functions:
    operations like the connection attempt (if not specified, the global default
    timeout setting will be used).  This actually only works for HTTP, HTTPS and
    FTP connections.
+
+   If *context* is specified, it must be a :class:`ssl.SSLContext` instance
+   describing the various SSL options. See :class:`~httplib.HTTPSConnection` for
+   more details.
+
+   The optional *cafile* and *capath* parameters specify a set of trusted CA
+   certificates for HTTPS requests.  *cafile* should point to a single file
+   containing a bundle of CA certificates, whereas *capath* should point to a
+   directory of hashed certificate files.  More information can be found in
+   :meth:`ssl.SSLContext.load_verify_locations`.
+
+   The *cadefault* parameter is ignored.
 
    This function returns a file-like object with three additional methods:
 
@@ -66,7 +80,10 @@ The :mod:`urllib2` module defines the following functions:
    handled through the proxy.
 
    .. versionchanged:: 2.6
-      *timeout* was added.
+     *timeout* was added.
+
+   .. versionchanged:: 2.7.9
+      *cafile*, *capath*, *cadefault*, and *context* were added.
 
 
 .. function:: install_opener(opener)
@@ -280,9 +297,13 @@ The following classes are provided:
    A class to handle opening of HTTP URLs.
 
 
-.. class:: HTTPSHandler()
+.. class:: HTTPSHandler([debuglevel[, context]])
 
-   A class to handle opening of HTTPS URLs.
+   A class to handle opening of HTTPS URLs. *context* has the same meaning as
+   for :class:`httplib.HTTPSConnection`.
+
+   .. versionchanged:: 2.7.9
+      *context* added.
 
 
 .. class:: FileHandler()

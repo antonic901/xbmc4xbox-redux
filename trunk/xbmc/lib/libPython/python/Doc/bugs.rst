@@ -29,7 +29,7 @@ Using the Python issue tracker
 ==============================
 
 Bug reports for Python itself should be submitted via the Python Bug Tracker
-(http://bugs.python.org/).  The bug tracker offers a Web form which allows
+(https://bugs.python.org/).  The bug tracker offers a Web form which allows
 pertinent information to be entered and submitted to the developers.
 
 The first step in filing a report is to determine whether the problem has
@@ -68,7 +68,7 @@ taken on the bug.
       Article which goes into some detail about how to create a useful bug report.
       This describes what kind of information is useful and why it is useful.
 
-   `Bug Writing Guidelines <http://developer.mozilla.org/en/docs/Bug_writing_guidelines>`_
+   `Bug Writing Guidelines <https://developer.mozilla.org/en-US/docs/Mozilla/QA/Bug_writing_guidelines>`_
       Information about writing a good bug report.  Some of this is specific to the
       Mozilla project, but describes general good practices.
 
@@ -82,6 +82,6 @@ patching Python in the `Python Developer's Guide`_.  If you have questions,
 the `core-mentorship mailing list`_ is a friendly place to get answers to
 any and all questions pertaining to the process of fixing issues in Python.
 
-.. _Documentation bugs: http://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity
-.. _Python Developer's Guide: http://docs.python.org/devguide/
+.. _Documentation bugs: https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity
+.. _Python Developer's Guide: https://docs.python.org/devguide/
 .. _core-mentorship mailing list: https://mail.python.org/mailman/listinfo/core-mentorship/

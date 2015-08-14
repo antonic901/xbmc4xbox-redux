@@ -265,7 +265,7 @@ The module :mod:`socket` exports the following constants and functions:
    connection to ``www.python.org`` on port 80 (results may differ on your
    system if IPv6 isn't enabled)::
 
-      >>> socket.getaddrinfo("www.python.org", 80, 0, 0, socket.SOL_TCP)
+      >>> socket.getaddrinfo("www.python.org", 80, 0, 0, socket.IPPROTO_TCP)
       [(2, 1, 6, '', ('82.94.164.162', 80)),
        (10, 1, 6, '', ('2001:888:2000:d::a2', 80, 0, 0))]
 
@@ -661,9 +661,11 @@ correspond to Unix system calls applicable to sockets.
    .. index:: single: I/O control; buffering
 
    Return a :dfn:`file object` associated with the socket.  (File objects are
-   described in :ref:`bltin-file-objects`.) The file object
-   references a :c:func:`dup`\ ped version of the socket file descriptor, so the
-   file object and socket object may be closed or garbage-collected independently.
+   described in :ref:`bltin-file-objects`.) The file object does not close the
+   socket explicitly when its :meth:`close` method is called, but only removes
+   its reference to the socket object, so that the socket will be closed if it
+   is not referenced from anywhere else.
+
    The socket must be in blocking mode (it can not have a timeout). The optional
    *mode* and *bufsize* arguments are interpreted the same way as by the built-in
    :func:`file` function.

@@ -44,19 +44,20 @@ time-critical functions in your code, and gain a significant improvement with
 very little effort, as long as you're running on a machine with an
 x86-compatible processor.
 
-`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_ is a compiler
-that accepts a slightly modified form of Python and generates the corresponding
+`Cython <http://cython.org>`_ and its relative `Pyrex
+<http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/>`_ are compilers
+that accept a slightly modified form of Python and generate the corresponding
 C code.  Pyrex makes it possible to write an extension without having to learn
 Python's C API.
 
 If you need to interface to some C or C++ library for which no Python extension
 currently exists, you can try wrapping the library's data types and functions
 with a tool such as `SWIG <http://www.swig.org>`_.  `SIP
-<http://www.riverbankcomputing.co.uk/software/sip/>`__, `CXX
+<http://www.riverbankcomputing.co.uk/software/sip/intro>`__, `CXX
 <http://cxx.sourceforge.net/>`_ `Boost
 <http://www.boost.org/libs/python/doc/index.html>`_, or `Weave
-<http://www.scipy.org/Weave>`_ are also alternatives for wrapping
-C++ libraries.
+<http://docs.scipy.org/doc/scipy-dev/reference/tutorial/weave.html>`_ are also
+alternatives for wrapping C++ libraries.
 
 
 How can I execute arbitrary Python statements from C?

@@ -130,7 +130,9 @@ is the module's name in the Python package namespace.
    Indicates the effective level for this logger. If a value other than
    :const:`NOTSET` has been set using :meth:`setLevel`, it is returned. Otherwise,
    the hierarchy is traversed towards the root until a value other than
-   :const:`NOTSET` is found, and that value is returned.
+   :const:`NOTSET` is found, and that value is returned. The value returned is
+   an integer, typically one of :const:`logging.DEBUG`, :const:`logging.INFO`
+   etc.
 
 
 .. method:: Logger.getChild(suffix)
@@ -225,8 +227,9 @@ is the module's name in the Python package namespace.
 .. method:: Logger.exception(msg, *args, **kwargs)
 
    Logs a message with level :const:`ERROR` on this logger. The arguments are
-   interpreted as for :meth:`debug`. Exception info is added to the logging
-   message. This method should only be called from an exception handler.
+   interpreted as for :meth:`debug`, except that any passed *exc_info* is not
+   inspected. Exception info is always added to the logging message. This method
+   should only be called from an exception handler.
 
 
 .. method:: Logger.addFilter(filt)
@@ -437,7 +440,9 @@ Formatter Objects
 responsible for converting a :class:`LogRecord` to (usually) a string which can
 be interpreted by either a human or an external system. The base
 :class:`Formatter` allows a formatting string to be specified. If none is
-supplied, the default value of ``'%(message)s'`` is used.
+supplied, the default value of ``'%(message)s'`` is used, which just includes
+the message in the logging call. To have additional items of information in the
+formatted output (such as a timestamp), keep reading.
 
 A Formatter can be initialized with a format string which makes use of knowledge
 of the :class:`LogRecord` attributes - such as the default value mentioned above
@@ -843,8 +848,9 @@ functions.
 .. function:: exception(msg[, *args[, **kwargs]])
 
    Logs a message with level :const:`ERROR` on the root logger. The arguments are
-   interpreted as for :func:`debug`. Exception info is added to the logging
-   message. This function should only be called from an exception handler.
+   interpreted as for :func:`debug`, except that any passed *exc_info* is not
+   inspected. Exception info is always added to the logging message. This
+   function should only be called from an exception handler.
 
 
 .. function:: log(level, msg[, *args[, **kwargs]])
@@ -897,6 +903,12 @@ functions.
    have associated with *lvl* is returned. If a numeric value corresponding to one
    of the defined levels is passed in, the corresponding string representation is
    returned. Otherwise, the string "Level %s" % lvl is returned.
+
+   .. note:: Integer levels should be used when e.g. setting levels on instances
+      of :class:`Logger` and handlers. This function is used to convert between
+      an integer level and the level name displayed in the formatted log output
+      by means of the ``%(levelname)s`` format specifier (see
+      :ref:`logrecord-attributes`).
 
 
 .. function:: makeLogRecord(attrdict)

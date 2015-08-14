@@ -16,6 +16,9 @@ AC_CANONICAL_HOST
 AC_SUBST(build)
 AC_SUBST(host)
 
+# pybuilddir.txt will be created by --generate-posix-vars in the Makefile
+rm -f pybuilddir.txt
+
 if test "$cross_compiling" = yes; then
     AC_MSG_CHECKING([for python interpreter for cross build])
     if test -z "$PYTHON_FOR_BUILD"; then
@@ -30,7 +33,7 @@ if test "$cross_compiling" = yes; then
 	    AC_MSG_ERROR([python$PACKAGE_VERSION interpreter not found])
 	fi
         AC_MSG_RESULT($interp)
-	PYTHON_FOR_BUILD='_PYTHON_PROJECT_BASE=$(abs_builddir) _PYTHON_HOST_PLATFORM=$(_PYTHON_HOST_PLATFORM) PYTHONPATH=$(shell test -f pybuilddir.txt && echo $(abs_builddir)/`cat pybuilddir.txt`:)$(srcdir)/Lib:$(srcdir)/Lib/plat-$(MACHDEP) '$interp
+	PYTHON_FOR_BUILD='_PYTHON_PROJECT_BASE=$(abs_builddir) _PYTHON_HOST_PLATFORM=$(_PYTHON_HOST_PLATFORM) PYTHONPATH=$(shell test -f pybuilddir.txt && echo $(abs_builddir)/`cat pybuilddir.txt`:)$(srcdir)/Lib:$(srcdir)/Lib/$(PLATDIR) '$interp
     fi
 elif test "$cross_compiling" = maybe; then
     AC_MSG_ERROR([Cross compiling required --host=HOST-TUPLE and --build=ARCH])
@@ -489,6 +492,9 @@ then
         MACHDEP=`echo "${MACHDEP}${SGI_ABI}" | sed 's/ *//g'`
 fi
 AC_MSG_RESULT($MACHDEP)
+
+AC_SUBST(PLATDIR)
+PLATDIR=plat-$MACHDEP
 
 # And add extra plat-mac for darwin
 AC_SUBST(EXTRAPLATDIR)
@@ -2218,6 +2224,9 @@ AC_MSG_RESULT($SHLIBS)
 # checks for libraries
 AC_CHECK_LIB(dl, dlopen)	# Dynamic linking for SunOS/Solaris and SYSV
 AC_CHECK_LIB(dld, shl_load)	# Dynamic linking for HP-UX
+AC_CHECK_LIB(crypto, RAND_egd,
+             AC_DEFINE(HAVE_RAND_EGD, 1,
+             [Define if the libcrypto has RAND_egd]))
 
 # only check for sem_init if thread support is requested
 if test "$with_threads" = "yes" -o -z "$with_threads"; then
@@ -2268,7 +2277,7 @@ LIBS="$withval $LIBS"
 ],
 [AC_MSG_RESULT(no)])
 
-AC_PATH_TOOL([PKG_CONFIG], [pkg-config])
+PKG_PROG_PKG_CONFIG
 
 # Check for use of the system expat library
 AC_MSG_CHECKING(for --with-system-expat)
@@ -2910,6 +2919,7 @@ AC_MSG_RESULT(MACHDEP_OBJS)
 AC_CHECK_FUNCS(alarm setitimer getitimer bind_textdomain_codeset chown \
  clock confstr ctermid execv fchmod fchown fork fpathconf ftime ftruncate \
  gai_strerror getgroups getlogin getloadavg getpeername getpgid getpid \
+ getentropy \
  getpriority getresuid getresgid getpwent getspnam getspent getsid getwd \
  initgroups kill killpg lchmod lchown lstat mkfifo mknod mktime mmap \
  mremap nice pathconf pause plock poll pthread_init \
@@ -4548,6 +4558,21 @@ for dir in $SRCDIRS; do
     fi
 done
 AC_MSG_RESULT(done)
+
+# ensurepip option
+AC_MSG_CHECKING(for ensurepip)
+AC_ARG_WITH(ensurepip,
+    [AS_HELP_STRING([--with(out)-ensurepip=@<:@=OPTION@:>@],
+        ["install" or "upgrade" using bundled pip, default is "no"])],
+    [],
+    [with_ensurepip=no])
+AS_CASE($with_ensurepip,
+    [yes|upgrade],[ENSUREPIP=upgrade],
+    [install],[ENSUREPIP=install],
+    [no],[ENSUREPIP=no],
+    [AC_MSG_ERROR([--with-ensurepip=upgrade|install|no])])
+AC_MSG_RESULT($ENSUREPIP)
+AC_SUBST(ENSUREPIP)
 
 # generate output files
 AC_CONFIG_FILES(Makefile.pre Modules/Setup.config Misc/python.pc)

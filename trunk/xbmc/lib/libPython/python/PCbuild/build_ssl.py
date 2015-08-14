@@ -69,7 +69,7 @@ def get_ssl_dir():
     propfile = (os.path.join(os.path.dirname(__file__), 'pyproject.vsprops'))
     with open(propfile) as f:
         m = re.search('openssl-([^"]+)"', f.read())
-        return "..\..\openssl-"+m.group(1)
+        return "..\externals\openssl-"+m.group(1)
 
 
 def create_makefile64(makefile, m32):
@@ -158,7 +158,11 @@ def main():
         make_flags = "-a"
     # perl should be on the path, but we also look in "\perl" and "c:\\perl"
     # as "well known" locations
-    perls = find_all_on_path("perl.exe", ["\\perl\\bin", "C:\\perl\\bin"])
+    perls = find_all_on_path("perl.exe", [r"\perl\bin",
+                                          r"C:\perl\bin",
+                                          r"\perl64\bin",
+                                          r"C:\perl64\bin",
+                                         ])
     perl = find_working_perl(perls)
     if perl:
         print("Found a working perl at '%s'" % (perl,))
@@ -169,6 +173,18 @@ def main():
     ssl_dir = get_ssl_dir()
     if ssl_dir is None:
         sys.exit(1)
+
+    # add our copy of NASM to PATH.  It will be on the same level as openssl
+    for dir in os.listdir(os.path.join(ssl_dir, os.pardir)):
+        if dir.startswith('nasm'):
+            nasm_dir = os.path.join(ssl_dir, os.pardir, dir)
+            nasm_dir = os.path.abspath(nasm_dir)
+            old_path = os.environ['PATH']
+            os.environ['PATH'] = os.pathsep.join([nasm_dir, old_path])
+            break
+    else:
+        print('NASM was not found, make sure it is on PATH')
+
 
     old_cd = os.getcwd()
     try:
