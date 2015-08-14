@@ -107,7 +107,7 @@ CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&q
 GOTO VC_DONE
 
 :VC_DONE
-set PATH=%PATH%;C:\Program Files\nasm\
+set PATH=%PATH%;C:\Program Files\nasm\;C:\Mingw\bin
 cd &quot;$(SolutionDir)&quot;
 c:\python27\python.exe build_ssl.py Release $(PlatformName) -a
 exit 0
