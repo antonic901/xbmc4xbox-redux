@@ -16,7 +16,8 @@
 
 
 #define PY_SSIZE_T_CLEAN
-#define XBOX_NO_XBP_DEFINE#include "Python.h"
+#define XBOX_NO_XBP_DEFINE
+#include "Python.h"
 
 #ifdef WITH_THREAD
 #include "pythread.h"

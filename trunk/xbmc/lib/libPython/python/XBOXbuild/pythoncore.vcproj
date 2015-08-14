@@ -709,9 +709,6 @@
 					RelativePath="..\Modules\zlib\deflate.h">
 				</File>
 				<File
-					RelativePath="..\Modules\zlib\gzio.c">
-				</File>
-				<File
 					RelativePath="..\Modules\zlib\infback.c">
 				</File>
 				<File
