@@ -1,5 +1,5 @@
 #!/bin/sh
-OPENSSL="openssl-0.9.8y"
+OPENSSL="openssl-0.9.8zg"
 BZIP2="bzip2-1.0.6"
 SQLITE="sqlite-amalgamation"
 SQLITEVER="3.6.21"
@@ -21,4 +21,4 @@ mv $BZIP2 bzip2
 rm -rf sqlite
 tar xvzf $SQLITE-$SQLITEVER.tar.gz
 mv sqlite-$SQLITEVER sqlite
-cd sqlite && patch -p1 <../patches/sqlite-$SQLITEVER.diff & cd ..
+cd sqlite && patch -p1 <../patches/sqlite-$SQLITEVER.diff && cd ..

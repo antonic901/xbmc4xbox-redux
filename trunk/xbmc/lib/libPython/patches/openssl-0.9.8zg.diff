@@ -1,0 +1,158 @@
+diff --git a/crypto/aes/aes_locl.h b/crypto/aes/aes_locl.h
+index fabfd02..9755fbf 100644
+--- a/crypto/aes/aes_locl.h
++++ b/crypto/aes/aes_locl.h
+@@ -62,7 +62,7 @@
+ # include <stdlib.h>
+ # include <string.h>
+ 
+-# if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64))
++# if defined(_MSC_VER) && !defined(_XBOX) && (defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64))
+ #  define SWAP(x) (_lrotl(x, 8) & 0x00ff00ff | _lrotr(x, 8) & 0xff00ff00)
+ #  define GETU32(p) SWAP(*((u32 *)(p)))
+ #  define PUTU32(ct, st) { *((u32 *)(ct)) = SWAP((st)); }
+diff --git a/crypto/camellia/cmll_locl.h b/crypto/camellia/cmll_locl.h
+index 98d1f46..2ad9369 100644
+--- a/crypto/camellia/cmll_locl.h
++++ b/crypto/camellia/cmll_locl.h
+@@ -80,7 +80,7 @@ typedef unsigned int u32;
+ extern "C" {
+ #endif
+ 
+-# if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64))
++# if defined(_MSC_VER) && !defined(_XBOX) && (defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64))
+ #  define SWAP(x) ( _lrotl(x, 8) & 0x00ff00ff | _lrotr(x, 8) & 0xff00ff00 )
+ #  define GETU32(p) SWAP(*((u32 *)(p)))
+ #  define PUTU32(ct, st) { *((u32 *)(ct)) = SWAP((st)); }
+diff --git a/crypto/cast/cast_lcl.h b/crypto/cast/cast_lcl.h
+index 7c4ad41..02003c4 100644
+--- a/crypto/cast/cast_lcl.h
++++ b/crypto/cast/cast_lcl.h
+@@ -150,7 +150,7 @@
+                          *((c)++)=(unsigned char)(((l)>> 8L)&0xff), \
+                          *((c)++)=(unsigned char)(((l)     )&0xff))
+ 
+-#if defined(OPENSSL_SYS_WIN32) && defined(_MSC_VER)
++#if defined(OPENSSL_SYS_WIN32) && defined(_MSC_VER) && !defined(_XBOX)
+ # define ROTL(a,n)     (_lrotl(a,n))
+ #else
+ # define ROTL(a,n)     ((((a)<<(n))&0xffffffffL)|((a)>>(32-(n))))
+diff --git a/crypto/md32_common.h b/crypto/md32_common.h
+index 8687665..cf0fc75 100644
+--- a/crypto/md32_common.h
++++ b/crypto/md32_common.h
+@@ -142,7 +142,7 @@
+  */
+ #undef ROTATE
+ #ifndef PEDANTIC
+-# if defined(_MSC_VER) || defined(__ICC)
++# if defined(_MSC_VER) || defined(__ICC) && !defined(_XBOX)
+ #  define ROTATE(a,n)   _lrotl(a,n)
+ # elif defined(__MWERKS__)
+ #  if defined(__POWERPC__)
+diff --git a/crypto/opensslconf.h b/crypto/opensslconf.h
+index 6050532..a9bfcc0 100644
+--- a/crypto/opensslconf.h
++++ b/crypto/opensslconf.h
+@@ -2,6 +2,9 @@
+ /* WARNING: Generated automatically from opensslconf.h.in by Configure. */
+ 
+ /* OpenSSL was configured with the following options: */
++#ifndef OPENSSL_SYSNAME_WIN32
++# define OPENSSL_SYSNAME_WIN32
++#endif
+ #ifndef OPENSSL_DOING_MAKEDEPEND
+ 
+ 
+@@ -38,8 +41,8 @@
+ 
+ #endif /* OPENSSL_DOING_MAKEDEPEND */
+ 
+-#ifndef OPENSSL_NO_DYNAMIC_ENGINE
+-# define OPENSSL_NO_DYNAMIC_ENGINE
++#ifndef OPENSSL_THREADS
++# define OPENSSL_THREADS
+ #endif
+ 
+ /* The OPENSSL_NO_* macros are also defined as NO_* if the application
+@@ -110,6 +113,7 @@
+ #define OPENSSL_UNISTD <unistd.h>
+ 
+ #undef OPENSSL_EXPORT_VAR_AS_FUNCTION
++#define OPENSSL_EXPORT_VAR_AS_FUNCTION
+ 
+ #if defined(HEADER_IDEA_H) && !defined(IDEA_INT)
+ #define IDEA_INT unsigned int
+@@ -154,7 +158,7 @@
+ 
+ #if defined(HEADER_BN_H) && !defined(CONFIG_HEADER_BN_H)
+ #define CONFIG_HEADER_BN_H
+-#undef BN_LLONG
++#define BN_LLONG
+ 
+ /* Should we define BN_DIV2W here? */
+ 
+@@ -173,7 +177,7 @@
+ #define CONFIG_HEADER_RC4_LOCL_H
+ /* if this is defined data[i] is used instead of *data, this is a %20
+  * speedup on x86 */
+-#undef RC4_INDEX
++#define RC4_INDEX
+ #endif
+ 
+ #if defined(HEADER_BF_LOCL_H) && !defined(CONFIG_HEADER_BF_LOCL_H)
+diff --git a/crypto/rand/rand_win.c b/crypto/rand/rand_win.c
+index 0c616c4..10fd60d 100644
+--- a/crypto/rand/rand_win.c
++++ b/crypto/rand/rand_win.c
+@@ -203,7 +203,14 @@ int RAND_poll(void)
+     DWORD w;
+     int good = 0;
+ 
+-# if defined(OPENSSL_SYS_WINCE)
++# if defined(_XBOX)
++	{
++	BYTE buf[64];
++	// not a real API function, so hProvider is not used.
++	if (CryptGenRandom(hProvider, sizeof(buf), buf))
++		RAND_add(buf, sizeof(buf), sizeof(buf));
++	}
++# elif defined(OPENSSL_SYS_WINCE)
+ #  if defined(_WIN32_WCE) && _WIN32_WCE>=300
+     /*
+      * Even though MSDN says _WIN32_WCE>=210, it doesn't seem to be available
+diff --git a/crypto/rc5/rc5_locl.h b/crypto/rc5/rc5_locl.h
+index 21f1114..23e1771 100644
+--- a/crypto/rc5/rc5_locl.h
++++ b/crypto/rc5/rc5_locl.h
+@@ -146,7 +146,7 @@
+                          *((c)++)=(unsigned char)(((l)>> 8L)&0xff), \
+                          *((c)++)=(unsigned char)(((l)     )&0xff))
+ 
+-#if (defined(OPENSSL_SYS_WIN32) && defined(_MSC_VER)) || defined(__ICC)
++#if (defined(OPENSSL_SYS_WIN32) && defined(_MSC_VER) && !defined(_XBOX)) || defined(__ICC)
+ # define ROTATE_l32(a,n)     _lrotl(a,n)
+ # define ROTATE_r32(a,n)     _lrotr(a,n)
+ #elif defined(__GNUC__) && __GNUC__>=2 && !defined(__STRICT_ANSI__) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
+diff --git a/util/pl/VC-32.pl b/util/pl/VC-32.pl
+index 2db008c..a4d02be 100644
+--- a/util/pl/VC-32.pl
++++ b/util/pl/VC-32.pl
+@@ -116,7 +116,7 @@ else	# Win32
+     $base_cflags.=' -D_CRT_NONSTDC_NO_DEPRECATE';	# shut up VC8
+     my $f = $shlib || $fips ?' /MD':' /MT';
+     $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
+-    $opt_cflags=$f.' /Ox /O2 /Ob2';
++    $opt_cflags=$f.' /O1 /Ob1';
+     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
+     $lflags="/nologo /subsystem:console /opt:ref";
+     }
+@@ -242,7 +242,7 @@ if (!$no_asm)
+ 	$rmd160_asm_src='crypto\ripemd\asm\rm_win32.asm';
+ 	$cpuid_asm_obj='crypto\cpu_win32.obj';
+ 	$cpuid_asm_src='crypto\cpu_win32.asm';
+-	$cflags.=" -DOPENSSL_CPUID_OBJ -DOPENSSL_IA32_SSE2 -DAES_ASM -DBN_ASM -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_BN_ASM_MONT -DMD5_ASM -DSHA1_ASM -DRMD160_ASM";
++	$cflags.=" -D_XBOX -DOPENSSL_CPUID_OBJ -DAES_ASM -DBN_ASM -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_BN_ASM_MONT -DMD5_ASM -DSHA1_ASM -DRMD160_ASM";
+ 	}
+     elsif ($FLAVOR =~ "WIN64A")
+ 	{
