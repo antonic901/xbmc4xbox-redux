@@ -19,15 +19,17 @@
 			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="1"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
+				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\Include; ..\PC"
 				PreprocessorDefinitions="_CONSOLE"
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="0"/>

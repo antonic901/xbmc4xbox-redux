@@ -81,6 +81,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
+				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories=";..\Include; ..\PC"
 				PreprocessorDefinitions="_WINDOWS"
 				StringPooling="TRUE"

@@ -90,9 +90,11 @@ exit 0
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
+				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\..\openssl\inc32;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
-				RuntimeLibrary="2"/>
+				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool

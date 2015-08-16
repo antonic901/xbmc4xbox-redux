@@ -64,9 +64,12 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="1"
+				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\Modules\_ctypes\libffi_msvc;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
-				RuntimeLibrary="2"/>
+				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
