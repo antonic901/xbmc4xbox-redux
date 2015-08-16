@@ -3542,7 +3542,7 @@ PySSL_nid2obj(PyObject *self, PyObject *args)
     return result;
 }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && ! defined(_XBOX)
 
 static PyObject*
 certEncodingType(DWORD encodingType)
@@ -3812,7 +3812,7 @@ static PyMethodDef PySSL_methods[] = {
 #endif
     {"get_default_verify_paths", (PyCFunction)PySSL_get_default_verify_paths,
      METH_NOARGS, PySSL_get_default_verify_paths_doc},
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && ! defined(_XBOX)
     {"enum_certificates", (PyCFunction)PySSL_enum_certificates,
      METH_VARARGS | METH_KEYWORDS, PySSL_enum_certificates_doc},
     {"enum_crls", (PyCFunction)PySSL_enum_crls,
