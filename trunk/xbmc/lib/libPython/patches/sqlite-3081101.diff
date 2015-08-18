@@ -1,0 +1,82 @@
+diff --git a/sqlite3.c b/sqlite3.c
+index 1344938..2fe7c0b 100644
+--- a/sqlite3.c
++++ b/sqlite3.c
+@@ -8365,7 +8365,7 @@ struct sqlite3_rtree_query_info {
+ ** Make sure that the compiler intrinsics we desire are enabled when
+ ** compiling with an appropriate version of MSVC.
+ */
+-#if defined(_MSC_VER) && _MSC_VER>=1300
++#if defined(_MSC_VER) && _MSC_VER>=1300 && !defined(_XBOX)
+ #  if !defined(_WIN32_WCE)
+ #    include <intrin.h>
+ #    pragma intrinsic(_byteswap_ushort)
+@@ -25000,7 +25000,7 @@ SQLITE_PRIVATE u32 sqlite3Get4byte(const u8 *p){
+   u32 x;
+   memcpy(&x,p,4);
+   return __builtin_bswap32(x);
+-#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300
++#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300 && !defined(_XBOX)
+   u32 x;
+   memcpy(&x,p,4);
+   return _byteswap_ulong(x);
+@@ -25015,7 +25015,7 @@ SQLITE_PRIVATE void sqlite3Put4byte(unsigned char *p, u32 v){
+ #elif SQLITE_BYTEORDER==1234 && defined(__GNUC__) && GCC_VERSION>=4003000
+   u32 x = __builtin_bswap32(v);
+   memcpy(p,&x,4);
+-#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300
++#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300 && !defined(_XBOX)
+   u32 x = _byteswap_ulong(v);
+   memcpy(p,&x,4);
+ #else
+@@ -35441,6 +35441,12 @@ static char *winUnicodeToMbcs(LPCWSTR zWideFilename){
+ ** returned string is obtained from sqlite3_malloc().
+ */
+ SQLITE_API char *SQLITE_STDCALL sqlite3_win32_mbcs_to_utf8(const char *zFilename){
++#ifdef _XBOX
++   char *zOut;
++   zOut = sqlite3_malloc(strlen(zFilename)+1);
++   strcpy(zOut, zFilename);
++   return zOut;
++#else
+   char *zFilenameUtf8;
+   LPWSTR zTmpWide;
+ 
+@@ -35451,6 +35457,7 @@ SQLITE_API char *SQLITE_STDCALL sqlite3_win32_mbcs_to_utf8(const char *zFilename
+   zFilenameUtf8 = winUnicodeToUtf8(zTmpWide);
+   sqlite3_free(zTmpWide);
+   return zFilenameUtf8;
++#endif
+ }
+ 
+ /*
+@@ -35458,6 +35465,12 @@ SQLITE_API char *SQLITE_STDCALL sqlite3_win32_mbcs_to_utf8(const char *zFilename
+ ** returned string is obtained from sqlite3_malloc().
+ */
+ SQLITE_API char *SQLITE_STDCALL sqlite3_win32_utf8_to_mbcs(const char *zFilename){
++#ifdef _XBOX
++   char *zOut;
++   zOut = sqlite3_malloc(strlen(zFilename)+1);
++   strcpy(zOut, zFilename);
++   return zOut;
++#else
+   char *zFilenameMbcs;
+   LPWSTR zTmpWide;
+ 
+@@ -35468,6 +35481,7 @@ SQLITE_API char *SQLITE_STDCALL sqlite3_win32_utf8_to_mbcs(const char *zFilename
+   zFilenameMbcs = winUnicodeToMbcs(zTmpWide);
+   sqlite3_free(zTmpWide);
+   return zFilenameMbcs;
++#endif
+ }
+ 
+ /*
+@@ -53498,7 +53512,7 @@ struct IntegrityCk {
+ # define get2byteAligned(x)  (*(u16*)(x))
+ #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4008000
+ # define get2byteAligned(x)  __builtin_bswap16(*(u16*)(x))
+-#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300
++#elif SQLITE_BYTEORDER==1234 && defined(_MSC_VER) && _MSC_VER>=1300 && !defined(_XBOX)
+ # define get2byteAligned(x)  _byteswap_ushort(*(u16*)(x))
+ #else
+ # define get2byteAligned(x)  ((x)[0]<<8 | (x)[1])

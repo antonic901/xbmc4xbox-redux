@@ -2,7 +2,7 @@
 OPENSSL="openssl-0.9.8zg"
 BZIP2="bzip2-1.0.6"
 SQLITE="sqlite-amalgamation"
-SQLITEVER="3.6.21"
+SQLITEVER="3081101"
 
 set -x
 
@@ -17,8 +17,8 @@ rm -rf bzip2
 tar xvzf $BZIP2.tar.gz
 mv $BZIP2 bzip2
 
-[ ! -f "$SQLITE-$SQLITEVER.tar.gz" ] && wget "http://sqlite.org/$SQLITE-$SQLITEVER.tar.gz"
+[ ! -f "$SQLITE-$SQLITEVER.zip" ] && wget "http://sqlite.org/$SQLITE-$SQLITEVER.zip"
 rm -rf sqlite
-tar xvzf $SQLITE-$SQLITEVER.tar.gz
-mv sqlite-$SQLITEVER sqlite
+unzip -o $SQLITE-$SQLITEVER.zip
+mv $SQLITE-$SQLITEVER sqlite
 cd sqlite && patch -p1 <../patches/sqlite-$SQLITEVER.diff && cd ..
