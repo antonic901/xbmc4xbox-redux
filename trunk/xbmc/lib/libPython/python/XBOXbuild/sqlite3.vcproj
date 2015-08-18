@@ -64,7 +64,7 @@
 				InlineFunctionExpansion="1"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="&quot;..\..\sqlite&quot;"
-				PreprocessorDefinitions="SQLITE_API=__declspec(dllexport);_XBOX"
+				PreprocessorDefinitions="SQLITE_API=__declspec(dllexport);_XBOX;SQLITE_DISABLE_LFS;SQLITE_WITHOUT_MSIZE;SQLITE_WIN32_NO_WIDE;SQLITE_OMIT_WAL"
 				RuntimeLibrary="0"
 				EnableEnhancedInstructionSet="1"
 				WarningLevel="1"/>
