@@ -563,6 +563,12 @@ static int decode_frame(AVCodecContext *avctx,
         case MKTAG('I', 'H', 'D', 'R'):
             if (length != 13)
                 goto fail;
+
+            if (s->state & PNG_IDAT) {
+                av_log(avctx, AV_LOG_ERROR, "IHDR after IDAT\n");
+                goto fail;
+            }
+
             s->width  = bytestream2_get_be32(&s->gb);
             s->height = bytestream2_get_be32(&s->gb);
             if (av_image_check_size(s->width, s->height, 0, avctx)) {
@@ -631,7 +637,7 @@ static int decode_frame(AVCodecContext *avctx,
                 } else if ((s->bits_per_pixel == 1 || s->bits_per_pixel == 2 || s->bits_per_pixel == 4 || s->bits_per_pixel == 8) &&
                            s->color_type == PNG_COLOR_TYPE_PALETTE) {
                     avctx->pix_fmt = AV_PIX_FMT_PAL8;
-                } else if (s->bit_depth == 1) {
+                } else if (s->bit_depth == 1 && s->bits_per_pixel == 1) {
                     avctx->pix_fmt = AV_PIX_FMT_MONOBLACK;
                 } else if (s->bit_depth == 8 &&
                            s->color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
@@ -842,9 +848,10 @@ static int decode_frame(AVCodecContext *avctx,
             int i, j;
             uint8_t *pd      = s->current_picture->data[0];
             uint8_t *pd_last = s->last_picture->data[0];
+            int ls = FFMIN(av_image_get_linesize(s->current_picture->format, s->width, 0), s->width * s->bpp);
 
             for (j = 0; j < s->height; j++) {
-                for (i = 0; i < s->width * s->bpp; i++) {
+                for (i = 0; i < ls; i++) {
                     pd[i] += pd_last[i];
                 }
                 pd      += s->image_linesize;

@@ -74,8 +74,8 @@ static int read_number(const AVOption *o, void *dst, double *num, int *den, int6
 {
     switch (o->type) {
     case AV_OPT_TYPE_FLAGS:     *intnum = *(unsigned int*)dst;return 0;
-    case AV_OPT_TYPE_PIXEL_FMT:
-    case AV_OPT_TYPE_SAMPLE_FMT:
+    case AV_OPT_TYPE_PIXEL_FMT: *intnum = *(enum AVPixelFormat *)dst;return 0;
+    case AV_OPT_TYPE_SAMPLE_FMT:*intnum = *(enum AVSampleFormat*)dst;return 0;
     case AV_OPT_TYPE_INT:       *intnum = *(int         *)dst;return 0;
     case AV_OPT_TYPE_INT64:     *intnum = *(int64_t     *)dst;return 0;
     case AV_OPT_TYPE_FLOAT:     *num    = *(float       *)dst;return 0;
@@ -97,9 +97,9 @@ static int write_number(void *obj, const AVOption *o, void *dst, double num, int
     }
 
     switch (o->type) {
+    case AV_OPT_TYPE_PIXEL_FMT: *(enum AVPixelFormat *)dst = llrint(num/den) * intnum; break;
+    case AV_OPT_TYPE_SAMPLE_FMT:*(enum AVSampleFormat*)dst = llrint(num/den) * intnum; break;
     case AV_OPT_TYPE_FLAGS:
-    case AV_OPT_TYPE_PIXEL_FMT:
-    case AV_OPT_TYPE_SAMPLE_FMT:
     case AV_OPT_TYPE_INT:   *(int       *)dst= llrint(num/den)*intnum; break;
     case AV_OPT_TYPE_INT64: *(int64_t   *)dst= llrint(num/den)*intnum; break;
     case AV_OPT_TYPE_FLOAT: *(float     *)dst= num*intnum/den;         break;
@@ -149,6 +149,8 @@ static int set_string_binary(void *obj, const AVOption *o, const char *val, uint
     len /= 2;
 
     ptr = bin = av_malloc(len);
+    if (!ptr)
+        return AVERROR(ENOMEM);
     while (*val) {
         int a = hexchar2int(*val++);
         int b = hexchar2int(*val++);
