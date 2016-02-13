@@ -333,10 +333,8 @@ What are the rules for local and global variables in Python?
 ------------------------------------------------------------
 
 In Python, variables that are only referenced inside a function are implicitly
-global.  If a variable is assigned a new value anywhere within the function's
-body, it's assumed to be a local.  If a variable is ever assigned a new value
-inside the function, the variable is implicitly local, and you need to
-explicitly declare it as 'global'.
+global.  If a variable is assigned a value anywhere within the function's body,
+it's assumed to be a local unless explicitly declared as global.
 
 Though a bit surprising at first, a moment's consideration explains this.  On
 one hand, requiring :keyword:`global` for assigned variables provides a bar
@@ -1281,6 +1279,8 @@ analogue of lisp car is ``lisp_list[0]`` and the analogue of cdr is
 ``lisp_list[1]``.  Only do this if you're sure you really need to, because it's
 usually a lot slower than using Python lists.
 
+
+.. _faq-multidimensional-list:
 
 How do I create a multidimensional list?
 ----------------------------------------

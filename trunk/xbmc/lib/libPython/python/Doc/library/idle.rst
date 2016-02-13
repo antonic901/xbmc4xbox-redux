@@ -8,23 +8,29 @@ IDLE
    single: Python Editor
    single: Integrated Development Environment
 
-.. moduleauthor:: Guido van Rossum <guido@Python.org>
+.. moduleauthor:: Guido van Rossum <guido@python.org>
 
-IDLE is the Python IDE built with the :mod:`tkinter` GUI toolkit.
+IDLE is Python's Integrated Development and Learning Environment.
 
 IDLE has the following features:
 
 * coded in 100% pure Python, using the :mod:`tkinter` GUI toolkit
 
-* cross-platform: works on Windows, Unix, and Mac OS X
+* cross-platform: works mostly the same on Windows, Unix, and Mac OS X
+
+* Python shell window (interactive interpreter) with colorizing
+  of code input, output, and error messages
 
 * multi-window text editor with multiple undo, Python colorizing,
-  smart indent, call tips, and many other features
+  smart indent, call tips, auto completion, and other features
 
-* Python shell window (a.k.a. interactive interpreter)
+* search within any window, replace within editor windows, and search
+  through multiple files (grep)
 
-* debugger (not complete, but you can set breakpoints, view and step)
+* debugger with persistent breakpoints, stepping, and viewing
+  of global and local namespaces
 
+* configuration, browsers, and other dialogs
 
 Menus
 -----
@@ -37,8 +43,6 @@ context menu.
 
 IDLE's menus dynamically change based on which window is currently selected.
 Each menu documented below indicates which window type it is associated with.
-Click on the dotted line at the top of a menu to "tear it off": a separate
-window containing the menu is created (for Unix and Windows only).
 
 File menu (Shell and Editor)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -202,7 +206,12 @@ Check Module
 
 Run Module
    Do Check Module (above).  If no error, restart the shell to clean the
-   environment, then execute the module.
+   environment, then execute the module.  Output is displayed in the Shell
+   window.  Note that output requires use of ``print`` or ``write``.
+   When execution is complete, the Shell retains focus and displays a prompt.
+   At this point, one may interactively explore the result of execution.
+   This is similar to executing a file with ``python -i file`` at a command
+   line.
 
 Shell menu (Shell window only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -243,16 +252,16 @@ Options menu (Shell and Editor)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Configure IDLE
-   Open a configuration dialog.  Fonts, indentation, keybindings, and color
-   themes may be altered.  Startup Preferences may be set, and additional
-   help sources can be specified.  Non-default user setting are saved in a
-   .idlerc directory in the user's home directory.  Problems caused by bad user
-   configuration files are solved by editing or deleting one or more of the
-   files in .idlerc.
+   Open a configuration dialog and change preferences for the following:
+   fonts, indentation, keybindings, text color themes, startup windows and
+   size, additional help sources, and extensions (see below).  On OS X,
+   open the configuration dialog by selecting Preferences in the application
+   menu.  To use a new built-in color theme (IDLE Dark) with older IDLEs,
+   save it as a new custom theme.
 
-Configure Extensions
-   Open a configuration dialog for setting preferences for extensions
-   (discussed below).  See note above about the location of user settings.
+   Non-default user settings are saved in a .idlerc directory in the user's
+   home directory.  Problems caused by bad user configuration files are solved
+   by editing or deleting one or more of the files in .idlerc.
 
 Code Context (toggle)(Editor Window only)
    Open a pane at the top of the edit window which shows the block context
@@ -331,8 +340,8 @@ Go to file/line
 Editing and navigation
 ----------------------
 
-In this section, 'C' refers to the Control key on Windows and Unix and
-the Command key on Mac OSX.
+In this section, 'C' refers to the :kbd:`Control` key on Windows and Unix and
+the :kbd:`Command` key on Mac OSX.
 
 * :kbd:`Backspace` deletes to the left; :kbd:`Del` deletes to the right
 
@@ -425,9 +434,35 @@ Note that IDLE itself places quite a few modules in sys.modules, so
 much can be found by default, e.g. the re module.
 
 If you don't like the ACW popping up unbidden, simply make the delay
-longer or disable the extension.  Or another option is the delay could
-be set to zero. Another alternative to preventing ACW popups is to
-disable the call tips extension.
+longer or disable the extension.
+
+Calltips
+^^^^^^^^
+
+A calltip is shown when one types :kbd:`(` after the name of an *acccessible*
+function.  A name expression may include dots and subscripts.  A calltip
+remains until it is clicked, the cursor is moved out of the argument area,
+or :kbd:`)` is typed.  When the cursor is in the argument part of a definition,
+the menu or shortcut display a calltip.
+
+A calltip consists of the function signature and the first line of the
+docstring.  For builtins without an accessible signature, the calltip
+consists of all lines up the fifth line or the first blank line.  These
+details may change.
+
+The set of *accessible* functions depends on what modules have been imported
+into the user process, including those imported by Idle itself,
+and what definitions have been run, all since the last restart.
+
+For example, restart the Shell and enter ``itertools.count(``.  A calltip
+appears because Idle imports itertools into the user process for its own use.
+(This could change.)  Enter ``turtle.write(`` and nothing appears.  Idle does
+not import turtle.  The menu or shortcut do nothing either.  Enter
+``import turtle`` and then ``turtle.write(`` will work.
+
+In an editor, import statements have no effect until one runs the file.  One
+might want to run a file after writing the import statements at the top,
+or immediately run an existing file before editing.
 
 Python Shell window
 ^^^^^^^^^^^^^^^^^^^
@@ -448,42 +483,24 @@ Python Shell window
   * :kbd:`Return` while on any previous command retrieves that command
 
 
-Syntax colors
--------------
+Text colors
+^^^^^^^^^^^
 
-The coloring is applied in a background "thread," so you may occasionally see
-uncolorized text.  To change the color scheme, edit the ``[Colors]`` section in
-:file:`config.txt`.
+Idle defaults to black on white text, but colors text with special meanings.
+For the shell, these are shell output, shell error, user output, and
+user error.  For Python code, at the shell prompt or in an editor, these are
+keywords, builtin class and function names, names following ``class`` and
+``def``, strings, and comments. For any text window, these are the cursor (when
+present), found text (when possible), and selected text.
 
-Python syntax colors:
-   Keywords
-      orange
-
-   Strings
-      green
-
-   Comments
-      red
-
-   Definitions
-      blue
-
-Shell colors:
-   Console output
-      brown
-
-   stdout
-      blue
-
-   stderr
-      dark green
-
-   stdin
-      black
+Text coloring is done in the background, so uncolorized text is occasionally
+visible.  To change the color scheme, use the Configure IDLE dialog
+Highlighting tab.  The marking of debugger breakpoint lines in the editor and
+text in popups and dialogs is not user-configurable.
 
 
-Startup
--------
+Startup and code execution
+--------------------------
 
 Upon startup with the ``-s`` option, IDLE will execute the file referenced by
 the environment variables :envvar:`IDLESTARTUP` or :envvar:`PYTHONSTARTUP`.
@@ -505,30 +522,59 @@ Command line usage
 
 ::
 
-   idle.py [-c command] [-d] [-e] [-s] [-t title] [arg] ...
+   idle.py [-c command] [-d] [-e] [-h] [-i] [-r file] [-s] [-t title] [-] [arg] ...
 
-   -c command  run this command
-   -d          enable debugger
-   -e          edit mode; arguments are files to be edited
-   -s          run $IDLESTARTUP or $PYTHONSTARTUP first
+   -c command  run command in the shell window
+   -d          enable debugger and open shell window
+   -e          open editor window
+   -h          print help message with legal combinatios and exit
+   -i          open shell window
+   -r file     run file in shell window
+   -s          run $IDLESTARTUP or $PYTHONSTARTUP first, in shell window
    -t title    set title of shell window
+   -           run stdin in shell (- must be last option before args)
 
 If there are arguments:
 
-#. If ``-e`` is used, arguments are files opened for editing and
-   ``sys.argv`` reflects the arguments passed to IDLE itself.
+* If ``-``, ``-c``, or ``r`` is used, all arguments are placed in
+  ``sys.argv[1:...]`` and ``sys.argv[0]`` is set to ``''``, ``'-c'``,
+  or ``'-r'``.  No editor window is opened, even if that is the default
+  set in the Options dialog.
 
-#. Otherwise, if ``-c`` is used, all arguments are placed in
-   ``sys.argv[1:...]``, with ``sys.argv[0]`` set to ``'-c'``.
+* Otherwise, arguments are files opened for editing and
+  ``sys.argv`` reflects the arguments passed to IDLE itself.
 
-#. Otherwise, if neither ``-e`` nor ``-c`` is used, the first
-   argument is a script which is executed with the remaining arguments in
-   ``sys.argv[1:...]``  and ``sys.argv[0]`` set to the script name.  If the
-   script name is '-', no script is executed but an interactive Python session
-   is started;    the arguments are still available in ``sys.argv``.
+
+IDLE-console differences
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+As much as possible, the result of executing Python code with IDLE is the
+same as executing the same code in a console window.  However, the different
+interface and operation occasionally affects results.
+
+For instance, IDLE normally executes user code in a separate process from
+the IDLE GUI itself.  The IDLE versions of sys.stdin, .stdout, and .stderr in the
+execution process get input from and send output to the GUI process,
+which keeps control of the keyboard and screen.  This is normally transparent,
+but code that access these object will see different attribute values.
+Also, functions that directly access the keyboard and screen will not work.
+
+With IDLE's Shell, one enters, edits, and recalls complete statements.
+Some consoles only work with a single physical line at a time.
 
 Running without a subprocess
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, IDLE executes user code in a separate subprocess via a socket,
+which uses the internal loopback interface.  This connection is not
+externally visible and no data is sent to or received from the Internet.
+If firewall software complains anyway, you can ignore it.
+
+If the attempt to make the socket connection fails, Idle will notify you.
+Such failures are sometimes transient, but if persistent, the problem
+may be either a firewall blocking the connecton or misconfiguration of
+a particular system.  Until the problem is fixed, one can run Idle with
+the -n command line switch.
 
 If IDLE is started with the -n command line switch it will run in a
 single process and will not create the subprocess which runs the RPC

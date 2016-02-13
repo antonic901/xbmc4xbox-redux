@@ -1,10 +1,5 @@
-@rem Used by the buildbot "clean" step.
-call "%VS90COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-@echo Deleting .pyc/.pyo files ...
-del /s Lib\*.pyc Lib\*.pyo
-@echo Deleting test leftovers ...
-rmdir /s /q build
-cd PCbuild
-vcbuild /clean pcbuild.sln "Release|x64"
-vcbuild /clean pcbuild.sln "Debug|x64"
-cd ..
+@rem Formerly used by the buildbot "clean" step.
+@echo This script is no longer used and may be removed in the future.
+@echo To get the same effect as this script, use `clean.bat` from this
+@echo directory and pass `-p x64` as two arguments.
+call "%~dp0clean.bat" -p x64 %*

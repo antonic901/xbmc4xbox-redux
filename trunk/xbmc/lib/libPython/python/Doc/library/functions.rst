@@ -261,7 +261,7 @@ section.
 
 .. class:: complex([real[, imag]])
 
-   Return a complex number with the value *real* + *imag*\*j or convert a string or
+   Return a complex number with the value *real* + *imag*\*1j or convert a string or
    number to a complex number.  If the first parameter is a string, it will be
    interpreted as a complex number and the function must be called without a second
    parameter.  The second parameter can never be a string. Each argument may be any
@@ -687,10 +687,10 @@ section.
    is a type object (new-style class) and *object* is an object of that type or of
    a (direct, indirect or :term:`virtual <abstract base class>`) subclass
    thereof.  If *object* is not a class instance or
-   an object of the given type, the function always returns false.  If *classinfo*
-   is neither a class object nor a type object, it may be a tuple of class or type
-   objects, or may recursively contain other such tuples (other sequence types are
-   not accepted).  If *classinfo* is not a class, type, or tuple of classes, types,
+   an object of the given type, the function always returns false.
+   If *classinfo* is a tuple of class or type objects (or recursively, other
+   such tuples), return true if *object* is an instance of any of the classes
+   or types.  If *classinfo* is not a class, type, or tuple of classes, types,
    and such tuples, a :exc:`TypeError` exception is raised.
 
    .. versionchanged:: 2.2
@@ -1191,10 +1191,11 @@ section.
       except NameError:
           cache = {}
 
-   It is legal though generally not very useful to reload built-in or dynamically
-   loaded modules, except for :mod:`sys`, :mod:`__main__` and :mod:`__builtin__`.
-   In many cases, however, extension modules are not designed to be initialized
-   more than once, and may fail in arbitrary ways when reloaded.
+   It is generally not very useful to reload built-in or dynamically loaded
+   modules.  Reloading :mod:`sys`, :mod:`__main__`, :mod:`builtins` and other
+   key modules is not recommended.  In many cases extension modules are not
+   designed to be initialized more than once, and may fail in arbitrary ways
+   when reloaded.
 
    If a module imports objects from another module using :keyword:`from` ...
    :keyword:`import` ..., calling :func:`reload` for the other module does not
@@ -1761,4 +1762,3 @@ bypass these functions without concerns about missing something important.
 .. [#] In the current implementation, local variable bindings cannot normally be
    affected this way, but variables retrieved from other scopes (such as modules)
    can be.  This may change.
-

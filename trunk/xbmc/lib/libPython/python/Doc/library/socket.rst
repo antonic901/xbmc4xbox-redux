@@ -262,12 +262,12 @@ The module :mod:`socket` exports the following constants and functions:
    method.
 
    The following example fetches address information for a hypothetical TCP
-   connection to ``www.python.org`` on port 80 (results may differ on your
+   connection to ``example.org`` on port 80 (results may differ on your
    system if IPv6 isn't enabled)::
 
-      >>> socket.getaddrinfo("www.python.org", 80, 0, 0, socket.IPPROTO_TCP)
-      [(2, 1, 6, '', ('82.94.164.162', 80)),
-       (10, 1, 6, '', ('2001:888:2000:d::a2', 80, 0, 0))]
+      >>> socket.getaddrinfo("example.org", 80, 0, 0, socket.IPPROTO_TCP)
+      [(10, 1, 6, '', ('2606:2800:220:1:248:1893:25c8:1946', 80, 0, 0)),
+       (2, 1, 6, '', ('93.184.216.34', 80))]
 
    .. versionadded:: 2.2
 

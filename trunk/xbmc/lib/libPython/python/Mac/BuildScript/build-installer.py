@@ -237,9 +237,9 @@ def library_recipes():
 
         result.extend([
           dict(
-              name="OpenSSL 1.0.2a",
-              url="https://www.openssl.org/source/openssl-1.0.2a.tar.gz",
-              checksum='a06c547dac9044161a477211049f60ef',
+              name="OpenSSL 1.0.2d",
+              url="https://www.openssl.org/source/openssl-1.0.2d.tar.gz",
+              checksum='38dd619b2e77cbac69b99f52a053d25a',
               patches=[
                   "openssl_sdk_makedepend.patch",
                    ],

@@ -31,7 +31,7 @@ The available exception and functions in this module are:
 
 .. function:: adler32(data[, value])
 
-   Computes a Adler-32 checksum of *data*.  (An Adler-32 checksum is almost as
+   Computes an Adler-32 checksum of *data*.  (An Adler-32 checksum is almost as
    reliable as a CRC32 but can be computed much more quickly.)  If *value* is
    present, it is used as the starting value of the checksum; otherwise, a fixed
    default value is used.  This allows computing a running checksum over the
@@ -221,7 +221,7 @@ Decompression objects support the following methods, and two attributes:
    :meth:`decompress` method.  Some of the input data may be preserved in internal
    buffers for later processing.
 
-   If the optional parameter *max_length* is supplied then the return value will be
+   If the optional parameter *max_length* is non-zero then the return value will be
    no longer than *max_length*. This may mean that not all of the compressed input
    can be processed; and unconsumed data will be stored in the attribute
    :attr:`unconsumed_tail`. This string must be passed to a subsequent call to

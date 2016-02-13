@@ -783,7 +783,7 @@ bytearray_init(PyByteArrayObject *self, PyObject *args, PyObject *kwds)
     if (PyBytes_Check(arg)) {
         PyObject *new, *encoded;
         if (encoding != NULL) {
-            encoded = PyCodec_Encode(arg, encoding, errors);
+            encoded = _PyCodec_EncodeText(arg, encoding, errors);
             if (encoded == NULL)
                 return -1;
             assert(PyBytes_Check(encoded));
@@ -809,7 +809,7 @@ bytearray_init(PyByteArrayObject *self, PyObject *args, PyObject *kwds)
                             "unicode argument without an encoding");
             return -1;
         }
-        encoded = PyCodec_Encode(arg, encoding, errors);
+        encoded = _PyCodec_EncodeText(arg, encoding, errors);
         if (encoded == NULL)
             return -1;
         assert(PyBytes_Check(encoded));
@@ -897,8 +897,10 @@ bytearray_init(PyByteArrayObject *self, PyObject *args, PyObject *kwds)
             goto error;
 
         /* Append the byte */
-        if (Py_SIZE(self) < self->ob_alloc)
+        if (Py_SIZE(self) + 1 < self->ob_alloc) {
             Py_SIZE(self)++;
+            PyByteArray_AS_STRING(self)[Py_SIZE(self)] = '\0';
+        }
         else if (PyByteArray_Resize((PyObject *)self, Py_SIZE(self)+1) < 0)
             goto error;
         self->ob_bytes[Py_SIZE(self)-1] = value;
@@ -1021,14 +1023,18 @@ bytearray_richcompare(PyObject *self, PyObject *other, int op)
     Py_buffer self_bytes, other_bytes;
     PyObject *res;
     Py_ssize_t minsize;
-    int cmp;
+    int cmp, rc;
 
     /* Bytes can be compared to anything that supports the (binary)
        buffer API.  Except that a comparison with Unicode is always an
        error, even if the comparison is for equality. */
 #ifdef Py_USING_UNICODE
-    if (PyObject_IsInstance(self, (PyObject*)&PyUnicode_Type) ||
-        PyObject_IsInstance(other, (PyObject*)&PyUnicode_Type)) {
+    rc = PyObject_IsInstance(self, (PyObject*)&PyUnicode_Type);
+    if (!rc)
+        rc = PyObject_IsInstance(other, (PyObject*)&PyUnicode_Type);
+    if (rc < 0)
+        return NULL;
+    if (rc) {
         if (Py_BytesWarningFlag && op == Py_EQ) {
             if (PyErr_WarnEx(PyExc_BytesWarning,
                             "Comparison between bytearray and string", 1))
@@ -2563,7 +2569,7 @@ bytearray_decode(PyObject *self, PyObject *args, PyObject *kwargs)
         return NULL;
 #endif
     }
-    return PyCodec_Decode(self, encoding, errors);
+    return _PyCodec_DecodeText(self, encoding, errors);
 }
 
 PyDoc_STRVAR(alloc_doc,

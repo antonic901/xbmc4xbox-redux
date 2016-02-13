@@ -107,6 +107,7 @@ Ben Bell
 Thomas Bellman
 Alexander “Саша” Belopolsky
 Eli Bendersky
+Cory Benfield
 David Benjamin
 Oscar Benjamin
 Andrew Bennetts
@@ -429,6 +430,7 @@ Doug Fort
 Chris Foster
 John Fouhy
 Andrew Francis
+Matt Frank
 Stefan Franke
 Martin Franklin
 Kent Frazier
@@ -460,6 +462,7 @@ Fred Gansevles
 Lars Marius Garshol
 Dan Gass
 Andrew Gaul
+Matthieu Gautier
 Stephen M. Gava
 Xavier de Gaye
 Harry Henry Gebel
@@ -571,6 +574,7 @@ Gregor Hoffleit
 Chris Hoffman
 Stefan Hoffmeister
 Albert Hofkamp
+Chris Hogan
 Tomas Hoger
 Jonathan Hogg
 Kamilla Holanda
@@ -804,6 +808,7 @@ Mark Levinson
 Mark Levitt
 William Lewis
 Akira Li
+Robert Li
 Xuanji Li
 Robert van Liere
 Ross Light
@@ -872,12 +877,14 @@ Nick Mathewson
 Simon Mathieu
 Laura Matson
 Graham Matthews
+mattip
 Martin Matusiak
 Dieter Maurer
 Daniel May
 Madison May
 Lucas Maystre
 Arnaud Mazin
+Pam McA'Nulty
 Matt McClure
 Rebecca McCreary
 Kirk McDonald
@@ -1028,6 +1035,7 @@ Heikki Partanen
 Harri Pasanen
 Gaël Pasgrimaud
 Ashish Nitin Patil
+Alecsandru Patrascu
 Randy Pausch
 Samuele Pedroni
 Justin Peel
@@ -1078,6 +1086,7 @@ Martin Pool
 Iustin Pop
 Claudiu Popa
 John Popplewell
+Matheus Vieira Portela
 Davin Potts
 Guillaume Pratte
 Florian Preinstorfer
@@ -1086,6 +1095,7 @@ Paul Prescod
 Donovan Preston
 Paul Price
 Iuliia Proskurnia
+Dorian Pula
 Jyrki Pulliainen
 Steve Purcell
 Eduardo Pérez
@@ -1135,6 +1145,7 @@ Vlad Riscutia
 Wes Rishel
 Daniel Riti
 Juan M. Bello Rivas
+Mohd Sanad Zaki Rizvi
 Davide Rizzo
 Anthony Roach
 Carl Robben
@@ -1153,12 +1164,14 @@ Armin Ronacher
 Case Roole
 Timothy Roscoe
 Erik Rose
+Mark Roseman
 Jim Roskind
 Brian Rosner
 Guido van Rossum
 Just van Rossum
 Hugo van Rossum
 Saskia van Rossum
+Clement Rouault
 Donald Wallace Rouse II
 Liam Routt
 Todd Rovito
@@ -1167,6 +1180,7 @@ Clinton Roy
 Paul Rubin
 Sam Ruby
 Demur Rumed
+Bernt Røskar Brenna
 Audun S. Runde
 Eran Rundstein
 Rauli Ruohonen
@@ -1196,6 +1210,7 @@ Hugh Sasse
 Bob Savage
 Ben Sayer
 sbt
+Luca Sbardella
 Marco Scataglini
 Andrew Schaaf
 Michael Scharf
@@ -1245,6 +1260,7 @@ Alexander Shigin
 Pete Shinners
 Michael Shiplett
 John W. Shipman
+Shiyao Ma
 Joel Shprentz
 Yue Shuaijie
 Terrel Shumway
@@ -1276,6 +1292,7 @@ Ryan Smith-Roberts
 Rafal Smotrzyk
 Eric Snow
 Dirk Soede
+Nir Soffer
 Paul Sokolovsky
 Evgeny Sologubov
 Cody Somerville
@@ -1326,6 +1343,7 @@ John Szakmeister
 Amir Szekely
 Arfrever Frehtes Taifersar Arahesis
 Hideaki Takahashi
+Takase Arihiro
 Indra Talip
 Neil Tallim
 Geoff Talvola
@@ -1385,6 +1403,7 @@ Fraser Tweedale
 Doobee R. Tzeck
 Eren Türkay
 Lionel Ulmer
+Adnan Umer
 Roger Upole
 Daniel Urban
 Michael Urman
@@ -1424,6 +1443,7 @@ Richard Walker
 Larry Wall
 Kevin Walzer
 Rodrigo Steinmuller Wanderley
+Dingyuan Wang
 Ke Wang
 Greg Ward
 Tom Wardill
@@ -1490,6 +1510,7 @@ Thomas Wouters
 Daniel Wozniak
 Heiko Wundram
 Doug Wyatt
+Xiang Zhang
 Robert Xiao
 Florent Xicluna
 Hirokazu Yamamoto

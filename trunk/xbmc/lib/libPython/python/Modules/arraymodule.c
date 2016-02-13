@@ -1380,6 +1380,11 @@ array_fromstring(arrayobject *self, PyObject *args)
     int itemsize = self->ob_descr->itemsize;
     if (!PyArg_ParseTuple(args, "s#:fromstring", &str, &n))
         return NULL;
+    if (str == self->ob_item) {
+        PyErr_SetString(PyExc_ValueError,
+                        "array.fromstring(x): x cannot be self");
+        return NULL;
+    }
     if (n % itemsize != 0) {
         PyErr_SetString(PyExc_ValueError,
                    "string length not a multiple of item size");
@@ -1928,15 +1933,29 @@ static PyBufferProcs array_as_buffer = {
 static PyObject *
 array_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    char c;
-    PyObject *initial = NULL, *it = NULL;
+    int c = -1;
+    PyObject *initial = NULL, *it = NULL, *typecode = NULL;
     struct arraydescr *descr;
 
     if (type == &Arraytype && !_PyArg_NoKeywords("array.array()", kwds))
         return NULL;
 
-    if (!PyArg_ParseTuple(args, "c|O:array", &c, &initial))
+    if (!PyArg_ParseTuple(args, "O|O:array", &typecode, &initial))
         return NULL;
+
+    if (PyString_Check(typecode) && PyString_GET_SIZE(typecode) == 1)
+        c = (unsigned char)*PyString_AS_STRING(typecode);
+#ifdef Py_USING_UNICODE
+    else if (PyUnicode_Check(typecode) && PyUnicode_GET_SIZE(typecode) == 1)
+        c = *PyUnicode_AS_UNICODE(typecode);
+#endif
+    else {
+        PyErr_Format(PyExc_TypeError,
+                     "array() argument 1 or typecode must be char (string or "
+                     "ascii-unicode with length 1), not %s",
+                     Py_TYPE(typecode)->tp_name);
+        return NULL;
+    }
 
     if (!(initial == NULL || PyList_Check(initial)
           || PyString_Check(initial) || PyTuple_Check(initial)

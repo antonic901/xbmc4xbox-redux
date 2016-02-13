@@ -2533,6 +2533,27 @@ save_reduce(Picklerobject *self, PyObject *args, PyObject *fn, PyObject *ob)
     /* Memoize. */
     /* XXX How can ob be NULL? */
     if (ob != NULL) {
+        /* If the object is already in the memo, this means it is
+           recursive. In this case, throw away everything we put on the
+           stack, and fetch the object back from the memo. */
+        if (Py_REFCNT(ob) > 1 && !self->fast) {
+            PyObject *py_ob_id = PyLong_FromVoidPtr(ob);
+            if (!py_ob_id)
+                return -1;
+            if (PyDict_GetItem(self->memo, py_ob_id)) {
+                const char pop_op = POP;
+                if (self->write_func(self, &pop_op, 1) < 0 ||
+                    get(self, py_ob_id) < 0) {
+                    Py_DECREF(py_ob_id);
+                    return -1;
+                }
+                Py_DECREF(py_ob_id);
+                return 0;
+            }
+            Py_DECREF(py_ob_id);
+            if (PyErr_Occurred())
+                return -1;
+        }
         if (state && !PyDict_Check(state)) {
             if (put2(self, ob) < 0)
                 return -1;
@@ -2910,7 +2931,7 @@ Pickle_getvalue(Picklerobject *self, PyObject *args)
             if (ik >= lm || ik == 0) {
                 PyErr_SetString(PicklingError,
                                 "Invalid get data");
-                return NULL;
+                goto err;
             }
             have_get[ik] = 1;
             rsize += ik < 256 ? 2 : 5;
@@ -3448,7 +3469,7 @@ calc_binint(char *s, int x)
      * to extend a BININT's sign bit to the full width.
      */
     if (x == 4 && l & (1L << 31))
-        l |= (~0L) << 32;
+        l |= (~0UL) << 32;
 #endif
     return l;
 }

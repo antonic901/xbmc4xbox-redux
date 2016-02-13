@@ -53,7 +53,7 @@ commercial use, to sell copies of Python in source or binary form (modified or
 unmodified), or to sell products that incorporate Python in some form.  We would
 still like to know about all commercial use of Python, of course.
 
-See `the PSF license page <https://docs.python.org/3/license/>`_ to find further
+See `the PSF license page <https://www.python.org/psf/license/>`_ to find further
 explanations and a link to the full text of the license.
 
 The Python logo is trademarked, and in certain cases permission is required to
@@ -151,8 +151,8 @@ after a final minor release is made, the Subversion trunk is incremented to the
 next minor version, which becomes the "a0" version,
 e.g. "2.4a0".
 
-See also the documentation for ``sys.version``, ``sys.hexversion``, and
-``sys.version_info``.
+See also the documentation for :data:`sys.version`, :data:`sys.hexversion`, and
+:data:`sys.version_info`.
 
 
 How do I obtain a copy of the Python source?

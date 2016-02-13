@@ -515,6 +515,8 @@ _Py_Dev_Converter(PyObject *obj, void *p)
     return 1;
 }
 
+#endif
+
 #ifdef HAVE_LONG_LONG
 static PyObject *
 _PyInt_FromDev(PY_LONG_LONG v)
@@ -526,8 +528,6 @@ _PyInt_FromDev(PY_LONG_LONG v)
 }
 #else
 #  define _PyInt_FromDev PyInt_FromLong
-#endif
-
 #endif
 
 

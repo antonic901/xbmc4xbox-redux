@@ -104,9 +104,9 @@ For example::
    .. method:: most_common([n])
 
       Return a list of the *n* most common elements and their counts from the
-      most common to the least.  If *n* is not specified, :func:`most_common`
-      returns *all* elements in the counter.  Elements with equal counts are
-      ordered arbitrarily:
+      most common to the least.  If *n* is omitted or ``None``,
+      :func:`most_common` returns *all* elements in the counter.
+      Elements with equal counts are ordered arbitrarily:
 
             >>> Counter('abracadabra').most_common(3)
             [('a', 5), ('r', 2), ('b', 2)]
@@ -696,6 +696,7 @@ field names, the method and attribute names start with an underscore.
    Return a new :class:`OrderedDict` which maps field names to their corresponding
    values::
 
+      >>> p = Point(x=11, y=22)
       >>> p._asdict()
       OrderedDict([('x', 11), ('y', 22)])
 
@@ -977,7 +978,7 @@ ABC                        Inherits from          Abstract Methods        Mixin 
            KeysView
            ValuesView
 
-   ABCs for mapping, items, keys, and values :term:`views <view>`.
+   ABCs for mapping, items, keys, and values :term:`views <dictionary view>`.
 
 
 These ABCs allow us to ask classes or instances if they provide

@@ -28,15 +28,15 @@ modules and extensions.
 
 .. note::
 
-   This guide only covers the basic tools for installing extensions that are
-   provided as part of this version of Python. Third party tools offer easier
-   to use and more secure alternatives. Refer to the
-   `quick recommendations section
-   <https://python-packaging-user-guide.readthedocs.org/en/latest/current.html>`__
+   This guide only covers the basic tools for building and distributing
+   extensions that are provided as part of this version of Python. Third party
+   tools offer easier to use and more secure alternatives. Refer to the `quick
+   recommendations section <https://packaging.python.org/en/latest/current/>`__
    in the Python Packaging User Guide for more information.
 
 
 .. _inst-intro:
+
 
 Introduction
 ============
@@ -149,7 +149,7 @@ into.  For example, if you've just downloaded a module source distribution
 
 On Windows, you'd probably download :file:`foo-1.0.zip`.  If you downloaded the
 archive file to :file:`C:\\Temp`, then it would unpack into
-:file:`C:\\Temp\\foo-1.0`; you can use either a archive manipulator with a
+:file:`C:\\Temp\\foo-1.0`; you can use either an archive manipulator with a
 graphical user interface (such as WinZip) or a command-line tool (such as
 :program:`unzip` or :program:`pkunzip`) to unpack the archive.  Then, open a
 command prompt window and run::

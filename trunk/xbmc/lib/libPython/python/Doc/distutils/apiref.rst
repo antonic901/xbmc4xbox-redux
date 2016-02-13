@@ -516,7 +516,7 @@ This module provides the following functions.
 
    .. method:: CCompiler.library_option(lib)
 
-      Return the compiler option to add *dir* to the list of libraries linked into the
+      Return the compiler option to add *lib* to the list of libraries linked into the
       shared library or executable.
 
 
@@ -926,7 +926,7 @@ timestamp dependency analysis.
 
    Walk two filename lists in parallel, testing if each source is newer than its
    corresponding target.  Return a pair of lists (*sources*, *targets*) where
-   source is newer than target, according to the semantics of :func:`newer`
+   source is newer than target, according to the semantics of :func:`newer`.
 
    .. % % equivalent to a listcomp...
 

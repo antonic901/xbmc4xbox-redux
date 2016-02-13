@@ -1352,6 +1352,51 @@ then
   CFLAGS=$save_CFLAGS
 fi
 
+
+# Enable PGO flags.
+AC_SUBST(PGO_PROF_GEN_FLAG)
+AC_SUBST(PGO_PROF_USE_FLAG)
+AC_SUBST(LLVM_PROF_MERGER)
+AC_SUBST(LLVM_PROF_FILE)
+AC_SUBST(LLVM_PROF_ERR)
+AC_SUBST(LLVM_PROF_FOUND)
+AC_CHECK_PROG(LLVM_PROF_FOUND, llvm-profdata, found, not-found)
+LLVM_PROF_ERR=no
+case $CC in
+  *clang*)
+    # Any changes made here should be reflected in the GCC+Darwin case below
+    PGO_PROF_GEN_FLAG="-fprofile-instr-generate"
+    PGO_PROF_USE_FLAG="-fprofile-instr-use=code.profclangd"
+    LLVM_PROF_MERGER="llvm-profdata merge -output=code.profclangd *.profclangr"
+    LLVM_PROF_FILE="LLVM_PROFILE_FILE=\"code-%p.profclangr\""
+    if test $LLVM_PROF_FOUND = not-found
+    then
+      LLVM_PROF_ERR=yes
+    fi
+    ;;
+  *gcc*)
+    case $ac_sys_system in
+      Darwin*)
+        PGO_PROF_GEN_FLAG="-fprofile-instr-generate"
+        PGO_PROF_USE_FLAG="-fprofile-instr-use=code.profclangd"
+        LLVM_PROF_MERGER="llvm-profdata merge -output=code.profclangd *.profclangr"
+        LLVM_PROF_FILE="LLVM_PROFILE_FILE=\"code-%p.profclangr\""
+        if test $LLVM_PROF_FOUND = not-found
+        then
+          LLVM_PROF_ERR=yes
+        fi
+        ;;
+      *)
+        PGO_PROF_GEN_FLAG="-fprofile-generate"
+        PGO_PROF_USE_FLAG="-fprofile-use -fprofile-correction"
+        LLVM_PROF_MERGER="true"
+        LLVM_PROF_FILE=""
+        ;;
+    esac
+    ;;
+esac
+
+
 # On some compilers, pthreads are available without further options
 # (e.g. MacOS X). On some of these systems, the compiler will not
 # complain if unaccepted options are passed (e.g. gcc on Mac OS X).
@@ -3723,7 +3768,7 @@ fi
 # so we try it on all platforms.
 
 AC_MSG_CHECKING(whether we can use gcc inline assembler to get and set x87 control word)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
   unsigned short cw;
   __asm__ __volatile__ ("fnstcw %0" : "=m" (cw));
   __asm__ __volatile__ ("fldcw %0" : : "m" (cw));
@@ -4557,6 +4602,57 @@ for dir in $SRCDIRS; do
         mkdir $dir
     fi
 done
+
+# BEGIN_COMPUTED_GOTO 
+# Check for --with-computed-gotos
+AC_MSG_CHECKING(for --with-computed-gotos)
+AC_ARG_WITH(computed-gotos,
+            AS_HELP_STRING([--with(out)-computed-gotos],
+                           [Use computed gotos in evaluation loop (enabled by default on supported compilers)]),
+[
+if test "$withval" = yes
+then 
+  AC_DEFINE(USE_COMPUTED_GOTOS, 1,
+  [Define if you want to use computed gotos in ceval.c.]) 
+  AC_MSG_RESULT(yes)
+fi
+if test "$withval" = no
+then 
+  AC_DEFINE(USE_COMPUTED_GOTOS, 0,
+  [Define if you want to use computed gotos in ceval.c.]) 
+  AC_MSG_RESULT(no)
+fi
+],
+[AC_MSG_RESULT(no value specified)])
+
+AC_MSG_CHECKING(whether $CC supports computed gotos)
+AC_CACHE_VAL(ac_cv_computed_gotos,
+AC_RUN_IFELSE([AC_LANG_SOURCE([[[
+int main(int argc, char **argv)
+{
+    static void *targets[1] = { &&LABEL1 };
+    goto LABEL2;
+LABEL1:
+    return 0;
+LABEL2:
+    goto *targets[0];
+    return 1;
+}
+]]])],
+[ac_cv_computed_gotos=yes],
+[ac_cv_computed_gotos=no],
+[if test "${with_computed_gotos+set}" = set; then
+   ac_cv_computed_gotos="$with_computed_gotos -- configured --with(out)-computed-gotos"
+ else
+   ac_cv_computed_gotos=no
+ fi]))
+AC_MSG_RESULT($ac_cv_computed_gotos)
+case "$ac_cv_computed_gotos" in yes*)
+  AC_DEFINE(HAVE_COMPUTED_GOTOS, 1,
+  [Define if the C compiler supports computed gotos.])
+esac
+# END_COMPUTED_GOTO
+
 AC_MSG_RESULT(done)
 
 # ensurepip option
