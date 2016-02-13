@@ -155,6 +155,8 @@ def main():
     else:
         raise ValueError(str(sys.argv))
 
+    configure+= " --openssldir=Q:\\system\\python\\ssl"
+
     make_flags = ""
     if build_all:
         make_flags = "-a"
