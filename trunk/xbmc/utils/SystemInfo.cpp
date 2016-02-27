@@ -1740,21 +1740,22 @@ CStdString CSysInfo::GetSystemUpTime(bool bTotalUptime)
 
 CStdString CSysInfo::GetInternetState()
 {
-  CStdString status;
+#ifdef HAS_XBOX_HARDWARE
   // check for ethernet link before checking for internet access
-  if (XNetGetEthernetLinkStatus() & XNET_ETHERNET_LINK_ACTIVE)
+  if (!(XNetGetEthernetLinkStatus() & XNET_ETHERNET_LINK_ACTIVE))
   {
-    XFILE::CCurlFile http;
-    m_bInternetState = http.IsInternet();
-    if (m_bInternetState)
-      status = g_localizeStrings.Get(13296);
-    else if (http.IsInternet(false))
-      status = g_localizeStrings.Get(13274);
-    else
-      status = g_localizeStrings.Get(13297);
+    return g_localizeStrings.Get(159);
   }
+#endif
+  CStdString status;
+  XFILE::CCurlFile http;
+  m_bInternetState = http.IsInternet();
+  if (m_bInternetState)
+    status = g_localizeStrings.Get(13296);
+  else if (http.IsInternet(false))
+    status = g_localizeStrings.Get(13274);
   else
-    status = g_localizeStrings.Get(159);
+    status = g_localizeStrings.Get(13297);
   return status;
 }
 
