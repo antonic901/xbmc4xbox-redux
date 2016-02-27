@@ -72,9 +72,6 @@ using namespace XFILE;
 #define CONTROL_LABELD0GEN  34
 #define CONTROL_IMAGED0IMG  35
 
-#define PARTNER_ID    "1004124588"   //weather.com partner id
-#define PARTNER_KEY    "079f24145f208494"  //weather.com partner key
-
 #define MAX_LOCATION   3
 #define LOCALIZED_TOKEN_FIRSTID   370
 #define LOCALIZED_TOKEN_LASTID   395
@@ -83,7 +80,6 @@ using namespace XFILE;
 /*
 FIXME'S
 >strings are not centered
->weather.com dev account is mine not a general xbmc one
 */
 
 // USE THESE FOR ZIP
@@ -113,8 +109,7 @@ bool CWeather::DoWork()
   CStdString strSetting;
   strSetting.Format("weather.areacode%i", GetArea() + 1);
   CStdString areaCode = GetAreaCode(g_guiSettings.GetString(strSetting));
-  strURL.Format("http://xml.weather.com/weather/local/%s?cc=*&unit=m&dayf=7&prod=xoap&link=xoap&par=%s&key=%s",
-                areaCode.c_str(), PARTNER_ID, PARTNER_KEY);
+  strURL.Format("http://wxdata.weather.com/wxdata/weather/local/%s?cc=*&unit=m&dayf=7", areaCode.c_str());
   CStdString xml;
   if (httpUtil.Get(strURL, xml))
   {
@@ -583,7 +578,7 @@ bool CWeather::GetSearchResults(const CStdString &strSearch, CStdString &strResu
     pDlgProgress->Progress();
   }
 
-  strURL.Format("http://xoap.weather.com/search/search?where=%s", strSearch);
+  strURL.Format("http://wxdata.weather.com/wxdata/search/search?where=%s", strSearch);
 
   if (!httpUtil.Get(strURL, strXML))
   {
