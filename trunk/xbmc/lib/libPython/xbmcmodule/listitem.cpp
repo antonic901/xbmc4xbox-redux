@@ -51,8 +51,8 @@ namespace PYXBMC
 
     PyObject* label = NULL;
     PyObject* label2 = NULL;
-    char* cIconImage = NULL;
-    char* cThumbnailImage = NULL;
+    PyObject* cIconImage = NULL;
+    PyObject* cThumbnailImage = NULL;
     PyObject* path = NULL;
 
     // allocate new object
@@ -66,7 +66,7 @@ namespace PYXBMC
     if (!PyArg_ParseTupleAndKeywords(
       args,
       kwds,
-      (char*)"|OOssO",
+      (char*)"|OOOOO",
       (char**)keywords,
       &label,
       &label2,
@@ -94,13 +94,13 @@ namespace PYXBMC
     {
       self->item->SetLabel2( utf8String );
     }
-    if (cIconImage)
+    if (cIconImage && PyXBMCGetUnicodeString(utf8String, cIconImage, 1))
     {
-      self->item->SetIconImage( cIconImage );
+      self->item->SetIconImage( utf8String );
     }
-    if (cThumbnailImage)
+    if (cThumbnailImage && PyXBMCGetUnicodeString(utf8String, cThumbnailImage, 1))
     {
-      self->item->SetThumbnailImage( cThumbnailImage );
+      self->item->SetThumbnailImage( utf8String );
     }
     if (path && PyXBMCGetUnicodeString(utf8String, path, 1))
     {
