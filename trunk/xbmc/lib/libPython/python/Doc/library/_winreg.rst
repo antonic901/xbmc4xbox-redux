@@ -1,5 +1,5 @@
-:mod:`_winreg` -- Windows registry access
-=========================================
+:mod:`_winreg` --- Windows registry access
+==========================================
 
 .. module:: _winreg
    :platform: Windows
@@ -427,7 +427,7 @@ This module offers the following functions:
    *key* is an already open key, or one of the predefined
    :ref:`HKEY_* constants <hkey-constants>`.
 
-   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   Will generally raise :exc:`NotImplementedError` if executed on a 32-bit
    operating system.
 
    If the key is not on the reflection list, the function succeeds but has no
@@ -442,7 +442,7 @@ This module offers the following functions:
    *key* is an already open key, or one of the predefined
    :ref:`HKEY_* constants <hkey-constants>`.
 
-   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   Will generally raise :exc:`NotImplementedError` if executed on a 32-bit
    operating system.
 
    Restoring reflection for a key does not affect reflection of any subkeys.
@@ -457,7 +457,7 @@ This module offers the following functions:
 
    Returns ``True`` if reflection is disabled.
 
-   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   Will generally raise :exc:`NotImplementedError` if executed on a 32-bit
    operating system.
 
 
@@ -577,7 +577,7 @@ For more information, see `Registry Key Security and Access
 64-bit Specific
 ***************
 
-For more information, see `Accesing an Alternate Registry View
+For more information, see `Accessing an Alternate Registry View
 <http://msdn.microsoft.com/en-us/library/aa384129(v=VS.85).aspx>`__.
 
 .. data:: KEY_WOW64_64KEY

@@ -4,8 +4,6 @@
 
 /* Itertools module written and maintained
    by Raymond D. Hettinger <python@rcn.com>
-   Copyright (c) 2003 Python Software Foundation.
-   All rights reserved.
 */
 
 
@@ -73,10 +71,37 @@ groupby_traverse(groupbyobject *gbo, visitproc visit, void *arg)
     return 0;
 }
 
+Py_LOCAL_INLINE(int)
+groupby_step(groupbyobject *gbo)
+{
+    PyObject *newvalue, *newkey, *oldvalue;
+
+    newvalue = PyIter_Next(gbo->it);
+    if (newvalue == NULL)
+        return -1;
+
+    if (gbo->keyfunc == Py_None) {
+        newkey = newvalue;
+        Py_INCREF(newvalue);
+    } else {
+        newkey = PyObject_CallFunctionObjArgs(gbo->keyfunc, newvalue, NULL);
+        if (newkey == NULL) {
+            Py_DECREF(newvalue);
+            return -1;
+        }
+    }
+
+    oldvalue = gbo->currvalue;
+    gbo->currvalue = newvalue;
+    Py_XSETREF(gbo->currkey, newkey);
+    Py_XDECREF(oldvalue);
+    return 0;
+}
+
 static PyObject *
 groupby_next(groupbyobject *gbo)
 {
-    PyObject *newvalue, *newkey, *r, *grouper, *tmp;
+    PyObject *r, *grouper;
 
     /* skip to next iteration group */
     for (;;) {
@@ -95,35 +120,11 @@ groupby_next(groupbyobject *gbo)
                 break;
         }
 
-        newvalue = PyIter_Next(gbo->it);
-        if (newvalue == NULL)
+        if (groupby_step(gbo) < 0)
             return NULL;
-
-        if (gbo->keyfunc == Py_None) {
-            newkey = newvalue;
-            Py_INCREF(newvalue);
-        } else {
-            newkey = PyObject_CallFunctionObjArgs(gbo->keyfunc,
-                                                  newvalue, NULL);
-            if (newkey == NULL) {
-                Py_DECREF(newvalue);
-                return NULL;
-            }
-        }
-
-        tmp = gbo->currkey;
-        gbo->currkey = newkey;
-        Py_XDECREF(tmp);
-
-        tmp = gbo->currvalue;
-        gbo->currvalue = newvalue;
-        Py_XDECREF(tmp);
     }
-
     Py_INCREF(gbo->currkey);
-    tmp = gbo->tgtkey;
-    gbo->tgtkey = gbo->currkey;
-    Py_XDECREF(tmp);
+    Py_XSETREF(gbo->tgtkey, gbo->currkey);
 
     grouper = _grouper_create(gbo, gbo->tgtkey);
     if (grouper == NULL)
@@ -231,29 +232,12 @@ static PyObject *
 _grouper_next(_grouperobject *igo)
 {
     groupbyobject *gbo = (groupbyobject *)igo->parent;
-    PyObject *newvalue, *newkey, *r;
+    PyObject *r;
     int rcmp;
 
     if (gbo->currvalue == NULL) {
-        newvalue = PyIter_Next(gbo->it);
-        if (newvalue == NULL)
+        if (groupby_step(gbo) < 0)
             return NULL;
-
-        if (gbo->keyfunc == Py_None) {
-            newkey = newvalue;
-            Py_INCREF(newvalue);
-        } else {
-            newkey = PyObject_CallFunctionObjArgs(gbo->keyfunc,
-                                                  newvalue, NULL);
-            if (newkey == NULL) {
-                Py_DECREF(newvalue);
-                return NULL;
-            }
-        }
-
-        assert(gbo->currkey == NULL);
-        gbo->currkey = newkey;
-        gbo->currvalue = newvalue;
     }
 
     assert(gbo->currkey != NULL);
@@ -330,6 +314,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *it;
     int numread;
+    int running;
     PyObject *nextlink;
     PyObject *(values[LINKCELLS]);
 } teedataobject;
@@ -352,6 +337,7 @@ teedataobject_new(PyObject *it)
     if (tdo == NULL)
         return NULL;
 
+    tdo->running = 0;
     tdo->numread = 0;
     tdo->nextlink = NULL;
     Py_INCREF(it);
@@ -380,7 +366,14 @@ teedataobject_getitem(teedataobject *tdo, int i)
     else {
         /* this is the lead iterator, so fetch more data */
         assert(i == tdo->numread);
+        if (tdo->running) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "cannot re-enter the tee iterator");
+            return NULL;
+        }
+        tdo->running = 1;
         value = PyIter_Next(tdo->it);
+        tdo->running = 0;
         if (value == NULL)
             return NULL;
         tdo->numread++;
@@ -494,8 +487,7 @@ tee_next(teeobject *to)
         link = teedataobject_jumplink(to->dataobj);
         if (link == NULL)
             return NULL;
-        Py_DECREF(to->dataobj);
-        to->dataobj = (teedataobject *)link;
+        Py_SETREF(to->dataobj, (teedataobject *)link);
         to->index = 0;
     }
     value = teedataobject_getitem(to->dataobj, to->index);
@@ -1711,33 +1703,37 @@ chain_next(chainobject *lz)
 {
     PyObject *item;
 
-    if (lz->source == NULL)
-        return NULL;                                    /* already stopped */
-
-    if (lz->active == NULL) {
-        PyObject *iterable = PyIter_Next(lz->source);
-        if (iterable == NULL) {
-            Py_CLEAR(lz->source);
-            return NULL;                                /* no more input sources */
-        }
-        lz->active = PyObject_GetIter(iterable);
-        Py_DECREF(iterable);
+    /* lz->source is the iterator of iterables. If it's NULL, we've already
+     * consumed them all. lz->active is the current iterator. If it's NULL,
+     * we should grab a new one from lz->source. */
+    while (lz->source != NULL) {
         if (lz->active == NULL) {
-            Py_CLEAR(lz->source);
-            return NULL;                                /* input not iterable */
+            PyObject *iterable = PyIter_Next(lz->source);
+            if (iterable == NULL) {
+                Py_CLEAR(lz->source);
+                return NULL;                  /* no more input sources */
+            }
+            lz->active = PyObject_GetIter(iterable);
+            Py_DECREF(iterable);
+            if (lz->active == NULL) {
+                Py_CLEAR(lz->source);
+                return NULL;                  /* input not iterable */
+            }
         }
+        item = PyIter_Next(lz->active);
+        if (item != NULL)
+            return item;
+        if (PyErr_Occurred()) {
+            if (PyErr_ExceptionMatches(PyExc_StopIteration))
+                PyErr_Clear();
+            else
+                return NULL;                  /* input raised an exception */
+        }
+        /* lz->active is consumed, try with the next iterable. */
+        Py_CLEAR(lz->active);
     }
-    item = PyIter_Next(lz->active);
-    if (item != NULL)
-        return item;
-    if (PyErr_Occurred()) {
-        if (PyErr_ExceptionMatches(PyExc_StopIteration))
-            PyErr_Clear();
-        else
-            return NULL;                                /* input raised an exception */
-    }
-    Py_CLEAR(lz->active);
-    return chain_next(lz);                      /* recurse and use next active */
+    /* Everything had been consumed already. */
+    return NULL;
 }
 
 PyDoc_STRVAR(chain_doc,
@@ -1750,7 +1746,7 @@ iterable, until all of the iterables are exhausted.");
 PyDoc_STRVAR(chain_from_iterable_doc,
 "chain.from_iterable(iterable) --> chain object\n\
 \n\
-Alternate chain() contructor taking a single iterable argument\n\
+Alternate chain() constructor taking a single iterable argument\n\
 that evaluates lazily.");
 
 static PyMethodDef chain_methods[] = {
@@ -3334,6 +3330,7 @@ count_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     lz = (countobject *)type->tp_alloc(type, 0);
     if (lz == NULL) {
         Py_XDECREF(long_cnt);
+        Py_DECREF(long_step);
         return NULL;
     }
     lz->cnt = cnt;

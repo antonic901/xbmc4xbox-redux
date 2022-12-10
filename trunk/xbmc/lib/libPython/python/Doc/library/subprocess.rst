@@ -32,7 +32,7 @@ functions can be found in the subprocess-replacements_ section.
 
    :pep:`324` -- PEP proposing the subprocess module
 
-.. _subprocess32: https://pypi.python.org/pypi/subprocess32/
+.. _subprocess32: https://pypi.org/project/subprocess32/
 
 Using the :mod:`subprocess` Module
 ----------------------------------
@@ -320,8 +320,8 @@ functions.
    manner described in :ref:`converting-argument-sequence`.  This is because
    the underlying ``CreateProcess()`` operates on strings.
 
-   The *shell* argument (which defaults to *False*) specifies whether to use
-   the shell as the program to execute.  If *shell* is *True*, it is
+   The *shell* argument (which defaults to ``False``) specifies whether to use
+   the shell as the program to execute.  If *shell* is ``True``, it is
    recommended to pass *args* as a string rather than as a sequence.
 
    On Unix with ``shell=True``, the shell defaults to :file:`/bin/sh`.  If
@@ -404,7 +404,7 @@ functions.
       `side-by-side assembly`_ the specified *env* **must** include a valid
       :envvar:`SystemRoot`.
 
-   .. _side-by-side assembly: http://en.wikipedia.org/wiki/Side-by-Side_Assembly
+   .. _side-by-side assembly: https://en.wikipedia.org/wiki/Side-by-Side_Assembly
 
    If *universal_newlines* is ``True``, the file objects *stdout* and *stderr*
    are opened as text files in :term:`universal newlines` mode.  Lines may be
@@ -586,7 +586,7 @@ on Windows.
 .. class:: STARTUPINFO()
 
    Partial support of the Windows
-   `STARTUPINFO <http://msdn.microsoft.com/en-us/library/ms686331(v=vs.85).aspx>`__
+   `STARTUPINFO <https://msdn.microsoft.com/en-us/library/ms686331(v=vs.85).aspx>`__
    structure is used for :class:`Popen` creation.
 
    .. attribute:: dwFlags
@@ -622,7 +622,7 @@ on Windows.
       If :attr:`dwFlags` specifies :data:`STARTF_USESHOWWINDOW`, this attribute
       can be any of the values that can be specified in the ``nCmdShow``
       parameter for the
-      `ShowWindow <http://msdn.microsoft.com/en-us/library/ms633548(v=vs.85).aspx>`__
+      `ShowWindow <https://msdn.microsoft.com/en-us/library/ms633548(v=vs.85).aspx>`__
       function, except for ``SW_SHOWDEFAULT``. Otherwise, this attribute is
       ignored.
 
@@ -706,20 +706,23 @@ been imported from the :mod:`subprocess` module.
 Replacing /bin/sh shell backquote
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: bash
 
    output=`mycmd myarg`
-   # becomes
-   output = check_output(["mycmd", "myarg"])
 
+becomes::
+
+   output = check_output(["mycmd", "myarg"])
 
 Replacing shell pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: bash
 
    output=`dmesg | grep hda`
-   # becomes
+
+becomes::
+
    p1 = Popen(["dmesg"], stdout=PIPE)
    p2 = Popen(["grep", "hda"], stdin=p1.stdout, stdout=PIPE)
    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
@@ -729,10 +732,14 @@ The p1.stdout.close() call after starting the p2 is important in order for p1
 to receive a SIGPIPE if p2 exits before p1.
 
 Alternatively, for trusted input, the shell's own pipeline support may still
-be used directly::
+be used directly:
+
+.. code-block:: bash
 
    output=`dmesg | grep hda`
-   # becomes
+
+becomes::
+
    output=check_output("dmesg | grep hda", shell=True)
 
 

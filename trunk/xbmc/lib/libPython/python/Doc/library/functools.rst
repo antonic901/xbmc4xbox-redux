@@ -76,9 +76,9 @@ The :mod:`functools` module defines the following functions:
 
 .. function:: partial(func[,*args][, **keywords])
 
-   Return a new :class:`partial` object which when called will behave like *func*
-   called with the positional arguments *args* and keyword arguments *keywords*. If
-   more arguments are supplied to the call, they are appended to *args*. If
+   Return a new :ref:`partial object<partial-objects>` which when called will behave
+   like *func* called with the positional arguments *args* and keyword arguments *keywords*.
+   If more arguments are supplied to the call, they are appended to *args*. If
    additional keyword arguments are supplied, they extend and override *keywords*.
    Roughly equivalent to::
 
@@ -185,7 +185,7 @@ have three read-only attributes:
 
 :class:`partial` objects are like :class:`function` objects in that they are
 callable, weak referencable, and can have attributes.  There are some important
-differences.  For instance, the :attr:`__name__` and :attr:`__doc__` attributes
+differences.  For instance, the :attr:`~definition.__name__` and :attr:`__doc__` attributes
 are not created automatically.  Also, :class:`partial` objects defined in
 classes behave like static methods and do not transform into bound methods
 during instance attribute look-up.

@@ -70,7 +70,7 @@ The typical usage to inspect a crashed program is::
    >>> import mymodule
    >>> mymodule.test()
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
      File "./mymodule.py", line 4, in test
        test2()
      File "./mymodule.py", line 3, in test2
@@ -290,7 +290,7 @@ commands [*bpnumber*]
    return, jump, quit and their abbreviations) terminates the command list (as if
    that command was immediately followed by end). This is because any time you
    resume execution (even with a simple next or step), you may encounter another
-   breakpoint--which could have its own command list, leading to ambiguities about
+   breakpoint—which could have its own command list, leading to ambiguities about
    which list to execute.
 
    If you use the 'silent' command in the command list, the usual message about

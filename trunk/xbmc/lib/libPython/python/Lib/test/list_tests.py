@@ -45,10 +45,11 @@ class CommonTest(seq_tests.CommonTest):
         self.assertEqual(str(a2), "[0, 1, 2, [...], 3]")
         self.assertEqual(repr(a2), "[0, 1, 2, [...], 3]")
 
-        l0 = []
-        for i in xrange(sys.getrecursionlimit() + 100):
-            l0 = [l0]
-        self.assertRaises(RuntimeError, repr, l0)
+    def test_repr_deep(self):
+        a = self.type2test([])
+        for i in range(sys.getrecursionlimit() + 100):
+            a = self.type2test([a])
+        self.assertRaises(RuntimeError, repr, a)
 
     def test_print(self):
         d = self.type2test(xrange(200))
@@ -532,3 +533,14 @@ class CommonTest(seq_tests.CommonTest):
             def __iter__(self):
                 raise KeyboardInterrupt
         self.assertRaises(KeyboardInterrupt, list, F())
+
+    def test_exhausted_iterator(self):
+        a = self.type2test([1, 2, 3])
+        exhit = iter(a)
+        empit = iter(a)
+        for x in exhit:  # exhaust the iterator
+            next(empit)  # not exhausted
+        a.append(9)
+        self.assertEqual(list(exhit), [])
+        self.assertEqual(list(empit), [9])
+        self.assertEqual(a, self.type2test([1, 2, 3, 9]))

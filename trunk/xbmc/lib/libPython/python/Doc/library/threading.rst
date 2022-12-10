@@ -448,6 +448,10 @@ All methods are executed atomically.
 
    There is no return value.
 
+   .. method:: locked()
+      Return true if the lock is acquired.
+
+
 
 .. _rlock-objects:
 
@@ -778,7 +782,7 @@ For example::
        print "hello, world"
 
    t = Timer(30.0, hello)
-   t.start() # after 30 seconds, "hello, world" will be printed
+   t.start()  # after 30 seconds, "hello, world" will be printed
 
 
 .. class:: Timer(interval, function, args=[], kwargs={})

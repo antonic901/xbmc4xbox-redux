@@ -196,16 +196,16 @@ counts, but the output will exclude results with counts of zero or less.
 
 .. seealso::
 
-    * `Counter class <http://code.activestate.com/recipes/576611/>`_
+    * `Counter class <https://code.activestate.com/recipes/576611/>`_
       adapted for Python 2.5 and an early `Bag recipe
-      <http://code.activestate.com/recipes/259174/>`_ for Python 2.4.
+      <https://code.activestate.com/recipes/259174/>`_ for Python 2.4.
 
-    * `Bag class <http://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html>`_
+    * `Bag class <https://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html>`_
       in Smalltalk.
 
-    * Wikipedia entry for `Multisets <http://en.wikipedia.org/wiki/Multiset>`_.
+    * Wikipedia entry for `Multisets <https://en.wikipedia.org/wiki/Multiset>`_.
 
-    * `C++ multisets <http://www.demo2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm>`_
+    * `C++ multisets <http://www.java2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm>`_
       tutorial with examples.
 
     * For mathematical operations on multisets and their use cases, see
@@ -238,7 +238,7 @@ counts, but the output will exclude results with counts of zero or less.
 
    .. versionadded:: 2.4
 
-   If *maxlen* is not specified or is *None*, deques may grow to an
+   If *maxlen* is not specified or is ``None``, deques may grow to an
    arbitrary length.  Otherwise, the deque is bounded to the specified maximum
    length.  Once a bounded length deque is full, when new items are added, a
    corresponding number of items are discarded from the opposite end.  Bounded
@@ -300,7 +300,7 @@ counts, but the output will exclude results with counts of zero or less.
 
    .. method:: remove(value)
 
-      Removed the first occurrence of *value*.  If not found, raises a
+      Remove the first occurrence of *value*.  If not found, raises a
       :exc:`ValueError`.
 
       .. versionadded:: 2.5
@@ -311,18 +311,21 @@ counts, but the output will exclude results with counts of zero or less.
 
       .. versionadded:: 2.7
 
-   .. method:: rotate(n)
+   .. method:: rotate(n=1)
 
       Rotate the deque *n* steps to the right.  If *n* is negative, rotate to
-      the left.  Rotating one step to the right is equivalent to:
-      ``d.appendleft(d.pop())``.
+      the left.
+
+      When the deque is not empty, rotating one step to the right is equivalent to
+      ``d.appendleft(d.pop())``, and rotating one step to the left is
+      equivalent to ``d.append(d.popleft())``.
 
 
    Deque objects also provide one read-only attribute:
 
    .. attribute:: maxlen
 
-      Maximum size of a deque or *None* if unbounded.
+      Maximum size of a deque or ``None`` if unbounded.
 
       .. versionadded:: 2.7
 
@@ -609,7 +612,7 @@ Example:
        _fields = ('x', 'y')
    <BLANKLINE>
        def __new__(_cls, x, y):
-           'Create a new instance of Point(x, y)'
+           'Create new instance of Point(x, y)'
            return _tuple.__new__(_cls, (x, y))
    <BLANKLINE>
        @classmethod
@@ -636,7 +639,7 @@ Example:
            return result
    <BLANKLINE>
        def __getnewargs__(self):
-           'Return self as a plain tuple.   Used by copy and pickle.'
+           'Return self as a plain tuple.  Used by copy and pickle.'
            return tuple(self)
    <BLANKLINE>
        __dict__ = _property(_asdict)
@@ -648,6 +651,7 @@ Example:
        x = _property(_itemgetter(0), doc='Alias for field number 0')
    <BLANKLINE>
        y = _property(_itemgetter(1), doc='Alias for field number 1')
+   <BLANKLINE>
    <BLANKLINE>
 
    >>> p = Point(11, y=22)     # instantiate with positional or keyword arguments
@@ -703,7 +707,7 @@ field names, the method and attribute names start with an underscore.
    .. versionchanged:: 2.7
       Returns an :class:`OrderedDict` instead of a regular :class:`dict`.
 
-.. method:: somenamedtuple._replace(kwargs)
+.. method:: somenamedtuple._replace(**kwargs)
 
    Return a new instance of the named tuple replacing specified fields with new
    values::
@@ -713,7 +717,7 @@ field names, the method and attribute names start with an underscore.
       Point(x=33, y=22)
 
       >>> for partnum, record in inventory.items():
-              inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())
+      ...     inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())
 
 .. attribute:: somenamedtuple._fields
 
@@ -748,15 +752,15 @@ functionality with a subclass.  Here is how to add a calculated field and
 a fixed-width print format:
 
     >>> class Point(namedtuple('Point', 'x y')):
-            __slots__ = ()
-            @property
-            def hypot(self):
-                return (self.x ** 2 + self.y ** 2) ** 0.5
-            def __str__(self):
-                return 'Point: x=%6.3f  y=%6.3f  hypot=%6.3f' % (self.x, self.y, self.hypot)
-
+    ...     __slots__ = ()
+    ...     @property
+    ...     def hypot(self):
+    ...         return (self.x ** 2 + self.y ** 2) ** 0.5
+    ...     def __str__(self):
+    ...         return 'Point: x=%6.3f  y=%6.3f  hypot=%6.3f' % (self.x, self.y, self.hypot)
+    ...
     >>> for p in Point(3, 4), Point(14, 5/7.):
-            print p
+    ...     print p
     Point: x= 3.000  y= 4.000  hypot= 5.000
     Point: x=14.000  y= 0.714  hypot=14.018
 
@@ -782,11 +786,11 @@ and more efficient to use a simple class declaration:
     >>> Status.open, Status.pending, Status.closed
     (0, 1, 2)
     >>> class Status:
-            open, pending, closed = range(3)
+    ...     open, pending, closed = range(3)
 
 .. seealso::
 
-   `Named tuple recipe <http://code.activestate.com/recipes/500261/>`_
+   `Named tuple recipe <https://code.activestate.com/recipes/500261/>`_
    adapted for Python 2.4.
 
 
@@ -829,17 +833,17 @@ semantics pass-in keyword arguments using a regular unordered dictionary.
 
 .. seealso::
 
-   `Equivalent OrderedDict recipe <http://code.activestate.com/recipes/576693/>`_
+   `Equivalent OrderedDict recipe <https://code.activestate.com/recipes/576693/>`_
    that runs on Python 2.4 or later.
 
 :class:`OrderedDict` Examples and Recipes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Since an ordered dictionary remembers its insertion order, it can be used
-in conjuction with sorting to make a sorted dictionary::
+in conjunction with sorting to make a sorted dictionary::
 
     >>> # regular unsorted dictionary
-    >>> d = {'banana': 3, 'apple':4, 'pear': 1, 'orange': 2}
+    >>> d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
 
     >>> # dictionary sorted by key
     >>> OrderedDict(sorted(d.items(), key=lambda t: t[0]))
@@ -1003,10 +1007,13 @@ The ABC supplies the remaining methods such as :meth:`__and__` and
              for value in iterable:
                  if value not in lst:
                      lst.append(value)
+
          def __iter__(self):
              return iter(self.elements)
+
          def __contains__(self, value):
              return value in self.elements
+
          def __len__(self):
              return len(self.elements)
 
@@ -1035,13 +1042,13 @@ Notes on using :class:`Set` and :class:`MutableSet` as a mixin:
 (3)
    The :class:`Set` mixin provides a :meth:`_hash` method to compute a hash value
    for the set; however, :meth:`__hash__` is not defined because not all sets
-   are hashable or immutable.  To add set hashabilty using mixins,
+   are hashable or immutable.  To add set hashability using mixins,
    inherit from both :meth:`Set` and :meth:`Hashable`, then define
    ``__hash__ = Set._hash``.
 
 .. seealso::
 
-   * `OrderedSet recipe <http://code.activestate.com/recipes/576694/>`_ for an
+   * `OrderedSet recipe <https://code.activestate.com/recipes/576694/>`_ for an
      example built on :class:`MutableSet`.
 
    * For more about ABCs, see the :mod:`abc` module and :pep:`3119`.

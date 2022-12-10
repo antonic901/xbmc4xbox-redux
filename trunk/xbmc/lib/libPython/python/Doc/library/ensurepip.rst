@@ -76,6 +76,9 @@ options:
 * ``--no-default-pip``: if a non-default installation is request, the ``pip``
   script will *not* be installed.
 
+.. versionchanged:: 2.7.15
+   The exit status is non-zero if the command fails.
+
 
 Module API
 ----------
@@ -94,7 +97,7 @@ Module API
    Bootstraps ``pip`` into the current or designated environment.
 
    *root* specifies an alternative root directory to install relative to.
-   If *root* is None, then installation uses the default install location
+   If *root* is ``None``, then installation uses the default install location
    for the current environment.
 
    *upgrade* indicates whether or not to upgrade an existing installation

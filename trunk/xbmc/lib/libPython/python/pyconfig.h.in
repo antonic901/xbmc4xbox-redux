@@ -73,7 +73,7 @@
 /* Define if GCC supports __attribute__((format(PyArg_ParseTuple, 2, 3))) */
 #undef HAVE_ATTRIBUTE_FORMAT_PARSETUPLE
 
-/* Define to 1 if you have the `bind_textdomain_codeset' function. */
+/* Define to 1 if bind_textdomain_codeset is available. */
 #undef HAVE_BIND_TEXTDOMAIN_CODESET
 
 /* Define to 1 if you have the <bluetooth/bluetooth.h> header file. */
@@ -130,14 +130,29 @@
 /* Define to 1 if you have the `copysign' function. */
 #undef HAVE_COPYSIGN
 
+/* Define to 1 if you have the <crypt.h> header file. */
+#undef HAVE_CRYPT_H
+
 /* Define to 1 if you have the `ctermid' function. */
 #undef HAVE_CTERMID
 
 /* Define if you have the 'ctermid_r' function. */
 #undef HAVE_CTERMID_R
 
+/* Define if you have the 'filter' function. */
+#undef HAVE_CURSES_FILTER
+
 /* Define to 1 if you have the <curses.h> header file. */
 #undef HAVE_CURSES_H
+
+/* Define if you have the 'has_key' function. */
+#undef HAVE_CURSES_HAS_KEY
+
+/* Define if you have the 'immedok' function. */
+#undef HAVE_CURSES_IMMEDOK
+
+/* Define if you have the 'is_pad' function or macro. */
+#undef HAVE_CURSES_IS_PAD
 
 /* Define if you have the 'is_term_resized' function. */
 #undef HAVE_CURSES_IS_TERM_RESIZED
@@ -147,6 +162,18 @@
 
 /* Define if you have the 'resize_term' function. */
 #undef HAVE_CURSES_RESIZE_TERM
+
+/* Define if you have the 'syncok' function. */
+#undef HAVE_CURSES_SYNCOK
+
+/* Define if you have the 'typeahead' function. */
+#undef HAVE_CURSES_TYPEAHEAD
+
+/* Define if you have the 'use_env' function. */
+#undef HAVE_CURSES_USE_ENV
+
+/* Define if you have the 'wchgat' function. */
+#undef HAVE_CURSES_WCHGAT
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
@@ -550,9 +577,6 @@
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
 
-/* Define if the libcrypto has RAND_egd */
-#undef HAVE_RAND_EGD
-
 /* Define to 1 if you have the `readlink' function. */
 #undef HAVE_READLINK
 
@@ -579,6 +603,9 @@
 
 /* Define if you have readline 4.0 */
 #undef HAVE_RL_PRE_INPUT_HOOK
+
+/* Define if you have readline 4.0 */
+#undef HAVE_RL_RESIZE_TERMINAL
 
 /* Define to 1 if you have the `round' function. */
 #undef HAVE_ROUND
@@ -731,10 +758,6 @@
 /* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
-/* Define to 1 if your `struct stat' has `st_blocks'. Deprecated, use
-   `HAVE_STRUCT_STAT_ST_BLOCKS' instead. */
-#undef HAVE_ST_BLOCKS
-
 /* Define if you have the 'symlink' function. */
 #undef HAVE_SYMLINK
 
@@ -785,6 +808,9 @@
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #undef HAVE_SYS_POLL_H
 
+/* Define to 1 if you have the <sys/random.h> header file. */
+#undef HAVE_SYS_RANDOM_H
+
 /* Define to 1 if you have the <sys/resource.h> header file. */
 #undef HAVE_SYS_RESOURCE_H
 
@@ -799,6 +825,9 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+#undef HAVE_SYS_SYSMACROS_H
 
 /* Define to 1 if you have the <sys/termio.h> header file. */
 #undef HAVE_SYS_TERMIO_H

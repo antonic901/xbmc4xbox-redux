@@ -10,14 +10,15 @@
 """
 
 ISSUE_URI = 'https://bugs.python.org/issue%s'
-SOURCE_URI = 'https://hg.python.org/cpython/file/2.7/%s'
+SOURCE_URI = 'https://github.com/python/cpython/tree/2.7/%s'
 
 from docutils import nodes, utils
+from docutils.parsers.rst import Directive
 
 from sphinx.util.nodes import split_explicit_title
-from sphinx.util.compat import Directive
 from sphinx.writers.html import HTMLTranslator
 from sphinx.writers.latex import LaTeXTranslator
+from sphinx.writers.text import TextTranslator
 
 # monkey-patch reST parser to disable alphabetic and roman enumerated lists
 from docutils.parsers.rst.states import Body
@@ -58,7 +59,7 @@ LaTeXTranslator.depart_literal_block = new_depart_literal_block
 
 def issue_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     issue = utils.unescape(text)
-    text = 'issue ' + issue
+    text = 'bpo-'+ issue
     refnode = nodes.reference(text, text, refuri=ISSUE_URI % issue)
     return [refnode], []
 
@@ -131,7 +132,7 @@ pydoc_topic_labels = [
     'assert', 'assignment', 'atom-identifiers', 'atom-literals',
     'attribute-access', 'attribute-references', 'augassign', 'binary',
     'bitwise', 'bltin-code-objects', 'bltin-ellipsis-object',
-    'bltin-null-object', 'bltin-type-objects', 'booleans',
+    'bltin-file-objects', 'bltin-null-object', 'bltin-type-objects', 'booleans',
     'break', 'callable-types', 'calls', 'class', 'comparisons', 'compound',
     'context-managers', 'continue', 'conversions', 'customization', 'debugger',
     'del', 'dict', 'dynamic-features', 'else', 'exceptions', 'exec', 'execmodel',
@@ -158,8 +159,11 @@ from sphinx.writers.text import TextWriter
 class PydocTopicsBuilder(Builder):
     name = 'pydoc-topics'
 
+    default_translator_class = TextTranslator
+
     def init(self):
         self.topics = {}
+        self.secnumbers = {}
 
     def get_outdated_docs(self):
         return 'all pydoc topics'
@@ -168,10 +172,15 @@ class PydocTopicsBuilder(Builder):
         return ''  # no URIs
 
     def write(self, *ignored):
+        try:  # sphinx>=1.6
+            from sphinx.util import status_iterator
+        except ImportError:  # sphinx<1.6
+            status_iterator = self.status_iterator
+
         writer = TextWriter(self)
-        for label in self.status_iterator(pydoc_topic_labels,
-                                          'building topics... ',
-                                          length=len(pydoc_topic_labels)):
+        for label in status_iterator(pydoc_topic_labels,
+                                     'building topics... ',
+                                     length=len(pydoc_topic_labels)):
             if label not in self.env.domaindata['std']['labels']:
                 self.warn('label %r not in documentation' % label)
                 continue
@@ -248,11 +257,9 @@ def setup(app):
     app.add_directive('impl-detail', ImplementationDetail)
     app.add_builder(PydocTopicsBuilder)
     app.add_builder(suspicious.CheckSuspiciousMarkupBuilder)
-    app.add_description_unit('opcode', 'opcode', '%s (opcode)',
-                             parse_opcode_signature)
-    app.add_description_unit('pdbcommand', 'pdbcmd', '%s (pdb command)',
-                             parse_pdb_command)
-    app.add_description_unit('2to3fixer', '2to3fixer', '%s (2to3 fixer)')
+    app.add_object_type('opcode', 'opcode', '%s (opcode)', parse_opcode_signature)
+    app.add_object_type('pdbcommand', 'pdbcmd', '%s (pdb command)', parse_pdb_command)
+    app.add_object_type('2to3fixer', '2to3fixer', '%s (2to3 fixer)')
     app.add_directive_to_domain('py', 'decorator', PyDecoratorFunction)
     app.add_directive_to_domain('py', 'decoratormethod', PyDecoratorMethod)
     return {'version': '1.0', 'parallel_read_safe': True}

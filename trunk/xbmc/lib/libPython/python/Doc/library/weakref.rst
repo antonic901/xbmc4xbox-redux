@@ -189,8 +189,8 @@ than needed.
       magic" (as a side effect of garbage collection).
 
 :class:`WeakValueDictionary` objects have the following additional methods.
-These method have the same issues as the :meth:`iterkeyrefs` and :meth:`keyrefs`
-methods of :class:`WeakKeyDictionary` objects.
+These methods have the same issues as the :meth:`iterkeyrefs` and
+:meth:`keyrefs` methods of :class:`WeakKeyDictionary` objects.
 
 
 .. method:: WeakValueDictionary.itervaluerefs()
@@ -245,7 +245,7 @@ methods of :class:`WeakKeyDictionary` objects.
 
 .. seealso::
 
-   :pep:`0205` - Weak References
+   :pep:`205` - Weak References
       The proposal and rationale for this feature, including links to earlier
       implementations and information about similar features in other languages.
 
@@ -328,7 +328,7 @@ the referent is accessed::
 Example
 -------
 
-This simple example shows how an application can use objects IDs to retrieve
+This simple example shows how an application can use object IDs to retrieve
 objects that it has seen before.  The IDs of the objects can then be used in
 other data structures without forcing the objects to remain alive, but the
 objects can still be retrieved by ID if they do.

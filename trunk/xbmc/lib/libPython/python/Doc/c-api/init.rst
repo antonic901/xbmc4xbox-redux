@@ -43,8 +43,8 @@ Initializing and finalizing the interpreter
 
 .. c:function:: void Py_InitializeEx(int initsigs)
 
-   This function works like :c:func:`Py_Initialize` if *initsigs* is 1. If
-   *initsigs* is 0, it skips initialization registration of signal handlers, which
+   This function works like :c:func:`Py_Initialize` if *initsigs* is ``1``. If
+   *initsigs* is ``0``, it skips initialization registration of signal handlers, which
    might be useful when Python is embedded.
 
    .. versionadded:: 2.4
@@ -295,9 +295,9 @@ Process-wide parameters
 
    .. note::
       It is recommended that applications embedding the Python interpreter
-      for purposes other than executing a single script pass 0 as *updatepath*,
+      for purposes other than executing a single script pass ``0`` as *updatepath*,
       and update :data:`sys.path` themselves if desired.
-      See `CVE-2008-5983 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_.
+      See `CVE-2008-5983 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_.
 
       On versions before 2.6.6, you can achieve the same effect by manually
       popping the first :data:`sys.path` element after having called
@@ -307,13 +307,13 @@ Process-wide parameters
 
    .. versionadded:: 2.6.6
 
-   .. XXX impl. doesn't seem consistent in allowing 0/NULL for the params;
+   .. XXX impl. doesn't seem consistent in allowing ``0``/``NULL`` for the params;
       check w/ Guido.
 
 
 .. c:function:: void PySys_SetArgv(int argc, char **argv)
 
-   This function works like :c:func:`PySys_SetArgvEx` with *updatepath* set to 1.
+   This function works like :c:func:`PySys_SetArgvEx` with *updatepath* set to ``1``.
 
 
 .. c:function:: void Py_SetPythonHome(char *home)
@@ -917,8 +917,8 @@ pointer and a void pointer argument.
    .. index:: single: Py_AddPendingCall()
 
    Schedule a function to be called from the main interpreter thread.  On
-   success, 0 is returned and *func* is queued for being called in the
-   main thread.  On failure, -1 is returned without setting any exception.
+   success, ``0`` is returned and *func* is queued for being called in the
+   main thread.  On failure, ``-1`` is returned without setting any exception.
 
    When successfully queued, *func* will be *eventually* called from the
    main interpreter thread with the argument *arg*.  It will be called
@@ -929,7 +929,7 @@ pointer and a void pointer argument.
    * with the main thread holding the :term:`global interpreter lock`
      (*func* can therefore use the full C API).
 
-   *func* must return 0 on success, or -1 on failure with an exception
+   *func* must return ``0`` on success, or ``-1`` on failure with an exception
    set.  *func* won't be interrupted to perform another asynchronous
    notification recursively, but it can still be interrupted to switch
    threads if the global interpreter lock is released.
@@ -983,12 +983,12 @@ in previous versions.
    +------------------------------+--------------------------------------+
    | Value of *what*              | Meaning of *arg*                     |
    +==============================+======================================+
-   | :const:`PyTrace_CALL`        | Always *NULL*.                       |
+   | :const:`PyTrace_CALL`        | Always :c:data:`Py_None`.            |
    +------------------------------+--------------------------------------+
    | :const:`PyTrace_EXCEPTION`   | Exception information as returned by |
    |                              | :func:`sys.exc_info`.                |
    +------------------------------+--------------------------------------+
-   | :const:`PyTrace_LINE`        | Always *NULL*.                       |
+   | :const:`PyTrace_LINE`        | Always :c:data:`Py_None`.            |
    +------------------------------+--------------------------------------+
    | :const:`PyTrace_RETURN`      | Value being returned to the caller,  |
    |                              | or *NULL* if caused by an exception. |
@@ -1030,7 +1030,7 @@ in previous versions.
 .. c:var:: int PyTrace_RETURN
 
    The value for the *what* parameter to :c:type:`Py_tracefunc` functions when a
-   call is returning without propagating an exception.
+   call is about to return.
 
 
 .. c:var:: int PyTrace_C_CALL
@@ -1057,15 +1057,19 @@ in previous versions.
    function as its first parameter, and may be any Python object, or *NULL*.  If
    the profile function needs to maintain state, using a different value for *obj*
    for each thread provides a convenient and thread-safe place to store it.  The
-   profile function is called for all monitored events except the line-number
-   events.
+   profile function is called for all monitored events except :const:`PyTrace_LINE`
+   and :const:`PyTrace_EXCEPTION`.
 
 
 .. c:function:: void PyEval_SetTrace(Py_tracefunc func, PyObject *obj)
 
    Set the tracing function to *func*.  This is similar to
    :c:func:`PyEval_SetProfile`, except the tracing function does receive line-number
-   events.
+   events and does not receive any event related to C function objects being called. Any
+   trace function registered using :c:func:`PyEval_SetTrace` will not receive
+   :const:`PyTrace_C_CALL`, :const:`PyTrace_C_EXCEPTION` or :const:`PyTrace_C_RETURN`
+   as a value for the *what* parameter.
+
 
 .. c:function:: PyObject* PyEval_GetCallStats(PyObject *self)
 

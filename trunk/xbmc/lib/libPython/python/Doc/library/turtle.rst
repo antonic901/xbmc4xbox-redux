@@ -529,7 +529,7 @@ Turtle motion
 
    :param n: an integer (or ``None``)
 
-   Delete all or first/last *n* of turtle's stamps.  If *n* is None, delete
+   Delete all or first/last *n* of turtle's stamps.  If *n* is ``None``, delete
    all stamps, if *n* > 0 delete first *n* stamps, else if *n* < 0 delete
    last *n* stamps.
 
@@ -1229,7 +1229,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1250,7 +1250,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1274,7 +1274,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1656,7 +1656,7 @@ Using screen events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1857,10 +1857,10 @@ Methods specific to Screen, not inherited from TurtleScreen
    :param height: if an integer, the height in pixels, if a float, a fraction of
                   the screen; default is 75% of screen
    :param startx: if positive, starting position in pixels from the left
-                  edge of the screen, if negative from the right edge, if None,
+                  edge of the screen, if negative from the right edge, if ``None``,
                   center window horizontally
    :param starty: if positive, starting position in pixels from the top
-                  edge of the screen, if negative from the bottom edge, if None,
+                  edge of the screen, if negative from the bottom edge, if ``None``,
                   center window vertically
 
    .. doctest::
@@ -2219,7 +2219,7 @@ The demoscripts are:
 | wikipedia      | a pattern from the wikipedia | :func:`clone`,        |
 |                | article on turtle graphics   | :func:`undo`          |
 +----------------+------------------------------+-----------------------+
-| yingyang       | another elementary example   | :func:`circle`        |
+| yinyang        | another elementary example   | :func:`circle`        |
 +----------------+------------------------------+-----------------------+
 
 Have fun!

@@ -74,7 +74,7 @@ sends logging output to a disk file.  It inherits the output functionality from
 
    Returns a new instance of the :class:`FileHandler` class. The specified file is
    opened and used as the stream for logging. If *mode* is not specified,
-   :const:`'a'` is used.  If *encoding* is not *None*, it is used to open the file
+   :const:`'a'` is used.  If *encoding* is not ``None``, it is used to open the file
    with that encoding.  If *delay* is true, then file opening is deferred until the
    first call to :meth:`emit`. By default, the file grows indefinitely.
 
@@ -154,7 +154,7 @@ for this value.
 
    Returns a new instance of the :class:`WatchedFileHandler` class. The specified
    file is opened and used as the stream for logging. If *mode* is not specified,
-   :const:`'a'` is used.  If *encoding* is not *None*, it is used to open the file
+   :const:`'a'` is used.  If *encoding* is not ``None``, it is used to open the file
    with that encoding.  If *delay* is true, then file opening is deferred until the
    first call to :meth:`emit`.  By default, the file grows indefinitely.
 
@@ -178,7 +178,7 @@ module, supports rotation of disk log files.
 
    Returns a new instance of the :class:`RotatingFileHandler` class. The specified
    file is opened and used as the stream for logging. If *mode* is not specified,
-   ``'a'`` is used.  If *encoding* is not *None*, it is used to open the file
+   ``'a'`` is used.  If *encoding* is not ``None``, it is used to open the file
    with that encoding.  If *delay* is true, then file opening is deferred until the
    first call to :meth:`emit`.  By default, the file grows indefinitely.
 
@@ -349,7 +349,7 @@ sends logging output to a network socket. The base class uses a TCP socket.
    .. method:: createSocket()
 
       Tries to create a socket; on failure, uses an exponential back-off
-      algorithm.  On intial failure, the handler will drop the message it was
+      algorithm.  On initial failure, the handler will drop the message it was
       trying to send.  When subsequent messages are handled by the same
       instance, it will not try connecting until some time has passed.  The
       default parameters are such that the initial delay is one second, and if
@@ -743,7 +743,7 @@ supports sending logging messages to a Web server, using either ``GET`` or
 
    .. method:: emit(record)
 
-      Sends the record to the Web server as an URL-encoded dictionary. The
+      Sends the record to the Web server as a URL-encoded dictionary. The
       :meth:`mapLogRecord` method is used to convert the record to the
       dictionary to be sent.
 

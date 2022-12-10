@@ -107,7 +107,7 @@ An example that uses most of the list methods::
 
 You might have noticed that methods like ``insert``, ``remove`` or ``sort`` that
 only modify the list have no return value printed -- they return the default
-``None``. [1]_  This is a design principle for all mutable data structures in
+``None``.  This is a design principle for all mutable data structures in
 Python.
 
 
@@ -311,7 +311,7 @@ it must be parenthesized. ::
    [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
    >>> # the tuple must be parenthesized, otherwise an error is raised
    >>> [x, x**2 for x in range(6)]
-     File "<stdin>", line 1
+     File "<stdin>", line 1, in <module>
        [x, x**2 for x in range(6)]
                   ^
    SyntaxError: invalid syntax
@@ -452,7 +452,7 @@ objects, such as lists.
 
 Though tuples may seem similar to lists, they are often used in different
 situations and for different purposes.
-Tuples are :term:`immutable`, and usually contain an heterogeneous sequence of
+Tuples are :term:`immutable`, and usually contain a heterogeneous sequence of
 elements that are accessed via unpacking (see later in this section) or indexing
 (or even by attribute in the case of :func:`namedtuples <collections.namedtuple>`).
 Lists are :term:`mutable`, and their elements are usually homogeneous and are

@@ -20,7 +20,7 @@ based on the :file:`UnicodeData.txt` file version 5.2.0 which is publicly
 available from ftp://ftp.unicode.org/.
 
 The module uses the same names and symbols as defined by the UnicodeData File
-Format 5.2.0 (see http://www.unicode.org/reports/tr44/tr44-4.html).
+Format 5.2.0 (see https://www.unicode.org/reports/tr44/).
 It defines the following functions:
 
 
@@ -161,7 +161,7 @@ Examples:
    9
    >>> unicodedata.decimal(u'a')
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    ValueError: not a decimal
    >>> unicodedata.category(u'A')  # 'L'etter, 'u'ppercase
    'Lu'

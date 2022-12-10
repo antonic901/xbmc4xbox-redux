@@ -128,7 +128,7 @@ Find Selection
    Search for the currently selected string, if there is one.
 
 Find in Files...
-   Open a file search dialog.  Put results in an new output window.
+   Open a file search dialog.  Put results in a new output window.
 
 Replace...
    Open a search-and-replace dialog.
@@ -222,6 +222,9 @@ View Last Restart
 Restart Shell
   Restart the shell to clean the environment.
 
+Interrupt Execution
+  Stop a running program.
+
 Debug menu (Shell window only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -237,7 +240,7 @@ Go to File/Line
    single: stack viewer
 
 Debugger (toggle)
-   When actived, code entered in the Shell or run from an Editor will run
+   When activated, code entered in the Shell or run from an Editor will run
    under the debugger.  In the Editor, breakpoints can be set with the context
    menu.  This feature is still incomplete and somewhat experimental.
 
@@ -365,7 +368,7 @@ the :kbd:`Command` key on Mac OSX.
 
    * :kbd:`C-l` center window around the insertion point
 
-   * :kbd:`C-b` go backwards one character without deleting (usually you can
+   * :kbd:`C-b` go backward one character without deleting (usually you can
      also use the cursor key for this)
 
    * :kbd:`C-f` go forward one character without deleting (usually you can
@@ -387,7 +390,7 @@ After a block-opening statement, the next line is indented by 4 spaces (in the
 Python Shell window by one tab).  After certain keywords (break, return etc.)
 the next line is dedented.  In leading indentation, :kbd:`Backspace` deletes up
 to 4 spaces if they are there. :kbd:`Tab` inserts spaces (in the Python
-Shell window one tab), number depends on Indent width. Currently tabs
+Shell window one tab), number depends on Indent width. Currently, tabs
 are restricted to four spaces due to Tcl/Tk limitations.
 
 See also the indent/dedent region commands in the edit menu.
@@ -411,7 +414,7 @@ If there is only one possible completion for the characters entered, a
 :kbd:`C-space` will open a completions window. In an empty
 string, this will contain the files in the current directory. On a
 blank line, it will contain the built-in and user-defined functions and
-classes in the current name spaces, plus any modules imported. If some
+classes in the current namespaces, plus any modules imported. If some
 characters have been entered, the ACW will attempt to be more specific.
 
 If a string of characters is typed, the ACW selection will jump to the
@@ -439,7 +442,7 @@ longer or disable the extension.
 Calltips
 ^^^^^^^^
 
-A calltip is shown when one types :kbd:`(` after the name of an *acccessible*
+A calltip is shown when one types :kbd:`(` after the name of an *accessible*
 function.  A name expression may include dots and subscripts.  A calltip
 remains until it is clicked, the cursor is moved out of the argument area,
 or :kbd:`)` is typed.  When the cursor is in the argument part of a definition,
@@ -520,14 +523,14 @@ functions to be used from IDLE's Python shell.
 Command line usage
 ^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: none
 
    idle.py [-c command] [-d] [-e] [-h] [-i] [-r file] [-s] [-t title] [-] [arg] ...
 
    -c command  run command in the shell window
    -d          enable debugger and open shell window
    -e          open editor window
-   -h          print help message with legal combinatios and exit
+   -h          print help message with legal combinations and exit
    -i          open shell window
    -r file     run file in shell window
    -s          run $IDLESTARTUP or $PYTHONSTARTUP first, in shell window
@@ -550,17 +553,21 @@ IDLE-console differences
 
 As much as possible, the result of executing Python code with IDLE is the
 same as executing the same code in a console window.  However, the different
-interface and operation occasionally affects results.
+interface and operation occasionally affect visible results.  For instance,
+``sys.modules`` starts with more entries.
 
-For instance, IDLE normally executes user code in a separate process from
-the IDLE GUI itself.  The IDLE versions of sys.stdin, .stdout, and .stderr in the
-execution process get input from and send output to the GUI process,
-which keeps control of the keyboard and screen.  This is normally transparent,
-but code that access these object will see different attribute values.
-Also, functions that directly access the keyboard and screen will not work.
+IDLE also replaces ``sys.stdin``, ``sys.stdout``, and ``sys.stderr`` with
+objects that get input from and send output to the Shell window.
+When this window has the focus, it controls the keyboard and screen.
+This is normally transparent, but functions that directly access the keyboard
+and screen will not work.  If ``sys`` is reset with ``reload(sys)``,
+IDLE's changes are lost and things like ``input``, ``raw_input``, and
+``print`` will not work correctly.
 
 With IDLE's Shell, one enters, edits, and recalls complete statements.
-Some consoles only work with a single physical line at a time.
+Some consoles only work with a single physical line at a time.  IDLE uses
+``exec`` to run each statement.  As a result, ``'__builtins__'`` is always
+defined for each statement.
 
 Running without a subprocess
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -572,7 +579,7 @@ If firewall software complains anyway, you can ignore it.
 
 If the attempt to make the socket connection fails, Idle will notify you.
 Such failures are sometimes transient, but if persistent, the problem
-may be either a firewall blocking the connecton or misconfiguration of
+may be either a firewall blocking the connection or misconfiguration of
 a particular system.  Until the problem is fixed, one can run Idle with
 the -n command line switch.
 
@@ -608,14 +615,14 @@ Setting preferences
 
 The font preferences, highlighting, keys, and general preferences can be
 changed via Configure IDLE on the Option menu.  Keys can be user defined;
-IDLE ships with four built in key sets. In addition a user can create a
+IDLE ships with four built-in key sets. In addition, a user can create a
 custom key set in the Configure IDLE dialog under the keys tab.
 
 
 Extensions
 ^^^^^^^^^^
 
-IDLE contains an extension facility.  Peferences for extensions can be
+IDLE contains an extension facility.  Preferences for extensions can be
 changed with Configure Extensions. See the beginning of config-extensions.def
 in the idlelib directory for further information.  The default extensions
 are currently:

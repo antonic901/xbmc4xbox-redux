@@ -93,7 +93,9 @@ mode*.  In this mode it prompts for the next command with the *primary prompt*,
 usually three greater-than signs (``>>>``); for continuation lines it prompts
 with the *secondary prompt*, by default three dots (``...``). The interpreter
 prints a welcome message stating its version number and a copyright notice
-before printing the first prompt::
+before printing the first prompt:
+
+.. code-block:: shell-session
 
    python
    Python 2.7 (#1, Feb 28 2010, 00:02:06)
@@ -124,40 +126,23 @@ The Interpreter and Its Environment
 Source Code Encoding
 --------------------
 
-It is possible to use encodings different than ASCII in Python source files. The
-best way to do it is to put one more special comment line right after the ``#!``
-line to define the source file encoding::
+By default, Python source files are treated as encoded in ASCII.
+To declare an encoding other than the default one, a special comment line
+should be added as the *first* line of the file.  The syntax is as follows::
 
    # -*- coding: encoding -*-
 
+where *encoding* is one of the valid :mod:`codecs` supported by Python.
 
-With that declaration, all characters in the source file will be treated as
-having the encoding *encoding*, and it will be possible to directly write
-Unicode string literals in the selected encoding.  The list of possible
-encodings can be found in the Python Library Reference, in the section on
-:mod:`codecs`.
+For example, to declare that Windows-1252 encoding is to be used, the first
+line of your source code file should be::
 
-For example, to write Unicode literals including the Euro currency symbol, the
-ISO-8859-15 encoding can be used, with the Euro symbol having the ordinal value
-164.  This script, when saved in the ISO-8859-15 encoding, will print the value
-8364 (the Unicode code point corresponding to the Euro symbol) and then exit::
+   # -*- coding: cp1252 -*-
 
-   # -*- coding: iso-8859-15 -*-
+One exception to the *first line* rule is when the source code starts with a
+:ref:`UNIX "shebang" line <tut-scripts>`.  In this case, the encoding
+declaration should be added as the second line of the file.  For example::
 
-   currency = u"€"
-   print ord(currency)
-
-If your editor supports saving files as ``UTF-8`` with a UTF-8 *byte order mark*
-(aka BOM), you can use that instead of an encoding declaration. IDLE supports
-this capability if ``Options/General/Default Source Encoding/UTF-8`` is set.
-Notice that this signature is not understood in older Python releases (2.2 and
-earlier), and also not understood by the operating system for script files with
-``#!`` lines (only used on Unix systems).
-
-By using UTF-8 (either through the signature or an encoding declaration),
-characters of most languages in the world can be used simultaneously in string
-literals and comments.  Using non-ASCII characters in identifiers is not
-supported. To display all these characters properly, your editor must recognize
-that the file is UTF-8, and it must use a font that supports all the characters
-in the file.
+   #!/usr/bin/env python
+   # -*- coding: cp1252 -*-
 

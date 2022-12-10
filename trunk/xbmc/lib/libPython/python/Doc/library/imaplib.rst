@@ -90,7 +90,7 @@ The following utility functions are defined:
 
    Parse an IMAP4 ``INTERNALDATE`` string and return corresponding local
    time.  The return value is a :class:`time.struct_time` instance or
-   None if the string has wrong format.
+   ``None`` if the string has wrong format.
 
 .. function:: Int2AP(num)
 
@@ -125,7 +125,7 @@ example of usage.
 
    Documents describing the protocol, and sources and binaries  for servers
    implementing it, can all be found at the University of Washington's *IMAP
-   Information Center* (http://www.washington.edu/imap/).
+   Information Center* (https://www.washington.edu/imap/).
 
 
 .. _imap4-objects:

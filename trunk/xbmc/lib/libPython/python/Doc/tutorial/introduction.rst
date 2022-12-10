@@ -149,12 +149,12 @@ to escape quotes::
    "doesn't"
    >>> "doesn't"  # ...or use double quotes instead
    "doesn't"
-   >>> '"Yes," he said.'
-   '"Yes," he said.'
-   >>> "\"Yes,\" he said."
-   '"Yes," he said.'
-   >>> '"Isn\'t," she said.'
-   '"Isn\'t," she said.'
+   >>> '"Yes," they said.'
+   '"Yes," they said.'
+   >>> "\"Yes,\" they said."
+   '"Yes," they said.'
+   >>> '"Isn\'t," they said.'
+   '"Isn\'t," they said.'
 
 In the interactive interpreter, the output string is enclosed in quotes and
 special characters are escaped with backslashes.  While this might sometimes
@@ -165,10 +165,10 @@ enclosed in single quotes.  The :keyword:`print` statement produces a more
 readable output, by omitting the enclosing quotes and by printing escaped
 and special characters::
 
-   >>> '"Isn\'t," she said.'
-   '"Isn\'t," she said.'
-   >>> print '"Isn\'t," she said.'
-   "Isn't," she said.
+   >>> '"Isn\'t," they said.'
+   '"Isn\'t," they said.'
+   >>> print '"Isn\'t," they said.'
+   "Isn't," they said.
    >>> s = 'First line.\nSecond line.'  # \n means newline
    >>> s  # without print, \n is included in the output
    'First line.\nSecond line.'
@@ -218,6 +218,13 @@ to each other are automatically concatenated. ::
    >>> 'Py' 'thon'
    'Python'
 
+This feature is particularly useful when you want to break long strings::
+
+   >>> text = ('Put several strings within parentheses '
+   ...         'to have them joined together.')
+   >>> text
+   'Put several strings within parentheses to have them joined together.'
+
 This only works with two literals though, not with variables or expressions::
 
    >>> prefix = 'Py'
@@ -232,13 +239,6 @@ If you want to concatenate variables or a variable and a literal, use ``+``::
 
    >>> prefix + 'thon'
    'Python'
-
-This feature is particularly useful when you want to break long strings::
-
-   >>> text = ('Put several strings within parentheses '
-               'to have them joined together.')
-   >>> text
-   'Put several strings within parentheses to have them joined together.'
 
 Strings can be *indexed* (subscripted), with the first character having index 0.
 There is no separate character type; a character is simply a string of size
@@ -280,11 +280,11 @@ makes sure that ``s[:i] + s[i:]`` is always equal to ``s``::
 Slice indices have useful defaults; an omitted first index defaults to zero, an
 omitted second index defaults to the size of the string being sliced. ::
 
-   >>> word[:2]  # character from the beginning to position 2 (excluded)
+   >>> word[:2]   # character from the beginning to position 2 (excluded)
    'Py'
-   >>> word[4:]  # characters from position 4 (included) to the end
+   >>> word[4:]   # characters from position 4 (included) to the end
    'on'
-   >>> word[-2:] # characters from the second-last (included) to the end
+   >>> word[-2:]  # characters from the second-last (included) to the end
    'on'
 
 One way to remember how slices work is to think of the indices as pointing
@@ -307,7 +307,7 @@ For non-negative indices, the length of a slice is the difference of the
 indices, if both are within bounds.  For example, the length of ``word[1:3]`` is
 2.
 
-Attempting to use a index that is too large will result in an error::
+Attempting to use an index that is too large will result in an error::
 
    >>> word[42]  # the word only has 6 characters
    Traceback (most recent call last):
@@ -357,9 +357,8 @@ The built-in function :func:`len` returns the length of a string::
       Both strings and Unicode strings support a large number of methods for
       basic transformations and searching.
 
-   :ref:`new-string-formatting`
-      Information about string formatting with :meth:`str.format` is described
-      here.
+   :ref:`formatstrings`
+      Information about string formatting with :meth:`str.format`.
 
    :ref:`string-formatting`
       The old formatting operations invoked when strings and Unicode strings are

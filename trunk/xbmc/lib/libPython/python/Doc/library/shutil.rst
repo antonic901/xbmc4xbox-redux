@@ -82,9 +82,11 @@ Directory and files operations
 
 .. function:: copy2(src, dst)
 
-   Similar to :func:`shutil.copy`, but metadata is copied as well -- in fact,
-   this is just :func:`shutil.copy` followed by :func:`copystat`.  This is
-   similar to the Unix command :program:`cp -p`.
+   Identical to :func:`~shutil.copy` except that :func:`copy2`
+   also attempts to preserve file metadata.
+
+   :func:`copy2` uses :func:`copystat` to copy the file metadata.
+   Please see :func:`copystat` for more information.
 
 
 .. function:: ignore_patterns(\*patterns)
@@ -267,7 +269,9 @@ provided.  They rely on the :mod:`zipfile` and :mod:`tarfile` modules.
 
    *base_name* is the name of the file to create, including the path, minus
    any format-specific extension. *format* is the archive format: one of
-   "zip", "tar", "bztar" or "gztar".
+   "zip" (if the :mod:`zlib` module or external ``zip`` executable is
+   available), "tar", "gztar" (if the :mod:`zlib` module is available), or
+   "bztar" (if the :mod:`bz2` module is available).
 
    *root_dir* is a directory that will be the root directory of the
    archive; ie. we typically chdir into *root_dir* before creating the
@@ -295,10 +299,11 @@ provided.  They rely on the :mod:`zipfile` and :mod:`tarfile` modules.
 
    By default :mod:`shutil` provides these formats:
 
-   - *gztar*: gzip'ed tar-file
-   - *bztar*: bzip2'ed tar-file
-   - *tar*: uncompressed tar file
-   - *zip*: ZIP file
+   - *zip*: ZIP file (if the :mod:`zlib` module or external ``zip``
+     executable is available).
+   - *tar*: uncompressed tar file.
+   - *gztar*: gzip'ed tar-file (if the :mod:`zlib` module is available).
+   - *bztar*: bzip2'ed tar-file (if the :mod:`bz2` module is available).
 
    You can register new formats or provide your own archiver for any existing
    formats, by using :func:`register_archive_format`.
@@ -342,7 +347,9 @@ found in the :file:`.ssh` directory of the user::
     >>> make_archive(archive_name, 'gztar', root_dir)
     '/Users/tarek/myarchive.tar.gz'
 
-The resulting archive contains::
+The resulting archive contains:
+
+.. code-block:: shell-session
 
     $ tar -tzvf /Users/tarek/myarchive.tar.gz
     drwx------ tarek/staff       0 2010-02-01 16:23:40 ./

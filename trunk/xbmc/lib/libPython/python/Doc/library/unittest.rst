@@ -78,7 +78,7 @@ need to derive from a specific class.
    Module :mod:`doctest`
       Another test-support module with a very different flavor.
 
-   `unittest2: A backport of new unittest features for Python 2.4-2.6 <https://pypi.python.org/pypi/unittest2>`_
+   `unittest2: A backport of new unittest features for Python 2.4-2.6 <https://pypi.org/project/unittest2>`_
       Many new features were added to unittest in Python 2.7, including test
       discovery. unittest2 allows you to use these features with earlier
       versions of Python.
@@ -87,7 +87,7 @@ need to derive from a specific class.
       Kent Beck's original paper on testing frameworks using the pattern shared
       by :mod:`unittest`.
 
-   `Nose <https://nose.readthedocs.org/en/latest/>`_ and `py.test <http://pytest.org>`_
+   `Nose <https://nose.readthedocs.io/>`_ and `pytest <https://docs.pytest.org/>`_
       Third-party unittest frameworks with a lighter-weight syntax for writing
       tests.  For example, ``assert func(10) == 42``.
 
@@ -115,19 +115,19 @@ Here is a short script to test three string methods::
 
   class TestStringMethods(unittest.TestCase):
 
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+      def test_upper(self):
+          self.assertEqual('foo'.upper(), 'FOO')
 
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
+      def test_isupper(self):
+          self.assertTrue('FOO'.isupper())
+          self.assertFalse('Foo'.isupper())
 
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+      def test_split(self):
+          s = 'hello world'
+          self.assertEqual(s.split(), ['hello', 'world'])
+          # check that s.split fails when the separator is not a string
+          with self.assertRaises(TypeError):
+              s.split(2)
 
   if __name__ == '__main__':
       unittest.main()
@@ -147,7 +147,7 @@ and produce a report.
 
 The :meth:`~TestCase.setUp` and :meth:`~TestCase.tearDown` methods allow you
 to define instructions that will be executed before and after each test method.
-They are covered in more details in the section :ref:`organizing-tests`.
+They are covered in more detail in the section :ref:`organizing-tests`.
 
 The final block shows a simple way to run the tests. :func:`unittest.main`
 provides a command-line interface to the test script.  When run from the command
@@ -720,15 +720,17 @@ Test cases
       Method called immediately after the test method has been called and the
       result recorded.  This is called even if the test method raised an
       exception, so the implementation in subclasses may need to be particularly
-      careful about checking internal state.  Any exception, other than :exc:`AssertionError`
-      or :exc:`SkipTest`, raised by this method will be considered an error rather than a
-      test failure.  This method will only be called if the :meth:`setUp` succeeds,
-      regardless of the outcome of the test method. The default implementation does nothing.
+      careful about checking internal state.  Any exception, other than
+      :exc:`AssertionError` or :exc:`SkipTest`, raised by this method will be
+      considered an additional error rather than a test failure (thus increasing
+      the total number of reported errors). This method will only be called if
+      the :meth:`setUp` succeeds, regardless of the outcome of the test method.
+      The default implementation does nothing.
 
 
    .. method:: setUpClass()
 
-      A class method called before tests in an individual class run.
+      A class method called before tests in an individual class are run.
       ``setUpClass`` is called with the class as the only argument
       and must be decorated as a :func:`classmethod`::
 
@@ -783,8 +785,9 @@ Test cases
 
    .. _assert-methods:
 
-   The :class:`TestCase` class provides a number of methods to check for and
-   report failures, such as:
+   The :class:`TestCase` class provides several assert methods to check for and
+   report failures.  The following table lists the most commonly used methods
+   (see the tables below for more assert methods):
 
    +-----------------------------------------+-----------------------------+---------------+
    | Method                                  | Checks that                 | New in        |
@@ -875,7 +878,7 @@ Test cases
    .. method:: assertIsNone(expr, msg=None)
                assertIsNotNone(expr, msg=None)
 
-      Test that *expr* is (or is not) None.
+      Test that *expr* is (or is not) ``None``.
 
       .. versionadded:: 2.7
 
@@ -1135,7 +1138,7 @@ Test cases
       Test that the multiline string *first* is equal to the string *second*.
       When not equal a diff of the two strings highlighting the differences
       will be included in the error message. This method is used by default
-      when comparing strings with :meth:`assertEqual`.
+      when comparing Unicode strings with :meth:`assertEqual`.
 
       .. versionadded:: 2.7
 
@@ -1237,7 +1240,7 @@ Test cases
       methods that delegate to it), :meth:`assertDictEqual` and
       :meth:`assertMultiLineEqual`.
 
-      Setting ``maxDiff`` to None means that there is no maximum length of
+      Setting ``maxDiff`` to ``None`` means that there is no maximum length of
       diffs.
 
       .. versionadded:: 2.7
@@ -1349,7 +1352,7 @@ Grouping tests
 
 .. class:: TestSuite(tests=())
 
-   This class represents an aggregation of individual tests cases and test suites.
+   This class represents an aggregation of individual test cases and test suites.
    The class presents the interface needed by the test runner to allow it to be run
    as any other test case.  Running a :class:`TestSuite` instance is the same as
    iterating over the suite, running each test individually.
@@ -1434,13 +1437,13 @@ Loading and running tests
 
    .. method:: loadTestsFromTestCase(testCaseClass)
 
-      Return a suite of all tests cases contained in the :class:`TestCase`\ -derived
+      Return a suite of all test cases contained in the :class:`TestCase`\ -derived
       :class:`testCaseClass`.
 
 
    .. method:: loadTestsFromModule(module)
 
-      Return a suite of all tests cases contained in the given module. This
+      Return a suite of all test cases contained in the given module. This
       method searches *module* for classes derived from :class:`TestCase` and
       creates an instance of the class for each test method defined for the
       class.
@@ -1463,7 +1466,7 @@ Loading and running tests
 
    .. method:: loadTestsFromName(name, module=None)
 
-      Return a suite of all tests cases given a string specifier.
+      Return a suite of all test cases given a string specifier.
 
       The specifier *name* is a "dotted name" that may resolve either to a
       module, a test case class, a test method within a test case class, a
@@ -1763,9 +1766,10 @@ Loading and running tests
    instead of repeatedly creating new instances.
 
 
-.. class:: TextTestRunner(stream=sys.stderr, descriptions=True, verbosity=1)
+.. class:: TextTestRunner(stream=sys.stderr, descriptions=True, verbosity=1, \
+                          failfast=False, buffer=False, resultclass=None)
 
-   A basic test runner implementation which prints results on standard error.  It
+   A basic test runner implementation which prints results on standard error. It
    has a few configurable parameters, but is essentially very simple.  Graphical
    applications which run test suites should provide alternate implementations.
 
@@ -2034,7 +2038,7 @@ handling functionality within test frameworks.
 
    When called without arguments this function removes the control-c handler
    if it has been installed. This function can also be used as a test decorator
-   to temporarily remove the handler whilst the test is being executed::
+   to temporarily remove the handler while the test is being executed::
 
       @unittest.removeHandler
       def test_signal_handling(self):

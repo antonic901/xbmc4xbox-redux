@@ -14,8 +14,9 @@ Glossary
 
    ``...``
       The default Python prompt of the interactive shell when entering code for
-      an indented code block or within a pair of matching left and right
-      delimiters (parentheses, square brackets or curly braces).
+      an indented code block, when within a pair of matching left and right
+      delimiters (parentheses, square brackets, curly braces or triple quotes),
+      or after specifying a decorator.
 
    2to3
       A tool that tries to convert Python 2.x code to Python 3.x code by
@@ -296,7 +297,7 @@ Glossary
       the :func:`next` function. Each :keyword:`yield` temporarily suspends
       processing, remembering the location execution state (including local
       variables and pending try-statements).  When the generator resumes, it
-      picks-up where it left-off (in contrast to functions which start fresh on
+      picks up where it left off (in contrast to functions which start fresh on
       every invocation).
 
       .. index:: single: generator expression
@@ -346,8 +347,8 @@ Glossary
       All of Python's immutable built-in objects are hashable, while no mutable
       containers (such as lists or dictionaries) are.  Objects which are
       instances of user-defined classes are hashable by default; they all
-      compare unequal (except with themselves), and their hash value is their
-      :func:`id`.
+      compare unequal (except with themselves), and their hash value is derived
+      from their :func:`id`.
 
    IDLE
       An Integrated Development Environment for Python.  IDLE is a basic editor
@@ -457,7 +458,7 @@ Glossary
    lambda
       An anonymous inline function consisting of a single :term:`expression`
       which is evaluated when the function is called.  The syntax to create
-      a lambda function is ``lambda [arguments]: expression``
+      a lambda function is ``lambda [parameters]: expression``
 
    LBYL
       Look before you leap.  This coding style explicitly tests for
@@ -474,7 +475,7 @@ Glossary
    list
       A built-in Python :term:`sequence`.  Despite its name it is more akin
       to an array in other languages than to a linked list since access to
-      elements are O(1).
+      elements is O(1).
 
    list comprehension
       A compact way to process all or part of the elements in a sequence and
@@ -488,6 +489,11 @@ Glossary
       An object that loads a module. It must define a method named
       :meth:`load_module`. A loader is typically returned by a
       :term:`finder`. See :pep:`302` for details.
+
+   magic method
+      .. index:: pair: magic; method
+
+      An informal synonym for :term:`special method`.
 
    mapping
       A container object that supports arbitrary key lookups and implements the
@@ -519,7 +525,8 @@ Glossary
    method resolution order
       Method Resolution Order is the order in which base classes are searched
       for a member during lookup. See `The Python 2.3 Method Resolution Order
-      <https://www.python.org/download/releases/2.3/mro/>`_.
+      <https://www.python.org/download/releases/2.3/mro/>`_ for details of the
+      algorithm used by the Python interpreter since the 2.3 release.
 
    module
       An object that serves as an organizational unit of Python code.  Modules
@@ -624,6 +631,21 @@ Glossary
       :ref:`the difference between arguments and parameters
       <faq-argument-vs-parameter>`, and the :ref:`function` section.
 
+   PEP
+      Python Enhancement Proposal. A PEP is a design document
+      providing information to the Python community, or describing a new
+      feature for Python or its processes or environment. PEPs should
+      provide a concise technical specification and a rationale for proposed
+      features.
+
+      PEPs are intended to be the primary mechanisms for proposing major new
+      features, for collecting community input on an issue, and for documenting
+      the design decisions that have gone into Python. The PEP author is
+      responsible for building consensus within the community and documenting
+      dissenting opinions.
+
+      See :pep:`1`.
+
    positional argument
       See :term:`argument`.
 
@@ -681,6 +703,8 @@ Glossary
       versions, :meth:`__getslice__` and :meth:`__setslice__`).
 
    special method
+      .. index:: pair: special; method
+
       A method that is called implicitly by Python to execute a certain
       operation on a type, such as addition.  Such methods have names starting
       and ending with double underscores.  Special methods are documented in
@@ -693,7 +717,7 @@ Glossary
 
    struct sequence
       A tuple with named elements. Struct sequences expose an interface similiar
-      to :term:`named tuple` in that elements can either be accessed either by
+      to :term:`named tuple` in that elements can be accessed either by
       index or as an attribute. However, they do not have any of the named tuple
       methods like :meth:`~collections.somenamedtuple._make` or
       :meth:`~collections.somenamedtuple._asdict`. Examples of struct sequences

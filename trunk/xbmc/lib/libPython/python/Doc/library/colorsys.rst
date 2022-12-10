@@ -20,8 +20,8 @@ spaces, the coordinates are all between 0 and 1.
 .. seealso::
 
    More information about color spaces can be found at
-   http://www.poynton.com/ColorFAQ.html and
-   http://www.cambridgeincolour.com/tutorials/color-spaces.htm.
+   https://www.poynton.com/ColorFAQ.html and
+   https://www.cambridgeincolour.com/tutorials/color-spaces.htm.
 
 The :mod:`colorsys` module defines the following functions:
 

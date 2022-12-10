@@ -439,7 +439,7 @@ The following exceptions are the exceptions that are actually raised.
 
 .. exception:: ValueError
 
-   Raised when a built-in operation or function receives an argument that has the
+   Raised when an operation or function receives an argument that has the
    right type but an inappropriate value, and the situation is not described by a
    more precise exception such as :exc:`IndexError`.
 
@@ -522,6 +522,13 @@ module for more information.
    Base class for warnings related to Unicode.
 
    .. versionadded:: 2.5
+
+
+.. exception:: BytesWarning
+
+   Base class for warnings related to bytes and bytearray.
+
+   .. versionadded:: 2.6
 
 
 Exception hierarchy

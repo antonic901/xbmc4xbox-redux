@@ -5,6 +5,7 @@ BytesIO -- for bytes
 
 from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import absolute_import
 
 import unittest
 from test import test_support as support
@@ -396,6 +397,7 @@ class MemoryTestMixin:
 
 
 class PyBytesIOTest(MemoryTestMixin, MemorySeekTestMixin, unittest.TestCase):
+    # Test _pyio.BytesIO; class also inherited for testing C implementation
 
     UnsupportedOperation = pyio.UnsupportedOperation
 

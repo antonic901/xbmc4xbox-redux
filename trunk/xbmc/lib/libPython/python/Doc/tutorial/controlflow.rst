@@ -4,8 +4,8 @@
 More Control Flow Tools
 ***********************
 
-Besides the :keyword:`while` statement just introduced, Python knows the usual
-control flow statements known from other languages, with some twists.
+Besides the :keyword:`while` statement just introduced, Python uses the usual
+flow control statements known from other languages, with some twists.
 
 
 .. _tut-if:
@@ -126,7 +126,7 @@ function, see :ref:`tut-loopidioms`.
 :keyword:`break` and :keyword:`continue` Statements, and :keyword:`else` Clauses on Loops
 =========================================================================================
 
-The :keyword:`break` statement, like in C, breaks out of the smallest enclosing
+The :keyword:`break` statement, like in C, breaks out of the innermost enclosing
 :keyword:`for` or :keyword:`while` loop.
 
 Loop statements may have an ``else`` clause; it is executed when the loop
@@ -284,7 +284,7 @@ You can see it if you really want to using :keyword:`print`::
 It is simple to write a function that returns a list of the numbers of the
 Fibonacci series, instead of printing it::
 
-   >>> def fib2(n): # return Fibonacci series up to n
+   >>> def fib2(n):  # return Fibonacci series up to n
    ...     """Return a list containing the Fibonacci series up to n."""
    ...     result = []
    ...     a, b = 0, 1
@@ -444,7 +444,7 @@ Here's an example that fails due to this restriction::
    ...
    >>> function(0, a=0)
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    TypeError: function() got multiple values for keyword argument 'a'
 
 When a final formal parameter of the form ``**name`` is present, it receives a
@@ -473,7 +473,9 @@ It could be called like this::
               client="John Cleese",
               sketch="Cheese Shop Sketch")
 
-and of course it would print::
+and of course it would print:
+
+.. code-block:: none
 
    -- Do you have any Limburger ?
    -- I'm sorry, we're all out of Limburger

@@ -236,7 +236,7 @@ The module defines the following functions and data items:
    argument.  If *t* is not provided, the current time as returned by
    :func:`localtime` is used.  *format* must be a string.  :exc:`ValueError` is
    raised if any field in *t* is outside of the allowed range. :func:`strftime`
-   returns a locale depedent byte string; the result may be converted to unicode
+   returns a locale dependent byte string; the result may be converted to unicode
    by doing ``strftime(<myformat>).decode(locale.getlocale()[1])``.
 
    .. versionchanged:: 2.1
@@ -427,9 +427,12 @@ The module defines the following functions and data items:
 
    Note that unlike the C structure, the month value is a range of [1, 12], not
    [0, 11].  A year value will be handled as described under :ref:`Year 2000
-   (Y2K) issues <time-y2kissues>` above.  A ``-1`` argument as the daylight
-   savings flag, passed to :func:`mktime` will usually result in the correct
-   daylight savings state to be filled in.
+   (Y2K) issues <time-y2kissues>` above.
+
+   In calls to :func:`mktime`, :attr:`tm_isdst` may be set to 1 when daylight
+   savings time is in effect, and 0 when it is not.  A value of -1 indicates
+   that this is not known, and will usually result in the correct state being
+   filled in.
 
    When a tuple with an incorrect length is passed to a function expecting a
    :class:`struct_time`, or having elements of the wrong type, a
@@ -461,8 +464,13 @@ The module defines the following functions and data items:
 
 .. function:: tzset()
 
-   Resets the time conversion rules used by the library routines. The environment
-   variable :envvar:`TZ` specifies how this is done.
+   Reset the time conversion rules used by the library routines. The environment
+   variable :envvar:`TZ` specifies how this is done. It will also set the variables
+   ``tzname`` (from the :envvar:`TZ` environment variable), ``timezone`` (non-DST
+   seconds West of UTC), ``altzone`` (DST seconds west of UTC) and ``daylight``
+   (to 0 if this timezone does not have any daylight saving time rules, or to
+   nonzero if there is a time, past, present or future when daylight saving time
+   applies).
 
    .. versionadded:: 2.3
 

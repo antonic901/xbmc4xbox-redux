@@ -34,9 +34,9 @@ Slice Objects
    assuming a sequence of length *length*. Treats indices greater than
    *length* as errors.
 
-   Returns 0 on success and -1 on error with no exception set (unless one of
+   Returns ``0`` on success and ``-1`` on error with no exception set (unless one of
    the indices was not :const:`None` and failed to be converted to an integer,
-   in which case -1 is returned with an exception set).
+   in which case ``-1`` is returned with an exception set).
 
    You probably do not want to use this function.  If you want to use slice
    objects in versions of Python prior to 2.3, you would probably do well to
@@ -57,7 +57,7 @@ Slice Objects
    of bounds indices are clipped in a manner consistent with the handling of
    normal slices.
 
-   Returns 0 on success and -1 on error with exception set.
+   Returns ``0`` on success and ``-1`` on error with exception set.
 
    .. versionadded:: 2.3
 
@@ -66,3 +66,14 @@ Slice Objects
       :c:type:`int *` type for *start*, *stop*, *step*, and *slicelength*. This
       might require changes in your code for properly supporting 64-bit
       systems.
+
+
+Ellipsis Object
+---------------
+
+
+.. c:var:: PyObject *Py_Ellipsis
+
+   The Python ``Ellipsis`` object.  This object has no methods.  It needs to be
+   treated just like any other object with respect to reference counts.  Like
+   :c:data:`Py_None` it is a singleton object.

@@ -2,6 +2,11 @@
 Design and History FAQ
 ======================
 
+.. only:: html
+
+   .. contents::
+
+
 Why does Python use indentation for grouping of statements?
 -----------------------------------------------------------
 
@@ -31,7 +36,7 @@ least slightly uneasy when reading (or being required to write) another style.
 Many coding styles place begin/end brackets on a line by themselves.  This makes
 programs considerably longer and wastes valuable screen space, making it harder
 to get a good overview of a program.  Ideally, a function should fit on one
-screen (say, 20-30 lines).  20 lines of Python can do a lot more work than 20
+screen (say, 20--30 lines).  20 lines of Python can do a lot more work than 20
 lines of C.  This is not solely due to the lack of begin/end brackets -- the
 lack of declarations and the high-level data types are also responsible -- but
 the indentation-based syntax certainly helps.
@@ -169,7 +174,7 @@ where in Python you're forced to write this::
        line = f.readline()
        if not line:
            break
-       ... # do something with line
+       ...  # do something with line
 
 The reason for not allowing assignment in Python expressions is a common,
 hard-to-find bug in those other languages, caused by this construct:
@@ -201,7 +206,7 @@ generally less robust than the "while True" solution::
 
    line = f.readline()
    while line:
-       ... # do something with line...
+       ...  # do something with line...
        line = f.readline()
 
 The problem with this is that if you change your mind about exactly how you get
@@ -214,31 +219,32 @@ objects using the ``for`` statement.  For example, in the current version of
 Python file objects support the iterator protocol, so you can now write simply::
 
    for line in f:
-       ... # do something with line...
+       ...  # do something with line...
 
 
 
 Why does Python use methods for some functionality (e.g. list.index()) but functions for other (e.g. len(list))?
 ----------------------------------------------------------------------------------------------------------------
 
-The major reason is history. Functions were used for those operations that were
-generic for a group of types and which were intended to work even for objects
-that didn't have methods at all (e.g. tuples).  It is also convenient to have a
-function that can readily be applied to an amorphous collection of objects when
-you use the functional features of Python (``map()``, ``zip()`` et al).
+As Guido said:
 
-In fact, implementing ``len()``, ``max()``, ``min()`` as a built-in function is
-actually less code than implementing them as methods for each type.  One can
-quibble about individual cases but it's a part of Python, and it's too late to
-make such fundamental changes now. The functions have to remain to avoid massive
-code breakage.
+    (a) For some operations, prefix notation just reads better than
+    postfix -- prefix (and infix!) operations have a long tradition in
+    mathematics which likes notations where the visuals help the
+    mathematician thinking about a problem. Compare the easy with which we
+    rewrite a formula like x*(a+b) into x*a + x*b to the clumsiness of
+    doing the same thing using a raw OO notation.
 
-.. XXX talk about protocols?
+    (b) When I read code that says len(x) I *know* that it is asking for
+    the length of something. This tells me two things: the result is an
+    integer, and the argument is some kind of container. To the contrary,
+    when I read x.len(), I have to already know that x is some kind of
+    container implementing an interface or inheriting from a class that
+    has a standard len(). Witness the confusion we occasionally have when
+    a class that is not implementing a mapping has a get() or keys()
+    method, or something that isn't a file has a write() method.
 
-.. note::
-
-   For string operations, Python has moved from external functions (the
-   ``string`` module) to methods.  However, ``len()`` is still a function.
+    -- https://mail.python.org/pipermail/python-3000/2006-November/004643.html
 
 
 Why is join() a string method instead of a list or tuple method?
@@ -391,50 +397,11 @@ is exactly the same type of object that a lambda expression yields) is assigned!
 Can Python be compiled to machine code, C or some other language?
 -----------------------------------------------------------------
 
-Not easily.  Python's high level data types, dynamic typing of objects and
-run-time invocation of the interpreter (using :func:`eval` or :keyword:`exec`)
-together mean that a "compiled" Python program would probably consist mostly of
-calls into the Python run-time system, even for seemingly simple operations like
-``x+1``.
-
-Several projects described in the Python newsgroup or at past `Python
-conferences <https://www.python.org/community/workshops/>`_ have shown that this
-approach is feasible, although the speedups reached so far are only modest
-(e.g. 2x).  Jython uses the same strategy for compiling to Java bytecode.  (Jim
-Hugunin has demonstrated that in combination with whole-program analysis,
-speedups of 1000x are feasible for small demo programs.  See the proceedings
-from the `1997 Python conference
-<http://legacy.python.org/workshops/1997-10/proceedings/>`_ for more information.)
-
-Internally, Python source code is always translated into a bytecode
-representation, and this bytecode is then executed by the Python virtual
-machine.  In order to avoid the overhead of repeatedly parsing and translating
-modules that rarely change, this byte code is written into a file whose name
-ends in ".pyc" whenever a module is parsed.  When the corresponding .py file is
-changed, it is parsed and translated again and the .pyc file is rewritten.
-
-There is no performance difference once the .pyc file has been loaded, as the
-bytecode read from the .pyc file is exactly the same as the bytecode created by
-direct translation.  The only difference is that loading code from a .pyc file
-is faster than parsing and translating a .py file, so the presence of
-precompiled .pyc files improves the start-up time of Python scripts.  If
-desired, the Lib/compileall.py module can be used to create valid .pyc files for
-a given set of modules.
-
-Note that the main script executed by Python, even if its filename ends in .py,
-is not compiled to a .pyc file.  It is compiled to bytecode, but the bytecode is
-not saved to a file.  Usually main scripts are quite short, so this doesn't cost
-much speed.
-
-.. XXX check which of these projects are still alive
-
-There are also several programs which make it easier to intermingle Python and C
-code in various ways to increase performance.  See, for example, `Cython <http://cython.org/>`_ , `Psyco
-<http://psyco.sourceforge.net/>`_, `Pyrex
-<http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_, `PyInline
-<http://pyinline.sourceforge.net/>`_, `Py2Cmod
-<http://sourceforge.net/projects/py2cmod/>`_, and
-`Weave <http://docs.scipy.org/doc/scipy-dev/reference/tutorial/weave.html>`_.
+`Cython <http://cython.org/>`_ compiles a modified version of Python with
+optional annotations into C extensions.  `Nuitka <http://www.nuitka.net/>`_ is
+an up-and-coming compiler of Python into C++ code, aiming to support the full
+Python language. For compiling to Java you can consider
+`VOC <https://voc.readthedocs.io>`_.
 
 
 How does Python manage memory?
@@ -537,10 +504,10 @@ you can always change a list's elements.  Only immutable elements can be used as
 dictionary keys, and hence only tuples and not lists can be used as keys.
 
 
-How are lists implemented?
---------------------------
+How are lists implemented in CPython?
+-------------------------------------
 
-Python's lists are really variable-length arrays, not Lisp-style linked lists.
+CPython's lists are really variable-length arrays, not Lisp-style linked lists.
 The implementation uses a contiguous array of references to other objects, and
 keeps a pointer to this array and the array's length in a list head structure.
 
@@ -553,10 +520,10 @@ when the array must be grown, some extra space is allocated so the next few
 times don't require an actual resize.
 
 
-How are dictionaries implemented?
----------------------------------
+How are dictionaries implemented in CPython?
+--------------------------------------------
 
-Python's dictionaries are implemented as resizable hash tables.  Compared to
+CPython's dictionaries are implemented as resizable hash tables.  Compared to
 B-trees, this gives better performance for lookup (the most common operation by
 far) under most circumstances, and the implementation is simpler.
 
@@ -625,8 +592,10 @@ other structure). ::
    class ListWrapper:
        def __init__(self, the_list):
            self.the_list = the_list
+
        def __eq__(self, other):
            return self.the_list == other.the_list
+
        def __hash__(self):
            l = self.the_list
            result = 98767 - len(l)*555
@@ -667,7 +636,7 @@ it.  For example, here's how to iterate over the keys of a dictionary in sorted
 order::
 
    for key in sorted(mydict):
-       ... # do whatever with mydict[key]...
+       ...  # do whatever with mydict[key]...
 
 
 How do you specify and enforce an interface spec in Python?
@@ -723,11 +692,11 @@ languages.  For example::
    class label: pass  # declare a label
 
    try:
-        ...
-        if condition: raise label()  # goto label
-        ...
+       ...
+       if condition: raise label()  # goto label
+       ...
    except label:  # where to goto
-        pass
+       pass
    ...
 
 This doesn't allow you to jump into the middle of a loop, but that's usually

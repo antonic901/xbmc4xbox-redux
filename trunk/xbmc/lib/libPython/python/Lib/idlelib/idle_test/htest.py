@@ -112,7 +112,7 @@ ConfigDialog_spec = {
            "font face of the text in the area below it.\nIn the "
            "'Highlighting' tab, try different color schemes. Clicking "
            "items in the sample program should update the choices above it."
-           "\nIn the 'Keys', 'General' and 'Extensions' tabs, test settings"
+           "\nIn the 'Keys', 'General' and 'Extensions' tabs, test settings "
            "of interest."
            "\n[Ok] to close the dialog.[Apply] to apply the settings and "
            "and [Cancel] to revert all changes.\nRe-run the test to ensure "
@@ -171,7 +171,7 @@ GetKeysDialog_spec = {
     'msg': "Test for different key modifier sequences.\n"
            "<nothing> is invalid.\n"
            "No modifier key is invalid.\n"
-           "Shift key with [a-z],[0-9], function key, move key, tab, space"
+           "Shift key with [a-z],[0-9], function key, move key, tab, space "
            "is invalid.\nNo validitity checking if advanced key binding "
            "entry is used."
     }
@@ -192,7 +192,10 @@ _io_binding_spec = {
     'msg': "Test the following bindings.\n"
            "<Control-o> to open file from dialog.\n"
            "Edit the file.\n"
+           "<Control-p> to print the file.\n"
            "<Control-s> to save the file.\n"
+           "<Alt-s> to save-as another file.\n"
+           "<Control-c> to save-copy-as another file.\n"
            "Check that changes were saved by opening the file elsewhere."
     }
 
@@ -234,7 +237,7 @@ _percolator_spec = {
     'file': 'Percolator',
     'kwds': {},
     'msg': "There are two tracers which can be toggled using a checkbox.\n"
-           "Toggling a tracer 'on' by checking it should print tracer"
+           "Toggling a tracer 'on' by checking it should print tracer "
            "output to the console or to the IDLE shell.\n"
            "If both the tracers are 'on', the output from the tracer which "
            "was switched 'on' later, should be printed first\n"
@@ -326,7 +329,7 @@ _undo_delegator_spec = {
 _widget_redirector_spec = {
     'file': 'WidgetRedirector',
     'kwds': {},
-    'msg': "Every text insert should be printed to the console."
+    'msg': "Every text insert should be printed to the console "
            "or the IDLE shell."
     }
 

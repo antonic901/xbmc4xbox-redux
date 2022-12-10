@@ -17,9 +17,8 @@ Sequence Protocol
 
    .. index:: builtin: len
 
-   Returns the number of objects in sequence *o* on success, and ``-1`` on failure.
-   For objects that do not provide sequence protocol, this is equivalent to the
-   Python expression ``len(o)``.
+   Returns the number of objects in sequence *o* on success, and ``-1`` on
+   failure.  This is equivalent to the Python expression ``len(o)``.
 
    .. versionchanged:: 2.5
       These functions returned an :c:type:`int` type. This might require
@@ -82,9 +81,13 @@ Sequence Protocol
 
 .. c:function:: int PySequence_SetItem(PyObject *o, Py_ssize_t i, PyObject *v)
 
-   Assign object *v* to the *i*\ th element of *o*.  Returns ``-1`` on failure.  This
+   Assign object *v* to the *i*\ th element of *o*.  Raise an exception
+   and return ``-1`` on failure; return ``0`` on success.  This
    is the equivalent of the Python statement ``o[i] = v``.  This function *does
    not* steal a reference to *v*.
+
+   If *v* is *NULL*, the element is deleted, however this feature is
+   deprecated in favour of using :c:func:`PySequence_DelItem`.
 
    .. versionchanged:: 2.5
       This function used an :c:type:`int` type for *i*. This might require
@@ -104,7 +107,11 @@ Sequence Protocol
 .. c:function:: int PySequence_SetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2, PyObject *v)
 
    Assign the sequence object *v* to the slice in sequence object *o* from *i1* to
-   *i2*.  This is the equivalent of the Python statement ``o[i1:i2] = v``.
+   *i2*.  Raise an exception and return ``-1`` on failure; return ``0`` on success.
+   This is the equivalent of the Python statement ``o[i1:i2] = v``.
+
+   If *v* is *NULL*, the slice is deleted, however this feature is
+   deprecated in favour of using :c:func:`PySequence_DelSlice`.
 
    .. versionchanged:: 2.5
       This function used an :c:type:`int` type for *i1* and *i2*. This might

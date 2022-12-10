@@ -39,21 +39,67 @@ def add_dir_to_list(dirlist, dir):
     """Add the directory 'dir' to the list 'dirlist' (at the front) if
     1) 'dir' is not already in 'dirlist'
     2) 'dir' actually exists, and is a directory."""
-    if dir is not None and os.path.isdir(dir) and dir not in dirlist:
-        dirlist.insert(0, dir)
+    if dir is not None and dir not in dirlist:
+        if host_platform == 'darwin' and is_macosx_sdk_path(dir):
+            # If in a macOS SDK path, check relative to the SDK root
+            dir_exists = os.path.isdir(
+                os.path.join(macosx_sdk_root(), dir[1:]))
+        else:
+            dir_exists = os.path.isdir(dir)
+        if dir_exists:
+            dirlist.insert(0, dir)
+
+MACOS_SDK_ROOT = None
 
 def macosx_sdk_root():
+    """Return the directory of the current macOS SDK.
+
+    If no SDK was explicitly configured, call the compiler to find which
+    include files paths are being searched by default.  Use '/' if the
+    compiler is searching /usr/include (meaning system header files are
+    installed) or use the root of an SDK if that is being searched.
+    (The SDK may be supplied via Xcode or via the Command Line Tools).
+    The SDK paths used by Apple-supplied tool chains depend on the
+    setting of various variables; see the xcrun man page for more info.
     """
-    Return the directory of the current OSX SDK,
-    or '/' if no SDK was specified.
-    """
+    global MACOS_SDK_ROOT
+
+    # If already called, return cached result.
+    if MACOS_SDK_ROOT:
+        return MACOS_SDK_ROOT
+
     cflags = sysconfig.get_config_var('CFLAGS')
     m = re.search(r'-isysroot\s+(\S+)', cflags)
-    if m is None:
-        sysroot = '/'
+    if m is not None:
+        MACOS_SDK_ROOT = m.group(1)
     else:
-        sysroot = m.group(1)
-    return sysroot
+        MACOS_SDK_ROOT = '/'
+        cc = sysconfig.get_config_var('CC')
+        tmpfile = '/tmp/setup_sdk_root.%d' % os.getpid()
+        try:
+            os.unlink(tmpfile)
+        except:
+            pass
+        ret = os.system('%s -E -v - </dev/null 2>%s 1>/dev/null' % (cc, tmpfile))
+        in_incdirs = False
+        try:
+            if ret >> 8 == 0:
+                with open(tmpfile) as fp:
+                    for line in fp.readlines():
+                        if line.startswith("#include <...>"):
+                            in_incdirs = True
+                        elif line.startswith("End of search list"):
+                            in_incdirs = False
+                        elif in_incdirs:
+                            line = line.strip()
+                            if line == '/usr/include':
+                                MACOS_SDK_ROOT = '/'
+                            elif line.endswith(".sdk/usr/include"):
+                                MACOS_SDK_ROOT = line[:-12]
+        finally:
+            os.unlink(tmpfile)
+
+    return MACOS_SDK_ROOT
 
 def is_macosx_sdk_path(path):
     """
@@ -117,6 +163,22 @@ def find_library_file(compiler, libname, std_dirs, paths):
         p = p.rstrip(os.sep)
 
         if host_platform == 'darwin' and is_macosx_sdk_path(p):
+            # Note that, as of Xcode 7, Apple SDKs may contain textual stub
+            # libraries with .tbd extensions rather than the normal .dylib
+            # shared libraries installed in /.  The Apple compiler tool
+            # chain handles this transparently but it can cause problems
+            # for programs that are being built with an SDK and searching
+            # for specific libraries.  Distutils find_library_file() now
+            # knows to also search for and return .tbd files.  But callers
+            # of find_library_file need to keep in mind that the base filename
+            # of the returned SDK library file might have a different extension
+            # from that of the library file installed on the running system,
+            # for example:
+            #   /Applications/Xcode.app/Contents/Developer/Platforms/
+            #       MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/
+            #       usr/lib/libedit.tbd
+            # vs
+            #   /usr/lib/libedit.dylib
             if os.path.join(sysroot, p[1:]) == dirname:
                 return [ ]
 
@@ -568,13 +630,17 @@ class PyBuildExt(build_ext):
 
         # array objects
         exts.append( Extension('array', ['arraymodule.c']) )
+
+        shared_math = 'Modules/_math.o'
         # complex math library functions
-        exts.append( Extension('cmath', ['cmathmodule.c', '_math.c'],
-                               depends=['_math.h'],
+        exts.append( Extension('cmath', ['cmathmodule.c'],
+                               extra_objects=[shared_math],
+                               depends=['_math.h', shared_math],
                                libraries=math_libs) )
         # math library functions, e.g. sin()
-        exts.append( Extension('math',  ['mathmodule.c', '_math.c'],
-                               depends=['_math.h'],
+        exts.append( Extension('math',  ['mathmodule.c'],
+                               extra_objects=[shared_math],
+                               depends=['_math.h', shared_math],
                                libraries=math_libs) )
         # fast string operations implemented in C
         exts.append( Extension('strop', ['stropmodule.c']) )
@@ -749,8 +815,8 @@ class PyBuildExt(build_ext):
             if host_platform == 'darwin' and os_release < 9:
                 # In every directory on the search path search for a dynamic
                 # library and then a static library, instead of first looking
-                # for dynamic libraries on the entiry path.
-                # This way a staticly linked custom readline gets picked up
+                # for dynamic libraries on the entire path.
+                # This way a statically linked custom readline gets picked up
                 # before the (possibly broken) dynamic library in /usr/lib.
                 readline_extra_link_args = ('-Wl,-search_paths_first',)
             else:
@@ -1326,19 +1392,11 @@ class PyBuildExt(build_ext):
             else:
                 missing.append('resource')
 
-            # Sun yellow pages. Some systems have the functions in libc.
-            if (host_platform not in ['cygwin', 'atheos', 'qnx6'] and
-                find_file('rpcsvc/yp_prot.h', inc_dirs, []) is not None):
-                if (self.compiler.find_library_file(lib_dirs, 'nsl')):
-                    libs = ['nsl']
-                else:
-                    libs = []
-                exts.append( Extension('nis', ['nismodule.c'],
-                                       libraries = libs) )
+            nis = self._detect_nis(inc_dirs, lib_dirs)
+            if nis is not None:
+                exts.append(nis)
             else:
                 missing.append('nis')
-        else:
-            missing.extend(['nis', 'resource', 'termios'])
 
         # Curses support, requiring the System V version of curses, often
         # provided by the ncurses library.
@@ -1472,6 +1530,9 @@ class PyBuildExt(build_ext):
             expat_inc = [os.path.join(os.getcwd(), srcdir, 'Modules', 'expat')]
             define_macros = [
                 ('HAVE_EXPAT_CONFIG_H', '1'),
+                # bpo-30947: Python uses best available entropy sources to
+                # call XML_SetHashSalt(), expat entropy sources are not needed
+                ('XML_POOR_ENTROPY', '1'),
             ]
             expat_lib = []
             expat_sources = ['expat/xmlparse.c',
@@ -1632,7 +1693,7 @@ class PyBuildExt(build_ext):
             if int(os.uname()[2].split('.')[0]) >= 8:
                 # We're on Mac OS X 10.4 or later, the compiler should
                 # support '-Wno-deprecated-declarations'. This will
-                # surpress deprecation warnings for the Carbon extensions,
+                # suppress deprecation warnings for the Carbon extensions,
                 # these extensions wrap the Carbon APIs and even those
                 # parts that are deprecated.
                 carbon_extra_compile_args = ['-Wno-deprecated-declarations']
@@ -1747,7 +1808,7 @@ class PyBuildExt(build_ext):
         #     --with-tcltk-libs="-L/path/to/tcllibs -ltclm.n \
         #                        -L/path/to/tklibs -ltkm.n"
         #
-        # These values can also be specified or overriden via make:
+        # These values can also be specified or overridden via make:
         #    make TCLTK_INCLUDES="..." TCLTK_LIBS="..."
         #
         # This can be useful for building and testing tkinter with multiple
@@ -2112,14 +2173,16 @@ class PyBuildExt(build_ext):
             ffi_inc = find_file('ffi.h', [], inc_dirs)
         if ffi_inc is not None:
             ffi_h = ffi_inc[0] + '/ffi.h'
-            fp = open(ffi_h)
-            while 1:
-                line = fp.readline()
-                if not line:
+            with open(ffi_h) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith(('#define LIBFFI_H',
+                                        '#define ffi_wrapper_h')):
+                        break
+                else:
                     ffi_inc = None
-                    break
-                if line.startswith('#define LIBFFI_H'):
-                    break
+                    print('Header file {} does not define LIBFFI_H or '
+                          'ffi_wrapper_h'.format(ffi_h))
         ffi_lib = None
         if ffi_inc is not None:
             for lib_name in ('ffi_convenience', 'ffi_pic', 'ffi'):
@@ -2131,6 +2194,55 @@ class PyBuildExt(build_ext):
             ext.include_dirs.extend(ffi_inc)
             ext.libraries.append(ffi_lib)
             self.use_system_libffi = True
+
+        if sysconfig.get_config_var('HAVE_LIBDL'):
+            # for dlopen, see bpo-32647
+            ext.libraries.append('dl')
+
+    def _detect_nis(self, inc_dirs, lib_dirs):
+        if host_platform in {'win32', 'cygwin', 'qnx6'}:
+            return None
+
+        libs = []
+        library_dirs = []
+        includes_dirs = []
+
+        # bpo-32521: glibc has deprecated Sun RPC for some time. Fedora 28
+        # moved headers and libraries to libtirpc and libnsl. The headers
+        # are in tircp and nsl sub directories.
+        rpcsvc_inc = find_file(
+            'rpcsvc/yp_prot.h', inc_dirs,
+            [os.path.join(inc_dir, 'nsl') for inc_dir in inc_dirs]
+        )
+        rpc_inc = find_file(
+            'rpc/rpc.h', inc_dirs,
+            [os.path.join(inc_dir, 'tirpc') for inc_dir in inc_dirs]
+        )
+        if rpcsvc_inc is None or rpc_inc is None:
+            # not found
+            return None
+        includes_dirs.extend(rpcsvc_inc)
+        includes_dirs.extend(rpc_inc)
+
+        if self.compiler.find_library_file(lib_dirs, 'nsl'):
+            libs.append('nsl')
+        else:
+            # libnsl-devel: check for libnsl in nsl/ subdirectory
+            nsl_dirs = [os.path.join(lib_dir, 'nsl') for lib_dir in lib_dirs]
+            libnsl = self.compiler.find_library_file(nsl_dirs, 'nsl')
+            if libnsl is not None:
+                library_dirs.append(os.path.dirname(libnsl))
+                libs.append('nsl')
+
+        if self.compiler.find_library_file(lib_dirs, 'tirpc'):
+            libs.append('tirpc')
+
+        return Extension(
+            'nis', ['nismodule.c'],
+            libraries=libs,
+            library_dirs=library_dirs,
+            include_dirs=includes_dirs
+        )
 
 
 class PyBuildInstall(install):

@@ -117,7 +117,7 @@ programming), software engineering (unit testing, logging, profiling, parsing
 Python code), and operating system interfaces (system calls, filesystems, TCP/IP
 sockets).  Look at the table of contents for :ref:`library-index` to get an idea
 of what's available.  A wide variety of third-party extensions are also
-available.  Consult `the Python Package Index <https://pypi.python.org/pypi>`_ to
+available.  Consult `the Python Package Index <https://pypi.org>`_ to
 find packages of interest to you.
 
 
@@ -146,10 +146,9 @@ labeled 2.0aN precede the versions labeled 2.0bN, which precede versions labeled
 2.0cN, and *those* precede 2.0.
 
 You may also find version numbers with a "+" suffix, e.g. "2.2+".  These are
-unreleased versions, built directly from the Subversion trunk.  In practice,
-after a final minor release is made, the Subversion trunk is incremented to the
-next minor version, which becomes the "a0" version,
-e.g. "2.4a0".
+unreleased versions, built directly from the CPython development repository.  In
+practice, after a final minor release is made, the version is incremented to the
+next minor version, which becomes the "a0" version, e.g. "2.4a0".
 
 See also the documentation for :data:`sys.version`, :data:`sys.hexversion`, and
 :data:`sys.version_info`.
@@ -159,8 +158,8 @@ How do I obtain a copy of the Python source?
 --------------------------------------------
 
 The latest Python source distribution is always available from python.org, at
-https://www.python.org/download/.  The latest development sources can be obtained
-via anonymous Mercurial access at https://hg.python.org/cpython.
+https://www.python.org/downloads/.  The latest development sources can be obtained
+at https://github.com/python/cpython/.
 
 The source distribution is a gzipped tar file containing the complete C source,
 Sphinx-formatted documentation, Python library modules, example programs, and
@@ -218,13 +217,13 @@ can be found at https://www.python.org/community/lists/.
 How do I get a beta test version of Python?
 -------------------------------------------
 
-Alpha and beta releases are available from https://www.python.org/download/.  All
+Alpha and beta releases are available from https://www.python.org/downloads/.  All
 releases are announced on the comp.lang.python and comp.lang.python.announce
 newsgroups and on the Python home page at https://www.python.org/; an RSS feed of
 news is available.
 
-You can also access the development version of Python through Mercurial.  See
-https://docs.python.org/devguide/faq.html for details.
+You can also access the development version of Python through Git.  See
+`The Python Developer's Guide <https://docs.python.org/devguide/>`_ for details.
 
 
 How do I submit bug reports and patches for Python?
@@ -253,7 +252,7 @@ outdated.
 
     Guido van Rossum and Jelke de Boer, "Interactively Testing Remote Servers
     Using the Python Programming Language", CWI Quarterly, Volume 4, Issue 4
-    (December 1991), Amsterdam, pp 283-303.
+    (December 1991), Amsterdam, pp 283--303.
 
 
 Are there any books on Python?
@@ -269,14 +268,8 @@ Python references; or perhaps search for "Python" and "language".
 Where in the world is www.python.org located?
 ---------------------------------------------
 
-The Python project's infrastructure is located all over the world.
-`www.python.org <https://www.python.org>`_ is graciously hosted by `Rackspace
-<http://www.rackspace.com>`_, with CDN caching provided by `Fastly
-<https://www.fastly.com>`_.  `Upfront Systems
-<http://www.upfrontsystems.co.za>`_ hosts `bugs.python.org
-<https://bugs.python.org>`_.  Many other Python services like `the Wiki
-<https://wiki.python.org>`_ are hosted by `Oregon State
-University Open Source Lab <https://osuosl.org>`_.
+The Python project's infrastructure is located all over the world and is managed
+by the Python Infrastructure Team. Details `here <http://infra.psf.io>`__.
 
 
 Why is it called Python?
@@ -284,7 +277,7 @@ Why is it called Python?
 
 When he began implementing Python, Guido van Rossum was also reading the
 published scripts from `"Monty Python's Flying Circus"
-<http://en.wikipedia.org/wiki/Monty_Python>`__, a BBC comedy series from the 1970s.  Van Rossum
+<https://en.wikipedia.org/wiki/Monty_Python>`__, a BBC comedy series from the 1970s.  Van Rossum
 thought he needed a name that was short, unique, and slightly mysterious, so he
 decided to call the language Python.
 
@@ -307,18 +300,16 @@ usually around 18 months between major releases.
 
 The developers issue "bugfix" releases of older versions, so the stability of
 existing releases gradually improves.  Bugfix releases, indicated by a third
-component of the version number (e.g. 2.5.3, 2.6.2), are managed for stability;
+component of the version number (e.g. 3.5.3, 3.6.2), are managed for stability;
 only fixes for known problems are included in a bugfix release, and it's
 guaranteed that interfaces will remain the same throughout a series of bugfix
 releases.
 
 The latest stable releases can always be found on the `Python download page
-<https://www.python.org/download/>`_.  There are two recommended production-ready
-versions at this point in time, because at the moment there are two branches of
-stable releases: 2.x and 3.x.  Python 3.x may be less useful than 2.x, since
-currently there is more third party software available for Python 2 than for
-Python 3.  Python 2 code will generally not run unchanged in Python 3.
-
+<https://www.python.org/downloads/>`_.  There are two production-ready versions
+of Python: 2.x and 3.x. The recommended version is 3.x, which is supported by
+most widely used libraries.  Although 2.x is still widely used, `it will not
+be maintained after January 1, 2020 <https://www.python.org/dev/peps/pep-0373/>`_.
 
 How many people are using Python?
 ---------------------------------
@@ -345,7 +336,7 @@ different companies and organizations.
 High-profile Python projects include `the Mailman mailing list manager
 <http://www.list.org>`_ and `the Zope application server
 <http://www.zope.org>`_.  Several Linux distributions, most notably `Red Hat
-<http://www.redhat.com>`_, have written part or all of their installer and
+<https://www.redhat.com>`_, have written part or all of their installer and
 system administration software in Python.  Companies that use Python internally
 include Google, Yahoo, and Lucasfilm Ltd.
 

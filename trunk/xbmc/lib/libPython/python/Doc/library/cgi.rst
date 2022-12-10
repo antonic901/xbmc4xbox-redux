@@ -292,15 +292,15 @@ algorithms implemented in this module in other circumstances.
    passed to :func:`urlparse.parse_qs` unchanged.
 
 
-.. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
+.. function:: parse_qs(qs[, keep_blank_values[, strict_parsing[, max_num_fields]]])
 
    This function is deprecated in this module. Use :func:`urlparse.parse_qs`
-   instead. It is maintained here only for backward compatiblity.
+   instead. It is maintained here only for backward compatibility.
 
-.. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
+.. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing[, max_num_fields]]])
 
    This function is deprecated in this module. Use :func:`urlparse.parse_qsl`
-   instead. It is maintained here only for backward compatiblity.
+   instead. It is maintained here only for backward compatibility.
 
 .. function:: parse_multipart(fp, pdict)
 
@@ -450,7 +450,9 @@ installing a copy of this module file (:file:`cgi.py`) as a CGI script.  When
 invoked as a script, the file will dump its environment and the contents of the
 form in HTML form. Give it the right mode etc, and send it a request.  If it's
 installed in the standard :file:`cgi-bin` directory, it should be possible to
-send it a request by entering a URL into your browser of the form::
+send it a request by entering a URL into your browser of the form:
+
+.. code-block:: none
 
    http://yourhostname/cgi-bin/cgi.py?name=Joe+Blow&addr=At+Home
 
@@ -542,4 +544,3 @@ Common problems and solutions
    field values should be supplied in, but knowing whether a request was
    received from a conforming browser, or even from a browser at all, is tedious
    and error-prone.
-

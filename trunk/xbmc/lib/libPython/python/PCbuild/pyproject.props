@@ -8,12 +8,9 @@
     <IntDir Condition="'$(Configuration)' == 'PGInstrument' or '$(Configuration)' == 'PGUpdate'">$(SolutionDir)obj\$(ArchName)\$(ProjectName)\</IntDir>
     <TargetName Condition="'$(TargetName)' == ''">$(ProjectName)</TargetName>
     <TargetName>$(TargetName)$(PyDebugExt)</TargetName>
-    <GenerateManifest Condition="'$(GenerateManifest)' == ''">false</GenerateManifest>
-    <EmbedManifest Condition="'$(EmbedManifest)' == ''">false</EmbedManifest>
-    <!-- For VS2008, we have to embed the manifest to be able to run -->
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
     <!-- BasePlatformToolset is for ICC support -->
-    <GenerateManifest Condition="'$(PlatformToolset)' == 'v90' or '$(BasePlatformToolset)' == 'v90'">true</GenerateManifest>
-    <EmbedManifest Condition="'$(PlatformToolset)' == 'v90' or '$(BasePlatformToolset)' == 'v90'">true</EmbedManifest>
     <SupportPGO Condition="'$(SupportPGO)' == ''">true</SupportPGO>
     <SupportSigning Condition="'$(SupportSigning)' == ''">true</SupportSigning>
     <SupportSigning Condition="'$(Configuration)' == 'Debug'">false</SupportSigning>
@@ -48,6 +45,9 @@
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <ClCompile Condition="$(ICCBuild) == 'true'">
+      <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -127,7 +127,7 @@ foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses
   </UsingTask>
 
   <Target Name="KillPython" BeforeTargets="PrepareForBuild" Condition="'$(KillPython)' == 'true'">
-    <Message Text="Killing any running python.exe instances..." Importance="high" />
+    <Message Text="Killing any running python$(PyDebugExt).exe instances..." Importance="high" />
     <KillPython FileName="$(OutDir)python$(PyDebugExt).exe" />
   </Target>
 

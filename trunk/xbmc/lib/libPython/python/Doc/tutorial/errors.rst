@@ -18,7 +18,7 @@ Syntax errors, also known as parsing errors, are perhaps the most common kind of
 complaint you get while you are still learning Python::
 
    >>> while True print 'Hello world'
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1
        while True print 'Hello world'
                       ^
    SyntaxError: invalid syntax
@@ -44,15 +44,15 @@ programs, however, and result in error messages as shown here::
 
    >>> 10 * (1/0)
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    ZeroDivisionError: integer division or modulo by zero
    >>> 4 + spam*3
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    NameError: name 'spam' is not defined
    >>> '2' + 2
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    TypeError: cannot concatenate 'str' and 'int' objects
 
 The last line of the error message indicates what happened. Exceptions come in
@@ -180,14 +180,14 @@ One may also instantiate an exception first before raising it and add any
 attributes to it as desired. ::
 
    >>> try:
-   ...    raise Exception('spam', 'eggs')
+   ...     raise Exception('spam', 'eggs')
    ... except Exception as inst:
-   ...    print type(inst)     # the exception instance
-   ...    print inst.args      # arguments stored in .args
-   ...    print inst           # __str__ allows args to be printed directly
-   ...    x, y = inst.args
-   ...    print 'x =', x
-   ...    print 'y =', y
+   ...     print type(inst)     # the exception instance
+   ...     print inst.args      # arguments stored in .args
+   ...     print inst           # __str__ allows args to be printed directly
+   ...     x, y = inst.args
+   ...     print 'x =', x
+   ...     print 'y =', y
    ...
    <type 'exceptions.Exception'>
    ('spam', 'eggs')
@@ -223,7 +223,7 @@ exception to occur. For example::
 
    >>> raise NameError('HiThere')
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    NameError: HiThere
 
 The sole argument to :keyword:`raise` indicates the exception to be raised.
@@ -242,7 +242,7 @@ re-raise the exception::
    ...
    An exception flew by!
    Traceback (most recent call last):
-     File "<stdin>", line 2, in ?
+     File "<stdin>", line 2, in <module>
    NameError: HiThere
 
 
@@ -270,7 +270,7 @@ example::
    My exception occurred, value: 4
    >>> raise MyError('oops!')
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
    __main__.MyError: 'oops!'
 
 In this example, the default :meth:`__init__` of :class:`Exception` has been
@@ -315,7 +315,7 @@ to create specific exception classes for different error conditions::
            self.next = next
            self.msg = msg
 
-Most exceptions are defined with names that end in "Error," similar to the
+Most exceptions are defined with names that end in "Error", similar to the
 naming of the standard exceptions.
 
 Many standard modules define their own exceptions to report errors that may
@@ -339,13 +339,13 @@ example::
    ...
    Goodbye, world!
    Traceback (most recent call last):
-     File "<stdin>", line 2, in ?
+     File "<stdin>", line 2, in <module>
    KeyboardInterrupt
 
 A *finally clause* is always executed before leaving the :keyword:`try`
 statement, whether an exception has occurred or not. When an exception has
 occurred in the :keyword:`try` clause and has not been handled by an
-:keyword:`except` clause (or it has occurred in a :keyword:`except` or
+:keyword:`except` clause (or it has occurred in an :keyword:`except` or
 :keyword:`else` clause), it is re-raised after the :keyword:`finally` clause has
 been executed.  The :keyword:`finally` clause is also executed "on the way out"
 when any other clause of the :keyword:`try` statement is left via a
@@ -372,7 +372,7 @@ the same :keyword:`try` statement works as of Python 2.5)::
    >>> divide("2", "1")
    executing finally clause
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
      File "<stdin>", line 3, in divide
    TypeError: unsupported operand type(s) for /: 'str' and 'str'
 

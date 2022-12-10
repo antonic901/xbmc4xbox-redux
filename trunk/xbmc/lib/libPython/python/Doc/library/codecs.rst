@@ -796,8 +796,8 @@ and how these arrays are stored as bytes become an issue.  Transforming a
 unicode object into a sequence of bytes is called encoding and recreating the
 unicode object from the sequence of bytes is known as decoding.  There are many
 different methods for how this transformation can be done (these methods are
-also called encodings). The simplest method is to map the code points 0-255 to
-the bytes ``0x0``-``0xff``. This means that a unicode object that contains
+also called encodings). The simplest method is to map the code points 0--255 to
+the bytes ``0x0``--``0xff``. This means that a unicode object that contains
 code points above ``U+00FF`` can't be encoded with this method (which is called
 ``'latin-1'`` or ``'iso-8859-1'``). :func:`unicode.encode` will raise a
 :exc:`UnicodeEncodeError` that looks like this: ``UnicodeEncodeError: 'latin-1'
@@ -806,7 +806,7 @@ range(256)``.
 
 There's another group of encodings (the so called charmap encodings) that choose
 a different subset of all unicode code points and how these code points are
-mapped to the bytes ``0x0``-``0xff``. To see how this is done simply open
+mapped to the bytes ``0x0``--``0xff``. To see how this is done simply open
 e.g. :file:`encodings/cp1252.py` (which is an encoding that is used primarily on
 Windows). There's a string constant with 256 characters that shows you which
 character is mapped to which byte value.
@@ -909,7 +909,7 @@ particular, the following variants typically exist:
 
 * an ISO 8859 codeset
 
-* a Microsoft Windows code page, which is typically derived from a 8859 codeset,
+* a Microsoft Windows code page, which is typically derived from an 8859 codeset,
   but replaces control characters with additional graphic characters
 
 * an IBM EBCDIC code page
@@ -1273,7 +1273,7 @@ parameters, such as :mod:`httplib` and :mod:`ftplib`, accept Unicode host names
 (:mod:`httplib` then also transparently sends an IDNA hostname in the
 :mailheader:`Host` field if it sends that field at all).
 
-.. _section 3.1: http://tools.ietf.org/html/rfc3490#section-3.1
+.. _section 3.1: https://tools.ietf.org/html/rfc3490#section-3.1
 
 When receiving host names from the wire (such as in reverse name lookup), no
 automatic conversion to Unicode is performed: Applications wishing to present

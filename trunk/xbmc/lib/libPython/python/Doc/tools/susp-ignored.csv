@@ -1,6 +1,7 @@
 c-api/arg,,:ref,"PyArg_ParseTuple(args, ""O|O:ref"", &object, &callback)"
 c-api/list,,:high,list[low:high]
 c-api/sequence,,:i2,o[i1:i2]
+c-api/tuple,,:high,p[low:high]
 c-api/unicode,,:end,str[start:end]
 distutils/setupscript,,::,
 extending/embedding,,:numargs,"if(!PyArg_ParseTuple(args, "":numargs""))"
@@ -46,7 +47,7 @@ howto/pyporting,,::,Programming Language :: Python :: 2
 howto/pyporting,,::,Programming Language :: Python :: 3
 howto/regex,,::,
 howto/regex,,:foo,(?:foo)
-howto/urllib2,,:example,"for example ""joe@password:example.com"""
+howto/urllib2,,:password,"""joe:password@example.com"""
 library/audioop,,:ipos,"# factor = audioop.findfactor(in_test[ipos*2:ipos*2+len(out_test)],"
 library/bisect,,:hi,all(val >= x for val in a[i:hi])
 library/bisect,,:hi,all(val > x for val in a[i:hi])
@@ -99,6 +100,8 @@ library/profile,,:lineno,ncalls  tottime  percall  cumtime  percall filename:lin
 library/profile,,:lineno,filename:lineno(function)
 library/pyexpat,,:elem1,<py:elem1 />
 library/pyexpat,,:py,"xmlns:py = ""http://www.python.org/ns/"">"
+library/re,,`,!#$%&'*+-.^_`|~:
+library/re,,`,[abcdefghijklmnopqrstuvwxyz0123456789\!\#\$\%\&\'\*\+\-\.\^\_\`\|\~\:]+
 library/smtplib,,:port,method must support that as well as a regular host:port
 library/socket,,::,'5aef:2b::8'
 library/sqlite3,,:memory,
@@ -150,7 +153,7 @@ reference/datamodel,,:step,a[i:j:step]
 reference/datamodel,,:max,
 reference/expressions,,:index,x[index:index]
 reference/expressions,,`,`expressions...`
-reference/expressions,,`,"""`"""
+reference/expressions,350,`,`
 reference/grammar,,`,'`' testlist1 '`'
 reference/lexical_analysis,,:fileencoding,# vim:fileencoding=<encoding-name>
 reference/lexical_analysis,,`,",       :       .       `       =       ;"
@@ -173,7 +176,7 @@ using/cmdline,,:line,action:message:category:module:line
 using/cmdline,,:message,action:message:category:module:line
 using/cmdline,,:module,action:message:category:module:line
 using/cmdline,,:errorhandler,:errorhandler
-using/unix,,:Packaging,http://en.opensuse.org/Portal:Packaging
+using/unix,,:Packaging,https://en.opensuse.org/Portal:Packaging
 whatsnew/2.0,418,:len,
 whatsnew/2.3,,::,
 whatsnew/2.3,,:config,

@@ -107,7 +107,7 @@ _bsddb
     Wraps Berkeley DB 4.7.25, which is currently built by _bsddb.vcproj.
     project.
 _sqlite3
-    Wraps SQLite 3.6.21, which is currently built by sqlite3.vcproj.
+    Wraps SQLite 3.8.11.0, which is currently built by sqlite3.vcproj.
 _tkinter
     Wraps the Tk windowing system.  Unlike _bsddb and _sqlite3, there's no
     corresponding tcltk.vcproj-type project that builds Tcl/Tk from vcproj's
@@ -132,7 +132,7 @@ _ssl
 
     Get the source code through
 
-    svn export http://svn.python.org/projects/external/openssl-1.0.2d
+    svn export http://svn.python.org/projects/external/openssl-1.0.2o
 
     ** NOTE: if you use the PCbuild\get_externals.bat approach for
     obtaining external sources then you don't need to manually get the source
@@ -145,11 +145,10 @@ _ssl
         http://www.nasm.us/
     and add NASM to your PATH.
 
-    You can also install ActivePerl from
+    You will also need ActivePerl from
         http://www.activestate.com/activeperl/
-    if you like to use the official sources instead of the files from
-    python's subversion repository. The svn version contains pre-build
-    makefiles and assembly files.
+    in order to create the necessary makefiles and .asm files for building
+    OpenSSL.
 
     The build process makes sure that no patented algorithms are included.
     For now RC5, MDC2 and IDEA are excluded from the build. You may have

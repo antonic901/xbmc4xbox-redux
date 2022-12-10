@@ -210,6 +210,7 @@ definition looked like this::
    class MyClass:
        """A simple example class"""
        i = 12345
+
        def f(self):
            return 'hello world'
 
@@ -327,8 +328,8 @@ the corresponding function with an argument list that is created by inserting
 the method's object before the first argument.
 
 If you still don't understand how methods work, a look at the implementation can
-perhaps clarify matters.  When an instance attribute is referenced that isn't a
-data attribute, its class is searched.  If the name denotes a valid class
+perhaps clarify matters.  When a non-data attribute of an instance is
+referenced, the instance's class is searched.  If the name denotes a valid class
 attribute that is a function object, a method object is created by packing
 (pointers to) the instance object and the function object just found together in
 an abstract object: this is the method object.  When the method object is called
@@ -458,8 +459,10 @@ variable in the class is also ok.  For example::
 
    class C:
        f = f1
+
        def g(self):
            return 'hello world'
+
        h = g
 
 Now ``f``, ``g`` and ``h`` are all attributes of class :class:`C` that refer to
@@ -473,8 +476,10 @@ argument::
    class Bag:
        def __init__(self):
            self.data = []
+
        def add(self, x):
            self.data.append(x)
+
        def addtwice(self, x):
            self.add(x)
            self.add(x)
@@ -615,6 +620,9 @@ be treated as a non-public part of the API (whether it is a function, a method
 or a data member).  It should be considered an implementation detail and subject
 to change without notice.
 
+.. index::
+   pair: name; mangling
+
 Since there is a valid use-case for class-private members (namely to avoid name
 clashes of names with names defined by subclasses), there is limited support for
 such a mechanism, called :dfn:`name mangling`.  Any identifier of the form
@@ -646,6 +654,11 @@ breaking intraclass method calls.  For example::
            for item in zip(keys, values):
                self.items_list.append(item)
 
+The above example would work even if ``MappingSubclass`` were to introduce a
+``__update`` identifier since it is replaced with ``_Mapping__update`` in the
+``Mapping`` class  and ``_MappingSubclass__update`` in the ``MappingSubclass``
+class respectively.
+
 Note that the mangling rules are designed mostly to avoid accidents; it still is
 possible to access or modify a variable that is considered private.  This can
 even be useful in special circumstances, such as in the debugger.
@@ -670,7 +683,7 @@ will do nicely::
    class Employee:
        pass
 
-   john = Employee() # Create an empty employee record
+   john = Employee()  # Create an empty employee record
 
    # Fill the fields of the record
    john.name = 'John Doe'
@@ -782,7 +795,7 @@ This example shows how it all works::
    'c'
    >>> it.next()
    Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
+     File "<stdin>", line 1, in <module>
        it.next()
    StopIteration
 
@@ -796,8 +809,10 @@ defines :meth:`~iterator.next`, then :meth:`__iter__` can just return ``self``::
        def __init__(self, data):
            self.data = data
            self.index = len(data)
+
        def __iter__(self):
            return self
+
        def next(self):
            if self.index == 0:
                raise StopIteration
@@ -866,9 +881,9 @@ Generator Expressions
 =====================
 
 Some simple generators can be coded succinctly as expressions using a syntax
-similar to list comprehensions but with parentheses instead of brackets.  These
-expressions are designed for situations where the generator is used right away
-by an enclosing function.  Generator expressions are more compact but less
+similar to list comprehensions but with parentheses instead of square brackets.
+These expressions are designed for situations where the generator is used right
+away by an enclosing function.  Generator expressions are more compact but less
 versatile than full generator definitions and tend to be more memory friendly
 than equivalent list comprehensions.
 
@@ -898,8 +913,8 @@ Examples::
 .. rubric:: Footnotes
 
 .. [#] Except for one thing.  Module objects have a secret read-only attribute called
-   :attr:`__dict__` which returns the dictionary used to implement the module's
-   namespace; the name :attr:`__dict__` is an attribute but not a global name.
+   :attr:`~object.__dict__` which returns the dictionary used to implement the module's
+   namespace; the name :attr:`~object.__dict__` is an attribute but not a global name.
    Obviously, using this violates the abstraction of namespace implementation, and
    should be restricted to things like post-mortem debuggers.
 

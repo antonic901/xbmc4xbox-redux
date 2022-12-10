@@ -15,8 +15,7 @@
 The ZIP file format is a common archive and compression standard. This module
 provides tools to create, read, write, append, and list a ZIP file.  Any
 advanced use of this module will require an understanding of the format, as
-defined in `PKZIP Application Note
-<http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_.
+defined in `PKZIP Application Note`_.
 
 This module does not currently handle multi-disk ZIP files.
 It can handle ZIP files that use the ZIP64 extensions
@@ -83,7 +82,7 @@ The module defines the following items:
 
 .. seealso::
 
-   `PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_
+   `PKZIP Application Note`_
       Documentation on the ZIP file format by Phil Katz, the creator of the format and
       algorithms used.
 
@@ -435,8 +434,7 @@ Instances have the following attributes:
 
 .. attribute:: ZipInfo.extra
 
-   Expansion field data.  The `PKZIP Application Note
-   <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_ contains
+   Expansion field data.  The `PKZIP Application Note`_ contains
    some comments on the internal structure of the data contained in this string.
 
 
@@ -499,3 +497,61 @@ Instances have the following attributes:
 
    Size of the uncompressed file.
 
+
+.. _zipfile-commandline:
+.. program:: zipfile
+
+Command-Line Interface
+----------------------
+
+The :mod:`zipfile` module provides a simple command-line interface to interact
+with ZIP archives.
+
+If you want to create a new ZIP archive, specify its name after the :option:`-c`
+option and then list the filename(s) that should be included:
+
+.. code-block:: shell-session
+
+    $ python -m zipfile -c monty.zip spam.txt eggs.txt
+
+Passing a directory is also acceptable:
+
+.. code-block:: shell-session
+
+    $ python -m zipfile -c monty.zip life-of-brian_1979/
+
+If you want to extract a ZIP archive into the specified directory, use
+the :option:`-e` option:
+
+.. code-block:: shell-session
+
+    $ python -m zipfile -e monty.zip target-dir/
+
+For a list of the files in a ZIP archive, use the :option:`-l` option:
+
+.. code-block:: shell-session
+
+    $ python -m zipfile -l monty.zip
+
+
+Command-line options
+~~~~~~~~~~~~~~~~~~~~
+
+.. cmdoption:: -l <zipfile>
+
+   List files in a zipfile.
+
+.. cmdoption:: -c <zipfile> <source1> ... <sourceN>
+
+   Create zipfile from source files.
+
+.. cmdoption:: -e <zipfile> <output_dir>
+
+   Extract zipfile into target directory.
+
+.. cmdoption:: -t <zipfile>
+
+   Test whether the zipfile is valid or not.
+
+
+.. _PKZIP Application Note: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT

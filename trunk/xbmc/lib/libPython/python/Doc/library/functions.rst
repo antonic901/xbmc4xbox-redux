@@ -16,7 +16,7 @@ available.  They are listed here in alphabetical order.
 :func:`basestring`   :func:`execfile`   :func:`issubclass`  :func:`print`      :func:`super`
 :func:`bin`          :func:`file`       :func:`iter`        :func:`property`   :func:`tuple`
 :func:`bool`         :func:`filter`     :func:`len`         :func:`range`      :func:`type`
-:func:`bytearray`    :func:`float`      :func:`list`        :func:`raw_input`  :func:`unichr`
+:func:`bytearray`    :func:`float`      |func-list|_        :func:`raw_input`  :func:`unichr`
 :func:`callable`     :func:`format`     :func:`locals`      :func:`reduce`     :func:`unicode`
 :func:`chr`          |func-frozenset|_  :func:`long`        :func:`reload`     :func:`vars`
 :func:`classmethod`  :func:`getattr`    :func:`map`         |func-repr|_       :func:`xrange`
@@ -38,6 +38,7 @@ section.
 
 .. |func-dict| replace:: ``dict()``
 .. |func-frozenset| replace:: ``frozenset()``
+.. |func-list| replace:: ``list()``
 .. |func-memoryview| replace:: ``memoryview()``
 .. |func-repr| replace:: ``repr()``
 .. |func-set| replace:: ``set()``
@@ -174,19 +175,18 @@ section.
           def f(cls, arg1, arg2, ...):
               ...
 
-   The ``@classmethod`` form is a function :term:`decorator` -- see the description
-   of function definitions in :ref:`function` for details.
+   The ``@classmethod`` form is a function :term:`decorator` -- see
+   :ref:`function` for details.
 
-   It can be called either on the class (such as ``C.f()``) or on an instance (such
+   A class method can be called either on the class (such as ``C.f()``) or on an instance (such
    as ``C().f()``).  The instance is ignored except for its class. If a class
    method is called for a derived class, the derived class object is passed as the
    implied first argument.
 
    Class methods are different than C++ or Java static methods. If you want those,
-   see :func:`staticmethod` in this section.
+   see :func:`staticmethod`.
 
-   For more information on class methods, consult the documentation on the standard
-   type hierarchy in :ref:`types`.
+   For more information on class methods, see :ref:`types`.
 
    .. versionadded:: 2.2
 
@@ -247,6 +247,12 @@ section.
       ``'eval'`` mode, input must be terminated by at least one newline
       character.  This is to facilitate detection of incomplete and complete
       statements in the :mod:`code` module.
+
+   .. warning::
+
+      It is possible to crash the Python interpreter with a
+      sufficiently large/complex string when compiling to an AST
+      object due to stack depth limitations in Python's AST compiler.
 
    .. versionchanged:: 2.3
       The *flags* and *dont_inherit* arguments were added.
@@ -311,7 +317,7 @@ section.
    :func:`dir` reports their attributes.
 
    If the object does not provide :meth:`__dir__`, the function tries its best to
-   gather information from the object's :attr:`__dict__` attribute, if defined, and
+   gather information from the object's :attr:`~object.__dict__` attribute, if defined, and
    from its type object.  The resulting list is not necessarily complete, and may
    be inaccurate when the object has a custom :func:`__getattr__`.
 
@@ -617,7 +623,7 @@ section.
       '0x1L'
 
    If x is not a Python :class:`int` or :class:`long` object, it has to
-   define an __index__() method that returns an integer.
+   define a __hex__() method that returns a string.
 
    See also :func:`int` for converting a hexadecimal string to an
    integer using a base of 16.
@@ -670,7 +676,7 @@ section.
    preceded by ``+`` or ``-`` (with no space in between) and surrounded by
    whitespace.  A base-n literal consists of the digits 0 to n-1, with ``a``
    to ``z`` (or ``A`` to ``Z``) having
-   values 10 to 35.  The default *base* is 10. The allowed values are 0 and 2-36.
+   values 10 to 35.  The default *base* is 10. The allowed values are 0 and 2--36.
    Base-2, -8, and -16 literals can be optionally prefixed with ``0b``/``0B``,
    ``0o``/``0O``/``0``, or ``0x``/``0X``, as with integer literals in code.
    Base 0 means to interpret the string exactly as an integer literal, so that
@@ -740,7 +746,9 @@ section.
    (such as a dictionary, set, or frozen set).
 
 
+.. _func-list:
 .. class:: list([iterable])
+   :noindex:
 
    Return a list whose items are the same and in the same order as *iterable*'s
    items.  *iterable* may be either a sequence, a container that supports
@@ -1343,18 +1351,17 @@ section.
           def f(arg1, arg2, ...):
               ...
 
-   The ``@staticmethod`` form is a function :term:`decorator` -- see the
-   description of function definitions in :ref:`function` for details.
+   The ``@staticmethod`` form is a function :term:`decorator` -- see
+   :ref:`function` for details.
 
-   It can be called either on the class (such as ``C.f()``) or on an instance (such
-   as ``C().f()``).  The instance is ignored except for its class.
+   A static method can be called either on the class (such as ``C.f()``) or on an instance (such
+   as ``C().f()``).
 
    Static methods in Python are similar to those found in Java or C++. Also see
    :func:`classmethod` for a variant that is useful for creating alternate
    class constructors.
 
-   For more information on static methods, consult the documentation on the
-   standard type hierarchy in :ref:`types`.
+   For more information on static methods, see :ref:`types`.
 
    .. versionadded:: 2.2
 
@@ -1447,7 +1454,7 @@ section.
 
    For practical suggestions on how to design cooperative classes using
    :func:`super`, see `guide to using super()
-   <http://rhettinger.wordpress.com/2011/05/26/super-considered-super/>`_.
+   <https://rhettinger.wordpress.com/2011/05/26/super-considered-super/>`_.
 
    .. versionadded:: 2.2
 
@@ -1477,7 +1484,7 @@ section.
 
    With three arguments, return a new type object.  This is essentially a
    dynamic form of the :keyword:`class` statement. The *name* string is the
-   class name and becomes the :attr:`~class.__name__` attribute; the *bases* tuple
+   class name and becomes the :attr:`~definition.__name__` attribute; the *bases* tuple
    itemizes the base classes and becomes the :attr:`~class.__bases__` attribute;
    and the *dict* dictionary is the namespace containing definitions for class
    body and becomes the :attr:`~object.__dict__`  attribute.  For example, the
@@ -1545,11 +1552,11 @@ section.
 .. function:: vars([object])
 
    Return the :attr:`~object.__dict__` attribute for a module, class, instance,
-   or any other object with a :attr:`__dict__` attribute.
+   or any other object with a :attr:`~object.__dict__` attribute.
 
-   Objects such as modules and instances have an updateable :attr:`__dict__`
+   Objects such as modules and instances have an updateable :attr:`~object.__dict__`
    attribute; however, other objects may have write restrictions on their
-   :attr:`__dict__` attributes (for example, new-style classes use a
+   :attr:`~object.__dict__` attributes (for example, new-style classes use a
    dictproxy to prevent direct dictionary updates).
 
    Without an argument, :func:`vars` acts like :func:`locals`.  Note, the

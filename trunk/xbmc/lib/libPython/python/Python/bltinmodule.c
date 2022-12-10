@@ -54,7 +54,7 @@ PyDoc_STRVAR(import_doc,
 "__import__(name, globals={}, locals={}, fromlist=[], level=-1) -> module\n\
 \n\
 Import a module. Because this function is meant for use by the Python\n\
-interpreter and not for general use it is better to use\n\
+interpreter and not for general use, it is better to use\n\
 importlib.import_module() to programmatically import a module.\n\
 \n\
 The globals argument is only used to determine the context;\n\
@@ -63,9 +63,8 @@ should be a list of names to emulate ``from name import ...'', or an\n\
 empty list to emulate ``import name''.\n\
 When importing a module from a package, note that __import__('A.B', ...)\n\
 returns package A when fromlist is empty, but its submodule B when\n\
-fromlist is not empty.  Level is used to determine whether to perform \n\
-absolute or relative imports.  -1 is the original strategy of attempting\n\
-both absolute and relative imports, 0 is absolute, a positive number\n\
+fromlist is not empty.  The level argument is used to determine whether to\n\
+perform absolute or relative imports: 0 is absolute, while a positive number\n\
 is the number of parent directories to search relative to the current module.");
 
 
@@ -352,11 +351,12 @@ Fail_arg:
 }
 
 PyDoc_STRVAR(filter_doc,
-"filter(function or None, sequence) -> list, tuple, or string\n"
-"\n"
-"Return those items of sequence for which function(item) is true.  If\n"
-"function is None, return the items that are true.  If sequence is a tuple\n"
-"or string, return the same type, else return a list.");
+"filter(function or None, iterable) -> list, string or tuple\n\
+\n\
+Return a sequence yielding those items of iterable for which function(item)\n\
+is true. If function is None, return the items that are true.\n\
+If iterable is a string or a tuple, the result also has that type; otherwise\n\
+it is always a list.");
 
 static PyObject *
 builtin_format(PyObject *self, PyObject *args)
@@ -374,7 +374,9 @@ PyDoc_STRVAR(format_doc,
 "format(value[, format_spec]) -> string\n\
 \n\
 Returns value.__format__(format_spec)\n\
-format_spec defaults to \"\"");
+format_spec defaults to the empty string.\n\
+See the Format Specification Mini-Language section of help('FORMATTING') for\n\
+details.");
 
 static PyObject *
 builtin_chr(PyObject *self, PyObject *args)
@@ -625,7 +627,7 @@ builtin_divmod(PyObject *self, PyObject *args)
 PyDoc_STRVAR(divmod_doc,
 "divmod(x, y) -> (quotient, remainder)\n\
 \n\
-Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.");
+Return the tuple (x//y, x%y).  Invariant: div*y + mod == x.");
 
 
 static PyObject *
@@ -1779,7 +1781,7 @@ get_range_long_argument(PyObject *arg, const char *name)
 {
     PyObject *v;
     PyNumberMethods *nb;
-    if (PyInt_Check(arg) || PyLong_Check(arg)) {
+    if (_PyAnyInt_Check(arg)) {
         Py_INCREF(arg);
         return arg;
     }
@@ -1794,7 +1796,7 @@ get_range_long_argument(PyObject *arg, const char *name)
     v = nb->nb_int(arg);
     if (v == NULL)
         return NULL;
-    if (PyInt_Check(v) || PyLong_Check(v))
+    if (_PyAnyInt_Check(v))
         return v;
     Py_DECREF(v);
     PyErr_SetString(PyExc_TypeError,
@@ -2362,6 +2364,11 @@ builtin_sum(PyObject *self, PyObject *args)
             }
             /* Either overflowed or is not an int. Restore real objects and process normally */
             result = PyInt_FromLong(i_result);
+            if (result == NULL) {
+                Py_DECREF(item);
+                Py_DECREF(iter);
+                return NULL;
+            }
             temp = PyNumber_Add(result, item);
             Py_DECREF(result);
             Py_DECREF(item);
@@ -2400,6 +2407,11 @@ builtin_sum(PyObject *self, PyObject *args)
                 continue;
             }
             result = PyFloat_FromDouble(f_result);
+            if (result == NULL) {
+                Py_DECREF(item);
+                Py_DECREF(iter);
+                return NULL;
+            }
             temp = PyNumber_Add(result, item);
             Py_DECREF(result);
             Py_DECREF(item);
@@ -2443,10 +2455,10 @@ builtin_sum(PyObject *self, PyObject *args)
 }
 
 PyDoc_STRVAR(sum_doc,
-"sum(sequence[, start]) -> value\n\
+"sum(iterable[, start]) -> value\n\
 \n\
-Return the sum of a sequence of numbers (NOT strings) plus the value\n\
-of parameter 'start' (which defaults to 0).  When the sequence is\n\
+Return the sum of an iterable or sequence of numbers (NOT strings)\n\
+plus the value of 'start' (which defaults to 0).  When the sequence is\n\
 empty, return start.");
 
 
@@ -2923,20 +2935,20 @@ filterstring(PyObject *func, PyObject *strobj)
 
                     if (need<2*outlen) {
                         need = 2*outlen;
-      }
-                                    if (_PyString_Resize(&result, need)) {
-                                            Py_DECREF(item);
-                                            return NULL;
-                                    }
-                                    outlen = need;
-                            }
-                            memcpy(
-                                    PyString_AS_STRING(result) + j,
-                                    PyString_AS_STRING(item),
-                                    reslen
-                            );
-                            j += reslen;
                     }
+                    if (_PyString_Resize(&result, need)) {
+                        Py_DECREF(item);
+                        return NULL;
+                    }
+                    outlen = need;
+                }
+                memcpy(
+                    PyString_AS_STRING(result) + j,
+                    PyString_AS_STRING(item),
+                    reslen
+                );
+                j += reslen;
+            }
         }
         Py_DECREF(item);
         if (ok < 0)
@@ -3031,29 +3043,27 @@ filterunicode(PyObject *func, PyObject *strobj)
                 assert(outlen >= 0);
 
                 if (need > outlen) {
-                    /* overallocate,
-                       to avoid reallocations */
+                    /* overallocate, to avoid reallocations */
                     if (need < 2 * outlen) {
-        if (outlen > PY_SSIZE_T_MAX / 2) {
-          Py_DECREF(item);
-          return NULL;
-                                            } else {
-                                                    need = 2 * outlen;
-                                }
-      }
-
-                                    if (PyUnicode_Resize(
-                                            &result, need) < 0) {
-                                            Py_DECREF(item);
-                                            goto Fail_1;
-                                    }
-                                    outlen = need;
-                            }
-                            memcpy(PyUnicode_AS_UNICODE(result) + j,
-                                   PyUnicode_AS_UNICODE(item),
-                                   reslen*sizeof(Py_UNICODE));
-                            j += reslen;
+                        if (outlen > PY_SSIZE_T_MAX / 2) {
+                            Py_DECREF(item);
+                            return NULL;
+                        } else {
+                            need = 2 * outlen;
+                        }
                     }
+
+                    if (PyUnicode_Resize(&result, need) < 0) {
+                        Py_DECREF(item);
+                        goto Fail_1;
+                    }
+                    outlen = need;
+                }
+                memcpy(PyUnicode_AS_UNICODE(result) + j,
+                   PyUnicode_AS_UNICODE(item),
+                   reslen*sizeof(Py_UNICODE));
+                j += reslen;
+            }
         }
         Py_DECREF(item);
         if (ok < 0)

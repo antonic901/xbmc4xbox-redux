@@ -24,7 +24,7 @@ returns a new sorted list::
     [1, 2, 3, 4, 5]
 
 You can also use the :meth:`list.sort` method of a list. It modifies the list
-in-place (and returns *None* to avoid confusion). Usually it's less convenient
+in-place (and returns ``None`` to avoid confusion). Usually it's less convenient
 than :func:`sorted` - but if you don't need the original list, it's slightly
 more efficient.
 
@@ -59,28 +59,28 @@ A common pattern is to sort complex objects using some of the object's indices
 as keys. For example:
 
     >>> student_tuples = [
-        ('john', 'A', 15),
-        ('jane', 'B', 12),
-        ('dave', 'B', 10),
-    ]
+    ...     ('john', 'A', 15),
+    ...     ('jane', 'B', 12),
+    ...     ('dave', 'B', 10),
+    ... ]
     >>> sorted(student_tuples, key=lambda student: student[2])   # sort by age
     [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
 
 The same technique works for objects with named attributes. For example:
 
     >>> class Student:
-            def __init__(self, name, grade, age):
-                self.name = name
-                self.grade = grade
-                self.age = age
-            def __repr__(self):
-                return repr((self.name, self.grade, self.age))
+    ...     def __init__(self, name, grade, age):
+    ...         self.name = name
+    ...         self.grade = grade
+    ...         self.age = age
+    ...     def __repr__(self):
+    ...         return repr((self.name, self.grade, self.age))
 
     >>> student_objects = [
-        Student('john', 'A', 15),
-        Student('jane', 'B', 12),
-        Student('dave', 'B', 10),
-    ]
+    ...     Student('john', 'A', 15),
+    ...     Student('jane', 'B', 12),
+    ...     Student('dave', 'B', 10),
+    ... ]
     >>> sorted(student_objects, key=lambda student: student.age)   # sort by age
     [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
 
@@ -90,7 +90,7 @@ Operator Module Functions
 The key-function patterns shown above are very common, so Python provides
 convenience functions to make accessor functions easier and faster. The operator
 module has :func:`operator.itemgetter`, :func:`operator.attrgetter`, and
-starting in Python 2.5 a :func:`operator.methodcaller` function.
+starting in Python 2.5 an :func:`operator.methodcaller` function.
 
 Using those functions, the above examples become simpler and faster:
 
@@ -116,6 +116,7 @@ parameters for each object being sorted.  For example, the :meth:`str.count`
 method could be used to compute message priority by counting the
 number of exclamation marks in a message:
 
+    >>> from operator import methodcaller
     >>> messages = ['critical!!!', 'hurry!', 'standby', 'immediate!!']
     >>> sorted(messages, key=methodcaller('count', '!'))
     ['standby', 'hurry!', 'immediate!!', 'critical!!!']
@@ -137,7 +138,7 @@ Sort Stability and Complex Sorts
 ================================
 
 Starting with Python 2.2, sorts are guaranteed to be `stable
-<http://en.wikipedia.org/wiki/Sorting_algorithm#Stability>`_\. That means that
+<https://en.wikipedia.org/wiki/Sorting_algorithm#Stability>`_\. That means that
 when multiple records have the same key, their original order is preserved.
 
     >>> data = [('red', 1), ('blue', 1), ('red', 2), ('blue', 2)]
@@ -155,7 +156,7 @@ ascending *age*, do the *age* sort first and then sort again using *grade*:
     >>> sorted(s, key=attrgetter('grade'), reverse=True)       # now sort on primary key, descending
     [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
 
-The `Timsort <http://en.wikipedia.org/wiki/Timsort>`_ algorithm used in Python
+The `Timsort <https://en.wikipedia.org/wiki/Timsort>`_ algorithm used in Python
 does multiple sorts efficiently because it can take advantage of any ordering
 already present in a dataset.
 
@@ -194,7 +195,7 @@ decorated list, but including it gives two benefits:
   directly.
 
 Another name for this idiom is
-`Schwartzian transform <http://en.wikipedia.org/wiki/Schwartzian_transform>`_\,
+`Schwartzian transform <https://en.wikipedia.org/wiki/Schwartzian_transform>`_\,
 after Randal L. Schwartz, who popularized it among Perl programmers.
 
 For large lists and lists where the comparison information is expensive to
@@ -220,15 +221,15 @@ return a negative value for less-than, return zero if they are equal, or return
 a positive value for greater-than. For example, we can do:
 
     >>> def numeric_compare(x, y):
-            return x - y
-    >>> sorted([5, 2, 4, 1, 3], cmp=numeric_compare)
+    ...     return x - y
+    >>> sorted([5, 2, 4, 1, 3], cmp=numeric_compare) # doctest: +SKIP
     [1, 2, 3, 4, 5]
 
 Or you can reverse the order of comparison with:
 
     >>> def reverse_numeric(x, y):
-            return y - x
-    >>> sorted([5, 2, 4, 1, 3], cmp=reverse_numeric)
+    ...     return y - x
+    >>> sorted([5, 2, 4, 1, 3], cmp=reverse_numeric) # doctest: +SKIP
     [5, 4, 3, 2, 1]
 
 When porting code from Python 2.x to 3.x, the situation can arise when you have
@@ -256,6 +257,12 @@ function. The following wrapper makes that easy to do::
 
 To convert to a key function, just wrap the old comparison function:
 
+.. testsetup::
+
+    from functools import cmp_to_key
+
+.. doctest::
+
     >>> sorted([5, 2, 4, 1, 3], key=cmp_to_key(reverse_numeric))
     [5, 4, 3, 2, 1]
 
@@ -274,7 +281,11 @@ Odd and Ends
   twice:
 
     >>> data = [('red', 1), ('blue', 1), ('red', 2), ('blue', 2)]
-    >>> assert sorted(data, reverse=True) == list(reversed(sorted(reversed(data))))
+    >>> standard_way = sorted(data, key=itemgetter(0), reverse=True)
+    >>> double_reversed = list(reversed(sorted(reversed(data), key=itemgetter(0))))
+    >>> assert standard_way == double_reversed
+    >>> standard_way
+    [('red', 1), ('red', 2), ('blue', 1), ('blue', 2)]
 
 * To create a standard sort order for a class, just add the appropriate rich
   comparison methods:

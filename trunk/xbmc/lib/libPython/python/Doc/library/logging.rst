@@ -95,10 +95,10 @@ is the module's name in the Python package namespace.
       scenario is to attach handlers only to the root logger, and to let
       propagation take care of the rest.
 
-.. method:: Logger.setLevel(lvl)
+.. method:: Logger.setLevel(level)
 
-   Sets the threshold for this logger to *lvl*. Logging messages which are less
-   severe than *lvl* will be ignored. When a logger is created, the level is set to
+   Sets the threshold for this logger to *level*. Logging messages which are less
+   severe than *level* will be ignored. When a logger is created, the level is set to
    :const:`NOTSET` (which causes all messages to be processed when the logger is
    the root logger, or delegation to the parent when the logger is a non-root
    logger). Note that the root logger is created with level :const:`WARNING`.
@@ -232,14 +232,14 @@ is the module's name in the Python package namespace.
    should only be called from an exception handler.
 
 
-.. method:: Logger.addFilter(filt)
+.. method:: Logger.addFilter(filter)
 
-   Adds the specified filter *filt* to this logger.
+   Adds the specified filter *filter* to this logger.
 
 
-.. method:: Logger.removeFilter(filt)
+.. method:: Logger.removeFilter(filter)
 
-   Removes the specified filter *filt* from this logger.
+   Removes the specified filter *filter* from this logger.
 
 
 .. method:: Logger.filter(record)
@@ -349,27 +349,27 @@ subclasses. However, the :meth:`__init__` method in subclasses needs to call
    Releases the thread lock acquired with :meth:`acquire`.
 
 
-.. method:: Handler.setLevel(lvl)
+.. method:: Handler.setLevel(level)
 
-   Sets the threshold for this handler to *lvl*. Logging messages which are less
-   severe than *lvl* will be ignored. When a handler is created, the level is set
+   Sets the threshold for this handler to *level*. Logging messages which are less
+   severe than *level* will be ignored. When a handler is created, the level is set
    to :const:`NOTSET` (which causes all messages to be processed).
 
    See :ref:`levels` for a list of levels.
 
-.. method:: Handler.setFormatter(form)
+.. method:: Handler.setFormatter(fmt)
 
-   Sets the :class:`Formatter` for this handler to *form*.
-
-
-.. method:: Handler.addFilter(filt)
-
-   Adds the specified filter *filt* to this handler.
+   Sets the :class:`Formatter` for this handler to *fmt*.
 
 
-.. method:: Handler.removeFilter(filt)
+.. method:: Handler.addFilter(filter)
 
-   Removes the specified filter *filt* from this handler.
+   Adds the specified filter *filter* to this handler.
+
+
+.. method:: Handler.removeFilter(filter)
+
+   Removes the specified filter *filter* from this handler.
 
 
 .. method:: Handler.filter(record)
@@ -588,7 +588,7 @@ wire).
    :param args: Variable data to merge into the *msg* argument to obtain the
                 event description.
    :param exc_info: An exception tuple with the current exception information,
-                    or *None* if no exception information is available.
+                    or ``None`` if no exception information is available.
    :param func: The name of the function or method from which the logging call
                 was invoked.
 
@@ -622,7 +622,9 @@ format string.
 | Attribute name | Format                  | Description                                   |
 +================+=========================+===============================================+
 | args           | You shouldn't need to   | The tuple of arguments merged into ``msg`` to |
-|                | format this yourself.   | produce ``message``.                          |
+|                | format this yourself.   | produce ``message``, or a dict whose values   |
+|                |                         | are used for the merge (when there is only one|
+|                |                         | argument, and it is a dictionary).            |
 +----------------+-------------------------+-----------------------------------------------+
 | asctime        | ``%(asctime)s``         | Human-readable time when the                  |
 |                |                         | :class:`LogRecord` was created.  By default   |
@@ -634,7 +636,7 @@ format string.
 |                |                         | (as returned by :func:`time.time`).           |
 +----------------+-------------------------+-----------------------------------------------+
 | exc_info       | You shouldn't need to   | Exception tuple (à la ``sys.exc_info``) or,   |
-|                | format this yourself.   | if no exception has occurred, *None*.         |
+|                | format this yourself.   | if no exception has occurred, ``None``.       |
 +----------------+-------------------------+-----------------------------------------------+
 | filename       | ``%(filename)s``        | Filename portion of ``pathname``.             |
 +----------------+-------------------------+-----------------------------------------------+
@@ -947,26 +949,26 @@ functions.
    +--------------+---------------------------------------------+
    | Format       | Description                                 |
    +==============+=============================================+
-   | ``filename`` | Specifies that a FileHandler be created,    |
+   | *filename*   | Specifies that a FileHandler be created,    |
    |              | using the specified filename, rather than a |
    |              | StreamHandler.                              |
    +--------------+---------------------------------------------+
-   | ``filemode`` | Specifies the mode to open the file, if     |
-   |              | filename is specified (if filemode is       |
-   |              | unspecified, it defaults to 'a').           |
+   | *filemode*   | If *filename* is specified, open the file   |
+   |              | in this mode. Defaults to ``'a'``.          |
    +--------------+---------------------------------------------+
-   | ``format``   | Use the specified format string for the     |
+   | *format*     | Use the specified format string for the     |
    |              | handler.                                    |
    +--------------+---------------------------------------------+
-   | ``datefmt``  | Use the specified date/time format.         |
+   | *datefmt*    | Use the specified date/time format, as      |
+   |              | accepted by :func:`time.strftime`.          |
    +--------------+---------------------------------------------+
-   | ``level``    | Set the root logger level to the specified  |
-   |              | level.                                      |
+   | *level*      | Set the root logger level to the specified  |
+   |              | :ref:`level <levels>`.                      |
    +--------------+---------------------------------------------+
-   | ``stream``   | Use the specified stream to initialize the  |
+   | *stream*     | Use the specified stream to initialize the  |
    |              | StreamHandler. Note that this argument is   |
-   |              | incompatible with 'filename' - if both are  |
-   |              | present, 'stream' is ignored.               |
+   |              | incompatible with *filename* - if both are  |
+   |              | present, *stream* is ignored.               |
    +--------------+---------------------------------------------+
 
 
@@ -1019,7 +1021,7 @@ with the :mod:`warnings` module.
       The proposal which described this feature for inclusion in the Python standard
       library.
 
-   `Original Python logging package <http://www.red-dove.com/python_logging.html>`_
+   `Original Python logging package <https://www.red-dove.com/python_logging.html>`_
       This is the original source for the :mod:`logging` package.  The version of the
       package available from this site is suitable for use with Python 1.5.2, 2.1.x
       and 2.2.x, which do not include the :mod:`logging` package in the standard

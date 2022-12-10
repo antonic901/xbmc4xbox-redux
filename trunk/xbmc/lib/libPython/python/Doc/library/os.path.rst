@@ -185,7 +185,7 @@ the :mod:`glob` module.)
 .. function:: islink(path)
 
    Return ``True`` if *path* refers to a directory entry that is a symbolic link.
-   Always ``False`` if symbolic links are not supported by the python runtime.
+   Always ``False`` if symbolic links are not supported by the Python runtime.
 
 
 .. function:: ismount(path)
@@ -256,7 +256,7 @@ the :mod:`glob` module.)
 .. function:: samefile(path1, path2)
 
    Return ``True`` if both pathname arguments refer to the same file or directory
-   (as indicated by device number and i-node number). Raise an exception if a
+   (as indicated by device number and i-node number). Raise an exception if an
    :func:`os.stat` call on either pathname fails.
 
    Availability: Unix.

@@ -15,7 +15,7 @@ change a substring by assigning to a slice: ``obj[i1:i2] = '...'``.  You can
 also read and write data starting at the current file position, and
 :meth:`seek` through the file to different positions.
 
-A memory-mapped file is created by the :class:`mmap` constructor, which is
+A memory-mapped file is created by the :class:`~mmap.mmap` constructor, which is
 different on Unix and on Windows.  In either case you must provide a file
 descriptor for a file opened for update. If you wish to map an existing Python
 file object, use its :meth:`fileno` method to obtain the correct value for the
@@ -68,7 +68,7 @@ memory but does not update the underlying file.
 
    *offset* may be specified as a non-negative integer offset. mmap references
    will be relative to the offset from the beginning of the file. *offset*
-   defaults to 0.  *offset* must be a multiple of the ALLOCATIONGRANULARITY.
+   defaults to 0.  *offset* must be a multiple of the :const:`ALLOCATIONGRANULARITY`.
 
 
 .. class:: mmap(fileno, length[, flags[, prot[, access[, offset]]]])
@@ -77,7 +77,7 @@ memory but does not update the underlying file.
    **(Unix version)** Maps *length* bytes from the file specified by the file
    descriptor *fileno*, and returns a mmap object.  If *length* is ``0``, the
    maximum length of the map will be the current size of the file when
-   :class:`mmap` is called.
+   :class:`~mmap.mmap` is called.
 
    *flags* specifies the nature of the mapping. :const:`MAP_PRIVATE` creates a
    private copy-on-write mapping, so changes to the contents of the mmap
@@ -97,14 +97,14 @@ memory but does not update the underlying file.
 
    *offset* may be specified as a non-negative integer offset. mmap references
    will be relative to the offset from the beginning of the file. *offset*
-   defaults to 0.  *offset* must be a multiple of the PAGESIZE or
-   ALLOCATIONGRANULARITY.
+   defaults to 0. *offset* must be a multiple of :const:`ALLOCATIONGRANULARITY`
+   which is equal to :const:`PAGESIZE` on Unix systems.
 
    To ensure validity of the created memory mapping the file specified
    by the descriptor *fileno* is internally automatically synchronized
    with physical backing store on Mac OS X and OpenVMS.
 
-   This example shows a simple way of using :class:`mmap`::
+   This example shows a simple way of using :class:`~mmap.mmap`::
 
       import mmap
 
@@ -140,7 +140,7 @@ memory but does not update the underlying file.
 
       pid = os.fork()
 
-      if pid == 0: # In a child process
+      if pid == 0:  # In a child process
           mm.seek(0)
           print mm.readline()
 
@@ -171,7 +171,8 @@ memory but does not update the underlying file.
       use of this call there is no guarantee that changes are written back before
       the object is destroyed.  If *offset* and *size* are specified, only
       changes to the given range of bytes will be flushed to disk; otherwise, the
-      whole extent of the mapping is flushed.
+      whole extent of the mapping is flushed.  *offset* must be a multiple of the
+      :const:`PAGESIZE` or :const:`ALLOCATIONGRANULARITY`.
 
       **(Windows version)** A nonzero value returned indicates success; zero
       indicates failure.

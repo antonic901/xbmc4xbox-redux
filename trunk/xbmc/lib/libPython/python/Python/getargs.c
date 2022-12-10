@@ -346,7 +346,7 @@ vgetargs1(PyObject *args, const char *format, va_list *p_va, int flags)
                           flags, levels, msgbuf,
                           sizeof(msgbuf), &freelist);
         if (msg) {
-            seterror(i+1, msg, levels, fname, msg);
+            seterror(i+1, msg, levels, fname, message);
             return cleanreturn(0, freelist);
         }
     }
@@ -533,9 +533,17 @@ converterr(const char *expected, PyObject *arg, char *msgbuf, size_t bufsize)
 {
     assert(expected != NULL);
     assert(arg != NULL);
-    PyOS_snprintf(msgbuf, bufsize,
-                  "must be %.50s, not %.50s", expected,
-                  arg == Py_None ? "None" : arg->ob_type->tp_name);
+    if (expected[0] == '(') {
+        PyOS_snprintf(msgbuf, bufsize,
+                      "%.100s", expected);
+        strncpy(msgbuf, expected, bufsize);
+        msgbuf[bufsize-1] = '\0';
+    }
+    else {
+        PyOS_snprintf(msgbuf, bufsize,
+                      "must be %.50s, not %.50s", expected,
+                      arg == Py_None ? "None" : arg->ob_type->tp_name);
+    }
     return msgbuf;
 }
 
@@ -567,6 +575,17 @@ float_argument_error(PyObject *arg)
     else
         return 0;
 }
+
+#ifdef Py_USING_UNICODE
+static size_t
+_ustrlen(Py_UNICODE *u)
+{
+    size_t i = 0;
+    Py_UNICODE *v = u;
+    while (*v != 0) { i++; v++; }
+    return i;
+}
+#endif
 
 /* Convert a non-tuple argument.  Return NULL if conversion went OK,
    or a string with a message describing the failure.  The message is
@@ -753,7 +772,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
         else if (PyLong_Check(arg))
             ival = PyLong_AsUnsignedLongMask(arg);
         else
-            return converterr("integer<k>", arg, msgbuf, bufsize);
+            return converterr("an integer", arg, msgbuf, bufsize);
         *p = ival;
         break;
     }
@@ -781,7 +800,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
         else if (PyLong_Check(arg))
             ival = PyLong_AsUnsignedLongLongMask(arg);
         else
-            return converterr("integer<K>", arg, msgbuf, bufsize);
+            return converterr("an integer", arg, msgbuf, bufsize);
         *p = ival;
         break;
     }
@@ -1127,15 +1146,29 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
             } else {
                 if (size + 1 > BUFFER_LEN) {
                     Py_DECREF(s);
-                    return converterr(
-                        "(buffer overflow)",
-                        arg, msgbuf, bufsize);
+                    PyErr_Format(PyExc_TypeError,
+                                 "encoded string too long "
+                                 "(%zd, maximum length %zd)",
+                                 (Py_ssize_t)size, (Py_ssize_t)(BUFFER_LEN-1));
+                    return "";
                 }
             }
             memcpy(*buffer,
                    PyString_AS_STRING(s),
                    size + 1);
-            STORE_SIZE(size);
+
+            if (flags & FLAG_SIZE_T) {
+                *q2 = size;
+            }
+            else {
+                if (INT_MAX < size) {
+                    Py_DECREF(s);
+                    PyErr_SetString(PyExc_OverflowError,
+                                    "size does not fit in an int");
+                    return converterr("", arg, msgbuf, bufsize);
+                }
+                *q = (int)size;
+            }
         } else {
             /* Using a 0-terminated buffer:
 
@@ -1154,7 +1187,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
                                                     != size) {
                 Py_DECREF(s);
                 return converterr(
-                    "encoded string without NULL bytes",
+                    "encoded string without null bytes",
                     arg, msgbuf, bufsize);
             }
             *buffer = PyMem_NEW(char, size + 1);
@@ -1192,8 +1225,14 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
             format++;
         } else {
             Py_UNICODE **p = va_arg(*p_va, Py_UNICODE **);
-            if (PyUnicode_Check(arg))
+            if (PyUnicode_Check(arg)) {
                 *p = PyUnicode_AS_UNICODE(arg);
+                if (_ustrlen(*p) != (size_t)PyUnicode_GET_SIZE(arg)) {
+                    return converterr(
+                        "unicode without null characters",
+                        arg, msgbuf, bufsize);
+                }
+            }
             else
                 return converterr("unicode", arg, msgbuf, bufsize);
         }
@@ -1260,7 +1299,6 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
         }
         break;
     }
-
 
     case 'w': { /* memory buffer, read-write access */
         void **p = va_arg(*p_va, void **);
@@ -1353,7 +1391,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
     }
 
     default:
-        return converterr("impossible<bad format char>", arg, msgbuf, bufsize);
+        return converterr("(impossible<bad format char>)", arg, msgbuf, bufsize);
 
     }
 
@@ -1754,7 +1792,7 @@ skipitem(const char **p_format, va_list *p_va, int flags)
                 else
                     (void) va_arg(*p_va, int *);
                 format++;
-            } else if ((c == 's' || c == 'z') && *format == '*') {
+            } else if ((c == 's' || c == 'z' || c == 'w') && *format == '*') {
                 format++;
             }
             break;

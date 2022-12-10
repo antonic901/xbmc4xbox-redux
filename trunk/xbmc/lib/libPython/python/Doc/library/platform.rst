@@ -33,8 +33,8 @@ Cross Platform
    returned as strings.
 
    Values that cannot be determined are returned as given by the parameter presets.
-   If bits is given as ``''``, the :c:func:`sizeof(pointer)` (or
-   :c:func:`sizeof(long)` on Python version < 1.5.2) is used as indicator for the
+   If bits is given as ``''``, the ``sizeof(pointer)`` (or
+   ``sizeof(long)`` on Python version < 1.5.2) is used as indicator for the
    supported pointer size.
 
    The function relies on the system's :file:`file` command to do the actual work.
@@ -269,6 +269,10 @@ Unix Platforms
    Returns a tuple ``(distname,version,id)`` which defaults to the args given as
    parameters.  ``id`` is the item in parentheses after the version number.  It
    is usually the version codename.
+
+   .. note::
+      This function is deprecated since Python 3.5 and removed in Python 3.8.
+      See alternative like the `distro <https://pypi.org/project/distro>`_ package.
 
    .. versionadded:: 2.6
 

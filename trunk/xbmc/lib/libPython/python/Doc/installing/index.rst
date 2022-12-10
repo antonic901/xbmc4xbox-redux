@@ -39,11 +39,10 @@ Key terms
   being installed system wide
 * ``virtualenv`` is a third party tools for creating virtual environments, it
   is defaults to installing ``pip`` into all created virtual environments.
-* the `Python Packaging Index <https://pypi.python.org/pypi>`__ is a public
-  repository of open source licensed packages made available for use by
-  other Python users
+* the `Python Packaging Index <https://pypi.org>`__ is a public repository of
+  open source licensed packages made available for use by other Python users
 * the `Python Packaging Authority
-  <https://packaging.python.org/en/latest/future.html>`__ are the group of
+  <https://www.pypa.io/en/latest/>`__ are the group of
   developers and documentation authors responsible for the maintenance and
   evolution of the standard packaging tools and the associated metadata and
   file format standards. They maintain a variety of tools, documentation
@@ -82,10 +81,12 @@ dependencies from the Python Packaging Index::
    Python.
 
 It's also possible to specify an exact or minimum version directly on the
-command line::
+command line. When using comparator operators such as ``>``, ``<`` or some other
+special character which get interpreted by shell, the package name and the
+version should be enclosed within double quotes::
 
     python -m pip install SomePackage==1.0.4    # specific version
-    python -m pip install 'SomePackage>=1.0.4'  # minimum version
+    python -m pip install "SomePackage>=1.0.4"  # minimum version
 
 Normally, if a suitable module is already installed, attempting to install
 it again will have no effect. Upgrading existing modules must be requested
@@ -99,7 +100,7 @@ found in the `Python Packaging User Guide <https://packaging.python.org>`__.
 .. seealso::
 
     `Python Packaging User Guide: Installing Python Distribution Packages
-    <https://packaging.python.org/en/latest/installing.html#installing-python-distribution-packages>`__
+    <https://packaging.python.org/en/latest/installing/>`__
 
 
 How do I ...?
@@ -116,8 +117,8 @@ User Guide.
 
 .. seealso::
 
-   `Python Packaging User Guide: Setup for Installing Distribution Packages
-   <https://packaging.python.org/en/latest/installing.html#setup-for-installing-distribution-packages>`__
+   `Python Packaging User Guide: Requirements for Installing Packages
+   <https://packaging.python.org/en/latest/installing/#requirements-for-installing-packages>`__
 
 
 .. installing-per-user-installation:
@@ -136,13 +137,13 @@ A number of scientific Python packages have complex binary dependencies, and
 aren't currently easy to install using ``pip`` directly. At this point in
 time, it will often be easier for users to install these packages by
 `other means
-<https://packaging.python.org/en/latest/science.html>`__
+<https://packaging.python.org/en/latest/science/>`__
 rather than attempting to install them with ``pip``.
 
 .. seealso::
 
    `Python Packaging User Guide: Installing Scientific Packages
-   <https://packaging.python.org/en/latest/science.html>`__
+   <https://packaging.python.org/en/latest/science/>`__
 
 
 ... work with multiple versions of Python installed in parallel?
@@ -172,7 +173,7 @@ switch::
    Once the Development & Deployment part of PPUG is fleshed out, some of
    those sections should be linked from new questions here (most notably,
    we should have a question about avoiding depending on PyPI that links to
-   https://packaging.python.org/en/latest/deployment.html#pypi-mirrors-and-caches)
+   https://packaging.python.org/en/latest/mirrors/)
 
 
 Common installation issues
@@ -191,6 +192,17 @@ On such systems, it is often better to use a virtual environment or a
 per-user installation when installing packages with ``pip``.
 
 
+Pip not installed
+-----------------
+
+It is possible that ``pip`` does not get installed by default. One potential fix is::
+
+    python -m ensurepip --default-pip
+
+There are also additional resources for `installing pip.
+<https://packaging.python.org/tutorials/installing-packages/#install-pip-setuptools-and-wheel>`__
+
+
 Installing binary extensions
 ----------------------------
 
@@ -205,11 +217,11 @@ as users are more regularly able to install pre-built extensions rather
 than needing to build them themselves.
 
 Some of the solutions for installing `scientific software
-<https://packaging.python.org/en/latest/science.html>`__
+<https://packaging.python.org/en/latest/science/>`__
 that is not yet available as pre-built ``wheel`` files may also help with
 obtaining other binary extensions without needing to build them locally.
 
 .. seealso::
 
    `Python Packaging User Guide: Binary Extensions
-   <https://packaging.python.org/en/latest/extensions.html>`__
+   <https://packaging.python.org/en/latest/extensions/>`__

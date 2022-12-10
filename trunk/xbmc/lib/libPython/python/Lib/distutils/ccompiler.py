@@ -160,7 +160,7 @@ class CCompiler:
             self.set_executable(key, args[key])
 
     def set_executable(self, key, value):
-        if isinstance(value, str):
+        if isinstance(value, basestring):
             setattr(self, key, split_quoted(value))
         else:
             setattr(self, key, value)
@@ -748,8 +748,9 @@ class CCompiler:
             for incl in includes:
                 f.write("""#include "%s"\n""" % incl)
             f.write("""\
-main (int argc, char **argv) {
+int main (int argc, char **argv) {
     %s();
+    return 0;
 }
 """ % funcname)
         finally:
@@ -842,8 +843,9 @@ main (int argc, char **argv) {
     def library_filename(self, libname, lib_type='static',     # or 'shared'
                          strip_dir=0, output_dir=''):
         assert output_dir is not None
-        if lib_type not in ("static", "shared", "dylib"):
-            raise ValueError, "'lib_type' must be \"static\", \"shared\" or \"dylib\""
+        if lib_type not in ("static", "shared", "dylib", "xcode_stub"):
+            raise ValueError, ("""'lib_type' must be "static", "shared", """
+                               """"dylib", or "xcode_stub".""")
         fmt = getattr(self, lib_type + "_lib_format")
         ext = getattr(self, lib_type + "_lib_extension")
 

@@ -109,7 +109,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\Modules\expat;..\Include;..\PC"
-				PreprocessorDefinitions="XML_NS;XML_DTD;BYTEORDER=1234;XML_CONTEXT_BYTES=1024;USE_PYEXPAT_CAPI;XML_STATIC;HAVE_MEMMOVE"
+				PreprocessorDefinitions="XML_NS;XML_DTD;BYTEORDER=1234;XML_CONTEXT_BYTES=1024;USE_PYEXPAT_CAPI;XML_STATIC;_XBOX"
 				RuntimeLibrary="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -151,7 +151,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Modules\expat;..\Include;..\PC"
-				PreprocessorDefinitions="XML_NS;XML_DTD;BYTEORDER=1234;XML_CONTEXT_BYTES=1024;USE_PYEXPAT_CAPI;XML_STATIC;HAVE_MEMMOVE"
+				PreprocessorDefinitions="XML_NS;XML_DTD;BYTEORDER=1234;XML_CONTEXT_BYTES=1024;USE_PYEXPAT_CAPI;XML_STATIC;_XBOX"
 				RuntimeLibrary="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

@@ -3,8 +3,6 @@
 
 /* collections module implementation of a deque() datatype
    Written and maintained by Raymond D. Hettinger <python@rcn.com>
-   Copyright (c) 2004 Python Software Foundation.
-   All rights reserved.
 */
 
 /* The block length may be set to any number over 1.  Larger numbers
@@ -641,7 +639,7 @@ deque_remove(dequeobject *deque, PyObject *value)
 PyDoc_STRVAR(remove_doc,
 "D.remove(value) -- remove first occurrence of value.");
 
-static void
+static int
 deque_clear(dequeobject *deque)
 {
     block *b;
@@ -652,7 +650,7 @@ deque_clear(dequeobject *deque)
     PyObject *item;
 
     if (deque->len == 0)
-        return;
+        return 0;
 
     /* During the process of clearing a deque, decrefs can cause the
        deque to mutate.  To avoid fatal confusion, we have to make the
@@ -703,7 +701,7 @@ deque_clear(dequeobject *deque)
     }
     assert(leftblock->rightlink == NULL);
     freeblock(leftblock);
-    return;
+    return 0;
 
   alternate_method:
     while (deque->len) {
@@ -711,6 +709,7 @@ deque_clear(dequeobject *deque)
         assert (item != NULL);
         Py_DECREF(item);
     }
+    return 0;
 }
 
 static PyObject *
@@ -860,11 +859,20 @@ deque_traverse(dequeobject *deque, visitproc visit, void *arg)
 static PyObject *
 deque_copy(PyObject *deque)
 {
+    PyObject *result;
     if (((dequeobject *)deque)->maxlen == -1)
-        return PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "O", deque, NULL);
+        result = PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "O", deque, NULL);
     else
-        return PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "Oi",
+        result = PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "Oi",
             deque, ((dequeobject *)deque)->maxlen, NULL);
+    if (result != NULL && !PyObject_TypeCheck(result, &deque_type)) {
+        PyErr_Format(PyExc_TypeError,
+                     "%.200s() must return a deque, not %.200s",
+                     Py_TYPE(deque)->tp_name, Py_TYPE(result)->tp_name);
+        Py_DECREF(result);
+        return NULL;
+    }
+    return result;
 }
 
 PyDoc_STRVAR(copy_doc, "Return a shallow copy of a deque.");
@@ -1103,7 +1111,7 @@ deque_sizeof(dequeobject *deque, void *unused)
     Py_ssize_t res;
     Py_ssize_t blocks;
 
-    res = sizeof(dequeobject);
+    res = _PyObject_SIZE(Py_TYPE(deque));
     blocks = (deque->leftindex + deque->len + BLOCKLEN - 1) / BLOCKLEN;
     assert(deque->leftindex + deque->len - 1 ==
            (blocks - 1) * BLOCKLEN + deque->rightindex);
@@ -1273,6 +1281,8 @@ dequeiter_traverse(dequeiterobject *dio, visitproc visit, void *arg)
 static void
 dequeiter_dealloc(dequeiterobject *dio)
 {
+    /* bpo-31095: UnTrack is needed before calling any callbacks */
+    PyObject_GC_UnTrack(dio);
     Py_XDECREF(dio->deque);
     PyObject_GC_Del(dio);
 }
@@ -1558,6 +1568,8 @@ static PyMemberDef defdict_members[] = {
 static void
 defdict_dealloc(defdictobject *dd)
 {
+    /* bpo-31095: UnTrack is needed before calling any callbacks */
+    PyObject_GC_UnTrack(dd);
     Py_CLEAR(dd->default_factory);
     PyDict_Type.tp_dealloc((PyObject *)dd);
 }

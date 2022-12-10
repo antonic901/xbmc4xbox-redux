@@ -3,12 +3,14 @@
 # The code for testing gdb was adapted from similar work in Unladen Swallow's
 # Lib/test/test_jit_gdb.py
 
+import locale
 import os
 import re
 import subprocess
 import sys
-import unittest
 import sysconfig
+import textwrap
+import unittest
 
 from test import test_support
 from test.test_support import run_unittest, findfile
@@ -23,6 +25,7 @@ def get_gdb_version():
     try:
         proc = subprocess.Popen(["gdb", "-nx", "--version"],
                                 stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
                                 universal_newlines=True)
         version = proc.communicate()[0]
     except OSError:
@@ -55,6 +58,23 @@ if sys.platform.startswith("sunos"):
 checkout_hook_path = os.path.join(os.path.dirname(sys.executable),
                                   'python-gdb.py')
 
+
+def cet_protection():
+    cflags = sysconfig.get_config_var('CFLAGS')
+    if not cflags:
+        return False
+    flags = cflags.split()
+    # True if "-mcet -fcf-protection" options are found, but false
+    # if "-fcf-protection=none" or "-fcf-protection=return" is found.
+    return (('-mcet' in flags)
+            and any((flag.startswith('-fcf-protection')
+                     and not flag.endswith(("=none", "=return")))
+                    for flag in flags))
+
+# Control-flow enforcement technology
+CET_PROTECTION = cet_protection()
+
+
 def run_gdb(*args, **env_vars):
     """Runs gdb in batch mode with the additional arguments given by *args.
 
@@ -71,9 +91,14 @@ def run_gdb(*args, **env_vars):
     if (gdb_major_version, gdb_minor_version) >= (7, 4):
         base_cmd += ('-iex', 'add-auto-load-safe-path ' + checkout_hook_path)
     out, err = subprocess.Popen(base_cmd + args,
+        # Redirect stdin to prevent GDB from messing with terminal settings
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
         ).communicate()
     return out, err
+
+if not sysconfig.is_python_build():
+    raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
 
 # Verify that "gdb" was built with the embedded python support enabled:
 gdbpy_version, _ = run_gdb("--eval-command=python import sys; print(sys.version_info)")
@@ -163,6 +188,12 @@ class DebuggerTests(unittest.TestCase):
             commands += ['set print entry-values no']
 
         if cmds_after_breakpoint:
+            if CET_PROTECTION:
+                # bpo-32962: When Python is compiled with -mcet
+                # -fcf-protection, function arguments are unusable before
+                # running the first instruction of the function entry point.
+                # The 'next' command makes the required first step.
+                commands += ['next']
             commands += cmds_after_breakpoint
         else:
             commands += ['backtrace']
@@ -184,44 +215,22 @@ class DebuggerTests(unittest.TestCase):
         elif script:
             args += [script]
 
-        # print args
-        # print ' '.join(args)
-
         # Use "args" to invoke gdb, capturing stdout, stderr:
         out, err = run_gdb(*args, PYTHONHASHSEED='0')
 
-        errlines = err.splitlines()
-        unexpected_errlines = []
+        for line in err.splitlines():
+            print >>sys.stderr, line
 
-        # Ignore some benign messages on stderr.
-        ignore_patterns = (
-            'Function "%s" not defined.' % breakpoint,
-            "warning: no loadable sections found in added symbol-file"
-            " system-supplied DSO",
-            "warning: Unable to find libthread_db matching"
-            " inferior's thread library, thread debugging will"
-            " not be available.",
-            "warning: Cannot initialize thread debugging"
-            " library: Debugger service failed",
-            'warning: Could not load shared library symbols for '
-            'linux-vdso.so',
-            'warning: Could not load shared library symbols for '
-            'linux-gate.so',
-            'warning: Could not load shared library symbols for '
-            'linux-vdso64.so',
-            'Do you need "set solib-search-path" or '
-            '"set sysroot"?',
-            'warning: Source file is more recent than executable.',
-            # Issue #19753: missing symbols on System Z
-            'Missing separate debuginfo for ',
-            'Try: zypper install -C ',
-            )
-        for line in errlines:
-            if not line.startswith(ignore_patterns):
-                unexpected_errlines.append(line)
+        # bpo-34007: Sometimes some versions of the shared libraries that
+        # are part of the traceback are compiled in optimised mode and the
+        # Program Counter (PC) is not present, not allowing gdb to walk the
+        # frames back. When this happens, the Python bindings of gdb raise
+        # an exception, making the test impossible to succeed.
+        if "PC not saved" in err:
+            raise unittest.SkipTest("gdb cannot walk the frame object"
+                                    " because the Program Counter is"
+                                    " not present")
 
-        # Ensure no unexpected error messages:
-        self.assertEqual(unexpected_errlines, [])
         return out
 
     def get_gdb_repr(self, source,
@@ -234,6 +243,11 @@ class DebuggerTests(unittest.TestCase):
         #
         # For a nested structure, the first time we hit the breakpoint will
         # give us the top-level structure
+
+        # NOTE: avoid decoding too much of the traceback as some
+        # undecodable characters may lurk there in optimized mode
+        # (issue #19743).
+        cmds_after_breakpoint = cmds_after_breakpoint or ["backtrace 1"]
         gdb_output = self.get_stack_trace(source, breakpoint='PyObject_Print',
                                           cmds_after_breakpoint=cmds_after_breakpoint,
                                           import_site=import_site)
@@ -258,6 +272,9 @@ class DebuggerTests(unittest.TestCase):
     def get_sample_script(self):
         return findfile('gdb_sample.py')
 
+
+@unittest.skipIf(python_is_optimized(),
+                 "Python was compiled with optimizations")
 class PrettyPrintTests(DebuggerTests):
     def test_getting_backtrace(self):
         gdb_output = self.get_stack_trace('print 42')
@@ -385,7 +402,7 @@ except RuntimeError, e:
         # Test division by zero:
         gdb_repr, gdb_output = self.get_gdb_repr('''
 try:
-    a = 1 / 0
+    a = 1 // 0
 except ZeroDivisionError, e:
     print e
 ''')
@@ -710,6 +727,8 @@ $''')
                             'Unable to find a newer python frame\n')
 
     @unittest.skipUnless(HAS_PYUP_PYDOWN, "test requires py-up/py-down commands")
+    @unittest.skipIf(python_is_optimized(),
+                     "Python was compiled with optimizations")
     def test_up_at_top(self):
         'Verify handling of "py-up" at the top of the stack'
         bt = self.get_stack_trace(script=self.get_sample_script(),
@@ -770,6 +789,8 @@ Traceback \(most recent call first\):
 
     @unittest.skipUnless(thread,
                          "Python was compiled without thread support")
+    @unittest.skipIf(python_is_optimized(),
+                     "Python was compiled with optimizations")
     def test_threads(self):
         'Verify that "py-bt" indicates threads that are waiting for the GIL'
         cmd = '''
@@ -859,7 +880,32 @@ print 42
                                           breakpoint='time_gmtime',
                                           cmds_after_breakpoint=['py-bt-full'],
                                           )
-        self.assertIn('#0 <built-in function gmtime', gdb_output)
+        self.assertIn('#1 <built-in function gmtime', gdb_output)
+
+    @unittest.skipIf(python_is_optimized(),
+                     "Python was compiled with optimizations")
+    def test_wrapper_call(self):
+        cmd = textwrap.dedent('''
+            class MyList(list):
+                def __init__(self):
+                    super(MyList, self).__init__()   # wrapper_call()
+
+            print("first break point")
+            l = MyList()
+        ''')
+        cmds_after_breakpoint = ['break wrapper_call', 'continue']
+        if CET_PROTECTION:
+            # bpo-32962: same case as in get_stack_trace():
+            # we need an additional 'next' command in order to read
+            # arguments of the innermost function of the call stack.
+            cmds_after_breakpoint.append('next')
+        cmds_after_breakpoint.append('py-bt')
+
+        # Verify with "py-bt":
+        gdb_output = self.get_stack_trace(cmd,
+                                          cmds_after_breakpoint=cmds_after_breakpoint)
+        self.assertRegexpMatches(gdb_output,
+                                 r"<method-wrapper u?'__init__' of MyList object at ")
 
 
 class PyPrintTests(DebuggerTests):

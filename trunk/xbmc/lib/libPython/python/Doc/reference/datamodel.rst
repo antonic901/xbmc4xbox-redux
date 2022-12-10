@@ -301,7 +301,7 @@ Sequences
          character is represented by a string of one item. Characters represent (at
          least) 8-bit bytes.  The built-in functions :func:`chr` and :func:`ord` convert
          between characters and nonnegative integers representing the byte values.  Bytes
-         with the values 0-127 usually represent the corresponding ASCII values, but the
+         with the values 0--127 usually represent the corresponding ASCII values, but the
          interpretation of values is up to the program.  The string data type is also
          used to represent arrays of bytes, e.g., to hold data read from a file.
 
@@ -481,6 +481,24 @@ Callable types
 
       .. tabularcolumns:: |l|L|l|
 
+      .. index::
+         single: __doc__ (function attribute)
+         single: __name__ (function attribute)
+         single: __module__ (function attribute)
+         single: __dict__ (function attribute)
+         single: __defaults__ (function attribute)
+         single: __code__ (function attribute)
+         single: __globals__ (function attribute)
+         single: __closure__ (function attribute)
+         single: func_doc (function attribute)
+         single: func_name (function attribute)
+         single: func_dict (function attribute)
+         single: func_defaults (function attribute)
+         single: func_code (function attribute)
+         single: func_globals (function attribute)
+         single: func_closure (function attribute)
+         pair: global; namespace
+
       +-----------------------+-------------------------------+-----------+
       | Attribute             | Meaning                       |           |
       +=======================+===============================+===========+
@@ -488,7 +506,8 @@ Callable types
       | :attr:`func_doc`      | string, or ``None`` if        |           |
       |                       | unavailable.                  |           |
       +-----------------------+-------------------------------+-----------+
-      | :attr:`__name__`      | The function's name.          | Writable  |
+      | :attr:`~definition.\  | The function's name           | Writable  |
+      | __name__`             |                               |           |
       | :attr:`func_name`     |                               |           |
       +-----------------------+-------------------------------+-----------+
       | :attr:`__module__`    | The name of the module the    | Writable  |
@@ -511,9 +530,9 @@ Callable types
       |                       | module in which the function  |           |
       |                       | was defined.                  |           |
       +-----------------------+-------------------------------+-----------+
-      | :attr:`__dict__`      | The namespace supporting      | Writable  |
-      | :attr:`func_dict`     | arbitrary function            |           |
-      |                       | attributes.                   |           |
+      | :attr:`~object.\      | The namespace supporting      | Writable  |
+      | __dict__`             | arbitrary function            |           |
+      | :attr:`func_dict`     | attributes.                   |           |
       +-----------------------+-------------------------------+-----------+
       | :attr:`__closure__`   | ``None`` or a tuple of cells  | Read-only |
       | :attr:`func_closure`  | that contain bindings for the |           |
@@ -540,24 +559,6 @@ Callable types
       Additional information about a function's definition can be retrieved from its
       code object; see the description of internal types below.
 
-      .. index::
-         single: __doc__ (function attribute)
-         single: __name__ (function attribute)
-         single: __module__ (function attribute)
-         single: __dict__ (function attribute)
-         single: __defaults__ (function attribute)
-         single: __code__ (function attribute)
-         single: __globals__ (function attribute)
-         single: __closure__ (function attribute)
-         single: func_doc (function attribute)
-         single: func_name (function attribute)
-         single: func_dict (function attribute)
-         single: func_defaults (function attribute)
-         single: func_code (function attribute)
-         single: func_globals (function attribute)
-         single: func_closure (function attribute)
-         pair: global; namespace
-
    User-defined methods
       .. index::
          object: method
@@ -571,7 +572,7 @@ Callable types
       :attr:`im_func` is the function object; :attr:`im_class` is the class of
       :attr:`im_self` for bound methods or the class that asked for the method for
       unbound methods; :attr:`__doc__` is the method's documentation (same as
-      ``im_func.__doc__``); :attr:`__name__` is the method name (same as
+      ``im_func.__doc__``); :attr:`~definition.__name__` is the method name (same as
       ``im_func.__name__``); :attr:`__module__` is the name of the module the method
       was defined in, or ``None`` if unavailable.
 
@@ -683,7 +684,7 @@ Callable types
       standard built-in module). The number and type of the arguments are
       determined by the C function. Special read-only attributes:
       :attr:`__doc__` is the function's documentation string, or ``None`` if
-      unavailable; :attr:`__name__` is the function's name; :attr:`__self__` is
+      unavailable; :attr:`~definition.__name__` is the function's name; :attr:`__self__` is
       set to ``None`` (but see the next item); :attr:`__module__` is the name of
       the module the function was defined in or ``None`` if unavailable.
 
@@ -744,7 +745,7 @@ Modules
 
    .. index:: single: __dict__ (module attribute)
 
-   Special read-only attribute: :attr:`__dict__` is the module's namespace as a
+   Special read-only attribute: :attr:`~object.__dict__` is the module's namespace as a
    dictionary object.
 
    .. impl-detail::
@@ -806,7 +807,7 @@ Classes
    static method object, it is transformed into the object wrapped by the static
    method object. See section :ref:`descriptors` for another way in which
    attributes retrieved from a class may differ from those actually contained in
-   its :attr:`__dict__` (note that only new-style classes support descriptors).
+   its :attr:`~object.__dict__` (note that only new-style classes support descriptors).
 
    .. index:: triple: class; attribute; assignment
 
@@ -824,12 +825,12 @@ Classes
       single: __bases__ (class attribute)
       single: __doc__ (class attribute)
 
-   Special attributes: :attr:`__name__` is the class name; :attr:`__module__` is
-   the module name in which the class was defined; :attr:`__dict__` is the
+   Special attributes: :attr:`~definition.__name__` is the class name; :attr:`__module__` is
+   the module name in which the class was defined; :attr:`~object.__dict__` is the
    dictionary containing the class's namespace; :attr:`~class.__bases__` is a
    tuple (possibly empty or a singleton) containing the base classes, in the
    order of their occurrence in the base class list; :attr:`__doc__` is the
-   class's documentation string, or None if undefined.
+   class's documentation string, or ``None`` if undefined.
 
 Class instances
    .. index::
@@ -851,7 +852,7 @@ Class instances
    objects are also transformed, as if they had been retrieved from class
    :class:`C`; see above under "Classes". See section :ref:`descriptors` for
    another way in which attributes of a class retrieved via its instances may
-   differ from the objects actually stored in the class's :attr:`__dict__`. If no
+   differ from the objects actually stored in the class's :attr:`~object.__dict__`. If no
    class attribute is found, and the object's class has a :meth:`__getattr__`
    method, that is called to satisfy the lookup.
 
@@ -909,11 +910,9 @@ Internal types
    definitions may change with future versions of the interpreter, but they are
    mentioned here for completeness.
 
-   Code objects
-      .. index::
-         single: bytecode
-         object: code
+   .. index:: bytecode, object; code, code object
 
+   Code objects
       Code objects represent *byte-compiled* executable Python code, or :term:`bytecode`.
       The difference between a code object and a function object is that the function
       object contains an explicit reference to the function's globals (the module in
@@ -1014,7 +1013,7 @@ Internal types
       called at the start of each source code line (this is used by the debugger);
       :attr:`f_exc_type`, :attr:`f_exc_value`, :attr:`f_exc_traceback` represent the
       last exception raised in the parent frame provided another exception was ever
-      raised in the current frame (in all other cases they are None); :attr:`f_lineno`
+      raised in the current frame (in all other cases they are ``None``); :attr:`f_lineno`
       is the current line number of the frame --- writing to this from within a trace
       function jumps to the given line (only for the bottom-most frame).  A debugger
       can implement a Jump command (aka Set Next Statement) by writing to f_lineno.
@@ -1410,8 +1409,12 @@ Basic customization
    hashed collections including :class:`set`, :class:`frozenset`, and
    :class:`dict`.  :meth:`__hash__` should return an integer.  The only required
    property is that objects which compare equal have the same hash value; it is
-   advised to somehow mix together (e.g. using exclusive or) the hash values for
-   the components of the object that also play a part in comparison of objects.
+   advised to mix together the hash values of the components of the object that
+   also play a part in comparison of objects by packing them into a tuple and
+   hashing the tuple. Example::
+
+       def __hash__(self):
+           return hash((self.name, self.nick, self.color))
 
    If a class does not define a :meth:`__cmp__` or :meth:`__eq__` method it
    should not define a :meth:`__hash__` operation either; if it defines
@@ -1419,7 +1422,7 @@ Basic customization
    will not be usable in hashed collections.  If a class defines mutable objects
    and implements a :meth:`__cmp__` or :meth:`__eq__` method, it should not
    implement :meth:`__hash__`, since hashable collection implementations require
-   that a object's hash value is immutable (if the object's hash value changes,
+   that an object's hash value is immutable (if the object's hash value changes,
    it will be in the wrong hash bucket).
 
    User-defined classes have :meth:`__cmp__` and :meth:`__hash__` methods
@@ -1556,7 +1559,7 @@ method (a so-called *descriptor* class) appears in an *owner* class (the
 descriptor must be in either the owner's class dictionary or in the class
 dictionary for one of its parents).  In the examples below, "the attribute"
 refers to the attribute whose name is the key of the property in the owner
-class' :attr:`__dict__`.
+class' :attr:`~object.__dict__`.
 
 
 .. method:: object.__get__(self, instance, owner)
@@ -1888,6 +1891,14 @@ sequences, it should iterate through the values.
    :meth:`__nonzero__` method and whose :meth:`__len__` method returns zero is
    considered to be false in a Boolean context.
 
+   .. impl-detail::
+
+      In CPython, the length is required to be at most :attr:`sys.maxsize`.
+      If the length is larger than :attr:`!sys.maxsize` some features (such as
+      :func:`len`) may raise :exc:`OverflowError`.  To prevent raising
+      :exc:`!OverflowError` by truth value testing, an object must define a
+      :meth:`__nonzero__` method.
+
 
 .. method:: object.__getitem__(self, key)
 
@@ -1908,12 +1919,6 @@ sequences, it should iterate through the values.
       indexes to allow proper detection of the end of the sequence.
 
 
-.. method:: object.__missing__(self, key)
-
-   Called by :class:`dict`\ .\ :meth:`__getitem__` to implement ``self[key]`` for dict subclasses
-   when key is not in the dictionary.
-
-
 .. method:: object.__setitem__(self, key, value)
 
    Called to implement assignment to ``self[key]``.  Same note as for
@@ -1930,6 +1935,12 @@ sequences, it should iterate through the values.
    objects support removal of keys, or for sequences if elements can be removed
    from the sequence.  The same exceptions should be raised for improper *key*
    values as for the :meth:`__getitem__` method.
+
+
+.. method:: object.__missing__(self, key)
+
+   Called by :class:`dict`\ .\ :meth:`__getitem__` to implement ``self[key]`` for dict subclasses
+   when key is not in the dictionary.
 
 
 .. method:: object.__iter__(self)
@@ -2397,7 +2408,7 @@ For more information on context managers, see :ref:`typecontextmanager`.
 
 .. seealso::
 
-   :pep:`0343` - The "with" statement
+   :pep:`343` - The "with" statement
       The specification, background, and examples for the Python :keyword:`with`
       statement.
 

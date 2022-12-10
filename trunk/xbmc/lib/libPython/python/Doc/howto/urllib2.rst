@@ -1,3 +1,5 @@
+.. _urllib-howto:
+
 ************************************************
   HOWTO Fetch Internet Resources Using urllib2
 ************************************************
@@ -6,7 +8,7 @@
 
 .. note::
 
-    There is an French translation of an earlier revision of this
+    There is a French translation of an earlier revision of this
     HOWTO, available at `urllib2 - Le Manuel manquant
     <http://www.voidspace.org.uk/python/articles/urllib2_francais.shtml>`_.
 
@@ -32,8 +34,8 @@ handling common situations - like basic authentication, cookies, proxies and so
 on. These are provided by objects called handlers and openers.
 
 urllib2 supports fetching URLs for many "URL schemes" (identified by the string
-before the ":" in URL - for example "ftp" is the URL scheme of
-"ftp://python.org/") using their associated network protocols (e.g. FTP, HTTP).
+before the ``":"`` in URL - for example ``"ftp"`` is the URL scheme of
+``"ftp://python.org/"``) using their associated network protocols (e.g. FTP, HTTP).
 This tutorial focuses on the most common case, HTTP.
 
 For straightforward situations *urlopen* is very easy to use. But as soon as you
@@ -55,7 +57,7 @@ The simplest way to use urllib2 is as follows::
     html = response.read()
 
 Many uses of urllib2 will be that simple (note that instead of an 'http:' URL we
-could have used an URL starting with 'ftp:', 'file:', etc.).  However, it's the
+could have used a URL starting with 'ftp:', 'file:', etc.).  However, it's the
 purpose of this tutorial to explain the more complicated cases, concentrating on
 HTTP.
 
@@ -112,7 +114,7 @@ argument. The encoding is done using a function from the ``urllib`` library
 
 Note that other encodings are sometimes required (e.g. for file upload from HTML
 forms - see `HTML Specification, Form Submission
-<http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13>`_ for more
+<https://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13>`_ for more
 details).
 
 If you do not pass the ``data`` argument, urllib2 uses a **GET** request. One
@@ -165,10 +167,10 @@ Explorer [#]_. ::
 
     url = 'http://www.someserver.com/cgi-bin/register.cgi'
     user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
-    values = {'name' : 'Michael Foord',
-              'location' : 'Northampton',
-              'language' : 'Python' }
-    headers = { 'User-Agent' : user_agent }
+    values = {'name': 'Michael Foord',
+              'location': 'Northampton',
+              'language': 'Python' }
+    headers = {'User-Agent': user_agent}
 
     data = urllib.urlencode(values)
     req = urllib2.Request(url, data, headers)
@@ -201,7 +203,7 @@ e.g. ::
 
     >>> req = urllib2.Request('http://www.pretend_server.org')
     >>> try: urllib2.urlopen(req)
-    ... except URLError as e:
+    ... except urllib2.URLError as e:
     ...    print e.reason   #doctest: +SKIP
     ...
     (4, 'getaddrinfo failed')
@@ -227,8 +229,8 @@ Error Codes
 ~~~~~~~~~~~
 
 Because the default handlers handle redirects (codes in the 300 range), and
-codes in the 100-299 range indicate success, you will usually only see error
-codes in the 400-599 range.
+codes in the 100--299 range indicate success, you will usually only see error
+codes in the 400--599 range.
 
 ``BaseHTTPServer.BaseHTTPRequestHandler.responses`` is a useful dictionary of
 response codes in that shows all the response codes used by RFC 2616. The
@@ -388,7 +390,7 @@ fetched, particularly the headers sent by the server. It is currently an
 ``httplib.HTTPMessage`` instance.
 
 Typical headers include 'Content-length', 'Content-type', and so on. See the
-`Quick Reference to HTTP Headers <http://www.cs.tut.fi/~jkorpela/http.html>`_
+`Quick Reference to HTTP Headers <https://www.cs.tut.fi/~jkorpela/http.html>`_
 for a useful listing of HTTP headers with brief explanations of their meaning
 and use.
 
@@ -496,10 +498,10 @@ than the URL you pass to .add_password() will also match. ::
 
 ``top_level_url`` is in fact *either* a full URL (including the 'http:' scheme
 component and the hostname and optionally the port number)
-e.g. "http://example.com/" *or* an "authority" (i.e. the hostname,
-optionally including the port number) e.g. "example.com" or "example.com:8080"
+e.g. ``"http://example.com/"`` *or* an "authority" (i.e. the hostname,
+optionally including the port number) e.g. ``"example.com"`` or ``"example.com:8080"``
 (the latter example includes a port number).  The authority, if present, must
-NOT contain the "userinfo" component - for example "joe@password:example.com" is
+NOT contain the "userinfo" component - for example ``"joe:password@example.com"`` is
 not correct.
 
 
@@ -522,6 +524,11 @@ setting up a `Basic Authentication`_ handler: ::
     Currently ``urllib2`` *does not* support fetching of ``https`` locations
     through a proxy.  However, this can be enabled by extending urllib2 as
     shown in the recipe [#]_.
+
+.. note::
+
+    ``HTTP_PROXY`` will be ignored if a variable ``REQUEST_METHOD`` is set; see
+    the documentation on :func:`~urllib.getproxies`.
 
 
 Sockets and Layers
@@ -560,7 +567,7 @@ This document was reviewed and revised by John Lee.
 .. [#] For an introduction to the CGI protocol see
        `Writing Web Applications in Python <http://www.pyzine.com/Issue008/Section_Articles/article_CGIOne.html>`_.
 .. [#] Google for example.
-.. [#] Browser sniffing is a very bad practise for website design - building
+.. [#] Browser sniffing is a very bad practice for website design - building
        sites using web standards is much more sensible. Unfortunately a lot of
        sites still send different versions to different browsers.
 .. [#] The user agent for MSIE 6 is
@@ -573,5 +580,5 @@ This document was reviewed and revised by John Lee.
        scripts with a localhost server, I have to prevent urllib2 from using
        the proxy.
 .. [#] urllib2 opener for SSL proxy (CONNECT method): `ASPN Cookbook Recipe
-       <http://code.activestate.com/recipes/456195/>`_.
+       <https://code.activestate.com/recipes/456195/>`_.
 

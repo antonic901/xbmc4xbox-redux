@@ -15,7 +15,7 @@ Building the docs
 
 You need to have Sphinx <http://sphinx-doc.org/> installed; it is the toolset
 used to build the docs.  It is not included in this tree, but maintained
-separately and available from PyPI <https://pypi.python.org/pypi/Sphinx>.
+separately and available from PyPI <https://pypi.org/project/Sphinx>.
 
 
 Using make
@@ -104,6 +104,13 @@ Then, from the ``Doc`` directory, run ::
 where ``<builder>`` is one of html, text, latex, or htmlhelp (for explanations
 see the make targets above).
 
+Deprecation header
+==================
+
+Following the sunsetting of Python 2.7, a red banner displays at the
+top of each page redirecting to the corresponding page on
+``https://docs.python.org/3/``.
+
 
 Contributing
 ============
@@ -119,27 +126,3 @@ and we will process your request as soon as possible.
 
 If you want to help the Documentation Team, you are always welcome.  Just send
 a mail to docs@python.org.
-
-
-Copyright notice
-================
-
-The Python source is copyrighted, but you can freely use and copy it
-as long as you don't change or remove the copyright notice:
-
-----------------------------------------------------------------------
-Copyright (c) 2000-2014 Python Software Foundation.
-All rights reserved.
-
-Copyright (c) 2000 BeOpen.com.
-All rights reserved.
-
-Copyright (c) 1995-2000 Corporation for National Research Initiatives.
-All rights reserved.
-
-Copyright (c) 1991-1995 Stichting Mathematisch Centrum.
-All rights reserved.
-
-See the file "license.rst" for information on usage and redistribution
-of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-----------------------------------------------------------------------

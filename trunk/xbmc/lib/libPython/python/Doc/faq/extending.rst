@@ -45,7 +45,7 @@ very little effort, as long as you're running on a machine with an
 x86-compatible processor.
 
 `Cython <http://cython.org>`_ and its relative `Pyrex
-<http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/>`_ are compilers
+<https://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/>`_ are compilers
 that accept a slightly modified form of Python and generate the corresponding
 C code.  Pyrex makes it possible to write an extension without having to learn
 Python's C API.
@@ -53,10 +53,10 @@ Python's C API.
 If you need to interface to some C or C++ library for which no Python extension
 currently exists, you can try wrapping the library's data types and functions
 with a tool such as `SWIG <http://www.swig.org>`_.  `SIP
-<http://www.riverbankcomputing.co.uk/software/sip/intro>`__, `CXX
+<https://riverbankcomputing.com/software/sip/intro>`__, `CXX
 <http://cxx.sourceforge.net/>`_ `Boost
 <http://www.boost.org/libs/python/doc/index.html>`_, or `Weave
-<http://docs.scipy.org/doc/scipy-dev/reference/tutorial/weave.html>`_ are also
+<https://github.com/scipy/weave>`_ are also
 alternatives for wrapping C++ libraries.
 
 
@@ -156,6 +156,8 @@ The easiest way to do this is to use the StringIO class in the standard library.
 
 Sample code and use for catching stdout:
 
+.. code-block:: pycon
+
    >>> class StdoutCatcher:
    ...     def __init__(self):
    ...         self.data = ''
@@ -219,11 +221,15 @@ How do I debug an extension?
 When using GDB with dynamically loaded extensions, you can't set a breakpoint in
 your extension until your extension is loaded.
 
-In your ``.gdbinit`` file (or interactively), add the command::
+In your ``.gdbinit`` file (or interactively), add the command:
+
+.. code-block:: none
 
    br _PyImport_LoadDynamicModule
 
-Then, when you run GDB::
+Then, when you run GDB:
+
+.. code-block:: shell-session
 
    $ gdb /local/bin/python
    gdb) run myscript.py
@@ -280,7 +286,7 @@ However sometimes you have to run the embedded Python interpreter in the same
 thread as your rest application and you can't allow the
 :c:func:`PyRun_InteractiveLoop` to stop while waiting for user input.  The one
 solution then is to call :c:func:`PyParser_ParseString` and test for ``e.error``
-equal to ``E_EOF``, which means the input is incomplete).  Here's a sample code
+equal to ``E_EOF``, which means the input is incomplete.  Here's a sample code
 fragment, untested, inspired by code from Alex Farber::
 
    #include <Python.h>
@@ -468,6 +474,8 @@ parameter specifications for :c:func:`PyArg_ParseTuple`.
 
 You can check the size of the Unicode character a Python interpreter is using by
 checking the value of sys.maxunicode:
+
+.. code-block:: pycon
 
    >>> import sys
    >>> if sys.maxunicode > 65535:

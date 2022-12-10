@@ -87,7 +87,9 @@ The :mod:`xml.parsers.expat` module contains two functions:
    separator.
 
    For example, if *namespace_separator* is set to a space character (``' '``) and
-   the following document is parsed::
+   the following document is parsed:
+
+   .. code-block:: xml
 
       <?xml version="1.0"?>
       <root xmlns    = "http://default-namespace.org/"
@@ -270,7 +272,7 @@ XMLParser Objects
 
 The following attributes contain values relating to the most recent error
 encountered by an :class:`xmlparser` object, and will only have correct values
-once a call to :meth:`Parse` or :meth:`ParseFile` has raised a
+once a call to :meth:`Parse` or :meth:`ParseFile` has raised an
 :exc:`xml.parsers.expat.ExpatError` exception.
 
 
@@ -595,9 +597,9 @@ Content Model Descriptions
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-Content modules are described using nested tuples.  Each tuple contains four
+Content models are described using nested tuples.  Each tuple contains four
 values: the type, the quantifier, the name, and a tuple of children.  Children
-are simply additional content module descriptions.
+are simply additional content model descriptions.
 
 The values of the first two fields are constants defined in the ``model`` object
 of the :mod:`xml.parsers.expat` module.  These constants can be collected in two
@@ -788,7 +790,7 @@ The ``errors`` object has the following attributes:
 .. data:: XML_ERROR_UNDEFINED_ENTITY
    :noindex:
 
-   A reference was made to a entity which was not defined.
+   A reference was made to an entity which was not defined.
 
 
 .. data:: XML_ERROR_UNKNOWN_ENCODING
@@ -909,8 +911,8 @@ The ``errors`` object has the following attributes:
 
 .. rubric:: Footnotes
 
-.. [#] The encoding string included in XML output should conform to the
+.. [1] The encoding string included in XML output should conform to the
    appropriate standards. For example, "UTF-8" is valid, but "UTF8" is
-   not. See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
-   and http://www.iana.org/assignments/character-sets/character-sets.xhtml.
+   not. See https://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
+   and https://www.iana.org/assignments/character-sets/character-sets.xhtml.
 

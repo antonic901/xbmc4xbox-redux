@@ -27,7 +27,7 @@ uses it to handle URLs that use HTTP and HTTPS.
 .. seealso::
 
     The `Requests package <http://requests.readthedocs.org/>`_
-    is recommended for a higher-level http client interface.
+    is recommended for a higher-level HTTP client interface.
 
 .. note::
 
@@ -49,7 +49,7 @@ The module provides the following classes:
    server.  It should be instantiated passing it a host and optional port
    number.  If no port number is passed, the port is extracted from the host
    string if it has the form ``host:port``, else the default HTTP port (80) is
-   used.  When True, the optional parameter *strict* (which defaults to a false
+   used.  When true, the optional parameter *strict* (which defaults to a false
    value) causes ``BadStatusLine`` to
    be raised if the status line can't be parsed as a valid HTTP/1.0 or 1.1
    status line.  If the optional *timeout* parameter is given, blocking
@@ -473,7 +473,7 @@ HTTPConnection Objects
 .. method:: HTTPConnection.set_tunnel(host,port=None, headers=None)
 
    Set the host and the port for HTTP Connect Tunnelling. Normally used when
-   it is required to do HTTPS Conection through a proxy server.
+   it is required to do HTTPS Connection through a proxy server.
 
    The headers argument should be a mapping of extra HTTP headers to send
    with the CONNECT request.

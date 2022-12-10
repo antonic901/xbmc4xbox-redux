@@ -15,8 +15,8 @@
 
 
 The :mod:`test` package contains all regression tests for Python as well as the
-modules :mod:`test.test_support` and :mod:`test.regrtest`.
-:mod:`test.test_support` is used to enhance your tests while
+modules :mod:`test.support` and :mod:`test.regrtest`.
+:mod:`test.support` is used to enhance your tests while
 :mod:`test.regrtest` drives the testing suite.
 
 Each module in the :mod:`test` package whose name starts with ``test_`` is a
@@ -54,7 +54,7 @@ stated.
 A basic boilerplate is often used::
 
    import unittest
-   from test import test_support
+   from test import support
 
    class MyTestCase1(unittest.TestCase):
 
@@ -82,10 +82,10 @@ A basic boilerplate is often used::
    ... more test classes ...
 
    def test_main():
-       test_support.run_unittest(MyTestCase1,
-                                 MyTestCase2,
-                                 ... list other tests ...
-                                )
+       support.run_unittest(MyTestCase1,
+                            MyTestCase2,
+                            ... list other tests ...
+                            )
 
    if __name__ == '__main__':
        test_main()
@@ -171,7 +171,7 @@ the test passed or failed and thus minimize output.
 Running :mod:`test.regrtest` directly allows what resources are available for
 tests to use to be set. You do this by using the ``-u`` command-line
 option. Specifying ``all`` as the value for the ``-u`` option enables all
-possible resources: :program:`python -m test -uall`.
+possible resources: :program:`python -m test.regrtest -uall`.
 If all but one resource is desired (a more common case), a
 comma-separated list of resources that are not desired may be listed after
 ``all``. The command :program:`python -m test.regrtest -uall,-audio,-largefile`
@@ -185,19 +185,24 @@ top-level directory where Python was built. On Windows, executing
 :program:`rt.bat` from your :file:`PCBuild` directory will run all regression
 tests.
 
+.. versionchanged:: 2.7.14
+   The :mod:`test` package can be run as a script: :program:`python -m test`.
+   This works the same as running the :mod:`test.regrtest` module.
 
-:mod:`test.test_support` --- Utility functions for tests
-========================================================
 
-.. module:: test.test_support
+:mod:`test.support` --- Utility functions for tests
+===================================================
+
+.. module:: test.support
    :synopsis: Support for Python regression tests.
 
 .. note::
 
    The :mod:`test.test_support` module has been renamed to :mod:`test.support`
-   in Python 3.x.
+   in Python 3.x and 2.7.14.  The name ``test.test_support`` has been retained
+   as an alias in 2.7.
 
-The :mod:`test.test_support` module provides support for Python's regression
+The :mod:`test.support` module provides support for Python's regression
 tests.
 
 This module defines the following exceptions:
@@ -216,7 +221,7 @@ This module defines the following exceptions:
    network connection) is not available. Raised by the :func:`requires`
    function.
 
-The :mod:`test.test_support` module defines the following constants:
+The :mod:`test.support` module defines the following constants:
 
 
 .. data:: verbose
@@ -241,7 +246,12 @@ The :mod:`test.test_support` module defines the following constants:
    Set to a name that is safe to use as the name of a temporary file.  Any
    temporary file that is created should be closed and unlinked (removed).
 
-The :mod:`test.test_support` module defines the following functions:
+
+.. data:: TEST_HTTP_URL
+
+    Define the URL of a dedicated HTTP server for the network tests.
+
+The :mod:`test.support` module defines the following functions:
 
 
 .. function:: forget(module_name)
@@ -284,7 +294,7 @@ The :mod:`test.test_support` module defines the following functions:
    following :func:`test_main` function::
 
       def test_main():
-          test_support.run_unittest(__name__)
+          support.run_unittest(__name__)
 
    This will run all tests defined in the named module.
 
@@ -418,7 +428,7 @@ The :mod:`test.test_support` module defines the following functions:
    Module and package deprecation messages are suppressed during this import
    if *deprecated* is :const:`True`.
 
-   This function will raise :exc:`unittest.SkipTest` is the named module
+   This function will raise :exc:`unittest.SkipTest` if the named module
    cannot be imported.
 
    Example use::
@@ -433,7 +443,7 @@ The :mod:`test.test_support` module defines the following functions:
    .. versionadded:: 2.7
 
 
-The :mod:`test.test_support` module defines the following classes:
+The :mod:`test.support` module defines the following classes:
 
 .. class:: TransientResource(exc[, **kwargs])
 

@@ -56,7 +56,7 @@ Constructors for container types must conform to two rules:
 .. c:function:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
    Resize an object allocated by :c:func:`PyObject_NewVar`.  Returns the
-   resized object or *NULL* on failure.
+   resized object or *NULL* on failure.  *op* must not be tracked by the collector yet.
 
    .. versionchanged:: 2.5
       This function used an :c:type:`int` type for *newsize*. This might
@@ -137,9 +137,10 @@ must name its arguments exactly *visit* and *arg*:
 
 .. c:function:: void Py_VISIT(PyObject *o)
 
-   Call the *visit* callback, with arguments *o* and *arg*. If *visit* returns
-   a non-zero value, then return it.  Using this macro, :c:member:`~PyTypeObject.tp_traverse`
-   handlers look like::
+   If *o* is not *NULL*, call the *visit* callback, with arguments *o*
+   and *arg*.  If *visit* returns a non-zero value, then return it.
+   Using this macro, :c:member:`~PyTypeObject.tp_traverse` handlers
+   look like::
 
       static int
       my_traverse(Noddy *self, visitproc visit, void *arg)

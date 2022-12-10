@@ -239,11 +239,6 @@ typedef int pid_t;
 #define copysign _copysign
 #endif
 
-/* VS 2010 and above already defines hypot as _hypot */
-#if _MSC_VER < 1600
-#define hypot _hypot
-#endif
-
 #endif /* _MSC_VER */
 
 /* define some ANSI types that are not defined in earlier Win headers */
@@ -295,7 +290,6 @@ typedef int pid_t;
 #endif
 
 #define COMPILER "[gcc]"
-#define hypot _hypot
 #define PY_LONG_LONG long long
 #define PY_LLONG_MIN LLONG_MIN
 #define PY_LLONG_MAX LLONG_MAX
@@ -382,7 +376,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #	define SIZEOF_FPOS_T 8
 #	define SIZEOF_HKEY 4
 #	define SIZEOF_SIZE_T 4
-	/* MS VS2005 changes time_t to an 64-bit type on all platforms */
+	/* MS VS2005 changes time_t to a 64-bit type on all platforms */
 #	if defined(_MSC_VER) && _MSC_VER >= 1400
 #	define SIZEOF_TIME_T 8
 #	else

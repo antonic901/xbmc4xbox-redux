@@ -36,7 +36,7 @@ For example, ``'[?]'`` matches the character ``'?'``.
 
 Note that the filename separator (``'/'`` on Unix) is *not* special to this
 module.  See module :mod:`glob` for pathname expansion (:mod:`glob` uses
-:func:`fnmatch` to match pathname segments).  Similarly, filenames starting with
+:func:`.filter` to match pathname segments).  Similarly, filenames starting with
 a period are not special for this module, and are matched by the ``*`` and ``?``
 patterns.
 
@@ -44,9 +44,8 @@ patterns.
 .. function:: fnmatch(filename, pattern)
 
    Test whether the *filename* string matches the *pattern* string, returning
-   :const:`True` or :const:`False`.  If the operating system is case-insensitive,
-   then both parameters will be normalized to all lower- or upper-case before
-   the comparison is performed.  :func:`fnmatchcase` can be used to perform a
+   :const:`True` or :const:`False`.  Both parameters are case-normalized
+   using :func:`os.path.normcase`. :func:`fnmatchcase` can be used to perform a
    case-sensitive comparison, regardless of whether that's standard for the
    operating system.
 
@@ -64,7 +63,8 @@ patterns.
 .. function:: fnmatchcase(filename, pattern)
 
    Test whether *filename* matches *pattern*, returning :const:`True` or
-   :const:`False`; the comparison is case-sensitive.
+   :const:`False`; the comparison is case-sensitive and does not apply
+   :func:`os.path.normcase`.
 
 
 .. function:: filter(names, pattern)
@@ -77,7 +77,8 @@ patterns.
 
 .. function:: translate(pattern)
 
-   Return the shell-style *pattern* converted to a regular expression.
+   Return the shell-style *pattern* converted to a regular expression for
+   using with :func:`re.match`.
 
    Example:
 

@@ -852,8 +852,9 @@ ast_for_decorator(struct compiling *c, const node *n)
         name_expr = NULL;
     }
     else if (NCH(n) == 5) { /* Call with no arguments */
-        d = Call(name_expr, NULL, NULL, NULL, NULL, LINENO(n),
-                 n->n_col_offset, c->c_arena);
+        d = Call(name_expr, NULL, NULL, NULL, NULL,
+                 name_expr->lineno, name_expr->col_offset,
+                 c->c_arena);
         if (!d)
             return NULL;
         name_expr = NULL;
@@ -2179,7 +2180,7 @@ ast_for_expr_stmt(struct compiling *c, const node *n)
        testlist: test (',' test)* [',']
        augassign: '+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^='
                 | '<<=' | '>>=' | '**=' | '//='
-       test: ... here starts the operator precendence dance
+       test: ... here starts the operator precedence dance
      */
 
     if (NCH(n) == 1) {
@@ -2284,7 +2285,7 @@ ast_for_print_stmt(struct compiling *c, const node *n)
         dest = ast_for_expr(c, CHILD(n, 2));
         if (!dest)
             return NULL;
-            start = 4;
+        start = 4;
     }
     values_count = (NCH(n) + 1 - start) / 2;
     if (values_count) {
@@ -2520,6 +2521,8 @@ alias_for_import_name(struct compiling *c, const node *n, int store)
             break;
         case STAR:
             str = PyString_InternFromString("*");
+            if (!str)
+                return NULL;
             PyArena_AddPyObject(c->c_arena, str);
             return alias(str, NULL, c->c_arena);
         default:

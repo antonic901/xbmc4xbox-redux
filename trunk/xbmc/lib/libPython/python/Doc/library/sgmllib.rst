@@ -143,7 +143,7 @@ A single exception is defined as well:
 
    Convert a character reference to a string, or ``None``.  *ref* is the reference
    passed in as a string.  In the base implementation, *ref* must be a decimal
-   number in the range 0-255.  It converts the code point found using the
+   number in the range 0--255.  It converts the code point found using the
    :meth:`convert_codepoint` method. If *ref* is invalid or out of range, this
    method returns ``None``.  This method is called by the default
    :meth:`handle_charref` implementation and by the attribute value parser.
@@ -162,11 +162,11 @@ A single exception is defined as well:
 .. method:: SGMLParser.handle_entityref(ref)
 
    This method is called to process a general entity reference of the form
-   ``&ref;`` where *ref* is an general entity reference.  It converts *ref* by
+   ``&ref;`` where *ref* is a general entity reference.  It converts *ref* by
    passing it to :meth:`convert_entityref`.  If a translation is returned, it calls
    the method :meth:`handle_data` with the translation; otherwise, it calls the
    method ``unknown_entityref(ref)``. The default :attr:`entitydefs` defines
-   translations for ``&amp;``, ``&apos``, ``&gt;``, ``&lt;``, and ``&quot;``.
+   translations for ``&amp;``, ``&apos;``, ``&gt;``, ``&lt;``, and ``&quot;``.
 
    .. versionchanged:: 2.5
       Use :meth:`convert_entityref` instead of hard-coding the conversion.

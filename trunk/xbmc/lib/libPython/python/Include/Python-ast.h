@@ -2,6 +2,10 @@
 
 #include "asdl.h"
 
+#ifdef _XBOX
+#undef Yield
+#endif
+
 typedef struct _mod *mod_ty;
 
 typedef struct _stmt *stmt_ty;

@@ -19,7 +19,7 @@ On the real line, there are functions to compute uniform, normal (Gaussian),
 lognormal, negative exponential, gamma, and beta distributions. For generating
 distributions of angles, the von Mises distribution is available.
 
-Almost all module functions depend on the basic function :func:`random`, which
+Almost all module functions depend on the basic function :func:`.random`, which
 generates a random float uniformly in the semi-open range [0.0, 1.0).  Python
 uses the Mersenne Twister as the core generator.  It produces 53-bit precision
 floats and has a period of 2\*\*19937-1.  The underlying implementation in C is
@@ -36,9 +36,10 @@ especially useful for multi-threaded programs, creating a different instance of
 it likely that the generated sequences seen by each thread don't overlap.
 
 Class :class:`Random` can also be subclassed if you want to use a different
-basic generator of your own devising: in that case, override the :meth:`random`,
-:meth:`seed`, :meth:`getstate`, :meth:`setstate` and :meth:`jumpahead` methods.
-Optionally, a new generator can supply a :meth:`getrandbits` method --- this
+basic generator of your own devising: in that case, override the :meth:`~Random.random`,
+:meth:`~Random.seed`, :meth:`~Random.getstate`, :meth:`~Random.setstate` and
+:meth:`~Random.jumpahead` methods.  Optionally, a new generator can supply a
+:meth:`~Random.getrandbits` method --- this
 allows :meth:`randrange` to produce selections over an arbitrarily large range.
 
 .. versionadded:: 2.4
@@ -70,14 +71,17 @@ from sources provided by the operating system.
 Bookkeeping functions:
 
 
-.. function:: seed([x])
+.. function:: seed(a=None)
 
-   Initialize the basic random number generator. Optional argument *x* can be any
-   :term:`hashable` object. If *x* is omitted or ``None``, current system time is used;
-   current system time is also used to initialize the generator when the module is
-   first imported.  If randomness sources are provided by the operating system,
-   they are used instead of the system time (see the :func:`os.urandom` function
-   for details on availability).
+   Initialize internal state of the random number generator.
+
+   ``None`` or no argument seeds from current time or from an operating
+   system specific randomness source if available (see the :func:`os.urandom`
+   function for details on availability).
+
+   If *a* is not ``None`` or an :class:`int` or a :class:`long`, then
+   ``hash(a)`` is used instead.  Note that the hash values for some types
+   are nondeterministic when :envvar:`PYTHONHASHSEED` is enabled.
 
    .. versionchanged:: 2.4
       formerly, operating system resources were not used.
@@ -158,7 +162,7 @@ Functions for sequences:
 
    Shuffle the sequence *x* in place. The optional argument *random* is a
    0-argument function returning a random float in [0.0, 1.0); by default, this is
-   the function :func:`random`.
+   the function :func:`.random`.
 
    Note that for even rather small ``len(x)``, the total number of permutations of
    *x* is larger than the period of most random number generators; this implies
@@ -339,7 +343,7 @@ Examples of basic usage::
 
    M. Matsumoto and T. Nishimura, "Mersenne Twister: A 623-dimensionally
    equidistributed uniform pseudorandom number generator", ACM Transactions on
-   Modeling and Computer Simulation Vol. 8, No. 1, January pp.3-30 1998.
+   Modeling and Computer Simulation Vol. 8, No. 1, January pp.3--30 1998.
 
    Wichmann, B. A. & Hill, I. D., "Algorithm AS 183: An efficient and portable
    pseudo-random number generator", Applied Statistics 31 (1982) 188-190.

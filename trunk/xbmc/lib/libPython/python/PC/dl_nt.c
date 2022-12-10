@@ -33,8 +33,8 @@ const char *PyWin_DLLVersionString = dllVersionBuffer;
 typedef BOOL (WINAPI * PFN_GETCURRENTACTCTX)(HANDLE *);
 typedef BOOL (WINAPI * PFN_ACTIVATEACTCTX)(HANDLE, ULONG_PTR *);
 typedef BOOL (WINAPI * PFN_DEACTIVATEACTCTX)(DWORD, ULONG_PTR);
-typedef BOOL (WINAPI * PFN_ADDREFACTCTX)(HANDLE);
-typedef BOOL (WINAPI * PFN_RELEASEACTCTX)(HANDLE);
+typedef void (WINAPI * PFN_ADDREFACTCTX)(HANDLE);
+typedef void (WINAPI * PFN_RELEASEACTCTX)(HANDLE);
 
 // locals and function pointers for this activation context magic.
 static HANDLE PyWin_DLLhActivationContext = NULL; // one day it might be public
@@ -92,9 +92,14 @@ BOOL    WINAPI  DllMain (HANDLE hInst,
             /*
             _LoadActCtxPointers();
             if (pfnGetCurrentActCtx && pfnAddRefActCtx)
-                if ((*pfnGetCurrentActCtx)(&PyWin_DLLhActivationContext))
-                    if (!(*pfnAddRefActCtx)(PyWin_DLLhActivationContext))
-                        OutputDebugString("Python failed to load the default activation context\n");
+                if ((*pfnGetCurrentActCtx)(&PyWin_DLLhActivationContext)) {
+                    (*pfnAddRefActCtx)(PyWin_DLLhActivationContext);
+                }
+                else {
+                    OutputDebugString("Python failed to load the default "
+                                      "activation context\n");
+                    return FALSE;
+                }
             */
             break;
 

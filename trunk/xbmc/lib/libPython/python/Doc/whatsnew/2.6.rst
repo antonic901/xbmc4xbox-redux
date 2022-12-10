@@ -151,10 +151,10 @@ The infrastructure committee of the Python Software Foundation
 therefore posted a call for issue trackers, asking volunteers to set
 up different products and import some of the bugs and patches from
 SourceForge.  Four different trackers were examined: `Jira
-<http://www.atlassian.com/software/jira/>`__,
-`Launchpad <http://www.launchpad.net>`__,
+<https://www.atlassian.com/software/jira/>`__,
+`Launchpad <https://launchpad.net/>`__,
 `Roundup <http://roundup.sourceforge.net/>`__, and
-`Trac <http://trac.edgewall.org/>`__.
+`Trac <https://trac.edgewall.org/>`__.
 The committee eventually settled on Jira
 and Roundup as the two candidates.  Jira is a commercial product that
 offers no-cost hosted instances to free-software projects; Roundup
@@ -215,7 +215,7 @@ the time required to finish the job.
 During the 2.6 development cycle, Georg Brandl put a lot of effort
 into building a new toolchain for processing the documentation.  The
 resulting package is called Sphinx, and is available from
-http://sphinx.pocoo.org/.
+http://sphinx-doc.org/.
 
 Sphinx concentrates on HTML output, producing attractively styled and
 modern HTML; printed output is still supported through conversion to
@@ -286,8 +286,8 @@ be used with the ':keyword:`with`' statement. File objects are one example::
            ... more processing code ...
 
 After this statement has executed, the file object in *f* will have been
-automatically closed, even if the :keyword:`for` loop raised an exception part-
-way through the block.
+automatically closed, even if the :keyword:`for` loop raised an exception
+part-way through the block.
 
 .. note::
 
@@ -609,10 +609,10 @@ multiple of 4.
         result = queue.get()
         print 'Factorial', N, '=', result
 
-A :class:`Queue` is used to communicate the result of the factorial.
-The :class:`Queue` object is stored in a global variable.
+A :class:`~Queue.Queue` is used to communicate the result of the factorial.
+The :class:`~Queue.Queue` object is stored in a global variable.
 The child process will use the value of the variable when the child
-was created; because it's a :class:`Queue`, parent and child can use
+was created; because it's a :class:`~Queue.Queue`, parent and child can use
 the object to communicate.  (If the parent were to change the value of
 the global variable, the child's value would be unaffected, and vice
 versa.)
@@ -1077,7 +1077,7 @@ the :mod:`io` module:
   There are two concrete implementations.  :class:`TextIOWrapper`
   wraps a buffered I/O object, supporting all of the methods for
   text I/O and adding a :attr:`buffer` attribute for access
-  to the underlying object.  :class:`StringIO` simply buffers
+  to the underlying object.  :class:`~StringIO.StringIO` simply buffers
   everything in memory without ever writing anything to disk.
 
   (In Python 2.6, :class:`io.StringIO` is implemented in
@@ -1427,7 +1427,7 @@ one, :func:`math.trunc`, that's been backported to Python 2.6.
    :pep:`3141` - A Type Hierarchy for Numbers
       PEP written by Jeffrey Yasskin.
 
-   `Scheme's numerical tower <http://www.gnu.org/software/guile/manual/html_node/Numerical-Tower.html#Numerical-Tower>`__, from the Guile manual.
+   `Scheme's numerical tower <https://www.gnu.org/software/guile/manual/html_node/Numerical-Tower.html#Numerical-Tower>`__, from the Guile manual.
 
    `Scheme's number datatypes <http://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.2>`__ from the R5RS Scheme specification.
 
@@ -1792,7 +1792,7 @@ changes, or look through the Subversion logs for all the details.
 * The :mod:`bsddb` module also has a new maintainer, Jesús Cea Avion, and the package
   is now available as a standalone package.  The web page for the package is
   `www.jcea.es/programacion/pybsddb.htm
-  <http://www.jcea.es/programacion/pybsddb.htm>`__.
+  <https://www.jcea.es/programacion/pybsddb.htm>`__.
   The plan is to remove the package from the standard library
   in Python 3.0, because its pace of releases is much more frequent than
   Python's.
@@ -1922,7 +1922,7 @@ changes, or look through the Subversion logs for all the details.
   the left to six places.  (Contributed by Skip Montanaro; :issue:`1158`.)
 
 * The :mod:`decimal` module was updated to version 1.66 of
-  `the General Decimal Specification <http://www2.hursley.ibm.com/decimal/decarith.html>`__.  New features
+  `the General Decimal Specification <http://speleotrove.com/decimal/decarith.html>`__.  New features
   include some methods for some basic mathematical functions such as
   :meth:`exp` and :meth:`log10`::
 
@@ -2127,7 +2127,7 @@ changes, or look through the Subversion logs for all the details.
 
   (Contributed by Christian Heimes and Mark Dickinson.)
 
-* :class:`mmap` objects now have a :meth:`rfind` method that searches for a
+* :class:`~mmap.mmap` objects now have a :meth:`rfind` method that searches for a
   substring beginning at the end of the string and searching
   backwards.  The :meth:`find` method also gained an *end* parameter
   giving an index at which to stop searching.
@@ -2605,16 +2605,16 @@ changes, or look through the Subversion logs for all the details.
   intended for testing purposes that lets you temporarily modify the
   warning filters and then restore their original values (:issue:`3781`).
 
-* The XML-RPC :class:`SimpleXMLRPCServer` and :class:`DocXMLRPCServer`
+* The XML-RPC :class:`~SimpleXMLRPCServer.SimpleXMLRPCServer` and :class:`~DocXMLRPCServer.DocXMLRPCServer`
   classes can now be prevented from immediately opening and binding to
-  their socket by passing True as the ``bind_and_activate``
+  their socket by passing ``False`` as the *bind_and_activate*
   constructor parameter.  This can be used to modify the instance's
   :attr:`allow_reuse_address` attribute before calling the
   :meth:`server_bind` and :meth:`server_activate` methods to
   open the socket and begin listening for connections.
   (Contributed by Peter Parente; :issue:`1599845`.)
 
-  :class:`SimpleXMLRPCServer` also has a :attr:`_send_traceback_header`
+  :class:`~SimpleXMLRPCServer.SimpleXMLRPCServer` also has a :attr:`_send_traceback_header`
   attribute; if true, the exception and formatted traceback are returned
   as HTTP headers "X-Exception" and "X-Traceback".  This feature is
   for debugging purposes only and should not be used on production servers
@@ -2626,7 +2626,7 @@ changes, or look through the Subversion logs for all the details.
   :class:`datetime.date` and :class:`datetime.time` to the
   :class:`xmlrpclib.DateTime` type; the conversion semantics were
   not necessarily correct for all applications.  Code using
-  :mod:`xmlrpclib` should convert :class:`date` and :class:`time`
+  :mod:`xmlrpclib` should convert :class:`date` and :class:`~datetime.time`
   instances. (:issue:`1330538`)  The code can also handle
   dates before 1900 (contributed by Ralf Schmitt; :issue:`2014`)
   and 64-bit integers represented by using ``<i8>`` in XML-RPC responses
@@ -2885,7 +2885,7 @@ Improved SSL Support
 
 Bill Janssen made extensive improvements to Python 2.6's support for
 the Secure Sockets Layer by adding a new module, :mod:`ssl`, that's
-built atop the `OpenSSL <http://www.openssl.org/>`__ library.
+built atop the `OpenSSL <https://www.openssl.org/>`__ library.
 This new module provides more control over the protocol negotiated,
 the X.509 certificates used, and has better support for writing SSL
 servers (as opposed to clients) in Python.  The existing SSL support
@@ -2988,7 +2988,7 @@ Changes to Python's build process and to the C API include:
 
 * On Mac OS X, Python 2.6 can be compiled as a 4-way universal build.
   The :program:`configure` script
-  can take a :option:`--with-universal-archs=[32-bit|64-bit|all]`
+  can take a :option:`!--with-universal-archs=[32-bit|64-bit|all]`
   switch, controlling whether the binaries are built for 32-bit
   architectures (x86, PowerPC), 64-bit (x86-64 and PPC-64), or both.
   (Contributed by Ronald Oussoren.)
@@ -3143,14 +3143,14 @@ Port-Specific Changes: Mac OS X
 
 * When compiling a framework build of Python, you can now specify the
   framework name to be used by providing the
-  :option:`--with-framework-name=` option to the
+  :option:`!--with-framework-name=` option to the
   :program:`configure` script.
 
 * The :mod:`macfs` module has been removed.  This in turn required the
   :func:`macostools.touched` function to be removed because it depended on the
   :mod:`macfs` module.  (:issue:`1490190`)
 
-* Many other Mac OS modules have been deprecated and will removed in
+* Many other Mac OS modules have been deprecated and will be removed in
   Python 3.0:
   :mod:`_builtinSuites`,
   :mod:`aepack`,
@@ -3279,7 +3279,7 @@ that may require changes to your code:
   :class:`datetime.date` and :class:`datetime.time` to the
   :class:`xmlrpclib.DateTime` type; the conversion semantics were
   not necessarily correct for all applications.  Code using
-  :mod:`xmlrpclib` should convert :class:`date` and :class:`time`
+  :mod:`xmlrpclib` should convert :class:`date` and :class:`~datetime.time`
   instances. (:issue:`1330538`)
 
 * (3.0-warning mode) The :class:`Exception` class now warns

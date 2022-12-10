@@ -8,7 +8,7 @@ m4_define(PYTHON_VERSION, 2.7)
 AC_PREREQ(2.65)
 
 AC_REVISION($Revision$)
-AC_INIT(python, PYTHON_VERSION, http://bugs.python.org/)
+AC_INIT(python, PYTHON_VERSION, https://bugs.python.org/)
 AC_CONFIG_SRCDIR([Include/object.h])
 AC_CONFIG_HEADER(pyconfig.h)
 
@@ -18,6 +18,9 @@ AC_SUBST(host)
 
 # pybuilddir.txt will be created by --generate-posix-vars in the Makefile
 rm -f pybuilddir.txt
+
+AC_CHECK_PROGS(PYTHON_FOR_REGEN, python$PACKAGE_VERSION python3 python, python3)
+AC_SUBST(PYTHON_FOR_REGEN)
 
 if test "$cross_compiling" = yes; then
     AC_MSG_CHECKING([for python interpreter for cross build])
@@ -110,14 +113,20 @@ CONFIG_ARGS="$ac_configure_args"
 
 AC_MSG_CHECKING([for --enable-universalsdk])
 AC_ARG_ENABLE(universalsdk,
-	AS_HELP_STRING([--enable-universalsdk@<:@=SDKDIR@:>@], [Build against Mac OS X 10.4u SDK (ppc/i386)]),
+	AS_HELP_STRING([--enable-universalsdk@<:@=SDKDIR@:>@], [Build fat binary against Mac OS X SDK]),
 [
 	case $enableval in
 	yes)
-		enableval=/Developer/SDKs/MacOSX10.4u.sdk
-		if test ! -d "${enableval}"
+		# Locate the best usable SDK, see Mac/README for more
+		# information
+		enableval="`/usr/bin/xcodebuild -version -sdk macosx Path 2>/dev/null`"
+		if ! ( echo $enableval | grep -E '\.sdk' 1>/dev/null )
 		then
-			enableval=/
+			enableval=/Developer/SDKs/MacOSX10.4u.sdk
+			if test ! -d "${enableval}"
+			then
+				enableval=/
+			fi
 		fi
 		;;
 	esac
@@ -134,7 +143,7 @@ AC_ARG_ENABLE(universalsdk,
 		fi
 		;;
 	esac
-	
+
 ],[
    	UNIVERSALSDK=
 	enable_universalsdk=
@@ -150,25 +159,34 @@ AC_SUBST(UNIVERSALSDK)
 AC_SUBST(ARCH_RUN_32BIT)
 ARCH_RUN_32BIT=""
 
+# For backward compatibility reasons we prefer to select '32-bit' if available,
+# otherwise use 'intel'
 UNIVERSAL_ARCHS="32-bit"
+if test "`uname -s`" = "Darwin"
+then
+	if test -n "${UNIVERSALSDK}"
+	then
+		if test -z "`/usr/bin/file -L "${UNIVERSALSDK}/usr/lib/libSystem.dylib" | grep ppc`"
+		then
+			UNIVERSAL_ARCHS="intel"
+		fi
+	fi
+fi
+
 AC_SUBST(LIPO_32BIT_FLAGS)
 AC_MSG_CHECKING(for --with-universal-archs)
 AC_ARG_WITH(universal-archs,
-    AS_HELP_STRING([--with-universal-archs=ARCH], [select architectures for universal build ("32-bit", "64-bit", "3-way", "intel" or "all")]),
+    AS_HELP_STRING([--with-universal-archs=ARCH], [select architectures for universal build ("32-bit", "64-bit", "3-way", "intel", "intel-32", "intel-64", or "all")]),
 [
-	AC_MSG_RESULT($withval)
 	UNIVERSAL_ARCHS="$withval"
-        if test "${enable_universalsdk}" ; then
-		:
-	else
-		AC_MSG_ERROR([--with-universal-archs without --enable-universalsdk. See Mac/README])
-	fi
 ],
-[
- 	AC_MSG_RESULT(32-bit)
-])
-
-
+[])
+if test -n "${UNIVERSALSDK}"
+then
+	AC_MSG_RESULT(${UNIVERSAL_ARCHS})
+else
+	AC_MSG_RESULT(no)
+fi
 
 AC_ARG_WITH(framework-name,
               AS_HELP_STRING([--with-framework-name=FRAMEWORK],
@@ -478,7 +496,7 @@ fi
 #
 # SGI compilers allow the specification of the both the ABI and the
 # ISA on the command line.  Depending on the values of these switches,
-# different and often incompatable code will be generated.
+# different and often incompatible code will be generated.
 #
 # The SGI_ABI variable can be used to modify the CC and LDFLAGS and
 # thus supply support for various ABI/ISA combinations.  The MACHDEP
@@ -572,6 +590,22 @@ AC_ARG_WITH(gcc,
 	*)	without_gcc=no;;
 	esac])
 AC_MSG_RESULT($without_gcc)
+
+AC_MSG_CHECKING(for --with-icc)
+AC_ARG_WITH(icc,
+            AS_HELP_STRING([--with-icc], [build with icc]),
+[
+	case $withval in
+	no)	CC=${CC:-cc}
+		with_icc=no;;
+	yes)	CC=icc
+		CXX=icpc
+		with_icc=yes;;
+	*)	CC=$withval
+		with_icc=$withval;;
+	esac], [
+	with_icc=no])
+AC_MSG_RESULT($with_icc)
 
 # If the user switches compilers, we can't believe the cache
 if test ! -z "$ac_cv_prog_CC" -a ! -z "$CC" -a "$CC" != "$ac_cv_prog_CC"
@@ -959,42 +993,25 @@ then
         ARFLAGS="rc"
 fi
 
-AC_SUBST(SVNVERSION)
-AC_CHECK_PROG(SVNVERSION, svnversion, found, not-found)
-if test $SVNVERSION = found
-then
-	SVNVERSION="svnversion \$(srcdir)"
-else
-	SVNVERSION="echo Unversioned directory"
-fi
+AC_SUBST(GITVERSION)
+AC_SUBST(GITTAG)
+AC_SUBST(GITBRANCH)
 
-AC_SUBST(BASECPPFLAGS)
-if test "$abs_srcdir" != "$abs_builddir"; then
-    # If we're building out-of-tree make sure Include (in the current dir)
-    # gets picked up before its $srcdir counterpart in order for Python-ast.h
-    # and graminit.h to get picked up from the correct directory.
-    # (A side effect of this is that these resources will automatically be
-    #  regenerated when building out-of-tree, regardless of whether or not
-    #  the $srcdir counterpart is up-to-date.  This is an acceptable trade
-    #  off.)
-    BASECPPFLAGS="-IInclude"
-else
-    BASECPPFLAGS=""
-fi
-
-AC_SUBST(HGVERSION)
-AC_SUBST(HGTAG)
-AC_SUBST(HGBRANCH)
-AC_CHECK_PROG(HAS_HG, hg, found, not-found)
-if test $HAS_HG = found
+if test -e $srcdir/.git
 then
-    HGVERSION="hg id -i \$(srcdir)"
-    HGTAG="hg id -t \$(srcdir)"
-    HGBRANCH="hg id -b \$(srcdir)"
+AC_CHECK_PROG(HAS_GIT, git, found, not-found)
 else
-    HGVERSION=""
-    HGTAG=""
-    HGBRANCH=""
+HAS_GIT=no-repository
+fi
+if test $HAS_GIT = found
+then
+    GITVERSION="git --git-dir \$(srcdir)/.git rev-parse --short HEAD"
+    GITTAG="git --git-dir \$(srcdir)/.git describe --all --always --dirty"
+    GITBRANCH="git --git-dir \$(srcdir)/.git name-rev --name-only HEAD"
+else
+    GITVERSION=""
+    GITTAG=""
+    GITBRANCH=""
 fi
 
 case $MACHDEP in
@@ -1134,117 +1151,133 @@ yes)
 	SCO_SV*)
 	    BASECFLAGS="$BASECFLAGS -m486 -DSCO5"
 	    ;;
-	# is there any other compiler on Darwin besides gcc?
-	Darwin*)
-	    # -Wno-long-double, -no-cpp-precomp, and -mno-fused-madd
-	    # used to be here, but non-Apple gcc doesn't accept them.
-	    if test "${CC}" = gcc
-	    then
-		AC_MSG_CHECKING(which compiler should be used)
-		case "${UNIVERSALSDK}" in
-		*/MacOSX10.4u.sdk)
-			# Build using 10.4 SDK, force usage of gcc when the 
-			# compiler is gcc, otherwise the user will get very
-			# confusing error messages when building on OSX 10.6
-			CC=gcc-4.0
-			CPP=cpp-4.0
-			;;
-		esac
-		AC_MSG_RESULT($CC)
-	    fi
+    # is there any other compiler on Darwin besides gcc?
+    Darwin*)
+        # -Wno-long-double, -no-cpp-precomp, and -mno-fused-madd
+        # used to be here, but non-Apple gcc doesn't accept them.
+        if test "${CC}" = gcc
+        then
+            AC_MSG_CHECKING(which compiler should be used)
+            case "${UNIVERSALSDK}" in
+            */MacOSX10.4u.sdk)
+                # Build using 10.4 SDK, force usage of gcc when the
+                # compiler is gcc, otherwise the user will get very
+                # confusing error messages when building on OSX 10.6
+                CC=gcc-4.0
+                CPP=cpp-4.0
+                ;;
+            esac
+            AC_MSG_RESULT($CC)
+        fi
 
-	    # Calculate the right deployment target for this build.
-	    #
-		cur_target_major=`sw_vers -productVersion | \
-				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\1/'`
-		cur_target_minor=`sw_vers -productVersion | \
-				sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\2/'`
-		cur_target="${cur_target_major}.${cur_target_minor}"
-		if test ${cur_target_major} -eq 10 && \
-		   test ${cur_target_minor} -ge 3
-		then
-		    cur_target=10.3
-		    if test ${enable_universalsdk}; then
-			    if test "${UNIVERSAL_ARCHS}" = "all"; then
-				    # Ensure that the default platform for a 
-				    # 4-way universal build is OSX 10.5, 
-				    # that's the first OS release where 
-				    # 4-way builds make sense.
-				    cur_target='10.5'
+        if test "${enable_universalsdk}"
+        then
+            case "$UNIVERSAL_ARCHS" in
+            32-bit)
+               UNIVERSAL_ARCH_FLAGS="-arch ppc -arch i386"
+               LIPO_32BIT_FLAGS=""
+               ARCH_RUN_32BIT=""
+               ;;
+            64-bit)
+               UNIVERSAL_ARCH_FLAGS="-arch ppc64 -arch x86_64"
+               LIPO_32BIT_FLAGS=""
+               ARCH_RUN_32BIT=""
+               ;;
+            all)
+               UNIVERSAL_ARCH_FLAGS="-arch i386 -arch ppc -arch ppc64 -arch x86_64"
+               LIPO_32BIT_FLAGS="-extract ppc7400 -extract i386"
+               ARCH_RUN_32BIT="/usr/bin/arch -i386 -ppc"
+               ;;
+            intel)
+               UNIVERSAL_ARCH_FLAGS="-arch i386 -arch x86_64"
+               LIPO_32BIT_FLAGS="-extract i386"
+               ARCH_RUN_32BIT="/usr/bin/arch -i386"
+               ;;
+            intel-32)
+               UNIVERSAL_ARCH_FLAGS="-arch i386"
+               LIPO_32BIT_FLAGS=""
+               ARCH_RUN_32BIT=""
+               ;;
+            intel-64)
+               UNIVERSAL_ARCH_FLAGS="-arch x86_64"
+               LIPO_32BIT_FLAGS=""
+               ARCH_RUN_32BIT=""
+               ;;
+            3-way)
+               UNIVERSAL_ARCH_FLAGS="-arch i386 -arch ppc -arch x86_64"
+               LIPO_32BIT_FLAGS="-extract ppc7400 -extract i386"
+               ARCH_RUN_32BIT="/usr/bin/arch -i386 -ppc"
+               ;;
+            *)
+               AC_MSG_ERROR([proper usage is --with-universal-arch=32-bit|64-bit|all|intel|3-way])
+               ;;
+            esac
 
-			    elif test "${UNIVERSAL_ARCHS}" = "3-way"; then
-				    cur_target='10.5'
+            if test "${UNIVERSALSDK}" != "/"
+            then
+                CFLAGS="${UNIVERSAL_ARCH_FLAGS} -isysroot ${UNIVERSALSDK} ${CFLAGS}"
+                LDFLAGS="${UNIVERSAL_ARCH_FLAGS} -isysroot ${UNIVERSALSDK} ${LDFLAGS}"
+                CPPFLAGS="-isysroot ${UNIVERSALSDK} ${CPPFLAGS}"
+            else
+                CFLAGS="${UNIVERSAL_ARCH_FLAGS} ${CFLAGS}"
+                LDFLAGS="${UNIVERSAL_ARCH_FLAGS} ${LDFLAGS}"
+            fi
+        fi
 
-			    elif test "${UNIVERSAL_ARCHS}" = "intel"; then
-				    cur_target='10.5'
+        # Calculate an appropriate deployment target for this build:
+        # The deployment target value is used explicitly to enable certain
+        # features are enabled (such as builtin libedit support for readline)
+        # through the use of Apple's Availability Macros and is used as a
+        # component of the string returned by distutils.get_platform().
+        #
+        # Use the value from:
+        # 1. the MACOSX_DEPLOYMENT_TARGET environment variable if specified
+        # 2. the operating system version of the build machine if >= 10.6
+        # 3. If running on OS X 10.3 through 10.5, use the legacy tests
+        #       below to pick either 10.3, 10.4, or 10.5 as the target.
+        # 4. If we are running on OS X 10.2 or earlier, good luck!
 
-			    elif test "${UNIVERSAL_ARCHS}" = "64-bit"; then
-				    cur_target='10.5'
-			    fi
-		    else
-			    if test `/usr/bin/arch` = "i386"; then
-				    # On Intel macs default to a deployment
-				    # target of 10.4, that's the first OSX
-				    # release with Intel support.
-				    cur_target="10.4"
-			    fi
-		    fi
-	    fi
-	    CONFIGURE_MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET-${cur_target}}
-	    
-	    # Make sure that MACOSX_DEPLOYMENT_TARGET is set in the 
-	    # environment with a value that is the same as what we'll use
-	    # in the Makefile to ensure that we'll get the same compiler
-	    # environment during configure and build time.
-	    MACOSX_DEPLOYMENT_TARGET="$CONFIGURE_MACOSX_DEPLOYMENT_TARGET"
-	    export MACOSX_DEPLOYMENT_TARGET
-	    EXPORT_MACOSX_DEPLOYMENT_TARGET=''
+        AC_MSG_CHECKING(which MACOSX_DEPLOYMENT_TARGET to use)
+        cur_target_major=`sw_vers -productVersion | \
+                sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\1/'`
+        cur_target_minor=`sw_vers -productVersion | \
+                sed 's/\([[0-9]]*\)\.\([[0-9]]*\).*/\2/'`
+        cur_target="${cur_target_major}.${cur_target_minor}"
+        if test ${cur_target_major} -eq 10 && \
+           test ${cur_target_minor} -ge 3 && \
+           test ${cur_target_minor} -le 5
+        then
+            # OS X 10.3 through 10.5
+            cur_target=10.3
+            if test ${enable_universalsdk}
+            then
+                case "$UNIVERSAL_ARCHS" in
+                all|3-way|intel|64-bit)
+                    # These configurations were first supported in 10.5
+                    cur_target='10.5'
+                    ;;
+                esac
+            else
+                if test `/usr/bin/arch` = "i386"
+                then
+                    # 10.4 was the first release to support Intel archs
+                    cur_target="10.4"
+                fi
+            fi
+        fi
+        CONFIGURE_MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET-${cur_target}}
 
-	    if test "${enable_universalsdk}"; then
-		UNIVERSAL_ARCH_FLAGS=""
-	        if test "$UNIVERSAL_ARCHS" = "32-bit" ; then
-		   UNIVERSAL_ARCH_FLAGS="-arch ppc -arch i386"
-		   ARCH_RUN_32BIT=""
-		   LIPO_32BIT_FLAGS=""
+        # Make sure that MACOSX_DEPLOYMENT_TARGET is set in the
+        # environment with a value that is the same as what we'll use
+        # in the Makefile to ensure that we'll get the same compiler
+        # environment during configure and build time.
+        MACOSX_DEPLOYMENT_TARGET="$CONFIGURE_MACOSX_DEPLOYMENT_TARGET"
+        export MACOSX_DEPLOYMENT_TARGET
+        EXPORT_MACOSX_DEPLOYMENT_TARGET=''
+        AC_MSG_RESULT($MACOSX_DEPLOYMENT_TARGET)
 
-	         elif test "$UNIVERSAL_ARCHS" = "64-bit" ; then
-		   UNIVERSAL_ARCH_FLAGS="-arch ppc64 -arch x86_64"
-		   LIPO_32BIT_FLAGS=""
-		   ARCH_RUN_32BIT="true"
-
-	         elif test "$UNIVERSAL_ARCHS" = "all" ; then
-		   UNIVERSAL_ARCH_FLAGS="-arch i386 -arch ppc -arch ppc64 -arch x86_64"
-		   LIPO_32BIT_FLAGS="-extract ppc7400 -extract i386"
-		   ARCH_RUN_32BIT="/usr/bin/arch -i386 -ppc"
-
-	         elif test "$UNIVERSAL_ARCHS" = "intel" ; then
-		   UNIVERSAL_ARCH_FLAGS="-arch i386 -arch x86_64"
-		   LIPO_32BIT_FLAGS="-extract i386"
-		   ARCH_RUN_32BIT="/usr/bin/arch -i386"
-
-	         elif test "$UNIVERSAL_ARCHS" = "3-way" ; then
-		   UNIVERSAL_ARCH_FLAGS="-arch i386 -arch ppc -arch x86_64"
-		   LIPO_32BIT_FLAGS="-extract ppc7400 -extract i386"
-		   ARCH_RUN_32BIT="/usr/bin/arch -i386 -ppc"
-
-		 else
-	           AC_MSG_ERROR([proper usage is --with-universal-arch=32-bit|64-bit|all|intel|3-way])
-
-		 fi
-
-
-		CFLAGS="${UNIVERSAL_ARCH_FLAGS} ${CFLAGS}"
-		if test "${UNIVERSALSDK}" != "/" 
-		then
-			CPPFLAGS="-isysroot ${UNIVERSALSDK} ${CPPFLAGS}"
-			LDFLAGS="-isysroot ${UNIVERSALSDK} ${LDFLAGS}"
-			CFLAGS="-isysroot ${UNIVERSALSDK} ${CFLAGS}"
-		fi
-
-	    fi
-
-
-	    ;;
+        # end of Darwin* tests
+        ;;
 	OSF*)
 	    BASECFLAGS="$BASECFLAGS -mieee"
 	    ;;
@@ -1263,6 +1296,13 @@ yes)
 	BASECFLAGS="$BASECFLAGS -belf -Ki486 -DSCO5"
 	;;
     esac
+    ;;
+esac
+
+# ICC needs -fp-model strict or floats behave badly
+case "$CC" in
+*icc*)
+    BASECFLAGS="$BASECFLAGS -fp-model strict"
     ;;
 esac
 
@@ -1353,25 +1393,138 @@ then
 fi
 
 
+# Enable optimization flags
+AC_SUBST(DEF_MAKE_ALL_RULE)
+AC_SUBST(DEF_MAKE_RULE)
+Py_OPT='false'
+AC_MSG_CHECKING(for --enable-optimizations)
+AC_ARG_ENABLE(optimizations, AS_HELP_STRING([--enable-optimizations], [Enable expensive optimizations (PGO, maybe LTO, etc).  Disabled by default.]),
+[
+if test "$enableval" != no
+then
+  Py_OPT='true'
+  AC_MSG_RESULT(yes);
+else
+  Py_OPT='false'
+  AC_MSG_RESULT(no);
+fi],
+[AC_MSG_RESULT(no)])
+if test "$Py_OPT" = 'true' ; then
+  # Intentionally not forcing Py_LTO='true' here.  Too many toolchains do not
+  # compile working code using it and both test_distutils and test_gdb are
+  # broken when you do managed to get a toolchain that works with it.  People
+  # who want LTO need to use --with-lto themselves.
+  DEF_MAKE_ALL_RULE="profile-opt"
+  REQUIRE_PGO="yes"
+  DEF_MAKE_RULE="build_all"
+else
+  DEF_MAKE_ALL_RULE="build_all"
+  REQUIRE_PGO="no"
+  DEF_MAKE_RULE="all"
+fi
+
+
+# Enable LTO flags
+AC_SUBST(LTOFLAGS)
+AC_MSG_CHECKING(for --with-lto)
+AC_ARG_WITH(lto, AS_HELP_STRING([--with-lto], [Enable Link Time Optimization in PGO builds. Disabled by default.]),
+[
+if test "$withval" != no
+then
+  Py_LTO='true'
+  AC_MSG_RESULT(yes);
+else
+  Py_LTO='false'
+  AC_MSG_RESULT(no);
+fi],
+[AC_MSG_RESULT(no)])
+if test "$Py_LTO" = 'true' ; then
+  case $CC in
+    *clang*)
+      # Any changes made here should be reflected in the GCC+Darwin case below
+      LTOFLAGS="-flto"
+      ;;
+    *gcc*)
+      case $ac_sys_system in
+        Darwin*)
+          LTOFLAGS="-flto"
+          ;;
+        *)
+          LTOFLAGS="-flto -fuse-linker-plugin -ffat-lto-objects -flto-partition=none"
+          ;;
+      esac
+      ;;
+  esac
+
+  if test "$ac_cv_prog_cc_g" = "yes"
+  then
+      # bpo-30345: Add -g to LDFLAGS when compiling with LTO
+      # to get debug symbols.
+      LTOFLAGS="$LTOFLAGS -g"
+  fi
+fi
+
+
 # Enable PGO flags.
 AC_SUBST(PGO_PROF_GEN_FLAG)
 AC_SUBST(PGO_PROF_USE_FLAG)
 AC_SUBST(LLVM_PROF_MERGER)
 AC_SUBST(LLVM_PROF_FILE)
 AC_SUBST(LLVM_PROF_ERR)
+# Make this work on systems where llvm tools are not installed with their
+# normal names in the default $PATH (ie: Ubuntu).  They exist under the
+# non-suffixed name in their versioned llvm directory.
+llvm_bin_dir=''
+llvm_path="${PATH}"
+if test "${CC}" = "clang"
+then
+  clang_bin=`which clang`
+  # Some systems install clang elsewhere as a symlink to the real path
+  # which is where the related llvm tools are located.
+  if test -L "${clang_bin}"
+  then
+    clang_dir=`dirname "${clang_bin}"`
+    clang_bin=`readlink "${clang_bin}"`
+    llvm_bin_dir="${clang_dir}/"`dirname "${clang_bin}"`
+    llvm_path="${llvm_path}${PATH_SEPARATOR}${llvm_bin_dir}"
+  fi
+fi
+AC_SUBST(LLVM_PROFDATA)
+AC_PATH_TARGET_TOOL(LLVM_PROFDATA, llvm-profdata, '', ${llvm_path})
 AC_SUBST(LLVM_PROF_FOUND)
-AC_CHECK_PROG(LLVM_PROF_FOUND, llvm-profdata, found, not-found)
+if test -n "${LLVM_PROFDATA}" -a -x "${LLVM_PROFDATA}"
+then
+  LLVM_PROF_FOUND="found"
+else
+  LLVM_PROF_FOUND="not-found"
+fi
+if test "$ac_sys_system" = "Darwin" -a "${LLVM_PROF_FOUND}" = "not-found"
+then
+  found_llvm_profdata=`/usr/bin/xcrun -find llvm-profdata 2>/dev/null`
+  if test -n "${found_llvm_profdata}"
+  then
+    # llvm-profdata isn't directly in $PATH in some cases.
+    # https://apple.stackexchange.com/questions/197053/
+    LLVM_PROFDATA='/usr/bin/xcrun llvm-profdata'
+    LLVM_PROF_FOUND=found
+    AC_MSG_NOTICE([llvm-profdata found via xcrun: ${LLVM_PROFDATA}])
+  fi
+fi
 LLVM_PROF_ERR=no
 case $CC in
   *clang*)
     # Any changes made here should be reflected in the GCC+Darwin case below
     PGO_PROF_GEN_FLAG="-fprofile-instr-generate"
     PGO_PROF_USE_FLAG="-fprofile-instr-use=code.profclangd"
-    LLVM_PROF_MERGER="llvm-profdata merge -output=code.profclangd *.profclangr"
+    LLVM_PROF_MERGER="${LLVM_PROFDATA} merge -output=code.profclangd *.profclangr"
     LLVM_PROF_FILE="LLVM_PROFILE_FILE=\"code-%p.profclangr\""
     if test $LLVM_PROF_FOUND = not-found
     then
       LLVM_PROF_ERR=yes
+      if test "${REQUIRE_PGO}" = "yes"
+      then
+        AC_MSG_ERROR([llvm-profdata is required for a --enable-optimizations build but could not be found.])
+      fi
     fi
     ;;
   *gcc*)
@@ -1379,11 +1532,15 @@ case $CC in
       Darwin*)
         PGO_PROF_GEN_FLAG="-fprofile-instr-generate"
         PGO_PROF_USE_FLAG="-fprofile-instr-use=code.profclangd"
-        LLVM_PROF_MERGER="llvm-profdata merge -output=code.profclangd *.profclangr"
+        LLVM_PROF_MERGER="${LLVM_PROFDATA} merge -output=code.profclangd *.profclangr"
         LLVM_PROF_FILE="LLVM_PROFILE_FILE=\"code-%p.profclangr\""
-        if test $LLVM_PROF_FOUND = not-found
+        if test "${LLVM_PROF_FOUND}" = "not-found"
         then
           LLVM_PROF_ERR=yes
+          if test "${REQUIRE_PGO}" = "yes"
+	  then
+	    AC_MSG_ERROR([llvm-profdata is required for a --enable-optimizations build but could not be found.])
+	  fi
         fi
         ;;
       *)
@@ -1393,6 +1550,12 @@ case $CC in
         LLVM_PROF_FILE=""
         ;;
     esac
+    ;;
+  *icc*)
+    PGO_PROF_GEN_FLAG="-prof-gen"
+    PGO_PROF_USE_FLAG="-prof-use"
+    LLVM_PROF_MERGER="true"
+    LLVM_PROF_FILE=""
     ;;
 esac
 
@@ -1565,18 +1728,18 @@ dnl AC_MSG_RESULT($cpp_type)
 
 # checks for header files
 AC_HEADER_STDC
-AC_CHECK_HEADERS(asm/types.h conio.h direct.h dlfcn.h errno.h \
+AC_CHECK_HEADERS(asm/types.h crypt.h conio.h direct.h dlfcn.h errno.h \
 fcntl.h grp.h \
 ieeefp.h io.h langinfo.h libintl.h poll.h process.h pthread.h \
 shadow.h signal.h stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/epoll.h sys/event.h sys/file.h sys/loadavg.h \
 sys/lock.h sys/mkdev.h sys/modem.h \
-sys/param.h sys/poll.h sys/select.h sys/socket.h sys/statvfs.h sys/stat.h \
+sys/param.h sys/poll.h sys/random.h sys/select.h sys/socket.h sys/statvfs.h sys/stat.h \
 sys/termio.h sys/time.h \
 sys/times.h sys/types.h sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
 sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
-bluetooth/bluetooth.h linux/tipc.h spawn.h util.h alloca.h)
+bluetooth/bluetooth.h linux/tipc.h spawn.h util.h alloca.h sys/sysmacros.h)
 AC_HEADER_DIRENT
 AC_HEADER_MAJOR
 
@@ -1908,7 +2071,6 @@ case $ac_sys_system/$ac_sys_release in
     		;;
     	esac
 
-	#ARCH_RUN_32BIT="true"
     fi
 
     LIBTOOL_CRUFT=$LIBTOOL_CRUFT" -lSystem -lSystemStubs -arch_only ${MACOSX_DEFAULT_ARCH}"
@@ -1994,7 +2156,7 @@ if test -z "$LDSHARED"
 then
 	case $ac_sys_system/$ac_sys_release in
 	AIX*)
-		BLDSHARED="\$(srcdir)/Modules/ld_so_aix \$(CC) -bI:\$(srcdir)/Modules/python.exp"
+		BLDSHARED="Modules/ld_so_aix \$(CC) -bI:Modules/python.exp"
 		LDSHARED="\$(BINLIBDEST)/config/ld_so_aix \$(CC) -bI:\$(BINLIBDEST)/config/python.exp"
 		;;
 	BeOS*)
@@ -2073,9 +2235,6 @@ then
 			fi
 		else
 			# building for OS X 10.3 and later
-			if test "${enable_universalsdk}"; then
-				LDFLAGS="${UNIVERSAL_ARCH_FLAGS} -isysroot ${UNIVERSALSDK} ${LDFLAGS}"
-			fi
 			LDSHARED='$(CC) -bundle -undefined dynamic_lookup'
 			LDCXXSHARED='$(CXX) -bundle -undefined dynamic_lookup'
 			BLDSHARED="$LDSHARED"
@@ -2269,9 +2428,6 @@ AC_MSG_RESULT($SHLIBS)
 # checks for libraries
 AC_CHECK_LIB(dl, dlopen)	# Dynamic linking for SunOS/Solaris and SYSV
 AC_CHECK_LIB(dld, shl_load)	# Dynamic linking for HP-UX
-AC_CHECK_LIB(crypto, RAND_egd,
-             AC_DEFINE(HAVE_RAND_EGD, 1,
-             [Define if the libcrypto has RAND_egd]))
 
 # only check for sem_init if thread support is requested
 if test "$with_threads" = "yes" -o -z "$with_threads"; then
@@ -2284,6 +2440,9 @@ fi
 AC_CHECK_LIB(intl, textdomain,
 	AC_DEFINE(WITH_LIBINTL, 1,
 	[Define to 1 if libintl is needed for locale functions.]))
+AC_SEARCH_LIBS(bind_textdomain_codeset, intl,
+	AC_DEFINE(HAVE_BIND_TEXTDOMAIN_CODESET, 1,
+	[Define to 1 if bind_textdomain_codeset is available.]))
 
 # checks for system dependent C++ extensions support
 case "$ac_sys_system" in
@@ -2466,6 +2625,9 @@ then
     AC_DEFINE(_REENTRANT)
     posix_threads=yes
     THREADOBJ="Python/thread.o"    
+    if test "$ac_sys_system" = "SunOS"; then
+        CFLAGS="$CFLAGS -D_REENTRANT"
+    fi
 elif test "$ac_cv_kpthread" = "yes"
 then
     CC="$CC -Kpthread"
@@ -2961,12 +3123,12 @@ fi
 AC_MSG_RESULT(MACHDEP_OBJS)
 
 # checks for library functions
-AC_CHECK_FUNCS(alarm setitimer getitimer bind_textdomain_codeset chown \
+AC_CHECK_FUNCS(alarm setitimer getitimer chown \
  clock confstr ctermid execv fchmod fchown fork fpathconf ftime ftruncate \
  gai_strerror getgroups getlogin getloadavg getpeername getpgid getpid \
  getentropy \
  getpriority getresuid getresgid getpwent getspnam getspent getsid getwd \
- initgroups kill killpg lchmod lchown lstat mkfifo mknod mktime mmap \
+ initgroups kill killpg lchown lstat mkfifo mknod mktime mmap \
  mremap nice pathconf pause plock poll pthread_init \
  putenv readlink realpath \
  select sem_open sem_timedwait sem_getvalue sem_unlink setegid seteuid \
@@ -2977,6 +3139,13 @@ AC_CHECK_FUNCS(alarm setitimer getitimer bind_textdomain_codeset chown \
  sigaction siginterrupt sigrelse strftime \
  sysconf tcgetpgrp tcsetpgrp tempnam timegm times tmpfile tmpnam tmpnam_r \
  truncate uname unsetenv utimes waitpid wait3 wait4 wcscoll _getpty)
+
+# Force lchmod off for Linux. Linux disallows changing the mode of symbolic
+# links. Some libc implementations have a stub lchmod implementation that always
+# returns an error.
+if test "$MACHDEP" != linux; then
+  AC_CHECK_FUNCS(lchmod)
+fi
 
 # For some functions, having a definition is not sufficient, since
 # we want to take their address.
@@ -3358,6 +3527,8 @@ int main()
         break;
       }
     }
+    freeaddrinfo(aitop);
+    aitop = NULL;
   }
 
   if (!(inet4 == 0 || inet4 == 2))
@@ -3410,7 +3581,7 @@ AC_CHECK_MEMBERS([struct stat.st_blksize])
 AC_CHECK_MEMBERS([struct stat.st_flags])
 AC_CHECK_MEMBERS([struct stat.st_gen])
 AC_CHECK_MEMBERS([struct stat.st_birthtime])
-AC_STRUCT_ST_BLOCKS
+AC_CHECK_MEMBERS([struct stat.st_blocks])
 
 AC_MSG_CHECKING(for time.h that defines altzone)
 AC_CACHE_VAL(ac_cv_header_time_altzone,[
@@ -4170,6 +4341,11 @@ AC_CHECK_LIB(readline, rl_completion_display_matches_hook,
 	AC_DEFINE(HAVE_RL_COMPLETION_DISPLAY_MATCHES_HOOK, 1,
         [Define if you have readline 4.0]), ,$READLINE_LIBS)
 
+# also in 4.0, but not in editline
+AC_CHECK_LIB(readline, rl_resize_terminal,
+	AC_DEFINE(HAVE_RL_RESIZE_TERMINAL, 1,
+        [Define if you have readline 4.0]), ,$READLINE_LIBS)
+
 # check for readline 4.2
 AC_CHECK_LIB(readline, rl_completion_matches,
 	AC_DEFINE(HAVE_RL_COMPLETION_MATCHES, 1,
@@ -4194,6 +4370,8 @@ LIBS=$LIBS_no_readline
 AC_MSG_CHECKING(for broken nice())
 AC_CACHE_VAL(ac_cv_broken_nice, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
+#include <unistd.h>
 int main()
 {
 	int val1 = nice(1);
@@ -4242,11 +4420,6 @@ then
   AC_DEFINE(HAVE_BROKEN_POLL, 1,
       [Define if poll() sets errno on invalid file descriptors.])
 fi
-
-# Before we can test tzset, we need to check if struct tm has a tm_zone 
-# (which is not required by ISO C or UNIX spec) and/or if we support
-# tzname[]
-AC_STRUCT_TIMEZONE
 
 # check tzset(3) exists and works like we expect it to
 AC_MSG_CHECKING(for working tzset())
@@ -4387,9 +4560,16 @@ then
   [Define if mvwdelch in curses.h is an expression.])
 fi
 
+# Issue #25720: ncurses has introduced the NCURSES_OPAQUE symbol making opaque
+# structs since version 5.7.  If the macro is defined as zero before including
+# [n]curses.h, ncurses will expose fields of the structs regardless of the
+# configuration.
 AC_MSG_CHECKING(whether WINDOW has _flags)
 AC_CACHE_VAL(ac_cv_window_has_flags,
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  #define NCURSES_OPAQUE 0
+  #include <curses.h>
+]], [[
   WINDOW *w;
   w->_flags = 0;
 ]])],
@@ -4403,6 +4583,17 @@ then
   AC_DEFINE(WINDOW_HAS_FLAGS, 1, 
   [Define if WINDOW in curses.h offers a field _flags.])
 fi
+
+AC_MSG_CHECKING(for is_pad)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef is_pad
+void *x=is_pad
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_IS_PAD, 1, Define if you have the 'is_pad' function or macro.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
 
 AC_MSG_CHECKING(for is_term_resized)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[void *x=is_term_resized]])],
@@ -4421,6 +4612,83 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[void *x=resize_ter
 AC_MSG_CHECKING(for resizeterm)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[void *x=resizeterm]])],
   [AC_DEFINE(HAVE_CURSES_RESIZETERM, 1, Define if you have the 'resizeterm' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for immedok)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef immedok
+void *x=immedok
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_IMMEDOK, 1, Define if you have the 'immedok' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for syncok)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef syncok
+void *x=syncok
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_SYNCOK, 1, Define if you have the 'syncok' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for wchgat)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef wchgat
+void *x=wchgat
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_WCHGAT, 1, Define if you have the 'wchgat' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for filter)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef filter
+void *x=filter
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_FILTER, 1, Define if you have the 'filter' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for has_key)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef has_key
+void *x=has_key
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_HAS_KEY, 1, Define if you have the 'has_key' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for typeahead)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef typeahead
+void *x=typeahead
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_TYPEAHEAD, 1, Define if you have the 'typeahead' function.)
+   AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)]
+)
+
+AC_MSG_CHECKING(for use_env)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <curses.h>]], [[
+#ifndef use_env
+void *x=use_env
+#endif
+]])],
+  [AC_DEFINE(HAVE_CURSES_USE_ENV, 1, Define if you have the 'use_env' function.)
    AC_MSG_RESULT(yes)],
   [AC_MSG_RESULT(no)]
 )
@@ -4595,7 +4863,7 @@ do
 done
 
 AC_SUBST(SRCDIRS)
-SRCDIRS="Parser Grammar Objects Python Modules Mac"
+SRCDIRS="Parser Objects Python Modules Modules/_io"
 AC_MSG_CHECKING(for build directories)
 for dir in $SRCDIRS; do
     if test ! -d $dir; then
@@ -4704,3 +4972,12 @@ BeOS)
 esac
 
 mv config.c Modules
+
+if test "$Py_OPT" = 'false' -a "$Py_DEBUG" != 'true'; then
+    echo "" >&AS_MESSAGE_FD
+    echo "" >&AS_MESSAGE_FD
+    echo "If you want a release build with all optimizations active (LTO, PGO, etc),"
+    echo "please run ./configure --enable-optimizations" >&AS_MESSAGE_FD
+    echo "" >&AS_MESSAGE_FD
+    echo "" >&AS_MESSAGE_FD
+fi

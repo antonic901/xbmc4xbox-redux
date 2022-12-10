@@ -26,11 +26,16 @@ reading, and no seek operations are available.
 
 .. seealso::
 
-    The `Requests package <http://requests.readthedocs.org/>`_
-    is recommended for a higher-level http client interface.
+    The `Requests package <http://docs.python-requests.org/>`_
+    is recommended for a higher-level HTTP client interface.
 
-.. warning:: When opening HTTPS URLs, it does not attempt to validate the
-   server certificate.  Use at your own risk!
+.. versionchanged:: 2.7.9
+
+    For HTTPS URIs, :mod:`urllib` performs all the neccessary certificate and hostname checks by default.
+
+.. warning::
+
+    For Python versions earlier than 2.7.9, urllib does not attempt to validate the server certificates of HTTPS URIs. Use at your own risk!
 
 
 High-level interface
@@ -118,7 +123,7 @@ High-level interface
    causes environmental proxy settings to be used as discussed above.  For
    example::
 
-      # Use http://www.someproxy.com:3128 for http proxying
+      # Use http://www.someproxy.com:3128 for HTTP proxying
       proxies = {'http': 'http://www.someproxy.com:3128'}
       filehandle = urllib.urlopen(some_url, proxies=proxies)
       # Don't use any proxies
@@ -142,14 +147,15 @@ High-level interface
       :envvar:`no_proxy` environment variable.
 
    .. versionchanged:: 2.7.9
-      The *context* parameter was added.
+      The *context* parameter was added.  All the neccessary certificate and hostname
+      checks are done by default.
 
    .. deprecated:: 2.6
       The :func:`urlopen` function has been removed in Python 3 in favor
       of :func:`urllib2.urlopen`.
 
 
-.. function:: urlretrieve(url[, filename[, reporthook[, data]]])
+.. function:: urlretrieve(url[, filename[, reporthook[, data[, context]]]])
 
    Copy a network object denoted by a URL to a local file, if necessary. If the URL
    points to a local file, or a valid cached copy of the object exists, the object
@@ -161,9 +167,9 @@ High-level interface
 
    The second argument, if present, specifies the file location to copy to (if
    absent, the location will be a tempfile with a generated name). The third
-   argument, if present, is a hook function that will be called once on
+   argument, if present, is a callable that will be called once on
    establishment of the network connection and once after each block read
-   thereafter.  The hook will be passed three arguments; a count of blocks
+   thereafter.  The callable will be passed three arguments; a count of blocks
    transferred so far, a block size in bytes, and the total size of the file.  The
    third argument may be ``-1`` on older FTP servers which do not return a file
    size in response to a retrieval request.
@@ -173,6 +179,10 @@ High-level interface
    is ``GET``).  The *data* argument must in standard
    :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
    function below.
+
+   The *context* parameter may be set to a :class:`ssl.SSLContext` instance to
+   configure the SSL settings that are used if :func:`urlretrieve` makes a HTTPS
+   connection.
 
    .. versionchanged:: 2.5
       :func:`urlretrieve` will raise :exc:`ContentTooShortError` when it detects that
@@ -190,6 +200,10 @@ High-level interface
       If no *Content-Length* header was supplied, :func:`urlretrieve` can not check
       the size of the data it has downloaded, and just returns it.  In this case you
       just have to assume that the download was successful.
+
+   .. versionchanged:: 2.7.9
+      The *context* parameter was added.  All the neccessary certificate and hostname
+      checks are done by default.
 
 
 .. data:: _urlopener
@@ -263,7 +277,7 @@ Utility functions
    two-element tuples is used as the *query* argument, the first element of
    each tuple is a key and the second is a value. The value element in itself
    can be a sequence and in that case, if the optional parameter *doseq* is
-   evaluates to *True*, individual ``key=value`` pairs separated by ``'&'`` are
+   evaluates to ``True``, individual ``key=value`` pairs separated by ``'&'`` are
    generated for each element of the value sequence for the key.  The order of
    parameters in the encoded string will match the order of parameter tuples in
    the sequence. The :mod:`urlparse` module provides the functions
@@ -280,7 +294,7 @@ Utility functions
 
 .. function:: url2pathname(path)
 
-   Convert the path component *path* from an percent-encoded URL to the local syntax for a
+   Convert the path component *path* from a percent-encoded URL to the local syntax for a
    path.  This does not accept a complete URL.  This function uses :func:`unquote`
    to decode *path*.
 
@@ -292,11 +306,23 @@ Utility functions
    in case insensitive way, for all operating systems first, and when it cannot
    find it, looks for proxy information from Mac OSX System Configuration for
    Mac OS X and Windows Systems Registry for Windows.
+   If both lowercase and uppercase environment variables exist (and disagree),
+   lowercase is preferred.
+
+   .. note::
+
+      If the environment variable ``REQUEST_METHOD`` is set, which usually
+      indicates your script is running in a CGI environment, the environment
+      variable ``HTTP_PROXY`` (uppercase ``_PROXY``) will be ignored. This is
+      because that variable can be injected by a client using the "Proxy:" HTTP
+      header. If you need to use an HTTP proxy in a CGI environment, either use
+      ``ProxyHandler`` explicitly, or make sure the variable name is in
+      lowercase (or at least the ``_proxy`` suffix).
 
 .. note::
     urllib also exposes certain utility functions like splittype, splithost and
-    others parsing url into various components. But it is recommended to use
-    :mod:`urlparse` for parsing urls rather than using these functions directly.
+    others parsing URL into various components. But it is recommended to use
+    :mod:`urlparse` for parsing URLs rather than using these functions directly.
     Python 3 does not expose these helper functions from :mod:`urllib.parse`
     module.
 
@@ -332,47 +358,51 @@ URL Opener objects
    :class:`URLopener` objects will raise an :exc:`IOError` exception if the server
    returns an error code.
 
-    .. method:: open(fullurl[, data])
+   .. versionchanged:: 2.7.9
+      The *context* parameter was added.  All the neccessary certificate and hostname
+      checks are done by default.
 
-       Open *fullurl* using the appropriate protocol.  This method sets up cache and
-       proxy information, then calls the appropriate open method with its input
-       arguments.  If the scheme is not recognized, :meth:`open_unknown` is called.
-       The *data* argument has the same meaning as the *data* argument of
-       :func:`urlopen`.
+   .. method:: open(fullurl[, data])
 
-
-    .. method:: open_unknown(fullurl[, data])
-
-       Overridable interface to open unknown URL types.
-
-
-    .. method:: retrieve(url[, filename[, reporthook[, data]]])
-
-       Retrieves the contents of *url* and places it in *filename*.  The return value
-       is a tuple consisting of a local filename and either a
-       :class:`mimetools.Message` object containing the response headers (for remote
-       URLs) or ``None`` (for local URLs).  The caller must then open and read the
-       contents of *filename*.  If *filename* is not given and the URL refers to a
-       local file, the input filename is returned.  If the URL is non-local and
-       *filename* is not given, the filename is the output of :func:`tempfile.mktemp`
-       with a suffix that matches the suffix of the last path component of the input
-       URL.  If *reporthook* is given, it must be a function accepting three numeric
-       parameters.  It will be called after each chunk of data is read from the
-       network.  *reporthook* is ignored for local URLs.
-
-       If the *url* uses the :file:`http:` scheme identifier, the optional *data*
-       argument may be given to specify a ``POST`` request (normally the request type
-       is ``GET``).  The *data* argument must in standard
-       :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
-       function below.
+      Open *fullurl* using the appropriate protocol.  This method sets up cache and
+      proxy information, then calls the appropriate open method with its input
+      arguments.  If the scheme is not recognized, :meth:`open_unknown` is called.
+      The *data* argument has the same meaning as the *data* argument of
+      :func:`urlopen`.
 
 
-    .. attribute:: version
+   .. method:: open_unknown(fullurl[, data])
 
-       Variable that specifies the user agent of the opener object.  To get
-       :mod:`urllib` to tell servers that it is a particular user agent, set this in a
-       subclass as a class variable or in the constructor before calling the base
-       constructor.
+      Overridable interface to open unknown URL types.
+
+
+   .. method:: retrieve(url[, filename[, reporthook[, data]]])
+
+      Retrieves the contents of *url* and places it in *filename*.  The return value
+      is a tuple consisting of a local filename and either a
+      :class:`mimetools.Message` object containing the response headers (for remote
+      URLs) or ``None`` (for local URLs).  The caller must then open and read the
+      contents of *filename*.  If *filename* is not given and the URL refers to a
+      local file, the input filename is returned.  If the URL is non-local and
+      *filename* is not given, the filename is the output of :func:`tempfile.mktemp`
+      with a suffix that matches the suffix of the last path component of the input
+      URL.  If *reporthook* is given, it must be a function accepting three numeric
+      parameters.  It will be called after each chunk of data is read from the
+      network.  *reporthook* is ignored for local URLs.
+
+      If the *url* uses the :file:`http:` scheme identifier, the optional *data*
+      argument may be given to specify a ``POST`` request (normally the request type
+      is ``GET``).  The *data* argument must in standard
+      :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+      function below.
+
+
+   .. attribute:: version
+
+      Variable that specifies the user agent of the opener object.  To get
+      :mod:`urllib` to tell servers that it is a particular user agent, set this in a
+      subclass as a class variable or in the constructor before calling the base
+      constructor.
 
 
 .. class:: FancyURLopener(...)
@@ -403,18 +433,18 @@ URL Opener objects
       users for the required information on the controlling terminal.  A subclass may
       override this method to support more appropriate behavior if needed.
 
-    The :class:`FancyURLopener` class offers one additional method that should be
-    overloaded to provide the appropriate behavior:
+   The :class:`FancyURLopener` class offers one additional method that should be
+   overloaded to provide the appropriate behavior:
 
-    .. method:: prompt_user_passwd(host, realm)
+   .. method:: prompt_user_passwd(host, realm)
 
-       Return information needed to authenticate the user at the given host in the
-       specified security realm.  The return value should be a tuple, ``(user,
-       password)``, which can be used for basic authentication.
+      Return information needed to authenticate the user at the given host in the
+      specified security realm.  The return value should be a tuple, ``(user,
+      password)``, which can be used for basic authentication.
 
-       The implementation prompts for this information on the terminal; an application
-       should override this method to use an appropriate interaction model in the local
-       environment.
+      The implementation prompts for this information on the terminal; an application
+      should override this method to use an appropriate interaction model in the local
+      environment.
 
 .. exception:: ContentTooShortError(msg[, content])
 

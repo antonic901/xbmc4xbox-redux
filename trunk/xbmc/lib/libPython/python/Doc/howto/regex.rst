@@ -79,7 +79,9 @@ of the RE by repeating them or changing their meaning.  Much of this document is
 devoted to discussing various metacharacters and what they do.
 
 Here's a complete list of the metacharacters; their meanings will be discussed
-in the rest of this HOWTO. ::
+in the rest of this HOWTO.
+
+.. code-block:: none
 
    . ^ $ * + ? { } [ ] \ | ( )
 
@@ -99,8 +101,9 @@ special nature.
 
 You can match the characters not listed within the class by :dfn:`complementing`
 the set.  This is indicated by including a ``'^'`` as the first character of the
-class; ``'^'`` outside a character class will simply match the ``'^'``
-character.  For example, ``[^5]`` will match any character except ``'5'``.
+class. For example, ``[^5]`` will match any character except ``'5'``.  If the
+caret appears elsewhere in a character class, it does not have special meaning.
+For example: ``[5^]`` will match either a ``'5'`` or a ``'^'``.
 
 Perhaps the most important metacharacter is the backslash, ``\``.   As in Python
 string literals, the backslash can be followed by various characters to signal
@@ -172,7 +175,7 @@ that limit.
 Repetitions such as ``*`` are :dfn:`greedy`; when repeating a RE, the matching
 engine will try to repeat it as many times as possible. If later portions of the
 pattern don't match, the matching engine will then back up and try again with
-few repetitions.
+fewer repetitions.
 
 A step-by-step example will make this more obvious.  Let's consider the
 expression ``a[bcd]*b``.  This matches the letter ``'a'``, zero or more letters
@@ -838,7 +841,7 @@ backreferences in a RE.
 
 For example, the following RE detects doubled words in a string. ::
 
-   >>> p = re.compile(r'(\b\w+)\s+\1')
+   >>> p = re.compile(r'\b(\w+)\s+\1\b')
    >>> p.search('Paris in the the spring').group()
    'the the'
 
@@ -945,9 +948,9 @@ number of the group.  There's naturally a variant that uses the group name
 instead of the number. This is another Python extension: ``(?P=name)`` indicates
 that the contents of the group called *name* should again be matched at the
 current point.  The regular expression for finding doubled words,
-``(\b\w+)\s+\1`` can also be written as ``(?P<word>\b\w+)\s+(?P=word)``::
+``\b(\w+)\s+\1\b`` can also be written as ``\b(?P<word>\w+)\s+(?P=word)\b``::
 
-   >>> p = re.compile(r'(?P<word>\b\w+)\s+(?P=word)')
+   >>> p = re.compile(r'\b(?P<word>\w+)\s+(?P=word)\b')
    >>> p.search('Paris in the the spring').group()
    'the the'
 
@@ -1015,17 +1018,18 @@ confusing.
 
 A negative lookahead cuts through all this confusion:
 
-``.*[.](?!bat$).*$``  The negative lookahead means: if the expression ``bat``
+``.*[.](?!bat$)[^.]*$``  The negative lookahead means: if the expression ``bat``
 doesn't match at this point, try the rest of the pattern; if ``bat$`` does
 match, the whole pattern will fail.  The trailing ``$`` is required to ensure
 that something like ``sample.batch``, where the extension only starts with
-``bat``, will be allowed.
+``bat``, will be allowed.  The ``[^.]*`` makes sure that the pattern works
+when there are multiple dots in the filename.
 
 Excluding another filename extension is now easy; simply add it as an
 alternative inside the assertion.  The following pattern excludes filenames that
 end in either ``bat`` or ``exe``:
 
-``.*[.](?!bat$|exe$).*$``
+``.*[.](?!bat$|exe$)[^.]*$``
 
 
 Modifying Strings
@@ -1126,19 +1130,19 @@ which can be either a string or a function, and the string to be processed.
 Here's a simple example of using the :meth:`sub` method.  It replaces colour
 names with the word ``colour``::
 
-   >>> p = re.compile( '(blue|white|red)')
-   >>> p.sub( 'colour', 'blue socks and red shoes')
+   >>> p = re.compile('(blue|white|red)')
+   >>> p.sub('colour', 'blue socks and red shoes')
    'colour socks and colour shoes'
-   >>> p.sub( 'colour', 'blue socks and red shoes', count=1)
+   >>> p.sub('colour', 'blue socks and red shoes', count=1)
    'colour socks and red shoes'
 
 The :meth:`subn` method does the same work, but returns a 2-tuple containing the
 new string value and the number of replacements  that were performed::
 
-   >>> p = re.compile( '(blue|white|red)')
-   >>> p.subn( 'colour', 'blue socks and red shoes')
+   >>> p = re.compile('(blue|white|red)')
+   >>> p.subn('colour', 'blue socks and red shoes')
    ('colour socks and colour shoes', 2)
-   >>> p.subn( 'colour', 'no colours at all')
+   >>> p.subn('colour', 'no colours at all')
    ('no colours at all', 0)
 
 Empty matches are replaced only when they're not adjacent to a previous match.

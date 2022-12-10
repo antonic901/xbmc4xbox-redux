@@ -24,7 +24,7 @@ the format unit; the entry in (round) parentheses is the Python object type
 that matches the format unit; and the entry in [square] brackets is the type
 of the C variable(s) whose address should be passed.
 
-These formats allow to access an object as a contiguous chunk of memory.
+These formats allow accessing an object as a contiguous chunk of memory.
 You don't have to provide raw storage for the returned unicode or bytes
 area.  Also, you won't have to release any memory yourself, except with the
 ``es``, ``es#``, ``et`` and ``et#`` formats.
@@ -136,7 +136,8 @@ area.  Also, you won't have to release any memory yourself, except with the
    :c:func:`PyArg_ParseTuple` will use this location as the buffer and
    interpret the initial value of *\*buffer_length* as the buffer size.  It
    will then copy the encoded data into the buffer and NUL-terminate it.  If
-   the buffer is not large enough, a :exc:`ValueError` will be set.
+   the buffer is not large enough, a :exc:`TypeError` will be set.
+   Note: starting from Python 3.6 a :exc:`ValueError` will be set.
 
    In both cases, *\*buffer_length* is set to the length of the encoded data
    without the trailing NUL byte.
@@ -424,7 +425,7 @@ and the following format units are left untouched.
    only if its format string contains two or more format units.  If the format
    string is empty, it returns ``None``; if it contains exactly one format
    unit, it returns whatever object is described by that format unit.  To
-   force it to return a tuple of size 0 or one, parenthesize the format
+   force it to return a tuple of size ``0`` or one, parenthesize the format
    string.
 
    When memory buffers are passed as parameters to supply data to build

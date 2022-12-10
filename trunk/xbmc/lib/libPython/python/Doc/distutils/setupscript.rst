@@ -201,7 +201,7 @@ The second argument to the :class:`~distutils.core.Extension` constructor is
 a list of source
 files.  Since the Distutils currently only support C, C++, and Objective-C
 extensions, these are normally C/C++/Objective-C source files.  (Be sure to use
-appropriate extensions to distinguish C++\ source files: :file:`.cc` and
+appropriate extensions to distinguish C++ source files: :file:`.cc` and
 :file:`.cpp` seem to be recognized by both Unix and Windows compilers.)
 
 However, you can also include SWIG interface (:file:`.i`) files in the list; the
@@ -442,7 +442,7 @@ command line.  Scripts don't require Distutils to do anything very complicated.
 The only clever feature is that if the first line of the script starts with
 ``#!`` and contains the word "python", the Distutils will adjust the first line
 to refer to the current interpreter location. By default, it is replaced with
-the current interpreter location.  The :option:`--executable` (or :option:`-e`)
+the current interpreter location.  The :option:`!--executable` (or :option:`!-e`)
 option will allow the interpreter path to be explicitly overridden.
 
 The ``scripts`` option simply is a list of files to be handled in this
@@ -520,20 +520,23 @@ following way::
     setup(...,
           data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
                       ('config', ['cfg/data.cfg']),
-                      ('/etc/init.d', ['init-script'])]
          )
 
-Note that you can specify the directory names where the data files will be
-installed, but you cannot rename the data files themselves.
-
 Each (*directory*, *files*) pair in the sequence specifies the installation
-directory and the files to install there.  If *directory* is a relative path, it
-is interpreted relative to the installation prefix (Python's ``sys.prefix`` for
-pure-Python packages, ``sys.exec_prefix`` for packages that contain extension
-modules).  Each file name in *files* is interpreted relative to the
-:file:`setup.py` script at the top of the package source distribution.  No
-directory information from *files* is used to determine the final location of
-the installed file; only the name of the file is used.
+directory and the files to install there.
+
+Each file name in *files* is interpreted relative to the :file:`setup.py`
+script at the top of the package source distribution. Note that you can
+specify the directory where the data files will be installed, but you cannot
+rename the data files themselves.
+
+The *directory* should be a relative path. It is interpreted relative to the
+installation prefix (Python's ``sys.prefix`` for system installations;
+``site.USER_BASE`` for user installations). Distutils allows *directory* to be
+an absolute installation path, but this is discouraged since it is
+incompatible with the wheel packaging format. No directory information from
+*files* is used to determine the final location of the installed file; only
+the name of the file is used.
 
 You can specify the ``data_files`` options as a simple sequence of files
 without specifying a target directory, but this is not recommended, and the
@@ -606,12 +609,11 @@ Notes:
 (4)
     These fields should not be used if your package is to be compatible with Python
     versions prior to 2.2.3 or 2.3.  The list is available from the `PyPI website
-    <https://pypi.python.org/pypi>`_.
+    <https://pypi.org>`_.
 
 (5)
-    The ``long_description`` field is used by PyPI when you are
-    :ref:`registering <package-register>` a package, to
-    :ref:`build its home page <package-display>`.
+    The ``long_description`` field is used by PyPI when you publish a package,
+    to build its project page.
 
 (6)
     The ``license`` field is a text indicating the license covering the

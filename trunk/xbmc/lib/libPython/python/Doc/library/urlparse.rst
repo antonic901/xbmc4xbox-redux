@@ -119,14 +119,24 @@ The :mod:`urlparse` module defines the following functions:
    See section :ref:`urlparse-result-object` for more information on the result
    object.
 
+   Characters in the :attr:`netloc` attribute that decompose under NFKC
+   normalization (as used by the IDNA encoding) into any of ``/``, ``?``,
+   ``#``, ``@``, or ``:`` will raise a :exc:`ValueError`. If the URL is
+   decomposed before parsing, or is not a Unicode string, no error will be
+   raised.
+
    .. versionchanged:: 2.5
       Added attributes to return value.
 
    .. versionchanged:: 2.7
       Added IPv6 URL parsing capabilities.
 
+   .. versionchanged:: 2.7.17
+      Characters that affect netloc parsing under NFKC normalization will
+      now raise :exc:`ValueError`.
 
-.. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
+
+.. function:: parse_qs(qs[, keep_blank_values[, strict_parsing[, max_num_fields]]])
 
    Parse a query string given as a string argument (data of type
    :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a
@@ -143,14 +153,20 @@ The :mod:`urlparse` module defines the following functions:
    parsing errors.  If false (the default), errors are silently ignored.  If true,
    errors raise a :exc:`ValueError` exception.
 
+   The optional argument *max_num_fields* is the maximum number of fields to
+   read. If set, then throws a :exc:`ValueError` if there are more than
+   *max_num_fields* fields read.
+
    Use the :func:`urllib.urlencode` function to convert such dictionaries into
    query strings.
 
    .. versionadded:: 2.6
       Copied from the :mod:`cgi` module.
 
+   .. versionchanged:: 2.7.16
+      Added *max_num_fields* parameter.
 
-.. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
+.. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing[, max_num_fields]]])
 
    Parse a query string given as a string argument (data of type
    :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a list of
@@ -166,12 +182,18 @@ The :mod:`urlparse` module defines the following functions:
    parsing errors.  If false (the default), errors are silently ignored.  If true,
    errors raise a :exc:`ValueError` exception.
 
+   The optional argument *max_num_fields* is the maximum number of fields to
+   read. If set, then throws a :exc:`ValueError` if there are more than
+   *max_num_fields* fields read.
+
    Use the :func:`urllib.urlencode` function to convert such lists of pairs into
    query strings.
 
    .. versionadded:: 2.6
       Copied from the :mod:`cgi` module.
 
+   .. versionchanged:: 2.7.16
+      Added *max_num_fields* parameter.
 
 .. function:: urlunparse(parts)
 
@@ -220,10 +242,20 @@ The :mod:`urlparse` module defines the following functions:
    See section :ref:`urlparse-result-object` for more information on the result
    object.
 
+   Characters in the :attr:`netloc` attribute that decompose under NFKC
+   normalization (as used by the IDNA encoding) into any of ``/``, ``?``,
+   ``#``, ``@``, or ``:`` will raise a :exc:`ValueError`. If the URL is
+   decomposed before parsing, or is not a Unicode string, no error will be
+   raised.
+
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.5
       Added attributes to return value.
+
+   .. versionchanged:: 2.7.17
+      Characters that affect netloc parsing under NFKC normalization will
+      now raise :exc:`ValueError`.
 
 
 .. function:: urlunsplit(parts)
@@ -279,7 +311,7 @@ The :mod:`urlparse` module defines the following functions:
    :rfc:`3986` - Uniform Resource Identifiers
       This is the current standard (STD66). Any changes to urlparse module
       should conform to this. Certain deviations could be observed, which are
-      mostly due backward compatiblity purposes and for certain de-facto
+      mostly for backward compatibility purposes and for certain de-facto
       parsing requirements as commonly observed in major browsers.
 
    :rfc:`2732` - Format for Literal IPv6 Addresses in URL's.
@@ -290,7 +322,7 @@ The :mod:`urlparse` module defines the following functions:
       Names (URNs) and Uniform Resource Locators (URLs).
 
    :rfc:`2368` - The mailto URL scheme.
-      Parsing requirements for mailto url schemes.
+      Parsing requirements for mailto URL schemes.
 
    :rfc:`1808` - Relative Uniform Resource Locators
       This Request For Comments includes the rules for joining an absolute and a
@@ -337,22 +369,12 @@ described in those functions, as well as provide an additional method:
 The following classes provide the implementations of the parse results:
 
 
-.. class:: BaseResult
-
-   Base class for the concrete result classes.  This provides most of the attribute
-   definitions.  It does not provide a :meth:`geturl` method.  It is derived from
-   :class:`tuple`, but does not override the :meth:`__init__` or :meth:`__new__`
-   methods.
-
-
 .. class:: ParseResult(scheme, netloc, path, params, query, fragment)
 
-   Concrete class for :func:`urlparse` results.  The :meth:`__new__` method is
-   overridden to support checking that the right number of arguments are passed.
+   Concrete class for :func:`urlparse` results.
 
 
 .. class:: SplitResult(scheme, netloc, path, query, fragment)
 
-   Concrete class for :func:`urlsplit` results.  The :meth:`__new__` method is
-   overridden to support checking that the right number of arguments are passed.
+   Concrete class for :func:`urlsplit` results.
 

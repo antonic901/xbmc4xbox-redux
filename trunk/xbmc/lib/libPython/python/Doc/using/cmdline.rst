@@ -24,7 +24,7 @@ Command line
 
 When invoking Python, you may specify any of these options::
 
-    python [-BdEiOQsRStuUvVWxX3?] [-c command | -m module-name | script | - ] [args]
+    python [-bBdEiOQsRStuUvVWxX3?] [-c command | -m module-name | script | - ] [args]
 
 The most common use case is, of course, a simple invocation of a script::
 
@@ -191,6 +191,19 @@ Generic options
 Miscellaneous options
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. cmdoption:: -b
+
+   Issue a warning when comparing :class:`unicode` with :class:`bytearray`.
+   Issue an error when the option is given twice (:option:`!-bb`).
+
+   Note that, unlike the corresponding Python 3.x flag, this will **not** emit
+   warnings for comparisons between :class:`str` and :class:`unicode`.
+   Instead, the ``str`` instance will be implicitly decoded to ``unicode`` and
+   Unicode comparison used.
+
+   .. versionadded:: 2.6
+
+
 .. cmdoption:: -B
 
    If given, Python won't try to write ``.pyc`` or ``.pyo`` files on the
@@ -224,6 +237,7 @@ Miscellaneous options
    raises an exception.  See also :envvar:`PYTHONINSPECT`.
 
 
+.. _using-on-optimizations:
 .. cmdoption:: -O
 
    Turn on basic optimizations.  This changes the filename extension for
@@ -302,7 +316,7 @@ Miscellaneous options
 
    Issue a warning when a source file mixes tabs and spaces for indentation in a
    way that makes it depend on the worth of a tab expressed in spaces.  Issue an
-   error when the option is given twice (:option:`-tt`).
+   error when the option is given twice (:option:`!-tt`).
 
 
 .. cmdoption:: -u
@@ -322,7 +336,7 @@ Miscellaneous options
 
    Print a message each time a module is initialized, showing the place
    (filename or built-in module) from which it is loaded.  When given twice
-   (:option:`-vv`), print a message for each file that is checked for when
+   (:option:`!-vv`), print a message for each file that is checked for when
    searching for a module.  Also provides information on module cleanup at exit.
    See also :envvar:`PYTHONVERBOSE`.
 
@@ -344,7 +358,7 @@ Miscellaneous options
    invalid options when the first warning is issued).
 
    Starting from Python 2.7, :exc:`DeprecationWarning` and its descendants
-   are ignored by default.  The :option:`-Wd` option can be used to re-enable
+   are ignored by default.  The :option:`!-Wd` option can be used to re-enable
    them.
 
    Warnings can also be controlled from within a Python program using the
@@ -397,15 +411,15 @@ Miscellaneous options
    Skip the first line of the source, allowing use of non-Unix forms of
    ``#!cmd``.  This is intended for a DOS specific hack only.
 
-   .. note:: The line numbers in error messages will be off by one.
-
 .. cmdoption:: -3
 
    Warn about Python 3.x possible incompatibilities by emitting a
    :exc:`DeprecationWarning` for features that are removed or significantly
-   changed in Python 3.
+   changed in Python 3 and can't be detected using static code analysis.
 
    .. versionadded:: 2.6
+
+   See :doc:`/howto/pyporting` for more details.
 
 Options you shouldn't use
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -613,6 +627,17 @@ conflict.
    times.
 
 
+.. envvar:: PYTHONHTTPSVERIFY
+
+   If this environment variable is set specifically to ``0``, then it is
+   equivalent to implicitly calling :func:`ssl._https_verify_certificates` with
+   ``enable=False`` when :mod:`ssl` is first imported.
+
+   Refer to the documentation of :func:`ssl._https_verify_certificates` for
+   details.
+
+   .. versionadded:: 2.7.12
+
 Debug-mode variables
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -636,3 +661,17 @@ if Python was configured with the ``--with-pydebug`` build option.
 
    If set, Python will print memory allocation statistics every time a new
    object arena is created, and on shutdown.
+
+.. envvar:: PYTHONSHOWALLOCCOUNT
+
+   If set and Python was compiled with ``COUNT_ALLOCS`` defined, Python will
+   dump allocations counts into stderr on shutdown.
+
+   .. versionadded:: 2.7.15
+
+.. envvar:: PYTHONSHOWREFCOUNT
+
+   If set, Python will print the total reference count when the program
+   finishes or after each statement in the interactive interpreter.
+
+   .. versionadded:: 2.7.15

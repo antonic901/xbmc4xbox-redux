@@ -114,11 +114,11 @@ structseq_subscript(PyStructSequence *self, PyObject *item)
         Py_ssize_t start, stop, step, slicelen, cur, i;
         PyObject *result;
 
-        if (PySlice_GetIndicesEx((PySliceObject *)item,
-                                 VISIBLE_SIZE(self), &start, &stop,
-                                 &step, &slicelen) < 0) {
+        if (_PySlice_Unpack(item, &start, &stop, &step) < 0) {
             return NULL;
         }
+        slicelen = _PySlice_AdjustIndices(VISIBLE_SIZE(self), &start, &stop,
+                                         step);
         if (slicelen <= 0)
             return PyTuple_New(0);
         result = PyTuple_New(slicelen);
@@ -252,9 +252,11 @@ structseq_repr(PyStructSequence *obj)
     }
 
     /* "typename(", limited to  TYPE_MAXSIZE */
-    len = strlen(typ->tp_name) > TYPE_MAXSIZE ? TYPE_MAXSIZE :
-                            strlen(typ->tp_name);
-    strncpy(pbuf, typ->tp_name, len);
+    len = strlen(typ->tp_name);
+    if (len > TYPE_MAXSIZE) {
+        len = TYPE_MAXSIZE;
+    }
+    pbuf = memcpy(pbuf, typ->tp_name, len);
     pbuf += len;
     *pbuf++ = '(';
 
@@ -266,6 +268,7 @@ structseq_repr(PyStructSequence *obj)
 
         val = PyTuple_GetItem(tup, i);
         if (cname == NULL || val == NULL) {
+            Py_DECREF(tup);
             return NULL;
         }
         repr = PyObject_Repr(val);

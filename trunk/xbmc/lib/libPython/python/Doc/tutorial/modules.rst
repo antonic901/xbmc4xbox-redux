@@ -33,7 +33,7 @@ called :file:`fibo.py` in the current directory with the following contents::
            print b,
            a, b = b, a+b
 
-   def fib2(n): # return Fibonacci series up to n
+   def fib2(n):   # return Fibonacci series up to n
        result = []
        a, b = 0, 1
        while b < n:
@@ -108,6 +108,25 @@ Note that in general the practice of importing ``*`` from a module or package is
 frowned upon, since it often causes poorly readable code. However, it is okay to
 use it to save typing in interactive sessions.
 
+If the module name is followed by :keyword:`as`, then the name
+following :keyword:`as` is bound directly to the imported module.
+
+::
+
+   >>> import fibo as fib
+   >>> fib.fib(500)
+   0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+This is effectively importing the module in the same way that ``import fibo``
+will do, with the only difference of it being available as ``fib``.
+
+It can also be used when utilising :keyword:`from` with similar effects::
+
+   >>> from fibo import fib as fibonacci
+   >>> fibonacci(500)
+   0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+
 .. note::
 
    For efficiency reasons, each module is only imported once per interpreter
@@ -135,7 +154,9 @@ the end of your module::
 
 you can make the file usable as a script as well as an importable module,
 because the code that parses the command line only runs if the module is
-executed as the "main" file::
+executed as the "main" file:
+
+.. code-block:: shell-session
 
    $ python fibo.py 50
    1 1 2 3 5 8 13 21 34
@@ -356,7 +377,7 @@ module names".  For example, the module name :mod:`A.B` designates a submodule
 named ``B`` in a package named ``A``.  Just like the use of modules saves the
 authors of different modules from having to worry about each other's global
 variable names, the use of dotted module names saves the authors of multi-module
-packages like NumPy or the Python Imaging Library from having to worry about
+packages like NumPy or Pillow from having to worry about
 each other's module names.
 
 Suppose you want to design a collection of modules (a "package") for the uniform
@@ -494,10 +515,10 @@ when the ``from...import`` statement is executed.  (This also works when
 ``__all__`` is defined.)
 
 Although certain modules are designed to export only names that follow certain
-patterns when you use ``import *``, it is still considered bad practise in
+patterns when you use ``import *``, it is still considered bad practice in
 production code.
 
-Remember, there is nothing wrong with using ``from Package import
+Remember, there is nothing wrong with using ``from package import
 specific_submodule``!  In fact, this is the recommended notation unless the
 importing module needs to use submodules with the same name from different
 packages.

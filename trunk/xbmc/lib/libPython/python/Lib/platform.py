@@ -63,7 +63,7 @@
 #            though
 #    0.5.2 - fixed uname() to return '' instead of 'unknown' in all
 #            return values (the system uname command tends to return
-#            'unknown' instead of just leaving the field emtpy)
+#            'unknown' instead of just leaving the field empty)
 #    0.5.1 - included code for slackware dist; added exception handlers
 #            to cover up situations where platforms don't have os.popen
 #            (e.g. Mac) or fail on socket.gethostname(); fixed libc
@@ -132,6 +132,35 @@ except AttributeError:
         # Standard Unix uses /dev/null
         DEV_NULL = '/dev/null'
 
+# Helper for comparing two version number strings.
+# Based on the description of the PHP's version_compare():
+# http://php.net/manual/en/function.version-compare.php
+
+_ver_stages = {
+    # any string not found in this dict, will get 0 assigned
+    'dev': 10,
+    'alpha': 20, 'a': 20,
+    'beta': 30, 'b': 30,
+    'c': 40,
+    'RC': 50, 'rc': 50,
+    # number, will get 100 assigned
+    'pl': 200, 'p': 200,
+}
+
+_component_re = re.compile(r'([0-9]+|[._+-])')
+
+def _comparable_version(version):
+    result = []
+    for v in _component_re.split(version):
+        if v not in '._+-':
+            try:
+                v = int(v, 10)
+                t = 100
+            except ValueError:
+                t = _ver_stages.get(v, 0)
+            result.extend((t, v))
+    return result
+
 ### Platform specific APIs
 
 _libc_search = re.compile(r'(__libc_init)'
@@ -140,9 +169,7 @@ _libc_search = re.compile(r'(__libc_init)'
                           '|'
                           '(libc(_\w+)?\.so(?:\.(\d[0-9.]*))?)')
 
-def libc_ver(executable=sys.executable,lib='',version='',
-
-             chunksize=2048):
+def libc_ver(executable=sys.executable,lib='',version='', chunksize=2048):
 
     """ Tries to determine the libc version that the file executable
         (which defaults to the Python interpreter) is linked against.
@@ -157,40 +184,45 @@ def libc_ver(executable=sys.executable,lib='',version='',
         The file is read and scanned in chunks of chunksize bytes.
 
     """
+    V = _comparable_version
     if hasattr(os.path, 'realpath'):
         # Python 2.2 introduced os.path.realpath(); it is used
         # here to work around problems with Cygwin not being
         # able to open symlinks for reading
         executable = os.path.realpath(executable)
-    f = open(executable,'rb')
-    binary = f.read(chunksize)
-    pos = 0
-    while 1:
-        m = _libc_search.search(binary,pos)
-        if not m:
-            binary = f.read(chunksize)
-            if not binary:
-                break
-            pos = 0
-            continue
-        libcinit,glibc,glibcversion,so,threads,soversion = m.groups()
-        if libcinit and not lib:
-            lib = 'libc'
-        elif glibc:
-            if lib != 'glibc':
-                lib = 'glibc'
-                version = glibcversion
-            elif glibcversion > version:
-                version = glibcversion
-        elif so:
-            if lib != 'glibc':
+    with open(executable, 'rb') as f:
+        binary = f.read(chunksize)
+        pos = 0
+        while pos < len(binary):
+            if 'libc' in binary or 'GLIBC' in binary:
+                m = _libc_search.search(binary, pos)
+            else:
+                m = None
+            if not m or m.end() == len(binary):
+                chunk = f.read(chunksize)
+                if chunk:
+                    binary = binary[max(pos, len(binary) - 1000):] + chunk
+                    pos = 0
+                    continue
+                if not m:
+                    break
+            libcinit,glibc,glibcversion,so,threads,soversion = m.groups()
+            if libcinit and not lib:
                 lib = 'libc'
-                if soversion and soversion > version:
-                    version = soversion
-                if threads and version[-len(threads):] != threads:
-                    version = version + threads
-        pos = m.end()
-    f.close()
+            elif glibc:
+                if lib != 'glibc':
+                    lib = 'glibc'
+                    version = glibcversion
+                elif V(glibcversion) > V(version):
+                    version = glibcversion
+            elif so:
+                if lib != 'glibc':
+                    lib = 'libc'
+                    if soversion and (not version or V(soversion) > V(version)):
+                        version = soversion
+                    if threads and version[-len(threads):] != threads:
+                        version = version + threads
+            pos = m.end()
     return lib,version
 
 def _dist_try_harder(distname,version,id):
@@ -451,6 +483,7 @@ def popen(cmd, mode='r', bufsize=None):
     else:
         return popen(cmd,mode,bufsize)
 
+
 def _norm_version(version, build=''):
 
     """ Normalize the version and build strings and return a single
@@ -567,7 +600,7 @@ def _get_real_winver(maj, min, build):
         return maj, min, build
 
     from ctypes import (c_buffer, POINTER, byref, create_unicode_buffer,
-                        Structure, WinDLL)
+                        Structure, WinDLL, _Pointer)
     from ctypes.wintypes import DWORD, HANDLE
 
     class VS_FIXEDFILEINFO(Structure):
@@ -586,6 +619,8 @@ def _get_real_winver(maj, min, build):
             ("dwFileDateMS", DWORD),
             ("dwFileDateLS", DWORD),
         ]
+    class PVS_FIXEDFILEINFO(_Pointer):
+        _type_ = VS_FIXEDFILEINFO
 
     kernel32 = WinDLL('kernel32')
     version = WinDLL('version')
@@ -611,7 +646,7 @@ def _get_real_winver(maj, min, build):
         not ver_block):
         return maj, min, build
 
-    pvi = POINTER(VS_FIXEDFILEINFO)()
+    pvi = PVS_FIXEDFILEINFO()
     if not version.VerQueryValueW(ver_block, "", byref(pvi), byref(DWORD())):
         return maj, min, build
 
@@ -1318,9 +1353,11 @@ def processor():
 ### Various APIs for extracting information from sys.version
 
 _sys_version_parser = re.compile(
-    r'([\w.+]+)\s*'
-    '\(#?([^,]+),\s*([\w ]+),\s*([\w :]+)\)\s*'
-    '\[([^\]]+)\]?')
+    r'([\w.+]+)\s*'  # "version<space>"
+    r'\(#?([^,]+)'  # "(#buildno"
+    r'(?:,\s*([\w ]*)'  # ", builddate"
+    r'(?:,\s*([\w :]*))?)?\)\s*'  # ", buildtime)<space>"
+    r'\[([^\]]+)\]?')  # "[compiler]"
 
 _ironpython_sys_version_parser = re.compile(
     r'IronPython\s*'
@@ -1399,6 +1436,8 @@ def _sys_version(sys_version=None):
                 'failed to parse Jython sys.version: %s' %
                 repr(sys_version))
         version, buildno, builddate, buildtime, _ = match.groups()
+        if builddate is None:
+            builddate = ''
         compiler = sys.platform
 
     elif "PyPy" in sys_version:
@@ -1421,7 +1460,10 @@ def _sys_version(sys_version=None):
         version, buildno, builddate, buildtime, compiler = \
               match.groups()
         name = 'CPython'
-        builddate = builddate + ' ' + buildtime
+        if builddate is None:
+            builddate = ''
+        elif buildtime:
+            builddate = builddate + ' ' + buildtime
 
     if hasattr(sys, 'subversion'):
         # sys.subversion was added in Python 2.5

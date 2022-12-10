@@ -54,8 +54,8 @@ The :mod:`sunau` module defines the following functions:
 
    Note that it does not allow read/write files.
 
-   A *mode* of ``'r'`` returns a :class:`AU_read` object, while a *mode* of ``'w'``
-   or ``'wb'`` returns a :class:`AU_write` object.
+   A *mode* of ``'r'`` returns an :class:`AU_read` object, while a *mode* of ``'w'``
+   or ``'wb'`` returns an :class:`AU_write` object.
 
 
 .. function:: openfp(file, mode)
@@ -117,7 +117,7 @@ AU_read objects, as returned by :func:`.open` above, have the following methods:
 
 .. method:: AU_read.getnchannels()
 
-   Returns number of audio channels (1 for mone, 2 for stereo).
+   Returns number of audio channels (1 for mono, 2 for stereo).
 
 
 .. method:: AU_read.getsampwidth()

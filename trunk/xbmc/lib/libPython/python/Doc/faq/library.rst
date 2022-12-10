@@ -19,7 +19,7 @@ standard library module.  (Eventually you'll learn what's in the standard
 library and will be able to skip this step.)
 
 For third-party packages, search the `Python Package Index
-<https://pypi.python.org/pypi>`_ or try `Google <https://www.google.com>`_ or
+<https://pypi.org>`_ or try `Google <https://www.google.com>`_ or
 another Web search engine.  Searching for "Python" plus a keyword or two for
 your topic of interest will usually find something helpful.
 
@@ -585,7 +585,7 @@ substituted for standard input and output.  You will have to use pseudo ttys
 ("ptys") instead of pipes. Or you can use a Python interface to Don Libes'
 "expect" library.  A Python extension that interfaces to expect is called "expy"
 and available from http://expectpy.sourceforge.net.  A pure Python solution that
-works like expect is `pexpect <https://pypi.python.org/pypi/pexpect/>`_.
+works like expect is `pexpect <https://pypi.org/project/pexpect/>`_.
 
 
 How do I access the serial (RS232) port?
@@ -597,7 +597,7 @@ For Win32, POSIX (Linux, BSD, etc.), Jython:
 
 For Unix, see a Usenet post by Mitch Chapman:
 
-   http://groups.google.com/groups?selm=34A04430.CF9@ohioee.com
+   https://groups.google.com/groups?selm=34A04430.CF9@ohioee.com
 
 
 Why doesn't closing sys.stdout (stdin, stderr) really close it?
@@ -658,20 +658,20 @@ Yes. Here's a simple example that uses httplib::
 
    import httplib, sys, time
 
-   ### build the query string
+   # build the query string
    qs = "First=Josephine&MI=Q&Last=Public"
 
-   ### connect and send the server a path
+   # connect and send the server a path
    httpobj = httplib.HTTP('www.some-server.out-there', 80)
    httpobj.putrequest('POST', '/cgi-bin/some-cgi-script')
-   ### now generate the rest of the HTTP headers...
+   # now generate the rest of the HTTP headers...
    httpobj.putheader('Accept', '*/*')
    httpobj.putheader('Connection', 'Keep-Alive')
    httpobj.putheader('Content-type', 'application/x-www-form-urlencoded')
    httpobj.putheader('Content-length', '%d' % len(qs))
    httpobj.endheaders()
    httpobj.send(qs)
-   ### find out what the server said in response...
+   # find out what the server said in response...
    reply, msg, hdrs = httpobj.getreply()
    if reply != 200:
        sys.stdout.write(httpobj.getfile().read())
@@ -724,8 +724,9 @@ varies between systems; sometimes it is ``/usr/lib/sendmail``, sometimes
 ``/usr/sbin/sendmail``.  The sendmail manual page will help you out.  Here's
 some sample code::
 
-   SENDMAIL = "/usr/sbin/sendmail" # sendmail location
    import os
+
+   SENDMAIL = "/usr/sbin/sendmail"  # sendmail location
    p = os.popen("%s -t -i" % SENDMAIL, "w")
    p.write("To: receiver@example.com\n")
    p.write("Subject: test\n")
