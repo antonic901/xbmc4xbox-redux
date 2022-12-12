@@ -180,9 +180,14 @@ CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&q
 GOTO VC_DONE
 
 :VC_DONE
-set PATH=%PATH%;C:\Program Files\nasm\
-cd &quot;$(SolutionDir)&quot;
-c:\python27\python.exe build_ssl.py Release $(PlatformName) -a
+
+set PATH=%PATH%;C:\Program Files\nasm\;C:\Perl\bin
+cd &quot;$(SolutionDir)..\..\openssl
+CALL perl Configure no-sse2 --openssldir=Q:\system\python\ssl  VC-WIN32
+CALL ms\do_nasm.bat
+CALL nmake /F ms\nt.mak
+
+PAUSE
 exit 0
 
 :NO_VC
