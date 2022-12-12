@@ -1,5 +1,5 @@
 #!/bin/sh
-OPENSSL="openssl-0.9.8zg"
+OPENSSL="openssl-1.0.2u"
 BZIP2="bzip2-1.0.6"
 SQLITE="sqlite-amalgamation"
 SQLITEVER="3081101"

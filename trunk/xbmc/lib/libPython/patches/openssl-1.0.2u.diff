@@ -1,0 +1,59 @@
+--- a/crypto/bio/bss_file.c
++++ b/crypto/bio/bss_file.c
+@@ -119,7 +119,7 @@
+ {
+     FILE *file = NULL;
+ 
+-#  if defined(_WIN32) && defined(CP_UTF8)
++#  if defined(_WIN32) && defined(CP_UTF8) && !defined(_XBOX)
+     int sz, len_0 = (int)strlen(filename) + 1;
+     DWORD flags;
+ 
+--- a/crypto/cryptlib.h
++++ b/crypto/cryptlib.h
+@@ -81,9 +81,9 @@
+ 
+ # ifndef OPENSSL_SYS_VMS
+ #  define X509_CERT_AREA          OPENSSLDIR
+-#  define X509_CERT_DIR           OPENSSLDIR "/certs"
+-#  define X509_CERT_FILE          OPENSSLDIR "/cert.pem"
+-#  define X509_PRIVATE_DIR        OPENSSLDIR "/private"
++#  define X509_CERT_DIR           OPENSSLDIR "\\certs"
++#  define X509_CERT_FILE          OPENSSLDIR "\\cert.pem"
++#  define X509_PRIVATE_DIR        OPENSSLDIR "\\private"
+ # else
+ #  define X509_CERT_AREA          "SSLROOT:[000000]"
+ #  define X509_CERT_DIR           "SSLCERTS:"
+--- a/crypto/rand/rand_win.c
++++ b/crypto/rand/rand_win.c
+@@ -205,7 +205,14 @@
+     DWORD w;
+     int good = 0;
+ 
+-# if defined(OPENSSL_SYS_WINCE)
++# if defined(_XBOX)
++	{
++	BYTE buf[64];
++	// not a real API function, so hProvider is not used.
++	if (CryptGenRandom(hProvider, sizeof(buf), buf))
++		RAND_add(buf, sizeof(buf), sizeof(buf));
++	}
++# elif defined(OPENSSL_SYS_WINCE)
+ #  if defined(_WIN32_WCE) && _WIN32_WCE>=300
+     /*
+      * Even though MSDN says _WIN32_WCE>=210, it doesn't seem to be available
+--- a/util/pl/VC-32.pl
++++ b/util/pl/VC-32.pl
+@@ -129,10 +129,10 @@
+     }
+ else	# Win32
+     {
+-    $base_cflags= " $mf_cflag";
++    $base_cflags= " $mf_cflag -D_XBOX";
+     my $f = $shlib || $fips ?' /MD':' /MT';
+     $ff = "/fixed";
+-    $opt_cflags=$f.' /Ox /O2 /Ob2';
++    $opt_cflags=$f.' /O1 /Ob1';
+     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
+     $lflags="/nologo /subsystem:console /opt:ref";
+     }
