@@ -426,10 +426,8 @@ def create_default_context(purpose=Purpose.SERVER_AUTH, cafile=None,
 
     if purpose == Purpose.SERVER_AUTH:
         # verify certs and host name in client mode
-        # context.verify_mode = CERT_REQUIRED
-        # context.check_hostname = True
-        # XBMC4XBOX - disable certification verification as with python 2.7.8 for now as cafile loading is broken
-        context.verify_mode = CERT_NONE
+        context.verify_mode = CERT_REQUIRED
+        context.check_hostname = True
     elif purpose == Purpose.CLIENT_AUTH:
         context.set_ciphers(_RESTRICTED_SERVER_CIPHERS)
 
