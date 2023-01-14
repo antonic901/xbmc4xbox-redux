@@ -548,11 +548,11 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
         {
           case NETWORK_DASH:
             FEH_TextOut(pFont, iLine, L"Init network using dash settings...");
-            m_network.Initialize(NETWORK_DASH, "","","","");
+            m_network.Initialize(NETWORK_DASH, "","","","","");
             break;
           case NETWORK_DHCP:
             FEH_TextOut(pFont, iLine, L"Init network using DHCP...");
-            m_network.Initialize(NETWORK_DHCP, "","","","");
+            m_network.Initialize(NETWORK_DHCP, "","","","","");
             break;
           default:
             FEH_TextOut(pFont, iLine, L"Init network using static ip...");
@@ -562,7 +562,8 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
                     g_guiSettings.GetString("network.ipaddress").c_str(),
                     g_guiSettings.GetString("network.subnet").c_str(),
                     g_guiSettings.GetString("network.gateway").c_str(),
-                    g_guiSettings.GetString("network.dns").c_str() );
+                    g_guiSettings.GetString("network.dns").c_str(),
+                    g_guiSettings.GetString("network.dns2").c_str() );
             }
             else
             {
@@ -570,7 +571,8 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
                     "192.168.0.42",
                     "255.255.255.0",
                     "192.168.0.1",
-                    "192.168.0.1" );
+                    "192.168.0.1",
+                    "0.0.0.0" );
             }
             break;
         }
@@ -1243,6 +1245,7 @@ HRESULT CApplication::Initialize()
     g_guiSettings.SetString("network.subnet", "255.255.255.0");
     g_guiSettings.SetString("network.gateway", "192.168.0.1");
     g_guiSettings.SetString("network.dns", "192.168.0.1");
+    g_guiSettings.SetString("network.dns2", "0.0.0.0");
     g_guiSettings.SetBool("services.ftpserver", true);
     g_guiSettings.SetBool("services.webserver", false);
     g_guiSettings.SetBool("locale.timeserver", false);

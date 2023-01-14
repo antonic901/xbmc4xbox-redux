@@ -196,7 +196,7 @@ static bool TranslateConfig( const struct network_info& networkinfo, TXNetConfig
 }
 #endif
 
-bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer)
+bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer, const char* szNameServerAlt)
 {
 #ifdef HAS_XBOX_NETWORK
   XNetStartupParams xnsp = {};
@@ -225,6 +225,7 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
     strcpy(m_networkinfo.subnet, szLocalSubnet);
     strcpy(m_networkinfo.gateway, szLocalGateway);
     strcpy(m_networkinfo.DNS1, szNameServer);
+    strcpy(m_networkinfo.DNS2, szNameServerAlt);
 
     TranslateConfig(m_networkinfo, params);
     CLog::Log(LOGNOTICE, "Network: Using static IP settings");
@@ -403,7 +404,8 @@ bool CNetwork::SetupNetwork()
       g_guiSettings.GetString("network.ipaddress").c_str(),
       g_guiSettings.GetString("network.subnet").c_str(),
       g_guiSettings.GetString("network.gateway").c_str(),
-      g_guiSettings.GetString("network.dns").c_str());
+      g_guiSettings.GetString("network.dns").c_str(),
+      g_guiSettings.GetString("network.dns2").c_str());
       
     return true;
   }

@@ -48,7 +48,7 @@ public:
   ~CNetwork(void);
 
   /* initializes network settings */
-  bool Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer);
+  bool Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer, const char* szNameServerAlt);
   void Deinitialize();
 
   /* waits for network to finish init */

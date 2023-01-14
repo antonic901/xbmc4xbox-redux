@@ -953,7 +953,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
         pControl->SetEnabled(g_guiSettings.GetBool("services.webserver"));
       }
     }
-    else if (strSetting.Equals("network.ipaddress") || strSetting.Equals("network.subnet") || strSetting.Equals("network.gateway") || strSetting.Equals("network.dns"))
+    else if (strSetting.Equals("network.ipaddress") || strSetting.Equals("network.subnet") || strSetting.Equals("network.gateway") || strSetting.Equals("network.dns") || strSetting.Equals("network.dns2"))
     {
       CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(pSettingControl->GetID());
       if (pControl)
@@ -969,6 +969,8 @@ void CGUIWindowSettingsCategory::UpdateSettings()
             pControl->SetLabel2(g_application.getNetwork().m_networkinfo.gateway);
           else if(strSetting.Equals("network.dns"))
             pControl->SetLabel2(g_application.getNetwork().m_networkinfo.DNS1);
+          else if(strSetting.Equals("network.dns2"))
+            pControl->SetLabel2(g_application.getNetwork().m_networkinfo.DNS2);
         }
         pControl->SetEnabled(g_guiSettings.GetInt("network.assignment") == NETWORK_STATIC);
       }
@@ -1618,7 +1620,8 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
         g_guiSettings.SetString("network.gateway",strDefault);
       if (g_guiSettings.GetString("network.dns").Equals("0.0.0.0"))
         g_guiSettings.SetString("network.dns",strDefault);
-
+      if (g_guiSettings.GetString("network.dns2").Equals("0.0.0.0"))
+        g_guiSettings.SetString("network.dns2",strDefault);
     }
   }
     
@@ -2241,7 +2244,8 @@ void CGUIWindowSettingsCategory::CheckNetworkSettings()
          m_strNetworkIPAddress != g_guiSettings.GetString("network.ipaddress") ||
          m_strNetworkSubnet != g_guiSettings.GetString("network.subnet") ||
          m_strNetworkGateway != g_guiSettings.GetString("network.gateway") ||
-         m_strNetworkDNS != g_guiSettings.GetString("network.dns"))))
+         m_strNetworkDNS != g_guiSettings.GetString("network.dns") ||
+         m_strNetworkDNS2 != g_guiSettings.GetString("network.dns2"))))
   {
 /*    // our network settings have changed - we should prompt the user to reset XBMC
     if (CGUIDialogYesNo::ShowAndGetInput(14038, 14039, 14040, 0))
@@ -2262,6 +2266,7 @@ void CGUIWindowSettingsCategory::CheckNetworkSettings()
     m_strNetworkSubnet = g_guiSettings.GetString("network.subnet");
     m_strNetworkGateway = g_guiSettings.GetString("network.gateway");
     m_strNetworkDNS = g_guiSettings.GetString("network.dns");
+    m_strNetworkDNS2 = g_guiSettings.GetString("network.dns2");
 
     // replace settings
     /*   g_guiSettings.SetInt("network.assignment", m_iNetworkAssignment);
@@ -3150,6 +3155,7 @@ void CGUIWindowSettingsCategory::OnInitWindow()
   m_strNetworkSubnet = g_guiSettings.GetString("network.subnet");
   m_strNetworkGateway = g_guiSettings.GetString("network.gateway");
   m_strNetworkDNS = g_guiSettings.GetString("network.dns");
+  m_strNetworkDNS2 = g_guiSettings.GetString("network.dns2");
   m_strOldTrackFormat = g_guiSettings.GetString("musicfiles.trackformat");
   m_strOldTrackFormatRight = g_guiSettings.GetString("musicfiles.trackformatright");
   m_NewResolution = INVALID;
