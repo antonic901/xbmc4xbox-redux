@@ -255,7 +255,7 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node)
     Params params;
     CStdString tagName;
     // determine which form of include call we have
-    const char *name = include->Attribute("name");
+    const char *name = include->Attribute("content");
     if (name)
     {
       // 1. <include name="MyControl" />
