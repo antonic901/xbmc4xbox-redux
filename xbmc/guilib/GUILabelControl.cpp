@@ -94,14 +94,14 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
   else if (m_bHasPath)
     label = ShortenPath(label);
 
-  m_label.SetMaxRect(m_posX, m_posY, m_width, m_height);
+  m_label.SetMaxRect(m_posX, m_posY, GetWidth(), m_height);
   m_label.SetText(label);
 }
 
 void CGUILabelControl::Render()
 {
   m_label.SetColor(IsDisabled() ? CGUILabel::COLOR_DISABLED : CGUILabel::COLOR_TEXT);
-  m_label.SetMaxRect(m_posX, m_posY, m_width, m_height);
+  m_label.SetMaxRect(m_posX, m_posY, GetWidth(), m_height);
   m_label.Render();
   CGUIControl::Render();
 }
@@ -134,7 +134,10 @@ void CGUILabelControl::SetAlignment(uint32_t align)
 float CGUILabelControl::GetWidth() const
 {
   if (m_minWidth && m_minWidth != m_width)
-    return CLAMP(m_label.GetTextWidth(), m_minWidth, m_width);
+  {
+    float maxWidth = m_width ? m_width : m_label.GetTextWidth();
+    return CLAMP(m_label.GetTextWidth(), m_minWidth, maxWidth);
+  }
   return m_width;
 }
 
