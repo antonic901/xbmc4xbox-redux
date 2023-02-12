@@ -47,7 +47,6 @@ public:
   virtual ~CGUIControlFactory(void);
   CGUIControl* Create(int parentID, const FRECT &rect, TiXmlElement* pControlNode, bool insideContainer = false);
   void ScaleElement(TiXmlElement *element, RESOLUTION fileRes, RESOLUTION destRes);
-  static bool GetFloat(const TiXmlNode* pRootNode, const char* strTag, float& value);
 
   /*! \brief translate from control name to control type
    \param type name of the control
@@ -61,7 +60,6 @@ public:
    */
   static CStdString TranslateControlType(CGUIControl::GUICONTROLTYPES type);
 
-  static bool GetUnsigned(const TiXmlNode* pRootNode, const char* strTag, unsigned int& value);
   static bool GetAspectRatio(const TiXmlNode* pRootNode, const char* strTag, CAspectRatio &aspectRatio);
   static bool GetInfoTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image, CGUIInfoLabel &info, int parentID);
   static bool GetTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image);
