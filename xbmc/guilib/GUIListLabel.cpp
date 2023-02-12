@@ -22,6 +22,7 @@
 #include "GUIListLabel.h"
 #include "utils/CharsetConverter.h"
 #include <limits>
+#include "SkinInfo.h"
 
 CGUIListLabel::CGUIListLabel(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, const CGUIInfoLabel &info, bool alwaysScroll)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -29,11 +30,13 @@ CGUIListLabel::CGUIListLabel(int parentID, int controlID, float posX, float posY
 {
   m_info = info;
   m_alwaysScroll = alwaysScroll;
-  // TODO: Remove this "correction"
-  if (labelInfo.align & XBFONT_RIGHT)
-    m_label.SetMaxRect(m_posX - m_width, m_posY, m_width, m_height);
-  else if (labelInfo.align & XBFONT_CENTER_X)
-    m_label.SetMaxRect(m_posX - m_width*0.5f, m_posY, m_width, m_height);
+  if (g_SkinInfo.GetVersion() < 2.12f)
+  { // this is "correction" for skins using older version of GUILIB. This will break <align> in newer skins like Estuary
+    if (labelInfo.align & XBFONT_RIGHT)
+      m_label.SetMaxRect(m_posX - m_width, m_posY, m_width, m_height);
+    else if (labelInfo.align & XBFONT_CENTER_X)
+      m_label.SetMaxRect(m_posX - m_width*0.5f, m_posY, m_width, m_height);
+  }
   if (m_info.IsConstant())
     SetLabel(m_info.GetLabel(m_parentID, true));
   ControlType = GUICONTROL_LISTLABEL;
