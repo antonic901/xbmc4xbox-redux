@@ -49,10 +49,21 @@ public:
   const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name, int context);
 
 private:
+  enum ResolveParamsResult
+  {
+    NO_PARAMS_FOUND,
+    PARAMS_RESOLVED,
+    SINGLE_UNDEFINED_PARAM_RESOLVED
+  };
+
   void ResolveIncludesForNode(TiXmlElement *node);
+  typedef std::map<CStdString, CStdString> Params;
+  static bool GetParameters(const TiXmlElement *include, const char *valueAttribute, Params& params);
+  static void ResolveParametersForNode(TiXmlElement *node, const Params& params);
+  static ResolveParamsResult ResolveParameters(const CStdString& strInput, CStdString& strOutput, const Params& params);
   CStdString ResolveConstant(const CStdString &constant) const;
   bool HasIncludeFile(const CStdString &includeFile) const;
-  std::map<CStdString, TiXmlElement> m_includes;
+  std::map<CStdString, std::pair<TiXmlElement, Params> > m_includes;
   std::map<CStdString, TiXmlElement> m_defaults;
   std::map<CStdString, TiXmlElement> m_skinvariables;
   std::map<CStdString, CStdString> m_constants;

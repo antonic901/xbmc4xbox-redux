@@ -262,3 +262,14 @@ void XMLUtils::SetPath(TiXmlNode* pRootNode, const char *strTag, const CStdStrin
     pNewNode->InsertEndChild(value);
   }
 }
+
+CStdString XMLUtils::GetAttribute(const TiXmlElement *element, const char *tag)
+{
+  if (element)
+  {
+    const char *attribute = element->Attribute(tag);
+    if (attribute)
+      return attribute;
+  }
+  return "";
+}

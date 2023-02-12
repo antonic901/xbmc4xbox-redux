@@ -1012,7 +1012,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   XMLUtils::GetBoolean(pControlNode,"pulseonselect", bPulse);
 
   GetInfoTexture(pControlNode, "imagepath", texture, texturePath, parentID);
- 
+
   XMLUtils::GetUInt(pControlNode,"timeperimage", timePerImage);
   XMLUtils::GetUInt(pControlNode,"fadetime", fadeTime);
   XMLUtils::GetUInt(pControlNode,"pauseatend", timeToPauseAtEnd);

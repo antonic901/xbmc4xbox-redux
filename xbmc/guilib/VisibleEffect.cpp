@@ -73,7 +73,7 @@ CAnimEffect::CAnimEffect(const TiXmlElement *node, EFFECT_TYPE effect)
 
   float accel = 0;
   node->QueryFloatAttribute("acceleration", &accel);
-
+  
   if (!m_pTweener)
   { // no tweener is specified - use a linear tweener
     // or quadratic if we have acceleration

@@ -194,8 +194,6 @@ bool CGUIInfoLabel::IsConstant() const
   return m_info.size() == 0 || (m_info.size() == 1 && m_info[0].m_info == 0);
 }
 
-typedef CStdString (*StringReplacerFunc) (const CStdString &str);
-
 void ReplaceString(CStdString &work, const std::string &str, StringReplacerFunc func)
 {
   // Replace all $str[number] with the real string
@@ -218,6 +216,50 @@ void ReplaceString(CStdString &work, const std::string &str, StringReplacerFunc 
     }
     pos1 = work.find("$" + str + "[", pos1);
   }
+}
+
+bool CGUIInfoLabel::ReplaceSpecialKeywordReferences(const CStdString &strInput, const CStdString &strKeyword, const StringReplacerFunc func, CStdString &strOutput)
+{
+  CStdString dollarStrPrefix = CStdString("$" + strKeyword + "[");
+  size_t index = 0;
+  size_t startPos;
+  while((startPos = strInput.find(dollarStrPrefix, index)) != std::string::npos)
+  {
+    size_t valuePos = startPos + dollarStrPrefix.size();
+    size_t endPos = StringUtils::FindEndBracket(strInput, '[',']', valuePos);
+    if (endPos != std::string::npos)
+    {
+      if(index == 0)
+        strOutput.clear();
+      strOutput += strInput.substr(index, startPos - index);
+      strOutput += func(strInput.substr(valuePos, endPos - valuePos));
+      index = endPos + 1;
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"%s\"", strInput.c_str());
+      break;
+    }
+  }
+
+  if (index)
+  {
+    strOutput += strInput.substr(index);
+    return true;
+  }
+
+  return false;
+}
+
+bool CGUIInfoLabel::ReplaceSpecialKeywordReferences(CStdString &work, const CStdString &strKeyword, const StringReplacerFunc func)
+{
+  CStdString output;
+  if (ReplaceSpecialKeywordReferences(work, strKeyword, func, output))
+  {
+    work = output;
+    return true;
+  }
+  return false;
 }
 
 CStdString LocalizeReplacer(const CStdString &str)
@@ -245,15 +287,15 @@ CStdString NumberReplacer(const CStdString &str)
 CStdString CGUIInfoLabel::ReplaceLocalize(const CStdString &label)
 {
   CStdString work(label);
-  ReplaceString(work, "LOCALIZE", LocalizeReplacer);
-  ReplaceString(work, "NUMBER", NumberReplacer);
+  ReplaceSpecialKeywordReferences(work, "LOCALIZE", LocalizeReplacer);
+  ReplaceSpecialKeywordReferences(work, "NUMBER", NumberReplacer);
   return work;
 }
 
 CStdString CGUIInfoLabel::ReplaceAddonStrings(const CStdString &label)
 {
   CStdString work(label);
-  ReplaceString(work, "ADDON", AddonReplacer);
+  ReplaceSpecialKeywordReferences(work, "ADDON", AddonReplacer);
   return work;
 }
 

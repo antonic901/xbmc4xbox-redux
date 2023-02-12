@@ -26,6 +26,7 @@
 // forward
 class TiXmlDocument;
 class TiXmlNode;
+class TiXmlElement;
 
 class XMLUtils
 {
@@ -53,5 +54,12 @@ public:
   static void SetBoolean(TiXmlNode* pRootNode, const char *strTag, bool value);
   static void SetHex(TiXmlNode* pRootNode, const char *strTag, uint32_t value);
   static void SetPath(TiXmlNode* pRootNode, const char *strTag, const CStdString& strValue);
+
+  /*! \brief Fetch a std::string copy of an attribute, if it exists.  Cannot distinguish between empty and non-existent attributes.
+   \param element the element to query.
+   \param tag the name of the attribute.
+   \return the attribute, if it exists, else an empty string
+   */
+  static CStdString GetAttribute(const TiXmlElement *element, const char *tag);
 };
 

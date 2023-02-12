@@ -66,6 +66,8 @@ private:
   color_t m_color;
 };
 
+typedef CStdString (*StringReplacerFunc) (const CStdString &str);
+
 class CGUIInfoLabel
 {
 public:
@@ -89,6 +91,25 @@ public:
    */
   static CStdString ReplaceLocalize(const CStdString &label);
   static CStdString ReplaceAddonStrings(const CStdString &label);
+
+  /*!
+   \brief Replaces instances of $strKeyword[value] with the appropriate resolved string
+   \param strInput text to replace
+   \param strKeyword keyword to look for
+   \param func function that does the actual replacement of each bracketed value found
+   \param strOutput the output string
+   \return whether anything has been replaced.
+   */
+  static bool ReplaceSpecialKeywordReferences(const CStdString &strInput, const CStdString &strKeyword, const StringReplacerFunc func, CStdString &strOutput);
+
+  ///*!
+  // \brief Replaces instances of $strKeyword[value] with the appropriate resolved string in-place
+  // \param work text to replace in-place
+  // \param strKeyword keyword to look for
+  // \param func function that does the actual replacement of each bracketed value found
+  // \return whether anything has been replaced.
+  // */
+  static bool ReplaceSpecialKeywordReferences(CStdString &work, const CStdString &strKeyword, const StringReplacerFunc func);
 
 private:
   void Parse(const CStdString &label, int context);
