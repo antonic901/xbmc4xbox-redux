@@ -247,8 +247,10 @@ void CGUITextureBase::Render(float left, float top, float right, float bottom, f
 
 #define MIX_ALPHA(a,c) (((a * (c >> 24)) / 255) << 24) | (c & 0x00ffffff)
 
-  color_t color = m_diffuseColor;
-  if (m_alpha != 0xFF) color = MIX_ALPHA(m_alpha, m_diffuseColor);
+  // diffuse color
+  color_t color = (m_info.diffuseColor) ? m_info.diffuseColor : m_diffuseColor;
+  if (m_alpha != 0xFF) color = MIX_ALPHA(m_alpha, color);
+
   color = g_graphicsContext.MergeAlpha(color);
 
   Draw(x, y, z, texture, diffuse, color, orientation);
@@ -498,6 +500,7 @@ void CGUITextureBase::SetAlpha(unsigned char alpha)
 void CGUITextureBase::SetDiffuseColor(color_t color)
 {
   m_diffuseColor = color;
+  m_info.diffuseColor.Update();
 }
 
 bool CGUITextureBase::ReadyToRender() const

@@ -30,6 +30,7 @@
 
 #include "TextureManager.h"
 #include "Geometry.h"
+#include "GUIInfoTypes.h"
 
 typedef uint32_t color_t;
 
@@ -99,12 +100,14 @@ public:
     diffuse = right.diffuse;
     filename = right.filename;
     useLarge = right.useLarge;
+    diffuseColor = right.diffuseColor;
   };
   bool       useLarge;
-  FRECT      border;      // scaled  - unneeded if we get rid of scale on load
-  int        orientation; // orientation of the texture (0 - 7 == EXIForientation - 1)
-  CStdString diffuse;     // diffuse overlay texture
-  CStdString filename;    // main texture file
+  FRECT      border;          // scaled  - unneeded if we get rid of scale on load
+  int        orientation;     // orientation of the texture (0 - 7 == EXIForientation - 1)
+  CStdString diffuse;         // diffuse overlay texture
+  CGUIInfoColor diffuseColor; // diffuse color
+  CStdString filename;        // main texture file
 };
 
 class CGUITextureBase
