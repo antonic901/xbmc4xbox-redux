@@ -260,8 +260,10 @@ namespace PYXBMC
       new(&((ControlRadioButton*)pControl)->strText) string();    
       new(&((ControlRadioButton*)pControl)->strTextureFocus) string();
       new(&((ControlRadioButton*)pControl)->strTextureNoFocus) string();
-      new(&((ControlRadioButton*)pControl)->strTextureRadioFocus) string();
-      new(&((ControlRadioButton*)pControl)->strTextureRadioNoFocus) string();
+      new(&((ControlRadioButton*)pControl)->strTextureRadioOnFocus) string();
+      new(&((ControlRadioButton*)pControl)->strTextureRadioOnNoFocus) string();
+      new(&((ControlRadioButton*)pControl)->strTextureRadioOffFocus) string();
+      new(&((ControlRadioButton*)pControl)->strTextureRadioOffNoFocus) string();
 
       li = ((CGUIRadioButtonControl *)pGUIControl)->GetLabelInfo();
 

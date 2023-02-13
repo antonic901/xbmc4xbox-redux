@@ -207,8 +207,10 @@ namespace PYXBMC
     std::string strText;
     std::string strTextureFocus;
     std::string strTextureNoFocus;
-    std::string strTextureRadioFocus;
-    std::string strTextureRadioNoFocus;
+    std::string strTextureRadioOnFocus;
+    std::string strTextureRadioOnNoFocus;
+    std::string strTextureRadioOffFocus;
+    std::string strTextureRadioOffNoFocus;
     color_t textColor;
     color_t disabledColor;
     int textOffsetX;

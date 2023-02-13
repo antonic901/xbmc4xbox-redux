@@ -49,12 +49,18 @@ namespace PYXBMC
   {
     static const char *keywords[] = {
       "x", "y", "width", "height", "label",
+      "focusOnTexture", "noFocusOnTexture",
+      "focusOffTexture", "noFocusOffTexture",
       "focusTexture", "noFocusTexture",
       "textOffsetX", "textOffsetY", "alignment",
       "font", "textColor", "disabledColor", "angle", "shadowColor", "focusedColor",
       "TextureRadioFocus", "TextureRadioNoFocus", NULL };
     ControlRadioButton *self;
     char* cFont = NULL;
+    char* cTextureOnFocus = NULL;
+    char* cTextureOnNoFocus = NULL;
+    char* cTextureOffFocus = NULL;
+    char* cTextureOffNoFocus = NULL;
     char* cTextureFocus = NULL;
     char* cTextureNoFocus = NULL;
     char* cTextColor = NULL;
@@ -72,8 +78,10 @@ namespace PYXBMC
     new(&self->strText) string();    
     new(&self->strTextureFocus) string();    
     new(&self->strTextureNoFocus) string(); 
-    new(&self->strTextureRadioFocus) string();    
-    new(&self->strTextureRadioNoFocus) string(); 
+    new(&self->strTextureRadioOnFocus) string();
+    new(&self->strTextureRadioOnNoFocus) string();
+    new(&self->strTextureRadioOffFocus) string();
+    new(&self->strTextureRadioOffNoFocus) string();
     
     // set up default values in case they are not supplied
     self->textOffsetX = CONTROL_TEXT_OFFSET_X;
@@ -127,12 +135,28 @@ namespace PYXBMC
     self->strTextureNoFocus = cTextureNoFocus ?
       cTextureNoFocus :
       PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"texturenofocus", (char*)"radiobutton-nofocus.jpg");
-    self->strTextureRadioFocus = cTextureRadioFocus ?
-      cTextureRadioFocus :
-      PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
-    self->strTextureRadioNoFocus = cTextureRadioNoFocus ?
-      cTextureRadioNoFocus :
-      PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"textureradionofocus", (char*)"radiobutton-nofocus.jpg");
+
+    if (cTextureOnFocus && cTextureOnNoFocus)
+    {
+      self->strTextureRadioOnFocus = cTextureOnFocus;
+      self->strTextureRadioOnNoFocus = cTextureOnNoFocus;
+    }
+    else
+    {
+      self->strTextureRadioOnFocus = self->strTextureRadioOnNoFocus = cTextureFocus ? cTextureFocus :
+        PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+    }
+    
+    if (cTextureOffFocus && cTextureOffNoFocus)
+    {
+      self->strTextureRadioOffFocus = cTextureOffFocus;
+      self->strTextureRadioOffNoFocus = cTextureOffNoFocus;
+    }
+    else
+    {
+      self->strTextureRadioOffFocus = self->strTextureRadioOffNoFocus = cTextureNoFocus ? cTextureNoFocus :
+        PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+    }
 
     if (cFont) self->strFont = cFont;
     if (cTextColor) sscanf( cTextColor, "%x", &self->textColor );
@@ -148,8 +172,10 @@ namespace PYXBMC
     self->strText.~string();
     self->strTextureFocus.~string();
     self->strTextureNoFocus.~string();
-    self->strTextureRadioFocus.~string();
-    self->strTextureRadioNoFocus.~string();
+    self->strTextureRadioOnFocus.~string();
+    self->strTextureRadioOnNoFocus.~string();
+    self->strTextureRadioOffFocus.~string();
+    self->strTextureRadioOffNoFocus.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -175,8 +201,10 @@ namespace PYXBMC
       (CStdString)pControl->strTextureFocus,
       (CStdString)pControl->strTextureNoFocus,
       label,
-      (CStdString)pControl->strTextureRadioFocus,
-      (CStdString)pControl->strTextureRadioNoFocus);
+      (CStdString)pControl->strTextureRadioOnFocus,
+      (CStdString)pControl->strTextureRadioOnNoFocus,
+      (CStdString)pControl->strTextureRadioOffFocus,
+      (CStdString)pControl->strTextureRadioOffNoFocus);
 
     CGUIRadioButtonControl* pGuiButtonControl =
       (CGUIRadioButtonControl*)pControl->pGUIControl;
