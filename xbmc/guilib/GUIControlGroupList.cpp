@@ -194,6 +194,9 @@ bool CGUIControlGroupList::OnMessage(CGUIMessage& message)
 
 void CGUIControlGroupList::ValidateOffset()
 {
+  // calculate item gap. this needs to be done
+  // before fetching the total size
+  CalculateItemGap();
   // calculate how many items we have on this page
   m_totalSize = 0;
   for (iControls it = m_children.begin(); it != m_children.end(); ++it)
@@ -402,13 +405,34 @@ bool CGUIControlGroupList::IsLastFocusableControl(const CGUIControl *control) co
   return false;
 }
 
+void CGUIControlGroupList::CalculateItemGap()
+{
+  if (m_alignment & XBFONT_JUSTIFIED)
+  {
+    int itemsCount = 0;
+    float itemsSize = 0;
+
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    {
+      CGUIControl *child = *it;
+      if (child->IsVisible())
+      {
+        itemsSize += Size(child);
+        itemsCount++;
+      }
+    }
+    if (itemsCount > 0)
+      m_itemGap = (Size() - itemsSize) / itemsCount;
+  }
+}
+
 float CGUIControlGroupList::GetAlignOffset() const
 {
   if (m_totalSize < Size())
   {
     if (m_alignment & XBFONT_RIGHT)
       return Size() - m_totalSize;
-    if (m_alignment & XBFONT_CENTER_X)
+   if (m_alignment & (XBFONT_CENTER_X | XBFONT_JUSTIFIED))
       return (Size() - m_totalSize)*0.5f;
   }
   return 0.0f;
