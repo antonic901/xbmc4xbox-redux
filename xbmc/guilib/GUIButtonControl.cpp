@@ -223,12 +223,18 @@ void CGUIButtonControl::DynamicResourceAlloc(bool bOnOff)
 
 void CGUIButtonControl::SetLabel(const string &label)
 { // NOTE: No fallback for buttons at this point
-  m_info.SetLabel(label, "", GetParentID());
+  if (m_info.GetLabel(GetParentID(), false) != label)
+  {
+    m_info.SetLabel(label, "", GetParentID());
+  }
 }
 
 void CGUIButtonControl::SetLabel2(const string &label2)
 { // NOTE: No fallback for buttons at this point
-  m_info2.SetLabel(label2, "", GetParentID());
+  if (m_info2.GetLabel(GetParentID(), false) != label2)
+  {
+    m_info2.SetLabel(label2, "", GetParentID());
+  }
 }
 
 void CGUIButtonControl::SetPosition(float posX, float posY)

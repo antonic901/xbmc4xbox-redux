@@ -22,6 +22,7 @@
 #include "GUIRadioButtonControl.h"
 #include "GUIInfoManager.h"
 #include "GUIFontManager.h"
+#include "LocalizeStrings.h"
 
 CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, float posX, float posY, float width, float height,
     const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
@@ -42,6 +43,7 @@ CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, floa
   m_imgRadioOffFocus.SetAspectRatio(CAspectRatio::AR_KEEP);
   m_imgRadioOffNoFocus.SetAspectRatio(CAspectRatio::AR_KEEP);
   ControlType = GUICONTROL_RADIO;
+  m_useLabel2 = false;
 }
 
 CGUIRadioButtonControl::~CGUIRadioButtonControl(void)
@@ -70,6 +72,9 @@ void CGUIRadioButtonControl::Render()
     else
       m_imgRadioOffNoFocus.Render();
   }
+
+  if (m_useLabel2)
+    SetLabel2(g_localizeStrings.Get(m_bSelected ? 16041 : 351));
 }
 
 bool CGUIRadioButtonControl::OnAction(const CAction &action)
@@ -153,6 +158,12 @@ void CGUIRadioButtonControl::SetRadioDimensions(float posX, float posY, float wi
     m_imgRadioOffFocus.SetHeight(height);
     m_imgRadioOffNoFocus.SetHeight(height);
   }
+
+  // use label2 to display the button value in case no
+  // dimensions were specified and there's no label2 yet.
+  if (GetLabel2().empty() && !width && !height)
+    m_useLabel2 = true;
+
   SetPosition(GetXPosition(), GetYPosition());
 }
 

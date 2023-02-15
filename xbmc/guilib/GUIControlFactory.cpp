@@ -1236,6 +1236,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus);
 
     ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
+    ((CGUIRadioButtonControl *)control)->SetLabel2(strLabel2);
     ((CGUIRadioButtonControl *)control)->SetRadioDimensions(radioPosX, radioPosY, radioWidth, radioHeight);
     ((CGUIRadioButtonControl *)control)->SetToggleSelect(iToggleSelect);
     ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);

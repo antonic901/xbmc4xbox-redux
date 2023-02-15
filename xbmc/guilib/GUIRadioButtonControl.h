@@ -68,4 +68,5 @@ protected:
   float m_radioPosX;
   float m_radioPosY;
   int m_toggleSelect;
+  bool m_useLabel2;
 };
