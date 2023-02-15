@@ -246,7 +246,9 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node)
     const char *condition = include->Attribute("condition");
     if (condition)
     { // check this condition
-      if (!g_infoManager.EvaluateBool(condition))
+      bool value = g_infoManager.GetBool(g_infoManager.TranslateString(condition));
+
+      if (!value)
       {
         include = include->NextSiblingElement("include");
         continue;
