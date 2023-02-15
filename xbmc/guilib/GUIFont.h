@@ -30,10 +30,11 @@ class CGUIFontTTF;
 #define FONT_STYLE_BOLD         1
 #define FONT_STYLE_ITALICS      2
 #define FONT_STYLE_BOLD_ITALICS 3
-#define FONT_STYLE_UPPERCASE    4
-#define FONT_STYLE_LOWERCASE    8
-#define FONT_STYLE_CAPITALIZE  16
-#define FONT_STYLE_MASK       0xF
+#define FONT_STYLE_LIGHT        4
+#define FONT_STYLE_UPPERCASE    8
+#define FONT_STYLE_LOWERCASE    16
+#define FONT_STYLE_CAPITALIZE   32
+#define FONT_STYLE_MASK         0xFF
 
 class CScrollInfo
 {

@@ -370,6 +370,13 @@ void CGUITextLayout::ParseText(const CStdStringW &text, uint32_t defaultStyle, v
          (!on && (currentStyle & FONT_STYLE_UPPERCASE)))  // or matching start point
         newStyle = FONT_STYLE_UPPERCASE;
     }
+    else if (text.Mid(pos,10) == L"LOWERCASE]")
+    {
+      pos += 10;
+      if ((on && text.Find(L"[/LOWERCASE]",pos) >= 0) ||  // check for a matching end point
+         (!on && (currentStyle & FONT_STYLE_LOWERCASE)))  // or matching start point
+        newStyle = FONT_STYLE_LOWERCASE;
+    }
     else if (text.Mid(pos, 11) == L"CAPITALIZE]")
     {
       pos += 11;
@@ -377,12 +384,12 @@ void CGUITextLayout::ParseText(const CStdStringW &text, uint32_t defaultStyle, v
          (!on && (currentStyle & FONT_STYLE_CAPITALIZE)))  // or matching start point
         newStyle = FONT_STYLE_CAPITALIZE;
     }
-    else if (text.Mid(pos,10) == L"LOWERCASE]")
+    else if (text.Mid(pos, 6) == L"LIGHT]")
     {
-      pos += 10;
-      if ((on && text.Find(L"[/LOWERCASE]",pos) >= 0) ||  // check for a matching end point
-         (!on && (currentStyle & FONT_STYLE_LOWERCASE)))  // or matching start point
-        newStyle = FONT_STYLE_LOWERCASE;
+      pos += 6;
+      if ((on && text.Find(L"[/LIGHT]", pos) >= 0) ||
+         (!on && (currentStyle & FONT_STYLE_LIGHT)))
+        newStyle = FONT_STYLE_LIGHT;
     }
     else if (text.Mid(pos,3) == L"CR]" && on)
     {
