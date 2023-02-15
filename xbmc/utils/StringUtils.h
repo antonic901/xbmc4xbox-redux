@@ -39,6 +39,9 @@
 class StringUtils
 {
 public:
+  static void ToCapitalize(CStdString &str);
+  static void ToCapitalize(CStdStringW &str);
+
   static void JoinString(const CStdStringArray &strings, const CStdString& delimiter, CStdString& result);
   static CStdString JoinString(const CStdStringArray &strings, const CStdString& delimiter);
   static CStdString Join(const std::vector<std::string> &strings, const CStdString& delimiter);

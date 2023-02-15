@@ -45,6 +45,11 @@ public:
   const CStdString& GetLanguageLocale() const;
   const CStdString GetLocale() const;
 
+  /*!
+   \brief Returns the system's current locale.
+   */
+  const std::locale& GetSystemLocale() const { return m_systemLocale; }
+
   bool ForceUnicodeFont() const { return m_currentRegion->m_forceUnicodeFont; }
 
   const CStdString& GetDateFormat(bool bLongDate=false) const;
@@ -140,6 +145,7 @@ protected:
   MAPREGIONS m_regions;
   CRegion* m_currentRegion; // points to the current region
   CRegion m_defaultRegion; // default, will be used if no region available via langinfo.xml
+  std::locale m_systemLocale; // current locale, matching GUI settings !!! Hardcoded to std::locale::classic() !!!
 };
 
 

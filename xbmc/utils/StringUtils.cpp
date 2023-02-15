@@ -30,6 +30,8 @@
 
 
 #include "utils/StringUtils.h"
+#include "utils/CharsetConverter.h"
+#include "LangInfo.h"
 #include <math.h>
 #include <sstream>
 
@@ -37,6 +39,30 @@ using namespace std;
 
 /* empty string for use in returns by ref */
 const CStdString StringUtils::EmptyString = "";
+
+void StringUtils::ToCapitalize(CStdString &str)
+{
+  CStdStringW wstr;
+  g_charsetConverter.utf8ToW(str, wstr);
+  ToCapitalize(wstr);
+  g_charsetConverter.wToUTF8(wstr, str);
+}
+
+void StringUtils::ToCapitalize(CStdStringW &str)
+{
+  const std::locale& loc = g_langInfo.GetSystemLocale();
+  bool isFirstLetter = true;
+  for (CStdStringW::iterator it = str.begin(); it < str.end(); ++it)
+  {
+    if (std::isspace(*it, loc))
+      isFirstLetter = true;
+    else if (isFirstLetter)
+    {
+      *it = std::toupper(*it, loc);
+      isFirstLetter = false;
+    }
+  }
+}
 
 void StringUtils::JoinString(const CStdStringArray &strings, const CStdString& delimiter, CStdString& result)
 {

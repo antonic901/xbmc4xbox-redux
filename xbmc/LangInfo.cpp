@@ -291,6 +291,8 @@ void CLangInfo::SetDefaults()
 
   // Set the default region, we may be unable to load langinfo.xml
   m_currentRegion=&m_defaultRegion;
+
+  m_systemLocale = locale::classic();
 }
 
 CStdString CLangInfo::GetGuiCharSet() const

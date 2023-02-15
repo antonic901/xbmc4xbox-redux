@@ -408,6 +408,8 @@ void GUIFontManager::LoadFonts(const TiXmlNode* fontNode)
                   iStyle |= FONT_STYLE_UPPERCASE;
                 else if (*i == "lowercase")
                   iStyle |= FONT_STYLE_LOWERCASE;
+                else if (*i == "capitalize")
+                  iStyle |= FONT_STYLE_CAPITALIZE;
               }
             }
 
