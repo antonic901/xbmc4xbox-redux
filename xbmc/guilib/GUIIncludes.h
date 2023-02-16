@@ -62,15 +62,20 @@ private:
   static void ResolveParametersForNode(TiXmlElement *node, const Params& params);
   static ResolveParamsResult ResolveParameters(const CStdString& strInput, CStdString& strOutput, const Params& params);
   CStdString ResolveConstant(const CStdString &constant) const;
+  CStdString ResolveExpressions(const CStdString &expression) const;
   bool HasIncludeFile(const CStdString &includeFile) const;
   std::map<CStdString, std::pair<TiXmlElement, Params> > m_includes;
   std::map<CStdString, TiXmlElement> m_defaults;
   std::map<CStdString, TiXmlElement> m_skinvariables;
   std::map<CStdString, CStdString> m_constants;
+  std::map<CStdString, CStdString> m_expressions;
   std::vector<CStdString> m_files;
   typedef std::vector<CStdString>::const_iterator iFiles;
 
   std::set<std::string> m_constantAttributes;
   std::set<std::string> m_constantNodes;
+
+  std::set<std::string> m_expressionAttributes;
+  std::set<std::string> m_expressionNodes;
 };
 

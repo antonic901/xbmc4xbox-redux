@@ -81,6 +81,13 @@ CGUIIncludes::CGUIIncludes()
   m_constantNodes.insert("timeperimage");
   m_constantNodes.insert("fadetime");
   m_constantNodes.insert("pauseatend");
+
+  m_expressionAttributes.insert("condition");
+
+  m_expressionNodes.insert("visible");
+  m_expressionNodes.insert("enable");
+  m_expressionNodes.insert("usealttexture");
+  m_expressionNodes.insert("selected");
 }
 
 CGUIIncludes::~CGUIIncludes()
@@ -183,6 +190,17 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
       m_skinvariables.insert(make_pair(tagName, *node));
     }
     node = node->NextSiblingElement("variable");
+  }
+
+  node = root->FirstChildElement("expression");
+  while (node)
+  {
+    if (node->Attribute("name") && node->FirstChild())
+    {
+      std::string tagName = node->Attribute("name");
+      m_expressions.insert(make_pair(tagName, node->FirstChild()->ValueStr()));
+    }
+    node = node->NextSiblingElement("expression");
   }
 
   return true;
@@ -313,11 +331,15 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node)
   { // check the attribute against our set
     if (m_constantAttributes.count(attribute->Name()))
       attribute->SetValue(ResolveConstant(attribute->ValueStr()));
+    if (m_expressionAttributes.count(attribute->Name()))
+      attribute->SetValue(ResolveExpressions(attribute->ValueStr()));
     attribute = attribute->Next();
   }
   // also do the value
   if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TEXT && m_constantNodes.count(node->ValueStr()))
     node->FirstChild()->SetValue(ResolveConstant(node->FirstChild()->ValueStr()));
+  if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TEXT && m_expressionNodes.count(node->ValueStr()))
+    node->FirstChild()->SetValue(ResolveExpressions(node->FirstChild()->ValueStr()));
 }
 
 bool CGUIIncludes::GetParameters(const TiXmlElement *include, const char *valueAttribute, Params& params)
@@ -494,6 +516,52 @@ CStdString CGUIIncludes::ResolveConstant(const CStdString &constant) const
   CStdString value;
   StringUtils::JoinString(values, ",", value);
   return value;
+}
+
+CStdString CGUIIncludes::ResolveExpressions(const CStdString &expression) const
+{
+  CStdString work(expression);
+  
+  bool detector = false;
+  
+  CStdString strInput(work);
+  CStdString strKeyword("EXP");
+  CStdString strOutput;
+
+  CStdString dollarStrPrefix = CStdString("$" + strKeyword + "[");
+  size_t index = 0;
+  size_t startPos;
+  while((startPos = strInput.find(dollarStrPrefix, index)) != std::string::npos)
+  {
+    size_t valuePos = startPos + dollarStrPrefix.size();
+    size_t endPos = StringUtils::FindEndBracket(strInput, '[',']', valuePos);
+    if (endPos != std::string::npos)
+    {
+      if(index == 0)
+        strOutput.clear();
+      strOutput += strInput.substr(index, startPos - index);
+      std::map<CStdString, CStdString>::const_iterator it = m_expressions.find(strInput.substr(valuePos, endPos - valuePos));
+      if (it != m_expressions.end())
+        strOutput += it->second;
+      index = endPos + 1;
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"%s\"", strInput.c_str());
+      break;
+    }
+  }
+
+  if (index)
+  {
+    strOutput += strInput.substr(index);
+    detector = true;
+  }
+
+  if (detector)
+    work = strOutput;
+
+  return work;
 }
 
 const INFO::CSkinVariableString* CGUIIncludes::CreateSkinVariable(const CStdString& name, int context)
