@@ -1128,6 +1128,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUIControlGroupList(
       parentID, id, posX, posY, width, height, buttonGap, pageControl, orientation, useControlCoords, labelInfo.align, scrollTime);
+    ((CGUIControlGroup *)control)->SetDefaultControl(defaultControl, defaultAlways);
     ((CGUIControlGroup *)control)->SetRenderFocusedLast(renderFocusedLast);
   }
   else if (type == CGUIControl::GUICONTROL_LABEL)
