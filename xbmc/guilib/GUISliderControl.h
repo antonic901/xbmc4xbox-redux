@@ -35,6 +35,14 @@
 #define SPIN_CONTROL_TYPE_FLOAT     2
 #define SPIN_CONTROL_TYPE_TEXT      3
 
+typedef struct
+{
+  const char *action;
+  const char *formatString;
+  int         infoCode;
+  bool        fireOnDrag;
+} SliderAction;
+
 /*!
  \ingroup controls
  \brief
@@ -63,20 +71,26 @@ public:
   int GetIntValue() const;
   void SetFloatValue(float fValue);
   float GetFloatValue() const;
+  void SetIntInterval(int iInterval);
   void SetFloatInterval(float fInterval);
   void SetType(int iType) { m_iType = iType; };
   virtual CStdString GetDescription() const;
   void SetTextValue(const CStdString &textValue) { m_textValue = textValue; };
-  /*! \brief Get the current position of the slider as a proportion
-   \return slider position in the range [0,1]
-   */
-  float GetProportion() const;
+  void SetAction(const CStdString &action);
 protected:
   virtual bool HitTest(const CPoint &point) const;
   virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual void UpdateColors();
   virtual void Move(int iNumSteps);
   virtual void SetFromPosition(const CPoint &point);
+  /*! \brief Get the current position of the slider as a proportion
+   \return slider position in the range [0,1]
+   */
+  float GetProportion() const;
+
+  /*! \brief Send a click message (and/or action) to the app in response to a slider move
+   */
+  void SendClick();
 
   CGUITexture m_guiBackground;
   CGUITexture m_guiMid;
@@ -87,6 +101,7 @@ protected:
 
   int m_iValue;
   int m_iStart;
+  int m_iInterval;
   int m_iEnd;
 
   float m_fValue;
@@ -96,5 +111,7 @@ protected:
 
   int m_iInfoCode;
   CStdString m_textValue; ///< Allows overriding of the text value to be displayed (parent must update when the slider updates)
+  const SliderAction *m_action; ///< Allows the skin to configure the action of a click on the slider \sa SendClick
+  bool m_dragging; ///< Whether we're in a (mouse/touch) drag operation or not - some actions are sent only on release.
 };
 #endif
