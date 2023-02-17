@@ -27,12 +27,14 @@ using namespace std;
 #define SPIN_BUTTON_DOWN 1
 #define SPIN_BUTTON_UP   2
 
-CGUISpinControl::CGUISpinControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureUp, const CTextureInfo& textureDown, const CTextureInfo& textureUpFocus, const CTextureInfo& textureDownFocus, const CLabelInfo &labelInfo, int iType)
+CGUISpinControl::CGUISpinControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureUp, const CTextureInfo& textureDown, const CTextureInfo& textureUpFocus, const CTextureInfo& textureDownFocus, const CTextureInfo& textureUpDisabled, const CTextureInfo& textureDownDisabled, const CLabelInfo &labelInfo, int iType)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
     , m_imgspinUp(posX, posY, width, height, textureUp)
     , m_imgspinDown(posX, posY, width, height, textureDown)
     , m_imgspinUpFocus(posX, posY, width, height, textureUpFocus)
     , m_imgspinDownFocus(posX, posY, width, height, textureDownFocus)
+    , m_imgspinUpDisabled(posX, posY, width, height, textureUpDisabled)
+    , m_imgspinDownDisabled(posX, posY, width, height, textureDownDisabled)
     , m_label(posX, posY, width, height, labelInfo)
 {
   m_bReverse = false;
@@ -309,6 +311,8 @@ void CGUISpinControl::PreAllocResources()
   m_imgspinUpFocus.PreAllocResources();
   m_imgspinDown.PreAllocResources();
   m_imgspinDownFocus.PreAllocResources();
+  m_imgspinUpDisabled.PreAllocResources();
+  m_imgspinDownDisabled.PreAllocResources();
 }
 
 void CGUISpinControl::AllocResources()
@@ -318,11 +322,15 @@ void CGUISpinControl::AllocResources()
   m_imgspinUpFocus.AllocResources();
   m_imgspinDown.AllocResources();
   m_imgspinDownFocus.AllocResources();
+  m_imgspinUpDisabled.AllocResources();
+  m_imgspinDownDisabled.AllocResources();
 
   m_imgspinDownFocus.SetPosition(m_posX, m_posY);
   m_imgspinDown.SetPosition(m_posX, m_posY);
+  m_imgspinDownDisabled.SetPosition(m_posX, m_posY);
   m_imgspinUp.SetPosition(m_posX + m_imgspinDown.GetWidth(), m_posY);
   m_imgspinUpFocus.SetPosition(m_posX + m_imgspinDownFocus.GetWidth(), m_posY);
+  m_imgspinUpDisabled.SetPosition(m_posX + m_imgspinDownDisabled.GetWidth(), m_posY);
 }
 
 void CGUISpinControl::FreeResources(bool immediately)
@@ -332,6 +340,8 @@ void CGUISpinControl::FreeResources(bool immediately)
   m_imgspinUpFocus.FreeResources(immediately);
   m_imgspinDown.FreeResources(immediately);
   m_imgspinDownFocus.FreeResources(immediately);
+  m_imgspinUpDisabled.FreeResources(immediately);
+  m_imgspinDownDisabled.FreeResources(immediately);
   m_iTypedPos = 0;
   strcpy(m_szTyped, "");
 }
@@ -343,6 +353,8 @@ void CGUISpinControl::DynamicResourceAlloc(bool bOnOff)
   m_imgspinUpFocus.DynamicResourceAlloc(bOnOff);
   m_imgspinDown.DynamicResourceAlloc(bOnOff);
   m_imgspinDownFocus.DynamicResourceAlloc(bOnOff);
+  m_imgspinUpDisabled.DynamicResourceAlloc(bOnOff);
+  m_imgspinDownDisabled.DynamicResourceAlloc(bOnOff);
 }
 
 void CGUISpinControl::Render()
@@ -430,10 +442,15 @@ void CGUISpinControl::Render()
     else
       m_imgspinDown.Render();
   }
-  else
+  else if ( !HasFocus() && !IsDisabled() )
   {
     m_imgspinUp.Render();
     m_imgspinDown.Render();
+  }
+  else
+  {
+    m_imgspinUpDisabled.Render();
+    m_imgspinDownDisabled.Render();
   }
 
   if (m_label.GetLabelInfo().font)
@@ -546,9 +563,11 @@ void CGUISpinControl::SetPosition(float posX, float posY)
 
   m_imgspinDownFocus.SetPosition(posX, posY);
   m_imgspinDown.SetPosition(posX, posY);
+  m_imgspinDownDisabled.SetPosition(posX, posY);
 
   m_imgspinUp.SetPosition(m_posX + m_imgspinDown.GetWidth(), m_posY);
   m_imgspinUpFocus.SetPosition(m_posX + m_imgspinDownFocus.GetWidth(), m_posY);
+  m_imgspinUpDisabled.SetPosition(m_posX + m_imgspinDownDisabled.GetWidth(), m_posY);
 
 }
 
@@ -918,6 +937,8 @@ void CGUISpinControl::UpdateColors()
   m_imgspinDown.SetDiffuseColor(m_diffuseColor);
   m_imgspinUp.SetDiffuseColor(m_diffuseColor);
   m_imgspinUpFocus.SetDiffuseColor(m_diffuseColor);
+  m_imgspinUpDisabled.SetDiffuseColor(m_diffuseColor);
+  m_imgspinDownDisabled.SetDiffuseColor(m_diffuseColor);
 }
 
 bool CGUISpinControl::IsVisible() const

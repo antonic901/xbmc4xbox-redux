@@ -720,6 +720,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CTextureInfo textureLeftFocus, textureRightFocus;
   CTextureInfo textureUp, textureDown;
   CTextureInfo textureUpFocus, textureDownFocus;
+  CTextureInfo textureUpDisabled, textureDownDisabled;
   CTextureInfo texture, borderTexture;
   CGUIInfoLabel textureFile;
   CTextureInfo textureCheckMark, textureCheckMarkNF;
@@ -727,6 +728,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CTextureInfo textureAltFocus, textureAltNoFocus;
   CTextureInfo textureRadioOnFocus, textureRadioOnNoFocus;
   CTextureInfo textureRadioOffFocus, textureRadioOffNoFocus;
+  CTextureInfo textureRadioOnDisabled, textureRadioOffDisabled;
   CTextureInfo imageNoFocus, imageFocus;
   CGUIInfoLabel texturePath;
   FRECT borderSize = { 0, 0, 0, 0};
@@ -906,6 +908,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetTexture(pControlNode, "texturedown", textureDown);
   GetTexture(pControlNode, "textureupfocus", textureUpFocus);
   GetTexture(pControlNode, "texturedownfocus", textureDownFocus);
+  GetTexture(pControlNode, "textureupdisabled", textureUpDisabled);
+  GetTexture(pControlNode, "texturedowndisabled", textureDownDisabled);
 
   GetTexture(pControlNode, "textureleft", textureLeft);
   GetTexture(pControlNode, "textureright", textureRight);
@@ -941,6 +945,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     textureRadioOffNoFocus = textureRadioOffFocus;
   }
 
+  GetTexture(pControlNode, "textureradioondisabled", textureRadioOnDisabled);
+  GetTexture(pControlNode, "textureradiooffdisabled", textureRadioOffDisabled);
   GetTexture(pControlNode, "texturesliderbackground", textureBackground);
   GetTexture(pControlNode, "texturesliderbar", textureBar);
   GetTexture(pControlNode, "texturesliderbarfocus", textureBarFocus);
@@ -1235,7 +1241,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       parentID, id, posX, posY, width, height,
       textureFocus, textureNoFocus,
       labelInfo,
-      textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus);
+      textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus, textureRadioOnDisabled, textureRadioOffDisabled);
 
     ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
     ((CGUIRadioButtonControl *)control)->SetLabel2(strLabel2);
@@ -1259,6 +1265,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     control = new CGUISpinControl(
       parentID, id, posX, posY, width, height,
       textureUp, textureDown, textureUpFocus, textureDownFocus,
+      textureUpDisabled, textureDownDisabled,
       labelInfo, iType);
 
     ((CGUISpinControl *)control)->SetReverse(bReverse);
@@ -1422,7 +1429,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     control = new CGUISpinControlEx(
       parentID, id, posX, posY, width, height, spinWidth, spinHeight,
       labelInfo, textureFocus, textureNoFocus, textureUp, textureDown, textureUpFocus, textureDownFocus,
-      labelInfo, iType);
+      textureUpDisabled, textureDownDisabled, labelInfo, iType);
 
     ((CGUISpinControlEx *)control)->SetSpinPosition(spinPosX);
     ((CGUISpinControlEx *)control)->SetText(strLabel);

@@ -84,6 +84,8 @@ namespace PYXBMC
     new(&self->strTextureDown) string();    
     new(&self->strTextureUpFocus) string();    
     new(&self->strTextureDownFocus) string();      
+    new(&self->strTextureUpDisabled) string();
+    new(&self->strTextureDownDisabled) string();
 
     // default values for spin control
     self->color = 0xffffffff;
@@ -97,6 +99,8 @@ namespace PYXBMC
     self->strTextureDown = PyXBMCGetDefaultImage((char*)"listcontrol", (char*)"texturedown", (char*)"scroll-down.png");
     self->strTextureUpFocus = PyXBMCGetDefaultImage((char*)"listcontrol", (char*)"textureupfocus", (char*)"scroll-up-focus.png");
     self->strTextureDownFocus = PyXBMCGetDefaultImage((char*)"listcontrol", (char*)"texturedownfocus", (char*)"scroll-down-focus.png");
+    self->strTextureUpDisabled = PyXBMCGetDefaultImage((char*)"listcontrol", (char*)"textureupdisabled", (char*)"scroll-up.png");
+    self->strTextureDownDisabled = PyXBMCGetDefaultImage((char*)"listcontrol", (char*)"texturedowndisabled", (char*)"scroll-down.png");
 
     return (PyObject*)self;
   }
@@ -106,7 +110,9 @@ namespace PYXBMC
     self->strTextureUp.~string();
     self->strTextureDown.~string();
     self->strTextureUpFocus.~string();
-    self->strTextureDownFocus.~string();  
+    self->strTextureDownFocus.~string();
+    self->strTextureUpDisabled.~string();
+    self->strTextureDownDisabled.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -129,23 +135,26 @@ namespace PYXBMC
 
   /*
    * set textures
-   * (string textureUp, string textureDown, string textureUpFocus, string textureDownFocus)
+   * (string textureUp, string textureDown, string textureUpFocus, string textureDownFocus, string upDisabled, string downDisabled);)
    */
   PyDoc_STRVAR(setTextures__doc__,
-    "setTextures(up, down, upFocus, downFocus) -- Set's textures for this control.\n"
+    "setTextures(up, down, upFocus, downFocus, upDisabled, downDisabled) -- Set's textures for this control.\n"
     "\n"
     "texture are image files that are used for example in the skin");
 
   PyObject* ControlSpin_SetTextures(ControlSpin *self, PyObject *args)
   {
-    char *cLine[4];
+    char *cLine[6];
 
-    if (!PyArg_ParseTuple(args, (char*)"ssss", &cLine[0], &cLine[1], &cLine[2], &cLine[3])) return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"ssss", &cLine[0], &cLine[1], &cLine[2], &cLine[3], &cLine[4], &cLine[5])) return NULL;
 
     self->strTextureUp = cLine[0];
     self->strTextureDown = cLine[1];
     self->strTextureUpFocus = cLine[2];
     self->strTextureDownFocus = cLine[3];
+    self->strTextureUpDisabled = cLine[4];
+    self->strTextureDownDisabled = cLine[5];
+
     /*
     PyXBMCGUILock();
     if (self->pGUIControl)

@@ -53,7 +53,10 @@ namespace PYXBMC
       "focusOffTexture", "noFocusOffTexture",
       "focusTexture", "noFocusTexture",
       "textOffsetX", "textOffsetY", "alignment",
-      "font", "textColor", "disabledColor", "angle", "shadowColor", "focusedColor",
+      "font", "textColor",
+      "disabledColor", "angle",
+      "shadowColor", "focusedColor",
+      "disabledOnTexture", "disabledOffTexture",
       "TextureRadioFocus", "TextureRadioNoFocus", NULL };
     ControlRadioButton *self;
     char* cFont = NULL;
@@ -69,6 +72,8 @@ namespace PYXBMC
     char* cFocusedColor = NULL;
     char* cTextureRadioFocus = NULL;
     char* cTextureRadioNoFocus = NULL;
+    char* cTextureOnDisabled = NULL;
+    char* cTextureOffDisabled = NULL;
 
     PyObject* pObjectText;
 
@@ -82,6 +87,8 @@ namespace PYXBMC
     new(&self->strTextureRadioOnNoFocus) string();
     new(&self->strTextureRadioOffFocus) string();
     new(&self->strTextureRadioOffNoFocus) string();
+    new(&self->strTextureRadioOnDisabled) string();
+    new(&self->strTextureRadioOffDisabled) string();
     
     // set up default values in case they are not supplied
     self->textOffsetX = CONTROL_TEXT_OFFSET_X;
@@ -176,6 +183,8 @@ namespace PYXBMC
     self->strTextureRadioOnNoFocus.~string();
     self->strTextureRadioOffFocus.~string();
     self->strTextureRadioOffNoFocus.~string();
+    self->strTextureRadioOnDisabled.~string();
+    self->strTextureRadioOffDisabled.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -204,7 +213,9 @@ namespace PYXBMC
       (CStdString)pControl->strTextureRadioOnFocus,
       (CStdString)pControl->strTextureRadioOnNoFocus,
       (CStdString)pControl->strTextureRadioOffFocus,
-      (CStdString)pControl->strTextureRadioOffNoFocus);
+      (CStdString)pControl->strTextureRadioOffNoFocus,
+      (CStdString)pControl->strTextureRadioOnDisabled,
+      (CStdString)pControl->strTextureRadioOffDisabled);
 
     CGUIRadioButtonControl* pGuiButtonControl =
       (CGUIRadioButtonControl*)pControl->pGUIControl;

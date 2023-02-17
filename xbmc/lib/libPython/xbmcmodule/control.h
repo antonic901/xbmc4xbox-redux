@@ -100,6 +100,8 @@ namespace PYXBMC
     std::string strTextureDown;
     std::string strTextureUpFocus;
     std::string strTextureDownFocus;
+    std::string strTextureUpDisabled;
+    std::string strTextureDownDisabled;
   } ControlSpin;
 
   typedef struct {
@@ -211,6 +213,8 @@ namespace PYXBMC
     std::string strTextureRadioOnNoFocus;
     std::string strTextureRadioOffFocus;
     std::string strTextureRadioOffNoFocus;
+    std::string strTextureRadioOnDisabled;
+    std::string strTextureRadioOffDisabled;
     color_t textColor;
     color_t disabledColor;
     int textOffsetX;
