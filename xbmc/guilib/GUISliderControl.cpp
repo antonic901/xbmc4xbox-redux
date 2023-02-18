@@ -29,7 +29,7 @@ static const SliderAction actions[] = {
   {"volume",  "SetVolume(%2d)",                     PLAYER_VOLUME,   true}
  };
 
-CGUISliderControl::CGUISliderControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& backGroundTexture, const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus, int iType)
+CGUISliderControl::CGUISliderControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& backGroundTexture, const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus, int iType, ORIENTATION orientation)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
     , m_guiBackground(posX, posY, width, height, backGroundTexture)
     , m_guiMid(posX, posY, width, height, nibTexture)
@@ -46,6 +46,7 @@ CGUISliderControl::CGUISliderControl(int parentID, int controlID, float posX, fl
   m_iValue = 0;
   m_fValue = 0.0;
   ControlType = GUICONTROL_SLIDER;
+  m_orientation = orientation;
   m_iInfoCode = 0;
   m_dragging = false;
   m_action = NULL;
@@ -64,9 +65,6 @@ void CGUISliderControl::Render()
   if (infoCode)
     SetIntValue(g_infoManager.GetInt(infoCode));
 
-  float fScaleX = m_width == 0 ? 1.0f : m_width / m_guiBackground.GetTextureWidth();
-  float fScaleY = m_height == 0 ? 1.0f : m_height / m_guiBackground.GetTextureHeight();
-
   m_guiBackground.SetHeight(m_height);
   m_guiBackground.SetWidth(m_width);
   m_guiBackground.Render();
@@ -75,15 +73,46 @@ void CGUISliderControl::Render()
   // would overflow the background image
   CGUITexture &nib = (m_bHasFocus && !IsDisabled()) ? m_guiMidFocus : m_guiMid;
 
-  float offset = GetProportion() * m_guiBackground.GetTextureWidth() - nib.GetTextureWidth()/2;
-  if (offset > m_guiBackground.GetTextureWidth() - nib.GetTextureWidth())
-    offset = m_guiBackground.GetTextureWidth() - nib.GetTextureWidth();
-  if (offset < 0)
-    offset = 0;
+  float fScale = 1.0f;
 
-  nib.SetPosition(m_guiBackground.GetXPosition() + offset * fScaleX, m_guiBackground.GetYPosition() );
-  nib.SetWidth(nib.GetTextureWidth() * fScaleX);
-  nib.SetHeight(nib.GetTextureHeight() * fScaleY);
+  if (m_orientation == HORIZONTAL && m_guiBackground.GetTextureHeight() != 0)
+    fScale = m_height / m_guiBackground.GetTextureHeight();
+  else if (m_width != 0 && nib.GetTextureWidth() != 0)
+    fScale = m_width / nib.GetTextureWidth();
+  
+  if (m_orientation == HORIZONTAL)
+  {
+    nib.SetHeight(nib.GetTextureHeight() * fScale);
+    nib.SetWidth(nib.GetHeight() * 2);
+  }
+  else
+  {
+    nib.SetWidth(nib.GetTextureWidth() * fScale);
+    nib.SetHeight(nib.GetWidth() * 2);
+  }
+  CAspectRatio ratio(CAspectRatio::AR_KEEP); ratio.align = ASPECT_ALIGN_LEFT | ASPECT_ALIGNY_CENTER;
+  nib.SetAspectRatio(ratio);
+  CRect rect = nib.GetRenderRect();
+
+  float offset;
+  if (m_orientation == HORIZONTAL)
+  {
+    offset = GetProportion() * m_width - rect.Width() / 2;
+    if (offset > m_width - rect.Width())
+      offset = m_width - rect.Width();
+    if (offset < 0)
+      offset = 0;
+    nib.SetPosition(m_guiBackground.GetXPosition() + offset, m_guiBackground.GetYPosition());
+  }
+  else
+  {
+    offset = GetProportion() * m_height - rect.Height() / 2;
+    if (offset > m_height - rect.Height())
+      offset = m_height - rect.Height();
+    if (offset < 0)
+      offset = 0;
+    nib.SetPosition(m_guiBackground.GetXPosition(), m_guiBackground.GetYPosition() + m_guiBackground.GetHeight() - offset - ((nib.GetHeight() - rect.Height()) / 2 + rect.Height()));
+  }
   nib.Render();
 
   CGUIControl::Render();
@@ -118,18 +147,41 @@ bool CGUISliderControl::OnAction(const CAction &action)
   {
   case ACTION_MOVE_LEFT:
     //case ACTION_OSD_SHOW_VALUE_MIN:
-    Move( -1);
-    return true;
+    if (m_orientation == HORIZONTAL)
+    {
+      Move(-1);
+      return true;
+    }
     break;
 
   case ACTION_MOVE_RIGHT:
     //case ACTION_OSD_SHOW_VALUE_PLUS:
-    Move(1);
-    return true;
+    if (m_orientation == HORIZONTAL)
+    {
+      Move(1);
+      return true;
+    }
+    break;
+
+  case ACTION_MOVE_UP:
+    if (m_orientation == VERTICAL)
+    {
+      Move(1);
+      return true;
+    }
+    break;
+
+  case ACTION_MOVE_DOWN:
+    if (m_orientation == VERTICAL)
+    {
+      Move(-1);
+      return true;
+    }
     break;
   default:
-    return CGUIControl::OnAction(action);
+    break;
   }
+  return CGUIControl::OnAction(action);
 }
 
 void CGUISliderControl::Move(int iNumSteps)
@@ -302,7 +354,11 @@ bool CGUISliderControl::HitTest(const CPoint &point) const
 
 void CGUISliderControl::SetFromPosition(const CPoint &point)
 {
-  float fPercent = (point.x - m_guiBackground.GetXPosition()) / m_guiBackground.GetWidth();
+  float fPercent;
+  if (m_orientation == HORIZONTAL)
+    fPercent = (point.x - m_guiBackground.GetXPosition()) / m_guiBackground.GetWidth();
+  else
+    fPercent = (point.y - m_guiBackground.GetYPosition()) / m_guiBackground.GetHeight();
   if (fPercent < 0) fPercent = 0;
   if (fPercent > 1) fPercent = 1;
   switch (m_iType)

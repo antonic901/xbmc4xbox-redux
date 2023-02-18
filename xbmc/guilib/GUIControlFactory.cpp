@@ -1291,7 +1291,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   {
     control = new CGUISliderControl(
       parentID, id, posX, posY, width, height,
-      textureBar, textureNib, textureNibFocus, SPIN_CONTROL_TYPE_TEXT);
+      textureBar, textureNib, textureNibFocus, SPIN_CONTROL_TYPE_TEXT, orientation);
 
     ((CGUISliderControl *)control)->SetInfo(singleInfo);
   }
