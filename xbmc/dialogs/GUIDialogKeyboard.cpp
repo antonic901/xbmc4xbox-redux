@@ -38,6 +38,7 @@
 
 // Symbol mapping (based on MS virtual keyboard - may need improving)
 static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";
+#define NUM_SYMBOLS sizeof(symbol_map)
 
 #define CTL_BUTTON_DONE       300
 #define CTL_BUTTON_CANCEL     301
@@ -52,9 +53,6 @@ static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";
 #define CTL_LABEL_HEADING     311
 
 #define CTL_BUTTON_BACKSPACE    8
-
-static char symbolButtons[] = "._-@/\\";
-#define NUM_SYMBOLS sizeof(symbolButtons) - 1
 
 #define SEARCH_DELAY         1000
 #define REMOTE_SMS_DELAY     1000
@@ -474,7 +472,7 @@ char CGUIDialogKeyboard::GetCharacter(int iButton)
   else
   { // check for symbols
     for (unsigned int i = 0; i < NUM_SYMBOLS; i++)
-      if (iButton == symbolButtons[i])
+      if (iButton == symbol_map[i])
         return (char)iButton;
   }
   return 0;
@@ -548,8 +546,8 @@ void CGUIDialogKeyboard::UpdateButtons()
   }
   for (unsigned int i = 0; i < NUM_SYMBOLS; i++)
   {
-    aLabel[0] = symbolButtons[i];
-    SetControlLabel(symbolButtons[i], aLabel);
+    aLabel[0] = symbol_map[i];
+    SetControlLabel(symbol_map[i], aLabel);
   }
 }
 
