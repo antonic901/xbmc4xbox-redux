@@ -154,7 +154,19 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
     }
     else if (node->Attribute("file"))
     { // load this file in as well
-      LoadIncludes(g_SkinInfo.GetSkinPath(node->Attribute("file")));
+      const char *condition = node->Attribute("condition");
+      if (condition)
+      { // check this condition
+        bool value = g_infoManager.GetBool(g_infoManager.TranslateString(condition));
+
+        if (value)
+        {
+          // load this file in as well
+          LoadIncludes(g_SkinInfo.GetSkinPath(node->Attribute("file")));
+        }
+      }
+      else
+        LoadIncludes(g_SkinInfo.GetSkinPath(node->Attribute("file")));
     }
     node = node->NextSiblingElement("include");
   }
