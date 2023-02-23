@@ -38,7 +38,7 @@
 class CGUIFadeLabelControl : public CGUIControl
 {
 public:
-  CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange);
+  CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange, bool randomized);
   CGUIFadeLabelControl(const CGUIFadeLabelControl &from);
   virtual ~CGUIFadeLabelControl(void);
   virtual CGUIFadeLabelControl *Clone() const { return new CGUIFadeLabelControl(*this); };
@@ -80,5 +80,6 @@ protected:
   unsigned int m_renderTime;
   unsigned int m_scrollSpeed;
   bool m_resetOnLabelChange;
+  bool m_randomized;
 };
 #endif

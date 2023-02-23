@@ -24,7 +24,7 @@
 
 using namespace std;
 
-CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange)
+CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange, bool randomized)
     : CGUIControl(parentID, controlID, posX, posY, width, height), m_scrollInfo(50, labelInfo.offsetX, labelInfo.scrollSpeed)
     , m_textLayout(labelInfo.font, false)
 {
@@ -40,6 +40,7 @@ CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float po
   m_scrollSpeed = labelInfo.scrollSpeed;  // save it for later
   m_resetOnLabelChange = resetOnLabelChange;
   m_shortText = false;
+  m_randomized = randomized;
 }
 
 CGUIFadeLabelControl::CGUIFadeLabelControl(const CGUIFadeLabelControl &from)
@@ -58,6 +59,7 @@ CGUIFadeLabelControl::CGUIFadeLabelControl(const CGUIFadeLabelControl &from)
   m_renderTime = 0;
   m_lastLabel = -1;
   ControlType = GUICONTROL_FADELABEL;
+  m_randomized = from.m_randomized;
 }
 
 CGUIFadeLabelControl::~CGUIFadeLabelControl(void)
@@ -70,6 +72,8 @@ void CGUIFadeLabelControl::SetInfo(const vector<CGUIInfoLabel> &infoLabels)
 {
   m_lastLabel = -1;
   m_infoLabels = infoLabels;
+  if (m_randomized)
+    std::random_shuffle(m_infoLabels.begin(), m_infoLabels.end());
 }
 
 void CGUIFadeLabelControl::AddLabel(const string &label)

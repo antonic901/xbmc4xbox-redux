@@ -112,7 +112,8 @@ namespace PYXBMC
       label, 
       true,
       0,
-      true);
+      true,
+      false);
 
     CGUIMessage msg(GUI_MSG_LABEL_RESET, pControl->iParentId, pControl->iControlId);
     pControl->pGUIControl->OnMessage(msg);
