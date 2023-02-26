@@ -20,6 +20,7 @@
 
 #include "include.h"
 #include "GUIControlGroup.h"
+#include "GUIInfoManager.h"
 
 using namespace std;
 
@@ -494,6 +495,49 @@ void CGUIControlGroup::AddControl(CGUIControl *control, int position /* = -1*/)
   control->SetParentControl(this);
   control->SetPushUpdates(m_pushedUpdates);
   AddLookup(control);
+}
+
+CStdString CGUIControlGroup::GetLabel(int info) const
+{
+  CStdString label;
+  switch (info)
+  {
+  case CONTAINER_CURRENT_ITEM:
+    label.Format("%i", GetSelectedItem());
+    return label;
+  case CONTAINER_NUM_ITEMS:
+    label.Format("%i", GetNumItems());
+    return label;
+  default:
+    break;
+  }
+  return string();
+}
+
+bool isVisibleFocusable(const CGUIControl *child)
+{
+  return (child->IsVisible() && child->CanFocus());
+}
+
+int CGUIControlGroup::GetNumItems() const
+{
+  return count_if(m_children.begin(), m_children.end(), isVisibleFocusable);
+}
+
+int CGUIControlGroup::GetSelectedItem() const
+{
+  int index = 1;
+  for (vector<CGUIControl*>::const_iterator it = m_children.begin(); it != m_children.end(); ++it)
+  {
+    CGUIControl *child = *it;
+    if (child->IsVisible() && child->CanFocus())
+    {
+      if (child->HasFocus())
+        return index;
+      index++;
+    }
+  }
+  return -1;
 }
 
 void CGUIControlGroup::AddLookup(CGUIControl *control)

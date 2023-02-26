@@ -49,6 +49,7 @@
 #include "SystemInfo.h"
 #include "GUIButtonScroller.h"
 #include "GUITextBox.h"
+#include "GUIControlGroupList.h"
 #include "GUIPassword.h"
 #include "LangInfo.h"
 #include "GUIInfoManager.h"
@@ -2731,6 +2732,8 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     {
       if (control->IsContainer())
         return ((CGUIBaseContainer *)control)->GetLabel(info.m_info);
+      else if (control->GetControlType() == CGUIControl::GUICONTROL_GROUPLIST)
+        return ((CGUIControlGroupList *)control)->GetLabel(info.m_info);
       else if (control->GetControlType() == CGUIControl::GUICONTROL_TEXTBOX)
         return ((CGUITextBox *)control)->GetLabel(info.m_info);
     }
