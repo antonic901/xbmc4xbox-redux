@@ -1056,6 +1056,14 @@ CStdString CGUIBaseContainer::GetLabel(int info) const
   case CONTAINER_POSITION:
     label.Format("%i", m_cursor);
     break;
+  case CONTAINER_CURRENT_ITEM:
+    {
+      if (m_items.size() && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
+        label.Format("%i", GetSelectedItem());
+      else
+        label.Format("%i", GetSelectedItem() + 1);
+    }
+    break;
   case CONTAINER_NUM_ITEMS:
     {
       unsigned int numItems = GetNumItems();

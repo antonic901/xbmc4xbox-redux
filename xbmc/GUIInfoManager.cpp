@@ -711,6 +711,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     else if (info.Equals("hasthumb")) ret = CONTAINER_HAS_THUMB;
     else if (info.Equals("numpages")) ret = CONTAINER_NUM_PAGES;
     else if (info.Equals("numitems")) ret = CONTAINER_NUM_ITEMS;
+    else if (info.Equals("currentitem")) ret = CONTAINER_CURRENT_ITEM;
     else if (info.Equals("currentpage")) ret = CONTAINER_CURRENT_PAGE;
     else if (info.Equals("sortmethod")) ret = CONTAINER_SORT_METHOD;
     else if (info.Left(13).Equals("sortdirection"))
@@ -743,7 +744,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     }
     else if (info.Equals("showplot")) ret = CONTAINER_SHOWPLOT;
     if (id && ((ret >= CONTAINER_SCROLL_PREVIOUS && ret <= CONTAINER_SCROLL_NEXT) || ret == CONTAINER_NUM_PAGES ||
-               ret == CONTAINER_NUM_ITEMS || ret == CONTAINER_CURRENT_PAGE))
+               ret == CONTAINER_NUM_ITEMS || ret == CONTAINER_CURRENT_PAGE || CONTAINER_CURRENT_ITEM))
       return AddMultiInfo(GUIInfo(bNegate ? -ret : ret, id));
   }
   else if (strCategory.Left(8).Equals("listitem"))
@@ -1412,6 +1413,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
     break;
   case CONTAINER_NUM_PAGES:
   case CONTAINER_NUM_ITEMS:
+  case CONTAINER_CURRENT_ITEM:
   case CONTAINER_CURRENT_PAGE:
     return GetMultiInfoLabel(GUIInfo(info), contextWindow);
     break;
@@ -2712,7 +2714,8 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     return GetTime((TIME_FORMAT)info.GetData1());
   }
   else if (info.m_info == CONTAINER_NUM_PAGES || info.m_info == CONTAINER_CURRENT_PAGE ||
-           info.m_info == CONTAINER_NUM_ITEMS || info.m_info == CONTAINER_POSITION)
+           info.m_info == CONTAINER_NUM_ITEMS || info.m_info == CONTAINER_POSITION ||
+           info.m_info == CONTAINER_CURRENT_ITEM)
   {
     const CGUIControl *control = NULL;
     if (info.GetData1())
