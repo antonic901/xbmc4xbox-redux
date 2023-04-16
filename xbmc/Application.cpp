@@ -325,6 +325,7 @@ CApplication::CApplication(void) : m_ctrDpad(220, 220), m_itemCurrentFile(new CF
   m_pCdgParser = new CCdgParser();
 #endif
   m_currentStack = new CFileItemList;
+  m_debugLayout = NULL;
 }
 
 CApplication::~CApplication(void)
@@ -2026,6 +2027,9 @@ void CApplication::UnloadSkin()
   m_guiDialogMuteBug.ResetControlStates();
   m_guiDialogMuteBug.FreeResources(true);
 
+  delete m_debugLayout;
+  m_debugLayout = NULL;
+
   // remove the skin-dependent window
   g_windowManager.Delete(WINDOW_DIALOG_FULLSCREEN_INFO);
 
@@ -2283,6 +2287,17 @@ void CApplication::Render()
 void CApplication::RenderMemoryStatus()
 {
   g_infoManager.UpdateFPS();
+
+  if (!m_debugLayout)
+  {
+    CGUIFont *font13 = g_fontManager.GetDefaultFont();
+    CGUIFont *font13border = g_fontManager.GetDefaultFont(true);
+    if (font13)
+      m_debugLayout = new CGUITextLayout(font13, true, 0, font13border);
+  }
+  if (!m_debugLayout)
+    return;
+
 #if !defined(_DEBUG) && !defined(PROFILE)
   if (LOG_LEVEL_DEBUG_FREEMEM <= g_advancedSettings.m_logLevel)
 #endif
@@ -2291,14 +2306,47 @@ void CApplication::RenderMemoryStatus()
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
     g_graphicsContext.SetRenderingResolution(res, false);
 
-    CStdStringW wszText;
+    CStdString info;
     MEMORYSTATUS stat;
     GlobalMemoryStatus(&stat);
-    wszText.Format(L"FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, g_infoManager.GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
-
+    info.Format("FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, g_infoManager.GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
+    
+    if(g_SkinInfo.IsDebugging())
+    {
+      if (!info.IsEmpty())
+        info += "\n";
+      CGUIWindow *window = g_windowManager.GetWindow(g_windowManager.GetFocusedWindow());
+      CGUIWindow *pointer = g_windowManager.GetWindow(105);
+      CPoint point;
+      if (pointer)
+        point = CPoint(pointer->GetXPosition(), pointer->GetYPosition());
+      if (window)
+      {
+        CStdString windowName = CButtonTranslator::TranslateWindow(window->GetID());
+        if (!windowName.IsEmpty())
+          windowName += " (" + window->GetProperty("xmlfile") + ")";
+        else
+          windowName = window->GetProperty("xmlfile");
+        info += "Window: " + windowName + "  ";
+        // transform the mouse coordinates to this window's coordinates
+        g_graphicsContext.SetScalingResolution(window->GetCoordsRes(), true);
+        point.x *= g_graphicsContext.GetGUIScaleX();
+        point.y *= g_graphicsContext.GetGUIScaleY();
+        g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetVideoResolution(), false);
+      }
+      info.AppendFormat("Mouse: (%d,%d)  ", (int)point.x, (int)point.y);
+      if (window)
+      {
+        CGUIControl *control = window->GetFocusedControl();
+        if (control)
+          info.AppendFormat("Focused: %i (%s)", control->GetID(), CGUIControlFactory::TranslateControlType(control->GetControlType()).c_str());
+      }
+    }
     float x = 0.04f * g_graphicsContext.GetWidth() + g_settings.m_ResInfo[res].Overscan.left;
     float y = 0.04f * g_graphicsContext.GetHeight() + g_settings.m_ResInfo[res].Overscan.top;
-    CGUITextLayout::DrawOutlineText(g_fontManager.GetFont("font13"), x, y, 0xffffffff, 0xff000000, 2, wszText);
+
+    m_debugLayout->Update(info);
+    m_debugLayout->RenderOutline(x, y, 0xffffffff, 0xff000000, 0, 0);
   }
 }
 

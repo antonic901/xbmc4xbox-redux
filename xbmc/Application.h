@@ -55,6 +55,7 @@ class CCdgParser;
 class CApplicationMessenger;
 class CProfile;
 class CSplash;
+class CGUITextLayout;
 
 class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback
 {
@@ -249,6 +250,8 @@ protected:
   int m_iPlaySpeed;
   int m_currentStackPosition;
   int m_nextPlaylistItem;
+
+  CGUITextLayout *m_debugLayout;
 
   static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
 
