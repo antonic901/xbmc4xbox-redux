@@ -4,6 +4,7 @@
 	<defaultthemename>Textures.xpr</defaultthemename>
 	<version>2.11</version>
 	<effectslowdown>.75</effectslowdown>
+  <debugging>false</debugging>
 	<credits>
 		<skinname>Confluence Lite</skinname>
 		<name>Confluence skin by Jezz_X, Team XBMC</name>

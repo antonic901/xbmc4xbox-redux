@@ -38,28 +38,31 @@ CSkinInfo g_SkinInfo; // global
 
 CSkinInfo::CSkinInfo()
 {
-  m_DefaultResolution = PAL_4x3;
-  m_DefaultResolutionWide = INVALID;
-  m_strBaseDir = "";
-  m_iNumCreditLines = 0;
-  m_effectsSlowDown = 1.0f;
-  m_onlyAnimateToHome = true;
-  m_Version = 1.0;
-  m_skinzoom = 1.0f;
-  m_bLegacy = false;
+  SetDefaults();
 }
 
 CSkinInfo::~CSkinInfo()
 {}
 
-void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
+void CSkinInfo::SetDefaults()
 {
-  m_strBaseDir = strSkinDir;
+  m_strBaseDir = "";
   m_DefaultResolution = PAL_4x3;
   m_DefaultResolutionWide = INVALID;
   m_effectsSlowDown = 1.0f;
-  m_skinzoom = 1.0f;
   m_Version = 1.0;
+  m_debugging = false;
+  m_onlyAnimateToHome = true;
+  m_iNumCreditLines = 0;
+  m_skinzoom = 1.0f;
+  m_bLegacy = false;
+}
+
+void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
+{
+  SetDefaults();
+  m_strBaseDir = strSkinDir;
+
   // Load from skin.xml
   TiXmlDocument xmlDoc;
   CStdString strFile = m_strBaseDir + "\\skin.xml";
@@ -77,6 +80,7 @@ void CSkinInfo::Load(const CStdString& strSkinDir, bool loadIncludes)
 
       XMLUtils::GetDouble(root, "version", m_Version);
       XMLUtils::GetFloat(root, "effectslowdown", m_effectsSlowDown);
+      XMLUtils::GetBoolean(root, "debugging", m_debugging);
       XMLUtils::GetFloat(root, "zoom", m_skinzoom);
 
       // get the legacy parameter to tweak the control behaviour for old skins such as PM3
