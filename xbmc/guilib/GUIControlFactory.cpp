@@ -792,6 +792,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   CStdString altLabel;
   CStdString strLabel2;
+  CStdString action;
 
   int focusPosition = 0;
   int scrollTime = 200;
@@ -1111,6 +1112,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetString(pControlNode, "scrollsuffix", labelInfo.scrollSuffix);
   spinInfo.scrollSuffix = labelInfo.scrollSuffix;
 
+  XMLUtils::GetString(pControlNode, "action", action);
+
   /////////////////////////////////////////////////////////////////////////////
   // Instantiate a new control using the properties gathered above
   //
@@ -1294,6 +1297,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       textureBar, textureNib, textureNibFocus, SPIN_CONTROL_TYPE_TEXT, orientation);
 
     ((CGUISliderControl *)control)->SetInfo(singleInfo);
+    ((CGUISliderControl *)control)->SetAction(action);
   }
   else if (type == CGUIControl::GUICONTROL_SETTINGS_SLIDER)
   {
