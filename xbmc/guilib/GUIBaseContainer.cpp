@@ -1101,3 +1101,8 @@ void CGUIBaseContainer::GetCacheOffsets(int &cacheBefore, int &cacheAfter)
     cacheAfter = m_cacheItems / 2;
   }
 }
+
+bool CGUIBaseContainer::CanFocus() const
+{
+  return (!m_items.empty() && CGUIControl::CanFocus());
+}
