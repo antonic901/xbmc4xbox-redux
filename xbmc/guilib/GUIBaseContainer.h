@@ -114,6 +114,7 @@ protected:
   virtual unsigned int GetNumItems() const { return m_items.size(); };
   virtual int GetCurrentPage() const;
   bool InsideLayout(const CGUIListItemLayout *layout, const CPoint &point) const;
+  void UpdateStaticItems(bool refreshItems = false);
 
   inline float Size() const;
   void MoveToRow(int row);
