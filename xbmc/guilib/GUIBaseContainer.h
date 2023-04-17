@@ -97,7 +97,7 @@ protected:
   virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
   virtual void Render();
-  virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
+  virtual void RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused);
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
   virtual bool MoveUp(bool wrapAround);
@@ -133,7 +133,7 @@ protected:
 
   std::vector< CGUIListItemPtr > m_items;
   typedef std::vector<CGUIListItemPtr> ::iterator iItems;
-  CGUIListItem *m_lastItem;
+  CGUIListItemPtr m_lastItem;
 
   int m_pageControl;
 

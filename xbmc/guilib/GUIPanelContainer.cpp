@@ -87,9 +87,9 @@ void CGUIPanelContainer::Render()
         else
         {
           if (m_orientation == VERTICAL)
-            RenderItem(origin.x + col * m_layout->Size(HORIZONTAL), pos, item.get(), false);
+            RenderItem(origin.x + col * m_layout->Size(HORIZONTAL), pos, item, false);
           else
-            RenderItem(pos, origin.y + col * m_layout->Size(VERTICAL), item.get(), false);
+            RenderItem(pos, origin.y + col * m_layout->Size(VERTICAL), item, false);
         }
       }
       // increment our position
@@ -106,9 +106,9 @@ void CGUIPanelContainer::Render()
     if (focusedItem)
     {
       if (m_orientation == VERTICAL)
-        RenderItem(origin.x + focusedCol * m_layout->Size(HORIZONTAL), focusedPos, focusedItem.get(), true);
+        RenderItem(origin.x + focusedCol * m_layout->Size(HORIZONTAL), focusedPos, focusedItem, true);
       else
-        RenderItem(focusedPos, origin.y + focusedCol * m_layout->Size(VERTICAL), focusedItem.get(), true);
+        RenderItem(focusedPos, origin.y + focusedCol * m_layout->Size(VERTICAL), focusedItem, true);
     }
 
     g_graphicsContext.RestoreClipRegion();

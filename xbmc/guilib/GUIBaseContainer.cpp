@@ -49,7 +49,6 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_renderTime = 0;
   m_orientation = orientation;
   m_analogScrollCount = 0;
-  m_lastItem = NULL;
   m_staticContent = false;
   m_staticUpdateTime = 0;
   m_wasReset = false;
@@ -119,9 +118,9 @@ void CGUIBaseContainer::Render()
         else
         {
           if (m_orientation == VERTICAL)
-            RenderItem(origin.x, pos, item.get(), false);
+            RenderItem(origin.x, pos, item, false);
           else
-            RenderItem(pos, origin.y, item.get(), false);
+            RenderItem(pos, origin.y, item, false);
         }
       }
       // increment our position
@@ -132,9 +131,9 @@ void CGUIBaseContainer::Render()
     if (focusedItem)
     {
       if (m_orientation == VERTICAL)
-        RenderItem(origin.x, focusedPos, focusedItem.get(), true);
+        RenderItem(origin.x, focusedPos, focusedItem, true);
       else
-        RenderItem(focusedPos, origin.y, focusedItem.get(), true);
+        RenderItem(focusedPos, origin.y, focusedItem, true);
     }
 
     g_graphicsContext.RestoreClipRegion();
@@ -146,7 +145,7 @@ void CGUIBaseContainer::Render()
 }
 
 
-void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, bool focused)
+void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused)
 {
   if (!m_focusedLayout || !m_layout) return;
 
@@ -176,7 +175,7 @@ void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, b
           subItem = m_lastItem->GetFocusedLayout()->GetFocusedItem();
         item->GetFocusedLayout()->SetFocusedItem(subItem ? subItem : 1);
       }
-      item->GetFocusedLayout()->Render(item, m_parentID, m_renderTime);
+      item->GetFocusedLayout()->Render(item.get(), m_parentID, m_renderTime);
     }
     m_lastItem = item;
   }
@@ -190,9 +189,9 @@ void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, b
       item->SetLayout(layout);
     }
     if (item->GetFocusedLayout() && item->GetFocusedLayout()->IsAnimating(ANIM_TYPE_UNFOCUS))
-      item->GetFocusedLayout()->Render(item, m_parentID, m_renderTime);
+      item->GetFocusedLayout()->Render(item.get(), m_parentID, m_renderTime);
     else if (item->GetLayout())
-      item->GetLayout()->Render(item, m_parentID, m_renderTime);
+      item->GetLayout()->Render(item.get(), m_parentID, m_renderTime);
   }
   g_graphicsContext.RestoreOrigin();
 }
@@ -647,7 +646,7 @@ void CGUIBaseContainer::SetFocus(bool bOnOff)
   if (bOnOff != HasFocus())
   {
     SetInvalid();
-    m_lastItem = NULL;
+    m_lastItem.reset();
   }
   CGUIControl::SetFocus(bOnOff);
 }
@@ -740,7 +739,6 @@ void CGUIBaseContainer::UpdateVisibility(const CGUIListItem *item)
   if (m_staticContent)
   { // update our item list with our new content, but only add those items that should
     // be visible.  Save the previous item and keep it if we are adding that one.
-    CGUIListItem *lastItem = m_lastItem;
     int selected = GetSelectedItem();
     CGUIListItem* selectedItem = (selected >= 0 && (unsigned int)selected < m_items.size()) ? m_items[selected].get() : NULL;
     Reset();
@@ -759,8 +757,6 @@ void CGUIBaseContainer::UpdateVisibility(const CGUIListItem *item)
       if (item->IsVisible())
       {
         m_items.push_back(item);
-        if (item.get() == lastItem)
-          m_lastItem = lastItem;
         // if item is selected and it changed position, re-select it
         if (item.get() == selectedItem && selected != (int)m_items.size() - 1)
           SelectItem(m_items.size() - 1);
@@ -878,7 +874,6 @@ void CGUIBaseContainer::Reset()
 {
   m_wasReset = true;
   m_items.clear();
-  m_lastItem = NULL;
 }
 
 void CGUIBaseContainer::LoadLayout(TiXmlElement *layout)
