@@ -68,10 +68,22 @@ public:
    */
   void UpdateProperties(int contextWindow);
   const CGUIAction &GetClickActions() const { return m_clickActions; };
+
+  /*! \brief update visibility of this item
+   \param contextWindow window context to use for any info labels
+   \return true if visible state has changed, false otherwise
+   */
+  bool UpdateVisibility(int contextWindow);
+
+  /*! \brief whether this item is visible or not
+   */
+  bool IsVisible() const;
 private:
   typedef std::vector< std::pair<CGUIInfoLabel, CStdString> > InfoVector;
   InfoVector m_info;
   CGUIAction m_clickActions;
+  int  m_visCondition;
+  bool m_visState;
 };
 
 typedef boost::shared_ptr<CGUIStaticItem> CGUIStaticItemPtr;
