@@ -731,9 +731,9 @@ void CGUIBaseContainer::UpdateVisibility(const CGUIListItem *item)
       (m_focusedLayout && m_focusedLayout->GetCondition() && !g_infoManager.GetBool(m_focusedLayout->GetCondition(), GetParentID())))
   {
     // and do it
-    int item = GetSelectedItem();
+    int itemIndex = GetSelectedItem();
     UpdateLayout(true); // true to refresh all items
-    SelectItem(item);
+    SelectItem(itemIndex);
   }
 
   UpdateStaticItems();
@@ -758,19 +758,19 @@ void CGUIBaseContainer::UpdateStaticItems(bool refreshItems)
     }
     for (unsigned int i = 0; i < m_staticItems.size(); ++i)
     {
-      CGUIStaticItemPtr item = boost::static_pointer_cast<CGUIStaticItem>(m_staticItems[i]);
-      if(item->UpdateVisibility(GetParentID()))
+      CGUIStaticItemPtr staticItem = boost::static_pointer_cast<CGUIStaticItem>(m_staticItems[i]);
+      if(staticItem->UpdateVisibility(GetParentID()))
         refreshItems = true;
-      if (item->IsVisible())
+      if (staticItem->IsVisible())
       {
-        items.push_back(item);
+        items.push_back(staticItem);
         // if item is selected and it changed position, re-select it
-        if (item.get() == selectedItem && selected != (int)items.size() - 1)
+        if (staticItem.get() == selectedItem && selected != (int)items.size() - 1)
           reselect = items.size() - 1;
       }
       // update any properties
       if (updateItemsProperties)
-        item->UpdateProperties(GetParentID());
+        staticItem->UpdateProperties(GetParentID());
     }
     if (refreshItems)
     {
