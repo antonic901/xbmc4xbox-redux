@@ -281,26 +281,11 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 bool CGUIWindowPrograms::OnChooseVideoModeAndLaunch(int item)
 {
   if (item < 0 || item >= m_vecItems->Size()) return false;
-  // calculate our position
-  float posX = 200;
-  float posY = 100;
-  const CGUIControl *pList = GetControl(CONTROL_LIST);
-  if (pList)
-  {
-    posX = pList->GetXPosition() + pList->GetWidth() / 2;
-    posY = pList->GetYPosition() + pList->GetHeight() / 2;
-  }
 
-  // grab the context menu
-  CGUIDialogContextMenu *pMenu = (CGUIDialogContextMenu *)g_windowManager.GetWindow(WINDOW_DIALOG_CONTEXT_MENU);
-  if (!pMenu) return false;
-
-  pMenu->Initialize();
-
-  int btn_PAL;
-  int btn_NTSCM;
-  int btn_NTSCJ;
-  int btn_PAL60;
+  int btn_PAL = 1;
+  int btn_NTSCM = 2;
+  int btn_NTSCJ = 3;
+  int btn_PAL60 = 4;
   CStdString strPAL, strNTSCJ, strNTSCM, strPAL60;
   strPAL = "PAL";
   strNTSCM = "NTSC-M";
@@ -315,14 +300,14 @@ bool CGUIWindowPrograms::OnChooseVideoModeAndLaunch(int item)
   if (iRegion == VIDEO_PAL50)
     strPAL += " (default)";
 
-  btn_PAL = pMenu->AddButton(strPAL);
-  btn_NTSCM = pMenu->AddButton(strNTSCM);
-  btn_NTSCJ = pMenu->AddButton(strNTSCJ);
-  btn_PAL60 = pMenu->AddButton(strPAL60);
+  // add the needed buttons
+  CContextButtons choices;
+  choices.Add(btn_PAL, strPAL);
+  choices.Add(btn_NTSCM, strNTSCM);
+  choices.Add(btn_NTSCJ, strNTSCJ);
+  choices.Add(btn_PAL60, strPAL60);
 
-  pMenu->OffsetPosition(posX, posY);
-  pMenu->DoModal();
-  int btnid = pMenu->GetButton();
+  int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
 
   if (btnid == btn_NTSCM)
   {
