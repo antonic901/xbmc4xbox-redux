@@ -85,13 +85,7 @@ public:
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
-protected:
-  /*!
-   \brief Return the coordinates of the top left of the group, in the group's parent coordinates
-   \return The top left coordinates of the group
-   */
-  virtual CPoint GetPosition() const { return CPoint(m_posX, m_posY); };
-  
+protected:  
   /*!
    \brief Check whether a given control is valid
    Runs through controls and returns whether this control is valid.  Only functional

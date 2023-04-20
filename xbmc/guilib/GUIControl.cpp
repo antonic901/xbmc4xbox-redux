@@ -811,7 +811,7 @@ void CGUIControl::SetCamera(const CPoint &camera)
 CPoint CGUIControl::GetRenderPosition() const
 {
   float z = 0;
-  CPoint point(GetXPosition(), GetYPosition());
+  CPoint point(GetPosition());
   m_transform.TransformPosition(point.x, point.y, z);
   if (m_parentControl)
     point += m_parentControl->GetRenderPosition();
