@@ -76,6 +76,7 @@ class CGUIWindow : public CGUIControlGroup
 {
 public:
   enum WINDOW_TYPE { WINDOW = 0, MODAL_DIALOG, MODELESS_DIALOG, BUTTON_MENU, SUB_MENU };
+  enum LOAD_TYPE { LOAD_ON_DEMAND, LOAD_ON_GUI_INIT};
 
   CGUIWindow(int id, const CStdString &xmlFile);
   virtual ~CGUIWindow(void);
@@ -138,8 +139,8 @@ public:
   virtual bool IsActive() const;
   void SetCoordsRes(RESOLUTION res) { m_coordsRes = res; };
   RESOLUTION GetCoordsRes() const { return m_coordsRes; };
-  void LoadOnDemand(bool loadOnDemand) { m_loadOnDemand = loadOnDemand; };
-  bool GetLoadOnDemand() { return m_loadOnDemand; }
+  void SetLoadType(LOAD_TYPE loadType) { m_loadType = loadType; };
+  LOAD_TYPE GetLoadType() { return m_loadType; } const
   int GetRenderOrder() { return m_renderOrder; };
   virtual void SetInitialVisibility();
 
@@ -253,7 +254,7 @@ protected:
   RESOLUTION m_coordsRes; // resolution that the window coordinates are in.
   bool m_needsScaling;
   bool m_windowLoaded;  // true if the window's xml file has been loaded
-  bool m_loadOnDemand;  // true if the window should be loaded only as needed
+  LOAD_TYPE m_loadType;
   bool m_isDialog;      // true if we have a dialog, false otherwise.
   bool m_dynamicResourceAlloc;
   CGUIInfoColor m_clearBackground; // colour to clear the window

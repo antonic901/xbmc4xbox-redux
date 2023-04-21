@@ -26,7 +26,7 @@ CGUIPythonWindowDialog::CGUIPythonWindowDialog(int id)
 :CGUIPythonWindow(id)
 {
   m_bRunning = false;
-  m_loadOnDemand = false;
+  m_loadType = LOAD_ON_GUI_INIT;
 }
 
 CGUIPythonWindowDialog::~CGUIPythonWindowDialog(void)

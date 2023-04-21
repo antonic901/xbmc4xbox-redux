@@ -34,7 +34,7 @@ CGUIPythonWindow::CGUIPythonWindow(int id)
 {
   pCallbackWindow = NULL;
   m_actionEvent = CreateEvent(NULL, true, false, NULL);
-  m_loadOnDemand = false;
+  m_loadType = LOAD_ON_GUI_INIT;
 }
 
 CGUIPythonWindow::~CGUIPythonWindow(void)

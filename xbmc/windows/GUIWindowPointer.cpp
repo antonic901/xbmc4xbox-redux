@@ -27,7 +27,7 @@ CGUIWindowPointer::CGUIWindowPointer(void)
     : CGUIWindow(105, "Pointer.xml")
 {
   m_dwPointer = 0;
-  m_loadOnDemand = false;
+  m_loadType = LOAD_ON_GUI_INIT;
   m_needsScaling = false;
 }
 

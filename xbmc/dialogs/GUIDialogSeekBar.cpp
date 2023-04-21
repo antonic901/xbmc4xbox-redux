@@ -36,7 +36,7 @@ CGUIDialogSeekBar::CGUIDialogSeekBar(void)
 {
   m_fSeekPercentage = 0.0f;
   m_bRequireSeek = false;
-  m_loadOnDemand = false;    // the application class handles our resources
+  m_loadType = LOAD_ON_GUI_INIT;    // the application class handles our resources
 }
 
 CGUIDialogSeekBar::~CGUIDialogSeekBar(void)

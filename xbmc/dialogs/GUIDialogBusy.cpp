@@ -24,7 +24,7 @@
 CGUIDialogBusy::CGUIDialogBusy(void)
 : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml")
 {
-  m_loadOnDemand = true;
+  m_loadType = LOAD_ON_DEMAND;
 }
 
 CGUIDialogBusy::~CGUIDialogBusy(void)

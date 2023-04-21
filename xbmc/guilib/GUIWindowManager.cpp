@@ -784,7 +784,7 @@ void CGUIWindowManager::LoadNotOnDemandWindows()
   for (WindowMap::iterator it = m_mapWindows.begin(); it != m_mapWindows.end(); it++)
   {
     CGUIWindow *pWindow = (*it).second;
-    if (!pWindow ->GetLoadOnDemand())
+    if (pWindow->GetLoadType() == CGUIWindow::LOAD_ON_GUI_INIT)
     {
       pWindow->FreeResources(true);
       pWindow->Initialize();
@@ -798,7 +798,7 @@ void CGUIWindowManager::UnloadNotOnDemandWindows()
   for (WindowMap::iterator it = m_mapWindows.begin(); it != m_mapWindows.end(); it++)
   {
     CGUIWindow *pWindow = (*it).second;
-    if (!pWindow->GetLoadOnDemand())
+    if (pWindow->GetLoadType() == CGUIWindow::LOAD_ON_GUI_INIT)
     {
       pWindow->FreeResources(true);
     }
