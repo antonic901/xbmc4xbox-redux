@@ -198,14 +198,7 @@ void CGUIControlGroupList::ValidateOffset()
   // before fetching the total size
   CalculateItemGap();
   // calculate how many items we have on this page
-  m_totalSize = 0;
-  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
-  {
-    CGUIControl *control = *it;
-    if (!control->IsVisible()) continue;
-    m_totalSize += Size(control) + m_itemGap;
-  }
-  if (m_totalSize > 0) m_totalSize -= m_itemGap;
+  m_totalSize = GetTotalSize();
   // check our m_offset range
   if (m_offset > m_totalSize - Size())
     m_offset = m_totalSize - Size();
@@ -463,4 +456,17 @@ bool CGUIControlGroupList::OnMouseEvent(const CPoint &point, const CMouseEvent &
     }
   }
   return false;
+}
+
+float CGUIControlGroupList::GetTotalSize() const
+{
+  float totalSize = 0;
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
+  {
+    CGUIControl *control = *it;
+    if (!control->IsVisible()) continue;
+    totalSize += Size(control) + m_itemGap;
+  }
+  if (totalSize > 0) totalSize -= m_itemGap;
+  return totalSize;
 }
