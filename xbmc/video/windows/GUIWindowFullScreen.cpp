@@ -149,7 +149,7 @@ void CGUIWindowFullScreen::UnloadDialog(unsigned int windowID)
   CGUIWindow *pWindow = g_windowManager.GetWindow(windowID);
   if (pWindow) {
     if (pWindow->GetLoadType() == LOAD_ON_GUI_INIT ||
-        pWindow->GetLoadType() == LOAD_ON_DEMAND)
+        pWindow->GetLoadType() == KEEP_IN_MEMORY)
     {
       pWindow->FreeResources(true);
     }
