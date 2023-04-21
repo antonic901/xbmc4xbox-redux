@@ -90,7 +90,7 @@ public:
    */
   static RESOLUTION TranslateResolution(const CStdString &res, RESOLUTION def);
 
-  void ResolveIncludes(TiXmlElement *node);
+  void ResolveIncludes(TiXmlElement *node, std::map<int, bool>* xmlIncludeConditions = NULL);
 
   float GetEffectsSlowdown() const { return m_effectsSlowDown; };
 
