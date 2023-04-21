@@ -7,41 +7,25 @@
 		<posy>0</posy>
 	</coordinates>
 	<controls>
-		<control type="image" id="997">
-			<description>background top image</description>
-			<posx>0</posx>
-			<posy>-30</posy>
-			<width>340</width>
-			<height>30</height>
-			<texture border="20,19,20,0">DialogContextTop.png</texture>
-		</control>
 		<control type="image" id="999">
-			<description>background middle image</description>
+			<description>background image</description>
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>340</width>
-			<height>400</height>
-			<texture border="25,5,25,5">DialogContextMiddle.png</texture>
+			<height>200</height>
+			<texture border="20,19,20,19">DialogBack.png</texture>
 		</control>
-		<control type="image" id="998">
-			<description>background bottom image</description>
-			<posx>0</posx>
-			<posy>0</posy>
-			<width>340</width>
-			<height>25</height>
-			<texture border="20,0,19,20">DialogContextBottom.png</texture>
-		</control>
-		<control type="list" id="996">
-			<description>list for context buttons</description>
-			<posx>0</posx>
-			<posy>0</posy>
+    <control type="grouplist" id="996">
+			<description>grouplist for context buttons</description>
+			<posx>20</posx>
+			<posy>30</posy>
 			<width>300</width>
-			<height max="480">auto</height>
+			<height>145</height>
 			<itemgap>2</itemgap>
-		</control>
+    </control>
 		<control type="button" id="1000">
 			<description>context button template</description>
-			<posx>20</posx>
+			<posx>-</posx>
 			<posy>20</posy>
 			<width>300</width>
 			<height>40</height>
