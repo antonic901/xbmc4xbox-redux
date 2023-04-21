@@ -174,7 +174,7 @@ void CGUIWindowSystemInfo::FrameMove()
 void CGUIWindowSystemInfo::SetLabelDummy()
 {
   // Set Label Dummy Entry! ""
-  for (int i=2; i<12; i++ )
+  for (int i=2; i<=12; i++ )
   {
 #ifdef HAS_SYSINFO
     SET_CONTROL_LABEL(i,"");
