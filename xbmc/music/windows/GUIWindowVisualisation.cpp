@@ -48,6 +48,7 @@ CGUIWindowVisualisation::CGUIWindowVisualisation(void)
   m_dwInitTimer = 0;
   m_dwLockedTimer = 0;
   m_bShowPreset = false;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowVisualisation::~CGUIWindowVisualisation(void)

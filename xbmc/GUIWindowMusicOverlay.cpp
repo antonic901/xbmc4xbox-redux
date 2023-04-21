@@ -29,6 +29,7 @@ CGUIWindowMusicOverlay::CGUIWindowMusicOverlay()
 {
   m_renderOrder = 0;
   m_visibleCondition = SKIN_HAS_MUSIC_OVERLAY;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowMusicOverlay::~CGUIWindowMusicOverlay()

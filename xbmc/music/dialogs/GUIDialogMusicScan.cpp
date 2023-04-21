@@ -39,6 +39,7 @@ CGUIDialogMusicScan::CGUIDialogMusicScan(void)
 : CGUIDialog(WINDOW_DIALOG_MUSIC_SCAN, "DialogMusicScan.xml")
 {
   m_musicInfoScanner.SetObserver(this);
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogMusicScan::~CGUIDialogMusicScan(void)

@@ -67,6 +67,7 @@ CGUIDialogKeyboard::CGUIDialogKeyboard(void)
   m_keyType = LOWER;
   m_strHeading = "";
   m_lastRemoteClickTime = 0;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogKeyboard::~CGUIDialogKeyboard(void)

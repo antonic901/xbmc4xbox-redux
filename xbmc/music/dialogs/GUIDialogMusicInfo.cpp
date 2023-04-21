@@ -67,6 +67,7 @@ CGUIWindowMusicInfo::CGUIWindowMusicInfo(void)
 {
   m_bRefresh = false;
   m_albumSongs = new CFileItemList;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowMusicInfo::~CGUIWindowMusicInfo(void)

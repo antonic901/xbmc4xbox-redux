@@ -66,6 +66,7 @@ using namespace std;
 CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
     : CGUIWindow(id, xmlFile)
 {
+  m_loadType = KEEP_IN_MEMORY;
   m_vecItems = new CFileItemList;
   m_unfilteredItems = new CFileItemList;
   m_vecItems->SetPath("?");

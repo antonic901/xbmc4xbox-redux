@@ -26,6 +26,7 @@
 CGUIWindowOSD::CGUIWindowOSD(void)
     : CGUIDialog(WINDOW_OSD, "VideoOSD.xml")
 {
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowOSD::~CGUIWindowOSD(void)

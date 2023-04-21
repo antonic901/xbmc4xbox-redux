@@ -36,6 +36,7 @@ CGUIWindowVideoOverlay::CGUIWindowVideoOverlay()
 {
   m_renderOrder = 0;
   m_visibleCondition = SKIN_HAS_VIDEO_OVERLAY;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowVideoOverlay::~CGUIWindowVideoOverlay()
