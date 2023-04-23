@@ -36,6 +36,7 @@ CGUIWindowSystemInfo::CGUIWindowSystemInfo(void)
 :CGUIWindow(WINDOW_SYSTEM_INFORMATION, "SettingsSystemInfo.xml")
 {
   m_section = CONTROL_BT_DEFAULT;
+  m_loadType = KEEP_IN_MEMORY;
 }
 CGUIWindowSystemInfo::~CGUIWindowSystemInfo(void)
 {
@@ -59,6 +60,7 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       CGUIWindow::OnMessage(message);
+      ResetLabels();
       return true;
     }
     break;
