@@ -32,6 +32,7 @@ CGUIDialogSlider::CGUIDialogSlider(void)
 {
   m_callback = NULL;
   m_callbackData = NULL;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogSlider::~CGUIDialogSlider(void)
@@ -62,6 +63,10 @@ bool CGUIDialogSlider::OnMessage(CGUIMessage& message)
         SET_CONTROL_LABEL(CONTROL_LABEL, slider->GetDescription());
       }
     }
+    break;
+  case GUI_MSG_WINDOW_DEINIT:
+    m_callback = NULL;
+    m_callbackData = NULL;
     break;
   }
   return CGUIDialog::OnMessage(message);
