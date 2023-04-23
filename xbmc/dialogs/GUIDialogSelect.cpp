@@ -118,7 +118,6 @@ void CGUIDialogSelect::Reset()
   m_bButtonEnabled = false;
   m_useDetails = false;
   m_iSelected = -1;
-  m_selectedItem = NULL;
   m_vecListInternal->Clear();
   m_vecList = m_vecListInternal;
 }
