@@ -82,7 +82,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
   virtual void Render();
-  virtual void FreeResources();
+  virtual void OnDeinitWindow(int nextWindowID);
   void OnLoadPic(int iPic, int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, int iWidth, int iHeight, int iOriginalWidth, int iOriginalHeight, int iRotate, bool bFullSize);
   int NumSlides() const;
   int CurrentSlide() const;

@@ -136,6 +136,7 @@ CGUIWindowSlideShow::CGUIWindowSlideShow(void)
   m_pBackgroundLoader = NULL;
   m_slides = new CFileItemList;
   m_Resolution = INVALID;
+  m_loadType = KEEP_IN_MEMORY;
   Reset();
 }
 
@@ -171,8 +172,24 @@ void CGUIWindowSlideShow::Reset()
   m_Resolution = g_graphicsContext.GetVideoResolution();
 }
 
-void CGUIWindowSlideShow::FreeResources()
-{ // wait for any outstanding picture loads
+void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
+{ 
+  if (m_Resolution != g_guiSettings.m_LookAndFeelResolution)
+  {
+    //FIXME: Use GUI resolution for now
+    g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
+  }
+
+  //   Reset();
+  if (nextWindowID != WINDOW_PICTURES)
+    m_ImageLib.Unload();
+
+  g_windowManager.ShowOverlay(OVERLAY_STATE_SHOWN);
+  // set screen filters to video filters so that we
+  // get sharper images
+  g_graphicsContext.SetScreenFilters(false);
+
+  // wait for any outstanding picture loads
   if (m_pBackgroundLoader)
   {
     // sleep until the loader finishes loading the current pic
@@ -189,6 +206,8 @@ void CGUIWindowSlideShow::FreeResources()
   m_Image[0].Close();
   m_Image[1].Close();
   g_infoManager.ResetCurrentSlide();
+
+  CGUIWindow::OnDeinitWindow(nextWindowID);
 }
 
 void CGUIWindowSlideShow::Add(const CFileItem *picture)
@@ -574,26 +593,6 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
 {
   switch ( message.GetMessage() )
   {
-  case GUI_MSG_WINDOW_DEINIT:
-    {
-      if (m_Resolution != g_guiSettings.m_LookAndFeelResolution)
-      {
-        g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
-      }
-
-      //   Reset();
-      if (message.GetParam1() != WINDOW_PICTURES)
-      {
-        m_ImageLib.Unload();
-      }
-      g_windowManager.ShowOverlay(OVERLAY_STATE_SHOWN);
-      // set screen filters to video filters so that we
-      // get sharper images
-      g_graphicsContext.SetScreenFilters(false);
-      FreeResources();
-    }
-    break;
-
   case GUI_MSG_WINDOW_INIT:
     {
       m_Resolution = (RESOLUTION) g_guiSettings.GetInt("pictures.displayresolution");
