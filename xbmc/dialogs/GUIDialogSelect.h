@@ -22,6 +22,7 @@
 
 #include "dialogs/GUIDialogBoxBase.h"
 #include "GUIListItem.h"
+#include "GUIViewControl.h"
 
 class CFileItem;
 class CFileItemList;
@@ -47,12 +48,19 @@ public:
   bool IsButtonPressed();
   void Sort(bool bSortOrder = true);
   void SetSelected(int iSelected);
+  void SetUseDetails(bool useDetails);
 protected:
+  virtual CGUIControl *CGUIDialogSelect::GetFirstFocusableControl(int id);
+  virtual void OnWindowLoaded();
+  virtual void OnInitWindow();
+
   bool m_bButtonEnabled;
   bool m_bButtonPressed;
   int m_iSelected;
+  bool m_useDetails;
 
   CFileItem* m_selectedItem;
   CFileItemList* m_vecListInternal;
   CFileItemList* m_vecList;
+  CGUIViewControl m_viewControl;
 };
