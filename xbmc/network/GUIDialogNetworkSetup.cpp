@@ -44,6 +44,7 @@ CGUIDialogNetworkSetup::CGUIDialogNetworkSetup(void)
 {
   m_protocol = NET_PROTOCOL_SMB;
   m_confirmed = false;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogNetworkSetup::~CGUIDialogNetworkSetup()
@@ -107,7 +108,7 @@ bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(CStdString &path)
   return dialog->IsConfirmed();
 }
 
-void CGUIDialogNetworkSetup::OnInitWindow()
+void CGUIDialogNetworkSetup::OnWindowLoaded()
 {
   // replace our buttons with edits
   ChangeButtonToEdit(CONTROL_SERVER_ADDRESS);
@@ -116,6 +117,11 @@ void CGUIDialogNetworkSetup::OnInitWindow()
   ChangeButtonToEdit(CONTROL_PORT_NUMBER);
   ChangeButtonToEdit(CONTROL_PASSWORD);
 
+  CGUIDialog::OnWindowLoaded();
+}
+
+void CGUIDialogNetworkSetup::OnInitWindow()
+{
   // start as unconfirmed
   m_confirmed = false;
 
@@ -141,6 +147,16 @@ void CGUIDialogNetworkSetup::OnInitWindow()
 
   pSpin->SetValue(m_protocol);
   OnProtocolChange();
+}
+
+void CGUIDialogNetworkSetup::OnDeinitWindow(int nextWindowID)
+{
+  // clear protocol spinner
+  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(CONTROL_PROTOCOL);
+  if (pSpin)
+    pSpin->Clear();
+
+  CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
 void CGUIDialogNetworkSetup::OnServerBrowse()
