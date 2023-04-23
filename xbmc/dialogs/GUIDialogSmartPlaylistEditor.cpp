@@ -70,6 +70,7 @@ CGUIDialogSmartPlaylistEditor::CGUIDialogSmartPlaylistEditor(void)
 {
   m_cancelled = false;
   m_ruleLabels = new CFileItemList;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogSmartPlaylistEditor::~CGUIDialogSmartPlaylistEditor()
@@ -118,21 +119,6 @@ bool CGUIDialogSmartPlaylistEditor::OnMessage(CGUIMessage& message)
       else
         return CGUIDialog::OnMessage(message);
       return true;
-    }
-    break;
-  case GUI_MSG_WINDOW_INIT:
-    {
-      m_cancelled = false;
-      UpdateButtons();
-    }
-    break;
-  case GUI_MSG_WINDOW_DEINIT:
-    {
-      CGUIDialog::OnMessage(message);
-      // clear the rule list
-      CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_RULE_LIST);
-      OnMessage(msg);
-      m_ruleLabels->Clear();
     }
     break;
   case GUI_MSG_FOCUSED:
@@ -345,6 +331,13 @@ void CGUIDialogSmartPlaylistEditor::OnWindowLoaded()
     msg.SetLabel(label);
     OnMessage(msg);
   }
+}
+
+void CGUIDialogSmartPlaylistEditor::OnInitWindow()
+{
+  m_cancelled = false;
+  UpdateButtons();
+
   SendMessage(GUI_MSG_ITEM_SELECT, CONTROL_LIMIT, m_playlist.m_limit);
 
   vector<PLAYLIST_TYPE> allowedTypes;
@@ -390,6 +383,16 @@ void CGUIDialogSmartPlaylistEditor::OnWindowLoaded()
 
   SendMessage(GUI_MSG_ITEM_SELECT, CONTROL_TYPE, type);
   m_playlist.SetType(ConvertType(type));
+
+  CGUIDialog::OnInitWindow();
+}
+
+void CGUIDialogSmartPlaylistEditor::OnDeinitWindow(int nextWindowID)
+{
+  CGUIDialog::OnDeinitWindow(nextWindowID);
+  CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_RULE_LIST);
+  OnMessage(msg);
+  m_ruleLabels->Clear();
 }
 
 CGUIDialogSmartPlaylistEditor::PLAYLIST_TYPE CGUIDialogSmartPlaylistEditor::ConvertType(const CStdString &type)
