@@ -53,6 +53,7 @@ protected:
   virtual CGUIControl *CGUIDialogSelect::GetFirstFocusableControl(int id);
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
+  virtual void OnWindowUnload();
 
   bool m_bButtonEnabled;
   bool m_bButtonPressed;

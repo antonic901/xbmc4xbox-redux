@@ -38,6 +38,7 @@ CGUIDialogSelect::CGUIDialogSelect(void)
   m_selectedItem = new CFileItem;
   m_vecList = m_vecListInternal;
   m_iSelected = -1;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIDialogSelect::~CGUIDialogSelect(void)
@@ -53,7 +54,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       CGUIDialog::OnMessage(message);
-      m_viewControl.Reset();
+      m_viewControl.Clear();
       m_bButtonEnabled = false;
       m_useDetails = false;
       m_vecListInternal->Clear();
@@ -232,4 +233,10 @@ void CGUIDialogSelect::OnInitWindow()
     g_windowManager.SendMessage(msg2);
   }
   CGUIDialogBoxBase::OnInitWindow();
+}
+
+void CGUIDialogSelect::OnWindowUnload()
+{
+  CGUIDialog::OnWindowUnload();
+  m_viewControl.Reset();
 }
