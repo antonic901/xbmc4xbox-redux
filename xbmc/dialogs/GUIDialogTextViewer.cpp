@@ -26,7 +26,9 @@
 
 CGUIDialogTextViewer::CGUIDialogTextViewer(void)
     : CGUIDialog(WINDOW_DIALOG_TEXT_VIEWER, "DialogTextViewer.xml")
-{}
+{
+  m_loadType = KEEP_IN_MEMORY;
+}
 
 CGUIDialogTextViewer::~CGUIDialogTextViewer(void)
 {}
@@ -78,3 +80,14 @@ void CGUIDialogTextViewer::SetHeading()
   OnMessage(msg);
 }
 
+void CGUIDialogTextViewer::OnDeinitWindow(int nextWindowID)
+{
+  CGUIDialog::OnDeinitWindow(nextWindowID);
+
+  // reset text area
+  CGUIMessage msgReset(GUI_MSG_LABEL_RESET, GetID(), CONTROL_TEXTAREA);
+  OnMessage(msgReset);
+
+  // reset heading
+  SET_CONTROL_LABEL(CONTROL_HEADING, "");
+}
