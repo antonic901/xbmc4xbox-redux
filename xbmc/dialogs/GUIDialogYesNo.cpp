@@ -21,6 +21,9 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
 
+#define CONTROL_NO_BUTTON 10
+#define CONTROL_YES_BUTTON 11
+
 CGUIDialogYesNo::CGUIDialogYesNo(void)
     : CGUIDialogBoxBase(WINDOW_DIALOG_YES_NO, "DialogYesNo.xml")
 {
@@ -41,13 +44,13 @@ bool CGUIDialogYesNo::OnMessage(CGUIMessage& message)
       int iAction = message.GetParam1();
       if (1 || ACTION_SELECT_ITEM == iAction)
       {
-        if (iControl == 10)
+        if (iControl == CONTROL_NO_BUTTON)
         {
           m_bConfirmed = false;
           Close();
           return true;
         }
-        if (iControl == 11)
+        if (iControl == CONTROL_YES_BUTTON)
         {
           m_bConfirmed = true;
           Close();
@@ -92,8 +95,12 @@ bool CGUIDialogYesNo::ShowAndGetInput(int heading, int line0, int line1, int lin
     dialog->SetAutoClose(autoCloseTime);
   if (iNoLabel != -1)
     dialog->SetChoice(0,iNoLabel);
+  else
+    dialog->SetChoice(0,106);
   if (iYesLabel != -1)
     dialog->SetChoice(1,iYesLabel);
+  else
+    dialog->SetChoice(1,107);
   dialog->m_bCanceled = false;
   dialog->DoModal();
   bCanceled = dialog->m_bCanceled;
@@ -120,3 +127,11 @@ bool CGUIDialogYesNo::ShowAndGetInput(const CStdString& heading, const CStdStrin
   return (dialog->IsConfirmed()) ? true : false;
 }
 
+int CGUIDialogYesNo::GetDefaultLabelID(int controlId) const
+{
+  if (controlId == CONTROL_NO_BUTTON)
+    return 106;
+  else if (controlId == CONTROL_YES_BUTTON)
+    return 107;
+  return CGUIDialogBoxBase::GetDefaultLabelID(controlId);
+}
