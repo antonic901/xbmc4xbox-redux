@@ -111,6 +111,7 @@ CGUIWindowFullScreen::CGUIWindowFullScreen(void)
   m_bShowCurrentTime = false;
   m_subsLayout = NULL;
   m_sliderAction = 0;
+  m_loadType = KEEP_IN_MEMORY;
   // audio
   //  - language
   //  - volume
@@ -154,35 +155,6 @@ void CGUIWindowFullScreen::UnloadDialog(unsigned int windowID)
       pWindow->FreeResources(true);
     }
   }
-}
-
-void CGUIWindowFullScreen::AllocResources(bool forceLoad)
-{
-  CGUIWindow::AllocResources(forceLoad);
-  DynamicResourceAlloc(false);
-  PreloadDialog(WINDOW_OSD);
-  PreloadDialog(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
-  PreloadDialog(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
-  PreloadDialog(WINDOW_DIALOG_FULLSCREEN_INFO);
-  // No need to preload these here, as they're preloaded by our app
-//  PreloadDialog(WINDOW_DIALOG_SEEK_BAR);
-//  PreloadDialog(WINDOW_DIALOG_VOLUME_BAR);
-//  PreloadDialog(WINDOW_DIALOG_MUTE_BUG);
-}
-
-void CGUIWindowFullScreen::FreeResources(bool forceUnload)
-{
-  g_settings.Save();
-  DynamicResourceAlloc(true);
-  UnloadDialog(WINDOW_OSD);
-  UnloadDialog(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
-  UnloadDialog(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
-  UnloadDialog(WINDOW_DIALOG_FULLSCREEN_INFO);
-  // No need to unload these here, as they're preloaded by our app
-//  UnloadDialog(WINDOW_DIALOG_SEEK_BAR);
-//  UnloadDialog(WINDOW_DIALOG_VOLUME_BAR);
-//  UnloadDialog(WINDOW_DIALOG_MUTE_BUG);
-  CGUIWindow::FreeResources(forceUnload);
 }
 
 bool CGUIWindowFullScreen::OnAction(const CAction &action)
@@ -557,6 +529,11 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
+      PreloadDialog(WINDOW_OSD);
+      PreloadDialog(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
+      PreloadDialog(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+      PreloadDialog(WINDOW_DIALOG_FULLSCREEN_INFO);
+
       // check whether we've come back here from a window during which time we've actually
       // stopped playing videos
       if (message.GetParam1() == WINDOW_INVALID && !g_application.IsPlayingVideo())
@@ -623,7 +600,10 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
     }
   case GUI_MSG_WINDOW_DEINIT:
     {
-      CGUIWindow::OnMessage(message);
+      UnloadDialog(WINDOW_OSD);
+      UnloadDialog(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
+      UnloadDialog(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+      UnloadDialog(WINDOW_DIALOG_FULLSCREEN_INFO);
 
       CGUIDialogSlider *slider = (CGUIDialogSlider *)g_windowManager.GetWindow(WINDOW_DIALOG_SLIDER);
       if (slider) slider->Close(true);
@@ -632,7 +612,9 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       pDialog = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
       if (pDialog) pDialog->Close(true);
 
-      FreeResources(true);
+      CGUIWindow::OnMessage(message);
+
+      g_settings.Save();
 
       CSingleLock lock (g_graphicsContext);
       CUtil::RestoreBrightnessContrastGamma();
