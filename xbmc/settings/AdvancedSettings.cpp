@@ -215,6 +215,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_bPythonVerbose = false;
 
   m_bgInfoLoaderMaxThreads = 1;
+
+  m_guiKeepInMemory = false;
 }
 
 bool CAdvancedSettings::Load()
@@ -695,6 +697,10 @@ bool CAdvancedSettings::Load()
 
   XMLUtils::GetInt(pRootElement, "bginfoloadermaxthreads", m_bgInfoLoaderMaxThreads);
   m_bgInfoLoaderMaxThreads = std::max(1, m_bgInfoLoaderMaxThreads);
+
+  pElement = pRootElement->FirstChildElement("gui");
+  if (pElement)
+    XMLUtils::GetBoolean(pElement, "keepinmemory", m_guiKeepInMemory);
 
   // load in the GUISettings overrides:
   g_guiSettings.LoadXML(pRootElement, true);  // true to hide the settings we read in

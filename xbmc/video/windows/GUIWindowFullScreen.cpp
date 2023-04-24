@@ -152,7 +152,7 @@ void CGUIWindowFullScreen::UnloadDialog(unsigned int windowID)
     if (pWindow->GetLoadType() == LOAD_ON_GUI_INIT ||
         pWindow->GetLoadType() == KEEP_IN_MEMORY)
     {
-      pWindow->FreeResources(true);
+      pWindow->FreeResources(!g_advancedSettings.m_guiKeepInMemory);
     }
   }
 }

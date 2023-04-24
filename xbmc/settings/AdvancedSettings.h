@@ -93,6 +93,8 @@ class CAdvancedSettings
     bool m_audioApplyDrc;
 
     float m_videoPlayCountMinimumPercent;
+    
+    bool m_guiKeepInMemory;
 
     unsigned int m_cacheMemBufferSize;
 

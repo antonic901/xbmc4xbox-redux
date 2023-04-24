@@ -666,6 +666,9 @@ void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
 
 void CGUIWindow::FreeResources(bool forceUnload /*= FALSE */)
 {
+  if (!g_advancedSettings.m_guiKeepInMemory && !forceUnload)
+    forceUnload = true;
+
   m_bAllocated = false;
   CGUIControlGroup::FreeResources();
   //g_TextureManager.Dump();

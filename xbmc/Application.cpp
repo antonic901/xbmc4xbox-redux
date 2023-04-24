@@ -736,6 +736,7 @@ HRESULT CApplication::Create(HWND hWnd)
       wrmsr
     }
     m_128MBHack = true;
+    g_advancedSettings.m_guiKeepInMemory = true;
   }
 #endif
 
