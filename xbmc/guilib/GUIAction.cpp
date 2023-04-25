@@ -37,7 +37,7 @@ CGUIAction::CGUIAction(int controlID)
   SetNavigation(controlID);
 }
 
-bool CGUIAction::Execute(int controlID, int parentID, int direction /*= 0*/) const
+bool CGUIAction::ExecuteActions(int controlID, int parentID) const
 {
   if (m_actions.size() == 0) return false;
   bool retval = false;
@@ -46,21 +46,7 @@ bool CGUIAction::Execute(int controlID, int parentID, int direction /*= 0*/) con
   {
     if (it->condition.IsEmpty() || g_infoManager.EvaluateBool(it->condition))
     {
-      if (StringUtils::IsInteger(it->action))
-      {
-        CGUIMessage msg(GUI_MSG_MOVE, parentID, controlID, direction);
-        if (parentID)
-        {
-          CGUIWindow *pWindow = g_windowManager.GetWindow(parentID);
-          if (pWindow)
-          {
-            retval |= pWindow->OnMessage(msg);
-            continue;
-          }
-        }
-        retval |= g_windowManager.SendMessage(msg);
-      }
-      else
+      if (!StringUtils::IsInteger(it->action))
       {
         CGUIMessage msg(GUI_MSG_EXECUTE, controlID, parentID);
         msg.SetStringParam(it->action);

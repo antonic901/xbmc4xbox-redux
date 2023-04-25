@@ -114,7 +114,7 @@ bool CGUIButtonScroller::OnAction(const CAction &action)
   if (action.GetID() == ACTION_SELECT_ITEM)
   {
     CGUIAction actions = m_vecButtons[GetActiveButton()]->clickActions;
-    actions.Execute(GetID(), GetParentID());
+    actions.ExecuteActions(GetID(), GetParentID());
     return true;
   }
   if (action.GetID() == ACTION_CONTEXT_MENU)

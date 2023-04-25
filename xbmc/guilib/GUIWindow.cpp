@@ -992,10 +992,10 @@ void CGUIWindow::SetRunActionsManually()
 
 void CGUIWindow::RunLoadActions()
 {
-  m_loadActions.Execute(GetID(), GetParentID());
+  m_loadActions.ExecuteActions(GetID(), GetParentID());
 }
  
 void CGUIWindow::RunUnloadActions()
 {
-  m_unloadActions.Execute(GetID(), GetParentID());
+  m_unloadActions.ExecuteActions(GetID(), GetParentID());
 }
