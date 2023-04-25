@@ -823,7 +823,11 @@ bool CGUIWindow::OnMove(int fromControl, int moveAction)
   while (control)
   { // grab the next control direction
     moveHistory.push_back(nextControl);
-    nextControl = control->GetNextControl(moveAction);
+    CGUIAction action;
+    if (!control->GetNavigationAction(moveAction, action))
+      return false;
+    action.ExecuteActions(nextControl, GetParentID());
+    nextControl = action.GetNavigation();
     // check our history - if the nextControl is in it, we can't focus it
     for (unsigned int i = 0; i < moveHistory.size(); i++)
     {
