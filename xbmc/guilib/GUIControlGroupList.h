@@ -40,7 +40,7 @@ public:
 
   virtual float GetWidth() const;
   virtual float GetHeight() const;
-  float GetMaxSize() const { return Size(); }
+  virtual float Size() const;
 
   virtual void Render();
   virtual bool OnMessage(CGUIMessage& message);
@@ -67,7 +67,6 @@ protected:
   void ValidateOffset();
   void CalculateItemGap();
   inline float Size(const CGUIControl *control) const;
-  inline float Size() const;
   void ScrollTo(float offset);
   float GetAlignOffset() const;
 
