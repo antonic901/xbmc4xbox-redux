@@ -824,7 +824,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
           (labelInfo.align & XBFONT_RIGHT))
         posX -= width;
     }
-    if (!width)
+    if (!width) // no width specified, so compute from parent
       width = max((rect.right - rect.left) - posX, 0.0f);
   }
   if (!GetDimensions(pControlNode, "top", "bottom", "centertop", "centerbottom", "height", (rect.bottom - rect.top), posY, height, minHeight))
