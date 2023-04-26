@@ -69,7 +69,7 @@ void CGUIControlGroupList::Render()
   ValidateOffset();
   if (m_pageControl)
   {
-    CGUIMessage message(GUI_MSG_LABEL_RESET, GetParentID(), m_pageControl, (int)m_height, (int)m_totalSize);
+    CGUIMessage message(GUI_MSG_LABEL_RESET, GetParentID(), m_pageControl, (int)Size(), (int)m_totalSize);
     SendWindowMessage(message);
     CGUIMessage message2(GUI_MSG_ITEM_SELECT, GetParentID(), m_pageControl, (int)m_offset);
     SendWindowMessage(message2);
