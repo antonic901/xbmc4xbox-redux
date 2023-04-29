@@ -24,19 +24,15 @@
 #include "GUIInfoManager.h"
 #include "GUIFont.h" // for XBFONT_* definitions
 
-CGUIControlGroupList::CGUIControlGroupList(int parentID, int controlID, float posX, float posY, float width, float height, float itemGap, int pageControl, ORIENTATION orientation, bool useControlPositions, uint32_t alignment, unsigned int scrollTime)
+CGUIControlGroupList::CGUIControlGroupList(int parentID, int controlID, float posX, float posY, float width, float height, float itemGap, int pageControl, ORIENTATION orientation, bool useControlPositions, uint32_t alignment, const CScroller& scroller)
 : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
+, m_scroller(scroller)
 {
   m_itemGap = itemGap;
   m_pageControl = pageControl;
-  m_offset = 0;
   m_totalSize = 0;
   m_orientation = orientation;
   m_alignment = alignment;
-  m_scrollOffset = 0;
-  m_scrollSpeed = 0;
-  m_scrollLastTime = 0;
-  m_scrollTime = scrollTime ? scrollTime : 1;
   m_renderTime = 0;
   m_useControlPositions = useControlPositions;
   ControlType = GUICONTROL_GROUPLIST;
@@ -49,17 +45,7 @@ CGUIControlGroupList::~CGUIControlGroupList(void)
 
 void CGUIControlGroupList::Render()
 {
-  if (m_scrollSpeed != 0)
-  {
-    m_offset += m_scrollSpeed * (m_renderTime - m_scrollLastTime);
-    if ((m_scrollSpeed < 0 && m_offset < m_scrollOffset) ||
-        (m_scrollSpeed > 0 && m_offset > m_scrollOffset))
-    {
-      m_offset = m_scrollOffset;
-      m_scrollSpeed = 0;
-    }
-  }
-  m_scrollLastTime = m_renderTime;
+  m_scroller.Update(m_renderTime);
 
   // first we update visibility of all our items, to ensure our size and
   // alignment computations are correct.
@@ -71,7 +57,7 @@ void CGUIControlGroupList::Render()
   {
     CGUIMessage message(GUI_MSG_LABEL_RESET, GetParentID(), m_pageControl, (int)Size(), (int)m_totalSize);
     SendWindowMessage(message);
-    CGUIMessage message2(GUI_MSG_ITEM_SELECT, GetParentID(), m_pageControl, (int)m_offset);
+    CGUIMessage message2(GUI_MSG_ITEM_SELECT, GetParentID(), m_pageControl, (int)m_scroller.GetValue());
     SendWindowMessage(message2);
   }
   // we run through the controls, rendering as we go
@@ -92,9 +78,9 @@ void CGUIControlGroupList::Render()
     else
     {
       if (m_orientation == VERTICAL)
-        g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_offset);
+        g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_scroller.GetValue());
       else
-        g_graphicsContext.SetOrigin(m_posX + pos - m_offset, m_posY);
+        g_graphicsContext.SetOrigin(m_posX + pos - m_scroller.GetValue(), m_posY);
       control->DoRender(m_renderTime);
     }
     if (control->IsVisible())
@@ -104,9 +90,9 @@ void CGUIControlGroupList::Render()
   if (focusedControl)
   {
     if (m_orientation == VERTICAL)
-      g_graphicsContext.SetOrigin(m_posX, m_posY + focusedPos - m_offset);
+      g_graphicsContext.SetOrigin(m_posX, m_posY + focusedPos - m_scroller.GetValue());
     else
-      g_graphicsContext.SetOrigin(m_posX + focusedPos - m_offset, m_posY);
+      g_graphicsContext.SetOrigin(m_posX + focusedPos - m_scroller.GetValue(), m_posY);
     focusedControl->DoRender(m_renderTime);
   }
   if (render) g_graphicsContext.RestoreClipRegion();
@@ -134,9 +120,9 @@ bool CGUIControlGroupList::OnMessage(CGUIMessage& message)
             ScrollTo(0);
           else if (IsLastFocusableControl(control))
             ScrollTo(m_totalSize - Size());
-          else if (offset < m_offset)
+          else if (offset < m_scroller.GetValue())
             ScrollTo(offset);
-          else if (offset + Size(control) > m_offset + Size())
+          else if (offset + Size(control) > m_scroller.GetValue() + Size())
             ScrollTo(offset + Size(control) - Size());
           break;
         }
@@ -158,7 +144,7 @@ bool CGUIControlGroupList::OnMessage(CGUIMessage& message)
           continue;
         if (control->HasID(m_focusedControl))
         {
-          if (offset >= m_offset && offset + Size(control) <= m_offset + Size())
+          if (offset >= m_scroller.GetValue() && offset + Size(control) <= m_scroller.GetValue() + Size())
             return CGUIControlGroup::OnMessage(message);
           break;
         }
@@ -171,7 +157,7 @@ bool CGUIControlGroupList::OnMessage(CGUIMessage& message)
         CGUIControl *control = *it;
         if (!control->IsVisible())
           continue;
-        if (control->CanFocus() && offset >= m_offset && offset + Size(control) <= m_offset + Size())
+        if (control->CanFocus() && offset >= m_scroller.GetValue() && offset + Size(control) <= m_scroller.GetValue() + Size())
         {
           m_focusedControl = control->GetID();
           break;
@@ -201,9 +187,9 @@ void CGUIControlGroupList::ValidateOffset()
   // calculate how many items we have on this page
   m_totalSize = GetTotalSize();
   // check our m_offset range
-  if (m_offset > m_totalSize - Size())
-    m_offset = m_totalSize - Size();
-  if (m_offset < 0) m_offset = 0;
+  if (m_scroller.GetValue() > m_totalSize - Size())
+    m_scroller.SetValue(m_totalSize - Size());
+  if (m_scroller.GetValue() < 0) m_scroller.SetValue(0);
 }
 
 void CGUIControlGroupList::AddControl(CGUIControl *control, int position /*= -1*/)
@@ -294,7 +280,7 @@ void CGUIControlGroupList::ClearAll()
 {
   m_totalSize = 0;
   CGUIControlGroup::ClearAll();
-  m_offset = 0;
+  m_scroller.SetValue(0);
 }
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
@@ -333,8 +319,9 @@ inline float CGUIControlGroupList::Size() const
 
 void CGUIControlGroupList::ScrollTo(float offset)
 {
-  m_scrollOffset = offset;
-  m_scrollSpeed = (m_scrollOffset - m_offset) / m_scrollTime;
+  m_scroller.ScrollTo(offset);
+  if (m_scroller.IsScrolling())
+    SetInvalid();
 }
 
 bool CGUIControlGroupList::SendMouseEvent(const CPoint &point, const CMouseEvent &event)
@@ -351,10 +338,10 @@ bool CGUIControlGroupList::SendMouseEvent(const CPoint &point, const CMouseEvent
       CGUIControl *child = *i;
       if (child->IsVisible())
       {
-        if (pos + Size(child) > m_offset && pos < m_offset + Size())
+        if (pos + Size(child) > m_scroller.GetValue() && pos < m_scroller.GetValue() + Size())
         { // we're on screen
-          float offsetX = m_orientation == VERTICAL ? m_posX : m_posX + alignOffset + pos - m_offset;
-          float offsetY = m_orientation == VERTICAL ? m_posY + alignOffset + pos - m_offset : m_posY;
+          float offsetX = m_orientation == VERTICAL ? m_posX : m_posX + alignOffset + pos - m_scroller.GetValue();
+          float offsetY = m_orientation == VERTICAL ? m_posY + alignOffset + pos - m_scroller.GetValue() : m_posY;
           if (child->SendMouseEvent(childPoint - CPoint(offsetX, offsetY), event))
           { // we've handled the action, and/or have focused an item
             return true;
@@ -382,9 +369,9 @@ void CGUIControlGroupList::UnfocusFromPoint(const CPoint &point)
     CGUIControl *child = *it;
     if (child->IsVisible())
     {
-      if (pos + Size(child) > m_offset && pos < m_offset + Size())
+      if (pos + Size(child) > m_scroller.GetValue() && pos < m_scroller.GetValue() + Size())
       { // we're on screen
-        CPoint offset = (m_orientation == VERTICAL) ? CPoint(m_posX, m_posY + alignOffset + pos - m_offset) : CPoint(m_posX + alignOffset + pos - m_offset, m_posY);
+        CPoint offset = (m_orientation == VERTICAL) ? CPoint(m_posX, m_posY + alignOffset + pos - m_scroller.GetValue()) : CPoint(m_posX + alignOffset + pos - m_scroller.GetValue(), m_posY);
         child->UnfocusFromPoint(controlCoords - offset);
       }
       pos += Size(child) + m_itemGap;
@@ -398,9 +385,9 @@ bool CGUIControlGroupList::GetCondition(int condition, int data) const
   switch (condition)
   {
   case CONTAINER_HAS_NEXT:
-    return (m_totalSize >= Size() && m_offset < m_totalSize - Size());
+    return (m_totalSize >= Size() && m_scroller.GetValue() < m_totalSize - Size());
   case CONTAINER_HAS_PREVIOUS:
-    return (m_offset > 0);
+    return (m_scroller.GetValue() > 0);
   default:
     return false;
   }
@@ -476,12 +463,12 @@ bool CGUIControlGroupList::OnMouseEvent(const CPoint &point, const CMouseEvent &
       CGUIControl *control = *it;
       if (!control->IsVisible()) continue;
       float nextOffset = offset + Size(control) + m_itemGap;
-      if (event.m_id == ACTION_MOUSE_WHEEL_DOWN && nextOffset > m_offset && m_offset < m_totalSize - Size()) // past our current offset
+      if (event.m_id == ACTION_MOUSE_WHEEL_DOWN && nextOffset > m_scroller.GetValue() && m_scroller.GetValue() < m_totalSize - Size()) // past our current offset
       {
         ScrollTo(nextOffset);
         return true;
       }
-      else if (event.m_id == ACTION_MOUSE_WHEEL_UP && nextOffset >= m_offset && m_offset > 0) // at least at our current offset
+      else if (event.m_id == ACTION_MOUSE_WHEEL_UP && nextOffset >= m_scroller.GetValue() && m_scroller.GetValue() > 0) // at least at our current offset
       {
         ScrollTo(offset);
         return true;

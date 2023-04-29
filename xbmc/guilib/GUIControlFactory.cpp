@@ -1150,8 +1150,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   }
   else if (type == CGUIControl::GUICONTROL_GROUPLIST)
   {
+    CScroller scroller;
+    GetScroller(pControlNode, "scrolltime", scroller);
+
     control = new CGUIControlGroupList(
-      parentID, id, posX, posY, width, height, buttonGap, pageControl, orientation, useControlCoords, labelInfo.align, scrollTime);
+      parentID, id, posX, posY, width, height, buttonGap, pageControl, orientation, useControlCoords, labelInfo.align, scroller);
     ((CGUIControlGroup *)control)->SetDefaultControl(defaultControl, defaultAlways);
     ((CGUIControlGroup *)control)->SetRenderFocusedLast(renderFocusedLast);
     ((CGUIControlGroupList *)control)->SetMinSize(minWidth, minHeight);
