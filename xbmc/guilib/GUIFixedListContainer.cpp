@@ -148,12 +148,13 @@ void CGUIFixedListContainer::ValidateOffset()
   m_cursor = max(m_cursor, minCursor);
   m_cursor = min(m_cursor, maxCursor);
   // and finally ensure our offset is valid
-  if (m_offset + maxCursor >= (int)m_items.size() || m_scroller.GetValue() > ((int)m_items.size() - maxCursor - 1) * m_layout->Size(m_orientation))
+  // don't validate offset if we are scrolling in case the tween image exceed <0, 1> range
+  if (m_offset + maxCursor >= (int)m_items.size() || (!m_scroller.IsScrolling() && m_scroller.GetValue() > ((int)m_items.size() - maxCursor - 1) * m_layout->Size(m_orientation)))
   {
     m_offset = m_items.size() - maxCursor - 1;
     m_scroller.SetValue(m_offset * m_layout->Size(m_orientation));
   }
-  if (m_offset < -minCursor || m_scroller.GetValue() < -minCursor * m_layout->Size(m_orientation))
+  if (m_offset < -minCursor || (!m_scroller.IsScrolling() && m_scroller.GetValue() < -minCursor * m_layout->Size(m_orientation)))
   {
     m_offset = -minCursor;
     m_scroller.SetValue(m_offset * m_layout->Size(m_orientation));
