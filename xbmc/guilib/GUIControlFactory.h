@@ -87,6 +87,7 @@ public:
   static bool GetActions(const TiXmlNode* pRootNode, const char* strTag, CGUIAction& actions);
   static void GetRectFromString(const CStdString &string, FRECT &rect);
   static bool GetHitRect(const TiXmlNode* pRootNode, CRect &rect);
+  static bool GetScroller(const TiXmlNode *pControlNode, const CStdString &scrollerTag, CScroller& scroller);
 private:
   static CStdString GetType(const TiXmlElement *pControlNode);
   bool GetCondition(const TiXmlNode *control, const char *tag, int &condition);
