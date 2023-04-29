@@ -34,15 +34,12 @@ using namespace std;
 #define HOLD_TIME_START 100
 #define HOLD_TIME_END   3000
 
-CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, int scrollTime, int preloadItems)
+CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
+    , m_scroller(scroller)
 {
   m_cursor = 0;
   m_offset = 0;
-  m_scrollOffset = 0;
-  m_scrollSpeed = 0;
-  m_scrollLastTime = 0;
-  m_scrollTime = scrollTime ? scrollTime : 1;
   m_lastHoldTime = 0;
   m_itemsPerPage = 10;
   m_pageControl = 0;
@@ -74,7 +71,7 @@ void CGUIBaseContainer::Render()
 
   UpdateScrollOffset();
 
-  int offset = (int)floorf(m_scrollOffset / m_layout->Size(m_orientation));
+  int offset = (int)floorf(m_scroller.GetValue() / m_layout->Size(m_orientation));
 
   int cacheBefore, cacheAfter;
   GetCacheOffsets(cacheBefore, cacheAfter);
@@ -91,7 +88,7 @@ void CGUIBaseContainer::Render()
 
     // we offset our draw position to take into account scrolling and whether or not our focused
     // item is offscreen "above" the list.
-    float drawOffset = (offset - cacheBefore) * m_layout->Size(m_orientation) - m_scrollOffset;
+    float drawOffset = (offset - cacheBefore) * m_layout->Size(m_orientation) - m_scroller.GetValue();
     if (m_offset + m_cursor < offset)
       drawOffset += m_focusedLayout->Size(m_orientation) - m_layout->Size(m_orientation);
     pos += drawOffset;
@@ -548,7 +545,7 @@ CGUIListItemPtr CGUIBaseContainer::GetListItem(int offset, unsigned int flag) co
     return CGUIListItemPtr();
   int item = GetSelectedItem() + offset;
   if (flag & INFOFLAG_LISTITEM_POSITION) // use offset from the first item displayed, taking into account scrolling
-    item = CorrectOffset((int)(m_scrollOffset / m_layout->Size(m_orientation)), offset);
+    item = CorrectOffset((int)(m_scroller.GetValue() / m_layout->Size(m_orientation)), offset);
 
   if (flag & INFOFLAG_LISTITEM_WRAP)
   {
@@ -686,7 +683,7 @@ void CGUIBaseContainer::FreeResources(bool immediately)
   { // free any static content
     Reset();
   }
-  m_scrollSpeed = 0;
+  m_scroller.Stop();
 }
 
 void CGUIBaseContainer::UpdateLayout(bool updateAllItems)
@@ -806,7 +803,7 @@ void CGUIBaseContainer::CalculateLayout()
   m_itemsPerPage = (int)((Size() - m_focusedLayout->Size(m_orientation)) / m_layout->Size(m_orientation)) + 1;
 
   // ensure that the scroll offset is a multiple of our size
-  m_scrollOffset = m_offset * m_layout->Size(m_orientation);
+  m_scroller.SetValue(m_offset * m_layout->Size(m_orientation));
 }
 
 void CGUIBaseContainer::UpdateScrollByLetter()
@@ -847,19 +844,19 @@ void CGUIBaseContainer::ScrollToOffset(int offset)
   float size = (m_layout) ? m_layout->Size(m_orientation) : 10.0f;
   int range = m_itemsPerPage / 4;
   if (range <= 0) range = 1;
-  if (offset * size < m_scrollOffset &&  m_scrollOffset - offset * size > size * range)
+  if (offset * size < m_scroller.GetValue() &&  m_scroller.GetValue() - offset * size > size * range)
   { // scrolling up, and we're jumping more than 0.5 of a screen
-    m_scrollOffset = (offset + range) * size;
+    m_scroller.SetValue((offset + range) * size);
   }
-  if (offset * size > m_scrollOffset && offset * size - m_scrollOffset > size * range)
+  if (offset * size > m_scroller.GetValue() && offset * size - m_scroller.GetValue() > size * range)
   { // scrolling down, and we're jumping more than 0.5 of a screen
-    m_scrollOffset = (offset - range) * size;
+    m_scroller.SetValue((offset - range) * size);
   }
-  m_scrollSpeed = (offset * size - m_scrollOffset) / m_scrollTime;
+  m_scroller.ScrollTo(offset * size);
   if (!m_wasReset)
   {
     SetContainerMoving(offset - m_offset);
-    if (m_scrollSpeed)
+    if (m_scroller.IsScrolling())
       m_scrollTimer.Start();
     else
       m_scrollTimer.Stop();
@@ -870,20 +867,13 @@ void CGUIBaseContainer::ScrollToOffset(int offset)
 void CGUIBaseContainer::SetContainerMoving(int direction)
 {
   if (direction)
-    g_infoManager.SetContainerMoving(GetID(), direction > 0, m_scrollSpeed != 0);
+    g_infoManager.SetContainerMoving(GetID(), direction > 0, m_scroller.IsScrolling());
 }
 
 void CGUIBaseContainer::UpdateScrollOffset()
 {
-  m_scrollOffset += m_scrollSpeed * (m_renderTime - m_scrollLastTime);
-  if ((m_scrollSpeed < 0 && m_scrollOffset < m_offset * m_layout->Size(m_orientation)) ||
-      (m_scrollSpeed > 0 && m_scrollOffset > m_offset * m_layout->Size(m_orientation)))
-  {
-    m_scrollOffset = m_offset * m_layout->Size(m_orientation);
-    m_scrollSpeed = 0;
+  if (!m_scroller.Update(m_renderTime))
     m_scrollTimer.Stop();
-  }
-  m_scrollLastTime = m_renderTime;
 }
 
 int CGUIBaseContainer::CorrectOffset(int offset, int cursor) const
@@ -1019,7 +1009,7 @@ bool CGUIBaseContainer::GetCondition(int condition, int data) const
       return layout ? (layout->GetFocusedItem() == (unsigned int)data) : false;
     }
   case CONTAINER_SCROLLING:
-    return (m_scrollTimer.GetElapsedMilliseconds() > m_scrollTime || m_pageChangeTimer.IsRunning());
+    return (m_scrollTimer.GetElapsedMilliseconds() > m_scroller.GetDuration() || m_pageChangeTimer.IsRunning());
   default:
     return false;
   }
@@ -1110,12 +1100,12 @@ int CGUIBaseContainer::GetCurrentPage() const
 
 void CGUIBaseContainer::GetCacheOffsets(int &cacheBefore, int &cacheAfter)
 {
-  if (m_scrollSpeed > 0)
+  if (m_scroller.IsScrollingDown())
   {
     cacheBefore = 0;
     cacheAfter = m_cacheItems;
   }
-  else if (m_scrollSpeed < 0)
+  else if (m_scroller.IsScrollingUp())
   {
     cacheBefore = m_cacheItems;
     cacheAfter = 0;
