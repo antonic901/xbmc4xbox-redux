@@ -71,6 +71,7 @@ public:
   virtual void DoRender(unsigned int currentTime);
   void LoadLayout(TiXmlElement *layout);
   void LoadContent(TiXmlElement *content);
+  void SetDefaultControl(int id, bool always) { m_staticDefaultItem = id; m_staticDefaultAlways = always; };
 
   VIEW_TYPE GetType() const { return m_type; };
   const CStdString &GetLabel() const { return m_label; };
@@ -110,12 +111,14 @@ protected:
   virtual void UpdatePageControl(int offset);
   virtual void CalculateLayout();
   virtual void SelectItem(int item) {};
+  void SelectStaticItemById(int id);
   virtual bool SelectItemFromPoint(const CPoint &point) { return false; };
   virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const { return -1; };
   virtual void Reset();
   virtual unsigned int GetNumItems() const { return m_items.size(); };
   virtual int GetCurrentPage() const;
   bool InsideLayout(const CGUIListItemLayout *layout, const CPoint &point) const;
+  virtual void OnFocus();
   void UpdateStaticItems(bool refreshItems = false);
 
   inline float Size() const;
@@ -158,6 +161,8 @@ protected:
   CStdString m_label;
 
   bool m_staticContent;
+  bool m_staticDefaultAlways;
+  int  m_staticDefaultItem;
   unsigned int m_staticUpdateTime;
   std::vector<CGUIListItemPtr> m_staticItems;
   bool m_wasReset;  // true if we've received a Reset message until we've rendered once.  Allows
