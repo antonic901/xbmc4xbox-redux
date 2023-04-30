@@ -26,6 +26,7 @@
 #include "GUILabel.h"
 #include "control.h"
 #include "pyutil.h"
+#include "listproviders/StaticProvider.h"
 
 using namespace std;
 
@@ -658,7 +659,7 @@ PyDoc_STRVAR(setStaticContent__doc__,
       return NULL;
     }
 
-    vector<CGUIListItemPtr> items;
+    vector<CGUIStaticItemPtr> items;
     
     for (int item = 0; item < PyList_Size(pList); item++)
     {
@@ -668,15 +669,16 @@ PyDoc_STRVAR(setStaticContent__doc__,
         PyErr_SetString(PyExc_TypeError, "Only ListItems can be passed");
         return NULL;
       }
-      // object is a listitem, and we set m_idpeth to 0 as this
-      // is used as the visibility condition for the item in the list
-      ListItem *listItem = (ListItem*)pItem;
-      listItem->item->m_idepth = 0;
 
-      items.push_back((CFileItemPtr &)listItem->item);
+      // NOTE: This code has likely not worked fully correctly for some time
+      //       In particular, the click behaviour won't be working.
+      CGUIStaticItemPtr newItem(new CGUIStaticItem(*((ListItem*)pItem)->item));
+      items.push_back(newItem);
     }
+
     // set static list
-    ((CGUIBaseContainer *)self->pGUIControl)->SetStaticContent(items);
+    IListProvider *provider = new CStaticListProvider(items);
+    ((CGUIBaseContainer *)self->pGUIControl)->SetListProvider(provider);
 
     Py_INCREF(Py_None);
     return Py_None;

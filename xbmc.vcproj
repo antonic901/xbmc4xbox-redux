@@ -2833,6 +2833,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\interfaces\info\SkinVariable.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="listproviders"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\listproviders\IListProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\listproviders\IListProvider.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\listproviders\StaticProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\listproviders\StaticProvider.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
