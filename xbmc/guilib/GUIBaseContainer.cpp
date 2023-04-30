@@ -760,14 +760,21 @@ void CGUIBaseContainer::UpdateListProvider(bool refreshItems)
       m_listProvider->Fetch(m_items);
       SetPageControlRange();
       // update the newly selected item
+      bool found = false;
       for (int i = 0; i < (int)m_items.size(); i++)
       {
-        if (m_items[i].get() == current && i != currentItem)
+        if (m_items[i].get() == current)
         {
-          SelectItem(i);
-          break;
+          found = true;
+          if (i != currentItem)
+          {
+            SelectItem(i);
+            break;
+          }
         }
       }
+      if (!found && currentItem >= (int)m_items.size())
+        SelectItem(m_items.size()-1);
     }
     // always update the scroll by letter, as the list provider may have altered labels
     // while not actually changing the list items.
