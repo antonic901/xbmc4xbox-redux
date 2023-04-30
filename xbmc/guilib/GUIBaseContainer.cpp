@@ -683,7 +683,9 @@ void CGUIBaseContainer::DoRender(unsigned int currentTime)
 
 void CGUIBaseContainer::AllocResources()
 {
+  CGUIControl::AllocResources();
   CalculateLayout();
+  UpdateStaticItems(true);
   if (m_staticDefaultItem != -1) // select default item
     SelectStaticItemById(m_staticDefaultItem);
 }
