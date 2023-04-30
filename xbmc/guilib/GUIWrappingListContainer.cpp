@@ -118,6 +118,11 @@ void CGUIWrappingListContainer::Scroll(int amount)
   ScrollToOffset(m_offset + amount);
 }
 
+bool CGUIWrappingListContainer::GetOffsetRange(int &minOffset, int &maxOffset) const
+{
+  return false;
+}
+
 void CGUIWrappingListContainer::ValidateOffset()
 {
   if (m_itemsPerPage <= (int)m_items.size())

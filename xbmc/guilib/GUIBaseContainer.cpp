@@ -658,6 +658,13 @@ void CGUIBaseContainer::SetPageControl(int id)
   m_pageControl = id;
 }
 
+bool CGUIBaseContainer::GetOffsetRange(int &minOffset, int &maxOffset) const
+{
+  minOffset = 0;
+  maxOffset = GetRows() - m_itemsPerPage;
+  return true;
+}
+
 void CGUIBaseContainer::ValidateOffset()
 {
 }

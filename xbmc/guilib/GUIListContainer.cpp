@@ -189,9 +189,11 @@ void CGUIListContainer::ValidateOffset()
   if (!m_layout) return;
   // first thing is we check the range of our offset
   // don't validate offset if we are scrolling in case the tween image exceed <0, 1> range
-  if (m_offset > (int)m_items.size() - m_itemsPerPage || (!m_scroller.IsScrolling() && m_scroller.GetValue() > ((int)m_items.size() - m_itemsPerPage) * m_layout->Size(m_orientation)))
+  int minOffset, maxOffset;
+  GetOffsetRange(minOffset, maxOffset);
+  if (m_offset > maxOffset || (!m_scroller.IsScrolling() && m_scroller.GetValue() > maxOffset * m_layout->Size(m_orientation)))
   {
-    m_offset = m_items.size() - m_itemsPerPage;
+    m_offset = maxOffset;
     m_scroller.SetValue(m_offset * m_layout->Size(m_orientation));
   }
   if (m_offset < 0 || (!m_scroller.IsScrolling() && m_scroller.GetValue() < 0))
