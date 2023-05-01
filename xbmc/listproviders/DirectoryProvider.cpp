@@ -174,6 +174,9 @@ bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
     target = m_target.GetLabel(m_parentID, false);
   if (fileItem.HasProperty("node.target_url"))
     fileItem.SetPath(fileItem.GetProperty("node.target_url"));
+
+  CheckContentAttributes(target, fileItem);
+
   // grab the execute string
   string execute = CFavourites::GetExecutePath(fileItem, target);
   if (!execute.empty())
@@ -184,6 +187,28 @@ bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
     return true;
   }
   return false;
+}
+
+void CDirectoryProvider::CheckContentAttributes(string &target, CFileItem &fileItem)
+{
+  CStdString path;
+  if (target == "application")
+  {
+    path.Format("%i", WINDOW_PROGRAMS);
+    target = path.c_str();
+    path.Format("%sdefault.xbe", fileItem.GetPath());
+  }
+  else if (target == "script")
+  {
+    path.Format("%i", WINDOW_SCRIPTS);
+    target = path.c_str();
+    path.Format("%sdefault.py", fileItem.GetPath());
+  }
+  if (!path.IsEmpty())
+  {
+    fileItem.m_bIsFolder = false;
+    fileItem.SetPath(path);
+  }
 }
 
 bool CDirectoryProvider::IsUpdating() const

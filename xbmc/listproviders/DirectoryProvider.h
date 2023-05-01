@@ -38,6 +38,7 @@ public:
   virtual void Fetch(std::vector<CGUIListItemPtr> &items) const;
   virtual void Reset();
   virtual bool OnClick(const CGUIListItemPtr &item);
+  void CheckContentAttributes(std::string &target, CFileItem &fileItem);
   virtual bool IsUpdating() const;
 
   // callback from directory job
