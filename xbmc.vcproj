@@ -2837,6 +2837,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="listproviders"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\listproviders\DirectoryProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\listproviders\DirectoryProvider.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\listproviders\IListProvider.cpp">
 				</File>
 				<File
