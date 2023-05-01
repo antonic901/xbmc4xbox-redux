@@ -173,7 +173,7 @@ CStdString CFavourites::GetExecutePath(const CFileItem &item, const std::string 
                             !(item.IsSmartPlayList() || item.IsPlayList())))
   {
     if (!contextWindow.empty())
-      execute.Format("ActivateWindow(%s,%s)", contextWindow, Paramify(item.GetPath()));
+      execute.Format("ActivateWindow(%s,%s,return)", contextWindow, Paramify(item.GetPath()));
   }
   else if (item.GetPath().Left(9).Equals("plugin://"))
     execute.Format("RunPlugin(%s)", Paramify(item.GetPath()));
