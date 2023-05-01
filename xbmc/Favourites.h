@@ -32,6 +32,7 @@ public:
   static bool Save(const CFileItemList& items);
   static bool IsFavourite(CFileItem *item, int contextWindow);
 
+  static CStdString GetExecutePath(const CFileItem &item, int contextWindow);
+  static CStdString GetExecutePath(const CFileItem &item, const std::string &contextWindow);
 private:
-  static CStdString GetExecutePath(const CFileItem *item, int contextWindow);
 };

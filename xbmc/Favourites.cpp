@@ -29,6 +29,9 @@
 #include "video/VideoInfoTag.h"
 #include "settings/AdvancedSettings.h"
 
+#define STRINGIZE_(x) #x
+#define STRINGIZE(x) STRINGIZE_(x)
+
 bool CFavourites::Load(CFileItemList &items)
 {
   items.Clear();
@@ -119,7 +122,7 @@ bool CFavourites::AddOrRemove(CFileItem *item, int contextWindow)
   CFileItemList items;
   Load(items);
 
-  CStdString executePath(GetExecutePath(item, contextWindow));
+  CStdString executePath(GetExecutePath(*item, contextWindow));
 
   CFileItemPtr match = items.Get(executePath);
   if (match)
@@ -145,7 +148,7 @@ bool CFavourites::IsFavourite(CFileItem *item, int contextWindow)
   CFileItemList items;
   if (!Load(items)) return false;
 
-  return items.Contains(GetExecutePath(item, contextWindow));
+  return items.Contains(GetExecutePath(*item, contextWindow));
 }
 
 static CStdString Paramify(const CStdString& param)
@@ -156,24 +159,34 @@ static CStdString Paramify(const CStdString& param)
   return "\"" + result + "\"";
 }
 
-CStdString CFavourites::GetExecutePath(const CFileItem *item, int contextWindow)
+CStdString CFavourites::GetExecutePath(const CFileItem &item, int contextWindow)
+{
+  CStdString text;
+  text.Format("%i", contextWindow);
+  return GetExecutePath(item, text);
+}
+
+CStdString CFavourites::GetExecutePath(const CFileItem &item, const std::string &contextWindow)
 {
   CStdString execute;
-  if (item->m_bIsFolder && (g_advancedSettings.m_playlistAsFolders ||
-                            !(item->IsSmartPlayList() || item->IsPlayList())))
-    execute.Format("ActivateWindow(%i,%s)", contextWindow, Paramify(item->GetPath()));
-  else if (item->GetPath().Left(9).Equals("plugin://"))
-    execute.Format("RunPlugin(%s)", Paramify(item->GetPath()));
-  else if (contextWindow == WINDOW_SCRIPTS)
-    execute.Format("RunScript(%s)", item->GetPath());
-  else if (contextWindow == WINDOW_PROGRAMS)
-    execute.Format("RunXBE(%s)", Paramify(item->GetPath()));
+  if (item.m_bIsFolder && (g_advancedSettings.m_playlistAsFolders ||
+                            !(item.IsSmartPlayList() || item.IsPlayList())))
+  {
+    if (!contextWindow.empty())
+      execute.Format("ActivateWindow(%s,%s)", contextWindow, Paramify(item.GetPath()));
+  }
+  else if (item.GetPath().Left(9).Equals("plugin://"))
+    execute.Format("RunPlugin(%s)", Paramify(item.GetPath()));
+  else if (contextWindow == STRINGIZE(WINDOW_SCRIPTS))
+    execute.Format("RunScript(%s)", item.GetPath());
+  else if (contextWindow == STRINGIZE(WINDOW_PROGRAMS))
+    execute.Format("RunXBE(%s)", Paramify(item.GetPath()));
   else  // assume a media file
   {
-    if (item->IsVideoDb() && item->HasVideoInfoTag())
-      execute.Format("PlayMedia(%s)", Paramify(item->GetVideoInfoTag()->m_strFileNameAndPath));
+    if (item.IsVideoDb() && item.HasVideoInfoTag())
+      execute.Format("PlayMedia(%s)", Paramify(item.GetVideoInfoTag()->m_strFileNameAndPath));
     else
-      execute.Format("PlayMedia(%s)", Paramify(item->GetPath()));
+      execute.Format("PlayMedia(%s)", Paramify(item.GetPath()));
   }
   return execute;
 }
