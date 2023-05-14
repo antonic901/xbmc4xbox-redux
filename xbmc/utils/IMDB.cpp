@@ -249,7 +249,7 @@ void CIMDB::ShowErrorDialog(const TiXmlElement* element)
   dialog->DoModal();
 }
 
-bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& details)
+bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& details, const CStdString& strFunction)
 {
   IMDB_EPISODELIST temp;
   for(unsigned int i=0; i < url.m_url.size(); i++)
@@ -266,7 +266,7 @@ bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& det
     m_parser.m_param[0] = strHTML;
     m_parser.m_param[1] = url.m_url[i].m_url;
 
-    CStdString strXML = m_parser.Parse("GetEpisodeList",&m_info.settings);
+    CStdString strXML = m_parser.Parse(strFunction,&m_info.settings);
     CLog::Log(LOGDEBUG,"scraper: GetEpisodeList returned %s",strXML.c_str());
     if (strXML.IsEmpty())
     {
@@ -283,6 +283,19 @@ bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& det
     {
       CLog::Log(LOGERROR, "%s: Unable to parse xml",__FUNCTION__);
       return false;
+    }
+
+    TiXmlElement* pRoot = doc.RootElement();
+    TiXmlElement* xurl = pRoot->FirstChildElement("url");
+    while (xurl && xurl->FirstChild())
+    {
+      const char* szFunction = xurl->Attribute("function");
+      if (szFunction)
+      {
+        CScraperUrl scrURL(xurl);
+        InternalGetEpisodeList(scrURL,details,szFunction);
+      }
+      xurl = xurl->NextSiblingElement("url");
     }
 
     if (!XMLUtils::HasUTF8Declaration(strXML))
@@ -370,7 +383,7 @@ bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& det
 bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetails, const CStdString& strFunction)
 {
   vector<CStdString> strHTML;
-
+  
   for (unsigned int i=0;i<url.m_url.size();++i)
   {
     CStdString strCurrHTML;
@@ -385,8 +398,8 @@ bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetai
   for (unsigned int i=0;i<strHTML.size();++i)
     m_parser.m_param[i] = strHTML[i];
 
-  m_parser.m_param[strHTML.size()] = url.strId;
-  m_parser.m_param[strHTML.size()+1] = url.m_url[0].m_url;
+    m_parser.m_param[strHTML.size()] = url.strId;
+    m_parser.m_param[strHTML.size()+1] = url.m_url[0].m_url;
 
   CStdString strXML = m_parser.Parse(strFunction,&m_info.settings);
   CLog::Log(LOGDEBUG,"scraper: %s returned %s",strFunction.c_str(),strXML.c_str());
