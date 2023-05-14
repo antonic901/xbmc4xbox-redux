@@ -58,7 +58,7 @@ public:
   virtual ~CIMDB();
 
   int InternalFindMovie(const CStdString& strMovie, IMDB_MOVIELIST& movielist, bool& sortMovieList, const CStdString& strFunction="GetSearchResults", CScraperUrl* pUrl=NULL);
-  bool InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetails, const CStdString& strFunction="GetDetails");
+  bool InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetails, const CStdString& strFunction="GetDetails", const std::vector<CStdString>* extras=NULL);
   bool InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& details, const CStdString& strFunction="GetEpisodeList");
   bool ParseDetails(TiXmlDocument &doc, CVideoInfoTag &movieDetails);
   bool LoadXML(const CStdString& strXMLFile, CVideoInfoTag &movieDetails, bool bDownload = true);

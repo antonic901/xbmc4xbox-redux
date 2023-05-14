@@ -380,11 +380,12 @@ bool CIMDB::InternalGetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& det
   return true;
 }
 
-bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetails, const CStdString& strFunction)
+bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetails, const CStdString& strFunction, const vector<CStdString>* extras)
 {
   vector<CStdString> strHTML;
   
-  for (unsigned int i=0;i<url.m_url.size();++i)
+  size_t i;
+  for (i=0;i<url.m_url.size();++i)
   {
     CStdString strCurrHTML;
     if (url.m_xml.Equals("filenamescrape"))
@@ -395,11 +396,20 @@ bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetai
   }
 
   // now grab our details using the scraper
-  for (unsigned int i=0;i<strHTML.size();++i)
+  for (i=0;i<strHTML.size();++i)
     m_parser.m_param[i] = strHTML[i];
 
+  // put the 'extra' parameterts into the parser parameter list too
+  if (extras)
+  {
+    for (size_t j=0;j<extras->size();++j)
+      m_parser.m_param[j+i] = (*extras)[j];
+  }
+  else
+  {
     m_parser.m_param[strHTML.size()] = url.strId;
     m_parser.m_param[strHTML.size()+1] = url.m_url[0].m_url;
+  }
 
   CStdString strXML = m_parser.Parse(strFunction,&m_info.settings);
   CLog::Log(LOGDEBUG,"scraper: %s returned %s",strFunction.c_str(),strXML.c_str());
@@ -425,6 +435,19 @@ bool CIMDB::InternalGetDetails(const CScraperUrl& url, CVideoInfoTag& movieDetai
 
   bool ret = ParseDetails(doc, movieDetails);
   TiXmlElement* pRoot = doc.RootElement();
+  TiXmlElement* xchain = doc.RootElement()->FirstChildElement("chain");
+  while (xchain && xchain->FirstChild())
+  {
+    const char* szFunction = xchain->Attribute("function");
+    if (szFunction)
+    {
+      CScraperUrl scrURL2;
+      vector<CStdString> extras;
+      extras.push_back(xchain->FirstChild()->Value());
+      InternalGetDetails(scrURL2,movieDetails,szFunction,&extras);
+    }
+    xchain = xchain->NextSiblingElement("chain");
+  }
   TiXmlElement* xurl = pRoot->FirstChildElement("url");
   while (xurl && xurl->FirstChild())
   {
