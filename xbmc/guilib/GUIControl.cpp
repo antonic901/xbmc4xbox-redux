@@ -537,7 +537,7 @@ void CGUIControl::UpdateVisibility(const CGUIListItem *item)
   // this may need to be reviewed at a later date
   if (m_enableCondition)
     m_enabled = g_infoManager.GetBool(m_enableCondition, m_parentID, item);
-  m_allowHiddenFocus.Update(m_parentID, item);
+  m_allowHiddenFocus.Update(item);
   UpdateColors();
   // and finally, update our control information (if not pushed)
   if (!m_pushedUpdates)
