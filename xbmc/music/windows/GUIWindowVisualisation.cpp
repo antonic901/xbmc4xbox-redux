@@ -61,9 +61,9 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   {
   case ACTION_SHOW_INFO:
     {
-      if (!m_dwInitTimer || g_settings.m_bMyMusicSongThumbInVis)
-        g_settings.m_bMyMusicSongThumbInVis = !g_settings.m_bMyMusicSongThumbInVis;
-      g_infoManager.SetShowInfo(g_settings.m_bMyMusicSongThumbInVis);
+      m_dwInitTimer = 0;
+      g_infoManager.ToggleShowInfo();
+      g_settings.m_bMyMusicSongThumbInVis = g_infoManager.GetBool(PLAYER_SHOWINFO);
       return true;
     }
     break;
