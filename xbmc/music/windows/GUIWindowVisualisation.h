@@ -22,6 +22,7 @@
 
 #include "GUIWindow.h"
 #include "music/tags/MusicInfoTag.h"
+#include "Stopwatch.h"
 
 class CGUIWindowVisualisation :
       public CGUIWindow
@@ -36,8 +37,8 @@ public:
   virtual void FrameMove();
 protected:
   virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
-  DWORD m_dwInitTimer;
-  DWORD m_dwLockedTimer;
+  CStopWatch m_initTimer;
+  CStopWatch m_lockedTimer;
   bool m_bShowPreset;
   MUSIC_INFO::CMusicInfoTag m_tag;    // current tag info, for finding when the info manager updates
 };
