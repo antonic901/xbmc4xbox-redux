@@ -189,11 +189,9 @@ namespace PYXBMC
 
     if (!PyArg_ParseTuple(args, (char*)"s|b", &cVisible, &bHidden)) return NULL;
 
-    int ret = g_infoManager.TranslateString(cVisible);
-
     PyXBMCGUILock();
     if (self->pGUIControl)
-      self->pGUIControl->SetVisibleCondition(ret, 0 != bHidden);
+      self->pGUIControl->SetVisibleCondition(cVisible, bHidden ? "true" : "");
     PyXBMCGUIUnlock();
 
     Py_INCREF(Py_None);
@@ -218,11 +216,9 @@ namespace PYXBMC
 
     if (!PyArg_ParseTuple(args, (char*)"s", &cEnable)) return NULL;
 
-    int ret = g_infoManager.TranslateString(cEnable);
-
     PyXBMCGUILock();
     if (self->pGUIControl)
-      self->pGUIControl->SetEnableCondition(ret);
+      self->pGUIControl->SetEnableCondition(cEnable);
     PyXBMCGUIUnlock();
 
     Py_INCREF(Py_None);

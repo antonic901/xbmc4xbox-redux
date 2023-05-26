@@ -541,7 +541,7 @@ void CGUIWindowManager::UpdateModelessVisibility()
     CGUIWindow *pWindow = (*it).second;
     if (pWindow && pWindow->IsDialog() && pWindow->GetVisibleCondition())
     {
-      if (g_infoManager.GetBool(pWindow->GetVisibleCondition(), GetActiveWindow()))
+      if (g_infoManager.GetBoolValue(pWindow->GetVisibleCondition()))
         ((CGUIDialog *)pWindow)->Show();
       else
         ((CGUIDialog *)pWindow)->Close();

@@ -423,7 +423,7 @@ bool CGUIControlFactory::GetAlignmentY(const TiXmlNode* pRootNode, const char* s
   return true;
 }
 
-bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode* control, int &condition, CGUIInfoBool &allowHiddenFocus)
+bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode* control, CStdString &condition, CStdString &allowHiddenFocus)
 {
   const TiXmlElement* node = control->FirstChildElement("visible");
   if (!node) return false;
@@ -432,7 +432,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode* control, int 
   {
     const char *hidden = node->Attribute("allowhiddenfocus");
     if (hidden)
-      allowHiddenFocus.Parse(hidden, 0);
+      allowHiddenFocus = hidden;
     // add to our condition string
     if (!node->NoChildren())
       conditions.push_back(node->FirstChild()->Value());
@@ -441,32 +441,20 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode* control, int 
   if (!conditions.size())
     return false;
   if (conditions.size() == 1)
-    condition = g_infoManager.TranslateString(conditions[0]);
+    condition = conditions[0];
   else
   { // multiple conditions should be anded together
-    CStdString conditionString = "[";
+    condition = "[";
     for (unsigned int i = 0; i < conditions.size() - 1; i++)
-      conditionString += conditions[i] + "] + [";
-    conditionString += conditions[conditions.size() - 1] + "]";
-    condition = g_infoManager.TranslateString(conditionString);
+      condition += conditions[i] + "] + [";
+    condition += conditions[conditions.size() - 1] + "]";
   }
-  return (condition != 0);
+  return true;
 }
 
-bool CGUIControlFactory::GetCondition(const TiXmlNode *control, const char *tag, int &condition)
+bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, CStdString &condition)
 {
-  CStdString condString;
-  if (XMLUtils::GetString(control, tag, condString))
-  {
-    condition = g_infoManager.TranslateString(condString);
-    return true;
-  }
-  return false;
-}
-
-bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, int &condition)
-{
-  CGUIInfoBool allowHiddenFocus;
+  CStdString allowHiddenFocus;
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
@@ -775,9 +763,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     aspect.ratio = CAspectRatio::AR_KEEP;
 #endif
 
-  int iVisibleCondition = 0;
-  CGUIInfoBool allowHiddenFocus(false);
-  int enableCondition = 0;
+  CStdString allowHiddenFocus;
+  CStdString enableCondition;
 
   vector<CAnimation> animations;
 
@@ -819,6 +806,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   bool   hasCamera = false;
   bool resetOnLabelChange = true;
   bool bPassword = false;
+  CStdString visibleCondition;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -873,8 +861,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   GetInfoColor(pControlNode, "colordiffuse", colorDiffuse, parentID);
 
-  GetConditionalVisibility(pControlNode, iVisibleCondition, allowHiddenFocus);
-  GetCondition(pControlNode, "enable", enableCondition);
+  GetConditionalVisibility(pControlNode, visibleCondition, allowHiddenFocus);
+  XMLUtils::GetString(pControlNode, "enable", enableCondition);
 
   // note: animrect here uses .right and .bottom as width and height respectively (nonstandard)
   FRECT animRect = { posX, posY, width, height };
@@ -1479,7 +1467,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   if (control)
   {
     control->SetHitRect(hitRect);
-    control->SetVisibleCondition(iVisibleCondition, allowHiddenFocus);
+    control->SetVisibleCondition(visibleCondition, allowHiddenFocus);
     control->SetEnableCondition(enableCondition);
     control->SetAnimations(animations);
     control->SetColorDiffuse(colorDiffuse);

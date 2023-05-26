@@ -44,10 +44,9 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     CGUIControlFactory::GetInfoLabel(item, "thumb", thumb, parentID);
     CGUIControlFactory::GetInfoLabel(item, "icon", icon, parentID);
     const char *id = item->Attribute("id");
-    int visibleCondition = 0;
-    CGUIControlFactory::GetConditionalVisibility(item, visibleCondition);
-    // NOTE: Use this when backporting #318 PR. Link to commit: https://github.com/xbmc/xbmc/commit/acfe38802f9bc55fd403c87c2fae919283219c3c
-    //SetVisibleCondition(condition, parentID);
+    CStdString condition;
+    CGUIControlFactory::GetConditionalVisibility(item, condition);
+    SetVisibleCondition(condition, parentID);
     CGUIControlFactory::GetActions(item, "onclick", m_clickActions);
     SetLabel(label.GetLabel(parentID));
     SetLabel2(label2.GetLabel(parentID));
@@ -58,7 +57,6 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     if (!thumb.IsConstant())  m_info.push_back(make_pair(thumb, "thumb"));
     if (!icon.IsConstant())   m_info.push_back(make_pair(icon, "icon"));
     m_iprogramCount = id ? atoi(id) : 0;
-    m_visCondition = visibleCondition;
     // add any properties
     const TiXmlElement *property = item->FirstChildElement("property");
     while (property)
@@ -123,7 +121,7 @@ bool CGUIStaticItem::UpdateVisibility(int contextWindow)
 {
   if (!m_visCondition)
     return false;
-  bool state = g_infoManager.GetBool(m_visCondition, contextWindow);
+  bool state = g_infoManager.GetBoolValue(m_visCondition);
   if (state != m_visState)
   {
     m_visState = state;
