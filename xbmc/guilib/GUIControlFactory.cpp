@@ -458,7 +458,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, CStd
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
-bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &rect, vector<CAnimation> &animations)
+bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &rect, int context, vector<CAnimation> &animations)
 {
   const TiXmlElement* node = control->FirstChildElement("animation");
   bool ret = false;
@@ -470,7 +470,7 @@ bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &re
     if (node->FirstChild())
     {
       CAnimation anim;
-      anim.Create(node, rect);
+      anim.Create(node, rect, context);
       animations.push_back(anim);
       if (strcmpi(node->FirstChild()->Value(), "VisibleChange") == 0)
       { // add the hidden one as well
@@ -489,7 +489,7 @@ bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &re
         else if (end)
           hidden.SetAttribute("start", end);
         CAnimation anim2;
-        anim2.Create(&hidden, rect);
+        anim2.Create(&hidden, rect, context);
         animations.push_back(anim2);
       }
     }
@@ -866,7 +866,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   // note: animrect here uses .right and .bottom as width and height respectively (nonstandard)
   FRECT animRect = { posX, posY, width, height };
-  GetAnimations(pControlNode, animRect, animations);
+  GetAnimations(pControlNode, animRect, parentID, animations);
 
   GetInfoColor(pControlNode, "textcolor", labelInfo.textColor, parentID);
   GetInfoColor(pControlNode, "focusedcolor", labelInfo.focusedColor, parentID);

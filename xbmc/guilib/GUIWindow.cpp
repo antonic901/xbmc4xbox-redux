@@ -193,7 +193,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     {
       FRECT rect = { 0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight };
       CAnimation anim;
-      anim.Create(pChild, rect);
+      anim.Create(pChild, rect, GetID());
       m_animations.push_back(anim);
     }
     else if (strValue == "zorder" && pChild->FirstChild())

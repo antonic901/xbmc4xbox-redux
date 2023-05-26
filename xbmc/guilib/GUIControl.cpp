@@ -536,7 +536,7 @@ void CGUIControl::UpdateVisibility(const CGUIListItem *item)
   {
     CAnimation &anim = m_animations[i];
     if (anim.GetType() == ANIM_TYPE_CONDITIONAL)
-      anim.UpdateCondition(GetParentID(), item);
+      anim.UpdateCondition(item);
   }
   // and check for conditional enabling - note this overrides SetEnabled() from the code currently
   // this may need to be reviewed at a later date
@@ -666,7 +666,7 @@ CAnimation *CGUIControl::GetAnimation(ANIMATION_TYPE type, bool checkConditions 
     CAnimation &anim = m_animations[i];
     if (anim.GetType() == type)
     {
-      if (!checkConditions || !anim.GetCondition() || g_infoManager.GetBool(anim.GetCondition()))
+      if (!checkConditions || !anim.GetCondition() || g_infoManager.GetBoolValue(anim.GetCondition()))
         return &anim;
     }
   }
