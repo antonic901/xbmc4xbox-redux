@@ -54,7 +54,7 @@ public:
   void SetLabel(const std::string& strLabel);
   void SetAltLabel(const std::string& label);
   virtual CStdString GetLabel() const;
-  void SetToggleSelect(int toggleSelect) { m_toggleSelect = toggleSelect; };
+  void SetToggleSelect(const CStdString &toggleSelect);
   void SetAltClickActions(const CGUIAction &clickActions);
 
 protected:
@@ -62,6 +62,6 @@ protected:
   virtual void OnClick();
   virtual void SetInvalid();
   CGUIButtonControl m_selectButton;
-  int m_toggleSelect;
+  unsigned int m_toggleSelect;
 };
 #endif

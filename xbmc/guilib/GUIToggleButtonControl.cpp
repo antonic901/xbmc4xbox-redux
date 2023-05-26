@@ -43,7 +43,7 @@ void CGUIToggleButtonControl::Render()
 {
   // ask our infoManager whether we are selected or not...
   if (m_toggleSelect)
-    m_bSelected = g_infoManager.GetBool(m_toggleSelect, m_parentID);
+    m_bSelected = g_infoManager.GetBoolValue(m_toggleSelect);
 
   if (m_bSelected)
   {
@@ -161,4 +161,9 @@ void CGUIToggleButtonControl::OnClick()
     m_selectButton.OnClick();
   else
     CGUIButtonControl::OnClick();
+}
+
+void CGUIToggleButtonControl::SetToggleSelect(const CStdString &toggleSelect)
+{
+  m_toggleSelect = g_infoManager.Register(toggleSelect, GetParentID());
 }

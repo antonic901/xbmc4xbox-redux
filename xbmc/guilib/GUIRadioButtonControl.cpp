@@ -61,7 +61,7 @@ void CGUIRadioButtonControl::Render()
 
   // ask our infoManager whether we are selected or not...
   if (m_toggleSelect)
-    m_bSelected = g_infoManager.GetBool(m_toggleSelect, m_parentID);
+    m_bSelected = g_infoManager.GetBoolValue(m_toggleSelect);
 
   if ( IsSelected() && !IsDisabled() )
   {
@@ -221,4 +221,9 @@ void CGUIRadioButtonControl::UpdateColors()
   m_imgRadioOffNoFocus.SetDiffuseColor(m_diffuseColor);
   m_imgRadioOnDisabled.SetDiffuseColor(m_diffuseColor);
   m_imgRadioOffDisabled.SetDiffuseColor(m_diffuseColor);
+}
+
+void CGUIRadioButtonControl::SetToggleSelect(const CStdString &toggleSelect)
+{
+  m_toggleSelect = g_infoManager.Register(toggleSelect, GetParentID());
 }

@@ -702,7 +702,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   int singleInfo = 0;
   CStdString strLabel;
   int iUrlSet=0;
-  int iToggleSelect;
+  CStdString toggleSelect;
 
   float spinWidth = 16;
   float spinHeight = 16;
@@ -901,10 +901,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetTexture(pControlNode, "texturenofocus", textureNoFocus);
   GetTexture(pControlNode, "alttexturefocus", textureAltFocus);
   GetTexture(pControlNode, "alttexturenofocus", textureAltNoFocus);
-  CStdString strToggleSelect;
-  XMLUtils::GetString(pControlNode, "usealttexture", strToggleSelect);
-  XMLUtils::GetString(pControlNode, "selected", strToggleSelect);
-  iToggleSelect = g_infoManager.TranslateString(strToggleSelect);
+
+  XMLUtils::GetString(pControlNode, "usealttexture", toggleSelect);
+  XMLUtils::GetString(pControlNode, "selected", toggleSelect);
 
   XMLUtils::GetBoolean(pControlNode, "haspath", bHasPath);
 
@@ -1234,7 +1233,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIToggleButtonControl *)control)->SetAltClickActions(altclickActions);
     ((CGUIToggleButtonControl *)control)->SetFocusActions(focusActions);
     ((CGUIToggleButtonControl *)control)->SetUnFocusActions(unfocusActions);
-    ((CGUIToggleButtonControl *)control)->SetToggleSelect(iToggleSelect);
+    ((CGUIToggleButtonControl *)control)->SetToggleSelect(toggleSelect);
   }
   else if (type == CGUIControl::GUICONTROL_CHECKMARK)
   {
@@ -1256,7 +1255,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
     ((CGUIRadioButtonControl *)control)->SetLabel2(strLabel2);
     ((CGUIRadioButtonControl *)control)->SetRadioDimensions(radioPosX, radioPosY, radioWidth, radioHeight);
-    ((CGUIRadioButtonControl *)control)->SetToggleSelect(iToggleSelect);
+    ((CGUIRadioButtonControl *)control)->SetToggleSelect(toggleSelect);
     ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);
     ((CGUIRadioButtonControl *)control)->SetFocusActions(focusActions);
     ((CGUIRadioButtonControl *)control)->SetUnFocusActions(unfocusActions);

@@ -58,7 +58,7 @@ public:
   virtual void SetHeight(float height);
   virtual CStdString GetDescription() const;
   void SetRadioDimensions(float posX, float posY, float width, float height);
-  void SetToggleSelect(int toggleSelect) { m_toggleSelect = toggleSelect; };
+  void SetToggleSelect(const CStdString &toggleSelect);
   bool IsSelected() const { return m_bSelected; };
 protected:
   virtual void UpdateColors();
@@ -70,6 +70,6 @@ protected:
   CGUITexture m_imgRadioOffDisabled;
   float m_radioPosX;
   float m_radioPosY;
-  int m_toggleSelect;
+  unsigned int m_toggleSelect;
   bool m_useLabel2;
 };
