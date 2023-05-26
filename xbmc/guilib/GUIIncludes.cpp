@@ -157,7 +157,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
       const char *condition = node->Attribute("condition");
       if (condition)
       { // check this condition
-        bool value = g_infoManager.GetBool(g_infoManager.TranslateString(condition));
+        bool value = g_infoManager.EvaluateBool(condition);
 
         if (value)
         {
