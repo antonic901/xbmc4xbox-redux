@@ -33,7 +33,7 @@ public:
   CGUIListItemLayout();
   CGUIListItemLayout(const CGUIListItemLayout &from);
   virtual ~CGUIListItemLayout();
-  void LoadLayout(TiXmlElement *layout, bool focused);
+  void LoadLayout(TiXmlElement *layout, int context, bool focused);
   void Render(CGUIListItem *item, int parentID, unsigned int time = 0);
   float Size(ORIENTATION orientation) const;
   unsigned int GetFocusedItem() const;
@@ -51,7 +51,7 @@ public:
   bool MoveLeft();
   bool MoveRight();
 
-  int GetCondition() const { return m_condition; };
+  unsigned int GetCondition() const { return m_condition; };
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
@@ -66,7 +66,7 @@ protected:
   bool m_focused;
   bool m_invalidated;
 
-  int m_condition;
+  unsigned int m_condition;
   bool m_isPlaying;
 };
 
