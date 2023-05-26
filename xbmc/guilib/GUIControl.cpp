@@ -448,7 +448,7 @@ void CGUIControl::SetHeight(float height)
   }
 }
 
-void CGUIControl::SetVisible(bool bVisible)
+void CGUIControl::SetVisible(bool bVisible, bool setVisState)
 {
   if (bVisible && setVisState)
   {  // TODO: currently we only update m_visible from GUI_MSG_VISIBLE (SET_CONTROL_VISIBLE)
