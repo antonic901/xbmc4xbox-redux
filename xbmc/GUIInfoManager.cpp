@@ -679,6 +679,10 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         int compareString = ConditionalStringParameter(label);
         return AddMultiInfo(GUIInfo(STRING_STR, info, compareString));
       }
+      else if (category == "istrue" && params.size() == 1)
+      {
+        return AddMultiInfo(GUIInfo(VALUE_IS_TRUE, TranslateSingleString(info[0].second.c_str())));
+      }
     }
   }
   else if (info.size() == 2)
@@ -1008,6 +1012,16 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
           return bar[i].val;
       }
     }
+    else if (category == "addon" && property == "setting")
+    {
+      return AddMultiInfo(GUIInfo(WINDOW_PROPERTY, WINDOW_DIALOG_PLUGIN_SETTINGS, ConditionalStringParameter(info[1].second.c_str())));
+    }
+    else if (category == "buttonscroller" && property == "hasfocus")
+    {
+      int controlID = atoi(info[1].second.c_str());
+      if (controlID)
+        return AddMultiInfo(GUIInfo(BUTTON_SCROLLER_HAS_ICON, controlID, 0));
+    }
   }
   else if (info.size() == 3)
   {
@@ -1046,30 +1060,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     }
   }
 
-  CStdString original(strTest);
-  strTest.ToLower();
-  CStdString strCategory = strTest.Left(strTest.Find("."));
-
-  int ret = 0;
-  // translate conditions...
-  if (strTest.Left(7).Equals("istrue("))
-  {
-    CStdString str = strTest.Mid(7, strTest.GetLength() - 8);
-    return AddMultiInfo(GUIInfo(VALUE_IS_TRUE, TranslateSingleString(str)));
-  }
-  else if (strTest.Left(14).Equals("addon.setting("))
-  {
-    CStdString str = strTest.Mid(14, strTest.GetLength() - 15);
-    return AddMultiInfo(GUIInfo(WINDOW_PROPERTY, WINDOW_DIALOG_PLUGIN_SETTINGS, ConditionalStringParameter(str)));
-  }
-  else if (strTest.Left(24).Equals("buttonscroller.hasfocus("))
-  {
-    int controlID = atoi(strTest.Mid(24, strTest.GetLength() - 24).c_str());
-    if (controlID)
-      return AddMultiInfo(GUIInfo(BUTTON_SCROLLER_HAS_ICON, controlID, 0));
-  }
-
-  return ret;
+  return 0;
 }
 
 int CGUIInfoManager::TranslateListItem(const CStdString &info, const CStdString &param)
