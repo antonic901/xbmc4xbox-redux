@@ -444,7 +444,7 @@ infomap mediacontainer[] = {{ "hasfiles",         CONTAINER_HASFILES },
                             { "sortmethod",       CONTAINER_SORT_METHOD },
                             { "showplot",         CONTAINER_SHOWPLOT }};
 
-infomap container_bools[] ={{ "onnext",           CONTAINER_MOVE_NEXT },
+infomap container_bools[] = {{ "onnext",          CONTAINER_MOVE_NEXT },
                             { "onprevious",       CONTAINER_MOVE_PREVIOUS },
                             { "onscrollnext",     CONTAINER_SCROLL_NEXT },
                             { "onscrollprevious", CONTAINER_SCROLL_PREVIOUS },
@@ -561,6 +561,30 @@ infomap playlist[] =       {{ "length",           PLAYLIST_LENGTH },
                             { "israndom",         PLAYLIST_ISRANDOM },
                             { "isrepeat",         PLAYLIST_ISREPEAT },
                             { "isrepeatone",      PLAYLIST_ISREPEATONE }};
+
+infomap bar[] =            {{ "gputemperature",  SYSTEM_GPU_TEMPERATURE },
+                            { "cputemperature",  SYSTEM_CPU_TEMPERATURE },
+                            { "cpuusage",        SYSTEM_CPU_USAGE },
+                            { "freememory",      SYSTEM_FREE_MEMORY },
+                            { "usedmemory",      SYSTEM_USED_MEMORY },
+                            { "fanspeed",        SYSTEM_FAN_SPEED },
+                            { "usedspace",       SYSTEM_USED_SPACE },
+                            { "freespace",       SYSTEM_FREE_SPACE },
+                            { "usedspace(c)",    SYSTEM_USED_SPACE_C },
+                            { "freespace(c)",    SYSTEM_FREE_SPACE_C },
+                            { "usedspace(e)",    SYSTEM_USED_SPACE_E }, 
+                            { "freespace(e)",    SYSTEM_FREE_SPACE_E },
+                            { "usedspace(f)",    SYSTEM_USED_SPACE_F },
+                            { "freespace(f)",    SYSTEM_FREE_SPACE_F },
+                            { "usedspace(g)",    SYSTEM_USED_SPACE_G },
+                            { "freespace(g)",    SYSTEM_FREE_SPACE_G },
+                            { "usedspace(x)",    SYSTEM_USED_SPACE_X },
+                            { "freespace(x)",    SYSTEM_FREE_SPACE_X },
+                            { "usedspace(y)",    SYSTEM_USED_SPACE_Y },
+                            { "freespace(y)",    SYSTEM_FREE_SPACE_Y },
+                            { "usedspace(z)",    SYSTEM_USED_SPACE_Z },
+                            { "freespace(z)",    SYSTEM_FREE_SPACE_Z },
+                            { "hddtemperature",  SYSTEM_HDD_TEMPERATURE }};
 
 void CGUIInfoManager::SplitInfoString(const CStdString &infoString, vector< pair<CStdString, CStdString> > &info)
 {
@@ -976,6 +1000,14 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
           return playlist[i].val;
       }
     }
+    else if (category == "bar")
+    {
+      for (size_t i = 0; i < sizeof(bar) / sizeof(infomap); i++)
+      {
+        if (property == bar[i].str)
+          return bar[i].val;
+      }
+    }
   }
   else if (info.size() == 3)
   {
@@ -1020,33 +1052,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
 
   int ret = 0;
   // translate conditions...
-  if (strCategory.Equals("bar"))
-  {
-    if (strTest.Equals("bar.gputemperature")) ret = SYSTEM_GPU_TEMPERATURE;
-    else if (strTest.Equals("bar.cputemperature")) ret = SYSTEM_CPU_TEMPERATURE;
-    else if (strTest.Equals("bar.cpuusage")) ret = SYSTEM_CPU_USAGE;
-    else if (strTest.Equals("bar.freememory")) ret = SYSTEM_FREE_MEMORY;
-    else if (strTest.Equals("bar.usedmemory")) ret = SYSTEM_USED_MEMORY;
-    else if (strTest.Equals("bar.fanspeed")) ret = SYSTEM_FAN_SPEED;
-    else if (strTest.Equals("bar.usedspace")) ret = SYSTEM_USED_SPACE;
-    else if (strTest.Equals("bar.freespace")) ret = SYSTEM_FREE_SPACE;
-    else if (strTest.Equals("bar.usedspace(c)")) ret = SYSTEM_USED_SPACE_C;
-    else if (strTest.Equals("bar.freespace(c)")) ret = SYSTEM_FREE_SPACE_C;
-    else if (strTest.Equals("bar.usedspace(e)")) ret = SYSTEM_USED_SPACE_E;   
-    else if (strTest.Equals("bar.freespace(e)")) ret = SYSTEM_FREE_SPACE_E; 
-    else if (strTest.Equals("bar.usedspace(f)")) ret = SYSTEM_USED_SPACE_F;
-    else if (strTest.Equals("bar.freespace(f)")) ret = SYSTEM_FREE_SPACE_F;
-    else if (strTest.Equals("bar.usedspace(g)")) ret = SYSTEM_USED_SPACE_G;
-    else if (strTest.Equals("bar.freespace(g)")) ret = SYSTEM_FREE_SPACE_G;
-    else if (strTest.Equals("bar.usedspace(x)")) ret = SYSTEM_USED_SPACE_X;
-    else if (strTest.Equals("bar.freespace(x)")) ret = SYSTEM_FREE_SPACE_X;
-    else if (strTest.Equals("bar.usedspace(y)")) ret = SYSTEM_USED_SPACE_Y;
-    else if (strTest.Equals("bar.freespace(y)")) ret = SYSTEM_FREE_SPACE_Y;
-    else if (strTest.Equals("bar.usedspace(z)")) ret = SYSTEM_USED_SPACE_Z;
-    else if (strTest.Equals("bar.freespace(z)")) ret = SYSTEM_FREE_SPACE_Z;
-    else if (strTest.Equals("bar.hddtemperature")) ret = SYSTEM_HDD_TEMPERATURE;
-  }
-  else if (strTest.Left(7).Equals("istrue("))
+  if (strTest.Left(7).Equals("istrue("))
   {
     CStdString str = strTest.Mid(7, strTest.GetLength() - 8);
     return AddMultiInfo(GUIInfo(VALUE_IS_TRUE, TranslateSingleString(str)));
