@@ -454,13 +454,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         else if (param == "total") return SYSTEM_TOTAL_MEMORY;
       }
       else if (property == "idletime")
-      { // TODO: switch to GUIInfo
-        int time = atoi(info[1].second.c_str());
-        if (time > SYSTEM_IDLE_TIME_FINISH - SYSTEM_IDLE_TIME_START)
-          time = SYSTEM_IDLE_TIME_FINISH - SYSTEM_IDLE_TIME_START;
-        if (time > 0)
-          return SYSTEM_IDLE_TIME_START + time;
-      }
+        return AddMultiInfo(GUIInfo(SYSTEM_IDLE_TIME, atoi(info[1].second.c_str())));
       else if (property == "alarmlessorequal")
       {
         vector<CStdString> params;
@@ -1934,8 +1928,6 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
 #else
     bReturn = true;
 #endif
-  else if (condition > SYSTEM_IDLE_TIME_START && condition <= SYSTEM_IDLE_TIME_FINISH)
-    bReturn = (g_application.GlobalIdleTime() >= condition - SYSTEM_IDLE_TIME_START);
   else if (condition == WINDOW_IS_MEDIA)
   { // note: This doesn't return true for dialogs (content, favourites, login, videoinfo)
     CGUIWindow *pWindow = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
@@ -2411,7 +2403,10 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           CStdString addon = m_stringParameters[info.GetData1()];
           bReturn = CAddonDatabase::HasAddon(addon);
         }
-	    break;
+	      break;
+      case SYSTEM_IDLE_TIME:
+        bReturn = g_application.GlobalIdleTime() >= (int)info.GetData1();
+        break;
       case CONTROL_GROUP_HAS_FOCUS:
         {
           CGUIWindow *window = GetWindowWithCondition(contextWindow, 0);
