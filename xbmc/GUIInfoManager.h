@@ -714,6 +714,7 @@ public:
   bool ConditionsChangedValues(const std::map<int, bool>& map);
 protected:
   friend class INFO::InfoSingle;
+  friend class CGUIWindowFullScreen;
   bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
 
   // routines for window retrieval
