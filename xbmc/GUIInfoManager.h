@@ -47,6 +47,7 @@ class CDateTime;
 namespace INFO
 {
   class InfoBool;
+  class InfoSingle;
 }
 
 // conditions for window retrieval
@@ -618,7 +619,6 @@ public:
   bool EvaluateBool(const CStdString &expression, int context = 0);
 
   int TranslateString(const CStdString &strCondition);
-  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
   int GetInt(int info, int contextWindow = 0) const;
   CStdString GetLabel(int info, int contextWindow = 0);
 
@@ -713,6 +713,9 @@ public:
   /// \brief iterates through boolean conditions and compares their stored values to current values. Returns true if any condition changed value.
   bool ConditionsChangedValues(const std::map<int, bool>& map);
 protected:
+  friend class INFO::InfoSingle;
+  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
+
   // routines for window retrieval
   bool CheckWindowCondition(CGUIWindow *window, int condition) const;
   CGUIWindow *GetWindowWithCondition(int contextWindow, int condition) const;
