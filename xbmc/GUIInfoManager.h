@@ -340,6 +340,8 @@ namespace INFO
 #define SKIN_STRING                 601
 #define SKIN_HAS_MUSIC_OVERLAY      602
 #define SKIN_HAS_VIDEO_OVERLAY      603
+#define SKIN_THEME                  604
+#define SKIN_COLOUR_THEME           605
 
 #define SYSTEM_TOTAL_MEMORY         644
 #define SYSTEM_CPU_USAGE            645
@@ -422,9 +424,6 @@ namespace INFO
 #define SYSTEM_PLATFORM_LINUX       741
 #define SYSTEM_PLATFORM_WINDOWS     742
 #define SYSTEM_PLATFORM_OSX         743
-
-#define SKIN_THEME                  800
-#define SKIN_COLOUR_THEME           801
 
 #define SLIDE_INFO_START            900
 #define SLIDE_INFO_END              980
