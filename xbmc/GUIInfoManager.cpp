@@ -671,8 +671,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
       return AddMultiInfo(GUIInfo(STRING_IS_EMPTY, TranslateSingleString(cat.param())));
     else if (cat.name == "stringcompare" && cat.num_params() == 2)
     {
-      int info = TranslateString(cat.param(0));
-      int info2 = TranslateString(cat.param(1));
+      int info = TranslateSingleString(cat.param(0));
+      int info2 = TranslateSingleString(cat.param(1));
       if (info2 > 0)
         return AddMultiInfo(GUIInfo(STRING_COMPARE, info, -info2));
       // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
@@ -682,13 +682,13 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     }
     else if (cat.name == "integergreaterthan" && cat.num_params() == 2)
     {
-      int info = TranslateString(cat.param(0));
+      int info = TranslateSingleString(cat.param(0));
       int compareInt = atoi(cat.param(1).c_str());
       return AddMultiInfo(GUIInfo(INTEGER_GREATER_THAN, info, compareInt));
     }
     else if (cat.name == "substring" && cat.num_params() == 2)
     {
-      int info = TranslateString(cat.param(0));
+      int info = TranslateSingleString(cat.param(0));
       CStdString label = CGUIInfoLabel::GetLabel(cat.param(1)).ToLower();
       int compareString = ConditionalStringParameter(label);
       return AddMultiInfo(GUIInfo(STRING_STR, info, compareString));
