@@ -543,6 +543,7 @@ const infomap skin_labels[] =    {{ "currenttheme",     SKIN_THEME },
                                   { "currentcolourtheme",SKIN_COLOUR_THEME }};
 
 const infomap window_bools[] =   {{ "ismedia",          WINDOW_IS_MEDIA },
+                                  { "is",               WINDOW_IS },
                                   { "isactive",         WINDOW_IS_ACTIVE },
                                   { "istopmost",        WINDOW_IS_TOPMOST },
                                   { "isvisible",        WINDOW_IS_VISIBLE },
@@ -2500,6 +2501,15 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           if (window && URIUtils::GetFileName(window->GetProperty("xmlfile")).Equals(m_stringParameters[info.GetData2()]))
             bReturn = true;
         }
+        break;
+      case WINDOW_IS:
+        if (info.GetData1())
+        {
+          CGUIWindow *window = g_windowManager.GetWindow(contextWindow);
+          bReturn = (window && window->GetID() == static_cast<int>(info.GetData1()));
+        }
+        else
+          CLog::Log(LOGERROR, "The window id is required.");
         break;
       case WINDOW_IS_VISIBLE:
         if (info.GetData1())
