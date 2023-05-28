@@ -787,6 +787,15 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         }
         else if (prop.name == "idletime")
           return AddMultiInfo(GUIInfo(SYSTEM_IDLE_TIME, atoi(param.c_str())));
+        else if (prop.name == "controllerport")
+        {
+          int i_ControllerPort = atoi(param);
+          if (i_ControllerPort == 1) return SYSTEM_CONTROLLER_PORT_1;
+          else if (i_ControllerPort == 2) return SYSTEM_CONTROLLER_PORT_2;
+          else if (i_ControllerPort == 3) return SYSTEM_CONTROLLER_PORT_3;
+          else if (i_ControllerPort == 4)return SYSTEM_CONTROLLER_PORT_4;
+          else return SYSTEM_CONTROLLER_PORT_1;
+        }
       }
       else if (prop.name == "alarmlessorequal" && prop.num_params() == 2)
         return AddMultiInfo(GUIInfo(SYSTEM_ALARM_LESS_OR_EQUAL, ConditionalStringParameter(prop.param(0)), ConditionalStringParameter(prop.param(1))));
@@ -811,10 +820,6 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         }
         else
           return AddMultiInfo(GUIInfo(SYSTEM_TIME, StringUtils::TimeStringToSeconds(prop.param(0)), StringUtils::TimeStringToSeconds(prop.param(1))));
-      }
-      else if (prop.name == "controllerport")
-      {
-        // TODO: handle this property
       }
     }
     else if (cat.name == "library")
