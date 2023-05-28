@@ -54,7 +54,7 @@ public:
       Update(item);
     else if (time - m_lastUpdate > 0)
     {
-      Update(item);
+      Update(NULL);
       m_lastUpdate = time;
     }
     return m_value;
