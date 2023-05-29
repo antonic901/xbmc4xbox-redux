@@ -157,6 +157,13 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
       pItem->SetProperty("fanart_image",pItem->GetCachedFanart());
   }
 
+  if (pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds == 0)
+  {
+    CVideoDatabase db;
+    db.Open();
+    db.GetResumePoint(*pItem->GetVideoInfoTag());
+    db.Close();
+  }
   return true;
 }
 
