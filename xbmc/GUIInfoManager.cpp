@@ -521,13 +521,13 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "audiochannels",    LISTITEM_AUDIO_CHANNELS },
                                   { "audiolanguage",    LISTITEM_AUDIO_LANGUAGE },
                                   { "subtitlelanguage", LISTITEM_SUBTITLE_LANGUAGE },
+                                  { "isresumable",      LISTITEM_IS_RESUMABLE},
                                   { "isfolder",         LISTITEM_IS_FOLDER },
                                   { "originaltitle",    LISTITEM_ORIGINALTITLE },
                                   { "lastplayed",       LISTITEM_LASTPLAYED },
                                   { "playcount",        LISTITEM_PLAYCOUNT },
                                   { "lastplayed",       MUSICPLAYER_LASTPLAYED },
-                                  { "discnumber",       LISTITEM_DISC_NUMBER },
-                                  { "isresumable",      LISTITEM_IS_RESUMABLE }};
+                                  { "discnumber",       LISTITEM_DISC_NUMBER }};
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
                                   { "preset",           VISUALISATION_PRESET },
