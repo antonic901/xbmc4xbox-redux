@@ -71,8 +71,8 @@ void CGUISliderControl::Render()
     infoCode = m_action->infoCode;
   if (infoCode)
   {
-    int val = g_infoManager.GetInt(infoCode);
-    if (val)
+    int val;
+    if (g_infoManager.GetInt(val, infoCode))
       SetIntValue(val);
   }
 
