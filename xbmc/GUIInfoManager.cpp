@@ -677,9 +677,9 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
   const Property &cat = info[0];
   if (info.size() == 1)
   { // single category
-    if (cat.name == "false" || cat.name == "no" || cat.name == "off")
+    if (cat.name == "false" || cat.name == "no")
       return SYSTEM_ALWAYS_FALSE;
-    else if (cat.name == "true" || cat.name == "yes" || cat.name == "on")
+    else if (cat.name == "true" || cat.name == "yes")
       return SYSTEM_ALWAYS_TRUE;
 
     // deprecated begin
@@ -688,11 +688,15 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     else if (cat.name == "stringcompare" && cat.num_params() == 2)
     {
       int info = TranslateSingleString(cat.param(0));
-      int info2 = TranslateSingleString(cat.param(1));
-      if (info2 > 0)
-        return AddMultiInfo(GUIInfo(STRING_COMPARE, info, -info2));
       // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
       CStdString label = CGUIInfoLabel::GetLabel(cat.param(1)).ToLower();
+      // 'true', 'false', 'yes', 'no' are valid strings, do not resolve them to SYSTEM_ALWAYS_TRUE or SYSTEM_ALWAYS_FALSE
+      if (label != "true" && label != "false" && label != "yes" && label != "no")
+      {
+        int info2 = TranslateSingleString(cat.param(1));
+        if (info2 > 0)
+          return AddMultiInfo(GUIInfo(STRING_COMPARE, info, -info2));
+      }
       int compareString = ConditionalStringParameter(label);
       return AddMultiInfo(GUIInfo(STRING_COMPARE, info, compareString));
     }
