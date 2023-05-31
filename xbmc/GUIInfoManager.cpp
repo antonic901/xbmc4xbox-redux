@@ -318,7 +318,8 @@ const infomap system_labels[] =  {{ "hasnetwork",           SYSTEM_ETHERNET_LINK
                                   { "profilethumb",         SYSTEM_PROFILETHUMB },
                                   { "launchxbe",            SYSTEM_LAUNCHING_XBE },
                                   { "progressbar",          SYSTEM_PROGRESS_BAR },
-                                  { "alarmpos",             SYSTEM_ALARM_POS }};
+                                  { "alarmpos",             SYSTEM_ALARM_POS },
+                                  { "startupwindow",        SYSTEM_STARTUP_WINDOW }};
 
 const infomap system_param[] =   {{ "hasalarm",         SYSTEM_HAS_ALARM },
                                   { "getbool",          SYSTEM_GET_BOOL },
@@ -1627,6 +1628,9 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
     break;
   case SYSTEM_CURRENT_WINDOW:
     return g_localizeStrings.Get(g_windowManager.GetFocusedWindow());
+    break;
+  case SYSTEM_STARTUP_WINDOW:
+    strLabel.Format("%i", g_guiSettings.GetInt("lookandfeel.startupwindow"));
     break;
   case SYSTEM_CURRENT_CONTROL:
     {
