@@ -52,7 +52,6 @@ void CSkinInfo::SetDefaults()
   m_effectsSlowDown = 1.0f;
   m_Version = 1.0;
   m_debugging = false;
-  m_onlyAnimateToHome = true;
   m_iNumCreditLines = 0;
   m_skinzoom = 1.0f;
   m_bLegacy = false;
@@ -310,10 +309,7 @@ bool CSkinInfo::LoadStartupWindows(const TiXmlElement *startup)
     m_startupWindows.push_back(CStartupWindow(WINDOW_FILES, "7"));
     m_startupWindows.push_back(CStartupWindow(WINDOW_SETTINGS_MENU, "5"));
     m_startupWindows.push_back(CStartupWindow(WINDOW_SCRIPTS, "247"));
-    m_onlyAnimateToHome = true;
   }
-  else
-    m_onlyAnimateToHome = false;
   return true;
 }
 
@@ -365,7 +361,7 @@ bool CSkinInfo::GetResolution(const TiXmlNode *root, const char *tag, RESOLUTION
 int CSkinInfo::GetFirstWindow() const
 {
   int startWindow = GetStartWindow();
-  if (HasSkinFile("Startup.xml") && (!m_onlyAnimateToHome || startWindow == WINDOW_HOME))
+  if (HasSkinFile("Startup.xml"))
     startWindow = WINDOW_STARTUP_ANIM;
   return startWindow;
 }

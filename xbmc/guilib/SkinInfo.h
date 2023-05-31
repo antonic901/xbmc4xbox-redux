@@ -139,7 +139,6 @@ protected:
   CGUIIncludes m_includes;
 
   std::vector<CStartupWindow> m_startupWindows;
-  bool m_onlyAnimateToHome;
   bool m_debugging;
 
   float m_skinzoom;
