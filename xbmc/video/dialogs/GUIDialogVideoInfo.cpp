@@ -290,11 +290,6 @@ void CGUIWindowVideoInfo::SetMovie(const CFileItem *item)
   { // movie/show/episode
     for (CVideoInfoTag::iCast it = m_movieItem->GetVideoInfoTag()->m_cast.begin(); it != m_movieItem->GetVideoInfoTag()->m_cast.end(); ++it)
     {
-      CStdString character;
-      if (it->strRole.IsEmpty())
-        character = it->strName;
-      else
-        character.Format("%s %s %s", it->strName.c_str(), g_localizeStrings.Get(20347).c_str(), it->strRole.c_str());
       CFileItemPtr item(new CFileItem(it->strName));
       if (CFile::Exists(item->GetCachedActorThumb()))
         item->SetThumbnailImage(item->GetCachedActorThumb());
