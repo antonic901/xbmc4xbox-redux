@@ -115,7 +115,7 @@ bool CGUIWindowVideoInfo::OnMessage(CGUIMessage& message)
       m_hasUpdatedThumb = false;
 
       CGUIDialog::OnMessage(message);
-      m_bViewReview = true;
+      m_bViewReview = false;
       CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_DISC);
       OnMessage(msg);
       for (int i = 0; i < 1000; ++i)
