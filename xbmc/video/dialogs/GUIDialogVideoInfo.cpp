@@ -299,7 +299,8 @@ void CGUIWindowVideoInfo::SetMovie(const CFileItem *item)
       if (CFile::Exists(item->GetCachedActorThumb()))
         item->SetThumbnailImage(item->GetCachedActorThumb());
       item->SetIconImage("DefaultActor.png");
-      item->SetLabel(character);
+      item->SetLabel(it->strName);
+      item->SetLabel2(it->strRole);
       m_castList->Add(item);
     }
     // set fanart property for tvshows and movies
