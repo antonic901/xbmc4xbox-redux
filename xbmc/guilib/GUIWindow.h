@@ -136,6 +136,7 @@ public:
   virtual bool HasListItems() const { return false; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return CFileItemPtr(); };
   virtual int GetViewContainerID() const { return 0; };
+  virtual int GetViewCount() const { return 0; };
   virtual bool IsActive() const;
   void SetCoordsRes(RESOLUTION res) { m_coordsRes = res; };
   RESOLUTION GetCoordsRes() const { return m_coordsRes; };

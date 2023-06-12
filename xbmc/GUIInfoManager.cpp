@@ -453,6 +453,7 @@ const infomap mediacontainer[] = {{ "hasfiles",         CONTAINER_HASFILES },
                                   { "foldername",       CONTAINER_FOLDERNAME },
                                   { "pluginname",       CONTAINER_PLUGINNAME },
                                   { "viewmode",         CONTAINER_VIEWMODE },
+                                  { "viewcount",        CONTAINER_VIEWCOUNT },
                                   { "totaltime",        CONTAINER_TOTALTIME },
                                   { "hasthumb",         CONTAINER_HAS_THUMB },
                                   { "sortmethod",       CONTAINER_SORT_METHOD },
@@ -1534,6 +1535,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
       }
       break;
     }
+  case CONTAINER_VIEWCOUNT:
   case CONTAINER_VIEWMODE:
     {
       CGUIWindow *window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_IS_MEDIA_WINDOW);
@@ -1541,7 +1543,12 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
       {
         const CGUIControl *control = window->GetControl(window->GetViewContainerID());
         if (control && control->IsContainer())
-          strLabel = ((CGUIBaseContainer *)control)->GetLabel();
+        {
+          if (info == CONTAINER_VIEWMODE)
+            strLabel = ((CGUIBaseContainer *)control)->GetLabel();
+          else if (info == CONTAINER_VIEWCOUNT)
+            strLabel.Format("%i", window->GetViewCount());
+        }
       }
       break;
     }

@@ -43,6 +43,7 @@ public:
   virtual bool IsMediaWindow() const { return true; };
   const CFileItemList &CurrentDirectory() const;
   int GetViewContainerID() const { return m_viewControl.GetCurrentControl(); };
+  int GetViewCount() const { return m_viewControl.GetViewModeCount(); };
   virtual bool HasListItems() const { return true; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);
   const CGUIViewState *GetViewState() const;
