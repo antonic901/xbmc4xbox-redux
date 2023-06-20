@@ -96,6 +96,7 @@ public:
   CFanart m_fanart;
   CStreamDetails m_streamDetails;
   CBookmark m_resumePoint;
+  CStdString m_type;
 
 private:
   void ParseNative(const TiXmlElement* movie);

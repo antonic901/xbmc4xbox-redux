@@ -2833,6 +2833,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(auto_ptr<Dataset> &pDS, bool ne
   GetDetailsFromDB(pDS, VIDEODB_ID_MIN, VIDEODB_ID_MAX, DbMovieOffsets, details);
 
   details.m_iDbId = idMovie;
+  details.m_type = "movie";
   GetCommonDetails(pDS, details);
   movieTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
 
@@ -2900,6 +2901,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(auto_ptr<Dataset> &pDS, bool n
 
   GetDetailsFromDB(pDS, VIDEODB_ID_TV_MIN, VIDEODB_ID_TV_MAX, DbTvShowOffsets, details, 1);
   details.m_iDbId = idTvShow;
+  details.m_type = "tvshow";
   details.m_strPath = pDS->fv(VIDEODB_DETAILS_TVSHOW_PATH).get_asString();
   details.m_iEpisode = m_pDS->fv(VIDEODB_DETAILS_TVSHOW_NUM_EPISODES).get_asInt();
   details.m_playCount = m_pDS->fv(VIDEODB_DETAILS_TVSHOW_NUM_WATCHED).get_asInt();
@@ -2937,6 +2939,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
 
   GetDetailsFromDB(pDS, VIDEODB_ID_EPISODE_MIN, VIDEODB_ID_EPISODE_MAX, DbEpisodeOffsets, details);
   details.m_iDbId = idEpisode;
+  details.m_type = "episode";
   GetCommonDetails(pDS, details);
   movieTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
 
@@ -3008,6 +3011,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMusicVideo(auto_ptr<Dataset> &pDS)
 
   GetDetailsFromDB(pDS, VIDEODB_ID_MUSICVIDEO_MIN, VIDEODB_ID_MUSICVIDEO_MAX, DbMusicVideoOffsets, details);
   details.m_iDbId = idMovie;
+  details.m_type = "musicvideo";
   GetCommonDetails(pDS, details);
   movieTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
 
@@ -4209,6 +4213,7 @@ bool CVideoDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& i
       while (!m_pDS->eof())
       {
         CFileItemPtr pItem(new CFileItem(m_pDS->fv(1).get_asString()));
+        pItem->GetVideoInfoTag()->m_type = "set";
         CStdString strDir;
         strDir.Format("%ld/", m_pDS->fv(0).get_asInt());
         pItem->SetPath(strBaseDir + strDir);
@@ -4292,6 +4297,7 @@ bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& ite
       for (it=mapSets.begin();it != mapSets.end();++it)
       {
         CFileItemPtr pItem(new CFileItem(it->second.first));
+        pItem->GetVideoInfoTag()->m_type = "set";
         CStdString strDir;
         strDir.Format("%ld/", it->first);
         pItem->SetPath(strBaseDir + strDir);
@@ -4600,6 +4606,8 @@ bool CVideoDatabase::GetPeopleNav(const CStdString& strBaseDir, CFileItemList& i
         pItem->m_bIsFolder=true;
         pItem->GetVideoInfoTag()->m_playCount = it->second.playcount;
         pItem->GetVideoInfoTag()->m_strPictureURL.ParseString(it->second.thumb);
+        pItem->GetVideoInfoTag()->m_iDbId = it->first;
+        pItem->GetVideoInfoTag()->m_type = type;
         items.Add(pItem);
       }
     }
@@ -4615,6 +4623,8 @@ bool CVideoDatabase::GetPeopleNav(const CStdString& strBaseDir, CFileItemList& i
           pItem->SetPath(strBaseDir + strDir);
           pItem->m_bIsFolder=true;
           pItem->GetVideoInfoTag()->m_strPictureURL.ParseString(m_pDS->fv(2).get_asString());
+          pItem->GetVideoInfoTag()->m_iDbId = m_pDS->fv(0).get_asInt();
+          pItem->GetVideoInfoTag()->m_type = type;
           if (idContent != VIDEODB_CONTENT_TVSHOWS)
           {
             // fv(4) is the number of videos watched, fv(3) is the total number.  We set the playcount
@@ -4908,6 +4918,7 @@ bool CVideoDatabase::GetSeasonsNav(const CStdString& strBaseDir, CFileItemList& 
         pItem->GetVideoInfoTag()->m_strTitle = strLabel;
         pItem->GetVideoInfoTag()->m_iSeason = iSeason;
         pItem->GetVideoInfoTag()->m_iDbId = idShow;
+        pItem->GetVideoInfoTag()->m_type = "season";
         pItem->GetVideoInfoTag()->m_strPath = it->second.path;
         pItem->GetVideoInfoTag()->m_strGenre = it->second.genre;
         pItem->GetVideoInfoTag()->m_strShowTitle = showTitle;
@@ -4940,6 +4951,7 @@ bool CVideoDatabase::GetSeasonsNav(const CStdString& strBaseDir, CFileItemList& 
         pItem->GetVideoInfoTag()->m_strTitle = strLabel;
         pItem->GetVideoInfoTag()->m_iSeason = iSeason;
         pItem->GetVideoInfoTag()->m_iDbId = idShow;
+        pItem->GetVideoInfoTag()->m_type = "season";
         pItem->GetVideoInfoTag()->m_strPath = m_pDS->fv(1).get_asString();
         pItem->GetVideoInfoTag()->m_strGenre = m_pDS->fv(3).get_asString();
         pItem->GetVideoInfoTag()->m_strShowTitle = showTitle;
