@@ -543,7 +543,9 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "lastplayed",       LISTITEM_LASTPLAYED },
                                   { "playcount",        LISTITEM_PLAYCOUNT },
                                   { "lastplayed",       MUSICPLAYER_LASTPLAYED },
-                                  { "discnumber",       LISTITEM_DISC_NUMBER }};
+                                  { "discnumber",       LISTITEM_DISC_NUMBER },
+                                  { "dbtype",           LISTITEM_DBTYPE },
+                                  { "dbid",             LISTITEM_DBID }};
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
                                   { "preset",           VISUALISATION_PRESET },
@@ -4320,6 +4322,23 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_SUBTITLE_LANGUAGE:
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_streamDetails.GetSubtitleLanguage();
+    break;
+  case LISTITEM_DBTYPE:
+    if (item->HasVideoInfoTag())
+      return item->GetVideoInfoTag()->m_type;
+  case LISTITEM_DBID:
+    if (item->HasVideoInfoTag())
+      {
+        CStdString dbid;
+        dbid.Format("%i", item->GetVideoInfoTag()->m_iDbId);
+        return dbid;
+      }
+    if (item->HasMusicInfoTag())
+      {
+        CStdString dbid;
+        dbid.Format("%i", item->GetMusicInfoTag()->GetDatabaseId());
+        return dbid;
+      }
     break;
   }
   return "";
