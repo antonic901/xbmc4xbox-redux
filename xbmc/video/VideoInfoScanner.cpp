@@ -1223,11 +1223,8 @@ namespace VIDEO
       URIUtils::GetDirectory(item->GetPath(), strPath);
 
       if (bGrabAny)
-      { // looking up by folder name - movie.nfo and mymovies.xml take priority
+      { // looking up by folder name - movie.nfo takes priority
         nfoFile = URIUtils::AddFileToFolder(strPath, "movie.nfo");
-        if (CFile::Exists(nfoFile))
-          return nfoFile;
-        nfoFile = URIUtils::AddFileToFolder(strPath, "mymovies.xml");
         if (CFile::Exists(nfoFile))
           return nfoFile;
       }
