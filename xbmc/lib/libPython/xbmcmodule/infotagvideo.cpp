@@ -21,6 +21,8 @@
 #include "system.h"
 #include "infotagvideo.h"
 #include "pyutil.h"
+#include "settings/AdvancedSettings.h"
+#include "utils/StringUtils.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -78,7 +80,7 @@ namespace PYXBMC
 
   PyObject* InfoTagVideo_GetGenre(InfoTagVideo *self, PyObject *args)
   {
-    return Py_BuildValue((char*)"s", self->infoTag.m_strGenre.c_str());
+    return Py_BuildValue((char*)"s", StringUtils::Join(self->infoTag.m_genre, g_advancedSettings.m_videoItemSeparator).c_str());
   }
 
   // InfoTagVideo_GetTagLine

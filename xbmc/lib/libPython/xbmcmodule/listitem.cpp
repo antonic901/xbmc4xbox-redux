@@ -27,6 +27,8 @@
 #include "pictures/PictureInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
+#include "settings/AdvancedSettings.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 
@@ -471,7 +473,7 @@ namespace PYXBMC
         {
           if (!PyXBMCGetUnicodeString(tmp, value, 1)) continue;
           if (strcmpi(PyString_AsString(key), "genre") == 0)
-            self->item->GetVideoInfoTag()->m_strGenre = tmp;
+            self->item->GetVideoInfoTag()->m_genre = StringUtils::Split(tmp, g_advancedSettings.m_videoItemSeparator);
           else if (strcmpi(PyString_AsString(key), "director") == 0)
             self->item->GetVideoInfoTag()->m_strDirector = tmp;
           else if (strcmpi(PyString_AsString(key), "mpaa") == 0)

@@ -595,10 +595,8 @@ CUPnPServer::PopulateObjectFromTag(CVideoInfoTag&         tag,
     if(object.m_ReferenceID == object.m_ObjectID)
         object.m_ReferenceID = "";
 
-    StringUtils::SplitString(tag.m_strGenre, " / ", strings);
-    for(CStdStringArray::iterator it = strings.begin(); it != strings.end(); it++) {
-        object.m_Affiliation.genre.Add((*it).c_str());
-    }
+    for (unsigned int index = 0; index < tag.m_genre.size(); index++)
+      object.m_Affiliation.genre.Add(tag.m_genre.at(index).c_str());
 
     for(CVideoInfoTag::iCast it = tag.m_cast.begin();it != tag.m_cast.end();it++) {
         object.m_People.actors.Add(it->strName.c_str(), it->strRole.c_str());
@@ -2411,7 +2409,8 @@ int CUPnP::PopulateTagFromObject(CVideoInfoTag&         tag,
     }
     else
         tag.m_strTitle = object.m_Title;
-    tag.m_strGenre    = JoinString(object.m_Affiliation.genre, " / ");
+    for (unsigned int index = 0; index < object.m_Affiliation.genre.GetItemCount(); index++)
+      tag.m_genre.push_back(object.m_Affiliation.genre.GetItem(index)->GetChars());
     tag.m_strDirector = object.m_People.director;
     tag.m_strTagLine  = object.m_Description.description;
     tag.m_strPlot     = object.m_Description.long_description;

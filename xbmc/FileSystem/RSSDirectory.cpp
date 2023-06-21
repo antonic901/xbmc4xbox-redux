@@ -23,6 +23,7 @@
 #include "FileItem.h"
 #include "CurlFile.h"
 #include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/HTMLUtil.h"
 #include "video/VideoInfoTag.h"
 #include "utils/URIUtils.h"
@@ -197,7 +198,7 @@ static void ParseItemMRSS(CFileItem* item, SResources& resources, TiXmlElement* 
 
     /* okey this is silly, boxee what did you think?? */
     if     (scheme == "urn:boxee:genre")
-      vtag->m_strGenre = text;
+      vtag->m_genre = StringUtils::Split(text, g_advancedSettings.m_videoItemSeparator);
     else if(scheme == "urn:boxee:title-type")
     {
       if     (text == "tv")
@@ -216,7 +217,7 @@ static void ParseItemMRSS(CFileItem* item, SResources& resources, TiXmlElement* 
     else if(scheme == "urn:boxee:source")
       item->SetProperty("boxee:provider_source", text);
     else
-      vtag->m_strGenre = text;
+      vtag->m_genre = StringUtils::Split(text, g_advancedSettings.m_videoItemSeparator);
   }
   else if(name == "rating")
   {
