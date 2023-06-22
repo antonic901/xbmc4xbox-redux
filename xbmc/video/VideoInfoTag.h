@@ -47,7 +47,7 @@ public:
   bool HasStreamDetails() const;
   bool IsEmpty() const;
 
-  CStdString m_strDirector;
+  std::vector<std::string> m_director;
   CStdString m_strWritingCredits;
   std::vector<std::string> m_genre;
   std::vector<std::string> m_country;
