@@ -3577,7 +3577,7 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
       return m_currentFile->GetVideoInfoTag()->m_strShowTitle;
 
     case VIDEOPLAYER_STUDIO:
-      return m_currentFile->GetVideoInfoTag()->m_strStudio;
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_studio, g_advancedSettings.m_videoItemSeparator);
     case VIDEOPLAYER_COUNTRY:
       return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_country, g_advancedSettings.m_videoItemSeparator);
     case VIDEOPLAYER_MPAA:
@@ -4241,7 +4241,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
     break;
   case LISTITEM_STUDIO:
     if (item->HasVideoInfoTag())
-      return item->GetVideoInfoTag()->m_strStudio;
+      return StringUtils::Join(item->GetVideoInfoTag()->m_studio, g_advancedSettings.m_videoItemSeparator);
     break;
   case LISTITEM_COUNTRY:
     if (item->HasVideoInfoTag())

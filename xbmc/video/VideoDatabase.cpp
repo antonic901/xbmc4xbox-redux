@@ -1673,18 +1673,8 @@ void CVideoDatabase::AddGenreAndDirectorsAndStudios(const CVideoInfoTag& details
   for (unsigned int i = 0; i < details.m_genre.size(); i++)
     vecGenres.push_back(AddGenre(details.m_genre[i]));
   // add all studios
-  if (!details.m_strStudio.IsEmpty())
-  {
-    CStdStringArray studios;
-    StringUtils::SplitString(details.m_strStudio, g_advancedSettings.m_videoItemSeparator, studios);
-    for (unsigned int i = 0; i < studios.size(); i++)
-    {
-      CStdString strStudio(studios[i]);
-      strStudio.Trim();
-      int idStudio = AddStudio(strStudio);
-      vecStudios.push_back(idStudio);
-    }
-  }
+  for (unsigned int i = 0; i < details.m_studio.size(); i++)
+    vecStudios.push_back(AddStudio(details.m_studio[i]));
 }
 
 CStdString CVideoDatabase::GetValueString(const CVideoInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const
@@ -2890,7 +2880,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
 
   details.m_strMPAARating = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_MPAA).get_asString();
   details.m_strShowTitle = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_NAME).get_asString();
-  details.m_strStudio = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_STUDIO).get_asString();
+  details.m_studio = StringUtils::Split(pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_STUDIO).get_asString(), g_advancedSettings.m_videoItemSeparator);
   details.m_strPremiered = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_AIRED).get_asString();
   details.m_iIdShow = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_ID).get_asInt();
 

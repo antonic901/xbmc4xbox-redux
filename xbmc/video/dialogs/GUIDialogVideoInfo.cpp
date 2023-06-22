@@ -387,7 +387,7 @@ void CGUIWindowVideoInfo::Update()
   strTmp = StringUtils::Join(m_movieItem->GetVideoInfoTag()->m_director, g_advancedSettings.m_videoItemSeparator); strTmp.Trim();
   SetLabel(CONTROL_DIRECTOR, strTmp);
 
-  strTmp = m_movieItem->GetVideoInfoTag()->m_strStudio; strTmp.Trim();
+  strTmp = StringUtils::Join(m_movieItem->GetVideoInfoTag()->m_studio, g_advancedSettings.m_videoItemSeparator); strTmp.Trim();
   SetLabel(CONTROL_STUDIO, strTmp);
 
   strTmp = StringUtils::Join(m_movieItem->GetVideoInfoTag()->m_writingCredits, g_advancedSettings.m_videoItemSeparator); strTmp.Trim();

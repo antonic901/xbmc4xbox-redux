@@ -143,7 +143,7 @@ const struct SDbTableOffsets
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_director) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strOriginalTitle) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strPictureURL.m_spoof) },
-  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strStudio) },
+  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_studio) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strTrailer) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_fanart.m_xml) },
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_country) }
@@ -188,7 +188,7 @@ const struct SDbTableOffsets DbTvShowOffsets[] =
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_fanart.m_xml)},
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strIMDBNumber)},
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strMPAARating)},
-  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strStudio)},
+  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_studio)},
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strSortTitle)},
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strTrailer)}
 };
@@ -266,7 +266,7 @@ const struct SDbTableOffsets DbMusicVideoOffsets[] =
   { VIDEODB_TYPE_COUNT, my_offsetof(CVideoInfoTag,m_playCount) }, // unused
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strRuntime) },
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_director) },
-  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strStudio) },
+  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_studio) },
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iYear) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strPlot) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strAlbum) },
