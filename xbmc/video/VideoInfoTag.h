@@ -80,7 +80,7 @@ public:
   CStdString m_strShowTitle;
   std::vector<std::string> m_studio;
   CStdString m_strAlbum;
-  CStdString m_lastPlayed;
+  CDateTime m_lastPlayed;
   std::vector<std::string> m_showLink;
   int m_playCount;
   int m_iTop250;
