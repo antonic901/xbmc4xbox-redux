@@ -47,8 +47,8 @@ void CVideoInfoTag::Reset()
   m_strSortTitle = "";
   m_strVotes = "";
   m_cast.clear();
-  m_strSet = "";
-  m_strSetId = "";
+  m_set.clear();
+  m_setId.clear();
   m_strFile = "";
   m_strPath = "";
   m_strIMDBNumber = "";
@@ -154,8 +154,8 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
   XMLUtils::SetStringArray(movie, "genre", m_genre);
   XMLUtils::SetAdditiveString(movie, "country",
                           g_advancedSettings.m_videoItemSeparator, m_strCountry);
-  XMLUtils::SetAdditiveString(movie, "set",
-                          g_advancedSettings.m_videoItemSeparator, m_strSet);
+  for (unsigned int i = 0; i < m_set.size(); i++)
+    XMLUtils::SetString(movie, "set", m_set[i]);
   XMLUtils::SetAdditiveString(movie, "credits",
                           g_advancedSettings.m_videoItemSeparator, m_strWritingCredits);
   XMLUtils::SetAdditiveString(movie, "director",
@@ -272,7 +272,14 @@ void CVideoInfoTag::Archive(CArchive& ar)
       ar << m_cast[i].thumbUrl.m_xml;
     }
     
-    ar << m_strSet;
+    ar << (int)m_set.size();
+    for (unsigned int i=0;i<m_set.size();++i)
+      ar << (CStdString)m_set[i];
+
+    ar << (int)m_setId.size();
+    for (unsigned int i=0;i<m_setId.size();++i)
+      ar << m_setId[i];
+
     ar << m_strRuntime;
     ar << m_strFile;
     ar << m_strPath;
@@ -306,7 +313,6 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_fEpBookmark;
     ar << m_resumePoint.timeInSeconds;
     ar << m_resumePoint.totalTimeInSeconds;
-    ar << m_strSetId;
     ar << m_iIdShow;
     ar << m_type;
   }
@@ -342,7 +348,25 @@ void CVideoInfoTag::Archive(CArchive& ar)
       m_cast.push_back(info);
     }
     
-    ar >> m_strSet;
+    m_set.clear();
+    int iSetSize;
+    ar >> iSetSize;
+    for (int i=0;i<iSetSize;++i)
+    {
+      CStdString strSet;
+      ar >> strSet;
+      m_set.push_back(strSet);
+    }
+
+    m_setId.clear();
+    ar >> iSetSize;
+    for (int i=0;i<iSetSize;++i)
+    {
+      int iSetId;
+      ar >> iSetId;
+      m_setId.push_back(iSetId);
+    }
+
     ar >> m_strRuntime;
     ar >> m_strFile;
     ar >> m_strPath;
@@ -376,7 +400,6 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_fEpBookmark;
     ar >> m_resumePoint.timeInSeconds;
     ar >> m_resumePoint.totalTimeInSeconds;
-    ar >> m_strSetId;
     ar >> m_iIdShow;
     ar >> m_type;
   }
@@ -400,7 +423,12 @@ void CVideoInfoTag::Serialize(CVariant& value)
     value["cast"][i]["name"] = m_cast[i].strName;
     value["cast"][i]["role"] = m_cast[i].strRole;
   }
-  value["set"] = m_strSet;
+  value["set"] = CVariant(CVariant::VariantTypeArray);
+  for (unsigned int i = 0; i < m_set.size(); i++)
+    value["set"].push_back(m_set[i]);
+  value["setid"] = CVariant(CVariant::VariantTypeArray);
+  for (unsigned int i = 0; i < m_setId.size(); i++)
+    value["setid"].push_back(m_setId[i]);
   value["runtime"] = m_strRuntime;
   value["file"] = m_strFile;
   value["path"] = m_strPath;
@@ -431,7 +459,6 @@ void CVideoInfoTag::Serialize(CVariant& value)
   resume["position"] = (float)m_resumePoint.timeInSeconds;
   resume["total"] = (float)m_resumePoint.totalTimeInSeconds;
   value["resume"] = resume;
-  value["setid"] = m_strSetId;
   value["tvshowid"] = m_iIdShow;
   value["type"] = m_type;
 }
@@ -535,7 +562,19 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
     }
     node = node->NextSiblingElement("actor");
   }
-  XMLUtils::GetAdditiveString(movie,"set",g_advancedSettings.m_videoItemSeparator,m_strSet);
+
+
+  m_set.clear();
+  m_setId.clear();
+  node = movie->FirstChildElement("set");
+  while (node)
+  {
+    if (node->FirstChild())
+      m_set.push_back(node->FirstChild()->Value());
+
+    node = node->NextSiblingElement("set");
+  }
+  
   XMLUtils::GetAdditiveString(movie,"studio",g_advancedSettings.m_videoItemSeparator,m_strStudio);
   // artists
   node = movie->FirstChildElement("artist");
