@@ -28,6 +28,8 @@ class TiXmlDocument;
 class TiXmlNode;
 class TiXmlElement;
 
+class CDateTime;
+
 class XMLUtils
 {
 public:
@@ -47,6 +49,8 @@ public:
   static bool GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringValue);
   static bool GetFloat(const TiXmlNode* pRootNode, const char* strTag, float& value, const float min, const float max);
   static bool GetInt(const TiXmlNode* pRootNode, const char* strTag, int& iIntValue, const int min, const int max);
+  static bool GetDate(const TiXmlNode* pRootNode, const char* strTag, CDateTime& date);
+  static bool GetDateTime(const TiXmlNode* pRootNode, const char* strTag, CDateTime& dateTime);
 
   static void SetString(TiXmlNode* pRootNode, const char *strTag, const CStdString& strValue);
   static void SetAdditiveString(TiXmlNode* pRootNode, const char *strTag, const CStdString& strSeparator, const CStdString& strValue);
@@ -56,6 +60,8 @@ public:
   static void SetBoolean(TiXmlNode* pRootNode, const char *strTag, bool value);
   static void SetHex(TiXmlNode* pRootNode, const char *strTag, uint32_t value);
   static void SetPath(TiXmlNode* pRootNode, const char *strTag, const CStdString& strValue);
+  static void SetDate(TiXmlNode* pRootNode, const char *strTag, const CDateTime& date);
+  static void SetDateTime(TiXmlNode* pRootNode, const char *strTag, const CDateTime& dateTime);
 
   /*! \brief Fetch a std::string copy of an attribute, if it exists.  Cannot distinguish between empty and non-existent attributes.
    \param element the element to query.

@@ -230,6 +230,30 @@ bool XMLUtils::GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdStrin
   return false;
 }
 
+bool XMLUtils::GetDate(const TiXmlNode* pRootNode, const char* strTag, CDateTime& date)
+{
+  CStdString strDate;
+  if (GetString(pRootNode, strTag, strDate))
+  {
+    date.SetFromDBDate(strDate);
+    return true;
+  }
+
+  return false;
+}
+
+bool XMLUtils::GetDateTime(const TiXmlNode* pRootNode, const char* strTag, CDateTime& dateTime)
+{
+  CStdString strDateTime;
+  if (GetString(pRootNode, strTag, strDateTime))
+  {
+    dateTime.SetFromDBDateTime(strDateTime);
+    return true;
+  }
+
+  return false;
+}
+
 void XMLUtils::SetAdditiveString(TiXmlNode* pRootNode, const char *strTag, const CStdString& strSeparator, const CStdString& strValue)
 {
   CStdStringArray list;
@@ -302,4 +326,14 @@ CStdString XMLUtils::GetAttribute(const TiXmlElement *element, const char *tag)
       return attribute;
   }
   return "";
+}
+
+void XMLUtils::SetDate(TiXmlNode* pRootNode, const char *strTag, const CDateTime& date)
+{
+  SetString(pRootNode, strTag, date.GetAsDBDate());
+}
+
+void XMLUtils::SetDateTime(TiXmlNode* pRootNode, const char *strTag, const CDateTime& dateTime)
+{
+  SetString(pRootNode, strTag, dateTime.GetAsDBDateTime());
 }
