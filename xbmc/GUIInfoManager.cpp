@@ -3989,7 +3989,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
       if (item->HasVideoInfoTag())
         return item->GetVideoInfoTag()->m_lastPlayed.GetAsLocalizedDate();
       if (item->HasMusicInfoTag())
-        return item->GetMusicInfoTag()->GetLastPlayed();
+        return item->GetMusicInfoTag()->GetLastPlayed().GetAsLocalizedDate();
       break;
     }
   case LISTITEM_TRACKNUMBER:
