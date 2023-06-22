@@ -3543,8 +3543,8 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
       {
         if (!m_currentFile->GetVideoInfoTag()->m_strFirstAired.IsEmpty())
           return m_currentFile->GetVideoInfoTag()->m_strFirstAired;
-        if (!m_currentFile->GetVideoInfoTag()->m_strPremiered.IsEmpty())
-          return m_currentFile->GetVideoInfoTag()->m_strPremiered;
+        if (m_currentFile->GetVideoInfoTag()->m_premiered.IsValid())
+          return m_currentFile->GetVideoInfoTag()->m_premiered.GetAsLocalizedDate();
       }
       break;
     case VIDEOPLAYER_PLOT:
@@ -4042,8 +4042,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
     {
       if (!item->GetVideoInfoTag()->m_strFirstAired.IsEmpty())
         return item->GetVideoInfoTag()->m_strFirstAired;
-      if (!item->GetVideoInfoTag()->m_strPremiered.IsEmpty())
-        return item->GetVideoInfoTag()->m_strPremiered;
+      if (item->GetVideoInfoTag()->m_premiered.IsValid())
+        return item->GetVideoInfoTag()->m_premiered.GetAsLocalizedDate();
     }
     break;
   case LISTITEM_GENRE:

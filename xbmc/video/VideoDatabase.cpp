@@ -2889,7 +2889,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
   details.m_strMPAARating = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_MPAA).get_asString();
   details.m_strShowTitle = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_NAME).get_asString();
   details.m_studio = StringUtils::Split(pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_STUDIO).get_asString(), g_advancedSettings.m_videoItemSeparator);
-  details.m_strPremiered = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_AIRED).get_asString();
+  details.m_premiered.SetFromDBDate(pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_AIRED).get_asString());
   details.m_iIdShow = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_ID).get_asInt();
 
   GetStreamDetails(details);
@@ -5063,7 +5063,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const CStdString& strBaseDir, const CStdS
         CFileItemPtr pItem(new CFileItem(movie));
         CStdString path; path.Format("%s%ld/", strBaseDir.c_str(), idShow);
         pItem->SetPath(path);
-        pItem->m_dateTime.SetFromDateString(movie.m_strPremiered);
+        pItem->m_dateTime = movie.m_premiered;
         pItem->GetVideoInfoTag()->m_iYear = pItem->m_dateTime.GetYear();
         pItem->SetProperty("totalepisodes", movie.m_iEpisode);
         pItem->SetProperty("numepisodes", movie.m_iEpisode); // will be changed later to reflect watchmode setting
@@ -5123,8 +5123,8 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
           // matching title? append information
           if (jItem->GetVideoInfoTag()->m_strTitle.Equals(strTitle))
           {
-            if (jItem->GetVideoInfoTag()->m_strPremiered != 
-                pItem->GetVideoInfoTag()->m_strPremiered)
+            if (jItem->GetVideoInfoTag()->m_premiered != 
+                pItem->GetVideoInfoTag()->m_premiered)
             {
               j++;
               continue;

@@ -24,6 +24,7 @@
 #include "utils/Fanart.h"
 #include "utils/StreamDetails.h"
 #include "video/Bookmark.h"
+#include "XBDateTime.h"
 
 #include <vector>
 
@@ -72,7 +73,7 @@ public:
   CStdString m_strFileNameAndPath;
   CStdString m_strOriginalTitle;
   CStdString m_strEpisodeGuide;
-  CStdString m_strPremiered;
+  CDateTime m_premiered;
   CStdString m_strStatus;
   CStdString m_strProductionCode;
   CStdString m_strFirstAired;
