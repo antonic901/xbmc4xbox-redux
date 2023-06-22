@@ -37,7 +37,7 @@ void CVideoInfoTag::Reset()
   m_strDirector = "";
   m_strWritingCredits = "";
   m_genre.clear();
-  m_strCountry = "";
+  m_country.clear();
   m_strTagLine = "";
   m_strPlotOutline = "";
   m_strPlot = "";
@@ -152,8 +152,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
 
   XMLUtils::SetString(movie, "id", m_strIMDBNumber);
   XMLUtils::SetStringArray(movie, "genre", m_genre);
-  XMLUtils::SetAdditiveString(movie, "country",
-                          g_advancedSettings.m_videoItemSeparator, m_strCountry);
+  XMLUtils::SetStringArray(movie, "country", m_country);
   XMLUtils::SetStringArray(movie, "set", m_set);
   XMLUtils::SetAdditiveString(movie, "credits",
                           g_advancedSettings.m_videoItemSeparator, m_strWritingCredits);
@@ -251,7 +250,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_strDirector;
     ar << m_strWritingCredits;
     ar << m_genre;
-    ar << m_strCountry;
+    ar << m_country;
     ar << m_strTagLine;
     ar << m_strPlotOutline;
     ar << m_strPlot;
@@ -314,7 +313,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_strDirector;
     ar >> m_strWritingCredits;
     ar >> m_genre;
-    ar >> m_strCountry;
+    ar >> m_country;
     ar >> m_strTagLine;
     ar >> m_strPlotOutline;
     ar >> m_strPlot;
@@ -386,7 +385,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["director"] = m_strDirector;
   value["writingcredits"] = m_strWritingCredits;
   value["genre"] = m_genre;
-  value["country"] = m_strCountry;
+  value["country"] = m_country;
   value["tagline"] = m_strTagLine;
   value["plotoutline"] = m_strPlotOutline;
   value["plot"] = m_strPlot;
@@ -506,7 +505,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
   }
 
   XMLUtils::GetStringArray(movie, "genre", m_genre);
-  XMLUtils::GetAdditiveString(movie,"country",g_advancedSettings.m_videoItemSeparator,m_strCountry);
+  XMLUtils::GetStringArray(movie, "country", m_country);
   XMLUtils::GetAdditiveString(movie,"credits",g_advancedSettings.m_videoItemSeparator,m_strWritingCredits);
   XMLUtils::GetAdditiveString(movie,"director",g_advancedSettings.m_videoItemSeparator,m_strDirector);
   XMLUtils::GetAdditiveString(movie,"showlink",g_advancedSettings.m_videoItemSeparator,m_strShowLink);
