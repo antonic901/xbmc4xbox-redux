@@ -88,6 +88,8 @@ public:
   CStdString lastPlayed;
   int iStartOffset;
   int iEndOffset;
+  int iArtistId;
+  int iAlbumId;
 };
 
 /*!

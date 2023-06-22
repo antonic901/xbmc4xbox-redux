@@ -48,6 +48,7 @@ void CVideoInfoTag::Reset()
   m_strVotes = "";
   m_cast.clear();
   m_strSet = "";
+  m_strSetId = "";
   m_strFile = "";
   m_strPath = "";
   m_strIMDBNumber = "";
@@ -80,6 +81,7 @@ void CVideoInfoTag::Reset()
   m_fEpBookmark = 0;
   m_resumePoint.Reset();
   m_resumePoint.type = CBookmark::RESUME;
+  m_iIdShow = -1;
   m_type.clear();
 }
 
@@ -304,6 +306,8 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_fEpBookmark;
     ar << m_resumePoint.timeInSeconds;
     ar << m_resumePoint.totalTimeInSeconds;
+    ar << m_strSetId;
+    ar << m_iIdShow;
     ar << m_type;
   }
   else
@@ -372,6 +376,8 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_fEpBookmark;
     ar >> m_resumePoint.timeInSeconds;
     ar >> m_resumePoint.totalTimeInSeconds;
+    ar >> m_strSetId;
+    ar >> m_iIdShow;
     ar >> m_type;
   }
 }
@@ -425,6 +431,8 @@ void CVideoInfoTag::Serialize(CVariant& value)
   resume["position"] = (float)m_resumePoint.timeInSeconds;
   resume["total"] = (float)m_resumePoint.totalTimeInSeconds;
   value["resume"] = resume;
+  value["setid"] = m_strSetId;
+  value["tvshowid"] = m_iIdShow;
   value["type"] = m_type;
 }
 

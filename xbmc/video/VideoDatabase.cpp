@@ -2856,7 +2856,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(auto_ptr<Dataset> &pDS, bool ne
     details.m_strPictureURL.Parse();
 
     // create sets string
-    strSQL = PrepareSQL("select sets.strSet from sets,setlinkmovie where setlinkmovie.idMovie=%i and setlinkmovie.idSet=sets.idSet order by setlinkmovie.ROWID",idMovie);
+    strSQL = PrepareSQL("select sets.idSet, sets.strSet from sets,setlinkmovie where setlinkmovie.idMovie=%i and setlinkmovie.idSet=sets.idSet order by setlinkmovie.ROWID",idMovie);
     m_pDS2->query(strSQL.c_str());
     while (!m_pDS2->eof())
     {
@@ -2864,6 +2864,12 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(auto_ptr<Dataset> &pDS, bool ne
       if (!details.m_strSet.IsEmpty())
         details.m_strSet += g_advancedSettings.m_videoItemSeparator;
       details.m_strSet += setName;
+
+      CStdString setId = m_pDS2->fv("sets.idSet").get_asString();
+      if (!details.m_strSetId.IsEmpty())
+        details.m_strSetId += g_advancedSettings.m_videoItemSeparator;
+      details.m_strSetId += setId;
+
       m_pDS2->next();
     }
 
@@ -2943,6 +2949,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
   details.m_strShowTitle = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_NAME).get_asString();
   details.m_strStudio = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_STUDIO).get_asString();
   details.m_strPremiered = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_AIRED).get_asString();
+  details.m_iIdShow = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_ID).get_asInt();
 
   GetStreamDetails(details);
 

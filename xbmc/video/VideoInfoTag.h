@@ -63,6 +63,7 @@ public:
   std::vector< SActorInfo > m_cast;
   typedef std::vector< SActorInfo >::const_iterator iCast;
   CStdString m_strSet;
+  CStdString m_strSetId;
   CStdString m_strRuntime;
   CStdString m_strFile;
   CStdString m_strPath;
@@ -93,6 +94,7 @@ public:
   float m_fRating;
   float m_fEpBookmark;
   int m_iBookmarkId;
+  int m_iIdShow;
   CFanart m_fanart;
   CStreamDetails m_streamDetails;
   CBookmark m_resumePoint;
