@@ -75,7 +75,7 @@ void CVideoInfoTag::Reset()
   m_fanart.m_xml = "";
   m_strRuntime = "";
   m_lastPlayed = "";
-  m_strShowLink = "";
+  m_showLink.clear();
   m_streamDetails.Reset();
   m_playCount = 0;
   m_fEpBookmark = 0;
@@ -217,8 +217,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
   }
   XMLUtils::SetAdditiveString(movie, "artist",
                          g_advancedSettings.m_videoItemSeparator, m_strArtist);
-  XMLUtils::SetAdditiveString(movie, "showlink",
-                         g_advancedSettings.m_videoItemSeparator, m_strShowLink);
+  XMLUtils::SetStringArray(movie, "showlink", m_showLink);;
  
   TiXmlElement resume("resume");
   XMLUtils::SetFloat(&resume, "position", (float)m_resumePoint.timeInSeconds);
@@ -298,7 +297,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_iBookmarkId;
     ar << m_iTrack;
     ar << dynamic_cast<IArchivable&>(m_streamDetails);
-    ar << m_strShowLink;
+    ar << m_showLink;
     ar << m_fEpBookmark;
     ar << m_resumePoint.timeInSeconds;
     ar << m_resumePoint.totalTimeInSeconds;
@@ -368,7 +367,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_iBookmarkId;
     ar >> m_iTrack;
     ar >> dynamic_cast<IArchivable&>(m_streamDetails);
-    ar >> m_strShowLink;
+    ar >> m_showLink;
     ar >> m_fEpBookmark;
     ar >> m_resumePoint.timeInSeconds;
     ar >> m_resumePoint.totalTimeInSeconds;
@@ -423,7 +422,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["dbid"] = m_iDbId;
   value["fileid"] = m_iFileId;
   value["track"] = m_iTrack;
-  value["showlink"] = m_strShowLink;
+  value["showlink"] = m_showLink;
   m_streamDetails.Serialize(value["streamDetails"]);
   CVariant resume = CVariant(CVariant::VariantTypeObject);
   resume["position"] = (float)m_resumePoint.timeInSeconds;
@@ -505,7 +504,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
   XMLUtils::GetStringArray(movie, "country", m_country);
   XMLUtils::GetStringArray(movie, "credits", m_writingCredits);
   XMLUtils::GetStringArray(movie, "director", m_director);
-  XMLUtils::GetAdditiveString(movie,"showlink",g_advancedSettings.m_videoItemSeparator,m_strShowLink);
+  XMLUtils::GetStringArray(movie, "showlink", m_showLink);
 
   // cast
   const TiXmlElement* node = movie->FirstChildElement("actor");
