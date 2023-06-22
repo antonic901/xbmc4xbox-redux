@@ -48,7 +48,7 @@ public:
   bool IsEmpty() const;
 
   std::vector<std::string> m_director;
-  CStdString m_strWritingCredits;
+  std::vector<std::string> m_writingCredits;
   std::vector<std::string> m_genre;
   std::vector<std::string> m_country;
   CStdString m_strTagLine;
