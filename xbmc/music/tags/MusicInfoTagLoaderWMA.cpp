@@ -397,7 +397,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   }
   else if (strFrameName == "WM/AlbumArtist")
   {
-    if (tag.GetAlbumArtist().IsEmpty()) tag.SetAlbumArtist(strValue);
+    if (tag.GetAlbumArtist().empty()) tag.SetAlbumArtist(strValue);
   }
   else if (strFrameName == "Author")
   {
@@ -505,8 +505,8 @@ void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, c
       // if we don't have an album tag, cache with the full file path so that
       // other non-tagged files don't get this album image
       CStdString strCoverArt;
-      if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().IsEmpty() || !tag.GetArtist().empty()))
-        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), tag.GetAlbumArtist().IsEmpty() ? StringUtils::Join(tag.GetArtist(), g_advancedSettings.m_musicItemSeparator) : tag.GetAlbumArtist());
+      if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().empty() || !tag.GetArtist().empty()))
+        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), StringUtils::Join(!tag.GetAlbumArtist().empty() ? tag.GetAlbumArtist() : tag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
       else
         strCoverArt = CUtil::GetCachedMusicThumb(tag.GetURL());
       if (!CUtil::ThumbExists(strCoverArt))

@@ -388,7 +388,7 @@ bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& 
       // other non-tagged files don't get this album image
       CStdString strCoverArt;
       if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().empty() || !tag.GetArtist().empty()))
-        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), tag.GetAlbumArtist().IsEmpty() ? StringUtils::Join(tag.GetArtist(), g_advancedSettings.m_musicItemSeparator) : tag.GetAlbumArtist());
+        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), StringUtils::Join(!tag.GetAlbumArtist().empty() ? tag.GetAlbumArtist() : tag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
       else
         strCoverArt = CUtil::GetCachedMusicThumb(tag.GetURL());
       if (!CUtil::ThumbExists(strCoverArt))
@@ -409,7 +409,7 @@ bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& 
 
     if (m_isCompilation)
     { // iTunes compilation flag is set - this could be a various artists file
-      if (tag.GetAlbumArtist().IsEmpty())
+      if (tag.GetAlbumArtist().empty())
         tag.SetAlbumArtist(g_localizeStrings.Get(340)); // Various Artists
     }
     // Close the file..

@@ -117,8 +117,8 @@ bool CFlacTag::Read(const CStdString& strFile)
     cover = third_cover;
 
   CStdString strCoverArt;
-  if (!m_musicInfoTag.GetAlbum().IsEmpty() && (!m_musicInfoTag.GetAlbumArtist().IsEmpty() || !m_musicInfoTag.GetArtist().empty()))
-    strCoverArt = CUtil::GetCachedAlbumThumb(m_musicInfoTag.GetAlbum(), m_musicInfoTag.GetAlbumArtist().IsEmpty() ? StringUtils::Join(m_musicInfoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator) : m_musicInfoTag.GetAlbumArtist());
+  if (!m_musicInfoTag.GetAlbum().IsEmpty() && (!m_musicInfoTag.GetAlbumArtist().empty() || !m_musicInfoTag.GetArtist().empty()))
+    strCoverArt = CUtil::GetCachedAlbumThumb(m_musicInfoTag.GetAlbum(), StringUtils::Join(!m_musicInfoTag.GetAlbumArtist().empty() ? m_musicInfoTag.GetAlbumArtist() : m_musicInfoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
   else
     strCoverArt = CUtil::GetCachedMusicThumb(m_musicInfoTag.GetURL());
 

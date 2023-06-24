@@ -382,7 +382,7 @@ CStdString CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTag
   // replace %A with album artist name
   if (strAlbumDir.Find("%A") != -1)
   {
-    CStdString strAlbumArtist = infoTag.GetAlbumArtist();
+    CStdString strAlbumArtist = StringUtils::Join(infoTag.GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator);
     if (strAlbumArtist.IsEmpty())
       strAlbumArtist = StringUtils::Join(infoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator);
     if (strAlbumArtist.IsEmpty())
