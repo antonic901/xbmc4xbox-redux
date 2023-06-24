@@ -81,7 +81,7 @@ void CSong::Clear()
   iEndOffset = 0;
   idSong = -1;
   iTimesPlayed = 0;
-  lastPlayed = "";
+  lastPlayed.Reset();
   iArtistId = -1;
   iAlbumId = -1;
 }

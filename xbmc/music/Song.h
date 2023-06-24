@@ -24,6 +24,7 @@
 #pragma once
 
 #include "utils/StdString.h"
+#include "XBDateTime.h"
 
 #include <map>
 #include <vector>
@@ -85,7 +86,7 @@ public:
   int iDuration;
   int iYear;
   int iTimesPlayed;
-  CStdString lastPlayed;
+  CDateTime lastPlayed;
   int iStartOffset;
   int iEndOffset;
   int iArtistId;
