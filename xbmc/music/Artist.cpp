@@ -34,7 +34,7 @@ bool CArtist::Load(const TiXmlElement *artist, bool chained)
   XMLUtils::GetStringArray(artist, "genre", genre);
   XMLUtils::GetStringArray(artist, "style", styles);
   XMLUtils::GetStringArray(artist, "mood", moods);
-  XMLUtils::GetAdditiveString(artist,"yearsactive",g_advancedSettings.m_musicItemSeparator,strYearsActive);
+  XMLUtils::GetStringArray(artist, "yearsactive", yearsActive);
 
   XMLUtils::GetString(artist,"born",strBorn);
   XMLUtils::GetString(artist,"formed",strFormed);
@@ -90,8 +90,7 @@ bool CArtist::Save(TiXmlNode *node, const CStdString &tag, const CStdString& str
   XMLUtils::SetStringArray(artist, "genre", genre);
   XMLUtils::SetStringArray(artist, "style", styles);
   XMLUtils::SetStringArray(artist,  "mood", moods);
-  XMLUtils::SetAdditiveString(artist, "yearsactive",
-                            g_advancedSettings.m_musicItemSeparator, strYearsActive);
+  XMLUtils::SetStringArray(artist, "yearsactive", yearsActive);
   XMLUtils::SetString(artist,        "born", strBorn);
   XMLUtils::SetString(artist,      "formed", strFormed);
   XMLUtils::SetString(artist, "instruments", strInstruments);

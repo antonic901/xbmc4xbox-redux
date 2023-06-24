@@ -47,7 +47,7 @@ public:
     strFormed.Empty();
     strDied.Empty();
     strDisbanded.Empty();
-    strYearsActive.Empty();
+    yearsActive.clear();
     thumbURL.Clear();
     discography.clear();
     idArtist = -1;
@@ -66,7 +66,7 @@ public:
   CStdString strFormed;
   CStdString strDied;
   CStdString strDisbanded;
-  CStdString strYearsActive;
+  std::vector<std::string> yearsActive;
   CScraperUrl thumbURL;
   CFanart fanart;
   std::vector<std::pair<CStdString,CStdString> > discography;
