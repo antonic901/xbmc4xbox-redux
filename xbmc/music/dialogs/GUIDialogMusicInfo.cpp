@@ -163,7 +163,7 @@ void CGUIWindowMusicInfo::SetAlbum(const CAlbum& album, const CStdString &path)
   m_albumItem->GetMusicInfoTag()->SetYear(m_album.iYear);
   m_albumItem->GetMusicInfoTag()->SetLoaded(true);
   m_albumItem->GetMusicInfoTag()->SetRating('0' + (m_album.iRating + 1) / 2);
-  m_albumItem->GetMusicInfoTag()->SetGenre(m_album.strGenre);
+  m_albumItem->GetMusicInfoTag()->SetGenre(m_album.genre);
   m_albumItem->GetMusicInfoTag()->SetDatabaseId(m_album.idAlbum, "album");
   CMusicDatabase::SetPropertiesFromAlbum(*m_albumItem,m_album);
   m_albumItem->SetMusicThumb();
@@ -186,7 +186,7 @@ void CGUIWindowMusicInfo::SetArtist(const CArtist& artist, const CStdString &pat
   m_albumItem->GetMusicInfoTag()->SetAlbumArtist(m_artist.strArtist);
   m_albumItem->GetMusicInfoTag()->SetArtist(m_artist.strArtist);
   m_albumItem->GetMusicInfoTag()->SetLoaded(true);
-  m_albumItem->GetMusicInfoTag()->SetGenre(m_artist.strGenre);
+  m_albumItem->GetMusicInfoTag()->SetGenre(m_artist.genre);
   m_albumItem->GetMusicInfoTag()->SetDatabaseId(m_artist.idArtist, "artist");
   CMusicDatabase::SetPropertiesFromArtist(*m_albumItem,m_artist);
   CStdString strFanart = m_albumItem->GetCachedFanart();
@@ -239,7 +239,7 @@ void CGUIWindowMusicInfo::Update()
   {
     CONTROL_ENABLE(CONTROL_BTN_GET_FANART);
     SetLabel(CONTROL_ARTIST, m_artist.strArtist );
-    SetLabel(CONTROL_GENRE, m_artist.strGenre);
+    SetLabel(CONTROL_GENRE, StringUtils::Join(m_artist.genre, g_advancedSettings.m_musicItemSeparator).c_str());
     SetLabel(CONTROL_MOODS, m_artist.strMoods);
     SetLabel(CONTROL_STYLES, m_artist.strStyles );
     if (m_bViewReview)
@@ -276,7 +276,7 @@ void CGUIWindowMusicInfo::Update()
       strRating.Format("%i/9", m_album.iRating);
     SetLabel(CONTROL_RATING, strRating );
 
-    SetLabel(CONTROL_GENRE, m_album.strGenre);
+    SetLabel(CONTROL_GENRE, StringUtils::Join(m_album.genre, g_advancedSettings.m_musicItemSeparator).c_str());
     SetLabel(CONTROL_MOODS, m_album.strMoods);
     SetLabel(CONTROL_STYLES, m_album.strStyles );
 

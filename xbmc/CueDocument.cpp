@@ -57,6 +57,7 @@
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
+#include "settings/AdvancedSettings.h"
 
 #include <set>
 
@@ -228,7 +229,7 @@ void CCueDocument::GetSongs(VECSONGS &songs)
       song.strArtist = m_Track[i].strArtist;
     song.strAlbumArtist = m_strArtist; 
     song.strAlbum = m_strAlbum;
-    song.strGenre = m_strGenre;
+    song.genre = StringUtils::Split(m_strGenre, g_advancedSettings.m_musicItemSeparator);
     song.iYear = m_iYear;
     song.iTrack = m_Track[i].iTrackNumber;
     if (m_Track[i].strTitle.length() == 0) // No track information for this track!

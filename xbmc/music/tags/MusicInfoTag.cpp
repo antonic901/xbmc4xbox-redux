@@ -47,7 +47,7 @@ const CMusicInfoTag& CMusicInfoTag::operator =(const CMusicInfoTag& tag)
   m_strArtist = tag.m_strArtist;
   m_strAlbumArtist = tag.m_strAlbumArtist;
   m_strAlbum = tag.m_strAlbum;
-  m_strGenre = tag.m_strGenre;
+  m_genre = tag.m_genre;
   m_strTitle = tag.m_strTitle;
   m_strMusicBrainzTrackID = tag.m_strMusicBrainzTrackID;
   m_strMusicBrainzArtistID = tag.m_strMusicBrainzArtistID;
@@ -127,9 +127,9 @@ const CStdString& CMusicInfoTag::GetAlbumArtist() const
   return m_strAlbumArtist;
 }
 
-const CStdString& CMusicInfoTag::GetGenre() const
+const std::vector<std::string> CMusicInfoTag::GetGenre() const
 {
-  return m_strGenre;
+  return m_genre;
 }
 
 void CMusicInfoTag::GetReleaseDate(SYSTEMTIME& dateTime) const
@@ -226,7 +226,12 @@ void CMusicInfoTag::SetAlbumArtist(const CStdString& strAlbumArtist)
 
 void CMusicInfoTag::SetGenre(const CStdString& strGenre)
 {
-  m_strGenre = Trim(strGenre);
+  SetGenre(StringUtils::Split(strGenre, g_advancedSettings.m_musicItemSeparator));
+}
+
+void CMusicInfoTag::SetGenre(const std::vector<std::string>& genres)
+{
+  m_genre = genres;
 }
 
 void CMusicInfoTag::SetYear(int year)
@@ -366,7 +371,7 @@ void CMusicInfoTag::SetAlbum(const CAlbum& album)
   SetArtist(album.strArtist);
   SetAlbum(album.strAlbum);
   SetAlbumArtist(album.strArtist);
-  SetGenre(album.strGenre);
+  SetGenre(album.genre);
   SetRating('0' + (album.iRating + 1) / 2);
   SYSTEMTIME stTime;
   stTime.wYear = album.iYear;
@@ -380,7 +385,7 @@ void CMusicInfoTag::SetAlbum(const CAlbum& album)
 void CMusicInfoTag::SetSong(const CSong& song)
 {
   SetTitle(song.strTitle);
-  SetGenre(song.strGenre);
+  SetGenre(song.genre);
   SetArtist(song.strArtist);
   SetAlbum(song.strAlbum);
   SetAlbumArtist(song.strAlbumArtist);
@@ -414,7 +419,7 @@ void CMusicInfoTag::Serialize(CVariant& value)
   value["artist"] = m_strArtist;
   value["album"] = m_strAlbum;
   value["albumartist"] = m_strAlbumArtist;
-  value["genre"] = m_strGenre;
+  value["genre"] = m_genre;
   value["duration"] = m_iDuration;
   value["track"] = m_iTrack;
   value["loaded"] = m_bLoaded;
@@ -439,7 +444,7 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar << m_strArtist;
     ar << m_strAlbum;
     ar << m_strAlbumArtist;
-    ar << m_strGenre;
+    ar << m_genre;
     ar << m_iDuration;
     ar << m_iTrack;
     ar << m_bLoaded;
@@ -463,7 +468,7 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar >> m_strArtist;
     ar >> m_strAlbum;
     ar >> m_strAlbumArtist;
-    ar >> m_strGenre;
+    ar >> m_genre;
     ar >> m_iDuration;
     ar >> m_iTrack;
     ar >> m_bLoaded;
@@ -488,7 +493,7 @@ void CMusicInfoTag::Clear()
   m_strArtist.Empty();
   m_strAlbum.Empty();
   m_strAlbumArtist.Empty();
-  m_strGenre.Empty();
+  m_genre.clear();
   m_strTitle.Empty();
   m_strMusicBrainzTrackID.Empty();
   m_strMusicBrainzArtistID.Empty();
@@ -533,13 +538,13 @@ void CMusicInfoTag::AppendAlbumArtist(const CStdString &albumArtist)
 
 void CMusicInfoTag::AppendGenre(const CStdString &genre)
 {
-  if (m_strGenre.IsEmpty())
-    return SetGenre(genre);
-  std::vector<CStdString> values;
-  CStdString value(Trim(genre));
-  StringUtils::SplitString(m_strGenre, g_advancedSettings.m_musicItemSeparator, values);
-  if (std::find(values.begin(), values.end(), value) == values.end())
-    m_strGenre += g_advancedSettings.m_musicItemSeparator + value;
+  for (unsigned int index = 0; index < m_genre.size(); index++)
+  {
+    if (genre.Equals(m_genre.at(index).c_str()))
+      return;
+  }
+
+  m_genre.push_back(genre);
 }
 
 CStdString CMusicInfoTag::Trim(const CStdString &value) const

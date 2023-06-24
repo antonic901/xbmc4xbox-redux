@@ -21,6 +21,8 @@
 #include "system.h"
 #include "infotagmusic.h"
 #include "pyutil.h"
+#include "../../../utils/StringUtils.h"
+#include "../../../settings/AdvancedSettings.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -105,7 +107,7 @@ namespace PYXBMC
 
   PyObject* InfoTagMusic_GetGenre(InfoTagMusic *self, PyObject *args)
   {
-    return Py_BuildValue((char*)"s", self->infoTag.GetGenre().c_str());
+    return Py_BuildValue((char*)"s", StringUtils::Join(self->infoTag.GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str());
   }
 
   // InfoTagMusic_GetDuration

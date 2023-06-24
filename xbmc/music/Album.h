@@ -44,7 +44,7 @@ public:
     idAlbum = -1;
     strAlbum.Empty();
     strArtist.Empty();
-    strGenre.Empty();
+    genre.clear();
     thumbURL.Clear();
     strMoods.Empty();
     strStyles.Empty();
@@ -64,7 +64,7 @@ public:
   long idAlbum;
   CStdString strAlbum;
   CStdString strArtist;
-  CStdString strGenre;
+  std::vector<std::string> genre;
   CScraperUrl thumbURL;  
   CStdString strMoods;
   CStdString strStyles;

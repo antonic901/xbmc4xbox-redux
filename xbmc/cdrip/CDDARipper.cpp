@@ -36,6 +36,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "utils/StringUtils.h"
@@ -86,7 +87,7 @@ bool CCDDARipper::Init(const CStdString& strTrackFile, const CStdString& strFile
   m_pEncoder->SetArtist(infoTag.GetArtist().c_str());
   m_pEncoder->SetTitle(infoTag.GetTitle().c_str());
   m_pEncoder->SetAlbum(infoTag.GetAlbum().c_str());
-  m_pEncoder->SetGenre(infoTag.GetGenre().c_str());
+  m_pEncoder->SetGenre(StringUtils::Join(infoTag.GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str());
   m_pEncoder->SetTrack(strTrack.c_str());
   m_pEncoder->SetYear(infoTag.GetYearString().c_str());
 
@@ -405,7 +406,7 @@ CStdString CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTag
   // replace %G with genre
   if (strAlbumDir.Find("%G") != -1)
   {
-    CStdString strGenre = infoTag.GetGenre();
+    CStdString strGenre = StringUtils::Join(infoTag.GetGenre(), g_advancedSettings.m_musicItemSeparator);
     if (strGenre.IsEmpty())
       strGenre = "Unknown Genre";
     else

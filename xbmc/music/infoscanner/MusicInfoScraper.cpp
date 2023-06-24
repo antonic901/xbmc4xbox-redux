@@ -20,12 +20,14 @@
 
 #include "XMLUtils.h"
 #include "music/infoscanner/MusicInfoScraper.h"
+#include "settings/AdvancedSettings.h"
 #include "HTMLUtil.h"
 #include "HTMLTable.h"
 #include "Util.h"
 #include "ScraperParser.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace MUSIC_GRABBER;
 using namespace HTML;
@@ -271,7 +273,7 @@ void CMusicInfoScraper::FindArtistInfo()
       }
       CMusicArtistInfo newArtist(strTitle, url);
       if (genre && genre->FirstChild())
-        newArtist.GetArtist().strGenre = genre->FirstChild()->Value();
+        newArtist.GetArtist().genre = StringUtils::Split(genre->FirstChild()->Value(), g_advancedSettings.m_musicItemSeparator);
       if (year && year->FirstChild())
         newArtist.GetArtist().strBorn = year->FirstChild()->Value();
       m_vecArtists.push_back(newArtist);

@@ -38,7 +38,7 @@ public:
   void Reset()
   {
     strArtist.Empty();
-    strGenre.Empty();
+    genre.clear();
     strBiography.Empty();
     strStyles.Empty();
     strMoods.Empty();
@@ -57,7 +57,7 @@ public:
   bool Save(TiXmlNode *node, const CStdString &tag, const CStdString& strPath);
 
   CStdString strArtist;
-  CStdString strGenre;
+  std::vector<std::string> genre;
   CStdString strBiography;
   CStdString strStyles;
   CStdString strMoods;
