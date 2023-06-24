@@ -92,9 +92,9 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
 
   /* TODO: remove when we remove old properties */
   SetProperty("description", album.strReview);
-  SetProperty("theme", album.strThemes);
-  SetProperty("mood", album.strMoods);
-  SetProperty("style", album.strStyles);
+  SetProperty("theme", StringUtils::Join(album.themes, g_advancedSettings.m_musicItemSeparator));
+  SetProperty("mood", StringUtils::Join(album.moods, g_advancedSettings.m_musicItemSeparator));
+  SetProperty("style", StringUtils::Join(album.styles, g_advancedSettings.m_musicItemSeparator));
   SetProperty("type", album.strType);
   SetProperty("label", album.strLabel);
   if (album.iRating > 0)

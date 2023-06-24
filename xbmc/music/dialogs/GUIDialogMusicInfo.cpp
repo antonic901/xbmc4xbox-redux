@@ -240,9 +240,9 @@ void CGUIWindowMusicInfo::Update()
   {
     CONTROL_ENABLE(CONTROL_BTN_GET_FANART);
     SetLabel(CONTROL_ARTIST, m_artist.strArtist );
-    SetLabel(CONTROL_GENRE, StringUtils::Join(m_artist.genre, g_advancedSettings.m_musicItemSeparator).c_str());
-    SetLabel(CONTROL_MOODS, m_artist.strMoods);
-    SetLabel(CONTROL_STYLES, m_artist.strStyles );
+    SetLabel(CONTROL_GENRE, StringUtils::Join(m_artist.genre, g_advancedSettings.m_musicItemSeparator));
+    SetLabel(CONTROL_MOODS, StringUtils::Join(m_artist.moods, g_advancedSettings.m_musicItemSeparator));
+    SetLabel(CONTROL_STYLES, StringUtils::Join(m_artist.styles, g_advancedSettings.m_musicItemSeparator));
     if (m_bViewReview)
     {
       SET_CONTROL_VISIBLE(CONTROL_TEXTAREA);
@@ -278,8 +278,8 @@ void CGUIWindowMusicInfo::Update()
     SetLabel(CONTROL_RATING, strRating );
 
     SetLabel(CONTROL_GENRE, StringUtils::Join(m_album.genre, g_advancedSettings.m_musicItemSeparator).c_str());
-    SetLabel(CONTROL_MOODS, m_album.strMoods);
-    SetLabel(CONTROL_STYLES, m_album.strStyles );
+    SetLabel(CONTROL_MOODS, StringUtils::Join(m_album.moods, g_advancedSettings.m_musicItemSeparator));
+    SetLabel(CONTROL_STYLES, StringUtils::Join(m_album.styles, g_advancedSettings.m_musicItemSeparator));
 
     if (m_bViewReview)
     {
