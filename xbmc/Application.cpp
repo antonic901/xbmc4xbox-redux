@@ -2326,9 +2326,9 @@ void CApplication::RenderMemoryStatus()
       {
         CStdString windowName = CButtonTranslator::TranslateWindow(window->GetID());
         if (!windowName.IsEmpty())
-          windowName += " (" + window->GetProperty("xmlfile") + ")";
+          windowName += " (" + window->GetProperty("xmlfile").asString() + ")";
         else
-          windowName = window->GetProperty("xmlfile");
+          windowName = window->GetProperty("xmlfile").asString();
         info += "Window: " + windowName + "  ";
         // transform the mouse coordinates to this window's coordinates
         g_graphicsContext.SetScalingResolution(window->GetCoordsRes(), true);
@@ -3712,7 +3712,7 @@ bool CApplication::PlayMedia(const CFileItem& item, int iPlaylist)
       {
         int track=0;
         if (item.HasProperty("playlist_starting_track"))
-          track = item.GetPropertyInt("playlist_starting_track");
+          track = item.GetProperty("playlist_starting_track").asInteger();
         return ProcessAndStartPlaylist(item.GetPath(), *pPlayList, iPlaylist, track);
       }
       else
@@ -3901,7 +3901,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
   
   if( item.HasProperty("StartPercent") )
   {
-    options.startpercent = item.GetPropertyDouble("StartPercent");                    
+    options.startpercent = item.GetProperty("StartPercent").asDouble();
   }
   
   PLAYERCOREID eNewCore = EPC_NONE;

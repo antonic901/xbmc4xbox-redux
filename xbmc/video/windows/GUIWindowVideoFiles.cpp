@@ -419,7 +419,7 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
     else
     {
       CGUIWindowVideoBase::GetContextButtons(itemNumber, buttons);
-      if (!item->GetPropertyBOOL("pluginreplacecontextitems"))
+      if (!item->GetProperty("pluginreplacecontextitems").asBoolean())
       {
         // Movie Info button
         if (pScanDlg && pScanDlg->IsScanning())
@@ -478,7 +478,7 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
         }
       }
       if (!item->IsParentFolder())
-      {
+    {
         if ((m_vecItems->GetPath().Equals("special://videoplaylists/")) || 
              g_guiSettings.GetBool("filelists.allowfiledeletion"))
         { // video playlists or file operations are allowed
@@ -489,7 +489,7 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
           }
         }
       }
-      if (m_vecItems->IsPlugin() && item->HasVideoInfoTag() && !item->GetPropertyBOOL("pluginreplacecontextitems"))
+      if (m_vecItems->IsPlugin() && item->HasVideoInfoTag() && !item->GetProperty("pluginreplacecontextitems").asBoolean())
         buttons.Add(CONTEXT_BUTTON_INFO,13346); // only movie information for now
 
       if (item->m_bIsFolder)
@@ -510,7 +510,7 @@ void CGUIWindowVideoFiles::GetContextButtons(int itemNumber, CContextButtons &bu
     if (pScanDlg && pScanDlg->IsScanning())
       buttons.Add(CONTEXT_BUTTON_STOP_SCANNING, 13353);	// Stop Scanning
   }
-  if(!(item && item->GetPropertyBOOL("pluginreplacecontextitems")))
+  if(!(item && item->GetProperty("pluginreplacecontextitems").asBoolean()))
   {
     if (!m_vecItems->IsVirtualDirectoryRoot())
       buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);

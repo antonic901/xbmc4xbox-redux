@@ -805,9 +805,9 @@ void CGUIWindowVideoNav::OnPrepareFileItems(CFileItemList &items)
     if(item->HasVideoInfoTag() && node == NODE_TYPE_TITLE_TVSHOWS || node == NODE_TYPE_SEASONS)
     {
       if (g_settings.m_iMyVideoWatchMode == VIDEO_SHOW_UNWATCHED)
-        item->GetVideoInfoTag()->m_iEpisode = item->GetPropertyInt("unwatchedepisodes");
+        item->GetVideoInfoTag()->m_iEpisode = (int)item->GetProperty("unwatchedepisodes").asInteger();
       if (g_settings.m_iMyVideoWatchMode == VIDEO_SHOW_WATCHED)
-        item->GetVideoInfoTag()->m_iEpisode = item->GetPropertyInt("watchedepisodes");
+        item->GetVideoInfoTag()->m_iEpisode = (int)item->GetProperty("watchedepisodes").asInteger();
       item->SetProperty("numepisodes", item->GetVideoInfoTag()->m_iEpisode);
     }
 
@@ -831,7 +831,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
 
   CGUIWindowVideoBase::GetContextButtons(itemNumber, buttons);
 
-  if (item && item->GetPropertyBOOL("pluginreplacecontextitems"))
+  if (item && item->GetProperty("pluginreplacecontextitems").asBoolean())
     return;
 
   CVideoDatabaseDirectory dir;

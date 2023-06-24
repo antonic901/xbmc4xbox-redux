@@ -501,7 +501,7 @@ void CGUIWindowVideoInfo::Refresh()
     if (thumbImage.IsEmpty())
       thumbImage = m_movieItem->GetCachedVideoThumb();
 
-    if (!CFile::Exists(thumbImage) || m_movieItem->GetProperty("HasAutoThumb") == "1")
+    if (!CFile::Exists(thumbImage) || m_movieItem->GetProperty("HasAutoThumb").asString() == "1")
     { // don't have a thumb already, try and grab one
       m_movieItem->SetUserVideoThumb();
       if (m_movieItem->GetThumbnailImage() != thumbImage)
@@ -512,7 +512,7 @@ void CGUIWindowVideoInfo::Refresh()
       if (CFile::Exists(thumbImage))
       {
         if (m_movieItem->HasProperty("set_folder_thumb"))
-          VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb"), thumbImage);
+          VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), thumbImage);
         hasUpdatedThumb = true;
       }
     }
@@ -826,7 +826,7 @@ void CGUIWindowVideoInfo::OnGetThumb()
   m_movieItem->SetThumbnailImage(cachedThumb);
   if (m_movieItem->HasProperty("set_folder_thumb"))
   { // have a folder thumb to set as well
-    VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb"), cachedThumb);
+    VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), cachedThumb);
   }
   m_hasUpdatedThumb = true;
 

@@ -24,6 +24,7 @@
 #include "GUIControlFactory.h"
 #include "utils/StringUtils.h"
 #include "GUIInfoManager.h"
+#include "utils/Variant.h"
 
 using namespace std;
 
@@ -65,7 +66,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
       CGUIInfoLabel prop;
       if (!name.IsEmpty() && CGUIControlFactory::GetInfoLabelFromElement(property, prop, parentID))
       {
-        SetProperty(name, prop.GetLabel(parentID, true));
+        SetProperty(name, prop.GetLabel(parentID, true).c_str());
         if (!prop.IsConstant())
           m_info.push_back(make_pair(prop, name));
       }
@@ -113,7 +114,7 @@ void CGUIStaticItem::UpdateProperties(int contextWindow)
     else if (name.Equals("icon"))
       SetIconImage(value);
     else
-      SetProperty(name, value);
+      SetProperty(name, value.c_str());
   }
 }
 

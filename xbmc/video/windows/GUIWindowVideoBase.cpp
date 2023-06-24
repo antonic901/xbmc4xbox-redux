@@ -1089,7 +1089,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
     item = m_vecItems->Get(itemNumber);
 
   // contextual buttons
-  if (item && !item->GetPropertyBOOL("pluginreplacecontextitems"))
+  if (item && !item->GetProperty("pluginreplacecontextitems").asBoolean())
   {
     if (!item->IsParentFolder())
     {

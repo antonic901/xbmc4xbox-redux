@@ -477,7 +477,7 @@ namespace VIDEO
           if (OnProcessSeriesFolder(episodes, files, ignoreNfo, idTvShow, showDetails.m_strTitle, pDlgProgress))
           {
             Return = true;
-            m_database.SetPathHash(pItem->GetPath(),pItem->GetProperty("hash"));
+            m_database.SetPathHash(pItem->GetPath(), pItem->GetProperty("hash").asString());
           }
           continue;
         }
@@ -602,7 +602,7 @@ namespace VIDEO
                       continue;
                   }
                   if (OnProcessSeriesFolder(episodes, files, ignoreNfo, lResult, details.m_strTitle, pDlgProgress))
-                    m_database.SetPathHash(pItem->GetPath(),pItem->GetProperty("hash"));
+                    m_database.SetPathHash(pItem->GetPath(), pItem->GetProperty("hash").asString());
                 }
                 else
                   if (g_guiSettings.GetBool("videolibrary.seasonthumbs"))

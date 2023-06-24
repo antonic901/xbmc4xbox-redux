@@ -29,6 +29,7 @@
 #include "video/VideoInfoTag.h"
 #include "video/VideoDatabase.h"
 #include "utils/URIUtils.h"
+#include "utils/Variant.h"
 
 #include "cores/dvdplayer/DVDFileInfo.h"
 
@@ -141,7 +142,7 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
         struct __stat64 stat;
         if(CFile::Stat(cachedThumb, &stat) == 0 && stat.st_size > 0)
         {
-          pItem->SetProperty("HasAutoThumb", "1");
+          pItem->SetProperty("HasAutoThumb", true);
           pItem->SetProperty("AutoThumbImage", cachedThumb);
           pItem->SetThumbnailImage(cachedThumb);
         }

@@ -30,6 +30,7 @@
 #include "GUIRadioButtonControl.h"
 #include "GUIWindowManager.h"
 #include "Application.h"
+#include "utils/Variant.h"
 
 using namespace std;
 
@@ -988,7 +989,7 @@ namespace PYXBMC
 
     PyXBMCGUILock();
     CStdString lowerKey = key;
-    string value = pWindow->GetProperty(lowerKey.ToLower());
+    string value = pWindow->GetProperty(lowerKey.ToLower()).asString();
     PyXBMCGUIUnlock();
 
     return Py_BuildValue((char*)"s", value.c_str());

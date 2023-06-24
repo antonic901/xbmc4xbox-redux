@@ -557,10 +557,10 @@ static void ParseItem(CFileItem* item, TiXmlElement* root, const CStdString& pat
     CVideoInfoTag* vtag = item->GetVideoInfoTag();
 
     if(item->HasProperty("duration")    && vtag->m_strRuntime.IsEmpty())
-      vtag->m_strRuntime = item->GetProperty("duration");
+      vtag->m_strRuntime = item->GetProperty("duration").asString();
 
     if(item->HasProperty("description") && vtag->m_strPlot.IsEmpty())
-      vtag->m_strPlot = item->GetProperty("description");
+      vtag->m_strPlot = item->GetProperty("description").asString();
 
     if(vtag->m_strPlotOutline.IsEmpty() && !vtag->m_strPlot.IsEmpty())
     {

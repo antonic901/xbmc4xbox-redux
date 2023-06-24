@@ -30,6 +30,7 @@
 #include "lib/libPython/XBPython.h"
 #include "LangInfo.h"
 #include "utils/log.h"
+#include "utils/Variant.h"
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3

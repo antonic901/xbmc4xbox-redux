@@ -25,6 +25,7 @@
 #include "utils/JobManager.h"
 #include "utils/StringUtils.h"
 #include "utils/TimeUtils.h"
+#include "utils/Variant.h"
 #include "guilib/XMLUtils.h"
 #include "utils/SingleLock.h"
 #include "ApplicationMessenger.h"
@@ -62,10 +63,10 @@ public:
       {
         CGUIStaticItemPtr item(new CGUIStaticItem(*items[i]));
         if (item->HasProperty("node.visible"))
-          item->SetVisibleCondition(item->GetProperty("node.visible"), m_parentID);
+          item->SetVisibleCondition(item->GetProperty("node.visible").asString(), m_parentID);
         m_items.push_back(item);
       }
-      m_target = items.GetProperty("node.target");
+      m_target = items.GetProperty("node.target").asString();
     }
     return true;    
   }
@@ -167,13 +168,13 @@ void CDirectoryProvider::OnJobComplete(unsigned int jobID, bool success, CJob *j
 bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
 {
   CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
-  string target = fileItem.GetProperty("node.target");
+  string target = fileItem.GetProperty("node.target").asString();
   if (target.empty())
     target = m_currentTarget;
   if (target.empty())
     target = m_target.GetLabel(m_parentID, false);
   if (fileItem.HasProperty("node.target_url"))
-    fileItem.SetPath(fileItem.GetProperty("node.target_url"));
+    fileItem.SetPath(fileItem.GetProperty("node.target_url").asString());
 
   CheckContentAttributes(target, fileItem);
 

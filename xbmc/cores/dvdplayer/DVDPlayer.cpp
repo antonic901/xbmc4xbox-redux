@@ -51,6 +51,7 @@
 #include "FileItem.h"
 #include "utils/StreamDetails.h"
 #include "utils/StreamUtils.h"
+#include "utils/Variant.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "playlists/PlayListM3U.h"
 #include "utils/URIUtils.h"
@@ -534,7 +535,7 @@ bool CDVDPlayer::OpenInputStream()
     // find any upnp subtitles
     CStdString key("upnp:subtitle:1");
     for(unsigned s = 1; m_item.HasProperty(key); key.Format("upnp:subtitle:%u", ++s))
-      filenames.push_back(m_item.GetProperty(key));
+      filenames.push_back(m_item.GetProperty(key).asString());
 
     for(unsigned int i=0;i<filenames.size();i++)
       AddSubtitleFile(filenames[i], i == 0 ? CDemuxStream::FLAG_DEFAULT : CDemuxStream::FLAG_NONE);

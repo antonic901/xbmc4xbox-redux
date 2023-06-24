@@ -20,6 +20,7 @@
 
 #include "playlists/PlayList.h"
 #include "utils/URIUtils.h"
+#include "utils/Variant.h"
 #include "playlists/PlayListFactory.h"
 #include <sstream>
 #include "video/VideoInfoTag.h"
@@ -353,7 +354,7 @@ void CPlayList::SetUnPlayable(int iItem)
   }
 
   CFileItemPtr item = m_vecItems[iItem];
-  if (!item->GetPropertyBOOL("unplayable"))
+  if (!item->GetProperty("unplayable").asBoolean())
   {
     item->SetProperty("unplayable", true);
     m_iPlayableItems--;

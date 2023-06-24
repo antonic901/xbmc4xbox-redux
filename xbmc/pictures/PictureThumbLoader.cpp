@@ -25,6 +25,7 @@
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
 #include "TextureManager.h"
+#include "utils/Variant.h"
 
 using namespace XFILE;
 
@@ -102,12 +103,12 @@ bool CPictureThumbLoader::DownloadVideoThumb(CFileItem *item, const CStdString &
   }
   else if (item->GetVideoInfoTag()->m_fanart.GetNumFanarts() > 0 && item->HasProperty("fanart_number"))
   { // yep - download our fanart preview
-    if (item->GetVideoInfoTag()->m_fanart.DownloadThumb(item->GetPropertyInt("fanart_number"), cachedThumb))
+    if (item->GetVideoInfoTag()->m_fanart.DownloadThumb((int)item->GetProperty("fanart_number").asInteger(), cachedThumb))
       item->SetThumbnailImage(cachedThumb);
     else
       item->SetThumbnailImage("");
   }
   if (item->HasProperty("labelonthumbload"))
-    item->SetLabel(item->GetProperty("labelonthumbload"));
+    item->SetLabel(item->GetProperty("labelonthumbload").asString());
   return true; // we don't need to do anything else here
 }
