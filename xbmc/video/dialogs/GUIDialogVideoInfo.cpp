@@ -77,6 +77,7 @@ using namespace XFILE;
 #define CONTROL_BTN_GET_THUMB       10
 #define CONTROL_BTN_PLAY_TRAILER    11
 #define CONTROL_BTN_GET_FANART      12
+#define CONTROL_BTN_DIRECTOR        13
 
 #define CONTROL_LIST                50
 
@@ -196,6 +197,11 @@ bool CGUIWindowVideoInfo::OnMessage(CGUIMessage& message)
       else if (iControl == CONTROL_BTN_GET_FANART)
       {
         OnGetFanart();
+      }
+      else if (iControl == CONTROL_BTN_DIRECTOR)
+      {
+        CStdString strDirector = StringUtils::Join(m_movieItem->GetVideoInfoTag()->m_director, g_advancedSettings.m_videoItemSeparator);
+        OnSearch(strDirector);
       }
 /*      else if (iControl == CONTROL_DISC)
       {
