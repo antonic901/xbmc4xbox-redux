@@ -21,6 +21,7 @@
 #include "music/dialogs/GUIDialogSongInfo.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "pictures/Picture.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
@@ -177,7 +178,7 @@ void CGUIDialogSongInfo::SetSong(CFileItem *item)
   // set artist thumb as well
   if (m_song->HasMusicInfoTag())
   {
-    CFileItem artist(m_song->GetMusicInfoTag()->GetArtist());
+    CFileItem artist(StringUtils::Join(m_song->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator));
     artist.SetCachedArtistThumb();
     if (CFile::Exists(artist.GetThumbnailImage()))
       m_song->SetProperty("artistthumb", artist.GetThumbnailImage());
@@ -274,7 +275,7 @@ void CGUIDialogSongInfo::OnGetThumb()
   // delete the thumbnail if that's what the user wants, else overwrite with the
   // new thumbnail
 
-  CStdString cachedThumb(CUtil::GetCachedAlbumThumb(m_song->GetMusicInfoTag()->GetAlbum(), m_song->GetMusicInfoTag()->GetArtist()));
+  CStdString cachedThumb(CUtil::GetCachedAlbumThumb(m_song->GetMusicInfoTag()->GetAlbum(), StringUtils::Join(m_song->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator)));
 
   if (result == "thumb://None")
   { // cache the default thumb

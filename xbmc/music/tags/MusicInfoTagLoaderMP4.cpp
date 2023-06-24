@@ -25,7 +25,9 @@
 #include "pictures/Picture.h"
 #include "music/tags/id3v1genre.h"
 #include "music/tags/MusicInfoTag.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 using namespace AUTOPTR;
@@ -40,19 +42,19 @@ static const unsigned int	g_MetaAtomName			=	MAKE_ATOM_NAME(	 'm', 'e', 't', 'a'
 static const unsigned int	g_IlstAtomName			=	MAKE_ATOM_NAME(  'i', 'l', 's', 't' );	// 'ilst'
 static const unsigned int	g_MdhdAtomName			=	MAKE_ATOM_NAME(  'm', 'd', 'h', 'd' );	// 'mdhd'
 
-static const unsigned int	g_TitleAtomName			=	MAKE_ATOM_NAME( 0xa9, 'n', 'a', 'm' ); 	// '©nam'
-static const unsigned int	g_ArtistAtomName		=	MAKE_ATOM_NAME( 0xa9, 'A', 'R', 'T' );	// '©ART'
+static const unsigned int	g_TitleAtomName			=	MAKE_ATOM_NAME( 0xa9, 'n', 'a', 'm' ); 	// 'ï¿½nam'
+static const unsigned int	g_ArtistAtomName		=	MAKE_ATOM_NAME( 0xa9, 'A', 'R', 'T' );	// 'ï¿½ART'
 static const unsigned int	g_AlbumArtistAtomName		=	MAKE_ATOM_NAME( 'a', 'A', 'R', 'T' );	// 'aART'
-static const unsigned int	g_AlbumAtomName			=	MAKE_ATOM_NAME( 0xa9, 'a', 'l', 'b' );	// '©alb'
-static const unsigned int	g_DayAtomName			=	MAKE_ATOM_NAME( 0xa9, 'd', 'a', 'y' );	// '©day'
-static const unsigned int	g_CustomGenreAtomName	=	MAKE_ATOM_NAME( 0xa9, 'g', 'e', 'n' );	// '©gnr'
+static const unsigned int	g_AlbumAtomName			=	MAKE_ATOM_NAME( 0xa9, 'a', 'l', 'b' );	// 'ï¿½alb'
+static const unsigned int	g_DayAtomName			=	MAKE_ATOM_NAME( 0xa9, 'd', 'a', 'y' );	// 'ï¿½day'
+static const unsigned int	g_CustomGenreAtomName	=	MAKE_ATOM_NAME( 0xa9, 'g', 'e', 'n' );	// 'ï¿½gnr'
 static const unsigned int	g_GenreAtomName			=	MAKE_ATOM_NAME(  'g', 'n', 'r', 'e' );	// 'gnre'
 static const unsigned int	g_TrackNumberAtomName	=	MAKE_ATOM_NAME(  't', 'r', 'k', 'n' );	// 'trkn'
 static const unsigned int	g_DiscNumberAtomName	=	MAKE_ATOM_NAME(  'd', 'i', 's', 'k' );	// 'disk'
 static const unsigned int	g_CoverArtAtomName		=	MAKE_ATOM_NAME(  'c', 'o', 'v', 'r' );	// 'covr'
 static const unsigned int	g_CompilationAtomName	=	MAKE_ATOM_NAME(  'c', 'p', 'i', 'l' );	// 'cpil'
 static const unsigned int	g_CommentAtomName	=	MAKE_ATOM_NAME(  0xa9, 'c', 'm', 't' );	// 'cpil'
-static const unsigned int	g_LyricsAtomName	=	MAKE_ATOM_NAME(  0xa9, 'l', 'y', 'r' );	// '©lyr'
+static const unsigned int	g_LyricsAtomName	=	MAKE_ATOM_NAME(  0xa9, 'l', 'y', 'r' );	// 'ï¿½lyr'
 
 // These atoms contain other atoms.. so when we find them, we have to recurse..
 
@@ -385,8 +387,8 @@ bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& 
       // if we don't have an album tag, cache with the full file path so that
       // other non-tagged files don't get this album image
       CStdString strCoverArt;
-      if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().IsEmpty() || !tag.GetArtist().IsEmpty()))
-        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), tag.GetAlbumArtist().IsEmpty() ? tag.GetArtist() : tag.GetAlbumArtist());
+      if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().empty() || !tag.GetArtist().empty()))
+        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), tag.GetAlbumArtist().IsEmpty() ? StringUtils::Join(tag.GetArtist(), g_advancedSettings.m_musicItemSeparator) : tag.GetAlbumArtist());
       else
         strCoverArt = CUtil::GetCachedMusicThumb(tag.GetURL());
       if (!CUtil::ThumbExists(strCoverArt))

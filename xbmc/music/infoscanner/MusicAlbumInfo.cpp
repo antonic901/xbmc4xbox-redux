@@ -26,6 +26,8 @@
 #include "HTMLUtil.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
+#include "settings/AdvancedSettings.h"
 
 using namespace MUSIC_GRABBER;
 using namespace std;
@@ -52,7 +54,7 @@ CMusicAlbumInfo::CMusicAlbumInfo(const CStdString& strAlbumInfo, const CScraperU
 CMusicAlbumInfo::CMusicAlbumInfo(const CStdString& strAlbum, const CStdString& strArtist, const CStdString& strAlbumInfo, const CScraperUrl& strAlbumURL)
 {
   m_album.strAlbum = strAlbum;
-  m_album.strArtist = strArtist;
+  m_album.artist = StringUtils::Split(strArtist, g_advancedSettings.m_musicItemSeparator);
   m_strTitle2 = strAlbumInfo;
   m_albumURL = strAlbumURL;
   m_relevance = -1;

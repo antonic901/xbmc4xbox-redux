@@ -55,6 +55,7 @@
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -310,13 +311,13 @@ void CGUIWindowMusicBase::OnInfo(CFileItem *pItem, bool bShowInfo)
     if (params.GetAlbumId() == -1)
     { // artist lookup
       artist.idArtist = params.GetArtistId();
-      artist.strArtist = pItem->GetMusicInfoTag()->GetArtist();
+      artist.strArtist = StringUtils::Join(pItem->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
     }
     else
     { // album lookup
       album.idAlbum = params.GetAlbumId();
       album.strAlbum = pItem->GetMusicInfoTag()->GetAlbum();
-      album.strArtist = pItem->GetMusicInfoTag()->GetArtist();
+      album.artist = pItem->GetMusicInfoTag()->GetArtist();
 
       // we're going to need it's path as well (we assume that there's only one) - this is for
       // assigning thumbs to folders, and obtaining the local folder.jpg
@@ -355,7 +356,7 @@ void CGUIWindowMusicBase::OnInfo(CFileItem *pItem, bool bShowInfo)
         { // album isn't in the database - construct it from the tag info we have
           CMusicInfoTag *tag = pItem->GetMusicInfoTag();
           album.strAlbum = tag->GetAlbum();
-          album.strArtist = tag->GetAlbumArtist().IsEmpty() ? tag->GetArtist() : tag->GetAlbumArtist();
+          album.artist = tag->GetAlbumArtist().IsEmpty() ? tag->GetArtist() : StringUtils::Split(tag->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator);
           album.idAlbum = -1; // the -1 indicates it's not in the database
         }
         foundAlbum = true;
@@ -387,7 +388,7 @@ void CGUIWindowMusicBase::OnManualAlbumInfo()
     return;
 
   CStdString strNewArtist = "";
-  if (!CGUIDialogKeyboard::ShowAndGetInput(album.strArtist, g_localizeStrings.Get(16025), false)) 
+  if (!CGUIDialogKeyboard::ShowAndGetInput(StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator), g_localizeStrings.Get(16025), false))
     return;
   
   ShowAlbumInfo(album,"",true);
@@ -539,7 +540,7 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
     return;
 
   CMusicAlbumInfo info;
-  if (FindAlbumInfo(album.strAlbum, album.strArtist, info, scraper, bShowInfo ? (bRefresh ? SELECTION_FORCED : SELECTION_ALLOWED) : SELECTION_AUTO))
+  if (FindAlbumInfo(album.strAlbum, StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator), info, scraper, bShowInfo ? (bRefresh ? SELECTION_FORCED : SELECTION_ALLOWED) : SELECTION_AUTO))
   {
     // download the album info
     if ( info.Loaded() )
@@ -1216,7 +1217,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
     saveDirThumb = false;
   }
 
-  CStdString albumThumb(CUtil::GetCachedAlbumThumb(album.strAlbum, album.strArtist));
+  CStdString albumThumb(CUtil::GetCachedAlbumThumb(album.strAlbum, StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator)));
 
   // Update the thumb in the music database (songs + albums)
   CStdString albumPath(path);
@@ -1235,8 +1236,8 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
       // really, this may not be enough as it is to reliably update this item.  eg think of various artists albums
       // that aren't tagged as such (and aren't yet scanned).  But we probably can't do anything better than this
       // in that case
-      if (album.strAlbum == tag->GetAlbum() && (album.strArtist == tag->GetAlbumArtist() || 
-                                                album.strArtist == tag->GetArtist()))
+      if (album.strAlbum == tag->GetAlbum() && (StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator) == tag->GetAlbumArtist() ||
+                                                album.artist == tag->GetArtist()))
       {
         g_infoManager.SetCurrentAlbumThumb(albumThumb);
       }
@@ -1380,12 +1381,12 @@ void CGUIWindowMusicBase::SetupFanart(CFileItemList& items)
     if (item->HasProperty("fanart_image"))
       continue;
     if (item->HasMusicInfoTag())
-      strArtist = item->GetMusicInfoTag()->GetArtist();
+      strArtist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
    if (item->HasVideoInfoTag())
      strArtist = item->GetVideoInfoTag()->m_strArtist;
    if (strArtist.IsEmpty())
      continue;
-    map<CStdString, CStdString>::iterator artist = artists.find(item->GetMusicInfoTag()->GetArtist());
+    map<CStdString, CStdString>::iterator artist = artists.find(strArtist);
     if (artist == artists.end())
     {
       CStdString strFanart = item->GetCachedFanart();

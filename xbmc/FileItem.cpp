@@ -82,7 +82,7 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
   SetLabel(album.strAlbum);
   m_strPath = path;
   m_bIsFolder = true;
-  m_strLabel2 = album.strArtist;
+  m_strLabel2 = StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator);
   URIUtils::AddSlashAtEnd(m_strPath);
   GetMusicInfoTag()->SetAlbum(album);
   if (album.thumbURL.m_url.size() > 0)
@@ -1889,7 +1889,7 @@ void CFileItemList::FilterCueItems()
                     if (song.strAlbum.empty() && !tag.GetAlbum().empty()) song.strAlbum = tag.GetAlbum();
                     if (song.strAlbumArtist.empty() && !tag.GetAlbumArtist().empty()) song.strAlbumArtist = tag.GetAlbumArtist();
                     if (song.genre.empty() && !tag.GetGenre().empty()) song.genre = tag.GetGenre();
-                    if (song.strArtist.empty() && !tag.GetArtist().empty()) song.strArtist = tag.GetArtist();
+                    if (song.artist.empty() && !tag.GetArtist().empty()) song.artist = tag.GetArtist();
                     if (tag.GetDiscNumber()) song.iTrack |= (tag.GetDiscNumber() << 16); // see CMusicInfoTag::GetDiscNumber()
                     SYSTEMTIME dateTime;
                     tag.GetReleaseDate(dateTime);
@@ -2376,7 +2376,7 @@ CStdString CFileItem::GetPreviouslyCachedMusicThumb() const
     if (!m_musicInfoTag->GetAlbumArtist().IsEmpty())
       strArtist = m_musicInfoTag->GetAlbumArtist();
     else
-      strArtist = m_musicInfoTag->GetArtist();
+      strArtist = StringUtils::Join(m_musicInfoTag->GetArtist(), g_advancedSettings.m_musicItemSeparator);
   }
   if (!strAlbum.IsEmpty() && !strArtist.IsEmpty())
   {
@@ -2808,7 +2808,7 @@ CStdString CFileItem::GetCachedFanart() const
     return GetCachedThumb(m_bIsFolder ? GetVideoInfoTag()->m_strPath : GetVideoInfoTag()->m_strFileNameAndPath,g_settings.GetVideoFanartFolder());
   }
   if (HasMusicInfoTag())
-    return GetCachedThumb(GetMusicInfoTag()->GetArtist(),g_settings.GetMusicFanartFolder());
+    return GetCachedThumb(StringUtils::Join(GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator),g_settings.GetMusicFanartFolder());
 
   return GetCachedThumb(m_strPath,g_settings.GetVideoFanartFolder());
 }

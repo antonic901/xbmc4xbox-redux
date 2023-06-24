@@ -309,7 +309,7 @@ void CMusicInfoScraper::LoadAlbumInfo()
     return;
 
   CMusicAlbumInfo& album=m_vecAlbums[m_iAlbum];
-  album.GetAlbum().strArtist.Empty();
+  album.GetAlbum().artist.clear();
   if (album.Load(m_http,m_info))
     m_bSucceeded=true;
 }

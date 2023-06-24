@@ -221,7 +221,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
         tag.SetDuration(atoi(szMins)*60+atoi(szSecs));
       if (tag.GetTitle() == "")
         tag.SetTitle(szTitle);
-      if (tag.GetArtist() == "")
+      if (tag.GetArtist().empty())
         tag.SetArtist(szArtist);
       SYSTEMTIME dateTime;
       dateTime.wYear = atoi(szYear);

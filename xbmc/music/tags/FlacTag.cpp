@@ -19,9 +19,11 @@
  */
 
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "music/tags/FlacTag.h"
 #include "Util.h"
 #include "pictures/Picture.h"
+#include "settings/AdvancedSettings.h"
 #include "FileSystem/File.h"
 
 // Use SDL macros to perform byte swapping on big-endian systems
@@ -115,8 +117,8 @@ bool CFlacTag::Read(const CStdString& strFile)
     cover = third_cover;
 
   CStdString strCoverArt;
-  if (!m_musicInfoTag.GetAlbum().IsEmpty() && (!m_musicInfoTag.GetAlbumArtist().IsEmpty() || !m_musicInfoTag.GetArtist().IsEmpty()))
-    strCoverArt = CUtil::GetCachedAlbumThumb(m_musicInfoTag.GetAlbum(), m_musicInfoTag.GetAlbumArtist().IsEmpty() ? m_musicInfoTag.GetArtist() : m_musicInfoTag.GetAlbumArtist());
+  if (!m_musicInfoTag.GetAlbum().IsEmpty() && (!m_musicInfoTag.GetAlbumArtist().IsEmpty() || !m_musicInfoTag.GetArtist().empty()))
+    strCoverArt = CUtil::GetCachedAlbumThumb(m_musicInfoTag.GetAlbum(), m_musicInfoTag.GetAlbumArtist().IsEmpty() ? StringUtils::Join(m_musicInfoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator) : m_musicInfoTag.GetAlbumArtist());
   else
     strCoverArt = CUtil::GetCachedMusicThumb(m_musicInfoTag.GetURL());
 

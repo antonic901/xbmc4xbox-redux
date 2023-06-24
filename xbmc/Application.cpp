@@ -87,6 +87,7 @@
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
+#include "utils/StringUtils.h"
 #ifdef HAS_FILESYSTEM
 #include "FileSystem/DAAPFile.h"
 #endif
@@ -3206,8 +3207,8 @@ void  CApplication::CheckForTitleChange()
         CStdString msg="";
         if (!tagVal->GetTitle().IsEmpty())
           msg=m_pXbmcHttp->GetOpenTag()+"AudioTitle:"+tagVal->GetTitle()+m_pXbmcHttp->GetCloseTag();
-        if (!tagVal->GetArtist().IsEmpty())
-          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+tagVal->GetArtist()+m_pXbmcHttp->GetCloseTag();
+        if (!tagVal->GetArtist().empty())
+          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator)+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
         {
           m_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
