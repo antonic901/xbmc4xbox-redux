@@ -26,6 +26,7 @@
 #include "settings/Profile.h"
 #include "Directory.h"
 #include "DirectoryCache.h"
+#include "SourcesDirectory.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/MemoryUnitManager.h"
 #endif
@@ -74,8 +75,6 @@ bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
 }
 bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, bool bUseFileDirectories)
 {
-  VECSOURCES shares;
-  GetSources(shares);
   if (!strPath.IsEmpty() && strPath != "files://")
     return CDirectory::GetDirectory(strPath, items, m_strFileMask, bUseFileDirectories, m_allowPrompting, m_cacheDirectory, m_extFileInfo);
 
@@ -87,58 +86,10 @@ bool CVirtualDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
   items.SetPath(strPath);
 
   // grab our shares
-  for (unsigned int i = 0; i < shares.size(); ++i)
-  {
-    CMediaSource& share = shares[i];
-    CFileItemPtr pItem(new CFileItem(share));
-    if (pItem->IsLastFM() || pItem->IsShoutCast() || (pItem->GetPath().Left(14).Equals("musicsearch://")))
-      pItem->SetCanQueue(false);
-    CStdString strPathUpper = pItem->GetPath();
-    strPathUpper.ToUpper();
-
-    CStdString strIcon;
-    // We have the real DVD-ROM, set icon on disktype
-    if (share.m_iDriveType == CMediaSource::SOURCE_TYPE_DVD && share.m_strThumbnailImage.IsEmpty())
-    {
-      CUtil::GetDVDDriveIcon( pItem->GetPath(), strIcon );
-      // CDetectDVDMedia::SetNewDVDShareUrl() caches disc thumb as special://temp/dvdicon.tbn
-      CStdString strThumb = "special://temp/dvdicon.tbn";
-      if (XFILE::CFile::Exists(strThumb))
-        pItem->SetThumbnailImage(strThumb);
-    }
-    else if (strPathUpper.Left(11) == "SOUNDTRACK:")
-      strIcon = "DefaultHardDisk.png";
-    else if (pItem->IsLastFM()
-          || pItem->IsShoutCast()
-          || pItem->IsVideoDb()
-          || pItem->IsMusicDb()
-          || pItem->IsPlugin()
-          || pItem->IsPluginRoot()
-          || pItem->GetPath() == "special://musicplaylists/"
-          || pItem->GetPath() == "special://videoplaylists/"
-          || pItem->GetPath() == "musicsearch://")
-      strIcon = "DefaultFolder.png";
-    else if (pItem->IsRemote())
-      strIcon = "DefaultNetwork.png";
-    else if (pItem->IsISO9660())
-      strIcon = "DefaultDVDRom.png";
-    else if (pItem->IsDVD())
-      strIcon = "DefaultDVDRom.png";
-    else if (pItem->IsCDDA())
-      strIcon = "DefaultCDDA.png";
-    else
-      strIcon = "DefaultHardDisk.png";
-
-    pItem->SetIconImage(strIcon);
-    if (share.m_iHasLock == 2 && g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
-      pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_LOCKED);
-    else
-      pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_NONE);
-
-    items.Add(pItem);
-  }
-
-  return true;
+  VECSOURCES shares;
+  GetSources(shares);
+  CSourcesDirectory dir;
+  return dir.GetDirectory(shares, items);
 }
 
 /*!
