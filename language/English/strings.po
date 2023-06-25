@@ -2754,6 +2754,14 @@ msgstr ""
 
 #empty strings from id 853 to 999
 
+msgctxt "#998"
+msgid "Add Music..."
+msgstr ""
+
+msgctxt "#999"
+msgid "Add Videos..."
+msgstr ""
+
 msgctxt "#1000"
 msgid "Screensaver preview"
 msgstr ""

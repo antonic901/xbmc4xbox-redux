@@ -261,6 +261,8 @@ CStdString CGUIWindowVideoNav::GetQuickpathName(const CStdString& strPath) const
     return "RecentlyAddedMusicVideos";
   else if (strPath.Equals("special://videoplaylists/"))
     return "Playlists";
+  else if (strPath.Equals("sources://video/"))
+    return "Files";
   else
   {
     CLog::Log(LOGERROR, "  CGUIWindowVideoNav::GetQuickpathName: Unknown parameter (%s)", strPath.c_str());
@@ -465,12 +467,16 @@ void CGUIWindowVideoNav::UpdateButtons()
     CStdString strDummy;
     URIUtils::Split(m_vecItems->GetPath(), strDummy, strLabel);
   }
+  else if (m_vecItems->GetPath().Equals("sources://video/"))
+    strLabel = g_localizeStrings.Get(744);
   // everything else is from a videodb:// path
-  else
+  else if (m_vecItems->IsVideoDb())
   {
     CVideoDatabaseDirectory dir;
     dir.GetLabel(m_vecItems->GetPath(), strLabel);
   }
+  else
+    strLabel = URIUtils::GetFileName(m_vecItems->GetPath());
 
   SET_CONTROL_LABEL(CONTROL_FILTER, strLabel);
 
@@ -1487,5 +1493,7 @@ CStdString CGUIWindowVideoNav::GetStartFolder(const CStdString &dir)
     return "videodb://5/";
   else if (dir.Equals("RecentlyAddedMusicVideos"))
     return "videodb://6/";
+  else if (dir.Equals("Files"))
+    return "sources://video/";
   return CGUIWindowVideoBase::GetStartFolder(dir);
 }
