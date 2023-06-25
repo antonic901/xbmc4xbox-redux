@@ -280,12 +280,15 @@ void CGUIWindowVideoFiles::AddFileToDatabase(const CFileItem* pItem)
   }
 }
 
-bool CGUIWindowVideoFiles::OnUnAssignContent(int iItem, int label1, int label2, int label3)
+bool CGUIWindowVideoFiles::OnUnAssignContent(const CStdString &path, int label1, int label2, int label3)
 {
   bool bCanceled;
+  CVideoDatabase db;
+  db.Open();
   if (CGUIDialogYesNo::ShowAndGetInput(label1,label2,label3,20022,bCanceled))
   {
-    m_database.RemoveContentForPath(m_vecItems->Get(iItem)->GetPath(),m_dlgProgress);
+    db.RemoveContentForPath(path);
+    db.Close();
     CUtil::DeleteVideoDatabaseDirectoryCache();
     return true;
   }
@@ -295,23 +298,25 @@ bool CGUIWindowVideoFiles::OnUnAssignContent(int iItem, int label1, int label2, 
     {
       SScraperInfo info;
       SScanSettings settings;
-      m_database.SetScraperForPath(m_vecItems->Get(iItem)->GetPath(),info,settings);
+      db.SetScraperForPath(path,info,settings);
     }
   }
+  db.Close();
 
   return false;
 }
 
-void CGUIWindowVideoFiles::OnAssignContent(int iItem, int iFound, SScraperInfo& info, SScanSettings& settings)
+void CGUIWindowVideoFiles::OnAssignContent(const CStdString &path, int iFound, SScraperInfo& info, SScanSettings& settings)
 {
   if (!g_guiSettings.GetBool("videolibrary.enabled")) 
     return;
  
-  CFileItemPtr item = m_vecItems->Get(iItem);
   bool bScan=false;
+  CVideoDatabase db;
+  db.Open();
   if (iFound == 0)
   {
-    m_database.GetScraperForPath(item->GetPath(),info,settings,iFound);
+    db.GetScraperForPath(path,info,settings,iFound);
   }
   SScraperInfo info2 = info;
   SScanSettings settings2 = settings;
@@ -321,7 +326,7 @@ void CGUIWindowVideoFiles::OnAssignContent(int iItem, int iFound, SScraperInfo& 
     if((info2.strContent.IsEmpty() || info2.strContent.Equals("None")) && 
       (!info.strContent.IsEmpty() && !info.strContent.Equals("None")))
     {
-      OnUnAssignContent(iItem,20375,20340,20341);
+      OnUnAssignContent(path,20375,20340,20341);
     }
     if (!info.strContent.IsEmpty()      && 
         !info2.strContent.IsEmpty()     &&
@@ -329,18 +334,17 @@ void CGUIWindowVideoFiles::OnAssignContent(int iItem, int iFound, SScraperInfo& 
        (info2.strContent != info.strContent ||
         !info.strPath.Equals(info2.strPath)))
     {
-      if (OnUnAssignContent(iItem,20442,20443,20444))
+      if (OnUnAssignContent(path,20442,20443,20444))
         bScan = true;
     }
 
-    m_database.Open();
-    m_database.SetScraperForPath(item->GetPath(),info2,settings2);
-    m_database.Close();
+    db.SetScraperForPath(path,info2,settings2);
 
     if (bScan)
     {
-      GetScraperForItem(item.get(),info2,settings2);
-      OnScan(item->GetPath(),info2,settings2);
+      CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
+      if (pDialog)
+        pDialog->StartScanning(path, info2, settings2, true);
     }
   }
 }
@@ -532,7 +536,7 @@ bool CGUIWindowVideoFiles::OnContextButton(int itemNumber, CONTEXT_BUTTON button
       if (button == CONTEXT_BUTTON_REMOVE_SOURCE && !item->IsPlugin()
           && !item->IsLiveTV() &&!item->IsRSS())
       {
-        OnUnAssignContent(itemNumber,20375,20340,20341);
+        OnUnAssignContent(item->GetPath(),20375,20340,20341);
       }
       Update("");
       return true;
@@ -553,7 +557,7 @@ bool CGUIWindowVideoFiles::OnContextButton(int itemNumber, CONTEXT_BUTTON button
         m_database.GetScraperForPath(item->GetVideoInfoTag()->m_strPath, info, settings);
       else
         m_database.GetScraperForPath(item->GetPath(), info, settings);
-      OnAssignContent(itemNumber,0, info, settings);
+      OnAssignContent(item->GetPath(),0, info, settings);
       return true;
     }
 
