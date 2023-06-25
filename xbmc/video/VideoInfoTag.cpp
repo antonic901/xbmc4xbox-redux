@@ -60,7 +60,7 @@ void CVideoInfoTag::Reset()
   m_firstAired.Reset();
   m_studio.clear();
   m_strAlbum = "";
-  m_strArtist = "";
+  m_artist.clear();
   m_strTrailer = "";
   m_iTop250 = 0;
   m_iYear = 0;
@@ -216,8 +216,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
     TiXmlText th(it->thumbUrl.GetFirstThumb().m_url);
     thumbNode->InsertEndChild(th);
   }
-  XMLUtils::SetAdditiveString(movie, "artist",
-                         g_advancedSettings.m_videoItemSeparator, m_strArtist);
+  XMLUtils::SetStringArray(movie, "artist", m_artist);
   XMLUtils::SetStringArray(movie, "showlink", m_showLink);;
  
   TiXmlElement resume("resume");
@@ -283,7 +282,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_firstAired;
     ar << m_strShowTitle;
     ar << m_strAlbum;
-    ar << m_strArtist;
+    ar << m_artist;
     ar << m_playCount;
     ar << m_lastPlayed;
     ar << m_iTop250;
@@ -353,7 +352,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_firstAired;
     ar >> m_strShowTitle;
     ar >> m_strAlbum;
-    ar >> m_strArtist;
+    ar >> m_artist;
     ar >> m_playCount;
     ar >> m_lastPlayed;
     ar >> m_iTop250;
@@ -415,7 +414,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["firstaired"] = m_firstAired.GetAsDBDate();
   value["showtitle"] = m_strShowTitle;
   value["album"] = m_strAlbum;
-  value["artist"] = m_strArtist;
+  value["artist"] = StringUtils::Join(m_artist, " / ");
   value["playcount"] = m_playCount;
   value["lastplayed"] = m_lastPlayed.GetAsDBDateTime();
   value["top250"] = m_iTop250;
@@ -551,10 +550,10 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
     if (pValue)
     {
       const char* clear=node->Attribute("clear");
-      if (m_strArtist.IsEmpty() || (clear && stricmp(clear,"true")==0))
-        m_strArtist += pValue;
-      else
-        m_strArtist += g_advancedSettings.m_videoItemSeparator + pValue;
+      if (clear && stricmp(clear,"true")==0)
+        m_artist.clear();
+      vector<string> artists = StringUtils::Split(pValue, g_advancedSettings.m_videoItemSeparator);
+      m_artist.insert(m_artist.end(), artists.begin(), artists.end());
     }
     node = node->NextSiblingElement("artist");
   }

@@ -1568,7 +1568,7 @@ void CVideoDatabase::GetMusicVideosByArtist(const CStdString& strArtist, CFileIt
     {
       CVideoInfoTag tag = GetDetailsForMusicVideo(m_pDS);
       CFileItemPtr pItem(new CFileItem(tag));
-      pItem->SetLabel(tag.m_strArtist);
+      pItem->SetLabel(StringUtils::Join(tag.m_artist, g_advancedSettings.m_videoItemSeparator));
       items.Add(pItem);
       m_pDS->next();
     }
@@ -1939,13 +1939,11 @@ void CVideoDatabase::SetDetailsForMusicVideo(const CStdString& strFilenameAndPat
     AddGenreAndDirectorsAndStudios(details,vecDirectors,vecGenres,vecStudios);
 
     // add artists...
-    if (!details.m_strArtist.IsEmpty())
+    if (!details.m_artist.empty())
     {
-      CStdStringArray vecArtists;
-      StringUtils::SplitString(details.m_strArtist, g_advancedSettings.m_videoItemSeparator, vecArtists);
-      for (unsigned int i = 0; i < vecArtists.size(); i++)
+      for (unsigned int i = 0; i < details.m_artist.size(); i++)
       {
-        CStdString artist = vecArtists[i];
+        CStdString artist = details.m_artist[i];
         artist.Trim();
         int idArtist = AddActor(artist,"");
         AddArtistToMusicVideo(idMVideo, idArtist);
@@ -4377,8 +4375,8 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const CStdString& strBaseDir, CFileI
           pItem->SetLabelPreformated(true);
           if (!items.Contains(pItem->GetPath()))
           {
-            pItem->GetVideoInfoTag()->m_strArtist = m_pDS->fv(2).get_asString();
-            CStdString strThumb = CUtil::GetCachedAlbumThumb(pItem->GetLabel(),pItem->GetVideoInfoTag()->m_strArtist);
+            pItem->GetVideoInfoTag()->m_artist.push_back(it->second.second);
+            CStdString strThumb = CUtil::GetCachedAlbumThumb(pItem->GetLabel(),StringUtils::Join(pItem->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator));
             if (CFile::Exists(strThumb))
               pItem->SetThumbnailImage(strThumb);
             items.Add(pItem);
@@ -4400,7 +4398,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const CStdString& strBaseDir, CFileI
           pItem->SetLabelPreformated(true);
           if (!items.Contains(pItem->GetPath()))
           {
-            pItem->GetVideoInfoTag()->m_strArtist = m_pDS->fv(2).get_asString();
+            pItem->GetVideoInfoTag()->m_artist.push_back(m_pDS->fv(2).get_asString());
             CStdString strThumb = CUtil::GetCachedAlbumThumb(pItem->GetLabel(),m_pDS->fv(2).get_asString());
             if (CFile::Exists(strThumb))
               pItem->SetThumbnailImage(strThumb);
@@ -4576,7 +4574,7 @@ bool CVideoDatabase::GetPeopleNav(const CStdString& strBaseDir, CFileItemList& i
             pItem->GetVideoInfoTag()->m_playCount = (m_pDS->fv(4).get_asInt() == m_pDS->fv(3).get_asInt()) ? 1 : 0;
           }
           if (idContent == VIDEODB_CONTENT_MUSICVIDEOS)
-            pItem->GetVideoInfoTag()->m_strArtist = pItem->GetLabel();
+            pItem->GetVideoInfoTag()->m_artist.push_back(pItem->GetLabel());
           items.Add(pItem);
           m_pDS->next();
         }
@@ -7258,7 +7256,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
       CFileItem item(movie.m_strFileNameAndPath,false);
       CFileItem saveItem(item);
       if (!singleFiles)
-        saveItem = CFileItem(GetSafeFile(musicvideosDir, movie.m_strArtist + "." + movie.m_strTitle) + ".avi", false);
+        saveItem = CFileItem(GetSafeFile(musicvideosDir, StringUtils::Join(movie.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + movie.m_strTitle) + ".avi", false);
       if (CUtil::IsWritable(movie.m_strFileNameAndPath) && singleFiles)
       {
         if (!item.Exists(false))
@@ -7699,7 +7697,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         CFileItem item(info);
         scanner.AddMovie(&item,"musicvideos",info);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
-        CStdString file(GetSafeFile(musicvideosDir, info.m_strArtist + "." + info.m_strTitle));
+        CStdString file(GetSafeFile(musicvideosDir, StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
         current++;
       }

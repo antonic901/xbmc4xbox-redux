@@ -2794,8 +2794,8 @@ CStdString CFileItem::GetCachedFanart() const
   {
     if (!HasVideoInfoTag())
       return "";
-    if (!GetVideoInfoTag()->m_strArtist.IsEmpty())
-      return GetCachedThumb(GetVideoInfoTag()->m_strArtist,g_settings.GetMusicFanartFolder());
+    if (!GetVideoInfoTag()->m_artist.empty())
+      return GetCachedThumb(StringUtils::Join(GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator),g_settings.GetMusicFanartFolder());
     if (!m_bIsFolder && !GetVideoInfoTag()->m_strShowTitle.IsEmpty())
     {
       CVideoDatabase database;
@@ -3271,7 +3271,7 @@ VIDEODB_CONTENT_TYPE CFileItem::GetVideoContentType() const
     type = VIDEODB_CONTENT_TVSHOWS;
   if (HasVideoInfoTag() && GetVideoInfoTag()->m_iSeason > -1 && !m_bIsFolder) // episode
     type = VIDEODB_CONTENT_EPISODES;
-  if (HasVideoInfoTag() && !GetVideoInfoTag()->m_strArtist.IsEmpty())
+  if (HasVideoInfoTag() && !GetVideoInfoTag()->m_artist.empty())
     type = VIDEODB_CONTENT_MUSICVIDEOS;
   return type;
 }

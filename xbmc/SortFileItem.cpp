@@ -217,7 +217,7 @@ void SSortFileItem::BySongAlbum(CFileItemPtr &item)
   if (item->HasMusicInfoTag())
     artist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
   else if (item->HasVideoInfoTag())
-    artist = item->GetVideoInfoTag()->m_strArtist;
+    artist = StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
   label += " " + artist;
 
   if (item->HasMusicInfoTag())
@@ -240,7 +240,7 @@ void SSortFileItem::BySongAlbumNoThe(CFileItemPtr &item)
   if (item->HasMusicInfoTag())
     artist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
   else if (item->HasVideoInfoTag())
-    artist = item->GetVideoInfoTag()->m_strArtist;
+    artist = StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
   label += " " + RemoveArticles(artist);
 
   if (item->HasMusicInfoTag())
@@ -257,7 +257,7 @@ void SSortFileItem::BySongArtist(CFileItemPtr &item)
   if (item->HasMusicInfoTag())
     label = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
   else if (item->HasVideoInfoTag())
-    label = item->GetVideoInfoTag()->m_strArtist;
+    label = StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
 
   if (g_advancedSettings.m_bMusicLibraryAlbumsSortByArtistThenYear)
   {
@@ -290,7 +290,7 @@ void SSortFileItem::BySongArtistNoThe(CFileItemPtr &item)
   if (item->HasMusicInfoTag())
     label = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
   else if (item->HasVideoInfoTag())
-    label = item->GetVideoInfoTag()->m_strArtist;
+    label = StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
   label = RemoveArticles(label);
 
   if (g_advancedSettings.m_bMusicLibraryAlbumsSortByArtistThenYear)

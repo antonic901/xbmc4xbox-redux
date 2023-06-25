@@ -48,6 +48,7 @@
 #include "settings/AdvancedSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 
@@ -694,7 +695,7 @@ bool CGUIWindowVideoNav::DeleteItem(CFileItem* pItem, bool bUnavailable /* = fal
     iType = VIDEODB_CONTENT_TVSHOWS;
   if (pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->m_iSeason > -1 && !pItem->m_bIsFolder)
     iType = VIDEODB_CONTENT_EPISODES;
-  if (pItem->HasVideoInfoTag() && !pItem->GetVideoInfoTag()->m_strArtist.IsEmpty())
+  if (pItem->HasVideoInfoTag() && !pItem->GetVideoInfoTag()->m_artist.empty())
     iType = VIDEODB_CONTENT_MUSICVIDEOS;
 
   // dont allow update while scanning
@@ -858,11 +859,11 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
     else if (!item->m_bIsFolder && !item->GetPath().Left(19).Equals("newsmartplaylist://"))
       buttons.Add(CONTEXT_BUTTON_INFO, 13346);
 
-    if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strArtist.IsEmpty())
+    if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_artist.empty())
     {
       CMusicDatabase database;
       database.Open();
-      if (database.GetArtistByName(item->GetVideoInfoTag()->m_strArtist) > -1)
+      if (database.GetArtistByName(StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator)) > -1)
         buttons.Add(CONTEXT_BUTTON_GO_TO_ARTIST, 20396);
     }
     if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_strAlbum.size() > 0)
@@ -873,12 +874,12 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
         buttons.Add(CONTEXT_BUTTON_GO_TO_ALBUM, 20397);
     }
     if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_strAlbum.size() > 0 &&
-        item->GetVideoInfoTag()->m_strArtist.size() > 0                           &&
+        item->GetVideoInfoTag()->m_artist.size() > 0                              &&
         item->GetVideoInfoTag()->m_strTitle.size() > 0)
     {
       CMusicDatabase database;
       database.Open();
-      if (database.GetSongByArtistAndAlbumAndTitle(item->GetVideoInfoTag()->m_strArtist,
+      if (database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator),
                                                    item->GetVideoInfoTag()->m_strAlbum,
                                                    item->GetVideoInfoTag()->m_strTitle) > -1)
       {
@@ -910,7 +911,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
         }
         if (m_database.HasContent(VIDEODB_CONTENT_TVSHOWS) && item->HasVideoInfoTag() &&
            !item->m_bIsFolder && item->GetVideoInfoTag()->m_iEpisode == -1 &&
-            item->GetVideoInfoTag()->m_strArtist.IsEmpty()) // movie entry
+            item->GetVideoInfoTag()->m_artist.empty()) // movie entry
         {
           if (m_database.IsLinkedToTvshow(item->GetVideoInfoTag()->m_iDbId))
             buttons.Add(CONTEXT_BUTTON_UNLINK_MOVIE,20385);
@@ -1315,7 +1316,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString strPath;
       CMusicDatabase database;
       database.Open();
-      strPath.Format("musicdb://2/%ld/",database.GetArtistByName(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strArtist));
+      strPath.Format("musicdb://2/%ld/",database.GetArtistByName(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator)));
       g_windowManager.ActivateWindow(WINDOW_MUSIC_NAV,strPath);
       return true;
     }
@@ -1333,7 +1334,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CMusicDatabase database;
       database.Open();
       CSong song;
-      if (database.GetSongById(database.GetSongByArtistAndAlbumAndTitle(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strArtist,m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strAlbum,
+      if (database.GetSongById(database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator),m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strAlbum,
                                                                         m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strTitle),
                                                                         song))
       {

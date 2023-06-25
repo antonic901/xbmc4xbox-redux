@@ -272,7 +272,7 @@ const struct SDbTableOffsets DbMusicVideoOffsets[] =
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iYear) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strPlot) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strAlbum) },
-  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strArtist) },
+  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_artist) },
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_genre) },
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iTrack) }
 };
