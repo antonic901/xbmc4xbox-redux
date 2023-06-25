@@ -549,18 +549,6 @@ bool CGUIWindowVideoFiles::OnContextButton(int itemNumber, CONTEXT_BUTTON button
     CGUIDialogContextMenu::SwitchMedia("video", m_vecItems->GetPath());
     return true;
 
-  case CONTEXT_BUTTON_SET_CONTENT:
-    {
-      SScraperInfo info;
-      SScanSettings settings;
-      if (item->HasVideoInfoTag())  // files view shouldn't need this check I think?
-        m_database.GetScraperForPath(item->GetVideoInfoTag()->m_strPath, info, settings);
-      else
-        m_database.GetScraperForPath(item->GetPath(), info, settings);
-      OnAssignContent(item->GetPath(),0, info, settings);
-      return true;
-    }
-
   case CONTEXT_BUTTON_ADD_TO_LIBRARY:
     AddToDatabase(itemNumber);
     return true;
