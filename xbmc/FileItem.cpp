@@ -1975,7 +1975,7 @@ void CFileItemList::Stack()
   CSingleLock lock(m_lock);
 
   // not allowed here
-  if (IsVirtualDirectoryRoot() || IsLiveTV())
+  if (IsVirtualDirectoryRoot() || IsLiveTV() || GetPath().Left(10).Equals("sources://"))
     return;
 
   SetProperty("isstacked", "1");
