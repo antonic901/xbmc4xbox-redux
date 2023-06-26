@@ -2644,6 +2644,17 @@ CStdString CFileItem::GetMovieName(bool bUseFolderNames /* = false */) const
   if (IsLabelPreformated())
     return GetLabel();
 
+  CStdString strMovieName = GetBaseMoviePath(bUseFolderNames);
+
+  URIUtils::RemoveSlashAtEnd(strMovieName);
+  strMovieName = URIUtils::GetFileName(strMovieName);
+  CURL::Decode(strMovieName);
+
+  return strMovieName;
+}
+
+CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
+{
   CStdString strMovieName = m_strPath;
 
   if (IsMultiPath())
@@ -2662,10 +2673,6 @@ CStdString CFileItem::GetMovieName(bool bUseFolderNames /* = false */) const
       strMovieName = strArchivePath;
     }
   }
-
-  URIUtils::RemoveSlashAtEnd(strMovieName);
-  strMovieName = URIUtils::GetFileName(strMovieName);
-  CURL::Decode(strMovieName);
 
   return strMovieName;
 }

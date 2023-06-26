@@ -48,6 +48,7 @@ public:
   bool HasStreamDetails() const;
   bool IsEmpty() const;
 
+  CStdString m_basePath; // the base path of the video, for folder-based lookups
   std::vector<std::string> m_director;
   std::vector<std::string> m_writingCredits;
   std::vector<std::string> m_genre;

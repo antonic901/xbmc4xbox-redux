@@ -912,7 +912,7 @@ namespace VIDEO
     return bMatched;
   }
 
-  long CVideoInfoScanner::AddMovie(CFileItem *pItem, const CStdString &content, CVideoInfoTag &movieDetails, int idShow)
+  long CVideoInfoScanner::AddMovie(CFileItem *pItem, const CStdString &content, CVideoInfoTag &movieDetails, bool videoFolder, int idShow)
   {
     // ensure our database is open (this can get called via other classes)
     if (!m_database.Open())
@@ -923,6 +923,8 @@ namespace VIDEO
     
     CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new item to %s:%s", content.c_str(), pItem->GetPath().c_str());
     long lResult = -1;
+
+    movieDetails.m_basePath = pItem->GetBaseMoviePath(videoFolder);
 
     // add to all movies in the stacked set
     if (content.Equals("movies"))
@@ -981,7 +983,7 @@ namespace VIDEO
 
   long CVideoInfoScanner::AddMovieAndGetThumb(CFileItem *pItem, const CStdString &content, CVideoInfoTag &movieDetails, int idShow, bool bApplyToDir, bool bRefresh, CGUIDialogProgress* pDialog /* == NULL */)
   {
-    long lResult = AddMovie(pItem, content, movieDetails, idShow);
+    long lResult = AddMovie(pItem, content, movieDetails, bApplyToDir, idShow);
     // get & save fanart image
     if (!pItem->CacheLocalFanart() || bRefresh)
     {

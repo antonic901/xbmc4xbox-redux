@@ -80,6 +80,7 @@ void CVideoInfoTag::Reset()
   m_streamDetails.Reset();
   m_playCount = 0;
   m_fEpBookmark = 0;
+  m_basePath = "";
   m_resumePoint.Reset();
   m_resumePoint.type = CBookmark::RESUME;
   m_iIdShow = -1;
@@ -147,6 +148,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
     XMLUtils::SetString(movie, "file", m_strFile);
     XMLUtils::SetString(movie, "path", m_strPath);
     XMLUtils::SetString(movie, "filenameandpath", m_strFileNameAndPath);
+    XMLUtils::SetString(movie, "basepath", m_basePath);
   }
   if (!m_strEpisodeGuide.IsEmpty())
     XMLUtils::SetString(movie, "episodeguide", m_strEpisodeGuide);
@@ -299,6 +301,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << dynamic_cast<IArchivable&>(m_streamDetails);
     ar << m_showLink;
     ar << m_fEpBookmark;
+    ar << m_basePath;
     ar << m_resumePoint.timeInSeconds;
     ar << m_resumePoint.totalTimeInSeconds;
     ar << m_iIdShow;
@@ -369,6 +372,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> dynamic_cast<IArchivable&>(m_streamDetails);
     ar >> m_showLink;
     ar >> m_fEpBookmark;
+    ar >> m_basePath;
     ar >> m_resumePoint.timeInSeconds;
     ar >> m_resumePoint.totalTimeInSeconds;
     ar >> m_iIdShow;
@@ -495,6 +499,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
   XMLUtils::GetDate(movie, "aired", m_firstAired);
   XMLUtils::GetString(movie, "album", m_strAlbum);
   XMLUtils::GetString(movie, "trailer", m_strTrailer);
+  XMLUtils::GetString(movie, "basepath", m_basePath);
 
   const TiXmlElement* thumb = movie->FirstChildElement("thumb");
   while (thumb)

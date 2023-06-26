@@ -58,7 +58,7 @@ namespace VIDEO
 
 // these defines are based on how many columns we have and which column certain data is going to be in
 // when we do GetDetailsForMovie()
-#define VIDEODB_MAX_COLUMNS 22
+#define VIDEODB_MAX_COLUMNS 23
 #define VIDEODB_DETAILS_FILEID                 1
 #define VIDEODB_DETAILS_FILE                   VIDEODB_MAX_COLUMNS + 2
 #define VIDEODB_DETAILS_PATH                   VIDEODB_MAX_COLUMNS + 3
@@ -118,6 +118,7 @@ typedef enum // this enum MUST match the offset struct further down!! and make s
   VIDEODB_ID_TRAILER = 19,
   VIDEODB_ID_FANART = 20,
   VIDEODB_ID_COUNTRY = 21,
+  VIDEODB_ID_BASEPATH = 22,
   VIDEODB_ID_MAX
 } VIDEODB_IDS;
 
@@ -148,7 +149,8 @@ const struct SDbTableOffsets
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_studio) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strTrailer) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_fanart.m_xml) },
-  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_country) }
+  { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_country) },
+  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_basePath) }
 };
 
 typedef enum // this enum MUST match the offset struct further down!! and make sure to keep min and max at -1 and sizeof(offsets)
@@ -170,7 +172,8 @@ typedef enum // this enum MUST match the offset struct further down!! and make s
   VIDEODB_ID_TV_MPAA = 13,
   VIDEODB_ID_TV_STUDIOS = 14,
   VIDEODB_ID_TV_SORTTITLE = 15,
-  VIDEODB_ID_TV_TRAILER = 16,
+  VIDEODB_ID_TV_BASEPATH = 16,
+  VIDEODB_ID_TV_TRAILER = 17,
   VIDEODB_ID_TV_MAX
 } VIDEODB_TV_IDS;
 
@@ -192,6 +195,7 @@ const struct SDbTableOffsets DbTvShowOffsets[] =
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strMPAARating)},
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_studio)},
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strSortTitle)},
+  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_basePath) },
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strTrailer)}
 };
 
@@ -216,6 +220,7 @@ typedef enum // this enum MUST match the offset struct further down!! and make s
   VIDEODB_ID_EPISODE_SORTSEASON = 15,
   VIDEODB_ID_EPISODE_SORTEPISODE = 16,
   VIDEODB_ID_EPISODE_BOOKMARK = 17,
+  VIDEODB_ID_EPISODE_BASEPATH = 18,
   VIDEODB_ID_EPISODE_MAX
 } VIDEODB_EPISODE_IDS;
 
@@ -239,6 +244,7 @@ const struct SDbTableOffsets DbEpisodeOffsets[] =
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iSpecialSortSeason) },
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iSpecialSortEpisode) },
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iBookmarkId) },
+  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_basePath) }
 };
 
 typedef enum // this enum MUST match the offset struct further down!! and make sure to keep min and max at -1 and sizeof(offsets)
@@ -257,6 +263,7 @@ typedef enum // this enum MUST match the offset struct further down!! and make s
   VIDEODB_ID_MUSICVIDEO_ARTIST = 10,
   VIDEODB_ID_MUSICVIDEO_GENRE = 11,
   VIDEODB_ID_MUSICVIDEO_TRACK = 12,
+  VIDEODB_ID_MUSICVIDEO_BASEPATH = 13,
   VIDEODB_ID_MUSICVIDEO_MAX
 } VIDEODB_MUSICVIDEO_IDS;
 
@@ -274,7 +281,8 @@ const struct SDbTableOffsets DbMusicVideoOffsets[] =
   { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_strAlbum) },
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_artist) },
   { VIDEODB_TYPE_STRINGARRAY, my_offsetof(CVideoInfoTag,m_genre) },
-  { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iTrack) }
+  { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iTrack) },
+  { VIDEODB_TYPE_STRING, my_offsetof(CVideoInfoTag,m_basePath) }
 };
 
 #define COMPARE_PERCENTAGE     0.90f // 90%
@@ -644,7 +652,16 @@ private:
    */
   void CreateViews();
 
-  virtual int GetMinVersion() const { return 42; };
+  /*! \brief Update routine for base path of videos
+   Only required for videodb version < 44
+   \param table the table to update
+   \param id the primary id in the given table
+   \param column the basepath column to update
+   \param shows whether we're fetching shows (defaults to false)
+   */
+  void UpdateBasePath(const char *table, const char *id, int column, bool shows = false);
+  
+  virtual int GetMinVersion() const { return 43; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
