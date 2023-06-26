@@ -5674,6 +5674,29 @@ bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& 
   return false;
 }
 
+CStdString CVideoDatabase::GetContentForPath(const CStdString& strPath)
+{
+  SScanSettings settings;
+  bool foundDirectly = false;
+  int iFound = -1;
+  SScraperInfo scraper;
+  GetScraperForPath(strPath, scraper, settings, iFound);
+  foundDirectly = iFound == 1 ? true : false;
+  if (!scraper.strContent.IsEmpty())
+  {
+    if (scraper.strContent == "tvshows" && !foundDirectly)
+    { // check for episodes or seasons (ASSUMPTION: no episodes == seasons (i.e. assume show/season/episodes structure)
+      CStdString sql = PrepareSQL("select count(1) from episodeview where strPath = '%s' limit 1", strPath.c_str());
+      m_pDS->query( sql.c_str() );
+      if (m_pDS->num_rows())
+        return "episodes";
+      return "seasons";
+    }
+    return scraper.strContent;
+  }
+  return "";
+}
+
 void CVideoDatabase::GetMovieGenresByName(const CStdString& strSearch, CFileItemList& items)
 {
   CStdString strSQL;

@@ -418,6 +418,16 @@ public:
   bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info, VIDEO::SScanSettings& settings);
   bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info, VIDEO::SScanSettings& settings, int& iFound);
 
+  /*! \brief Retrieve the content type of videos in the given path
+   If content is set on the folder, we return the given content type, except in the case of tvshows,
+   where we first check for whether we have episodes directly in the path (thus return episodes) or whether
+   we've found a scraper directly (shows).  Any folders inbetween are treated as seasons (regardless of whether
+   they actually are seasons). Note that any subfolders in movies will be treated as movies.
+   \param strPath path to start searching in.
+   \return A content type string for the current path.
+   */
+  CStdString GetContentForPath(const CStdString& strPath);
+
   // scanning hashes and paths scanned
   bool SetPathHash(const CStdString &path, const CStdString &hash);
   bool GetPathHash(const CStdString &path, CStdString &hash);
