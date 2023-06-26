@@ -46,8 +46,6 @@ public:
   virtual bool LoadItem(CFileItem* pItem);
   void SetStreamDetailsObserver(IStreamDetailsObserver *pObs) { m_pStreamDetailsObs = pObs; }
 
-  static void SetWatchedOverlay(CFileItem *item);
-
 protected:
   virtual void OnLoaderStart() ;
   virtual void OnLoaderFinish() ;
