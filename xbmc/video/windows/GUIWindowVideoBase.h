@@ -34,7 +34,7 @@ public:
   virtual bool OnAction(const CAction &action);
 
   void PlayMovie(const CFileItem *item);
-  int  GetResumeItemOffset(const CFileItem *item);
+  static int GetResumeItemOffset(const CFileItem *item);
 
   void AddToDatabase(int iItem);
   static void OnScan(const CStdString& strPath, const SScraperInfo& info, const VIDEO::SScanSettings& settings);
@@ -93,7 +93,7 @@ protected:
   bool CheckMovie(const CStdString& strFileName);
 
   void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
-  void GetStackedFiles(const CStdString &strFileName, std::vector<CStdString> &movies);
+  static void GetStackedFiles(const CStdString &strFileName, std::vector<CStdString> &movies);
 
   void OnSearch();
   void OnSearchItemFound(const CFileItem* pSelItem);

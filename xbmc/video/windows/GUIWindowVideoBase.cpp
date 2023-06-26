@@ -968,7 +968,8 @@ int  CGUIWindowVideoBase::GetResumeItemOffset(const CFileItem *item)
   if (item->IsLiveTV())
     return 0;
 
-  m_database.Open();
+  CVideoDatabase db;
+  db.Open();
   long startoffset = 0;
 
   if (item->IsStack() && (!g_guiSettings.GetBool("myvideos.treatstackasfile") ||
@@ -982,7 +983,7 @@ int  CGUIWindowVideoBase::GetResumeItemOffset(const CFileItem *item)
     for (unsigned i = 0; i<movies.size();i++)
     {
       CBookmark bookmark;
-      if (m_database.GetResumeBookMark(movies[i], bookmark))
+      if (db.GetResumeBookMark(movies[i], bookmark))
       {
         startoffset = (long)(bookmark.timeInSeconds*75);
         startoffset += 0x10000000 * (i+1); /* store file number in here */
@@ -1001,11 +1002,11 @@ int  CGUIWindowVideoBase::GetResumeItemOffset(const CFileItem *item)
       if ((item->IsVideoDb() || item->IsDVD()) && item->HasVideoInfoTag())
         strPath = item->GetVideoInfoTag()->m_strFileNameAndPath;
 
-      if (m_database.GetResumeBookMark(strPath, bookmark))
+      if (db.GetResumeBookMark(strPath, bookmark))
         startoffset = (long)(bookmark.timeInSeconds*75);
     }
   }
-  m_database.Close();
+  db.Close();
 
   return startoffset;
 }

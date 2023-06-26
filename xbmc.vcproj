@@ -580,9 +580,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\windows\GUIWindowVideoBase.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\\video\windows\GUIWindowVideoFiles.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\video\windows\GUIWindowVideoNav.cpp">
 				</File>
 				<File
@@ -2008,6 +2005,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\SndtrkFile.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileSystem\SourcesDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\SourcesDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\SpecialProtocol.cpp">
 				</File>
 				<File
@@ -3120,9 +3123,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\video\windows\GUIWindowVideoBase.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\\video\windows\GUIWindowVideoFiles.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GuiWindowVideoOverlay.h">

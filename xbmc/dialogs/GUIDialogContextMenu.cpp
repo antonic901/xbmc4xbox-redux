@@ -27,7 +27,6 @@
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
-#include "video/windows/GUIWindowVideoFiles.h"
 #include "Application.h"
 #include "GUIPassword.h"
 #include "Util.h"

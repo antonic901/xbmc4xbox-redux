@@ -135,7 +135,6 @@
 #include "video/windows/GUIWindowVideoPlaylist.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
-#include "video/windows/GUIWindowVideoFiles.h"
 #include "video/windows/GUIWindowVideoNav.h"
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
@@ -1268,7 +1267,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowPrograms);                 // window id = 1
   g_windowManager.Add(new CGUIWindowPictures);                 // window id = 2
   g_windowManager.Add(new CGUIWindowFileManager);      // window id = 3
-  g_windowManager.Add(new CGUIWindowVideoFiles);          // window id = 6
   g_windowManager.Add(new CGUIWindowSettings);                 // window id = 4
   g_windowManager.Add(new CGUIWindowSystemInfo);               // window id = 7
   g_windowManager.Add(new CGUIWindowSettingsScreenCalibration); // window id = 11

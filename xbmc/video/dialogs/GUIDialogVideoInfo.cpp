@@ -25,8 +25,7 @@
 #include "pictures/Picture.h"
 #include "guiImage.h"
 #include "utils/StringUtils.h"
-#include "video/windows/GUIWindowVideoBase.h"
-#include "video/windows/GUIWindowVideoFiles.h"
+#include "video/windows/GUIWindowVideoNav.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIInfoManager.h"
 #include "video/VideoInfoScanner.h"
@@ -468,8 +467,7 @@ void CGUIWindowVideoInfo::Update()
   }
 
   // Check for resumability
-  CGUIWindowVideoFiles *window = (CGUIWindowVideoFiles *)g_windowManager.GetWindow(WINDOW_VIDEO_FILES);
-  if (window && window->GetResumeItemOffset(m_movieItem.get()) > 0)
+  if (CGUIWindowVideoBase::GetResumeItemOffset(m_movieItem.get()) > 0)
     CONTROL_ENABLE(CONTROL_BTN_RESUME);
   else
     CONTROL_DISABLE(CONTROL_BTN_RESUME);
@@ -706,7 +704,7 @@ void CGUIWindowVideoInfo::Play(bool resume)
   CFileItem movie(*m_movieItem->GetVideoInfoTag());
   if (m_movieItem->GetVideoInfoTag()->m_strFileNameAndPath.IsEmpty())
     movie.SetPath(m_movieItem->GetPath());
-  CGUIWindowVideoFiles* pWindow = (CGUIWindowVideoFiles*)g_windowManager.GetWindow(WINDOW_VIDEO_FILES);
+  CGUIWindowVideoNav* pWindow = (CGUIWindowVideoNav*)g_windowManager.GetWindow(WINDOW_VIDEO_NAV);
   if (pWindow)
   {
     // close our dialog
