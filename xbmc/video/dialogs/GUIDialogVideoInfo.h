@@ -22,6 +22,7 @@
 
 #include "GUIDialog.h"
 #include "GUIListItem.h"
+#include "video/windows/GUIWindowVideoBase.h"
 #include "ThumbLoader.h"
 
 class CFileItem;
