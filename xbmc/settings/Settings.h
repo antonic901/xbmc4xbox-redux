@@ -52,9 +52,6 @@
 #define VIEW_MODE_ORIGINAL      5
 #define VIEW_MODE_CUSTOM        6
 
-#define STACK_NONE          0
-#define STACK_SIMPLE        1
-
 #define VIDEO_SHOW_ALL 0
 #define VIDEO_SHOW_UNWATCHED 1
 #define VIDEO_SHOW_WATCHED 2
@@ -354,7 +351,7 @@ public:
 
   int m_iVideoStartWindow;
 
-  int m_iMyVideoStack;
+  bool m_videoStacking;
 
   int iAdditionalSubtitleDirectoryChecked;
 

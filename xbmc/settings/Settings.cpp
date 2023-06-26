@@ -78,7 +78,7 @@ void CSettings::Initialize()
     g_graphicsContext.ResetOverscan((RESOLUTION)i, m_ResInfo[i].Overscan);
   }
 
-  m_iMyVideoStack = STACK_NONE;
+  m_videoStacking = false;
 
   strcpy(g_settings.szOnlineArenaPassword, "");
   strcpy(g_settings.szOnlineArenaDescription, "It's Good To Play Together!");
@@ -716,7 +716,7 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   if (pElement)
   {
     GetInteger(pElement, "startwindow", m_iVideoStartWindow, WINDOW_VIDEO_FILES, WINDOW_VIDEO_FILES, WINDOW_VIDEO_NAV);
-    GetInteger(pElement, "stackvideomode", m_iMyVideoStack, STACK_NONE, STACK_NONE, STACK_SIMPLE);
+    XMLUtils::GetBoolean(pElement, "stackvideos", m_videoStacking);
 
     GetPath(pElement, "defaultlibview", m_defaultVideoLibSource);
     GetInteger(pElement, "watchmode", m_iMyVideoWatchMode, VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
@@ -1067,7 +1067,7 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
 
   XMLUtils::SetInt(pNode, "startwindow", m_iVideoStartWindow);
 
-  XMLUtils::SetInt(pNode, "stackvideomode", m_iMyVideoStack);
+  XMLUtils::SetBoolean(pNode, "stackvideos", m_videoStacking);
 
   XMLUtils::SetPath(pNode, "defaultlibview", m_defaultVideoLibSource);
 

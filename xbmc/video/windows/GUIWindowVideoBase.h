@@ -101,4 +101,5 @@ protected:
   CVideoDatabase m_database;
 
   CVideoThumbLoader m_thumbLoader;
+  bool m_stackingAvailable;
 };
