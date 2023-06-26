@@ -464,21 +464,21 @@
 					</item>
 					<item id="2">
 						<label>31953</label>
-						<onclick>ActivateWindow(Videos)</onclick>
+						<onclick>ActivateWindow(Videos,Files,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
 					</item>
 					<item id="10">
 						<label>31954</label>
-						<onclick>ActivateWindow(VideoLibrary,Movies,return)</onclick>
+						<onclick>ActivateWindow(Videos,MovieTitles,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMoviesButton) + Library.HasContent(Movies)</visible>
 					</item>
 					<item id="11">
 						<label>31955</label>
-						<onclick>ActivateWindow(VideoLibrary,TvShows,return)</onclick>
+						<onclick>ActivateWindow(Videos,TvShowTitles,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton) + Library.HasContent(TVShows)</visible>
