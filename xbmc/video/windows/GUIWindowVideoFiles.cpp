@@ -71,10 +71,6 @@ bool CGUIWindowVideoFiles::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      // is this the first time accessing this window?
-      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
-        message.SetStringParam(g_settings.m_defaultVideoSource);
-
       return CGUIWindowVideoBase::OnMessage(message);
     }
     break;

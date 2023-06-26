@@ -294,7 +294,8 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
     {
       if (!share->m_ignore)
         buttons.Add(CONTEXT_BUTTON_EDIT_SOURCE, 1027); // Edit Source
-      buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // Set as Default
+      if (type != "video")
+        buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // Set as Default
       if (!share->m_ignore)
         buttons.Add(CONTEXT_BUTTON_REMOVE_SOURCE, 522); // Remove Source
 
@@ -697,8 +698,6 @@ void CGUIDialogContextMenu::SetDefault(const CStdString &strType, const CStdStri
     g_settings.m_defaultFileSource = strDefault;
   else if (strType == "music")
     g_settings.m_defaultMusicSource = strDefault;
-  else if (strType == "video")
-    g_settings.m_defaultVideoSource = strDefault;
   else if (strType == "pictures")
     g_settings.m_defaultPictureSource = strDefault;
   g_settings.SaveSources();

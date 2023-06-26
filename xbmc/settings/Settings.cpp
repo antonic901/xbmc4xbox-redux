@@ -235,11 +235,12 @@ bool CSettings::Load(bool& bXboxMediacenter, bool& bSettings)
 
   if (pRootElement)
   { // parse sources...
+    CStdString dummy;
     GetSources(pRootElement, "programs", m_programSources, m_defaultProgramSource);
     GetSources(pRootElement, "pictures", m_pictureSources, m_defaultPictureSource);
     GetSources(pRootElement, "files", m_fileSources, m_defaultFileSource);
     GetSources(pRootElement, "music", m_musicSources, m_defaultMusicSource);
-    GetSources(pRootElement, "video", m_videoSources, m_defaultVideoSource);
+    GetSources(pRootElement, "video", m_videoSources, dummy);
   }
 
   bXboxMediacenter = true;
@@ -315,8 +316,6 @@ CStdString CSettings::GetDefaultSourceFromType(const CStdString &type)
     defaultShare = m_defaultFileSource;
   else if (type == "music")
     defaultShare = m_defaultMusicSource;
-  else if (type == "video")
-    defaultShare = m_defaultVideoSource;
   else if (type == "pictures")
     defaultShare = m_defaultPictureSource;
   return defaultShare;
@@ -718,7 +717,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetInteger(pElement, "startwindow", m_iVideoStartWindow, WINDOW_VIDEO_FILES, WINDOW_VIDEO_FILES, WINDOW_VIDEO_NAV);
     XMLUtils::GetBoolean(pElement, "stackvideos", m_videoStacking);
 
-    GetPath(pElement, "defaultlibview", m_defaultVideoLibSource);
     GetInteger(pElement, "watchmode", m_iMyVideoWatchMode, VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
     XMLUtils::GetBoolean(pElement, "flatten", m_bMyVideoNavFlatten);
 
@@ -1068,8 +1066,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   XMLUtils::SetInt(pNode, "startwindow", m_iVideoStartWindow);
 
   XMLUtils::SetBoolean(pNode, "stackvideos", m_videoStacking);
-
-  XMLUtils::SetPath(pNode, "defaultlibview", m_defaultVideoLibSource);
 
   XMLUtils::SetInt(pNode, "watchmode", m_iMyVideoWatchMode);
   XMLUtils::SetBoolean(pNode, "flatten", m_bMyVideoNavFlatten);
@@ -1553,7 +1549,7 @@ bool CSettings::SaveSources()
 
   // ok, now run through and save each sources section
   SetSources(pRoot, "programs", m_programSources, m_defaultProgramSource);
-  SetSources(pRoot, "video", m_videoSources, m_defaultVideoSource);
+  SetSources(pRoot, "video", m_videoSources, "");
   SetSources(pRoot, "music", m_musicSources, m_defaultMusicSource);
   SetSources(pRoot, "pictures", m_pictureSources, m_defaultPictureSource);
   SetSources(pRoot, "files", m_fileSources, m_defaultFileSource);

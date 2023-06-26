@@ -79,7 +79,6 @@ using namespace std;
 CGUIWindowVideoNav::CGUIWindowVideoNav(void)
     : CGUIWindowVideoBase(WINDOW_VIDEO_NAV, "MyVideoNav.xml")
 {
-  m_vecItems->SetPath("?");
   m_thumbLoader.SetObserver(this);
 }
 
@@ -107,7 +106,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
   switch (message.GetMessage())
   {
   case GUI_MSG_WINDOW_RESET:
-    m_vecItems->SetPath("?");
+    m_vecItems->SetPath("");
     break;
   case GUI_MSG_WINDOW_DEINIT:
     if (m_thumbLoader.IsLoading())
@@ -115,10 +114,6 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
     break;
   case GUI_MSG_WINDOW_INIT:
     {
-      // is this the first time the window is opened?
-      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
-        message.SetStringParam(g_settings.m_defaultVideoLibSource);
-
       if (!CGUIWindowVideoBase::OnMessage(message))
         return false;
 
@@ -1025,21 +1020,6 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
           buttons.Add(CONTEXT_BUTTON_UPDATE_LIBRARY, 653);
       }
 
-      //Set default and/or clear default
-      NODE_TYPE nodetype = CVideoDatabaseDirectory::GetDirectoryType(item->GetPath());
-      if (!item->IsParentFolder() && !m_vecItems->GetPath().Equals("special://videoplaylists/") &&
-        (nodetype == NODE_TYPE_ROOT             ||
-         nodetype == NODE_TYPE_OVERVIEW         ||
-         nodetype == NODE_TYPE_TVSHOWS_OVERVIEW ||
-         nodetype == NODE_TYPE_MOVIES_OVERVIEW  ||
-         nodetype == NODE_TYPE_MUSICVIDEOS_OVERVIEW))
-      {
-        if (!item->GetPath().Equals(g_settings.m_defaultVideoLibSource))
-          buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // set default
-        if (strcmp(g_settings.m_defaultVideoLibSource, ""))
-          buttons.Add(CONTEXT_BUTTON_CLEAR_DEFAULT, 13403); // clear default
-      }
-
       if (!m_vecItems->IsVideoDb() && !m_vecItems->IsVirtualDirectoryRoot())
       { // non-video db items, file operations are allowed
         if (!item->IsReadOnly())
@@ -1083,16 +1063,6 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   }
   switch (button)
   {
-  case CONTEXT_BUTTON_SET_DEFAULT:
-    g_settings.m_defaultVideoLibSource = GetQuickpathName(item->GetPath());
-    g_settings.Save();
-    return true;
-
-  case CONTEXT_BUTTON_CLEAR_DEFAULT:
-    g_settings.m_defaultVideoLibSource.Empty();
-    g_settings.Save();
-    return true;
-
   case CONTEXT_BUTTON_EDIT:
     UpdateVideoTitle(item.get());
     CUtil::DeleteVideoDatabaseDirectoryCache();
