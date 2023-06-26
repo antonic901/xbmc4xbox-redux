@@ -661,7 +661,7 @@ private:
    */
   void UpdateBasePath(const char *table, const char *id, int column, bool shows = false);
   
-  virtual int GetMinVersion() const { return 43; };
+  virtual int GetMinVersion() const { return 44; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
