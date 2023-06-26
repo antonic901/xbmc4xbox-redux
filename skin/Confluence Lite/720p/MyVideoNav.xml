@@ -96,13 +96,6 @@
 					<altlabel>31050</altlabel>
 					<usealttexture>Container.SortDirection(Ascending)</usealttexture>
 				</control>
-				<control type="radiobutton" id="99">
-					<description>Library button</description>
-					<label>$LOCALIZE[29800]</label>
-					<onclick>ReplaceWindow(VideoFiles)</onclick>
-					<selected>Window.IsVisible(VideoLibrary)</selected>
-					<include>ButtonCommonValues</include>
-				</control>
 				<control type="edit" id="19">
 					<description>Filter</description>
 					<textwidth>230</textwidth>
@@ -137,6 +130,12 @@
 					<description>Search</description>
 					<include>ButtonCommonValues</include>
 					<label>137</label>
+				</control>
+				<control type="radiobutton" id="7">
+          <description>Stack Toggle</description>
+          <textwidth>170</textwidth>
+          <include>ButtonCommonValues</include>
+          <label>346</label>
 				</control>
 				<control type="radiobutton" id="17">
 					<description>Flatten</description>
