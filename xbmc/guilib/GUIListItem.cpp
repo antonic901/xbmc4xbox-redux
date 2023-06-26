@@ -367,3 +367,8 @@ void CGUIListItem::IncrementProperty(const CStdString &strKey, double dVal)
   d += dVal;
   SetProperty(strKey, d);
 }
+
+void CGUIListItem::AppendProperties(const CGUIListItem &item)
+{
+  m_mapProperties.insert(item.m_mapProperties.begin(), item.m_mapProperties.end());
+}
