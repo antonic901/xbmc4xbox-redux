@@ -19,7 +19,6 @@
  */
 
 #include "video/windows/GUIWindowVideoNav.h"
-#include "GUIWindowVideoFiles.h"
 #include "music/windows/GUIWindowMusicNav.h"
 #include "windows/GUIWindowFileManager.h"
 #include "GUIInfoManager.h"
@@ -1056,7 +1055,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     if (button == CONTEXT_BUTTON_REMOVE_SOURCE && !item->IsPlugin()
         && !item->IsLiveTV() &&!item->IsRSS())
     {
-      CGUIWindowVideoFiles::OnUnAssignContent(item->GetPath(),20375,20340,20341);
+      OnUnAssignContent(item->GetPath(),20375,20340,20341);
     }
     Update(m_vecItems->GetPath());
     return true;

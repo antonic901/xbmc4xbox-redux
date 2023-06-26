@@ -51,6 +51,7 @@
 #include "FileSystem/Directory.h"
 #include "playlists/PlayList.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/GUIDialogContentSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
@@ -1177,7 +1178,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         m_database.GetScraperForPath(item->GetVideoInfoTag()->m_strPath, info, settings);
       else
         m_database.GetScraperForPath(item->GetPath(), info, settings);
-      CGUIWindowVideoFiles::OnAssignContent(item->GetPath(),0, info, settings);
+      OnAssignContent(item->GetPath(),0, info, settings);
       return true;
     }
   case CONTEXT_BUTTON_PLAY_PART:
@@ -2000,4 +2001,73 @@ CStdString CGUIWindowVideoBase::GetStartFolder(const CStdString &dir)
   else if (dir.Equals("Plugins") || dir.Equals("Addons"))
     return "plugin://video/";
   return CGUIMediaWindow::GetStartFolder(dir);
+}
+
+bool CGUIWindowVideoBase::OnUnAssignContent(const CStdString &path, int label1, int label2, int label3)
+{
+  bool bCanceled;
+  CVideoDatabase db;
+  db.Open();
+  if (CGUIDialogYesNo::ShowAndGetInput(label1,label2,label3,20022,bCanceled))
+  {
+    db.RemoveContentForPath(path);
+    db.Close();
+    CUtil::DeleteVideoDatabaseDirectoryCache();
+    return true;
+  }
+  else
+  {
+    if (!bCanceled)
+    {
+      SScraperInfo info;
+      SScanSettings settings;
+      db.SetScraperForPath(path,info,settings);
+    }
+  }
+  db.Close();
+
+  return false;
+}
+
+void CGUIWindowVideoBase::OnAssignContent(const CStdString &path, int iFound, SScraperInfo& info, SScanSettings& settings)
+{
+  if (!g_guiSettings.GetBool("videolibrary.enabled")) 
+    return;
+ 
+  bool bScan=false;
+  CVideoDatabase db;
+  db.Open();
+  if (iFound == 0)
+  {
+    db.GetScraperForPath(path,info,settings,iFound);
+  }
+  SScraperInfo info2 = info;
+  SScanSettings settings2 = settings;
+  
+  if (CGUIDialogContentSettings::Show(info2, settings2, bScan))
+  {
+    if((info2.strContent.IsEmpty() || info2.strContent.Equals("None")) && 
+      (!info.strContent.IsEmpty() && !info.strContent.Equals("None")))
+    {
+      OnUnAssignContent(path,20375,20340,20341);
+    }
+    if (!info.strContent.IsEmpty()      && 
+        !info2.strContent.IsEmpty()     &&
+        !info.strContent.Equals("None") && 
+       (info2.strContent != info.strContent ||
+        !info.strPath.Equals(info2.strPath)))
+    {
+      if (OnUnAssignContent(path,20442,20443,20444))
+        bScan = true;
+    }
+
+    db.SetScraperForPath(path,info2,settings2);
+
+    if (bScan)
+    {
+      CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
+      if (pDialog)
+        pDialog->StartScanning(path, info2, settings2, true);
+    }
+  }
 }

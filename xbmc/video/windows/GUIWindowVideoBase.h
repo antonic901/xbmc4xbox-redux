@@ -58,6 +58,8 @@ public:
    */
   static void AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results);
 
+  static void OnAssignContent(const CStdString &path, int iFound, SScraperInfo& info, VIDEO::SScanSettings& settings);
+
 private:
   bool IsCorrectDiskInDrive(const CStdString& strFileName, const CStdString& strDVDLabel);
 protected:
@@ -97,6 +99,8 @@ protected:
   void OnSearchItemFound(const CFileItem* pSelItem);
   int GetScraperForItem(CFileItem *item, SScraperInfo &info, VIDEO::SScanSettings& settings);
 
+  static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
+  
   CGUIDialogProgress* m_dlgProgress;
   CVideoDatabase m_database;
 
