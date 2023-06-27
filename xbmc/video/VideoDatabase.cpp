@@ -5121,6 +5121,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const CStdString& strBaseDir, const CStdS
     while (!m_pDS->eof())
     {
       int idShow = m_pDS->fv("tvshow.idShow").get_asInt();
+      int numSeasons = m_pDS->fv(VIDEODB_DETAILS_TVSHOW_NUM_SEASONS).get_asInt();
 
       CVideoInfoTag movie = GetDetailsForTvShow(m_pDS, false);
       if (!g_advancedSettings.m_bVideoLibraryHideEmptySeries || movie.m_iEpisode > 0)
@@ -5130,6 +5131,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const CStdString& strBaseDir, const CStdS
         pItem->SetPath(path);
         pItem->m_dateTime = movie.m_premiered;
         pItem->GetVideoInfoTag()->m_iYear = pItem->m_dateTime.GetYear();
+        pItem->SetProperty("totalseasons", numSeasons);
         pItem->SetProperty("totalepisodes", movie.m_iEpisode);
         pItem->SetProperty("numepisodes", movie.m_iEpisode); // will be changed later to reflect watchmode setting
         pItem->SetProperty("watchedepisodes", movie.m_playCount);
