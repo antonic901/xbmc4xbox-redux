@@ -594,7 +594,15 @@ protected:
    */
   int GetFileId(const CStdString& url);
 
-  int AddPath(const CStdString& strPath);
+  int AddPath(const CStdString& strPath, const CStdString &strDateAdded = "");
+
+  /*! \brief Updates the dateAdded field in the files table for the file
+   with the given idFile and the given path based on the files modification date
+   \param idFile id of the file in the files table
+   \param strFileNameAndPath path to the file
+   */
+  void UpdateFileDateAdded(int idFile, const CStdString& strFileNameAndPath);
+  
   int AddToTable(const CStdString& table, const CStdString& firstField, const CStdString& secondField, const CStdString& value);
   int AddGenre(const CStdString& strGenre1);
   int AddActor(const CStdString& strActor, const CStdString& strThumb);
