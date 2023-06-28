@@ -85,6 +85,7 @@ void CVideoInfoTag::Reset()
   m_resumePoint.type = CBookmark::RESUME;
   m_iIdShow = -1;
   m_strShowPath.clear();
+  m_dateAdded.Reset();
   m_type.clear();
 }
 
@@ -227,6 +228,8 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
   XMLUtils::SetFloat(&resume, "total", (float)m_resumePoint.totalTimeInSeconds);
   movie->InsertEndChild(resume);
 
+  XMLUtils::SetString(movie, "dateadded", m_dateAdded.GetAsDBDateTime());
+
   return true;
 }
 
@@ -307,6 +310,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_resumePoint.totalTimeInSeconds;
     ar << m_iIdShow;
     ar << m_strShowPath;
+    ar << m_dateAdded.GetAsDBDateTime();
     ar << m_type;
   }
   else
@@ -379,6 +383,10 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_resumePoint.totalTimeInSeconds;
     ar >> m_iIdShow;
     ar >> m_strShowPath;
+
+    CStdString dateAdded;
+    ar >> dateAdded;
+    m_dateAdded.SetFromDBDateTime(dateAdded);
     ar >> m_type;
   }
 }
@@ -440,6 +448,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["resume"] = resume;
   value["tvshowid"] = m_iIdShow;
   value["tvshowpath"] = m_strShowPath;
+  value["dateadded"] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : "";
   value["type"] = m_type;
 }
 
@@ -639,6 +648,11 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
     XMLUtils::GetDouble(resume, "position", m_resumePoint.timeInSeconds);
     XMLUtils::GetDouble(resume, "total", m_resumePoint.totalTimeInSeconds);
   }
+
+  // dateAdded
+  CStdString dateAdded;
+  XMLUtils::GetString(movie, "dateadded", dateAdded);
+  m_dateAdded.SetFromDBDateTime(dateAdded);
 }
 
 bool CVideoInfoTag::HasStreamDetails() const

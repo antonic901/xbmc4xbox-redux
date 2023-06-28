@@ -20,6 +20,7 @@
  */
 
 #include "utils/Archive.h"
+#include "XBDateTime.h"
 #include "utils/ScraperUrl.h"
 #include "utils/Fanart.h"
 #include "utils/StreamDetails.h"
@@ -101,6 +102,7 @@ public:
   CFanart m_fanart;
   CStreamDetails m_streamDetails;
   CBookmark m_resumePoint;
+  CDateTime m_dateAdded;
   CStdString m_type;
 
 private:
