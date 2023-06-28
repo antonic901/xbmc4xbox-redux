@@ -1095,7 +1095,7 @@ int CVideoDatabase::AddTvShow(const CStdString& strPath)
       if (!dateAdded.IsValid())
         dateAdded = CDateTime::GetCurrentDateTime();
 
-      int idPath = AddPath(strPath, dateAdded.GetAsDBDateTime());
+      idPath = AddPath(strPath, dateAdded.GetAsDBDateTime());
     }
     strSQL=PrepareSQL("insert into tvshowlinkpath values (%i,%i)",idTvShow,idPath);
     m_pDS->exec(strSQL.c_str());
