@@ -320,7 +320,8 @@ void CVideoDatabase::CreateViews()
                                       "  tvshow.c%02d AS strStudio,"
                                       "  tvshow.idShow AS idShow,"
                                       "  tvshow.c%02d AS premiered,"
-                                      "  tvshow.c%02d AS mpaa "
+                                      "  tvshow.c%02d AS mpaa,"
+                                      "  tvshow.c%02d AS strShowPath "
                                       "FROM episode"
                                       "  JOIN files ON"
                                       "    files.idFile=episode.idFile"
@@ -329,7 +330,7 @@ void CVideoDatabase::CreateViews()
                                       "  JOIN tvshow ON"
                                       "    tvshow.idShow=tvshowlinkepisode.idShow"
                                       "  JOIN path ON"
-                                      "    files.idPath=path.idPath", VIDEODB_ID_TV_TITLE, VIDEODB_ID_TV_STUDIOS, VIDEODB_ID_TV_PREMIERED, VIDEODB_ID_TV_MPAA);
+                                      "    files.idPath=path.idPath", VIDEODB_ID_TV_TITLE, VIDEODB_ID_TV_STUDIOS, VIDEODB_ID_TV_PREMIERED, VIDEODB_ID_TV_MPAA, VIDEODB_ID_TV_BASEPATH);
   m_pDS->exec(episodeview.c_str());
 
   CLog::Log(LOGINFO, "create tvshowview");
@@ -2895,6 +2896,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(auto_ptr<Dataset> &pDS, bool 
   details.m_studio = StringUtils::Split(pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_STUDIO).get_asString(), g_advancedSettings.m_videoItemSeparator);
   details.m_premiered.SetFromDBDate(pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_AIRED).get_asString());
   details.m_iIdShow = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_ID).get_asInt();
+  details.m_strShowPath = pDS->fv(VIDEODB_DETAILS_EPISODE_TVSHOW_PATH).get_asString();
 
   GetStreamDetails(details);
 

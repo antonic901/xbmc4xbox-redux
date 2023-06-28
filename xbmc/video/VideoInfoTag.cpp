@@ -84,6 +84,7 @@ void CVideoInfoTag::Reset()
   m_resumePoint.Reset();
   m_resumePoint.type = CBookmark::RESUME;
   m_iIdShow = -1;
+  m_strShowPath.clear();
   m_type.clear();
 }
 
@@ -305,6 +306,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_resumePoint.timeInSeconds;
     ar << m_resumePoint.totalTimeInSeconds;
     ar << m_iIdShow;
+    ar << m_strShowPath;
     ar << m_type;
   }
   else
@@ -376,6 +378,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> m_resumePoint.timeInSeconds;
     ar >> m_resumePoint.totalTimeInSeconds;
     ar >> m_iIdShow;
+    ar >> m_strShowPath;
     ar >> m_type;
   }
 }
@@ -436,6 +439,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   resume["total"] = (float)m_resumePoint.totalTimeInSeconds;
   value["resume"] = resume;
   value["tvshowid"] = m_iIdShow;
+  value["tvshowpath"] = m_strShowPath;
   value["type"] = m_type;
 }
 
