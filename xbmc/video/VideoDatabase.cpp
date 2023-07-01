@@ -576,7 +576,10 @@ int CVideoDatabase::AddPath(const CStdString& strPath, const CStdString &strDate
   CStdString strSQL;
   try
   {
-    int idPath;
+    int idPath = GetPathId(strPath);
+    if (idPath >= 0)
+      return idPath; // already have the path
+
     if (NULL == m_pDB.get()) return -1;
     if (NULL == m_pDS.get()) return -1;
 
@@ -637,10 +640,7 @@ int CVideoDatabase::AddFile(const CStdString& strFileNameAndPath)
     CStdString strFileName, strPath;
     SplitPath(strFileNameAndPath,strPath,strFileName);
 
-    int idPath=GetPathId(strPath);
-    if (idPath < 0)
-      idPath = AddPath(strPath);
-
+    int idPath = AddPath(strPath);
     if (idPath < 0)
       return -1;
 
@@ -715,9 +715,7 @@ bool CVideoDatabase::SetPathHash(const CStdString &path, const CStdString &hash)
       if (!CDirectory::Exists(path))
         return false;
     }
-    int idPath = GetPathId(path);
-    if (idPath < 0)
-      idPath = AddPath(path);
+    int idPath = AddPath(path);
     if (idPath < 0) return false;
 
     CStdString strSQL=PrepareSQL("update path set strHash='%s' where idPath=%ld", hash.c_str(), idPath);
@@ -1079,20 +1077,16 @@ int CVideoDatabase::AddTvShow(const CStdString& strPath)
     m_pDS->exec(strSQL.c_str());
     int idTvShow = (int)m_pDS->lastinsertid();
 
-    int idPath = GetPathId(strPath);
-    if (idPath < 0)
-    {
-      // Get the creation datetime of the tvshow directory
-      CDateTime dateAdded;
-      struct __stat64 buffer;
-      if (XFILE::CFile::Stat(strPath, &buffer) == 0)
-        dateAdded = *localtime((const time_t*)&buffer.st_ctime);
+    // Get the creation datetime of the tvshow directory
+    CDateTime dateAdded;
+    struct __stat64 buffer;
+    if (XFILE::CFile::Stat(strPath, &buffer) == 0)
+      dateAdded = *localtime((const time_t*)&buffer.st_ctime);
 
-      if (!dateAdded.IsValid())
-        dateAdded = CDateTime::GetCurrentDateTime();
+    if (!dateAdded.IsValid())
+      dateAdded = CDateTime::GetCurrentDateTime();
 
-      idPath = AddPath(strPath, dateAdded.GetAsDBDateTime());
-    }
+    int idPath = AddPath(strPath, dateAdded.GetAsDBDateTime());
     strSQL=PrepareSQL("insert into tvshowlinkpath values (%i,%i)",idTvShow,idPath);
     m_pDS->exec(strSQL.c_str());
 
@@ -3316,12 +3310,9 @@ void CVideoDatabase::SetScraperForPath(const CStdString& filePath, const SScrape
   {
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
-    int idPath = GetPathId(filePath);
+    int idPath = AddPath(filePath);
     if (idPath < 0)
-    { // no path found - we have to add one
-      idPath = AddPath(filePath);
-      if (idPath < 0) return ;
-    }
+      return;
 
     // Update
     CStdString strSQL=PrepareSQL("update path set strContent='%s',strScraper='%s', scanRecursive=%i, useFolderNames=%i, strSettings='%s', noUpdate=%i where idPath=%i", info.strContent.c_str(), info.strPath.c_str(),settings.recurse,settings.parent_name,info.settings.GetSettings().c_str(),settings.noupdate, idPath);
@@ -7849,8 +7840,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
     {
       CStdString strPath;
       if (XMLUtils::GetString(path,"url",strPath))
-        if (GetPathId(strPath) < 0)
-          AddPath(strPath);
+        AddPath(strPath);
+        
       SScraperInfo info;
       SScanSettings settings;
       XMLUtils::GetString(path,"content",info.strContent);
