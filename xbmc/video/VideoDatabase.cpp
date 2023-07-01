@@ -286,10 +286,10 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_2 ON setlinkmovie ( idMovie, idSet)\n");
 
     // create basepath indices
-    m_pDS->exec("CREATE index ixMovieBasePath on movie(c22)");
-    m_pDS->exec("CREATE index ixMusicVideoBasePath on musicvideo(c13)");
-    m_pDS->exec("CREATE index ixEpisodeBasePath on episode(c18)");
-    m_pDS->exec("CREATE index ixTVShowBasePath on tvshow(c16)");
+    m_pDS->exec("CREATE INDEX ixMovieBasePath ON movie ( c23(12) )");
+    m_pDS->exec("CREATE INDEX ixMusicVideoBasePath ON musicvideo ( c14(12) )");
+    m_pDS->exec("CREATE INDEX ixEpisodeBasePath ON episode ( c19(12) )");
+    m_pDS->exec("CREATE INDEX ixTVShowBasePath on tvshow ( c17(12) )");
 
     // we create views last to ensure all indexes are rolled in
     CreateViews();
@@ -3956,6 +3956,26 @@ void CVideoDatabase::UpdateBasePath(const char *table, const char *id, int colum
     path = item.GetBaseMoviePath(i->second);
     CStdString sql = PrepareSQL("UPDATE %s set c%02d='%s' where %s.%s=%i", table, column, path.c_str(), table, id, m_pDS2->fv(0).get_asInt());
     m_pDS->exec(sql.c_str());
+    m_pDS2->next();
+  }
+  m_pDS2->close();
+}
+
+void CVideoDatabase::UpdateBasePathID(const char *table, const char *id, int column, int idColumn)
+{
+  CStdString query = PrepareSQL("SELECT %s,c%02d from %s", id, column, table);
+  m_pDS2->query(query.c_str());
+  while (!m_pDS2->eof())
+  {
+    int rowID = m_pDS2->fv(0).get_asInt();
+    CStdString path(m_pDS2->fv(1).get_asString());
+    // find the parent path of this item
+    int pathID = AddPath(URIUtils::GetParentPath(path));
+    if (pathID >= 0)
+    {
+      CStdString sql = PrepareSQL("UPDATE %s SET c%02d=%d WHERE %s=%d", table, idColumn, pathID, id, rowID);
+      m_pDS->exec(sql.c_str());
+    }
     m_pDS2->next();
   }
   m_pDS2->close();

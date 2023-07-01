@@ -926,6 +926,7 @@ namespace VIDEO
 
     if (movieDetails.m_basePath.IsEmpty())
       movieDetails.m_basePath = pItem->GetBaseMoviePath(videoFolder);
+    movieDetails.m_parentPathID = m_database.AddPath(URIUtils::GetParentPath(movieDetails.m_basePath));
 
     // add to all movies in the stacked set
     if (content.Equals("movies"))
