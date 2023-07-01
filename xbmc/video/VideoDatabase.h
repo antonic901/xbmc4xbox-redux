@@ -462,6 +462,14 @@ public:
    */
   bool GetItemForPath(const CStdString &content, const CStdString &path, CFileItem &item);
 
+  /*! \brief Get videos of the given content type from the given path
+   \param content the content type to fetch.
+   \param path the path to fetch videos from.
+   \param items the returned items
+   \return true if items are found, false otherwise.
+   */
+  bool GetItemsForPath(const CStdString &content, const CStdString &path, CFileItemList &items);
+
   // scanning hashes and paths scanned
   bool SetPathHash(const CStdString &path, const CStdString &hash);
   bool GetPathHash(const CStdString &path, CStdString &hash);
