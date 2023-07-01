@@ -293,6 +293,13 @@ public:
 /* Refresh dataset (reopen it and set the same cursor position) */
   virtual void refresh();
 
+/*! \brief Drop an index from the database table, provided it exists.
+  \param table - name of the table the index to be dropped is associated with
+  \param index - name of the index to be dropped
+  \return true when the index is guaranteed to no longer exist in the database.
+  */
+virtual bool dropIndex(const char *table, const char *index) { return false; }
+
 /* Go to record No (starting with 0) */
   virtual bool seek(int pos=0);
 /* Go to record No (starting with 1) */
