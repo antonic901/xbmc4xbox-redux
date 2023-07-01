@@ -420,7 +420,15 @@ void CGUIWindowVideoNav::LoadVideoInfo(CFileItemList &items)
 {
   // TODO: this could possibly be threaded as per the music info loading,
   //       we could also cache the info
+  if (!items.GetContent().IsEmpty())
+    return; // don't load for listings that have content set
+
   CStdString content = m_database.GetContentForPath(items.GetPath());
+  if (content.IsEmpty())
+  {
+    items.SetContent("files");
+    return;
+  }
   items.SetContent(content);
   if (!content.IsEmpty())
   {
