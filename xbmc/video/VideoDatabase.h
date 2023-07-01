@@ -686,6 +686,12 @@ private:
    \param shows whether we're fetching shows (defaults to false)
    */
   void UpdateBasePath(const char *table, const char *id, int column, bool shows = false);
+
+  /*! \brief Determine whether the path is using lookup using folders
+   \param path the path to check
+   \param shows whether this path is from a tvshow (defaults to false)
+   */
+  bool LookupByFolders(const CStdString &path, bool shows = false);
   
   virtual int GetMinVersion() const { return 45; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };

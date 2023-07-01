@@ -3924,6 +3924,19 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
   return true;
 }
 
+bool CVideoDatabase::LookupByFolders(const CStdString &path, bool shows)
+{
+  SScanSettings settings;
+  bool foundDirectly = false;
+  int iFound = -1;
+  SScraperInfo scraper;
+  GetScraperForPath(path, scraper, settings, iFound);
+  foundDirectly = iFound == 1 ? true : false;
+  if (scraper.strContent == "tvshows" && !shows)
+    return false; // episodes
+  return settings.parent_name_root; // shows, movies, musicvids
+}
+
 void CVideoDatabase::UpdateBasePath(const char *table, const char *id, int column, bool shows)
 {
   CStdString query;
@@ -3940,16 +3953,7 @@ void CVideoDatabase::UpdateBasePath(const char *table, const char *id, int colum
     map<CStdString, bool>::iterator i = paths.find(path);
     if (i == paths.end())
     {
-      SScanSettings settings;
-      bool foundDirectly = false;
-      int iFound = -1;
-      SScraperInfo scraper;
-      GetScraperForPath(path, scraper, settings, iFound);
-      foundDirectly = iFound ? true : false;
-      if (!scraper.strContent.IsEmpty() && scraper.strContent == "tvshows" && !shows)
-        paths.insert(make_pair(path, false)); // episodes
-      else
-        paths.insert(make_pair(path, settings.parent_name_root)); // shows, movies, musicvids
+      paths.insert(make_pair(path, LookupByFolders(path, shows)));
       i = paths.find(path);
     }
     CStdString filename;
@@ -7838,6 +7842,24 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
     CStdString tvshowsDir(URIUtils::AddFileToFolder(path, "tvshows"));
     CVideoInfoScanner scanner;
     set<CStdString> actors;
+    // add paths first (so we have scraper settings available)
+    TiXmlElement *path = root->FirstChildElement("paths");
+    path = path->FirstChildElement();
+    while (path)
+    {
+      CStdString strPath;
+      if (XMLUtils::GetString(path,"url",strPath))
+        if (GetPathId(strPath) < 0)
+          AddPath(strPath);
+      SScraperInfo info;
+      SScanSettings settings;
+      XMLUtils::GetString(path,"content",info.strContent);
+      XMLUtils::GetString(path,"scraperpath",info.strPath);
+      XMLUtils::GetInt(path,"scanrecursive",settings.recurse);
+      XMLUtils::GetBoolean(path,"usefoldernames",settings.parent_name);
+      SetScraperForPath(strPath,info,settings);
+      path = path->NextSiblingElement();
+    }
     movie = root->FirstChildElement();
     while (movie)
     {
@@ -7846,7 +7868,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       {
         info.Load(movie);
         CFileItem item(info);
-        scanner.AddMovie(&item,"movies",info);
+        bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
+        scanner.AddMovie(&item,"movies",info,useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(moviesDir, info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -7859,7 +7882,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       {
         info.Load(movie);
         CFileItem item(info);
-        scanner.AddMovie(&item,"musicvideos",info);
+        bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
+        scanner.AddMovie(&item,"musicvideos",info,useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(musicvideosDir, StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -7873,7 +7897,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         URIUtils::AddSlashAtEnd(info.m_strPath);
         DeleteTvShow(info.m_strPath);
         CFileItem item(info);
-        int showID = scanner.AddMovie(&item,"tvshows",info);
+        bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath(), true) : false;
+        int showID = scanner.AddMovie(&item,"tvshows",info,useFolders);
         current++;
         CStdString showDir(GetSafeFile(tvshowsDir, info.m_strTitle));
         CFile::Cache(URIUtils::AddFileToFolder(showDir, "folder.jpg"), item.GetCachedVideoThumb());
@@ -7899,23 +7924,6 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         }
         // and fetch season thumbs
         scanner.FetchSeasonThumbs(showID, showDir, false, true);
-      }
-      else if (strnicmp(movie->Value(), "paths", 5) == 0)
-      {
-        const TiXmlElement* path = movie->FirstChildElement("path");
-        while (path)
-        {
-          CStdString strPath;
-          XMLUtils::GetString(path,"url",strPath);
-          SScraperInfo info;
-          SScanSettings settings;
-          XMLUtils::GetString(path,"content",info.strContent);
-          XMLUtils::GetString(path,"scraperpath",info.strPath);
-          XMLUtils::GetInt(path,"scanrecursive",settings.recurse);
-          XMLUtils::GetBoolean(path,"usefoldernames",settings.parent_name);
-          SetScraperForPath(strPath,info,settings);
-          path = path->NextSiblingElement();
-        }
       }
       movie = movie->NextSiblingElement();
       if (progress && total)
