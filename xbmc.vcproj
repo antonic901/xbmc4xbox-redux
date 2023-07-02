@@ -3197,6 +3197,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\iso9660.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\ISortable.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
 			</File>
 			<File
