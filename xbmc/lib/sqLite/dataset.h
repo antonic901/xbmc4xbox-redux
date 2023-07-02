@@ -177,7 +177,12 @@ protected:
   Database *db;		// info about db connection
   dsStates ds_state;	        // current state
   Fields *fields_object, *edit_object;
-      
+
+  /* query results*/
+  result_set result;
+  result_set exec_res;
+  bool autorefresh;
+  char* errmsg;
 
   bool active;			// Is Query Opened?
   bool haveError;
@@ -375,6 +380,9 @@ virtual bool dropIndex(const char *table, const char *index) { return false; }
 /* ----------------- for debug -------------------- */
   Fields *get_fields_object() {return fields_object;};
   Fields *get_edit_object() {return edit_object;};
+
+/* --------------- for fast access ---------------- */
+  const result_set& get_result_set() { return result; }
 
  private:
   void set_ds_state(dsStates new_state) {ds_state = new_state;};	
