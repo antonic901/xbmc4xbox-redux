@@ -869,6 +869,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\CriticalSection.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\DatabaseUtils.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\DDSImage.cpp">
 				</File>
 				<File
@@ -1098,6 +1101,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\SortFileItem.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SortUtils.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Splash.cpp">
@@ -2948,6 +2954,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\xbox\custom_launch_params.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\DatabaseUtils.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\DelayController.h">
 			</File>
 			<File
@@ -3345,6 +3354,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\SortFileItem.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\SortUtils.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\lib\libSpeex\speex.h">

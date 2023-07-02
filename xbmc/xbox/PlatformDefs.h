@@ -24,7 +24,7 @@
 #ifdef _WIN32
 
 #define __STDC_FORMAT_MACROS
-//#include "inttypes.h"
+#include "inttypes.h"
 
 typedef signed   __int8   int8_t;
 typedef signed   __int16  int16_t;

@@ -80,6 +80,8 @@ class CFileItemList;
  */
 class CMusicDatabase : public CDatabase
 {
+  friend class DatabaseUtils;
+
   class CArtistCache
   {
   public:
