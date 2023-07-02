@@ -383,6 +383,7 @@ virtual bool dropIndex(const char *table, const char *index) { return false; }
 
 /* --------------- for fast access ---------------- */
   const result_set& get_result_set() { return result; }
+  const sql_record* const get_sql_record();
 
  private:
   void set_ds_state(dsStates new_state) {ds_state = new_state;};	
