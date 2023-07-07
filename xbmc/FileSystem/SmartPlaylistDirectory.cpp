@@ -84,7 +84,7 @@ namespace XFILE
     {
       CMusicDatabase db;
       db.Open();
-      success = db.GetAlbumsByWhere("musicdb://3/", playlist.GetWhereClause(db, playlists), playlist.GetOrderClause(db), items);
+      success = db.GetAlbumsByWhere("musicdb://3/", "WHERE " + playlist.GetWhereClause(db, playlists), playlist.GetOrderClause(db), items);
       items.SetContent("albums");
       db.Close();
     }
@@ -92,17 +92,19 @@ namespace XFILE
     {
       CMusicDatabase db;
       db.Open();
-      CStdString type=playlist.GetType();
-      if (type.IsEmpty())
-        type = "songs";
-      if (playlist.GetType().Equals("mixed"))
-        playlist.SetType("songs");
+      CStdString whereOrder;
+      if (playlist.GetType().IsEmpty() || playlist.GetType().Equals("mixed"))
+      {
+        CSmartPlaylist songPlaylist(playlist);
+        songPlaylist.SetType("songs");
+        whereOrder = "WHERE " + songPlaylist.GetWhereClause(db, playlists) + " " + songPlaylist.GetOrderClause(db);
+      }
+      else
+        whereOrder = "WHERE " + playlist.GetWhereClause(db, playlists) + " " + playlist.GetOrderClause(db);
 
-      CStdString whereOrder = playlist.GetWhereClause(db, playlists) + " " + playlist.GetOrderClause(db);
       success = db.GetSongsByWhere("", whereOrder, items);
       items.SetContent("songs");
       db.Close();
-      playlist.SetType(type);
     }
     if (playlist.GetType().Equals("musicvideos") || playlist.GetType().Equals("mixed"))
     {

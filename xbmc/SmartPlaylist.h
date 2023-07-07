@@ -175,7 +175,7 @@ public:
    \param referencedPlaylists a set of playlists to know when we reach a cycle
    \param needWhere whether we need to prepend the where clause with "WHERE "
    */
-  CStdString GetWhereClause(CDatabase &db, std::set<CStdString> &referencedPlaylists, bool needWhere = true);
+  CStdString GetWhereClause(CDatabase &db, std::set<CStdString> &referencedPlaylists);
   CStdString GetOrderClause(CDatabase &db);
 
   const std::vector<CSmartPlaylistRule> &GetRules() const;
