@@ -4316,7 +4316,16 @@ bool CVideoDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& i
   return false;
 }
 
-bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent, const CStdString &where)
+bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent)
+{
+  if (idContent != VIDEODB_CONTENT_MOVIES)
+    return false;
+
+  Filter filter;
+  return GetSetsByWhere(strBaseDir, filter, items);
+}
+
+bool CVideoDatabase::GetSetsByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items)
 {
   try
   {
@@ -4327,21 +4336,17 @@ bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& ite
     CStdString strSQL;
     if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
     {
-      if (idContent == VIDEODB_CONTENT_MOVIES)
-        strSQL=PrepareSQL("select sets.idSet,sets.strSet,path.strPath,files.playCount from sets join setlinkmovie on sets.idSet=setlinkmovie.idSet join movie on setlinkMovie.idMovie = movie.idMovie join files on files.idFile=movie.idFile join path on path.idPath = files.idPath");
-      if (!where.empty())
-        strSQL += " WHERE (" + where + ")";
+      strSQL=PrepareSQL("SELECT sets.idSet,sets.strSet,path.strPath,files.playCount FROM sets JOIN setlinkmovie ON sets.idSet=setlinkmovie.idSet JOIN (SELECT idSet, COUNT(1) AS c FROM setlinkmovie GROUP BY idSet HAVING c>1) s2 ON s2.idSet=sets.idSet JOIN movie ON setlinkmovie.idMovie=movie.idMovie JOIN files ON files.idFile=movie.idFile JOIN path ON path.idPath=files.idPath ");
+      if (!filter.where.empty())
+        strSQL += " WHERE (" + filter.where + ")";
     }
     else
     {
       CStdString group;
-      if (idContent == VIDEODB_CONTENT_MOVIES)
-      {
-        strSQL=PrepareSQL("select sets.idSet,sets.strSet,count(1),count(files.playCount) from sets join setlinkmovie on sets.idSet=setlinkmovie.idSet join movie on setlinkmovie.idMovie=movie.idMovie join files on files.idFile=movie.idFile ");
-        group = " group by sets.idSet";
-      }
-      if (!where.empty())
-        strSQL += " WHERE (" + where + ")";
+      strSQL=PrepareSQL("SELECT sets.idSet,sets.strSet,COUNT(1) AS c,count(files.playCount) FROM sets JOIN setlinkmovie ON sets.idSet=setlinkmovie.idSet JOIN movie ON setlinkmovie.idMovie=movie.idMovie JOIN files ON files.idFile=movie.idFile ");
+      group = " GROUP BY sets.idSet HAVING c>1";
+      if (!filter.where.empty())
+        strSQL += " WHERE (" + filter.where + ")";
       strSQL += group;
     }
 
@@ -4358,10 +4363,7 @@ bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& ite
         int idSet = m_pDS->fv(0).get_asInt();
         CSetInfo set;
         set.name = m_pDS->fv(1).get_asString();
-        if (idContent == VIDEODB_CONTENT_MOVIES || idContent == VIDEODB_CONTENT_MUSICVIDEOS)
-          set.playcount = m_pDS->fv(3).get_asInt();
-        else
-          set.playcount = 0;
+        set.playcount = m_pDS->fv(3).get_asInt();
         it = mapSets.find(idSet);
         // was this set already found?
         if (it == mapSets.end())
@@ -4383,11 +4385,8 @@ bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& ite
         pItem->SetPath(strBaseDir + strDir);
         pItem->m_bIsFolder=true;
         pItem->GetVideoInfoTag()->m_strPath = pItem->GetPath();
-        if (idContent == VIDEODB_CONTENT_MOVIES || idContent == VIDEODB_CONTENT_MUSICVIDEOS)
-        {
-          pItem->GetVideoInfoTag()->m_playCount = it->second.playcount;
-          pItem->GetVideoInfoTag()->m_strTitle = pItem->GetLabel();
-        }
+        pItem->GetVideoInfoTag()->m_playCount = it->second.playcount;
+        pItem->GetVideoInfoTag()->m_strTitle = pItem->GetLabel();
         if (!items.Contains(pItem->GetPath()))
         {
           pItem->SetLabelPreformated(true);
@@ -4407,13 +4406,12 @@ bool CVideoDatabase::GetSetsNav(const CStdString& strBaseDir, CFileItemList& ite
         pItem->m_bIsFolder=true;
         pItem->GetVideoInfoTag()->m_strPath = pItem->GetPath();
         pItem->SetLabelPreformated(true);
-        if (idContent == VIDEODB_CONTENT_MOVIES || idContent==VIDEODB_CONTENT_MUSICVIDEOS)
-        {
-          // fv(3) is the number of videos watched, fv(2) is the total number.  We set the playcount
-          // only if the number of videos watched is equal to the total number (i.e. every video watched)
-          pItem->GetVideoInfoTag()->m_playCount = (m_pDS->fv(3).get_asInt() == m_pDS->fv(2).get_asInt()) ? 1 : 0;
-          pItem->GetVideoInfoTag()->m_strTitle = pItem->GetLabel();
-        }
+
+        // fv(3) is the number of videos watched, fv(2) is the total number.  We set the playcount
+        // only if the number of videos watched is equal to the total number (i.e. every video watched)
+        pItem->GetVideoInfoTag()->m_playCount = (m_pDS->fv(3).get_asInt() == m_pDS->fv(2).get_asInt()) ? 1 : 0;
+        pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, pItem->GetVideoInfoTag()->m_playCount > 0);
+        pItem->GetVideoInfoTag()->m_strTitle = pItem->GetLabel();
         bool thumb=false,fanart=false;
         if (CFile::Exists(pItem->GetCachedVideoThumb()))
         {
@@ -5140,17 +5138,17 @@ bool CVideoDatabase::GetMoviesByWhere(const CStdString& strBaseDir, const Filter
     if (fetchSets && g_guiSettings.GetBool("videolibrary.groupmoviesets"))
     {
       // not getting a set, so grab all sets that match this where clause first
-      CStdString setsWhere;
+      Filter setsFilter;
       if (!filter.where.empty() || !filter.join.empty())
       {
-        setsWhere = "movie.idMovie in (select movieview.idMovie from movieview ";
+        setsFilter.where = "movie.idMovie in (select movieview.idMovie from movieview ";
         if (!filter.join.empty())
-          setsWhere += filter.join;
+          setsFilter.where += filter.join;
         if (!filter.where.empty())
-          setsWhere += " WHERE " + filter.where;
-        setsWhere += ")";
+          setsFilter.where += " WHERE " + filter.where;
+        setsFilter.where += ")";
       }
-      GetSetsNav("videodb://1/7/", items, VIDEODB_CONTENT_MOVIES, setsWhere);
+      GetSetsByWhere("videodb://1/7/", setsFilter, items);
       CStdString movieSetsWhere = "movieview.idMovie NOT IN (SELECT idMovie FROM setlinkmovie s1 JOIN(SELECT idSet, COUNT(1) AS c FROM setlinkmovie GROUP BY idSet HAVING c>1) s2 ON s2.idSet=s1.idSet)";
       if (!filter.join.empty())
         strSQL += filter.join;
