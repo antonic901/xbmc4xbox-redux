@@ -121,6 +121,26 @@ public:
   bool GetSkinBool(int setting) const;
   void SetSkinBool(int setting, bool set);
 
+  /*! \brief Retreive the watched mode for the given content type
+   \param content Current content type
+   \return the current watch mode for this content type, WATCH_MODE_ALL if the content type is unknown.
+   \sa SetWatchMode, IncrementWatchMode
+   */
+  int GetWatchMode(const CStdString& content) const;
+
+  /*! \brief Set the watched mode for the given content type
+   \param content Current content type
+   \param value Watched mode to set
+   \sa GetWatchMode, IncrementWatchMode
+   */
+  void SetWatchMode(const CStdString& content, int value);
+
+  /*! \brief Cycle the watched mode for the given content type
+   \param content Current content type
+   \sa GetWatchMode, SetWatchMode
+   */
+  void CycleWatchMode(const CStdString& content);
+
   void ResetSkinSetting(const CStdString &setting);
   void ResetSkinSettings();
 
@@ -342,8 +362,6 @@ public:
   float m_fZoomAmount;      // current zoom amount
   float m_fPixelRatio;      // current pixel ratio
 
-  int m_iMyVideoWatchMode;
-
   bool m_bMyVideoPlaylistRepeat;
   bool m_bMyVideoPlaylistShuffle;
   bool m_bMyVideoNavFlatten;
@@ -562,6 +580,7 @@ protected:
 
 private:
   std::vector<CProfile> m_vecProfiles;
+  std::map<CStdString, int> m_watchMode;
   bool m_usingLoginScreen;
   unsigned int m_lastUsedProfile;
   unsigned int m_currentProfile;
