@@ -2065,7 +2065,11 @@ msgctxt "#575"
 msgid "In progress"
 msgstr ""
 
-#empty strings from id 576 to 579
+msgctxt "#576"
+msgid "Times played"
+msgstr ""
+
+#empty strings from id 577 to 579
 
 msgctxt "#580"
 msgid "Sort direction"
