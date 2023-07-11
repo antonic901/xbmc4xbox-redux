@@ -25,11 +25,18 @@
 #include "Database.h"
 #include "music/Album.h"
 #include "utils/StringUtils.h"
+#include "utils/SortUtils.h"
 
 struct SScraperInfo;
 
 class CArtist;
 class CFileItem;
+
+namespace dbiplus
+{
+  class field_value;
+  typedef std::vector<field_value> sql_record;
+}
 
 #include <set>
 
@@ -169,6 +176,9 @@ public:
   int GetSongsCount(const CStdString& strWhere = "");
   unsigned int GetSongIDs(const CStdString& strWhere, std::vector<std::pair<int,int> > &songIDs);
 
+  bool GetSortedAlbums(const CStdString& strBaseDir, const SortDescription &sortDescription, CFileItemList& items, const CStdString &where = "");
+  bool GetSortedSongs(const CStdString& strBaseDir, const SortDescription &sortDescription, CFileItemList& items, const CStdString &where = "");
+
   bool GetAlbumPath(int idAlbum, CStdString &path);
   bool SaveAlbumThumb(int idAlbum, const CStdString &thumb);
   bool GetAlbumThumb(int idAlbum, CStdString &thumb);
@@ -224,7 +234,9 @@ private:
   CSong GetSongFromDataset(bool bWithMusicDbPath=false);
   CArtist GetArtistFromDataset(dbiplus::Dataset* pDS, bool needThumb=true);
   CAlbum GetAlbumFromDataset(dbiplus::Dataset* pDS, bool imageURL=false);
+  CAlbum GetAlbumFromDataset(const dbiplus::sql_record* const record, bool imageURL=false);
   void GetFileItemFromDataset(CFileItem* item, const CStdString& strMusicDBbasePath);
+  void GetFileItemFromDataset(const dbiplus::sql_record* const record, CFileItem* item, const CStdString& strMusicDBbasePath);
   bool CleanupSongs();
   bool CleanupSongsByIds(const CStdString &strSongIds);
   bool CleanupPaths();
