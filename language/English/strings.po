@@ -7412,6 +7412,10 @@ msgctxt "#20456"
 msgid "Set movieset fanart"
 msgstr ""
 
+msgctxt "#20457"
+msgid "Movie set"
+msgstr ""
+
 #empty string with id 20457
 
 msgctxt "#20458"
