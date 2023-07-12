@@ -37,6 +37,7 @@ CDatabase::CDatabase(void)
 {
   m_bOpen = false;
   m_iRefCount = 0;
+  m_sqlite = true;
   m_bMultiWrite = false;
 }
 
@@ -314,8 +315,7 @@ bool CDatabase::Open(DatabaseSettings &dbSettings)
   // test if db already exists, if not we need to create the tables
   if (!m_pDB->exists())
   {
-    CreateTables();
-    if (m_sqlite)
+    if (dbSettings.type.Equals("sqlite3"))
     {
       //  all fatx formatted partitions, except the utility drive,
       //  have a cluster size of 16k. To gain better performance
@@ -327,6 +327,7 @@ bool CDatabase::Open(DatabaseSettings &dbSettings)
       //  Also set the memory cache size to 16k
       m_pDS->exec("PRAGMA default_cache_size=16384\n");
     }
+    CreateTables();
   }
 
   // Mark our db as open here to make our destructor to properly close the file handle
