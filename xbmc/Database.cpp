@@ -236,8 +236,10 @@ bool CDatabase::Open()
   return Open(db_fallback);
 }
 
-bool CDatabase::Open(DatabaseSettings &dbSettings)
+bool CDatabase::Open(const DatabaseSettings &settings)
 {
+  // take a copy - we're gonna be messing with it and we don't want to touch the original
+  DatabaseSettings dbSettings = settings;
   if (IsOpen())
   {
     m_iRefCount++;
@@ -274,7 +276,7 @@ bool CDatabase::Open(DatabaseSettings &dbSettings)
   return false;
 }
 
-bool CDatabase::Connect(DatabaseSettings &dbSettings, bool create)
+bool CDatabase::Connect(const DatabaseSettings &dbSettings, bool create)
 {
   // create the appropriate database structure
   if (dbSettings.type.Equals("sqlite3"))
