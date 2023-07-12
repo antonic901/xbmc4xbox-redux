@@ -167,7 +167,7 @@ const char *SqliteDatabase::getErrorMsg() {
    return error.c_str();
 }
 
-int SqliteDatabase::connect() {
+int SqliteDatabase::connect(bool create) {
   if (host.empty() || db.empty())
     return DB_CONNECTION_NONE;
 
@@ -206,6 +206,11 @@ int SqliteDatabase::connect() {
   {
     disconnect();
     if (sqlite3_open(db_fullpath.c_str(), &conn)==SQLITE_OK)
+    // TODO: sqLite 3.5 added sqlite3_open_v2 function. Try porting it and then uncomment this code
+    /*int flags = SQLITE_OPEN_READWRITE;
+    if (create)
+      flags |= SQLITE_OPEN_CREATE;
+    if (sqlite3_open_v2(db_fullpath.c_str(), &conn, flags, NULL)==SQLITE_OK)*/
     {
       sqlite3_busy_handler(conn, busy_callback, NULL);
       char* err=NULL;
@@ -251,7 +256,7 @@ void SqliteDatabase::disconnect(void) {
 }
 
 int SqliteDatabase::create() {
-  return connect();
+  return connect(true);
 }
 
 int SqliteDatabase::drop() {

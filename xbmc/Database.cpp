@@ -306,7 +306,7 @@ bool CDatabase::Open(DatabaseSettings &dbSettings)
   CLog::Log(LOGDEBUG, "CDatabase: Connecting to database %s at %s:%s",
             dbSettings.name.c_str(), dbSettings.host.c_str(), dbSettings.port.c_str());
 
-  if (m_pDB->connect() != DB_CONNECTION_OK)
+  if (m_pDB->connect(true) != DB_CONNECTION_OK)
   {
     CLog::Log(LOGERROR, "Unable to open database at host: %s db: %s (old version?)", dbSettings.host.c_str(), dbSettings.name.c_str());
     return false;
