@@ -131,6 +131,7 @@ protected:
   std::auto_ptr<dbiplus::Dataset> m_pDS2;
 
 private:
+  bool Connect(DatabaseSettings &db, bool create);
   bool UpdateVersionNumber();
 
   bool m_bMultiWrite; /*!< True if there are any queries in the queue, false otherwise */
