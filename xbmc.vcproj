@@ -1100,9 +1100,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Sntp.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\SortFileItem.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\SortUtils.cpp">
 				</File>
 				<File

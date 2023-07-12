@@ -63,7 +63,7 @@ CGUIViewStateWindowVideoFiles::CGUIViewStateWindowVideoFiles(const CFileItemList
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
-    SetSortOrder(SORT_ORDER_ASC);
+    SetSortOrder(SortOrderAscending);
   }
   else
   {
@@ -110,7 +110,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
-    SetSortOrder(SORT_ORDER_NONE);
+    SetSortOrder(SortOrderNone);
   }
   else if (items.IsVideoDb())
   {
@@ -131,7 +131,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
 
         SetViewAsControl(DEFAULT_VIEW_LIST);
 
-        SetSortOrder(SORT_ORDER_NONE);
+        SetSortOrder(SortOrderNone);
       }
       break;
     case NODE_TYPE_DIRECTOR:
@@ -257,7 +257,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
         SetSortMethod(SORT_METHOD_NONE);
 
         SetViewAsControl(g_settings.m_viewStateVideoNavEpisodes.m_viewMode);
-        SetSortOrder(SORT_ORDER_NONE);
+        SetSortOrder(SortOrderNone);
 
         break;
       }
@@ -331,7 +331,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
 
         SetViewAsControl(g_settings.m_viewStateVideoNavTitles.m_viewMode);
 
-        SetSortOrder(SORT_ORDER_NONE);
+        SetSortOrder(SortOrderNone);
       }
       break;
     case NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS:
@@ -341,7 +341,7 @@ CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& it
 
         SetViewAsControl(g_settings.m_viewStateVideoNavMusicVideos.m_viewMode);
 
-        SetSortOrder(SORT_ORDER_NONE);
+        SetSortOrder(SortOrderNone);
       }
       break;
     default:
@@ -458,7 +458,7 @@ CGUIViewStateWindowVideoPlaylist::CGUIViewStateWindowVideoPlaylist(const CFileIt
 
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
-  SetSortOrder(SORT_ORDER_NONE);
+  SetSortOrder(SortOrderNone);
 
   LoadViewState(items.GetPath(), WINDOW_VIDEO_PLAYLIST);
 }

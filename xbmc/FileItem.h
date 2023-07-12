@@ -27,6 +27,7 @@
 #include "GUIListItem.h"
 #include "utils/Archive.h"
 #include "utils/ISerializable.h"
+#include "utils/ISortable.h"
 #include "XBDateTime.h"
 #include "SortFileItem.h"
 #include "utils/LabelFormatter.h"
@@ -61,7 +62,7 @@ class CMediaSource;
   \sa CFileItemList
   */
 class CFileItem :
-  public CGUIListItem, public IArchivable, public ISerializable
+  public CGUIListItem, public IArchivable, public ISerializable, public ISortable
 {
 public:
   CFileItem(void);
@@ -85,6 +86,7 @@ public:
   const CFileItem& operator=(const CFileItem& item);
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value);
+  virtual void ToSortable(SortItem &sortable);
   virtual bool IsFileItem() const { return true; };
 
   bool Exists(bool bUseCache = true) const;
@@ -153,9 +155,9 @@ public:
   VIDEODB_CONTENT_TYPE GetVideoContentType() const;
   bool IsLabelPreformated() const { return m_bLabelPreformated; }
   void SetLabelPreformated(bool bYesNo) { m_bLabelPreformated=bYesNo; }
-  bool SortsOnTop() const { return m_specialSort == SORT_ON_TOP; }
-  bool SortsOnBottom() const { return m_specialSort == SORT_ON_BOTTOM; }
-  void SetSpecialSort(SPECIAL_SORT sort) { m_specialSort = sort; }
+  bool SortsOnTop() const { return m_specialSort == SortSpecialOnTop; }
+  bool SortsOnBottom() const { return m_specialSort == SortSpecialOnBottom; }
+  void SetSpecialSort(SortSpecial sort) { m_specialSort = sort; }
 
   inline bool HasMusicInfoTag() const
   {
@@ -306,7 +308,7 @@ public:
 private:
   CStdString m_strPath;            ///< complete path to item
 
-  SPECIAL_SORT m_specialSort;
+  SortSpecial m_specialSort;
   bool m_bIsParentFolder;
   bool m_bCanQueue;
   bool m_bLabelPreformated;
@@ -389,7 +391,7 @@ public:
   void Assign(const CFileItemList& itemlist, bool append = false);
   bool Copy  (const CFileItemList& item);
   void Reserve(int iCount);
-  void Sort(SORT_METHOD sortMethod, SORT_ORDER sortOrder);
+  void Sort(SORT_METHOD sortMethod, SortOrder sortOrder);
   void Randomize();
   void SetMusicThumbs();
   void FillInDefaultIcons();
@@ -403,7 +405,7 @@ public:
   bool Contains(const CStdString& fileName) const;
   bool GetFastLookup() const { return m_fastLookup; };
   void Stack();
-  SORT_ORDER GetSortOrder() const { return m_sortOrder; }
+  SortOrder GetSortOrder() const { return m_sortOrder; }
   SORT_METHOD GetSortMethod() const { return m_sortMethod; }
   /*! \brief load a CFileItemList out of the cache
 
@@ -484,7 +486,7 @@ private:
   MAPFILEITEMS m_map;
   bool m_fastLookup;
   SORT_METHOD m_sortMethod;
-  SORT_ORDER m_sortOrder;
+  SortOrder m_sortOrder;
   bool m_sortIgnoreFolders;
   CACHE_TYPE m_cacheToDisc;
   bool m_replaceListing;

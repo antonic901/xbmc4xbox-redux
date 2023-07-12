@@ -563,7 +563,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
       if (items.Size() < 4 || pItem->IsCBR() || pItem->IsCBZ())
       { // less than 4 items, so just grab the first thumb
         CStdString folderThumb(pItem->GetCachedPictureThumb());
-        items.Sort(SORT_METHOD_LABEL, SORT_ORDER_ASC);
+        items.Sort(SORT_METHOD_LABEL, SortOrderAscending);
         CPicture pic;
         pic.CreateThumbnail(items[0]->GetPath(), folderThumb);
       }

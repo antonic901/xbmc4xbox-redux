@@ -783,7 +783,7 @@ int CGUIWindowSlideShow::CurrentSlide() const
 
 void CGUIWindowSlideShow::AddFromPath(const CStdString &strPath,
                                       bool bRecursive, 
-                                      SORT_METHOD method, SORT_ORDER order)
+                                      SORT_METHOD method, SortOrder order)
 {
   if (strPath!="")
   {
@@ -799,7 +799,7 @@ void CGUIWindowSlideShow::AddFromPath(const CStdString &strPath,
   }
 }
 
-void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursive /* = false */, bool bRandom /* = false */, bool bNotRandom /* = false */, SORT_METHOD method /* = SORT_METHOD_LABEL */, SORT_ORDER order /* = SORT_ORDER_ASC */)
+void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursive /* = false */, bool bRandom /* = false */, bool bNotRandom /* = false */, SORT_METHOD method /* = SORT_METHOD_LABEL */, SortOrder order /* = SortOrderAscending */)
 {
   // stop any video
   if (g_application.IsPlayingVideo())
@@ -821,7 +821,7 @@ void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath, bool bRecursiv
     g_windowManager.ActivateWindow(WINDOW_SLIDESHOW);
 }
 
-void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursivePaths, SORT_METHOD method, SORT_ORDER order)
+void CGUIWindowSlideShow::AddItems(const CStdString &strPath, path_set *recursivePaths, SORT_METHOD method, SortOrder order)
 {
   // check whether we've already added this path
   if (recursivePaths)

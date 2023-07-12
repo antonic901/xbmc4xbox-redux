@@ -133,7 +133,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_TOP100:
@@ -143,7 +143,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_GENRE:
@@ -153,7 +153,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
-      SetSortOrder(SORT_ORDER_ASC);
+      SetSortOrder(SortOrderAscending);
     }
     break;
   case NODE_TYPE_YEAR:
@@ -163,7 +163,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
-      SetSortOrder(SORT_ORDER_ASC);
+      SetSortOrder(SortOrderAscending);
     }
     break;
   case NODE_TYPE_ARTIST:
@@ -217,7 +217,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
@@ -227,7 +227,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
@@ -237,7 +237,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
@@ -247,7 +247,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_ALBUM_TOP100:
@@ -257,7 +257,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   case NODE_TYPE_SINGLES:
@@ -328,7 +328,7 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
 
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
-      SetSortOrder(SORT_ORDER_NONE);
+      SetSortOrder(SortOrderNone);
     }
     break;
   default:
@@ -495,7 +495,7 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
-    SetSortOrder(SORT_ORDER_NONE);
+    SetSortOrder(SortOrderNone);
   }
   else
   {
@@ -537,7 +537,7 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
     }
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
-    SetSortOrder(SORT_ORDER_ASC);
+    SetSortOrder(SortOrderAscending);
   }
   LoadViewState(items.GetPath(), WINDOW_MUSIC_NAV);
 }
@@ -628,7 +628,7 @@ CGUIViewStateWindowMusicSongs::CGUIViewStateWindowMusicSongs(const CFileItemList
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
-    SetSortOrder(SORT_ORDER_ASC);
+    SetSortOrder(SortOrderAscending);
   }
   else if (items.GetPath() == "special://musicplaylists/")
   { // playlists list sorts by label only, ignoring folders
@@ -688,7 +688,7 @@ CGUIViewStateWindowMusicPlaylist::CGUIViewStateWindowMusicPlaylist(const CFileIt
 
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
-  SetSortOrder(SORT_ORDER_NONE);
+  SetSortOrder(SortOrderNone);
 
   LoadViewState(items.GetPath(), WINDOW_MUSIC_PLAYLIST);
 }
@@ -742,7 +742,7 @@ CGUIViewStateMusicShoutcast::CGUIViewStateMusicShoutcast(const CFileItemList& it
   { /* genre list */
     AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%K", "", "%K", ""));  // Title, nothing | Title, nothing
     SetSortMethod(SORT_METHOD_LABEL);
-    SetSortOrder(SORT_ORDER_ASC); /* maybe we should have this stored somewhere */
+    SetSortOrder(SortOrderAscending); /* maybe we should have this stored somewhere */
   }
 
   SetViewAsControl(DEFAULT_VIEW_LIST);

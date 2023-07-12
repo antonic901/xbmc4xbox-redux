@@ -41,7 +41,7 @@ CGUIViewStateWindowGameSaves::CGUIViewStateWindowGameSaves(const CFileItemList& 
 
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
-  SetSortOrder(SORT_ORDER_ASC);
+  SetSortOrder(SortOrderAscending);
   LoadViewState(items.GetPath(), WINDOW_GAMESAVES);
 }
 

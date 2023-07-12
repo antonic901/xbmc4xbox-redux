@@ -25,6 +25,7 @@
 #include "utils/CharsetConverter.h"
 #include "GUIInfoManager.h"
 #include "utils/TimeUtils.h"
+#include "utils/SortUtils.h"
 #include "XMLUtils.h"
 #include "SkinInfo.h"
 #include "FileItem.h"
@@ -467,7 +468,7 @@ void CGUIBaseContainer::OnJumpLetter(char letter, bool skip /*=false*/)
   do
   {
     CGUIListItemPtr item = m_items[i];
-    if (0 == strnicmp(SSortFileItem::RemoveArticles(item->GetLabel()).c_str(), m_match.c_str(), m_match.size()))
+    if (0 == strnicmp(SortUtils::RemoveArticles(item->GetLabel()).c_str(), m_match.c_str(), m_match.size()))
     {
       SelectItem(i);
       return;
