@@ -122,7 +122,7 @@ protected:
 
   bool m_bOpen;
   CStdString m_strDatabaseFile;
-  bool m_compressible; ///< \brief whether this database is compressible (defaults to false)
+  bool m_sqlite; ///< \brief whether we use sqlite (defaults to true)
   
   std::auto_ptr<dbiplus::Database> m_pDB;
   std::auto_ptr<dbiplus::Dataset> m_pDS;
