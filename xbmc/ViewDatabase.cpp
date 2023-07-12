@@ -20,13 +20,14 @@
 
 #include "ViewDatabase.h"
 #include "utils/URIUtils.h"
+#include "FileSystem/SpecialProtocol.h"
+#include "settings/Settings.h"
 #include "ViewState.h"
 #include "utils/log.h"
 
 //********************************************************************************************************************************
 CViewDatabase::CViewDatabase(void)
 {
-  m_strDatabaseFile = VIEW_DATABASE_NAME;
 }
 
 //********************************************************************************************************************************
@@ -36,6 +37,11 @@ CViewDatabase::~CViewDatabase(void)
 }
 
 //********************************************************************************************************************************
+bool CViewDatabase::Open()
+{
+  return CDatabase::Open();
+}
+
 bool CViewDatabase::CreateTables()
 {
   try

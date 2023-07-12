@@ -359,6 +359,7 @@ public:
   CVideoDatabase(void);
   virtual ~CVideoDatabase(void);
 
+  virtual bool Open();
   virtual bool CommitTransaction();
 
   int AddMovie(const CStdString& strFilenameAndPath);

@@ -25,6 +25,16 @@
 #include "utils/StdString.h"
 #include "utils/StringUtils.h"
 
+struct DatabaseSettings
+{
+  CStdString type;
+  CStdString host;
+  CStdString port;
+  CStdString user;
+  CStdString pass;
+  CStdString name;
+};
+
 struct TVShowRegexp
 {
   bool byDate;
@@ -219,6 +229,9 @@ class CAdvancedSettings
     int m_bgInfoLoaderMaxThreads;
     
     void SetDebugMode(bool debug);
+
+    DatabaseSettings m_databaseMusic; // advanced music database setup
+    DatabaseSettings m_databaseVideo; // advanced video database setup
 };
 
 extern CAdvancedSettings g_advancedSettings;

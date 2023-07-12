@@ -32,6 +32,7 @@
 #include "GUIWindowManager.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
+#include "FileSystem/SpecialProtocol.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileItem.h"
@@ -60,6 +61,11 @@ CVideoDatabase::~CVideoDatabase(void)
 {}
 
 //********************************************************************************************************************************
+bool CVideoDatabase::Open()
+{
+  return CDatabase::Open(g_advancedSettings.m_databaseVideo);
+}
+
 bool CVideoDatabase::CreateTables()
 {
   /* indexes should be added on any columns that are used in in  */

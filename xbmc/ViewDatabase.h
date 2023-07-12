@@ -20,8 +20,6 @@
  */
 #include "Database.h"
 
-#define VIEW_DATABASE_NAME "ViewModes.db"
-
 class CViewState;
 
 class CViewDatabase : public CDatabase
@@ -29,6 +27,7 @@ class CViewDatabase : public CDatabase
 public:
   CViewDatabase(void);
   virtual ~CViewDatabase(void);
+  virtual bool Open();
 
   bool GetViewState(const CStdString &path, int windowID, CViewState &state);
   bool SetViewState(const CStdString &path, int windowID, const CViewState &state);
@@ -38,4 +37,5 @@ protected:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
   virtual int GetMinVersion() const { return 3; };
+  const char *GetDefaultDBName() const { return "ViewModes"; };
 };
