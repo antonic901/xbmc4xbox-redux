@@ -1132,7 +1132,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           button != CONTEXT_BUTTON_SET_PLUGIN_THUMB)
       {
         if (button == CONTEXT_BUTTON_SET_SEASON_THUMB)
-          m_database.GetTvShowInfo("",tag,m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iDbId);
+          m_database.GetTvShowInfo("",tag,m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iIdShow);
         else
           tag = *m_vecItems->Get(itemNumber)->GetVideoInfoTag();
         for (vector<CScraperUrl::SUrlEntry>::iterator iter=tag.m_strPictureURL.m_url.begin();iter != tag.m_strPictureURL.m_url.end();++iter)
