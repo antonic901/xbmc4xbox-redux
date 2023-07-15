@@ -200,15 +200,11 @@ const CFileItemList& CGUIDialogSelect::GetSelectedItems() const
   return *m_selectedItems;
 }
 
-void CGUIDialogSelect::EnableButton(bool bOnOff)
+void CGUIDialogSelect::EnableButton(bool enable, int string)
 {
-  m_bButtonEnabled = bOnOff;
-}
-
-void CGUIDialogSelect::SetButtonLabel(int iString)
-{
+  m_bButtonEnabled = enable;
   CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), CONTROL_BUTTON);
-  msg.SetLabel(iString);
+  msg.SetLabel(string);
   OnMessage(msg);
 }
 

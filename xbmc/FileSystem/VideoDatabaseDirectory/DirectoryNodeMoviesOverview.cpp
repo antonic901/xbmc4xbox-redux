@@ -35,6 +35,7 @@ Node MovieChildren[] = {
                         { NODE_TYPE_STUDIO,       6, 20388 },
                         { NODE_TYPE_SETS,         7, 20434 },
                         { NODE_TYPE_COUNTRY,      8, 20451 },
+                        { NODE_TYPE_TAGS,         9, 20459 }
                        };
 
 CDirectoryNodeMoviesOverview::CDirectoryNodeMoviesOverview(const CStdString& strName, CDirectoryNode* pParent)

@@ -38,6 +38,7 @@ CQueryParams::CQueryParams()
   m_idMVideo = -1;
   m_idAlbum = -1;
   m_idSet = -1;
+  m_idTag = -1;
 }
 
 void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeName)
@@ -90,6 +91,9 @@ void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeNa
     break;
   case NODE_TYPE_SETS:
     m_idSet = idDb;
+    break;
+  case NODE_TYPE_TAGS:
+    m_idTag = idDb;
     break;
   default:
     break;

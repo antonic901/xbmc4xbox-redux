@@ -2571,6 +2571,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeStudio.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeTags.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeTags.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory\DirectoryNodeTitleMovies.cpp">
 					</File>
 					<File

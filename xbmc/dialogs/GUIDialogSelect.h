@@ -45,8 +45,7 @@ public:
   const CStdString& GetSelectedLabelText();
   const CFileItemPtr GetSelectedItem();
   const CFileItemList& GetSelectedItems() const;
-  void EnableButton(bool bOnOff);
-  void SetButtonLabel(int iString);
+  void EnableButton(bool enable, int string);
   bool IsButtonPressed();
   void Sort(bool bSortOrder = true);
   void SetSelected(int iSelected);

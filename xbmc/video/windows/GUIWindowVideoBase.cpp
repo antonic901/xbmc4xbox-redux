@@ -608,8 +608,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
           pDlgSelect->Reset();
           for (unsigned int i = 0; i < movielist.size(); ++i)
             pDlgSelect->Add(movielist[i].strTitle);
-          pDlgSelect->EnableButton(true);
-          pDlgSelect->SetButtonLabel(413); // manual
+          pDlgSelect->EnableButton(true, 413); // manual
           pDlgSelect->DoModal();
 
           // and wait till user selects one
@@ -1108,7 +1107,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
           buttons.Add(CONTEXT_BUTTON_PLAY_PART, 20324);
       }
 
-        if (!m_vecItems->GetPath().IsEmpty() && !item->GetPath().Left(19).Equals("newsmartplaylist://")
+        if (!m_vecItems->GetPath().IsEmpty() && !item->GetPath().Left(19).Equals("newsmartplaylist://") && !item->GetPath().Left(9).Equals("newtag://")
             && !m_vecItems->GetPath().Left(10).Equals("sources://"))
       {
         buttons.Add(CONTEXT_BUTTON_QUEUE_ITEM, 13347);      // Add to Playlist
@@ -1780,8 +1779,7 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
     if (!CDirectory::GetDirectory("videodb://1/1/", items))
       return;
     pSelect->SetItems(&items);
-    pSelect->EnableButton(true);
-    pSelect->SetButtonLabel(531); // New Genre
+    pSelect->EnableButton(true, 531); // New Genre
     pSelect->DoModal();
     CStdString strGenre;
     int iSelected = pSelect->GetSelectedLabel();
