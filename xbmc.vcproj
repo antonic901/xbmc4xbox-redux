@@ -1178,6 +1178,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\URL.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\UrlOptions.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\Util.cpp">
 				</File>
 				<File
@@ -3417,6 +3420,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\URL.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\UrlOptions.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\Util.h">
