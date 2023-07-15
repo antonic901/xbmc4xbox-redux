@@ -133,10 +133,10 @@ void CGUIButtonControl::RenderText()
 
   // render the second label if it exists
   CStdString label2(m_info2.GetLabel(m_parentID));
+  m_label2.SetMaxRect(m_posX, m_posY, GetWidth(), m_height);
+  m_label2.SetText(label2);
   if (!label2.IsEmpty())
   {
-    m_label2.SetMaxRect(m_posX, m_posY, GetWidth(), m_height);
-    m_label2.SetText(label2);
     m_label2.SetAlign(XBFONT_RIGHT | (m_label.GetLabelInfo().align & XBFONT_CENTER_Y) | XBFONT_TRUNCATED);
     m_label2.SetScrolling(HasFocus());
 
