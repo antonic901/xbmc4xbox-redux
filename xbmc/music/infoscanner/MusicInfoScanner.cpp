@@ -957,7 +957,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
           m_musicDatabase.Close();
           return DownloadAlbumInfo(strPath,strNewArtist,strNewAlbum,bCanceled,albumInfo,pDialog);
         }
-        iSelectedAlbum = pDlg->GetSelectedItem().m_idepth;
+        iSelectedAlbum = pDlg->GetSelectedItem()->m_idepth;
       }
     }
 
@@ -1137,7 +1137,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
             m_musicDatabase.Close();
             return DownloadArtistInfo(strPath,strNewArtist,bCanceled,pDialog);
           }
-          iSelectedArtist = pDlg->GetSelectedItem().m_idepth;
+          iSelectedArtist = pDlg->GetSelectedItem()->m_idepth;
         }
       }
     }
