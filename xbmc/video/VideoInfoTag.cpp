@@ -50,6 +50,7 @@ void CVideoInfoTag::Reset()
   m_cast.clear();
   m_set.clear();
   m_setId.clear();
+  m_tags.clear();
   m_strFile = "";
   m_strPath = "";
   m_strIMDBNumber = "";
@@ -161,6 +162,7 @@ bool CVideoInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePathIn
   XMLUtils::SetStringArray(movie, "genre", m_genre);
   XMLUtils::SetStringArray(movie, "country", m_country);
   XMLUtils::SetStringArray(movie, "set", m_set);
+  XMLUtils::SetStringArray(movie, "tag", m_tags);
   XMLUtils::SetStringArray(movie, "credits", m_writingCredits);
   XMLUtils::SetStringArray(movie, "director", m_director);
   XMLUtils::SetDate(movie, "premiered", m_premiered);
@@ -276,6 +278,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     
     ar << m_set;
     ar << m_setId;
+    ar << m_tags;
     ar << m_strRuntime;
     ar << m_strFile;
     ar << m_strPath;
@@ -351,6 +354,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     
     ar >> m_set;
     ar >> m_setId;
+    ar >> m_tags;
     ar >> m_strRuntime;
     ar >> m_strFile;
     ar >> m_strPath;
@@ -422,6 +426,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["setid"] = CVariant(CVariant::VariantTypeArray);
   for (unsigned int i = 0; i < m_setId.size(); i++)
     value["setid"].push_back(m_setId[i]);
+  value["tags"] = m_tags;
   value["runtime"] = m_strRuntime;
   value["file"] = m_strFile;
   value["path"] = m_strPath;
@@ -612,6 +617,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie)
   }
 
   XMLUtils::GetStringArray(movie, "set", m_set);
+  XMLUtils::GetStringArray(movie, "tag", m_tags);
   XMLUtils::GetStringArray(movie, "studio", m_studio);
   // artists
   node = movie->FirstChildElement("artist");
