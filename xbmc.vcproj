@@ -404,6 +404,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\CueDocument.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\DbUrl.cpp">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\EventClient.cpp">
 			</File>
 			<File
@@ -2967,6 +2970,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DatabaseUtils.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\DbUrl.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DelayController.h">
