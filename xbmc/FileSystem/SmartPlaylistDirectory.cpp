@@ -69,7 +69,7 @@ namespace XFILE
       if (db.Open())
       {
         MediaType mediaType = DatabaseUtils::MediaTypeFromString(playlist.GetType());
-        CVideoDatabase::Filter filter;
+        CDatabase::Filter filter;
         filter.where = playlist.GetWhereClause(db, playlists);
 
         CStdString strBaseDir;
@@ -133,7 +133,7 @@ namespace XFILE
       CVideoDatabase db;
       if (db.Open())
       {
-        CVideoDatabase::Filter filter;
+        CDatabase::Filter filter;
         if (playlist.GetType().Equals("mixed"))
         {
           CSmartPlaylist mvidPlaylist(playlist);
