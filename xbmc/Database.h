@@ -19,12 +19,13 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#include <map>
+#include <memory>
 
+#include "utils/CriticalSection.h"
 #include "utils/StdString.h"
 // #include "lib/sqLite/mysqldataset.h"
 #include "lib/sqLite/sqlitedataset.h"
-
-#include <memory>
 
 struct DatabaseSettings; // forward
 
@@ -137,4 +138,7 @@ private:
   bool m_bMultiWrite; /*!< True if there are any queries in the queue, false otherwise */
 
   int m_iRefCount;
+
+  CCriticalSection m_critSect;
+  static std::map<std::string, bool> m_updated;
 };

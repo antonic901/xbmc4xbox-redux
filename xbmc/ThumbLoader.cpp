@@ -135,13 +135,25 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
       pItem->SetProperty("fanart_image",pItem->GetCachedFanart());
   }
 
-  if (pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds == 0)
+  if (pItem->HasVideoInfoTag() &&
+      pItem->GetVideoInfoTag()->m_resumePoint.type != CBookmark::RESUME && pItem->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds == 0)
   {
     CVideoDatabase db;
     db.Open();
     db.GetResumePoint(*pItem->GetVideoInfoTag());
     db.Close();
   }
+
+  if (pItem->HasVideoInfoTag() && !pItem->GetVideoInfoTag()->HasStreamDetails() &&
+     (pItem->GetVideoInfoTag()->m_type == "movie" || pItem->GetVideoInfoTag()->m_type == "episode" || pItem->GetVideoInfoTag()->m_type == "musicvideo"))
+  {
+    CVideoDatabase db;
+    db.Open();
+    if (db.GetStreamDetails(*pItem->GetVideoInfoTag()))
+      pItem->SetInvalid();
+    db.Close();
+  }
+  
   return true;
 }
 

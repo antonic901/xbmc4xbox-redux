@@ -85,6 +85,7 @@ void CVideoInfoTag::Reset()
   m_resumePoint.Reset();
   m_resumePoint.type = CBookmark::RESUME;
   m_iIdShow = -1;
+  m_iIdSeason = -1;
   m_strShowPath.clear();
   m_dateAdded.Reset();
   m_type.clear();
@@ -314,6 +315,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar << m_strShowPath;
     ar << m_dateAdded.GetAsDBDateTime();
     ar << m_type;
+    ar << m_iIdSeason;
   }
   else
   {
@@ -391,6 +393,7 @@ void CVideoInfoTag::Archive(CArchive& ar)
     ar >> dateAdded;
     m_dateAdded.SetFromDBDateTime(dateAdded);
     ar >> m_type;
+    ar >> m_iIdSeason;
   }
 }
 
@@ -453,6 +456,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["tvshowpath"] = m_strShowPath;
   value["dateadded"] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : "";
   value["type"] = m_type;
+  value["seasonid"] = m_iIdSeason;
 }
 
 void CVideoInfoTag::ToSortable(SortItem& sortable)

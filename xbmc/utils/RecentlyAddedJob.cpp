@@ -96,10 +96,11 @@ bool CRecentlyAddedJob::UpdateVideo()
   }
  
   i = 0;
-  CFileItemList  TVShowItems; 
- 
+  CFileItemList  TVShowItems;
+
   if (videodatabase.GetRecentlyAddedEpisodesNav("videodb://1/", TVShowItems, NUM_ITEMS))
-  {  
+  {
+    std::map<int, std::string> showThumbs; 
     for (; i < TVShowItems.Size(); ++i)
     {    
       CFileItemPtr item          = TVShowItems.Get(i);
@@ -199,13 +200,17 @@ bool CRecentlyAddedJob::UpdateMusic()
   int            i = 0;
   CFileItemList  musicItems;
   CMusicDatabase musicdatabase;
+  CThumbLoader loader;
   
   musicdatabase.Open();
   
   if (musicdatabase.GetRecentlyAddedAlbumSongs("musicdb://", musicItems, NUM_ITEMS))
-  { 
+  {
+    long idAlbum = -1;
+    CStdString strAlbumThumb;
+    CStdString strAlbumFanart;
     for (; i < musicItems.Size(); ++i)
-    {  
+    {
       CFileItemPtr item = musicItems.Get(i);
       CStdString   value;
       value.Format("%i", i + 1);
@@ -215,9 +220,18 @@ bool CRecentlyAddedJob::UpdateMusic()
       CStdString   strAlbum  = item->GetMusicInfoTag()->GetAlbum();
       CStdString   strArtist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
       
-      long idAlbum = musicdatabase.GetAlbumByName(strAlbum,strArtist);
-      if (idAlbum != -1)
-        musicdatabase.GetAlbumThumb(idAlbum,strThumb);
+      if (idAlbum != item->GetMusicInfoTag()->GetAlbumId())
+      {
+        strAlbumThumb.clear();
+        strAlbumFanart.clear();
+        idAlbum = item->GetMusicInfoTag()->GetAlbumId();
+
+        if (loader.LoadItem(item.get()))
+        {
+          strAlbumThumb = item->GetThumbnailImage();
+          strAlbumFanart = item->GetProperty("fanart_image").asString();
+        }
+      }
       
       strRating.Format("%c", item->GetMusicInfoTag()->GetRating());
       
@@ -227,8 +241,8 @@ bool CRecentlyAddedJob::UpdateMusic()
       home->SetProperty("LatestSong." + value + ".Album"   , strAlbum);
       home->SetProperty("LatestSong." + value + ".Rating"  , strRating);
       home->SetProperty("LatestSong." + value + ".Path"    , item->GetMusicInfoTag()->GetURL());
-      home->SetProperty("LatestSong." + value + ".Thumb"   , strThumb);
-      home->SetProperty("LatestSong." + value + ".Fanart"  , item->GetCachedFanart());
+      home->SetProperty("LatestSong." + value + ".Thumb"   , strAlbumThumb);
+      home->SetProperty("LatestSong." + value + ".Fanart"  , strAlbumFanart);
     }
   }
   for (; i < NUM_ITEMS; ++i)
@@ -266,10 +280,10 @@ bool CRecentlyAddedJob::UpdateMusic()
       
       CStdString strArtist = musicdatabase.GetSingleValue("albumview", "strArtist", strSQLAlbum);
       
-      home->SetProperty("LatestAlbum." + value + ".Title"   , musicdatabase.GetAlbumById(album.idAlbum));
-      home->SetProperty("LatestAlbum." + value + ".Year"    , atoi(musicdatabase.GetSingleValue("album", "iYear", strSQLAlbum)));
+      home->SetProperty("LatestAlbum." + value + ".Title"   , album.strAlbum);
+      home->SetProperty("LatestAlbum." + value + ".Year"    , album.iYear);
       home->SetProperty("LatestAlbum." + value + ".Artist"  , strArtist);      
-      home->SetProperty("LatestAlbum." + value + ".Rating"  , musicdatabase.GetSingleValue("albumview", "iRating", strSQLAlbum));
+      home->SetProperty("LatestAlbum." + value + ".Rating"  , album.iRating);
       home->SetProperty("LatestAlbum." + value + ".Path"    , strDBpath);
       home->SetProperty("LatestAlbum." + value + ".Thumb"   , strThumb);
       home->SetProperty("LatestAlbum." + value + ".Fanart"  , CFileItem::GetCachedThumb(strArtist,g_settings.GetMusicFanartFolder()));
