@@ -5649,7 +5649,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const CStdString& strBaseDir, const Filte
       }
     }
 
-    Stack(items, VIDEODB_CONTENT_TVSHOWS, !filter.order.empty());
+    Stack(items, VIDEODB_CONTENT_TVSHOWS, !filter.order.empty() || sortDescription.sortBy != SortByNone);
 
     // cleanup
     m_pDS->close();
