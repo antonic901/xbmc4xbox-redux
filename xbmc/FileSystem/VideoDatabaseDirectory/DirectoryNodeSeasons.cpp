@@ -21,6 +21,7 @@
 #include "DirectoryNodeSeasons.h"
 #include "QueryParams.h"
 #include "video/VideoDatabase.h"
+#include "video/VideoDbUrl.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "utils/Variant.h"
@@ -79,8 +80,14 @@ bool CDirectoryNodeSeasons::GetContent(CFileItemList& items) const
   if (bFlatten)
   { // flatten if one season or flatten always
     items.Clear();
-    bSuccess=videodatabase.GetEpisodesNav(BuildPath()+"-2/",items,params.GetGenreId(),params.GetYear(),params.GetActorId(),params.GetDirectorId(),params.GetTvShowId());
-    items.SetPath(BuildPath()+"-2/");
+
+    CVideoDbUrl videoUrl;
+    if (!videoUrl.FromString(BuildPath()))
+      return false;
+
+    videoUrl.AppendPath("-2/");
+    bSuccess=videodatabase.GetEpisodesNav(videoUrl.ToString(), items, params.GetGenreId(), params.GetYear(), params.GetActorId(), params.GetDirectorId(), params.GetTvShowId());
+    items.SetPath(videoUrl.ToString());
   }
 
   videodatabase.Close();

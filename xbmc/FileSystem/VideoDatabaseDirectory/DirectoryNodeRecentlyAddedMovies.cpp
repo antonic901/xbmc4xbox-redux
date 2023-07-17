@@ -41,8 +41,7 @@ bool CDirectoryNodeRecentlyAddedMovies::GetContent(CFileItemList& items) const
   if (!videodatabase.Open())
     return false;
 
-  CStdString strBaseDir=BuildPath();
-  bool bSuccess=videodatabase.GetRecentlyAddedMoviesNav(strBaseDir, items);
+  bool bSuccess=videodatabase.GetRecentlyAddedMoviesNav(BuildPath(), items);
 
   videodatabase.Close();
 

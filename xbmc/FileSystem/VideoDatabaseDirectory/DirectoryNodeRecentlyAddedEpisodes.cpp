@@ -41,8 +41,7 @@ bool CDirectoryNodeRecentlyAddedEpisodes::GetContent(CFileItemList& items) const
   if (!videodatabase.Open())
     return false;
 
-  CStdString strBaseDir=BuildPath();
-  bool bSuccess=videodatabase.GetRecentlyAddedEpisodesNav(strBaseDir, items);
+  bool bSuccess=videodatabase.GetRecentlyAddedEpisodesNav(BuildPath(), items);
 
   videodatabase.Close();
 
