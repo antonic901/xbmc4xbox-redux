@@ -4524,21 +4524,9 @@ bool CVideoDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& i
         return false;
     }
 
-    // parse the base path to get additional filters
     CVideoDbUrl videoUrl;
-    if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, videoUrl))
       return false;
-
-    if (!extFilter.join.empty())
-      strSQL += extFilter.join;
-    if (!extFilter.where.empty())
-      strSQL += " WHERE " + extFilter.where;
-    if (!extFilter.group.empty())
-      strSQL += " GROUP BY " + extFilter.group;
-    if (!extFilter.order.empty())
-      strSQL += " ORDER BY " + extFilter.order;
-    if (!extFilter.limit.empty())
-      strSQL += " LIMIT " + extFilter.limit;
 
     int iRowsFound = RunQuery(strSQL);
     if (iRowsFound <= 0)
@@ -4644,19 +4632,8 @@ bool CVideoDatabase::GetTagsNav(const CStdString& strBaseDir, CFileItemList& ite
 
     // parse the base path to get additional filters
     CVideoDbUrl videoUrl;
-    if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, videoUrl))
       return false;
-
-    if (!extFilter.join.empty())
-      strSQL += extFilter.join;
-    if (!extFilter.where.empty())
-      strSQL += " WHERE " + extFilter.where;
-    if (!extFilter.group.empty())
-      strSQL += " GROUP BY " + extFilter.group;
-    if (!extFilter.order.empty())
-      strSQL += " ORDER BY " + extFilter.order;
-    if (!extFilter.limit.empty())
-      strSQL += " LIMIT " + extFilter.limit;
 
     int iRowsFound = RunQuery(strSQL);
     if (iRowsFound <= 0)
@@ -4882,21 +4859,9 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const CStdString& strBaseDir, CFileI
 
     extFilter.AppendGroup(PrepareSQL("musicvideoview.c%02d", VIDEODB_ID_MUSICVIDEO_ALBUM));
 
-    // parse the base path to get additional filters
     CVideoDbUrl videoUrl;
-    if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, videoUrl))
       return false;
-
-    if (!extFilter.join.empty())
-      strSQL += extFilter.join;
-    if (!extFilter.where.empty())
-      strSQL += " WHERE " + extFilter.where;
-    if (!extFilter.group.empty())
-      strSQL += " GROUP BY " + extFilter.group;
-    if (!extFilter.order.empty())
-      strSQL += " ORDER BY " + extFilter.order;
-    if (!extFilter.limit.empty())
-      strSQL += " LIMIT " + extFilter.limit;
 
     int iRowsFound = RunQuery(strSQL);
     if (iRowsFound <= 0)
@@ -5101,21 +5066,9 @@ bool CVideoDatabase::GetPeopleNav(const CStdString& strBaseDir, CFileItemList& i
         return false;
     }
 
-    // parse the base path to get additional filters
     CVideoDbUrl videoUrl;
-    if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, videoUrl))
       return false;
-
-    if (!extFilter.join.empty())
-      strSQL += extFilter.join;
-    if (!extFilter.where.empty())
-      strSQL += " WHERE " + extFilter.where;
-    if (!extFilter.group.empty())
-      strSQL += " GROUP BY " + extFilter.group;
-    if (!extFilter.order.empty())
-      strSQL += " ORDER BY " + extFilter.order;
-    if (!extFilter.limit.empty())
-      strSQL += " LIMIT " + extFilter.limit;
 
     // run query
     unsigned int time = CTimeUtils::GetTimeMS();
@@ -5271,21 +5224,9 @@ bool CVideoDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& it
         return false;
     }
 
-    // parse the base path to get additional filters
     CVideoDbUrl videoUrl;
-    if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, videoUrl))
       return false;
-
-    if (!extFilter.join.empty())
-      strSQL += extFilter.join;
-    if (!extFilter.where.empty())
-      strSQL += " WHERE " + extFilter.where;
-    if (!extFilter.group.empty())
-      strSQL += " GROUP BY " + extFilter.group;
-    if (!extFilter.order.empty())
-      strSQL += " ORDER BY " + extFilter.order;
-    if (!extFilter.limit.empty())
-      strSQL += " LIMIT " + extFilter.limit;
 
     int iRowsFound = RunQuery(strSQL);
     if (iRowsFound <= 0)
@@ -9293,6 +9234,33 @@ bool CVideoDatabase::GetFilter(const CVideoDbUrl &videoUrl, Filter &filter) cons
   }
   else
     return false;
+
+  return true;
+}
+
+bool CVideoDatabase::BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, const Filter &filter, CStdString &strSQL, CVideoDbUrl &videoUrl)
+{
+  if (strQuery.empty())
+    return false;
+
+  // parse the base path to get additional filters
+  Filter extFilter = filter;
+  videoUrl.Reset();
+  if (!videoUrl.FromString(strBaseDir) || !GetFilter(videoUrl, extFilter))
+    return false;
+
+  strSQL = strQuery;
+
+  if (!extFilter.join.empty())
+    strSQL += extFilter.join;
+  if (!extFilter.where.empty())
+    strSQL += " WHERE " + extFilter.where;
+  if (!extFilter.group.empty())
+    strSQL += " GROUP BY " + extFilter.group;
+  if (!extFilter.order.empty())
+    strSQL += " ORDER BY " + extFilter.order;
+  if (!extFilter.limit.empty())
+    strSQL += " LIMIT " + extFilter.limit;
 
   return true;
 }
