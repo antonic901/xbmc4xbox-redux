@@ -22,6 +22,7 @@
 #include "video/VideoInfoTag.h"
 #include "video/Bookmark.h"
 #include "utils/SortUtils.h"
+#include "video/VideoDbUrl.h"
 
 #include <memory>
 #include <set>
@@ -645,6 +646,8 @@ public:
   void AddTagToItem(int idItem, int idTag, const std::string &type);
   void RemoveTagFromItem(int idItem, int idTag, const std::string &type);
 
+  bool GetFilter(const CVideoDbUrl &videoUrl, Filter &filter) const;
+
 protected:
   int GetMovieId(const CStdString& strFilenameAndPath);
   int GetMusicVideoId(const CStdString& strFilenameAndPath);
@@ -778,7 +781,7 @@ private:
   void InvalidatePathHash(const CStdString& strPath);
   void DeleteThumbForItem(const CStdString& strPath, bool bFolder, int idEpisode = -1);
 
-  bool GetStackedTvShowList(int idShow, CStdString& strIn);
+  bool GetStackedTvShowList(int idShow, CStdString& strIn) const;
   void Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool maintainSortOrder = false);
 
   /*! \brief Get a safe filename from a given string
