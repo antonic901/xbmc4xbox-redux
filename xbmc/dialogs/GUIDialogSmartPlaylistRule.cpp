@@ -30,6 +30,7 @@
 #include "storage/MediaManager.h"
 #include "LocalizeStrings.h"
 #include "settings/Settings.h"
+#include "storage/MediaManager.h"
 
 #define CONTROL_FIELD           15
 #define CONTROL_OPERATOR        16
@@ -68,8 +69,15 @@ bool CGUIDialogSmartPlaylistRule::OnMessage(CGUIMessage& message)
         OnOK();
       else if (iControl == CONTROL_CANCEL)
         OnCancel();
-      else if (iControl == CONTROL_VALUE)
-        OnEditChanged(iControl, m_rule.m_parameter);
+      else if (iControl == CONTROL_VALUE && CSmartPlaylistRule::GetFieldType(m_rule.m_field) != CSmartPlaylistRule::BROWSEABLE_FIELD)
+      {
+        CStdString parameter;
+        OnEditChanged(iControl, parameter);
+        m_rule.m_parameter.clear();
+
+        if (!parameter.empty())
+          m_rule.m_parameter.push_back(parameter);
+      }
       else if (iControl == CONTROL_OPERATOR)
         OnOperator();
       else if (iControl == CONTROL_FIELD)
@@ -189,7 +197,17 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   }
   else if (m_rule.m_field == FieldPath)
   {
-    CGUIDialogFileBrowser::ShowAndGetDirectory(g_settings.m_musicSources,g_localizeStrings.Get(657),m_rule.m_parameter,false);
+    VECSOURCES sources;
+    if (m_type == "songs" || m_type == "mixed")
+      sources = *g_settings.GetSourcesFromType("music");
+    if (m_type != "songs")
+    {
+      VECSOURCES sources2 = *g_settings.GetSourcesFromType("video");
+      sources.insert(sources.end(),sources2.begin(),sources2.end());
+    }
+    g_mediaManager.GetLocalDrives(sources);
+
+    CGUIDialogFileBrowser::ShowAndGetDirectory(sources,g_localizeStrings.Get(657),m_rule.GetLocalizedParameter(m_type),false);
     UpdateButtons();
     return;
   }
@@ -220,10 +238,19 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   CStdString strHeading;
   strHeading.Format(g_localizeStrings.Get(13401),g_localizeStrings.Get(iLabel));
   pDialog->SetHeading(strHeading);
+  pDialog->SetMultiSelection(true);
+
+  if (!m_rule.m_parameter.empty())
+    pDialog->SetSelected(m_rule.m_parameter);
+
   pDialog->DoModal();
-  if (pDialog->GetSelectedLabel() > -1)
+  if (pDialog->IsConfirmed())
   {
-    m_rule.m_parameter = pDialog->GetSelectedLabelText();
+    const CFileItemList &items = pDialog->GetSelectedItems();
+    m_rule.m_parameter.clear();
+    for (int index = 0; index < items.Size(); index++)
+      m_rule.m_parameter.push_back(items[index]->GetLabel());
+
     UpdateButtons();
   }
   pDialog->Reset();
@@ -323,13 +350,15 @@ void CGUIDialogSmartPlaylistRule::UpdateButtons()
   m_rule.m_operator = (CSmartPlaylistRule::SEARCH_OPERATOR)selected.GetParam1();
 
   // update the parameter edit control appropriately
-  SET_CONTROL_LABEL2(CONTROL_VALUE, m_rule.m_parameter);
+  SET_CONTROL_LABEL2(CONTROL_VALUE, m_rule.GetLocalizedParameter(m_type));
   CGUIEditControl::INPUT_TYPE type = CGUIEditControl::INPUT_TYPE_TEXT;
   CSmartPlaylistRule::FIELD_TYPE fieldType = CSmartPlaylistRule::GetFieldType(m_rule.m_field);
   switch (fieldType)
   {
-  case CSmartPlaylistRule::TEXT_FIELD:
   case CSmartPlaylistRule::BROWSEABLE_FIELD:
+    type = CGUIEditControl::INPUT_TYPE_READONLY;
+    break;
+  case CSmartPlaylistRule::TEXT_FIELD:
   case CSmartPlaylistRule::PLAYLIST_FIELD:
   case CSmartPlaylistRule::TEXTIN_FIELD:
     type = CGUIEditControl::INPUT_TYPE_TEXT;
