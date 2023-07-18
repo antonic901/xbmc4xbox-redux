@@ -27,6 +27,7 @@
 #include "tinyXML/tinyxml.h"
 
 class CDatabase;
+class CVariant;
 
 class CSmartPlaylistRule
 {
@@ -62,9 +63,11 @@ public:
                   };
  
   bool Load(TiXmlElement *element, const CStdString &encoding = "UTF-8");
+  bool Load(const CVariant &obj);
   bool Save(TiXmlNode *parent) const;
+  bool Save(CVariant &obj) const;
 
-  CStdString GetWhereClause(CDatabase &db, const CStdString& strType) const;
+  CStdString                  GetWhereClause(const CDatabase &db, const CStdString& strType) const;
   static Field                TranslateField(const char *field);
   static CStdString           TranslateField(Field field);
   static SortBy               TranslateOrder(const char *order);
@@ -97,7 +100,12 @@ public:
   CSmartPlaylist();
 
   bool Load(const CStdString &path);
-  bool Save(const CStdString &path);
+  bool Load(const CVariant &obj);
+  bool LoadFromXml(const CStdString &xml);
+  bool LoadFromJson(const CStdString &json);
+  bool Save(const CStdString &path) const;
+  bool Save(CVariant &obj, bool full = true) const;
+  bool SaveAsJson(CStdString &json, bool full = true) const;
 
   TiXmlElement *OpenAndReadName(const CStdString &path);
   bool LoadFromXML(TiXmlElement *root, const CStdString &encoding = "UTF-8");
@@ -129,13 +137,17 @@ public:
    \param referencedPlaylists a set of playlists to know when we reach a cycle
    \param needWhere whether we need to prepend the where clause with "WHERE "
    */
-  CStdString GetWhereClause(CDatabase &db, std::set<CStdString> &referencedPlaylists) const;
+  CStdString GetWhereClause(const CDatabase &db, std::set<CStdString> &referencedPlaylists) const;
 
   const std::vector<CSmartPlaylistRule> &GetRules() const;
 
   CStdString GetSaveLocation() const;
 private:
   friend class CGUIDialogSmartPlaylistEditor;
+
+  TiXmlElement* readName();
+  TiXmlElement *readNameFromXml(const CStdString &xml);
+  bool load(TiXmlElement *root);
 
   std::vector<CSmartPlaylistRule> m_playlistRules;
   CStdString m_playlistName;
