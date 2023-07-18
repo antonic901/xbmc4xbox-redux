@@ -32,6 +32,13 @@ using namespace std;
 
 extern HWND g_hWnd;
 
+#define XBMCVK_HOME 0x24
+#define XBMCVK_END 0x23
+#define XBMCVK_LEFT 0x25
+#define XBMCVK_RIGHT 0x27
+#define XBMCVK_DELETE 0x2e
+#define XBMCVK_BACK 0x8
+
 CGUIEditControl::CGUIEditControl(int parentID, int controlID, float posX, float posY,
                                  float idth, float height, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus,
                                  const CLabelInfo& labelInfo, const std::string &text)
@@ -84,139 +91,138 @@ bool CGUIEditControl::OnAction(const CAction &action)
 {
   ValidateCursor();
 
-  if (action.GetID() == ACTION_BACKSPACE
+  if (m_inputType != INPUT_TYPE_READONLY
       || action.GetID() == ACTION_PARENT_DIR
       )
   {
-    // backspace
-    if (m_cursorPos)
+    if (action.GetID() == ACTION_BACKSPACE)
     {
-      if (!ClearMD5())
-        m_text2.erase(--m_cursorPos, 1);
-      OnTextChanged();
-    }
-    return true;
-  }
-  else if (action.GetID() == ACTION_MOVE_LEFT)
-  {
-    if (m_cursorPos > 0) {
-      m_cursorPos--;
-      OnTextChanged();
-      return true;
-    }
-  }
-  else if (action.GetID() == ACTION_MOVE_RIGHT)
-  {
-    if ((unsigned int) m_cursorPos < m_text2.size())
-    { 
-      m_cursorPos++;
-      OnTextChanged();
-      return true;
-    }
-  }
-  else if (action.GetID() == ACTION_PASTE)
-  {
-    ClearMD5();
-    OnPasteClipboard();
-  }
-  else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_ASCII)
-  {
-    // input from the keyboard (vkey, not ascii)
-    BYTE b = action.GetID() & 0xFF;
-    if (b == 0x24) // home
-    {
-      m_cursorPos = 0;
-      OnTextChanged();
-      return true;
-    }
-    else if (b == 0x23) // end
-    {
-      m_cursorPos = m_text2.length();
-      OnTextChanged();
-      return true;
-    }
-    if (b == 0x25 && m_cursorPos > 0)
-    { // left
-      m_cursorPos--;
-      OnTextChanged();
-      return true;
-    }
-    if (b == 0x27 && m_cursorPos < m_text2.length())
-    { // right
-      m_cursorPos++;
-      OnTextChanged();
-      return true;
-    }
-    if (b == 0x2e)
-    {
-      if (m_cursorPos < m_text2.length())
-    { // delete
-        if (!ClearMD5())
-          m_text2.erase(m_cursorPos, 1);
-      OnTextChanged();
-      return true;
-    }
-  }
-    if (b == 0x8)
-    {
-      if (m_cursorPos > 0)
-      { // backspace
+      // backspace
+      if (m_cursorPos)
+      {
         if (!ClearMD5())
           m_text2.erase(--m_cursorPos, 1);
-        OnTextChanged();      
-      }    
+        OnTextChanged();
+      }
       return true;
     }
-  }
-  else if (action.GetID() >= KEY_ASCII)
-  {
-    // input from the keyboard
-    switch (action.GetUnicode())
+    else if (action.GetID() == ACTION_MOVE_LEFT)
     {
-    case '\t':
-      break;
-    case 10:
-    case 13:
+      if (m_cursorPos > 0)
       {
-        // enter - send click message, but otherwise ignore
-        SEND_CLICK_MESSAGE(GetID(), GetParentID(), 1);
+        m_cursorPos--;
+        OnTextChanged();
         return true;
       }
-    case 27:
-      { // escape - fallthrough to default action
-        return CGUIButtonControl::OnAction(action);
-      }
-    case 8:
+    }
+    else if (action.GetID() == ACTION_MOVE_RIGHT)
+    {
+      if ((unsigned int) m_cursorPos < m_text2.size())
       {
-        // backspace
-        if (m_cursorPos)
+        m_cursorPos++;
+        OnTextChanged();
+        return true;
+      }
+    }
+    else if (action.GetID() == ACTION_PASTE)
+    {
+      ClearMD5();
+      OnPasteClipboard();
+    }
+    else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_ASCII)
+    {
+      // input from the keyboard (vkey, not ascii)
+      BYTE b = action.GetID() & 0xFF;
+      if (b == XBMCVK_HOME)
+      {
+        m_cursorPos = 0;
+        OnTextChanged();
+        return true;
+      }
+      else if (b == XBMCVK_END)
+      {
+        m_cursorPos = m_text2.length();
+        OnTextChanged();
+        return true;  
+      }    
+      if (b == XBMCVK_LEFT && m_cursorPos > 0)
+      {
+        m_cursorPos--;
+        OnTextChanged();
+        return true;
+      }
+      if (b == XBMCVK_RIGHT && m_cursorPos < m_text2.length())
+      {
+        m_cursorPos++;
+        OnTextChanged();
+        return true;
+      }
+      if (b == XBMCVK_DELETE)
+      {
+        if (m_cursorPos < m_text2.length())
+        {
+          if (!ClearMD5())
+            m_text2.erase(m_cursorPos, 1);
+          OnTextChanged();
+          return true;
+        }
+      }
+      if (b == XBMCVK_BACK)
+      {
+        if (m_cursorPos > 0)
         {
           if (!ClearMD5())
             m_text2.erase(--m_cursorPos, 1);
           OnTextChanged();
         }
-        break;
-      }
-    default:
-      {
-        ClearMD5();
-        m_text2.insert(m_text2.begin() + m_cursorPos, (WCHAR)action.GetUnicode());
-        m_cursorPos++;
-        OnTextChanged();
-        break;
+        return true;
       }
     }
-    OnTextChanged();
-    return true;
-  }
-  else if (action.GetID() >= REMOTE_2 && action.GetID() <= REMOTE_9)
-  { // input from the remote
-    ClearMD5();
-    if (m_inputType == INPUT_TYPE_FILTER)
-    { // filtering - use single number presses
-      m_text2.insert(m_text2.begin() + m_cursorPos, L'0' + (action.GetID() - REMOTE_0));
-      m_cursorPos++;
-      OnTextChanged();
+    else if (action.GetID() >= KEY_ASCII)
+    {
+      // input from the keyboard
+      switch (action.GetUnicode())
+      {
+      case '\t':
+        break;
+      case 10:
+      case 13:
+        {
+          // enter - send click message, but otherwise ignore
+          SEND_CLICK_MESSAGE(GetID(), GetParentID(), 1);
+          return true;
+        }
+      case 27:
+        { // escape - fallthrough to default action
+          return CGUIButtonControl::OnAction(action);
+        }
+      case 8:
+        {
+          // backspace
+          if (m_cursorPos)
+          {
+            if (!ClearMD5())
+              m_text2.erase(--m_cursorPos, 1);
+          }
+          break;
+        }
+      default:
+        {
+          ClearMD5();
+          m_text2.insert(m_text2.begin() + m_cursorPos++, (WCHAR)action.GetUnicode());
+          break;
+        }
+      }
+      return true;
+    }
+    else if (action.GetID() >= REMOTE_2 && action.GetID() <= REMOTE_9)
+    { // input from the remote
+      ClearMD5();
+      if (m_inputType == INPUT_TYPE_FILTER)
+      { // filtering - use single number presses
+        m_text2.insert(m_text2.begin() + m_cursorPos++, L'0' + (action.GetID() - REMOTE_0));
+        OnTextChanged();
+      }
       return true;
     }
   }
@@ -236,6 +242,9 @@ void CGUIEditControl::OnClick()
   CStdString heading = g_localizeStrings.Get(m_inputHeading ? m_inputHeading : 16028);
   switch (m_inputType)
   {
+    case INPUT_TYPE_READONLY:
+      textChanged = false;
+      break;
     case INPUT_TYPE_NUMBER:
       textChanged = CGUIDialogNumeric::ShowAndGetNumber(utf8, heading);
       break;
@@ -372,7 +381,7 @@ void CGUIEditControl::RenderText()
     }
     CStdStringW text = GetDisplayedText();
     // add the cursor if we're focused
-    if (HasFocus())
+    if (HasFocus() && m_inputType != INPUT_TYPE_READONLY)
     {
       CStdStringW col;
       if ((m_focusCounter % 64) > 32)
