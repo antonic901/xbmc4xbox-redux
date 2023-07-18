@@ -50,7 +50,7 @@ public:
   void Sort(bool bSortOrder = true);
   void SetSelected(int iSelected);
   void SetUseDetails(bool useDetails);
-  void SetMultiSelection(bool multiSelection) { m_multiSelection = multiSelection; };
+  void SetMultiSelection(bool multiSelection);
 protected:
   virtual CGUIControl *CGUIDialogSelect::GetFirstFocusableControl(int id);
   virtual void OnWindowLoaded();
