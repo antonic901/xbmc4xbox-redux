@@ -241,6 +241,18 @@ void CMusicDatabase::CreateViews()
               "    album.idThumb=thumb.idThumb"
               "  LEFT OUTER JOIN albuminfo ON"
               "    album.idAlbum=albuminfo.idAlbum");
+
+  CLog::Log(LOGINFO, "create artist view");
+  m_pDS->exec("DROP VIEW IF EXISTS artistview");
+  m_pDS->exec("CREATE VIEW artistview AS SELECT"
+              "  artist.idArtist AS idArtist, strArtist, "
+              "  strBorn, strFormed, strGenres,"
+              "  strMoods, strStyles, strInstruments, "
+              "  strBiography, strDied, strDisbanded, "
+              "  strYearsActive, strImage, strFanart "
+              "FROM artist "
+              "  LEFT OUTER JOIN artistinfo ON"
+              "    artist.idArtist = artistinfo.idArtist");
 }
 
 void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
@@ -779,6 +791,7 @@ CArtist CMusicDatabase::GetArtistFromDataset(dbiplus::Dataset* pDS, bool needThu
   CArtist artist;
   artist.idArtist = pDS->fv(artist_idArtist).get_asInt();
   artist.strArtist = pDS->fv("artist.strArtist").get_asString();
+  artist.strArtist = pDS->fv(artist_strArtist).get_asString();
   artist.genre = StringUtils::Split(pDS->fv(artist_strGenres).get_asString(), g_advancedSettings.m_musicItemSeparator);
   artist.strBiography = pDS->fv(artist_strBiography).get_asString();
   artist.styles = StringUtils::Split(pDS->fv(artist_strStyles).get_asString(), g_advancedSettings.m_musicItemSeparator);
@@ -1136,10 +1149,16 @@ bool CMusicDatabase::GetArtistInfo(int idArtist, CArtist &info, bool needAll)
     if (idArtist == -1)
       return false; // not in the database
 
-    CStdString strSQL=PrepareSQL("select * from artistinfo "
-                                "join artist on artist.idArtist=artistinfo.idArtist "
-                                "where artistinfo.idArtist = %i"
-                                , idArtist);
+    CStdString strSQL=PrepareSQL("SELECT artist.idArtist AS idArtist, strArtist, "
+                                 "  strBorn, strFormed, strGenres,"
+                                 "  strMoods, strStyles, strInstruments, "
+                                 "  strBiography, strDied, strDisbanded, "
+                                 "  strYearsActive, strImage, strFanart "
+                                 "  FROM artist "
+                                 "  JOIN artistinfo "
+                                 "    ON artist.idArtist = artistinfo.idArtist "
+                                 "  WHERE artistinfo.idArtist = %i"
+                                 , idArtist);
 
     if (!m_pDS2->query(strSQL.c_str())) return false;
     int iRowsFound = m_pDS2->num_rows();
@@ -2561,12 +2580,9 @@ bool CMusicDatabase::GetArtistsNav(const CStdString& strBaseDir, CFileItemList& 
   if (NULL == m_pDS.get()) return false;
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-
     unsigned int time = timeGetTime();
 
-    CStdString strSQL = "select * from artist where (idArtist IN ";
+    CStdString strSQL = "(idArtist IN ";
 
     if (idGenre==-1)
     {
@@ -2605,7 +2621,7 @@ bool CMusicDatabase::GetArtistsNav(const CStdString& strBaseDir, CFileItemList& 
     }
 
     // remove the null string
-    strSQL += " and artist.strArtist != \"\"";
+    strSQL += " and strArtist != \"\"";
     // and the various artist entry if applicable
     if (!albumArtistsOnly)
     {
@@ -2613,6 +2629,30 @@ bool CMusicDatabase::GetArtistsNav(const CStdString& strBaseDir, CFileItemList& 
       int idVariousArtists = AddArtist(strVariousArtists);
       strSQL+=PrepareSQL(" and artist.idArtist<>%i", idVariousArtists);
     }
+
+    bool result = GetArtistsByWhere(strBaseDir, strSQL, items);
+    CLog::Log(LOGDEBUG,"Time to retrieve artists from dataset = %i", timeGetTime() - time);
+
+    return result;
+  }
+  catch (...)
+  {
+    m_pDS->close();
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return false;
+}
+
+bool CMusicDatabase::GetArtistsByWhere(const CStdString& strBaseDir, const CStdString &where, CFileItemList& items)
+{
+  if (NULL == m_pDB.get()) return false;
+  if (NULL == m_pDS.get()) return false;
+
+  try
+  {
+    CStdString strSQL = "select * from artistview";
+    if (!where.empty())
+       strSQL += " WHERE " + where;
 
     // run query
     CLog::Log(LOGDEBUG, "%s query: %s", __FUNCTION__, strSQL.c_str());
@@ -2629,27 +2669,21 @@ bool CMusicDatabase::GetArtistsNav(const CStdString& strBaseDir, CFileItemList& 
     // get data from returned rows
     while (!m_pDS->eof())
     {
-      CStdString strArtist = m_pDS->fv("strArtist").get_asString();
-      CFileItemPtr pItem(new CFileItem(strArtist));
-      pItem->GetMusicInfoTag()->SetArtist(strArtist);
-      pItem->GetMusicInfoTag()->SetDatabaseId(m_pDS->fv(0).get_asInt(), "artist");
+      CArtist artist = GetArtistFromDataset(m_pDS.get(), false);
+      CFileItemPtr pItem(new CFileItem(artist));
       CStdString strDir;
-      int idArtist = m_pDS->fv("idArtist").get_asInt();
-      strDir.Format("%ld/", idArtist);
+      strDir.Format("%ld/", artist.idArtist);
       pItem->SetPath(strBaseDir + strDir);
-      pItem->m_bIsFolder=true;
+      pItem->GetMusicInfoTag()->SetDatabaseId(artist.idArtist, "artist");
       if (CFile::Exists(pItem->GetCachedArtistThumb()))
         pItem->SetThumbnailImage(pItem->GetCachedArtistThumb());
       pItem->SetIconImage("DefaultArtist.png");
-      CArtist artist;
-      GetArtistInfo(idArtist,artist,false);
 
       SetPropertiesFromArtist(*pItem,artist);
       items.Add(pItem);
 
       m_pDS->next();
     }
-    CLog::Log(LOGDEBUG,"Time to retrieve artists from dataset = %i", timeGetTime() - time);
 
     // cleanup
     m_pDS->close();
@@ -4046,8 +4080,14 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
     m_pDS->close();
 
     // find all artists
-    sql = "select * from artistinfo "
-          "join artist on artist.idArtist=artistinfo.idArtist";
+    sql = "SELECT artist.idArtist AS idArtist, strArtist, "
+          "  strBorn, strFormed, strGenres,"
+          "  strMoods, strStyles, strInstruments, "
+          "  strBiography, strDied, strDisbanded, "
+          "  strYearsActive, strImage, strFanart "
+          "  FROM artist "
+          "  JOIN artistinfo "
+          "    ON artist.idArtist=artistinfo.idArtist";
 
     // needed due to getartistpath
     auto_ptr<dbiplus::Dataset> pDS;

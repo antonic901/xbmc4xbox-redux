@@ -172,6 +172,7 @@ public:
   bool GetSongsByYear(const CStdString& baseDir, CFileItemList& items, int year);
   bool GetSongsByWhere(const CStdString &baseDir, const CStdString &whereClause, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
   bool GetAlbumsByWhere(const CStdString &baseDir, const CStdString &where, const CStdString &order, CFileItemList &items, const SortDescription &sortDescription = SortDescription());
+  bool GetArtistsByWhere(const CStdString& strBaseDir, const CStdString &where, CFileItemList& items);
   bool GetRandomSong(CFileItem* item, int& idSong, const CStdString& strWhere);
   int GetKaraokeSongsCount();
   int GetSongsCount(const CStdString& strWhere = "");
@@ -313,7 +314,8 @@ private:
 
   enum _ArtistFields
   {
-    artist_idArtist=1, // not a typo - we have the primary key @ 0
+    artist_idArtist=0,
+    artist_strArtist,
     artist_strBorn,
     artist_strFormed,
     artist_strGenres,
