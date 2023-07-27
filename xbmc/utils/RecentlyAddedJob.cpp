@@ -321,7 +321,7 @@ bool CRecentlyAddedJob::UpdateTotal()
   musicdatabase.Open();
   int MusSongTotals   = atoi(musicdatabase.GetSingleValue("songview"       , "count(1)"));
   int MusAlbumTotals  = atoi(musicdatabase.GetSingleValue("songview"       , "count(distinct strAlbum)"));
-  int MusArtistTotals = atoi(musicdatabase.GetSingleValue("songview"       , "count(distinct strArtist)"));
+  int MusArtistTotals = atoi(musicdatabase.GetSingleValue("songview"       , "count(distinct strArtists)"));
   musicdatabase.Close();
  
   videodatabase.Open();

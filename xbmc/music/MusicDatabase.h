@@ -221,8 +221,8 @@ protected:
   int AddPath(const CStdString& strPath);
   int AddThumb(const CStdString& strThumb1);
   bool AddAlbumArtist(int idArtist, int idAlbum, bool featured, int iOrder);
+  bool AddSongArtist(int idArtist, int idSong, bool featured, int iOrder);
 
-  void AddExtraSongArtists(const std::vector<std::string>& vecArtists, int idSong, bool bCheck = true);
   void AddExtraGenres(const std::vector<std::string>& vecGenres, int idSong, int idAlbum, bool bCheck = true);
   bool SetAlbumInfoSongs(int idAlbumInfo, const VECSONGS& songs);
   bool GetAlbumInfoSongs(int idAlbumInfo, VECSONGS& songs);
@@ -256,7 +256,7 @@ private:
   enum _SongFields
   {
     song_idSong=0,
-    song_strExtraArtists,
+    song_strArtists,
     song_strExtraGenres,
     song_strTitle,
     song_iTrack,
@@ -278,8 +278,6 @@ private:
     song_idAlbum,
     song_strAlbum,
     song_strPath,
-    song_idArtist,
-    song_strArtist,
     song_idGenre,
     song_strGenre,
     song_strThumb,
