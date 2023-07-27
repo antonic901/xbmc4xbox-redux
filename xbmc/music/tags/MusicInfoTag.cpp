@@ -401,6 +401,7 @@ void CMusicInfoTag::SetMusicBrainzTRMID(const CStdString& strTRMID)
 void CMusicInfoTag::SetAlbum(const CAlbum& album)
 {
   SetArtist(album.artist);
+  SetAlbumId(album.idAlbum);
   SetAlbum(album.strAlbum);
   SetAlbumArtist(album.artist);
   SetGenre(album.genre);
