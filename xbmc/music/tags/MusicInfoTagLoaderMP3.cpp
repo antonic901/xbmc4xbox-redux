@@ -133,6 +133,7 @@ bool CMusicInfoTagLoaderMP3::Load(const CStdString& strFileName, CMusicInfoTag& 
         m_replayGainInfo = apeTag.GetReplayGain();
       if (apeTag.GetRating() > '0')
         tag.SetRating(apeTag.GetRating());
+      tag.SetCompilation(apeTag.GetCompilation());
     }
 
     tag.SetDuration(ReadDuration(strFileName));

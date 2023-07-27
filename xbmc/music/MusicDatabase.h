@@ -215,7 +215,7 @@ protected:
 
   virtual bool CreateTables();
   virtual int GetMinVersion() const { return 15; };
-  int AddAlbum(const CStdString& strAlbum1, const CStdString &strArtist1, int idThumb, const CStdString& strGenre, int year);
+  int AddAlbum(const CStdString& strAlbum1, const CStdString &strArtist1, int idThumb, const CStdString& strGenre, int year, bool bCompilation);
   int AddGenre(const CStdString& strGenre);
   int AddArtist(const CStdString& strArtist);
   int AddPath(const CStdString& strPath);
@@ -282,7 +282,8 @@ private:
     song_strThumb,
     song_iKarNumber,
     song_iKarDelay,
-    song_strKarEncoding
+    song_strKarEncoding,
+    song_bCompilation
   } SongFields;
 
   // Fields should be ordered as they
@@ -303,7 +304,8 @@ private:
     album_strLabel,
     album_strType,
     album_strThumbURL,
-    album_iRating
+    album_iRating,
+    album_bCompilation
   } AlbumFields;
 
   enum _ArtistFields

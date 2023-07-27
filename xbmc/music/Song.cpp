@@ -44,6 +44,7 @@ CSong::CSong(CMusicInfoTag& tag)
   iYear = stTime.wYear;
   iTrack = tag.GetTrackAndDiskNumber();
   iDuration = tag.GetDuration();
+  bCompilation = tag.GetCompilation();
   strThumb = "";
   iStartOffset = 0;
   iEndOffset = 0;
@@ -84,6 +85,7 @@ void CSong::Clear()
   lastPlayed.Reset();
   iArtistId = -1;
   iAlbumId = -1;
+  bCompilation = false;
 }
 
 CSongMap::CSongMap()

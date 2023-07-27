@@ -91,6 +91,7 @@ public:
   int iEndOffset;
   int iArtistId;
   int iAlbumId;
+  bool bCompilation;
 };
 
 /*!

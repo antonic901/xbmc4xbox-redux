@@ -50,6 +50,7 @@ public:
   CStdString GetMusicBrainzTRMID() { return m_strMusicBrainzTRMID; }
   CStdString GetComment() { return m_strComment; };
   CStdString GetLyrics() { return m_strLyrics; };
+  bool GetCompilation() { return m_bCompilation; };
   char GetRating() { return m_rating; };
   void GetReplayGainFromTag(apetag *tag);
   const CReplayGain &GetReplayGain() { return m_replayGain; };
@@ -77,6 +78,7 @@ protected:
   CReplayGain m_replayGain;
   __int64 m_nDuration;
   char m_rating;
+  bool m_bCompilation;
 
   DllLibApeTag m_dll;
 };
