@@ -399,7 +399,6 @@ void CMusicInfoTag::SetAlbum(const CAlbum& album)
   m_iDbId = album.idAlbum;
   m_type = "album";
   m_bLoaded = true;
-  m_iArtistId = album.idArtist;
 }
 
 void CMusicInfoTag::SetSong(const CSong& song)

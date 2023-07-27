@@ -278,7 +278,7 @@ bool CRecentlyAddedJob::UpdateMusic()
       strDBpath.Format("musicdb://3/%i/", album.idAlbum);
       strSQLAlbum.Format("idAlbum=%i", album.idAlbum);
       
-      CStdString strArtist = musicdatabase.GetSingleValue("albumview", "strArtist", strSQLAlbum);
+      CStdString strArtist = musicdatabase.GetSingleValue("albumview", "strArtists", strSQLAlbum);
       
       home->SetProperty("LatestAlbum." + value + ".Title"   , album.strAlbum);
       home->SetProperty("LatestAlbum." + value + ".Year"    , album.iYear);

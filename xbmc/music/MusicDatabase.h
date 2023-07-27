@@ -114,7 +114,6 @@ class CMusicDatabase : public CDatabase
   {
   public:
     int idAlbum;
-    int idArtist;
   };
 
 public:
@@ -215,12 +214,13 @@ protected:
 
   virtual bool CreateTables();
   virtual int GetMinVersion() const { return 15; };
-  int AddAlbum(const CStdString& strAlbum1, int idArtist, const CStdString &extraArtists, const CStdString &strArtist1, int idThumb, int idGenre, const CStdString &extraGenres, int year);
+  int AddAlbum(const CStdString& strAlbum1, const CStdString &strArtist1, int idThumb, int idGenre, const CStdString &extraGenres, int year);
   int AddGenre(const CStdString& strGenre);
   int AddArtist(const CStdString& strArtist);
   int AddPath(const CStdString& strPath);
   int AddThumb(const CStdString& strThumb1);
-  void AddExtraAlbumArtists(const std::vector<std::string>& vecArtists, int idAlbum);
+  bool AddAlbumArtist(int idArtist, int idAlbum, bool featured, int iOrder);
+
   void AddExtraSongArtists(const std::vector<std::string>& vecArtists, int idSong, bool bCheck = true);
   void AddExtraGenres(const std::vector<std::string>& vecGenres, int idSong, int idAlbum, bool bCheck = true);
   bool SetAlbumInfoSongs(int idAlbumInfo, const VECSONGS& songs);
@@ -293,11 +293,9 @@ private:
   {
     album_idAlbum=0,
     album_strAlbum,
-    album_strExtraArtists,
-    album_idArtist,
+    album_strArtists,
     album_strExtraGenres,
     album_idGenre,
-    album_strArtist,
     album_strGenre,
     album_iYear,
     album_strThumb,
