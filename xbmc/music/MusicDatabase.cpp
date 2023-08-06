@@ -243,7 +243,11 @@ void CMusicDatabase::CreateViews()
               "    album.idAlbum=albuminfo.idAlbum");
 
   CLog::Log(LOGINFO, "create artist view");
-  m_pDS->exec("DROP VIEW IF EXISTS artistview");
+  try
+  {
+    m_pDS->exec("DROP VIEW artistview");
+  }
+  catch (...) {}
   m_pDS->exec("CREATE VIEW artistview AS SELECT"
               "  artist.idArtist AS idArtist, strArtist, "
               "  strBorn, strFormed, strGenres,"
