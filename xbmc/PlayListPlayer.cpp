@@ -29,6 +29,7 @@
 #include "dialogs/GUIDialogOK.h"
 #include "playlists/PlayList.h"
 #include "utils/log.h"
+#include "music/tags/MusicInfoTag.h"
 
 using namespace PLAYLIST;
 
@@ -207,6 +208,26 @@ void CPlayListPlayer::Play()
   if (playlist.size() <= 0) return;
 
   Play(0);
+}
+
+void CPlayListPlayer::PlaySongId(int songId)
+{
+  if (m_iCurrentPlayList == PLAYLIST_NONE)
+    return;
+
+  CPlayList& playlist = GetPlaylist(m_iCurrentPlayList);
+  if (playlist.size() <= 0) 
+    Play();
+
+  for (int i = 0; i < playlist.size(); i++)
+  {
+    if (playlist[i]->HasMusicInfoTag() && playlist[i]->GetMusicInfoTag()->GetDatabaseId() == songId)
+    {
+      Play(i);
+      return;
+    }
+  }
+  Play();
 }
 
 /// \brief Start playing entry \e iSong in current playlist

@@ -41,6 +41,8 @@ class CGUIDialog;
 #define TMSG_PLAYLISTPLAYER_PLAY  210
 #define TMSG_PLAYLISTPLAYER_NEXT  211
 #define TMSG_PLAYLISTPLAYER_PREV  212
+// 212-216 reserved
+#define TMSG_PLAYLISTPLAYER_PLAY_SONG_ID 217
 
 #define TMSG_PICTURE_SHOW         220
 #define TMSG_PICTURE_SLIDESHOW    221
@@ -96,6 +98,7 @@ public:
 
   void PlayListPlayerPlay();
   void PlayListPlayerPlay(int iSong);
+  void PlayListPlayerPlaySongId(int songId);
   void PlayListPlayerNext();
   void PlayListPlayerPrevious();
   void PlayFile(const CFileItem &item, bool bRestart = false); // thread safe version of g_application.PlayFile()

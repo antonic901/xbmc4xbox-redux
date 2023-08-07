@@ -48,6 +48,7 @@ public:
   virtual bool OnMessage(CGUIMessage &message);
   void PlayNext(int offset = 1, bool bAutoPlay = false);
   void PlayPrevious();
+  void PlaySongId(int songId);
   void Play();
   void Play(int iSong, bool bAutoPlay = false, bool bPlayPrevious = false);
   int GetCurrentSong() const;

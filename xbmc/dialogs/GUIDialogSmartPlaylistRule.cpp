@@ -148,7 +148,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   else if (m_rule.m_field == FieldAlbum)
   {
     if (m_type.Equals("songs") || m_type.Equals("mixed") || m_type.Equals("albums"))
-      database.GetAlbumsNav("musicdb://6/",items,-1,-1);
+      database.GetAlbumsNav("musicdb://6/",items,-1,-1,-1,-1);
     if (m_type.Equals("musicvideos") || m_type.Equals("mixed"))
     {
       CFileItemList items2;
