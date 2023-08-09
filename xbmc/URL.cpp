@@ -155,7 +155,8 @@ void CURL::Parse(const CStdString& strURL1)
 
   CStdString strProtocol2 = GetTranslatedProtocol();
   if(m_strProtocol.Equals("rss") ||
-     m_strProtocol.Equals("videodb"))
+     m_strProtocol.Equals("videodb") ||
+     m_strProtocol.Equals("musicdb"))
     sep = "?";
   else
   if(strProtocol2.Equals("http")

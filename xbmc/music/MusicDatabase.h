@@ -26,6 +26,7 @@
 #include "music/Album.h"
 #include "utils/StringUtils.h"
 #include "utils/SortUtils.h"
+#include "MusicDbUrl.h"
 
 struct SScraperInfo;
 
@@ -144,7 +145,7 @@ public:
   bool GetGenresNav(const CStdString& strBaseDir, CFileItemList& items);
   bool GetYearsNav(const CStdString& strBaseDir, CFileItemList& items);
   bool GetArtistsNav(const CStdString& strBaseDir, CFileItemList& items, int idGenre, bool albumArtistsOnly);
-  bool GetAlbumsNav(const CStdString& strBaseDir, CFileItemList& items, int idGenre, int idArtist, int start, int end, const SortDescription &sortDescription = SortDescription());
+  bool GetAlbumsNav(const CStdString& strBaseDir, CFileItemList& items, int idGenre = -1, int idArtist = -1, const SortDescription &sortDescription = SortDescription());
   bool GetAlbumsByYear(const CStdString &strBaseDir, CFileItemList& items, int year);
   bool GetSongsNav(const CStdString& strBaseDir, CFileItemList& items, int idGenre, int idArtist,int idAlbum, const SortDescription &sortDescription = SortDescription());
   bool GetSongsByYear(const CStdString& baseDir, CFileItemList& items, int year);
@@ -187,6 +188,9 @@ public:
   void SetPropertiesForFileItem(CFileItem& item);
   static void SetPropertiesFromArtist(CFileItem& item, const CArtist& artist);
   static void SetPropertiesFromAlbum(CFileItem& item, const CAlbum& album);
+
+  bool GetFilter(const CMusicDbUrl &musicUrl, Filter &filter);
+
 protected:
   std::map<CStdString, int> m_artistCache;
   std::map<CStdString, int> m_genreCache;
@@ -310,4 +314,6 @@ private:
 
   void AnnounceRemove(std::string content, int id);
   void AnnounceUpdate(std::string content, int id);
+
+  bool BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CMusicDbUrl &musicUrl);
 };
