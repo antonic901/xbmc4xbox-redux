@@ -4984,6 +4984,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\lib\SlingboxLib\SlingboxLib.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="jsoncpp"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\lib\jsoncpp\json\json-forwards.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\lib\jsoncpp\json\json.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\lib\jsoncpp\jsoncpp.cpp">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
