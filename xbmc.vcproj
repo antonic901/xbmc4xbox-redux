@@ -962,6 +962,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\JpegIO.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\JSONVariantParser.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\input\KeyboardLayoutConfiguration.cpp">
 				</File>
 				<File
@@ -3210,6 +3213,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\ISortable.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\JSONVariantParser.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
