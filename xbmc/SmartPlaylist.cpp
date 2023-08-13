@@ -28,6 +28,8 @@
 #include "video/VideoDatabase.h"
 #include "Util.h"
 #include "utils/DatabaseUtils.h"
+#include "utils/JSONVariantParser.h"
+#include "utils/JSONVariantWriter.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 #include "XBDateTime.h"
@@ -1038,18 +1040,11 @@ bool CSmartPlaylist::LoadFromXML(TiXmlElement *root, const CStdString &encoding)
 
 bool CSmartPlaylist::LoadFromJson(const CStdString &json)
 {
-  /*
-  * 1. First backport this PR: https://github.com/xbmc/xbmc/pull/149
-  * 2. Specifically take a look on those commits:
-  *      https://github.com/xbmc/xbmc/pull/149/commits/8f9536610a581f48db1be920709c76ea5016ca26
-  *      https://github.com/xbmc/xbmc/pull/149/commits/89da9921a88c6c3dd5dc47ba9399ccdf5cdcb77a
-  *      https://github.com/xbmc/xbmc/pull/149/commits/dc28e9fd7ef14c7e382d161d2fbd90f86db8c153
-  * 
-  * 3. This is library that needs backport for Xbox: https://github.com/lloyd/yajl
-  * 4. After JSON parser and writer are backported take a look on this commit:
-  *      https://github.com/xbmc/xbmc/pull/1150/commits/9670b3f4cefb231b6a8c277599be4dfd705ca55a
-  */
-  return false;
+  if (json.empty())
+    return false;
+
+  CVariant obj = CJSONVariantParser::Parse((const unsigned char *)json.c_str(), json.size());
+  return Load(obj);
 }
 
 bool CSmartPlaylist::Save(const CStdString &path) const
@@ -1138,8 +1133,12 @@ bool CSmartPlaylist::Save(CVariant &obj, bool full /* = true */) const
 
 bool CSmartPlaylist::SaveAsJson(CStdString &json, bool full /* = true */) const
 {
-  // TODO: Read for details in LoadFromJson method
-  return false;
+  CVariant xsp(CVariant::VariantTypeObject);
+  if (!Save(xsp, full))
+    return false;
+
+  json = CJSONVariantWriter::Write(xsp, true);
+  return json.size() > 0;
 }
 
 void CSmartPlaylist::SetName(const CStdString &name)
