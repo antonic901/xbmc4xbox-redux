@@ -126,7 +126,7 @@ bool CVideoDatabase::CreateTables()
       column.Format(",c%02d text", i);
       columns += column;
     }
-    columns += ")";
+    columns += ", idSet integer)";
     m_pDS->exec(columns.c_str());
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_1 ON movie (idFile, idMovie)");
     m_pDS->exec("CREATE UNIQUE INDEX ix_movie_file_2 ON movie (idMovie, idFile)");
@@ -288,11 +288,6 @@ bool CVideoDatabase::CreateTables()
     CLog::Log(LOGINFO, "create sets table");
     m_pDS->exec("CREATE TABLE sets ( idSet integer primary key, strSet text)\n");
 
-    CLog::Log(LOGINFO, "create setlinkmovie table");
-    m_pDS->exec("CREATE TABLE setlinkmovie ( idSet integer, idMovie integer)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_1 ON setlinkmovie ( idSet, idMovie)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_setlinkmovie_2 ON setlinkmovie ( idMovie, idSet)\n");
-
     // create basepath indices
     m_pDS->exec("CREATE INDEX ixMovieBasePath ON movie ( c23(12) )");
     m_pDS->exec("CREATE INDEX ixMusicVideoBasePath ON musicvideo ( c14(12) )");
@@ -418,6 +413,7 @@ void CVideoDatabase::CreateViews()
   catch (...) {}
   m_pDS->exec("CREATE VIEW movieview AS SELECT"
               "  movie.*,"
+              "  sets.strSet AS strSet,"
               "  files.strFileName AS strFileName,"
               "  path.strPath AS strPath,"
               "  files.playCount AS playCount,"
@@ -426,6 +422,8 @@ void CVideoDatabase::CreateViews()
               "  bookmark.timeInSeconds AS resumeTimeInSeconds, "
               "  bookmark.totalTimeInSeconds AS totalTimeInSeconds "
               "FROM movie"
+              "  LEFT JOIN sets ON"
+              "    sets.idSet = movie.idSet"
               "  JOIN files ON"
               "    files.idFile=movie.idFile"
               "  JOIN path ON"
@@ -1226,6 +1224,9 @@ int CVideoDatabase::AddToTable(const CStdString& table, const CStdString& firstF
 
 int CVideoDatabase::AddSet(const CStdString& strSet)
 {
+  if (strSet.empty())
+    return -1;
+
   return AddToTable("sets", "idSet", "strSet", strSet);
 }
 
@@ -1358,12 +1359,6 @@ void CVideoDatabase::RemoveFromLinkTable(const char *table, const char *firstFie
   {
     CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
   }
-}
-
-//****Sets****
-void CVideoDatabase::AddSetToMovie(int idMovie, int idSet)
-{
-  AddToLinkTable("setlinkmovie", "idSet", idSet, "idMovie", idMovie);
 }
 
 //****Tags****
@@ -1913,9 +1908,15 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
       AddActorToMovie(idMovie, idActor, it->strRole, order++);
     }
 
-    // add sets...
-    for (unsigned int i = 0; i < details.m_set.size(); i++)
-      AddSetToMovie(idMovie, AddSet(details.m_set[i]));
+    // add set...
+    int idSet = AddSet(details.m_strSet);
+    // NOTICE: use this code when backporting: https://github.com/xbmc/xbmc/commit/34a0715919510cc1067d025d1c2a51f4ba0f11a3
+    /*
+    // add art if not available
+    map<string, string> setArt;
+    if (!GetArtForItem(idSet, "set", setArt))
+      SetArtForItem(idSet, "set", artwork);
+    */
 
     // add tags...
     for (unsigned int i = 0; i < details.m_tags.size(); i++)
@@ -1934,6 +1935,10 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
     // update our movie table (we know it was added already above)
     // and insert the new row
     CStdString sql = "update movie set " + GetValueString(details, VIDEODB_ID_MIN, VIDEODB_ID_MAX, DbMovieOffsets);
+    if (idSet > 0)
+      sql += PrepareSQL(", idSet = %i", idSet);
+    else
+      sql += ", idSet = NULL";
     sql += PrepareSQL(" where idMovie=%i", idMovie);
     m_pDS->exec(sql.c_str());
     CommitTransaction();
@@ -2580,9 +2585,6 @@ void CVideoDatabase::DeleteMovie(const CStdString& strFilenameAndPath, bool bKee
     strSQL=PrepareSQL("delete from studiolinkmovie where idmovie=%i", idMovie);
     m_pDS->exec(strSQL.c_str());
 
-    strSQL=PrepareSQL("delete from setlinkmovie where idmovie=%i", idMovie);
-    m_pDS->exec(strSQL.c_str());
-
     strSQL=PrepareSQL("delete from countrylinkmovie where idMovie=%i", idMovie);
     m_pDS->exec(strSQL.c_str());
 
@@ -2849,9 +2851,9 @@ void CVideoDatabase::DeleteSet(int idSet)
     if (NULL == m_pDS.get()) return ;
 
     CStdString strSQL;
-    strSQL=PrepareSQL("delete from sets where idSet=%i", idSet);
+    strSQL=PrepareSQL("delete from sets where idSet = %i", idSet);
     m_pDS->exec(strSQL.c_str());
-    strSQL=PrepareSQL("delete from setlinkmovie where idSet=%i", idSet);
+    strSQL=PrepareSQL("update movie set idSet = null where idSet = %i", idSet);
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
@@ -3070,19 +3072,8 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(const dbiplus::sql_record* cons
     castTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
     details.m_strPictureURL.Parse();
 
-    // create sets string
-    CStdString strSQL = PrepareSQL("select sets.idSet, sets.strSet from sets,setlinkmovie where setlinkmovie.idMovie=%i and setlinkmovie.idSet=sets.idSet order by setlinkmovie.ROWID",idMovie);
-    m_pDS2->query(strSQL.c_str());
-    while (!m_pDS2->eof())
-    {
-      details.m_set.push_back(m_pDS2->fv("sets.strSet").get_asString());
-      details.m_setId.push_back(m_pDS2->fv("sets.idSet").get_asInt());
-
-      m_pDS2->next();
-    }
-
     // get tags
-    strSQL = PrepareSQL("SELECT tag.strTag FROM tag, taglinks WHERE taglinks.idMedia = %i AND taglinks.media_type = 'movie' AND taglinks.idTag = tag.idTag ORDER BY tag.idTag", idMovie);
+    CStdString strSQL = PrepareSQL("SELECT tag.strTag FROM tag, taglinks WHERE taglinks.idMedia = %i AND taglinks.media_type = 'movie' AND taglinks.idTag = tag.idTag ORDER BY tag.idTag", idMovie);
     m_pDS2->query(strSQL.c_str());
     while (!m_pDS2->eof())
     {
@@ -3095,7 +3086,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(const dbiplus::sql_record* cons
     GetLinksToTvShow(idMovie,links);
     for (unsigned int i=0;i<links.size();++i)
     {
-      strSQL = PrepareSQL("select c%02d from tvshow where idShow=%i",
+      CStdString strSQL = PrepareSQL("select c%02d from tvshow where idShow=%i",
                          VIDEODB_ID_TV_TITLE,links[i]);
       m_pDS2->query(strSQL.c_str());
       if (!m_pDS2->eof())
@@ -3226,6 +3217,8 @@ void CVideoDatabase::GetCommonDetails(auto_ptr<Dataset> &pDS, CVideoInfoTag &det
 
 void CVideoDatabase::GetCommonDetails(const dbiplus::sql_record* const record, CVideoInfoTag &details)
 {
+  details.m_iSetId = record->at(VIDEODB_DETAILS_SET_ID).get_asInt();
+  details.m_strSet = record->at(VIDEODB_DETAILS_SET_NAME).get_asInt();
   details.m_iFileId = record->at(VIDEODB_DETAILS_FILEID).get_asInt();
   details.m_strPath = record->at(VIDEODB_DETAILS_PATH).get_asString();
   CStdString strFileName = record->at(VIDEODB_DETAILS_FILE).get_asString();
@@ -4693,10 +4686,8 @@ bool CVideoDatabase::GetSetsByWhere(const CStdString& strBaseDir, const Filter &
     if (!videoUrl.FromString(strBaseDir))
       return false;
 
-    CStdString strSQL = "SELECT movieview.*, sets.idSet, sets.strSet FROM movieview"
-                       " JOIN setlinkmovie ON movieview.idMovie = setlinkmovie.idMovie"
-                       " JOIN (SELECT idSet, COUNT(1) AS c FROM setlinkmovie GROUP BY idSet HAVING c>1) s2 ON s2.idSet = sets.idSet"
-                       " JOIN sets ON setlinkmovie.idSet = sets.idSet ";
+    CStdString strSQL = "SELECT movieview.*, sets.strSet FROM movieview"
+                        " JOIN sets ON movieview.idSet = sets.idSet ";
     if (!filter.join.empty())
       strSQL += filter.join;
     if (!filter.where.empty())
@@ -4720,7 +4711,7 @@ bool CVideoDatabase::GetSetsByWhere(const CStdString& strBaseDir, const Filter &
         continue;
 
       // get the setid and check if we already have this set
-      int idSet = m_pDS->fv("sets.idSet").get_asInt();
+      int idSet = m_pDS->fv("movieview.idSet").get_asInt();
       if ((it = mapSets.find(idSet)) == mapSets.end())
       {
         // add the set to the list of sets
@@ -4798,7 +4789,7 @@ bool CVideoDatabase::GetSetsByWhere(const CStdString& strBaseDir, const Filter &
         }
         if (!thumb || !fanart) // use the first item's thumb
         {
-          CStdString strSQL = PrepareSQL("select strPath, strFileName from movieview join setlinkmovie on setlinkmovie.idMovie=movieview.idmovie where setlinkmovie.idSet=%u",it->first);
+          CStdString strSQL = PrepareSQL("select strPath, strFileName from movieview where idSet=%u",it->first);
           m_pDS2->query(strSQL.c_str());
           if (!m_pDS2->eof())
           {
@@ -5680,7 +5671,7 @@ bool CVideoDatabase::GetMoviesByWhere(const CStdString& strBaseDir, const Filter
       CStdString movieSetsWhere;
       if (setItems.Size() > 0)
       {
-        movieSetsWhere = "movieview.idMovie NOT IN (SELECT idMovie FROM setlinkmovie s1 JOIN(SELECT idSet, COUNT(1) AS c FROM setlinkmovie GROUP BY idSet HAVING c>1) s2 ON s2.idSet=s1.idSet WHERE s1.idSet IN (";
+        movieSetsWhere = "movieview.idMovie NOT IN (SELECT idMovie FROM movieview WHERE movieview.idSet IN (";
         for (int index = 0; index < setItems.Size(); index++)
           movieSetsWhere.AppendFormat("%s%d", index > 0 ? "," : "", setItems[index]->GetVideoInfoTag()->m_iDbId);
         movieSetsWhere += "))";
@@ -6285,7 +6276,9 @@ bool CVideoDatabase::HasSets() const
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    m_pDS->query( "select idSet from sets" );
+    m_pDS->query("SELECT movieview.idSet,COUNT(1) AS c FROM movieview "
+                 "JOIN sets ON sets.idSet = movieview.idSet "
+                 "GROUP BY movieview.idSet HAVING c>1");
     bool bResult = (m_pDS->num_rows() > 0);
     m_pDS->close();
     return bResult;
@@ -7136,9 +7129,9 @@ void CVideoDatabase::GetMoviesByName(const CStdString& strSearch, CFileItemList&
     if (NULL == m_pDS.get()) return;
 
     if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-      strSQL = PrepareSQL("select movie.idmovie,movie.c%02d,path.strPath from movie,files,path where files.idfile=movie.idfile and files.idPath=path.idPath and movie.c%02d like '%%%s%%'",VIDEODB_ID_TITLE,VIDEODB_ID_TITLE,strSearch.c_str());
+      strSQL = PrepareSQL("select movie.idMovie,movie.c%02d,path.strPath, movie.idSet from movie,files,path where files.idFile=movie.idFile and files.idPath=path.idPath and movie.c%02d like '%%%s%%'",VIDEODB_ID_TITLE,VIDEODB_ID_TITLE,strSearch.c_str());
     else
-      strSQL = PrepareSQL("select movie.idmovie,movie.c%02d from movie where movie.c%02d like '%%%s%%'",VIDEODB_ID_TITLE,VIDEODB_ID_TITLE,strSearch.c_str());
+      strSQL = PrepareSQL("select movie.idMovie,movie.c%02d, movie.idSet from movie where movie.c%02d like '%%%s%%'",VIDEODB_ID_TITLE,VIDEODB_ID_TITLE,strSearch.c_str());
     m_pDS->query( strSQL.c_str() );
 
     while (!m_pDS->eof())
@@ -7151,18 +7144,16 @@ void CVideoDatabase::GetMoviesByName(const CStdString& strSearch, CFileItemList&
         }
 
       int movieId = m_pDS->fv("movie.idMovie").get_asInt();
-      CStdString strSQL2 = PrepareSQL("select idSet from setlinkmovie where idMovie=%i",movieId); 
-      m_pDS2->query(strSQL2.c_str());
+      int setId = m_pDS->fv("movie.idSet").get_asInt();
       CFileItemPtr pItem(new CFileItem(m_pDS->fv(1).get_asString()));
       CStdString path;
-      if (m_pDS2->eof())
-        path.Format("videodb://1/2/%i",movieId);
+      if (setId <= 0)
+        path.Format("videodb://1/2/%i", movieId);
       else
-        path.Format("videodb://1/7/%i/%i",m_pDS2->fv(0).get_asInt(),movieId);
+        path.Format("videodb://1/7/%i/%i", setId, movieId);
       pItem->SetPath(path);
       pItem->m_bIsFolder=false;
       items.Add(pItem);
-      m_pDS2->close();
       m_pDS->next();
     }
     m_pDS->close();
@@ -7734,10 +7725,6 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       CLog::Log(LOGDEBUG, "%s Cleaning studiolinkmovie table", __FUNCTION__);
       sql = "delete from studiolinkmovie where idMovie in " + moviesToDelete;
       m_pDS->exec(sql.c_str());
-
-      CLog::Log(LOGDEBUG, "%s Cleaning setlinkmovie table", __FUNCTION__);
-      sql = "delete from setlinkmovie where idMovie in " + moviesToDelete;
-      m_pDS->exec(sql.c_str());
     }
 
     if ( ! episodesToDelete.IsEmpty() )
@@ -7881,7 +7868,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     m_pDS->exec(sql.c_str());
 
     CLog::Log(LOGDEBUG, "%s Cleaning set table", __FUNCTION__);
-    sql = "delete from sets where idSet not in (select distinct idSet from setlinkmovie)";
+    sql = "delete from sets where idSet not in (select distinct idSet from movie)";
     m_pDS->exec(sql.c_str());
 
     CommitTransaction();
@@ -9004,10 +8991,7 @@ bool CVideoDatabase::GetFilter(const CVideoDbUrl &videoUrl, Filter &filter) cons
 
     option = options.find("setid");
     if (option != options.end())
-    {
-      filter.AppendJoin(PrepareSQL("join setlinkmovie on setlinkmovie.idMovie = movieview.idMovie"));
-      filter.AppendWhere(PrepareSQL("setlinkmovie.idSet = %i", (int)option->second.asInteger()));
-    }
+      filter.AppendWhere(PrepareSQL("movieview.idSet = %i", (int)option->second.asInteger()));
 
     option = options.find("tagid");
     if (option != options.end())

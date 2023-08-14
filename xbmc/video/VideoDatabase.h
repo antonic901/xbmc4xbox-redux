@@ -67,14 +67,16 @@ namespace VIDEO
 // these defines are based on how many columns we have and which column certain data is going to be in
 // when we do GetDetailsForMovie()
 #define VIDEODB_MAX_COLUMNS 24
-#define VIDEODB_DETAILS_FILEID                 1
-#define VIDEODB_DETAILS_FILE                   VIDEODB_MAX_COLUMNS + 2
-#define VIDEODB_DETAILS_PATH                   VIDEODB_MAX_COLUMNS + 3
-#define VIDEODB_DETAILS_PLAYCOUNT              VIDEODB_MAX_COLUMNS + 4
-#define VIDEODB_DETAILS_LASTPLAYED             VIDEODB_MAX_COLUMNS + 5
-#define VIDEODB_DETAILS_DATEADDED		           VIDEODB_MAX_COLUMNS + 6
-#define VIDEODB_DETAILS_RESUME_TIME		         VIDEODB_MAX_COLUMNS + 7
-#define VIDEODB_DETAILS_TOTAL_TIME		         VIDEODB_MAX_COLUMNS + 8
+#define VIDEODB_DETAILS_FILEID      1
+#define VIDEODB_DETAILS_SET_ID			           VIDEODB_MAX_COLUMNS + 2
+#define VIDEODB_DETAILS_SET_NAME		           VIDEODB_MAX_COLUMNS + 3
+#define VIDEODB_DETAILS_FILE			             VIDEODB_MAX_COLUMNS + 4
+#define VIDEODB_DETAILS_PATH			             VIDEODB_MAX_COLUMNS + 5
+#define VIDEODB_DETAILS_PLAYCOUNT		           VIDEODB_MAX_COLUMNS + 6
+#define VIDEODB_DETAILS_LASTPLAYED	           VIDEODB_MAX_COLUMNS + 7
+#define VIDEODB_DETAILS_DATEADDED		           VIDEODB_MAX_COLUMNS + 8
+#define VIDEODB_DETAILS_RESUME_TIME	           VIDEODB_MAX_COLUMNS + 9
+#define VIDEODB_DETAILS_TOTAL_TIME	           VIDEODB_MAX_COLUMNS + 10
 
 #define VIDEODB_DETAILS_EPISODE_TVSHOW_ID      VIDEODB_MAX_COLUMNS + 2
 #define VIDEODB_DETAILS_EPISODE_FILE           VIDEODB_MAX_COLUMNS + 3
@@ -686,8 +688,6 @@ protected:
   void AddLinkToActor(const char *table, int actorID, const char *secondField, int secondID, const CStdString &role, int order);
   void AddToLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID, const char *typeField = NULL, const char *type = NULL);
   void RemoveFromLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID, const char *typeField = NULL, const char *type = NULL);
-
-  void AddSetToMovie(int idMovie, int idSet);
 
   void AddActorToMovie(int idMovie, int idActor, const CStdString& strRole, int order);
   void AddActorToTvShow(int idTvShow, int idActor, const CStdString& strRole, int order);
