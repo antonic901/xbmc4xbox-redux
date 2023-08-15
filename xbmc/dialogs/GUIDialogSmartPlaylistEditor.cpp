@@ -56,6 +56,7 @@ typedef struct
 
 static const translateType types[] = { { CGUIDialogSmartPlaylistEditor::TYPE_SONGS, "songs", 134 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_ALBUMS, "albums", 132 },
+                                       { CGUIDialogSmartPlaylistEditor::TYPE_ARTISTS, "artists", 133 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_MIXED, "mixed", 20395 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_MUSICVIDEOS, "musicvideos", 20389 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_MOVIES, "movies", 20342 },
@@ -355,6 +356,7 @@ void CGUIDialogSmartPlaylistEditor::OnInitWindow()
   { // music types + mixed
     allowedTypes.push_back(TYPE_SONGS);
     allowedTypes.push_back(TYPE_ALBUMS);
+    allowedTypes.push_back(TYPE_ARTISTS);
     allowedTypes.push_back(TYPE_MIXED);
   }
   else if (m_mode.Equals("video"))

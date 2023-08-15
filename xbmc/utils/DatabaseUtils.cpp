@@ -125,6 +125,20 @@ std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQu
     else if (field == FieldGenre) return "songview.strGenre";
     else if (field == FieldDateAdded && queryPart == DatabaseQueryPartOrderBy) return "songview.idSong";     // only used for order clauses
   }
+  else if (mediaType == MediaTypeArtist)
+  {
+    if (field == FieldId) return "artistview.idArtist";
+    else if (field == FieldArtist) return "artistview.strArtist";
+    else if (field == FieldGenre) return "artistview.strGenres";
+    else if (field == FieldMoods) return "artistview.strMoods";
+    else if (field == FieldStyles) return "artistview.strStyles";
+    else if (field == FieldInstruments) return "artistview.strInstruments";
+    else if (field == FieldBiography) return "artistview.strBiography";
+    else if (field == FieldBorn) return "artistview.strBorn";
+    else if (field == FieldBandFormed) return "artistview.strFormed";
+    else if (field == FieldDisbanded) return "artistview.strDisbanded";
+    else if (field == FieldDied) return "artistview.strDied";
+  }
   else if (mediaType == MediaTypeMusicVideo)
   {
     CStdString result;
@@ -294,8 +308,22 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
     else if (field == FieldComment) return CMusicDatabase::song_comment;
     else if (field == FieldAlbum) return CMusicDatabase::song_strAlbum;
     else if (field == FieldPath) return CMusicDatabase::song_strPath;
-    else if (field == FieldArtist || field == FieldAlbumArtist) return CMusicDatabase::song_strArtists;
     else if (field == FieldGenre) return CMusicDatabase::song_strGenres;
+    else if (field == FieldArtist || field == FieldAlbumArtist) return CMusicDatabase::song_strArtists;
+  }
+  else if (mediaType == MediaTypeArtist)
+  {
+    if (field == FieldId) return CMusicDatabase::artist_idArtist;
+    else if (field == FieldArtist) return CMusicDatabase::artist_strArtist;
+    else if (field == FieldGenre) return CMusicDatabase::artist_strGenres;
+    else if (field == FieldMoods) return CMusicDatabase::artist_strMoods;
+    else if (field == FieldStyles) return CMusicDatabase::artist_strStyles;
+    else if (field == FieldInstruments) return CMusicDatabase::artist_strInstruments;
+    else if (field == FieldBiography) return CMusicDatabase::artist_strBiography;
+    else if (field == FieldBorn) return CMusicDatabase::artist_strBorn;
+    else if (field == FieldBandFormed) return CMusicDatabase::artist_strFormed;
+    else if (field == FieldDisbanded) return CMusicDatabase::artist_strDisbanded;
+    else if (field == FieldDied) return CMusicDatabase::artist_strDied;
   }
   else if (mediaType == MediaTypeMusicVideo)
   {
@@ -323,8 +351,7 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
     // the first field is the item's ID and the second is the item's file ID
     index += 2;
   }
-  else
-  if (mediaType == MediaTypeMovie)
+  else if (mediaType == MediaTypeMovie)
   {
     if (field == FieldId) return 0;
     else if (field == FieldTitle) index = VIDEODB_ID_TITLE;
@@ -438,6 +465,8 @@ bool DatabaseUtils::GetSelectFields(const Fields &fields, MediaType mediaType, F
   {
     sortFields.insert(FieldTrackNumber);
   }
+  else if (mediaType == MediaTypeArtist)
+    sortFields.insert(FieldArtist);
 
   selectFields.clear();
   for (Fields::const_iterator it = sortFields.begin(); it != sortFields.end(); it++)
@@ -585,6 +614,10 @@ bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fie
       result[FieldLabel] = label.str();
       break;
     }
+
+    case MediaTypeArtist:
+      result[FieldLabel] = result.find(FieldArtist)->second.asString();
+      break;
 
     default:
       break;

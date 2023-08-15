@@ -102,7 +102,13 @@ static const translateField fields[] = {
   { "subtitlelanguage",  FieldSubtitleLanguage,        SortBySubtitleLanguage,         CSmartPlaylistRule::TEXTIN_FIELD,     21448 },
   { "random",            FieldRandom,                  SortByRandom,                   CSmartPlaylistRule::TEXT_FIELD,       590 },
   { "playlist",          FieldPlaylist,                SortByPlaylistOrder,            CSmartPlaylistRule::PLAYLIST_FIELD,   559 },
-  { "tag",               FieldTag,                     SortByNone,                     CSmartPlaylistRule::BROWSEABLE_FIELD, 20459 }
+  { "tag",               FieldTag,                     SortByNone,                     CSmartPlaylistRule::BROWSEABLE_FIELD, 20459 },
+  { "instruments",       FieldInstruments,             SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21892 },
+  { "biography",         FieldBiography,               SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21887 },
+  { "born",              FieldBorn,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21893 },
+  { "bandformed",        FieldBandFormed,              SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21894 },
+  { "disbanded",         FieldDisbanded,               SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21896 },
+  { "died",              FieldDied,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,       21897 }
 };
 
 #define NUM_FIELDS sizeof(fields) / sizeof(translateField)
@@ -214,7 +220,7 @@ bool CSmartPlaylistRule::Load(const CVariant &obj)
   if (m_operator == OPERATOR_TRUE || m_operator == OPERATOR_FALSE)
     return true;
 
-   if (!obj.isMember("value") || (!obj["value"].isString() && !obj["value"].isArray()))
+  if (!obj.isMember("value") || (!obj["value"].isString() && !obj["value"].isArray()))
     return false;
 
   const CVariant &value = obj["value"];
@@ -373,6 +379,19 @@ vector<Field> CSmartPlaylistRule::GetFields(const CStdString &type)
     fields.push_back(FieldMusicLabel);
     fields.push_back(FieldRating);
   }
+  else if (type == "artists")
+  {
+    fields.push_back(FieldArtist);
+    fields.push_back(FieldGenre);
+    fields.push_back(FieldMoods);
+    fields.push_back(FieldStyles);
+    fields.push_back(FieldInstruments);
+    fields.push_back(FieldBiography);
+    fields.push_back(FieldBorn);
+    fields.push_back(FieldBandFormed);
+    fields.push_back(FieldDisbanded);
+    fields.push_back(FieldDied);
+  }
   else if (type == "tvshows")
   {
     fields.push_back(FieldTitle);
@@ -511,6 +530,10 @@ std::vector<SortBy> CSmartPlaylistRule::GetOrders(const CStdString &type)
     orders.push_back(SortByAlbumType);
     //orders.push_back(SortByMusicLabel);
     orders.push_back(SortByRating);
+  }
+  else if (type == "artists")
+  {
+    orders.push_back(SortByArtist);
   }
   else if (type == "tvshows")
   {
@@ -701,7 +724,7 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
     if (strType == "movies")
     {
       if (m_field == FieldInProgress)
-        return "movieview.idFile " + negate + " in (select idFile from bookmark where type = 1)";
+        return "movieview.idFile " + negate + " IN (select idFile from bookmark where type = 1)";
       else if (m_field == FieldTrailer)
         return negate + GetField(m_field, strType) + "!= ''";
     }
@@ -1248,7 +1271,7 @@ const vector<CSmartPlaylistRule> &CSmartPlaylist::GetRules() const
 
 CStdString CSmartPlaylist::GetSaveLocation() const
 {
-  if (m_playlistType == "songs" || m_playlistType == "albums")
+  if (m_playlistType == "songs" || m_playlistType == "albums" || m_playlistType == "artists")
     return "music";
   else if (m_playlistType == "mixed")
     return "mixed";
