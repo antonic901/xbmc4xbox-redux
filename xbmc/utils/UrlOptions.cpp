@@ -55,6 +55,14 @@ std::string CUrlOptions::GetOptionsString(bool withLeadingSeperator /* = false *
   return options;
 }
 
+void CUrlOptions::AddOption(const std::string &key, const char *value)
+{
+  if (key.empty() || value == NULL)
+    return;
+
+  return AddOption(key, string(value));
+}
+
 void CUrlOptions::AddOption(const std::string &key, const std::string &value)
 {
   if (key.empty())
@@ -136,6 +144,11 @@ void CUrlOptions::AddOptions(const std::string &options)
   }
 }
 
+void CUrlOptions::AddOptions(const CUrlOptions &options)
+{
+  m_options.insert(options.m_options.begin(), options.m_options.end());
+}
+
 bool CUrlOptions::HasOption(const std::string &key) const
 {
   if (key.empty())
@@ -148,9 +161,11 @@ bool CUrlOptions::GetOption(const std::string &key, CVariant &value) const
 {
   if (key.empty())
     return false;
+
   UrlOptions::const_iterator option = m_options.find(key);
   if (option == m_options.end())
     return false;
+
   value = option->second;
   return true;
 }
