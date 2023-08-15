@@ -5541,6 +5541,7 @@ bool CVideoDatabase::GetSeasonsNav(const CStdString& strBaseDir, CFileItemList& 
       }
       m_pDS->close();
     }
+    items.SetPath(videoUrl.ToString());
 
     // now add any linked movies
     Filter movieFilter;
@@ -5756,6 +5757,7 @@ bool CVideoDatabase::GetMoviesByWhere(const CStdString& strBaseDir, const Filter
         items.Add(pItem);
       }
     }
+    items.SetPath(videoUrl.ToString());
 
     // cleanup
     m_pDS->close();
@@ -5869,6 +5871,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const CStdString& strBaseDir, const Filte
     }
 
     Stack(items, VIDEODB_CONTENT_TVSHOWS, !filter.order.empty() || sortDescription.sortBy != SortByNone);
+    items.SetPath(videoUrl.ToString());
 
     // cleanup
     m_pDS->close();
@@ -6166,7 +6169,7 @@ bool CVideoDatabase::GetEpisodesByWhere(const CStdString& strBaseDir, const Filt
 
         CVideoDbUrl itemUrl = videoUrl;
         CStdString path;
-        if (appendFullShowPath)
+        if (appendFullShowPath && videoUrl.GetItemType() != "episodes")
           path.Format("%ld/%ld/%ld", record->at(VIDEODB_DETAILS_EPISODE_TVSHOW_ID).get_asInt(), movie.m_iSeason, idEpisode);
         else
           path.Format("%ld", idEpisode);
@@ -6179,6 +6182,7 @@ bool CVideoDatabase::GetEpisodesByWhere(const CStdString& strBaseDir, const Filt
         items.Add(pItem);
       }
     }
+    items.SetPath(videoUrl.ToString());
 
     // cleanup
     m_pDS->close();
@@ -6998,6 +7002,7 @@ bool CVideoDatabase::GetMusicVideosByWhere(const CStdString &baseDir, const Filt
         items.Add(item);
       }
     }
+    items.SetPath(videoUrl.ToString());
 
     // cleanup
     m_pDS->close();
