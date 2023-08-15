@@ -403,19 +403,16 @@ void CVideoInfoTag::Archive(CArchive& ar)
 
 void CVideoInfoTag::Serialize(CVariant& value)
 {
-  /* TODO:
-     All the StringUtils::Join() calls can be removed once backwards-compatibility to
-     JSON-RPC v4 can be broken */
-  value["director"] = StringUtils::Join(m_director, " / ");
-  value["writer"] = StringUtils::Join(m_writingCredits, " / ");
-  value["genre"] = StringUtils::Join(m_genre, " / ");
-  value["country"] = StringUtils::Join(m_country, " / ");
+  value["director"] = m_director;
+  value["writer"] = m_writingCredits;
+  value["genre"] = m_genre;
+  value["country"] = m_country;
   value["tagline"] = m_strTagLine;
   value["plotoutline"] = m_strPlotOutline;
   value["plot"] = m_strPlot;
   value["title"] = m_strTitle;
   value["votes"] = m_strVotes;
-  value["studio"] = StringUtils::Join(m_studio, " / ");
+  value["studio"] = m_studio;
   value["trailer"] = m_strTrailer;
   for (unsigned int i = 0; i < m_cast.size(); ++i)
   {
@@ -438,7 +435,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["firstaired"] = m_firstAired.GetAsDBDate();
   value["showtitle"] = m_strShowTitle;
   value["album"] = m_strAlbum;
-  value["artist"] = StringUtils::Join(m_artist, " / ");
+  value["artist"] = m_artist;
   value["playcount"] = m_playCount;
   value["lastplayed"] = m_lastPlayed.GetAsDBDateTime();
   value["top250"] = m_iTop250;
@@ -449,7 +446,7 @@ void CVideoInfoTag::Serialize(CVariant& value)
   value["dbid"] = m_iDbId;
   value["fileid"] = m_iFileId;
   value["track"] = m_iTrack;
-  value["showlink"] = StringUtils::Join(m_showLink, " / ");
+  value["showlink"] = m_showLink;
   m_streamDetails.Serialize(value["streamDetails"]);
   CVariant resume = CVariant(CVariant::VariantTypeObject);
   resume["position"] = (float)m_resumePoint.timeInSeconds;
