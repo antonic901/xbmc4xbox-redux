@@ -96,9 +96,10 @@ namespace VIDEO
 
 #define VIDEODB_DETAILS_TVSHOW_PATH            VIDEODB_MAX_COLUMNS + 1
 #define VIDEODB_DETAILS_TVSHOW_DATEADDED		   VIDEODB_MAX_COLUMNS + 2
-#define VIDEODB_DETAILS_TVSHOW_NUM_EPISODES	   VIDEODB_MAX_COLUMNS + 3
-#define VIDEODB_DETAILS_TVSHOW_NUM_WATCHED	   VIDEODB_MAX_COLUMNS + 4
-#define VIDEODB_DETAILS_TVSHOW_NUM_SEASONS	   VIDEODB_MAX_COLUMNS + 5
+#define VIDEODB_DETAILS_TVSHOW_LASTPLAYED	     VIDEODB_MAX_COLUMNS + 3
+#define VIDEODB_DETAILS_TVSHOW_NUM_EPISODES	   VIDEODB_MAX_COLUMNS + 4
+#define VIDEODB_DETAILS_TVSHOW_NUM_WATCHED	   VIDEODB_MAX_COLUMNS + 5
+#define VIDEODB_DETAILS_TVSHOW_NUM_SEASONS	   VIDEODB_MAX_COLUMNS + 6
 
 #define VIDEODB_DETAILS_MUSICVIDEO_FILE			    VIDEODB_MAX_COLUMNS + 2
 #define VIDEODB_DETAILS_MUSICVIDEO_PATH			    VIDEODB_MAX_COLUMNS + 3
@@ -779,7 +780,7 @@ private:
    */
   bool LookupByFolders(const CStdString &path, bool shows = false);
   
-  virtual int GetMinVersion() const { return 46; };
+  virtual int GetMinVersion() const { return 69; };
   const char *GetDefaultDBName() const { return "MyVideos34.db"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);

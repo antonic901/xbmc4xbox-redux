@@ -33,7 +33,7 @@
 class CAlbum
 {
 public:
-  CAlbum() { idAlbum = 0; iRating = 0; iYear = 0; };
+  CAlbum() { idAlbum = 0; iRating = 0; iYear = 0; iTimesPlayed = 0; };
   bool operator<(const CAlbum &a) const;
 
   void Reset()
@@ -53,6 +53,7 @@ public:
     iRating=-1;
     iYear=-1;
     bCompilation = false;
+    iTimesPlayed = 0;
     songs.clear();
   }
 
@@ -74,6 +75,7 @@ public:
   int iRating;
   int iYear;
   bool bCompilation;
+  int iTimesPlayed;
   VECSONGS songs;
 };
 

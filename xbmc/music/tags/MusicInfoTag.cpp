@@ -410,6 +410,7 @@ void CMusicInfoTag::SetAlbum(const CAlbum& album)
   SYSTEMTIME stTime;
   stTime.wYear = album.iYear;
   SetReleaseDate(stTime);
+  m_iTimesPlayed = album.iTimesPlayed;
   m_iDbId = album.idAlbum;
   m_type = "album";
   m_bLoaded = true;

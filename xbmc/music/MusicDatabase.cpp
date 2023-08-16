@@ -236,12 +236,16 @@ void CMusicDatabase::CreateViews()
               "  album.iYear AS iYear,"
               "  strThumb, idAlbumInfo, strMoods, strStyles, strThemes,"
               "  strReview, strLabel, strType, strImage, iRating, "
-              "  bCompilation "
+              "  bCompilation, "
+              "  sum(song.iTimesPlayed) AS iTimesPlayed "
               "FROM album "
               "  LEFT OUTER JOIN thumb ON"
               "    album.idThumb=thumb.idThumb"
               "  LEFT OUTER JOIN albuminfo ON"
-              "    album.idAlbum=albuminfo.idAlbum");
+              "    album.idAlbum=albuminfo.idAlbum"
+              "  LEFT OUTER JOIN song ON"
+              "    album.idAlbum=song.idAlbum "
+              "GROUP BY album.idAlbum");
 
   CLog::Log(LOGINFO, "create artist view");
   try
@@ -929,6 +933,7 @@ CAlbum CMusicDatabase::GetAlbumFromDataset(const dbiplus::sql_record* const reco
   album.strLabel = record->at(album_strLabel).get_asString();
   album.strType = record->at(album_strType).get_asString();
   album.bCompilation = record->at(album_bCompilation).get_asInt() == 1;
+  album.iTimesPlayed = record->at(album_iTimesPlayed).get_asInt();
   return album;
 }
 
@@ -1445,11 +1450,9 @@ bool CMusicDatabase::GetTop100Albums(VECALBUMS& albums)
 
     // NOTE: The song.idAlbum is needed for the group by, as for some reason group by albumview.idAlbum doesn't work
     //       consistently - possibly an SQLite bug, as it works fine in SQLiteSpy (v3.3.17)
-    CStdString strSQL = "select albumview.*, sum(song.iTimesPlayed) as total, song.idAlbum from song "
-                    "join albumview on albumview.idAlbum=song.idAlbum "
-                    "where song.iTimesPlayed>0 "
-                    "group by song.idAlbum "
-                    "order by total desc "
+    CStdString strSQL = "select albumview.* from albumview "
+                    "where albumview.iTimesPlayed>0 and albumview.strAlbum != '' "
+                    "order by albumview.iTimesPlayed desc "
                     "limit 100 ";
 
     CLog::Log(LOGDEBUG, "%s query: %s", __FUNCTION__, strSQL.c_str());

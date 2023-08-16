@@ -200,7 +200,7 @@ protected:
   const char *GetDefaultDBName() const { return "MyMusic7"; };
 
   virtual bool CreateTables();
-  virtual int GetMinVersion() const { return 15; };
+  virtual int GetMinVersion() const { return 16; };
   int AddAlbum(const CStdString& strAlbum1, const CStdString &strArtist1, int idThumb, const CStdString& strGenre, int year, bool bCompilation);
   int AddGenre(const CStdString& strGenre);
   int AddArtist(const CStdString& strArtist);
@@ -292,7 +292,8 @@ private:
     album_strType,
     album_strThumbURL,
     album_iRating,
-    album_bCompilation
+    album_bCompilation,
+    album_iTimesPlayed
   } AlbumFields;
 
   enum _ArtistFields
