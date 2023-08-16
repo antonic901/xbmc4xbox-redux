@@ -99,8 +99,8 @@ namespace XFILE
         // store the smartplaylist as JSON in the URL as well
         videoUrl.AddOption("xsp", xsp);
 
-        CDatabase::Filter filter;
-        success = db.GetSortedVideos(mediaType, videoUrl.ToString(), sorting, items, filter, true);
+        CDatabase::Filter dbfilter;
+        success = db.GetSortedVideos(mediaType, videoUrl.ToString(), sorting, items, dbfilter, true);
         db.Close();
       }
     }
@@ -117,8 +117,8 @@ namespace XFILE
         // store the smartplaylist as JSON in the URL as well
         musicUrl.AddOption("xsp", xsp);
 
-        CDatabase::Filter filter;
-        success = db.GetAlbumsByWhere(musicUrl.ToString(), filter, items, sorting);
+        CDatabase::Filter dbfilter;
+        success = db.GetAlbumsByWhere(musicUrl.ToString(), dbfilter, items, sorting);
         items.SetContent("albums");
         db.Close();
       }
@@ -161,8 +161,8 @@ namespace XFILE
         // store the smartplaylist as JSON in the URL as well
         musicUrl.AddOption("xsp", xsp);
 
-        CDatabase::Filter filter;
-        success = db.GetSongsByWhere(musicUrl.ToString(), filter, items, sorting);
+        CDatabase::Filter dbfilter;
+        success = db.GetSongsByWhere(musicUrl.ToString(), dbfilter, items, sorting);
         items.SetContent("songs");
         db.Close();
       }
