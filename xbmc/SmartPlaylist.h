@@ -188,6 +188,9 @@ public:
 
   CStdString GetSaveLocation() const;
 
+  static void GetAvailableFields(const std::string &type, std::vector<std::string> &fieldList);
+  static void GetAvailableOperators(std::vector<std::string> &operatorList);
+
 private:
   friend class CGUIDialogSmartPlaylistEditor;
 
