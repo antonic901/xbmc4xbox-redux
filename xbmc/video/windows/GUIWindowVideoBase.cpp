@@ -1469,7 +1469,7 @@ void CGUIWindowVideoBase::PlayMovie(const CFileItem *item)
   g_playlistPlayer.Play(0);
 
   if(!g_application.IsPlayingVideo())
-    m_thumbLoader.Load(*m_vecItems);
+    m_thumbLoader.Load(*m_unfilteredItems);
 }
 
 void CGUIWindowVideoBase::OnDeleteItem(int iItem)
