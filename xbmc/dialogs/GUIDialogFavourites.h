@@ -45,6 +45,7 @@ protected:
   void OnMoveItem(int item, int amount);
   void OnDelete(int item);
   void OnRename(int item);
+  void OnSetThumb(int item);
   void UpdateList();
 
   CFileItemList* m_favourites;
