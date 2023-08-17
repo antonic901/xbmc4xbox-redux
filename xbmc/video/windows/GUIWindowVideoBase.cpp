@@ -1680,7 +1680,34 @@ bool CGUIWindowVideoBase::Update(const CStdString &strDirectory)
 
 bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
 {
-  bool bResult = CGUIMediaWindow::GetDirectory(strDirectory,items);
+  CStdString directory = strDirectory;
+
+  // check if the path contains a filter and if so load it and
+  // remove it from the path to get proper GUI view states etc
+  CSmartPlaylist filterXsp;
+  CVideoDbUrl videoUrl;
+  if (videoUrl.FromString(strDirectory))
+  {
+    CVariant filter;
+    if (videoUrl.GetOption("filter", filter))
+    {
+      // load the filter and if it's type does not match the
+      // path's item type reset it
+      if (filterXsp.LoadFromJson(filter.asString()) && !filterXsp.GetType().Equals(videoUrl.GetItemType().c_str()))
+        filterXsp.Reset();
+
+      // remove the "filter" option from the path
+      videoUrl.AddOption("filter", "");
+    }
+    directory = videoUrl.ToString();
+  }
+
+  bool bResult = CGUIMediaWindow::GetDirectory(directory, items);
+
+  // (re-)apply the previously retrieved filter
+  // because it was reset in CGUIMediaWindow::GetDirectory()
+  if (!filterXsp.IsEmpty())
+    m_filter = filterXsp;
 
   // add in the "New Playlist" item if we're in the playlists folder
   if ((items.GetPath() == "special://videoplaylists/") && !items.Contains("newplaylist://"))
@@ -1709,7 +1736,7 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
   // (ideally this should be removed, and our stack regexps tidied up if necessary
   // No "normal" episodes should stack, and multi-parts should be supported)
   SScraperInfo info;
-  m_database.GetScraperForPath(strDirectory, info);
+  m_database.GetScraperForPath(directory, info);
   if (!info.strContent.IsEmpty() && info.strContent == "tvshows")
     m_stackingAvailable = false;
 

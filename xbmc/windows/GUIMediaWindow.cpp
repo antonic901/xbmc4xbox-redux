@@ -214,7 +214,14 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
       CGUIDialogContextMenu* pDlg = (CGUIDialogContextMenu*)g_windowManager.GetWindow(WINDOW_DIALOG_CONTEXT_MENU);
       if (pDlg && pDlg->IsActive())
         pDlg->Close();
-        
+
+      // get rid of any active filtering
+      if (m_canFilterAdvanced)
+      {
+        m_canFilterAdvanced = false;
+        m_filter.Reset();
+      }
+
       // Call ClearFileItems() after our window has finished doing any WindowClose
       // animations
       ClearFileItems();
@@ -600,7 +607,7 @@ bool CGUIMediaWindow::GetDirectory(const CStdString &strDirectory, CFileItemList
   if (items.Size())
     items.Clear();
 
-  CStdString strParentPath=m_history.GetParentPath();
+  CStdString strParentPath = m_history.GetParentPath();
 
   CLog::Log(LOGDEBUG,"CGUIMediaWindow::GetDirectory (%s)", strDirectory.c_str());
   CLog::Log(LOGDEBUG,"  ParentPath = [%s]", strParentPath.c_str());
@@ -662,6 +669,7 @@ bool CGUIMediaWindow::GetDirectory(const CStdString &strDirectory, CFileItemList
 
   // clear the filter
   SetProperty("filter", "");
+  m_canFilterAdvanced = false;
   m_filter.Reset();
   return true;
 }
@@ -687,9 +695,9 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     }
   }
 
-  CStdString strOldDirectory = m_vecItems->GetPath();
+  CStdString strCurrentDirectory = m_vecItems->GetPath();
 
-  m_history.SetSelectedItem(strSelectedItem, strOldDirectory);
+  m_history.SetSelectedItem(strSelectedItem, strCurrentDirectory);
 
   CFileItemList items;
   if (!GetDirectory(strDirectory, items))
@@ -697,7 +705,7 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     CLog::Log(LOGERROR,"CGUIMediaWindow::GetDirectory(%s) failed", strDirectory.c_str());
     // if the directory is the same as the old directory, then we'll return
     // false.  Else, we assume we can get the previous directory
-    if (strDirectory.Equals(strOldDirectory))
+    if (strDirectory.Equals(strCurrentDirectory))
       return false;
 
     // We assume, we can get the parent
@@ -894,6 +902,13 @@ bool CGUIMediaWindow::OnClick(int iItem)
     if (!items.AlwaysCache())
       items.RemoveDiscCache(GetID());
 
+    // if we have a filtered list, we need to add the filtered
+    // path to be able to come back to the filtered view
+    CStdString strCurrentDirectory = m_vecItems->GetPath();
+    if (m_canFilterAdvanced && !m_filter.IsEmpty() &&
+        !m_unfilteredItems->GetPath().Equals(strCurrentDirectory))
+      m_history.AddPath(strCurrentDirectory);
+
     CFileItem directory(*pItem);
     if (!Update(directory.GetPath()))
       ShowShareErrorMessage(&directory);
@@ -1050,7 +1065,6 @@ void CGUIMediaWindow::GoParentFolder()
 
   // if vector is not empty, pop parent
   // if vector is empty, parent is root source listing
-  CStdString strOldPath(m_vecItems->GetPath());
   strParent = m_history.RemoveParentPath();
   Update(strParent);
 }
@@ -1468,6 +1482,8 @@ void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
 
     if (!m_canFilterAdvanced)
       SetProperty("filter", filter);
+    else
+      m_vecItems->SetPath(items.GetPath());
   }
   
   // and update our view control + buttons
@@ -1595,6 +1611,7 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
 
   items.ClearItems();
   items.Append(filteredItems);
+  items.SetPath(resultItems.GetPath());
   return true;
 }
 
