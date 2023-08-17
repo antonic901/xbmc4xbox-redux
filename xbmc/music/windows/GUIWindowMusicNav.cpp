@@ -284,7 +284,7 @@ bool CGUIWindowMusicNav::GetDirectory(const CStdString &strDirectory, CFileItemL
     if (!items.IsMusicDb())
     {
       items.SetCachedMusicThumbs();
-      m_thumbLoader.Load(*m_vecItems);
+      m_thumbLoader.Load(*m_unfilteredItems);
     }
   }
 

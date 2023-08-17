@@ -1370,6 +1370,15 @@ void CGUIWindowMusicBase::OnPrepareFileItems(CFileItemList &items)
     items.SetCachedMusicThumbs();
 }
 
+bool CGUIWindowMusicBase::CheckFilterAdvanced(CFileItemList &items)
+{
+  CStdString content = items.GetContent();
+  if (items.IsMusicDb() && (content.Equals("artists") || content.Equals("albums") || content.Equals("songs")))
+    return true;
+
+  return false;
+}
+
 void CGUIWindowMusicBase::SetupFanart(CFileItemList& items)
 {
   // set fanart
