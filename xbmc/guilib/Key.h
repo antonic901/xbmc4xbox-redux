@@ -354,6 +354,10 @@
 #define WINDOW_MUSIC_NAV                  10502
 #define WINDOW_MUSIC_PLAYLIST_EDITOR      10503
 
+// PVR related Window and Dialog ID's
+#define WINDOW_DIALOG_PVR_TIMER_SETTING   10604
+// PVR_WINDOW VIEWS = 10694-10699
+
 //#define WINDOW_VIRTUAL_KEYBOARD           11000
 #define WINDOW_DIALOG_SELECT              12000
 #define WINDOW_MUSIC_INFO                 12001

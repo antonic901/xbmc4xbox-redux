@@ -26,15 +26,17 @@
 #include "GUIButtonControl.h"
 #include "GUISettingsSliderControl.h"
 #include "dialogs/GUIDialogSlider.h"
+#include "GUIEditControl.h"
 
 class CGUIImage;
 
+typedef std::vector<CStdString> SETTINGSTRINGS;
 typedef CStdString (*FORMATFUNCTION) (float value, float min);
 
 class SettingInfo
 {
 public:
-  enum SETTING_TYPE { NONE=0, BUTTON, CHECK, CHECK_UCHAR, SPIN, SLIDER, SEPARATOR };
+  enum SETTING_TYPE { NONE=0, EDIT, EDIT_NUM, BUTTON, BUTTON_DIALOG, CHECK, CHECK_UCHAR, SPIN, SLIDER, SEPARATOR, STRING };
   SettingInfo()
   {
     id = 0;
@@ -82,8 +84,13 @@ protected:
 
   void AddSetting(SettingInfo &setting, float width, int iControlID);
 
+  void AddEdit(unsigned int id, int label, CStdString *str, bool enabled = true);
+  void AddNumEdit(unsigned int id, int label, int *current, bool enabled = true);
   void AddButton(unsigned int id, int label, float *current = NULL, float min = 0, float interval = 0, float max = 0, FORMATFUNCTION function = NULL);
+  void AddButton(unsigned int it, int label, CStdString *str, bool bOn=true);
   void AddBool(unsigned int id, int label, bool *on, bool enabled = true);
+  void AddSpin(unsigned int id, int label, int *current, unsigned int max, const SETTINGSTRINGS &entries);
+  void AddString(unsigned int id, int label, CStdString *current);
   void AddSpin(unsigned int id, int label, int *current, unsigned int max, const int *entries);
   void AddSpin(unsigned int id, int label, int *current, unsigned int min, unsigned int max, const char* minLabel = NULL);
   void AddSpin(unsigned int id, int label, int *current, std::vector<std::pair<int, CStdString> > &values);
@@ -91,6 +98,8 @@ protected:
   void AddSlider(unsigned int id, int label, float *current, float min, float interval, float max, FORMATFUNCTION formatFunction, bool allowPopup = true);
   void AddSeparator(unsigned int id);
 
+  CGUIEditControl *m_pOriginalEdit;
+  CGUIEditControl *m_pOriginalEditNum;
   CGUISpinControlEx *m_pOriginalSpin;
   CGUIRadioButtonControl *m_pOriginalRadioButton;
   CGUIButtonControl *m_pOriginalSettingsButton;
