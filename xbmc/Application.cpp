@@ -195,6 +195,7 @@
 #include "dialogs/GUIDialogSlider.h"
 #include "cores/dlgcache.h"
 #include "guilib/GUIControlFactory.h"
+#include "dialogs/GUIDialogMediaFilter.h"
 
 #ifdef _LINUX
 #include "XHandle.h"
@@ -1315,6 +1316,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
 
   g_windowManager.Add(new CGUIDialogContentSettings);        // window id = 132
+
+  g_windowManager.Add(new CGUIDialogMediaFilter);   // window id = 151
 
   g_windowManager.Add(new CGUIWindowMusicPlayList);          // window id = 500
   g_windowManager.Add(new CGUIWindowMusicSongs);             // window id = 501
@@ -3512,6 +3515,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_PICTURE_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_PLUGIN_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
+    g_windowManager.Delete(WINDOW_DIALOG_MEDIA_FILTER);
     g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
 
     g_windowManager.Delete(WINDOW_STARTUP_ANIM);

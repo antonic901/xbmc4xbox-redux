@@ -1363,6 +1363,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUIDialogLockSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogMediaFilter.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogMediaFilter.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogMediaSource.cpp">
 				</File>
 				<File
