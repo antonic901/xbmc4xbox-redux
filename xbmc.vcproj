@@ -911,12 +911,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\FanController.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\Favourites.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\Favourites.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileItem.cpp">
 				</File>
 				<File
@@ -1724,6 +1718,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\DllLibCurl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\FavouritesDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\FavouritesDirectory.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\File.cpp">

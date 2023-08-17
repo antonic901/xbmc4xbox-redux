@@ -20,14 +20,22 @@
  *
  */
 
+#include "IDirectory.h"
+
 class CFileItemList;
 class CFileItem;
 
-class CFavourites
+namespace XFILE
+{
+
+class CFavouritesDirectory : public IDirectory
 {
 public:
-  static bool Load(CFileItemList& items);
-  static bool LoadFavourites(CStdString& strPath, CFileItemList& items);
+  virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
+  virtual bool Exists(const char* strPath);
+  static bool Load(CFileItemList &items);
+  static bool LoadFavourites(const CStdString& strPath, CFileItemList& items);
+
   static bool AddOrRemove(CFileItem *item, int contextWindow);
   static bool Save(const CFileItemList& items);
   static bool IsFavourite(CFileItem *item, int contextWindow);
@@ -36,3 +44,5 @@ public:
   static CStdString GetExecutePath(const CFileItem &item, const std::string &contextWindow);
 private:
 };
+
+}

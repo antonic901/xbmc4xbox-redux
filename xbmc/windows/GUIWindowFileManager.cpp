@@ -45,7 +45,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "FileSystem/RarManager.h"
-#include "Favourites.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "playlists/PlayList.h"
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"
@@ -1263,7 +1263,7 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   {
     choices.Add(1, 188); // SelectAll
     if (!pItem->IsParentFolder())
-      choices.Add(2, CFavourites::IsFavourite(pItem.get(), GetID()) ? 14077 : 14076); // Add/Remove Favourite
+      choices.Add(2, XFILE::CFavouritesDirectory::IsFavourite(pItem.get(), GetID()) ? 14077 : 14076); // Add/Remove Favourite
     if (vecCores.size() > 1)
       choices.Add(3, 15213); // Play Using...
     if (CanRename(list) && !pItem->IsParentFolder())
@@ -1291,7 +1291,7 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   }
   if (btnid == 2)
   {
-    CFavourites::AddOrRemove(pItem.get(), GetID());
+    XFILE::CFavouritesDirectory::AddOrRemove(pItem.get(), GetID());
     return;
   }
   if (btnid == 3)

@@ -20,7 +20,7 @@
 
 #include "DirectoryProvider.h"
 #include "filesystem/Directory.h"
-#include "Favourites.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/JobManager.h"
 #include "utils/StringUtils.h"
@@ -179,7 +179,7 @@ bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
   CheckContentAttributes(target, fileItem);
 
   // grab the execute string
-  string execute = CFavourites::GetExecutePath(fileItem, target);
+  string execute = CFavouritesDirectory::GetExecutePath(fileItem, target);
   if (!execute.empty())
   {
     CGUIMessage message(GUI_MSG_EXECUTE, 0, 0);

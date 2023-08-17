@@ -19,39 +19,68 @@
  */
 
 #include "utils/log.h"
-#include "FileSystem/File.h"
-#include "Favourites.h"
+#include "FavouritesDirectory.h"
+#include "File.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "Key.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
+#include "URL.h"
 #include "settings/AdvancedSettings.h"
 
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)
 
-bool CFavourites::Load(CFileItemList &items)
+namespace XFILE
+{
+
+
+bool CFavouritesDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+{
+  items.Clear();
+  CURL url(strPath);
+
+  if (url.GetProtocol() == "favourites")
+  {
+    Load(items); //load the default favourite files
+  }
+  return LoadFavourites(strPath, items); //directly load the given file
+}
+
+bool CFavouritesDirectory::Exists(const char* strPath)
+{
+  CURL url(strPath);
+
+  if (url.GetProtocol() == "favourites")
+  {
+    return XFILE::CFile::Exists("special://xbmc/system/favourites.xml") 
+        || XFILE::CFile::Exists(URIUtils::AddFileToFolder(g_settings.GetProfileUserDataFolder(), "favourites.xml"));
+  }
+  return XFILE::CFile::Exists(strPath); //directly load the given file
+}
+
+bool CFavouritesDirectory::Load(CFileItemList &items)
 {
   items.Clear();
   CStdString favourites;
 
   favourites = "special://xbmc/system/favourites.xml";
   if(XFILE::CFile::Exists(favourites))
-    CFavourites::LoadFavourites(favourites, items);
+    CFavouritesDirectory::LoadFavourites(favourites, items);
   else
     CLog::Log(LOGDEBUG, "CFavourites::Load - no system favourites found, skipping");
   URIUtils::AddFileToFolder(g_settings.GetProfileUserDataFolder(), "favourites.xml", favourites);
   if(XFILE::CFile::Exists(favourites))
-    CFavourites::LoadFavourites(favourites, items);
+    CFavouritesDirectory::LoadFavourites(favourites, items);
   else
     CLog::Log(LOGDEBUG, "CFavourites::Load - no userdata favourites found, skipping");
 
   return true;
 }
 
-bool CFavourites::LoadFavourites(CStdString& strPath, CFileItemList& items)
+bool CFavouritesDirectory::LoadFavourites(const CStdString& strPath, CFileItemList& items)
 {
   TiXmlDocument doc;
   if (!doc.LoadFile(strPath))
@@ -90,7 +119,7 @@ bool CFavourites::LoadFavourites(CStdString& strPath, CFileItemList& items)
   return true;
 }
 
-bool CFavourites::Save(const CFileItemList &items)
+bool CFavouritesDirectory::Save(const CFileItemList &items)
 {
   CStdString favourites;
   TiXmlDocument doc;
@@ -114,7 +143,7 @@ bool CFavourites::Save(const CFileItemList &items)
   return doc.SaveFile(favourites);
 }
 
-bool CFavourites::AddOrRemove(CFileItem *item, int contextWindow)
+bool CFavouritesDirectory::AddOrRemove(CFileItem *item, int contextWindow)
 {
   if (!item) return false;
 
@@ -143,7 +172,7 @@ bool CFavourites::AddOrRemove(CFileItem *item, int contextWindow)
   return Save(items);
 }
 
-bool CFavourites::IsFavourite(CFileItem *item, int contextWindow)
+bool CFavouritesDirectory::IsFavourite(CFileItem *item, int contextWindow)
 {
   CFileItemList items;
   if (!Load(items)) return false;
@@ -159,14 +188,14 @@ static CStdString Paramify(const CStdString& param)
   return "\"" + result + "\"";
 }
 
-CStdString CFavourites::GetExecutePath(const CFileItem &item, int contextWindow)
+CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, int contextWindow)
 {
   CStdString text;
   text.Format("%i", contextWindow);
   return GetExecutePath(item, text);
 }
 
-CStdString CFavourites::GetExecutePath(const CFileItem &item, const std::string &contextWindow)
+CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, const std::string &contextWindow)
 {
   CStdString execute;
   if (item.m_bIsFolder && (g_advancedSettings.m_playlistAsFolders ||
@@ -189,4 +218,6 @@ CStdString CFavourites::GetExecutePath(const CFileItem &item, const std::string 
       execute.Format("PlayMedia(%s)", Paramify(item.GetPath()));
   }
   return execute;
+}
+
 }
