@@ -19,6 +19,8 @@
  *
  */
 
+#include <map>
+
 class CDirectoryHistory
 {
 public:
@@ -30,7 +32,8 @@ public:
     CStdString m_strItem;
     CStdString m_strDirectory;
   };
-  CDirectoryHistory();
+
+  CDirectoryHistory() { }
   virtual ~CDirectoryHistory();
 
   void SetSelectedItem(const CStdString& strSelectedItem, const CStdString& strDirectory);
@@ -44,7 +47,9 @@ public:
   void ClearPathHistory();
   void DumpPathHistory();
 private:
-  std::vector<CHistoryItem> m_vecHistory;
+  static CStdString preparePath(const CStdString &strDirectory, bool tolower = true);
+
+  typedef std::map<CStdString, CHistoryItem> HistoryMap;
+  HistoryMap m_vecHistory;
   std::vector<CStdString> m_vecPathHistory; ///< History of traversed directories
-  CStdString m_strNull;
 };
