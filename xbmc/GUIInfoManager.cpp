@@ -59,6 +59,7 @@
 #include "music/LastFmManager.h"
 #include "pictures/PictureInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
+#include "guilib/IGUIContainer.h"
 #include "video/VideoDatabase.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "video/dialogs/GUIDialogVideoScan.h"

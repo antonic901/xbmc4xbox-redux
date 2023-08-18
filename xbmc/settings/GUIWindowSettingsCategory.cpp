@@ -73,6 +73,7 @@
 #include "utils/ScraperParser.h"
 #include "FileItem.h"
 #include "GUIToggleButtonControl.h"
+#include "IGUIContainer.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "FileSystem/File.h"
 #include "LocalizeStrings.h"

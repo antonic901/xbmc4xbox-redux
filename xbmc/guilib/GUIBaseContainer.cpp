@@ -36,17 +36,6 @@ using namespace std;
 #define HOLD_TIME_START 100
 #define HOLD_TIME_END   3000
 
-IGUIContainer::IGUIContainer(int parentID, int controlID, float posX, float posY, float width, float height)
-  : CGUIControl(parentID, controlID, posX, posY, width, height)
-{
-}
-
-void IGUIContainer::SetType(VIEW_TYPE type, const CStdString &label)
-{
-  m_type = type;
-  m_label = label;
-}
-
 CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems)
     : IGUIContainer(parentID, controlID, posX, posY, width, height)
     , m_scroller(scroller)
