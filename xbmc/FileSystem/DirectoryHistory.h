@@ -39,7 +39,10 @@ public:
     CPathHistoryItem() { }
     virtual ~CPathHistoryItem() { }
 
+    const CStdString& GetPath(bool filter = false) const;
+
     CStdString m_strPath;
+    CStdString m_strFilterPath;
   };
 
   CDirectoryHistory() { }
@@ -49,10 +52,10 @@ public:
   const CStdString& GetSelectedItem(const CStdString& strDirectory) const;
   void RemoveSelectedItem(const CStdString& strDirectory);
 
-  void AddPath(const CStdString& strPath);
-  void AddPathFront(const CStdString& strPath);
-  CStdString GetParentPath();
-  CStdString RemoveParentPath();
+  void AddPath(const CStdString& strPath, const CStdString &m_strFilterPath = "");
+  void AddPathFront(const CStdString& strPath, const CStdString &m_strFilterPath = "");
+  CStdString GetParentPath(bool filter = false);
+  CStdString RemoveParentPath(bool filter = false);
   void ClearPathHistory();
   void DumpPathHistory();
 
