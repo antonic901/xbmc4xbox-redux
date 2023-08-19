@@ -266,7 +266,7 @@ static const ActionMapping windows[] =
         {"filestackingdialog"       , WINDOW_DIALOG_FILESTACKING},
         {"weather"                  , WINDOW_WEATHER},
         {"screensaver"              , WINDOW_SCREENSAVER},
-        {"videoosd"                 , WINDOW_OSD},
+        {"videoosd"                 , WINDOW_DIALOG_VIDEO_OSD},
         {"videomenu"                , WINDOW_VIDEO_MENU},
         {"videotimeseek"            , WINDOW_VIDEO_TIME_SEEK},
         {"musicoverlay"             , WINDOW_MUSIC_OVERLAY},

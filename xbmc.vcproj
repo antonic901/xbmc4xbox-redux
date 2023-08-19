@@ -1453,6 +1453,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoBookmarks.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoOSD.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoOSD.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoSettings.cpp">
 				</File>
 				<File
@@ -1536,9 +1542,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\windows\GUIWindowLoginScreen.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIWindowOSD.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\pictures\GUIWindowPictures.cpp">
@@ -3129,9 +3132,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\music\windows\GUIWindowMusicSongs.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\GUIWindowOSD.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\pictures\GUIWindowPictures.h">

@@ -2206,9 +2206,6 @@
 					RelativePath="..\..\xbmc\windows\GUIWindowLoginScreen.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowOSD.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\pictures\GUIWindowPictures.cpp">
 				</File>
 				<File
@@ -3245,9 +3242,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\windows\GUIWindowMusicSongs.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\GUIWindowOSD.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\pictures\GUIWindowPictures.h">

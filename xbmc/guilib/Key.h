@@ -373,7 +373,7 @@
 #define WINDOW_DIALOG_FILESTACKING        12008
 #define WINDOW_WEATHER                    12600
 #define WINDOW_SCREENSAVER                12900
-#define WINDOW_OSD                        12901
+#define WINDOW_DIALOG_VIDEO_OSD                        12901
 
 #define WINDOW_VIDEO_MENU                 12902
 #define WINDOW_MUSIC_OVERLAY              12903

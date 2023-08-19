@@ -150,7 +150,7 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "windows/GUIWindowStartup.h"
 #include "video/windows/GUIWindowFullScreen.h"
-#include "GUIWindowOSD.h"
+#include "video/dialogs/GUIDialogVideoOSD.h"
 #include "GUIWindowMusicOverlay.h"
 #include "GUIWindowVideoOverlay.h"
 
@@ -1334,7 +1334,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSlideShow);          // window id = 2007
   g_windowManager.Add(new CGUIDialogFileStacking);       // window id = 2008
 
-  g_windowManager.Add(new CGUIWindowOSD);                // window id = 2901
+  g_windowManager.Add(new CGUIDialogVideoOSD);                // window id = 2901
   g_windowManager.Add(new CGUIWindowMusicOverlay);       // window id = 2903
   g_windowManager.Add(new CGUIWindowVideoOverlay);       // window id = 2904
   g_windowManager.Add(new CGUIWindowScreensaver);        // window id = 2900 Screensaver
@@ -3526,7 +3526,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_SCREEN_CALIBRATION);
     g_windowManager.Delete(WINDOW_SYSTEM_INFORMATION);
     g_windowManager.Delete(WINDOW_SCREENSAVER);
-    g_windowManager.Delete(WINDOW_OSD);
+    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD);
     g_windowManager.Delete(WINDOW_MUSIC_OVERLAY);
     g_windowManager.Delete(WINDOW_VIDEO_OVERLAY);
     g_windowManager.Delete(WINDOW_SCRIPTS_INFO);
@@ -4817,7 +4817,7 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
         if (iWin == WINDOW_FULLSCREEN_VIDEO)
         {
           // check if OSD is visible, if so don't do immediate spindown
-          CGUIWindowOSD *pOSD = (CGUIWindowOSD *)g_windowManager.GetWindow(WINDOW_OSD);
+          CGUIDialogVideoOSD *pOSD = (CGUIDialogVideoOSD *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_OSD);
           if (pOSD)
             m_bNetworkSpinDown = !pOSD->IsDialogRunning();
         }

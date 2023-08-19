@@ -22,12 +22,12 @@
 
 #include "GUIDialog.h"
 
-class CGUIWindowOSD : public CGUIDialog
+class CGUIDialogVideoOSD : public CGUIDialog
 {
 public:
 
-  CGUIWindowOSD(void);
-  virtual ~CGUIWindowOSD(void);
+  CGUIDialogVideoOSD(void);
+  virtual ~CGUIDialogVideoOSD(void);
 
   virtual void FrameMove();
   virtual bool OnMessage(CGUIMessage& message);
