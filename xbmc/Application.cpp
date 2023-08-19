@@ -1325,7 +1325,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowMusicPlaylistEditor);    // window id = 503
 
   g_windowManager.Add(new CGUIDialogSelect);             // window id = 2000
-  g_windowManager.Add(new CGUIWindowMusicInfo);                // window id = 2001
+  g_windowManager.Add(new CGUIDialogMusicInfo);                // window id = 2001
   g_windowManager.Add(new CGUIDialogOK);                 // window id = 2002
   g_windowManager.Add(new CGUIWindowVideoInfo);                // window id = 2003
   g_windowManager.Add(new CGUIWindowScriptsInfo);              // window id = 2004
@@ -3472,13 +3472,12 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST_EDITOR);
     g_windowManager.Delete(WINDOW_MUSIC_FILES);
     g_windowManager.Delete(WINDOW_MUSIC_NAV);
-    g_windowManager.Delete(WINDOW_MUSIC_INFO);
+    g_windowManager.Delete(WINDOW_DIALOG_MUSIC_INFO);
     g_windowManager.Delete(WINDOW_VIDEO_INFO);
     g_windowManager.Delete(WINDOW_VIDEO_FILES);
     g_windowManager.Delete(WINDOW_VIDEO_PLAYLIST);
     g_windowManager.Delete(WINDOW_VIDEO_NAV);
     g_windowManager.Delete(WINDOW_FILES);
-    g_windowManager.Delete(WINDOW_MUSIC_INFO);
     g_windowManager.Delete(WINDOW_VIDEO_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_YES_NO);
     g_windowManager.Delete(WINDOW_DIALOG_PROGRESS);

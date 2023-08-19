@@ -256,7 +256,7 @@ static const ActionMapping windows[] =
         {"musiclibrary"             , WINDOW_MUSIC_NAV},
         {"musicplaylisteditor"      , WINDOW_MUSIC_PLAYLIST_EDITOR},
         {"selectdialog"             , WINDOW_DIALOG_SELECT},
-        {"musicinformation"         , WINDOW_MUSIC_INFO},
+        {"musicinformation"         , WINDOW_DIALOG_MUSIC_INFO},
         {"okdialog"                 , WINDOW_DIALOG_OK},
         {"movieinformation"         , WINDOW_VIDEO_INFO},
         {"textviewer"               , WINDOW_DIALOG_TEXT_VIEWER},

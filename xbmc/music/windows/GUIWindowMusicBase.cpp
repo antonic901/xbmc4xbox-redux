@@ -264,7 +264,7 @@ void CGUIWindowMusicBase::OnInfoAll(int iItem, bool bCurrent)
     musicScan->StartArtistScan(strPath);
 }
 
-/// \brief Retrieves music info for albums from theaudiodb.com and displays them in CGUIWindowMusicInfo
+/// \brief Retrieves music info for albums from theaudiodb.com and displays them in CGUIDialogMusicInfo
 /// \param iItem Item in list/thumb control
 void CGUIWindowMusicBase::OnInfo(int iItem, bool bShowInfo)
 {
@@ -406,7 +406,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
   if (m_musicdatabase.GetArtistInfo(artist.idArtist, artistInfo) && !bShowInfo)
     return;
 
-  CGUIWindowMusicInfo *pDlgAlbumInfo = (CGUIWindowMusicInfo*)g_windowManager.GetWindow(WINDOW_MUSIC_INFO);
+  CGUIDialogMusicInfo *pDlgAlbumInfo = (CGUIDialogMusicInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_INFO);
   if (pDlgAlbumInfo && !bRefresh)
   {
     pDlgAlbumInfo->SetArtist(artistInfo, path);
@@ -456,7 +456,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
         m_dlgProgress->Close();
 
       // ok, show album info
-      CGUIWindowMusicInfo *pDlgAlbumInfo = (CGUIWindowMusicInfo*)g_windowManager.GetWindow(WINDOW_MUSIC_INFO);
+      CGUIDialogMusicInfo *pDlgAlbumInfo = (CGUIDialogMusicInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_INFO);
       if (pDlgAlbumInfo)
       {
         pDlgAlbumInfo->SetArtist(info.GetArtist(), path);
@@ -505,7 +505,7 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
     if (!bShowInfo)
       return;
 
-    CGUIWindowMusicInfo *pDlgAlbumInfo = (CGUIWindowMusicInfo*)g_windowManager.GetWindow(WINDOW_MUSIC_INFO);
+    CGUIDialogMusicInfo *pDlgAlbumInfo = (CGUIDialogMusicInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_INFO);
     if (pDlgAlbumInfo)
     {
       pDlgAlbumInfo->SetAlbum(albumInfo, path);
@@ -559,7 +559,7 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
       UpdateThumb(album, path);
 
       // ok, show album info
-      CGUIWindowMusicInfo *pDlgAlbumInfo = (CGUIWindowMusicInfo*)g_windowManager.GetWindow(WINDOW_MUSIC_INFO);
+      CGUIDialogMusicInfo *pDlgAlbumInfo = (CGUIDialogMusicInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_INFO);
       if (pDlgAlbumInfo)
       {
         pDlgAlbumInfo->SetAlbum(info.GetAlbum(), path);

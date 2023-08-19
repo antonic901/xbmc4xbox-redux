@@ -363,7 +363,7 @@
 
 //#define WINDOW_VIRTUAL_KEYBOARD           11000
 #define WINDOW_DIALOG_SELECT              12000
-#define WINDOW_MUSIC_INFO                 12001
+#define WINDOW_DIALOG_MUSIC_INFO          12001
 #define WINDOW_DIALOG_OK                  12002
 #define WINDOW_VIDEO_INFO                 12003
 #define WINDOW_SCRIPTS_INFO               12004
