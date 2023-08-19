@@ -19,7 +19,8 @@
 
 #include "MusicDbUrl.h"
 #include "filesystem/MusicDatabaseDirectory.h"
-#include "utils/StringUtils.h"
+#include "SmartPlayList.h"
+#include "utils/StringUtils2.h"
 #include "utils/Variant.h"
 
 using namespace std;
@@ -146,4 +147,25 @@ bool CMusicDbUrl::parse()
     AddOption("year", queryParams.GetYear());
 
   return true;
+}
+
+bool CMusicDbUrl::validateOption(const std::string &key, const CVariant &value)
+{
+  if (!CDbUrl::validateOption(key, value))
+    return false;
+
+  // if the value is empty it will remove the option which is ok
+  // otherwise we only care about the "filter" option here
+  if (value.empty() || !StringUtils2::EqualsNoCase(key, "filter"))
+    return true;
+
+  if (!value.isString())
+    return false;
+
+  CSmartPlaylist xspFilter;
+  if (!xspFilter.LoadFromJson(value.asString()))
+    return false;
+
+  // check if the filter playlist matches the item type
+  return xspFilter.GetType() == m_type;
 }
