@@ -570,7 +570,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         path.Format("musicdb://2/%ld/", idArtist);
         item->SetPath(path);
         CGUIWindowMusicBase::OnContextButton(itemNumber,button);
-        Update(m_vecItems->GetPath());
+        Refresh();
         m_viewControl.SetSelectedItem(itemNumber);
         return true;
       }
@@ -585,7 +585,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         path.Format("musicdb://3/%ld/", idAlbum);
         item->SetPath(path);
         CGUIWindowMusicBase::OnContextButton(itemNumber,button);
-        Update(m_vecItems->GetPath());
+        Refresh();
         m_viewControl.SetSelectedItem(itemNumber);
         return true;
       }
@@ -597,7 +597,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         { 
           SScraperInfo info;
           pWindow->OnInfo(item.get(),info);
-          Update(m_vecItems->GetPath());
+          Refresh();
         }
       }
       return true;
@@ -652,19 +652,19 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_MARK_WATCHED:
     CGUIWindowVideoBase::MarkWatched(item,true);
     CUtil::DeleteVideoDatabaseDirectoryCache();
-    Update(m_vecItems->GetPath());
+    Refresh();
     return true;
 
   case CONTEXT_BUTTON_MARK_UNWATCHED:
     CGUIWindowVideoBase::MarkWatched(item,false);
     CUtil::DeleteVideoDatabaseDirectoryCache();
-    Update(m_vecItems->GetPath());
+    Refresh();
     return true;
 
   case CONTEXT_BUTTON_RENAME:
     CGUIWindowVideoBase::UpdateVideoTitle(item.get());
     CUtil::DeleteVideoDatabaseDirectoryCache();
-    Update(m_vecItems->GetPath());
+    Refresh();
     return true;
 
   case CONTEXT_BUTTON_DELETE:
@@ -678,7 +678,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CGUIWindowVideoNav::DeleteItem(item.get());
       CUtil::DeleteVideoDatabaseDirectoryCache();
     }
-    Update(m_vecItems->GetPath());
+    Refresh();
     return true;
 
   case CONTEXT_BUTTON_SET_CONTENT:

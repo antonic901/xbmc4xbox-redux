@@ -76,7 +76,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
     {
       // global playlist changed outside playlist window
       UpdateButtons();
-      Update(m_vecItems->GetPath());
+      Refresh(true);
 
       if (m_viewControl.HasControl(m_iLastControl) && m_vecItems->Size() <= 0)
       {
@@ -128,7 +128,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
           g_settings.m_bMyVideoPlaylistShuffle = g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO);
           g_settings.Save();
           UpdateButtons();
-          Update(m_vecItems->GetPath());
+          Refresh();
         }
       }
       else if (iControl == CONTROL_BTNSAVE)
@@ -250,7 +250,7 @@ bool CGUIWindowVideoPlaylist::MoveCurrentPlayListItem(int iItem, int iAction, bo
     }
 
     if (bUpdate)
-      Update(m_vecItems->GetPath());
+      Refresh();
     return true;
   }
 
@@ -354,7 +354,7 @@ void CGUIWindowVideoPlaylist::RemovePlayListItem(int iItem)
     }
   }
 
-  Update(m_vecItems->GetPath());
+  Refresh();
 
   if (m_vecItems->Size() <= 0)
   {
@@ -549,7 +549,7 @@ void CGUIWindowVideoPlaylist::MoveItem(int iStart, int iDest)
     else
       break;
   }
-  Update(m_vecItems->GetPath());
+  Refresh();
 }
 
 void CGUIWindowVideoPlaylist::MarkPlaying()

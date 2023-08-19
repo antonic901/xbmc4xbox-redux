@@ -151,12 +151,10 @@ bool CGUIWindowMusicBase::OnMessage(CGUIMessage& message)
     }
     break;
 
-    // update the display
-    case GUI_MSG_SCAN_FINISHED:
-    case GUI_MSG_REFRESH_THUMBS:
-    {
-      Update(m_vecItems->GetPath());
-    }
+  // update the display
+  case GUI_MSG_SCAN_FINISHED:
+  case GUI_MSG_REFRESH_THUMBS:
+    Refresh();
     break;
 
   case GUI_MSG_CLICKED:
@@ -420,7 +418,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
       if (!pDlgArtistInfo->NeedRefresh())
       {
         if (pDlgArtistInfo->HasUpdatedThumb())
-          Update(m_vecItems->GetPath());
+          Refresh();
 
         return;
       }
@@ -474,7 +472,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
           UpdateThumb(artistInfo, path);
 */
         // just update for now
-        Update(m_vecItems->GetPath());
+        Refresh();
         if (pDlgArtistInfo->NeedRefresh())
         {
           m_musicdatabase.DeleteArtistInfo(artistInfo.idArtist);
@@ -607,10 +605,7 @@ void CGUIWindowMusicBase::ShowSongInfo(CFileItem* pItem)
     dialog->SetSong(pItem);
     dialog->DoModal(GetID());
     if (dialog->NeedsUpdate())
-    { // update our file list
-      m_vecItems->RemoveDiscCache(GetID());
-      Update(m_vecItems->GetPath());
-    }
+      Refresh(true); // update our file list
   }
 }
 
@@ -971,10 +966,7 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CStdString playlist = item->IsSmartPlayList() ? item->GetPath() : m_vecItems->GetPath(); // save path as activatewindow will destroy our items
       if (CGUIDialogSmartPlaylistEditor::EditPlaylist(playlist, "music"))
-      { // need to update
-        m_vecItems->RemoveDiscCache(GetID());
-        Update(m_vecItems->GetPath());
-      }
+        Refresh(true); // need to update
       return true;
     }
 
@@ -1019,16 +1011,14 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     if (CLastFmManager::GetInstance()->Unban(*item->GetMusicInfoTag()))
     {
       g_directoryCache.ClearDirectory(m_vecItems->GetPath());
-      m_vecItems->RemoveDiscCache(GetID());
-      Update(m_vecItems->GetPath());
+      Refresh(true);
     }
     return true;
   case CONTEXT_BUTTON_LASTFM_UNLOVE_ITEM:
     if (CLastFmManager::GetInstance()->Unlove(*item->GetMusicInfoTag()))
     {
       g_directoryCache.ClearDirectory(m_vecItems->GetPath());
-      m_vecItems->RemoveDiscCache(GetID());
-      Update(m_vecItems->GetPath());
+      Refresh(true);
     }
     return true;
   default:
@@ -1277,8 +1267,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
   // more than just our thumbnaias changed
   // TODO: Ideally this would only be done when needed - at the moment we appear to be
   //       doing this for every lookup, possibly twice (see ShowAlbumInfo)
-  m_vecItems->RemoveDiscCache(GetID());
-  Update(m_vecItems->GetPath());
+  Refresh(true);
 
   //  Do we have to autoswitch to the thumb control?
   m_guiState.reset(CGUIViewState::GetViewState(GetID(), *m_vecItems));
