@@ -27,12 +27,12 @@
 
 class CFileItem;
 
-class CGUIWindowVideoInfo :
+class CGUIDialogVideoInfo :
       public CGUIDialog
 {
 public:
-  CGUIWindowVideoInfo(void);
-  virtual ~CGUIWindowVideoInfo(void);
+  CGUIDialogVideoInfo(void);
+  virtual ~CGUIDialogVideoInfo(void);
   virtual bool OnMessage(CGUIMessage& message);
   void SetMovie(const CFileItem *item);
   bool NeedRefresh() const;

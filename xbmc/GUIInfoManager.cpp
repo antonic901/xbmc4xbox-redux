@@ -2726,8 +2726,8 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           {
             if (window->GetID() == WINDOW_DIALOG_MUSIC_INFO)
               content = ((CGUIDialogMusicInfo *)window)->CurrentDirectory().GetContent();
-            else if (window->GetID() == WINDOW_VIDEO_INFO)
-              content = ((CGUIWindowVideoInfo *)window)->CurrentDirectory().GetContent();
+            else if (window->GetID() == WINDOW_DIALOG_VIDEO_INFO)
+              content = ((CGUIDialogVideoInfo *)window)->CurrentDirectory().GetContent();
           }
           if (content.IsEmpty())
           {

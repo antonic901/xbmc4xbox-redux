@@ -365,7 +365,7 @@
 #define WINDOW_DIALOG_SELECT              12000
 #define WINDOW_DIALOG_MUSIC_INFO          12001
 #define WINDOW_DIALOG_OK                  12002
-#define WINDOW_VIDEO_INFO                 12003
+#define WINDOW_DIALOG_VIDEO_INFO                 12003
 #define WINDOW_SCRIPTS_INFO               12004
 #define WINDOW_FULLSCREEN_VIDEO           12005
 #define WINDOW_VISUALISATION              12006

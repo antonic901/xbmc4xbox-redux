@@ -406,7 +406,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const SScraperInfo& info2)
 
   CGUIDialogProgress* pDlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
   CGUIDialogSelect* pDlgSelect = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
-  CGUIWindowVideoInfo* pDlgInfo = (CGUIWindowVideoInfo*)g_windowManager.GetWindow(WINDOW_VIDEO_INFO);
+  CGUIDialogVideoInfo* pDlgInfo = (CGUIDialogVideoInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_INFO);
 
   CVideoInfoScanner scanner;
   scanner.m_IMDB.SetScraperInfo(info2);
