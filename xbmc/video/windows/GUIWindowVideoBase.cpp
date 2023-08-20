@@ -1662,12 +1662,12 @@ void CGUIWindowVideoBase::PlayItem(int iItem)
   }
 }
 
-bool CGUIWindowVideoBase::Update(const CStdString &strDirectory)
+bool CGUIWindowVideoBase::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
     m_thumbLoader.StopThread();
 
-  if (!CGUIMediaWindow::Update(strDirectory))
+  if (!CGUIMediaWindow::Update(strDirectory, updateFilterPath))
     return false;
 
   m_thumbLoader.Load(*m_vecItems);
@@ -1677,34 +1677,7 @@ bool CGUIWindowVideoBase::Update(const CStdString &strDirectory)
 
 bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
 {
-  CStdString directory = strDirectory;
-
-  // check if the path contains a filter and if so load it and
-  // remove it from the path to get proper GUI view states etc
-  CSmartPlaylist filterXsp;
-  CVideoDbUrl videoUrl;
-  if (videoUrl.FromString(strDirectory))
-  {
-    CVariant filter;
-    if (videoUrl.GetOption("filter", filter))
-    {
-      // load the filter and if it's type does not match the
-      // path's item type reset it
-      if (filterXsp.LoadFromJson(filter.asString()) && !filterXsp.GetType().Equals(videoUrl.GetItemType().c_str()))
-        filterXsp.Reset();
-
-      // remove the "filter" option from the path
-      videoUrl.AddOption("filter", "");
-    }
-    directory = videoUrl.ToString();
-  }
-
-  bool bResult = CGUIMediaWindow::GetDirectory(directory, items);
-
-  // (re-)apply the previously retrieved filter
-  // because it was reset in CGUIMediaWindow::GetDirectory()
-  if (!filterXsp.IsEmpty())
-    m_filter = filterXsp;
+  bool bResult = CGUIMediaWindow::GetDirectory(strDirectory, items);
 
   // add in the "New Playlist" item if we're in the playlists folder
   if ((items.GetPath() == "special://videoplaylists/") && !items.Contains("newplaylist://"))
@@ -1733,7 +1706,7 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
   // (ideally this should be removed, and our stack regexps tidied up if necessary
   // No "normal" episodes should stack, and multi-parts should be supported)
   SScraperInfo info;
-  m_database.GetScraperForPath(directory, info);
+  m_database.GetScraperForPath(strDirectory, info);
   if (!info.strContent.IsEmpty() && info.strContent == "tvshows")
     m_stackingAvailable = false;
 
@@ -1749,13 +1722,19 @@ void CGUIWindowVideoBase::OnPrepareFileItems(CFileItemList &items)
     items.SetCachedVideoThumbs();
 }
 
-bool CGUIWindowVideoBase::CheckFilterAdvanced(CFileItemList &items)
+bool CGUIWindowVideoBase::CheckFilterAdvanced(CFileItemList &items) const
 {
   CStdString content = items.GetContent();
-  if (items.IsVideoDb() && (content.Equals("movies") || content.Equals("tvshows") || content.Equals("episodes") || content.Equals("musicvideos")))
+  if ((items.IsVideoDb() || CanContainFilter(m_strFilterPath)) &&
+      (content.Equals("movies") || content.Equals("tvshows") || content.Equals("episodes") || content.Equals("musicvideos")))
     return true;
 
   return false;
+}
+
+bool CGUIWindowVideoBase::CanContainFilter(const CStdString &strDirectory) const
+{
+  return strDirectory.Left(10).Equals("videodb://");
 }
 
 void CGUIWindowVideoBase::AddToDatabase(int iItem)

@@ -65,6 +65,8 @@
 
 #define CONTROL_LABELFILES          12
 
+#define PROPERTY_PATH_DB            "path.db"
+
 using namespace std;
 
 CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
@@ -77,7 +79,6 @@ CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
   m_iLastControl = -1;
   m_iSelectedItem = -1;
   m_canFilterAdvanced = false;
-  m_itemsLoaded = false;
 
   m_guiState.reset(CGUIViewState::GetViewState(GetID(), *m_vecItems));
 }
@@ -197,7 +198,9 @@ bool CGUIMediaWindow::OnAction(const CAction &action)
 
 bool CGUIMediaWindow::OnBack(int actionID)
 {
-  if (actionID == ACTION_NAV_BACK && !(m_vecItems->IsVirtualDirectoryRoot() || m_vecItems->GetPath() == m_startDirectory))
+  CURL filterUrl(m_strFilterPath);
+  if (actionID == ACTION_NAV_BACK && !m_vecItems->IsVirtualDirectoryRoot() &&
+     (m_vecItems->GetPath() != m_startDirectory || (m_canFilterAdvanced && filterUrl.HasOption("filter"))))
   {
     GoParentFolder();
     return true;
@@ -224,11 +227,11 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
         m_canFilterAdvanced = false;
         m_filter.Reset();
       }
+      m_strFilterPath.clear();
 
       // Call ClearFileItems() after our window has finished doing any WindowClose
       // animations
       ClearFileItems();
-      m_itemsLoaded = false;
       return true;
     }
     break;
@@ -550,13 +553,10 @@ void CGUIMediaWindow::UpdateButtons()
     SET_CONTROL_LABEL2(CONTROL_BTN_FILTER, GetProperty("filter").asString());
 }
 
-void CGUIMediaWindow::ClearFileItems(bool itemsOnly /* = false */)
+void CGUIMediaWindow::ClearFileItems()
 {
   m_viewControl.Clear();
-  if (itemsOnly)
-    m_vecItems->ClearItems();
-  else
-    m_vecItems->Clear();
+  m_vecItems->Clear();
   m_unfilteredItems->Clear();
 }
 
@@ -570,7 +570,7 @@ void CGUIMediaWindow::SortItems(CFileItemList &items)
     items.Sort(guiState->GetSortMethod(), guiState->GetDisplaySortOrder());
 
     // Should these items be saved to the hdd
-    if (items.CacheToDiscAlways())
+    if (items.CacheToDiscAlways() && !IsFiltered())
       items.Save(GetID());
   }
 }
@@ -693,7 +693,7 @@ bool CGUIMediaWindow::GetDirectory(const CStdString &strDirectory, CFileItemList
 // \brief Set window to a specific directory
 // \param strDirectory The directory to be displayed in list/thumb control
 // This function calls OnPrepareFileItems() and OnFinalizeFileItems()
-bool CGUIMediaWindow::Update(const CStdString &strDirectory)
+bool CGUIMediaWindow::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)
 {
   // TODO: OnInitWindow calls Update() before window path has been set properly.
   if (strDirectory == "?")
@@ -714,10 +714,20 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
   CStdString strCurrentDirectory = m_vecItems->GetPath();
   m_history.SetSelectedItem(strSelectedItem, strCurrentDirectory);
 
-  bool refresh = (strDirectory == strCurrentDirectory && m_itemsLoaded);
+  CStdString directory = strDirectory;
+  // check if the path contains a filter and temporarily remove it
+  // so that the retrieved list of items is unfiltered
+  bool canfilter = CanContainFilter(directory);
+  CStdString filter;
+  CURL url(directory);
+  if (canfilter && url.HasOption("filter"))
+  {
+    filter = url.GetOption("filter");
+    directory = RemoveParameterFromPath(directory, "filter");
+  }
 
   CFileItemList items;
-  if (!GetDirectory(strDirectory, items))
+  if (!GetDirectory(directory, items))
   {
     CLog::Log(LOGERROR,"CGUIMediaWindow::GetDirectory(%s) failed", strDirectory.c_str());
     // if the directory is the same as the old directory, then we'll return
@@ -729,22 +739,54 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     // directory again, but we have to
     // return false to be able to eg. show
     // an error message.
-    CStdString strParentPath = m_history.GetParentPath();
-    m_history.RemoveParentPath();
-    Update(strParentPath);
+    Update(m_history.RemoveParentPath());
     return false;
   }
 
   if (items.GetLabel().IsEmpty())
     items.SetLabel(CUtil::GetTitleFromPath(items.GetPath(), true));
 
-  ClearFileItems(refresh);
-  if (refresh)
-    m_vecItems->Append(items);
-  else
-    m_vecItems->Copy(items);
+  ClearFileItems();
+  m_vecItems->Copy(items);
 
-  m_itemsLoaded = true;
+  // only set the filter path if it hasn't been marked
+  // as preset or if it's empty
+  if (updateFilterPath || m_strFilterPath.empty())
+  {
+    if (items.HasProperty(PROPERTY_PATH_DB))
+      m_strFilterPath = items.GetProperty(PROPERTY_PATH_DB).asString();
+    else
+      m_strFilterPath = items.GetPath();
+  }
+
+  // maybe the filter path can contain a filter
+  if (!canfilter && CanContainFilter(m_strFilterPath))
+    canfilter = true;
+
+  // check if the filter path contains a filter
+  CURL filterPathUrl(m_strFilterPath);
+  if (canfilter && filter.empty())
+  {
+    if (filterPathUrl.HasOption("filter"))
+      filter = filterPathUrl.GetOption("filter");
+  }
+
+  // check if there is a filter and re-apply it
+  if (canfilter && !filter.empty())
+  {
+    if (!m_filter.LoadFromJson(filter))
+    {
+      CLog::Log(LOGWARNING, "CGUIMediaWindow::Update: unable to load existing filter (%s)", filter.c_str());
+      m_filter.Reset();
+      m_strFilterPath = m_vecItems->GetPath();
+    }
+    else
+    {
+      // add the filter to the filter path
+      filterPathUrl.SetOption("filter", filter);
+      m_strFilterPath = filterPathUrl.Get();
+    }
+  }
 
   // if we're getting the root source listing
   // make sure the path history is clean
@@ -795,8 +837,6 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
   OnFinalizeFileItems(*m_vecItems);
   UpdateButtons();
 
-  m_viewControl.SetItems(*m_vecItems);
-
   strSelectedItem = m_history.GetSelectedItem(m_vecItems->GetPath());
 
   bool bSelectedFound = false;
@@ -806,15 +846,13 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
     CFileItemPtr pItem = m_vecItems->Get(i);
 
     // Update selected item
-    if (!bSelectedFound)
+    CStdString strHistory;
+    GetDirectoryHistoryString(pItem.get(), strHistory);
+    if (strHistory == strSelectedItem)
     {
-      CStdString strHistory;
-      GetDirectoryHistoryString(pItem.get(), strHistory);
-      if (strHistory == strSelectedItem)
-      {
-        m_viewControl.SetSelectedItem(i);
-        bSelectedFound = true;
-      }
+      m_viewControl.SetSelectedItem(i);
+      bSelectedFound = true;
+      break;
     }
   }
 
@@ -822,7 +860,7 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory)
   if (!bSelectedFound)
     m_viewControl.SetSelectedItem(0);
 
-  m_history.AddPath(m_vecItems->GetPath());
+  m_history.AddPath(m_vecItems->GetPath(), m_strFilterPath);
 
   //m_history.DumpPathHistory();
 
@@ -840,7 +878,7 @@ bool CGUIMediaWindow::Refresh(bool clearCache /* = false */)
 
   // get the original number of items
   int oldCount = m_filter.IsEmpty() ? m_vecItems->Size() : m_unfilteredItems->Size();
-  if (!Update(strCurrentDirectory))
+  if (!Update(strCurrentDirectory, false))
     return false;
 
   // check if we previously had at least 1 item
@@ -876,7 +914,7 @@ void CGUIMediaWindow::OnFinalizeFileItems(CFileItemList &items)
   m_unfilteredItems->Append(items);
   
   CStdString filter(GetProperty("filter").asString());
-  GetFilteredItems(filter, items);
+  OnFilterItems(filter);
 
   // The idea here is to ensure we have something to focus if our file list
   // is empty.  As such, this check MUST be last and ignore the hide parent
@@ -957,8 +995,11 @@ bool CGUIMediaWindow::OnClick(int iItem)
     // path to be able to come back to the filtered view
     CStdString strCurrentDirectory = m_vecItems->GetPath();
     if (m_canFilterAdvanced && !m_filter.IsEmpty() &&
-        !m_unfilteredItems->GetPath().Equals(strCurrentDirectory))
-      m_history.AddPath(strCurrentDirectory);
+      !m_strFilterPath.Equals(strCurrentDirectory))
+    {
+      m_history.RemoveParentPath();
+      m_history.AddPath(strCurrentDirectory, m_strFilterPath);
+    }
 
     CFileItem directory(*pItem);
     if (!Update(directory.GetPath()))
@@ -1114,10 +1155,27 @@ void CGUIMediaWindow::GoParentFolder()
     strParent = m_history.GetParentPath();
   }
 
+  // remove the current filter but only if the parent
+  // item doesn't have a filter as well
+  CURL filterUrl(m_strFilterPath);
+  if (filterUrl.HasOption("filter"))
+  {
+    CURL parentUrl(m_history.GetParentPath(true));
+    if (!parentUrl.HasOption("filter"))
+    {
+      // we need to overwrite m_strFilterPath because
+      // Refresh() will set updateFilterPath to false
+      m_strFilterPath.clear();
+      Refresh();
+      return;
+    }
+  }
+
   // if vector is not empty, pop parent
   // if vector is empty, parent is root source listing
+  m_strFilterPath = m_history.GetParentPath(true);
   strParent = m_history.RemoveParentPath();
-  if (!Update(strParent))
+  if (!Update(strParent, false))
     return;
 
   // No items to show so go another level up
@@ -1175,6 +1233,11 @@ void CGUIMediaWindow::GetDirectoryHistoryString(const CFileItem* pItem, CStdStri
     // Normal directory items
     strHistoryString = pItem->GetPath();
   }
+
+  // remove any filter
+  if (CanContainFilter(strHistoryString))
+    strHistoryString = RemoveParameterFromPath(strHistoryString, "filter");
+
   URIUtils::RemoveSlashAtEnd(strHistoryString);
   strHistoryString.ToLower();
 }
@@ -1523,52 +1586,56 @@ bool CGUIMediaWindow::WaitForNetwork() const
 
 void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
 {
-  CStdString currentItem;
+  CFileItemPtr currentItem;
+  CStdString currentItemPath;
   int item = m_viewControl.GetSelectedItem();
-  if (item >= 0)
-    currentItem = m_vecItems->Get(item)->GetPath();
+  if (item >= 0 && item < m_vecItems->Size())
+  {
+    currentItem = m_vecItems->Get(item);
+    currentItemPath = currentItem->GetPath();
+  }
   
   m_viewControl.Clear();
   
-  CFileItemList items(m_unfilteredItems->GetPath()); // use the original path - it'll likely be relied on for other things later.
+  CFileItemList items(m_vecItems->GetPath()); // use the original path - it'll likely be relied on for other things later.
   items.Append(*m_unfilteredItems);
-  if (GetFilteredItems(filter, items))
+  if (GetFilteredItems(filter, items) || m_vecItems->Size() != items.Size())
   {
     m_vecItems->ClearItems();
     m_vecItems->Append(items);
+
+    // we need to clear the sort state and re-sort the items
+    m_vecItems->ClearSortState();
+    SortItems(*m_vecItems);
 
     if (!m_canFilterAdvanced)
       SetProperty("filter", filter);
     else
     {
-      m_vecItems->SetPath(items.GetPath());
+      if (items.HasProperty(PROPERTY_PATH_DB))
+        m_strFilterPath = items.GetProperty(PROPERTY_PATH_DB).asString();
+      else
+        m_strFilterPath = items.GetPath();
 
       // to be able to select the same item as before we need to adjust
       // the path of the item i.e. add or remove the "filter=" URL option
-      CURL curUrl(currentItem), newUrl(items.GetPath());
-      CUrlOptions curOptions(curUrl.GetOptions()), newOptions(newUrl.GetOptions());
-
-      if (newOptions.HasOption("filter"))
+      // but that's only necessary for folder items
+      if (currentItem.get() != NULL && currentItem->m_bIsFolder)
       {
-        CVariant filter;
-        if (newOptions.GetOption("filter", filter) && filter.isString())
-          curOptions.AddOption("filter", filter.asString());
-      }
-      else if (curOptions.HasOption("filter"))
-        curOptions.AddOption("filter", "");
+        CURL curUrl(currentItemPath), newUrl(m_strFilterPath);
+        if (newUrl.HasOption("filter"))
+          curUrl.SetOption("filter", newUrl.GetOption("filter"));
+        else if (curUrl.HasOption("filter"))
+          curUrl.RemoveOption("filter");
 
-      string options = curOptions.GetOptionsString();
-      if (!options.empty())
-        curUrl.SetOptions("?" + options);
-      else
-        curUrl.SetOptions("");
-      currentItem = curUrl.Get();
+        currentItemPath = curUrl.Get();
+      }
     }
   }
   
   // and update our view control + buttons
   m_viewControl.SetItems(*m_vecItems);
-  m_viewControl.SetSelectedItem(currentItem);
+  m_viewControl.SetSelectedItem(currentItemPath);
   UpdateButtons();
 }
 
@@ -1627,17 +1694,21 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
 {
   hasNewItems = false;
 
+  // don't run the advanced filter if the filter is empty
+  // and there hasn't been a filter applied before which
+  // would have to be removed
+  CURL url(m_strFilterPath);
+  if (m_filter.IsEmpty() && !url.HasOption("filter"))
+    return false;
+
   CFileItemList resultItems;
-  XFILE::CSmartPlaylistDirectory::GetDirectory(m_filter, resultItems, m_vecItems->GetPath(), true);
+  XFILE::CSmartPlaylistDirectory::GetDirectory(m_filter, resultItems, m_strFilterPath, true);
 
   // put together a lookup map for faster path comparison
   map<CStdString, CFileItemPtr> lookup;
   for (int j = 0; j < resultItems.Size(); j++)
   {
-    CStdString itemPath = resultItems[j]->GetPath();
-    size_t pos = itemPath.find('?');
-    if (pos != string::npos)
-      itemPath.erase(pos);
+    CStdString itemPath = RemoveParameterFromPath(resultItems[j]->GetPath(), "filter");
     itemPath.ToLower();
 
     lookup[itemPath] = resultItems[j];
@@ -1658,18 +1729,16 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
     // check if the item is part of the resultItems list
     // by comparing their paths (but ignoring any special
     // options because they differ from filter to filter)
-    CStdString path = item->GetPath();
-    size_t pos = path.find('?');
-    if (pos != string::npos)
-      path.erase(pos);
+    CStdString path = RemoveParameterFromPath(item->GetPath(), "filter");
     path.ToLower();
 
     map<CStdString, CFileItemPtr>::iterator itItem = lookup.find(path);
     if (itItem != lookup.end())
     {
-      // we need to copy the path of the filtered
-      // item to be able to keep the applied filters
-      item->SetPath(itItem->second->GetPath());
+      // if the item is a folder we need to copy the path of
+      // the filtered item to be able to keep the applied filters
+      if (item->m_bIsFolder)
+        item->SetPath(itItem->second->GetPath());
 
       // add the item to the list of filtered items
       filteredItems.Add(item);
@@ -1689,6 +1758,8 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
   items.ClearItems();
   items.Append(filteredItems);
   items.SetPath(resultItems.GetPath());
+  if (resultItems.HasProperty(PROPERTY_PATH_DB))
+    items.SetProperty(PROPERTY_PATH_DB, resultItems.GetProperty(PROPERTY_PATH_DB));
   return true;
 }
 
@@ -1722,7 +1793,7 @@ bool CGUIMediaWindow::Filter()
   }
   // advanced filtering
   else
-    CGUIDialogMediaFilter::ShowAndEditMediaFilter(m_vecItems->GetPath(), m_filter);
+    CGUIDialogMediaFilter::ShowAndEditMediaFilter(m_strFilterPath, m_filter);
 
   return true;
 }
@@ -1732,4 +1803,16 @@ CStdString CGUIMediaWindow::GetStartFolder(const CStdString &dir)
   if (dir.Equals("$ROOT") || dir.Equals("Root"))
     return "";
   return dir;
+}
+
+CStdString CGUIMediaWindow::RemoveParameterFromPath(const CStdString &strDirectory, const CStdString &strParameter)
+{
+  CURL url(strDirectory);
+  if (url.HasOption(strParameter))
+  {
+    url.RemoveOption(strParameter);
+    return url.Get();
+  }
+
+  return strDirectory;
 }

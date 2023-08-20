@@ -336,12 +336,12 @@ bool CGUIWindowPrograms::OnChooseVideoModeAndLaunch(int item)
   return true;
 }
 
-bool CGUIWindowPrograms::Update(const CStdString &strDirectory)
+bool CGUIWindowPrograms::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
     m_thumbLoader.StopThread();
 
-  if (!CGUIMediaWindow::Update(strDirectory))
+  if (!CGUIMediaWindow::Update(strDirectory, updateFilterPath))
     return false;
 
   m_thumbLoader.Load(*m_vecItems);

@@ -451,12 +451,12 @@ void CGUIWindowMusicSongs::PlayItem(int iItem)
     CGUIWindowMusicBase::PlayItem(iItem);
 }
 
-bool CGUIWindowMusicSongs::Update(const CStdString &strDirectory)
+bool CGUIWindowMusicSongs::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
     m_thumbLoader.StopThread();
 
-  if (!CGUIMediaWindow::Update(strDirectory))
+  if (!CGUIMediaWindow::Update(strDirectory, updateFilterPath))
     return false;
 
   if (m_vecItems->GetContent().IsEmpty())
