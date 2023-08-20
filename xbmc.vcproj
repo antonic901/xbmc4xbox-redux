@@ -1130,6 +1130,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\StringUtils.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\StringUtils2.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\strptime.cpp">
 				</File>
 				<File
@@ -3320,6 +3323,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\NfoFile.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\params_check_macros.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\PartyModeManager.h">
 			</File>
 			<File
@@ -3417,6 +3423,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\StringUtils.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\StringUtils2.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\system.h">
