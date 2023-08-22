@@ -566,13 +566,7 @@ void CGUIMediaWindow::SortItems(CFileItemList &items)
   auto_ptr<CGUIViewState> guiState(CGUIViewState::GetViewState(GetID(), items));
 
   if (guiState.get())
-  {
     items.Sort(guiState->GetSortMethod(), guiState->GetDisplaySortOrder());
-
-    // Should these items be saved to the hdd
-    if (items.CacheToDiscAlways() && !IsFiltered())
-      items.Save(GetID());
-  }
 }
 
 // \brief Formats item labels based on the formatting provided by guiViewState
@@ -608,8 +602,9 @@ void CGUIMediaWindow::FormatAndSort(CFileItemList &items)
     LABEL_MASKS labelMasks;
     viewState->GetSortMethodLabelMasks(labelMasks);
     FormatItemLabels(items, labelMasks);
+  
+    items.Sort(viewState->GetSortMethod(), viewState->GetDisplaySortOrder());
   }
-  SortItems(items);
 }
 
 /*!
@@ -830,7 +825,16 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory, bool updateFilterPa
 
   m_guiState.reset(CGUIViewState::GetViewState(GetID(), *m_vecItems));
 
-  FormatAndSort(*m_vecItems);
+  // remember the original (untouched) list of items (for filtering etc)
+  m_unfilteredItems->SetPath(m_vecItems->GetPath()); // use the original path - it'll likely be relied on for other things later.
+  m_unfilteredItems->Append(*m_vecItems);
+
+  // Cache the list of items if possible
+  OnCacheFileItems(*m_vecItems);
+
+  // Filter and group the items if necessary
+  CStdString titleFilter = GetProperty("filter").asString();
+  OnFilterItems(titleFilter);
 
   // Ask the devived class if it wants to do custom list operations,
   // eg. changing the label
@@ -905,17 +909,21 @@ void CGUIMediaWindow::OnPrepareFileItems(CFileItemList &items)
 
 }
 
+// \brief This function will be called by Update() before
+// any additional formatting, filtering or sorting is applied.
+// Override this function to define a custom caching behaviour.
+void CGUIMediaWindow::OnCacheFileItems(CFileItemList &items)
+{
+  // Should these items be saved to the hdd
+  if (items.CacheToDiscAlways() && !IsFiltered())
+    items.Save(GetID());
+}
+
 // \brief This function will be called by Update() after the
 // labels of the fileitems are formatted. Override this function
 // to modify the fileitems. Eg. to modify the item label
 void CGUIMediaWindow::OnFinalizeFileItems(CFileItemList &items)
 {
-  m_unfilteredItems->SetPath(items.GetPath()); // use the original path - it'll likely be relied on for other things later.
-  m_unfilteredItems->Append(items);
-  
-  CStdString filter(GetProperty("filter").asString());
-  OnFilterItems(filter);
-
   // The idea here is to ensure we have something to focus if our file list
   // is empty.  As such, this check MUST be last and ignore the hide parent
   // fileitems settings.
@@ -1599,24 +1607,52 @@ void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
   
   CFileItemList items(m_vecItems->GetPath()); // use the original path - it'll likely be relied on for other things later.
   items.Append(*m_unfilteredItems);
-  if (GetFilteredItems(filter, items) || m_vecItems->Size() != items.Size())
+  bool filtered = GetFilteredItems(filter, items);
+
+  m_vecItems->ClearItems();
+  // we need to clear the sort state and re-sort the items
+  m_vecItems->ClearSortState();
+  m_vecItems->Append(items);
+
+  // if the filter has changed, get the new filter path
+  if (filtered && m_canFilterAdvanced)
   {
-    m_vecItems->ClearItems();
-    m_vecItems->Append(items);
+    if (items.HasProperty(PROPERTY_PATH_DB))
+      m_strFilterPath = items.GetProperty(PROPERTY_PATH_DB).asString();
+    else
+      m_strFilterPath = items.GetPath();
+  }
 
-    // we need to clear the sort state and re-sort the items
-    m_vecItems->ClearSortState();
-    SortItems(*m_vecItems);
+  GetGroupedItems(*m_vecItems);
+  FormatAndSort(*m_vecItems);
 
+  // get the "filter" option
+  CStdString filterOption;
+  CURL filterUrl(m_strFilterPath);
+  if (filterUrl.HasOption("filter"))
+    filterOption = filterUrl.GetOption("filter");
+
+  // apply the "filter" option to any folder item so that
+  // the filter can be passed down to the sub-directory
+  for (int index = 0; index < m_vecItems->Size(); index++)
+  {
+    CFileItemPtr pItem = m_vecItems->Get(index);
+    // if the item is a folder we need to copy the path of
+    // the filtered item to be able to keep the applied filters
+    if (pItem->m_bIsFolder)
+    {
+      CURL itemUrl(pItem->GetPath());
+      itemUrl.SetOption("filter", filterOption);
+      pItem->SetPath(itemUrl.Get());
+    }
+  }
+
+  if (filtered)
+  {
     if (!m_canFilterAdvanced)
       SetProperty("filter", filter);
     else
     {
-      if (items.HasProperty(PROPERTY_PATH_DB))
-        m_strFilterPath = items.GetProperty(PROPERTY_PATH_DB).asString();
-      else
-        m_strFilterPath = items.GetPath();
-
       // to be able to select the same item as before we need to adjust
       // the path of the item i.e. add or remove the "filter=" URL option
       // but that's only necessary for folder items
@@ -1642,10 +1678,7 @@ void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
 bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &items)
 {
   if (m_canFilterAdvanced)
-  {
-    bool hasNewItems;
-    return GetAdvanceFilteredItems(items, hasNewItems);
-  }
+    return GetAdvanceFilteredItems(items);
 
   CStdString trimmedFilter(filter);
   trimmedFilter.TrimLeft().ToLower();
@@ -1690,10 +1723,8 @@ bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &
   return items.GetObjectCount() > 0;
 }
 
-bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNewItems)
+bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items)
 {
-  hasNewItems = false;
-
   // don't run the advanced filter if the filter is empty
   // and there hasn't been a filter applied before which
   // would have to be removed
@@ -1735,11 +1766,6 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
     map<CStdString, CFileItemPtr>::iterator itItem = lookup.find(path);
     if (itItem != lookup.end())
     {
-      // if the item is a folder we need to copy the path of
-      // the filtered item to be able to keep the applied filters
-      if (item->m_bIsFolder)
-        item->SetPath(itItem->second->GetPath());
-
       // add the item to the list of filtered items
       filteredItems.Add(item);
 
@@ -1750,10 +1776,7 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, bool &hasNew
   }
 
   if (resultItems.Size() > 0)
-  {
-    filteredItems.Append(resultItems);
-    hasNewItems = true;
-  }
+    CLog::Log(LOGWARNING, "CGUIMediaWindow::GetAdvanceFilteredItems(): %d unknown items", resultItems.Size());
 
   items.ClearItems();
   items.Append(filteredItems);

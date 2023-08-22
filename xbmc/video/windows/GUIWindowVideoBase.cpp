@@ -23,6 +23,7 @@
 #include "utils/IMDB.h"
 #include "utils/RegExp.h"
 #include "GUIInfoManager.h"
+#include "utils/GroupUtils.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/windows/GUIWindowVideoNav.h" 
 #include "dialogs/GUIDialogFileBrowser.h"
@@ -1716,10 +1717,27 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
   return bResult;
 }
 
-void CGUIWindowVideoBase::OnPrepareFileItems(CFileItemList &items)
+void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
 {
   if (!items.GetPath().Equals("plugin://video/"))
     items.SetCachedVideoThumbs();
+
+  CGUIMediaWindow::GetGroupedItems(items);
+
+  CQueryParams params;
+  CVideoDatabaseDirectory dir;
+  dir.GetQueryParams(items.GetPath(), params);
+  if (items.GetContent().Equals("movies") && params.GetSetId() <= 0 &&
+      CVideoDatabaseDirectory::GetDirectoryChildType(items.GetPath()) != NODE_TYPE_RECENTLY_ADDED_MOVIES &&
+      g_guiSettings.GetBool("videolibrary.groupmoviesets"))
+  {
+    CFileItemList groupedItems;
+    if (GroupUtils::Group(GroupBySet, items, groupedItems, GroupAttributeIgnoreSingleItems))
+    {
+      items.ClearItems();
+      items.Append(groupedItems);
+    }
+  }
 }
 
 bool CGUIWindowVideoBase::CheckFilterAdvanced(CFileItemList &items) const
