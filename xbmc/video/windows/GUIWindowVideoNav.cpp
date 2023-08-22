@@ -542,12 +542,6 @@ bool CGUIWindowVideoNav::GetFilteredItems(const CStdString &filter, CFileItemLis
 
   listchanged |= ApplyWatchedFilter(items);
 
-  // there are new items so we need to run the thumbloader
-  if (m_thumbLoader.IsLoading())
-    m_thumbLoader.StopThread();
-
-  m_thumbLoader.Load(items);
-
   return listchanged;
 }
 
