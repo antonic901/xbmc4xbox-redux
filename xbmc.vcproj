@@ -920,6 +920,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\fstrcmp.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\GroupUtils.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\GUIInfoManager.cpp">
 				</File>
 				<File
@@ -3051,6 +3054,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\fstrcmp.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\GroupUtils.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.h">
