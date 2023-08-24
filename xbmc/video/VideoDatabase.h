@@ -659,6 +659,10 @@ public:
 
   virtual bool GetFilter(CDbUrl &videoUrl, Filter &filter);
 
+  int AddSet(const CStdString& strSet);
+  void ClearMovieSet(int idMovie);
+  void SetMovieSet(int idMovie, int idSet);
+
 protected:
   int GetMovieId(const CStdString& strFilenameAndPath);
   int GetMusicVideoId(const CStdString& strFilenameAndPath);
@@ -687,7 +691,6 @@ protected:
   int AddGenre(const CStdString& strGenre1);
   int AddActor(const CStdString& strActor, const CStdString& strThumb);
   int AddCountry(const CStdString& strCountry);
-  int AddSet(const CStdString& strSet);
   int AddStudio(const CStdString& strStudio1);
   int AddTvShow(const CStdString& strPath);
   int AddMusicVideo(const CStdString& strFilenameAndPath);
