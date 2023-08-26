@@ -2629,7 +2629,8 @@ bool CMusicDatabase::GetGenresNav(const CStdString& strBaseDir, CFileItemList& i
 
     Filter extFilter = filter;
     CMusicDbUrl musicUrl;
-    if (!musicUrl.FromString(strBaseDir) || !GetFilter(musicUrl, extFilter))
+    SortDescription sorting;
+    if (!musicUrl.FromString(strBaseDir) || !GetFilter(musicUrl, extFilter, sorting))
       return false;
 
     // if there are extra WHERE conditions we might need access
@@ -2919,7 +2920,8 @@ bool CMusicDatabase::GetArtistsByWhere(const CStdString& strBaseDir, const Filte
 
     Filter extFilter = filter;
     CMusicDbUrl musicUrl;
-    if (!musicUrl.FromString(strBaseDir) || !GetFilter(musicUrl, extFilter))
+    SortDescription sorting = sortDescription;
+    if (!musicUrl.FromString(strBaseDir) || !GetFilter(musicUrl, extFilter, sorting))
       return false;
 
     // if there are extra WHERE conditions we might need access
@@ -3141,7 +3143,8 @@ bool CMusicDatabase::GetAlbumsByWhere(const CStdString &baseDir, const Filter &f
 
     Filter extFilter = filter;
     CMusicDbUrl musicUrl;
-    if (!musicUrl.FromString(baseDir) || !GetFilter(musicUrl, extFilter))
+    SortDescription sorting = sortDescription;
+    if (!musicUrl.FromString(baseDir) || !GetFilter(musicUrl, extFilter, sorting))
       return false;
 
     // if there are extra WHERE conditions we might need access
@@ -3253,7 +3256,8 @@ bool CMusicDatabase::GetSongsByWhere(const CStdString &baseDir, const Filter &fi
 
     Filter extFilter = filter;
     CMusicDbUrl musicUrl;
-    if (!musicUrl.FromString(baseDir) || !GetFilter(musicUrl, extFilter))
+    SortDescription sorting = sortDescription;
+    if (!musicUrl.FromString(baseDir) || !GetFilter(musicUrl, extFilter, sorting))
       return false;
 
     // if there are extra WHERE conditions we might need access
@@ -4700,7 +4704,7 @@ void CMusicDatabase::AnnounceUpdate(std::string content, int id)
   ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnUpdate", data);
 }
 
-bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter)
+bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription &sorting)
 {
   if (!musicUrl.IsValid())
     return false;
@@ -4888,6 +4892,14 @@ bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter)
     {
       std::set<CStdString> playlists;
       filter.AppendWhere(xsp.GetWhereClause(*this, playlists));
+  
+      if (xsp.GetLimit() > 0)
+        sorting.limitEnd = xsp.GetLimit();
+      if (xsp.GetOrder() != SortByNone)
+        sorting.sortBy = xsp.GetOrder();
+      sorting.sortOrder = xsp.GetOrderAscending() ? SortOrderAscending : SortOrderDescending;
+      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+        sorting.sortAttributes = SortAttributeIgnoreArticle;
     }
   }
 

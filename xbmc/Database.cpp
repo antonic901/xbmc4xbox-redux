@@ -19,6 +19,7 @@
  */
 
 #include "utils/log.h"
+#include "utils/SortUtils.h"
 #include "AutoPtrHandle.h"
 #include "Database.h"
 #include "utils/URIUtils.h"
@@ -616,9 +617,15 @@ bool CDatabase::BuildSQL(const CStdString &strQuery, const Filter &filter, CStdS
 
 bool CDatabase::BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl)
 {
+  SortDescription sorting;
+  return BuildSQL(strBaseDir, strQuery, filter, strSQL, dbUrl, sorting);
+}
+
+bool CDatabase::BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl, SortDescription &sorting /* = SortDescription() */)
+{
   // parse the base path to get additional filters
   dbUrl.Reset();
-  if (!dbUrl.FromString(strBaseDir) || !GetFilter(dbUrl, filter))
+  if (!dbUrl.FromString(strBaseDir) || !GetFilter(dbUrl, filter, sorting))
     return false;
 
   return BuildSQL(strQuery, filter, strSQL);
