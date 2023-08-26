@@ -1260,6 +1260,9 @@ bool CSmartPlaylist::Load(const CVariant &obj)
   if (obj.isMember("rules"))
     m_ruleCombination.Load(obj["rules"]);
 
+  if (obj.isMember("group") && obj["group"].isMember("type") && obj["group"]["type"].isString())
+    m_group = obj["group"]["type"].asString();
+
   // now any limits
   if (obj.isMember("limit") && (obj["limit"].isInteger() || obj["limit"].isUnsignedInteger()) && obj["limit"].asUnsignedInteger() > 0)
     m_limit = (unsigned int)obj["limit"].asUnsignedInteger();
@@ -1300,6 +1303,10 @@ bool CSmartPlaylist::LoadFromXML(const TiXmlNode *root, const CStdString &encodi
 
     ruleNode = ruleNode->NextSibling("rule");
   }
+
+  const TiXmlElement *groupElement = root->FirstChildElement("group");
+  if (groupElement != NULL && groupElement->FirstChild() != NULL)
+    m_group = groupElement->FirstChild()->ValueStr();
 
   // now any limits
   // format is <limit>25</limit>
@@ -1349,6 +1356,15 @@ bool CSmartPlaylist::Save(const CStdString &path) const
   for (CSmartPlaylistRules::const_iterator it = m_ruleCombination.m_rules.begin(); it != m_ruleCombination.m_rules.end(); ++it)
     it->Save(pRoot);
 
+  // add <group> tag if necessary
+  if (!m_group.empty())
+  {
+    TiXmlText group(m_group.c_str());
+    TiXmlElement nodeGroup("group");
+    nodeGroup.InsertEndChild(group);
+    pRoot->InsertEndChild(nodeGroup);
+  }
+
   // add <limit> tag
   if (m_limit)
     XMLUtils::SetInt(pRoot, "limit", m_limit);
@@ -1378,6 +1394,10 @@ bool CSmartPlaylist::Save(CVariant &obj, bool full /* = true */) const
   CVariant rulesObj = CVariant(CVariant::VariantTypeObject);
   if (m_ruleCombination.Save(rulesObj))
     obj["rules"] = rulesObj;
+
+  // add "group"
+  if (!m_group.empty())
+    obj["group"]["type"] = m_group;
 
   // add "limit"
   if (full && m_limit)
@@ -1413,6 +1433,7 @@ void CSmartPlaylist::Reset()
   m_orderField = SortByNone;
   m_orderDirection = SortOrderNone;
   m_playlistType = "songs"; // sane default
+  m_group.clear();
 }
 
 void CSmartPlaylist::SetName(const CStdString &name)
