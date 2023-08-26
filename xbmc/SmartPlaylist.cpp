@@ -21,6 +21,7 @@
 #include "SmartPlaylist.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "utils/StringUtils2.h"
 #include "FileSystem/SmartPlaylistDirectory.h"
 #include "FileSystem/File.h"
 #include "utils/CharsetConverter.h"
@@ -281,7 +282,7 @@ bool CSmartPlaylistRule::Save(CVariant &obj) const
 Field CSmartPlaylistRule::TranslateField(const char *field)
 {
   for (unsigned int i = 0; i < NUM_FIELDS; i++)
-    if (strcmpi(field, fields[i].string) == 0) return fields[i].field;
+    if (StringUtils2::EqualsNoCase(field, fields[i].string)) return fields[i].field;
   return FieldNone;
 }
 
@@ -295,7 +296,7 @@ CStdString CSmartPlaylistRule::TranslateField(Field field)
 SortBy CSmartPlaylistRule::TranslateOrder(const char *order)
 {
   for (unsigned int i = 0; i < NUM_FIELDS; i++)
-    if (strcmpi(order, fields[i].string) == 0) return fields[i].sort;
+    if (StringUtils2::EqualsNoCase(order, fields[i].string)) return fields[i].sort;
   return SortByNone;
 }
 
@@ -309,7 +310,7 @@ CStdString CSmartPlaylistRule::TranslateOrder(SortBy order)
 CSmartPlaylistRule::SEARCH_OPERATOR CSmartPlaylistRule::TranslateOperator(const char *oper)
 {
   for (unsigned int i = 0; i < NUM_OPERATORS; i++)
-    if (strcmpi(oper, operators[i].string) == 0) return operators[i].op;
+    if (StringUtils2::EqualsNoCase(oper, operators[i].string)) return operators[i].op;
   return OPERATOR_CONTAINS;
 }
 
@@ -1164,7 +1165,7 @@ TiXmlElement* CSmartPlaylist::readName()
   }
 
   TiXmlElement *root = m_xmlDoc.RootElement();
-  if (!root || strcmpi(root->Value(),"smartplaylist") != 0)
+  if (!root || !StringUtils2::EqualsNoCase(root->Value(),"smartplaylist"))
   {
     CLog::Log(LOGERROR, "Error loading Smart playlist");
     return NULL;
@@ -1240,7 +1241,7 @@ bool CSmartPlaylist::Load(const CVariant &obj)
   if (obj.isMember("order") && obj["order"].isMember("method") && obj["order"]["method"].isString())
   {
     if (obj["order"].isMember("direction") && obj["order"]["direction"].isString())
-      m_orderDirection = strcmpi(obj["order"]["direction"].asString().c_str(), "ascending") == 0 ? SortOrderAscending : SortOrderDescending;
+      m_orderDirection = StringUtils2::EqualsNoCase(obj["order"]["direction"].asString(), "ascending") == 0 ? SortOrderAscending : SortOrderDescending;
 
     m_orderField = CSmartPlaylistRule::TranslateOrder(obj["order"]["method"].asString().c_str());
   }
@@ -1273,7 +1274,7 @@ bool CSmartPlaylist::LoadFromXML(TiXmlElement *root, const CStdString &encoding)
 
   TiXmlHandle match = ((TiXmlHandle)root->FirstChild("match")).FirstChild();
   if (match.Node())
-    m_ruleCombination.SetType(strcmpi(match.Node()->Value(), "all") == 0 ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr);
+    m_ruleCombination.SetType(StringUtils2::EqualsNoCase(match.Node()->ValueStr(), "all") ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr);
 
   // now the rules
   TiXmlElement *ruleElement = root->FirstChildElement("rule");
@@ -1299,7 +1300,7 @@ bool CSmartPlaylist::LoadFromXML(TiXmlElement *root, const CStdString &encoding)
   {
     const char *direction = order->Attribute("direction");
     if (direction)
-      m_orderDirection = strcmpi(direction, "ascending") == 0 ? SortOrderAscending : SortOrderDescending;
+      m_orderDirection = StringUtils2::EqualsNoCase(direction, "ascending") ? SortOrderAscending : SortOrderDescending;
     m_orderField = CSmartPlaylistRule::TranslateOrder(order->FirstChild()->Value());
   }
   return true;
