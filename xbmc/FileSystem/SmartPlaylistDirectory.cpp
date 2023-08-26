@@ -21,14 +21,14 @@
 #include <math.h>
 
 #include "SmartPlaylistDirectory.h"
-#include "utils/log.h"
-#include "SmartPlaylist.h"
-#include "music/MusicDatabase.h"
-#include "video/VideoDatabase.h"
-#include "playlists/PlayList.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
+#include "music/MusicDatabase.h"
+#include "SmartPlaylist.h"
+#include "playlists/PlayList.h"
 #include "settings/GUISettings.h"
+#include "utils/log.h"
+#include "video/VideoDatabase.h"
 
 using namespace PLAYLIST;
 
