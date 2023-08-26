@@ -1,5 +1,6 @@
-<node order="7" type="folder" visible="Library.HasContent(MovieSets)">
+<node order="9" type="filter">
   <label>20459</label>
-  <path>videodb://movies/tags/</path>
   <icon>DefaultTags.png</icon>
+  <content>movies</content>
+  <group>tags</group>
 </node>

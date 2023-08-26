@@ -1,5 +1,6 @@
-<node order="5" type="folder">
+<node order="5" type="filter">
   <label>20348</label>
-  <path>videodb://movies/directors/</path>
   <icon>DefaultDirector.png</icon>
+  <content>movies</content>
+  <group>directors</group>
 </node>

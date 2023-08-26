@@ -1,5 +1,6 @@
-<node order="4" type="folder">
+<node order="4" type="filter">
   <label>133</label>
-  <path>videodb://musicvideos/artists/</path>
   <icon>DefaultArtist.png</icon>
+  <content>musicvideos</content>
+  <group>artists</group>
 </node>

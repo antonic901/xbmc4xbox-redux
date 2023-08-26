@@ -1,5 +1,6 @@
-<node order="6" type="folder">
+<node order="6" type="filter">
   <label>20459</label>
-  <path>videodb://tvshows/tags/</path>
   <icon>DefaultTags.png</icon>
+  <content>tvshows</content>
+  <group>tags</group>
 </node>

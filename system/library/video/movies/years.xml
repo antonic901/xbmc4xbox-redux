@@ -1,5 +1,6 @@
-<node order="3" type="folder">
+<node order="3" type="filter">
   <label>562</label>
-  <path>videodb://movies/years/</path>
   <icon>DefaultYear.png</icon>
+  <content>movies</content>
+  <group>years</group>
 </node>
