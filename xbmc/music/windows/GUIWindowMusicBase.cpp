@@ -798,7 +798,7 @@ bool CGUIWindowMusicBase::FindAlbumInfo(const CStdString& strAlbum, const CStdSt
   CStdString strTempAlbum(strAlbum);
   CStdString strTempArtist(strArtist);
   long idAlbum = m_musicdatabase.GetAlbumByName(strAlbum,strArtist);
-  strPath.Format("musicdb://3/%d/",idAlbum);
+  strPath.Format("musicdb://albums/%d/",idAlbum);
 
   bool bCanceled(false);
   bool needsRefresh(true);
@@ -846,7 +846,7 @@ bool CGUIWindowMusicBase::FindArtistInfo(const CStdString& strArtist, CMusicArti
   CStdString strPath;
   CStdString strTempArtist(strArtist);
   long idArtist = m_musicdatabase.GetArtistByName(strArtist);
-  strPath.Format("musicdb://2/%u/",idArtist);
+  strPath.Format("musicdb://artists/%u/",idArtist);
 
   bool bCanceled(false);
   bool needsRefresh(true);

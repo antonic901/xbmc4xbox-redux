@@ -138,7 +138,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     if (m_type.Equals("tvshows") || m_type.Equals("episodes") || m_type.Equals("movies"))
       videodatabase.GetGenresNav(basePath + "genres/", items, type);
     else if (m_type.Equals("songs") || m_type.Equals("albums") || m_type.Equals("artists") || m_type.Equals("mixed"))
-      database.GetGenresNav("musicdb://1/",items);
+      database.GetGenresNav("musicdb://genres/",items);
     if (m_type.Equals("musicvideos") || m_type.Equals("mixed"))
     {
       CFileItemList items2;
@@ -155,7 +155,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   else if (m_rule.m_field == FieldArtist || m_rule.m_field == FieldAlbumArtist)
   {
     if (m_type.Equals("songs") || m_type.Equals("mixed") || m_type.Equals("albums") || m_type.Equals("artists"))
-      database.GetArtistsNav("musicdb://2/", items, m_rule.m_field == FieldAlbumArtist, -1);
+      database.GetArtistsNav("musicdb://artists/", items, m_rule.m_field == FieldAlbumArtist, -1);
     if (m_type.Equals("musicvideos") || m_type.Equals("mixed"))
     {
       CFileItemList items2;
@@ -167,7 +167,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   else if (m_rule.m_field == FieldAlbum)
   {
     if (m_type.Equals("songs") || m_type.Equals("mixed") || m_type.Equals("albums"))
-      database.GetAlbumsNav("musicdb://3/", items);
+      database.GetAlbumsNav("musicdb://albums/", items);
     if (m_type.Equals("musicvideos") || m_type.Equals("mixed"))
     {
       CFileItemList items2;
@@ -184,7 +184,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   else if (m_rule.m_field == FieldYear)
   {
     if (m_type.Equals("songs") || m_type.Equals("mixed") || m_type.Equals("albums"))
-      database.GetYearsNav("musicdb://9/", items);
+      database.GetYearsNav("musicdb://years/", items);
     if (!m_type.Equals("songs") && !m_type.Equals("albums"))
     {
       CFileItemList items2;
@@ -218,7 +218,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   {
     if (m_type.Equals("songs"))
     {
-      database.GetSongsNav("musicdb://4/", items, -1, -1, -1);
+      database.GetSongsNav("musicdb://songs/", items, -1, -1, -1);
       iLabel = 134;
     }
     else if (m_type.Equals("movies"))

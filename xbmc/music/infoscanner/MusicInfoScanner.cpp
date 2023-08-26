@@ -237,7 +237,7 @@ void CMusicInfoScanner::FetchAlbumInfo(const CStdString& strDirectory)
   if (strDirectory.IsEmpty())
   {
     m_musicDatabase.Open();
-    m_musicDatabase.GetAlbumsNav("musicdb://3/", items);
+    m_musicDatabase.GetAlbumsNav("musicdb://albums/", items);
     m_musicDatabase.Close();
   }
   else
@@ -278,7 +278,7 @@ void CMusicInfoScanner::FetchArtistInfo(const CStdString& strDirectory)
   if (strDirectory.IsEmpty())
   {
     m_musicDatabase.Open();
-    m_musicDatabase.GetArtistsNav("musicdb://2/", items, false, -1);
+    m_musicDatabase.GetArtistsNav("musicdb://artists/", items, false, -1);
     m_musicDatabase.Close();
   }
   else
@@ -556,7 +556,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(CFileItemList& items, const CStdString&
       if (!m_bStop && g_guiSettings.GetBool("musiclibrary.downloadinfo"))
       {
         CStdString strPath;
-        strPath.Format("musicdb://2/%u/", *it);
+        strPath.Format("musicdb://artists/%u/", *it);
 
         if (!DownloadArtistInfo(strPath, strArtist, bCanceled)) // assume we want to retry
           m_artistsScanned.pop_back();
@@ -574,7 +574,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(CFileItemList& items, const CStdString&
         return songsToAdd.size();
 
       CStdString strPath;
-      strPath.Format("musicdb://3/%u/",*it);
+      strPath.Format("musicdb://albums/%u/",*it);
 
       CAlbum album;
       m_musicDatabase.GetAlbumInfo(*it, album, NULL);

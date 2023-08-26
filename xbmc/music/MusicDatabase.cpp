@@ -837,7 +837,7 @@ CSong CMusicDatabase::GetSongFromDataset(bool bWithMusicDbPath/*=false*/)
   {
     CStdString strFileName = m_pDS->fv(song_strFileName).get_asString();
     CStdString strExt = URIUtils::GetExtension(strFileName);
-    song.strFileName.Format("musicdb://3/%ld/%ld%s", m_pDS->fv(song_idAlbum).get_asInt(), m_pDS->fv(song_idSong).get_asInt(), strExt.c_str());
+    song.strFileName.Format("musicdb://albums/%ld/%ld%s", m_pDS->fv(song_idAlbum).get_asInt(), m_pDS->fv(song_idSong).get_asInt(), strExt.c_str());
   }
 
   return song;
@@ -1129,7 +1129,7 @@ bool CMusicDatabase::SearchArtists(const CStdString& search, CFileItemList &arti
     while (!m_pDS->eof())
     {
       CStdString path;
-      path.Format("musicdb://2/%ld/", m_pDS->fv(0).get_asInt());
+      path.Format("musicdb://artists/%ld/", m_pDS->fv(0).get_asInt());
       CFileItemPtr pItem(new CFileItem(path, true));
       CStdString label;
       label.Format("[%s] %s", artistLabel.c_str(), m_pDS->fv(1).get_asString());
@@ -1782,7 +1782,7 @@ bool CMusicDatabase::SearchSongs(const CStdString& search, CFileItemList &items)
     while (!m_pDS->eof())
     {
       CFileItemPtr item(new CFileItem);
-      GetFileItemFromDataset(item.get(), "musicdb://4/");
+      GetFileItemFromDataset(item.get(), "musicdb://songs/");
       items.Add(item);
       m_pDS->next();
     }
@@ -1818,7 +1818,7 @@ bool CMusicDatabase::SearchAlbums(const CStdString& search, CFileItemList &album
     {
       CAlbum album = GetAlbumFromDataset(m_pDS.get());
       CStdString path;
-      path.Format("musicdb://3/%ld/", album.idAlbum);
+      path.Format("musicdb://albums/%ld/", album.idAlbum);
       CFileItemPtr pItem(new CFileItem(path, album));
       CStdString label;
       label.Format("[%s] %s", albumLabel.c_str(), album.strAlbum);
@@ -4282,27 +4282,27 @@ bool CMusicDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& 
       CDirectoryNode::GetDatabaseInfo(strPath, params);
       if (params.GetGenreId() != -1) // check genre
       {
-        strSQL = PrepareSQL("select * from content where strPath like 'musicdb://1/%i/'",params.GetGenreId());
+        strSQL = PrepareSQL("select * from content where strPath='musicdb://genres/%i/'",params.GetGenreId());
         m_pDS->query(strSQL.c_str());
       }
       if (m_pDS->eof() && params.GetAlbumId() != -1) // check album
       {
-        strSQL = PrepareSQL("select * from content where strPath like 'musicdb://3/%i/'",params.GetGenreId());
+        strSQL = PrepareSQL("select * from content where strPath='musicdb://albums/%i/'",params.GetGenreId());
         m_pDS->query(strSQL.c_str());
       }
       if (m_pDS->eof() && params.GetArtistId() != -1) // check artist
       {
-        strSQL = PrepareSQL("select * from content where strPath like 'musicdb://2/%i/'",params.GetArtistId());
+        strSQL = PrepareSQL("select * from content where strPath='musicdb://artists/%i/'",params.GetArtistId());
         m_pDS->query(strSQL.c_str());
       }
       if (m_pDS->eof()) // general albums setting
       {
-        strSQL = PrepareSQL("select * from content where strPath like 'musicdb://3/'");
+        strSQL = PrepareSQL("select * from content where strPath='musicdb://albums/'");
         m_pDS->query(strSQL.c_str());
       }
       if (m_pDS->eof()) // general artist setting
       {
-        strSQL = PrepareSQL("select * from content where strPath like 'musicdb://2/'");
+        strSQL = PrepareSQL("select * from content where strPath='musicdb://artists/'");
         m_pDS->query(strSQL.c_str());
       }
     }
