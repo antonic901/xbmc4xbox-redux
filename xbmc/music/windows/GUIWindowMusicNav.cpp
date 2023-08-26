@@ -50,6 +50,7 @@
 #include "ApplicationMessenger.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "utils/StringUtils2.h"
 
 using namespace std;
 using namespace XFILE;
@@ -437,8 +438,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
     {
       if (!item->m_bIsFolder) // music video
        buttons.Add(CONTEXT_BUTTON_INFO, 20393);
-      if (item->GetPath().Left(14).Equals("videodb://3/4/") &&
-          item->GetPath().size() > 14 && item->m_bIsFolder)
+      if (StringUtils2::StartsWith(item->GetPath(), "videodb://musicvideos/artist/") && item->m_bIsFolder)
       {
         long idArtist = m_musicdatabase.GetArtistByName(m_vecItems->Get(itemNumber)->GetLabel());
         if (idArtist > - 1)
@@ -561,7 +561,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         return CGUIWindowMusicBase::OnContextButton(itemNumber,button);
 
       // music videos - artists
-      if (item->GetPath().Left(14).Equals("videodb://3/4/"))
+      if (StringUtils2::StartsWith(item->GetPath(), "videodb://musicvideos/artists/"))
       {
         long idArtist = m_musicdatabase.GetArtistByName(item->GetLabel());
         if (idArtist == -1)
@@ -579,7 +579,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       }
 
       // music videos - albums
-      if (item->GetPath().Left(14).Equals("videodb://3/5/"))
+      if (StringUtils2::StartsWith(item->GetPath(), "videodb://musicvideos/albums/"))
       {
         long idAlbum = m_musicdatabase.GetAlbumByName(item->GetLabel());
         if (idAlbum == -1)
@@ -640,7 +640,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString strPath;
       CVideoDatabase database;
       database.Open();
-      strPath.Format("videodb://3/4/%ld/",database.GetMatchingMusicVideo(StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator)));
+      strPath.Format("videodb://musicvideos/artist/%ld/",database.GetMatchingMusicVideo(StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator)));
       g_windowManager.ActivateWindow(WINDOW_VIDEO_NAV,strPath);
       return true;
     }

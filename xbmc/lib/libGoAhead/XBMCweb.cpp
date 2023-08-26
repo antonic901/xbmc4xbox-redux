@@ -323,7 +323,7 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
         {
           g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
           // NOTICE: point always to list of all movies (MoviesTitle)
-          strDirectory = "videodb://1/2/";
+          strDirectory = "videodb://movies/titles/";
           shares = &g_settings.m_videoSources;
           directory->SetMask(g_settings.m_videoExtensions);
         }

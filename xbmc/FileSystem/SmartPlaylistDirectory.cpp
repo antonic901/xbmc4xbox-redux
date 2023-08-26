@@ -89,16 +89,18 @@ namespace XFILE
           {
           case MediaTypeTvShow:
           case MediaTypeEpisode:
-            baseDir = "videodb://2/2/";
+            baseDir = "videodb://tvshows/";
             break;
 
           case MediaTypeMovie:
-            baseDir = "videodb://1/2/";
+            baseDir = "videodb://movies/";
             break;
 
           default:
             return false;
           }
+
+          baseDir += "titles/";
         }
 
         CVideoDbUrl videoUrl;
@@ -135,7 +137,7 @@ namespace XFILE
       if (db.Open())
       {
         CMusicDbUrl musicUrl;
-        if (!musicUrl.FromString(!strBaseDir.empty() ? strBaseDir : "musicdb://3/"))
+        if (!musicUrl.FromString(!strBaseDir.empty() ? strBaseDir : "musicdb://albums/"))
           return false;
 
         // store the smartplaylist as JSON in the URL as well
@@ -164,7 +166,7 @@ namespace XFILE
       if (db.Open())
       {
         CMusicDbUrl musicUrl;
-        if (!musicUrl.FromString("musicdb://2/"))
+        if (!musicUrl.FromString("musicdb://artists/"))
           return false;
 
         // store the smartplaylist as JSON in the URL as well
@@ -198,7 +200,7 @@ namespace XFILE
           songPlaylist.SetType("songs");
 
         CMusicDbUrl musicUrl;
-        if (!musicUrl.FromString(!strBaseDir.empty() ? strBaseDir : "musicdb://4/"))
+        if (!musicUrl.FromString(!strBaseDir.empty() ? strBaseDir : "musicdb://songs/"))
           return false;
 
         // store the smartplaylist as JSON in the URL as well
@@ -231,7 +233,7 @@ namespace XFILE
           mvidPlaylist.SetType("musicvideos");
 
         CVideoDbUrl videoUrl;
-        if (!videoUrl.FromString(!strBaseDir.empty() ? strBaseDir : "videodb://3/2/"))
+        if (!videoUrl.FromString(!strBaseDir.empty() ? strBaseDir : "videodb://musicvideos/titles/"))
           return false;
 
         // store the smartplaylist as JSON in the URL as well

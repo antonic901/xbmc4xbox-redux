@@ -1104,11 +1104,11 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
       return SetResponse(openTag+"Error: Could not open video database");
 
     if (type.Equals("movies"))
-      videodatabase.GetMoviesByWhere("videodb://1/2/", where, filelist);
+      videodatabase.GetMoviesByWhere("videodb://movies/titles/", where, filelist);
     else if (type.Equals("episodes"))
-      videodatabase.GetEpisodesByWhere("videodb://2/2/", where, filelist);
+      videodatabase.GetEpisodesByWhere("videodb://tvshows/titles/", where, filelist);
     else if (type.Equals("musicvideos"))
-      videodatabase.GetMusicVideosByWhere("videodb://3/2/", where, filelist);
+      videodatabase.GetMusicVideosByWhere("videodb://musicvideos/titles/", where, filelist);
     videodatabase.Close();
   }
   else

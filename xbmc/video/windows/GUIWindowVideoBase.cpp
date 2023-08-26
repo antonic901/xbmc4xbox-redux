@@ -1572,10 +1572,7 @@ void CGUIWindowVideoBase::UpdateVideoTitle(const CFileItem* pItem)
   if (iType == VIDEODB_CONTENT_MOVIES)
     database.GetMovieInfo("", detail, pItem->GetVideoInfoTag()->m_iDbId);
   if (iType == VIDEODB_CONTENT_MOVIE_SETS)
-  {
-    detail.m_strTitle = database.GetSetById(params.GetSetId());
-    iDbId = params.GetSetId();
-  }
+    database.GetSetInfo(params.GetSetId(), detail);
   if (iType == VIDEODB_CONTENT_EPISODES)
     database.GetEpisodeInfo(pItem->GetPath(),detail,pItem->GetVideoInfoTag()->m_iDbId);
   if (iType == VIDEODB_CONTENT_TVSHOWS)
@@ -1815,7 +1812,7 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
     pSelect->SetHeading(530); // Select Genre
     pSelect->Reset();
     CFileItemList items;
-    if (!CDirectory::GetDirectory("videodb://1/1/", items))
+    if (!CDirectory::GetDirectory("videodb://movies/genres/", items))
       return;
     pSelect->SetItems(&items);
     pSelect->EnableButton(true, 531); // New Genre

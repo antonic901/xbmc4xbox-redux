@@ -1,6 +1,5 @@
 <node order="4" type="folder">
   <label>344</label>
-  <path>videodb://1/4</path>
+  <path>videodb://movies/actors/</path>
   <icon>DefaultActor.png</icon>
 </node>
-

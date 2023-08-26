@@ -1394,7 +1394,7 @@ namespace VIDEO
     CStdString showDir(folderToCheck.IsEmpty() ? movie.m_strPath : folderToCheck);
     CFileItemList items;
     CStdString strPath;
-    strPath.Format("videodb://2/2/%i/",idTvShow);
+    strPath.Format("videodb://tvshows/titles/%i/",idTvShow);
     m_database.GetSeasonsNav(strPath,items,-1,-1,-1,-1,idTvShow);
     CFileItemPtr pItem;
     pItem.reset(new CFileItem(g_localizeStrings.Get(20366)));  // "All Seasons"

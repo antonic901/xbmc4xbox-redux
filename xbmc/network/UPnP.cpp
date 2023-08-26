@@ -573,7 +573,7 @@ CUPnPServer::PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_ObjectClass.type = "object.item.videoItem.musicVideoClip";
           object.m_Creator = StringUtils::Join(tag.m_artist, g_advancedSettings.m_videoItemSeparator);
           object.m_Title = tag.m_strTitle;
-          object.m_ReferenceID = NPT_String::Format("videodb://3/2/%i", tag.m_iDbId);
+          object.m_ReferenceID = NPT_String::Format("videodb://musicvideos/titles/%i", tag.m_iDbId);
         } else if (!tag.m_strShowTitle.IsEmpty()) {
           object.m_ObjectClass.type = "object.item.videoItem.videoBroadcast";
           object.m_Recorded.program_title  = "S" + ("0" + NPT_String::FromInteger(tag.m_iSeason)).Right(2);
@@ -583,11 +583,11 @@ CUPnPServer::PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_Recorded.episode_number = tag.m_iSeason * 100 + tag.m_iEpisode;
           object.m_Title = object.m_Recorded.series_title + " - " + object.m_Recorded.program_title;
           if(tag.m_iSeason != -1)
-              object.m_ReferenceID = NPT_String::Format("videodb://2/0/%i", tag.m_iDbId);
+              object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i", tag.m_iDbId);
         } else {
           object.m_ObjectClass.type = "object.item.videoItem.movie";
           object.m_Title = tag.m_strTitle;
-          object.m_ReferenceID = NPT_String::Format("videodb://1/2/%i", tag.m_iDbId);
+          object.m_ReferenceID = NPT_String::Format("videodb://movies/titles/%i", tag.m_iDbId);
         }
     }
 
@@ -1374,15 +1374,14 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         return NPT_SUCCESS;
       }
 
-      if (!database.GetMoviesNav("videodb://1/2/", items)) {
+      if (!database.GetMoviesNav("videodb://movies/titles/", items)) {
         action->SetError(800, "Internal Error");
         return NPT_SUCCESS;
       }
       itemsall.Append(items);
       items.Clear();
 
-      // TODO - set proper base url for this
-      if (!database.GetEpisodesByWhere("videodb://2/0/", "", items, false)) {
+      if (!database.GetEpisodesByWhere("videodb://tvshows/titles/", "", items)) {
         action->SetError(800, "Internal Error");
         return NPT_SUCCESS;
       }
