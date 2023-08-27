@@ -7285,10 +7285,14 @@ msgid "Writer"
 msgstr ""
 
 msgctxt "#20418"
+msgid "Writers"
+msgstr ""
+
+msgctxt "#20419"
 msgid "Clean file and folder names"
 msgstr ""
 
-#empty string with id 20419
+#empty string with id 20420
 
 msgctxt "#20420"
 msgid "Never"
@@ -7878,7 +7882,17 @@ msgctxt "#21450"
 msgid "- Edit"
 msgstr ""
 
-#empty strings from id 21451 to 21799
+#empty strings from id 21451 to 21457
+
+msgctxt "#21458"
+msgid "Group by"
+msgstr ""
+
+msgctxt "#21459"
+msgid "mixed"
+msgstr ""
+
+#empty strings from id 21460 to 21799
 
 msgctxt "#21800"
 msgid "File name"

@@ -436,7 +436,7 @@ void CGUISettings::Initialize()
   AddCategory(5, "myvideos", 14081);
   AddBool(0, "myvideos.treatstackasfile", 20051, true);
   AddBool(0, "myvideos.extractflags",20433, false);
-  AddBool(3, "myvideos.cleanstrings", 20418, false);
+  AddBool(3, "myvideos.cleanstrings", 20419, false);
   AddBool(0, "myvideos.extractthumb",20433, false);
 
   AddCategory(5, "subtitles", 287);
