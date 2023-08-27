@@ -2212,49 +2212,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeArtist.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeGenre.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeGenre.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeOverview.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeOverview.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeRoot.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeRoot.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSong.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSong.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSongTop100.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSongTop100.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeTop100.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeTop100.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYear.cpp">
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeGrouped.cpp">
 						<FileConfiguration
 							Name="Debug|Xbox">
 							<Tool
@@ -2293,7 +2251,43 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYear.h">
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeGrouped.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeOverview.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeOverview.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeRoot.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeRoot.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSingles.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSong.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSong.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSongTop100.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeSongTop100.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeTop100.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeTop100.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYearAlbum.cpp">

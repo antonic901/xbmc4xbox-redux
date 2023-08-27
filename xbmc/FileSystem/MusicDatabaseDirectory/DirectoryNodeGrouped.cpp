@@ -18,43 +18,52 @@
  *
  */
 
-#include "DirectoryNodeGenre.h"
+#include "DirectoryNodeGrouped.h"
 #include "QueryParams.h"
 #include "music/MusicDatabase.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeGenre::CDirectoryNodeGenre(const CStdString& strName, CDirectoryNode* pParent)
-  : CDirectoryNode(NODE_TYPE_GENRE, strName, pParent)
-{
+CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const CStdString& strName, CDirectoryNode* pParent)
+  : CDirectoryNode(type, strName, pParent)
+{ }
 
-}
-
-NODE_TYPE CDirectoryNodeGenre::GetChildType() const
+NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
 {
+  if (GetType() == NODE_TYPE_YEAR)
+    return NODE_TYPE_YEAR_ALBUM;
+
   return NODE_TYPE_ARTIST;
 }
 
-CStdString CDirectoryNodeGenre::GetLocalizedName() const
+CStdString CDirectoryNodeGrouped::GetLocalizedName() const
 {
   CMusicDatabase db;
   if (db.Open())
-    return db.GetGenreById(GetID());
+    return db.GetItemById(GetContentType(), GetID());
   return "";
 }
 
-bool CDirectoryNodeGenre::GetContent(CFileItemList& items) const
+bool CDirectoryNodeGrouped::GetContent(CFileItemList& items) const
 {
   CMusicDatabase musicdatabase;
   if (!musicdatabase.Open())
     return false;
 
-  CQueryParams params;
-  CollectQueryParams(params);
+  return musicdatabase.GetItems(BuildPath(), GetContentType(), items);
+}
 
-  bool bSuccess=musicdatabase.GetGenresNav(BuildPath(), items);
+std::string CDirectoryNodeGrouped::GetContentType() const
+{
+  switch (GetType())
+  {
+    case NODE_TYPE_GENRE:
+      return "genres";
+    case NODE_TYPE_YEAR:
+      return "years";
+    default:
+      break;
+  }
 
-  musicdatabase.Close();
-
-  return bSuccess;
+  return "";
 }
