@@ -28,6 +28,7 @@
 #include "playlists/PlayList.h"
 #include "settings/GUISettings.h"
 #include "utils/log.h"
+#include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
 
@@ -36,6 +37,8 @@ using namespace PLAYLIST;
 #define PROPERTY_PATH_DB            "path.db"
 #define PROPERTY_SORT_ORDER         "sort.order"
 #define PROPERTY_SORT_ASCENDING     "sort.ascending"
+#define PROPERTY_GROUP_BY           "group.by"
+#define PROPERTY_GROUP_MIXED        "group.mixed"
 
 namespace XFILE
 {
@@ -74,8 +77,7 @@ namespace XFILE
 
     std::string option = !filter ? "xsp" : "filter";
     const CStdString& group = playlist.GetGroup();
-    // TODO: must be replaced in following commits
-    bool isGrouped = false;
+    bool isGrouped = !group.empty() && !StringUtils2::EqualsNoCase(group, "none") && !playlist.IsGroupMixed();
 
     if (playlist.GetType().Equals("movies") ||
         playlist.GetType().Equals("tvshows") ||
@@ -107,7 +109,7 @@ namespace XFILE
               return false;
           }
 
-          if (group.empty())
+          if (!isGrouped)
             baseDir += "titles";
           else
             baseDir += group;
@@ -137,7 +139,7 @@ namespace XFILE
 
         // if we retrieve a list of episodes and we didn't receive
         // a pre-defined base path, we need to fix it
-        if (strBaseDir.empty() && mediaType == MediaTypeEpisode)
+        if (strBaseDir.empty() && mediaType == MediaTypeEpisode && !isGrouped)
           videoUrl.AppendPath("-1/-1/");
         items.SetProperty(PROPERTY_PATH_DB, videoUrl.ToString());
       }
@@ -224,7 +226,7 @@ namespace XFILE
         {
           baseDir = "videodb://musicvideos/";
 
-          if (group.empty())
+          if (!isGrouped)
             baseDir += "titles";
           else
             baseDir += group;
@@ -269,12 +271,18 @@ namespace XFILE
     }
 
     items.SetLabel(playlist.GetName());
-    if (!playlist.GetGroup().empty())
-      items.SetContent(playlist.GetGroup());
+    if (isGrouped)
+      items.SetContent(group);
     else
       items.SetContent(playlist.GetType());
     items.SetProperty(PROPERTY_SORT_ORDER, (int)playlist.GetOrder());
     items.SetProperty(PROPERTY_SORT_ASCENDING, playlist.GetOrderDirection() == SortOrderAscending);
+
+    if (!group.empty())
+    {
+      items.SetProperty(PROPERTY_GROUP_BY, group);
+      items.SetProperty(PROPERTY_GROUP_MIXED, playlist.IsGroupMixed());
+    }
 
     // sort grouped list by label
     if (items.Size() > 1 && !group.empty())
