@@ -56,6 +56,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/StringUtils2.h"
 
 #include "SkinInfo.h"
 
@@ -79,6 +80,9 @@ using namespace VIDEO;
 #define CONTROL_STACK              7
 #define CONTROL_BTNSCAN            8
 #define CONTROL_IMDB               9
+
+#define PROPERTY_GROUP_BY           "group.by"
+#define PROPERTY_GROUP_MIXED        "group.mixed"
 
 CGUIWindowVideoBase::CGUIWindowVideoBase(int id, const CStdString &xmlFile)
     : CGUIMediaWindow(id, xmlFile)
@@ -1723,19 +1727,30 @@ void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
 
   CGUIMediaWindow::GetGroupedItems(items);
 
-  CQueryParams params;
-  CVideoDatabaseDirectory dir;
-  dir.GetQueryParams(items.GetPath(), params);
-  VIDEODATABASEDIRECTORY::NODE_TYPE nodeType = CVideoDatabaseDirectory::GetDirectoryChildType(m_strFilterPath);
-  if (items.GetContent().Equals("movies") && params.GetSetId() <= 0 &&
-      nodeType == NODE_TYPE_TITLE_MOVIES &&
-      g_guiSettings.GetBool("videolibrary.groupmoviesets"))
+  std::string group;
+  bool mixed = false;
+  if (items.HasProperty(PROPERTY_GROUP_BY))
+    group = items.GetProperty(PROPERTY_GROUP_BY).asString();
+  if (items.HasProperty(PROPERTY_GROUP_MIXED))
+    mixed = items.GetProperty(PROPERTY_GROUP_MIXED).asBoolean();
+
+  // group == "none" completely supresses any grouping
+  if (!StringUtils2::EqualsNoCase(group, "none"))
   {
-    CFileItemList groupedItems;
-    if (GroupUtils::Group(GroupBySet, m_strFilterPath, items, groupedItems, GroupAttributeIgnoreSingleItems))
+    CQueryParams params;
+    CVideoDatabaseDirectory dir;
+    dir.GetQueryParams(items.GetPath(), params);
+    VIDEODATABASEDIRECTORY::NODE_TYPE nodeType = CVideoDatabaseDirectory::GetDirectoryChildType(m_strFilterPath);
+    if (items.GetContent().Equals("movies") && params.GetSetId() <= 0 &&
+        nodeType == NODE_TYPE_TITLE_MOVIES &&
+       (g_guiSettings.GetBool("videolibrary.groupmoviesets") || (StringUtils2::EqualsNoCase(group, "sets") && mixed)))
     {
-      items.ClearItems();
-      items.Append(groupedItems);
+      CFileItemList groupedItems;
+      if (GroupUtils::Group(GroupBySet, m_strFilterPath, items, groupedItems, GroupAttributeIgnoreSingleItems))
+      {
+        items.ClearItems();
+        items.Append(groupedItems);
+      }
     }
   }
 
