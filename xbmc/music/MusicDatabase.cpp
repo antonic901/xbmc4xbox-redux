@@ -4918,7 +4918,7 @@ bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription
     }
     // remove the filter if it doesn't match the item type
     else
-      musicUrl.AddOption("filter", "");
+      musicUrl.RemoveOption("filter");
   }
 
   return true;
