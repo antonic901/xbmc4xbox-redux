@@ -26,7 +26,7 @@
 #include "utils/CriticalSection.h"
 #include "pictures/SlideShowPicture.h"
 #include "pictures/DllImageLib.h"
-#include "SortFileItem.h"
+#include "utils/SortUtils.h"
 
 class CFileItemList;
 
