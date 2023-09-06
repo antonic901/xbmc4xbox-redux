@@ -33,6 +33,8 @@
 using namespace PLAYLIST;
 
 #define PROPERTY_PATH_DB            "path.db"
+#define PROPERTY_SORT_ORDER         "sort.order"
+#define PROPERTY_SORT_ASCENDING     "sort.ascending"
 
 namespace XFILE
 {
@@ -261,6 +263,8 @@ namespace XFILE
       }
     }
     items.SetLabel(playlist.GetName());
+    items.SetProperty(PROPERTY_SORT_ORDER, (int)playlist.GetOrder());
+    items.SetProperty(PROPERTY_SORT_ASCENDING, playlist.GetOrderDirection() == SortOrderAscending);
 
     // go through and set the playlist order
     for (int i = 0; i < items.Size(); i++)
