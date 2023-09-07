@@ -803,6 +803,24 @@ bool CFile::Rename(const CStdString& strFileName, const CStdString& strNewFileNa
   return false;
 }
 
+bool CFile::SetHidden(const CStdString& fileName, bool hidden)
+{
+  try
+  {
+    CURL url(fileName);
+
+    auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
+    if (!pFile.get()) return false;
+
+    return pFile->SetHidden(url, hidden);
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s(%s) - Unhandled exception", __FUNCTION__, fileName.c_str());
+  }
+  return false;
+}
+
 int CFile::IoControl(EIoControl request, void* param)
 {
   int result = -1;
@@ -820,6 +838,7 @@ int CFile::IoControl(EIoControl request, void* param)
 
   return result;
 }
+
 //*********************************************************************************************
 //*************** Stream IO for CFile objects *************************************************
 //*********************************************************************************************

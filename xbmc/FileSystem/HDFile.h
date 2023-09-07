@@ -54,6 +54,7 @@ public:
 
   virtual bool Delete(const CURL& url);
   virtual bool Rename(const CURL& url, const CURL& urlnew);
+  virtual bool SetHidden(const CURL& url, bool hidden);
 
   virtual int IoControl(EIoControl request, void* param);
 protected:
