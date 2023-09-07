@@ -35,6 +35,7 @@
 #include "dialogs/GUIDialogBusy.h"
 #include "utils/SingleLock.h"
 #include "utils/URIUtils.h"
+#include "settings/AdvancedSettings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -117,7 +118,8 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
 {
   try
   {
-    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(strPath));
+    CStdString realPath = Translate(strPath);
+    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (!pDirectory.get())
       return false;
 
@@ -143,7 +145,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
         {
           CSingleExit ex(g_graphicsContext);
 
-          CGetDirectory get(*pDirectory, strPath);
+          CGetDirectory get(*pDirectory, realPath);
           if(!get.Wait(100))
           {
             CGUIDialogBusy* dialog = NULL;
@@ -179,7 +181,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
         else
         {
           items.SetPath(strPath);
-          result = pDirectory->GetDirectory(strPath, items);
+          result = pDirectory->GetDirectory(realPath, items);
         }
 
         if (!result)
@@ -234,9 +236,10 @@ bool CDirectory::Create(const CStdString& strPath)
 {
   try
   {
-    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(strPath));
+    CStdString realPath = Translate(strPath);
+    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      if(pDirectory->Create(strPath.c_str()))
+      if(pDirectory->Create(realPath.c_str()))
         return true;
   }
 #ifndef _LINUX
@@ -257,9 +260,10 @@ bool CDirectory::Exists(const CStdString& strPath)
 {
   try
   {
-    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(strPath));
+    CStdString realPath = Translate(strPath);
+    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      return pDirectory->Exists(strPath.c_str());
+      return pDirectory->Exists(realPath.c_str());
   }
 #ifndef _LINUX
   catch (const win32_exception &e)
@@ -279,9 +283,10 @@ bool CDirectory::Remove(const CStdString& strPath)
 {
   try
   {
-    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(strPath));
+    CStdString realPath = Translate(strPath);
+    auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      if(pDirectory->Remove(strPath.c_str()))
+      if(pDirectory->Remove(realPath.c_str()))
         return true;
   }
 #ifndef _LINUX
@@ -316,4 +321,15 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const CStdString &m
         }
     }
   }
+}
+
+CStdString CDirectory::Translate(const CStdString &path)
+{
+  for (CAdvancedSettings::StringMapping::iterator i = g_advancedSettings.m_pathSubstitutions.begin(); 
+      i != g_advancedSettings.m_pathSubstitutions.end(); i++)
+  {
+    if (strncmp(path.c_str(), i->first.c_str(), i->first.size()) == 0)
+      return URIUtils::AddFileToFolder(i->second, path.Mid(i->first.size()));
+  }
+  return path;
 }
