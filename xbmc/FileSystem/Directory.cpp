@@ -120,6 +120,8 @@ public:
   unsigned int  m_id;
 };
 
+CCriticalSection CGetDirectory::m_lock;
+
 CDirectory::CDirectory()
 {}
 
