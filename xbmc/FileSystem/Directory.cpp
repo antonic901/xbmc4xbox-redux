@@ -35,7 +35,6 @@
 #include "dialogs/GUIDialogBusy.h"
 #include "utils/SingleLock.h"
 #include "utils/URIUtils.h"
-#include "settings/AdvancedSettings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -118,7 +117,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
 {
   try
   {
-    CStdString realPath = Translate(strPath);
+    CStdString realPath = URIUtils::SubstitutePath(strPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (!pDirectory.get())
       return false;
@@ -236,7 +235,7 @@ bool CDirectory::Create(const CStdString& strPath)
 {
   try
   {
-    CStdString realPath = Translate(strPath);
+    CStdString realPath = URIUtils::SubstitutePath(strPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
       if(pDirectory->Create(realPath.c_str()))
@@ -260,7 +259,7 @@ bool CDirectory::Exists(const CStdString& strPath)
 {
   try
   {
-    CStdString realPath = Translate(strPath);
+    CStdString realPath = URIUtils::SubstitutePath(strPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
       return pDirectory->Exists(realPath.c_str());
@@ -283,7 +282,7 @@ bool CDirectory::Remove(const CStdString& strPath)
 {
   try
   {
-    CStdString realPath = Translate(strPath);
+    CStdString realPath = URIUtils::SubstitutePath(strPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
       if(pDirectory->Remove(realPath.c_str()))
@@ -321,15 +320,4 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const CStdString &m
         }
     }
   }
-}
-
-CStdString CDirectory::Translate(const CStdString &path)
-{
-  for (CAdvancedSettings::StringMapping::iterator i = g_advancedSettings.m_pathSubstitutions.begin(); 
-      i != g_advancedSettings.m_pathSubstitutions.end(); i++)
-  {
-    if (strncmp(path.c_str(), i->first.c_str(), i->first.size()) == 0)
-      return URIUtils::AddFileToFolder(i->second, path.Mid(i->first.size()));
-  }
-  return path;
 }

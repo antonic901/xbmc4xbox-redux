@@ -220,7 +220,7 @@ bool CFile::Open(const CStdString& strFileName, unsigned int flags)
         return false;
     }
 
-    CURL url(CDirectory::Translate(strFileName));
+    CURL url(URIUtils::SubstitutePath(strFileName));
     if ( (flags & READ_NO_CACHE) == 0 && URIUtils::IsInternetStream(url, true) && !CUtil::IsPicture(strFileName) )
       m_flags |= READ_CACHED;
 
@@ -312,7 +312,7 @@ bool CFile::OpenForWrite(const CStdString& strFileName, bool bOverWrite)
 {
   try
   {
-    CURL url(CDirectory::Translate(strFileName));
+    CURL url(URIUtils::SubstitutePath(strFileName));
 
     m_pFile = CFileFactory::CreateLoader(url);
     if (m_pFile && m_pFile->OpenForWrite(url, bOverWrite))
@@ -741,7 +741,7 @@ bool CFile::Delete(const CStdString& strFileName)
 {
   try
   {
-    CURL url(CDirectory::Translate(strFileName));
+    CURL url(URIUtils::SubstitutePath(strFileName));
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get())
@@ -776,8 +776,8 @@ bool CFile::Rename(const CStdString& strFileName, const CStdString& strNewFileNa
 {
   try
   {
-    CURL url(CDirectory::Translate(strFileName));
-    CURL urlnew(CDirectory::Translate(strNewFileName));
+    CURL url(URIUtils::SubstitutePath(strFileName));
+    CURL urlnew(URIUtils::SubstitutePath(strNewFileName));
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get())
@@ -808,7 +808,7 @@ bool CFile::SetHidden(const CStdString& fileName, bool hidden)
 {
   try
   {
-    CURL url(CDirectory::Translate(fileName));
+    CURL url(URIUtils::SubstitutePath(fileName));
 
     auto_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get()) return false;
@@ -1032,5 +1032,5 @@ void CFileStream::Close()
 
 bool CFileStream::Open(const CStdString& filename)
 {
-  return Open(CURL(CDirectory::Translate(filename)));
+  return Open(CURL(URIUtils::SubstitutePath(filename)));
 }
