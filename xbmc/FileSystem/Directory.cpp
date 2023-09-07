@@ -148,7 +148,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
           while(!get.Wait(10))
           {
             CSingleLock lock(g_graphicsContext);
-            if(g_windowManager.HasModalDialog())
+            if(g_windowManager.IsWindowVisible(WINDOW_DIALOG_PROGRESS))
             {
               if(dialog)
               {
