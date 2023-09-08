@@ -39,6 +39,8 @@
 using namespace std;
 using namespace XFILE;
 
+#define TIME_TO_BUSY_DIALOG 500
+
 class CGetDirectory
 {
 private:
@@ -82,7 +84,7 @@ public:
                                            , NULL
                                            , CJob::PRIORITY_HIGH);
   }
- ~CGetDirectory()
+  ~CGetDirectory()
   {
     CJobManager::GetInstance().CancelJob(m_id);
   }
@@ -147,7 +149,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
           CSingleExit ex(g_graphicsContext);
 
           CGetDirectory get(pDirectory, realPath);
-          if(!get.Wait(100))
+          if(!get.Wait(TIME_TO_BUSY_DIALOG))
           {
             CGUIDialogBusy* dialog = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
             dialog->Show();
