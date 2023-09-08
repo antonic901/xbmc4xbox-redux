@@ -19,13 +19,55 @@
  */
 
 #include "dialogs/GUIDialogBusy.h"
+#include "guilib/GUIWindowManager.h"
 
 CGUIDialogBusy::CGUIDialogBusy(void)
 : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml")
 {
   m_loadType = LOAD_ON_GUI_INIT;
+  m_bModal = true;
 }
 
 CGUIDialogBusy::~CGUIDialogBusy(void)
 {
+}
+
+void CGUIDialogBusy::Show_Internal()
+{
+  m_bCanceled = false;
+  m_bRunning = true;
+  m_bModal = true;
+  m_bLastVisible = true;
+  m_dialogClosing = false;
+  g_windowManager.RouteToWindow(this);
+
+  // active this window...
+  CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0);
+  OnMessage(msg);
+}
+
+void CGUIDialogBusy::DoRender(unsigned int currentTime)
+{
+  bool visible = g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
+  m_bLastVisible = visible;
+  CGUIDialog::DoRender(currentTime);
+}
+
+void CGUIDialogBusy::Render()
+{
+  if(!m_bLastVisible)
+    return;
+  CGUIDialog::Render();
+}
+
+bool CGUIDialogBusy::OnAction(const CAction &action)
+{
+  if(action.GetID() == ACTION_NAV_BACK 
+  || action.GetID() == ACTION_PREVIOUS_MENU)
+  {
+    m_bCanceled = true;
+    return true;
+  }
+  else
+    return CGUIDialog::OnAction(action);
 }
