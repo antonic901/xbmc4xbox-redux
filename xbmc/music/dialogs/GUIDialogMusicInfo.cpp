@@ -337,12 +337,6 @@ void CGUIDialogMusicInfo::SetLabel(int iControl, const CStdString& strLabel)
   }
 }
 
-void CGUIDialogMusicInfo::Render()
-{
-  CGUIDialog::Render();
-}
-
-
 void CGUIDialogMusicInfo::RefreshThumb()
 {
   CStdString thumbImage = m_albumItem->GetThumbnailImage();

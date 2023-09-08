@@ -33,7 +33,6 @@ public:
   CGUIDialogVisualisationSettings(void);
   virtual ~CGUIDialogVisualisationSettings(void);
   virtual bool OnMessage(CGUIMessage &message);
-  virtual void Render();
 protected:
   virtual void OnInitWindow();
   void SetVisualisation(CVisualisation *pVisualisation);
