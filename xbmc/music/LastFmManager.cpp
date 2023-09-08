@@ -24,7 +24,6 @@
 #include "music/Artist.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "ApplicationRenderer.h"
 #include "PlayListPlayer.h"
 #include "utils/URIUtils.h"
 #include "playlists/PlayListFactory.h"
@@ -181,10 +180,6 @@ void CLastFmManager::InitProgressDialog(const CStdString& strUrl)
         dlgProgress->StartModal();
     }
   }
-  else
-  {
-    g_ApplicationRenderer.SetBusy(true);
-  }
 }
 
 void CLastFmManager::UpdateProgressDialog(const int iStringID)
@@ -202,10 +197,6 @@ void CLastFmManager::CloseProgressDialog()
   {
     dlgProgress->Close();
     dlgProgress = NULL;
-  }
-  else
-  {
-    g_ApplicationRenderer.SetBusy(false);
   }
 }
 

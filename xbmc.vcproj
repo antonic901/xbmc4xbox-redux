@@ -395,12 +395,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\Application.cpp">
 			</File>
 			<File
-				RelativePath=".\xbmc\ApplicationRenderer.cpp">
-			</File>
-			<File
-				RelativePath=".\xbmc\ApplicationRenderer.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\CueDocument.cpp">
 			</File>
 			<File
@@ -2964,9 +2958,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\AutoSwitch.h">
-			</File>
-			<File
-				RelativePath=".\BusyIndicator.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\input\ButtonTranslator.h">
