@@ -43,7 +43,7 @@ public:
   static void GetCommonPath(CStdString& strPath, const CStdString& strPath2);
   static CStdString GetParentPath(const CStdString& strPath);
   static bool GetParentPath(const CStdString& strPath, CStdString& strParent);
-  static CStdString SubstitutePath(const CStdString& strPath);
+  static CStdString SubstitutePath(const CStdString& strPath, bool reverse = false);
 
   static bool IsCDDA(const CStdString& strFile);
   static bool IsDAAP(const CStdString& strFile);

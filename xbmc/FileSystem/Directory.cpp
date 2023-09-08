@@ -47,10 +47,11 @@ private:
 
   struct CResult
   {
-    CResult(const CStdString& dir) : m_event(true), m_result(false), m_dir(dir) {}
+    CResult(const CStdString& dir, const CStdString& listDir) : m_event(true), m_dir(dir), m_listDir(listDir), m_result(false) {}
     CEvent        m_event;
     CFileItemList m_list;
     CStdString    m_dir;
+    CStdString    m_listDir;
     bool          m_result;
   };
 
@@ -65,7 +66,7 @@ private:
   public:
     virtual bool DoWork()
     {
-      m_result->m_list.SetPath(m_result->m_dir);
+      m_result->m_list.SetPath(m_result->m_listDir);
       m_result->m_result         = m_imp->GetDirectory(m_result->m_dir, m_result->m_list);
       m_result->m_event.Set();
       return m_result->m_result;
@@ -77,14 +78,14 @@ private:
 
 public:
 
-  CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CStdString& dir) 
-    : m_result(new CResult(dir))
+  CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CStdString& dir, const CStdString& listDir)
+    : m_result(new CResult(dir, listDir))
   {
     m_id = CJobManager::GetInstance().AddJob(new CGetJob(imp, m_result)
                                            , NULL
                                            , CJob::PRIORITY_HIGH);
   }
-  ~CGetDirectory()
+ ~CGetDirectory()
   {
     CJobManager::GetInstance().CancelJob(m_id);
   }
@@ -106,7 +107,6 @@ public:
     list.Copy(m_result->m_list);
     return true;
   }
-
   boost::shared_ptr<CResult> m_result;
   unsigned int               m_id;
 };
@@ -148,7 +148,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
         {
           CSingleExit ex(g_graphicsContext);
 
-          CGetDirectory get(pDirectory, realPath);
+          CGetDirectory get(pDirectory, realPath, strPath);
           if(!get.Wait(TIME_TO_BUSY_DIALOG))
           {
             CGUIDialogBusy* dialog = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
@@ -207,6 +207,16 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, C
     //  Disable for database folders, as they already contain the extracted items
     if (bUseFileDirectories && !items.IsMusicDb() && !items.IsVideoDb() && !items.IsSmartPlayList())
       FilterFileDirectories(items, strMask);
+
+    // Correct items for path substitution
+    if (strPath != realPath)
+    {
+      for (int i = 0; i < items.Size(); ++i)
+      {
+        CFileItemPtr item = items[i];
+        item->SetPath(URIUtils::SubstitutePath(item->GetPath(), true));
+      }
+    }
 
     return true;
   }
