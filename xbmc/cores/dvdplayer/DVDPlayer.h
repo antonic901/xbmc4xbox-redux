@@ -437,7 +437,7 @@ protected:
   } m_State, m_StateInput;
   CCriticalSection m_StateSection;
 
-  HANDLE m_hReadyEvent;
+  CEvent m_ready;
   CRITICAL_SECTION m_critStreamSection; // need to have this lock when switching streams (audio / video)
 
   CEdl m_Edl;
