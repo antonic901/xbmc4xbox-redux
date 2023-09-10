@@ -119,6 +119,10 @@ CDirectory::~CDirectory()
 
 bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, CStdString strMask /*=""*/, bool bUseFileDirectories /* = true */, bool allowPrompting /* = false */, DIR_CACHE_TYPE cacheDirectory /* = DIR_CACHE_ONCE */, bool extFileInfo /* = true */, bool allowThreads /* = false */)
 {
+#ifdef _XBOX
+  if(URIUtils::IsPlugin(strPath))
+    allowThreads = false;
+#endif
   try
   {
     CStdString realPath = URIUtils::SubstitutePath(strPath);
