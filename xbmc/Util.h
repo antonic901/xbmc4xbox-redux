@@ -114,6 +114,7 @@ public:
   static bool IsPicture(const CStdString& strFile);
   static void GetDVDDriveIcon( const CStdString& strPath, CStdString& strIcon );
   static void RemoveTempFiles();
+  static void ClearTempFonts();
   static void DeleteGUISettings();
 
   static void RemoveIllegalChars( CStdString& strText);

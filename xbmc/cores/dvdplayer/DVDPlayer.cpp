@@ -477,6 +477,8 @@ void CDVDPlayer::OnStartup()
   m_messenger.Init();
 
   g_dvdPerformanceCounter.EnableMainPerformance(ThreadHandle());
+
+  CUtil::ClearTempFonts();
 }
 
 bool CDVDPlayer::OpenInputStream()
