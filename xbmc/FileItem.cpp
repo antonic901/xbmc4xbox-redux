@@ -1969,7 +1969,7 @@ void CFileItemList::RemoveExtensions()
     m_items[i]->RemoveExtension();
 }
 
-void CFileItemList::Stack()
+void CFileItemList::Stack(bool stackFiles /* = true */)
 {
   CSingleLock lock(m_lock);
 
@@ -1982,6 +1982,14 @@ void CFileItemList::Stack()
   // items needs to be sorted for stuff below to work properly
   Sort(SORT_METHOD_LABEL, SortOrderAscending);
 
+  StackFolders();
+
+  if (stackFiles)
+    StackFiles();
+}
+
+void CFileItemList::StackFolders()
+{
   // Precompile our REs
   VECCREGEXP folderRegExps;
   CRegExp folderRegExp(true);
@@ -2082,7 +2090,10 @@ void CFileItemList::Stack()
       }
     }
   }
+}
 
+void CFileItemList::StackFiles()
+{
   // Precompile our REs
   VECCREGEXP stackRegExps;
   CRegExp tmpRegExp(true);
@@ -2101,7 +2112,7 @@ void CFileItemList::Stack()
   }
 
   // now stack the files, some of which may be from the previous stack iteration
-  i = 0;
+  int i = 0;
   while (i < Size())
   {
     CFileItemPtr item1 = Get(i);

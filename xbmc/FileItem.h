@@ -425,7 +425,14 @@ public:
   void SetFastLookup(bool fastLookup);
   bool Contains(const CStdString& fileName) const;
   bool GetFastLookup() const { return m_fastLookup; };
-  void Stack();
+
+  /*! \brief stack a CFileItemList
+   By default we stack all items (files and folders) in a CFileItemList
+   \param stackFiles whether to stack all items or just collapse folders (defaults to true)
+   \sa StackFiles,StackFolders
+   */
+  void Stack(bool stackFiles = true);
+
   SortOrder GetSortOrder() const { return m_sortOrder; }
   SORT_METHOD GetSortMethod() const { return m_sortMethod; }
   /*! \brief load a CFileItemList out of the cache
@@ -502,6 +509,18 @@ private:
   void Sort(FILEITEMLISTCOMPARISONFUNC func);
   void FillSortFields(FILEITEMFILLFUNC func);
   CStdString GetDiscCacheFile(int windowID) const;
+
+  /*!
+   \brief stack files in a CFileItemList
+   \sa Stack
+   */
+  void StackFiles();
+
+  /*!
+   \brief stack folders in a CFileItemList
+   \sa Stack
+   */
+  void StackFolders();
 
   VECFILEITEMS m_items;
   MAPFILEITEMS m_map;
