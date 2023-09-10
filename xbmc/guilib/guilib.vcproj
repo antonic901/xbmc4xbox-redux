@@ -362,9 +362,6 @@
 				RelativePath=".\GUISpinControlEx.cpp">
 			</File>
 			<File
-				RelativePath=".\GUIStandardWindow.cpp">
-			</File>
-			<File
 				RelativePath=".\GUIStaticItem.cpp">
 			</File>
 			<File
@@ -587,9 +584,6 @@
 			</File>
 			<File
 				RelativePath=".\GUISpinControlEx.h">
-			</File>
-			<File
-				RelativePath=".\GUIStandardWindow.h">
 			</File>
 			<File
 				RelativePath=".\GUIStaticItem.h">
