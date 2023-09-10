@@ -1435,7 +1435,12 @@ void CGUIMediaWindow::OnRenameItem(int iItem)
 
 void CGUIMediaWindow::OnInitWindow()
 {
+  // initial fetch is done unthreaded to ensure the items are setup prior to skin animations kicking off
+  m_rootDir.SetAllowThreads(false);
+
   Refresh();
+
+  m_rootDir.SetAllowThreads(true);
 
   if (m_iSelectedItem > -1)
     m_viewControl.SetSelectedItem(m_iSelectedItem);
