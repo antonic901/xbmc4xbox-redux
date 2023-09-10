@@ -331,7 +331,7 @@ void CGUIWindowVideoBase::OnInfo(CFileItem* pItem, const SScraperInfo& info)
     if (item.m_bIsFolder && !info.strContent.Equals("tvshows"))
     {
       CFileItemList items;
-      CDirectory::GetDirectory(item.GetPath(), items);
+      CDirectory::GetDirectory(item.GetPath(), items,"",false,false,DIR_CACHE_ONCE,true,true);
       items.Stack();
 
       // check for media files

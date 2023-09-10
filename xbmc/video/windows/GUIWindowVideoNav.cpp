@@ -691,7 +691,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     if (pDialog->IsConfirmed())
     {
       CFileItemList items;
-      CDirectory::GetDirectory(pItem->GetPath(),items);
+      CDirectory::GetDirectory(pItem->GetPath(),items,"",false,false,DIR_CACHE_ONCE,true,true);
       for (int i=0;i<items.Size();++i)
         OnDeleteItem(items[i]);
 
