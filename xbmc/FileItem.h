@@ -108,7 +108,9 @@ public:
   bool IsShortCut() const;
   bool IsNFO() const;
   bool IsDVDImage() const;
+  bool IsOpticalMediaFile() const;
   bool IsDVDFile(bool bVobs = true, bool bIfos = true) const;
+  bool IsBDFile() const;
   bool IsRAR() const;
   bool IsZIP() const;
   bool IsCBZ() const;
@@ -259,6 +261,17 @@ public:
   void SetUserVideoThumb();
   void SetUserProgramThumb();
   void SetUserMusicThumb(bool alwaysCheckRemote = false);
+
+  /*! \brief Get the path where we expect local metadata to reside.
+   For a folder, this is just the existing path (eg tvshow folder)
+   For a file, this is the parent path, with exceptions made for VIDEO_TS and BDMV files
+   Three cases are handled:
+     /foo/bar/movie_name/file_name          -> /foo/bar/movie_name/
+     /foo/bar/movie_name/VIDEO_TS/file_name -> /foo/bar/movie_name/
+     /foo/bar/movie_name/BDMV/file_name     -> /foo/bar/movie_name/
+     \sa URIUtils::GetParentPath
+   */
+  CStdString GetLocalMetadataPath() const;
 
   // finds a matching local trailer file
   CStdString FindTrailer() const;

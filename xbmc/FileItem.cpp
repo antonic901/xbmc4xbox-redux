@@ -712,6 +712,14 @@ bool CFileItem::IsDVDImage() const
   return false;
 }
 
+bool CFileItem::IsOpticalMediaFile() const
+{
+  bool found = IsDVDFile(false, true);
+  if (found)
+    return true;
+  return IsBDFile();
+}
+
 bool CFileItem::IsDVDFile(bool bVobs /*= true*/, bool bIfos /*= true*/) const
 {
   CStdString strFileName = URIUtils::GetFileName(m_strPath);
@@ -727,6 +735,12 @@ bool CFileItem::IsDVDFile(bool bVobs /*= true*/, bool bIfos /*= true*/) const
   }
 
   return false;
+}
+
+bool CFileItem::IsBDFile() const
+{
+  CStdString strFileName = URIUtils::GetFileName(m_strPath);
+  return (strFileName.Equals("index.bdmv"));
 }
 
 bool CFileItem::IsRAR() const
@@ -2034,25 +2048,11 @@ void CFileItemList::Stack()
           if (!dvdPath.IsEmpty())
           {
             // NOTE: should this be done for the CD# folders too?
-            /* set the thumbnail based on folder */
-            item->SetCachedVideoThumb();
-            if (!item->HasThumbnail())
-              item->SetUserVideoThumb();
-
             item->m_bIsFolder = false;
             item->SetPath(dvdPath);
             item->SetLabel2("");
             item->SetLabelPreformated(true);
             m_sortMethod = SORT_METHOD_NONE; /* sorting is now broken */
-
-            /* override the previously set thumb if video_ts.ifo has any */
-            /* otherwise user can't set icon on the stacked file as that */
-            /* will allways be set on the video_ts.ifo file */
-            CStdString thumb(item->GetCachedVideoThumb());
-            if(CFile::Exists(thumb))
-              item->SetThumbnailImage(thumb);
-            else
-              item->SetUserVideoThumb();
           }
         }
       }
@@ -2600,6 +2600,15 @@ CStdString CFileItem::GetUserVideoThumb() const
   if (CFile::Exists(fileThumb))
     return fileThumb;
 
+  if (IsOpticalMediaFile())
+  { // special case for optical media "folders" - check the parent folder (or parent of parent)
+    // TODO: A better way to handle this would be to treat stacked folders as folders rather than files.
+    CFileItem item(GetLocalMetadataPath(), true);
+    CStdString thumb(item.GetUserVideoThumb());
+    if (!thumb.IsEmpty())
+      return thumb;
+  }
+
   // 2. - check movie.tbn, as long as it's not a folder
   if (!m_bIsFolder)
   {
@@ -2776,6 +2785,12 @@ CStdString CFileItem::GetLocalFanart() const
 
   CFileItemList items;
   CDirectory::GetDirectory(strDir, items, g_settings.m_pictureExtensions, false, false, DIR_CACHE_ALWAYS, false, true);
+  if (IsOpticalMediaFile())
+  { // grab from the optical media parent folder as well - see GetUserVideoThumb
+    CFileItemList moreItems;
+    CDirectory::GetDirectory(GetLocalMetadataPath(), moreItems, g_settings.m_pictureExtensions, false, false, DIR_CACHE_ALWAYS, false, true);
+    items.Append(moreItems);
+  }
 
   CStdStringArray fanarts;
   StringUtils::SplitString(g_advancedSettings.m_fanartImages, "|", fanarts);
@@ -2800,6 +2815,22 @@ CStdString CFileItem::GetLocalFanart() const
   }
 
   return "";
+}
+
+CStdString CFileItem::GetLocalMetadataPath() const
+{
+  if (m_bIsFolder && !IsFileFolder())
+    return m_strPath;
+
+  CStdString parent(URIUtils::GetParentPath(m_strPath));
+  CStdString parentFolder(parent);
+  URIUtils::RemoveSlashAtEnd(parentFolder);
+  parentFolder = URIUtils::GetFileName(parentFolder);
+  if (parentFolder == "VIDEO_TS" || parentFolder == "BDMV")
+  { // go back up another one
+    parent = URIUtils::GetParentPath(parent);
+  }
+  return parent;
 }
 
 CStdString CFileItem::GetCachedFanart() const
