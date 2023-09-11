@@ -73,10 +73,10 @@ public:
   void RunSlideShow(const CStdString &strPath, bool bRecursive = false,
                     bool bRandom = false, bool bNotRandom = false,
                     SORT_METHOD method = SORT_METHOD_LABEL,
-                    SortOrder order = SortOrderAscending);
+                    SortOrder order = SortOrderAscending, const CStdString &strExtensions="");
   void AddFromPath(const CStdString &strPath, bool bRecursive,
                    SORT_METHOD method=SORT_METHOD_LABEL, 
-                   SortOrder order = SortOrderAscending);
+                   SortOrder order = SortOrderAscending, const CStdString &strExtensions="");
   void StartSlideShow(bool screensaver=false);
   bool InSlideShow() const;
   virtual bool OnMessage(CGUIMessage& message);
@@ -107,6 +107,7 @@ private:
   bool m_bSlideShow;
   bool m_bScreensaver;
   bool m_bPause;
+  bool m_bPlayingVideo;
   bool m_bErrorMessage;
 
   CFileItemList* m_slides;
@@ -122,4 +123,5 @@ private:
   DllImageLib m_ImageLib;
   RESOLUTION m_Resolution;
   CCriticalSection m_slideSection;
+  CStdString m_strExtensions;
 };
