@@ -889,9 +889,9 @@ vector<CStdString> CGUIDialogPluginSettings::GetFileEnumValues(const CStdString 
   // fetch directory
   CFileItemList items;
   if (!mask.IsEmpty())
-    CDirectory::GetDirectory(fullPath, items, mask);
+    CDirectory::GetDirectory(fullPath, items, mask, XFILE::DIR_FLAG_NO_FILE_DIRS);
   else
-    CDirectory::GetDirectory(fullPath, items);
+    CDirectory::GetDirectory(fullPath, items, "", XFILE::DIR_FLAG_NO_FILE_DIRS);
 
   vector<CStdString> values;
   for (int i = 0; i < items.Size(); ++i)

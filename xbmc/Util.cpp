@@ -1557,7 +1557,7 @@ void CUtil::RemoveTempFiles()
 {
   CStdString searchPath = g_settings.GetDatabaseFolder();
   CFileItemList items;
-  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".tmp", false))
+  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".tmp", DIR_FLAG_NO_FILE_DIRS))
     return;
   for (int i = 0; i < items.Size(); ++i)
   {
@@ -1642,7 +1642,7 @@ void CUtil::ClearTempFonts()
     return;
 
   CFileItemList items;
-  CDirectory::GetDirectory(searchPath, items, "", false, false, XFILE::DIR_CACHE_NEVER);
+  CDirectory::GetDirectory(searchPath, items, "", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_BYPASS_CACHE);
 
   for (int i=0; i<items.Size(); ++i)
   {
@@ -1781,7 +1781,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
     {
       CFileItemList items;
 
-      CDirectory::GetDirectory(strLookInPaths[step], items, ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|.ass|.idx|.ifo|.rar|.zip", false, false, DIR_CACHE_NEVER, true);
+      CDirectory::GetDirectory(strLookInPaths[step], items, ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|.ass|.idx|.ifo|.rar|.zip", DIR_FLAG_NO_FILE_DIRS);
       int fnl = strFileNameNoExt.size();
 
       CStdString strFileNameNoExtNoCase(strFileNameNoExt);
@@ -1889,7 +1889,7 @@ bool CUtil::CacheRarSubtitles(const CStdString& strRarPath,
   {
     CStdString strZipPath;
     URIUtils::CreateArchivePath(strZipPath,"zip",strRarPath,"");
-    if (!CDirectory::GetDirectory(strZipPath,ItemList,"",false))
+    if (!CDirectory::GetDirectory(strZipPath,ItemList,"",DIR_FLAG_NO_FILE_DIRS))
       return false;
   }
   else
@@ -2060,7 +2060,7 @@ CStdString CUtil::GetNextFilename(const CStdString &fn_template, int max)
   name.Format(fn_template.c_str(), 0);
 
   CFileItemList items;
-  if (!CDirectory::GetDirectory(searchPath, items, mask, false))
+  if (!CDirectory::GetDirectory(searchPath, items, mask, DIR_FLAG_NO_FILE_DIRS))
     return name;
 
   items.SetFastLookup(true);
@@ -2831,7 +2831,7 @@ void CUtil::DeleteDirectoryCache(const CStdString &prefix)
 {
   CStdString searchPath = "special://temp/";
   CFileItemList items;
-  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".fi", false))
+  if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".fi", DIR_FLAG_NO_FILE_DIRS))
     return;
 
   for (int i = 0; i < items.Size(); ++i)
@@ -3441,7 +3441,10 @@ bool CUtil::GetXBOXNickName(CStdString &strXboxNickNameOut)
 void CUtil::GetRecursiveListing(const CStdString& strPath, CFileItemList& items, const CStdString& strMask, bool bUseFileDirectories)
 {
   CFileItemList myItems;
-  CDirectory::GetDirectory(strPath,myItems,strMask,bUseFileDirectories);
+  int flags = DIR_FLAG_DEFAULTS;
+  if (!bUseFileDirectories)
+    flags |= DIR_FLAG_NO_FILE_DIRS;
+  CDirectory::GetDirectory(strPath,myItems,strMask,flags);
   for (int i=0;i<myItems.Size();++i)
   {
     if (myItems[i]->m_bIsFolder)
@@ -3455,7 +3458,7 @@ void CUtil::GetRecursiveListing(const CStdString& strPath, CFileItemList& items,
 void CUtil::GetRecursiveDirsListing(const CStdString& strPath, CFileItemList& item)
 {
   CFileItemList myItems;
-  CDirectory::GetDirectory(strPath,myItems,"",false);
+  CDirectory::GetDirectory(strPath,myItems,"",DIR_FLAG_NO_FILE_DIRS);
   for (int i=0;i<myItems.Size();++i)
   {
     if (myItems[i]->m_bIsFolder && !myItems[i]->GetPath().Equals(".."))

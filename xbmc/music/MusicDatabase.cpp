@@ -2517,7 +2517,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 void CMusicDatabase::DeleteCDDBInfo()
 {
   CFileItemList items;
-  if (!CDirectory::GetDirectory(g_settings.GetCDDBFolder(), items, ".cddb", false))
+  if (!CDirectory::GetDirectory(g_settings.GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
   {
     CGUIDialogOK::ShowAndGetInput(313, 426, 0, 0);
     return ;
