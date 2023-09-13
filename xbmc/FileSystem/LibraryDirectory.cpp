@@ -48,12 +48,12 @@ CLibraryDirectory::~CLibraryDirectory(void)
 
 bool CLibraryDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
 {
-  CStdString libNode = GetNode(strPath);
-  if (libNode.IsEmpty())
+  std::string libNode = GetNode(strPath);
+  if (libNode.empty())
     return false;
 
   if (URIUtils::GetExtension(libNode).Equals(".xml"))
-  { // a filter node
+  { // a filter or folder node
     TiXmlElement *node = LoadXML(libNode);
     if (node)
     {
@@ -76,8 +76,16 @@ bool CLibraryDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
             CSmartPlaylistDirectory::GetDirectory(playlist, items))
         {
           items.SetProperty("library.filter", "true");
+          items.SetPath(items.GetProperty("path.db").asString());
           return true;
         }
+      }
+      else if (type == "folder")
+      {
+        CStdString path;
+        XMLUtils::GetPath(node, "path", path);
+        if (!path.IsEmpty())
+          return CDirectory::GetDirectory(path, items, m_strFileMask, m_flags);
       }
     }
     return false;
@@ -85,7 +93,7 @@ bool CLibraryDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
 
   // just a plain node - read the folder for XML nodes and other folders
   CFileItemList nodes;
-  if (!CDirectory::GetDirectory(libNode, nodes, ".xml", false))
+  if (!CDirectory::GetDirectory(libNode, nodes, ".xml", DIR_FLAG_NO_FILE_DIRS))
     return false;
 
   // iterate over our nodes
@@ -113,27 +121,14 @@ bool CLibraryDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
       if (XMLUtils::GetString(node, "label", label))
         label = CGUIControlFactory::FilterLabel(label);
       XMLUtils::GetString(node, "icon", icon);
-      CStdString type = node->Attribute("type");
       int order = 0;
       node->Attribute("order", &order);
-      CFileItemPtr item;
-      if (type == "folder")
-      { // folder type - grab our path
-        CStdString path;
-        XMLUtils::GetPath(node, "path", path);
-        if (path.IsEmpty())
-        {
-          CLog::Log(LOGERROR, "<path> tag must be not be empty for type=\"folder\" node '%s'", xml.c_str());
-          continue;
-        }
-        item.reset(new CFileItem(path, true));
-      }
-      else
-      { // virtual folder or filter
-        URIUtils::RemoveSlashAtEnd(xml);
-        CStdString folder = URIUtils::GetFileName(xml);
-        item.reset(new CFileItem(URIUtils::AddFileToFolder(strPath, folder), true));
-      }
+
+      // create item
+      URIUtils::RemoveSlashAtEnd(xml);
+      CStdString folder = URIUtils::GetFileName(xml);
+      CFileItemPtr item(new CFileItem(URIUtils::AddFileToFolder(strPath, folder), true));
+
       item->SetLabel(label);
       if (!icon.IsEmpty() && g_TextureManager.HasTexture(icon))
         item->SetIconImage(icon);
@@ -145,7 +140,7 @@ bool CLibraryDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
   return true;
 }
 
-TiXmlElement *CLibraryDirectory::LoadXML(const CStdString &xmlFile)
+TiXmlElement *CLibraryDirectory::LoadXML(const std::string &xmlFile)
 {
   if (!CFile::Exists(xmlFile))
     return NULL;
@@ -158,8 +153,9 @@ TiXmlElement *CLibraryDirectory::LoadXML(const CStdString &xmlFile)
     return NULL;
 
   // check the condition
-  CStdString condition = xml->Attribute("visible");
-  if (condition.IsEmpty() || g_infoManager.EvaluateBool(condition))
+  const char* visible = xml->Attribute("visible");
+  std::string condition = visible ? visible : "";
+  if (condition.empty() || g_infoManager.EvaluateBool(condition))
     return xml;
 
   return NULL;
@@ -167,10 +163,12 @@ TiXmlElement *CLibraryDirectory::LoadXML(const CStdString &xmlFile)
 
 bool CLibraryDirectory::Exists(const char* strPath)
 {
-  return !GetNode(strPath).IsEmpty();
+  if (strPath)
+    return !GetNode(std::string(strPath)).empty();
+  return false;
 }
 
-CStdString CLibraryDirectory::GetNode(const CStdString &path)
+std::string CLibraryDirectory::GetNode(const std::string &path)
 {
   CURL url(path);
   CStdString libDir = URIUtils::AddFileToFolder(g_settings.GetLibraryFolder(), url.GetHostName() + "/");

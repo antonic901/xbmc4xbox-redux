@@ -613,7 +613,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
 CMediaSource *CGUIDialogContextMenu::GetShare(const CStdString &type, const CFileItem *item)
 {
   VECSOURCES *shares = g_settings.GetSourcesFromType(type);
-  if (!shares) return NULL;
+  if (!shares || !item) return NULL;
   for (unsigned int i = 0; i < shares->size(); i++)
   {
     CMediaSource &testShare = shares->at(i);
