@@ -107,6 +107,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath)
   m_fileResult->Reset();
   m_listItems->Clear();
   m_listItems->SetPath(strPath);
+  m_listItems->SetLabel(url.GetShareName());
   m_cancelled = false;
   m_success = false;
   m_totalItems = 0;
