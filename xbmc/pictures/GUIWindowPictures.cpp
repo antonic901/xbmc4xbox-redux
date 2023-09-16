@@ -389,6 +389,7 @@ void CGUIWindowPictures::OnSlideShowRecursive(const CStdString &strPicture)
     m_slideShowStarted = true;
     pSlideShow->RunSlideShow(strPicture, true,
                              g_guiSettings.GetBool("slideshow.shuffle"),false,
+                             "", true,
                              m_guiState->GetSortMethod(),
                              m_guiState->GetSortOrder(),
                              strExtensions);
@@ -421,6 +422,7 @@ void CGUIWindowPictures::OnSlideShow(const CStdString &strPicture)
     }
     m_slideShowStarted = true;
     pSlideShow->RunSlideShow(strPicture, false ,false, false,
+                             "", true,
                              m_guiState->GetSortMethod(),
                              m_guiState->GetSortOrder(),
                              strExtensions);
