@@ -69,6 +69,7 @@ public:
   void ShowPrevious();
   void Select(const CStdString& strPicture);
   const CFileItemList &GetSlideShowContents();
+  void GetSlideShowContents(CFileItemList &list);
   const CFileItemPtr GetCurrentSlide();
   void RunSlideShow(const CStdString &strPath, bool bRecursive = false,
                     bool bRandom = false, bool bNotRandom = false,
@@ -87,6 +88,7 @@ public:
   int NumSlides() const;
   int CurrentSlide() const;
   void Shuffle();
+  int GetDirection() const { return m_iDirection; }
 private:
   typedef std::set<CStdString> path_set;  // set to track which paths we're adding
   void AddItems(const CStdString &strPath, path_set *recursivePaths,
