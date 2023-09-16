@@ -29,13 +29,13 @@ public:
   virtual ~CViewDatabase(void);
   virtual bool Open();
 
-  bool GetViewState(const CStdString &path, int windowID, CViewState &state);
-  bool SetViewState(const CStdString &path, int windowID, const CViewState &state);
+  bool GetViewState(const CStdString &path, int windowID, CViewState &state, const CStdString &skin);
+  bool SetViewState(const CStdString &path, int windowID, const CViewState &state, const CStdString &skin);
   bool ClearViewStates(int windowID);
 
 protected:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 3; };
+  virtual int GetMinVersion() const { return 4; };
   const char *GetDefaultDBName() const { return "ViewModes"; };
 };
