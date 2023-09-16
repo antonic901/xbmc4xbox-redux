@@ -3198,30 +3198,6 @@ void CGUIWindowSettingsCategory::FillInViewModes(CSetting *pSetting, int windowI
   pControl->SetValue(pSettingInt->GetData());
 }
 
-void CGUIWindowSettingsCategory::FillInSortMethods(CSetting *pSetting, int windowID)
-{
-  CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-  CFileItemList items("C:");
-  CGUIViewState *state = CGUIViewState::GetViewState(windowID, items);
-  if (state)
-  {
-    bool found(false);
-    vector< pair<int,int> > sortMethods;
-    state->GetSortMethods(sortMethods);
-    for (unsigned int i = 0; i < sortMethods.size(); i++)
-    {
-      pControl->AddLabel(g_localizeStrings.Get(sortMethods[i].second), sortMethods[i].first);
-      if (sortMethods[i].first == pSettingInt->GetData())
-        found = true;
-    }
-    if (!found && sortMethods.size())
-      pSettingInt->SetData(sortMethods[0].first);
-  }
-  pControl->SetValue(pSettingInt->GetData());
-  delete state;
-}
-
 void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, const CStdString& strSelected, const CStdString& strContent)
 {
   CFileItemList items;
