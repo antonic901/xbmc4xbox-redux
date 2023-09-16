@@ -94,9 +94,10 @@ using namespace MUSIC_INFO;
  *  %X - Bitrate
  *  %Y - Year
  *  %Z - tvshow title
+ *  %a - Date Added
  */
 
-#define MASK_CHARS "NSATBGYFLDIJRCKMEPHZOQUVXW"
+#define MASK_CHARS "NSATBGYFLDIJRCKMEPHZOQUVXWa"
 
 CLabelFormatter::CLabelFormatter(const CStdString &mask, const CStdString &mask2)
 {
@@ -306,7 +307,11 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
    case 'W': // Listeners
     if( !item->m_bIsFolder && music->GetListeners() != 0 )
      value.Format("%i %s", music->GetListeners(), g_localizeStrings.Get(music->GetListeners() == 1 ? 20454 : 20455));
-    break;    
+    break;
+  case 'a': // Date Added
+    if (movie && movie->m_dateAdded.IsValid())
+      value = movie->m_dateAdded.GetAsLocalizedDate();
+    break;
   }
   if (!value.IsEmpty())
     return mask.m_prefix + value + mask.m_postfix;
