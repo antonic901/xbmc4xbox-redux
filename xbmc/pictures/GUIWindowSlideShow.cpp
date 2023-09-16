@@ -171,6 +171,7 @@ void CGUIWindowSlideShow::Reset()
   m_iCurrentSlide = 0;
   m_iNextSlide = 1;
   m_iCurrentPic = 0;
+  m_iDirection = 1;
   CSingleLock lock(m_slideSection);
   m_slides->Clear();
   m_Resolution = g_graphicsContext.GetVideoResolution();
@@ -229,6 +230,7 @@ void CGUIWindowSlideShow::ShowNext()
   if (m_iNextSlide >= m_slides->Size())
     m_iNextSlide = 0;
 
+  m_iDirection   = 1;
   m_bLoadNextPic = true;
 }
 
@@ -240,6 +242,7 @@ void CGUIWindowSlideShow::ShowPrevious()
   m_iNextSlide = m_iCurrentSlide - 1;
   if (m_iNextSlide < 0)
     m_iNextSlide = m_slides->Size() - 1;
+  m_iDirection   = -1;
   m_bLoadNextPic = true;
 }
 
@@ -255,6 +258,7 @@ void CGUIWindowSlideShow::Select(const CStdString& strPicture)
       m_iNextSlide = m_iCurrentSlide + 1;
       if (m_iNextSlide >= m_slides->Size())
         m_iNextSlide = 0;
+      m_iDirection    = 1;
       return ;
     }
   }
@@ -280,6 +284,7 @@ bool CGUIWindowSlideShow::InSlideShow() const
 void CGUIWindowSlideShow::StartSlideShow(bool screensaver)
 {
   m_bSlideShow = true;
+  m_iDirection = 1;
   m_bScreensaver = screensaver;
 }
 
@@ -333,12 +338,14 @@ void CGUIWindowSlideShow::Render()
       {
         CLog::Log(LOGERROR, "Error loading the current image %s", m_slides->Get(m_iCurrentSlide)->GetPath().c_str());
         m_iCurrentSlide = m_iNextSlide;
+        m_iNextSlide    = GetNextSlide();
         ShowNext();
         m_bErrorMessage = false;
       }
       else if (m_bLoadNextPic)
       {
         m_iCurrentSlide = m_iNextSlide;
+        m_iNextSlide    = GetNextSlide();
         m_bErrorMessage = false;
       }
       // else just drop through - there's nothing we can do (error message will be displayed)
@@ -397,7 +404,7 @@ void CGUIWindowSlideShow::Render()
   }
   else
   {
-    if ((bSlideShow || m_bLoadNextPic) && m_Image[m_iCurrentPic].IsLoaded() && !m_Image[1 - m_iCurrentPic].IsLoaded() && !m_pBackgroundLoader->IsLoading() && !m_bWaitForNextPic)
+    if (m_iNextSlide != m_iCurrentSlide && m_Image[m_iCurrentPic].IsLoaded() && !m_Image[1 - m_iCurrentPic].IsLoaded() && !m_pBackgroundLoader->IsLoading() && !m_bWaitForNextPic)
     { // load the next image
       CLog::Log(LOGDEBUG, "Loading the next image %s", m_slides->Get(m_iNextSlide)->GetPath().c_str());
       int maxWidth, maxHeight;
@@ -429,9 +436,7 @@ void CGUIWindowSlideShow::Render()
     // play movie...
     g_playlistPlayer.Play(0);
     m_iCurrentSlide = m_iNextSlide;
-    m_iNextSlide++;
-    if (m_iNextSlide >= m_slides->Size())
-      m_iNextSlide = 0;
+    m_iNextSlide    = GetNextSlide();
   }
   // Check if we should be transistioning immediately
   if (m_bLoadNextPic)
@@ -471,13 +476,10 @@ void CGUIWindowSlideShow::Render()
     m_Image[m_iCurrentPic].Close();
     if (m_Image[1 - m_iCurrentPic].IsLoaded())
       m_iCurrentPic = 1 - m_iCurrentPic;
+
     m_iCurrentSlide = m_iNextSlide;
-    if (bSlideShow)
-    {
-      m_iNextSlide++;
-      if (m_iNextSlide >= m_slides->Size())
-        m_iNextSlide = 0;
-    }
+    m_iNextSlide    = GetNextSlide();
+
 //    m_iZoomFactor = 1;
     m_iRotate = 0;
   }
@@ -490,6 +492,16 @@ void CGUIWindowSlideShow::Render()
   RenderErrorMessage();
 
   CGUIWindow::Render();
+}
+
+int CGUIWindowSlideShow::GetNextSlide()
+{
+  if(m_slides->Size() <= 1)
+    return m_iCurrentSlide;
+  if(m_bSlideShow || m_iDirection >= 0)
+    return (m_iCurrentSlide + 1                   ) % m_slides->Size();
+  else
+    return (m_iCurrentSlide - 1 + m_slides->Size()) % m_slides->Size();
 }
 
 bool CGUIWindowSlideShow::OnAction(const CAction &action)
