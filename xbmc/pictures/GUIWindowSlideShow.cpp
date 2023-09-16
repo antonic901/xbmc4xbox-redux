@@ -38,6 +38,8 @@
 #include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "playlists/PlayList.h"
+#include "interfaces/AnnouncementManager.h"
+#include "pictures/PictureInfoTag.h"
 
 #ifdef _XBOX
 #define RELOAD_ON_ZOOM
@@ -149,6 +151,52 @@ CGUIWindowSlideShow::~CGUIWindowSlideShow(void)
   delete m_slides;
 }
 
+void CGUIWindowSlideShow::AnnouncePlayerPlay(const CFileItemPtr& item)
+{
+  CVariant param;
+  param["player"]["speed"] = 1;
+  param["player"]["playerid"] = PLAYLIST_PICTURE;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Player, "xbmc", "OnPlay", item, param);
+}
+
+void CGUIWindowSlideShow::AnnouncePlayerPause(const CFileItemPtr& item)
+{
+  CVariant param;
+  param["player"]["speed"] = 0;
+  param["player"]["playerid"] = PLAYLIST_PICTURE;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Player, "xbmc", "OnPause", item, param);
+}
+
+void CGUIWindowSlideShow::AnnouncePlayerStop(const CFileItemPtr& item)
+{
+  CVariant param;
+  param["player"]["playerid"] = PLAYLIST_PICTURE;
+  param["end"] = true;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Player, "xbmc", "OnStop", item, param);
+}
+
+void CGUIWindowSlideShow::AnnouncePlaylistRemove(int pos)
+{
+  CVariant data;
+  data["playlistid"] = PLAYLIST_PICTURE;
+  data["position"] = pos;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnRemove", data);
+}
+
+void CGUIWindowSlideShow::AnnouncePlaylistClear()
+{
+  CVariant data;
+  data["playlistid"] = PLAYLIST_PICTURE;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnClear", data);
+}
+
+void CGUIWindowSlideShow::AnnouncePlaylistAdd(const CFileItemPtr& item, int pos)
+{
+  CVariant data;
+  data["playlistid"] = PLAYLIST_PICTURE;
+  data["position"] = pos;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnAdd", item, data);
+}
 
 bool CGUIWindowSlideShow::IsPlaying() const
 {
@@ -174,6 +222,7 @@ void CGUIWindowSlideShow::Reset()
   m_iDirection = 1;
   CSingleLock lock(m_slideSection);
   m_slides->Clear();
+  AnnouncePlaylistClear();
   m_Resolution = g_graphicsContext.GetVideoResolution();
 }
 
@@ -218,6 +267,13 @@ void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
 void CGUIWindowSlideShow::Add(const CFileItem *picture)
 {
   CFileItemPtr item(new CFileItem(*picture));
+  if (!item->HasVideoInfoTag() && !item->HasPictureInfoTag())
+  {
+    // item without tag; assume it is a picture and force tag generation
+    item->GetPictureInfoTag();
+  }
+  AnnouncePlaylistAdd(item, m_slides->Size());
+
   m_slides->Add(item);
 }
 
@@ -485,6 +541,7 @@ void CGUIWindowSlideShow::Render()
 
     m_iCurrentSlide = m_iNextSlide;
     m_iNextSlide    = GetNextSlide();
+    AnnouncePlayerPlay(m_slides->Get(m_iCurrentSlide));
 
 //    m_iZoomFactor = 1;
     m_iRotate = 0;
@@ -533,6 +590,8 @@ bool CGUIWindowSlideShow::OnAction(const CAction &action)
   case ACTION_PREVIOUS_MENU:
   case ACTION_NAV_BACK:
   case ACTION_STOP:
+    if (m_bSlideShow && m_slides->Size())
+      AnnouncePlayerStop(m_slides->Get(m_iCurrentSlide));
     g_windowManager.PreviousWindow();
     break;
   case ACTION_NEXT_PICTURE:
@@ -567,7 +626,16 @@ bool CGUIWindowSlideShow::OnAction(const CAction &action)
 
   case ACTION_PAUSE:
     if (m_bSlideShow)
+    {
       m_bPause = !m_bPause;
+      if (m_slides->Size())
+      {
+        if (m_bPause)
+          AnnouncePlayerPause(m_slides->Get(m_iCurrentSlide));
+        else
+          AnnouncePlayerPlay(m_slides->Get(m_iCurrentSlide));
+      }
+    }
     break;
 
   case ACTION_PLAYER_PLAY:
@@ -577,7 +645,11 @@ bool CGUIWindowSlideShow::OnAction(const CAction &action)
       m_bPause = false;
     }
     else if (m_bPause)
+    {
       m_bPause = false;
+      if (m_slides->Size())
+        AnnouncePlayerPlay(m_slides->Get(m_iCurrentSlide));
+    }
     break;
 
   case ACTION_ZOOM_OUT:

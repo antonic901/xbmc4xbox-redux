@@ -26,8 +26,8 @@ namespace PLAYLIST
 class CPlayList
 {
 public:
-  CPlayList(void);
-  virtual ~CPlayList(void);
+  CPlayList(int id = -1);
+  virtual ~CPlayList(void) {};
   virtual bool Load(const CStdString& strFileName);
   virtual bool LoadData(std::istream &stream);
   virtual bool LoadData(const CStdString& strData);
@@ -70,6 +70,7 @@ public:
   const CStdString& ResolveURL(const CFileItemPtr &item) const;
 
 protected:
+  int m_id;
   CStdString m_strPlayListName;
   CStdString m_strBasePath;
   int m_iPlayableItems;
@@ -84,5 +85,9 @@ private:
   void Add(const CFileItemPtr& item, int iPosition, int iOrderOffset);
   void DecrementOrder(int iOrder);
   void IncrementOrder(int iPosition, int iOrder);
+
+  void AnnounceRemove(int pos);
+  void AnnounceClear();
+  void AnnounceAdd(const CFileItemPtr& item, int pos);
 };
 }

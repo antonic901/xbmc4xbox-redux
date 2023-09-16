@@ -21,6 +21,7 @@
 #include "playlists/PlayList.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "interfaces/AnnouncementManager.h"
 #include "playlists/PlayListFactory.h"
 #include <sstream>
 #include "video/VideoInfoTag.h"
@@ -33,7 +34,8 @@ using namespace MUSIC_INFO;
 using namespace XFILE;
 using namespace PLAYLIST;
 
-CPlayList::CPlayList(void)
+CPlayList::CPlayList(int id)
+  : m_id(id)
 {
   m_strPlayListName = "";
   m_iPlayableItems = -1;
@@ -41,9 +43,36 @@ CPlayList::CPlayList(void)
   m_bWasPlayed = false;
 }
 
-CPlayList::~CPlayList(void)
+void CPlayList::AnnounceRemove(int pos)
 {
-  Clear();
+  if (m_id < 0)
+    return;
+
+  CVariant data;
+  data["playlistid"] = m_id;
+  data["position"] = pos;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnRemove", data);
+}
+
+void CPlayList::AnnounceClear()
+{
+  if (m_id < 0)
+    return;
+
+  CVariant data;
+  data["playlistid"] = m_id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnClear", data);
+}
+
+void CPlayList::AnnounceAdd(const CFileItemPtr& item, int pos)
+{
+  if (m_id < 0)
+    return;
+
+  CVariant data;
+  data["playlistid"] = m_id;
+  data["position"] = pos;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnAdd", item, data);
 }
 
 void CPlayList::Add(const CFileItemPtr &item, int iPosition, int iOrder)
@@ -78,6 +107,7 @@ void CPlayList::Add(const CFileItemPtr &item, int iPosition, int iOrder)
     if (iOrder < iOldSize)
       IncrementOrder(iPosition + 1, iOrder);
   }
+  AnnounceAdd(item, iPosition);
 }
 
 void CPlayList::Add(const CFileItemPtr &item)
@@ -187,6 +217,8 @@ void CPlayList::Clear()
   m_strPlayListName = "";
   m_iPlayableItems = -1;
   m_bWasPlayed = false;
+
+  AnnounceClear();
 }
 
 int CPlayList::size() const
@@ -260,6 +292,7 @@ const CStdString& CPlayList::GetName() const
 void CPlayList::Remove(const CStdString& strFileName)
 {
   int iOrder = -1;
+  int position = 0;
   ivecItems it;
   it = m_vecItems.begin();
   while (it != m_vecItems.end() )
@@ -269,10 +302,14 @@ void CPlayList::Remove(const CStdString& strFileName)
     {
       iOrder = item->m_iprogramCount;
       it = m_vecItems.erase(it);
+      AnnounceRemove(position);
       //CLog::Log(LOGDEBUG,"PLAYLIST, removing item at order %i", iPos);
     }
     else
+    {
+      ++position;
       ++it;
+    }
   }
   DecrementOrder(iOrder);
 }
@@ -297,6 +334,8 @@ void CPlayList::Remove(int position)
     m_vecItems.erase(m_vecItems.begin() + position);
   }
   DecrementOrder(iOrder);
+
+  AnnounceRemove(position);
 }
 
 int CPlayList::RemoveDVDItems()
