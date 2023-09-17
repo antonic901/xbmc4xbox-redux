@@ -120,7 +120,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
     {
       CFileItemList items;
       CDirectory::GetDirectory(g_advancedSettings.m_cachePath,items);
-      items.Sort(SORT_METHOD_SIZE, SortOrderDescending);
+      items.Sort(SortBySize, SortOrderDescending);
       while (items.Size() && CheckFreeSpace(strDir) < iSize)
       {
         CStdString strPath = items[0]->GetPath();

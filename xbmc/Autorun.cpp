@@ -231,7 +231,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           CDirectory::GetDirectory(pItem->GetPath(), items, ".dat");
           if (items.Size())
           {
-            items.Sort(SORT_METHOD_LABEL, SortOrderAscending);
+            items.Sort(SortByLabel, SortOrderAscending);
             g_playlistPlayer.ClearPlaylist(PLAYLIST_VIDEO);
             g_playlistPlayer.Add(PLAYLIST_VIDEO, items);
             g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
@@ -247,7 +247,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           CDirectory::GetDirectory(pItem->GetPath(), items, ".mpg");
           if (items.Size())
           {
-            items.Sort(SORT_METHOD_LABEL, SortOrderAscending);
+            items.Sort(SortBySize, SortOrderDescending);
             g_playlistPlayer.ClearPlaylist(PLAYLIST_VIDEO);
             g_playlistPlayer.Add(PLAYLIST_VIDEO, items);
             g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);

@@ -19,8 +19,6 @@
  *
  */
 
-#include "utils/LabelFormatter.h"
-
 typedef enum {
   SORT_METHOD_NONE=0,
   SORT_METHOD_LABEL,
@@ -63,11 +61,3 @@ typedef enum {
   SORT_METHOD_BITRATE,
   SORT_METHOD_MAX
 } SORT_METHOD;
-
-typedef struct
-{
-  SORT_METHOD m_sortMethod;
-  int m_buttonLabel;
-  LABEL_MASKS m_labelMasks;
-} SORT_METHOD_DETAILS;
-

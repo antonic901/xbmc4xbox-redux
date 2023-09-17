@@ -387,17 +387,9 @@ bool CHTSPDirectory::GetChannels( const CURL &base
     items.Add(item);
   }
 
-  items.AddSortMethod(SORT_METHOD_TRACKNUM, 554, LABEL_MASKS("%K[ - %B]", "%Z", "%L", ""));
-
-  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-    items.AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558,   LABEL_MASKS("%B", "%Z", "%L", ""));
-  else
-    items.AddSortMethod(SORT_METHOD_ALBUM,            558,   LABEL_MASKS("%B", "%Z", "%L", ""));
-
-  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-    items.AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS("%Z", "%B", "%L", ""));
-  else
-    items.AddSortMethod(SORT_METHOD_LABEL,            551, LABEL_MASKS("%Z", "%B", "%L", ""));
+  items.AddSortMethod(SortByTrackNumber,   554, LABEL_MASKS("%K[ - %B]", "%Z", "%L", ""));
+  items.AddSortMethod(SortByAlbum,         558, LABEL_MASKS("%B", "%Z", "%L", ""), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.AddSortMethod(SortByLabel,         551, LABEL_MASKS("%Z", "%B", "%L", ""), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   return !channels.empty();
 

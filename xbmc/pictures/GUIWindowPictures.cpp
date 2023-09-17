@@ -362,9 +362,10 @@ void CGUIWindowPictures::OnShowPictureRecursive(const CStdString& strPath)
     // stop any video
     if (g_application.IsPlayingVideo())
       g_application.StopPlaying();
+
+    SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->AddFromPath(strPath, true,
-                            m_guiState->GetSortMethod(),
-                            m_guiState->GetSortOrder());
+                            sorting.sortBy, sorting.sortOrder, sorting.sortAttributes);
     if (pSlideShow->NumSlides())
     {
       m_slideShowStarted = true;
@@ -387,11 +388,12 @@ void CGUIWindowPictures::OnSlideShowRecursive(const CStdString &strPicture)
       delete viewState;
     }
     m_slideShowStarted = true;
+
+    SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, true,
                              g_guiSettings.GetBool("slideshow.shuffle"),false,
                              "", true,
-                             m_guiState->GetSortMethod(),
-                             m_guiState->GetSortOrder(),
+                             sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
   }
 }
@@ -421,10 +423,11 @@ void CGUIWindowPictures::OnSlideShow(const CStdString &strPicture)
       delete viewState;
     }
     m_slideShowStarted = true;
+
+    SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, false ,false, false,
                              "", true,
-                             m_guiState->GetSortMethod(),
-                             m_guiState->GetSortOrder(),
+                             sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
   }
 }
@@ -609,7 +612,7 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
       if (items.Size() < 4 || pItem->IsCBR() || pItem->IsCBZ())
       { // less than 4 items, so just grab the first thumb
         CStdString folderThumb(pItem->GetCachedPictureThumb());
-        items.Sort(SORT_METHOD_LABEL, SortOrderAscending);
+        items.Sort(SortByLabel, SortOrderAscending);
         CPicture pic;
         pic.CreateThumbnail(items[0]->GetPath(), folderThumb);
       }

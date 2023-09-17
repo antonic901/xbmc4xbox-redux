@@ -1595,7 +1595,7 @@ void CGUIWindowVideoNav::OnLinkMovieToTvShow(int itemnumber, bool bRemove)
   int iSelectedLabel = 0;
   if (list.Size() > 1)
   {
-    list.Sort(g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SORT_METHOD_LABEL_IGNORE_THE : SORT_METHOD_LABEL, SortOrderAscending);
+    list.Sort(SortByLabel, SortOrderAscending, g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
     CGUIDialogSelect* pDialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
     pDialog->Reset();
     pDialog->SetItems(&list);
@@ -1793,7 +1793,7 @@ bool CGUIWindowVideoNav::GetItemsForTag(const CStdString &strHeading, const std:
   if (dialog == NULL)
     return false;
 
-  listItems.Sort(SORT_METHOD_LABEL_IGNORE_THE, SortOrderAscending);
+  listItems.Sort(SortByLabel, SortOrderAscending, SortAttributeIgnoreArticle);
 
   dialog->Reset();
   dialog->SetMultiSelection(true);
@@ -1827,7 +1827,7 @@ bool CGUIWindowVideoNav::GetMoviesForSet(CFileItemPtr &setItem, CFileItemList &o
   if (dialog == NULL)
     return false;
 
-  listItems.Sort(SORT_METHOD_LABEL_IGNORE_THE, SortOrderAscending);
+  listItems.Sort(SortByLabel, SortOrderAscending, SortAttributeIgnoreArticle);
 
   dialog->Reset();
   dialog->SetMultiSelection(true);
@@ -1868,7 +1868,7 @@ bool CGUIWindowVideoNav::GetSetForMovie(CFileItemPtr &movieItem, CFileItemPtr &s
   CStdString baseDir = "videodb://movies/sets/";
   if (!CDirectory::GetDirectory(baseDir, listItems) || listItems.Size() <= 0)
     return false;
-  listItems.Sort(SORT_METHOD_LABEL_IGNORE_THE, SortOrderAscending);
+  listItems.Sort(SortByLabel, SortOrderAscending, SortAttributeIgnoreArticle);
 
   int currentSetId = 0;
   CStdString currentSetLabel;

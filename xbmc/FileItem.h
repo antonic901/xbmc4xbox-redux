@@ -407,7 +407,7 @@ public:
   void Assign(const CFileItemList& itemlist, bool append = false);
   bool Copy  (const CFileItemList& item, bool copyItems = true);
   void Reserve(int iCount);
-  void Sort(SORT_METHOD sortMethod, SortOrder sortOrder);
+  void Sort(SortBy sortBy, SortOrder sortOrder, SortAttribute sortAttributes = SortAttributeNone);
   /* \brief Sorts the items based on the given sorting options
   In contrast to Sort (see above) this does not change the internal
   state by storing the sorting method and order used and therefore
@@ -435,8 +435,8 @@ public:
    */
   void Stack(bool stackFiles = true);
 
-  SortOrder GetSortOrder() const { return m_sortOrder; }
-  SORT_METHOD GetSortMethod() const { return m_sortMethod; }
+  SortOrder GetSortOrder() const { return m_sortDescription.sortOrder; }
+  SortBy GetSortMethod() const { return m_sortDescription.sortBy; }
   /*! \brief load a CFileItemList out of the cache
 
    The file list may be cached based on which window we're viewing in, as different
@@ -490,7 +490,9 @@ public:
    */
   bool UpdateItem(const CFileItem *item);
 
-  void AddSortMethod(SORT_METHOD method, int buttonLabel, const LABEL_MASKS &labelMasks);
+  void AddSortMethod(SortBy sortBy, int buttonLabel, const LABEL_MASKS &labelMasks, SortAttribute sortAttributes = SortAttributeNone);
+  void AddSortMethod(SortBy sortBy, SortAttribute sortAttributes, int buttonLabel, const LABEL_MASKS &labelMasks);
+  void AddSortMethod(SortDescription sortDescription, int buttonLabel, const LABEL_MASKS &labelMasks);
   bool HasSortDetails() const { return m_sortDetails.size() != 0; };
   const std::vector<SORT_METHOD_DETAILS> &GetSortDetails() const { return m_sortDetails; };
 
@@ -527,8 +529,7 @@ private:
   VECFILEITEMS m_items;
   MAPFILEITEMS m_map;
   bool m_fastLookup;
-  SORT_METHOD m_sortMethod;
-  SortOrder m_sortOrder;
+  SortDescription m_sortDescription;
   bool m_sortIgnoreFolders;
   CACHE_TYPE m_cacheToDisc;
   bool m_replaceListing;

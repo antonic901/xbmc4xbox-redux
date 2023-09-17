@@ -29,6 +29,7 @@
 #include "../utils/CriticalSection.h"
 
 class CURL;
+class CFileItem;
 class CFileItemList;
 
 namespace XFILE

@@ -79,20 +79,16 @@ CGUIViewStateMusicSearch::CGUIViewStateMusicSearch(const CFileItemList& items) :
   if (strAlbumRight.IsEmpty())
     strAlbumRight = "%A"; // artist
 
+  SortAttribute sortAttribute = SortAttributeNone;
   if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-  {
-    AddSortMethod(SORT_METHOD_TITLE_IGNORE_THE, 556, LABEL_MASKS("%T - %A", "%D", "%L", "%A"));  // Title, Artist, Duration| empty, empty
-    SetSortMethod(SORT_METHOD_TITLE_IGNORE_THE);
-  }
-  else
-  {
-    AddSortMethod(SORT_METHOD_TITLE, 556, LABEL_MASKS("%T - %A", "%D", "%L", "%A"));  // Title, Artist, Duration| empty, empty
-    SetSortMethod(SORT_METHOD_TITLE);
-  }
+    sortAttribute = SortAttributeIgnoreArticle;
+
+  AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D", "%L", "%A"));  // Title, Artist, Duration| empty, empty
+  SetSortMethod(SortByTitle, sortAttribute);
 
   SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
-  SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortOrder);
+  SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortDescription.sortOrder);
 
   LoadViewState(items.GetPath(), WINDOW_MUSIC_NAV);
 }
@@ -124,12 +120,16 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
   CLog::Log(LOGDEBUG,"Album format left  = [%s]", strAlbumLeft.c_str());
   CLog::Log(LOGDEBUG,"Album format right = [%s]", strAlbumRight.c_str());
 
+  SortAttribute sortAttribute = SortAttributeNone;
+  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+    sortAttribute = SortAttributeIgnoreArticle;
+
   switch (NodeType)
   {
   case NODE_TYPE_OVERVIEW:
     {
-      AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "", "%L", ""));  // Filename, empty | Foldername, empty
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "", "%L", ""));  // Filename, empty | Foldername, empty
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -138,8 +138,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_TOP100:
     {
-      AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "", "%L", ""));  // Filename, empty | Foldername, empty
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "", "%L", ""));  // Filename, empty | Foldername, empty
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -148,8 +148,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_GENRE:
     {
-      AddSortMethod(SORT_METHOD_GENRE, 515, LABEL_MASKS("%F", "", "%G", ""));  // Filename, empty | Genre, empty
-      SetSortMethod(SORT_METHOD_GENRE);
+      AddSortMethod(SortByGenre, 515, LABEL_MASKS("%F", "", "%G", ""));  // Filename, empty | Genre, empty
+      SetSortMethod(SortByGenre);
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -158,8 +158,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_YEAR:
     {
-      AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%F", "", "%Y", ""));  // Filename, empty | Year, empty
-      SetSortMethod(SORT_METHOD_LABEL);
+      AddSortMethod(SortByLabel, 551, LABEL_MASKS("%F", "", "%Y", ""));  // Filename, empty | Year, empty
+      SetSortMethod(SortByLabel);
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -168,20 +168,12 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_ARTIST:
     {
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      {
-        AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%F", "", "%A", ""));  // Filename, empty | Artist, empty
-        SetSortMethod(SORT_METHOD_ARTIST_IGNORE_THE);
-      }
-      else
-      {
-        AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%F", "", "%A", ""));  // Filename, empty | Artist, empty
-        SetSortMethod(SORT_METHOD_ARTIST);
-      }
+      AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%F", "", "%A", ""));  // Filename, empty | Artist, empty
+      SetSortMethod(SortByArtist, sortAttribute);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavArtists.m_viewMode);
 
-      SetSortOrder(g_settings.m_viewStateMusicNavArtists.m_sortOrder);
+      SetSortOrder(g_settings.m_viewStateMusicNavArtists.m_sortDescription.sortOrder);
     }
     break;
   case NODE_TYPE_ALBUM_COMPILATIONS:
@@ -189,31 +181,23 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
   case NODE_TYPE_YEAR_ALBUM:
     {
       // album
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-        AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-      else
-        AddSortMethod(SORT_METHOD_ALBUM, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-
+      AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
       // artist
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-        AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-      else
-        AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-
+      AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
       // year
-      AddSortMethod(SORT_METHOD_YEAR, 562, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));
+      AddSortMethod(SortByYear, 562, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));
 
-      SetSortMethod(g_settings.m_viewStateMusicNavAlbums.m_sortMethod);
+      SetSortMethod(g_settings.m_viewStateMusicNavAlbums.m_sortDescription);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
-      SetSortOrder(g_settings.m_viewStateMusicNavAlbums.m_sortOrder);
+      SetSortOrder(g_settings.m_viewStateMusicNavAlbums.m_sortDescription.sortOrder);
     }
     break;
   case NODE_TYPE_ALBUM_RECENTLY_ADDED:
     {
-      AddSortMethod(SORT_METHOD_NONE, 552, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 552, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
@@ -222,8 +206,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
     {
-      AddSortMethod(SORT_METHOD_NONE, 552, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined | empty, empty
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 552, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined | empty, empty
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
@@ -232,8 +216,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
     {
-      AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
@@ -242,8 +226,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
     {
-      AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined | empty, empty
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 551, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined | empty, empty
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavAlbums.m_viewMode);
 
@@ -252,8 +236,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_ALBUM_TOP100:
     {
-      AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
+      SetSortMethod(SortByNone);
 
       SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -262,26 +246,17 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
     break;
   case NODE_TYPE_SINGLES:
     {
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      {
-        AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_TITLE_IGNORE_THE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-      }
-      else
-      {
-        AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_TITLE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-      }
-      AddSortMethod(SORT_METHOD_DURATION, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_SONG_RATING, 563, LABEL_MASKS("%T - %A", "%R"));  // Title - Artist, Rating
+      AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
+      AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
+      AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
+      AddSortMethod(SortByTime, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
+      AddSortMethod(SortByRating, 563, LABEL_MASKS("%T - %A", "%R"));  // Title - Artist, Rating
       
-      SetSortMethod(g_settings.m_viewStateMusicNavSongs.m_sortMethod);
+      SetSortMethod(g_settings.m_viewStateMusicNavSongs.m_sortDescription);
       
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
       
-      SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortOrder);
+      SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortDescription.sortOrder);
     }
     break;
   case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
@@ -289,42 +264,33 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
   case NODE_TYPE_YEAR_SONG:
   case NODE_TYPE_SONG:
     {
-      AddSortMethod(SORT_METHOD_TRACKNUM, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      {
-        AddSortMethod(SORT_METHOD_TITLE_IGNORE_THE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-      }
-      else
-      {
-        AddSortMethod(SORT_METHOD_TITLE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_ALBUM, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Title, Artist, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
-        AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-      }
-      AddSortMethod(SORT_METHOD_DURATION, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_SONG_RATING, 563, LABEL_MASKS("%T - %A", "%R"));  // Title - Artist, Rating
+      AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
+      AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
+      AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Title, Artist, Duration| empty, empty
+      AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Title, Duration| empty, empty
+      AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
+      AddSortMethod(SortByTime, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
+      AddSortMethod(SortByRating, 563, LABEL_MASKS("%T - %A", "%R"));  // Title - Artist, Rating
+      AddSortMethod(SortByYear, 562, LABEL_MASKS("%T - %A", "%Y")); // Title, Artist, Year
 
-      // the "All Albums" entries always default to SORT_METHOD_ALBUM as this is most logical - user can always
+      // the "All Albums" entries always default to SortByAlbum as this is most logical - user can always
       // change it and the change will be saved for this particular path
       if (dir.IsAllItem(items.GetPath()))
-        SetSortMethod(g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SORT_METHOD_ALBUM_IGNORE_THE : SORT_METHOD_ALBUM);
+        SetSortMethod(SortByAlbum, sortAttribute);
       else
-        SetSortMethod(g_settings.m_viewStateMusicNavSongs.m_sortMethod);
+        SetSortMethod(g_settings.m_viewStateMusicNavSongs.m_sortDescription);
 
-      AddSortMethod(SORT_METHOD_PLAYCOUNT, 567, LABEL_MASKS("%T - %A", "%V"));  // Titel - Artist, PlayCount
+      AddSortMethod(SortByPlaycount, 567, LABEL_MASKS("%T - %A", "%V"));  // Titel - Artist, PlayCount
 
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
-      SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortOrder);
+      SetSortOrder(g_settings.m_viewStateMusicNavSongs.m_sortDescription.sortOrder);
     }
     break;
   case NODE_TYPE_SONG_TOP100:
     {
-      AddSortMethod(SORT_METHOD_NONE, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined | empty, empty
-      SetSortMethod(SORT_METHOD_NONE);
+      AddSortMethod(SortByNone, 576, LABEL_MASKS("%T - %A", "%V"));
+      SetSortMethod(SortByPlaycount);
 
       SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
 
@@ -375,31 +341,24 @@ void CGUIViewStateMusicDatabase::SaveViewState()
 	}
 }
 
-
 CGUIViewStateMusicSmartPlaylist::CGUIViewStateMusicSmartPlaylist(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
+  SortAttribute sortAttribute = SortAttributeNone;
+  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+    sortAttribute = SortAttributeIgnoreArticle;
+
   if (items.GetContent() == "songs" || items.GetContent() == "mixed") 
   {
     CStdString strTrackLeft=g_guiSettings.GetString("musicfiles.trackformat");
     CStdString strTrackRight=g_guiSettings.GetString("musicfiles.trackformatright");
 
-    AddSortMethod(SORT_METHOD_TRACKNUM, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
-    if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-    {
-      AddSortMethod(SORT_METHOD_TITLE_IGNORE_THE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-    }
-    else
-    {
-      AddSortMethod(SORT_METHOD_TITLE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_ALBUM, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
-      AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-    }
-    AddSortMethod(SORT_METHOD_DURATION, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_SONG_RATING, 563, LABEL_MASKS("%T - %A", "%R"));  // Titel, Artist, Rating| empty, empty
+    AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
+    AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
+    AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
+    AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
+    AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
+    AddSortMethod(SortByTime, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
+    AddSortMethod(SortByRating, 563, LABEL_MASKS("%T - %A", "%R"));  // Titel, Artist, Rating| empty, empty
     AddPlaylistOrder(items, LABEL_MASKS(strTrackLeft, strTrackRight));
 
     SetViewAsControl(g_settings.m_viewStateMusicNavSongs.m_viewMode);
@@ -414,19 +373,11 @@ CGUIViewStateMusicSmartPlaylist::CGUIViewStateMusicSmartPlaylist(const CFileItem
       strAlbumRight = "%A"; // artist
 
     // album
-    if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-    else
-      AddSortMethod(SORT_METHOD_ALBUM, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-    
+    AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined    
     // artist
-    if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-    else
-      AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
-    
+    AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));  // Filename, empty | Userdefined, Userdefined
     // year
-    AddSortMethod(SORT_METHOD_YEAR, 562, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));
+    AddSortMethod(SortByYear, 562, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));
 
     AddPlaylistOrder(items, LABEL_MASKS("%F", "", strAlbumLeft, strAlbumRight));
 
@@ -447,31 +398,25 @@ void CGUIViewStateMusicSmartPlaylist::SaveViewState()
 
 CGUIViewStateMusicPlaylist::CGUIViewStateMusicPlaylist(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
+  SortAttribute sortAttribute = SortAttributeNone;
+  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+    sortAttribute = SortAttributeIgnoreArticle;
+
   CStdString strTrackLeft=g_guiSettings.GetString("musicfiles.trackformat");
   CStdString strTrackRight=g_guiSettings.GetString("musicfiles.trackformatright");
 
-  AddSortMethod(SORT_METHOD_PLAYLIST_ORDER, 559, LABEL_MASKS(strTrackLeft, strTrackRight));
-  AddSortMethod(SORT_METHOD_TRACKNUM, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
-  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-  {
-    AddSortMethod(SORT_METHOD_TITLE_IGNORE_THE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-  }
-  else
-  {
-    AddSortMethod(SORT_METHOD_TITLE, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_ALBUM, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_ARTIST, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
-    AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
-  }
-  AddSortMethod(SORT_METHOD_DURATION, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
-  AddSortMethod(SORT_METHOD_SONG_RATING, 563, LABEL_MASKS("%T - %A", "%R"));  // Titel, Artist, Rating| empty, empty
+  AddSortMethod(SortByPlaylistOrder, 559, LABEL_MASKS(strTrackLeft, strTrackRight));
+  AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
+  AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
+  AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
+  AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%A - %T", "%D"));  // Artist, Titel, Duration| empty, empty
+  AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS(strTrackLeft, strTrackRight));
+  AddSortMethod(SortByTime, 180, LABEL_MASKS("%T - %A", "%D"));  // Titel, Artist, Duration| empty, empty
+  AddSortMethod(SortByRating, 563, LABEL_MASKS("%T - %A", "%R"));  // Titel, Artist, Rating| empty, empty
 
-  SetSortMethod(SORT_METHOD_PLAYLIST_ORDER);
+  SetSortMethod(SortByPlaylistOrder);
   SetViewAsControl(g_settings.m_viewStateMusicFiles.m_viewMode);
-  SetSortOrder(g_settings.m_viewStateMusicFiles.m_sortOrder);
+  SetSortOrder(g_settings.m_viewStateMusicFiles.m_sortDescription.sortOrder);
 
   LoadViewState(items.GetPath(), WINDOW_MUSIC_FILES);
 }
@@ -481,13 +426,16 @@ void CGUIViewStateMusicPlaylist::SaveViewState()
   SaveViewToDb(m_items.GetPath(), WINDOW_MUSIC_FILES);
 }
 
-
 CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
+  SortAttribute sortAttribute = SortAttributeNone;
+  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+    sortAttribute = SortAttributeIgnoreArticle;
+
   if (items.IsVirtualDirectoryRoot())
   {
-    AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Foldername, empty
-    SetSortMethod(SORT_METHOD_NONE);
+    AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Foldername, empty
+    SetSortMethod(SortByNone);
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -501,35 +449,25 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
       XFILE::CVideoDatabaseDirectory::GetQueryParams(items[!g_guiSettings.GetBool("filelists.showparentdiritems")?0:1]->GetPath(),params);
       if (params.GetMVideoId() != -1)
       {
-        if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-          AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS("%T", "%Y"));  // Filename, Duration | Foldername, empty
-        else
-          AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%T", "%Y"));  // Filename, Duration | Foldername, empty
-        AddSortMethod(SORT_METHOD_YEAR,562, LABEL_MASKS("%T", "%Y"));
-        if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-        {
-          AddSortMethod(SORT_METHOD_ARTIST_IGNORE_THE,557, LABEL_MASKS("%A - %T", "%Y"));
-          AddSortMethod(SORT_METHOD_ALBUM_IGNORE_THE,558, LABEL_MASKS("%B - %T", "%Y"));
-        }
-        else
-        {
-          AddSortMethod(SORT_METHOD_ARTIST,557, LABEL_MASKS("%A - %T", "%Y"));
-          AddSortMethod(SORT_METHOD_ALBUM,558, LABEL_MASKS("%B - %T", "%Y"));
-        }
+        AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS("%T", "%Y"));  // Filename, Duration | Foldername, empty
+        AddSortMethod(SortByYear, 562, LABEL_MASKS("%T", "%Y"));
+        AddSortMethod(SortByArtist, sortAttribute, 557, LABEL_MASKS("%A - %T", "%Y"));
+        AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T", "%Y"));
+
         CStdString strTrackLeft=g_guiSettings.GetString("musicfiles.trackformat");
         CStdString strTrackRight=g_guiSettings.GetString("musicfiles.trackformatright");
-        AddSortMethod(SORT_METHOD_TRACKNUM, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
+        AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrackLeft, strTrackRight));  // Userdefined, Userdefined| empty, empty
       }
       else
       {
-        AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
-        SetSortMethod(SORT_METHOD_LABEL);
+        AddSortMethod(SortByLabel, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
+        SetSortMethod(SortByLabel);
       }
     }
     else
     {
-      AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
-      SetSortMethod(SORT_METHOD_LABEL);
+      AddSortMethod(SortByLabel, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
+      SetSortMethod(SortByLabel);
     }
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -618,9 +556,9 @@ CGUIViewStateWindowMusicSongs::CGUIViewStateWindowMusicSongs(const CFileItemList
 {
   if (items.IsVirtualDirectoryRoot())
   {
-    AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS()); // Preformated
-    AddSortMethod(SORT_METHOD_DRIVE_TYPE, 564, LABEL_MASKS()); // Preformated
-    SetSortMethod(SORT_METHOD_LABEL);
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS()); // Preformated
+    AddSortMethod(SortByDriveType, 564, LABEL_MASKS()); // Preformated
+    SetSortMethod(SortByLabel);
 
     SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -628,26 +566,25 @@ CGUIViewStateWindowMusicSongs::CGUIViewStateWindowMusicSongs(const CFileItemList
   }
   else if (items.GetPath() == "special://musicplaylists/")
   { // playlists list sorts by label only, ignoring folders
-    AddSortMethod(SORT_METHOD_LABEL_IGNORE_FOLDERS, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
-    SetSortMethod(SORT_METHOD_LABEL_IGNORE_FOLDERS);
+    AddSortMethod(SortByLabel, SortAttributeIgnoreFolders, 551, LABEL_MASKS("%F", "%D", "%L", ""));  // Filename, Duration | Foldername, empty
+    SetSortMethod(SortByLabel, SortAttributeIgnoreFolders);
   }
   else
   {
     CStdString strTrackLeft=g_guiSettings.GetString("musicfiles.trackformat");
     CStdString strTrackRight=g_guiSettings.GetString("musicfiles.trackformatright");
 
-    if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
-      AddSortMethod(SORT_METHOD_LABEL_IGNORE_THE, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-    else
-      AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-    AddSortMethod(SORT_METHOD_SIZE, 553, LABEL_MASKS(strTrackLeft, "%I", "%L", "%I"));  // Userdefined, Size | FolderName, Size
-    AddSortMethod(SORT_METHOD_BITRATE, 623, LABEL_MASKS(strTrackLeft, "%X", "%L", "%X"));  // Userdefined, Bitrate | FolderName, Bitrate  
-    AddSortMethod(SORT_METHOD_DATE, 552, LABEL_MASKS(strTrackLeft, "%J", "%L", "%J"));  // Userdefined, Date | FolderName, Date
-    AddSortMethod(SORT_METHOD_FILE, 561, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-    AddSortMethod(SORT_METHOD_LISTENERS,20455,LABEL_MASKS(strTrackLeft, "%W", "%L", "%W"));
-    SetSortMethod(g_settings.m_viewStateMusicFiles.m_sortMethod);
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""),  // Userdefined, Userdefined | FolderName, empty
+      g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+    AddSortMethod(SortBySize, 553, LABEL_MASKS(strTrackLeft, "%I", "%L", "%I"));  // Userdefined, Size | FolderName, Size
+    AddSortMethod(SortByBitrate, 623, LABEL_MASKS(strTrackLeft, "%X", "%L", "%X"));  // Userdefined, Bitrate | FolderName, Bitrate  
+    AddSortMethod(SortByDate, 552, LABEL_MASKS(strTrackLeft, "%J", "%L", "%J"));  // Userdefined, Date | FolderName, Date
+    AddSortMethod(SortByFile, 561, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
+    AddSortMethod(SortByListeners, 20455,LABEL_MASKS(strTrackLeft, "%W", "%L", "%W"));
+
+    SetSortMethod(g_settings.m_viewStateMusicFiles.m_sortDescription);
     SetViewAsControl(g_settings.m_viewStateMusicFiles.m_viewMode);
-    SetSortOrder(g_settings.m_viewStateMusicFiles.m_sortOrder);
+    SetSortOrder(g_settings.m_viewStateMusicFiles.m_sortDescription.sortOrder);
   }
   LoadViewState(items.GetPath(), WINDOW_MUSIC_FILES);
 }
@@ -679,8 +616,8 @@ CGUIViewStateWindowMusicPlaylist::CGUIViewStateWindowMusicPlaylist(const CFileIt
   if (strTrackRight.IsEmpty())
     strTrackRight = g_guiSettings.GetString("musicfiles.trackformatright");
 
-  AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-  SetSortMethod(SORT_METHOD_NONE);
+  AddSortMethod(SortByNone, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
+  SetSortMethod(SortByNone);
 
   SetViewAsControl(DEFAULT_VIEW_LIST);
 
@@ -727,17 +664,17 @@ CGUIViewStateMusicShoutcast::CGUIViewStateMusicShoutcast(const CFileItemList& it
   /* and thus this check hardly ever works, so let's just disable it for now */
   if( true || m_items.m_idepth > 1 )
   { /* station list */
-    AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%K", "%B kbps", "%K", ""));  // Title, Bitrate | Title, nothing
-    AddSortMethod(SORT_METHOD_VIDEO_RATING, 563, LABEL_MASKS("%K", "%A listeners", "%K", ""));  // Titel, Listeners | Titel, nothing
-    AddSortMethod(SORT_METHOD_SIZE, 553, LABEL_MASKS("%K", "%B kbps", "%K", ""));  // Title, Bitrate | Title, nothing
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%B kbps", "%K", ""));  // Title, Bitrate | Title, nothing
+    AddSortMethod(SortByRating, 563, LABEL_MASKS("%K", "%A listeners", "%K", ""));  // Titel, Listeners | Titel, nothing
+    AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%B kbps", "%K", ""));  // Title, Bitrate | Title, nothing
 
-    SetSortMethod(g_settings.m_viewStateMusicShoutcast.m_sortMethod);
-    SetSortOrder(g_settings.m_viewStateMusicShoutcast.m_sortOrder);
+    SetSortMethod(g_settings.m_viewStateMusicShoutcast.m_sortDescription);
+    SetSortOrder(g_settings.m_viewStateMusicShoutcast.m_sortDescription.sortOrder);
   }
   else
   { /* genre list */
-    AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS("%K", "", "%K", ""));  // Title, nothing | Title, nothing
-    SetSortMethod(SORT_METHOD_LABEL);
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "", "%K", ""));  // Title, nothing | Title, nothing
+    SetSortMethod(SortByLabel);
     SetSortOrder(SortOrderAscending); /* maybe we should have this stored somewhere */
   }
 
@@ -760,12 +697,12 @@ CGUIViewStateMusicLastFM::CGUIViewStateMusicLastFM(const CFileItemList& items) :
   CStdString strTrackLeft=g_guiSettings.GetString("musicfiles.trackformat");
   CStdString strTrackRight=g_guiSettings.GetString("musicfiles.trackformatright");
 
-  AddSortMethod(SORT_METHOD_UNSORTED, 571, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-  AddSortMethod(SORT_METHOD_LABEL, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
-  AddSortMethod(SORT_METHOD_SIZE, 553, LABEL_MASKS(strTrackLeft, "%I", "%L", "%I"));  // Userdefined, Size | FolderName, Size
+  AddSortMethod(SortByNone, 571, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
+  AddSortMethod(SortByLabel, 551, LABEL_MASKS(strTrackLeft, strTrackRight, "%L", ""));  // Userdefined, Userdefined | FolderName, empty
+  AddSortMethod(SortBySize, 553, LABEL_MASKS(strTrackLeft, "%I", "%L", "%I"));  // Userdefined, Size | FolderName, Size
 
-  SetSortMethod(g_settings.m_viewStateMusicLastFM.m_sortMethod);
-  SetSortOrder(g_settings.m_viewStateMusicLastFM.m_sortOrder);
+  SetSortMethod(g_settings.m_viewStateMusicLastFM.m_sortDescription);
+  SetSortOrder(g_settings.m_viewStateMusicLastFM.m_sortDescription.sortOrder);
 
   SetViewAsControl(DEFAULT_VIEW_LIST);
   LoadViewState(items.GetPath(), WINDOW_MUSIC_FILES);
