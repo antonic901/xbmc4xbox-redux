@@ -3154,7 +3154,13 @@ msgctxt "#1260"
 msgid "Announce these services to other systems via Zeroconf"
 msgstr ""
 
-#empty strings from id 1261 to 1274
+#empty strings from id 1261 to 1270
+
+msgctxt "#1271"
+msgid "Device name"
+msgstr ""
+
+#empty strings from id 1272 to 1274
 
 msgctxt "#1275"
 msgid "Filter %s"
