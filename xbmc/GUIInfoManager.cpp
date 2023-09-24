@@ -320,6 +320,7 @@ const infomap system_labels[] =  {{ "hasnetwork",           SYSTEM_ETHERNET_LINK
                                   { "profilethumb",         SYSTEM_PROFILETHUMB },
                                   { "launchxbe",            SYSTEM_LAUNCHING_XBE },
                                   { "progressbar",          SYSTEM_PROGRESS_BAR },
+                                  { "friendlyname",         SYSTEM_FRIENDLY_NAME },
                                   { "alarmpos",             SYSTEM_ALARM_POS },
                                   { "startupwindow",        SYSTEM_STARTUP_WINDOW }};
 
@@ -1695,6 +1696,15 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
       int percent;
       if (GetInt(percent, SYSTEM_PROGRESS_BAR) && percent > 0)
         strLabel.Format("%i", percent);
+    }
+    break;
+  case SYSTEM_FRIENDLY_NAME:
+    {
+      CStdString friendlyName = g_guiSettings.GetString("services.friendlyname");
+      if (friendlyName.Equals("XBMC"))
+        strLabel.Format("%s (%s)", friendlyName.c_str(), "XBOX");
+      else
+        strLabel = friendlyName;
     }
     break;
   case LCD_PLAY_ICON:
