@@ -296,11 +296,13 @@ public:
   {
     m_strCategory = strCategory;
     m_labelID = labelID;
+    m_entries = 0;
   }
   ~CSettingsCategory() {};
 
   CStdString m_strCategory;
   int m_labelID;
+  int m_entries;
 };
 
 typedef std::vector<CSettingsCategory *> vecSettingsCategory;
@@ -320,11 +322,12 @@ public:
     m_vecCategories.clear();
   };
 
-  void AddCategory(const char *strCategory, int labelID)
+  CSettingsCategory* AddCategory(const char *strCategory, int labelID)
   {
     CSettingsCategory *pCategory = new CSettingsCategory(strCategory, labelID);
     if (pCategory)
       m_vecCategories.push_back(pCategory);
+    return pCategory;
   }
   void GetCategories(vecSettingsCategory &vecCategories);
   int GetLabelID() { return m_labelID; };
@@ -346,32 +349,32 @@ public:
   void Initialize();
 
   void AddGroup(int groupID, int labelID);
-  void AddCategory(int groupID, const char *strCategory, int labelID);
+  CSettingsCategory* AddCategory(int groupID, const char *strCategory, int labelID);
   CSettingsGroup *GetGroup(int windowID);
 
-  void AddBool(int iOrder, const char *strSetting, int iLabel, bool bSetting, int iControlType = CHECKMARK_CONTROL);
+  void AddBool(CSettingsCategory* cat, const char *strSetting, int iLabel, bool bSetting, int iControlType = CHECKMARK_CONTROL);
   bool GetBool(const char *strSetting) const;
   void SetBool(const char *strSetting, bool bSetting);
   void ToggleBool(const char *strSetting);
 
-  void AddFloat(int iOrder, const char *strSetting, int iLabel, float fSetting, float fMin, float fStep, float fMax, int iControlType = SPIN_CONTROL_FLOAT);
+  void AddFloat(CSettingsCategory* cat, const char *strSetting, int iLabel, float fSetting, float fMin, float fStep, float fMax, int iControlType = SPIN_CONTROL_FLOAT);
   float GetFloat(const char *strSetting) const;
   void SetFloat(const char *strSetting, float fSetting);
 
-  void AddInt(int iOrder, const char *strSetting, int iLabel, int fSetting, int iMin, int iStep, int iMax, int iControlType, const char *strFormat = NULL);
-  void AddInt(int iOrder, const char *strSetting, int iLabel, int iData, int iMin, int iStep, int iMax, int iControlType, int iFormat, int iLabelMin=-1);
+  void AddInt(CSettingsCategory* cat, const char *strSetting, int iLabel, int fSetting, int iMin, int iStep, int iMax, int iControlType, const char *strFormat = NULL);
+  void AddInt(CSettingsCategory* cat, const char *strSetting, int iLabel, int iData, int iMin, int iStep, int iMax, int iControlType, int iFormat, int iLabelMin=-1);
   int GetInt(const char *strSetting) const;
   void SetInt(const char *strSetting, int fSetting);
 
-  void AddHex(int iOrder, const char *strSetting, int iLabel, int fSetting, int iMin, int iStep, int iMax, int iControlType, const char *strFormat = NULL);
+  void AddHex(CSettingsCategory* cat, const char *strSetting, int iLabel, int fSetting, int iMin, int iStep, int iMax, int iControlType, const char *strFormat = NULL);
 
-  void AddString(int iOrder, const char *strSetting, int iLabel, const char *strData, int iControlType = EDIT_CONTROL_INPUT, bool bAllowEmpty = false, int iHeadingString = -1);
-  void AddPath(int iOrder, const char *strSetting, int iLabel, const char *strData, int iControlType = EDIT_CONTROL_INPUT, bool bAllowEmpty = false, int iHeadingString = -1);
+  void AddString(CSettingsCategory* cat, const char *strSetting, int iLabel, const char *strData, int iControlType = EDIT_CONTROL_INPUT, bool bAllowEmpty = false, int iHeadingString = -1);
+  void AddPath(CSettingsCategory* cat, const char *strSetting, int iLabel, const char *strData, int iControlType = EDIT_CONTROL_INPUT, bool bAllowEmpty = false, int iHeadingString = -1);
 
   const CStdString &GetString(const char *strSetting, bool bPrompt=true) const;
   void SetString(const char *strSetting, const char *strData);
 
-  void AddSeparator(int iOrder, const char *strSetting);
+  void AddSeparator(CSettingsCategory* cat, const char *strSetting);
 
   CSetting *GetSetting(const char *strSetting);
 
