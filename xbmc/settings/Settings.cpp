@@ -558,24 +558,24 @@ bool CSettings::GetFloat(const TiXmlElement* pRootElement, const char *tagName, 
   return false;
 }
 
-void CSettings::GetViewState(const TiXmlElement *pRootElement, const CStdString &strTagName, CViewState &viewState, SORT_METHOD defaultSort, int defaultView)
+void CSettings::GetViewState(const TiXmlElement *pRootElement, const CStdString &strTagName, CViewState &viewState, SortBy defaultSort, int defaultView)
 {
   const TiXmlElement* pNode = pRootElement->FirstChildElement(strTagName);
   if (!pNode)
   {
-    viewState.m_sortMethod = defaultSort;
+    viewState.m_sortDescription.sortBy = defaultSort;
     viewState.m_viewMode = defaultView;
     return;
   }
   GetInteger(pNode, "viewmode", viewState.m_viewMode, defaultView, DEFAULT_VIEW_LIST, DEFAULT_VIEW_MAX);
 
   int sortMethod;
-  GetInteger(pNode, "sortmethod", sortMethod, defaultSort, SORT_METHOD_NONE, SORT_METHOD_MAX);
-  viewState.m_sortMethod = (SORT_METHOD)sortMethod;
+  GetInteger(pNode, "sortmethod", sortMethod, defaultSort, SortByNone, SORT_METHOD_MAX);
+  viewState.m_sortDescription.sortBy = (SortBy)sortMethod;
 
   int sortOrder;
   GetInteger(pNode, "sortorder", sortOrder, SortOrderAscending, SortOrderNone, SortOrderDescending);
-  viewState.m_sortOrder = (SortOrder)sortOrder;
+  viewState.m_sortDescription.sortOrder = (SortOrder)sortOrder;
 }
 
 void CSettings::SetViewState(TiXmlNode *pRootNode, const CStdString &strTagName, const CViewState &viewState) const
@@ -585,8 +585,8 @@ void CSettings::SetViewState(TiXmlNode *pRootNode, const CStdString &strTagName,
   if (pNewNode)
   {
     XMLUtils::SetInt(pNewNode, "viewmode", viewState.m_viewMode);
-    XMLUtils::SetInt(pNewNode, "sortmethod", (int)viewState.m_sortMethod);
-    XMLUtils::SetInt(pNewNode, "sortorder", (int)viewState.m_sortOrder);
+    XMLUtils::SetInt(pNewNode, "sortmethod", (int)viewState.m_sortDescription.sortBy);
+    XMLUtils::SetInt(pNewNode, "sortorder", (int)viewState.m_sortDescription.sortOrder);
   }
 }
 
@@ -752,15 +752,15 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "videonavyears", m_viewStateVideoNavYears);
     GetViewState(pElement, "videonavgenres", m_viewStateVideoNavGenres);
     GetViewState(pElement, "videonavtitles", m_viewStateVideoNavTitles);
-    GetViewState(pElement, "videonavepisodes", m_viewStateVideoNavEpisodes, SORT_METHOD_EPISODE);
+    GetViewState(pElement, "videonavepisodes", m_viewStateVideoNavEpisodes, SortByEpisodeNumber);
     GetViewState(pElement, "videonavtvshows", m_viewStateVideoNavTvShows);
     GetViewState(pElement, "videonavseasons", m_viewStateVideoNavSeasons);
     GetViewState(pElement, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
 
-    GetViewState(pElement, "programs", m_viewStatePrograms, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
-    GetViewState(pElement, "pictures", m_viewStatePictures, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
-    GetViewState(pElement, "videofiles", m_viewStateVideoFiles, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
-    GetViewState(pElement, "musicfiles", m_viewStateMusicFiles, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "programs", m_viewStatePrograms, SortByLabel, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "pictures", m_viewStatePictures, SortByLabel, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "videofiles", m_viewStateVideoFiles, SortByLabel, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "musicfiles", m_viewStateMusicFiles, SortByLabel, DEFAULT_VIEW_AUTO);
   }
 
   // general settings

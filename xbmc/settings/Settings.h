@@ -554,7 +554,7 @@ public:
 protected:
   void GetSources(const TiXmlElement* pRootElement, const CStdString& strTagName, VECSOURCES& items, CStdString& strDefault);
   bool SetSources(TiXmlNode *root, const char *section, const VECSOURCES &shares, const char *defaultPath);
-  void GetViewState(const TiXmlElement* pRootElement, const CStdString& strTagName, CViewState &viewState, SORT_METHOD defaultSort = SORT_METHOD_LABEL, int defaultView = DEFAULT_VIEW_LIST);
+  void GetViewState(const TiXmlElement* pRootElement, const CStdString& strTagName, CViewState &viewState, SortBy defaultSort = SortByLabel, int defaultView = DEFAULT_VIEW_LIST);
 
   void ConvertHomeVar(CStdString& strText);
   // functions for writing xml files
