@@ -243,7 +243,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     else
       assert(false);
   }
-  else if (m_rule.m_field == FieldPlaylist)
+  else if (m_rule.m_field == FieldPlaylist || m_rule.m_field == FieldVirtualFolder)
   {
     // use filebrowser to grab another smart playlist
 
@@ -310,7 +310,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   CStdString strHeading;
   strHeading.Format(g_localizeStrings.Get(13401),g_localizeStrings.Get(iLabel));
   pDialog->SetHeading(strHeading);
-  pDialog->SetMultiSelection(true);
+  pDialog->SetMultiSelection(m_rule.m_field != FieldPlaylist && m_rule.m_field != FieldVirtualFolder);
 
   if (!m_rule.m_parameter.empty())
     pDialog->SetSelected(m_rule.m_parameter);
