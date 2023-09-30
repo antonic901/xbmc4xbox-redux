@@ -23,6 +23,7 @@
 #include "SmartPlaylistDirectory.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
+#include "filesystem/FileDirectoryFactory.h"
 #include "music/MusicDatabase.h"
 #include "SmartPlaylist.h"
 #include "playlists/PlayList.h"
@@ -66,7 +67,7 @@ namespace XFILE
   bool CSmartPlaylistDirectory::GetDirectory(const CSmartPlaylist &playlist, CFileItemList& items, const CStdString &strBaseDir /* = "" */, bool filter /* = false */)
   {
     bool success = false, success2 = false;
-    std::set<CStdString> playlists;
+    std::vector<CStdString> virtualFolders;
 
     SortDescription sorting;
     sorting.limitEnd = playlist.GetLimit();
@@ -80,6 +81,18 @@ namespace XFILE
     std::string option = !filter ? "xsp" : "filter";
     const CStdString& group = playlist.GetGroup();
     bool isGrouped = !group.empty() && !StringUtils2::EqualsNoCase(group, "none") && !playlist.IsGroupMixed();
+
+    // get all virtual folders and add them to the item list
+    playlist.GetVirtualFolders(virtualFolders);
+    for (std::vector<CStdString>::const_iterator virtualFolder = virtualFolders.begin(); virtualFolder != virtualFolders.end(); virtualFolder++)
+    {
+      CFileItemPtr pItem = CFileItemPtr(new CFileItem(*virtualFolder, true));
+      if (CFactoryFileDirectory::Create(*virtualFolder, pItem.get()) != NULL)
+      {
+        pItem->SetSpecialSort(SortSpecialOnTop);
+        items.Add(pItem);
+      }
+    }
 
     if (playlist.GetType().Equals("movies") ||
         playlist.GetType().Equals("tvshows") ||

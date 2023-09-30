@@ -2191,7 +2191,14 @@ msgctxt "#611"
 msgid "Enter number"
 msgstr ""
 
-#empty strings from id 612 to 619
+#empty strings from id 612 to 613
+
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#614"
+msgid "Virtual folder"
+msgstr ""
+
+#empty strings from id 615 to 619
 
 msgctxt "#620"
 msgid "Audio CDs"
