@@ -989,6 +989,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\LED.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\LegacyPathTranslation.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\log.cpp">
 				</File>
 				<File
@@ -3171,6 +3174,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\LED.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\LegacyPathTranslation.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\log.h">
