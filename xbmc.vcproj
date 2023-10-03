@@ -625,6 +625,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\playlists\PlayListXML.cpp">
 				</File>
+				<File
+					RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.cpp">
+				</File>
 			</Filter>
 			<Filter
 				Name="infoTagReaders"
@@ -3131,6 +3134,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\IFileDirectory.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\IFileItemListModifier.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\IMDB.h">
 			</File>
 			<File
@@ -3303,6 +3309,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\SingleLock.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Sntp.h">
