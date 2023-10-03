@@ -1759,6 +1759,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileItem.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\FileItemListModification.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileItemListModification.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\FileReaderFile.cpp">
 				</File>
 				<File
