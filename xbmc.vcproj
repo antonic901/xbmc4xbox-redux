@@ -4606,12 +4606,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\keyboard.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\lib\libPython\xbmcmodule\language.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\lib\libPython\xbmcmodule\language.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\listitem.cpp">
 					</File>
 					<File
@@ -4634,12 +4628,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonPlayer.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonSettings.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonSettings.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\pyutil.cpp">

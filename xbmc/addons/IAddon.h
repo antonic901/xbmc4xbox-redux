@@ -106,8 +106,6 @@ namespace ADDON
     virtual TiXmlElement* GetSettingsXML() =0;
     virtual CStdString GetString(uint32_t id) =0;
     virtual ADDONDEPS GetDeps() =0;
-    // specific to Xbox because I still don't want to remove PythonSettings
-    virtual bool ReloadSettings() =0;
 
   protected:
     virtual const AddonPtr Parent() const =0;

@@ -167,7 +167,6 @@ public:
   const CStdString Disclaimer() const { return m_props.disclaimer; }
   const InfoMap &ExtraInfo() const { return m_props.extrainfo; }
   ADDONDEPS GetDeps();
-  virtual bool ReloadSettings() { return LoadSettings(); }
 
 protected:
   CAddon(const CAddon&); // protected as all copying is handled by Clone()

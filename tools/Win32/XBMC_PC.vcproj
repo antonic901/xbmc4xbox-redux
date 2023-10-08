@@ -3891,12 +3891,6 @@
 						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonPlayer.h">
 					</File>
 					<File
-						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonSettings.cpp">
-					</File>
-					<File
-						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\PythonSettings.h">
-					</File>
-					<File
 						RelativePath="..\..\xbmc\lib\libPython\xbmcmodule\pyutil.cpp">
 					</File>
 					<File
