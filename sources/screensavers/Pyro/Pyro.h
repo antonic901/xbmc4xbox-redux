@@ -48,14 +48,6 @@ typedef struct _D3DTLVERTEX {
     }
 } D3DTLVERTEX, *LPD3DTLVERTEX;
 
-extern "C" 
-{
-	struct SCR_INFO 
-	{
-		int	dummy;
-	};
-};
-
 //struct VERTEX { D3DXVECTOR4 p; D3DCOLOR col; FLOAT tu, tv; };
 //static const DWORD FVF_VERTEX = D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1;
 
@@ -70,8 +62,6 @@ struct MYCUSTOMVERTEX
 };
 
 //
-
-SCR_INFO vInfo;
 
 void LoadSettings();
 void SetDefaults();

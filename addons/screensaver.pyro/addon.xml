@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="screensaver.pyro"
+  version="1.0.0"
+  name="Pyro"
+  provider-name="Team XBMC">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension
+    point="xbmc.ui.screensaver"
+    library_xbox="Pyro.xbs"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>Pyro screensaver</summary>
+    <description>The pyro screensaver simulates fireworks.</description>
+    <disclaimer></disclaimer>
+    <platform>xbox</platform>
+  </extension>
+</addon>
