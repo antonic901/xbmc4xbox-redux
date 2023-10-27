@@ -30,8 +30,12 @@
 #include "main.h"
 #include "matrixtrails.h"
 #include "XmlDocument.h"
+#include "../../../xbmc/addons/include/xbmc_scr_dll.h"
+#include "../../../xbmc/addons/include/xbmc_addon_cpp_dll.h"
 #include "timer.h"
 #include <time.h>
+
+#define CONFIG_FILE "special://xbmc/addons/screensaver.matrixtrails/config.xml"
 
 static char gScrName[1024];
 
@@ -48,15 +52,22 @@ extern "C" void Stop();
 // XBMC has loaded us into memory, we should set our core values
 // here and load any settings we may have from our config file
 //
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int width, int height, const char* szScreenSaverName)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
-	strcpy(gScrName,szScreenSaverName);
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  SCR_PROPS* scrprops = (SCR_PROPS*)props;
+
+	strcpy(gScrName,scrprops->name);
 	gConfig.SetDefaults();
 	gConfig.LoadSettings();
 
-	gRender.m_D3dDevice = pd3dDevice;
-	gRender.m_Width	= width;
-	gRender.m_Height= height;
+	gRender.m_D3dDevice = (LPDIRECT3DDEVICE8)scrprops->device;
+	gRender.m_Width	= scrprops->width;
+	gRender.m_Height= scrprops->height;
+
+  return STATUS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -110,15 +121,54 @@ extern "C" void GetInfo(SCR_INFO* pInfo)
 	return;
 }
 
-////////////////////////////////////////////////////////////////////////////
-//
-extern "C" void __declspec(dllexport) get_module(struct ScreenSaver* pScr)
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
 {
-	pScr->Create = Create;
-	pScr->Start = Start;
-	pScr->Render = Render;
-	pScr->Stop = Stop;
-	pScr->GetInfo = GetInfo;
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
+}
+
+//-- GetSettings --------------------------------------------------------------
+// Return the settings for XBMC to display
+//-----------------------------------------------------------------------------
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
+{
+  return 0;
+}
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{
+}
+
+//-- UpdateSetting ------------------------------------------------------------
+// Handle setting change request from XBMC
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+{
+  return STATUS_UNKNOWN;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -156,9 +206,7 @@ void	CConfig::LoadSettings()
 #ifdef _TEST
 	strcpy(szXMLFile, "MatrixTrails.xml");
 #else
-	strcpy(szXMLFile, "Q:\\screensavers\\");
-	strcat(szXMLFile, gScrName);
-	strcat(szXMLFile, ".xml");
+  strcpy(szXMLFile, CONFIG_FILE);
 #endif
 
 	// Load the config file
