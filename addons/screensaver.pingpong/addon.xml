@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="screensaver.pingpong"
+  version="1.0.0"
+  name="Ping Pong"
+  provider-name="Team XBMC">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension
+    point="xbmc.ui.screensaver"
+    library_xbox="PingPong.xbs"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>Ping Pong screensaver</summary>
+    <description>Lets a ball jump back and forth.</description>
+    <disclaimer></disclaimer>
+    <platform>xbox</platform>
+  </extension>
+</addon>
