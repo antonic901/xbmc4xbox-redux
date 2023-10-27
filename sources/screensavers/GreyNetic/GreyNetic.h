@@ -5,19 +5,11 @@
 extern "C" void d3dSetTextureStageState( int x, DWORD dwY, DWORD dwZ);
 extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
 extern "C" void d3dGetRenderState(DWORD dwY, DWORD* dwZ);
-extern "C" 
-{
-	struct SCR_INFO 
-	{
-		int	dummy;
-	};
-};
 
 void LoadSettings();
 void SetDefaults();
 void CreateArrays();
 
-SCR_INFO vInfo;
 LPDIRECT3DDEVICE8 m_pd3dDevice;
 
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
