@@ -4512,13 +4512,13 @@ bool CApplication::ResetScreenSaverWindow()
     return false;
 
   // if Screen saver is active
-  if (m_bScreenSave)
+  if (m_bScreenSave && m_screenSaver)
   {
     if (m_iScreenSaveLock == 0)
       if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
           (g_settings.UsingLoginScreen() || g_guiSettings.GetBool("masterlock.startuplock")) &&
           g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-          m_screenSaverMode != "Dim" && m_screenSaverMode != "Black" && m_screenSaverMode != "Visualisation")
+          m_screenSaver->ID() != "screensaver.xbmc.builtin.dim" && m_screenSaver->ID() != "screensaver.xbmc.builtin.black" && m_screenSaver->ID() != "visualization")
       {
         m_iScreenSaveLock = 2;
         CGUIMessage msg(GUI_MSG_CHECK_LOCK,0,0);
@@ -4536,20 +4536,21 @@ bool CApplication::ResetScreenSaverWindow()
     m_screenSaverTimer.StartZero();
 
     float fFadeLevel = 1.0f;
-    if (m_screenSaverMode == "Visualisation" || m_screenSaverMode == "Slideshow" || m_screenSaverMode == "Fanart Slideshow")
+    if (m_screenSaver->ID() == "visualization" || m_screenSaver->ID() == "screensaver.xbmc.builtin.slideshow")
     {
       // we can just continue as usual from vis mode
       return false;
     }
-    else if (m_screenSaverMode == "Dim")
+    else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.dim")
     {
-      fFadeLevel = (float)g_guiSettings.GetInt("screensaver.dimlevel") / 100;
+      if (!m_screenSaver->GetSetting("level").IsEmpty())
+        fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level"));
     }
-    else if (m_screenSaverMode == "Black")
+    else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.black")
     {
       fFadeLevel = 0;
     }
-    else if (m_screenSaverMode != "None")
+    else if (!m_screenSaver->ID().IsEmpty())
     { // we're in screensaver window
       if (g_windowManager.GetActiveWindow() == WINDOW_SCREENSAVER)
         g_windowManager.PreviousWindow();  // show the previous window
@@ -4616,7 +4617,9 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   m_bScreenSave = true;
 
   // Get Screensaver Mode
-  m_screenSaverMode = g_guiSettings.GetString("screensaver.mode");
+  m_screenSaver.reset();
+  if (!CAddonMgr::Get().GetAddon(g_guiSettings.GetString("screensaver.mode"), m_screenSaver))
+    m_screenSaver.reset(new CScreenSaver(""));
 
   // disable screensaver lock from the login screen
   m_iScreenSaveLock = g_windowManager.GetActiveWindow() == WINDOW_LOGIN_SCREEN ? 1 : 0;
@@ -4624,32 +4627,44 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   {
     // set to Dim in the case of a dialog on screen or playing video
     if (g_windowManager.HasModalDialog() || (IsPlayingVideo() && g_guiSettings.GetBool("screensaver.usedimonpause")))
-      m_screenSaverMode = "Dim";
+    {
+      if (!CAddonMgr::Get().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver))
+        m_screenSaver.reset(new CScreenSaver(""));
+    }
     // Check if we are Playing Audio and Vis instead Screensaver!
     else if (IsPlayingAudio() && g_guiSettings.GetBool("screensaver.usemusicvisinstead") && g_guiSettings.GetString("musicplayer.visualisation") != "None")
     { // activate the visualisation
-      m_screenSaverMode = "Visualisation";
+      m_screenSaver.reset(new CScreenSaver("visualization"));
       g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
       return;
     }
   }
   // Picture slideshow
-  if (m_screenSaverMode == "SlideShow" || m_screenSaverMode == "Fanart Slideshow")
+  if (m_screenSaver->ID() == "screensaver.xbmc.builtin.slideshow")
   {
     // reset our codec info - don't want that on screen
     g_infoManager.SetShowCodec(false);
-    m_applicationMessenger.PictureSlideShow(g_guiSettings.GetString("screensaver.slideshowpath"), true);
+    CStdString type = m_screenSaver->GetSetting("type");
+    CStdString path = m_screenSaver->GetSetting("path");
+    if (type == "2" && path.IsEmpty())
+      type = "0";
+    if (type == "0")
+      path = "special://profile/thumbnails/Video/Fanart";
+    if (type == "1")
+      path = "special://profile/thumbnails/Music/Fanart";
+    m_applicationMessenger.PictureSlideShow(path, true, type != "2");
     return;
   }
-  else if (m_screenSaverMode == "Dim")
+  else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.dim")
   {
-    fFadeLevel = (FLOAT) g_guiSettings.GetInt("screensaver.dimlevel") / 100; // 0.07f;
+    if (!m_screenSaver->GetSetting("level").IsEmpty())
+      fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level"));
   }
-  else if (m_screenSaverMode == "Black")
+  else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.black")
   {
     fFadeLevel = 0;
   }
-  else if (m_screenSaverMode != "None")
+  else if (!m_screenSaver->ID().IsEmpty())
   {
     g_windowManager.ActivateWindow(WINDOW_SCREENSAVER);
     return ;
