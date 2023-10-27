@@ -135,18 +135,24 @@
 						<icon>-</icon>
 					</item>
 					<item id="7">
+						<label>24001</label>
+						<label2>31409</label2>
+						<onclick>ActivateWindow(AddonBrowser)</onclick>
+						<icon>-</icon>
+					</item>
+					<item id="8">
 						<label>705</label>
 						<label2>31405</label2>
 						<onclick>ActivateWindow(NetworkSettings)</onclick>
 						<icon>-</icon>
 					</item>
-					<item id="8">
+					<item id="9">
 						<label>13000</label>
 						<label2>31406</label2>
 						<onclick>ActivateWindow(SystemSettings)</onclick>
 						<icon>-</icon>
 					</item>
-					<item id="9">
+					<item id="10">
 						<label>166</label>
 						<label2>31407</label2>
 						<onclick>ActivateWindow(1111)</onclick>

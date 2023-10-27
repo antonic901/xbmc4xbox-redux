@@ -106,6 +106,7 @@ public:
   bool IsPlugin() const;
   bool IsPluginRoot() const;
   bool IsDefaultXBE() const;
+  bool IsAddonsPath() const;
   bool IsSourcesPath() const;
   bool IsShortCut() const;
   bool IsNFO() const;

@@ -1,5 +1,5 @@
 <node order="22" type="folder">
   <label>1037</label>
   <icon>DefaultAddonVideo.png</icon>
-  <path>plugin://video/</path>
+  <path>addons://sources/video/</path>
 </node>

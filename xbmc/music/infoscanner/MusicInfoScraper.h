@@ -22,7 +22,7 @@
 
 #include "music/infoscanner/MusicAlbumInfo.h"
 #include "music/infoscanner/MusicArtistInfo.h"
-#include "ScraperSettings.h"
+#include "addons/Scraper.h"
 #include "Thread.h"
 #include "FileSystem/CurlFile.h"
 
@@ -33,7 +33,7 @@ namespace MUSIC_GRABBER
 class CMusicInfoScraper : public CThread
 {
 public:
-  CMusicInfoScraper(const SScraperInfo& info);
+  CMusicInfoScraper(const ADDON::ScraperPtr &scraper);
   virtual ~CMusicInfoScraper(void);
   void FindAlbumInfo(const CStdString& strAlbum, const CStdString& strArtist = "");
   void LoadAlbumInfo(int iAlbum);
@@ -55,9 +55,9 @@ public:
   {
     return m_vecAlbums;
   }
-  void SetScraperInfo(const SScraperInfo& info)
+  void SetScraperInfo(const ADDON::ScraperPtr& scraper)
   {
-    m_info = info;
+    m_scraper = scraper;
   }
   /*!
    \brief Checks whether we have a valid scraper.  If not, we try the fallbackScraper
@@ -83,7 +83,7 @@ protected:
   bool m_bSucceeded;
   bool m_bCanceled;
   XFILE::CCurlFile m_http;
-  SScraperInfo m_info;
+  ADDON::ScraperPtr m_scraper;
 };
 
 }

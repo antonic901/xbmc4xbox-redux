@@ -31,6 +31,10 @@
 #include "LangInfo.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
+#include "settings/Settings.h"
+#include "addons/AddonManager.h"
+
+using namespace ADDON;
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3
@@ -54,7 +58,7 @@
 #define LOCALIZED_TOKEN_FIRSTID      370
 #define LOCALIZED_TOKEN_LASTID       395
 
-DWORD timeToCallPlugin = 1000;
+DWORD timeToCallScript = 1000;
 /*
 FIXME'S
 >strings are not centered
@@ -87,9 +91,9 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SELECTLOCATION)
       {
-        // stop the plugin timer here, so the user has a full second
-        if (m_pluginTimer.IsRunning())
-          m_pluginTimer.Stop();
+        // stop the script timer here, so the user has a full second
+        if (m_scriptTimer.IsRunning())
+          m_scriptTimer.Stop();
 
         CGUIMessage msg(GUI_MSG_ITEM_SELECTED,GetID(),CONTROL_SELECTLOCATION);
         g_windowManager.SendMessage(msg);
@@ -120,11 +124,11 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
       SetProperties();
       if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
       {
-        if (!g_guiSettings.GetString("weather.plugin").IsEmpty())
-          m_pluginTimer.StartZero();
+        if (!g_guiSettings.GetString("weather.script").IsEmpty())
+          m_scriptTimer.StartZero();
       }
       else
-        CallPlugin();
+        CallScript();
     }
     break;
   }
@@ -222,11 +226,11 @@ void CGUIWindowWeather::FrameMove()
   // update our controls
   UpdateButtons();
 
-  // call weather plugin
-  if (m_pluginTimer.IsRunning() && m_pluginTimer.GetElapsedMilliseconds() > timeToCallPlugin)
+  // call weather script
+  if (m_scriptTimer.IsRunning() && m_scriptTimer.GetElapsedMilliseconds() > timeToCallScript)
   {
-    m_pluginTimer.Stop();
-    CallPlugin();
+    m_scriptTimer.Stop();
+    CallScript();
   }
 
   CGUIWindow::FrameMove();
@@ -277,25 +281,26 @@ void CGUIWindowWeather::SetProperties()
   }
 }
 
-void CGUIWindowWeather::CallPlugin()
+void CGUIWindowWeather::CallScript()
 {
-  if (!g_guiSettings.GetString("weather.plugin").IsEmpty())
+  if (!g_guiSettings.GetString("weather.script").IsEmpty())
   {
-    // create the full path to the plugin
-    CStdString plugin = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin") + "/default.py";
+    AddonPtr addon;
+    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT))
+      return;
 
     // initialize our sys.argv variables
     unsigned int argc = 2;
     char ** argv = new char*[argc];
-    argv[0] = (char*)plugin.c_str();
+    argv[0] = (char*)addon->LibPath().c_str();
 
-    // if plugin is running we wait for another timeout only when in weather window
+    // if script is running we wait for another timeout only when in weather window
     if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
     {
       int id = g_pythonParser.getScriptId(argv[0]);
       if (id != -1 && g_pythonParser.isRunning(id))
       {
-        m_pluginTimer.StartZero();
+        m_scriptTimer.StartZero();
         return;
       }
     }
@@ -306,9 +311,9 @@ void CGUIWindowWeather::CallPlugin()
     const CStdString &areacode = g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting));
     argv[1] = (char*)areacode.c_str();
 
-    // call our plugin, passing the areacode
+    // call our script, passing the areacode
     g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
 
-    CLog::Log(LOGDEBUG, "%s - Weather plugin called: %s (%s)", __FUNCTION__, argv[0], argv[1]);
+    CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0], argv[1]);
   }
 }

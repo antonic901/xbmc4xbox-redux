@@ -115,6 +115,7 @@ void CGUIDialogLockSettings::CreateSettings()
     AddBool(6,20041,&m_locks.programs);
     AddBool(7,20042,&m_locks.files);
     AddBool(8,20043,&m_locks.settings);
+    AddBool(9,24090,&m_locks.addonManager);
     EnableDetails(m_locks.mode != LOCK_MODE_EVERYONE);
   }
 }

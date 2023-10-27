@@ -790,6 +790,11 @@ bool CFileItem::IsPluginRoot() const
   return URIUtils::IsPluginRoot(m_strPath);
 }
 
+bool CFileItem::IsAddonsPath() const
+{
+  return URIUtils::IsAddonsPath(m_strPath);
+}
+
 bool CFileItem::IsSourcesPath() const
 {
   return URIUtils::IsSourcesPath(m_strPath);

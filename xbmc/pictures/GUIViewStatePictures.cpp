@@ -82,16 +82,8 @@ CStdString CGUIViewStateWindowPictures::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPictures::GetSources()
 {
-  // plugins share
-  if (CPluginDirectory::HasPlugins("pictures") && g_advancedSettings.m_bVirtualShares)
-  {
-    CMediaSource share;
-    share.strName = g_localizeStrings.Get(1039); // Picture Plugins
-    share.strPath = "plugin://pictures/";
-    share.m_strThumbnailImage = CUtil::GetDefaultFolderThumb("DefaultPicturePlugins.png");
-    share.m_ignore = true;
-    AddOrReplace(g_settings.m_pictureSources,share);
-  }
+  AddAddonsSource("image", g_localizeStrings.Get(1039));
+  AddOrReplace(g_settings.m_pictureSources, CGUIViewState::GetSources());
   return g_settings.m_pictureSources; 
 }
 

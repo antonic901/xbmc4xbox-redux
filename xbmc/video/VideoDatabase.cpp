@@ -22,6 +22,7 @@
 #include "video/VideoDatabase.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "utils/RegExp.h"
+#include "addons/AddonManager.h"
 #include "GUIInfoManager.h"
 #include "Util.h"
 #include "XMLUtils.h"
@@ -52,6 +53,7 @@ using namespace std;
 using namespace dbiplus;
 using namespace XFILE;
 using namespace VIDEO;
+using namespace ADDON;
 
 //********************************************************************************************************************************
 CVideoDatabase::CVideoDatabase(void)
@@ -465,7 +467,7 @@ int CVideoDatabase::GetPathId(const CStdString& strPath)
   return -1;
 }
 
-bool CVideoDatabase::GetPaths(map<CStdString,VIDEO::SScanSettings> &paths)
+bool CVideoDatabase::GetPaths(set<CStdString> &paths)
 {
   try
   {
@@ -474,11 +476,8 @@ bool CVideoDatabase::GetPaths(map<CStdString,VIDEO::SScanSettings> &paths)
 
     paths.clear();
 
-    SScanSettings settings;
-    memset(&settings, 0, sizeof(settings));
-
     // grab all paths with movie content set
-    if (!m_pDS->query("select strPath,scanRecursive,useFolderNames,noUpdate from path"
+    if (!m_pDS->query("select strPath,noUpdate from path"
                       " where (strContent = 'movies' or strContent = 'musicvideos')"
                       " and strPath NOT like 'multipath://%%'"
                       " order by strPath"))
@@ -487,21 +486,13 @@ bool CVideoDatabase::GetPaths(map<CStdString,VIDEO::SScanSettings> &paths)
     while (!m_pDS->eof())
     {
       if (!m_pDS->fv("noUpdate").get_asBool())
-      {
-        CStdString strPath = m_pDS->fv("strPath").get_asString();
-
-        settings.parent_name = m_pDS->fv("useFolderNames").get_asBool();
-        settings.recurse     = m_pDS->fv("scanRecursive").get_asInt();
-        settings.parent_name_root = settings.parent_name && !settings.recurse;
-
-        paths.insert(pair<CStdString,SScanSettings>(strPath,settings));
-      }
+        paths.insert(m_pDS->fv("strPath").get_asString());
       m_pDS->next();
     }
     m_pDS->close();
 
     // then grab all tvshow paths
-    if (!m_pDS->query("select strPath,scanRecursive,useFolderNames,strContent,noUpdate from path"
+    if (!m_pDS->query("select strPath,noUpdate from path"
                       " where ( strContent = 'tvshows'"
                       "       or idPath in (select idpath from tvshowlinkpath))"
                       " and strPath NOT like 'multipath://%%'"
@@ -511,24 +502,7 @@ bool CVideoDatabase::GetPaths(map<CStdString,VIDEO::SScanSettings> &paths)
     while (!m_pDS->eof())
     {
       if (!m_pDS->fv("noUpdate").get_asBool())
-      {
-        CStdString strPath = m_pDS->fv("strPath").get_asString();
-        CStdString strContent = m_pDS->fv("strContent").get_asString();
-        if(strContent.Equals("tvshows"))
-        {
-          settings.parent_name = m_pDS->fv("useFolderNames").get_asBool();
-          settings.recurse     = m_pDS->fv("scanRecursive").get_asInt();
-          settings.parent_name_root = settings.parent_name && !settings.recurse;
-        }
-        else
-        {
-          settings.parent_name = true;
-          settings.recurse = 0;
-          settings.parent_name_root = true;
-        }
-
-        paths.insert(pair<CStdString,SScanSettings>(strPath,settings));
-      }
+        paths.insert(m_pDS->fv("strPath").get_asString());
       m_pDS->next();
     }
     m_pDS->close();
@@ -549,15 +523,7 @@ bool CVideoDatabase::GetPaths(map<CStdString,VIDEO::SScanSettings> &paths)
     while (!m_pDS->eof())
     {
       if (!m_pDS->fv("noUpdate").get_asBool())
-      {
-        CStdString strPath = m_pDS->fv("strPath").get_asString();
-
-        settings.parent_name = false;
-        settings.recurse = 0;
-        settings.parent_name_root = settings.parent_name && !settings.recurse;
-
-        paths.insert(pair<CStdString,SScanSettings>(strPath,settings));
-      }
+        paths.insert(m_pDS->fv("strPath").get_asString());
       m_pDS->next();
     }
     m_pDS->close();
@@ -3633,7 +3599,7 @@ void CVideoDatabase::RemoveContentForPath(const CStdString& strPath, CGUIDialogP
     progress->Close();
 }
 
-void CVideoDatabase::SetScraperForPath(const CStdString& filePath, const SScraperInfo& info, const VIDEO::SScanSettings& settings)
+void CVideoDatabase::SetScraperForPath(const CStdString& filePath, const ScraperPtr& scraper, const VIDEO::SScanSettings& settings)
 {
   // if we have a multipath, set scraper for all contained paths too
   if(URIUtils::IsMultiPath(filePath))
@@ -3642,7 +3608,7 @@ void CVideoDatabase::SetScraperForPath(const CStdString& filePath, const SScrape
     CMultiPathDirectory::GetPaths(filePath, paths);
 
     for(unsigned i=0;i<paths.size();i++)
-      SetScraperForPath(paths[i],info,settings);
+      SetScraperForPath(paths[i],scraper,settings);
   }
 
   try
@@ -3654,7 +3620,20 @@ void CVideoDatabase::SetScraperForPath(const CStdString& filePath, const SScrape
       return;
 
     // Update
-    CStdString strSQL=PrepareSQL("update path set strContent='%s',strScraper='%s', scanRecursive=%i, useFolderNames=%i, strSettings='%s', noUpdate=%i where idPath=%i", info.strContent.c_str(), info.strPath.c_str(),settings.recurse,settings.parent_name,info.settings.GetSettings().c_str(),settings.noupdate, idPath);
+    CStdString strSQL;
+    if (settings.exclude)
+    { //NB See note in ::GetScraperForPath about strContent=='none'
+      strSQL=PrepareSQL("update path set strContent='none', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=0 where idPath=%i", idPath);
+    }
+    else if(!scraper)
+    { // catch clearing content, but not excluding
+      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=0 where idPath=%i", idPath);
+    }
+    else
+    {
+      CStdString content = TranslateContent(scraper->Content());
+      strSQL=PrepareSQL("update path set strContent='%s', strScraper='%s', scanRecursive=%i, useFolderNames=%i, strSettings='%s', noUpdate=%i where idPath=%i", content.c_str(), scraper->ID().c_str(),settings.recurse,settings.parent_name,scraper->GetPathSettings().c_str(),settings.noupdate, idPath);
+    }
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
@@ -4258,11 +4237,8 @@ bool CVideoDatabase::LookupByFolders(const CStdString &path, bool shows)
 {
   SScanSettings settings;
   bool foundDirectly = false;
-  int iFound = -1;
-  SScraperInfo scraper;
-  GetScraperForPath(path, scraper, settings, iFound);
-  foundDirectly = iFound == 1 ? true : false;
-  if (scraper.strContent == "tvshows" && !shows)
+  ScraperPtr scraper = GetScraperForPath(path, settings, foundDirectly);
+  if (scraper && scraper->Content() == CONTENT_TVSHOWS && !shows)
     return false; // episodes
   return settings.parent_name_root; // shows, movies, musicvids
 }
@@ -6499,33 +6475,26 @@ int CVideoDatabase::GetMusicVideoCount(const CStdString& strWhere)
   return 0;
 }
 
-bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& info)
-{
-  int iDummy;
-  return GetScraperForPath(strPath, info, iDummy);
-}
-
-bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& info, int& iFound)
+ScraperPtr CVideoDatabase::GetScraperForPath( const CStdString& strPath )
 {
   SScanSettings settings;
-  return GetScraperForPath(strPath, info, settings, iFound);
+  return GetScraperForPath(strPath, settings);
 }
 
-bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& info, SScanSettings& settings)
+ScraperPtr CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScanSettings& settings)
 {
-  int iDummy;
-  return GetScraperForPath(strPath, info, settings, iDummy);
+  bool dummy;
+  return GetScraperForPath(strPath, settings, dummy);
 }
 
-bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& info, SScanSettings& settings, int& iFound)
+ScraperPtr CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScanSettings& settings, bool& foundDirectly)
 {
+  foundDirectly = false;
   try
   {
-    info.Reset();
-    if (strPath.IsEmpty()) return false;
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (strPath.IsEmpty() || !m_pDB.get() || !m_pDS.get()) return ScraperPtr();
 
+    ScraperPtr scraper;
     CStdString strPath1;
     CStdString strPath2(strPath);
 
@@ -6537,119 +6506,142 @@ bool CVideoDatabase::GetScraperForPath(const CStdString& strPath, SScraperInfo& 
 
     if (idPath > -1)
     {
-      CStdString strSQL=PrepareSQL("select path.strContent,path.strScraper,path.scanRecursive,path.useFolderNames,path.strSettings,path.noUpdate from path where path.idPath=%i",idPath);
+      CStdString strSQL=PrepareSQL("select path.strContent,path.strScraper,path.scanRecursive,path.useFolderNames,path.strSettings,path.noUpdate,path.exclude from path where path.idPath=%i",idPath);
       m_pDS->query( strSQL.c_str() );
     }
 
-    iFound = 1;
+    int iFound = 1;
+    CONTENT_TYPE content = CONTENT_NONE;
     if (!m_pDS->eof())
-    {
-      info.strContent = m_pDS->fv("path.strContent").get_asString();
-      info.strPath = m_pDS->fv("path.strScraper").get_asString();
-      info.settings.LoadUserXML(m_pDS->fv("path.strSettings").get_asString());
+    { // path is stored in db
 
-      CScraperParser parser;
-      parser.Load("special://xbmc/system/scrapers/video/" + info.strPath);
-      info.strLanguage = parser.GetLanguage();
-      info.strTitle = parser.GetName();
-      info.strDate = parser.GetDate();
-      info.strFramework = parser.GetFramework();
+      if (m_pDS->fv("path.exclude").get_asBool())
+      {
+        settings.exclude = true;
+        m_pDS->close();
+        return ScraperPtr();
+      }
+      settings.exclude = false;
 
-      settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
-      settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
-      settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
+      // try and ascertain scraper for this path
+      CStdString strcontent = m_pDS->fv("path.strContent").get_asString();
+      strcontent.ToLower();
+      content = TranslateContent(strcontent);
+
+      //FIXME paths stored should not have empty strContent
+      //assert(content != CONTENT_NONE);
+      CStdString scraperID = m_pDS->fv("path.strScraper").get_asString();
+
+      AddonPtr addon;
+      if (!scraperID.empty() &&
+        CAddonMgr::Get().GetAddon(scraperID, addon))
+      {
+        scraper = boost::dynamic_pointer_cast<CScraper>(addon->Clone(addon));
+        if (!scraper)
+          return ScraperPtr();
+
+        // store this path's content & settings
+        scraper->SetPathSettings(content, m_pDS->fv("path.strSettings").get_asString());
+        settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
+        settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
+        settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
+      }
     }
-    if (info.strContent.IsEmpty())
-    {
-      CStdString strParent;
 
+    if (content == CONTENT_NONE)
+    { // this path is not saved in db
+      // we must drill up until a scraper is configured
+      CStdString strParent;
       while (URIUtils::GetParentPath(strPath1, strParent))
       {
         iFound++;
-
+ 
         CStdString strSQL=PrepareSQL("select path.strContent,path.strScraper,path.scanRecursive,path.useFolderNames,path.strSettings,path.noUpdate from path where strPath like '%s'",strParent.c_str());
         m_pDS->query(strSQL.c_str());
+
+        CONTENT_TYPE content = CONTENT_NONE;
         if (!m_pDS->eof())
         {
-          info.strContent = m_pDS->fv("path.strContent").get_asString();
-          info.strPath = m_pDS->fv("path.strScraper").get_asString();
-          info.settings.LoadUserXML(m_pDS->fv("path.strSettings").get_asString());
 
-          CScraperParser parser;
-          parser.Load("special://xbmc/system/scrapers/video/" + info.strPath);
-          info.strLanguage = parser.GetLanguage();
-          info.strTitle = parser.GetName();
-          info.strDate = parser.GetDate();
-          info.strFramework = parser.GetFramework();
-
-          settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
-          settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
-          settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
-
-          if (!info.strContent.IsEmpty())
+          CStdString strcontent = m_pDS->fv("path.strContent").get_asString();
+          strcontent.ToLower();
+          if (strcontent.Equals("none"))
+          {
+            settings.exclude = true;
+            scraper.reset();
+            m_pDS->close();
             break;
-        }
+          }
 
+          content = TranslateContent(strcontent);
+
+          AddonPtr addon;
+          if (content != CONTENT_NONE &&
+              CAddonMgr::Get().GetAddon(m_pDS->fv("path.strScraper").get_asString(), addon))
+          {
+            scraper = boost::dynamic_pointer_cast<CScraper>(addon->Clone(addon));
+            scraper->SetPathSettings(content, m_pDS->fv("path.strSettings").get_asString());
+            settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
+            settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
+            settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
+            settings.exclude = false;
+
+            break;
+          }
+        }
         strPath1 = strParent;
       }
     }
     m_pDS->close();
 
-    if (info.strContent.Equals("tvshows"))
+    if (!scraper || scraper->Content() == CONTENT_NONE)
+      return ScraperPtr();
+
+    if (scraper->Content() == CONTENT_TVSHOWS)
     {
       settings.recurse = 0;
       if(settings.parent_name) // single show
       {
         settings.parent_name_root = settings.parent_name = (iFound == 1);
-        return iFound <= 2;
       }
       else // show root
       {
         settings.parent_name_root = settings.parent_name = (iFound == 2);
-        return iFound <= 3;
       }
     }
-    else if (info.strContent.Equals("movies"))
+    else if (scraper->Content() == CONTENT_MOVIES)
     {
       settings.recurse = settings.recurse - (iFound-1);
       settings.parent_name_root = settings.parent_name && (!settings.recurse || iFound > 1);
-      return settings.recurse >= 0;
     }
-    else if (info.strContent.Equals("musicvideos"))
+    else if (scraper->Content() == CONTENT_MUSICVIDEOS)
     {
       settings.recurse = settings.recurse - (iFound-1);
       settings.parent_name_root = settings.parent_name && (!settings.recurse || iFound > 1);
-      return settings.recurse >= 0;
     }
     else
     {
       iFound = 0;
-      // this is setup so set content dialog will show correct defaults
-      settings.recurse = -1;
-      settings.parent_name = false;
-      settings.parent_name_root = false;
-      settings.noupdate = false;
-      return false;
+      return ScraperPtr();
     }
+    foundDirectly = (iFound == 1);
+    return scraper;
   }
   catch (...)
   {
     CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
   }
-  return false;
+  return ScraperPtr();
 }
 
 CStdString CVideoDatabase::GetContentForPath(const CStdString& strPath)
 {
   SScanSettings settings;
   bool foundDirectly = false;
-  int iFound = -1;
-  SScraperInfo scraper;
-  GetScraperForPath(strPath, scraper, settings, iFound);
-  foundDirectly = iFound == 1 ? true : false;
-  if (!scraper.strContent.IsEmpty())
+  ScraperPtr scraper = GetScraperForPath(strPath, settings, foundDirectly);
+  if (scraper)
   {
-    if (scraper.strContent == "tvshows" && !foundDirectly)
+    if (scraper->Content() == CONTENT_TVSHOWS && !foundDirectly)
     { // check for episodes or seasons (ASSUMPTION: no episodes == seasons (i.e. assume show/season/episodes structure)
       CStdString sql = PrepareSQL("select count(1) from episodeview where strPath = '%s' limit 1", strPath.c_str());
       m_pDS->query( sql.c_str() );
@@ -6657,7 +6649,7 @@ CStdString CVideoDatabase::GetContentForPath(const CStdString& strPath)
         return "episodes";
       return "seasons";
     }
-    return scraper.strContent;
+    return TranslateContent(scraper->Content());
   }
   return "";
 }
@@ -8543,23 +8535,24 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
     if (!singleFiles)
     {
       // now dump path info
-      map<CStdString,SScanSettings> paths;
+      set<CStdString> paths;
       GetPaths(paths);
       TiXmlElement xmlPathElement("paths");
       TiXmlNode *pPaths = pMain->InsertEndChild(xmlPathElement);
-      for( map<CStdString,SScanSettings>::iterator iter=paths.begin();iter != paths.end();++iter)
+      for( set<CStdString>::iterator iter = paths.begin(); iter != paths.end(); ++iter)
       {
-        SScraperInfo info;
-        int iFound=0;
-        if (GetScraperForPath(iter->first,info,iFound) && iFound == 1)
+        bool foundDirectly = false;
+        SScanSettings settings;
+        ScraperPtr info = GetScraperForPath(*iter, settings, foundDirectly);
+        if (info && foundDirectly)
         {
           TiXmlElement xmlPathElement2("path");
           TiXmlNode *pPath = pPaths->InsertEndChild(xmlPathElement2);
-          XMLUtils::SetString(pPath,"url",iter->first);
-          XMLUtils::SetInt(pPath,"scanrecursive",iter->second.recurse);
-          XMLUtils::SetBoolean(pPath,"usefoldernames",iter->second.parent_name);
-          XMLUtils::SetString(pPath,"content",info.strContent);
-          XMLUtils::SetString(pPath,"scraperpath",info.strPath);
+          XMLUtils::SetString(pPath,"url", *iter);
+          XMLUtils::SetInt(pPath,"scanrecursive", settings.recurse);
+          XMLUtils::SetBoolean(pPath,"usefoldernames", settings.parent_name);
+          XMLUtils::SetString(pPath,"content", TranslateContent(info->Content()));
+          XMLUtils::SetString(pPath,"scraperpath", info->ID());
         }
       }
       xmlDoc.SaveFile(xmlFile);
@@ -8687,14 +8680,24 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       CStdString strPath;
       if (XMLUtils::GetString(path,"url",strPath))
         AddPath(strPath);
-        
-      SScraperInfo info;
-      SScanSettings settings;
-      XMLUtils::GetString(path,"content",info.strContent);
-      XMLUtils::GetString(path,"scraperpath",info.strPath);
-      XMLUtils::GetInt(path,"scanrecursive",settings.recurse);
-      XMLUtils::GetBoolean(path,"usefoldernames",settings.parent_name);
-      SetScraperForPath(strPath,info,settings);
+
+      CStdString content;
+      if (XMLUtils::GetString(path,"content", content))
+      { // check the scraper exists, if so store the path
+        AddonPtr addon;
+        CStdString id;
+        XMLUtils::GetString(path,"scraperpath",id);
+        if (CAddonMgr::Get().GetAddon(id, addon))
+        {
+          SScanSettings settings;
+          ScraperPtr scraper = boost::dynamic_pointer_cast<CScraper>(addon);
+          // FIXME: scraper settings are not exported?
+          scraper->SetPathSettings(TranslateContent(content), "");
+          XMLUtils::GetInt(path,"scanrecursive",settings.recurse);
+          XMLUtils::GetBoolean(path,"usefoldernames",settings.parent_name);
+          SetScraperForPath(strPath,scraper,settings);
+        }
+      }
       path = path->NextSiblingElement();
     }
     movie = root->FirstChildElement();
@@ -8706,7 +8709,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         info.Load(movie);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
-        scanner.AddMovie(&item,"movies",info,useFolders);
+        scanner.AddMovie(&item,CONTENT_MOVIES,info,useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(moviesDir, info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -8720,7 +8723,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         info.Load(movie);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
-        scanner.AddMovie(&item,"musicvideos",info,useFolders);
+        scanner.AddMovie(&item,CONTENT_MUSICVIDEOS,info,useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(musicvideosDir, StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -8735,7 +8738,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         DeleteTvShow(info.m_strPath);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath(), true) : false;
-        int showID = scanner.AddMovie(&item,"tvshows",info,useFolders);
+        int showID = scanner.AddMovie(&item,CONTENT_TVSHOWS,info,useFolders);
         current++;
         CStdString showDir(GetSafeFile(tvshowsDir, info.m_strTitle));
         CFile::Cache(URIUtils::AddFileToFolder(showDir, "folder.jpg"), item.GetCachedVideoThumb());
@@ -8750,7 +8753,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
           CVideoInfoTag info;
           info.Load(episode);
           CFileItem item(info);
-          scanner.AddMovie(&item,"tvshows",info,false,showID);
+          scanner.AddMovie(&item,CONTENT_TVSHOWS,info,false,showID);
           SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
           CStdString file;
           file.Format("s%02ie%02i.tbn", info.m_iSeason, info.m_iEpisode);
@@ -8879,14 +8882,15 @@ void CVideoDatabase::SplitPath(const CStdString& strFileNameAndPath, CStdString&
 
 void CVideoDatabase::InvalidatePathHash(const CStdString& strPath)
 {
-  SScraperInfo info;
   SScanSettings settings;
-  int iFound;
-  GetScraperForPath(strPath,info,settings,iFound);
+  bool foundDirectly;
+  ScraperPtr info = GetScraperForPath(strPath,settings,foundDirectly);
   SetPathHash(strPath,"");
-  if (info.strContent.Equals("tvshows") || (info.strContent.Equals("movies") && iFound != 1)) // if we scan by folder name we need to invalidate parent as well
+  if (!info)
+    return;
+  if (info->Content() == CONTENT_TVSHOWS || (info->Content() == CONTENT_MOVIES && !foundDirectly)) // if we scan by folder name we need to invalidate parent as well
   {
-    if (info.strContent.Equals("tvshows") || settings.parent_name_root)
+    if (info->Content() == CONTENT_TVSHOWS || settings.parent_name_root)
     {
       CStdString strParent;
       URIUtils::GetParentPath(strPath,strParent);

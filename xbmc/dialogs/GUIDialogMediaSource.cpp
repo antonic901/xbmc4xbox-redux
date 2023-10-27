@@ -89,13 +89,6 @@ bool CGUIDialogMediaSource::OnMessage(CGUIMessage& message)
         OnOK();
       else if (iControl == CONTROL_CANCEL)
         OnCancel();
-      else if (iControl == CONTROL_CONTENT)
-      {
-        CMediaSource share;
-        share.FromNameAndPaths("video", m_name, GetPaths());
-
-        CGUIDialogContentSettings::ShowForDirectory(share.strPath,m_info,m_settings,m_bRunScan);
-      }
       return true;
     }
     break;
@@ -104,8 +97,6 @@ bool CGUIDialogMediaSource::OnMessage(CGUIMessage& message)
       m_confirmed = false;
       m_bRunScan = false;
       m_bNameChanged=false;
-      m_settings.parent_name = false;
-      m_settings.recurse = 0;
       UpdateButtons();
     }
     break;
@@ -162,7 +153,7 @@ bool CGUIDialogMediaSource::ShowAndAddMediaSource(const CStdString &type)
     if (type == "video")
     {
       if (dialog->m_bRunScan)
-        CGUIWindowVideoBase::OnScan(share.strPath,dialog->m_info,dialog->m_settings);
+        CGUIWindowVideoBase::OnScan(share.strPath, true);
 
     }
   }
@@ -275,12 +266,12 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
       extraShares.push_back(share1);
     }
     // add the plugins dir as needed
-    if (CPluginDirectory::HasPlugins("music"))
+    /*if (ADDON::CAddonMgr::Get().HasAddons(ADDON::ADDON_PLUGIN, CONTENT_ALBUMS))
     {
       share1.strPath = "plugin://music/";
       share1.strName = g_localizeStrings.Get(1038); // Music Plugins
       extraShares.push_back(share1);
-    }
+    }*/
  }
   else if (m_type == "video")
   { // add the music playlist location
@@ -311,12 +302,12 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     extraShares.push_back(share1);
 
     // add the plugins dir as needed
-    if (CPluginDirectory::HasPlugins("video"))
+    /*if (ADDON::CAddonMgr::Get().HasAddons(ADDON::ADDON_PLUGIN, CONTENT_MOVIES))
     {
       share1.strPath = "plugin://video/";
       share1.strName = g_localizeStrings.Get(1037); // Video Plugins
       extraShares.push_back(share1);
-    }
+    }*/
   }
   else if (m_type == "pictures")
   {
@@ -338,23 +329,23 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     extraShares.push_back(share1);
 
     // add the plugins dir as needed
-    if (CPluginDirectory::HasPlugins("pictures"))
+    /*if (ADDON::CAddonMgr::Get().HasAddons(ADDON::ADDON_PLUGIN, CONTENT_PICTURES))
     {
       share1.strPath = "plugin://pictures/";
       share1.strName = g_localizeStrings.Get(1039); // Picture Plugins
       extraShares.push_back(share1);
-    }
+    }*/
   }
   else if (m_type == "programs")
   {
-    if (CPluginDirectory::HasPlugins("programs"))
+    /*if (ADDON::CAddonMgr::Get().HasAddons(ADDON::ADDON_PLUGIN, CONTENT_PROGRAMS))
     {
       CMediaSource share2;
       share2.strPath = "plugin://programs/";
       share2.strName = g_localizeStrings.Get(1043); // Program Plugins
       share2.m_ignore = true;
       extraShares.push_back(share2);
-    }
+    }*/
   }
   if (CGUIDialogFileBrowser::ShowAndGetSource(path, allowNetworkShares, extraShares.size()==0?NULL:&extraShares))
   {
@@ -406,43 +397,13 @@ void CGUIDialogMediaSource::OnOK()
     shares->push_back(share);
   if (share.strPath.Left(9).Equals("plugin://") || CDirectory::GetDirectory(share.strPath, items, "", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_ALLOW_PROMPT) || CGUIDialogYesNo::ShowAndGetInput(1001,1025,1003,1004))
   {
-    if (share.strPath.Left(9).Equals("plugin://"))
-    {
-      CStdString strPath=share.strPath;
-      strPath.Replace("plugin://","special://home/plugins/");
-      CFileItem item(strPath,true);
-      item.SetCachedProgramThumb();
-      if (!item.HasThumbnail())
-        item.SetUserProgramThumb();
-      if (!item.HasThumbnail())
-      {
-        item.SetPath(URIUtils::AddFileToFolder(strPath,"default.py"));
-        item.m_bIsFolder = false;
-        item.SetCachedProgramThumb();
-        if (!item.HasThumbnail())
-          item.SetUserProgramThumb();
-      }
-      if (item.HasThumbnail() && m_paths->Size())
-      {
-        CFileItem item2(share.strPath,true);
-        XFILE::CFile::Cache(item.GetThumbnailImage(),item2.GetCachedProgramThumb());
-        m_paths->Get(0)->SetThumbnailImage(item2.GetCachedProgramThumb());
-      }
-    }
     m_confirmed = true;
     Close();
-  }
-
-  // Special handling of multipath:// shares.
-  // * GetScraperForPath takes the first path of the multipath:// element to fetch needed scraper and scan settings.
-  // * SetScraperForPath loops through all elements and adds the appropriate settings for each path.
-  if (URIUtils::IsMultiPath(share.strPath))
-  {
-    CVideoDatabase database;
-    database.Open();
-    database.GetScraperForPath(share.strPath, m_info, m_settings);
-    database.SetScraperForPath(share.strPath, m_info, m_settings);
-    database.Close();
+    if (m_type == "video" && !URIUtils::IsLiveTV(share.strPath) && 
+        !share.strPath.Left(6).Equals("rss://"))
+    {
+      CGUIWindowVideoBase::OnAssignContent(share.strPath);
+    }
   }
 
   // and remove the share again

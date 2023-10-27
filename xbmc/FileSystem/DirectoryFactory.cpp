@@ -31,12 +31,15 @@
 #include "VideoDatabaseDirectory.h"
 #include "FavouritesDirectory.h"
 #include "LibraryDirectory.h"
+#include "AddonsDirectory.h"
 #include "SourcesDirectory.h"
 #include "LastFMDirectory.h"
 #include "FTPDirectory.h"
 #include "HTTPDirectory.h"
 #include "DAVDirectory.h"
 #include "Application.h"
+#include "utils/StringUtils.h"
+#include "addons/Addon.h"
 #include "utils/log.h"
 
 #ifdef HAS_FILESYSTEM_SMB
@@ -100,6 +103,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
   if (strProtocol.size() == 0 || strProtocol == "file") return new CHDDirectory();
   if (strProtocol == "special") return new CSpecialProtocolDirectory();
   if (strProtocol == "sources") return new CSourcesDirectory();
+  if (strProtocol == "addons") return new CAddonsDirectory();
 #ifdef HAS_FILESYSTEM_CDDA
   if (strProtocol == "cdda") return new CCDDADirectory();
 #endif

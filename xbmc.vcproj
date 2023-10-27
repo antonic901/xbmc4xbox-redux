@@ -428,12 +428,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\AdvancedSettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogPluginSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogPluginSettings.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File
@@ -447,24 +441,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\GUIWindowSettingsScreenCalibration.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\PluginSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\PluginSettings.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\ScraperSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\ScraperSettings.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\ScriptSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\ScriptSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\Settings.cpp">
@@ -905,6 +881,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileItem.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\FileOperationJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FileOperationJob.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\FilterFlickerPatch.cpp">
 				</File>
 				<File
@@ -1223,12 +1205,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="Database"
 				Filter="">
-				<File
-					RelativePath=".\xbmc\AddonDatabase.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\AddonDatabase.h">
-				</File>
 				<File
 					RelativePath=".\xbmc\music\Album.cpp">
 				</File>
@@ -1611,6 +1587,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="Filesystem"
 				Filter="">
+				<File
+					RelativePath=".\xbmc\FileSystem\AddonsDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\FileSystem\AddonsDirectory.h">
+				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\ASAPFileDirectory.cpp">
 				</File>
@@ -2600,25 +2582,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</Filter>
 			</Filter>
 			<Filter
-				Name="Screensavers"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\screensavers\DllScreenSaver.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\screensavers\Screensaver.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\screensavers\Screensaver.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\screensavers\ScreenSaverFactory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\screensavers\ScreenSaverFactory.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="cdrip"
 				Filter="">
 				<File
@@ -2820,6 +2783,116 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\listproviders\StaticProvider.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="addons"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\addons\Addon.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Addon.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonDatabase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonDatabase.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonDll.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonManager.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonStatusHandler.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonStatusHandler.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\DllAddon.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\DllLibCPluff.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\DllScreenSaver.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\DllVisualisation.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIDialogAddonSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIDialogAddonSettings.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIViewStateAddonBrowser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIViewStateAddonBrowser.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIWindowAddonBrowser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\GUIWindowAddonBrowser.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\IAddon.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\PluginSource.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\PluginSource.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Repository.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Repository.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Scraper.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Scraper.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ScreenSaver.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ScreenSaver.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Skin.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Skin.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="xbox"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\xbox\PlatformDefs.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\xbox\strverscmp.cpp">
 				</File>
 			</Filter>
 		</Filter>

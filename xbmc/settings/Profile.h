@@ -97,6 +97,6 @@ private:
   bool m_bSources;
   bool m_bCanWriteSources;
   bool m_bUseAvpackSettings;
-
+  bool m_bAddons;
   CLock m_locks;
 };

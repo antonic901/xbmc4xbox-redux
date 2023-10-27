@@ -26,8 +26,8 @@
 #include "windows/GUIWindowFileManager.h"
 #include "FileSystem/File.h"
 #include "FileItem.h"
-#include "ScriptSettings.h"
-#include "dialogs/GUIDialogPluginSettings.h"
+#include "addons/AddonManager.h"
+#include "addons/GUIDialogAddonSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace XFILE;
@@ -67,7 +67,7 @@ bool CGUIWindowScripts::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       if (m_vecItems->GetPath() == "?")
-        m_vecItems->SetPath("Q:\\scripts"); //g_settings.m_szDefaultScripts;
+        m_vecItems->SetPath("special://scripts/"); //g_settings.m_szDefaultScripts;
 
       return CGUIMediaWindow::OnMessage(message);
     }
@@ -211,8 +211,14 @@ void CGUIWindowScripts::GetContextButtons(int itemNumber, CContextButtons &butto
   {
     CStdString path, filename;
     URIUtils::Split(item->GetPath(), path, filename);
-    if (CScriptSettings::SettingsExist(path))
-      buttons.Add(CONTEXT_BUTTON_SCRIPT_SETTINGS, 1049);
+    ADDON::AddonPtr script;
+    if (ADDON::CAddonMgr::Get().GetAddon(item->GetPath(), script, ADDON::ADDON_SCRIPT))
+    {
+      if (script->HasSettings())
+      {
+        buttons.Add(CONTEXT_BUTTON_SCRIPT_SETTINGS, 1049);
+      }
+    }
   }
 
   buttons.Add(CONTEXT_BUTTON_INFO, 654);
@@ -230,8 +236,12 @@ bool CGUIWindowScripts::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
     CStdString path, filename;
     URIUtils::Split(m_vecItems->Get(itemNumber)->GetPath(), path, filename);
-    if(CGUIDialogPluginSettings::ShowAndGetInput(path))
-      Update(m_vecItems->GetPath());
+    ADDON::AddonPtr script;
+    if (ADDON::CAddonMgr::Get().GetAddon(m_vecItems->Get(itemNumber)->GetPath(), script, ADDON::ADDON_SCRIPT))
+    {
+      if (CGUIDialogAddonSettings::ShowAndGetInput(script))
+        Update(m_vecItems->GetPath());
+    }
     return true;
   }
   else if (button == CONTEXT_BUTTON_DELETE)

@@ -53,6 +53,11 @@ int CGUIViewStateWindowVideo::GetPlaylist()
   return PLAYLIST_VIDEO;
 }
 
+VECSOURCES& CGUIViewStateWindowVideo::GetSources()
+{
+  return CGUIViewState::GetSources();
+}
+
 CGUIViewStateWindowVideoFiles::CGUIViewStateWindowVideoFiles(const CFileItemList& items) : CGUIViewStateWindowVideo(items)
 {
   if (items.IsVirtualDirectoryRoot())
@@ -87,15 +92,7 @@ void CGUIViewStateWindowVideoFiles::SaveViewState()
 
 VECSOURCES& CGUIViewStateWindowVideoFiles::GetSources()
 {
-  // plugins share
-  if (CPluginDirectory::HasPlugins("video") && g_advancedSettings.m_bVirtualShares)
-  {
-    CMediaSource share;
-    share.strName = g_localizeStrings.Get(1037);
-    share.strPath = "plugin://video/";
-    share.m_ignore = true;
-    AddOrReplace(g_settings.m_videoSources,share);
-  }
+  AddOrReplace(g_settings.m_videoSources, CGUIViewStateWindowVideo::GetSources());
   return g_settings.m_videoSources; 
 }
 
@@ -469,7 +466,8 @@ VECSOURCES& CGUIViewStateWindowVideoPlaylist::GetSources()
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   m_sources.push_back(share);
 
-  return CGUIViewStateWindowVideo::GetSources();
+  // no plugins in playlist window
+  return m_sources;
 }
 
 CGUIViewStateVideoMovies::CGUIViewStateVideoMovies(const CFileItemList& items) : CGUIViewStateWindowVideo(items)

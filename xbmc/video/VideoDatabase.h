@@ -20,6 +20,7 @@
  */
 #include "Database.h"
 #include "video/VideoInfoTag.h"
+#include "addons/Scraper.h"
 #include "video/Bookmark.h"
 #include "utils/SortUtils.h"
 #include "video/VideoDbUrl.h"
@@ -27,7 +28,6 @@
 #include <memory>
 #include <set>
 
-struct SScraperInfo;
 class CFileItem;
 class CFileItemList;
 class CVideoSettings;
@@ -481,11 +481,19 @@ public:
   bool GetStreamDetails(CVideoInfoTag& tag) const;
 
   // scraper settings
-  void SetScraperForPath(const CStdString& filePath, const SScraperInfo& info, const VIDEO::SScanSettings& settings);
-  bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info);
-  bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info, int& iFound);
-  bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info, VIDEO::SScanSettings& settings);
-  bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info, VIDEO::SScanSettings& settings, int& iFound);
+  void SetScraperForPath(const CStdString& filePath, const ADDON::ScraperPtr& info, const VIDEO::SScanSettings& settings);
+  ADDON::ScraperPtr GetScraperForPath(const CStdString& strPath);
+  ADDON::ScraperPtr GetScraperForPath(const CStdString& strPath, VIDEO::SScanSettings& settings);
+
+  /*! \brief Retrieve the scraper and settings we should use for the specified path
+   If the scraper is not set on this particular path, we'll recursively check parent folders.
+   \param strPath path to start searching in.
+   \param settings [out] scan settings for this folder.
+   \param foundDirectly [out] true if a scraper was found directly for strPath, false if it was in a parent path.
+   \return A ScraperPtr containing the scraper information. Returns NULL if a trivial (Content == CONTENT_NONE)
+           scraper or no scraper is found.
+   */
+  ADDON::ScraperPtr GetScraperForPath(const CStdString& strPath, VIDEO::SScanSettings& settings, bool& foundDirectly);
 
   /*! \brief Retrieve the content type of videos in the given path
    If content is set on the folder, we return the given content type, except in the case of tvshows,
@@ -516,7 +524,7 @@ public:
   // scanning hashes and paths scanned
   bool SetPathHash(const CStdString &path, const CStdString &hash);
   bool GetPathHash(const CStdString &path, CStdString &hash);
-  bool GetPaths(std::map<CStdString,VIDEO::SScanSettings> &paths);
+  bool GetPaths(std::set<CStdString> &paths);
   bool GetPathsForTvShow(int idShow, std::vector<int>& paths);
 
   // for music + musicvideo linkups - if no album and title given it will return the artist id, else the id of the matching video

@@ -86,13 +86,14 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 
+#include "addons/AddonManager.h"
 #include "interfaces/info/InfoBool.h"
-#include "AddonDatabase.h"
 
 using namespace std;
 using namespace XFILE;
 using namespace MEDIA_DETECT;
 using namespace MUSIC_INFO;
+using namespace ADDON;
 
 CGUIInfoManager g_infoManager;
 
@@ -1101,10 +1102,10 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
           return bar[i].val;
       }
     }
-    else if (cat.name == "addon" && prop.name == "setting")
+    /*else if (cat.name == "addon" && prop.name == "setting")
     {
       return AddMultiInfo(GUIInfo(WINDOW_PROPERTY, WINDOW_DIALOG_PLUGIN_SETTINGS, ConditionalStringParameter(prop.param(0))));
-    }
+    }*/
     else if (cat.name == "buttonscroller" && prop.name == "hasfocus")
     {
       int controlID = atoi(prop.param(0));
@@ -2592,10 +2593,10 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
         break;
       case SYSTEM_HAS_ADDON:
         {
-          CStdString addon = m_stringParameters[info.GetData1()];
-          bReturn = CAddonDatabase::HasAddon(addon);
+          AddonPtr addon;
+          bReturn = CAddonMgr::Get().GetAddon(m_stringParameters[info.GetData1()],addon) && addon;
+          break;
         }
-	      break;
       case SYSTEM_IDLE_TIME:
         bReturn = g_application.GlobalIdleTime() >= (int)info.GetData1();
         break;

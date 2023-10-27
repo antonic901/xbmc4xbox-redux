@@ -25,12 +25,14 @@
 #include "FileSystem/File.h"
 #include "FileItem.h"
 #include "FileSystem/StackDirectory.h"
+#include "addons/Addon.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
 #include <sys\stat.h>
 
 using namespace std;
+using namespace ADDON;
 
 CStdString URLEncodeInline(const CStdString& strData)
 {

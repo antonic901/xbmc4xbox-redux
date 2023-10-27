@@ -45,6 +45,7 @@ public:
   static bool GetParentPath(const CStdString& strPath, CStdString& strParent);
   static CStdString SubstitutePath(const CStdString& strPath, bool reverse = false);
 
+  static bool IsAddonsPath(const CStdString& strFile);
   static bool IsSourcesPath(const CStdString& strFile);
   static bool IsCDDA(const CStdString& strFile);
   static bool IsDAAP(const CStdString& strFile);

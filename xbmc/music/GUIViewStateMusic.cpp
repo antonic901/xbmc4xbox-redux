@@ -29,9 +29,9 @@
 #include "Util.h"
 #include "LocalizeStrings.h"
 
+#include "FileSystem/Directory.h"
 #include "FileSystem/MusicDatabaseDirectory.h"
 #include "FileSystem/VideoDatabaseDirectory.h"
-#include "FileSystem/PluginDirectory.h"
 
 using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
@@ -61,6 +61,12 @@ CStdString CGUIViewStateWindowMusic::GetLockType()
 CStdString CGUIViewStateWindowMusic::GetExtensions()
 {
   return g_settings.m_musicExtensions;
+}
+
+VECSOURCES& CGUIViewStateWindowMusic::GetSources()
+{
+  AddAddonsSource("audio", g_localizeStrings.Get(1038));
+  return CGUIViewState::GetSources();
 }
 
 CGUIViewStateMusicSearch::CGUIViewStateMusicSearch(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
@@ -539,16 +545,6 @@ VECSOURCES& CGUIViewStateWindowMusicNav::GetSources()
     m_sources.push_back(share);
   }
 
-  // plugins share
-  if (CPluginDirectory::HasPlugins("music") && g_advancedSettings.m_bVirtualShares)
-  {
-    share.strName = g_localizeStrings.Get(1038);
-    share.strPath = "plugin://music/";
-    share.m_strThumbnailImage = CUtil::GetDefaultFolderThumb("DefaultMusicPlugins.png");
-    share.m_ignore = true;
-    m_sources.push_back(share);
-  }
-
   return CGUIViewStateWindowMusic::GetSources();
 }
 
@@ -596,14 +592,7 @@ void CGUIViewStateWindowMusicSongs::SaveViewState()
 
 VECSOURCES& CGUIViewStateWindowMusicSongs::GetSources()
 {
-  // plugins share
-  if (CPluginDirectory::HasPlugins("music") && g_advancedSettings.m_bVirtualShares)
-  {
-    CMediaSource share;
-    share.strName = g_localizeStrings.Get(1038);
-    share.strPath = "plugin://music/";
-    AddOrReplace(g_settings.m_musicSources,share);
-  }
+  AddOrReplace(g_settings.m_musicSources, CGUIViewStateWindowMusic::GetSources());
   return g_settings.m_musicSources; 
 }
 
@@ -655,7 +644,8 @@ VECSOURCES& CGUIViewStateWindowMusicPlaylist::GetSources()
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   m_sources.push_back(share);
 
-  return CGUIViewStateWindowMusic::GetSources();
+  // CGUIViewState::GetSources would add music plugins
+  return m_sources;
 }
 
 CGUIViewStateMusicShoutcast::CGUIViewStateMusicShoutcast(const CFileItemList& items) : CGUIViewStateWindowMusic(items)

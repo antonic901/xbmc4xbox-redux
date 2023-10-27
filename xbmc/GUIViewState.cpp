@@ -19,6 +19,7 @@
  */
 
 #include "GUIViewState.h"
+#include "addons/GUIViewStateAddonBrowser.h"
 #include "music/GUIViewStateMusic.h"
 #include "video/GUIViewStateVideo.h"
 #include "pictures/GUIViewStatePictures.h"
@@ -34,9 +35,11 @@
 #include "ViewDatabase.h"
 #include "AutoSwitch.h"
 #include "GUIWindowManager.h"
+#include "addons/AddonManager.h"
 #include "ViewState.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
+#include "FileSystem/AddonsDirectory.h"
 
 #define PROPERTY_SORT_ORDER         "sort.order"
 #define PROPERTY_SORT_ASCENDING     "sort.ascending"
@@ -48,6 +51,9 @@ VECSOURCES CGUIViewState::m_sources;
 
 CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& items)
 {
+  // don't expect derived classes to clear the sources
+  m_sources.clear();
+
   if (windowId == 0)
     return GetViewState(g_windowManager.GetActiveWindow(),items);
 
@@ -126,6 +132,9 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
 
   if (windowId==WINDOW_PROGRAMS)
     return new CGUIViewStateWindowPrograms(items);
+
+  if (windowId==WINDOW_ADDON_BROWSER)
+    return new CGUIViewStateAddonBrowser(items);
 
   //  Use as fallback/default
   return new CGUIViewStateGeneral(items);
@@ -366,6 +375,21 @@ CStdString CGUIViewState::GetExtensions()
 VECSOURCES& CGUIViewState::GetSources()
 {
   return m_sources;
+}
+
+void CGUIViewState::AddAddonsSource(const CStdString &content, const CStdString &label)
+{
+  CFileItemList items;
+  if (XFILE::CAddonsDirectory::GetScriptsAndPlugins(content, items))
+  { // add the plugin source
+    CMediaSource source;
+    source.strPath = "addons://sources/" + content + "/";    
+    source.strName = label;
+    source.m_strThumbnailImage = "";
+    source.m_iDriveType = CMediaSource::SOURCE_TYPE_REMOTE;
+    source.m_ignore = true;
+    m_sources.push_back(source);
+  }
 }
 
 CGUIViewStateGeneral::CGUIViewStateGeneral(const CFileItemList& items) : CGUIViewState(items)

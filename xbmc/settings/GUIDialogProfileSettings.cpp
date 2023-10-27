@@ -301,6 +301,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
     dialog->m_iSourcesMode = 2;
 
     dialog->m_locks = CProfile::CLock();
+    dialog->m_locks.addonManager = true;
     dialog->m_locks.settings = true;
     dialog->m_locks.files = true;
 

@@ -32,7 +32,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void FrameMove();
 
-  void StartScanning(const CStdString& strDirectory, const SScraperInfo& info, const VIDEO::SScanSettings& settings, bool bUpdateAll);
+  void StartScanning(const CStdString& strDirectory, bool scanAll = false);
   bool IsScanning();
   void StopScanning();
 

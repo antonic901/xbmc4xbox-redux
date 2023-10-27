@@ -23,6 +23,7 @@
 #include "utils/LabelFormatter.h"
 #include "utils/SortUtils.h"
 #include "MediaSource.h"
+#include "addons/IAddon.h"
 
 class CViewState; // forward
 class CFileItemList;
@@ -64,6 +65,12 @@ protected:
   virtual void SaveViewState()=0;
   virtual void SaveViewToDb(const CStdString &path, int windowID, CViewState *viewState = NULL);
   void LoadViewState(const CStdString &path, int windowID);
+
+  /*! \brief Add the addons source for the given content type, if the user has suitable addons
+   \param content the type of addon content desired
+   \param label the name of the addons source
+   */
+  void AddAddonsSource(const CStdString &content, const CStdString &label);
 
   /*! \brief Add the sort order defined in a smartplaylist
    Defaults to SORT_METHOD_PLAYLIST_ORDER if no order is defined.

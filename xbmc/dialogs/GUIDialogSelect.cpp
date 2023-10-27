@@ -33,6 +33,7 @@ CGUIDialogSelect::CGUIDialogSelect(void)
     : CGUIDialogBoxBase(WINDOW_DIALOG_SELECT, "DialogSelect.xml")
 {
   m_bButtonEnabled = false;
+  m_buttonString = -1;
   m_useDetails = false;
   m_vecListInternal = new CFileItemList;
   m_selectedItems = new CFileItemList;
@@ -78,6 +79,9 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
 
       m_vecListInternal->Clear();
       m_vecList = m_vecListInternal;
+
+      m_buttonString = -1;
+      SET_CONTROL_LABEL(CONTROL_BUTTON, "");
       return true;
     }
     break;
@@ -120,6 +124,8 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
       }
       if (CONTROL_BUTTON == iControl)
       {
+        m_iSelected = -1;
+        m_bButtonPressed = true;
         if (m_multiSelection)
           m_bConfirmed = true;
         Close();
@@ -208,9 +214,10 @@ const CFileItemList& CGUIDialogSelect::GetSelectedItems() const
 void CGUIDialogSelect::EnableButton(bool enable, int string)
 {
   m_bButtonEnabled = enable;
-  CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), CONTROL_BUTTON);
-  msg.SetLabel(string);
-  OnMessage(msg);
+  m_buttonString = string;
+
+  if (IsActive())
+    SetupButton();
 }
 
 bool CGUIDialogSelect::IsButtonPressed()
@@ -322,16 +329,7 @@ void CGUIDialogSelect::OnInitWindow()
   if (m_multiSelection)
     EnableButton(true, 186);
 
-  if (m_bButtonEnabled)
-  {
-    CGUIMessage msg2(GUI_MSG_VISIBLE, GetID(), CONTROL_BUTTON);
-    g_windowManager.SendMessage(msg2);
-  }
-  else
-  {
-    CGUIMessage msg2(GUI_MSG_HIDDEN, GetID(), CONTROL_BUTTON);
-    g_windowManager.SendMessage(msg2);
-  }
+  SetupButton();
   CGUIDialogBoxBase::OnInitWindow();
 }
 
@@ -339,4 +337,15 @@ void CGUIDialogSelect::OnWindowUnload()
 {
   CGUIDialog::OnWindowUnload();
   m_viewControl.Reset();
+}
+
+void CGUIDialogSelect::SetupButton()
+{
+  if (m_bButtonEnabled)
+  {
+    SET_CONTROL_LABEL(CONTROL_BUTTON, g_localizeStrings.Get(m_buttonString));
+    SET_CONTROL_VISIBLE(CONTROL_BUTTON);
+  }
+  else
+    SET_CONTROL_HIDDEN(CONTROL_BUTTON);
 }

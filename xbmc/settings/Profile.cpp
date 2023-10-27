@@ -53,6 +53,7 @@ CProfile::CProfile(const CStdString &directory, const CStdString &name)
   m_bCanWrite = true;
   m_bSources = true;
   m_bCanWriteSources = true;
+  m_bAddons = true;
   m_bUseAvpackSettings = false;
 }
 

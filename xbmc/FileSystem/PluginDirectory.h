@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include "../utils/CriticalSection.h"
+#include "../addons/IAddon.h"
 
 class CURL;
 class CFileItem;
@@ -38,16 +39,11 @@ namespace XFILE
 class CPluginDirectory : public IDirectory
 {
 public:
-  CPluginDirectory(void);
+  CPluginDirectory();
   ~CPluginDirectory(void);
   virtual bool GetDirectory(const CStdString& strPath, CFileItemList& items);
   virtual bool IsAllowed(const CStdString &strFile) const { return true; };
   static bool RunScriptWithParams(const CStdString& strPath);
-  static bool HasPlugins(const CStdString &type);
-  bool GetPluginsDirectory(const CStdString &type, CFileItemList &items);
-  static void LoadPluginStrings(const CURL &url);
-  static void ClearPluginStrings();
-  bool StartScript(const CStdString& strPath);
   static bool GetPluginResult(const CStdString& strPath, CFileItem &resultItem);
 
   // callbacks from python
@@ -55,13 +51,17 @@ public:
   static bool AddItems(int handle, const CFileItemList *items, int totalItems);
   static void EndOfDirectory(int handle, bool success, bool replaceListing, bool cacheToDisc);
   static void AddSortMethod(int handle, SORT_METHOD sortMethod, const CStdString &label2Mask);
+  static CStdString GetSetting(int handle, const CStdString &key);
+  static void SetSetting(int handle, const CStdString &key, const CStdString &value);
   static void SetContent(int handle, const CStdString &strContent);
   static void SetProperty(int handle, const CStdString &strProperty, const CStdString &strValue);
   static void SetResolvedUrl(int handle, bool success, const CFileItem* resultItem);
   static void SetLabel2(int handle, const CStdString& ident);  
 
 private:
-  bool WaitOnScriptResult(const CStdString &scriptPath, const CStdString &scriptName);
+  ADDON::AddonPtr m_addon;
+  bool StartScript(const CStdString& strPath, bool retrievingDir);
+  bool WaitOnScriptResult(const CStdString &scriptPath, const CStdString &scriptName, bool retrievingDir);
 
   static std::vector<CPluginDirectory*> globalHandles;
   static int getNewHandle(CPluginDirectory *cp);

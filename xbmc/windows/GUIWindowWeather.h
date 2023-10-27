@@ -37,10 +37,10 @@ protected:
   void UpdateButtons();
   void UpdateLocations();
   void SetProperties();
-  void CallPlugin();
+  void CallScript();
 
   void Refresh();
 
   unsigned int m_iCurWeather;
-  CStopWatch m_pluginTimer;
+  CStopWatch m_scriptTimer;
 };

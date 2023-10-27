@@ -37,10 +37,12 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "addons/AddonManager.h"
 #include "FileItem.h"
 #include "FileSystem/File.h"
 #include "pictures/Picture.h"
 #include "LocalizeStrings.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace MEDIA_DETECT;
@@ -291,12 +293,24 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
   {
     if (share)
     {
-      if (!share->m_ignore)
+      // Note. from now on, remove source & disable plugin should mean the same thing
+      //TODO might be smart to also combine editing source & plugin settings into one concept/dialog
+
+      CURL url(share->strPath);
+      bool isAddon = ADDON::TranslateContent(url.GetProtocol()) != CONTENT_NONE;
+      if (!share->m_ignore && !isAddon)
         buttons.Add(CONTEXT_BUTTON_EDIT_SOURCE, 1027); // Edit Source
+      else
+      {
+        ADDON::AddonPtr plugin;
+        if (ADDON::CAddonMgr::Get().GetAddon(url.GetHostName(), plugin, ADDON::ADDON_PLUGIN))
+        if (plugin->HasSettings())
+          buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045); // Plugin Settings
+      }
       if (type != "video")
         buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // Set as Default
       if (!share->m_ignore)
-        buttons.Add(CONTEXT_BUTTON_REMOVE_SOURCE, 522); // Remove Source
+        buttons.Add(CONTEXT_BUTTON_REMOVE_SOURCE, 522); // Remove Source / disable plugin
 
       buttons.Add(CONTEXT_BUTTON_SET_THUMB, 20019);
     }
@@ -380,6 +394,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
     return CGUIDialogMediaSource::ShowAndEditMediaSource(type, *share);
     
   case CONTEXT_BUTTON_REMOVE_SOURCE:
+  {
     if (g_settings.IsMasterUser())
     {
       if (!g_passwordManager.IsMasterLockUnlocked(true))
@@ -392,8 +407,14 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       if (g_settings.GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
         return false;
     }
-    // prompt user if they want to really delete the source
-    if (CGUIDialogYesNo::ShowAndGetInput(751, 0, 750, 0))
+    // prompt user if they want to really delete the source/disable the plugin
+    bool yes(false);
+    bool plugin = item->IsPlugin();
+    if (plugin)
+      yes = CGUIDialogYesNo::ShowAndGetInput(24009, 24010, 24011, 0);
+    else
+      yes = CGUIDialogYesNo::ShowAndGetInput(751, 0, 750, 0);
+    if (yes)
     { // check default before we delete, as deletion will kill the share object
       CStdString defaultSource(GetDefaultShareNameByType(type));
       if (!defaultSource.IsEmpty())
@@ -401,13 +422,10 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
         if (share->strName.Equals(defaultSource))
           ClearDefault(type);
       }
-
-      // delete this share
       g_settings.DeleteSource(type, share->strName, share->strPath);
-      return true;
     }
-    break;
-
+    return true;
+  }
   case CONTEXT_BUTTON_SET_DEFAULT:
     if (g_settings.GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
       return false;

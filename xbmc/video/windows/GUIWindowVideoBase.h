@@ -37,8 +37,8 @@ public:
   static int GetResumeItemOffset(const CFileItem *item);
 
   void AddToDatabase(int iItem);
-  static void OnScan(const CStdString& strPath, const SScraperInfo& info, const VIDEO::SScanSettings& settings);
-  virtual void OnInfo(CFileItem* pItem, const SScraperInfo& info);
+  static void OnScan(const CStdString& strPath, bool scanAll = false);
+  virtual void OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
   virtual void OnStreamDetails(const CStreamDetails &details, const CStdString &strFileName, long lFileId);
   static void MarkWatched(const CFileItemPtr &pItem, bool bMark);
   static void UpdateVideoTitle(const CFileItem* pItem);
@@ -58,7 +58,12 @@ public:
    */
   static void AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results);
 
-  static void OnAssignContent(const CStdString &path, int iFound, SScraperInfo& info, VIDEO::SScanSettings& settings);
+  /*! \brief Prompt the user for assigning content to a path.
+   Based on changes, we then call OnUnassignContent, update or refresh scraper information in the database
+   and optionally start a scan
+   \param path the path to assign content for
+   */
+  static void OnAssignContent(const CStdString &path);
 
 private:
   bool IsCorrectDiskInDrive(const CStdString& strFileName, const CStdString& strDVDLabel);
@@ -90,9 +95,8 @@ protected:
   virtual bool OnPlayMedia(int iItem);
   void LoadPlayList(const CStdString& strPlayList, int iPlayList = PLAYLIST_VIDEO);
 
-  bool ShowIMDB(CFileItem *item, const SScraperInfo& info);
+  bool ShowIMDB(CFileItem *item, const ADDON::ScraperPtr& content);
 
-  void OnManualIMDB();
   bool CheckMovie(const CStdString& strFileName);
 
   void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
@@ -100,7 +104,7 @@ protected:
 
   void OnSearch();
   void OnSearchItemFound(const CFileItem* pSelItem);
-  int GetScraperForItem(CFileItem *item, SScraperInfo &info, VIDEO::SScanSettings& settings);
+  int GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, VIDEO::SScanSettings& settings);
 
   static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
 

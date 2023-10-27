@@ -49,7 +49,7 @@ CDownloadQueue::~CDownloadQueue(void)
 }
 
 
-TICKET CDownloadQueue::RequestContent(CStdString& aUrl, IDownloadQueueObserver* aObserver)
+TICKET CDownloadQueue::RequestContent(const CStdString& aUrl, IDownloadQueueObserver* aObserver)
 {
   EnterCriticalSection(&m_critical);
 
@@ -62,7 +62,7 @@ TICKET CDownloadQueue::RequestContent(CStdString& aUrl, IDownloadQueueObserver* 
   return request.ticket;
 }
 
-TICKET CDownloadQueue::RequestFile(CStdString& aUrl, CStdString& aFilePath, IDownloadQueueObserver* aObserver)
+TICKET CDownloadQueue::RequestFile(const CStdString& aUrl, const CStdString& aFilePath, IDownloadQueueObserver* aObserver)
 {
   EnterCriticalSection(&m_critical);
 
@@ -95,7 +95,7 @@ void CDownloadQueue::CancelRequests(IDownloadQueueObserver *aObserver)
   LeaveCriticalSection(&m_critical);
 }
 
-TICKET CDownloadQueue::RequestFile(CStdString& aUrl, IDownloadQueueObserver* aObserver)
+TICKET CDownloadQueue::RequestFile(const CStdString& aUrl, IDownloadQueueObserver* aObserver)
 {
   EnterCriticalSection(&m_critical);
 

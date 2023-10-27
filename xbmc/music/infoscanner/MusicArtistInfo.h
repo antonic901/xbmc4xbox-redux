@@ -22,11 +22,11 @@
 
 #include "music/Song.h"
 #include "music/Artist.h"
+#include "addons/Scraper.h"
 #include "ScraperParser.h"
 
 class TiXmlDocument;
 class CScraperUrl;
-struct SScraperInfo;
 
 namespace MUSIC_GRABBER
 {
@@ -42,7 +42,7 @@ public:
   const CArtist& GetArtist() const;
   CArtist& GetArtist();
   const CScraperUrl& GetArtistURL() const;
-  bool Load(XFILE::CCurlFile& http, const SScraperInfo& info, const CStdString& strFunction="GetArtistDetails", const CScraperUrl* url=NULL);
+  bool Load(XFILE::CCurlFile& http, const ADDON::ScraperPtr& scraper, const CStdString& strFunction="GetArtistDetails", const CScraperUrl* url=NULL);
   bool Parse(const TiXmlElement* artist, bool bChained=false);
   CStdString m_strSearch;
 protected:

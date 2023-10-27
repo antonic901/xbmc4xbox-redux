@@ -38,6 +38,7 @@
 #include "GUIFont.h" // for FONT_STYLE_* definitions
 
 using namespace std;
+using namespace ADDON;
 
 // String id's of the masks
 #define MASK_MINS   14044
@@ -174,6 +175,12 @@ CSettingPath::CSettingPath(int iOrder, const char *strSetting, int iLabel, const
 {
 }
 
+CSettingAddon::CSettingAddon(int iOrder, const char *strSetting, int iLabel, const char *strData, const TYPE type)
+  : CSettingString(iOrder, strSetting, iLabel, strData, BUTTON_CONTROL_STANDARD, false, -1)
+  , m_type(type)
+{
+}
+
 void CSettingsGroup::GetCategories(vecSettingsCategory &vecCategories)
 {
   vecCategories.clear();
@@ -230,8 +237,7 @@ void CGUISettings::Initialize()
   AddString(wea, "weather.areacode2", 14020, "UKXX0085 - London, United Kingdom", BUTTON_CONTROL_STANDARD);
   AddString(wea, "weather.areacode3", 14021, "JAXX0085 - Tokyo, Japan", BUTTON_CONTROL_STANDARD);
   AddSeparator(wea, "weather.sep1");
-  AddString(wea, "weather.plugin", 23000, "", SPIN_CONTROL_TEXT, true);
-  AddString(wea, "weather.pluginsettings", 23001, "", BUTTON_CONTROL_STANDARD, true);
+  AddString(wea, "weather.plugin", 24027, "", SPIN_CONTROL_TEXT, true);
 
   // My Music Settings
   AddGroup(3, 2);
@@ -240,8 +246,8 @@ void CGUISettings::Initialize()
   AddBool(ml, "musiclibrary.showcompilationartists", 13414, true);
   AddSeparator(ml,"musiclibrary.sep1");
   AddBool(ml,"musiclibrary.downloadinfo", 20192, false);
-  AddString(ml, "musiclibrary.scraper", 20194, "tadb.xml", SPIN_CONTROL_TEXT);
-  AddString(ml, "musiclibrary.scrapersettings", 21417, "", BUTTON_CONTROL_STANDARD);
+  AddDefaultAddon(ml, "musiclibrary.albumscraper", 20193, "metadata.tadb.xml", ADDON_SCRAPER_ALBUMS);
+  AddDefaultAddon(ml, "musiclibrary.artistscraper", 20194, "metadata.tadb.xml", ADDON_SCRAPER_ARTISTS);
   AddBool(ml, "musiclibrary.updateonstartup", 22000, false);
   AddBool(NULL, "musiclibrary.backgroundupdate", 22001, false);
   AddSeparator(ml,"musiclibrary.sep2");
@@ -804,6 +810,14 @@ void CGUISettings::AddPath(CSettingsCategory* cat, const char *strSetting, int i
 {
   int iOrder = cat?++cat->m_entries:0;
   CSettingPath* pSetting = new CSettingPath(iOrder, CStdString(strSetting).ToLower(), iLabel, strData, iControlType, bAllowEmpty, iHeadingString);
+  if (!pSetting) return ;
+  settingsMap.insert(pair<CStdString, CSetting*>(CStdString(strSetting).ToLower(), pSetting));
+}
+
+void CGUISettings::AddDefaultAddon(CSettingsCategory* cat, const char *strSetting, int iLabel, const char *strData, const TYPE type)
+{
+  int iOrder = cat?++cat->m_entries:0;
+  CSettingAddon* pSetting = new CSettingAddon(iOrder, CStdString(strSetting).ToLower(), iLabel, strData, type);
   if (!pSetting) return ;
   settingsMap.insert(pair<CStdString, CSetting*>(CStdString(strSetting).ToLower(), pSetting));
 }

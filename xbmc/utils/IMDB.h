@@ -32,7 +32,7 @@
 #include "Thread.h"
 #include "ScraperParser.h"
 #include "video/VideoInfoTag.h"
-#include "ScraperSettings.h"
+#include "addons/Scraper.h"
 #include "XBDateTime.h"
 #include "FileSystem/CurlFile.h"
 
@@ -73,8 +73,8 @@ public:
   bool GetEpisodeList(const CScraperUrl& url, IMDB_EPISODELIST& details, CGUIDialogProgress *pProgress = NULL);
   bool ScrapeFilename(const CStdString& strFileName, CVideoInfoTag& details);
 
-  void SetScraperInfo(const SScraperInfo& info) { m_info.Reset(); m_info = info; }
-  const SScraperInfo& GetScraperInfo() const { return m_info; }
+  void SetScraperInfo(const ADDON::ScraperPtr& scraper) { m_info = scraper; }
+  const ADDON::ScraperPtr GetScraperInfo() const { return m_info; }
 
   static void ShowErrorDialog(const TiXmlElement* element);
 protected:
@@ -101,7 +101,7 @@ protected:
   IMDB_EPISODELIST  m_episode;
   LOOKUP_STATE      m_state;
   int               m_found;
-  SScraperInfo      m_info;
+  ADDON::ScraperPtr m_info;
 };
 
 #endif // !defined(AFX_IMDB1_H__562A722A_CD2A_4B4A_8A67_32DE8088A7D3__INCLUDED_)

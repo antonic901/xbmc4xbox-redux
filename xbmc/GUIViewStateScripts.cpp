@@ -48,7 +48,8 @@ void CGUIViewStateWindowScripts::SaveViewState()
 
 CStdString CGUIViewStateWindowScripts::GetExtensions()
 {
-  return ".py";
+//  return ".py";
+  return "";
 }
 
 VECSOURCES& CGUIViewStateWindowScripts::GetSources()
@@ -56,24 +57,7 @@ VECSOURCES& CGUIViewStateWindowScripts::GetSources()
   m_sources.clear();
 
   CMediaSource share;
-  if (g_settings.GetNumProfiles() > 1)
-  {
-    if (CDirectory::Exists("P:\\scripts"))
-    {
-      CMediaSource share2;
-      share2.strName = "Profile Scripts";
-      share2.strPath = "P:\\scripts";
-      share2.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-      m_sources.push_back(share2);
-    }
-    share.strName = "Shared Scripts";
-  }
-  else
-    share.strName = "Scripts";
-
-  share.strPath = "special://home/scripts";
-  if (!CDirectory::Exists(share.strPath))
-    share.strPath = "special://xbmc/scripts";
+  share.strPath = "special://xbmc/scripts";
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   m_sources.push_back(share);
 

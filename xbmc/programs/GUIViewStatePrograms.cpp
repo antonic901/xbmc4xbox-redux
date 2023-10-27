@@ -63,16 +63,8 @@ CStdString CGUIViewStateWindowPrograms::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
 {
-  // plugins share
-  if (CPluginDirectory::HasPlugins("programs"))
-  {
-    CMediaSource share;
-    share.strName = g_localizeStrings.Get(1043); // Program Plugins
-    share.strPath = "plugin://programs/";
-    share.m_strThumbnailImage = CUtil::GetDefaultFolderThumb("DefaultProgramPlugins.png");
-    share.m_ignore= true;
-    AddOrReplace(g_settings.m_programSources,share);
-  }
+  AddAddonsSource("executable", g_localizeStrings.Get(1043));
+  AddOrReplace(g_settings.m_programSources,CGUIViewState::GetSources());
   return g_settings.m_programSources; 
 }
 

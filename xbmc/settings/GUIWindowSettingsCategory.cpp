@@ -55,9 +55,11 @@
 #include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "addons/GUIDialogAddonSettings.h"
 #include "GUIFontManager.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "programs/GUIWindowPrograms.h"
+#include "addons/AddonManager.h"
 #include "storage/MediaManager.h"
 #include "xbox/network.h"
 #include "lib/libGoAhead/WebServer.h"
@@ -79,15 +81,13 @@
 #include "LocalizeStrings.h"
 #include "LangInfo.h"
 
-#include "ScraperSettings.h"
-#include "ScriptSettings.h"
-#include "dialogs/GUIDialogPluginSettings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 
 using namespace std;
 using namespace XFILE;
+using namespace ADDON;
 
 #define CONTROL_GROUP_BUTTONS           0
 #define CONTROL_GROUP_SETTINGS          1
@@ -438,26 +438,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
     else if (strSetting.Equals("musicplayer.visualisation"))
     {
       FillInVisualisations(pSetting, GetSetting(pSetting->GetSetting())->GetID());
-    }
-    else if (strSetting.Equals("musiclibrary.scraper"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInScrapers(pControl, g_guiSettings.GetString("musiclibrary.scraper"), "music");
-    }
-    else if (strSetting.Equals("scrapers.moviedefault"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInScrapers(pControl, g_guiSettings.GetString("scrapers.moviedefault"), "movies");
-    }
-    else if (strSetting.Equals("scrapers.tvshowdefault"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInScrapers(pControl, g_guiSettings.GetString("scrapers.tvshowdefault"), "tvshows");
-    }
-    else if (strSetting.Equals("scrapers.musicvideodefault"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInScrapers(pControl, g_guiSettings.GetString("scrapers.musicvideodefault"), "musicvideos");
     }
     else if (strSetting.Equals("karaoke.port0voicemask"))
     {
@@ -824,10 +804,10 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
       pControl->SetValue(pSettingInt->GetData());
     }
-    else if (strSetting.Equals("weather.plugin"))
+    else if (strSetting.Equals("weather.script"))
     {
       CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInWeatherPlugins(pControl, g_guiSettings.GetString("weather.plugin"));
+      FillInWeatherScripts(pControl, g_guiSettings.GetString("weather.script"));
     }
   }
   // update our settings (turns controls on/off as appropriate)
@@ -1065,13 +1045,13 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(GetSetting(strSetting)->GetID());
       pControl->SetLabel2(g_weatherManager.GetAreaCity(pSetting->GetData()));
     }
-    else if (strSetting.Equals("weather.plugin"))
+    else if (strSetting.Equals("weather.script"))
     {
       CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
       if (pControl->GetCurrentLabel().Equals(g_localizeStrings.Get(13611)))
-        g_guiSettings.SetString("weather.plugin", "");
+        g_guiSettings.SetString("weather.script", "");
       else
-        g_guiSettings.SetString("weather.plugin", pControl->GetCurrentLabel());
+        g_guiSettings.SetString("weather.script", pControl->GetCurrentLabel());
     }
     else if (strSetting.Equals("system.leddisableonplayback"))
     {
@@ -1154,16 +1134,6 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       if (pControl) pControl->SetEnabled(g_guiSettings.GetInt("lcd.disableonplayback") != LED_PLAYBACK_OFF && g_guiSettings.GetInt("lcd.type") != LCD_TYPE_NONE);
     }
-    else if (strSetting.Equals("musiclibrary.scrapersettings"))
-    {
-      CScraperParser parser;
-      bool enabled=false;
-      if (parser.Load("special://xbmc/system/scrapers/music/"+g_guiSettings.GetString("musiclibrary.scraper")))
-        enabled = parser.HasFunction("GetSettings");
-
-      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(enabled);
-    }
     else if (strSetting.Equals("system.ledenableonpaused"))
     {
       // LED_COLOUR_NO_CHANGE: we can't enable LED on paused, 
@@ -1189,12 +1159,12 @@ void CGUIWindowSettingsCategory::UpdateSettings()
         if (pControl) pControl->SetEnabled(false); 
       }
     }
-    else if (strSetting.Equals("weather.pluginsettings"))
+    else if (strSetting.Equals("weather.scriptsettings"))
     {
-      // Create our base path
-      CStdString basepath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
-      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(!g_guiSettings.GetString("weather.plugin").IsEmpty() && CScriptSettings::SettingsExist(basepath));
+      //// Create our base path
+      //CStdString basepath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
+      //CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      //if (pControl) pControl->SetEnabled(!g_guiSettings.GetString("weather.plugin").IsEmpty() && CScriptSettings::SettingsExist(basepath));
     }
     else if (!strSetting.Equals("musiclibrary.enabled")
       && strSetting.Left(13).Equals("musiclibrary."))
@@ -1252,35 +1222,22 @@ void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
       g_weatherManager.Refresh();
     }
   }
-  else if (strSetting.Equals("weather.plugin"))
+  else if (strSetting.Equals("weather.script"))
   {
     g_weatherManager.Refresh();
   }
-  else if (strSetting.Equals("weather.pluginsettings"))
+  else if (strSetting.Equals("weather.scriptsettings"))
   {
-    // Create our base path
-    CURL url("plugin://weather/" + g_guiSettings.GetString("weather.plugin"));
-    if (CGUIDialogPluginSettings::ShowAndGetInput(url))
-    {
-      // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
+    CStdString name = g_guiSettings.GetString("weather.script");
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(name, addon, ADDON_SCRIPT_WEATHER))
+    { // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
+      CGUIDialogAddonSettings::ShowAndGetInput(addon);
       g_weatherManager.Refresh();
     }
   }
   else if (strSetting.Equals("lookandfeel.rssedit"))
     CBuiltins::Execute("RunScript("RSSEDITOR_PATH")");
-  else if (strSetting.Equals("musiclibrary.scrapersettings"))
-  {
-    CMusicDatabase database;
-    database.Open();
-    SScraperInfo info;
-    database.GetScraperForPath("musicdb://",info);
-
-    if (info.settings.LoadSettingsXML("special://xbmc/system/scrapers/music/" + info.strPath))
-        CGUIDialogPluginSettings::ShowAndGetInput(info);
-
-    database.SetScraperForPath("musicdb://",info);
-    database.Close();
-  }
 
   // if OnClick() returns false, the setting hasn't changed or doesn't
   // require immediate update
@@ -1364,26 +1321,6 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     CMusicDatabase musicdatabase;
     musicdatabase.Clean();
     CUtil::DeleteMusicDatabaseDirectoryCache();
-  }
-  else if (strSetting.Equals("musiclibrary.scraper"))
-  {
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    FillInScrapers(pControl, pControl->GetCurrentLabel(), "music");
-  }
-  else if (strSetting.Equals("scrapers.moviedefault"))
-  {
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    FillInScrapers(pControl, pControl->GetCurrentLabel(), "movies");
-  }
-  else if (strSetting.Equals("scrapers.tvshowdefault"))
-  {
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    FillInScrapers(pControl, pControl->GetCurrentLabel(), "tvshows");
-  }
-  else if (strSetting.Equals("scrapers.musicvideodefault"))
-  {
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    FillInScrapers(pControl, pControl->GetCurrentLabel(), "musicvideos");
   }
   else if (strSetting.Equals("videolibrary.cleanup"))
   {
@@ -1874,7 +1811,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     else if (iValue == 4)
       strScreenSaver = "Fanart Slideshow"; //Fanart Slideshow
     else
-      strScreenSaver = pControl->GetCurrentLabel() + ".xbs";
+      strScreenSaver = pControl->GetCurrentLabel();
     pSettingString->SetData(strScreenSaver);
   }
   else if (strSetting.Equals("screensaver.preview"))
@@ -2590,6 +2527,7 @@ void CGUIWindowSettingsCategory::FillInVisualisations(CSetting *pSetting, int iC
     CGUIMessage msg(GUI_MSG_LABEL_RESET, iWinID, iControlID);
     g_windowManager.SendMessage(msg);
   }
+
   vector<CStdString> vecVis;
   //find visz....
   CFileItemList items;
@@ -2862,35 +2800,22 @@ void CGUIWindowSettingsCategory::FillInScreenSavers(CSetting *pSetting)
   pControl->AddLabel(g_localizeStrings.Get(108), 3); // PictureSlideShow
   pControl->AddLabel(g_localizeStrings.Get(20425), 4); // Fanart Slideshow
 
-  //find screensavers ....
-  CFileItemList items;
-  CDirectory::GetDirectory( "special://xbmc/screensavers/", items);
-  if (!CSpecialProtocol::XBMCIsHome())
-    CDirectory::GetDirectory("special://home/screensavers/", items);
-
   int iCurrentScr = -1;
   vector<CStdString> vecScr;
   int i;
-  for (i = 0; i < items.Size(); ++i)
+  VECADDONS addons;
+
+  CAddonMgr::Get().GetAddons(ADDON_SCREENSAVER, addons);
+  if (!addons.empty())
   {
-    CFileItemPtr pItem = items[i];
-    if (!pItem->m_bIsFolder)
+    for (unsigned int i = 0; i < addons.size(); i++)
     {
-      CStdString strExtension;
-      URIUtils::GetExtension(pItem->GetPath(), strExtension);
-      if (strExtension == ".xbs")
-      {
-        CStdString strLabel = pItem->GetLabel();
-        vecScr.push_back(strLabel.Mid(0, strLabel.size() - 4));
-      }
+      const AddonPtr addon = addons.at(i);
+      vecScr.push_back(addon->Name());
     }
   }
 
   CStdString strDefaultScr = pSettingString->GetData();
-  CStdString strExtension;
-  URIUtils::GetExtension(strDefaultScr, strExtension);
-  if (strExtension == ".xbs")
-    strDefaultScr.Delete(strDefaultScr.size() - 4, 4);
 
   sort(vecScr.begin(), vecScr.end(), sortstringbyname());
   for (i = 0; i < (int) vecScr.size(); ++i)
@@ -3198,88 +3123,30 @@ void CGUIWindowSettingsCategory::FillInViewModes(CSetting *pSetting, int windowI
   pControl->SetValue(pSettingInt->GetData());
 }
 
-void CGUIWindowSettingsCategory::FillInScrapers(CGUISpinControlEx *pControl, const CStdString& strSelected, const CStdString& strContent)
+void CGUIWindowSettingsCategory::FillInWeatherScripts(CGUISpinControlEx *pControl, const CStdString& strSelected)
 {
-  CFileItemList items;
-  if (strContent.Equals("music"))
-    CDirectory::GetDirectory("special://xbmc/system/scrapers/music",items,".xml",false);
-  else
-    CDirectory::GetDirectory("special://xbmc/system/scrapers/video",items,".xml",false);
-  int j=0;
-  int k=0;
-  pControl->Clear();
-  for ( int i=0;i<items.Size();++i)
-  {
-    if (items[i]->m_bIsFolder)
-      continue;
-
-    CScraperParser parser;
-    if (parser.Load(items[i]->GetPath()))
-    {
-      if (parser.GetContent() != strContent && !strContent.Equals("music"))
-        continue;
-
-      if (parser.GetName().Equals(strSelected) || URIUtils::GetFileName(items[i]->GetPath()).Equals(strSelected))
-      {
-        if (strContent.Equals("music")) // native strContent would be albums or artists but we're using the same scraper for both
-        {
-          if (g_guiSettings.GetString("musiclibrary.scraper") != strSelected)
-          {
-            g_guiSettings.SetString("musiclibrary.scraper", URIUtils::GetFileName(items[i]->GetPath()));
-
-            SScraperInfo info;
-            CMusicDatabase database;
-
-            info.strPath = g_guiSettings.GetString("musiclibrary.scraper");
-            info.strContent = "albums";
-            info.strTitle = parser.GetName();
-
-            database.Open();
-            database.SetScraperForPath("musicdb://",info);
-            database.Close();
-          }
-        }
-        else if (strContent.Equals("movies"))
-          g_guiSettings.SetString("scrapers.moviedefault", URIUtils::GetFileName(items[i]->GetPath()));
-        else if (strContent.Equals("tvshows"))
-          g_guiSettings.SetString("scrapers.tvshowdefault", URIUtils::GetFileName(items[i]->GetPath()));
-        else if (strContent.Equals("musicvideos"))
-          g_guiSettings.SetString("scrapers.musicvideodefault", URIUtils::GetFileName(items[i]->GetPath()));
-        k = j;
-      }
-      pControl->AddLabel(parser.GetName(),j++);
-    }
-  }
-  pControl->SetValue(k);
-}
-
-void CGUIWindowSettingsCategory::FillInWeatherPlugins(CGUISpinControlEx *pControl, const CStdString& strSelected)
-{
+  VECADDONS addons;
   int j=0;
   int k=0;
   pControl->Clear();
   // add our disable option
   pControl->AddLabel(g_localizeStrings.Get(13611), j++);
 
-  CFileItemList items;
-  if (CDirectory::GetDirectory("special://home/plugins/weather/", items, "/", false))
+  //find weather scripts....
+  CAddonMgr::Get().GetAddons(ADDON_SCRIPT, addons);
+  if (!addons.empty())
   {
-    for (int i=0; i<items.Size(); ++i)
-    {    
+    for (unsigned int i = 0; i < addons.size(); i++)
+    {
+      AddonPtr addon = addons.at(i);  
       // create the full path to the plugin
-      CStdString plugin;
-      CStdString pluginPath = items[i]->GetPath();
-      // remove slash at end so we can use the plugins folder as plugin name
-      URIUtils::RemoveSlashAtEnd(pluginPath);
-      // add default.py to our plugin path to create the full path
-      URIUtils::AddFileToFolder(pluginPath, "default.py", plugin);
-      if (XFILE::CFile::Exists(plugin))
+      if (XFILE::CFile::Exists(addon->LibPath()))
       {
         // is this the users choice
-        if (URIUtils::GetFileName(pluginPath).Equals(strSelected))
+        if (addon->Name().Equals(strSelected))
           k = j;
         // we want to use the plugins folder as name
-        pControl->AddLabel(URIUtils::GetFileName(pluginPath), j++);
+        pControl->AddLabel(addon->Name(), j++);
       }
     }
   }

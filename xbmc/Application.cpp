@@ -142,6 +142,7 @@
 #include "windows/GUIWindowWeather.h"
 #include "GUIWindowGameSaves.h"
 #include "windows/GUIWindowLoginScreen.h"
+#include "addons/GUIWindowAddonBrowser.h"
 #include "music/windows/GUIWindowVisualisation.h"
 #include "windows/GUIWindowSystemInfo.h"
 #include "windows/GUIWindowScreensaver.h"
@@ -186,7 +187,8 @@
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "pictures/GUIDialogPictureInfo.h"
-#include "dialogs/GUIDialogPluginSettings.h"
+#include "addons/GUIDialogAddonSettings.h"
+#include "addons/GUIDialogAddonInfo.h"
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "dialogs/GUIDialogSlider.h"
 #include "cores/dlgcache.h"
@@ -198,6 +200,7 @@
 #endif
 
 using namespace std;
+using namespace ADDON;
 using namespace XFILE;
 using namespace MEDIA_DETECT;
 using namespace PLAYLIST;
@@ -973,6 +976,14 @@ HRESULT CApplication::Create(HWND hWnd)
 
   update_emu_environ();//apply the GUI settings
 
+  // start-up Addons Framework
+  // currently bails out if either cpluff Dll is unavailable or system dir can not be scanned
+  if (!CAddonMgr::Get().Init())
+  {
+    CLog::Log(LOGFATAL, "CApplication::Create: Unable to start CAddonMgr");
+    FatalErrorHandler(true, true, true);
+  }
+
   // Check for WHITE + Y for forced Error Handler (to recover if something screwy happens)
 #ifdef HAS_GAMEPAD
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_WHITE])
@@ -1223,6 +1234,9 @@ HRESULT CApplication::Initialize()
 
   CDirectory::Create(g_settings.GetProfilesThumbFolder());
 
+  CDirectory::Create("special://home/addons");
+  CDirectory::Create("special://home/addons/packages");
+
   CUtil::WipeDir("Z:\\");
   CreateDirectory("Z:\\temp", NULL); // temp directory for python and dllGetTempPathA
   CreateDirectory("Q:\\scripts", NULL);
@@ -1273,6 +1287,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowVideoPlaylist);            // window id = 28
   g_windowManager.Add(new CGUIWindowLoginScreen);            // window id = 29
   g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
+  g_windowManager.Add(new CGUIWindowAddonBrowser);          // window id = 40
   g_windowManager.Add(new CGUIWindowGameSaves);               // window id = 35
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
@@ -1306,7 +1321,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogSmartPlaylistRule);       // window id = 137
   g_windowManager.Add(new CGUIDialogBusy);      // window id = 138
   g_windowManager.Add(new CGUIDialogPictureInfo);      // window id = 139
-  g_windowManager.Add(new CGUIDialogPluginSettings);      // window id = 140
+  g_windowManager.Add(new CGUIDialogAddonInfo);
+  g_windowManager.Add(new CGUIDialogAddonSettings);      // window id = 140
   g_windowManager.Add(new CGUIDialogTextViewer);              // window id = 147
 
   g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
@@ -3484,7 +3500,8 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
     g_windowManager.Delete(WINDOW_DIALOG_BUSY);
     g_windowManager.Delete(WINDOW_DIALOG_PICTURE_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_PLUGIN_SETTINGS);
+    g_windowManager.Delete(WINDOW_DIALOG_ADDON_INFO);
+    g_windowManager.Delete(WINDOW_DIALOG_ADDON_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
     g_windowManager.Delete(WINDOW_DIALOG_MEDIA_FILTER);
     g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
@@ -3521,6 +3538,8 @@ HRESULT CApplication::Cleanup()
 
     g_windowManager.Remove(WINDOW_DIALOG_SEEK_BAR);
     g_windowManager.Remove(WINDOW_DIALOG_VOLUME_BAR);
+
+    CAddonMgr::Get().DeInit();
 
     CLog::Log(LOGNOTICE, "unload sections");
     CSectionLoader::UnloadAll();
@@ -5252,6 +5271,9 @@ void CApplication::ProcessSlow()
 
   //Check to see if current playing Title has changed and whether we should broadcast the fact
   CheckForTitleChange();
+
+  if (!IsPlayingVideo())
+    ADDON::CAddonMgr::Get().UpdateRepos();
 }
 
 // Global Idle Time in Seconds
@@ -5657,10 +5679,8 @@ void CApplication::UpdateLibraries()
   {
     CLog::Log(LOGNOTICE, "%s - Starting video library startup scan", __FUNCTION__);
     CGUIDialogVideoScan *scanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-    SScraperInfo info;
-    VIDEO::SScanSettings settings;
     if (scanner && !scanner->IsScanning())
-      scanner->StartScanning("",info,settings,false);
+      scanner->StartScanning("");
   }
  
   if (g_guiSettings.GetBool("musiclibrary.updateonstartup"))

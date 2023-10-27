@@ -24,11 +24,10 @@
 #pragma once
 #include "Database.h"
 #include "music/Album.h"
+#include "addons/Scraper.h"
 #include "utils/StringUtils.h"
 #include "utils/SortUtils.h"
 #include "MusicDbUrl.h"
-
-struct SScraperInfo;
 
 class CArtist;
 class CFileItem;
@@ -183,8 +182,8 @@ public:
   int GetVariousArtistsAlbumsCount();
 
   bool SetSongRating(const CStdString &filePath, char rating);
-  bool SetScraperForPath(const CStdString& strPath, const SScraperInfo& info);
-  bool GetScraperForPath(const CStdString& strPath, SScraperInfo& info);
+  bool SetScraperForPath(const CStdString& strPath, const ADDON::ScraperPtr& info);
+  bool GetScraperForPath(const CStdString& strPath, ADDON::ScraperPtr& info, const ADDON::TYPE &type);
 
   // retrieve a list of items
   bool GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());

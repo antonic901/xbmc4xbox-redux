@@ -31,13 +31,16 @@
 
 using namespace MUSIC_GRABBER;
 using namespace HTML;
-CMusicInfoScraper::CMusicInfoScraper(const SScraperInfo& info)
+using namespace ADDON;
+using namespace std;
+
+CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr &scraper)
 {
   m_bSucceeded=false;
   m_bCanceled=false;
   m_iAlbum=-1;
   m_iArtist=-1;
-  m_info = info;
+  m_scraper = scraper;
 }
 
 CMusicInfoScraper::~CMusicInfoScraper(void)
@@ -92,26 +95,20 @@ void CMusicInfoScraper::FindAlbumInfo()
   CScraperParser parser;
   parser.ClearCache();
 
-  if (!parser.Load("special://xbmc/system/scrapers/music/" + m_info.strPath) || !parser.HasFunction("CreateAlbumSearchUrl"))
+  if (!parser.Load(m_scraper) || !parser.HasFunction("CreateAlbumSearchUrl"))
     return;
-
-  if (!m_info.settings.GetPluginRoot() && m_info.settings.GetSettings().IsEmpty() && parser.HasFunction("GetSettings"))
-  {
-    m_info.settings.LoadSettingsXML("special://xbmc/system/scrapers/music/" + m_info.strPath);
-    m_info.settings.SaveFromDefault();
-  }
 
   parser.m_param[0] = strAlbum;
   parser.m_param[1] = m_strArtist;
   CURL::Encode(parser.m_param[0]);
   CURL::Encode(parser.m_param[1]);
 
-  CLog::Log(LOGDEBUG, "%s: Searching for '%s - %s' using %s scraper (file: '%s', content: '%s', language: '%s', date: '%s', framework: '%s')",
-    __FUNCTION__, m_strArtist.c_str(), strAlbum.c_str(), m_info.strTitle.c_str(), m_info.strPath.c_str(), m_info.strContent.c_str(), m_info.strLanguage.c_str(), m_info.strDate.c_str(), m_info.strFramework.c_str());
+  CLog::Log(LOGDEBUG, "%s: Searching for '%s - %s' using %s scraper (file: '%s', content: '%s')",
+  __FUNCTION__, m_strArtist.c_str(), strAlbum.c_str(), m_scraper->Name().c_str(), m_scraper->Path().c_str(), ADDON::TranslateContent(m_scraper->Content()).c_str());
 
 
   CScraperUrl scrURL;
-  scrURL.ParseString(parser.Parse("CreateAlbumSearchUrl",&m_info.settings));
+  scrURL.ParseString(parser.Parse("CreateAlbumSearchUrl"));
   if (!scrURL.m_url.size() || !CScraperUrl::Get(scrURL.m_url[0], strHTML, m_http, parser.GetFilename()) || strHTML.size() == 0)
   {
     CLog::Log(LOGERROR, "%s: Unable to retrieve web site",__FUNCTION__);
@@ -119,7 +116,7 @@ void CMusicInfoScraper::FindAlbumInfo()
   }
 
   parser.m_param[0] = strHTML;
-  CStdString strXML = parser.Parse("GetAlbumSearchResults",&m_info.settings);
+  CStdString strXML = parser.Parse("GetAlbumSearchResults");
   CLog::Log(LOGDEBUG,"scraper: GetAlbumSearchResults returns %s",strXML.c_str());
   if (strXML.IsEmpty())
   {
@@ -202,85 +199,68 @@ void CMusicInfoScraper::FindArtistInfo()
   CStdString strHTML;
   m_vecArtists.erase(m_vecArtists.begin(), m_vecArtists.end());
 
-  CScraperParser parser;
-  parser.ClearCache();
-
-  if (!parser.Load("special://xbmc/system/scrapers/music/" + m_info.strPath) || !parser.HasFunction("CreateArtistSearchUrl"))
+  if (!m_scraper->Load())
     return;
 
-  if (!m_info.settings.GetPluginRoot() && m_info.settings.GetSettings().IsEmpty() && parser.HasFunction("GetSettings"))
-  {
-    m_info.settings.LoadSettingsXML("special://xbmc/system/scrapers/music/" + m_info.strPath);
-    m_info.settings.SaveFromDefault();
-  }
-  
-  parser.m_param[0] = m_strArtist;
-  CURL::Encode(parser.m_param[0]);
+  vector<CStdString> extras;
+  extras.push_back(m_strArtist);
+  g_charsetConverter.utf8To(m_scraper->GetParser().GetSearchStringEncoding(), m_strArtist, extras[0]);
+  CURL::Encode(extras[0]);
 
-  CLog::Log(LOGDEBUG, "%s: Searching for '%s' using %s scraper (file: '%s', content: '%s', language: '%s', date: '%s', framework: '%s')",
-    __FUNCTION__, m_strArtist.c_str(), m_info.strTitle.c_str(), m_info.strPath.c_str(), m_info.strContent.c_str(), m_info.strLanguage.c_str(), m_info.strDate.c_str(), m_info.strFramework.c_str());
+  CLog::Log(LOGDEBUG, "%s: Searching for '%s' using %s scraper (file: '%s', content: '%s')",
+    __FUNCTION__, m_strArtist.c_str(), m_scraper->Name().c_str(), m_scraper->Path().c_str(), ADDON::TranslateContent(m_scraper->Content()).c_str());
 
   CScraperUrl scrURL;
-  scrURL.ParseString(parser.Parse("CreateArtistSearchUrl",&m_info.settings));
-  if (!CScraperUrl::Get(scrURL.m_url[0], strHTML, m_http, parser.GetFilename()) || strHTML.size() == 0)
-  {
-    CLog::Log(LOGERROR, "%s: Unable to retrieve web site",__FUNCTION__);
+  vector<CStdString> url = m_scraper->Run("CreateArtistSearchUrl",scrURL,m_http,&extras);
+  if (url.empty())
     return;
-  }
+  scrURL.ParseString(url[0]);
 
-  parser.m_param[0] = strHTML;
-  CStdString strXML = parser.Parse("GetArtistSearchResults",&m_info.settings);
-  CLog::Log(LOGDEBUG,"scraper: GetArtistSearchResults returns %s",strXML.c_str());
-  if (strXML.IsEmpty())
+  vector<CStdString> xml = m_scraper->Run("GetArtistSearchResults",scrURL,m_http,&extras);
+
+  for (vector<CStdString>::iterator it  = xml.begin();
+                                    it != xml.end(); ++it)
   {
-    CLog::Log(LOGERROR, "%s: Unable to parse web site",__FUNCTION__);
-    return;
-  }
-
-  if (!XMLUtils::HasUTF8Declaration(strXML))
-    g_charsetConverter.unknownToUTF8(strXML);
-
-  // ok, now parse the xml file
-  TiXmlDocument doc;
-  doc.Parse(strXML.c_str(),0,TIXML_ENCODING_UTF8);
-  if (!doc.RootElement())
-  {
-    CLog::Log(LOGERROR, "%s: Unable to parse xml",__FUNCTION__);
-    return;
-  }
-
-  TiXmlHandle docHandle( &doc );
-  TiXmlElement* artist = docHandle.FirstChild( "results" ).FirstChild( "entity" ).Element();
-  if (!artist)
-    return;
-
-  while (artist)
-  {
-    TiXmlNode* title = artist->FirstChild("title");
-    TiXmlNode* year = artist->FirstChild("year");
-    TiXmlNode* genre = artist->FirstChild("genre");
-    TiXmlElement* link = artist->FirstChildElement("url");
-    if (title && title->FirstChild())
+    // ok, now parse the xml file
+    TiXmlDocument doc;
+    doc.Parse(it->c_str(),0,TIXML_ENCODING_UTF8);
+    if (!doc.RootElement())
     {
-      CStdString strTitle = title->FirstChild()->Value();
-      CScraperUrl url;
-      if (!link)
-        url.ParseString(scrURL.m_xml);
-      while (link && link->FirstChild())
-      {
-        url.ParseElement(link);
-        link = link->NextSiblingElement("url");
-      }
-      CMusicArtistInfo newArtist(strTitle, url);
-      if (genre && genre->FirstChild())
-        newArtist.GetArtist().genre = StringUtils::Split(genre->FirstChild()->Value(), g_advancedSettings.m_musicItemSeparator);
-      if (year && year->FirstChild())
-        newArtist.GetArtist().strBorn = year->FirstChild()->Value();
-      m_vecArtists.push_back(newArtist);
+      CLog::Log(LOGERROR, "%s: Unable to parse xml",__FUNCTION__);
+      continue;
     }
-    artist = artist->NextSiblingElement();
+
+    TiXmlHandle docHandle( &doc );
+    TiXmlElement* artist = docHandle.FirstChild( "results" ).FirstChild( "entity" ).Element();
+
+    while (artist)
+    {
+      TiXmlNode* title = artist->FirstChild("title");
+      TiXmlNode* year = artist->FirstChild("year");
+      TiXmlNode* genre = artist->FirstChild("genre");
+      TiXmlElement* link = artist->FirstChildElement("url");
+      if (title && title->FirstChild())
+      {
+        CStdString strTitle = title->FirstChild()->Value();
+        CScraperUrl url;
+        if (!link)
+          url.ParseString(scrURL.m_xml);
+        while (link && link->FirstChild())
+        {
+          url.ParseElement(link);
+          link = link->NextSiblingElement("url");
+        }
+        CMusicArtistInfo newArtist(strTitle, url);
+        if (genre && genre->FirstChild())
+          newArtist.GetArtist().genre = StringUtils::Split(genre->FirstChild()->Value(), g_advancedSettings.m_musicItemSeparator);
+        if (year && year->FirstChild())
+          newArtist.GetArtist().strBorn = year->FirstChild()->Value();
+        m_vecArtists.push_back(newArtist);
+      }
+      artist = artist->NextSiblingElement();
+    }
   }
-  
+
   if (m_vecArtists.size()>0)
     m_bSucceeded=true;
 
@@ -310,7 +290,7 @@ void CMusicInfoScraper::LoadAlbumInfo()
 
   CMusicAlbumInfo& album=m_vecAlbums[m_iAlbum];
   album.GetAlbum().artist.clear();
-  if (album.Load(m_http,m_info))
+  if (album.Load(m_http,m_scraper))
     m_bSucceeded=true;
 }
 
@@ -321,7 +301,7 @@ void CMusicInfoScraper::LoadArtistInfo()
 
   CMusicArtistInfo& artist=m_vecArtists[m_iArtist];
   artist.GetArtist().strArtist.Empty();
-  if (artist.Load(m_http,m_info))
+  if (artist.Load(m_http,m_scraper))
     m_bSucceeded=true;
 }
 
@@ -388,9 +368,13 @@ void CMusicInfoScraper::Process()
 bool CMusicInfoScraper::CheckValidOrFallback(const CStdString &fallbackScraper)
 {
   CScraperParser parser;
-  if (parser.Load("special://xbmc/system/scrapers/music/" + m_info.strPath))
+  if (parser.Load(m_scraper))
     return true;
-  if (m_info.strPath != fallbackScraper &&
+  else
+    return false;
+/*
+ * TODO handle fallback mechanism
+  if (m_scraper->Path() != fallbackScraper &&
       parser.Load("special://xbmc/system/scrapers/music/" + fallbackScraper))
   {
     CLog::Log(LOGWARNING, "%s - scraper %s fails to load, falling back to %s", __FUNCTION__, m_info.strPath.c_str(), fallbackScraper.c_str());
@@ -403,5 +387,5 @@ bool CMusicInfoScraper::CheckValidOrFallback(const CStdString &fallbackScraper)
     m_info.settings.LoadSettingsXML("special://xbmc/system/scrapers/music/" + m_info.strPath);
     return true;
   }
-  return false;
+  return false; */
 }

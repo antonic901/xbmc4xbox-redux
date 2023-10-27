@@ -29,6 +29,7 @@ public:
   CGUIViewStateWindowVideo(const CFileItemList& items) : CGUIViewState(items) {}
 
 protected:
+  virtual VECSOURCES& GetSources();
   virtual CStdString GetLockType();
   virtual bool UnrollArchives();
   virtual int GetPlaylist();

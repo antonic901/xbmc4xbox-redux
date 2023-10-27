@@ -370,7 +370,7 @@ CStdString URIUtils::SubstitutePath(const CStdString& strPath, bool reverse /* =
 
 bool URIUtils::IsRemote(const CStdString& strFile)
 {
-  if (IsMemCard(strFile) || IsCDDA(strFile) || IsISO9660(strFile) || IsPlugin(strFile) || IsMusicDb(strFile) || IsVideoDb(strFile))
+  if (IsMemCard(strFile) || IsCDDA(strFile) || IsISO9660(strFile) || IsMusicDb(strFile) || IsVideoDb(strFile))
     return false;
 
   if (IsSpecial(strFile))
@@ -589,6 +589,12 @@ bool URIUtils::IsPluginRoot(const CStdString& strFile)
 {
   CURL url(strFile);
   return url.GetProtocol().Equals("plugin") && url.GetFileName().IsEmpty();
+}
+
+bool URIUtils::IsAddonsPath(const CStdString& strFile)
+{
+  CURL url(strFile);
+  return url.GetProtocol().Equals("addons");
 }
 
 bool URIUtils::IsSourcesPath(const CStdString& strPath)

@@ -21,7 +21,8 @@
  */
 
 #include "lib/libPython/python/Include/Python.h"
-#include "ScriptSettings.h"
+
+#include "addons/IAddon.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +32,7 @@ namespace PYXBMC
 {
   typedef struct {
     PyObject_HEAD
-    CScriptSettings* pSettings;
+    ADDON::IAddon* pAddon;
   } Settings;
 
   extern PyTypeObject Settings_Type;

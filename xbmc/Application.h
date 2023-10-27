@@ -28,6 +28,12 @@
 
 class CFileItem;
 class CFileItemList;
+namespace ADDON
+{
+  class CSkinInfo;
+  class IAddon;
+  typedef boost::shared_ptr<IAddon> AddonPtr;
+}
 
 #include "dialogs/GUIDialogSeekBar.h"
 #include "dialogs/GUIDialogKaiToast.h"

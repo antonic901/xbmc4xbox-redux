@@ -275,7 +275,13 @@ msgctxt "#112"
 msgid "Paused"
 msgstr ""
 
-#empty strings from id 113 to 114
+msgctxt "#113"
+msgid "Update failed"
+msgstr ""
+
+msgctxt "#114"
+msgid "Installation failed"
+msgstr ""
 
 msgctxt "#115"
 msgid "Copy"
@@ -2928,15 +2934,15 @@ msgid "Favourites"
 msgstr ""
 
 msgctxt "#1037"
-msgid "Video plugins"
+msgid "Video Add-ons"
 msgstr ""
 
 msgctxt "#1038"
-msgid "Music plugins"
+msgid "Music Add-ons"
 msgstr ""
 
 msgctxt "#1039"
-msgid "Picture plugins"
+msgid "Picture Add-ons"
 msgstr ""
 
 msgctxt "#1040"
@@ -2952,7 +2958,7 @@ msgid "Retrieved %i of %i items"
 msgstr ""
 
 msgctxt "#1043"
-msgid "Program plugins"
+msgid "Program Add-ons"
 msgstr ""
 
 msgctxt "#1044"
@@ -6778,10 +6784,12 @@ msgctxt "#20192"
 msgid "Download additional information during updates"
 msgstr ""
 
-#empty string with id 20193
+msgctxt "#20193"
+msgid "Default service for album information"
+msgstr ""
 
 msgctxt "#20194"
-msgid "Default service for music information"
+msgid "Default service for artist information"
 msgstr ""
 
 msgctxt "#20195"
@@ -7773,7 +7781,9 @@ msgctxt "#21418"
 msgid "Multilingual"
 msgstr ""
 
-#empty string with id 21419
+msgctxt "#21419"
+msgid "No scrapers present"
+msgstr ""
 
 msgctxt "#21420"
 msgid "Value to match"
@@ -7899,7 +7909,13 @@ msgctxt "#21450"
 msgid "- Edit"
 msgstr ""
 
-#empty strings from id 21451 to 21457
+#empty string id 21451
+
+msgctxt "#21452"
+msgid "Get More..."
+msgstr ""
+
+#empty strings from id 21453 to 21457
 
 msgctxt "#21458"
 msgid "Group by"
@@ -8392,17 +8408,7 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr ""
 
-#empty strings from id 22044 to 22999
-
-msgctxt "#23000"
-msgid "Weather plugin"
-msgstr ""
-
-msgctxt "#23001"
-msgid "- Plugin settings"
-msgstr ""
-
-#empty strings from id 23002 to 23049
+#empty strings from id 22044 to 23049
 
 msgctxt "#23050"
 msgid "Activate Teletext"
@@ -8448,10 +8454,76 @@ msgid "Add-on"
 msgstr ""
 
 msgctxt "#24001"
-msgid "Plugins"
+msgid "Add-ons"
 msgstr ""
 
-#empty strings from id 24002 to 24019
+msgctxt "#24002"
+msgid "Add-on options"
+msgstr ""
+
+msgctxt "#24003"
+msgid "Add-on Information"
+msgstr ""
+
+#empty string with id 24004
+
+msgctxt "#24005"
+msgid "Media sources"
+msgstr ""
+
+#empty string with id 24006
+
+msgctxt "#24007"
+msgid "Movie information"
+msgstr ""
+
+msgctxt "#24008"
+msgid "Screensaver"
+msgstr ""
+
+msgctxt "#24009"
+msgid "Script"
+msgstr ""
+
+msgctxt "#24010"
+msgid "Visualisation"
+msgstr ""
+
+msgctxt "#24011"
+msgid "Add-on repository"
+msgstr ""
+
+msgctxt "#24012"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#24013"
+msgid "Lyrics"
+msgstr ""
+
+msgctxt "#24014"
+msgid "TV information"
+msgstr ""
+
+msgctxt "#24015"
+msgid "Music video information"
+msgstr ""
+
+msgctxt "#24016"
+msgid "Album information"
+msgstr ""
+
+msgctxt "#24017"
+msgid "Artist information"
+msgstr ""
+
+msgctxt "#24018"
+msgid "Services"
+msgstr ""
+
+msgctxt "#24019"
+msgid "PVR clients"
+msgstr ""
 
 msgctxt "#24020"
 msgid "Configure"
@@ -8466,16 +8538,276 @@ msgid "Enable"
 msgstr ""
 
 msgctxt "#24023"
+msgid "Disabled"
+msgstr ""
+
+msgctxt "#24024"
 msgid "Add-on disabled"
 msgstr ""
 
-#empty strings from id 24024 to 24029
+#empty strings from id 24025 to 24026
+
+msgctxt "#24027"
+msgid "Weather"
+msgstr ""
+
+msgctxt "#24028"
+msgid "Weather.com (standard)"
+msgstr ""
+
+msgctxt "#24029"
+msgid "Service for weather information"
+msgstr ""
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"
 msgstr ""
 
-#empty strings from id 24031 to 29799
+msgctxt "#24031"
+msgid "Error loading settings"
+msgstr ""
+
+msgctxt "#24032"
+msgid "All Add-ons"
+msgstr ""
+
+msgctxt "#24033"
+msgid "Get Add-ons"
+msgstr ""
+
+msgctxt "#24034"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "#24035"
+msgid "Force refresh"
+msgstr ""
+
+msgctxt "#24036"
+msgid "Change log"
+msgstr ""
+
+msgctxt "#24037"
+msgid "Uninstall"
+msgstr ""
+
+msgctxt "#24038"
+msgid "Install"
+msgstr ""
+
+msgctxt "#24039"
+msgid "Disabled Add-ons"
+msgstr ""
+
+msgctxt "#24040"
+msgid "(Clear the current setting)"
+msgstr ""
+
+msgctxt "#24041"
+msgid "Install from zip file"
+msgstr ""
+
+msgctxt "#24042"
+msgid "Downloading %i%%"
+msgstr ""
+
+msgctxt "#24043"
+msgid "Available Updates"
+msgstr ""
+
+msgctxt "#24044"
+msgid "Dependencies not met. Please contact Add-on author."
+msgstr ""
+
+msgctxt "#24045"
+msgid "Add-on does not have the correct structure"
+msgstr ""
+
+msgctxt "#24046"
+msgid "%s is used by the following installed Add-on(s)"
+msgstr ""
+
+msgctxt "#24047"
+msgid "This Add-on cannot be uninstalled"
+msgstr ""
+
+#empty string with id 24048
+
+msgctxt "#24049"
+msgid "Incompatible"
+msgstr ""
+
+msgctxt "#24050"
+msgid "Available Add-ons"
+msgstr ""
+
+msgctxt "#24051"
+msgid "Version:"
+msgstr ""
+
+msgctxt "#24052"
+msgid "Disclaimer"
+msgstr ""
+
+msgctxt "#24053"
+msgid "License:"
+msgstr ""
+
+msgctxt "#24054"
+msgid "Changelog"
+msgstr ""
+
+#empty strings from id 24055 to 24058
+
+msgctxt "#24059"
+msgid "Would you like to enable this Add-on?"
+msgstr ""
+
+msgctxt "#24060"
+msgid "Would you like to disable this Add-on?"
+msgstr ""
+
+msgctxt "#24061"
+msgid "Add-on update available!"
+msgstr ""
+
+msgctxt "#24062"
+msgid "Enabled Add-ons"
+msgstr ""
+
+msgctxt "#24063"
+msgid "Auto update"
+msgstr ""
+
+msgctxt "#24064"
+msgid "Add-on enabled"
+msgstr ""
+
+msgctxt "#24065"
+msgid "Add-on updated"
+msgstr ""
+
+msgctxt "#24066"
+msgid "Cancel Add-on download?"
+msgstr ""
+
+msgctxt "#24067"
+msgid "Currently downloading Add-ons"
+msgstr ""
+
+msgctxt "#24068"
+msgid "Update available"
+msgstr ""
+
+msgctxt "#24069"
+msgid "Update"
+msgstr ""
+
+msgctxt "#24070"
+msgid "Add-on could not be loaded."
+msgstr ""
+
+msgctxt "#24071"
+msgid "An unknown error has occurred."
+msgstr ""
+
+msgctxt "#24072"
+msgid "Settings required"
+msgstr ""
+
+msgctxt "#24073"
+msgid "Could not connect"
+msgstr ""
+
+msgctxt "#24074"
+msgid "Needs to restart"
+msgstr ""
+
+msgctxt "#24075"
+msgid "Disable"
+msgstr ""
+
+msgctxt "#24076"
+msgid "Add-on Required"
+msgstr ""
+
+#empty strings from id 24077 to 24079
+
+msgctxt "#24080"
+msgid "Try to reconnect?"
+msgstr ""
+
+#empty strings from id 24081 to 24088
+
+msgctxt "#24089"
+msgid "Add-on restarts"
+msgstr ""
+
+msgctxt "#24090"
+msgid "Lock Add-on manager"
+msgstr ""
+
+msgctxt "#24091"
+msgid "This Add-on cannot be disabled"
+msgstr ""
+
+#empty strings from id 24092 to 24093
+
+msgctxt "#24094"
+msgid "(current)"
+msgstr ""
+
+msgctxt "#24095"
+msgid "(blacklisted)"
+msgstr ""
+
+msgctxt "#24096"
+msgid "Add-on is incompatible or has been marked broken in repository."
+msgstr ""
+
+msgctxt "#24097"
+msgid "Would you like to disable it on your system?"
+msgstr ""
+
+msgctxt "#24098"
+msgid "Broken"
+msgstr ""
+
+msgctxt "#24099"
+msgid "Would you like to switch to this skin?"
+msgstr ""
+
+msgctxt "#24100"
+msgid "To use this feature you must download an Add-on:"
+msgstr ""
+
+msgctxt "#24101"
+msgid "Would you like to download this Add-on?"
+msgstr ""
+
+#empty strings from id 24102 to 24103
+
+msgctxt "#24104"
+msgid "Add-on is incompatible due to unmet dependencies."
+msgstr ""
+
+#empty strings from id 24105 to 24121
+
+msgctxt "#24122"
+msgid "Update all"
+msgstr ""
+
+#empty strings from id 24123 to 24999
+
+msgctxt "#25000"
+msgid "Notifications"
+msgstr ""
+
+msgctxt "#25001"
+msgid "Hide foreign"
+msgstr ""
+
+#empty strings from id 25002 to 29799
 #strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 
 msgctxt "#29800"

@@ -25,6 +25,7 @@
 #include "utils/URIUtils.h"
 #include "storage/DetectDVDType.h"
 #include "PlayListPlayer.h"
+#include "addons/AddonManager.h"
 #include "FileSystem/ZipManager.h"
 #include "FileSystem/PluginDirectory.h"
 #include "FileSystem/MultiPathDirectory.h"
@@ -46,14 +47,15 @@
 #include "GUIImage.h"
 #include "GUIMultiImage.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "dialogs/GUIDialogPluginSettings.h"
-#include "PluginSettings.h"
+#include "addons/GUIDialogAddonSettings.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "playlists/PlayList.h"
 #include "FileSystem/FileDirectoryFactory.h"
 #include "GUIEditControl.h"
 #include "dialogs/GUIDialogKeyboard.h"
+#include "interfaces/Builtins.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaFilter.h"
 #include "filesystem/SmartPlaylistDirectory.h"
@@ -71,6 +73,7 @@
 #define PROPERTY_SORT_ASCENDING     "sort.ascending"
 
 using namespace std;
+using namespace ADDON;
 
 CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
     : CGUIWindow(id, xmlFile)
@@ -1024,6 +1027,11 @@ bool CGUIMediaWindow::OnClick(int iItem)
         Refresh();
       return true;
     }
+    else if (pItem->GetPath().Left(14).Equals("addons://more/"))
+    {
+      CBuiltins::Execute("ActivateWindow(AddonBrowser,addons://all/xbmc.addon." + pItem->GetPath().Mid(14) + ",return)");
+      return true;
+    }
 
     if (m_guiState.get() && m_guiState->AutoPlayNextItem() && !g_partyModeManager.IsEnabled() && !pItem->IsPlayList())
     {
@@ -1473,19 +1481,6 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
     buttons.Add((CONTEXT_BUTTON)i, item->GetProperty(label).asString());
   }
 
-  if (item->IsPlugin() && !item->IsPluginRoot() && item->m_bIsFolder)
-  {
-    if (CPluginSettings::SettingsExist(item->GetPath()))
-      buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
-    if (m_vecItems->GetPath().Equals("plugin://music/")    ||
-        m_vecItems->GetPath().Equals("plugin://video/")    ||
-        m_vecItems->GetPath().Equals("plugin://pictures/") ||
-        m_vecItems->GetPath().Equals("plugin://programs/")   )
-    {
-      buttons.Add(CONTEXT_BUTTON_DELETE_PLUGIN, 117);
-    }
-  }
-
   if (item->GetProperty("pluginreplacecontextitems").asBoolean())
     return;
 
@@ -1511,20 +1506,11 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     }
   case CONTEXT_BUTTON_PLUGIN_SETTINGS:
     {
-      CURL url(m_vecItems->Get(itemNumber)->GetPath());
-      if(CGUIDialogPluginSettings::ShowAndGetInput(url))
-        Refresh();
-      return true;
-    }
-  case CONTEXT_BUTTON_DELETE_PLUGIN:
-    {
-      CStdString path;
-      URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),path);
-      path.Replace("plugin://","special://home/plugins/");
-      CFileItem item2(path,true);
-      if (CGUIWindowFileManager::DeleteItem(&item2))
-        Refresh(true);
-
+      CURL plugin(m_vecItems->Get(itemNumber)->GetPath());
+      ADDON::AddonPtr addon;
+      if (CAddonMgr::Get().GetAddon(plugin.GetHostName(), addon, ADDON_PLUGIN))
+        if (CGUIDialogAddonSettings::ShowAndGetInput(addon))
+          Refresh();
       return true;
     }
   case CONTEXT_BUTTON_USER1:

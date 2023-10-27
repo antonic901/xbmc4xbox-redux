@@ -22,12 +22,14 @@
 #include "GUIInfoTypes.h"
 #include "utils/CharsetConverter.h"
 #include "GUIInfoManager.h"
+#include "addons/AddonManager.h"
 #include "LocalizeStrings.h"
 #include "GUIColorManager.h"
 #include "GUIListItem.h"
 #include "guilib/SkinInfo.h"
 
 using namespace std;
+using ADDON::CAddonMgr;
 
 CGUIInfoBool::CGUIInfoBool(bool value)
 {
@@ -276,7 +278,7 @@ CStdString AddonReplacer(const CStdString &str)
   size_t length = str.find(" ");
   CStdString id = str.substr(0, length);
   int stringid = atoi(str.substr(length + 1).c_str());
-  return g_localizeStringsTemp.Get(stringid);
+  return CAddonMgr::Get().GetString(id, stringid);
 }
 
 CStdString NumberReplacer(const CStdString &str)
