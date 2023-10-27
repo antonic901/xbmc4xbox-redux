@@ -2090,14 +2090,6 @@ CStdString CSettings::GetSourcesFile() const
   return folder;
 }
 
-CStdString CSettings::GetSkinFolder() const
-{
-  CStdString folder;
-
-  // Get the Current Skin Path
-  return GetSkinFolder(g_guiSettings.GetString("lookandfeel.skin"));
-}
-
 CStdString CSettings::GetScriptsFolder() const
 {
   CStdString folder = "special://home/scripts";

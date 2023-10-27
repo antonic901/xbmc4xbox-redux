@@ -22,7 +22,7 @@
 #include "GUIListLabel.h"
 #include "utils/CharsetConverter.h"
 #include <limits>
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 
 CGUIListLabel::CGUIListLabel(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, const CGUIInfoLabel &info, bool alwaysScroll)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -30,7 +30,7 @@ CGUIListLabel::CGUIListLabel(int parentID, int controlID, float posX, float posY
 {
   m_info = info;
   m_alwaysScroll = alwaysScroll;
-  if (g_SkinInfo.GetVersion() < 2.12f)
+  if (g_SkinInfo->GetVersion() < 2.12f)
   { // this is "correction" for skins using older version of GUILIB. This will break <align> in newer skins like Estuary
     if (labelInfo.align & XBFONT_RIGHT)
       m_label.SetMaxRect(m_posX - m_width, m_posY, m_width, m_height);

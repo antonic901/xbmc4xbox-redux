@@ -20,7 +20,7 @@
 
 #include "pyutil.h"
 #include <wchar.h>
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "tinyXML/tinyxml.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
@@ -120,7 +120,7 @@ namespace PYXBMC
     control.SetAttribute("type", cControlType);
     TiXmlElement filler("description");
     control.InsertEndChild(filler);
-    g_SkinInfo.ResolveIncludes(&control);
+    g_SkinInfo->ResolveIncludes(&control);
 
     // ok, now check for our texture type
     TiXmlElement *pTexture = control.FirstChildElement(cTextureType);

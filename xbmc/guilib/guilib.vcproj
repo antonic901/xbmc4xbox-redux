@@ -410,9 +410,6 @@
 				RelativePath=".\PackedTexture.cpp">
 			</File>
 			<File
-				RelativePath=".\SkinInfo.cpp">
-			</File>
-			<File
 				RelativePath=".\TextureBundle.cpp">
 			</File>
 			<File
@@ -678,9 +675,6 @@
 			</File>
 			<File
 				RelativePath=".\PackedTexture.h">
-			</File>
-			<File
-				RelativePath=".\SkinInfo.h">
 			</File>
 			<File
 				RelativePath=".\StdString.h">

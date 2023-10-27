@@ -20,7 +20,7 @@
 
 #include "include.h"
 #include "GUIIncludes.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "GUIInfoManager.h"
 #include "interfaces/info/SkinVariable.h"
 #include "XMLUtils.h"
@@ -162,11 +162,11 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
         if (value)
         {
           // load this file in as well
-          LoadIncludes(g_SkinInfo.GetSkinPath(node->Attribute("file")));
+          LoadIncludes(g_SkinInfo->GetSkinPath(node->Attribute("file")));
         }
       }
       else
-        LoadIncludes(g_SkinInfo.GetSkinPath(node->Attribute("file")));
+        LoadIncludes(g_SkinInfo->GetSkinPath(node->Attribute("file")));
     }
     node = node->NextSiblingElement("include");
   }
@@ -271,7 +271,7 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool
     const char *file = include->Attribute("file");
     if (file)
     { // we need to load this include from the alternative file
-      LoadIncludes(g_SkinInfo.GetSkinPath(file));
+      LoadIncludes(g_SkinInfo->GetSkinPath(file));
     }
     const char *condition = include->Attribute("condition");
     if (condition)

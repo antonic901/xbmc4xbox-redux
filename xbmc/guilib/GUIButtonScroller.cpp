@@ -25,7 +25,7 @@
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
 #include "GUIInfoManager.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "GUIControlFactory.h"
 
 using namespace std;
@@ -195,13 +195,13 @@ void CGUIButtonScroller::LoadButtons(TiXmlNode *node)
   if (!buttons) return;
 
   // resolve includes
-  g_SkinInfo.ResolveIncludes(buttons);
+  g_SkinInfo->ResolveIncludes(buttons);
 
   TiXmlElement *buttonNode = buttons->FirstChildElement("button");
   while (buttonNode)
   {
     // resolve includes
-    g_SkinInfo.ResolveIncludes(buttonNode);
+    g_SkinInfo->ResolveIncludes(buttonNode);
     CButton *button = new CButton;
     buttonNode->Attribute("id", &button->id);
     const TiXmlNode *childNode = buttonNode->FirstChild("label");

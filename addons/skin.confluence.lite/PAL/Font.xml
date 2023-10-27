@@ -1,0 +1,312 @@
+<fonts>
+	<fontset id="Default" unicode="true">
+	<!-- Normal Fonts -->
+		 <font>
+			<name>font10</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>11</size>
+		</font>
+		
+	 	<font>
+			<name>font12</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>13</size>
+		</font>
+	 	
+	 	<font>
+			<name>font13</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>14</size>
+		</font>
+		
+		<font>
+			<name>font14</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>16</size>
+		</font>
+	 	
+	 	<font>
+			<name>font16</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>22</size>
+		</font>
+	 	<font>
+			<name>font30</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>26</size>
+		</font>
+	 	<font>
+			<name>fontContextMenu</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>16</size>
+		</font>
+
+	<!-- Title Fonts -->
+	 	<font>
+			<name>font10_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>11</size>
+		</font>
+		
+	 	<font>
+			<name>font12_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>13</size>
+		</font>
+		
+	 	<font>
+			<name>font13_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>14</size>
+		</font>
+	 	<font>
+			<name>font24_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>16</size>
+		</font>
+	 	<font>
+			<name>font28_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>19</size>
+		</font>
+	 	<font>
+			<name>font30_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>26</size>
+		</font>
+	 	<font>
+			<name>font35_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>28</size>
+		</font>
+	 	<font>
+			<name>font45caps_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>36</size>
+		</font>
+
+		<font>
+			<name>font_MainMenu</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<style>uppercase</style>
+			<size>30</size>
+		</font>
+		
+	 	<font>
+			<name>WeatherTemp</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>55</size>
+		</font>
+	</fontset>
+
+	<fontset id="Default_NoCaps" unicode="true">
+	<!-- Normal Fonts -->
+	 	 <font>
+			<name>font10</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>11</size>
+		</font>
+		
+	 	<font>
+			<name>font12</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>13</size>
+		</font>
+	 	
+	 	<font>
+			<name>font13</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>14</size>
+		</font>
+		
+		<font>
+			<name>font14</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>16</size>
+		</font>
+	 	
+	 	<font>
+			<name>font16</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>22</size>
+		</font>
+	 	<font>
+			<name>font30</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>26</size>
+		</font>
+	 	<font>
+			<name>fontContextMenu</name>
+			<filename>Roboto-Regular.ttf</filename>
+			<size>16</size>
+		</font>
+
+	<!-- Title Fonts -->
+	 	<font>
+			<name>font10_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>11</size>
+		</font>
+		
+	 	<font>
+			<name>font12_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>13</size>
+		</font>
+		
+	 	<font>
+			<name>font13_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>14</size>
+		</font>
+	 	<font>
+			<name>font24_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>16</size>
+		</font>
+	 	<font>
+			<name>font28_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>19</size>
+		</font>
+	 	<font>
+			<name>font30_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>26</size>
+		</font>
+	 	<font>
+			<name>font35_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>28</size>
+		</font>
+	 	<font>
+			<name>font45caps_title</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>36</size>
+		</font>
+
+		<font>
+			<name>font_MainMenu</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>31</size>
+		</font>
+		
+	 	<font>
+			<name>WeatherTemp</name>
+			<filename>Roboto-Bold.ttf</filename>
+			<size>55</size>
+		</font>
+	</fontset>
+
+	<fontset id="Arial" unicode="true">
+	<!-- Normal Fonts -->
+	 	<font>
+			<name>font10</name>
+			<filename>Arial.ttf</filename>
+			<size>11</size>
+		</font>
+		
+	 	<font>
+			<name>font12</name>
+			<filename>Arial.ttf</filename>
+			<size>13</size>
+		</font>
+	 	
+	 	<font>
+			<name>font13</name>
+			<filename>Arial.ttf</filename>
+			<size>14</size>
+		</font>
+		
+		<font>
+			<name>font14</name>
+			<filename>Arial.ttf</filename>
+			<size>16</size>
+		</font>
+	 	
+	 	<font>
+			<name>font16</name>
+			<filename>Arial.ttf</filename>
+			<size>22</size>
+		</font>
+	 	<font>
+			<name>font30</name>
+			<filename>Arial.ttf</filename>
+			<size>26</size>
+		</font>
+	 	<font>
+			<name>fontContextMenu</name>
+			<filename>Arial.ttf</filename>
+			<size>16</size>
+		</font>
+
+
+	<!-- Title Fonts -->
+	 	<font>
+			<name>font10_title</name>
+			<filename>Arial.ttf</filename>
+			<size>11</size>
+			<style>bold</style>
+		</font>
+		
+	 	<font>
+			<name>font12_title</name>
+			<filename>Arial.ttf</filename>
+			<size>13</size>
+			<style>bold</style>
+		</font>
+		
+	 	<font>
+			<name>font13_title</name>
+			<filename>Arial.ttf</filename>
+			<size>14</size>
+			<style>bold</style>
+		</font>
+	 	<font>
+			<name>font24_title</name>
+			<filename>Arial.ttf</filename>
+			<size>16</size>
+			<style>bold</style>
+		</font>
+		
+	 	<font>
+			<name>font28_title</name>
+			<filename>Arial.ttf</filename>
+			<size>19</size>
+			<style>bold</style>
+		</font>
+	 	<font>
+			<name>font30_title</name>
+			<filename>Arial.ttf</filename>
+			<size>26</size>
+			<style>bold</style>
+		</font>
+	 	<font>
+			<name>font35_title</name>
+			<filename>Arial.ttf</filename>
+			<size>28</size>
+			<style>bold</style>
+		</font>
+	 	<font>
+			<name>font45caps_title</name>
+			<filename>Arial.ttf</filename>
+			<size>36</size>
+			<style>bold</style>
+		</font>
+		
+		<font>
+			<name>font_MainMenu</name>
+			<filename>arial.ttf</filename>
+			<size>28</size>
+			<style>bold</style>
+		</font>
+
+	 	<font>
+			<name>WeatherTemp</name>
+			<filename>Arial.ttf</filename>
+			<size>55</size>
+			<style>bold</style>
+		</font>
+	</fontset>
+	
+</fonts>

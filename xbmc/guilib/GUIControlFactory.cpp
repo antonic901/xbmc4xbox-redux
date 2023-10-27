@@ -60,7 +60,6 @@
 #include "XMLUtils.h"
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"
-#include "SkinInfo.h"
 #include "settings/Settings.h"
 
 using namespace std;

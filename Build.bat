@@ -202,8 +202,10 @@ GOTO:EOF
   ECHO Desktop.ini>>exclude.txt
   ECHO dsstdfx.bin>>exclude.txt
   ECHO exclude.txt>>exclude.txt
+  ECHO addons\skin >>exclude.txt
 
-  xcopy UserData %~1\UserData /E /Q /I /Y /EXCLUDE:exclude.txt
+  mkdir %~1\home
+  xcopy userdata %~1\home\userdata /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy *.txt %~1 /EXCLUDE:exclude.txt
 
   SET RUN_ME=%~1\run_me.bat
@@ -220,25 +222,11 @@ GOTO:EOF
     ECHO subst q: /D >>%RUN_ME%
   )
 
-  cd "skin\Project Mayhem III"
+  cd "addons/skin.confluence.lite"
   CALL build.bat
   cd ..\..
-  xcopy "skin\Project Mayhem III\BUILD\Project Mayhem III" "%~1\skin\Project Mayhem III" /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy "addons/skin.confluence.lite\BUILD\Confluence Lite" "%~1\addons\skin.confluence.lite" /E /Q /I /Y /EXCLUDE:exclude.txt
 
-  cd "skin\PM3.HD"
-  CALL build.bat
-  cd ..\..
-  xcopy "skin\PM3.HD\BUILD\PM3.HD" "%~1\skin\PM3.HD" /E /Q /I /Y /EXCLUDE:exclude.txt
-
-  cd "skin\Confluence"
-  CALL build.bat
-  cd ..\..
-  xcopy "skin\Confluence\BUILD\Confluence" "%~1\skin\Confluence" /E /Q /I /Y /EXCLUDE:exclude.txt
-
-  cd "skin\Confluence Lite"
-  CALL build.bat
-  cd ..\..
-  xcopy "skin\Confluence Lite\BUILD\Confluence Lite" "%~1\skin\Confluence Lite" /E /Q /I /Y /EXCLUDE:exclude.txt
   
   xcopy addons %~1\addons /E /Q /I /Y /EXCLUDE:exclude.txt
   rem xcopy credits %~1\credits /Q /I /Y /EXCLUDE:exclude.txt
@@ -262,7 +250,7 @@ GOTO:EOF
   ECHO ------------------------------------------------------------
   IF EXIST "%COMPRESS%" (
     DEL %COMPRESS_FILE%
-    "%COMPRESS%" %COMPRESS_OPTS% %~1
+    "%COMPRESS%" %COMPRESS_OPTS% "%~1"
   ) ELSE ( 
     ECHO 7-Zip not installed!  Skipping compression...
   )

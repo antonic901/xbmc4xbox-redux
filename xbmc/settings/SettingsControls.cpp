@@ -26,6 +26,7 @@
 #include "settings/GUISettings.h"
 #include "GUIImage.h"
 #include "LocalizeStrings.h"
+#include "addons/AddonManager.h"
 
 CBaseSettingControl::CBaseSettingControl(int id, CSetting *pSetting)
 {
@@ -155,15 +156,21 @@ bool CButtonSettingControl::OnClick()
 
 void CButtonSettingControl::Update()
 {
-  if (m_pSetting->GetControlType() == BUTTON_CONTROL_STANDARD)
-    return ;
   CStdString strText = ((CSettingString *)m_pSetting)->GetData();
-  if (m_pSetting->GetControlType() == BUTTON_CONTROL_PATH_INPUT)
+  if (m_pSetting->GetType() == SETTINGS_TYPE_ADDON)
+  {
+    ADDON::AddonPtr addon;
+    if (ADDON::CAddonMgr::Get().GetAddon(((CSettingAddon *)m_pSetting)->GetData(), addon))
+      strText = addon->Name();
+  }
+  else if (m_pSetting->GetControlType() == BUTTON_CONTROL_PATH_INPUT)
   {
     CStdString shortPath;
     if (CUtil::MakeShortenPath(strText, shortPath, 30 ))
       strText = shortPath;
   }
+  else if (m_pSetting->GetControlType() == BUTTON_CONTROL_STANDARD)
+    return;
   m_pButton->SetLabel2(strText);
 }
 

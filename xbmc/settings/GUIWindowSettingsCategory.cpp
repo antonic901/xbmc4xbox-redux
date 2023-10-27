@@ -45,7 +45,7 @@
 #include "utils/LCDFactory.h"
 #endif
 #include "PlayListPlayer.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "GUIAudioManager.h"
 #include "AudioContext.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"
@@ -56,9 +56,11 @@
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "addons/GUIDialogAddonSettings.h"
+#include "addons/GUIWindowAddonBrowser.h"
 #include "GUIFontManager.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "programs/GUIWindowPrograms.h"
+#include "addons/Visualisation.h"
 #include "addons/AddonManager.h"
 #include "storage/MediaManager.h"
 #include "xbox/network.h"
@@ -72,7 +74,6 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "FileSystem/Directory.h"
-#include "utils/ScraperParser.h"
 #include "FileItem.h"
 #include "GUIToggleButtonControl.h"
 #include "IGUIContainer.h"
@@ -102,10 +103,6 @@ using namespace ADDON;
 #define CONTROL_DEFAULT_EDIT            12
 #define CONTROL_START_BUTTONS           -40
 #define CONTROL_START_CONTROL           -20
-
-#define PREDEFINED_SCREENSAVERS          5
-
-#define RSSEDITOR_PATH "special://home/scripts/RSS Editor/default.py"
 
 CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
     : CGUIWindow(WINDOW_SETTINGS_MYPICTURES, "SettingsCategory.xml")
@@ -640,10 +637,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
     {
       FillInSkinFonts(pSetting);
     }
-    else if (strSetting.Equals("lookandfeel.skin"))
-    {
-      FillInSkins(pSetting);
-    }
     else if (strSetting.Equals("lookandfeel.soundskin"))
     {
       FillInSoundSkins(pSetting);
@@ -671,10 +664,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
     else if (strSetting.Equals("lookandfeel.skincolors"))
     {
       FillInSkinColors(pSetting);
-    }
-    else if (strSetting.Equals("screensaver.mode"))
-    {
-      FillInScreenSavers(pSetting);
     }
     else if (strSetting.Equals("videoplayer.displayresolution") || strSetting.Equals("pictures.displayresolution"))
     {
@@ -803,11 +792,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(22029), PLAYER_MPLAYER);
       pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
       pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("weather.script"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-      FillInWeatherScripts(pControl, g_guiSettings.GetString("weather.script"));
     }
   }
   // update our settings (turns controls on/off as appropriate)
@@ -1014,29 +998,22 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       //   CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       //   if (pControl) pControl->SetEnabled(g_guiSettings.GetString("lookandfeel.font").Right(4) == ".ttf");
     }
-    else if (strSetting.Equals("screensaver.dimlevel"))
+    else if (strSetting.Equals("screensaver.settings"))
     {
-      CGUIControl *pControl = (CGUIControl *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->SetEnabled(g_guiSettings.GetString("screensaver.mode") == "Dim");
-    }
-    else if (strSetting.Equals("screensaver.slideshowpath"))
-    {
-      CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->SetEnabled(g_guiSettings.GetString("screensaver.mode") == "SlideShow");
-    }
-    else if (strSetting.Equals("screensaver.slideshowshuffle"))
-    {
-      CGUIControl *pControl = (CGUIControl *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->SetEnabled(g_guiSettings.GetString("screensaver.mode") == "SlideShow" ||
-                           g_guiSettings.GetString("screensaver.mode") == "Fanart Slideshow");
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      AddonPtr addon;
+      if (CAddonMgr::Get().GetAddon(g_guiSettings.GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
+        pControl->SetEnabled(addon->HasSettings());
+      else
+        pControl->SetEnabled(false);
     }
     else if (strSetting.Equals("screensaver.preview")           ||
              strSetting.Equals("screensaver.usedimonpause")     ||
              strSetting.Equals("screensaver.usemusicvisinstead"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->SetEnabled(g_guiSettings.GetString("screensaver.mode") != "None");
-      if (strSetting.Equals("screensaver.usedimonpause") && g_guiSettings.GetString("screensaver.mode").Equals("Dim"))
+      pControl->SetEnabled(!g_guiSettings.GetString("screensaver.mode").IsEmpty());
+      if (strSetting.Equals("screensaver.usedimonpause") && g_guiSettings.GetString("screensaver.mode").Equals("screensaver.xbmc.builtin.dim"))
         pControl->SetEnabled(false);
     }
     else if (strSetting.Left(16).Equals("weather.areacode"))
@@ -1044,14 +1021,6 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CSettingString *pSetting = (CSettingString *)GetSetting(strSetting)->GetSetting();
       CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(GetSetting(strSetting)->GetID());
       pControl->SetLabel2(g_weatherManager.GetAreaCity(pSetting->GetData()));
-    }
-    else if (strSetting.Equals("weather.script"))
-    {
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-      if (pControl->GetCurrentLabel().Equals(g_localizeStrings.Get(13611)))
-        g_guiSettings.SetString("weather.script", "");
-      else
-        g_guiSettings.SetString("weather.script", pControl->GetCurrentLabel());
     }
     else if (strSetting.Equals("system.leddisableonplayback"))
     {
@@ -1122,7 +1091,9 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     else if (strSetting.Equals("lookandfeel.rssedit"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      pControl->SetEnabled(XFILE::CFile::Exists(RSSEDITOR_PATH) && g_guiSettings.GetBool("lookandfeel.enablerssfeeds"));
+      AddonPtr addon;
+      CAddonMgr::Get().GetAddon("script.rss.editor",addon);
+      pControl->SetEnabled(addon && g_guiSettings.GetBool("lookandfeel.enablerssfeeds"));
     }
     else if (strSetting.Equals("myprograms.dashboard"))
     {
@@ -1161,10 +1132,13 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     }
     else if (strSetting.Equals("weather.scriptsettings"))
     {
-      //// Create our base path
-      //CStdString basepath = "special://home/plugins/weather/" + g_guiSettings.GetString("weather.plugin");
-      //CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      //if (pControl) pControl->SetEnabled(!g_guiSettings.GetString("weather.plugin").IsEmpty() && CScriptSettings::SettingsExist(basepath));
+      AddonPtr addon;
+      if (CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT_WEATHER))
+      {
+        CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+        if (pControl)
+          pControl->SetEnabled(addon->HasSettings());
+      }
     }
     else if (!strSetting.Equals("musiclibrary.enabled")
       && strSetting.Left(13).Equals("musiclibrary."))
@@ -1218,13 +1192,11 @@ void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
       strSearch.Replace(" ", "+");
       CStdString strResult = ((CSettingString *)pSettingControl->GetSetting())->GetData();
       if (g_weatherManager.GetSearchResults(strSearch, strResult))
+      {
         ((CSettingString *)pSettingControl->GetSetting())->SetData(strResult);
-      g_weatherManager.Refresh();
+        g_weatherManager.Refresh();
+      }
     }
-  }
-  else if (strSetting.Equals("weather.script"))
-  {
-    g_weatherManager.Refresh();
   }
   else if (strSetting.Equals("weather.scriptsettings"))
   {
@@ -1237,7 +1209,16 @@ void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
     }
   }
   else if (strSetting.Equals("lookandfeel.rssedit"))
-    CBuiltins::Execute("RunScript("RSSEDITOR_PATH")");
+    CBuiltins::Execute("RunScript(script.rss.editor)");
+  else if (pSettingControl->GetSetting()->GetType() == SETTINGS_TYPE_ADDON)
+  { // prompt for the addon
+    CSettingAddon *setting = (CSettingAddon *)pSettingControl->GetSetting();
+    CStdString addonID;
+    if (CGUIWindowAddonBrowser::SelectAddonID(setting->m_type, addonID, setting->m_type == ADDON_SCREENSAVER || setting->m_type == ADDON_VIZ) == 1)
+      setting->SetData(addonID);
+    else
+      return;
+  }
 
   // if OnClick() returns false, the setting hasn't changed or doesn't
   // require immediate update
@@ -1275,7 +1256,19 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
   CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
 
   // ok, now check the various special things we need to do
-  if (strSetting.Equals("musicplayer.visualisation"))
+  if (pSettingControl->GetSetting()->GetType() == SETTINGS_TYPE_ADDON)
+  {
+    CSettingAddon *pSettingAddon = (CSettingAddon*)pSettingControl->GetSetting();
+    if (pSettingAddon->m_type == ADDON_SKIN)
+    {
+      g_application.ReloadSkin();
+    }
+    else if (pSettingAddon->m_type == ADDON_SCRIPT_WEATHER)
+    {
+      g_weatherManager.Refresh();
+    }
+  }
+  else if (strSetting.Equals("musicplayer.visualisation"))
   { // new visualisation choosen...
     CSettingString *pSettingString = (CSettingString *)pSettingControl->GetSetting();
     CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
@@ -1642,34 +1635,6 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
       g_application.CancelDelayLoadSkin();
     }
   }
-  else if (strSetting.Equals("lookandfeel.skin"))
-  { // new skin choosen...
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    CStdString strSkin = pControl->GetCurrentLabel();
-    CStdString strSkinPath = "Q:\\skin\\" + strSkin;
-    if (g_SkinInfo.Check(strSkinPath))
-    {
-      m_strErrorMessage.Empty();
-      pControl->SettingsCategorySetSpinTextColor(pControl->GetButtonLabelInfo().textColor);
-      if (strSkin != ".svn" && strSkin != g_guiSettings.GetString("lookandfeel.skin"))
-      {
-        m_strNewSkin = strSkin;
-        g_application.DelayLoadSkin();
-      }
-      else
-      { // Do not reload the skin we are already using
-        m_strNewSkin.Empty();
-        g_application.CancelDelayLoadSkin();
-      }
-    }
-    else
-    {
-      m_strErrorMessage.Format("Incompatible skin. We require skins of version %0.2f or higher", g_SkinInfo.GetMinVersion());
-      m_strNewSkin.Empty();
-      g_application.CancelDelayLoadSkin();
-      pControl->SettingsCategorySetSpinTextColor(pControl->GetButtonLabelInfo().disabledColor);
-    }
-  }
   else if (strSetting.Equals("lookandfeel.soundskin"))
   { // new sound skin choosen...
     CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
@@ -1794,38 +1759,15 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
   { // reset display
     g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
   }
-  else if (strSetting.Equals("screensaver.mode"))
-  {
-    CSettingString *pSettingString = (CSettingString *)pSettingControl->GetSetting();
-    CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-    int iValue = pControl->GetValue();
-    CStdString strScreenSaver;
-    if (iValue == 0)
-      strScreenSaver = "None";
-    else if (iValue == 1)
-      strScreenSaver = "Dim";
-    else if (iValue == 2)
-      strScreenSaver = "Black";
-    else if (iValue == 3)
-      strScreenSaver = "SlideShow"; // PictureSlideShow
-    else if (iValue == 4)
-      strScreenSaver = "Fanart Slideshow"; //Fanart Slideshow
-    else
-      strScreenSaver = pControl->GetCurrentLabel();
-    pSettingString->SetData(strScreenSaver);
-  }
   else if (strSetting.Equals("screensaver.preview"))
   {
     g_application.ActivateScreenSaver(true);
   }
-  else if (strSetting.Equals("screensaver.slideshowpath"))
+  else if (strSetting.Equals("screensaver.settings"))
   {
-    CSettingString *pSettingString = (CSettingString *)pSettingControl->GetSetting();
-    CStdString path = pSettingString->GetData();
-    VECSOURCES shares = g_settings.m_pictureSources;
-    g_mediaManager.GetLocalDrives(shares);
-    if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(pSettingString->m_iHeadingString), path))
-      pSettingString->SetData(path);
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(g_guiSettings.GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
+      CGUIDialogAddonSettings::ShowAndGetInput(addon);
   }
   else if (strSetting.Equals("myprograms.dashboard"))
   {
@@ -2332,7 +2274,7 @@ void CGUIWindowSettingsCategory::FillInSkinFonts(CSetting *pSetting)
 
   m_strNewSkinFontSet.Empty();
 
-  CStdString strPath = g_SkinInfo.GetSkinPath("Font.xml");
+  CStdString strPath = g_SkinInfo->GetSkinPath("Font.xml");
 
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(strPath))
@@ -2387,53 +2329,6 @@ void CGUIWindowSettingsCategory::FillInSkinFonts(CSetting *pSetting)
     pControl->SetValue(1);
     pControl->SetEnabled(false);
   }
-}
-
-void CGUIWindowSettingsCategory::FillInSkins(CSetting *pSetting)
-{
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-  pControl->SetType(SPIN_CONTROL_TYPE_TEXT);
-  pControl->Clear();
-  pControl->SetShowRange(true);
-
-  m_strNewSkin.Empty();
-
-  //find skins...
-  CFileItemList items;
-  CDirectory::GetDirectory("special://xbmc/skin/", items);
-  if (!CSpecialProtocol::XBMCIsHome())
-    CDirectory::GetDirectory("special://home/skin/", items);
-
-  int iCurrentSkin = 0;
-  int iSkin = 0;
-  vector<CStdString> vecSkins;
-  for (int i = 0; i < items.Size(); ++i)
-  {
-    CFileItemPtr pItem = items[i];
-    if (pItem->m_bIsFolder)
-    {
-      if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
-      if (strcmpi(pItem->GetLabel().c_str(), "fonts") == 0) continue;
-      if (strcmpi(pItem->GetLabel().c_str(), "media") == 0) continue;
-      //   if (g_SkinInfo.Check(pItem->GetPath()))
-      //   {
-      vecSkins.push_back(pItem->GetLabel());
-      //   }
-    }
-  }
-
-  sort(vecSkins.begin(), vecSkins.end(), sortstringbyname());
-  for (unsigned int i = 0; i < vecSkins.size(); ++i)
-  {
-    CStdString strSkin = vecSkins[i];
-    if (strcmpi(strSkin.c_str(), g_guiSettings.GetString("lookandfeel.skin").c_str()) == 0)
-    {
-      iCurrentSkin = iSkin;
-    }
-    pControl->AddLabel(strSkin, iSkin++);
-  }
-  pControl->SetValue(iCurrentSkin);
-  return ;
 }
 
 void CGUIWindowSettingsCategory::FillInSoundSkins(CSetting *pSetting)
@@ -2788,67 +2683,6 @@ void CGUIWindowSettingsCategory::FillInLanguages(CSetting *pSetting)
   pControl->SetValue(iCurrentLang);
 }
 
-void CGUIWindowSettingsCategory::FillInScreenSavers(CSetting *pSetting)
-{ // Screensaver mode
-  CSettingString *pSettingString = (CSettingString*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
-  pControl->Clear();
-
-  pControl->AddLabel(g_localizeStrings.Get(351), 0); // Off
-  pControl->AddLabel(g_localizeStrings.Get(352), 1); // Dim
-  pControl->AddLabel(g_localizeStrings.Get(353), 2); // Black
-  pControl->AddLabel(g_localizeStrings.Get(108), 3); // PictureSlideShow
-  pControl->AddLabel(g_localizeStrings.Get(20425), 4); // Fanart Slideshow
-
-  int iCurrentScr = -1;
-  vector<CStdString> vecScr;
-  int i;
-  VECADDONS addons;
-
-  CAddonMgr::Get().GetAddons(ADDON_SCREENSAVER, addons);
-  if (!addons.empty())
-  {
-    for (unsigned int i = 0; i < addons.size(); i++)
-    {
-      const AddonPtr addon = addons.at(i);
-      vecScr.push_back(addon->Name());
-    }
-  }
-
-  CStdString strDefaultScr = pSettingString->GetData();
-
-  sort(vecScr.begin(), vecScr.end(), sortstringbyname());
-  for (i = 0; i < (int) vecScr.size(); ++i)
-  {
-    CStdString strScr = vecScr[i];
-
-    if (strcmpi(strScr.c_str(), strDefaultScr.c_str()) == 0)
-      iCurrentScr = i + PREDEFINED_SCREENSAVERS;
-
-    pControl->AddLabel(strScr, i + PREDEFINED_SCREENSAVERS);
-  }
-
-  // if we can't find the screensaver previously configured
-  // then fallback to turning the screensaver off.
-  if (iCurrentScr < 0)
-  {
-    if (strDefaultScr == "Dim")
-      iCurrentScr = 1;
-    else if (strDefaultScr == "Black")
-      iCurrentScr = 2;
-    else if (strDefaultScr == "SlideShow") // PictureSlideShow
-      iCurrentScr = 3;
-    else if (strDefaultScr == "Fanart Slideshow") // Fanart slideshow
-      iCurrentScr = 4;
-    else
-    {
-      iCurrentScr = 0;
-      pSettingString->SetData("None");
-    }
-  }
-  pControl->SetValue(iCurrentScr);
-}
-
 void CGUIWindowSettingsCategory::FillInFTPServerUser(CSetting *pSetting)
 {
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
@@ -3002,7 +2836,7 @@ void CGUIWindowSettingsCategory::FillInSkinColors(CSetting *pSetting)
   vector<CStdString> vecColors;
 
   CStdString strPath;
-  URIUtils::AddFileToFolder(g_SkinInfo.GetBaseDir(),"colors",strPath);
+  URIUtils::AddFileToFolder(g_SkinInfo->Path(),"colors",strPath);
 
   CFileItemList items;
   CDirectory::GetDirectory(strPath, items, ".xml");
@@ -3041,7 +2875,7 @@ void CGUIWindowSettingsCategory::FillInStartupWindow(CSetting *pSetting)
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
   pControl->Clear();
 
-  const vector<CSkinInfo::CStartupWindow> &startupWindows = g_SkinInfo.GetStartupWindows();
+  const vector<CSkinInfo::CStartupWindow> &startupWindows = g_SkinInfo->GetStartupWindows();
 
   // TODO: How should we localize this?
   // In the long run there is no way to do it really without the skin having some
@@ -3060,8 +2894,6 @@ void CGUIWindowSettingsCategory::FillInStartupWindow(CSetting *pSetting)
     CStdString windowName((*it).m_name);
     if (StringUtils::IsNaturalNumber(windowName))
       windowName = g_localizeStrings.Get(atoi(windowName.c_str()));
-    else if (windowName.Equals("Settings"))
-      windowName = g_localizeStrings.Get(5);
     int windowID((*it).m_id);
     pControl->AddLabel(windowName, windowID);
     if (pSettingInt->GetData() == windowID)
@@ -3121,34 +2953,4 @@ void CGUIWindowSettingsCategory::FillInViewModes(CSetting *pSetting, int windowI
   if (!found)
     pSettingInt->SetData(foundType ? foundType : (DEFAULT_VIEW_AUTO));
   pControl->SetValue(pSettingInt->GetData());
-}
-
-void CGUIWindowSettingsCategory::FillInWeatherScripts(CGUISpinControlEx *pControl, const CStdString& strSelected)
-{
-  VECADDONS addons;
-  int j=0;
-  int k=0;
-  pControl->Clear();
-  // add our disable option
-  pControl->AddLabel(g_localizeStrings.Get(13611), j++);
-
-  //find weather scripts....
-  CAddonMgr::Get().GetAddons(ADDON_SCRIPT, addons);
-  if (!addons.empty())
-  {
-    for (unsigned int i = 0; i < addons.size(); i++)
-    {
-      AddonPtr addon = addons.at(i);  
-      // create the full path to the plugin
-      if (XFILE::CFile::Exists(addon->LibPath()))
-      {
-        // is this the users choice
-        if (addon->Name().Equals(strSelected))
-          k = j;
-        // we want to use the plugins folder as name
-        pControl->AddLabel(addon->Name(), j++);
-      }
-    }
-  }
-  pControl->SetValue(k);
 }

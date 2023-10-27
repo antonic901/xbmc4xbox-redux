@@ -53,7 +53,7 @@
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"
 #include "GUITextLayout.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "lib/libPython/XBPython.h"
 #include "input/ButtonTranslator.h"
 #include "GUIAudioManager.h"
@@ -1110,22 +1110,6 @@ HRESULT CApplication::Create(HWND hWnd)
   if (!CButtonTranslator::GetInstance().Load())
     FatalErrorHandler(true, false, true);
 
-  // check the skin file for testing purposes
-  CStdString strSkinBase = "special://xbmc/skin/";
-  CStdString strSkinPath = strSkinBase + g_guiSettings.GetString("lookandfeel.skin");
-  CLog::Log(LOGINFO, "Checking skin version of: %s", g_guiSettings.GetString("lookandfeel.skin").c_str());
-  if (!g_SkinInfo.Check(strSkinPath))
-  {
-    // reset to the default skin (DEFAULT_SKIN)
-    CLog::Log(LOGINFO, "The above skin isn't suitable - checking the version of the default: %s", DEFAULT_SKIN);
-    strSkinPath = strSkinBase + DEFAULT_SKIN;
-    if (!g_SkinInfo.Check(strSkinPath))
-    {
-      g_LoadErrorStr.Format("No suitable skin version found.\nWe require at least version %5.4f \n", g_SkinInfo.GetMinVersion());
-      FatalErrorHandler(true, false, true);
-    }
-  }
-
   if (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
   {
     // Oh uh - doesn't look good for starting in their wanted screenmode
@@ -1272,8 +1256,8 @@ HRESULT CApplication::Initialize()
 
   g_windowManager.Add(new CGUIWindowHome);                     // window id = 0
 
-  CLog::Log(LOGNOTICE, "load default skin:[%s]", g_guiSettings.GetString("lookandfeel.skin").c_str());
-  LoadSkin(g_guiSettings.GetString("lookandfeel.skin"));
+  if (!LoadSkin(g_guiSettings.GetString("lookandfeel.skin")))
+    LoadSkin(DEFAULT_SKIN);
 
   g_windowManager.Add(new CGUIWindowPrograms);                 // window id = 1
   g_windowManager.Add(new CGUIWindowPictures);                 // window id = 2
@@ -1372,7 +1356,7 @@ HRESULT CApplication::Initialize()
   }
   else
   {
-    g_windowManager.ActivateWindow(g_SkinInfo.GetFirstWindow());
+    g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
   }
 
   g_pythonParser.bStartup = true;
@@ -1885,8 +1869,27 @@ void CApplication::ReloadSkin()
   }
 }
 
-void CApplication::LoadSkin(const CStdString& strSkin)
+bool CApplication::LoadSkin(const CStdString& skinID)
 {
+  AddonPtr addon;
+  if (CAddonMgr::Get().GetAddon(skinID, addon))
+  {
+    LoadSkin(boost::dynamic_pointer_cast<ADDON::CSkinInfo>(addon));
+    return true;
+  }
+  return false;
+}
+
+void CApplication::LoadSkin(const SkinPtr& skin)
+{
+  if (!skin)
+  {
+    CLog::Log(LOGERROR, "failed to load requested skin, fallback to \"%s\" skin", DEFAULT_SKIN);
+    g_guiSettings.SetString("lookandfeel.skin", DEFAULT_SKIN);
+    LoadSkin(DEFAULT_SKIN);
+    return ;
+  }
+
   bool bPreviousPlayingState=false;
   bool bPreviousRenderingState=false;
   if (g_application.m_pPlayer && g_application.IsPlayingVideo())
@@ -1909,12 +1912,6 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   CSingleLock lock(g_graphicsContext);
 
   m_skinReloadTime = 0;
-
-  CStdString strHomePath;
-  CStdString strSkinPath = "Q:\\skin\\" + strSkin;
-
-  CLog::Log(LOGINFO, "  load skin from:%s", strSkinPath.c_str());
-
   // save the current window details
   int currentWindow = g_windowManager.GetActiveWindow();
   vector<int> currentModelessWindows;
@@ -1923,12 +1920,14 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   CLog::Log(LOGINFO, "  delete old skin...");
   UnloadSkin();
 
-  // Load in the skin.xml file if it exists
-  g_SkinInfo.Load(strSkinPath);
+  CLog::Log(LOGINFO, "  load skin from:%s", skin->Path().c_str());
+
+  g_SkinInfo = skin;
+  g_SkinInfo->Start();
 
   CLog::Log(LOGINFO, "  load fonts for skin...");
-  g_graphicsContext.SetMediaDir(strSkinPath);
-  g_directoryCache.ClearSubPaths(strSkinPath);
+  g_graphicsContext.SetMediaDir(skin->Path());
+  g_directoryCache.ClearSubPaths(skin->Path());
   if (g_langInfo.ForceUnicodeFont() && !g_fontManager.IsFontSetUnicode(g_guiSettings.GetString("lookandfeel.font")))
   {
     CLog::Log(LOGINFO, "    language needs a ttf font, loading first ttf font available");
@@ -1948,7 +1947,7 @@ void CApplication::LoadSkin(const CStdString& strSkin)
 
   // load in the skin strings
   CStdString langPath;
-  URIUtils::AddFileToFolder(strSkinPath, "language", langPath);
+  URIUtils::AddFileToFolder(skin->Path(), "language", langPath);
   URIUtils::AddSlashAtEnd(langPath);
 
   g_localizeStrings.LoadSkinStrings(langPath, g_guiSettings.GetString("locale.language"));
@@ -1957,19 +1956,6 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   QueryPerformanceCounter(&start);
 
   CLog::Log(LOGINFO, "  load new skin...");
-  CGUIWindowHome *pHome = (CGUIWindowHome *)g_windowManager.GetWindow(WINDOW_HOME);
-  if (!g_SkinInfo.Check(strSkinPath) || !pHome || !pHome->Load("Home.xml"))
-  {
-    // failed to load home.xml
-    // fallback to default skin
-    if ( strcmpi(strSkin.c_str(), DEFAULT_SKIN) != 0)
-    {
-      CLog::Log(LOGERROR, "failed to load home.xml for skin:%s, fallback to \"%s\" skin", strSkin.c_str(), DEFAULT_SKIN);
-      g_guiSettings.SetString("lookandfeel.skin", DEFAULT_SKIN);
-      LoadSkin(g_guiSettings.GetString("lookandfeel.skin"));
-      return ;
-    }
-  }
 
   // Load the user windows
   LoadUserWindows();
@@ -1993,7 +1979,7 @@ void CApplication::LoadSkin(const CStdString& strSkin)
   g_audioManager.Initialize(CAudioContext::DEFAULT_DEVICE);
   g_audioManager.Load();
 
-  if (g_SkinInfo.HasSkinFile("DialogFullScreenInfo.xml"))
+  if (g_SkinInfo->HasSkinFile("DialogFullScreenInfo.xml"))
     g_windowManager.Add(new CGUIDialogFullScreenInfo);
 
   CLog::Log(LOGINFO, "  skin loaded...");
@@ -2057,7 +2043,7 @@ bool CApplication::LoadUserWindows()
 {
   // Start from wherever home.xml is
   std::vector<CStdString> vecSkinPath;
-  g_SkinInfo.GetSkinPaths(vecSkinPath);
+  g_SkinInfo->GetSkinPaths(vecSkinPath);
   for (unsigned int i = 0;i < vecSkinPath.size();++i)
   {
     CLog::Log(LOGINFO, "Loading user windows, path %s", vecSkinPath[i].c_str());
@@ -2303,7 +2289,7 @@ void CApplication::RenderMemoryStatus()
     GlobalMemoryStatus(&stat);
     info.Format("FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, g_infoManager.GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
     
-    if(g_SkinInfo.IsDebugging())
+    if(g_SkinInfo->IsDebugging())
     {
       if (!info.IsEmpty())
         info += "\n";
@@ -5868,11 +5854,11 @@ void CApplication::InitDirectoriesXbox()
 
   // map our special drives to the correct drive letter
   CSpecialProtocol::SetXBMCPath(install_path);
-  CSpecialProtocol::SetHomePath(install_path);
+  CSpecialProtocol::SetHomePath("Q:\\home");
   CSpecialProtocol::SetTempPath("Z:\\");
 
   // First profile is always the Master Profile
-  CSpecialProtocol::SetMasterProfilePath("Q:\\UserData");
+  CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
 
   g_settings.LoadProfiles(PROFILES_FILE);
 }

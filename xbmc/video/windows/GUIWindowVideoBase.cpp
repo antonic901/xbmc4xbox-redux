@@ -60,7 +60,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
 
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 
 using namespace std;
 using namespace XFILE;

@@ -30,7 +30,7 @@
 #include "GUIEditControl.h"
 #endif
 
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "GUIInfoManager.h"
 #include "utils/SingleLock.h"
 #include "utils/TimeUtils.h"
@@ -100,7 +100,7 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
   if (bContainsPath)
     strPath = strFileName;
   else
-    strPath = g_SkinInfo.GetSkinPath(strFileName, &resToUse);
+    strPath = g_SkinInfo->GetSkinPath(strFileName, &resToUse);
 
   if (!bContainsPath)
     m_coordsRes = resToUse;
@@ -152,7 +152,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
   g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
 
   // Resolve any includes that may be present and save conditions used to do it
-  g_SkinInfo.ResolveIncludes(pRootElement, &m_xmlIncludeConditions);
+  g_SkinInfo->ResolveIncludes(pRootElement, &m_xmlIncludeConditions);
   // now load in the skin file
   SetDefaults();
 
@@ -203,7 +203,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     else if (strValue == "coordinates")
     {
       // resolve any includes within coordinates tag (such as multiple origin includes)
-      g_SkinInfo.ResolveIncludes(pChild);
+      g_SkinInfo->ResolveIncludes(pChild);
 
       XMLUtils::GetFloat(pChild, "posx", m_posX);
       XMLUtils::GetFloat(pChild, "posy", m_posY);
@@ -231,7 +231,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     else if (strValue == "controls")
     {
       // resolve any includes within controls tag (such as whole <control> includes)
-      g_SkinInfo.ResolveIncludes(pChild);
+      g_SkinInfo->ResolveIncludes(pChild);
 
       TiXmlElement *pControl = pChild->FirstChildElement();
       while (pControl)

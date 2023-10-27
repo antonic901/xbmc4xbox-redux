@@ -23,7 +23,7 @@
 #include "GUIListItemLayout.h"
 #include "FileItem.h"
 #include "GUIControlFactory.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "GUIInfoManager.h"
 #include "GUIListLabel.h"
 #include "GUIImage.h"
@@ -149,7 +149,7 @@ void CGUIListItemLayout::LoadControl(TiXmlElement *child, CGUIControlGroup *grou
 void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focused)
 {
   m_focused = focused;
-  g_SkinInfo.ResolveIncludes(layout);
+  g_SkinInfo->ResolveIncludes(layout);
   layout->QueryFloatAttribute("width", &m_width);
   layout->QueryFloatAttribute("height", &m_height);
   const char *condition = layout->Attribute("condition");

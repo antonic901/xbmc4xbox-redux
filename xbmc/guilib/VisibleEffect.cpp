@@ -21,7 +21,7 @@
 #include "include.h"
 #include "VisibleEffect.h"
 #include "GUIInfoManager.h"
-#include "SkinInfo.h" // for the effect time adjustments
+#include "addons/Skin.h" // for the effect time adjustments
 #include "guiImage.h" // for FRECT
 #include "Tween.h"
 
@@ -36,8 +36,8 @@ CAnimEffect::CAnimEffect(const TiXmlElement *node, EFFECT_TYPE effect)
   // time and delay
 
   float temp;
-  if (TIXML_SUCCESS == node->QueryFloatAttribute("time", &temp)) m_length = (unsigned int)(temp * g_SkinInfo.GetEffectsSlowdown());
-  if (TIXML_SUCCESS == node->QueryFloatAttribute("delay", &temp)) m_delay = (unsigned int)(temp * g_SkinInfo.GetEffectsSlowdown());
+  if (TIXML_SUCCESS == node->QueryFloatAttribute("time", &temp)) m_length = (unsigned int)(temp * g_SkinInfo->GetEffectsSlowdown());
+  if (TIXML_SUCCESS == node->QueryFloatAttribute("delay", &temp)) m_delay = (unsigned int)(temp * g_SkinInfo->GetEffectsSlowdown());
 
   m_pTweener = GetTweener(node);
 }

@@ -80,7 +80,7 @@
 #include "TextureManager.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -4224,7 +4224,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
       if(strThumb.IsEmpty() && !item->GetIconImage().IsEmpty())
       {
         strThumb = item->GetIconImage();
-        if (g_SkinInfo.GetVersion() <= 2.10)
+        if (g_SkinInfo->GetVersion() <= 2.10)
           strThumb.Insert(strThumb.Find("."), "Big");
       }
       return strThumb;

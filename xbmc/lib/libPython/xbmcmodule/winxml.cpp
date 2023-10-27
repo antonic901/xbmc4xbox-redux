@@ -20,16 +20,16 @@
 
 #include "system.h"
 #include "winxml.h"
-#include "lib/libPython/python/Include/Python.h"
+#include "lib/libPython/Python/Include/Python.h"
 #include "../XBPythonDll.h"
 #include "pyutil.h"
 #include "GUIPythonWindowXML.h"
-#include "SkinInfo.h"
-#include "Util.h"
+#include "addons/Skin.h"
+#include "URIUtils.h"
 #include "FileSystem/File.h"
-#include "utils/URIUtils.h"
 
 using namespace std;
+using namespace ADDON;
 
 #define ACTIVE_WINDOW g_windowManager.GetActiveWindow()
 
@@ -50,58 +50,61 @@ namespace PYXBMC
   {
     WindowXML *self;
 
-    self = (WindowXML*)type->tp_alloc(type, 0);    
+    self = (WindowXML*)type->tp_alloc(type, 0);
     if (!self) return NULL;
+
+    new(&self->sXMLFileName) string();
+    new(&self->sFallBackPath) string();
+    new(&self->vecControls) std::vector<Control*>();
+
     self->iWindowId = -1;
     PyObject* pyOXMLname = NULL;
     PyObject* pyOname = NULL;
     PyObject* pyDName = NULL;
     PyObject* pyRes = NULL;
+    char bForceDefaultSkin = false;
 
     string strXMLname, strFallbackPath;
     string strDefault = "Default";
     string resolution = "720p";
 
-    if (!PyArg_ParseTuple(args, (char*)"OO|OO", &pyOXMLname, &pyOname, &pyDName, &pyRes)) return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"OO|OOb", &pyOXMLname, &pyOname, &pyDName, &pyRes, &bForceDefaultSkin )) return NULL;
 
     PyXBMCGetUnicodeString(strXMLname, pyOXMLname);
     PyXBMCGetUnicodeString(strFallbackPath, pyOname);
     if (pyDName) PyXBMCGetUnicodeString(strDefault, pyDName);
     if (pyRes) PyXBMCGetUnicodeString(resolution, pyRes);
 
-    RESOLUTION res = INVALID;
-    CStdString strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res);
-
     // Check to see if the XML file exists in current skin. If not use fallback path to find a skin for the script
+    RESOLUTION res;
+    CStdString strSkinPath = g_SkinInfo->GetSkinPath(strXMLname, &res);
+ 
     if (!XFILE::CFile::Exists(strSkinPath))
     {
       // Check for the matching folder for the skin in the fallback skins folder
       CStdString fallbackPath = URIUtils::AddFileToFolder(strFallbackPath, "resources");
       fallbackPath = URIUtils::AddFileToFolder(fallbackPath, "skins");
-      CStdString basePath = URIUtils::AddFileToFolder(fallbackPath, URIUtils::GetFileName(g_SkinInfo.GetBaseDir()));
-      strSkinPath = g_SkinInfo.GetSkinPath(strXMLname, &res, basePath);
+      CStdString basePath = URIUtils::AddFileToFolder(fallbackPath, g_SkinInfo->ID());
+      strSkinPath = g_SkinInfo->GetSkinPath(strXMLname, &res, basePath);
+
       if (!XFILE::CFile::Exists(strSkinPath))
       {
         // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
-        CStdString basePath = URIUtils::AddFileToFolder(fallbackPath, strDefault);
-        res = CSkinInfo::TranslateResolution(resolution, HDTV_720p);
-        CSkinInfo skinInfo;
+        CStdString str("none");
+        AddonProps props(str, ADDON_SKIN, str);
+        CSkinInfo skinInfo(props, CSkinInfo::TranslateResolution(resolution, HDTV_720p));
+        basePath = URIUtils::AddFileToFolder(fallbackPath, strDefault);
+        
+        skinInfo.Start(basePath);
         strSkinPath = skinInfo.GetSkinPath(strXMLname, &res, basePath);
         if (!XFILE::CFile::Exists(strSkinPath))
         {
-          skinInfo.Load(basePath);
-          strSkinPath = skinInfo.GetSkinPath(strXMLname, &res, basePath);
-
-          if (!XFILE::CFile::Exists(strSkinPath))
-          {
-            CStdString error;
-            error.Format("XML file(%s) for window is missing", strSkinPath);
-            PyErr_SetString(PyExc_TypeError, error.c_str());
-            return NULL;
-          }
+          PyErr_SetString(PyExc_TypeError, "XML File for Window is missing");
+          return NULL;
         }
       }
     }
+
     self->sFallBackPath = strFallbackPath;
     self->sXMLFileName = strSkinPath;
     self->bUsingXML = true;
@@ -110,6 +113,10 @@ namespace PYXBMC
     if (!Window_CreateNewWindow((Window*)self, false))
     {
       // error is already set by Window_CreateNewWindow, just release the memory
+      self->vecControls.clear();
+      self->vecControls.~vector();
+      self->sFallBackPath.~string();
+      self->sXMLFileName.~string();
       self->ob_type->tp_free((PyObject*)self);
       return NULL;
     }
@@ -372,17 +379,17 @@ namespace PYXBMC
   PyDoc_STRVAR(windowXML__doc__,
     "WindowXML class.\n"
     "\n"
-    "WindowXML(self, xmlFilename, scriptPath[, defaultSkin, defaultRes]) -- Create a new WindowXML script.\n"
+    "WindowXML(self, xmlFilename, scriptPath[, defaultSkin, forceFallback) -- Create a new WindowXML script.\n"
     "\n"
     "xmlFilename     : string - the name of the xml file to look for.\n"
     "scriptPath      : string - path to script. used to fallback to if the xml doesn't exist in the current skin. (eg os.getcwd())\n"
     "defaultSkin     : [opt] string - name of the folder in the skins path to look in for the xml. (default='Default')\n"
-    "defaultRes      : [opt] string - default skins resolution. (default='720p')\n"
+    "forceFallback   : [opt] boolean - if true then it will look only in the defaultSkin folder. (default=False)\n"
     "\n"
-    "*Note, skin folder structure is eg(resources/skins/Default/720p)\n"
+    "*Note, skin folder structure is eg(resources/skins/Default/PAL)\n"
     "\n"
     "example:\n"
-    " - ui = GUI('script-Lyrics-main.xml', os.getcwd(), 'LCARS', 'PAL')\n"
+    " - ui = GUI('script-AMT-main.xml', os.getcwd(), 'LCARS', True)\n"
     "   ui.doModal()\n"
     "   del ui\n");
 

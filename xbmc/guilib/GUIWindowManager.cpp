@@ -29,7 +29,7 @@
 #include "utils/URIUtils.h"
 #include "settings/GUISettings.h"
 #include "settings/Settings.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "utils/SingleLock.h"
 #include "utils/Variant.h"
 
@@ -382,7 +382,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   }
   if (iWindowID == WINDOW_START)
   { // virtual start window
-    iWindowID = g_SkinInfo.GetStartWindow();
+    iWindowID = g_SkinInfo->GetStartWindow();
   }
 
   // first check existence of the window we wish to activate.

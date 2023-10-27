@@ -26,7 +26,7 @@
 #include "LocalizeStrings.h"
 #include "GUIColorManager.h"
 #include "GUIListItem.h"
-#include "guilib/SkinInfo.h"
+#include "addons/Skin.h"
 
 using namespace std;
 using ADDON::CAddonMgr;
@@ -106,7 +106,7 @@ void CGUIInfoColor::Parse(const CStdString &label, int context)
     label2 = label.Mid(5, label.length() - 6);
     m_info = g_infoManager.TranslateSkinVariableString(label2, context);
     if (!m_info)
-      m_info = g_infoManager.RegisterSkinVariableString(g_SkinInfo.CreateSkinVariable(label2, context));
+      m_info = g_infoManager.RegisterSkinVariableString(g_SkinInfo->CreateSkinVariable(label2, context));
     return;
   }
 
@@ -356,7 +356,7 @@ void CGUIInfoLabel::Parse(const CStdString &label, int context)
         {
           info = g_infoManager.TranslateSkinVariableString(params[0], context);
           if (info == 0)
-            info = g_infoManager.RegisterSkinVariableString(g_SkinInfo.CreateSkinVariable(params[0], context));
+            info = g_infoManager.RegisterSkinVariableString(g_SkinInfo->CreateSkinVariable(params[0], context));
           if (info == 0) // skinner didn't define this conditional label!
             CLog::Log(LOGWARNING, "Label Formating: $VAR[%s] is not defined", params[0].c_str());
         }

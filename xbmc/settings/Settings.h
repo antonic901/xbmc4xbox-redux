@@ -22,7 +22,7 @@
 #define PRE_SKIN_VERSION_9_10_COMPATIBILITY 1
 #define PRE_SKIN_VERSION_11_COMPATIBILITY 1
 
-#define DEFAULT_SKIN "Confluence Lite"
+#define DEFAULT_SKIN           "skin.confluence.lite"
 #define DEFAULT_WEATHER_PLUGIN "Weather.com (standard)"
 
 #include "settings/VideoSettings.h"
@@ -510,7 +510,6 @@ public:
   CStdString GetProfilesThumbFolder() const;
   CStdString GetLibraryFolder() const;
   CStdString GetSourcesFile() const;
-  CStdString GetSkinFolder() const;
   CStdString GetSkinFolder(const CStdString& skinName) const;
   CStdString GetScriptsFolder() const;
   CStdString GetVideoFanartFolder() const;

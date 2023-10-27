@@ -542,7 +542,7 @@ void CGUISettings::Initialize()
   // appearance settings
   AddGroup(7, 480);
   CSettingsCategory* laf = AddCategory(7,"lookandfeel", 166);
-  AddString(laf, "lookandfeel.skin",166,DEFAULT_SKIN, SPIN_CONTROL_TEXT);
+  AddDefaultAddon(laf, "lookandfeel.skin",166,DEFAULT_SKIN, ADDON_SKIN);
   AddString(laf, "lookandfeel.skintheme",15111,"SKINDEFAULT", SPIN_CONTROL_TEXT);
   AddString(laf, "lookandfeel.skincolors",14078, "SKINDEFAULT", SPIN_CONTROL_TEXT);
   AddString(laf, "lookandfeel.font",13303,"Default", SPIN_CONTROL_TEXT);
@@ -984,23 +984,20 @@ void CGUISettings::LoadFromXML(TiXmlElement *pRootElement, mapIter &it, bool adv
     if (pChild)
     {
       const TiXmlElement *pGrandChild = pChild->FirstChildElement(strSplit[1].c_str());
-      if (pGrandChild && pGrandChild->FirstChild())
+      if (pGrandChild)
       {
-        CStdString strValue = pGrandChild->FirstChild()->Value();
-        if (strValue.size() )
-        {
-          if (strValue != "-")
-          { // update our item
-            if ((*it).second->GetType() == SETTINGS_TYPE_PATH)
-            { // check our path
-              int pathVersion = 0;
-              pGrandChild->Attribute("pathversion", &pathVersion);
-              strValue = CSpecialProtocol::ReplaceOldPath(strValue, pathVersion);
-            }
-            (*it).second->FromString(strValue);
-            if (advanced)
-              (*it).second->SetAdvanced();
+        CStdString strValue = pGrandChild->FirstChild() ? pGrandChild->FirstChild()->Value() : "";
+        if (strValue != "-")
+        { // update our item
+          if ((*it).second->GetType() == SETTINGS_TYPE_PATH)
+          { // check our path
+            int pathVersion = 0;
+            pGrandChild->Attribute("pathversion", &pathVersion);
+            strValue = CSpecialProtocol::ReplaceOldPath(strValue, pathVersion);
           }
+          (*it).second->FromString(strValue);
+          if (advanced)
+            (*it).second->SetAdvanced();
         }
       }
     }

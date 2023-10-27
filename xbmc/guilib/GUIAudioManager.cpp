@@ -28,6 +28,7 @@
 #include "utils/SingleLock.h"
 #include "../xbmc/utils/URIUtils.h"
 #include "../xbmc/FileSystem/Directory.h"
+#include "addons/Skin.h"
 
 using namespace std;
 using namespace XFILE;
@@ -265,12 +266,7 @@ bool CGUIAudioManager::Load()
 
   if (g_guiSettings.GetString("lookandfeel.soundskin")=="SKINDEFAULT")
   {
-    m_strMediaDir="special://home/skin/" + g_guiSettings.GetString("lookandfeel.skin") + "/sounds";
-    if ( ! CDirectory::Exists( m_strMediaDir ) )
-    {
-      m_strMediaDir = URIUtils::AddFileToFolder("special://xbmc/skin", g_guiSettings.GetString("lookandfeel.skin"));
-      m_strMediaDir = URIUtils::AddFileToFolder(m_strMediaDir, "sounds");
-    }
+    m_strMediaDir = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "sounds");
   }
   else
     m_strMediaDir = URIUtils::AddFileToFolder("special://xbmc/sounds", g_guiSettings.GetString("lookandfeel.soundskin"));

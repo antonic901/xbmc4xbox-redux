@@ -32,7 +32,7 @@
 #include "FileSystem/File.h"
 #include "URL.h"
 #include "FileItem.h"
-#include "SkinInfo.h"
+#include "addons/Skin.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 
@@ -68,7 +68,7 @@ CGUIDialogAudioSubtitleSettings::~CGUIDialogAudioSubtitleSettings(void)
 
 void CGUIDialogAudioSubtitleSettings::CreateSettings()
 {
-  m_usePopupSliders = g_SkinInfo.HasSkinFile("DialogSlider.xml");
+  m_usePopupSliders = g_SkinInfo->HasSkinFile("DialogSlider.xml");
 
   // clear out any old settings
   m_settings.clear();

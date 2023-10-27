@@ -27,7 +27,6 @@
 #include "utils/TimeUtils.h"
 #include "utils/SortUtils.h"
 #include "XMLUtils.h"
-#include "SkinInfo.h"
 #include "FileItem.h"
 #include "listproviders/IListProvider.h"
 
