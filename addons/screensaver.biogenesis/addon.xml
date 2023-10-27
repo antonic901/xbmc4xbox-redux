@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="screensaver.biogenesis"
+  version="1.0.0"
+  name="BioGenesis"
+  provider-name="Team XBMC">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension
+    point="xbmc.ui.screensaver"
+    library_xbox="BioGenesis.xbs"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>BioGenesis screensaver</summary>
+    <description>An implementation of John Conway's famous &quot;Game of Life&quot; with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings.</description>
+    <disclaimer></disclaimer>
+    <platform>xbox</platform>
+  </extension>
+</addon>

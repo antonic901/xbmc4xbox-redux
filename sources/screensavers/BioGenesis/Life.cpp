@@ -22,6 +22,11 @@
 
 #include "Life.h"
 #include "XmlDocument.h"
+#include "../../../xbmc/addons/include/xbmc_scr_dll.h"
+#include "../../../xbmc/addons/include/xbmc_addon_cpp_dll.h"
+
+#define CONFIG_FILE "special://xbmc/addons/screensaver.biogenesis/config.xml"
+
 // use the 'dummy' dx8 lib - this allow you to make
 // DX8 calls which XBMC will emulate for you.
 #pragma comment (lib, "lib/xbox_dx8.lib" )
@@ -447,13 +452,18 @@ void DrawRectangle(int x, int y, int w, int h, D3DCOLOR dwColour)
 // we should set our core values
 // here and load any settings we
 // may have from our config file
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, const char* szScreenSaverName, float ratio)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
-  strcpy(g_szScrName,szScreenSaverName);
-  g_pd3dDevice = pd3dDevice;
-  g_iWidth = iWidth;
-  g_iHeight = iHeight;
-  g_fRatio = ratio;
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  SCR_PROPS* scrprops = (SCR_PROPS*)props;
+
+  strcpy(g_szScrName,scrprops->name);
+  g_pd3dDevice = (LPDIRECT3DDEVICE8)scrprops->device;
+  g_iWidth = scrprops->width;
+  g_iHeight = scrprops->height;
+  g_fRatio = scrprops->pixelRatio;
   if (g_fRatio < 0.1f) // backwards compatible
     g_fRatio = 1.0f;
   // Load the settings
@@ -470,7 +480,8 @@ extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, co
 
   LoadSettings();
   CreateGrid();
-  
+
+  return STATUS_OK;
 }
 
 
@@ -512,6 +523,56 @@ extern "C" void Stop()
   return;
 }
 
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
+{
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
+}
+
+//-- GetSettings --------------------------------------------------------------
+// Return the settings for XBMC to display
+//-----------------------------------------------------------------------------
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
+{
+  return 0;
+}
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{
+}
+
+//-- UpdateSetting ------------------------------------------------------------
+// Handle setting change request from XBMC
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+{
+  return STATUS_UNKNOWN;
+}
+
 void SetDefaults()
 {
   grid.minSize = 50;
@@ -536,9 +597,7 @@ void LoadSettings()
   SetDefaults();
 
   char szXMLFile[1024];
-  strcpy(szXMLFile, "Q:\\screensavers\\");
-  strcat(szXMLFile, g_szScrName);
-  strcat(szXMLFile, ".xml");
+  strcpy(szXMLFile, CONFIG_FILE);
 
   OutputDebugString("Loading XML: ");
   OutputDebugString(szXMLFile);
@@ -593,27 +652,3 @@ extern "C" void GetInfo(SCR_INFO* pInfo)
   // back to XBMC if required in the future
   return;
 }
-
-extern "C" 
-{
-
-  struct ScreenSaver
-  {
-  public:
-    void (__cdecl* Create)(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, const char* szScreensaver, float ratio);
-    void (__cdecl* Start) ();
-    void (__cdecl* Render) ();
-    void (__cdecl* Stop) ();
-    void (__cdecl* GetInfo)(SCR_INFO *info);
-  } ;
-
-
-  void __declspec(dllexport) get_module(struct ScreenSaver* pScr)
-  {
-    pScr->Create = Create;
-    pScr->Start = Start;
-    pScr->Render = Render;
-    pScr->Stop = Stop;
-    pScr->GetInfo = GetInfo;
-  }
-};

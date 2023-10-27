@@ -83,13 +83,13 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/GreyNetic.xbs"
+				OutputFile="$(OutDir)/BioGenesis.xbs"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/GreyNetic.lib"
+				ImportLibrary="$(OutDir)/BioGenesis.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
