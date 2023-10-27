@@ -22,7 +22,11 @@
 #include "Effect.h"
 #include "XmlDocument.h"
 #include "Util.h"
+#include "../../../xbmc/addons/include/xbmc_scr_dll.h"
+#include "../../../xbmc/addons/include/xbmc_addon_cpp_dll.h"
 #include <cstdlib>
+
+#define CONFIG_FILE "special://xbmc/addons/screensaver.asterwave/config.xml"
 
 // use the 'dummy' dx8 lib - this allow you to make
 // DX8 calls which XBMC will emulate for you.
@@ -131,6 +135,14 @@ void RenderGradientBackground()
 
 void LoadEffects()
 {
+  // this is needed since addons introduction. If we don't add this screensaver will crash on second launch
+  ::effects[0] = new EffectBoil();
+  ::effects[1] = new EffectTwist();
+  ::effects[2] = new EffectBullet();
+  ::effects[3] = new EffectRain();
+  ::effects[4] = new EffectSwirl();
+  ::effects[5] = new EffectXBMCLogo();
+
   int i = 0;
   while(effects[i] != NULL)
     effects[i++]->init(&world);
@@ -230,18 +242,23 @@ void LoadTexture()
 // we should set our core values
 // here and load any settings we
 // may have from our config file
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, const char* szScreenSaverName, float ratio)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  SCR_PROPS* scrprops = (SCR_PROPS*)props;
+
   memset(&world,0,sizeof(WaterSettings));
 
-  strcpy(m_szScrName,szScreenSaverName);
-  g_pd3dDevice = pd3dDevice;
+  strcpy(m_szScrName,scrprops->name);
+  g_pd3dDevice = (LPDIRECT3DDEVICE8)scrprops->device;
 
-  m_iWidth = iWidth;
-  m_iHeight = iHeight;
+  m_iWidth = scrprops->width;
+  m_iHeight = scrprops->height;
 
   world.scaleX = 1.0f;
-  if ( (ratio * iWidth / iHeight) > 1.5)
+  if ( (scrprops->pixelRatio * scrprops->width / scrprops->height) > 1.5)
     world.scaleX = 1/1.333f;//0.91158f/ratio; widescreen mode
   // Load the settings
   LoadSettings();
@@ -271,6 +288,8 @@ extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, co
   buff[15] = 0;
   ((EffectText*)(effects[6]))->drawString(buff,0.6f,0.6f,1.3f,0.06f,-7.0f,7.8f);*/
   //world.widescreen = (float)iWidth/ (float)iHeight > 1.7f;
+
+  return STATUS_OK;
 }
 
 void SetCamera()
@@ -409,6 +428,55 @@ extern "C" void Stop()
   return;
 }
 
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
+{
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
+}
+
+//-- GetSettings --------------------------------------------------------------
+// Return the settings for XBMC to display
+//-----------------------------------------------------------------------------
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
+{
+  return 0;
+}
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{
+}
+
+//-- UpdateSetting ------------------------------------------------------------
+// Handle setting change request from XBMC
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+{
+  return STATUS_UNKNOWN;
+}
 
 // Load settings from the [screensavername].xml configuration file
 // the name of the screensaver (filename) is used as the name of
@@ -420,9 +488,7 @@ void LoadSettings()
   CXmlDocument doc;
   
   char szXMLFile[1024];
-  strcpy(szXMLFile, "Q:\\screensavers\\");
-  strcat(szXMLFile, m_szScrName);
-  strcat(szXMLFile, ".xml");
+  strcpy(szXMLFile, CONFIG_FILE);
 
   OutputDebugString("Loading XML: ");
   OutputDebugString(szXMLFile);
@@ -524,27 +590,3 @@ extern "C" void GetInfo(SCR_INFO* pInfo)
   // back to XBMC if required in the future
   return;
 }
-
-extern "C" 
-{
-
-  struct ScreenSaver
-  {
-  public:
-    void (__cdecl* Create)(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, const char* szScreensaver, float ratio);
-    void (__cdecl* Start) ();
-    void (__cdecl* Render) ();
-    void (__cdecl* Stop) ();
-    void (__cdecl* GetInfo)(SCR_INFO *info);
-  } ;
-
-
-  void __declspec(dllexport) get_module(struct ScreenSaver* pScr)
-  {
-    pScr->Create = Create;
-    pScr->Start = Start;
-    pScr->Render = Render;
-    pScr->Stop = Stop;
-    pScr->GetInfo = GetInfo;
-  }
-};
