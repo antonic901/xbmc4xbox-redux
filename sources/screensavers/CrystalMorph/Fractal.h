@@ -8,13 +8,6 @@ extern "C" void d3dSetTextureStageState( int x, DWORD dwY, DWORD dwZ);
 extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
 extern "C" void d3dGetRenderState(DWORD dwY, DWORD* dwZ);
 extern "C" void d3dSetTransform(DWORD dwY, D3DMATRIX* dwZ);
-extern "C" 
-{
-	struct SCR_INFO 
-	{
-		int	dummy;
-	};
-};
 
 void LoadSettings();
 
