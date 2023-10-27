@@ -32,7 +32,6 @@ public:
 
 /***************************** G L O B A L S *******************************/
 
-extern "C" void Stop();
 void LoadSettings();
 void SetDefaults();
 
