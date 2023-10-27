@@ -2966,7 +2966,7 @@ msgid "Set plugin thumb"
 msgstr ""
 
 msgctxt "#1045"
-msgid "Plugin settings"
+msgid "Addon settings"
 msgstr ""
 
 msgctxt "#1046"
