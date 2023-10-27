@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string id="30000">Keep Original Title</string>
+  <string id="30001">Enable Trailer (YouTube)</string>
+  <string id="30002">Preferred Language</string>
+  <string id="30003">Episode Title Prefix</string>
+  <string id="30004">Episode Title Suffix</string>
+  <string id="30005">Get Artwork from themoviedb.org</string>
+  <string id="30006">Get Extra Artwork from fanart.tv</string>
+  <string id="30007">Get Wide Banners from thetvdb.com</string>
+  <string id="30008">Certification Country</string>
+  <string id="30009">Certification Prefix</string>
+</strings>

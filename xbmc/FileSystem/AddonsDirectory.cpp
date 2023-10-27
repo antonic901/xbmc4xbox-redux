@@ -51,6 +51,8 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
   CURL path(path1);
   items.ClearProperties();
 
+  items.SetContent("addons");
+
   VECADDONS addons;
   // get info from repository
   bool reposAsFolders = true;
@@ -241,42 +243,62 @@ CFileItemPtr CAddonsDirectory::FileItemFromAddon(AddonPtr &addon, const CStdStri
   return item;
 }
 
-bool CAddonsDirectory::GetScriptsAndPlugins(const CStdString &content, CFileItemList &items)
+bool CAddonsDirectory::GetScriptsAndPlugins(const CStdString &content, VECADDONS &addons)
 {
-  items.Clear();
-
   CPluginSource::Content type = CPluginSource::Translate(content);
   if (type == CPluginSource::UNKNOWN)
     return false;
 
+  VECADDONS tempAddons;
+  CAddonMgr::Get().GetAddons(ADDON_PLUGIN, tempAddons);
+  for (unsigned i=0; i<tempAddons.size(); i++)
+  {
+    PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(tempAddons[i]);
+    if (plugin && plugin->Provides(type))
+      addons.push_back(tempAddons[i]);
+  }
+  tempAddons.clear();
+  CAddonMgr::Get().GetAddons(ADDON_SCRIPT, tempAddons);
+  for (unsigned i=0; i<tempAddons.size(); i++)
+  {
+    PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(tempAddons[i]);
+    if (plugin && plugin->Provides(type))
+      addons.push_back(tempAddons[i]);
+  }
+  return true;
+}
+
+bool CAddonsDirectory::GetScriptsAndPlugins(const CStdString &content, CFileItemList &items)
+{
+  items.Clear();
+
   VECADDONS addons;
-  CAddonMgr::Get().GetAddons(ADDON_PLUGIN, addons);
+  if (!GetScriptsAndPlugins(content, addons))
+    return false;
+
   for (unsigned i=0; i<addons.size(); i++)
   {
-    PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addons[i]);
-    if (!plugin || !plugin->Provides(type))
-      continue;
-    items.Add(FileItemFromAddon(addons[i], "plugin://", true));
+    if (addons[i]->Type() == ADDON_PLUGIN)
+      items.Add(FileItemFromAddon(addons[i], "plugin://", true));
+    else
+      items.Add(FileItemFromAddon(addons[i], "script://", false));
   }
 
-  addons.clear();
-  CAddonMgr::Get().GetAddons(ADDON_SCRIPT, addons);
-  for (unsigned i=0; i<addons.size(); i++)
-  {
-    PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addons[i]);
-    if (!plugin || !plugin->Provides(type))
-      continue;
-    items.Add(FileItemFromAddon(addons[i], "script://", false));
-  }
-  if (items.Size() == 0)
-  {
-    CFileItemPtr item(new CFileItem("addons://more",false));
-    item->SetLabelPreformated(true);
-    item->SetLabel(g_localizeStrings.Get(21452));
-    item->SetIconImage("DefaultAddon.png");
-    items.Add(item);
-  }
+  items.Add(GetMoreItem(content));
+
+  items.SetContent("addons");
+
   return items.Size() > 0;
+}
+
+CFileItemPtr CAddonsDirectory::GetMoreItem(const CStdString &content)
+{
+  CFileItemPtr item(new CFileItem("addons://more/"+content,false));
+  item->SetLabelPreformated(true);
+  item->SetLabel(g_localizeStrings.Get(21452));
+  item->SetIconImage("DefaultAddon.png");
+  // item->SetSpecialSort(SORT_ON_BOTTOM);
+  return item;
 }
 
 }

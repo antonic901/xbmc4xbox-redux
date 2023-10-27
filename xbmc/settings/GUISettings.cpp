@@ -237,7 +237,8 @@ void CGUISettings::Initialize()
   AddString(wea, "weather.areacode2", 14020, "UKXX0085 - London, United Kingdom", BUTTON_CONTROL_STANDARD);
   AddString(wea, "weather.areacode3", 14021, "JAXX0085 - Tokyo, Japan", BUTTON_CONTROL_STANDARD);
   AddSeparator(wea, "weather.sep1");
-  AddString(wea, "weather.plugin", 24027, "", SPIN_CONTROL_TEXT, true);
+  AddDefaultAddon(wea, "weather.script", 24027, DEFAULT_WEATHER_ADDON, ADDON_SCRIPT_WEATHER);
+  AddString(wea, "weather.scriptsettings", 21417, "", BUTTON_CONTROL_STANDARD, true);
 
   // My Music Settings
   AddGroup(3, 2);
@@ -246,8 +247,8 @@ void CGUISettings::Initialize()
   AddBool(ml, "musiclibrary.showcompilationartists", 13414, true);
   AddSeparator(ml,"musiclibrary.sep1");
   AddBool(ml,"musiclibrary.downloadinfo", 20192, false);
-  AddDefaultAddon(ml, "musiclibrary.albumscraper", 20193, "metadata.tadb.xml", ADDON_SCRAPER_ALBUMS);
-  AddDefaultAddon(ml, "musiclibrary.artistscraper", 20194, "metadata.tadb.xml", ADDON_SCRAPER_ARTISTS);
+  AddDefaultAddon(ml, "musiclibrary.albumscraper", 20193, "metadata.albums.tadb.com", ADDON_SCRAPER_ALBUMS);
+  AddDefaultAddon(ml, "musiclibrary.artistscraper", 20194, "metadata.artists.tadb.com", ADDON_SCRAPER_ARTISTS);
   AddBool(ml, "musiclibrary.updateonstartup", 22000, false);
   AddBool(NULL, "musiclibrary.backgroundupdate", 22001, false);
   AddSeparator(ml,"musiclibrary.sep2");
@@ -473,12 +474,10 @@ void CGUISettings::Initialize()
   AddBool(NULL, "postprocessing.autobrightnesscontrastlevels", 310, false);
   AddBool(NULL, "postprocessing.dering", 311, false);
 
-  CSettingsCategory* scp = AddCategory(5, "scrapers", 21412);
-  AddString(scp, "scrapers.moviedefault", 21413, "tmdb.xml", SPIN_CONTROL_TEXT);
-  AddString(scp, "scrapers.tvshowdefault", 21414, "tvdb.xml", SPIN_CONTROL_TEXT);
-  AddString(scp, "scrapers.musicvideodefault", 21415, "mtv.xml", SPIN_CONTROL_TEXT);
-  AddSeparator(scp,"scrapers.sep2");
-  AddBool(scp, "scrapers.langfallback", 21416, false);
+  AddDefaultAddon(NULL, "scrapers.moviesdefault", 21413, "metadata.movies.themoviedb.org", ADDON_SCRAPER_MOVIES);
+  AddDefaultAddon(NULL, "scrapers.tvshowsdefault", 21414, "metadata.tvshows.themoviedb.org", ADDON_SCRAPER_TVSHOWS);
+  AddDefaultAddon(NULL, "scrapers.musicvideosdefault", 21415, "metadata.musicvideos.nfo", ADDON_SCRAPER_MUSICVIDEOS);
+  AddBool(NULL, "scrapers.langfallback", 21416, false);
 
   // network settings
   AddGroup(6, 705);

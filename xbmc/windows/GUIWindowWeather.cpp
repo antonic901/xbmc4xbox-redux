@@ -283,7 +283,7 @@ void CGUIWindowWeather::SetProperties()
 
 void CGUIWindowWeather::CallScript()
 {
-  if (!g_guiSettings.GetString("weather.script").IsEmpty())
+  if (!g_guiSettings.GetString("weather.script").Equals(DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
     if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT))

@@ -1094,6 +1094,10 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       viewType = VIEW_TYPE_WRAP;
     else if (type == "bigwrap")
       viewType = VIEW_TYPE_BIG_WRAP;
+    else if (type == "info")
+      viewType = VIEW_TYPE_INFO;
+    else if (type == "biginfo")
+      viewType = VIEW_TYPE_BIG_INFO;
     const char *label = itemElement->Attribute("label");
     if (label)
       viewLabel = CGUIInfoLabel::GetLabel(FilterLabel(label));

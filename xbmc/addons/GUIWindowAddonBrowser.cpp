@@ -48,6 +48,7 @@
 #include "settings/AdvancedSettings.h"
 
 #define CONTROL_AUTOUPDATE 5
+#define CONTROL_SHUTUP     6
 
 using namespace ADDON;
 using namespace XFILE;
@@ -88,6 +89,12 @@ bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
       if (iControl == CONTROL_AUTOUPDATE)
       {
         g_settings.m_bAddonAutoUpdate = !g_settings.m_bAddonAutoUpdate;
+        g_settings.Save();
+        return true;
+      }
+      else if (iControl == CONTROL_SHUTUP)
+      {
+        g_settings.m_bAddonNotifications = !g_settings.m_bAddonNotifications;
         g_settings.Save();
         return true;
       }
@@ -298,21 +305,22 @@ void CGUIWindowAddonBrowser::OnJobComplete(unsigned int jobID,
             }
             if (addon->Type() >= ADDON_VIZ_LIBRARY)
               continue;
-            if (update)
+            if (update && g_settings.m_bAddonNotifications)
             {
               g_application.m_guiDialogKaiToast.QueueNotification(
-                                                  CGUIDialogKaiToast::Info,
+                                                  addon->Icon(),
                                                   addon->Name(),
                                                   g_localizeStrings.Get(24065),
                                                   TOAST_DISPLAY_TIME,false);
             }
             else
             {
-              g_application.m_guiDialogKaiToast.QueueNotification(
-                                                  CGUIDialogKaiToast::Info,
-                                                  addon->Name(),
-                                                  g_localizeStrings.Get(24064),
-                                                  TOAST_DISPLAY_TIME,false);
+             if (g_settings.m_bAddonNotifications)
+                g_application.m_guiDialogKaiToast.QueueNotification(
+                                                   addon->Icon(),
+                                                   addon->Name(),
+                                                   g_localizeStrings.Get(24064),
+                                                   TOAST_DISPLAY_TIME,false);
             }
           }
         }
@@ -329,6 +337,7 @@ void CGUIWindowAddonBrowser::OnJobComplete(unsigned int jobID,
 void CGUIWindowAddonBrowser::UpdateButtons()
 {
   SET_CONTROL_SELECTED(GetID(),CONTROL_AUTOUPDATE,g_settings.m_bAddonAutoUpdate);
+  SET_CONTROL_SELECTED(GetID(),CONTROL_SHUTUP,g_settings.m_bAddonNotifications);
   CGUIMediaWindow::UpdateButtons();
 }
 
@@ -420,6 +429,8 @@ bool CGUIWindowAddonBrowser::GetDirectory(const CStdString& strDirectory,
     item->SetIconImage("DefaultNetwork.png");
     items.Add(item);
   }
+
+  items.SetContent("addons");
 
   for (int i=0;i<items.Size();++i)
     SetItemLabel2(items[i]);

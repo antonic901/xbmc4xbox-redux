@@ -23,7 +23,7 @@
 #define PRE_SKIN_VERSION_11_COMPATIBILITY 1
 
 #define DEFAULT_SKIN           "skin.confluence.lite"
-#define DEFAULT_WEATHER_PLUGIN "Weather.com (standard)"
+#define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
 
 #include "settings/VideoSettings.h"
 #include "settings/GUISettings.h"
@@ -367,6 +367,7 @@ public:
   bool m_bMyVideoNavFlatten;
   bool m_bStartVideoWindowed;
   bool m_bAddonAutoUpdate;
+  bool m_bAddonNotifications;
 
   int m_iVideoStartWindow;
 
