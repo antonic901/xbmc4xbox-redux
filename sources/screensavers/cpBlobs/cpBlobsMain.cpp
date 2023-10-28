@@ -3,8 +3,9 @@
 // Simon Windmill (siw@coolpowers.com)
 
 #include "cpBlobsMain.h"
-
 #include "Blobby.h"
+#include "../../../xbmc/addons/include/xbmc_scr_dll.h"
+#include "../../../xbmc/addons/include/xbmc_addon_cpp_dll.h"
 
 Blobby *m_pBlobby;
 
@@ -150,22 +151,29 @@ LPDIRECT3DCUBETEXTURE8	g_pSpecularCubeTexture	= NULL;
 // we should set our core values
 // here and load any settings we
 // may have from our config file
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iWidth, int iHeight, const char* szScreenSaverName)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  SCR_PROPS* scrprops = (SCR_PROPS*)props;
+
 #ifdef _TEST
 	strcpy( m_szScrName, "cpBlobs" );
 #else
-	strcpy(m_szScrName,szScreenSaverName);
+	strcpy(m_szScrName,scrprops->name);
 #endif
-	m_pd3dDevice = pd3dDevice;
-	m_iWidth = iWidth;
-	m_iHeight = iHeight;
+	m_pd3dDevice = (LPDIRECT3DDEVICE8)scrprops->device;
+	m_iWidth = scrprops->width;
+	m_iHeight = scrprops->height;
 
 	m_pBlobby = new Blobby();
 	m_pBlobby->m_iNumPoints = 5;
 	
 	// Load the settings
 	LoadSettings();
+
+  return STATUS_OK;
 }
 
 // XBMC tells us we should get ready
@@ -321,6 +329,56 @@ extern "C" void Stop()
 	return;
 }
 
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
+{
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
+}
+
+//-- GetSettings --------------------------------------------------------------
+// Return the settings for XBMC to display
+//-----------------------------------------------------------------------------
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
+{
+  return 0;
+}
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{
+}
+
+//-- UpdateSetting ------------------------------------------------------------
+// Handle setting change request from XBMC
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+{
+  return STATUS_UNKNOWN;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" void GetInfo(SCR_INFO* pInfo)
@@ -328,13 +386,4 @@ extern "C" void GetInfo(SCR_INFO* pInfo)
 	// not used, but can be used to pass info
 	// back to XBMC if required in the future
 	return;
-}
-
-extern "C" void __declspec(dllexport) get_module(struct ScreenSaver* pScr)
-{
-	pScr->Create = Create;
-	pScr->Start = Start;
-	pScr->Render = Render;
-	pScr->Stop = Stop;
-	pScr->GetInfo = GetInfo;
 }

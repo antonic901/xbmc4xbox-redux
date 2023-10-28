@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "Blobby.h"
 
+#define CONFIG_FILE "special://xbmc/addons/screensaver.cpblobs/config.xml"
+
 extern float g_fFOV;
 extern float g_fAspectRatio;
 
@@ -133,9 +135,7 @@ void LoadSettings()
 	SetDefaults();
 
 	char szXMLFile[1024];
-	strcpy(szXMLFile, "Q:\\screensavers\\");
-	strcat(szXMLFile, m_szScrName);
-	strcat(szXMLFile, ".xml");
+  strcpy(szXMLFile, CONFIG_FILE);
 
 	// Load the config file
 	if (doc.Load(szXMLFile) >= 0)

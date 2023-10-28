@@ -6,7 +6,6 @@ LPDIRECT3DDEVICE8 m_pd3dDevice;
 char m_szScrName[1024];
 int	m_iWidth;
 int m_iHeight;
-SCR_INFO vInfo;
 
 //XML Settings function prototypes
 void LoadSettings();
