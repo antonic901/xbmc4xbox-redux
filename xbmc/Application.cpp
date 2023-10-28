@@ -153,7 +153,6 @@
 
 // Dialog includes
 #include "music/dialogs/GUIDialogMusicOSD.h"
-#include "dialogs/GUIDialogVisualisationSettings.h"
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
 #include "dialogs/GUIDialogTrainerSettings.h"
 #include "GUIWindowScriptsInfo.h"
@@ -1288,7 +1287,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogPlayerControls);     // window id = 113
   g_windowManager.Add(new CGUIDialogSlider);             // window id = 145
   g_windowManager.Add(new CGUIDialogMusicOSD);           // window id = 120
-  g_windowManager.Add(new CGUIDialogVisualisationSettings);     // window id = 121
   g_windowManager.Add(new CGUIDialogVisualisationPresetList);   // window id = 122
   g_windowManager.Add(new CGUIDialogVideoSettings);             // window id = 123
   g_windowManager.Add(new CGUIDialogAudioSubtitleSettings);     // window id = 124

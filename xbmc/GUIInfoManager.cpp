@@ -34,7 +34,7 @@
 #include "Weather.h"
 #include "PlayListPlayer.h"
 #include "PartyModeManager.h"
-#include "visualizations/Visualisation.h"
+#include "addons/Visualisation.h"
 #include "input/ButtonTranslator.h"
 #include "music/MusicDatabase.h"
 #include "utils/AlarmClock.h"
@@ -1821,25 +1821,18 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
       g_windowManager.SendMessage(msg);
       if (msg.GetPointer())
       {
-        CVisualisation *pVis = (CVisualisation *)msg.GetPointer();
-        char *preset = pVis->GetPreset();
-        if (preset)
+        CVisualisation* viz = NULL;
+        viz = (CVisualisation*)msg.GetPointer();
+        if (viz)
         {
-          strLabel = preset;
+          strLabel = viz->GetPresetName();
           URIUtils::RemoveExtension(strLabel);
         }
       }
     }
     break;
   case VISUALISATION_NAME:
-    {
-      strLabel = g_guiSettings.GetString("musicplayer.visualisation");
-      if (strLabel != "None" && strLabel.size() > 4)
-      { // make it look pretty
-        strLabel = strLabel.Left(strLabel.size() - 4);
-        strLabel[0] = toupper(strLabel[0]);
-      }
-    }
+    strLabel = g_guiSettings.GetString("musicplayer.visualisation");
     break;
   case FANART_COLOR1:
     {

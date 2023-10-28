@@ -30,14 +30,9 @@
 #include "GUIUserMessages.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#ifdef HAS_KARAOKE
-#include "CdgParser.h"
-#endif
 
 using namespace MUSIC_INFO;
 
-#define TRANSISTION_COUNT   50  // 1 second
-#define TRANSISTION_LENGTH 200  // 4 seconds
 #define START_FADE_LENGTH  2.0f // 2 seconds on startup
 
 #define CONTROL_VIS          2
@@ -49,14 +44,19 @@ CGUIWindowVisualisation::CGUIWindowVisualisation(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIWindowVisualisation::~CGUIWindowVisualisation(void)
-{
-}
-
 bool CGUIWindowVisualisation::OnAction(const CAction &action)
 {
+  bool passToVis = false;
   switch (action.GetID())
   {
+  case ACTION_VIS_PRESET_NEXT:
+  case ACTION_VIS_PRESET_PREV:
+  case ACTION_VIS_PRESET_RANDOM:
+  case ACTION_VIS_RATE_PRESET_PLUS:
+  case ACTION_VIS_RATE_PRESET_MINUS:
+    passToVis = true;
+    break;
+
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
@@ -74,24 +74,12 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 
   case ACTION_VIS_PRESET_LOCK:
     { // show the locked icon + fall through so that the vis handles the locking
-      CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
-      g_windowManager.SendMessage(msg);
-      if (msg.GetPointer())
-      {
-        CVisualisation *pVis = (CVisualisation *)msg.GetPointer();
-        char** pPresets=NULL;
-        int currpreset=0, numpresets=0;
-        bool locked;
-
-        pVis->GetPresets(&pPresets,&currpreset,&numpresets,&locked);
-        if (numpresets == 1 || !pPresets)
-          return true;
-      }
       if (!m_bShowPreset)
       {
         m_lockedTimer.StartZero();
         g_infoManager.SetShowCodec(true);
       }
+      passToVis = true;
     }
     break;
   case ACTION_VIS_PRESET_SHOW:
@@ -128,10 +116,14 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     }
     break;*/
   }
-  // default action is to send to the visualisation first
-  CGUIVisualisationControl *pVisControl = (CGUIVisualisationControl *)GetControl(CONTROL_VIS);
-  if (pVisControl && pVisControl->OnAction(action))
-    return true;
+
+  if (passToVis)
+  {
+    CGUIControl *control = (CGUIControl *)GetControl(CONTROL_VIS);
+    if (control)
+      return control->OnAction(action);
+  }
+
   return CGUIWindow::OnAction(action);
 }
 
@@ -139,30 +131,20 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
 {
   switch ( message.GetMessage() )
   {
+  case GUI_MSG_GET_VISUALISATION:
+  case GUI_MSG_VISUALISATION_RELOAD:
   case GUI_MSG_PLAYBACK_STARTED:
     {
-      CGUIVisualisationControl *pVisControl = (CGUIVisualisationControl *)GetControl(CONTROL_VIS);
-      if (pVisControl)
-        return pVisControl->OnMessage(message);
-    }
-    break;
-  case GUI_MSG_GET_VISUALISATION:
-    {
-//      message.SetControlID(CONTROL_VIS);
-      CGUIVisualisationControl *pVisControl = (CGUIVisualisationControl *)GetControl(CONTROL_VIS);
-      if (pVisControl)
-        message.SetPointer(pVisControl->GetVisualisation());
-      return true;
+      CGUIControl *control = (CGUIControl *)GetControl(CONTROL_VIS);
+      if (control)
+        return control->OnMessage(message);
     }
     break;
   case GUI_MSG_VISUALISATION_ACTION:
-    {
-      // message.SetControlID(CONTROL_VIS);
-      CGUIVisualisationControl *pVisControl = (CGUIVisualisationControl *)GetControl(CONTROL_VIS);
-      if (pVisControl)
-        return pVisControl->OnMessage(message);
-    }
-    break;
+  { 
+    CAction action(message.GetParam1());
+    return OnAction(action);
+  }
   case GUI_MSG_WINDOW_DEINIT:
     {
       if (IsActive()) // save any changed settings from the OSD
@@ -172,11 +154,6 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       if (pOSD && pOSD->IsDialogRunning()) pOSD->Close(true);
       CGUIDialogVisualisationPresetList *pList = (CGUIDialogVisualisationPresetList *)g_windowManager.GetWindow(WINDOW_DIALOG_VIS_PRESET_LIST);
       if (pList && pList->IsDialogRunning()) pList->Close(true);
-
-#ifdef HAS_KARAOKE
-      if(g_application.m_pCdgParser)
-        g_application.m_pCdgParser->FreeGraphics();
-#endif
     }
     break;
   case GUI_MSG_WINDOW_INIT:
@@ -195,11 +172,6 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       CGUIWindow::OnMessage(message);
       if (g_infoManager.GetCurrentSongTag())
         m_tag = *g_infoManager.GetCurrentSongTag();
-#ifdef HAS_KARAOKE
-      if( g_application.m_pCdgParser && g_guiSettings.GetBool("karaoke.enabled"))
-        g_application.m_pCdgParser->AllocGraphics();
-#endif
-
       if (g_settings.m_bMyMusicSongThumbInVis)
       { // always on
         m_initTimer.Stop();

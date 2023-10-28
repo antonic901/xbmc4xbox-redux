@@ -1447,12 +1447,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\dialogs\GUIDialogVisualisationPresetList.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogVisualisationSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogVisualisationSettings.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogVolumeBar.cpp">
 				</File>
 				<File
@@ -2828,6 +2822,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\DllVisualisation.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\fft.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\fft.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.cpp">
 				</File>
 				<File
@@ -2883,6 +2883,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Skin.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Visualisation.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Visualisation.h">
 				</File>
 			</Filter>
 			<Filter
@@ -4436,31 +4442,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 					</Filter>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="Visualisations"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\visualizations\DllVisualisation.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\fft.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\fft.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\Visualisation.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\Visualisation.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\VisualisationFactory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\visualizations\VisualisationFactory.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="ffmpeg"

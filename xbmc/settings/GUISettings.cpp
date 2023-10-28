@@ -53,7 +53,8 @@ using namespace ADDON;
 
 class CGUISettings g_guiSettings;
 
-#define DEFAULT_VISUALISATION "milkdrop.vis"
+#define DEFAULT_VISUALISATION "visualization.milkrop"
+
 struct sortsettings
 {
   bool operator()(const CSetting* pSetting1, const CSetting* pSetting2)
@@ -267,7 +268,7 @@ void CGUISettings::Initialize()
   AddInt(mp, "musicplayer.crossfade", 13314, 0, 0, 1, 15, SPIN_CONTROL_INT_PLUS, MASK_SECS, TEXT_OFF);
   AddBool(mp, "musicplayer.crossfadealbumtracks", 13400, true);
   AddSeparator(mp, "musicplayer.sep2");
-  AddString(mp, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, SPIN_CONTROL_TEXT);
+  AddDefaultAddon(mp, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, ADDON_VIZ);
   AddSeparator(mp, "musicplayer.sep3");
   AddInt(mp, "musicplayer.defaultplayer", 22003, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
 #ifdef _XBOX

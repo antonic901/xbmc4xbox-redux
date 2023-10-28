@@ -37,8 +37,6 @@ public:
   virtual void Render();
   virtual int GetID() const { return CGUIWindow::GetID() + m_iScreen; };
 
-  // static function as it's accessed elsewhere
-  static void FillInVisualisations(CSetting *pSetting, int iControlID);
 protected:
   virtual void OnInitWindow();
 

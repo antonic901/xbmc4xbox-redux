@@ -38,7 +38,7 @@
 #include "utils/log.h"
 #include "utils/SingleLock.h"
 
-#if defined(HAS_VISUALISATION) && !defined(_XBOX)
+#ifdef HAS_VISUALISATION
 #include "DllVisualisation.h"
 #include "Visualisation.h"
 #endif
@@ -129,11 +129,9 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
         if ((value = GetExtValue(props->plugin->extensions->configuration, "@library_xbox")) && value.empty())
           break;
 #endif
-#ifndef _XBOX
         if (type == ADDON_VIZ)
           return AddonPtr(new CVisualisation(props));
         else
-#endif
           return AddonPtr(new CScreenSaver(props));
       }
     case ADDON_SKIN:
@@ -368,11 +366,9 @@ bool CAddonMgr::GetDefault(const TYPE &type, AddonPtr &addon)
   CStdString setting;
   switch (type)
   {
-#ifndef _XBOX
   case ADDON_VIZ:
     setting = g_guiSettings.GetString("musicplayer.visualisation");
     break;
-#endif
   case ADDON_SCREENSAVER:
     setting = g_guiSettings.GetString("screensaver.mode");
     break;
@@ -401,11 +397,9 @@ bool CAddonMgr::SetDefault(const TYPE &type, const CStdString &addonID)
 {
   switch (type)
   {
-#ifndef _XBOX
   case ADDON_VIZ:
     g_guiSettings.SetString("musicplayer.visualisation",addonID);
     break;
-#endif
   case ADDON_SCREENSAVER:
     g_guiSettings.SetString("screensaver.mode",addonID);
     break;
@@ -496,10 +490,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new CScraper(addonProps));
     case ADDON_SKIN:
       return AddonPtr(new CSkinInfo(addonProps));
-#ifndef _XBOX
     case ADDON_VIZ:
       return AddonPtr(new CVisualisation(addonProps));
-#endif
     case ADDON_SCREENSAVER:
       return AddonPtr(new CScreenSaver(addonProps));
     case ADDON_VIZ_LIBRARY:

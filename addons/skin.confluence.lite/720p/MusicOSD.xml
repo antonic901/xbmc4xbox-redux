@@ -283,7 +283,7 @@
 				<onright>703</onright>
 				<onup>1000</onup>
 				<ondown>1000</ondown>
-				<onclick>ActivateWindow(121)</onclick>
+				<onclick>Addon.Default.OpenSettings(xbmc.player.musicviz)</onclick>
 			</control>
 			<control type="button" id="703">
 				<posx>135</posx>

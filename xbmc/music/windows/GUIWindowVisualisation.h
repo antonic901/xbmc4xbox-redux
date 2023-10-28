@@ -29,7 +29,6 @@ class CGUIWindowVisualisation :
 {
 public:
   CGUIWindowVisualisation(void);
-  virtual ~CGUIWindowVisualisation(void);
   virtual void AllocResources(bool forceLoad = false);
   virtual void FreeResources(bool forceUnLoad = false);
   virtual bool OnMessage(CGUIMessage& message);
@@ -37,6 +36,7 @@ public:
   virtual void FrameMove();
 protected:
   virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+
   CStopWatch m_initTimer;
   CStopWatch m_lockedTimer;
   bool m_bShowPreset;

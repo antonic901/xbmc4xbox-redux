@@ -61,10 +61,8 @@ namespace ADDON
 
   class IAddon;
   typedef boost::shared_ptr<IAddon> AddonPtr;
-#ifndef _XBOX
   class CVisualisation;
   typedef boost::shared_ptr<CVisualisation> VizPtr;
-#endif
   class CSkinInfo;
   typedef boost::shared_ptr<CSkinInfo> SkinPtr;
   class CPluginSource;

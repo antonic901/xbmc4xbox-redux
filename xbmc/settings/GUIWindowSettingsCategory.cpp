@@ -432,10 +432,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       }
       pControl->SetValue(pSettingInt->GetData());
     }
-    else if (strSetting.Equals("musicplayer.visualisation"))
-    {
-      FillInVisualisations(pSetting, GetSetting(pSetting->GetSetting())->GetID());
-    }
     else if (strSetting.Equals("karaoke.port0voicemask"))
     {
       FillInVoiceMasks(0, pSetting);
@@ -1275,7 +1271,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     if (pControl->GetValue() == 0)
       pSettingString->SetData("None");
     else
-      pSettingString->SetData(pControl->GetCurrentLabel() + ".vis");
+      pSettingString->SetData(pControl->GetCurrentLabel());
   }
   else if (strSetting.Equals("debug.showloginfo"))
   {
@@ -2411,71 +2407,6 @@ void CGUIWindowSettingsCategory::FillInCharSets(CSetting *pSetting)
   }
 
   pControl->SetValue(iCurrentCharset);
-}
-
-void CGUIWindowSettingsCategory::FillInVisualisations(CSetting *pSetting, int iControlID)
-{
-  CSettingString *pSettingString = (CSettingString*)pSetting;
-  if (!pSetting) return;
-  int iWinID = g_windowManager.GetActiveWindow();
-  {
-    CGUIMessage msg(GUI_MSG_LABEL_RESET, iWinID, iControlID);
-    g_windowManager.SendMessage(msg);
-  }
-
-  vector<CStdString> vecVis;
-  //find visz....
-  CFileItemList items;
-  CDirectory::GetDirectory("special://xbmc/visualisations/", items);
-  if (!CSpecialProtocol::XBMCIsHome())
-    CDirectory::GetDirectory("special://home/visualisations/", items);
-
-  for (int i = 0; i < items.Size(); ++i)
-  {
-    CFileItemPtr pItem = items[i];
-    if (!pItem->m_bIsFolder)
-    {
-      CStdString strExtension;
-      URIUtils::GetExtension(pItem->GetPath(), strExtension);
-      if (strExtension == ".vis")
-      {
-        CStdString strLabel = pItem->GetLabel();
-        vecVis.push_back(strLabel.Mid(0, strLabel.size() - 4));
-      }
-    }
-  }
-
-  CStdString strDefaultVis = pSettingString->GetData();
-  if (!strDefaultVis.Equals("None"))
-    strDefaultVis.Delete(strDefaultVis.size() - 4, 4);
-
-  sort(vecVis.begin(), vecVis.end(), sortstringbyname());
-
-  // add the "disabled" setting first
-  int iVis = 0;
-  int iCurrentVis = 0;
-  {
-    CGUIMessage msg(GUI_MSG_LABEL_ADD, iWinID, iControlID, iVis++);
-    msg.SetLabel(231);
-    g_windowManager.SendMessage(msg);
-  }
-  for (int i = 0; i < (int) vecVis.size(); ++i)
-  {
-    CStdString strVis = vecVis[i];
-
-    if (strcmpi(strVis.c_str(), strDefaultVis.c_str()) == 0)
-      iCurrentVis = iVis;
-
-    {
-      CGUIMessage msg(GUI_MSG_LABEL_ADD, iWinID, iControlID, iVis++);
-      msg.SetLabel(strVis);
-      g_windowManager.SendMessage(msg);
-    }
-  }
-  {
-    CGUIMessage msg(GUI_MSG_ITEM_SELECT, iWinID, iControlID, iCurrentVis);
-    g_windowManager.SendMessage(msg);
-  }
 }
 
 void CGUIWindowSettingsCategory::FillInVoiceMasks(DWORD dwPort, CSetting *pSetting)
