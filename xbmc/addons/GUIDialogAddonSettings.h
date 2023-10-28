@@ -37,6 +37,7 @@ public:
   static bool ShowAndGetInput(const ADDON::AddonPtr &addon, bool saveToDisk = true);
   virtual void Render();
 
+  CStdString GetCurrentID() const;
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;
@@ -63,7 +64,7 @@ private:
   void FreeControls();
   void UpdateFromControls();
   void EnableControls();
-  void SetDefaults();
+  void SetDefaultSettings();
   bool GetCondition(const CStdString &condition, const int controlId);
 
   void SaveSettings(void);

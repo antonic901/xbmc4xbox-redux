@@ -46,6 +46,7 @@
 #include "FileItem.h"
 #include "settings/Settings.h"
 #include "GUIInfoManager.h"
+#include "GUIUserMessages.h"
 #include "dialogs/GUIDialogSelect.h"
 
 using namespace std;
@@ -96,7 +97,7 @@ bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
       bool bCloseDialog = false;
 
       if (iControl == ID_BUTTON_DEFAULT)
-        SetDefaults();
+        SetDefaultSettings();
       else if (iControl != ID_BUTTON_OK)
         bCloseDialog = ShowVirtualKeyboard(iControl);
 
@@ -123,6 +124,17 @@ bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
         m_currentSection = focusedControl - CONTROL_START_SECTION;
         CreateControls();
       }
+      return true;
+    }
+    case GUI_MSG_SETTING_UPDATED:
+    {
+      CStdString      id = message.GetStringParam(0);
+      CStdString value   = message.GetStringParam(1);
+      m_settings[id] = value;
+      int iControl = GetFocusedControl()->GetID();
+      CreateControls();
+      CGUIMessage msg(GUI_MSG_SETFOCUS,GetID(),iControl);
+      OnMessage(msg);
       return true;
     }
   }
@@ -580,6 +592,9 @@ void CGUIDialogAddonSettings::CreateControls()
     CStdString entries;
     if (setting->Attribute("entries"))
       entries = setting->Attribute("entries");
+    CStdString defaultValue;
+    if (setting->Attribute("default"))
+      defaultValue= setting->Attribute("default");
     const char *subsetting = setting->Attribute("subsetting");
     CStdString label = GetString(setting->Attribute("label"), subsetting && 0 == strcmpi(subsetting, "true"));
 
@@ -620,7 +635,7 @@ void CGUIDialogAddonSettings::CreateControls()
             ((CGUIButtonControl *)pControl)->SetLabel2(value);
         }
         else
-          ((CGUIButtonControl *)pControl)->SetLabel2(setting->Attribute("default"));
+          ((CGUIButtonControl *)pControl)->SetLabel2(defaultValue);
       }
       else if (strcmpi(type, "bool") == 0)
       {
@@ -754,7 +769,7 @@ void CGUIDialogAddonSettings::CreateControls()
         }
 
         CStdString option = setting->Attribute("option");
-        int iType;
+        int iType=0;
 
         if (option.size() == 0 || option.CompareNoCase("float") == 0)
           iType = SPIN_CONTROL_TYPE_FLOAT;
@@ -858,7 +873,9 @@ bool CGUIDialogAddonSettings::GetCondition(const CStdString &condition, const in
 
   bool bCondition = true;
   bool bCompare = true;
+  bool bControlDependend = false;//flag if the condition depends on another control
   vector<CStdString> conditionVec;
+
   if (condition.Find("+") >= 0)
     CUtil::Tokenize(condition, conditionVec, "+");
   else
@@ -874,6 +891,10 @@ bool CGUIDialogAddonSettings::GetCondition(const CStdString &condition, const in
     if (!TranslateSingleString(conditionVec[i], condVec)) continue;
 
     const CGUIControl* control2 = GetControl(controlId + atoi(condVec[1]));
+    if (!control2)
+      continue;
+
+    bControlDependend = true; //once we are here - this condition depends on another control
 
     CStdString value;
     switch (control2->GetControlType())
@@ -923,6 +944,12 @@ bool CGUIDialogAddonSettings::GetCondition(const CStdString &condition, const in
         bCondition |= (atoi(value) < atoi(condVec[2]));
     }
   }
+
+  if (!bControlDependend)//if condition doesn't depend on another control - try if its an infobool expression
+  {
+    bCondition = g_infoManager.EvaluateBool(condition);
+  }
+
   return bCondition;
 }
 
@@ -950,15 +977,14 @@ CStdString CGUIDialogAddonSettings::GetString(const char *value, bool subSetting
 {
   if (!value)
     return "";
-  int id = atoi(value);
   CStdString prefix(subSetting ? "- " : "");
-  if (id > 0)
-    return prefix + m_addon->GetString(id);
+  if (StringUtils::IsNaturalNumber(value))
+    return prefix + m_addon->GetString(atoi(value));
   return prefix + value;
 }
 
 // Go over all the settings and set their default values
-void CGUIDialogAddonSettings::SetDefaults()
+void CGUIDialogAddonSettings::SetDefaultSettings()
 {
   if(!m_addon)
     return;
@@ -979,9 +1005,9 @@ void CGUIDialogAddonSettings::SetDefaults()
       {
         if (value)
           m_settings[id] = value;
-        else if (0 == strcmpi(type, "bool"))
+        else if (type && 0 == strcmpi(type, "bool"))
           m_settings[id] = "false";
-        else if (0 == strcmpi(type, "slider") || 0 == strcmpi(type, "enum"))
+        else if (type && (0 == strcmpi(type, "slider") || 0 == strcmpi(type, "enum")))
           m_settings[id] = "0";
         else
           m_settings[id] = "";
@@ -1034,6 +1060,13 @@ void CGUIDialogAddonSettings::Render()
     else
       ((CGUIButtonControl *)control)->SetSelected(false);
   }
+}
+
+CStdString CGUIDialogAddonSettings::GetCurrentID() const
+{
+  if (m_addon)
+    return m_addon->ID();
+  return "";
 }
 
 int CGUIDialogAddonSettings::GetDefaultLabelID(int controlId) const
