@@ -22,6 +22,7 @@
 				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Xbox SDK\xbox\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_EXPORTS"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -122,9 +123,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
 				RelativePath=".\MilkdropXBMC.cpp">
-			</File>
-			<File
-				RelativePath=".\xbmc_vis.h">
 			</File>
 			<File
 				RelativePath=".\XmlDocument.cpp">
