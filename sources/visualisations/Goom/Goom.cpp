@@ -4,17 +4,11 @@
 
 #include "xmldocument.h"
 #include "lib/goom_core.h"
+#include "../../../xbmc/addons/include/xbmc_vis_dll.h"
 #include <cstdio>
 
 #pragma comment (lib, "lib/xbox_dx8.lib" )
 #pragma comment (lib, "lib/libgoom.a" )
-extern "C" 
-{
-	struct VIS_INFO {
-		bool bWantsFreq;
-		int iSyncDelay;
-	};
-};
 extern "C" void d3dSetTextureStageState( int x, DWORD dwY, DWORD dwZ);
 extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
 
@@ -22,6 +16,8 @@ extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
 //#define GOOM_MAX_WIDTH	640
 #define GOOM_MIN_HEIGHT	16
 //#define GOOM_MAX_HEIGHT	640
+
+#define CONFIG_FILE "special://xbmc/addons/visualization.goom/config.xml"
 
 struct VERTEX { D3DXVECTOR4 p; D3DCOLOR col; FLOAT tu, tv; };
 static const DWORD FVF_VERTEX = D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1;
@@ -61,16 +57,8 @@ void LoadSettings()
 	OutputDebugString("LoadSettings()\n");
 
   char szXMLFile[1024];
-  strcpy(szXMLFile,"P:\\Visualisations\\");
-  strcat(szXMLFile,"goom.xml");
-  FILE *f = fopen(szXMLFile,"r");
-  if (!f)
-  {
-    strcpy(szXMLFile,"T:\\Visualisations\\");
-    strcat(szXMLFile,"goom.xml");
-  }
-  else
-    fclose(f);
+  strcpy(szXMLFile,CONFIG_FILE);
+
 	// Load the config file
 	if (doc.Load(szXMLFile)<0)
 	{
@@ -112,25 +100,31 @@ void LoadSettings()
 	doc.Close();
 }
 
-
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iPosX, int iPosY, int iWidth, int iHeight, const char* szVisualisationName)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  VIS_PROPS* visprops = (VIS_PROPS*)props;
+
   OutputDebugString("Create()\n");
-  strcpy(m_szVisName,szVisualisationName);
-  m_iPosX=iPosX;
-  m_iPosY=iPosY;
-  m_iMaxWidth=iWidth;
-  m_iMaxHeight=iHeight;
+  strcpy(m_szVisName,visprops->name);
+  m_iPosX=visprops->x;
+  m_iPosY=visprops->y;
+  m_iMaxWidth=visprops->width;
+  m_iMaxHeight=visprops->height;
 	m_colDiffuse	= 0xFFFFFFFF;
 	m_pFrameBuffer=NULL;
 	m_pTexture=NULL;
 	m_pVB=NULL;
 
-	m_pd3dDevice = pd3dDevice;
+	m_pd3dDevice = (LPDIRECT3DDEVICE8)visprops->device;
 	vInfo.bWantsFreq = false;
 
 	// Load settings
 	LoadSettings();
+
+  return STATUS_OK;
 }
 
 extern "C" void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName)
@@ -206,8 +200,10 @@ extern "C" void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, con
 	}
 }
 
-
-extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+//-- Audiodata ----------------------------------------------------------------
+// Called by XBMC to pass new audio data to the vis
+//-----------------------------------------------------------------------------
+extern "C" void AudioData(const short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
 	memset(m_sData,0,sizeof(m_sData));
 	int ipos=0;
@@ -324,28 +320,93 @@ extern "C" void GetInfo(VIS_INFO* pInfo)
   pInfo->bWantsFreq =vInfo.bWantsFreq;
 	pInfo->iSyncDelay=vInfo.iSyncDelay;
 }
-extern "C" 
-{
 
-struct Visualisation
+//-- OnAction -----------------------------------------------------------------
+// Handle XBMC actions such as next preset, lock preset, album art changed etc
+//-----------------------------------------------------------------------------
+extern "C" bool OnAction(long flags, const void *param)
 {
-public:
-  void (__cdecl* Create)(LPDIRECT3DDEVICE8 pd3dDevice, int iPosX, int iPosY, int iWidth, int iHeight, const char* szVisualisationName);
-  void (__cdecl* Start)(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName);
-  void (__cdecl* AudioData)(short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
-  void (__cdecl* Render) ();
-  void (__cdecl* Stop)();
-  void (__cdecl* GetInfo)(VIS_INFO* pInfo);
-};
+  return false;
+}
 
-	void __declspec(dllexport) get_module(struct Visualisation* pVisz)
-	{
-		//OutputDebugString("get_module() \n");
-		pVisz->Create = Create;
-		pVisz->Start = Start;
-		pVisz->AudioData = AudioData;
-		pVisz->Render = Render;
-		pVisz->Stop = Stop;
-		pVisz->GetInfo = GetInfo;
-	}
-};
+//-- GetPresets ---------------------------------------------------------------
+// Return a list of presets to XBMC for display
+//-----------------------------------------------------------------------------
+extern "C" unsigned int GetPresets(char ***presets)
+{
+  return 0;
+}
+
+//-- GetPreset ----------------------------------------------------------------
+// Return the index of the current playing preset
+//-----------------------------------------------------------------------------
+extern "C" unsigned GetPreset()
+{
+  return 0;
+}
+
+//-- IsLocked -----------------------------------------------------------------
+// Returns true if this add-on use settings
+//-----------------------------------------------------------------------------
+extern "C" bool IsLocked()
+{
+  return false;
+}
+
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
+{
+  Stop();
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
+}
+
+//-- GetSettings --------------------------------------------------------------
+// Return the settings for XBMC to display
+//-----------------------------------------------------------------------------
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
+{
+  return 0;
+}
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{}
+
+//-- UpdateSetting ------------------------------------------------------------
+// Handle setting change request from XBMC
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+{
+  return STATUS_UNKNOWN;
+}
+
+//-- GetSubModules ------------------------------------------------------------
+// Return any sub modules supported by this vis
+//-----------------------------------------------------------------------------
+extern "C" unsigned int GetSubModules(char ***names)
+{
+  return 0; // this vis supports 0 sub modules
+}

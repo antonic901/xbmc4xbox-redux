@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="visualization.goom"
+  version="1.0.0"
+  name="Goom"
+  provider-name="Team XBMC">
+  <extension
+    point="xbmc.player.musicviz"
+    library_xbox="Goom.vis"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>Goom 2k4 Visualization</summary>
+    <description>The Goom 2k4 visualization supports effects like Tentacles, Flash, Stars, Fireworks, Waves, Blurs and Glows and includes a large number of trippy hypnotic effects that dance, swirl and pop with the music.</description>
+    <disclaimer></disclaimer>
+    <platform>xbox</platform>
+  </extension>
+</addon>
