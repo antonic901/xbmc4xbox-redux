@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="visualization.gforce"
+  version="1.0.0"
+  name="G-Force"
+  provider-name="Team XBMC">
+  <extension
+    point="xbmc.player.musicviz"
+    library_xbox="g-force.vis"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>G-Force visualizer</summary>
+    <description>G-Force visualizer.</description>
+    <disclaimer></disclaimer>
+    <platform>xbox</platform>
+  </extension>
+</addon>

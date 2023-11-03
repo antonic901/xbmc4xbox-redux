@@ -1,0 +1,14 @@
+<visualisation>
+
+ <!-- amount to delay visualisation (range 0..31) -->
+ <syncdelay>0</syncdelay>
+
+ <!-- resolution of G-Force -->
+ <width>360</width>
+ <height>288</height>
+ <ColorMapsFolder>ColorMaps.zip</ColorMapsFolder>
+ <DeltaFieldsFolder>DeltaFields.zip</DeltaFieldsFolder>
+ <ParticlesFolder>Particles.zip</ParticlesFolder>
+ <WaveShapesFolder>WaveShapes.zip</WaveShapesFolder>
+
+</visualisation>
