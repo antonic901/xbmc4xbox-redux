@@ -2,9 +2,14 @@
 // A simple visualisation example by MrC
 
 #include <xtl.h>
-#include "xbmc_vis.h"
+#include "../../../xbmc/addons/include/xbmc_vis_dll.h"
 
-char g_visName[512];
+#pragma comment (lib, "lib/xbox_dx8.lib" )
+
+// exports for d3d hacks
+extern "C" void d3dSetTextureStageState( int x, DWORD dwY, DWORD dwZ);
+extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
+
 LPDIRECT3DDEVICE8 g_device;
 float g_fWaveform[2][512];
 D3DVIEWPORT8  g_viewport;
@@ -21,16 +26,22 @@ struct Vertex_t
 //-- Create -------------------------------------------------------------------
 // Called once when the visualisation is created by XBMC. Do any setup here.
 //-----------------------------------------------------------------------------
-extern "C" void Create(LPDIRECT3DDEVICE8 pd3dDevice, int iPosX, int iPosY, int iWidth, int iHeight, const char* szVisualisationName, float fPixelRatio)
+extern "C" ADDON_STATUS Create(void* hdl, void* props)
 {
-  strcpy(g_visName, szVisualisationName);
-  g_device = pd3dDevice;
-  g_viewport.X = iPosX;
-  g_viewport.Y = iPosY;
-  g_viewport.Width = iWidth;
-  g_viewport.Height = iHeight;
+  if (!props)
+    return STATUS_UNKNOWN;
+
+  VIS_PROPS* visprops = (VIS_PROPS*)props;
+
+  g_device = (LPDIRECT3DDEVICE8)visprops->device;;
+  g_viewport.X = visprops->x;
+  g_viewport.Y = visprops->y;
+  g_viewport.Width = visprops->width;
+  g_viewport.Height = visprops->height;
   g_viewport.MinZ = 0;
   g_viewport.MaxZ = 1;
+
+  return STATUS_OK;
 }
 
 //-- Start --------------------------------------------------------------------
@@ -52,7 +63,7 @@ extern "C" void Stop()
 //-- Audiodata ----------------------------------------------------------------
 // Called by XBMC to pass new audio data to the vis
 //-----------------------------------------------------------------------------
-extern "C" void AudioData(short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+extern "C" void AudioData(const short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
 
   // Convert the audio data into a floating -1 to +1 range
@@ -117,32 +128,89 @@ extern "C" void GetInfo(VIS_INFO* pInfo)
 //-- OnAction -----------------------------------------------------------------
 // Handle XBMC actions such as next preset, lock preset, album art changed etc
 //-----------------------------------------------------------------------------
-extern "C" bool OnAction(long flags, void *param)
+extern "C" bool OnAction(long flags, const void *param)
 {
-  bool ret = false;
-  return ret;
+  return false;
 }
 
 //-- GetPresets ---------------------------------------------------------------
 // Return a list of presets to XBMC for display
 //-----------------------------------------------------------------------------
-extern "C" void GetPresets(char ***pPresets, int *currentPreset, int *numPresets, bool *locked)
+extern "C" unsigned int GetPresets(char ***presets)
 {
+  return 0;
+}
 
+//-- GetPreset ----------------------------------------------------------------
+// Return the index of the current playing preset
+//-----------------------------------------------------------------------------
+extern "C" unsigned GetPreset()
+{
+  return 0;
+}
+
+//-- IsLocked -----------------------------------------------------------------
+// Returns true if this add-on use settings
+//-----------------------------------------------------------------------------
+extern "C" bool IsLocked()
+{
+  return false;
+}
+
+//-- Destroy-------------------------------------------------------------------
+// Do everything before unload of this add-on
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" void Destroy()
+{
+  Stop();
+}
+
+//-- HasSettings --------------------------------------------------------------
+// Returns true if this add-on use settings
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" bool HasSettings()
+{
+  return false;
+}
+
+//-- GetStatus ---------------------------------------------------------------
+// Returns the current Status of this visualisation
+// !!! Add-on master function !!!
+//-----------------------------------------------------------------------------
+extern "C" ADDON_STATUS GetStatus()
+{
+  return STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
-extern "C" void GetSettings(vector<VisSetting> **vecSettings)
+
+extern "C" unsigned int GetSettings(StructSetting ***sSet)
 {
-  return;
+  return 0;
 }
+
+//-- FreeSettings --------------------------------------------------------------
+// Free the settings struct passed from XBMC
+//-----------------------------------------------------------------------------
+extern "C" void FreeSettings()
+{}
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void UpdateSetting(int num)
+extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
 {
+  return STATUS_OK;
+}
 
+//-- GetSubModules ------------------------------------------------------------
+// Return any sub modules supported by this vis
+//-----------------------------------------------------------------------------
+extern "C" unsigned int GetSubModules(char ***names)
+{
+  return 0; // this vis supports 0 sub modules
 }
