@@ -512,7 +512,6 @@ public:
   CStdString GetLibraryFolder() const;
   CStdString GetSourcesFile() const;
   CStdString GetSkinFolder(const CStdString& skinName) const;
-  CStdString GetScriptsFolder() const;
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
   CStdString GetFFmpegDllFolder() const;

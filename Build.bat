@@ -233,9 +233,7 @@ GOTO:EOF
   xcopy system %~1\system /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy web\XBMC_Reloaded %~1\web /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy media   %~1\media   /E /Q /I /Y /EXCLUDE:exclude.txt
-  xcopy plugins %~1\plugins /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy sounds  %~1\sounds  /E /Q /I /Y /EXCLUDE:exclude.txt
-  xcopy scripts %~1\scripts /E /Q /I /Y /EXCLUDE:exclude.txt
   
   del exclude.txt
   GOTO:EOF

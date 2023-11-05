@@ -2093,17 +2093,6 @@ CStdString CSettings::GetSourcesFile() const
   return folder;
 }
 
-CStdString CSettings::GetScriptsFolder() const
-{
-  CStdString folder = "special://home/scripts";
-
-  if ( CDirectory::Exists(folder) )
-    return folder;
-
-  folder = "special://xbmc/scripts";
-  return folder;
-}
-
 CStdString CSettings::GetSkinFolder(const CStdString &skinName) const
 {
   CStdString folder;
