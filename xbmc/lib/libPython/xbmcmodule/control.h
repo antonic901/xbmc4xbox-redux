@@ -62,6 +62,9 @@
 #define ControlRadioButton_Check(op) PyObject_TypeCheck(op, &ControlRadioButton_Type)
 #define ControlRadioButton_CheckExact(op) ((op)->ob_type == &ControlRadioButton_Type)
 
+#define ControlSlider_Check(op) PyObject_TypeCheck(op, &ControlSlider_Type)
+#define ControlSlider_CheckExact(op) ((op)->ob_type == &ControlSlider_Type)
+
 // -----------------
 
 // hardcoded offsets for button controls (and controls that use button controls)
@@ -224,6 +227,13 @@ namespace PYXBMC
     color_t shadowColor;
     color_t focusedColor;
   } ControlRadioButton;
+	
+  typedef struct {
+    PyObject_HEAD_XBMC_CONTROL
+    std::string strTextureBack;
+    std::string strTexture;
+    std::string strTextureFoc;    
+  } ControlSlider;	
 
   extern void Control_Dealloc(Control* self);
 
@@ -241,6 +251,7 @@ namespace PYXBMC
   extern PyTypeObject ControlList_Type;
   extern PyTypeObject ControlProgress_Type;
   extern PyTypeObject ControlRadioButton_Type;
+  extern PyTypeObject ControlSlider_Type;
 
   CGUIControl* ControlLabel_Create(ControlLabel* pControl);
   CGUIControl* ControlFadeLabel_Create(ControlFadeLabel* pControl);
@@ -252,6 +263,7 @@ namespace PYXBMC
   CGUIControl* ControlList_Create(ControlList* pControl);
   CGUIControl* ControlProgress_Create(ControlProgress* pControl);
   CGUIControl* ControlRadioButton_Create(ControlRadioButton* pControl);
+  CGUIControl* ControlSlider_Create(ControlSlider* pControl);
 
   void initControl_Type();
   void initControlSpin_Type();
@@ -265,6 +277,7 @@ namespace PYXBMC
   void initControlGroup_Type();
   void initControlProgress_Type();
   void initControlRadioButton_Type();
+  void initControlSlider_Type();
 }
 
 #ifdef __cplusplus

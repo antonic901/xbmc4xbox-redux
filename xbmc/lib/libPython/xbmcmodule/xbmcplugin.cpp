@@ -88,7 +88,7 @@ namespace PYXBMC
 
     string url;
     if (!PyXBMCGetUnicodeString(url, pURL, 1) || !ListItem_CheckExact(pItem)) return NULL;
-    
+
     ListItem *pListItem = (ListItem *)pItem;
     pListItem->item->SetPath(url);
     pListItem->item->m_bIsFolder = (0 != bIsFolder);
@@ -245,7 +245,7 @@ namespace PYXBMC
     };
 
     ListItem *pListItem = (ListItem *)pItem;
-    
+
     XFILE::CPluginDirectory::SetResolvedUrl(handle, 0 != bSucceeded, pListItem->item.get());
 
     Py_INCREF(Py_None);
@@ -370,7 +370,7 @@ namespace PYXBMC
     CStdString value;
     if (!id || !PyXBMCGetUnicodeString(value, pValue, 1))
       return NULL;
-    
+
     XFILE::CPluginDirectory::SetSetting(handle, id, value);
 
     Py_INCREF(Py_None);
@@ -570,14 +570,27 @@ namespace PYXBMC
  *****************************************************************/
 
   PyMODINIT_FUNC
-  initxbmcplugin(void)
+  DeinitPluginModule(void)
+  {
+    // no need to Py_DECREF our objects (see InitPluginTypes()) as they were created only
+    // so that they could be added to the module, which steals a reference.
+  }
+
+  PyMODINIT_FUNC
+  InitPluginTypes(void)
+  {
+    // no types here
+  }
+
+  PyMODINIT_FUNC
+  InitPluginModule()
   {
     // init general xbmc modules
     PyObject* pXbmcPluginModule;
 
     pXbmcPluginModule = Py_InitModule((char*)"xbmcplugin", pluginMethods);
     if (pXbmcPluginModule == NULL) return;
-  
+
     // constants
     PyModule_AddStringConstant(pXbmcPluginModule, (char*)"__author__", (char*)PY_XBMC_AUTHOR);
     PyModule_AddStringConstant(pXbmcPluginModule, (char*)"__date__", (char*)"20 August 2007");

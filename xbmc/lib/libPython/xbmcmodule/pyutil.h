@@ -47,6 +47,16 @@ namespace PYXBMC
   void  PyXBMCWaitForThreadMessage(int message, int param1, int param2);
 }
 
+// Python doesn't play nice with PyXBMC_AddPendingCall
+// and PyXBMC_MakePendingCalls as it only allows them from
+// the main python thread, which isn't what we want, so we have our own versions.
+
+#define PyXBMC_AddPendingCall _PyXBMC_AddPendingCall
+#define PyXBMC_MakePendingCalls _PyXBMC_MakePendingCalls
+
+void _PyXBMC_AddPendingCall(int(*func)(void*), void *arg);
+void _PyXBMC_MakePendingCalls();
+
 #ifdef __cplusplus
 }
 #endif

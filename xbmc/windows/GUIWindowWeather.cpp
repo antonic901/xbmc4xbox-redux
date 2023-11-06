@@ -286,13 +286,12 @@ void CGUIWindowWeather::CallScript()
   if (!g_guiSettings.GetString("weather.script").Equals(DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
-    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT))
+    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT_WEATHER))
       return;
 
     // initialize our sys.argv variables
-    unsigned int argc = 2;
-    char ** argv = new char*[argc];
-    argv[0] = (char*)addon->LibPath().c_str();
+    std::vector<CStdString> argv;
+    argv.push_back(addon->LibPath());
 
     // if script is running we wait for another timeout only when in weather window
     if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
@@ -308,12 +307,11 @@ void CGUIWindowWeather::CallScript()
     // get the current locations area code
     CStdString strSetting;
     strSetting.Format("weather.areacode%i", m_iCurWeather + 1);
-    const CStdString &areacode = g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting));
-    argv[1] = (char*)areacode.c_str();
+    argv.push_back(g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting)));
 
     // call our script, passing the areacode
-    g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
+    g_pythonParser.evalFile(argv[0], argv);
 
-    CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0], argv[1]);
+    CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0].c_str(), argv[1].c_str());
   }
 }

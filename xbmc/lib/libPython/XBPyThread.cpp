@@ -24,13 +24,13 @@
 #include "Python/Include/osdefs.h"
 #include "XBPythonDll.h"
 #include "FileSystem/SpecialProtocol.h"
-#include "FileSystem/Directory.h"
-#include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogKaiToast.h"
-#include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/SingleLock.h"
+#include "utils/URIUtils.h"
+#include "addons/AddonManager.h"
 
 #include "XBPyThread.h"
 #include "XBPython.h"
@@ -62,78 +62,67 @@ int xbTrace(PyObject *obj, _frame *frame, int what, PyObject *arg)
   return -1;
 }
 
-XBPyThread::XBPyThread(LPVOID pExecuter, PyThreadState* mainThreadState, int id)
+XBPyThread::XBPyThread(XBPython *pExecuter, int id)
 {
   CLog::Log(LOGDEBUG,"new python thread created. id=%d", id);
-  this->pExecuter = pExecuter;
-  this->id = id;
-  // get the global lock
-  PyEval_AcquireLock();
-  // get a reference to the PyInterpreterState
-  PyInterpreterState *mainInterpreterState = mainThreadState->interp;
-  // create a thread state object for this thread
-  threadState = PyThreadState_New(mainInterpreterState);
-
-  // clear the thread state and free the lock
-  PyThreadState_Swap(NULL);
-  PyEval_ReleaseLock();
-
-  done = false;
-  stopping = false;
-  argv = NULL;
-  source = NULL;
-  argc = 0;
+  m_pExecuter   = pExecuter;
+  m_threadState = NULL;
+  m_id          = id;
+  m_stopping    = false;
+  m_argv        = NULL;
+  m_source      = NULL;
+  m_argc        = 0;
 }
 
 XBPyThread::~XBPyThread()
 {
-// Don't call StopThread for now as it hangs XBMC at shutdown:
-//  stop();
+  stop();
   g_pythonParser.PulseGlobalEvent();
-//  StopThread();
-  CLog::Log(LOGDEBUG,"python thread %d destructed", this->id);
-  delete [] source;
-  if (argv)
+  StopThread();
+  CLog::Log(LOGDEBUG,"python thread %d destructed", m_id);
+  delete [] m_source;
+  if (m_argv)
   {
-    for (unsigned int i = 0; i < argc; i++)
-      delete [] argv[i];
-    delete [] argv;
+    for (unsigned int i = 0; i < m_argc; i++)
+      delete [] m_argv[i];
+    delete [] m_argv;
   }
 }
 
-int XBPyThread::evalFile(const char *src)
+int XBPyThread::evalFile(const CStdString &src)
 {
-  type = 'F';
-  source = new char[strlen(src)+1];
-  strcpy(source, src);
+  m_type    = 'F';
+  m_source  = new char[src.GetLength()+1];
+  strcpy(m_source, src);
   Create();
   return 0;
 }
 
-int XBPyThread::evalString(const char *src)
+int XBPyThread::evalString(const CStdString &src)
 {
-  type = 'S';
-  source = new char[strlen(src)+1];
-  strcpy(source, src);
+  m_type    = 'S';
+  m_source  = new char[src.GetLength()+1];
+  strcpy(m_source, src);
   Create();
   return 0;
 }
 
-int XBPyThread::setArgv(unsigned int src_argc, const char **src)
+int XBPyThread::setArgv(const std::vector<CStdString> &argv)
 {
-  if (src == NULL)
-    return 1;
-  argc = src_argc;
-  argv = new char*[argc];
-  for(unsigned int i = 0; i < argc; i++)
+  m_argc = argv.size();
+  m_argv = new char*[m_argc];
+  for(unsigned int i = 0; i < m_argc; i++)
   {
-    argv[i] = new char[strlen(src[i])+1];
-    strcpy(argv[i], src[i]);
+    m_argv[i] = new char[argv[i].GetLength()+1];
+    strcpy(m_argv[i], argv[i].c_str());
   }
   return 0;
 }
 
-void XBPyThread::OnStartup(){}
+void XBPyThread::OnStartup()
+{
+  CThread::SetName("Python Thread");
+}
 
 void XBPyThread::Process()
 {
@@ -143,41 +132,40 @@ void XBPyThread::Process()
 
   // get the global lock
   PyEval_AcquireLock();
+  PyThreadState* state = Py_NewInterpreter();
+  if (!state)
+  {
+    PyEval_ReleaseLock();
+    CLog::Log(LOGERROR,"Python thread: FAILED to get thread state!");
+    return;
+  }
   // swap in my thread state
-  PyThreadState_Swap(threadState);
-  
-  CLog::Log(LOGDEBUG, "%s - The source file to load is %s", __FUNCTION__, source);
+  PyThreadState_Swap(state);
+
+  m_pExecuter->InitializeInterpreter();
+
+  CLog::Log(LOGDEBUG, "%s - The source file to load is %s", __FUNCTION__, m_source);
 
   // get path from script file name and add python path's
   // this is used for python so it will search modules from script path first
   CStdString scriptDir;
-  URIUtils::GetDirectory(_P(source), scriptDir);
+  URIUtils::GetDirectory(_P(m_source), scriptDir);
   URIUtils::RemoveSlashAtEnd(scriptDir);
   CStdString path = scriptDir;
 
   // add on any addon modules the user has installed
-  // fetch directory
-  if (XFILE::CDirectory::Exists("Q:\\scripts\\.modules"))
-  {
-    CFileItemList items;
-    XFILE::CDirectory::GetDirectory("Q:\\scripts\\.modules", items, "/");
-    for (int i = 0; i < items.Size(); ++i)
-    {
-      CFileItemPtr pItem = items[i];
-      if (pItem->m_bIsFolder)
-      {
-        CStdString fullpath = URIUtils::AddFileToFolder(pItem->GetPath(), "lib");
-        path += PY_PATH_SEP + fullpath;
-      }
-    }
-  }
+  ADDON::VECADDONS addons;
+  ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_SCRIPT_MODULE, addons);
+  for (unsigned int i = 0; i < addons.size(); ++i)
+    path += PY_PATH_SEP + _P(addons[i]->LibPath());
+
   // and add on whatever our default path is
   path += PY_PATH_SEP;
-  path += dll_getenv("PYTHONPATH");
+  path += Py_GetPath();
 
   // set current directory and python's path.
-  if (argv != NULL)
-    PySys_SetArgv(argc, argv);
+  if (m_argv != NULL)
+    PySys_SetArgv(m_argc, m_argv);
 
   CLog::Log(LOGDEBUG, "%s - Setting the Python path to %s", __FUNCTION__, path.c_str());
 
@@ -185,34 +173,49 @@ void XBPyThread::Process()
 
   CLog::Log(LOGDEBUG, "%s - Entering source directory %s", __FUNCTION__, scriptDir.c_str());
 
+  PyObject* module = PyImport_AddModule((char*)"__main__");
+  PyObject* moduleDict = PyModule_GetDict(module);
+
+  // when we are done initing we store thread state so we can be aborted
+  PyThreadState_Swap(NULL);
+  PyEval_ReleaseLock();
+
+  // we need to check if we was asked to abort before we had inited
+  bool stopping = false;
+  { CSingleLock lock(m_pExecuter->m_critSection);
+    m_threadState = state;
+    stopping = m_stopping;
+  }
+
+  PyEval_AcquireLock();
+  PyThreadState_Swap(state);
+
   xbp_chdir(scriptDir.c_str());
 
-  int retval = -1;
-  
-  if (type == 'F')
+  if (!stopping)
   {
-    // run script from file
-    FILE *fp = fopen_utf8(_P(source).c_str(), "r");
-    if (fp)
+    if (m_type == 'F')
     {
-      PyObject* module = PyImport_AddModule((char*)"__main__");
-      PyObject* moduleDict = PyModule_GetDict(module);
-      PyObject *f = PyString_FromString(_P(source).c_str());
-      PyDict_SetItemString(moduleDict, "__file__", f);
-      Py_DECREF(f);
-      PyRun_File(fp, _P(source).c_str(), m_Py_file_input, moduleDict, moduleDict);
-      fclose(fp);
+      // run script from file
+      FILE *fp = fopen_utf8(_P(m_source).c_str(), "r");
+      if (fp)
+      {
+        PyObject *f = PyString_FromString(_P(m_source).c_str());
+        PyDict_SetItemString(moduleDict, "__file__", f);
+        Py_DECREF(f);
+        PyRun_File(fp, _P(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
+        fclose(fp);
+      }
+      else
+        CLog::Log(LOGERROR, "%s not found!", m_source);
     }
     else
-      CLog::Log(LOGERROR, "%s not found!", source);
+    {
+      //run script
+      PyRun_String(m_source, m_Py_file_input, moduleDict, moduleDict);
+    }
   }
-  else
-  {
-    //run script
-    PyObject* module = PyImport_AddModule((char*)"__main__");
-    PyObject* moduleDict = PyModule_GetDict(module);
-    PyRun_String(source, m_Py_file_input, moduleDict, moduleDict);
-  }
+
   if (PyErr_Occurred())
   {
     PyObject* exc_type;
@@ -230,7 +233,7 @@ void XBPyThread::Process()
     {
       if (exc_type != NULL && (pystring = PyObject_Str(exc_type)) != NULL && (PyString_Check(pystring)))
       {
-        if (strncmp(PyString_AsString(pystring), "<type 'exceptions.KeyboardInterrupt'>", 37) == 0)
+        if (strncmp(PyString_AsString(pystring), "exceptions.KeyboardInterrupt", 28) == 0)
           CLog::Log(LOGINFO, "Scriptresult: Interrupted by user");
         else
         {
@@ -239,7 +242,7 @@ void XBPyThread::Process()
           CLog::Log(LOGINFO, "-->Python script returned the following error<--");
           CLog::Log(LOGERROR, "Error Type: %s", PyString_AsString(PyObject_Str(exc_type)));
           if (PyObject_Str(exc_value))
-          CLog::Log(LOGERROR, "Error Contents: %s", PyString_AsString(PyObject_Str(exc_value)));
+            CLog::Log(LOGERROR, "Error Contents: %s", PyString_AsString(PyObject_Str(exc_value)));
 
           tracebackModule = PyImport_ImportModule((char*)"traceback");
           if (tracebackModule != NULL)
@@ -266,7 +269,7 @@ void XBPyThread::Process()
         CLog::Log(LOGINFO, "<unknown exception type>");
       }
     }
-    if (pystring != NULL && strncmp(PyString_AsString(pystring), "<type 'exceptions.KeyboardInterrupt'>", 37) != 0)
+    if (pystring != NULL && strncmp(PyString_AsString(pystring), "exceptions.KeyboardInterrupt", 28) != 0)
     {
       CGUIDialogKaiToast *pDlgToast = (CGUIDialogKaiToast*)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
       if (pDlgToast)
@@ -274,7 +277,7 @@ void XBPyThread::Process()
         CStdString desc;
         CStdString path;
         CStdString script;
-        URIUtils::Split(source, path, script);
+        URIUtils::Split(m_source, path, script);
         if (script.Equals("default.py"))
         {
           CStdString path2;
@@ -294,51 +297,79 @@ void XBPyThread::Process()
   else
     CLog::Log(LOGINFO, "Scriptresult: Success");
 
-  // clear the thread state and release our hold on the global interpreter
+  // wait for the running threads to end
+  PyErr_Clear();
+  PyRun_SimpleString(
+        "import threading\n"
+        "import sys\n"
+        "while threading.activeCount() > 1:\n"
+        "\tthreads = list(threading.enumerate())\n"
+        "\tfor thread in threads:\n"
+        "\t\tif thread <> threading.currentThread():\n"
+        "\t\t\tprint 'waiting for thread - ' + thread.getName()\n"
+        "\t\t\tthread.join(1000)\n"
+        );
+
+  if (PyErr_Occurred())
+    CLog::Log(LOGERROR, "Failed to wait for python threads to end");
+
   PyThreadState_Swap(NULL);
+  PyEval_ReleaseLock();
+
+  { CSingleLock lock(m_pExecuter->m_critSection);
+    m_threadState = NULL;
+  }
+
+  PyEval_AcquireLock();
+  PyThreadState_Swap(state);
+
+  m_pExecuter->DeInitializeInterpreter();
+
+  Py_EndInterpreter(state);
+  PyThreadState_Swap(NULL);
+
   PyEval_ReleaseLock();
 }
 
 void XBPyThread::OnExit()
 {
-  // grab the lock
-  PyEval_AcquireLock();
-  // swap my thread state out of the interpreter
-  PyThreadState_Swap(NULL);
-
-  // clear out any cruft from thread state object
-  // can cause a crash since we moved from python 2.4 so disabled for now
-  // PyThreadState_Clear(threadState);
-
-  // delete my thread state object
-  PyThreadState_Delete(threadState);
-  // release the lock
-  PyEval_ReleaseLock();
-
-  done = true;
-  ((XBPython*)pExecuter)->setDone(id);
+  m_pExecuter->setDone(m_id);
 }
 
-bool XBPyThread::isDone() {
-  return done;
+void XBPyThread::OnException()
+{
+  PyThreadState_Swap(NULL);
+  PyEval_ReleaseLock();
+
+  CSingleLock lock(m_pExecuter->m_critSection);
+  m_threadState = NULL;
+  CLog::Log(LOGERROR,"%s, abnormally terminating python thread", __FUNCTION__);
+  m_pExecuter->setDone(m_id);
 }
 
 bool XBPyThread::isStopping() {
-  return stopping;
+  return m_stopping;
 }
 
 void XBPyThread::stop()
 {
-  stopping = true;
-  PyEval_AcquireLock();
-  //PyErr_SetInterrupt();
+  CSingleLock lock(m_pExecuter->m_critSection);
+  if(m_stopping)
+    return;
 
-  // enable tracing. xbTrace will generate an error and the sript will be stopped
-  //PyEval_SetTrace(xbTrace, NULL);
+  m_stopping = true;
 
-  threadState->c_tracefunc = xbTrace;
-  //arg threadState->c_traceobj
-  threadState->use_tracing = 1;
+  if (m_threadState)
+  {
+    PyEval_AcquireLock();
+    PyThreadState* old = PyThreadState_Swap(m_threadState);
+    PyRun_SimpleString("import xbmc\n"
+                       "xbmc.abortRequested = True\n");
 
-  PyEval_ReleaseLock();
+    m_threadState->c_tracefunc = xbTrace;
+    m_threadState->use_tracing = 1;
+
+    PyThreadState_Swap(old);
+    PyEval_ReleaseLock();
+  }
 }

@@ -171,3 +171,32 @@ namespace PYXBMC
   }
 
 }
+
+typedef std::pair<int(*)(void*), void*> Func;
+typedef std::vector<Func> CallQueue;
+CallQueue g_callQueue;
+CCriticalSection g_critSectionPyCall;
+
+void _PyXBMC_AddPendingCall(int(*func)(void*), void *arg)
+{
+  CSingleLock lock(g_critSectionPyCall);
+  g_callQueue.push_back(Func(func, arg));
+}
+
+void _PyXBMC_MakePendingCalls()
+{
+  CSingleLock lock(g_critSectionPyCall);
+  CallQueue::iterator iter = g_callQueue.begin();
+  while (iter != g_callQueue.end())
+  {
+    int(*f)(void*) = (*iter).first;
+    void* arg = (*iter).second;
+    g_callQueue.erase(iter);
+    lock.Leave();
+    if (f)
+      f(arg);
+    //(*((*iter).first))((*iter).second);
+    lock.Enter();
+    iter = g_callQueue.begin();
+  }
+}

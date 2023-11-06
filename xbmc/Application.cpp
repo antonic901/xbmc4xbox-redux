@@ -1345,7 +1345,7 @@ HRESULT CApplication::Initialize()
     g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
   }
 
-  g_pythonParser.bStartup = true;
+  g_pythonParser.m_bStartup = true;
   //g_sysinfo.Refresh();
 
   CLog::Log(LOGINFO, "removing tempfiles");
@@ -5094,11 +5094,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
         CFileItem item(actionStr, false);
         if (item.IsPythonScript())
         { // a python script
-          unsigned int argc = 1;
-          char ** argv = new char*[argc];
-          argv[0] = (char*)item.GetPath().c_str();
-          g_pythonParser.evalFile(argv[0], argc, (const char**)argv);
-          delete [] argv;
+          g_pythonParser.evalFile(item.GetPath().c_str());
         }
         else if (item.IsXBE())
         { // an XBE

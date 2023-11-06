@@ -290,7 +290,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   g_settings.SaveProfiles(PROFILES_FILE);
 
   g_weatherManager.Refresh();
-  g_pythonParser.bLogin = true;
+  g_pythonParser.m_bLogin = true;
 
   g_windowManager.ChangeActiveWindow(g_SkinInfo->GetFirstWindow());
 
