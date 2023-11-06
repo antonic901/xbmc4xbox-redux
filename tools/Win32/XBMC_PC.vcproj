@@ -2218,9 +2218,6 @@
 					RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowScripts.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\pictures\GUIWindowSlideShow.cpp">
 				</File>
 				<File
@@ -3251,9 +3248,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\GUIWindowScripts.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\settings\GUIWindowSettings.h">

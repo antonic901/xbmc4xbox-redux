@@ -138,7 +138,6 @@
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
 #include "pictures/GUIWindowPictures.h"
-#include "GUIWindowScripts.h"
 #include "windows/GUIWindowWeather.h"
 #include "GUIWindowGameSaves.h"
 #include "windows/GUIWindowLoginScreen.h"
@@ -1256,7 +1255,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSystemInfo);               // window id = 7
   g_windowManager.Add(new CGUIWindowSettingsScreenCalibration); // window id = 11
   g_windowManager.Add(new CGUIWindowSettingsCategory);         // window id = 12 slideshow:window id 2007
-  g_windowManager.Add(new CGUIWindowScripts);                  // window id = 20
   g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 36
   g_windowManager.Add(new CGUIWindowVideoPlaylist);            // window id = 28
   g_windowManager.Add(new CGUIWindowLoginScreen);            // window id = 29
