@@ -2221,9 +2221,6 @@
 					RelativePath="..\..\xbmc\GUIWindowScripts.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIWindowScriptsInfo.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\pictures\GUIWindowSlideShow.cpp">
 				</File>
 				<File
@@ -3257,9 +3254,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\GUIWindowScripts.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\GUIWindowScriptsInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\settings\GUIWindowSettings.h">

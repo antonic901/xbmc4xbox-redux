@@ -155,7 +155,6 @@
 #include "music/dialogs/GUIDialogMusicOSD.h"
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
 #include "dialogs/GUIDialogTrainerSettings.h"
-#include "GUIWindowScriptsInfo.h"
 #include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "video/dialogs/GUIDialogVideoSettings.h"
@@ -1314,7 +1313,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogMusicInfo);                // window id = 2001
   g_windowManager.Add(new CGUIDialogOK);                 // window id = 2002
   g_windowManager.Add(new CGUIDialogVideoInfo);                // window id = 2003
-  g_windowManager.Add(new CGUIWindowScriptsInfo);              // window id = 2004
   g_windowManager.Add(new CGUIWindowFullScreen);         // window id = 2005
   g_windowManager.Add(new CGUIWindowVisualisation);      // window id = 2006
   g_windowManager.Add(new CGUIWindowSlideShow);          // window id = 2007
@@ -3492,7 +3490,6 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_SYSTEM_INFORMATION);
     g_windowManager.Delete(WINDOW_SCREENSAVER);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD);
-    g_windowManager.Delete(WINDOW_SCRIPTS_INFO);
     g_windowManager.Delete(WINDOW_SLIDESHOW);
 
     g_windowManager.Delete(WINDOW_HOME);
