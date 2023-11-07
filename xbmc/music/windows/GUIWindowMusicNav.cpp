@@ -21,6 +21,7 @@
 #include "music/windows/GUIWindowMusicNav.h"
 #include "Util.h"
 #include "GUIInfoManager.h"
+#include "utils/FileUtils.h"
 #include "playlists/PlayListM3U.h"
 #include "PlayListPlayer.h"
 #include "GUIPassword.h"
@@ -677,7 +678,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     if (item->IsPlayList() || item->IsSmartPlayList())
     {
       item->m_bIsFolder = false;
-      CGUIWindowFileManager::DeleteItem(item.get());
+      CFileUtils::DeleteItem(item);
     }
     else
     {

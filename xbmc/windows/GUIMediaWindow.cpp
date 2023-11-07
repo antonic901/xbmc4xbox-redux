@@ -60,6 +60,7 @@
 #include "dialogs/GUIDialogMediaFilter.h"
 #include "filesystem/SmartPlaylistDirectory.h"
 #include "FileItemListModification.h"
+#include "utils/FileUtils.h"
 
 #define CONTROL_BTNVIEWASICONS       2
 #define CONTROL_BTNSORTBY            3
@@ -1365,16 +1366,16 @@ void CGUIMediaWindow::UpdateFileList()
 void CGUIMediaWindow::OnDeleteItem(int iItem)
 {
   if ( iItem < 0 || iItem >= m_vecItems->Size()) return;
-  CFileItem item(*m_vecItems->Get(iItem));
+  CFileItemPtr item = m_vecItems->Get(iItem);
 
-  if (item.IsPlayList())
-    item.m_bIsFolder = false;
+  if (item->IsPlayList())
+    item->m_bIsFolder = false;
 
   if (g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE && g_settings.GetCurrentProfile().filesLocked())
     if (!g_passwordManager.IsMasterLockUnlocked(true))
       return;
 
-  if (!CGUIWindowFileManager::DeleteItem(&item))
+  if (!CFileUtils::DeleteItem(item))
     return;
   Refresh(true);
   m_viewControl.SetSelectedItem(iItem);
@@ -1388,7 +1389,7 @@ void CGUIMediaWindow::OnRenameItem(int iItem)
     if (!g_passwordManager.IsMasterLockUnlocked(true))
       return;
 
-  if (!CGUIWindowFileManager::RenameFile(m_vecItems->Get(iItem)->GetPath()))
+  if (!CFileUtils::RenameFile(m_vecItems->Get(iItem)->GetPath()))
     return;
   Refresh(true);
   m_viewControl.SetSelectedItem(iItem);

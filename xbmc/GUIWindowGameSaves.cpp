@@ -35,11 +35,12 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileSystem/Directory.h"
 #include "FileItem.h"
+#include "FileOperationJob.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
+#include "utils/FileUtils.h"
 
-using namespace XFILE;
 using namespace XFILE;
 
 #define CONTROL_BTNVIEWASICONS     2
@@ -411,8 +412,8 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   dir.SetSources(localMemShares);
   dir.GetSources(localMemShares);
 
-  CFileItem item(*m_vecItems->Get(itemNumber));
-  CStdString strFileName = URIUtils::GetFileName(item.GetPath());
+  CFileItemPtr item = m_vecItems->Get(itemNumber);
+  CStdString strFileName = URIUtils::GetFileName(item->GetPath());
   switch (button)
   {
   case CONTEXT_BUTTON_COPY:
@@ -427,12 +428,12 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       {
         CStdString itemPath;
         URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item.SetPath(itemPath);
-        item.m_bIsFolder = true;
+        item->SetPath(itemPath);
+        item->m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;
         CStdString strParent;
-        URIUtils::GetParentPath(item.GetPath(),strParent);
+        URIUtils::GetParentPath(item->GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
         URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
         for (int j=0;j<items2.Size();++j)
@@ -444,33 +445,36 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
             CFile::Cache(items2[j]->GetPath(),strDest);
           }
         }
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.GetPath()),path);
+        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()),path);
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.GetPath()),path);
+        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()),path);
       }
 
-      item.Select(true);
-      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.GetPath().c_str());
-      CGUIWindowFileManager::CopyItem(&item,path,true);
-      return true;
+      item->Select(true);
+      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item->GetPath().c_str());
+
+      CFileItemList items;
+      items.Add(item);
+      CFileOperationJob op(CFileOperationJob::ActionCopy, items, path);
+      return op.DoWork();
     }
   case CONTEXT_BUTTON_DELETE:
     {
-      CLog::Log(LOGDEBUG,"GSM: Deletion of folder confirmed for folder %s", item.GetPath().c_str());
+      CLog::Log(LOGDEBUG,"GSM: Deletion of folder confirmed for folder %s", item->GetPath().c_str());
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx"))
       {
         CStdString itemPath;
         URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item.SetPath(itemPath);
-        item.m_bIsFolder = true;
+        item->SetPath(itemPath);
+        item->m_bIsFolder = true;
       }
 
-      item.Select(true);
-      if (CGUIWindowFileManager::DeleteItem(&item))
+      item->Select(true);
+      if (CFileUtils::DeleteItem(item))
       {
-        CFile::Delete(item.GetThumbnailImage());
+        CFile::Delete(item->GetThumbnailImage());
         Update(m_vecItems->GetPath());
       }
       return true;
@@ -487,12 +491,12 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       {
         CStdString itemPath;
         URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item.SetPath(itemPath);
-        item.m_bIsFolder = true;
+        item->SetPath(itemPath);
+        item->m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;
         CStdString strParent;
-        URIUtils::GetParentPath(item.GetPath(),strParent);
+        URIUtils::GetParentPath(item->GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
 
         URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
@@ -506,17 +510,23 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           }
         }
 
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item.GetPath()),path);
+        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()),path);
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item.GetPath()),path);
+        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()),path);
       }
 
-      item.Select(true);
-      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item.GetPath().c_str());
-      CGUIWindowFileManager::MoveItem(&item,path,true);
-      CDirectory::Remove(item.GetPath());
+      item->Select(true);
+      CLog::Log(LOGDEBUG,"GSM: Copy of folder confirmed for folder %s",  item->GetPath().c_str());
+
+      CFileItemList items;
+      items.Add(item);
+      CFileOperationJob op(CFileOperationJob::ActionMove, items, path);
+      if(!op.DoWork())
+        return false;
+
+      CDirectory::Remove(item->GetPath());
       Update(m_vecItems->GetPath());
       return true;
     }
@@ -525,12 +535,12 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CHTTP http;
       CStdString strURL;
-      if (item.m_musicInfoTag.GetTitle() != "")
+      if (item->m_musicInfoTag.GetTitle() != "")
       {
         if (!CGUIWindowGameSaves::DownloadSaves(item))
         {
           CGUIDialogOK::ShowAndGetInput(20317, 0, 20321, 0);  // No Saves found
-          CLog::Log(LOGINFO,"GSM: No saves available for game on internet: %s",  item.GetLabel().c_str());
+          CLog::Log(LOGINFO,"GSM: No saves available for game on internet: %s",  item->GetLabel().c_str());
         }
         else
         {

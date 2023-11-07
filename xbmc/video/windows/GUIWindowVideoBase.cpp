@@ -59,7 +59,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
-
+#include "utils/FileUtils.h"
 #include "addons/Skin.h"
 
 using namespace std;
@@ -1456,7 +1456,7 @@ void CGUIWindowVideoBase::OnDeleteItem(CFileItemPtr item)
       return;
   }
 
-  CGUIWindowFileManager::DeleteItem(item.get());
+  CFileUtils::DeleteItem(item);
 }
 
 void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)

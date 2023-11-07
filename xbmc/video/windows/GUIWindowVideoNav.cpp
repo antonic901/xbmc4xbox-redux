@@ -20,7 +20,6 @@
 
 #include "video/windows/GUIWindowVideoNav.h"
 #include "music/windows/GUIWindowMusicNav.h"
-#include "windows/GUIWindowFileManager.h"
 #include "GUIInfoManager.h"
 #include "Util.h"
 #include "utils/RegExp.h"
@@ -51,6 +50,7 @@
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/StringUtils2.h"
+#include "utils/FileUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "dialogs/GUIDialogKeyboard.h"
@@ -675,8 +675,8 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     CStdString path;
     URIUtils::GetDirectory(pItem->GetPath(),path);
     path.Replace("plugin://","special://home/plugins/");
-    CFileItem item2(path,true);
-    CGUIWindowFileManager::DeleteItem(&item2);
+    CFileItemPtr item2 = CFileItemPtr(new CFileItem(path,true));
+    CFileUtils::DeleteItem(item2);
   }
   else if (StringUtils2::StartsWith(pItem->GetPath(), "videodb://movies/sets/") &&
            pItem->GetPath().size() > 22 && pItem->m_bIsFolder)

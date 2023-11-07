@@ -59,6 +59,7 @@
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/FileUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1301,11 +1302,11 @@ bool CSettings::DeleteProfile(unsigned int index)
         Save();
       }
 
-      CFileItem item(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory));
-      item.SetPath(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory + "\\"));
-      item.m_bIsFolder = true;
-      item.Select(true);
-      CGUIWindowFileManager::DeleteItem(&item);
+      CFileItemPtr item = CFileItemPtr(new CFileItem(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory)));
+      item->SetPath(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory + "\\"));
+      item->m_bIsFolder = true;
+      item->Select(true);
+      CFileUtils::DeleteItem(item);
     }
     else
       return false;
