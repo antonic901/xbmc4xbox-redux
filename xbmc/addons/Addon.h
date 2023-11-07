@@ -69,7 +69,7 @@ public:
   {
   }
 
-  AddonProps(cp_plugin_info_t *props);
+  AddonProps(const cp_extension_t *ext);
 
   bool operator==(const AddonProps &rhs)
   { 
