@@ -410,6 +410,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\EventServer.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\FileUtils.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\FileUtils.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\Socket.cpp">
 			</File>
 			<File
@@ -4670,6 +4676,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\xbmcplugin.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\lib\libPython\xbmcmodule\xbmcvfsmodule.cpp">
 					</File>
 				</Filter>
 				<Filter
