@@ -220,6 +220,13 @@ CStdString AddonVersion::Print() const
   return CStdString(out);
 }
 
+#define EMPTY_IF(x,y) \
+  { \
+    CStdString fan=CAddonMgr::Get().GetExtValue(metadata->configuration, x); \
+    if (fan.Equals("true")) \
+      y.Empty(); \
+  }
+
 AddonProps::AddonProps(const cp_extension_t *ext)
   : id(ext->plugin->identifier)
   , version(ext->plugin->version)
@@ -231,6 +238,9 @@ AddonProps::AddonProps(const cp_extension_t *ext)
   if (ext->ext_point_id)
     type = TranslateType(ext->ext_point_id);
 
+  icon = "icon.png";
+  fanart = URIUtils::AddFileToFolder(path, "fanart.jpg");
+  changelog = URIUtils::AddFileToFolder(path, "changelog.txt");
   // Grab more detail from the props...
   const cp_extension_t *metadata = CAddonMgr::Get().GetExtension(ext->plugin, "xbmc.addon.metadata");
   if (metadata)
@@ -240,10 +250,10 @@ AddonProps::AddonProps(const cp_extension_t *ext)
     disclaimer = CAddonMgr::Get().GetTranslatedString(metadata->configuration, "disclaimer");
     license = CAddonMgr::Get().GetExtValue(metadata->configuration, "license");
     broken = CAddonMgr::Get().GetExtValue(metadata->configuration, "broken");
+    EMPTY_IF("nofanart",fanart)
+    EMPTY_IF("noicon",icon)
+    EMPTY_IF("nochangelog",changelog)
   }
-  icon = "icon.png";
-  fanart = URIUtils::AddFileToFolder(path, "fanart.jpg");
-  changelog = URIUtils::AddFileToFolder(path, "changelog.txt");
 }
 
 /**

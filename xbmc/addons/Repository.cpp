@@ -100,6 +100,12 @@ CStdString CRepository::Checksum()
   return checksum;
 }
 
+#define SET_IF_NOT_EMPTY(x,y) \
+  { \
+    if (!x.IsEmpty()) \
+       x = y; \
+  }
+
 VECADDONS CRepository::Parse()
 {
   CSingleLock lock(m_critSection);
@@ -128,15 +134,16 @@ VECADDONS CRepository::Parse()
       if (m_zipped)
       {
         addon->Props().path = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/"+addon->ID()+"-"+addon->Version().str+".zip");
-        addon->Props().icon = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/icon.png");
-        addon->Props().changelog = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/changelog-"+addon->Version().str+".txt");
-        addon->Props().fanart = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/fanart.jpg");
+        SET_IF_NOT_EMPTY(addon->Props().icon,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/icon.png"))
+        SET_IF_NOT_EMPTY(addon->Props().changelog,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/changelog-"+addon->Version().str+".txt"))
+        SET_IF_NOT_EMPTY(addon->Props().fanart,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/fanart.jpg"))
       }
       else
       {
         addon->Props().path = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/");
-        addon->Props().changelog = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/changelog.txt");
-        addon->Props().fanart = URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/fanart.jpg");
+        SET_IF_NOT_EMPTY(addon->Props().icon,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/icon.png"))
+        SET_IF_NOT_EMPTY(addon->Props().changelog,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/changelog.txt"))
+        SET_IF_NOT_EMPTY(addon->Props().fanart,URIUtils::AddFileToFolder(m_datadir,addon->ID()+"/fanart.jpg"))
       }
     }
   }
