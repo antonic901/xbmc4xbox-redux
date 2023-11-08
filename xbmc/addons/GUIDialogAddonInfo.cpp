@@ -29,12 +29,11 @@
 #include "addons/GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogTextViewer.h"
 #include "GUIUserMessages.h"
-#include "GUIWindowAddonBrowser.h"
 #include "GUIWindowManager.h"
-#include "URL.h"
 #include "URIUtils.h"
 #include "utils/JobManager.h"
 #include "utils/FileOperationJob.h"
+#include "addons/AddonInstaller.h"
 
 #define CONTROL_BTN_INSTALL          6
 #define CONTROL_BTN_ENABLE           7
@@ -142,13 +141,15 @@ void CGUIDialogAddonInfo::UpdateControls()
 
 void CGUIDialogAddonInfo::OnUpdate()
 {
-  CGUIWindowAddonBrowser::InstallAddon(m_addon->ID(), true); // force install
+  CStdString referer;
+  referer.Format("Referer=%s-%s.zip",m_localAddon->ID().c_str(),m_localAddon->Version().str.c_str());
+  CAddonInstaller::Get().Install(m_addon->ID(), true, referer); // force install
   Close();
 }
 
 void CGUIDialogAddonInfo::OnInstall()
 {
-  CGUIWindowAddonBrowser::InstallAddon(m_addon->ID());
+  CAddonInstaller::Get().Install(m_addon->ID());
   Close();
 }
 
@@ -162,11 +163,10 @@ void CGUIDialogAddonInfo::OnUninstall()
   database.Open();
   database.DisableAddon(m_localAddon->ID(), false);
 
-  CGUIWindowAddonBrowser* window = (CGUIWindowAddonBrowser*)g_windowManager.GetWindow(WINDOW_ADDON_BROWSER);
   CFileItemList list;
   list.Add(CFileItemPtr(new CFileItem(m_localAddon->Path(),true)));
   list[0]->Select(true);
-  CJobManager::GetInstance().AddJob(new CFileOperationJob(CFileOperationJob::ActionDelete,list,""),window);
+  CJobManager::GetInstance().AddJob(new CFileOperationJob(CFileOperationJob::ActionDelete,list,""),NULL);
   CAddonMgr::Get().RemoveAddon(m_localAddon->ID());
   Close();
 }

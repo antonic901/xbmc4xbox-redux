@@ -105,6 +105,12 @@ public:
   static bool GetXBEDescription(const CStdString& strFileName, CStdString& strDescription);
   static bool SetXBEDescription(const CStdString& strFileName, const CStdString& strDescription);
   static DWORD GetXbeID( const CStdString& strFilePath);
+
+  /*! \brief retrieve MD5sum of a file
+   \param strPath - path to the file to MD5sum
+   \return md5 sum of the file
+   */
+  static CStdString GetFileMD5(const CStdString& strPath);
   static bool GetDirectoryName(const CStdString& strFileName, CStdString& strDescription);
   static void CreateShortcuts(CFileItemList &items);
   static void CreateShortcut(CFileItem* pItem);

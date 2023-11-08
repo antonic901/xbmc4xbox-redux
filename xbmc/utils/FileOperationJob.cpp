@@ -38,11 +38,21 @@
 using namespace std;
 using namespace XFILE;
 
+CFileOperationJob::CFileOperationJob()
+{
+}
+
 CFileOperationJob::CFileOperationJob(FileAction action, CFileItemList & items, const CStdString& strDestFile)
+{
+  SetFileOperation(action, items, strDestFile);
+}
+
+void CFileOperationJob::SetFileOperation(FileAction action, CFileItemList &items, const CStdString &strDestFile)
 {
   m_action = action;
   m_strDestFile = strDestFile;
 
+  m_items.Clear();
   for (int i = 0; i < items.Size(); i++)
     m_items.Add(CFileItemPtr(new CFileItem(*items[i])));
 }
@@ -68,7 +78,7 @@ bool CFileOperationJob::DoProcessFile(FileAction action, const CStdString& strFi
 {
   int64_t time = 1;
 
-  if (action == ActionCopy || (action == ActionMove && !CanBeRenamed(strFileA, strFileB)))
+  if (action == ActionCopy || action == ActionReplace || (action == ActionMove && !CanBeRenamed(strFileA, strFileB)))
   {
     struct __stat64 data;
     if(CFile::Stat(strFileA, &data) == 0)
@@ -150,6 +160,8 @@ bool CFileOperationJob::DoProcess(FileAction action, CFileItemList & items, cons
         // create folder on dest. drive
         if (action != ActionDelete)
           DoProcessFile(ActionCreateFolder, strnewDestFile, "", fileOperations, totalTime);
+        if (action == ActionReplace)
+          DoProcessFolder(ActionDelete, strnewDestFile, "", fileOperations, totalTime);
         if (!DoProcessFolder(action, pItem->GetPath(), strnewDestFile, fileOperations, totalTime))
           return false;
         if (action == ActionDelete)
@@ -182,6 +194,7 @@ bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base
   switch (m_action)
   {
     case ActionCopy:
+    case ActionReplace:
       base->m_currentOperation = g_localizeStrings.Get(115);
       break;
     case ActionMove:
@@ -207,6 +220,7 @@ bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base
   switch (m_action)
   {
     case ActionCopy:
+    case ActionReplace:
     {
       CLog::Log(LOGDEBUG,"FileManager: copy %s->%s\n", m_strFileA.c_str(), m_strFileB.c_str());
 

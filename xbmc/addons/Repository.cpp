@@ -28,10 +28,9 @@
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "utils/JobManager.h"
-#include "utils/FileOperationJob.h"
+#include "addons/AddonInstaller.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-#include "GUIWindowManager.h"
-#include "GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogYesNo.h"
 
 using namespace XFILE;
@@ -68,6 +67,7 @@ CRepository::CRepository(const cp_extension_t *ext)
     m_info = CAddonMgr::Get().GetExtValue(ext->configuration, "info");
     m_datadir = CAddonMgr::Get().GetExtValue(ext->configuration, "datadir");
     m_zipped = CAddonMgr::Get().GetExtValue(ext->configuration, "datadir@zip").Equals("true");
+    m_hashes = CAddonMgr::Get().GetExtValue(ext->configuration, "hashes").Equals("true");
   }
 }
 
@@ -82,9 +82,16 @@ CRepository::~CRepository()
 
 CStdString CRepository::Checksum()
 {
+  if (!m_checksum.IsEmpty())
+    return FetchChecksum(m_checksum);
+  return "";
+}
+
+CStdString CRepository::FetchChecksum(const CStdString& url)
+{
   CSingleLock lock(m_critSection);
   CFile file;
-  file.Open(m_checksum);
+  file.Open(url);
   CStdString checksum;
   try
   {
@@ -105,6 +112,18 @@ CStdString CRepository::Checksum()
     if (!x.IsEmpty()) \
        x = y; \
   }
+
+CStdString CRepository::GetAddonHash(const AddonPtr& addon)
+{
+  CStdString result;
+  if (m_hashes)
+    result = FetchChecksum(addon->Path()+".md5");
+
+  CStdStringArray arr;
+  StringUtils::SplitString(result," ",arr);
+
+  return arr[0];
+}
 
 VECADDONS CRepository::Parse()
 {
@@ -173,7 +192,11 @@ bool CRepositoryUpdateJob::DoWork()
     {
       if (g_settings.m_bAddonAutoUpdate || addon->Type() >= ADDON_VIZ_LIBRARY)
       {
-        CGUIWindowAddonBrowser::AddJob(addons[i]->Path());
+        CStdString referer;
+        if (URIUtils::IsInternetStream(addons[i]->Path()))
+          referer.Format("Referer=%s-%s.zip",addon->ID().c_str(),addon->Version().str.c_str());
+
+        CAddonInstaller::Get().Install(addon->ID(), true, referer);
       }
       else if (g_settings.m_bAddonNotifications)
       {

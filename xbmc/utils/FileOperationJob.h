@@ -33,11 +33,15 @@ public:
     ActionCopy = 1,
     ActionMove,
     ActionDelete,
+    ActionReplace, ///< Copy, emptying any existing destination directories first
     ActionCreateFolder,
     ActionDeleteFolder,
   };
 
+  CFileOperationJob();
   CFileOperationJob(FileAction action, CFileItemList & items, const CStdString& strDestFile);
+
+  void SetFileOperation(FileAction action, CFileItemList &items, const CStdString &strDestFile);
 
   virtual bool DoWork();
   const CStdString &GetAverageSpeed()     { return m_avgSpeed; }

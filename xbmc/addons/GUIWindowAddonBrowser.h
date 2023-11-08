@@ -23,17 +23,13 @@
 
 #include "addons/Addon.h"
 #include "windows/GUIMediaWindow.h"
-#include "utils/CriticalSection.h"
 #include "utils/Job.h"
 #include "pictures/PictureThumbLoader.h"
 
 class CFileItem;
 class CFileItemList;
-class CFileOperationJob;
 
-class CGUIWindowAddonBrowser :
-      public CGUIMediaWindow,
-      public IJobCallback
+class CGUIWindowAddonBrowser : public CGUIMediaWindow, IJobCallback
 {
 public:
   CGUIWindowAddonBrowser(void);
@@ -41,11 +37,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
 //  virtual bool OnAction(const CAction &action);
 
-  // job callback
   void OnJobComplete(unsigned int jobID, bool success, CJob* job);
-  void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job);
-
-  static unsigned int AddJob(const CStdString& path);
 
   /*! \brief Popup a selection dialog with a list of addons of the given type
    \param type the type of addon wanted
@@ -55,25 +47,12 @@ public:
    */
   static int SelectAddonID(ADDON::TYPE type, CStdString &addonID, bool showNone = false);
 
-  /*! \brief Install an addon if it is available in a repository
-   \param addonID the addon ID of the item to install
-   \param force whether to force the install even if the addon is already installed (eg for updating). Defaults to false.
-   */
-  static void InstallAddon(const CStdString &addonID, bool force = false);
-
-  /*! \brief Install a set of addons from the official repository (if needed)
-   \param addonIDs a set of addon IDs to install
-   */
-  static void InstallAddonsFromXBMCRepo(const std::set<CStdString> &addonIDs);
-
 protected:
   /* \brief set label2 of an item based on the Addon.Status property
    \param item the item to update
    */
   void SetItemLabel2(CFileItemPtr item);
 
-  void RegisterJob(const CStdString& id, unsigned int jobid);
-  void UnRegisterJob(unsigned int jobID);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual bool OnClick(int iItem);
@@ -82,19 +61,5 @@ protected:
   virtual bool Update(const CStdString &strDirectory);
   virtual CStdString GetStartFolder(const CStdString &dir);
 private:
-  class CDownloadJob
-  {
-  public:
-    CDownloadJob(unsigned int id)
-    {
-      jobID = id;
-      progress = 0;
-    }
-    unsigned int jobID;
-    unsigned int progress;
-  };
-  typedef std::map<CStdString,CDownloadJob> JobMap;
-  JobMap m_downloadJobs;
-  CCriticalSection m_critSection;
   CPictureThumbLoader m_thumbLoader;
 };
