@@ -1388,6 +1388,7 @@ HRESULT CApplication::Initialize()
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
 #endif
+  CAddonMgr::Get().StartServices();
 
   CLog::Log(LOGNOTICE, "initialize done");
 
@@ -3622,6 +3623,9 @@ void CApplication::Stop(bool bLCDStop)
 
     CLog::Log(LOGNOTICE, "unload skin");
     UnloadSkin();
+
+    // Stop services before unloading Python
+    CAddonMgr::Get().StopServices();
 
     CLog::Log(LOGNOTICE, "stop python");
     g_pythonParser.FreeResources();

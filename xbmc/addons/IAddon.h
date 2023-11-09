@@ -49,6 +49,7 @@ namespace ADDON
     ADDON_SCREENSAVER,
     ADDON_PLUGIN,
     ADDON_REPOSITORY,
+    ADDON_SERVICE,
     ADDON_VIDEO, // virtual addon types
     ADDON_AUDIO,
     ADDON_IMAGE,

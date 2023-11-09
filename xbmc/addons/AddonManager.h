@@ -143,6 +143,15 @@ namespace ADDON
      \return true if the repository XML file is parsed, false otherwise.
      */
     bool AddonsFromRepoXML(const TiXmlElement *root, VECADDONS &addons);
+
+    /*! \brief Start all services addons.
+        \return True is all addons are started, false otherwise
+    */
+    bool StartServices();
+    /*! \brief Stop all services addons.
+    */
+    void StopServices();
+
   private:
     void LoadAddons(const CStdString &path, 
                     std::map<CStdString, AddonPtr>& unresolved);

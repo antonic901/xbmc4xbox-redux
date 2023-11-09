@@ -2885,6 +2885,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\ScreenSaver.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\Service.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Service.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\Skin.cpp">
 				</File>
 				<File
