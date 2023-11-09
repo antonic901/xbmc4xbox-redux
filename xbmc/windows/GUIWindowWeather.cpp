@@ -310,7 +310,7 @@ void CGUIWindowWeather::CallScript()
     argv.push_back(g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting)));
 
     // call our script, passing the areacode
-    g_pythonParser.evalFile(argv[0], argv);
+    g_pythonParser.evalFile(argv[0], argv,addon);
 
     CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0].c_str(), argv[1].c_str());
   }

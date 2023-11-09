@@ -475,7 +475,7 @@ case TMSG_POWERDOWN:
 
     case TMSG_EXECUTE_SCRIPT:
       {
-        g_pythonParser.evalFile(pMsg->strParam.c_str());
+        g_pythonParser.evalFile(pMsg->strParam.c_str(),ADDON::AddonPtr());
       }
       break;
 

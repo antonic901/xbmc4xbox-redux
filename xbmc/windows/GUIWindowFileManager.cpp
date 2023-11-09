@@ -621,7 +621,7 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem)
   }
   if (pItem->IsPythonScript())
   {
-    g_pythonParser.evalFile(pItem->GetPath().c_str());
+    g_pythonParser.evalFile(pItem->GetPath().c_str(),ADDON::AddonPtr());
     return ;
   }
   if (pItem->IsXBE())

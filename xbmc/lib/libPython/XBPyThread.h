@@ -23,6 +23,7 @@
 
 #include "python/Include/Python.h"
 #include "utils/Thread.h"
+#include "addons/IAddon.h"
 #include "utils/StringUtils.h"
 
 class XBPython;
@@ -38,6 +39,8 @@ public:
   bool isStopping();
   void stop();
 
+  void setAddon(ADDON::AddonPtr _addon) { addon = _addon; }
+
 protected:
   XBPython      *m_pExecuter;
   PyThreadState *m_threadState;
@@ -48,6 +51,7 @@ protected:
   unsigned int  m_argc;
   bool m_stopping;
   int  m_id;
+  ADDON::AddonPtr addon;
 
   virtual void OnStartup();
   virtual void Process();

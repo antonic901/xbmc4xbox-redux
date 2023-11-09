@@ -61,6 +61,9 @@
 #include "filesystem/SmartPlaylistDirectory.h"
 #include "FileItemListModification.h"
 #include "utils/FileUtils.h"
+#ifdef HAS_PYTHON
+#include "lib/libPython/XBPython.h"
+#endif
 
 #define CONTROL_BTNVIEWASICONS       2
 #define CONTROL_BTNSORTBY            3
@@ -957,6 +960,21 @@ bool CGUIMediaWindow::OnClick(int iItem)
     else if(pItem->m_bIsFolder)
       pItem->m_bIsFolder = false;
     delete pFileDirectory;
+  }
+
+  CURL url(pItem->GetPath());
+  if (url.GetProtocol() == "script")
+  {
+    // execute the script
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(url.GetHostName(), addon))
+    {
+#ifdef HAS_PYTHON
+      if (!g_pythonParser.StopScript(addon->LibPath()))
+        g_pythonParser.evalFile(addon->LibPath(),addon);
+#endif
+      return true;
+    }
   }
 
   if (pItem->m_bIsFolder)

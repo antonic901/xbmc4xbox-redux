@@ -1346,7 +1346,6 @@ HRESULT CApplication::Initialize()
     g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
   }
 
-  g_pythonParser.m_bStartup = true;
   //g_sysinfo.Refresh();
 
   CLog::Log(LOGINFO, "removing tempfiles");
@@ -1381,7 +1380,12 @@ HRESULT CApplication::Initialize()
   }
 
   if (!g_settings.UsingLoginScreen())
+  {
     UpdateLibraries();
+#ifdef HAS_PYTHON
+  g_pythonParser.m_bLogin = true;
+#endif
+  }
 
   m_slowTimer.StartZero();
 
@@ -5099,7 +5103,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
         CFileItem item(actionStr, false);
         if (item.IsPythonScript())
         { // a python script
-          g_pythonParser.evalFile(item.GetPath().c_str());
+          g_pythonParser.evalFile(item.GetPath().c_str(),ADDON::AddonPtr());
         }
         else if (item.IsXBE())
         { // an XBE
