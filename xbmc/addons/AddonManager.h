@@ -24,8 +24,6 @@
 #include "tinyXML/tinyxml.h"
 #include "utils/CriticalSection.h"
 #include "StdString.h"
-#include "utils/Job.h"
-#include "utils/Stopwatch.h"
 #include <vector>
 #include <map>
 #include <deque>
@@ -105,7 +103,6 @@ namespace ADDON
 
     const char *GetTranslatedString(const cp_cfg_element_t *root, const char *tag);
     static AddonPtr AddonFromProps(AddonProps& props);
-    void UpdateRepos();
     void FindAddons();
     void RemoveAddon(const CStdString& ID);
 
@@ -146,7 +143,6 @@ namespace ADDON
      \return true if the repository XML file is parsed, false otherwise.
      */
     bool AddonsFromRepoXML(const TiXmlElement *root, VECADDONS &addons);
-    ADDONDEPS GetDeps(const CStdString& id);
   private:
     void LoadAddons(const CStdString &path, 
                     std::map<CStdString, AddonPtr>& unresolved);
@@ -179,7 +175,6 @@ namespace ADDON
     virtual ~CAddonMgr();
 
     static std::map<TYPE, IAddonMgrCallback*> m_managers;
-    CStopWatch m_watch;
     CCriticalSection m_critSection;
     CAddonDatabase m_database;
   };

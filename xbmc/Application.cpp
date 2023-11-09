@@ -191,6 +191,7 @@
 #include "cores/dlgcache.h"
 #include "guilib/GUIControlFactory.h"
 #include "dialogs/GUIDialogMediaFilter.h"
+#include "addons/AddonInstaller.h"
 
 #ifdef _LINUX
 #include "XHandle.h"
@@ -5255,7 +5256,7 @@ void CApplication::ProcessSlow()
   CheckForTitleChange();
 
   if (!IsPlayingVideo())
-    ADDON::CAddonMgr::Get().UpdateRepos();
+    CAddonInstaller::Get().UpdateRepos();
 }
 
 // Global Idle Time in Seconds

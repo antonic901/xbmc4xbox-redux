@@ -27,6 +27,7 @@
 #include "DirectoryCache.h"
 #include "FileItem.h"
 #include "addons/Repository.h"
+#include "addons/AddonInstaller.h"
 #include "addons/PluginSource.h"
 #include "StringUtils.h"
 #include "utils/URIUtils.h"
@@ -114,13 +115,12 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
     CAddonMgr::Get().GetAddon(path.GetHostName(),addon);
     if (!addon)
       return false;
+
+    // ensure our repos are up to date
+    CAddonInstaller::Get().UpdateRepos(false, true);
     CAddonDatabase database;
     database.Open();
-    if (!database.GetRepository(addon->ID(),addons))
-    {
-      RepositoryPtr repo = boost::dynamic_pointer_cast<CRepository>(addon);
-      addons = CRepositoryUpdateJob::GrabAddons(repo,false);
-    }
+    database.GetRepository(addon->ID(),addons);
     items.SetProperty("reponame",addon->Name());
     items.SetLabel(addon->Name());
   }
@@ -235,8 +235,10 @@ CFileItemPtr CAddonsDirectory::FileItemFromAddon(AddonPtr &addon, const CStdStri
 
   item->SetLabel(strLabel);
 
-  item->SetLabel2(addon->Summary());
+  if (!(basePath.Equals("addons://") && addon->Type() == ADDON_REPOSITORY))
+    item->SetLabel2(addon->Version().c_str());
   item->SetThumbnailImage(addon->Icon());
+  item->SetLabelPreformated(true);
   item->SetIconImage("DefaultAddon.png");
   item->SetProperty("fanart_image", addon->FanArt());
   CAddonDatabase::SetPropertiesFromAddon(addon, item);

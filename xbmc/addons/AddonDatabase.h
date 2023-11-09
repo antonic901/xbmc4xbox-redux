@@ -80,13 +80,12 @@ public:
   bool HasDisabledAddons();
 
   /*! \brief Mark an addon as broken
-   Sets a flag that this addon has been marked as broken in the repository. 
+   Sets a flag that this addon has been marked as broken in the repository.
    \param addonID id of the addon to mark as broken
-   \param broken whether to mark or not.  Defaults to true
-   \param reason why it is broken.  Defaults to blank 
+   \param reason why it is broken - if non empty we take it as broken.  Defaults to empty
    \return true on success, false on failure
    \sa IsAddonBroken */
-  bool BreakAddon(const CStdString &addonID, bool broken = true, const CStdString& reason="");
+  bool BreakAddon(const CStdString &addonID, const CStdString& reason="");
 
   /*! \brief Check whether an addon has been marked as broken via BreakAddon.
    \param addonID id of the addon to check
@@ -97,6 +96,6 @@ public:
 protected:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 11; }
+  virtual int GetMinVersion() const { return 14; }
   const char *GetDefaultDBName() const { return "Addons"; }
 };

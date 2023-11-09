@@ -40,6 +40,7 @@
 #include "video/windows/GUIWindowVideoBase.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "addons/Addon.h" // for TranslateType, TranslateContent
+#include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
 #include "music/LastFmManager.h"
 #include "LCD.h"
@@ -175,6 +176,7 @@ const BUILT_IN commands[] = {
   { "WakeOnLan",                  true,   "Sends the wake-up packet to the broadcast address for the specified MAC address" },
   { "Addon.Default.OpenSettings", true,   "Open a settings dialog for the default addon of the given type" },
   { "Addon.Default.Set",          true,   "Open a select dialog to allow choosing the default addon of the given type" },
+  { "UpdateAddonRepos",           false,  "Check add-on repositories for updates" },
   { "toggledebug",                false,  "Enables/disables debug mode" },
 };
 
@@ -1390,6 +1392,10 @@ int CBuiltins::Execute(const CStdString& execString)
       if (type == ADDON_VIZ)
         g_windowManager.SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
     }
+  }
+  else if (execute.Equals("updateaddonrepos"))
+  {
+    CAddonInstaller::Get().UpdateRepos(true);
   }
   else if (execute.Equals("toggledebug"))
   {
