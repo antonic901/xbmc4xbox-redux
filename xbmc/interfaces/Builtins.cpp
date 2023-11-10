@@ -1313,15 +1313,8 @@ int CBuiltins::Execute(const CStdString& execString)
     int actionID;
     if (CButtonTranslator::TranslateActionString(params[0].c_str(), actionID))
     {
-      if (params.size() == 2)
-      { // have a window - convert it and send to it.
-        int windowID = CButtonTranslator::TranslateWindow(params[1].c_str());
-        CGUIWindow *window = g_windowManager.GetWindow(windowID);
-        if (window)
-          window->OnAction(CAction(actionID));
-      }
-      else // send to our app
-        g_application.OnAction(CAction(actionID));
+      int windowID = params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
+      g_application.getApplicationMessenger().SendAction(CAction(actionID), windowID);
     }
   }
   else if (execute.Equals("setproperty") && params.size() >= 2)
