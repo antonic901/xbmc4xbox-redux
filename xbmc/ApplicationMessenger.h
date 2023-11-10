@@ -140,7 +140,7 @@ public:
   void Show(CGUIDialog *pDialog);
   void Close(CGUIDialog *pDialog, bool forceClose, bool waitResult=true);
   void ActivateWindow(int windowID, const std::vector<CStdString> &params, bool swappingWindows);
-  void SendAction(const CAction &action, int windowID = WINDOW_INVALID);
+  void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);
 private:
   void ProcessMessage(ThreadMessage *pMsg);
 
