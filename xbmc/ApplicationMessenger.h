@@ -71,7 +71,6 @@ class CGUIDialog;
 #define TMSG_GUI_SHOW                 601
 #define TMSG_GUI_ACTIVATE_WINDOW      604
 #define TMSG_GUI_PYTHON_DIALOG        605
-#define TMSG_GUI_DIALOG_CLOSE         606
 #define TMSG_GUI_ACTION               607
 
 typedef struct
@@ -138,7 +137,6 @@ public:
 
   void DoModal(CGUIDialog *pDialog, int iWindowID, const CStdString &param = "");
   void Show(CGUIDialog *pDialog);
-  void Close(CGUIDialog *pDialog, bool forceClose, bool waitResult=true);
   void ActivateWindow(int windowID, const std::vector<CStdString> &params, bool swappingWindows);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);
 private:
