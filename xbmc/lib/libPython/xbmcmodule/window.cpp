@@ -356,10 +356,6 @@ namespace PYXBMC
         // old window does not exist anymore, switch to home
         else g_windowManager.ActivateWindow(WINDOW_HOME);
       }
-      // Free any window properties
-      self->pWindow->ClearProperties();
-      // free the window's resources and unload it (free all guicontrols)
-      self->pWindow->FreeResources(true);
     }
     else
     {
@@ -386,10 +382,8 @@ namespace PYXBMC
     }
 
     if (self->bIsPythonWindow)
-    {
-      g_windowManager.Remove(self->pWindow->GetID());
-      delete self->pWindow;
-    }
+      g_windowManager.Delete(self->pWindow->GetID());
+
     PyXBMCGUIUnlock();
     self->vecControls.clear();
     self->vecControls.~vector();

@@ -45,6 +45,7 @@ CGUIWindowManager::CGUIWindowManager(void)
 {
   m_pCallback = NULL;
   m_bShowOverlay = true;
+  m_iNested = 0;
   m_initialized = false;
 }
 
@@ -220,6 +221,14 @@ void CGUIWindowManager::Remove(int id)
   WindowMap::iterator it = m_mapWindows.find(id);
   if (it != m_mapWindows.end())
   {
+    for(vector<CGUIWindow*>::iterator it2 = m_activeDialogs.begin(); it2 != m_activeDialogs.end();)
+    {
+      if(*it2 == it->second)
+        it2 = m_activeDialogs.erase(it2);
+      else
+        it2++;
+    }
+
     m_mapWindows.erase(it);
   }
   else
@@ -239,7 +248,7 @@ void CGUIWindowManager::Delete(int id)
   if (pWindow)
   {
     Remove(id);
-    delete pWindow;
+    m_deleteWindows.push_back(pWindow);
   }
 }
 
@@ -480,6 +489,19 @@ void CGUIWindowManager::Render()
 {
   assert(g_application.IsCurrentThread());
   CSingleLock lock(g_graphicsContext);
+
+  if(m_iNested == 0)
+  {
+    // delete any windows queued for deletion
+    for(iDialog it = m_deleteWindows.begin(); it != m_deleteWindows.end(); it++)
+    {
+      // Free any window resources
+      (*it)->FreeResources(true);
+      delete *it;
+    }
+    m_deleteWindows.clear();
+  }
+
   CGUIWindow* pWindow = GetWindow(GetActiveWindow());
   if (pWindow)
   {
@@ -555,12 +577,14 @@ void CGUIWindowManager::ProcessRenderLoop(bool renderOnly /*= false*/)
 {
   if (g_application.IsCurrentThread() && m_pCallback)
   {
+    m_iNested++;
     if (!renderOnly)
     {
 	    m_pCallback->Process();
 	    m_pCallback->FrameMove();
     }
     m_pCallback->Render();
+    m_iNested--;
 #ifndef _XBOX
     extern CXBMC_PC *g_xbmcPC;
     g_xbmcPC->ProcessMessage(NULL);
