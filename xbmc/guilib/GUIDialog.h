@@ -44,7 +44,6 @@ public:
   virtual void Render();
 
   virtual void DoModal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal
-  void DoModalThreadSafe(); // threadsafe version of DoModal
   void Show(); // modeless
   
   virtual bool OnBack(int actionID);
@@ -64,6 +63,7 @@ protected:
   virtual void SetDefaults();
   virtual void OnWindowLoaded();
 
+  friend class CApplicationMessenger;
   virtual void DoModal_Internal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal
   virtual void Show_Internal(); // modeless
 

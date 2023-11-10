@@ -30,6 +30,7 @@
 #include "GUIPassword.h"
 #include "utils/md5.h"
 #include "utils/TimeUtils.h"
+#include "Application.h"
 #include "xbox/XKGeneral.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
@@ -569,7 +570,8 @@ bool CGUIDialogKeyboard::ShowAndGetInput(CStdString& aTextString, const CVariant
   pKeyboard->SetHiddenInput(hiddenInput);
   pKeyboard->SetText(aTextString);
   // do this using a thread message to avoid render() conflicts
-  pKeyboard->DoModalThreadSafe();
+  ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_KEYBOARD, g_windowManager.GetActiveWindow()};
+  g_application.getApplicationMessenger().SendMessage(tMsg, true);
   pKeyboard->Close();
 
   // If have text - update this.

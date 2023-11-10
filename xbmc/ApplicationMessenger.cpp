@@ -35,6 +35,7 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "lib/libGoAhead/XBMChttp.h"
 #include "xbox/network.h"
+#include "utils/log.h"
 #include "GUIWindowManager.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
@@ -551,6 +552,28 @@ case TMSG_POWERDOWN:
       }
       break;
 
+    case TMSG_GUI_DO_MODAL:
+      {
+        CGUIDialog *pDialog = (CGUIDialog *)pMsg->lpVoid;
+        if (pDialog)
+          pDialog->DoModal_Internal((int)pMsg->dwParam1, pMsg->strParam);
+      }
+      break;
+
+    case TMSG_GUI_SHOW:
+      {
+        CGUIDialog *pDialog = (CGUIDialog *)pMsg->lpVoid;
+        if (pDialog)
+          pDialog->Show_Internal();
+      }
+      break;
+
+    case TMSG_GUI_ACTIVATE_WINDOW:
+      {
+        g_windowManager.ActivateWindow(pMsg->dwParam1, pMsg->params, pMsg->dwParam2 > 0);
+      }
+      break;
+
     case TMSG_GUI_PYTHON_DIALOG:
       {
         if (pMsg->lpVoid)
@@ -562,6 +585,15 @@ case TMSG_POWERDOWN:
         }
       }
       break;
+
+    case TMSG_GUI_WIN_MANAGER_PROCESS:
+      g_windowManager.Process_Internal(0 != pMsg->dwParam1);
+      break;
+
+    case TMSG_GUI_WIN_MANAGER_RENDER:
+      g_windowManager.Render_Internal();
+      break;
+
   }
 }
 
@@ -792,4 +824,40 @@ void CApplicationMessenger::SwitchToFullscreen()
   */
   ThreadMessage tMsg = {TMSG_SWITCHTOFULLSCREEN};
   SendMessage(tMsg, false);
+}
+
+void CApplicationMessenger::DoModal(CGUIDialog *pDialog, int iWindowID, const CStdString &param)
+{
+  ThreadMessage tMsg = {TMSG_GUI_DO_MODAL};
+  tMsg.lpVoid = pDialog;
+  tMsg.dwParam1 = (DWORD)iWindowID;
+  tMsg.strParam = param;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::Show(CGUIDialog *pDialog)
+{
+  ThreadMessage tMsg = {TMSG_GUI_SHOW};
+  tMsg.lpVoid = pDialog;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::ActivateWindow(int windowID, const vector<CStdString> &params, bool swappingWindows)
+{
+  ThreadMessage tMsg = {TMSG_GUI_ACTIVATE_WINDOW, windowID, swappingWindows ? 1 : 0};
+  tMsg.params = params;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::WindowManagerProcess(bool renderOnly)
+{
+  ThreadMessage tMsg = {TMSG_GUI_WIN_MANAGER_PROCESS};
+  tMsg.dwParam1 = (DWORD)renderOnly;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::Render()
+{
+  ThreadMessage tMsg = {TMSG_GUI_WIN_MANAGER_RENDER};
+  SendMessage(tMsg, true);
 }
