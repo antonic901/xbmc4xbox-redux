@@ -21,6 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "dlgcache.h"
+#include "Application.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "utils/SingleLock.h"
@@ -52,8 +53,10 @@ void CDlgCache::Close(bool bForceClose)
 {
   bSentCancel = true;
 
+  // we cannot wait for the app thread to process the close message
+  // as this might happen during player startup which leads to a deadlock
   if (m_pDlg->IsDialogRunning())
-    m_pDlg->Close(bForceClose);
+    g_application.getApplicationMessenger().Close(m_pDlg,bForceClose,false);
 
   //Set stop, this will kill this object, when thread stops  
   CThread::m_bStop = true;
