@@ -1218,11 +1218,11 @@ HRESULT CApplication::Initialize()
 
   CDirectory::Create("special://home/addons");
   CDirectory::Create("special://home/addons/packages");
+  CDirectory::Create("special://home/sounds");
+  CUtil::WipeDir("special://temp/");
+  CDirectory::Create("special://temp/temp"); // temp directory for python and dllGetTempPathA
 
-  CUtil::WipeDir("Z:\\");
-  CreateDirectory("Z:\\temp", NULL); // temp directory for python and dllGetTempPathA
   CreateDirectory("Q:\\language", NULL);
-  CreateDirectory("Q:\\sounds", NULL);
 
   // initialize network
   if (!m_bXboxMediacenterLoaded)
