@@ -149,8 +149,6 @@
 #include "windows/GUIWindowStartup.h"
 #include "video/windows/GUIWindowFullScreen.h"
 #include "video/dialogs/GUIDialogVideoOSD.h"
-#include "GUIWindowMusicOverlay.h"
-#include "GUIWindowVideoOverlay.h"
 
 // Dialog includes
 #include "music/dialogs/GUIDialogMusicOSD.h"
@@ -1333,8 +1331,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogFileStacking);       // window id = 2008
 
   g_windowManager.Add(new CGUIDialogVideoOSD);                // window id = 2901
-  g_windowManager.Add(new CGUIWindowMusicOverlay);       // window id = 2903
-  g_windowManager.Add(new CGUIWindowVideoOverlay);       // window id = 2904
   g_windowManager.Add(new CGUIWindowScreensaver);        // window id = 2900 Screensaver
   g_windowManager.Add(new CGUIWindowWeather);            // window id = 2600 WEATHER
   g_windowManager.Add(new CGUIWindowStartup);            // startup window (id 2999)
@@ -3503,8 +3499,6 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_SYSTEM_INFORMATION);
     g_windowManager.Delete(WINDOW_SCREENSAVER);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD);
-    g_windowManager.Delete(WINDOW_MUSIC_OVERLAY);
-    g_windowManager.Delete(WINDOW_VIDEO_OVERLAY);
     g_windowManager.Delete(WINDOW_SCRIPTS_INFO);
     g_windowManager.Delete(WINDOW_SLIDESHOW);
 
@@ -4484,12 +4478,6 @@ void CApplication::RenderFullScreen()
 {
   if (g_graphicsContext.IsFullScreenVideo())
   {
-    // make sure our overlays are closed
-    CGUIDialog *overlay = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_VIDEO_OVERLAY);
-    if (overlay) overlay->Close(true);
-    overlay = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_MUSIC_OVERLAY);
-    if (overlay) overlay->Close(true);
-
     CGUIWindowFullScreen *pFSWin = (CGUIWindowFullScreen *)g_windowManager.GetWindow(WINDOW_FULLSCREEN_VIDEO);
     if (!pFSWin)
       return ;

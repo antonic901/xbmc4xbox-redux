@@ -534,9 +534,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\windows\GUIWindowMusicNav.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIWindowMusicOverlay.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylist.cpp">
 				</File>
 				<File
@@ -581,9 +578,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\video\windows\GUIWindowVideoNav.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIWindowVideoOverlay.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\video\windows\GUIWindowVideoPlaylist.cpp">
@@ -3047,9 +3041,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\music\windows\GUIWindowMusicBase.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GuiWindowMusicOverlay.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\music\windows\GUIWindowMusicPlaylist.h">
 			</File>
 			<File
@@ -3096,9 +3087,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\video\windows\GUIWindowVideoBase.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\GuiWindowVideoOverlay.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\video\windows\GUIWindowVideoPlaylist.h">
