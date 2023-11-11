@@ -21,6 +21,7 @@
 
 #include "PythonAddon.h"
 #include "pyutil.h"
+#include "pythreadstate.h"
 #include "addons/AddonManager.h"
 #include "utils/CharsetConverter.h"
 #include "addons/GUIDialogAddonSettings.h"
@@ -244,8 +245,11 @@ namespace PYXBMC
       return NULL;
     }
 
-    self->pAddon->UpdateSetting(id, value);
-    self->pAddon->SaveSettings();
+    AddonPtr addon(self->pAddon);
+    CPyThreadState pyState;
+    addon->UpdateSetting(id, value);
+    addon->SaveSettings();
+    pyState.Restore();
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -261,7 +265,9 @@ namespace PYXBMC
   {
     // show settings dialog
     AddonPtr addon(self->pAddon);
+    CPyThreadState pyState;
     CGUIDialogAddonSettings::ShowAndGetInput(addon);
+    pyState.Restore();
 
     Py_INCREF(Py_None);
     return Py_None;
