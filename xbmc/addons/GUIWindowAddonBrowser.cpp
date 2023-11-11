@@ -210,7 +210,7 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem)
   CFileItemPtr item = m_vecItems->Get(iItem);
   if (item->GetPath() == "addons://install/")
   {
-    InstallFromZip()
+    InstallFromZip();
     return true;
   }
   if (!item->m_bIsFolder)
