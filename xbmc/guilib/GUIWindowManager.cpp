@@ -560,7 +560,7 @@ void CGUIWindowManager::UpdateModelessVisibility()
       if (g_infoManager.GetBoolValue(pWindow->GetVisibleCondition()))
         ((CGUIDialog *)pWindow)->Show();
       else
-        ((CGUIDialog *)pWindow)->Close();
+        ((CGUIDialog *)pWindow)->Close_Internal();
     }
   }
 }
