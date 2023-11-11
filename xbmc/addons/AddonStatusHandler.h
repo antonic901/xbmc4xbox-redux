@@ -22,7 +22,7 @@
 
 #include "Thread.h"
 #include "IAddon.h"
-#include "include/xbmc_addon_dll.h"
+#include "include/xbmc_addon_types.h"
 #include "utils/CriticalSection.h"
 
 namespace ADDON

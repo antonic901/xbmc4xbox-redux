@@ -36,6 +36,7 @@
 #include "inttypes.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
+#include "tinyXML/tinyxml.h"
 #include "utils/SingleLock.h"
 
 #ifdef HAS_VISUALISATION
