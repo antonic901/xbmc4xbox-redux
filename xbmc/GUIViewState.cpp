@@ -40,6 +40,7 @@
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "FileSystem/AddonsDirectory.h"
+#include "TextureManager.h"
 
 #define PROPERTY_SORT_ORDER         "sort.order"
 #define PROPERTY_SORT_ASCENDING     "sort.ascending"
@@ -377,7 +378,7 @@ VECSOURCES& CGUIViewState::GetSources()
   return m_sources;
 }
 
-void CGUIViewState::AddAddonsSource(const CStdString &content, const CStdString &label)
+void CGUIViewState::AddAddonsSource(const CStdString &content, const CStdString &label, const CStdString &thumb)
 {
   CFileItemList items;
   if (XFILE::CAddonsDirectory::GetScriptsAndPlugins(content, items))
@@ -385,7 +386,8 @@ void CGUIViewState::AddAddonsSource(const CStdString &content, const CStdString 
     CMediaSource source;
     source.strPath = "addons://sources/" + content + "/";    
     source.strName = label;
-    source.m_strThumbnailImage = "";
+    if (!thumb.IsEmpty() && g_TextureManager.HasTexture(thumb))
+      source.m_strThumbnailImage = thumb;
     source.m_iDriveType = CMediaSource::SOURCE_TYPE_REMOTE;
     source.m_ignore = true;
     m_sources.push_back(source);

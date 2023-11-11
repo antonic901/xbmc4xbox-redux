@@ -69,8 +69,9 @@ protected:
   /*! \brief Add the addons source for the given content type, if the user has suitable addons
    \param content the type of addon content desired
    \param label the name of the addons source
+   \param thumb the skin image to use as the icon
    */
-  void AddAddonsSource(const CStdString &content, const CStdString &label);
+  void AddAddonsSource(const CStdString &content, const CStdString &label, const CStdString& thumb);
 
   /*! \brief Add the sort order defined in a smartplaylist
    Defaults to SORT_METHOD_PLAYLIST_ORDER if no order is defined.

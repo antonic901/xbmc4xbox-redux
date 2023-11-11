@@ -8797,7 +8797,13 @@ msgctxt "#24122"
 msgid "Update all"
 msgstr ""
 
-#empty strings from id 24123 to 24999
+#empty strings from id 24123 to 24997
+
+msgctxt "#24998"
+msgid "My Add-ons"
+msgstr ""
+
+#empty string with id 24999
 
 msgctxt "#25000"
 msgid "Notifications"

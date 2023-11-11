@@ -351,6 +351,13 @@
 					<visible>Container(9000).HasFocus(4)</visible>
 					<include>HomeSubMenuPictures</include> <!-- Buttons for the grouplist -->
 				</control>
+				<control type="grouplist" id="9017">
+					<include>HomeSubMenuCommonValues</include>
+					<onleft>9017</onleft>
+					<onright>9017</onright>
+					<visible>Container(9000).HasFocus(8)</visible> <!--Buttons for the grouplist -->
+					<include>HomeSubMenuAddons</include>
+				</control>
 			</control>
 			<control type="image">
 				<posx>-100</posx>
@@ -503,6 +510,12 @@
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>System.HasMediaDVD</visible>
+					</item>
+					<item id="8">
+						<label>24001</label>
+						<onclick>ActivateWindow(AddonBrowser)</onclick>
+						<icon>-</icon>
+						<thumb>-</thumb>
 					</item>
 					<item id="5">
 						<label>31959</label>

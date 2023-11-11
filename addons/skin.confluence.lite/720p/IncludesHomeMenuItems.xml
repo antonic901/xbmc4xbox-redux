@@ -36,8 +36,8 @@
 		</control>
 		<control type="button" id="90107">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31251</label>
-		  <onclick>ActivateWindow(Videos,Plugins,return)</onclick>
+			<label>24001</label>
+			<onclick>ActivateWindow(Videos,Addons,return)</onclick>
 		</control>
 		<control type="image" id="90109">
 			<width>35</width>
@@ -146,15 +146,10 @@
 			<label>31272</label>
 			<onclick>ActivateWindow(Programs,Emulators,return)</onclick>
 		</control>
-		<control type="button" id="90185">
-			<include>ButtonHomeSubCommonValues</include>
-			<label>247</label>
-			<onclick>ActivateWindow(Scripts)</onclick>
-		</control>
 		<control type="button" id="90186">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31251</label>
-			<onclick>ActivateWindow(Programs,Plugins,return)</onclick>
+			<label>24001</label>
+			<onclick>ActivateWindow(Programs,Addons,return)</onclick>
 		</control>
 		<control type="image" id="90188">
 			<width>35</width>
@@ -199,14 +194,14 @@
 		</control>
 		<control type="button" id="90117">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31251</label>
-			<onclick>ActivateWindow(MusicLibrary,Plugins,return)</onclick>
+			<label>24001</label>
+			<onclick>ActivateWindow(MusicLibrary,Addons,return)</onclick>
 			<visible>Library.HasContent(Music)</visible>
 		</control>
 		<control type="button" id="90118">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31251</label>
-			<onclick>ActivateWindow(MusicFiles,Plugins,return)</onclick>
+			<label>24001</label>
+			<onclick>ActivateWindow(MusicFiles,Addons,return)</onclick>
 			<visible>!Library.HasContent(Music)</visible>
 		</control>
 		<control type="image" id="90119">
@@ -273,10 +268,42 @@
 		</control>
 		<control type="button" id="90142">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31251</label>
-			<onclick>ActivateWindow(Pictures,Plugins,return)</onclick>
+			<label>24001</label>
+			<onclick>ActivateWindow(Pictures,Addons,return)</onclick>
 		</control>
 		<control type="image" id="90146">
+			<width>35</width>
+			<height>35</height>
+			<texture border="0,0,0,3">HomeSubEnd.png</texture>
+		</control>
+	</include>
+	<include name="HomeSubMenuAddons">
+		<control type="image" id="90301">
+			<width>35</width>
+			<height>35</height>
+			<texture border="0,0,0,3" flipx="true">HomeSubEnd.png</texture>
+		</control>
+		<control type="button" id="90302">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>24998</label>
+			<onclick>ActivateWindow(addonbrowser,addons://enabled/,return)</onclick>
+		</control>
+		<control type="button" id="90303">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>24033</label>
+			<onclick>ActivateWindow(addonbrowser,addons://repos/,return)</onclick>
+		</control>
+		<control type="button" id="90304">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>24041</label>
+			<onclick>InstallFromZip</onclick>
+		</control>
+		<control type="button" id="90305">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>137</label>
+			<onclick>ActivateWindow(addonbrowser,addons://search,return)</onclick>
+		</control>
+		<control type="image" id="90306">
 			<width>35</width>
 			<height>35</height>
 			<texture border="0,0,0,3">HomeSubEnd.png</texture>

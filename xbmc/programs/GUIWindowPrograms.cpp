@@ -718,7 +718,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
 CStdString CGUIWindowPrograms::GetStartFolder(const CStdString &dir)
 {
   if (dir.Equals("Plugins") || dir.Equals("Addons"))
-    return "plugin://programs/";
+    return "addons://sources/executable/";
     
   SetupShares();
   VECSOURCES shares;

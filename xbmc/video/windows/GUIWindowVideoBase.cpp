@@ -1985,7 +1985,7 @@ CStdString CGUIWindowVideoBase::GetStartFolder(const CStdString &dir)
   if (dir.Equals("$PLAYLISTS") || dir.Equals("Playlists"))
     return "special://videoplaylists/";
   else if (dir.Equals("Plugins") || dir.Equals("Addons"))
-    return "plugin://video/";
+    return "addons://sources/video/";
   return CGUIMediaWindow::GetStartFolder(dir);
 }
 
