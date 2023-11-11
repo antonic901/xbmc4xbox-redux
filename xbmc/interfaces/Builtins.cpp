@@ -177,6 +177,7 @@ const BUILT_IN commands[] = {
   { "Addon.Default.OpenSettings", true,   "Open a settings dialog for the default addon of the given type" },
   { "Addon.Default.Set",          true,   "Open a select dialog to allow choosing the default addon of the given type" },
   { "UpdateAddonRepos",           false,  "Check add-on repositories for updates" },
+  { "InstallFromZip",             false,  "Open the install from zip dialog" },
   { "toggledebug",                false,  "Enables/disables debug mode" },
 };
 
@@ -1396,6 +1397,11 @@ int CBuiltins::Execute(const CStdString& execString)
   else if (execute.Equals("updateaddonrepos"))
   {
     CAddonInstaller::Get().UpdateRepos(true);
+  }
+  else if (execute.Equals("installfromzip"))
+  {
+    CGUIWindowAddonBrowser::InstallFromZip();
+    return 0;
   }
   else if (execute.Equals("toggledebug"))
   {

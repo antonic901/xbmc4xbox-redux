@@ -44,6 +44,8 @@ public:
    */
   static int SelectAddonID(ADDON::TYPE type, CStdString &addonID, bool showNone = false);
 
+  static void InstallFromZip();
+
 protected:
   /* \brief set label2 of an item based on the Addon.Status property
    \param item the item to update
