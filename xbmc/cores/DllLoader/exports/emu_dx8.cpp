@@ -61,13 +61,13 @@ extern "C"
   HRESULT WINAPI d3dXCreateTextureFromFileA(LPDIRECT3DDEVICE8 pDevice, LPCSTR pSrcFile, LPDIRECT3DTEXTURE8* ppTexture)
   {
     //TODO: possibly load pSrcFile from memory or cached file if it's a non-local file
-    return D3DXCreateTextureFromFileA(pDevice, _P(pSrcFile).c_str(), ppTexture);
+    return D3DXCreateTextureFromFileA(pDevice, CSpecialProtocol::TranslatePath(pSrcFile).c_str(), ppTexture);
   }
 
   HRESULT WINAPI d3dXCreateCubeTextureFromFileA(LPDIRECT3DDEVICE8 pDevice, LPCSTR pSrcFile, LPDIRECT3DCUBETEXTURE8* ppCubeTexture)
   {
     //TODO: possibly load pSrcFile from memory or cached file if it's a non-local file
-    return D3DXCreateCubeTextureFromFileA(pDevice, _P(pSrcFile).c_str(), ppCubeTexture);
+    return D3DXCreateCubeTextureFromFileA(pDevice, CSpecialProtocol::TranslatePath(pSrcFile).c_str(), ppCubeTexture);
   }
 
   HRESULT WINAPI d3dXCreateTextureFromFileExA(
@@ -88,7 +88,7 @@ extern "C"
   )
   {
     //TODO: possibly load pSrcFile from memory or cached file if it's a non-local file
-    return D3DXCreateTextureFromFileExA(pDevice, _P(pSrcFile).c_str(), Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture);
+    return D3DXCreateTextureFromFileExA(pDevice, CSpecialProtocol::TranslatePath(pSrcFile).c_str(), Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture);
   }
 #endif
 }

@@ -1986,7 +1986,7 @@ void CUtil::PrepareSubtitleFonts()
 
     CStdString strSearchMask = strFontPath + "\\*.*";
     WIN32_FIND_DATA wfd;
-    CAutoPtrFind hFind ( FindFirstFile(_P(strSearchMask).c_str(), &wfd));
+    CAutoPtrFind hFind ( FindFirstFile(CSpecialProtocol::TranslatePath(strSearchMask).c_str(), &wfd));
     if (hFind.isValid())
     {
       do
@@ -2008,7 +2008,7 @@ void CUtil::PrepareSubtitleFonts()
 
     CStdString strSearchMask = strPath + "\\*.*";
     WIN32_FIND_DATA wfd;
-    CAutoPtrFind hFind ( FindFirstFile(_P(strSearchMask).c_str(), &wfd));
+    CAutoPtrFind hFind ( FindFirstFile(CSpecialProtocol::TranslatePath(strSearchMask).c_str(), &wfd));
     if (hFind.isValid())
     {
       do
@@ -3979,7 +3979,7 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
   Sleep(600);        //and wait a little bit to execute
 
   char szPath[1024];
-  strcpy(szPath, _P(szPath1).c_str());
+  strcpy(szPath, CSpecialProtocol::TranslatePath(szPath1).c_str());
 
   CStdString szNewPath;
   if (RunFFPatchedXBE(szPath, szNewPath))
@@ -4035,7 +4035,7 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
 
 void CUtil::LaunchXbe(const char* szPath, const char* szXbe, const char* szParameters, F_VIDEO ForceVideo, F_COUNTRY ForceCountry, CUSTOM_LAUNCH_DATA* pData)
 {
-  CStdString strPath(_P(szPath));
+  CStdString strPath(CSpecialProtocol::TranslatePath(szPath));
   CLog::Log(LOGINFO, "launch xbe:%s %s", strPath.c_str(), szXbe);
   CLog::Log(LOGINFO, " mount %s as D:", strPath.c_str());
 

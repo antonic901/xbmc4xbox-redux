@@ -101,7 +101,7 @@ int xbp_unlink(const char *filename)
 {
   char* p = strdup(filename);
   CORRECT_SEP_STR(p);
-  int res = unlink(_P(p).c_str());
+  int res = unlink(CSpecialProtocol::TranslatePath(p).c_str());
   free(p);
   return res;
 }
@@ -110,7 +110,7 @@ int xbp_access(const char *path, int mode)
 {
   char* p = strdup(path);
   CORRECT_SEP_STR(p);
-  int res = access(_P(p).c_str(), mode);
+  int res = access(CSpecialProtocol::TranslatePath(p).c_str(), mode);
   free(p);
   return res;
 }
@@ -119,7 +119,7 @@ int xbp_chmod(const char *filename, int pmode)
 {
   char* p = strdup(filename);
   CORRECT_SEP_STR(p);
-  int res = chmod(_P(p).c_str(), pmode);
+  int res = chmod(CSpecialProtocol::TranslatePath(p).c_str(), pmode);
   free(p);
   return res;
 }
@@ -128,7 +128,7 @@ int xbp_rmdir(const char *dirname)
 {
   char* p = strdup(dirname);
   CORRECT_SEP_STR(p);
-  int res = rmdir(_P(p).c_str());
+  int res = rmdir(CSpecialProtocol::TranslatePath(p).c_str());
   free(p);
   return res;
 }
@@ -147,7 +147,7 @@ int xbp_utime(const char *filename, struct utimbuf *times)
     if ((s.st_mode & S_IFDIR))
       res = 0;
     else
-      res = utime(_P(p).c_str(), times);
+      res = utime(CSpecialProtocol::TranslatePath(p).c_str(), times);
   else
     res = -1;
 
@@ -161,7 +161,7 @@ int xbp_rename(const char *oldname, const char *newname)
   char* n = strdup(newname);
   CORRECT_SEP_STR(o);
   CORRECT_SEP_STR(n);
-  int res = rename(_P(o).c_str(), _P(n).c_str());
+  int res = rename(CSpecialProtocol::TranslatePath(o).c_str(), CSpecialProtocol::TranslatePath(n).c_str());
   free(o);
   free(n);
   return res;
@@ -171,14 +171,14 @@ int xbp_mkdir(const char *dirname)
 {
   char* p = strdup(dirname);
   CORRECT_SEP_STR(p);
-  int res = mkdir(_P(p).c_str());
+  int res = mkdir(CSpecialProtocol::TranslatePath(p).c_str());
   free(p);
   return res;
 }
 
 int xbp_open(const char *filename, int oflag, int pmode)
 {
-  CStdString strPath = CUtil::ValidatePath(_P(filename), true);
+  CStdString strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
   
   int res = open(strPath.c_str(), oflag, pmode);
   return res;
@@ -190,7 +190,7 @@ FILE* xbp_fopen(const char *filename, const char *mode)
   char cName[1024];
   char* p;
 
-  CStdString strPath = CUtil::ValidatePath(_P(filename), true);
+  CStdString strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
   strcpy(cName, strPath.c_str());
   
   //for each "\\..\\" remove the directory before it
@@ -243,7 +243,7 @@ HANDLE xbp_FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData)
     e[0] = '\0';
   }
   
-  HANDLE res = FindFirstFile(_P(p).c_str(), lpFindFileData);
+  HANDLE res = FindFirstFile(CSpecialProtocol::TranslatePath(p).c_str(), lpFindFileData);
   free(p);
   return res;
 }

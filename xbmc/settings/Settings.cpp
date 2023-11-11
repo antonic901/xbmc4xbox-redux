@@ -173,11 +173,11 @@ bool CSettings::Load(bool& bXboxMediacenter, bool& bSettings)
 
 #ifdef _XBOX
   char szDevicePath[1024];
-  CStdString strMnt = _P(GetProfileUserDataFolder());
+  CStdString strMnt = CSpecialProtocol::TranslatePath(GetProfileUserDataFolder());
   if (strMnt.Left(2).Equals("Q:"))
   {
     CUtil::GetHomePath(strMnt);
-    strMnt += _P(GetProfileUserDataFolder()).substr(2);
+    strMnt += CSpecialProtocol::TranslatePath(GetProfileUserDataFolder()).substr(2);
   }
   CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
   strcat(szDevicePath,strMnt.c_str()+2);

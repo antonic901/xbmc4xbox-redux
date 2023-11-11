@@ -546,7 +546,7 @@ static HRESULT InitLogo()
   DWORD n;
 
   // Open XPR
-  HANDLE hFile = CreateFile(_P("special://xbmc/credits/credits.xpr").c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+  HANDLE hFile = CreateFile(CSpecialProtocol::TranslatePath("special://xbmc/credits/credits.xpr").c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
   if (hFile == INVALID_HANDLE_VALUE)
     return E_FAIL;
 

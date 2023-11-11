@@ -129,7 +129,7 @@ bool CWebServer::Start(const char *szLocalAddress, int port, const char_t* web, 
   if (end)
     m_szLocalAddress[end - 1] = '\0';
   end = sizeof(m_szRootWeb);
-  strncpy(m_szRootWeb, _P(web), end);
+  strncpy(m_szRootWeb, CSpecialProtocol::TranslatePath(web), end);
   if (end)
     m_szRootWeb[end - 1] = '\0';
   m_port = port;

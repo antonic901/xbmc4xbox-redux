@@ -47,7 +47,7 @@ void CGUIColorManager::Load(const CStdString &colorFile)
 
   // load the global color map if it exists
   TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(PTH_IC("special://xbmc/system/colors.xml")))
+  if (xmlDoc.LoadFile(CSpecialProtocol::TranslatePathConvertCase("special://xbmc/system/colors.xml")))
     LoadXML(xmlDoc);
 
   // first load the default color map if it exists

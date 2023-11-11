@@ -146,7 +146,7 @@ void XBPyThread::Process()
   // get path from script file name and add python path's
   // this is used for python so it will search modules from script path first
   CStdString scriptDir;
-  URIUtils::GetDirectory(_P(m_source), scriptDir);
+  URIUtils::GetDirectory(CSpecialProtocol::TranslatePath(m_source), scriptDir);
   URIUtils::RemoveSlashAtEnd(scriptDir);
   CStdString path = scriptDir;
 
@@ -154,7 +154,7 @@ void XBPyThread::Process()
   ADDON::VECADDONS addons;
   ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_SCRIPT_MODULE, addons);
   for (unsigned int i = 0; i < addons.size(); ++i)
-    path += PY_PATH_SEP + _P(addons[i]->LibPath());
+    path += PY_PATH_SEP + CSpecialProtocol::TranslatePath(addons[i]->LibPath());
 
   // and add on whatever our default path is
   path += PY_PATH_SEP;
@@ -194,10 +194,10 @@ void XBPyThread::Process()
     if (m_type == 'F')
     {
       // run script from file
-      FILE *fp = fopen_utf8(_P(m_source).c_str(), "r");
+      FILE *fp = fopen_utf8(CSpecialProtocol::TranslatePath(m_source).c_str(), "r");
       if (fp)
       {
-        PyObject *f = PyString_FromString(_P(m_source).c_str());
+        PyObject *f = PyString_FromString(CSpecialProtocol::TranslatePath(m_source).c_str());
         PyDict_SetItemString(moduleDict, "__file__", f);
         if (addon.get() != NULL)
         {
@@ -211,7 +211,7 @@ void XBPyThread::Process()
           CLog::Log(LOGDEBUG,"Instantiating addon using automatically obtained id of \"%s\" dependent on version %s of the xbmc.python api",addon->ID().c_str(),version.c_str());
         }
         Py_DECREF(f);
-        PyRun_File(fp, _P(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
+        PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
         fclose(fp);
       }
       else

@@ -334,7 +334,7 @@ bool CDatabase::Open(const DatabaseSettings &settings)
   if (m_sqlite)
   {
     dbSettings.type = "sqlite3";
-    dbSettings.host = _P(g_settings.GetDatabaseFolder());
+    dbSettings.host = CSpecialProtocol::TranslatePath(g_settings.GetDatabaseFolder());
   }
 
   if (Connect(dbSettings, true) && UpdateVersion(dbSettings.name))

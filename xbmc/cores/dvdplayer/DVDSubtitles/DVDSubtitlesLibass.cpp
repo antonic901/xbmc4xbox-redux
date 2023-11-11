@@ -54,7 +54,7 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
   CLog::Log(LOGINFO, "CDVDSubtitlesLibass: Initializing ASS library font settings");
   // libass uses fontconfig (system lib) which is not wrapped 
   //  so translate the path before calling into libass
-  m_dll.ass_set_fonts_dir(m_library,  _P(strPath).c_str());
+  m_dll.ass_set_fonts_dir(m_library,  CSpecialProtocol::TranslatePath(strPath).c_str());
   m_dll.ass_set_extract_fonts(m_library, 0);
   m_dll.ass_set_style_overrides(m_library, NULL);
 
@@ -74,7 +74,7 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
 
   // libass uses fontconfig (system lib) which is not wrapped 
   //  so translate the path before calling into libass
-  m_dll.ass_set_fonts(m_renderer, _P(strPath).c_str(), "Arial");
+  m_dll.ass_set_fonts(m_renderer, CSpecialProtocol::TranslatePath(strPath).c_str(), "Arial");
 }
 
 
@@ -127,7 +127,7 @@ bool CDVDSubtitlesLibass::ReadFile(const string& strFile)
 
   string fileName =  strFile;
 #ifdef _LINUX
-  fileName = PTH_IC(fileName);
+  fileName = CSpecialProtocol::TranslatePathConvertCase(fileName);
 #endif
 
   CLog::Log(LOGINFO, "SSA Parser: Creating m_track from SSA file:  %s", fileName.c_str());

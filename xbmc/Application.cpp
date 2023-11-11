@@ -802,11 +802,11 @@ HRESULT CApplication::Create(HWND hWnd)
   }
   else
   {
-    CStdString strMnt = _P(g_settings.GetUserDataFolder());
+    CStdString strMnt = CSpecialProtocol::TranslatePath(g_settings.GetUserDataFolder());
     if (strMnt.Left(2).Equals("Q:"))
     {
       CUtil::GetHomePath(strMnt);
-      strMnt += _P(g_settings.GetUserDataFolder()).substr(2);
+      strMnt += CSpecialProtocol::TranslatePath(g_settings.GetUserDataFolder()).substr(2);
     }
 
     CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
@@ -1487,7 +1487,7 @@ void CApplication::StartFtpServer()
       CFile xml;
       if (xml.Open(xmlpath+"FileZilla Server.xml") && xml.GetLength() > 0)
       {
-        m_pFileZilla = new CXBFileZilla(_P(xmlpath));
+        m_pFileZilla = new CXBFileZilla(CSpecialProtocol::TranslatePath(xmlpath));
         m_pFileZilla->Start(false);
       }
       else

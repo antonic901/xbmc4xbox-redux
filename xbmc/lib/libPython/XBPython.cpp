@@ -357,12 +357,12 @@ void XBPython::Initialize()
 #ifdef _LINUX
       // Required for python to find optimized code (pyo) files
       setenv("PYTHONOPTIMIZE", "1", 1);
-      setenv("PYTHONHOME", _P("special://xbmc/system/python").c_str(), 1);
+      setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://xbmc/system/python").c_str(), 1);
 #ifdef __APPLE__
       // OSX uses contents from extracted zip, 3X to 4X times faster during Py_Initialize
-      setenv("PYTHONPATH", _P("special://xbmc/system/python/Lib").c_str(), 1);
+      setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib").c_str(), 1);
 #else
-      setenv("PYTHONPATH", _P("special://xbmc/system/python/python27.zip").c_str(), 1);
+      setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://xbmc/system/python/python27.zip").c_str(), 1);
 #endif /* __APPLE__ */
       setenv("PYTHONCASEOK", "1", 1);
       CLog::Log(LOGDEBUG, "Python wrapper library linked with internal Python library");
@@ -460,7 +460,7 @@ void XBPython::Process()
     m_bLogin = false;
 
     // autoexec.py - profile
-    CStdString strAutoExecPy = _P("special://profile/autoexec.py");
+    CStdString strAutoExecPy = CSpecialProtocol::TranslatePath("special://profile/autoexec.py");
 
     if ( XFILE::CFile::Exists(strAutoExecPy) )
       evalFile(strAutoExecPy,ADDON::AddonPtr());

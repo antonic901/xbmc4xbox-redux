@@ -453,7 +453,7 @@ extern "C"
     else if (!IS_STD_STREAM(stream))
     {
       // Translate the path
-      return freopen(_P(path).c_str(), mode, stream);
+      return freopen(CSpecialProtocol::TranslatePath(path).c_str(), mode, stream);
     }
     
     // error
@@ -594,7 +594,7 @@ extern "C"
   {
     char str[XBMC_MAX_PATH];
     int size = sizeof(str);
-    CURL url(_P(file));
+    CURL url(CSpecialProtocol::TranslatePath(file));
     if (url.IsLocal())
     {
       // move to CFile classes
@@ -616,7 +616,7 @@ extern "C"
       }
 
       // Make sure the slashes are correct & translate the path
-      return _findfirst(CUtil::ValidatePath(_P(str), true), data);
+      return _findfirst(CUtil::ValidatePath(CSpecialProtocol::TranslatePath(str), true), data);
     }
     // non-local files. handle through IDirectory-class - only supports '*.bah' or '*.*'
     CStdString strURL(file);
@@ -1488,7 +1488,7 @@ extern "C"
   {
     if (!dir) return -1;
     // Make sure the slashes are correct & translate the path
-    return mkdir( CUtil::ValidatePath(_P(dir), true).c_str() );
+    return mkdir( CUtil::ValidatePath(CSpecialProtocol::TranslatePath(dir), true).c_str() );
   }
 
   char* dll_getcwd(char *buffer, int maxlen)

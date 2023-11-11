@@ -592,7 +592,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     else
     {
 
-      HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+      HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), CSpecialProtocol::TranslatePath(texturePath).c_str(),
                                        D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
                                        D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
 
@@ -617,7 +617,7 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
           pTexture = NULL;
         }
 
-        result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), _P(texturePath).c_str(),
+        result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), CSpecialProtocol::TranslatePath(texturePath).c_str(),
                                          checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
                                          D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
       }
