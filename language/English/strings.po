@@ -8631,7 +8631,9 @@ msgctxt "#24047"
 msgid "This Add-on cannot be uninstalled"
 msgstr ""
 
-#empty string with id 24048
+msgctxt "#24048"
+msgid "Rollback"
+msgstr ""
 
 msgctxt "#24049"
 msgid "Incompatible"

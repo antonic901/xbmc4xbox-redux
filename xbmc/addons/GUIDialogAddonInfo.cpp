@@ -24,9 +24,11 @@
 #include "addons/AddonManager.h"
 #include "AddonDatabase.h"
 #include "FileItem.h"
+#include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "addons/GUIDialogAddonSettings.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogTextViewer.h"
 #include "GUIUserMessages.h"
 #include "GUIWindowManager.h"
@@ -40,6 +42,7 @@
 #define CONTROL_BTN_UPDATE           8
 #define CONTROL_BTN_SETTINGS         9
 #define CONTROL_BTN_CHANGELOG       10
+#define CONTROL_BTN_ROLLBACK        11
 
 using namespace std;
 using namespace ADDON;
@@ -103,6 +106,11 @@ bool CGUIDialogAddonInfo::OnMessage(CGUIMessage& message)
         OnChangeLog();
         return true;
       }
+      else if (iControl == CONTROL_BTN_ROLLBACK)
+      {
+        OnRollback();
+        return true;
+      }
     }
     break;
 default:
@@ -126,6 +134,8 @@ void CGUIDialogAddonInfo::UpdateControls()
   bool isSystem = isInstalled && m_localAddon->Path().Left(xbmcPath.size()).Equals(xbmcPath);
   bool isEnabled = isInstalled && m_item->GetProperty("Addon.Enabled").asBoolean();
   bool isUpdatable = isInstalled && m_item->GetProperty("Addon.UpdateAvail").asBoolean();
+  if (isInstalled)
+    GrabRollbackVersions();
 
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_INSTALL, (!isSystem && (m_item->GetProperty("Addon.Broken").empty() || isInstalled)));
   SET_CONTROL_LABEL(CONTROL_BTN_INSTALL, isInstalled ? 24037 : 24038);
@@ -137,6 +147,7 @@ void CGUIDialogAddonInfo::UpdateControls()
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_UPDATE, isUpdatable);
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_SETTINGS, isInstalled && m_localAddon->HasSettings());
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_CHANGELOG, m_addon->Type() != ADDON_REPOSITORY);
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_ROLLBACK, m_rollbackVersions.size() > 1);
 }
 
 void CGUIDialogAddonInfo::OnUpdate()
@@ -211,6 +222,39 @@ void CGUIDialogAddonInfo::OnChangeLog()
   m_changelog = false;
 }
 
+void CGUIDialogAddonInfo::OnRollback()
+{
+  CGUIDialogContextMenu* dlg = (CGUIDialogContextMenu*)g_windowManager.GetWindow(WINDOW_DIALOG_CONTEXT_MENU);
+  CAddonDatabase database;
+  database.Open();
+
+  CContextButtons buttons;
+  for (unsigned int i=0;i<m_rollbackVersions.size();++i)
+  {
+    CStdString label(m_rollbackVersions[i]);
+    if (m_rollbackVersions[i].Equals(m_localAddon->Version().c_str()))
+     label += " "+g_localizeStrings.Get(24094);
+   if (database.IsAddonBlacklisted(m_localAddon->ID(),label))
+     label += " "+g_localizeStrings.Get(24095);
+
+    buttons.Add(i,label);
+  }
+  int choice;
+  if ((choice=dlg->ShowAndGetChoice(buttons)) > -1)
+  {
+    // blacklist everything newer
+    for (unsigned int j=choice+1;j<m_rollbackVersions.size();++j)
+      database.BlacklistAddon(m_localAddon->ID(),m_rollbackVersions[j]);
+    CStdString path = "special://home/addons/packages/";
+    path += m_localAddon->ID()+"-"+m_rollbackVersions[choice]+".zip";
+    // needed as cpluff won't downgrade
+    CAddonMgr::Get().RemoveAddon(m_localAddon->ID());
+    CAddonInstaller::Get().InstallFromZip(path);
+    database.RemoveAddonFromBlacklist(m_localAddon->ID(),m_rollbackVersions[choice]);
+    Close();
+  }
+}
+
 bool CGUIDialogAddonInfo::ShowForItem(const CFileItemPtr& item)
 {
   CGUIDialogAddonInfo* dialog = (CGUIDialogAddonInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_ADDON_INFO);
@@ -226,6 +270,7 @@ bool CGUIDialogAddonInfo::ShowForItem(const CFileItemPtr& item)
 bool CGUIDialogAddonInfo::SetItem(const CFileItemPtr& item)
 {
   *m_item = *item;
+  m_rollbackVersions.clear();
 
   // grab the local addon, if it's available
   m_addon.reset();
@@ -297,3 +342,32 @@ void CGUIDialogAddonInfo::OnJobComplete(unsigned int jobID, bool success,
   g_windowManager.SendThreadMessage(msg);
 }
 
+bool SplitFileName(CStdString& ID, CStdString& version,
+                                  const CStdString& filename)
+{
+  // TODO: this function should be moved to CAddonVersion class once it's added
+  int dpos = filename.rfind("-");
+  if (dpos < 0)
+    return false;
+  ID = filename.Mid(0,dpos);
+  version = filename.Mid(dpos+1);
+  version = version.Mid(0,version.size()-4);
+
+  return true;
+}
+
+void CGUIDialogAddonInfo::GrabRollbackVersions()
+{
+  CFileItemList items;
+  XFILE::CDirectory::GetDirectory("special://home/addons/packages/",items,".zip",false);
+  items.Sort(SortByLabel,SortOrderAscending);
+  for (int i=0;i<items.Size();++i)
+  {
+    if (items[i]->m_bIsFolder)
+      continue;
+    CStdString ID, version;
+    SplitFileName(ID,version,items[i]->GetLabel());
+    if (ID.Equals(m_localAddon->ID()))
+      m_rollbackVersions.push_back(version);
+  }
+}

@@ -173,7 +173,8 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
     {
       AddonPtr addon2;
       database.GetAddon(items[i]->GetProperty("Addon.ID").asString(),addon2);
-      if (addon2 && addon2->Version() > AddonVersion(items[i]->GetProperty("Addon.Version").asString()))
+      if (addon2 && addon2->Version() > AddonVersion(items[i]->GetProperty("Addon.Version").asString())
+                 && !database.IsAddonBlacklisted(addon2->ID(),addon2->Version().c_str()))
       {
         items[i]->SetProperty("Addon.Status",g_localizeStrings.Get(24068));
         items[i]->SetProperty("Addon.UpdateAvail","true");
