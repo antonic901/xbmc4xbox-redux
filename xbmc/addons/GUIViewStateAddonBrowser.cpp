@@ -64,7 +64,7 @@ VECSOURCES& CGUIViewStateAddonBrowser::GetSources()
     CMediaSource share;
     share.strPath = "addons://enabled/";
     share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-    share.strName = g_localizeStrings.Get(24062);
+    share.strName = g_localizeStrings.Get(24998);
     m_sources.push_back(share);
   }
   CAddonDatabase db;

@@ -60,8 +60,8 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
   if (path.GetHostName().Equals("enabled"))
   {
     CAddonMgr::Get().GetAllAddons(addons, true);
-    items.SetProperty("reponame",g_localizeStrings.Get(24062));
-    items.SetLabel(g_localizeStrings.Get(24062));
+    items.SetProperty("reponame",g_localizeStrings.Get(24998));
+    items.SetLabel(g_localizeStrings.Get(24998));
   }
   else if (path.GetHostName().Equals("disabled"))
   { // grab all disabled addons, including disabled repositories
@@ -91,8 +91,8 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
     CAddonDatabase database;
     database.Open();
     database.GetAddons(addons);
-    items.SetProperty("reponame",g_localizeStrings.Get(24032));
-    items.SetLabel(g_localizeStrings.Get(24032));
+    items.SetProperty("reponame",g_localizeStrings.Get(24087));
+    items.SetLabel(g_localizeStrings.Get(24087));
   }
   else if (path.GetHostName().Equals("search"))
   {
@@ -184,7 +184,7 @@ bool CAddonsDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
   if (path.GetHostName().Equals("repos"))
   {
     CFileItemPtr item(new CFileItem("addons://all/",true));
-    item->SetLabel(g_localizeStrings.Get(24032));
+    item->SetLabel(g_localizeStrings.Get(24087));
     items.Add(item);
   }
 

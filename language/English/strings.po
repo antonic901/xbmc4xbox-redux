@@ -8572,7 +8572,7 @@ msgid "All Add-ons"
 msgstr ""
 
 msgctxt "#24033"
-msgid "Get Add-ons"
+msgid "Install from repository"
 msgstr ""
 
 msgctxt "#24034"
@@ -8739,7 +8739,13 @@ msgctxt "#24080"
 msgid "Try to reconnect?"
 msgstr ""
 
-#empty strings from id 24081 to 24088
+#empty strings from id 24081 to 24086
+
+msgctxt "#24087"
+msgid "All repositories"
+msgstr ""
+
+#empty string with id 24088
 
 msgctxt "#24089"
 msgid "Add-on restarts"
