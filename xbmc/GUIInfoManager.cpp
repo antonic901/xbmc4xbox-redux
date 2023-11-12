@@ -4244,7 +4244,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_ICON:
     {
       CStdString strThumb = item->GetThumbnailImage();
-      if(!strThumb.IsEmpty() && !g_TextureManager.CanLoad(strThumb))
+      // NOTICE: we can remove this completely in PR798
+      if(!strThumb.IsEmpty() && !g_TextureManager.CanLoad(strThumb) && !item->IsAddonsPath())
         strThumb = "";
 
       if(strThumb.IsEmpty() && !item->GetIconImage().IsEmpty())
