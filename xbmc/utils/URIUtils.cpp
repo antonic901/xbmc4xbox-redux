@@ -501,7 +501,7 @@ bool URIUtils::IsHD(const CStdString& strFileName)
   if (IsInArchive(strFileName))
     return IsHD(url.GetHostName());
 
-  return url.IsLocal();
+  return url.GetProtocol().IsEmpty() || url.GetProtocol() == "file";
 }
 
 bool URIUtils::IsDVD(const CStdString& strFile)

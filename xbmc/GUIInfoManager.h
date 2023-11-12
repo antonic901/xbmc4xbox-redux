@@ -426,6 +426,8 @@ namespace INFO
 #define SYSTEM_OPENGL_VERSION       709
 #define SYSTEM_SETTING              710
 #define SYSTEM_HAS_ADDON            711
+#define SYSTEM_ADDON_TITLE          712
+#define SYSTEM_ADDON_ICON           713
 #define SYSTEM_IDLE_TIME            715
 #define SYSTEM_FRIENDLY_NAME        716
 

@@ -124,7 +124,7 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
       SetProperties();
       if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
       {
-        if (!g_guiSettings.GetString("weather.script").IsEmpty())
+        if (!g_guiSettings.GetString("weather.addon").IsEmpty())
           m_scriptTimer.StartZero();
       }
       else
@@ -283,10 +283,10 @@ void CGUIWindowWeather::SetProperties()
 
 void CGUIWindowWeather::CallScript()
 {
-  if (!g_guiSettings.GetString("weather.script").Equals(DEFAULT_WEATHER_ADDON))
+  if (!g_guiSettings.GetString("weather.addon").Equals(DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
-    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.script"), addon, ADDON_SCRIPT_WEATHER))
+    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
       return;
 
     // initialize our sys.argv variables
