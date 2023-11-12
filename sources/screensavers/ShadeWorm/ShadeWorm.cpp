@@ -5,7 +5,7 @@
 
 #include "ShadeWorm.h"
 
-#define CONFIG_FILE "special://xbmc/addons/screensaver.shadeworm/config.xml"
+#define CONFIG_FILE "special://home/addons/screensaver.shadeworm/config.xml"
 
 // Pixel shader for colour remapping
 const char* ShadeWorm_c::m_shaderColourMapSrc = 
@@ -48,7 +48,7 @@ void ShadeWorm_c::Create(LPDIRECT3DDEVICE8 device, int width, int height, const 
 //-----------------------------------------------------------------------------
 bool ShadeWorm_c::Start()
 {
-	if (D3D_OK != D3DXCreateTextureFromFile(m_device, "q:\\addons\\screensaver.shadeworm\\resources\\Particle.bmp", &m_spriteTexture))
+	if (D3D_OK != D3DXCreateTextureFromFile(m_device, "q:\\home\\addons\\screensaver.shadeworm\\resources\\Particle.bmp", &m_spriteTexture))
 		return false;
 
 	if (D3D_OK  != m_device->CreateTexture(512, 512, 1, 0, D3DFMT_X8R8G8B8, 0, &m_bufferTexture))

@@ -20,9 +20,9 @@ extern "C" void d3dSetRenderState(DWORD dwY, DWORD dwZ);
 #define GOOM_MIN_HEIGHT	16
 //#define GOOM_MAX_HEIGHT	640
 
-#define CONFIG_FILE "special://xbmc/addons/visualization.g-force/config.xml"
-#define RESOURCES_DIR "zip://special%3A%2F%2Fxbmc%2Faddons%2Fvisualization.g-force%2Fresources%2F"
-#define ADDON_ROOT "Q:\\addons\\visualization.g-force\\"
+#define CONFIG_FILE "special://home/addons/visualization.g-force/config.xml"
+#define RESOURCES_DIR "zip://special%3A%2F%2Fhome%2Faddons%2Fvisualization.g-force%2Fresources%2F"
+#define ADDON_ROOT "q:\\home\\addons\\visualization.g-force\\"
 
 struct VERTEX { D3DXVECTOR4 p; D3DCOLOR col; FLOAT tu, tv; };
 static const DWORD FVF_VERTEX = D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1;
@@ -153,10 +153,10 @@ void LoadSettings()
 }
 
 
-extern "C" ADDON_STATUS Create(void* hdl, void* props)
+extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   VIS_PROPS* visprops = (VIS_PROPS*)props;
 
@@ -177,7 +177,7 @@ extern "C" ADDON_STATUS Create(void* hdl, void* props)
 	// Load settings
 	LoadSettings();
 
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 extern "C" void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName)
@@ -355,7 +355,7 @@ extern "C" void Render()
 }
 
 
-extern "C" void Stop()
+extern "C" void ADDON_Stop()
 {
   OutputDebugString("Calling Goom_Close() ... ");
 	if (m_pVB) m_pVB->Release();
@@ -416,16 +416,16 @@ extern "C" bool IsLocked()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void Destroy()
+extern "C" void ADDON_Destroy()
 {
-  Stop();
+  ADDON_Stop();
 }
 
 //-- HasSettings --------------------------------------------------------------
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" bool HasSettings()
+extern "C" bool ADDON_HasSettings()
 {
   return false;
 }
@@ -434,16 +434,16 @@ extern "C" bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS GetStatus()
+extern "C" ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
 
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -451,15 +451,15 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 //-- FreeSettings --------------------------------------------------------------
 // Free the settings struct passed from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void FreeSettings()
+extern "C" void ADDON_FreeSettings()
 {}
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 {
-  return STATUS_UNKNOWN;
+  return ADDON_STATUS_UNKNOWN;
 }
 
 //-- GetSubModules ------------------------------------------------------------

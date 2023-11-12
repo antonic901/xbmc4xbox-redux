@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "Blobby.h"
 
-#define CONFIG_FILE "special://xbmc/addons/screensaver.cpblobs/config.xml"
+#define CONFIG_FILE "special://home/addons/screensaver.cpblobs/config.xml"
 
 extern float g_fFOV;
 extern float g_fAspectRatio;

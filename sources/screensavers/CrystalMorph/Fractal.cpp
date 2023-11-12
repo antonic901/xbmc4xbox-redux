@@ -31,7 +31,7 @@
 // DX8 calls which XBMC will emulate for you.
 #pragma comment (lib, "lib/xbox_dx8.lib" )
 
-#define CONFIG_FILE "special://xbmc/addons/screensaver.crystalmorph/config.xml"
+#define CONFIG_FILE "special://home/addons/screensaver.crystalmorph/config.xml"
 
 FractalSettings settings;
 SCR_INFO vInfo;
@@ -204,10 +204,10 @@ void RenderSetup()
 // we should set our core values
 // here and load any settings we
 // may have from our config file
-extern "C" ADDON_STATUS Create(void* hdl, void* props)
+extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   SCR_PROPS* scrprops = (SCR_PROPS*)props;
 
@@ -228,7 +228,7 @@ extern "C" ADDON_STATUS Create(void* hdl, void* props)
   settings.fractalcontroller->SetMorphSpeed(settings.morphSpeed);
 	CreateLight();
 
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 // XBMC tells us we should get ready
@@ -262,7 +262,7 @@ extern "C" void Render()
 // XBMC tells us to stop the screensaver
 // we should free any memory and release
 // any resources we have created.
-extern "C" void Stop()
+extern "C" void ADDON_Stop()
 {
 	delete settings.fractal;
 	delete settings.fractalcontroller;
@@ -287,7 +287,7 @@ void SetDefaults()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void Destroy()
+extern "C" void ADDON_Destroy()
 {
 }
 
@@ -295,7 +295,7 @@ extern "C" void Destroy()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" bool HasSettings()
+extern "C" bool ADDON_HasSettings()
 {
   return false;
 }
@@ -304,16 +304,16 @@ extern "C" bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS GetStatus()
+extern "C" ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
 
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -321,16 +321,16 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 //-- FreeSettings --------------------------------------------------------------
 // Free the settings struct passed from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void FreeSettings()
+extern "C" void ADDON_FreeSettings()
 {
 }
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 {
-  return STATUS_UNKNOWN;
+  return ADDON_STATUS_UNKNOWN;
 }
 
 // Load settings from the [screensavername].xml configuration file

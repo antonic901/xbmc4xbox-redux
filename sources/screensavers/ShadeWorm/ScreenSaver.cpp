@@ -31,17 +31,17 @@ ShadeWorm_c*		g_shadeWorm = NULL;
 //-- Create -------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS Create(void* hdl, void* props)
+extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   SCR_PROPS* scrprops = (SCR_PROPS*)props;
 
 	g_shadeWorm = new ShadeWorm_c;
 	g_shadeWorm->Create((LPDIRECT3DDEVICE8)scrprops->device, scrprops->width, scrprops->height, scrprops->name);
 
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 } // Create
 
 //-- Start --------------------------------------------------------------------
@@ -77,7 +77,7 @@ extern "C" void Render()
 //-- Stop ---------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-extern "C" void Stop()
+extern "C" void ADDON_Stop()
 {
 	if (g_shadeWorm)
 	{
@@ -92,7 +92,7 @@ extern "C" void Stop()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void Destroy()
+extern "C" void ADDON_Destroy()
 {
 }
 
@@ -100,7 +100,7 @@ extern "C" void Destroy()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" bool HasSettings()
+extern "C" bool ADDON_HasSettings()
 {
   return false;
 }
@@ -109,16 +109,16 @@ extern "C" bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS GetStatus()
+extern "C" ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
 
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -126,16 +126,16 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 //-- FreeSettings --------------------------------------------------------------
 // Free the settings struct passed from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void FreeSettings()
+extern "C" void ADDON_FreeSettings()
 {
 }
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 {
-  return STATUS_UNKNOWN;
+  return ADDON_STATUS_UNKNOWN;
 }
 
 //-- GetInfo ------------------------------------------------------------------

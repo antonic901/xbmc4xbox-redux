@@ -60,7 +60,7 @@ bool	CMatrixTrails::RestoreDevice(CRenderD3D* render)
 #ifdef _TEST
 	DVERIFY(D3DXCreateTextureFromFileA(d3dDevice, "matrixtrails.tga", &m_Texture))
 #else
-	DVERIFY(D3DXCreateTextureFromFileA(d3dDevice, "q:\\addons\\screensaver.matrixtrails\\resources\\MatrixTrails.tga", &m_Texture))
+	DVERIFY(D3DXCreateTextureFromFileA(d3dDevice, "q:\\home\\addons\\screensaver.matrixtrails\\resources\\MatrixTrails.tga", &m_Texture))
 #endif
 
 	m_CharSize.x	= (f32)render->m_Width  / (f32)m_NumColumns;

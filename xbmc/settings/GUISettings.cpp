@@ -53,7 +53,7 @@ using namespace ADDON;
 
 class CGUISettings g_guiSettings;
 
-#define DEFAULT_VISUALISATION "visualization.milkrop"
+#define DEFAULT_VISUALISATION "visualization.milkdrop"
 
 struct sortsettings
 {

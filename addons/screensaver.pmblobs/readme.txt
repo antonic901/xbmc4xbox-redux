@@ -1,1 +1,0 @@
-This is cpBlobs screensaver just with different textures

@@ -31,7 +31,7 @@
 #include "timer.h"
 #include <time.h>
 
-#define CONFIG_FILE "special://xbmc/addons/screensaver.planestate/config.xml"
+#define CONFIG_FILE "special://home/addons/screensaver.planestate/config.xml"
 
 static char gScrName[1024];
 
@@ -44,10 +44,10 @@ f32				gCfgProbability[NUMCFGS] = { 0.35f, 0.35f,0.15f, 0.15f };	// The probabil
 // XBMC has loaded us into memory, we should set our core values
 // here and load any settings we may have from our config file
 //
-extern "C" ADDON_STATUS Create(void* hdl, void* props)
+extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   SCR_PROPS* scrprops = (SCR_PROPS*)props;
 
@@ -61,7 +61,7 @@ extern "C" ADDON_STATUS Create(void* hdl, void* props)
 	gPlanestate = null;
 	gTimer = null;
 
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ extern "C" void Start()
 	gTimer = new CTimer();
 	gTimer->Init();
 	if (!gPlanestate->RestoreDevice(&gRender))
-		Stop();
+		ADDON_Stop();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ extern "C" void Render()
 // XBMC tells us to stop the screensaver we should free any memory and release
 // any resources we have created.
 //
-extern "C" void Stop()
+extern "C" void ADDON_Stop()
 {
 	if (gPlanestate)
 		gPlanestate->InvalidateDevice(&gRender);
@@ -111,7 +111,7 @@ extern "C" void Stop()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void Destroy()
+extern "C" void ADDON_Destroy()
 {
 }
 
@@ -119,7 +119,7 @@ extern "C" void Destroy()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" bool HasSettings()
+extern "C" bool ADDON_HasSettings()
 {
   return false;
 }
@@ -128,16 +128,16 @@ extern "C" bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS GetStatus()
+extern "C" ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
 
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -145,16 +145,16 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 //-- FreeSettings --------------------------------------------------------------
 // Free the settings struct passed from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void FreeSettings()
+extern "C" void ADDON_FreeSettings()
 {
 }
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 {
-  return STATUS_UNKNOWN;
+  return ADDON_STATUS_UNKNOWN;
 }
 
 ////////////////////////////////////////////////////////////////////////////

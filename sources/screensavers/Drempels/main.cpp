@@ -134,7 +134,7 @@ int   g_iBlendPercent = 7;
 
 float time_between_textures = 20.0f;
 float texture_fade_time = 5.0f;
-char  szTexPath[MAX_PATH] = "q:\\addons\\screensaver.drempels\\resources\\images";
+char  szTexPath[MAX_PATH] = "q:\\home\\addons\\screensaver.drempels\\resources\\images";
 //char  szTexPathCurrent[MAX_PATH] = "c:\\program files\\drempels";
 int   g_nTimeBetweenSubdirs = 120;
 int   g_subdirIndices[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -2635,7 +2635,7 @@ void DrempelsInit()
 		{
 			//make sure the sliderbar, etc. controls are loaded:
 			dumpmsg("InitCommonControls()...");
-			InitCommonControls(); // loads common control�s DLL 
+			InitCommonControls(); // loads common controls DLL 
 			
 			dumpmsg("Bringing up Config Dialog...");
 			DialogBox( h, MAKEINTRESOURCE(IDD_CONFIG),

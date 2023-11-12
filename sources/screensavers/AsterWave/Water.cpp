@@ -26,7 +26,7 @@
 #include "../../../xbmc/addons/include/xbmc_addon_cpp_dll.h"
 #include <cstdlib>
 
-#define CONFIG_FILE "special://xbmc/addons/screensaver.asterwave/config.xml"
+#define CONFIG_FILE "special://home/addons/screensaver.asterwave/config.xml"
 
 // use the 'dummy' dx8 lib - this allow you to make
 // DX8 calls which XBMC will emulate for you.
@@ -242,10 +242,10 @@ void LoadTexture()
 // we should set our core values
 // here and load any settings we
 // may have from our config file
-extern "C" ADDON_STATUS Create(void* hdl, void* props)
+extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   SCR_PROPS* scrprops = (SCR_PROPS*)props;
 
@@ -289,7 +289,7 @@ extern "C" ADDON_STATUS Create(void* hdl, void* props)
   ((EffectText*)(effects[6]))->drawString(buff,0.6f,0.6f,1.3f,0.06f,-7.0f,7.8f);*/
   //world.widescreen = (float)iWidth/ (float)iHeight > 1.7f;
 
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 void SetCamera()
@@ -414,7 +414,7 @@ extern "C" void Render()
 // XBMC tells us to stop the screensaver
 // we should free any memory and release
 // any resources we have created.
-extern "C" void Stop()
+extern "C" void ADDON_Stop()
 {
   delete world.waterField;
   world.waterField = NULL;
@@ -432,7 +432,7 @@ extern "C" void Stop()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void Destroy()
+extern "C" void ADDON_Destroy()
 {
 }
 
@@ -440,7 +440,7 @@ extern "C" void Destroy()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" bool HasSettings()
+extern "C" bool ADDON_HasSettings()
 {
   return false;
 }
@@ -449,16 +449,16 @@ extern "C" bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS GetStatus()
+extern "C" ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 //-----------------------------------------------------------------------------
 
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -466,16 +466,16 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 //-- FreeSettings --------------------------------------------------------------
 // Free the settings struct passed from XBMC
 //-----------------------------------------------------------------------------
-extern "C" void FreeSettings()
+extern "C" void ADDON_FreeSettings()
 {
 }
 
 //-- UpdateSetting ------------------------------------------------------------
 // Handle setting change request from XBMC
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char* id, const void* value)
+extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 {
-  return STATUS_UNKNOWN;
+  return ADDON_STATUS_UNKNOWN;
 }
 
 // Load settings from the [screensavername].xml configuration file
