@@ -609,7 +609,11 @@ msgctxt "#198"
 msgid "Loading movie details"
 msgstr ""
 
-#empty strings from id 199 to 201
+msgctxt "#199"
+msgid "Web interface"
+msgstr ""
+
+#empty strings from id 200 to 201
 
 msgctxt "#202"
 msgid "Tagline"

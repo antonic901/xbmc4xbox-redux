@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="webinterface.default"
+  version="1.0.0"
+  name="XBMC Reloaded"
+  provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.gui" version="2.13"/>
+  </requires>
+  <extension
+    point="xbmc.gui.webinterface"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Default web interface (XBMC's default web interface)</summary>
+    <description lang="en">Control XBMC from your web browser using built-in HTTP web server.</description>
+    <platform>all</platform>
+  </extension>
+</addon>

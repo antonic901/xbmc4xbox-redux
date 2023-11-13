@@ -24,6 +24,7 @@
 
 #define DEFAULT_SKIN           "skin.confluence.lite"
 #define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
+#define DEFAULT_WEB_INTERFACE "webinterface.default"
 
 #include "settings/VideoSettings.h"
 #include "settings/GUISettings.h"

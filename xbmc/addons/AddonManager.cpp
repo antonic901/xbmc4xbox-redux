@@ -97,6 +97,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_SCRIPT_WEATHER:
     case ADDON_SCRIPT_SUBTITLES:
     case ADDON_SCRIPT_MODULE:
+    case ADDON_WEB_INTERFACE:
       return AddonPtr(new CAddon(props));
     case ADDON_SERVICE:
       return AddonPtr(new CService(props));
@@ -392,6 +393,9 @@ bool CAddonMgr::GetDefault(const TYPE &type, AddonPtr &addon)
     break;
   case ADDON_SCRAPER_TVSHOWS:
     setting = g_guiSettings.GetString("scrapers.tvshowsdefault");
+    break;
+  case ADDON_WEB_INTERFACE:
+    setting = g_guiSettings.GetString("services.webskin");
     break;
   default:
     return false;

@@ -14,6 +14,8 @@
 #include "XBMCweb.h"
 #include "FileSystem/SpecialProtocol.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "addons/AddonManager.h"
 
 #ifdef SPYCE_SUPPORT
 #include "SpyceModule.h"
@@ -23,6 +25,7 @@
 #include "XBMChttp.h"
 #include "includes.h"
 
+using namespace ADDON;
 using namespace std;
 
 static CXbmcWeb* pXbmcWeb;
@@ -129,7 +132,17 @@ bool CWebServer::Start(const char *szLocalAddress, int port, const char_t* web, 
   if (end)
     m_szLocalAddress[end - 1] = '\0';
   end = sizeof(m_szRootWeb);
-  strncpy(m_szRootWeb, CSpecialProtocol::TranslatePath(web), end);
+
+  AddonPtr addon;
+  CStdString strURL;
+  CAddonMgr::Get().GetDefault(ADDON_WEB_INTERFACE,addon);
+  if (addon)
+  {
+    strURL = URIUtils::AddFileToFolder(addon->Path(),strURL);
+    URIUtils::RemoveSlashAtEnd(strURL);
+  }
+
+  strncpy(m_szRootWeb, CSpecialProtocol::TranslatePath(strURL.c_str()), end);
   if (end)
     m_szRootWeb[end - 1] = '\0';
   m_port = port;

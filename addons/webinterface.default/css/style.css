@@ -1,0 +1,126 @@
+body {
+	margin:0;
+	padding:0;
+	border:0;			/* This removes the border around the viewport in old versions of IE */
+	width:100%;
+	background:#fff;
+	min-width:400px;    	/* Minimum width of layout - remove line if not required */
+					/* The min-width property does not work in old versions of Internet Explorer */
+	height: 100%;
+	font-size:90%;
+	background-image:url('../images/background.jpg');
+}
+img { border: 0; }
+h1, h2, h3 {
+	margin:.8em 0 .2em 0;
+	padding:0;
+}
+p {
+	margin:.4em 0 .8em 0;
+	padding:0;
+}
+.small-button {
+   font-size: .6em !important;
+   width: 85px;
+}
+.ui-dialog {
+      opacity: 0.85;
+}
+.ui-button-text {
+   font-size: inherit !important;
+} 
+#playlistContent { list-style-type: none;}
+#playlistContent li { padding: 2px; font-size: 1.0em; }
+#status{
+float: right;
+top:5px;
+padding: 5px;
+}
+.keyconfig{ width: 45px; }
+.keyboardcontroller{ width: 45px; }
+/* Header styles */
+#header {
+	clear:both;
+	float:left;
+	width:100%;
+	
+}
+#header {
+	border-bottom:1px solid #000;
+}
+#header p,
+#header h1,
+#header h2 {
+	padding:.4em 15px 0 15px;
+	margin:0;
+}
+/* 'widths' sub menu */
+#layoutdims {
+	clear:both;
+	background:#eee;
+	border-top:4px solid #000;
+	margin:0;
+	padding:6px 15px !important;
+	text-align:right;
+}
+/* column container */
+.colmask {
+	position:relative;	/* This fixes the IE7 overflow hidden bug */
+	clear:both;
+	float:left;
+	width:100%;			/* width of whole page */
+	overflow:hidden;		/* This chops off any overhanging divs */
+}
+/* common column settings */
+.colright,
+.colmid,
+.colleft {
+	float:left;
+	width:100%;
+	position:relative;
+}
+.col1{
+background-color:#c0c0c0;
+
+}
+.col1,
+.col2 {
+	float:left;
+	position:relative;
+	padding:0 0 1em 0;
+	overflow:hidden;
+	
+}
+/* 2 Column (left menu) settings */
+.leftmenu {
+	background:#fff;		/* right column background colour */
+}
+.leftmenu .colleft {
+	right:75%;			/* right column width */
+	background:#f4f4f4;	/* left column background colour */
+}
+.leftmenu .col1 {
+	width:71%;			/* right column content width */
+	left:102%;			/* 100% plus left column left padding */
+}
+.leftmenu .col2 {
+	width:21%;			/* left column content width (column width minus left and right padding) */
+	left:6%;			/* (right column left and right padding) plus (left column left padding) */
+}
+
+.buttonEx {
+width: 30%;
+background-color: #c9c9c9;
+
+}
+/* Footer styles */
+#footer {
+	clear:both;
+	float:left;
+	width:100%;
+	border-top:1px solid #000;
+}
+#footer p {
+	padding:10px;
+	margin:0;
+}
