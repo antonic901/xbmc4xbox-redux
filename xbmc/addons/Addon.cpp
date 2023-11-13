@@ -487,6 +487,7 @@ CStdString CAddon::GetSetting(const CStdString& key)
 
 void CAddon::UpdateSetting(const CStdString& key, const CStdString& value)
 {
+  LoadSettings();
   if (key.empty()) return;
   m_settings[key] = value;
 }
