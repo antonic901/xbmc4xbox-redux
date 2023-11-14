@@ -30,8 +30,12 @@ public:
   PyObject* pCallbackWindow;
   PyObject* pObject;
   int controlId; // for XML window
-  PyXBMCAction() { }
-  //virtual ~PyXBMCAction();
+#if defined(_LINUX) || defined(_WIN32)
+  int type; // 0=Action, 1=Control;
+#endif
+
+  PyXBMCAction(): param(0), pCallbackWindow(NULL), pObject(NULL), controlId(0), type(0) { }
+  virtual ~PyXBMCAction() ;
 };
 
 int Py_XBMC_Event_OnAction(void* arg);

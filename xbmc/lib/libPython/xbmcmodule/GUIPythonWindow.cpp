@@ -29,6 +29,14 @@
 
 using namespace PYXBMC;
 
+PyXBMCAction::~PyXBMCAction() {
+     if (pObject) {
+       Py_DECREF(pObject);
+     }
+
+     pObject = NULL;
+}
+
 CGUIPythonWindow::CGUIPythonWindow(int id)
 : CGUIWindow(id, "")
 {
