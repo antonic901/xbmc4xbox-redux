@@ -35,6 +35,7 @@ PyXBMCAction::~PyXBMCAction() {
      }
 
      pObject = NULL;
+     Py_DECREF(pCallbackWindow);
 }
 
 CGUIPythonWindow::CGUIPythonWindow(int id)
@@ -63,9 +64,10 @@ bool CGUIPythonWindow::OnAction(const CAction &action)
 
   if(pCallbackWindow)
   {
-    PyXBMCAction* inf = new PyXBMCAction;
+    PyXBMCAction* inf = new PyXBMCAction(pCallbackWindow);
     inf->pObject = Action_FromAction(action);
     inf->pCallbackWindow = pCallbackWindow;
+    Py_INCREF(pCallbackWindow);
 
     // aquire lock?
     PyXBMC_AddPendingCall(Py_XBMC_Event_OnAction, inf);
@@ -130,6 +132,7 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
           {
             // create a new call and set it in the python queue
             inf->pCallbackWindow = pCallbackWindow;
+            Py_INCREF(pCallbackWindow);
 
             // aquire lock?
             PyXBMC_AddPendingCall(Py_XBMC_Event_OnControl, inf);
@@ -175,6 +178,7 @@ int Py_XBMC_Event_OnControl(void* arg)
     if (ret) {
        Py_DECREF(ret);
     }
+    Py_DECREF(action->pCallbackWindow);
     delete action;
   }
   return 0;
@@ -198,6 +202,7 @@ int Py_XBMC_Event_OnAction(void* arg)
       CLog::Log(LOGERROR,"Exception in python script's onAction");
       PyErr_Print();
     }
+    Py_DECREF(action->pCallbackWindow);
     delete action;
   }
   return 0;
