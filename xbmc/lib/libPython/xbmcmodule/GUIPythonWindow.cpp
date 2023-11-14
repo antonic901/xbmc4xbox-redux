@@ -66,8 +66,6 @@ bool CGUIPythonWindow::OnAction(const CAction &action)
   {
     PyXBMCAction* inf = new PyXBMCAction(pCallbackWindow);
     inf->pObject = Action_FromAction(action);
-    inf->pCallbackWindow = pCallbackWindow;
-    Py_INCREF(pCallbackWindow);
 
     // aquire lock?
     PyXBMC_AddPendingCall(Py_XBMC_Event_OnAction, inf);
@@ -107,8 +105,7 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
       int iControl=message.GetSenderId();
       if(pCallbackWindow)
       {
-        PyXBMCAction* inf = new PyXBMCAction;
-        inf->pObject = NULL;
+        PyXBMCAction* inf = new PyXBMCAction(pCallbackWindow);
         // find python control object with same iControl
         std::vector<Control*>::iterator it = ((PYXBMC::Window*)pCallbackWindow)->vecControls.begin();
         while (it != ((PYXBMC::Window*)pCallbackWindow)->vecControls.end())
@@ -130,10 +127,6 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
             ControlButton_CheckExact(inf->pObject) || ControlRadioButton_CheckExact(inf->pObject) ||
             ControlCheckMark_CheckExact(inf->pObject))
           {
-            // create a new call and set it in the python queue
-            inf->pCallbackWindow = pCallbackWindow;
-            Py_INCREF(pCallbackWindow);
-
             // aquire lock?
             PyXBMC_AddPendingCall(Py_XBMC_Event_OnControl, inf);
             PulseActionEvent();
@@ -142,6 +135,9 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
             return true;
           }
         }
+
+        // if we get here, we didn't add the action
+        delete inf;
       }
     }
     break;
@@ -178,7 +174,6 @@ int Py_XBMC_Event_OnControl(void* arg)
     if (ret) {
        Py_DECREF(ret);
     }
-    Py_DECREF(action->pCallbackWindow);
     delete action;
   }
   return 0;
@@ -202,7 +197,6 @@ int Py_XBMC_Event_OnAction(void* arg)
       CLog::Log(LOGERROR,"Exception in python script's onAction");
       PyErr_Print();
     }
-    Py_DECREF(action->pCallbackWindow);
     delete action;
   }
   return 0;
