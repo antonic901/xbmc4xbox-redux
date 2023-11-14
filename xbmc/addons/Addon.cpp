@@ -95,7 +95,7 @@ const CStdString TranslateType(const ADDON::TYPE &type, bool pretty/*=false*/)
   return "";
 }
 
-const TYPE TranslateType(const CStdString &string)
+TYPE TranslateType(const CStdString &string)
 {
   for (unsigned int index=0; index < sizeof(types)/sizeof(types[0]); ++index)
   {
@@ -378,7 +378,6 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
  */
 bool CAddon::LoadStrings()
 {
-
   // Path where the language strings reside
   CStdString chosenPath = URIUtils::AddFileToFolder(m_props.path, "resources/language/");
 
@@ -616,6 +615,7 @@ CStdString GetXbmcApiVersionDependency(ADDON::AddonPtr addon)
 
   return version;
 }
+
 
 } /* namespace ADDON */
 
