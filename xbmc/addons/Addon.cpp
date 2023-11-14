@@ -404,9 +404,9 @@ bool CAddon::HasSettings()
   return LoadSettings();
 }
 
-bool CAddon::LoadSettings()
+bool CAddon::LoadSettings(bool bForce /* = false*/)
 {
-  if (m_settingsLoaded)
+  if (m_settingsLoaded && !bForce)
     return true;
   if (!m_hasSettings)
     return false;
@@ -441,6 +441,11 @@ bool CAddon::HasUserSettings()
   return m_userSettingsLoaded;
 }
 
+bool CAddon::ReloadSettings()
+{
+  return LoadSettings(true);
+}
+
 bool CAddon::LoadUserSettings()
 {
   m_userSettingsLoaded = false;
@@ -472,6 +477,8 @@ void CAddon::SaveSettings(void)
   TiXmlDocument doc;
   SettingsToXML(doc);
   doc.SaveFile(m_userSettingsPath);
+
+  CAddonMgr::Get().ReloadSettings(ID());//push the settings changes to the running addon instance
 }
 
 CStdString CAddon::GetSetting(const CStdString& key)
