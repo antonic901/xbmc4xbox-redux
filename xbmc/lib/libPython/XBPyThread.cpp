@@ -328,7 +328,7 @@ void XBPyThread::Process()
   }
 
   // pending calls must be cleared out
-  PyXBMC_ClearPendingCalls();
+  PyXBMC_ClearPendingCalls(state);
 
   PyThreadState_Swap(NULL);
   PyEval_ReleaseLock();

@@ -42,6 +42,7 @@ CGUIPythonWindow::CGUIPythonWindow(int id)
 : CGUIWindow(id, "")
 {
   pCallbackWindow = NULL;
+  m_threadState = NULL;
   m_actionEvent = CreateEvent(NULL, true, false, NULL);
   m_loadType = LOAD_ON_GUI_INIT;
 }
@@ -68,7 +69,7 @@ bool CGUIPythonWindow::OnAction(const CAction &action)
     inf->pObject = Action_FromAction(action);
 
     // aquire lock?
-    PyXBMC_AddPendingCall(Py_XBMC_Event_OnAction, inf);
+    PyXBMC_AddPendingCall(m_threadState, Py_XBMC_Event_OnAction, inf);
     PulseActionEvent();
   }
   return ret;
@@ -128,7 +129,7 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
             ControlCheckMark_CheckExact(inf->pObject))
           {
             // aquire lock?
-            PyXBMC_AddPendingCall(Py_XBMC_Event_OnControl, inf);
+            PyXBMC_AddPendingCall(m_threadState, Py_XBMC_Event_OnControl, inf);
             PulseActionEvent();
 
             // return true here as we are handling the event
@@ -146,9 +147,10 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
   return CGUIWindow::OnMessage(message);
 }
 
-void CGUIPythonWindow::SetCallbackWindow(PyObject *object)
+void CGUIPythonWindow::SetCallbackWindow(PyThreadState *state, PyObject *object)
 {
   pCallbackWindow = object;
+  m_threadState   = state;
 }
 
 void CGUIPythonWindow::WaitForActionEvent(unsigned int timeout)

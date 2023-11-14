@@ -68,7 +68,7 @@ namespace PYXBMC
     self->pPlayer = new CPythonPlayer();
     pyState.Restore();
 
-    self->pPlayer->SetCallback((PyObject*)self);
+    self->pPlayer->SetCallback(PyThreadState_Get(), (PyObject*)self);
     self->playerCore = EPC_NONE;
 
     if (playerCore == EPC_DVDPLAYER ||
@@ -84,7 +84,7 @@ namespace PYXBMC
 
   void Player_Dealloc(Player* self)
   {
-    self->pPlayer->SetCallback(NULL);
+    self->pPlayer->SetCallback(NULL, NULL);
 
     CPyThreadState pyState;
     self->pPlayer->Release();

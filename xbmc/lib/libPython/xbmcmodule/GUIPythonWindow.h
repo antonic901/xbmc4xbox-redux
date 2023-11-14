@@ -53,10 +53,11 @@ public:
   virtual bool    OnMessage(CGUIMessage& message);
   virtual bool    OnAction(const CAction &action);
   virtual bool    OnBack(int actionID);
-  void             SetCallbackWindow(PyObject *object);
+  void             SetCallbackWindow(PyThreadState *state, PyObject *object);
   void             WaitForActionEvent(unsigned int timeout);
   void             PulseActionEvent();
 protected:
   PyObject*        pCallbackWindow;
+  PyThreadState*   m_threadState;
   HANDLE           m_actionEvent;
 };
