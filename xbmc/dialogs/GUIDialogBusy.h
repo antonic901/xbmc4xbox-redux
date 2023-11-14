@@ -31,10 +31,15 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual void DoRender(unsigned int currentTime);
   virtual void Render();
+  /*! \brief set the current progress of the busy operation
+   \param progress a percentage of progress
+   */
+  void SetProgress(float progress);
 
   bool IsCanceled() { return m_bCanceled; }
 protected:
   virtual void Show_Internal(); // modeless'ish
   bool m_bCanceled;
   bool m_bLastVisible;
+  float m_progress; ///< current progress
 };
