@@ -170,6 +170,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
               if(dialog->IsCanceled())
               {
                 cancel = true;
+                pDirectory->CancelDirectory();
                 break;
               }
               g_windowManager.ProcessRenderLoop(false);
