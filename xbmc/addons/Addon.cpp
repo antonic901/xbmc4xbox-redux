@@ -25,6 +25,7 @@
 #include "StringUtils.h"
 #include "FileSystem/Directory.h"
 #include "FileSystem/File.h"
+#include "lib/libPython/XBPython.h"
 #include "URIUtils.h"
 #include "utils/log.h"
 #include <vector>
@@ -479,6 +480,7 @@ void CAddon::SaveSettings(void)
   doc.SaveFile(m_userSettingsPath);
 
   CAddonMgr::Get().ReloadSettings(ID());//push the settings changes to the running addon instance
+  g_pythonParser.OnSettingsChanged(ID());
 }
 
 CStdString CAddon::GetSetting(const CStdString& key)
