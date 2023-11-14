@@ -363,6 +363,8 @@ namespace PYXBMC
         // old window does not exist anymore, switch to home
         else g_windowManager.ActivateWindow(WINDOW_HOME);
       }
+      // no callbacks are possible any longer
+      ((CGUIPythonWindowXML*)self->pWindow)->SetCallbackWindow(NULL);
     }
     else
     {
