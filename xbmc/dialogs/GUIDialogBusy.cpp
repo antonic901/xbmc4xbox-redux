@@ -22,6 +22,8 @@
 #include "guilib/GUIProgressControl.h"
 #include "guilib/GUIWindowManager.h"
 
+#define PROGRESS_CONTROL 10
+
 CGUIDialogBusy::CGUIDialogBusy(void)
   : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml"), m_bLastVisible(false)
 {
