@@ -23,6 +23,7 @@
 #include "XBPyThread.h"
 #include "cores/IPlayer.h"
 #include "utils/CriticalSection.h"
+#include "interfaces/IAnnouncer.h"
 #include "addons/IAddon.h"
 
 #include <vector>
@@ -35,12 +36,16 @@ typedef struct {
 }PyElem;
 
 class LibraryLoader;
+class CPythonMonitor;
 
 typedef std::vector<PyElem> PyList;
 typedef std::vector<PVOID> PlayerCallbackList;
+typedef std::vector<PVOID> MonitorCallbackList;
 typedef std::vector<LibraryLoader*> PythonExtensionLibraries;
 
-class XBPython : public IPlayerCallback
+class XBPython : 
+  public IPlayerCallback,
+  public ANNOUNCEMENT::IAnnouncer
 {
 public:
   XBPython();
@@ -51,8 +56,15 @@ public:
   virtual void OnPlayBackResumed();
   virtual void OnPlayBackStopped();
   virtual void OnQueueNextItem() {};
+  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
   void RegisterPythonPlayerCallBack(IPlayerCallback* pCallback);
   void UnregisterPythonPlayerCallBack(IPlayerCallback* pCallback);
+  void RegisterPythonMonitorCallBack(CPythonMonitor* pCallback);
+  void UnregisterPythonMonitorCallBack(CPythonMonitor* pCallback);
+  void OnSettingsChanged(const CStdString &strings);
+  void OnScreensaverActivated();
+  void OnScreensaverDeactivated();
+  void OnDatabaseUpdated(const std::string &database);
   void Initialize();
   void Finalize();
   void FinalizeScript();
@@ -117,6 +129,7 @@ private:
   //Vector with list of threads used for running scripts
   PyList              m_vecPyList;
   PlayerCallbackList  m_vecPlayerCallbackList;
+  MonitorCallbackList m_vecMonitorCallbackList;
   LibraryLoader*      m_pDll;
 
   // any global events that scripts should be using

@@ -2913,6 +2913,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\xbox\strverscmp.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="threads"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\threads\Atomics.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\Atomics.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -4633,6 +4643,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\listitem.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\lib\libPython\xbmcmodule\monitor.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\lib\libPython\xbmcmodule\monitor.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\player.cpp">
 					</File>
 					<File
@@ -4649,6 +4665,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonAddon.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonMonitor.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonMonitor.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\lib\libPython\xbmcmodule\PythonPlayer.cpp">
