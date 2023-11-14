@@ -37,6 +37,7 @@
 #include "XBPython.h"
 
 #include "xbmcmodule/pythreadstate.h"
+#include "xbmcmodule/pyutil.h"
 
 #ifndef __GNUC__
 #pragma code_seg("PY_TEXT")
@@ -325,6 +326,9 @@ void XBPyThread::Process()
 
     s = state->interp->tstate_head;
   }
+
+  // pending calls must be cleared out
+  PyXBMC_ClearPendingCalls();
 
   PyThreadState_Swap(NULL);
   PyEval_ReleaseLock();
