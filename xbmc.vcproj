@@ -565,6 +565,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\windows\GUIWindowVideoPlaylist.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\VideoInfoDownloader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoInfoDownloader.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\VideoInfoScanner.cpp">
 				</File>
 				<File
@@ -848,6 +854,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\DatabaseUtils.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\DateTime.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\DDSImage.cpp">
 				</File>
 				<File
@@ -924,9 +933,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Idle.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\VideoInfoDownloader.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
@@ -1191,9 +1197,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\XBAudioConfig.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\DateTime.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\XBInputEx.cpp">
@@ -2998,6 +3001,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\DatabaseUtils.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\DateTime.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\DbUrl.h">
 			</File>
 			<File
@@ -3215,9 +3221,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\IFileItemListModifier.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\VideoInfoDownloader.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\music\tags\ImusicInfoTagLoader.h">
@@ -3476,9 +3479,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\XBAudioConfig.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\DateTime.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\XBInputEx.h">
