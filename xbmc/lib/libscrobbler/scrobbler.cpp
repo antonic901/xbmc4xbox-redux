@@ -31,7 +31,6 @@
 #include "settings/AdvancedSettings.h"
 #include "XMLUtils.h"
 #include "Application.h"
-#include "strptime.h"
 #include "LocalizeStrings.h"
 #include "utils/SingleLock.h"
 

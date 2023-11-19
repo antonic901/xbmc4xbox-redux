@@ -1813,12 +1813,6 @@
 					RelativePath="..\..\xbmc\utils\StringUtils.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\strptime.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\utils\strptime.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\SystemInfo.cpp">
 				</File>
 				<File

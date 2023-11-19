@@ -59,6 +59,7 @@ typedef int ssize_t;
 #define llrint(x) ((x) >= 0 ? ((__int64)((x) + 0.5)) : ((__int64)((x) - 0.5)))
 #define strtoll(p, e, b) _strtoi64(p, e, b)
 
+extern "C" char * strptime(const char *buf, const char *fmt, struct tm *tm);
 extern "C" int strverscmp (const char *s1, const char *s2);
 
 #endif // _WIN32

@@ -31,7 +31,6 @@
 #include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
 #include "XMLUtils.h"
-#include "utils/strptime.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
