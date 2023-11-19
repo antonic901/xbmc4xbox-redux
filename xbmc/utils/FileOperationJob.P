@@ -150,7 +150,7 @@ FileOperationJob.o: FileOperationJob.cpp FileOperationJob.h \
  /usr/include/c++/4.7/bits/stl_multiset.h \
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/SortFileItem.h \
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/utils/LabelFormatter.h \
- /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/XBDateTime.h \
+ /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/DateTime.h \
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/GUIPassword.h \
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/threads/CriticalSection.h \
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/threads/platform/CriticalSection.h \
@@ -429,7 +429,7 @@ FileOperationJob.cpp FileOperationJob.h :
  /usr/include/c++/4.7/bits/stl_multiset.h :
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/SortFileItem.h :
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/utils/LabelFormatter.h :
- /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/XBDateTime.h :
+ /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/DateTime.h :
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/GUIPassword.h :
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/threads/CriticalSection.h :
  /home/jools/Repos/Public/xbmc/xbmc-git/xbmc/threads/platform/CriticalSection.h :

@@ -20,7 +20,7 @@
 
 #include "SortUtils.h"
 #include "URL.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StdString.h"

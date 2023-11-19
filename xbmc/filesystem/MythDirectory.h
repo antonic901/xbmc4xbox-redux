@@ -21,7 +21,7 @@
 
 #include "IDirectory.h"
 #include "MythSession.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 
 namespace XFILE
 {

@@ -1888,7 +1888,7 @@
 					RelativePath="..\..\xbmc\XBAudioConfig.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\XBDateTime.cpp">
+					RelativePath="..\..\xbmc\DateTime.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\XBTF.h">
@@ -3496,7 +3496,7 @@
 				RelativePath="..\..\xbmc\XBAudioConfig.h">
 			</File>
 			<File
-				RelativePath="..\..\xbmc\XBDateTime.h">
+				RelativePath="..\..\xbmc\DateTime.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\XBTimeZone.h">

@@ -21,7 +21,7 @@
 #include "GUIDialogMediaFilter.h"
 #include "FileItem.h"
 #include "GUIUserMessages.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"

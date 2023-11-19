@@ -23,7 +23,7 @@
 #include "MythSession.h"
 #include "video/VideoInfoTag.h"
 #include "settings/AdvancedSettings.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "FileItem.h"
 #include "URL.h"
 #include "Util.h"

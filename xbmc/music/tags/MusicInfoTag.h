@@ -25,7 +25,7 @@ class CAlbum;
 #include "utils/Archive.h"
 #include "utils/ISerializable.h"
 #include "utils/ISortable.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 
 namespace MUSIC_INFO
 {

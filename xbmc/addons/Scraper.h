@@ -21,7 +21,7 @@
  */
 #include "addons/Addon.h"
 #include "utils/ScraperUrl.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "utils/ScraperParser.h"
 
 typedef enum

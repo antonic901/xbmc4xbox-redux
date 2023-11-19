@@ -33,7 +33,7 @@
 #include "ScraperParser.h"
 #include "video/VideoInfoTag.h"
 #include "addons/Scraper.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "filesystem/CurlFile.h"
 
 // forward definitions

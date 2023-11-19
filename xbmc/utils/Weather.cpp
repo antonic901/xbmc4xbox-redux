@@ -33,7 +33,7 @@
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "LangInfo.h"
 #include "LocalizeStrings.h"
 #include "filesystem/Directory.h"

@@ -18,7 +18,7 @@
  *
  */
 #include "pictures/PictureInfoTag.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "Util.h"
 #include "utils/Variant.h"
 

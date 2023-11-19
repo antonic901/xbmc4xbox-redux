@@ -20,7 +20,7 @@
 
 #include "SmartPlaylist.h"
 #include "Util.h"
-#include "XBDateTime.h"
+#include "DateTime.h"
 #include "filesystem/File.h"
 #include "filesystem/SmartPlaylistDirectory.h"
 #include "guilib/LocalizeStrings.h"
