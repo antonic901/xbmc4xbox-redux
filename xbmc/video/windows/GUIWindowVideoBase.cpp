@@ -543,11 +543,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
         ignoreNfo = true;
       else
       if (nfoResult != CNfoFile::NO_NFO)
-      {
         hasDetails = true;
-        if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO)
-          scanner.m_IMDB.SetScraperInfo(info);
-      }
 
       if (needsRefresh)
       {
@@ -567,7 +563,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
 
     // 4. if we don't have an url, or need to refresh the search
     //    then do the web search
-    IMDB_MOVIELIST movielist;
+    MOVIELIST movielist;
     if (info->Content() == CONTENT_TVSHOWS && !item->m_bIsFolder)
       hasDetails = true;
 
@@ -575,7 +571,6 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
     {
       // 4a. show dialog that we're busy querying www.imdb.com
       CStdString strHeading;
-      scanner.m_IMDB.SetScraperInfo(info);
       strHeading.Format(g_localizeStrings.Get(197),info->Name().c_str());
       pDlgProgress->SetHeading(strHeading);
       pDlgProgress->SetLine(0, movieName);
@@ -585,7 +580,8 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
       pDlgProgress->Progress();
 
       // 4b. do the websearch
-      int returncode = scanner.m_IMDB.FindMovie(movieName, movielist, pDlgProgress);
+      CVideoInfoDownloader imdb(info);
+      int returncode = imdb.FindMovie(movieName, movielist, pDlgProgress);
       if (returncode > 0)
       {
         pDlgProgress->Close();
@@ -705,7 +701,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
             m_database.DeleteDetailsForTvShow(item->GetPath());
         }
       }
-      if (scanner.RetrieveVideoInfo(list,settings.parent_name_root,info,!pDlgInfo->RefreshAll(),&scrUrl,pDlgProgress,ignoreNfo))
+      if (scanner.RetrieveVideoInfo(list,settings.parent_name_root,info->Content(),!ignoreNfo,&scrUrl,pDlgInfo->RefreshAll(),pDlgProgress))
       {
         if (info->Content() == CONTENT_MOVIES)
           m_database.GetMovieInfo(item->GetPath(),movieDetails);
@@ -718,17 +714,6 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
             m_database.GetTvShowInfo(item->GetPath(),movieDetails);
           else
             m_database.GetEpisodeInfo(item->GetPath(),movieDetails);
-        }
-
-        // set path hash
-        if (info->Content() == CONTENT_MOVIES || info->Content() == CONTENT_MUSICVIDEOS)
-        {
-          CStdString hash, strParent;
-          CFileItemList items;
-          URIUtils::GetParentPath(list.GetPath(),strParent);
-          CDirectory::GetDirectory(strParent,items,g_settings.m_videoExtensions);
-          scanner.GetPathHash(items, hash);
-          m_database.SetPathHash(strParent, hash);
         }
 
         // got all movie details :-)

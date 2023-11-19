@@ -515,7 +515,7 @@ void CGUIDialogVideoInfo::Refresh()
       if (CFile::Exists(thumbImage))
       {
         if (m_movieItem->HasProperty("set_folder_thumb"))
-          VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), thumbImage);
+          VIDEO::CVideoInfoScanner::ApplyThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), thumbImage);
         hasUpdatedThumb = true;
       }
     }
@@ -829,7 +829,7 @@ void CGUIDialogVideoInfo::OnGetThumb()
   m_movieItem->SetThumbnailImage(cachedThumb);
   if (m_movieItem->HasProperty("set_folder_thumb"))
   { // have a folder thumb to set as well
-    VIDEO::CVideoInfoScanner::ApplyIMDBThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), cachedThumb);
+    VIDEO::CVideoInfoScanner::ApplyThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), cachedThumb);
   }
   m_hasUpdatedThumb = true;
 

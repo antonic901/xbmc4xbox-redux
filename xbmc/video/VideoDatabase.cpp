@@ -560,20 +560,6 @@ bool CVideoDatabase::GetPathsForTvShow(int idShow, vector<int>& paths)
   return false;
 }
 
-int CVideoDatabase::RunQuery(const CStdString &sql)
-{
-  unsigned int time = CTimeUtils::GetTimeMS();
-  int rows = -1;
-  if (m_pDS->query(sql.c_str()))
-  {
-    rows = m_pDS->num_rows();
-    if (rows == 0)
-      m_pDS->close();
-  }
-  CLog::Log(LOGDEBUG, "%s took %d ms for %d items query: %s", __FUNCTION__, CTimeUtils::GetTimeMS() - time, rows, sql.c_str());
-  return rows;
-}
-
 bool CVideoDatabase::GetSubPaths(const CStdString &basepath, vector<int>& subpaths)
 {
   CStdString sql;
@@ -597,6 +583,20 @@ bool CVideoDatabase::GetSubPaths(const CStdString &basepath, vector<int>& subpat
     CLog::Log(LOGERROR, "%s error during query: %s",__FUNCTION__, sql.c_str());
   }
   return false;
+}
+
+int CVideoDatabase::RunQuery(const CStdString &sql)
+{
+  unsigned int time = CTimeUtils::GetTimeMS();
+  int rows = -1;
+  if (m_pDS->query(sql.c_str()))
+  {
+    rows = m_pDS->num_rows();
+    if (rows == 0)
+      m_pDS->close();
+  }
+  CLog::Log(LOGDEBUG, "%s took %d ms for %d items query: %s", __FUNCTION__, CTimeUtils::GetTimeMS() - time, rows, sql.c_str());
+  return rows;
 }
 
 int CVideoDatabase::AddPath(const CStdString& strPath, const CStdString &strDateAdded /*= "" */)
@@ -8734,7 +8734,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         info.Load(movie);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
-        scanner.AddMovie(&item,CONTENT_MOVIES,info,useFolders);
+        scanner.AddVideo(&item, CONTENT_MOVIES, useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(moviesDir, info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -8748,7 +8748,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         info.Load(movie);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
-        scanner.AddMovie(&item,CONTENT_MUSICVIDEOS,info,useFolders);
+        scanner.AddVideo(&item, CONTENT_MUSICVIDEOS, useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(musicvideosDir, StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle));
         CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
@@ -8763,7 +8763,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         DeleteTvShow(info.m_strPath);
         CFileItem item(info);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath(), true) : false;
-        int showID = scanner.AddMovie(&item,CONTENT_TVSHOWS,info,useFolders);
+        int showID = scanner.AddVideo(&item, CONTENT_TVSHOWS, useFolders);
         current++;
         CStdString showDir(GetSafeFile(tvshowsDir, info.m_strTitle));
         CFile::Cache(URIUtils::AddFileToFolder(showDir, "folder.jpg"), item.GetCachedVideoThumb());
@@ -8778,7 +8778,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
           CVideoInfoTag info;
           info.Load(episode);
           CFileItem item(info);
-          scanner.AddMovie(&item,CONTENT_TVSHOWS,info,false,showID);
+          scanner.AddVideo(&item, CONTENT_TVSHOWS, false, showID);
           SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
           CStdString file;
           file.Format("s%02ie%02i.tbn", info.m_iSeason, info.m_iEpisode);

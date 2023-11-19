@@ -180,7 +180,7 @@ bool CNfoFile::DoScrape(ScraperPtr& scraper)
     {
       if (stricmp(doc.RootElement()->Value(),"error")==0)
       {
-        CIMDB::ShowErrorDialog(doc.RootElement());
+        CVideoInfoDownloader::ShowErrorDialog(doc.RootElement());
         return false;
       }
 
