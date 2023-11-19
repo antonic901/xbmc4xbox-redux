@@ -190,6 +190,12 @@ public:
   bool GetItems(const CStdString &strBaseDir, const CStdString &itemType, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
   CStdString GetItemById(const CStdString &itemType, int id);
 
+  /*! \brief Check whether a given scraper is in use.
+   \param scraperID the scraper to check for.
+   \return true if the scraper is in use, false otherwise.
+   */
+  bool ScraperInUse(const CStdString &scraperID) const;
+
   void ExportToXML(const CStdString &xmlFile, bool singleFiles = false, bool images=false, bool overwrite=false);
   void ImportFromXML(const CStdString &xmlFile);
   void SetPropertiesForFileItem(CFileItem& item);

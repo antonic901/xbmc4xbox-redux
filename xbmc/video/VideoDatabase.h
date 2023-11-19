@@ -521,6 +521,12 @@ public:
    */
   bool GetItemsForPath(const CStdString &content, const CStdString &path, CFileItemList &items);
 
+  /*! \brief Check whether a given scraper is in use.
+   \param scraperID the scraper to check for.
+   \return true if the scraper is in use, false otherwise.
+   */
+  bool ScraperInUse(const CStdString &scraperID) const;
+
   // scanning hashes and paths scanned
   bool SetPathHash(const CStdString &path, const CStdString &hash);
   bool GetPathHash(const CStdString &path, CStdString &hash);

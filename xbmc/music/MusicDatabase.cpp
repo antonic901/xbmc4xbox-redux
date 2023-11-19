@@ -4408,6 +4408,27 @@ CStdString CMusicDatabase::GetItemById(const CStdString &itemType, int id)
   return "";
 }
 
+bool CMusicDatabase::ScraperInUse(const CStdString &scraperID) const
+{
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString sql = PrepareSQL("select count(1) from content where strScraperPath='%s'",scraperID.c_str());
+    if (!m_pDS->query(sql.c_str()) || m_pDS->num_rows() == 0)
+      return false;
+    bool found = m_pDS->fv(0).get_asInt() > 0;
+    m_pDS->close();
+    return found;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s(%s) failed", __FUNCTION__, scraperID.c_str());
+  }
+  return false;
+}
+
 void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bool images, bool overwrite)
 {
   try
