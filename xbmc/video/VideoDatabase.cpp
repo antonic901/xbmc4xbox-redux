@@ -574,6 +574,31 @@ int CVideoDatabase::RunQuery(const CStdString &sql)
   return rows;
 }
 
+bool CVideoDatabase::GetSubPaths(const CStdString &basepath, vector<int>& subpaths)
+{
+  CStdString sql;
+  try
+  {
+    if (!m_pDB.get() || !m_pDS.get())
+      return false;
+
+    sql = PrepareSQL("SELECT idPath FROM path WHERE strPath LIKE '%s%%'", basepath.c_str());
+    m_pDS->query(sql.c_str());
+    while (!m_pDS->eof())
+    {
+      subpaths.push_back(m_pDS->fv(0).get_asInt());
+      m_pDS->next();
+    }
+    m_pDS->close();
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s error during query: %s",__FUNCTION__, sql.c_str());
+  }
+  return false;
+}
+
 int CVideoDatabase::AddPath(const CStdString& strPath, const CStdString &strDateAdded /*= "" */)
 {
   CStdString strSQL;

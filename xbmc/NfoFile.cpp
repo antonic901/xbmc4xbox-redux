@@ -24,7 +24,7 @@
 #include "NfoFile.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
-#include "utils/IMDB.h"
+#include "utils/VideoInfoDownloader.h"
 #include "addons/AddonManager.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"

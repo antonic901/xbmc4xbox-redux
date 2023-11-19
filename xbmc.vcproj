@@ -926,7 +926,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Idle.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\IMDB.cpp">
+					RelativePath=".\xbmc\utils\VideoInfoDownloader.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
@@ -3220,7 +3220,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\IFileItemListModifier.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\IMDB.h">
+				RelativePath=".\xbmc\utils\VideoInfoDownloader.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\music\tags\ImusicInfoTagLoader.h">

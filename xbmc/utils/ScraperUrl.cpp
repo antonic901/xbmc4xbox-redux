@@ -21,7 +21,7 @@
 #include "XMLUtils.h"
 #include "ScraperUrl.h"
 #include "settings/AdvancedSettings.h"
-#include "Util.h"
+#include "utils/HTMLUtil.h"
 #include "CharsetConverter.h"
 #include "URL.h"
 #include "filesystem/CurlFile.h"
@@ -138,7 +138,7 @@ bool CScraperUrl::ParseString(CStdString strUrl)
     m_xml = strUrl;
   }
   else
-  { 
+  {
     while (pElement)
     {
       ParseElement(pElement);
@@ -156,11 +156,7 @@ const CScraperUrl::SUrlEntry CScraperUrl::GetFirstThumb() const
     if (iter->m_type == URL_TYPE_GENERAL)
       return *iter;
   }
-
   SUrlEntry result;
-  result.m_type = URL_TYPE_GENERAL;
-  result.m_post = false;
-  result.m_isgz = false;
   result.m_season = -1;
   return result;
 }
@@ -172,22 +168,16 @@ const CScraperUrl::SUrlEntry CScraperUrl::GetSeasonThumb(int season) const
     if (iter->m_type == URL_TYPE_SEASON && iter->m_season == season)
       return *iter;
   }
-
   SUrlEntry result;
-  result.m_type = URL_TYPE_GENERAL;
-  result.m_post = false;
-  result.m_isgz = false;
   result.m_season = -1;
   return result;
 }
 
-bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCurlFile& http, const CStdString& cacheContext1)
+bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCurlFile& http, const CStdString& cacheContext)
 {
   CURL url(scrURL.m_url);
   http.SetReferer(scrURL.m_spoof);
   CStdString strCachePath;
-
-  CStdString cacheContext = URIUtils::GetFileName(cacheContext1);
 
   if (scrURL.m_isgz)
     http.SetContentEncoding("gzip");
@@ -195,14 +185,15 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
   if (!scrURL.m_cache.IsEmpty())
   {
     URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,
-                           "scrapers/"+cacheContext+"/"+scrURL.m_cache,
-                           strCachePath);
+                              "scrapers/"+cacheContext+"/"+scrURL.m_cache,
+                              strCachePath);
     if (XFILE::CFile::Exists(strCachePath))
     {
       XFILE::CFile file;
       file.Open(strCachePath);
       char* temp = new char[(int)file.GetLength()];
       file.Read(temp,file.GetLength());
+      strHTML.clear();
       strHTML.append(temp,temp+file.GetLength());
       file.Close();
       delete[] temp;
@@ -211,7 +202,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
   }
 
   CStdString strHTML1(strHTML);
-        
+
   if (scrURL.m_post)
   {
     CStdString strOptions = url.GetOptions();
@@ -219,7 +210,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
     url.SetOptions("");
 
     if (!http.Post(url.Get(), strOptions, strHTML1))
-      return false;    
+      return false;
   }
   else
     if (!http.Get(url.Get(), strHTML1))
@@ -243,8 +234,8 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
   {
     CStdString strCachePath;
     URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,
-                           "scrapers/"+cacheContext+"/"+scrURL.m_cache,
-                           strCachePath);
+                              "scrapers/"+cacheContext+"/"+scrURL.m_cache,
+                              strCachePath);
     XFILE::CFile file;
     if (file.OpenForWrite(strCachePath,true))
       file.Write(strHTML.data(),strHTML.size());
@@ -305,15 +296,42 @@ bool CScraperUrl::ParseEpisodeGuide(CStdString strUrls)
   if (doc.RootElement())
   {
     TiXmlHandle docHandle( &doc );
-    TiXmlElement *link = docHandle.FirstChild( "episodeguide" ).FirstChild( "url" ).Element();
-    while (link)
+    TiXmlElement *link = docHandle.FirstChild("episodeguide").Element();
+    if (link->FirstChildElement("url"))
     {
-      ParseElement(link);
-      link = link->NextSiblingElement("url");
+      link = link->FirstChildElement("url");
+      while (link)
+      {
+        ParseElement(link);
+        link = link->NextSiblingElement("url");
+      }
     }
+    else if (link->FirstChild() && link->FirstChild()->Value())
+      ParseString(link->FirstChild()->Value());
   }
   else
     return false;
 
   return true;
+}
+
+CStdString CScraperUrl::GetThumbURL(const CScraperUrl::SUrlEntry &entry)
+{
+  if (entry.m_spoof.IsEmpty())
+    return entry.m_url;
+  CStdString spoof = entry.m_spoof;
+  CURL::Encode(spoof);
+  return entry.m_url + "|Referer=" + spoof;
+}
+
+void CScraperUrl::GetThumbURLs(std::vector<CStdString> &thumbs, int season) const
+{
+  for (vector<SUrlEntry>::const_iterator iter = m_url.begin(); iter != m_url.end(); ++iter)
+  {
+    if ((iter->m_type == CScraperUrl::URL_TYPE_GENERAL && season == -1)
+     || (iter->m_type == CScraperUrl::URL_TYPE_SEASON && iter->m_season == season))
+    {
+      thumbs.push_back(GetThumbURL(*iter));
+    }
+  }
 }
