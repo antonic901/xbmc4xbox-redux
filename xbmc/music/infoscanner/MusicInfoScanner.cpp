@@ -855,7 +855,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
     }
     else if (result == CNfoFile::URL_NFO || result == CNfoFile::COMBINED_NFO)
     {
-      CScraperUrl scrUrl(nfoReader.m_strImDbUrl);
+      CScraperUrl scrUrl(nfoReader.ScraperUrl());
       CMusicAlbumInfo album("nfo",scrUrl);
       info = nfoReader.GetScraperInfo();
       CLog::Log(LOGDEBUG,"-- nfo-scraper: %s",info->Name().c_str());
@@ -1081,7 +1081,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
     }
     else if (result == CNfoFile::URL_NFO || result == CNfoFile::COMBINED_NFO)
     {
-      CScraperUrl scrUrl(nfoReader.m_strImDbUrl);
+      CScraperUrl scrUrl(nfoReader.ScraperUrl());
       CMusicArtistInfo artist("nfo",scrUrl);
       info = nfoReader.GetScraperInfo();
       CLog::Log(LOGDEBUG,"-- nfo-scraper: %s",info->Name().c_str());
@@ -1168,9 +1168,7 @@ bool CMusicInfoScanner::DownloadArtistInfo(const CStdString& strPath, const CStd
     }
   }
 
-  scraper.GetArtist(iSelectedArtist).m_strSearch = strArtist;
-  CURL::Encode(scraper.GetArtist(iSelectedArtist).m_strSearch);
-  scraper.LoadArtistInfo(iSelectedArtist);
+  scraper.LoadArtistInfo(iSelectedArtist, strArtist);
 
   while (!scraper.Completed())
   {

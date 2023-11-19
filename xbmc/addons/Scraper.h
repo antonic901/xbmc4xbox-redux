@@ -20,9 +20,20 @@
  *
  */
 #include "addons/Addon.h"
-#include "utils/ScraperUrl.h"
 #include "DateTime.h"
+#include "utils/ScraperUrl.h"
 #include "utils/ScraperParser.h"
+#include "video/Episode.h"
+
+class CAlbum;
+class CArtist;
+class CVideoInfoTag;
+
+namespace MUSIC_GRABBER
+{
+class CMusicAlbumInfo;
+class CMusicArtistInfo;
+}
 
 typedef enum
 {
@@ -36,73 +47,107 @@ typedef enum
 
 namespace ADDON
 {
-  class CScraper;
-  typedef boost::shared_ptr<CScraper> ScraperPtr;
+class CScraper;
+typedef boost::shared_ptr<CScraper> ScraperPtr;
 
-  const CStdString   TranslateContent(const CONTENT_TYPE &content, bool pretty=false);
-        CONTENT_TYPE TranslateContent(const CStdString &string);
-        TYPE         ScraperTypeFromContent(const CONTENT_TYPE &content);
+CStdString TranslateContent(const CONTENT_TYPE &content, bool pretty=false);
+CONTENT_TYPE TranslateContent(const CStdString &string);
+TYPE ScraperTypeFromContent(const CONTENT_TYPE &content);
 
-  class CScraper : public CAddon
-  {
-  public:
+// thrown as exception to show error dialog
+class CScraperError
+{
+public:
+  CScraperError(const CStdString &sTitle, const CStdString &sMessage) :
+    m_sTitle(sTitle), m_sMessage(sMessage) {}
 
-    CScraper(const AddonProps &props) : CAddon(props) { }
-    CScraper(const cp_extension_t *ext);
-    virtual ~CScraper() {}
-    virtual AddonPtr Clone(const AddonPtr &self) const;
+  const CStdString &Title() const { return m_sTitle; }
+  const CStdString &Message() const { return m_sMessage; }
 
-    /*! \brief Set the scraper settings for a particular path from an XML string
-     Loads the default and user settings (if not already loaded) and, if the given XML string is non-empty,
-     overrides the user settings with the XML.
-     \param content Content type of the path
-     \param xml string of XML with the settings.  If non-empty this overrides any saved user settings.
-     \return true if settings are available, false otherwise
-     \sa GetPathSettings
-     */
-    bool SetPathSettings(CONTENT_TYPE content, const CStdString& xml);
+private:
+  CStdString m_sTitle;
+  CStdString m_sMessage;
+};
 
-    /*! \brief Get the scraper settings for a particular path in the form of an XML string
-     Loads the default and user settings (if not already loaded) and returns the user settings in the
-     form or an XML string
-     \return a string containing the XML settings
-     \sa SetPathSettings
-     */
-    CStdString GetPathSettings();
+class CScraper : public CAddon
+{
+public:
+  CScraper(const AddonProps &props) : CAddon(props), m_fLoaded(false) {}
+  CScraper(const cp_extension_t *ext);
+  virtual ~CScraper() {}
+  virtual AddonPtr Clone(const AddonPtr &self) const;
 
-    /*! \brief Clear any previously cached results for this scraper
-     Any previously cached files are cleared if they have been cached for longer than the specified
-     cachepersistence.
-     */
-    void ClearCache();
-    bool Load();
+  /*! \brief Set the scraper settings for a particular path from an XML string
+   Loads the default and user settings (if not already loaded) and, if the given XML string is non-empty,
+   overrides the user settings with the XML.
+   \param content Content type of the path
+   \param xml string of XML with the settings.  If non-empty this overrides any saved user settings.
+   \return true if settings are available, false otherwise
+   \sa GetPathSettings
+   */
+  bool SetPathSettings(CONTENT_TYPE content, const CStdString& xml);
 
-    CONTENT_TYPE Content() const { return m_pathContent; }
-    const CStdString& Framework() const { return m_framework; }
-    const CStdString& Language() const { return m_language; }
-    bool RequiresSettings() const { return m_requiressettings; }
-    bool Supports(const CONTENT_TYPE &content) const;
+  /*! \brief Get the scraper settings for a particular path in the form of an XML string
+   Loads the default and user settings (if not already loaded) and returns the user settings in the
+   form or an XML string
+   \return a string containing the XML settings
+   \sa SetPathSettings
+   */
+  CStdString GetPathSettings();
 
-    std::vector<CStdString> Run(const CStdString& function,
-                                const CScraperUrl& url,
-                                XFILE::CCurlFile& http,
-                                const std::vector<CStdString>* extras=NULL);
-    CScraperParser& GetParser() { return m_parser; }
-  private:
-    CScraper(const CScraper&, const AddonPtr&);
+  /*! \brief Clear any previously cached results for this scraper
+   Any previously cached files are cleared if they have been cached for longer than the specified
+   cachepersistence.
+   */
+  void ClearCache();
 
-    CStdString InternalRun(const CStdString& function,
-                           const CScraperUrl& url,
-                           XFILE::CCurlFile& http,
-                           const std::vector<CStdString>* extras);
+  CONTENT_TYPE Content() const { return m_pathContent; }
+  const CStdString& Language() const { return m_language; }
+  bool RequiresSettings() const { return m_requiressettings; }
+  bool Supports(const CONTENT_TYPE &content) const;
 
-    CStdString m_framework;
-    CStdString m_language;
-    bool m_requiressettings;
-    CDateTimeSpan m_persistence;
-    CONTENT_TYPE m_pathContent;
-    CScraperParser m_parser;
-  };
+  bool IsInUse() const;
 
-}; /* namespace ADDON */
+  // scraper media functions
+  CScraperUrl NfoUrl(const CStdString &sNfoContent);
+
+  std::vector<CScraperUrl> FindMovie(XFILE::CCurlFile &fcurl,
+    const CStdString &sMovie, bool fFirst);
+  std::vector<MUSIC_GRABBER::CMusicAlbumInfo> FindAlbum(XFILE::CCurlFile &fcurl,
+    const CStdString &sAlbum, const CStdString &sArtist = "");
+  std::vector<MUSIC_GRABBER::CMusicArtistInfo> FindArtist(
+    XFILE::CCurlFile &fcurl, const CStdString &sArtist);
+  EPISODELIST GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl);
+
+  bool GetVideoDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
+    bool fMovie/*else episode*/, CVideoInfoTag &video);
+  bool GetAlbumDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
+    CAlbum &album);
+  bool GetArtistDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
+    const CStdString &sSearch, CArtist &artist);
+
+private:
+  CScraper(const CScraper&, const AddonPtr&);
+  CStdString SearchStringEncoding() const
+    { return m_parser.GetSearchStringEncoding(); }
+
+  bool Load();
+  std::vector<CStdString> Run(const CStdString& function,
+                              const CScraperUrl& url,
+                              XFILE::CCurlFile& http,
+                              const std::vector<CStdString>* extras = NULL);
+  CStdString InternalRun(const CStdString& function,
+                         const CScraperUrl& url,
+                         XFILE::CCurlFile& http,
+                         const std::vector<CStdString>* extras);
+
+  bool m_fLoaded;
+  CStdString m_language;
+  bool m_requiressettings;
+  CDateTimeSpan m_persistence;
+  CONTENT_TYPE m_pathContent;
+  CScraperParser m_parser;
+};
+
+}
 

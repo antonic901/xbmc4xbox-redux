@@ -38,7 +38,7 @@ public:
   void FindAlbumInfo(const CStdString& strAlbum, const CStdString& strArtist = "");
   void LoadAlbumInfo(int iAlbum);
   void FindArtistInfo(const CStdString& strArtist);
-  void LoadArtistInfo(int iArtist);
+  void LoadArtistInfo(int iArtist, const CStdString &strSearch);
   bool Completed();
   bool Succeeded();
   void Cancel();
@@ -78,6 +78,7 @@ protected:
   std::vector<CMusicArtistInfo> m_vecArtists;
   CStdString m_strAlbum;
   CStdString m_strArtist;
+  CStdString m_strSearch;
   int m_iAlbum;
   int m_iArtist;
   bool m_bSucceeded;
