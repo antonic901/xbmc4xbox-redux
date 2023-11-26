@@ -32,7 +32,7 @@
 #include "GUIImage.h"
 #include "utils/Weather.h"
 #include "music/MusicDatabase.h"
-#include "ProgramDatabase.h"
+#include "programs/ProgramDatabase.h"
 #include "ViewDatabase.h"
 #include "XBAudioConfig.h"
 #include "XBVideoConfig.h"

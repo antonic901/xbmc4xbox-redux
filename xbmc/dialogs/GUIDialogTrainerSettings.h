@@ -21,7 +21,7 @@
  */
 
 #include "settings/GUIDialogSettings.h"
-#include "ProgramDatabase.h"
+#include "programs/ProgramDatabase.h"
 
 class CTrainer;
 

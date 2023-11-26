@@ -1245,10 +1245,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\MusicDbUrl.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\ProgramDatabase.cpp">
+					RelativePath=".\xbmc\programs\ProgramDatabase.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\ProgramDatabase.h">
+					RelativePath=".\xbmc\programs\ProgramDatabase.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\Song.cpp">
