@@ -56,6 +56,8 @@ public:
   CStdString m_strOriginalTitle;
   CStdString m_strESRB;
   CStdString m_strESRBDescription;
+  CDateTime m_lastPlayed;
+  int m_playCount;
   int m_iYear;
   int m_iDbId; 
   int m_iFileId;

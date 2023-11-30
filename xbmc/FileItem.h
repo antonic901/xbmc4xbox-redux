@@ -44,6 +44,7 @@ namespace MUSIC_INFO
 }
 class CVideoInfoTag;
 class CPictureInfoTag;
+class CProgramInfoTag;
 
 class CAlbum;
 class CArtist;
@@ -133,6 +134,7 @@ public:
   bool IsMultiPath() const;
   bool IsMusicDb() const;
   bool IsVideoDb() const;
+  bool IsProgramDb() const;
   bool IsType(const char *ext) const;
   bool IsVirtualDirectoryRoot() const;
   bool IsReadOnly() const;
@@ -199,6 +201,18 @@ public:
   }
 
   CPictureInfoTag* GetPictureInfoTag();
+
+  inline bool HasProgramInfoTag() const
+  {
+    return m_programInfoTag != NULL;
+  }
+
+  CProgramInfoTag* GetProgramInfoTag();
+
+  inline const CProgramInfoTag* GetProgramInfoTag() const
+  {
+    return m_programInfoTag;
+  }
 
   // Gets the cached thumb filename (no existence checks)
   CStdString GetCachedVideoThumb() const;
@@ -333,6 +347,7 @@ private:
   MUSIC_INFO::CMusicInfoTag* m_musicInfoTag;
   CVideoInfoTag* m_videoInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
+  CProgramInfoTag* m_programInfoTag;
 };
 
 /*!

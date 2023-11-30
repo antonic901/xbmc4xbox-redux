@@ -171,6 +171,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_prioritiseAPEv2tags = false;
   m_musicItemSeparator = " / ";
   m_videoItemSeparator = " / ";
+  m_programItemSeparator = " / ";
 
   m_bVideoLibraryHideAllItems = false;
   m_bVideoLibraryAllItemsOnBottom = false;
@@ -180,6 +181,9 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryExportAutoThumbs = false;
   m_bVideoLibraryImportWatchedState = false;
   m_bVideoScannerIgnoreErrors = false;
+
+  m_iProgramLibraryRecentlyAddedItems = 25;
+  m_bProgramScannerIgnoreErrors = false;
 
   m_iTuxBoxStreamtsPort = 31339;
   m_bTuxBoxAudioChannelSelection = false;
@@ -366,10 +370,23 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetBoolean(pElement, "importwatchedstate", m_bVideoLibraryImportWatchedState);
   }
 
+  pElement = pRootElement->FirstChildElement("programlibrary");
+  if (pElement)
+  {
+    XMLUtils::GetInt(pElement, "recentlyaddeditems", m_iProgramLibraryRecentlyAddedItems, 1, INT_MAX);
+    XMLUtils::GetString(pElement, "itemseparator", m_programItemSeparator);
+  }
+
   pElement = pRootElement->FirstChildElement("videoscanner");
   if (pElement)
   {
     XMLUtils::GetBoolean(pElement, "ignoreerrors", m_bVideoScannerIgnoreErrors);
+  }
+
+  pElement = pRootElement->FirstChildElement("programscanner");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "ignoreerrors", m_bProgramScannerIgnoreErrors);
   }
 
   pElement = pRootElement->FirstChildElement("slideshow");

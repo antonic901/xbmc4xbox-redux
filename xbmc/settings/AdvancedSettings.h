@@ -179,6 +179,7 @@ class CAdvancedSettings
     bool m_prioritiseAPEv2tags;
     CStdString m_musicItemSeparator;
     CStdString m_videoItemSeparator;
+    CStdString m_programItemSeparator;
     std::vector<CStdString> m_musicTagsFromFileFilters;
 
     bool m_bVideoLibraryHideAllItems;
@@ -190,6 +191,10 @@ class CAdvancedSettings
     bool m_bVideoLibraryImportWatchedState;
 
     bool m_bVideoScannerIgnoreErrors;
+
+    int m_iProgramLibraryRecentlyAddedItems;
+
+    bool m_bProgramScannerIgnoreErrors;
 
     std::vector<CStdString> m_vecTokens; // cleaning strings tied to language
     //TuxBox

@@ -134,6 +134,7 @@
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/windows/GUIWindowVideoNav.h"
+#include "programs/windows/GUIWindowProgramNav.h"
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
@@ -1269,7 +1270,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSystemInfo);               // window id = 7
   g_windowManager.Add(new CGUIWindowSettingsScreenCalibration); // window id = 11
   g_windowManager.Add(new CGUIWindowSettingsCategory);         // window id = 12 slideshow:window id 2007
-  g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 36
+  g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 25
+  g_windowManager.Add(new CGUIWindowProgramNav);               // windiw id = 36
   g_windowManager.Add(new CGUIWindowVideoPlaylist);            // window id = 28
   g_windowManager.Add(new CGUIWindowLoginScreen);            // window id = 29
   g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
@@ -3456,6 +3458,8 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_VIDEO_FILES);
     g_windowManager.Delete(WINDOW_VIDEO_PLAYLIST);
     g_windowManager.Delete(WINDOW_VIDEO_NAV);
+    g_windowManager.Delete(WINDOW_PROGRAM_FILES);
+    g_windowManager.Delete(WINDOW_PROGRAM_NAV);
     g_windowManager.Delete(WINDOW_FILES);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_YES_NO);

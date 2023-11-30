@@ -44,6 +44,7 @@
 #include "utils/SingleLock.h"
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
+#include "programs/ProgramInfoTag.h"
 #include "music/Artist.h"
 #include "music/Album.h"
 #include "music/Song.h"
@@ -3303,6 +3304,14 @@ MUSIC_INFO::CMusicInfoTag* CFileItem::GetMusicInfoTag()
     m_musicInfoTag = new MUSIC_INFO::CMusicInfoTag;
 
   return m_musicInfoTag;
+}
+
+CProgramInfoTag* CFileItem::GetProgramInfoTag()
+{
+  if (!m_programInfoTag)
+    m_programInfoTag = new CProgramInfoTag;
+
+  return m_programInfoTag;
 }
 
 CStdString CFileItem::FindTrailer() const

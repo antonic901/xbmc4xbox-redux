@@ -312,6 +312,10 @@
 #define WINDOW_SETTINGS_PROFILES          10034
 #define WINDOW_GAMESAVES                  10035
 
+// WINDOW_PROGRAM_* defines should be moved somewhere else
+#define WINDOW_PROGRAM_FILES              10036
+#define WINDOW_PROGRAM_NAV                10037
+
 #define WINDOW_ADDON_BROWSER              10040
 
 #define WINDOW_DIALOG_YES_NO              10100
