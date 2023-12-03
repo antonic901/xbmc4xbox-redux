@@ -63,6 +63,7 @@
 #include "video/VideoDatabase.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
+#include "programs/dialogs/GUIDialogProgramScan.h"
 #include "GUIWindowManager.h"
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
@@ -2097,7 +2098,8 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
   {
     CGUIDialogMusicScan *musicScanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
     CGUIDialogVideoScan *videoScanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-    if (musicScanner->IsScanning() || videoScanner->IsScanning())
+    CGUIDialogProgramScan *programScanner = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+    if (musicScanner->IsScanning() || videoScanner->IsScanning() || programScanner->IsScanning())
       bReturn = true;
     else
       bReturn = false;
@@ -2111,6 +2113,11 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
   {
     CGUIDialogMusicScan *musicScanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
     bReturn = (musicScanner && musicScanner->IsScanning());
+  }
+  else if (condition == LIBRARY_IS_SCANNING_PROGRAM)
+  {
+    CGUIDialogProgramScan *programScanner = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+    bReturn = (programScanner && programScanner->IsScanning());
   }
   else if (condition == SYSTEM_PLATFORM_LINUX)
 #if defined(_LINUX) && !defined(__APPLE__)

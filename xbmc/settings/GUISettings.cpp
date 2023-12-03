@@ -231,6 +231,13 @@ void CGUISettings::Initialize()
   AddBool(pro, "myprograms.usedashpath", 13007, true);
   AddString(pro, "myprograms.dashboard", 13006, "C:\\xboxdash.xbe", BUTTON_CONTROL_PATH_INPUT, false, 655);
 
+  CSettingsCategory* prl = AddCategory(1, "programlibrary", 14022);
+  AddBool(prl, "programlibrary.enabled", 421, true);
+  AddBool(prl, "programlibrary.updateonstartup", 22000, false);
+  AddBool(NULL, "programlibrary.backgroundupdate", 22001, false);
+  AddSeparator(prl, "programlibrary.sep3");
+  AddString(prl, "programlibrary.cleanup", 334, "", BUTTON_CONTROL_STANDARD);
+
   // My Weather settings
   AddGroup(2, 8);
   CSettingsCategory* wea = AddCategory(2, "weather", 16000);

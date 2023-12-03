@@ -193,6 +193,7 @@ class CAdvancedSettings
     bool m_bVideoScannerIgnoreErrors;
 
     int m_iProgramLibraryRecentlyAddedItems;
+    bool m_bProgramLibraryCleanOnUpdate;
 
     bool m_bProgramScannerIgnoreErrors;
 

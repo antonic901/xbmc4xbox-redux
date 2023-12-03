@@ -24,7 +24,7 @@
 #include "programs/ProgramDatabase.h"
 #include "ThumbLoader.h"
 
-class CGUIWindowProgramBase : public CGUIMediaWindow, public IBackgroundLoaderObserver, public IStreamDetailsObserver
+class CGUIWindowProgramBase : public CGUIMediaWindow, public IBackgroundLoaderObserver
 {
 public:
   CGUIWindowProgramBase(int id, const CStdString &xmlFile);
@@ -32,21 +32,35 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
 
-  virtual void OnStreamDetails(const CStreamDetails &details, const CStdString &strFileName, long lFileId) {};
+  static void OnScan(const CStdString& strPath, bool scanAll = false);
+  virtual void OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
+
+  /*! \brief Prompt the user for assigning content to a path.
+   Based on changes, we then call OnUnassignContent, update or refresh scraper information in the database
+   and optionally start a scan
+   \param path the path to assign content for
+   */
+  static void OnAssignContent(const CStdString &path);
+
 protected:
   virtual bool Update(const CStdString &strDirectory, bool updateFilterPath = true);
   virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
   virtual void OnItemLoaded(CFileItem* pItem) {};
 
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual CStdString GetStartFolder(const CStdString &dir);
 
   virtual CStdString GetQuickpathName(const CStdString& strPath) const {return strPath;};
 
   bool OnClick(int iItem);
 
-  CGUIDialogProgress* m_dlgProgress;
-  CVideoDatabase m_database;
+  int GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, PROGRAM::SScanSettings& settings);
 
-  CVideoThumbLoader m_thumbLoader;
+  static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
+
+  CGUIDialogProgress* m_dlgProgress;
+  CProgramDatabase m_database;
+
+  CProgramThumbLoader m_thumbLoader;
   bool m_stackingAvailable;
 };

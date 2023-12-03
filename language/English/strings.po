@@ -9149,3 +9149,15 @@ msgstr ""
 msgctxt "#34005"
 msgid "Flac"
 msgstr ""
+
+msgctxt "#35001"
+msgid "Downloading game information"
+msgstr ""
+
+msgctxt "#35002"
+msgid "Games"
+msgstr ""
+
+msgctxt "#35003"
+msgid "Game information"
+msgstr ""

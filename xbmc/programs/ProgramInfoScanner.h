@@ -56,5 +56,27 @@ namespace PROGRAM
   public:
     CProgramInfoScanner();
     virtual ~CProgramInfoScanner();
+
+    /*! \brief Scan a folder using the background scanner
+     \param strDirectory path to scan
+     \param scanAll whether to scan everything not already scanned (regardless of whether the user normally doesn't want a folder scanned.) Defaults to false.
+     */
+    void Start(const CStdString& strDirectory, bool scanAll = false);
+    bool IsScanning();
+    void Stop();
+    void SetObserver(IProgramInfoScannerObserver* pObserver);
+
+    IProgramInfoScannerObserver* m_pObserver;
+    int m_currentItem;
+    int m_itemCount;
+    bool m_bRunning;
+    bool m_bCanInterrupt;
+    bool m_bClean;
+    bool m_scanAll;
+    CStdString m_strStartDir;
+    CProgramDatabase m_database;
+    std::set<CStdString> m_pathsToScan;
+    std::set<CStdString> m_pathsToCount;
+    std::vector<int> m_pathsToClean;
   };
 }

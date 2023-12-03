@@ -315,6 +315,7 @@
 // WINDOW_PROGRAM_* defines should be moved somewhere else
 #define WINDOW_PROGRAM_FILES              10036
 #define WINDOW_PROGRAM_NAV                10037
+#define WINDOW_DIALOG_PROGRAM_SCAN        10038
 
 #define WINDOW_ADDON_BROWSER              10040
 

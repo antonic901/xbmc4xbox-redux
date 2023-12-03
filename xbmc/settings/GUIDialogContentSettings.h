@@ -29,6 +29,10 @@ namespace VIDEO
 {
   struct SScanSettings;
 }
+namespace PROGRAM
+{
+  struct SScanSettings;
+}
 class CFileItemList;
 
 class CGUIDialogContentSettings : public CGUIDialogSettings
@@ -39,6 +43,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
 
   static bool Show(ADDON::ScraperPtr& scraper, CONTENT_TYPE musicContext = CONTENT_NONE);
+  static bool Show(ADDON::ScraperPtr& scraper, PROGRAM::SScanSettings& settings);
   static bool Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSettings& settings, CONTENT_TYPE musicContext = CONTENT_NONE);
   static bool ShowForDirectory(const CStdString& strDirectory, ADDON::ScraperPtr& scraper, VIDEO::SScanSettings& settings);
   virtual bool HasListItems() const { return true; };

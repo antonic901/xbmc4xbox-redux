@@ -115,6 +115,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_SCRAPER_MOVIES:
     case ADDON_SCRAPER_MUSICVIDEOS:
     case ADDON_SCRAPER_TVSHOWS:
+    case ADDON_SCRAPER_GAMES:
     case ADDON_SCRAPER_LIBRARY:
       return AddonPtr(new CScraper(props));
     case ADDON_VIZ:
@@ -454,6 +455,9 @@ bool CAddonMgr::GetDefault(const TYPE &type, AddonPtr &addon)
     break;
   case ADDON_SCRAPER_TVSHOWS:
     setting = g_guiSettings.GetString("scrapers.tvshowsdefault");
+    break;
+  case ADDON_SCRAPER_GAMES:
+    setting = g_guiSettings.GetString("scrapers.gamesdefault");
     break;
   case ADDON_WEB_INTERFACE:
     setting = g_guiSettings.GetString("services.webskin");

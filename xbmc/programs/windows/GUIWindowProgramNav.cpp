@@ -19,6 +19,7 @@
  */
 
 #include "programs/windows/GUIWindowProgramNav.h"
+#include "programs/dialogs/GUIDialogProgramScan.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 
@@ -59,7 +60,7 @@ bool CGUIWindowProgramNav::OnMessage(CGUIMessage& message)
       //  base class has opened the database, do our check
       m_database.Open();
 
-      if (!m_database.HasContent() && m_vecItems->IsVideoDb())
+      if (!m_database.HasContent() && m_vecItems->IsProgramDb())
       { // no library - make sure we default to the root.
         m_vecItems->SetPath("");
         SetHistoryForPath("");
@@ -109,6 +110,43 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
   {
     // get the usual shares
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
+    // add scan button somewhere here
+    CGUIDialogProgramScan *pScanDlg = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+    if (pScanDlg && pScanDlg->IsScanning())
+      buttons.Add(CONTEXT_BUTTON_STOP_SCANNING, 13353);  // Stop Scanning
+    if (!item->IsDVD() && item->GetPath() != "add" &&
+        (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+    {
+      CProgramDatabase database;
+      database.Open();
+      ADDON::ScraperPtr info = database.GetScraperForPath(item->GetPath());
+
+      if (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning()))
+      {
+        if (!item->IsLiveTV() && !item->IsPlugin() && !item->IsAddonsPath())
+        {
+          if (info && info->Content() != CONTENT_NONE)
+            buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20442);
+          else
+            buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20333);
+        }
+      }
+
+      if (info && (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning())))
+        buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
+    }
+  }
+  else
+  {
+    if (!item->IsParentFolder())
+    {
+      ADDON::ScraperPtr info;
+      PROGRAM::SScanSettings settings;
+      GetScraperForItem(item.get(), info, settings);
+
+      if (info && info->Content() == CONTENT_GAMES)
+        buttons.Add(CONTEXT_BUTTON_INFO, 35003);
+    }
   }
 }
 

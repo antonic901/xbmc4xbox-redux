@@ -183,6 +183,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoScannerIgnoreErrors = false;
 
   m_iProgramLibraryRecentlyAddedItems = 25;
+  m_bProgramLibraryCleanOnUpdate = false;
   m_bProgramScannerIgnoreErrors = false;
 
   m_iTuxBoxStreamtsPort = 31339;
@@ -374,6 +375,7 @@ bool CAdvancedSettings::Load()
   if (pElement)
   {
     XMLUtils::GetInt(pElement, "recentlyaddeditems", m_iProgramLibraryRecentlyAddedItems, 1, INT_MAX);
+    XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bProgramLibraryCleanOnUpdate);
     XMLUtils::GetString(pElement, "itemseparator", m_programItemSeparator);
   }
 

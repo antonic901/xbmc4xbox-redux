@@ -143,6 +143,75 @@ void CProgramDatabase::CreateViews()
               "    path.idPath=files.idPath");
 }
 
+void CProgramDatabase::RemoveContentForPath(const CStdString& strPath, CGUIDialogProgress *progress /* = NULL */)
+{
+  // TODO: implement this
+}
+
+void CProgramDatabase::SetScraperForPath(const CStdString& filePath, const ScraperPtr& scraper, const PROGRAM::SScanSettings& settings)
+{
+  // if we have a multipath, set scraper for all contained paths too
+  if(URIUtils::IsMultiPath(filePath))
+  {
+    vector<CStdString> paths;
+    CMultiPathDirectory::GetPaths(filePath, paths);
+
+    for(unsigned i=0;i<paths.size();i++)
+      SetScraperForPath(paths[i],scraper,settings);
+  }
+
+  try
+  {
+    if (NULL == m_pDB.get()) return ;
+    if (NULL == m_pDS.get()) return ;
+    int idPath = AddPath(filePath);
+    if (idPath < 0)
+      return;
+
+    // Update
+    CStdString strSQL;
+    if (settings.exclude)
+    { //NB See note in ::GetScraperForPath about strContent=='none'
+      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=1, exclude=0, where idPath=%i", idPath);
+    }
+    else if(!scraper)
+    { // catch clearing content, but not excluding
+      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=0, exclude=1, where idPath=%i", idPath);
+    }
+    else
+    {
+      CStdString content = TranslateContent(scraper->Content());
+      strSQL=PrepareSQL("update path set strContent='%s', strScraper='%s', scanRecursive=%i, useFolderNames=%i, strSettings='%s', noUpdate=%i, exclude=0 where idPath=%i", content.c_str(), scraper->ID().c_str(),settings.recurse,settings.parent_name,scraper->GetPathSettings().c_str(),settings.noupdate, idPath);
+    }
+    m_pDS->exec(strSQL.c_str());
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, filePath.c_str());
+  }
+}
+
+bool CProgramDatabase::ScraperInUse(const CStdString &scraperID) const
+{
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString sql = PrepareSQL("select count(1) from path where strScraper='%s'", scraperID.c_str());
+    if (!m_pDS->query(sql.c_str()) || m_pDS->num_rows() == 0)
+      return false;
+    bool found = m_pDS->fv(0).get_asInt() > 0;
+    m_pDS->close();
+    return found;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s(%s) failed", __FUNCTION__, scraperID.c_str());
+  }
+  return false;
+}
+
 bool CProgramDatabase::UpdateOldVersion(int version)
 {
   if (NULL == m_pDB.get()) return false;
@@ -335,7 +404,7 @@ int CProgramDatabase::AddFile(const CStdString& strFileNameAndPath)
 
 int CProgramDatabase::AddFile(const CFileItem& item)
 {
-  if (item.IsVideoDb() && item.HasProgramInfoTag())
+  if (item.IsProgramDb() && item.HasProgramInfoTag())
     return AddFile(item.GetProgramInfoTag()->m_strFileNameAndPath);
   return AddFile(item.GetPath());
 }
@@ -480,7 +549,7 @@ int CProgramDatabase::GetGameId(const CStdString& strFilenameAndPath)
       CStdString strFile;
       SplitPath(strFilenameAndPath,strPath,strFile);
 
-      // have to join movieinfo table for correct results
+      // have to join gameinfo table for correct results
       idPath = GetPathId(strPath);
       if (idPath < 0 && strPath != strFilenameAndPath)
         return -1;
@@ -721,8 +790,8 @@ void CProgramDatabase::UpdateGameTitle(int idGame, const CStdString& strNewGameT
     if (iType == PROGRAMDB_CONTENT_GAMES)
     {
       CLog::Log(LOGINFO, "Changing Game:id:%i New Title:%s", idGame, strNewGameTitle.c_str());
-      strSQL = PrepareSQL("UPDATE movie SET c%02d='%s' WHERE idGame=%i", PROGRAMDB_ID_TITLE, strNewGameTitle.c_str(), idGame );
-      content = "movie";
+      strSQL = PrepareSQL("UPDATE game SET c%02d='%s' WHERE idGame=%i", PROGRAMDB_ID_TITLE, strNewGameTitle.c_str(), idGame );
+      content = "game";
     }
     m_pDS->exec(strSQL.c_str());
   }
@@ -904,9 +973,9 @@ int CProgramDatabase::SetDetailsForGame(const CStdString& strFilenameAndPath, co
         DeleteGame(strFilenameAndPath, true, true, idGame); // true to keep the table entry and the thumb
       else
       {
-        // only add a new movie if we don't already have a valid idGame
-        // (DeleteMovie is called with bKeepId == true so the movie won't
-        // be removed from the movie table)
+        // only add a new game if we don't already have a valid idGame
+        // (DeleteGame is called with bKeepId == true so the game won't
+        // be removed from the game table)
         idGame = AddGame(strFilenameAndPath);
         if (idGame < 0)
         {
@@ -979,13 +1048,13 @@ void CProgramDatabase::DeleteGame(const CStdString& strFilenameAndPath, bool bKe
     strSQL=PrepareSQL("delete from publisherlinkgame where idgame=%i", idGame);
     m_pDS->exec(strSQL.c_str());
 
-    strSQL=PrepareSQL("delete from genrelinkmovie where idgame=%i", idGame);
+    strSQL=PrepareSQL("delete from genrelinkgame where idgame=%i", idGame);
     m_pDS->exec(strSQL.c_str());
 
     if (!bKeepThumb)
       DeleteThumbForItem(strFilenameAndPath,false);
 
-    // keep the movie table entry, linking to tv shows, and bookmarks
+    // keep the game table entry, linking to tv shows, and bookmarks
     // so we can update the data in place
     // the ancilliary tables are still purged
     if (!bKeepId)
@@ -1173,7 +1242,131 @@ ScraperPtr CProgramDatabase::GetScraperForPath(const CStdString& strPath, SScanS
 
 ScraperPtr CProgramDatabase::GetScraperForPath(const CStdString& strPath, SScanSettings& settings, bool& foundDirectly)
 {
-  // TODO: implement this
+  foundDirectly = false;
+  try
+  {
+    if (strPath.IsEmpty() || !m_pDB.get() || !m_pDS.get()) return ScraperPtr();
+
+    ScraperPtr scraper;
+    CStdString strPath1;
+    CStdString strPath2(strPath);
+
+    if (URIUtils::IsMultiPath(strPath))
+      strPath2 = CMultiPathDirectory::GetFirstPath(strPath);
+
+    URIUtils::GetDirectory(strPath2,strPath1);
+    int idPath = GetPathId(strPath1);
+
+    if (idPath > -1)
+    {
+      CStdString strSQL=PrepareSQL("select path.strContent,path.strScraper,path.scanRecursive,path.useFolderNames,path.strSettings,path.noUpdate,path.exclude from path where path.idPath=%i",idPath);
+      m_pDS->query( strSQL.c_str() );
+    }
+
+    int iFound = 1;
+    CONTENT_TYPE content = CONTENT_NONE;
+    if (!m_pDS->eof())
+    { // path is stored in db
+
+      if (m_pDS->fv("path.exclude").get_asBool())
+      {
+        settings.exclude = true;
+        m_pDS->close();
+        return ScraperPtr();
+      }
+      settings.exclude = false;
+
+      // try and ascertain scraper for this path
+      CStdString strcontent = m_pDS->fv("path.strContent").get_asString();
+      strcontent.ToLower();
+      content = TranslateContent(strcontent);
+
+      //FIXME paths stored should not have empty strContent
+      //assert(content != CONTENT_NONE);
+      CStdString scraperID = m_pDS->fv("path.strScraper").get_asString();
+
+      AddonPtr addon;
+      if (!scraperID.empty() &&
+        CAddonMgr::Get().GetAddon(scraperID, addon))
+      {
+        scraper = boost::dynamic_pointer_cast<CScraper>(addon->Clone(addon));
+        if (!scraper)
+          return ScraperPtr();
+
+        // store this path's content & settings
+        scraper->SetPathSettings(content, m_pDS->fv("path.strSettings").get_asString());
+        settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
+        settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
+        settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
+      }
+    }
+
+    if (content == CONTENT_NONE)
+    { // this path is not saved in db
+      // we must drill up until a scraper is configured
+      CStdString strParent;
+      while (URIUtils::GetParentPath(strPath1, strParent))
+      {
+        iFound++;
+ 
+        CStdString strSQL=PrepareSQL("select path.strContent,path.strScraper,path.scanRecursive,path.useFolderNames,path.strSettings,path.noUpdate, path.exclude from path where strPath='%s'",strParent.c_str());
+        m_pDS->query(strSQL.c_str());
+
+        CONTENT_TYPE content = CONTENT_NONE;
+        if (!m_pDS->eof())
+        {
+
+          CStdString strcontent = m_pDS->fv("path.strContent").get_asString();
+          strcontent.ToLower();
+          if (m_pDS->fv("path.exclude").get_asBool())
+          {
+            settings.exclude = true;
+            scraper.reset();
+            m_pDS->close();
+            break;
+          }
+
+          content = TranslateContent(strcontent);
+
+          AddonPtr addon;
+          if (content != CONTENT_NONE &&
+              CAddonMgr::Get().GetAddon(m_pDS->fv("path.strScraper").get_asString(), addon))
+          {
+            scraper = boost::dynamic_pointer_cast<CScraper>(addon->Clone(addon));
+            scraper->SetPathSettings(content, m_pDS->fv("path.strSettings").get_asString());
+            settings.parent_name = m_pDS->fv("path.useFolderNames").get_asBool();
+            settings.recurse = m_pDS->fv("path.scanRecursive").get_asInt();
+            settings.noupdate = m_pDS->fv("path.noUpdate").get_asBool();
+            settings.exclude = false;
+
+            break;
+          }
+        }
+        strPath1 = strParent;
+      }
+    }
+    m_pDS->close();
+
+    if (!scraper || scraper->Content() == CONTENT_NONE)
+      return ScraperPtr();
+
+    if (scraper->Content() == CONTENT_GAMES)
+    {
+      settings.recurse = settings.recurse - (iFound-1);
+      settings.parent_name_root = settings.parent_name && (!settings.recurse || iFound > 1);
+    }
+    else
+    {
+      iFound = 0;
+      return ScraperPtr();
+    }
+    foundDirectly = (iFound == 1);
+    return scraper;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
   return ScraperPtr();
 }
 
