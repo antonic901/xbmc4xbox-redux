@@ -103,14 +103,14 @@ bool CProgramDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_genrelinkgame_2 ON genrelinkgame ( idGame, idGenre)\n");
 
     CLog::Log(LOGINFO, "create developerlinkgame table");
-    m_pDS->exec("CREATE TABLE developerlinkgame ( idDeveloper integer, idProgram integer)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_developerlinkgame_1 ON developerlinkgame ( idDeveloper, idProgram)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_developerlinkgame_2 ON developerlinkgame ( idProgram, idDeveloper)\n");
+    m_pDS->exec("CREATE TABLE developerlinkgame ( idDeveloper integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_developerlinkgame_1 ON developerlinkgame ( idDeveloper, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_developerlinkgame_2 ON developerlinkgame ( idGame, idDeveloper)\n");
 
     CLog::Log(LOGINFO, "create publisherlinkgame table");
-    m_pDS->exec("CREATE TABLE publisherlinkgame ( idPublisher integer, idProgram integer)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_1 ON publisherlinkgame ( idPublisher, idProgram)\n");
-    m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_2 ON publisherlinkgame ( idProgram, idPublisher)\n");
+    m_pDS->exec("CREATE TABLE publisherlinkgame ( idPublisher integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_1 ON publisherlinkgame ( idPublisher, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_2 ON publisherlinkgame ( idGame, idPublisher)\n");
 
     CLog::Log(LOGINFO, "create trainers table");
     m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
@@ -1016,7 +1016,7 @@ int CProgramDatabase::SetDetailsForGame(const CStdString& strFilenameAndPath, co
     vector<int> vecDevelopers;
     vector<int> vecPublishers;
     vector<int> vecGenres;
-    AddGenreAndDevelopersAndPublishers(details,vecDevelopers,vecGenres,vecPublishers);
+    AddGenreAndDevelopersAndPublishers(details,vecDevelopers,vecPublishers,vecGenres);
 
     for (unsigned int i = 0; i < vecDevelopers.size(); ++i)
       AddDeveloperToGame(idGame, vecDevelopers[i]);

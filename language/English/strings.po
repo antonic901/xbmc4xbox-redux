@@ -9173,3 +9173,7 @@ msgstr ""
 msgctxt "#35006"
 msgid "Loading game details"
 msgstr ""
+
+msgctxt "#35007"
+msgid "Default game scraper"
+msgstr ""

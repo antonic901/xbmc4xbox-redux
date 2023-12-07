@@ -22,11 +22,13 @@
 #include "ProgramInfoScanner.h"
 #include "addons/AddonManager.h"
 #include "GUIInfoManager.h"
+#include "filesystem/File.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -172,8 +174,140 @@ namespace PROGRAM
 
   INFO_RET CProgramInfoScanner::RetrieveInfoForGame(CFileItemPtr pItem, bool bDirNames, ScraperPtr &info2, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress)
   {
-    // TODO: This is not strictly correct as we could fail to download information here or error, or be cancelled
+    if (pItem->m_bIsFolder || !pItem->IsProgram() || pItem->IsNFO() || pItem->IsPlayList())
+      return INFO_NOT_NEEDED;
+
+    if (ProgressCancelled(pDlgProgress, 198, pItem->GetLabel()))
+      return INFO_CANCELLED;
+
+    if (m_database.HasGameInfo(pItem->GetPath()))
+      return INFO_HAVE_ALREADY;
+
+    CNfoFile::NFOResult result=CNfoFile::NO_NFO;
+    CScraperUrl scrUrl;
+    // handle .nfo files
+    if (useLocal)
+      result = CheckForNFOFile(pItem.get(), bDirNames, info2, scrUrl);
+    if (result == CNfoFile::FULL_NFO)
+    {
+      pItem->GetProgramInfoTag()->Reset();
+      m_nfoReader.GetDetails(*pItem->GetProgramInfoTag());
+      if (m_pObserver)
+        m_pObserver->OnSetTitle(pItem->GetProgramInfoTag()->m_strTitle);
+
+      if (AddProgram(pItem.get(), info2->Content(), bDirNames) < 0)
+        return INFO_ERROR;
+      GetArtwork(pItem.get(), info2->Content(), bDirNames, true, pDlgProgress);
+      return INFO_ADDED;
+    }
+    // TODO: implement support for web-based parsers
     return INFO_NOT_FOUND;
+  }
+
+  long CProgramInfoScanner::AddProgram(CFileItem *pItem, const CONTENT_TYPE &content, bool programFolder, int idShow)
+  {
+    // ensure our database is open (this can get called via other classes)
+    if (!m_database.Open())
+      return -1;
+
+    CLog::Log(LOGDEBUG, "ProgramInfoScanner: Adding new item to %s:%s", TranslateContent(content).c_str(), pItem->GetPath().c_str());
+    long lResult = -1;
+
+    CProgramInfoTag &gameDetails = *pItem->GetProgramInfoTag();
+    if (gameDetails.m_basePath.IsEmpty())
+      gameDetails.m_basePath = pItem->GetBaseGamePath(programFolder);
+    gameDetails.m_parentPathID = m_database.AddPath(URIUtils::GetParentPath(gameDetails.m_basePath));
+
+    if (content == CONTENT_GAMES)
+    {
+      // find local trailer first
+      CStdString strTrailer = pItem->FindTrailer();
+      if (!strTrailer.IsEmpty())
+        gameDetails.m_strTrailer = strTrailer;
+
+      lResult = m_database.SetDetailsForGame(pItem->GetPath(), gameDetails);
+      gameDetails.m_iDbId = lResult;
+    }
+
+    m_database.Close();
+    return lResult;
+  }
+
+  CStdString CProgramInfoScanner::GetnfoFile(CFileItem *item, bool bGrabAny) const
+  {
+    CStdString nfoFile;
+    // Find a matching .nfo file
+    if (!item->m_bIsFolder)
+    {
+      // grab the folder path
+      CStdString strPath;
+      URIUtils::GetDirectory(item->GetPath(), strPath);
+
+      if (bGrabAny)
+      { // looking up by folder name - game.nfo takes priority
+        nfoFile = URIUtils::AddFileToFolder(strPath, "game.nfo");
+        if (CFile::Exists(nfoFile))
+          return nfoFile;
+      }
+
+      // use resources file from XBMC4Gamers
+      nfoFile = URIUtils::AddFileToFolder(strPath, "_resources\\default.xml");
+    }
+
+    return nfoFile;
+  }
+
+  CNfoFile::NFOResult CProgramInfoScanner::CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ScraperPtr& info, CScraperUrl& scrUrl)
+  {
+    CStdString strNfoFile;
+    if (info->Content() == CONTENT_GAMES)
+      strNfoFile = GetnfoFile(pItem, bGrabAny);
+
+    CNfoFile::NFOResult result=CNfoFile::NO_NFO;
+    if (!strNfoFile.IsEmpty() && CFile::Exists(strNfoFile))
+    {
+      result = m_nfoReader.Create(strNfoFile,info,-1);
+
+      CStdString type;
+      switch(result)
+      {
+        case CNfoFile::COMBINED_NFO:
+          type = "Mixed";
+          break;
+        case CNfoFile::FULL_NFO:
+          type = "Full";
+          break;
+        case CNfoFile::URL_NFO:
+          type = "URL";
+          break;
+        case CNfoFile::NO_NFO:
+          type = "";
+          break;
+        default:
+          type = "malformed";
+      }
+      if (result != CNfoFile::NO_NFO)
+        CLog::Log(LOGDEBUG, "ProgramInfoScanner: Found matching %s NFO file: %s", type.c_str(), strNfoFile.c_str());
+      if (result == CNfoFile::FULL_NFO)
+      {
+        // TODO: we will (probably) need this block for emulators roms integration (if not remove it)
+      }
+      else if (result != CNfoFile::NO_NFO && result != CNfoFile::ERROR_NFO)
+      {
+        scrUrl = m_nfoReader.ScraperUrl();
+        info = m_nfoReader.GetScraperInfo();
+
+        CLog::Log(LOGDEBUG, "ProgramInfoScanner: Fetching url '%s' using %s scraper (content: '%s')",
+          scrUrl.m_url[0].m_url.c_str(), info->Name().c_str(), TranslateContent(info->Content()).c_str());
+
+        if (result == CNfoFile::COMBINED_NFO)
+          m_nfoReader.GetDetails(*pItem->GetProgramInfoTag());
+      }
+    }
+    else
+      CLog::Log(LOGDEBUG, "ProgramInfoScanner: No NFO file found. Using title search for '%s'", pItem->GetPath().c_str());
+
+    return result;
   }
 
   bool CProgramInfoScanner::DownloadFailed(CGUIDialogProgress* pDialog)
@@ -187,5 +321,18 @@ namespace PROGRAM
       return false;
     }
     return CGUIDialogYesNo::ShowAndGetInput(20448,20449,20450,20022);
+  }
+
+  bool CProgramInfoScanner::ProgressCancelled(CGUIDialogProgress* progress, int heading, const CStdString &line1)
+  {
+    if (progress)
+    {
+      progress->SetHeading(heading);
+      progress->SetLine(0, line1);
+      progress->SetLine(2, "");
+      progress->Progress();
+      return progress->IsCanceled();
+    }
+    return m_bStop;
   }
 }

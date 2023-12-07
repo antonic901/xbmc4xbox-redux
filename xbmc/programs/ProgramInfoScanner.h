@@ -76,6 +76,15 @@ namespace PROGRAM
     void Stop();
     void SetObserver(IProgramInfoScannerObserver* pObserver);
 
+    /*! \brief Add an item to the database.
+     \param pItem item to add to the database.
+     \param content content type of the item.
+     \param programFolder whether the program is represented by a folder (single game per folder). Defaults to false.
+     \param idShow database id of the tvshow if we're adding an episode.  Defaults to -1.
+     \return database id of the added item, or -1 on failure.
+     */
+    long AddProgram(CFileItem *pItem, const CONTENT_TYPE &content, bool programFolder = false, int idShow = -1);
+
     /*! \brief Retrieve information for a list of items and add them to the database.
      \param items list of items to retrieve info for.
      \param bDirNames whether we should use folder or file names for lookups.
@@ -88,8 +97,20 @@ namespace PROGRAM
     bool RetrieveProgramInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal = true, CScraperUrl *pURL = NULL, CGUIDialogProgress* pDlgProgress = NULL);
 
     static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
+    CNfoFile::NFOResult CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ADDON::ScraperPtr& scraper, CScraperUrl& scrUrl);
+
   protected:
     INFO_RET RetrieveInfoForGame(CFileItemPtr pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress);
+
+    /*! \brief Update the progress bar with the heading and line and check for cancellation
+     \param progress CGUIDialogProgress bar
+     \param heading string id of heading
+     \param line1   string to set for the first line
+     \return true if the user has cancelled the scanner, false otherwise
+     */
+    bool ProgressCancelled(CGUIDialogProgress* progress, int heading, const CStdString &line1);
+
+    CStdString GetnfoFile(CFileItem *item, bool bGrabAny=false) const;
 
     IProgramInfoScannerObserver* m_pObserver;
     int m_currentItem;

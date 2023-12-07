@@ -228,13 +228,33 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
   CProgramInfoScanner scanner;
   bool hasDetails = false;
   bool listNeedsUpdating = false;
-  bool ignoreNfo = true/*false*/;
+  bool ignoreNfo = false;
   // 3. Run a loop so that if we Refresh we re-run this block
   do
   {
     if (!ignoreNfo)
     {
-      // TODO: implement support for NFO files
+      CNfoFile::NFOResult nfoResult = scanner.CheckForNFOFile(item,settings.parent_name_root,info,scrUrl);
+      if (nfoResult == CNfoFile::ERROR_NFO)
+        ignoreNfo = true;
+      else
+      if (nfoResult != CNfoFile::NO_NFO)
+        hasDetails = true;
+
+      if (needsRefresh)
+      {
+        bHasInfo = true;
+        if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO || nfoResult == CNfoFile::FULL_NFO)
+        {
+          if (CGUIDialogYesNo::ShowAndGetInput(13346,20446,20447,20022))
+          {
+            hasDetails = false;
+            ignoreNfo = true;
+            scrUrl.Clear();
+            info = info2;
+          }
+        }
+      }
     }
 
     // 4. if we don't have an url, or need to refresh the search

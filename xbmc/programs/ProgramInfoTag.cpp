@@ -223,7 +223,6 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
   }
   XMLUtils::GetInt(program, "year", m_iYear);
   XMLUtils::GetString(program, "plot", m_strPlot);
-  XMLUtils::GetString(program, "esrb", m_strESRB);
   XMLUtils::GetString(program, "esrbdescription", m_strESRBDescription);
   XMLUtils::GetString(program, "file", m_strFile);
   XMLUtils::GetString(program, "path", m_strPath);
@@ -239,8 +238,6 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
     thumb = thumb->NextSiblingElement("thumb");
   }
 
-  XMLUtils::GetStringArray(program, "developer", m_developer);
-  XMLUtils::GetStringArray(program, "publisher", m_publisher);
   XMLUtils::GetStringArray(program, "genre", m_genre);
 
   // fanart
@@ -250,6 +247,12 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
     m_fanart.m_xml << *fanart;
     m_fanart.Unpack();
   }
+
+  // XBMC4Gamers default.xml
+  XMLUtils::GetStringArray(program, "developer", m_developer);
+  XMLUtils::GetStringArray(program, "publisher", m_publisher);
+  XMLUtils::GetString(program, "esrb", m_strESRB);
+  XMLUtils::GetString(program, "overview", m_strPlot);
 
   // dateAdded
   CStdString dateAdded;

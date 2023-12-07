@@ -274,6 +274,12 @@ public:
    */
   CStdString GetBaseMoviePath(bool useFolderNames) const;
 
+  /*! \brief Find the base game path (eg the folder if using "use foldernames for lookups")
+   \param useFolderNames whether we're using foldernames for lookups
+   \return the base game folder
+   */
+  CStdString GetBaseGamePath(bool useFolderNames) const;
+
   // Gets the user thumb, if it exists
   CStdString GetUserVideoThumb() const;
   CStdString GetUserMusicThumb(bool alwaysCheckRemote = false) const;

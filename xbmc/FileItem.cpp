@@ -2853,6 +2853,22 @@ CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
   return strMovieName;
 }
 
+CStdString CFileItem::GetBaseGamePath(bool bUseFolderNames) const
+{
+  CStdString strGameName = m_strPath;
+
+  if (IsMultiPath())
+    strGameName = CMultiPathDirectory::GetFirstPath(m_strPath);
+
+  if (URIUtils::IsStack(strGameName))
+    strGameName = CStackDirectory::GetStackedTitlePath(strGameName);
+
+  if (!m_bIsFolder && bUseFolderNames)
+    URIUtils::GetParentPath(m_strPath, strGameName);
+
+  return strGameName;
+}
+
 void CFileItem::SetVideoThumb()
 {
   if (HasThumbnail()) return;
