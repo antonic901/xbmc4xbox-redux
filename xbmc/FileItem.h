@@ -76,6 +76,7 @@ public:
   CFileItem(const CArtist& artist);
   CFileItem(const CGenre& genre);
   CFileItem(const CVideoInfoTag& movie);
+  CFileItem(const CProgramInfoTag& game);
   CFileItem(const CMediaSource& share);
   virtual ~CFileItem(void);
   virtual CGUIListItem *Clone() const { return new CFileItem(*this); };
@@ -93,6 +94,7 @@ public:
   bool Exists(bool bUseCache = true) const;
   bool IsVideo() const;
   bool IsPicture() const;
+  bool IsProgram() const;
   bool IsLyrics() const;
   bool IsAudio() const;
   bool IsCUESheet() const;
@@ -262,6 +264,8 @@ public:
   CStdString GetFolderThumb(const CStdString &folderJPG = "folder.jpg") const;
   // Gets the correct movie title
   CStdString GetMovieName(bool bUseFolderNames = false) const;
+  // Gets the correct game title
+  CStdString GetGameName(bool bUseFolderNames = false) const;
 
   /*! \brief Find the base movie path (eg the folder if using "use foldernames for lookups")
    Takes care of VIDEO_TS, BDMV, and rar:// listings

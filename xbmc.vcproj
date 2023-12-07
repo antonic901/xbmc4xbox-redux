@@ -2927,6 +2927,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="GUI Program"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramInfo.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramScan.cpp">
 				</File>
 				<File
@@ -2949,6 +2955,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\programs\ProgramDbUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoDownloader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoDownloader.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\programs\ProgramInfoScanner.cpp">

@@ -1199,7 +1199,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_INFO:
     {
       ADDON::ScraperPtr info;
-      PROGRAM::SScanSettings settings;
+      VIDEO::SScanSettings settings;
       GetScraperForItem(item.get(), info, settings);
 
       OnInfo(item.get(),info);

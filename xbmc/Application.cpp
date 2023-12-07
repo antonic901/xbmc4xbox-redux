@@ -137,8 +137,9 @@
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
-#include "programs/windows/GUIWindowProgramNav.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
+#include "programs/windows/GUIWindowProgramNav.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
 #include "GUIWindowGameSaves.h"
@@ -1314,6 +1315,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogTextViewer);              // window id = 147
 
   g_windowManager.Add(new CGUIDialogProgramScan); // window id = 38
+  g_windowManager.Add(new CGUIDialogProgramInfo); // window id = 39
 
   g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
 
@@ -3458,13 +3460,13 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_MUSIC_NAV);
     g_windowManager.Delete(WINDOW_DIALOG_MUSIC_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
+    g_windowManager.Delete(WINDOW_DIALOG_PROGRAM_INFO);
     g_windowManager.Delete(WINDOW_VIDEO_FILES);
     g_windowManager.Delete(WINDOW_VIDEO_PLAYLIST);
     g_windowManager.Delete(WINDOW_VIDEO_NAV);
     g_windowManager.Delete(WINDOW_PROGRAM_FILES);
     g_windowManager.Delete(WINDOW_PROGRAM_NAV);
     g_windowManager.Delete(WINDOW_FILES);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_YES_NO);
     g_windowManager.Delete(WINDOW_DIALOG_PROGRESS);
     g_windowManager.Delete(WINDOW_DIALOG_NUMERIC);

@@ -9161,3 +9161,15 @@ msgstr ""
 msgctxt "#35003"
 msgid "Game information"
 msgstr ""
+
+msgctxt "#35004"
+msgid "Select game:"
+msgstr ""
+
+msgctxt "#35005"
+msgid "Enter the game name"
+msgstr ""
+
+msgctxt "#35006"
+msgid "Loading game details"
+msgstr ""

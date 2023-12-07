@@ -113,6 +113,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_moviesExcludeFromScanRegExps.push_back("[-._ \\\\/]sample[-._ \\\\/]");
   m_tvshowExcludeFromScanRegExps.push_back("[-._ \\\\/]sample[-._ \\\\/]");
 
+  m_gamesExcludeFromScanRegExps.push_back("-patch");
+
   m_folderStackRegExps.push_back("((cd|dvd|dis[ck])[0-9]+)$");
 
   m_videoStackRegExps.push_back("(.*?)([ _.-]*(?:cd|dvd|p(?:(?:ar)?t)|dis[ck]|d)[ _.-]*[0-9]+)(.*?)(\\.[^.]+)$");
@@ -343,6 +345,14 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetString(pElement,"cleandatetime", m_videoCleanDateTimeRegExp);
     XMLUtils::GetString(pElement,"ppffmpegdeinterlacing",m_videoPPFFmpegDeint);
     XMLUtils::GetString(pElement,"ppffmpegpostprocessing",m_videoPPFFmpegPostProc);
+  }
+
+  pElement = pRootElement->FirstChildElement("program");
+  if (pElement)
+  {
+    TiXmlElement* pProgramExcludes = pElement->FirstChildElement("excludefromscan");
+    if (pProgramExcludes)
+      GetCustomRegexps(pProgramExcludes, m_gamesExcludeFromScanRegExps);
   }
 
   pElement = pRootElement->FirstChildElement("musiclibrary");
@@ -762,6 +772,7 @@ void CAdvancedSettings::Clear()
   m_audioExcludeFromScanRegExps.clear();
   m_audioExcludeFromListingRegExps.clear();
   m_pictureExcludeFromListingRegExps.clear();
+  m_gamesExcludeFromScanRegExps.clear();
 }
 
 void CAdvancedSettings::GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings)

@@ -28,6 +28,7 @@
 class CAlbum;
 class CArtist;
 class CVideoInfoTag;
+class CProgramInfoTag;
 
 namespace MUSIC_GRABBER
 {
@@ -123,6 +124,8 @@ public:
     XFILE::CCurlFile &fcurl, const CStdString &sArtist);
   EPISODELIST GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl);
 
+  bool GetProgramDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
+    CProgramInfoTag &program);
   bool GetVideoDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
     bool fMovie/*else episode*/, CVideoInfoTag &video);
   bool GetAlbumDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,

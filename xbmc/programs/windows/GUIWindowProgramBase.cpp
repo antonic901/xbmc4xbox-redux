@@ -21,12 +21,22 @@
 #include "programs/windows/GUIWindowProgramBase.h"
 #include "addons/AddonManager.h"
 #include "addons/IAddon.h"
+#include "programs/ProgramInfoDownloader.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
+#include "dialogs/GUIDialogOK.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "filesystem/Directory.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "GUIWindowManager.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
+using namespace XFILE;
 using namespace PROGRAM;
 using namespace ADDON;
 
@@ -72,7 +82,316 @@ bool CGUIWindowProgramBase::OnMessage(CGUIMessage& message)
 
 void CGUIWindowProgramBase::OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper)
 {
-  // TODO: implement this
+  if (!pItem)
+    return;
+
+  if (!scraper)
+    return;
+
+  if (pItem->IsParentFolder() || pItem->m_bIsShareOrDrive ||
+      pItem->GetPath().Equals("add") || pItem->IsPlayList())
+    return;
+
+  // ShowIGDB can kill the item as this window can be closed while we do it,
+  // so take a copy of the item now
+  CFileItem item(*pItem);
+  if (item.IsProgramDb() && item.HasProgramInfoTag())
+  {
+    if (item.GetProgramInfoTag()->m_strFileNameAndPath.IsEmpty())
+      item.SetPath(item.GetProgramInfoTag()->m_strPath);
+    else
+      item.SetPath(item.GetProgramInfoTag()->m_strFileNameAndPath);
+  }
+  else
+  {
+    if (item.m_bIsFolder)
+    {
+      CFileItemList items;
+      CDirectory::GetDirectory(item.GetPath(), items, g_settings.m_programExtensions);
+      items.Stack();
+
+      // check for media files
+      bool bFoundFile(false);
+      for (int i = 0; i < items.Size(); ++i)
+      {
+        CFileItemPtr item2 = items[i];
+
+        if (item2->IsProgram() && !item2->IsPlayList() &&
+            !CUtil::ExcludeFileOrFolder(item2->GetPath(), g_advancedSettings.m_gamesExcludeFromScanRegExps))
+        {
+          item.SetPath(item2->GetPath());
+          item.m_bIsFolder = false;
+          bFoundFile = true;
+          break;
+        }
+      }
+
+      // no program file in this folder
+      if (!bFoundFile)
+      {
+        CGUIDialogOK::ShowAndGetInput(13346,20349,20022,20022);
+        return;
+      }
+    }
+  }
+
+  // we need to also request any thumbs be applied to the folder item
+  if (pItem->m_bIsFolder)
+    item.SetProperty("set_folder_thumb", pItem->GetPath());
+
+  bool modified = ShowIGDB(&item, scraper);
+  if (modified)
+  {
+    int itemNumber = m_viewControl.GetSelectedItem();
+    Refresh();
+    m_viewControl.SetSelectedItem(itemNumber);
+  }
+}
+
+// See ShowIMDB in GUIWindowVideoBase.cpp for more info
+bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
+{
+  CGUIDialogProgress* pDlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  CGUIDialogSelect* pDlgSelect = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
+  CGUIDialogProgramInfo* pDlgInfo = (CGUIDialogProgramInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO);
+
+  ScraperPtr info(info2); // use this as nfo might change it..
+
+  if (!pDlgProgress) return false;
+  if (!pDlgSelect) return false;
+  if (!pDlgInfo) return false;
+
+  // 1.  Check for already downloaded information, and if we have it, display our dialog
+  //     Return if no Refresh is needed.
+  bool bHasInfo=false;
+
+  CProgramInfoTag gameDetails;
+  if (info)
+  {
+    m_database.Open();
+
+    if (info->Content() == CONTENT_GAMES)
+    {
+      if (m_database.HasGameInfo(item->GetPath()))
+      {
+        bHasInfo = true;
+        m_database.GetGameInfo(item->GetPath(), gameDetails);
+      }
+    }
+    m_database.Close();
+  }
+  else if (item->HasProgramInfoTag())
+  {
+    bHasInfo = true;
+    gameDetails = *item->GetProgramInfoTag();
+  }
+
+  bool needsRefresh = false;
+  if (bHasInfo)
+  {
+    if (info->Content() == CONTENT_NONE) // disable refresh button
+      gameDetails.m_strXBENumber = "xx"+gameDetails.m_strXBENumber;
+    *item->GetProgramInfoTag() = gameDetails;
+    pDlgInfo->SetGame(item);
+    pDlgInfo->DoModal();
+    needsRefresh = pDlgInfo->NeedRefresh();
+    if (!needsRefresh)
+      return pDlgInfo->HasUpdatedThumb();
+  }
+
+  // quietly return if Internet lookups are disabled
+  if (!g_settings.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
+    return false;
+
+  if(!info)
+    return false;
+
+  CGUIDialogProgramScan* pDialog = (CGUIDialogProgramScan*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+  if (pDialog && pDialog->IsScanning())
+  {
+    CGUIDialogOK::ShowAndGetInput(35003,14057,-1,-1);
+    return false;
+  }
+
+  m_database.Open();
+  // 2. Look for a nfo File to get the search URL
+  SScanSettings settings;
+  info = m_database.GetScraperForPath(item->GetPath(),settings);
+
+  if (!info)
+    return false;
+
+  // Get the correct game title
+  CStdString gameName = item->GetGameName(settings.parent_name);
+
+  CScraperUrl scrUrl;
+  CProgramInfoScanner scanner;
+  bool hasDetails = false;
+  bool listNeedsUpdating = false;
+  bool ignoreNfo = true/*false*/;
+  // 3. Run a loop so that if we Refresh we re-run this block
+  do
+  {
+    if (!ignoreNfo)
+    {
+      // TODO: implement support for NFO files
+    }
+
+    // 4. if we don't have an url, or need to refresh the search
+    //    then do the web search
+    GAMELIST gamelist;
+    
+    if (!hasDetails && (scrUrl.m_url.size() == 0 || needsRefresh))
+    {
+      // 4a. show dialog that we're busy querying www.igdb.com
+      CStdString strHeading;
+      strHeading.Format(g_localizeStrings.Get(197),info->Name().c_str());
+      pDlgProgress->SetHeading(strHeading);
+      pDlgProgress->SetLine(0, gameName);
+      pDlgProgress->SetLine(1, "");
+      pDlgProgress->SetLine(2, "");
+      pDlgProgress->StartModal();
+      pDlgProgress->Progress();
+
+      // 4b. do the websearch
+      CProgramInfoDownloader igdb(info);
+      int returncode = igdb.FindGame(gameName, gamelist, pDlgProgress);
+      if (returncode > 0)
+      {
+        pDlgProgress->Close();
+        if (gamelist.size() > 0)
+        {
+          int iString = 35004;
+          pDlgSelect->SetHeading(iString);
+          pDlgSelect->Reset();
+          for (unsigned int i = 0; i < gamelist.size(); ++i)
+            pDlgSelect->Add(gamelist[i].strTitle);
+          pDlgSelect->EnableButton(true, 413); // manual
+          pDlgSelect->DoModal();
+
+          // and wait till user selects one
+          int iSelectedGame = pDlgSelect->GetSelectedLabel();
+          if (iSelectedGame >= 0)
+          {
+            scrUrl = gamelist[iSelectedGame];
+            CLog::Log(LOGDEBUG, "%s: user selected game '%s' with URL '%s'",
+              __FUNCTION__, scrUrl.strTitle.c_str(), scrUrl.m_url[0].m_url.c_str());
+          }
+          else if (!pDlgSelect->IsButtonPressed())
+          {
+            m_database.Close();
+            return listNeedsUpdating; // user backed out
+          }
+        }
+      }
+      else if (returncode == -1 || !CProgramInfoScanner::DownloadFailed(pDlgProgress))
+      {
+        pDlgProgress->Close();
+        return false;
+      }
+    }
+    // 4c. Check if url is still empty - occurs if user has selected to do a manual
+    //     lookup, or if the IGDb lookup failed or was cancelled.
+    if (!hasDetails && scrUrl.m_url.size() == 0)
+    {
+      // Check for cancel of the progress dialog
+      pDlgProgress->Close();
+      if (pDlgProgress->IsCanceled())
+      {
+        m_database.Close();
+        return listNeedsUpdating;
+      }
+
+      // Prompt the user to input the gameName
+      int iString = 35005;
+      if (!CGUIDialogKeyboard::ShowAndGetInput(gameName, g_localizeStrings.Get(iString), false))
+      {
+        m_database.Close();
+        return listNeedsUpdating; // user backed out
+      }
+
+      needsRefresh = true;
+    }
+    else
+    {
+      // 5. Download the game information
+      // show dialog that we're downloading the game info
+      CFileItemList list;
+      CStdString strPath=item->GetPath();
+      if (item->IsProgramDb())
+      {
+        CFileItemPtr newItem(new CFileItem(*item->GetProgramInfoTag()));
+        list.Add(newItem);
+        strPath = item->GetProgramInfoTag()->m_strPath;
+      }
+      else
+      {
+        CFileItemPtr newItem(new CFileItem(*item));
+        list.Add(newItem);
+      }
+
+      if (item->m_bIsFolder)
+        list.SetPath(URIUtils::GetParentPath(strPath));
+      else
+      {
+        CStdString path;
+        URIUtils::GetDirectory(strPath, path);
+        list.SetPath(path);
+      }
+
+      int iString=35006;
+      pDlgProgress->SetHeading(iString);
+      pDlgProgress->SetLine(0, gameName);
+      pDlgProgress->SetLine(1, scrUrl.strTitle);
+      pDlgProgress->SetLine(2, "");
+      pDlgProgress->StartModal();
+      pDlgProgress->Progress();
+      if (bHasInfo)
+      {
+        if (info->Content() == CONTENT_GAMES)
+          m_database.DeleteGame(item->GetPath());
+      }
+      if (scanner.RetrieveProgramInfo(list,settings.parent_name_root,info->Content(),!ignoreNfo,&scrUrl,pDlgProgress))
+      {
+        if (info->Content() == CONTENT_GAMES)
+          m_database.GetGameInfo(item->GetPath(),gameDetails);
+
+        // got all game details :-)
+        OutputDebugString("got details\n");
+        pDlgProgress->Close();
+
+        // now show the igdb info
+        OutputDebugString("show info\n");
+
+        // remove directory caches and reload images
+        CUtil::DeleteProgramDatabaseDirectoryCache();
+        CGUIMessage reload(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REFRESH_THUMBS);
+        OnMessage(reload);
+
+        *item->GetProgramInfoTag() = gameDetails;
+        pDlgInfo->SetGame(item);
+        pDlgInfo->DoModal();
+        item->SetThumbnailImage(pDlgInfo->GetThumbnail());
+        needsRefresh = pDlgInfo->NeedRefresh();
+        listNeedsUpdating = true;
+      }
+      else
+      {
+        pDlgProgress->Close();
+        if (pDlgProgress->IsCanceled())
+        {
+          m_database.Close();
+          return listNeedsUpdating; // user cancelled
+        }
+        CGUIDialogOK::ShowAndGetInput(195, gameName, 0, 0);
+        m_database.Close();
+        return listNeedsUpdating;
+      }
+    }
+  // 6. Check for a refresh
+  } while (needsRefresh);
+  m_database.Close();
+  return listNeedsUpdating;
 }
 
 bool CGUIWindowProgramBase::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)

@@ -22,6 +22,7 @@
 #include "utils/Thread.h"
 #include "ProgramDatabase.h"
 #include "addons/Scraper.h"
+#include "NfoFile.h"
 #include "DateTime.h"
 
 namespace PROGRAM
@@ -51,6 +52,15 @@ namespace PROGRAM
     virtual void OnFinished() = 0;
   };
 
+  /*! \brief return values from the information lookup functions
+   */
+  enum INFO_RET { INFO_CANCELLED,
+                  INFO_ERROR,
+                  INFO_NOT_NEEDED,
+                  INFO_HAVE_ALREADY,
+                  INFO_NOT_FOUND,
+                  INFO_ADDED };
+
   class CProgramInfoScanner : CThread
   {
   public:
@@ -66,6 +76,21 @@ namespace PROGRAM
     void Stop();
     void SetObserver(IProgramInfoScannerObserver* pObserver);
 
+    /*! \brief Retrieve information for a list of items and add them to the database.
+     \param items list of items to retrieve info for.
+     \param bDirNames whether we should use folder or file names for lookups.
+     \param content type of content to retrieve.
+     \param useLocal should local data (.nfo and art) be used. Defaults to true.
+     \param pURL an optional URL to use to retrieve online info.  Defaults to NULL.
+     \param pDlgProgress progress dialog to update and check for cancellation during processing.  Defaults to NULL.
+     \return true if we successfully found information for some items, false otherwise
+     */
+    bool RetrieveProgramInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal = true, CScraperUrl *pURL = NULL, CGUIDialogProgress* pDlgProgress = NULL);
+
+    static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
+  protected:
+    INFO_RET RetrieveInfoForGame(CFileItemPtr pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress);
+
     IProgramInfoScannerObserver* m_pObserver;
     int m_currentItem;
     int m_itemCount;
@@ -78,5 +103,6 @@ namespace PROGRAM
     std::set<CStdString> m_pathsToScan;
     std::set<CStdString> m_pathsToCount;
     std::vector<int> m_pathsToClean;
+    CNfoFile m_nfoReader;
   };
 }

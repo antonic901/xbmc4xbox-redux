@@ -131,6 +131,30 @@ CFileItem::CFileItem(const CVideoInfoTag& movie)
   SetCachedVideoThumb();
 }
 
+CFileItem::CFileItem(const CProgramInfoTag& game)
+{
+  m_musicInfoTag = NULL;
+  m_videoInfoTag = NULL;
+  m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
+  Reset();
+  SetLabel(game.m_strTitle);
+  if (game.m_strFileNameAndPath.IsEmpty())
+  {
+    m_strPath = game.m_strPath;
+    URIUtils::AddSlashAtEnd(m_strPath);
+    m_bIsFolder = true;
+  }
+  else
+  {
+    m_strPath = game.m_strFileNameAndPath;
+    m_bIsFolder = false;
+  }
+  *GetProgramInfoTag() = game;
+  FillInDefaultIcon();
+  SetCachedProgramThumb();
+}
+
 CFileItem::CFileItem(const CArtist& artist)
 {
   m_musicInfoTag = NULL;
@@ -642,6 +666,12 @@ bool CFileItem::IsPicture() const
   if (HasVideoInfoTag()) return false;
 
   return CUtil::IsPicture(m_strPath);
+}
+
+bool CFileItem::IsProgram() const
+{
+  // for now only XBE is considered program. In future program could be also Emulator game
+  return IsXBE();
 }
 
 bool CFileItem::IsLyrics() const
@@ -2791,6 +2821,12 @@ CStdString CFileItem::GetMovieName(bool bUseFolderNames /* = false */) const
   CURL::Decode(strMovieName);
 
   return strMovieName;
+}
+
+CStdString CFileItem::GetGameName(bool bUseFolderNames /* = false */) const
+{
+  // TODO: Is there any difference between Movie and Game names?
+  return GetMovieName(bUseFolderNames);
 }
 
 CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const

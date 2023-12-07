@@ -325,6 +325,7 @@ public:
   CStdString m_pictureExtensions;
   CStdString m_musicExtensions;
   CStdString m_videoExtensions;
+  CStdString m_programExtensions;
 
   CStdString m_logFolder;
 

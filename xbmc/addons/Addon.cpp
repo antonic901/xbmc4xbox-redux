@@ -271,6 +271,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
     case ADDON_SCRAPER_MOVIES:
     case ADDON_SCRAPER_MUSICVIDEOS:
     case ADDON_SCRAPER_TVSHOWS:
+    case ADDON_SCRAPER_GAMES:
     case ADDON_SCRAPER_LIBRARY:
       ext = ADDON_SCRAPER_EXT;
       break;
@@ -317,6 +318,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
       case ADDON_SCRAPER_MOVIES:
       case ADDON_SCRAPER_MUSICVIDEOS:
       case ADDON_SCRAPER_TVSHOWS:
+      case ADDON_SCRAPER_GAMES:
       case ADDON_SCRAPER_LIBRARY:
       case ADDON_PLUGIN:
       case ADDON_SERVICE:

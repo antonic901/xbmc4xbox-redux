@@ -759,6 +759,34 @@ void CProgramDatabase::DeleteThumbForItem(const CStdString& strPath, bool bFolde
   // TODO: implement this
 }
 
+void CProgramDatabase::SetDetail(const CStdString& strDetail, int id, int field,
+                               PROGRAMDB_CONTENT_TYPE type)
+{
+  try
+  {
+    if (NULL == m_pDB.get()) return;
+    if (NULL == m_pDS.get()) return;
+
+    CStdString strTable, strField;
+    if (type == PROGRAMDB_CONTENT_GAMES)
+    {
+      strTable = "game";
+      strField = "idGame";
+    }
+
+    if (strTable.IsEmpty())
+      return;
+
+    CStdString strSQL = PrepareSQL("update %s set c%02u='%s' where %s=%u",
+                                  strTable.c_str(), field, strDetail.c_str(), strField.c_str(), id);
+    m_pDS->exec(strSQL.c_str());
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+}
+
 void CProgramDatabase::UpdateFanart(const CFileItem &item, PROGRAMDB_CONTENT_TYPE type)
 {
   if (NULL == m_pDB.get()) return;

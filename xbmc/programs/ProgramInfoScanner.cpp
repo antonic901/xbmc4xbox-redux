@@ -18,9 +18,15 @@
  *
  */
 
+#include "FileItem.h"
 #include "ProgramInfoScanner.h"
 #include "addons/AddonManager.h"
+#include "GUIInfoManager.h"
+#include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;
@@ -84,5 +90,102 @@ namespace PROGRAM
   void CProgramInfoScanner::SetObserver(IProgramInfoScannerObserver* pObserver)
   {
     m_pObserver = pObserver;
+  }
+
+  bool CProgramInfoScanner::RetrieveProgramInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress)
+  {
+    if (pDlgProgress)
+    {
+      if (items.Size() > 1)
+      {
+        pDlgProgress->ShowProgressBar(true);
+        pDlgProgress->SetPercentage(0);
+      }
+      else
+        pDlgProgress->ShowProgressBar(false);
+
+      pDlgProgress->Progress();
+    }
+
+    m_database.Open();
+
+    bool FoundSomeInfo = false;
+    vector<int> seenPaths;
+    for (int i = 0; i < (int)items.Size(); ++i)
+    {
+      m_nfoReader.Close();
+      CFileItemPtr pItem = items[i];
+
+      // we do this since we may have a override per dir
+      ScraperPtr info2 = m_database.GetScraperForPath(pItem->m_bIsFolder ? pItem->GetPath() : items.GetPath());
+      if (!info2) // skip
+        continue;
+
+      // Discard all exclude files defined by regExExclude
+      if (CUtil::ExcludeFileOrFolder(pItem->GetPath(), g_advancedSettings.m_gamesExcludeFromScanRegExps))
+        continue;
+
+      if (info2->Content() == CONTENT_GAMES)
+      {
+        if (m_pObserver)
+        {
+          m_pObserver->OnSetCurrentProgress(i, items.Size());
+          if (!pItem->m_bIsFolder && m_itemCount)
+            m_pObserver->OnSetProgress(m_currentItem++, m_itemCount);
+        }
+      }
+
+      // clear our scraper cache
+      info2->ClearCache();
+
+      INFO_RET ret = INFO_CANCELLED;
+      if (info2->Content() == CONTENT_GAMES)
+        ret = RetrieveInfoForGame(pItem, bDirNames, info2, useLocal, pURL, pDlgProgress);
+      else
+      {
+        CLog::Log(LOGERROR, "ProgramInfoScanner: Unknown content type %d (%s)", info2->Content(), pItem->GetPath().c_str());
+        FoundSomeInfo = false;
+        break;
+      }
+      if (ret == INFO_CANCELLED || ret == INFO_ERROR)
+      {
+        FoundSomeInfo = false;
+        break;
+      }
+      if (ret == INFO_ADDED || ret == INFO_HAVE_ALREADY)
+        FoundSomeInfo = true;
+
+      pURL = NULL;
+
+      // Keep track of directories we've seen
+      if (pItem->m_bIsFolder)
+        seenPaths.push_back(m_database.GetPathId(pItem->GetPath()));
+    }
+
+    if(pDlgProgress)
+      pDlgProgress->ShowProgressBar(false);
+
+    g_infoManager.ResetLibraryBools();
+    m_database.Close();
+    return FoundSomeInfo;
+  }
+
+  INFO_RET CProgramInfoScanner::RetrieveInfoForGame(CFileItemPtr pItem, bool bDirNames, ScraperPtr &info2, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress)
+  {
+    // TODO: This is not strictly correct as we could fail to download information here or error, or be cancelled
+    return INFO_NOT_FOUND;
+  }
+
+  bool CProgramInfoScanner::DownloadFailed(CGUIDialogProgress* pDialog)
+  {
+    if (g_advancedSettings.m_bProgramScannerIgnoreErrors)
+      return true;
+
+    if (pDialog)
+    {
+      CGUIDialogOK::ShowAndGetInput(20448,20449,20022,20022);
+      return false;
+    }
+    return CGUIDialogYesNo::ShowAndGetInput(20448,20449,20450,20022);
   }
 }

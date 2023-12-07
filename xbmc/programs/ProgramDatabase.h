@@ -158,6 +158,7 @@ public:
   int GetPathId(const CStdString& strPath);
 
   int SetDetailsForGame(const CStdString& strFilenameAndPath, const CProgramInfoTag& details, int idGame = -1);
+  void SetDetail(const CStdString& strDetail, int id, int field, PROGRAMDB_CONTENT_TYPE type);
 
   void DeleteGame(int idGame, bool bKeepId = false, bool bKeepThumb = false);
   void DeleteGame(const CStdString& strFilenameAndPath, bool bKeepId = false, bool bKeepThumb = false, int idGame = -1);

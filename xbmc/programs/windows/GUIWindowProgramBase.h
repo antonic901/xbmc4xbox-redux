@@ -54,6 +54,8 @@ protected:
 
   bool OnClick(int iItem);
 
+  bool ShowIGDB(CFileItem *item, const ADDON::ScraperPtr& content);
+
   int GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, PROGRAM::SScanSettings& settings);
 
   static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
