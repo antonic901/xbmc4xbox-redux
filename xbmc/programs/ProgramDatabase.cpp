@@ -75,6 +75,18 @@ bool CProgramDatabase::CreateTables()
     CLog::Log(LOGINFO, "create publisher table");
     m_pDS->exec("CREATE TABLE publisher ( idPublisher integer primary key, strPublisher text)\n");
 
+    CLog::Log(LOGINFO, "create descriptor table");
+    m_pDS->exec("CREATE TABLE descriptor ( idDescriptor integer primary key, strDescriptor text)\n");
+
+    CLog::Log(LOGINFO, "create generalfeature table");
+    m_pDS->exec("CREATE TABLE generalfeature ( idGeneralFeature integer primary key, strGeneralFeature text)\n");
+
+    CLog::Log(LOGINFO, "create onlinefeature table");
+    m_pDS->exec("CREATE TABLE onlinefeature ( idOnlineFeature integer primary key, strOnlineFeature text)\n");
+
+    CLog::Log(LOGINFO, "create platform table");
+    m_pDS->exec("CREATE TABLE platform ( idPlatform integer primary key, strPlatform text)\n");
+
     CLog::Log(LOGINFO, "create game table");
     CStdString columns = "CREATE TABLE game ( idGame integer primary key, idFile integer";
     for (int i = 0; i < PROGRAMDB_MAX_COLUMNS; i++)
@@ -112,8 +124,31 @@ bool CProgramDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_1 ON publisherlinkgame ( idPublisher, idGame)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_publisherlinkgame_2 ON publisherlinkgame ( idGame, idPublisher)\n");
 
+    CLog::Log(LOGINFO, "create descriptorlinkgame table");
+    m_pDS->exec("CREATE TABLE descriptorlinkgame ( idDescriptor integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_descriptorlinkgame_1 ON descriptorlinkgame ( idDescriptor, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_descriptorlinkgame_2 ON descriptorlinkgame ( idGame, idDescriptor)\n");
+
+    CLog::Log(LOGINFO, "create generalfeaturelinkgame table");
+    m_pDS->exec("CREATE TABLE generalfeaturelinkgame ( idGeneralFeature integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_generalfeaturelinkgame_1 ON generalfeaturelinkgame ( idGeneralFeature, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_generalfeaturelinkgame_2 ON generalfeaturelinkgame ( idGame, idGeneralFeature)\n");
+
+    CLog::Log(LOGINFO, "create onlinefeaturelinkgame table");
+    m_pDS->exec("CREATE TABLE onlinefeaturelinkgame ( idOnlineFeature integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_onlinefeaturelinkgame_1 ON onlinefeaturelinkgame ( idOnlineFeature, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_onlinefeaturelinkgame_2 ON onlinefeaturelinkgame ( idGame, idOnlineFeature)\n");
+
+    CLog::Log(LOGINFO, "create platformlinkgame table");
+    m_pDS->exec("CREATE TABLE platformlinkgame ( idPlatform integer, idGame integer)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_platformlinkgame_1 ON platformlinkgame ( idPlatform, idGame)\n");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_platformlinkgame_2 ON platformlinkgame ( idGame, idPlatform)\n");
+
     CLog::Log(LOGINFO, "create trainers table");
     m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
+
+    // we create views last to ensure all indexes are rolled in
+    CreateViews();
   }
   catch (...)
   {
@@ -135,7 +170,10 @@ void CProgramDatabase::CreateViews()
   m_pDS->exec("CREATE VIEW gameview AS SELECT"
               "  game.*,"
               "  files.strFileName AS strFileName,"
-              "  path.strPath AS strPath "
+              "  path.strPath AS strPath, "
+              "  files.playCount AS playCount,"
+              "  files.lastPlayed AS lastPlayed,"
+              "  files.dateAdded AS dateAdded "
               "FROM game"
               "  JOIN files ON"
               "    files.idFile=game.idFile"
@@ -172,11 +210,11 @@ void CProgramDatabase::SetScraperForPath(const CStdString& filePath, const Scrap
     CStdString strSQL;
     if (settings.exclude)
     { //NB See note in ::GetScraperForPath about strContent=='none'
-      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=1, exclude=0, where idPath=%i", idPath);
+      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=1, exclude=0 where idPath=%i", idPath);
     }
     else if(!scraper)
     { // catch clearing content, but not excluding
-      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=0, exclude=1, where idPath=%i", idPath);
+      strSQL=PrepareSQL("update path set strContent='', strScraper='', scanRecursive=0, useFolderNames=0, strSettings='', noUpdate=0, exclude=1 where idPath=%i", idPath);
     }
     else
     {
@@ -656,6 +694,26 @@ int CProgramDatabase::AddGenre(const CStdString& strGenre)
   return AddToTable("genre", "idGenre", "strGenre", strGenre);
 }
 
+int CProgramDatabase::AddDescriptor(const CStdString& strDescriptor)
+{
+  return AddToTable("descriptor", "idDescriptor", "strDescriptor", strDescriptor);
+}
+
+int CProgramDatabase::AddGeneralFeature(const CStdString& strGeneralFeature)
+{
+  return AddToTable("generalfeature", "idGeneralFeature", "strGeneralFeature", strGeneralFeature);
+}
+
+int CProgramDatabase::AddOnlineFeature(const CStdString& strOnlineFeature)
+{
+  return AddToTable("onlinefeature", "idOnlineFeature", "strOnlineFeature", strOnlineFeature);
+}
+
+int CProgramDatabase::AddPlatform(const CStdString& strPlatform)
+{
+  return AddToTable("platform", "idPlatform", "strPlatform", strPlatform);
+}
+
 void CProgramDatabase::AddToLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID, const char *typeField /* = NULL */, const char *type /* = NULL */)
 {
   try
@@ -718,6 +776,30 @@ void CProgramDatabase::AddPublisherToGame(int idGame, int idPublisher)
 void CProgramDatabase::AddGenreToGame(int idGame, int idGenre)
 {
   AddToLinkTable("genrelinkgame", "idGenre", idGenre, "idGame", idGame);
+}
+
+//****Descriptors****
+void CProgramDatabase::AddDescriptorToGame(int idGame, int idDescriptor)
+{
+  AddToLinkTable("descriptorlinkgame", "idDescriptor", idDescriptor, "idGame", idGame);
+}
+
+//****General features****
+void CProgramDatabase::AddGeneralFeatureToGame(int idGame, int idGeneralFeature)
+{
+  AddToLinkTable("generalfeaturelinkgame", "idGeneralFeature", idGeneralFeature, "idGame", idGame);
+}
+
+//****Online features****
+void CProgramDatabase::AddOnlineFeatureToGame(int idGame, int idOnlineFeature)
+{
+  AddToLinkTable("onlinefeaturelinkgame", "idOnlineFeature", idOnlineFeature, "idGame", idGame);
+}
+
+//****Platforms****
+void CProgramDatabase::AddPlatformToGame(int idGame, int idPlatform)
+{
+  AddToLinkTable("platformlinkgame", "idPlatform", idPlatform, "idGame", idGame);
 }
 
 void CProgramDatabase::ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName)
@@ -895,6 +977,26 @@ CStdString CProgramDatabase::GetGenreById(int id)
   return GetSingleValue("genre", "strGenre", PrepareSQL("idGenre=%i", id));
 }
 
+CStdString CProgramDatabase::GetDescriptorById(int id)
+{
+  return GetSingleValue("descriptor", "strDescriptor", PrepareSQL("idDescriptor=%i", id));
+}
+
+CStdString CProgramDatabase::GetGeneralFeatureById(int id)
+{
+  return GetSingleValue("generalfeature", "strGeneralFeature", PrepareSQL("idGeneralFeature=%i", id));
+}
+
+CStdString CProgramDatabase::GetOnlineFeatureById(int id)
+{
+  return GetSingleValue("onlinefeature", "strOnlineFeature", PrepareSQL("idOnlineFeature=%i", id));
+}
+
+CStdString CProgramDatabase::GetPlatformById(int id)
+{
+  return GetSingleValue("platform", "strPlatform", PrepareSQL("idPlatform=%i", id));
+}
+
 //********************************************************************************************************************************
 bool CProgramDatabase::LoadProgramInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details)
 {
@@ -929,7 +1031,8 @@ void CProgramDatabase::GetGameInfo(const CStdString& strFilenameAndPath, CProgra
   }
 }
 
-void CProgramDatabase::AddGenreAndDevelopersAndPublishers(const CProgramInfoTag& details, vector<int>& vecDevelopers, vector<int>& vecPublishers, vector<int>& vecGenres)
+void CProgramDatabase::AddGenreAndDevelopersAndPublishers(const CProgramInfoTag& details, vector<int>& vecDevelopers, vector<int>& vecPublishers, vector<int>& vecGenres,
+                                                          vector<int>& vecDescriptors, vector<int>& vecGeneralFeatures, vector<int>& vecOnlineFeatures, vector<int>& vecPlatforms)
 {
   // add all developers
   for (unsigned int i = 0; i < details.m_developer.size(); i++)
@@ -942,6 +1045,22 @@ void CProgramDatabase::AddGenreAndDevelopersAndPublishers(const CProgramInfoTag&
   // add all genres
   for (unsigned int i = 0; i < details.m_genre.size(); i++)
     vecGenres.push_back(AddGenre(details.m_genre[i]));
+
+  // add all descriptors
+  for (unsigned int i = 0; i < details.m_descriptor.size(); i++)
+    vecDescriptors.push_back(AddDescriptor(details.m_descriptor[i]));
+
+  // add all general features
+  for (unsigned int i = 0; i < details.m_generalFeature.size(); i++)
+    vecGeneralFeatures.push_back(AddGeneralFeature(details.m_generalFeature[i]));
+
+  // add all online features
+  for (unsigned int i = 0; i < details.m_onlineFeature.size(); i++)
+    vecOnlineFeatures.push_back(AddOnlineFeature(details.m_onlineFeature[i]));
+
+  // add all platforms
+  for (unsigned int i = 0; i < details.m_platform.size(); i++)
+    vecPlatforms.push_back(AddPlatform(details.m_platform[i]));
 }
 
 CStdString CProgramDatabase::GetValueString(const CProgramInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const
@@ -1016,7 +1135,11 @@ int CProgramDatabase::SetDetailsForGame(const CStdString& strFilenameAndPath, co
     vector<int> vecDevelopers;
     vector<int> vecPublishers;
     vector<int> vecGenres;
-    AddGenreAndDevelopersAndPublishers(details,vecDevelopers,vecPublishers,vecGenres);
+    vector<int> vecDescriptors;
+    vector<int> vecGeneralFeatures;
+    vector<int> vecOnlineFeatures;
+    vector<int> vecPlatforms;
+    AddGenreAndDevelopersAndPublishers(details,vecDevelopers,vecPublishers,vecGenres,vecDescriptors,vecGeneralFeatures,vecOnlineFeatures,vecPlatforms);
 
     for (unsigned int i = 0; i < vecDevelopers.size(); ++i)
       AddDeveloperToGame(idGame, vecDevelopers[i]);
@@ -1026,6 +1149,18 @@ int CProgramDatabase::SetDetailsForGame(const CStdString& strFilenameAndPath, co
 
     for (unsigned int i = 0; i < vecGenres.size(); ++i)
       AddGenreToGame(idGame, vecGenres[i]);
+
+    for (unsigned int i = 0; i < vecDescriptors.size(); ++i)
+      AddDescriptorToGame(idGame, vecDescriptors[i]);
+
+    for (unsigned int i = 0; i < vecGeneralFeatures.size(); ++i)
+      AddGeneralFeatureToGame(idGame, vecGeneralFeatures[i]);
+
+    for (unsigned int i = 0; i < vecOnlineFeatures.size(); ++i)
+      AddOnlineFeatureToGame(idGame, vecOnlineFeatures[i]);
+
+    for (unsigned int i = 0; i < vecPlatforms.size(); ++i)
+      AddPlatformToGame(idGame, vecPlatforms[i]);
 
     // update our game table (we know it was added already above)
     // and insert the new row
@@ -1077,6 +1212,18 @@ void CProgramDatabase::DeleteGame(const CStdString& strFilenameAndPath, bool bKe
     m_pDS->exec(strSQL.c_str());
 
     strSQL=PrepareSQL("delete from genrelinkgame where idgame=%i", idGame);
+    m_pDS->exec(strSQL.c_str());
+
+    strSQL=PrepareSQL("delete from descriptorlinkgame where idgame=%i", idGame);
+    m_pDS->exec(strSQL.c_str());
+
+    strSQL=PrepareSQL("delete from generalfeaturelinkgame where idgame=%i", idGame);
+    m_pDS->exec(strSQL.c_str());
+
+    strSQL=PrepareSQL("delete from onlinefeaturelinkgame where idgame=%i", idGame);
+    m_pDS->exec(strSQL.c_str());
+
+    strSQL=PrepareSQL("delete from platformlinkgame where idgame=%i", idGame);
     m_pDS->exec(strSQL.c_str());
 
     if (!bKeepThumb)
@@ -1189,6 +1336,26 @@ bool CProgramDatabase::GetGenresNav(const CStdString& strBaseDir, CFileItemList&
   return GetNavCommon(strBaseDir, items, "genre", idContent, filter, countOnly);
 }
 
+bool CProgramDatabase::GetDescriptorsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
+{
+  return GetNavCommon(strBaseDir, items, "descriptor", idContent, filter, countOnly);
+}
+
+bool CProgramDatabase::GetGeneralFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
+{
+  return GetNavCommon(strBaseDir, items, "generalfeature", idContent, filter, countOnly);
+}
+
+bool CProgramDatabase::GetOnlineFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
+{
+  return GetNavCommon(strBaseDir, items, "onlinefeature", idContent, filter, countOnly);
+}
+
+bool CProgramDatabase::GetPlatformsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
+{
+  return GetNavCommon(strBaseDir, items, "platform", idContent, filter, countOnly);
+}
+
 bool CProgramDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& items, const CStdString &type, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
 {
   // TODO: implement this
@@ -1204,7 +1371,8 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
 bool CProgramDatabase::GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,
                                   int idGenre /* = -1 */, int idYear /* = -1 */, int idActor /* = -1 */, int idDirector /* = -1 */,
                                   int idStudio /* = -1 */, int idCountry /* = -1 */, int idSet /* = -1 */, int idTag /* = -1 */,
-                                  const SortDescription &sortDescription /* = SortDescription() */)
+                                  int idDescriptor /* = -1 */, int idGeneralFeature /* = -1 */, int idOnlineFeature /* = -1 */,
+                                  int idPlatform /* = -1 */, const SortDescription &sortDescription /* = SortDescription() */)
 {
   // TODO: implement this
   CProgramDbUrl programUrl;

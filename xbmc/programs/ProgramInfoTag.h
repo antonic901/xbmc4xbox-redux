@@ -45,6 +45,10 @@ public:
   std::vector<std::string> m_developer;
   std::vector<std::string> m_publisher;
   std::vector<std::string> m_genre;
+  std::vector<std::string> m_descriptor;
+  std::vector<std::string> m_generalFeature;
+  std::vector<std::string> m_onlineFeature;
+  std::vector<std::string> m_platform;
   CStdString m_strTrailer;
   CStdString m_strPlot;
   CScraperUrl m_strPictureURL;
@@ -55,13 +59,13 @@ public:
   CStdString m_strFileNameAndPath;
   CStdString m_strOriginalTitle;
   CStdString m_strESRB;
-  CStdString m_strESRBDescription;
   CDateTime m_lastPlayed;
   int m_playCount;
   int m_iYear;
   int m_iDbId; 
   int m_iFileId;
   float m_fRating;
+  bool m_bExclusive;
   CFanart m_fanart;
   CDateTime m_dateAdded;
   CStdString m_type;

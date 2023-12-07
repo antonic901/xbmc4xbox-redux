@@ -99,15 +99,19 @@ typedef enum
   PROGRAMDB_ID_THUMBURL = 4,
   PROGRAMDB_ID_IDENT = 5,
   PROGRAMDB_ID_ESRB = 6,
-  PROGRAMDB_ID_ESRB_DES = 7,
+  PROGRAMDB_ID_ESRB_DESCRIPTOR = 7,
   PROGRAMDB_ID_GENRE = 8,
   PROGRAMDB_ID_DEVELOPER = 9,
   PROGRAMDB_ID_PUBLISHER = 10,
-  PROGRAMDB_ID_ORIGINALTITLE = 11,
-  PROGRAMDB_ID_TRAILER = 12,
-  PROGRAMDB_ID_FANART = 13,
-  PROGRAMDB_ID_BASEPATH = 14,
-  PROGRAMDB_ID_PARENTPATHID = 15,
+  PROGRAMDB_ID_FEATURE_GENERAL = 11,
+  PROGRAMDB_ID_FEATURE_ONLINE = 12,
+  PROGRAMDB_ID_PLATFORM = 13,
+  PROGRAMDB_ID_EXCLUSIVE = 14,
+  PROGRAMDB_ID_ORIGINALTITLE = 15,
+  PROGRAMDB_ID_TRAILER = 16,
+  PROGRAMDB_ID_FANART = 17,
+  PROGRAMDB_ID_BASEPATH = 18,
+  PROGRAMDB_ID_PARENTPATHID = 19,
   PROGRAMDB_ID_MAX
 } PROGRAMDB_IDS;
 
@@ -115,17 +119,20 @@ const struct SDbTableOffsets DbGameOffsets[] =
 {
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTitle) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPlot) },
-  { PROGRAMDB_TYPE_FLOAT, my_offsetof(CProgramInfoTag,m_fRating) },
   { PROGRAMDB_TYPE_INT, my_offsetof(CProgramInfoTag,m_iYear) },
+  { PROGRAMDB_TYPE_FLOAT, my_offsetof(CProgramInfoTag,m_fRating) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPictureURL.m_xml) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strXBENumber) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strESRB) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strESRBDescription) },
+  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_descriptor) },
+  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_genre) },
   { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_developer) },
   { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_publisher) },
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_genre) },
+  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_generalFeature) },
+  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_onlineFeature) },
+  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_platform) },
+  { PROGRAMDB_TYPE_BOOL, my_offsetof(CProgramInfoTag,m_bExclusive) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strOriginalTitle) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPictureURL.m_spoof) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTrailer) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_fanart.m_xml) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_basePath) },
@@ -151,6 +158,10 @@ public:
   CStdString GetDeveloperById(int id);
   CStdString GetPublisherById(int id);
   CStdString GetGenreById(int id);
+  CStdString GetDescriptorById(int id);
+  CStdString GetGeneralFeatureById(int id);
+  CStdString GetOnlineFeatureById(int id);
+  CStdString GetPlatformById(int id);
 
   bool LoadProgramInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details);
   void GetGameInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details, int idGame = -1);
@@ -222,12 +233,20 @@ public:
   bool GetSubPaths(const CStdString& basepath, std::vector<int>& subpaths);
 
   // general browsing
-  bool GetGenresNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetDevelopersNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetPublishersNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetGenresNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetDescriptorsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetGeneralFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetOnlineFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetPlatformsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetYearsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter());
 
-  bool GetGamesNav(const CStdString& strBaseDir, CFileItemList& items, int idGenre=-1, int idYear=-1, int idActor=-1, int idDirector=-1, int idStudio=-1, int idCountry=-1, int idSet=-1, int idTag=-1, const SortDescription &sortDescription = SortDescription());
+  bool GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,
+                    int idGenre=-1, int idYear=-1, int idActor=-1, int idDirector=-1,
+                    int idStudio=-1, int idCountry=-1, int idSet=-1, int idTag=-1,
+                    int idDescriptor=-1, int idGeneralFeature=-1, int idOnlineFeature=-1,
+                    int idPlatform=-1, const SortDescription &sortDescription = SortDescription());
 
   bool GetRecentlyAddedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
 
@@ -316,6 +335,10 @@ protected:
   int AddDeveloper(const CStdString& strDeveloper);
   int AddPublisher(const CStdString& strPublisher);
   int AddGenre(const CStdString& strGenre);
+  int AddDescriptor(const CStdString& strDescriptor);
+  int AddGeneralFeature(const CStdString& strGeneralFeature);
+  int AddOnlineFeature(const CStdString& strOnlineFeature);
+  int AddPlatform(const CStdString& strPlatform);
 
   // link functions - these two do all the work
   void AddToLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID, const char *typeField = NULL, const char *type = NULL);
@@ -324,8 +347,13 @@ protected:
   void AddDeveloperToGame(int idGame, int idDeveloper);
   void AddPublisherToGame(int idGame, int idPublisher);
   void AddGenreToGame(int idGame, int idGenre);
+  void AddDescriptorToGame(int idGame, int idDescriptor);
+  void AddGeneralFeatureToGame(int idGame, int idGeneralFeature);
+  void AddOnlineFeatureToGame(int idGame, int idOnlineFeature);
+  void AddPlatformToGame(int idGame, int idPlatform);
 
-  void AddGenreAndDevelopersAndPublishers(const CProgramInfoTag& details, std::vector<int>& vecDevelopers, std::vector<int>& vecGenres, std::vector<int>& vecPublishers);
+  void AddGenreAndDevelopersAndPublishers(const CProgramInfoTag& details, std::vector<int>& vecDevelopers, std::vector<int>& vecGenres, std::vector<int>& vecPublishers,
+                                          std::vector<int>& vecDescriptors, std::vector<int>& vecGeneralFeatures, std::vector<int>& vecOnlineFeatures, std::vector<int>& vecPlatforms);
 
   CProgramInfoTag GetDetailsByTypeAndId(PROGRAMDB_CONTENT_TYPE type, int id);
   CProgramInfoTag GetDetailsForGame(std::auto_ptr<dbiplus::Dataset> &pDS, bool needsCast = false);

@@ -233,6 +233,11 @@ namespace PROGRAM
     return lResult;
   }
 
+  void CProgramInfoScanner::GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir, bool useLocal, CGUIDialogProgress* pDialog /* == NULL */)
+  {
+    // TODO: implement this
+  }
+
   CStdString CProgramInfoScanner::GetnfoFile(CFileItem *item, bool bGrabAny) const
   {
     CStdString nfoFile;

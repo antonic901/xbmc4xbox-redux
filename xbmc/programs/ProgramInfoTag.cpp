@@ -38,6 +38,10 @@ void CProgramInfoTag::Reset()
   m_developer.clear();
   m_publisher.clear();
   m_genre.clear();
+  m_descriptor.clear();
+  m_generalFeature.clear();
+  m_onlineFeature.clear();
+  m_platform.clear();
   m_strTrailer = "";
   m_strPlot = "";
   m_strTitle = "";
@@ -46,7 +50,6 @@ void CProgramInfoTag::Reset()
   m_strFileNameAndPath = "";
   m_strOriginalTitle = "";
   m_strESRB = "";
-  m_strESRBDescription = "";
   m_iYear = 0;
   m_iDbId = -1;
   m_iFileId = -1;
@@ -70,7 +73,6 @@ bool CProgramInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePath
     XMLUtils::SetString(program, "originaltitle", m_strOriginalTitle);
   XMLUtils::SetFloat(program, "rating", m_fRating);
   XMLUtils::SetInt(program, "year", m_iYear);
-  XMLUtils::SetString(program, "plot", m_strPlot);
   if (!m_strPictureURL.m_xml.empty())
   {
     TiXmlDocument doc;
@@ -97,10 +99,19 @@ bool CProgramInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePath
   }
 
   XMLUtils::SetString(program, "id", m_strXBENumber);
-  XMLUtils::SetStringArray(program, "developer", m_developer);
-  XMLUtils::SetStringArray(program, "publisher", m_publisher);
   XMLUtils::SetStringArray(program, "genre", m_genre);
   XMLUtils::SetString(program, "trailer", m_strTrailer);
+
+  // XBMC4Gamers default.xml
+  XMLUtils::SetStringArray(program, "developer", m_developer);
+  XMLUtils::SetStringArray(program, "publisher", m_publisher);
+  XMLUtils::SetStringArray(program, "esrb_descriptor", m_descriptor);
+  XMLUtils::SetStringArray(program, "feature_general", m_generalFeature);
+  XMLUtils::SetStringArray(program, "feature_online", m_onlineFeature);
+  XMLUtils::SetStringArray(program, "platform", m_platform);
+  XMLUtils::SetBoolean(program, "exclusive", m_bExclusive);
+  XMLUtils::SetString(program, "esrb", m_strESRB);
+  XMLUtils::SetString(program, "overview", m_strPlot);
 
   XMLUtils::SetString(program, "dateadded", m_dateAdded.GetAsDBDateTime());
 
@@ -126,6 +137,10 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar << m_developer;
     ar << m_publisher;
     ar << m_genre;
+    ar << m_descriptor;
+    ar << m_generalFeature;
+    ar << m_onlineFeature;
+    ar << m_platform;
     ar << m_strPlot;
     ar << m_strPictureURL.m_spoof;
     ar << m_strPictureURL.m_xml;
@@ -136,7 +151,6 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar << m_strPath;
     ar << m_strXBENumber;
     ar << m_strESRB;
-    ar << m_strESRBDescription;
     ar << m_strFileNameAndPath;
     ar << m_strOriginalTitle;
     ar << m_iYear;
@@ -153,6 +167,10 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_developer;
     ar >> m_publisher;
     ar >> m_genre;
+    ar >> m_descriptor;
+    ar >> m_generalFeature;
+    ar >> m_onlineFeature;
+    ar >> m_platform;
     ar >> m_strPlot;
     ar >> m_strPictureURL.m_spoof;
     ar >> m_strPictureURL.m_xml;
@@ -165,7 +183,6 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_strPath;
     ar >> m_strXBENumber;
     ar >> m_strESRB;
-    ar >> m_strESRBDescription;
     ar >> m_strFileNameAndPath;
     ar >> m_strOriginalTitle;
     ar >> m_iYear;
@@ -187,6 +204,10 @@ void CProgramInfoTag::Serialize(CVariant& value)
   value["developer"] = m_developer;
   value["publisher"] = m_publisher;
   value["genre"] = m_genre;
+  value["descriptor"] = m_descriptor;
+  value["generalfeature"] = m_generalFeature;
+  value["onlinefeature"] = m_onlineFeature;
+  value["platform"] = m_platform;
   value["plot"] = m_strPlot;
   value["title"] = m_strTitle;
   value["trailer"] = m_strTrailer;
@@ -195,10 +216,10 @@ void CProgramInfoTag::Serialize(CVariant& value)
   value["imdbnumber"] = m_strXBENumber;
   value["filenameandpath"] = m_strFileNameAndPath;
   value["esrb"] = m_strESRB;
-  value["esrbdescription"] = m_strESRBDescription;
   value["originaltitle"] = m_strOriginalTitle;
   value["year"] = m_iYear;
   value["rating"] = m_fRating;
+  value["exclusive"] = m_bExclusive;
   value["dbid"] = m_iDbId;
   value["fileid"] = m_iFileId;
   value["dateadded"] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : "";
@@ -222,8 +243,6 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
     m_fRating = m_fRating / max_value * 10; // Normalise the Program Rating to between 1 and 10
   }
   XMLUtils::GetInt(program, "year", m_iYear);
-  XMLUtils::GetString(program, "plot", m_strPlot);
-  XMLUtils::GetString(program, "esrbdescription", m_strESRBDescription);
   XMLUtils::GetString(program, "file", m_strFile);
   XMLUtils::GetString(program, "path", m_strPath);
   XMLUtils::GetString(program, "id", m_strXBENumber);
@@ -251,6 +270,11 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
   // XBMC4Gamers default.xml
   XMLUtils::GetStringArray(program, "developer", m_developer);
   XMLUtils::GetStringArray(program, "publisher", m_publisher);
+  XMLUtils::GetStringArray(program, "esrb_descriptor", m_descriptor);
+  XMLUtils::GetStringArray(program, "feature_general", m_generalFeature);
+  XMLUtils::GetStringArray(program, "feature_online", m_onlineFeature);
+  XMLUtils::GetStringArray(program, "platform", m_platform);
+  XMLUtils::GetBoolean(program, "exclusive", m_bExclusive);
   XMLUtils::GetString(program, "esrb", m_strESRB);
   XMLUtils::GetString(program, "overview", m_strPlot);
 
