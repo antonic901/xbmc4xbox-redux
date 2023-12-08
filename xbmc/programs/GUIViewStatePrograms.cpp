@@ -30,41 +30,86 @@
 
 using namespace XFILE;
 
-CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& items) : CGUIViewState(items)
-{
-  AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
-    g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
-  AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
-  AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
-  AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
-  AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
-
-  SetSortMethod(g_settings.m_viewStatePrograms.m_sortDescription);
-  SetViewAsControl(g_settings.m_viewStatePrograms.m_viewMode);
-  SetSortOrder(g_settings.m_viewStatePrograms.m_sortDescription.sortOrder);
-
-  LoadViewState(items.GetPath(), WINDOW_PROGRAMS);
-}
-
-void CGUIViewStateWindowPrograms::SaveViewState()
-{
-    SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, &g_settings.m_viewStatePrograms);  
-}
-
-CStdString CGUIViewStateWindowPrograms::GetLockType()
+CStdString CGUIViewStateWindowProgram::GetLockType()
 {
   return "programs";
 }
 
-CStdString CGUIViewStateWindowPrograms::GetExtensions()
+CStdString CGUIViewStateWindowProgram::GetExtensions()
 {
   return ".xbe|.cut";
 }
 
-VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
+VECSOURCES& CGUIViewStateWindowProgram::GetSources()
 {
-  AddAddonsSource("executable", g_localizeStrings.Get(1043), "DefaultAddonProgram.png");
-  AddOrReplace(g_settings.m_programSources,CGUIViewState::GetSources());
+  return CGUIViewState::GetSources();
+}
+
+CGUIViewStateWindowProgramFiles::CGUIViewStateWindowProgramFiles(const CFileItemList& items) : CGUIViewStateWindowProgram(items)
+{
+  if (items.IsVirtualDirectoryRoot())
+  {
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS()); // Preformated
+    AddSortMethod(SortByDriveType, 564, LABEL_MASKS()); // Preformated
+    SetSortMethod(SortByLabel);
+
+    SetViewAsControl(DEFAULT_VIEW_LIST);
+
+    SetSortOrder(SortOrderAscending);
+  }
+  else
+  {
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%L", "%I", "%L", ""),  // Label, Size | Label, empty
+      g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+    AddSortMethod(SortBySize, 553, LABEL_MASKS("%L", "%I", "%L", "%I"));  // Label, Size | Label, Size
+    AddSortMethod(SortByDate, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));  // Label, Date | Label, Date
+    AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Label, Size | Label, empty
+
+    SetSortMethod(g_settings.m_viewStateProgramFiles.m_sortDescription);
+    SetViewAsControl(g_settings.m_viewStateProgramFiles.m_viewMode);
+    SetSortOrder(g_settings.m_viewStateProgramFiles.m_sortDescription.sortOrder);
+  }
+  LoadViewState(items.GetPath(), WINDOW_PROGRAM_FILES);
+}
+
+void CGUIViewStateWindowProgramFiles::SaveViewState()
+{
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_FILES, &g_settings.m_viewStateProgramFiles);
+}
+
+VECSOURCES& CGUIViewStateWindowProgramFiles::GetSources()
+{
+  AddOrReplace(g_settings.m_programSources, CGUIViewStateWindowProgram::GetSources());
   return g_settings.m_programSources; 
 }
 
+CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList& items) : CGUIViewStateWindowProgram(items)
+{
+}
+
+void CGUIViewStateWindowProgramNav::SaveViewState()
+{
+}
+
+VECSOURCES& CGUIViewStateWindowProgramNav::GetSources()
+{
+  //  Setup shares we want to have
+  m_sources.clear();
+  CFileItemList items;
+  if (g_settings.m_bMyProgramNavFlatten)
+    CDirectory::GetDirectory("library://program_flat/", items, "");
+  else
+    CDirectory::GetDirectory("library://program/", items, "");
+  for (int i=0; i<items.Size(); ++i)
+  {
+    CFileItemPtr item=items[i];
+    CMediaSource share;
+    share.strName=item->GetLabel();
+    share.strPath = item->GetPath();
+    share.m_strThumbnailImage= item->GetIconImage();
+    share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
+    m_sources.push_back(share);
+  }
+
+  return CGUIViewStateWindowProgram::GetSources();
+}

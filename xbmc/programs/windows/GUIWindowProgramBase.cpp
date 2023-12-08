@@ -534,7 +534,8 @@ void CGUIWindowProgramBase::OnScan(const CStdString& strPath, bool scanAll)
 
 CStdString CGUIWindowProgramBase::GetStartFolder(const CStdString &dir)
 {
-  // TODO: implemet this
+  if (dir.Equals("Plugins") || dir.Equals("Addons"))
+    return "addons://sources/executable/";
   return CGUIMediaWindow::GetStartFolder(dir);
 }
 

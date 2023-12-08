@@ -155,6 +155,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar << m_strOriginalTitle;
     ar << m_iYear;
     ar << m_fRating;
+    ar << m_bExclusive;
     ar << m_iDbId;
     ar << m_iFileId;
     ar << m_basePath;
@@ -186,6 +187,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_strFileNameAndPath;
     ar >> m_strOriginalTitle;
     ar >> m_iYear;
+    ar >> m_bExclusive;
     ar >> m_fRating;
     ar >> m_iDbId;
     ar >> m_iFileId;

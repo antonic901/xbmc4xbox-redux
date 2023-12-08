@@ -96,6 +96,7 @@ void CSettings::Initialize()
   m_bMyVideoPlaylistRepeat = false;
   m_bMyVideoPlaylistShuffle = false;
   m_bMyVideoNavFlatten = false;
+  m_bMyProgramNavFlatten = false;
   m_bStartVideoWindowed = false;
   m_bAddonAutoUpdate = false;
   m_bAddonNotifications = true;
@@ -747,6 +748,12 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
       XMLUtils::GetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
     }
   }
+  // myprograms settings
+  pElement = pRootElement->FirstChildElement("myprograms");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "flatten", m_bMyProgramNavFlatten);
+  }
 
   pElement = pRootElement->FirstChildElement("viewstates");
   if (pElement)
@@ -769,6 +776,7 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "pictures", m_viewStatePictures, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "videofiles", m_viewStateVideoFiles, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "musicfiles", m_viewStateMusicFiles, SortByLabel, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "programfiles", m_viewStateProgramFiles, SortByLabel, DEFAULT_VIEW_AUTO);
   }
 
   // general settings
@@ -1106,6 +1114,13 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     XMLUtils::SetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
   }
 
+  // myprograms settings
+  TiXmlElement programsNode("myprograms");
+  pNode = pRoot->InsertEndChild(programsNode);
+  if (!pNode) return false;
+
+  XMLUtils::SetBoolean(pNode, "flatten", m_bMyProgramNavFlatten);
+
   // view states
   TiXmlElement viewStateNode("viewstates");
   pNode = pRoot->InsertEndChild(viewStateNode);
@@ -1129,6 +1144,7 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SetViewState(pNode, "pictures", m_viewStatePictures);
     SetViewState(pNode, "videofiles", m_viewStateVideoFiles);
     SetViewState(pNode, "musicfiles", m_viewStateMusicFiles);
+    SetViewState(pNode, "programfiles", m_viewStateProgramFiles);
   }
 
   // general settings

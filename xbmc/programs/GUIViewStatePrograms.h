@@ -22,15 +22,34 @@
 
 #include "GUIViewState.h"
 
-class CGUIViewStateWindowPrograms : public CGUIViewState
+class CGUIViewStateWindowProgram : public CGUIViewState
 {
 public:
-  CGUIViewStateWindowPrograms(const CFileItemList& items);
+  CGUIViewStateWindowProgram(const CFileItemList& items) : CGUIViewState(items) {}
+
+protected:
+  virtual VECSOURCES& GetSources();
+  virtual CStdString GetLockType();
+  virtual CStdString GetExtensions();
+};
+
+class CGUIViewStateWindowProgramFiles : public CGUIViewStateWindowProgram
+{
+public:
+  CGUIViewStateWindowProgramFiles(const CFileItemList& items);
 
 protected:
   virtual void SaveViewState();
-  virtual CStdString GetLockType();
-  virtual CStdString GetExtensions();
+  virtual VECSOURCES& GetSources();
+};
+
+class CGUIViewStateWindowProgramNav : public CGUIViewStateWindowProgram
+{
+public:
+  CGUIViewStateWindowProgramNav(const CFileItemList& items);
+
+protected:
+  virtual void SaveViewState();
   virtual VECSOURCES& GetSources();
 };
 

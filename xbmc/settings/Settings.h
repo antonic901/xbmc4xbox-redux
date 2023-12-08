@@ -350,6 +350,7 @@ public:
   CViewState m_viewStatePictures;
   CViewState m_viewStateMusicFiles;
   CViewState m_viewStateVideoFiles;
+  CViewState m_viewStateProgramFiles;
 
   bool m_bMyMusicPlaylistRepeat;
   bool m_bMyMusicPlaylistShuffle;
@@ -367,6 +368,7 @@ public:
   bool m_bMyVideoPlaylistRepeat;
   bool m_bMyVideoPlaylistShuffle;
   bool m_bMyVideoNavFlatten;
+  bool m_bMyProgramNavFlatten;
   bool m_bStartVideoWindowed;
   bool m_bAddonAutoUpdate;
   bool m_bAddonNotifications;
