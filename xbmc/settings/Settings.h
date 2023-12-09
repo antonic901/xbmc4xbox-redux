@@ -345,6 +345,7 @@ public:
   CViewState m_viewStateVideoNavSeasons;
   CViewState m_viewStateVideoNavTvShows;
   CViewState m_viewStateVideoNavMusicVideos;
+  CViewState m_viewStateProgramNavTitles;
 
   CViewState m_viewStatePrograms;
   CViewState m_viewStatePictures;

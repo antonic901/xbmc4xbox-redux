@@ -1368,11 +1368,43 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
   return false;
 }
 
+bool CProgramDatabase::GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter /* = Filter() */, const SortDescription &sortDescription /* = SortDescription() */)
+{
+  CProgramDbUrl programUrl;
+  if (!programUrl.FromString(strBaseDir))
+    return false;
+
+  return GetItems(strBaseDir, programUrl.GetType(), programUrl.GetItemType(), items, filter, sortDescription);
+}
+
+bool CProgramDatabase::GetItems(const CStdString &strBaseDir, const CStdString &mediaType, const CStdString &itemType, CFileItemList &items, const Filter &filter /* = Filter() */, const SortDescription &sortDescription /* = SortDescription() */)
+{
+  PROGRAMDB_CONTENT_TYPE contentType;
+  if (mediaType.Equals("games"))
+    contentType = PROGRAMDB_CONTENT_GAMES;
+  else
+    return false;
+
+  return GetItems(strBaseDir, contentType, itemType, items, filter, sortDescription);
+}
+
+bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_TYPE mediaType, const CStdString &itemType, CFileItemList &items, const Filter &filter /* = Filter() */, const SortDescription &sortDescription /* = SortDescription() */)
+{
+  if (itemType.Equals("games") && mediaType == PROGRAMDB_CONTENT_GAMES)
+    return GetGamesByWhere(strBaseDir, filter, items, sortDescription);
+  else if (itemType.Equals("genres"))
+    return GetGenresNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("years"))
+    return GetYearsNav(strBaseDir, items, mediaType, filter);
+
+  return false;
+}
+
 bool CProgramDatabase::GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,
-                                  int idGenre /* = -1 */, int idYear /* = -1 */, int idActor /* = -1 */, int idDirector /* = -1 */,
-                                  int idStudio /* = -1 */, int idCountry /* = -1 */, int idSet /* = -1 */, int idTag /* = -1 */,
+                                  int idDeveloper /* = -1 */, int idPublisher /* = -1 */, int idGenre /* = -1 */,
                                   int idDescriptor /* = -1 */, int idGeneralFeature /* = -1 */, int idOnlineFeature /* = -1 */,
-                                  int idPlatform /* = -1 */, const SortDescription &sortDescription /* = SortDescription() */)
+                                  int idPlatform /* = -1 */, int idYear /* = -1 */, int idTag /* = -1 */,
+                                  const SortDescription &sortDescription /* = SortDescription() */)
 {
   // TODO: implement this
   CProgramDbUrl programUrl;

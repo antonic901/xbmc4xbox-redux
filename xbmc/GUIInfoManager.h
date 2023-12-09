@@ -854,6 +854,7 @@ protected:
   int m_libraryHasTVShows;
   int m_libraryHasMusicVideos;
   int m_libraryHasMovieSets;
+  int m_libraryHasGames;
 
   CCriticalSection m_critInfo;
 };

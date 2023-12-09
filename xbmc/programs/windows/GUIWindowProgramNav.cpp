@@ -19,10 +19,14 @@
  */
 
 #include "programs/windows/GUIWindowProgramNav.h"
+#include "filesystem/ProgramDatabaseDirectory.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
+#include "utils/log.h"
 
+using namespace XFILE;
+using namespace PROGRAMDATABASEDIRECTORY;
 using namespace std;
 
 CGUIWindowProgramNav::CGUIWindowProgramNav(void)
@@ -75,9 +79,30 @@ bool CGUIWindowProgramNav::OnMessage(CGUIMessage& message)
   return CGUIWindowProgramBase::OnMessage(message);
 }
 
-void CGUIWindowProgramNav::LoadProgramInfo(CFileItemList &items)
+CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) const
 {
-  // TODO: implement this
+  CStdString path = strPath;
+  if (path.Equals("programdb://games/genres/"))
+    return "GameGenres";
+  else if (path.Equals("programdb://games/titles/"))
+    return "GameTitles";
+  else if (path.Equals("programdb://games/years/"))
+    return "GameYears";
+  else if (path.Equals("programdb://games/developers/"))
+    return "GameDevelopers";
+  else if (path.Equals("programdb://games/publishers/"))
+    return "GamePublishers";
+  else if (path.Equals("programdb://games/"))
+    return "Games";
+  else if (path.Equals("programdb://recentlyaddedgames/"))
+    return "RecentlyAddedGames";
+  else if (path.Equals("sources://programs/"))
+    return "Files";
+  else
+  {
+    CLog::Log(LOGERROR, "  CGUIWindowVideoNav::GetQuickpathName: Unknown parameter (%s)", strPath.c_str());
+    return strPath;
+  }
 }
 
 bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
@@ -90,9 +115,38 @@ bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileIte
   bool bResult = CGUIWindowProgramBase::GetDirectory(strDirectory, items);
   if (bResult)
   {
-    // TODO: we got some results - implement this
+    if (items.IsProgramDb())
+    {
+      XFILE::CProgramDatabaseDirectory dir;
+      CQueryParams params;
+      dir.GetQueryParams(items.GetPath(),params);
+      PROGRAMDATABASEDIRECTORY::NODE_TYPE node = dir.GetDirectoryChildType(items.GetPath());
+
+      items.SetThumbnailImage("");
+      if (node == NODE_TYPE_TITLE_GAMES)
+        items.SetContent("games");
+      else
+        items.SetContent("");
+    }
+    else if (strDirectory.IsEmpty())
+      items.SetLabel("");
+    else if (!items.IsVirtualDirectoryRoot())
+    {
+      CStdString label;
+      if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("programs"), &label)) 
+        items.SetLabel(label);
+    }
+    else
+    { // load info from the database
+      LoadProgramInfo(items);
+    }
   }
   return bResult;
+}
+
+void CGUIWindowProgramNav::LoadProgramInfo(CFileItemList &items)
+{
+  // TODO: implement this
 }
 
 bool CGUIWindowProgramNav::OnClick(int iItem)

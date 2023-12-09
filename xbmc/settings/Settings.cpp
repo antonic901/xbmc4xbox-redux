@@ -771,6 +771,7 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "videonavtvshows", m_viewStateVideoNavTvShows);
     GetViewState(pElement, "videonavseasons", m_viewStateVideoNavSeasons);
     GetViewState(pElement, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    GetViewState(pElement, "programnavtitles", m_viewStateProgramNavTitles);
 
     GetViewState(pElement, "programs", m_viewStatePrograms, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "pictures", m_viewStatePictures, SortByLabel, DEFAULT_VIEW_AUTO);
@@ -1139,6 +1140,7 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SetViewState(pNode, "videonavseasons", m_viewStateVideoNavSeasons);
     SetViewState(pNode, "videonavtvshows", m_viewStateVideoNavTvShows);
     SetViewState(pNode, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    SetViewState(pNode, "programnavtitles", m_viewStateProgramNavTitles);
 
     SetViewState(pNode, "programs", m_viewStatePrograms);
     SetViewState(pNode, "pictures", m_viewStatePictures);

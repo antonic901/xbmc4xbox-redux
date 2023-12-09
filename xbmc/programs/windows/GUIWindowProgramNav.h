@@ -50,5 +50,7 @@ protected:
   virtual bool OnClick(int iItem);
   virtual CStdString GetStartFolder(const CStdString &dir);
 
+  virtual CStdString GetQuickpathName(const CStdString& strPath) const;
+
   VECSOURCES m_shares;
 };

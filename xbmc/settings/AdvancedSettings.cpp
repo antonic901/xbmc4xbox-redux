@@ -184,6 +184,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryImportWatchedState = false;
   m_bVideoScannerIgnoreErrors = false;
 
+  m_bProgramLibraryHideAllItems = false;
+  m_bProgramLibraryAllItemsOnBottom = false;
   m_iProgramLibraryRecentlyAddedItems = 25;
   m_bProgramLibraryCleanOnUpdate = false;
   m_bProgramScannerIgnoreErrors = false;
@@ -384,6 +386,8 @@ bool CAdvancedSettings::Load()
   pElement = pRootElement->FirstChildElement("programlibrary");
   if (pElement)
   {
+    XMLUtils::GetBoolean(pElement, "hideallitems", m_bProgramLibraryHideAllItems);
+    XMLUtils::GetBoolean(pElement, "allitemsonbottom", m_bProgramLibraryAllItemsOnBottom);
     XMLUtils::GetInt(pElement, "recentlyaddeditems", m_iProgramLibraryRecentlyAddedItems, 1, INT_MAX);
     XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bProgramLibraryCleanOnUpdate);
     XMLUtils::GetString(pElement, "itemseparator", m_programItemSeparator);

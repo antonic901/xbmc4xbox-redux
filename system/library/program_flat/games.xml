@@ -1,0 +1,6 @@
+<node order="1" type="filter" visible="Library.HasContent(Games)">
+  <label>35002</label>
+  <icon>DefaultMovieTitle.png</icon>
+  <content>games</content>
+  <order direction="ascending">sorttitle</order>
+</node>

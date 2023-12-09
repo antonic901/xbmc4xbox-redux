@@ -63,7 +63,7 @@ namespace PROGRAM
 }
 
 // these defines are based on how many columns we have and which column certain data is going to be in
-// when we do GetDetailsForMovie()
+// when we do GetDetailsForGame()
 #define PROGRAMDB_MAX_COLUMNS 24
 #define PROGRAMDB_DETAILS_FILEID      1
 
@@ -243,10 +243,10 @@ public:
   bool GetYearsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter());
 
   bool GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,
-                    int idGenre=-1, int idYear=-1, int idActor=-1, int idDirector=-1,
-                    int idStudio=-1, int idCountry=-1, int idSet=-1, int idTag=-1,
-                    int idDescriptor=-1, int idGeneralFeature=-1, int idOnlineFeature=-1,
-                    int idPlatform=-1, const SortDescription &sortDescription = SortDescription());
+                    int idDeveloper = -1, int idPublisher = -1, int idGenre = -1,
+                    int idDescriptor = -1, int idGeneralFeature = -1, int idOnlineFeature = -1,
+                    int idPlatform = -1, int idYear = -1, int idTag = -1,
+                    const SortDescription &sortDescription = SortDescription());
 
   bool GetRecentlyAddedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
 
@@ -276,6 +276,11 @@ public:
 
   // smart playlists and main retrieval work in these functions
   bool GetGamesByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
+
+  // retrieve a list of items
+  bool GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
+  bool GetItems(const CStdString &strBaseDir, const CStdString &mediaType, const CStdString &itemType, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
+  bool GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_TYPE mediaType, const CStdString &itemType, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
 
   static void ProgramContentTypeToString(PROGRAMDB_CONTENT_TYPE type, CStdString& out)
   {

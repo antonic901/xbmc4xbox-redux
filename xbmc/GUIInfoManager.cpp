@@ -64,6 +64,7 @@
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
+#include "programs/ProgramDatabase.h"
 #include "GUIWindowManager.h"
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
@@ -933,6 +934,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         else if (cat == "tvshows") return LIBRARY_HAS_TVSHOWS;
         else if (cat == "musicvideos") return LIBRARY_HAS_MUSICVIDEOS;
         else if (cat == "moviesets") return LIBRARY_HAS_MOVIE_SETS;
+        else if (cat == "program") return LIBRARY_HAS_PROGRAM;
+        else if (cat == "games") return LIBRARY_HAS_GAMES;
       }
     }
     else if (cat.name == "musicplayer")
@@ -2093,6 +2096,8 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
   else if (condition == PLAYER_MUTED)
     bReturn = g_settings.m_bMute;
   else if (condition >= LIBRARY_HAS_MUSIC && condition <= LIBRARY_HAS_MUSICVIDEOS)
+    bReturn = GetLibraryBool(condition);
+  else if (condition >= LIBRARY_HAS_PROGRAM && condition <= LIBRARY_HAS_GAMES)
     bReturn = GetLibraryBool(condition);
   else if (condition == LIBRARY_IS_SCANNING)
   {
@@ -4758,6 +4763,9 @@ void CGUIInfoManager::SetLibraryBool(int condition, bool value)
     case LIBRARY_HAS_MUSICVIDEOS:
       m_libraryHasMusicVideos = value ? 1 : 0;
       break;
+    case LIBRARY_HAS_GAMES:
+      m_libraryHasGames = value ? 1 : 0;
+      break;
     default:
       break;
   }
@@ -4770,6 +4778,7 @@ void CGUIInfoManager::ResetLibraryBools()
   m_libraryHasTVShows = -1;
   m_libraryHasMusicVideos = -1;
   m_libraryHasMovieSets = -1;
+  m_libraryHasGames = -1;
 }
 
 bool CGUIInfoManager::GetLibraryBool(int condition)
@@ -4845,6 +4854,21 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
             GetLibraryBool(LIBRARY_HAS_TVSHOWS) ||
             GetLibraryBool(LIBRARY_HAS_MUSICVIDEOS));
   }
+  else if (condition == LIBRARY_HAS_GAMES)
+  {
+    if (m_libraryHasGames < 0)
+    {
+      CProgramDatabase db;
+      if (db.Open())
+      {
+        m_libraryHasGames = db.HasContent(PROGRAMDB_CONTENT_GAMES) ? 1 : 0;
+        db.Close();
+      }
+    }
+    return m_libraryHasGames > 0;
+  }
+  else if (condition == LIBRARY_HAS_PROGRAM)
+    return GetLibraryBool(LIBRARY_HAS_GAMES);
   return false;
 }
 
