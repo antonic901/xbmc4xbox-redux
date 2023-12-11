@@ -63,6 +63,10 @@ bool CProgramDbUrl::parse()
       m_itemType = "games";
       break;
 
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_GENRE:
+      m_itemType = "genres";
+      break;
+
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_ROOT:
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_OVERVIEW:
     default:

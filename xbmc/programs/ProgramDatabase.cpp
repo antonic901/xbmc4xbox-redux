@@ -1359,7 +1359,141 @@ bool CProgramDatabase::GetPlatformsNav(const CStdString& strBaseDir, CFileItemLi
 
 bool CProgramDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList& items, const CStdString &type, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
 {
-  // TODO: implement this
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString strSQL;
+    Filter extFilter = filter;
+    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
+    {
+      if (idContent == PROGRAMDB_CONTENT_GAMES)
+      {
+        strSQL = "select %s " + PrepareSQL("from %s ", type.c_str());
+        extFilter.fields = PrepareSQL("%s.id%s, %s.str%s, path.strPath, files.playCount", type.c_str(), type.c_str(), type.c_str(), type.c_str());
+        extFilter.AppendJoin(PrepareSQL("join %slinkgame on %s.id%s = %slinkgame.id%s join gameview on %slinkgame.idGame = gameview.idGame join files on files.idFile = gameview.idFile join path on path.idPath = files.idPath",
+                                        type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str()));
+      }
+      else
+        return false;
+    }
+    else
+    {
+      if (idContent == PROGRAMDB_CONTENT_GAMES)
+      {
+        strSQL = "select %s " + PrepareSQL("from %s ", type.c_str());
+        extFilter.fields = PrepareSQL("%s.id%s, %s.str%s, count(1), count(files.playCount)", type.c_str(), type.c_str(), type.c_str(), type.c_str());
+        extFilter.AppendJoin(PrepareSQL("join %slinkgame on %s.id%s = %slinkgame.id%s join gameview on %slinkgame.idGame = gameview.idGame join files on files.idFile = gameview.idFile",
+                                        type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str(), type.c_str()));
+        extFilter.AppendGroup(PrepareSQL("%s.id%s", type.c_str(), type.c_str()));
+      }
+      else
+        return false;
+    }
+
+    if (countOnly)
+    {
+      extFilter.fields = PrepareSQL("COUNT(DISTINCT %s.id%s)", type.c_str(), type.c_str());
+      extFilter.group.clear();
+      extFilter.order.clear();
+    }
+    strSQL.Format(strSQL.c_str(), !extFilter.fields.empty() ? extFilter.fields.c_str() : "*");
+
+    CProgramDbUrl programUrl;
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, programUrl))
+      return false;
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return iRowsFound == 0;
+
+    if (countOnly)
+    {
+      CFileItemPtr pItem(new CFileItem());
+      pItem->SetProperty("total", iRowsFound == 1 ? m_pDS->fv(0).get_asInt() : iRowsFound);
+      items.Add(pItem);
+
+      m_pDS->close();
+      return true;
+    }
+
+    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
+    {
+      map<int, pair<CStdString,int> > mapItems;
+      map<int, pair<CStdString,int> >::iterator it;
+      while (!m_pDS->eof())
+      {
+        int id = m_pDS->fv(0).get_asInt();
+        CStdString str = m_pDS->fv(1).get_asString();
+
+        // was this already found?
+        it = mapItems.find(id);
+        if (it == mapItems.end())
+        {
+          // check path
+          if (g_passwordManager.IsDatabasePathUnlocked(CStdString(m_pDS->fv(2).get_asString()),g_settings.m_programSources))
+          {
+            if (idContent == PROGRAMDB_CONTENT_GAMES)
+              mapItems.insert(pair<int, pair<CStdString,int> >(id, pair<CStdString,int>(str,m_pDS->fv(3).get_asInt()))); //fv(3) is file.playCount
+          }
+        }
+        m_pDS->next();
+      }
+      m_pDS->close();
+
+      for (it = mapItems.begin(); it != mapItems.end(); ++it)
+      {
+        CFileItemPtr pItem(new CFileItem(it->second.first));
+        pItem->GetProgramInfoTag()->m_iDbId = it->first;
+        pItem->GetProgramInfoTag()->m_type = type;
+
+        CProgramDbUrl itemUrl = programUrl;
+        CStdString path; path.Format("%ld/", it->first);
+        itemUrl.AppendPath(path);
+        pItem->SetPath(itemUrl.ToString());
+
+        pItem->m_bIsFolder = true;
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+          pItem->GetProgramInfoTag()->m_playCount = it->second.second;
+        if (!items.Contains(pItem->GetPath()))
+        {
+          pItem->SetLabelPreformated(true);
+          items.Add(pItem);
+        }
+      }
+    }
+    else
+    {
+      while (!m_pDS->eof())
+      {
+        CFileItemPtr pItem(new CFileItem(m_pDS->fv(1).get_asString()));
+        pItem->GetProgramInfoTag()->m_iDbId = m_pDS->fv(0).get_asInt();
+        pItem->GetProgramInfoTag()->m_type = type;
+
+        CProgramDbUrl itemUrl = programUrl;
+        CStdString path; path.Format("%ld/", m_pDS->fv(0).get_asInt());
+        itemUrl.AppendPath(path);
+        pItem->SetPath(itemUrl.ToString());
+
+        pItem->m_bIsFolder = true;
+        pItem->SetLabelPreformated(true);
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+        { // fv(3) is the number of program watched, fv(2) is the total number.  We set the playcount
+          // only if the number of programs watched is equal to the total number (i.e. every program watched)
+          pItem->GetProgramInfoTag()->m_playCount = (m_pDS->fv(3).get_asInt() == m_pDS->fv(2).get_asInt()) ? 1 : 0;
+        }
+        items.Add(pItem);
+        m_pDS->next();
+      }
+      m_pDS->close();
+    }
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
   return false;
 }
 
@@ -1399,6 +1533,14 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_
     return GetYearsNav(strBaseDir, items, mediaType, filter);
 
   return false;
+}
+
+CStdString CProgramDatabase::GetItemById(const CStdString &itemType, int id)
+{
+  if (itemType.Equals("genres"))
+    return GetGenreById(id);
+
+  return "";
 }
 
 bool CProgramDatabase::GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,

@@ -28,7 +28,8 @@ using namespace XFILE::PROGRAMDATABASEDIRECTORY;
 using namespace std;
 
 Node GameChildren[] = {
-                        { NODE_TYPE_TITLE_GAMES, "titles",     369 }
+                        { NODE_TYPE_GENRE,        "genres",     135 },
+                        { NODE_TYPE_TITLE_GAMES,  "titles",     369 }
                        };
 
 CDirectoryNodeGamesOverview::CDirectoryNodeGamesOverview(const CStdString& strName, CDirectoryNode* pParent)
