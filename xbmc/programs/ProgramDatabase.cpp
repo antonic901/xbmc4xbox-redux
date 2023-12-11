@@ -1654,8 +1654,20 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_
 {
   if (itemType.Equals("games") && mediaType == PROGRAMDB_CONTENT_GAMES)
     return GetGamesByWhere(strBaseDir, filter, items, sortDescription);
+  else if (itemType.Equals("developers"))
+    return GetDevelopersNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("publishers"))
+    return GetPublishersNav(strBaseDir, items, mediaType, filter);
   else if (itemType.Equals("genres"))
     return GetGenresNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("descriptors"))
+    return GetDescriptorsNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("generalfeatures"))
+    return GetGeneralFeaturesNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("onlinefeatures"))
+    return GetOnlineFeaturesNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("platforms"))
+    return GetPlatformsNav(strBaseDir, items, mediaType, filter);
   else if (itemType.Equals("years"))
     return GetYearsNav(strBaseDir, items, mediaType, filter);
 

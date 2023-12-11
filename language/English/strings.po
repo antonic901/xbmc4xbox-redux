@@ -9177,3 +9177,27 @@ msgstr ""
 msgctxt "#35007"
 msgid "Default game scraper"
 msgstr ""
+
+msgctxt "#35100"
+msgid "Developers"
+msgstr ""
+
+msgctxt "#35101"
+msgid "Publishers"
+msgstr ""
+
+msgctxt "#35102"
+msgid "ESRB Descriptors"
+msgstr ""
+
+msgctxt "#35103"
+msgid "General features"
+msgstr ""
+
+msgctxt "#35104"
+msgid "Online features"
+msgstr ""
+
+msgctxt "#35105"
+msgid "Platforms"
+msgstr ""

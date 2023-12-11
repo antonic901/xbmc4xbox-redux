@@ -63,8 +63,32 @@ bool CProgramDbUrl::parse()
       m_itemType = "games";
       break;
 
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_DEVELOPER:
+      m_itemType = "developers";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_PUBLISHER:
+      m_itemType = "publishers";
+      break;
+
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_GENRE:
       m_itemType = "genres";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_DESCRIPTOR:
+      m_itemType = "descriptors";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_GENERALFEATURE:
+      m_itemType = "generalfeatures";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_ONLINEFEATURE:
+      m_itemType = "onlinefeatures";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_PLATFORM:
+      m_itemType = "platforms";
       break;
 
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_YEAR:

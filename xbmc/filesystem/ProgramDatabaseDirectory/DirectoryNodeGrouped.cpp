@@ -77,8 +77,20 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
 {
   switch (GetType())
   {
+    case NODE_TYPE_DEVELOPER:
+      return "developers";
+    case NODE_TYPE_PUBLISHER:
+      return "publishers";
     case NODE_TYPE_GENRE:
       return "genres";
+    case NODE_TYPE_DESCRIPTOR:
+      return "descriptors";
+    case NODE_TYPE_GENERALFEATURE:
+      return "generalfeatures";
+    case NODE_TYPE_ONLINEFEATURE:
+      return "onlinefeatures";
+    case NODE_TYPE_PLATFORM:
+      return "platforms";
     case NODE_TYPE_YEAR:
       return "years";
     case NODE_TYPE_GAMES_OVERVIEW:

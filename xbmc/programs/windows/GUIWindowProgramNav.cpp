@@ -230,6 +230,14 @@ CStdString CGUIWindowProgramNav::GetStartFolder(const CStdString &dir)
     return "programdb://games/developers/";
   else if (dir.Equals("GamePublishers"))
     return "programdb://games/publishers/";
+  else if (dir.Equals("GameDescriptors"))
+    return "programdb://games/descriptors/";
+  else if (dir.Equals("GameGeneralFeatures"))
+    return "programdb://games/generalfeatures/";
+  else if (dir.Equals("GameOnlineFeatures"))
+    return "programdb://games/onlinefeatures/";
+  else if (dir.Equals("GamePlatforms"))
+    return "programdb://games/platforms/";
   else if (dir.Equals("Games"))
     return "programdb://games/";
   else if (dir.Equals("RecentlyAddedGames"))
