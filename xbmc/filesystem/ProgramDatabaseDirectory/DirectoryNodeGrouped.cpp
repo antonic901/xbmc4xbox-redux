@@ -79,7 +79,8 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
   {
     case NODE_TYPE_GENRE:
       return "genres";
-
+    case NODE_TYPE_YEAR:
+      return "years";
     case NODE_TYPE_GAMES_OVERVIEW:
     case NODE_TYPE_NONE:
     case NODE_TYPE_OVERVIEW:

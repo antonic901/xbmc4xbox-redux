@@ -1499,7 +1499,134 @@ bool CProgramDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList&
 
 bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */)
 {
-  // TODO: implement this
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString strSQL;
+    Filter extFilter = filter;
+    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
+    {
+      if (idContent == PROGRAMDB_CONTENT_GAMES)
+      {
+        strSQL = PrepareSQL("select gameview.c%02d, path.strPath, files.playCount from gameview ", PROGRAMDB_ID_YEAR);
+        extFilter.AppendJoin("join files on files.idFile = gameview.idFile join path on files.idPath = path.idPath");
+      }
+      else
+        return false;
+    }
+    else
+    {
+      CStdString group;
+      if (idContent == PROGRAMDB_CONTENT_GAMES)
+      {
+        strSQL = PrepareSQL("select gameview.c%02d, count(1), count(files.playCount) from gameview ", PROGRAMDB_ID_YEAR);
+        extFilter.AppendJoin("join files on files.idFile = gameview.idFile");
+        extFilter.AppendGroup(PrepareSQL("gameview.c%02d", PROGRAMDB_ID_YEAR));
+      }
+      else
+        return false;
+    }
+
+    CProgramDbUrl programUrl;
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, programUrl))
+      return false;
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return iRowsFound == 0;
+
+    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
+    {
+      map<int, pair<CStdString,int> > mapYears;
+      map<int, pair<CStdString,int> >::iterator it;
+      while (!m_pDS->eof())
+      {
+        int lYear = 0;
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+          lYear = m_pDS->fv(0).get_asInt();
+        it = mapYears.find(lYear);
+        if (it == mapYears.end())
+        {
+          // check path
+          if (g_passwordManager.IsDatabasePathUnlocked(CStdString(m_pDS->fv("path.strPath").get_asString()),g_settings.m_programSources))
+          {
+            CStdString year;
+            year.Format("%d", lYear);
+            if (idContent == PROGRAMDB_CONTENT_GAMES)
+              mapYears.insert(pair<int, pair<CStdString,int> >(lYear, pair<CStdString,int>(year,m_pDS->fv(2).get_asInt())));
+            else
+              mapYears.insert(pair<int, pair<CStdString,int> >(lYear, pair<CStdString,int>(year,0)));
+          }
+        }
+        m_pDS->next();
+      }
+      m_pDS->close();
+
+      for (it=mapYears.begin();it != mapYears.end();++it)
+      {
+        if (it->first == 0)
+          continue;
+        CFileItemPtr pItem(new CFileItem(it->second.first));
+
+        CProgramDbUrl itemUrl = programUrl;
+        CStdString path; path.Format("%ld/", it->first);
+        itemUrl.AppendPath(path);
+        pItem->SetPath(itemUrl.ToString());
+
+        pItem->m_bIsFolder=true;
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+          pItem->GetProgramInfoTag()->m_playCount = it->second.second;
+        items.Add(pItem);
+      }
+    }
+    else
+    {
+      while (!m_pDS->eof())
+      {
+        int lYear = 0;
+        CStdString strLabel;
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+        {
+          lYear = m_pDS->fv(0).get_asInt();
+          strLabel = m_pDS->fv(0).get_asString();
+        }
+        if (lYear == 0)
+        {
+          m_pDS->next();
+          continue;
+        }
+        CFileItemPtr pItem(new CFileItem(strLabel));
+
+        CProgramDbUrl itemUrl = programUrl;
+        CStdString path; path.Format("%ld/", lYear);
+        itemUrl.AppendPath(path);
+        pItem->SetPath(itemUrl.ToString());
+
+        pItem->m_bIsFolder=true;
+        if (idContent == PROGRAMDB_CONTENT_GAMES)
+        {
+          // fv(2) is the number of programs watched, fv(1) is the total number.  We set the playcount
+          // only if the number of programs watched is equal to the total number (i.e. every program watched)
+          pItem->GetProgramInfoTag()->m_playCount = (m_pDS->fv(2).get_asInt() == m_pDS->fv(1).get_asInt()) ? 1 : 0;
+        }
+
+        // take care of dupes ..
+        if (!items.Contains(pItem->GetPath()))
+          items.Add(pItem);
+
+        m_pDS->next();
+      }
+      m_pDS->close();
+    }
+
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
   return false;
 }
 

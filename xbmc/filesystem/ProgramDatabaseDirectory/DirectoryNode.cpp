@@ -102,6 +102,7 @@ CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type, const CStdString& str
   case NODE_TYPE_OVERVIEW:
     return new CDirectoryNodeOverview(strName, pParent);
   case NODE_TYPE_GENRE:
+  case NODE_TYPE_YEAR:
     return new CDirectoryNodeGrouped(Type, strName, pParent);
   case NODE_TYPE_TITLE_GAMES:
     return new CDirectoryNodeTitleGames(strName, pParent);

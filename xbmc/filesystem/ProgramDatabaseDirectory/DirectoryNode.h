@@ -38,6 +38,7 @@ namespace XFILE
       NODE_TYPE_ROOT,
       NODE_TYPE_OVERVIEW,
       NODE_TYPE_TITLE_GAMES,
+      NODE_TYPE_YEAR,
     } NODE_TYPE;
 
     typedef struct {
