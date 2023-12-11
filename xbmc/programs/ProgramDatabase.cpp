@@ -36,6 +36,7 @@
 #include "utils/log.h"
 #include "DateTime.h"
 #include "programs/ProgramDbUrl.h"
+#include "SmartPlaylist.h"
 
 using namespace std;
 using namespace dbiplus;
@@ -1406,15 +1407,116 @@ bool CProgramDatabase::GetGamesNav(const CStdString& strBaseDir, CFileItemList& 
                                   int idPlatform /* = -1 */, int idYear /* = -1 */, int idTag /* = -1 */,
                                   const SortDescription &sortDescription /* = SortDescription() */)
 {
-  // TODO: implement this
   CProgramDbUrl programUrl;
+  if (!programUrl.FromString(strBaseDir))
+    return false;
+
+  if (idDeveloper > 0)  
+    programUrl.AddOption("developerid", idDeveloper);
+  else if (idPublisher > 0)  
+    programUrl.AddOption("publisherid", idPublisher);
+  else if (idGenre > 0)
+    programUrl.AddOption("genreid", idGenre);
+  else if (idDescriptor > 0)
+    programUrl.AddOption("descriptorid", idDescriptor);
+  else if (idGeneralFeature > 0)
+    programUrl.AddOption("generalfeatureid", idGeneralFeature);
+  else if (idOnlineFeature > 0)
+    programUrl.AddOption("onlinefeatureid", idOnlineFeature);
+  else if (idPlatform > 0)
+    programUrl.AddOption("platformid", idPlatform);
+  else if (idYear > 0)
+    programUrl.AddOption("year", idYear);
+  else if (idTag > 0)
+    programUrl.AddOption("tagid", idTag);
+
   Filter filter;
   return GetGamesByWhere(programUrl.ToString(), filter, items, sortDescription);
 }
 
 bool CProgramDatabase::GetGamesByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription /* = SortDescription() */)
 {
-  // TODO: implement this
+  try
+  {
+    gameTime = 0;
+
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    // parse the base path to get additional filters
+    CProgramDbUrl programUrl;
+    Filter extFilter = filter;
+    SortDescription sorting = sortDescription;
+    if (!programUrl.FromString(strBaseDir) || !GetFilter(programUrl, extFilter, sorting))
+      return false;
+
+    int total = -1;
+
+    CStdString strSQL = "select %s from gameview ";
+    CStdString strSQLExtra;
+
+    if (!CDatabase::BuildSQL(strSQLExtra, extFilter, strSQLExtra))
+      return false;
+
+    // Apply the limiting directly here if there's no special sorting but limiting
+    if (extFilter.limit.empty() &&
+        sorting.sortBy == SortByNone &&
+       (sorting.limitStart > 0 || sorting.limitEnd > 0))
+    {
+      total = (int)strtol(GetSingleValue(PrepareSQL(strSQL, "COUNT(1)") + strSQLExtra, m_pDS).c_str(), NULL, 10);
+      strSQLExtra += DatabaseUtils::BuildLimitClause(sorting.limitEnd, sorting.limitStart);
+    }
+
+    strSQL = PrepareSQL(strSQL, !extFilter.fields.empty() ? extFilter.fields.c_str() : "*") + strSQLExtra;
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return iRowsFound == 0;
+
+    // store the total value of items as a property
+    if (total < iRowsFound)
+      total = iRowsFound;
+    items.SetProperty("total", total);
+
+    DatabaseResults results;
+    results.reserve(iRowsFound);
+
+    if (!SortUtils::SortFromDataset(sorting, MediaTypeGame, m_pDS, results))
+      return false;
+
+    // get data from returned rows
+    items.Reserve(results.size());
+    const query_data &data = m_pDS->get_result_set().records;
+    for (DatabaseResults::const_iterator it = results.begin(); it != results.end(); it++)
+    {
+      unsigned int targetRow = (unsigned int)it->find(FieldRow)->second.asInteger();
+      const dbiplus::sql_record* const record = data.at(targetRow);
+
+      CProgramInfoTag game = GetDetailsForGame(record);
+      if (g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
+          g_passwordManager.bMasterUser                                   ||
+          g_passwordManager.IsDatabasePathUnlocked(game.m_strPath, g_settings.m_programSources))
+      {
+        CFileItemPtr pItem(new CFileItem(game));
+
+        CProgramDbUrl itemUrl = programUrl;
+        CStdString path; path.Format("%ld", game.m_iDbId);
+        itemUrl.AppendPath(path);
+        pItem->SetPath(itemUrl.ToString());
+
+        pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED,game.m_playCount > 0);
+        items.Add(pItem);
+      }
+    }
+
+    // cleanup
+    m_pDS->close();
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
   return false;
 }
 
@@ -2235,3 +2337,67 @@ bool CProgramDatabase::GetArbitraryQuery(const CStdString& strQuery,      const 
 
   return false;
 }
+
+bool CProgramDatabase::GetFilter(CDbUrl &programUrl, Filter &filter, SortDescription &sorting)
+{
+  if (!programUrl.IsValid())
+    return false;
+
+  std::string type = programUrl.GetType();
+  std::string itemType = ((const CProgramDbUrl &)programUrl).GetItemType();
+  const CUrlOptions::UrlOptions& options = programUrl.GetOptions();
+  CUrlOptions::UrlOptions::const_iterator option;
+
+  if (type == "games")
+  {
+    // TODO: implement this
+  }
+  else
+    return false;
+
+  option = options.find("xsp");
+  if (option != options.end())
+  {
+    CSmartPlaylist xsp;
+    if (!xsp.LoadFromJson(option->second.asString()))
+      return false;
+
+    // check if the filter playlist matches the item type
+    if (xsp.GetType() == itemType ||
+       (xsp.GetGroup() == itemType && !xsp.IsGroupMixed()))
+    {
+      std::set<CStdString> playlists;
+      filter.AppendWhere(xsp.GetWhereClause(*this, playlists));
+
+      if (xsp.GetLimit() > 0)
+        sorting.limitEnd = xsp.GetLimit();
+      if (xsp.GetOrder() != SortByNone)
+        sorting.sortBy = xsp.GetOrder();
+      if (xsp.GetOrderDirection() != SortOrderNone)
+        sorting.sortOrder = xsp.GetOrderDirection();
+      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+        sorting.sortAttributes = SortAttributeIgnoreArticle;
+    }
+  }
+
+  option = options.find("filter");
+  if (option != options.end())
+  {
+    CSmartPlaylist xspFilter;
+    if (!xspFilter.LoadFromJson(option->second.asString()))
+      return false;
+
+    // check if the filter playlist matches the item type
+    if (xspFilter.GetType() == itemType)
+    {
+      std::set<CStdString> playlists;
+      filter.AppendWhere(xspFilter.GetWhereClause(*this, playlists));
+    }
+    // remove the filter if it doesn't match the item type
+    else
+      programUrl.RemoveOption("filter");
+  }
+
+  return true;
+}
+

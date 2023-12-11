@@ -100,7 +100,7 @@ CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) con
     return "Files";
   else
   {
-    CLog::Log(LOGERROR, "  CGUIWindowVideoNav::GetQuickpathName: Unknown parameter (%s)", strPath.c_str());
+    CLog::Log(LOGERROR, "  CGUIWindowProgramNav::GetQuickpathName: Unknown parameter (%s)", strPath.c_str());
     return strPath;
   }
 }

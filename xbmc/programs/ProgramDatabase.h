@@ -22,6 +22,7 @@
 #include "programs/ProgramInfoTag.h"
 #include "video/VideoDatabase.h" // for SDbTableOffsets
 #include "addons/Scraper.h"
+#include "programs/ProgramDbUrl.h"
 
 typedef std::vector<CStdString> VECPROGRAMPATHS;
 
@@ -293,6 +294,8 @@ public:
         break;
     }
   }
+
+  virtual bool GetFilter(CDbUrl &programUrl, Filter &filter, SortDescription &sorting);
 
   bool AddTrainer(int iTitleId, const CStdString& strText);
   bool RemoveTrainer(const CStdString& strText);

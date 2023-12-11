@@ -19,6 +19,7 @@
  */
 
 #include "ProgramDbUrl.h"
+#include "filesystem/ProgramDatabaseDirectory.h"
 #include "SmartPlayList.h"
 #include "utils/StringUtils2.h"
 #include "utils/Variant.h"
@@ -35,7 +36,72 @@ CProgramDbUrl::~CProgramDbUrl()
 
 bool CProgramDbUrl::parse()
 {
-  // TODO: implement this
+  // the URL must start with programdb://
+  if (m_url.GetProtocol() != "programdb" || m_url.GetFileName().empty())
+    return false;
+
+  CStdString path = m_url.Get();
+  PROGRAMDATABASEDIRECTORY::NODE_TYPE dirType = CProgramDatabaseDirectory::GetDirectoryType(path);
+  PROGRAMDATABASEDIRECTORY::NODE_TYPE childType = CProgramDatabaseDirectory::GetDirectoryChildType(path);
+
+  switch (dirType)
+  {
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_GAMES_OVERVIEW:
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_TITLE_GAMES:
+      m_type = "games";
+      break;
+
+    default:
+      break;
+  }
+
+  switch (childType)
+  {
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_GAMES_OVERVIEW:
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_TITLE_GAMES:
+      m_type = "games";
+      m_itemType = "games";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_ROOT:
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_OVERVIEW:
+    default:
+      return false;
+  }
+
+  if (m_type.empty() || m_itemType.empty())
+    return false;
+
+  // parse query params
+  PROGRAMDATABASEDIRECTORY::CQueryParams queryParams;
+  if (!CProgramDatabaseDirectory::GetQueryParams(path, queryParams))
+    return false;
+
+  // retrieve and parse all options
+  AddOptions(m_url.GetOptions());
+
+  // add options based on the QueryParams
+  if (queryParams.GetGenreId() != -1)
+    AddOption("genreid", queryParams.GetGenreId());
+  if (queryParams.GetGameId() != -1)
+    AddOption("gameid", queryParams.GetGameId());
+  if (queryParams.GetDeveloperId() != -1)
+    AddOption("developerid", queryParams.GetDeveloperId());
+  if (queryParams.GetPublisherId() != -1)
+    AddOption("publisherid", queryParams.GetPublisherId());
+  if (queryParams.GetDescriptorId() != -1)
+    AddOption("descriptorid", queryParams.GetDescriptorId());
+  if (queryParams.GetGeneralFeatureId() != -1)
+    AddOption("generalfeatureid", queryParams.GetGeneralFeatureId());
+  if (queryParams.GetOnlineFeatureId() != -1)
+    AddOption("onlinefeatureid", queryParams.GetOnlineFeatureId());
+  if (queryParams.GetPlatformId() != -1)
+    AddOption("platformid", queryParams.GetPlatformId());
+  if (queryParams.GetTagId() != -1)
+    AddOption("tagid", queryParams.GetTagId());
+  if (queryParams.GetYear() != -1)
+    AddOption("year", queryParams.GetYear());
+
   return true;
 }
 
@@ -57,6 +123,5 @@ bool CProgramDbUrl::validateOption(const std::string &key, const CVariant &value
     return false;
   
   // check if the filter playlist matches the item type
-  return (xspFilter.GetType() == m_itemType ||
-         (xspFilter.GetType() == "movies" && m_itemType == "sets"));
+  return (xspFilter.GetType() == m_itemType || xspFilter.GetType() == "games");
 }

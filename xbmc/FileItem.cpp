@@ -33,6 +33,7 @@
 #include "filesystem/MultiPathDirectory.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
+#include "filesystem/ProgramDatabaseDirectory.h"
 #include "filesystem/DirectoryFactory.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "CueDocument.h"
@@ -486,6 +487,9 @@ void CFileItem::Archive(CArchive& ar)
     ar >> iType;
     if (iType == 1)
       ar >> *GetPictureInfoTag();
+    ar >> iType;
+    if (iType == 1)
+      ar >> *GetProgramInfoTag();
 
     SetInvalid();
   }
@@ -594,6 +598,7 @@ bool CFileItem::IsVideo() const
   if (HasVideoInfoTag()) return true;
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
 
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
@@ -630,6 +635,7 @@ bool CFileItem::IsAudio() const
   if (HasMusicInfoTag()) return true;
   if (HasVideoInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
   if (IsCDDA()) return true;
   if (!m_bIsFolder && IsShoutCast()) return true;
   if (!m_bIsFolder && IsLastFM()) return true;
@@ -664,12 +670,18 @@ bool CFileItem::IsPicture() const
   if (HasPictureInfoTag()) return true;
   if (HasMusicInfoTag()) return false;
   if (HasVideoInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
 
   return CUtil::IsPicture(m_strPath);
 }
 
 bool CFileItem::IsProgram() const
 {
+  if (HasProgramInfoTag()) return true;
+  if (HasVideoInfoTag()) return false;
+  if (HasMusicInfoTag()) return false;
+  if (HasPictureInfoTag()) return false;
+
   // for now only XBE is considered program. In future program could be also Emulator game
   return IsXBE();
 }
@@ -1043,7 +1055,7 @@ void CFileItem::FillInDefaultIcon()
       {
         SetIconImage("DefaultPlaylist.png");
       }
-      else if ( IsXBE() )
+      else if ( IsProgram() || IsXBE() )
       {
         // xbe
         SetIconImage("DefaultProgram.png");
@@ -2448,6 +2460,8 @@ CStdString CFileItemList::GetDiscCacheFile(int windowID) const
     cacheFile.Format("special://temp/mdb-%08x.fi", (unsigned __int32)crc);
   else if (IsVideoDb())
     cacheFile.Format("special://temp/vdb-%08x.fi", (unsigned __int32)crc);
+  else if (IsProgramDb())
+    cacheFile.Format("special://temp/pdb-%08x.fi", (unsigned __int32)crc);
   else if (windowID)
     cacheFile.Format("special://temp/%i-%08x.fi", windowID, (unsigned __int32)crc);
   else
@@ -2462,6 +2476,8 @@ bool CFileItemList::AlwaysCache() const
     return CMusicDatabaseDirectory::CanCache(GetPath());
   if (IsVideoDb())
     return CVideoDatabaseDirectory::CanCache(GetPath());
+  if (IsProgramDb())
+    return CProgramDatabaseDirectory::CanCache(GetPath());
   return false;
 }
 
