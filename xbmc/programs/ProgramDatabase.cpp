@@ -276,6 +276,118 @@ bool CProgramDatabase::LookupByFolders(const CStdString &path, bool shows)
   return settings.parent_name_root; // games
 }
 
+bool CProgramDatabase::GetPlayCounts(CFileItemList &items)
+{
+  int pathID = GetPathId(items.GetPath());
+  if (pathID < 0)
+    return false; // path (and thus files) aren't in the database
+
+  try
+  {
+    // error!
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    // TODO: also test a single query for the above and below
+    CStdString sql = PrepareSQL("select strFilename,playCount from files where idPath=%i", pathID);
+    if (RunQuery(sql) <= 0)
+      return false;
+
+    items.SetFastLookup(true); // note: it's possibly quicker the other way around (map on db returned items)?
+    while (!m_pDS->eof())
+    {
+      CStdString path;
+      ConstructPath(path, items.GetPath(), m_pDS->fv(0).get_asString());
+      CFileItemPtr item = items.Get(path);
+      if (item)
+        item->GetProgramInfoTag()->m_playCount = m_pDS->fv(1).get_asInt();
+      m_pDS->next();
+    }
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return false;
+}
+
+int CProgramDatabase::GetPlayCount(const CFileItem &item)
+{
+  int id = GetFileId(item);
+  if (id < 0)
+    return 0;  // not in db, so not played
+
+  try
+  {
+    // error!
+    if (NULL == m_pDB.get()) return -1;
+    if (NULL == m_pDS.get()) return -1;
+
+    CStdString strSQL = PrepareSQL("select playCount from files WHERE idFile=%i", id);
+    int count = 0;
+    if (m_pDS->query(strSQL.c_str()))
+    {
+      // there should only ever be one row returned
+      if (m_pDS->num_rows() == 1)
+        count = m_pDS->fv(0).get_asInt();
+      m_pDS->close();
+    }
+    return count;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return -1;
+}
+
+void CProgramDatabase::SetPlayCount(const CFileItem &item, int count, const CDateTime &date)
+{
+  int id = AddFile(item);
+  if (id < 0)
+    return;
+
+  // and mark as played
+  try
+  {
+    if (NULL == m_pDB.get()) return ;
+    if (NULL == m_pDS.get()) return ;
+
+    CStdString strSQL;
+    if (count)
+    {
+      if (!date.IsValid())
+        strSQL = PrepareSQL("update files set playCount=%i,lastPlayed='%s' where idFile=%i", count, CDateTime::GetCurrentDateTime().GetAsDBDateTime().c_str(), id);
+      else
+        strSQL = PrepareSQL("update files set playCount=%i,lastPlayed='%s' where idFile=%i", count, date.GetAsDBDateTime().c_str(), id);
+    }
+    else
+    {
+      if (!date.IsValid())
+        strSQL = PrepareSQL("update files set playCount=NULL,lastPlayed=NULL where idFile=%i", id);
+      else
+        strSQL = PrepareSQL("update files set playCount=NULL,lastPlayed='%s' where idFile=%i", date.GetAsDBDateTime().c_str(), id);
+    }
+
+    m_pDS->exec(strSQL.c_str());
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+}
+
+void CProgramDatabase::IncrementPlayCount(const CFileItem &item)
+{
+  SetPlayCount(item, GetPlayCount(item) + 1);
+}
+
+void CProgramDatabase::UpdateLastPlayed(const CFileItem &item)
+{
+  SetPlayCount(item, GetPlayCount(item), CDateTime::GetCurrentDateTime());
+}
+
 //********************************************************************************************************************************
 int CProgramDatabase::GetPathId(const CStdString& strPath)
 {
@@ -535,6 +647,13 @@ int CProgramDatabase::GetFileId(const CStdString& strFilenameAndPath)
     CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strFilenameAndPath.c_str());
   }
   return -1;
+}
+
+int CProgramDatabase::GetFileId(const CFileItem &item)
+{
+  if (item.IsProgramDb() && item.HasProgramInfoTag())
+    return GetFileId(item.GetProgramInfoTag()->m_strFileNameAndPath);
+  return GetFileId(item.GetPath());
 }
 
 bool CProgramDatabase::GetPaths(set<CStdString> &paths)

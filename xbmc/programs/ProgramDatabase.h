@@ -151,6 +151,43 @@ public:
 
   int AddGame(const CStdString& strFilenameAndPath);
 
+  // editing functions
+  /*! \brief Set the playcount of an item
+   Sets the playcount and last played date to a given value
+   \param item CFileItem to set the playcount for
+   \param count The playcount to set.
+   \param date The date the file was last played. If empty we current datetime (if count > 0) or never played (if count = 0).
+   \sa GetPlayCount, IncrementPlayCount, UpdateLastPlayed
+   */
+  void SetPlayCount(const CFileItem &item, int count, const CDateTime &date = CDateTime());
+
+  /*! \brief Increment the playcount of an item
+   Increments the playcount and updates the last played date
+   \param item CFileItem to increment the playcount for
+   \sa GetPlayCount, SetPlayCount, GetPlayCounts
+   */
+  void IncrementPlayCount(const CFileItem &item);
+
+  /*! \brief Get the playcount of an item
+   \param item CFileItem to get the playcount for
+   \return the playcount of the item, or -1 on error
+   \sa SetPlayCount, IncrementPlayCount, GetPlayCounts
+   */
+  int GetPlayCount(const CFileItem &item);
+
+  /*! \brief Update the last played time of an item
+   Updates the last played date
+   \param item CFileItem to update the last played time for
+   \sa GetPlayCount, SetPlayCount, IncrementPlayCount, GetPlayCounts
+   */
+  void UpdateLastPlayed(const CFileItem &item);
+
+  /*! \brief Get the playcount of a list of items
+   \param items CFileItemList to fetch the playcounts for
+   \sa GetPlayCount, SetPlayCount, IncrementPlayCount
+   */
+  bool GetPlayCounts(CFileItemList &items);
+
   void UpdateGameTitle(int idGame, const CStdString& strNewGameTitle, PROGRAMDB_CONTENT_TYPE iType=PROGRAMDB_CONTENT_GAMES);
 
   bool HasGameInfo(const CStdString& strFilenameAndPath);
@@ -326,6 +363,13 @@ public:
 
 protected:
   int GetGameId(const CStdString& strFilenameAndPath);
+
+  /*! \brief Get the id of this fileitem
+   Works for both videodb:// items and normal fileitems
+   \param item CFileItem to grab the fileid of
+   \return id of the file, -1 if it is not in the db.
+   */
+  int GetFileId(const CFileItem &item);
 
   /*! \brief Get the id of a file from path
    \param url full path to the file

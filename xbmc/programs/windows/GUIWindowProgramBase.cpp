@@ -504,6 +504,32 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
   return CGUIMediaWindow::OnContextButton(itemNumber, button);
 }
 
+/*
+ TODO:
+  1. Forcing video mode
+  2. Applying trainer
+  3. Launching roms
+  4. Launching from DVD
+*/
+bool CGUIWindowProgramBase::OnPlayMedia(int iItem)
+{
+  if ( iItem < 0 || iItem >= (int)m_vecItems->Size() )
+    return false;
+
+  CFileItemPtr pItem = m_vecItems->Get(iItem);
+  
+  CProgramDatabase database;
+  if (pItem->GetProgramInfoTag()->m_type.Equals("game"))
+  {
+    if (database.Open())
+      database.IncrementPlayCount(*pItem);
+    database.Close();
+    CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
+  }
+
+  return false;
+}
+
 int CGUIWindowProgramBase::GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, SScanSettings& settings)
 {
   if (!item)

@@ -53,6 +53,7 @@ protected:
   virtual CStdString GetQuickpathName(const CStdString& strPath) const {return strPath;};
 
   bool OnClick(int iItem);
+  virtual bool OnPlayMedia(int iItem);
 
   bool ShowIGDB(CFileItem *item, const ADDON::ScraperPtr& content);
 
