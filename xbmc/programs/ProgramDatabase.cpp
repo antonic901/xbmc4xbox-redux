@@ -1084,7 +1084,7 @@ void CProgramDatabase::GetFilePathById(int idGame, CStdString &filePath, PROGRAM
 
 CStdString CProgramDatabase::GetDeveloperById(int id)
 {
-  return GetSingleValue("developer", "strDeveloper", PrepareSQL("idDeloper=%i", id));
+  return GetSingleValue("developer", "strDeveloper", PrepareSQL("idDeveloper=%i", id));
 }
 
 CStdString CProgramDatabase::GetPublisherById(int id)
@@ -1795,9 +1795,25 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_
 
 CStdString CProgramDatabase::GetItemById(const CStdString &itemType, int id)
 {
+  if (itemType.Equals("developers"))
+    return GetDeveloperById(id);
+  if (itemType.Equals("publishers"))
+    return GetPublisherById(id);
   if (itemType.Equals("genres"))
     return GetGenreById(id);
-
+  if (itemType.Equals("years"))
+  {
+    CStdString tmp; tmp.Format("%d", id);
+    return tmp;
+  }
+  if (itemType.Equals("descriptors"))
+    return GetDescriptorById(id);
+  if (itemType.Equals("generalfeatures"))
+    return GetGeneralFeatureById(id);
+  if (itemType.Equals("onlinefeatures"))
+    return GetOnlineFeatureById(id);
+  if (itemType.Equals("platforms"))
+    return GetPlatformById(id);
   return "";
 }
 
