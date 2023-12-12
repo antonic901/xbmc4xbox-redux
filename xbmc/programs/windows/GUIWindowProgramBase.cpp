@@ -129,7 +129,7 @@ void CGUIWindowProgramBase::OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& sc
       // no program file in this folder
       if (!bFoundFile)
       {
-        CGUIDialogOK::ShowAndGetInput(13346,20349,20022,20022);
+        CGUIDialogOK::ShowAndGetInput(35003,35002,20022,20022);
         return;
       }
     }
@@ -246,7 +246,7 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
         bHasInfo = true;
         if (nfoResult == CNfoFile::URL_NFO || nfoResult == CNfoFile::COMBINED_NFO || nfoResult == CNfoFile::FULL_NFO)
         {
-          if (CGUIDialogYesNo::ShowAndGetInput(13346,20446,20447,20022))
+          if (CGUIDialogYesNo::ShowAndGetInput(35003,20446,20447,20022))
           {
             hasDetails = false;
             ignoreNfo = true;

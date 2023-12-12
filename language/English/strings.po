@@ -9155,7 +9155,7 @@ msgid "Downloading game information"
 msgstr ""
 
 msgctxt "#35002"
-msgid "Games"
+msgid "No program files found in this path!"
 msgstr ""
 
 msgctxt "#35003"

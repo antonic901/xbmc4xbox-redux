@@ -60,7 +60,7 @@ static const ContentMapping content[] =
    {"albums",        CONTENT_ALBUMS,        132 },
    {"music",         CONTENT_ALBUMS,        132 },
    {"artists",       CONTENT_ARTISTS,       133 },
-   {"games",         CONTENT_GAMES,       35002 },
+   {"games",         CONTENT_GAMES,       15016 },
    {"movies",        CONTENT_MOVIES,      20342 },
    {"tvshows",       CONTENT_TVSHOWS,     20343 },
    {"musicvideos",   CONTENT_MUSICVIDEOS, 20389 }};

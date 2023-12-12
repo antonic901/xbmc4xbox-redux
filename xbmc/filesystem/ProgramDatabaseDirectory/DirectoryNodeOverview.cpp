@@ -30,7 +30,7 @@ using namespace std;
 
 
 Node OverviewChildren[] = {
-                            { NODE_TYPE_GAMES_OVERVIEW,            "games",                   35002 },
+                            { NODE_TYPE_GAMES_OVERVIEW,            "games",                   15016 },
                             { NODE_TYPE_RECENTLY_ADDED_GAMES,      "recentlyaddedgames",      35106 },
                             { NODE_TYPE_RECENTLY_PLAYED_GAMES,     "recentlyplayedgames",     35107 }
                           };
@@ -67,9 +67,9 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
   if (hasGames)
   {
     if (g_settings.m_bMyProgramNavFlatten)
-      vec.push_back(make_pair("games/titles", 35002));
+      vec.push_back(make_pair("games/titles", 15016));
     else
-      vec.push_back(make_pair("games", 35002));   // Games
+      vec.push_back(make_pair("games", 15016));   // Games
   }
   CStdString path = BuildPath();
   for (unsigned int i = 0; i < vec.size(); ++i)

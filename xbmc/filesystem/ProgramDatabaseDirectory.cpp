@@ -174,7 +174,7 @@ bool CProgramDatabaseDirectory::GetLabel(const CStdString& strDirectory, CStdStr
     case NODE_TYPE_TITLE_GAMES:
       strLabel = g_localizeStrings.Get(369); break;
     case NODE_TYPE_GAMES_OVERVIEW: // Games
-      strLabel = g_localizeStrings.Get(35002); break;
+      strLabel = g_localizeStrings.Get(15016); break;
     default:
       CLog::Log(LOGWARNING, "%s - Unknown nodetype requested %d", __FUNCTION__, pNode->GetChildType());
       return false;

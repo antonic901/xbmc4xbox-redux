@@ -191,7 +191,10 @@ static const ActionMapping actions[] =
 
 static const ActionMapping windows[] =
        {{"home"                     , WINDOW_HOME},
+        {"program"                  , WINDOW_PROGRAMS},
         {"programs"                 , WINDOW_PROGRAMS},
+        {"programfiles"             , WINDOW_PROGRAM_FILES},
+        {"programlibrary"           , WINDOW_PROGRAM_NAV},
         {"pictures"                 , WINDOW_PICTURES},
         {"filemanager"              , WINDOW_FILES},
         {"files"                    , WINDOW_FILES},

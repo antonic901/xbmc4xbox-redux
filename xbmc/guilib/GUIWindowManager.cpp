@@ -369,6 +369,11 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   { // backward compatibility for pre-Eden
     iWindowID = WINDOW_VIDEO_NAV;
   }
+  // virtual program window which returns the last open video window (aka the video start window)
+  if (iWindowID == WINDOW_PROGRAMS || iWindowID == WINDOW_PROGRAM_FILES)
+  { // backward compatibility for pre-Eden
+    iWindowID = WINDOW_PROGRAM_NAV;
+  }
 
   // debug
   CLog::Log(LOGDEBUG, "Activating window ID: %i", iWindowID);
