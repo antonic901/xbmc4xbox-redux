@@ -2759,7 +2759,121 @@ bool CProgramDatabase::GetFilter(CDbUrl &programUrl, Filter &filter, SortDescrip
 
   if (type == "games")
   {
-    // TODO: implement this
+    option = options.find("developerid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join developerlinkgame on developerlinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("developerlinkgame.idDeveloper = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("developer");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join developerlinkgame on developerlinkgame.idGame = gameview.idGame join developer on developer.idDeveloper = developerlinkgame.idDeveloper"));
+      filter.AppendWhere(PrepareSQL("developer.strDeveloper like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("publisherid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join publisherlinkgame on publisherlinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("publisherlinkgame.idPublisher = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("publisher");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join publisherlinkgame on publisherlinkgame.idGame = gameview.idGame join publisher on publisher.idPublisher = publisherlinkgame.idPublisher"));
+      filter.AppendWhere(PrepareSQL("publisher.strPublisher like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("genreid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join genrelinkgame on genrelinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("genrelinkgame.idGenre = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("genre");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join genrelinkgame on genrelinkgame.idGame = gameview.idGame join genre on genre.idGenre = genrelinkgame.idGenre"));
+      filter.AppendWhere(PrepareSQL("genre.strGenre like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("descriptorid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join descriptorlinkgame on descriptorlinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("descriptorlinkgame.idDescriptor = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("descriptor");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join descriptorlinkgame on descriptorlinkgame.idGame = gameview.idGame join descriptor on descriptor.idDescriptor = descriptorlinkgame.idDescriptor"));
+      filter.AppendWhere(PrepareSQL("descriptor.strDescriptor like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("generalfeatureid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join generalfeaturelinkgame on generalfeaturelinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("generalfeaturelinkgame.idGeneralFeature = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("generalfeature");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join generalfeaturelinkgame on generalfeaturelinkgame.idGame = gameview.idGame join generalfeature on generalfeature.idGeneralFeature = generalfeaturelinkgame.idGeneralFeature"));
+      filter.AppendWhere(PrepareSQL("generalfeature.strGeneralFeature like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("onlinefeatureid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join onlinefeaturelinkgame on onlinefeaturelinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("onlinefeaturelinkgame.idOnlineFeature = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("onlinefeature");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join onlinefeaturelinkgame on onlinefeaturelinkgame.idGame = gameview.idGame join onlinefeature on onlinefeature.idOnlineFeature = onlinefeaturelinkgame.idOnlineFeature"));
+      filter.AppendWhere(PrepareSQL("onlinefeature.strOnlineFeature like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("platformid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join platformlinkgame on platformlinkgame.idGame = gameview.idGame"));
+      filter.AppendWhere(PrepareSQL("platformlinkgame.idPlatform = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("platform");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join platformlinkgame on platformlinkgame.idGame = gameview.idGame join platform on platform.idPlatform = platformlinkgame.idPlatform"));
+      filter.AppendWhere(PrepareSQL("platform.strPlatform like '%s'", option->second.asString().c_str()));
+    }
+
+    option = options.find("year");
+    if (option != options.end())
+      filter.AppendWhere(PrepareSQL("gameview.c%02d = '%i'", PROGRAMDB_ID_YEAR, (int)option->second.asInteger()));
+
+    option = options.find("tagid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join taglinks on taglinks.idMedia = gameview.idGame AND taglinks.media_type = 'game'"));
+      filter.AppendWhere(PrepareSQL("taglinks.idTag = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("tag");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join taglinks on taglinks.idMedia = gameview.idGame AND taglinks.media_type = 'game' join tag on tag.idTag = taglinks.idTag"));
+      filter.AppendWhere(PrepareSQL("tag.strTag like '%s'", option->second.asString().c_str()));
+    }
   }
   else
     return false;

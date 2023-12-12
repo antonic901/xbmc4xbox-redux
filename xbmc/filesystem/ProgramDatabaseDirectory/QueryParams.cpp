@@ -47,7 +47,33 @@ void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeNa
   case NODE_TYPE_OVERVIEW:
     m_idContent = PROGRAMDB_CONTENT_GAMES;
     break;
+  case NODE_TYPE_DEVELOPER:
+    m_idDeveloper = idDb;
+    break;
+  case NODE_TYPE_PUBLISHER:
+    m_idPublisher = idDb;
+    break;
+  case NODE_TYPE_GENRE:
+    m_idGenre = idDb;
+    break;
+  case NODE_TYPE_DESCRIPTOR:
+    m_idDescriptor = idDb;
+    break;
+  case NODE_TYPE_GENERALFEATURE:
+    m_idGeneralFeature = idDb;
+    break;
+  case NODE_TYPE_ONLINEFEATURE:
+    m_idOnlineFeature = idDb;
+    break;
+  case NODE_TYPE_PLATFORM:
+    m_idPlatform = idDb;
+    break;
+  case NODE_TYPE_YEAR:
+    m_idYear = idDb;
+    break;
   case NODE_TYPE_TITLE_GAMES:
+  case NODE_TYPE_RECENTLY_ADDED_GAMES:
+  case NODE_TYPE_RECENTLY_PLAYED_GAMES:
     m_idGame = idDb;
     break;
   default:

@@ -133,10 +133,31 @@ bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileIte
       PROGRAMDATABASEDIRECTORY::NODE_TYPE node = dir.GetDirectoryChildType(items.GetPath());
 
       items.SetThumbnailImage("");
-      if (node == NODE_TYPE_TITLE_GAMES)
+      if (node == NODE_TYPE_TITLE_GAMES ||
+          node == NODE_TYPE_RECENTLY_ADDED_GAMES ||
+          node == NODE_TYPE_RECENTLY_PLAYED_GAMES)
         items.SetContent("games");
+      else if (node == NODE_TYPE_DEVELOPER)
+        items.SetContent("developers");
+      else if (node == NODE_TYPE_PUBLISHER)
+        items.SetContent("publishers");
+      else if (node == NODE_TYPE_GENRE)
+        items.SetContent("genres");
+      else if (node == NODE_TYPE_DESCRIPTOR)
+        items.SetContent("descriptors");
+      else if (node == NODE_TYPE_GENERALFEATURE)
+        items.SetContent("generalfeatures");
+      else if (node == NODE_TYPE_ONLINEFEATURE)
+        items.SetContent("onlinefeatures");
+      else if (node == NODE_TYPE_PLATFORM)
+        items.SetContent("platforms");
       else
         items.SetContent("");
+    }
+    else if (strDirectory.Equals("plugin://program/"))
+    {
+      items.SetContent("plugins");
+      items.SetLabel(g_localizeStrings.Get(24001));
     }
     else if (strDirectory.IsEmpty())
       items.SetLabel("");
