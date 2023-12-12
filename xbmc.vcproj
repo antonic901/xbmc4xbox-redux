@@ -2635,6 +2635,48 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGamesOverview.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGrouped.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGrouped.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeOverview.cpp">
 						<FileConfiguration
 							Name="Debug|Xbox">
@@ -2675,6 +2717,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeOverview.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyAddedGames.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyAddedGames.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyPlayedGames.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyPlayedGames.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRoot.cpp">

@@ -1928,6 +1928,15 @@ bool CProgramDatabase::GetRecentlyAddedGamesNav(const CStdString& strBaseDir, CF
   return GetGamesByWhere(strBaseDir, filter, items);
 }
 
+bool CProgramDatabase::GetRecentlyPlayedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
+{
+  Filter filter;
+  filter.where = "lastPlayed is not null";
+  filter.order = "lastPlayed desc, idGame desc";
+  filter.limit = PrepareSQL("%u", limit ? limit : g_advancedSettings.m_iProgramLibraryRecentlyAddedItems);
+  return GetGamesByWhere(strBaseDir, filter, items);
+}
+
 bool CProgramDatabase::HasContent()
 {
   return (HasContent(PROGRAMDB_CONTENT_GAMES));

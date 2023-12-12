@@ -287,6 +287,7 @@ public:
                     const SortDescription &sortDescription = SortDescription());
 
   bool GetRecentlyAddedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
+  bool GetRecentlyPlayedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
 
   bool HasContent();
   bool HasContent(PROGRAMDB_CONTENT_TYPE type);

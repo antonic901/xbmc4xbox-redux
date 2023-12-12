@@ -92,10 +92,20 @@ CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) con
     return "GameDevelopers";
   else if (path.Equals("programdb://games/publishers/"))
     return "GamePublishers";
+  else if (path.Equals("programdb://games/descriptors/"))
+    return "GameDescriptors";
+  else if (path.Equals("programdb://games/generalfeatures/"))
+    return "GameGeneralFeatures";
+  else if (path.Equals("programdb://games/onlinefeatures/"))
+    return "GameOnlineFeatures";
+  else if (path.Equals("programdb://games/platforms/"))
+    return "GamePlatforms";
   else if (path.Equals("programdb://games/"))
     return "Games";
   else if (path.Equals("programdb://recentlyaddedgames/"))
     return "RecentlyAddedGames";
+  else if (path.Equals("programdb://recentlyplayedgames/"))
+    return "RecentlyPlayedGames";
   else if (path.Equals("sources://programs/"))
     return "Files";
   else
@@ -242,6 +252,8 @@ CStdString CGUIWindowProgramNav::GetStartFolder(const CStdString &dir)
     return "programdb://games/";
   else if (dir.Equals("RecentlyAddedGames"))
     return "programdb://recentlyaddedgames/";
+  else if (dir.Equals("RecentlyPlayedGames"))
+    return "programdb://recentlyplayedgames/";
   else if (dir.Equals("Files"))
     return "sources://programs/";
   return CGUIWindowProgramBase::GetStartFolder(dir);

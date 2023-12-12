@@ -9201,3 +9201,11 @@ msgstr ""
 msgctxt "#35105"
 msgid "Platforms"
 msgstr ""
+
+msgctxt "#35106"
+msgid "Recently added games"
+msgstr ""
+
+msgctxt "#35107"
+msgid "Recently played games"
+msgstr ""
