@@ -2011,6 +2011,17 @@ CStdString CSettings::GetMusicFanartFolder() const
   return folder;
 }
 
+CStdString CSettings::GetProgramFanartFolder() const
+{
+  CStdString folder;
+  if (GetCurrentProfile().hasDatabases())
+    URIUtils::AddFileToFolder(GetProfileUserDataFolder(), "Thumbnails/Programs/Fanart", folder);
+  else
+    URIUtils::AddFileToFolder(GetUserDataFolder(), "Thumbnails/Programs/Fanart", folder);
+
+  return folder;
+}
+
 CStdString CSettings::GetBookmarksThumbFolder() const
 {
   CStdString folder;

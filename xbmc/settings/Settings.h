@@ -520,6 +520,7 @@ public:
   CStdString GetSkinFolder(const CStdString& skinName) const;
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
+  CStdString GetProgramFanartFolder() const;
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
   CStdString GetDefaultVideoPlayerName() const;

@@ -167,11 +167,26 @@ CProgramThumbLoader::~CProgramThumbLoader()
 
 bool CProgramThumbLoader::LoadItem(CFileItem *pItem)
 {
-  if (pItem->m_bIsShareOrDrive) return true;
+  if (pItem->m_bIsShareOrDrive
+  ||  pItem->IsParentFolder())
+    return false;
+
+  CFileItem item(*pItem);
+  CStdString cachedThumb(item.GetCachedProgramThumb());
+
   if (!pItem->HasThumbnail())
     pItem->SetUserProgramThumb();
-  else
+  else if (!pItem->GetThumbnailImage().Left(10).Equals("special://"))
     LoadRemoteThumb(pItem);
+
+  if (!pItem->HasProperty("fanart_image"))
+  {
+    if (pItem->CacheLocalFanart())
+      pItem->SetProperty("fanart_image",pItem->GetCachedFanart());
+  }
+
+  // TODO: load XBMC4Gamers artwork here
+
   return true;
 }
 

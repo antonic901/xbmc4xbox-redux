@@ -2936,6 +2936,14 @@ CStdString CFileItem::GetLocalFanart() const
     return dbItem.GetLocalFanart();
   }
 
+  if (IsProgramDb())
+  {
+    if (!HasProgramInfoTag())
+      return ""; // nothing can be done
+    CFileItem dbItem(m_bIsFolder ? GetProgramInfoTag()->m_strPath : GetProgramInfoTag()->m_strFileNameAndPath, m_bIsFolder);
+    return dbItem.GetLocalFanart();
+  }
+
   CStdString strFile2;
   CStdString strFile = m_strPath;
   if (IsStack())
@@ -3046,6 +3054,12 @@ CStdString CFileItem::GetCachedFanart() const
   }
   if (HasMusicInfoTag())
     return GetCachedThumb(StringUtils::Join(GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator),g_settings.GetMusicFanartFolder());
+  if (IsProgramDb())
+  {
+    if (!HasProgramInfoTag())
+      return "";
+    return GetCachedThumb(m_bIsFolder ? GetProgramInfoTag()->m_strPath : GetProgramInfoTag()->m_strFileNameAndPath,g_settings.GetProgramFanartFolder());
+  }
 
   return GetCachedThumb(m_strPath,g_settings.GetVideoFanartFolder());
 }
@@ -3071,27 +3085,24 @@ CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &p
 
 CStdString CFileItem::GetCachedProgramThumb() const
 {
-  // get the locally cached thumb
-  Crc32 crc;
   if (IsOnDVD())
   {
     CStdString strDesc;
     CUtil::GetXBEDescription(m_strPath,strDesc);
     CStdString strCRC;
     strCRC.Format("%s%u",strDesc.c_str(),CUtil::GetXbeID(m_strPath));
-    crc.ComputeFromLowerCase(strCRC);
+    return GetCachedThumb(strCRC,g_settings.GetProgramsThumbFolder(),true);
   }
-  else
-    crc.ComputeFromLowerCase(m_strPath);
-
-  CStdString hex;
-  hex.Format("%08x", (__int32)crc);
-
-  CStdString thumb;
-
-  thumb.Format("%s\\%c\\%08x.tbn", g_settings.GetProgramsThumbFolder().c_str(), hex[0], (unsigned __int32)crc);
-
-  return thumb;
+  else if (IsStack())
+    return GetCachedThumb(CStackDirectory::GetFirstStackedFile(m_strPath),g_settings.GetProgramsThumbFolder(),true);
+  else if (IsProgramDb() && HasProgramInfoTag())
+  {
+    if (m_bIsFolder && !GetProgramInfoTag()->m_strPath.IsEmpty())
+      return GetCachedThumb(GetProgramInfoTag()->m_strPath, g_settings.GetProgramsThumbFolder(), true);
+    else if (!GetProgramInfoTag()->m_strFileNameAndPath.IsEmpty())
+      return GetCachedThumb(GetProgramInfoTag()->m_strFileNameAndPath, g_settings.GetProgramsThumbFolder(), true);
+  }
+  return GetCachedThumb(m_strPath,g_settings.GetProgramsThumbFolder(),true);
 }
 
 CStdString CFileItem::GetCachedGameSaveThumb() const
@@ -3161,6 +3172,7 @@ void CFileItem::SetCachedProgramThumb()
   // don't set any thumb for programs on DVD, as they're bound to be named the
   // same (D:\default.xbe).
   if (IsParentFolder()) return;
+  if (HasThumbnail()) return;
   CStdString thumb(GetCachedProgramThumb());
   if (CFile::Exists(thumb))
     SetThumbnailImage(thumb);
