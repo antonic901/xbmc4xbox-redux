@@ -2236,6 +2236,7 @@ void CSettings::CreateProfileFolders()
   CDirectory::Create(GetMusicFanartFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
   CDirectory::Create(GetProgramsThumbFolder());
+  CDirectory::Create(GetProgramFanartFolder());
   CDirectory::Create(GetPicturesThumbFolder());
   CDirectory::Create(GetGameSaveThumbFolder());
   CLog::Log(LOGINFO, "thumbnails folder: %s", GetThumbnailsFolder().c_str());

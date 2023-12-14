@@ -287,6 +287,7 @@ public:
 
   // Gets the user thumb, if it exists
   CStdString GetUserVideoThumb() const;
+  CStdString GetUserProgramThumb() const;
   CStdString GetUserMusicThumb(bool alwaysCheckRemote = false) const;
 
   // Caches the user thumb and assigns it to the item

@@ -96,6 +96,7 @@ namespace PROGRAM
      */
     bool RetrieveProgramInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal = true, CScraperUrl *pURL = NULL, CGUIDialogProgress* pDlgProgress = NULL);
 
+    static void ApplyThumbToFolder(const CStdString &folder, const CStdString &igdbThumb);
     static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
     CNfoFile::NFOResult CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ADDON::ScraperPtr& scraper, CScraperUrl& scrUrl);
 
@@ -119,8 +120,23 @@ namespace PROGRAM
      */
     void GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir=false, bool useLocal=true, CGUIDialogProgress* pDialog = NULL);
 
+    /*! \brief Download an image file and apply the image to a folder if necessary
+     \param url URL of the image.
+     \param destination File to save the image as
+     \param asThumb whether we need to download as a thumbnail or as a full image. Defaults to true
+     \param progress progressbar to update - defaults to NULL
+     \param directory directory that this thumbnail should be applied to. Defaults to empty
+     */
+    void DownloadImage(const CStdString &url, const CStdString &destination, bool asThumb = true, CGUIDialogProgress *dialog = NULL);
+  
     CStdString GetnfoFile(CFileItem *item, bool bGrabAny=false) const;
 
+    /*! \brief Retrieve the parent folder of an item, accounting for stacks and files in rars.
+     \param item a media item.
+     \return the folder that contains the item.
+     */
+    CStdString GetParentDir(const CFileItem &item) const;
+  
     IProgramInfoScannerObserver* m_pObserver;
     int m_currentItem;
     int m_itemCount;

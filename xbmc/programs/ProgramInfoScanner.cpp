@@ -21,7 +21,9 @@
 #include "FileItem.h"
 #include "ProgramInfoScanner.h"
 #include "addons/AddonManager.h"
+#include "pictures/Picture.h"
 #include "GUIInfoManager.h"
+#include "filesystem/StackDirectory.h"
 #include "filesystem/File.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -177,7 +179,7 @@ namespace PROGRAM
     if (pItem->m_bIsFolder || !pItem->IsProgram() || pItem->IsNFO() || pItem->IsPlayList())
       return INFO_NOT_NEEDED;
 
-    if (ProgressCancelled(pDlgProgress, 198, pItem->GetLabel()))
+    if (ProgressCancelled(pDlgProgress, 35006, pItem->GetLabel()))
       return INFO_CANCELLED;
 
     if (m_database.HasGameInfo(pItem->GetPath()))
@@ -235,7 +237,80 @@ namespace PROGRAM
 
   void CProgramInfoScanner::GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir, bool useLocal, CGUIDialogProgress* pDialog /* == NULL */)
   {
-    // TODO: implement this
+    CProgramInfoTag &programDetails = *pItem->GetProgramInfoTag();
+    // get & save fanart image
+    if (!useLocal || !pItem->CacheLocalFanart())
+    {
+      if (programDetails.m_fanart.GetNumFanarts())
+        DownloadImage(programDetails.m_fanart.GetImageURL(), pItem->GetCachedFanart(), false, pDialog);
+    }
+
+    // get & save thumb image
+    CStdString cachedThumb = pItem->GetCachedProgramThumb();
+    if (CFile::Exists(cachedThumb))
+    {
+      programDetails.m_strFileNameAndPath = pItem->GetPath();
+      CFileItem item(programDetails);
+      cachedThumb = item.GetCachedEpisodeThumb();
+    }
+
+    CStdString localThumb;
+    if (useLocal)
+    {
+      localThumb = pItem->GetUserProgramThumb();
+      if (bApplyToDir && localThumb.IsEmpty())
+      {
+        CStdString strParent;
+        URIUtils::GetParentPath(pItem->GetPath(), strParent);
+        CFileItem item(*pItem);
+        item.SetPath(strParent);
+        item.m_bIsFolder = true;
+        localThumb = item.GetUserProgramThumb();
+      }
+    }
+
+    // parent folder to apply the thumb to and to search for local actor thumbs
+    CStdString parentDir = GetParentDir(*pItem);
+
+    if (!localThumb.IsEmpty())
+      CPicture::CacheThumb(localThumb, cachedThumb);
+    else
+    { // see if we have an online image to use
+      CStdString onlineThumb = CScraperUrl::GetThumbURL(programDetails.m_strPictureURL.GetFirstThumb());
+      if (!onlineThumb.IsEmpty())
+      {
+        if (onlineThumb.Find("http://") < 0 &&
+            onlineThumb.Find("/") < 0 &&
+            onlineThumb.Find("\\") < 0)
+        {
+          CStdString strPath;
+          URIUtils::GetDirectory(pItem->GetPath(), strPath);
+          onlineThumb = URIUtils::AddFileToFolder(strPath, onlineThumb);
+        }
+        DownloadImage(onlineThumb, cachedThumb, true, pDialog);
+      }
+    }
+    if (bApplyToDir)
+      ApplyThumbToFolder(parentDir, cachedThumb);
+  }
+
+  void CProgramInfoScanner::DownloadImage(const CStdString &url, const CStdString &destination, bool asThumb /*= true */, CGUIDialogProgress *progress /*= NULL */)
+  {
+    if (progress)
+    {
+      progress->SetLine(2, 415);
+      progress->Progress();
+    }
+    bool result = false;
+    if (asThumb)
+      result = CPicture::CreateThumbnail(url, destination);
+    else
+      result = CPicture::CacheFanart(url, destination);
+    if (!result)
+    {
+      CFile::Delete(destination);
+      return;
+    }
   }
 
   CStdString CProgramInfoScanner::GetnfoFile(CFileItem *item, bool bGrabAny) const
@@ -260,6 +335,17 @@ namespace PROGRAM
     }
 
     return nfoFile;
+  }
+
+  void CProgramInfoScanner::ApplyThumbToFolder(const CStdString &folder, const CStdString &igdbThumb)
+  {
+    // copy icon to folder also;
+    if (CFile::Exists(igdbThumb))
+    {
+      CFileItem folderItem(folder, true);
+      CStdString strThumb(folderItem.GetCachedProgramThumb());
+      CFile::Cache(igdbThumb.c_str(), strThumb.c_str(), NULL, NULL);
+    }
   }
 
   CNfoFile::NFOResult CProgramInfoScanner::CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ScraperPtr& info, CScraperUrl& scrUrl)
@@ -339,5 +425,28 @@ namespace PROGRAM
       return progress->IsCanceled();
     }
     return m_bStop;
+  }
+
+  CStdString CProgramInfoScanner::GetParentDir(const CFileItem &item) const
+  {
+    CStdString strCheck = item.GetPath();
+    if (item.IsStack())
+      strCheck = CStackDirectory::GetFirstStackedFile(item.GetPath());
+
+    CStdString strDirectory;
+    URIUtils::GetDirectory(strCheck, strDirectory);
+    if (URIUtils::IsInRAR(strCheck))
+    {
+      CStdString strPath=strDirectory;
+      URIUtils::GetParentPath(strPath, strDirectory);
+    }
+    if (item.IsStack())
+    {
+      strCheck = strDirectory;
+      URIUtils::RemoveSlashAtEnd(strCheck);
+      if (URIUtils::GetFileName(strCheck).size() == 3 && URIUtils::GetFileName(strCheck).Left(2).Equals("cd"))
+        URIUtils::GetDirectory(strCheck, strDirectory);
+    }
+    return strDirectory;
   }
 }

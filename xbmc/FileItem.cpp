@@ -3061,7 +3061,7 @@ CStdString CFileItem::GetCachedFanart() const
     return GetCachedThumb(m_bIsFolder ? GetProgramInfoTag()->m_strPath : GetProgramInfoTag()->m_strFileNameAndPath,g_settings.GetProgramFanartFolder());
   }
 
-  return GetCachedThumb(m_strPath,g_settings.GetVideoFanartFolder());
+  return GetCachedThumb(m_strPath,HasProgramInfoTag() ? g_settings.GetProgramFanartFolder() : g_settings.GetVideoFanartFolder());
 }
 
 CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &path2, bool split)
@@ -3164,6 +3164,54 @@ CStdString CFileItem::GetCachedGameSaveThumb() const
     }
     return thumb;
   }
+  return "";
+}
+
+CStdString CFileItem::GetUserProgramThumb() const
+{
+  if (m_strPath.IsEmpty()
+   || m_bIsShareOrDrive
+   || m_strPath.Left(4).Equals("dvd:")
+   || IsInternetStream()
+   || IsDVD()
+   || IsPlugin()
+   || IsLibraryFolder()
+   || IsParentFolder())
+    return "";
+
+  // 1. check <filename>.tbn or <foldername>.tbn
+  CStdString fileThumb(GetTBNFile());
+  if (CFile::Exists(fileThumb))
+    return fileThumb;
+
+  // 2. - check game.tbn, as long as it's not a folder
+  if (!m_bIsFolder)
+  {
+    CStdString strPath, gametbnFile;
+    URIUtils::GetParentPath(m_strPath, strPath);
+    URIUtils::AddFileToFolder(strPath, "game.tbn", gametbnFile);
+    if (CFile::Exists(gametbnFile))
+      return gametbnFile;
+  }
+
+  // 3. check folder image in_m_dvdThumbs (folder.jpg)
+  if (m_bIsFolder && !IsFileFolder())
+  {
+    CStdStringArray thumbs;
+    StringUtils::SplitString(g_advancedSettings.m_dvdThumbs, "|", thumbs);
+    for (unsigned int i = 0; i < thumbs.size(); ++i)
+    {
+      CStdString folderThumb(GetFolderThumb(thumbs[i]));
+      if (CFile::Exists(folderThumb))
+      {
+        return folderThumb;
+      }
+    }
+  }
+
+  // 4. TODO: maybe we should cache XBMC4Gamers artwork here?
+
+  // No thumb found
   return "";
 }
 
