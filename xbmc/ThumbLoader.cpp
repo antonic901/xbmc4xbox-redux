@@ -185,7 +185,8 @@ bool CProgramThumbLoader::LoadItem(CFileItem *pItem)
       pItem->SetProperty("fanart_image",pItem->GetCachedFanart());
   }
 
-  // TODO: load XBMC4Gamers artwork here
+  // NOTICE: remove this once we add real support for artwork (pulling from API and caching them)
+  pItem->LoadXBMC4GamersArtwork();
 
   return true;
 }

@@ -3548,3 +3548,22 @@ VIDEODB_CONTENT_TYPE CFileItem::GetVideoContentType() const
   return type;
 }
 
+void CFileItem::LoadXBMC4GamersArtwork()
+{
+  if (!HasProgramInfoTag())
+    return;
+
+  CFileItemList items;
+  CStdString strArtworkPath = URIUtils::AddFileToFolder(m_programInfoTag->m_strPath, "_resources\\artwork\\");
+  if(CDirectory::GetDirectory(strArtworkPath, items, g_settings.m_pictureExtensions) && items.Size())
+  {
+    CLog::Log(LOGINFO, "Found XBMC4Gamers artwork for %s", m_programInfoTag->m_strPath.c_str());
+    for (unsigned int i = 0; i < items.Size(); i++)
+    {
+      CStdString strProperty(items[i]->GetLabel());
+      URIUtils::RemoveExtension(strProperty);
+      strProperty.Format("artwork_%s", strProperty);
+      SetProperty(strProperty, items[i]->m_strPath);
+    }
+  }
+}

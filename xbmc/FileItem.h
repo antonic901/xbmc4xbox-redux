@@ -249,6 +249,11 @@ public:
    */
   CStdString GetLocalFanart() const;
 
+  /*!
+   \brief Load the XBMC4Gamers artwork for this item if it exists
+   */
+  void LoadXBMC4GamersArtwork();
+
   // Sets the cached thumb for the item if it exists
   void SetCachedVideoThumb();
   void SetCachedPictureThumb();
