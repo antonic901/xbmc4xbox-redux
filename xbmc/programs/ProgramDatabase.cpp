@@ -986,6 +986,11 @@ void CProgramDatabase::AddPlatformToGame(int idGame, int idPlatform)
   AddToLinkTable("platformlinkgame", "idPlatform", idPlatform, "idGame", idGame);
 }
 
+void CProgramDatabase::CleanDatabase(IProgramInfoScannerObserver* pObserver, const vector<int>* paths)
+{
+  // TODO: implement this
+}
+
 void CProgramDatabase::ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName)
 {
   if (URIUtils::IsStack(strFileName) || URIUtils::IsInArchive(strFileName))
@@ -1007,7 +1012,18 @@ void CProgramDatabase::SplitPath(const CStdString& strFileNameAndPath, CStdStrin
 
 void CProgramDatabase::InvalidatePathHash(const CStdString& strPath)
 {
-  // TODO: implement this
+  SScanSettings settings;
+  bool foundDirectly;
+  ScraperPtr info = GetScraperForPath(strPath,settings,foundDirectly);
+  SetPathHash(strPath,"");
+  if (!info)
+    return;
+  if (info->Content() == CONTENT_GAMES && !foundDirectly && settings.parent_name_root) // if we scan by folder name we need to invalidate parent as well
+  {
+    CStdString strParent;
+    URIUtils::GetParentPath(strPath,strParent);
+    SetPathHash(strParent,"");
+  }
 }
 
 bool CProgramDatabase::CommitTransaction()

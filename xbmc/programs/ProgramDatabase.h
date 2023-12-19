@@ -292,6 +292,8 @@ public:
   bool HasContent();
   bool HasContent(PROGRAMDB_CONTENT_TYPE type);
 
+  void CleanDatabase(PROGRAM::IProgramInfoScannerObserver* pObserver=NULL, const std::vector<int>* paths=NULL);
+
   /*! \brief Add a file to the database, if necessary
    If the file is already in the database, we simply return its id.
    \param url - full path of the file to add.

@@ -24,14 +24,18 @@
 #include "pictures/Picture.h"
 #include "ProgramInfoDownloader.h"
 #include "GUIInfoManager.h"
+#include "filesystem/DirectoryCache.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/File.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "utils/TimeUtils.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/md5.h"
 
 using namespace std;
 using namespace XFILE;
@@ -52,6 +56,73 @@ namespace PROGRAM
 
   CProgramInfoScanner::~CProgramInfoScanner()
   {
+  }
+
+  void CProgramInfoScanner::Process()
+  {
+    try
+    {
+      unsigned int tick = CTimeUtils::GetTimeMS();
+
+      m_database.Open();
+
+      if (m_pObserver)
+        m_pObserver->OnStateChanged(PREPARING);
+
+      m_bCanInterrupt = true;
+
+      CLog::Log(LOGNOTICE, "ProgramInfoScanner: Starting scan ..");
+
+      // Reset progress vars
+      m_currentItem = 0;
+      m_itemCount = -1;
+
+      SetPriority(GetMinPriority());
+
+      // Database operations should not be canceled
+      // using Interupt() while scanning as it could
+      // result in unexpected behaviour.
+      m_bCanInterrupt = false;
+
+      bool bCancelled = false;
+      while (!bCancelled && m_pathsToScan.size())
+      {
+        /*
+         * A copy of the directory path is used because the path supplied is
+         * immediately removed from the m_pathsToScan set in DoScan(). If the
+         * reference points to the entry in the set a null reference error
+         * occurs.
+         */
+        CStdString directory = *m_pathsToScan.begin();
+        if (!DoScan(directory))
+          bCancelled = true;
+      }
+
+      if (!bCancelled)
+      {
+        if (m_bClean)
+          m_database.CleanDatabase(m_pObserver,&m_pathsToClean);
+        else
+        {
+          if (m_pObserver)
+            m_pObserver->OnStateChanged(COMPRESSING_DATABASE);
+          m_database.Compress(false);
+        }
+      }
+
+      m_database.Close();
+
+      tick = CTimeUtils::GetTimeMS() - tick;
+      CLog::Log(LOGNOTICE, "ProgramInfoScanner: Finished scan. Scanning for program info took %s", StringUtils::SecondsToTimeString(tick / 1000).c_str());
+
+      m_bRunning = false;
+      if (m_pObserver)
+        m_pObserver->OnFinished();
+    }
+    catch (...)
+    {
+      CLog::Log(LOGERROR, "ProgramInfoScanner: Exception while scanning.");
+    }
   }
 
   void CProgramInfoScanner::Start(const CStdString& strDirectory, bool scanAll)
@@ -95,6 +166,133 @@ namespace PROGRAM
   void CProgramInfoScanner::SetObserver(IProgramInfoScannerObserver* pObserver)
   {
     m_pObserver = pObserver;
+  }
+
+  bool CProgramInfoScanner::DoScan(const CStdString& strDirectory)
+  {
+    if (m_pObserver)
+    {
+      m_pObserver->OnDirectoryChanged(strDirectory);
+      m_pObserver->OnSetTitle(g_localizeStrings.Get(20415));
+    }
+
+    /*
+     * Remove this path from the list we're processing. This must be done prior to
+     * the check for file or folder exclusion to prevent an infinite while loop
+     * in Process().
+     */
+    set<CStdString>::iterator it = m_pathsToScan.find(strDirectory);
+    if (it != m_pathsToScan.end())
+      m_pathsToScan.erase(it);
+
+    // load subfolder
+    CFileItemList items;
+    bool foundDirectly = false;
+    bool bSkip = false;
+
+    SScanSettings settings;
+    ScraperPtr info = m_database.GetScraperForPath(strDirectory, settings, foundDirectly);
+    CONTENT_TYPE content = info ? info->Content() : CONTENT_NONE;
+
+    // exclude folders that match our exclude regexps
+    CStdStringArray regexps = g_advancedSettings.m_gamesExcludeFromScanRegExps;
+
+    if (CUtil::ExcludeFileOrFolder(strDirectory, regexps))
+      return true;
+
+    bool ignoreFolder = !m_scanAll && settings.noupdate;
+    if (content == CONTENT_NONE || ignoreFolder)
+      return true;
+
+    CStdString hash, dbHash;
+    if (content == CONTENT_GAMES)
+    {
+      if (m_pObserver)
+        m_pObserver->OnStateChanged(FETCHING_GAME_INFO);
+
+      CStdString fastHash = GetFastHash(strDirectory);
+      if (m_database.GetPathHash(strDirectory, dbHash) && !fastHash.IsEmpty() && fastHash == dbHash)
+      { // fast hashes match - no need to process anything
+        CLog::Log(LOGDEBUG, "ProgramInfoScanner: Skipping dir '%s' due to no change (fasthash)", strDirectory.c_str());
+        hash = fastHash;
+        bSkip = true;
+      }
+      if (!bSkip)
+      { // need to fetch the folder
+        CDirectory::GetDirectory(strDirectory, items, g_settings.m_programExtensions);
+        if (content == CONTENT_GAMES)
+          items.Stack();
+        // compute hash
+        GetPathHash(items, hash);
+        if (hash != dbHash && !hash.IsEmpty())
+        {
+          if (dbHash.IsEmpty())
+            CLog::Log(LOGDEBUG, "ProgramInfoScanner: Scanning dir '%s' as not in the database", strDirectory.c_str());
+          else
+            CLog::Log(LOGDEBUG, "ProgramInfoScanner: Rescanning dir '%s' due to change (%s != %s)", strDirectory.c_str(), dbHash.c_str(), hash.c_str());
+        }
+        else
+        { // they're the same or the hash is empty (dir empty/dir not retrievable)
+          if (hash.IsEmpty() && !dbHash.IsEmpty())
+          {
+            CLog::Log(LOGDEBUG, "ProgramInfoScanner: Skipping dir '%s' as it's empty or doesn't exist - adding to clean list", strDirectory.c_str());
+            m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
+          }
+          else
+            CLog::Log(LOGDEBUG, "ProgramInfoScanner: Skipping dir '%s' due to no change", strDirectory.c_str());
+          bSkip = true;
+          if (m_pObserver)
+            m_pObserver->OnDirectoryScanned(strDirectory);
+        }
+        // update the hash to a fast hash if needed
+        if (CanFastHash(items) && !fastHash.IsEmpty())
+          hash = fastHash;
+      }
+    }
+
+    if (!bSkip)
+    {
+      if (RetrieveProgramInfo(items, settings.parent_name_root, content))
+      {
+        if (!m_bStop && content == CONTENT_GAMES)
+        {
+          m_database.SetPathHash(strDirectory, hash);
+          m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
+          CLog::Log(LOGDEBUG, "ProgramInfoScanner: Finished adding information from dir %s", strDirectory.c_str());
+        }
+      }
+      else
+      {
+        m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
+        CLog::Log(LOGDEBUG, "ProgramInfoScanner: No (new) information was found in dir %s", strDirectory.c_str());
+      }
+    }
+    else if (hash != dbHash && content == CONTENT_GAMES)
+    { // update the hash either way - we may have changed the hash to a fast version
+      m_database.SetPathHash(strDirectory, hash);
+    }
+
+    if (m_pObserver)
+      m_pObserver->OnDirectoryScanned(strDirectory);
+
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      CFileItemPtr pItem = items[i];
+
+      if (m_bStop)
+        break;
+
+      // if we have a directory item (non-playlist) we then recurse into that folder
+      // do not recurse for tv shows - we have already looked recursively for episodes
+      if (pItem->m_bIsFolder && !pItem->IsParentFolder() && !pItem->IsPlayList() && settings.recurse > 0)
+      {
+        if (!DoScan(pItem->GetPath()))
+        {
+          m_bStop = true;
+        }
+      }
+    }
+    return !m_bStop;
   }
 
   bool CProgramInfoScanner::RetrieveProgramInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress)
@@ -393,6 +591,54 @@ namespace PROGRAM
       CStdString strThumb(folderItem.GetCachedProgramThumb());
       CFile::Cache(igdbThumb.c_str(), strThumb.c_str(), NULL, NULL);
     }
+  }
+
+  int CProgramInfoScanner::GetPathHash(const CFileItemList &items, CStdString &hash)
+  {
+    // Create a hash based on the filenames, filesize and filedate.  Also count the number of files
+    if (0 == items.Size()) return 0;
+    XBMC::XBMC_MD5 md5state;
+    int count = 0;
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      const CFileItemPtr pItem = items[i];
+      md5state.append(pItem->GetPath());
+      md5state.append((unsigned char *)&pItem->m_dwSize, sizeof(pItem->m_dwSize));
+      FILETIME time = pItem->m_dateTime;
+      md5state.append((unsigned char *)&time, sizeof(FILETIME));
+      if (pItem->IsProgram() && !pItem->IsPlayList() && !pItem->IsNFO())
+        count++;
+    }
+    md5state.getDigest(hash);
+    return count;
+  }
+
+  bool CProgramInfoScanner::CanFastHash(const CFileItemList &items) const
+  {
+    // TODO: Probably should account for excluded folders here (eg samples), though that then
+    //       introduces possible problems if the user then changes the exclude regexps and
+    //       expects excluded folders that are inside a fast-hashed folder to then be picked
+    //       up. The chances that the user has a folder which contains only excluded folders
+    //       where some of those folders should be scanned recursively is pretty small.
+    return items.GetFolderCount() == 0;
+  }
+
+  CStdString CProgramInfoScanner::GetFastHash(const CStdString &directory) const
+  {
+    struct __stat64 buffer;
+    if (XFILE::CFile::Stat(directory, &buffer) == 0)
+    {
+      int64_t time = buffer.st_mtime;
+      if (!time)
+        time = buffer.st_ctime;
+      if (time)
+      {
+        CStdString hash;
+        hash.Format("fast%"PRId64, time);
+        return hash;
+      }
+    }
+    return "";
   }
 
   CNfoFile::NFOResult CProgramInfoScanner::CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ScraperPtr& info, CScraperUrl& scrUrl)

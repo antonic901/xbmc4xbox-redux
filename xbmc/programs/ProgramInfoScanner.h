@@ -101,6 +101,9 @@ namespace PROGRAM
     CNfoFile::NFOResult CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ADDON::ScraperPtr& scraper, CScraperUrl& scrUrl);
 
   protected:
+    virtual void Process();
+    bool DoScan(const CStdString& strDirectory);
+
     INFO_RET RetrieveInfoForGame(CFileItemPtr pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress);
 
     /*! \brief Update the progress bar with the heading and line and check for cancellation
@@ -139,6 +142,26 @@ namespace PROGRAM
      \param pDialog progress dialog to update during processing. Defaults to NULL.
      */
     void GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir=false, bool useLocal=true, CGUIDialogProgress* pDialog = NULL);
+
+    static int GetPathHash(const CFileItemList &items, CStdString &hash);
+
+    /*! \brief Retrieve a "fast" hash of the given directory (if available)
+     Performs a stat() on the directory, and uses modified time to create a "fast"
+     hash of the folder. If no modified time is available, the create time is used,
+     and if neither are available, an empty hash is returned.
+     \param directory folder to hash
+     \return the hash of the folder of the form "fast<datetime>"
+     */
+    CStdString GetFastHash(const CStdString &directory) const;
+
+    /*! \brief Decide whether a folder listing could use the "fast" hash
+     Fast hashing can be done whenever the folder contains no scannable subfolders, as the
+     fast hash technique uses modified time to determine when folder content changes, which
+     is generally not propogated up the directory tree.
+     \param items the directory listing
+     \return true if this directory listing can be fast hashed, false otherwise
+     */
+    bool CanFastHash(const CFileItemList &items) const;
 
     /*! \brief Download an image file and apply the image to a folder if necessary
      \param url URL of the image.
