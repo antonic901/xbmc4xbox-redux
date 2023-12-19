@@ -111,6 +111,26 @@ namespace PROGRAM
      */
     bool ProgressCancelled(CGUIDialogProgress* progress, int heading, const CStdString &line1);
 
+    /*! \brief Find a url for the given program using the given scraper
+     \param programName name of the program to lookup
+     \param scraper scraper to use for the lookup
+     \param url [out] returned url from the scraper
+     \param progress CGUIDialogProgress bar
+     \return >0 on success, <0 on failure (cancellation), and 0 on no info found
+     */
+    int FindProgram(const CStdString &programName, const ADDON::ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress);
+
+    /*! \brief Retrieve detailed information for an item from an online source, optionally supplemented with local data
+     TODO: sort out some better return codes.
+     \param pItem item to retrieve online details for.
+     \param url URL to use to retrieve online details.
+     \param scraper Scraper that handles parsing the online data.
+     \param nfoFile if set, we override the online data with the locally supplied data. Defaults to NULL.
+     \param pDialog progress dialog to update and check for cancellation during processing. Defaults to NULL.
+     \return true if information is found, false if an error occurred, the lookup was cancelled, or no information was found.
+     */
+    bool GetDetails(CFileItem *pItem, CScraperUrl &url, const ADDON::ScraperPtr &scraper, CNfoFile *nfoFile=NULL, CGUIDialogProgress* pDialog=NULL);
+
     /*! \brief Retrieve any artwork associated with an item
      \param pItem item to add to the database.
      \param content content type of the item.

@@ -22,6 +22,7 @@
 #include "ProgramInfoScanner.h"
 #include "addons/AddonManager.h"
 #include "pictures/Picture.h"
+#include "ProgramInfoDownloader.h"
 #include "GUIInfoManager.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/File.h"
@@ -202,7 +203,27 @@ namespace PROGRAM
       GetArtwork(pItem.get(), info2->Content(), bDirNames, true, pDlgProgress);
       return INFO_ADDED;
     }
-    // TODO: implement support for web-based parsers
+    if (result == CNfoFile::URL_NFO || result == CNfoFile::COMBINED_NFO)
+      pURL = &scrUrl;
+
+    CScraperUrl url;
+    int retVal = 0;
+    if (pURL)
+      url = *pURL;
+    else if ((retVal = FindProgram(pItem->GetGameName(bDirNames), info2, url, pDlgProgress)) <= 0)
+      return retVal < 0 ? INFO_CANCELLED : INFO_NOT_FOUND;
+
+    if (m_pObserver && !url.strTitle.IsEmpty())
+      m_pObserver->OnSetTitle(url.strTitle);
+
+    if (GetDetails(pItem.get(), url, info2, result == CNfoFile::COMBINED_NFO ? &m_nfoReader : NULL, pDlgProgress))
+    {
+      if (AddProgram(pItem.get(), info2->Content(), bDirNames) < 0)
+        return INFO_ERROR;
+      GetArtwork(pItem.get(), info2->Content(), bDirNames, useLocal);
+      return INFO_ADDED;
+    }
+
     return INFO_NOT_FOUND;
   }
 
@@ -337,6 +358,32 @@ namespace PROGRAM
     return nfoFile;
   }
 
+  bool CProgramInfoScanner::GetDetails(CFileItem *pItem, CScraperUrl &url, const ScraperPtr& scraper, CNfoFile *nfoFile, CGUIDialogProgress* pDialog /* = NULL */)
+  {
+    CProgramInfoTag gameDetails;
+    gameDetails.m_strFileNameAndPath = pItem->GetPath();
+
+    CProgramInfoDownloader igdb(scraper);
+    if ( igdb.GetDetails(url, gameDetails, pDialog) )
+    {
+      if (nfoFile)
+        nfoFile->GetDetails(gameDetails);
+
+      if (m_pObserver && url.strTitle.IsEmpty())
+        m_pObserver->OnSetTitle(gameDetails.m_strTitle);
+
+      if (pDialog)
+      {
+        pDialog->SetLine(1, gameDetails.m_strTitle);
+        pDialog->Progress();
+      }
+
+      *pItem->GetProgramInfoTag() = gameDetails;
+      return true;
+    }
+    return false; // no info found, or cancelled
+  }
+
   void CProgramInfoScanner::ApplyThumbToFolder(const CStdString &folder, const CStdString &igdbThumb)
   {
     // copy icon to folder also;
@@ -425,6 +472,24 @@ namespace PROGRAM
       return progress->IsCanceled();
     }
     return m_bStop;
+  }
+
+  int CProgramInfoScanner::FindProgram(const CStdString &programName, const ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress)
+  {
+    GAMELIST gamelist;
+    CProgramInfoDownloader igdb(scraper);
+    int returncode = igdb.FindGame(programName, gamelist, progress);
+    if (returncode < 0 || (returncode == 0 && !DownloadFailed(progress)))
+    { // scraper reported an error, or we had an error and user wants to cancel the scan
+      m_bStop = true;
+      return -1; // cancelled
+    }
+    if (returncode > 0 && gamelist.size())
+    {
+      url = gamelist[0];
+      return 1;  // found a game
+    }
+    return 0; // didn't find anything
   }
 
   CStdString CProgramInfoScanner::GetParentDir(const CFileItem &item) const

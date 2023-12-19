@@ -53,6 +53,7 @@ void CProgramInfoTag::Reset()
   m_iYear = 0;
   m_iDbId = -1;
   m_iFileId = -1;
+  m_bExclusive = false;
   m_fanart.m_xml = "";
   m_dateAdded.Reset();
   m_type = "";
