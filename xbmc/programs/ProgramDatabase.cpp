@@ -27,8 +27,10 @@
 #include "windows/GUIWindowFileManager.h"
 #include "filesystem/MultiPathDirectory.h"
 #include "programs/ProgramInfoScanner.h"
+#include "GUIWindowManager.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"
 #include "utils/TimeUtils.h"
@@ -184,7 +186,69 @@ void CProgramDatabase::CreateViews()
 
 void CProgramDatabase::RemoveContentForPath(const CStdString& strPath, CGUIDialogProgress *progress /* = NULL */)
 {
-  // TODO: implement this
+  if(URIUtils::IsMultiPath(strPath))
+  {
+    vector<CStdString> paths;
+    CMultiPathDirectory::GetPaths(strPath, paths);
+
+    for(unsigned i=0;i<paths.size();i++)
+      RemoveContentForPath(paths[i], progress);
+  }
+
+  try
+  {
+    if (NULL == m_pDB.get()) return ;
+    if (NULL == m_pDS.get()) return ;
+
+    auto_ptr<Dataset> pDS(m_pDB->CreateDataset());
+    CStdString strPath1(strPath);
+    CStdString strSQL = PrepareSQL("select idPath,strContent,strPath from path where strPath like '%%%s%%'",strPath1.c_str());
+    progress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+    pDS->query(strSQL.c_str());
+    if (progress)
+    {
+      progress->SetHeading(700);
+      progress->SetLine(0, "");
+      progress->SetLine(1, 313);
+      progress->SetLine(2, 330);
+      progress->SetPercentage(0);
+      progress->StartModal();
+      progress->ShowProgressBar(true);
+    }
+    int iCurr=0;
+    int iMax = pDS->num_rows();
+    while (!pDS->eof())
+    {
+      if (progress)
+      {
+        progress->SetPercentage((int)((float)(iCurr++)/iMax*100.f));
+        progress->Progress();
+      }
+      int idPath = pDS->fv("path.idPath").get_asInt();
+      CStdString strCurrPath = pDS->fv("path.strPath").get_asString();
+      strSQL=PrepareSQL("select files.strFilename from files join game on game.idFile=files.idFile where files.idPath=%i",idPath);
+      m_pDS2->query(strSQL.c_str());
+      while (!m_pDS2->eof())
+      {
+        CStdString strGamePath;
+        CStdString strFileName = m_pDS2->fv("files.strFilename").get_asString();
+        ConstructPath(strGamePath, strCurrPath, strFileName);
+        if (HasGameInfo(strGamePath))
+          DeleteGame(strGamePath);
+        m_pDS2->next();
+      }
+      m_pDS2->close();
+      pDS->next();
+    }
+    strSQL = PrepareSQL("update path set strContent = '', strScraper='', strHash='',strSettings='',useFolderNames=0,scanRecursive=0 where strPath like '%%%s%%'",strPath1.c_str());
+    pDS->exec(strSQL.c_str());
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
+  }
+  if (progress)
+    progress->Close();
 }
 
 void CProgramDatabase::SetScraperForPath(const CStdString& filePath, const ScraperPtr& scraper, const PROGRAM::SScanSettings& settings)
@@ -958,7 +1022,15 @@ bool CProgramDatabase::CommitTransaction()
 
 void CProgramDatabase::DeleteThumbForItem(const CStdString& strPath, bool bFolder)
 {
-  // TODO: implement this
+  CFileItem item(strPath,bFolder);
+
+  XFILE::CFile::Delete(item.GetCachedProgramThumb());
+  XFILE::CFile::Delete(item.GetCachedFanart());
+
+  // tell our GUI to completely reload all controls (as some of them
+  // are likely to have had this image in use so will need refreshing)
+  CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REFRESH_THUMBS);
+  g_windowManager.SendThreadMessage(msg);
 }
 
 void CProgramDatabase::SetDetail(const CStdString& strDetail, int id, int field,

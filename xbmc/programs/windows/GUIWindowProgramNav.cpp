@@ -242,6 +242,12 @@ bool CGUIWindowProgramNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button
     item = m_vecItems->Get(itemNumber);
   if (CGUIDialogContextMenu::OnContextButton("programs", item, button))
   {
+    //TODO should we search DB for entries from plugins?
+    if (button == CONTEXT_BUTTON_REMOVE_SOURCE && !item->IsPlugin()
+        && !item->IsLiveTV() &&!item->IsRSS())
+    {
+      OnUnAssignContent(item->GetPath(),20375,20340,20341);
+    }
     Refresh();
     return true;
   }
