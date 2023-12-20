@@ -32,6 +32,8 @@
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
 #include "settings/AdvancedSettings.h"
+#include "programs/ProgramDatabase.h"
+#include "programs/ProgramInfoTag.h"
 
 #define NUM_ITEMS 10
 
@@ -306,6 +308,67 @@ bool CRecentlyAddedJob::UpdateMusic()
   return true;
 }
 
+bool CRecentlyAddedJob::UpdateProgram()
+{
+  CGUIWindow* home = g_windowManager.GetWindow(WINDOW_HOME);
+
+  if ( home == NULL )
+    return false;
+
+  CLog::Log(LOGDEBUG, "CRecentlyAddedJob::UpdatePrograms() - Running RecentlyAdded home screen update");
+  
+  int            i = 0;
+  CFileItemList  items;
+  CProgramDatabase programdatabase;
+  
+  programdatabase.Open();
+
+  if (programdatabase.GetRecentlyAddedGamesNav("programdb://recentlyaddedgames/", items, NUM_ITEMS))
+  {  
+    for (; i < items.Size(); ++i)
+    {
+      CFileItemPtr item = items.Get(i);
+      CStdString   value;
+      CStdString   strRating;
+      value.Format("%i", i + 1);
+      strRating.Format("%.1f", item->GetProgramInfoTag()->m_fRating);
+      
+      home->SetProperty("LatestGame." + value + ".Title"       , item->GetLabel());
+      home->SetProperty("LatestGame." + value + ".Rating"      , strRating);
+      home->SetProperty("LatestGame." + value + ".Year"        , item->GetProgramInfoTag()->m_iYear);
+      home->SetProperty("LatestGame." + value + ".Plot"        , item->GetProgramInfoTag()->m_strPlot);
+      home->SetProperty("LatestGame." + value + ".ESRB"        , item->GetProgramInfoTag()->m_strESRB);
+      home->SetProperty("LatestGame." + value + ".Path"        , item->GetProgramInfoTag()->m_strFileNameAndPath);
+      home->SetProperty("LatestGame." + value + ".Trailer"     , item->GetProgramInfoTag()->m_strTrailer);
+
+      if (!item->HasThumbnail())
+        m_thumbLoader.LoadItem(item.get());
+
+      home->SetProperty("LatestGame." + value + ".Thumb"       , item->GetThumbnailImage());
+      home->SetProperty("LatestGame." + value + ".Fanart"      , item->GetCachedFanart());
+    }
+  } 
+  for (; i < NUM_ITEMS; ++i)
+  {
+    CStdString value;
+    value.Format("%i", i + 1);
+    home->SetProperty("LatestGame." + value + ".Title"       , "");
+    home->SetProperty("LatestGame." + value + ".Thumb"       , "");
+    home->SetProperty("LatestGame." + value + ".Rating"      , "");
+    home->SetProperty("LatestGame." + value + ".Year"        , "");
+    home->SetProperty("LatestGame." + value + ".Plot"        , "");
+    home->SetProperty("LatestGame." + value + ".ESRB"        , "");
+    home->SetProperty("LatestGame." + value + ".Path"        , "");
+    home->SetProperty("LatestGame." + value + ".Trailer"     , "");
+    home->SetProperty("LatestGame." + value + ".Fanart"      , "");
+  }
+ 
+  // TODO: do the same for Applications once we add them
+
+  programdatabase.Close();
+  return true;
+}
+
 bool CRecentlyAddedJob::UpdateTotal()
 {
   CGUIWindow* home = g_windowManager.GetWindow(WINDOW_HOME);
@@ -317,6 +380,7 @@ bool CRecentlyAddedJob::UpdateTotal()
   
   CVideoDatabase videodatabase;  
   CMusicDatabase musicdatabase;
+  CProgramDatabase programdatabase;
   
   musicdatabase.Open();
   int MusSongTotals   = atoi(musicdatabase.GetSingleValue("songview"       , "count(1)"));
@@ -334,7 +398,12 @@ bool CRecentlyAddedJob::UpdateTotal()
   int EpCount         = atoi(videodatabase.GetSingleValue("tvshowview"     , "sum(totalcount)"));
   int TvShowsWatched  = atoi(videodatabase.GetSingleValue("tvshowview"     , "sum(watchedcount = totalcount)"));
   videodatabase.Close();
-  
+
+  programdatabase.Open();
+  int gameTotals      = atoi(programdatabase.GetSingleValue("gameview"     , "count(1)"));
+  int gamePlayCount   = atoi(programdatabase.GetSingleValue("gameview"     , "count(playCount)"));
+  programdatabase.Close();
+
   home->SetProperty("TVShows.Count"         , tvShowCount);
   home->SetProperty("TVShows.Watched"       , TvShowsWatched);
   home->SetProperty("TVShows.UnWatched"     , tvShowCount - TvShowsWatched);
@@ -350,6 +419,8 @@ bool CRecentlyAddedJob::UpdateTotal()
   home->SetProperty("Music.SongsCount"      , MusSongTotals);
   home->SetProperty("Music.AlbumsCount"     , MusAlbumTotals);
   home->SetProperty("Music.ArtistsCount"    , MusArtistTotals);
+  home->SetProperty("Games.Count"           , gameTotals);
+  home->SetProperty("Games.Played"          , gamePlayCount);
   
   return true;
 }
@@ -363,6 +434,9 @@ bool CRecentlyAddedJob::DoWork()
   
   if (m_flag & Video)
     ret &= UpdateVideo();
+
+  if (m_flag & Program)
+    ret &= UpdateProgram();
   
   if (m_flag & Totals)
     ret &= UpdateTotal();

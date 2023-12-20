@@ -82,6 +82,19 @@ void CGUIWindowHome::Announce(AnnouncementFlag flag, const char *sender, const c
       ra_flag |= ( Audio | Totals );
     }
   }
+  if (flag & ProgramLibrary)
+  {
+    if ((strcmp(message, "OnUpdate") == 0) ||
+        (strcmp(message, "OnRemove") == 0))
+    {
+      if (data.isMember("playcount"))
+        ra_flag |= Totals;
+    }
+    else if (strcmp(message, "OnScanFinished") == 0)
+    {
+      ra_flag |= (Program | Totals);
+    }
+  }
 
   // add the job immediatedly if the home window is active
   // otherwise defer it to the next initialisation
