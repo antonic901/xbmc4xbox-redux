@@ -25,6 +25,7 @@
 #include "Util.h"
 #include "xbox/xbeheader.h"
 #include "windows/GUIWindowFileManager.h"
+#include "filesystem/StackDirectory.h"
 #include "filesystem/MultiPathDirectory.h"
 #include "programs/ProgramInfoScanner.h"
 #include "GUIWindowManager.h"
@@ -36,6 +37,7 @@
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "interfaces/AnnouncementManager.h"
 #include "DateTime.h"
 #include "programs/ProgramDbUrl.h"
 #include "SmartPlaylist.h"
@@ -988,7 +990,263 @@ void CProgramDatabase::AddPlatformToGame(int idGame, int idPlatform)
 
 void CProgramDatabase::CleanDatabase(IProgramInfoScannerObserver* pObserver, const vector<int>* paths)
 {
-  // TODO: implement this
+  CGUIDialogProgress *progress=NULL;
+  try
+  {
+    if (NULL == m_pDB.get()) return;
+    if (NULL == m_pDS.get()) return;
+
+    BeginTransaction();
+
+    // find all the files
+    CStdString sql;
+    if (paths)
+    {
+      if (paths->size() == 0)
+      {
+        RollbackTransaction();
+        return;
+      }
+
+      CStdString strPaths;
+      for (unsigned int i=0;i<paths->size();++i )
+        strPaths.Format("%s,%i",strPaths.Mid(0).c_str(),paths->at(i));
+      sql = PrepareSQL("select * from files,path where files.idpath=path.idPath and path.idPath in (%s)",strPaths.Mid(1).c_str());
+    }
+    else
+      sql = "select * from files, path where files.idPath = path.idPath";
+
+    m_pDS->query(sql.c_str());
+    if (m_pDS->num_rows() == 0) return;
+
+    if (!pObserver)
+    {
+      progress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+      if (progress)
+      {
+        progress->SetHeading(700);
+        progress->SetLine(0, "");
+        progress->SetLine(1, 313);
+        progress->SetLine(2, 330);
+        progress->SetPercentage(0);
+        progress->StartModal();
+        progress->ShowProgressBar(true);
+      }
+    }
+    else
+    {
+      pObserver->OnDirectoryChanged("");
+      pObserver->OnSetTitle("");
+      pObserver->OnSetCurrentProgress(0,1);
+      pObserver->OnStateChanged(CLEANING_UP_DATABASE);
+    }
+
+    CStdString filesToDelete = "";
+    CStdString gamesToDelete = "";
+
+    std::vector<int> gameIDs;
+
+    int total = m_pDS->num_rows();
+    int current = 0;
+    while (!m_pDS->eof())
+    {
+      CStdString path = m_pDS->fv("path.strPath").get_asString();
+      CStdString fileName = m_pDS->fv("files.strFileName").get_asString();
+      CStdString fullPath;
+      ConstructPath(fullPath,path,fileName);
+
+      // get the first stacked file
+      if (URIUtils::IsStack(fullPath))
+        fullPath = CStackDirectory::GetFirstStackedFile(fullPath);
+
+      // check for deletion
+      bool bIsSource;
+      VECSOURCES *pShares = g_settings.GetSourcesFromType("programs");
+
+      // check if we have a internet related file that is part of a media source
+      if (URIUtils::IsInternetStream(fullPath, true) && CUtil::GetMatchingSource(fullPath, *pShares, bIsSource) > -1)
+      {
+        if (!CFile::Exists(fullPath, false))
+          filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
+      }
+      else
+      {
+        // remove optical, internet related and non-existing files
+        // note: this will also remove entries from previously existing media sources
+        if (URIUtils::IsOnDVD(fullPath) || URIUtils::IsMemCard(fullPath) || URIUtils::IsInternetStream(fullPath, true) || !CFile::Exists(fullPath, false))
+          filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
+      }
+
+      if (!pObserver)
+      {
+        if (progress)
+        {
+          progress->SetPercentage(current * 100 / total);
+          progress->Progress();
+          if (progress->IsCanceled())
+          {
+            progress->Close();
+            m_pDS->close();
+            return;
+          }
+        }
+      }
+      else
+        pObserver->OnSetProgress(current,total);
+
+      m_pDS->next();
+      current++;
+    }
+    m_pDS->close();
+    if ( ! filesToDelete.IsEmpty() )
+    {
+      filesToDelete.TrimRight(",");
+      // now grab them games
+      sql = PrepareSQL("select idGame from game where idFile in (%s)",filesToDelete.c_str());
+      m_pDS->query(sql.c_str());
+      while (!m_pDS->eof())
+      {
+        gameIDs.push_back(m_pDS->fv(0).get_asInt());
+        gamesToDelete += m_pDS->fv(0).get_asString() + ",";
+        m_pDS->next();
+      }
+      m_pDS->close();
+    }
+
+    if (progress)
+    {
+      progress->SetPercentage(100);
+      progress->Progress();
+    }
+
+    // Add any files that don't have a valid idPath entry to the filesToDelete list.
+    sql = "select files.idFile from files where idPath not in (select idPath from path)";
+    m_pDS->exec(sql.c_str());
+    while (!m_pDS->eof())
+    {
+      filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
+      m_pDS->next();
+    }
+    m_pDS->close();
+
+    if ( ! filesToDelete.IsEmpty() )
+    {
+      filesToDelete = "(" + filesToDelete + ")";
+      CLog::Log(LOGDEBUG, "%s Cleaning files table", __FUNCTION__);
+      sql = "delete from files where idFile in " + filesToDelete;
+      m_pDS->exec(sql.c_str());
+    }
+
+    if ( ! gamesToDelete.IsEmpty() )
+    {
+      gamesToDelete = "(" + gamesToDelete.TrimRight(",") + ")";
+
+      CLog::Log(LOGDEBUG, "%s Cleaning game table", __FUNCTION__);
+      sql = "delete from game where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning developerlinkgame table", __FUNCTION__);
+      sql = "delete from developerlinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning publisherlinkgame table", __FUNCTION__);
+      sql = "delete from publisherlinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning genrelinkgame table", __FUNCTION__);
+      sql = "delete from genrelinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning descriptorlinkgame table", __FUNCTION__);
+      sql = "delete from descriptorlinkgame where idDescriptor in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning generalfeaturelinkgame table", __FUNCTION__);
+      sql = "delete from genrelinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning generalfeaturelinkgame table", __FUNCTION__);
+      sql = "delete from generalfeaturelinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning onlinefeaturelinkgame table", __FUNCTION__);
+      sql = "delete from onlinefeaturelinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+
+      CLog::Log(LOGDEBUG, "%s Cleaning platformlinkgame table", __FUNCTION__);
+      sql = "delete from platformlinkgame where idGame in " + gamesToDelete;
+      m_pDS->exec(sql.c_str());
+    }
+
+    CLog::Log(LOGDEBUG, "Cleaning paths that don't exist and don't have content set...");
+    sql = "select * from path where strContent not like ''";
+    m_pDS->query(sql.c_str());
+    CStdString strIds;
+    while (!m_pDS->eof())
+    {
+      if (!CDirectory::Exists(m_pDS->fv("path.strPath").get_asString()))
+        strIds.Format("%s %i,",strIds.Mid(0),m_pDS->fv("path.idPath").get_asInt()); // mid since we cannot format the same string
+      m_pDS->next();
+    }
+    m_pDS->close();
+    if (!strIds.IsEmpty())
+    {
+      strIds.TrimLeft(" ");
+      strIds.TrimRight(",");
+      sql = PrepareSQL("delete from path where idpath in (%s)",strIds.c_str());
+      m_pDS->exec(sql.c_str());
+    }
+
+    CLog::Log(LOGDEBUG, "%s Cleaning path table", __FUNCTION__);
+    sql = "delete from path where idPath not in (select distinct idPath from files) and strContent=''";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning developer table", __FUNCTION__);
+    sql = "delete from developer where idDeveloper not in (select distinct idDeveloper from developerlinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning publisher table", __FUNCTION__);
+    sql = "delete from publisher where idPublisher not in (select distinct idPublisher from publisherlinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning genre table", __FUNCTION__);
+    sql = "delete from genre where idGenre not in (select distinct idGenre from genrelinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning descriptor table", __FUNCTION__);
+    sql = "delete from descriptor where idDescriptor not in (select distinct idDescriptor from descriptorlinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning generalfeature table", __FUNCTION__);
+    sql = "delete from generalfeature where idGeneralFeature not in (select distinct idGeneralFeature from generalfeaturelinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning onlinefeature table", __FUNCTION__);
+    sql = "delete from onlinefeature where idOnlineFeature not in (select distinct idOnlineFeature from onlinefeaturelinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CLog::Log(LOGDEBUG, "%s Cleaning platform table", __FUNCTION__);
+    sql = "delete from platform where idPlatform not in (select distinct idPlatform from platformlinkgame)";
+    m_pDS->exec(sql.c_str());
+
+    CommitTransaction();
+
+    if (pObserver)
+      pObserver->OnStateChanged(COMPRESSING_DATABASE);
+
+    Compress(false);
+
+    CUtil::DeleteProgramDatabaseDirectoryCache();
+
+    for (unsigned int i = 0; i < gameIDs.size(); i++)
+      AnnounceRemove("game", gameIDs[i]);
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  if (progress)
+    progress->Close();
 }
 
 void CProgramDatabase::ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName)
@@ -2221,6 +2479,22 @@ CStdString CProgramDatabase::GetContentForPath(const CStdString& strPath)
   if (scraper)
     return TranslateContent(scraper->Content());
   return "";
+}
+
+void CProgramDatabase::AnnounceRemove(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::ProgramLibrary, "xbmc", "OnRemove", data);
+}
+
+void CProgramDatabase::AnnounceUpdate(std::string content, int id)
+{
+  CVariant data;
+  data["type"] = content;
+  data["id"] = id;
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::ProgramLibrary, "xbmc", "OnUpdate", data);
 }
 
 bool CProgramDatabase::GetItemForPath(const CStdString &content, const CStdString &path, CFileItem &item)

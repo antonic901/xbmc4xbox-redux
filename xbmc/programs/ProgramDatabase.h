@@ -449,5 +449,8 @@ private:
   void InvalidatePathHash(const CStdString& strPath);
   void DeleteThumbForItem(const CStdString& strPath, bool bFolder);
 
+  void AnnounceRemove(std::string content, int id);
+  void AnnounceUpdate(std::string content, int id);
+
   FILETIME TimeStampToLocalTime( unsigned __int64 timeStamp );
 };

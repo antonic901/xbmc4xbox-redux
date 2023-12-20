@@ -1321,6 +1321,16 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
       videodatabase.Close();
     }
   }
+  else if (strSetting.Equals("programlibrary.cleanup"))
+  {
+    if (CGUIDialogYesNo::ShowAndGetInput(313, 333, 0, 0))
+    {
+      CProgramDatabase programdatabase;
+      programdatabase.Open();
+      programdatabase.CleanDatabase();
+      programdatabase.Close();
+    }
+  }
   else if (strSetting.Equals("videolibrary.export"))
     CBuiltins::Execute("exportlibrary(video)");
   else if (strSetting.Equals("musiclibrary.export"))
