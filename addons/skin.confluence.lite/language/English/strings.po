@@ -553,7 +553,11 @@ msgctxt "#31331"
 msgid "Album Details"
 msgstr ""
 
-#empty strings from id 31332 to 31350
+msgctxt "#31332"
+msgid "Recently Played"
+msgstr ""
+
+#empty strings from id 31333 to 31350
 #Video and Music OSD Labels
 
 msgctxt "#31351"

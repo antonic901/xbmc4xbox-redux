@@ -29,6 +29,7 @@
 #include "MusicDatabaseDirectory.h"
 #include "MusicSearchDirectory.h"
 #include "VideoDatabaseDirectory.h"
+#include "ProgramDatabaseDirectory.h"
 #include "FavouritesDirectory.h"
 #include "LibraryDirectory.h"
 #include "AddonsDirectory.h"
@@ -122,6 +123,7 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
   if (strProtocol == "musicdb") return new CMusicDatabaseDirectory();
   if (strProtocol == "musicsearch") return new CMusicSearchDirectory();
   if (strProtocol == "videodb") return new CVideoDatabaseDirectory();
+  if (strProtocol == "programdb") return new CProgramDatabaseDirectory();
   if (strProtocol == "library") return new CLibraryDirectory();
   if (strProtocol == "favourites") return new CFavouritesDirectory();
   if (strProtocol == "filereader") 

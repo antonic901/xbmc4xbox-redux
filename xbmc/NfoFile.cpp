@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "NfoFile.h"
+#include "programs/ProgramDatabase.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoInfoDownloader.h"
@@ -94,6 +95,11 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, const ScraperPtr
       }
     }
   }
+  else if (m_type == ADDON_SCRAPER_GAMES)
+  {
+    CProgramInfoTag details;
+    bNfo = GetDetails(details);
+  }
 
   vector<ScraperPtr> vecScrapers;
   ADDON::ScraperPtr selected;
@@ -103,6 +109,12 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, const ScraperPtr
       m_type == ADDON_SCRAPER_TVSHOWS)
   {
     CVideoDatabase database;
+    database.Open();
+    selected = database.GetScraperForPath(strPath);
+  }
+  if (m_type == ADDON_SCRAPER_GAMES)
+  {
+    CProgramDatabase database;
     database.Open();
     selected = database.GetScraperForPath(strPath);
   }

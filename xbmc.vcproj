@@ -1245,10 +1245,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\MusicDbUrl.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\ProgramDatabase.cpp">
+					RelativePath=".\xbmc\programs\ProgramDatabase.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\ProgramDatabase.h">
+					RelativePath=".\xbmc\programs\ProgramDatabase.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\Song.cpp">
@@ -1942,6 +1942,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\PluginDirectory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\RarDirectory.cpp">
 				</File>
 				<File
@@ -2577,6 +2583,244 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory\QueryParams.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="ProgramDatabaseDirectory"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNode.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNode.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGamesOverview.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGamesOverview.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGrouped.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGrouped.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeOverview.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeOverview.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyAddedGames.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyAddedGames.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyPlayedGames.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRecentlyPlayedGames.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRoot.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRoot.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeTitleGames.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeTitleGames.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\QueryParams.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\QueryParams.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="cdrip"
@@ -2921,6 +3165,58 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\Atomics.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="GUI Program"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramInfo.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramScan.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramScan.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\windows\GUIWindowProgramBase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\windows\GUIWindowProgramBase.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\windows\GUIWindowProgramNav.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\windows\GUIWindowProgramNav.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramDbUrl.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramDbUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoDownloader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoDownloader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoScanner.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoScanner.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoTag.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoTag.h">
 				</File>
 			</Filter>
 		</Filter>

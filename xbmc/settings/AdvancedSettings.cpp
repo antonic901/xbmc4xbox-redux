@@ -113,6 +113,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_moviesExcludeFromScanRegExps.push_back("[-._ \\\\/]sample[-._ \\\\/]");
   m_tvshowExcludeFromScanRegExps.push_back("[-._ \\\\/]sample[-._ \\\\/]");
 
+  m_gamesExcludeFromScanRegExps.push_back("-patch");
+
   m_folderStackRegExps.push_back("((cd|dvd|dis[ck])[0-9]+)$");
 
   m_videoStackRegExps.push_back("(.*?)([ _.-]*(?:cd|dvd|p(?:(?:ar)?t)|dis[ck]|d)[ _.-]*[0-9]+)(.*?)(\\.[^.]+)$");
@@ -171,6 +173,7 @@ CAdvancedSettings::CAdvancedSettings()
   m_prioritiseAPEv2tags = false;
   m_musicItemSeparator = " / ";
   m_videoItemSeparator = " / ";
+  m_programItemSeparator = " / ";
 
   m_bVideoLibraryHideAllItems = false;
   m_bVideoLibraryAllItemsOnBottom = false;
@@ -180,6 +183,12 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryExportAutoThumbs = false;
   m_bVideoLibraryImportWatchedState = false;
   m_bVideoScannerIgnoreErrors = false;
+
+  m_bProgramLibraryHideAllItems = false;
+  m_bProgramLibraryAllItemsOnBottom = false;
+  m_iProgramLibraryRecentlyAddedItems = 25;
+  m_bProgramLibraryCleanOnUpdate = false;
+  m_bProgramScannerIgnoreErrors = false;
 
   m_iTuxBoxStreamtsPort = 31339;
   m_bTuxBoxAudioChannelSelection = false;
@@ -340,6 +349,14 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetString(pElement,"ppffmpegpostprocessing",m_videoPPFFmpegPostProc);
   }
 
+  pElement = pRootElement->FirstChildElement("program");
+  if (pElement)
+  {
+    TiXmlElement* pProgramExcludes = pElement->FirstChildElement("excludefromscan");
+    if (pProgramExcludes)
+      GetCustomRegexps(pProgramExcludes, m_gamesExcludeFromScanRegExps);
+  }
+
   pElement = pRootElement->FirstChildElement("musiclibrary");
   if (pElement)
   {
@@ -366,10 +383,26 @@ bool CAdvancedSettings::Load()
     XMLUtils::GetBoolean(pElement, "importwatchedstate", m_bVideoLibraryImportWatchedState);
   }
 
+  pElement = pRootElement->FirstChildElement("programlibrary");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "hideallitems", m_bProgramLibraryHideAllItems);
+    XMLUtils::GetBoolean(pElement, "allitemsonbottom", m_bProgramLibraryAllItemsOnBottom);
+    XMLUtils::GetInt(pElement, "recentlyaddeditems", m_iProgramLibraryRecentlyAddedItems, 1, INT_MAX);
+    XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bProgramLibraryCleanOnUpdate);
+    XMLUtils::GetString(pElement, "itemseparator", m_programItemSeparator);
+  }
+
   pElement = pRootElement->FirstChildElement("videoscanner");
   if (pElement)
   {
     XMLUtils::GetBoolean(pElement, "ignoreerrors", m_bVideoScannerIgnoreErrors);
+  }
+
+  pElement = pRootElement->FirstChildElement("programscanner");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "ignoreerrors", m_bProgramScannerIgnoreErrors);
   }
 
   pElement = pRootElement->FirstChildElement("slideshow");
@@ -743,6 +776,7 @@ void CAdvancedSettings::Clear()
   m_audioExcludeFromScanRegExps.clear();
   m_audioExcludeFromListingRegExps.clear();
   m_pictureExcludeFromListingRegExps.clear();
+  m_gamesExcludeFromScanRegExps.clear();
 }
 
 void CAdvancedSettings::GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings)

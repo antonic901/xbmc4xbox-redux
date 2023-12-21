@@ -117,6 +117,11 @@ void XBPython::Announce(AnnouncementFlag flag, const char *sender, const char *m
    if (strcmp(message, "OnScanFinished") == 0)
     OnDatabaseUpdated("music");
   }
+  else if (flag & ProgramLibrary)
+  {
+   if (strcmp(message, "OnScanFinished") == 0)
+    OnDatabaseUpdated("program");
+  }
   else if (flag & GUI)
   {
    if (strcmp(message, "OnScreensaverDeactivated") == 0)

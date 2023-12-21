@@ -36,6 +36,7 @@
 #include "guilib/XMLUtils.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramDatabase.h"
 #include "music/Album.h"
 #include "music/Artist.h"
 #include <sstream>
@@ -59,6 +60,7 @@ static const ContentMapping content[] =
    {"albums",        CONTENT_ALBUMS,        132 },
    {"music",         CONTENT_ALBUMS,        132 },
    {"artists",       CONTENT_ARTISTS,       133 },
+   {"games",         CONTENT_GAMES,       15016 },
    {"movies",        CONTENT_MOVIES,      20342 },
    {"tvshows",       CONTENT_TVSHOWS,     20343 },
    {"musicvideos",   CONTENT_MUSICVIDEOS, 20389 }};
@@ -104,6 +106,8 @@ TYPE ScraperTypeFromContent(const CONTENT_TYPE &content)
     return ADDON_SCRAPER_MUSICVIDEOS;
   case CONTENT_TVSHOWS:
     return ADDON_SCRAPER_TVSHOWS;
+  case CONTENT_GAMES:
+    return ADDON_SCRAPER_GAMES;
   default:
     return ADDON_UNKNOWN;
   }
@@ -147,6 +151,9 @@ CScraper::CScraper(const cp_extension_t *ext) : CAddon(ext), m_fLoaded(false)
       break;
     case ADDON_SCRAPER_TVSHOWS:
       m_pathContent = CONTENT_TVSHOWS;
+      break;
+    case ADDON_SCRAPER_GAMES:
+      m_pathContent = CONTENT_GAMES;
       break;
     default:
       m_pathContent = CONTENT_NONE;
@@ -833,6 +840,51 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
   }
 
   return vcep;
+}
+
+// takes URL; returns true and populates program details on success, false otherwise
+bool CScraper::GetProgramDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl, CProgramInfoTag &program)
+{
+  /*
+  This function is copy/paste of CScraper::GetVideoDetails(...) with CProgramInfoTag &program).
+  It's not ideal, but since I want to keep main codebase untouched as much as possible I don't see
+  other way. 
+  */
+  CLog::Log(LOGDEBUG, "%s: Reading %s '%s' using %s scraper "
+    "(file: '%s', content: '%s', version: '%s')", __FUNCTION__,
+    "program", scurl.m_url[0].m_url.c_str(), Name().c_str(), Path().c_str(),
+    ADDON::TranslateContent(Content()).c_str(), Version().c_str());
+
+  program.Reset();
+  CStdString sFunc = "GetDetails";
+  vector<CStdString> vcsIn;
+  vcsIn.push_back(scurl.strId);
+  vcsIn.push_back(scurl.m_url[0].m_url);
+  vector<CStdString> vcsOut = RunNoThrow(sFunc, scurl, fcurl, &vcsIn);
+
+  // parse XML output
+  bool fRet(false);
+  for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
+  {
+    TiXmlDocument doc;
+    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    if (!doc.RootElement())
+    {
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
+      continue;
+    }
+
+    TiXmlHandle xhDoc(&doc);
+    TiXmlElement *pxeDetails = xhDoc.FirstChild("details").Element();
+    if (!pxeDetails)
+    {
+      CLog::Log(LOGERROR, "%s: Invalid XML file (want <details>)", __FUNCTION__);
+      continue;
+    }
+    program.Load(pxeDetails, true/*fChain*/);
+    fRet = true;  // but don't exit in case of chaining
+  }
+  return fRet;
 }
 
 // takes URL; returns true and populates video details on success, false otherwise

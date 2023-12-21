@@ -32,6 +32,7 @@
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramDatabase.h"
 
 using namespace PLAYLIST;
 
@@ -225,6 +226,57 @@ namespace XFILE
         db.Close();
 
         items.SetProperty(PROPERTY_PATH_DB, musicUrl.ToString());
+      }
+    }
+    else if (playlist.GetType().Equals("games"))
+    {
+      CProgramDatabase db;
+      if (db.Open())
+      {
+        MediaType mediaType = DatabaseUtils::MediaTypeFromString(playlist.GetType());
+
+        CStdString baseDir = strBaseDir;
+        if (strBaseDir.empty())
+        {
+          switch (mediaType)
+          {
+            case MediaTypeGame:
+              baseDir = "programdb://games/";
+              break;
+
+            default:
+              return false;
+          }
+
+          if (!isGrouped)
+            baseDir += "titles";
+          else
+            baseDir += group;
+          URIUtils::AddSlashAtEnd(baseDir);
+        }
+
+        CProgramDbUrl programUrl;
+        if (!programUrl.FromString(baseDir))
+          return false;
+
+        // store the smartplaylist as JSON in the URL as well
+        CStdString xsp;
+        if (!playlist.IsEmpty(filter))
+        {
+          if (!playlist.SaveAsJson(xsp, !filter))
+            return false;
+        }
+
+        if (!xsp.empty())
+          programUrl.AddOption(option, xsp);
+        else
+          programUrl.RemoveOption(option);
+
+        CDatabase::Filter dbfilter;
+        success = db.GetItems(programUrl.ToString(), items, dbfilter, sorting);
+        db.Close();
+
+        items.SetProperty(PROPERTY_PATH_DB, programUrl.ToString());
       }
     }
 

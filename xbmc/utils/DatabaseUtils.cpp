@@ -26,6 +26,7 @@
 #include "utils/log.h"
 #include "utils/Variant.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramDatabase.h"
 
 std::string DatabaseUtils::MediaTypeToString(MediaType mediaType)
 {
@@ -51,6 +52,10 @@ std::string DatabaseUtils::MediaTypeToString(MediaType mediaType)
     return "tvshow";
   case MediaTypeEpisode:
     return "episode";
+  case MediaTypeProgram:
+    return "program";
+  case MediaTypeGame:
+    return "game";
   default:
     break;
   }
@@ -80,6 +85,10 @@ MediaType DatabaseUtils::MediaTypeFromString(const std::string &strMediaType)
     return MediaTypeTvShow;
   else if (strMediaType.compare("episode") == 0 || strMediaType.compare("episodes") == 0)
     return MediaTypeEpisode;
+  else if (strMediaType.compare("program") == 0 || strMediaType.compare("programs") == 0)
+    return MediaTypeProgram;
+  else if (strMediaType.compare("game") == 0 || strMediaType.compare("games") == 0)
+    return MediaTypeGame;
 
   return MediaTypeNone;
 }
@@ -261,6 +270,39 @@ std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQu
     else if (field == FieldYear) return "episodeview.premiered";
     else if (field == FieldMPAA) return "episodeview.mpaa";
     else if (field == FieldStudio) return "episodeview.strStudio";
+
+    if (!result.empty())
+      return result;
+  }
+  else if (mediaType == MediaTypeGame)
+  {
+    CStdString result;
+    if (field == FieldId) return "gameview.idGame";
+    else if (field == FieldTitle)
+    {
+      // We need some extra logic to get the title value if sorttitle isn't set
+      // if (queryPart == DatabaseQueryPartOrderBy)
+      //   result.Format("CASE WHEN length(gameview.c%02d) > 0 THEN gameview.c%02d ELSE gameview.c%02d END", VIDEODB_ID_SORTTITLE, VIDEODB_ID_SORTTITLE, VIDEODB_ID_TITLE);
+      // else
+        result.Format("gameview.c%02d", PROGRAMDB_ID_TITLE);
+    }
+    else if (field == FieldPlot) result.Format("gameview.c%02d", PROGRAMDB_ID_PLOT);
+    else if (field == FieldRating)
+    {
+      if (queryPart == DatabaseQueryPartOrderBy)
+        result.Format("CAST(gameview.c%02d as DECIMAL(5,3))", PROGRAMDB_ID_RATING);
+      else
+        result.Format("gameview.c%02d", PROGRAMDB_ID_RATING);
+    }
+    else if (field == FieldYear) result.Format("gameview.c%02d", PROGRAMDB_ID_YEAR);
+    else if (field == FieldMPAA) result.Format("gameview.c%02d", PROGRAMDB_ID_ESRB);
+    else if (field == FieldGenre) result.Format("gameview.c%02d", PROGRAMDB_ID_GENRE);
+    else if (field == FieldTrailer) result.Format("gameview.c%02d", PROGRAMDB_ID_TRAILER);
+    else if (field == FieldFilename) return "gameview.strFilename";
+    else if (field == FieldPath) return "gameview.strPath";
+    else if (field == FieldPlaycount) return "gameview.playCount";
+    else if (field == FieldLastPlayed) return "gameview.lastPlayed";
+    else if (field == FieldDateAdded) return "gameview.dateAdded";
 
     if (!result.empty())
       return result;
@@ -447,6 +489,29 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
     // the first field is the item's ID and the second is the item's file ID
     index += 2;
   }
+  else if (mediaType == MediaTypeGame)
+  {
+    if (field == FieldId) return 0;
+    else if (field == FieldTitle) index = PROGRAMDB_ID_TITLE;
+    else if (field == FieldPlot) index = PROGRAMDB_ID_PLOT;
+    else if (field == FieldRating) index = PROGRAMDB_ID_RATING;
+    else if (field == FieldYear) index = PROGRAMDB_ID_YEAR;
+    else if (field == FieldMPAA) index = PROGRAMDB_ID_ESRB;
+    else if (field == FieldGenre) index = PROGRAMDB_ID_GENRE;
+    else if (field == FieldTrailer) index = PROGRAMDB_ID_TRAILER;
+    else if (field == FieldFilename) index = PROGRAMDB_DETAILS_GAME_FILE;
+    else if (field == FieldPath) return PROGRAMDB_DETAILS_GAME_PATH;
+    else if (field == FieldPlaycount) return PROGRAMDB_DETAILS_GAME_PLAYCOUNT;
+    else if (field == FieldLastPlayed) return PROGRAMDB_DETAILS_GAME_LASTPLAYED;
+    else if (field == FieldDateAdded) return PROGRAMDB_DETAILS_GAME_DATEADDED;
+
+    if (index < 0)
+      return index;
+
+    // see ProgramDatabase.h
+    // the first field is the item's ID and the second is the item's file ID
+    index += 2;
+  }
 
   return index;
 }
@@ -607,6 +672,7 @@ bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fie
     case MediaTypeVideoCollection:
     case MediaTypeTvShow:
     case MediaTypeMusicVideo:
+    case MediaTypeGame:
       result[FieldLabel] = result.find(FieldTitle)->second.asString();
       break;
       

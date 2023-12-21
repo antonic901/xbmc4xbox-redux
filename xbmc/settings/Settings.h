@@ -325,6 +325,7 @@ public:
   CStdString m_pictureExtensions;
   CStdString m_musicExtensions;
   CStdString m_videoExtensions;
+  CStdString m_programExtensions;
 
   CStdString m_logFolder;
 
@@ -344,11 +345,13 @@ public:
   CViewState m_viewStateVideoNavSeasons;
   CViewState m_viewStateVideoNavTvShows;
   CViewState m_viewStateVideoNavMusicVideos;
+  CViewState m_viewStateProgramNavTitles;
 
   CViewState m_viewStatePrograms;
   CViewState m_viewStatePictures;
   CViewState m_viewStateMusicFiles;
   CViewState m_viewStateVideoFiles;
+  CViewState m_viewStateProgramFiles;
 
   bool m_bMyMusicPlaylistRepeat;
   bool m_bMyMusicPlaylistShuffle;
@@ -366,6 +369,7 @@ public:
   bool m_bMyVideoPlaylistRepeat;
   bool m_bMyVideoPlaylistShuffle;
   bool m_bMyVideoNavFlatten;
+  bool m_bMyProgramNavFlatten;
   bool m_bStartVideoWindowed;
   bool m_bAddonAutoUpdate;
   bool m_bAddonNotifications;
@@ -516,6 +520,7 @@ public:
   CStdString GetSkinFolder(const CStdString& skinName) const;
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
+  CStdString GetProgramFanartFolder() const;
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
   CStdString GetDefaultVideoPlayerName() const;

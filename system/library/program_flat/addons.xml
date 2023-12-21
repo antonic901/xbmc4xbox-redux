@@ -1,0 +1,5 @@
+<node order="22" type="folder">
+  <label>1043</label>
+  <icon>DefaultAddonProgram.png</icon>
+  <path>addons://sources/executable/</path>
+</node>

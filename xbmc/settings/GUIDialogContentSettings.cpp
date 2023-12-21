@@ -28,6 +28,7 @@
 #include "FileItem.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoInfoScanner.h"
+#include "programs/ProgramInfoScanner.h"
 #include "settings/Settings.h"
 #include "utils/LangCodeExpander.h"
 #include "utils/URIUtils.h"
@@ -170,6 +171,7 @@ void CGUIDialogContentSettings::CreateSettings()
     }
     break;
   case CONTENT_MOVIES:
+  case CONTENT_GAMES:
     {
       AddBool(1,20330,&m_bUseDirNames, m_bShowScanSettings);
       AddBool(2,20346,&m_bScanRecursive, m_bShowScanSettings && ((m_bUseDirNames && !m_bSingleItem) || !m_bUseDirNames));
@@ -201,7 +203,7 @@ void CGUIDialogContentSettings::OnSettingChanged(SettingInfo &setting)
   CreateSettings();
 
   // crappy setting dependencies part 2
-  if (m_content == CONTENT_MOVIES)
+  if (m_content == CONTENT_MOVIES || m_content == CONTENT_GAMES)
   {
     if (setting.id == 2) // use dir names
     {
@@ -259,6 +261,7 @@ void CGUIDialogContentSettings::FillContentTypes()
     FillContentTypes(CONTENT_MOVIES);
     FillContentTypes(CONTENT_TVSHOWS);
     FillContentTypes(CONTENT_MUSICVIDEOS);
+    FillContentTypes(CONTENT_GAMES);
 
     // add 'None' to spinner
     CGUIMessage msg2(GUI_MSG_LABEL_ADD,GetID(),CONTROL_CONTENT_TYPE);
@@ -388,6 +391,73 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, CONTENT_TYPE mu
 {
   VIDEO::SScanSettings dummy;
   return Show(scraper,dummy,musicContext);
+}
+
+bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, PROGRAM::SScanSettings& settings)
+{
+  CGUIDialogContentSettings *dialog = (CGUIDialogContentSettings *)g_windowManager.GetWindow(WINDOW_DIALOG_CONTENT_SETTINGS);
+  if (!dialog)
+    return false;
+
+  if (scraper)
+  {
+    dialog->m_content = scraper->Content();
+    dialog->m_origContent = dialog->m_content;
+    dialog->m_scraper = scraper;
+    // toast selected but disabled scrapers
+    if (!scraper->Enabled())
+      g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24023), scraper->Name(), 2000, true);
+  }
+
+  dialog->m_bScanRecursive = (settings.recurse > 0 && !settings.parent_name) || (settings.recurse > 1 && settings.parent_name);
+  dialog->m_bUseDirNames   = settings.parent_name;
+  dialog->m_bExclude       = settings.exclude;
+  dialog->m_bSingleItem    = settings.parent_name_root;
+  dialog->m_bNoUpdate      = settings.noupdate;
+  dialog->m_bNeedSave = false;
+  dialog->DoModal();
+  if (dialog->m_bNeedSave)
+  {
+    scraper = boost::dynamic_pointer_cast<CScraper>(dialog->m_scraper);
+    CONTENT_TYPE content = dialog->m_content;
+    if (!scraper || content == CONTENT_NONE)
+    {
+      scraper.reset();
+      settings.exclude = dialog->m_bExclude;
+    }
+    else
+    {
+      settings.exclude = false;
+      settings.noupdate = dialog->m_bNoUpdate;
+      scraper->SetPathSettings(content, "");
+
+      if (content == CONTENT_GAMES)
+      {
+        if (dialog->m_bUseDirNames)
+        {
+          settings.parent_name = true;
+          settings.parent_name_root = false;
+          settings.recurse = dialog->m_bScanRecursive ? INT_MAX : 1;
+
+          if (dialog->m_bSingleItem)
+          {
+            settings.parent_name_root = true;
+            settings.recurse = 0;
+          }
+        }
+        else
+        {
+          settings.parent_name = false;
+          settings.parent_name_root = false;
+          settings.recurse = dialog->m_bScanRecursive ? INT_MAX : 0;
+        }
+      }
+    }
+  }
+
+  dialog->m_scraper.reset();
+  dialog->m_content = dialog->m_origContent = CONTENT_NONE;
+  return dialog->m_bNeedSave;
 }
 
 bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSettings& settings, CONTENT_TYPE musicContext/*=CONTENT_NONE*/)

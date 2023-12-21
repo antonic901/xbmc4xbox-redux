@@ -772,7 +772,240 @@
 					<include>VisibleFadeEffect</include>
 				</control>
 			</control>
-			
+
+      <control type="group">
+				<posx>190</posx>
+				<posy>50</posy>
+				<visible>Library.HasContent(Games)</visible>
+				<visible>Container(9000).Hasfocus(12) + !Skin.HasSetting(HomepageHideRecentlyAddedProgram)</visible>
+				<include>VisibleFadeEffect</include>
+				<control type="label">
+					<description>Title label</description>
+					<posx>180</posx>
+					<posy>220</posy>
+					<height>20</height>
+					<width>540</width>
+					<label>35106</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+				</control>
+				<control type="list" id="8003">
+					<animation effect="slide" start="0,0" end="90,0" time="0" condition="StringCompare(Container(8003).NumItems,4)">conditional</animation>
+					<animation effect="slide" start="0,0" end="180,0" time="0" condition="StringCompare(Container(8003).NumItems,3)">conditional</animation>
+					<animation effect="slide" start="0,0" end="270,0" time="0" condition="StringCompare(Container(8003).NumItems,2)">conditional</animation>
+					<animation effect="slide" start="0,0" end="360,0" time="0" condition="StringCompare(Container(8003).NumItems,1)">conditional</animation>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>900</width>
+					<height>220</height>
+					<onleft>8003</onleft>
+					<onright>8003</onright>
+					<onup>20</onup>
+					<ondown>610</ondown>
+					<viewtype label="535">list</viewtype>
+					<pagecontrol>-</pagecontrol>
+					<scrolltime>200</scrolltime>
+					<orientation>Horizontal</orientation>
+					<itemlayout height="220" width="180">
+						<control type="image">
+							<description>background</description>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>180</width>
+							<height>220</height>
+							<texture border="15">RecentAddedBack.png</texture>
+						</control>
+						<control type="image">
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>160</width>
+							<height>170</height>
+							<texture background="true">$INFO[ListItem.Icon]</texture>
+							<bordertexture border="5">button-nofocus.png</bordertexture>
+							<bordersize>5</bordersize>
+						</control>
+						<control type="label">
+							<posx>90</posx>
+							<posy>185</posy>
+							<width>150</width>
+							<height>20</height>
+							<font>font12</font>
+							<textcolor>white</textcolor>
+							<shadowcolor>black</shadowcolor>
+							<selectedcolor>selected</selectedcolor>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>$INFO[ListItem.Label]</label>
+						</control>
+					</itemlayout>
+					<focusedlayout height="220" width="180">
+						<control type="image">
+							<description>background</description>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>180</width>
+							<height>220</height>
+							<texture border="15">RecentAddedBack.png</texture>
+						</control>
+						<control type="image">
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>160</width>
+							<height>170</height>
+							<texture background="true">$INFO[ListItem.Icon]</texture>
+							<bordertexture border="5">folder-focus.png</bordertexture>
+							<bordersize>5</bordersize>
+							<visible>Control.HasFocus(8003)</visible>
+						</control>
+						<control type="image">
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>160</width>
+							<height>170</height>
+							<texture>$INFO[ListItem.Icon]</texture>
+							<bordertexture border="5">button-nofocus.png</bordertexture>
+							<bordersize>5</bordersize>
+							<visible>!Control.HasFocus(8003)</visible>
+						</control>
+						<control type="label">
+							<posx>90</posx>
+							<posy>185</posy>
+							<width>150</width>
+							<height>20</height>
+							<font>font12</font>
+							<textcolor>white</textcolor>
+							<shadowcolor>black</shadowcolor>
+							<selectedcolor>selected</selectedcolor>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>$INFO[ListItem.Label]</label>
+						</control>
+						<control type="label">
+							<posx>90</posx>
+							<posy>185</posy>
+							<width>150</width>
+							<height>20</height>
+							<font>font12</font>
+							<textcolor>blue</textcolor>
+							<selectedcolor>selected</selectedcolor>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>Control.HasFocus(8003)</visible>
+						</control>
+					</focusedlayout>
+					<content>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.1.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.1.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.1.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.1.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.2.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.2.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.2.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.2.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.3.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.3.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.3.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.3.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.4.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.4.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.4.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.4.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.5.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.5.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.5.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.5.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.6.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.6.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.6.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.6.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.7.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.7.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.7.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.7.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.8.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.8.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.8.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.8.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.9.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.9.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.9.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.9.Title))</visible>
+						</item>
+						<item>
+							<label>$INFO[Window.Property(LatestGame.10.Title)]</label>
+							<label2></label2>
+							<onclick>RunXBE($INFO[Window.Property(LatestGame.10.Path)])</onclick>
+							<icon>$INFO[Window.Property(LatestGame.10.Thumb)]</icon>
+							<thumb>-</thumb>
+							<visible>!IsEmpty(Window.Property(LatestGame.10.Title))</visible>
+						</item>
+					</content>
+				</control>
+				<control type="button">
+					<description>left Arrow</description>
+					<posx>-40</posx>
+					<posy>90</posy>
+					<width>30</width>
+					<height>40</height>
+					<texturefocus>arrow-big-left.png</texturefocus>
+					<texturenofocus>arrow-big-left.png</texturenofocus>
+					<onclick>Control.Move(8003,-1)</onclick>
+					<visible>Control.HasFocus(8003) + Container(8003).HasPrevious</visible>
+					<include>VisibleFadeEffect</include>
+				</control>
+				<control type="button">
+					<description>right Arrow</description>
+					<posx>910</posx>
+					<posy>90</posy>
+					<width>30</width>
+					<height>40</height>
+					<texturefocus>arrow-big-right.png</texturefocus>
+					<texturenofocus>arrow-big-right.png</texturenofocus>
+					<onclick>Control.Move(8003,1)</onclick>
+					<visible>Control.HasFocus(8003) + Container(8003).HasNext</visible>
+					<include>VisibleFadeEffect</include>
+				</control>
+			</control>
+
 		</control>
 	</include>
 </includes>
