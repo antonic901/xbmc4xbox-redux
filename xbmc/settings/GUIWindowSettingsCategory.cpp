@@ -32,7 +32,7 @@
 #include "GUIImage.h"
 #include "utils/Weather.h"
 #include "music/MusicDatabase.h"
-#include "ProgramDatabase.h"
+#include "programs/ProgramDatabase.h"
 #include "ViewDatabase.h"
 #include "XBAudioConfig.h"
 #include "XBVideoConfig.h"
@@ -1319,6 +1319,16 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
       videodatabase.Open();
       videodatabase.CleanDatabase();
       videodatabase.Close();
+    }
+  }
+  else if (strSetting.Equals("programlibrary.cleanup"))
+  {
+    if (CGUIDialogYesNo::ShowAndGetInput(313, 333, 0, 0))
+    {
+      CProgramDatabase programdatabase;
+      programdatabase.Open();
+      programdatabase.CleanDatabase();
+      programdatabase.Close();
     }
   }
   else if (strSetting.Equals("videolibrary.export"))

@@ -1,0 +1,6 @@
+<node order="1" type="filter">
+  <label>35104</label>
+  <icon>DefaultFolder.png</icon>
+  <content>games</content>
+  <group>onlinefeatures</group>
+</node>

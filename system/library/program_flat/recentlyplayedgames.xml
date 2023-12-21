@@ -1,0 +1,5 @@
+<node order="10" type="folder" visible="Library.HasContent(Games)">
+  <label>35107</label>
+  <icon>DefaultRecentlyAddedMovies.png</icon>
+  <path>programdb://recentlyplayedgames/</path>
+</node>

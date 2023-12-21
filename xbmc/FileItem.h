@@ -44,6 +44,7 @@ namespace MUSIC_INFO
 }
 class CVideoInfoTag;
 class CPictureInfoTag;
+class CProgramInfoTag;
 
 class CAlbum;
 class CArtist;
@@ -75,6 +76,7 @@ public:
   CFileItem(const CArtist& artist);
   CFileItem(const CGenre& genre);
   CFileItem(const CVideoInfoTag& movie);
+  CFileItem(const CProgramInfoTag& game);
   CFileItem(const CMediaSource& share);
   virtual ~CFileItem(void);
   virtual CGUIListItem *Clone() const { return new CFileItem(*this); };
@@ -92,6 +94,7 @@ public:
   bool Exists(bool bUseCache = true) const;
   bool IsVideo() const;
   bool IsPicture() const;
+  bool IsProgram() const;
   bool IsLyrics() const;
   bool IsAudio() const;
   bool IsCUESheet() const;
@@ -133,6 +136,7 @@ public:
   bool IsMultiPath() const;
   bool IsMusicDb() const;
   bool IsVideoDb() const;
+  bool IsProgramDb() const;
   bool IsType(const char *ext) const;
   bool IsVirtualDirectoryRoot() const;
   bool IsReadOnly() const;
@@ -200,6 +204,18 @@ public:
 
   CPictureInfoTag* GetPictureInfoTag();
 
+  inline bool HasProgramInfoTag() const
+  {
+    return m_programInfoTag != NULL;
+  }
+
+  CProgramInfoTag* GetProgramInfoTag();
+
+  inline const CProgramInfoTag* GetProgramInfoTag() const
+  {
+    return m_programInfoTag;
+  }
+
   // Gets the cached thumb filename (no existence checks)
   CStdString GetCachedVideoThumb() const;
   CStdString GetCachedEpisodeThumb() const;
@@ -233,6 +249,11 @@ public:
    */
   CStdString GetLocalFanart() const;
 
+  /*!
+   \brief Load the XBMC4Gamers artwork for this item if it exists
+   */
+  void LoadXBMC4GamersArtwork();
+
   // Sets the cached thumb for the item if it exists
   void SetCachedVideoThumb();
   void SetCachedPictureThumb();
@@ -248,6 +269,8 @@ public:
   CStdString GetFolderThumb(const CStdString &folderJPG = "folder.jpg") const;
   // Gets the correct movie title
   CStdString GetMovieName(bool bUseFolderNames = false) const;
+  // Gets the correct game title
+  CStdString GetGameName(bool bUseFolderNames = false) const;
 
   /*! \brief Find the base movie path (eg the folder if using "use foldernames for lookups")
    Takes care of VIDEO_TS, BDMV, and rar:// listings
@@ -256,8 +279,15 @@ public:
    */
   CStdString GetBaseMoviePath(bool useFolderNames) const;
 
+  /*! \brief Find the base game path (eg the folder if using "use foldernames for lookups")
+   \param useFolderNames whether we're using foldernames for lookups
+   \return the base game folder
+   */
+  CStdString GetBaseGamePath(bool useFolderNames) const;
+
   // Gets the user thumb, if it exists
   CStdString GetUserVideoThumb() const;
+  CStdString GetUserProgramThumb() const;
   CStdString GetUserMusicThumb(bool alwaysCheckRemote = false) const;
 
   // Caches the user thumb and assigns it to the item
@@ -333,6 +363,7 @@ private:
   MUSIC_INFO::CMusicInfoTag* m_musicInfoTag;
   CVideoInfoTag* m_videoInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
+  CProgramInfoTag* m_programInfoTag;
 };
 
 /*!

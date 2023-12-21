@@ -1,0 +1,6 @@
+<node order="2" type="filter">
+  <label>369</label>
+  <icon>DefaultMovieTitle.png</icon>
+  <content>games</content>
+  <order direction="ascending">sorttitle</order>
+</node>

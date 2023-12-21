@@ -135,7 +135,9 @@ typedef enum {
   MediaTypeMusicVideo,
   MediaTypeMovie,
   MediaTypeTvShow,
-  MediaTypeEpisode
+  MediaTypeEpisode,
+  MediaTypeProgram,
+  MediaTypeGame
 } MediaType;
 
 typedef enum {

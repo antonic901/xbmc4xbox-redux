@@ -1,0 +1,6 @@
+<node order="1" type="filter">
+  <label>35100</label>
+  <icon>DefaultFolder.png</icon>
+  <content>games</content>
+  <group>developers</group>
+</node>

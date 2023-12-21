@@ -166,6 +166,7 @@ public:
   static void DeleteDirectoryCache(const CStdString &prefix = "");
   static void DeleteMusicDatabaseDirectoryCache();
   static void DeleteVideoDatabaseDirectoryCache();
+  static void DeleteProgramDatabaseDirectoryCache();
   static CStdString MusicPlaylistsLocation();
   static CStdString VideoPlaylistsLocation();
 

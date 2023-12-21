@@ -1,0 +1,61 @@
+#pragma once
+
+/*
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include "GUIDialog.h"
+#include "programs/ProgramInfoScanner.h"
+#include "utils/CriticalSection.h"
+
+class CGUIDialogProgramScan: public CGUIDialog, public PROGRAM::IProgramInfoScannerObserver
+{
+public:
+  CGUIDialogProgramScan(void);
+  virtual ~CGUIDialogProgramScan(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual void FrameMove();
+
+  void StartScanning(const CStdString& strDirectory, bool scanAll = false);
+  bool IsScanning();
+  void StopScanning();
+
+  void UpdateState();
+protected:
+  int GetStateString();
+  virtual void OnDirectoryChanged(const CStdString& strDirectory);
+  virtual void OnDirectoryScanned(const CStdString& strDirectory);
+  virtual void OnFinished();
+  virtual void OnStateChanged(PROGRAM::SCAN_STATE state);
+  virtual void OnSetProgress(int currentItem, int itemCount);
+  virtual void OnSetCurrentProgress(int currentItem, int itemCount);
+  virtual void OnSetTitle(const CStdString& strTitle);
+
+  PROGRAM::CProgramInfoScanner m_programInfoScanner;
+  PROGRAM::SCAN_STATE m_ScanState;
+  CStdString m_strCurrentDir;
+  CStdString m_strTitle;
+
+  CCriticalSection m_critical;
+
+  float m_fPercentDone;
+  float m_fCurrentPercentDone;
+  int m_currentItem;
+  int m_itemCount;
+};

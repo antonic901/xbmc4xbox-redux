@@ -27,7 +27,7 @@
 #include "PlayListPlayer.h"
 #include "xbox/xbeheader.h"
 #include "filesystem/StackDirectory.h"
-#include "ProgramDatabase.h"
+#include "programs/ProgramDatabase.h"
 #include "utils/Trainer.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

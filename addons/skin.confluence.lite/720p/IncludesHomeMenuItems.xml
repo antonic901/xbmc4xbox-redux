@@ -131,32 +131,101 @@
 			<height>35</height>
 			<texture border="0,0,0,3" flipx="true">HomeSubEnd.png</texture>
 		</control>
+		<control type="button" id="90102">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>15016</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameTitles,return)</onclick>
+			<visible>Library.HasContent(Games) + Skin.HasSetting(HomeMenuNoGamesButton)</visible>
+		</control>
 		<control type="button" id="90182">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>31271</label>
-			<onclick>ActivateWindow(Programs,Apps,return)</onclick>
+			<label>744</label>
+			<onclick>ActivateWindow(ProgramLibrary,Files,return)</onclick>
 		</control>
 		<control type="button" id="90183">
 			<include>ButtonHomeSubCommonValues</include>
-			<label>15016</label>
-			<onclick>ActivateWindow(Programs,Games,return)</onclick>
-		</control>
-		<control type="button" id="90184">
-			<include>ButtonHomeSubCommonValues</include>
-			<label>31272</label>
-			<onclick>ActivateWindow(Programs,Emulators,return)</onclick>
+			<label>14022</label>
+			<onclick>ActivateWindow(ProgramLibrary,Root)</onclick>
+			<visible>Library.HasContent(Program)</visible>
 		</control>
 		<control type="button" id="90186">
 			<include>ButtonHomeSubCommonValues</include>
 			<label>24001</label>
-			<onclick>ActivateWindow(Programs,Addons,return)</onclick>
+			<onclick>ActivateWindow(ProgramLibrary,Addons,return)</onclick>
 		</control>
 		<control type="image" id="90188">
 			<width>35</width>
 			<height>35</height>
 			<texture border="0,0,0,3">HomeSubEnd.png</texture>
 		</control>
-	</include>	
+	</include>
+	<include name="HomeSubMenuGames">
+		<control type="image" id="90161">
+			<width>35</width>
+			<height>35</height>
+			<texture border="0,0,0,3" flipx="true">HomeSubEnd.png</texture>
+		</control>
+		<control type="button" id="90210">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>31328</label>
+			<onclick>ActivateWindow(ProgramLibrary,RecentlyAddedGames,return)</onclick>
+		</control>
+		<control type="button" id="90211">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>31332</label>
+			<onclick>ActivateWindow(ProgramLibrary,RecentlyPlayedGames,return)</onclick>
+		</control>
+		<control type="button" id="90212">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>369</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameTitles,return)</onclick>
+		</control>
+		<control type="button" id="90213">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35100</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameDevelopers,return)</onclick>
+		</control>
+		<control type="button" id="90214">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35101</label>
+			<onclick>ActivateWindow(ProgramLibrary,GamePublishers,return)</onclick>
+		</control>
+		<control type="button" id="90215">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>135</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameGenres,return)</onclick>
+		</control>
+		<control type="button" id="90216">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>652</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameYears,return)</onclick>
+		</control>
+		<control type="button" id="90217">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35102</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameDescriptors,return)</onclick>
+		</control>
+		<control type="button" id="90218">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35103</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameGeneralFeatures,return)</onclick>
+		</control>
+		<control type="button" id="90219">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35104</label>
+			<onclick>ActivateWindow(ProgramLibrary,GameOnlineFeatures,return)</onclick>
+		</control>
+		<control type="button" id="90220">
+			<include>ButtonHomeSubCommonValues</include>
+			<label>35105</label>
+			<onclick>ActivateWindow(ProgramLibrary,GamePlatforms,return)</onclick>
+		</control>
+		<control type="image" id="90221">
+			<width>35</width>
+			<height>35</height>
+			<texture border="0,0,0,3">HomeSubEnd.png</texture>
+		</control>
+	</include>
 	<include name="HomeSubMenuMusic">
 		<control type="image" id="90111">
 			<width>35</width>
