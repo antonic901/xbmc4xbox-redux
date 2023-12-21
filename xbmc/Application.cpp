@@ -137,6 +137,9 @@
 #include "settings/GUIWindowSettingsProfile.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
+#include "programs/dialogs/GUIDialogProgramScan.h"
+#include "programs/windows/GUIWindowProgramNav.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
 #include "GUIWindowGameSaves.h"
@@ -1269,7 +1272,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSystemInfo);               // window id = 7
   g_windowManager.Add(new CGUIWindowSettingsScreenCalibration); // window id = 11
   g_windowManager.Add(new CGUIWindowSettingsCategory);         // window id = 12 slideshow:window id 2007
-  g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 36
+  g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 25
+  g_windowManager.Add(new CGUIWindowProgramNav);               // windiw id = 36
   g_windowManager.Add(new CGUIWindowVideoPlaylist);            // window id = 28
   g_windowManager.Add(new CGUIWindowLoginScreen);            // window id = 29
   g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
@@ -1309,6 +1313,9 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogAddonInfo);
   g_windowManager.Add(new CGUIDialogAddonSettings);      // window id = 140
   g_windowManager.Add(new CGUIDialogTextViewer);              // window id = 147
+
+  g_windowManager.Add(new CGUIDialogProgramScan); // window id = 38
+  g_windowManager.Add(new CGUIDialogProgramInfo); // window id = 39
 
   g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
 
@@ -3453,11 +3460,13 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_MUSIC_NAV);
     g_windowManager.Delete(WINDOW_DIALOG_MUSIC_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
+    g_windowManager.Delete(WINDOW_DIALOG_PROGRAM_INFO);
     g_windowManager.Delete(WINDOW_VIDEO_FILES);
     g_windowManager.Delete(WINDOW_VIDEO_PLAYLIST);
     g_windowManager.Delete(WINDOW_VIDEO_NAV);
+    g_windowManager.Delete(WINDOW_PROGRAM_FILES);
+    g_windowManager.Delete(WINDOW_PROGRAM_NAV);
     g_windowManager.Delete(WINDOW_FILES);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
     g_windowManager.Delete(WINDOW_DIALOG_YES_NO);
     g_windowManager.Delete(WINDOW_DIALOG_PROGRESS);
     g_windowManager.Delete(WINDOW_DIALOG_NUMERIC);
@@ -3484,6 +3493,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_SCAN);
+    g_windowManager.Delete(WINDOW_DIALOG_PROGRAM_SCAN);
     g_windowManager.Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_FAVOURITES);
     g_windowManager.Delete(WINDOW_DIALOG_SONG_INFO);
@@ -3613,6 +3623,10 @@ void CApplication::Stop(bool bLCDStop)
     CGUIDialogVideoScan *videoScan = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
     if (videoScan)
       videoScan->StopScanning();
+
+    CGUIDialogProgramScan *programScan = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+    if (programScan)
+      programScan->StopScanning();
 
     StopServices();
     //Sleep(5000);
@@ -4697,6 +4711,7 @@ void CApplication::CheckShutdown()
 #ifdef HAS_XBOX_HARDWARE
   CGUIDialogMusicScan *pMusicScan = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
   CGUIDialogVideoScan *pVideoScan = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
+  CGUIDialogProgramScan *pProgramScan = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
 
   // first check if we should reset the timer
   bool resetTimer = false;
@@ -4712,6 +4727,9 @@ void CApplication::CheckShutdown()
     resetTimer = true;
 
   if (pVideoScan && pVideoScan->IsScanning()) // video scanning?
+    resetTimer = true;
+
+  if (pProgramScan && pProgramScan->IsScanning()) // program scanning?
     resetTimer = true;
 
   if (g_windowManager.IsWindowActive(WINDOW_DIALOG_PROGRESS)) // progress dialog is onscreen
@@ -5691,6 +5709,14 @@ void CApplication::UpdateLibraries()
   {
     CLog::Log(LOGNOTICE, "%s - Starting music library startup scan", __FUNCTION__);
     CGUIDialogMusicScan *scanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
+    if (scanner && !scanner->IsScanning())
+      scanner->StartScanning("");
+  }
+
+  if (g_guiSettings.GetBool("programlibrary.updateonstartup"))
+  {
+    CLog::Log(LOGNOTICE, "%s - Starting program library startup scan", __FUNCTION__);
+    CGUIDialogProgramScan *scanner = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
     if (scanner && !scanner->IsScanning())
       scanner->StartScanning("");
   }

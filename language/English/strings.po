@@ -9149,3 +9149,63 @@ msgstr ""
 msgctxt "#34005"
 msgid "Flac"
 msgstr ""
+
+msgctxt "#35001"
+msgid "Downloading game information"
+msgstr ""
+
+msgctxt "#35002"
+msgid "No program files found in this path!"
+msgstr ""
+
+msgctxt "#35003"
+msgid "Game information"
+msgstr ""
+
+msgctxt "#35004"
+msgid "Select game:"
+msgstr ""
+
+msgctxt "#35005"
+msgid "Enter the game name"
+msgstr ""
+
+msgctxt "#35006"
+msgid "Loading game details"
+msgstr ""
+
+msgctxt "#35007"
+msgid "Default game scraper"
+msgstr ""
+
+msgctxt "#35100"
+msgid "Developers"
+msgstr ""
+
+msgctxt "#35101"
+msgid "Publishers"
+msgstr ""
+
+msgctxt "#35102"
+msgid "ESRB Descriptors"
+msgstr ""
+
+msgctxt "#35103"
+msgid "General features"
+msgstr ""
+
+msgctxt "#35104"
+msgid "Online features"
+msgstr ""
+
+msgctxt "#35105"
+msgid "Platforms"
+msgstr ""
+
+msgctxt "#35106"
+msgid "Recently added games"
+msgstr ""
+
+msgctxt "#35107"
+msgid "Recently played games"
+msgstr ""

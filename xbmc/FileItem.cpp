@@ -33,6 +33,7 @@
 #include "filesystem/MultiPathDirectory.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
+#include "filesystem/ProgramDatabaseDirectory.h"
 #include "filesystem/DirectoryFactory.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "CueDocument.h"
@@ -44,6 +45,7 @@
 #include "utils/SingleLock.h"
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
+#include "programs/ProgramInfoTag.h"
 #include "music/Artist.h"
 #include "music/Album.h"
 #include "music/Song.h"
@@ -65,6 +67,7 @@ CFileItem::CFileItem(const CSong& song)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(song.strTitle);
   m_strPath = song.strFileName;
@@ -79,6 +82,7 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(album.strAlbum);
   m_strPath = path;
@@ -109,6 +113,7 @@ CFileItem::CFileItem(const CVideoInfoTag& movie)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(movie.m_strTitle);
   if (movie.m_strFileNameAndPath.IsEmpty())
@@ -127,11 +132,36 @@ CFileItem::CFileItem(const CVideoInfoTag& movie)
   SetCachedVideoThumb();
 }
 
+CFileItem::CFileItem(const CProgramInfoTag& game)
+{
+  m_musicInfoTag = NULL;
+  m_videoInfoTag = NULL;
+  m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
+  Reset();
+  SetLabel(game.m_strTitle);
+  if (game.m_strFileNameAndPath.IsEmpty())
+  {
+    m_strPath = game.m_strPath;
+    URIUtils::AddSlashAtEnd(m_strPath);
+    m_bIsFolder = true;
+  }
+  else
+  {
+    m_strPath = game.m_strFileNameAndPath;
+    m_bIsFolder = false;
+  }
+  *GetProgramInfoTag() = game;
+  FillInDefaultIcon();
+  SetCachedProgramThumb();
+}
+
 CFileItem::CFileItem(const CArtist& artist)
 {
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(artist.strArtist);
   m_strPath = artist.strArtist;
@@ -145,6 +175,7 @@ CFileItem::CFileItem(const CGenre& genre)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(genre.strGenre);
   m_strPath = genre.strGenre;
@@ -158,6 +189,7 @@ CFileItem::CFileItem(const CFileItem& item): CGUIListItem()
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   *this = item;
 }
 
@@ -166,6 +198,7 @@ CFileItem::CFileItem(const CGUIListItem& item)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   // not particularly pretty, but it gets around the issue of Reset() defaulting
   // parameters in the CGUIListItem base class.
@@ -177,6 +210,7 @@ CFileItem::CFileItem(void)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
 }
 
@@ -186,6 +220,7 @@ CFileItem::CFileItem(const CStdString& strLabel)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   SetLabel(strLabel);
 }
@@ -195,6 +230,7 @@ CFileItem::CFileItem(const CStdString& strPath, bool bIsFolder)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   m_strPath = strPath;
   m_bIsFolder = bIsFolder;
@@ -208,6 +244,7 @@ CFileItem::CFileItem(const CMediaSource& share)
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
   Reset();
   m_bIsFolder = true;
   m_bIsShareOrDrive = true;
@@ -231,10 +268,12 @@ CFileItem::~CFileItem(void)
   delete m_musicInfoTag;
   delete m_videoInfoTag;
   delete m_pictureInfoTag;
+  delete m_programInfoTag;
 
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_programInfoTag = NULL;
 }
 
 const CFileItem& CFileItem::operator=(const CFileItem& item)
@@ -283,6 +322,18 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
   {
     delete m_pictureInfoTag;
     m_pictureInfoTag = NULL;
+  }
+
+  if (item.HasProgramInfoTag())
+  {
+    m_programInfoTag = GetProgramInfoTag();
+    if (m_programInfoTag)
+      *m_programInfoTag = *item.m_programInfoTag;
+  }
+  else
+  {
+    delete m_programInfoTag;
+    m_programInfoTag = NULL;
   }
 
   m_lStartOffset = item.m_lStartOffset;
@@ -335,6 +386,8 @@ void CFileItem::Reset()
   m_videoInfoTag=NULL;
   delete m_pictureInfoTag;
   m_pictureInfoTag=NULL;
+  delete m_programInfoTag;
+  m_programInfoTag=NULL;
   m_extrainfo.Empty();
   m_specialSort = SortSpecialNone;
   SetInvalid();
@@ -389,6 +442,13 @@ void CFileItem::Archive(CArchive& ar)
     }
     else
       ar << 0;
+    if (m_programInfoTag)
+    {
+      ar << 1;
+      ar << *m_programInfoTag;
+    }
+    else
+      ar << 0;
   }
   else
   {
@@ -427,6 +487,9 @@ void CFileItem::Archive(CArchive& ar)
     ar >> iType;
     if (iType == 1)
       ar >> *GetPictureInfoTag();
+    ar >> iType;
+    if (iType == 1)
+      ar >> *GetProgramInfoTag();
 
     SetInvalid();
   }
@@ -451,6 +514,9 @@ void CFileItem::Serialize(CVariant& value)
 
   if (m_pictureInfoTag)
     (*m_pictureInfoTag).Serialize(value["pictureInfoTag"]);
+
+  if (m_programInfoTag)
+    (*m_programInfoTag).Serialize(value["programInfoTag"]);
 }
 
 void CFileItem::ToSortable(SortItem &sortable)
@@ -532,6 +598,7 @@ bool CFileItem::IsVideo() const
   if (HasVideoInfoTag()) return true;
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
 
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
@@ -568,6 +635,7 @@ bool CFileItem::IsAudio() const
   if (HasMusicInfoTag()) return true;
   if (HasVideoInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
   if (IsCDDA()) return true;
   if (!m_bIsFolder && IsShoutCast()) return true;
   if (!m_bIsFolder && IsLastFM()) return true;
@@ -602,8 +670,20 @@ bool CFileItem::IsPicture() const
   if (HasPictureInfoTag()) return true;
   if (HasMusicInfoTag()) return false;
   if (HasVideoInfoTag()) return false;
+  if (HasProgramInfoTag()) return false;
 
   return CUtil::IsPicture(m_strPath);
+}
+
+bool CFileItem::IsProgram() const
+{
+  if (HasProgramInfoTag()) return true;
+  if (HasVideoInfoTag()) return false;
+  if (HasMusicInfoTag()) return false;
+  if (HasPictureInfoTag()) return false;
+
+  // for now only XBE is considered program. In future program could be also Emulator game
+  return IsXBE();
 }
 
 bool CFileItem::IsLyrics() const
@@ -902,6 +982,12 @@ bool CFileItem::IsVideoDb() const
   return url.GetProtocol().Equals("videodb");
 }
 
+bool CFileItem::IsProgramDb() const
+{
+  CURL url(m_strPath);
+  return url.GetProtocol().Equals("programdb");
+}
+
 bool CFileItem::IsVirtualDirectoryRoot() const
 {
   return (m_bIsFolder && m_strPath.IsEmpty());
@@ -969,7 +1055,7 @@ void CFileItem::FillInDefaultIcon()
       {
         SetIconImage("DefaultPlaylist.png");
       }
-      else if ( IsXBE() )
+      else if ( IsProgram() || IsXBE() )
       {
         // xbe
         SetIconImage("DefaultProgram.png");
@@ -1201,6 +1287,12 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
     dbItem.m_lStartOffset = m_lStartOffset;
     return dbItem.IsSamePath(item);
   }
+  if (IsProgramDb() && HasProgramInfoTag())
+  {
+    CFileItem dbItem(m_programInfoTag->m_strFileNameAndPath, false);
+    dbItem.m_lStartOffset = m_lStartOffset;
+    return dbItem.IsSamePath(item);
+  }
   if (item->IsMusicDb() && item->HasMusicInfoTag())
   {
     CFileItem dbItem(item->m_musicInfoTag->GetURL(), false);
@@ -1210,6 +1302,12 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
   if (item->IsVideoDb() && item->HasVideoInfoTag())
   {
     CFileItem dbItem(item->m_videoInfoTag->m_strFileNameAndPath, false);
+    dbItem.m_lStartOffset = item->m_lStartOffset;
+    return IsSamePath(&dbItem);
+  }
+  if (item->IsProgramDb() && item->HasProgramInfoTag())
+  {
+    CFileItem dbItem(item->m_programInfoTag->m_strFileNameAndPath, false);
     dbItem.m_lStartOffset = item->m_lStartOffset;
     return IsSamePath(&dbItem);
   }
@@ -2362,6 +2460,8 @@ CStdString CFileItemList::GetDiscCacheFile(int windowID) const
     cacheFile.Format("special://temp/mdb-%08x.fi", (unsigned __int32)crc);
   else if (IsVideoDb())
     cacheFile.Format("special://temp/vdb-%08x.fi", (unsigned __int32)crc);
+  else if (IsProgramDb())
+    cacheFile.Format("special://temp/pdb-%08x.fi", (unsigned __int32)crc);
   else if (windowID)
     cacheFile.Format("special://temp/%i-%08x.fi", windowID, (unsigned __int32)crc);
   else
@@ -2376,6 +2476,8 @@ bool CFileItemList::AlwaysCache() const
     return CMusicDatabaseDirectory::CanCache(GetPath());
   if (IsVideoDb())
     return CVideoDatabaseDirectory::CanCache(GetPath());
+  if (IsProgramDb())
+    return CProgramDatabaseDirectory::CanCache(GetPath());
   return false;
 }
 
@@ -2737,6 +2839,12 @@ CStdString CFileItem::GetMovieName(bool bUseFolderNames /* = false */) const
   return strMovieName;
 }
 
+CStdString CFileItem::GetGameName(bool bUseFolderNames /* = false */) const
+{
+  // TODO: Is there any difference between Movie and Game names?
+  return GetMovieName(bUseFolderNames);
+}
+
 CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
 {
   CStdString strMovieName = m_strPath;
@@ -2759,6 +2867,22 @@ CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
   }
 
   return strMovieName;
+}
+
+CStdString CFileItem::GetBaseGamePath(bool bUseFolderNames) const
+{
+  CStdString strGameName = m_strPath;
+
+  if (IsMultiPath())
+    strGameName = CMultiPathDirectory::GetFirstPath(m_strPath);
+
+  if (URIUtils::IsStack(strGameName))
+    strGameName = CStackDirectory::GetStackedTitlePath(strGameName);
+
+  if (!m_bIsFolder && bUseFolderNames)
+    URIUtils::GetParentPath(m_strPath, strGameName);
+
+  return strGameName;
 }
 
 void CFileItem::SetVideoThumb()
@@ -2809,6 +2933,14 @@ CStdString CFileItem::GetLocalFanart() const
     if (!HasVideoInfoTag())
       return ""; // nothing can be done
     CFileItem dbItem(m_bIsFolder ? GetVideoInfoTag()->m_strPath : GetVideoInfoTag()->m_strFileNameAndPath, m_bIsFolder);
+    return dbItem.GetLocalFanart();
+  }
+
+  if (IsProgramDb())
+  {
+    if (!HasProgramInfoTag())
+      return ""; // nothing can be done
+    CFileItem dbItem(m_bIsFolder ? GetProgramInfoTag()->m_strPath : GetProgramInfoTag()->m_strFileNameAndPath, m_bIsFolder);
     return dbItem.GetLocalFanart();
   }
 
@@ -2922,8 +3054,14 @@ CStdString CFileItem::GetCachedFanart() const
   }
   if (HasMusicInfoTag())
     return GetCachedThumb(StringUtils::Join(GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator),g_settings.GetMusicFanartFolder());
+  if (IsProgramDb())
+  {
+    if (!HasProgramInfoTag())
+      return "";
+    return GetCachedThumb(m_bIsFolder ? GetProgramInfoTag()->m_strPath : GetProgramInfoTag()->m_strFileNameAndPath,g_settings.GetProgramFanartFolder());
+  }
 
-  return GetCachedThumb(m_strPath,g_settings.GetVideoFanartFolder());
+  return GetCachedThumb(m_strPath,HasProgramInfoTag() ? g_settings.GetProgramFanartFolder() : g_settings.GetVideoFanartFolder());
 }
 
 CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &path2, bool split)
@@ -2947,27 +3085,24 @@ CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &p
 
 CStdString CFileItem::GetCachedProgramThumb() const
 {
-  // get the locally cached thumb
-  Crc32 crc;
   if (IsOnDVD())
   {
     CStdString strDesc;
     CUtil::GetXBEDescription(m_strPath,strDesc);
     CStdString strCRC;
     strCRC.Format("%s%u",strDesc.c_str(),CUtil::GetXbeID(m_strPath));
-    crc.ComputeFromLowerCase(strCRC);
+    return GetCachedThumb(strCRC,g_settings.GetProgramsThumbFolder(),true);
   }
-  else
-    crc.ComputeFromLowerCase(m_strPath);
-
-  CStdString hex;
-  hex.Format("%08x", (__int32)crc);
-
-  CStdString thumb;
-
-  thumb.Format("%s\\%c\\%08x.tbn", g_settings.GetProgramsThumbFolder().c_str(), hex[0], (unsigned __int32)crc);
-
-  return thumb;
+  else if (IsStack())
+    return GetCachedThumb(CStackDirectory::GetFirstStackedFile(m_strPath),g_settings.GetProgramsThumbFolder(),true);
+  else if (IsProgramDb() && HasProgramInfoTag())
+  {
+    if (m_bIsFolder && !GetProgramInfoTag()->m_strPath.IsEmpty())
+      return GetCachedThumb(GetProgramInfoTag()->m_strPath, g_settings.GetProgramsThumbFolder(), true);
+    else if (!GetProgramInfoTag()->m_strFileNameAndPath.IsEmpty())
+      return GetCachedThumb(GetProgramInfoTag()->m_strFileNameAndPath, g_settings.GetProgramsThumbFolder(), true);
+  }
+  return GetCachedThumb(m_strPath,g_settings.GetProgramsThumbFolder(),true);
 }
 
 CStdString CFileItem::GetCachedGameSaveThumb() const
@@ -3032,11 +3167,60 @@ CStdString CFileItem::GetCachedGameSaveThumb() const
   return "";
 }
 
+CStdString CFileItem::GetUserProgramThumb() const
+{
+  if (m_strPath.IsEmpty()
+   || m_bIsShareOrDrive
+   || m_strPath.Left(4).Equals("dvd:")
+   || IsInternetStream()
+   || IsDVD()
+   || IsPlugin()
+   || IsLibraryFolder()
+   || IsParentFolder())
+    return "";
+
+  // 1. check <filename>.tbn or <foldername>.tbn
+  CStdString fileThumb(GetTBNFile());
+  if (CFile::Exists(fileThumb))
+    return fileThumb;
+
+  // 2. - check game.tbn, as long as it's not a folder
+  if (!m_bIsFolder)
+  {
+    CStdString strPath, gametbnFile;
+    URIUtils::GetParentPath(m_strPath, strPath);
+    URIUtils::AddFileToFolder(strPath, "game.tbn", gametbnFile);
+    if (CFile::Exists(gametbnFile))
+      return gametbnFile;
+  }
+
+  // 3. check folder image in_m_dvdThumbs (folder.jpg)
+  if (m_bIsFolder && !IsFileFolder())
+  {
+    CStdStringArray thumbs;
+    StringUtils::SplitString(g_advancedSettings.m_dvdThumbs, "|", thumbs);
+    for (unsigned int i = 0; i < thumbs.size(); ++i)
+    {
+      CStdString folderThumb(GetFolderThumb(thumbs[i]));
+      if (CFile::Exists(folderThumb))
+      {
+        return folderThumb;
+      }
+    }
+  }
+
+  // 4. TODO: maybe we should cache XBMC4Gamers artwork here?
+
+  // No thumb found
+  return "";
+}
+
 void CFileItem::SetCachedProgramThumb()
 {
   // don't set any thumb for programs on DVD, as they're bound to be named the
   // same (D:\default.xbe).
   if (IsParentFolder()) return;
+  if (HasThumbnail()) return;
   CStdString thumb(GetCachedProgramThumb());
   if (CFile::Exists(thumb))
     SetThumbnailImage(thumb);
@@ -3305,6 +3489,14 @@ MUSIC_INFO::CMusicInfoTag* CFileItem::GetMusicInfoTag()
   return m_musicInfoTag;
 }
 
+CProgramInfoTag* CFileItem::GetProgramInfoTag()
+{
+  if (!m_programInfoTag)
+    m_programInfoTag = new CProgramInfoTag;
+
+  return m_programInfoTag;
+}
+
 CStdString CFileItem::FindTrailer() const
 {
   CStdString strFile2;
@@ -3404,3 +3596,22 @@ VIDEODB_CONTENT_TYPE CFileItem::GetVideoContentType() const
   return type;
 }
 
+void CFileItem::LoadXBMC4GamersArtwork()
+{
+  if (!HasProgramInfoTag())
+    return;
+
+  CFileItemList items;
+  CStdString strArtworkPath = URIUtils::AddFileToFolder(m_programInfoTag->m_strPath, "_resources\\artwork\\");
+  if(CDirectory::GetDirectory(strArtworkPath, items, g_settings.m_pictureExtensions) && items.Size())
+  {
+    CLog::Log(LOGINFO, "Found XBMC4Gamers artwork for %s", m_programInfoTag->m_strPath.c_str());
+    for (unsigned int i = 0; i < items.Size(); i++)
+    {
+      CStdString strProperty(items[i]->GetLabel());
+      URIUtils::RemoveExtension(strProperty);
+      strProperty.Format("artwork_%s", strProperty);
+      SetProperty(strProperty, items[i]->m_strPath);
+    }
+  }
+}

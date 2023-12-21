@@ -131,8 +131,11 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
   if (windowId==WINDOW_PICTURES)
     return new CGUIViewStateWindowPictures(items);
 
-  if (windowId==WINDOW_PROGRAMS)
-    return new CGUIViewStateWindowPrograms(items);
+  if (windowId==WINDOW_PROGRAM_FILES)
+    return new CGUIViewStateWindowProgramFiles(items);
+
+  if (windowId==WINDOW_PROGRAM_NAV)
+    return new CGUIViewStateWindowProgramNav(items);
 
   if (windowId==WINDOW_ADDON_BROWSER)
     return new CGUIViewStateAddonBrowser(items);

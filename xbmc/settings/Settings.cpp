@@ -96,6 +96,7 @@ void CSettings::Initialize()
   m_bMyVideoPlaylistRepeat = false;
   m_bMyVideoPlaylistShuffle = false;
   m_bMyVideoNavFlatten = false;
+  m_bMyProgramNavFlatten = false;
   m_bStartVideoWindowed = false;
   m_bAddonAutoUpdate = false;
   m_bAddonNotifications = true;
@@ -111,6 +112,7 @@ void CSettings::Initialize()
   m_pictureExtensions = ".png|.jpg|.jpeg|.bmp|.gif|.ico|.tif|.tiff|.tga|.pcx|.cbz|.zip|.cbr|.rar|.m3u|.dng|.nef|.cr2|.crw|.orf|.arw|.erf|.3fr|.dcr|.x3f|.mef|.raf|.mrw|.pef|.sr2";
   m_musicExtensions = ".nsv|.m4a|.flac|.aac|.strm|.pls|.rm|.rma|.mpa|.wav|.wma|.ogg|.mp3|.mp2|.m3u|.mod|.amf|.669|.dmf|.dsm|.far|.gdm|.imf|.it|.m15|.med|.okt|.s3m|.stm|.sfx|.ult|.uni|.xm|.sid|.ac3|.dts|.cue|.aif|.aiff|.wpl|.ape|.mac|.mpc|.mp+|.mpp|.shn|.zip|.rar|.wv|.nsf|.spc|.gym|.adplug|.adx|.dsp|.adp|.ymf|.ast|.afc|.hps|.xsp|.xwav|.waa|.wvs|.wam|.gcm|.idsp|.mpdsp|.mss|.spt|.rsd|.mid|.kar|.sap|.cmc|.cmr|.dmc|.mpt|.mpd|.rmt|.tmc|.tm8|.tm2|.oga|.url|.pxml";
   m_videoExtensions = ".m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.rar|.001|.wpl|.zip|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.webm|.xmv|.bik|.sfd";
+  m_programExtensions = ".xbe";
   // internal music extensions
   m_musicExtensions += "|.sidstream|.oggstream|.nsfstream|.asapstream|.cdda";
 
@@ -746,6 +748,12 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
       XMLUtils::GetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
     }
   }
+  // myprograms settings
+  pElement = pRootElement->FirstChildElement("myprograms");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "flatten", m_bMyProgramNavFlatten);
+  }
 
   pElement = pRootElement->FirstChildElement("viewstates");
   if (pElement)
@@ -763,11 +771,13 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "videonavtvshows", m_viewStateVideoNavTvShows);
     GetViewState(pElement, "videonavseasons", m_viewStateVideoNavSeasons);
     GetViewState(pElement, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    GetViewState(pElement, "programnavtitles", m_viewStateProgramNavTitles);
 
     GetViewState(pElement, "programs", m_viewStatePrograms, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "pictures", m_viewStatePictures, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "videofiles", m_viewStateVideoFiles, SortByLabel, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "musicfiles", m_viewStateMusicFiles, SortByLabel, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "programfiles", m_viewStateProgramFiles, SortByLabel, DEFAULT_VIEW_AUTO);
   }
 
   // general settings
@@ -1105,6 +1115,13 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     XMLUtils::SetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
   }
 
+  // myprograms settings
+  TiXmlElement programsNode("myprograms");
+  pNode = pRoot->InsertEndChild(programsNode);
+  if (!pNode) return false;
+
+  XMLUtils::SetBoolean(pNode, "flatten", m_bMyProgramNavFlatten);
+
   // view states
   TiXmlElement viewStateNode("viewstates");
   pNode = pRoot->InsertEndChild(viewStateNode);
@@ -1123,11 +1140,13 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SetViewState(pNode, "videonavseasons", m_viewStateVideoNavSeasons);
     SetViewState(pNode, "videonavtvshows", m_viewStateVideoNavTvShows);
     SetViewState(pNode, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    SetViewState(pNode, "programnavtitles", m_viewStateProgramNavTitles);
 
     SetViewState(pNode, "programs", m_viewStatePrograms);
     SetViewState(pNode, "pictures", m_viewStatePictures);
     SetViewState(pNode, "videofiles", m_viewStateVideoFiles);
     SetViewState(pNode, "musicfiles", m_viewStateMusicFiles);
+    SetViewState(pNode, "programfiles", m_viewStateProgramFiles);
   }
 
   // general settings
@@ -1992,6 +2011,17 @@ CStdString CSettings::GetMusicFanartFolder() const
   return folder;
 }
 
+CStdString CSettings::GetProgramFanartFolder() const
+{
+  CStdString folder;
+  if (GetCurrentProfile().hasDatabases())
+    URIUtils::AddFileToFolder(GetProfileUserDataFolder(), "Thumbnails/Programs/Fanart", folder);
+  else
+    URIUtils::AddFileToFolder(GetUserDataFolder(), "Thumbnails/Programs/Fanart", folder);
+
+  return folder;
+}
+
 CStdString CSettings::GetBookmarksThumbFolder() const
 {
   CStdString folder;
@@ -2206,6 +2236,7 @@ void CSettings::CreateProfileFolders()
   CDirectory::Create(GetMusicFanartFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
   CDirectory::Create(GetProgramsThumbFolder());
+  CDirectory::Create(GetProgramFanartFolder());
   CDirectory::Create(GetPicturesThumbFolder());
   CDirectory::Create(GetGameSaveThumbFolder());
   CLog::Log(LOGINFO, "thumbnails folder: %s", GetThumbnailsFolder().c_str());

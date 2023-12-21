@@ -158,7 +158,8 @@ void CURL::Parse(const CStdString& strURL1)
   CStdString strProtocol2 = GetTranslatedProtocol();
   if(m_strProtocol.Equals("rss") ||
      m_strProtocol.Equals("videodb") ||
-     m_strProtocol.Equals("musicdb"))
+     m_strProtocol.Equals("musicdb") ||
+     m_strProtocol.Equals("programdb"))
     sep = "?";
   else
   if(strProtocol2.Equals("http")
@@ -287,6 +288,7 @@ void CURL::Parse(const CStdString& strURL1)
   if (m_strProtocol.CompareNoCase("iso9660") == 0
     || m_strProtocol.CompareNoCase("musicdb") == 0
     || m_strProtocol.CompareNoCase("videodb") == 0
+    || m_strProtocol.CompareNoCase("programdb") == 0
     || m_strProtocol.CompareNoCase("sources") == 0
     || m_strProtocol.CompareNoCase("lastfm") == 0
     || m_strProtocol.Left(3).CompareNoCase("mem") == 0)

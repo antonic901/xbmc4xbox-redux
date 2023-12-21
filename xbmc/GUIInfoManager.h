@@ -441,6 +441,10 @@ namespace INFO
 #define LIBRARY_IS_SCANNING_VIDEO   727
 #define LIBRARY_IS_SCANNING_MUSIC   728
 
+#define LIBRARY_HAS_PROGRAM         729
+#define LIBRARY_HAS_GAMES           730
+#define LIBRARY_IS_SCANNING_PROGRAM 731
+
 #define SYSTEM_PLATFORM_XBOX        740
 #define SYSTEM_PLATFORM_LINUX       741
 #define SYSTEM_PLATFORM_WINDOWS     742
@@ -850,6 +854,7 @@ protected:
   int m_libraryHasTVShows;
   int m_libraryHasMusicVideos;
   int m_libraryHasMovieSets;
+  int m_libraryHasGames;
 
   CCriticalSection m_critInfo;
 };

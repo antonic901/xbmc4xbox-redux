@@ -346,8 +346,8 @@
 				</control>
 				<control type="grouplist" id="9014">
 					<include>HomeSubMenuCommonValues</include>
-					<onleft>9013</onleft>
-					<onright>9013</onright>
+					<onleft>9014</onleft>
+					<onright>9014</onright>
 					<visible>Container(9000).HasFocus(4)</visible>
 					<include>HomeSubMenuPictures</include> <!-- Buttons for the grouplist -->
 				</control>
@@ -357,6 +357,13 @@
 					<onright>9017</onright>
 					<visible>Container(9000).HasFocus(8)</visible> <!--Buttons for the grouplist -->
 					<include>HomeSubMenuAddons</include>
+				</control>
+				<control type="grouplist" id="9019">
+					<include>HomeSubMenuCommonValues</include>
+					<onleft>9019</onleft>
+					<onright>9019</onright>
+					<visible>Container(9000).HasFocus(12)</visible>
+					<include>HomeSubMenuGames</include> <!-- Buttons for the grouplist -->
 				</control>
 			</control>
 			<control type="image">
@@ -497,9 +504,16 @@
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
 					</item>
+					<item id="12">
+						<label>15016</label>
+						<onclick>ActivateWindow(ProgramLibrary,GameTitles,return)</onclick>
+						<icon>-</icon>
+						<thumb>-</thumb>
+						<visible>!Skin.HasSetting(HomeMenuNoGamesButton) + Library.HasContent(Games)</visible>
+					</item>
 					<item id="1">
 						<label>31957</label>
-						<onclick>ActivateWindow(Programs)</onclick>
+						<onclick>ActivateWindow(ProgramLibrary,Files,return)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
