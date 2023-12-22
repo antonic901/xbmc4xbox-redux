@@ -549,8 +549,14 @@ namespace PROGRAM
           return nfoFile;
       }
 
-      // use resources file from XBMC4Gamers
-      nfoFile = URIUtils::AddFileToFolder(strPath, "_resources\\default.xml");
+      if (item->IsXBE())
+      { // use resources file from XBMC4Gamers
+        nfoFile = URIUtils::AddFileToFolder(strPath, "_resources\\default.xml");
+      }
+      else if(item->IsROM())
+      { // romname.nfo
+        nfoFile = URIUtils::ReplaceExtension(item->GetPath(), ".nfo");
+      }
     }
 
     return nfoFile;

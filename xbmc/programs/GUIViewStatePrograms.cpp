@@ -40,7 +40,7 @@ CStdString CGUIViewStateWindowProgram::GetLockType()
 
 CStdString CGUIViewStateWindowProgram::GetExtensions()
 {
-  return ".xbe|.cut";
+  return g_settings.m_programExtensions;
 }
 
 VECSOURCES& CGUIViewStateWindowProgram::GetSources()

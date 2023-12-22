@@ -392,6 +392,39 @@ int CBuiltins::Execute(const CStdString& execString)
     else
       CLog::Log(LOGERROR, "CUtil::ExecuteBuiltin: No archive given");
   }
+  else if (execute.Equals("runprogram"))
+  {
+    if(params.size())
+    {
+      CFileItem item(params[0]);
+      item.SetPath(params[0]);
+      CStdString action;
+      if (item.IsXBE() || item.IsShortCut())
+        action.Format("RunXBE(%s)", params[0]);
+      else if (item.IsROM())
+        action.Format("RunROM(%s)", params[0]);
+
+      if (!action.IsEmpty())
+        Execute(action);
+    }
+    else
+      CLog::Log(LOGERROR, "CBuiltins::Execute, runprogram called with no arguments.");
+  }
+  else if (execute.Equals("runrom"))
+  {
+    if (params.size())
+    {
+      CFileItem item(params[0]);
+      item.SetPath(params[0]);
+      /*TODO: add logic for launching roms
+        1. Get <system> from database for given ROM
+        2. Get all emulators from database for appropriate <system>
+        3. Launch specific emulator for requested ROM (reach to Rocky5 about this and check how XBMC-Emustatino is doing this part)
+      */
+    }
+    else
+      CLog::Log(LOGERROR, "CBuiltins::Execute, runrom called with no arguments.");
+  }
   else if (execute.Equals("runxbe"))
   {
     // only useful if there is actually an XBE to execute
