@@ -113,6 +113,7 @@ typedef enum
   PROGRAMDB_ID_FANART = 17,
   PROGRAMDB_ID_BASEPATH = 18,
   PROGRAMDB_ID_PARENTPATHID = 19,
+  PROGRAMDB_ID_SYSTEM = 20,
   PROGRAMDB_ID_MAX
 } PROGRAMDB_IDS;
 
@@ -137,7 +138,8 @@ const struct SDbTableOffsets DbGameOffsets[] =
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTrailer) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_fanart.m_xml) },
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_basePath) },
-  { PROGRAMDB_TYPE_INT, my_offsetof(CProgramInfoTag,m_parentPathID) }
+  { PROGRAMDB_TYPE_INT, my_offsetof(CProgramInfoTag,m_parentPathID) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strSystem) }
 };
 
 class CProgramDatabase : public CDatabase

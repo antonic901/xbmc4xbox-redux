@@ -50,6 +50,7 @@ void CProgramInfoTag::Reset()
   m_strFileNameAndPath = "";
   m_strOriginalTitle = "";
   m_strESRB = "";
+  m_strSystem = "";
   m_iYear = 0;
   m_iDbId = -1;
   m_iFileId = -1;
@@ -69,6 +70,7 @@ bool CProgramInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePath
 
   if (!program) return false;
 
+  XMLUtils::SetString(program, "system", m_strSystem);
   XMLUtils::SetString(program, "title", m_strTitle);
   if (!m_strOriginalTitle.IsEmpty())
     XMLUtils::SetString(program, "originaltitle", m_strOriginalTitle);
@@ -152,6 +154,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar << m_strPath;
     ar << m_strXBENumber;
     ar << m_strESRB;
+    ar << m_strSystem;
     ar << m_strFileNameAndPath;
     ar << m_strOriginalTitle;
     ar << m_iYear;
@@ -185,6 +188,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_strPath;
     ar >> m_strXBENumber;
     ar >> m_strESRB;
+    ar >> m_strSystem;
     ar >> m_strFileNameAndPath;
     ar >> m_strOriginalTitle;
     ar >> m_iYear;
@@ -219,6 +223,7 @@ void CProgramInfoTag::Serialize(CVariant& value)
   value["imdbnumber"] = m_strXBENumber;
   value["filenameandpath"] = m_strFileNameAndPath;
   value["esrb"] = m_strESRB;
+  value["system"] = m_strSystem;
   value["originaltitle"] = m_strOriginalTitle;
   value["year"] = m_iYear;
   value["rating"] = m_fRating;
@@ -236,6 +241,7 @@ void CProgramInfoTag::ToSortable(SortItem& sortable)
 
 void CProgramInfoTag::ParseNative(const TiXmlElement* program)
 {
+  XMLUtils::GetString(program, "system", m_strSystem);
   XMLUtils::GetString(program, "title", m_strTitle);
   XMLUtils::GetString(program, "originaltitle", m_strOriginalTitle);
   XMLUtils::GetFloat(program, "rating", m_fRating);
