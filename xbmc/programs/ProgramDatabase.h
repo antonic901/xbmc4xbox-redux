@@ -74,6 +74,10 @@ namespace PROGRAM
 #define PROGRAMDB_DETAILS_GAME_LASTPLAYED   PROGRAMDB_MAX_COLUMNS + 5
 #define PROGRAMDB_DETAILS_GAME_DATEADDED		PROGRAMDB_MAX_COLUMNS + 6
 
+#define PROGRAMDB_DETAILS_APPLICATION_FILE      PROGRAMDB_MAX_COLUMNS + 2
+#define PROGRAMDB_DETAILS_APPLICATION_PATH      PROGRAMDB_MAX_COLUMNS + 3
+#define PROGRAMDB_DETAILS_APPLICATION_DATEADDED PROGRAMDB_MAX_COLUMNS + 4
+
 #define PROGRAMDB_TYPE_STRING 1
 #define PROGRAMDB_TYPE_INT 2
 #define PROGRAMDB_TYPE_FLOAT 3
@@ -86,8 +90,7 @@ namespace PROGRAM
 typedef enum
 {
   PROGRAMDB_CONTENT_GAMES = 1,
-  PROGRAMDB_CONTENT_EMULATORS = 2,
-  PROGRAMDB_CONTENT_HOMEBREWS = 3
+  PROGRAMDB_CONTENT_APPLICATION = 2
 } PROGRAMDB_CONTENT_TYPE;
 
 typedef enum
@@ -142,6 +145,38 @@ const struct SDbTableOffsets DbGameOffsets[] =
   { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strSystem) }
 };
 
+typedef enum
+{
+  PROGRAMDB_ID_APPLICATION_MIN = -1,
+  PROGRAMDB_ID_APPLICATION_TITLE = 0,
+  PROGRAMDB_ID_APPLICATION_PLOT = 1,
+  PROGRAMDB_ID_APPLICATION_YEAR = 2,
+  PROGRAMDB_ID_APPLICATION_RATING = 3,
+  PROGRAMDB_ID_APPLICATION_THUMBURL = 4,
+  PROGRAMDB_ID_APPLICATION_IDENT = 5,
+  PROGRAMDB_ID_APPLICATION_FANART = 6,
+  PROGRAMDB_ID_APPLICATION_BASEPATH = 7,
+  PROGRAMDB_ID_APPLICATION_PARENTPATHID = 8,
+  PROGRAMDB_ID_APPLICATION_SYSTEM = 9,
+  PROGRAMDB_ID_APPLICATION_TYPE = 10,
+  PROGRAMDB_ID_APPLICATION_MAX
+} PROGRAMDB_APPLICATION_IDS;
+
+const struct SDbTableOffsets DbApplicationOffsets[] =
+{
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTitle) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPlot) },
+  { PROGRAMDB_TYPE_INT, my_offsetof(CProgramInfoTag,m_iYear) },
+  { PROGRAMDB_TYPE_FLOAT, my_offsetof(CProgramInfoTag,m_fRating) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPictureURL.m_xml) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strXBENumber) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_fanart.m_xml) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_basePath) },
+  { PROGRAMDB_TYPE_INT, my_offsetof(CProgramInfoTag,m_parentPathID) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strSystem) },
+  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_type) }
+};
+
 class CProgramDatabase : public CDatabase
 {
 public:
@@ -152,6 +187,7 @@ public:
   virtual bool CommitTransaction();
 
   int AddGame(const CStdString& strFilenameAndPath);
+  int AddApplication(const CStdString& strFilenameAndPath);
 
   // editing functions
   /*! \brief Set the playcount of an item
@@ -193,6 +229,7 @@ public:
   void UpdateGameTitle(int idGame, const CStdString& strNewGameTitle, PROGRAMDB_CONTENT_TYPE iType=PROGRAMDB_CONTENT_GAMES);
 
   bool HasGameInfo(const CStdString& strFilenameAndPath);
+  bool HasApplicationInfo(const CStdString& strFilenameAndPath);
 
   void GetFilePathById(int idGame, CStdString &filePath, PROGRAMDB_CONTENT_TYPE iType);
   CStdString GetDeveloperById(int id);
@@ -205,14 +242,18 @@ public:
 
   bool LoadProgramInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details);
   void GetGameInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details, int idGame = -1);
+  void GetApplicationInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details, int idApplication = -1);
 
   int GetPathId(const CStdString& strPath);
 
   int SetDetailsForGame(const CStdString& strFilenameAndPath, const CProgramInfoTag& details, int idGame = -1);
+  int SetDetailsForApplication(const CStdString& strFilenameAndPath, const CProgramInfoTag& details, int idApplication = -1);
   void SetDetail(const CStdString& strDetail, int id, int field, PROGRAMDB_CONTENT_TYPE type);
 
   void DeleteGame(int idGame, bool bKeepId = false, bool bKeepThumb = false);
   void DeleteGame(const CStdString& strFilenameAndPath, bool bKeepId = false, bool bKeepThumb = false, int idGame = -1);
+  void DeleteApplication(int idApplication, bool bKeepId = false, bool bKeepThumb = false);
+  void DeleteApplication(const CStdString& strFilenameAndPath, bool bKeepId = false, bool bKeepThumb = false, int idApplication = -1);
   void RemoveContentForPath(const CStdString& strPath,CGUIDialogProgress *progress = NULL);
   void UpdateFanart(const CFileItem &item, PROGRAMDB_CONTENT_TYPE type);
 
@@ -288,6 +329,10 @@ public:
                     int idPlatform = -1, int idYear = -1, int idTag = -1,
                     const SortDescription &sortDescription = SortDescription());
 
+  bool GetApplicationsNav(const CStdString& strBaseDir, CFileItemList& items,
+                          int idYear = -1, int idTag = -1,
+                          const SortDescription &sortDescription = SortDescription());
+
   bool GetRecentlyAddedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
   bool GetRecentlyPlayedGamesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit=0);
 
@@ -319,6 +364,7 @@ public:
 
   // smart playlists and main retrieval work in these functions
   bool GetGamesByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
+  bool GetApplicationsByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
 
   // retrieve a list of items
   bool GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
@@ -332,6 +378,9 @@ public:
     {
       case PROGRAMDB_CONTENT_GAMES:
         out = "game";
+        break;
+      case PROGRAMDB_CONTENT_APPLICATION:
+        out = "application";
         break;
       default:
         break;
@@ -368,6 +417,7 @@ public:
 
 protected:
   int GetGameId(const CStdString& strFilenameAndPath);
+  int GetApplicationId(const CStdString& strFilenameAndPath);
 
   /*! \brief Get the id of this fileitem
    Works for both videodb:// items and normal fileitems
@@ -416,6 +466,8 @@ protected:
   CProgramInfoTag GetDetailsByTypeAndId(PROGRAMDB_CONTENT_TYPE type, int id);
   CProgramInfoTag GetDetailsForGame(std::auto_ptr<dbiplus::Dataset> &pDS, bool needsCast = false);
   CProgramInfoTag GetDetailsForGame(const dbiplus::sql_record* const record, bool needsCast = false);
+  CProgramInfoTag GetDetailsForApplication(std::auto_ptr<dbiplus::Dataset> &pDS, bool needsCast = false);
+  CProgramInfoTag GetDetailsForApplication(const dbiplus::sql_record* const record, bool needsCast = false);
   bool GetNavCommon(const CStdString& strBaseDir, CFileItemList& items, const CStdString& type, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
 
   void GetDetailsFromDB(std::auto_ptr<dbiplus::Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CProgramInfoTag &details, int idxOffset = 2);
@@ -432,7 +484,7 @@ private:
    */
   int RunQuery(const CStdString &sql);
 
-  /*! \brief (Re)Create the generic database views for games, emulators,
+  /*! \brief (Re)Create the generic database views for games, applications,
      and homebrew
    */
   void CreateViews();
