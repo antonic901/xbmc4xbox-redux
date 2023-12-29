@@ -1382,7 +1382,7 @@ void CProgramDatabase::InvalidatePathHash(const CStdString& strPath)
   SetPathHash(strPath,"");
   if (!info)
     return;
-  if (info->Content() == CONTENT_GAMES && !foundDirectly && settings.parent_name_root) // if we scan by folder name we need to invalidate parent as well
+  if ((info->Content() == CONTENT_GAMES || info->Content() == CONTENT_APPLICATIONS) && !foundDirectly && settings.parent_name_root) // if we scan by folder name we need to invalidate parent as well
   {
     CStdString strParent;
     URIUtils::GetParentPath(strPath,strParent);
@@ -2828,7 +2828,7 @@ ScraperPtr CProgramDatabase::GetScraperForPath(const CStdString& strPath, SScanS
     if (!scraper || scraper->Content() == CONTENT_NONE)
       return ScraperPtr();
 
-    if (scraper->Content() == CONTENT_GAMES)
+    if (scraper->Content() == CONTENT_GAMES || scraper->Content() == CONTENT_APPLICATIONS)
     {
       settings.recurse = settings.recurse - (iFound-1);
       settings.parent_name_root = settings.parent_name && (!settings.recurse || iFound > 1);

@@ -241,6 +241,7 @@ void CProgramInfoTag::ToSortable(SortItem& sortable)
 
 void CProgramInfoTag::ParseNative(const TiXmlElement* program)
 {
+  XMLUtils::GetString(program, "type", m_type);
   XMLUtils::GetString(program, "system", m_strSystem);
   XMLUtils::GetString(program, "title", m_strTitle);
   XMLUtils::GetString(program, "originaltitle", m_strOriginalTitle);

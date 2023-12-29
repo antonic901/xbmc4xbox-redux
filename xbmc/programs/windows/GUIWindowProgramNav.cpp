@@ -231,6 +231,8 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
 
       if (info && info->Content() == CONTENT_GAMES)
         buttons.Add(CONTEXT_BUTTON_INFO, 35003);
+      else if (info && info->Content() == CONTENT_APPLICATIONS)
+        buttons.Add(CONTEXT_BUTTON_INFO, 35109);
     }
   }
 }

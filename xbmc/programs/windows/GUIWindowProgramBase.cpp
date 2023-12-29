@@ -178,6 +178,14 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
         m_database.GetGameInfo(item->GetPath(), gameDetails);
       }
     }
+    else if (info->Content() == CONTENT_APPLICATIONS)
+    {
+      if (m_database.HasApplicationInfo(item->GetPath()))
+      {
+        bHasInfo = true;
+        m_database.GetApplicationInfo(item->GetPath(), gameDetails);
+      }
+    }
     m_database.Close();
   }
   else if (item->HasProgramInfoTag())
@@ -370,11 +378,15 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
       {
         if (info->Content() == CONTENT_GAMES)
           m_database.DeleteGame(item->GetPath());
+        else if (info->Content() == CONTENT_APPLICATIONS)
+          m_database.DeleteApplication(item->GetPath());
       }
       if (scanner.RetrieveProgramInfo(list,settings.parent_name_root,info->Content(),!ignoreNfo,&scrUrl,pDlgProgress))
       {
         if (info->Content() == CONTENT_GAMES)
           m_database.GetGameInfo(item->GetPath(),gameDetails);
+        else if (info->Content() == CONTENT_APPLICATIONS)
+          m_database.GetApplicationInfo(item->GetPath(),gameDetails);
 
         // got all game details :-)
         OutputDebugString("got details\n");

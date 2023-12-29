@@ -172,6 +172,7 @@ void CGUIDialogContentSettings::CreateSettings()
     break;
   case CONTENT_MOVIES:
   case CONTENT_GAMES:
+  case CONTENT_APPLICATIONS:
     {
       AddBool(1,20330,&m_bUseDirNames, m_bShowScanSettings);
       AddBool(2,20346,&m_bScanRecursive, m_bShowScanSettings && ((m_bUseDirNames && !m_bSingleItem) || !m_bUseDirNames));
@@ -203,7 +204,7 @@ void CGUIDialogContentSettings::OnSettingChanged(SettingInfo &setting)
   CreateSettings();
 
   // crappy setting dependencies part 2
-  if (m_content == CONTENT_MOVIES || m_content == CONTENT_GAMES)
+  if (m_content == CONTENT_MOVIES || m_content == CONTENT_GAMES || m_content == CONTENT_APPLICATIONS)
   {
     if (setting.id == 2) // use dir names
     {
@@ -262,6 +263,7 @@ void CGUIDialogContentSettings::FillContentTypes()
     FillContentTypes(CONTENT_TVSHOWS);
     FillContentTypes(CONTENT_MUSICVIDEOS);
     FillContentTypes(CONTENT_GAMES);
+    FillContentTypes(CONTENT_APPLICATIONS);
 
     // add 'None' to spinner
     CGUIMessage msg2(GUI_MSG_LABEL_ADD,GetID(),CONTROL_CONTENT_TYPE);
@@ -431,7 +433,7 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, PROGRAM::SScanS
       settings.noupdate = dialog->m_bNoUpdate;
       scraper->SetPathSettings(content, "");
 
-      if (content == CONTENT_GAMES)
+      if (content == CONTENT_GAMES || content == CONTENT_APPLICATIONS)
       {
         if (dialog->m_bUseDirNames)
         {
