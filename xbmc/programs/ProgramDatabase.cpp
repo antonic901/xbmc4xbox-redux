@@ -637,7 +637,44 @@ int CProgramDatabase::AddFile(const CStdString& strFileNameAndPath)
       return idFile;
     }
     m_pDS->close();
-    strSQL=PrepareSQL("insert into files (idFile, idPath, strFileName) values(NULL, %i, '%s')", idPath, strFileName.c_str());
+
+    CStdString strExtension = URIUtils::GetExtension(strFileName);
+    if (strExtension.Equals(".xbe"))
+    { // if it's XBE we need to pull info from XBE too
+      int iRegion = -1;
+      if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+      {
+        CXBE xbe;
+        iRegion = xbe.ExtractGameRegion(strFileNameAndPath);
+        if (iRegion < 1 || iRegion > 7)
+          iRegion = 0;
+      }
+
+      FILETIME time;
+      CDateTime::GetCurrentDateTime().GetAsTimeStamp(time);
+      ULARGE_INTEGER lastAccessed;
+      lastAccessed.u.LowPart = time.dwLowDateTime; 
+      lastAccessed.u.HighPart = time.dwHighDateTime;
+
+      __int64 iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
+
+      CStdString description;
+      CUtil::GetXBEDescription(strFileNameAndPath, description);
+
+      unsigned int titleID = CUtil::GetXbeID(strFileNameAndPath);
+      if (titleID == 0)
+        titleID = (unsigned int) -1;
+
+      strSQL=PrepareSQL("insert into files (idFile, idPath, strFileName, titleId, xbedescription, iTimesPlayed, lastAccessed, iRegion, iSize) values(NULL, %i, '%s', %u, '%s', %i, %I64u, %i, %I64u)", idPath, strFileName.c_str(), titleID, description.c_str(), 0, lastAccessed.QuadPart, iRegion, iSize);
+    }
+    else
+    {
+      __int64 iSize = -1;
+      __stat64 stat;
+      if (CFile::Stat(strFileNameAndPath,&stat) == 0)
+        iSize = stat.st_size;
+      strSQL=PrepareSQL("insert into files (idFile, idPath, strFileName, iSize) values(NULL, %i, '%s', %I64u)", idPath, strFileName.c_str(), iSize);
+    }
     m_pDS->exec(strSQL.c_str());
     idFile = (int)m_pDS->lastinsertid();
     return idFile;
