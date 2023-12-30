@@ -102,6 +102,10 @@ CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) con
     return "GamePlatforms";
   else if (path.Equals("programdb://games/"))
     return "Games";
+  else if (path.Equals("programdb://applications/titles/"))
+    return "ApplicationTitles";
+  else if (path.Equals("programdb://applications/years/"))
+    return "ApplicationYears";
   else if (path.Equals("programdb://recentlyaddedgames/"))
     return "RecentlyAddedGames";
   else if (path.Equals("programdb://recentlyplayedgames/"))
@@ -137,6 +141,8 @@ bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileIte
           node == NODE_TYPE_RECENTLY_ADDED_GAMES ||
           node == NODE_TYPE_RECENTLY_PLAYED_GAMES)
         items.SetContent("games");
+      else if (node == NODE_TYPE_TITLE_APPLICATIONS)
+        items.SetContent("applications");
       else if (node == NODE_TYPE_DEVELOPER)
         items.SetContent("developers");
       else if (node == NODE_TYPE_PUBLISHER)
@@ -279,6 +285,12 @@ CStdString CGUIWindowProgramNav::GetStartFolder(const CStdString &dir)
     return "programdb://games/platforms/";
   else if (dir.Equals("Games"))
     return "programdb://games/";
+  else if (dir.Equals("ApplicationTitles"))
+    return "programdb://applications/titles/";
+  else if (dir.Equals("ApplicationYears"))
+    return "programdb://applications/years/";
+  else if (dir.Equals("Applications"))
+    return "programdb://applications/";
   else if (dir.Equals("RecentlyAddedGames"))
     return "programdb://recentlyaddedgames/";
   else if (dir.Equals("RecentlyPlayedGames"))

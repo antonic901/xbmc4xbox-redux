@@ -196,6 +196,7 @@ bool CProgramDatabaseDirectory::GetLabel(const CStdString& strDirectory, CStdStr
     switch (pNode->GetChildType())
     {
     case NODE_TYPE_TITLE_GAMES:
+    case NODE_TYPE_TITLE_APPLICATIONS:
       strLabel = g_localizeStrings.Get(369); break;
     case NODE_TYPE_DEVELOPER: // Developers
       strLabel = g_localizeStrings.Get(35100); break;
@@ -215,6 +216,8 @@ bool CProgramDatabaseDirectory::GetLabel(const CStdString& strDirectory, CStdStr
       strLabel = g_localizeStrings.Get(562); break;
     case NODE_TYPE_GAMES_OVERVIEW: // Games
       strLabel = g_localizeStrings.Get(15016); break;
+    case NODE_TYPE_APPLICATIONS_OVERVIEW: // Applications
+      strLabel = g_localizeStrings.Get(35108); break;
     case NODE_TYPE_RECENTLY_ADDED_GAMES: // Recently Added Games
       strLabel = g_localizeStrings.Get(35106); break;
     case NODE_TYPE_RECENTLY_PLAYED_GAMES: // Recently Played Games
@@ -241,6 +244,14 @@ CStdString CProgramDatabaseDirectory::GetIcon(const CStdString &strDirectory)
       return "DefaultGameTitle.png";
     }
     return "";
+  case NODE_TYPE_TITLE_APPLICATIONS:
+    if (path.Equals("programdb://applications/titles/"))
+    {
+      if (g_settings.m_bMyProgramNavFlatten)
+        return "DefaultApplications.png";
+      return "DefaultApplicationTitle.png";
+    }
+    return "";
   case NODE_TYPE_DEVELOPER: // Developers
     return "DefaultDeveloper.png";
   case NODE_TYPE_PUBLISHER: // Publishers
@@ -258,6 +269,8 @@ CStdString CProgramDatabaseDirectory::GetIcon(const CStdString &strDirectory)
     return "DefaultYear.png";
   case NODE_TYPE_GAMES_OVERVIEW: // Games
     return "DefaultGames.png";
+  case NODE_TYPE_APPLICATIONS_OVERVIEW: // Applications
+    return "DefaultApplications.png";
   case NODE_TYPE_RECENTLY_ADDED_GAMES: // Recently Added Games
     return "DefaultRecentlyAddedGames.png";
   case NODE_TYPE_RECENTLY_PLAYED_GAMES: // Recently Played Games

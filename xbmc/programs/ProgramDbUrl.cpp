@@ -53,6 +53,11 @@ bool CProgramDbUrl::parse()
       m_type = "games";
       break;
 
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_APPLICATIONS_OVERVIEW:
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_TITLE_APPLICATIONS:
+      m_type = "applications";
+      break;
+
     default:
       break;
   }
@@ -65,6 +70,12 @@ bool CProgramDbUrl::parse()
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_RECENTLY_PLAYED_GAMES:
       m_type = "games";
       m_itemType = "games";
+      break;
+
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_APPLICATIONS_OVERVIEW:
+    case PROGRAMDATABASEDIRECTORY::NODE_TYPE_TITLE_APPLICATIONS:
+      m_type = "applications";
+      m_itemType = "applications";
       break;
 
     case PROGRAMDATABASEDIRECTORY::NODE_TYPE_DEVELOPER:

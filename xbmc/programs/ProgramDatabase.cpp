@@ -1395,6 +1395,7 @@ bool CProgramDatabase::CommitTransaction()
   if (CDatabase::CommitTransaction())
   { // number of items in the db has likely changed, so recalculate
     g_infoManager.SetLibraryBool(LIBRARY_HAS_GAMES, HasContent(PROGRAMDB_CONTENT_GAMES));
+    g_infoManager.SetLibraryBool(LIBRARY_HAS_APPLICATIONS, HasContent(PROGRAMDB_CONTENT_APPLICATIONS));
     return true;
   }
   return false;
@@ -1916,7 +1917,7 @@ void CProgramDatabase::DeleteApplication(int idApplication, bool bKeepId /* = fa
     return;
 
   CStdString path;
-  GetFilePathById(idApplication, path, PROGRAMDB_CONTENT_APPLICATION);
+  GetFilePathById(idApplication, path, PROGRAMDB_CONTENT_APPLICATIONS);
   if (!path.empty())
     DeleteGame(path, bKeepId, bKeepThumb, idApplication);
 }
@@ -2252,6 +2253,11 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
         strSQL = PrepareSQL("select gameview.c%02d, path.strPath, files.playCount from gameview ", PROGRAMDB_ID_YEAR);
         extFilter.AppendJoin("join files on files.idFile = gameview.idFile join path on files.idPath = path.idPath");
       }
+      else if (idContent == PROGRAMDB_CONTENT_APPLICATIONS)
+      {
+        strSQL = PrepareSQL("select applicationview.c%02d, path.strPath, files.playCount from applicationview ", PROGRAMDB_ID_YEAR);
+        extFilter.AppendJoin("join files on files.idFile = applicationview.idFile join path on files.idPath = path.idPath");
+      }
       else
         return false;
     }
@@ -2263,6 +2269,12 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
         strSQL = PrepareSQL("select gameview.c%02d, count(1), count(files.playCount) from gameview ", PROGRAMDB_ID_YEAR);
         extFilter.AppendJoin("join files on files.idFile = gameview.idFile");
         extFilter.AppendGroup(PrepareSQL("gameview.c%02d", PROGRAMDB_ID_YEAR));
+      }
+      else if (idContent == PROGRAMDB_CONTENT_APPLICATIONS)
+      {
+        strSQL = PrepareSQL("select applicationview.c%02d, count(1), count(files.playCount) from applicationview ", PROGRAMDB_ID_YEAR);
+        extFilter.AppendJoin("join files on files.idFile = applicationview.idFile");
+        extFilter.AppendGroup(PrepareSQL("applicationview.c%02d", PROGRAMDB_ID_APPLICATION_YEAR));
       }
       else
         return false;
@@ -2283,7 +2295,7 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
       while (!m_pDS->eof())
       {
         int lYear = 0;
-        if (idContent == PROGRAMDB_CONTENT_GAMES)
+        if (idContent == PROGRAMDB_CONTENT_GAMES || idContent == PROGRAMDB_CONTENT_APPLICATIONS)
           lYear = m_pDS->fv(0).get_asInt();
         it = mapYears.find(lYear);
         if (it == mapYears.end())
@@ -2293,7 +2305,7 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
           {
             CStdString year;
             year.Format("%d", lYear);
-            if (idContent == PROGRAMDB_CONTENT_GAMES)
+            if (idContent == PROGRAMDB_CONTENT_GAMES || idContent == PROGRAMDB_CONTENT_APPLICATIONS)
               mapYears.insert(pair<int, pair<CStdString,int> >(lYear, pair<CStdString,int>(year,m_pDS->fv(2).get_asInt())));
             else
               mapYears.insert(pair<int, pair<CStdString,int> >(lYear, pair<CStdString,int>(year,0)));
@@ -2326,7 +2338,7 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
       {
         int lYear = 0;
         CStdString strLabel;
-        if (idContent == PROGRAMDB_CONTENT_GAMES)
+        if (idContent == PROGRAMDB_CONTENT_GAMES || idContent == PROGRAMDB_CONTENT_APPLICATIONS)
         {
           lYear = m_pDS->fv(0).get_asInt();
           strLabel = m_pDS->fv(0).get_asString();
@@ -2383,6 +2395,8 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, const CStdString &
   PROGRAMDB_CONTENT_TYPE contentType;
   if (mediaType.Equals("games"))
     contentType = PROGRAMDB_CONTENT_GAMES;
+  else if (mediaType.Equals("applications"))
+    contentType = PROGRAMDB_CONTENT_APPLICATIONS;
   else
     return false;
 
@@ -2393,6 +2407,8 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_
 {
   if (itemType.Equals("games") && mediaType == PROGRAMDB_CONTENT_GAMES)
     return GetGamesByWhere(strBaseDir, filter, items, sortDescription);
+  if (itemType.Equals("applications") && mediaType == PROGRAMDB_CONTENT_APPLICATIONS)
+    return GetApplicationsByWhere(strBaseDir, filter, items, sortDescription);
   else if (itemType.Equals("developers"))
     return GetDevelopersNav(strBaseDir, items, mediaType, filter);
   else if (itemType.Equals("publishers"))
@@ -2620,7 +2636,7 @@ bool CProgramDatabase::GetApplicationsByWhere(const CStdString& strBaseDir, cons
     DatabaseResults results;
     results.reserve(iRowsFound);
 
-    if (!SortUtils::SortFromDataset(sorting, MediaTypeGame, m_pDS, results))
+    if (!SortUtils::SortFromDataset(sorting, MediaTypeApplication, m_pDS, results))
       return false;
 
     // get data from returned rows
@@ -2631,7 +2647,7 @@ bool CProgramDatabase::GetApplicationsByWhere(const CStdString& strBaseDir, cons
       unsigned int targetRow = (unsigned int)it->find(FieldRow)->second.asInteger();
       const dbiplus::sql_record* const record = data.at(targetRow);
 
-      CProgramInfoTag application = GetDetailsForGame(record);
+      CProgramInfoTag application = GetDetailsForApplication(record);
       if (g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
           g_passwordManager.bMasterUser                                   ||
           g_passwordManager.IsDatabasePathUnlocked(application.m_strPath, g_settings.m_programSources))
@@ -2692,6 +2708,8 @@ bool CProgramDatabase::HasContent(PROGRAMDB_CONTENT_TYPE type)
     CStdString sql;
     if (type == PROGRAMDB_CONTENT_GAMES)
       sql = "select count(1) from game";
+    else if (type == PROGRAMDB_CONTENT_APPLICATIONS)
+      sql = "select count(1) from application";
     m_pDS->query( sql.c_str() );
 
     if (!m_pDS->eof())
@@ -2909,6 +2927,11 @@ bool CProgramDatabase::GetItemsForPath(const CStdString &content, const CStdStri
   {
     Filter filter(PrepareSQL("c%02d=%d", PROGRAMDB_ID_BASEPATH, pathID));
     GetGamesByWhere("programdb://games/titles/", filter, items);
+  }
+  else if (content == "applications")
+  {
+    Filter filter(PrepareSQL("c%02d=%d", PROGRAMDB_ID_APPLICATION_BASEPATH, pathID));
+    GetGamesByWhere("programdb://applications/titles/", filter, items);
   }
   for (int i = 0; i < items.Size(); i++)
     items[i]->SetPath(items[i]->GetProgramInfoTag()->m_basePath);
@@ -3627,6 +3650,26 @@ bool CProgramDatabase::GetFilter(CDbUrl &programUrl, Filter &filter, SortDescrip
     if (option != options.end())
     {
       filter.AppendJoin(PrepareSQL("join taglinks on taglinks.idMedia = gameview.idGame AND taglinks.media_type = 'game' join tag on tag.idTag = taglinks.idTag"));
+      filter.AppendWhere(PrepareSQL("tag.strTag like '%s'", option->second.asString().c_str()));
+    }
+  }
+  else if (type == "applications")
+  {
+    option = options.find("year");
+    if (option != options.end())
+      filter.AppendWhere(PrepareSQL("applicationview.c%02d = '%i'", PROGRAMDB_ID_APPLICATION_YEAR, (int)option->second.asInteger()));
+
+    option = options.find("tagid");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join taglinks on taglinks.idMedia = applicationview.idApplication AND taglinks.media_type = 'application'"));
+      filter.AppendWhere(PrepareSQL("taglinks.idTag = %i", (int)option->second.asInteger()));
+    }
+
+    option = options.find("tag");
+    if (option != options.end())
+    {
+      filter.AppendJoin(PrepareSQL("join taglinks on taglinks.idMedia = applicationview.idApplication AND taglinks.media_type = 'application' join tag on tag.idTag = taglinks.idTag"));
       filter.AppendWhere(PrepareSQL("tag.strTag like '%s'", option->second.asString().c_str()));
     }
   }

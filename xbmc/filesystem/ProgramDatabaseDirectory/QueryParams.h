@@ -48,6 +48,7 @@ namespace XFILE
     private:
       long m_idContent;
       long m_idGame;
+      long m_idApplication;
       long m_idDeveloper;
       long m_idPublisher;
       long m_idGenre;

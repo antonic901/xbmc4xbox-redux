@@ -1,0 +1,6 @@
+<node order="1" type="filter" visible="Library.HasContent(Applications)">
+  <label>35108</label>
+  <icon>DefaultApplicationTitle.png</icon>
+  <content>applications</content>
+  <order direction="ascending">sorttitle</order>
+</node>

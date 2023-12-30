@@ -90,7 +90,7 @@ namespace PROGRAM
 typedef enum
 {
   PROGRAMDB_CONTENT_GAMES = 1,
-  PROGRAMDB_CONTENT_APPLICATION = 2
+  PROGRAMDB_CONTENT_APPLICATIONS = 2
 } PROGRAMDB_CONTENT_TYPE;
 
 typedef enum
@@ -379,7 +379,7 @@ public:
       case PROGRAMDB_CONTENT_GAMES:
         out = "game";
         break;
-      case PROGRAMDB_CONTENT_APPLICATION:
+      case PROGRAMDB_CONTENT_APPLICATIONS:
         out = "application";
         break;
       default:

@@ -110,6 +110,7 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
     switch (NodeType)
     {
     case NODE_TYPE_GAMES_OVERVIEW:
+    case NODE_TYPE_APPLICATIONS_OVERVIEW:
     case NODE_TYPE_OVERVIEW:
       {
         AddSortMethod(SortByNone, 551, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Label, empty
@@ -121,6 +122,7 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
         SetSortOrder(SortOrderNone);        
       }
     case NODE_TYPE_TITLE_GAMES:
+    case NODE_TYPE_TITLE_APPLICATIONS:
       {
         AddSortMethod(SortBySortTitle, sortAttributes, 556, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
         AddSortMethod(SortByYear, 562, LABEL_MASKS("%T", "%Y", "%T", "%Y"));  // Title, Year | Title, Year
