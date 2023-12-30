@@ -3722,3 +3722,35 @@ bool CProgramDatabase::GetFilter(CDbUrl &programUrl, Filter &filter, SortDescrip
   return true;
 }
 
+bool CProgramDatabase::GetEmulatorsForSystem(const CStdString& system, CFileItemList& items)
+{
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString strSQL = PrepareSQL("select * from applicationview where applicationview.c%02d like '%s'", PROGRAMDB_ID_APPLICATION_SYSTEM, system.c_str());
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return false;
+
+    while(!m_pDS->eof())
+    {
+      CProgramInfoTag info = GetDetailsForApplication(m_pDS);
+      CFileItemPtr pItem(new CFileItem(info));
+      pItem->SetPath(info.m_strFileNameAndPath);
+      items.Add(pItem);
+      m_pDS->next();
+    }
+
+    // cleanup
+    m_pDS->close();
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return false;
+}

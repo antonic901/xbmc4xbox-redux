@@ -389,6 +389,8 @@ public:
 
   virtual bool GetFilter(CDbUrl &programUrl, Filter &filter, SortDescription &sorting);
 
+  bool GetEmulatorsForSystem(const CStdString& system, CFileItemList& items);
+
   bool AddTrainer(int iTitleId, const CStdString& strText);
   bool RemoveTrainer(const CStdString& strText);
   bool GetTrainers(unsigned int iTitleId, std::vector<CStdString>& vecTrainers);

@@ -881,6 +881,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\DynamicDll.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\EmulatorUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EmulatorUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Event.cpp">
 				</File>
 				<File

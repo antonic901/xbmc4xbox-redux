@@ -50,6 +50,7 @@
 #include "PartyModeManager.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
+#include "utils/EmulatorUtils.h"
 #include "Util.h"
 #include "video/VideoDatabase.h"
 
@@ -113,7 +114,9 @@ const BUILT_IN commands[] = {
   { "TakeScreenshot",             false,  "Takes a Screenshot" },
   { "RunScript",                  true,   "Run the specified script" },
   { "StopScript",                 true,   "Stop the script by ID or path, if running" },
+  { "RunProgram",                 true,   "Run the specified program" },
   { "RunXBE",                     true,   "Run the specified executeable" },
+  { "RunROM",                     true,   "Run the specified emulator rom" },
   { "RunPlugin",                  true,   "Run the specified plugin" },
   { "Extract",                    true,   "Extracts the specified archive" },
   { "PlayMedia",                  true,   "Play the specified media file (or playlist)" },
@@ -413,15 +416,7 @@ int CBuiltins::Execute(const CStdString& execString)
   else if (execute.Equals("runrom"))
   {
     if (params.size())
-    {
-      CFileItem item(params[0]);
-      item.SetPath(params[0]);
-      /*TODO: add logic for launching roms
-        1. Get <system> from database for given ROM
-        2. Get all emulators from database for appropriate <system>
-        3. Launch specific emulator for requested ROM (reach to Rocky5 about this and check how XBMC-Emustatino is doing this part)
-      */
-    }
+      EmulatorUtils::ChooseEmulatorAndLaunch(params[0]);
     else
       CLog::Log(LOGERROR, "CBuiltins::Execute, runrom called with no arguments.");
   }

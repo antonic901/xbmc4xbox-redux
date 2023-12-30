@@ -9225,3 +9225,7 @@ msgstr ""
 msgctxt "#35111"
 msgid "Default application scraper"
 msgstr ""
+
+msgctxt "#35112"
+msgid "Choose emulator for"
+msgstr ""

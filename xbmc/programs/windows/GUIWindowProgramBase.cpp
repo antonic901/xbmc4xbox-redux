@@ -34,6 +34,7 @@
 #include "GUIWindowManager.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/EmulatorUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -534,9 +535,17 @@ bool CGUIWindowProgramBase::OnPlayMedia(int iItem)
   if (pItem->GetProgramInfoTag()->m_type.Equals("game"))
   {
     if (database.Open())
+    {
       database.IncrementPlayCount(*pItem);
-    database.Close();
-    CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
+      database.Close();
+    }
+
+    CFileItem file;
+    file.SetPath(pItem->HasProgramInfoTag() ? pItem->GetProgramInfoTag()->m_strFileNameAndPath : pItem->GetPath());
+    if (file.IsXBE())
+      CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
+    else if (file.IsROM())
+      EmulatorUtils::ChooseEmulatorAndLaunch(file.GetPath());
   }
 
   return false;
