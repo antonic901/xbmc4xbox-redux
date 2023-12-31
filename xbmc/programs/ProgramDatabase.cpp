@@ -3759,14 +3759,16 @@ bool CProgramDatabase::GetFilter(CDbUrl &programUrl, Filter &filter, SortDescrip
   return true;
 }
 
-bool CProgramDatabase::GetEmulatorsForSystem(const CStdString& system, CFileItemList& items)
+bool CProgramDatabase::GetEmulatorsForSystem(const CStdString& strSystem, CFileItemList& items)
 {
   try
   {
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
-    CStdString strSQL = PrepareSQL("select * from applicationview where applicationview.c%02d like '%s'", PROGRAMDB_ID_APPLICATION_SYSTEM, system.c_str());
+    CStdString system;
+    system.Format("|%s|", strSystem);
+    CStdString strSQL = PrepareSQL("select * from applicationview where '|' || applicationview.c%02d || '|' like '%%%s%%'", PROGRAMDB_ID_APPLICATION_SYSTEM, system.c_str());
 
     int iRowsFound = RunQuery(strSQL);
     if (iRowsFound <= 0)

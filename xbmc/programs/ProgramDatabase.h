@@ -389,7 +389,7 @@ public:
 
   virtual bool GetFilter(CDbUrl &programUrl, Filter &filter, SortDescription &sorting);
 
-  bool GetEmulatorsForSystem(const CStdString& system, CFileItemList& items);
+  bool GetEmulatorsForSystem(const CStdString& strSystem, CFileItemList& items);
 
   bool AddTrainer(int iTitleId, const CStdString& strText);
   bool RemoveTrainer(const CStdString& strText);
