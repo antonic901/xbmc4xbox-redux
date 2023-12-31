@@ -6,8 +6,11 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
-
+#include "Shortcut.h"
+#include "Util.h"
 #include "FileItem.h"
+
+#define CUSTOM_LAUNCH "special://temp/emu_launch.xbe"
 
 bool EmulatorUtils::GetSystemFromFilename(std::string strFilename, SystemMapping& system)
 {
@@ -57,6 +60,10 @@ bool EmulatorUtils::ChooseEmulatorAndLaunch(std::string strPath)
 
 bool EmulatorUtils::LaunchROM(std::string strRomPath, std::string strEmuPath)
 {
-  // TODO: figure out how to launch ROM
+  CShortcut shortcut;
+  shortcut.m_strPath = strEmuPath.c_str();
+  shortcut.m_strCustomGame = strRomPath.c_str();
+  shortcut.Save(CUSTOM_LAUNCH);
+  CUtil::RunShortcut(CUSTOM_LAUNCH);
   return false;
 }
