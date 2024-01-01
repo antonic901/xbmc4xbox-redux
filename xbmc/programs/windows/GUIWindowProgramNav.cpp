@@ -383,10 +383,10 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
       {
 
         if (item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder)
+        {
           buttons.Add(CONTEXT_BUTTON_EDIT, 16105);
-
-        if(item->IsProgramDb() && item->HasProgramInfoTag())
           buttons.Add(CONTEXT_BUTTON_DELETE, 646);
+        }
       }
     }
   }
