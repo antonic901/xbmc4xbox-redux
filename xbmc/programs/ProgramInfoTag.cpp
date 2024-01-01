@@ -253,6 +253,7 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
     m_fRating = m_fRating / max_value * 10; // Normalise the Program Rating to between 1 and 10
   }
   XMLUtils::GetInt(program, "year", m_iYear);
+  XMLUtils::GetString(program, "plot", m_strPlot);
   XMLUtils::GetString(program, "file", m_strFile);
   XMLUtils::GetString(program, "path", m_strPath);
   XMLUtils::GetString(program, "id", m_strXBENumber);

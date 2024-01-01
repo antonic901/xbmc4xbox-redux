@@ -32,14 +32,28 @@ class CGUIDialogProgramInfo :
 public:
   CGUIDialogProgramInfo(void);
   virtual ~CGUIDialogProgramInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
   void SetGame(const CFileItem *item);
   bool NeedRefresh() const;
   bool RefreshAll() const;
   bool HasUpdatedThumb() const { return m_hasUpdatedThumb; };
 
   const CStdString &GetThumbnail() const;
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return m_gameItem; }
+  const CFileItemList& CurrentDirectory() const { return *m_patchList; };
+  virtual bool HasListItems() const { return true; };
 protected:
+  void Update();
+  void SetLabel(int iControl, const CStdString& strLabel);
   PROGRAMDB_CONTENT_TYPE GetContentType(const CFileItem *pItem) const;
+
+  // hold all XBEs witch name starts with 'patch_'
+  void ClearPatchList();
+
+  void Play(const CStdString& strPath = "");
+  void OnGetThumb();
+  void OnGetFanart();
+  void PlayTrailer();
 
   CFileItemPtr m_gameItem;
   CFileItemList *m_patchList;

@@ -9229,3 +9229,12 @@ msgstr ""
 msgctxt "#35112"
 msgid "Choose emulator for"
 msgstr ""
+
+msgctxt "#35113"
+msgid "ESRB"
+msgstr ""
+
+msgctxt "#35114"
+msgid "Patches"
+msgstr ""
+
