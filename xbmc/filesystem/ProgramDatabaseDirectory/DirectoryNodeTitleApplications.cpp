@@ -1,4 +1,3 @@
-#pragma once
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -19,20 +18,30 @@
  *
  */
 
-#include "utils/StdString.h"
-#include "BackgroundInfoLoader.h"
+#include "DirectoryNodeTitleApplications.h"
+#include "QueryParams.h"
+#include "programs/ProgramDatabase.h"
 
-class CPictureThumbLoader : public CBackgroundInfoLoader
+using namespace XFILE::PROGRAMDATABASEDIRECTORY;
+
+CDirectoryNodeTitleApplications::CDirectoryNodeTitleApplications(const CStdString& strName, CDirectoryNode* pParent)
+  : CDirectoryNode(NODE_TYPE_TITLE_APPLICATIONS, strName, pParent)
 {
-public:
-  CPictureThumbLoader();
-  virtual ~CPictureThumbLoader();
-  virtual bool LoadItem(CFileItem* pItem);
-  void SetRegenerateThumbs(bool regenerate) { m_regenerateThumbs = regenerate; };
-protected:
-  virtual void OnLoaderFinish();
-private:
-  bool DownloadVideoThumb(CFileItem *item, const CStdString &cachedThumb);
-  bool DownloadProgramThumb(CFileItem *item, const CStdString &cachedThumb);
-  bool m_regenerateThumbs;
-};
+
+}
+
+bool CDirectoryNodeTitleApplications::GetContent(CFileItemList& items) const
+{
+  CProgramDatabase programdatabase;
+  if (!programdatabase.Open())
+    return false;
+
+  CQueryParams params;
+  CollectQueryParams(params);
+
+  bool bSuccess=programdatabase.GetApplicationsNav(BuildPath(), items, params.GetYear(), params.GetTagId());
+  
+  programdatabase.Close();
+
+  return bSuccess;
+}

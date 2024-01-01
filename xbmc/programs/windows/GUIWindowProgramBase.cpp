@@ -34,6 +34,7 @@
 #include "GUIWindowManager.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/EmulatorUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -176,6 +177,14 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
       {
         bHasInfo = true;
         m_database.GetGameInfo(item->GetPath(), gameDetails);
+      }
+    }
+    else if (info->Content() == CONTENT_APPLICATIONS)
+    {
+      if (m_database.HasApplicationInfo(item->GetPath()))
+      {
+        bHasInfo = true;
+        m_database.GetApplicationInfo(item->GetPath(), gameDetails);
       }
     }
     m_database.Close();
@@ -370,11 +379,15 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
       {
         if (info->Content() == CONTENT_GAMES)
           m_database.DeleteGame(item->GetPath());
+        else if (info->Content() == CONTENT_APPLICATIONS)
+          m_database.DeleteApplication(item->GetPath());
       }
       if (scanner.RetrieveProgramInfo(list,settings.parent_name_root,info->Content(),!ignoreNfo,&scrUrl,pDlgProgress))
       {
         if (info->Content() == CONTENT_GAMES)
           m_database.GetGameInfo(item->GetPath(),gameDetails);
+        else if (info->Content() == CONTENT_APPLICATIONS)
+          m_database.GetApplicationInfo(item->GetPath(),gameDetails);
 
         // got all game details :-)
         OutputDebugString("got details\n");
@@ -522,9 +535,17 @@ bool CGUIWindowProgramBase::OnPlayMedia(int iItem)
   if (pItem->GetProgramInfoTag()->m_type.Equals("game"))
   {
     if (database.Open())
+    {
       database.IncrementPlayCount(*pItem);
-    database.Close();
-    CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
+      database.Close();
+    }
+
+    CFileItem file;
+    file.SetPath(pItem->HasProgramInfoTag() ? pItem->GetProgramInfoTag()->m_strFileNameAndPath : pItem->GetPath());
+    if (file.IsXBE())
+      CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
+    else if (file.IsROM())
+      EmulatorUtils::ChooseEmulatorAndLaunch(file.GetPath());
   }
 
   return false;

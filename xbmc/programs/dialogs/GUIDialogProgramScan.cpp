@@ -169,7 +169,7 @@ void CGUIDialogProgramScan::UpdateState()
 
   SET_CONTROL_LABEL(CONTROL_LABELSTATUS, GetStateString());
 
-  if (m_ScanState == FETCHING_GAME_INFO || m_ScanState == CLEANING_UP_DATABASE)
+  if (m_ScanState == FETCHING_GAME_INFO || m_ScanState == FETCHING_APPLICATION_INFO || m_ScanState == CLEANING_UP_DATABASE)
   {
     CURL url(m_strCurrentDir);
     CStdString strStrippedPath = url.GetWithoutUserDetails();
@@ -215,6 +215,8 @@ int CGUIDialogProgramScan::GetStateString()
     return 700;
   else if (m_ScanState == FETCHING_GAME_INFO)
     return 35001;
+  else if (m_ScanState == FETCHING_APPLICATION_INFO)
+    return 35110;
   else if (m_ScanState == COMPRESSING_DATABASE)
     return 331;
   else if (m_ScanState == WRITING_CHANGES)

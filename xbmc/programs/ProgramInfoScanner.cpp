@@ -205,10 +205,10 @@ namespace PROGRAM
       return true;
 
     CStdString hash, dbHash;
-    if (content == CONTENT_GAMES)
+    if (content == CONTENT_GAMES || content == CONTENT_APPLICATIONS)
     {
       if (m_pObserver)
-        m_pObserver->OnStateChanged(FETCHING_GAME_INFO);
+        m_pObserver->OnStateChanged(content == CONTENT_GAMES ? FETCHING_GAME_INFO : FETCHING_APPLICATION_INFO);
 
       CStdString fastHash = GetFastHash(strDirectory);
       if (m_database.GetPathHash(strDirectory, dbHash) && !fastHash.IsEmpty() && fastHash == dbHash)
@@ -220,7 +220,7 @@ namespace PROGRAM
       if (!bSkip)
       { // need to fetch the folder
         CDirectory::GetDirectory(strDirectory, items, g_settings.m_programExtensions);
-        if (content == CONTENT_GAMES)
+        if (content == CONTENT_GAMES )
           items.Stack();
         // compute hash
         GetPathHash(items, hash);
@@ -254,7 +254,7 @@ namespace PROGRAM
     {
       if (RetrieveProgramInfo(items, settings.parent_name_root, content))
       {
-        if (!m_bStop && content == CONTENT_GAMES)
+        if (!m_bStop && (content == CONTENT_GAMES || content == CONTENT_APPLICATIONS))
         {
           m_database.SetPathHash(strDirectory, hash);
           m_pathsToClean.push_back(m_database.GetPathId(strDirectory));
@@ -267,7 +267,7 @@ namespace PROGRAM
         CLog::Log(LOGDEBUG, "ProgramInfoScanner: No (new) information was found in dir %s", strDirectory.c_str());
       }
     }
-    else if (hash != dbHash && content == CONTENT_GAMES)
+    else if (hash != dbHash && (content == CONTENT_GAMES || content == CONTENT_APPLICATIONS))
     { // update the hash either way - we may have changed the hash to a fast version
       m_database.SetPathHash(strDirectory, hash);
     }
@@ -328,7 +328,7 @@ namespace PROGRAM
       if (CUtil::ExcludeFileOrFolder(pItem->GetPath(), g_advancedSettings.m_gamesExcludeFromScanRegExps))
         continue;
 
-      if (info2->Content() == CONTENT_GAMES)
+      if (info2->Content() == CONTENT_GAMES || info2->Content() == CONTENT_APPLICATIONS)
       {
         if (m_pObserver)
         {
@@ -342,7 +342,7 @@ namespace PROGRAM
       info2->ClearCache();
 
       INFO_RET ret = INFO_CANCELLED;
-      if (info2->Content() == CONTENT_GAMES)
+      if (info2->Content() == CONTENT_GAMES || info2->Content() == CONTENT_APPLICATIONS)
         ret = RetrieveInfoForGame(pItem, bDirNames, info2, useLocal, pURL, pDlgProgress);
       else
       {
@@ -381,7 +381,7 @@ namespace PROGRAM
     if (ProgressCancelled(pDlgProgress, 35006, pItem->GetLabel()))
       return INFO_CANCELLED;
 
-    if (m_database.HasGameInfo(pItem->GetPath()))
+    if (info2->Content() == CONTENT_GAMES ? m_database.HasGameInfo(pItem->GetPath()) : m_database.HasApplicationInfo(pItem->GetPath()))
       return INFO_HAVE_ALREADY;
 
     CNfoFile::NFOResult result=CNfoFile::NO_NFO;
@@ -447,6 +447,11 @@ namespace PROGRAM
         gameDetails.m_strTrailer = strTrailer;
 
       lResult = m_database.SetDetailsForGame(pItem->GetPath(), gameDetails);
+      gameDetails.m_iDbId = lResult;
+    }
+    else if (content == CONTENT_APPLICATIONS)
+    {
+      lResult = m_database.SetDetailsForApplication(pItem->GetPath(), gameDetails);
       gameDetails.m_iDbId = lResult;
     }
 
@@ -549,8 +554,14 @@ namespace PROGRAM
           return nfoFile;
       }
 
-      // use resources file from XBMC4Gamers
-      nfoFile = URIUtils::AddFileToFolder(strPath, "_resources\\default.xml");
+      if (item->IsXBE())
+      { // use resources file from XBMC4Gamers
+        nfoFile = URIUtils::AddFileToFolder(strPath, "_resources\\default.xml");
+      }
+      else if(item->IsROM())
+      { // romname.nfo
+        nfoFile = URIUtils::ReplaceExtension(item->GetPath(), ".nfo");
+      }
     }
 
     return nfoFile;
@@ -644,7 +655,7 @@ namespace PROGRAM
   CNfoFile::NFOResult CProgramInfoScanner::CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ScraperPtr& info, CScraperUrl& scrUrl)
   {
     CStdString strNfoFile;
-    if (info->Content() == CONTENT_GAMES)
+    if (info->Content() == CONTENT_GAMES || info->Content() == CONTENT_APPLICATIONS)
       strNfoFile = GetnfoFile(pItem, bGrabAny);
 
     CNfoFile::NFOResult result=CNfoFile::NO_NFO;

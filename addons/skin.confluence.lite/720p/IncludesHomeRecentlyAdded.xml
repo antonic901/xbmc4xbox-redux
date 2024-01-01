@@ -901,7 +901,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.1.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.1.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.1.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.1.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.1.Title))</visible>
@@ -909,7 +909,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.2.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.2.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.2.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.2.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.2.Title))</visible>
@@ -917,7 +917,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.3.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.3.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.3.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.3.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.3.Title))</visible>
@@ -925,7 +925,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.4.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.4.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.4.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.4.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.4.Title))</visible>
@@ -933,7 +933,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.5.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.5.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.5.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.5.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.5.Title))</visible>
@@ -941,7 +941,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.6.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.6.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.6.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.6.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.6.Title))</visible>
@@ -949,7 +949,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.7.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.7.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.7.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.7.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.7.Title))</visible>
@@ -957,7 +957,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.8.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.8.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.8.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.8.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.8.Title))</visible>
@@ -965,7 +965,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.9.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.9.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.9.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.9.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.9.Title))</visible>
@@ -973,7 +973,7 @@
 						<item>
 							<label>$INFO[Window.Property(LatestGame.10.Title)]</label>
 							<label2></label2>
-							<onclick>RunXBE($INFO[Window.Property(LatestGame.10.Path)])</onclick>
+							<onclick>RunProgram($INFO[Window.Property(LatestGame.10.Path)])</onclick>
 							<icon>$INFO[Window.Property(LatestGame.10.Thumb)]</icon>
 							<thumb>-</thumb>
 							<visible>!IsEmpty(Window.Property(LatestGame.10.Title))</visible>

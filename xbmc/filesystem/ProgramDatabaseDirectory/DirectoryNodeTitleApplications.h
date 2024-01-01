@@ -19,20 +19,18 @@
  *
  */
 
-#include "utils/StdString.h"
-#include "BackgroundInfoLoader.h"
+#include "DirectoryNode.h"
 
-class CPictureThumbLoader : public CBackgroundInfoLoader
+namespace XFILE
 {
-public:
-  CPictureThumbLoader();
-  virtual ~CPictureThumbLoader();
-  virtual bool LoadItem(CFileItem* pItem);
-  void SetRegenerateThumbs(bool regenerate) { m_regenerateThumbs = regenerate; };
-protected:
-  virtual void OnLoaderFinish();
-private:
-  bool DownloadVideoThumb(CFileItem *item, const CStdString &cachedThumb);
-  bool DownloadProgramThumb(CFileItem *item, const CStdString &cachedThumb);
-  bool m_regenerateThumbs;
-};
+  namespace PROGRAMDATABASEDIRECTORY
+  {
+    class CDirectoryNodeTitleApplications : public CDirectoryNode
+    {
+    public:
+      CDirectoryNodeTitleApplications(const CStdString& strEntryName, CDirectoryNode* pParent);
+    protected:
+      virtual bool GetContent(CFileItemList& items) const;
+    };
+  }
+}

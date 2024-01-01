@@ -89,6 +89,8 @@ MediaType DatabaseUtils::MediaTypeFromString(const std::string &strMediaType)
     return MediaTypeProgram;
   else if (strMediaType.compare("game") == 0 || strMediaType.compare("games") == 0)
     return MediaTypeGame;
+  else if (strMediaType.compare("application") == 0 || strMediaType.compare("applications") == 0)
+    return MediaTypeApplication;
 
   return MediaTypeNone;
 }

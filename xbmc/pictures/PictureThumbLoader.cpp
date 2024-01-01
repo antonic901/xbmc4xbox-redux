@@ -24,6 +24,7 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
+#include "programs/ProgramInfoTag.h"
 #include "TextureManager.h"
 #include "utils/Variant.h"
 
@@ -59,6 +60,8 @@ bool CPictureThumbLoader::LoadItem(CFileItem* pItem)
         // see if we have additional info to download this thumb with
         if (pItem->HasVideoInfoTag())
           return DownloadVideoThumb(pItem, cachedThumb);
+        if (pItem->HasProgramInfoTag())
+          return DownloadProgramThumb(pItem, cachedThumb);
         else
         {
           CPicture pic;
@@ -104,6 +107,27 @@ bool CPictureThumbLoader::DownloadVideoThumb(CFileItem *item, const CStdString &
   else if (item->GetVideoInfoTag()->m_fanart.GetNumFanarts() > 0 && item->HasProperty("fanart_number"))
   { // yep - download our fanart preview
     if (item->GetVideoInfoTag()->m_fanart.DownloadThumb((int)item->GetProperty("fanart_number").asInteger(), cachedThumb))
+      item->SetThumbnailImage(cachedThumb);
+    else
+      item->SetThumbnailImage("");
+  }
+  if (item->HasProperty("labelonthumbload"))
+    item->SetLabel(item->GetProperty("labelonthumbload").asString());
+  return true; // we don't need to do anything else here
+}
+
+bool CPictureThumbLoader::DownloadProgramThumb(CFileItem *item, const CStdString &cachedThumb)
+{
+  if (item->GetProgramInfoTag()->m_strPictureURL.m_url.size())
+  { // yep - download using this thumb
+    if (CScraperUrl::DownloadThumbnail(cachedThumb, item->GetProgramInfoTag()->m_strPictureURL.m_url[0]))
+      item->SetThumbnailImage(cachedThumb);
+    else
+      item->SetThumbnailImage("");
+  }
+  else if (item->GetProgramInfoTag()->m_fanart.GetNumFanarts() > 0 && item->HasProperty("fanart_number"))
+  { // yep - download our fanart preview
+    if (item->GetProgramInfoTag()->m_fanart.DownloadThumb((int)item->GetProperty("fanart_number").asInteger(), cachedThumb))
       item->SetThumbnailImage(cachedThumb);
     else
       item->SetThumbnailImage("");

@@ -31,6 +31,7 @@ using namespace std;
 
 Node OverviewChildren[] = {
                             { NODE_TYPE_GAMES_OVERVIEW,            "games",                   15016 },
+                            { NODE_TYPE_APPLICATIONS_OVERVIEW,     "applications",            35108 },
                             { NODE_TYPE_RECENTLY_ADDED_GAMES,      "recentlyaddedgames",      35106 },
                             { NODE_TYPE_RECENTLY_PLAYED_GAMES,     "recentlyplayedgames",     35107 }
                           };

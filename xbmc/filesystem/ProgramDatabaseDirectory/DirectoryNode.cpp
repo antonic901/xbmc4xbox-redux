@@ -25,7 +25,9 @@
 #include "DirectoryNodeOverview.h"
 #include "DirectoryNodeGrouped.h"
 #include "DirectoryNodeTitleGames.h"
+#include "DirectoryNodeTitleApplications.h"
 #include "DirectoryNodeGamesOverview.h"
+#include "DirectoryNodeApplicationsOverview.h"
 #include "DirectoryNodeRecentlyAddedGames.h"
 #include "DirectoryNodeRecentlyPlayedGames.h"
 #include "programs/ProgramInfoTag.h"
@@ -114,8 +116,12 @@ CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type, const CStdString& str
     return new CDirectoryNodeGrouped(Type, strName, pParent);
   case NODE_TYPE_TITLE_GAMES:
     return new CDirectoryNodeTitleGames(strName, pParent);
+  case NODE_TYPE_TITLE_APPLICATIONS:
+    return new CDirectoryNodeTitleApplications(strName, pParent);
   case NODE_TYPE_GAMES_OVERVIEW:
     return new CDirectoryNodeGamesOverview(strName, pParent);
+  case NODE_TYPE_APPLICATIONS_OVERVIEW:
+    return new CDirectoryNodeApplicationsOverview(strName, pParent);
   case NODE_TYPE_RECENTLY_ADDED_GAMES:
     return new CDirectoryNodeRecentlyAddedGames(strName,pParent);
   case NODE_TYPE_RECENTLY_PLAYED_GAMES:

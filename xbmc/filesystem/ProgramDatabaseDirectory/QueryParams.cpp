@@ -26,6 +26,7 @@ using namespace XFILE::PROGRAMDATABASEDIRECTORY;
 CQueryParams::CQueryParams()
 {
   m_idGame = -1;
+  m_idApplication = -1;
   m_idDeveloper = -1;
   m_idPublisher = -1;
   m_idGenre = -1;
@@ -45,7 +46,7 @@ void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeNa
   switch (NodeType)
   {
   case NODE_TYPE_OVERVIEW:
-    m_idContent = PROGRAMDB_CONTENT_GAMES;
+    m_idContent = strNodeName.Equals("games") ? PROGRAMDB_CONTENT_GAMES : PROGRAMDB_CONTENT_APPLICATIONS;
     break;
   case NODE_TYPE_DEVELOPER:
     m_idDeveloper = idDb;
@@ -75,6 +76,9 @@ void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const CStdString& strNodeNa
   case NODE_TYPE_RECENTLY_ADDED_GAMES:
   case NODE_TYPE_RECENTLY_PLAYED_GAMES:
     m_idGame = idDb;
+    break;
+  case NODE_TYPE_TITLE_APPLICATIONS:
+    m_idApplication = idDb;
     break;
   default:
     break;

@@ -682,8 +682,18 @@ bool CFileItem::IsProgram() const
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
 
-  // for now only XBE is considered program. In future program could be also Emulator game
-  return IsXBE();
+  CStdString extension;
+  URIUtils::GetExtension(m_strPath, extension);
+
+  if (extension.IsEmpty())
+    return false;
+
+  extension.ToLower();
+
+  if (g_settings.m_programExtensions.Find(extension) != -1)
+    return true;
+
+  return false;
 }
 
 bool CFileItem::IsLyrics() const
@@ -763,6 +773,22 @@ bool CFileItem::IsPythonScript() const
 bool CFileItem::IsXBE() const
 {
   return URIUtils::GetExtension(m_strPath).Equals(".xbe", false);
+}
+
+bool CFileItem::IsROM() const
+{
+  CStdString extension;
+  URIUtils::GetExtension(m_strPath, extension);
+
+  if (extension.IsEmpty())
+    return false;
+
+  extension.ToLower();
+
+  if (g_settings.m_programExtensions.Find(extension) != -1)
+    return !(extension.Equals(".xbe") || extension.Equals(".cut"));
+
+  return false;
 }
 
 bool CFileItem::IsType(const char *ext) const
@@ -1055,7 +1081,7 @@ void CFileItem::FillInDefaultIcon()
       {
         SetIconImage("DefaultPlaylist.png");
       }
-      else if ( IsProgram() || IsXBE() )
+      else if ( IsProgram() )
       {
         // xbe
         SetIconImage("DefaultProgram.png");
@@ -3598,15 +3624,15 @@ VIDEODB_CONTENT_TYPE CFileItem::GetVideoContentType() const
 
 void CFileItem::LoadXBMC4GamersArtwork()
 {
-  if (!HasProgramInfoTag())
+  if (!HasProgramInfoTag() || IsROM())
     return;
 
   CFileItemList items;
   CStdString strArtworkPath = URIUtils::AddFileToFolder(m_programInfoTag->m_strPath, "_resources\\artwork\\");
-  if(CDirectory::GetDirectory(strArtworkPath, items, g_settings.m_pictureExtensions) && items.Size())
+  if(CFile::Exists(strArtworkPath) && CDirectory::GetDirectory(strArtworkPath, items, g_settings.m_pictureExtensions) && items.Size())
   {
     CLog::Log(LOGINFO, "Found XBMC4Gamers artwork for %s", m_programInfoTag->m_strPath.c_str());
-    for (unsigned int i = 0; i < items.Size(); i++)
+    for (int i = 0; i < items.Size(); i++)
     {
       CStdString strProperty(items[i]->GetLabel());
       URIUtils::RemoveExtension(strProperty);
