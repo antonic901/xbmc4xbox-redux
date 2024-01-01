@@ -228,7 +228,7 @@ namespace XFILE
         items.SetProperty(PROPERTY_PATH_DB, musicUrl.ToString());
       }
     }
-    else if (playlist.GetType().Equals("games"))
+    else if (playlist.GetType().Equals("games") || playlist.GetType().Equals("applications"))
     {
       CProgramDatabase db;
       if (db.Open())
@@ -242,6 +242,10 @@ namespace XFILE
           {
             case MediaTypeGame:
               baseDir = "programdb://games/";
+              break;
+
+            case MediaTypeApplication:
+              baseDir = "programdb://applications/";
               break;
 
             default:

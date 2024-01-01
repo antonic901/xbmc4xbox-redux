@@ -1,5 +1,5 @@
 <node order="1" visible="Library.HasContent(Games)">
   <!-- a virtual folder -->
-  <label>35002</label>
+  <label>15016</label>
   <icon>DefaultGames.png</icon>
 </node>

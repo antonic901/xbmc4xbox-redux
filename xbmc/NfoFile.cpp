@@ -95,7 +95,7 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, const ScraperPtr
       }
     }
   }
-  else if (m_type == ADDON_SCRAPER_GAMES)
+  else if (m_type == ADDON_SCRAPER_GAMES || m_type == ADDON_SCRAPER_APPLICATIONS)
   {
     CProgramInfoTag details;
     bNfo = GetDetails(details);
@@ -112,7 +112,8 @@ CNfoFile::NFOResult CNfoFile::Create(const CStdString& strPath, const ScraperPtr
     database.Open();
     selected = database.GetScraperForPath(strPath);
   }
-  if (m_type == ADDON_SCRAPER_GAMES)
+  if (m_type == ADDON_SCRAPER_GAMES       ||
+      m_type == ADDON_SCRAPER_APPLICATIONS)
   {
     CProgramDatabase database;
     database.Open();

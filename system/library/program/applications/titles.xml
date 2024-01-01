@@ -1,0 +1,6 @@
+<node order="2" type="filter">
+  <label>369</label>
+  <icon>DefaultApplicationTitle.png</icon>
+  <content>applications</content>
+  <order direction="ascending">sorttitle</order>
+</node>

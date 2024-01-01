@@ -50,6 +50,7 @@
 #include "PartyModeManager.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
+#include "utils/EmulatorUtils.h"
 #include "Util.h"
 #include "video/VideoDatabase.h"
 
@@ -113,7 +114,9 @@ const BUILT_IN commands[] = {
   { "TakeScreenshot",             false,  "Takes a Screenshot" },
   { "RunScript",                  true,   "Run the specified script" },
   { "StopScript",                 true,   "Stop the script by ID or path, if running" },
+  { "RunProgram",                 true,   "Run the specified program" },
   { "RunXBE",                     true,   "Run the specified executeable" },
+  { "RunROM",                     true,   "Run the specified emulator rom" },
   { "RunPlugin",                  true,   "Run the specified plugin" },
   { "Extract",                    true,   "Extracts the specified archive" },
   { "PlayMedia",                  true,   "Play the specified media file (or playlist)" },
@@ -391,6 +394,31 @@ int CBuiltins::Execute(const CStdString& execString)
       g_RarManager.ExtractArchive(params[0],strDestDirect);
     else
       CLog::Log(LOGERROR, "CUtil::ExecuteBuiltin: No archive given");
+  }
+  else if (execute.Equals("runprogram"))
+  {
+    if(params.size())
+    {
+      CFileItem item(params[0]);
+      item.SetPath(params[0]);
+      CStdString action;
+      if (item.IsXBE() || item.IsShortCut())
+        action.Format("RunXBE(%s)", params[0]);
+      else if (item.IsROM())
+        action.Format("RunROM(%s)", params[0]);
+
+      if (!action.IsEmpty())
+        Execute(action);
+    }
+    else
+      CLog::Log(LOGERROR, "CBuiltins::Execute, runprogram called with no arguments.");
+  }
+  else if (execute.Equals("runrom"))
+  {
+    if (params.size())
+      EmulatorUtils::ChooseEmulatorAndLaunch(params[0]);
+    else
+      CLog::Log(LOGERROR, "CBuiltins::Execute, runrom called with no arguments.");
   }
   else if (execute.Equals("runxbe"))
   {

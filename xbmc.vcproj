@@ -881,6 +881,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\DynamicDll.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\EmulatorUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EmulatorUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Event.cpp">
 				</File>
 				<File
@@ -2629,6 +2635,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNode.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeApplicationsOverview.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeApplicationsOverview.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeGamesOverview.cpp">
 					</File>
 					<File
@@ -2771,6 +2783,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeRoot.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeTitleApplications.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeTitleApplications.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory\DirectoryNodeTitleGames.cpp">

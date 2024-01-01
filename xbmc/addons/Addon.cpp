@@ -59,6 +59,7 @@ static const TypeMapping types[] =
    {"xbmc.metadata.scraper.musicvideos", ADDON_SCRAPER_MUSICVIDEOS, 24015, "DefaultAddonMusicVideoInfo.png" },
    {"xbmc.metadata.scraper.tvshows",     ADDON_SCRAPER_TVSHOWS,     24014, "DefaultAddonTvInfo.png" },
    {"xbmc.metadata.scraper.games",       ADDON_SCRAPER_GAMES,       35003, "" },
+   {"xbmc.metadata.scraper.applications",ADDON_SCRAPER_APPLICATIONS,35109, "" },
    {"xbmc.metadata.scraper.library",     ADDON_SCRAPER_LIBRARY,         0, "" },
    {"xbmc.ui.screensaver",               ADDON_SCREENSAVER,         24008, "DefaultAddonScreensaver.png" },
    {"xbmc.player.musicviz",              ADDON_VIZ,                 24010, "DefaultAddonVisualization.png" },
@@ -272,6 +273,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
     case ADDON_SCRAPER_MUSICVIDEOS:
     case ADDON_SCRAPER_TVSHOWS:
     case ADDON_SCRAPER_GAMES:
+    case ADDON_SCRAPER_APPLICATIONS:
     case ADDON_SCRAPER_LIBRARY:
       ext = ADDON_SCRAPER_EXT;
       break;
@@ -319,6 +321,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
       case ADDON_SCRAPER_MUSICVIDEOS:
       case ADDON_SCRAPER_TVSHOWS:
       case ADDON_SCRAPER_GAMES:
+      case ADDON_SCRAPER_APPLICATIONS:
       case ADDON_SCRAPER_LIBRARY:
       case ADDON_PLUGIN:
       case ADDON_SERVICE:

@@ -443,7 +443,8 @@ namespace INFO
 
 #define LIBRARY_HAS_PROGRAM         729
 #define LIBRARY_HAS_GAMES           730
-#define LIBRARY_IS_SCANNING_PROGRAM 731
+#define LIBRARY_HAS_APPLICATIONS    731
+#define LIBRARY_IS_SCANNING_PROGRAM 732
 
 #define SYSTEM_PLATFORM_XBOX        740
 #define SYSTEM_PLATFORM_LINUX       741
@@ -550,6 +551,13 @@ namespace INFO
 #define LISTITEM_PERCENT_PLAYED     (LISTITEM_START + 62)
 #define LISTITEM_DBTYPE             (LISTITEM_START + 79)
 #define LISTITEM_DBID               (LISTITEM_START + 80)
+#define LISTITEM_DEVELOPER          (LISTITEM_START + 81)
+#define LISTITEM_PUBLISHER          (LISTITEM_START + 82)
+#define LISTITEM_DESCRIPTOR         (LISTITEM_START + 83)
+#define LISTITEM_GENERALFEATURE     (LISTITEM_START + 84)
+#define LISTITEM_ONLINEFEATURE      (LISTITEM_START + 85)
+#define LISTITEM_PLATFORM           (LISTITEM_START + 86)
+#define LISTITEM_SYSTEM             (LISTITEM_START + 87)
 
 #define LISTITEM_TAG                (LISTITEM_START + 154)
 #define LISTITEM_SET                (LISTITEM_START + 155)
@@ -855,6 +863,7 @@ protected:
   int m_libraryHasMusicVideos;
   int m_libraryHasMovieSets;
   int m_libraryHasGames;
+  int m_libraryHasApplications;
 
   CCriticalSection m_critInfo;
 };

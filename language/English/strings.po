@@ -9209,3 +9209,32 @@ msgstr ""
 msgctxt "#35107"
 msgid "Recently played games"
 msgstr ""
+
+msgctxt "#35108"
+msgid "Applications"
+msgstr ""
+
+msgctxt "#35109"
+msgid "Application information"
+msgstr ""
+
+msgctxt "#35110"
+msgid "Downloading application information"
+msgstr ""
+
+msgctxt "#35111"
+msgid "Default application scraper"
+msgstr ""
+
+msgctxt "#35112"
+msgid "Choose emulator for"
+msgstr ""
+
+msgctxt "#35113"
+msgid "ESRB"
+msgstr ""
+
+msgctxt "#35114"
+msgid "Patches"
+msgstr ""
+

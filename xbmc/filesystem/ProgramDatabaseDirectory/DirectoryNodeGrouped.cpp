@@ -36,8 +36,7 @@ NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
   if (params.GetContentType() == PROGRAMDB_CONTENT_GAMES)
     return NODE_TYPE_TITLE_GAMES;
 
-  // this could matter in future roms/emulators integration
-  return NODE_TYPE_TITLE_GAMES/*NODE_TYPE_TITLE_TVSHOWS*/;
+  return NODE_TYPE_TITLE_APPLICATIONS;
 }
 
 CStdString CDirectoryNodeGrouped::GetLocalizedName() const
@@ -94,12 +93,14 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
     case NODE_TYPE_YEAR:
       return "years";
     case NODE_TYPE_GAMES_OVERVIEW:
+    case NODE_TYPE_APPLICATIONS_OVERVIEW:
     case NODE_TYPE_NONE:
     case NODE_TYPE_OVERVIEW:
     case NODE_TYPE_RECENTLY_ADDED_GAMES:
     case NODE_TYPE_RECENTLY_PLAYED_GAMES:
     case NODE_TYPE_ROOT:
     case NODE_TYPE_TITLE_GAMES:
+    case NODE_TYPE_TITLE_APPLICATIONS:
     default:
       break;
   }

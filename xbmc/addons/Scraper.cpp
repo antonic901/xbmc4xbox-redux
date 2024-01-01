@@ -61,6 +61,7 @@ static const ContentMapping content[] =
    {"music",         CONTENT_ALBUMS,        132 },
    {"artists",       CONTENT_ARTISTS,       133 },
    {"games",         CONTENT_GAMES,       15016 },
+   {"applications",  CONTENT_APPLICATIONS,35108 },
    {"movies",        CONTENT_MOVIES,      20342 },
    {"tvshows",       CONTENT_TVSHOWS,     20343 },
    {"musicvideos",   CONTENT_MUSICVIDEOS, 20389 }};
@@ -108,6 +109,8 @@ TYPE ScraperTypeFromContent(const CONTENT_TYPE &content)
     return ADDON_SCRAPER_TVSHOWS;
   case CONTENT_GAMES:
     return ADDON_SCRAPER_GAMES;
+  case CONTENT_APPLICATIONS:
+    return ADDON_SCRAPER_APPLICATIONS;
   default:
     return ADDON_UNKNOWN;
   }
@@ -154,6 +157,9 @@ CScraper::CScraper(const cp_extension_t *ext) : CAddon(ext), m_fLoaded(false)
       break;
     case ADDON_SCRAPER_GAMES:
       m_pathContent = CONTENT_GAMES;
+      break;
+    case ADDON_SCRAPER_APPLICATIONS:
+      m_pathContent = CONTENT_APPLICATIONS;
       break;
     default:
       m_pathContent = CONTENT_NONE;

@@ -63,6 +63,7 @@
 #include "video/VideoDatabase.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
 #include "programs/ProgramDatabase.h"
 #include "GUIWindowManager.h"
@@ -500,7 +501,13 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "album",            LISTITEM_ALBUM },
                                   { "albumartist",      LISTITEM_ALBUM_ARTIST },
                                   { "year",             LISTITEM_YEAR },
+                                  { "developer",        LISTITEM_DEVELOPER },
+                                  { "publisher",        LISTITEM_PUBLISHER },
                                   { "genre",            LISTITEM_GENRE },
+                                  { "descriptor",       LISTITEM_DESCRIPTOR },
+                                  { "generalfeature",   LISTITEM_GENERALFEATURE },
+                                  { "onlinefeature",    LISTITEM_ONLINEFEATURE },
+                                  { "platform",         LISTITEM_PLATFORM },
                                   { "director",         LISTITEM_DIRECTOR },
                                   { "filename",         LISTITEM_FILENAME },
                                   { "filenameandpath",  LISTITEM_FILENAME_AND_PATH },
@@ -555,7 +562,8 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "lastplayed",       MUSICPLAYER_LASTPLAYED },
                                   { "discnumber",       LISTITEM_DISC_NUMBER },
                                   { "dbtype",           LISTITEM_DBTYPE },
-                                  { "dbid",             LISTITEM_DBID }};
+                                  { "dbid",             LISTITEM_DBID },
+                                  { "system",           LISTITEM_SYSTEM }};
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
                                   { "preset",           VISUALISATION_PRESET },
@@ -936,6 +944,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         else if (cat == "moviesets") return LIBRARY_HAS_MOVIE_SETS;
         else if (cat == "program") return LIBRARY_HAS_PROGRAM;
         else if (cat == "games") return LIBRARY_HAS_GAMES;
+        else if (cat == "applications") return LIBRARY_HAS_APPLICATIONS;
       }
     }
     else if (cat.name == "musicplayer")
@@ -2097,7 +2106,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     bReturn = g_settings.m_bMute;
   else if (condition >= LIBRARY_HAS_MUSIC && condition <= LIBRARY_HAS_MUSICVIDEOS)
     bReturn = GetLibraryBool(condition);
-  else if (condition >= LIBRARY_HAS_PROGRAM && condition <= LIBRARY_HAS_GAMES)
+  else if (condition >= LIBRARY_HAS_PROGRAM && condition <= LIBRARY_HAS_APPLICATIONS)
     bReturn = GetLibraryBool(condition);
   else if (condition == LIBRARY_IS_SCANNING)
   {
@@ -2758,6 +2767,8 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
               content = ((CGUIDialogMusicInfo *)window)->CurrentDirectory().GetContent();
             else if (window->GetID() == WINDOW_DIALOG_VIDEO_INFO)
               content = ((CGUIDialogVideoInfo *)window)->CurrentDirectory().GetContent();
+            else if (window->GetID() == WINDOW_DIALOG_PROGRAM_INFO)
+              content = ((CGUIDialogProgramInfo*)window)->CurrentDirectory().GetContent();
           }
           if (content.IsEmpty())
           {
@@ -4052,10 +4063,14 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
       return item->GetVideoInfoTag()->m_strTitle;
     if (item->HasMusicInfoTag())
       return item->GetMusicInfoTag()->GetTitle();
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strTitle;
     break;
   case LISTITEM_ORIGINALTITLE:
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strOriginalTitle;
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strOriginalTitle;
     break;
   case LISTITEM_PLAYCOUNT:
     {
@@ -4064,15 +4079,18 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         strPlayCount.Format("%i", item->GetVideoInfoTag()->m_playCount);
       if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetPlayCount() > 0)
         strPlayCount.Format("%i", item->GetMusicInfoTag()->GetPlayCount());
+      if (item->HasProgramInfoTag() && item->GetProgramInfoTag()->m_playCount > 0)
+        strPlayCount.Format("%i", item->GetProgramInfoTag()->m_playCount);
       return strPlayCount;
     }
   case LISTITEM_LASTPLAYED:
     {
-      CStdString strLastPlayed;
       if (item->HasVideoInfoTag())
         return item->GetVideoInfoTag()->m_lastPlayed.GetAsLocalizedDate();
       if (item->HasMusicInfoTag())
         return item->GetMusicInfoTag()->GetLastPlayed().GetAsLocalizedDate();
+      if (item->HasProgramInfoTag())
+        return item->GetProgramInfoTag()->m_lastPlayed.GetAsLocalizedDate();
       break;
     }
   case LISTITEM_TRACKNUMBER:
@@ -4119,6 +4137,13 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
     }
     if (item->HasMusicInfoTag())
       return item->GetMusicInfoTag()->GetYearString();
+    if (item->HasProgramInfoTag())
+    {
+      CStdString strResult;
+      if (item->GetProgramInfoTag()->m_iYear > 0)
+        strResult.Format("%i",item->GetProgramInfoTag()->m_iYear);
+      return strResult;
+    }
     break;
   case LISTITEM_PREMIERED:
     if (item->HasVideoInfoTag())
@@ -4129,11 +4154,37 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         return item->GetVideoInfoTag()->m_premiered.GetAsLocalizedDate();
     }
     break;
+  case LISTITEM_DEVELOPER:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_developer, g_advancedSettings.m_programItemSeparator);
+    break;
+  case LISTITEM_PUBLISHER:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_publisher, g_advancedSettings.m_programItemSeparator);
+    break;
   case LISTITEM_GENRE:
     if (item->HasVideoInfoTag())
       return StringUtils::Join(item->GetVideoInfoTag()->m_genre, g_advancedSettings.m_videoItemSeparator);
     if (item->HasMusicInfoTag())
       return StringUtils::Join(item->GetMusicInfoTag()->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_genre, g_advancedSettings.m_programItemSeparator);
+    break;
+  case LISTITEM_DESCRIPTOR:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_descriptor, g_advancedSettings.m_programItemSeparator);
+    break;
+  case LISTITEM_GENERALFEATURE:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_generalFeature, g_advancedSettings.m_programItemSeparator);
+    break;
+  case LISTITEM_ONLINEFEATURE:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_onlineFeature, g_advancedSettings.m_programItemSeparator);
+    break;
+  case LISTITEM_PLATFORM:
+    if (item->HasProgramInfoTag())
+      return StringUtils::Join(item->GetProgramInfoTag()->m_platform, g_advancedSettings.m_programItemSeparator);
     break;
   case LISTITEM_FILENAME:
   case LISTITEM_FILE_EXTENSION:
@@ -4143,6 +4194,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         strFile = URIUtils::GetFileName(item->GetMusicInfoTag()->GetURL());
       else if (item->IsVideoDb() && item->HasVideoInfoTag())
         strFile = URIUtils::GetFileName(item->GetVideoInfoTag()->m_strFileNameAndPath);
+      else if (item->IsProgramDb() && item->HasProgramInfoTag())
+        strFile = URIUtils::GetFileName(item->GetProgramInfoTag()->m_strFileNameAndPath);
       else
         strFile = URIUtils::GetFileName(item->GetPath());
 
@@ -4171,6 +4224,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
       { // song rating.  Images will probably be better than numbers for this in the long run
         rating = item->GetMusicInfoTag()->GetRating();
       }
+      if (item->HasProgramInfoTag() && item->GetProgramInfoTag()->m_fRating > 0.f) // game rating
+        rating.Format("%.1f", item->GetProgramInfoTag()->m_fRating);
       return rating;
     }
   case LISTITEM_RATING_AND_VOTES:
@@ -4182,6 +4237,12 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
           strRatingAndVotes.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
         else
           strRatingAndVotes.Format("%.1f (%s %s)", item->GetVideoInfoTag()->m_fRating, item->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
+        return strRatingAndVotes;
+      }
+      if (item->HasProgramInfoTag() && item->GetProgramInfoTag()->m_fRating > 0.f) // game rating
+      { // TODO: add support for number of votes
+        CStdString strRatingAndVotes;
+        strRatingAndVotes.Format("%.1f", item->GetProgramInfoTag()->m_fRating);
         return strRatingAndVotes;
       }
     }
@@ -4216,6 +4277,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
 
       return item->GetVideoInfoTag()->m_strPlot;
     }
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strPlot;
     break;
   case LISTITEM_PLOT_OUTLINE:
     if (item->HasVideoInfoTag())
@@ -4287,6 +4350,13 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         else
           URIUtils::GetParentPath(item->GetVideoInfoTag()->m_strFileNameAndPath, path);
       }
+      else if (item->IsProgramDb() && item->HasProgramInfoTag())
+      {
+        if (item->m_bIsFolder)
+          path = item->GetProgramInfoTag()->m_strPath;
+        else
+          URIUtils::GetParentPath(item->GetProgramInfoTag()->m_strFileNameAndPath, path);
+      }
       else
         URIUtils::GetParentPath(item->GetPath(), path);
       path = CURL(path).GetWithoutUserDetails();
@@ -4305,6 +4375,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         path = item->GetMusicInfoTag()->GetURL();
       else if (item->IsVideoDb() && item->HasVideoInfoTag())
         path = item->GetVideoInfoTag()->m_strFileNameAndPath;
+      else if (item->IsProgramDb() && item->HasProgramInfoTag())
+        path = item->GetProgramInfoTag()->m_strFileNameAndPath;
       else
         path = item->GetPath();
       path = CURL(path).GetWithoutUserDetails();
@@ -4334,6 +4406,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_MPAA:
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strMPAARating;
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strESRB;
     break;
   case LISTITEM_CAST:
     if (item->HasVideoInfoTag())
@@ -4354,6 +4428,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_TRAILER:
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_strTrailer;
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strTrailer;
     break;
   case LISTITEM_TOP250:
     if (item->HasVideoInfoTag())
@@ -4420,6 +4496,8 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
       return item->GetVideoInfoTag()->m_type;
     if (item->HasMusicInfoTag())
       return item->GetMusicInfoTag()->GetType();
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_type;
     break;
   case LISTITEM_DBID:
     if (item->HasVideoInfoTag())
@@ -4434,6 +4512,16 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
         dbid.Format("%i", item->GetMusicInfoTag()->GetDatabaseId());
         return dbid;
       }
+    if (item->HasProgramInfoTag())
+      {
+        CStdString dbid;
+        dbid.Format("%i", item->GetProgramInfoTag()->m_iDbId);
+        return dbid;
+      }
+    break;
+  case LISTITEM_SYSTEM:
+    if (item->HasProgramInfoTag())
+      return item->GetProgramInfoTag()->m_strSystem;
     break;
   }
   return "";
@@ -4766,6 +4854,9 @@ void CGUIInfoManager::SetLibraryBool(int condition, bool value)
     case LIBRARY_HAS_GAMES:
       m_libraryHasGames = value ? 1 : 0;
       break;
+    case LIBRARY_HAS_APPLICATIONS:
+      m_libraryHasApplications = value ? 1 : 0;
+      break;
     default:
       break;
   }
@@ -4779,6 +4870,7 @@ void CGUIInfoManager::ResetLibraryBools()
   m_libraryHasMusicVideos = -1;
   m_libraryHasMovieSets = -1;
   m_libraryHasGames = -1;
+  m_libraryHasApplications = -1;
 }
 
 bool CGUIInfoManager::GetLibraryBool(int condition)
@@ -4867,8 +4959,21 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
     }
     return m_libraryHasGames > 0;
   }
+  else if (condition == LIBRARY_HAS_APPLICATIONS)
+  {
+    if (m_libraryHasApplications < 0)
+    {
+      CProgramDatabase db;
+      if (db.Open())
+      {
+        m_libraryHasApplications = db.HasContent(PROGRAMDB_CONTENT_APPLICATIONS) ? 1 : 0;
+        db.Close();
+      }
+    }
+    return m_libraryHasApplications > 0;
+  }
   else if (condition == LIBRARY_HAS_PROGRAM)
-    return GetLibraryBool(LIBRARY_HAS_GAMES);
+    return GetLibraryBool(LIBRARY_HAS_GAMES) || GetLibraryBool(LIBRARY_HAS_APPLICATIONS);
   return false;
 }
 
