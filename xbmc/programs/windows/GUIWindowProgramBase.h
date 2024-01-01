@@ -48,6 +48,8 @@ protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
 
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  virtual void OnDeleteItem(CFileItemPtr pItem);
+  virtual void OnDeleteItem(int iItem);
   virtual CStdString GetStartFolder(const CStdString &dir);
 
   virtual CStdString GetQuickpathName(const CStdString& strPath) const {return strPath;};

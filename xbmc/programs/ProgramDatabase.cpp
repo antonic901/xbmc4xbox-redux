@@ -1529,16 +1529,6 @@ bool CProgramDatabase::HasGameInfo(const CStdString& strFilenameAndPath)
     if (NULL == m_pDS.get()) return false;
     int idGame = GetGameId(strFilenameAndPath);
     return (idGame > 0); // index of zero is also invalid
-
-    // work in progress
-    if (idGame > 0)
-    {
-      // get title.  if no title, the id was "deleted" for in-place update
-      CProgramInfoTag details;
-      GetGameInfo(strFilenameAndPath, details, idGame);
-      if (!details.m_strTitle.IsEmpty()) return true;
-    }
-    return false;
   }
   catch (...)
   {
@@ -1555,16 +1545,6 @@ bool CProgramDatabase::HasApplicationInfo(const CStdString& strFilenameAndPath)
     if (NULL == m_pDS.get()) return false;
     int idApplication = GetApplicationId(strFilenameAndPath);
     return (idApplication> 0); // index of zero is also invalid
-
-    // work in progress
-    if (idApplication > 0)
-    {
-      // get title.  if no title, the id was "deleted" for in-place update
-      CProgramInfoTag details;
-      GetApplicationInfo(strFilenameAndPath, details, idApplication);
-      if (!details.m_strTitle.IsEmpty()) return true;
-    }
-    return false;
   }
   catch (...)
   {

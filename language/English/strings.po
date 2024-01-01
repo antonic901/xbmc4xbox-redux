@@ -9238,3 +9238,10 @@ msgctxt "#35114"
 msgid "Patches"
 msgstr ""
 
+msgctxt "#35115"
+msgid "Remove game from library"
+msgstr ""
+
+msgctxt "#35116"
+msgid "Remove application from library"
+msgstr ""

@@ -34,6 +34,7 @@
 #include "GUIWindowManager.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/FileUtils.h"
 #include "utils/EmulatorUtils.h"
 
 using namespace std;
@@ -511,6 +512,9 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
 
       return true;
     }
+  case CONTEXT_BUTTON_DELETE:
+    OnDeleteItem(itemNumber);
+    return true;
   default:
     break;
   }
@@ -648,4 +652,30 @@ void CGUIWindowProgramBase::OnAssignContent(const CStdString &path)
         pDialog->StartScanning(path, true);
     }
   }
+}
+
+void CGUIWindowProgramBase::OnDeleteItem(int iItem)
+{
+  if ( iItem < 0 || iItem >= m_vecItems->Size())
+    return;
+
+  OnDeleteItem(m_vecItems->Get(iItem));
+
+  Refresh(true);
+  m_viewControl.SetSelectedItem(iItem);
+}
+
+void CGUIWindowProgramBase::OnDeleteItem(CFileItemPtr item)
+{
+  // HACK: stacked files need to be treated as folders in order to be deleted
+  if (item->IsStack())
+    item->m_bIsFolder = true;
+  if (g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      g_settings.GetCurrentProfile().filesLocked())
+  {
+    if (!g_passwordManager.IsMasterLockUnlocked(true))
+      return;
+  }
+
+  CFileUtils::DeleteItem(item);
 }
