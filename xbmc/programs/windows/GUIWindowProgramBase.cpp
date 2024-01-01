@@ -550,6 +550,9 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
   case CONTEXT_BUTTON_DELETE:
     OnDeleteItem(itemNumber);
     return true;
+  case CONTEXT_BUTTON_RENAME:
+    OnRenameItem(itemNumber);
+    return true;
   default:
     break;
   }

@@ -388,6 +388,27 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
           buttons.Add(CONTEXT_BUTTON_DELETE, 646);
         }
       }
+
+      if (!m_vecItems->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot())
+      { // non-video db items, file operations are allowed
+        if (!item->IsReadOnly())
+        {
+          buttons.Add(CONTEXT_BUTTON_DELETE, 117);
+          buttons.Add(CONTEXT_BUTTON_RENAME, 118);
+        }
+        // add "Set/Change content" to folders
+        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
+        {
+          CGUIDialogProgramScan *pScanDlg = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+          if (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning()))
+          {
+            if (info && info->Content() != CONTENT_NONE)
+              buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20442);
+            else
+              buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20333);
+          }
+        }
+      }
     }
   }
 }
