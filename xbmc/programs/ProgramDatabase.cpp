@@ -1513,6 +1513,13 @@ void CProgramDatabase::UpdateGameTitle(int idGame, const CStdString& strNewGameT
       strSQL = PrepareSQL("UPDATE game SET c%02d='%s' WHERE idGame=%i", PROGRAMDB_ID_TITLE, strNewGameTitle.c_str(), idGame );
       content = "game";
     }
+    else if (iType == PROGRAMDB_CONTENT_APPLICATIONS)
+    {
+      CLog::Log(LOGINFO, "Changing Application:id:%i New Title:%s", idGame, strNewGameTitle.c_str());
+      strSQL = PrepareSQL("UPDATE application SET c%02d='%s' WHERE idApplication=%i", PROGRAMDB_ID_APPLICATION_TITLE, strNewGameTitle.c_str(), idGame );
+      content = "application";
+    }
+
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)

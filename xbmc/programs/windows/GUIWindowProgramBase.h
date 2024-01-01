@@ -34,6 +34,7 @@ public:
 
   static void OnScan(const CStdString& strPath, bool scanAll = false);
   virtual void OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
+  static void UpdateProgramTitle(const CFileItem* pItem);
 
   /*! \brief Prompt the user for assigning content to a path.
    Based on changes, we then call OnUnassignContent, update or refresh scraper information in the database

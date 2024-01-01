@@ -381,6 +381,10 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
       // can we update the database?
       if (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
       {
+
+        if (item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder)
+          buttons.Add(CONTEXT_BUTTON_EDIT, 16105);
+
         if(item->IsProgramDb() && item->HasProgramInfoTag())
           buttons.Add(CONTEXT_BUTTON_DELETE, 646);
       }
@@ -404,7 +408,17 @@ bool CGUIWindowProgramNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button
     Refresh();
     return true;
   }
+  switch(button)
+  {
+    case CONTEXT_BUTTON_EDIT:
+      UpdateProgramTitle(item.get());
+      CUtil::DeleteProgramDatabaseDirectoryCache();
+      Refresh();
+      return true;
 
+    default:
+      break;
+  }
   return CGUIWindowProgramBase::OnContextButton(itemNumber, button);
 }
 
