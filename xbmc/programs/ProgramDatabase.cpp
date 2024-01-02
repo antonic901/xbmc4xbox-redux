@@ -1513,6 +1513,13 @@ void CProgramDatabase::UpdateGameTitle(int idGame, const CStdString& strNewGameT
       strSQL = PrepareSQL("UPDATE game SET c%02d='%s' WHERE idGame=%i", PROGRAMDB_ID_TITLE, strNewGameTitle.c_str(), idGame );
       content = "game";
     }
+    else if (iType == PROGRAMDB_CONTENT_APPLICATIONS)
+    {
+      CLog::Log(LOGINFO, "Changing Application:id:%i New Title:%s", idGame, strNewGameTitle.c_str());
+      strSQL = PrepareSQL("UPDATE application SET c%02d='%s' WHERE idApplication=%i", PROGRAMDB_ID_APPLICATION_TITLE, strNewGameTitle.c_str(), idGame );
+      content = "application";
+    }
+
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
@@ -1529,16 +1536,6 @@ bool CProgramDatabase::HasGameInfo(const CStdString& strFilenameAndPath)
     if (NULL == m_pDS.get()) return false;
     int idGame = GetGameId(strFilenameAndPath);
     return (idGame > 0); // index of zero is also invalid
-
-    // work in progress
-    if (idGame > 0)
-    {
-      // get title.  if no title, the id was "deleted" for in-place update
-      CProgramInfoTag details;
-      GetGameInfo(strFilenameAndPath, details, idGame);
-      if (!details.m_strTitle.IsEmpty()) return true;
-    }
-    return false;
   }
   catch (...)
   {
@@ -1555,16 +1552,6 @@ bool CProgramDatabase::HasApplicationInfo(const CStdString& strFilenameAndPath)
     if (NULL == m_pDS.get()) return false;
     int idApplication = GetApplicationId(strFilenameAndPath);
     return (idApplication> 0); // index of zero is also invalid
-
-    // work in progress
-    if (idApplication > 0)
-    {
-      // get title.  if no title, the id was "deleted" for in-place update
-      CProgramInfoTag details;
-      GetApplicationInfo(strFilenameAndPath, details, idApplication);
-      if (!details.m_strTitle.IsEmpty()) return true;
-    }
-    return false;
   }
   catch (...)
   {

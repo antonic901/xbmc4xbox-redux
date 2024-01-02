@@ -52,6 +52,7 @@
 #include "LocalizeStrings.h"
 #include "storage/MediaManager.h"
 #include "FileUtils.h"
+#include "addons/AddonManager.h"
 
 #include "JobManager.h"
 #include "FileOperationJob.h"
@@ -1049,6 +1050,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   choices.Add(10, 5);     // Settings
   choices.Add(11, 20128); // Go To Root
   choices.Add(12, 523);     // switch media
+  if (item > 0)
+    choices.Add(14, 247); // scripts
 
   int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (btnid == 1)
@@ -1125,6 +1128,11 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     return;
   }
     }
+  if (btnid == 14)
+  {
+    OnScripts(m_vecItems[list]->Get(item)->GetPath());
+    return;
+  }
 
   if (bDeselect && item >= 0 && item < m_vecItems[list]->Size())
   { // deselect item as we didn't do anything
@@ -1347,4 +1355,30 @@ void CGUIWindowFileManager::SetSourcesWithLocal(VECSOURCES sources)
 {
   g_mediaManager.GetLocalDrives(sources);
   m_rootDir.SetSources(sources);
+}
+
+bool CGUIWindowFileManager::OnScripts(const CStdString& path)
+{
+  CFileItemList scripts;
+  CDirectory::GetDirectory("addons://sources/executable/", scripts);
+
+  CContextButtons choices;
+  for (int i = 0; i < scripts.Size(); ++i)
+    choices.Add(i, scripts[i]->GetLabel());
+  int selected = CGUIDialogContextMenu::ShowAndGetChoice(choices);
+  if (selected == -1)
+    return false;
+  
+  std::vector<CStdString> argv;
+  argv.push_back(path);
+
+  CURL url(scripts[selected]->GetPath());
+  ADDON::AddonPtr addon;
+  if (ADDON::CAddonMgr::Get().GetAddon(url.GetHostName(), addon))
+  {
+    if (!g_pythonParser.StopScript(addon->LibPath()))
+      g_pythonParser.evalFile(addon->LibPath(), argv, addon);
+    return true;
+  }
+  return false;
 }

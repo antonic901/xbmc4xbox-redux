@@ -35,6 +35,9 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
 
+  static bool CanDelete(const CStdString& strPath);
+  static bool DeleteItem(CFileItem* pItem, bool bUnavailable=false);
+
 protected:
   /*! \brief Load program information from the database for these items
    Useful for grabbing information for file listings, from played status to full metadata
@@ -45,6 +48,7 @@ protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
   // override base class methods
   virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
+  virtual void OnDeleteItem(CFileItemPtr pItem);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual bool OnClick(int iItem);
