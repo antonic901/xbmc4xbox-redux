@@ -27,6 +27,7 @@
 #include "FileItem.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
 using namespace PROGRAMDATABASEDIRECTORY;
@@ -389,6 +390,10 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
         }
       }
 
+      if ((item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder) ||
+          (!item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
+        buttons.Add(CONTEXT_BUTTON_SCRIPTS, 10020);
+
       if (!m_vecItems->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot())
       { // non-video db items, file operations are allowed
         if (!item->IsReadOnly())
@@ -436,6 +441,10 @@ bool CGUIWindowProgramNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button
       CUtil::DeleteProgramDatabaseDirectoryCache();
       Refresh();
       return true;
+
+    case CONTEXT_BUTTON_SCRIPTS:
+        return CGUIWindowFileManager::OnScripts(item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath());
+      break;
 
     default:
       break;
