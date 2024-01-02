@@ -29,15 +29,18 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "filesystem/ProgramDatabaseDirectory.h"
 #include "filesystem/Directory.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "GUIWindowManager.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/FileUtils.h"
 #include "utils/EmulatorUtils.h"
 
 using namespace std;
 using namespace XFILE;
+using namespace PROGRAMDATABASEDIRECTORY;
 using namespace PROGRAM;
 using namespace ADDON;
 
@@ -427,6 +430,39 @@ bool CGUIWindowProgramBase::ShowIGDB(CFileItem *item, const ScraperPtr &info2)
   return listNeedsUpdating;
 }
 
+//Add change a title's name
+void CGUIWindowProgramBase::UpdateProgramTitle(const CFileItem* pItem)
+{
+  // dont allow update while scanning
+  CGUIDialogProgramScan* pDialogScan = (CGUIDialogProgramScan*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+  if (pDialogScan && pDialogScan->IsScanning())
+  {
+    CGUIDialogOK::ShowAndGetInput(257, 0, 14057, 0);
+    return;
+  }
+
+  CProgramInfoTag detail;
+  CProgramDatabase database;
+  database.Open();
+  CProgramDatabaseDirectory dir;
+  CQueryParams params;
+  dir.GetQueryParams(pItem->GetPath(),params);
+  int iDbId = pItem->GetProgramInfoTag()->m_iDbId;
+
+  PROGRAMDB_CONTENT_TYPE iType=PROGRAMDB_CONTENT_GAMES;
+  if (pItem->HasProgramInfoTag() && (pItem->GetProgramInfoTag()->m_type.Equals("application") || pItem->GetProgramInfoTag()->m_type.Equals("emulator")))
+    iType = PROGRAMDB_CONTENT_APPLICATIONS;
+
+  CStdString strInput;
+  strInput = detail.m_strTitle;
+
+  //Get the new title
+  if (!CGUIDialogKeyboard::ShowAndGetInput(strInput, g_localizeStrings.Get(16105), false))
+    return;
+  
+  database.UpdateGameTitle(iDbId, strInput, iType);
+}
+
 bool CGUIWindowProgramBase::Update(const CStdString &strDirectory, bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
@@ -511,6 +547,12 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
 
       return true;
     }
+  case CONTEXT_BUTTON_DELETE:
+    OnDeleteItem(itemNumber);
+    return true;
+  case CONTEXT_BUTTON_RENAME:
+    OnRenameItem(itemNumber);
+    return true;
   default:
     break;
   }
@@ -648,4 +690,30 @@ void CGUIWindowProgramBase::OnAssignContent(const CStdString &path)
         pDialog->StartScanning(path, true);
     }
   }
+}
+
+void CGUIWindowProgramBase::OnDeleteItem(int iItem)
+{
+  if ( iItem < 0 || iItem >= m_vecItems->Size())
+    return;
+
+  OnDeleteItem(m_vecItems->Get(iItem));
+
+  Refresh(true);
+  m_viewControl.SetSelectedItem(iItem);
+}
+
+void CGUIWindowProgramBase::OnDeleteItem(CFileItemPtr item)
+{
+  // HACK: stacked files need to be treated as folders in order to be deleted
+  if (item->IsStack())
+    item->m_bIsFolder = true;
+  if (g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      g_settings.GetCurrentProfile().filesLocked())
+  {
+    if (!g_passwordManager.IsMasterLockUnlocked(true))
+      return;
+  }
+
+  CFileUtils::DeleteItem(item);
 }

@@ -471,12 +471,6 @@ namespace PROGRAM
 
     // get & save thumb image
     CStdString cachedThumb = pItem->GetCachedProgramThumb();
-    if (CFile::Exists(cachedThumb))
-    {
-      programDetails.m_strFileNameAndPath = pItem->GetPath();
-      CFileItem item(programDetails);
-      cachedThumb = item.GetCachedEpisodeThumb();
-    }
 
     CStdString localThumb;
     if (useLocal)

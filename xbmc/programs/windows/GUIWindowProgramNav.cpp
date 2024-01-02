@@ -21,9 +21,13 @@
 #include "programs/windows/GUIWindowProgramNav.h"
 #include "filesystem/ProgramDatabaseDirectory.h"
 #include "programs/dialogs/GUIDialogProgramScan.h"
+#include "dialogs/GUIDialogOK.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
 using namespace PROGRAMDATABASEDIRECTORY;
@@ -191,11 +195,146 @@ bool CGUIWindowProgramNav::OnClick(int iItem)
   return CGUIWindowProgramBase::OnClick(iItem);
 }
 
+bool CGUIWindowProgramNav::CanDelete(const CStdString& strPath)
+{
+  CQueryParams params;
+  CProgramDatabaseDirectory::GetQueryParams(strPath,params);
+
+  if (params.GetGameId()   != -1 ||
+      params.GetApplicationId() != -1
+              && !CProgramDatabaseDirectory::IsAllItem(strPath))
+    return true;
+
+  return false;
+}
+
+void CGUIWindowProgramNav::OnDeleteItem(CFileItemPtr pItem)
+{
+  if (m_vecItems->IsParentFolder())
+    return;
+
+  if (!m_vecItems->IsProgramDb())
+  {
+    if (!pItem->GetPath().Equals("newsmartplaylist://program") &&
+        !pItem->GetPath().Equals("special://programplaylists/") &&
+        !pItem->GetPath().Equals("sources://programs/") &&
+        !pItem->GetPath().Left(9).Equals("newtag://"))
+      CGUIWindowProgramBase::OnDeleteItem(pItem);
+  }
+  // else if (m_vecItems->GetContent() == "tags" && pItem->m_bIsFolder)
+  // {
+  //   CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+  //   pDialog->SetHeading(432);
+  //   CStdString strLabel;
+  //   strLabel.Format(g_localizeStrings.Get(433), pItem->GetLabel());
+  //   pDialog->SetLine(1, strLabel);
+  //   pDialog->SetLine(2, "");
+  //   pDialog->DoModal();
+  //   if (pDialog->IsConfirmed())
+  //   {
+  //     CVideoDatabaseDirectory dir;
+  //     CQueryParams params;
+  //     dir.GetQueryParams(pItem->GetPath(), params);
+  //     m_database.DeleteTag(params.GetTagId(), (VIDEODB_CONTENT_TYPE)params.GetContentType());
+  //   }
+  // }
+  else 
+  {
+    if (!DeleteItem(pItem.get()))
+      return;
+
+    CStdString strDeletePath;
+    if (pItem->m_bIsFolder)
+      strDeletePath=pItem->GetProgramInfoTag()->m_strPath;
+    else
+      strDeletePath=pItem->GetProgramInfoTag()->m_strFileNameAndPath;
+
+    if (URIUtils::HasSlashAtEnd(strDeletePath))
+      pItem->m_bIsFolder=true;
+
+    if (g_guiSettings.GetBool("filelists.allowfiledeletion") &&
+        CUtil::SupportsWriteFileOperations(strDeletePath))
+    {
+      pItem->SetPath(strDeletePath);
+      CGUIWindowProgramBase::OnDeleteItem(pItem);
+    }
+  }
+
+  CUtil::DeleteProgramDatabaseDirectoryCache();
+}
+
+bool CGUIWindowProgramNav::DeleteItem(CFileItem* pItem, bool bUnavailable /* = false */)
+{
+  if (!pItem->HasProgramInfoTag() || !CanDelete(pItem->GetPath()))
+    return false;
+
+  PROGRAMDB_CONTENT_TYPE iType = PROGRAMDB_CONTENT_GAMES;
+  if (pItem->HasProgramInfoTag() && (pItem->GetProgramInfoTag()->m_type.Equals("application") || pItem->GetProgramInfoTag()->m_type.Equals("emulator")))
+    iType = PROGRAMDB_CONTENT_APPLICATIONS;
+
+  // dont allow update while scanning
+  CGUIDialogProgramScan* pDialogScan = (CGUIDialogProgramScan*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+  if (pDialogScan && pDialogScan->IsScanning())
+  {
+    CGUIDialogOK::ShowAndGetInput(257, 0, 14057, 0);
+    return false;
+  }
+
+  CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+  if (!pDialog)
+    return false;
+  if (iType == PROGRAMDB_CONTENT_GAMES)
+    pDialog->SetHeading(35115);
+  if (iType == PROGRAMDB_CONTENT_APPLICATIONS)
+    pDialog->SetHeading(35116);
+
+  if(bUnavailable)
+  {
+    pDialog->SetLine(0, g_localizeStrings.Get(662));
+    pDialog->SetLine(1, g_localizeStrings.Get(663));
+    pDialog->SetLine(2, "");;
+    pDialog->DoModal();
+  }
+  else
+  {
+    CStdString strLine;
+    strLine.Format(g_localizeStrings.Get(433),pItem->GetLabel());
+    pDialog->SetLine(0, strLine);
+    pDialog->SetLine(1, "");
+    pDialog->SetLine(2, "");;
+    pDialog->DoModal();
+  }
+
+  if (!pDialog->IsConfirmed())
+    return false;
+
+  CStdString path;
+  CProgramDatabase database;
+  database.Open();
+
+  database.GetFilePathById(pItem->GetProgramInfoTag()->m_iDbId, path, iType);
+  if (path.IsEmpty())
+    return false;
+  if (iType == PROGRAMDB_CONTENT_GAMES)
+    database.DeleteGame(path);
+  if (iType == PROGRAMDB_CONTENT_APPLICATIONS)
+    database.DeleteApplication(path);
+
+  CStdString strDirectory;
+  URIUtils::GetDirectory(path,strDirectory);
+  database.SetPathHash(strDirectory,"");
+
+  return true;
+}
+
 void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
   CFileItemPtr item;
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
+
+  CProgramDatabaseDirectory dir;
+  NODE_TYPE node = dir.GetDirectoryChildType(m_vecItems->GetPath());
 
   if (m_vecItems->GetPath().Equals("sources://programs/"))
   {
@@ -239,6 +378,42 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
         buttons.Add(CONTEXT_BUTTON_INFO, 35003);
       else if (info && info->Content() == CONTENT_APPLICATIONS)
         buttons.Add(CONTEXT_BUTTON_INFO, 35109);
+
+      // can we update the database?
+      if (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
+      {
+
+        if (item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder)
+        {
+          buttons.Add(CONTEXT_BUTTON_EDIT, 16105);
+          buttons.Add(CONTEXT_BUTTON_DELETE, 646);
+        }
+      }
+
+      if ((item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder) ||
+          (!item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
+        buttons.Add(CONTEXT_BUTTON_SCRIPTS, 10020);
+
+      if (!m_vecItems->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot())
+      { // non-video db items, file operations are allowed
+        if (!item->IsReadOnly())
+        {
+          buttons.Add(CONTEXT_BUTTON_DELETE, 117);
+          buttons.Add(CONTEXT_BUTTON_RENAME, 118);
+        }
+        // add "Set/Change content" to folders
+        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
+        {
+          CGUIDialogProgramScan *pScanDlg = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+          if (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning()))
+          {
+            if (info && info->Content() != CONTENT_NONE)
+              buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20442);
+            else
+              buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20333);
+          }
+        }
+      }
     }
   }
 }
@@ -259,7 +434,21 @@ bool CGUIWindowProgramNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button
     Refresh();
     return true;
   }
+  switch(button)
+  {
+    case CONTEXT_BUTTON_EDIT:
+      UpdateProgramTitle(item.get());
+      CUtil::DeleteProgramDatabaseDirectoryCache();
+      Refresh();
+      return true;
 
+    case CONTEXT_BUTTON_SCRIPTS:
+        return CGUIWindowFileManager::OnScripts(item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath());
+      break;
+
+    default:
+      break;
+  }
   return CGUIWindowProgramBase::OnContextButton(itemNumber, button);
 }
 

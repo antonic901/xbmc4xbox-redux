@@ -51,6 +51,12 @@ public:
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
   virtual void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job);
+
+  /*! \brief Run Python script for specific path
+   Could be used for scripts which are patching XBEs
+   \param path the path on which script will run.
+   */
+  static bool OnScripts(const CStdString& path);
 protected:
   virtual void OnInitWindow();
   void SetInitialPath(const CStdString &path);
