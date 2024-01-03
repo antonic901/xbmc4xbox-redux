@@ -236,7 +236,20 @@ void CProgramInfoTag::Serialize(CVariant& value)
 
 void CProgramInfoTag::ToSortable(SortItem& sortable)
 {
-  // TODO: implement this
+  sortable[FieldGenre] = m_genre;
+  sortable[FieldPlot] = m_strPlot;
+  sortable[FieldTitle] = m_strTitle;
+  sortable[FieldTrailer] = m_strTrailer;
+  sortable[FieldFilename] = m_strFile;
+  sortable[FieldMPAA] = m_strESRB;
+  sortable[FieldPath] = m_strFileNameAndPath;
+  sortable[FieldPlaycount] = m_playCount;
+  sortable[FieldLastPlayed] = m_lastPlayed.IsValid() ? m_lastPlayed.GetAsDBDateTime() : StringUtils::EmptyString;
+  sortable[FieldYear] = m_iYear;
+  sortable[FieldRating] = m_fRating;
+  sortable[FieldId] = m_iDbId;
+  sortable[FieldDateAdded] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : StringUtils::EmptyString;
+  sortable[FieldMediaType] = DatabaseUtils::MediaTypeFromString(m_type);
 }
 
 void CProgramInfoTag::ParseNative(const TiXmlElement* program)

@@ -24,6 +24,7 @@
 #include "RegExp.h"
 #include "Util.h"
 #include "video/VideoInfoTag.h"
+#include "programs/ProgramInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
@@ -150,6 +151,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   if (!item) return "";
   const CMusicInfoTag *music = item->GetMusicInfoTag();
   const CVideoInfoTag *movie = item->GetVideoInfoTag();
+  const CProgramInfoTag *game = item->GetProgramInfoTag();
+
   CStdString value;
   switch (mask.m_content)
   {
@@ -174,6 +177,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
       value = music->GetTitle();
     if (movie && movie->m_strTitle.size())
       value = movie->m_strTitle;
+    else if (game && game->m_strTitle.size())
+      value = game->m_strTitle;
     break;
   case 'Z':
     if (movie && !movie->m_strShowTitle.IsEmpty())
@@ -190,6 +195,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
       value = StringUtils::Join(music->GetGenre(), g_advancedSettings.m_musicItemSeparator);
     if (movie && movie->m_genre.size())
       value = StringUtils::Join(movie->m_genre, g_advancedSettings.m_videoItemSeparator);
+    else if (game && game->m_genre.size())
+      value = StringUtils::Join(game->m_genre, g_advancedSettings.m_programItemSeparator);
     break;
   case 'Y':
     if (music)
@@ -202,6 +209,11 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
         value = movie->m_premiered.GetAsLocalizedDate();
       else if (movie->m_iYear > 0)
         value.Format("%i",movie->m_iYear);
+    }
+    else if (game)
+    {
+      if (game->m_iYear > 0)
+        value.Format("%i",game->m_iYear);
     }
     break;
   case 'F': // filename
@@ -250,6 +262,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
       value = music->GetRating();
     else if (movie && movie->m_fRating != 0.f)
       value.Format("%.1f", movie->m_fRating);
+    else if (game && game->m_fRating != 0.f)
+      value.Format("%.1f", game->m_fRating);
     break;
   case 'C': // programs count
     value.Format("%i", item->m_iprogramCount);
@@ -288,6 +302,10 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
     {// MPAA Rating
       value = movie->m_strMPAARating;
     }
+    else if (game && game->m_strESRB)
+    {// ESRB Rating
+      value = game->m_strESRB;
+    }
     break;
   case 'U':
     if (movie && movie->m_studio.size() > 0)
@@ -300,6 +318,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
       value.Format("%i", music->GetPlayCount());
     if (movie)
       value.Format("%i", movie->m_playCount);
+    else if (game)
+      value.Format("%i", game->m_playCount);
     break;
   case 'X': // Bitrate
     if( !item->m_bIsFolder && item->m_dwSize != 0 )
@@ -312,10 +332,14 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   case 'a': // Date Added
     if (movie && movie->m_dateAdded.IsValid())
       value = movie->m_dateAdded.GetAsLocalizedDate();
+    else if (game && game->m_dateAdded.IsValid())
+      value = game->m_dateAdded.GetAsLocalizedDate();
     break;
   case 'p': // Last played
     if (movie && movie->m_lastPlayed.IsValid())
       value = movie->m_lastPlayed.GetAsLocalizedDate();
+    else if (game && game->m_lastPlayed.IsValid())
+      value = game->m_lastPlayed.GetAsLocalizedDate();
     break;
   }
   if (!value.IsEmpty())

@@ -121,6 +121,7 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
         SetSortOrder(SortOrderNone);        
       }
+      break;
     case NODE_TYPE_TITLE_GAMES:
     case NODE_TYPE_TITLE_APPLICATIONS:
       {
@@ -135,6 +136,7 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
         SetSortOrder(g_settings.m_viewStateProgramNavTitles.m_sortDescription.sortOrder);
       }
+      break;
     default:
       break;
     }
@@ -155,6 +157,26 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
 void CGUIViewStateWindowProgramNav::SaveViewState()
 {
+  NODE_TYPE NodeType = CProgramDatabaseDirectory::GetDirectoryChildType(m_items.GetPath());
+  if (m_items.IsProgramDb())
+  {
+    NODE_TYPE NodeType = CProgramDatabaseDirectory::GetDirectoryChildType(m_items.GetPath());
+    CQueryParams params;
+    CProgramDatabaseDirectory::GetQueryParams(m_items.GetPath(),params);
+    switch (NodeType)
+    {
+    case NODE_TYPE_TITLE_GAMES:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavTitles);
+      break;
+    default:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV);
+      break;
+    }
+  }
+  else
+  {
+    SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramFiles); 
+  }
 }
 
 VECSOURCES& CGUIViewStateWindowProgramNav::GetSources()
