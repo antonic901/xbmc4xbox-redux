@@ -479,7 +479,7 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
       }
 
       if ((item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder) ||
-          (!item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
+          (!item->IsSmartPlayList() && !item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
         buttons.Add(CONTEXT_BUTTON_SCRIPTS, 10020);
 
       if (!m_vecItems->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot())
@@ -490,7 +490,7 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);
         }
         // add "Set/Change content" to folders
-        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
+        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsSmartPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
         {
           CGUIDialogProgramScan *pScanDlg = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
           if (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning()))
