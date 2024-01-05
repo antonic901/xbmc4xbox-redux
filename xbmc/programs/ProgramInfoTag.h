@@ -49,6 +49,7 @@ public:
   std::vector<std::string> m_generalFeature;
   std::vector<std::string> m_onlineFeature;
   std::vector<std::string> m_platform;
+  std::vector<std::string> m_tags;
   CStdString m_strTrailer;
   CStdString m_strPlot;
   CScraperUrl m_strPictureURL;

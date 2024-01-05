@@ -56,6 +56,8 @@ std::string DatabaseUtils::MediaTypeToString(MediaType mediaType)
     return "program";
   case MediaTypeGame:
     return "game";
+  case MediaTypeApplication:
+    return "application";
   default:
     break;
   }
@@ -675,6 +677,7 @@ bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fie
     case MediaTypeTvShow:
     case MediaTypeMusicVideo:
     case MediaTypeGame:
+    case MediaTypeApplication:
       result[FieldLabel] = result.find(FieldTitle)->second.asString();
       break;
       

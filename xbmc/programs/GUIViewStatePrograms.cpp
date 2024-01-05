@@ -148,6 +148,15 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
         SetSortOrder(g_settings.m_viewStateProgramNavGenres.m_sortDescription.sortOrder);
       }
       break;
+    case NODE_TYPE_TAGS:
+      {
+        AddSortMethod(SortByLabel, sortAttributes, 551, LABEL_MASKS("%T","", "%T",""));  // Title, empty | Title, empty
+        SetSortMethod(SortByLabel, sortAttributes);
+
+        SetViewAsControl(g_settings.m_viewStateProgramNavGenres.m_viewMode);
+        SetSortOrder(g_settings.m_viewStateProgramNavGenres.m_sortDescription.sortOrder);
+      }
+      break;
     case NODE_TYPE_TITLE_GAMES:
     case NODE_TYPE_TITLE_APPLICATIONS:
       {

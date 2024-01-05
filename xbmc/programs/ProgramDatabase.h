@@ -239,6 +239,7 @@ public:
   CStdString GetGeneralFeatureById(int id);
   CStdString GetOnlineFeatureById(int id);
   CStdString GetPlatformById(int id);
+  CStdString GetTagById(int id);
 
   bool LoadProgramInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details);
   void GetGameInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details, int idGame = -1);
@@ -321,6 +322,7 @@ public:
   bool GetGeneralFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetOnlineFeaturesNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetPlatformsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
+  bool GetTagsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter(), bool countOnly = false);
   bool GetYearsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent=-1, const Filter &filter = Filter());
 
   bool GetGamesNav(const CStdString& strBaseDir, CFileItemList& items,
@@ -366,6 +368,9 @@ public:
   bool GetGamesByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
   bool GetApplicationsByWhere(const CStdString& strBaseDir, const Filter &filter, CFileItemList& items, const SortDescription &sortDescription = SortDescription());
 
+  // retrieve sorted and limited items
+  bool GetSortedPrograms(MediaType mediaType, const CStdString& strBaseDir, const SortDescription &sortDescription, CFileItemList& items, const Filter &filter = Filter());
+
   // retrieve a list of items
   bool GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
   bool GetItems(const CStdString &strBaseDir, const CStdString &mediaType, const CStdString &itemType, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
@@ -386,6 +391,11 @@ public:
         break;
     }
   }
+
+  int AddTag(const std::string &tag);
+  void AddTagToItem(int idItem, int idTag, const std::string &type);
+  void RemoveTagFromItem(int idItem, int idTag, const std::string &type);
+  void DeleteTag(int idTag, PROGRAMDB_CONTENT_TYPE mediaType);
 
   virtual bool GetFilter(CDbUrl &programUrl, Filter &filter, SortDescription &sorting);
 

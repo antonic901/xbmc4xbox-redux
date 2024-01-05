@@ -92,6 +92,10 @@ bool CProgramDatabase::CreateTables()
     CLog::Log(LOGINFO, "create platform table");
     m_pDS->exec("CREATE TABLE platform ( idPlatform integer primary key, strPlatform text)\n");
 
+    CLog::Log(LOGINFO, "create tag table");
+    m_pDS->exec("CREATE TABLE tag (idTag integer primary key, strTag text)");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_tag_1 ON tag (strTag(256))");
+
     CLog::Log(LOGINFO, "create game table");
     CStdString columns = "CREATE TABLE game ( idGame integer primary key, idFile integer";
     for (int i = 0; i < PROGRAMDB_MAX_COLUMNS; i++)
@@ -161,6 +165,12 @@ bool CProgramDatabase::CreateTables()
     m_pDS->exec("CREATE TABLE platformlinkgame ( idPlatform integer, idGame integer)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_platformlinkgame_1 ON platformlinkgame ( idPlatform, idGame)\n");
     m_pDS->exec("CREATE UNIQUE INDEX ix_platformlinkgame_2 ON platformlinkgame ( idGame, idPlatform)\n");
+
+    CLog::Log(LOGINFO, "create taglinks table");
+    m_pDS->exec("CREATE TABLE taglinks (idTag integer, idMedia integer, media_type TEXT)");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_taglinks_1 ON taglinks (idTag, media_type(20), idMedia)");
+    m_pDS->exec("CREATE UNIQUE INDEX ix_taglinks_2 ON taglinks (idMedia, media_type(20), idTag)");
+    m_pDS->exec("CREATE INDEX ix_taglinks_3 ON taglinks (media_type(20))");
 
     CLog::Log(LOGINFO, "create trainers table");
     m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
@@ -1043,6 +1053,14 @@ int CProgramDatabase::AddPlatform(const CStdString& strPlatform)
   return AddToTable("platform", "idPlatform", "strPlatform", strPlatform);
 }
 
+int CProgramDatabase::AddTag(const std::string& tag)
+{
+  if (tag.empty())
+    return -1;
+
+  return AddToTable("tag", "idTag", "strTag", tag);
+}
+
 void CProgramDatabase::AddToLinkTable(const char *table, const char *firstField, int firstID, const char *secondField, int secondID, const char *typeField /* = NULL */, const char *type /* = NULL */)
 {
   try
@@ -1087,6 +1105,23 @@ void CProgramDatabase::RemoveFromLinkTable(const char *table, const char *firstF
   {
     CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
   }
+}
+
+//****Tags****
+void CProgramDatabase::AddTagToItem(int idMovie, int idTag, const std::string &type)
+{
+  if (type.empty())
+    return;
+
+  AddToLinkTable("taglinks", "idTag", idTag, "idMedia", idMovie, "media_type", type.c_str());
+}
+
+void CProgramDatabase::RemoveTagFromItem(int idMovie, int idTag, const std::string &type)
+{
+  if (type.empty())
+    return;
+
+  RemoveFromLinkTable("taglinks", "idTag", idTag, "idMedia", idMovie, "media_type", type.c_str());
 }
 
 //****Developers****
@@ -1620,6 +1655,11 @@ CStdString CProgramDatabase::GetPlatformById(int id)
   return GetSingleValue("platform", "strPlatform", PrepareSQL("idPlatform=%i", id));
 }
 
+CStdString CProgramDatabase::GetTagById(int id)
+{
+  return GetSingleValue("tag", "strTag", PrepareSQL("idTag=%i", id));
+}
+
 //********************************************************************************************************************************
 bool CProgramDatabase::LoadProgramInfo(const CStdString& strFilenameAndPath, CProgramInfoTag& details)
 {
@@ -1806,6 +1846,12 @@ int CProgramDatabase::SetDetailsForGame(const CStdString& strFilenameAndPath, co
     for (unsigned int i = 0; i < vecPlatforms.size(); ++i)
       AddPlatformToGame(idGame, vecPlatforms[i]);
 
+    for (unsigned int i = 0; i < details.m_tags.size(); i++)
+    {
+      int idTag = AddTag(details.m_tags[i]);
+      AddTagToItem(idGame, idTag, "game");
+    }
+
     // update our game table (we know it was added already above)
     // and insert the new row
     CStdString sql = "update game set " + GetValueString(details, PROGRAMDB_ID_MIN, PROGRAMDB_ID_MAX, DbGameOffsets);
@@ -1845,6 +1891,12 @@ int CProgramDatabase::SetDetailsForApplication(const CStdString& strFilenameAndP
           return idApplication;
         }
       }
+    }
+
+    for (unsigned int i = 0; i < details.m_tags.size(); i++)
+    {
+      int idTag = AddTag(details.m_tags[i]);
+      AddTagToItem(idApplication, idTag, "application");
     }
 
     // update our application table (we know it was added already above)
@@ -1981,6 +2033,39 @@ void CProgramDatabase::DeleteApplication(const CStdString& strFilenameAndPath, b
   catch (...)
   {
     CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+}
+
+void CProgramDatabase::DeleteTag(int idTag, PROGRAMDB_CONTENT_TYPE mediaType)
+{
+  try
+  {
+    if (m_pDB.get() == NULL || m_pDS.get() == NULL)
+      return;
+
+    std::string type;
+    if (mediaType == PROGRAMDB_CONTENT_GAMES)
+      type = "game";
+    else if (mediaType == PROGRAMDB_CONTENT_APPLICATIONS)
+      type = "application";
+    else
+      return;
+
+    CStdString strSQL;
+    strSQL = PrepareSQL("DELETE FROM taglinks WHERE idTag = %i AND media_type = '%s'", idTag, type.c_str());
+    m_pDS->exec(strSQL.c_str());
+
+    // check if the tag is used for another media type as well before deleting it completely
+    strSQL = PrepareSQL("SELECT 1 FROM taglinks WHERE idTag = %i", idTag);
+    if (RunQuery(strSQL) <= 0)
+    {
+      strSQL = PrepareSQL("DELETE FROM tag WHERE idTag = %i", idTag);
+      m_pDS->exec(strSQL.c_str());
+    }
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%i) failed", __FUNCTION__, idTag);
   }
 }
 
@@ -2261,6 +2346,96 @@ bool CProgramDatabase::GetNavCommon(const CStdString& strBaseDir, CFileItemList&
   return false;
 }
 
+bool CProgramDatabase::GetTagsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */, bool countOnly /* = false */)
+{
+  CStdString mediaType;
+  if (idContent == PROGRAMDB_CONTENT_GAMES)
+    mediaType = "game";
+  else if (idContent == PROGRAMDB_CONTENT_APPLICATIONS)
+    mediaType = "application";
+  else
+    return false;
+
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    CStdString strSQL = "SELECT %s FROM taglinks ";
+
+    Filter extFilter = filter;
+    extFilter.fields = "tag.idTag, tag.strTag";
+
+    extFilter.AppendJoin("JOIN tag ON tag.idTag = taglinks.idTag");
+
+    if (idContent == (int)PROGRAMDB_CONTENT_GAMES)
+      extFilter.AppendJoin("JOIN gameview ON gameview.idGame = taglinks.idMedia");
+    else if (idContent == (int)PROGRAMDB_CONTENT_APPLICATIONS)
+      extFilter.AppendJoin("JOIN applicationview ON applicationview.idApplication = taglinks.idMedia");
+
+    extFilter.AppendWhere(PrepareSQL("taglinks.media_type = '%s'", mediaType.c_str()));
+    extFilter.AppendGroup("taglinks.idTag");
+
+    if (countOnly)
+    {
+      extFilter.fields = "COUNT(DISTINCT taglinks.idTag)";
+      extFilter.group.clear();
+      extFilter.order.clear();
+    }
+    strSQL.Format(strSQL.c_str(), !extFilter.fields.empty() ? extFilter.fields.c_str() : "*");
+
+    // parse the base path to get additional filters
+    CProgramDbUrl programUrl;
+    if (!BuildSQL(strBaseDir, strSQL, extFilter, strSQL, programUrl))
+      return false;
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return iRowsFound == 0;
+
+    if (countOnly)
+    {
+      CFileItemPtr pItem(new CFileItem());
+      pItem->SetProperty("total", iRowsFound == 1 ? m_pDS->fv(0).get_asInt() : iRowsFound);
+      items.Add(pItem);
+
+      m_pDS->close();
+      return true;
+    }
+
+    while (!m_pDS->eof())
+    {
+      int idTag = m_pDS->fv(0).get_asInt();
+
+      CFileItemPtr pItem(new CFileItem(m_pDS->fv(1).get_asString()));
+      pItem->m_bIsFolder = true;
+      pItem->GetProgramInfoTag()->m_iDbId = idTag;
+      pItem->GetProgramInfoTag()->m_type = "tag";
+
+      CProgramDbUrl itemUrl = programUrl;
+      CStdString path; path.Format("%ld/", idTag);
+      itemUrl.AppendPath(path);
+      pItem->SetPath(itemUrl.ToString());
+
+      if (!items.Contains(pItem->GetPath()))
+      {
+        pItem->SetLabelPreformated(true);
+        items.Add(pItem);
+      }
+
+      m_pDS->next();
+    }
+    m_pDS->close();
+
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
+  }
+  return false;
+}
+
 bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& items, int idContent /* = -1 */, const Filter &filter /* = Filter() */)
 {
   try
@@ -2405,6 +2580,45 @@ bool CProgramDatabase::GetYearsNav(const CStdString& strBaseDir, CFileItemList& 
   return false;
 }
 
+bool CProgramDatabase::GetSortedPrograms(MediaType mediaType, const CStdString& strBaseDir, const SortDescription &sortDescription, CFileItemList& items, const Filter &filter /* = Filter() */)
+{
+  if (NULL == m_pDB.get() || NULL == m_pDS.get())
+    return false;
+
+  if (mediaType != MediaTypeGame && mediaType != MediaTypeApplication)
+    return false;
+
+  SortDescription sorting = sortDescription;
+  if (sortDescription.sortBy == SortByFile ||
+      sortDescription.sortBy == SortByTitle ||
+      sortDescription.sortBy == SortBySortTitle ||
+      sortDescription.sortBy == SortByLabel ||
+      sortDescription.sortBy == SortByDateAdded ||
+      sortDescription.sortBy == SortByRating ||
+      sortDescription.sortBy == SortByYear ||
+      sortDescription.sortBy == SortByLastPlayed ||
+      sortDescription.sortBy == SortByPlaycount)
+    sorting.sortAttributes = (SortAttribute)(sortDescription.sortAttributes | SortAttributeIgnoreFolders);
+
+  bool success = false;
+  switch (mediaType)
+  {
+  case MediaTypeGame:
+    success = GetGamesByWhere(strBaseDir, filter, items, sorting);
+    break;
+
+  case MediaTypeApplication:
+    success = GetApplicationsByWhere(strBaseDir, filter, items, sorting);
+    break;
+
+  default:
+    return false;
+  }
+
+  items.SetContent(DatabaseUtils::MediaTypeToString(mediaType) + "s");
+  return success;
+}
+
 bool CProgramDatabase::GetItems(const CStdString &strBaseDir, CFileItemList &items, const Filter &filter /* = Filter() */, const SortDescription &sortDescription /* = SortDescription() */)
 {
   CProgramDbUrl programUrl;
@@ -2447,6 +2661,8 @@ bool CProgramDatabase::GetItems(const CStdString &strBaseDir, PROGRAMDB_CONTENT_
     return GetOnlineFeaturesNav(strBaseDir, items, mediaType, filter);
   else if (itemType.Equals("platforms"))
     return GetPlatformsNav(strBaseDir, items, mediaType, filter);
+  else if (itemType.Equals("tags"))
+    return GetTagsNav(strBaseDir, items, mediaType, filter);
   else if (itemType.Equals("years"))
     return GetYearsNav(strBaseDir, items, mediaType, filter);
 
@@ -2474,6 +2690,8 @@ CStdString CProgramDatabase::GetItemById(const CStdString &itemType, int id)
     return GetOnlineFeatureById(id);
   if (itemType.Equals("platforms"))
     return GetPlatformById(id);
+  if (itemType.Equals("tags"))
+    return GetTagById(id);
   return "";
 }
 

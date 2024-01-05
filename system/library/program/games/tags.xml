@@ -1,0 +1,6 @@
+<node order="9" type="filter">
+  <label>20459</label>
+  <icon>DefaultTags.png</icon>
+  <content>games</content>
+  <group>tags</group>
+</node>

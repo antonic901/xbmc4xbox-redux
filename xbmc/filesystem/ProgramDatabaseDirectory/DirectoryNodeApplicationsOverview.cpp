@@ -29,7 +29,8 @@ using namespace std;
 
 Node ApplicationChildren[] = {
                                 { NODE_TYPE_TITLE_APPLICATIONS,    "titles",         369   },
-                                { NODE_TYPE_YEAR,                  "years",          562   }
+                                { NODE_TYPE_YEAR,                  "years",          562   },
+                                { NODE_TYPE_TAGS,                  "tags",           20459 }
                               };
 
 CDirectoryNodeApplicationsOverview::CDirectoryNodeApplicationsOverview(const CStdString& strName, CDirectoryNode* pParent)

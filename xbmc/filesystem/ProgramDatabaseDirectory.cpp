@@ -181,6 +181,10 @@ bool CProgramDatabaseDirectory::GetLabel(const CStdString& strDirectory, CStdStr
   if (params.GetPlatformId() != -1)
     strLabel += programdatabase.GetPlatformById(params.GetPlatformId());
 
+  // get tag
+  if (params.GetTagId() != -1)
+    strLabel += programdatabase.GetTagById(params.GetTagId());
+
   // get year
   if (params.GetYear() != -1)
   {
@@ -214,6 +218,8 @@ bool CProgramDatabaseDirectory::GetLabel(const CStdString& strDirectory, CStdStr
       strLabel = g_localizeStrings.Get(35105); break;
     case NODE_TYPE_YEAR: // Year
       strLabel = g_localizeStrings.Get(562); break;
+    case NODE_TYPE_TAGS: // Tags
+      strLabel = g_localizeStrings.Get(20459); break;
     case NODE_TYPE_GAMES_OVERVIEW: // Games
       strLabel = g_localizeStrings.Get(15016); break;
     case NODE_TYPE_APPLICATIONS_OVERVIEW: // Applications
@@ -265,6 +271,8 @@ CStdString CProgramDatabaseDirectory::GetIcon(const CStdString &strDirectory)
     return "DefaultFeature.png";
   case NODE_TYPE_PLATFORM: // Platforms
     return "DefaultPlatform.png";
+  case NODE_TYPE_TAGS: // Tags
+    return "DefaultTags.png";
   case NODE_TYPE_YEAR: // Year
     return "DefaultYear.png";
   case NODE_TYPE_GAMES_OVERVIEW: // Games
