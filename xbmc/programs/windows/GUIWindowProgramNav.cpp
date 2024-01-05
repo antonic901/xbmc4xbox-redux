@@ -402,6 +402,11 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
 
+  CGUIWindowProgramBase::GetContextButtons(itemNumber, buttons);
+
+  if (item && item->GetProperty("pluginreplacecontextitems").asBoolean())
+    return;
+
   CProgramDatabaseDirectory dir;
   NODE_TYPE node = dir.GetDirectoryChildType(m_vecItems->GetPath());
 
