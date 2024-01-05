@@ -1885,6 +1885,7 @@ void CSettings::LoadUserFolderLayout()
   CDirectory::Create(strDir);
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"music"));
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"video"));
+  CDirectory::Create(URIUtils::AddFileToFolder(strDir,"program"));
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"mixed"));
 }
 

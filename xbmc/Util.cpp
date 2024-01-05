@@ -2861,6 +2861,17 @@ CStdString CUtil::VideoPlaylistsLocation()
   return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
 }
 
+CStdString CUtil::ProgramPlaylistsLocation()
+{
+  vector<CStdString> vec;
+  CStdString strReturn;
+  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "program", strReturn);
+  vec.push_back(strReturn);
+  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "mixed", strReturn);
+  vec.push_back(strReturn);
+  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
+}
+
 void CUtil::DeleteMusicDatabaseDirectoryCache()
 {
   CUtil::DeleteDirectoryCache("mdb-");

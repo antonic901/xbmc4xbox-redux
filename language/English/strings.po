@@ -9245,3 +9245,7 @@ msgstr ""
 msgctxt "#35116"
 msgid "Remove application from library"
 msgstr ""
+
+msgctxt "#35117"
+msgid "Program playlists"
+msgstr ""

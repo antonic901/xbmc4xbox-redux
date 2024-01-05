@@ -116,6 +116,8 @@ CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) con
     return "RecentlyAddedGames";
   else if (path.Equals("programdb://recentlyplayedgames/"))
     return "RecentlyPlayedGames";
+  else if (path.Equals("special://programplaylists/"))
+    return "Playlists";
   else if (path.Equals("sources://programs/"))
     return "Files";
   else

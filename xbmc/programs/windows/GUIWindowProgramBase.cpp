@@ -482,6 +482,15 @@ bool CGUIWindowProgramBase::GetDirectory(const CStdString &strDirectory, CFileIt
 {
   bool bResult = CGUIMediaWindow::GetDirectory(strDirectory, items);
 
+  // add in the "New Playlist" item if we're in the playlists folder
+  if ((items.GetPath() == "special://programplaylists/") && !items.Contains("newplaylist://"))
+  {
+    CFileItemPtr newPlaylist(new CFileItem("newsmartplaylist://program", false));
+    newPlaylist->SetLabel(g_localizeStrings.Get(21437));  // "new smart playlist..."
+    newPlaylist->SetLabelPreformated(true);
+    items.Add(newPlaylist);
+  }
+
   // TODO: implement this
 
   return bResult;
@@ -623,7 +632,9 @@ void CGUIWindowProgramBase::OnScan(const CStdString& strPath, bool scanAll)
 
 CStdString CGUIWindowProgramBase::GetStartFolder(const CStdString &dir)
 {
-  if (dir.Equals("Plugins") || dir.Equals("Addons"))
+  if (dir.Equals("$PLAYLISTS") || dir.Equals("Playlists"))
+    return "special://programplaylists/";
+  else if (dir.Equals("Plugins") || dir.Equals("Addons"))
     return "addons://sources/executable/";
   return CGUIMediaWindow::GetStartFolder(dir);
 }

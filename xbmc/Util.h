@@ -169,6 +169,7 @@ public:
   static void DeleteProgramDatabaseDirectoryCache();
   static CStdString MusicPlaylistsLocation();
   static CStdString VideoPlaylistsLocation();
+  static CStdString ProgramPlaylistsLocation();
 
   static bool SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute);
   static int GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew);

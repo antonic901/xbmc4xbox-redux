@@ -338,6 +338,11 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   }
   else if (m_type == "programs")
   {
+    CMediaSource share1;
+    share1.m_ignore = true;
+    share1.strPath = "special://programplaylists/";
+    share1.strName = g_localizeStrings.Get(35117);
+    extraShares.push_back(share1);
     /*if (ADDON::CAddonMgr::Get().HasAddons(ADDON::ADDON_PLUGIN, CONTENT_PROGRAMS))
     {
       CMediaSource share2;
