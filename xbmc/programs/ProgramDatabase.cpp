@@ -1608,10 +1608,15 @@ void CProgramDatabase::GetFilePathById(int idGame, CStdString &filePath, PROGRAM
     CStdString strSQL;
     if (iType == PROGRAMDB_CONTENT_GAMES)
       strSQL=PrepareSQL("select path.strPath,files.strFileName from path, files, game where path.idPath=files.idPath and files.idFile=game.idFile and game.idGame=%i order by strFilename", idGame );
+    else if (iType == PROGRAMDB_CONTENT_APPLICATIONS)
+      strSQL=PrepareSQL("select path.strPath,files.strFileName from path, files, application where path.idPath=files.idPath and files.idFile=application.idFile and application.idApplication=%i order by strFilename", idGame );
 
     m_pDS->query( strSQL.c_str() );
     if (!m_pDS->eof())
-      filePath = m_pDS->fv("path.strPath").get_asString();
+    {
+      CStdString fileName = m_pDS->fv("files.strFilename").get_asString();
+      ConstructPath(filePath,m_pDS->fv("path.strPath").get_asString(),fileName);
+    }
     m_pDS->close();
   }
   catch (...)
