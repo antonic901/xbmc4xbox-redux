@@ -260,3 +260,29 @@ VECSOURCES& CGUIViewStateWindowProgramNav::GetSources()
 
   return CGUIViewStateWindowProgram::GetSources();
 }
+
+CGUIViewStateProgramGames::CGUIViewStateProgramGames(const CFileItemList& items) : CGUIViewStateWindowProgram(items)
+{
+  AddSortMethod(SortBySortTitle, 556, LABEL_MASKS("%T", "%R", "%T", "%R"),  // Title, Rating | Title, Rating
+    g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  AddSortMethod(SortByRating, 563, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
+  AddSortMethod(SortByMPAA, 20074, LABEL_MASKS("%T", "%O"));  // Title, MPAA | empty, empty
+  AddSortMethod(SortByYear, 562, LABEL_MASKS("%T", "%Y", "%T", "%Y"));  // Title, Year | Title, Year
+
+  if (items.IsSmartPlayList() || items.IsLibraryFolder())
+    AddPlaylistOrder(items, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
+  else
+  {
+    SetSortMethod(g_settings.m_viewStateProgramNavTitles.m_sortDescription);
+    SetSortOrder(g_settings.m_viewStateProgramNavTitles.m_sortDescription.sortOrder);
+  }
+
+  SetViewAsControl(g_settings.m_viewStateProgramNavTitles.m_viewMode);
+
+  LoadViewState(items.GetPath(), WINDOW_PROGRAM_NAV);
+}
+
+void CGUIViewStateProgramGames::SaveViewState()
+{
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavTitles);
+}

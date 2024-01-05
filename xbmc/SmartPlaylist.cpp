@@ -543,6 +543,33 @@ vector<Field> CSmartPlaylistRule::GetFields(const CStdString &type)
     fields.push_back(FieldDateAdded);
     isVideo = true;
   }
+  else if (type == "games")
+  {
+    fields.push_back(FieldTitle);
+    fields.push_back(FieldPlot);
+    fields.push_back(FieldRating);
+    fields.push_back(FieldPlaycount);
+    fields.push_back(FieldLastPlayed);
+    fields.push_back(FieldGenre);
+    fields.push_back(FieldYear);
+    fields.push_back(FieldMPAA);
+    fields.push_back(FieldTrailer);
+    fields.push_back(FieldFilename);
+    fields.push_back(FieldPath);
+    fields.push_back(FieldTag);
+    fields.push_back(FieldDateAdded);
+  }
+  else if (type == "applications")
+  {
+    fields.push_back(FieldTitle);
+    fields.push_back(FieldPlot);
+    fields.push_back(FieldRating);
+    fields.push_back(FieldYear);
+    fields.push_back(FieldFilename);
+    fields.push_back(FieldPath);
+    fields.push_back(FieldTag);
+    fields.push_back(FieldDateAdded);
+  }
   if (isVideo)
   {
     fields.push_back(FieldVideoResolution);
@@ -664,6 +691,29 @@ std::vector<SortBy> CSmartPlaylistRule::GetOrders(const CStdString &type)
     orders.push_back(SortByStudio);
     orders.push_back(SortByDateAdded);
   }
+  else if (type == "games")
+  {
+    orders.push_back(SortBySortTitle);
+    orders.push_back(SortByRating);
+    orders.push_back(SortByPlaycount);
+    orders.push_back(SortByLastPlayed);
+    orders.push_back(SortByGenre);
+    orders.push_back(SortByYear);
+    orders.push_back(SortByMPAA);
+    orders.push_back(SortByFile);
+    orders.push_back(SortByPath);
+    orders.push_back(SortByDateAdded);
+  }
+  else if (type == "applications")
+  {
+    orders.push_back(SortBySortTitle);
+    orders.push_back(SortByRating);
+    orders.push_back(SortByPlaycount);
+    orders.push_back(SortByYear);
+    orders.push_back(SortByFile);
+    orders.push_back(SortByPath);
+    orders.push_back(SortByDateAdded);
+  }
   orders.push_back(SortByRandom);
 
   return orders;
@@ -708,6 +758,19 @@ std::vector<Field> CSmartPlaylistRule::GetGroups(const CStdString &type)
     groups.push_back(FieldYear);
     groups.push_back(FieldDirector);
     groups.push_back(FieldStudio);
+    groups.push_back(FieldTag);
+  }
+  else if (type == "games")
+  {
+    groups.push_back(FieldNone);
+    groups.push_back(FieldGenre);
+    groups.push_back(FieldYear);
+    groups.push_back(FieldTag);
+  }
+  else if (type == "applications")
+  {
+    groups.push_back(FieldNone);
+    groups.push_back(FieldYear);
     groups.push_back(FieldTag);
   }
 
@@ -1043,6 +1106,26 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
         query = GetField(FieldId, strType) + negate + " IN (SELECT idEpisode FROM episodeview WHERE strStudio" + parameter + ")";
       else if (m_field == FieldMPAA)
         query = GetField(FieldId, strType) + negate + " IN (SELECT idEpisode FROM episodeview WHERE mpaa" + parameter + ")";
+    }
+    else if (strType == "games")
+    {
+      table = "gameview";
+
+      if (m_field == FieldGenre)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM genrelinkgame JOIN genre ON genre.idGenre=genrelinkgame.idGenre WHERE genre.strGenre" + parameter + ")";
+      else if ((m_field == FieldLastPlayed || m_field == FieldDateAdded) && (m_operator == OPERATOR_LESS_THAN || m_operator == OPERATOR_BEFORE || m_operator == OPERATOR_NOT_IN_THE_LAST))
+        query = GetField(m_field, strType) + " IS NULL OR " + GetField(m_field, strType) + parameter;
+      else if (m_field == FieldTag)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idMedia FROM taglinks JOIN tag ON tag.idTag = taglinks.idTag WHERE tag.strTag" + parameter + " AND taglinks.media_type = 'game')";
+    }
+    else if (strType == "applications")
+    {
+      table = "applicationview";
+
+      if ((m_field == FieldLastPlayed || m_field == FieldDateAdded) && (m_operator == OPERATOR_LESS_THAN || m_operator == OPERATOR_BEFORE || m_operator == OPERATOR_NOT_IN_THE_LAST))
+        query = GetField(m_field, strType) + " IS NULL OR " + GetField(m_field, strType) + parameter;
+      else if (m_field == FieldTag)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idMedia FROM taglinks JOIN tag ON tag.idTag = taglinks.idTag WHERE tag.strTag" + parameter + " AND taglinks.media_type = 'application')";
     }
     if (m_field == FieldVideoResolution)
       query = table + ".idFile" + negate + GetVideoResolutionQuery(*it);
@@ -1635,6 +1718,11 @@ bool CSmartPlaylist::IsMusicType() const
   return IsMusicType(m_playlistType);
 }
 
+bool CSmartPlaylist::IsProgramType() const
+{
+  return IsProgramType(m_playlistType);
+}
+
 bool CSmartPlaylist::IsVideoType(const CStdString &type)
 {
   return type == "movies" || type == "tvshows" || type == "episodes" ||
@@ -1645,6 +1733,11 @@ bool CSmartPlaylist::IsMusicType(const CStdString &type)
 {
   return type == "artists" || type == "albums" ||
          type == "songs" || type == "mixed";
+}
+
+bool CSmartPlaylist::IsProgramType(const CStdString &type)
+{
+  return type == "games" || type == "applications" || type == "mixed";
 }
 
 CStdString CSmartPlaylist::GetWhereClause(const CDatabase &db, set<CStdString> &referencedPlaylists) const
@@ -1663,6 +1756,8 @@ CStdString CSmartPlaylist::GetSaveLocation() const
     return "mixed";
   if (IsMusicType())
     return "music";
+  if (IsProgramType())
+    return "program";
   // all others are video
   return "video";
 }

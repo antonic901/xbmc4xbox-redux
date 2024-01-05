@@ -22,6 +22,7 @@
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramDatabase.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/Directory.h"
@@ -102,10 +103,14 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   database.Open();
   CVideoDatabase videodatabase;
   videodatabase.Open();
+  CProgramDatabase programdatabase;
+  programdatabase.Open();
 
   std::string basePath;
   if (CSmartPlaylist::IsMusicType(m_type))
     basePath = "musicdb://";
+  else if (CSmartPlaylist::IsProgramType(m_type))
+    basePath = "programdb://";
   else
     basePath = "videodb://";
 
@@ -132,11 +137,22 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     basePath += "tvshows/";
   }
 
+  PROGRAMDB_CONTENT_TYPE programtype = PROGRAMDB_CONTENT_GAMES;
+  if (m_type.Equals("games"))
+    basePath += "games/";
+  else if (m_type.Equals("applications"))
+  {
+    programtype = PROGRAMDB_CONTENT_APPLICATIONS;
+    basePath += "applications/";
+  }
+
   int iLabel = 0;
   if (m_rule.m_field == FieldGenre)
   {
     if (m_type.Equals("tvshows") || m_type.Equals("episodes") || m_type.Equals("movies"))
       videodatabase.GetGenresNav(basePath + "genres/", items, type);
+    else if (m_type.Equals("games") || m_type.Equals("applications"))
+      programdatabase.GetGenresNav(basePath + "genres/", items, programtype);
     else if (m_type.Equals("songs") || m_type.Equals("albums") || m_type.Equals("artists") || m_type.Equals("mixed"))
       database.GetGenresNav("musicdb://genres/",items);
     if (m_type.Equals("musicvideos") || m_type.Equals("mixed"))
@@ -185,10 +201,16 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   {
     if (CSmartPlaylist::IsMusicType(m_type))
       database.GetYearsNav("musicdb://years/", items);
-    if (!m_type.Equals("songs") && !m_type.Equals("albums") && !m_type.Equals("artists"))
+    if (!m_type.Equals("songs") && !m_type.Equals("albums") && !m_type.Equals("artists") && !CSmartPlaylist::IsProgramType(m_type))
     {
       CFileItemList items2;
       videodatabase.GetYearsNav(basePath + "years/", items2, type);
+      items.Append(items2);
+    }
+    if (CSmartPlaylist::IsProgramType(m_type))
+    {
+      CFileItemList items2;
+      programdatabase.GetYearsNav(basePath + "years/", items2, programtype);
       items.Append(items2);
     }
     iLabel = 562;
@@ -240,6 +262,16 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
       videodatabase.GetMusicVideosNav(basePath + "titles/", items);
       iLabel = 20389;
     }
+    else if (m_type.Equals("games"))
+    {
+      programdatabase.GetGamesNav(basePath + "titles/", items);
+      iLabel = 15016;
+    }
+    else if (m_type.Equals("applications"))
+    {
+      programdatabase.GetApplicationsNav(basePath + "titles/", items);
+      iLabel = 35108;
+    }
     else
       assert(false);
   }
@@ -253,6 +285,8 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     CStdString path = "special://videoplaylists/";
     if (m_type.Equals("songs") || m_type.Equals("albums"))
       path = "special://musicplaylists/";
+    if (m_type.Equals("games") || m_type.Equals("applications"))
+      path = "special://programplaylists/";
     XFILE::CDirectory::GetDirectory(path, items, ".xsp", XFILE::DIR_FLAG_NO_FILE_DIRS);
     for (int i = 0; i < items.Size(); i++)
     {
@@ -304,15 +338,28 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   }
   else if (m_rule.m_field == FieldTag)
   {
-    VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
-    if (m_type == "tvshows")
-      type = VIDEODB_CONTENT_TVSHOWS;
-    else if (m_type == "musicvideos")
-      type = VIDEODB_CONTENT_MUSICVIDEOS;
-    else if (m_type != "movies")
-      return;
+    if (CSmartPlaylist::IsVideoType(m_type))
+    {
+      VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
+      if (m_type == "tvshows")
+        type = VIDEODB_CONTENT_TVSHOWS;
+      else if (m_type == "musicvideos")
+        type = VIDEODB_CONTENT_MUSICVIDEOS;
+      else if (m_type != "movies")
+        return;
 
-    videodatabase.GetTagsNav(basePath + "tags/", items, type);
+      videodatabase.GetTagsNav(basePath + "tags/", items, type);
+    }
+    else
+    {
+      PROGRAMDB_CONTENT_TYPE type = PROGRAMDB_CONTENT_GAMES;
+      if (m_type == "applications")
+        type = PROGRAMDB_CONTENT_APPLICATIONS;
+      else if (m_type != "games")
+        return;
+
+      programdatabase.GetTagsNav(basePath + "tags/", items, type);
+    }
     iLabel = 20459;
   }
   else
