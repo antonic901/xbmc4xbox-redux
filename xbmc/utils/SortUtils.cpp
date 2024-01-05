@@ -199,9 +199,39 @@ string ByPlaylistOrder(SortAttribute attributes, const SortItem &values)
   return ByProgramCount(attributes, values);
 }
 
+string ByDeveloper(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldDeveloper)->second);
+}
+
+string ByPublisher(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldPublisher)->second);
+}
+
 string ByGenre(SortAttribute attributes, const SortItem &values)
 {
   return ArrayToString(attributes, values.find(FieldGenre)->second);
+}
+
+string ByDescriptor(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldDescriptor)->second);
+}
+
+string ByGeneralFeature(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldGeneralFeature)->second);
+}
+
+string ByOnlineFeature(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldOnlineFeature)->second);
+}
+
+string ByPlatform(SortAttribute attributes, const SortItem &values)
+{
+  return ArrayToString(attributes, values.find(FieldPlatform)->second);
 }
 
 string ByCountry(SortAttribute attributes, const SortItem &values)
@@ -559,6 +589,12 @@ map<SortBy, SortUtils::SortPreparator> fillPreparators()
   preparators[SortByListeners]                = ByListeners;
   preparators[SortByBitrate]                  = ByBitrate;
   preparators[SortByRandom]                   = ByRandom;
+  preparators[SortByDeveloper]                = ByDeveloper;
+  preparators[SortByPublisher]                = ByPublisher;
+  preparators[SortByDescriptor]               = ByDescriptor;
+  preparators[SortByGeneralFeature]           = ByGeneralFeature;
+  preparators[SortByOnlineFeature]            = ByOnlineFeature;
+  preparators[SortByPlatform]                 = ByPlatform;
 
   return preparators;
 }
@@ -626,6 +662,12 @@ map<SortBy, Fields> fillSortingFields()
   sortingFields[SortByPlaycount].insert(FieldPlaycount);
   sortingFields[SortByListeners].insert(FieldListeners);
   sortingFields[SortByBitrate].insert(FieldBitrate);
+  sortingFields[SortByDeveloper].insert(FieldDeveloper);
+  sortingFields[SortByPublisher].insert(FieldPublisher);
+  sortingFields[SortByDescriptor].insert(FieldDescriptor);
+  sortingFields[SortByGeneralFeature].insert(FieldGeneralFeature);
+  sortingFields[SortByOnlineFeature].insert(FieldOnlineFeature);
+  sortingFields[SortByPlatform].insert(FieldPlatform);
   sortingFields.insert(pair<SortBy, Fields>(SortByRandom, Fields()));
 
   return sortingFields;
@@ -763,7 +805,13 @@ const sort_map table[] = {
   { SortByArtist,                   SORT_METHOD_ARTIST_IGNORE_THE,            SortAttributeIgnoreArticle, 557 },
   { SortByAlbum,                    SORT_METHOD_ALBUM,                        SortAttributeNone,          558 },
   { SortByAlbum,                    SORT_METHOD_ALBUM_IGNORE_THE,             SortAttributeIgnoreArticle, 558 },
+  { SortByDeveloper,                SORT_METHOD_DEVELOPER,                    SortAttributeNone,          35121 },
+  { SortByPublisher,                SORT_METHOD_PUBLISHER,                    SortAttributeNone,          35122 },
   { SortByGenre,                    SORT_METHOD_GENRE,                        SortAttributeNone,          515 },
+  { SortByDescriptor,               SORT_METHOD_DESCRIPTOR,                   SortAttributeNone,          35123 },
+  { SortByGeneralFeature,           SORT_METHOD_GENERALFEATURE,               SortAttributeNone,          35124 },
+  { SortByOnlineFeature,            SORT_METHOD_ONLINEFEATURE,                SortAttributeNone,          35125 },
+  { SortByPlatform,                 SORT_METHOD_PLATFORM,                     SortAttributeNone,          35126 },
   { SortByCountry,                  SORT_METHOD_COUNTRY,                      SortAttributeNone,          574 },
   { SortByDateAdded,                SORT_METHOD_DATEADDED,                    SortAttributeIgnoreFolders, 570 },
   { SortByFile,                     SORT_METHOD_FILE,                         SortAttributeIgnoreFolders, 561 },

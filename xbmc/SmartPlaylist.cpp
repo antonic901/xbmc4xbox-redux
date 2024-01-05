@@ -76,7 +76,13 @@ static const translateField fields[] = {
   { "top250",            FieldTop250,                  SortByTop250,                   CSmartPlaylistRule::NUMERIC_FIELD,  false, 13409 },
   { "mpaarating",        FieldMPAA,                    SortByMPAA,                     CSmartPlaylistRule::TEXT_FIELD,     false, 20074 },
   { "dateadded",         FieldDateAdded,               SortByDateAdded,                CSmartPlaylistRule::DATE_FIELD,     false, 570 },
+  { "developer",         FieldDeveloper,               SortByDeveloper,                CSmartPlaylistRule::TEXT_FIELD,     true,  35121 },
+  { "publisher",         FieldPublisher,               SortByPublisher,                CSmartPlaylistRule::TEXT_FIELD,     true,  35122 },
   { "genre",             FieldGenre,                   SortByGenre,                    CSmartPlaylistRule::TEXT_FIELD,     true,  515 },
+  { "descriptor",        FieldDescriptor,              SortByDescriptor,               CSmartPlaylistRule::TEXT_FIELD,     true,  35123 },
+  { "generalfeature",    FieldGeneralFeature,          SortByGeneralFeature,           CSmartPlaylistRule::TEXT_FIELD,     true,  35124 },
+  { "onlinefeature",     FieldOnlineFeature,           SortByOnlineFeature,            CSmartPlaylistRule::TEXT_FIELD,     true,  35125 },
+  { "platform",          FieldPlatform,                SortByPlatform,                 CSmartPlaylistRule::TEXT_FIELD,     true,  35126 },
   { "plot",              FieldPlot,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 207 },
   { "plotoutline",       FieldPlotOutline,             SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 203 },
   { "tagline",           FieldTagline,                 SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 202 },
@@ -153,7 +159,13 @@ typedef struct
 static const group groups[] = { { "",           FieldUnknown,   false,    571 },
                                 { "none",       FieldNone,      false,    231 },
                                 { "sets",       FieldSet,       true,   20434 },
+                                { "developers", FieldDeveloper, false,  35100 },
+                                { "publishers", FieldPublisher, false,  35101 },
                                 { "genres",     FieldGenre,     false,    135 },
+                                { "descriptors",     FieldDescriptor,     false,  35102 },
+                                { "generalfeatures", FieldGeneralFeature, false,  35103 },
+                                { "onlinefeatures",  FieldOnlineFeature,  false,  35104 },
+                                { "platforms",  FieldPlatform,  false,  35105 },
                                 { "years",      FieldYear,      false,    652 },
                                 { "actors",     FieldActor,     false,    344 },
                                 { "directors",  FieldDirector,  false,  20348 },
@@ -550,7 +562,13 @@ vector<Field> CSmartPlaylistRule::GetFields(const CStdString &type)
     fields.push_back(FieldRating);
     fields.push_back(FieldPlaycount);
     fields.push_back(FieldLastPlayed);
+    fields.push_back(FieldDeveloper);
+    fields.push_back(FieldPublisher);
     fields.push_back(FieldGenre);
+    fields.push_back(FieldDescriptor);
+    fields.push_back(FieldGeneralFeature);
+    fields.push_back(FieldOnlineFeature);
+    fields.push_back(FieldPlatform);
     fields.push_back(FieldYear);
     fields.push_back(FieldMPAA);
     fields.push_back(FieldTrailer);
@@ -763,7 +781,13 @@ std::vector<Field> CSmartPlaylistRule::GetGroups(const CStdString &type)
   else if (type == "games")
   {
     groups.push_back(FieldNone);
+    groups.push_back(FieldDeveloper);
+    groups.push_back(FieldPublisher);
     groups.push_back(FieldGenre);
+    groups.push_back(FieldDescriptor);
+    groups.push_back(FieldGeneralFeature);
+    groups.push_back(FieldOnlineFeature);
+    groups.push_back(FieldPublisher);
     groups.push_back(FieldYear);
     groups.push_back(FieldTag);
   }
@@ -1111,8 +1135,20 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
     {
       table = "gameview";
 
-      if (m_field == FieldGenre)
+      if (m_field == FieldDeveloper)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM developerlinkgame JOIN developer ON developer.idDeveloper=developerlinkgame.idDeveloper WHERE developer.strDeveloper" + parameter + ")";
+      else if (m_field == FieldPublisher)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM publisherlinkgame JOIN publisher ON publisher.idPublisher=publisherlinkgame.idPublisher WHERE publisher.strPublisher" + parameter + ")";
+      else if (m_field == FieldGenre)
         query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM genrelinkgame JOIN genre ON genre.idGenre=genrelinkgame.idGenre WHERE genre.strGenre" + parameter + ")";
+      else if (m_field == FieldDescriptor)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM descriptorlinkgame JOIN descriptor ON descriptor.idDescriptor=descriptorlinkgame.idDescriptor WHERE descriptor.strDescriptor" + parameter + ")";
+      else if (m_field == FieldGeneralFeature)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM generalfeaturelinkgame JOIN generalfeature ON generalfeature.idGeneralFeature=generalfeaturelinkgame.idGeneralFeature WHERE generalfeature.strGeneralFeature" + parameter + ")";
+      else if (m_field == FieldOnlineFeature)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM onlinefeaturelinkgame JOIN onlinefeature ON onlinefeature.idOnlineFeature=onlinefeaturelinkgame.idOnlineFeature WHERE onlinefeature.strOnlineFeature" + parameter + ")";
+      else if (m_field == FieldPlatform)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM platformlinkgame JOIN platform ON platform.idPlatform=platformlinkgame.idPlatform WHERE platform.strPlatform" + parameter + ")";
       else if ((m_field == FieldLastPlayed || m_field == FieldDateAdded) && (m_operator == OPERATOR_LESS_THAN || m_operator == OPERATOR_BEFORE || m_operator == OPERATOR_NOT_IN_THE_LAST))
         query = GetField(m_field, strType) + " IS NULL OR " + GetField(m_field, strType) + parameter;
       else if (m_field == FieldTag)

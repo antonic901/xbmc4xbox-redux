@@ -163,6 +163,36 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     }
     iLabel = 515;
   }
+  else if (m_rule.m_field == FieldDeveloper)
+  {
+    programdatabase.GetDevelopersNav(basePath + "developers/", items, programtype);
+    iLabel = 35121;
+  }
+  else if (m_rule.m_field == FieldPublisher)
+  {
+    programdatabase.GetPublishersNav(basePath + "publishers/", items, programtype);
+    iLabel = 35122;
+  }
+  else if (m_rule.m_field == FieldDescriptor)
+  {
+    programdatabase.GetDescriptorsNav(basePath + "descriptors/", items, programtype);
+    iLabel = 35123;
+  }
+  else if (m_rule.m_field == FieldGeneralFeature)
+  {
+    programdatabase.GetGeneralFeaturesNav(basePath + "generalfeatures/", items, programtype);
+    iLabel = 35124;
+  }
+  else if (m_rule.m_field == FieldOnlineFeature)
+  {
+    programdatabase.GetOnlineFeaturesNav(basePath + "onlinefeatures/", items, programtype);
+    iLabel = 35125;
+  }
+  else if (m_rule.m_field == FieldPlatform)
+  {
+    programdatabase.GetPlatformsNav(basePath + "platforms/", items, programtype);
+    iLabel = 35126;
+  }
   else if (m_rule.m_field == FieldCountry)
   {
     videodatabase.GetCountriesNav(basePath, items, type);

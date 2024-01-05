@@ -242,7 +242,13 @@ void CProgramInfoTag::Serialize(CVariant& value)
 
 void CProgramInfoTag::ToSortable(SortItem& sortable)
 {
+  sortable[FieldDeveloper] = m_developer;
+  sortable[FieldPublisher] = m_publisher;
   sortable[FieldGenre] = m_genre;
+  sortable[FieldDescriptor] = m_descriptor;
+  sortable[FieldGeneralFeature] = m_generalFeature;
+  sortable[FieldOnlineFeature] = m_onlineFeature;
+  sortable[FieldPlatform] = m_platform;
   sortable[FieldPlot] = m_strPlot;
   sortable[FieldTitle] = m_strTitle;
   sortable[FieldTrailer] = m_strTrailer;

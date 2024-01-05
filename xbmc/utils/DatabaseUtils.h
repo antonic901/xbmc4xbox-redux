@@ -59,7 +59,13 @@ typedef enum {
 
   // fields retrievable from the database
   FieldId,
+  FieldDeveloper,
+  FieldPublisher,
   FieldGenre,
+  FieldDescriptor,
+  FieldGeneralFeature,
+  FieldOnlineFeature,
+  FieldPlatform,
   FieldAlbum,
   FieldArtist,
   FieldAlbumArtist,
