@@ -29,6 +29,7 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "filesystem/ProgramDatabaseDirectory.h"
 #include "filesystem/Directory.h"
 #include "settings/GUIDialogContentSettings.h"
@@ -501,6 +502,21 @@ bool CGUIWindowProgramBase::OnClick(int iItem)
   return CGUIMediaWindow::OnClick(iItem);
 }
 
+void CGUIWindowProgramBase::GetContextButtons(int itemNumber, CContextButtons &buttons)
+{
+  CFileItemPtr item;
+  if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
+    item = m_vecItems->Get(itemNumber);
+
+  // contextual buttons
+  if (item && !item->GetProperty("pluginreplacecontextitems").asBoolean() && !item->IsParentFolder())
+  {
+    if (item->IsSmartPlayList() || m_vecItems->IsSmartPlayList())
+      buttons.Add(CONTEXT_BUTTON_EDIT_SMART_PLAYLIST, 586);
+  }
+  CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
+}
+
 bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 {
   CFileItemPtr item;
@@ -559,6 +575,13 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
   case CONTEXT_BUTTON_DELETE:
     OnDeleteItem(itemNumber);
     return true;
+  case CONTEXT_BUTTON_EDIT_SMART_PLAYLIST:
+    {
+      CStdString playlist = m_vecItems->Get(itemNumber)->IsSmartPlayList() ? m_vecItems->Get(itemNumber)->GetPath() : m_vecItems->GetPath(); // save path as activatewindow will destroy our items
+      if (CGUIDialogSmartPlaylistEditor::EditPlaylist(playlist, "program"))
+        Refresh(true); // need to update
+      return true;
+    }
   case CONTEXT_BUTTON_RENAME:
     OnRenameItem(itemNumber);
     return true;
