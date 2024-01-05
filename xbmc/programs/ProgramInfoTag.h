@@ -75,5 +75,3 @@ public:
 private:
   void ParseNative(const TiXmlElement* program);
 };
-
-typedef std::vector<CProgramInfoTag> VECPROGRAMS;

@@ -55,8 +55,6 @@ namespace dbiplus
 #endif
 #endif
 
-typedef std::vector<CProgramInfoTag> VECPROGRAMS;
-
 namespace PROGRAM
 {
   class IProgramInfoScannerObserver;
