@@ -201,7 +201,8 @@ void CProgramDatabase::CreateViews()
               "  path.strPath AS strPath, "
               "  files.playCount AS playCount,"
               "  files.lastPlayed AS lastPlayed,"
-              "  files.dateAdded AS dateAdded "
+              "  files.dateAdded AS dateAdded,"
+              "  files.titleId as titleId "
               "FROM game"
               "  JOIN files ON"
               "    files.idFile=game.idFile"
@@ -218,7 +219,8 @@ void CProgramDatabase::CreateViews()
               "  application.*,"
               "  files.strFileName AS strFileName,"
               "  path.strPath AS strPath, "
-              "  files.dateAdded AS dateAdded "
+              "  files.dateAdded AS dateAdded,"
+              "  files.titleId as titleId "
               "FROM application"
               "  JOIN files ON"
               "    files.idFile=application.idFile"
@@ -2140,6 +2142,7 @@ CProgramInfoTag CProgramDatabase::GetDetailsForGame(const dbiplus::sql_record* c
   details.m_playCount = record->at(PROGRAMDB_DETAILS_GAME_PLAYCOUNT).get_asInt();
   details.m_lastPlayed.SetFromDBDateTime(record->at(PROGRAMDB_DETAILS_GAME_LASTPLAYED).get_asString());
   details.m_dateAdded.SetFromDBDateTime(record->at(PROGRAMDB_DETAILS_GAME_DATEADDED).get_asString());
+  details.m_strXBENumber = record->at(PROGRAMDB_DETAILS_GAME_TITLEID).get_asString();
 
   gameTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
 
@@ -2170,6 +2173,7 @@ CProgramInfoTag CProgramDatabase::GetDetailsForApplication(const dbiplus::sql_re
   CStdString strFileName = record->at(PROGRAMDB_DETAILS_APPLICATION_FILE).get_asString();
   ConstructPath(details.m_strFileNameAndPath,details.m_strPath,strFileName);
   details.m_dateAdded.SetFromDBDateTime(record->at(PROGRAMDB_DETAILS_APPLICATION_DATEADDED).get_asString());
+  details.m_strXBENumber = record->at(PROGRAMDB_DETAILS_APPLICATION_TITLEID).get_asString();
 
   gameTime += CTimeUtils::GetTimeMS() - time; time = CTimeUtils::GetTimeMS();
 

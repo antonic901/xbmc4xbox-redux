@@ -29,15 +29,21 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogTrainerSettings.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "filesystem/ProgramDatabaseDirectory.h"
+#include "filesystem/File.h"
 #include "filesystem/Directory.h"
+#include "filesystem/RarManager.h"
+#include "filesystem/HDDirectory.h"
 #include "settings/GUIDialogContentSettings.h"
 #include "GUIWindowManager.h"
 #include "utils/log.h"
+#include "utils/Trainer.h"
 #include "utils/URIUtils.h"
 #include "utils/FileUtils.h"
 #include "utils/EmulatorUtils.h"
+#include "xbox/xbeheader.h"
 
 using namespace std;
 using namespace XFILE;
@@ -74,6 +80,7 @@ bool CGUIWindowProgramBase::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_INIT:
     {
+      m_iRegionSet = 0;
       m_database.Open();
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -513,6 +520,40 @@ void CGUIWindowProgramBase::GetContextButtons(int itemNumber, CContextButtons &b
   {
     if (item->IsSmartPlayList() || m_vecItems->IsSmartPlayList())
       buttons.Add(CONTEXT_BUTTON_EDIT_SMART_PLAYLIST, 586);
+
+    CStdString strXbePath = item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath();
+    if (!item->m_bIsFolder && URIUtils::GetExtension(strXbePath).Equals(".xbe"))
+    { // XBE related buttons (save games, trainers, launch etc.)
+      CStdString strLaunch = g_localizeStrings.Get(518);
+      if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+      {
+        int iRegion = GetRegion(itemNumber);
+        if (iRegion == VIDEO_NTSCM)
+          strLaunch += " (NTSC-M)";
+        if (iRegion == VIDEO_NTSCJ)
+          strLaunch += " (NTSC-J)";
+        if (iRegion == VIDEO_PAL50)
+          strLaunch += " (PAL)";
+        if (iRegion == VIDEO_PAL60)
+          strLaunch += " (PAL-60)";
+        buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519); // launch in video mode
+      }
+      buttons.Add(CONTEXT_BUTTON_LAUNCH, strLaunch); // Launch
+
+      CStdString strTitleId;
+      DWORD dwTitleId = CUtil::GetXbeID(strXbePath);
+      strTitleId.Format("%08X", dwTitleId);
+
+      CStdString strGameSavepath;
+      URIUtils::AddFileToFolder("E:\\udata\\", strTitleId, strGameSavepath);
+      if (CDirectory::Exists(strGameSavepath))
+        buttons.Add(CONTEXT_BUTTON_GAMESAVES, 20322);
+
+      if (m_database.ItemHasTrainer(dwTitleId))
+        buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 12015);
+
+      buttons.Add(CONTEXT_BUTTON_SCAN_TRAINERS, 12012);
+    }
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
 }
@@ -585,6 +626,32 @@ bool CGUIWindowProgramBase::OnContextButton(int itemNumber, CONTEXT_BUTTON butto
   case CONTEXT_BUTTON_RENAME:
     OnRenameItem(itemNumber);
     return true;
+  case CONTEXT_BUTTON_TRAINER_OPTIONS:
+    {
+      DWORD dwTitleId = CUtil::GetXbeID(item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath());
+      if (CGUIDialogTrainerSettings::ShowForTitle(dwTitleId, &m_database))
+        Update(m_vecItems->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_SCAN_TRAINERS:
+    {
+      PopulateTrainersList();
+      Update(m_vecItems->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_GAMESAVES:
+    {
+      CStdString strTitleID;
+      CStdString strGameSavepath;
+      strTitleID.Format("%08X", CUtil::GetXbeID(item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath()));
+      URIUtils::AddFileToFolder("E:\\udata\\", strTitleID, strGameSavepath);
+      g_windowManager.ActivateWindow(WINDOW_GAMESAVES, strGameSavepath);
+      return true;
+    }
+  case CONTEXT_BUTTON_LAUNCH:
+    return OnPlayMedia(itemNumber);
+  case CONTEXT_BUTTON_LAUNCH_IN:
+    return OnChooseVideoModeAndLaunch(itemNumber);
   default:
     break;
   }
@@ -605,22 +672,36 @@ bool CGUIWindowProgramBase::OnPlayMedia(int iItem)
 
   CFileItemPtr pItem = m_vecItems->Get(iItem);
   
-  CProgramDatabase database;
-  if (pItem->GetProgramInfoTag()->m_type.Equals("game"))
+  if (pItem->HasProgramInfoTag() && m_database.Open())
   {
-    if (database.Open())
+    m_database.IncrementPlayCount(*pItem);
+    m_database.Close();
+  }
+
+  CFileItem file;
+  file.SetPath(pItem->HasProgramInfoTag() ? pItem->GetProgramInfoTag()->m_strFileNameAndPath : pItem->GetPath());
+  if (file.IsXBE())
+  {
+    DWORD dwTitleId = CUtil::GetXbeID(file.GetPath());
+    
+    // check if trainer is activated for this game
+    CStdString strTrainer = m_database.GetActiveTrainer(dwTitleId);
+    if (strTrainer != "")
     {
-      database.IncrementPlayCount(*pItem);
-      database.Close();
+      CTrainer trainer;
+      if (trainer.Load(strTrainer))
+      {
+        m_database.GetTrainerOptions(strTrainer, dwTitleId, trainer.GetOptions(), trainer.GetNumberOfOptions());
+        CUtil::InstallTrainer(trainer);
+      }
     }
 
-    CFileItem file;
-    file.SetPath(pItem->HasProgramInfoTag() ? pItem->GetProgramInfoTag()->m_strFileNameAndPath : pItem->GetPath());
-    if (file.IsXBE())
-      CUtil::RunXBE(pItem->GetProgramInfoTag()->m_strFileNameAndPath, NULL);
-    else if (file.IsROM())
-      EmulatorUtils::ChooseEmulatorAndLaunch(file.GetPath());
+    // Check for region override
+    int iRegion = m_iRegionSet ? m_iRegionSet : GetRegion(iItem);
+    CUtil::RunXBE(file.GetPath(), NULL, F_VIDEO(iRegion));
   }
+  else if (file.IsROM())
+    return EmulatorUtils::ChooseEmulatorAndLaunch(file.GetPath());
 
   return false;
 }
@@ -750,4 +831,241 @@ void CGUIWindowProgramBase::OnDeleteItem(CFileItemPtr item)
   }
 
   CFileUtils::DeleteItem(item);
+}
+
+bool CGUIWindowProgramBase::OnChooseVideoModeAndLaunch(int item)
+{
+  if (item < 0 || item >= m_vecItems->Size()) return false;
+
+  int btn_PAL = 1;
+  int btn_NTSCM = 2;
+  int btn_NTSCJ = 3;
+  int btn_PAL60 = 4;
+  CStdString strPAL, strNTSCJ, strNTSCM, strPAL60;
+  strPAL = "PAL";
+  strNTSCM = "NTSC-M";
+  strNTSCJ = "NTSC-J";
+  strPAL60 = "PAL-60";
+  int iRegion = GetRegion(item,true);
+
+  if (iRegion == VIDEO_NTSCM)
+    strNTSCM += " (default)";
+  if (iRegion == VIDEO_NTSCJ)
+    strNTSCJ += " (default)";
+  if (iRegion == VIDEO_PAL50)
+    strPAL += " (default)";
+
+  // add the needed buttons
+  CContextButtons choices;
+  choices.Add(btn_PAL, strPAL);
+  choices.Add(btn_NTSCM, strNTSCM);
+  choices.Add(btn_NTSCJ, strNTSCJ);
+  choices.Add(btn_PAL60, strPAL60);
+
+  int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
+
+  if (btnid == btn_NTSCM)
+  {
+    m_iRegionSet = VIDEO_NTSCM;
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),1);
+  }
+  if (btnid == btn_NTSCJ)
+  {
+    m_iRegionSet = VIDEO_NTSCJ;
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),2);
+  }
+  if (btnid == btn_PAL)
+  {
+    m_iRegionSet = VIDEO_PAL50;
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),4);
+  }
+  if (btnid == btn_PAL60)
+  {
+    m_iRegionSet = VIDEO_PAL60;
+    m_database.SetRegion(m_vecItems->Get(item)->GetPath(),8);
+  }
+
+  if (btnid > -1)
+    return OnPlayMedia(item);
+
+  return true;
+}
+
+int CGUIWindowProgramBase::GetRegion(int iItem, bool bReload)
+{
+  if (!g_guiSettings.GetBool("myprograms.gameautoregion"))
+    return 0;
+
+  int iRegion;
+  if (bReload || m_vecItems->Get(iItem)->IsOnDVD() || !m_vecItems->Get(iItem)->HasProgramInfoTag())
+  {
+    CXBE xbe;
+    iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
+  }
+  else
+  {
+    m_database.Open();
+    iRegion = m_database.GetRegion(m_vecItems->Get(iItem)->GetPath());
+    m_database.Close();
+  }
+  if (iRegion == -1)
+  {
+    if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+    {
+      CXBE xbe;
+      iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
+      if (iRegion < 1 || iRegion > 7)
+        iRegion = 0;
+      m_database.SetRegion(m_vecItems->Get(iItem)->GetPath(),iRegion);
+    }
+    else
+      iRegion = 0;
+  }
+
+  if (bReload)
+    return CXBE::FilterRegion(iRegion,true);
+  else
+    return CXBE::FilterRegion(iRegion);
+}
+
+void CGUIWindowProgramBase::PopulateTrainersList()
+{
+  CDirectory directory;
+  CFileItemList trainers;
+  CFileItemList archives;
+  CFileItemList inArchives;
+  // first, remove any dead items
+  std::vector<CStdString> vecTrainerPath;
+  m_database.GetAllTrainers(vecTrainerPath);
+  CGUIDialogProgress* m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  m_dlgProgress->SetLine(0,12023);
+  m_dlgProgress->SetLine(1,"");
+  m_dlgProgress->SetLine(2,"");
+  m_dlgProgress->StartModal();
+  m_dlgProgress->SetHeading(12012);
+  m_dlgProgress->ShowProgressBar(true);
+  m_dlgProgress->Progress();
+
+  bool bBreak=false;
+  bool bDatabaseState = m_database.IsOpen();
+  if (!bDatabaseState)
+    m_database.Open();
+  m_database.BeginTransaction();
+  for (unsigned int i=0;i<vecTrainerPath.size();++i)
+  {
+    m_dlgProgress->SetPercentage((int)((float)i/(float)vecTrainerPath.size()*100.f));
+    CStdString strLine;
+    strLine.Format("%s %i / %i",g_localizeStrings.Get(12013).c_str(), i+1,vecTrainerPath.size());
+    m_dlgProgress->SetLine(1,strLine);
+    m_dlgProgress->Progress();
+    if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(g_guiSettings.GetString("myprograms.trainerpath",false)) == -1)
+      m_database.RemoveTrainer(vecTrainerPath[i]);
+    if (m_dlgProgress->IsCanceled())
+    {
+      bBreak = true;
+      m_database.RollbackTransaction();
+      break;
+    }
+  }
+  if (!bBreak)
+  {
+    CLog::Log(LOGDEBUG,"trainerpath %s",g_guiSettings.GetString("myprograms.trainerpath",false).c_str());
+    directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm");
+    if (g_guiSettings.GetString("myprograms.trainerpath",false).IsEmpty())
+    {
+      m_database.RollbackTransaction();
+      m_dlgProgress->Close();
+
+      return;
+    }
+
+    directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
+    for( int i=0;i<archives.Size();++i)
+    {
+      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".rar") == 0)
+      {
+        g_RarManager.GetFilesInRar(inArchives,archives[i]->GetPath(),false);
+        CHDDirectory dir;
+        dir.SetMask(".xbtf|.etm");
+        for (int j=0;j<inArchives.Size();++j)
+          if (dir.IsAllowed(inArchives[j]->GetPath()))
+          {
+            CFileItemPtr item(new CFileItem(*inArchives[j]));
+            CStdString strPathInArchive = item->GetPath();
+            CStdString path;
+            URIUtils::CreateArchivePath(path, "rar", archives[i]->GetPath(), strPathInArchive,"");
+            item->SetPath(path);
+            trainers.Add(item);
+          }
+      }
+      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".zip")==0)
+      {
+        // add trainers in zip
+        CStdString strZipPath;
+        URIUtils::CreateArchivePath(strZipPath,"zip",archives[i]->GetPath(),"");
+        CFileItemList zipTrainers;
+        directory.GetDirectory(strZipPath,zipTrainers,".etm|.xbtf");
+        for (int j=0;j<zipTrainers.Size();++j)
+        {
+          CFileItemPtr item(new CFileItem(*zipTrainers[j]));
+          trainers.Add(item);
+        }
+      }
+    }
+    if (!m_dlgProgress)
+      m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+    m_dlgProgress->SetPercentage(0);
+    m_dlgProgress->ShowProgressBar(true);
+
+    CLog::Log(LOGDEBUG,"# trainers %i",trainers.Size());
+    m_dlgProgress->SetLine(1,"");
+    int j=0;
+    while (j < trainers.Size())
+    {
+      if (trainers[j]->m_bIsFolder)
+        trainers.Remove(j);
+      else
+        j++;
+    }
+    for (int i=0;i<trainers.Size();++i)
+    {
+      CLog::Log(LOGDEBUG,"found trainer %s",trainers[i]->GetPath().c_str());
+      m_dlgProgress->SetPercentage((int)((float)(i)/trainers.Size()*100.f));
+      CStdString strLine;
+      strLine.Format("%s %i / %i",g_localizeStrings.Get(12013).c_str(), i+1,trainers.Size());
+      m_dlgProgress->SetLine(0,strLine);
+      m_dlgProgress->SetLine(2,"");
+      m_dlgProgress->Progress();
+      if (m_database.HasTrainer(trainers[i]->GetPath())) // skip existing trainers
+        continue;
+
+      CTrainer trainer;
+      if (trainer.Load(trainers[i]->GetPath()))
+      {
+        m_dlgProgress->SetLine(1,trainer.GetName());
+        m_dlgProgress->SetLine(2,"");
+        m_dlgProgress->Progress();
+        unsigned int iTitle1, iTitle2, iTitle3;
+        trainer.GetTitleIds(iTitle1,iTitle2,iTitle3);
+        if (iTitle1)
+          m_database.AddTrainer(iTitle1,trainers[i]->GetPath());
+        if (iTitle2)
+          m_database.AddTrainer(iTitle2,trainers[i]->GetPath());
+        if (iTitle3)
+          m_database.AddTrainer(iTitle3,trainers[i]->GetPath());
+      }
+      if (m_dlgProgress->IsCanceled())
+      {
+        m_database.RollbackTransaction();
+        break;
+      }
+    }
+  }
+  m_database.CommitTransaction();
+  m_dlgProgress->Close();
+
+  if (!bDatabaseState)
+    m_database.Close();
+  else
+    Update(m_vecItems->GetPath());
 }

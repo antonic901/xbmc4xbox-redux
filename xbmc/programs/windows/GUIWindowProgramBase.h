@@ -65,9 +65,15 @@ protected:
 
   static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
 
+  int GetRegion(int iItem, bool bReload=false);
+  bool OnChooseVideoModeAndLaunch(int iItem);
+  void PopulateTrainersList();
+
   CGUIDialogProgress* m_dlgProgress;
   CProgramDatabase m_database;
 
   CProgramThumbLoader m_thumbLoader;
   bool m_stackingAvailable;
+
+  int m_iRegionSet; // for launching XBEs outside of library
 };
