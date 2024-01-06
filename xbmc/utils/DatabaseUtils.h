@@ -124,7 +124,8 @@ typedef enum {
   FieldBorn,
   FieldBandFormed,
   FieldDisbanded,
-  FieldDied
+  FieldDied,
+  FieldExclusive
 } Field;
 
 typedef std::set<Field> Fields;

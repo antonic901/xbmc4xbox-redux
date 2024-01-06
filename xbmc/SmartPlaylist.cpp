@@ -116,7 +116,8 @@ static const translateField fields[] = {
   { "born",              FieldBorn,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21893 },
   { "bandformed",        FieldBandFormed,              SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21894 },
   { "disbanded",         FieldDisbanded,               SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21896 },
-  { "died",              FieldDied,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21897 }
+  { "died",              FieldDied,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21897 },
+  { "isexclusive",       FieldExclusive,               SortByNone,                     CSmartPlaylistRule::BOOLEAN_FIELD,  false, 35127 }
 };
 
 #define NUM_FIELDS sizeof(fields) / sizeof(translateField)
@@ -572,6 +573,7 @@ vector<Field> CSmartPlaylistRule::GetFields(const CStdString &type)
     fields.push_back(FieldYear);
     fields.push_back(FieldMPAA);
     fields.push_back(FieldTrailer);
+    fields.push_back(FieldExclusive);
     fields.push_back(FieldFilename);
     fields.push_back(FieldPath);
     fields.push_back(FieldTag);
@@ -967,6 +969,13 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
                "(watchedcount > 0 AND watchedcount < totalCount) OR "
                "(watchedcount = 0 AND " + GetField(FieldId, strType) + " IN "
                "(select episodeview.idShow from episodeview WHERE episodeview.idShow = " + GetField(FieldId, strType) + " AND episodeview.resumeTimeInSeconds > 0)))";
+    }
+    else if (strType == "games")
+    {
+      if (m_field == FieldTrailer)
+        return negate + GetField(m_field, strType) + "!= ''";
+      else if (m_field == FieldExclusive)
+        return negate + GetField(m_field, strType) + "== 'true'";
     }
   }
 

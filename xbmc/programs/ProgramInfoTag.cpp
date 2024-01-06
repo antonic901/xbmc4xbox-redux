@@ -260,6 +260,7 @@ void CProgramInfoTag::ToSortable(SortItem& sortable)
   sortable[FieldYear] = m_iYear;
   sortable[FieldRating] = m_fRating;
   sortable[FieldId] = m_iDbId;
+  sortable[FieldExclusive] = m_bExclusive;
   sortable[FieldDateAdded] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : StringUtils::EmptyString;
   sortable[FieldMediaType] = DatabaseUtils::MediaTypeFromString(m_type);
 }

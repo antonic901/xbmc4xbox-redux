@@ -308,6 +308,7 @@ std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQu
     else if (field == FieldOnlineFeature) result.Format("gameview.c%02d", PROGRAMDB_ID_FEATURE_ONLINE);
     else if (field == FieldPlatform) result.Format("gameview.c%02d", PROGRAMDB_ID_PLATFORM);
     else if (field == FieldTrailer) result.Format("gameview.c%02d", PROGRAMDB_ID_TRAILER);
+    else if (field == FieldExclusive) result.Format("gameview.c%02d", PROGRAMDB_ID_EXCLUSIVE);
     else if (field == FieldFilename) return "gameview.strFilename";
     else if (field == FieldPath) return "gameview.strPath";
     else if (field == FieldPlaycount) return "gameview.playCount";
@@ -537,6 +538,7 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
     else if (field == FieldOnlineFeature) index = PROGRAMDB_ID_FEATURE_ONLINE;
     else if (field == FieldPlatform) index = PROGRAMDB_ID_PLATFORM;
     else if (field == FieldTrailer) index = PROGRAMDB_ID_TRAILER;
+    else if (field == FieldExclusive) index = PROGRAMDB_ID_EXCLUSIVE;
     else if (field == FieldFilename) index = PROGRAMDB_DETAILS_GAME_FILE;
     else if (field == FieldPath) return PROGRAMDB_DETAILS_GAME_PATH;
     else if (field == FieldPlaycount) return PROGRAMDB_DETAILS_GAME_PLAYCOUNT;

@@ -9273,3 +9273,7 @@ msgstr ""
 msgctxt "#35126"
 msgid "Platform"
 msgstr ""
+
+msgctxt "#35127"
+msgid "Is exclusive"
+msgstr ""
