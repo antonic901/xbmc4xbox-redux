@@ -1,0 +1,5 @@
+<node order="21" type="folder">
+  <label>136</label>
+  <icon>DefaultProgramPlaylists.png</icon>
+  <path>special://programplaylists/</path>
+</node>

@@ -42,6 +42,7 @@ void CProgramInfoTag::Reset()
   m_generalFeature.clear();
   m_onlineFeature.clear();
   m_platform.clear();
+  m_tags.clear();
   m_strTrailer = "";
   m_strPlot = "";
   m_strTitle = "";
@@ -52,6 +53,7 @@ void CProgramInfoTag::Reset()
   m_strESRB = "";
   m_strSystem = "";
   m_iYear = 0;
+  m_fRating = 0.0f;
   m_iDbId = -1;
   m_iFileId = -1;
   m_bExclusive = false;
@@ -103,6 +105,7 @@ bool CProgramInfoTag::Save(TiXmlNode *node, const CStdString &tag, bool savePath
 
   XMLUtils::SetString(program, "id", m_strXBENumber);
   XMLUtils::SetStringArray(program, "genre", m_genre);
+  XMLUtils::SetStringArray(program, "tag", m_tags);
   XMLUtils::SetString(program, "trailer", m_strTrailer);
 
   // XBMC4Gamers default.xml
@@ -144,6 +147,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar << m_generalFeature;
     ar << m_onlineFeature;
     ar << m_platform;
+    ar << m_tags;
     ar << m_strPlot;
     ar << m_strPictureURL.m_spoof;
     ar << m_strPictureURL.m_xml;
@@ -176,6 +180,7 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_generalFeature;
     ar >> m_onlineFeature;
     ar >> m_platform;
+    ar >> m_tags;
     ar >> m_strPlot;
     ar >> m_strPictureURL.m_spoof;
     ar >> m_strPictureURL.m_xml;
@@ -192,8 +197,8 @@ void CProgramInfoTag::Archive(CArchive& ar)
     ar >> m_strFileNameAndPath;
     ar >> m_strOriginalTitle;
     ar >> m_iYear;
-    ar >> m_bExclusive;
     ar >> m_fRating;
+    ar >> m_bExclusive;
     ar >> m_iDbId;
     ar >> m_iFileId;
     ar >> m_basePath;
@@ -215,6 +220,7 @@ void CProgramInfoTag::Serialize(CVariant& value)
   value["generalfeature"] = m_generalFeature;
   value["onlinefeature"] = m_onlineFeature;
   value["platform"] = m_platform;
+  value["tag"] = m_tags;
   value["plot"] = m_strPlot;
   value["title"] = m_strTitle;
   value["trailer"] = m_strTrailer;
@@ -236,7 +242,27 @@ void CProgramInfoTag::Serialize(CVariant& value)
 
 void CProgramInfoTag::ToSortable(SortItem& sortable)
 {
-  // TODO: implement this
+  sortable[FieldDeveloper] = m_developer;
+  sortable[FieldPublisher] = m_publisher;
+  sortable[FieldGenre] = m_genre;
+  sortable[FieldDescriptor] = m_descriptor;
+  sortable[FieldGeneralFeature] = m_generalFeature;
+  sortable[FieldOnlineFeature] = m_onlineFeature;
+  sortable[FieldPlatform] = m_platform;
+  sortable[FieldPlot] = m_strPlot;
+  sortable[FieldTitle] = m_strTitle;
+  sortable[FieldTrailer] = m_strTrailer;
+  sortable[FieldFilename] = m_strFile;
+  sortable[FieldMPAA] = m_strESRB;
+  sortable[FieldPath] = m_strFileNameAndPath;
+  sortable[FieldPlaycount] = m_playCount;
+  sortable[FieldLastPlayed] = m_lastPlayed.IsValid() ? m_lastPlayed.GetAsDBDateTime() : StringUtils::EmptyString;
+  sortable[FieldYear] = m_iYear;
+  sortable[FieldRating] = m_fRating;
+  sortable[FieldId] = m_iDbId;
+  sortable[FieldExclusive] = m_bExclusive;
+  sortable[FieldDateAdded] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : StringUtils::EmptyString;
+  sortable[FieldMediaType] = DatabaseUtils::MediaTypeFromString(m_type);
 }
 
 void CProgramInfoTag::ParseNative(const TiXmlElement* program)
@@ -269,6 +295,7 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program)
   }
 
   XMLUtils::GetStringArray(program, "genre", m_genre);
+  XMLUtils::GetStringArray(program, "tag", m_tags);
 
   // fanart
   const TiXmlElement *fanart = program->FirstChildElement("fanart");

@@ -56,6 +56,8 @@ std::string DatabaseUtils::MediaTypeToString(MediaType mediaType)
     return "program";
   case MediaTypeGame:
     return "game";
+  case MediaTypeApplication:
+    return "application";
   default:
     break;
   }
@@ -298,13 +300,42 @@ std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQu
     }
     else if (field == FieldYear) result.Format("gameview.c%02d", PROGRAMDB_ID_YEAR);
     else if (field == FieldMPAA) result.Format("gameview.c%02d", PROGRAMDB_ID_ESRB);
+    else if (field == FieldDeveloper) result.Format("gameview.c%02d", PROGRAMDB_ID_DEVELOPER);
+    else if (field == FieldPublisher) result.Format("gameview.c%02d", PROGRAMDB_ID_PUBLISHER);
     else if (field == FieldGenre) result.Format("gameview.c%02d", PROGRAMDB_ID_GENRE);
+    else if (field == FieldDescriptor) result.Format("gameview.c%02d", PROGRAMDB_ID_ESRB_DESCRIPTOR);
+    else if (field == FieldGeneralFeature) result.Format("gameview.c%02d", PROGRAMDB_ID_FEATURE_GENERAL);
+    else if (field == FieldOnlineFeature) result.Format("gameview.c%02d", PROGRAMDB_ID_FEATURE_ONLINE);
+    else if (field == FieldPlatform) result.Format("gameview.c%02d", PROGRAMDB_ID_PLATFORM);
     else if (field == FieldTrailer) result.Format("gameview.c%02d", PROGRAMDB_ID_TRAILER);
+    else if (field == FieldExclusive) result.Format("gameview.c%02d", PROGRAMDB_ID_EXCLUSIVE);
     else if (field == FieldFilename) return "gameview.strFilename";
     else if (field == FieldPath) return "gameview.strPath";
     else if (field == FieldPlaycount) return "gameview.playCount";
     else if (field == FieldLastPlayed) return "gameview.lastPlayed";
     else if (field == FieldDateAdded) return "gameview.dateAdded";
+
+    if (!result.empty())
+      return result;
+  }
+  else if (mediaType == MediaTypeApplication)
+  {
+    CStdString result;
+    if (field == FieldId) return "applicationview.idApplication";
+    else if (field == FieldTitle)
+      result.Format("applicationview.c%02d", PROGRAMDB_ID_APPLICATION_TITLE);
+    else if (field == FieldPlot) result.Format("applicationview.c%02d", PROGRAMDB_ID_APPLICATION_PLOT);
+    else if (field == FieldRating)
+    {
+      if (queryPart == DatabaseQueryPartOrderBy)
+        result.Format("CAST(applicationview.c%02d as DECIMAL(5,3))", PROGRAMDB_ID_APPLICATION_RATING);
+      else
+        result.Format("applicationview.c%02d", PROGRAMDB_ID_APPLICATION_RATING);
+    }
+    else if (field == FieldYear) result.Format("applicationview.c%02d", PROGRAMDB_ID_APPLICATION_YEAR);
+    else if (field == FieldFilename) return "applicationview.strFilename";
+    else if (field == FieldPath) return "applicationview.strPath";
+    else if (field == FieldDateAdded) return "applicationview.dateAdded";
 
     if (!result.empty())
       return result;
@@ -499,13 +530,38 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
     else if (field == FieldRating) index = PROGRAMDB_ID_RATING;
     else if (field == FieldYear) index = PROGRAMDB_ID_YEAR;
     else if (field == FieldMPAA) index = PROGRAMDB_ID_ESRB;
+    else if (field == FieldDeveloper) index = PROGRAMDB_ID_DEVELOPER;
+    else if (field == FieldPublisher) index = PROGRAMDB_ID_PUBLISHER;
     else if (field == FieldGenre) index = PROGRAMDB_ID_GENRE;
+    else if (field == FieldDescriptor) index = PROGRAMDB_ID_ESRB_DESCRIPTOR;
+    else if (field == FieldGeneralFeature) index = PROGRAMDB_ID_FEATURE_GENERAL;
+    else if (field == FieldOnlineFeature) index = PROGRAMDB_ID_FEATURE_ONLINE;
+    else if (field == FieldPlatform) index = PROGRAMDB_ID_PLATFORM;
     else if (field == FieldTrailer) index = PROGRAMDB_ID_TRAILER;
+    else if (field == FieldExclusive) index = PROGRAMDB_ID_EXCLUSIVE;
     else if (field == FieldFilename) index = PROGRAMDB_DETAILS_GAME_FILE;
     else if (field == FieldPath) return PROGRAMDB_DETAILS_GAME_PATH;
     else if (field == FieldPlaycount) return PROGRAMDB_DETAILS_GAME_PLAYCOUNT;
     else if (field == FieldLastPlayed) return PROGRAMDB_DETAILS_GAME_LASTPLAYED;
     else if (field == FieldDateAdded) return PROGRAMDB_DETAILS_GAME_DATEADDED;
+
+    if (index < 0)
+      return index;
+
+    // see ProgramDatabase.h
+    // the first field is the item's ID and the second is the item's file ID
+    index += 2;
+  }
+  else if (mediaType == MediaTypeApplication)
+  {
+    if (field == FieldId) return 0;
+    else if (field == FieldTitle) index = PROGRAMDB_ID_APPLICATION_TITLE;
+    else if (field == FieldPlot) index = PROGRAMDB_ID_APPLICATION_PLOT;
+    else if (field == FieldRating) index = PROGRAMDB_ID_APPLICATION_RATING;
+    else if (field == FieldYear) index = PROGRAMDB_ID_APPLICATION_YEAR;
+    else if (field == FieldFilename) index = PROGRAMDB_DETAILS_APPLICATION_FILE;
+    else if (field == FieldPath) return PROGRAMDB_DETAILS_APPLICATION_PATH;
+    else if (field == FieldDateAdded) return PROGRAMDB_DETAILS_APPLICATION_DATEADDED;
 
     if (index < 0)
       return index;
@@ -675,6 +731,7 @@ bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fie
     case MediaTypeTvShow:
     case MediaTypeMusicVideo:
     case MediaTypeGame:
+    case MediaTypeApplication:
       result[FieldLabel] = result.find(FieldTitle)->second.asString();
       break;
       

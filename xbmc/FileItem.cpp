@@ -555,6 +555,9 @@ void CFileItem::ToSortable(SortItem &sortable)
 
   if (HasPictureInfoTag())
     GetPictureInfoTag()->ToSortable(sortable);
+
+  if (HasProgramInfoTag())
+    GetProgramInfoTag()->ToSortable(sortable);
 }
 
 bool CFileItem::Exists(bool bUseCache /* = true */) const

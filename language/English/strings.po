@@ -9245,3 +9245,35 @@ msgstr ""
 msgctxt "#35116"
 msgid "Remove application from library"
 msgstr ""
+
+msgctxt "#35117"
+msgid "Program playlists"
+msgstr ""
+
+msgctxt "#35121"
+msgid "Developer"
+msgstr ""
+
+msgctxt "#35122"
+msgid "Publisher"
+msgstr ""
+
+msgctxt "#35123"
+msgid "ESRB Descriptor"
+msgstr ""
+
+msgctxt "#35124"
+msgid "General feature"
+msgstr ""
+
+msgctxt "#35125"
+msgid "Online feature"
+msgstr ""
+
+msgctxt "#35126"
+msgid "Platform"
+msgstr ""
+
+msgctxt "#35127"
+msgid "Is exclusive"
+msgstr ""

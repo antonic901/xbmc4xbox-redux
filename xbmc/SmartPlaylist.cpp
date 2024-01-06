@@ -76,7 +76,13 @@ static const translateField fields[] = {
   { "top250",            FieldTop250,                  SortByTop250,                   CSmartPlaylistRule::NUMERIC_FIELD,  false, 13409 },
   { "mpaarating",        FieldMPAA,                    SortByMPAA,                     CSmartPlaylistRule::TEXT_FIELD,     false, 20074 },
   { "dateadded",         FieldDateAdded,               SortByDateAdded,                CSmartPlaylistRule::DATE_FIELD,     false, 570 },
+  { "developer",         FieldDeveloper,               SortByDeveloper,                CSmartPlaylistRule::TEXT_FIELD,     true,  35121 },
+  { "publisher",         FieldPublisher,               SortByPublisher,                CSmartPlaylistRule::TEXT_FIELD,     true,  35122 },
   { "genre",             FieldGenre,                   SortByGenre,                    CSmartPlaylistRule::TEXT_FIELD,     true,  515 },
+  { "descriptor",        FieldDescriptor,              SortByDescriptor,               CSmartPlaylistRule::TEXT_FIELD,     true,  35123 },
+  { "generalfeature",    FieldGeneralFeature,          SortByGeneralFeature,           CSmartPlaylistRule::TEXT_FIELD,     true,  35124 },
+  { "onlinefeature",     FieldOnlineFeature,           SortByOnlineFeature,            CSmartPlaylistRule::TEXT_FIELD,     true,  35125 },
+  { "platform",          FieldPlatform,                SortByPlatform,                 CSmartPlaylistRule::TEXT_FIELD,     true,  35126 },
   { "plot",              FieldPlot,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 207 },
   { "plotoutline",       FieldPlotOutline,             SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 203 },
   { "tagline",           FieldTagline,                 SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 202 },
@@ -110,7 +116,8 @@ static const translateField fields[] = {
   { "born",              FieldBorn,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21893 },
   { "bandformed",        FieldBandFormed,              SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21894 },
   { "disbanded",         FieldDisbanded,               SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21896 },
-  { "died",              FieldDied,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21897 }
+  { "died",              FieldDied,                    SortByNone,                     CSmartPlaylistRule::TEXT_FIELD,     false, 21897 },
+  { "isexclusive",       FieldExclusive,               SortByNone,                     CSmartPlaylistRule::BOOLEAN_FIELD,  false, 35127 }
 };
 
 #define NUM_FIELDS sizeof(fields) / sizeof(translateField)
@@ -153,7 +160,13 @@ typedef struct
 static const group groups[] = { { "",           FieldUnknown,   false,    571 },
                                 { "none",       FieldNone,      false,    231 },
                                 { "sets",       FieldSet,       true,   20434 },
+                                { "developers", FieldDeveloper, false,  35100 },
+                                { "publishers", FieldPublisher, false,  35101 },
                                 { "genres",     FieldGenre,     false,    135 },
+                                { "descriptors",     FieldDescriptor,     false,  35102 },
+                                { "generalfeatures", FieldGeneralFeature, false,  35103 },
+                                { "onlinefeatures",  FieldOnlineFeature,  false,  35104 },
+                                { "platforms",  FieldPlatform,  false,  35105 },
                                 { "years",      FieldYear,      false,    652 },
                                 { "actors",     FieldActor,     false,    344 },
                                 { "directors",  FieldDirector,  false,  20348 },
@@ -543,6 +556,40 @@ vector<Field> CSmartPlaylistRule::GetFields(const CStdString &type)
     fields.push_back(FieldDateAdded);
     isVideo = true;
   }
+  else if (type == "games")
+  {
+    fields.push_back(FieldTitle);
+    fields.push_back(FieldPlot);
+    fields.push_back(FieldRating);
+    fields.push_back(FieldPlaycount);
+    fields.push_back(FieldLastPlayed);
+    fields.push_back(FieldDeveloper);
+    fields.push_back(FieldPublisher);
+    fields.push_back(FieldGenre);
+    fields.push_back(FieldDescriptor);
+    fields.push_back(FieldGeneralFeature);
+    fields.push_back(FieldOnlineFeature);
+    fields.push_back(FieldPlatform);
+    fields.push_back(FieldYear);
+    fields.push_back(FieldMPAA);
+    fields.push_back(FieldTrailer);
+    fields.push_back(FieldExclusive);
+    fields.push_back(FieldFilename);
+    fields.push_back(FieldPath);
+    fields.push_back(FieldTag);
+    fields.push_back(FieldDateAdded);
+  }
+  else if (type == "applications")
+  {
+    fields.push_back(FieldTitle);
+    fields.push_back(FieldPlot);
+    fields.push_back(FieldRating);
+    fields.push_back(FieldYear);
+    fields.push_back(FieldFilename);
+    fields.push_back(FieldPath);
+    fields.push_back(FieldTag);
+    fields.push_back(FieldDateAdded);
+  }
   if (isVideo)
   {
     fields.push_back(FieldVideoResolution);
@@ -664,6 +711,29 @@ std::vector<SortBy> CSmartPlaylistRule::GetOrders(const CStdString &type)
     orders.push_back(SortByStudio);
     orders.push_back(SortByDateAdded);
   }
+  else if (type == "games")
+  {
+    orders.push_back(SortBySortTitle);
+    orders.push_back(SortByRating);
+    orders.push_back(SortByPlaycount);
+    orders.push_back(SortByLastPlayed);
+    orders.push_back(SortByGenre);
+    orders.push_back(SortByYear);
+    orders.push_back(SortByMPAA);
+    orders.push_back(SortByFile);
+    orders.push_back(SortByPath);
+    orders.push_back(SortByDateAdded);
+  }
+  else if (type == "applications")
+  {
+    orders.push_back(SortBySortTitle);
+    orders.push_back(SortByRating);
+    orders.push_back(SortByPlaycount);
+    orders.push_back(SortByYear);
+    orders.push_back(SortByFile);
+    orders.push_back(SortByPath);
+    orders.push_back(SortByDateAdded);
+  }
   orders.push_back(SortByRandom);
 
   return orders;
@@ -708,6 +778,25 @@ std::vector<Field> CSmartPlaylistRule::GetGroups(const CStdString &type)
     groups.push_back(FieldYear);
     groups.push_back(FieldDirector);
     groups.push_back(FieldStudio);
+    groups.push_back(FieldTag);
+  }
+  else if (type == "games")
+  {
+    groups.push_back(FieldNone);
+    groups.push_back(FieldDeveloper);
+    groups.push_back(FieldPublisher);
+    groups.push_back(FieldGenre);
+    groups.push_back(FieldDescriptor);
+    groups.push_back(FieldGeneralFeature);
+    groups.push_back(FieldOnlineFeature);
+    groups.push_back(FieldPublisher);
+    groups.push_back(FieldYear);
+    groups.push_back(FieldTag);
+  }
+  else if (type == "applications")
+  {
+    groups.push_back(FieldNone);
+    groups.push_back(FieldYear);
     groups.push_back(FieldTag);
   }
 
@@ -881,6 +970,13 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
                "(watchedcount = 0 AND " + GetField(FieldId, strType) + " IN "
                "(select episodeview.idShow from episodeview WHERE episodeview.idShow = " + GetField(FieldId, strType) + " AND episodeview.resumeTimeInSeconds > 0)))";
     }
+    else if (strType == "games")
+    {
+      if (m_field == FieldTrailer)
+        return negate + GetField(m_field, strType) + "!= ''";
+      else if (m_field == FieldExclusive)
+        return negate + GetField(m_field, strType) + "== 'true'";
+    }
   }
 
   // The BETWEEN operator is handled special
@@ -1045,6 +1141,38 @@ CStdString CSmartPlaylistRule::GetWhereClause(const CDatabase &db, const CStdStr
         query = GetField(FieldId, strType) + negate + " IN (SELECT idEpisode FROM episodeview WHERE strStudio" + parameter + ")";
       else if (m_field == FieldMPAA)
         query = GetField(FieldId, strType) + negate + " IN (SELECT idEpisode FROM episodeview WHERE mpaa" + parameter + ")";
+    }
+    else if (strType == "games")
+    {
+      table = "gameview";
+
+      if (m_field == FieldDeveloper)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM developerlinkgame JOIN developer ON developer.idDeveloper=developerlinkgame.idDeveloper WHERE developer.strDeveloper" + parameter + ")";
+      else if (m_field == FieldPublisher)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM publisherlinkgame JOIN publisher ON publisher.idPublisher=publisherlinkgame.idPublisher WHERE publisher.strPublisher" + parameter + ")";
+      else if (m_field == FieldGenre)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM genrelinkgame JOIN genre ON genre.idGenre=genrelinkgame.idGenre WHERE genre.strGenre" + parameter + ")";
+      else if (m_field == FieldDescriptor)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM descriptorlinkgame JOIN descriptor ON descriptor.idDescriptor=descriptorlinkgame.idDescriptor WHERE descriptor.strDescriptor" + parameter + ")";
+      else if (m_field == FieldGeneralFeature)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM generalfeaturelinkgame JOIN generalfeature ON generalfeature.idGeneralFeature=generalfeaturelinkgame.idGeneralFeature WHERE generalfeature.strGeneralFeature" + parameter + ")";
+      else if (m_field == FieldOnlineFeature)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM onlinefeaturelinkgame JOIN onlinefeature ON onlinefeature.idOnlineFeature=onlinefeaturelinkgame.idOnlineFeature WHERE onlinefeature.strOnlineFeature" + parameter + ")";
+      else if (m_field == FieldPlatform)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idGame FROM platformlinkgame JOIN platform ON platform.idPlatform=platformlinkgame.idPlatform WHERE platform.strPlatform" + parameter + ")";
+      else if ((m_field == FieldLastPlayed || m_field == FieldDateAdded) && (m_operator == OPERATOR_LESS_THAN || m_operator == OPERATOR_BEFORE || m_operator == OPERATOR_NOT_IN_THE_LAST))
+        query = GetField(m_field, strType) + " IS NULL OR " + GetField(m_field, strType) + parameter;
+      else if (m_field == FieldTag)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idMedia FROM taglinks JOIN tag ON tag.idTag = taglinks.idTag WHERE tag.strTag" + parameter + " AND taglinks.media_type = 'game')";
+    }
+    else if (strType == "applications")
+    {
+      table = "applicationview";
+
+      if ((m_field == FieldLastPlayed || m_field == FieldDateAdded) && (m_operator == OPERATOR_LESS_THAN || m_operator == OPERATOR_BEFORE || m_operator == OPERATOR_NOT_IN_THE_LAST))
+        query = GetField(m_field, strType) + " IS NULL OR " + GetField(m_field, strType) + parameter;
+      else if (m_field == FieldTag)
+        query = GetField(FieldId, strType) + negate + " IN (SELECT idMedia FROM taglinks JOIN tag ON tag.idTag = taglinks.idTag WHERE tag.strTag" + parameter + " AND taglinks.media_type = 'application')";
     }
     if (m_field == FieldVideoResolution)
       query = table + ".idFile" + negate + GetVideoResolutionQuery(*it);
@@ -1637,6 +1765,11 @@ bool CSmartPlaylist::IsMusicType() const
   return IsMusicType(m_playlistType);
 }
 
+bool CSmartPlaylist::IsProgramType() const
+{
+  return IsProgramType(m_playlistType);
+}
+
 bool CSmartPlaylist::IsVideoType(const CStdString &type)
 {
   return type == "movies" || type == "tvshows" || type == "episodes" ||
@@ -1647,6 +1780,11 @@ bool CSmartPlaylist::IsMusicType(const CStdString &type)
 {
   return type == "artists" || type == "albums" ||
          type == "songs" || type == "mixed";
+}
+
+bool CSmartPlaylist::IsProgramType(const CStdString &type)
+{
+  return type == "games" || type == "applications" || type == "mixed";
 }
 
 CStdString CSmartPlaylist::GetWhereClause(const CDatabase &db, set<CStdString> &referencedPlaylists) const
@@ -1665,6 +1803,8 @@ CStdString CSmartPlaylist::GetSaveLocation() const
     return "mixed";
   if (IsMusicType())
     return "music";
+  if (IsProgramType())
+    return "program";
   // all others are video
   return "video";
 }

@@ -63,7 +63,9 @@ static const translateType types[] = { { CGUIDialogSmartPlaylistEditor::TYPE_SON
                                        { CGUIDialogSmartPlaylistEditor::TYPE_MUSICVIDEOS, "musicvideos", 20389 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_MOVIES, "movies", 20342 },
                                        { CGUIDialogSmartPlaylistEditor::TYPE_TVSHOWS, "tvshows", 20343 },
-                                       { CGUIDialogSmartPlaylistEditor::TYPE_EPISODES, "episodes", 20360 }
+                                       { CGUIDialogSmartPlaylistEditor::TYPE_EPISODES, "episodes", 20360 },
+                                       { CGUIDialogSmartPlaylistEditor::TYPE_GAMES, "games", 15016 },
+                                       { CGUIDialogSmartPlaylistEditor::TYPE_APPLICATIONS, "applications", 35108 }
                                      };
 
 #define NUM_TYPES (sizeof(types) / sizeof(translateType))
@@ -422,6 +424,11 @@ void CGUIDialogSmartPlaylistEditor::OnInitWindow()
     allowedTypes.push_back(TYPE_EPISODES);
     allowedTypes.push_back(TYPE_MUSICVIDEOS);
     allowedTypes.push_back(TYPE_MIXED);
+  }
+  else if (m_mode.Equals("program"))
+  { // general category for programs
+    allowedTypes.push_back(TYPE_GAMES);
+    allowedTypes.push_back(TYPE_APPLICATIONS);
   }
   // add to the spinner
   for (unsigned int i = 0; i < allowedTypes.size(); i++)

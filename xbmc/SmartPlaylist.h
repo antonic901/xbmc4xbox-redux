@@ -181,6 +181,7 @@ public:
   const CStdString& GetType() const { return m_playlistType; };
   bool IsVideoType() const;
   bool IsMusicType() const;
+  bool IsProgramType() const;
 
   void SetMatchAllRules(bool matchAll) { m_ruleCombination.SetType(matchAll ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr); }
   bool GetMatchAllRules() const { return m_ruleCombination.GetType() == CSmartPlaylistRuleCombination::CombinationAnd; }
@@ -219,6 +220,7 @@ public:
 
   static bool IsVideoType(const CStdString &type);
   static bool IsMusicType(const CStdString &type);
+  static bool IsProgramType(const CStdString &type);
   static bool CheckTypeCompatibility(const CStdString &typeLeft, const CStdString &typeRight);
 
   bool IsEmpty(bool ignoreSortAndLimit = true) const;

@@ -124,6 +124,8 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName, translatedPath);
   else if (RootDir.Equals("videoplaylists"))
     URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName, translatedPath);
+  else if (RootDir.Equals("programplaylists"))
+    URIUtils::AddFileToFolder(CUtil::ProgramPlaylistsLocation(), FileName, translatedPath);
   else if (RootDir.Equals("skin"))
     URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName, translatedPath);
 

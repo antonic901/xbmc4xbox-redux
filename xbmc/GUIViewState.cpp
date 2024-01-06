@@ -84,6 +84,8 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
       return new CGUIViewStateVideoEpisodes(items);
     else if (items.GetContent() == "movies")
       return new CGUIViewStateVideoMovies(items);
+    else if (items.GetContent() == "games" || items.GetContent() == "applications")
+      return new CGUIViewStateProgramGames(items);
   }
 
   if (url.GetProtocol() == "library")

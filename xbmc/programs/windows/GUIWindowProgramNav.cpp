@@ -23,6 +23,8 @@
 #include "programs/dialogs/GUIDialogProgramScan.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "utils/log.h"
@@ -114,6 +116,8 @@ CStdString CGUIWindowProgramNav::GetQuickpathName(const CStdString& strPath) con
     return "RecentlyAddedGames";
   else if (path.Equals("programdb://recentlyplayedgames/"))
     return "RecentlyPlayedGames";
+  else if (path.Equals("special://programplaylists/"))
+    return "Playlists";
   else if (path.Equals("sources://programs/"))
     return "Files";
   else
@@ -161,6 +165,8 @@ bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileIte
         items.SetContent("onlinefeatures");
       else if (node == NODE_TYPE_PLATFORM)
         items.SetContent("platforms");
+      else if (node == NODE_TYPE_TAGS)
+        items.SetContent("tags");
       else
         items.SetContent("");
     }
@@ -181,6 +187,17 @@ bool CGUIWindowProgramNav::GetDirectory(const CStdString &strDirectory, CFileIte
     { // load info from the database
       LoadProgramInfo(items);
     }
+
+    CProgramDbUrl programUrl;
+    if (programUrl.FromString(items.GetPath()) && items.GetContent() == "tags" &&
+       !items.Contains("newtag://" + programUrl.GetType()))
+    {
+      CFileItemPtr newTag(new CFileItem("newtag://" + programUrl.GetType(), false));
+      newTag->SetLabel(g_localizeStrings.Get(20462));
+      newTag->SetLabelPreformated(true);
+      newTag->SetSpecialSort(SortSpecialOnTop);
+      items.Add(newTag);
+    }
   }
   return bResult;
 }
@@ -192,6 +209,58 @@ void CGUIWindowProgramNav::LoadProgramInfo(CFileItemList &items)
 
 bool CGUIWindowProgramNav::OnClick(int iItem)
 {
+  CFileItemPtr item = m_vecItems->Get(iItem);
+  if (item->GetPath().Left(9).Equals("newtag://"))
+  {
+    // dont allow update while scanning
+    CGUIDialogProgramScan* pDialog = (CGUIDialogProgramScan*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
+    if (pDialog && pDialog->IsScanning())
+    {
+      CGUIDialogOK::ShowAndGetInput(257, 0, 14057, 0);
+      return true;
+    }
+
+    //Get the new title
+    CStdString strTag;
+    if (!CGUIDialogKeyboard::ShowAndGetInput(strTag, g_localizeStrings.Get(20462), false))
+      return true;
+
+    CProgramDatabase programdb;
+    if (!programdb.Open())
+      return true;
+
+    // get the media type and convert from plural to singular (by removing the trailing "s")
+    CStdString mediaType = item->GetPath().Mid(9);
+    mediaType = mediaType.Left(mediaType.size() - 1);
+    CStdString localizedType = GetLocalizedType(mediaType);
+    if (localizedType.empty())
+      return true;
+
+    if (!programdb.GetSingleValue("tag", "tag.idTag", programdb.PrepareSQL("tag.strTag = '%s' AND tag.idTag IN (SELECT taglinks.idTag FROM taglinks WHERE taglinks.media_type = '%s')", strTag.c_str(), mediaType.c_str())).empty())
+    {
+      CStdString strError; strError.Format(g_localizeStrings.Get(20463), strTag.c_str());
+      CGUIDialogOK::ShowAndGetInput(20462, "", strError, "");
+      return true;
+    }
+
+    int idTag = programdb.AddTag(strTag);
+    CFileItemList items;
+    CStdString strLabel; strLabel.Format(g_localizeStrings.Get(20464), localizedType.c_str());
+    if (GetItemsForTag(strLabel, mediaType, items, idTag))
+    {
+      for (int index = 0; index < items.Size(); index++)
+      {
+        if (!items[index]->HasProgramInfoTag() || items[index]->GetProgramInfoTag()->m_iDbId <= 0)
+          continue;
+
+        programdb.AddTagToItem(items[index]->GetProgramInfoTag()->m_iDbId, idTag, mediaType);
+      }
+    }
+
+    Refresh(true);
+    return true;
+  }
+
   return CGUIWindowProgramBase::OnClick(iItem);
 }
 
@@ -221,23 +290,23 @@ void CGUIWindowProgramNav::OnDeleteItem(CFileItemPtr pItem)
         !pItem->GetPath().Left(9).Equals("newtag://"))
       CGUIWindowProgramBase::OnDeleteItem(pItem);
   }
-  // else if (m_vecItems->GetContent() == "tags" && pItem->m_bIsFolder)
-  // {
-  //   CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
-  //   pDialog->SetHeading(432);
-  //   CStdString strLabel;
-  //   strLabel.Format(g_localizeStrings.Get(433), pItem->GetLabel());
-  //   pDialog->SetLine(1, strLabel);
-  //   pDialog->SetLine(2, "");
-  //   pDialog->DoModal();
-  //   if (pDialog->IsConfirmed())
-  //   {
-  //     CVideoDatabaseDirectory dir;
-  //     CQueryParams params;
-  //     dir.GetQueryParams(pItem->GetPath(), params);
-  //     m_database.DeleteTag(params.GetTagId(), (VIDEODB_CONTENT_TYPE)params.GetContentType());
-  //   }
-  // }
+  else if (m_vecItems->GetContent() == "tags" && pItem->m_bIsFolder)
+  {
+    CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+    pDialog->SetHeading(432);
+    CStdString strLabel;
+    strLabel.Format(g_localizeStrings.Get(433), pItem->GetLabel());
+    pDialog->SetLine(1, strLabel);
+    pDialog->SetLine(2, "");
+    pDialog->DoModal();
+    if (pDialog->IsConfirmed())
+    {
+      CProgramDatabaseDirectory dir;
+      CQueryParams params;
+      dir.GetQueryParams(pItem->GetPath(), params);
+      m_database.DeleteTag(params.GetTagId(), (PROGRAMDB_CONTENT_TYPE)params.GetContentType());
+    }
+  }
   else 
   {
     if (!DeleteItem(pItem.get()))
@@ -333,6 +402,11 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
 
+  CGUIWindowProgramBase::GetContextButtons(itemNumber, buttons);
+
+  if (item && item->GetProperty("pluginreplacecontextitems").asBoolean())
+    return;
+
   CProgramDatabaseDirectory dir;
   NODE_TYPE node = dir.GetDirectoryChildType(m_vecItems->GetPath());
 
@@ -382,27 +456,41 @@ void CGUIWindowProgramNav::GetContextButtons(int itemNumber, CContextButtons &bu
       // can we update the database?
       if (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
       {
-
         if (item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder)
         {
           buttons.Add(CONTEXT_BUTTON_EDIT, 16105);
           buttons.Add(CONTEXT_BUTTON_DELETE, 646);
         }
+
+        if (m_vecItems->GetContent() == "tags" && item->m_bIsFolder) // tags
+        {
+          CProgramDbUrl programUrl;
+          if (programUrl.FromString(item->GetPath()))
+          {
+            std::string mediaType = programUrl.GetItemType();
+
+            CStdString strLabelAdd; strLabelAdd.Format(g_localizeStrings.Get(20460), GetLocalizedType(programUrl.GetItemType()).c_str());
+            CStdString strLabelRemove; strLabelRemove.Format(g_localizeStrings.Get(20461), GetLocalizedType(programUrl.GetItemType()).c_str());
+            buttons.Add(CONTEXT_BUTTON_TAGS_ADD_ITEMS, strLabelAdd);
+            buttons.Add(CONTEXT_BUTTON_TAGS_REMOVE_ITEMS, strLabelRemove);
+            buttons.Add(CONTEXT_BUTTON_DELETE, 646);
+          }
+        }
       }
 
       if ((item->IsProgramDb() && item->HasProgramInfoTag() && !item->m_bIsFolder) ||
-          (!item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
+          (!item->IsSmartPlayList() && !item->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot()))
         buttons.Add(CONTEXT_BUTTON_SCRIPTS, 10020);
 
       if (!m_vecItems->IsProgramDb() && !m_vecItems->IsVirtualDirectoryRoot())
-      { // non-video db items, file operations are allowed
+      { // non-program db items, file operations are allowed
         if (!item->IsReadOnly())
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);
         }
         // add "Set/Change content" to folders
-        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
+        if (item->m_bIsFolder && !item->IsPlayList() && !item->IsSmartPlayList() && !item->IsPlugin() && !item->IsAddonsPath())
         {
           CGUIDialogProgramScan *pScanDlg = (CGUIDialogProgramScan *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SCAN);
           if (!pScanDlg || (pScanDlg && !pScanDlg->IsScanning()))
@@ -441,6 +529,71 @@ bool CGUIWindowProgramNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button
       CUtil::DeleteProgramDatabaseDirectoryCache();
       Refresh();
       return true;
+
+  case CONTEXT_BUTTON_TAGS_ADD_ITEMS:
+    {
+      CProgramDbUrl programUrl;
+      if (!programUrl.FromString(item->GetPath()))
+        return false;
+
+      std::string mediaType = programUrl.GetItemType();
+      mediaType = mediaType.substr(0, mediaType.length() - 1);
+
+      CFileItemList items;
+      CStdString localizedType = GetLocalizedType(mediaType);
+      CStdString strLabel; strLabel.Format(g_localizeStrings.Get(20464), localizedType.c_str());
+      if (!GetItemsForTag(strLabel, mediaType, items, item->GetProgramInfoTag()->m_iDbId))
+        return true;
+
+      CProgramDatabase programdb;
+      if (!programdb.Open())
+        return true;
+
+      for (int index = 0; index < items.Size(); index++)
+      {
+        if (!items[index]->HasProgramInfoTag() || items[index]->GetProgramInfoTag()->m_iDbId <= 0)
+          continue;
+
+        programdb.AddTagToItem(items[index]->GetProgramInfoTag()->m_iDbId, item->GetProgramInfoTag()->m_iDbId, mediaType);
+      }
+
+      // we need to clear any cached version of this tag's listing
+      items.SetPath(item->GetPath());
+      items.RemoveDiscCache(GetID());
+      return true;
+    }
+  case CONTEXT_BUTTON_TAGS_REMOVE_ITEMS:
+    {
+      CProgramDbUrl programUrl;
+      if (!programUrl.FromString(item->GetPath()))
+        return false;
+
+      std::string mediaType = programUrl.GetItemType();
+      mediaType = mediaType.substr(0, mediaType.length() - 1);
+
+      CFileItemList items;
+      CStdString localizedType = GetLocalizedType(mediaType);
+      CStdString strLabel; strLabel.Format(g_localizeStrings.Get(20464), localizedType.c_str());
+      if (!GetItemsForTag(strLabel, mediaType, items, item->GetProgramInfoTag()->m_iDbId, false))
+        return true;
+
+      CProgramDatabase programdb;
+      if (!programdb.Open())
+        return true;
+
+      for (int index = 0; index < items.Size(); index++)
+      {
+        if (!items[index]->HasProgramInfoTag() || items[index]->GetProgramInfoTag()->m_iDbId <= 0)
+          continue;
+
+        programdb.RemoveTagFromItem(items[index]->GetProgramInfoTag()->m_iDbId, item->GetProgramInfoTag()->m_iDbId, mediaType);
+      }
+
+      // we need to clear any cached version of this tag's listing
+      items.SetPath(item->GetPath());
+      items.RemoveDiscCache(GetID());
+      return true;
+    }
 
     case CONTEXT_BUTTON_SCRIPTS:
         return CGUIWindowFileManager::OnScripts(item->HasProgramInfoTag() ? item->GetProgramInfoTag()->m_strFileNameAndPath : item->GetPath());
@@ -487,4 +640,71 @@ CStdString CGUIWindowProgramNav::GetStartFolder(const CStdString &dir)
   else if (dir.Equals("Files"))
     return "sources://programs/";
   return CGUIWindowProgramBase::GetStartFolder(dir);
+}
+
+bool CGUIWindowProgramNav::GetItemsForTag(const CStdString &strHeading, const std::string &type, CFileItemList &items, int idTag /* = -1 */, bool showAll /* = true */)
+{
+  CProgramDatabase programdb;
+  if (!programdb.Open())
+    return false;
+
+  MediaType mediaType;
+  std::string baseDir = "programdb://";
+  std::string idColumn;
+  if (type.compare("game") == 0)
+  {
+    mediaType = MediaTypeGame;
+    baseDir += "games";
+    idColumn = "idGame";
+  }
+  else if (type.compare("application") == 0)
+  {
+    mediaType = MediaTypeApplication;
+    baseDir += "applications";
+    idColumn = "idApplication";
+  }
+
+  baseDir += "/titles/";
+  CProgramDbUrl programUrl;
+  if (!programUrl.FromString(baseDir))
+    return false;
+
+  CProgramDatabase::Filter filter;
+  if (idTag > 0)
+  {
+    if (!showAll)
+      programUrl.AddOption("tagid", idTag);
+    else
+      filter.where = programdb.PrepareSQL("%sview.%s NOT IN (SELECT taglinks.idMedia FROM taglinks WHERE taglinks.idTag = %d AND taglinks.media_type = '%s')", type.c_str(), idColumn.c_str(), idTag, type.c_str());
+  }
+
+  CFileItemList listItems;
+  if (!programdb.GetSortedPrograms(mediaType, programUrl.ToString(), SortDescription(), listItems, filter) || listItems.Size() <= 0)
+    return false;
+
+  CGUIDialogSelect *dialog = (CGUIDialogSelect *)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
+  if (dialog == NULL)
+    return false;
+
+  listItems.Sort(SortByLabel, SortOrderAscending, SortAttributeIgnoreArticle);
+
+  dialog->Reset();
+  dialog->SetMultiSelection(true);
+  dialog->SetHeading(strHeading);
+  dialog->SetItems(&listItems);
+  dialog->EnableButton(true, 186);
+  dialog->DoModal();
+
+  items.Copy(dialog->GetSelectedItems());
+  return items.Size() > 0;
+}
+
+CStdString CGUIWindowProgramNav::GetLocalizedType(const std::string &strType)
+{
+  if (strType == "game" || strType == "games")
+    return g_localizeStrings.Get(15016);
+  else if (strType == "application" || strType == "applications")
+    return g_localizeStrings.Get(35108);
+  else
+    return "";
 }

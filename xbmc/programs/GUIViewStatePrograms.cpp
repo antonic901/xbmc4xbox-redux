@@ -121,12 +121,49 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
         SetSortOrder(SortOrderNone);        
       }
+      break;
+    case NODE_TYPE_YEAR:
+      {
+        AddSortMethod(SortByLabel, 551, LABEL_MASKS("%T", "%R", "%L", ""));  // Title, Rating | Label, empty
+        SetSortMethod(SortByLabel);
+
+        SetViewAsControl(g_settings.m_viewStateProgramNavYears.m_viewMode);
+
+        SetSortOrder(g_settings.m_viewStateProgramNavYears.m_sortDescription.sortOrder);
+      }
+      break;
+    case NODE_TYPE_DEVELOPER:
+    case NODE_TYPE_PUBLISHER:
+    case NODE_TYPE_GENRE:
+    case NODE_TYPE_DESCRIPTOR:
+    case NODE_TYPE_GENERALFEATURE:
+    case NODE_TYPE_ONLINEFEATURE:
+    case NODE_TYPE_PLATFORM:
+      {
+        AddSortMethod(SortByLabel, 551, LABEL_MASKS("%T", "%R", "%L", ""));  // Title, Rating | Label, empty
+        SetSortMethod(SortByLabel);
+
+        SetViewAsControl(g_settings.m_viewStateProgramNavGenres.m_viewMode);
+
+        SetSortOrder(g_settings.m_viewStateProgramNavGenres.m_sortDescription.sortOrder);
+      }
+      break;
+    case NODE_TYPE_TAGS:
+      {
+        AddSortMethod(SortByLabel, sortAttributes, 551, LABEL_MASKS("%T","", "%T",""));  // Title, empty | Title, empty
+        SetSortMethod(SortByLabel, sortAttributes);
+
+        SetViewAsControl(g_settings.m_viewStateProgramNavGenres.m_viewMode);
+        SetSortOrder(g_settings.m_viewStateProgramNavGenres.m_sortDescription.sortOrder);
+      }
+      break;
     case NODE_TYPE_TITLE_GAMES:
     case NODE_TYPE_TITLE_APPLICATIONS:
       {
         AddSortMethod(SortBySortTitle, sortAttributes, 556, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
         AddSortMethod(SortByYear, 562, LABEL_MASKS("%T", "%Y", "%T", "%Y"));  // Title, Year | Title, Year
         AddSortMethod(SortByRating, 563, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
+        AddSortMethod(SortByMPAA, 35113, LABEL_MASKS("%T", "%O"));  // Title, ESRB | empty, empty
         AddSortMethod(SortByDateAdded, 570, LABEL_MASKS("%T", "%a", "%T", "%a"));  // Title, DateAdded | Title, DateAdded
 
         SetSortMethod(g_settings.m_viewStateProgramNavTitles.m_sortDescription);
@@ -135,6 +172,18 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
         SetSortOrder(g_settings.m_viewStateProgramNavTitles.m_sortDescription.sortOrder);
       }
+      break;
+    case NODE_TYPE_RECENTLY_ADDED_GAMES:
+    case NODE_TYPE_RECENTLY_PLAYED_GAMES:
+      {
+        AddSortMethod(SortByNone, 552, LABEL_MASKS("%T", "%R"));  // Title, Rating | empty, empty
+        SetSortMethod(SortByNone);
+
+        SetViewAsControl(g_settings.m_viewStateProgramNavTitles.m_viewMode);
+
+        SetSortOrder(SortOrderNone);
+      }
+      break;
     default:
       break;
     }
@@ -155,6 +204,38 @@ CGUIViewStateWindowProgramNav::CGUIViewStateWindowProgramNav(const CFileItemList
 
 void CGUIViewStateWindowProgramNav::SaveViewState()
 {
+  NODE_TYPE NodeType = CProgramDatabaseDirectory::GetDirectoryChildType(m_items.GetPath());
+  if (m_items.IsProgramDb())
+  {
+    NODE_TYPE NodeType = CProgramDatabaseDirectory::GetDirectoryChildType(m_items.GetPath());
+    CQueryParams params;
+    CProgramDatabaseDirectory::GetQueryParams(m_items.GetPath(),params);
+    switch (NodeType)
+    {
+    case NODE_TYPE_YEAR:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavYears);
+      break;
+    case NODE_TYPE_DEVELOPER:
+    case NODE_TYPE_PUBLISHER:
+    case NODE_TYPE_GENRE:
+    case NODE_TYPE_DESCRIPTOR:
+    case NODE_TYPE_GENERALFEATURE:
+    case NODE_TYPE_ONLINEFEATURE:
+    case NODE_TYPE_PLATFORM:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavGenres);
+      break;
+    case NODE_TYPE_TITLE_GAMES:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavTitles);
+      break;
+    default:
+      SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV);
+      break;
+    }
+  }
+  else
+  {
+    SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramFiles); 
+  }
 }
 
 VECSOURCES& CGUIViewStateWindowProgramNav::GetSources()
@@ -178,4 +259,30 @@ VECSOURCES& CGUIViewStateWindowProgramNav::GetSources()
   }
 
   return CGUIViewStateWindowProgram::GetSources();
+}
+
+CGUIViewStateProgramGames::CGUIViewStateProgramGames(const CFileItemList& items) : CGUIViewStateWindowProgram(items)
+{
+  AddSortMethod(SortBySortTitle, 556, LABEL_MASKS("%T", "%R", "%T", "%R"),  // Title, Rating | Title, Rating
+    g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  AddSortMethod(SortByRating, 563, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
+  AddSortMethod(SortByMPAA, 20074, LABEL_MASKS("%T", "%O"));  // Title, MPAA | empty, empty
+  AddSortMethod(SortByYear, 562, LABEL_MASKS("%T", "%Y", "%T", "%Y"));  // Title, Year | Title, Year
+
+  if (items.IsSmartPlayList() || items.IsLibraryFolder())
+    AddPlaylistOrder(items, LABEL_MASKS("%T", "%R", "%T", "%R"));  // Title, Rating | Title, Rating
+  else
+  {
+    SetSortMethod(g_settings.m_viewStateProgramNavTitles.m_sortDescription);
+    SetSortOrder(g_settings.m_viewStateProgramNavTitles.m_sortDescription.sortOrder);
+  }
+
+  SetViewAsControl(g_settings.m_viewStateProgramNavTitles.m_viewMode);
+
+  LoadViewState(items.GetPath(), WINDOW_PROGRAM_NAV);
+}
+
+void CGUIViewStateProgramGames::SaveViewState()
+{
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAM_NAV, &g_settings.m_viewStateProgramNavTitles);
 }

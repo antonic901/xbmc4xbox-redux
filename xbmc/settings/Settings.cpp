@@ -771,6 +771,8 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "videonavtvshows", m_viewStateVideoNavTvShows);
     GetViewState(pElement, "videonavseasons", m_viewStateVideoNavSeasons);
     GetViewState(pElement, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    GetViewState(pElement, "programnavyears", m_viewStateProgramNavYears);
+    GetViewState(pElement, "programnavgenres", m_viewStateProgramNavGenres);
     GetViewState(pElement, "programnavtitles", m_viewStateProgramNavTitles);
 
     GetViewState(pElement, "programs", m_viewStatePrograms, SortByLabel, DEFAULT_VIEW_AUTO);
@@ -1140,6 +1142,8 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SetViewState(pNode, "videonavseasons", m_viewStateVideoNavSeasons);
     SetViewState(pNode, "videonavtvshows", m_viewStateVideoNavTvShows);
     SetViewState(pNode, "videonavmusicvideos", m_viewStateVideoNavMusicVideos);
+    SetViewState(pNode, "programnavyears", m_viewStateProgramNavYears);
+    SetViewState(pNode, "programnavgenres", m_viewStateProgramNavGenres);
     SetViewState(pNode, "programnavtitles", m_viewStateProgramNavTitles);
 
     SetViewState(pNode, "programs", m_viewStatePrograms);
@@ -1881,6 +1885,7 @@ void CSettings::LoadUserFolderLayout()
   CDirectory::Create(strDir);
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"music"));
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"video"));
+  CDirectory::Create(URIUtils::AddFileToFolder(strDir,"program"));
   CDirectory::Create(URIUtils::AddFileToFolder(strDir,"mixed"));
 }
 
