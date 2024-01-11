@@ -244,9 +244,6 @@ protected:
   CSplash* m_splash;
   DWORD m_threadID;       // application thread ID.  Used in applicationMessanger to know where we are firing a thread with delay from.
   PLAYERCOREID m_eCurrentPlayer;
-  bool m_bXboxMediacenterLoaded;
-  bool m_bSettingsLoaded;
-  bool m_bAllSettingsLoaded;
   bool m_bInitializing;
 
   CBookmark m_progressTrackingVideoResumeBookmark;

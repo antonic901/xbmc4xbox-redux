@@ -95,7 +95,7 @@ public:
 
   void Initialize();
 
-  bool Load(bool& bXboxMediacenter, bool& bSettings);
+  bool Load();
   void Save() const;
   bool Reset();
 
@@ -544,6 +544,7 @@ public:
 
   bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
 
+  void LoadSources();
   bool SaveSources();
 
   void LoadRSSFeeds();

@@ -504,31 +504,9 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
   if (InitNetwork)
   {
     std::vector<int> netorder;
-    if (m_bXboxMediacenterLoaded)
-    {
-      if (g_guiSettings.GetInt("network.assignment") == NETWORK_DHCP)
-      {
-        netorder.push_back(NETWORK_DHCP);
-        netorder.push_back(NETWORK_STATIC);
-      }
-      else if (g_guiSettings.GetInt("network.assignment") == NETWORK_STATIC)
-      {
-        netorder.push_back(NETWORK_STATIC);
-        netorder.push_back(NETWORK_DHCP);
-      }
-      else
-      {
-        netorder.push_back(NETWORK_DASH);
-        netorder.push_back(NETWORK_DHCP);
-        netorder.push_back(NETWORK_STATIC);
-      }
-    }
-    else
-    {
-      netorder.push_back(NETWORK_DASH);
-      netorder.push_back(NETWORK_DHCP);
-      netorder.push_back(NETWORK_STATIC);
-    }
+    netorder.push_back(NETWORK_DASH);
+    netorder.push_back(NETWORK_DHCP);
+    netorder.push_back(NETWORK_STATIC);
 
     while(1)
     {
@@ -556,24 +534,12 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
             break;
           default:
             FEH_TextOut(pFont, iLine, L"Init network using static ip...");
-            if( m_bXboxMediacenterLoaded )
-            {
-              m_network.Initialize(NETWORK_STATIC,
-                    g_guiSettings.GetString("network.ipaddress").c_str(),
-                    g_guiSettings.GetString("network.subnet").c_str(),
-                    g_guiSettings.GetString("network.gateway").c_str(),
-                    g_guiSettings.GetString("network.dns").c_str(),
-                    g_guiSettings.GetString("network.dns2").c_str() );
-            }
-            else
-            {
-              m_network.Initialize(NETWORK_STATIC,
-                    "192.168.0.42",
-                    "255.255.255.0",
-                    "192.168.0.1",
-                    "192.168.0.1",
-                    "0.0.0.0" );
-            }
+            m_network.Initialize(NETWORK_STATIC,
+                  "192.168.0.42",
+                  "255.255.255.0",
+                  "192.168.0.1",
+                  "192.168.0.1",
+                  "0.0.0.0" );
             break;
         }
 
@@ -969,8 +935,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGNOTICE, "load settings...");
   g_LoadErrorStr = "Unable to load settings";
   
-  m_bAllSettingsLoaded = g_settings.Load(m_bXboxMediacenterLoaded, m_bSettingsLoaded);
-  if (!m_bAllSettingsLoaded)
+  if (!g_settings.Load())
     FatalErrorHandler(true, true, true);
 
   update_emu_environ();//apply the GUI settings
@@ -1241,20 +1206,6 @@ HRESULT CApplication::Initialize()
 
   CreateDirectory("Q:\\language", NULL);
 
-  // initialize network
-  if (!m_bXboxMediacenterLoaded)
-  {
-    CLog::Log(LOGINFO, "using default network settings");
-    g_guiSettings.SetString("network.ipaddress", "192.168.0.100");
-    g_guiSettings.SetString("network.subnet", "255.255.255.0");
-    g_guiSettings.SetString("network.gateway", "192.168.0.1");
-    g_guiSettings.SetString("network.dns", "192.168.0.1");
-    g_guiSettings.SetString("network.dns2", "0.0.0.0");
-    g_guiSettings.SetBool("services.ftpserver", true);
-    g_guiSettings.SetBool("services.webserver", false);
-    g_guiSettings.SetBool("locale.timeserver", false);
-  }
-
   /* setup network based on our settings */
   /* network will start it's init procedure */
   m_network.SetupNetwork();
@@ -1370,22 +1321,6 @@ HRESULT CApplication::Initialize()
 
   CLog::Log(LOGINFO, "removing tempfiles");
   CUtil::RemoveTempFiles();
-
-  if (!m_bAllSettingsLoaded)
-  {
-    CLog::Log(LOGWARNING, "settings not correct, show dialog");
-    CStdString test;
-    CUtil::GetHomePath(test);
-    CGUIDialogOK *dialog = (CGUIDialogOK *)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
-    if (dialog)
-    {
-      dialog->SetHeading(279);
-      dialog->SetLine(0, "Error while loading settings");
-      dialog->SetLine(1, test);
-      dialog->SetLine(2, "");;
-      dialog->DoModal();
-    }
-  }
 
   //  Show mute symbol
   if (g_settings.m_nVolumeLevel == VOLUME_MINIMUM)
