@@ -127,9 +127,22 @@ CSettingInt::CSettingInt(int iOrder, const char *strSetting, int iLabel, int iDa
     m_strFormat = "%i";
 }
 
+CSettingInt::CSettingInt(int iOrder, const char *strSetting, int iLabel,
+                         int iData, const map<int,int>& entries, int iControlType)
+  : CSetting(iOrder, strSetting, iLabel, iControlType),
+    m_entries(entries)
+{
+  m_iData = iData;
+  m_iMin = -1;
+  m_iMax = -1;
+  m_iStep = 1;
+  m_iLabelMin = -1;
+}
+
 void CSettingInt::FromString(const CStdString &strValue)
 {
-  SetData(atoi(strValue.c_str()));
+  int id = atoi(strValue.c_str());
+  SetData(id);
 }
 
 CStdString CSettingInt::ToString()
@@ -261,7 +274,12 @@ void CGUISettings::Initialize()
   AddBool(mp, "musicplayer.autoplaynextitem", 489, true);
   AddBool(mp, "musicplayer.queuebydefault", 14084, false);
   AddSeparator(mp, "musicplayer.sep1");
-  AddInt(mp, "musicplayer.replaygaintype", 638, REPLAY_GAIN_ALBUM, REPLAY_GAIN_NONE, 1, REPLAY_GAIN_TRACK, SPIN_CONTROL_TEXT);
+  map<int,int> gain;
+  gain.insert(make_pair(351,REPLAY_GAIN_NONE));
+  gain.insert(make_pair(639,REPLAY_GAIN_TRACK));
+  gain.insert(make_pair(640,REPLAY_GAIN_ALBUM));
+
+  AddInt(mp, "musicplayer.replaygaintype", 638, REPLAY_GAIN_ALBUM, gain, SPIN_CONTROL_TEXT);
   AddInt(NULL, "musicplayer.replaygainpreamp", 641, 89, 77, 1, 101, SPIN_CONTROL_INT_PLUS, MASK_DB);
   AddInt(NULL, "musicplayer.replaygainnogainpreamp", 642, 89, 77, 1, 101, SPIN_CONTROL_INT_PLUS, MASK_DB);
   AddBool(NULL, "musicplayer.replaygainavoidclipping", 643, false);
@@ -301,8 +319,19 @@ void CGUISettings::Initialize()
   AddSeparator(acd, "audiocds.sep1");
   AddPath(acd,"audiocds.recordingpath",20000,"select writable folder",BUTTON_CONTROL_PATH_INPUT,false,657);
   AddString(acd, "audiocds.trackpathformat", 13307, "%A - %B/[%N. ][%A - ]%T", EDIT_CONTROL_INPUT, false, 16016);
-  AddInt(acd, "audiocds.encoder", 621, CDDARIP_ENCODER_LAME, CDDARIP_ENCODER_LAME, 1, CDDARIP_ENCODER_FLAC, SPIN_CONTROL_TEXT);
-  AddInt(acd, "audiocds.quality", 622, CDDARIP_QUALITY_CBR, CDDARIP_QUALITY_CBR, 1, CDDARIP_QUALITY_EXTREME, SPIN_CONTROL_TEXT);
+  map<int,int> encoders;
+  encoders.insert(make_pair(34005, CDDARIP_ENCODER_FLAC));
+  encoders.insert(make_pair(34000,CDDARIP_ENCODER_LAME));
+  encoders.insert(make_pair(34001,CDDARIP_ENCODER_VORBIS));
+  encoders.insert(make_pair(34002,CDDARIP_ENCODER_WAV));
+  AddInt(acd, "audiocds.encoder", 621, CDDARIP_ENCODER_LAME, encoders, SPIN_CONTROL_TEXT);
+
+  map<int,int> qualities;
+  qualities.insert(make_pair(604,CDDARIP_QUALITY_CBR));
+  qualities.insert(make_pair(601,CDDARIP_QUALITY_MEDIUM));
+  qualities.insert(make_pair(602,CDDARIP_QUALITY_STANDARD));
+  qualities.insert(make_pair(603,CDDARIP_QUALITY_EXTREME));
+  AddInt(acd, "audiocds.quality", 622, CDDARIP_QUALITY_CBR, qualities, SPIN_CONTROL_TEXT);
   AddInt(acd, "audiocds.bitrate", 623, 192, 128, 32, 320, SPIN_CONTROL_INT_PLUS, MASK_KBPS);
   AddInt(acd, "audiocds.compressionlevel", 665, 5, 0, 1, 8, SPIN_CONTROL_INT_PLUS);
 
@@ -340,7 +369,11 @@ void CGUISettings::Initialize()
   AddBool(vo,  "videooutput.hd1080i", 21380, false);
 
   CSettingsCategory* ao = AddCategory(4, "audiooutput", 772);
-  AddInt(ao, "audiooutput.mode", 337, AUDIO_ANALOG, AUDIO_ANALOG, 1, AUDIO_DIGITAL, SPIN_CONTROL_TEXT);
+
+  map<int,int> audiomode;
+  audiomode.insert(make_pair(338,AUDIO_ANALOG));
+  audiomode.insert(make_pair(339,AUDIO_DIGITAL));
+  AddInt(ao, "audiooutput.mode", 337, AUDIO_ANALOG, audiomode, SPIN_CONTROL_TEXT);
   AddBool(ao, "audiooutput.ac3passthrough", 364, true);
   AddBool(ao, "audiooutput.dtspassthrough", 254, true);
   AddBool(ao, "audiooutput.aacpassthrough", 299, false);
@@ -426,7 +459,12 @@ void CGUISettings::Initialize()
   AddString(vdl, "videolibrary.import", 648, "", BUTTON_CONTROL_STANDARD);
 
   CSettingsCategory* vp = AddCategory(5, "videoplayer", 14086);
-  AddInt(vp, "videoplayer.resumeautomatically", 12017, RESUME_ASK, RESUME_NO, 1, RESUME_ASK, SPIN_CONTROL_TEXT);
+
+  map<int,int> resume;
+  resume.insert(make_pair(106,RESUME_NO));
+  resume.insert(make_pair(107,RESUME_YES));
+  resume.insert(make_pair(12020,RESUME_ASK));
+  AddInt(vp, "videoplayer.resumeautomatically", 12017, RESUME_ASK, resume, SPIN_CONTROL_TEXT);
   AddString(vp, "videoplayer.calibrate", 214, "", BUTTON_CONTROL_STANDARD);
   AddSeparator(vp, "videoplayer.sep1");
   AddInt(vp, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, RENDER_LQ_RGB_SHADER, 1, RENDER_HQ_RGB_SHADERV2, SPIN_CONTROL_TEXT);
@@ -755,6 +793,16 @@ void CGUISettings::AddInt(CSettingsCategory* cat, const char *strSetting, int iL
 {
   int iOrder = cat?++cat->m_entries:0;
   CSettingInt* pSetting = new CSettingInt(iOrder, CStdString(strSetting).ToLower(), iLabel, iData, iMin, iStep, iMax, iControlType, iFormat, iLabelMin);
+  if (!pSetting) return ;
+  settingsMap.insert(pair<CStdString, CSetting*>(CStdString(strSetting).ToLower(), pSetting));
+}
+
+void CGUISettings::AddInt(CSettingsCategory* cat, const char *strSetting,
+                          int iLabel, int iData, const map<int,int>& entries,
+                          int iControlType)
+{
+  int iOrder = cat?++cat->m_entries:0;
+  CSettingInt* pSetting = new CSettingInt(iOrder, CStdString(strSetting).ToLower(), iLabel, iData, entries, iControlType);
   if (!pSetting) return ;
   settingsMap.insert(pair<CStdString, CSetting*>(CStdString(strSetting).ToLower(), pSetting));
 }

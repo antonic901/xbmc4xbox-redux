@@ -422,6 +422,21 @@ void CGUIWindowSettingsCategory::CreateSettings()
     CSetting *pSetting = settings[i];
     AddSetting(pSetting, group->GetWidth(), iControlID);
     CStdString strSetting = pSetting->GetSetting();
+    if (pSetting->GetType() == SETTINGS_TYPE_INT)
+    {
+      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
+      if (!pSettingInt->m_entries.empty())
+      {
+        CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
+        for (map<int,int>::iterator it=pSettingInt->m_entries.begin();
+             it != pSettingInt->m_entries.end();++it)
+        {
+          pControl->AddLabel(g_localizeStrings.Get(it->first), it->second);
+        }
+        pControl->SetValue(pSettingInt->GetData());
+        continue;
+      }
+    }
     if (strSetting.Equals("myprograms.ntscmode"))
     {
       CSettingInt *pSettingInt = (CSettingInt*)pSetting;
@@ -448,15 +463,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
     {
       FillInVoiceMasks(3, pSetting);
     }
-    else if (strSetting.Equals("audiooutput.mode"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(338), AUDIO_ANALOG);
-      if (g_audioConfig.HasDigitalOutput())
-        pControl->AddLabel(g_localizeStrings.Get(339), AUDIO_DIGITAL);
-      pControl->SetValue(pSettingInt->GetData());
-    }
     else if (strSetting.Equals("videooutput.aspect"))
     {
       CSettingInt *pSettingInt = (CSettingInt*)pSetting;
@@ -464,26 +470,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(21375), VIDEO_NORMAL);
       pControl->AddLabel(g_localizeStrings.Get(21376), VIDEO_LETTERBOX);
       pControl->AddLabel(g_localizeStrings.Get(21377), VIDEO_WIDESCREEN);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("audiocds.encoder"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel("Lame", CDDARIP_ENCODER_LAME);
-      pControl->AddLabel("Vorbis", CDDARIP_ENCODER_VORBIS);
-      pControl->AddLabel("Wav", CDDARIP_ENCODER_WAV);
-      pControl->AddLabel("Flac", CDDARIP_ENCODER_FLAC);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("audiocds.quality"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(604), CDDARIP_QUALITY_CBR);
-      pControl->AddLabel(g_localizeStrings.Get(601), CDDARIP_QUALITY_MEDIUM);
-      pControl->AddLabel(g_localizeStrings.Get(602), CDDARIP_QUALITY_STANDARD);
-      pControl->AddLabel(g_localizeStrings.Get(603), CDDARIP_QUALITY_EXTREME);
       pControl->SetValue(pSettingInt->GetData());
     }
     else if (strSetting.Equals("lcd.type"))
@@ -727,15 +713,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
       pControl->AddLabel(g_localizeStrings.Get(21397), RENDER_HQ_RGB_SHADERV2);
       pControl->SetValue(pSettingInt->GetData());
     }
-    else if (strSetting.Equals("musicplayer.replaygaintype"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(351), REPLAY_GAIN_NONE);
-      pControl->AddLabel(g_localizeStrings.Get(639), REPLAY_GAIN_TRACK);
-      pControl->AddLabel(g_localizeStrings.Get(640), REPLAY_GAIN_ALBUM);
-      pControl->SetValue(pSettingInt->GetData());
-    }
     else if (strSetting.Equals("musicplayer.defaultplayer"))
     {
       CSettingInt *pSettingInt = (CSettingInt*)pSetting;
@@ -771,15 +748,6 @@ void CGUIWindowSettingsCategory::CreateSettings()
     else if (strSetting.Equals("locale.country"))
     {
       FillInRegions(pSetting);
-    }
-    else if (strSetting.Equals("videoplayer.resumeautomatically"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(106), RESUME_NO);
-      pControl->AddLabel(g_localizeStrings.Get(107), RESUME_YES);
-      pControl->AddLabel(g_localizeStrings.Get(12020), RESUME_ASK);
-      pControl->SetValue(pSettingInt->GetData());
     }
     else if (strSetting.Equals("videoplayer.defaultplayer"))
     {

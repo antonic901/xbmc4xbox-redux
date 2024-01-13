@@ -9144,7 +9144,21 @@ msgctxt "#33083"
 msgid "Enable custom script button"
 msgstr ""
 
-#empty strings from id 33084 to 34004
+#empty strings from id 33084 to 39999
+
+msgctxt "#34000"
+msgid "Lame"
+msgstr ""
+
+msgctxt "#34001"
+msgid "Vorbis"
+msgstr ""
+
+msgctxt "#34002"
+msgid "Wav"
+msgstr ""
+
+#empty strings from id 34003 to 34004
 
 msgctxt "#34005"
 msgid "Flac"
