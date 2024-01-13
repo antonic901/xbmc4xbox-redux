@@ -501,7 +501,6 @@ bool CAdvancedSettings::Load()
     GetCustomRegexps(pPictureExcludes, m_pictureExcludeFromListingRegExps);
 
   // picture extensions
-  CStdString extraExtensions;
   TiXmlElement* pExts = pRootElement->FirstChildElement("pictureextensions");
   if (pExts)
     GetCustomExtensions(pExts,g_settings.m_pictureExtensions);
@@ -605,61 +604,14 @@ bool CAdvancedSettings::Load()
   XMLUtils::GetBoolean(pRootElement, "detectasudf", m_detectAsUdf);
 
   // music thumbs
-  CStdString extraThumbs;
   TiXmlElement* pThumbs = pRootElement->FirstChildElement("musicthumbs");
   if (pThumbs)
-  {
-    // remove before add so that the defaults can be restored after user defined ones
-    // (ie, the list can be:cover.jpg|cover.png|folder.jpg)
-    CSettings::GetString(pThumbs, "remove", extraThumbs, "");
-    if (extraThumbs != "")
-    {
-      CStdStringArray thumbs;
-      StringUtils::SplitString(extraThumbs, "|", thumbs);
-      for (unsigned int i = 0; i < thumbs.size(); ++i)
-      {
-        int iPos = m_musicThumbs.Find(thumbs[i]);
-        if (iPos == -1)
-          continue;
-        m_musicThumbs.erase(iPos, thumbs[i].size() + 1);
-      }
-    }
-    CSettings::GetString(pThumbs, "add", extraThumbs,"");
-    if (extraThumbs != "")
-    {
-      if (!m_musicThumbs.IsEmpty())
-        m_musicThumbs += "|";
-      m_musicThumbs += extraThumbs;
-    }
-  }
+    GetCustomExtensions(pThumbs,m_musicThumbs);
 
   // dvd thumbs
   pThumbs = pRootElement->FirstChildElement("dvdthumbs");
   if (pThumbs)
-  {
-    // remove before add so that the defaults can be restored after user defined ones
-    // (ie, the list can be:cover.jpg|cover.png|folder.jpg)
-    CSettings::GetString(pThumbs, "remove", extraThumbs, "");
-    if (extraThumbs != "")
-    {
-      CStdStringArray thumbs;
-      StringUtils::SplitString(extraThumbs, "|", thumbs);
-      for (unsigned int i = 0; i < thumbs.size(); ++i)
-      {
-        int iPos = m_dvdThumbs.Find(thumbs[i]);
-        if (iPos == -1)
-          continue;
-        m_dvdThumbs.erase(iPos, thumbs[i].size() + 1);
-      }
-    }
-    CSettings::GetString(pThumbs, "add", extraThumbs,"");
-    if (extraThumbs != "")
-    {
-      if (!m_dvdThumbs.IsEmpty())
-        m_dvdThumbs += "|";
-      m_dvdThumbs += extraThumbs;
-    }
-  }
+    GetCustomExtensions(pThumbs,m_dvdThumbs);
 
   // movie fanarts
   TiXmlElement* pFanart = pRootElement->FirstChildElement("fanart");

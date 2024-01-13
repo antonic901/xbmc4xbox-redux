@@ -630,12 +630,12 @@ void CGUIWindowVideoNav::PlayItem(int iItem)
 
 void CGUIWindowVideoNav::OnInfo(CFileItem* pItem, ADDON::ScraperPtr& scraper)
 {
-  CStdString strPath,strFile;
   m_database.Open(); // since we can be called from the music library without being inited
   if (pItem->IsVideoDb())
     scraper = m_database.GetScraperForPath(pItem->GetVideoInfoTag()->m_strPath);
   else
   {
+    CStdString strPath,strFile;
     URIUtils::Split(pItem->GetPath(),strPath,strFile);
     scraper = m_database.GetScraperForPath(strPath);
   }
@@ -1129,9 +1129,9 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       noneitem->SetIconImage("DefaultFolder.png");
       noneitem->SetLabel(g_localizeStrings.Get(20018));
 
-      CVideoInfoTag tag;
       if (button != CONTEXT_BUTTON_SET_ARTIST_THUMB)
       {
+        CVideoInfoTag tag;
         if (button == CONTEXT_BUTTON_SET_SEASON_THUMB)
           m_database.GetTvShowInfo("",tag,m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iIdShow);
         else
@@ -1175,9 +1175,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           //  browsing for the artist thumb
           CMusicDatabase database;
           database.Open();
-          CFileItemList albums;
           long idArtist=database.GetArtistByName(m_vecItems->Get(itemNumber)->GetLabel());
-          CStdString path;
           database.GetArtistPath(idArtist, picturePath);
         }
 

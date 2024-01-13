@@ -231,8 +231,7 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
       // note that according to http://atomicparsley.sourceforge.net/mpeg-4files.html the type
       // of image (PNG=14 or JPG=13) is contained in pMetadata[-5] but we currently don't use this.
       m_thumbSize = metaSize;
-      if (m_thumbData)
-        delete[] m_thumbData;
+      delete[] m_thumbData;
       m_thumbData = new BYTE[m_thumbSize];
       if (m_thumbData)
         memcpy(m_thumbData, pMetaData, metaSize);

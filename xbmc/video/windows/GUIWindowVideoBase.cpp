@@ -200,8 +200,6 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         }
         else if (iAction == ACTION_SHOW_INFO)
         {
-          SScanSettings settings;
-          CStdString strDir;
           if (iItem < 0 || iItem >= m_vecItems->Size())
             return false;
 
@@ -214,6 +212,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
           ADDON::ScraperPtr scraper;
           if (!m_vecItems->IsPlugin() && !m_vecItems->IsRSS() && !m_vecItems->IsLiveTV())
           {
+            CStdString strDir;
             if (item->IsVideoDb()       &&
                 item->HasVideoInfoTag() &&
               !item->GetVideoInfoTag()->m_strPath.IsEmpty())
@@ -223,6 +222,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
             else
               URIUtils::GetDirectory(item->GetPath(),strDir);
 
+            SScanSettings settings;
             bool foundDirectly = false;
             scraper = m_database.GetScraperForPath(strDir, settings, foundDirectly);
 

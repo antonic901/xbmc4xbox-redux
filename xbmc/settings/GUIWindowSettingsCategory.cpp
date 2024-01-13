@@ -2039,7 +2039,11 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
     pControl->SetWidth(width);
     pSettingControl = new CButtonSettingControl((CGUIButtonControl *)pControl, iControlID, pSetting);
   }
-  if (!pControl) return;
+  if (!pControl)
+  {
+    delete pSettingControl;
+    return;
+  }
   pControl->SetID(iControlID++);
   pControl->SetVisible(true);
   CGUIControlGroupList *group = (CGUIControlGroupList *)GetControl(SETTINGS_GROUP_ID);

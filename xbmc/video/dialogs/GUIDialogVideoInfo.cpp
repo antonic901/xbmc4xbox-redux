@@ -797,7 +797,6 @@ void CGUIDialogVideoInfo::OnGetThumb()
 
   if (result.Left(14) == "thumb://Remote")
   {
-    CStdString strFile;
     CFileItem chosen(result, false);
     CStdString thumb = chosen.GetCachedPictureThumb();
     if (CFile::Exists(thumb))

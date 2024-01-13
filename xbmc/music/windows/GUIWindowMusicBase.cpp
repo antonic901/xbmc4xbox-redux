@@ -1211,7 +1211,6 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
   // sending a blank thumb to the skin.)
   if (g_application.IsPlayingAudio())
   {
-    CStdString strSongFolder;
     const CMusicInfoTag* tag=g_infoManager.GetCurrentSongTag();
     if (tag)
     {

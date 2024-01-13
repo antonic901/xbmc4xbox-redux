@@ -8649,7 +8649,6 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
     CStdString moviesDir(URIUtils::AddFileToFolder(path, "movies"));
     CStdString musicvideosDir(URIUtils::AddFileToFolder(path, "musicvideos"));
     CStdString tvshowsDir(URIUtils::AddFileToFolder(path, "tvshows"));
-    CVideoInfoScanner scanner;
     set<CStdString> actors;
     // add paths first (so we have scraper settings available)
     TiXmlElement *path = root->FirstChildElement("paths");
@@ -8680,6 +8679,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       path = path->NextSiblingElement();
     }
     movie = root->FirstChildElement();
+    CVideoInfoScanner scanner;
     while (movie)
     {
       CVideoInfoTag info;

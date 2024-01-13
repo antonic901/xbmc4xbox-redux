@@ -519,7 +519,6 @@ void CGUIDialogMusicInfo::OnGetThumb()
 
   if (result.Left(14).Equals("thumb://Remote"))
   {
-    CStdString strFile;
     CFileItem chosen(result, false);
     CStdString thumb = chosen.GetCachedPictureThumb();
     if (CFile::Exists(thumb))
@@ -675,10 +674,9 @@ void CGUIDialogMusicInfo::OnSearch(const CFileItem* pItem)
   if (idAlbum != -1)
   {
     CAlbum album;
-    CStdString strPath;
-
     if (database.GetAlbumInfo(idAlbum,album,&album.songs))
     {
+      CStdString strPath;
       database.GetAlbumPath(idAlbum,strPath);
       SetAlbum(album,strPath);
       Update();

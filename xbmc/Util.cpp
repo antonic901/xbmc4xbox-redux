@@ -431,8 +431,6 @@ bool CUtil::GetVolumeFromFileName(const CStdString& strFileName, CStdString& str
   CStdString strFileNameLower = strFileName;
   strFileNameLower.MakeLower();
 
-  CStdString strVolume;
-  CStdString strTestString;
   CRegExp reg;
 
 //  CLog::Log(LOGDEBUG, "GetVolumeFromFileName:[%s]", strFileNameLower.c_str());
