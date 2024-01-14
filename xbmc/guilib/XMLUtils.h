@@ -43,6 +43,7 @@ public:
   static bool GetInt(const TiXmlNode* pRootNode, const char* strTag, int& iIntValue);
   static bool GetBoolean(const TiXmlNode* pRootNode, const char* strTag, bool& bBoolValue);
   static bool GetString(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringValue);
+  static bool GetString(const TiXmlNode* pRootNode, const char* strTag, std::string& strStringValue);
   static bool GetAdditiveString(const TiXmlNode* pRootNode, const char* strTag, const CStdString& strSeparator, CStdString& strStringValue);
   static bool GetStringArray(const TiXmlNode* rootNode, const char* tag, std::vector<std::string>& arrayValue, bool clear = false);
   static bool GetEncoding(const TiXmlDocument* pDoc, CStdString& strEncoding);
