@@ -437,6 +437,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\ISettingsHandler.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\Settings.cpp">
 				</File>
 				<File

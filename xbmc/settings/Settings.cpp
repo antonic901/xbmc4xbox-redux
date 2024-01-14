@@ -63,6 +63,7 @@
 #include "addons/AddonManager.h"
 #include "DatabaseManager.h"
 #include "network/upnp/UPnPSettings.h"
+#include "utils/SingleLock.h"
 
 using namespace std;
 using namespace XFILE;
@@ -74,6 +75,24 @@ extern CStdString g_LoadErrorStr;
 
 CSettings::CSettings(void)
 {
+}
+
+void CSettings::RegisterSettingsHandler(ISettingsHandler *settingsHandler)
+{
+  if (settingsHandler == NULL)
+    return;
+
+  CSingleLock lock(m_critical);
+  m_settingsHandlers.insert(settingsHandler);
+}
+
+void CSettings::UnregisterSettingsHandler(ISettingsHandler *settingsHandler)
+{
+  if (settingsHandler == NULL)
+    return;
+
+  CSingleLock lock(m_critical);
+  m_settingsHandlers.erase(settingsHandler);
 }
 
 void CSettings::Initialize()
@@ -145,6 +164,7 @@ void CSettings::Initialize()
 CSettings::~CSettings(void)
 {
   Clear();
+  m_settingsHandlers.clear();
 }
 
 
@@ -173,6 +193,9 @@ bool CSettings::Reset()
 
 bool CSettings::Load()
 {
+  if (!OnSettingsLoading())
+    return false;
+
 #ifdef _XBOX
   char szDevicePath[1024];
   CStdString strMnt = CSpecialProtocol::TranslatePath(GetProfileUserDataFolder());
@@ -197,6 +220,8 @@ bool CSettings::Load()
   LoadSources();
   LoadRSSFeeds();
   LoadUserFolderLayout();
+
+  OnSettingsLoaded();
 
   return true;
 }
@@ -975,6 +1000,9 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   if (!pRoot) return false;
   // write our tags one by one - just a big list for now (can be flashed up later)
 
+  if (!OnSettingsSaving())
+    return false;
+
   // mymusic settings
   TiXmlElement musicNode("mymusic");
   TiXmlNode *pNode = pRoot->InsertEndChild(musicNode);
@@ -1110,6 +1138,8 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
 
   // For mastercode
   SaveProfiles(PROFILES_FILE);
+
+  OnSettingsSaved();
 
   // save the file
   return xmlDoc.SaveFile(strSettingsFile);
@@ -1611,6 +1641,8 @@ void CSettings::Clear()
   // m_ResInfo.clear();
 
   CUPnPSettings::Get().Clear();
+
+  OnSettingsCleared();
 }
 
 int CSettings::TranslateSkinString(const CStdString &setting)
@@ -2202,4 +2234,49 @@ void CSettings::LoadMasterForLogin()
   m_lastUsedProfile = m_currentProfile;
   if (m_currentProfile != 0)
     LoadProfile(0);
+}
+
+bool CSettings::OnSettingsLoading()
+{
+  CSingleLock lock(m_critical);
+  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
+  {
+    if (!(*it)->OnSettingsLoading())
+      return false;
+  }
+
+  return true;
+}
+
+void CSettings::OnSettingsLoaded()
+{
+  CSingleLock lock(m_critical);
+  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
+    (*it)->OnSettingsLoaded();
+}
+
+bool CSettings::OnSettingsSaving() const
+{
+  CSingleLock lock(m_critical);
+  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
+  {
+    if (!(*it)->OnSettingsSaving())
+      return false;
+  }
+
+  return true;
+}
+
+void CSettings::OnSettingsSaved() const
+{
+  CSingleLock lock(m_critical);
+  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
+    (*it)->OnSettingsSaved();
+}
+
+void CSettings::OnSettingsCleared()
+{
+  CSingleLock lock(m_critical);
+  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
+    (*it)->OnSettingsCleared();
 }

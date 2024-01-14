@@ -26,15 +26,18 @@
 #define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
 #define DEFAULT_WEB_INTERFACE "webinterface.default"
 
+#include "settings/ISettingsHandler.h"
 #include "settings/VideoSettings.h"
 #include "settings/GUISettings.h"
 #include "settings/Profile.h"
 #include "MediaSource.h"
 #include "ViewState.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/CriticalSection.h"
 
 #include <vector>
 #include <map>
+#include <set>
 
 #define CACHE_AUDIO 0
 #define CACHE_VIDEO 1
@@ -87,11 +90,14 @@ class CGUISettings;
 class TiXmlElement;
 class TiXmlNode;
 
-class CSettings
+class CSettings : private ISettingsHandler
 {
 public:
   CSettings(void);
   virtual ~CSettings(void);
+
+  void RegisterSettingsHandler(ISettingsHandler *settingsHandler);
+  void UnregisterSettingsHandler(ISettingsHandler *settingsHandler);
 
   void Initialize();
 
@@ -572,6 +578,17 @@ protected:
   bool LoadAvpackXML();
 
 private:
+  // implementation of ISettingsHandler
+  virtual bool OnSettingsLoading();
+  virtual void OnSettingsLoaded();
+  virtual bool OnSettingsSaving() const;
+  virtual void OnSettingsSaved() const;
+  virtual void OnSettingsCleared();
+
+  CCriticalSection m_critical;
+  typedef std::set<ISettingsHandler*> SettingsHandlers;
+  SettingsHandlers m_settingsHandlers;
+
   std::vector<CProfile> m_vecProfiles;
   std::map<CStdString, int> m_watchMode;
   bool m_usingLoginScreen;
