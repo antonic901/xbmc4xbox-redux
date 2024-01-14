@@ -23,7 +23,6 @@
 #include "tinyXML/tinyxml.h"
 #include "XMLUtils.h"
 #include "cores/IPlayer.h"
-#include "threads/CriticalSection.h"
 
 /*----------------------------------------------------------------------
 |   forward references
@@ -69,9 +68,6 @@ public:
   PLAYERCOREID SelectPlayerDialog(float posX, float posY) const;
 
   bool LoadConfiguration(const std::string &file, bool clear);
-  
-  void OnPlayerDiscovered(const CStdString& id, const CStdString& name, EPLAYERCORES core);
-  void OnPlayerRemoved(const CStdString& id);
 
 protected:
   CPlayerCoreFactory();
@@ -82,5 +78,4 @@ protected:
 private:
   std::vector<CPlayerCoreConfig *> m_vecCoreConfigs;
   std::vector<CPlayerSelectionRule *> m_vecCoreSelectionRules;
-  CCriticalSection m_section;
 };
