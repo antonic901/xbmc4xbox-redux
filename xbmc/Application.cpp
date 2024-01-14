@@ -93,6 +93,7 @@
 #endif
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
+#include "network/upnp/UPnPSettings.h"
 #include "filesystem/UPnPDirectory.h"
 #endif
 #include "PartyModeManager.h"
@@ -934,6 +935,7 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGNOTICE, "load settings...");
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
+  g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
 
   g_LoadErrorStr = "Unable to load settings";
   

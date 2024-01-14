@@ -61,7 +61,6 @@
 #include "utils/FileUtils.h"
 #include "addons/AddonManager.h"
 #include "DatabaseManager.h"
-#include "network/upnp/UPnPSettings.h"
 #include "utils/SingleLock.h"
 
 using namespace std;
@@ -1634,8 +1633,6 @@ void CSettings::Clear()
   m_defaultMusicLibSource.clear();
 
   // m_ResInfo.clear();
-
-  CUPnPSettings::Get().Clear();
 
   OnSettingsCleared();
 }
