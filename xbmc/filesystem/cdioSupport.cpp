@@ -28,7 +28,7 @@
 
 using namespace MEDIA_DETECT;
 
-CLibcdio* CLibcdio::m_pInstance = NULL;
+boost::shared_ptr<CLibcdio> CLibcdio::m_pInstance;
 
 /* Some interesting sector numbers stored in the above buffer. */
 #define ISO_SUPERBLOCK_SECTOR  16  /* buffer[0] */
@@ -102,20 +102,16 @@ CLibcdio::~CLibcdio()
 {
 }
 
-void CLibcdio::RemoveInstance()
+void CLibcdio::ReleaseInstance()
 {
-  if (m_pInstance)
-  {
-    delete m_pInstance;
-    m_pInstance = NULL;
-  }
+  m_pInstance.reset();
 }
 
-CLibcdio* CLibcdio::GetInstance()
+boost::shared_ptr<CLibcdio> CLibcdio::GetInstance()
 {
   if (!m_pInstance)
   {
-    m_pInstance = new CLibcdio();
+    m_pInstance = boost::shared_ptr<CLibcdio>(new CLibcdio());
   }
   return m_pInstance;
 }

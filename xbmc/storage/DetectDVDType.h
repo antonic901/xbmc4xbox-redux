@@ -33,6 +33,7 @@
 #include "utils/CriticalSection.h"
 #include "utils/event.h"
 #include "utils/Thread.h"
+#include "boost/shared_ptr.hpp"
 
 namespace MEDIA_DETECT
 {
@@ -83,6 +84,6 @@ private:
   static CStdString m_diskLabel;
   static CStdString m_diskPath;
   
-  CLibcdio* m_cdio;
+  boost::shared_ptr<CLibcdio> m_cdio;
 };
 }

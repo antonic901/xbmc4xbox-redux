@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "boost/shared_ptr.hpp"
+
 #include "xbox/IoSupport.h"
 
 #include "lib/libcdio/intTypes.h"
@@ -265,8 +267,8 @@ private:
 public:
   virtual ~CLibcdio();
 
-  static void RemoveInstance();
-  static CLibcdio* GetInstance();
+  static void ReleaseInstance();
+  static boost::shared_ptr<CLibcdio> GetInstance();
 
   // libcdio is not thread safe so these are wrappers to libcdio routines
   CdIo_t* cdio_open(const char *psz_source, driver_id_t driver_id);
@@ -284,7 +286,7 @@ public:
 
 private:
   CCriticalSection m_critSection;
-  static CLibcdio* m_pInstance;
+  static boost::shared_ptr<CLibcdio> m_pInstance;
 };
 
 class CCdIoSupport
@@ -347,7 +349,7 @@ private:
   int m_nFirstAudio;      /* # of first audio track */
   int m_nNumAudio;              /* # of audio tracks */
 
-  CLibcdio* m_cdio;
+  boost::shared_ptr<CLibcdio> m_cdio;
 };
 
 }

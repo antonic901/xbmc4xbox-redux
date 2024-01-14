@@ -143,6 +143,7 @@ void CSettings::Initialize()
 
 CSettings::~CSettings(void)
 {
+  Clear();
 }
 
 
@@ -1655,16 +1656,34 @@ void CSettings::SaveSkinSettings(TiXmlNode *pRootElement) const
 
 void CSettings::Clear()
 {
+  m_vecProfiles.clear();
+
+  m_pictureExtensions.clear();
+  m_musicExtensions.clear();
+  m_videoExtensions.clear();
+
+  m_logFolder.clear();
+
+  m_mapRssUrls.clear();
+  m_skinStrings.clear();
+  m_skinBools.clear();
+
   m_programSources.clear();
   m_pictureSources.clear();
   m_fileSources.clear();
   m_musicSources.clear();
   m_videoSources.clear();
-//  m_vecIcons.clear();
-  m_vecProfiles.clear();
-  m_mapRssUrls.clear();
-  m_skinBools.clear();
-  m_skinStrings.clear();
+
+  m_defaultProgramSource.clear();
+  m_defaultMusicSource.clear();
+  m_defaultPictureSource.clear();
+  m_defaultFileSource.clear();
+  m_defaultMusicLibSource.clear();
+
+  m_UPnPUUIDServer.clear();
+  m_UPnPUUIDRenderer.clear();
+
+  // m_ResInfo.clear();
 }
 
 int CSettings::TranslateSkinString(const CStdString &setting)

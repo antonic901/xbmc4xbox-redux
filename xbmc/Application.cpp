@@ -1984,6 +1984,8 @@ void CApplication::UnloadSkin()
   g_charsetConverter.reset();
 
   g_infoManager.Clear();
+
+  g_SkinInfo.reset();
 }
 
 bool CApplication::LoadUserWindows()
@@ -3504,8 +3506,11 @@ HRESULT CApplication::Cleanup()
     g_settings.Clear();
     g_guiSettings.Clear();
     g_advancedSettings.Clear();
-#endif
 
+#ifdef HAS_DVD_DRIVE
+    CLibcdio::ReleaseInstance();
+#endif
+#endif
 #ifdef _CRTDBG_MAP_ALLOC
     _CrtDumpMemoryLeaks();
     while(1); // execution ends
