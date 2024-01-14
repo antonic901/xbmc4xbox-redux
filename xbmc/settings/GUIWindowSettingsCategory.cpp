@@ -189,16 +189,6 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     }
   case GUI_MSG_LOAD_SKIN:
     {
-      // Reload a resolution
-      if (m_NewResolution != INVALID)
-      {
-        g_guiSettings.SetInt("videoscreen.resolution", m_NewResolution);
-        //set the gui resolution, if newRes is AUTORES newRes will be set to the highest available resolution
-        g_graphicsContext.SetVideoResolution(m_NewResolution, TRUE);
-        //set our lookandfeelres to the resolution set in graphiccontext
-        g_guiSettings.m_LookAndFeelResolution = m_NewResolution;
-      }
-
       if (IsActive())
         m_returningFromSkinLoad = true;
     }
@@ -1396,17 +1386,17 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     int iControlID = pSettingControl->GetID();
     CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControlID);
     g_windowManager.SendMessage(msg);
-    m_NewResolution = (RESOLUTION)msg.GetParam1();
-    // reset our skin if necessary
-    // delay change of resolution
-    if (m_NewResolution != g_guiSettings.m_LookAndFeelResolution)
+    RESOLUTION nextRes = (RESOLUTION)msg.GetParam1();
+    RESOLUTION lastRes = g_graphicsContext.GetVideoResolution();
+    g_guiSettings.SetInt("videoscreen.resolution", nextRes);
+    g_graphicsContext.SetVideoResolution(nextRes);
+    g_guiSettings.m_LookAndFeelResolution = nextRes;
+    bool cancelled = false;
+    if (!CGUIDialogYesNo::ShowAndGetInput(13110, 13111, 20022, 20022, -1, -1, cancelled, 10000))
     {
-      g_application.DelayLoadSkin();
-    }
-    else
-    { // Do not reload the resolution we are using
-      m_NewResolution = INVALID;
-      g_application.CancelDelayLoadSkin();
+      g_guiSettings.SetInt("videoscreen.resolution", lastRes);
+      g_graphicsContext.SetVideoResolution(lastRes);
+      g_guiSettings.m_LookAndFeelResolution = lastRes;
     }
   }
   else if (strSetting.Equals("system.ledcolour"))
@@ -2301,7 +2291,9 @@ void CGUIWindowSettingsCategory::FillInVoiceMaskValues(DWORD dwPort, CSetting *p
 void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool playbackSetting)
 {
   CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
+  CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
+  control->SetDelayed();
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(control->GetID());
   pControl->Clear();
   // Find the valid resolutions and add them as necessary
   vector<RESOLUTION> res;
