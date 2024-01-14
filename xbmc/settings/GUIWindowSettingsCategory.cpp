@@ -189,74 +189,6 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     }
   case GUI_MSG_LOAD_SKIN:
     {
-      // Do we need to reload the language file
-      if (!m_strNewLanguage.IsEmpty())
-      {
-        g_guiSettings.SetString("locale.language", m_strNewLanguage);
-        g_settings.Save();
-
-        CStdString strLangInfoPath;
-        strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", m_strNewLanguage.c_str());
-        g_langInfo.Load(strLangInfoPath);
-
-        if (g_langInfo.ForceUnicodeFont() && !g_fontManager.IsFontSetUnicode())
-        {
-          CLog::Log(LOGINFO, "Language needs a ttf font, loading first ttf font available");
-          CStdString strFontSet;
-          if (g_fontManager.GetFirstFontSetUnicode(strFontSet))
-          {
-            m_strNewSkinFontSet=strFontSet;
-          }
-          else
-            CLog::Log(LOGERROR, "No ttf font found but needed: %s", strFontSet.c_str());
-        }
-
-        g_charsetConverter.reset();
-
-        CStdString strKeyboardLayoutConfigurationPath;
-        strKeyboardLayoutConfigurationPath.Format("special://xbmc/language/%s/keyboardmap.xml", m_strNewLanguage.c_str());
-        CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
-        g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
-
-        g_localizeStrings.Load("special://xbmc/language/", m_strNewLanguage);
-
-        // also tell our weather to reload, as this must be localized
-        g_weatherManager.Refresh();
-      }
-
-      // Do we need to reload the skin font set
-      if (!m_strNewSkinFontSet.IsEmpty())
-      {
-        g_guiSettings.SetString("lookandfeel.font", m_strNewSkinFontSet);
-        g_settings.Save();
-      }
-
-      // Reload another skin
-      if (!m_strNewSkin.IsEmpty())
-      {
-        g_guiSettings.SetString("lookandfeel.skin", m_strNewSkin);
-        g_settings.Save();
-      }
-
-      // Reload a skin theme
-      if (!m_strNewSkinTheme.IsEmpty())
-      {
-        g_guiSettings.SetString("lookandfeel.skintheme", m_strNewSkinTheme);
-        // also set the default color theme
-        CStdString colorTheme(URIUtils::ReplaceExtension(m_strNewSkinTheme, ".xml"));
-        if (colorTheme.Equals("Textures.xml"))
-          colorTheme = "defaults.xml";
-        g_guiSettings.SetString("lookandfeel.skincolors", colorTheme);
-        g_settings.Save();
-      }
-
-      // Reload a skin color
-      if (!m_strNewSkinColors.IsEmpty())
-      {
-        g_guiSettings.SetString("lookandfeel.skincolors", m_strNewSkinColors);
-        g_settings.Save();
-      }
-
       // Reload a resolution
       if (m_NewResolution != INVALID)
       {
@@ -1437,13 +1369,8 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     CStdString strSkinFontSet = pControl->GetCurrentLabel();
     if (strSkinFontSet != ".svn" && strSkinFontSet != g_guiSettings.GetString("lookandfeel.font"))
     {
-      m_strNewSkinFontSet = strSkinFontSet;
-      g_application.DelayLoadSkin();
-    }
-    else
-    { // Do not reload the language we are already using
-      m_strNewSkinFontSet.Empty();
-      g_application.CancelDelayLoadSkin();
+      g_guiSettings.SetString("lookandfeel.font", strSkinFontSet);
+      g_application.ReloadSkin();
     }
   }
   else if (strSetting.Equals("lookandfeel.soundskin"))
@@ -1503,13 +1430,33 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     CStdString strLanguage = pControl->GetCurrentLabel();
     if (strLanguage != ".svn" && strLanguage != pSettingString->GetData())
     {
-      m_strNewLanguage = strLanguage;
-      g_application.DelayLoadSkin();
-    }
-    else
-    { // Do not reload the language we are already using
-      m_strNewLanguage.Empty();
-      g_application.CancelDelayLoadSkin();
+      CStdString strLangInfoPath;
+      strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
+      g_langInfo.Load(strLangInfoPath);
+
+      if (g_langInfo.ForceUnicodeFont() && !g_fontManager.IsFontSetUnicode())
+      {
+        CLog::Log(LOGINFO, "Language needs a ttf font, loading first ttf font available");
+        CStdString strFontSet;
+        if (g_fontManager.GetFirstFontSetUnicode(strFontSet))
+          strLanguage = strFontSet;
+        else
+          CLog::Log(LOGERROR, "No ttf font found but needed: %s", strFontSet.c_str());
+      }
+      g_guiSettings.SetString("locale.language", strLanguage);
+
+      g_charsetConverter.reset();
+
+      CStdString strKeyboardLayoutConfigurationPath;
+      strKeyboardLayoutConfigurationPath.Format("special://xbmc/language/%s/keyboardmap.xml", strLanguage.c_str());
+      CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
+      g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
+
+      g_localizeStrings.Load("special://xbmc/language/", strLanguage);
+
+      // also tell our weather and skin to reload as these are localized
+      g_weatherManager.Refresh();
+      g_application.ReloadSkin();
     }
   }
   else if (strSetting.Equals("lookandfeel.skintheme"))
@@ -1526,13 +1473,13 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
 
     if (strSkinTheme != pSettingString->GetData())
     {
-      m_strNewSkinTheme = strSkinTheme;
-      g_application.DelayLoadSkin();
-    }
-    else
-    { // Do not reload the skin theme we are using
-      m_strNewSkinTheme.Empty();
-      g_application.CancelDelayLoadSkin();
+      g_guiSettings.SetString("lookandfeel.skintheme", strSkinTheme);
+      // also set the default color theme
+      CStdString colorTheme(URIUtils::ReplaceExtension(strSkinTheme, ".xml"));
+      if (colorTheme.Equals("Textures.xml"))
+        colorTheme = "defaults.xml";
+      g_guiSettings.SetString("lookandfeel.skincolors", colorTheme);
+      g_application.ReloadSkin();
     }
   }
   else if (strSetting.Equals("lookandfeel.skincolors"))
@@ -1549,13 +1496,8 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
 
     if (strSkinColor != pSettingString->GetData())
     {
-      m_strNewSkinColors = strSkinColor;
-      g_application.DelayLoadSkin();
-    }
-    else
-    { // Do not reload the skin colors we are using
-      m_strNewSkinColors.Empty();
-      g_application.CancelDelayLoadSkin();
+      g_guiSettings.SetString("lookandfeel.skincolors", strSkinColor);
+      g_application.ReloadSkin();
     }
   }
   else if (strSetting.Equals("videoplayer.displayresolution"))
@@ -2082,13 +2024,13 @@ void CGUIWindowSettingsCategory::FillInSubtitleFonts(CSetting *pSetting)
 
 void CGUIWindowSettingsCategory::FillInSkinFonts(CSetting *pSetting)
 {
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
+  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   pControl->SetType(SPIN_CONTROL_TYPE_TEXT);
   pControl->Clear();
+  setting->SetDelayed();
 
   int iSkinFontSet = 0;
-
-  m_strNewSkinFontSet.Empty();
 
   CStdString strPath = g_SkinInfo->GetSkinPath("Font.xml");
 
@@ -2153,8 +2095,6 @@ void CGUIWindowSettingsCategory::FillInSoundSkins(CSetting *pSetting)
   pControl->SetType(SPIN_CONTROL_TYPE_TEXT);
   pControl->Clear();
   pControl->SetShowRange(true);
-
-  m_strNewSkin.Empty();
 
   //find skins...
   CFileItemList items;
@@ -2398,10 +2338,12 @@ void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool play
 
 void CGUIWindowSettingsCategory::FillInLanguages(CSetting *pSetting)
 {
-  CSettingString *pSettingString = (CSettingString*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
+  CSettingString *pSettingString = (CSettingString *)pSetting;
+  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
+  setting->SetDelayed();
   pControl->Clear();
-  m_strNewLanguage.Empty();
+
   //find languages...
   CFileItemList items;
   CDirectory::GetDirectory("special://xbmc/language/", items);
@@ -2532,11 +2474,11 @@ void CGUIWindowSettingsCategory::FillInSkinThemes(CSetting *pSetting)
 {
   // There is a default theme (just Textures.xpr)
   // any other *.xpr files are additional themes on top of this one.
-  CSettingString *pSettingString = (CSettingString*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
+  CSettingString *pSettingString = (CSettingString *)pSetting;
+  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   CStdString strSettingString = g_guiSettings.GetString("lookandfeel.skintheme");
-
-  m_strNewSkinTheme.Empty();
+  setting->SetDelayed();
 
   // Clear and add. the Default Label
   pControl->Clear();
@@ -2572,10 +2514,10 @@ void CGUIWindowSettingsCategory::FillInSkinColors(CSetting *pSetting)
 {
   // There is a default theme (just defaults.xml)
   // any other *.xml files are additional color themes on top of this one.
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
+  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   CStdString strSettingString = g_guiSettings.GetString("lookandfeel.skincolors");
-
-  m_strNewSkinColors.Empty();
+  setting->SetDelayed();
 
   // Clear and add. the Default Label
   pControl->Clear();

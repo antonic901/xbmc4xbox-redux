@@ -90,12 +90,6 @@ protected:
   CStdString m_strNetworkGateway;
   CStdString m_strNetworkDNS;
   CStdString m_strNetworkDNS2;
-  // look + feel settings (for delayed loading)
-  CStdString m_strNewSkinFontSet;
-  CStdString m_strNewSkin;
-  CStdString m_strNewLanguage;
-  CStdString m_strNewSkinTheme;
-  CStdString m_strNewSkinColors;
 
   CStdString m_strErrorMessage;
 
