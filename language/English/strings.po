@@ -9163,3 +9163,27 @@ msgstr ""
 msgctxt "#34005"
 msgid "Flac"
 msgstr ""
+
+msgctxt "#34006"
+msgid "LCD - HD44780"
+msgstr ""
+
+msgctxt "#34007"
+msgid "LCD - KS0073"
+msgstr ""
+
+msgctxt "#34008"
+msgid "VFD"
+msgstr ""
+
+msgctxt "#34009"
+msgid "SmartXX"
+msgstr ""
+
+msgctxt "#34010"
+msgid "Xenium"
+msgstr ""
+
+msgctxt "#34011"
+msgid "Xecuter3"
+msgstr ""

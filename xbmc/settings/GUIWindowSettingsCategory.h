@@ -41,7 +41,7 @@ protected:
   virtual void OnInitWindow();
 
   void CheckNetworkSettings();
-  void FillInSubtitleHeights(CSetting *pSetting);
+  void FillInSubtitleHeights(CSetting *pSetting, CGUISpinControlEx *pControl);
   void FillInSubtitleFonts(CSetting *pSetting);
   void FillInCharSets(CSetting *pSetting);
   void FillInSkinFonts(CSetting *pSetting);
@@ -60,6 +60,7 @@ protected:
   void FillInSkinColors(CSetting *pSetting);
 
   virtual void SetupControls();
+  CGUIControl* AddIntBasedSpinControl(CSetting *pSetting, float groupWidth, int &iControlID);
   void CreateSettings();
   void UpdateSettings();
   void UpdateRealTimeSettings();
@@ -68,7 +69,7 @@ protected:
   virtual void FreeControls();
   virtual void OnClick(CBaseSettingControl *pSettingControl);
   virtual void OnSettingChanged(CBaseSettingControl *pSettingControl);
-  void AddSetting(CSetting *pSetting, float width, int &iControlID);
+  CGUIControl* AddSetting(CSetting *pSetting, float width, int &iControlID);
   CBaseSettingControl* GetSetting(const CStdString &strSetting);
 
   std::vector<CBaseSettingControl *> m_vecSettings;

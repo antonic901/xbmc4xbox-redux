@@ -288,7 +288,12 @@ void CGUISettings::Initialize()
   AddSeparator(mp, "musicplayer.sep2");
   AddDefaultAddon(mp, "musicplayer.visualisation", 250, DEFAULT_VISUALISATION, ADDON_VIZ);
   AddSeparator(mp, "musicplayer.sep3");
-  AddInt(mp, "musicplayer.defaultplayer", 22003, PLAYER_PAPLAYER, PLAYER_MPLAYER, 1, PLAYER_PAPLAYER, SPIN_CONTROL_TEXT);
+
+  map<int,int> defaultMusicPlayers;
+  defaultMusicPlayers.insert(make_pair(22027, PLAYER_PAPLAYER));
+  defaultMusicPlayers.insert(make_pair(22029, PLAYER_MPLAYER));
+  defaultMusicPlayers.insert(make_pair(22028, PLAYER_DVDPLAYER));
+  AddInt(mp, "musicplayer.defaultplayer", 22003, PLAYER_PAPLAYER, defaultMusicPlayers, SPIN_CONTROL_TEXT);
 #ifdef _XBOX
   AddBool(mp, "musicplayer.outputtoallspeakers", 252, false);
 #endif
@@ -346,12 +351,27 @@ void CGUISettings::Initialize()
 
   // System settings
   AddGroup(4, 13000);
+
+  map<int,int> ledPlaybacks;
+  ledPlaybacks.insert(make_pair(106, LED_PLAYBACK_OFF));
+  ledPlaybacks.insert(make_pair(13002, LED_PLAYBACK_VIDEO));
+  ledPlaybacks.insert(make_pair(475, LED_PLAYBACK_MUSIC));
+  ledPlaybacks.insert(make_pair(476, LED_PLAYBACK_VIDEO_MUSIC));
+
+  map<int,int> ledColours;
+  ledColours.insert(make_pair(13340, LED_COLOUR_NO_CHANGE));
+  ledColours.insert(make_pair(13341, LED_COLOUR_GREEN));
+  ledColours.insert(make_pair(13342, LED_COLOUR_ORANGE));
+  ledColours.insert(make_pair(13343, LED_COLOUR_RED));
+  ledColours.insert(make_pair(13344, LED_COLOUR_CYCLE));
+  ledColours.insert(make_pair(351, LED_COLOUR_OFF));
+
 #ifdef HAS_XBOX_HARDWARE
   CSettingsCategory* sys = AddCategory(4, "system", 128);
   AddBool(sys, "system.mceremote", 13601, false);
   AddInt(sys, "system.shutdowntime", 357, 0, 0, 5, 120, SPIN_CONTROL_INT_PLUS, MASK_MINS, TEXT_OFF);
-  AddInt(sys, "system.ledcolour", 13339, LED_COLOUR_NO_CHANGE, LED_COLOUR_NO_CHANGE, 1, LED_COLOUR_OFF, SPIN_CONTROL_TEXT);
-  AddInt(sys, "system.leddisableonplayback", 13345, LED_PLAYBACK_OFF, LED_PLAYBACK_OFF, 1, LED_PLAYBACK_VIDEO_MUSIC, SPIN_CONTROL_TEXT);
+  AddInt(sys, "system.ledcolour", 13339, LED_COLOUR_NO_CHANGE, ledColours, SPIN_CONTROL_TEXT);
+  AddInt(sys, "system.leddisableonplayback", 13345, LED_PLAYBACK_OFF, ledPlaybacks, SPIN_CONTROL_TEXT);
   AddBool(sys, "system.ledenableonpaused", 20313, true);
   AddSeparator(sys, "system.sep1");
   AddBool(sys, "system.fanspeedcontrol", 13302, false);
@@ -363,7 +383,12 @@ void CGUISettings::Initialize()
 #endif
   
   CSettingsCategory* vo = AddCategory(4, "videooutput", 21373);
-  AddInt(vo, "videooutput.aspect", 21374, VIDEO_NORMAL, VIDEO_NORMAL, 1, VIDEO_WIDESCREEN, SPIN_CONTROL_TEXT);
+  map<int,int> videoAspects;
+  videoAspects.insert(make_pair(21375, VIDEO_NORMAL));
+  videoAspects.insert(make_pair(21376, VIDEO_LETTERBOX));
+  videoAspects.insert(make_pair(21377, VIDEO_WIDESCREEN));
+
+  AddInt(vo, "videooutput.aspect", 21374, VIDEO_NORMAL, videoAspects, SPIN_CONTROL_TEXT);
   AddBool(vo,  "videooutput.hd480p", 21378, true);
   AddBool(vo,  "videooutput.hd720p", 21379, true);
   AddBool(vo,  "videooutput.hd1080i", 21380, false);
@@ -371,8 +396,8 @@ void CGUISettings::Initialize()
   CSettingsCategory* ao = AddCategory(4, "audiooutput", 772);
 
   map<int,int> audiomode;
-  audiomode.insert(make_pair(338,AUDIO_ANALOG));
-  audiomode.insert(make_pair(339,AUDIO_DIGITAL));
+  audiomode.insert(make_pair(338, AUDIO_ANALOG));
+  audiomode.insert(make_pair(339, AUDIO_DIGITAL));
   AddInt(ao, "audiooutput.mode", 337, AUDIO_ANALOG, audiomode, SPIN_CONTROL_TEXT);
   AddBool(ao, "audiooutput.ac3passthrough", 364, true);
   AddBool(ao, "audiooutput.dtspassthrough", 254, true);
@@ -382,12 +407,24 @@ void CGUISettings::Initialize()
 #endif
 
   CSettingsCategory* lcd = AddCategory(4, "lcd", 448);
-  AddInt(lcd, "lcd.type", 4501, LCD_TYPE_NONE, LCD_TYPE_NONE, 1, LCD_TYPE_VFD, SPIN_CONTROL_TEXT);
-  AddInt(lcd, "lcd.modchip", 471, MODCHIP_SMARTXX, MODCHIP_SMARTXX, 1, MODCHIP_XECUTER3, SPIN_CONTROL_TEXT);
+
+  map<int,int> lcdTypes;
+  lcdTypes.insert(make_pair(351, LCD_TYPE_NONE));
+  lcdTypes.insert(make_pair(34006, LCD_TYPE_LCD_HD44780));
+  lcdTypes.insert(make_pair(34007, LCD_TYPE_LCD_KS0073));
+  lcdTypes.insert(make_pair(34008, LCD_TYPE_VFD));
+  AddInt(lcd, "lcd.type", 4501, LCD_TYPE_NONE, lcdTypes, SPIN_CONTROL_TEXT);
+
+  map<int,int> lcdModcips;
+  lcdModcips.insert(make_pair(34009, MODCHIP_SMARTXX));
+  lcdModcips.insert(make_pair(34010, MODCHIP_XENIUM));
+  lcdModcips.insert(make_pair(34011, MODCHIP_XECUTER3));
+
+  AddInt(lcd, "lcd.modchip", 471, MODCHIP_SMARTXX, lcdModcips, SPIN_CONTROL_TEXT);
   AddInt(lcd, "lcd.backlight", 463, 80, 0, 5, 100, SPIN_CONTROL_INT_PLUS, MASK_PERCENT);
   AddInt(lcd, "lcd.contrast", 465, 100, 0, 5, 100, SPIN_CONTROL_INT_PLUS, MASK_PERCENT);
   AddSeparator(lcd, "lcd.sep1");
-  AddInt(lcd, "lcd.disableonplayback", 20310, LED_PLAYBACK_OFF, LED_PLAYBACK_OFF, 1, LED_PLAYBACK_VIDEO_MUSIC, SPIN_CONTROL_TEXT);
+  AddInt(lcd, "lcd.disableonplayback", 20310, LED_PLAYBACK_OFF, ledPlaybacks, SPIN_CONTROL_TEXT);
   AddBool(lcd, "lcd.enableonpaused", 20312, true);
 
   CSettingsCategory* dbg = AddCategory(4, "debug", 14092);
@@ -405,11 +442,27 @@ void CGUISettings::Initialize()
 
   CSettingsCategory* hdd = AddCategory(4, "harddisk", 440);
   AddInt(hdd, "harddisk.spindowntime", 229, 0, 0, 1, 60, SPIN_CONTROL_INT_PLUS, MASK_MINS, TEXT_OFF); // Minutes
-  AddInt(hdd, "harddisk.remoteplayspindown", 13001, 0, 0, 1, 3, SPIN_CONTROL_TEXT); // off, music, video, both
+  map<int,int> remotePlaySpinDowns;
+  remotePlaySpinDowns.insert(make_pair(474, SPIN_DOWN_NONE));
+  remotePlaySpinDowns.insert(make_pair(475, SPIN_DOWN_MUSIC));
+  remotePlaySpinDowns.insert(make_pair(13002, SPIN_DOWN_VIDEO));
+  remotePlaySpinDowns.insert(make_pair(476, SPIN_DOWN_BOTH));
+
+  AddInt(hdd, "harddisk.remoteplayspindown", 13001, 0, remotePlaySpinDowns, SPIN_CONTROL_TEXT); // off, music, video, both
   AddInt(NULL, "harddisk.remoteplayspindownminduration", 13004, 20, 0, 1, 20, SPIN_CONTROL_INT_PLUS, MASK_MINS); // Minutes
   AddInt(NULL, "harddisk.remoteplayspindowndelay", 13003, 20, 5, 5, 300, SPIN_CONTROL_INT_PLUS, MASK_SECS); // seconds
-  AddInt(hdd, "harddisk.aamlevel", 21386, AAM_FAST, AAM_FAST, 1, AAM_QUIET, SPIN_CONTROL_TEXT);
-  AddInt(hdd, "harddisk.apmlevel", 21390, APM_HIPOWER, APM_HIPOWER, 1, APM_LOPOWER_STANDBY, SPIN_CONTROL_TEXT);
+
+  map<int,int> aamLevels;
+  aamLevels.insert(make_pair(21388, AAM_QUIET));
+  aamLevels.insert(make_pair(21387, AAM_FAST));
+  AddInt(hdd, "harddisk.aamlevel", 21386, AAM_FAST, aamLevels, SPIN_CONTROL_TEXT);
+
+  map<int,int> apmLevels;
+  apmLevels.insert(make_pair(21391, APM_HIPOWER));
+  apmLevels.insert(make_pair(21392, APM_LOPOWER));
+  apmLevels.insert(make_pair(21393, APM_HIPOWER_STANDBY));
+  apmLevels.insert(make_pair(21394, APM_LOPOWER_STANDBY));
+  AddInt(hdd, "harddisk.apmlevel", 21390, APM_HIPOWER, apmLevels, SPIN_CONTROL_TEXT);
 
   CSettingsCategory* dpc = AddCategory(4, "dvdplayercache", 483);
   AddInt(dpc, "dvdplayercache.video", 14096, 1024, 0, 256, 16384, SPIN_CONTROL_INT_PLUS, MASK_KB, TEXT_OFF);
@@ -449,7 +502,13 @@ void CGUISettings::Initialize()
   AddBool(vdl, "videolibrary.showunwatchedplots", 20369, true);
   AddBool(vdl, "videolibrary.seasonthumbs", 20382, true);
   AddBool(vdl, "videolibrary.actorthumbs", 20402, false);
-  AddInt(NULL, "videolibrary.flattentvshows", 20412, 1, 0, 1, 2, SPIN_CONTROL_TEXT);
+
+  map<int,int> flattenTVShowOptions;
+  flattenTVShowOptions.insert(make_pair(20420, 0));
+  flattenTVShowOptions.insert(make_pair(20421, 1));
+  flattenTVShowOptions.insert(make_pair(20422, 2));
+  AddInt(vdl, "videolibrary.flattentvshows", 20412, 1, flattenTVShowOptions, SPIN_CONTROL_TEXT);
+
   AddBool(vdl, "videolibrary.groupmoviesets", 20458, false);
   AddBool(vdl, "videolibrary.updateonstartup", 22000, false);
   AddBool(NULL, "videolibrary.backgroundupdate", 22001, false);
@@ -467,17 +526,43 @@ void CGUISettings::Initialize()
   AddInt(vp, "videoplayer.resumeautomatically", 12017, RESUME_ASK, resume, SPIN_CONTROL_TEXT);
   AddString(vp, "videoplayer.calibrate", 214, "", BUTTON_CONTROL_STANDARD);
   AddSeparator(vp, "videoplayer.sep1");
-  AddInt(vp, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, RENDER_LQ_RGB_SHADER, 1, RENDER_HQ_RGB_SHADERV2, SPIN_CONTROL_TEXT);
+
+  map<int,int> renderMethods;
+  renderMethods.insert(make_pair(13355, RENDER_LQ_RGB_SHADER));
+  renderMethods.insert(make_pair(13356, RENDER_OVERLAYS));
+  renderMethods.insert(make_pair(13357, RENDER_HQ_RGB_SHADER));
+  renderMethods.insert(make_pair(21397, RENDER_HQ_RGB_SHADERV2));
+
+  AddInt(vp, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, renderMethods, SPIN_CONTROL_TEXT);
   AddInt(vp, "videoplayer.displayresolution", 169, (int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
-  AddInt(vp, "videoplayer.framerateconversions", 336, FRAME_RATE_LEAVE_AS_IS, FRAME_RATE_LEAVE_AS_IS, 1, FRAME_RATE_USE_PAL60, SPIN_CONTROL_TEXT);
+
+  map<int,int> framerateConversions;
+  framerateConversions.insert(make_pair(231, FRAME_RATE_LEAVE_AS_IS));
+  framerateConversions.insert(make_pair(g_videoConfig.HasPAL() ? 12380 : 12381, FRAME_RATE_CONVERT));
+  if (g_videoConfig.HasPAL() && g_videoConfig.HasPAL60())
+    framerateConversions.insert(make_pair(12382, FRAME_RATE_USE_PAL60));
+
+  AddInt(vp, "videoplayer.framerateconversions", 336, FRAME_RATE_LEAVE_AS_IS, framerateConversions, SPIN_CONTROL_TEXT);
   AddInt(vp, "videoplayer.flicker", 13100, 1, 0, 1, 5, SPIN_CONTROL_INT_PLUS, -1, TEXT_OFF);
   AddBool(vp, "videoplayer.soften", 215, false);
   AddFloat(vp, "videoplayer.errorinaspect", 22021, 3.0f, 0.0f, 1.0f, 20.0f);
   AddSeparator(vp, "videoplayer.sep2");
-  AddInt(vp, "videoplayer.defaultplayer", 22003, PLAYER_DVDPLAYER, PLAYER_MPLAYER, 1, PLAYER_DVDPLAYER, SPIN_CONTROL_TEXT);
+
+  map<int,int> defaultVideoPlayers;
+  defaultVideoPlayers.insert(make_pair(22028, PLAYER_DVDPLAYER));
+  defaultVideoPlayers.insert(make_pair(22029, PLAYER_MPLAYER));
+
+  AddInt(vp, "videoplayer.defaultplayer", 22003, PLAYER_DVDPLAYER, defaultVideoPlayers, SPIN_CONTROL_TEXT);
   AddBool(vp, "videoplayer.allcodecs", 22025, false);
   AddBool(vp, "videoplayer.fast", 22026, false);
-  AddInt(vp, "videoplayer.skiploopfilter", 14100, VS_SKIPLOOP_NONREF, VS_SKIPLOOP_DEFAULT, 1, VS_SKIPLOOP_ALL, SPIN_CONTROL_TEXT);
+
+  map<int,int> skipLoopFilters;
+  skipLoopFilters.insert(make_pair(14101, VS_SKIPLOOP_DEFAULT));
+  skipLoopFilters.insert(make_pair(14102, VS_SKIPLOOP_NONREF));
+  skipLoopFilters.insert(make_pair(14103, VS_SKIPLOOP_BIDIR));
+  skipLoopFilters.insert(make_pair(14104, VS_SKIPLOOP_NONKEY));
+  skipLoopFilters.insert(make_pair(14105, VS_SKIPLOOP_ALL));
+  AddInt(vp, "videoplayer.skiploopfilter", 14100, VS_SKIPLOOP_NONREF, skipLoopFilters, SPIN_CONTROL_TEXT);
 
   CSettingsCategory* vid = AddCategory(5, "myvideos", 14081);
   AddBool(NULL, "myvideos.treatstackasfile", 20051, true);
@@ -488,7 +573,14 @@ void CGUISettings::Initialize()
   CSettingsCategory* sub = AddCategory(5, "subtitles", 287);
   AddString(sub, "subtitles.font", 288, "Arial.ttf", SPIN_CONTROL_TEXT);
   AddInt(sub, "subtitles.height", 289, 28, 16, 2, 74, SPIN_CONTROL_TEXT); // use text as there is a disk based lookup needed
-  AddInt(sub, "subtitles.style", 736, FONT_STYLE_BOLD, FONT_STYLE_NORMAL, 1, FONT_STYLE_BOLD | FONT_STYLE_ITALICS, SPIN_CONTROL_TEXT);
+
+  map<int,int> fontStyles;
+  fontStyles.insert(make_pair(738, FONT_STYLE_NORMAL));
+  fontStyles.insert(make_pair(739, FONT_STYLE_BOLD));
+  fontStyles.insert(make_pair(740, FONT_STYLE_ITALICS));
+  fontStyles.insert(make_pair(741, FONT_STYLE_BOLD_ITALICS));
+
+  AddInt(sub, "subtitles.style", 736, FONT_STYLE_BOLD, fontStyles, SPIN_CONTROL_TEXT);
   AddInt(sub, "subtitles.color", 737, SUBTITLE_COLOR_START + 1, SUBTITLE_COLOR_START, 1, SUBTITLE_COLOR_END, SPIN_CONTROL_TEXT);
   AddString(sub, "subtitles.charset", 735, "DEFAULT", SPIN_CONTROL_TEXT);
   AddSeparator(sub, "subtitles.sep1");
@@ -561,7 +653,13 @@ void CGUISettings::Initialize()
   AddString(smb, "smb.workgroup",   1202,   "WORKGROUP", EDIT_CONTROL_INPUT, false, 1202);
 
   CSettingsCategory* net = AddCategory(6, "network", 705);
-  AddInt(net, "network.assignment", 715, NETWORK_DHCP, NETWORK_DASH, 1, NETWORK_STATIC, SPIN_CONTROL_TEXT);
+
+  map<int,int> networkAssignments;
+  networkAssignments.insert(make_pair(716, NETWORK_DHCP));
+  networkAssignments.insert(make_pair(717, NETWORK_STATIC));
+  networkAssignments.insert(make_pair(718, NETWORK_DASH));
+
+  AddInt(net, "network.assignment", 715, NETWORK_DHCP, networkAssignments, SPIN_CONTROL_TEXT);
   AddString(net, "network.ipaddress", 719, "0.0.0.0", EDIT_CONTROL_IP_INPUT);
   AddString(net, "network.subnet", 720, "255.255.255.0", EDIT_CONTROL_IP_INPUT);
   AddString(net, "network.gateway", 721, "0.0.0.0", EDIT_CONTROL_IP_INPUT);

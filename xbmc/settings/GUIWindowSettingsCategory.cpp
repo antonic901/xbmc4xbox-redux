@@ -407,6 +407,19 @@ void CGUIWindowSettingsCategory::SetupControls()
   m_defaultControl = CONTROL_START_BUTTONS;
 }
 
+CGUIControl* CGUIWindowSettingsCategory::AddIntBasedSpinControl(CSetting *pSetting, float groupWidth, int &iControlID)
+{
+  CSettingInt *pSettingInt = (CSettingInt*)pSetting;
+  CGUISpinControlEx *pControl = (CGUISpinControlEx *)AddSetting(pSetting, groupWidth, iControlID);
+  if (!pSettingInt->m_entries.empty())
+  {
+    for (map<int,int>::iterator it=pSettingInt->m_entries.begin(); it != pSettingInt->m_entries.end();++it)
+      pControl->AddLabel(g_localizeStrings.Get(it->first), it->second);
+    pControl->SetValue(pSettingInt->GetData());
+  }
+  return pControl;
+}
+
 void CGUIWindowSettingsCategory::CreateSettings()
 {
   FreeSettingsControls();
@@ -420,315 +433,151 @@ void CGUIWindowSettingsCategory::CreateSettings()
   for (unsigned int i = 0; i < settings.size(); i++)
   {
     CSetting *pSetting = settings[i];
-    AddSetting(pSetting, group->GetWidth(), iControlID);
     CStdString strSetting = pSetting->GetSetting();
     if (pSetting->GetType() == SETTINGS_TYPE_INT)
     {
+      CGUISpinControlEx *pControl = (CGUISpinControlEx *)AddIntBasedSpinControl(pSetting, group->GetWidth(), iControlID);
       CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      if (!pSettingInt->m_entries.empty())
+      if (strSetting.Equals("myprograms.ntscmode"))
       {
-        CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-        for (map<int,int>::iterator it=pSettingInt->m_entries.begin();
-             it != pSettingInt->m_entries.end();++it)
+        for (int i = pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i++)
+          pControl->AddLabel(g_localizeStrings.Get(16106 + i), i);
+        pControl->SetValue(pSettingInt->GetData());
+      }
+      else if (strSetting.Equals("subtitles.color"))
+      {
+        for (int i = SUBTITLE_COLOR_START; i <= SUBTITLE_COLOR_END; i++)
+          pControl->AddLabel(g_localizeStrings.Get(760 + i), i);
+        pControl->SetValue(pSettingInt->GetData());
+      }
+      else if (strSetting.Equals("system.fanspeed") || strSetting.Equals("system.minfanspeed"))
+      {
+        CStdString strPercentMask = g_localizeStrings.Get(14047);
+        for (int i=pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i += pSettingInt->m_iStep)
         {
-          pControl->AddLabel(g_localizeStrings.Get(it->first), it->second);
+          CStdString strLabel;
+          strLabel.Format(strPercentMask.c_str(), i*2);
+          pControl->AddLabel(strLabel, i);
         }
         pControl->SetValue(pSettingInt->GetData());
-        continue;
       }
-    }
-    if (strSetting.Equals("myprograms.ntscmode"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      for (int i = pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i++)
+      else if (strSetting.Equals("system.targettemperature"))
       {
-        pControl->AddLabel(g_localizeStrings.Get(16106 + i), i);
+        for (int i = pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i++)
+        {
+          CTemperature temp=CTemperature::CreateFromCelsius(i);
+          pControl->AddLabel(temp.ToString(), i);
+        }
+        pControl->SetValue(pSettingInt->GetData());
       }
-      pControl->SetValue(pSettingInt->GetData());
+      else if (strSetting.Equals("locale.timezone"))
+      {
+        for (int i = 0; i < g_timezone.GetNumberOfTimeZones(); i++)
+          pControl->AddLabel(g_timezone.GetTimeZoneString(i), i);
+        pControl->SetValue(pSettingInt->GetData());
+      }
+      else if (strSetting.Equals("lookandfeel.startupwindow"))
+        FillInStartupWindow(pSetting);
+      else if (strSetting.Equals("subtitles.height"))
+        FillInSubtitleHeights(pSetting, pControl);
+      else if (strSetting.Equals("videoscreen.resolution"))
+        FillInResolutions(pSetting, false);
+      else if (strSetting.Equals("videoplayer.displayresolution") || strSetting.Equals("pictures.displayresolution"))
+        FillInResolutions(pSetting, true);
+      continue;
     }
     else if (strSetting.Equals("karaoke.port0voicemask"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInVoiceMasks(0, pSetting);
+      continue;
     }
     else if (strSetting.Equals("karaoke.port1voicemask"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInVoiceMasks(1, pSetting);
+      continue;
     }
     else if (strSetting.Equals("karaoke.port2voicemask"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInVoiceMasks(2, pSetting);
+      continue;
     }
     else if (strSetting.Equals("karaoke.port3voicemask"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInVoiceMasks(3, pSetting);
-    }
-    else if (strSetting.Equals("videooutput.aspect"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(21375), VIDEO_NORMAL);
-      pControl->AddLabel(g_localizeStrings.Get(21376), VIDEO_LETTERBOX);
-      pControl->AddLabel(g_localizeStrings.Get(21377), VIDEO_WIDESCREEN);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("lcd.type"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(351), LCD_TYPE_NONE);
-      pControl->AddLabel("LCD - HD44780", LCD_TYPE_LCD_HD44780);
-      pControl->AddLabel("LCD - KS0073", LCD_TYPE_LCD_KS0073);
-      pControl->AddLabel("VFD", LCD_TYPE_VFD);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("lcd.modchip"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel("SmartXX", MODCHIP_SMARTXX);
-      pControl->AddLabel("Xenium", MODCHIP_XENIUM);
-      pControl->AddLabel("Xecuter3", MODCHIP_XECUTER3);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("harddisk.aamlevel"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(21388), AAM_QUIET);
-      pControl->AddLabel(g_localizeStrings.Get(21387), AAM_FAST);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("harddisk.apmlevel"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(21391), APM_HIPOWER);
-      pControl->AddLabel(g_localizeStrings.Get(21392), APM_LOPOWER);
-      pControl->AddLabel(g_localizeStrings.Get(21393), APM_HIPOWER_STANDBY);
-      pControl->AddLabel(g_localizeStrings.Get(21394), APM_LOPOWER_STANDBY);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("system.targettemperature"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      for (int i = pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i++)
-      {
-        CTemperature temp=CTemperature::CreateFromCelsius(i);
-        pControl->AddLabel(temp.ToString(), i);
-      }
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("system.fanspeed") || strSetting.Equals("system.minfanspeed"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      CStdString strPercentMask = g_localizeStrings.Get(14047);
-      for (int i=pSettingInt->m_iMin; i <= pSettingInt->m_iMax; i += pSettingInt->m_iStep)
-      {
-        CStdString strLabel;
-        strLabel.Format(strPercentMask.c_str(), i*2);
-        pControl->AddLabel(strLabel, i);
-      }
-      pControl->SetValue(int(pSettingInt->GetData()));
-    }
-    else if (strSetting.Equals("harddisk.remoteplayspindown"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(474), SPIN_DOWN_NONE);
-      pControl->AddLabel(g_localizeStrings.Get(475), SPIN_DOWN_MUSIC);
-      pControl->AddLabel(g_localizeStrings.Get(13002), SPIN_DOWN_VIDEO);
-      pControl->AddLabel(g_localizeStrings.Get(476), SPIN_DOWN_BOTH);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("services.webserverusername"))
-    {
-      // get password from the webserver if it's running (and update our settings)
-      if (g_application.m_pWebServer)
-      {
-        ((CSettingString *)GetSetting(strSetting)->GetSetting())->SetData(g_application.m_pWebServer->GetUserName());
-        g_settings.Save();
-      }
-    }
-    else if (strSetting.Equals("services.webserverpassword"))
-    {
-      // get password from the webserver if it's running (and update our settings)
-      if (g_application.m_pWebServer)
-      {
-        ((CSettingString *)GetSetting(strSetting)->GetSetting())->SetData(g_application.m_pWebServer->GetPassword());
-        g_settings.Save();
-      }
+      continue;
     }
     else if (strSetting.Equals("services.webserverport"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
+      continue;
     }
     else if (strSetting.Equals("services.esport"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
-    }
-    else if (strSetting.Equals("network.assignment"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(718), NETWORK_DASH);
-      pControl->AddLabel(g_localizeStrings.Get(716), NETWORK_DHCP);
-      pControl->AddLabel(g_localizeStrings.Get(717), NETWORK_STATIC);
-      pControl->SetValue(pSettingInt->GetData());
+      continue;
     }
     else if (strSetting.Equals("network.httpproxyport"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
-    }
-    else if (strSetting.Equals("subtitles.style"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(738), FONT_STYLE_NORMAL);
-      pControl->AddLabel(g_localizeStrings.Get(739), FONT_STYLE_BOLD);
-      pControl->AddLabel(g_localizeStrings.Get(740), FONT_STYLE_ITALICS);
-      pControl->AddLabel(g_localizeStrings.Get(741), FONT_STYLE_BOLD_ITALICS);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("subtitles.color"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      for (int i = SUBTITLE_COLOR_START; i <= SUBTITLE_COLOR_END; i++)
-        pControl->AddLabel(g_localizeStrings.Get(760 + i), i);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("subtitles.height"))
-    {
-      FillInSubtitleHeights(pSetting);
+      continue;
     }
     else if (strSetting.Equals("subtitles.font"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInSubtitleFonts(pSetting);
+      continue;
     }
     else if (strSetting.Equals("subtitles.charset") || strSetting.Equals("locale.charset"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInCharSets(pSetting);
+      continue;
     }
     else if (strSetting.Equals("lookandfeel.font"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInSkinFonts(pSetting);
+      continue;
     }
     else if (strSetting.Equals("lookandfeel.soundskin"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInSoundSkins(pSetting);
+      continue;
     }
     else if (strSetting.Equals("locale.language"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInLanguages(pSetting);
-    }
-    else if (strSetting.Equals("locale.timezone"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      for (int i=0; i < g_timezone.GetNumberOfTimeZones(); i++)
-        pControl->AddLabel(g_timezone.GetTimeZoneString(i), i);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("videoscreen.resolution"))
-    {
-      FillInResolutions(pSetting, false);
+      continue;
     }
     else if (strSetting.Equals("lookandfeel.skintheme"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInSkinThemes(pSetting);
+      continue;
     }
     else if (strSetting.Equals("lookandfeel.skincolors"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInSkinColors(pSetting);
-    }
-    else if (strSetting.Equals("videoplayer.displayresolution") || strSetting.Equals("pictures.displayresolution"))
-    {
-      FillInResolutions(pSetting, true);
-    }
-    else if (strSetting.Equals("videoplayer.framerateconversions"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(231), FRAME_RATE_LEAVE_AS_IS); // "None"
-      pControl->AddLabel(g_videoConfig.HasPAL() ? g_localizeStrings.Get(12380) : g_localizeStrings.Get(12381), FRAME_RATE_CONVERT); // "Play PAL videos at NTSC rates" or "Play NTSC videos at PAL rates"
-      if (g_videoConfig.HasPAL() && g_videoConfig.HasPAL60())
-        pControl->AddLabel(g_localizeStrings.Get(12382), FRAME_RATE_USE_PAL60); // "Play NTSC videos in PAL60"
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("videoplayer.skiploopfilter"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(14101), VS_SKIPLOOP_DEFAULT);
-      pControl->AddLabel(g_localizeStrings.Get(14102), VS_SKIPLOOP_NONREF);
-      pControl->AddLabel(g_localizeStrings.Get(14103), VS_SKIPLOOP_BIDIR);
-      pControl->AddLabel(g_localizeStrings.Get(14104), VS_SKIPLOOP_NONKEY);
-      pControl->AddLabel(g_localizeStrings.Get(14105), VS_SKIPLOOP_ALL);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("videolibrary.flattentvshows"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(20420), 0); // Never
-      pControl->AddLabel(g_localizeStrings.Get(20421), 1); // One Season
-      pControl->AddLabel(g_localizeStrings.Get(20422), 2); // Always
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("system.ledcolour"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(13340), LED_COLOUR_NO_CHANGE);
-      pControl->AddLabel(g_localizeStrings.Get(13341), LED_COLOUR_GREEN);
-      pControl->AddLabel(g_localizeStrings.Get(13342), LED_COLOUR_ORANGE);
-      pControl->AddLabel(g_localizeStrings.Get(13343), LED_COLOUR_RED);
-      pControl->AddLabel(g_localizeStrings.Get(13344), LED_COLOUR_CYCLE);
-      pControl->AddLabel(g_localizeStrings.Get(351), LED_COLOUR_OFF);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("system.leddisableonplayback") || strSetting.Equals("lcd.disableonplayback"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(106), LED_PLAYBACK_OFF);     // No
-      pControl->AddLabel(g_localizeStrings.Get(13002), LED_PLAYBACK_VIDEO);   // Video Only
-      pControl->AddLabel(g_localizeStrings.Get(475), LED_PLAYBACK_MUSIC);    // Music Only
-      pControl->AddLabel(g_localizeStrings.Get(476), LED_PLAYBACK_VIDEO_MUSIC); // Video & Music
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("videoplayer.rendermethod"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER);
-      pControl->AddLabel(g_localizeStrings.Get(13356), RENDER_OVERLAYS);
-      pControl->AddLabel(g_localizeStrings.Get(13357), RENDER_HQ_RGB_SHADER);
-      pControl->AddLabel(g_localizeStrings.Get(21397), RENDER_HQ_RGB_SHADERV2);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("musicplayer.defaultplayer"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(22027), PLAYER_PAPLAYER);
-      pControl->AddLabel(g_localizeStrings.Get(22029), PLAYER_MPLAYER);
-      pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
-      pControl->SetValue(pSettingInt->GetData());
-    }
-    else if (strSetting.Equals("lookandfeel.startupwindow"))
-    {
-      FillInStartupWindow(pSetting);
+      continue;
     }
     else if (strSetting.Equals("services.ftpserveruser"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInFTPServerUser(pSetting);
+      continue;
     }
     else if (strSetting.Equals("autodetect.nickname"))
     {
@@ -741,23 +590,20 @@ void CGUIWindowSettingsCategory::CreateSettings()
     else if (strSetting.Equals("dvds.externaldvdplayer"))
     {
       CSettingString *pSettingString = (CSettingString *)pSetting;
-      CGUIButtonControl *pControl = (CGUIButtonControl *)GetControl(GetSetting(strSetting)->GetID());
+      CGUIButtonControl *pControl = (CGUIButtonControl *)AddSetting(pSetting, group->GetWidth(), iControlID);
       if (pSettingString->GetData().IsEmpty())
         pControl->SetLabel2(g_localizeStrings.Get(20009));
+      continue;
     }
     else if (strSetting.Equals("locale.country"))
     {
+      AddSetting(pSetting, group->GetWidth(), iControlID);
       FillInRegions(pSetting);
+      continue;
     }
-    else if (strSetting.Equals("videoplayer.defaultplayer"))
-    {
-      CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-      CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(strSetting)->GetID());
-      pControl->AddLabel(g_localizeStrings.Get(22029), PLAYER_MPLAYER);
-      pControl->AddLabel(g_localizeStrings.Get(22028), PLAYER_DVDPLAYER);
-      pControl->SetValue(pSettingInt->GetData());
-    }
+    AddSetting(pSetting, group->GetWidth(), iControlID);
   }
+
   // update our settings (turns controls on/off as appropriate)
   UpdateSettings();
 }
@@ -1556,7 +1402,8 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
     CSettingString *pSettingString = (CSettingString *)pSettingControl->GetSetting();
     CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
     pSettingString->SetData(pControl->GetCurrentLabel());
-    FillInSubtitleHeights(g_guiSettings.GetSetting("subtitles.height"));
+    CSetting *pSetting = (CSetting *)g_guiSettings.GetSetting("subtitles.height");
+    FillInSubtitleHeights(pSetting, (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID()));
   }
   else if (strSetting.Equals("subtitles.charset"))
   {
@@ -1958,14 +1805,15 @@ void CGUIWindowSettingsCategory::FreeSettingsControls()
   m_vecSettings.clear();
 }
 
-void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int &iControlID)
+CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int &iControlID)
 {
+  if (!pSetting->IsVisible()) return NULL;  // not displayed in current session
   CBaseSettingControl *pSettingControl = NULL;
   CGUIControl *pControl = NULL;
   if (pSetting->GetControlType() == CHECKMARK_CONTROL)
   {
     pControl = new CGUIRadioButtonControl(*m_pOriginalRadioButton);
-    if (!pControl) return ;
+    if (!pControl) return NULL;
     ((CGUIRadioButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
     pSettingControl = new CRadioButtonSettingControl((CGUIRadioButtonControl *)pControl, iControlID, pSetting);
@@ -1973,7 +1821,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
   else if (pSetting->GetControlType() == SPIN_CONTROL_FLOAT || pSetting->GetControlType() == SPIN_CONTROL_INT_PLUS || pSetting->GetControlType() == SPIN_CONTROL_TEXT || pSetting->GetControlType() == SPIN_CONTROL_INT)
   {
     pControl = new CGUISpinControlEx(*m_pOriginalSpin);
-    if (!pControl) return ;
+    if (!pControl) return NULL;
     pControl->SetWidth(width);
     ((CGUISpinControlEx *)pControl)->SetText(g_localizeStrings.Get(pSetting->GetLabel()));
     pSettingControl = new CSpinExSettingControl((CGUISpinControlEx *)pControl, iControlID, pSetting);
@@ -1981,7 +1829,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
   else if (pSetting->GetControlType() == SEPARATOR_CONTROL && m_pOriginalImage)
   {
     pControl = new CGUIImage(*m_pOriginalImage);
-    if (!pControl) return;
+    if (!pControl) return NULL;
     pControl->SetWidth(width);
     pSettingControl = new CSeparatorSettingControl((CGUIImage *)pControl, iControlID, pSetting);
   }
@@ -1992,7 +1840,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
            pSetting->GetControlType() == EDIT_CONTROL_IP_INPUT)
   {
     pControl = new CGUIEditControl(*m_pOriginalEdit);
-    if (!pControl) return ;
+    if (!pControl) return NULL;
     ((CGUIEditControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIEditControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
@@ -2001,7 +1849,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
   else if (pSetting->GetControlType() != SEPARATOR_CONTROL) // button control
   {
     pControl = new CGUIButtonControl(*m_pOriginalButton);
-    if (!pControl) return ;
+    if (!pControl) return NULL;
     ((CGUIButtonControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
@@ -2010,7 +1858,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
   if (!pControl)
   {
     delete pSettingControl;
-    return;
+    return NULL;
   }
   pControl->SetID(iControlID++);
   pControl->SetVisible(true);
@@ -2021,6 +1869,7 @@ void CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int
     group->AddControl(pControl);
     m_vecSettings.push_back(pSettingControl);
   }
+  return pControl;
 }
 
 void CGUIWindowSettingsCategory::FrameMove()
@@ -2126,10 +1975,9 @@ void CGUIWindowSettingsCategory::CheckNetworkSettings()
   }
 }
 
-void CGUIWindowSettingsCategory::FillInSubtitleHeights(CSetting *pSetting)
+void CGUIWindowSettingsCategory::FillInSubtitleHeights(CSetting *pSetting, CGUISpinControlEx *pControl)
 {
   CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-  CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(GetSetting(pSetting->GetSetting())->GetID());
   pControl->SetType(SPIN_CONTROL_TYPE_TEXT);
   pControl->Clear();
   if (CUtil::IsUsingTTFSubtitles())
