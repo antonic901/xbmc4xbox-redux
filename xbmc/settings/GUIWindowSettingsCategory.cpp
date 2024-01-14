@@ -123,7 +123,7 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
   m_strOldTrackFormat = "";
   m_strOldTrackFormatRight = "";
   m_returningFromSkinLoad = false;
-  m_delayedSetting = NULL;
+  m_delayedSetting.reset();
 }
 
 CGUIWindowSettingsCategory::~CGUIWindowSettingsCategory(void)
@@ -169,7 +169,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
           focusedControl - CONTROL_START_BUTTONS != m_iSection)
       {
         // changing section, check for updates and cancel any delayed changes
-        m_delayedSetting = NULL;
+        m_delayedSetting.reset();
         CheckForUpdates();
 
         if (m_vecSections[focusedControl-CONTROL_START_BUTTONS]->m_strCategory == "masterlock")
@@ -195,7 +195,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     break;
   case GUI_MSG_WINDOW_INIT:
     {
-      m_delayedSetting = NULL;
+      m_delayedSetting.reset();
       if (message.GetParam1() != WINDOW_INVALID && !m_returningFromSkinLoad)
       { // coming to this window first time (ie not returning back from some other window)
         // so we reset our section and control states
@@ -211,13 +211,13 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     if (m_delayedSetting)
     {
       OnSettingChanged(m_delayedSetting);
-      m_delayedSetting = NULL;
+      m_delayedSetting.reset();
       return true;
     }
     break;
   case GUI_MSG_WINDOW_DEINIT:
     {
-      m_delayedSetting = NULL;
+      m_delayedSetting.reset();
       // Hardware based stuff
       // TODO: This should be done in a completely separate screen
       // to give warning to the user that it writes to the EEPROM.
@@ -435,21 +435,21 @@ void CGUIWindowSettingsCategory::CreateSettings()
     else if (strSetting.Equals("services.webserverport"))
     {
       AddSetting(pSetting, group->GetWidth(), iControlID);
-      CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
+      BaseSettingControlPtr control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
       continue;
     }
     else if (strSetting.Equals("services.esport"))
     {
       AddSetting(pSetting, group->GetWidth(), iControlID);
-      CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
+      BaseSettingControlPtr control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
       continue;
     }
     else if (strSetting.Equals("network.httpproxyport"))
     {
       AddSetting(pSetting, group->GetWidth(), iControlID);
-      CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
+      BaseSettingControlPtr control = GetSetting(pSetting->GetSetting());
       control->SetDelayed();
       continue;
     }
@@ -534,7 +534,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
 {
   for (unsigned int i = 0; i < m_vecSettings.size(); i++)
   {
-    CBaseSettingControl *pSettingControl = m_vecSettings[i];
+    BaseSettingControlPtr pSettingControl = m_vecSettings[i];
     pSettingControl->Update();
     CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
     if (strSetting.Equals("filelists.allowfiledeletion"))
@@ -783,21 +783,6 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
       if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("locale.timeserver"));
     }
-    else if (strSetting.Equals("locale.time") || strSetting.Equals("locale.date"))
-    {
-      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(!g_guiSettings.GetBool("locale.timeserver"));
-      SYSTEMTIME curTime;
-      GetLocalTime(&curTime);
-      CStdString time;
-      if (strSetting.Equals("locale.time"))
-        time = g_infoManager.GetTime();
-      else
-        time = g_infoManager.GetDate();
-      CSettingString *pSettingString = (CSettingString*)pSettingControl->GetSetting();
-      pSettingString->SetData(time);
-      pSettingControl->Update();
-    }
 #endif
     else if (strSetting.Equals("autodetect.nickname") || strSetting.Equals("autodetect.senduserpw"))
     {
@@ -889,31 +874,10 @@ void CGUIWindowSettingsCategory::UpdateSettings()
 
 void CGUIWindowSettingsCategory::UpdateRealTimeSettings()
 {
-  for (unsigned int i = 0; i < m_vecSettings.size(); i++)
-  {
-    CBaseSettingControl *pSettingControl = m_vecSettings[i];
-    CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
-    if (strSetting.Equals("locale.time") || strSetting.Equals("locale.date"))
-    {
-#ifdef HAS_TIME_SERVER
-      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(!g_guiSettings.GetBool("locale.timeserver"));
-#endif
-      SYSTEMTIME curTime;
-      GetLocalTime(&curTime);
-      CStdString time;
-      if (strSetting.Equals("locale.time"))
-        time = g_infoManager.GetTime();
-      else
-        time = g_infoManager.GetDate();
-      CSettingString *pSettingString = (CSettingString*)pSettingControl->GetSetting();
-      pSettingString->SetData(time);
-      pSettingControl->Update();
-    }
-  }
+  // date and time used to be here
 }
 
-void CGUIWindowSettingsCategory::OnClick(CBaseSettingControl *pSettingControl)
+void CGUIWindowSettingsCategory::OnClick(BaseSettingControlPtr pSettingControl)
 {
   CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
   if (strSetting.Left(16).Equals("weather.areacode"))
@@ -974,7 +938,7 @@ void CGUIWindowSettingsCategory::CheckForUpdates()
 {
   for (unsigned int i = 0; i < m_vecSettings.size(); i++)
   {
-    CBaseSettingControl *pSettingControl = m_vecSettings[i];
+    BaseSettingControlPtr pSettingControl = m_vecSettings[i];
     if (pSettingControl->NeedsUpdate())
     {
       OnSettingChanged(pSettingControl);
@@ -983,7 +947,7 @@ void CGUIWindowSettingsCategory::CheckForUpdates()
   }
 }
 
-void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingControl)
+void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSettingControl)
 {
   CStdString strSetting = pSettingControl->GetSetting()->GetSetting();
 
@@ -1577,28 +1541,6 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
       g_application.StartTimeServer();
   }
 #endif
-  else if (strSetting.Equals("locale.time"))
-  {
-    SYSTEMTIME curTime;
-    GetLocalTime(&curTime);
-    if (CGUIDialogNumeric::ShowAndGetTime(curTime, g_localizeStrings.Get(14066)))
-    { // yay!
-      SYSTEMTIME curDate;
-      GetLocalTime(&curDate);
-      CUtil::SetSysDateTimeYear(curDate.wYear, curDate.wMonth, curDate.wDay, curTime.wHour, curTime.wMinute);
-    }
-  }
-  else if (strSetting.Equals("locale.date"))
-  {
-    SYSTEMTIME curDate;
-    GetLocalTime(&curDate);
-    if (CGUIDialogNumeric::ShowAndGetDate(curDate, g_localizeStrings.Get(14067)))
-    { // yay!
-      SYSTEMTIME curTime;
-      GetLocalTime(&curTime);
-      CUtil::SetSysDateTimeYear(curDate.wYear, curDate.wMonth, curDate.wDay, curTime.wHour, curTime.wMinute);
-    }
-  }
   else if (strSetting.Equals("smb.winsserver") || strSetting.Equals("smb.workgroup") )
   {
     if (g_guiSettings.GetString("smb.winsserver") == "0.0.0.0")
@@ -1730,17 +1672,16 @@ void CGUIWindowSettingsCategory::FreeSettingsControls()
     control->ClearAll();
   }
 
-  for(int i = 0; (size_t)i < m_vecSettings.size(); i++)
-  {
-    delete m_vecSettings[i];
-  }
+  for (int i = 0; (size_t)i < m_vecSettings.size(); i++)
+    m_vecSettings[i]->Clear();
+
   m_vecSettings.clear();
 }
 
 CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float width, int &iControlID)
 {
   if (!pSetting->IsVisible()) return NULL;  // not displayed in current session
-  CBaseSettingControl *pSettingControl = NULL;
+  BaseSettingControlPtr pSettingControl;
   CGUIControl *pControl = NULL;
   if (pSetting->GetControlType() == CHECKMARK_CONTROL)
   {
@@ -1748,7 +1689,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     if (!pControl) return NULL;
     ((CGUIRadioButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl = new CRadioButtonSettingControl((CGUIRadioButtonControl *)pControl, iControlID, pSetting);
+    pSettingControl.reset(new CRadioButtonSettingControl((CGUIRadioButtonControl *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == SPIN_CONTROL_FLOAT || pSetting->GetControlType() == SPIN_CONTROL_INT_PLUS || pSetting->GetControlType() == SPIN_CONTROL_TEXT || pSetting->GetControlType() == SPIN_CONTROL_INT)
   {
@@ -1756,14 +1697,14 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     if (!pControl) return NULL;
     pControl->SetWidth(width);
     ((CGUISpinControlEx *)pControl)->SetText(g_localizeStrings.Get(pSetting->GetLabel()));
-    pSettingControl = new CSpinExSettingControl((CGUISpinControlEx *)pControl, iControlID, pSetting);
+    pSettingControl.reset(new CSpinExSettingControl((CGUISpinControlEx *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == SEPARATOR_CONTROL && m_pOriginalImage)
   {
     pControl = new CGUIImage(*m_pOriginalImage);
     if (!pControl) return NULL;
     pControl->SetWidth(width);
-    pSettingControl = new CSeparatorSettingControl((CGUIImage *)pControl, iControlID, pSetting);
+    pSettingControl.reset(new CSeparatorSettingControl((CGUIImage *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == EDIT_CONTROL_INPUT ||
            pSetting->GetControlType() == EDIT_CONTROL_HIDDEN_INPUT ||
@@ -1776,7 +1717,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     ((CGUIEditControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIEditControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl = new CEditSettingControl((CGUIEditControl *)pControl, iControlID, pSetting);
+    pSettingControl.reset(new CEditSettingControl((CGUIEditControl *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() != SEPARATOR_CONTROL) // button control
   {
@@ -1785,11 +1726,11 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     ((CGUIButtonControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl = new CButtonSettingControl((CGUIButtonControl *)pControl, iControlID, pSetting);
+    pSettingControl.reset(new CButtonSettingControl((CGUIButtonControl *)pControl, iControlID, pSetting));
   }
   if (!pControl)
   {
-    delete pSettingControl;
+    pSettingControl.reset();
     return NULL;
   }
   pControl->SetID(iControlID++);
@@ -2014,7 +1955,7 @@ void CGUIWindowSettingsCategory::FillInSubtitleFonts(CSetting *pSetting)
 
 void CGUIWindowSettingsCategory::FillInSkinFonts(CSetting *pSetting)
 {
-  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  BaseSettingControlPtr setting = GetSetting(pSetting->GetSetting());
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   pControl->SetType(SPIN_CONTROL_TYPE_TEXT);
   pControl->Clear();
@@ -2291,7 +2232,7 @@ void CGUIWindowSettingsCategory::FillInVoiceMaskValues(DWORD dwPort, CSetting *p
 void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool playbackSetting)
 {
   CSettingInt *pSettingInt = (CSettingInt*)pSetting;
-  CBaseSettingControl *control = GetSetting(pSetting->GetSetting());
+  BaseSettingControlPtr control = GetSetting(pSetting->GetSetting());
   control->SetDelayed();
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(control->GetID());
   pControl->Clear();
@@ -2331,7 +2272,7 @@ void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool play
 void CGUIWindowSettingsCategory::FillInLanguages(CSetting *pSetting)
 {
   CSettingString *pSettingString = (CSettingString *)pSetting;
-  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  BaseSettingControlPtr setting = GetSetting(pSetting->GetSetting());
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   setting->SetDelayed();
   pControl->Clear();
@@ -2452,14 +2393,14 @@ void CGUIWindowSettingsCategory::FillInRegions(CSetting *pSetting)
   pControl->SetValue(iCurrentRegion);
 }
 
-CBaseSettingControl *CGUIWindowSettingsCategory::GetSetting(const CStdString &strSetting)
+BaseSettingControlPtr CGUIWindowSettingsCategory::GetSetting(const CStdString &strSetting)
 {
   for (unsigned int i = 0; i < m_vecSettings.size(); i++)
   {
     if (m_vecSettings[i]->GetSetting()->GetSetting() == strSetting)
       return m_vecSettings[i];
   }
-  return NULL;
+  return BaseSettingControlPtr();
 }
 
 void CGUIWindowSettingsCategory::FillInSkinThemes(CSetting *pSetting)
@@ -2467,7 +2408,7 @@ void CGUIWindowSettingsCategory::FillInSkinThemes(CSetting *pSetting)
   // There is a default theme (just Textures.xpr)
   // any other *.xpr files are additional themes on top of this one.
   CSettingString *pSettingString = (CSettingString *)pSetting;
-  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  BaseSettingControlPtr setting = GetSetting(pSetting->GetSetting());
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   CStdString strSettingString = g_guiSettings.GetString("lookandfeel.skintheme");
   setting->SetDelayed();
@@ -2506,7 +2447,7 @@ void CGUIWindowSettingsCategory::FillInSkinColors(CSetting *pSetting)
 {
   // There is a default theme (just defaults.xml)
   // any other *.xml files are additional color themes on top of this one.
-  CBaseSettingControl *setting = GetSetting(pSetting->GetSetting());
+  BaseSettingControlPtr setting = GetSetting(pSetting->GetSetting());
   CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(setting->GetID());
   CStdString strSettingString = g_guiSettings.GetString("lookandfeel.skincolors");
   setting->SetDelayed();

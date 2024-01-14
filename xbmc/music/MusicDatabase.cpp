@@ -1227,6 +1227,9 @@ bool CMusicDatabase::GetAlbumInfo(int idAlbum, CAlbum &info, VECSONGS* songs)
 {
   try
   {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS2.get()) return false;
+  
     if (idAlbum == -1)
       return false; // not in the database
 
@@ -1280,30 +1283,18 @@ bool CMusicDatabase::HasAlbumInfo(int idAlbum)
 
 bool CMusicDatabase::DeleteAlbumInfo(int idAlbum)
 {
-  try
-  {
-    if (idAlbum == -1)
-      return false; // not in the database
-
-    CStdString strSQL = PrepareSQL("delete from albuminfo where idAlbum=%i",idAlbum);
-
-    if (!m_pDS2->exec(strSQL.c_str()))
-      return false;
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - (%i) failed", __FUNCTION__, idAlbum);
-  }
-
-  return false;
+  if (idAlbum == -1)
+    return false; // not in the database
+  return ExecuteQuery(PrepareSQL("delete from albuminfo where idAlbum=%i",idAlbum));
 }
 
 bool CMusicDatabase::GetArtistInfo(int idArtist, CArtist &info, bool needAll)
 {
   try
   {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS2.get()) return false;
+
     if (idArtist == -1)
       return false; // not in the database
 
@@ -1349,24 +1340,10 @@ bool CMusicDatabase::GetArtistInfo(int idArtist, CArtist &info, bool needAll)
 
 bool CMusicDatabase::DeleteArtistInfo(int idArtist)
 {
-  try
-  {
-    if (idArtist == -1)
-      return false; // not in the database
+  if (idArtist == -1)
+    return false; // not in the database
 
-    CStdString strSQL = PrepareSQL("delete from artistinfo where idArtist=%i",idArtist);
-
-    if (!m_pDS2->exec(strSQL.c_str()))
-      return false;
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - (%i) failed", __FUNCTION__, idArtist);
-  }
-
-  return false;
+  return ExecuteQuery(PrepareSQL("delete from artistinfo where idArtist=%i",idArtist));
 }
 
 bool CMusicDatabase::GetAlbumInfoSongs(int idAlbumInfo, VECSONGS& songs)

@@ -38,7 +38,8 @@ public:
   CSetting* GetSetting() { return m_pSetting; };
   virtual bool NeedsUpdate() { return false; };   ///< Returns true if the control needs an update
   virtual void Reset() {}; ///< Resets the NeedsUpdate() state
-  
+  virtual void Clear()=0;  ///< Clears the attached control
+
   /*!
    \brief Specifies that this setting should update after a delay
    Useful for settings that have options to navigate through
@@ -68,7 +69,7 @@ public:
   virtual ~CRadioButtonSettingControl();
   virtual bool OnClick();
   virtual void Update();
-  void Select(bool bSelect);
+  virtual void Clear() { m_pRadioButton = NULL; }
 private:
   CGUIRadioButtonControl *m_pRadioButton;
 };
@@ -80,6 +81,7 @@ public:
   virtual ~CSpinExSettingControl();
   virtual bool OnClick();
   virtual void Update();
+  virtual void Clear() { m_pSpin = NULL; }
 private:
   CGUISpinControlEx *m_pSpin;
 };
@@ -91,6 +93,7 @@ public:
   virtual ~CButtonSettingControl();
   virtual bool OnClick();
   virtual void Update();
+  virtual void Clear() { m_pButton = NULL; }
 private:
   CGUIButtonControl *m_pButton;
 };
@@ -104,6 +107,7 @@ public:
   virtual void Update();
   virtual bool NeedsUpdate() { return m_needsUpdate; };
   virtual void Reset() { m_needsUpdate = false; };
+  virtual void Clear() { m_pEdit = NULL; }
 private:
   bool IsValidIPAddress(const CStdString &strIP);
   CGUIEditControl *m_pEdit;
@@ -117,6 +121,7 @@ public:
   virtual ~CSeparatorSettingControl();
   virtual bool OnClick() { return false; };
   virtual void Update() {};
+  virtual void Clear() { m_pImage = NULL; }
 private:
   CGUIImage *m_pImage;
 };

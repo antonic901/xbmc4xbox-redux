@@ -54,7 +54,8 @@ bool CRadioButtonSettingControl::OnClick()
 
 void CRadioButtonSettingControl::Update()
 {
-  m_pRadioButton->SetSelected(((CSettingBool *)m_pSetting)->GetData());
+  if (m_pRadioButton)
+    m_pRadioButton->SetSelected(((CSettingBool *)m_pSetting)->GetData());
 }
 
 CSpinExSettingControl::CSpinExSettingControl(CGUISpinControlEx *pSpin, int id, CSetting *pSetting)
@@ -124,6 +125,8 @@ bool CSpinExSettingControl::OnClick()
 
 void CSpinExSettingControl::Update()
 {
+  if (!m_pSpin)
+    return;
   if (m_pSetting->GetControlType() == SPIN_CONTROL_FLOAT)
   {
     CSettingFloat *pSettingFloat = (CSettingFloat *)m_pSetting;
@@ -171,7 +174,8 @@ void CButtonSettingControl::Update()
   }
   else if (m_pSetting->GetControlType() == BUTTON_CONTROL_STANDARD)
     return;
-  m_pButton->SetLabel2(strText);
+  if (m_pButton)
+    m_pButton->SetLabel2(strText);
 }
 
 CEditSettingControl::CEditSettingControl(CGUIEditControl *pEdit, int id, CSetting *pSetting)
@@ -210,7 +214,7 @@ bool CEditSettingControl::OnClick()
 
 void CEditSettingControl::Update()
 {
-  if (!m_needsUpdate)
+  if (!m_needsUpdate && m_pEdit)
     m_pEdit->SetLabel2(((CSettingString *)m_pSetting)->GetData());
 }
 
