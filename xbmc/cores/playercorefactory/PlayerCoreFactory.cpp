@@ -39,10 +39,13 @@
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
+#include "settings/Settings.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
 #include "LocalizeStrings.h"
 #include "AutoPtrHandle.h"
+
+#define PLAYERCOREFACTORY_XML "playercorefactory.xml"
 
 using namespace AUTOPTR;
 
@@ -61,6 +64,12 @@ CPlayerCoreFactory& CPlayerCoreFactory::Get()
 {
   static CPlayerCoreFactory sPlayerCoreFactory;
   return sPlayerCoreFactory;
+}
+
+void CPlayerCoreFactory::OnSettingsLoaded()
+{
+  LoadConfiguration("special://xbmc/system/" PLAYERCOREFACTORY_XML, true);
+  LoadConfiguration(g_settings.GetUserDataItem(PLAYERCOREFACTORY_XML), false);
 }
 
 /* generic function to make a vector unique, removes later duplicates */
