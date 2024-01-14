@@ -20,27 +20,25 @@
  *
  */
 
-#include "GUIWindow.h"
+#include "guilib/GUIWindow.h"
 
-class CGUIWindowSettingsScreenCalibration : public CGUIWindow
+class CGUIWindowSettingsProfile :
+      public CGUIWindow
 {
 public:
-  CGUIWindowSettingsScreenCalibration(void);
-  virtual ~CGUIWindowSettingsScreenCalibration(void);
+  CGUIWindowSettingsProfile(void);
+  virtual ~CGUIWindowSettingsProfile(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
-  virtual void FrameMove();
-  virtual void Render();
-  virtual void AllocResources(bool forceLoad = false);
-  virtual void FreeResources(bool forceUnLoad = false);
 
 protected:
-  void NextControl();
-  void ResetControls();
-  void EnableControl(int iControl);
-  void UpdateFromControl(int iControl);
-  UINT m_iCurRes;
-  std::vector<RESOLUTION> m_Res;
-  int m_iControl;
-  float m_fPixelRatioBoxHeight;
+  virtual void OnInitWindow();
+  CFileItemList *m_listItems;
+
+  void OnPopupMenu(int iItem);
+  void DoRename(int iItem);
+  void DoOverwrite(int iItem);
+  int GetSelectedItem();
+  void LoadList();
+  void SetLastLoaded();
+  void ClearListItems();
 };

@@ -18,7 +18,7 @@
  *
  */
 
-#include "settings/GUIDialogContentSettings.h"
+#include "GUIDialogContentSettings.h"
 #include "addons/GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogOK.h"
 #include "settings/GUISettings.h"

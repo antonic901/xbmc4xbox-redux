@@ -18,13 +18,13 @@
  *
  */
 
-#include "settings/GUIDialogProfileSettings.h"
+#include "GUIDialogProfileSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogGamepad.h"
-#include "settings/GUIDialogLockSettings.h"
+#include "settings/dialogs/GUIDialogLockSettings.h"
 #include "GUIImage.h"
 #include "GUIWindowManager.h"
 #include "storage/MediaManager.h"

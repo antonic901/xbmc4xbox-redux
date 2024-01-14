@@ -20,7 +20,7 @@
  *
  */
 
-#include "GUIDialog.h"
+#include "guilib/GUIDialog.h"
 #include "dialogs/GUIDialogSlider.h"
 
 class CGUISpinControlEx;

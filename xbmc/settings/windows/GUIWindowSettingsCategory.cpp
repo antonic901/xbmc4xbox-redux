@@ -21,7 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "interfaces/Builtins.h"
-#include "settings/GUIWindowSettingsCategory.h"
+#include "GUIWindowSettingsCategory.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "input/KeyboardLayoutConfiguration.h"
@@ -1689,7 +1689,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     if (!pControl) return NULL;
     ((CGUIRadioButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl.reset(new CRadioButtonSettingControl((CGUIRadioButtonControl *)pControl, iControlID, pSetting));
+    pSettingControl.reset(new CGUIRadioButtonSettingControl((CGUIRadioButtonControl *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == SPIN_CONTROL_FLOAT || pSetting->GetControlType() == SPIN_CONTROL_INT_PLUS || pSetting->GetControlType() == SPIN_CONTROL_TEXT || pSetting->GetControlType() == SPIN_CONTROL_INT)
   {
@@ -1697,14 +1697,14 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     if (!pControl) return NULL;
     pControl->SetWidth(width);
     ((CGUISpinControlEx *)pControl)->SetText(g_localizeStrings.Get(pSetting->GetLabel()));
-    pSettingControl.reset(new CSpinExSettingControl((CGUISpinControlEx *)pControl, iControlID, pSetting));
+    pSettingControl.reset(new CGUISpinExSettingControl((CGUISpinControlEx *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == SEPARATOR_CONTROL && m_pOriginalImage)
   {
     pControl = new CGUIImage(*m_pOriginalImage);
     if (!pControl) return NULL;
     pControl->SetWidth(width);
-    pSettingControl.reset(new CSeparatorSettingControl((CGUIImage *)pControl, iControlID, pSetting));
+    pSettingControl.reset(new CGUISeparatorSettingControl((CGUIImage *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() == EDIT_CONTROL_INPUT ||
            pSetting->GetControlType() == EDIT_CONTROL_HIDDEN_INPUT ||
@@ -1717,7 +1717,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     ((CGUIEditControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIEditControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl.reset(new CEditSettingControl((CGUIEditControl *)pControl, iControlID, pSetting));
+    pSettingControl.reset(new CGUIEditSettingControl((CGUIEditControl *)pControl, iControlID, pSetting));
   }
   else if (pSetting->GetControlType() != SEPARATOR_CONTROL) // button control
   {
@@ -1726,7 +1726,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     ((CGUIButtonControl *)pControl)->SettingsCategorySetTextAlign(XBFONT_CENTER_Y);
     ((CGUIButtonControl *)pControl)->SetLabel(g_localizeStrings.Get(pSetting->GetLabel()));
     pControl->SetWidth(width);
-    pSettingControl.reset(new CButtonSettingControl((CGUIButtonControl *)pControl, iControlID, pSetting));
+    pSettingControl.reset(new CGUIButtonSettingControl((CGUIButtonControl *)pControl, iControlID, pSetting));
   }
   if (!pControl)
   {

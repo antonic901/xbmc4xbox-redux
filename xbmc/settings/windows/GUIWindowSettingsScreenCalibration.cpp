@@ -19,7 +19,7 @@
  */
 
 #include "system.h"
-#include "settings/GUIWindowSettingsScreenCalibration.h"
+#include "GUIWindowSettingsScreenCalibration.h"
 #include "GUIMoverControl.h"
 #include "GUIResizeControl.h"
 #include "GUILabelControl.h"

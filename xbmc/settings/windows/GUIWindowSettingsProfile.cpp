@@ -18,12 +18,12 @@
  *
  */
 
-#include "settings/GUIWindowSettingsProfile.h"
+#include "GUIWindowSettingsProfile.h"
 #include "windows/GUIWindowFileManager.h"
 #include "settings/Profile.h"
 #include "Application.h"
 #include "dialogs/GUIDialogContextMenu.h"
-#include "settings/GUIDialogProfileSettings.h"
+#include "settings/dialogs/GUIDialogProfileSettings.h"
 #include "xbox/network.h"
 #include "utils/Weather.h"
 #include "GUIPassword.h"

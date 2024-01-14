@@ -437,22 +437,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\settings\GUIWindowSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIWindowSettingsCategory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIWindowSettingsProfile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIWindowSettingsScreenCalibration.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\settings\Settings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\SettingsControls.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\VideoSettings.cpp">
@@ -460,6 +445,68 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\settings\VideoSettings.h">
 				</File>
+				<Filter
+					Name="windows"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\settings\windows\GUISettingControls.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUISettingControls.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsCategory.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsCategory.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsProfile.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsProfile.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsScreenCalibration.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsScreenCalibration.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="dialogs"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogContentSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogContentSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogLockSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogLockSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogProfileSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogProfileSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettings.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="GUI Music"
@@ -1303,12 +1350,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\settings\GUIDialogContentSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogContentSettings.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogContextMenu.cpp">
 				</File>
 				<File
@@ -1340,12 +1381,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogKeyboard.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogLockSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogLockSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogMediaFilter.cpp">
@@ -1393,12 +1428,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogPlayerControls.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\settings\GUIDialogProfileSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogProfileSettings.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogProgress.cpp">
 				</File>
 				<File
@@ -1409,12 +1438,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogSelect.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\GUIDialogSettings.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogSlider.cpp">
@@ -3169,18 +3192,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\windows\GUIWindowScreensaver.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\settings\GUIWindowSettings.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\GUIWindowSettingsCategory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\GUIWindowSettingsProfile.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\GUIWindowSettingsScreenCalibration.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\GUIWindowSettingsUICalibration.h">
 			</File>
 			<File
@@ -3392,9 +3403,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\settings\Settings.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\SettingsControls.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\SharedSection.h">

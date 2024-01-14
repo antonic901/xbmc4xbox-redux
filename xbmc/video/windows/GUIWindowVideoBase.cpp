@@ -54,7 +54,7 @@
 #include "filesystem/Directory.h"
 #include "playlists/PlayList.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUIDialogContentSettings.h"
+#include "settings/dialogs/GUIDialogContentSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"

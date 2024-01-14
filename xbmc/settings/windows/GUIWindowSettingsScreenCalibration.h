@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -18,41 +20,27 @@
  *
  */
 
-#include "system.h"
-#include "settings/GUIWindowSettings.h"
-#ifdef HAS_CREDITS
-#include "Credits.h"
-#endif
+#include "guilib/GUIWindow.h"
 
-#define CONTROL_CREDITS 12
-
-CGUIWindowSettings::CGUIWindowSettings(void)
-    : CGUIWindow(WINDOW_SETTINGS_MENU, "Settings.xml")
+class CGUIWindowSettingsScreenCalibration : public CGUIWindow
 {
-  m_loadType = KEEP_IN_MEMORY;
-}
+public:
+  CGUIWindowSettingsScreenCalibration(void);
+  virtual ~CGUIWindowSettingsScreenCalibration(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual void FrameMove();
+  virtual void Render();
+  virtual void AllocResources(bool forceLoad = false);
+  virtual void FreeResources(bool forceUnLoad = false);
 
-CGUIWindowSettings::~CGUIWindowSettings(void)
-{
-}
-
-bool CGUIWindowSettings::OnMessage(CGUIMessage& message)
-{
-  switch ( message.GetMessage() )
-  {
-  case GUI_MSG_CLICKED:
-    {
-      int iControl = message.GetSenderId();
-      if (iControl == CONTROL_CREDITS)
-      {
-#ifdef HAS_CREDITS
-        RunCredits();
-#endif
-        return true;
-      }
-    }
-    break;
-  }
-
-  return CGUIWindow::OnMessage(message);
-}
+protected:
+  void NextControl();
+  void ResetControls();
+  void EnableControl(int iControl);
+  void UpdateFromControl(int iControl);
+  UINT m_iCurRes;
+  std::vector<RESOLUTION> m_Res;
+  int m_iControl;
+  float m_fPixelRatioBoxHeight;
+};

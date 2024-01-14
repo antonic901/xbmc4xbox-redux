@@ -20,7 +20,7 @@
  *
  */
 
-#include "settings/GUIDialogSettings.h"
+#include "GUIDialogSettings.h"
 #include "addons/Scraper.h"
 #include "addons/AddonManager.h"
 #include <vector>

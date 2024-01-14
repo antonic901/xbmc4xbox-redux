@@ -23,7 +23,7 @@
 #include "DllAddon.h"
 #include "AddonManager.h"
 #include "AddonStatusHandler.h"
-#include "settings/GUIDialogSettings.h"
+#include "settings/dialogs/GUIDialogSettings.h"
 #include "URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"

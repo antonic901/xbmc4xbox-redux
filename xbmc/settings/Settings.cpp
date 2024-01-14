@@ -27,7 +27,7 @@
 #include "URL.h"
 #include "windows/GUIWindowFileManager.h"
 #include "dialogs/GUIDialogButtonMenu.h"
-#include "settings/GUIDialogContentSettings.h"
+#include "settings/dialogs/GUIDialogContentSettings.h"
 #include "GUIFontManager.h"
 #include "utils/LangCodeExpander.h"
 #include "input/ButtonTranslator.h"

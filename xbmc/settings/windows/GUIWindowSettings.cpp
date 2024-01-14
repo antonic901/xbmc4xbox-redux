@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -20,25 +18,41 @@
  *
  */
 
-#include "GUIWindow.h"
+#include "system.h"
+#include "GUIWindowSettings.h"
+#ifdef HAS_CREDITS
+#include "Credits.h"
+#endif
 
-class CGUIWindowSettingsProfile :
-      public CGUIWindow
+#define CONTROL_CREDITS 12
+
+CGUIWindowSettings::CGUIWindowSettings(void)
+    : CGUIWindow(WINDOW_SETTINGS_MENU, "Settings.xml")
 {
-public:
-  CGUIWindowSettingsProfile(void);
-  virtual ~CGUIWindowSettingsProfile(void);
-  virtual bool OnMessage(CGUIMessage& message);
+  m_loadType = KEEP_IN_MEMORY;
+}
 
-protected:
-  virtual void OnInitWindow();
-  CFileItemList *m_listItems;
+CGUIWindowSettings::~CGUIWindowSettings(void)
+{
+}
 
-  void OnPopupMenu(int iItem);
-  void DoRename(int iItem);
-  void DoOverwrite(int iItem);
-  int GetSelectedItem();
-  void LoadList();
-  void SetLastLoaded();
-  void ClearListItems();
-};
+bool CGUIWindowSettings::OnMessage(CGUIMessage& message)
+{
+  switch ( message.GetMessage() )
+  {
+  case GUI_MSG_CLICKED:
+    {
+      int iControl = message.GetSenderId();
+      if (iControl == CONTROL_CREDITS)
+      {
+#ifdef HAS_CREDITS
+        RunCredits();
+#endif
+        return true;
+      }
+    }
+    break;
+  }
+
+  return CGUIWindow::OnMessage(message);
+}

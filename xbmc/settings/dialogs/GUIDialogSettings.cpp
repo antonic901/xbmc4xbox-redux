@@ -18,7 +18,7 @@
  *
  */
 
-#include "settings/GUIDialogSettings.h"
+#include "GUIDialogSettings.h"
 #include "guilib/GUIEditControl.h"
 #include "guilib/GUISpinControlEx.h"
 #include "guilib/GUIRadioButtonControl.h"

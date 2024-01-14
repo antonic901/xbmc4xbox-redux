@@ -22,7 +22,7 @@
 #include "dialogs/GUIDialogSeekBar.h"
 #include "windows/GUIMediaWindow.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "settings/GUIDialogContentSettings.h"
+#include "settings/dialogs/GUIDialogContentSettings.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
