@@ -92,7 +92,7 @@
 #include "filesystem/DAAPFile.h"
 #endif
 #ifdef HAS_UPNP
-#include "network/UPnP.h"
+#include "network/upnp/UPnP.h"
 #include "filesystem/UPnPDirectory.h"
 #endif
 #include "PartyModeManager.h"

@@ -62,6 +62,7 @@
 #include "utils/FileUtils.h"
 #include "addons/AddonManager.h"
 #include "DatabaseManager.h"
+#include "network/upnp/UPnPSettings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1332,60 +1333,6 @@ bool CSettings::SaveProfiles(const CStdString& profilesFile) const
   return xmlDoc.SaveFile(profilesFile);
 }
 
-bool CSettings::LoadUPnPXml(const CStdString& strSettingsFile)
-{
-  TiXmlDocument UPnPDoc;
-
-  if (!CFile::Exists(strSettingsFile))
-  { // set defaults, or assume no rss feeds??
-    return false;
-  }
-  if (!UPnPDoc.LoadFile(strSettingsFile))
-  {
-    CLog::Log(LOGERROR, "Error loading %s, Line %d\n%s", strSettingsFile.c_str(), UPnPDoc.ErrorRow(), UPnPDoc.ErrorDesc());
-    return false;
-  }
-
-  TiXmlElement *pRootElement = UPnPDoc.RootElement();
-  if (!pRootElement || strcmpi(pRootElement->Value(),"upnpserver") != 0)
-  {
-    CLog::Log(LOGERROR, "Error loading %s, no <upnpserver> node", strSettingsFile.c_str());
-    return false;
-  }
-  // load settings
-
-  // default values for ports
-  m_UPnPPortServer = 0;
-  m_UPnPPortRenderer = 0;
-  m_UPnPMaxReturnedItems = 0;
-
-  XMLUtils::GetString(pRootElement, "UUID", m_UPnPUUIDServer);
-  XMLUtils::GetInt(pRootElement, "Port", m_UPnPPortServer);
-  XMLUtils::GetInt(pRootElement, "MaxReturnedItems", m_UPnPMaxReturnedItems);
-  XMLUtils::GetString(pRootElement, "UUIDRenderer", m_UPnPUUIDRenderer);
-  XMLUtils::GetInt(pRootElement, "PortRenderer", m_UPnPPortRenderer);
-
-  return true;
-}
-
-bool CSettings::SaveUPnPXml(const CStdString& strSettingsFile) const
-{
-  TiXmlDocument xmlDoc;
-  TiXmlElement xmlRootElement("upnpserver");
-  TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
-  if (!pRoot) return false;
-
-  // create a new Element for UUID
-  XMLUtils::SetString(pRoot, "UUID", m_UPnPUUIDServer);
-  XMLUtils::SetInt(pRoot, "Port", m_UPnPPortServer);
-  XMLUtils::SetInt(pRoot, "MaxReturnedItems", m_UPnPMaxReturnedItems);
-  XMLUtils::SetString(pRoot, "UUIDRenderer", m_UPnPUUIDRenderer);
-  XMLUtils::SetInt(pRoot, "PortRenderer", m_UPnPPortRenderer);
-
-  // save the file
-  return xmlDoc.SaveFile(strSettingsFile);
-}
-
 bool CSettings::UpdateShare(const CStdString &type, const CStdString oldName, const CMediaSource &share)
 {
   VECSOURCES *pShares = GetSourcesFromType(type);
@@ -1680,10 +1627,9 @@ void CSettings::Clear()
   m_defaultFileSource.clear();
   m_defaultMusicLibSource.clear();
 
-  m_UPnPUUIDServer.clear();
-  m_UPnPUUIDRenderer.clear();
-
   // m_ResInfo.clear();
+
+  CUPnPSettings::Get().Clear();
 }
 
 int CSettings::TranslateSkinString(const CStdString &setting)

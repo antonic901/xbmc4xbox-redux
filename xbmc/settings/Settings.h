@@ -413,12 +413,6 @@ public:
   CStdString m_defaultFileSource;
   CStdString m_defaultMusicLibSource;
 
-  CStdString m_UPnPUUIDServer;
-  int        m_UPnPPortServer;
-  int        m_UPnPMaxReturnedItems;
-  CStdString m_UPnPUUIDRenderer;
-  int        m_UPnPPortRenderer;
-
   /*! \brief Retrieve the master profile
    \return const reference to the master profile
    */
@@ -523,9 +517,6 @@ public:
 
   CStdString GetSettingsFile() const;
   CStdString GetAvpackSettingsFile() const;
-
-  bool LoadUPnPXml(const CStdString& strSettingsFile);
-  bool SaveUPnPXml(const CStdString& strSettingsFile) const;
 
   /*! \brief Load the user profile information from disk
    Loads the profiles.xml file and creates the list of profiles. If no profiles

@@ -916,9 +916,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\storage\DetectDVDType.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\network\DNSNameCache.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\DownloadQueue.cpp">
 				</File>
 				<File
@@ -1402,12 +1399,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogNumeric.cpp">
@@ -2749,14 +2740,36 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 			</Filter>
 			<Filter
-				Name="UPnP"
+				Name="network"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\network\UPnP.cpp">
+					RelativePath=".\xbmc\network\DNSNameCache.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\network\UPnP.h">
+					RelativePath=".\xbmc\network\DNSNameCache.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.h">
+				</File>
+				<Filter
+					Name="upnp"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnP.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnP.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPSettings.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Interfaces"
@@ -3055,9 +3068,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\pictures\DllImageLib.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\network\DNSNameCache.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DownloadQueue.h">
