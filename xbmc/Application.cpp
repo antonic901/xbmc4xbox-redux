@@ -934,6 +934,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGINFO, "Drives are mapped");
 
   CLog::Log(LOGNOTICE, "load settings...");
+  g_settings.RegisterSettingsHandler(this);
   g_settings.RegisterSettingsHandler(&g_advancedSettings);
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
@@ -1819,6 +1820,14 @@ void CApplication::ReloadSkin()
     CGUIMessage msg3(GUI_MSG_SETFOCUS, g_windowManager.GetActiveWindow(), iCtrlID, 0);
     pWindow->OnMessage(msg3);
   }
+}
+
+bool CApplication::OnSettingsSaving() const
+{
+  // Don't save settings when we're busy stopping the application.
+  // A lot of screens try to save settings on deinit and deinit is called
+  // for every screen when the application is stopping.
+  return !m_bStop;
 }
 
 bool CApplication::LoadSkin(const CStdString& skinID)

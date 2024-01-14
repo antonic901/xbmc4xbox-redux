@@ -47,6 +47,7 @@ namespace ADDON
 #include "cores/IPlayer.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "PlayListPlayer.h"
+#include "settings/ISettingsHandler.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -63,7 +64,8 @@ class CProfile;
 class CSplash;
 class CGUITextLayout;
 
-class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback
+class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
+                     public ISettingsHandler
 {
 public:
   CApplication(void);
@@ -220,6 +222,8 @@ public:
   int GlobalIdleTime();
 
 protected:
+  virtual bool OnSettingsSaving() const;
+
   void LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
 
   friend class CApplicationMessenger;
