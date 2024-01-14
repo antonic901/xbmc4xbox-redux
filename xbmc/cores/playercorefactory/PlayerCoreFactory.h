@@ -22,7 +22,8 @@
 
 #include "tinyXML/tinyxml.h"
 #include "XMLUtils.h"
-#include "../IPlayer.h"
+#include "cores/IPlayer.h"
+#include "threads/CriticalSection.h"
 
 /*----------------------------------------------------------------------
 |   forward references
@@ -50,28 +51,36 @@ const PLAYERCOREID PCID_MODPLAYER = 4;
 class CPlayerCoreFactory
 {
 public:
+  static CPlayerCoreFactory& Get();
+
+  PLAYERCOREID GetPlayerCore(const CStdString& strCoreName) const;
+  CPlayerCoreConfig* GetPlayerConfig(const CStdString& strCoreName) const;
+  CStdString GetPlayerName(const PLAYERCOREID eCore) const;
+
+  IPlayer* CreatePlayer(const PLAYERCOREID eCore, IPlayerCallback& callback) const;
+  IPlayer* CreatePlayer(const CStdString& strCore, IPlayerCallback& callback) const;
+  void GetPlayers( const CFileItem& item, VECPLAYERCORES &vecCores) const;   //Players supporting the specified file
+  void GetPlayers( VECPLAYERCORES &vecCores, bool audio, bool video ) const; //All audio players and/or video players
+  void GetPlayers( VECPLAYERCORES &vecCores ) const;                         //All players
+
+  PLAYERCOREID GetDefaultPlayer( const CFileItem& item ) const;
+
+  PLAYERCOREID SelectPlayerDialog(VECPLAYERCORES &vecCores, float posX = 0, float posY = 0) const;
+  PLAYERCOREID SelectPlayerDialog(float posX, float posY) const;
+
+  bool LoadConfiguration(TiXmlElement* pConfig, bool clear);
+  
+  void OnPlayerDiscovered(const CStdString& id, const CStdString& name, EPLAYERCORES core);
+  void OnPlayerRemoved(const CStdString& id);
+
+protected:
   CPlayerCoreFactory();
+  CPlayerCoreFactory(const CPlayerCoreFactory&);
+  CPlayerCoreFactory const& operator=(CPlayerCoreFactory const&);
   virtual ~CPlayerCoreFactory();
 
-  IPlayer* CreatePlayer(const CStdString& strCore, IPlayerCallback& callback) const;
-
-  static PLAYERCOREID GetPlayerCore(const CStdString& strCoreName);
-  static CPlayerCoreConfig* GetPlayerConfig(const CStdString& strCoreName);
-  static CStdString GetPlayerName(const PLAYERCOREID eCore);
-
-  static IPlayer* CreatePlayer(const PLAYERCOREID eCore, IPlayerCallback& callback);
-  static void GetPlayers( const CFileItem& item, VECPLAYERCORES &vecCores); //Players supporting the specified file
-  static void GetPlayers( VECPLAYERCORES &vecCores, bool audio, bool video ); //All audio players and/or video players
-  static void GetPlayers( VECPLAYERCORES &vecCores );                       //All players
-
-  static PLAYERCOREID GetDefaultPlayer( const CFileItem& item );
-
-  static PLAYERCOREID SelectPlayerDialog(VECPLAYERCORES &vecCores, float posX = 0, float posY = 0);
-  static PLAYERCOREID SelectPlayerDialog(float posX, float posY);
-  
-  static bool LoadConfiguration(TiXmlElement* pConfig, bool clear);
-
 private:
-  static std::vector<CPlayerCoreConfig *> s_vecCoreConfigs;
-  static std::vector<CPlayerSelectionRule *> s_vecCoreSelectionRules;
+  std::vector<CPlayerCoreConfig *> m_vecCoreConfigs;
+  std::vector<CPlayerSelectionRule *> m_vecCoreSelectionRules;
+  CCriticalSection m_section;
 };

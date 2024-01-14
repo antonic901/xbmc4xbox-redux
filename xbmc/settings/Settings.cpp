@@ -815,7 +815,7 @@ bool CSettings::LoadPlayerCoreFactorySettings(const CStdString& fileStr, bool cl
     return false;
   }
 
-  return CPlayerCoreFactory::LoadConfiguration(playerCoreFactoryXML.RootElement(), clear);
+  return CPlayerCoreFactory::Get().LoadConfiguration(playerCoreFactoryXML.RootElement(), clear);
 }
 
 bool CSettings::LoadAvpackXML()
