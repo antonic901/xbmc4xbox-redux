@@ -93,6 +93,24 @@ void CSettings::UnregisterSettingsHandler(ISettingsHandler *settingsHandler)
   m_settingsHandlers.erase(settingsHandler);
 }
 
+void CSettings::RegisterSubSettings(ISubSettings *subSettings)
+{
+  if (subSettings == NULL)
+    return;
+
+  CSingleLock lock(m_critical);
+  m_subSettings.insert(subSettings);
+}
+
+void CSettings::UnregisterSubSettings(ISubSettings *subSettings)
+{
+  if (subSettings == NULL)
+    return;
+
+  CSingleLock lock(m_critical);
+  m_subSettings.erase(subSettings);
+}
+
 void CSettings::Initialize()
 {
   for (int i = HDTV_1080i; i <= PAL60_16x9; i++)
@@ -161,8 +179,12 @@ void CSettings::Initialize()
 
 CSettings::~CSettings(void)
 {
-  Clear();
+  // first clear all registered settings handler and subsettings
+  // implementations because we can't be sure that they are still valid
   m_settingsHandlers.clear();
+  m_subSettings.clear();
+
+  Clear(); // dont delete during a9cf8501a95713627fb18033697575eae8437765!!
 }
 
 
@@ -791,7 +813,8 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   else
     CLog::Log(LOGNOTICE, "Per AV pack settings are off");
 
-  return true;
+  // load any ISubSettings implementations
+  return Load(pRootElement);
 }
 
 bool CSettings::LoadAvpackXML()
@@ -1110,6 +1133,9 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   SaveProfiles(PROFILES_FILE);
 
   OnSettingsSaved();
+
+  if (!Save(pRoot))
+    return false;
 
   // save the file
   return xmlDoc.SaveFile(strSettingsFile);
@@ -1611,6 +1637,9 @@ void CSettings::Clear()
   // m_ResInfo.clear();
 
   OnSettingsCleared();
+
+  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
+    (*it)->Clear();
 }
 
 int CSettings::TranslateSkinString(const CStdString &setting)
@@ -2247,4 +2276,25 @@ void CSettings::OnSettingsCleared()
   CSingleLock lock(m_critical);
   for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
     (*it)->OnSettingsCleared();
+}
+
+bool CSettings::Load(const TiXmlNode *settings)
+{
+  bool ok = true;
+  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
+    ok &= (*it)->Load(settings);
+
+  return ok;
+}
+
+bool CSettings::Save(TiXmlNode *settings) const
+{
+  CSingleLock lock(m_critical);
+  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
+  {
+    if (!(*it)->Save(settings))
+      return false;
+  }
+
+  return true;
 }

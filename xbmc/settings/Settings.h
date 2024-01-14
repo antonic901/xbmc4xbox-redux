@@ -27,6 +27,7 @@
 #define DEFAULT_WEB_INTERFACE "webinterface.default"
 
 #include "settings/ISettingsHandler.h"
+#include "settings/ISubSettings.h"
 #include "settings/VideoSettings.h"
 #include "settings/GUISettings.h"
 #include "settings/Profile.h"
@@ -90,7 +91,7 @@ class CGUISettings;
 class TiXmlElement;
 class TiXmlNode;
 
-class CSettings : private ISettingsHandler
+class CSettings : private ISettingsHandler, ISubSettings
 {
 public:
   CSettings(void);
@@ -98,6 +99,8 @@ public:
 
   void RegisterSettingsHandler(ISettingsHandler *settingsHandler);
   void UnregisterSettingsHandler(ISettingsHandler *settingsHandler);
+  void RegisterSubSettings(ISubSettings *subSettings);
+  void UnregisterSubSettings(ISubSettings *subSettings);
 
   void Initialize();
 
@@ -585,9 +588,15 @@ private:
   virtual void OnSettingsSaved() const;
   virtual void OnSettingsCleared();
 
+  // implementation of ISubSettings
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
+
   CCriticalSection m_critical;
   typedef std::set<ISettingsHandler*> SettingsHandlers;
   SettingsHandlers m_settingsHandlers;
+  typedef std::set<ISubSettings*> SubSettings;
+  SubSettings m_subSettings;
 
   std::vector<CProfile> m_vecProfiles;
   std::map<CStdString, int> m_watchMode;
