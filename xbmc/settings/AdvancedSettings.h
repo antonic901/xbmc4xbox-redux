@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "tinyXML/tinyxml.h"
+#include "settings/ISettingsHandler.h"
 #include "utils/StdString.h"
 #include "utils/StringUtils.h"
 
@@ -49,10 +50,12 @@ struct TVShowRegexp
 
 typedef std::vector<TVShowRegexp> SETTINGS_TVSHOWLIST;
 
-class CAdvancedSettings
+class CAdvancedSettings : public ISettingsHandler
 {
   public:
     CAdvancedSettings();
+
+    virtual void OnSettingsLoaded();
 
     bool Load();
     void Clear();

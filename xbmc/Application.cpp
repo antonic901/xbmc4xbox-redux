@@ -934,6 +934,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGINFO, "Drives are mapped");
 
   CLog::Log(LOGNOTICE, "load settings...");
+  g_settings.RegisterSettingsHandler(&g_advancedSettings);
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
 

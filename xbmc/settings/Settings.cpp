@@ -790,21 +790,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   LoadCalibration(pRootElement, strSettingsFile);
   g_guiSettings.LoadXML(pRootElement);
   LoadSkinSettings(pRootElement);
-
-  // Advanced settings
-  g_advancedSettings.Load();
-
-  // Default players?
-  CLog::Log(LOGNOTICE, "Default Video Player: %s", GetDefaultVideoPlayerName().c_str());
-  CLog::Log(LOGNOTICE, "Default Audio Player: %s", GetDefaultAudioPlayerName().c_str());
-
-  // setup logging...
-  if (g_guiSettings.GetBool("debug.showloginfo"))
-  {
-    g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
-    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
-    CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", g_advancedSettings.m_logLevel);
-  }
   
   // Override settings with avpack settings
   if ( GetCurrentProfile().useAvpackSettings())

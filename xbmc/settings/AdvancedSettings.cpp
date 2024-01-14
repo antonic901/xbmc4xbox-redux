@@ -34,6 +34,29 @@ using namespace XFILE;
 
 CAdvancedSettings g_advancedSettings;
 
+void CAdvancedSettings::OnSettingsLoaded()
+{
+  // load advanced settings
+  Load();
+
+  // default players?
+  CLog::Log(LOGNOTICE, "Default Video Player: %s", g_settings.GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Audio Player: %s", g_settings.GetDefaultAudioPlayerName().c_str());
+
+  // setup any logging...
+  if (g_guiSettings.GetBool("debug.showloginfo"))
+  {
+    m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
+    CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", m_logLevel);
+  }
+  else
+  {
+    m_logLevel = std::min(m_logLevelHint, LOG_LEVEL_DEBUG/*LOG_LEVEL_NORMAL*/);
+    CLog::Log(LOGNOTICE, "Disabled debug logging due to GUI setting. Level %d.", m_logLevel);
+  }
+  CLog::SetLogLevel(m_logLevel);
+}
+
 CAdvancedSettings::CAdvancedSettings()
 {
   m_DisableModChipDetection = true;
