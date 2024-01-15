@@ -45,6 +45,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SkinSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
@@ -2952,8 +2953,8 @@ int CXbmcHttp::xbmcGetSkinSetting(int numParas, CStdString paras[])
   {
     if (atoi(paras[0]) == 0)
     {
-      int string = g_settings.TranslateSkinBool(paras[1]);
-      bool value = g_settings.GetSkinBool(string);
+      int string = CSkinSettings::Get().TranslateBool(paras[1]);
+      bool value = CSkinSettings::Get().GetBool(string);
       if (value==false)
         return SetResponse(openTag+"False");
       else
@@ -2961,8 +2962,8 @@ int CXbmcHttp::xbmcGetSkinSetting(int numParas, CStdString paras[])
     }
     else
     {
-      int string = g_settings.TranslateSkinString(paras[1]);
-      CStdString value = g_settings.GetSkinString(string);
+      int string = CSkinSettings::Get().TranslateString(paras[1]);
+      CStdString value = CSkinSettings::Get().GetString(string);
       return SetResponse(openTag+value);
     }
   }

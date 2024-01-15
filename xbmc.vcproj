@@ -446,6 +446,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\Settings.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\SkinSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SkinSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\VideoSettings.cpp">
 				</File>
 				<File
