@@ -29,6 +29,7 @@
 #include "filesystem/PluginDirectory.h"
 #include "Util.h"
 #include "LocalizeStrings.h"
+#include "view/ViewStateSettings.h"
 
 using namespace XFILE;
 
@@ -51,16 +52,17 @@ CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& it
     AddSortMethod(SortByDate, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));  // Filename, Date | Foldername, Date
     AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
 
-    SetSortMethod(g_settings.m_viewStatePictures.m_sortDescription);
-    SetViewAsControl(g_settings.m_viewStatePictures.m_viewMode);
-    SetSortOrder(g_settings.m_viewStatePictures.m_sortDescription.sortOrder);
+    const CViewState *viewState = CViewStateSettings::Get().Get("pictures");
+    SetSortMethod(viewState->m_sortDescription);
+    SetViewAsControl(viewState->m_viewMode);
+    SetSortOrder(viewState->m_sortDescription.sortOrder);
   }
   LoadViewState(items.GetPath(), WINDOW_PICTURES);
 }
 
 void CGUIViewStateWindowPictures::SaveViewState()
 {
-    SaveViewToDb(m_items.GetPath(), WINDOW_PICTURES, &g_settings.m_viewStatePictures);
+  SaveViewToDb(m_items.GetPath(), WINDOW_PICTURES, CViewStateSettings::Get().Get("pictures"));
 }
 
 CStdString CGUIViewStateWindowPictures::GetLockType()

@@ -32,7 +32,6 @@
 #include "settings/GUISettings.h"
 #include "settings/Profile.h"
 #include "MediaSource.h"
-#include "view/ViewState.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CriticalSection.h"
 
@@ -307,25 +306,6 @@ public:
   bool m_bMyMusicSongInfoInVis;
   bool m_bMyMusicSongThumbInVis;
 
-  CViewState m_viewStateMusicNavArtists;
-  CViewState m_viewStateMusicNavAlbums;
-  CViewState m_viewStateMusicNavSongs;
-  CViewState m_viewStateMusicShoutcast;
-  CViewState m_viewStateMusicLastFM;
-  CViewState m_viewStateVideoNavActors;
-  CViewState m_viewStateVideoNavYears;
-  CViewState m_viewStateVideoNavGenres;
-  CViewState m_viewStateVideoNavTitles;
-  CViewState m_viewStateVideoNavEpisodes;
-  CViewState m_viewStateVideoNavSeasons;
-  CViewState m_viewStateVideoNavTvShows;
-  CViewState m_viewStateVideoNavMusicVideos;
-
-  CViewState m_viewStatePrograms;
-  CViewState m_viewStatePictures;
-  CViewState m_viewStateMusicFiles;
-  CViewState m_viewStateVideoFiles;
-
   bool m_bMyMusicPlaylistRepeat;
   bool m_bMyMusicPlaylistShuffle;
   int m_iMyMusicStartWindow;
@@ -505,11 +485,7 @@ public:
   static bool GetString(const TiXmlElement* pRootElement, const char *strTagName, CStdString& strValue, const CStdString& strDefaultValue);
   bool GetString(const TiXmlElement* pRootElement, const char *strTagName, char *szValue, const CStdString& strDefaultValue);
 protected:
-  void GetViewState(const TiXmlElement* pRootElement, const CStdString& strTagName, CViewState &viewState, SortBy defaultSort = SortByLabel, int defaultView = DEFAULT_VIEW_LIST);
-
   void ConvertHomeVar(CStdString& strText);
-  // functions for writing xml files
-  void SetViewState(TiXmlNode* pRootNode, const CStdString& strTagName, const CViewState &viewState) const;
 
   bool LoadCalibration(const TiXmlElement* pElement, const CStdString& strSettingsFile);
   bool SaveCalibration(TiXmlNode* pRootNode) const;

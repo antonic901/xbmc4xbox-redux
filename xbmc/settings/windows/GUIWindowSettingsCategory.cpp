@@ -68,6 +68,7 @@
 #include "GUIControlGroupList.h"
 #include "XBTimeZone.h"
 #include "video/VideoDatabase.h"
+#include "view/ViewState.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"

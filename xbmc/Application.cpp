@@ -90,6 +90,7 @@
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "DatabaseManager.h"
+#include "view/ViewStateSettings.h"
 #ifdef HAS_FILESYSTEM
 #include "filesystem/DAAPFile.h"
 #endif
@@ -942,6 +943,7 @@ HRESULT CApplication::Create(HWND hWnd)
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
   g_settings.RegisterSubSettings(&CSkinSettings::Get());
+  g_settings.RegisterSubSettings(&CViewStateSettings::Get());
 
   g_LoadErrorStr = "Unable to load settings";
   

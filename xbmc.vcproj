@@ -2989,6 +2989,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\view\ViewState.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\view\ViewStateSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\ViewStateSettings.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

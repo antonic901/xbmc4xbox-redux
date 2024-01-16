@@ -40,6 +40,7 @@
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "view/ViewState.h"
 
 using namespace XFILE;
 

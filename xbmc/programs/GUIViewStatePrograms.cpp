@@ -28,6 +28,7 @@
 #include "filesystem/PluginDirectory.h"
 #include "Util.h"
 #include "LocalizeStrings.h"
+#include "view/ViewStateSettings.h"
 
 using namespace XFILE;
 
@@ -40,16 +41,17 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
   AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
   AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
 
-  SetSortMethod(g_settings.m_viewStatePrograms.m_sortDescription);
-  SetViewAsControl(g_settings.m_viewStatePrograms.m_viewMode);
-  SetSortOrder(g_settings.m_viewStatePrograms.m_sortDescription.sortOrder);
+  const CViewState *viewState = CViewStateSettings::Get().Get("programs");
+  SetSortMethod(viewState->m_sortDescription);
+  SetViewAsControl(viewState->m_viewMode);
+  SetSortOrder(viewState->m_sortDescription.sortOrder);
 
   LoadViewState(items.GetPath(), WINDOW_PROGRAMS);
 }
 
 void CGUIViewStateWindowPrograms::SaveViewState()
 {
-    SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, &g_settings.m_viewStatePrograms);  
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, CViewStateSettings::Get().Get("programs")); 
 }
 
 CStdString CGUIViewStateWindowPrograms::GetLockType()

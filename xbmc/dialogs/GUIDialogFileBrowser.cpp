@@ -41,6 +41,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
+#include "view/ViewState.h"
 
 using namespace XFILE;
 
