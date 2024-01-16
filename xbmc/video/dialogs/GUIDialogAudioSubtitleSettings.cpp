@@ -34,6 +34,7 @@
 #include "FileItem.h"
 #include "addons/Skin.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace std;
@@ -303,7 +304,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
     CStdString strMask = ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.aqt|.jss|.ass|.idx|.rar|.zip";
     if (g_application.GetCurrentPlayer() == EPC_DVDPLAYER)
       strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt";
-    VECSOURCES shares(g_settings.m_videoSources);
+    VECSOURCES shares(*CMediaSourceSettings::Get().GetSources("video"));
     if (g_settings.iAdditionalSubtitleDirectoryChecked != -1 && !g_guiSettings.GetString("subtitles.custompath").IsEmpty())
     {
       CMediaSource share;
@@ -315,11 +316,11 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       paths.push_back(g_guiSettings.GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
       // hack
-      g_settings.m_videoSources.push_back(share);
+      CMediaSourceSettings::Get().AddShare("video", share);
       strPath = share.strPath;
       URIUtils::AddSlashAtEnd(strPath);
     }
-    if (CGUIDialogFileBrowser::ShowAndGetFile(g_settings.m_videoSources,strMask,g_localizeStrings.Get(293),strPath,false,true)) // "subtitles"
+    if (CGUIDialogFileBrowser::ShowAndGetFile(*CMediaSourceSettings::Get().GetSources("video"),strMask,g_localizeStrings.Get(293),strPath,false,true)) // "subtitles"
     {
       CStdString strExt;
       URIUtils::GetExtension(strPath,strExt);
@@ -429,7 +430,6 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       }
       g_settings.m_currentVideoSettings.m_SubtitleCached = true;
     }
-    g_settings.m_videoSources = shares;
   }
   else if (setting.id == AUDIO_SETTINGS_MAKE_DEFAULT)
   {

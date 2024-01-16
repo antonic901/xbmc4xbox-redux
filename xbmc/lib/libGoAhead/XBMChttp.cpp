@@ -45,6 +45,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -665,25 +666,25 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
   {
   case MUSIC:
     {
-      pShares = &g_settings.m_musicSources;
+      pShares = CMediaSourceSettings::Get().GetSources("music");
       strMask = g_settings.m_musicExtensions;
     }
     break;
   case VIDEO:
     {
-      pShares = &g_settings.m_videoSources;
+      pShares = CMediaSourceSettings::Get().GetSources("video");;
       strMask = g_settings.m_videoExtensions;
     }
     break;
   case PICTURES:
     {
-      pShares = &g_settings.m_pictureSources;
+      pShares = CMediaSourceSettings::Get().GetSources("pictures");
       strMask = g_settings.m_pictureExtensions;
     }
     break;
   case FILES:
     {
-      pShares = &g_settings.m_fileSources;
+      pShares = CMediaSourceSettings::Get().GetSources("files");
       strMask = "";
     }
     break;
@@ -905,31 +906,31 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
     case MUSIC:
       {
         strType = "music";
-        pShares = &g_settings.m_musicSources;
+        pShares = CMediaSourceSettings::Get().GetSources("music");
       }
       break;
     case VIDEO:
       {
         strType = "video";
-        pShares = &g_settings.m_videoSources;
+        pShares = CMediaSourceSettings::Get().GetSources("video");
       }
       break;
     case PICTURES:
       {
         strType = "pictures";
-        pShares = &g_settings.m_pictureSources;
+        pShares = CMediaSourceSettings::Get().GetSources("pictures");
       }
       break;
     case FILES:
       {
         strType = "files";
-        pShares = &g_settings.m_fileSources;
+        pShares = CMediaSourceSettings::Get().GetSources("files");
       }
       break;
     case PROGRAMS:
       {
         strType = "programs";
-        pShares = &g_settings.m_programSources;
+        pShares = CMediaSourceSettings::Get().GetSources("programs");
       }
       break;
     }

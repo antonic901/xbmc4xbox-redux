@@ -22,8 +22,9 @@
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
 #include "ViewState.h"
-#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/MediaSourceSettings.h"
 #include "filesystem/Directory.h"
 #include "filesystem/PluginDirectory.h"
 #include "Util.h"
@@ -82,8 +83,9 @@ CStdString CGUIViewStateWindowPictures::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPictures::GetSources()
 {
+  VECSOURCES *pictureSources = CMediaSourceSettings::Get().GetSources("pictures");
   AddAddonsSource("image", g_localizeStrings.Get(1039), "DefaultAddonPicture.png");
-  AddOrReplace(g_settings.m_pictureSources, CGUIViewState::GetSources());
-  return g_settings.m_pictureSources; 
+  AddOrReplace(*pictureSources, CGUIViewState::GetSources());
+  return *pictureSources;
 }
 

@@ -101,14 +101,6 @@ public:
   void DeleteAllProfiles();
   void CreateProfileFolders();
 
-  VECSOURCES *GetSourcesFromType(const CStdString &type);
-  CStdString GetDefaultSourceFromType(const CStdString &type);
-
-  bool UpdateSource(const CStdString &strType, const CStdString strOldName, const CStdString &strUpdateChild, const CStdString &strUpdateValue);
-  bool DeleteSource(const CStdString &strType, const CStdString strName, const CStdString strPath, bool virtualSource = false);
-  bool UpdateShare(const CStdString &type, const CStdString oldName, const CMediaSource &share);
-  bool AddShare(const CStdString &type, const CMediaSource &share);
-
   /*! \brief Retreive the watched mode for the given content type
    \param content Current content type
    \return the current watch mode for this content type, WATCH_MODE_ALL if the content type is unknown.
@@ -383,16 +375,6 @@ public:
 
   std::map<int,RssSet> m_mapRssUrls;
 
-  VECSOURCES m_programSources;
-  VECSOURCES m_pictureSources;
-  VECSOURCES m_fileSources;
-  VECSOURCES m_musicSources;
-  VECSOURCES m_videoSources;
-
-  CStdString m_defaultProgramSource;
-  CStdString m_defaultMusicSource;
-  CStdString m_defaultPictureSource;
-  CStdString m_defaultFileSource;
   CStdString m_defaultMusicLibSource;
 
   /*! \brief Retrieve the master profile
@@ -488,7 +470,6 @@ public:
   CStdString GetGameSaveThumbFolder() const;
   CStdString GetProfilesThumbFolder() const;
   CStdString GetLibraryFolder() const;
-  CStdString GetSourcesFile() const;
   CStdString GetSkinFolder(const CStdString& skinName) const;
   CStdString GetVideoFanartFolder() const;
   CStdString GetMusicFanartFolder() const;
@@ -517,19 +498,13 @@ public:
 
   bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
 
-  void LoadSources();
-  bool SaveSources();
-
   void LoadRSSFeeds();
   bool GetInteger(const TiXmlElement* pRootElement, const char *strTagName, int& iValue, const int iDefault, const int iMin, const int iMax);
   bool GetFloat(const TiXmlElement* pRootElement, const char *strTagName, float& fValue, const float fDefault, const float fMin, const float fMax);
   static bool GetPath(const TiXmlElement* pRootElement, const char *tagName, CStdString &strValue);
   static bool GetString(const TiXmlElement* pRootElement, const char *strTagName, CStdString& strValue, const CStdString& strDefaultValue);
   bool GetString(const TiXmlElement* pRootElement, const char *strTagName, char *szValue, const CStdString& strDefaultValue);
-  bool GetSource(const CStdString &category, const TiXmlNode *source, CMediaSource &share);
 protected:
-  void GetSources(const TiXmlElement* pRootElement, const CStdString& strTagName, VECSOURCES& items, CStdString& strDefault);
-  bool SetSources(TiXmlNode *root, const char *section, const VECSOURCES &shares, const char *defaultPath);
   void GetViewState(const TiXmlElement* pRootElement, const CStdString& strTagName, CViewState &viewState, SortBy defaultSort = SortByLabel, int defaultView = DEFAULT_VIEW_LIST);
 
   void ConvertHomeVar(CStdString& strText);

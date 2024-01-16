@@ -83,6 +83,7 @@
 #include "LangInfo.h"
 
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 
@@ -1499,7 +1500,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
     if (strSetting.Equals("subtitles.custompath"))
     {
       bWriteOnly = false;
-      shares = g_settings.m_videoSources;
+      shares = *CMediaSourceSettings::Get().GetSources("video");
       g_mediaManager.GetLocalDrives(shares);
     }
     if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(pSettingString->m_iHeadingString), path, bWriteOnly))

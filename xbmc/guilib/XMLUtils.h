@@ -70,5 +70,7 @@ public:
    \return the attribute, if it exists, else an empty string
    */
   static CStdString GetAttribute(const TiXmlElement *element, const char *tag);
+
+  static const int path_version = 1;
 };
 

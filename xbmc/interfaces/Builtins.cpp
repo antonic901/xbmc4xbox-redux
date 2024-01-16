@@ -49,6 +49,7 @@
 #include "RssReader.h"
 #include "PartyModeManager.h"
 #include "settings/Settings.h"
+#include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/StringUtils.h"
 #include "Util.h"
@@ -1014,7 +1015,7 @@ int CBuiltins::Execute(const CStdString& execString)
     }
     else if (execute.Equals("skin.setlargeimage"))
     {
-      VECSOURCES *shares = g_settings.GetSourcesFromType("pictures");
+      VECSOURCES *shares = CMediaSourceSettings::Get().GetSources("pictures");
       if (!shares) shares = &localShares;
       if (CGUIDialogFileBrowser::ShowAndGetImage(*shares, g_localizeStrings.Get(1030), value))
         CSkinSettings::Get().SetString(string, value);

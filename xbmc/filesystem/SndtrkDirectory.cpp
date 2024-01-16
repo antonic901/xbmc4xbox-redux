@@ -63,7 +63,7 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
           CFileItemPtr pItem(new CFileItem(stData.szName));
           pItem->SetLabelPreformated(true);
           char tmpvar[4];
-          itoa (stData.uSoundtrackId, tmpvar, 10);
+          sprintf(tmpvar,"%i",stData.uSoundtrackId);
           pItem->SetPath(strRoot + tmpvar);
           pItem->m_bIsFolder = true;
           items.Add(pItem);

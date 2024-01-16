@@ -39,6 +39,7 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
 
 using namespace XFILE;
@@ -873,7 +874,7 @@ void CGUIDialogFileBrowser::OnAddMediaSource()
 {
   if (CGUIDialogMediaSource::ShowAndAddMediaSource(m_addSourceType))
   {
-    SetSources(*g_settings.GetSourcesFromType(m_addSourceType));
+    SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
     Update("");
   }
 }
@@ -882,7 +883,7 @@ void CGUIDialogFileBrowser::OnEditMediaSource(CFileItem* pItem)
 {
   if (CGUIDialogMediaSource::ShowAndEditMediaSource(m_addSourceType,pItem->GetLabel()))
   {
-    SetSources(*g_settings.GetSourcesFromType(m_addSourceType));
+    SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
     Update("");
   }
 }
@@ -952,8 +953,8 @@ bool CGUIDialogFileBrowser::OnPopupMenu(int iItem)
     }
     else
     {
-      g_settings.DeleteSource(m_addSourceType,(*m_vecItems)[iItem]->GetLabel(),(*m_vecItems)[iItem]->GetPath());
-      SetSources(*g_settings.GetSourcesFromType(m_addSourceType));
+      CMediaSourceSettings::Get().DeleteSource(m_addSourceType,(*m_vecItems)[iItem]->GetLabel(),(*m_vecItems)[iItem]->GetPath());
+      SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
       Update("");
     }
   }

@@ -33,6 +33,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "storage/MediaManager.h"
+#include "settings/MediaSourceSettings.h"
 #include "ApplicationMessenger.h"
 
 using namespace std;
@@ -168,7 +169,7 @@ namespace PYXBMC
         return NULL;
     }
     VECSOURCES *shares = NULL;
-    shares = g_settings.GetSourcesFromType(utf8Line[1]);
+    shares = CMediaSourceSettings::Get().GetSources(utf8Line[1]);
     if (!shares) return NULL;
     VECSOURCES localShares;
     localShares = *shares;

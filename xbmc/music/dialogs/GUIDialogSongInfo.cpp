@@ -34,6 +34,7 @@
 #include "filesystem/CurlFile.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
 #include "music/Album.h"
 
@@ -280,7 +281,8 @@ void CGUIDialogSongInfo::OnGetThumb()
   }
 
   CStdString result;
-  if (!CGUIDialogFileBrowser::ShowAndGetImage(items, g_settings.m_musicSources, g_localizeStrings.Get(1030), result))
+  VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("music"));
+  if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(1030), result))
     return;   // user cancelled
 
   if (result == "thumb://Current")

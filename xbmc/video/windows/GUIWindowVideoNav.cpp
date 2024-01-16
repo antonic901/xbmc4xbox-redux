@@ -45,6 +45,7 @@
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/LegacyPathTranslation.h"
 #include "utils/URIUtils.h"
@@ -404,7 +405,7 @@ bool CGUIWindowVideoNav::GetDirectory(const CStdString &strDirectory, CFileItemL
     else if (!items.IsVirtualDirectoryRoot())
     {
       CStdString label;
-      if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), g_settings.GetSourcesFromType("video"), &label)) 
+      if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::Get().GetSources("video"), &label)) 
         items.SetLabel(label);
     }
     else
@@ -1216,7 +1217,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       if (!local)
         items.Add(noneitem);
 
-      VECSOURCES sources=g_settings.m_videoSources;
+      VECSOURCES sources=*CMediaSourceSettings::Get().GetSources("video");
       g_mediaManager.GetLocalDrives(sources);
       CStdString result;
       if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources,
@@ -1286,7 +1287,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       }
 
       CStdString result;
-      VECSOURCES sources(g_settings.m_videoSources);
+      VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("video"));
       g_mediaManager.GetLocalDrives(sources);
       bool flip=false;
       if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(20437), result, &flip, 20445) || result.Equals("fanart://Current"))

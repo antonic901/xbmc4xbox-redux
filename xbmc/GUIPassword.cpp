@@ -30,6 +30,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "settings/Settings.h"
+#include "settings/MediaSourceSettings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"
@@ -97,8 +98,9 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const CStdString &strType)
         pItem->m_iBadPwdCount = 0;
         pItem->m_iHasLock = 1;
         g_passwordManager.LockSource(strType,strLabel,false);
-        g_settings.UpdateSource(strType, strLabel, "badpwdcount", itoa(pItem->m_iBadPwdCount, buffer, 10));
-        g_settings.SaveSources();
+        sprintf(buffer,"%i",pItem->m_iBadPwdCount);
+        CMediaSourceSettings::Get().UpdateSource(strType, strLabel, "badpwdcount", buffer);
+        CMediaSourceSettings::Get().Save();
         break;
       }
     case 1:
@@ -106,8 +108,9 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const CStdString &strType)
         // password entry failed
         if (0 != g_guiSettings.GetInt("masterlock.maxretries"))
           pItem->m_iBadPwdCount++;
-        g_settings.UpdateSource(strType, strLabel, "badpwdcount", itoa(pItem->m_iBadPwdCount, buffer, 10));
-        g_settings.SaveSources();
+        sprintf(buffer,"%i",pItem->m_iBadPwdCount);
+        CMediaSourceSettings::Get().UpdateSource(strType, strLabel, "badpwdcount", buffer);
+        CMediaSourceSettings::Get().Save();
         break;
       }
     default:
@@ -390,7 +393,7 @@ bool CGUIPassword::CheckMenuLock(int iWindowID)
 
 bool CGUIPassword::LockSource(const CStdString& strType, const CStdString& strName, bool bState)
 {
-  VECSOURCES* pShares = g_settings.GetSourcesFromType(strType);
+  VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(strType);
   bool bResult = false;
   for (IVECSOURCES it=pShares->begin();it != pShares->end();++it)
   {
@@ -416,7 +419,7 @@ void CGUIPassword::LockSources(bool lock)
   const char* strType[5] = {"programs","music","video","pictures","files"};
   for (int i=0;i<5;++i)
   {
-    VECSOURCES *shares = g_settings.GetSourcesFromType(strType[i]);
+    VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(strType[i]);
     for (IVECSOURCES it=shares->begin();it != shares->end();++it)
       if (it->m_iLockMode != LOCK_MODE_EVERYONE)
         it->m_iHasLock = lock ? 2 : 1;
@@ -431,16 +434,16 @@ void CGUIPassword::RemoveSourceLocks()
   const char* strType[5] = {"programs","music","video","pictures","files"};
   for (int i=0;i<5;++i)
   {
-    VECSOURCES *shares = g_settings.GetSourcesFromType(strType[i]);
+    VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(strType[i]);
     for (IVECSOURCES it=shares->begin();it != shares->end();++it)
       if (it->m_iLockMode != LOCK_MODE_EVERYONE) // remove old info
       {
         it->m_iHasLock = 0;
         it->m_iLockMode = LOCK_MODE_EVERYONE;
-        g_settings.UpdateSource(strType[i],it->strName,"lockmode","0"); // removes locks from xml
+        CMediaSourceSettings::Get().UpdateSource(strType[i], it->strName, "lockmode", "0"); // removes locks from xml
       }
   }
-  g_settings.SaveSources();
+  CMediaSourceSettings::Get().Save();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0, GUI_MSG_UPDATE_SOURCES);
   g_windowManager.SendThreadMessage(msg);
 }

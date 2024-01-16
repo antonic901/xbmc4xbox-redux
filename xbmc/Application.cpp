@@ -84,6 +84,7 @@
 #include "playlists/PlayList.h"
 #include "utils/DownloadQueueManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
@@ -937,6 +938,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGNOTICE, "load settings...");
   g_settings.RegisterSettingsHandler(this);
   g_settings.RegisterSettingsHandler(&g_advancedSettings);
+  g_settings.RegisterSettingsHandler(&CMediaSourceSettings::Get());
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
   g_settings.RegisterSubSettings(&CSkinSettings::Get());

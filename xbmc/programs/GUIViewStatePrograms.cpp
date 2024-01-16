@@ -23,6 +23,7 @@
 #include "FileItem.h"
 #include "ViewState.h"
 #include "settings/Settings.h"
+#include "settings/MediaSourceSettings.h"
 #include "filesystem/Directory.h"
 #include "filesystem/PluginDirectory.h"
 #include "Util.h"
@@ -64,7 +65,9 @@ CStdString CGUIViewStateWindowPrograms::GetExtensions()
 VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
 {
   AddAddonsSource("executable", g_localizeStrings.Get(1043), "DefaultAddonProgram.png");
-  AddOrReplace(g_settings.m_programSources,CGUIViewState::GetSources());
-  return g_settings.m_programSources; 
+
+  VECSOURCES *programSources = CMediaSourceSettings::Get().GetSources("programs");
+  AddOrReplace(*programSources, CGUIViewState::GetSources());
+  return *programSources;
 }
 

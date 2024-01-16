@@ -27,6 +27,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "playlists/PlayList.h"
+#include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 
 using namespace std;
@@ -316,40 +317,34 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
         directory = new CVirtualDirectory();
 
         VECSOURCES *shares = NULL;
-        CStdString strDirectory;
 
         //get shares and extensions
         if (!strcmp(parameter, WEB_VIDEOS))
         {
           g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
           // NOTICE: point always to list of all movies (MoviesTitle)
-          strDirectory = "videodb://movies/titles/";
-          shares = &g_settings.m_videoSources;
+          shares = CMediaSourceSettings::Get().GetSources("video");;
           directory->SetMask(g_settings.m_videoExtensions);
         }
         else if (!strcmp(parameter, WEB_MUSIC))
         {
           g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC);
-          strDirectory = g_settings.m_defaultMusicSource;
-          shares = &g_settings.m_musicSources;
+          shares = CMediaSourceSettings::Get().GetSources("music");
           directory->SetMask(g_settings.m_musicExtensions);
         }
         else if (!strcmp(parameter, WEB_PICTURES))
         {
-          strDirectory = g_settings.m_defaultPictureSource;
-          shares = &g_settings.m_pictureSources;
+          shares = CMediaSourceSettings::Get().GetSources("pictures");
           directory->SetMask(g_settings.m_pictureExtensions);
         }
         else if (!strcmp(parameter, WEB_PROGRAMS))
         {
-          strDirectory = g_settings.m_defaultFileSource;
-          shares = &g_settings.m_fileSources;
+          shares = CMediaSourceSettings::Get().GetSources("files");
           directory->SetMask("xbe|cut");
         }
         else if (!strcmp(parameter, WEB_FILES))
         {
-          strDirectory = g_settings.m_defaultFileSource;
-          shares = &g_settings.m_fileSources;
+          shares = CMediaSourceSettings::Get().GetSources("files");
           directory->SetMask("*");
         }
 
@@ -546,7 +541,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
         items = iItemCount;
       }
       if( eid != NO_EID) {
-        itoa(items, buffer, 10);
+        sprintf(buffer,"%i",items);
         ejSetResult( eid, buffer);
       } else {
         cnt = websWrite(wp, "%i", items);

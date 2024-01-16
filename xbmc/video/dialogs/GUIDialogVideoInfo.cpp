@@ -41,6 +41,7 @@
 #include "storage/MediaManager.h"
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
 #include "Application.h"
@@ -780,7 +781,7 @@ void CGUIDialogVideoInfo::OnGetThumb()
   }
 
   CStdString result;
-  VECSOURCES sources(g_settings.m_videoSources);
+  VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("video"));
   g_mediaManager.GetLocalDrives(sources);  
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(20019), result))
     return;   // user cancelled
@@ -898,7 +899,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
   }
 
   CStdString result;
-  VECSOURCES sources(g_settings.m_videoSources);
+  VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("video"));
   g_mediaManager.GetLocalDrives(sources);
   bool flip=false;
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(20437), result, &flip, 20445) || result.Equals("fanart://Current"))

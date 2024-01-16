@@ -26,6 +26,7 @@
 #include "video/VideoDatabase.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "LocalizeStrings.h"
@@ -92,8 +93,9 @@ void CGUIViewStateWindowVideoFiles::SaveViewState()
 
 VECSOURCES& CGUIViewStateWindowVideoFiles::GetSources()
 {
-  AddOrReplace(g_settings.m_videoSources, CGUIViewStateWindowVideo::GetSources());
-  return g_settings.m_videoSources; 
+  VECSOURCES *videoSources = CMediaSourceSettings::Get().GetSources("video");
+  AddOrReplace(*videoSources, CGUIViewStateWindowVideo::GetSources());
+  return *videoSources;
 }
 
 CGUIViewStateWindowVideoNav::CGUIViewStateWindowVideoNav(const CFileItemList& items) : CGUIViewStateWindowVideo(items)
