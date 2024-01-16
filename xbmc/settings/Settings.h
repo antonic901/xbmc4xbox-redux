@@ -32,7 +32,7 @@
 #include "settings/GUISettings.h"
 #include "settings/Profile.h"
 #include "MediaSource.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CriticalSection.h"
 

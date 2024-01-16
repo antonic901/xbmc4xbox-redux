@@ -21,7 +21,7 @@
 #include "GUIViewStateScripts.h"
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 #include "settings/Settings.h"
 #include "filesystem/Directory.h"
 

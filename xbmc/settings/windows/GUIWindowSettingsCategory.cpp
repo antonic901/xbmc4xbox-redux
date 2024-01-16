@@ -33,7 +33,7 @@
 #include "utils/Weather.h"
 #include "music/MusicDatabase.h"
 #include "ProgramDatabase.h"
-#include "ViewDatabase.h"
+#include "view/ViewDatabase.h"
 #include "XBAudioConfig.h"
 #include "XBVideoConfig.h"
 #ifdef HAS_XBOX_HARDWARE

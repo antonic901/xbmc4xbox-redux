@@ -22,7 +22,7 @@
 
 #include "dialogs/GUIDialogBoxBase.h"
 #include "GUIListItem.h"
-#include "GUIViewControl.h"
+#include "view/GUIViewControl.h"
 
 class CFileItem;
 class CFileItemList;

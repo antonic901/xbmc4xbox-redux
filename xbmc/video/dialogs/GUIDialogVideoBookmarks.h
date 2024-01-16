@@ -21,7 +21,7 @@
  */
 
 #include "GUIDialog.h"
-#include "GUIViewControl.h"
+#include "view/GUIViewControl.h"
 #include "video/VideoDatabase.h"
 
 class CFileItemList;

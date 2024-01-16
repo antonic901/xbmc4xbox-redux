@@ -22,7 +22,7 @@
 #include "utils/URIUtils.h"
 #include "filesystem/SpecialProtocol.h"
 #include "settings/Settings.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 #include "utils/log.h"
 
 //********************************************************************************************************************************

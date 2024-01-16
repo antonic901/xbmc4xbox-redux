@@ -554,18 +554,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\dialogs\GUIDialogSongInfo.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\GUIViewControl.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIViewControl.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIViewState.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIViewState.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\music\GUIViewStateMusic.cpp">
 				</File>
 				<File
@@ -1332,12 +1320,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\video\VideoDbUrl.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\ViewDatabase.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\ViewDatabase.h">
 				</File>
 			</Filter>
 			<Filter
@@ -2983,6 +2965,31 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Atomics.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="view"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\view\GUIViewControl.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\GUIViewControl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\GUIViewState.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\GUIViewState.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\ViewDatabase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\ViewDatabase.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\view\ViewState.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -3512,9 +3519,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\Util.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\ViewState.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Weather.h">

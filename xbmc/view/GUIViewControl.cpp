@@ -19,7 +19,7 @@
  */
 
 #include "utils/log.h"
-#include "GUIViewControl.h"
+#include "view/GUIViewControl.h"
 #include "GUIWindowManager.h"
 #include "utils/URIUtils.h"
 #include "FileItem.h"

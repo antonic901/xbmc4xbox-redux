@@ -21,7 +21,7 @@
 #include "pictures/GUIViewStatePictures.h"
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"

@@ -23,8 +23,8 @@
 #include "GUIWindow.h"
 #include "filesystem/VirtualDirectory.h"
 #include "filesystem/DirectoryHistory.h"
-#include "GUIViewControl.h"
-#include "GUIViewState.h"
+#include "view/GUIViewControl.h"
+#include "view/GUIViewState.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "SmartPlayList.h"
 

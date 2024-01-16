@@ -21,7 +21,7 @@
  *
  */
 
-#include "GUIViewState.h"
+#include "view/GUIViewState.h"
 
 class CGUIViewStateAddonBrowser : public CGUIViewState
 {

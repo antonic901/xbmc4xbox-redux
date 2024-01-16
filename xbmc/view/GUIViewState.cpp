@@ -18,7 +18,7 @@
  *
  */
 
-#include "GUIViewState.h"
+#include "view/GUIViewState.h"
 #include "addons/GUIViewStateAddonBrowser.h"
 #include "music/GUIViewStateMusic.h"
 #include "video/GUIViewStateVideo.h"
@@ -32,11 +32,11 @@
 #include "URL.h"
 #include "GUIPassword.h"
 #include "GUIBaseContainer.h" // for VIEW_TYPE_*
-#include "ViewDatabase.h"
+#include "view/ViewDatabase.h"
 #include "AutoSwitch.h"
 #include "GUIWindowManager.h"
 #include "addons/AddonManager.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "filesystem/AddonsDirectory.h"
