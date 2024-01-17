@@ -443,6 +443,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\ISubSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\MediaSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\MediaSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\MediaSourceSettings.cpp">
 				</File>
 				<File

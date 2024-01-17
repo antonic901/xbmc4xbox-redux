@@ -21,6 +21,7 @@
 #include "system.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
 #include "Application.h"
 #include "input/KeyboardLayoutConfiguration.h"
 #include "Util.h"
@@ -161,12 +162,6 @@ void CSettings::Initialize()
   iAdditionalSubtitleDirectoryChecked = 0;
   m_iMyMusicStartWindow = WINDOW_MUSIC_FILES;
   m_iVideoStartWindow = WINDOW_VIDEO_FILES;
-
-  m_watchMode["movies"] = VIDEO_SHOW_ALL;
-  m_watchMode["tvshows"] = VIDEO_SHOW_ALL;
-  m_watchMode["seasons"] = VIDEO_SHOW_ALL;
-  m_watchMode["episodes"] = VIDEO_SHOW_ALL;
-  m_watchMode["musicvideos"] = VIDEO_SHOW_ALL;
 
   m_iSystemTimeTotalUp = 0;
   m_HttpApiBroadcastLevel = 0;
@@ -456,20 +451,13 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     XMLUtils::GetBoolean(pElement, "songthumbinvis", m_bMyMusicSongThumbInVis);
     GetPath(pElement, "defaultlibview", m_defaultMusicLibSource);
   }
+
   // myvideos settings
   pElement = pRootElement->FirstChildElement("myvideos");
   if (pElement)
   {
     GetInteger(pElement, "startwindow", m_iVideoStartWindow, WINDOW_VIDEO_FILES, WINDOW_VIDEO_FILES, WINDOW_VIDEO_NAV);
     XMLUtils::GetBoolean(pElement, "stackvideos", m_videoStacking);
-
-    // Read the watchmode settings for the various media views
-    GetInteger(pElement, "watchmodemovies", m_watchMode["movies"], VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
-    GetInteger(pElement, "watchmodetvshows", m_watchMode["tvshows"], VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
-    GetInteger(pElement, "watchmodeseasons", m_watchMode["seasons"], VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
-    GetInteger(pElement, "watchmodeepisodes", m_watchMode["episodes"], VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
-    GetInteger(pElement, "watchmodemusicvideos", m_watchMode["musicvideos"], VIDEO_SHOW_ALL, VIDEO_SHOW_ALL, VIDEO_SHOW_WATCHED);
-
     XMLUtils::GetBoolean(pElement, "flatten", m_bMyVideoNavFlatten);
 
     TiXmlElement *pChild = pElement->FirstChildElement("playlist");
@@ -492,37 +480,12 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     XMLUtils::GetBoolean(pElement, "addonforeignfilter", m_bAddonForeignFilter);
   }
 
-  pElement = pRootElement->FirstChildElement("defaultvideosettings");
-  if (pElement)
-  {
-    int interlaceMethod;
-    GetInteger(pElement, "interlacemethod", interlaceMethod, VS_INTERLACEMETHOD_NONE, VS_INTERLACEMETHOD_NONE, VS_INTERLACEMETHOD_DEINTERLACE);
-    m_defaultVideoSettings.m_InterlaceMethod = (EINTERLACEMETHOD)interlaceMethod;
-
-    GetFloat(pElement, "filmgrain", m_defaultVideoSettings.m_FilmGrain, 0, 0, 10);
-    GetInteger(pElement, "viewmode", m_defaultVideoSettings.m_ViewMode, VIEW_MODE_NORMAL, VIEW_MODE_NORMAL, VIEW_MODE_CUSTOM);
-    GetFloat(pElement, "zoomamount", m_defaultVideoSettings.m_CustomZoomAmount, 1.0f, 0.5f, 2.0f);
-    GetFloat(pElement, "pixelratio", m_defaultVideoSettings.m_CustomPixelRatio, 1.0f, 0.5f, 2.0f);
-    GetFloat(pElement, "volumeamplification", m_defaultVideoSettings.m_VolumeAmplification, VOLUME_DRC_MINIMUM * 0.01f, VOLUME_DRC_MINIMUM * 0.01f, VOLUME_DRC_MAXIMUM * 0.01f);
-    GetFloat(pElement, "noisereduction", m_defaultVideoSettings.m_NoiseReduction, 0.0f, 0.0f, 1.0f);
-    XMLUtils::GetBoolean(pElement, "postprocess", m_defaultVideoSettings.m_PostProcess);
-    GetFloat(pElement, "sharpness", m_defaultVideoSettings.m_Sharpness, 0.0f, -1.0f, 1.0f);
-    XMLUtils::GetBoolean(pElement, "outputtoallspeakers", m_defaultVideoSettings.m_OutputToAllSpeakers);
-    XMLUtils::GetBoolean(pElement, "showsubtitles", m_defaultVideoSettings.m_SubtitleOn);
-    GetFloat(pElement, "brightness", m_defaultVideoSettings.m_Brightness, 50, 0, 100);
-    GetFloat(pElement, "contrast", m_defaultVideoSettings.m_Contrast, 50, 0, 100);
-    GetFloat(pElement, "gamma", m_defaultVideoSettings.m_Gamma, 20, 0, 100);
-    GetFloat(pElement, "audiodelay", m_defaultVideoSettings.m_AudioDelay, 0.0f, -10.0f, 10.0f);
-    GetFloat(pElement, "subtitledelay", m_defaultVideoSettings.m_SubtitleDelay, 0.0f, -10.0f, 10.0f);
-
-    m_defaultVideoSettings.m_SubtitleCached = false;
-  }
   // audio settings
   pElement = pRootElement->FirstChildElement("audio");
   if (pElement)
   {
     GetInteger(pElement, "volumelevel", m_nVolumeLevel, VOLUME_MAXIMUM, VOLUME_MINIMUM, VOLUME_MAXIMUM);
-    GetInteger(pElement, "dynamicrangecompression", m_dynamicRangeCompressionLevel, VOLUME_DRC_MINIMUM, VOLUME_DRC_MINIMUM, VOLUME_DRC_MAXIMUM);
+    GetInteger(pElement, "dynamicrangecompression", m_dynamicRangeCompressionLevel, 0/*VOLUME_DRC_MINIMUM*/, 0/*VOLUME_DRC_MINIMUM*/, 3000/*VOLUME_DRC_MAXIMUM*/);
     for (int i = 0; i < 4; i++)
     {
       CStdString setting;
@@ -678,17 +641,17 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
   TiXmlElement videoSettingsNode("defaultvideosettings");
   pNode = io_pRoot->InsertEndChild(videoSettingsNode);
   if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "interlacemethod", g_settings.m_defaultVideoSettings.m_InterlaceMethod);
-  XMLUtils::SetFloat(pNode, "filmgrain", g_settings.m_currentVideoSettings.m_FilmGrain);
-  XMLUtils::SetInt(pNode, "viewmode", g_settings.m_currentVideoSettings.m_ViewMode);
-  XMLUtils::SetFloat(pNode, "zoomamount", g_settings.m_currentVideoSettings.m_CustomZoomAmount);
-  XMLUtils::SetFloat(pNode, "pixelratio", g_settings.m_currentVideoSettings.m_CustomPixelRatio);
-  XMLUtils::SetFloat(pNode, "volumeamplification", g_settings.m_currentVideoSettings.m_VolumeAmplification);
-  XMLUtils::SetBoolean(pNode, "outputtoallspeakers", g_settings.m_currentVideoSettings.m_OutputToAllSpeakers);
-  XMLUtils::SetBoolean(pNode, "showsubtitles", g_settings.m_currentVideoSettings.m_SubtitleOn);
-  XMLUtils::SetFloat(pNode, "brightness", g_settings.m_currentVideoSettings.m_Brightness);
-  XMLUtils::SetFloat(pNode, "contrast", g_settings.m_currentVideoSettings.m_Contrast);
-  XMLUtils::SetFloat(pNode, "gamma", g_settings.m_currentVideoSettings.m_Gamma);
+  XMLUtils::SetInt(pNode, "interlacemethod", CMediaSettings::Get().GetDefaultVideoSettings().m_InterlaceMethod);
+  XMLUtils::SetFloat(pNode, "filmgrain", CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain);
+  XMLUtils::SetInt(pNode, "viewmode", CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
+  XMLUtils::SetFloat(pNode, "zoomamount", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
+  XMLUtils::SetFloat(pNode, "pixelratio", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
+  XMLUtils::SetFloat(pNode, "volumeamplification", CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification);
+  XMLUtils::SetBoolean(pNode, "outputtoallspeakers", CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers);
+  XMLUtils::SetBoolean(pNode, "showsubtitles", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
+  XMLUtils::SetFloat(pNode, "brightness", CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness);
+  XMLUtils::SetFloat(pNode, "contrast", CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast);
+  XMLUtils::SetFloat(pNode, "gamma", CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma);
 
   TiXmlElement audiooutputNode("audiooutput");
   pNode = io_pRoot->InsertEndChild(audiooutputNode);
@@ -763,13 +726,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   XMLUtils::SetInt(pNode, "startwindow", m_iVideoStartWindow);
 
   XMLUtils::SetBoolean(pNode, "stackvideos", m_videoStacking);
-
-  XMLUtils::SetInt(pNode, "watchmodemovies", m_watchMode.find("movies")->second);
-  XMLUtils::SetInt(pNode, "watchmodetvshows", m_watchMode.find("tvshows")->second);
-  XMLUtils::SetInt(pNode, "watchmodeseasons", m_watchMode.find("seasons")->second);
-  XMLUtils::SetInt(pNode, "watchmodeepisodes", m_watchMode.find("episodes")->second);
-  XMLUtils::SetInt(pNode, "watchmodemusicvideos", m_watchMode.find("musicvideos")->second);
-
   XMLUtils::SetBoolean(pNode, "flatten", m_bMyVideoNavFlatten);
 
   { // playlist window
@@ -790,27 +746,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   XMLUtils::SetBoolean(pNode, "addonautoupdate", m_bAddonAutoUpdate);
   XMLUtils::SetBoolean(pNode, "addonnotifications", m_bAddonNotifications);
   XMLUtils::SetBoolean(pNode, "addonforeignfilter", m_bAddonForeignFilter);
-
-  // default video settings
-  TiXmlElement videoSettingsNode("defaultvideosettings");
-  pNode = pRoot->InsertEndChild(videoSettingsNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "interlacemethod", m_defaultVideoSettings.m_InterlaceMethod);
-  XMLUtils::SetFloat(pNode, "filmgrain", m_defaultVideoSettings.m_FilmGrain);
-  XMLUtils::SetFloat(pNode, "noisereduction", m_defaultVideoSettings.m_NoiseReduction);
-  XMLUtils::SetBoolean(pNode, "postprocess", m_defaultVideoSettings.m_PostProcess);
-  XMLUtils::SetFloat(pNode, "sharpness", m_defaultVideoSettings.m_Sharpness);
-  XMLUtils::SetInt(pNode, "viewmode", m_defaultVideoSettings.m_ViewMode);
-  XMLUtils::SetFloat(pNode, "zoomamount", m_defaultVideoSettings.m_CustomZoomAmount);
-  XMLUtils::SetFloat(pNode, "pixelratio", m_defaultVideoSettings.m_CustomPixelRatio);
-  XMLUtils::SetFloat(pNode, "volumeamplification", m_defaultVideoSettings.m_VolumeAmplification);
-  XMLUtils::SetBoolean(pNode, "outputtoallspeakers", m_defaultVideoSettings.m_OutputToAllSpeakers);
-  XMLUtils::SetBoolean(pNode, "showsubtitles", m_defaultVideoSettings.m_SubtitleOn);
-  XMLUtils::SetFloat(pNode, "brightness", m_defaultVideoSettings.m_Brightness);
-  XMLUtils::SetFloat(pNode, "contrast", m_defaultVideoSettings.m_Contrast);
-  XMLUtils::SetFloat(pNode, "gamma", m_defaultVideoSettings.m_Gamma);
-  XMLUtils::SetFloat(pNode, "audiodelay", m_defaultVideoSettings.m_AudioDelay);
-  XMLUtils::SetFloat(pNode, "subtitledelay", m_defaultVideoSettings.m_SubtitleDelay);
 
   // audio settings
   TiXmlElement volumeNode("audio");
@@ -1069,32 +1004,6 @@ void CSettings::Clear()
 
   for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
     (*it)->Clear();
-}
-
-int CSettings::GetWatchMode(const CStdString& content) const
-{
-  std::map<CStdString, int>::iterator it = g_settings.m_watchMode.find(content);
-  if (it != g_settings.m_watchMode.end())
-    return it->second;
-  return VIDEO_SHOW_ALL;
-}
-
-void CSettings::SetWatchMode(const CStdString& content, int value)
-{
-  std::map<CStdString, int>::iterator it = g_settings.m_watchMode.find(content);
-  if (it != g_settings.m_watchMode.end())
-    it->second = value;
-}
-
-void CSettings::CycleWatchMode(const CStdString& content)
-{
-  std::map<CStdString, int>::iterator it = g_settings.m_watchMode.find(content);
-  if (it != g_settings.m_watchMode.end())
-  {
-    it->second++;
-    if (it->second > VIDEO_SHOW_WATCHED)
-      it->second = VIDEO_SHOW_ALL;
-  }
 }
 
 void CSettings::LoadUserFolderLayout()

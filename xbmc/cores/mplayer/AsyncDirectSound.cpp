@@ -21,6 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "settings/Settings.h"
+#include "settings/MediaSettings.h"
 #include <stdio.h>
 #include "AsyncDirectSound.h"
 #include "MPlayer.h"
@@ -87,7 +88,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
   m_drcTable = NULL;
   m_drcAmount = 0;
   // TODO DRC
-  if (!bIsMusic && uiBitsPerSample == 16) SetDynamicRangeCompression((long)(g_settings.m_currentVideoSettings.m_VolumeAmplification * 100));
+  if (!bIsMusic && uiBitsPerSample == 16) SetDynamicRangeCompression((long)(CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification * 100));
 
   bool bAudioOnAllSpeakers(false);
   g_audioContext.SetupSpeakerConfig(iChannels, bAudioOnAllSpeakers,bIsMusic);

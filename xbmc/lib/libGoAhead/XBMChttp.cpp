@@ -45,6 +45,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/URIUtils.h"
@@ -2685,7 +2686,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       if (paras[i]=="myvideowatchmode")
       {
         CGUIWindow *window = g_windowManager.GetWindow(WINDOW_VIDEO_NAV);
-        int watchMode = (window) ? g_settings.GetWatchMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) : VIDEO_SHOW_ALL;
+        int watchMode = (window) ? CMediaSettings::Get().GetWatchedMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) : WatchedModeAll;
         tmp.Format("%i", watchMode);
       }
       else if (paras[i]=="mymusicstartwindow")

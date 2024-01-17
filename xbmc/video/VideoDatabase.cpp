@@ -38,6 +38,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"

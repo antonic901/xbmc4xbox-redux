@@ -36,7 +36,7 @@ CVideoSettings::CVideoSettings()
   m_bForceIndex = false;
   m_InterlaceMethod = VS_INTERLACEMETHOD_NONE;
   m_FilmGrain = 0;
-  m_ViewMode = VIEW_MODE_NORMAL;
+  m_ViewMode = ViewModeNormal;
   m_CustomZoomAmount = 1.0f;
   m_CustomPixelRatio = 1.0f;
   m_AudioStream = -1;

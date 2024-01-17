@@ -22,7 +22,7 @@
 #define PRE_SKIN_VERSION_9_10_COMPATIBILITY 1
 #define PRE_SKIN_VERSION_11_COMPATIBILITY 1
 
-#define DEFAULT_SKIN           "skin.confluence.lite"
+#define DEFAULT_SKIN          "skin.confluence.lite"
 #define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
 #define DEFAULT_WEB_INTERFACE "webinterface.default"
 
@@ -45,20 +45,6 @@
 
 #define VOLUME_MINIMUM -6000  // -60dB
 #define VOLUME_MAXIMUM 0      // 0dB
-#define VOLUME_DRC_MINIMUM 0    // 0dB
-#define VOLUME_DRC_MAXIMUM 3000 // 30dB
-
-#define VIEW_MODE_NORMAL        0
-#define VIEW_MODE_ZOOM          1
-#define VIEW_MODE_STRETCH_4x3   2
-#define VIEW_MODE_STRETCH_14x9  3
-#define VIEW_MODE_STRETCH_16x9  4
-#define VIEW_MODE_ORIGINAL      5
-#define VIEW_MODE_CUSTOM        6
-
-#define VIDEO_SHOW_ALL 0
-#define VIDEO_SHOW_UNWATCHED 1
-#define VIDEO_SHOW_WATCHED 2
 
 /* FIXME: eventually the profile should dictate where special://masterprofile/ is but for now it
    makes sense to leave all the profile settings in a user writeable location
@@ -99,26 +85,6 @@ public:
   bool DeleteProfile(unsigned int index);
   void DeleteAllProfiles();
   void CreateProfileFolders();
-
-  /*! \brief Retreive the watched mode for the given content type
-   \param content Current content type
-   \return the current watch mode for this content type, WATCH_MODE_ALL if the content type is unknown.
-   \sa SetWatchMode, IncrementWatchMode
-   */
-  int GetWatchMode(const CStdString& content) const;
-
-  /*! \brief Set the watched mode for the given content type
-   \param content Current content type
-   \param value Watched mode to set
-   \sa GetWatchMode, IncrementWatchMode
-   */
-  void SetWatchMode(const CStdString& content, int value);
-
-  /*! \brief Cycle the watched mode for the given content type
-   \param content Current content type
-   \sa GetWatchMode, SetWatchMode
-   */
-  void CycleWatchMode(const CStdString& content);
 
   struct AdvancedSettings
   {
@@ -312,9 +278,6 @@ public:
 
   // for scanning
   bool m_bMyMusicIsScanning;
-
-  CVideoSettings m_defaultVideoSettings;
-  CVideoSettings m_currentVideoSettings;
 
   float m_fZoomAmount;      // current zoom amount
   float m_fPixelRatio;      // current pixel ratio
@@ -519,7 +482,6 @@ private:
   SubSettings m_subSettings;
 
   std::vector<CProfile> m_vecProfiles;
-  std::map<CStdString, int> m_watchMode;
   bool m_usingLoginScreen;
   unsigned int m_lastUsedProfile;
   unsigned int m_currentProfile;

@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/GUISettings.h"
-#include "settings/Settings.h"
+#include "settings/MediaSettings.h"
 #include "DVDPlayer.h"
 #include "DVDPlayerVideo.h"
 #include "DVDCodecs/DVDFactoryCodec.h"
@@ -514,7 +514,7 @@ void CDVDPlayerVideo::Process()
 
             //Deinterlace if codec said format was interlaced or if we have selected we want to deinterlace
             //this video
-            EINTERLACEMETHOD mInt = g_settings.m_currentVideoSettings.m_InterlaceMethod;
+            EINTERLACEMETHOD mInt = CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod;
             if( mInt == VS_INTERLACEMETHOD_DEINTERLACE )
             {
               if (!sPostProcessType.empty())
@@ -522,7 +522,7 @@ void CDVDPlayerVideo::Process()
               sPostProcessType += g_advancedSettings.m_videoPPFFmpegDeint;
             }
 
-            if (g_settings.m_currentVideoSettings.m_PostProcess)
+            if (CMediaSettings::Get().GetCurrentVideoSettings().m_PostProcess)
             {
               if (!sPostProcessType.empty())
                 sPostProcessType += ",";

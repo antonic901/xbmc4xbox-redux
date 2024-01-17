@@ -22,7 +22,7 @@
 #include "AudioContext.h"
 #include "GUIAudioManager.h"
 #include "IAudioDeviceChangedCallback.h"
-#include "settings/Settings.h"
+#include "settings/MediaSettings.h"
 #include "settings/GUISettings.h"
 #include "XBAudioConfig.h"
 #include "utils/log.h"
@@ -132,7 +132,7 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
   DWORD spconfig = DSSPEAKER_USE_DEFAULT;
   if (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    if (((g_guiSettings.GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (g_settings.m_currentVideoSettings.m_OutputToAllSpeakers && !bIsMusic))
+    if (((g_guiSettings.GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
     {
       if( g_audioConfig.GetAC3Enabled() )
       {

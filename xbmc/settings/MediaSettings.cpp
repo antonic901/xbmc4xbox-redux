@@ -1,0 +1,187 @@
+/*
+ *      Copyright (C) 2013 Team XBMC
+ *      http://www.xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include "MediaSettings.h"
+#include "utils/SingleLock.h"
+#include "utils/log.h"
+#include "guilib/tinyXML/tinyxml.h"
+#include "guilib/XMLUtils.h"
+
+using namespace std;
+
+CMediaSettings::CMediaSettings()
+{
+  m_watchedModes["movies"] = WatchedModeAll;
+  m_watchedModes["tvshows"] = WatchedModeAll;
+  m_watchedModes["musicvideos"] = WatchedModeAll;
+}
+
+CMediaSettings::~CMediaSettings()
+{ }
+
+CMediaSettings& CMediaSettings::Get()
+{
+  static CMediaSettings sMediaSettings;
+  return sMediaSettings;
+}
+
+bool CMediaSettings::Load(const TiXmlNode *settings)
+{
+  if (settings == NULL)
+    return false;
+
+  CSingleLock lock(m_critical);
+  const TiXmlElement *pElement = settings->FirstChildElement("defaultvideosettings");
+  if (pElement != NULL)
+  {
+    int interlaceMethod;
+    if (!XMLUtils::GetInt(pElement, "interlacemethod", interlaceMethod, VS_INTERLACEMETHOD_NONE, VS_INTERLACEMETHOD_DEINTERLACE))
+      interlaceMethod = VS_INTERLACEMETHOD_NONE;
+    m_defaultVideoSettings.m_InterlaceMethod = (EINTERLACEMETHOD)interlaceMethod;
+
+    if (!XMLUtils::GetFloat(pElement, "filmgrain", m_defaultVideoSettings.m_FilmGrain, 0, 10))
+      m_defaultVideoSettings.m_FilmGrain = 0;
+    if (!XMLUtils::GetInt(pElement, "viewmode", m_defaultVideoSettings.m_ViewMode, ViewModeNormal, ViewModeCustom))
+      m_defaultVideoSettings.m_ViewMode = ViewModeNormal;
+    if (!XMLUtils::GetFloat(pElement, "zoomamount", m_defaultVideoSettings.m_CustomZoomAmount, 0.5f, 2.0f))
+      m_defaultVideoSettings.m_CustomZoomAmount = 1.0f;
+    if (!XMLUtils::GetFloat(pElement, "pixelratio", m_defaultVideoSettings.m_CustomPixelRatio, 0.5f, 2.0f))
+      m_defaultVideoSettings.m_CustomPixelRatio = 1.0f;
+    if (!XMLUtils::GetFloat(pElement, "volumeamplification", m_defaultVideoSettings.m_VolumeAmplification, VOLUME_DRC_MINIMUM * 0.01f, VOLUME_DRC_MAXIMUM * 0.01f))
+      m_defaultVideoSettings.m_VolumeAmplification = VOLUME_DRC_MINIMUM * 0.01f;
+    if (!XMLUtils::GetFloat(pElement, "noisereduction", m_defaultVideoSettings.m_NoiseReduction, 0.0f, 1.0f))
+      m_defaultVideoSettings.m_NoiseReduction = 0.0f;
+    XMLUtils::GetBoolean(pElement, "postprocess", m_defaultVideoSettings.m_PostProcess);
+    if (!XMLUtils::GetFloat(pElement, "sharpness", m_defaultVideoSettings.m_Sharpness, -1.0f, 1.0f))
+      m_defaultVideoSettings.m_Sharpness = 0.0f;
+    XMLUtils::GetBoolean(pElement, "outputtoallspeakers", m_defaultVideoSettings.m_OutputToAllSpeakers);
+    XMLUtils::GetBoolean(pElement, "showsubtitles", m_defaultVideoSettings.m_SubtitleOn);
+    if (!XMLUtils::GetFloat(pElement, "brightness", m_defaultVideoSettings.m_Brightness, 0, 100))
+      m_defaultVideoSettings.m_Brightness = 50;
+    if (!XMLUtils::GetFloat(pElement, "contrast", m_defaultVideoSettings.m_Contrast, 0, 100))
+      m_defaultVideoSettings.m_Contrast = 50;
+    if (!XMLUtils::GetFloat(pElement, "gamma", m_defaultVideoSettings.m_Gamma, 0, 100))
+      m_defaultVideoSettings.m_Gamma = 20;
+    if (!XMLUtils::GetFloat(pElement, "audiodelay", m_defaultVideoSettings.m_AudioDelay, -10.0f, 10.0f))
+      m_defaultVideoSettings.m_AudioDelay = 0.0f;
+    if (!XMLUtils::GetFloat(pElement, "subtitledelay", m_defaultVideoSettings.m_SubtitleDelay, -10.0f, 10.0f))
+      m_defaultVideoSettings.m_SubtitleDelay = 0.0f;
+
+    m_defaultVideoSettings.m_SubtitleCached = false;
+  }
+
+  // Read the watchmode settings for the various media views
+  pElement = settings->FirstChildElement("myvideos");
+  if (pElement != NULL)
+  {
+    int tmp;
+    if (XMLUtils::GetInt(pElement, "watchmodemovies", tmp, (int)WatchedModeAll, (int)WatchedModeWatched))
+      m_watchedModes["movies"] = (WatchedMode)tmp;
+    if (XMLUtils::GetInt(pElement, "watchmodetvshows", tmp, (int)WatchedModeAll, (int)WatchedModeWatched))
+      m_watchedModes["tvshows"] = (WatchedMode)tmp;
+    if (XMLUtils::GetInt(pElement, "watchmodemusicvideos", tmp, (int)WatchedModeAll, (int)WatchedModeWatched))
+      m_watchedModes["musicvideos"] = (WatchedMode)tmp;
+  }
+
+  return true;
+}
+
+bool CMediaSettings::Save(TiXmlNode *settings) const
+{
+  if (settings == NULL)
+    return false;
+
+  CSingleLock lock(m_critical);
+  // default video settings
+  TiXmlElement videoSettingsNode("defaultvideosettings");
+  TiXmlNode *pNode = settings->InsertEndChild(videoSettingsNode);
+  if (pNode == NULL)
+    return false;
+
+  XMLUtils::SetInt(pNode, "interlacemethod", m_defaultVideoSettings.m_InterlaceMethod);
+  XMLUtils::SetFloat(pNode, "filmgrain", m_defaultVideoSettings.m_FilmGrain);
+  XMLUtils::SetFloat(pNode, "noisereduction", m_defaultVideoSettings.m_NoiseReduction);
+  XMLUtils::SetBoolean(pNode, "postprocess", m_defaultVideoSettings.m_PostProcess);
+  XMLUtils::SetFloat(pNode, "sharpness", m_defaultVideoSettings.m_Sharpness);
+  XMLUtils::SetInt(pNode, "viewmode", m_defaultVideoSettings.m_ViewMode);
+  XMLUtils::SetFloat(pNode, "zoomamount", m_defaultVideoSettings.m_CustomZoomAmount);
+  XMLUtils::SetFloat(pNode, "pixelratio", m_defaultVideoSettings.m_CustomPixelRatio);
+  XMLUtils::SetFloat(pNode, "volumeamplification", m_defaultVideoSettings.m_VolumeAmplification);
+  XMLUtils::SetBoolean(pNode, "outputtoallspeakers", m_defaultVideoSettings.m_OutputToAllSpeakers);
+  XMLUtils::SetBoolean(pNode, "showsubtitles", m_defaultVideoSettings.m_SubtitleOn);
+  XMLUtils::SetFloat(pNode, "brightness", m_defaultVideoSettings.m_Brightness);
+  XMLUtils::SetFloat(pNode, "contrast", m_defaultVideoSettings.m_Contrast);
+  XMLUtils::SetFloat(pNode, "gamma", m_defaultVideoSettings.m_Gamma);
+  XMLUtils::SetFloat(pNode, "audiodelay", m_defaultVideoSettings.m_AudioDelay);
+  XMLUtils::SetFloat(pNode, "subtitledelay", m_defaultVideoSettings.m_SubtitleDelay);
+
+  pNode = settings->FirstChild("myvideos");
+  if (pNode == NULL)
+  {
+    TiXmlElement videosNode("myvideos");
+    pNode = settings->InsertEndChild(videosNode);
+    if (pNode == NULL)
+      return false;
+  }
+
+  XMLUtils::SetInt(pNode, "watchmodemovies", m_watchedModes.find("movies")->second);
+  XMLUtils::SetInt(pNode, "watchmodetvshows", m_watchedModes.find("tvshows")->second);
+  XMLUtils::SetInt(pNode, "watchmodemusicvideos", m_watchedModes.find("musicvideos")->second);
+
+  return true;
+}
+
+int CMediaSettings::GetWatchedMode(const std::string &content) const
+{
+  CSingleLock lock(m_critical);
+  WatchedModes::const_iterator it = m_watchedModes.find(GetWatchedContent(content));
+  if (it != m_watchedModes.end())
+    return it->second;
+
+  return WatchedModeAll;
+}
+
+void CMediaSettings::SetWatchedMode(const std::string &content, WatchedMode mode)
+{
+  CSingleLock lock(m_critical);
+  WatchedModes::iterator it = m_watchedModes.find(GetWatchedContent(content));
+  if (it != m_watchedModes.end())
+    it->second = mode;
+}
+
+void CMediaSettings::CycleWatchedMode(const std::string &content)
+{
+  CSingleLock lock(m_critical);
+  WatchedModes::iterator it = m_watchedModes.find(GetWatchedContent(content));
+  if (it != m_watchedModes.end())
+  {
+    it->second = (WatchedMode)((int)it->second + 1);
+    if (it->second > WatchedModeWatched)
+      it->second = WatchedModeAll;
+  }
+}
+
+std::string CMediaSettings::GetWatchedContent(const std::string &content)
+{
+  if (content == "seasons" || content == "episodes")
+    return "tvshows";
+
+  return content;
+}

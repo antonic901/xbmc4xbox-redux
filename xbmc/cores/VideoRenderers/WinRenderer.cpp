@@ -24,6 +24,7 @@
 #include "Util.h"
 #include "XBVideoConfig.h"
 #include "settings/Settings.h"
+#include "settings/MediaSettings.h"
 #include "utils/SingleLock.h"
 
 // http://www.martinreddy.net/gfx/faqs/colorconv.faq
@@ -403,8 +404,8 @@ RESOLUTION CWinRenderer::GetResolution()
 
 float CWinRenderer::GetAspectRatio()
 {
-  float fWidth = (float)m_iSourceWidth - g_settings.m_currentVideoSettings.m_CropLeft - g_settings.m_currentVideoSettings.m_CropRight;
-  float fHeight = (float)m_iSourceHeight - g_settings.m_currentVideoSettings.m_CropTop - g_settings.m_currentVideoSettings.m_CropBottom;
+  float fWidth = (float)m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
+  float fHeight = (float)m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
   return m_fSourceFrameRatio * fWidth / fHeight * m_iSourceHeight / m_iSourceWidth;
 }
 
@@ -486,10 +487,10 @@ void CWinRenderer::ManageDisplay()
   float fOffsetY1 = (float)rv.top;
 
   // source rect
-  rs.left = g_settings.m_currentVideoSettings.m_CropLeft;
-  rs.top = g_settings.m_currentVideoSettings.m_CropTop;
-  rs.right = m_iSourceWidth - g_settings.m_currentVideoSettings.m_CropRight;
-  rs.bottom = m_iSourceHeight - g_settings.m_currentVideoSettings.m_CropBottom;
+  rs.left = CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft;
+  rs.top = CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop;
+  rs.right = m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
+  rs.bottom = m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
 
   CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * g_settings.m_fPixelRatio, g_settings.m_fZoomAmount);
 }
@@ -645,7 +646,7 @@ bool CWinRenderer::Configure(unsigned int width, unsigned int height, unsigned i
   // calculate the input frame aspect ratio
   CalculateFrameAspectRatio(d_width, d_height);
   ChooseBestResolution(m_fps);
-  SetViewMode(g_settings.m_currentVideoSettings.m_ViewMode);
+  SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
 
   ManageDisplay();
 
@@ -914,19 +915,19 @@ void CWinRenderer::Render(DWORD flags)
 
 void CWinRenderer::SetViewMode(int iViewMode)
 {
-  if (iViewMode < VIEW_MODE_NORMAL || iViewMode > VIEW_MODE_CUSTOM) iViewMode = VIEW_MODE_NORMAL;
-  g_settings.m_currentVideoSettings.m_ViewMode = iViewMode;
+  if (iViewMode < ViewModeNormal || iViewMode > ViewModeCustom) iViewMode = ViewModeNormal;
+  CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = iViewMode;
 
-  if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_NORMAL)
+  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeNormal)
   { // normal mode...
     g_settings.m_fPixelRatio = 1.0;
     g_settings.m_fZoomAmount = 1.0;
     return ;
   }
-  if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_CUSTOM)
+  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeCustom)
   {
-    g_settings.m_fZoomAmount = g_settings.m_currentVideoSettings.m_CustomZoomAmount;
-    g_settings.m_fPixelRatio = g_settings.m_currentVideoSettings.m_CustomPixelRatio;
+    g_settings.m_fZoomAmount = CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount;
+    g_settings.m_fPixelRatio = CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio;
     return ;
   }
 
@@ -938,7 +939,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
   // and the source frame ratio
   float fSourceFrameRatio = GetAspectRatio();
 
-  if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_ZOOM)
+  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeZoom)
   { // zoom image so no black bars
     g_settings.m_fPixelRatio = 1.0;
     // calculate the desired output ratio
@@ -954,7 +955,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       g_settings.m_fZoomAmount = fNewHeight / fScreenHeight;
     }
   }
-  else if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_STRETCH_4x3)
+  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch4x3)
   { // stretch image to 4:3 ratio
     g_settings.m_fZoomAmount = 1.0;
     if (m_iResolution == PAL_4x3 || m_iResolution == PAL60_4x3 || m_iResolution == NTSC_4x3 || m_iResolution == HDTV_480p_4x3)
@@ -969,7 +970,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       g_settings.m_fPixelRatio = (4.0f / 3.0f) / fSourceFrameRatio;
     }
   }
-  else if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_STRETCH_14x9)
+  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch14x9)
   { // stretch image to 14:9 ratio
     // now we need to set g_settings.m_fPixelRatio so that
     // fOutputFrameRatio = 14:9.
@@ -987,7 +988,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       g_settings.m_fZoomAmount = fNewHeight / fScreenHeight;
     }
   }
-  else if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_STRETCH_16x9)
+  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch16x9)
   { // stretch image to 16:9 ratio
     g_settings.m_fZoomAmount = 1.0;
     if (m_iResolution == PAL_4x3 || m_iResolution == PAL60_4x3 || m_iResolution == NTSC_4x3 || m_iResolution == HDTV_480p_4x3)
@@ -1001,7 +1002,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       g_settings.m_fPixelRatio = (fScreenWidth / fScreenHeight) * g_settings.m_ResInfo[m_iResolution].fPixelRatio / fSourceFrameRatio;
     }
   }
-  else // if (g_settings.m_currentVideoSettings.m_ViewMode == VIEW_MODE_ORIGINAL)
+  else // if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeOriginal)
   { // zoom image so that the height is the original size
     g_settings.m_fPixelRatio = 1.0;
     // get the size of the media file
@@ -1016,7 +1017,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       fNewWidth = fNewHeight * fOutputFrameRatio;
     }
     // now work out the zoom amount so that no zoom is done
-    g_settings.m_fZoomAmount = (m_iSourceHeight - g_settings.m_currentVideoSettings.m_CropTop - g_settings.m_currentVideoSettings.m_CropBottom) / fNewHeight;
+    g_settings.m_fZoomAmount = (m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom) / fNewHeight;
   }
 }
 
@@ -1037,7 +1038,7 @@ void CWinRenderer::AutoCrop(bool bCrop)
     int total;
     // Crop top
     BYTE *s = (BYTE *)lr.pBits;
-    g_settings.m_currentVideoSettings.m_CropTop = m_iSourceHeight/2;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = m_iSourceHeight/2;
     for (unsigned int y = 0; y < m_iSourceHeight/2; y++)
     {
       total = 0;
@@ -1046,13 +1047,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s += lr.Pitch;
       if (total > detect)
       {
-        g_settings.m_currentVideoSettings.m_CropTop = y;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = y;
         break;
       }
     }
     // Crop bottom
     s = (BYTE *)lr.pBits + (m_iSourceHeight-1)*lr.Pitch;
-    g_settings.m_currentVideoSettings.m_CropBottom = m_iSourceHeight/2;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight/2;
     for (unsigned int y = (int)m_iSourceHeight; y > m_iSourceHeight/2; y--)
     {
       total = 0;
@@ -1061,13 +1062,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s -= lr.Pitch;
       if (total > detect)
       {
-        g_settings.m_currentVideoSettings.m_CropBottom = m_iSourceHeight - y;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight - y;
         break;
       }
     }
     // Crop left
     s = (BYTE *)lr.pBits;
-    g_settings.m_currentVideoSettings.m_CropLeft = m_iSourceWidth/2;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = m_iSourceWidth/2;
     for (unsigned int x = 0; x < m_iSourceWidth/2; x++)
     {
       total = 0;
@@ -1076,13 +1077,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s++;
       if (total > detect)
       {
-        g_settings.m_currentVideoSettings.m_CropLeft = x;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = x;
         break;
       }
     }
     // Crop right
     s = (BYTE *)lr.pBits + (m_iSourceWidth-1);
-    g_settings.m_currentVideoSettings.m_CropRight= m_iSourceWidth/2;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight= m_iSourceWidth/2;
     for (unsigned int x = (int)m_iSourceWidth-1; x > m_iSourceWidth/2; x--)
     {
       total = 0;
@@ -1091,7 +1092,7 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s--;
       if (total > detect)
       {
-        g_settings.m_currentVideoSettings.m_CropRight = m_iSourceWidth - x;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight = m_iSourceWidth - x;
         break;
       }
     }
@@ -1099,12 +1100,12 @@ void CWinRenderer::AutoCrop(bool bCrop)
   }
   else
   { // reset to defaults
-    g_settings.m_currentVideoSettings.m_CropLeft = 0;
-    g_settings.m_currentVideoSettings.m_CropRight = 0;
-    g_settings.m_currentVideoSettings.m_CropTop = 0;
-    g_settings.m_currentVideoSettings.m_CropBottom = 0;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = 0;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight = 0;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = 0;
+    CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = 0;
   }
-  SetViewMode(g_settings.m_currentVideoSettings.m_ViewMode);
+  SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
 }
 
 void CWinRenderer::RenderLowMem(DWORD flags)
