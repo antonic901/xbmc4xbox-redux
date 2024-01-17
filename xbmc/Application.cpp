@@ -3529,6 +3529,17 @@ HRESULT CApplication::Cleanup()
     g_guiSettings.Clear();
     g_advancedSettings.Clear();
 
+    g_settings.UnregisterSubSettings(&CMediaSettings::Get());
+    g_settings.UnregisterSubSettings(&CSkinSettings::Get());
+    g_settings.UnregisterSubSettings(&CViewStateSettings::Get());
+
+    g_settings.UnregisterSettingsHandler(&g_advancedSettings);
+    g_settings.UnregisterSettingsHandler(&CMediaSourceSettings::Get());
+    g_settings.UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
+    g_settings.UnregisterSettingsHandler(&CUPnPSettings::Get());
+
+    g_settings.UnregisterSettingsHandler(this);
+
 #ifdef HAS_DVD_DRIVE
     CLibcdio::ReleaseInstance();
 #endif
