@@ -24,7 +24,7 @@
 #include "lib/SlingboxLib/SlingboxLib.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace XFILE;
 using namespace std;

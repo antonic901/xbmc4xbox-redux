@@ -35,7 +35,7 @@
 #include "utils/SingleLock.h"
 #include "utils/TimeUtils.h"
 #include "input/ButtonTranslator.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/Variant.h"
 
 using namespace std;

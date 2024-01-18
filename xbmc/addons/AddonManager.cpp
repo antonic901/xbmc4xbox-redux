@@ -24,7 +24,7 @@
 #include "StringUtils.h"
 #include "URIUtils.h"
 #include "RegExp.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/JobManager.h"
 #include "utils/SingleLock.h"
 #include "FileItem.h"

@@ -22,7 +22,7 @@
 #include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "guilib/tinyXML/tinyxml.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 

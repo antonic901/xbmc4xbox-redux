@@ -22,7 +22,7 @@
 #include "VideoInfoDownloader.h"
 #include "Util.h"
 #include "utils/HTMLUtil.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/RegExp.h"
 #include "utils/ScraperParser.h"
 #include "NfoFile.h"

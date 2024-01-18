@@ -19,7 +19,7 @@
  */
 
 #include "StaticProvider.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/TimeUtils.h"
 
 using namespace std;

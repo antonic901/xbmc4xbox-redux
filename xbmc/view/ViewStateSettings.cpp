@@ -25,7 +25,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "guilib/tinyXML/tinyxml.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 #define XML_VIEWSTATESETTINGS "viewstates"
 #define XML_VIEWMODE          "viewmode"

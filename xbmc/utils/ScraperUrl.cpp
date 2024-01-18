@@ -18,7 +18,7 @@
  *
  */
 
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "ScraperUrl.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/HTMLUtil.h"

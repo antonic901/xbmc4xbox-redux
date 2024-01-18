@@ -23,7 +23,7 @@
 #include "addons/Skin.h"
 #include "GUIInfoManager.h"
 #include "interfaces/info/SkinVariable.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 

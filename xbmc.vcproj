@@ -1266,6 +1266,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\XBVideoConfig.cpp">
 				</File>
+				<File
+					RelativePath=".\xbmc\utils\XMLUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XMLUtils.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Database"

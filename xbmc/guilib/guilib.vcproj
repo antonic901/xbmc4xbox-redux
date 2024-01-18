@@ -418,9 +418,6 @@
 			<File
 				RelativePath=".\VisibleEffect.cpp">
 			</File>
-			<File
-				RelativePath=".\XMLUtils.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -693,9 +690,6 @@
 			</File>
 			<File
 				RelativePath=".\VisibleEffect.h">
-			</File>
-			<File
-				RelativePath=".\XMLUtils.h">
 			</File>
 		</Filter>
 		<Filter

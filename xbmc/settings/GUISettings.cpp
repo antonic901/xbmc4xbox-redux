@@ -35,7 +35,7 @@
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "GUIFont.h" // for FONT_STYLE_* definitions
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 using namespace ADDON;

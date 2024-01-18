@@ -25,7 +25,7 @@
 #include "addons/Skin.h"
 #include "GUIFontTTF.h"
 #include "GUIFont.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "GuiControlFactory.h"
 #include "../xbmc/utils/URIUtils.h"
 #include "utils/StringUtils.h"

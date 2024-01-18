@@ -25,7 +25,7 @@
 #include "addons/AddonManager.h"
 #include "GUIInfoManager.h"
 #include "Util.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "GUIPassword.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/MultiPathDirectory.h"

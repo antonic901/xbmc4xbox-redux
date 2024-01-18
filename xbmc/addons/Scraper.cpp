@@ -33,7 +33,7 @@
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
 #include "music/Album.h"

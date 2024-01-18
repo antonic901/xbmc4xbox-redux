@@ -26,7 +26,7 @@
 #include "GUIInfoManager.h"
 #include "utils/TimeUtils.h"
 #include "utils/SortUtils.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "FileItem.h"
 #include "listproviders/IListProvider.h"
 

@@ -26,7 +26,7 @@
 #include "utils/StringUtils.h"
 #include "utils/TimeUtils.h"
 #include "utils/Variant.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/SingleLock.h"
 #include "ApplicationMessenger.h"
 #include "FileItem.h"

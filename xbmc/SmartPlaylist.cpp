@@ -33,7 +33,7 @@
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "video/VideoDatabase.h"
 
 using namespace std;

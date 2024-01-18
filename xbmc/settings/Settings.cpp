@@ -32,7 +32,7 @@
 #include "GUIFontManager.h"
 #include "utils/LangCodeExpander.h"
 #include "input/ButtonTranslator.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "PasswordManager.h"
 #include "utils/RegExp.h"
 #include "GUIPassword.h"

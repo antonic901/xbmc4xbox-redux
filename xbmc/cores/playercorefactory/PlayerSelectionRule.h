@@ -20,7 +20,7 @@
  */
 
 #include "tinyXML/tinyxml.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "RegExp.h"
 #include "FileItem.h"
 #include "PlayerCoreFactory.h"

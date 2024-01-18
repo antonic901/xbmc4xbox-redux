@@ -29,7 +29,7 @@
 #include "errors.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "Application.h"
 #include "LocalizeStrings.h"
 #include "utils/SingleLock.h"

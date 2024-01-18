@@ -20,7 +20,7 @@
 
 #include "settings/AdvancedSettings.h"
 #include "music/Album.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

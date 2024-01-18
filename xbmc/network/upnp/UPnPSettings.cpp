@@ -24,7 +24,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
 #include "guilib/tinyXML/tinyxml.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 #define XML_UPNP          "upnpserver"
 #define XML_SERVER_UUID   "UUID"

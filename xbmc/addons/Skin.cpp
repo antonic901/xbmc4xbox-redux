@@ -29,7 +29,7 @@
 #include "utils/URIUtils.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 using namespace XFILE;

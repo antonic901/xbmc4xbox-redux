@@ -21,7 +21,7 @@
  */
 
 #include "tinyXML/tinyxml.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "cores/IPlayer.h"
 #include "settings/ISettingsHandler.h"
 

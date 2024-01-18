@@ -18,7 +18,7 @@
  *
  */
 
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "music/infoscanner/MusicInfoScraper.h"
 #include "settings/AdvancedSettings.h"
 #include "HTMLUtil.h"

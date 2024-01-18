@@ -22,7 +22,7 @@
 #include "filesystem/ZipManager.h"
 #include "filesystem/RarManager.h"
 #include "filesystem/CurlFile.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/POUtils.h"
 #include "Temperature.h"
 #include "xbox/network.h"

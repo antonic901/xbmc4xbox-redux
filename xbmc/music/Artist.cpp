@@ -19,7 +19,7 @@
  */
 
 #include "music/Artist.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "settings/AdvancedSettings.h"
 
 using namespace std;

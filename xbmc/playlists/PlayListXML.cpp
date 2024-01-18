@@ -25,7 +25,7 @@
 #include "utils/URIUtils.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
-#include "XMLUtils.h"
+#include "utils/XMLUtils.h"
 #include "utils/Variant.h"
 #ifndef _LINUX
 #include "cores/dllloader/exports/emu_msvcrt.h"

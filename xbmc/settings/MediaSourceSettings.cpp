@@ -27,7 +27,7 @@
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
 #include "guilib/tinyXML/tinyxml.h"
-#include "guilib/XMLUtils.h"
+#include "utils/XMLUtils.h"
 
 #define SOURCES_FILE  "sources.xml"
 #define XML_SOURCES   "sources"
