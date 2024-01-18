@@ -19,13 +19,6 @@
  *
  */
 
-#define PRE_SKIN_VERSION_9_10_COMPATIBILITY 1
-#define PRE_SKIN_VERSION_11_COMPATIBILITY 1
-
-#define DEFAULT_SKIN          "skin.confluence.lite"
-#define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
-#define DEFAULT_WEB_INTERFACE "webinterface.default"
-
 #include "settings/ISettingsHandler.h"
 #include "settings/ISubSettings.h"
 #include "settings/VideoSettings.h"

@@ -20,6 +20,9 @@
  *
  */
 
+#define PRE_SKIN_VERSION_9_10_COMPATIBILITY 1
+#define PRE_SKIN_VERSION_11_COMPATIBILITY 1
+
 #ifdef _XBOX
 #define DEBUG_MOUSE
 #define DEBUG_KEYBOARD
@@ -141,3 +144,7 @@ WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency)
 #ifndef SVN_REV
 #define SVN_REV "Unknown"
 #endif
+
+#define DEFAULT_SKIN          "skin.confluence.lite"
+#define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
+#define DEFAULT_WEB_INTERFACE "webinterface.default"
