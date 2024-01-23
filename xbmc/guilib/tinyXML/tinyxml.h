@@ -464,13 +464,13 @@ public:
 	*/
 	enum NodeType
 	{
-		DOCUMENT,
-		ELEMENT,
-		COMMENT,
-		UNKNOWN,
-		TEXT,
-		DECLARATION,
-		TYPECOUNT
+		TINYXML_DOCUMENT,
+		TINYXML_ELEMENT,
+		TINYXML_COMMENT,
+		TINYXML_UNKNOWN,
+		TINYXML_TEXT,
+		TINYXML_DECLARATION,
+		TINYXML_TYPECOUNT
 	};
 
 	virtual ~TiXmlNode();
@@ -1157,9 +1157,9 @@ class TiXmlComment : public TiXmlNode
 {
 public:
 	/// Constructs an empty comment.
-	TiXmlComment() : TiXmlNode( TiXmlNode::COMMENT ) {}
+	TiXmlComment() : TiXmlNode( TiXmlNode::TINYXML_COMMENT ) {}
 	/// Construct a comment from text.
-	TiXmlComment( const char* _value ) : TiXmlNode( TiXmlNode::COMMENT ) {
+	TiXmlComment( const char* _value ) : TiXmlNode( TiXmlNode::TINYXML_COMMENT ) {
 		SetValue( _value );
 	}
 	TiXmlComment( const TiXmlComment& );
@@ -1211,7 +1211,7 @@ public:
 		normal, encoded text. If you want it be output as a CDATA text
 		element, set the parameter _cdata to 'true'
 	*/
-	TiXmlText (const char * initValue ) : TiXmlNode (TiXmlNode::TEXT)
+	TiXmlText (const char * initValue ) : TiXmlNode (TiXmlNode::TINYXML_TEXT)
 	{
 		SetValue( initValue );
 		cdata = false;
@@ -1220,14 +1220,14 @@ public:
 
 	#ifdef TIXML_USE_STL
 	/// Constructor.
-	TiXmlText( const std::string& initValue ) : TiXmlNode (TiXmlNode::TEXT)
+	TiXmlText( const std::string& initValue ) : TiXmlNode (TiXmlNode::TINYXML_TEXT)
 	{
 		SetValue( initValue );
 		cdata = false;
 	}
 	#endif
 
-	TiXmlText( const TiXmlText& copy ) : TiXmlNode( TiXmlNode::TEXT )	{ copy.CopyTo( this ); }
+	TiXmlText( const TiXmlText& copy ) : TiXmlNode( TiXmlNode::TINYXML_TEXT )	{ copy.CopyTo( this ); }
 	void operator=( const TiXmlText& base )							 	{ base.CopyTo( this ); }
 
 	// Write this text object to a FILE stream.
@@ -1280,7 +1280,7 @@ class TiXmlDeclaration : public TiXmlNode
 {
 public:
 	/// Construct an empty declaration.
-	TiXmlDeclaration()   : TiXmlNode( TiXmlNode::DECLARATION ) {}
+	TiXmlDeclaration()   : TiXmlNode( TiXmlNode::TINYXML_DECLARATION ) {}
 
 #ifdef TIXML_USE_STL
 	/// Constructor.
@@ -1348,10 +1348,10 @@ private:
 class TiXmlUnknown : public TiXmlNode
 {
 public:
-	TiXmlUnknown() : TiXmlNode( TiXmlNode::UNKNOWN )	{}
+	TiXmlUnknown() : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )	{}
 	virtual ~TiXmlUnknown() {}
 
-	TiXmlUnknown( const TiXmlUnknown& copy ) : TiXmlNode( TiXmlNode::UNKNOWN )		{ copy.CopyTo( this ); }
+	TiXmlUnknown( const TiXmlUnknown& copy ) : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )		{ copy.CopyTo( this ); }
 	void operator=( const TiXmlUnknown& copy )										{ copy.CopyTo( this ); }
 
 	/// Creates a copy of this Unknown and returns it.
