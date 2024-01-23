@@ -23,7 +23,7 @@
 #include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
-#include "guilib/tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
 #define XML_UPNP          "upnpserver"
@@ -66,7 +66,7 @@ bool CUPnPSettings::Load(const std::string &file)
   if (!CFile::Exists(file))
     return false;
   
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   if (!doc.LoadFile(file))
   {
     CLog::Log(LOGERROR, "CUPnPSettings: error loading %s, Line %d\n%s", file.c_str(), doc.ErrorRow(), doc.ErrorDesc());
@@ -94,7 +94,7 @@ bool CUPnPSettings::Save(const std::string &file) const
 {
   CSingleLock lock(m_critical);
 
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   TiXmlElement xmlRootElement(XML_UPNP);
   TiXmlNode *pRoot = doc.InsertEndChild(xmlRootElement);
   if (pRoot == NULL)

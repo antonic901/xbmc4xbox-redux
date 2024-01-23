@@ -19,7 +19,7 @@
  */
 
 #include "Fanart.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "pictures/Picture.h"
@@ -58,7 +58,7 @@ void CFanart::Pack()
 
 bool CFanart::Unpack()
 {
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   doc.Parse(m_xml.c_str());
 
   m_fanart.clear();

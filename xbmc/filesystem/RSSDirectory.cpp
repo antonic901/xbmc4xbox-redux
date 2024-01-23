@@ -591,7 +591,7 @@ bool CRSSDirectory::GetDirectory(const CStdString& path, CFileItemList &items)
   }
   lock.Leave();
 
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strPath))
   {
     CLog::Log(LOGERROR,"failed to load xml from <%s>. error: <%d>", strPath.c_str(), xmlDoc.ErrorId());

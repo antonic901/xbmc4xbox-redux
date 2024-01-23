@@ -1749,7 +1749,7 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
   {
     bGotXml = true;
     CLog::Log(LOGDEBUG,"%s: found matching xml file:[%s]", __FUNCTION__, strXml.c_str());
-    TiXmlDocument doc;
+    CXBMCTinyXML doc;
     if (!doc.LoadFile(strXml) || !movie.Load(doc.RootElement()))
     {
       CLog::Log(LOGERROR,"%s: Could not parse info in file:[%s]", __FUNCTION__, strXml.c_str());

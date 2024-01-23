@@ -21,7 +21,7 @@
  *
  */
 
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/StdString.h"
 
 

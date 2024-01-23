@@ -93,7 +93,7 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
     break;
   }
   CLog::Log(LOGINFO, "Loading skin file: %s, load type: %s", strFileName.c_str(), strLoadType);
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   // Find appropriate skin folder + resolution to load from
   CStdString strPath;
   CStdString strLowerPath;
@@ -121,7 +121,7 @@ bool CGUIWindow::LoadXML(const CStdString &strPath, const CStdString &strLowerPa
   // load window xml if we don't have it stored yet
   if (!m_windowXMLRootElement)
   {
-    TiXmlDocument xmlDoc;
+    CXBMCTinyXML xmlDoc;
     if ( !xmlDoc.LoadFile(strPath) && !xmlDoc.LoadFile(CStdString(strPath).ToLower()) && !xmlDoc.LoadFile(strLowerPath))
     {
       CLog::Log(LOGERROR, "unable to load:%s, Line %d\n%s", strPath.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());

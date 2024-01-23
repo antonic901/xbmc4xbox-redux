@@ -40,7 +40,7 @@ bool CMediaManager::LoadSources()
   m_locations.clear();
 
   // load xml file...
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if ( !xmlDoc.LoadFile( MEDIA_SOURCES_XML ) )
     return false;
 
@@ -73,7 +73,7 @@ bool CMediaManager::LoadSources()
 
 bool CMediaManager::SaveSources()
 {
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   TiXmlElement xmlRootElement("mediasources");
   TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
   if (!pRoot) return false;

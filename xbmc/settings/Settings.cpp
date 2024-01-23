@@ -415,7 +415,7 @@ bool CSettings::SaveCalibration(TiXmlNode* pRootNode) const
 bool CSettings::LoadSettings(const CStdString& strSettingsFile)
 {
   // load the xml file
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
 
   if (!xmlDoc.LoadFile(strSettingsFile))
   {
@@ -520,7 +520,7 @@ bool CSettings::LoadAvpackXML()
 {
   CStdString avpackSettingsXML;
   avpackSettingsXML  = GetAvpackSettingsFile();
-  TiXmlDocument avpackXML;
+  CXBMCTinyXML avpackXML;
   if (!CFile::Exists(avpackSettingsXML))
   {
     CLog::Log(LOGERROR, "Error loading AV pack settings : %s not found !", avpackSettingsXML.c_str());
@@ -576,7 +576,7 @@ bool CSettings::SaveAvpackXML() const
   // We need to preserve other avpack settings
 
   // First load the previous settings
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(avpackSettingsXML))
   {
     CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, Line %d\n%s\nCreating new file.",
@@ -613,7 +613,7 @@ bool CSettings::SaveAvpackXML() const
 // Create an 'avpacksettings.xml' file with in the current profile directory
 bool CSettings::SaveNewAvpackXML() const
 {
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   TiXmlElement xmlMainElement("settings");
   TiXmlNode *pMain = xmlDoc.InsertEndChild(xmlMainElement);
   if (!pMain) return false;
@@ -686,7 +686,7 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 }
 bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings /* = NULL */) const
 {
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   TiXmlElement xmlRootElement("settings");
   TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
   if (!pRoot) return false;
@@ -830,7 +830,7 @@ bool CSettings::LoadProfile(unsigned int index)
 
     if (m_currentProfile != 0)
     {
-      TiXmlDocument doc;
+      CXBMCTinyXML doc;
       if (doc.LoadFile(URIUtils::AddFileToFolder(GetUserDataFolder(),"guisettings.xml")))
         g_guiSettings.LoadMasterLock(doc.RootElement());
     }
@@ -921,7 +921,7 @@ void CSettings::LoadProfiles(const CStdString& profilesFile)
   // clear out our profiles
   m_vecProfiles.clear();
 
-  TiXmlDocument profilesDoc;
+  CXBMCTinyXML profilesDoc;
   if (CFile::Exists(profilesFile))
   {
     if (profilesDoc.LoadFile(profilesFile))
@@ -972,7 +972,7 @@ void CSettings::LoadProfiles(const CStdString& profilesFile)
 
 bool CSettings::SaveProfiles(const CStdString& profilesFile) const
 {
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   TiXmlElement xmlRootElement("profiles");
   TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
   if (!pRoot) return false;
@@ -1261,7 +1261,7 @@ void CSettings::LoadRSSFeeds()
 {
   CStdString rssXML;
   rssXML = GetUserDataItem("RssFeeds.xml");
-  TiXmlDocument rssDoc;
+  CXBMCTinyXML rssDoc;
   if (!CFile::Exists(rssXML))
   { // set defaults, or assume no rss feeds??
     return;

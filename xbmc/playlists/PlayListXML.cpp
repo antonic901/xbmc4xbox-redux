@@ -18,13 +18,13 @@
  *
  */
 
-#include "tinyXML/tinyxml.h"
 #include "playlists/PlayListXML.h"
 #include "filesystem/File.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 #include "utils/Variant.h"
 #ifndef _LINUX
@@ -89,7 +89,7 @@ static inline CStdString GetString( const TiXmlElement* pRootElement, const char
 
 bool CPlayListXML::Load( const CStdString& strFileName )
 {
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
 
   m_strPlayListName = URIUtils::GetFileName(strFileName);
   URIUtils::GetParentPath(strFileName, m_strBasePath);

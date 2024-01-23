@@ -32,7 +32,7 @@
 #include "utils/StdString.h"
 #include "utils/SingleLock.h"
 #include "Thread.h"
-#include "tinyxml/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 #include <vector>
 #include <list>
@@ -81,7 +81,7 @@ private:
   std::vector<SYSTEMTIME *> m_vecTimeStamps;
   std::vector<int> m_vecUpdateTimes;
   int m_spacesBetweenFeeds;
-  TiXmlDocument m_xml;
+  CXBMCTinyXML m_xml;
   std::list<CStdString> m_tagSet;
   std::vector<std::string> m_vecUrls;
   std::vector<int> m_vecQueue;

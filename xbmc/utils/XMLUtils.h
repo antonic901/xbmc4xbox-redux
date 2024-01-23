@@ -24,7 +24,7 @@
 #include "../xbmc/xbox/PlatformDefs.h"
 
 // forward
-class TiXmlDocument;
+class CXBMCTinyXML;
 class TiXmlNode;
 class TiXmlElement;
 
@@ -46,7 +46,7 @@ public:
   static bool GetString(const TiXmlNode* pRootNode, const char* strTag, std::string& strStringValue);
   static bool GetAdditiveString(const TiXmlNode* pRootNode, const char* strTag, const CStdString& strSeparator, CStdString& strStringValue);
   static bool GetStringArray(const TiXmlNode* rootNode, const char* tag, std::vector<std::string>& arrayValue, bool clear = false);
-  static bool GetEncoding(const TiXmlDocument* pDoc, CStdString& strEncoding);
+  static bool GetEncoding(const CXBMCTinyXML* pDoc, CStdString& strEncoding);
   static bool GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringValue);
   static bool GetFloat(const TiXmlNode* pRootNode, const char* strTag, float& value, const float min, const float max);
   static bool GetInt(const TiXmlNode* pRootNode, const char* strTag, int& iIntValue, const int min, const int max);

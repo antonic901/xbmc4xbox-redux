@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <io.h>
-#include "tinyXML/tinyxml.cpp"
+#include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
 #include "emu_registry.h"
@@ -791,7 +791,7 @@ static bool load_registry_key(long handle, TiXmlElement *key)
 
 static bool load_registry_xml(char* filename)
 {
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   if(!doc.LoadFile(filename))
   {
     if(doc.ErrorId() != TiXmlBase::TIXML_ERROR_OPENING_FILE)

@@ -20,7 +20,7 @@
  *
  */
 
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include <vector>
 #include <map>
 #include "GraphicContext.h"

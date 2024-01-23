@@ -19,11 +19,11 @@
  *
  */
 
-#include "tinyXML/tinyxml.h"
-#include "utils/XMLUtils.h"
-#include "RegExp.h"
 #include "FileItem.h"
 #include "PlayerCoreFactory.h"
+
+class CRegExp;
+class TiXmlElement;
 
 class CPlayerSelectionRule
 {

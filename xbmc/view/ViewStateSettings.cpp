@@ -24,7 +24,7 @@
 #include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
-#include "guilib/tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
 #define XML_VIEWSTATESETTINGS "viewstates"

@@ -46,7 +46,7 @@ void CGUIColorManager::Load(const CStdString &colorFile)
   Clear();
 
   // load the global color map if it exists
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (xmlDoc.LoadFile(CSpecialProtocol::TranslatePathConvertCase("special://xbmc/system/colors.xml")))
     LoadXML(xmlDoc);
 
@@ -69,7 +69,7 @@ void CGUIColorManager::Load(const CStdString &colorFile)
     LoadXML(xmlDoc);
 }
 
-bool CGUIColorManager::LoadXML(TiXmlDocument &xmlDoc)
+bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
 {
   TiXmlElement* pRootElement = xmlDoc.RootElement();
 

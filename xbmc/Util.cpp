@@ -1593,7 +1593,7 @@ void CUtil::RemoveTempFiles()
 void CUtil::DeleteGUISettings()
 {
   // Load in master code first to ensure it's setting isn't reset
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   if (doc.LoadFile(g_settings.GetSettingsFile()))
   {
     g_guiSettings.LoadMasterLock(doc.RootElement());

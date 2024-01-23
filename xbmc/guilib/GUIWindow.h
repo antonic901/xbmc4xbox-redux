@@ -53,7 +53,7 @@ class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 // forward
 class TiXmlNode;
 class TiXmlElement;
-class TiXmlDocument;
+class CXBMCTinyXML;
 class CVariant;
 
 class COrigin

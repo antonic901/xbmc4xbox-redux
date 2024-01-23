@@ -316,7 +316,7 @@ bool CGUIWindowGameSaves::DownloadSaves(CFileItem item)
   strURL.Format("http://www.xboxmediacenter.com/xbmc.php?gameid=%s",item.m_musicInfoTag.GetTitle()); // donnos little fix the unleashx.php is broken (content lenght is greater then lenght sent)
   if (http.Get(strURL, theHtml))
   {
-    TiXmlDocument gsXml;
+    CXBMCTinyXML gsXml;
     gsXml.Parse(theHtml.c_str(), 0);
     TiXmlElement *pRootElement = gsXml.RootElement();
     if (pRootElement)

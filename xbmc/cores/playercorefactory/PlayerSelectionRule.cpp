@@ -21,6 +21,8 @@
 #include "URL.h"
 #include "PlayerSelectionRule.h"
 #include "utils/log.h"
+#include "utils/RegExp.h"
+#include "utils/XBMCTinyXML.h"
 
 CPlayerSelectionRule::CPlayerSelectionRule(TiXmlElement* pRule)
 {

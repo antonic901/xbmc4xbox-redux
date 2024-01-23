@@ -109,7 +109,7 @@ bool CGUIIncludes::LoadIncludes(const CStdString &includeFile)
   if (HasIncludeFile(includeFile))
     return true;
 
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   if (!doc.LoadFile(includeFile))
   {
     CLog::Log(LOGINFO, "Error loading includes.xml file (%s): %s (row=%i, col=%i)", includeFile.c_str(), doc.ErrorDesc(), doc.ErrorRow(), doc.ErrorCol());
@@ -306,7 +306,7 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool
     else
     {
       const TiXmlNode *child = include->FirstChild();
-      if (child && child->Type() == TiXmlNode::TEXT)
+      if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
       {
         // 3. <include>MyControl</include>          // old-style includes for backward compatibility
         tagName = child->ValueStr();
@@ -352,9 +352,9 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool
     attribute = attribute->Next();
   }
   // also do the value
-  if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TEXT && m_constantNodes.count(node->ValueStr()))
+  if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TINYXML_TEXT && m_constantNodes.count(node->ValueStr()))
     node->FirstChild()->SetValue(ResolveConstant(node->FirstChild()->ValueStr()));
-  if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TEXT && m_expressionNodes.count(node->ValueStr()))
+  if (node->FirstChild() && node->FirstChild()->Type() == TiXmlNode::TINYXML_TEXT && m_expressionNodes.count(node->ValueStr()))
     node->FirstChild()->SetValue(ResolveExpressions(node->FirstChild()->ValueStr()));
 }
 
@@ -388,7 +388,7 @@ bool CGUIIncludes::GetParameters(const TiXmlElement *include, const char *valueA
         {
           // <param name="posx">120</param>
           const TiXmlNode *child = param->FirstChild();
-          if (child && child->Type() == TiXmlNode::TEXT)
+          if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
             paramValue = child->ValueStr();                           // and then tag value
         }
         //params.insert({ paramName, paramValue });                     // no overwrites
@@ -429,7 +429,7 @@ void CGUIIncludes::ResolveParametersForNode(TiXmlElement *node, const Params& pa
   TiXmlNode *child = node->FirstChild();
   if (child)
   {
-    if (child->Type() == TiXmlNode::TEXT)
+    if (child->Type() == TiXmlNode::TINYXML_TEXT)
     {
       ResolveParamsResult result = ResolveParameters(child->ValueStr(), newValue, params);
       if (result == SINGLE_UNDEFINED_PARAM_RESOLVED && strcmp(node->Value(), "param") == 0 &&
@@ -442,7 +442,7 @@ void CGUIIncludes::ResolveParametersForNode(TiXmlElement *node, const Params& pa
       else if (result != NO_PARAMS_FOUND)
         child->SetValue(newValue);
     }
-    else if (child->Type() == TiXmlNode::ELEMENT)
+    else if (child->Type() == TiXmlNode::TINYXML_ELEMENT)
     {
       do
       {

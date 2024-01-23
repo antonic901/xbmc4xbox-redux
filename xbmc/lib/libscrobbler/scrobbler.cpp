@@ -20,7 +20,7 @@
 
 #include "PlatformDefs.h"
 #include "scrobbler.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/md5.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -289,7 +289,7 @@ bool CScrobbler::LoadJournal()
 {
   int                     journalVersion  = 0;
   SubmissionJournalEntry  entry;
-  TiXmlDocument           xmlDoc;
+  CXBMCTinyXML            xmlDoc;
   CStdString              JournalFileName = GetJournalFileName();
   CSingleLock             lock(m_queueLock);
 
@@ -359,7 +359,7 @@ bool CScrobbler::LoadJournal()
 bool CScrobbler::SaveJournal()
 {
   CStdString        strJournalVersion;
-  TiXmlDocument     xmlDoc;
+  CXBMCTinyXML      xmlDoc;
   TiXmlDeclaration  decl("1.0", "utf-8", "yes");
   TiXmlElement      xmlRootElement("asjournal");
   xmlDoc.InsertEndChild(decl);

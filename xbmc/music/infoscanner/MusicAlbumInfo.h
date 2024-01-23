@@ -25,7 +25,7 @@
 #include "addons/Scraper.h"
 #include "utils/ScraperUrl.h"
 
-class TiXmlDocument;
+class CXBMCTinyXML;
 
 namespace XFILE { class CCurlFile; }
 

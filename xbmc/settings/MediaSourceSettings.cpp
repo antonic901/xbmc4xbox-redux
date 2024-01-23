@@ -26,7 +26,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
-#include "guilib/tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
 #define SOURCES_FILE  "sources.xml"
@@ -86,7 +86,7 @@ bool CMediaSourceSettings::Load(const std::string &file)
   CLog::Log(LOGNOTICE, "CMediaSourceSettings: loading media sources from %s", file.c_str());
 
   // load xml file
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(file))
   {
     CLog::Log(LOGERROR, "CMediaSourceSettings: error loading %s: Line %d, %s", file.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
@@ -119,7 +119,7 @@ bool CMediaSourceSettings::Save(const std::string &file) const
     return false;
 
   // TODO: Should we be specifying utf8 here??
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   TiXmlElement xmlRootElement(XML_SOURCES);
   TiXmlNode *pRoot = doc.InsertEndChild(xmlRootElement);
   if (pRoot == NULL)

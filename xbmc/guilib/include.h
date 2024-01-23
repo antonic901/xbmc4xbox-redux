@@ -50,7 +50,7 @@
 
 // guilib internal
 #include "gui3d.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 
 #ifdef _XBOX

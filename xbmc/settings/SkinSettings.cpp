@@ -26,7 +26,7 @@
 #include "utils/SingleLock.h"
 #include "utils/log.h"
 #include "utils/StringUtils2.h"
-#include "guilib/tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 #define XML_SKINSETTINGS  "skinsettings"
 #define XML_SETTING       "setting"

@@ -764,7 +764,7 @@ bool CTuxBoxUtil::GetHttpXML(CURL url,CStdString strRequestType)
       }
 
       // parse returned xml
-      TiXmlDocument doc;
+      CXBMCTinyXML doc;
       TiXmlElement *XMLRoot=NULL;
       strTmp.Replace("></",">-</"); //FILL EMPTY ELEMENTS WITH "-"!
       doc.Parse(strTmp.c_str());
@@ -1519,7 +1519,7 @@ CStdString CTuxBoxUtil::GetPicon(CStdString strServiceName)
     piconPath = "special://xbmc/userdata/PictureIcon/Picon/";
     defaultPng = piconPath+"tuxbox.png";
     piconXML = "special://xbmc/userdata/PictureIcon/picon.xml";
-    TiXmlDocument piconDoc;
+    CXBMCTinyXML piconDoc;
 
     if (!CFile::Exists(piconXML))
     { 

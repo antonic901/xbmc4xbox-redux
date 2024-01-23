@@ -202,7 +202,7 @@ bool CSmartPlaylistRule::Load(const TiXmlNode *node, const std::string &encoding
   if (parameter == NULL)
     return false;
 
-  if (parameter->Type() == TiXmlNode::TEXT)
+  if (parameter->Type() == TiXmlNode::TINYXML_TEXT)
   {
     CStdString utf8Parameter;
     if (encoding.empty()) // utf8
@@ -213,13 +213,13 @@ bool CSmartPlaylistRule::Load(const TiXmlNode *node, const std::string &encoding
     if (!utf8Parameter.empty())
       m_parameter.push_back(utf8Parameter);
   }
-  else if (parameter->Type() == TiXmlNode::ELEMENT)
+  else if (parameter->Type() == TiXmlNode::TINYXML_ELEMENT)
   {
     const TiXmlNode *valueNode = element->FirstChild("value");
     while (valueNode != NULL)
     {
       const TiXmlNode *value = valueNode->FirstChild();
-      if (value != NULL && value->Type() == TiXmlNode::TEXT)
+      if (value != NULL && value->Type() == TiXmlNode::TINYXML_TEXT)
       {
         CStdString utf8Parameter;
         if (encoding.empty()) // utf8
@@ -1507,7 +1507,7 @@ bool CSmartPlaylist::LoadFromJson(const CStdString &json)
 
 bool CSmartPlaylist::Save(const CStdString &path) const
 {
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   TiXmlDeclaration decl("1.0", "UTF-8", "yes");
   doc.InsertEndChild(decl);
 

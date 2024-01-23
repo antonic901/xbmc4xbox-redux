@@ -251,7 +251,7 @@ bool CAdvancedSettings::Load()
   //       don't take defaults in.  Defaults are set in the constructor above
   CStdString advancedSettingsXML;
   advancedSettingsXML  = g_settings.GetUserDataItem("advancedsettings.xml");
-  TiXmlDocument advancedXML;
+  CXBMCTinyXML advancedXML;
   if (!CFile::Exists(advancedSettingsXML))
   { // tell the user it doesn't exist
     CLog::Log(LOGNOTICE, "No advancedsettings.xml to load (%s)", advancedSettingsXML.c_str());

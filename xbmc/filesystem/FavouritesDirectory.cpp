@@ -82,7 +82,7 @@ bool CFavouritesDirectory::Load(CFileItemList &items)
 
 bool CFavouritesDirectory::LoadFavourites(const CStdString& strPath, CFileItemList& items)
 {
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   if (!doc.LoadFile(strPath))
   {
     CLog::Log(LOGERROR, "Unable to load %s (row %i column %i)", strPath.c_str(), doc.Row(), doc.Column());
@@ -122,7 +122,7 @@ bool CFavouritesDirectory::LoadFavourites(const CStdString& strPath, CFileItemLi
 bool CFavouritesDirectory::Save(const CFileItemList &items)
 {
   CStdString favourites;
-  TiXmlDocument doc;
+  CXBMCTinyXML doc;
   TiXmlElement xmlRootElement("favourites");
   TiXmlNode *rootNode = doc.InsertEndChild(xmlRootElement);
   if (!rootNode) return false;

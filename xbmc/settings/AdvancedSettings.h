@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "settings/ISettingsHandler.h"
 #include "utils/StdString.h"
 #include "utils/StringUtils.h"

@@ -24,7 +24,7 @@
 #include "GUIInfoManager.h"
 #include "GuiControlFactory.h"
 #include "GUITexture.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace std;
 
@@ -247,7 +247,7 @@ namespace PYXBMC
       return NULL;
     }
 
-    TiXmlDocument xmlDoc;
+    CXBMCTinyXML xmlDoc;
     TiXmlElement xmlRootElement("control");
     TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
     if (!pRoot)

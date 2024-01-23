@@ -33,7 +33,7 @@
 // Forward
 class CGUIFont;
 class CGUIFontTTF;
-class TiXmlDocument;
+class CXBMCTinyXML;
 class TiXmlNode;
 
 struct OrigFontInfo
@@ -80,7 +80,7 @@ protected:
   void RescaleFontSizeAndAspect(float *size, float *aspect, RESOLUTION sourceRes, bool preserveAspect) const;
   void LoadFonts(const TiXmlNode* fontNode);
   CGUIFontTTF* GetFontFile(const CStdString& strFontFile);
-  bool OpenFontFile(TiXmlDocument& xmlDoc);
+  bool OpenFontFile(CXBMCTinyXML& xmlDoc);
 
   std::vector<CGUIFont*> m_vecFonts;
   std::vector<CGUIFontTTF*> m_vecFontFiles;

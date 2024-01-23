@@ -275,7 +275,7 @@ bool CWeather::LoadWeather(const CStdString &weatherXML)
     LoadLocalizedToken();
 
   // load the xml file
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (!xmlDoc.Parse(weatherXML))
   {
     CLog::Log(LOGERROR, "WEATHER: Unable to get data - invalid XML");
@@ -488,7 +488,7 @@ void CWeather::LoadLocalizedToken()
   // We load the tokens from the strings.xml file
   CStdString strLanguagePath = "special://xbmc/language/English/strings.xml";
   
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strLanguagePath) || !xmlDoc.RootElement())
   {
     CLog::Log(LOGERROR, "Weather: unable to load %s: %s at line %d", strLanguagePath.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
@@ -601,7 +601,7 @@ bool CWeather::GetSearchResults(const CStdString &strSearch, CStdString &strResu
   ///////////////////////////////
   // load the xml file
   ///////////////////////////////
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   xmlDoc.Parse(strXML.c_str());
   if (xmlDoc.Error())
     return false;

@@ -24,7 +24,7 @@
 
 #include "utils/SortUtils.h"
 #include "utils/StdString.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 class CDatabase;
 class CVariant;
@@ -243,6 +243,6 @@ private:
   CStdString m_group;
   bool m_groupMixed;
 
-  TiXmlDocument m_xmlDoc;
+  CXBMCTinyXML m_xmlDoc;
 };
 

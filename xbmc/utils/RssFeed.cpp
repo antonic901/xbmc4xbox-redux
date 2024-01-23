@@ -22,7 +22,7 @@
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "filesystem/CurlFile.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
 
@@ -69,7 +69,7 @@ bool CRssFeed::ReadFeed()
   if (!http.Get(m_strURL, strXML))
     return false;
 
-  TiXmlDocument xmlDoc;
+  CXBMCTinyXML xmlDoc;
   xmlDoc.Parse(strXML.c_str());
   if (xmlDoc.Error())
     CLog::Log(LOGERROR,"error parsing xml doc from <%s>. error: <%d>", m_strURL.c_str(), xmlDoc.ErrorId());

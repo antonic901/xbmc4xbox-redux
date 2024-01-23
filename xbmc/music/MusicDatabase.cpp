@@ -3497,7 +3497,7 @@ bool CMusicDatabase::UpdateOldVersion(int version)
         m_pDS->query(strSQL.c_str());
         while (!m_pDS->eof())
         {
-          TiXmlDocument doc;
+          CXBMCTinyXML doc;
           doc.Parse(m_pDS->fv(1).get_asString().c_str());
           if (!doc.RootElement() || strcmp(doc.RootElement()->Value(),"thumb") == 0)
           {
@@ -3508,7 +3508,7 @@ bool CMusicDatabase::UpdateOldVersion(int version)
           while (strstr(doc.RootElement()->FirstChild()->Value(),"<"))
           {
             CStdString strThumbs = doc.RootElement()->FirstChild()->Value();
-            TiXmlDocument doc2;
+            CXBMCTinyXML doc2;
             doc2.Parse(strThumbs);
             doc = doc2;
             thumb = doc.FirstChildElement("thumb");
@@ -4440,7 +4440,7 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
     int current = 0;
 
     // create our xml document
-    TiXmlDocument xmlDoc;
+    CXBMCTinyXML xmlDoc;
     TiXmlDeclaration decl("1.0", "UTF-8", "yes");
     xmlDoc.InsertEndChild(decl);
     TiXmlNode *pMain = NULL;
@@ -4600,7 +4600,7 @@ void CMusicDatabase::ImportFromXML(const CStdString &xmlFile)
     if (NULL == m_pDB.get()) return;
     if (NULL == m_pDS.get()) return;
 
-    TiXmlDocument xmlDoc;
+    CXBMCTinyXML xmlDoc;
     if (!xmlDoc.LoadFile(xmlFile))
       return;
 

@@ -20,7 +20,7 @@
  */
 
 #include "utils/StdString.h"
-#include "tinyXml/TinyXML.h"
+#include "utils/XBMCTinyXML.h"
 #include <map>
 
 class CLangCodeExpander

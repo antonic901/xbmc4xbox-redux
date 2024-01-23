@@ -27,7 +27,7 @@
 #include "URL.h"
 #include "utils/log.h"
 #include "DllLibCurl.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/RegExp.h"
 
 using namespace XFILE;
@@ -71,7 +71,7 @@ bool CDAVFile::Execute(const CURL& url)
     CStdString strResponse;
     ReadData(strResponse);
 
-    TiXmlDocument davResponse;
+    CXBMCTinyXML davResponse;
     davResponse.Parse(strResponse.c_str());
 
     if (!davResponse.Parse(strResponse))

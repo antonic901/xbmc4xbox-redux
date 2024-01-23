@@ -22,7 +22,7 @@ private:
 	int		Load();
 	bool	IsValidOption(char* option);
 
-	TiXmlDocument	xbmcCfg;
+	CXBMCTinyXML	xbmcCfg;
 	bool	xbmcCfgLoaded;
 };
 

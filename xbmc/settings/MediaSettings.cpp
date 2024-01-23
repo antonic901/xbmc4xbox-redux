@@ -21,7 +21,7 @@
 #include "MediaSettings.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"
-#include "guilib/tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
 using namespace std;

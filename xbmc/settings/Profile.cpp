@@ -21,7 +21,7 @@
 #include "settings/Profile.h"
 #include "GUIInfoManager.h"
 #include "utils/XMLUtils.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 
 CProfile::CLock::CLock(LockType type, const CStdString &password)
 {
