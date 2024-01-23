@@ -5119,6 +5119,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\lib\jsoncpp\jsoncpp.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="tinyxml"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\lib\tinyxml\tinyxml.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\lib\tinyxml\tinyxml.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\lib\tinyxml\tinyxmlerror.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\lib\tinyxml\tinyxmlparser.cpp">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
