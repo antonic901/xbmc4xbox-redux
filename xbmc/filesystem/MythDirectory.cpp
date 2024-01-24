@@ -22,6 +22,7 @@
 #include "MythDirectory.h"
 #include "MythSession.h"
 #include "Util.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "DllLibCMyth.h"
 #include "video/VideoInfoTag.h"

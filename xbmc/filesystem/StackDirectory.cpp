@@ -22,10 +22,10 @@
 #include "system.h"
 #include "StackDirectory.h"
 #include "utils/log.h"
-#include "Util.h"
-#include "FileItem.h"
-#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
+#include "FileItem.h"
+#include "utils/StringUtils.h"
+#include "settings/AdvancedSettings.h"
 
 #define PRE_2_1_STACK_COMPATIBILITY
 

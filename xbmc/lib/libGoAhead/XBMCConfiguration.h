@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/XBMCTinyXML.h"
+
 typedef char char_t;
 typedef struct websRec *webs_t;
 

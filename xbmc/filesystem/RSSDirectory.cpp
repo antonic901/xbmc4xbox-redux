@@ -18,16 +18,17 @@
  *
  */
 
-#include "utils/log.h"
 #include "RSSDirectory.h"
-#include "FileItem.h"
 #include "CurlFile.h"
-#include "settings/Settings.h"
+#include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "utils/HTMLUtil.h"
-#include "video/VideoInfoTag.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
+#include "video/VideoInfoTag.h"
 
 using namespace XFILE;
 using namespace std;

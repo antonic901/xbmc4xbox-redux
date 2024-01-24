@@ -22,11 +22,7 @@
 
 #include "utils/StdString.h"
 #include "../xbmc/xbox/PlatformDefs.h"
-
-// forward
-class CXBMCTinyXML;
-class TiXmlNode;
-class TiXmlElement;
+#include "utils/XBMCTinyXML.h"
 
 class CDateTime;
 

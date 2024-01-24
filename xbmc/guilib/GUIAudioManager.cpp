@@ -26,8 +26,8 @@
 #include "settings/GUISettings.h"
 #include "input/ButtonTranslator.h"
 #include "utils/SingleLock.h"
-#include "../xbmc/utils/URIUtils.h"
-#include "../xbmc/FileSystem/Directory.h"
+#include "utils/URIUtils.h"
+#include "utils/XBMCTinyXML.h"
 #include "addons/Skin.h"
 
 using namespace std;

@@ -27,9 +27,11 @@
 #include <map>
 #include <vector>
 
-#include "music/Song.h"
+#include "Song.h"
 #include "utils/ScraperUrl.h"
 
+class TiXmlNode;
+class CFileItem;
 class CAlbum
 {
 public:

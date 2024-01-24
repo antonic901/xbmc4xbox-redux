@@ -20,9 +20,10 @@
 
 #include "include.h"
 #include "GUITextBox.h"
+#include "GUIInfoManager.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
-#include "GUIInfoManager.h"
+#include "utils/XBMCTinyXML.h"
 
 #include <algorithm>
 

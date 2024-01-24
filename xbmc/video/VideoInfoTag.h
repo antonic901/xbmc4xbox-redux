@@ -19,16 +19,19 @@
  *
  */
 
-#include "utils/Archive.h"
 #include "DateTime.h"
 #include "utils/ScraperUrl.h"
 #include "utils/Fanart.h"
 #include "utils/ISortable.h"
 #include "utils/StreamDetails.h"
 #include "video/Bookmark.h"
-#include "DateTime.h"
 
 #include <vector>
+
+class CArchive;
+class TiXmlNode;
+class TiXmlElement;
+class CVariant;
 
 struct SActorInfo
 {

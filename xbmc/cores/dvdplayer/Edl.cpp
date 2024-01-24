@@ -20,11 +20,13 @@
 
 #include "Edl.h"
 #include "include.h"
-#include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/MythFile.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
 
 extern "C"
 {

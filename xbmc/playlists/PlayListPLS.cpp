@@ -21,12 +21,13 @@
 #include "playlists/PlayListPLS.h"
 #include "playlists/PlayListFactory.h"
 #include "Util.h"
+#include "utils/StringUtils.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
 #include "music/tags/MusicInfoTag.h"
-#include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace std;
 using namespace XFILE;

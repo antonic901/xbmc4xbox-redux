@@ -20,15 +20,17 @@
 
 #include <limits.h>
 
-#include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "Application.h"
 #include "network/DNSNameCache.h"
 #include "filesystem/File.h"
 #include "utils/LangCodeExpander.h"
 #include "LangInfo.h"
-#include "utils/URIUtils.h"
 #include "settings/Settings.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/XMLUtils.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 

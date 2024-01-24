@@ -23,6 +23,7 @@
 #include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace std;
 

@@ -21,8 +21,9 @@
 #include "LCD.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#include "CharsetConverter.h"
+#include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace std;
 

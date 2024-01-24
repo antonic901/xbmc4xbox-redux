@@ -19,15 +19,16 @@
  */
 
 #include "system.h"
-#include "utils/log.h"
 #include "interfaces/Builtins.h"
 #include "input/ButtonTranslator.h"
 #include "Util.h"
 #include "settings/Settings.h"
 #include "Key.h"
+#include "FileItem.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
-#include "FileItem.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;

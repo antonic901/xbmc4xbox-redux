@@ -32,6 +32,7 @@
 #include "network/DNSNameCache.h"
 #include "music/tags/Id3Tag.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "utils/CharsetConverter.h"

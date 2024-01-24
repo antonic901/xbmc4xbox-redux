@@ -26,6 +26,8 @@
 #include "utils/ScraperUrl.h"
 #include "utils/Fanart.h"
 
+class TiXmlNode;
+
 class CArtist
 {
 public:

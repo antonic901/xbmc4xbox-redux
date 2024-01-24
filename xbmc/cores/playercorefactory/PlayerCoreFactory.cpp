@@ -19,7 +19,6 @@
  */
  
 #include "system.h"
-#include "utils/log.h"
 #include "PlayerCoreFactory.h"
 #include "../dvdplayer/DVDPlayer.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -35,6 +34,8 @@
 #include "XBAudioConfig.h"
 #include "filesystem/CurlFile.h"
 #include "utils/HttpHeader.h"
+#include "utils/XMLUtils.h"
+#include "utils/log.h"
 #include "settings/Settings.h"
 #include "URL.h"
 #include "GUIWindowManager.h"

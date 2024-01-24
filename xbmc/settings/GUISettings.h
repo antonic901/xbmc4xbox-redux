@@ -20,11 +20,13 @@
  *
  */
 
-#include "utils/XBMCTinyXML.h"
 #include <vector>
 #include <map>
 #include "GraphicContext.h"
 #include "addons/IAddon.h"
+
+class TiXmlNode;
+class TiXmlElement;
 
 // Render Methods
 #define RENDER_LQ_RGB_SHADER   0

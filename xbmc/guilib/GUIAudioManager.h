@@ -25,6 +25,7 @@
 
 // forward definitions
 class CAction;
+class TiXmlNode;
 class CGUISound;
 
 enum WINDOW_SOUND { SOUND_INIT = 0, SOUND_DEINIT };

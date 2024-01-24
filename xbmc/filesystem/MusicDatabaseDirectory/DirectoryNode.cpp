@@ -44,6 +44,7 @@
 #include "URL.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
+#include "utils/StringUtils.h"
 #include "LocalizeStrings.h"
 
 using namespace std;

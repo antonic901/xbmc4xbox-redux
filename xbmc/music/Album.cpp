@@ -18,9 +18,11 @@
  *
  */
 
+#include "Album.h"
 #include "settings/AdvancedSettings.h"
-#include "music/Album.h"
+#include "utils/StringUtils.h"
 #include "utils/XMLUtils.h"
+#include "FileItem.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

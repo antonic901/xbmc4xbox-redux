@@ -26,6 +26,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
+#include "utils/Archive.h"
 #include "utils/CharsetConverter.h"
 #include "pictures/Picture.h"
 

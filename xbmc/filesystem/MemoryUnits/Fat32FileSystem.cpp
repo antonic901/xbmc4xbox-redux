@@ -19,12 +19,13 @@
 */
 
 #include "system.h"
-#include "utils/log.h"
 #include "Fat32FileSystem.h"
 #include "Fat32Device.h"
-#include "utils/MemoryUnitManager.h"
 #include "FileItem.h"
-#include "CharsetConverter.h"
+#include "utils/MemoryUnitManager.h"
+#include "utils/StringUtils.h"
+#include "utils/CharsetConverter.h"
+#include "utils/log.h"
 
 namespace XFILE
 {

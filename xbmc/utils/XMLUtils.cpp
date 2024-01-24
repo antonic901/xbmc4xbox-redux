@@ -18,7 +18,6 @@
  *
  */
 
-#include "include.h"
 #include "utils/XMLUtils.h"
 #include "URL.h"
 #include "utils/StringUtils.h"

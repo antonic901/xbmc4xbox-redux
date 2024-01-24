@@ -19,7 +19,6 @@
  */
 
 #include "system.h"
-#include "utils/log.h"
 #include "settings/GUISettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -35,6 +34,8 @@
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "GUIFont.h" // for FONT_STYLE_* definitions
+#include "utils/StringUtils.h"
+#include "utils/log.h"
 #include "utils/XMLUtils.h"
 
 using namespace std;
