@@ -4199,3 +4199,12 @@ int CUtil::TranslateRomanNumeral(const char* roman_numeral)
   }
   return decimal;
 }
+
+bool CUtil::ValidatePort(int port)
+{
+  // check that it's a valid port
+  if (port <= 0 || port > 65535)
+    return false;
+
+  return true;
+}

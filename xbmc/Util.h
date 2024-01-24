@@ -221,6 +221,8 @@ public:
   // Translate a string of roman numerals to decimal a decimal integer
   // return -1 on error, valid range is 1-3999
   static int TranslateRomanNumeral(const char* roman_numeral);
+
+  static bool ValidatePort(int port);
 };
 
 
