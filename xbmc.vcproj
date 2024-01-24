@@ -437,6 +437,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\ISetting.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\ISetting.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\ISettingCallback.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\ISettingCreator.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\ISettingsHandler.h">
 				</File>
 				<File
@@ -455,7 +467,73 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\MediaSourceSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\Setting.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\Setting.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingAddon.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingAddon.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingCategoryAccess.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingCategoryAccess.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingConditions.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingConditions.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingControl.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingControl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingDependency.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingDependency.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingPath.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingPath.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\Settings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingSection.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingSection.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsManager.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingUpdate.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingUpdate.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingVisibility.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingVisibility.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\SkinSettings.cpp">
@@ -889,6 +967,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\BitstreamStats.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\BooleanLogic.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\BooleanLogic.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\input\ButtonTranslator.cpp">
 				</File>
 				<File
@@ -992,6 +1076,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\IXmlDeserializable.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Job.h">

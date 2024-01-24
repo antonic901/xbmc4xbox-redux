@@ -21,8 +21,11 @@
 
 #include <string>
 #include <vector>
+#ifdef _XBOX
+#include <xtl.h>
+#endif
 
-#include <boost/shared_ptr.hpp>
+#include "boost/shared_ptr.hpp"
 
 #include "utils/IXmlDeserializable.h"
 
