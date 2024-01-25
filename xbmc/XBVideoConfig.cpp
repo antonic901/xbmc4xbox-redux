@@ -165,16 +165,16 @@ void XBVideoConfig::GetModes(LPDIRECT3D8 pD3D)
 
 RESOLUTION XBVideoConfig::GetSafeMode() const
 {
-  if (HasPAL()) return PAL_4x3;
-  return NTSC_4x3;
+  if (HasPAL()) return RES_PAL_4x3;
+  return RES_NTSC_4x3;
 }
 
 RESOLUTION XBVideoConfig::GetBestMode() const
 {
-  RESOLUTION bestRes = INVALID;
-  RESOLUTION resolutions[] = {HDTV_1080i, HDTV_720p, HDTV_480p_16x9, HDTV_480p_4x3, NTSC_16x9, NTSC_4x3, PAL_16x9, PAL_4x3, PAL60_16x9, PAL60_4x3, INVALID};
+  RESOLUTION bestRes = RES_INVALID;
+  RESOLUTION resolutions[] = {RES_HDTV_1080i, RES_HDTV_720p, RES_HDTV_480p_16x9, RES_HDTV_480p_4x3, RES_NTSC_16x9, RES_NTSC_4x3, RES_PAL_16x9, RES_PAL_4x3, RES_PAL60_16x9, RES_PAL60_4x3, RES_INVALID};
   UCHAR i = 0;
-  while (resolutions[i] != INVALID)
+  while (resolutions[i] != RES_INVALID)
   {
     if (IsValidResolution(resolutions[i]))
     {
@@ -192,19 +192,19 @@ bool XBVideoConfig::IsValidResolution(RESOLUTION res) const
   if (HasPAL())
   {
     bool bCanDoPAL60 = HasPAL60();
-    if (res == PAL_4x3) return true;
-    if (res == PAL_16x9 && bCanDoWidescreen) return true;
-    if (res == PAL60_4x3 && bCanDoPAL60) return true;
-    if (res == PAL60_16x9 && bCanDoPAL60 && bCanDoWidescreen) return true;
+    if (res == RES_PAL_4x3) return true;
+    if (res == RES_PAL_16x9 && bCanDoWidescreen) return true;
+    if (res == RES_PAL60_4x3 && bCanDoPAL60) return true;
+    if (res == RES_PAL60_16x9 && bCanDoPAL60 && bCanDoWidescreen) return true;
   }
   if (HasNTSC())
   {
-    if (res == NTSC_4x3) return true;
-    if (res == NTSC_16x9 && bCanDoWidescreen) return true;
-    if (res == HDTV_480p_4x3 && Has480p()) return true;
-    if (res == HDTV_480p_16x9 && Has480p() && bCanDoWidescreen) return true;
-    if (res == HDTV_720p && Has720p()) return true;
-    if (res == HDTV_1080i && Has1080i()) return true;
+    if (res == RES_NTSC_4x3) return true;
+    if (res == RES_NTSC_16x9 && bCanDoWidescreen) return true;
+    if (res == RES_HDTV_480p_4x3 && Has480p()) return true;
+    if (res == RES_HDTV_480p_16x9 && Has480p() && bCanDoWidescreen) return true;
+    if (res == RES_HDTV_720p && Has720p()) return true;
+    if (res == RES_HDTV_1080i && Has1080i()) return true;
   }
   return false;
 }
@@ -261,20 +261,20 @@ RESOLUTION XBVideoConfig::GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS
   {
     if (HasWidescreen() && (p3dParams->Flags & D3DPRESENTFLAG_WIDESCREEN))
     {
-      return PAL_16x9;
+      return RES_PAL_16x9;
     }
     else
     {
-      return PAL_4x3;
+      return RES_PAL_4x3;
     }
   }
   if (HasWidescreen() && (p3dParams->Flags & D3DPRESENTFLAG_WIDESCREEN))
   {
-    return NTSC_16x9;
+    return RES_NTSC_16x9;
   }
   else
   {
-    return NTSC_4x3;
+    return RES_NTSC_4x3;
   }
 }
 

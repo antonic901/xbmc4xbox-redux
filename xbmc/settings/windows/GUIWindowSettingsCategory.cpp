@@ -2243,12 +2243,12 @@ void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool play
   g_graphicsContext.GetAllowedResolutions(res, false);
 
   /* add the virtual resolutions */
-  res.push_back(AUTORES);
+  res.push_back(RES_AUTORES);
 
   for (vector<RESOLUTION>::iterator it = res.begin(); it != res.end();it++)
   {
     RESOLUTION res = *it;
-    if (res == AUTORES)
+    if (res == RES_AUTORES)
     {
       if (playbackSetting)
       {
@@ -2546,7 +2546,7 @@ void CGUIWindowSettingsCategory::OnInitWindow()
   m_strNetworkDNS2 = g_guiSettings.GetString("network.dns2");
   m_strOldTrackFormat = g_guiSettings.GetString("musicfiles.trackformat");
   m_strOldTrackFormatRight = g_guiSettings.GetString("musicfiles.trackformatright");
-  m_NewResolution = INVALID;
+  m_NewResolution = RES_INVALID;
   SetupControls();
   CGUIWindow::OnInitWindow();
 }

@@ -49,8 +49,8 @@ CSkinInfo::CSkinInfo(const AddonProps &props, RESOLUTION res)
 CSkinInfo::CSkinInfo(const cp_extension_t *ext)
   : CAddon(ext)
 {
-  m_DefaultResolution = TranslateResolution(CAddonMgr::Get().GetExtValue(ext->configuration, "@defaultresolution"), PAL_4x3);
-  m_DefaultResolutionWide = TranslateResolution(CAddonMgr::Get().GetExtValue(ext->configuration, "@defaultresolutionwide"), INVALID);
+  m_DefaultResolution = TranslateResolution(CAddonMgr::Get().GetExtValue(ext->configuration, "@defaultresolution"), RES_PAL_4x3);
+  m_DefaultResolutionWide = TranslateResolution(CAddonMgr::Get().GetExtValue(ext->configuration, "@defaultresolutionwide"), RES_INVALID);
 
   CStdString str = CAddonMgr::Get().GetExtValue(ext->configuration, "@effectslowdown");
   if (!str.IsEmpty())
@@ -84,28 +84,28 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
     strPathToUse = strBaseDir;
 
   // if the caller doesn't care about the resolution just use a temporary
-  RESOLUTION tempRes = INVALID;
+  RESOLUTION tempRes = RES_INVALID;
   if (!res)
     res = &tempRes;
 
   // first try and load from the current resolution's directory
-  if (*res == INVALID)
+  if (*res == RES_INVALID)
     *res = g_graphicsContext.GetVideoResolution();
   CStdString strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
   strPath = URIUtils::AddFileToFolder(strPath, strFile);
   if (CFile::Exists(strPath))
     return strPath;
   // if we're in 1080i mode, try 720p next
-  if (*res == HDTV_1080i)
+  if (*res == RES_HDTV_1080i)
   {
-    *res = HDTV_720p;
+    *res = RES_HDTV_720p;
     strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
     strPath = URIUtils::AddFileToFolder(strPath, strFile);
     if (CFile::Exists(strPath))
       return strPath;
   }
   // that failed - drop to the default widescreen resolution if where in a widemode
-  if (*res == PAL_16x9 || *res == NTSC_16x9 || *res == HDTV_480p_16x9 || *res == HDTV_720p)
+  if (*res == RES_PAL_16x9 || *res == RES_NTSC_16x9 || *res == RES_HDTV_480p_16x9 || *res == RES_HDTV_720p)
   {
     *res = m_DefaultResolutionWide;
     strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
@@ -118,7 +118,7 @@ CStdString CSkinInfo::GetSkinPath(const CStdString& strFile, RESOLUTION *res, co
   strPath = URIUtils::AddFileToFolder(strPathToUse, GetDirFromRes(*res));
   strPath = URIUtils::AddFileToFolder(strPath, strFile);
   // check if we don't have any subdirectories
-  if (*res == INVALID) *res = PAL_4x3;
+  if (*res == RES_INVALID) *res = RES_PAL_4x3;
   return strPath;
 }
 
@@ -132,27 +132,27 @@ CStdString CSkinInfo::GetDirFromRes(RESOLUTION res) const
   CStdString strRes;
   switch (res)
   {
-  case PAL_4x3:
+  case RES_PAL_4x3:
     strRes = "PAL";
     break;
-  case PAL_16x9:
+  case RES_PAL_16x9:
     strRes = "PAL16x9";
     break;
-  case NTSC_4x3:
-  case HDTV_480p_4x3:
+  case RES_NTSC_4x3:
+  case RES_HDTV_480p_4x3:
     strRes = "NTSC";
     break;
-  case NTSC_16x9:
-  case HDTV_480p_16x9:
+  case RES_NTSC_16x9:
+  case RES_HDTV_480p_16x9:
     strRes = "ntsc16x9";
     break;
-  case HDTV_720p:
+  case RES_HDTV_720p:
     strRes = "720p";
     break;
-  case HDTV_1080i:
+  case RES_HDTV_1080i:
     strRes = "1080i";
     break;
-  case INVALID:
+  case RES_INVALID:
   default:
     strRes = "";
     break;
@@ -225,12 +225,12 @@ bool CSkinInfo::LoadStartupWindows(const cp_extension_t *ext)
 
 bool CSkinInfo::IsWide(RESOLUTION res) const
 {
-  return (res == PAL_16x9 || res == NTSC_16x9 || res == HDTV_480p_16x9 || res == HDTV_720p || res == HDTV_1080i);
+  return (res == RES_PAL_16x9 || res == RES_NTSC_16x9 || res == RES_HDTV_480p_16x9 || res == RES_HDTV_720p || res == RES_HDTV_1080i);
 }
 
 void CSkinInfo::GetSkinPaths(std::vector<CStdString> &paths) const
 {
-  RESOLUTION resToUse = INVALID;
+  RESOLUTION resToUse = RES_INVALID;
   GetSkinPath("Home.xml", &resToUse);
   paths.push_back(URIUtils::AddFileToFolder(Path(), GetDirFromRes(resToUse)));
   // see if we need to add other paths
@@ -243,17 +243,17 @@ void CSkinInfo::GetSkinPaths(std::vector<CStdString> &paths) const
 RESOLUTION CSkinInfo::TranslateResolution(const CStdString &res, RESOLUTION def)
 {
   if (res.Equals("pal"))
-    return PAL_4x3;
+    return RES_PAL_4x3;
   else if (res.Equals("pal16x9"))
-    return PAL_16x9;
+    return RES_PAL_16x9;
   else if (res.Equals("ntsc"))
-    return NTSC_4x3;
+    return RES_NTSC_4x3;
   else if (res.Equals("ntsc16x9"))
-    return NTSC_16x9;
+    return RES_NTSC_16x9;
   else if (res.Equals("720p"))
-    return HDTV_720p;
+    return RES_HDTV_720p;
   else if (res.Equals("1080i"))
-    return HDTV_1080i;
+    return RES_HDTV_1080i;
   CLog::Log(LOGERROR, "%s invalid resolution specified for %s", __FUNCTION__, res.c_str());
   return def;
 }

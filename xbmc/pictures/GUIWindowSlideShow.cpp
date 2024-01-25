@@ -140,7 +140,7 @@ CGUIWindowSlideShow::CGUIWindowSlideShow(void)
 {
   m_pBackgroundLoader = NULL;
   m_slides = new CFileItemList;
-  m_Resolution = INVALID;
+  m_Resolution = RES_INVALID;
   m_loadType = KEEP_IN_MEMORY;
   Reset();
 }
@@ -708,7 +708,7 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       m_Resolution = (RESOLUTION) g_guiSettings.GetInt("pictures.displayresolution");
-      if (m_Resolution != g_guiSettings.m_LookAndFeelResolution && m_Resolution != INVALID)
+      if (m_Resolution != g_guiSettings.m_LookAndFeelResolution && m_Resolution != RES_INVALID)
       {
         g_graphicsContext.SetVideoResolution(m_Resolution, TRUE);
       }

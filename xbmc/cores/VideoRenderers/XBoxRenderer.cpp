@@ -61,7 +61,7 @@ CXBoxRenderer::CXBoxRenderer(LPDIRECT3DDEVICE8 pDevice)
 {
   m_pD3DDevice = pDevice;
   m_fSourceFrameRatio = 1.0f;
-  m_iResolution = PAL_4x3;
+  m_iResolution = RES_PAL_4x3;
   for (int i = 0; i < NUM_BUFFERS; i++)
   {
     m_pOSDYTexture[i] = NULL;
@@ -623,12 +623,12 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
   // it's a PAL setting, whereby we use the above setting to autoswitch to PAL60
   // if appropriate
   RESOLUTION DisplayRes = (RESOLUTION) g_guiSettings.GetInt("videoplayer.displayresolution");
-  if ( DisplayRes != AUTORES )
+  if ( DisplayRes != RES_AUTORES )
   {
     if (bPal60)
     {
-      if (DisplayRes == PAL_16x9) DisplayRes = PAL60_16x9;
-      if (DisplayRes == PAL_4x3) DisplayRes = PAL60_4x3;
+      if (DisplayRes == RES_PAL_16x9) DisplayRes = RES_PAL60_16x9;
+      if (DisplayRes == RES_PAL_4x3) DisplayRes = RES_PAL60_4x3;
     }
     CLog::Log(LOGNOTICE, "Display resolution USER : %s (%d)", g_settings.m_ResInfo[DisplayRes].strMode, DisplayRes);
     m_iResolution = DisplayRes;
@@ -652,16 +652,16 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
     if (bPal60)
     {
       if (bWideScreenMode)
-        m_iResolution = PAL60_16x9;
+        m_iResolution = RES_PAL60_16x9;
       else
-        m_iResolution = PAL60_4x3;
+        m_iResolution = RES_PAL60_4x3;
     }
     else    // PAL50
     {
       if (bWideScreenMode)
-        m_iResolution = PAL_16x9;
+        m_iResolution = RES_PAL_16x9;
       else
-        m_iResolution = PAL_4x3;
+        m_iResolution = RES_PAL_4x3;
     }
   }
   else      // NTSC resolutions
@@ -673,20 +673,20 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
       // If the TV has no HD support widescreen mode is chossen according to video AR
 
       if (g_videoConfig.Has1080i())     // Widescreen TV with 1080i res
-      m_iResolution = HDTV_1080i;
+      m_iResolution = RES_HDTV_1080i;
       else if (g_videoConfig.Has720p()) // Widescreen TV with 720p res
-      m_iResolution = HDTV_720p;
+      m_iResolution = RES_HDTV_720p;
       else if (g_videoConfig.Has480p()) // Widescreen TV with 480p
       {
         if (bWideScreenMode) // Choose widescreen mode according to video AR
-          m_iResolution = HDTV_480p_16x9;
+          m_iResolution = RES_HDTV_480p_16x9;
         else
-          m_iResolution = HDTV_480p_4x3;
+          m_iResolution = RES_HDTV_480p_4x3;
     }
       else if (bWideScreenMode)         // Standard 16:9 TV set with no HD
-        m_iResolution = NTSC_16x9;
+        m_iResolution = RES_NTSC_16x9;
       else
-        m_iResolution = NTSC_4x3;
+        m_iResolution = RES_NTSC_4x3;
     }
     else
     { // The TV set has a 4:3 aspect ratio
@@ -698,26 +698,26 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
         // The video fits best into widescreen modes so they are
         // the first choices
         if (g_videoConfig.Has1080i())
-          m_iResolution = HDTV_1080i;
+          m_iResolution = RES_HDTV_1080i;
         else if (g_videoConfig.Has720p())
-          m_iResolution = HDTV_720p;
+          m_iResolution = RES_HDTV_720p;
         else if (g_videoConfig.Has480p())
-          m_iResolution = HDTV_480p_4x3;
+          m_iResolution = RES_HDTV_480p_4x3;
         else
-          m_iResolution = NTSC_4x3;
+          m_iResolution = RES_NTSC_4x3;
       }
       else
       {
         // The video fits best into 4:3 modes so 480p
         // is the first choice
         if (g_videoConfig.Has480p())
-          m_iResolution = HDTV_480p_4x3;
+          m_iResolution = RES_HDTV_480p_4x3;
         else if (g_videoConfig.Has1080i())
-          m_iResolution = HDTV_1080i;
+          m_iResolution = RES_HDTV_1080i;
         else if (g_videoConfig.Has720p())
-          m_iResolution = HDTV_720p;
+          m_iResolution = RES_HDTV_720p;
         else
-          m_iResolution = NTSC_4x3;
+          m_iResolution = RES_NTSC_4x3;
       }
     }
   }
@@ -976,7 +976,7 @@ unsigned int CXBoxRenderer::PreInit()
 {
   CSingleLock lock(g_graphicsContext);
   m_bConfigured = false;
-  m_iResolution = PAL_4x3;
+  m_iResolution = RES_PAL_4x3;
 
   m_iOSDRenderBuffer = 0;
   m_iYV12RenderBuffer = 0;
@@ -1116,7 +1116,7 @@ void CXBoxRenderer::SetViewMode(int iViewMode)
   else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch4x3)
   { // stretch image to 4:3 ratio
     g_settings.m_fZoomAmount = 1.0;
-    if (m_iResolution == PAL_4x3 || m_iResolution == PAL60_4x3 || m_iResolution == NTSC_4x3 || m_iResolution == HDTV_480p_4x3)
+    if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // stretch to the limits of the 4:3 screen.
       // incorrect behaviour, but it's what the users want, so...
       g_settings.m_fPixelRatio = (fScreenWidth / fScreenHeight) * g_settings.m_ResInfo[m_iResolution].fPixelRatio / fSourceFrameRatio;
@@ -1149,7 +1149,7 @@ void CXBoxRenderer::SetViewMode(int iViewMode)
   else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch16x9)
   { // stretch image to 16:9 ratio
     g_settings.m_fZoomAmount = 1.0;
-    if (m_iResolution == PAL_4x3 || m_iResolution == PAL60_4x3 || m_iResolution == NTSC_4x3 || m_iResolution == HDTV_480p_4x3)
+    if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // now we need to set g_settings.m_fPixelRatio so that
       // fOutputFrameRatio = 16:9.
       g_settings.m_fPixelRatio = (16.0f / 9.0f) / fSourceFrameRatio;

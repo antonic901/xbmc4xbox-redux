@@ -92,7 +92,7 @@ namespace PYXBMC
         // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
         CStdString str("none");
         AddonProps props(str, ADDON_SKIN, "", "");
-        CSkinInfo skinInfo(props, CSkinInfo::TranslateResolution(resolution, HDTV_720p));
+        CSkinInfo skinInfo(props, CSkinInfo::TranslateResolution(resolution, RES_HDTV_720p));
         basePath = URIUtils::AddFileToFolder(fallbackPath, strDefault);
         
         skinInfo.Start(basePath);

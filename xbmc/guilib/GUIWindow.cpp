@@ -77,7 +77,7 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
   int64_t start;
   start = CurrentHostCounter();
 #endif
-  RESOLUTION resToUse = INVALID;
+  RESOLUTION resToUse = RES_INVALID;
   const char* strLoadType;
   switch (m_loadType)
   {

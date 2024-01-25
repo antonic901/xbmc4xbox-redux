@@ -225,7 +225,7 @@ void CGUISettings::Initialize()
   AddBool(pic,"pictures.generatethumbs",13360,true);
   AddBool(pic, "pictures.useexifrotation", 20184, true);
   AddBool(pic, "pictures.showvideos", 22022, false);
-  AddInt(pic, "pictures.displayresolution", 169, (int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
+  AddInt(pic, "pictures.displayresolution", 169, (int)RES_AUTORES, (int)RES_HDTV_1080i, 1, (int)RES_AUTORES, SPIN_CONTROL_TEXT);
 
   CSettingsCategory* cat = AddCategory(0, "slideshow", 108);
   AddInt(cat, "slideshow.staytime", 12378, 5, 1, 1, 100, SPIN_CONTROL_INT_PLUS, MASK_SECS);
@@ -535,7 +535,7 @@ void CGUISettings::Initialize()
   renderMethods.insert(make_pair(21397, RENDER_HQ_RGB_SHADERV2));
 
   AddInt(vp, "videoplayer.rendermethod", 13354, RENDER_HQ_RGB_SHADER, renderMethods, SPIN_CONTROL_TEXT);
-  AddInt(vp, "videoplayer.displayresolution", 169, (int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
+  AddInt(vp, "videoplayer.displayresolution", 169, (int)RES_AUTORES, (int)RES_HDTV_1080i, 1, (int)RES_AUTORES, SPIN_CONTROL_TEXT);
 
   map<int,int> framerateConversions;
   framerateConversions.insert(make_pair(231, FRAME_RATE_LEAVE_AS_IS));
@@ -706,7 +706,7 @@ void CGUISettings::Initialize()
   AddString(loc, "locale.timeserveraddress", 731, "pool.ntp.org", EDIT_CONTROL_INPUT);
 
   CSettingsCategory* vs = AddCategory(7, "videoscreen", 131);
-  AddInt(vs, "videoscreen.resolution",169,(int)AUTORES, (int)HDTV_1080i, 1, (int)AUTORES, SPIN_CONTROL_TEXT);
+  AddInt(vs, "videoscreen.resolution",169,(int)RES_AUTORES, (int)RES_HDTV_1080i, 1, (int)RES_AUTORES, SPIN_CONTROL_TEXT);
   AddString(vs, "videoscreen.guicalibration",214,"", BUTTON_CONTROL_STANDARD);
   AddInt(vs, "videoscreen.flickerfilter", 13100, 5, 0, 1, 5, SPIN_CONTROL_INT_PLUS, -1, TEXT_OFF);
   AddBool(vs, "videoscreen.soften", 215, false);
@@ -1090,7 +1090,7 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
   CLog::Log(LOGNOTICE, "Checking resolution %i", g_guiSettings.m_LookAndFeelResolution);
   g_videoConfig.PrintInfo();
   if (
-    (g_guiSettings.m_LookAndFeelResolution == AUTORES) ||
+    (g_guiSettings.m_LookAndFeelResolution == RES_AUTORES) ||
     (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
   )
   {
@@ -1099,9 +1099,9 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
 #else
     RESOLUTION newRes = g_videoConfig.GetSafeMode();
 #endif
-    if (g_guiSettings.m_LookAndFeelResolution == AUTORES)
+    if (g_guiSettings.m_LookAndFeelResolution == RES_AUTORES)
     {
-      //"videoscreen.resolution" will stay at AUTORES, m_LookAndFeelResolution will be the real mode
+      //"videoscreen.resolution" will stay at RES_AUTORES, m_LookAndFeelResolution will be the real mode
       CLog::Log(LOGNOTICE, "Setting autoresolution mode %i", newRes);
       g_guiSettings.m_LookAndFeelResolution = newRes;
     }

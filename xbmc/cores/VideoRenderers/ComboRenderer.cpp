@@ -125,8 +125,8 @@ void CComboRenderer::ManageDisplay()
   if (fScreenWidth + fOffsetX1 > fMaxScreenWidth) fScreenWidth = fMaxScreenWidth - fOffsetX1;
   if (fScreenHeight + fOffsetY1 > fMaxScreenHeight) fScreenHeight = fMaxScreenHeight - fOffsetY1;
 
-  // Correct for HDTV_1080i -> 540p
-  if (GetResolution() == HDTV_1080i)
+  // Correct for RES_HDTV_1080i -> 540p
+  if (GetResolution() == RES_HDTV_1080i)
   {
     fOffsetY1 /= 2;
     fScreenHeight /= 2;

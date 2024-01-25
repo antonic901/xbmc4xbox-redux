@@ -114,7 +114,7 @@ void CSettings::UnregisterSubSettings(ISubSettings *subSettings)
 
 void CSettings::Initialize()
 {
-  for (int i = HDTV_1080i; i <= PAL60_16x9; i++)
+  for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
   {
     g_graphicsContext.ResetScreenParameters((RESOLUTION)i);
     g_graphicsContext.ResetOverscan((RESOLUTION)i, m_ResInfo[i].Overscan);
@@ -352,11 +352,11 @@ bool CSettings::LoadCalibration(const TiXmlElement* pElement, const CStdString& 
   {
     // get the data for this resolution
     int iRes;
-    GetInteger(pResolution, "id", iRes, (int)PAL_4x3, HDTV_1080i, PAL60_16x9); //PAL4x3 as default data
+    GetInteger(pResolution, "id", iRes, (int)RES_PAL_4x3, RES_HDTV_1080i, RES_PAL60_16x9); //PAL4x3 as default data
     GetString(pResolution, "description", m_ResInfo[iRes].strMode, m_ResInfo[iRes].strMode);
     // get the appropriate "safe graphics area" = 10% for 4x3, 3.5% for 16x9
     float fSafe;
-    if (iRes == PAL_4x3 || iRes == NTSC_4x3 || iRes == PAL60_4x3 || iRes == HDTV_480p_4x3)
+    if (iRes == RES_PAL_4x3 || iRes == RES_NTSC_4x3 || iRes == RES_PAL60_4x3 || iRes == RES_HDTV_480p_4x3)
       fSafe = 0.1f;
     else
       fSafe = 0.035f;

@@ -46,7 +46,7 @@ public:
   };
 
   //FIXME remove this, kept for current repo handling
-  CSkinInfo(const ADDON::AddonProps &props, RESOLUTION res = HDTV_720p);
+  CSkinInfo(const ADDON::AddonProps &props, RESOLUTION res = RES_HDTV_720p);
   CSkinInfo(const cp_extension_t *ext);
   virtual ~CSkinInfo();
 

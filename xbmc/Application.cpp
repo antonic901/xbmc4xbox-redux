@@ -498,7 +498,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
       CIoSupport::RemapDriveLetter('G',"Harddisk0\\Partition7");
   }
 #endif
-  bool Pal = g_graphicsContext.GetVideoResolution() == PAL_4x3;
+  bool Pal = g_graphicsContext.GetVideoResolution() == RES_PAL_4x3;
 
   if (HaveGamepad)
     FEH_TextOut(pFont, (Pal ? 16 : 12) | 0x18000, L"Press any button to reboot");

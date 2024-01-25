@@ -88,7 +88,7 @@ public:
     if (m_pRenderer)
       return m_pRenderer->GetResolution();
     else
-      return INVALID;
+      return RES_INVALID;
   }
   float GetMaximumFPS() { return 60.0; };
   inline DWORD GetPresentDelay() { return 0;  }

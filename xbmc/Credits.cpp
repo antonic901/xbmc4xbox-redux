@@ -1043,7 +1043,7 @@ void RunCredits()
   RESOLUTION res = g_graphicsContext.GetVideoResolution();
   g_graphicsContext.SetVideoResolution(res, TRUE);
   float fFrameTime;
-  if (res == PAL_4x3 || res == PAL_16x9)
+  if (res == RES_PAL_4x3 || res == RES_PAL_16x9)
     fFrameTime = 1.0f / 50.0f;
   else
     fFrameTime = 1.0f / 59.94f;

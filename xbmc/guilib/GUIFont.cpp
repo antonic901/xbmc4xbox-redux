@@ -35,8 +35,8 @@ void CScrollInfo::SetSpeed(int speed)
   if (speed == defaultSpeed)
   {
     // HACK: workaround for PAL vs NTSC speeds on xbox
-    if (g_graphicsContext.GetVideoResolution() == PAL_4x3 ||
-        g_graphicsContext.GetVideoResolution() == PAL_16x9)
+    if (g_graphicsContext.GetVideoResolution() == RES_PAL_4x3 ||
+        g_graphicsContext.GetVideoResolution() == RES_PAL_16x9)
       speed = 50;
   }
   pixelSpeed = speed * 0.001f;

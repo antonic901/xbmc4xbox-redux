@@ -51,9 +51,9 @@ CGraphicContext::CGraphicContext(void)
   m_maxTextureSize = 4096;
   m_strMediaDir = "";
   m_bCalibrating = false;
-  m_Resolution = INVALID;
+  m_Resolution = RES_INVALID;
   m_guiScaleX = m_guiScaleY = 1.0f;
-  m_windowResolution = INVALID;
+  m_windowResolution = RES_INVALID;
 }
 
 CGraphicContext::~CGraphicContext(void)
@@ -345,33 +345,33 @@ void CGraphicContext::GetAllowedResolutions(vector<RESOLUTION> &res, bool bAllow
   res.clear();
   if (g_videoConfig.HasPAL())
   {
-    res.push_back(PAL_4x3);
-    if (bCanDoWidescreen) res.push_back(PAL_16x9);
+    res.push_back(RES_PAL_4x3);
+    if (bCanDoWidescreen) res.push_back(RES_PAL_16x9);
     if (bAllowPAL60 && g_videoConfig.HasPAL60())
     {
-      res.push_back(PAL60_4x3);
-      if (bCanDoWidescreen) res.push_back(PAL60_16x9);
+      res.push_back(RES_PAL60_4x3);
+      if (bCanDoWidescreen) res.push_back(RES_PAL60_16x9);
     }
   }
   if (g_videoConfig.HasNTSC())
   {
-    res.push_back(NTSC_4x3);
-    if (bCanDoWidescreen) res.push_back(NTSC_16x9);
+    res.push_back(RES_NTSC_4x3);
+    if (bCanDoWidescreen) res.push_back(RES_NTSC_16x9);
     if (g_videoConfig.Has480p())
     {
-      res.push_back(HDTV_480p_4x3);
-      if (bCanDoWidescreen) res.push_back(HDTV_480p_16x9);
+      res.push_back(RES_HDTV_480p_4x3);
+      if (bCanDoWidescreen) res.push_back(RES_HDTV_480p_16x9);
     }
     if (g_videoConfig.Has720p())
-      res.push_back(HDTV_720p);
+      res.push_back(RES_HDTV_720p);
     if (g_videoConfig.Has1080i())
-      res.push_back(HDTV_1080i);
+      res.push_back(RES_HDTV_1080i);
   }
 }
 
 void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool forceClear /* = false */)
 {
-  if (res == AUTORES)
+  if (res == RES_AUTORES)
   {
     res = g_videoConfig.GetBestMode();
   }
@@ -420,12 +420,12 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
     m_pd3dParams->Flags = g_settings.m_ResInfo[res].dwFlags;
     m_pd3dParams->Flags |= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
-    if (res == HDTV_1080i || res == HDTV_720p || m_bFullScreenVideo)
+    if (res == RES_HDTV_1080i || res == RES_HDTV_720p || m_bFullScreenVideo)
       m_pd3dParams->BackBufferCount = 1;
     else
       m_pd3dParams->BackBufferCount = 2;
 
-    if (res == PAL60_4x3 || res == PAL60_16x9)
+    if (res == RES_PAL60_4x3 || res == RES_PAL60_16x9)
     {
       if (m_pd3dParams->BackBufferWidth <= 720 && m_pd3dParams->BackBufferHeight <= 480)
       {
@@ -473,7 +473,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION &res, BOOL NeedZ, bool force
   if (NeedReset)
   {
     CLog::Log(LOGDEBUG, "We set resolution %i", m_Resolution);
-    if (m_Resolution != INVALID)
+    if (m_Resolution != RES_INVALID)
       g_fontManager.ReloadTTFFonts();
   }
 
@@ -506,25 +506,25 @@ void CGraphicContext::ResetOverscan(RESOLUTION res, OVERSCAN &overscan)
   overscan.top = 0;
   switch (res)
   {
-  case HDTV_1080i:
+  case RES_HDTV_1080i:
     overscan.right = 1920;
     overscan.bottom = 1080;
     break;
-  case HDTV_720p:
+  case RES_HDTV_720p:
     overscan.right = 1280;
     overscan.bottom = 720;
     break;
-  case HDTV_480p_16x9:
-  case HDTV_480p_4x3:
-  case NTSC_16x9:
-  case NTSC_4x3:
-  case PAL60_16x9:
-  case PAL60_4x3:
+  case RES_HDTV_480p_16x9:
+  case RES_HDTV_480p_4x3:
+  case RES_NTSC_16x9:
+  case RES_NTSC_4x3:
+  case RES_PAL60_16x9:
+  case RES_PAL60_4x3:
     overscan.right = 720;
     overscan.bottom = 480;
     break;
-  case PAL_16x9:
-  case PAL_4x3:
+  case RES_PAL_16x9:
+  case RES_PAL_4x3:
     overscan.right = 720;
     overscan.bottom = 576;
     break;
@@ -540,7 +540,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
   // 1080i
   switch (res)
   {
-  case HDTV_1080i:
+  case RES_HDTV_1080i:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 1080);
     g_settings.m_ResInfo[res].iWidth = 1920;
     g_settings.m_ResInfo[res].iHeight = 1080;
@@ -548,7 +548,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 1.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "1080i 16:9");
     break;
-  case HDTV_720p:
+  case RES_HDTV_720p:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 720);
     g_settings.m_ResInfo[res].iWidth = 1280;
     g_settings.m_ResInfo[res].iHeight = 720;
@@ -556,7 +556,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 1.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "720p 16:9");
     break;
-  case HDTV_480p_4x3:
+  case RES_HDTV_480p_4x3:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.9 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -564,7 +564,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 4320.0f / 4739.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "480p 4:3");
     break;
-  case HDTV_480p_16x9:
+  case RES_HDTV_480p_16x9:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -572,7 +572,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "480p 16:9");
     break;
-  case NTSC_4x3:
+  case RES_NTSC_4x3:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.9 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -580,7 +580,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 4320.0f / 4739.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "NTSC 4:3");
     break;
-  case NTSC_16x9:
+  case RES_NTSC_16x9:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -588,7 +588,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "NTSC 16:9");
     break;
-  case PAL_4x3:
+  case RES_PAL_4x3:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.9 * 576);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 576;
@@ -596,7 +596,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 128.0f / 117.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "PAL 4:3");
     break;
-  case PAL_16x9:
+  case RES_PAL_16x9:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 576);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 576;
@@ -604,7 +604,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 128.0f / 117.0f*4.0f / 3.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "PAL 16:9");
     break;
-  case PAL60_4x3:
+  case RES_PAL60_4x3:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.9 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -612,7 +612,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
     g_settings.m_ResInfo[res].fPixelRatio = 4320.0f / 4739.0f;
     strcpy(g_settings.m_ResInfo[res].strMode, "PAL60 4:3");
     break;
-  case PAL60_16x9:
+  case RES_PAL60_16x9:
     g_settings.m_ResInfo[res].iSubtitles = (int)(0.965 * 480);
     g_settings.m_ResInfo[res].iWidth = 720;
     g_settings.m_ResInfo[res].iHeight = 480;
@@ -754,7 +754,7 @@ float CGraphicContext::GetScalingPixelRatio() const
     return GetPixelRatio(m_windowResolution);
 
   RESOLUTION checkRes = m_windowResolution;
-  if (checkRes == INVALID)
+  if (checkRes == RES_INVALID)
     checkRes = m_Resolution;
   // resolutions are different - we want to return the aspect ratio of the video resolution
   // but only once it's been corrected for the skin -> screen coordinates scaling
@@ -775,7 +775,7 @@ void CGraphicContext::SetCameraPosition(const CPoint &camera)
   if (m_origins.size())
     cam += m_origins.top();
 
-  RESOLUTION windowRes = (m_windowResolution == INVALID) ? m_Resolution : m_windowResolution;
+  RESOLUTION windowRes = (m_windowResolution == RES_INVALID) ? m_Resolution : m_windowResolution;
   cam.x *= (float)m_iScreenWidth / g_settings.m_ResInfo[windowRes].iWidth;
   cam.y *= (float)m_iScreenHeight / g_settings.m_ResInfo[windowRes].iHeight;
 
@@ -839,9 +839,9 @@ bool CGraphicContext::RectIsAngled(float x1, float y1, float x2, float y2) const
 
 int CGraphicContext::GetFPS() const
 {
-  if (m_Resolution == PAL_4x3 || m_Resolution == PAL_16x9)
+  if (m_Resolution == RES_PAL_4x3 || m_Resolution == RES_PAL_16x9)
     return 50;
-  else if (m_Resolution == HDTV_1080i)
+  else if (m_Resolution == RES_HDTV_1080i)
     return 30;
   return 60;
 }
