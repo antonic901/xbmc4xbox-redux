@@ -139,8 +139,8 @@ public:
   virtual int GetViewContainerID() const { return 0; };
   virtual int GetViewCount() const { return 0; };
   virtual bool IsActive() const;
-  void SetCoordsRes(RESOLUTION res) { m_coordsRes = res; };
-  RESOLUTION GetCoordsRes() const { return m_coordsRes; };
+  void SetCoordsRes(const RESOLUTION_INFO &res) { m_coordsRes = res; };
+  const RESOLUTION_INFO &GetCoordsRes() const { return m_coordsRes; };
   void SetLoadType(LOAD_TYPE loadType) { m_loadType = loadType; };
   LOAD_TYPE GetLoadType() { return m_loadType; } const
   int GetRenderOrder() { return m_renderOrder; };
@@ -226,7 +226,7 @@ protected:
 
   int m_idRange;
   OVERLAY_STATE m_overlayState;
-  RESOLUTION m_coordsRes; // resolution that the window coordinates are in.
+  RESOLUTION_INFO m_coordsRes; // resolution that the window coordinates are in.
   bool m_needsScaling;
   bool m_windowLoaded;  // true if the window's xml file has been loaded
   LOAD_TYPE m_loadType;

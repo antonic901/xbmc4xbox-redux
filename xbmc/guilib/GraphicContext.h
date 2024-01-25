@@ -96,6 +96,15 @@ struct RESOLUTION_INFO
   DWORD dwFlags;
   float fPixelRatio;
   char strMode[11];
+public:
+  RESOLUTION_INFO(int width = 1280, int height = 720, float aspect = 0, const CStdString &mode = "")
+  {
+    iWidth = width;
+    iHeight = height;
+    fPixelRatio = aspect ? ((float)width)/height / aspect : 1.0f;
+    // strMode = mode;
+    dwFlags = iSubtitles = 0;
+  }
 };
 
 /*!
@@ -144,8 +153,9 @@ public:
   void Clear(color_t color = 0);
 
   // output scaling
-  void SetRenderingResolution(RESOLUTION res, bool needsScaling);  ///< Sets scaling up for rendering
-  void SetScalingResolution(RESOLUTION res, bool needsScaling);    ///< Sets scaling up for skin loading etc.
+  const RESOLUTION_INFO &GetResInfo() const;
+  void SetRenderingResolution(const RESOLUTION_INFO &res, bool needsScaling);  ///< Sets scaling up for rendering
+  void SetScalingResolution(const RESOLUTION_INFO &res, bool needsScaling);    ///< Sets scaling up for skin loading etc.
   float GetScalingPixelRatio() const;
 
   void InvertFinalCoords(float &x, float &y) const;
@@ -246,7 +256,7 @@ protected:
 private:
   void UpdateCameraPosition(const CPoint &camera);
   void UpdateFinalTransform(const TransformMatrix &matrix);
-  RESOLUTION m_windowResolution;
+  RESOLUTION_INFO m_windowResolution;
   float m_guiScaleX;
   float m_guiScaleY;
   std::stack<CPoint> m_cameras;

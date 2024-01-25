@@ -48,7 +48,6 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_saveLastControl = false;
   m_lastControlID = 0;
   m_overlayState = OVERLAY_STATE_PARENT_WINDOW;   // Use parent or previous window's state
-  m_coordsRes = g_guiSettings.m_LookAndFeelResolution;
   m_isDialog = false;
   m_needsScaling = true;
   m_windowLoaded = false;
@@ -103,7 +102,7 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
     strPath = g_SkinInfo->GetSkinPath(strFileName, &resToUse);
 
   if (!bContainsPath)
-    m_coordsRes = resToUse;
+    m_coordsRes = g_settings.m_ResInfo[resToUse];
 
   bool ret = LoadXML(strPath.c_str(), strLowerPath.c_str());
 
@@ -191,7 +190,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     }
     else if (strValue == "animation" && pChild->FirstChild())
     {
-      FRECT rect = { 0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight };
+      FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
       CAnimation anim;
       anim.Create(pChild, rect, GetID());
       m_animations.push_back(anim);
@@ -238,7 +237,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
       {
         if (strcmpi(pControl->Value(), "control") == 0)
         {
-          FRECT rect = { 0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight };
+          FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
           LoadControl(pControl, NULL, rect);
         }
         pControl = pControl->NextSiblingElement();
@@ -307,8 +306,8 @@ void CGUIWindow::OnWindowLoaded()
 
 void CGUIWindow::CenterWindow()
 {
-  m_posX = (g_settings.m_ResInfo[m_coordsRes].iWidth - GetWidth()) / 2;
-  m_posY = (g_settings.m_ResInfo[m_coordsRes].iHeight - GetHeight()) / 2;
+  m_posX = (m_coordsRes.iWidth - GetWidth()) / 2;
+  m_posY = (m_coordsRes.iHeight - GetHeight()) / 2;
 }
 
 void CGUIWindow::Render()
@@ -850,7 +849,7 @@ void CGUIWindow::SetDefaults()
   m_origins.clear();
   m_hasCamera = false;
   m_animationsEnabled = true;
-  m_hitRect.SetRect(0, 0, (float)g_settings.m_ResInfo[m_coordsRes].iWidth, (float)g_settings.m_ResInfo[m_coordsRes].iHeight);
+  m_hitRect.SetRect(0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight);
   m_clearBackground = 0xff000000; // opaque black -> clear
 }
 

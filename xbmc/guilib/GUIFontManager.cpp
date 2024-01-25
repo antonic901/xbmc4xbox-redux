@@ -31,6 +31,7 @@
 #include "utils/StringUtils.h"
 #include "../xbmc/FileSystem/File.h"
 #include "../xbmc/FileSystem/SpecialProtocol.h"
+#include "settings/Settings.h"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ void GUIFontManager::RescaleFontSizeAndAspect(float *size, float *aspect, RESOLU
   // set scaling resolution so that we can scale our font sizes correctly
   // as fonts aren't scaled at render time (due to aliasing) we must scale
   // the size of the fonts before they are drawn to bitmaps
-  g_graphicsContext.SetScalingResolution(sourceRes, true);
+  g_graphicsContext.SetScalingResolution(g_settings.m_ResInfo[sourceRes], true);
 
   if (preserveAspect)
   {

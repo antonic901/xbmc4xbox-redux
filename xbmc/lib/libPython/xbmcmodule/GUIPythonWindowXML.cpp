@@ -55,7 +55,6 @@ CGUIPythonWindowXML::CGUIPythonWindowXML(int id, CStdString strXML, CStdString s
   m_threadState = NULL;
   m_actionEvent = CreateEvent(NULL, true, false, NULL);
   m_loadType = LOAD_ON_GUI_INIT;
-  m_coordsRes = RES_PAL_4x3;
   m_scriptPath = strFallBackPath;
 }
 

@@ -2168,7 +2168,7 @@ void CApplication::RenderNoPresent()
     }
 
     // reset image scaling and effect states
-    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetVideoResolution(), false);
+    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
 
     // If we have the remote codes enabled, then show them
     if (g_advancedSettings.m_displayRemoteCodes)
@@ -2253,7 +2253,7 @@ void CApplication::RenderMemoryStatus()
   {
     // reset the window scaling and fade status
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    g_graphicsContext.SetRenderingResolution(res, false);
+    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
 
     CStdString info;
     MEMORYSTATUS stat;
@@ -2281,7 +2281,7 @@ void CApplication::RenderMemoryStatus()
         g_graphicsContext.SetScalingResolution(window->GetCoordsRes(), true);
         point.x *= g_graphicsContext.GetGUIScaleX();
         point.y *= g_graphicsContext.GetGUIScaleY();
-        g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetVideoResolution(), false);
+        g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
       }
       info.AppendFormat("Mouse: (%d,%d)  ", (int)point.x, (int)point.y);
       if (window)
