@@ -105,6 +105,10 @@ public:
     // strMode = mode;
     dwFlags = iSubtitles = 0;
   }
+  float DisplayRatio() const
+  {
+    return iWidth * fPixelRatio / iHeight;
+  }
 };
 
 /*!

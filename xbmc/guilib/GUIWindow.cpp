@@ -76,7 +76,6 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
   int64_t start;
   start = CurrentHostCounter();
 #endif
-  RESOLUTION resToUse = RES_INVALID;
   const char* strLoadType;
   switch (m_loadType)
   {
@@ -99,10 +98,10 @@ bool CGUIWindow::Load(const CStdString& strFileName, bool bContainsPath)
   if (bContainsPath)
     strPath = strFileName;
   else
-    strPath = g_SkinInfo->GetSkinPath(strFileName, &resToUse);
-
-  if (!bContainsPath)
-    m_coordsRes = g_settings.m_ResInfo[resToUse];
+  {
+    strLowerPath =  g_SkinInfo->GetSkinPath(CStdString(strFileName).ToLower(), &m_coordsRes);
+    strPath = g_SkinInfo->GetSkinPath(strFileName, &m_coordsRes);
+  }
 
   bool ret = LoadXML(strPath.c_str(), strLowerPath.c_str());
 
