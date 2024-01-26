@@ -57,6 +57,7 @@
 #include "addons/GUIDialogAddonSettings.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "GUIFontManager.h"
+#include "cores/paplayer/AudioDecoder.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "programs/GUIWindowPrograms.h"
 #include "addons/Visualisation.h"
@@ -1093,10 +1094,11 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
   }
   else if (strSetting.Left(22).Equals("MusicPlayer.ReplayGain"))
   { // Update our replaygain settings
-    g_guiSettings.m_replayGain.iType = g_guiSettings.GetInt("musicplayer.replaygaintype");
-    g_guiSettings.m_replayGain.iPreAmp = g_guiSettings.GetInt("musicplayer.replaygainpreamp");
-    g_guiSettings.m_replayGain.iNoGainPreAmp = g_guiSettings.GetInt("musicplayer.replaygainnogainpreamp");
-    g_guiSettings.m_replayGain.bAvoidClipping = g_guiSettings.GetBool("musicplayer.replaygainavoidclipping");
+    ReplayGainSettings &replayGainSettings = CAudioDecoder::GetReplayGainSettings();
+    replayGainSettings.iType = g_guiSettings.GetInt("musicplayer.replaygaintype");
+    replayGainSettings.iPreAmp = g_guiSettings.GetInt("musicplayer.replaygainpreamp");
+    replayGainSettings.iNoGainPreAmp = g_guiSettings.GetInt("musicplayer.replaygainnogainpreamp");
+    replayGainSettings.bAvoidClipping = g_guiSettings.GetBool("musicplayer.replaygainavoidclipping");
   }
 #ifdef HAS_LCD
   else if (strSetting.Equals("lcd.type"))
@@ -1491,10 +1493,11 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
   }
   else if (strSetting.Left(22).Equals("MusicPlayer.ReplayGain"))
   { // Update our replaygain settings
-    g_guiSettings.m_replayGain.iType = g_guiSettings.GetInt("musicplayer.replaygaintype");
-    g_guiSettings.m_replayGain.iPreAmp = g_guiSettings.GetInt("musicplayer.replaygainpreamp");
-    g_guiSettings.m_replayGain.iNoGainPreAmp = g_guiSettings.GetInt("musicplayer.replaygainnogainpreamp");
-    g_guiSettings.m_replayGain.bAvoidClipping = g_guiSettings.GetBool("musicplayer.replaygainavoidclipping");
+    ReplayGainSettings &replayGainSettings = CAudioDecoder::GetReplayGainSettings();
+    replayGainSettings.iType = g_guiSettings.GetInt("musicplayer.replaygaintype");
+    replayGainSettings.iPreAmp = g_guiSettings.GetInt("musicplayer.replaygainpreamp");
+    replayGainSettings.iNoGainPreAmp = g_guiSettings.GetInt("musicplayer.replaygainnogainpreamp");
+    replayGainSettings.bAvoidClipping = g_guiSettings.GetBool("musicplayer.replaygainavoidclipping");
   }
   else if (strSetting.Equals("locale.country"))
   {

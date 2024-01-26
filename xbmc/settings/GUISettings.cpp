@@ -32,6 +32,7 @@
 #endif
 #include "storage/MediaManager.h"
 #include "settings/AdvancedSettings.h"
+#include "cores/paplayer/AudioDecoder.h"
 #include "LocalizeStrings.h"
 #include "guilib/GUIFont.h" // for FONT_STYLE_* definitions
 #include "utils/StringUtils.h"
@@ -216,8 +217,6 @@ CGUISettings::CGUISettings(void)
 
 void CGUISettings::Initialize()
 {
-  ZeroMemory(&m_replayGain, sizeof(ReplayGainSettings));
-
   // Pictures settings
   AddGroup(0, 1);
   CSettingsCategory* pic = AddCategory(0, "pictures", 14081);
@@ -1085,10 +1084,11 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
   SetBool("locale.usedst", g_timezone.GetDST());
 
   // Move replaygain settings into our struct
-  m_replayGain.iPreAmp = GetInt("musicplayer.replaygainpreamp");
-  m_replayGain.iNoGainPreAmp = GetInt("musicplayer.replaygainnogainpreamp");
-  m_replayGain.iType = GetInt("musicplayer.replaygaintype");
-  m_replayGain.bAvoidClipping = GetBool("musicplayer.replaygainavoidclipping");
+  ReplayGainSettings &replayGainSettings = CAudioDecoder::GetReplayGainSettings();
+  replayGainSettings.iPreAmp = GetInt("musicplayer.replaygainpreamp");
+  replayGainSettings.iNoGainPreAmp = GetInt("musicplayer.replaygainnogainpreamp");
+  replayGainSettings.iType = GetInt("musicplayer.replaygaintype");
+  replayGainSettings.bAvoidClipping = GetBool("musicplayer.replaygainavoidclipping");
 }
 
 void CGUISettings::LoadFromXML(TiXmlElement *pRootElement, mapIter &it, bool advanced /* = false */)
