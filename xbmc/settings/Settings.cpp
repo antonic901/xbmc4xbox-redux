@@ -114,12 +114,6 @@ void CSettings::UnregisterSubSettings(ISubSettings *subSettings)
 
 void CSettings::Initialize()
 {
-  for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
-  {
-    g_graphicsContext.ResetScreenParameters((RESOLUTION)i);
-    g_graphicsContext.ResetOverscan((RESOLUTION)i, m_ResInfo[i].Overscan);
-  }
-
   m_videoStacking = false;
 
   strcpy(g_settings.szOnlineArenaPassword, "");
@@ -325,93 +319,6 @@ bool CSettings::GetFloat(const TiXmlElement* pRootElement, const char *tagName, 
   return false;
 }
 
-bool CSettings::LoadCalibration(const TiXmlElement* pElement, const CStdString& strSettingsFile)
-{
-  // reset the calibration to the defaults
-  //g_graphicsContext.SetD3DParameters(NULL, m_ResInfo);
-  //for (int i=0; i<10; i++)
-  //  g_graphicsContext.ResetScreenParameters((RESOLUTION)i);
-
-  const TiXmlElement *pRootElement;
-  CStdString strTagName = pElement->Value();
-  if (!strcmp(strTagName.c_str(), "calibration"))
-  {
-    pRootElement = pElement;
-  }
-  else
-  {
-    pRootElement = pElement->FirstChildElement("calibration");
-  }
-  if (!pRootElement)
-  {
-    g_LoadErrorStr.Format("%s Doesn't contain <calibration>", strSettingsFile.c_str());
-    return false;
-  }
-  const TiXmlElement *pResolution = pRootElement->FirstChildElement("resolution");
-  while (pResolution)
-  {
-    // get the data for this resolution
-    int iRes;
-    GetInteger(pResolution, "id", iRes, (int)RES_PAL_4x3, RES_HDTV_1080i, RES_PAL60_16x9); //PAL4x3 as default data
-    GetString(pResolution, "description", m_ResInfo[iRes].strMode, m_ResInfo[iRes].strMode);
-    // get the appropriate "safe graphics area" = 10% for 4x3, 3.5% for 16x9
-    float fSafe;
-    if (iRes == RES_PAL_4x3 || iRes == RES_NTSC_4x3 || iRes == RES_PAL60_4x3 || iRes == RES_HDTV_480p_4x3)
-      fSafe = 0.1f;
-    else
-      fSafe = 0.035f;
-    GetInteger(pResolution, "subtitles", m_ResInfo[iRes].iSubtitles, (int)((1 - fSafe)*m_ResInfo[iRes].iHeight), m_ResInfo[iRes].iHeight / 2, m_ResInfo[iRes].iHeight*5 / 4);
-    GetFloat(pResolution, "pixelratio", m_ResInfo[iRes].fPixelRatio, 128.0f / 117.0f, 0.5f, 2.0f);
-
-    // get the overscan info
-    const TiXmlElement *pOverscan = pResolution->FirstChildElement("overscan");
-    if (pOverscan)
-    {
-      GetInteger(pOverscan, "left", m_ResInfo[iRes].Overscan.left, 0, -m_ResInfo[iRes].iWidth / 4, m_ResInfo[iRes].iWidth / 4);
-      GetInteger(pOverscan, "top", m_ResInfo[iRes].Overscan.top, 0, -m_ResInfo[iRes].iHeight / 4, m_ResInfo[iRes].iHeight / 4);
-      GetInteger(pOverscan, "right", m_ResInfo[iRes].Overscan.right, m_ResInfo[iRes].iWidth, m_ResInfo[iRes].iWidth / 2, m_ResInfo[iRes].iWidth*3 / 2);
-      GetInteger(pOverscan, "bottom", m_ResInfo[iRes].Overscan.bottom, m_ResInfo[iRes].iHeight, m_ResInfo[iRes].iHeight / 2, m_ResInfo[iRes].iHeight*3 / 2);
-    }
-    
-    CPasswordManager::GetInstance().Clear();
-
-/*    CLog::Log(LOGDEBUG, "  calibration for %s %ix%i", m_ResInfo[iRes].strMode, m_ResInfo[iRes].iWidth, m_ResInfo[iRes].iHeight);
-    CLog::Log(LOGDEBUG, "    subtitle yposition:%i pixelratio:%03.3f offsets:(%i,%i)->(%i,%i)",
-              m_ResInfo[iRes].iSubtitles, m_ResInfo[iRes].fPixelRatio,
-              m_ResInfo[iRes].Overscan.left, m_ResInfo[iRes].Overscan.top,
-              m_ResInfo[iRes].Overscan.right, m_ResInfo[iRes].Overscan.bottom);*/
-
-    // iterate around
-    pResolution = pResolution->NextSiblingElement("resolution");
-  }
-  return true;
-}
-
-bool CSettings::SaveCalibration(TiXmlNode* pRootNode) const
-{
-  TiXmlElement xmlRootElement("calibration");
-  TiXmlNode *pRoot = pRootNode->InsertEndChild(xmlRootElement);
-  for (int i = 0; i < 10; i++)
-  {
-    // Write the resolution tag
-    TiXmlElement resElement("resolution");
-    TiXmlNode *pNode = pRoot->InsertEndChild(resElement);
-    // Now write each of the pieces of information we need...
-    XMLUtils::SetString(pNode, "description", m_ResInfo[i].strMode);
-    XMLUtils::SetInt(pNode, "id", i);
-    XMLUtils::SetInt(pNode, "subtitles", m_ResInfo[i].iSubtitles);
-    XMLUtils::SetFloat(pNode, "pixelratio", m_ResInfo[i].fPixelRatio);
-    // create the overscan child
-    TiXmlElement overscanElement("overscan");
-    TiXmlNode *pOverscanNode = pNode->InsertEndChild(overscanElement);
-    XMLUtils::SetInt(pOverscanNode, "left", m_ResInfo[i].Overscan.left);
-    XMLUtils::SetInt(pOverscanNode, "top", m_ResInfo[i].Overscan.top);
-    XMLUtils::SetInt(pOverscanNode, "right", m_ResInfo[i].Overscan.right);
-    XMLUtils::SetInt(pOverscanNode, "bottom", m_ResInfo[i].Overscan.bottom);
-  }
-  return true;
-}
-
 bool CSettings::LoadSettings(const CStdString& strSettingsFile)
 {
   // load the xml file
@@ -500,7 +407,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     }
   }
 
-  LoadCalibration(pRootElement, strSettingsFile);
   g_guiSettings.LoadXML(pRootElement);
   
   // Override settings with avpack settings
@@ -518,45 +424,47 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
 
 bool CSettings::LoadAvpackXML()
 {
-  CStdString avpackSettingsXML;
-  avpackSettingsXML  = GetAvpackSettingsFile();
-  CXBMCTinyXML avpackXML;
-  if (!CFile::Exists(avpackSettingsXML))
-  {
-    CLog::Log(LOGERROR, "Error loading AV pack settings : %s not found !", avpackSettingsXML.c_str());
-    return false;
-  }
+  return false;
+  // TODO: move this to separate setting class and load it at the end
+  // CStdString avpackSettingsXML;
+  // avpackSettingsXML  = GetAvpackSettingsFile();
+  // CXBMCTinyXML avpackXML;
+  // if (!CFile::Exists(avpackSettingsXML))
+  // {
+  //   CLog::Log(LOGERROR, "Error loading AV pack settings : %s not found !", avpackSettingsXML.c_str());
+  //   return false;
+  // }
 
-  CLog::Log(LOGNOTICE, "%s found : loading %s",
-    g_videoConfig.GetAVPack().c_str(), avpackSettingsXML.c_str());
+  // CLog::Log(LOGNOTICE, "%s found : loading %s",
+  //   g_videoConfig.GetAVPack().c_str(), avpackSettingsXML.c_str());
 
-  if (!avpackXML.LoadFile(avpackSettingsXML.c_str()))
-  {
-    CLog::Log(LOGERROR, "Error loading %s, Line %d\n%s",
-      avpackSettingsXML.c_str(), avpackXML.ErrorRow(), avpackXML.ErrorDesc());
-    return false;
-  }
+  // if (!avpackXML.LoadFile(avpackSettingsXML.c_str()))
+  // {
+  //   CLog::Log(LOGERROR, "Error loading %s, Line %d\n%s",
+  //     avpackSettingsXML.c_str(), avpackXML.ErrorRow(), avpackXML.ErrorDesc());
+  //   return false;
+  // }
 
-  TiXmlElement *pMainElement = avpackXML.RootElement();
-  if (!pMainElement || strcmpi(pMainElement->Value(),"settings") != 0)
-  {
-    CLog::Log(LOGERROR, "Error loading %s, no <settings> node", avpackSettingsXML.c_str());
-    return false;
-  }
+  // TiXmlElement *pMainElement = avpackXML.RootElement();
+  // if (!pMainElement || strcmpi(pMainElement->Value(),"settings") != 0)
+  // {
+  //   CLog::Log(LOGERROR, "Error loading %s, no <settings> node", avpackSettingsXML.c_str());
+  //   return false;
+  // }
 
-  TiXmlElement *pRoot = pMainElement->FirstChildElement(g_videoConfig.GetAVPack());
-  if (!pRoot)
-  {
-    CLog::Log(LOGERROR, "Error loading %s, no <%s> node",
-      avpackSettingsXML.c_str(), g_videoConfig.GetAVPack().c_str());
-    return false;
-  }
+  // TiXmlElement *pRoot = pMainElement->FirstChildElement(g_videoConfig.GetAVPack());
+  // if (!pRoot)
+  // {
+  //   CLog::Log(LOGERROR, "Error loading %s, no <%s> node",
+  //     avpackSettingsXML.c_str(), g_videoConfig.GetAVPack().c_str());
+  //   return false;
+  // }
 
-  // Load guisettings
-  g_guiSettings.LoadXML(pRoot);
+  // // Load guisettings
+  // g_guiSettings.LoadXML(pRoot);
 
-  // Load calibration
-  return LoadCalibration(pRoot, avpackSettingsXML);
+  // // Load calibration
+  // return LoadCalibration(pRoot, avpackSettingsXML);
 }
 
 // Save the avpack settings in the current 'avpacksettings.xml' file
@@ -631,58 +539,60 @@ bool CSettings::SaveNewAvpackXML() const
 // Save avpack settings in the provided xml node
 bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 {
-  TiXmlElement programsNode("myprograms");
-  TiXmlNode *pNode = io_pRoot->InsertEndChild(programsNode);
-  if (!pNode) return false;
-  XMLUtils::SetBoolean(pNode, "gameautoregion", g_guiSettings.GetBool("myprograms.gameautoregion"));
-  XMLUtils::SetInt(pNode, "ntscmode", g_guiSettings.GetInt("myprograms.ntscmode"));
+  return false;
+  // TODO: move this to separate setting class and save it at the end
+  // TiXmlElement programsNode("myprograms");
+  // TiXmlNode *pNode = io_pRoot->InsertEndChild(programsNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetBoolean(pNode, "gameautoregion", g_guiSettings.GetBool("myprograms.gameautoregion"));
+  // XMLUtils::SetInt(pNode, "ntscmode", g_guiSettings.GetInt("myprograms.ntscmode"));
 
-  // default video settings
-  TiXmlElement videoSettingsNode("defaultvideosettings");
-  pNode = io_pRoot->InsertEndChild(videoSettingsNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "interlacemethod", CMediaSettings::Get().GetDefaultVideoSettings().m_InterlaceMethod);
-  XMLUtils::SetFloat(pNode, "filmgrain", CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain);
-  XMLUtils::SetInt(pNode, "viewmode", CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
-  XMLUtils::SetFloat(pNode, "zoomamount", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
-  XMLUtils::SetFloat(pNode, "pixelratio", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
-  XMLUtils::SetFloat(pNode, "volumeamplification", CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification);
-  XMLUtils::SetBoolean(pNode, "outputtoallspeakers", CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers);
-  XMLUtils::SetBoolean(pNode, "showsubtitles", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
-  XMLUtils::SetFloat(pNode, "brightness", CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness);
-  XMLUtils::SetFloat(pNode, "contrast", CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast);
-  XMLUtils::SetFloat(pNode, "gamma", CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma);
+  // // default video settings
+  // TiXmlElement videoSettingsNode("defaultvideosettings");
+  // pNode = io_pRoot->InsertEndChild(videoSettingsNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetInt(pNode, "interlacemethod", CMediaSettings::Get().GetDefaultVideoSettings().m_InterlaceMethod);
+  // XMLUtils::SetFloat(pNode, "filmgrain", CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain);
+  // XMLUtils::SetInt(pNode, "viewmode", CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
+  // XMLUtils::SetFloat(pNode, "zoomamount", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
+  // XMLUtils::SetFloat(pNode, "pixelratio", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
+  // XMLUtils::SetFloat(pNode, "volumeamplification", CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification);
+  // XMLUtils::SetBoolean(pNode, "outputtoallspeakers", CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers);
+  // XMLUtils::SetBoolean(pNode, "showsubtitles", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
+  // XMLUtils::SetFloat(pNode, "brightness", CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness);
+  // XMLUtils::SetFloat(pNode, "contrast", CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast);
+  // XMLUtils::SetFloat(pNode, "gamma", CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma);
 
-  TiXmlElement audiooutputNode("audiooutput");
-  pNode = io_pRoot->InsertEndChild(audiooutputNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "mode", g_guiSettings.GetInt("audiooutput.mode"));
-  XMLUtils::SetBoolean(pNode, "ac3passthrough", g_guiSettings.GetBool("audiooutput.ac3passthrough"));
-  XMLUtils::SetBoolean(pNode, "dtspassthrough", g_guiSettings.GetBool("audiooutput.dtspassthrough"));
+  // TiXmlElement audiooutputNode("audiooutput");
+  // pNode = io_pRoot->InsertEndChild(audiooutputNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetInt(pNode, "mode", g_guiSettings.GetInt("audiooutput.mode"));
+  // XMLUtils::SetBoolean(pNode, "ac3passthrough", g_guiSettings.GetBool("audiooutput.ac3passthrough"));
+  // XMLUtils::SetBoolean(pNode, "dtspassthrough", g_guiSettings.GetBool("audiooutput.dtspassthrough"));
 
-  TiXmlElement videooutputNode("videooutput");
-  pNode = io_pRoot->InsertEndChild(videooutputNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "aspect", g_guiSettings.GetInt("videooutput.aspect"));
-  XMLUtils::SetBoolean(pNode, "hd480p", g_guiSettings.GetBool("videooutput.hd480p"));
-  XMLUtils::SetBoolean(pNode, "hd720p", g_guiSettings.GetBool("videooutput.hd720p"));
-  XMLUtils::SetBoolean(pNode, "hd1080i", g_guiSettings.GetBool("videooutput.hd1080i"));
+  // TiXmlElement videooutputNode("videooutput");
+  // pNode = io_pRoot->InsertEndChild(videooutputNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetInt(pNode, "aspect", g_guiSettings.GetInt("videooutput.aspect"));
+  // XMLUtils::SetBoolean(pNode, "hd480p", g_guiSettings.GetBool("videooutput.hd480p"));
+  // XMLUtils::SetBoolean(pNode, "hd720p", g_guiSettings.GetBool("videooutput.hd720p"));
+  // XMLUtils::SetBoolean(pNode, "hd1080i", g_guiSettings.GetBool("videooutput.hd1080i"));
 
-  TiXmlElement videoscreenNode("videoscreen");
-  pNode = io_pRoot->InsertEndChild(videoscreenNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "flickerfilter", g_guiSettings.GetInt("videoscreen.flickerfilter"));
-  XMLUtils::SetInt(pNode, "resolution", g_guiSettings.GetInt("videoscreen.resolution"));
-  XMLUtils::SetBoolean(pNode, "soften", g_guiSettings.GetBool("videoscreen.soften"));
+  // TiXmlElement videoscreenNode("videoscreen");
+  // pNode = io_pRoot->InsertEndChild(videoscreenNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetInt(pNode, "flickerfilter", g_guiSettings.GetInt("videoscreen.flickerfilter"));
+  // XMLUtils::SetInt(pNode, "resolution", g_guiSettings.GetInt("videoscreen.resolution"));
+  // XMLUtils::SetBoolean(pNode, "soften", g_guiSettings.GetBool("videoscreen.soften"));
 
-  TiXmlElement videoplayerNode("videoplayer");
-  pNode = io_pRoot->InsertEndChild(videoplayerNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "displayresolution", g_guiSettings.GetInt("videoplayer.displayresolution"));
-  XMLUtils::SetInt(pNode, "flicker", g_guiSettings.GetInt("videoplayer.flicker"));
-  XMLUtils::SetBoolean(pNode, "soften", g_guiSettings.GetBool("videoplayer.soften"));
+  // TiXmlElement videoplayerNode("videoplayer");
+  // pNode = io_pRoot->InsertEndChild(videoplayerNode);
+  // if (!pNode) return false;
+  // XMLUtils::SetInt(pNode, "displayresolution", g_guiSettings.GetInt("videoplayer.displayresolution"));
+  // XMLUtils::SetInt(pNode, "flicker", g_guiSettings.GetInt("videoplayer.flicker"));
+  // XMLUtils::SetBoolean(pNode, "soften", g_guiSettings.GetBool("videoplayer.soften"));
 
-  return SaveCalibration(io_pRoot);
+  // return SaveCalibration(io_pRoot);
 }
 bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings /* = NULL */) const
 {
@@ -762,8 +672,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     XMLUtils::SetFloat(pNode, setting + "whisper", m_karaokeVoiceMask[i].whisper);
     XMLUtils::SetFloat(pNode, setting + "robotic", m_karaokeVoiceMask[i].robotic);
   }
-
-  SaveCalibration(pRoot);
 
   if (localSettings) // local settings to save
     localSettings->SaveXML(pRoot);
@@ -997,8 +905,6 @@ void CSettings::Clear()
   m_mapRssUrls.clear();
 
   m_defaultMusicLibSource.clear();
-
-  // m_ResInfo.clear();
 
   OnSettingsCleared();
 

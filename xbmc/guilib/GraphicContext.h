@@ -95,14 +95,14 @@ struct RESOLUTION_INFO
   int iSubtitles;
   DWORD dwFlags;
   float fPixelRatio;
-  char strMode[11];
+  CStdString strMode;
 public:
   RESOLUTION_INFO(int width = 1280, int height = 720, float aspect = 0, const CStdString &mode = "")
   {
     iWidth = width;
     iHeight = height;
     fPixelRatio = aspect ? ((float)width)/height / aspect : 1.0f;
-    // strMode = mode;
+    strMode = mode;
     dwFlags = iSubtitles = 0;
   }
   float DisplayRatio() const

@@ -385,8 +385,6 @@ public:
    */
   unsigned int GetCurrentProfileIndex() const { return m_currentProfile; };
 
-  RESOLUTION_INFO m_ResInfo[10];
-
   // utility functions for user data folders
 
   //uses HasSlashAtEnd to determine if a directory or file was meant
@@ -442,9 +440,6 @@ public:
   bool GetString(const TiXmlElement* pRootElement, const char *strTagName, char *szValue, const CStdString& strDefaultValue);
 protected:
   void ConvertHomeVar(CStdString& strText);
-
-  bool LoadCalibration(const TiXmlElement* pElement, const CStdString& strSettingsFile);
-  bool SaveCalibration(TiXmlNode* pRootNode) const;
 
   bool LoadSettings(const CStdString& strSettingsFile);
 //  bool SaveSettings(const CStdString& strSettingsFile) const;

@@ -38,6 +38,7 @@
 #include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "GUISliderControl.h"
+#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSettings.h"
 #include "FileItem.h"
@@ -809,7 +810,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
     int iResolution = g_graphicsContext.GetVideoResolution();
     {
       CStdString strStatus;
-      strStatus.Format("%ix%i %s", g_settings.m_ResInfo[iResolution].iWidth, g_settings.m_ResInfo[iResolution].iHeight, g_settings.m_ResInfo[iResolution].strMode);
+      strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
       if (g_guiSettings.GetBool("videoplayer.soften"))
         strStatus += "  |  Soften";
       else
@@ -912,13 +913,13 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
       RESOLUTION res = g_graphicsContext.GetVideoResolution();
       g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
 
-      float maxWidth = (float) g_settings.m_ResInfo[res].Overscan.right - g_settings.m_ResInfo[res].Overscan.left;
+      float maxWidth = (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
       m_subsLayout->Update(subtitleText, maxWidth * 0.9f, true); // true to force LTR reading order (most Hebrew subs are this format)
       
       float textWidth, textHeight;
       m_subsLayout->GetTextExtent(textWidth, textHeight);
-      float x = maxWidth * 0.5f + g_settings.m_ResInfo[res].Overscan.left;
-      float y = g_settings.m_ResInfo[res].iSubtitles - textHeight;
+      float x = maxWidth * 0.5f + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+      float y = CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles - textHeight;
 
       m_subsLayout->RenderOutline(x, y, 0, 0xFF000000, XBFONT_CENTER_X, maxWidth);
     }

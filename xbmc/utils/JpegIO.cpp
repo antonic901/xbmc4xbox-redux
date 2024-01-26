@@ -22,10 +22,10 @@
 
 #include "include.h"
 #include "lib/libexif/libexif.h"
-#include "settings/GUISettings.h"
+#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
-#include "../xbmc/FileSystem/File.h"
-#include "utils/log.h"
+#include "settings/GUISettings.h"
+#include "filesystem/File.h"
 #include "JpegIO.h"
 #include "XBTF.h"
 #include "utils/log.h"
@@ -175,8 +175,8 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     the gpu can hold, use the previous one.*/
     if (minx == 0 || miny == 0)
     {
-      minx = g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iWidth;
-      miny = g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iHeight;
+      minx = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iWidth;
+      miny = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iHeight;
     }
 
     /* override minx/miny values based on image aspect and area of requested minx/miny 

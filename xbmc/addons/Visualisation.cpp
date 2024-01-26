@@ -22,8 +22,9 @@
 #include "utils/fft.h"
 #include "GUIInfoManager.h"
 #include "Application.h"
-#include "settings/Settings.h"
 #include "music/tags/MusicInfoTag.h"
+#include "settings/DisplaySettings.h"
+#include "settings/Settings.h"
 
 using namespace std;
 using namespace MUSIC_INFO;
@@ -86,7 +87,7 @@ bool CVisualisation::Create(int x, int y, int w, int h)
   m_pInfo->y = y;
   m_pInfo->width = w;
   m_pInfo->height = h;
-  m_pInfo->pixelRatio = g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].fPixelRatio;
+  m_pInfo->pixelRatio = CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).fPixelRatio;
 
   m_pInfo->name = strdup(Name().c_str());
   m_pInfo->presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());

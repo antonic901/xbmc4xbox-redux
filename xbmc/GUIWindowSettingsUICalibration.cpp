@@ -21,6 +21,7 @@
 #include "GUIWindowSettingsUICalibration.h"
 #include "GUIMoverControl.h"
 #include "Application.h"
+#include "settings/DisplaySettings.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 
 #define CONTROL_TOPLEFT 8
@@ -54,7 +55,7 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
   }
   else if (action.wID == ACTION_CALIBRATE_RESET)
   {
-    g_graphicsContext.ResetOverscan(g_guiSettings.m_LookAndFeelResolution, g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].GUIOverscan);
+    g_graphicsContext.ResetOverscan(g_guiSettings.m_LookAndFeelResolution, CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).GUIOverscan);
     ResetControls();
     return true;
   }
@@ -99,16 +100,16 @@ void CGUIWindowSettingsUICalibration::Render()
   {
     if (m_control == CONTROL_TOPLEFT)
     {
-      g_settings.m_ResInfo[res].GUIOverscan.left = pControl->GetXLocation();
-      g_settings.m_ResInfo[res].GUIOverscan.top = pControl->GetYLocation();
+      CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.left = pControl->GetXLocation();
+      CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.top = pControl->GetYLocation();
       strStatus.Format("%s (%i,%i)", g_localizeStrings.Get(272).c_str(), pControl->GetXLocation(), pControl->GetYLocation());
     }
     else //if (m_control == CONTROL_BOTTOMRIGHT)
     {
-      g_settings.m_ResInfo[res].GUIOverscan.right = pControl->GetXLocation();
-      g_settings.m_ResInfo[res].GUIOverscan.bottom = pControl->GetYLocation();
-      int iXOff1 = g_settings.m_ResInfo[res].iWidth - pControl->GetXLocation();
-      int iYOff1 = g_settings.m_ResInfo[res].iHeight - pControl->GetYLocation();
+      CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right = pControl->GetXLocation();
+      CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom = pControl->GetYLocation();
+      int iXOff1 = CDisplaySettings::Get().GetResolutionInfo(res).iWidth - pControl->GetXLocation();
+      int iYOff1 = CDisplaySettings::Get().GetResolutionInfo(res).iHeight - pControl->GetYLocation();
       strStatus.Format("%s (%i,%i)", g_localizeStrings.Get(273).c_str(), iXOff1, iYOff1);
     }
   }
@@ -142,26 +143,26 @@ void CGUIWindowSettingsUICalibration::ResetControls()
   RESOLUTION res = g_guiSettings.m_LookAndFeelResolution;
   if (pControl)
   {
-    pControl->SetLimits(-g_settings.m_ResInfo[res].iWidth / 4,
-                        -g_settings.m_ResInfo[res].iWidth / 4,
-                        g_settings.m_ResInfo[res].iWidth / 4,
-                        g_settings.m_ResInfo[res].iHeight / 4);
-    pControl->SetPosition(g_settings.m_ResInfo[res].GUIOverscan.left,
-                          g_settings.m_ResInfo[res].GUIOverscan.top);
-    pControl->SetLocation(g_settings.m_ResInfo[res].GUIOverscan.left,
-                          g_settings.m_ResInfo[res].GUIOverscan.top, false);
+    pControl->SetLimits(-CDisplaySettings::Get().GetResolutionInfo(res).iWidth / 4,
+                        -CDisplaySettings::Get().GetResolutionInfo(res).iWidth / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iWidth / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight / 4);
+    pControl->SetPosition(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.left,
+                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.top);
+    pControl->SetLocation(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.left,
+                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.top, false);
   }
   pControl = (CGUIMoverControl *)GetControl(CONTROL_BOTTOMRIGHT);
   if (pControl)
   {
-    pControl->SetLimits(g_settings.m_ResInfo[res].iWidth*3 / 4,
-                        g_settings.m_ResInfo[res].iHeight*3 / 4,
-                        g_settings.m_ResInfo[res].iWidth*5 / 4,
-                        g_settings.m_ResInfo[res].iHeight*5 / 4);
-    pControl->SetPosition(g_settings.m_ResInfo[res].GUIOverscan.right - (int)pControl->GetWidth(),
-                          g_settings.m_ResInfo[res].GUIOverscan.bottom - (int)pControl->GetHeight());
-    pControl->SetLocation(g_settings.m_ResInfo[res].GUIOverscan.right,
-                          g_settings.m_ResInfo[res].GUIOverscan.bottom, false);
+    pControl->SetLimits(CDisplaySettings::Get().GetResolutionInfo(res).iWidth*3 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight*3 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iWidth*5 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight*5 / 4);
+    pControl->SetPosition(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right - (int)pControl->GetWidth(),
+                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom - (int)pControl->GetHeight());
+    pControl->SetLocation(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right,
+                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom, false);
   }
 }
 

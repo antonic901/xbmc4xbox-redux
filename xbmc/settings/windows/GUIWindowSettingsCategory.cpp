@@ -84,6 +84,7 @@
 #include "LangInfo.h"
 
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/CharsetConverter.h"
@@ -2265,7 +2266,7 @@ void CGUIWindowSettingsCategory::FillInResolutions(CSetting *pSetting, bool play
     }
     else
     {
-      pControl->AddLabel(g_settings.m_ResInfo[res].strMode, res);
+      pControl->AddLabel(CDisplaySettings::Get().GetResolutionInfo(res).strMode, res);
     }
   }
   pControl->SetValue(pSettingInt->GetData());

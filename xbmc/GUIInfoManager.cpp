@@ -66,6 +66,7 @@
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/URIUtils.h"
@@ -1509,9 +1510,9 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
 
   case SYSTEM_SCREEN_RESOLUTION:
     strLabel.Format("%ix%i %s %02.2f fps.",
-      g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iWidth,
-      g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].iHeight,
-      g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].strMode,GetFPS());
+      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iWidth,
+      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iHeight,
+      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode.c_str(),GetFPS());
     return strLabel;
     break;
 #ifdef HAS_XBOX_HARDWARE
@@ -1646,13 +1647,13 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
     }
     break;
   case SYSTEM_SCREEN_MODE:
-    strLabel = g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].strMode;
+    strLabel = CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).strMode;
     break;
   case SYSTEM_SCREEN_WIDTH:
-    strLabel.Format("%i", g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].iWidth);
+    strLabel.Format("%i", CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iWidth);
     break;
   case SYSTEM_SCREEN_HEIGHT:
-    strLabel.Format("%i", g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].iHeight);
+    strLabel.Format("%i", CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iHeight);
     break;
   case SYSTEM_CURRENT_WINDOW:
     return g_localizeStrings.Get(g_windowManager.GetFocusedWindow());

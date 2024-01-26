@@ -434,6 +434,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\AdvancedSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\DisplaySettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\DisplaySettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\GUISettings.cpp">
 				</File>
 				<File

@@ -30,6 +30,7 @@
 #include "GUICheckMarkControl.h"
 #include "GUIRadioButtonControl.h"
 #include "GUIWindowManager.h"
+#include "settings/DisplaySettings.h"
 #include "Application.h"
 #include "utils/Variant.h"
 
@@ -901,7 +902,7 @@ namespace PYXBMC
     CGUIWindow* pWindow = (CGUIWindow*)g_windowManager.GetWindow(self->iWindowId);
     if (PyXBMCWindowIsNull(pWindow)) return NULL;
 
-    pWindow->SetCoordsRes(g_settings.m_ResInfo[res]);
+    pWindow->SetCoordsRes(CDisplaySettings::Get().GetResolutionInfo(res));
 
     Py_INCREF(Py_None);
     return Py_None;

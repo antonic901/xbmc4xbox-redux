@@ -32,6 +32,7 @@
 #include "pictures/GUIDialogPictureInfo.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
@@ -426,8 +427,8 @@ void CGUIWindowSlideShow::Render()
     m_bLoadNextPic = false;
     // load using the background loader
     int maxWidth, maxHeight;
-    GetCheckedSize((float)g_settings.m_ResInfo[m_Resolution].iWidth * zoomamount[m_iZoomFactor - 1], 
-                    (float)g_settings.m_ResInfo[m_Resolution].iHeight * zoomamount[m_iZoomFactor - 1],
+    GetCheckedSize((float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth * zoomamount[m_iZoomFactor - 1], 
+                    (float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iHeight * zoomamount[m_iZoomFactor - 1],
                     maxWidth, maxHeight);
     if (!m_slides->Get(m_iCurrentSlide)->IsVideo())
       m_pBackgroundLoader->LoadPic(m_iCurrentPic, m_iCurrentSlide, m_slides->Get(m_iCurrentSlide)->GetPath(), maxWidth, maxHeight);
@@ -450,8 +451,8 @@ void CGUIWindowSlideShow::Render()
     { // reload the image if we need to
       CLog::Log(LOGDEBUG, "Reloading the current image %s at zoom level %i", m_slides->Get(m_iCurrentSlide)->GetPath().c_str(), m_iZoomFactor);
       // first, our maximal size for this zoom level
-      int maxWidth = (int)((float)g_settings.m_ResInfo[m_Resolution].iWidth * zoomamount[m_iZoomFactor - 1]);
-      int maxHeight = (int)((float)g_settings.m_ResInfo[m_Resolution].iWidth * zoomamount[m_iZoomFactor - 1]);
+      int maxWidth = (int)((float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth * zoomamount[m_iZoomFactor - 1]);
+      int maxHeight = (int)((float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth * zoomamount[m_iZoomFactor - 1]);
 
       // the actual maximal size of the image to optimize the sizing based on the known sizing (aspect ratio)
       int width, height;
@@ -470,8 +471,8 @@ void CGUIWindowSlideShow::Render()
     { // load the next image
       CLog::Log(LOGDEBUG, "Loading the next image %s", m_slides->Get(m_iNextSlide)->GetPath().c_str());
       int maxWidth, maxHeight;
-      GetCheckedSize((float)g_settings.m_ResInfo[m_Resolution].iWidth * zoomamount[m_iZoomFactor - 1], 
-                     (float)g_settings.m_ResInfo[m_Resolution].iHeight * zoomamount[m_iZoomFactor - 1],
+      GetCheckedSize((float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth * zoomamount[m_iZoomFactor - 1], 
+                     (float)CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iHeight * zoomamount[m_iZoomFactor - 1],
                      maxWidth, maxHeight);
       if (!m_slides->Get(m_iNextSlide)->IsVideo())
         m_pBackgroundLoader->LoadPic(1 - m_iCurrentPic, m_iNextSlide, m_slides->Get(m_iNextSlide)->GetPath(), maxWidth, maxHeight);

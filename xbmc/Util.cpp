@@ -101,6 +101,7 @@
 #include "utils/Crc32.h"
 #include "utils/RssReader.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleTagSami.h"
@@ -2194,10 +2195,10 @@ void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
     if (0)
     { // reset calibration to defaults
       OVERSCAN oscan;
-      memcpy(&oscan, &g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].Overscan, sizeof(OVERSCAN));
-      g_graphicsContext.ResetOverscan(g_graphicsContext.GetVideoResolution(), g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].Overscan);
+      memcpy(&oscan, &CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan, sizeof(OVERSCAN));
+      g_graphicsContext.ResetOverscan(g_graphicsContext.GetVideoResolution(), CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan);
       g_application.Render();
-      memcpy(&g_settings.m_ResInfo[g_graphicsContext.GetVideoResolution()].Overscan, &oscan, sizeof(OVERSCAN));
+      memcpy(&CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan, &oscan, sizeof(OVERSCAN));
     }
     // now take screenshot
 #ifdef HAS_XBOX_D3D
@@ -3909,7 +3910,7 @@ bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
     CLog::Log(LOGDEBUG, "%s - Auto Filter Flicker is off. Skipping Filter Flicker Patching.", __FUNCTION__);
     return false;
   }
-  CStdString strIsPMode = g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].strMode;
+  CStdString strIsPMode = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode;
   if ( strIsPMode.Equals("480p 16:9") || strIsPMode.Equals("480p 4:3") || strIsPMode.Equals("720p 16:9"))
   {
     CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Auto Filter Flicker Patching!", __FUNCTION__);

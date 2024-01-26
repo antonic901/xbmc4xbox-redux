@@ -84,6 +84,7 @@
 #include "playlists/PlayList.h"
 #include "utils/DownloadQueueManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
@@ -401,7 +402,7 @@ void CApplication::InitBasicD3D()
     // Oh uh - doesn't look good for starting in their wanted screenmode
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
     g_guiSettings.m_LookAndFeelResolution = g_videoConfig.GetSafeMode();
-    CLog::Log(LOGERROR, "Resetting to mode %s", g_settings.m_ResInfo[g_guiSettings.m_LookAndFeelResolution].strMode);
+    CLog::Log(LOGERROR, "Resetting to mode %s", CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode.c_str());
     CLog::Log(LOGERROR, "Done reset");
   }
 
@@ -722,6 +723,12 @@ HRESULT CApplication::Create(HWND hWnd)
   g_guiSettings.Initialize();  // Initialize default Settings
   g_settings.Initialize(); //Initialize default AdvancedSettings
 
+  for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
+  {
+    g_graphicsContext.ResetScreenParameters((RESOLUTION)i);
+    g_graphicsContext.ResetOverscan((RESOLUTION)i, CDisplaySettings::Get().GetResolutionInfo(i).Overscan);
+  }
+
   g_hWnd = hWnd;
 
   HRESULT hr;
@@ -943,6 +950,8 @@ HRESULT CApplication::Create(HWND hWnd)
   g_settings.RegisterSettingsHandler(&CMediaSourceSettings::Get());
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
+
+  g_settings.RegisterSubSettings(&CDisplaySettings::Get());
   g_settings.RegisterSubSettings(&CMediaSettings::Get());
   g_settings.RegisterSubSettings(&CSkinSettings::Get());
   g_settings.RegisterSubSettings(&CViewStateSettings::Get());
@@ -1168,9 +1177,9 @@ HRESULT CApplication::Create(HWND hWnd)
 
   int iResolution = g_graphicsContext.GetVideoResolution();
   CLog::Log(LOGINFO, "GUI format %ix%i %s",
-            g_settings.m_ResInfo[iResolution].iWidth,
-            g_settings.m_ResInfo[iResolution].iHeight,
-            g_settings.m_ResInfo[iResolution].strMode);
+            CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth,
+            CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight,
+            CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
   g_windowManager.Initialize();
 
   // show recovery console on fatal error instead of freezing
@@ -2291,8 +2300,8 @@ void CApplication::RenderMemoryStatus()
           info.AppendFormat("Focused: %i (%s)", control->GetID(), CGUIControlFactory::TranslateControlType(control->GetControlType()).c_str());
       }
     }
-    float x = 0.04f * g_graphicsContext.GetWidth() + g_settings.m_ResInfo[res].Overscan.left;
-    float y = 0.04f * g_graphicsContext.GetHeight() + g_settings.m_ResInfo[res].Overscan.top;
+    float x = 0.04f * g_graphicsContext.GetWidth() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+    float y = 0.04f * g_graphicsContext.GetHeight() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
 
     m_debugLayout->Update(info);
     m_debugLayout->RenderOutline(x, y, 0xffffffff, 0xff000000, 0, 0);
@@ -3529,6 +3538,7 @@ HRESULT CApplication::Cleanup()
     g_guiSettings.Clear();
     g_advancedSettings.Clear();
 
+    g_settings.UnregisterSubSettings(&CDisplaySettings::Get());
     g_settings.UnregisterSubSettings(&CMediaSettings::Get());
     g_settings.UnregisterSubSettings(&CSkinSettings::Get());
     g_settings.UnregisterSubSettings(&CViewStateSettings::Get());
