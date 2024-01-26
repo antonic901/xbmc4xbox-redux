@@ -175,8 +175,8 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     the gpu can hold, use the previous one.*/
     if (minx == 0 || miny == 0)
     {
-      minx = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iWidth;
-      miny = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iHeight;
+      minx = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
+      miny = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
     }
 
     /* override minx/miny values based on image aspect and area of requested minx/miny 

@@ -1510,9 +1510,9 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow)
 
   case SYSTEM_SCREEN_RESOLUTION:
     strLabel.Format("%ix%i %s %02.2f fps.",
-      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iWidth,
-      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).iHeight,
-      CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode.c_str(),GetFPS());
+      CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth,
+      CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight,
+      CDisplaySettings::Get().GetCurrentResolutionInfo().strMode.c_str(),GetFPS());
     return strLabel;
     break;
 #ifdef HAS_XBOX_HARDWARE

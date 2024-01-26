@@ -935,8 +935,6 @@ void CGUISettings::SetInt(const char *strSetting, int iSetting)
   if (it != settingsMap.end())
   {
     ((CSettingInt *)(*it).second)->SetData(iSetting);
-    if (stricmp(strSetting, "videoscreen.resolution") == 0)
-      g_guiSettings.m_LookAndFeelResolution = (RESOLUTION)iSetting;
     return ;
   }
   // Assert here and write debug output
@@ -1085,32 +1083,6 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
 
   SetInt("locale.timezone", g_timezone.GetTimeZoneIndex());
   SetBool("locale.usedst", g_timezone.GetDST());
-
-  g_guiSettings.m_LookAndFeelResolution = (RESOLUTION)GetInt("videoscreen.resolution");
-  CLog::Log(LOGNOTICE, "Checking resolution %i", g_guiSettings.m_LookAndFeelResolution);
-  g_videoConfig.PrintInfo();
-  if (
-    (g_guiSettings.m_LookAndFeelResolution == RES_AUTORES) ||
-    (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
-  )
-  {
-#ifdef _XBOX
-    RESOLUTION newRes = g_videoConfig.GetBestMode();
-#else
-    RESOLUTION newRes = g_videoConfig.GetSafeMode();
-#endif
-    if (g_guiSettings.m_LookAndFeelResolution == RES_AUTORES)
-    {
-      //"videoscreen.resolution" will stay at RES_AUTORES, m_LookAndFeelResolution will be the real mode
-      CLog::Log(LOGNOTICE, "Setting autoresolution mode %i", newRes);
-      g_guiSettings.m_LookAndFeelResolution = newRes;
-    }
-    else
-    {
-      CLog::Log(LOGNOTICE, "Setting safe mode %i", newRes);
-      SetInt("videoscreen.resolution", newRes);
-    }
-  }
 
   // Move replaygain settings into our struct
   m_replayGain.iPreAmp = GetInt("musicplayer.replaygainpreamp");

@@ -144,7 +144,7 @@ public:
   void SetCalibrating(bool bOnOff);
   void GetAllowedResolutions(std::vector<RESOLUTION> &res, bool bAllowPAL60 = false);
   bool IsValidResolution(RESOLUTION res);
-  void SetVideoResolution(RESOLUTION &res, BOOL NeedZ = FALSE, bool forceClear = false);
+  void SetVideoResolution(RESOLUTION res, BOOL NeedZ = FALSE, bool forceClear = false);
   RESOLUTION GetVideoResolution() const;
   void SetScreenFilters(bool useFullScreenFilters);
   void ResetOverscan(RESOLUTION res, OVERSCAN &overscan);

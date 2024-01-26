@@ -55,7 +55,7 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
   }
   else if (action.wID == ACTION_CALIBRATE_RESET)
   {
-    g_graphicsContext.ResetOverscan(g_guiSettings.m_LookAndFeelResolution, CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).GUIOverscan);
+    g_graphicsContext.ResetOverscan(CDisplaySettings::Get().GetCurrentResolution(), CDisplaySettings::Get().GetCurrentResolutionInfo().GUIOverscan);
     ResetControls();
     return true;
   }
@@ -94,7 +94,7 @@ void CGUIWindowSettingsUICalibration::Render()
 {
   // Get the information from the control
   CStdString strStatus;
-  RESOLUTION res = g_guiSettings.m_LookAndFeelResolution;
+  RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
   CGUIMoverControl *pControl = (CGUIMoverControl *)GetControl(m_control);
   if (pControl)
   {
@@ -140,7 +140,7 @@ void CGUIWindowSettingsUICalibration::Render()
 void CGUIWindowSettingsUICalibration::ResetControls()
 {
   CGUIMoverControl *pControl = (CGUIMoverControl *)GetControl(CONTROL_TOPLEFT);
-  RESOLUTION res = g_guiSettings.m_LookAndFeelResolution;
+  RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
   if (pControl)
   {
     pControl->SetLimits(-CDisplaySettings::Get().GetResolutionInfo(res).iWidth / 4,

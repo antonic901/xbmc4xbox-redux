@@ -229,10 +229,10 @@ void CGUIWindowSlideShow::Reset()
 
 void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
 { 
-  if (m_Resolution != g_guiSettings.m_LookAndFeelResolution)
+  if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution())
   {
     //FIXME: Use GUI resolution for now
-    g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
+    g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   }
 
   //   Reset();
@@ -709,7 +709,8 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       m_Resolution = (RESOLUTION) g_guiSettings.GetInt("pictures.displayresolution");
-      if (m_Resolution != g_guiSettings.m_LookAndFeelResolution && m_Resolution != RES_INVALID)
+
+      if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution() && m_Resolution != RES_INVALID)
       {
         g_graphicsContext.SetVideoResolution(m_Resolution, TRUE);
       }

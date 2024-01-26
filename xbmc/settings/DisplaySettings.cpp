@@ -18,11 +18,12 @@
  *
  */
 
-#include "system.h"
 #include "DisplaySettings.h"
+#include "guilib/gui3d.h"
+#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"
-#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
 using namespace std;
@@ -148,6 +149,22 @@ void CDisplaySettings::Clear()
   CSingleLock lock(m_critical);
   m_calibrations.clear();
   m_resolutions.clear();
+}
+
+void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)
+{
+  if (save)
+    g_guiSettings.SetInt("videoscreen.resolution", (int)resolution);
+
+  m_currentResolution = resolution;
+
+  // SetChanged() is added in PVR pull request
+  g_settings.Save()/*g_guiSettings.SetChanged()*/;
+}
+
+RESOLUTION CDisplaySettings::GetDisplayResolution() const
+{
+  return (RESOLUTION)g_guiSettings.GetInt("videoscreen.resolution");
 }
 
 const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index) const

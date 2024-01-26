@@ -1355,15 +1355,13 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
     g_windowManager.SendMessage(msg);
     RESOLUTION nextRes = (RESOLUTION)msg.GetParam1();
     RESOLUTION lastRes = g_graphicsContext.GetVideoResolution();
-    g_guiSettings.SetInt("videoscreen.resolution", nextRes);
+    CDisplaySettings::Get().SetCurrentResolution(nextRes, true);
     g_graphicsContext.SetVideoResolution(nextRes);
-    g_guiSettings.m_LookAndFeelResolution = nextRes;
     bool cancelled = false;
     if (!CGUIDialogYesNo::ShowAndGetInput(13110, 13111, 20022, 20022, -1, -1, cancelled, 10000))
     {
-      g_guiSettings.SetInt("videoscreen.resolution", lastRes);
+      CDisplaySettings::Get().SetCurrentResolution(lastRes, true);
       g_graphicsContext.SetVideoResolution(lastRes);
-      g_guiSettings.m_LookAndFeelResolution = lastRes;
     }
   }
   else if (strSetting.Equals("system.ledcolour"))
@@ -1467,7 +1465,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
   }
   else if (strSetting.Equals("videoscreen.flickerfilter") || strSetting.Equals("videoscreen.soften"))
   { // reset display
-    g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
+    g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   }
   else if (strSetting.Equals("screensaver.preview"))
   {

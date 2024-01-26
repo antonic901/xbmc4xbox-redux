@@ -411,9 +411,6 @@ public:
   void LoadMasterLock(TiXmlElement *pRootElement);
   bool SetLanguage(const CStdString &strLanguage);
 
-  //m_LookAndFeelResolution holds the real gui resolution,
-  //also when g_guiSettings.GetInt("videoscreen.resolution") is set to RES_AUTORES
-  RESOLUTION m_LookAndFeelResolution;
   ReplayGainSettings m_replayGain;
 
   void Clear();

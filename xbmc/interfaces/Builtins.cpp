@@ -48,6 +48,7 @@
 #include "storage/MediaManager.h"
 #include "RssReader.h"
 #include "PartyModeManager.h"
+#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
@@ -368,11 +369,8 @@ int CBuiltins::Execute(const CStdString& execString)
     else if (parameter.Equals("1080i")) res = RES_HDTV_1080i;
     if (g_videoConfig.IsValidResolution(res))
     {
-      g_guiSettings.SetInt("videoscreen.resolution", res);
-      //set the gui resolution, if newRes is RES_AUTORES newRes will be set to the highest available resolution
+      CDisplaySettings::Get().SetCurrentResolution(res, true);
       g_graphicsContext.SetVideoResolution(res, TRUE);
-      //set our lookandfeelres to the resolution set in graphiccontext
-      g_guiSettings.m_LookAndFeelResolution = res;
       g_application.ReloadSkin();
     }
   }

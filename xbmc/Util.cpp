@@ -3910,7 +3910,7 @@ bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
     CLog::Log(LOGDEBUG, "%s - Auto Filter Flicker is off. Skipping Filter Flicker Patching.", __FUNCTION__);
     return false;
   }
-  CStdString strIsPMode = CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode;
+  CStdString strIsPMode = CDisplaySettings::Get().GetCurrentResolutionInfo().strMode;
   if ( strIsPMode.Equals("480p 16:9") || strIsPMode.Equals("480p 4:3") || strIsPMode.Equals("720p 16:9"))
   {
     CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Auto Filter Flicker Patching!", __FUNCTION__);

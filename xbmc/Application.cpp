@@ -397,18 +397,18 @@ void CApplication::InitBasicD3D()
 
   // Check if we have the required modes available
   g_videoConfig.GetModes(m_pD3D);
-  if (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
+  if (!g_graphicsContext.IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
   {
     // Oh uh - doesn't look good for starting in their wanted screenmode
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
-    g_guiSettings.m_LookAndFeelResolution = g_videoConfig.GetSafeMode();
-    CLog::Log(LOGERROR, "Resetting to mode %s", CDisplaySettings::Get().GetResolutionInfo(g_guiSettings.m_LookAndFeelResolution).strMode.c_str());
+    CDisplaySettings::Get().SetCurrentResolution(g_videoConfig.GetSafeMode(), true);
+    CLog::Log(LOGERROR, "Resetting to mode %s", CDisplaySettings::Get().GetCurrentResolutionInfo().strMode.c_str());
     CLog::Log(LOGERROR, "Done reset");
   }
 
   // Transfer the resolution information to our graphics context
   g_graphicsContext.SetD3DParameters(&m_d3dpp);
-  g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
+  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
 
   // Create the device
 #ifdef HAS_XBOX_D3D
@@ -1100,12 +1100,20 @@ HRESULT CApplication::Create(HWND hWnd)
   if (!CButtonTranslator::GetInstance().Load())
     FatalErrorHandler(true, false, true);
 
-  if (!g_graphicsContext.IsValidResolution(g_guiSettings.m_LookAndFeelResolution))
+  // Retrieve the matching resolution based on GUI settings
+  CDisplaySettings::Get().SetCurrentResolution(CDisplaySettings::Get().GetDisplayResolution());
+  CLog::Log(LOGNOTICE, "Checking resolution %i", CDisplaySettings::Get().GetCurrentResolution());
+  if (!g_graphicsContext.IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
   {
-    // Oh uh - doesn't look good for starting in their wanted screenmode
-    CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
-    g_guiSettings.m_LookAndFeelResolution = initialResolution;
+    #ifdef _XBOX
+        RESOLUTION newRes = g_videoConfig.GetBestMode();
+    #else
+        RESOLUTION newRes = g_videoConfig.GetSafeMode();
+    #endif
+    CLog::Log(LOGNOTICE, "Setting safe mode %i", newRes);
+    CDisplaySettings::Get().SetCurrentResolution(newRes, true);
   }
+
   // Transfer the new resolution information to our graphics context
 #ifndef HAS_XBOX_D3D
   m_d3dpp.Windowed = TRUE;
@@ -1115,7 +1123,7 @@ HRESULT CApplication::Create(HWND hWnd)
 #endif
 
   g_graphicsContext.SetD3DParameters(&m_d3dpp);
-  g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE);
+  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   
   if ( FAILED( hr = m_pD3D->CreateDevice(0, D3DDEVTYPE_HAL, NULL,
                                          D3DCREATE_MULTITHREADED | D3DCREATE_HARDWARE_VERTEXPROCESSING,
@@ -1157,7 +1165,7 @@ HRESULT CApplication::Create(HWND hWnd)
   CUtil::InitGamma();
   
   // set GUI res and force the clear of the screen
-  g_graphicsContext.SetVideoResolution(g_guiSettings.m_LookAndFeelResolution, TRUE, true);
+  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE, true);
 
   if (g_advancedSettings.m_splashImage)
   {
