@@ -409,7 +409,6 @@ public:
   void LoadXML(TiXmlElement *pRootElement, bool hideSettings = false);
   void SaveXML(TiXmlNode *pRootNode);
   void LoadMasterLock(TiXmlElement *pRootElement);
-  bool SetLanguage(const CStdString &strLanguage);
 
   ReplayGainSettings m_replayGain;
 

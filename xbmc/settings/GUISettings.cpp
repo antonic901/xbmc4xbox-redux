@@ -30,19 +30,13 @@
 #ifdef HAS_XFONT
 #include <xfont.h>
 #endif
-#include "Application.h"
 #include "storage/MediaManager.h"
 #include "settings/AdvancedSettings.h"
-#include "input/KeyboardLayoutConfiguration.h"
 #include "LocalizeStrings.h"
 #include "guilib/GUIFont.h" // for FONT_STYLE_* definitions
-#include "guilib/GUIFontManager.h"
-#include "LangInfo.h"
-#include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
-#include "utils/Weather.h"
 
 using namespace std;
 using namespace ADDON;
@@ -1165,44 +1159,4 @@ void CGUISettings::Clear()
   for (unsigned int i = 0; i < settingsGroups.size(); i++)
     delete settingsGroups[i];
   settingsGroups.clear();
-}
-
-bool CGUISettings::SetLanguage(const CStdString &strLanguage)
-{
-  CStdString strPreviousLanguage = GetString("locale.language");
-  CStdString strNewLanguage = strLanguage;
-  if (strNewLanguage != strPreviousLanguage)
-  {
-    CStdString strLangInfoPath;
-    strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", strNewLanguage.c_str());
-    if (!g_langInfo.Load(strLangInfoPath))
-      return false;
-
-    if (g_langInfo.ForceUnicodeFont() && !g_fontManager.IsFontSetUnicode())
-    {
-      CLog::Log(LOGINFO, "Language needs a ttf font, loading first ttf font available");
-      CStdString strFontSet;
-      if (g_fontManager.GetFirstFontSetUnicode(strFontSet))
-        strNewLanguage = strFontSet;
-      else
-        CLog::Log(LOGERROR, "No ttf font found but needed: %s", strFontSet.c_str());
-    }
-    SetString("locale.language", strNewLanguage);
-
-    g_charsetConverter.reset();
-
-    CStdString strKeyboardLayoutConfigurationPath;
-    strKeyboardLayoutConfigurationPath.Format("special://xbmc/language/%s/keyboardmap.xml", strLanguage.c_str());
-    CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
-    g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
-
-    if (!g_localizeStrings.Load("special://xbmc/language/", strLanguage))
-      return false;
-
-    // also tell our weather and skin to reload as these are localized
-    g_weatherManager.Refresh();
-    g_application.ReloadSkin();
-  }
-
-  return true;
 }

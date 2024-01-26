@@ -221,6 +221,7 @@ public:
 
   int GlobalIdleTime();
 
+  bool SetLanguage(const CStdString &strLanguage);
 protected:
   virtual bool OnSettingsSaving() const;
 
