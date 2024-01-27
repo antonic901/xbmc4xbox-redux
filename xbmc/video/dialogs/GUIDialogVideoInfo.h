@@ -20,10 +20,8 @@
  *
  */
 
-#include "GUIDialog.h"
-#include "GUIListItem.h"
-#include "video/windows/GUIWindowVideoBase.h"
-#include "ThumbLoader.h"
+#include "guilib/GUIDialog.h"
+#include "FileItem.h"
 
 class CFileItem;
 
@@ -64,6 +62,4 @@ protected:
   bool m_bRefresh;
   bool m_bRefreshAll;
   bool m_hasUpdatedThumb;
-  CGUIDialogProgress* m_dlgProgress;
-  CVideoThumbLoader m_loader;
 };

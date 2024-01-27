@@ -90,6 +90,7 @@
 
 #include "addons/AddonManager.h"
 #include "interfaces/info/InfoBool.h"
+#include "video/VideoDatabase.h"
 
 using namespace std;
 using namespace XFILE;
