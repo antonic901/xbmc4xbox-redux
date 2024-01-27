@@ -57,6 +57,7 @@ class CAdvancedSettings : public ISettingsHandler
 
     virtual void OnSettingsLoaded();
 
+    void AddSettingsFile(const CStdString &filename);
     bool Load();
     void Clear();
 
@@ -239,6 +240,9 @@ class CAdvancedSettings : public ISettingsHandler
 
     DatabaseSettings m_databaseMusic; // advanced music database setup
     DatabaseSettings m_databaseVideo; // advanced video database setup
+
+    std::vector<CStdString> m_settingsFiles;
+    void ParseSettingsFile(const CStdString &file);
 };
 
 extern CAdvancedSettings g_advancedSettings;
