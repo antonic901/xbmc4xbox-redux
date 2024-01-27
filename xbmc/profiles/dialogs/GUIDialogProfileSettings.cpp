@@ -339,7 +339,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
       }*/
 
       // check for old profile settings
-      CProfile profile;
+      CProfile profile(dialog->m_strDirectory,dialog->m_strName,g_settings.GetNextProfileId());
       g_settings.AddProfile(profile);
       bool bExists = CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/",
                                                           dialog->m_strDirectory+"/guisettings.xml"));
