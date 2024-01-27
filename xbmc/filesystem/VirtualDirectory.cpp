@@ -23,7 +23,6 @@
 #include "VirtualDirectory.h"
 #include "DirectoryFactory.h"
 #include "Util.h"
-#include "settings/Profile.h"
 #include "Directory.h"
 #include "DirectoryCache.h"
 #include "SourcesDirectory.h"

@@ -21,7 +21,7 @@
  */
 
 #include "MediaSource.h"
-#include "settings/Profile.h"
+#include "profiles/Profile.h"
 #include "settings/dialogs/GUIDialogSettings.h"
 
 class CGUIDialogProfileSettings : public CGUIDialogSettings

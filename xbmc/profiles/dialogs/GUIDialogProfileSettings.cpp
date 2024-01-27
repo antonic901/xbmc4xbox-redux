@@ -20,13 +20,10 @@
 
 #include "GUIDialogProfileSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "dialogs/GUIDialogContextMenu.h"
-#include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogKeyboard.h"
-#include "dialogs/GUIDialogGamepad.h"
-#include "settings/dialogs/GUIDialogLockSettings.h"
-#include "GUIImage.h"
-#include "GUIWindowManager.h"
+#include "profiles/dialogs/GUIDialogLockSettings.h"
+#include "guilib/GUIImage.h"
+#include "guilib/GUIWindowManager.h"
 #include "storage/MediaManager.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
@@ -36,7 +33,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 
 using namespace XFILE;
 

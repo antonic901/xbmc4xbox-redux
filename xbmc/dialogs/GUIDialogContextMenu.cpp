@@ -33,7 +33,7 @@
 #include "utils/URIUtils.h"
 #include "settings/MediaSourceSettings.h"
 #include "dialogs/GUIDialogMediaSource.h"
-#include "settings/dialogs/GUIDialogLockSettings.h"
+#include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "storage/MediaManager.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

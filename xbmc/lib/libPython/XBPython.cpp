@@ -33,7 +33,6 @@
 #include "XBPython.h"
 #include "XBPythonDll.h"
 #include "settings/Settings.h"
-#include "settings/Profile.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "utils/log.h"

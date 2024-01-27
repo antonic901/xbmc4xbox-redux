@@ -575,12 +575,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsCategory.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsProfile.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsProfile.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\settings\windows\GUIWindowSettingsScreenCalibration.cpp">
 					</File>
 					<File
@@ -595,18 +589,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\dialogs\GUIDialogContentSettings.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\settings\dialogs\GUIDialogLockSettings.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\settings\dialogs\GUIDialogLockSettings.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\settings\dialogs\GUIDialogProfileSettings.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\settings\dialogs\GUIDialogProfileSettings.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettings.cpp">
@@ -1193,9 +1175,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\POUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\Profile.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RecentlyAddedJob.cpp">
@@ -3107,6 +3086,42 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\view\ViewStateSettings.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="profiles"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\profiles\Profile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\profiles\Profile.h">
+				</File>
+				<Filter
+					Name="dialogs"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\profiles\dialogs\GUIDialogLockSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\profiles\dialogs\GUIDialogLockSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\profiles\dialogs\GUIDialogProfileSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\profiles\dialogs\GUIDialogProfileSettings.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="windows"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\profiles\windows\GUIWindowSettingsProfile.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\profiles\windows\GUIWindowSettingsProfile.h">
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -3534,9 +3549,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\playlists\PlayListXML.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\Profile.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\RegExp.h">

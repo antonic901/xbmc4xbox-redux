@@ -23,7 +23,7 @@
 #include "settings/ISubSettings.h"
 #include "settings/VideoSettings.h"
 #include "settings/GUISettings.h"
-#include "settings/Profile.h"
+#include "profiles/Profile.h"
 #include "MediaSource.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CriticalSection.h"

@@ -21,7 +21,7 @@
  */
 
 #include "GUIPassword.h"
-#include "settings/Profile.h"
+#include "profiles/Profile.h"
 #include "settings/dialogs/GUIDialogSettings.h"
 
 class CGUIDialogLockSettings : public CGUIDialogSettings

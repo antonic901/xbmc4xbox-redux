@@ -18,7 +18,7 @@
  *
  */
 
-#include "settings/Profile.h"
+#include "Profile.h"
 #include "GUIInfoManager.h"
 #include "utils/XMLUtils.h"
 
