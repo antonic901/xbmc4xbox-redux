@@ -439,8 +439,6 @@ public:
   static bool GetString(const TiXmlElement* pRootElement, const char *strTagName, CStdString& strValue, const CStdString& strDefaultValue);
   bool GetString(const TiXmlElement* pRootElement, const char *strTagName, char *szValue, const CStdString& strDefaultValue);
 protected:
-  void ConvertHomeVar(CStdString& strText);
-
   bool LoadSettings(const CStdString& strSettingsFile);
 //  bool SaveSettings(const CStdString& strSettingsFile) const;
 
