@@ -98,7 +98,6 @@ bool CGUIDialogVideoInfo::OnMessage(CGUIMessage& message)
 
       CGUIDialog::OnMessage(message);
       m_bViewReview = false;
-      Refresh();
 
       CVideoDatabase database;
       ADDON::ScraperPtr scraper;
@@ -423,49 +422,6 @@ void CGUIDialogVideoInfo::Update()
   }
 }
 
-void CGUIDialogVideoInfo::Refresh()
-{
-  try
-  {
-    OutputDebugString("Refresh\n");
-
-    CStdString strImage = m_movieItem->GetVideoInfoTag()->m_strPictureURL.GetFirstThumb().m_url;
-
-    bool hasUpdatedThumb = false;
-    CStdString thumbImage = m_movieItem->GetThumbnailImage();
-    if (thumbImage.IsEmpty())
-      thumbImage = m_movieItem->GetCachedVideoThumb();
-
-    if (!CFile::Exists(thumbImage) || m_movieItem->GetProperty("HasAutoThumb").asString() == "1")
-    { // don't have a thumb already, try and grab one
-      m_movieItem->SetUserVideoThumb();
-      if (m_movieItem->GetThumbnailImage() != thumbImage)
-        thumbImage = m_movieItem->GetThumbnailImage();
-      if (!CFile::Exists(thumbImage) && strImage.size() > 0)
-        CScraperUrl::DownloadThumbnail(thumbImage,m_movieItem->GetVideoInfoTag()->m_strPictureURL.GetFirstThumb());
-
-      if (CFile::Exists(thumbImage))
-      {
-        if (m_movieItem->HasProperty("set_folder_thumb"))
-          VIDEO::CVideoInfoScanner::ApplyThumbToFolder(m_movieItem->GetProperty("set_folder_thumb").asString(), thumbImage);
-        hasUpdatedThumb = true;
-      }
-    }
-
-    if (hasUpdatedThumb)
-    {
-      m_movieItem->SetThumbnailImage(thumbImage);
-      CUtil::DeleteVideoDatabaseDirectoryCache();
-      m_hasUpdatedThumb = true;
-    }
-
-    Update();
-    //OutputDebugString("update\n");
-    //OutputDebugString("updated\n");
-  }
-  catch (...)
-  {}
-}
 bool CGUIDialogVideoInfo::NeedRefresh() const
 {
   return m_bRefresh;
