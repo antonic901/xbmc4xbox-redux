@@ -25,8 +25,9 @@
 #include "utils/StdString.h"
 #include "utils/StringUtils.h"
 
-struct DatabaseSettings
+class DatabaseSettings
 {
+public:
   CStdString type;
   CStdString host;
   CStdString port;

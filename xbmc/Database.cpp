@@ -24,7 +24,6 @@
 #include "utils/Crc32.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/File.h"
-#include "utils/SingleLock.h"
 #include "utils/AutoPtrHandle.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -35,8 +34,6 @@ using namespace AUTOPTR;
 using namespace dbiplus;
 
 #define MAX_COMPRESS_COUNT 20
-
-std::map<std::string, bool> CDatabase::m_updated;
 
 void CDatabase::Filter::AppendField(const std::string &strField)
 {
@@ -488,10 +485,6 @@ bool CDatabase::Connect(const DatabaseSettings &dbSettings, bool create)
 
 bool CDatabase::UpdateVersion(const CStdString &dbName)
 {
-  CSingleLock lock(m_critSect);
-  if (m_updated[dbName])
-    return true;
-
   int version = 0;
   m_pDS->query("SELECT idVersion FROM version\n");
   if (m_pDS->num_rows() > 0)
@@ -513,8 +506,6 @@ bool CDatabase::UpdateVersion(const CStdString &dbName)
     CLog::Log(LOGERROR, "Can't open the database %s as it is a NEWER version than what we were expecting?", dbName.c_str());
     return false;
   }
-
-  m_updated[dbName] = true;
   return true;
 }
 
