@@ -29,11 +29,17 @@
 
 #include "system.h"
 #include <iostream>
+#ifdef _XBOX
+#include <fstream>
+#endif
 #include <string>
 
 #include "sqlitedataset.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#ifdef _XBOX
+#include "filesystem/File.h"
+#endif
 
 using namespace std;
 
@@ -213,13 +219,15 @@ int SqliteDatabase::connect(bool create) {
   try
   {
     disconnect();
-#ifndef _XBOX
     // TODO: sqLite 3.5 added sqlite3_open_v2 function. Try porting it and then use this block
+#ifndef _XBOX
     int flags = SQLITE_OPEN_READWRITE;
     if (create)
       flags |= SQLITE_OPEN_CREATE;
     if (sqlite3_open_v2(db_fullpath.c_str(), &conn, flags, NULL)==SQLITE_OK)
 #else
+    if (!create && !XFILE::CFile::Exists(db_fullpath))
+      return DB_CONNECTION_NONE;
     if (sqlite3_open(db_fullpath.c_str(), &conn)==SQLITE_OK)
 #endif
     {
@@ -311,7 +319,24 @@ int SqliteDatabase::copy(const char *backup_name) {
 
   (void)sqlite3_close(pFile);
 #else
-  // TODO: manually duplicate original DB file
+  if (backup_name[0] == '/' || backup_name[0] == '\\')
+    backup_db = backup_db.substr(1);
+
+  // ensure the ".db" extension is appended to the end
+  if ( backup_db.find(".db") != (backup_db.length()-3) )
+    backup_db += ".db";
+
+  string backup_path = URIUtils::AddFileToFolder(host, backup_db);
+  string original_path = URIUtils::AddFileToFolder(host, db);
+
+  ifstream original_file(original_path.c_str(), ios::binary);
+  ofstream destination_file(backup_path.c_str(), ios::binary);
+
+  if (!original_file.is_open() || !destination_file.is_open())
+    throw exception();
+
+  destination_file << original_file.rdbuf();
+  rc = 1;
 #endif
   return rc;
 }
