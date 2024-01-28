@@ -316,7 +316,7 @@ bool CDatabase::Open(const DatabaseSettings &settings)
   dbName.AppendFormat("%d", GetMinVersion());
   if (!Connect(dbName, dbSettings, false) || GetDBVersion() != GetMinVersion())
   {
-    if (!Update(dbSettings))
+    if (!Update(settings))
       return false;
   }
   return true;
@@ -346,8 +346,11 @@ void CDatabase::InitSettings(DatabaseSettings &dbSettings)
     dbSettings.name = GetBaseDBName();
 }
 
-bool CDatabase::Update(const DatabaseSettings &dbSettings)
+bool CDatabase::Update(const DatabaseSettings &settings)
 {
+  DatabaseSettings dbSettings = settings;
+  InitSettings(dbSettings);
+
   int version = GetMinVersion();
   CStdString latestDb = dbSettings.name;
   latestDb.AppendFormat("%d", version);

@@ -138,6 +138,7 @@ public:
   virtual bool BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
 
 protected:
+  friend class CDatabaseManager;
   bool Update(const DatabaseSettings &db);
 
   void Split(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);
