@@ -162,6 +162,7 @@ protected:
   std::auto_ptr<dbiplus::Dataset> m_pDS2;
 
 private:
+  void InitSettings(DatabaseSettings &dbSettings);
   bool Connect(const CStdString &dbName, const DatabaseSettings &db, bool create);
   bool UpdateVersionNumber();
 
