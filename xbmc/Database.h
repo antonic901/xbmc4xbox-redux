@@ -138,6 +138,8 @@ public:
   virtual bool BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
 
 protected:
+  bool Update(const DatabaseSettings &db);
+
   void Split(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);
   DWORD ComputeCRC(const CStdString &text);
 
