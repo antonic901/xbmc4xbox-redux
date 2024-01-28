@@ -812,7 +812,7 @@ private:
   bool LookupByFolders(const CStdString &path, bool shows = false);
   
   virtual int GetMinVersion() const { return 69; };
-  const char *GetDefaultDBName() const { return "MyVideos34.db"; };
+  const char *GetBaseDBName() const { return "MyVideos"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
   void SplitPath(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);

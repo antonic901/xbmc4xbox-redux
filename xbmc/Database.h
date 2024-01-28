@@ -147,12 +147,9 @@ protected:
   virtual bool UpdateOldVersion(int version) { return true; };
 
   virtual int GetMinVersion() const=0;
-  virtual const char *GetDefaultDBName() const=0;
+  virtual const char *GetBaseDBName() const=0;
 
   bool UpdateVersion(const CStdString &dbName);
-
-  bool m_bOpen;
-  CStdString m_strDatabaseFile;
 
   bool BuildSQL(const CStdString &strQuery, const Filter &filter, CStdString &strSQL);
 
@@ -168,7 +165,7 @@ private:
 
   bool m_bMultiWrite; /*!< True if there are any queries in the queue, false otherwise */
 
-  int m_iRefCount;
+  unsigned int m_openCount;
 
   CCriticalSection m_critSect;
   static std::map<std::string, bool> m_updated;

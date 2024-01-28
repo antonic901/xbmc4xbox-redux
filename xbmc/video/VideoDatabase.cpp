@@ -58,7 +58,6 @@ using namespace ADDON;
 //********************************************************************************************************************************
 CVideoDatabase::CVideoDatabase(void)
 {
-  m_strDatabaseFile=GetDefaultDBName(); 
 }
 
 //********************************************************************************************************************************
@@ -3634,9 +3633,6 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
 {
   BeginTransaction();
 
-  // when adding/removing an index or altering the table ensure that you call
-  // CreateViews() after all modifications.
-
   try
   {
     if (iVersion < 4)
@@ -4170,10 +4166,6 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("DROP INDEX ix_bookmark");
       m_pDS->exec("CREATE INDEX ix_bookmark ON bookmark (idFile, type)");
     }
-    if (iVersion < 40)
-    {
-      CreateViews();
-    }
     if (iVersion < 41)
     {
       // Add iOrder fields to actorlink* tables to be able to list
@@ -4181,10 +4173,6 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("ALTER TABLE actorlinkmovie ADD iOrder integer");
       m_pDS->exec("ALTER TABLE actorlinktvshow ADD iOrder integer");
       m_pDS->exec("ALTER TABLE actorlinkepisode ADD iOrder integer");
-    }
-    if ( iVersion < 42 )
-    {
-      CreateViews();
     }
     if (iVersion < 43)
     {
@@ -4210,6 +4198,9 @@ bool CVideoDatabase::UpdateOldVersion(int iVersion)
       m_pDS->exec("ALTER TABLE path ADD dateAdded text");
       m_pDS->exec("ALTER TABLE files ADD dateAdded text");
     }
+
+    // always recreate the view after any table change
+    CreateViews();
   }
   catch (...)
   {

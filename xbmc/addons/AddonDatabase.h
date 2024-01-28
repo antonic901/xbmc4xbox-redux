@@ -102,5 +102,5 @@ protected:
   virtual bool CreateTables();
   virtual bool UpdateOldVersion(int version);
   virtual int GetMinVersion() const { return 15; }
-  const char *GetDefaultDBName() const { return "Addons"; }
+  const char *GetBaseDBName() const { return "Addons"; }
 };
