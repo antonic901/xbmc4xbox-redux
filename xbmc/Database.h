@@ -148,6 +148,7 @@ protected:
   virtual int GetMinVersion() const=0;
   virtual const char *GetBaseDBName() const=0;
 
+  int GetDBVersion();
   bool UpdateVersion(const CStdString &dbName);
 
   bool BuildSQL(const CStdString &strQuery, const Filter &filter, CStdString &strSQL);
