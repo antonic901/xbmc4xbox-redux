@@ -61,6 +61,7 @@
 #include "utils/log.h"
 #include "utils/FileUtils.h"
 #include "addons/AddonManager.h"
+#include "DatabaseManager.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1232,6 +1233,8 @@ bool CSettings::LoadProfile(unsigned int index)
 
     CButtonTranslator::GetInstance().Load();
     g_localizeStrings.Load("special://xbmc/language/", strLanguage);
+
+    CDatabaseManager::Get().Initialize();
 
     g_infoManager.ResetCache();
     g_infoManager.ResetLibraryBools();

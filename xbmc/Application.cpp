@@ -87,6 +87,7 @@
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
+#include "DatabaseManager.h"
 #ifdef HAS_FILESYSTEM
 #include "filesystem/DAAPFile.h"
 #endif
@@ -974,6 +975,9 @@ HRESULT CApplication::Create(HWND hWnd)
 
   update_emu_environ();//apply the GUI settings
 
+  // initialize the addon database (must be before the addon manager is init'd)
+  CDatabaseManager::Get().Initialize(true);
+
   // start-up Addons Framework
   // currently bails out if either cpluff Dll is unavailable or system dir can not be scanned
   if (!CAddonMgr::Get().Init())
@@ -1254,6 +1258,9 @@ HRESULT CApplication::Initialize()
   /* setup network based on our settings */
   /* network will start it's init procedure */
   m_network.SetupNetwork();
+
+  // initialize (and update as needed) our databases
+  CDatabaseManager::Get().Initialize();
 
   StartServices();
 
