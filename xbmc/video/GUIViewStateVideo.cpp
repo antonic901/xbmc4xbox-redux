@@ -24,7 +24,7 @@
 #include "filesystem/PluginDirectory.h"
 #include "GUIBaseContainer.h"
 #include "video/VideoDatabase.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
@@ -407,7 +407,7 @@ VECSOURCES& CGUIViewStateWindowVideoNav::GetSources()
   //  Setup shares we want to have
   m_sources.clear();
   CFileItemList items;
-  if (g_settings.m_bMyVideoNavFlatten)
+  if (g_guiSettings.GetBool("myvideos.flatten"))
     CDirectory::GetDirectory("library://video_flat/", items, "");
   else
     CDirectory::GetDirectory("library://video/", items, "");

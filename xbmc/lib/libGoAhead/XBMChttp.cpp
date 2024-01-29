@@ -2691,11 +2691,11 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp.Format("%i", watchMode);
       }
       else if (paras[i]=="mymusicstartwindow")
-        tmp.Format("%i",g_settings.m_iMyMusicStartWindow);
+        tmp.Format("%i",g_guiSettings.GetInt("mymusic.startwindow"));
       else if (paras[i]=="videostartwindow")
-        tmp.Format("%i",g_settings.m_iVideoStartWindow);
+        tmp.Format("%i",g_guiSettings.GetInt("myvideos.startwindow"));
       else if (paras[i]=="myvideostack")
-        tmp.Format("%i",g_settings.m_videoStacking ? 1 : 0);
+        tmp.Format("%i",g_guiSettings.GetBool("myvideos.stackvideos") ? 1 : 0);
       else if (paras[i]=="additionalsubtitledirectorychecked")
         tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
@@ -2713,7 +2713,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="mute")
         tmp = (g_settings.m_bMute==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")
-        tmp = (g_settings.m_bMyVideoNavFlatten==0) ? "False" : "True";
+        tmp = (g_guiSettings.GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")
         tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
@@ -2722,10 +2722,6 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp = (CMediaSettings::Get().IsMusicPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistrepeat")
         tmp = (CMediaSettings::Get().DoesMusicPlaylistRepeat()==0) ? "False" : "True";
-      else if (paras[i]=="mymusicsongthumbinvis")
-        tmp = (g_settings.m_bMyMusicSongThumbInVis==0) ? "False" : "True";
-      else if (paras[i]=="mymusicsonginfoinvis")
-        tmp = (g_settings.m_bMyMusicSongInfoInVis==0) ? "False" : "True";
       else if (paras[i]=="zoomamount")
         tmp.Format("%f", CDisplaySettings::Get().GetZoomAmount());
       else if (paras[i]=="pixelratio")

@@ -244,23 +244,6 @@ public:
     int m_bgInfoLoaderMaxThreads;
   };
 
-  bool m_bMyMusicSongInfoInVis;
-  bool m_bMyMusicSongThumbInVis;
-
-  int m_iMyMusicStartWindow;
-
-  bool m_bMyVideoNavFlatten;
-  bool m_bAddonAutoUpdate;
-  bool m_bAddonNotifications;
-  bool m_bAddonForeignFilter;
-
-  int m_iVideoStartWindow;
-
-  bool m_videoStacking;
-
-  char szOnlineArenaPassword[32]; // private arena password
-  char szOnlineArenaDescription[64]; // private arena description
-
   int m_HttpApiBroadcastPort;
   int m_HttpApiBroadcastLevel;
   int m_nVolumeLevel;                     // measured in milliBels -60dB -> 0dB range.
@@ -270,8 +253,6 @@ public:
   int m_iSystemTimeTotalUp;    // Uptime in minutes!
 
   VOICE_MASK m_karaokeVoiceMask[4];
-
-  CStdString m_defaultMusicLibSource;
 
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;

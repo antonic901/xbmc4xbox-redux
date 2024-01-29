@@ -35,7 +35,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "playlists/PlayList.h"
 
@@ -276,7 +276,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     // stack video files
     CFileItemList tempItems;
     tempItems.Append(vecItems);
-    if (g_settings.m_videoStacking)
+    if (g_guiSettings.GetBool("myvideos.stackvideos"))
       tempItems.Stack();
     itemlist.Clear();
 

@@ -571,6 +571,11 @@ void CGUISettings::Initialize()
   AddBool(vid, "myvideos.cleanstrings", 20419, false);
   AddBool(NULL, "myvideos.extractthumb",20433, false);
 
+  AddSeparator(NULL, "myvideos.sep1");
+  AddInt(NULL, "myvideos.startwindow", 0, WINDOW_VIDEO_FILES, WINDOW_VIDEO_FILES, 1, WINDOW_VIDEO_NAV, SPIN_CONTROL_INT);
+  AddBool(NULL, "myvideos.stackvideos", 0, false);
+  AddBool(NULL, "myvideos.flatten", 0, false);
+
   CSettingsCategory* sub = AddCategory(5, "subtitles", 287);
   AddString(sub, "subtitles.font", 288, "Arial.ttf", SPIN_CONTROL_TEXT);
   AddInt(sub, "subtitles.height", 289, 28, 16, 2, 74, SPIN_CONTROL_TEXT); // use text as there is a disk based lookup needed
@@ -731,6 +736,14 @@ void CGUISettings::Initialize()
   AddBool(ss, "screensaver.usedimonpause", 22014, true);
 
   AddPath(NULL,"system.playlistspath",20006,"set default",BUTTON_CONTROL_PATH_INPUT,false);
+
+  AddInt(NULL, "mymusic.startwindow", 0, WINDOW_MUSIC_FILES, WINDOW_MUSIC_FILES, 1, WINDOW_MUSIC_NAV, SPIN_CONTROL_INT);
+  AddBool(NULL, "mymusic.songthumbinvis", 0, false);
+  AddString(NULL, "mymusic.defaultlibview", 0, "", BUTTON_CONTROL_STANDARD);
+
+  AddBool(NULL, "general.addonautoupdate", 0, true);
+  AddBool(NULL, "general.addonnotifications", 0, true);
+  AddBool(NULL, "general.addonforeignfilter", 0, false);
 }
 
 CGUISettings::~CGUISettings(void)

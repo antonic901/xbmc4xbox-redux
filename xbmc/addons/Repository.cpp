@@ -23,7 +23,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "filesystem/File.h"
 #include "AddonDatabase.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "utils/JobManager.h"
 #include "addons/AddonInstaller.h"
@@ -209,7 +209,7 @@ bool CRepositoryUpdateJob::DoWork()
     if (addon && addons[i]->Version() > addon->Version() &&
         !database.IsAddonBlacklisted(addons[i]->ID(),addons[i]->Version().c_str()))
     {
-      if (g_settings.m_bAddonAutoUpdate || addon->Type() >= ADDON_VIZ_LIBRARY)
+      if (g_guiSettings.GetBool("general.addonautoupdate") || addon->Type() >= ADDON_VIZ_LIBRARY)
       {
         CStdString referer;
         if (URIUtils::IsInternetStream(addons[i]->Path()))
@@ -217,7 +217,7 @@ bool CRepositoryUpdateJob::DoWork()
 
         CAddonInstaller::Get().Install(addon->ID(), true, referer);
       }
-      else if (g_settings.m_bAddonNotifications)
+      else if (g_guiSettings.GetBool("general.addonnotifications"))
       {
         g_application.m_guiDialogKaiToast.QueueNotification(addon->Icon(),
                                                             g_localizeStrings.Get(24061),

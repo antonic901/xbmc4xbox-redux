@@ -20,7 +20,7 @@
 
 #include "video/VideoDatabase.h"
 #include "DirectoryNodeOverview.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 #include "video/VideoDbUrl.h"
@@ -71,21 +71,21 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
   vector<pair<const char*, int> > vec;
   if (hasMovies)
   {
-    if (g_settings.m_bMyVideoNavFlatten)
+    if (g_guiSettings.GetBool("myvideos.flatten"))
       vec.push_back(make_pair("movies/titles", 342));
     else
       vec.push_back(make_pair("movies", 342));   // Movies
   }
   if (hasTvShows)
   {
-    if (g_settings.m_bMyVideoNavFlatten)
+    if (g_guiSettings.GetBool("myvideos.flatten"))
       vec.push_back(make_pair("tvshows/titles", 20343));
     else
       vec.push_back(make_pair("tvshows", 20343)); // TV Shows
   }
   if (hasMusicVideos)
   {
-    if (g_settings.m_bMyVideoNavFlatten)
+    if (g_guiSettings.GetBool("myvideos.flatten"))
       vec.push_back(make_pair("musicvideos/titles", 20389));
     else
       vec.push_back(make_pair("musicvideos", 20389)); // Music Videos

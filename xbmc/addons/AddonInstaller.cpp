@@ -26,7 +26,6 @@
 #include "guilib/LocalizeStrings.h"
 #include "filesystem/Directory.h"
 #include "settings/GUISettings.h"
-#include "settings/Settings.h"
 #include "Application.h"
 #include "utils/JobManager.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -518,7 +517,7 @@ bool CAddonInstallJob::Install(const CStdString &installFrom)
 
 void CAddonInstallJob::OnPostInstall(bool reloadAddon)
 {
-  if (m_addon->Type() < ADDON_VIZ_LIBRARY && g_settings.m_bAddonNotifications)
+  if (m_addon->Type() < ADDON_VIZ_LIBRARY && g_guiSettings.GetBool("general.addonnotifications"))
   {
     g_application.m_guiDialogKaiToast.QueueNotification(m_addon->Icon(),
                                                         m_addon->Name(),

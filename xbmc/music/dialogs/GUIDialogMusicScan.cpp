@@ -106,9 +106,6 @@ void CGUIDialogMusicScan::StartScanning(const CStdString& strDirectory)
     Show();
   }
 
-  // save settings
-  g_application.SaveMusicScanSettings();
-
   m_musicInfoScanner.Start(strDirectory);
 }
 
@@ -121,9 +118,6 @@ void CGUIDialogMusicScan::StartAlbumScan(const CStdString& strDirectory)
     Show();
   }
 
-  // save settings
-  g_application.SaveMusicScanSettings();
-
   m_musicInfoScanner.FetchAlbumInfo(strDirectory);
 }
 
@@ -135,9 +129,6 @@ void CGUIDialogMusicScan::StartArtistScan(const CStdString& strDirectory)
   {
     Show();
   }
-
-  // save settings
-  g_application.SaveMusicScanSettings();
 
   m_musicInfoScanner.FetchArtistInfo(strDirectory);
 }

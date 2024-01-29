@@ -30,6 +30,7 @@
 #include "GUIUserMessages.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 
 using namespace MUSIC_INFO;
 
@@ -61,7 +62,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      g_settings.m_bMyMusicSongThumbInVis = g_infoManager.ToggleShowInfo();
+      g_guiSettings.SetBool("mymusic.songthumbinvis", g_infoManager.ToggleShowInfo());
       return true;
     }
     break;
@@ -177,7 +178,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       CGUIWindow::OnMessage(message);
       if (g_infoManager.GetCurrentSongTag())
         m_tag = *g_infoManager.GetCurrentSongTag();
-      if (g_settings.m_bMyMusicSongThumbInVis)
+      if (g_guiSettings.GetBool("mymusic.songthumbinvis"))
       { // always on
         m_initTimer.Stop();
       }
@@ -231,7 +232,7 @@ void CGUIWindowVisualisation::FrameMove()
   if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
   {
     m_initTimer.Stop();
-    if (!g_settings.m_bMyMusicSongThumbInVis)
+    if (!g_guiSettings.GetBool("mymusic.songthumbinvis"))
     { // reached end of fade in, fade out again
       g_infoManager.SetShowInfo(false);
     }
