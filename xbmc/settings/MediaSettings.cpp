@@ -18,6 +18,8 @@
  *
  */
 
+#include <limits.h>
+
 #include "MediaSettings.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"
@@ -31,6 +33,17 @@ CMediaSettings::CMediaSettings()
   m_watchedModes["movies"] = WatchedModeAll;
   m_watchedModes["tvshows"] = WatchedModeAll;
   m_watchedModes["musicvideos"] = WatchedModeAll;
+
+  m_musicPlaylistRepeat = false;
+  m_musicPlaylistShuffle = false;
+  m_videoPlaylistRepeat = false;
+  m_videoPlaylistShuffle = false;
+
+  m_videoStartWindowed = false;
+  m_additionalSubtitleDirectoryChecked = 0;
+
+  m_musicNeedsUpdate = 0;
+  m_musicNeedsUpdate = 0;
 }
 
 CMediaSettings::~CMediaSettings()
@@ -87,6 +100,20 @@ bool CMediaSettings::Load(const TiXmlNode *settings)
     m_defaultVideoSettings.m_SubtitleCached = false;
   }
 
+  // mymusic settings
+  pElement = settings->FirstChildElement("mymusic");
+  if (pElement != NULL)
+  {
+    const TiXmlElement *pChild = pElement->FirstChildElement("playlist");
+    if (pChild != NULL)
+    {
+      XMLUtils::GetBoolean(pChild, "repeat", m_musicPlaylistRepeat);
+      XMLUtils::GetBoolean(pChild, "shuffle", m_musicPlaylistShuffle);
+    }
+    if (!XMLUtils::GetInt(pElement, "needsupdate", m_musicNeedsUpdate, 0, INT_MAX))
+      m_musicNeedsUpdate = 0;
+  }
+
   // Read the watchmode settings for the various media views
   pElement = settings->FirstChildElement("myvideos");
   if (pElement != NULL)
@@ -98,6 +125,15 @@ bool CMediaSettings::Load(const TiXmlNode *settings)
       m_watchedModes["tvshows"] = (WatchedMode)tmp;
     if (XMLUtils::GetInt(pElement, "watchmodemusicvideos", tmp, (int)WatchedModeAll, (int)WatchedModeWatched))
       m_watchedModes["musicvideos"] = (WatchedMode)tmp;
+
+    const TiXmlElement *pChild = pElement->FirstChildElement("playlist");
+    if (pChild != NULL)
+    {
+      XMLUtils::GetBoolean(pChild, "repeat", m_videoPlaylistRepeat);
+      XMLUtils::GetBoolean(pChild, "shuffle", m_videoPlaylistShuffle);
+    }
+    if (!XMLUtils::GetInt(pElement, "needsupdate", m_videoNeedsUpdate, 0, INT_MAX))
+      m_videoNeedsUpdate = 0;
   }
 
   return true;
@@ -132,6 +168,26 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   XMLUtils::SetFloat(pNode, "audiodelay", m_defaultVideoSettings.m_AudioDelay);
   XMLUtils::SetFloat(pNode, "subtitledelay", m_defaultVideoSettings.m_SubtitleDelay);
 
+  // mymusic
+  pNode = settings->FirstChild("mymusic");
+  if (pNode == NULL)
+  {
+    TiXmlElement videosNode("mymusic");
+    pNode = settings->InsertEndChild(videosNode);
+    if (pNode == NULL)
+      return false;
+  }
+
+  TiXmlElement musicPlaylistNode("playlist");
+  TiXmlNode *playlistNode = pNode->InsertEndChild(musicPlaylistNode);
+  if (playlistNode == NULL)
+    return false;
+  XMLUtils::SetBoolean(playlistNode, "repeat", m_musicPlaylistRepeat);
+  XMLUtils::SetBoolean(playlistNode, "shuffle", m_musicPlaylistShuffle);
+
+  XMLUtils::SetInt(pNode, "needsupdate", m_musicNeedsUpdate);
+
+  // myvideos
   pNode = settings->FirstChild("myvideos");
   if (pNode == NULL)
   {
@@ -144,6 +200,15 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   XMLUtils::SetInt(pNode, "watchmodemovies", m_watchedModes.find("movies")->second);
   XMLUtils::SetInt(pNode, "watchmodetvshows", m_watchedModes.find("tvshows")->second);
   XMLUtils::SetInt(pNode, "watchmodemusicvideos", m_watchedModes.find("musicvideos")->second);
+
+  TiXmlElement videoPlaylistNode("playlist");
+  playlistNode = pNode->InsertEndChild(videoPlaylistNode);
+  if (playlistNode == NULL)
+    return false;
+  XMLUtils::SetBoolean(playlistNode, "repeat", m_videoPlaylistRepeat);
+  XMLUtils::SetBoolean(playlistNode, "shuffle", m_videoPlaylistShuffle);
+
+  XMLUtils::SetInt(pNode, "needsupdate", m_videoNeedsUpdate);
 
   return true;
 }

@@ -94,13 +94,7 @@ void CSettings::Initialize()
   m_bMyMusicSongInfoInVis = true;    // UNUSED - depreciated.
   m_bMyMusicSongThumbInVis = false;  // used for music info in vis screen
 
-  m_bMyMusicPlaylistRepeat = false;
-  m_bMyMusicPlaylistShuffle = false;
-
-  m_bMyVideoPlaylistRepeat = false;
-  m_bMyVideoPlaylistShuffle = false;
   m_bMyVideoNavFlatten = false;
-  m_bStartVideoWindowed = false;
   m_bAddonAutoUpdate = false;
   m_bAddonNotifications = true;
   m_bAddonForeignFilter = false;
@@ -113,7 +107,6 @@ void CSettings::Initialize()
   // defaults for scanning
   m_bMyMusicIsScanning = false;
 
-  iAdditionalSubtitleDirectoryChecked = 0;
   m_iMyMusicStartWindow = WINDOW_MUSIC_FILES;
   m_iVideoStartWindow = WINDOW_VIDEO_FILES;
 
@@ -252,12 +245,7 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   TiXmlElement *pElement = pRootElement->FirstChildElement("mymusic");
   if (pElement)
   {
-    TiXmlElement *pChild = pElement->FirstChildElement("playlist");
-    if (pChild)
-    {
-      XMLUtils::GetBoolean(pChild, "repeat", m_bMyMusicPlaylistRepeat);
-      XMLUtils::GetBoolean(pChild, "shuffle", m_bMyMusicPlaylistShuffle);
-    }
+    TiXmlElement *pChild;
     // if the user happened to reboot in the middle of the scan we save this state
     pChild = pElement->FirstChildElement("scanning");
     if (pChild)
@@ -277,13 +265,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetInteger(pElement, "startwindow", m_iVideoStartWindow, WINDOW_VIDEO_FILES, WINDOW_VIDEO_FILES, WINDOW_VIDEO_NAV);
     XMLUtils::GetBoolean(pElement, "stackvideos", m_videoStacking);
     XMLUtils::GetBoolean(pElement, "flatten", m_bMyVideoNavFlatten);
-
-    TiXmlElement *pChild = pElement->FirstChildElement("playlist");
-    if (pChild)
-    { // playlist
-      XMLUtils::GetBoolean(pChild, "repeat", m_bMyVideoPlaylistRepeat);
-      XMLUtils::GetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
-    }
   }
 
   // general settings
@@ -521,13 +502,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   TiXmlNode *pNode = pRoot->InsertEndChild(musicNode);
   if (!pNode) return false;
   {
-    TiXmlElement childNode("playlist");
-    TiXmlNode *pChild = pNode->InsertEndChild(childNode);
-    if (!pChild) return false;
-    XMLUtils::SetBoolean(pChild, "repeat", m_bMyMusicPlaylistRepeat);
-    XMLUtils::SetBoolean(pChild, "shuffle", m_bMyMusicPlaylistShuffle);
-  }
-  {
     TiXmlElement childNode("scanning");
     TiXmlNode *pChild = pNode->InsertEndChild(childNode);
     if (!pChild) return false;
@@ -548,14 +522,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
 
   XMLUtils::SetBoolean(pNode, "stackvideos", m_videoStacking);
   XMLUtils::SetBoolean(pNode, "flatten", m_bMyVideoNavFlatten);
-
-  { // playlist window
-    TiXmlElement childNode("playlist");
-    TiXmlNode *pChild = pNode->InsertEndChild(childNode);
-    if (!pChild) return false;
-    XMLUtils::SetBoolean(pChild, "repeat", m_bMyVideoPlaylistRepeat);
-    XMLUtils::SetBoolean(pChild, "shuffle", m_bMyVideoPlaylistShuffle);
-  }
 
   // general settings
   TiXmlElement generalNode("general");

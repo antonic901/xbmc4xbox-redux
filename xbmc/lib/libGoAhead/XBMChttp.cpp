@@ -2697,7 +2697,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="myvideostack")
         tmp.Format("%i",g_settings.m_videoStacking ? 1 : 0);
       else if (paras[i]=="additionalsubtitledirectorychecked")
-        tmp.Format("%i",g_settings.iAdditionalSubtitleDirectoryChecked);
+        tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
         tmp.Format("%i",g_settings.m_HttpApiBroadcastPort);
       else if (paras[i]=="httpapibroadcastlevel")
@@ -2715,15 +2715,15 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="myvideonavflatten")
         tmp = (g_settings.m_bMyVideoNavFlatten==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")
-        tmp = (g_settings.m_bMyVideoPlaylistShuffle==0) ? "False" : "True";
+        tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
-        tmp = (g_settings.m_bMyVideoPlaylistRepeat==0) ? "False" : "True";
+        tmp = (CMediaSettings::Get().DoesVideoPlaylistRepeat()==0) ? "False" : "True";
       else if (paras[i]=="mymusicisscanning")
         tmp = (g_settings.m_bMyMusicIsScanning==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistshuffle")
-        tmp = (g_settings.m_bMyMusicPlaylistShuffle==0) ? "False" : "True";
+        tmp = (CMediaSettings::Get().IsMusicPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistrepeat")
-        tmp = (g_settings.m_bMyMusicPlaylistRepeat==0) ? "False" : "True";
+        tmp = (CMediaSettings::Get().DoesMusicPlaylistRepeat()==0) ? "False" : "True";
       else if (paras[i]=="mymusicsongthumbinvis")
         tmp = (g_settings.m_bMyMusicSongThumbInVis==0) ? "False" : "True";
       else if (paras[i]=="mymusicsonginfoinvis")

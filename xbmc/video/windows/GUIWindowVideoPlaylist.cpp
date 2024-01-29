@@ -18,21 +18,22 @@
  *
  */
 
-#include "video/windows/GUIWindowVideoPlaylist.h"
+#include "GUIWindowVideoPlaylist.h"
 #include "playlists/PlayListFactory.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "playlists/PlayListM3U.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
 #include "PartyModeManager.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "GUIUserMessages.h"
+#include "settings/MediaSettings.h"
 #include "filesystem/FavouritesDirectory.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace PLAYLIST;
 
@@ -125,7 +126,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
         if (!g_partyModeManager.IsEnabled())
         {
           g_playlistPlayer.SetShuffle(PLAYLIST_VIDEO, !(g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO)));
-          g_settings.m_bMyVideoPlaylistShuffle = g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO);
+          CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO));
           g_settings.Save();
           UpdateButtons();
           Refresh();
@@ -168,7 +169,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
           g_playlistPlayer.SetRepeat(PLAYLIST_VIDEO, PLAYLIST::REPEAT_NONE);
 
         // save settings
-        g_settings.m_bMyVideoPlaylistRepeat = g_playlistPlayer.GetRepeat(PLAYLIST_VIDEO) == PLAYLIST::REPEAT_ALL;
+        CMediaSettings::Get().SetVideoPlaylistRepeat(g_playlistPlayer.GetRepeat(PLAYLIST_VIDEO) == PLAYLIST::REPEAT_ALL);
         g_settings.Save();
 
         UpdateButtons();

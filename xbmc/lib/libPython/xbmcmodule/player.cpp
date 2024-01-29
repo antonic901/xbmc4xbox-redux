@@ -31,7 +31,6 @@
 #include "listitem.h"
 #include "FileItem.h"
 #include "LangCodeExpander.h"
-#include "settings/Settings.h"
 #include "settings/MediaSettings.h"
 #include "utils/log.h"
 #include "pythreadstate.h"
@@ -134,7 +133,7 @@ namespace PYXBMC
     }
 
     // set fullscreen or windowed
-    g_settings.m_bStartVideoWindowed = (0 != bWindowed);
+    CMediaSettings::Get().SetVideoStartWindowed(0 != bWindowed);
 
     // force a playercore before playing
     g_application.m_eForcedNextPlayer = self->playerCore;

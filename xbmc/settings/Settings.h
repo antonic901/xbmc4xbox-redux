@@ -247,17 +247,12 @@ public:
   bool m_bMyMusicSongInfoInVis;
   bool m_bMyMusicSongThumbInVis;
 
-  bool m_bMyMusicPlaylistRepeat;
-  bool m_bMyMusicPlaylistShuffle;
   int m_iMyMusicStartWindow;
 
   // for scanning
   bool m_bMyMusicIsScanning;
 
-  bool m_bMyVideoPlaylistRepeat;
-  bool m_bMyVideoPlaylistShuffle;
   bool m_bMyVideoNavFlatten;
-  bool m_bStartVideoWindowed;
   bool m_bAddonAutoUpdate;
   bool m_bAddonNotifications;
   bool m_bAddonForeignFilter;
@@ -265,8 +260,6 @@ public:
   int m_iVideoStartWindow;
 
   bool m_videoStacking;
-
-  int iAdditionalSubtitleDirectoryChecked;
 
   char szOnlineArenaPassword[32]; // private arena password
   char szOnlineArenaDescription[64]; // private arena description
