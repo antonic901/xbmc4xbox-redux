@@ -34,6 +34,9 @@ static RESOLUTION_INFO EmptyModifiableResolution;
 CDisplaySettings::CDisplaySettings()
 {
   m_resolutions.insert(m_resolutions.begin(), RES_AUTORES, RESOLUTION_INFO());
+
+  m_zoomAmount = 1.0f;
+  m_pixelRatio = 1.0f;
 }
 
 CDisplaySettings::~CDisplaySettings()
@@ -149,6 +152,9 @@ void CDisplaySettings::Clear()
   CSingleLock lock(m_critical);
   m_calibrations.clear();
   m_resolutions.clear();
+
+  m_zoomAmount = 1.0f;
+  m_pixelRatio = 1.0f;
 }
 
 void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)

@@ -45,6 +45,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
@@ -2728,9 +2729,9 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="mymusicsonginfoinvis")
         tmp = (g_settings.m_bMyMusicSongInfoInVis==0) ? "False" : "True";
       else if (paras[i]=="zoomamount")
-        tmp.Format("%f", g_settings.m_fZoomAmount);
+        tmp.Format("%f", CDisplaySettings::Get().GetZoomAmount());
       else if (paras[i]=="pixelratio")
-        tmp.Format("%f", g_settings.m_fPixelRatio);
+        tmp.Format("%f", CDisplaySettings::Get().GetPixelRatio());
       else if (paras[i]=="pictureextensions")
         tmp = g_settings.m_pictureExtensions;
       else if (paras[i]=="musicextensions")

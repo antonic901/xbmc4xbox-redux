@@ -68,6 +68,11 @@ public:
   void ApplyCalibrations();
   void UpdateCalibrations();
 
+  float GetZoomAmount() const { return m_zoomAmount; }
+  void SetZoomAmount(float zoomAmount) { m_zoomAmount = zoomAmount; }
+  float GetPixelRatio() const { return m_pixelRatio; }
+  void SetPixelRatio(float pixelRatio) { m_pixelRatio = pixelRatio; }
+
 protected:
   CDisplaySettings();
   CDisplaySettings(const CDisplaySettings&);
@@ -81,5 +86,8 @@ private:
   typedef std::vector<RESOLUTION_INFO> ResolutionInfos;
   ResolutionInfos m_resolutions;
   ResolutionInfos m_calibrations;
+
+  float m_zoomAmount;         // current zoom amount
+  float m_pixelRatio;         // current pixel ratio
   CCriticalSection m_critical;
 };

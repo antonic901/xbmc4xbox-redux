@@ -260,9 +260,6 @@ public:
   // for scanning
   bool m_bMyMusicIsScanning;
 
-  float m_fZoomAmount;      // current zoom amount
-  float m_fPixelRatio;      // current pixel ratio
-
   bool m_bMyVideoPlaylistRepeat;
   bool m_bMyVideoPlaylistShuffle;
   bool m_bMyVideoNavFlatten;

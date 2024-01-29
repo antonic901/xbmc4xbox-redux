@@ -493,7 +493,7 @@ void CWinRenderer::ManageDisplay()
   rs.right = m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
   rs.bottom = m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
 
-  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * g_settings.m_fPixelRatio, g_settings.m_fZoomAmount);
+  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * CDisplaySettings::Get().GetPixelRatio(), CDisplaySettings::Get().GetZoomAmount());
 }
 
 void CWinRenderer::ChooseBestResolution(float fps)
@@ -921,14 +921,14 @@ void CWinRenderer::SetViewMode(int iViewMode)
 
   if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeNormal)
   { // normal mode...
-    g_settings.m_fPixelRatio = 1.0;
-    g_settings.m_fZoomAmount = 1.0;
+    CDisplaySettings::Get().SetPixelRatio(1.0);
+    CDisplaySettings::Get().SetZoomAmount(1.0);
     return ;
   }
   if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeCustom)
   {
-    g_settings.m_fZoomAmount = CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount;
-    g_settings.m_fPixelRatio = CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio;
+    CDisplaySettings::Get().SetZoomAmount(CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
+    CDisplaySettings::Get().SetPixelRatio(CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
     return ;
   }
 
@@ -942,73 +942,73 @@ void CWinRenderer::SetViewMode(int iViewMode)
 
   if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeZoom)
   { // zoom image so no black bars
-    g_settings.m_fPixelRatio = 1.0;
+    CDisplaySettings::Get().SetPixelRatio(1.0);
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * g_settings.m_fPixelRatio / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full height.
     float fNewHeight = fScreenHeight;
     float fNewWidth = fNewHeight * fOutputFrameRatio;
-    g_settings.m_fZoomAmount = fNewWidth / fScreenWidth;
+    CDisplaySettings::Get().SetZoomAmount(fNewWidth / fScreenWidth);
     if (fNewWidth < fScreenWidth)
     { // zoom to full width
       fNewWidth = fScreenWidth;
       fNewHeight = fNewWidth / fOutputFrameRatio;
-      g_settings.m_fZoomAmount = fNewHeight / fScreenHeight;
+      CDisplaySettings::Get().SetZoomAmount(fNewHeight / fScreenHeight);
     }
   }
   else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch4x3)
   { // stretch image to 4:3 ratio
-    g_settings.m_fZoomAmount = 1.0;
+    CDisplaySettings::Get().SetZoomAmount(1.0);
     if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // stretch to the limits of the 4:3 screen.
       // incorrect behaviour, but it's what the users want, so...
-      g_settings.m_fPixelRatio = (fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio;
+      CDisplaySettings::Get().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
     }
     else
     {
       // now we need to set g_settings.m_fPixelRatio so that
       // fOutputFrameRatio = 4:3.
-      g_settings.m_fPixelRatio = (4.0f / 3.0f) / fSourceFrameRatio;
+      CDisplaySettings::Get().SetPixelRatio((4.0f / 3.0f) / fSourceFrameRatio);
     }
   }
   else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch14x9)
   { // stretch image to 14:9 ratio
     // now we need to set g_settings.m_fPixelRatio so that
     // fOutputFrameRatio = 14:9.
-    g_settings.m_fPixelRatio = (14.0f / 9.0f) / fSourceFrameRatio;
+    CDisplaySettings::Get().SetPixelRatio((14.0f / 9.0f) / fSourceFrameRatio);
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * g_settings.m_fPixelRatio / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full height.
     float fNewHeight = fScreenHeight;
     float fNewWidth = fNewHeight * fOutputFrameRatio;
-    g_settings.m_fZoomAmount = fNewWidth / fScreenWidth;
+    CDisplaySettings::Get().SetZoomAmount(fNewWidth / fScreenWidth);
     if (fNewWidth < fScreenWidth)
     { // zoom to full width
       fNewWidth = fScreenWidth;
       fNewHeight = fNewWidth / fOutputFrameRatio;
-      g_settings.m_fZoomAmount = fNewHeight / fScreenHeight;
+      CDisplaySettings::Get().SetZoomAmount(fNewHeight / fScreenHeight);
     }
   }
   else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch16x9)
   { // stretch image to 16:9 ratio
-    g_settings.m_fZoomAmount = 1.0;
+    CDisplaySettings::Get().SetZoomAmount(1.0);
     if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // now we need to set g_settings.m_fPixelRatio so that
       // fOutputFrameRatio = 16:9.
-      g_settings.m_fPixelRatio = (16.0f / 9.0f) / fSourceFrameRatio;
+      CDisplaySettings::Get().SetPixelRatio((16.0f / 9.0f) / fSourceFrameRatio);
     }
     else
     { // stretch to the limits of the 16:9 screen.
       // incorrect behaviour, but it's what the users want, so...
-      g_settings.m_fPixelRatio = (fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio;
+      CDisplaySettings::Get().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
     }
   }
   else // if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeOriginal)
   { // zoom image so that the height is the original size
-    g_settings.m_fPixelRatio = 1.0;
+    CDisplaySettings::Get().SetPixelRatio(1.0);
     // get the size of the media file
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * g_settings.m_fPixelRatio / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full width.
     float fNewWidth = fScreenWidth;
     float fNewHeight = fNewWidth / fOutputFrameRatio;
@@ -1018,7 +1018,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       fNewWidth = fNewHeight * fOutputFrameRatio;
     }
     // now work out the zoom amount so that no zoom is done
-    g_settings.m_fZoomAmount = (m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom) / fNewHeight;
+    CDisplaySettings::Get().SetZoomAmount((m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom) / fNewHeight);
   }
 }
 
