@@ -355,7 +355,7 @@ case TMSG_POWERDOWN:
           else
             URIUtils::CreateArchivePath(strPath, "rar", pMsg->strParam.c_str(), "");
 
-          CUtil::GetRecursiveListing(strPath, items, g_settings.m_pictureExtensions);
+          CUtil::GetRecursiveListing(strPath, items, g_advancedSettings.m_pictureExtensions);
           if (items.Size() > 0)
           {
             for (int i=0;i<items.Size();++i)
@@ -386,7 +386,7 @@ case TMSG_POWERDOWN:
 
         CFileItemList items;
         CStdString strPath = pMsg->strParam;
-        CStdString extensions = g_settings.m_pictureExtensions;
+        CStdString extensions = g_advancedSettings.m_pictureExtensions;
         if (pMsg->dwParam1)
           extensions += "|.tbn";
         CUtil::GetRecursiveListing(strPath, items, extensions);

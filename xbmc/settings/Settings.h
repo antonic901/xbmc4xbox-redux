@@ -244,12 +244,6 @@ public:
     int m_bgInfoLoaderMaxThreads;
   };
 
-  CStdString m_pictureExtensions;
-  CStdString m_musicExtensions;
-  CStdString m_videoExtensions;
-
-  CStdString m_logFolder;
-
   bool m_bMyMusicSongInfoInVis;
   bool m_bMyMusicSongThumbInVis;
 

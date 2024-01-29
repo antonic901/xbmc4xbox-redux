@@ -554,7 +554,7 @@ bool CFileItem::IsVideo() const
 
   extension.ToLower();
 
-  if (g_settings.m_videoExtensions.Find(extension) != -1)
+  if (g_advancedSettings.m_videoExtensions.Find(extension) != -1)
     return true;
 
   return false;
@@ -589,7 +589,7 @@ bool CFileItem::IsAudio() const
     return false;
 
   extension.ToLower();
-  if (g_settings.m_musicExtensions.Find(extension) != -1)
+  if (g_advancedSettings.m_musicExtensions.Find(extension) != -1)
     return true;
 
   return false;
@@ -1898,7 +1898,7 @@ void CFileItemList::FilterCueItems()
                 else
                 { // try replacing the extension with one of our allowed ones.
                   CStdStringArray extensions;
-                  StringUtils::SplitString(g_settings.m_musicExtensions, "|", extensions);
+                  StringUtils::SplitString(g_advancedSettings.m_musicExtensions, "|", extensions);
                   for (unsigned int i = 0; i < extensions.size(); i++)
                   {
                     strMediaFile = URIUtils::ReplaceExtension(pItem->GetPath(), extensions[i]);
@@ -2068,7 +2068,7 @@ void CFileItemList::StackFolders()
           if (bMatch)
           {
             CFileItemList items;
-            CDirectory::GetDirectory(item->GetPath(),items,g_settings.m_videoExtensions);
+            CDirectory::GetDirectory(item->GetPath(),items,g_advancedSettings.m_videoExtensions);
             // optimized to only traverse listing once by checking for filecount
             // and recording last file item for later use
             int nFiles = 0;
@@ -2852,11 +2852,11 @@ CStdString CFileItem::GetLocalFanart() const
     return "";
 
   CFileItemList items;
-  CDirectory::GetDirectory(strDir, items, g_settings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
+  CDirectory::GetDirectory(strDir, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
   if (IsOpticalMediaFile())
   { // grab from the optical media parent folder as well - see GetUserVideoThumb
     CFileItemList moreItems;
-    CDirectory::GetDirectory(GetLocalMetadataPath(), moreItems, g_settings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
+    CDirectory::GetDirectory(GetLocalMetadataPath(), moreItems, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
     items.Append(moreItems);
   }
 
@@ -3341,7 +3341,7 @@ CStdString CFileItem::FindTrailer() const
   CStdString strDir;
   URIUtils::GetDirectory(strFile, strDir);
   CFileItemList items;
-  CDirectory::GetDirectory(strDir, items, g_settings.m_videoExtensions, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
+  CDirectory::GetDirectory(strDir, items, g_advancedSettings.m_videoExtensions, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
   URIUtils::RemoveExtension(strFile);
   strFile += "-trailer";
   CStdString strFile3 = URIUtils::AddFileToFolder(strDir, "movie-trailer");

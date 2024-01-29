@@ -766,7 +766,7 @@ HRESULT CApplication::Create(HWND hWnd)
   char szXBEFileName[1024];
   CIoSupport::GetXbePath(szXBEFileName);
   CLog::Log(LOGNOTICE, "The executable running is: %s", szXBEFileName);
-  CLog::Log(LOGNOTICE, "Log File is located: %sxbmc.log", g_settings.m_logFolder.c_str());
+  CLog::Log(LOGNOTICE, "Log File is located: %sxbmc.log", g_advancedSettings.m_logFolder.c_str());
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
 
   // if we are running from DVD our UserData location will be TDATA
@@ -780,7 +780,7 @@ HRESULT CApplication::Create(HWND hWnd)
       for (int i=0;i<items.Size();++i)
           CFile::Cache(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
     }
-    g_settings.m_logFolder = "special://masterprofile/";
+    g_advancedSettings.m_logFolder = "special://masterprofile/";
   }
   else
   {
@@ -5864,28 +5864,24 @@ bool CApplication::IsCurrentThread() const
 }
 
 void CApplication::InitDirectoriesXbox()
-{  
-  // Set installation path. Use Q as ie. F doesn't exist yet!!!
-  CStdString install_path = "Q:\\";
-
-  // check logpath
-  CStdString strLogFile, strLogFileOld;
-  g_settings.m_logFolder = install_path;
-  URIUtils::AddSlashAtEnd(g_settings.m_logFolder);
-  strLogFile.Format("%sxbmc.log", g_settings.m_logFolder);
-  strLogFileOld.Format("%sxbmc.old.log", g_settings.m_logFolder);
-
-  // Rotate the log (xbmc.log -> xbmc.old.log)
-  ::DeleteFile(strLogFileOld.c_str());
-  ::MoveFile(strLogFile.c_str(), strLogFileOld.c_str());
-
+{
   // map our special drives to the correct drive letter
-  CSpecialProtocol::SetXBMCPath(install_path);
+  CSpecialProtocol::SetXBMCPath("Q:\\"); // Use Q as ie. F doesn't exist yet!!!
   CSpecialProtocol::SetHomePath("Q:\\home");
   CSpecialProtocol::SetTempPath("Z:\\");
 
   // First profile is always the Master Profile
   CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
+
+  // check logpath
+  CStdString strLogFile, strLogFileOld;
+  URIUtils::AddSlashAtEnd(g_advancedSettings.m_logFolder);
+  strLogFile.Format("%sxbmc.log", CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder));
+  strLogFileOld.Format("%sxbmc.old.log", CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder));
+
+  // Rotate the log (xbmc.log -> xbmc.old.log)
+  ::DeleteFile(strLogFileOld.c_str());
+  ::MoveFile(strLogFile.c_str(), strLogFileOld.c_str());
 
   CProfilesManager::Get().Load();
 }

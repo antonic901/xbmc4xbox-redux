@@ -264,11 +264,11 @@ CStdString CXbmcHttp::procMask(CStdString mask)
 {
   mask=mask.ToLower();
   if(mask=="[music]")
-    return g_settings.m_musicExtensions;
+    return g_advancedSettings.m_musicExtensions;
   if(mask=="[video]")
-    return g_settings.m_videoExtensions;
+    return g_advancedSettings.m_videoExtensions;
   if(mask=="[pictures]")
-    return g_settings.m_pictureExtensions;
+    return g_advancedSettings.m_pictureExtensions;
   if(mask=="[files]")
     return "";
   return mask;
@@ -669,19 +669,19 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
   case MUSIC:
     {
       pShares = CMediaSourceSettings::Get().GetSources("music");
-      strMask = g_settings.m_musicExtensions;
+      strMask = g_advancedSettings.m_musicExtensions;
     }
     break;
   case VIDEO:
     {
       pShares = CMediaSourceSettings::Get().GetSources("video");;
-      strMask = g_settings.m_videoExtensions;
+      strMask = g_advancedSettings.m_videoExtensions;
     }
     break;
   case PICTURES:
     {
       pShares = CMediaSourceSettings::Get().GetSources("pictures");
-      strMask = g_settings.m_pictureExtensions;
+      strMask = g_advancedSettings.m_pictureExtensions;
     }
     break;
   case FILES:
@@ -2733,13 +2733,13 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="pixelratio")
         tmp.Format("%f", CDisplaySettings::Get().GetPixelRatio());
       else if (paras[i]=="pictureextensions")
-        tmp = g_settings.m_pictureExtensions;
+        tmp = g_advancedSettings.m_pictureExtensions;
       else if (paras[i]=="musicextensions")
-        tmp = g_settings.m_musicExtensions;
+        tmp = g_advancedSettings.m_musicExtensions;
       else if (paras[i]=="videoextensions")
-        tmp = g_settings.m_videoExtensions;
+        tmp = g_advancedSettings.m_videoExtensions;
       else if (paras[i]=="logfolder")
-        tmp = g_settings.m_logFolder;
+        tmp = g_advancedSettings.m_logFolder;
       else
         tmp = "Error:Unknown setting " + paras[i];
       strInfo += openTag + tmp;
@@ -2788,11 +2788,11 @@ int CXbmcHttp::xbmcConfig(int numParas, CStdString paras[])
   {
     //getoption has been deprecated so the following is just to prevent (my) legacy client code breaking (to be removed later)
     if (paras[1]=="pictureextensions")
-      response=openTag+g_settings.m_pictureExtensions;
+      response=openTag+g_advancedSettings.m_pictureExtensions;
     else if (paras[1]=="videoextensions")
-      response=openTag+g_settings.m_videoExtensions;
+      response=openTag+g_advancedSettings.m_videoExtensions;
     else if (paras[1]=="musicextensions")
-      response=openTag+g_settings.m_musicExtensions;
+      response=openTag+g_advancedSettings.m_musicExtensions;
     else
       response=openTag+"Error:Function is deprecated";
     //ret=XbmcWebsHttpAPIConfigGetOption(response, argc, argv);

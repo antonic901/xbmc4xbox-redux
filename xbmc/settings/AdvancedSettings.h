@@ -243,6 +243,15 @@ class CAdvancedSettings : public ISettingsHandler
 
     std::vector<CStdString> m_settingsFiles;
     void ParseSettingsFile(const CStdString &file);
+
+    // runtime settings which cannot be set from advancedsettings.xml
+    CStdString m_pictureExtensions;
+    CStdString m_musicExtensions;
+    CStdString m_videoExtensions;
+
+    CStdString m_logFolder;
+
+    CStdString m_userAgent;
 };
 
 extern CAdvancedSettings g_advancedSettings;

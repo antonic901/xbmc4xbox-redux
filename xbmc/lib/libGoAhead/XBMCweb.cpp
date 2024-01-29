@@ -324,18 +324,18 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
           g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
           // NOTICE: point always to list of all movies (MoviesTitle)
           shares = CMediaSourceSettings::Get().GetSources("video");;
-          directory->SetMask(g_settings.m_videoExtensions);
+          directory->SetMask(g_advancedSettings.m_videoExtensions);
         }
         else if (!strcmp(parameter, WEB_MUSIC))
         {
           g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC);
           shares = CMediaSourceSettings::Get().GetSources("music");
-          directory->SetMask(g_settings.m_musicExtensions);
+          directory->SetMask(g_advancedSettings.m_musicExtensions);
         }
         else if (!strcmp(parameter, WEB_PICTURES))
         {
           shares = CMediaSourceSettings::Get().GetSources("pictures");
-          directory->SetMask(g_settings.m_pictureExtensions);
+          directory->SetMask(g_advancedSettings.m_pictureExtensions);
         }
         else if (!strcmp(parameter, WEB_PROGRAMS))
         {

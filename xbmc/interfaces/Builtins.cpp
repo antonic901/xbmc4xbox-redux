@@ -496,7 +496,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (item.m_bIsFolder)
     {
       CFileItemList items;
-      CDirectory::GetDirectory(item.GetPath(),items,g_settings.m_videoExtensions);
+      CDirectory::GetDirectory(item.GetPath(),items,g_advancedSettings.m_videoExtensions);
       g_playlistPlayer.Add(PLAYLIST_VIDEO,items);
       g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
       g_playlistPlayer.Play();

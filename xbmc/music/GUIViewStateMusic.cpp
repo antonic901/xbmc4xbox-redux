@@ -62,7 +62,7 @@ CStdString CGUIViewStateWindowMusic::GetLockType()
 
 CStdString CGUIViewStateWindowMusic::GetExtensions()
 {
-  return g_settings.m_musicExtensions;
+  return g_advancedSettings.m_musicExtensions;
 }
 
 VECSOURCES& CGUIViewStateWindowMusic::GetSources()
