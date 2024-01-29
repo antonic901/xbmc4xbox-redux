@@ -2718,8 +2718,6 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
         tmp = (CMediaSettings::Get().DoesVideoPlaylistRepeat()==0) ? "False" : "True";
-      else if (paras[i]=="mymusicisscanning")
-        tmp = (g_settings.m_bMyMusicIsScanning==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistshuffle")
         tmp = (CMediaSettings::Get().IsMusicPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistrepeat")

@@ -249,9 +249,6 @@ public:
 
   int m_iMyMusicStartWindow;
 
-  // for scanning
-  bool m_bMyMusicIsScanning;
-
   bool m_bMyVideoNavFlatten;
   bool m_bAddonAutoUpdate;
   bool m_bAddonNotifications;

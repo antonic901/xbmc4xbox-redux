@@ -177,8 +177,6 @@ public:
   void SeekTime( double dTime = 0.0 );
   void ResetPlayTime();
 
-  void SaveMusicScanSettings();
-  void RestoreMusicScanSettings();
   void UpdateLibraries();
   void CheckMusicPlaylist();
 

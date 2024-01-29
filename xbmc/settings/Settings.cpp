@@ -104,9 +104,6 @@ void CSettings::Initialize()
   m_iPreMuteVolumeLevel = 0;
   m_bMute = false;
 
-  // defaults for scanning
-  m_bMyMusicIsScanning = false;
-
   m_iMyMusicStartWindow = WINDOW_MUSIC_FILES;
   m_iVideoStartWindow = WINDOW_VIDEO_FILES;
 
@@ -245,13 +242,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   TiXmlElement *pElement = pRootElement->FirstChildElement("mymusic");
   if (pElement)
   {
-    TiXmlElement *pChild;
-    // if the user happened to reboot in the middle of the scan we save this state
-    pChild = pElement->FirstChildElement("scanning");
-    if (pChild)
-    {
-      XMLUtils::GetBoolean(pChild, "isscanning", m_bMyMusicIsScanning);
-    }
     GetInteger(pElement, "startwindow", m_iMyMusicStartWindow, WINDOW_MUSIC_FILES, WINDOW_MUSIC_FILES, WINDOW_MUSIC_NAV); //501; view songs
     XMLUtils::GetBoolean(pElement, "songinfoinvis", m_bMyMusicSongInfoInVis);
     XMLUtils::GetBoolean(pElement, "songthumbinvis", m_bMyMusicSongThumbInVis);
@@ -501,12 +491,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   TiXmlElement musicNode("mymusic");
   TiXmlNode *pNode = pRoot->InsertEndChild(musicNode);
   if (!pNode) return false;
-  {
-    TiXmlElement childNode("scanning");
-    TiXmlNode *pChild = pNode->InsertEndChild(childNode);
-    if (!pChild) return false;
-    XMLUtils::SetBoolean(pChild, "isscanning", m_bMyMusicIsScanning);
-  }
 
   XMLUtils::SetInt(pNode, "startwindow", m_iMyMusicStartWindow);
   XMLUtils::SetBoolean(pNode, "songinfoinvis", m_bMyMusicSongInfoInVis);

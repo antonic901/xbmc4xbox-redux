@@ -1364,14 +1364,6 @@ HRESULT CApplication::Initialize()
   if (g_settings.m_nVolumeLevel == VOLUME_MINIMUM)
     Mute();
 
-  // if the user shutoff the xbox during music scan
-  // restore the settings
-  if (g_settings.m_bMyMusicIsScanning)
-  {
-    CLog::Log(LOGWARNING,"System rebooted during music scan! ... restoring UseTags and FindRemoteThumbs");
-    RestoreMusicScanSettings();
-  }
-
   if (!CProfilesManager::Get().UsingLoginScreen())
   {
     UpdateLibraries();
@@ -5669,21 +5661,6 @@ bool CApplication::SwitchToFullScreen()
 PLAYERCOREID CApplication::GetCurrentPlayer()
 {
   return m_eCurrentPlayer;
-}
-
-// when a scan is initiated, save current settings
-// and enable tag reading and remote thums
-void CApplication::SaveMusicScanSettings()
-{
-  CLog::Log(LOGINFO,"Music scan has started... Enabling tag reading, and remote thumbs");
-  g_settings.m_bMyMusicIsScanning = true;
-  g_settings.Save();
-}
-
-void CApplication::RestoreMusicScanSettings()
-{
-  g_settings.m_bMyMusicIsScanning = false;
-  g_settings.Save();
 }
 
 void CApplication::UpdateLibraries()
