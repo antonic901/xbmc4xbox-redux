@@ -290,15 +290,6 @@ public:
 
   VOICE_MASK m_karaokeVoiceMask[4];
 
-  struct RssSet
-  {
-    bool rtl;
-    std::vector<int> interval;
-    std::vector<std::string> url;
-  };
-
-  std::map<int,RssSet> m_mapRssUrls;
-
   CStdString m_defaultMusicLibSource;
 
   CStdString GetFFmpegDllFolder() const;
@@ -310,7 +301,6 @@ public:
 
   bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
 
-  void LoadRSSFeeds();
   bool GetInteger(const TiXmlElement* pRootElement, const char *strTagName, int& iValue, const int iDefault, const int iMin, const int iMax);
   bool GetFloat(const TiXmlElement* pRootElement, const char *strTagName, float& fValue, const float fDefault, const float fMin, const float fMax);
   static bool GetPath(const TiXmlElement* pRootElement, const char *tagName, CStdString &strValue);

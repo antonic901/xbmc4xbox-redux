@@ -24,6 +24,7 @@
 #include "settings/GUISettings.h"
 #include "utils/CriticalSection.h"
 #include "utils/SingleLock.h"
+#include "utils/RssManager.h"
 #include "utils/RssReader.h"
 #include "utils/StringUtils.h"
 
@@ -89,13 +90,13 @@ void CGUIRSSControl::UpdateColors()
 void CGUIRSSControl::Render()
 {
   // only render the control if they are enabled
-  if (g_guiSettings.GetBool("lookandfeel.enablerssfeeds") && g_rssManager.IsActive())
+  if (g_guiSettings.GetBool("lookandfeel.enablerssfeeds") && CRssManager::Get().IsActive())
   {
     CSingleLock lock(m_criticalSection);
     // Create RSS background/worker thread if needed
     if (m_pReader == NULL)
     {
-      if (g_rssManager.GetReader(GetID(), GetParentID(), this, m_pReader))
+      if (CRssManager::Get().GetReader(GetID(), GetParentID(), this, m_pReader))
         m_scrollInfo.characterPos = m_pReader->m_SavedScrollPos;
       else
       {

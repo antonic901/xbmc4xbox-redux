@@ -1066,6 +1066,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\IRssObserver.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\IXmlDeserializable.h">
 				</File>
 				<File
@@ -1196,6 +1199,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RssFeed.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssManager.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RssReader.cpp">

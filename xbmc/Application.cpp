@@ -93,6 +93,7 @@
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "DatabaseManager.h"
+#include "utils/RssManager.h"
 #include "utils/Weather.h"
 #include "view/ViewStateSettings.h"
 #ifdef HAS_FILESYSTEM
@@ -954,6 +955,7 @@ HRESULT CApplication::Create(HWND hWnd)
   g_settings.RegisterSettingsHandler(&g_advancedSettings);
   g_settings.RegisterSettingsHandler(&CMediaSourceSettings::Get());
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
+  g_settings.RegisterSettingsHandler(&CRssManager::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
 
   g_settings.RegisterSubSettings(&CDisplaySettings::Get());
@@ -3559,6 +3561,7 @@ HRESULT CApplication::Cleanup()
     g_settings.UnregisterSettingsHandler(&g_advancedSettings);
     g_settings.UnregisterSettingsHandler(&CMediaSourceSettings::Get());
     g_settings.UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
+    g_settings.UnregisterSettingsHandler(&CRssManager::Get());
     g_settings.UnregisterSettingsHandler(&CUPnPSettings::Get());
     g_settings.UnregisterSettingsHandler(&CProfilesManager::Get());
     g_settings.UnregisterSettingsHandler(this);

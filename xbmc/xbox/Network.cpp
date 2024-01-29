@@ -31,7 +31,7 @@
 #include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "ApplicationMessenger.h"
-#include "utils/RssReader.h"
+#include "utils/RssManager.h"
 #include "utils/Weather.h"
 #include "utils/log.h"
 
@@ -612,7 +612,7 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
       g_application.StartEventServer();
       CLastfmScrobbler::GetInstance()->Init();
       CLibrefmScrobbler::GetInstance()->Init();
-      g_rssManager.Start();
+      CRssManager::Get().Start();
       g_weatherManager.Refresh();
     }
     break;
@@ -628,7 +628,7 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
       CLibrefmScrobbler::GetInstance()->Term();
       // smb.Deinit(); if any file is open over samba this will break.
 
-      g_rssManager.Stop();
+      CRssManager::Get().Stop();
     }
     break;
   }

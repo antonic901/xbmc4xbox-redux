@@ -46,7 +46,7 @@
 #include "LCD.h"
 #include "log.h"
 #include "storage/MediaManager.h"
-#include "RssReader.h"
+#include "utils/RssManager.h"
 #include "PartyModeManager.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/DisplaySettings.h"
@@ -575,9 +575,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("refreshrss"))
   {
-    g_rssManager.Stop();
-    g_settings.LoadRSSFeeds();
-    g_rssManager.Start();
+    CRssManager::Get().Reload();
   }
   else if (execute.Equals("playercontrol"))
   {
