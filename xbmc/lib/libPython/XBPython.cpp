@@ -32,9 +32,9 @@
 
 #include "XBPython.h"
 #include "XBPythonDll.h"
-#include "settings/Settings.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "guilib/GraphicContext.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/log.h"
 #include "utils/SingleLock.h"

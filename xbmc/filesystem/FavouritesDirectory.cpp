@@ -25,7 +25,6 @@
 #include "utils/URIUtils.h"
 #include "Key.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
 #include "URL.h"

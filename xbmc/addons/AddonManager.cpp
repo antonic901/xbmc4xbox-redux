@@ -29,7 +29,6 @@
 #include "utils/SingleLock.h"
 #include "FileItem.h"
 #include "LangInfo.h"
-#include "settings/Settings.h"
 #include "settings/GUISettings.h"
 #include "DownloadQueueManager.h"
 #include "settings/AdvancedSettings.h"

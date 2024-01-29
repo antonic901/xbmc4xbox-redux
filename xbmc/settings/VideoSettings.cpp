@@ -23,7 +23,6 @@
 
 #include "settings/VideoSettings.h"
 #include "GraphicContext.h"
-#include "settings/Settings.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

@@ -36,10 +36,10 @@
 #include "addons/Skin.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
-#include "settings/Settings.h"
 #include "filesystem/File.h"
+#include "settings/GUISettings.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "view/ViewState.h"
 

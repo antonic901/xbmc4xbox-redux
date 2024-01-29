@@ -23,7 +23,6 @@
 #include "GUIFontManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/GUISettings.h"
-#include "settings/Settings.h"
 #include "XBVideoConfig.h"
 #include "GUIAudioManager.h"
 #ifdef HAS_XBOX_D3D

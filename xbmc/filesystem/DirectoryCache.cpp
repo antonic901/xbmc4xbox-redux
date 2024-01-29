@@ -23,7 +23,6 @@
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "FileItem.h"
 
 using namespace std;

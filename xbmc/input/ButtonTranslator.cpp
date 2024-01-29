@@ -22,7 +22,6 @@
 #include "interfaces/Builtins.h"
 #include "ButtonTranslator.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "guilib/Key.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"

@@ -19,6 +19,8 @@
  *
  */
 
+#include "LabelFormatter.h"
+
 typedef enum {
   SORT_METHOD_NONE=0,
   SORT_METHOD_LABEL,

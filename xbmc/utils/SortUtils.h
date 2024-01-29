@@ -24,7 +24,6 @@
 
 #include "DatabaseUtils.h"
 #include "SortFileItem.h"
-#include "LabelFormatter.h"
 
 typedef enum {
   SortOrderNone = 0,

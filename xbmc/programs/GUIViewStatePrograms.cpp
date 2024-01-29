@@ -18,16 +18,15 @@
  *
  */
 
-#include "programs/GUIViewStatePrograms.h"
-#include "GUIBaseContainer.h"
+#include "GUIViewStatePrograms.h"
 #include "FileItem.h"
 #include "view/ViewState.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "filesystem/Directory.h"
 #include "filesystem/PluginDirectory.h"
-#include "Util.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "guilib/Key.h"
 #include "view/ViewStateSettings.h"
 
 using namespace XFILE;

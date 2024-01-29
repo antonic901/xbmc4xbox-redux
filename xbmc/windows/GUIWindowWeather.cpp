@@ -31,7 +31,6 @@
 #include "LangInfo.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
-#include "settings/Settings.h"
 #include "addons/AddonManager.h"
 
 using namespace ADDON;

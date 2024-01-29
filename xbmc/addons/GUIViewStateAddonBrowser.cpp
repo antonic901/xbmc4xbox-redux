@@ -21,9 +21,9 @@
 
 #include "GUIViewStateAddonBrowser.h"
 #include "FileItem.h"
+#include "guilib/GraphicContext.h"
 #include "guilib/Key.h"
 #include "view/ViewState.h"
-#include "settings/Settings.h"
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
 #include "AddonDatabase.h"

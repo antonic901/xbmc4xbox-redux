@@ -32,7 +32,6 @@
 #include "GUIWindowManager.h"
 #include "view/ViewState.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"

@@ -29,7 +29,6 @@
 #include "GUIEditControl.h"
 #include "storage/MediaManager.h"
 #include "LocalizeStrings.h"
-#include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/LabelFormatter.h"

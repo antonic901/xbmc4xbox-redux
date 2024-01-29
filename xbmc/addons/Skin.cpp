@@ -28,7 +28,6 @@
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "utils/URIUtils.h"
-#include "settings/Settings.h"
 #include "utils/StringUtils.h"
 #include "utils/XMLUtils.h"
 

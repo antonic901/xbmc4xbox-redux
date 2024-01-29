@@ -18,56 +18,27 @@
  *
  */
 
-#include "system.h"
-#include "settings/Settings.h"
-#include "settings/AdvancedSettings.h"
-#include "settings/MediaSettings.h"
-#include "Application.h"
-#include "input/KeyboardLayoutConfiguration.h"
-#include "Util.h"
-#include "URL.h"
-#include "windows/GUIWindowFileManager.h"
-#include "dialogs/GUIDialogButtonMenu.h"
-#include "settings/dialogs/GUIDialogContentSettings.h"
-#include "GUIFontManager.h"
-#include "utils/LangCodeExpander.h"
-#include "input/ButtonTranslator.h"
-#include "utils/XMLUtils.h"
-#include "PasswordManager.h"
-#include "utils/RegExp.h"
-#include "GUIPassword.h"
-#include "GUIAudioManager.h"
-#include "AudioContext.h"
-#include "GUIInfoManager.h"
-#include "xbox/Network.h"
-#include "filesystem/MultiPathDirectory.h"
-#include "filesystem/SpecialProtocol.h"
-#include "GUIBaseContainer.h" // for VIEW_TYPE enum
-#include "utils/FanController.h"
-#include "storage/MediaManager.h"
-#include "XBVideoConfig.h"
-#include "network/DNSNameCache.h"
-#include "GUIWindowManager.h"
-#include "dialogs/GUIDialogYesNo.h"
-#include "filesystem/Directory.h"
-#include "FileItem.h"
-#include "LangInfo.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "utils/MemoryUnitManager.h"
-#endif
-#include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
+#include <limits.h>
+
+#include "Settings.h"
+#include "filesystem/File.h"
+#include "guilib/Key.h"
 #include "profiles/ProfilesManager.h"
-#include "utils/CharsetConverter.h"
-#include "utils/log.h"
-#include "utils/FileUtils.h"
-#include "addons/AddonManager.h"
-#include "DatabaseManager.h"
+#include "settings/GUISettings.h"
 #include "utils/SingleLock.h"
+#include "utils/log.h"
+#include "utils/SystemInfo.h"
+#include "utils/XMLUtils.h"
+#ifdef HAS_XBOX_HARDWARE
+#include "settings/MediaSettings.h" // for AVPack methods
+#include "filesystem/SpecialProtocol.h"
+#include "utils/MemoryUnitManager.h"
+#include "Util.h"
+#include "XBVideoConfig.h" // for AVPack methods
+#endif
 
 using namespace std;
 using namespace XFILE;
-using namespace MEDIA_DETECT;
 
 class CSettings g_settings;
 

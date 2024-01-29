@@ -20,7 +20,6 @@
  */
 #include "ScreenSaver.h"
 #include "settings/DisplaySettings.h"
-#include "settings/Settings.h"
 
 #ifdef HAS_PYTHON
 #include "lib/libPython/XBPython.h"
