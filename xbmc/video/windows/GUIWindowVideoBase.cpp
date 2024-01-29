@@ -53,6 +53,7 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "filesystem/Directory.h"
 #include "playlists/PlayList.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
 #include "utils/URIUtils.h"
@@ -249,7 +250,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         else if (iAction == ACTION_DELETE_ITEM)
         {
           // is delete allowed?
-          if (g_settings.GetCurrentProfile().canWriteDatabases())
+          if (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
           {
             // must be at the title window
             if (GetID() == WINDOW_VIDEO_NAV)
@@ -501,7 +502,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
   }
 
   // quietly return if Internet lookups are disabled
-  if (!g_settings.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
+  if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
     return false;
 
   if(!info)
@@ -1431,8 +1432,8 @@ void CGUIWindowVideoBase::OnDeleteItem(CFileItemPtr item)
   // HACK: stacked files need to be treated as folders in order to be deleted
   if (item->IsStack())
     item->m_bIsFolder = true;
-  if (g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-      g_settings.GetCurrentProfile().filesLocked())
+  if (CProfilesManager::Get().GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      CProfilesManager::Get().GetCurrentProfile().filesLocked())
   {
     if (!g_passwordManager.IsMasterLockUnlocked(true))
       return;
@@ -1443,6 +1444,8 @@ void CGUIWindowVideoBase::OnDeleteItem(CFileItemPtr item)
 
 void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
 {
+  if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
+    return;
   // dont allow update while scanning
   CGUIDialogVideoScan* pDialogScan = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
   if (pDialogScan && pDialogScan->IsScanning())
@@ -1627,7 +1630,7 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
   // add in the "New Playlist" item if we're in the playlists folder
   if ((items.GetPath() == "special://videoplaylists/") && !items.Contains("newplaylist://"))
   {
-    CFileItemPtr newPlaylist(new CFileItem(g_settings.GetUserDataItem("PartyMode-Video.xsp"),false));
+    CFileItemPtr newPlaylist(new CFileItem(CProfilesManager::Get().GetUserDataItem("PartyMode-Video.xsp"),false));
     newPlaylist->SetLabel(g_localizeStrings.Get(16035));
     newPlaylist->SetLabelPreformated(true);
     newPlaylist->m_bIsFolder = true;

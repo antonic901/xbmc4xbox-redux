@@ -48,6 +48,7 @@
 #include "storage/MediaManager.h"
 #include "RssReader.h"
 #include "PartyModeManager.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
@@ -256,9 +257,9 @@ int CBuiltins::Execute(const CStdString& execString)
   {
     g_application.getApplicationMessenger().Quit();
   }
-  else if (execute.Equals("loadprofile") && g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
+  else if (execute.Equals("loadprofile") && CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
   {
-    int index = g_settings.GetProfileIndex(parameter);
+    int index = CProfilesManager::Get().GetProfileIndex(parameter);
     if (index >= 0)
       CGUIWindowLoginScreen::LoadProfile(index);
   }
@@ -1101,7 +1102,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("system.logoff"))
   {
-    if (g_windowManager.GetActiveWindow() == WINDOW_LOGIN_SCREEN || !g_settings.UsingLoginScreen())
+    if (g_windowManager.GetActiveWindow() == WINDOW_LOGIN_SCREEN || !CProfilesManager::Get().UsingLoginScreen())
       return -1;
 
     g_application.StopPlaying();
@@ -1117,7 +1118,7 @@ int CBuiltins::Execute(const CStdString& execString)
     CLog::Log(LOGNOTICE, "stop fancontroller");
     CFanController::Instance()->Stop();
 #endif
-    g_settings.LoadMasterForLogin();
+    CProfilesManager::Get().LoadMasterProfileForLogin();
     g_passwordManager.bMasterUser = false;
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
     g_application.getNetwork().SetupNetwork();

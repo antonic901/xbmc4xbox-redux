@@ -24,6 +24,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "Key.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
@@ -56,7 +57,7 @@ bool CFavouritesDirectory::Exists(const char* strPath)
   if (url.GetProtocol() == "favourites")
   {
     return XFILE::CFile::Exists("special://xbmc/system/favourites.xml") 
-        || XFILE::CFile::Exists(URIUtils::AddFileToFolder(g_settings.GetProfileUserDataFolder(), "favourites.xml"));
+        || XFILE::CFile::Exists(URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml"));
   }
   return XFILE::CFile::Exists(strPath); //directly load the given file
 }
@@ -71,7 +72,7 @@ bool CFavouritesDirectory::Load(CFileItemList &items)
     CFavouritesDirectory::LoadFavourites(favourites, items);
   else
     CLog::Log(LOGDEBUG, "CFavourites::Load - no system favourites found, skipping");
-  URIUtils::AddFileToFolder(g_settings.GetProfileUserDataFolder(), "favourites.xml", favourites);
+  URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml", favourites);
   if(XFILE::CFile::Exists(favourites))
     CFavouritesDirectory::LoadFavourites(favourites, items);
   else
@@ -139,7 +140,7 @@ bool CFavouritesDirectory::Save(const CFileItemList &items)
     rootNode->InsertEndChild(favNode);
   }
 
-  URIUtils::AddFileToFolder(g_settings.GetProfileUserDataFolder(), "favourites.xml", favourites);
+  URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml", favourites);
   return doc.SaveFile(favourites);
 }
 

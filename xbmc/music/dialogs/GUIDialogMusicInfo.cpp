@@ -33,6 +33,7 @@
 #include "URL.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
+#include "profiles/ProfilesManager.h"
 #include "video/VideoInfoTag.h"
 #include "storage/MediaManager.h"
 #include "filesystem/Directory.h"
@@ -313,7 +314,7 @@ void CGUIDialogMusicInfo::Update()
   }
 
   // disable the GetThumb button if the user isn't allowed it
-  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB, g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB, CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
 
   if (!m_album.artist.empty() && CLastFmManager::GetInstance()->IsLastFmEnabled())
   {
@@ -560,7 +561,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
 {
   CFileItemList items;
 
-  CStdString cachedThumb(CFileItem::GetCachedThumb(m_artist.strArtist,g_settings.GetMusicFanartFolder()));
+  CStdString cachedThumb(CFileItem::GetCachedThumb(m_artist.strArtist,CProfilesManager::Get().GetMusicFanartFolder()));
   if (CFile::Exists(cachedThumb))
   {
     CFileItemPtr itemCurrent(new CFileItem("fanart://Current",false));

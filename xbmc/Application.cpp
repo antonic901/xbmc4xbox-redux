@@ -82,6 +82,7 @@
 #include "SmartPlaylist.h"
 #include "filesystem/RarManager.h"
 #include "playlists/PlayList.h"
+#include "profiles/ProfilesManager.h"
 #include "utils/DownloadQueueManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
@@ -782,11 +783,11 @@ HRESULT CApplication::Create(HWND hWnd)
   }
   else
   {
-    CStdString strMnt = CSpecialProtocol::TranslatePath(g_settings.GetUserDataFolder());
+    CStdString strMnt = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder());
     if (strMnt.Left(2).Equals("Q:"))
     {
       CUtil::GetHomePath(strMnt);
-      strMnt += CSpecialProtocol::TranslatePath(g_settings.GetUserDataFolder()).substr(2);
+      strMnt += CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder()).substr(2);
     }
 
     CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
@@ -882,16 +883,18 @@ HRESULT CApplication::Create(HWND hWnd)
     if (m_DefaultGamepad.bPressedAnalogButtons[XINPUT_GAMEPAD_A])
     {
       CUtil::DeleteGUISettings();
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"database\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"thumbnails\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"playlists\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"cache\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"profiles\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"visualisations\\"));
-      CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(),"avpacksettings.xml"));
-      g_settings.DeleteAllProfiles();
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"database\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"thumbnails\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"playlists\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"cache\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"profiles\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"visualisations\\"));
+      CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"avpacksettings.xml"));
+      // delete all profiles
+      for (size_t i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); ++i)
+        CProfilesManager::Get().DeleteProfile(i);
 
-      g_settings.SaveProfiles(PROFILES_FILE);
+      CProfilesManager::Get().Save();
 
       char szXBEFileName[1024];
 
@@ -947,6 +950,7 @@ HRESULT CApplication::Create(HWND hWnd)
 
   CLog::Log(LOGNOTICE, "load settings...");
   g_settings.RegisterSettingsHandler(this);
+  g_settings.RegisterSettingsHandler(&CProfilesManager::Get());
   g_settings.RegisterSettingsHandler(&g_advancedSettings);
   g_settings.RegisterSettingsHandler(&CMediaSourceSettings::Get());
   g_settings.RegisterSettingsHandler(&CPlayerCoreFactory::Get());
@@ -1211,7 +1215,7 @@ HRESULT CApplication::Initialize()
 {
   CLog::Log(LOGINFO, "creating subdirectories");
 
-  CLog::Log(LOGINFO, "userdata folder: %s", g_settings.GetProfileUserDataFolder().c_str());
+  CLog::Log(LOGINFO, "userdata folder: %s", CProfilesManager::Get().GetProfileUserDataFolder().c_str());
   CLog::Log(LOGINFO, "recording folder: %s", g_guiSettings.GetString("audiocds.recordingpath",false).c_str());
   CLog::Log(LOGINFO, "screenshots folder: %s", g_guiSettings.GetString("debug.screenshotpath",false).c_str());
 
@@ -1224,11 +1228,11 @@ HRESULT CApplication::Initialize()
   //       temp/
   //     0 .. F/
 
-  CDirectory::Create(g_settings.GetUserDataFolder());
-  CDirectory::Create(g_settings.GetProfileUserDataFolder());
-  g_settings.CreateProfileFolders();
+  CDirectory::Create(CProfilesManager::Get().GetUserDataFolder());
+  CDirectory::Create(CProfilesManager::Get().GetProfileUserDataFolder());
+  CProfilesManager::Get().CreateProfileFolders();
 
-  CDirectory::Create(g_settings.GetProfilesThumbFolder());
+  CDirectory::Create(CProfilesManager::Get().GetProfilesThumbFolder());
 
   CDirectory::Create("special://home/addons");
   CDirectory::Create("special://home/addons/packages");
@@ -1333,14 +1337,14 @@ HRESULT CApplication::Initialize()
   SAFE_DELETE(m_splash);
 
   if (g_guiSettings.GetBool("masterlock.startuplock") && 
-      g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-     !g_settings.GetMasterProfile().getLockCode().IsEmpty())
+      CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+     !CProfilesManager::Get().GetMasterProfile().getLockCode().IsEmpty())
   {
      g_passwordManager.CheckStartUpLock();
   }
 
   // check if we should use the login screen
-  if (g_settings.UsingLoginScreen())
+  if (CProfilesManager::Get().UsingLoginScreen())
   {
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
   }
@@ -1366,7 +1370,7 @@ HRESULT CApplication::Initialize()
     RestoreMusicScanSettings();
   }
 
-  if (!g_settings.UsingLoginScreen())
+  if (!CProfilesManager::Get().UsingLoginScreen())
   {
     UpdateLibraries();
 #ifdef HAS_PYTHON
@@ -1467,8 +1471,8 @@ void CApplication::StartFtpServer()
       CStdString xmlpath = "special://xbmc/system/";
       // if user didn't upgrade properly,
       // check whether UserData/FileZilla Server.xml exists
-      if (CFile::Exists(g_settings.GetUserDataItem("FileZilla Server.xml")))
-        xmlpath = g_settings.GetUserDataFolder();
+      if (CFile::Exists(CProfilesManager::Get().GetUserDataItem("FileZilla Server.xml")))
+        xmlpath = CProfilesManager::Get().GetUserDataFolder();
 
       // check file size and presence
       CFile xml;
@@ -3556,7 +3560,7 @@ HRESULT CApplication::Cleanup()
     g_settings.UnregisterSettingsHandler(&CMediaSourceSettings::Get());
     g_settings.UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
     g_settings.UnregisterSettingsHandler(&CUPnPSettings::Get());
-
+    g_settings.UnregisterSettingsHandler(&CProfilesManager::Get());
     g_settings.UnregisterSettingsHandler(this);
 
 #ifdef HAS_DVD_DRIVE
@@ -3593,7 +3597,7 @@ void CApplication::Stop(bool bLCDStop)
     g_settings.m_iSystemTimeTotalUp = g_settings.m_iSystemTimeTotalUp + (int)(CTimeUtils::GetFrameTime() / 60000);
 
     // Update the settings information (volume, uptime etc. need saving)
-    if (CFile::Exists(g_settings.GetSettingsFile()))
+    if (CFile::Exists(CProfilesManager::Get().GetSettingsFile()))
     {
       CLog::Log(LOGNOTICE, "Saving settings");
       g_settings.Save();
@@ -4290,6 +4294,9 @@ bool CApplication::IsPlayingFullScreenVideo() const
 
 void CApplication::SaveFileState()
 {
+  if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
+    return;
+
   CStdString progressTrackingFile = m_progressTrackingItem->GetPath();
 
   if (progressTrackingFile != "")
@@ -4521,9 +4528,9 @@ bool CApplication::ResetScreenSaverWindow()
   if (m_bScreenSave && m_screenSaver)
   {
     if (m_iScreenSaveLock == 0)
-      if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-          (g_settings.UsingLoginScreen() || g_guiSettings.GetBool("masterlock.startuplock")) &&
-          g_settings.GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+          (CProfilesManager::Get().UsingLoginScreen() || g_guiSettings.GetBool("masterlock.startuplock")) &&
+          CProfilesManager::Get().GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
           m_screenSaver->ID() != "screensaver.xbmc.builtin.dim" && m_screenSaver->ID() != "screensaver.xbmc.builtin.black" && m_screenSaver->ID() != "visualization")
       {
         m_iScreenSaveLock = 2;
@@ -5877,7 +5884,7 @@ void CApplication::InitDirectoriesXbox()
   // First profile is always the Master Profile
   CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
 
-  g_settings.LoadProfiles(PROFILES_FILE);
+  CProfilesManager::Get().Load();
 }
 
 bool CApplication::SetLanguage(const CStdString &strLanguage)

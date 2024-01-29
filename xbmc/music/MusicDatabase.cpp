@@ -44,6 +44,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/File.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
@@ -2162,7 +2163,7 @@ bool CMusicDatabase::CleanupThumbs()
       return true;
     }
     // get albums dir
-    CStdString strThumbsDir = g_settings.GetMusicThumbFolder();
+    CStdString strThumbsDir = CProfilesManager::Get().GetMusicThumbFolder();
     while (!m_pDS->eof())
     {
       CStdString strThumb = m_pDS->fv("strThumb").get_asString();
@@ -2409,12 +2410,12 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
   {
     CStdString strFile;
     strFile.Format("%x.cddb", pCdInfo->GetCddbDiscId());
-    CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetCDDBFolder(), strFile));
+    CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetCDDBFolder(), strFile));
   }
 
   // Prepare cddb
   Xcddb cddb;
-  cddb.setCacheDir(g_settings.GetCDDBFolder());
+  cddb.setCacheDir(CProfilesManager::Get().GetCDDBFolder());
 
   // Do we have to look for cddb information
   if (pCdInfo->HasCDDBInfo() && !cddb.isCDCached(pCdInfo))
@@ -2497,7 +2498,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 void CMusicDatabase::DeleteCDDBInfo()
 {
   CFileItemList items;
-  if (!CDirectory::GetDirectory(g_settings.GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
+  if (!CDirectory::GetDirectory(CProfilesManager::Get().GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
   {
     CGUIDialogOK::ShowAndGetInput(313, 426, 0, 0);
     return ;
@@ -2519,7 +2520,7 @@ void CMusicDatabase::DeleteCDDBInfo()
       strFile.Delete(strFile.size() - 5, 5);
       ULONG lDiscId = strtoul(strFile.c_str(), NULL, 16);
       Xcddb cddb;
-      cddb.setCacheDir(g_settings.GetCDDBFolder());
+      cddb.setCacheDir(CProfilesManager::Get().GetCDDBFolder());
 
       if (!cddb.queryCache(lDiscId))
         continue;
@@ -2557,7 +2558,7 @@ void CMusicDatabase::DeleteCDDBInfo()
       {
         CStdString strFile;
         strFile.Format("%x.cddb", it->first);
-        CFile::Delete(URIUtils::AddFileToFolder(g_settings.GetCDDBFolder(), strFile));
+        CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetCDDBFolder(), strFile));
         break;
       }
     }
@@ -3108,7 +3109,7 @@ bool CMusicDatabase::GetAlbumsNav(const CStdString& strBaseDir, CFileItemList& i
   if (bResult && idArtist != -1)
   {
     CStdString strArtist = GetArtistById(idArtist);
-    CStdString strFanart = items.GetCachedThumb(strArtist,g_settings.GetMusicFanartFolder());
+    CStdString strFanart = items.GetCachedThumb(strArtist,CProfilesManager::Get().GetMusicFanartFolder());
     if (CFile::Exists(strFanart))
       items.SetProperty("fanart_image",strFanart);
   }
@@ -3379,7 +3380,7 @@ bool CMusicDatabase::GetSongsNav(const CStdString& strBaseDir, CFileItemList& it
   if (bResult && idArtist != -1)
   {
     CStdString strArtist = GetArtistById(idArtist);
-    CStdString strFanart = items.GetCachedThumb(strArtist,g_settings.GetMusicFanartFolder());
+    CStdString strFanart = items.GetCachedThumb(strArtist,CProfilesManager::Get().GetMusicFanartFolder());
     if (CFile::Exists(strFanart))
       items.SetProperty("fanart_image",strFanart);
   }
@@ -3462,7 +3463,7 @@ bool CMusicDatabase::UpdateOldVersion(int version)
     if (version < 12)
     {
       // update our thumb table as we've changed from storing absolute to relative paths
-      CStdString newPath = g_settings.GetMusicThumbFolder();
+      CStdString newPath = CProfilesManager::Get().GetMusicThumbFolder();
       CStdString oldPath = CSpecialProtocol::TranslatePath(newPath);
       if (m_pDS->query("select * from thumb where strThumb != 'NONE'") && m_pDS->num_rows())
       {

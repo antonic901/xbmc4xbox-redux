@@ -21,6 +21,7 @@
 #include "GUIDialogProfileSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogKeyboard.h"
+#include "profiles/ProfilesManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "guilib/GUIImage.h"
 #include "guilib/GUIWindowManager.h"
@@ -103,7 +104,7 @@ void CGUIDialogProfileSettings::CreateSettings()
 
   if (m_bShowDetails)
     AddButton(4,20066);
-  if (!m_bShowDetails && m_locks.mode == LOCK_MODE_EVERYONE && g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+  if (!m_bShowDetails && m_locks.mode == LOCK_MODE_EVERYONE && CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
     AddButton(4,20066);
 
   if (!m_bIsDefault && m_bShowDetails)
@@ -116,7 +117,7 @@ void CGUIDialogProfileSettings::CreateSettings()
     setting.entry.push_back(make_pair(setting.entry.size(), g_localizeStrings.Get(20062)));
     setting.entry.push_back(make_pair(setting.entry.size(), g_localizeStrings.Get(20063)));
     setting.entry.push_back(make_pair(setting.entry.size(), g_localizeStrings.Get(20061)));
-    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+    if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
       setting.entry.push_back(make_pair(setting.entry.size(), g_localizeStrings.Get(20107)));
 
     m_settings.push_back(setting);
@@ -129,7 +130,7 @@ void CGUIDialogProfileSettings::CreateSettings()
     setting2.entry.push_back(make_pair(setting2.entry.size(), g_localizeStrings.Get(20062)));
     setting2.entry.push_back(make_pair(setting2.entry.size(), g_localizeStrings.Get(20063)));
     setting2.entry.push_back(make_pair(setting2.entry.size(), g_localizeStrings.Get(20061)));
-    if (g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+    if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
       setting2.entry.push_back(make_pair(setting2.entry.size(), g_localizeStrings.Get(20107)));
 
     m_settings.push_back(setting2);
@@ -251,14 +252,14 @@ void CGUIDialogProfileSettings::OnSettingChanged(SettingInfo &setting)
   {
     if (m_bShowDetails)
     {
-      if (g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE && !m_bIsDefault)
+      if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE && !m_bIsDefault)
       {
         if (CGUIDialogYesNo::ShowAndGetInput(20066,20118,20119,20022))
           g_passwordManager.SetMasterLockMode(false);
-        if (g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
+        if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
           return;
       }
-      if (CGUIDialogLockSettings::ShowAndGetLock(m_locks, m_bIsDefault ? 12360 : 20068, g_settings.GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || m_bIsDefault))
+      if (CGUIDialogLockSettings::ShowAndGetLock(m_locks, m_bIsDefault ? 12360 : 20068, CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || m_bIsDefault))
         m_bNeedSave = true;
     }
     else
@@ -284,12 +285,12 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
     dialog->m_bIsDefault = true;
   else
     dialog->m_bIsDefault = false;
-  if (!bDetails && iProfile > g_settings.GetNumProfiles())
+  if (!bDetails && iProfile > CProfilesManager::Get().GetNumberOfProfiles())
     return false;
 
   dialog->m_bShowDetails = bDetails;
 
-  const CProfile *profile = g_settings.GetProfile(iProfile);
+  const CProfile *profile = CProfilesManager::Get().GetProfile(iProfile);
 
   if (!profile)
   { // defaults
@@ -298,9 +299,11 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
     dialog->m_iSourcesMode = 2;
 
     dialog->m_locks = CProfile::CLock();
-    dialog->m_locks.addonManager = true;
-    dialog->m_locks.settings = true;
-    dialog->m_locks.files = true;
+
+    bool bLock = CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser;
+    dialog->m_locks.addonManager = bLock;
+    dialog->m_locks.settings = bLock;
+    dialog->m_locks.files = bLock;
 
     dialog->m_strDirectory.Empty();
     dialog->m_strThumb.Empty();
@@ -326,7 +329,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
   dialog->DoModal();
   if (dialog->m_bNeedSave)
   {
-    if (iProfile >= g_settings.GetNumProfiles())
+    if (iProfile >= CProfilesManager::Get().GetNumberOfProfiles())
     {
       if (dialog->m_strName.IsEmpty() || dialog->m_strDirectory.IsEmpty())
         return false;
@@ -334,13 +337,13 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
       strLabel.Format(g_localizeStrings.Get(20047),dialog->m_strName);
       if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(20058),strLabel,dialog->m_strDirectory,""))
       {
-        CDirectory::Remove(URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), dialog->m_strDirectory));
+        CDirectory::Remove(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), dialog->m_strDirectory));
         return false;
       }*/
 
       // check for old profile settings
-      CProfile profile(dialog->m_strDirectory,dialog->m_strName,g_settings.GetNextProfileId());
-      g_settings.AddProfile(profile);
+      CProfile profile(dialog->m_strDirectory, dialog->m_strName, CProfilesManager::Get().GetNextProfileId());
+      CProfilesManager::Get().AddProfile(profile);
       bool bExists = CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/",
                                                           dialog->m_strDirectory+"/guisettings.xml"));
 
@@ -389,7 +392,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
       if (!CGUIDialogYesNo::ShowAndGetInput(20067,20103,20022,20022))
         return false;*/
 
-    CProfile *profile = g_settings.GetProfile(iProfile);
+    CProfile *profile = CProfilesManager::Get().GetProfile(iProfile);
     assert(profile);
     profile->setName(dialog->m_strName);
     profile->setDirectory(dialog->m_strDirectory);
@@ -401,7 +404,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
 
     profile->SetLocks(dialog->m_locks);
 
-    g_settings.SaveProfiles(PROFILES_FILE);
+    CProfilesManager::Get().Save();
     return true;
   }
 

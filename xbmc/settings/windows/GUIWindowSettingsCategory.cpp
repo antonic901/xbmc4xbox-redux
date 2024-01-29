@@ -31,6 +31,7 @@
 #include "GUIImage.h"
 #include "utils/Weather.h"
 #include "music/MusicDatabase.h"
+#include "profiles/ProfilesManager.h"
 #include "ProgramDatabase.h"
 #include "view/ViewDatabase.h"
 #include "XBAudioConfig.h"
@@ -311,7 +312,7 @@ void CGUIWindowSettingsCategory::SetupControls()
   int j=0;
   for (unsigned int i = 0; i < m_vecSections.size(); i++)
   {
-    if (m_vecSections[i]->m_labelID == 12360 && !g_settings.IsMasterUser())
+    if (m_vecSections[i]->m_labelID == 12360 && !CProfilesManager::Get().IsMasterProfile())
       continue;
     CGUIButtonControl *pButton = NULL;
     if (m_pOriginalCategoryButton->GetControlType() == CGUIControl::GUICONTROL_TOGGLEBUTTON)
@@ -543,12 +544,12 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     if (strSetting.Equals("filelists.allowfiledeletion"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(!g_settings.GetCurrentProfile().filesLocked() || g_passwordManager.bMasterUser);
+      if (pControl) pControl->SetEnabled(!CProfilesManager::Get().GetCurrentProfile().filesLocked() || g_passwordManager.bMasterUser);
     }
     else if (strSetting.Equals("filelists.showaddsourcebuttons"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_settings.GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser);
+      if (pControl) pControl->SetEnabled(CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser);
     }
     else if (strSetting.Equals("myprograms.ntscmode"))
     { // set visibility based on our other setting...
@@ -558,7 +559,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     else if (strSetting.Equals("masterlock.startuplock") || strSetting.Equals("masterlock.enableshutdown"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE);
+      if (pControl) pControl->SetEnabled(CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE);
     }
     else if (!strSetting.Equals("services.esenabled")
              && strSetting.Left(11).Equals("services.es"))
@@ -790,7 +791,7 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     else if (strSetting.Equals("autodetect.nickname") || strSetting.Equals("autodetect.senduserpw"))
     {
       CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
-      if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("autodetect.onoff") && (g_settings.GetCurrentProfileIndex() == 0));
+      if (pControl) pControl->SetEnabled(g_guiSettings.GetBool("autodetect.onoff") && (CProfilesManager::Get().GetCurrentProfileIndex() == 0));
     }
     else if ( strSetting.Equals("autodetect.popupinfo"))
     {

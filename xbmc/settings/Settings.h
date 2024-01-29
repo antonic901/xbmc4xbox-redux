@@ -19,18 +19,16 @@
  *
  */
 
-#include "settings/ISettingsHandler.h"
-#include "settings/ISubSettings.h"
-#include "settings/VideoSettings.h"
-#include "settings/GUISettings.h"
-#include "profiles/Profile.h"
-#include "MediaSource.h"
-#include "settings/AdvancedSettings.h"
-#include "utils/CriticalSection.h"
-
 #include <vector>
 #include <map>
 #include <set>
+
+#include "settings/ISettingsHandler.h"
+#include "settings/ISubSettings.h"
+#include "settings/GUISettings.h"
+#include "MediaSource.h"
+#include "settings/AdvancedSettings.h"
+#include "utils/CriticalSection.h"
 
 #define CACHE_AUDIO 0
 #define CACHE_VIDEO 1
@@ -38,11 +36,6 @@
 
 #define VOLUME_MINIMUM -6000  // -60dB
 #define VOLUME_MAXIMUM 0      // 0dB
-
-/* FIXME: eventually the profile should dictate where special://masterprofile/ is but for now it
-   makes sense to leave all the profile settings in a user writeable location
-   like special://masterprofile/ */
-#define PROFILES_FILE "special://masterprofile/profiles.xml"
 
 struct VOICE_MASK {
   float energy;
@@ -73,11 +66,6 @@ public:
   bool Reset();
 
   void Clear();
-
-  bool LoadProfile(unsigned int index);
-  bool DeleteProfile(unsigned int index);
-  void DeleteAllProfiles();
-  void CreateProfileFolders();
 
   struct AdvancedSettings
   {
@@ -313,129 +301,12 @@ public:
 
   CStdString m_defaultMusicLibSource;
 
-  /*! \brief Retrieve the master profile
-   \return const reference to the master profile
-   */
-  const CProfile &GetMasterProfile() const;
-
-  /*! \brief Retreive the current profile
-   \return const reference to the current profile
-   */
-  const CProfile &GetCurrentProfile() const;
-
-  /*! \brief Retreive the profile from an index
-   \param unsigned index of the profile to retrieve
-   \return const pointer to the profile, NULL if the index is invalid
-   */
-  const CProfile *GetProfile(unsigned int index) const;
-
-  /*! \brief Retreive the profile from an index
-   \param unsigned index of the profile to retrieve
-   \return pointer to the profile, NULL if the index is invalid
-   */
-  CProfile *GetProfile(unsigned int index);
-
-  /*! \brief Retreive index of a particular profile by name
-   \param name name of the profile index to retrieve
-   \return index of this profile, -1 if invalid.
-   */
-  int GetProfileIndex(const CStdString &name) const;
-
-  /*! \brief Retrieve the number of profiles
-   \return number of profiles
-   */
-  unsigned int GetNumProfiles() const;
-
-  /*! \brief Add a new profile
-   \param profile CProfile to add
-   */
-  void AddProfile(const CProfile &profile);
-
-  /*! \brief Are we using the login screen?
-   \return true if we're using the login screen, false otherwise
-   */
-  bool UsingLoginScreen() const { return m_usingLoginScreen; };
-
-  /*! \brief Toggle login screen use on and off
-   Toggles the login screen state
-   */
-  void ToggleLoginScreen() { m_usingLoginScreen = !m_usingLoginScreen; };
-
-  /*! \brief Are we the master user?
-   \return true if the current profile is the master user, false otherwise
-   */
-  bool IsMasterUser() const { return 0 == m_currentProfile; };
-
-  /*! \brief Update the date of the current profile
-   */
-  void UpdateCurrentProfileDate();
-
-  /*! \brief Load the master user for the purposes of logging in
-   Loads the master user.  Identical to LoadProfile(0) but doesn't update the last logged in details
-   */
-  void LoadMasterForLogin();
-
-  /*! \brief Retreive the last used profile index
-   \return the last used profile that logged in.  Does not count the master user during login.
-   */
-  unsigned int GetLastUsedProfileIndex() const { return m_lastUsedProfile; };
-
-  /*! \brief Retrieve the current profile index
-   \return the index of the currently logged in profile.
-   */
-  unsigned int GetCurrentProfileIndex() const { return m_currentProfile; };
-
-  /*! \brief Retrieve the next id to use for a new profile
-   \return the unique <id> to be used when creating a new profile
-   */
-  int GetNextProfileId() const { return m_nextIdProfile; }; // used to get the value of m_nextIdProfile for use in new profile creation
-
-  int GetCurrentProfileId() const;
-
-  // utility functions for user data folders
-
-  //uses HasSlashAtEnd to determine if a directory or file was meant
-  CStdString GetUserDataItem(const CStdString& strFile) const;
-  CStdString GetProfileUserDataFolder() const;
-  CStdString GetUserDataFolder() const;
-  CStdString GetDatabaseFolder() const;
-  CStdString GetCDDBFolder() const;
-  CStdString GetThumbnailsFolder() const;
-  CStdString GetMusicThumbFolder() const;
-  CStdString GetLastFMThumbFolder() const;
-  CStdString GetMusicArtistThumbFolder() const;
-  CStdString GetVideoThumbFolder() const;
-  CStdString GetBookmarksThumbFolder() const;
-  CStdString GetPicturesThumbFolder() const;
-  CStdString GetProgramsThumbFolder() const;
-  CStdString GetGameSaveThumbFolder() const;
-  CStdString GetProfilesThumbFolder() const;
-  CStdString GetLibraryFolder() const;
-  CStdString GetSkinFolder(const CStdString& skinName) const;
-  CStdString GetVideoFanartFolder() const;
-  CStdString GetMusicFanartFolder() const;
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
   CStdString GetDefaultVideoPlayerName() const;
   CStdString GetDefaultAudioPlayerName() const;
 
-  CStdString GetSettingsFile() const;
   CStdString GetAvpackSettingsFile() const;
-
-  /*! \brief Load the user profile information from disk
-   Loads the profiles.xml file and creates the list of profiles. If no profiles
-   exist, a master user is created.  Should be called after special://masterprofile/
-   has been defined.
-   \param profilesFile XML file to load.
-   */
-  void LoadProfiles(const CStdString& profilesFile);
-
-  /*! \brief Save the user profile information to disk
-   Saves the list of profiles to the profiles.xml file.
-   \param profilesFile XML file to save.
-   \return true on success, false on failure to save
-   */
-  bool SaveProfiles(const CStdString& profilesFile) const;
 
   bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
 
@@ -448,8 +319,6 @@ public:
 protected:
   bool LoadSettings(const CStdString& strSettingsFile);
 //  bool SaveSettings(const CStdString& strSettingsFile) const;
-
-  void LoadUserFolderLayout();
 
   bool SaveAvpackXML() const;
   bool SaveNewAvpackXML() const;
@@ -473,12 +342,6 @@ private:
   SettingsHandlers m_settingsHandlers;
   typedef std::set<ISubSettings*> SubSettings;
   SubSettings m_subSettings;
-
-  std::vector<CProfile> m_vecProfiles;
-  bool m_usingLoginScreen;
-  unsigned int m_lastUsedProfile;
-  unsigned int m_currentProfile;
-  int m_nextIdProfile; // for tracking the next available id to give to a new profile to ensure id's are not re-used
 };
 
 extern class CSettings g_settings;

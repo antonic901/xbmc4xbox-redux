@@ -54,6 +54,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "lib/libPython/XBPython.h"
+#include "profiles/ProfilesManager.h"
 #include "utils/RegExp.h"
 #include "utils/AlarmClock.h"
 #include "utils/RssFeed.h"
@@ -1579,7 +1580,7 @@ void CUtil::GetDVDDriveIcon( const CStdString& strPath, CStdString& strIcon )
 
 void CUtil::RemoveTempFiles()
 {
-  CStdString searchPath = g_settings.GetDatabaseFolder();
+  CStdString searchPath = CProfilesManager::Get().GetDatabaseFolder();
   CFileItemList items;
   if (!XFILE::CDirectory::GetDirectory(searchPath, items, ".tmp", DIR_FLAG_NO_FILE_DIRS))
     return;
@@ -1595,13 +1596,13 @@ void CUtil::DeleteGUISettings()
 {
   // Load in master code first to ensure it's setting isn't reset
   CXBMCTinyXML doc;
-  if (doc.LoadFile(g_settings.GetSettingsFile()))
+  if (doc.LoadFile(CProfilesManager::Get().GetSettingsFile()))
   {
     g_guiSettings.LoadMasterLock(doc.RootElement());
   }
   // delete the settings file only
-  CLog::Log(LOGINFO, "  DeleteFile(%s)", g_settings.GetSettingsFile().c_str());
-  CFile::Delete(g_settings.GetSettingsFile());
+  CLog::Log(LOGINFO, "  DeleteFile(%s)", CProfilesManager::Get().GetSettingsFile().c_str());
+  CFile::Delete(CProfilesManager::Get().GetSettingsFile());
 }
 
 void CUtil::RemoveIllegalChars( CStdString& strText)
@@ -3663,7 +3664,7 @@ CStdString CUtil::GetCachedMusicThumb(const CStdString& path)
   hex.Format("%08x", (unsigned __int32) crc);
   CStdString thumb;
   thumb.Format("%c/%s.tbn", hex[0], hex.c_str());
-  return URIUtils::AddFileToFolder(g_settings.GetMusicThumbFolder(), thumb);
+  return URIUtils::AddFileToFolder(CProfilesManager::Get().GetMusicThumbFolder(), thumb);
 }
 
 CStdString CUtil::GetDefaultFolderThumb(const CStdString &folderThumb)
@@ -3967,8 +3968,8 @@ bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
 void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, F_COUNTRY ForceCountry, CUSTOM_LAUNCH_DATA* pData)
 {
   // check if locked
-  if (g_settings.GetCurrentProfile().programsLocked() && 
-      g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+  if (CProfilesManager::Get().GetCurrentProfile().programsLocked() && 
+      CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
     if (!g_passwordManager.IsMasterLockUnlocked(true))
       return;
 

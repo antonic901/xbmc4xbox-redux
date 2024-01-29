@@ -20,15 +20,15 @@
 
 #include "system.h"
 #include "interfaces/Builtins.h"
-#include "input/ButtonTranslator.h"
-#include "Util.h"
+#include "ButtonTranslator.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
-#include "Key.h"
-#include "FileItem.h"
+#include "guilib/Key.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
-#include "utils/log.h"
+#include "FileItem.h"
 #include "utils/StringUtils.h"
+#include "utils/log.h"
 
 using namespace std;
 using namespace XFILE;
@@ -307,7 +307,7 @@ bool CButtonTranslator::Load()
       success |= LoadKeymap(files[i]->GetPath());
   }
   //load from user's keymaps/ directory
-  const CStdString userKeymapDirPath = g_settings.GetUserDataItem("keymaps/");
+  const CStdString userKeymapDirPath = CProfilesManager::Get().GetUserDataItem("keymaps/");
   if( XFILE::CDirectory::Exists(userKeymapDirPath) )
   {
     CFileItemList files;
@@ -319,7 +319,7 @@ bool CButtonTranslator::Load()
   }
 
   //try to load userdata/Keymap.xml for backward compatibility
-  const CStdString oldKeymapPath = g_settings.GetUserDataItem("Keymap.xml");
+  const CStdString oldKeymapPath = CProfilesManager::Get().GetUserDataItem("Keymap.xml");
   if( CFile::Exists(oldKeymapPath) )
   {
     CLog::Log(LOGINFO, "CButtonTranslator::Load - old Keymap.xml in userdata found (%s). Please consider moving it to the \"keymaps/\" folder", oldKeymapPath.c_str());

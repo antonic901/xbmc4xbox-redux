@@ -46,6 +46,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "filesystem/Directory.h"
 #include "URL.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
@@ -1687,7 +1688,7 @@ CUPnPRenderer::ProcessHttpRequest(NPT_HttpRequest&              request,
 
             // ensure that the request's path is a valid thumb path
             if (URIUtils::IsRemote(filepath.GetChars()) ||
-                !filepath.StartsWith(g_settings.GetUserDataFolder())) {
+                !filepath.StartsWith(CProfilesManager::Get().GetUserDataFolder().c_str())) {
                 response.SetStatus(404, "Not Found");
                 return NPT_SUCCESS;
             }
@@ -2262,7 +2263,7 @@ CUPnP::StartServer()
 
     // load upnpserver.xml so that g_settings.m_vecUPnPMusiCMediaSources, etc.. are loaded
     CStdString filename;
-    URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
+    URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), "upnpserver.xml", filename);
     CUPnPSettings::Get().Load(filename);
 
     // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
@@ -2358,7 +2359,7 @@ void CUPnP::StartRenderer()
     if (!m_RendererHolder->m_Device.IsNull()) return;
 
     CStdString filename;
-    URIUtils::AddFileToFolder(g_settings.GetUserDataFolder(), "upnpserver.xml", filename);
+    URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), "upnpserver.xml", filename);
     CUPnPSettings::Get().Load(filename);
 
     m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::Get().GetRendererPort());

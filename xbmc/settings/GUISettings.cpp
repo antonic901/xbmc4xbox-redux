@@ -32,6 +32,7 @@
 #endif
 #include "storage/MediaManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/VideoSettings.h"
 #include "cores/paplayer/AudioDecoder.h"
 #include "LocalizeStrings.h"
 #include "guilib/GUIFont.h" // for FONT_STYLE_* definitions

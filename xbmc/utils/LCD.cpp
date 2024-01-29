@@ -19,6 +19,7 @@
  */
 
 #include "LCD.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CharsetConverter.h"
@@ -390,7 +391,7 @@ CStdString ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nM
 void ILCD::Initialize()
 {
   CStdString lcdPath;
-  lcdPath = g_settings.GetUserDataItem("LCD.xml");
+  lcdPath = CProfilesManager::Get().GetUserDataItem("LCD.xml");
   LoadSkin(lcdPath);
   m_eCurrentCharset = CUSTOM_CHARSET_DEFAULT;
 

@@ -28,6 +28,7 @@
 #include "Key.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
@@ -286,7 +287,7 @@ bool CRecentlyAddedJob::UpdateMusic()
       home->SetProperty("LatestAlbum." + value + ".Rating"  , album.iRating);
       home->SetProperty("LatestAlbum." + value + ".Path"    , strDBpath);
       home->SetProperty("LatestAlbum." + value + ".Thumb"   , strThumb);
-      home->SetProperty("LatestAlbum." + value + ".Fanart"  , CFileItem::GetCachedThumb(strArtist,g_settings.GetMusicFanartFolder()));
+      home->SetProperty("LatestAlbum." + value + ".Fanart"  , CFileItem::GetCachedThumb(strArtist,CProfilesManager::Get().GetMusicFanartFolder()));
     }
   }
   for (; i < NUM_ITEMS; ++i)

@@ -20,6 +20,7 @@
 
 #include "lastfmscrobbler.h"
 #include "Application.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -66,7 +67,7 @@ void CLastfmScrobbler::LoadCredentials()
 
 CStdString CLastfmScrobbler::GetJournalFileName()
 {
-  CStdString strFileName = g_settings.GetProfileUserDataFolder();
+  CStdString strFileName = CProfilesManager::Get().GetProfileUserDataFolder();
   return URIUtils::AddFileToFolder(strFileName, "LastfmScrobbler.xml");
 }
 

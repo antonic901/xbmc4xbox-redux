@@ -22,6 +22,7 @@
 #include "pictures/Picture.h"
 #include "settings/GUISettings.h"
 #include "FileItem.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
@@ -130,8 +131,8 @@ void CGUILargeTextureManager::Process()
       CStdString directoryPath;
       URIUtils::GetDirectory(loadPath, directoryPath);
       URIUtils::RemoveSlashAtEnd(directoryPath);
-      if (directoryPath != g_settings.GetVideoFanartFolder() &&
-          directoryPath != g_settings.GetMusicFanartFolder() &&
+      if (directoryPath != CProfilesManager::Get().GetVideoFanartFolder() &&
+          directoryPath != CProfilesManager::Get().GetMusicFanartFolder() &&
           URIUtils::GetExtension(loadPath).Equals(".tbn"))
       {
         width = g_advancedSettings.m_thumbSize;

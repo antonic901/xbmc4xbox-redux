@@ -34,6 +34,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "playlists/PlayList.h"
@@ -69,7 +70,7 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying )
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
-      if (g_settings.GetCurrentProfile().musicLocked())
+      if (CProfilesManager::Get().GetCurrentProfile().musicLocked())
         return ;
 
     RunCdda();
@@ -128,7 +129,7 @@ void CAutorun::RunXboxCd(bool bypassSettings)
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
-      if (g_settings.GetCurrentProfile().programsLocked())
+      if (CProfilesManager::Get().GetCurrentProfile().programsLocked())
         return;
 
     ExecuteXBE("D:\\default.xbe");
@@ -202,9 +203,9 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
   bool bAllowMusic = true;
   if (!g_passwordManager.IsMasterLockUnlocked(false))
   {
-    bAllowVideo = !g_settings.GetCurrentProfile().videoLocked();
-    bAllowPictures = !g_settings.GetCurrentProfile().picturesLocked();
-    bAllowMusic = !g_settings.GetCurrentProfile().musicLocked();
+    bAllowVideo = !CProfilesManager::Get().GetCurrentProfile().videoLocked();
+    bAllowPictures = !CProfilesManager::Get().GetCurrentProfile().picturesLocked();
+    bAllowMusic = !CProfilesManager::Get().GetCurrentProfile().musicLocked();
   }
 
   if( bRoot )

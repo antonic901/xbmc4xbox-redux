@@ -26,6 +26,7 @@
 #include "filesystem/File.h"
 #include "utils/LangCodeExpander.h"
 #include "LangInfo.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -254,7 +255,7 @@ bool CAdvancedSettings::Load()
   ParseSettingsFile("special://xbmc/system/advancedsettings.xml");
   for (unsigned int i = 0; i < m_settingsFiles.size(); i++)
     ParseSettingsFile(m_settingsFiles[i]);
-  ParseSettingsFile(g_settings.GetUserDataItem("advancedsettings.xml"));
+  ParseSettingsFile(CProfilesManager::Get().GetUserDataItem("advancedsettings.xml"));
   return true;
 }
 

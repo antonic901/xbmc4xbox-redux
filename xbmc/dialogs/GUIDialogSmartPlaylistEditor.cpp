@@ -25,6 +25,7 @@
 #include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "GUIWindowManager.h"
 #include "filesystem/File.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
@@ -547,9 +548,9 @@ bool CGUIDialogSmartPlaylistEditor::EditPlaylist(const CStdString &path, const C
   if (!editor) return false;
 
   editor->m_mode = type;
-  if (path.Equals(g_settings.GetUserDataItem("PartyMode.xsp")))
+  if (path.Equals(CProfilesManager::Get().GetUserDataItem("PartyMode.xsp").c_str()))
     editor->m_mode = "partymusic";
-  if (path.Equals(g_settings.GetUserDataItem("PartyMode-Video.xsp")))
+  if (path.Equals(CProfilesManager::Get().GetUserDataItem("PartyMode-Video.xsp").c_str()))
     editor->m_mode = "partyvideo";
 
   CSmartPlaylist playlist;

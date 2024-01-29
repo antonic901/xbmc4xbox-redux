@@ -39,6 +39,7 @@
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "playlists/PlayList.h"
 #include "utils/Crc32.h"
@@ -431,7 +432,7 @@ void CLastFmManager::CacheTrackThumb(const int nrInitialTracksToAdd)
         crc.ComputeFromLowerCase(coverUrl);
         crcFile.Format("%08x.tbn", (__int32)crc);
         URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, crcFile, cachedFile);
-        URIUtils::AddFileToFolder(g_settings.GetLastFMThumbFolder(), crcFile, thumbFile);
+        URIUtils::AddFileToFolder(CProfilesManager::Get().GetLastFMThumbFolder(), crcFile, thumbFile);
         item->SetThumbnailImage("");
         try
         {

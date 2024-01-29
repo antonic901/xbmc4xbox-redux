@@ -24,6 +24,7 @@
 #include "utils/Crc32.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/File.h"
+#include "profiles/ProfilesManager.h"
 #include "utils/AutoPtrHandle.h"
 #include "utils/log.h"
 #include "utils/SortUtils.h"
@@ -338,7 +339,7 @@ void CDatabase::InitSettings(DatabaseSettings &dbSettings)
   else
   {
     dbSettings.type = "sqlite3";
-    dbSettings.host = CSpecialProtocol::TranslatePath(g_settings.GetDatabaseFolder());
+    dbSettings.host = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetDatabaseFolder());
   }
 
   // use separate, versioned database

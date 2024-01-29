@@ -22,6 +22,7 @@
 #include "utils/log.h"
 #include "DirectoryCache.h"
 #include "utils/URIUtils.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 
@@ -311,7 +312,7 @@ void CDirectoryCache::InitMusicThumbCache()
     {
       CStdString hex, folder;
       hex.Format("%x", i);
-      URIUtils::AddFileToFolder(g_settings.GetMusicThumbFolder(), hex, folder);
+      URIUtils::AddFileToFolder(CProfilesManager::Get().GetMusicThumbFolder(), hex, folder);
       m_musicThumbDirs.insert(folder);
     }
   }

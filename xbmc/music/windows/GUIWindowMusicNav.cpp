@@ -32,6 +32,7 @@
 #include "filesystem/VideoDatabaseDirectory.h"
 #include "PartyModeManager.h"
 #include "playlists/PlayListFactory.h"
+#include "profiles/ProfilesManager.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "video/VideoDatabase.h"
 #include "video/windows/GUIWindowVideoNav.h"
@@ -528,8 +529,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
         buttons.Add(CONTEXT_BUTTON_MARK_UNWATCHED, 16104); //Mark as UnWatched
       else
         buttons.Add(CONTEXT_BUTTON_MARK_WATCHED, 16103);   //Mark as Watched
-      if ((g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) &&
-          !item->IsPluginRoot() && !item->IsPlugin())
+      if ((CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !item->IsPlugin())
       {
         buttons.Add(CONTEXT_BUTTON_RENAME, 16105);
         buttons.Add(CONTEXT_BUTTON_DELETE, 646);

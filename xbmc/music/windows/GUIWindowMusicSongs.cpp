@@ -30,6 +30,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "FileItem.h"
+#include "profiles/ProfilesManager.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "LocalizeStrings.h"
@@ -343,7 +344,7 @@ void CGUIWindowMusicSongs::GetContextButtons(int itemNumber, CContextButtons &bu
 
       // enable CDDB lookup if the current dir is CDDA
       if (CDetectDVDMedia::IsDiscInDrive() && m_vecItems->IsCDDA() && 
-         (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+         (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
       {
         buttons.Add(CONTEXT_BUTTON_CDDB, 16002);
       }
@@ -369,7 +370,7 @@ void CGUIWindowMusicSongs::GetContextButtons(int itemNumber, CContextButtons &bu
                !item->IsLastFM() && !item->IsShoutCast()                 && 
                !item->GetPath().Equals("add") && !item->IsParentFolder() &&
                !item->IsPluginRoot() && !item->IsPlugin()                &&
-              (g_settings.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+              (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
       {
         buttons.Add(CONTEXT_BUTTON_SCAN, 13352);
       }
