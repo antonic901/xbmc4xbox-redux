@@ -1178,6 +1178,9 @@ void CXBoxRenderer::SetViewMode(int iViewMode)
     // now work out the zoom amount so that no zoom is done
     g_settings.m_fZoomAmount = (m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom) / fNewHeight;
   }
+
+  CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = g_settings.m_fZoomAmount;
+  CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio = g_settings.m_fPixelRatio;
 }
 
 void CXBoxRenderer::AutoCrop(bool bCrop)

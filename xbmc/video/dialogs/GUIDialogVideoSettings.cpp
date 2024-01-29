@@ -118,8 +118,6 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
   else if (setting.id == VIDEO_SETTINGS_VIEW_MODE)
   {
     g_renderManager.SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = g_settings.m_fZoomAmount;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio = g_settings.m_fPixelRatio;
     UpdateSetting(VIDEO_SETTINGS_ZOOM);
     UpdateSetting(VIDEO_SETTINGS_PIXEL_RATIO);
   }
