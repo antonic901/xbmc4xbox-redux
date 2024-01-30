@@ -34,6 +34,8 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "guilib/LocalizeStrings.h"
 
 using namespace XFILE;

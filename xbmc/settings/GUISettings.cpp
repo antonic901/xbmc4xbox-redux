@@ -19,7 +19,8 @@
  */
 
 #include "system.h"
-#include "settings/GUISettings.h"
+#include "GUISettings.h"
+#include "Settings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/FanController.h"

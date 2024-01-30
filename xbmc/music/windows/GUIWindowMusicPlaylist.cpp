@@ -18,10 +18,9 @@
  *
  */
 
-#include "music/windows/GUIWindowMusicPlaylist.h"
+#include "GUIWindowMusicPlaylist.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "playlists/PlayListM3U.h"
 #include "Application.h"
 #include "PlayListPlayer.h"
@@ -29,14 +28,17 @@
 #include "music/LastFmManager.h"
 #include "utils/LabelFormatter.h"
 #include "music/tags/MusicInfoTag.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "filesystem/FavouritesDirectory.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSettings.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace PLAYLIST;
 

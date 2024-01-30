@@ -24,7 +24,7 @@
 #include "Application.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/DisplaySettings.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

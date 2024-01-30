@@ -23,7 +23,7 @@
 #include <share.h>
 #include "CriticalSection.h"
 #include "SingleLock.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 
 FILE* CLog::fd = NULL;

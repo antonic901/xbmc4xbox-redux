@@ -18,16 +18,18 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "system.h"
-#include "utils/log.h"
-#include "settings/Settings.h"
-#include "settings/MediaSettings.h"
 #include <stdio.h>
+
+#include "system.h"
 #include "AsyncDirectSound.h"
-#include "MPlayer.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
+#include "settings/Settings.h"
+#include "utils/log.h"
 #include "Application.h" // Karaoke patch (114097)
 #include "AudioContext.h"
 #include "CdgParser.h"
+#include "MPlayer.h"
 
 #define CALC_DELAY_START   0
 #define CALC_DELAY_STARTED 1

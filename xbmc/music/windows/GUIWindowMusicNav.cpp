@@ -46,6 +46,7 @@
 #include "GUIEditControl.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/GUISettings.h"
 #include "utils/URIUtils.h"

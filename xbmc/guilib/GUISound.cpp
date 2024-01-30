@@ -21,6 +21,7 @@
 #include "include.h"
 #include "GUISound.h"
 #include "AudioContext.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "filesystem/File.h"
 

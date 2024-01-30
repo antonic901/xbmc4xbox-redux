@@ -18,7 +18,7 @@
  *
  */
 
-#include "music/windows/GUIWindowMusicPlaylistEditor.h"
+#include "GUIWindowMusicPlaylistEditor.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "GUIInfoManager.h"
@@ -29,11 +29,12 @@
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "playlists/PlayListM3U.h"
-#include "GUIWindowManager.h"
-#include "GUIUserMessages.h"
 #include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "settings/GUISettings.h"
+#include "GUIUserMessages.h"
+#include "guilib/LocalizeStrings.h"
 
 using namespace MEDIA_DETECT;
 

@@ -36,6 +36,9 @@
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
 #include "LocalizeStrings.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/log.h"
 

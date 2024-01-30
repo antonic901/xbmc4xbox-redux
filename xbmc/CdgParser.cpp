@@ -28,8 +28,9 @@
 #include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTag.h"
 #include "GUIWindowManager.h"
+#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
-#include "settings/Settings.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

@@ -2,7 +2,8 @@
 #include "x3lcd.h"
 #include "conio.h"
 #include "Application.h" // for g_application.IsInScreenSaver()
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
 #include <conio.h>

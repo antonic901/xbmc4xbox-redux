@@ -20,7 +20,7 @@
  */
 
 #include "IDirectory.h"
-#include "settings/Settings.h"
+#include "MediaSource.h"
 
 namespace XFILE
 {

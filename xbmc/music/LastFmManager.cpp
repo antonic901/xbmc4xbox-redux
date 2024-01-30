@@ -39,12 +39,12 @@
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "playlists/PlayList.h"
-#include "utils/Crc32.h"
+#include "profiles/ProfilesManager.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/Crc32.h"
 #include "utils/log.h"
 
 #include <sstream>

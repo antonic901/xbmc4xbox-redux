@@ -24,6 +24,7 @@
 #include "GUIPassword.h"
 #include "Util.h"
 #include "utils/MathUtils.h"
+#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 #include "Application.h"
 #ifdef HAS_VIDEO_PLAYBACK

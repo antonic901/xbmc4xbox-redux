@@ -27,7 +27,7 @@
 #include "Util.h"
 #include "music/tags/MusicInfoTag.h"
 #include "errors.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/XMLUtils.h"
 #include "Application.h"

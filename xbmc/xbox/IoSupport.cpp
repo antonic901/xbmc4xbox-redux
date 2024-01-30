@@ -24,7 +24,7 @@
 
 #include "system.h"
 #include "IoSupport.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 #ifdef HAS_UNDOCUMENTED
 #ifdef _XBOX

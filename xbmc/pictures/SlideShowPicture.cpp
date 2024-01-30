@@ -18,13 +18,14 @@
  *
  */
 
+#include "SlideShowPicture.h"
 #include "system.h"
-#include "pictures/SlideShowPicture.h"
 #include "cores/ssrc.h"         // for M_PI
 #include "GUIInfoManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "utils/log.h"
 
 using namespace std;

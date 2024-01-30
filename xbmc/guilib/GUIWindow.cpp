@@ -23,6 +23,7 @@
 #include "GUIWindowManager.h"
 #include "LocalizeStrings.h"
 #include "TextureManager.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "GUIControlFactory.h"
 #include "GUIControlGroup.h"

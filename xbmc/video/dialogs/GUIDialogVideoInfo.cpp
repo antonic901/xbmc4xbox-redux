@@ -42,6 +42,7 @@
 #include "utils/AsyncFileCopy.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"

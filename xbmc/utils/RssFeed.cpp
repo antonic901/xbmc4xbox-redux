@@ -19,7 +19,7 @@
  */
 
 #include "RssFeed.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "filesystem/CurlFile.h"
 #include "utils/XBMCTinyXML.h"

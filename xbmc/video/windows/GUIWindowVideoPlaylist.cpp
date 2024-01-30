@@ -29,6 +29,8 @@
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "GUIUserMessages.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSettings.h"
 #include "filesystem/FavouritesDirectory.h"
 #include "guilib/LocalizeStrings.h"

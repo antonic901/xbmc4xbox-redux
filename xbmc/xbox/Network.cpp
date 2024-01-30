@@ -28,7 +28,7 @@
 #include "filesystem/SmbFile.h"
 #include "lib/libscrobbler/lastfmscrobbler.h"
 #include "lib/libscrobbler/librefmscrobbler.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "GUIWindowManager.h"
 #include "ApplicationMessenger.h"
 #include "utils/RssManager.h"

@@ -34,10 +34,12 @@
 #include "FileItem.h"
 #include "addons/Skin.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 
 using namespace std;
 using namespace XFILE;

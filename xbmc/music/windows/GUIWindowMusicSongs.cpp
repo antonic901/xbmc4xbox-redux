@@ -18,24 +18,25 @@
  *
  */
 
-#include "music/windows/GUIWindowMusicSongs.h"
+#include "GUIWindowMusicSongs.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "GUIInfoManager.h"
 #include "Application.h"
 #include "CueDocument.h"
 #include "GUIPassword.h"
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
-#include "LocalizeStrings.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace MEDIA_DETECT;
 

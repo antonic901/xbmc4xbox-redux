@@ -31,6 +31,7 @@
 #include "GUIPassword.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "profiles/ProfilesManager.h"

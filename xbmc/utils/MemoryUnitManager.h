@@ -21,7 +21,7 @@
  */
 
 #include <vector>
-#include "settings/Settings.h"  // for VECSOURCES
+#include "MediaSource.h" // for VECSOURCES
 
 class IDevice;
 class IFileSystem;

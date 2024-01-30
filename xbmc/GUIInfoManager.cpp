@@ -69,6 +69,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "settings/SkinSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/SingleLock.h"

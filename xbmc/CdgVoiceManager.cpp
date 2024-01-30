@@ -20,6 +20,7 @@
 
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
+#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 
 //CdgChatter

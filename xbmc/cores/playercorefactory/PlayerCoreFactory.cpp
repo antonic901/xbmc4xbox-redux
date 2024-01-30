@@ -41,6 +41,7 @@
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"

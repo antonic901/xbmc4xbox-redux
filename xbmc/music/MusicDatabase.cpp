@@ -45,7 +45,7 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"

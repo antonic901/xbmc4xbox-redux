@@ -36,6 +36,7 @@
 #include "interfaces/Builtins.h"
 #include "Utils/log.h"
 #include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Application.h"
 #include "utils/MemoryUnitManager.h"
 #endif

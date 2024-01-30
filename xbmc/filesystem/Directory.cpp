@@ -27,7 +27,7 @@
 #endif
 #include "FileItem.h"
 #include "DirectoryCache.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "utils/Job.h"
 #include "utils/JobManager.h"
 #include "Application.h"

@@ -83,7 +83,7 @@
 #include "filesystem/File.h"
 #include "LocalizeStrings.h"
 #include "LangInfo.h"
-
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSourceSettings.h"

@@ -27,6 +27,8 @@
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "playlists/PlayList.h"
+#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 

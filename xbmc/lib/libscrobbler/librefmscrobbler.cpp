@@ -21,7 +21,7 @@
 #include "librefmscrobbler.h"
 #include "Application.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 

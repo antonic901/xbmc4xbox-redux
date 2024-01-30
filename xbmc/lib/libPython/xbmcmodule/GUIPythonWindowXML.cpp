@@ -31,6 +31,7 @@
 #include "filesystem/File.h"
 #include "TextureManager.h"
 #include "../XBPython.h"
+#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/Variant.h"

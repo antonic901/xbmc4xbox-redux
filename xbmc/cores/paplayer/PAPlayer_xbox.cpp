@@ -26,6 +26,8 @@
 #include "filesystem/ShoutcastFile.h"
 #include "CdgParser.h"
 #include "music/tags/MusicInfoTag.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 

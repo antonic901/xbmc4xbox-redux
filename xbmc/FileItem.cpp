@@ -49,7 +49,7 @@
 #include "music/Song.h"
 #include "URL.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"

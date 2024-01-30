@@ -18,7 +18,6 @@
  *
  */
 
-#include "utils/log.h"
 #include "GUIWindowGameSaves.h"
 #include "Util.h"
 #include "filesystem/ZipManager.h"
@@ -36,10 +35,12 @@
 #include "filesystem/Directory.h"
 #include "FileItem.h"
 #include "FileOperationJob.h"
-#include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
+#include "settings/GUISettings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/FileUtils.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 

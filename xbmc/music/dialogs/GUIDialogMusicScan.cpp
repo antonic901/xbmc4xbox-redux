@@ -26,7 +26,7 @@
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "utils/SingleLock.h"
 
 using namespace MUSIC_INFO;

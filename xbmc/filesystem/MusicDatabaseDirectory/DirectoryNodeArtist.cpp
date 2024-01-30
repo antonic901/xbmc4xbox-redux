@@ -21,7 +21,7 @@
 #include "DirectoryNodeArtist.h"
 #include "QueryParams.h"
 #include "music/MusicDatabase.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;

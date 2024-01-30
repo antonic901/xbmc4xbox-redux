@@ -5,7 +5,7 @@
 #include "system.h"
 #include <stdio.h>
 #include "XBInputEx.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
 //#define REMOTE_DEBUG 1

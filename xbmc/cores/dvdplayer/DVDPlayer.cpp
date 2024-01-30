@@ -46,7 +46,7 @@
 #include "Application.h"
 #include "DVDPerformanceCounter.h"
 #include "filesystem/File.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "FileItem.h"

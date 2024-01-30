@@ -26,7 +26,7 @@
 #include "File.h"
 #include "URL.h"
 #include "utils/TimeUtils.h"
-#include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 
 #include "MemBufferCache.h"
 #include "CircularCache.h"

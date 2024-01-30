@@ -21,6 +21,7 @@
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #include "cores/DllLoader/DllLoader.h"

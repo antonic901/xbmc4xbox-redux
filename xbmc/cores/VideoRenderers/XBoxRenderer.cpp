@@ -23,8 +23,9 @@
 #include "XBoxRenderer.h"
 #include "Application.h"
 #include "XBVideoConfig.h"
+#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
-#include "settings/Settings.h"
 #include "settings/MediaSettings.h"
 #include "utils/SingleLock.h"
 

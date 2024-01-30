@@ -43,6 +43,7 @@
 #include "profiles/ProfilesManager.h"
 #include "GUIUserMessages.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 
 #include "GUIImage.h"

@@ -22,7 +22,7 @@
 #include "CurlFile.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/Settings.h"
+#include "settings/GUISettings.h"
 #include "utils/HTMLUtil.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
