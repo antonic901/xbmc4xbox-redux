@@ -37,6 +37,7 @@
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "GUISliderControl.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
@@ -257,7 +258,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn;
       g_application.m_pPlayer->SetSubtitleVisible(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
       int label = CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn?305:1223;
-      g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(287),
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287),
                                                           g_localizeStrings.Get(label));
       if (g_application.GetCurrentPlayer() == EPC_MPLAYER && !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached && CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn) 
       { 
@@ -306,7 +307,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
         g_application.m_pPlayer->GetSubtitleName(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream,sub);
       else
         sub = g_localizeStrings.Get(1223);
-      g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(287),sub);
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287),sub);
     }
     return true;
     break;
@@ -382,7 +383,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       g_application.m_pPlayer->SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);    // Set the audio stream to the one selected
       CStdString aud;
       g_application.m_pPlayer->GetAudioStreamName(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream,aud);
-      g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(460),aud);
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(460),aud);
       return true;
     }
     break;

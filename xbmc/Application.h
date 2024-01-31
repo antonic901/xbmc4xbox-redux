@@ -36,7 +36,6 @@ namespace ADDON
 }
 
 #include "dialogs/GUIDialogSeekBar.h"
-#include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogVolumeBar.h"
 #include "dialogs/GUIDialogMuteBug.h"
 #include "windows/GUIWindowPointer.h"   // Mouse pointer
@@ -188,7 +187,6 @@ public:
 
   CGUIDialogVolumeBar m_guiDialogVolumeBar;
   CGUIDialogSeekBar m_guiDialogSeekBar;
-  CGUIDialogKaiToast m_guiDialogKaiToast;
   CGUIDialogMuteBug m_guiDialogMuteBug;
   CGUIWindowPointer m_guiPointer;
 

@@ -60,6 +60,7 @@
 #include "interfaces/Builtins.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaFilter.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/SmartPlaylistDirectory.h"
 #include "FileItemListModification.h"
 #include "utils/FileUtils.h"
@@ -890,7 +891,7 @@ bool CGUIMediaWindow::Refresh(bool clearCache /* = false */)
   if (oldCount > 0 &&
      (m_filter.IsEmpty() ? m_vecItems->Size() : m_unfilteredItems->Size()) <= 0)
   {
-    g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(2080), g_localizeStrings.Get(2081));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(2080), g_localizeStrings.Get(2081));
     GoParentFolder();
   }
 
@@ -1203,7 +1204,7 @@ void CGUIMediaWindow::GoParentFolder()
   // No items to show so go another level up
   if (!m_vecItems->GetPath().empty() && (m_filter.IsEmpty() ? m_vecItems->Size() : m_unfilteredItems->Size()) <= 0)
   {
-    g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(2080), g_localizeStrings.Get(2081));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(2080), g_localizeStrings.Get(2081));
     GoParentFolder();
   }
 }

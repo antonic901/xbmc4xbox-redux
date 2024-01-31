@@ -24,7 +24,6 @@
 #include "settings/GUISettings.h"
 #include "GUIWindowManager.h"
 #include "addons/IAddon.h"
-#include "Application.h"
 #include "FileItem.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoInfoScanner.h"
@@ -33,6 +32,7 @@
 #include "utils/URIUtils.h"
 #include "interfaces/Builtins.h"
 #include "filesystem/AddonsDirectory.h"
+#include "dialogs/GUIDialogKaiToast.h"
 
 #define CONTROL_CONTENT_TYPE        3
 #define CONTROL_SCRAPER_LIST        4
@@ -403,7 +403,7 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSet
     dialog->m_scraper = scraper;
     // toast selected but disabled scrapers
     if (!scraper->Enabled())
-      g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24023), scraper->Name(), 2000, true);
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24023), scraper->Name(), 2000, true);
   }
 
   dialog->m_bScanRecursive = (settings.recurse > 0 && !settings.parent_name) || (settings.recurse > 1 && settings.parent_name);

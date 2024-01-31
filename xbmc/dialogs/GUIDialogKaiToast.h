@@ -47,9 +47,9 @@ public:
 
   enum eMessageType { Info = 0, Warning, Error };
 
-  void QueueNotification(eMessageType eType, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime = TOAST_DISPLAY_TIME, bool withSound = true, unsigned int messageTime = TOAST_MESSAGE_TIME);
-  void QueueNotification(const CStdString& aCaption, const CStdString& aDescription);
-  void QueueNotification(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime = TOAST_DISPLAY_TIME, bool withSound = true, unsigned int messageTime = TOAST_MESSAGE_TIME);
+  static void QueueNotification(eMessageType eType, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime = TOAST_DISPLAY_TIME, bool withSound = true, unsigned int messageTime = TOAST_MESSAGE_TIME);
+  static void QueueNotification(const CStdString& aCaption, const CStdString& aDescription);
+  static void QueueNotification(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime = TOAST_DISPLAY_TIME, bool withSound = true, unsigned int messageTime = TOAST_MESSAGE_TIME);
   bool DoWork();
 
   virtual bool OnMessage(CGUIMessage& message);
@@ -58,6 +58,8 @@ public:
   void ResetTimer();
 
 protected:
+  void AddToQueue(eMessageType eType, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);
+  void AddToQueue(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);
 
   unsigned int m_timer;
 

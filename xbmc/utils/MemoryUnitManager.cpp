@@ -25,7 +25,7 @@
 #include "filesystem/MemoryUnits/FatXFileSystem.h"
 #include "filesystem/MemoryUnits/Fat32Device.h"
 #include "filesystem/MemoryUnits/Fat32FileSystem.h"
-#include "Application.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
@@ -279,7 +279,7 @@ void CMemoryUnitManager::Notify(unsigned long port, unsigned long slot, bool suc
   portSlot.Format(g_localizeStrings.Get(20139).c_str(), port, slot);
 
   if (success)
-    g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(20137), portSlot);
+    CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(20137), portSlot);
   else
-    g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(20138), portSlot);
+    CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(20138), portSlot);
 }

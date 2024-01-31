@@ -54,6 +54,7 @@
 #include "utils/StreamUtils.h"
 #include "utils/Variant.h"
 #include "dialogs/GUIDialogBusy.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "playlists/PlayListM3U.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -1298,7 +1299,7 @@ void CDVDPlayer::HandlePlaySpeed()
     {
       if(level  < 0.0)
       {
-        g_application.m_guiDialogKaiToast.QueueNotification("Cache full", "Cache filled before reaching required amount for continous playback");
+        CGUIDialogKaiToast::QueueNotification("Cache full", "Cache filled before reaching required amount for continous playback");
         caching = CACHESTATE_INIT;
       }
       if(level >= 1.0)
@@ -3030,7 +3031,7 @@ int CDVDPlayer::OnDVDNavResult(void* pData, int iMessage)
       {
         CLog::Log(LOGDEBUG, "DVDNAV_STOP");
         m_dvd.state = DVDSTATE_NORMAL;
-        g_application.m_guiDialogKaiToast.QueueNotification(g_localizeStrings.Get(16026), g_localizeStrings.Get(16029));
+        CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(16026), g_localizeStrings.Get(16029));
       }
       break;
     default:

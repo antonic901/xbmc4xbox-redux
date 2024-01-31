@@ -97,6 +97,7 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
 #include "utils/Crc32.h"
@@ -3041,7 +3042,7 @@ bool CUtil::AutoDetection()
         //Do Notification for this Client
         CStdString strtemplbl;
         strtemplbl.Format("%s %s",strNickName, v_xboxclients.client_ip[i]);
-        g_application.m_guiDialogKaiToast.QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(1251), strtemplbl);
+        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(1251), strtemplbl);
 
         //Debug Log
         CLog::Log(LOGDEBUG,"%s: %s FTP-Link: %s", g_localizeStrings.Get(1251).c_str(), strNickName.c_str(), strFTPPath.c_str());

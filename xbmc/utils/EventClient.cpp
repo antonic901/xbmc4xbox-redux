@@ -24,13 +24,14 @@
 
 #include "EventClient.h"
 #include "EventPacket.h"
-#include "Application.h"
 #include "SingleLock.h"
 #include "input/ButtonTranslator.h"
 #include "GraphicContext.h"
 #include "Key.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+#include "dialogs/GUIDialogKaiToast.h"
+#include "guilib/GraphicContext.h"
 
 #include <map>
 #include <queue>
@@ -337,14 +338,14 @@ bool CEventClient::OnPacketHELO(CEventPacket *packet)
   m_bGreeted = true;
   if (m_eLogoType == LT_NONE)
   {
-    g_application.m_guiDialogKaiToast.QueueNotification("Detected New Connection",
-                                                        m_deviceName.c_str());
+    CGUIDialogKaiToast::QueueNotification("Detected New Connection",
+                                          m_deviceName.c_str());
   }
   else
   {
-    g_application.m_guiDialogKaiToast.QueueNotification(iconfile.c_str(),
-                                                        "Detected New Connection",
-                                                        m_deviceName.c_str());
+    CGUIDialogKaiToast::QueueNotification(iconfile.c_str(),
+                                          "Detected New Connection",
+                                          m_deviceName.c_str());
   }
   return true;
 }
@@ -608,14 +609,14 @@ bool CEventClient::OnPacketNOTIFICATION(CEventPacket *packet)
 
   if (m_eLogoType == LT_NONE)
   {
-    g_application.m_guiDialogKaiToast.QueueNotification(title.c_str(),
-                                                        message.c_str());
+    CGUIDialogKaiToast::QueueNotification(title.c_str(),
+                                          message.c_str());
   }
   else
   {
-    g_application.m_guiDialogKaiToast.QueueNotification(iconfile.c_str(),
-                                                        title.c_str(),
-                                                        message.c_str());
+    CGUIDialogKaiToast::QueueNotification(iconfile.c_str(),
+                                          title.c_str(),
+                                          message.c_str());
   }
   return true;
 }

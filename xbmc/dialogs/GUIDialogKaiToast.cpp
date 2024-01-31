@@ -18,10 +18,10 @@
  *
  */
 
-#include "dialogs/GUIDialogKaiToast.h"
-#include "GUISliderControl.h"
-#include "GUIImage.h"
-#include "GUIAudioManager.h"
+#include "GUIDialogKaiToast.h"
+#include "guilib/GUIImage.h"
+#include "guilib/GUIAudioManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "utils/SingleLock.h"
 #include "utils/TimeUtils.h"
 
@@ -73,6 +73,25 @@ void CGUIDialogKaiToast::OnWindowLoaded()
 
 void CGUIDialogKaiToast::QueueNotification(eMessageType eType, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime /*= TOAST_DISPLAY_TIME*/, bool withSound /*= true*/, unsigned int messageTime /*= TOAST_MESSAGE_TIME*/)
 {
+  CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+  if (toast)
+    toast->AddToQueue(eType, aCaption, aDescription, displayTime, withSound, messageTime);
+}
+
+void CGUIDialogKaiToast::QueueNotification(const CStdString& aCaption, const CStdString& aDescription)
+{
+  QueueNotification("", aCaption, aDescription);
+}
+
+void CGUIDialogKaiToast::QueueNotification(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime /*= TOAST_DISPLAY_TIME*/, bool withSound /*= true*/, unsigned int messageTime /*= TOAST_MESSAGE_TIME*/)
+{
+  CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+  if (toast)
+    toast->AddToQueue(aImageFile, aCaption, aDescription, displayTime, withSound, messageTime);
+}
+
+void CGUIDialogKaiToast::AddToQueue(eMessageType eType, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime /*= TOAST_DISPLAY_TIME*/, bool withSound /*= true*/, unsigned int messageTime /*= TOAST_MESSAGE_TIME*/)
+{
   CGUIImage *image    = NULL;
 
   if (eType == Info)
@@ -86,15 +105,10 @@ void CGUIDialogKaiToast::QueueNotification(eMessageType eType, const CStdString&
   if (image)
     strImage = image->GetFileName();
 
-  QueueNotification(strImage, aCaption, aDescription, displayTime, withSound, messageTime);
+  AddToQueue(strImage, aCaption, aDescription, displayTime, withSound, messageTime);
 }
 
-void CGUIDialogKaiToast::QueueNotification(const CStdString& aCaption, const CStdString& aDescription)
-{
-  QueueNotification("", aCaption, aDescription);
-}
-
-void CGUIDialogKaiToast::QueueNotification(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime /*= TOAST_DISPLAY_TIME*/, bool withSound /*= true*/, unsigned int messageTime /*= TOAST_MESSAGE_TIME*/)
+void CGUIDialogKaiToast::AddToQueue(const CStdString& aImageFile, const CStdString& aCaption, const CStdString& aDescription, unsigned int displayTime /*= TOAST_DISPLAY_TIME*/, bool withSound /*= true*/, unsigned int messageTime /*= TOAST_MESSAGE_TIME*/)
 {
   CSingleLock lock(m_critical);
 
