@@ -74,6 +74,8 @@ class CGUIDialog;
 #define TMSG_GUI_DIALOG_CLOSE         606
 #define TMSG_GUI_ACTION               607
 
+#define TMSG_VOLUME_SHOW          900
+
 typedef struct
 {
   DWORD dwMessage;
@@ -141,6 +143,9 @@ public:
   void Close(CGUIDialog *pDialog, bool forceClose, bool waitResult=true);
   void ActivateWindow(int windowID, const std::vector<CStdString> &params, bool swappingWindows);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);
+
+  void ShowVolumeBar(bool up);
+
 private:
   void ProcessMessage(ThreadMessage *pMsg);
 

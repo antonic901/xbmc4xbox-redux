@@ -606,6 +606,11 @@ case TMSG_POWERDOWN:
       }
       break;
 
+    case TMSG_VOLUME_SHOW:
+      {
+        CAction action((int)pMsg->dwParam1);
+        g_application.ShowVolumeBar(&action);
+      }
   }
 }
 
@@ -876,4 +881,11 @@ void CApplicationMessenger::SendAction(const CAction &action, int windowID, bool
   tMsg.dwParam1 = windowID;
   tMsg.lpVoid = new CAction(action);
   SendMessage(tMsg, waitResult);
+}
+
+void CApplicationMessenger::ShowVolumeBar(bool up)
+{
+  ThreadMessage tMsg = {TMSG_VOLUME_SHOW};
+  tMsg.dwParam1 = up ? ACTION_VOLUME_UP : ACTION_VOLUME_DOWN;
+  SendMessage(tMsg, false);
 }
