@@ -722,7 +722,6 @@ HRESULT CApplication::Create(HWND hWnd)
   g_advancedSettings.m_logLevel     = LOG_LEVEL_NORMAL;
   g_advancedSettings.m_logLevelHint = LOG_LEVEL_NORMAL;
 #endif
-  CLog::SetLogLevel(g_advancedSettings.m_logLevel);
 
   g_guiSettings.Initialize();  // Initialize default Settings
   g_settings.Initialize(); //Initialize default AdvancedSettings
@@ -748,18 +747,9 @@ HRESULT CApplication::Create(HWND hWnd)
    * can now be caught using c++ try catch */
   win32_exception::install_handler();
 
-  CStdString strExecutablePath;
-  char szDevicePath[MAX_PATH];
-
-  // map Q to home drive of xbe to load the config file
-  CUtil::GetHomePath(strExecutablePath);
-  CIoSupport::GetPartition(strExecutablePath.c_str()[0], szDevicePath);
-  strcat(szDevicePath, &strExecutablePath.c_str()[2]);
-  CIoSupport::RemapDriveLetter('Q', szDevicePath);
- 
   // Do all the special:// & driveletter mapping & setup profiles
   InitDirectoriesXbox();
-  
+
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
   CLog::Log(LOGNOTICE, "Starting XBMC4Xbox %s (SVN:%s, compiler %i). Built on %s ", VERSION_STRING, SVN_REV, _MSC_VER, __DATE__);
   CSpecialProtocol::LogPaths();
@@ -769,33 +759,6 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::Log(LOGNOTICE, "The executable running is: %s", szXBEFileName);
   CLog::Log(LOGNOTICE, "Log File is located: %sxbmc.log", g_advancedSettings.m_logFolder.c_str());
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
-
-  // if we are running from DVD our UserData location will be TDATA
-  if (URIUtils::IsDVD(strExecutablePath))
-  {
-    // TODO: Should we copy over any UserData folder from the DVD?
-    if (!CFile::Exists("special://masterprofile/guisettings.xml")) // first run - cache userdata folder
-    {
-      CFileItemList items;
-      CUtil::GetRecursiveListing("special://xbmc/userdata",items,"");
-      for (int i=0;i<items.Size();++i)
-          CFile::Cache(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
-    }
-    g_advancedSettings.m_logFolder = "special://masterprofile/";
-  }
-  else
-  {
-    CStdString strMnt = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder());
-    if (strMnt.Left(2).Equals("Q:"))
-    {
-      CUtil::GetHomePath(strMnt);
-      strMnt += CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder()).substr(2);
-    }
-
-    CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
-    strcat(szDevicePath, &strMnt.c_str()[2]);
-    CIoSupport::RemapDriveLetter('T', szDevicePath);
-  }
 
   if (m_128MBHack)
     CLog::Log(LOGNOTICE, "128MB hack enabled");
@@ -5749,7 +5712,6 @@ void CApplication::CheckForDebugButtonCombo()
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_X] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y])
   {
     g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
-    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
     CLog::Log(LOGINFO, "Key combination detected for full debug logging (X+Y)");
   }
 #ifdef _DEBUG
@@ -5851,17 +5813,43 @@ void CApplication::InitDirectoriesXbox()
   // First profile is always the Master Profile
   CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
 
-  // check logpath
-  CStdString strLogFile, strLogFileOld;
-  URIUtils::AddSlashAtEnd(g_advancedSettings.m_logFolder);
-  strLogFile.Format("%sxbmc.log", CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder));
-  strLogFileOld.Format("%sxbmc.old.log", CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder));
+  CStdString strExecutablePath;
+  char szDevicePath[MAX_PATH];
 
-  // Rotate the log (xbmc.log -> xbmc.old.log)
-  ::DeleteFile(strLogFileOld.c_str());
-  ::MoveFile(strLogFile.c_str(), strLogFileOld.c_str());
+  // map Q to home drive of xbe to load the config file
+  CUtil::GetHomePath(strExecutablePath);
+  CIoSupport::GetPartition(strExecutablePath.c_str()[0], szDevicePath);
+  strcat(szDevicePath, &strExecutablePath.c_str()[2]);
+  CIoSupport::RemapDriveLetter('Q', szDevicePath);
 
   CProfilesManager::Get().Load();
+
+  // if we are running from DVD our UserData location will be TDATA
+  if (URIUtils::IsDVD(strExecutablePath))
+  {
+    // TODO: Should we copy over any UserData folder from the DVD?
+    if (!CFile::Exists("special://masterprofile/guisettings.xml")) // first run - cache userdata folder
+    {
+      CFileItemList items;
+      CUtil::GetRecursiveListing("special://xbmc/userdata",items,"");
+      for (int i=0;i<items.Size();++i)
+          CFile::Cache(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
+    }
+    g_advancedSettings.m_logFolder = "special://masterprofile/";
+  }
+  else
+  {
+    CStdString strMnt = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder());
+    if (strMnt.Left(2).Equals("Q:"))
+    {
+      CUtil::GetHomePath(strMnt);
+      strMnt += CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder()).substr(2);
+    }
+
+    CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
+    strcat(szDevicePath, &strMnt.c_str()[2]);
+    CIoSupport::RemapDriveLetter('T', szDevicePath);
+  }
 }
 
 bool CApplication::SetLanguage(const CStdString &strLanguage)

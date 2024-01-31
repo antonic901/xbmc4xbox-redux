@@ -59,7 +59,6 @@ void CAdvancedSettings::OnSettingsLoaded()
     m_logLevel = std::min(m_logLevelHint, LOG_LEVEL_DEBUG/*LOG_LEVEL_NORMAL*/);
     CLog::Log(LOGNOTICE, "Disabled debug logging due to GUI setting. Level %d.", m_logLevel);
   }
-  CLog::SetLogLevel(m_logLevel);
 }
 
 CAdvancedSettings::CAdvancedSettings()
@@ -477,7 +476,6 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
         setting->SetAdvanced();
     }
     g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevel, g_advancedSettings.m_logLevelHint);
-    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
   }
 
   pElement = pRootElement->FirstChildElement("python");
@@ -861,7 +859,6 @@ void CAdvancedSettings::SetDebugMode(bool debug)
   {
     int level = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
     m_logLevel = level;
-    CLog::SetLogLevel(level);
     CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting. Level %d.", level);
   }
   else
@@ -869,7 +866,6 @@ void CAdvancedSettings::SetDebugMode(bool debug)
     int level = std::min(m_logLevelHint, LOG_LEVEL_DEBUG/*LOG_LEVEL_NORMAL*/);
     CLog::Log(LOGNOTICE, "Disabled debug logging due to GUI setting. Level %d.", level);
     m_logLevel = level;
-    CLog::SetLogLevel(level);
   }
 }
 

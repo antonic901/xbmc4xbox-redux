@@ -40,20 +40,25 @@
 #define LOGFATAL   6
 #define LOGNONE    7
 
+#ifdef __GNUC__
+#define ATTRIB_LOG_FORMAT __attribute__((format(printf,2,3)))
+#else
+#define ATTRIB_LOG_FORMAT
+#endif
+
+namespace XFILE {
+  class CFile;
+}
+
 class CLog
 {
-  static FILE* fd;
-  static int        m_logLevel;
-  static int        m_repeatCount;
-  static int        m_repeatLogLevel;
-  static CStdString m_repeatLine;
+  static XFILE::CFile *m_file;
 public:
   CLog();
   virtual ~CLog(void);
   static void Close();
-  static void Log(int loglevel, const char *format, ... );
+  static void Log(int loglevel, const char *format, ... ) ATTRIB_LOG_FORMAT;
   static void DebugLog(const char *format, ...);
-  static void MemDump(BYTE *pData, int length);
-  static void SetLogLevel(int level);
-  static int  GetLogLevel();
+  static void MemDump(char *pData, int length);
+  static void DebugLogMemory();
 };

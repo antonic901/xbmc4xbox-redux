@@ -92,8 +92,6 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   char szDestinationDrive[16];
   NTSTATUS status;
 
-  CLog::Log(LOGNOTICE, "Mapping drive %c to %s", cDriveLetter, szDevice);
-
   sprintf(szSourceDevice, "\\Device\\%s", szDevice);
   sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
 
@@ -106,6 +104,8 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 
   if (!NT_SUCCESS(status))
     CLog::Log(LOGERROR, "Failed to create symbolic link!  (status=0x%08x)", status);
+  else
+    CLog::Log(LOGNOTICE, "Mapping drive %c to %s", cDriveLetter, szDevice);
 
   return status;
 #else

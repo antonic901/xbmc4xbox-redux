@@ -18,19 +18,15 @@
  *
  */
 
-#include "system.h"
 #include "log.h"
 #include <share.h>
 #include "CriticalSection.h"
 #include "SingleLock.h"
+#include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
-#include "utils/URIUtils.h"
+#include "Thread.h"
 
-FILE* CLog::fd = NULL;
-int         CLog::m_repeatCount     = 0;
-int         CLog::m_repeatLogLevel  = -1;
-CStdString  CLog::m_repeatLine      = "";
-int         CLog::m_logLevel        = LOG_LEVEL_DEBUG;
+XFILE::CFile* CLog::m_file = NULL;
 
 static CCriticalSection critSec;
 
@@ -48,34 +44,42 @@ CLog::~CLog()
 void CLog::Close()
 {
   CSingleLock waitLock(critSec);
-  if (fd)
+  if (m_file)
   {
-    fclose(fd);
-    fd = NULL;
+    m_file->Close();
+    delete m_file;
+    m_file = NULL;
   }
 }
 
 
 void CLog::Log(int loglevel, const char *format, ... )
 {
-  CSingleLock waitLock(critSec);
-  if (m_logLevel > LOG_LEVEL_NORMAL ||
-     (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
+  if (g_advancedSettings.m_logLevel > LOG_LEVEL_NORMAL ||
+     (g_advancedSettings.m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
   {
-    if (!fd)
+    CSingleLock waitLock(critSec);
+    if (!m_file)
     {
-      // We should only continue when the logfolder is set
-      if (g_advancedSettings.m_logFolder.IsEmpty()) return;
+      m_file = new XFILE::CFile;
+      if (!m_file)
+        return;
 
-      // g_advancedSettings.m_logFolder is initialized in the CAdvancedSettings constructor to Q:\\
-      // and if we are running from DVD, it's changed to T:\\ in CApplication::Create()
-      CStdString LogFile;
-      URIUtils::AddFileToFolder(g_advancedSettings.m_logFolder, "xbmc.log", LogFile);
-      fd = _fsopen(LogFile, "a+", _SH_DENYWR);
+      // g_advancedSettings.m_logFolder is initialized in the CAdvancedSettings constructor
+      // and changed in CApplication::Create()
+      CStdString strLogFile, strLogFileOld;
+
+      strLogFile.Format("%sxbmc.log", g_advancedSettings.m_logFolder.c_str());
+      strLogFileOld.Format("%sxbmc.old.log", g_advancedSettings.m_logFolder.c_str());
+
+      if(m_file->Exists(strLogFileOld))
+        m_file->Delete(strLogFileOld);
+      if(m_file->Exists(strLogFile))
+        m_file->Rename(strLogFile, strLogFileOld);
+
+      if(!m_file->OpenForWrite(strLogFile))
+        return;
     }
-      
-    if (!fd)
-      return ;
 
     SYSTEMTIME time;
     GetLocalTime(&time);
@@ -84,8 +88,8 @@ void CLog::Log(int loglevel, const char *format, ... )
     GlobalMemoryStatus(&stat);
 
     CStdString strPrefix, strData;
-    
-    strPrefix.Format("%02.2d:%02.2d:%02.2d M:%9u %7s: ", time.wHour, time.wMinute, time.wSecond, stat.dwAvailPhys, levelNames[loglevel]);
+
+    strPrefix.Format("%02.2d:%02.2d:%02.2d T:%"PRIu64" M:%9"PRIu64" %7s: ", time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), (uint64_t)stat.dwAvailPhys, levelNames[loglevel]);
 
     strData.reserve(16384);
     va_list va;
@@ -93,27 +97,6 @@ void CLog::Log(int loglevel, const char *format, ... )
     strData.FormatV(format,va);
     va_end(va);
 
-    if (m_repeatLogLevel == loglevel && m_repeatLine == strData)
-    {
-      m_repeatCount++;
-      return;
-    }
-    else if (m_repeatCount)
-    {
-      CStdString strPrefix2, strData2;
-      strPrefix.Format("%02.2d:%02.2d:%02.2d M:%9u %7s: ", time.wHour, time.wMinute, time.wSecond, stat.dwAvailPhys, levelNames[m_repeatLogLevel]);
-
-      strData2.Format("Previous line repeats %d times." LINE_ENDING, m_repeatCount);
-      fwrite(strPrefix2.c_str(), strPrefix2.size(), 1, fd);
-      fwrite(strData2.c_str(), strData2.size(), 1, fd);
-#if !defined(_LINUX) && (defined(_DEBUG) || defined(PROFILE))
-      OutputDebugString(strData2.c_str());
-#endif
-      m_repeatCount = 0;
-    }
-    
-    m_repeatLine      = strData;
-    m_repeatLogLevel  = loglevel;
 
     unsigned int length = 0;
     while ( length != strData.length() )
@@ -136,9 +119,8 @@ void CLog::Log(int loglevel, const char *format, ... )
     strData.Replace("\n", LINE_ENDING"                                            ");
     strData += LINE_ENDING;
 
-    fwrite(strPrefix.c_str(), strPrefix.size(), 1, fd);
-    fwrite(strData.c_str(), strData.size(), 1, fd);
-    fflush(fd);
+    m_file->Write(strPrefix.c_str(), strPrefix.size());
+    m_file->Write(strData.c_str(), strData.size());
   }
 #if defined(_DEBUG) || defined(PROFILE)
   else
@@ -180,14 +162,29 @@ void CLog::DebugLog(const char *format, ... )
 #endif
 }
 
-void CLog::MemDump(BYTE *pData, int length)
+void CLog::DebugLogMemory()
 {
-  Log(LOGDEBUG, "MEM_DUMP: Dumping from %x", (unsigned int)pData);
+  CSingleLock waitLock(critSec);
+  MEMORYSTATUS stat;
+  CStdString strData;
+
+  GlobalMemoryStatus(&stat);
+#ifdef __APPLE__
+  strData.Format("%ju bytes free\n", stat.dwAvailPhys);
+#else
+  strData.Format("%lu bytes free\n", stat.dwAvailPhys);
+#endif
+  OutputDebugString(strData.c_str());
+}
+
+void CLog::MemDump(char *pData, int length)
+{
+  Log(LOGDEBUG, "MEM_DUMP: Dumping from %p", pData);
   for (int i = 0; i < length; i+=16)
   {
     CStdString strLine;
     strLine.Format("MEM_DUMP: %04x ", i);
-    BYTE *alpha = pData;
+    char *alpha = pData;
     for (int k=0; k < 4 && i + 4*k < length; k++)
     {
       for (int j=0; j < 4 && i + 4*k + j < length; j++)
@@ -204,7 +201,7 @@ void CLog::MemDump(BYTE *pData, int length)
     for (int j=0; j < 16 && i + j < length; j++)
     {
       CStdString strFormat;
-      if (*alpha > 31 && *alpha < 128)
+      if (*alpha > 31)
         strLine += *alpha;
       else
         strLine += '.';
@@ -213,16 +210,3 @@ void CLog::MemDump(BYTE *pData, int length)
     Log(LOGDEBUG, "%s", strLine.c_str());
   }
 }
-
-void CLog::SetLogLevel(int level)
-{
-  CSingleLock waitLock(critSec);
-  m_logLevel = level;
-  CLog::Log(LOGNOTICE, "Log level changed to %d", m_logLevel);
-}
-
-int CLog::GetLogLevel()
-{
-  return m_logLevel;
-}
-

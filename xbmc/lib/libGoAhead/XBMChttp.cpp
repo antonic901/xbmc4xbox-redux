@@ -3097,7 +3097,6 @@ int CXbmcHttp::xbmcSetLogLevel(int numParas, CStdString paras[])
   else
   {
     g_advancedSettings.m_logLevel=atoi(paras[0]);
-    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
     return SetResponse(openTag+"OK");
   }
 }
