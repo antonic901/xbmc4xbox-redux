@@ -54,6 +54,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/SystemInfo.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -2711,7 +2712,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="premutevolumelevel")
         tmp.Format("%i",g_settings.m_iPreMuteVolumeLevel);
       else if (paras[i]=="systemtimetotalup")
-        tmp.Format("%i",g_settings.m_iSystemTimeTotalUp);
+        tmp.Format("%i",g_sysinfo.GetTotalUptime());
       else if (paras[i]=="mute")
         tmp = (g_settings.m_bMute==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")

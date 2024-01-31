@@ -18,6 +18,8 @@
  *
  */
 
+#include <limits.h>
+
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
@@ -29,6 +31,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
 #include "utils/log.h"
+#include "utils/XMLUtils.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #include "xbox/XKUtils.h"
@@ -217,7 +220,7 @@ CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
   if(bTotalUptime)
   {
     //Total Uptime
-    iInputMinutes = g_settings.m_iSystemTimeTotalUp + ((int)(CTimeUtils::GetTimeMS() / 60000));
+    iInputMinutes = g_sysinfo.GetTotalUptime() + ((int)(CTimeUtils::GetTimeMS() / 60000));
   }
   else
   {
@@ -337,6 +340,8 @@ void CSysInfo::Reset()
 
 CSysInfo::CSysInfo(void) : CInfoLoader(15 * 1000)
 {
+  memset(MD5_Sign, 0, sizeof(MD5_Sign));
+  m_iSystemTimeTotalUp = 0;
 #ifdef HAS_XBOX_HARDWARE
   m_bRequestDone = false;
   m_XKEEPROM = new XKEEPROM;
@@ -893,6 +898,37 @@ bool CSysInfo::GetRefurbInfo(CStdString& rfi_FirstBootTime, CStdString& rfi_Powe
   return true;
 }
 #endif
+
+bool CSysInfo::Load(const TiXmlNode *settings)
+{
+  if (settings == NULL)
+    return false;
+
+  const TiXmlElement *pElement = settings->FirstChildElement("general");
+  if (pElement)
+    XMLUtils::GetInt(pElement, "systemtotaluptime", m_iSystemTimeTotalUp, 0, INT_MAX);
+
+  return true;
+}
+
+bool CSysInfo::Save(TiXmlNode *settings) const
+{
+  if (settings == NULL)
+    return false;
+
+  TiXmlNode *generalNode = settings->FirstChild("general");
+  if (generalNode == NULL)
+  {
+    TiXmlElement generalNodeNew("general");
+    generalNode = settings->InsertEndChild(generalNodeNew);
+    if (generalNode == NULL)
+      return false;
+  }
+  XMLUtils::SetInt(generalNode, "systemtotaluptime", m_iSystemTimeTotalUp);
+
+  return true;
+}
+
 bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree, int& iTotalUsed, int& iPercentFree, int& iPercentUsed)
 {
   CStdString driveName = drive + ":\\";
@@ -946,8 +982,15 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
     iTotalFree = (int)(totalFree.QuadPart/MB);
     iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart)/MB);
 
-    totalUsed.QuadPart = total.QuadPart - totalFree.QuadPart;
-    iPercentUsed = (int)(100.0f * totalUsed.QuadPart/total.QuadPart + 0.5f);
+    if( total.QuadPart > 0 )
+    {
+      totalUsed.QuadPart = total.QuadPart - totalFree.QuadPart;
+      iPercentUsed = (int)(100.0f * totalUsed.QuadPart/total.QuadPart + 0.5f);
+    }
+    else
+    {
+      iPercentUsed = 0;
+    }
     iPercentFree = 100 - iPercentUsed;
     return true;
   }

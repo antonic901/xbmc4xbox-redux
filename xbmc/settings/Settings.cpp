@@ -91,7 +91,6 @@ void CSettings::Initialize()
   m_iPreMuteVolumeLevel = 0;
   m_bMute = false;
 
-  m_iSystemTimeTotalUp = 0;
   m_HttpApiBroadcastLevel = 0;
   m_HttpApiBroadcastPort = 8278;
 }
@@ -226,7 +225,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   const TiXmlElement *pElement = pRootElement->FirstChildElement("general");
   if (pElement)
   {
-    GetInteger(pElement, "systemtotaluptime", m_iSystemTimeTotalUp, 0, 0, INT_MAX);
     GetInteger(pElement, "httpapibroadcastlevel", m_HttpApiBroadcastLevel, 0, 0,5);
     GetInteger(pElement, "httpapibroadcastport", m_HttpApiBroadcastPort, 8278, 1, 65535);
   }
@@ -453,7 +451,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
   TiXmlElement generalNode("general");
   TiXmlNode *pNode = pRoot->InsertEndChild(generalNode);
   if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "systemtotaluptime", m_iSystemTimeTotalUp);
   XMLUtils::SetInt(pNode, "httpapibroadcastport", m_HttpApiBroadcastPort);
   XMLUtils::SetInt(pNode, "httpapibroadcastlevel", m_HttpApiBroadcastLevel);
 

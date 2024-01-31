@@ -23,6 +23,7 @@
 #include "md5.h"
 #include "xbox/XKEEPROM.h"
 #include "InfoLoader.h"
+#include "settings/ISubSettings.h"
 
 #define KB  (1024)          // 1 KiloByte (1KB)   1024 Byte (2^10 Byte)
 #define MB  (1024*KB)       // 1 MegaByte (1MB)   1024 KB (2^10 KB)
@@ -126,11 +127,14 @@ private:
   CSysData m_info;
 };
 
-class CSysInfo : public CInfoLoader
+class CSysInfo : public CInfoLoader, public ISubSettings
 {
 public:
   CSysInfo(void);
   virtual ~CSysInfo();
+
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
 
   char MD5_Sign[32 + 1];
 
@@ -165,6 +169,9 @@ public:
   bool GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree, int& iTotalUsed, int& iPercentFree, int& iPercentUsed);
   CStdString GetHddSpaceInfo(int& percent, int drive, bool shortText=false);
   CStdString GetHddSpaceInfo(int drive, bool shortText=false);
+
+  int GetTotalUptime() const { return m_iSystemTimeTotalUp; }
+  void SetTotalUptime(int uptime) { m_iSystemTimeTotalUp = uptime; }
 
 #ifdef _XBOX
   bool m_bRequestDone;
@@ -207,6 +214,7 @@ protected:
 
 private:
   CSysData m_info;
+  int m_iSystemTimeTotalUp; // Uptime in minutes!
   void Reset();
 };
 
