@@ -21,13 +21,14 @@
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
-#include "settings/AdvancedSettings.h"
-#include "settings/Settings.h"
-#include "utils/log.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "GUIInfoManager.h"
 #include "filesystem/CurlFile.h"
-#include "LocalizeStrings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/TimeUtils.h"
+#include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #include "xbox/XKUtils.h"
@@ -36,66 +37,214 @@
 #include "xbox/XKRC4.h"
 extern "C" XPP_DEVICE_TYPE XDEVICE_TYPE_IR_REMOTE_TABLE;
 #endif
-#include "filesystem/CurlFile.h"
+
 CSysInfo g_sysinfo;
 
-bool CSysInfo::DoWork()
+CSysInfoJob::CSysInfoJob()
 {
-#ifdef HAS_XBOX_HARDWARE
-  //Request only one time!
-  if(!m_bRequestDone)
+}
+
+bool CSysInfoJob::DoWork()
+{
+  m_info.systemUptime      = GetSystemUpTime(false);
+  m_info.systemTotalUptime = GetSystemUpTime(true);
+  m_info.internetState     = GetInternetState();
+
+#ifdef _XBOX
+  if (!g_sysinfo.m_bRequestDone)
   {
+    m_info.videoEncoder      = GetVideoEncoder();
+    m_info.cpuFrequency      = GetCPUFreqInfo();
+    m_info.kernelVersion     = CSysInfo::GetKernelVersion();
+    m_info.macAddress        = GetMACAddress();
+
     // The X2 series of modchips cause an error on XBE launching if GetModChipInfo()
     if(!g_advancedSettings.m_DisableModChipDetection)
-    {
-      m_XboxModChip     = GetModChipInfo();
-    }
-    m_XboxBios        = GetBIOSInfo();
-    m_mplayerversion  = GetMPlayerVersion();
-    m_kernelversion   = GetKernelVersion();
-    m_cpufrequency    = GetCPUFreqInfo();
-    m_xboxversion     = GetXBVerInfo();
-    m_avpackinfo      = GetAVPackInfo();
-    m_videoencoder    = GetVideoEncoder();
-    m_xboxserial      = GetXBOXSerial();
-    m_hddlockkey      = GetHDDKey();
-    m_macadress       = GetMACAddress();
-    m_videoxberegion  = GetVideoXBERegion();
-    m_videodvdzone    = GetDVDZone();
-    m_produceinfo     = GetXBProduceInfo();
-    g_sysinfo.GetRefurbInfo(m_hddbootdate, m_hddcyclecount);
+      m_info.xboxModChip     = CSysInfo::GetModChipInfo();
+    m_info.xboxBios          = g_sysinfo.GetBIOSInfo();
+    m_info.mplayerversion    = CSysInfo::GetMPlayerVersion();
+    m_info.xboxversion       = CSysInfo::GetXBVerInfo();
+    m_info.avpackinfo        = CSysInfo::GetAVPackInfo();
+    m_info.xboxserial        = g_sysinfo.GetXBOXSerial();
+    m_info.hddlockkey        = g_sysinfo.GetHDDKey();
+    m_info.videoxberegion    = g_sysinfo.GetVideoXBERegion();
+    m_info.videodvdzone      = g_sysinfo.GetDVDZone();
+    m_info.produceinfo       = g_sysinfo.GetXBProduceInfo();
+    CSysInfo::GetRefurbInfo(m_info.hddbootdate, m_info.hddcyclecount);
 
-    if (m_bSmartSupported && !m_bSmartEnabled)
-    {
-      CLog::Log(LOGNOTICE, "Enabling SMART...");
-      XKHDD::EnableSMART();
-    }
+    g_sysinfo.GetHDDInfo(m_info.HDDModel, m_info.HDDSerial, m_info.HDDFirmware, m_info.HDDpw, m_info.HDDLockState);
+    if (!g_advancedSettings.m_noDVDROM)
+      g_sysinfo.GetDVDInfo(m_info.DVDModel, m_info.DVDFirmware);
+  }
+  
+  if (g_sysinfo.m_bSmartEnabled)
+  { // this will waste 4-8KB of memory on each refresh (this is issue on 3.5.3 too) 
+    m_info.HDDTemp = XKHDD::GetHddSmartTemp();
+  }
+  else
+    m_info.HDDTemp = 0;
+#endif
 
-    m_bRequestDone = true;
+  return true;
+}
+
+const CSysData &CSysInfoJob::GetData() const
+{
+  return m_info;
+}
+
+CStdString CSysInfoJob::GetCPUFreqInfo()
+{
+  CStdString strCPUFreq;
+  double CPUFreq = GetCPUFrequency();
+  strCPUFreq.Format("%4.2fMHz", CPUFreq);
+  return strCPUFreq;
+}
+
+CStdString CSysInfoJob::GetInternetState()
+{
+#ifdef HAS_XBOX_HARDWARE
+  // check for ethernet link before checking for internet access
+  if (!(XNetGetEthernetLinkStatus() & XNET_ETHERNET_LINK_ACTIVE))
+  {
+    return g_localizeStrings.Get(159);
   }
 #endif
-  //Request always
-  m_systemuptime = GetSystemUpTime(false);
-  m_systemtotaluptime = GetSystemUpTime(true);
-  m_InternetState = GetInternetState();
-#ifdef HAS_XBOX_HARDWARE
-  if (!m_hddRequest)
-    GetHDDInfo(m_HDDModel, 
-                          m_HDDSerial,
-                          m_HDDFirmware,
-                          m_HDDpw, 
-                          m_HDDLockState);
-  // don't check the DVD-ROM if we have already successfully retrieved its info, or it is specified
-  // as not present in advancedsettings
-  if (!m_dvdRequest && !g_advancedSettings.m_noDVDROM)
-    GetDVDInfo(m_DVDModel, m_DVDFirmware);
+  // Internet connection state!
+  XFILE::CCurlFile http;
+  m_info.haveInternetState = http.IsInternet();
+  if (m_info.haveInternetState)
+    return g_localizeStrings.Get(13296);
+  else if (http.IsInternet(false))
+    return g_localizeStrings.Get(13274);
+  else // NOT Connected to the Internet!
+    return g_localizeStrings.Get(13297);
+}
 
-  if (m_bSmartEnabled)
-    byHddTemp = XKHDD::GetHddSmartTemp();
-  else
-    byHddTemp = 0;
+CStdString CSysInfoJob::GetMACAddress()
+{
+#if defined(HAS_LINUX_NETWORK)
+  CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
+  if (iface)
+    return iface->GetMacAddress();
 #endif
+  char macaddress[20] = "";
+
+  g_sysinfo.m_XKEEPROM->GetMACAddressString((LPSTR)&macaddress, ':');
+
+  CStdString strMacAddress;
+  strMacAddress.Format("%s", macaddress);
+  return strMacAddress;
+}
+
+CStdString CSysInfoJob::GetVideoEncoder()
+{
+#ifndef _XBOX
+  return "GPU: " + g_Windowing.GetRenderRenderer();
+#else
+  int iTemp;
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_CONNEXANT,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
+  { 
+    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");  
+    return "CONNEXANT"; 
+  }
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_FOCUS,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
+  { 
+    CLog::Log(LOGDEBUG, "Video Encoder: FOCUS");
+    return "FOCUS";   
+  }
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_XCALIBUR,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
+  { 
+    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");   
+    return "XCALIBUR";
+  }
+  else 
+  {  
+    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");  
+    return "UNKNOWN"; 
+  }
+#endif
+}
+
+double CSysInfoJob::GetCPUFrequency()
+{
+#ifndef _XBOX
+  return double (g_cpuInfo.getCPUFrequency());
+#else
+  DWORD Twin_fsb, Twin_result;
+  double Tcpu_fsb, Tcpu_result, Fcpu, CPUSpeed;
+
+  Tcpu_fsb = CSysInfo::RDTSC();
+  Twin_fsb = GetTickCount();
+
+  Sleep(300);
+
+  Tcpu_result = CSysInfo::RDTSC();
+  Twin_result = GetTickCount();
+
+  Fcpu  = (Tcpu_result-Tcpu_fsb);
+  Fcpu /= (Twin_result-Twin_fsb);
+
+  CPUSpeed = Fcpu/1000;
+
+  CLog::Log(LOGDEBUG, "- CPU Speed: %4.6fMHz",CPUSpeed);
+  return CPUSpeed;
+#endif
+}
+
+bool CSysInfoJob::SystemUpTime(int iInputMinutes, int &iMinutes, int &iHours, int &iDays)
+{
+  iMinutes=0;iHours=0;iDays=0;
+  iMinutes = iInputMinutes;
+  if (iMinutes >= 60) // Hour's
+  {
+    iHours = iMinutes / 60;
+    iMinutes = iMinutes - (iHours *60);
+  }
+  if (iHours >= 24) // Days
+  {
+    iDays = iHours / 24;
+    iHours = iHours - (iDays * 24);
+  }
   return true;
+}
+
+CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
+{
+  CStdString strSystemUptime;
+  int iInputMinutes, iMinutes,iHours,iDays;
+
+  if(bTotalUptime)
+  {
+    //Total Uptime
+    iInputMinutes = g_settings.m_iSystemTimeTotalUp + ((int)(CTimeUtils::GetTimeMS() / 60000));
+  }
+  else
+  {
+    //Current UpTime
+    iInputMinutes = (int)(CTimeUtils::GetTimeMS() / 60000);
+  }
+
+  SystemUpTime(iInputMinutes,iMinutes, iHours, iDays);
+  if (iDays > 0)
+  {
+    strSystemUptime.Format("%i %s, %i %s, %i %s",
+      iDays,g_localizeStrings.Get(12393),
+      iHours,g_localizeStrings.Get(12392),
+      iMinutes, g_localizeStrings.Get(12391));
+  }
+  else if (iDays == 0 && iHours >= 1 )
+  {
+    strSystemUptime.Format("%i %s, %i %s",
+      iHours,g_localizeStrings.Get(12392),
+      iMinutes, g_localizeStrings.Get(12391));
+  }
+  else if (iDays == 0 && iHours == 0 &&  iMinutes >= 0)
+  {
+    strSystemUptime.Format("%i %s",
+      iMinutes, g_localizeStrings.Get(12391));
+  }
+  return strSystemUptime;
 }
 
 CStdString CSysInfo::TranslateInfo(int info) const
@@ -104,99 +253,55 @@ CStdString CSysInfo::TranslateInfo(int info) const
   {
 #ifdef HAS_XBOX_HARDWARE
   case SYSTEM_MPLAYER_VERSION:
-    if (m_bRequestDone) return m_mplayerversion;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.mplayerversion;
   case SYSTEM_KERNEL_VERSION:
-    if (m_bRequestDone) return m_kernelversion;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.kernelVersion;
   case SYSTEM_CPUFREQUENCY:
-    if (m_bRequestDone) return m_cpufrequency;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.cpuFrequency;
   case SYSTEM_XBOX_VERSION:
-    if (m_bRequestDone) return m_xboxversion;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.xboxversion;
   case SYSTEM_AV_PACK_INFO:
-    if (m_bRequestDone) return m_avpackinfo;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.avpackinfo;
   case SYSTEM_VIDEO_ENCODER_INFO:
-    if (m_bRequestDone) return m_videoencoder;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.videoEncoder;
   case SYSTEM_XBOX_SERIAL:
-    if (m_bRequestDone) return m_xboxserial;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.xboxserial;
   case SYSTEM_HDD_LOCKKEY:
-    if (m_bRequestDone) return m_hddlockkey;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.hddlockkey;
   case SYSTEM_HDD_BOOTDATE:
-    if (m_bRequestDone) return m_hddbootdate;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.hddbootdate;
   case SYSTEM_HDD_CYCLECOUNT:
-    if (m_bRequestDone) return m_hddcyclecount;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.hddcyclecount;
   case NETWORK_MAC_ADDRESS:
-    if (m_bRequestDone) return m_macadress;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.macAddress;
   case SYSTEM_XBE_REGION:
-    if (m_bRequestDone) return m_videoxberegion;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.videoxberegion;
   case SYSTEM_DVD_ZONE:
-    if (m_bRequestDone) return m_videodvdzone;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.videodvdzone;
   case SYSTEM_XBOX_PRODUCE_INFO:
-    if (m_bRequestDone) return m_produceinfo;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.produceinfo;
   case SYSTEM_XBOX_BIOS:
-    if (m_bRequestDone) return m_XboxBios;
-    else return CInfoLoader::BusyInfo(info);
-    break;
+    return m_info.xboxBios;
   case SYSTEM_XBOX_MODCHIP:
     if (g_advancedSettings.m_DisableModChipDetection)
         return "Modchip lookup is disabled";
-    else
-    {
-        if (m_bRequestDone) 
-          return m_XboxModChip;
-        else 
-          return CInfoLoader::BusyInfo(info);
-    }
-    break;
+    return m_info.xboxModChip;
   // HDD request
   case SYSTEM_HDD_MODEL:
-    if (m_hddRequest) return m_HDDModel;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.HDDModel;
   case SYSTEM_HDD_SERIAL:
-    if (m_hddRequest) return m_HDDSerial;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.HDDSerial;
   case SYSTEM_HDD_FIRMWARE:
-    if (m_hddRequest) return m_HDDFirmware;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.HDDFirmware;
   case SYSTEM_HDD_PASSWORD:
-    if (m_hddRequest) return m_HDDpw;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.HDDpw;
   case SYSTEM_HDD_LOCKSTATE:
-    if (m_hddRequest) return m_HDDLockState;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.HDDLockState;
   // DVD request
   case SYSTEM_DVD_MODEL:
-    if (m_dvdRequest) return m_DVDModel;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.DVDModel;
   case SYSTEM_DVD_FIRMWARE:
-    if (m_dvdRequest) return m_DVDFirmware;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.DVDFirmware;
   // All Time request
   case LCD_HDD_TEMPERATURE:
   case SYSTEM_HDD_TEMPERATURE:
@@ -204,45 +309,30 @@ CStdString CSysInfo::TranslateInfo(int info) const
     CTemperature temp;
     CStdString strTemp;
     temp.SetState(CTemperature::invalid);
-    if(m_bSmartEnabled && byHddTemp != 0)
-      temp = CTemperature::CreateFromCelsius((double)byHddTemp);
+    if(m_bSmartEnabled && m_info.HDDTemp != 0)
+      temp = CTemperature::CreateFromCelsius((double)m_info.HDDTemp);
     strTemp.Format("%s",temp.ToString());
     return strTemp;
   }
 #endif
   case SYSTEM_UPTIME:
-    if (!m_systemuptime.IsEmpty()) return m_systemuptime;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.systemUptime;
   case SYSTEM_TOTALUPTIME:
-     if (!m_systemtotaluptime.IsEmpty()) return m_systemtotaluptime;
-    else return CInfoLoader::BusyInfo(info);
+    return m_info.systemTotalUptime;
   case SYSTEM_INTERNET_STATE:
-    if (!m_InternetState.IsEmpty()) return m_InternetState;
-    else return g_localizeStrings.Get(503); //Busy text
-
+    return m_info.internetState;
   default:
-    return g_localizeStrings.Get(503); //Busy text
+    return "";
   }
 }
 
 void CSysInfo::Reset()
 {
-#ifdef HAS_XBOX_HARDWARE
-  m_XboxBios ="";
-  m_XboxModChip ="";
+#ifdef _XBOX
   m_dvdRequest = false;
   m_hddRequest = false;
-
-  m_HDDModel ="";
-  m_HDDSerial="";
-  m_HDDFirmware="";
-  m_HDDpw ="";
-  m_HDDLockState = "";
-  m_DVDModel=""; 
-  m_DVDFirmware="";
 #endif
-  m_bInternetState = false;
-  m_InternetState = "";
+  m_info.Reset();
 }
 
 CSysInfo::CSysInfo(void) : CInfoLoader(15 * 1000)
@@ -864,28 +954,6 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
   return false;
 }
 #ifdef HAS_XBOX_HARDWARE
-double CSysInfo::GetCPUFrequency()
-{
-  DWORD Twin_fsb, Twin_result;
-  double Tcpu_fsb, Tcpu_result, Fcpu, CPUSpeed;
-
-  Tcpu_fsb = RDTSC();
-  Twin_fsb = GetTickCount();
-
-  Sleep(300);
-
-  Tcpu_result = RDTSC();
-  Twin_result = GetTickCount();
-
-  Fcpu  = (Tcpu_result-Tcpu_fsb);
-  Fcpu /= (Twin_result-Twin_fsb);
-
-  CPUSpeed = Fcpu/1000;
-
-  CLog::Log(LOGDEBUG, "- CPU Speed: %4.6fMHz",CPUSpeed);
-  return CPUSpeed;
-}
-
 double CSysInfo::RDTSC(void)
 {
   unsigned long a, b;
@@ -1128,31 +1196,6 @@ CStdString CSysInfo::GetAVPackInfo()
   else return "Unknown";
 }
 
-CStdString CSysInfo::GetVideoEncoder()
-{
-  int iTemp;
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_CONNEXANT,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");  
-    return "CONNEXANT"; 
-  }
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_FOCUS,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: FOCUS");
-    return "FOCUS";   
-  }
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_XCALIBUR,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");   
-    return "XCALIBUR";
-  }
-  else 
-  {  
-    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");  
-    return "UNKNOWN"; 
-  }
-}
-
 CStdString CSysInfo::SmartXXModCHIP()
 {
   // SmartXX ModChip Detection
@@ -1214,12 +1257,9 @@ CStdString CSysInfo::GetKernelVersion()
   strKernel.Format("%u.%u.%u.%u", XboxKrnlVersion->VersionMajor,XboxKrnlVersion->VersionMinor,XboxKrnlVersion->Build,XboxKrnlVersion->Qfe);
   return strKernel;
 }
-CStdString CSysInfo::GetCPUFreqInfo()
+bool CSysInfo::HasInternet() const
 {
-  CStdString strCPUFreq;
-  double CPUFreq = GetCPUFrequency();
-  strCPUFreq.Format("%4.2fMHz", CPUFreq);
-  return strCPUFreq;
+  return m_info.haveInternetState;
 }
 CStdString CSysInfo::GetXBVerInfo()
 {
@@ -1299,17 +1339,6 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
     );
 
   return strReturn;
-}
-
-CStdString CSysInfo::GetMACAddress()
-{
-  char macaddress[20] = "";
-
-  m_XKEEPROM->GetMACAddressString((LPSTR)&macaddress, ':');
-
-  CStdString strMacAddress;
-  strMacAddress.Format("%s", macaddress);
-  return strMacAddress;
 }
 
 CStdString CSysInfo::GetXBOXSerial()
@@ -1684,82 +1713,6 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
   return strRet;
 }
 
-bool CSysInfo::SystemUpTime(int iInputMinutes, int &iMinutes, int &iHours, int &iDays)
-{
-  iMinutes=0;iHours=0;iDays=0;
-  iMinutes = iInputMinutes;
-  if (iMinutes >= 60) // Hour's
-  {
-    iHours = iMinutes / 60;
-    iMinutes = iMinutes - (iHours *60);
-  }
-  if (iHours >= 24) // Days
-  {
-    iDays = iHours / 24;
-    iHours = iHours - (iDays * 24);
-  }
-  return true;
-}
-
-CStdString CSysInfo::GetSystemUpTime(bool bTotalUptime)
-{
-  CStdString strSystemUptime;
-  int iInputMinutes, iMinutes,iHours,iDays;
-  
-  if(bTotalUptime)
-  {
-    //Total Uptime
-    iInputMinutes = g_settings.m_iSystemTimeTotalUp + ((int)(timeGetTime() / 60000));
-  }
-  else
-  {
-    //Current UpTime
-    iInputMinutes = (int)(timeGetTime() / 60000);
-  }
-
-  SystemUpTime(iInputMinutes,iMinutes, iHours, iDays);
-  if (iDays > 0) 
-  {
-    strSystemUptime.Format("%i %s, %i %s, %i %s",
-      iDays,g_localizeStrings.Get(12393),
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
-  }
-  else if (iDays == 0 && iHours >= 1 )
-  {
-    strSystemUptime.Format("%i %s, %i %s",
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
-  }
-  else if (iDays == 0 && iHours == 0 &&  iMinutes >= 0)
-  {
-    strSystemUptime.Format("%i %s",
-      iMinutes, g_localizeStrings.Get(12391));
-  }
-  return strSystemUptime;
-}
-
-CStdString CSysInfo::GetInternetState()
-{
-#ifdef HAS_XBOX_HARDWARE
-  // check for ethernet link before checking for internet access
-  if (!(XNetGetEthernetLinkStatus() & XNET_ETHERNET_LINK_ACTIVE))
-  {
-    return g_localizeStrings.Get(159);
-  }
-#endif
-  CStdString status;
-  XFILE::CCurlFile http;
-  m_bInternetState = http.IsInternet();
-  if (m_bInternetState)
-    status = g_localizeStrings.Get(13296);
-  else if (http.IsInternet(false))
-    status = g_localizeStrings.Get(13274);
-  else
-    status = g_localizeStrings.Get(13297);
-  return status;
-}
-
 CStdString CSysInfo::GetUserAgent()
 {
   CStdString result;
@@ -1773,4 +1726,30 @@ CStdString CSysInfo::GetUserAgent()
   result += "; http://www.xbmc.org)";
 
   return result;
+}
+
+CJob *CSysInfo::GetJob() const
+{
+  return new CSysInfoJob();
+}
+
+void CSysInfo::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+{
+#ifdef _XBOX
+  if (m_bRequestDone)
+  {
+    m_info.systemUptime = ((CSysInfoJob *)job)->GetData().systemUptime;
+    m_info.systemTotalUptime = ((CSysInfoJob *)job)->GetData().systemTotalUptime;
+    m_info.internetState = ((CSysInfoJob *)job)->GetData().internetState;
+    m_info.HDDTemp = ((CSysInfoJob *)job)->GetData().HDDTemp;
+  }
+  else
+  {
+    m_bRequestDone = true;
+    m_info = ((CSysInfoJob *)job)->GetData();
+  }
+#else
+  m_info = ((CSysInfoJob *)job)->GetData();
+#endif
+  CInfoLoader::OnJobComplete(jobID, success, job);
 }

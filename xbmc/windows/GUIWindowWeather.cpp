@@ -211,12 +211,12 @@ void CGUIWindowWeather::UpdateButtons()
 
   for (int i = 0; i < NUM_DAYS; i++)
   {
-    SET_CONTROL_LABEL(CONTROL_LABELD0DAY + (i*10), g_weatherManager.m_dfForcast[i].m_day);
-    SET_CONTROL_LABEL(CONTROL_LABELD0HI + (i*10), g_weatherManager.m_dfForcast[i].m_high + g_langInfo.GetTempUnitString());
-    SET_CONTROL_LABEL(CONTROL_LABELD0LOW + (i*10), g_weatherManager.m_dfForcast[i].m_low + g_langInfo.GetTempUnitString());
-    SET_CONTROL_LABEL(CONTROL_LABELD0GEN + (i*10), g_weatherManager.m_dfForcast[i].m_overview);
+    SET_CONTROL_LABEL(CONTROL_LABELD0DAY + (i*10), g_weatherManager.GetForecast(i).m_day);
+    SET_CONTROL_LABEL(CONTROL_LABELD0HI + (i*10), g_weatherManager.GetForecast(i).m_high + g_langInfo.GetTempUnitString());
+    SET_CONTROL_LABEL(CONTROL_LABELD0LOW + (i*10), g_weatherManager.GetForecast(i).m_low + g_langInfo.GetTempUnitString());
+    SET_CONTROL_LABEL(CONTROL_LABELD0GEN + (i*10), g_weatherManager.GetForecast(i).m_overview);
     pImage = (CGUIImage *)GetControl(CONTROL_IMAGED0IMG + (i * 10));
-    if (pImage) pImage->SetFileName(g_weatherManager.m_dfForcast[i].m_icon);
+    if (pImage) pImage->SetFileName(g_weatherManager.GetForecast(i).m_icon);
   }
 }
 
@@ -249,7 +249,7 @@ void CGUIWindowWeather::SetProperties()
   SetProperty("LocationIndex", int(m_iCurWeather + 1));
   CStdString strSetting;
   strSetting.Format("weather.areacode%i", m_iCurWeather + 1);
-  SetProperty("AreaCode", g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting)));
+  SetProperty("AreaCode", CWeather::GetAreaCode(g_guiSettings.GetString(strSetting)));
   SetProperty("Updated", g_weatherManager.GetLastUpdateTime());
   SetProperty("Current.ConditionIcon", g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
   SetProperty("Current.Condition", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_COND));
@@ -269,12 +269,12 @@ void CGUIWindowWeather::SetProperties()
   for (int i = 0; i < NUM_DAYS; i++)
   {
     day.Format("Day%i.", i);
-    SetProperty(day + "Title", g_weatherManager.m_dfForcast[i].m_day);
-    SetProperty(day + "HighTemp", g_weatherManager.m_dfForcast[i].m_high);
-    SetProperty(day + "LowTemp", g_weatherManager.m_dfForcast[i].m_low);
-    SetProperty(day + "Outlook", g_weatherManager.m_dfForcast[i].m_overview);
-    SetProperty(day + "OutlookIcon", g_weatherManager.m_dfForcast[i].m_icon);
-    fanartcode = URIUtils::GetFileName(g_weatherManager.m_dfForcast[i].m_icon);
+    SetProperty(day + "Title", g_weatherManager.GetForecast(i).m_day);
+    SetProperty(day + "HighTemp", g_weatherManager.GetForecast(i).m_high);
+    SetProperty(day + "LowTemp", g_weatherManager.GetForecast(i).m_low);
+    SetProperty(day + "Outlook", g_weatherManager.GetForecast(i).m_overview);
+    SetProperty(day + "OutlookIcon", g_weatherManager.GetForecast(i).m_icon);
+    fanartcode = URIUtils::GetFileName(g_weatherManager.GetForecast(i).m_icon);
     URIUtils::RemoveExtension(fanartcode);
     SetProperty(day + "FanartCode", fanartcode);
   }
@@ -306,7 +306,7 @@ void CGUIWindowWeather::CallScript()
     // get the current locations area code
     CStdString strSetting;
     strSetting.Format("weather.areacode%i", m_iCurWeather + 1);
-    argv.push_back(g_weatherManager.GetAreaCode(g_guiSettings.GetString(strSetting)));
+    argv.push_back(CWeather::GetAreaCode(g_guiSettings.GetString(strSetting)));
 
     // call our script, passing the areacode
     g_pythonParser.evalFile(argv[0], argv,addon);
