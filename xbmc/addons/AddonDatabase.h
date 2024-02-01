@@ -20,9 +20,9 @@
  *
  */
 
-#include "Database.h"
+#include "dbwrappers/Database.h"
 #include "addons/Addon.h"
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "FileItem.h"
 
 class CAddonDatabase : public CDatabase

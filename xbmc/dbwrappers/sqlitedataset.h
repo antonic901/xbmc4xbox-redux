@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 #include "dataset.h"
-#include "sqlite3.h"
+#include "lib/sqLite/sqlite3.h"
 
 namespace dbiplus {
 /***************** Class SqliteDatabase definition ******************

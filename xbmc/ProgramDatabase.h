@@ -18,7 +18,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "Database.h"
+#include "dbwrappers/Database.h"
 
 typedef std::vector<CStdString> VECPROGRAMPATHS;
 

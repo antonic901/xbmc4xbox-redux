@@ -1376,12 +1376,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\Bookmark.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\Database.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\Database.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\DatabaseManager.cpp">
 				</File>
 				<File
@@ -3136,6 +3130,34 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\profiles\windows\GUIWindowSettingsProfile.h">
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="dbwrappers"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\dbwrappers\Database.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\Database.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\dataset.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\dataset.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\qry_dat.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\qry_dat.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\sqlitedataset.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\sqlitedataset.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -5195,25 +5217,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="sqlite"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\lib\sqLite\dataset.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\sqLite\dataset.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\sqLite\qry_dat.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\sqLite\qry_dat.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\lib\sqLite\sqlite.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\sqLite\sqlitedataset.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\lib\sqLite\sqlitedataset.h">
 				</File>
 			</Filter>
 			<Filter

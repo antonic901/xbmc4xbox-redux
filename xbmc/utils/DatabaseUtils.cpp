@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include "DatabaseUtils.h"
-#include "lib/sqLite/dataset.h"
+#include "dbwrappers/dataset.h"
 #include "music/MusicDatabase.h"
 #include "utils/log.h"
 #include "utils/Variant.h"

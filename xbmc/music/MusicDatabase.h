@@ -22,7 +22,7 @@
 \brief
 */
 #pragma once
-#include "Database.h"
+#include "dbwrappers/Database.h"
 #include "music/Album.h"
 #include "addons/Scraper.h"
 #include "utils/StringUtils.h"

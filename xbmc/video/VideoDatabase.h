@@ -18,7 +18,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "Database.h"
+#include "dbwrappers/Database.h"
 #include "video/VideoInfoTag.h"
 #include "addons/Scraper.h"
 #include "video/Bookmark.h"

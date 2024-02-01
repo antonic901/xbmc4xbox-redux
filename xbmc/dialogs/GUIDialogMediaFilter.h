@@ -23,7 +23,7 @@
 #include <string>
 
 #include "DbUrl.h"
-#include "Database.h"
+#include "dbwrappers/Database.h"
 #include "SmartPlayList.h"
 #include "settings/dialogs/GUIDialogSettings.h"
 #include "utils/DatabaseUtils.h"
