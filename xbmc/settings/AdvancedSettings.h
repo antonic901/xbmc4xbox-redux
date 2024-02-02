@@ -23,6 +23,7 @@
 
 #include "settings/ISettingsHandler.h"
 #include "utils/StdString.h"
+#include "utils/GlobalsHandling.h"
 
 class TiXmlElement;
 
@@ -54,6 +55,8 @@ class CAdvancedSettings : public ISettingsHandler
 {
   public:
     CAdvancedSettings();
+
+    static CAdvancedSettings* getInstance();
 
     virtual void OnSettingsLoaded();
 
@@ -254,5 +257,4 @@ class CAdvancedSettings : public ISettingsHandler
     CStdString m_userAgent;
 };
 
-extern CAdvancedSettings g_advancedSettings;
-
+XBMC_GLOBAL(CAdvancedSettings,g_advancedSettings);

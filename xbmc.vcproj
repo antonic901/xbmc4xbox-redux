@@ -3030,6 +3030,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\xbox\PlatformDefs.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\xbox\stat_utf8.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\xbox\stat_utf8.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\xbox\stdio_utf8.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\xbox\stdio_utf8.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\xbox\strptime.cpp">
 				</File>
 				<File

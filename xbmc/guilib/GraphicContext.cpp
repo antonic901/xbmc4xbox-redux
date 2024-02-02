@@ -36,24 +36,22 @@
 
 using namespace std;
 
-CGraphicContext g_graphicsContext;
-
 /* quick access to a skin setting, fine unless we starts clearing video settings */
 static CSettingInt* g_guiSkinzoom = NULL;
 
-CGraphicContext::CGraphicContext(void)
+CGraphicContext::CGraphicContext(void) :
+  m_iScreenWidth(720),
+  m_iScreenHeight(576),
+  m_pd3dDevice(NULL),
+  m_pd3dParams(NULL),
+  m_stateBlock(0xffffffff),
+  m_maxTextureSize(4096),
+  m_strMediaDir(""),
+  m_bCalibrating(false),
+  m_Resolution(RES_INVALID),
+  m_guiScaleX(m_guiScaleY = 1.0f)
+  /*m_windowResolution(RES_INVALID)*/
 {
-  m_iScreenWidth = 720;
-  m_iScreenHeight = 576;
-  m_pd3dDevice = NULL;
-  m_pd3dParams = NULL;
-  m_stateBlock = 0xffffffff;
-  m_maxTextureSize = 4096;
-  m_strMediaDir = "";
-  m_bCalibrating = false;
-  m_Resolution = RES_INVALID;
-  m_guiScaleX = m_guiScaleY = 1.0f;
-  /*m_windowResolution = RES_INVALID;*/
 }
 
 CGraphicContext::~CGraphicContext(void)

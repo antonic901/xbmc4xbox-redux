@@ -38,6 +38,8 @@
 
 #include "common/Mouse.h"
 
+#include "utils/GlobalsHandling.h"
+
 /*!
  \ingroup graphics
  \brief
@@ -278,5 +280,7 @@ private:
  \ingroup graphics
  \brief
  */
-extern CGraphicContext g_graphicsContext;
+
+XBMC_GLOBAL(CGraphicContext,g_graphicsContext);
+
 #endif

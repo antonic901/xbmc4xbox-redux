@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include "utils/StdString.h"
 
+#include "utils/CriticalSection.h"
+#include "utils/GlobalsHandling.h"
+
 #define LOG_LEVEL_NONE         -1 // nothing at all is logged
 #define LOG_LEVEL_NORMAL        0 // shows notice, error, severe and fatal
 #define LOG_LEVEL_DEBUG         1 // shows all
@@ -46,19 +49,33 @@
 #define ATTRIB_LOG_FORMAT
 #endif
 
-namespace XFILE {
-  class CFile;
-}
-
 class CLog
 {
-  static XFILE::CFile *m_file;
 public:
+
+  class CLogGlobals
+  {
+  public:
+    CLogGlobals() : m_file(NULL), m_repeatCount(0), m_repeatLogLevel(-1), m_logLevel(LOG_LEVEL_DEBUG) {}
+    FILE*       m_file;
+    int         m_repeatCount;
+    int         m_repeatLogLevel;
+    std::string m_repeatLine;
+    int         m_logLevel;
+    CCriticalSection critSec;
+  };
+
   CLog();
   virtual ~CLog(void);
   static void Close();
   static void Log(int loglevel, const char *format, ... ) ATTRIB_LOG_FORMAT;
-  static void DebugLog(const char *format, ...);
+  static void DebugLog(const char *format, ...) { Log(LOGDEBUG, format); };
   static void MemDump(char *pData, int length);
-  static void DebugLogMemory();
+  static bool Init(const char* path);
+  static void SetLogLevel(int level);
+  static int  GetLogLevel();
+private:
+  static void OutputDebugString(const std::string& line);
 };
+
+XBMC_GLOBAL_REF(CLog::CLogGlobals,g_log_globals);
