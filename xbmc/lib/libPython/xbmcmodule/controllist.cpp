@@ -26,9 +26,7 @@
 #include "guilib/GUILabel.h"
 #include "control.h"
 #include "pyutil.h"
-#ifndef _DEBUG
 #include "listproviders/StaticProvider.h"
-#endif
 
 using namespace std;
 
@@ -642,7 +640,7 @@ PyDoc_STRVAR(setStaticContent__doc__,
       PyErr_SetString(PyExc_TypeError, "Object should be of type List");
       return NULL;
     }
-#ifndef _DEBUG
+
     vector<CGUIStaticItemPtr> items;
 
     for (int item = 0; item < PyList_Size(pList); item++)
@@ -663,7 +661,7 @@ PyDoc_STRVAR(setStaticContent__doc__,
     // set static list
     IListProvider *provider = new CStaticListProvider(items);
     ((CGUIBaseContainer *)self->pGUIControl)->SetListProvider(provider);
-#endif
+
     Py_INCREF(Py_None);
     return Py_None;
   }

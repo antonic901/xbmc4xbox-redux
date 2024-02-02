@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "include.h"
+#include "system.h" // <xtl.h>
 #include <vector>
 #include "boost/shared_ptr.hpp"
 
