@@ -20,7 +20,6 @@
 
 #pragma once
 #include "ICodec.h"
-#include "filesystem/File.h"
 #include "CachingCodec.h"
 #include "ADPCMCodec.h"
 

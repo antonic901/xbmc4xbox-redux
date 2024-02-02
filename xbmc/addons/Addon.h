@@ -24,8 +24,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "Util.h"
 #include "URL.h"
-#include "LocalizeStrings.h"
-#include <ostream>
+#include "guilib/LocalizeStrings.h"
 
 class CURL;
 class TiXmlElement;

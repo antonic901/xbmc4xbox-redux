@@ -30,16 +30,13 @@
 
 #pragma once
 
-#include "boost/shared_ptr.hpp"
-
-#include "xbox/IoSupport.h"
-
 #include "lib/libcdio/intTypes.h"
 #include "lib/libcdio/Types.h"
 #include "lib/libcdio/cdio.h"
 #include "lib/libcdio/cd_Types.h"
 #include "lib/libcdio/cdtext.h"
-#include "../utils/CriticalSection.h"
+#include "utils/CriticalSection.h"
+#include "boost/shared_ptr.hpp"
 
 namespace MEDIA_DETECT
 {

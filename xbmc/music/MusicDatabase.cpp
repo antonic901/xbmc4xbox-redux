@@ -54,6 +54,7 @@
 #include "interfaces/AnnouncementManager.h"
 #include "utils/log.h"
 #include "SmartPlayList.h"
+#include "dbwrappers/dataset.h"
 
 using namespace std;
 using namespace AUTOPTR;

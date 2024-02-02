@@ -23,6 +23,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "view/ViewState.h"
 #include "utils/log.h"
+#include "dbwrappers/dataset.h"
 
 //********************************************************************************************************************************
 CViewDatabase::CViewDatabase(void)

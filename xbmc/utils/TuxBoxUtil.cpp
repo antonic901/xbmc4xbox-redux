@@ -22,23 +22,23 @@
 // GeminiServer
 //
 #include "TuxBoxUtil.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
+#include "URIUtils.h"
 #include "filesystem/CurlFile.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "video/VideoInfoTag.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/File.h"
 #include "URL.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
-#include "utils/log.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/XBMCTinyXML.h"
+#include "log.h"
 
 using namespace XFILE;
 using namespace std;

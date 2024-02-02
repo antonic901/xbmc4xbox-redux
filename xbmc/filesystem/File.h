@@ -31,9 +31,9 @@
 
 #include <iostream>
 #include "IFile.h"
-#include "../utils/StdString.h"
-#include "../utils/BitstreamStats.h"
+#include "utils/StdString.h"
 
+class BitstreamStats;
 class CURL;
 
 namespace XFILE

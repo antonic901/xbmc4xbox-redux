@@ -21,7 +21,7 @@
  */
 
 #include "utils/FileOperationJob.h"
-#include "addons/IAddon.h"
+#include "addons/Addon.h"
 #include "utils/Stopwatch.h"
 #include "utils/Event.h"
 

@@ -39,6 +39,7 @@
 #include "storage/MediaManager.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "Autorun.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "addons/AddonManager.h"
 #include "FileItem.h"
@@ -46,9 +47,10 @@
 #include "pictures/Picture.h"
 #include "LocalizeStrings.h"
 #include "utils/StringUtils.h"
+#include "xbox/IoSupport.h"
+#include "storage/DetectDVDType.h"
 
 using namespace std;
-using namespace MEDIA_DETECT;
 
 #define BACKGROUND_IMAGE       999
 #if PRE_SKIN_VERSION_11_COMPATIBILITY
@@ -283,7 +285,7 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
   if (item && (item->IsDVD() || item->IsCDDA()))
   {
     // We need to check if there is a detected is inserted!
-    if ( CDetectDVDMedia::IsDiscInDrive() )
+    if ( MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive() )
       buttons.Add(CONTEXT_BUTTON_PLAY_DISC, 341); // Play CD/DVD!
     buttons.Add(CONTEXT_BUTTON_EJECT_DISC, 13391);  // Eject/Load CD/DVD!
   }
@@ -367,7 +369,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
   switch (button)
   {
   case CONTEXT_BUTTON_PLAY_DISC:
-    return CAutorun::PlayDisc();
+    return MEDIA_DETECT::CAutorun::PlayDisc();
 
   case CONTEXT_BUTTON_EJECT_DISC:
 #ifdef _WIN32PC
@@ -533,7 +535,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
     }
 
   case CONTEXT_BUTTON_PLAY_DISC:
-    return CAutorun::PlayDisc();
+    return MEDIA_DETECT::CAutorun::PlayDisc();
 
   case CONTEXT_BUTTON_EJECT_DISC:
     if (CIoSupport::GetTrayState() == TRAY_OPEN)

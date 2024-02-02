@@ -28,10 +28,9 @@
 //
 //
 
-#include "xbox/IoSupport.h"
 #include "filesystem/cdioSupport.h"
 #include "utils/CriticalSection.h"
-#include "utils/event.h"
+#include "utils/Event.h"
 #include "utils/Thread.h"
 #include "boost/shared_ptr.hpp"
 

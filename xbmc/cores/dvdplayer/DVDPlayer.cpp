@@ -38,8 +38,6 @@
 
 #include "DVDFileInfo.h"
 
-#include "utils/LangCodeExpander.h"
-#include "Util.h"
 #include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -57,7 +55,9 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "playlists/PlayListM3U.h"
 #include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "Util.h"
+#include "utils/LangCodeExpander.h"
 
 using namespace std;
 

@@ -29,7 +29,6 @@
  */
 
 #include "system.h"
-#include "input/XBIRRemote.h"
 #include "utils/StdString.h"
 
 // Analogue - don't change order

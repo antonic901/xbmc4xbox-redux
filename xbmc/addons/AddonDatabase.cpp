@@ -25,6 +25,7 @@
 #include "DateTime.h"
 #include "utils/StringUtils.h"
 #include "Service.h"
+#include "dbwrappers/dataset.h"
 
 using namespace ADDON;
 using namespace std;

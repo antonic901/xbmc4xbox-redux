@@ -18,17 +18,18 @@
  *
  */
 
-#include "utils/log.h"
 #include "FavouritesDirectory.h"
 #include "File.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
-#include "Key.h"
 #include "profiles/ProfilesManager.h"
 #include "FileItem.h"
+#include "utils/XBMCTinyXML.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "settings/AdvancedSettings.h"
 #include "video/VideoInfoTag.h"
 #include "URL.h"
-#include "settings/AdvancedSettings.h"
+#include "Key.h"
 
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)

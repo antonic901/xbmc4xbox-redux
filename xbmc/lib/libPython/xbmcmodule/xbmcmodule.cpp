@@ -45,6 +45,7 @@
 #include "SectionLoader.h"
 #include "utils/URIUtils.h"
 #include "CharsetConverter.h"
+#include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/FileUtils.h"
 #include "pythreadstate.h"

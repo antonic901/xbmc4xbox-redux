@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "utils/BitstreamStats.h"
 #include "DirectoryCache.h"
 #include "Directory.h"
 #include "FileCache.h"

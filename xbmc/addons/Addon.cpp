@@ -29,6 +29,7 @@
 #include "utils/log.h"
 #include <vector>
 #include <string.h>
+#include <ostream>
 
 using XFILE::CDirectory;
 using XFILE::CFile;

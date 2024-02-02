@@ -28,6 +28,7 @@
 #include "utils/Crc32.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "dbwrappers/dataset.h"
 
 using namespace XFILE;
 

@@ -28,6 +28,8 @@
 #include "FileItem.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
+#include "XBIRRemote.h"
 
 using namespace std;
 using namespace XFILE;

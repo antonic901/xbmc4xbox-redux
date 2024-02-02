@@ -18,8 +18,8 @@
  *
  */
 
-#include "playlists/PlayListPLS.h"
-#include "playlists/PlayListFactory.h"
+#include "PlayListPLS.h"
+#include "PlayListFactory.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
 #include "filesystem/File.h"
@@ -28,6 +28,7 @@
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace std;
 using namespace XFILE;
