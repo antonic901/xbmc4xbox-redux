@@ -782,7 +782,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("mute"))
   {
-    g_application.Mute();
+    g_application.ToggleMute();
   }
   else if (execute.Equals("setvolume"))
   {
