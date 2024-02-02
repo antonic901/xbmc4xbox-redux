@@ -19,8 +19,10 @@
  */
 
 #include "system.h"
+
 #include "CDDARipper.h"
 #include "CDDAReader.h"
+#include "utils/StringUtils.h"
 #include "Util.h"
 #include "EncoderLame.h"
 #include "EncoderWav.h"
@@ -31,7 +33,7 @@
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "utils/LabelFormatter.h"
 #include "music/tags/MusicInfoTag.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogKeyboard.h"
@@ -39,8 +41,7 @@
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "filesystem/SpecialProtocol.h"
-#include "utils/StringUtils.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"

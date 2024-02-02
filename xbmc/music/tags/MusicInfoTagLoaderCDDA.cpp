@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "MusicInfoTagLoaderCDDA.h"
-#include "filesystem/cddb.h"
+#include "network/cddb.h"
 #include "MusicInfoTag.h"
 #include "storage/DetectDVDType.h"
 #include "profiles/ProfilesManager.h"

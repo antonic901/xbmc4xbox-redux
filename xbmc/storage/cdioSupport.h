@@ -36,6 +36,7 @@
 #include "lib/libcdio/cd_Types.h"
 #include "lib/libcdio/cdtext.h"
 #include "utils/CriticalSection.h"
+#include "utils/StdString.h"
 #include "boost/shared_ptr.hpp"
 
 namespace MEDIA_DETECT

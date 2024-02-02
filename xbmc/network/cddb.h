@@ -24,7 +24,7 @@
 #include <iostream>
 #include <strstream>
 #include <map>
-#include "cdioSupport.h"
+#include "storage/cdioSupport.h"
 
 #include "utils/AutoPtrHandle.h"
 

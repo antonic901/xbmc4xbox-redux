@@ -19,24 +19,25 @@
  */
 
 #include "system.h"
-#include "video/dialogs/GUIDialogVideoBookmarks.h"
+#include "GUIDialogVideoBookmarks.h"
 #include "video/VideoDatabase.h"
 #include "Application.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "pictures/Picture.h"
 #include "dialogs/GUIDialogContextMenu.h"
-#include "GUIWindowManager.h"
 #include "view/ViewState.h"
+#include "GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 #include "utils/SingleLock.h"
-#include "LocalizeStrings.h"
+#include "Util.h"
 
 using namespace std;
 

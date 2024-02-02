@@ -997,9 +997,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\DelayController.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\storage\DetectDVDType.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\DownloadQueue.cpp">
 				</File>
 				<File
@@ -1127,9 +1124,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\md5.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\storage\MediaManager.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\MediaSource.cpp">
@@ -1726,18 +1720,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\CDDAFile.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\cddb.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\cddb.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\cdioSupport.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\cdioSupport.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\CircularCache.cpp">
@@ -2836,6 +2818,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="network"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\network\cddb.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\network\cddb.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\network\DNSNameCache.cpp">
 				</File>
 				<File
@@ -3159,6 +3147,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dbwrappers\sqlitedataset.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="storage"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\storage\cdioSupport.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\storage\cdioSupport.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\storage\DetectDVDType.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\storage\DetectDVDType.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\storage\MediaManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\storage\MediaManager.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -3250,9 +3260,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DelayController.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\storage\DetectDVDType.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\DirectoryHistory.h">
@@ -3499,9 +3506,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\md5.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\storage\MediaManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\MemoryUnitManager.h">

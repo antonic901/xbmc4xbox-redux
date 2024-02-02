@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "music/MusicDatabase.h"
-#include "filesystem/cddb.h"
+#include "network/cddb.h"
 #include "filesystem/DirectoryCache.h"
 #include "filesystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "filesystem/MusicDatabaseDirectory/QueryParams.h"

@@ -18,27 +18,24 @@
  *
  */
 
-#include "system.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
-#include "storage/DetectDVDType.h"
-#include "filesystem/cdioSupport.h"
+#include "DetectDVDType.h"
 #include "filesystem/iso9660.h"
+#include "utils/SingleLock.h"
 #ifdef HAS_UNDOCUMENTED
 #include "xbox/Undocumented.h"
 #endif
-#include "Application.h"
 #include "settings/AdvancedSettings.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
-#include "pictures/Picture.h"
-#include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "utils/URIUtils.h"
+#include "guilib/GUIWindowManager.h"
+#include "pictures/Picture.h"
 #include "filesystem/File.h"
-#include "settings/Settings.h"
 #include "FileItem.h"
 #include "Application.h"
-#include "LocalizeStrings.h"
-#include "utils/SingleLock.h"
+#include "Util.h"
 
 using namespace XFILE;
 using namespace MEDIA_DETECT;

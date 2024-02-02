@@ -19,12 +19,12 @@
  */
 
 #include "system.h"
-#include "utils/log.h"
 #include "cdioSupport.h"
+#include "utils/SingleLock.h"
+#include "utils/log.h"
 #include "lib/libcdio/cdio.h"
 #include "lib/libcdio/logging.h"
-#include "lib/libcdio/Util.h"
-#include "utils/SingleLock.h"
+#include "lib/libcdio/util.h"
 
 using namespace MEDIA_DETECT;
 
