@@ -39,13 +39,6 @@
 #include "xbmcmodule/pythreadstate.h"
 #include "xbmcmodule/pyutil.h"
 
-#ifndef __GNUC__
-#pragma code_seg("PY_TEXT")
-#pragma data_seg("PY_DATA")
-#pragma bss_seg("PY_BSS")
-#pragma const_seg("PY_RDATA")
-#endif
-
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #else

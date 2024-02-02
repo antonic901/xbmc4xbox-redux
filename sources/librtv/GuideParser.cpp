@@ -1,8 +1,3 @@
-#pragma code_seg( "RTV_TEXT" )
-#pragma data_seg( "RTV_DATA" )
-#pragma bss_seg( "RTV_BSS" )
-#pragma const_seg( "RTV_RD" )
-
 /*
 ** ReplayTV 5000
 ** Guide Parser

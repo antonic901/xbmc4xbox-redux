@@ -27,13 +27,6 @@
 #include "addons/GUIDialogAddonSettings.h"
 #include "utils/log.h"
 
-#ifndef __GNUC__
-#pragma code_seg("PY_TEXT")
-#pragma data_seg("PY_DATA")
-#pragma bss_seg("PY_BSS")
-#pragma const_seg("PY_RDATA")
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
