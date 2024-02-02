@@ -35,6 +35,7 @@
 #include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
 #include "GUIUserMessages.h"
 #include "windows/GUIWindowLoginScreen.h"
@@ -158,7 +159,7 @@ const BUILT_IN commands[] = {
   { "SetFocus",                   true,   "Change current focus to a different control id" }, 
   { "BackupSystemInfo",           false,  "Backup System Informations to local hdd" },
   { "UpdateLibrary",              true,   "Update the selected library (music or video)" },
-  { "CleanLibrary",               true,   "Clean the video library" },
+  { "CleanLibrary",               true,   "Clean the video/music library" },
   { "ExportLibrary",              true,   "Export the video/music library" },
   { "PageDown",                   true,   "Send a page down event to the pagecontrol with given id" },
   { "PageUp",                     true,   "Send a page up event to the pagecontrol with given id" },
@@ -1198,18 +1199,38 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("cleanlibrary"))
   {
-    CGUIDialogVideoScan *scanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-    if (scanner)
+    if (!params.size() || params[0].Equals("video"))
     {
-      if (!scanner->IsScanning())
+      CGUIDialogVideoScan *scanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
+      if (scanner)
       {
-         CVideoDatabase videodatabase;
-         videodatabase.Open();
-         videodatabase.CleanDatabase();
-         videodatabase.Close();
+        if (!scanner->IsScanning())
+        {
+           CVideoDatabase videodatabase;
+           videodatabase.Open();
+           videodatabase.CleanDatabase();
+           videodatabase.Close();
+        }
+        else
+          CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
       }
-      else
-        CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
+    }
+    else if (params[0].Equals("music"))
+    {
+      CGUIDialogMusicScan *scanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
+      if (scanner)
+      {
+        if (!scanner->IsScanning())
+        {
+          CMusicDatabase musicdatabase;
+
+          musicdatabase.Open();
+          musicdatabase.Cleanup();
+          musicdatabase.Close();
+        }
+        else
+          CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
+      }
     }
   }
   else if (execute.Equals("exportlibrary"))
