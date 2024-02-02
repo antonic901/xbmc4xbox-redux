@@ -35,9 +35,6 @@ namespace ADDON
   typedef boost::shared_ptr<IAddon> AddonPtr;
 }
 
-#include "dialogs/GUIDialogSeekBar.h"
-#include "dialogs/GUIDialogVolumeBar.h"
-#include "dialogs/GUIDialogMuteBug.h"
 #include "windows/GUIWindowPointer.h"   // Mouse pointer
 
 #include "xbox/Network.h"
@@ -185,9 +182,6 @@ public:
 
   bool ExecuteXBMCAction(std::string action);
 
-  CGUIDialogVolumeBar m_guiDialogVolumeBar;
-  CGUIDialogSeekBar m_guiDialogSeekBar;
-  CGUIDialogMuteBug m_guiDialogMuteBug;
   CGUIWindowPointer m_guiPointer;
 
   CIdleThread m_idleThread;

@@ -182,7 +182,10 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogSeekBar.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "dialogs/GUIDialogVolumeBar.h"
+#include "dialogs/GUIDialogMuteBug.h"
 #include "video/dialogs/GUIDialogFileStacking.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogGamepad.h"
@@ -1240,8 +1243,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
   g_windowManager.Add(new CGUIDialogKeyboard);           // window id = 103
-  g_windowManager.Add(&m_guiDialogVolumeBar);          // window id = 104
-  g_windowManager.Add(&m_guiDialogSeekBar);            // window id = 115
+  g_windowManager.Add(new CGUIDialogVolumeBar);          // window id = 104
+  g_windowManager.Add(new CGUIDialogSeekBar);            // window id = 115
   g_windowManager.Add(new CGUIDialogSubMenu);            // window id = 105
   g_windowManager.Add(new CGUIDialogContextMenu);        // window id = 106
   g_windowManager.Add(new CGUIDialogKaiToast);           // window id = 107
@@ -1249,7 +1252,8 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogGamepad);            // window id = 110
   g_windowManager.Add(new CGUIDialogButtonMenu);         // window id = 111
   g_windowManager.Add(new CGUIDialogMusicScan);          // window id = 112
-  g_windowManager.Add(new CGUIDialogPlayerControls);     // window id = 113
+  g_windowManager.Add(new CGUIDialogMuteBug);            // window id = 113
+  g_windowManager.Add(new CGUIDialogPlayerControls);     // window id = 114
   g_windowManager.Add(new CGUIDialogSlider);             // window id = 145
   g_windowManager.Add(new CGUIDialogMusicOSD);           // window id = 120
   g_windowManager.Add(new CGUIDialogVisualisationPresetList);   // window id = 122
@@ -1918,9 +1922,6 @@ void CApplication::LoadSkin(const SkinPtr& skin)
 
   CLog::Log(LOGINFO, "  initialize new skin...");
   m_guiPointer.AllocResources(true);
-  m_guiDialogVolumeBar.AllocResources(true);
-  m_guiDialogSeekBar.AllocResources(true);
-  m_guiDialogMuteBug.AllocResources(true);
   g_windowManager.AddMsgTarget(this);
   g_windowManager.AddMsgTarget(&g_playlistPlayer);
   g_windowManager.AddMsgTarget(&g_infoManager);
@@ -1968,9 +1969,6 @@ void CApplication::UnloadSkin()
   m_guiPointer.OnMessage(msg);
   m_guiPointer.ResetControlStates();
   m_guiPointer.FreeResources(true);
-  m_guiDialogMuteBug.OnMessage(msg);
-  m_guiDialogMuteBug.ResetControlStates();
-  m_guiDialogMuteBug.FreeResources(true);
 
   delete m_debugLayout;
   m_debugLayout = NULL;
@@ -2733,7 +2731,9 @@ bool CApplication::OnAction(CAction &action)
   if (IsPlaying() && action.GetAmount() && (action.GetID() == ACTION_ANALOG_SEEK_FORWARD || action.GetID() == ACTION_ANALOG_SEEK_BACK))
   {
     if (!m_pPlayer->CanSeek()) return false;
-    m_guiDialogSeekBar.OnAction(action);
+    CGUIWindow *seekBar = g_windowManager.GetWindow(WINDOW_DIALOG_SEEK_BAR);
+    if (seekBar)
+      seekBar->OnAction(action);
     return true;
   }
   if (action.GetID() == ACTION_SHOW_PLAYLIST)
@@ -5333,9 +5333,13 @@ CFileItem& CApplication::CurrentFileItem()
 
 void CApplication::ShowVolumeBar(const CAction *action)
 {
-  m_guiDialogVolumeBar.Show();
-  if (action)
-    m_guiDialogVolumeBar.OnAction(*action);
+  CGUIDialog *volumeBar = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_VOLUME_BAR);
+  if (volumeBar)
+  {
+    volumeBar->Show();
+    if (action)
+      volumeBar->OnAction(*action);
+  }
 }
 
 void CApplication::Mute(void)
@@ -5394,14 +5398,16 @@ void CApplication::SetHardwareVolume(long hardwareVolume)
   if(!g_settings.m_bMute && hardwareVolume <= VOLUME_MINIMUM)
   {
     g_settings.m_bMute = true;
-    if (!m_guiDialogMuteBug.IsDialogRunning())
-      m_guiDialogMuteBug.Show();
+    CGUIDialog *muteBug = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_MUTE_BUG);
+    if (muteBug && !muteBug->IsDialogRunning())
+      muteBug->Show();
   }
   else if(g_settings.m_bMute && hardwareVolume > VOLUME_MINIMUM)
   {
     g_settings.m_bMute = false;
-    if (m_guiDialogMuteBug.IsDialogRunning())
-      m_guiDialogMuteBug.Close();
+    CGUIDialog *muteBug = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_MUTE_BUG);
+    if (muteBug && muteBug->IsDialogRunning())
+      muteBug->Close();
   }
 
   // and tell our player to update the volume
