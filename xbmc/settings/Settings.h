@@ -47,9 +47,6 @@ public:
   bool Reset();
   void Clear();
 
-  int m_HttpApiBroadcastPort;
-  int m_HttpApiBroadcastLevel;
-
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
   CStdString GetDefaultVideoPlayerName() const;

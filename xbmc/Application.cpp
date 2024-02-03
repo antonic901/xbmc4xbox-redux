@@ -1465,7 +1465,7 @@ void CApplication::StartWebServer()
       m_pWebServer->SetUserName(g_guiSettings.GetString("services.webserverusername").c_str());
        m_pWebServer->SetPassword(g_guiSettings.GetString("services.webserverpassword").c_str());
     }
-    if (m_pWebServer && m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+    if (m_pWebServer && m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
       m_applicationMessenger.HttpApi("broadcastlevel; StartUp;1");
   }
 }
@@ -2544,7 +2544,7 @@ bool CApplication::OnKey(CKey& key)
 bool CApplication::OnAction(CAction &action)
 {
   // Let's tell the outside world about this action
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=2)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=2)
   {
     CStdString tmp;
     tmp.Format("%i",action.GetID());
@@ -3209,7 +3209,7 @@ bool CApplication::ProcessMouse()
 
 void  CApplication::CheckForTitleChange()
 { 
-  if (g_settings.m_HttpApiBroadcastLevel>=1)
+  if (g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
   {
     if (IsPlayingVideo())
     {
@@ -3217,7 +3217,7 @@ void  CApplication::CheckForTitleChange()
       if (m_pXbmcHttp && tagVal && !(tagVal->m_strTitle.IsEmpty()))
       {
         CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle+m_pXbmcHttp->GetCloseTag();
-        if (m_prevMedia!=msg && g_settings.m_HttpApiBroadcastLevel>=1)
+        if (m_prevMedia!=msg && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
         {
           m_applicationMessenger.HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
@@ -3645,7 +3645,7 @@ void CApplication::Stop(bool bLCDStop)
   {
     if (m_pXbmcHttp)
     {
-      if(g_settings.m_HttpApiBroadcastLevel>=1)
+      if(g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
         m_applicationMessenger.HttpApi("broadcastlevel; ShutDown;1");
 
       m_pXbmcHttp->shuttingDown=true;
@@ -4160,7 +4160,7 @@ void CApplication::OnPlayBackEnded()
   // (does nothing if python is not loaded)
   g_pythonParser.OnPlayBackEnded();
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
     m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackEnded;1");
   
   if (IsPlayingAudio())
@@ -4185,7 +4185,7 @@ void CApplication::OnPlayBackStarted()
   g_pythonParser.OnPlayBackStarted();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
     m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStarted;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has started", __FUNCTION__);
@@ -4201,7 +4201,7 @@ void CApplication::OnQueueNextItem()
   g_pythonParser.OnQueueNextItem(); // currently unimplemented
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
   m_applicationMessenger.HttpApi("broadcastlevel; OnQueueNextItem;1");
 
   CLog::Log(LOGDEBUG, "Player has asked for the next item");
@@ -4226,7 +4226,7 @@ void CApplication::OnPlayBackStopped()
   g_pythonParser.OnPlayBackStopped();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
     m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackStopped;1");
   
   if (IsPlayingAudio())
@@ -4246,7 +4246,7 @@ void CApplication::OnPlayBackPaused()
   g_pythonParser.OnPlayBackPaused();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
     m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackPaused;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was paused", __FUNCTION__);
@@ -4257,7 +4257,7 @@ void CApplication::OnPlayBackResumed()
   g_pythonParser.OnPlayBackResumed();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
     m_applicationMessenger.HttpApi("broadcastlevel; OnPlayBackResumed;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was resumed", __FUNCTION__);
@@ -4268,7 +4268,7 @@ void CApplication::OnPlayBackSpeedChanged(int iSpeed)
   g_pythonParser.OnPlayBackSpeedChanged(iSpeed);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSpeedChanged:%i;1",iSpeed);
@@ -4283,7 +4283,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   g_pythonParser.OnPlayBackSeek(iTime, seekOffset);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSeek:%i;1",iTime);
@@ -4299,7 +4299,7 @@ void CApplication::OnPlayBackSeekChapter(int iChapter)
   g_pythonParser.OnPlayBackSeekChapter(iChapter);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && g_settings.m_HttpApiBroadcastLevel>=1)
+  if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSkeekChapter:%i;1",iChapter);

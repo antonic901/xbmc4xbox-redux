@@ -2702,9 +2702,9 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="additionalsubtitledirectorychecked")
         tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
-        tmp.Format("%i",g_settings.m_HttpApiBroadcastPort);
+        tmp.Format("%i",g_guiSettings.GetInt("services.httpapibroadcastport"));
       else if (paras[i]=="httpapibroadcastlevel")
-        tmp.Format("%i",g_settings.m_HttpApiBroadcastLevel);
+        tmp.Format("%i",g_guiSettings.GetInt("services.httpapibroadcastlevel"));
       else if (paras[i]=="volumelevel")
         tmp.Format("%i",g_application.GetVolume(false));
       else if (paras[i]=="dynamicrangecompressionlevel")
@@ -2889,13 +2889,13 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 
 bool CXbmcHttp::xbmcBroadcast(CStdString message, int level)
 {
-  if  (g_settings.m_HttpApiBroadcastLevel>=level)
+  if  (g_guiSettings.GetInt("services.httpapibroadcastlevel")>=level)
   {
     if (!pUdpBroadcast)
       pUdpBroadcast = new CUdpBroadcast();
     CStdString msg;
     msg.Format(openBroadcast+message+";%i"+closeBroadcast, level);
-    return pUdpBroadcast->broadcast(msg, g_settings.m_HttpApiBroadcastPort);
+    return pUdpBroadcast->broadcast(msg, g_guiSettings.GetInt("services.httpapibroadcastport"));
   }
   else
     return true;
@@ -2911,7 +2911,7 @@ int CXbmcHttp::xbmcBroadcast(int numParas, CStdString paras[])
     if (numParas>1)
       succ=pUdpBroadcast->broadcast(paras[0], atoi(paras[1]));
     else
-      succ=pUdpBroadcast->broadcast(paras[0], g_settings.m_HttpApiBroadcastPort);
+      succ=pUdpBroadcast->broadcast(paras[0], g_guiSettings.GetInt("services.httpapibroadcastport"));
     if (succ)
       return SetResponse(openTag+"OK");
     else
@@ -2925,9 +2925,9 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 {
   if (numParas>0)
   {
-    g_settings.m_HttpApiBroadcastLevel=atoi(paras[0]);
+    g_guiSettings.SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
     if (numParas>1)
-      g_settings.m_HttpApiBroadcastPort=atoi(paras[1]);
+      g_guiSettings.SetInt("services.httpapibroadcastport", atoi(paras[1]));
     return SetResponse(openTag+"OK");
   }
   else
@@ -2937,7 +2937,7 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetBroadcast()
 {
   CStdString tmp;
-  tmp.Format("%i;%i", g_settings.m_HttpApiBroadcastLevel,g_settings.m_HttpApiBroadcastPort);
+  tmp.Format("%i;%i", g_guiSettings.GetInt("services.httpapibroadcastlevel"),g_guiSettings.GetInt("services.httpapibroadcastport"));
   return SetResponse(openTag+tmp);
 }
 
