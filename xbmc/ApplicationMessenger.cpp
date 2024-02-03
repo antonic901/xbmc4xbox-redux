@@ -45,6 +45,8 @@
 #include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
 #include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
+#include "playlists/PlayList.h"
+
 using namespace std;
 
 extern HWND g_hWnd;
@@ -317,7 +319,7 @@ case TMSG_POWERDOWN:
             g_playlistPlayer.ClearPlaylist(playlist);
             g_playlistPlayer.Add(playlist, (*list));
             g_playlistPlayer.SetCurrentPlaylist(playlist);
-            g_playlistPlayer.Play();
+            g_playlistPlayer.Play(pMsg->dwParam1);
           }
 
           delete list;
@@ -506,6 +508,35 @@ case TMSG_POWERDOWN:
       g_playlistPlayer.PlayPrevious();
       break;
 
+    case TMSG_PLAYLISTPLAYER_ADD:
+      if(pMsg->lpVoid)
+      {
+        CFileItemList *list = (CFileItemList *)pMsg->lpVoid;
+
+        g_playlistPlayer.Add(pMsg->dwParam1, (*list));
+        delete list;
+      }
+      break;
+
+    case TMSG_PLAYLISTPLAYER_CLEAR:
+      g_playlistPlayer.ClearPlaylist(pMsg->dwParam1);
+      break;
+
+    case TMSG_PLAYLISTPLAYER_SHUFFLE:
+      g_playlistPlayer.SetShuffle(pMsg->dwParam1, pMsg->dwParam2 > 0);
+      break;
+
+    case TMSG_PLAYLISTPLAYER_GET_ITEMS:
+      if (pMsg->lpVoid)
+      {
+        PLAYLIST::CPlayList playlist = g_playlistPlayer.GetPlaylist(pMsg->dwParam1);
+        CFileItemList *list = (CFileItemList *)pMsg->lpVoid; //DO NOT DELETE THIS!
+
+        for (int i = 0; i < playlist.size(); i++)
+          list->Add(playlist[i]);
+      }
+      break;
+
     case TMSG_PLAYLISTPLAYER_INSERT:
       if (pMsg->lpVoid)
       {
@@ -690,11 +721,11 @@ void CApplicationMessenger::MediaPlay(const CFileItem &item)
   MediaPlay(list);
 }
 
-void CApplicationMessenger::MediaPlay(const CFileItemList &list)
+void CApplicationMessenger::MediaPlay(const CFileItemList &list, int song)
 {
   ThreadMessage tMsg = {TMSG_MEDIA_PLAY};
   tMsg.lpVoid = (void *)new CFileItemList(list);
-  tMsg.dwParam1 = 0;
+  tMsg.dwParam1 = song;
   tMsg.dwParam2 = 1;
   SendMessage(tMsg, true);
 }
@@ -754,6 +785,45 @@ void CApplicationMessenger::PlayListPlayerNext()
 void CApplicationMessenger::PlayListPlayerPrevious()
 {
   ThreadMessage tMsg = {TMSG_PLAYLISTPLAYER_PREV};
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::PlayListPlayerAdd(int playlist, const CFileItem &item)
+{
+  CFileItemList list;
+  list.Add(CFileItemPtr(new CFileItem(item)));
+
+  PlayListPlayerAdd(playlist, list);
+}
+
+void CApplicationMessenger::PlayListPlayerAdd(int playlist, const CFileItemList &list)
+{
+  ThreadMessage tMsg = {TMSG_PLAYLISTPLAYER_ADD};
+  tMsg.lpVoid = (void *)new CFileItemList(list);
+  tMsg.dwParam1 = playlist;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::PlayListPlayerClear(int playlist)
+{
+  ThreadMessage tMsg = {TMSG_PLAYLISTPLAYER_CLEAR};
+  tMsg.dwParam1 = playlist;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::PlayListPlayerShuffle(int playlist, bool shuffle)
+{
+  ThreadMessage tMsg = {TMSG_PLAYLISTPLAYER_SHUFFLE};
+  tMsg.dwParam1 = playlist;
+  tMsg.dwParam2 = shuffle ? 1 : 0;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::PlayListPlayerGetItems(int playlist, CFileItemList &list)
+{
+  ThreadMessage tMsg = {TMSG_PLAYLISTPLAYER_GET_ITEMS};
+  tMsg.dwParam1 = playlist;
+  tMsg.lpVoid = (void *)&list;
   SendMessage(tMsg, true);
 }
 
