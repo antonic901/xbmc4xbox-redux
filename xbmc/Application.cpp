@@ -1386,6 +1386,7 @@ HRESULT CApplication::Initialize()
   //  Show mute symbol
   if (g_settings.m_bMute)
     Mute();
+  SetVolume(g_settings.m_nVolumeLevel, false);
 
   if (!CProfilesManager::Get().UsingLoginScreen())
   {
@@ -2738,15 +2739,9 @@ bool CApplication::OnAction(CAction &action)
   // Check for global volume control
   if (action.GetAmount() && (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN))
   {
-    // increase or decrease the volume
-    int volume;
     if (g_settings.m_bMute)
-    {
-      volume = (int)((float)g_settings.m_iPreMuteVolumeLevel * 0.01f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM);
       UnMute();
-    }
-    else
-      volume = g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel;
+    int volume = g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel;
 
     // calculate speed so that a full press will equal 1 second from min to max
     float speed = float(VOLUME_MAXIMUM - VOLUME_MINIMUM);
@@ -5401,16 +5396,12 @@ void CApplication::ToggleMute(void)
 
 void CApplication::Mute()
 {
-  g_settings.m_iPreMuteVolumeLevel = GetVolume();
   g_settings.m_bMute = true;
-  SetVolume(0);
 }
 
 void CApplication::UnMute()
 {
   g_settings.m_bMute = false;
-  SetVolume(g_settings.m_iPreMuteVolumeLevel);
-  g_settings.m_iPreMuteVolumeLevel = 0;
 }
 
 void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
