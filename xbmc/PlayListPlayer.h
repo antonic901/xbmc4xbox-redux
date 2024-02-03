@@ -64,11 +64,28 @@ public:
   void Reset();
   void ClearPlaylist(int iPlaylist);
   void Clear();
-  void SetShuffle(int iPlaylist, bool bYesNo);
+
+    /*! \brief Set shuffle state of a playlist.
+   If the shuffle state changes, the playlist is shuffled or unshuffled.
+   Has no effect if Party Mode is enabled.
+   \param playlist the playlist to (un)shuffle, PLAYLIST_MUSIC or PLAYLIST_VIDEO.
+   \param shuffle set true to shuffle, false to unshuffle.
+   \param notify notify the user with a Toast notification (defaults to false)
+   \sa IsShuffled
+   */
+  void SetShuffle(int playlist, bool shuffle, bool notify = false);
+
   bool IsShuffled(int iPlaylist) const;
   bool HasPlayedFirstFile() const;
   
-  void SetRepeat(int iPlaylist, REPEAT_STATE state);
+  /*! \brief Set repeat state of a playlist.
+   If called while in Party Mode, repeat is disabled.
+   \param playlist the playlist to set repeat state for, PLAYLIST_MUSIC or PLAYLIST_VIDEO.
+   \param state set to REPEAT_NONE, REPEAT_ONE or REPEAT_ALL
+   \param notify notify the user with a Toast notification
+   \sa GetRepeat
+   */
+  void SetRepeat(int iPlaylist, REPEAT_STATE state, bool notify = false);
   REPEAT_STATE GetRepeat(int iPlaylist) const;
 
   // add items via the playlist player
