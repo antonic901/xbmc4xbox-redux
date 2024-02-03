@@ -24,7 +24,7 @@
 #include "AudioContext.h"
 #include "KS.h"
 #include "Ksmedia.h"
-#include "settings/Settings.h"
+#include "Application.h"
 
 
 void CWin32DirectSound::DoWork()
@@ -51,7 +51,7 @@ CWin32DirectSound::CWin32DirectSound(IAudioCallback* pCallback, int iChannels, u
   m_uiSamplesPerSec = uiSamplesPerSec;
   m_uiBitsPerSample = uiBitsPerSample;
 
-  m_nCurrentVolume = g_settings.m_nVolumeLevel;
+  m_nCurrentVolume = g_application.GetVolume(false);
 
   WAVEFORMATEXTENSIBLE wfxex = {0};
   wfxex.Format.nChannels       = iChannels;
@@ -97,7 +97,7 @@ CWin32DirectSound::CWin32DirectSound(IAudioCallback* pCallback, int iChannels, u
   }
   
   m_pBuffer->Stop();
-  m_pBuffer->SetVolume( g_settings.m_nVolumeLevel );
+  m_pBuffer->SetVolume( g_application.GetVolume(false) );
 
   m_bIsAllocated = true;
   m_nextPacket = 0;

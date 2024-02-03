@@ -207,6 +207,7 @@
 #include "cores/dlgcache.h"
 #include "guilib/GUIControlFactory.h"
 #include "dialogs/GUIDialogMediaFilter.h"
+#include "utils/XMLUtils.h"
 #include "addons/AddonInstaller.h"
 
 #ifdef _LINUX
@@ -346,6 +347,10 @@ CApplication::CApplication(void)
 #endif
   m_currentStack = new CFileItemList;
   m_debugLayout = NULL;
+
+  m_volumeLevel = 0;
+  m_dynamicRangeCompressionLevel = 0;
+  m_muted = false;
 }
 
 CApplication::~CApplication(void)
@@ -736,7 +741,6 @@ HRESULT CApplication::Create(HWND hWnd)
   CLog::SetLogLevel(g_advancedSettings.m_logLevel);
 
   g_guiSettings.Initialize();  // Initialize default Settings
-  g_settings.Initialize(); //Initialize default AdvancedSettings
 
   for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
   {
@@ -979,6 +983,7 @@ HRESULT CApplication::Create(HWND hWnd)
   g_settings.RegisterSettingsHandler(&CRssManager::Get());
   g_settings.RegisterSettingsHandler(&CUPnPSettings::Get());
 
+  g_settings.RegisterSubSettings(this);
   g_settings.RegisterSubSettings(&CDisplaySettings::Get());
   g_settings.RegisterSubSettings(&CMediaSettings::Get());
   g_settings.RegisterSubSettings(&CSkinSettings::Get());
@@ -1384,9 +1389,9 @@ HRESULT CApplication::Initialize()
   CUtil::RemoveTempFiles();
 
   //  Show mute symbol
-  if (g_settings.m_bMute)
+  if (m_muted)
     Mute();
-  SetVolume(g_settings.m_nVolumeLevel, false);
+  SetVolume(m_volumeLevel, false);
 
   if (!CProfilesManager::Get().UsingLoginScreen())
   {
@@ -1876,6 +1881,65 @@ bool CApplication::OnSettingsSaving() const
   // A lot of screens try to save settings on deinit and deinit is called
   // for every screen when the application is stopping.
   return !m_bStop;
+}
+
+bool CApplication::Load(const TiXmlNode *settings)
+{
+  if (settings == NULL)
+    return false;
+
+  const TiXmlElement *audioElement = settings->FirstChildElement("audio");
+  if (audioElement != NULL)
+  {
+    XMLUtils::GetBoolean(audioElement, "mute", m_muted);
+    if (!XMLUtils::GetInt(audioElement, "volumelevel", m_volumeLevel, VOLUME_MINIMUM, VOLUME_MAXIMUM))
+      m_volumeLevel = VOLUME_MAXIMUM;
+    if (!XMLUtils::GetInt(audioElement, "dynamicrangecompression", m_dynamicRangeCompressionLevel, 0/*VOLUME_DRC_MINIMUM*/, 3000/*VOLUME_DRC_MAXIMUM*/))
+      m_dynamicRangeCompressionLevel = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      CStdString setting;
+      setting.Format("karaoke%i", i);
+#ifndef HAS_XBOX_AUDIO
+#define XVOICE_MASK_PARAM_DISABLED (-1.0f)
+#endif
+      if(!XMLUtils::GetFloat(audioElement, setting + "energy", m_karaokeVoiceMask[i].energy, XVOICE_MASK_PARAM_DISABLED, 1.0f))
+        m_karaokeVoiceMask[i].energy = XVOICE_MASK_PARAM_DISABLED;
+      if(!XMLUtils::GetFloat(audioElement, setting + "pitch", m_karaokeVoiceMask[i].pitch, XVOICE_MASK_PARAM_DISABLED, 1.0f))
+        m_karaokeVoiceMask[i].pitch = XVOICE_MASK_PARAM_DISABLED;
+      if(!XMLUtils::GetFloat(audioElement, setting + "whisper", m_karaokeVoiceMask[i].whisper, XVOICE_MASK_PARAM_DISABLED, 1.0f))
+        m_karaokeVoiceMask[i].whisper = XVOICE_MASK_PARAM_DISABLED;
+      if(!XMLUtils::GetFloat(audioElement, setting + "robotic", m_karaokeVoiceMask[i].robotic, XVOICE_MASK_PARAM_DISABLED, 1.0f))
+        m_karaokeVoiceMask[i].robotic = XVOICE_MASK_PARAM_DISABLED;
+    }
+  }
+
+  return true;
+}
+
+bool CApplication::Save(TiXmlNode *settings) const
+{
+  if (settings == NULL)
+    return false;
+
+  TiXmlElement volumeNode("audio");
+  TiXmlNode *audioNode = settings->InsertEndChild(volumeNode);
+  if (audioNode == NULL)
+    return false;
+
+  XMLUtils::SetBoolean(audioNode, "mute", m_muted);
+  XMLUtils::SetInt(audioNode, "volumelevel", m_volumeLevel);
+  XMLUtils::SetInt(audioNode, "dynamicrangecompression", m_dynamicRangeCompressionLevel);
+  for (int i = 0; i < 4; i++)
+  {
+    CStdString setting;
+    setting.Format("karaoke%i", i);
+    XMLUtils::SetFloat(audioNode, setting + "energy", m_karaokeVoiceMask[i].energy);
+    XMLUtils::SetFloat(audioNode, setting + "pitch", m_karaokeVoiceMask[i].pitch);
+    XMLUtils::SetFloat(audioNode, setting + "whisper", m_karaokeVoiceMask[i].whisper);
+    XMLUtils::SetFloat(audioNode, setting + "robotic", m_karaokeVoiceMask[i].robotic);
+  }
+  return true;
 }
 
 bool CApplication::LoadSkin(const CStdString& skinID)
@@ -2739,9 +2803,9 @@ bool CApplication::OnAction(CAction &action)
   // Check for global volume control
   if (action.GetAmount() && (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN))
   {
-    if (g_settings.m_bMute)
+    if (m_muted)
       UnMute();
-    int volume = g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel;
+    int volume = m_volumeLevel + m_dynamicRangeCompressionLevel;
 
     // calculate speed so that a full press will equal 1 second from min to max
     float speed = float(VOLUME_MAXIMUM - VOLUME_MINIMUM);
@@ -5386,22 +5450,36 @@ void CApplication::ShowVolumeBar(const CAction *action)
   }
 }
 
+bool CApplication::IsMuted() const
+{
+  return m_muted;
+}
+
 void CApplication::ToggleMute(void)
 {
-  if (g_settings.m_bMute)
+  if (m_muted)
     UnMute();
   else
     Mute();
 }
 
+void CApplication::SetMute(bool mute)
+{
+  if (m_muted != mute)
+  {
+    ToggleMute();
+    m_muted = mute;
+  }
+}
+
 void CApplication::Mute()
 {
-  g_settings.m_bMute = true;
+  m_muted = true;
 }
 
 void CApplication::UnMute()
 {
-  g_settings.m_bMute = false;
+  m_muted = false;
 }
 
 void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
@@ -5411,16 +5489,16 @@ void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
 
   SetHardwareVolume(iValue);
 #ifndef HAS_SDL_AUDIO
-  g_audioManager.SetVolume(g_settings.m_nVolumeLevel);
+  g_audioManager.SetVolume(m_volumeLevel);
 #else
-  g_audioManager.SetVolume((int)(128.f * (g_settings.m_nVolumeLevel - VOLUME_MINIMUM) / (float)(VOLUME_MAXIMUM - VOLUME_MINIMUM)));
+  g_audioManager.SetVolume((int)(128.f * (m_volumeLevel - VOLUME_MINIMUM) / (float)(VOLUME_MAXIMUM - VOLUME_MINIMUM)));
 #endif
 
   CVariant data(CVariant::VariantTypeObject);
-  data["volume"] = (int)(((float)(g_settings.m_nVolumeLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM) * 100.0f + 0.5f);
+  data["volume"] = (int)(((float)(m_volumeLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM) * 100.0f + 0.5f);
   /* TODO: add once DRC is available
-  data["drc"] = (int)(((float)(g_settings.m_dynamicRangeCompressionLevel - VOLUME_DRC_MINIMUM)) / (VOLUME_DRC_MAXIMUM - VOLUME_DRC_MINIMUM) * 100.0f + 0.5f);*/
-  data["muted"] = g_settings.m_bMute;
+  data["drc"] = (int)(((float)(m_dynamicRangeCompressionLevel - VOLUME_DRC_MINIMUM)) / (VOLUME_DRC_MAXIMUM - VOLUME_DRC_MINIMUM) * 100.0f + 0.5f);*/
+  data["muted"] = m_muted;
   CAnnouncementManager::Announce(Application, "xbmc", "OnVolumeChanged", data);
 }
 
@@ -5435,28 +5513,32 @@ void CApplication::SetHardwareVolume(long hardwareVolume)
   // update our settings
   if (hardwareVolume > VOLUME_MAXIMUM)
   {
-    g_settings.m_dynamicRangeCompressionLevel = hardwareVolume - VOLUME_MAXIMUM;
-    g_settings.m_nVolumeLevel = VOLUME_MAXIMUM;
+    m_dynamicRangeCompressionLevel = hardwareVolume - VOLUME_MAXIMUM;
+    m_volumeLevel = VOLUME_MAXIMUM;
   }
   else
   {
-    g_settings.m_dynamicRangeCompressionLevel = 0;
-    g_settings.m_nVolumeLevel = hardwareVolume;
+    m_dynamicRangeCompressionLevel = 0;
+    m_volumeLevel = hardwareVolume;
   }
 
   // and tell our player to update the volume
   if (m_pPlayer)
   {
-    m_pPlayer->SetVolume(g_settings.m_nVolumeLevel);
+    m_pPlayer->SetVolume(m_volumeLevel);
     // TODO DRC
-//    m_pPlayer->SetDynamicRangeCompression(g_settings.m_dynamicRangeCompressionLevel);
+//    m_pPlayer->SetDynamicRangeCompression(m_dynamicRangeCompressionLevel);
   }
 }
 
-int CApplication::GetVolume() const
+int CApplication::GetVolume(bool percentage /* = true */) const
 {
-  // converts the hardware volume (in mB) to a percentage
-  return int(((float)(g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM)*100.0f + 0.5f);
+  if (percentage)
+  { // converts the hardware volume (in mB) to a percentage
+    return int(((float)(m_volumeLevel + m_dynamicRangeCompressionLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM)*100.0f + 0.5f);
+  }
+
+  return m_volumeLevel;
 }
 
 int CApplication::GetSubtitleDelay() const
@@ -5495,7 +5577,7 @@ void CApplication::SetPlaySpeed(int iSpeed)
   m_pPlayer->ToFFRW(m_iPlaySpeed);
   if (m_iPlaySpeed == 1)
   { // restore volume
-    m_pPlayer->SetVolume(g_settings.m_nVolumeLevel);
+    m_pPlayer->SetVolume(m_volumeLevel);
   }
   else
   { // mute volume

@@ -21,8 +21,8 @@
 #include "include.h"
 #include "GUISound.h"
 #include "AudioContext.h"
+#include "Application.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/Settings.h"
 #include "filesystem/File.h"
 
 typedef struct
@@ -152,7 +152,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   }
 
   //  Make effects as loud as possible
-  m_soundBuffer->SetVolume(g_settings.m_nVolumeLevel);
+  m_soundBuffer->SetVolume(g_application.GetVolume(false));
 #ifdef HAS_XBOX_AUDIO
   m_soundBuffer->SetHeadroom(0);
 

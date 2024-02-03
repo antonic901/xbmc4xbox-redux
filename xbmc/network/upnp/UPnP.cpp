@@ -49,7 +49,6 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/GUISettings.h"
-#include "settings/Settings.h"
 #include "FileItem.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -1732,7 +1731,7 @@ CUPnPRenderer::UpdateState()
 
     CStdString buffer;
     int volume;
-    if (g_settings.m_bMute) {
+    if (g_application.IsMuted()) {
         rct->SetStateVariable("Mute", "1");
     } else {
         rct->SetStateVariable("Mute", "0");
@@ -2017,7 +2016,7 @@ CUPnPRenderer::OnSetMute(PLT_ActionReference& action)
 {
     NPT_String mute;
     NPT_CHECK_SEVERE(action->GetArgumentValue("DesiredMute",mute));
-    if((mute == "1") ^ g_settings.m_bMute)
+    if((mute == "1") ^ g_application.IsMuted())
         g_application.ToggleMute();
     return NPT_SUCCESS;
 }

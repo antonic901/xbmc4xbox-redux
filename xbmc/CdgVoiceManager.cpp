@@ -21,7 +21,7 @@
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
 #include "settings/GUISettings.h"
-#include "settings/Settings.h"
+#include "Application.h"
 
 //CdgChatter
 CCdgChatter::CCdgChatter()
@@ -231,10 +231,10 @@ void CCdgChatter::LoadSettings()
     if (!m_pVoiceMask)
       m_pVoiceMask = new XVOICE_MASK;
     if (!m_pVoiceMask) return ;
-    m_pVoiceMask->fSpecEnergyWeight = g_settings.m_karaokeVoiceMask[m_dwPort].energy;
-    m_pVoiceMask->fPitchScale = g_settings.m_karaokeVoiceMask[m_dwPort].pitch;
-    m_pVoiceMask->fWhisperValue = g_settings.m_karaokeVoiceMask[m_dwPort].whisper;
-    m_pVoiceMask->fRoboticValue = g_settings.m_karaokeVoiceMask[m_dwPort].robotic;
+    m_pVoiceMask->fSpecEnergyWeight = g_application.GetKaraokeVoiceMask(m_dwPort).energy;
+    m_pVoiceMask->fPitchScale = g_application.GetKaraokeVoiceMask(m_dwPort).pitch;
+    m_pVoiceMask->fWhisperValue = g_application.GetKaraokeVoiceMask(m_dwPort).whisper;
+    m_pVoiceMask->fRoboticValue = g_application.GetKaraokeVoiceMask(m_dwPort).robotic;
   }
   //Calculate other useful constants
   DWORD dwSamplingRate, dwVoicePacketTime;

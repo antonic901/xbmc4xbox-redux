@@ -24,7 +24,6 @@
 #include "AsyncDirectSound.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
-#include "settings/Settings.h"
 #include "utils/log.h"
 #include "Application.h" // Karaoke patch (114097)
 #include "AudioContext.h"
@@ -214,7 +213,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
     m_pbSampleData[dwX] = m_pbSampleData[dwX - 1] + m_dwPacketSize;
 
   // set volume (from settings)
-  m_nCurrentVolume = g_settings.m_nVolumeLevel;
+  m_nCurrentVolume = g_application.GetVolume(false);
   m_pStream->SetVolume( m_nCurrentVolume );
 
   // Set the headroom of the stream to 0 (to allow the maximum volume)

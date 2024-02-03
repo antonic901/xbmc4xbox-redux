@@ -2706,13 +2706,13 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="httpapibroadcastlevel")
         tmp.Format("%i",g_settings.m_HttpApiBroadcastLevel);
       else if (paras[i]=="volumelevel")
-        tmp.Format("%i",g_settings.m_nVolumeLevel);
+        tmp.Format("%i",g_application.GetVolume(false));
       else if (paras[i]=="dynamicrangecompressionlevel")
-        tmp.Format("%i",g_settings.m_dynamicRangeCompressionLevel);
+        tmp.Format("%i",g_application.GetDynamicRangeCompressionLevel());
       else if (paras[i]=="systemtimetotalup")
         tmp.Format("%i",g_sysinfo.GetTotalUptime());
       else if (paras[i]=="mute")
-        tmp = (g_settings.m_bMute==0) ? "False" : "True";
+        tmp = (g_application.IsMuted()==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")
         tmp = (g_guiSettings.GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")

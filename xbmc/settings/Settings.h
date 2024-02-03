@@ -26,16 +26,6 @@
 #include "utils/CriticalSection.h"
 #include "utils/StdString.h"
 
-#define VOLUME_MINIMUM -6000  // -60dB
-#define VOLUME_MAXIMUM 0      // 0dB
-
-struct VOICE_MASK {
-  float energy;
-  float pitch;
-  float robotic;
-  float whisper;
-};
-
 class CGUISettings;
 class TiXmlElement;
 class TiXmlNode;
@@ -51,22 +41,14 @@ public:
   void RegisterSubSettings(ISubSettings *subSettings);
   void UnregisterSubSettings(ISubSettings *subSettings);
 
-  void Initialize();
-
   bool Load();
   void Save() const;
+  bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
   bool Reset();
-
   void Clear();
 
   int m_HttpApiBroadcastPort;
   int m_HttpApiBroadcastLevel;
-  int m_nVolumeLevel;                     // measured in milliBels -60dB -> 0dB range.
-  int m_dynamicRangeCompressionLevel;     // measured in milliBels  0dB -> 30dB range.
-
-  bool m_bMute;
-
-  VOICE_MASK m_karaokeVoiceMask[4];
 
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
@@ -75,16 +57,8 @@ public:
 
   CStdString GetAvpackSettingsFile() const;
 
-  bool SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings = NULL) const;
-
-  bool GetInteger(const TiXmlElement* pRootElement, const char *strTagName, int& iValue, const int iDefault, const int iMin, const int iMax);
-  bool GetFloat(const TiXmlElement* pRootElement, const char *strTagName, float& fValue, const float fDefault, const float fMin, const float fMax);
-  static bool GetPath(const TiXmlElement* pRootElement, const char *tagName, CStdString &strValue);
-  static bool GetString(const TiXmlElement* pRootElement, const char *strTagName, CStdString& strValue, const CStdString& strDefaultValue);
-  bool GetString(const TiXmlElement* pRootElement, const char *strTagName, char *szValue, const CStdString& strDefaultValue);
 protected:
   bool LoadSettings(const CStdString& strSettingsFile);
-//  bool SaveSettings(const CStdString& strSettingsFile) const;
 
   bool SaveAvpackXML() const;
   bool SaveNewAvpackXML() const;

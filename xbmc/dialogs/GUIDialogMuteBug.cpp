@@ -18,10 +18,9 @@
  *
  */
 
-#include "dialogs/GUIDialogMuteBug.h"
-#include "GUIWindowManager.h"
+#include "GUIDialogMuteBug.h"
 #include "GUIUserMessages.h"
-#include "settings/Settings.h"
+#include "Application.h"
 
 // the MuteBug is a true modeless dialog
 
@@ -36,7 +35,7 @@ CGUIDialogMuteBug::~CGUIDialogMuteBug(void)
 
 void CGUIDialogMuteBug::UpdateVisibility()
 {
-  if (g_settings.m_bMute || g_settings.m_nVolumeLevel == VOLUME_MINIMUM)
+  if (g_application.IsMuted() || g_application.GetVolume(false) == VOLUME_MINIMUM)
     Show();
   else
     Close();

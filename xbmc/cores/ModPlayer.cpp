@@ -21,7 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "modplayer.h"
-#include "settings/Settings.h"
+#include "Application.h"
 #include "SectionLoader.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
@@ -83,7 +83,7 @@ ModPlayer::ModPlayer(IPlayerCallback& callback) : IPlayer(callback)
     CLog::Log(LOGERROR, "ModPlayer: Could not initialize sound, reason: %s", MikMod_strerror(mikxboxGetErrno()));
   }
 
-  SetVolume(g_settings.m_nVolumeLevel);
+  SetVolume(g_application.GetVolume(false));
   // mikxboxSetMusicVolume(127);
   mikxboxSetCallback(ModCallback);
 }

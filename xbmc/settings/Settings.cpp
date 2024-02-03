@@ -18,16 +18,13 @@
  *
  */
 
-#include <limits.h>
-
 #include "Settings.h"
 #include "filesystem/File.h"
-#include "guilib/Key.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/GUISettings.h"
 #include "utils/SingleLock.h"
 #include "utils/log.h"
-#include "utils/XMLUtils.h"
+#include "utils/XBMCTinyXML.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "settings/MediaSettings.h" // for AVPack methods
 #include "filesystem/SpecialProtocol.h"
@@ -84,16 +81,6 @@ void CSettings::UnregisterSubSettings(ISubSettings *subSettings)
   m_subSettings.erase(subSettings);
 }
 
-void CSettings::Initialize()
-{
-  m_nVolumeLevel = 0;
-  m_dynamicRangeCompressionLevel = 0;
-  m_bMute = false;
-
-  m_HttpApiBroadcastLevel = 0;
-  m_HttpApiBroadcastPort = 8278;
-}
-
 CSettings::~CSettings(void)
 {
   // first clear all registered settings handler and subsettings
@@ -148,60 +135,6 @@ bool CSettings::Load()
   return true;
 }
 
-bool CSettings::GetPath(const TiXmlElement* pRootElement, const char *tagName, CStdString &strValue)
-{
-  CStdString strDefault = strValue;
-  if (XMLUtils::GetPath(pRootElement, tagName, strValue))
-  { // tag exists
-    // check for "-" for backward compatibility
-    if (!strValue.Equals("-"))
-      return true;
-  }
-  // tag doesn't exist - set default
-  strValue = strDefault;
-  return false;
-}
-
-bool CSettings::GetString(const TiXmlElement* pRootElement, const char *tagName, CStdString &strValue, const CStdString& strDefaultValue)
-{
-  if (XMLUtils::GetString(pRootElement, tagName, strValue))
-  { // tag exists
-    // check for "-" for backward compatibility
-    if (!strValue.Equals("-"))
-      return true;
-  }
-  // tag doesn't exist - set default
-  strValue = strDefaultValue;
-  return false;
-}
-
-bool CSettings::GetString(const TiXmlElement* pRootElement, const char *tagName, char *szValue, const CStdString& strDefaultValue)
-{
-  CStdString strValue;
-  bool ret = GetString(pRootElement, tagName, strValue, strDefaultValue);
-  if (szValue)
-    strcpy(szValue, strValue.c_str());
-  return ret;
-}
-
-bool CSettings::GetInteger(const TiXmlElement* pRootElement, const char *tagName, int& iValue, const int iDefault, const int iMin, const int iMax)
-{
-  if (XMLUtils::GetInt(pRootElement, tagName, iValue, iMin, iMax))
-    return true;
-  // default
-  iValue = iDefault;
-  return false;
-}
-
-bool CSettings::GetFloat(const TiXmlElement* pRootElement, const char *tagName, float& fValue, const float fDefault, const float fMin, const float fMax)
-{
-  if (XMLUtils::GetFloat(pRootElement, tagName, fValue, fMin, fMax))
-    return true;
-  // default
-  fValue = fDefault;
-  return false;
-}
-
 bool CSettings::LoadSettings(const CStdString& strSettingsFile)
 {
   // load the xml file
@@ -218,34 +151,6 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
   {
     g_LoadErrorStr.Format("%s\nDoesn't contain <settings>", strSettingsFile.c_str());
     return false;
-  }
-
-  // general settings
-  const TiXmlElement *pElement = pRootElement->FirstChildElement("general");
-  if (pElement)
-  {
-    GetInteger(pElement, "httpapibroadcastlevel", m_HttpApiBroadcastLevel, 0, 0,5);
-    GetInteger(pElement, "httpapibroadcastport", m_HttpApiBroadcastPort, 8278, 1, 65535);
-  }
-
-  // audio settings
-  pElement = pRootElement->FirstChildElement("audio");
-  if (pElement)
-  {
-    GetInteger(pElement, "volumelevel", m_nVolumeLevel, VOLUME_MAXIMUM, VOLUME_MINIMUM, VOLUME_MAXIMUM);
-    GetInteger(pElement, "dynamicrangecompression", m_dynamicRangeCompressionLevel, 0/*VOLUME_DRC_MINIMUM*/, 0/*VOLUME_DRC_MINIMUM*/, 3000/*VOLUME_DRC_MAXIMUM*/);
-    for (int i = 0; i < 4; i++)
-    {
-      CStdString setting;
-      setting.Format("karaoke%i", i);
-#ifndef HAS_XBOX_AUDIO
-#define XVOICE_MASK_PARAM_DISABLED (-1.0f)
-#endif
-      GetFloat(pElement, setting + "energy", m_karaokeVoiceMask[i].energy, XVOICE_MASK_PARAM_DISABLED, XVOICE_MASK_PARAM_DISABLED, 1.0f);
-      GetFloat(pElement, setting + "pitch", m_karaokeVoiceMask[i].pitch, XVOICE_MASK_PARAM_DISABLED, XVOICE_MASK_PARAM_DISABLED, 1.0f);
-      GetFloat(pElement, setting + "whisper", m_karaokeVoiceMask[i].whisper, XVOICE_MASK_PARAM_DISABLED, XVOICE_MASK_PARAM_DISABLED, 1.0f);
-      GetFloat(pElement, setting + "robotic", m_karaokeVoiceMask[i].robotic, XVOICE_MASK_PARAM_DISABLED, XVOICE_MASK_PARAM_DISABLED, 1.0f);
-    }
   }
 
   g_guiSettings.LoadXML(pRootElement);
@@ -326,6 +231,7 @@ bool CSettings::SaveAvpackXML() const
 
   // First load the previous settings
   CXBMCTinyXML xmlDoc;
+
   if (!xmlDoc.LoadFile(avpackSettingsXML))
   {
     CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, Line %d\n%s\nCreating new file.",
@@ -445,29 +351,6 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
 
   if (!OnSettingsSaving())
     return false;
-
-  // general settings
-  TiXmlElement generalNode("general");
-  TiXmlNode *pNode = pRoot->InsertEndChild(generalNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "httpapibroadcastport", m_HttpApiBroadcastPort);
-  XMLUtils::SetInt(pNode, "httpapibroadcastlevel", m_HttpApiBroadcastLevel);
-
-  // audio settings
-  TiXmlElement volumeNode("audio");
-  pNode = pRoot->InsertEndChild(volumeNode);
-  if (!pNode) return false;
-  XMLUtils::SetInt(pNode, "volumelevel", m_nVolumeLevel);
-  XMLUtils::SetInt(pNode, "dynamicrangecompression", m_dynamicRangeCompressionLevel);
-  for (int i = 0; i < 4; i++)
-  {
-    CStdString setting;
-    setting.Format("karaoke%i", i);
-    XMLUtils::SetFloat(pNode, setting + "energy", m_karaokeVoiceMask[i].energy);
-    XMLUtils::SetFloat(pNode, setting + "pitch", m_karaokeVoiceMask[i].pitch);
-    XMLUtils::SetFloat(pNode, setting + "whisper", m_karaokeVoiceMask[i].whisper);
-    XMLUtils::SetFloat(pNode, setting + "robotic", m_karaokeVoiceMask[i].robotic);
-  }
 
   if (localSettings) // local settings to save
     localSettings->SaveXML(pRoot);

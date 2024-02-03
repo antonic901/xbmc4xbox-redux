@@ -44,6 +44,7 @@ namespace ADDON
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "PlayListPlayer.h"
 #include "settings/ISettingsHandler.h"
+#include "settings/ISubSettings.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -60,6 +61,16 @@ namespace MUSIC_INFO
   class CMusicInfoScanner;
 }
 
+#define VOLUME_MINIMUM -6000  // -60dB
+#define VOLUME_MAXIMUM 0      // 0dB
+
+struct VOICE_MASK {
+  float energy;
+  float pitch;
+  float robotic;
+  float whisper;
+};
+
 class CWebServer;
 class CXBFileZilla;
 class CSNTPClient;
@@ -70,7 +81,7 @@ class CSplash;
 class CGUITextLayout;
 
 class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
-                     public ISettingsHandler
+                     public ISettingsHandler, public ISubSettings
 {
 public:
   CApplication(void);
@@ -162,9 +173,13 @@ public:
   virtual void Process();
   void ProcessSlow();
   void ResetScreenSaver();
-  int GetVolume() const;
+  int GetVolume(bool percentage = true) const;
   void SetVolume(long iValue, bool isPercentage = true);
+  int GetDynamicRangeCompressionLevel() { return m_dynamicRangeCompressionLevel; };
+  VOICE_MASK GetKaraokeVoiceMask(DWORD dwPort) { return m_karaokeVoiceMask[dwPort]; }
+  bool IsMuted() const;
   void ToggleMute(void);
+  void SetMute(bool mute);
   void ShowVolumeBar(const CAction *action = NULL);
   int GetPlaySpeed() const;
   int GetSubtitleDelay() const;
@@ -236,6 +251,9 @@ public:
 protected:
   virtual bool OnSettingsSaving() const;
 
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
+
   void LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
 
   friend class CApplicationMessenger;
@@ -276,6 +294,12 @@ protected:
 
   VIDEO::CVideoInfoScanner *m_videoInfoScanner;
   MUSIC_INFO::CMusicInfoScanner *m_musicInfoScanner;
+
+  bool m_muted;
+  int m_volumeLevel;                     // measured in milliBels -60dB -> 0dB range.
+  int m_dynamicRangeCompressionLevel;    // measured in milliBels  0dB -> 30dB range.
+
+  VOICE_MASK m_karaokeVoiceMask[4];
 
   void Mute();
   void UnMute();
