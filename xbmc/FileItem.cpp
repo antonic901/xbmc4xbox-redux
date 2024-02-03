@@ -105,6 +105,20 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
   CMusicDatabase::SetPropertiesFromAlbum(*this,album);
 }
 
+CFileItem::CFileItem(const CMusicInfoTag& music)
+{
+  m_musicInfoTag = NULL;
+  m_videoInfoTag = NULL;
+  m_pictureInfoTag = NULL;
+  Reset();
+  SetLabel(music.GetTitle());
+  m_strPath = music.GetURL();
+  m_bIsFolder = URIUtils::HasSlashAtEnd(m_strPath);
+  *GetMusicInfoTag() = music;
+  FillInDefaultIcon();
+  SetCachedMusicThumb();
+}
+
 CFileItem::CFileItem(const CVideoInfoTag& movie)
 {
   m_musicInfoTag = NULL;
@@ -441,7 +455,7 @@ void CFileItem::Serialize(CVariant& value)
   value["size"] = m_dwSize;
   value["DVDLabel"] = m_strDVDLabel;
   value["title"] = m_strTitle;
-  value["mimetype"] = m_mimetype;
+  value["mimetype"] = GetMimeType();
   value["extrainfo"] = m_extrainfo;
 
   if (m_musicInfoTag)

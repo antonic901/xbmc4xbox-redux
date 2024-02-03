@@ -130,6 +130,7 @@
 #ifdef HAS_EVENT_SERVER
 #include "utils/EventServer.h"
 #endif
+#include "interfaces/AnnouncementManager.h"
 
 // Windows includes
 #include "GUIWindowManager.h"
@@ -222,6 +223,7 @@ using namespace MUSIC_INFO;
 #ifdef HAS_EVENT_SERVER
 using namespace EVENTSERVER;
 #endif
+using namespace ANNOUNCEMENT;
 
 // uncomment this if you want to use release libs in the debug build.
 // Atm this saves you 7 mb of memory
@@ -4296,6 +4298,13 @@ bool CApplication::IsPlayingFullScreenVideo() const
   return IsPlayingVideo() && g_graphicsContext.IsFullScreenVideo();
 }
 
+bool CApplication::IsFullScreen()
+{
+  return IsPlayingFullScreenVideo() ||
+        (g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION) ||
+         g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW;
+}
+
 void CApplication::SaveFileState()
 {
   if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
@@ -5393,15 +5402,15 @@ void CApplication::ToggleMute(void)
 void CApplication::Mute()
 {
   g_settings.m_iPreMuteVolumeLevel = GetVolume();
-  SetVolume(0);
   g_settings.m_bMute = true;
+  SetVolume(0);
 }
 
 void CApplication::UnMute()
 {
+  g_settings.m_bMute = false;
   SetVolume(g_settings.m_iPreMuteVolumeLevel);
   g_settings.m_iPreMuteVolumeLevel = 0;
-  g_settings.m_bMute = false;
 }
 
 void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
@@ -5415,6 +5424,13 @@ void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
 #else
   g_audioManager.SetVolume((int)(128.f * (g_settings.m_nVolumeLevel - VOLUME_MINIMUM) / (float)(VOLUME_MAXIMUM - VOLUME_MINIMUM)));
 #endif
+
+  CVariant data(CVariant::VariantTypeObject);
+  data["volume"] = (int)(((float)(g_settings.m_nVolumeLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM) * 100.0f + 0.5f);
+  /* TODO: add once DRC is available
+  data["drc"] = (int)(((float)(g_settings.m_dynamicRangeCompressionLevel - VOLUME_DRC_MINIMUM)) / (VOLUME_DRC_MAXIMUM - VOLUME_DRC_MINIMUM) * 100.0f + 0.5f);*/
+  data["muted"] = g_settings.m_bMute;
+  CAnnouncementManager::Announce(Application, "xbmc", "OnVolumeChanged", data);
 }
 
 void CApplication::SetHardwareVolume(long hardwareVolume)
