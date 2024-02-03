@@ -26,7 +26,6 @@
 #include "filesystem/MusicDatabaseDirectory/QueryParams.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/SpecialProtocol.h"
-#include "music/dialogs/GUIDialogMusicScan.h"
 #include "storage/DetectDVDType.h"
 #include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTag.h"
@@ -2254,67 +2253,87 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress *pDlgProgress)
   if (NULL == m_pDB.get()) return ERROR_DATABASE;
   if (NULL == m_pDS.get()) return ERROR_DATABASE;
   // first cleanup any songs with invalid paths
-  pDlgProgress->SetHeading(700);
-  pDlgProgress->SetLine(0, "");
-  pDlgProgress->SetLine(1, 318);
-  pDlgProgress->SetLine(2, 330);
-  pDlgProgress->SetPercentage(0);
-  pDlgProgress->StartModal();
-  pDlgProgress->ShowProgressBar(true);
-
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetHeading(700);
+    pDlgProgress->SetLine(0, "");
+    pDlgProgress->SetLine(1, 318);
+    pDlgProgress->SetLine(2, 330);
+    pDlgProgress->SetPercentage(0);
+    pDlgProgress->StartModal();
+    pDlgProgress->ShowProgressBar(true);
+  }
   if (!CleanupSongs())
   {
     RollbackTransaction();
     return ERROR_REORG_SONGS;
   }
   // then the albums that are not linked to a song or to albuminfo, or whose path is removed
-  pDlgProgress->SetLine(1, 326);
-  pDlgProgress->SetPercentage(20);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 326);
+    pDlgProgress->SetPercentage(20);
+    pDlgProgress->Progress();
+  }
   if (!CleanupAlbums())
   {
     RollbackTransaction();
     return ERROR_REORG_ALBUM;
   }
   // now the paths
-  pDlgProgress->SetLine(1, 324);
-  pDlgProgress->SetPercentage(40);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 324);
+    pDlgProgress->SetPercentage(40);
+    pDlgProgress->Progress();
+  }
   if (!CleanupPaths() || !CleanupThumbs())
   {
     RollbackTransaction();
     return ERROR_REORG_PATH;
   }
   // and finally artists + genres
-  pDlgProgress->SetLine(1, 320);
-  pDlgProgress->SetPercentage(60);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 320);
+    pDlgProgress->SetPercentage(60);
+    pDlgProgress->Progress();
+  }
   if (!CleanupArtists())
   {
     RollbackTransaction();
     return ERROR_REORG_ARTIST;
   }
-  pDlgProgress->SetLine(1, 322);
-  pDlgProgress->SetPercentage(80);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 322);
+    pDlgProgress->SetPercentage(80);
+    pDlgProgress->Progress();
+  }
   if (!CleanupGenres())
   {
     RollbackTransaction();
     return ERROR_REORG_GENRE;
   }
   // commit transaction
-  pDlgProgress->SetLine(1, 328);
-  pDlgProgress->SetPercentage(90);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 328);
+    pDlgProgress->SetPercentage(90);
+    pDlgProgress->Progress();
+  }
   if (!CommitTransaction())
   {
     RollbackTransaction();
     return ERROR_WRITING_CHANGES;
   }
   // and compress the database
-  pDlgProgress->SetLine(1, 331);
-  pDlgProgress->SetPercentage(100);
-  pDlgProgress->Progress();
+  if (pDlgProgress)
+  {
+    pDlgProgress->SetLine(1, 331);
+    pDlgProgress->SetPercentage(100);
+    pDlgProgress->Progress();
+  }
   if (!Compress(false))
   {
     return ERROR_COMPRESSING;
@@ -2331,8 +2350,7 @@ void CMusicDatabase::DeleteAlbumInfo()
 
   // If we are scanning for music info in the background,
   // other writing access to the database is prohibited.
-  CGUIDialogMusicScan* dlgMusicScan = (CGUIDialogMusicScan*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-  if (dlgMusicScan->IsDialogRunning())
+  if (g_application.IsMusicScanning())
   {
     CGUIDialogOK::ShowAndGetInput(189, 14057, 0, 0);
     return;
@@ -2571,8 +2589,7 @@ void CMusicDatabase::Clean()
 {
   // If we are scanning for music info in the background,
   // other writing access to the database is prohibited.
-  CGUIDialogMusicScan* dlgMusicScan = (CGUIDialogMusicScan*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-  if (dlgMusicScan->IsDialogRunning())
+  if (g_application.IsMusicScanning())
   {
     CGUIDialogOK::ShowAndGetInput(189, 14057, 0, 0);
     return;

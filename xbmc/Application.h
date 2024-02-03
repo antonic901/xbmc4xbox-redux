@@ -50,6 +50,15 @@ namespace ADDON
 #include "utils/Stopwatch.h"
 #include "ApplicationMessenger.h"
 
+namespace VIDEO
+{
+  class CVideoInfoScanner;
+}
+
+namespace MUSIC_INFO
+{
+  class CMusicInfoScanner;
+}
 
 class CWebServer;
 class CXBFileZilla;
@@ -174,6 +183,16 @@ public:
   void SeekTime( double dTime = 0.0 );
   void ResetPlayTime();
 
+  void StopVideoScan();
+  void StopMusicScan();
+  bool IsMusicScanning() const;
+  bool IsVideoScanning() const;
+
+  void StartVideoScan(const CStdString &path, bool scanAll = false);
+  void StartMusicScan(const CStdString &path);
+  void StartMusicAlbumScan(const CStdString& strDirectory);
+  void StartMusicArtistScan(const CStdString& strDirectory);
+
   void UpdateLibraries();
   void CheckMusicPlaylist();
 
@@ -253,6 +272,9 @@ protected:
   CGUITextLayout *m_debugLayout;
 
   static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
+
+  VIDEO::CVideoInfoScanner *m_videoInfoScanner;
+  MUSIC_INFO::CMusicInfoScanner *m_musicInfoScanner;
 
   void Mute();
   void UnMute();

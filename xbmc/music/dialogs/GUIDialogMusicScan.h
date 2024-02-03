@@ -32,11 +32,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void FrameMove();
 
-  void StartScanning(const CStdString& strDirectory);
-  void StartAlbumScan(const CStdString& strDirectory);
-  void StartArtistScan(const CStdString& strDirectory);
-  bool IsScanning();
-  void StopScanning();
+  void ShowScan();
 
   void UpdateState();
 protected:
@@ -47,7 +43,6 @@ protected:
   virtual void OnStateChanged(MUSIC_INFO::SCAN_STATE state);
   virtual void OnSetProgress(int currentItem, int itemCount);
 
-  MUSIC_INFO::CMusicInfoScanner m_musicInfoScanner;
   MUSIC_INFO::SCAN_STATE m_ScanState;
   CStdString m_strCurrentDir;
 

@@ -1111,9 +1111,23 @@ int CBuiltins::Execute(const CStdString& execString)
       return -1;
 
     g_application.StopPlaying();
-    CGUIDialogMusicScan *musicScan = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-    if (musicScan && musicScan->IsScanning())
-      musicScan->StopScanning();
+    if (g_application.IsMusicScanning())
+    {
+      g_application.StopMusicScan();
+      CGUIDialogMusicScan *musicScan = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
+      if (musicScan)
+        musicScan->Close(true);
+    }
+
+    if (g_application.IsVideoScanning())
+    {
+      g_application.StopVideoScan();
+      CGUIDialogVideoScan *videoScan = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
+      if (videoScan)
+      {
+        videoScan->Close(true);
+      }
+    }
 
     ADDON::CAddonMgr::Get().StopServices(true);
 
@@ -1176,61 +1190,45 @@ int CBuiltins::Execute(const CStdString& execString)
   {
     if (params[0].Equals("music"))
     {
-      CGUIDialogMusicScan *scanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-      if (scanner)
-      {
-        if (scanner->IsScanning())
-          scanner->StopScanning();
-        else
-          scanner->StartScanning("");
-      }
+      if (g_application.IsMusicScanning())
+        g_application.StopMusicScan();
+      else
+        g_application.StartMusicScan(params.size() > 1 ? params[1] : "");
     }
     if (params[0].Equals("video"))
     {
-      CGUIDialogVideoScan *scanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-      if (scanner)
-      {
-        if (scanner->IsScanning())
-          scanner->StopScanning();
-        else
-          CGUIWindowVideoBase::OnScan(params.size() > 1 ? params[1] : "");
-      }
+      if (g_application.IsVideoScanning())
+        g_application.StopVideoScan();
+      else
+        g_application.StartVideoScan(params.size() > 1 ? params[1] : "");
     }
   }
   else if (execute.Equals("cleanlibrary"))
   {
     if (!params.size() || params[0].Equals("video"))
     {
-      CGUIDialogVideoScan *scanner = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-      if (scanner)
+      if (!g_application.IsVideoScanning())
       {
-        if (!scanner->IsScanning())
-        {
-           CVideoDatabase videodatabase;
-           videodatabase.Open();
-           videodatabase.CleanDatabase();
-           videodatabase.Close();
-        }
-        else
-          CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
+         CVideoDatabase videodatabase;
+         videodatabase.Open();
+         videodatabase.CleanDatabase();
+         videodatabase.Close();
       }
+      else
+        CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
     }
     else if (params[0].Equals("music"))
     {
-      CGUIDialogMusicScan *scanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-      if (scanner)
+      if (!g_application.IsMusicScanning())
       {
-        if (!scanner->IsScanning())
-        {
-          CMusicDatabase musicdatabase;
+        CMusicDatabase musicdatabase;
 
-          musicdatabase.Open();
-          musicdatabase.Cleanup();
-          musicdatabase.Close();
-        }
-        else
-          CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
+        musicdatabase.Open();
+        musicdatabase.Cleanup();
+        musicdatabase.Close();
       }
+      else
+        CLog::Log(LOGERROR, "XBMC.CleanLibrary is not possible while scanning for media info");
     }
   }
   else if (execute.Equals("exportlibrary"))

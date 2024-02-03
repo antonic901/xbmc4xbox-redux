@@ -88,8 +88,7 @@ CGUIWindowMusicBase::~CGUIWindowMusicBase ()
 
 bool CGUIWindowMusicBase::OnBack(int actionID)
 {
-  CGUIDialogMusicScan *musicScan = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-  if (musicScan && !musicScan->IsDialogRunning())
+  if (!g_application.IsMusicScanning())
   {
     CUtil::ThumbCacheClear();
     CUtil::RemoveTempFiles();
@@ -253,16 +252,15 @@ bool CGUIWindowMusicBase::OnAction(const CAction &action)
 
 void CGUIWindowMusicBase::OnInfoAll(int iItem, bool bCurrent)
 {
-  CGUIDialogMusicScan* musicScan = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
   CMusicDatabaseDirectory dir;
   CStdString strPath = m_vecItems->GetPath();
   if (bCurrent)
     strPath = m_vecItems->Get(iItem)->GetPath();
 
   if (dir.HasAlbumInfo(m_vecItems->Get(iItem)->GetPath()))
-    musicScan->StartAlbumScan(strPath);
+    g_application.StartMusicAlbumScan(strPath);
   else
-    musicScan->StartArtistScan(strPath);
+    g_application.StartMusicArtistScan(strPath);
 }
 
 /// \brief Retrieves music info for albums from theaudiodb.com and displays them in CGUIDialogMusicInfo
@@ -440,8 +438,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
 
   // If we are scanning for music info in the background,
   // other writing access to the database is prohibited.
-  CGUIDialogMusicScan* dlgMusicScan = (CGUIDialogMusicScan*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-  if (dlgMusicScan->IsDialogRunning())
+  if (g_application.IsMusicScanning())
   {
     CGUIDialogOK::ShowAndGetInput(189, 14057, 0, 0);
     return;
@@ -533,8 +530,7 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
 
   // If we are scanning for music info in the background,
   // other writing access to the database is prohibited.
-  CGUIDialogMusicScan* dlgMusicScan = (CGUIDialogMusicScan*)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-  if (dlgMusicScan->IsDialogRunning())
+  if (g_application.IsMusicScanning())
   {
     CGUIDialogOK::ShowAndGetInput(189, 14057, 0, 0);
     return;
@@ -991,9 +987,7 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_STOP_SCANNING:
     {
-      CGUIDialogMusicScan *scanner = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
-      if (scanner)
-        scanner->StopScanning();
+      g_application.StopMusicScan();
       return true;
     }
 

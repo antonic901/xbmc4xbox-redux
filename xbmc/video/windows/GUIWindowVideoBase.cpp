@@ -510,8 +510,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
   if(!info)
     return false;
 
-  CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-  if (pDialog && pDialog->IsScanning())
+  if (g_application.IsVideoScanning())
   {
     CGUIDialogOK::ShowAndGetInput(13346,14057,-1,-1);
     return false;
@@ -1207,9 +1206,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     }
   case CONTEXT_BUTTON_STOP_SCANNING:
     {
-      CGUIDialogVideoScan *pScanDlg = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-      if (pScanDlg && pScanDlg->IsScanning())
-        pScanDlg->StopScanning();
+      g_application.StopVideoScan();
       return true;
     }
   case CONTEXT_BUTTON_SCAN:
@@ -1449,8 +1446,7 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
   if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
     return;
   // dont allow update while scanning
-  CGUIDialogVideoScan* pDialogScan = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-  if (pDialogScan && pDialogScan->IsScanning())
+  if (g_application.IsVideoScanning())
   {
     CGUIDialogOK::ShowAndGetInput(257, 0, 14057, 0);
     return;
@@ -1492,8 +1488,7 @@ void CGUIWindowVideoBase::MarkWatched(const CFileItemPtr &item, bool bMark)
 void CGUIWindowVideoBase::UpdateVideoTitle(const CFileItem* pItem)
 {
   // dont allow update while scanning
-  CGUIDialogVideoScan* pDialogScan = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-  if (pDialogScan && pDialogScan->IsScanning())
+  if (g_application.IsVideoScanning())
   {
     CGUIDialogOK::ShowAndGetInput(257, 0, 14057, 0);
     return;
@@ -1947,9 +1942,7 @@ int CGUIWindowVideoBase::GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &i
 
 void CGUIWindowVideoBase::OnScan(const CStdString& strPath, bool scanAll)
 {
-  CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-  if (pDialog)
-    pDialog->StartScanning(strPath, scanAll);
+  g_application.StartVideoScan(strPath, scanAll);
 }
 
 void CGUIWindowVideoBase::AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results)
@@ -2031,9 +2024,7 @@ void CGUIWindowVideoBase::OnAssignContent(const CStdString &path)
 
     if (bScan)
     {
-      CGUIDialogVideoScan* pDialog = (CGUIDialogVideoScan*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-      if (pDialog)
-        pDialog->StartScanning(path, true);
+      g_application.StartVideoScan(path, true);
     }
   }
 }
