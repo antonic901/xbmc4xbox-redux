@@ -27,6 +27,7 @@
 #include "FileItem.h"
 #include "utils/log.h"
 #include "Util.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"

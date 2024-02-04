@@ -182,6 +182,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogSeekBar.h"
 #include "dialogs/GUIDialogKaiToast.h"
@@ -1302,6 +1303,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowGameSaves);               // window id = 35
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
+  g_windowManager.Add(new CGUIDialogExtendedProgressBar);     // window id = 148
   g_windowManager.Add(new CGUIDialogKeyboard);           // window id = 103
   g_windowManager.Add(new CGUIDialogVolumeBar);          // window id = 104
   g_windowManager.Add(new CGUIDialogSeekBar);            // window id = 115
