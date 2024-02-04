@@ -21,7 +21,8 @@
  */
 
 #include "InfoLoader.h"
-#include "utils/StdString.h"
+#include "StdString.h"
+#include "utils/GlobalsHandling.h"
 
 #include <map>
 
@@ -148,4 +149,5 @@ private:
   CWeatherInfo m_info;
 };
 
-extern CWeather g_weatherManager;
+XBMC_GLOBAL_REF(CWeather, g_weatherManager);
+#define g_weatherManager XBMC_GLOBAL_USE(CWeather)
