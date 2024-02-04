@@ -36,6 +36,7 @@
 #include "settings/VideoSettings.h"
 #include "cores/paplayer/AudioDecoder.h"
 #include "LocalizeStrings.h"
+#include "filesystem/CurlFile.h"
 #include "guilib/GUIFont.h" // for FONT_STYLE_* definitions
 #include "utils/StringUtils.h"
 #include "utils/log.h"
@@ -679,6 +680,13 @@ void CGUISettings::Initialize()
 
   AddSeparator(net, "network.sep1");
   AddBool(net, "network.usehttpproxy", 708, false);
+  map<int,int> proxyTypes;
+  proxyTypes.insert(make_pair(1181, XFILE::CCurlFile::PROXY_HTTP));
+  proxyTypes.insert(make_pair(1182, XFILE::CCurlFile::PROXY_SOCKS4));
+  proxyTypes.insert(make_pair(1183, XFILE::CCurlFile::PROXY_SOCKS4A));
+  proxyTypes.insert(make_pair(1184, XFILE::CCurlFile::PROXY_SOCKS5));
+  proxyTypes.insert(make_pair(1185, XFILE::CCurlFile::PROXY_SOCKS5_REMOTE));
+  AddInt(net, "network.httpproxytype", 1180, XFILE::CCurlFile::PROXY_HTTP, proxyTypes, SPIN_CONTROL_TEXT);
   AddString(net, "network.httpproxyserver", 706, "", EDIT_CONTROL_INPUT);
   AddString(net, "network.httpproxyport", 730, "8080", EDIT_CONTROL_NUMBER_INPUT, false, 707);
   AddString(net, "network.httpproxyusername", 1048, "", EDIT_CONTROL_INPUT);
