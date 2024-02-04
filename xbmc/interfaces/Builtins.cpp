@@ -188,6 +188,10 @@ const BUILT_IN commands[] = {
   { "UpdateAddonRepos",           false,  "Check add-on repositories for updates" },
   { "InstallFromZip",             false,  "Open the install from zip dialog" },
   { "toggledebug",                false,  "Enables/disables debug mode" },
+  { "Weather.Refresh",            false,  "Force weather data refresh"},
+  { "Weather.LocationNext",       false,  "Switch to next weather location"},
+  { "Weather.LocationPrevious",   false,  "Switch to previous weather location"},
+  { "Weather.LocationSet",        true,   "Switch to given weather location (parameter can be 1-3)"},
 };
 
 bool CBuiltins::HasCommand(const CStdString& execString)
@@ -1481,6 +1485,27 @@ int CBuiltins::Execute(const CStdString& execString)
     bool debug = g_guiSettings.GetBool("debug.showloginfo");
     g_guiSettings.SetBool("debug.showloginfo", !debug);
     g_advancedSettings.SetDebugMode(!debug);
+  }
+  else if (execute.Equals("weather.locationset"))
+  {
+    int loc = atoi(params[0]);
+    CGUIMessage msg(GUI_MSG_ITEM_SELECT, 0, 0, loc);
+    g_windowManager.SendMessage(msg, WINDOW_WEATHER);
+  }
+  else if (execute.Equals("weather.locationnext"))
+  {
+    CGUIMessage msg(GUI_MSG_MOVE_OFFSET, 0, 0, 1);
+    g_windowManager.SendMessage(msg, WINDOW_WEATHER);
+  }
+  else if (execute.Equals("weather.locationprevious"))
+  {
+    CGUIMessage msg(GUI_MSG_MOVE_OFFSET, 0, 0, -1);
+    g_windowManager.SendMessage(msg, WINDOW_WEATHER);
+  }
+  else if (execute.Equals("weather.refresh"))
+  {
+    CGUIMessage msg(GUI_MSG_MOVE_OFFSET, 0, 0, 0);
+    g_windowManager.SendMessage(msg, WINDOW_WEATHER);
   }
   else
     return -1;

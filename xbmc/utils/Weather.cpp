@@ -29,6 +29,7 @@
 #include "Util.h"
 #include "Application.h"
 #include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -72,7 +73,6 @@ using namespace XFILE;
 #define CONTROL_LABELD0GEN  34
 #define CONTROL_IMAGED0IMG  35
 
-#define MAX_LOCATION   3
 #define LOCALIZED_TOKEN_FIRSTID   370
 #define LOCALIZED_TOKEN_LASTID   395
 #define LOCALIZED_TOKEN_FIRSTID2 1396
@@ -698,15 +698,20 @@ CStdString CWeather::GetAreaCode(const CStdString &codeAndCity)
   return areaCode;
 }
 
+/*!
+ \brief Retrieve the city name for the specified location from the settings
+ \param iLocation the location index (can be in the range [1..MAXLOCATION])
+ \return the city name (without the accompanying region area code)
+ */
 CStdString CWeather::GetLocation(int iLocation)
 {
-  if (m_location[iLocation].IsEmpty())
+  if (m_location[iLocation - 1].IsEmpty())
   {
     CStdString setting;
-    setting.Format("weather.areacode%i", iLocation + 1);
-    m_location[iLocation] = GetAreaCity(g_guiSettings.GetString(setting));
+    setting.Format("weather.areacode%i", iLocation);
+    m_location[iLocation - 1] = GetAreaCity(g_guiSettings.GetString(setting));
   }
-  return m_location[iLocation];
+  return m_location[iLocation - 1];
 }
 
 void CWeather::Reset()
@@ -728,10 +733,30 @@ const day_forecast &CWeather::GetForecast(int day) const
   return m_info.forecast[day];
 }
 
+/*!
+ \brief Saves the specified location index to the settings. Call Refresh()
+        afterwards to update weather info for the new location.
+ \param iLocation the new location index (can be in the range [1..MAXLOCATION])
+ */
+void CWeather::SetArea(int iLocation)
+{
+  g_guiSettings.SetInt("weather.currentlocation", iLocation);
+  g_settings.Save();
+}
+
+/*!
+ \brief Retrieves the current location index from the settings
+ \return the active location index (will be in the range [1..MAXLOCATION])
+ */
+int CWeather::GetArea() const
+{
+  return g_guiSettings.GetInt("weather.currentlocation");
+}
+
 CJob *CWeather::GetJob() const
 {
   CStdString strSetting;
-  strSetting.Format("weather.areacode%i", m_iCurWeather + 1);
+  strSetting.Format("weather.areacode%i", GetArea());
   return new CWeatherJob(GetAreaCode(g_guiSettings.GetString(strSetting)));
 }
 

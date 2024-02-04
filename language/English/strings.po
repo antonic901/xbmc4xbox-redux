@@ -7952,7 +7952,9 @@ msgctxt "#21450"
 msgid "- Edit"
 msgstr ""
 
-#empty string id 21451
+msgctxt "#21451"
+msgid "Internet connection required."
+msgstr ""
 
 msgctxt "#21452"
 msgid "Get More..."
