@@ -30,6 +30,8 @@
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "xbox/IoSupport.h"
@@ -80,12 +82,32 @@ bool CCDDARipJob::DoWork()
     return false;
   }
 
+  // setup the progress dialog
+  CGUIDialogExtendedProgressBar* pDlgProgress = 
+      (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
+  CGUIDialogProgressBarHandle* handle = pDlgProgress->GetHandle(g_localizeStrings.Get(605));
+  CStdString strLine0;
+  int iTrack = atoi(m_input.substr(13, m_input.size() - 13 - 5).c_str());
+  strLine0.Format("%02i. %s - %s", iTrack,
+                  StringUtils::Join(m_tag.GetArtist(),
+                              g_advancedSettings.m_musicItemSeparator).c_str(),
+                  m_tag.GetTitle().c_str());
+  handle->SetText(strLine0);
+
   // start ripping
   int percent=0;
+  int oldpercent=0;
   bool cancelled(false);
   int result;
   while (!cancelled && (result=RipChunk(reader, encoder, percent)) == 0)
+  {
     cancelled = ShouldCancel(percent,100);
+    if (percent > oldpercent)
+    {
+      oldpercent = percent;
+      handle->SetPercentage(percent);
+    }
+  }
 
   // close encoder ripper
   encoder->Close();
@@ -124,6 +146,8 @@ bool CCDDARipJob::DoWork()
       CIoSupport::EjectTray();
     }
   }
+
+  handle->MarkFinished();
 
   return !cancelled && result == 2;
 }
