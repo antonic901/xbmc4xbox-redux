@@ -203,46 +203,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         }
         else if (iAction == ACTION_SHOW_INFO)
         {
-          if (iItem < 0 || iItem >= m_vecItems->Size())
-            return false;
-
-          CFileItemPtr item = m_vecItems->Get(iItem);
-
-          if (item->GetPath().Equals("add") || item->IsParentFolder() ||
-             (item->IsPlayList() && !URIUtils::GetExtension(item->GetPath()).Equals(".strm")))
-            return false;
-
-          ADDON::ScraperPtr scraper;
-          if (!m_vecItems->IsPlugin() && !m_vecItems->IsRSS() && !m_vecItems->IsLiveTV())
-          {
-            CStdString strDir;
-            if (item->IsVideoDb()       &&
-                item->HasVideoInfoTag() &&
-              !item->GetVideoInfoTag()->m_strPath.IsEmpty())
-            {
-              strDir = item->GetVideoInfoTag()->m_strPath;
-            }
-            else
-              URIUtils::GetDirectory(item->GetPath(),strDir);
-
-            SScanSettings settings;
-            bool foundDirectly = false;
-            scraper = m_database.GetScraperForPath(strDir, settings, foundDirectly);
-
-            if (!scraper &&
-              !(m_database.HasMovieInfo(item->GetPath()) ||
-                m_database.HasTvShowInfo(strDir)                           ||
-                m_database.HasEpisodeInfo(item->GetPath())))
-            {
-              return false;
-            }
-            if (scraper && scraper->Content() == CONTENT_TVSHOWS && foundDirectly && !settings.parent_name_root) // dont lookup on root tvshow folder
-              return true;
-          }
-
-          OnInfo(item.get(),scraper);
-
-          return true;
+          return OnInfo(iItem);
         }
         else if (iAction == ACTION_PLAYER_PLAY && !g_application.IsPlayingVideo())
         {
@@ -970,6 +931,50 @@ bool CGUIWindowVideoBase::OnClick(int iItem)
     OnResumeItem(iItem);
   else
     return CGUIMediaWindow::OnClick(iItem);
+
+  return true;
+}
+
+bool CGUIWindowVideoBase::OnInfo(int iItem)
+{
+  if (iItem < 0 || iItem >= m_vecItems->Size())
+    return false;
+
+  CFileItemPtr item = m_vecItems->Get(iItem);
+
+  if (item->GetPath().Equals("add") || item->IsParentFolder() ||
+      (item->IsPlayList() && !URIUtils::GetExtension(item->GetPath()).Equals(".strm")))
+    return false;
+
+  ADDON::ScraperPtr scraper;
+  if (!m_vecItems->IsPlugin() && !m_vecItems->IsRSS() && !m_vecItems->IsLiveTV())
+  {
+    CStdString strDir;
+    if (item->IsVideoDb()       &&
+        item->HasVideoInfoTag() &&
+      !item->GetVideoInfoTag()->m_strPath.IsEmpty())
+    {
+      strDir = item->GetVideoInfoTag()->m_strPath;
+    }
+    else
+      URIUtils::GetDirectory(item->GetPath(),strDir);
+
+    SScanSettings settings;
+    bool foundDirectly = false;
+    scraper = m_database.GetScraperForPath(strDir, settings, foundDirectly);
+
+    if (!scraper &&
+      !(m_database.HasMovieInfo(item->GetPath()) ||
+        m_database.HasTvShowInfo(strDir)                           ||
+        m_database.HasEpisodeInfo(item->GetPath())))
+    {
+      return false;
+    }
+    if (scraper && scraper->Content() == CONTENT_TVSHOWS && foundDirectly && !settings.parent_name_root) // dont lookup on root tvshow folder
+      return true;
+  }
+
+  OnInfo(item.get(),scraper);
 
   return true;
 }

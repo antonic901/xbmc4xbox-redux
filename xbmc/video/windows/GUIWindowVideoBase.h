@@ -89,6 +89,11 @@ protected:
   virtual CStdString GetQuickpathName(const CStdString& strPath) const {return strPath;};
 
   bool OnClick(int iItem);
+  /*! \brief react to an Info action on a view item
+   \param item the selected item
+   \return true if the action is performed, false otherwise
+   */
+  bool OnInfo(int item);
   void OnRestartItem(int iItem);
   void OnResumeItem(int iItem);
   void PlayItem(int iItem);

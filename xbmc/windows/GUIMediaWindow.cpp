@@ -1110,6 +1110,11 @@ bool CGUIMediaWindow::OnClick(int iItem)
   return false;
 }
 
+bool CGUIMediaWindow::OnSelect(int item)
+{
+  return OnClick(item);
+}
+
 // \brief Checks if there is a disc in the dvd drive and whether the
 // network is connected or not.
 bool CGUIMediaWindow::HaveDiscOrConnection(const CStdString& strPath, int iDriveType)
