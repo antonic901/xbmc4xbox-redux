@@ -140,7 +140,8 @@ enum VideoSelectAction
   SELECT_ACTION_RESUME,
   SELECT_ACTION_INFO,
   SELECT_ACTION_MORE,
-  SELECT_ACTION_PLAY
+  SELECT_ACTION_PLAY,
+  SELECT_ACTION_PLAYPART
 };
 
 // base class for all settings types

@@ -562,7 +562,6 @@ void CGUISettings::Initialize()
   myVideosSelectActions.insert(make_pair(22081, SELECT_ACTION_INFO));
 
   AddInt(vid, "myvideos.selectaction", 22079, SELECT_ACTION_PLAY_OR_RESUME, myVideosSelectActions, SPIN_CONTROL_TEXT);
-  AddBool(NULL, "myvideos.treatstackasfile", 20051, true);
   AddBool(NULL, "myvideos.extractflags",20433, false);
   AddBool(NULL, "myvideos.replacelabels", 20419, true);
   AddBool(NULL, "myvideos.extractthumb",20433, false);
