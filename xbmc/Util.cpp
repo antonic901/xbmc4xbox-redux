@@ -62,7 +62,6 @@
 #include "pictures/Picture.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "video/dialogs/GUIDialogVideoScan.h"
 #include "guilib/TextureManager.h"
 #include "guilib/IGUIContainer.h"
 #include "utils/fstrcmp.h"

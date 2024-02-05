@@ -87,8 +87,11 @@ namespace VIDEO
      */
     void Start(const CStdString& strDirectory, bool scanAll = false);
     bool IsScanning();
+    void CleanDatabase(CGUIDialogProgressBarHandle* handle=NULL, const std::set<int>* paths=NULL);
     void Stop();
-    void SetObserver(IVideoInfoScannerObserver* pObserver);
+
+    //! \brief Set whether or not to show a progress dialog
+    void ShowDialog(bool show) { m_showDialog = show; }
 
     /*! \brief Add an item to the database.
      \param pItem item to add to the database.
@@ -241,7 +244,8 @@ namespace VIDEO
      */
     CStdString GetParentDir(const CFileItem &item) const;
 
-    IVideoInfoScannerObserver* m_pObserver;
+    bool m_showDialog;
+    CGUIDialogProgressBarHandle* m_handle;
     int m_currentItem;
     int m_itemCount;
     bool m_bRunning;
@@ -252,7 +256,7 @@ namespace VIDEO
     CVideoDatabase m_database;
     std::set<CStdString> m_pathsToScan;
     std::set<CStdString> m_pathsToCount;
-    std::vector<int> m_pathsToClean;
+    std::set<int> m_pathsToClean;
     CNfoFile m_nfoReader;
   };
 }

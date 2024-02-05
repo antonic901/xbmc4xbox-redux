@@ -175,7 +175,6 @@
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
-#include "video/dialogs/GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogTextViewer.h"
 
@@ -1326,7 +1325,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogNetworkSetup);  // window id = 128
   g_windowManager.Add(new CGUIDialogMediaSource);   // window id = 129
   g_windowManager.Add(new CGUIDialogProfileSettings); // window id = 130
-  g_windowManager.Add(new CGUIDialogVideoScan);      // window id = 133
   g_windowManager.Add(new CGUIDialogFavourites);     // window id = 134
   g_windowManager.Add(new CGUIDialogSongInfo);       // window id = 135
   g_windowManager.Add(new CGUIDialogSmartPlaylistEditor);       // window id = 136
@@ -3530,7 +3528,6 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_SCAN);
     g_windowManager.Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_FAVOURITES);
     g_windowManager.Delete(WINDOW_DIALOG_SONG_INFO);
@@ -5728,20 +5725,21 @@ void CApplication::StopMusicScan()
     m_musicInfoScanner->Stop();
 }
 
+void CApplication::StartVideoCleanup()
+{
+  if (m_videoInfoScanner->IsScanning())
+    return;
+
+  m_videoInfoScanner->CleanDatabase();
+}
+
 void CApplication::StartVideoScan(const CStdString &strDirectory, bool scanAll)
 {
   if (m_videoInfoScanner->IsScanning())
     return;
 
-  if (!g_guiSettings.GetBool("videolibrary.backgroundupdate"))
-  {
-    CGUIDialogVideoScan *videoScan = (CGUIDialogVideoScan *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_SCAN);
-    if (videoScan)
-    {
-      m_videoInfoScanner->SetObserver(videoScan);
-      videoScan->ShowScan();
-    }
-  }
+  m_videoInfoScanner->ShowDialog(true);
+
   m_videoInfoScanner->Start(strDirectory,scanAll);
 }
 

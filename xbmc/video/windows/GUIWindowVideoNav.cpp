@@ -30,7 +30,6 @@
 #include "pictures/Picture.h"
 #include "filesystem/VideoDatabaseDirectory.h"
 #include "playlists/PlayListFactory.h"
-#include "video/dialogs/GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogOK.h"
 #include "addons/AddonManager.h"
 #include "PartyModeManager.h"
@@ -59,6 +58,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "dialogs/GUIDialogKeyboard.h"
+#include "video/VideoInfoScanner.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;

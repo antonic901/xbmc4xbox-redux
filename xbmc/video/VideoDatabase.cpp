@@ -34,6 +34,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "FileItem.h"
@@ -540,7 +541,7 @@ bool CVideoDatabase::GetPaths(set<CStdString> &paths)
   return false;
 }
 
-bool CVideoDatabase::GetPathsForTvShow(int idShow, vector<int>& paths)
+bool CVideoDatabase::GetPathsForTvShow(int idShow, set<int>& paths)
 {
   CStdString strSQL;
   try
@@ -551,7 +552,7 @@ bool CVideoDatabase::GetPathsForTvShow(int idShow, vector<int>& paths)
     m_pDS->query(strSQL.c_str());
     while (!m_pDS->eof())
     {
-      paths.push_back(m_pDS->fv(0).get_asInt());
+      paths.insert(m_pDS->fv(0).get_asInt());
       m_pDS->next();
     }
     m_pDS->close();
@@ -7604,7 +7605,7 @@ void CVideoDatabase::GetMusicVideoDirectorsByName(const CStdString& strSearch, C
   }
 }
 
-void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const vector<int>* paths)
+void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle, const set<int>* paths)
 {
   CGUIDialogProgress *progress=NULL;
   try
@@ -7625,8 +7626,8 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
       }
 
       CStdString strPaths;
-      for (unsigned int i=0;i<paths->size();++i )
-        strPaths.Format("%s,%i",strPaths.Mid(0).c_str(),paths->at(i));
+      for (std::set<int>::const_iterator i = paths->begin(); i != paths->end(); ++i)
+        strPaths.AppendFormat(",%i",*i);
       sql = PrepareSQL("select * from files,path where files.idpath=path.idPath and path.idPath in (%s)",strPaths.Mid(1).c_str());
     }
     else
@@ -7635,7 +7636,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     m_pDS->query(sql.c_str());
     if (m_pDS->num_rows() == 0) return;
 
-    if (!pObserver)
+    if (!handle)
     {
       progress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
       if (progress)
@@ -7651,10 +7652,8 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     }
     else
     {
-      pObserver->OnDirectoryChanged("");
-      pObserver->OnSetTitle("");
-      pObserver->OnSetCurrentProgress(0,1);
-      pObserver->OnStateChanged(CLEANING_UP_DATABASE);
+      handle->SetTitle(g_localizeStrings.Get(700));
+      handle->SetText("");
     }
 
     CStdString filesToDelete = "";
@@ -7697,7 +7696,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
           filesToDelete += m_pDS->fv("files.idFile").get_asString() + ",";
       }
 
-      if (!pObserver)
+      if (!handle)
       {
         if (progress)
         {
@@ -7712,7 +7711,7 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
         }
       }
       else
-        pObserver->OnSetProgress(current,total);
+        handle->SetPercentage(current/(float)total*100);
 
       m_pDS->next();
       current++;
@@ -7855,13 +7854,12 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
     while (!m_pDS->eof())
     {
       if (!CDirectory::Exists(m_pDS->fv("path.strPath").get_asString()))
-        strIds.Format("%s %i,",strIds.Mid(0),m_pDS->fv("path.idPath").get_asInt()); // mid since we cannot format the same string
+        strIds.AppendFormat("%i,", m_pDS->fv("path.idPath").get_asInt());
       m_pDS->next();
     }
     m_pDS->close();
     if (!strIds.IsEmpty())
     {
-      strIds.TrimLeft(" ");
       strIds.TrimRight(",");
       sql = PrepareSQL("delete from path where idpath in (%s)",strIds.c_str());
       m_pDS->exec(sql.c_str());
@@ -7973,8 +7971,8 @@ void CVideoDatabase::CleanDatabase(IVideoInfoScannerObserver* pObserver, const v
 
     CommitTransaction();
 
-    if (pObserver)
-      pObserver->OnStateChanged(COMPRESSING_DATABASE);
+    if (handle)
+      handle->SetTitle(g_localizeStrings.Get(331));
 
     Compress(false);
 

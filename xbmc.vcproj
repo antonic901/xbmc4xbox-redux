@@ -666,9 +666,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoInfo.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\video\dialogs\GUIDialogVideoScan.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\video\GUIViewStateVideo.cpp">
 				</File>
 				<File

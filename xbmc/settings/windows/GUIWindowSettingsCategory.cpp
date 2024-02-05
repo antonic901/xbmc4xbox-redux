@@ -1055,12 +1055,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
   else if (strSetting.Equals("videolibrary.cleanup"))
   {
     if (CGUIDialogYesNo::ShowAndGetInput(313, 333, 0, 0))
-    {
-      CVideoDatabase videodatabase;
-      videodatabase.Open();
-      videodatabase.CleanDatabase();
-      videodatabase.Close();
-    }
+      g_application.StartVideoCleanup();
   }
   else if (strSetting.Equals("videolibrary.export"))
     CBuiltins::Execute("exportlibrary(video)");
