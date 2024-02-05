@@ -513,11 +513,6 @@ void CGUISettings::Initialize()
 
   CSettingsCategory* vp = AddCategory(5, "videoplayer", 14086);
 
-  map<int,int> resume;
-  resume.insert(make_pair(106,RESUME_NO));
-  resume.insert(make_pair(107,RESUME_YES));
-  resume.insert(make_pair(12020,RESUME_ASK));
-  AddInt(vp, "videoplayer.resumeautomatically", 12017, RESUME_ASK, resume, SPIN_CONTROL_TEXT);
   AddString(vp, "videoplayer.calibrate", 214, "", BUTTON_CONTROL_STANDARD);
   AddSeparator(vp, "videoplayer.sep1");
 
@@ -562,10 +557,11 @@ void CGUISettings::Initialize()
 
   map<int, int> myVideosSelectActions;
   myVideosSelectActions.insert(make_pair(22080, SELECT_ACTION_CHOOSE));
-  myVideosSelectActions.insert(make_pair(22081, SELECT_ACTION_PLAY));
-  myVideosSelectActions.insert(make_pair(22082, SELECT_ACTION_INFO));
+  myVideosSelectActions.insert(make_pair(208,   SELECT_ACTION_PLAY_OR_RESUME));
+  myVideosSelectActions.insert(make_pair(13404, SELECT_ACTION_RESUME));
+  myVideosSelectActions.insert(make_pair(22081, SELECT_ACTION_INFO));
 
-  AddInt(vid, "myvideos.selectaction", 22079, SELECT_ACTION_PLAY, myVideosSelectActions, SPIN_CONTROL_TEXT);
+  AddInt(vid, "myvideos.selectaction", 22079, SELECT_ACTION_PLAY_OR_RESUME, myVideosSelectActions, SPIN_CONTROL_TEXT);
   AddBool(NULL, "myvideos.treatstackasfile", 20051, true);
   AddBool(NULL, "myvideos.extractflags",20433, false);
   AddBool(NULL, "myvideos.replacelabels", 20419, true);

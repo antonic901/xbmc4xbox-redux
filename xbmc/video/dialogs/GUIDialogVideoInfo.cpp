@@ -589,7 +589,7 @@ void CGUIDialogVideoInfo::Play(bool resume)
     if (resume)
       movie.m_lStartOffset = STARTOFFSET_RESUME;
     else
-      CGUIWindowVideoBase::OnResumeShowMenu(movie);
+      CGUIWindowVideoBase::ShowResumeMenu(movie);
     pWindow->PlayMovie(&movie);
   }
 }

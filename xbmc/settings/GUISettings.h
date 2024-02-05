@@ -124,10 +124,6 @@ class TiXmlElement;
 #define BUTTON_CONTROL_PATH_INPUT  13
 #define SEPARATOR_CONTROL          14
 
-#define RESUME_NO  0
-#define RESUME_YES 1
-#define RESUME_ASK 2
-
 #define REPLAY_GAIN_NONE 0
 #define REPLAY_GAIN_ALBUM 1
 #define REPLAY_GAIN_TRACK 2
@@ -140,8 +136,11 @@ class TiXmlElement;
 enum VideoSelectAction
 {
   SELECT_ACTION_CHOOSE = 0,
+  SELECT_ACTION_PLAY_OR_RESUME,
+  SELECT_ACTION_INFO,
+  SELECT_ACTION_MORE,
   SELECT_ACTION_PLAY,
-  SELECT_ACTION_INFO
+  SELECT_ACTION_RESUME
 };
 
 // base class for all settings types

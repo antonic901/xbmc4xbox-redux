@@ -8200,7 +8200,7 @@ msgid "Choose"
 msgstr ""
 
 msgctxt "#22081"
-msgid "Play"
+msgid "Show Information"
 msgstr ""
 
 msgctxt "#22082"
