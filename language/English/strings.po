@@ -8189,7 +8189,25 @@ msgctxt "#22043"
 msgid "black/white"
 msgstr ""
 
-#empty strings from id 22044 to 23049
+#empty strings from id 22044 to 22078
+
+msgctxt "#22079"
+msgid "Default select action"
+msgstr ""
+
+msgctxt "#22080"
+msgid "Choose"
+msgstr ""
+
+msgctxt "#22081"
+msgid "Play"
+msgstr ""
+
+msgctxt "#22082"
+msgid "Show Info"
+msgstr ""
+
+#empty strings from id 22083 to 23049
 
 msgctxt "#23050"
 msgid "Activate Teletext"

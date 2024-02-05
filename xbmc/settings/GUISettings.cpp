@@ -559,6 +559,13 @@ void CGUISettings::Initialize()
   AddInt(vp, "videoplayer.skiploopfilter", 14100, VS_SKIPLOOP_NONREF, skipLoopFilters, SPIN_CONTROL_TEXT);
 
   CSettingsCategory* vid = AddCategory(5, "myvideos", 14081);
+
+  map<int, int> myVideosSelectActions;
+  myVideosSelectActions.insert(make_pair(22080, SELECT_ACTION_CHOOSE));
+  myVideosSelectActions.insert(make_pair(22081, SELECT_ACTION_PLAY));
+  myVideosSelectActions.insert(make_pair(22082, SELECT_ACTION_INFO));
+
+  AddInt(vid, "myvideos.selectaction", 22079, SELECT_ACTION_PLAY, myVideosSelectActions, SPIN_CONTROL_TEXT);
   AddBool(NULL, "myvideos.treatstackasfile", 20051, true);
   AddBool(NULL, "myvideos.extractflags",20433, false);
   AddBool(NULL, "myvideos.replacelabels", 20419, true);

@@ -137,6 +137,13 @@ class TiXmlElement;
 #define PLAYER_DVDPLAYER  1
 #define PLAYER_PAPLAYER   2
 
+enum VideoSelectAction
+{
+  SELECT_ACTION_CHOOSE = 0,
+  SELECT_ACTION_PLAY,
+  SELECT_ACTION_INFO
+};
+
 // base class for all settings types
 class CSetting
 {
