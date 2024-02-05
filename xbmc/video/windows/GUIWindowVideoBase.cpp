@@ -1661,7 +1661,7 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
 bool CGUIWindowVideoBase::StackingAvailable(const CFileItemList &items) const
 {
   return !(items.IsTuxBox()         || items.IsPlugin()  ||
-           /*items.IsAddonsPath()     || */items.IsRSS()     ||
+           items.IsAddonsPath()     || items.IsRSS()     ||
            items.IsInternetStream() || items.IsVideoDb());
 }
 
