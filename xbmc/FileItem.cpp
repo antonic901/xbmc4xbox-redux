@@ -2009,7 +2009,7 @@ void CFileItemList::Stack(bool stackFiles /* = true */)
       IsLibraryFolder())
     return;
 
-  SetProperty("isstacked", "1");
+  SetProperty("isstacked", true);
 
   // items needs to be sorted for stuff below to work properly
   Sort(SortByLabel, SortOrderAscending);
@@ -2150,7 +2150,7 @@ void CFileItemList::StackFiles()
     CFileItemPtr item1 = Get(i);
 
     // set property
-    item1->SetProperty("isstacked", "1");
+    item1->SetProperty("isstacked", true);
 
     // skip folders, nfo files, playlists
     if (item1->m_bIsFolder
