@@ -296,7 +296,7 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
         if (iItem < 0) break;
         if (iAction == ACTION_SELECT_ITEM || iAction == ACTION_MOUSE_LEFT_CLICK)
         {
-          OnClick(iItem);
+          OnSelect(iItem);
         }
         else if (iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_RIGHT_CLICK)
         {
