@@ -795,8 +795,9 @@ private:
    \param id the primary id in the given table
    \param column the basepath column to update
    \param shows whether we're fetching shows (defaults to false)
+   \param where restrict updating of items that match the where clause
    */
-  void UpdateBasePath(const char *table, const char *id, int column, bool shows = false);
+  void UpdateBasePath(const char *table, const char *id, int column, bool shows = false, const CStdString &where = "");
 
   /*! \brief Update routine for base path id of videos
    Only required for videodb version < 52

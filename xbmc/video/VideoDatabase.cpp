@@ -4228,13 +4228,14 @@ bool CVideoDatabase::LookupByFolders(const CStdString &path, bool shows)
   return settings.parent_name_root; // shows, movies, musicvids
 }
 
-void CVideoDatabase::UpdateBasePath(const char *table, const char *id, int column, bool shows)
+void CVideoDatabase::UpdateBasePath(const char *table, const char *id, int column, bool shows, const CStdString &where)
 {
   CStdString query;
   if (shows)
     query = PrepareSQL("SELECT idShow,path.strPath from tvshowlinkpath join path on tvshowlinkpath.idPath=path.idPath");
   else
     query = PrepareSQL("SELECT %s.%s,path.strPath,files.strFileName from %s join files on %s.idFile=files.idFile join path on files.idPath=path.idPath", table, id, table, table);
+  query += where;
 
   map<CStdString, bool> paths;
   m_pDS2->query(query.c_str());
