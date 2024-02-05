@@ -2893,7 +2893,7 @@ CStdString CFileItem::GetLocalMetadataPath() const
   CStdString parentFolder(parent);
   URIUtils::RemoveSlashAtEnd(parentFolder);
   parentFolder = URIUtils::GetFileName(parentFolder);
-  if (parentFolder == "VIDEO_TS" || parentFolder == "BDMV")
+  if (parentFolder.CompareNoCase("VIDEO_TS") == 0 || parentFolder.CompareNoCase("BDMV") == 0)
   { // go back up another one
     parent = URIUtils::GetParentPath(parent);
   }
