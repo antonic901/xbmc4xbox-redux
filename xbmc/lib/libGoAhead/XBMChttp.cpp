@@ -51,8 +51,9 @@
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
+#include "filesystem/File.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/SystemInfo.h"
 

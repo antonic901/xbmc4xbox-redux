@@ -21,6 +21,7 @@
 #include "utils/log.h"
 #include "windows/GUIWindowFileManager.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "xbox/xbeheader.h"
@@ -43,6 +44,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "GUIUserMessages.h"
 #include "filesystem/RarManager.h"
 #include "filesystem/FavouritesDirectory.h"
@@ -89,9 +91,9 @@ using namespace PLAYLIST;
 #define CONTROL_CURRENTDIRLABEL_RIGHT 102
 
 CGUIWindowFileManager::CGUIWindowFileManager(void)
-    : CGUIWindow(WINDOW_FILES, "FileManager.xml")
+    : CGUIWindow(WINDOW_FILES, "FileManager.xml"),
+      CJobQueue(false,2)
 {
-  m_dlgProgress = NULL;
   m_Directory[0] = new CFileItem;
   m_Directory[1] = new CFileItem;
   m_vecItems[0] = new CFileItemList;
@@ -718,12 +720,10 @@ void CGUIWindowFileManager::OnCopy(int iList)
   if (!CGUIDialogYesNo::ShowAndGetInput(120, 123, 0, 0))
     return;
 
-  ResetProgressBar();
-
-  m_errorHeading = 16201;
-  m_errorLine    = 16202;
-
-  CJobManager::GetInstance().AddJob(new CFileOperationJob(CFileOperationJob::ActionCopy, *m_vecItems[iList], m_Directory[1 - iList]->GetPath()), this);
+  AddJob(new CFileOperationJob(CFileOperationJob::ActionCopy, 
+                                *m_vecItems[iList],
+                                m_Directory[1 - iList]->GetPath(),
+                                true, 16201, 16202));
 }
 
 void CGUIWindowFileManager::OnMove(int iList)
@@ -731,12 +731,10 @@ void CGUIWindowFileManager::OnMove(int iList)
   if (!CGUIDialogYesNo::ShowAndGetInput(121, 124, 0, 0))
     return;
 
-  ResetProgressBar();
-
-  m_errorHeading = 16203;
-  m_errorLine    = 16204;
-
-  CJobManager::GetInstance().AddJob(new CFileOperationJob(CFileOperationJob::ActionMove, *m_vecItems[iList], m_Directory[1 - iList]->GetPath()), this);
+  AddJob(new CFileOperationJob(CFileOperationJob::ActionMove,
+                               *m_vecItems[iList],
+                               m_Directory[1 - iList]->GetPath(),
+                               true, 16203, 16204));
 }
 
 void CGUIWindowFileManager::OnDelete(int iList)
@@ -744,12 +742,10 @@ void CGUIWindowFileManager::OnDelete(int iList)
   if (!CGUIDialogYesNo::ShowAndGetInput(122, 125, 0, 0))
     return;
 
-  ResetProgressBar(false);
-
-  m_errorHeading = 16205;
-  m_errorLine    = 16206;
-
-  CJobManager::GetInstance().AddJob(new CFileOperationJob(CFileOperationJob::ActionDelete, *m_vecItems[iList], m_Directory[iList]->GetPath()), this);
+  AddJob(new CFileOperationJob(CFileOperationJob::ActionDelete,
+                               *m_vecItems[iList],
+                               m_Directory[iList]->GetPath(),
+                               true, 16205, 16206));
 }
 
 void CGUIWindowFileManager::OnRename(int iList)
@@ -856,20 +852,6 @@ void CGUIWindowFileManager::GoParentFolder(int iList)
 
   CStdString strPath(m_strParentPath[iList]), strOldPath(m_Directory[iList]->GetPath());
   Update(iList, strPath);
-}
-
-bool CGUIWindowFileManager::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
-{
-  if (m_dlgProgress)
-  {
-    m_dlgProgress->SetPercentage(ipercent);
-    CStdString speedString;
-    speedString.Format("%2.2f KB/s", avgSpeed / 1024);
-    m_dlgProgress->SetLine(0, speedString);
-    m_dlgProgress->Progress();
-    if (m_dlgProgress->IsCanceled()) return false;
-  }
-  return true;
 }
 
 /// \brief Build a directory history string
@@ -1183,42 +1165,22 @@ __int64 CGUIWindowFileManager::CalculateFolderSize(const CStdString &strDirector
 
 void CGUIWindowFileManager::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
-  m_dlgProgress->SetLine(0, 1040);
-  m_dlgProgress->SetLine(1, "");
-  m_dlgProgress->SetLine(2, "");
-  m_dlgProgress->SetPercentage(100);
-  Refresh();
-  m_dlgProgress->Close();
-
   if(!success)
-    CGUIDialogOK::ShowAndGetInput(m_errorHeading, m_errorLine, 16200, 0);
-}
-
-void CGUIWindowFileManager::OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job)
-{
-  if (m_dlgProgress->IsCanceled())
   {
-    CJobManager::GetInstance().CancelJob(jobID);
-    m_dlgProgress->SetLine(0, 1040);
-    m_dlgProgress->SetLine(1, "");
-    m_dlgProgress->SetLine(2, "");
-    Refresh();
-    m_dlgProgress->Close();
+    CFileOperationJob* fileJob = (CFileOperationJob*)job;
+    CGUIDialogOK::ShowAndGetInput(fileJob->GetHeading(),
+                                  fileJob->GetLine(), 16200, 0);
   }
-  else
+
+  if (IsActive())
   {
-    CFileOperationJob *fileJob = (CFileOperationJob *)job;
-
-    m_dlgProgress->SetLine(0, fileJob->GetCurrentOperation());
-    m_dlgProgress->SetLine(1, fileJob->GetCurrentFile());
-    m_dlgProgress->SetLine(2, fileJob->GetAverageSpeed());
-
-    if (total > 0)
-      m_dlgProgress->SetPercentage((int)((float)progress * 100.0f / (float)total));
+    CGUIMessage msg(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_UPDATE);
+    g_application.getApplicationMessenger().SendGUIMessage(msg, GetID(), false);
   }
+
+  if (success)
+    CJobQueue::OnJobComplete(jobID, success, job);
 }
-
-
 
 void CGUIWindowFileManager::ShowShareErrorMessage(CFileItem* pItem)
 {
@@ -1243,9 +1205,6 @@ void CGUIWindowFileManager::ShowShareErrorMessage(CFileItem* pItem)
 
 void CGUIWindowFileManager::OnInitWindow()
 {
-  m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-  if (m_dlgProgress) m_dlgProgress->SetHeading(126);
-
   for (int i = 0; i < 2; i++)
   {
     Update(i, m_Directory[i]->GetPath());
@@ -1325,20 +1284,6 @@ void CGUIWindowFileManager::SetInitialPath(const CStdString &path)
   }
 
   if (m_Directory[1]->GetPath() == "?") m_Directory[1]->SetPath("");
-}
-
-void CGUIWindowFileManager::ResetProgressBar(bool showProgress /*= true */)
-{
-  if (m_dlgProgress)
-  {
-    m_dlgProgress->SetHeading(126);
-    m_dlgProgress->SetLine(0, 0);
-    m_dlgProgress->SetLine(1, 0);
-    m_dlgProgress->SetLine(2, 0);
-    m_dlgProgress->SetPercentage(0);
-    m_dlgProgress->StartModal();
-    m_dlgProgress->ShowProgressBar(showProgress);
-  }
 }
 
 const CFileItem& CGUIWindowFileManager::CurrentDirectory(int indx) const

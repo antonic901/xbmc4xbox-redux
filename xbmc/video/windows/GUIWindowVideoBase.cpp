@@ -64,6 +64,7 @@
 #include "utils/StringUtils2.h"
 #include "utils/FileUtils.h"
 #include "addons/Skin.h"
+#include "filesystem/File.h"
 
 using namespace std;
 using namespace XFILE;

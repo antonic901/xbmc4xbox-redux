@@ -28,6 +28,7 @@
 class CFileItem;
 class CFileItemList;
 class CGUIDialog;
+class CGUIMessage;
 
 // defines here
 #define TMSG_DIALOG_DOMODAL       100
@@ -76,6 +77,7 @@ class CGUIDialog;
 #define TMSG_GUI_PYTHON_DIALOG        605
 #define TMSG_GUI_DIALOG_CLOSE         606
 #define TMSG_GUI_ACTION               607
+#define TMSG_GUI_MESSAGE              610
 
 #define TMSG_VOLUME_SHOW          900
 
@@ -151,6 +153,14 @@ public:
   void Close(CGUIDialog *pDialog, bool forceClose, bool waitResult=true);
   void ActivateWindow(int windowID, const std::vector<CStdString> &params, bool swappingWindows);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);
+
+  /*! \brief Send a GUIMessage, optionally waiting before it's processed to return.
+   Should be used to send messages to the GUI from other threads.
+   \param msg the GUIMessage to send.
+   \param windowID optional window to send the message to (defaults to no specified window).
+   \param waitResult whether to wait for the result (defaults to false).
+   */
+  void SendGUIMessage(const CGUIMessage &msg, int windowID = WINDOW_INVALID, bool waitResult=false);
 
   void ShowVolumeBar(bool up);
 

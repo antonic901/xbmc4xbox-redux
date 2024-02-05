@@ -23,6 +23,7 @@
 #include "xbox/xbeheader.h"
 #include "windows/GUIWindowFileManager.h"
 #include "FileItem.h"
+#include "filesystem/File.h"
 #include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/Crc32.h"

@@ -31,6 +31,8 @@
 #include "URIUtils.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
+#include "guilib/GUIWindowManager.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #ifdef HAS_FILESYSTEM_RAR
 #include "filesystem/RarManager.h"
 #endif
@@ -40,10 +42,19 @@ using namespace XFILE;
 
 CFileOperationJob::CFileOperationJob()
 {
+  m_handle = NULL;
+  m_displayProgress = false;
 }
 
-CFileOperationJob::CFileOperationJob(FileAction action, CFileItemList & items, const CStdString& strDestFile)
+CFileOperationJob::CFileOperationJob(FileAction action, CFileItemList & items,
+                                    const CStdString& strDestFile,
+                                    bool displayProgress,
+                                    int heading, int line)
 {
+  m_handle = NULL;
+  m_displayProgress = displayProgress;
+  m_heading = heading;
+  m_line = line;
   SetFileOperation(action, items, strDestFile);
 }
 
@@ -61,6 +72,14 @@ bool CFileOperationJob::DoWork()
 {
   FileOperationList ops;
   double totalTime = 0.0;
+
+  if (m_displayProgress)
+  {
+    CGUIDialogExtendedProgressBar* dialog =
+      (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
+    m_handle = dialog->GetHandle(GetActionString(m_action));
+  }
+
   bool success = DoProcess(m_action, m_items, m_strDestFile, ops, totalTime);
 
   unsigned int size = ops.size();
@@ -70,6 +89,9 @@ bool CFileOperationJob::DoWork()
 
   for (unsigned int i = 0; i < size && success; i++)
     success &= ops[i].ExecuteOperation(this, current, opWeight);
+
+  if (m_handle)
+    m_handle->MarkFinished();
 
   return success;
 }
@@ -185,35 +207,47 @@ struct DataHolder
   double opWeight;
 };
 
+CStdString CFileOperationJob::GetActionString(FileAction action)
+{
+  CStdString result;
+  switch (action)
+  {
+    case ActionCopy:
+    case ActionReplace:
+      result = g_localizeStrings.Get(115);
+      break;
+    case ActionMove:
+      result = g_localizeStrings.Get(116);
+      break;
+    case ActionDelete:
+    case ActionDeleteFolder:
+      result = g_localizeStrings.Get(117);
+      break;
+    case ActionCreateFolder:
+      result = g_localizeStrings.Get(119);
+      break;
+    default:
+      break;
+  }
+
+  return result;
+}
+
 bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base, double &current, double opWeight)
 {
   bool bResult = true;
 
   base->m_currentFile = CURL(m_strFileA).GetFileNameWithoutPath();
-
-  switch (m_action)
-  {
-    case ActionCopy:
-    case ActionReplace:
-      base->m_currentOperation = g_localizeStrings.Get(115);
-      break;
-    case ActionMove:
-      base->m_currentOperation = g_localizeStrings.Get(116);
-      break;
-    case ActionDelete:
-    case ActionDeleteFolder:
-      base->m_currentOperation = g_localizeStrings.Get(117);
-      break;
-    case ActionCreateFolder:
-      base->m_currentOperation = g_localizeStrings.Get(119);
-      break;
-    default:
-      base->m_currentOperation = "";
-      break;
-  }
+  base->m_currentOperation = GetActionString(m_action);
 
   if (base->ShouldCancel((unsigned)current, 100))
     return false;
+
+  if (base->m_handle)
+  {
+    base->m_handle->SetText(base->GetCurrentFile());
+    base->m_handle->SetPercentage(current);
+  }
 
   DataHolder data = {base, current, opWeight};
 
@@ -293,6 +327,15 @@ bool CFileOperationJob::CFileOperation::OnFileCallback(void* pContext, int iperc
     data->base->m_avgSpeed.Format("%.1f Mb/s", avgSpeed / 1000000.0f);
   else
     data->base->m_avgSpeed.Format("%.1f Kb/s", avgSpeed / 1000.0f);
+
+  if (data->base->m_handle)
+  {
+    CStdString line;
+    line.Format("%s (%s)", data->base->GetCurrentFile().c_str(),
+                           data->base->GetAverageSpeed().c_str());
+    data->base->m_handle->SetText(line);
+    data->base->m_handle->SetPercentage(current);
+  }
 
   return !data->base->ShouldCancel((unsigned)current, 100);
 }

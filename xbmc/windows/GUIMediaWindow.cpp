@@ -54,6 +54,7 @@
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "playlists/PlayList.h"
+#include "filesystem/File.h"
 #include "filesystem/FileDirectoryFactory.h"
 #include "GUIEditControl.h"
 #include "dialogs/GUIDialogKeyboard.h"

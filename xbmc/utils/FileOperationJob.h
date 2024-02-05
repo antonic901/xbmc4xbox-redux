@@ -23,7 +23,9 @@
 #include "system.h"
 #include "FileItem.h"
 #include "Job.h"
-#include "../FileSystem/File.h"
+#include "filesystem/File.h"
+
+class CGUIDialogProgressBarHandle;
 
 class CFileOperationJob : public CJob
 {
@@ -39,9 +41,16 @@ public:
   };
 
   CFileOperationJob();
-  CFileOperationJob(FileAction action, CFileItemList & items, const CStdString& strDestFile);
+  CFileOperationJob(FileAction action, CFileItemList & items,
+                    const CStdString& strDestFile,
+                    bool displayProgress=false,
+                    int errorHeading=0, int errorLine=0);
 
   void SetFileOperation(FileAction action, CFileItemList &items, const CStdString &strDestFile);
+
+  static CStdString GetActionString(FileAction action);
+
+  const char* GetType() const { return m_displayProgress?"filemanager":""; }
 
   virtual bool DoWork();
   const CStdString &GetAverageSpeed()     { return m_avgSpeed; }
@@ -49,6 +58,8 @@ public:
   const CStdString &GetCurrentFile()      { return m_currentFile; }
   const CFileItemList &GetItems()         { return m_items; }
   FileAction GetAction()                  { return m_action; }
+  int GetHeading() const                  { return m_heading; }
+  int GetLine() const                     { return m_line; }
 private:
   class CFileOperation : public XFILE::IFileCallback
   {
@@ -74,4 +85,8 @@ private:
   CFileItemList m_items;
   CStdString m_strDestFile;
   CStdString m_avgSpeed, m_currentOperation, m_currentFile;
+  CGUIDialogProgressBarHandle* m_handle;
+  bool m_displayProgress;
+  int m_heading;
+  int m_line;
 };
