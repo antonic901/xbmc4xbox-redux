@@ -36,7 +36,6 @@
 #include "cdrip/CDDARipper.h"
 #endif
 #include "GUIPassword.h"
-#include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "PartyModeManager.h"
 #include "GUIInfoManager.h"
@@ -59,6 +58,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "music/infoscanner/MusicInfoScanner.h"
 
 using namespace std;
 using namespace XFILE;

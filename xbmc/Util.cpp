@@ -61,7 +61,6 @@
 #include "input/ButtonTranslator.h"
 #include "pictures/Picture.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "music/dialogs/GUIDialogMusicScan.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
 #include "guilib/TextureManager.h"
