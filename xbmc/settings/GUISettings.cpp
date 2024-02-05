@@ -561,7 +561,7 @@ void CGUISettings::Initialize()
   CSettingsCategory* vid = AddCategory(5, "myvideos", 14081);
   AddBool(NULL, "myvideos.treatstackasfile", 20051, true);
   AddBool(NULL, "myvideos.extractflags",20433, false);
-  AddBool(NULL, "myvideos.filemetadata", 20419, true);
+  AddBool(NULL, "myvideos.replacelabels", 20419, true);
   AddBool(NULL, "myvideos.extractthumb",20433, false);
 
   AddSeparator(NULL, "myvideos.sep1");

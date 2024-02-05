@@ -7095,7 +7095,7 @@ msgid "Writers"
 msgstr ""
 
 msgctxt "#20419"
-msgid "Show metadata in files view"
+msgid "Replace file names with library titles"
 msgstr ""
 
 #empty string with id 20420
