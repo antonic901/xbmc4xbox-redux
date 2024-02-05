@@ -2744,13 +2744,16 @@ CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
   if (IsMultiPath())
     strMovieName = CMultiPathDirectory::GetFirstPath(m_strPath);
 
+  if (IsOpticalMediaFile())
+    return GetLocalMetadataPath();
+
   if (URIUtils::IsStack(strMovieName))
     strMovieName = CStackDirectory::GetStackedTitlePath(strMovieName);
 
-  if ((!m_bIsFolder || IsDVDFile(false, true) || URIUtils::IsInArchive(m_strPath)) && bUseFolderNames)
+  if ((!m_bIsFolder || URIUtils::IsInArchive(m_strPath)) && bUseFolderNames)
   {
     URIUtils::GetParentPath(m_strPath, strMovieName);
-    if (URIUtils::IsInArchive(m_strPath) || strMovieName.Find( "VIDEO_TS" ) != -1)
+    if (URIUtils::IsInArchive(m_strPath))
     {
       CStdString strArchivePath;
       URIUtils::GetParentPath(strMovieName, strArchivePath);
