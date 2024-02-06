@@ -36,6 +36,8 @@ CGUIDialog::CGUIDialog(int id, const CStdString &xmlFile)
   m_dialogClosing = false;
   m_renderOrder = 1;
   m_autoClosing = false;
+  m_showStartTime = 0;
+  m_showDuration = 0;
   m_enableSound = true;
 }
 
@@ -106,7 +108,7 @@ bool CGUIDialog::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      m_showStartTime = CTimeUtils::GetFrameTime();
+      m_showStartTime = 0;
       return true;
     }
   }
@@ -243,8 +245,19 @@ bool CGUIDialog::RenderAnimation(unsigned int time)
 
 void CGUIDialog::FrameMove()
 {
-  if (m_autoClosing && m_showStartTime + m_showDuration < CTimeUtils::GetFrameTime() && !m_dialogClosing)
-    Close();
+  if (m_autoClosing)
+  { // check if our timer is running
+    if (!m_showStartTime)
+    {
+      if (HasRendered()) // start timer
+        m_showStartTime = CTimeUtils::GetFrameTime();
+    }
+    else
+    {
+      if (m_showStartTime + m_showDuration < CTimeUtils::GetFrameTime() && !m_dialogClosing)
+        Close();
+    }
+  }
   CGUIWindow::FrameMove();
 }
 
