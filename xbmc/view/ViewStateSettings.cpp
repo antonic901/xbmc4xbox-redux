@@ -32,6 +32,8 @@
 #define XML_SORTMETHOD        "sortmethod"
 #define XML_SORTORDER         "sortorder"
 #define XML_SORTATTRIBUTES    "sortattributes"
+#define XML_GENERAL           "general"
+#define XML_SETTINGLEVEL      "settinglevel"
 
 using namespace std;
 
@@ -54,6 +56,8 @@ CViewStateSettings::CViewStateSettings()
   AddViewState("pictures", DEFAULT_VIEW_AUTO);
   AddViewState("videofiles", DEFAULT_VIEW_AUTO);
   AddViewState("musicfiles", DEFAULT_VIEW_AUTO);
+
+  Clear();
 }
 
 CViewStateSettings::~CViewStateSettings()
@@ -111,6 +115,16 @@ bool CViewStateSettings::Load(const TiXmlNode *settings)
       viewState->second->m_sortDescription.sortOrder = (SortOrder)sortOrder;
   }
 
+  pElement = settings->FirstChild(XML_GENERAL);
+  if (pElement != NULL)
+  {
+    int settingLevel;
+    if (XMLUtils::GetInt(pElement, XML_SETTINGLEVEL, settingLevel, (const int)SettingLevelBasic, (const int)SettingLevelExpert))
+      m_settingLevel = (SettingLevel)settingLevel;
+    else
+      m_settingLevel = SettingLevelStandard;
+  }
+
   return true;
 }
 
@@ -142,7 +156,23 @@ bool CViewStateSettings::Save(TiXmlNode *settings) const
     XMLUtils::SetInt(pNewNode, XML_SORTATTRIBUTES, (int)viewState->second->m_sortDescription.sortAttributes);
   }
 
+  TiXmlNode *generalNode = settings->FirstChild(XML_GENERAL);
+  if (generalNode == NULL)
+  {
+    TiXmlElement generalElement(XML_GENERAL);
+    generalNode = settings->InsertEndChild(generalElement);
+    if (generalNode == NULL)
+      return false;
+  }
+
+  XMLUtils::SetInt(generalNode, XML_SETTINGLEVEL, (int)m_settingLevel);
+
   return true;
+}
+
+void CViewStateSettings::Clear()
+{
+  m_settingLevel = SettingLevelStandard;
 }
 
 const CViewState* CViewStateSettings::Get(const std::string &viewState) const
@@ -163,6 +193,23 @@ CViewState* CViewStateSettings::Get(const std::string &viewState)
     return view->second;
 
   return NULL;
+}
+
+void CViewStateSettings::SetSettingLevel(SettingLevel settingLevel)
+{
+  if (settingLevel < SettingLevelBasic)
+    m_settingLevel = SettingLevelBasic;
+  if (settingLevel > SettingLevelExpert)
+    m_settingLevel = SettingLevelExpert;
+  else
+    m_settingLevel = settingLevel;
+}
+
+void CViewStateSettings::CycleSettingLevel()
+{
+  m_settingLevel = (SettingLevel)((int)m_settingLevel + 1);
+  if (m_settingLevel > SettingLevelExpert)
+    m_settingLevel = SettingLevelBasic;
 }
 
 void CViewStateSettings::AddViewState(const std::string& strTagName, int defaultView /* = DEFAULT_VIEW_LIST */, SortBy defaultSort /* = SortByLabel */)
