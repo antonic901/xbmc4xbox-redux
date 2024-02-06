@@ -685,7 +685,8 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
 
 CMPlayer::CMPlayer(IPlayerCallback& callback)
-    : IPlayer(callback)
+    : IPlayer(callback),
+      CThread("MPlayer")
 {
   m_pDLL = NULL;
   m_bIsPlaying = false;
@@ -1352,7 +1353,6 @@ void CMPlayer::Process()
 {
   bool bHasVideo = HasVideo();
   bool bWaitingRestart = false;
-  CThread::SetName("MPlayer");
 
   if (!m_pDLL || !m_bIsPlaying) return;
 

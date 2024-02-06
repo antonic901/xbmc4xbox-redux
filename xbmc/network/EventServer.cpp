@@ -48,7 +48,7 @@ using namespace std;
 /* CEventServer                                                         */
 /************************************************************************/
 CEventServer* CEventServer::m_pInstance = NULL;
-CEventServer::CEventServer()
+CEventServer::CEventServer() : CThread("CEventServer")
 {
   m_pSocket       = NULL;
   m_pPacketBuffer = NULL;
@@ -110,7 +110,6 @@ void CEventServer::StartServer()
   }
 
   CThread::Create();
-  CThread::SetName("EventServer");
 }
 
 void CEventServer::StopServer()

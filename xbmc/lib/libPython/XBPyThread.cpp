@@ -53,7 +53,7 @@ extern "C"
   char* dll_getenv(const char* szKey);
 }
 
-XBPyThread::XBPyThread(XBPython *pExecuter, int id)
+XBPyThread::XBPyThread(XBPython *pExecuter, int id) : CThread("XBPyThread")
 {
   CLog::Log(LOGDEBUG,"new python thread created. id=%d", id);
   m_pExecuter   = pExecuter;
@@ -108,11 +108,6 @@ int XBPyThread::setArgv(const std::vector<CStdString> &argv)
     strcpy(m_argv[i], argv[i].c_str());
   }
   return 0;
-}
-
-void XBPyThread::OnStartup()
-{
-  CThread::SetName("Python Thread");
 }
 
 void XBPyThread::Process()

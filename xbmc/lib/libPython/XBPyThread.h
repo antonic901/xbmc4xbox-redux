@@ -53,7 +53,6 @@ protected:
   int  m_id;
   ADDON::AddonPtr addon;
 
-  virtual void OnStartup();
   virtual void Process();
   virtual void OnExit();
   virtual void OnException();

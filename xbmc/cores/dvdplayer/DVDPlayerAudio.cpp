@@ -90,7 +90,7 @@ public:
 
 
 CDVDPlayerAudio::CDVDPlayerAudio(CDVDClock* pClock, CDVDMessageQueue& parent)
-: CThread()
+: CThread("CDVDPlayerAudio")
 , m_messageQueue("audio")
 , m_messageParent(parent)
 , m_dvdAudio((bool&)m_bStop)
@@ -437,8 +437,6 @@ int CDVDPlayerAudio::DecodeFrame(DVDAudioFrame &audioframe, bool bDropPacket)
 
 void CDVDPlayerAudio::OnStartup()
 {
-  CThread::SetName("CDVDPlayerAudio");
-
   m_decode.msg = NULL;
   m_decode.Release();
 

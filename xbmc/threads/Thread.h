@@ -29,10 +29,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
+#include <string>
 #include "xbox/PlatformInclude.h"
 #include "Event.h"
-#include "utils/StdString.h"
 
 class IRunnable
 {
@@ -60,7 +59,6 @@ public:
   DWORD WaitForMultipleObjects(DWORD nCount, HANDLE *lpHandles, BOOL bWaitAll, DWORD dwMilliseconds);
   void Sleep(DWORD dwMilliseconds);
   bool SetPriority(const int iPriority);
-  void SetName( LPCTSTR szThreadName );
   HANDLE ThreadHandle();
   operator HANDLE();
   operator HANDLE() const;
@@ -82,7 +80,10 @@ protected:
   HANDLE m_ThreadHandle;
 
 private:
-  CStdString GetTypeName(void);
+  /*! \brief set the threadname for the debugger/callstack, implementation dependent.
+   */
+  void SetDebugCallStackName( const char *threadName );
+  std::string GetTypeName(void);
 
 private:
   ThreadIdentifier ThreadId() const;
@@ -96,7 +97,7 @@ private:
   unsigned __int64 m_iLastTime;
   float m_fLastUsage;
 
-  CStdString m_ThreadName;
+  std::string m_ThreadName;
 
 private:
   static DWORD WINAPI staticThread(LPVOID* data);

@@ -50,7 +50,7 @@ void VBlankCallback(D3DVBLANKDATA *pData)
 }
 
 
-CXBoxRenderManager::CXBoxRenderManager()
+CXBoxRenderManager::CXBoxRenderManager() : CThread("AsyncRenderer")
 {
   m_pRenderer = NULL;
   m_bPauseDrawing = false;
@@ -441,7 +441,6 @@ void CXBoxRenderManager::Process()
   float actualdelay = (float)m_presentdelay;
 
   SetPriority(THREAD_PRIORITY_TIME_CRITICAL);
-  SetName("AsyncRenderer");
   while( !m_bStop )
   {
     //Wait for new frame or an stop event

@@ -102,8 +102,9 @@ DWORD WINAPI CThread::staticThread(LPVOID* data)
   CUtil::InitRandomSeed();
 #endif
 
-  if (pThread->m_ThreadName.IsEmpty())
-    pThread->SetName(pThread->GetTypeName().c_str());
+  if (pThread->m_ThreadName.empty())
+    pThread->m_ThreadName = pThread->GetTypeName();
+  pThread->SetDebugCallStackName(pThread->m_ThreadName.c_str());
 
   CLog::Log(LOGDEBUG,"Thread %s start, auto delete: %d", pThread->m_ThreadName.c_str(), pThread->IsAutoDelete());
 
@@ -255,13 +256,11 @@ bool CThread::SetPriority(const int iPriority)
   }
 }
 
-void CThread::SetName( LPCTSTR szThreadName )
+void CThread::SetDebugCallStackName( const char *name )
 {
-  m_ThreadName = szThreadName;
-
   THREADNAME_INFO info;
   info.dwType = 0x1000;
-  info.szName = szThreadName;
+  info.szName = name;
   info.dwThreadID = m_ThreadId;
   info.dwFlags = 0;
 #ifndef _LINUX
@@ -277,14 +276,14 @@ void CThread::SetName( LPCTSTR szThreadName )
 
 // Get the thread name using the implementation dependant typeid() class
 // and attempt to clean it.
-CStdString CThread::GetTypeName(void)
+std::string CThread::GetTypeName(void)
 {
-  CStdString name = typeid(*this).name();
+  std::string name = typeid(*this).name();
 
 #if defined(_MSC_VER)
   // Visual Studio 2010 returns the name as "class CThread" etc
   if (name.substr(0, 6) == "class ")
-    name = name.Right(name.length() - 6);
+    name = name.substr(6, name.length() - 6);
 #elif defined(__GNUC__) && !defined(__clang__)
   // gcc provides __cxa_demangle to demangle the name
   char* demangled = NULL;

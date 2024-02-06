@@ -61,7 +61,7 @@ public:
 CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
                                 , CDVDOverlayContainer* pOverlayContainer
                                 , CDVDMessageQueue& parent)
-: CThread()
+: CThread("CDVDPlayerVideo")
 , m_messageQueue("video")
 , m_messageParent(parent)
 {
@@ -216,7 +216,6 @@ void CDVDPlayerVideo::CloseStream(bool bWaitForBuffers)
 
 void CDVDPlayerVideo::OnStartup()
 {
-  CThread::SetName("CDVDPlayerVideo");
   m_iDroppedFrames = 0;
   
   m_iCurrentPts = DVD_NOPTS_VALUE;

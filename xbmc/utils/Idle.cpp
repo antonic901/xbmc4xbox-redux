@@ -22,7 +22,7 @@
 #include "Idle.h"
 
 
-CIdleThread::CIdleThread()
+CIdleThread::CIdleThread() : CThread("IdleThread")
 {}
 
 CIdleThread::~CIdleThread()
@@ -31,7 +31,6 @@ CIdleThread::~CIdleThread()
 void CIdleThread::OnStartup()
 {
   SetPriority(THREAD_PRIORITY_IDLE);
-  SetName("IdleThread");
 }
 
 void CIdleThread::OnExit()

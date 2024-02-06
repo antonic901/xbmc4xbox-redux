@@ -65,7 +65,7 @@ extern void		dbZero(int did);
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CWebServer::CWebServer()
+CWebServer::CWebServer() : CThread("Webserver")
 {
   pXbmcWeb = new CXbmcWeb();
   if (!pXbmcWebConfig)
@@ -149,7 +149,6 @@ bool CWebServer::Start(const char *szLocalAddress, int port, const char_t* web, 
   Create(false, THREAD_MINSTACKSIZE);
   if (m_ThreadHandle == NULL) return false;  
 
-  CThread::SetName("Webserver");
   if( wait )
   {    
     // wait until the webserver is ready
