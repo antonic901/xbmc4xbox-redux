@@ -41,7 +41,7 @@ typedef struct tagTHREADNAME_INFO
   DWORD dwFlags; // reserved for future use, most be zero
 } THREADNAME_INFO;
 
-CThread::CThread()
+CThread::CThread(const char* ThreadName)
 {
   m_bStop = false;
 
@@ -54,9 +54,11 @@ CThread::CThread()
   m_StopEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
 
   m_pRunnable=NULL;
+
+  m_ThreadName = ThreadName;
 }
 
-CThread::CThread(IRunnable* pRunnable)
+CThread::CThread(IRunnable* pRunnable, const char* ThreadName)
 {
   m_bStop = false;
 
@@ -69,6 +71,8 @@ CThread::CThread(IRunnable* pRunnable)
   m_StopEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
 
   m_pRunnable=pRunnable;
+
+  m_ThreadName = ThreadName;
 }
 
 CThread::~CThread()

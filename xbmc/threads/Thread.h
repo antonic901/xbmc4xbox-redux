@@ -50,8 +50,8 @@ public:
 class CThread
 {
 public:
-  CThread();
-  CThread(IRunnable* pRunnable);
+  CThread(const char* ThreadName = "");
+  CThread(IRunnable* pRunnable, const char* ThreadName = "");
   virtual ~CThread();
   void Create(bool bAutoDelete = false, unsigned stacksize = 0);
   bool WaitForThreadExit(DWORD dwMilliseconds);
@@ -91,6 +91,9 @@ private:
   unsigned __int64 m_iLastUsage;
   unsigned __int64 m_iLastTime;
   float m_fLastUsage;
+
+protected:
+  CStdString m_ThreadName;
 
 private:
   static DWORD WINAPI staticThread(LPVOID* data);
