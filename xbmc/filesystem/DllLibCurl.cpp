@@ -18,10 +18,11 @@
  *
  */
 
+#include "threads/SystemClock.h"
 #include "system.h"
-#include "utils/log.h"
 #include "DllLibCurl.h"
-#include "TimeUtils.h"
+#include "utils/log.h"
+#include "utils/TimeUtils.h"
 
 #include <assert.h>
 
@@ -75,7 +76,7 @@ void DllLibCurlGlobal::Unload()
 
   /* CheckIdle will clear this one up */
   if(g_curlReferences == 1)
-    g_curlTimeout = CTimeUtils::GetTimeMS();
+    g_curlTimeout = XbmcThreads::SystemClockMillis();
 }
 
 void DllLibCurlGlobal::CheckIdle()
@@ -115,7 +116,7 @@ void DllLibCurlGlobal::CheckIdle()
   }
 
   /* check if we should unload the dll */
-  if(g_curlReferences == 1 && CTimeUtils::GetTimeMS() > g_curlTimeout + idletime)
+  if(g_curlReferences == 1 && XbmcThreads::SystemClockMillis() > g_curlTimeout + idletime)
     Unload();
 }
 

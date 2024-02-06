@@ -18,9 +18,9 @@
  *
  */
 
-#include "system.h"
 #include "TimeUtils.h"
 #include "DateTime.h"
+#include "threads/SystemClock.h"
 
 int64_t CurrentHostCounter(void)
 {
@@ -40,7 +40,7 @@ unsigned int CTimeUtils::frameTime = 0;
 
 void CTimeUtils::UpdateFrameTime()
 {
-  frameTime = GetTimeMS();
+  frameTime = XbmcThreads::SystemClockMillis();
 }
 
 unsigned int CTimeUtils::GetFrameTime()
@@ -50,11 +50,6 @@ unsigned int CTimeUtils::GetFrameTime()
   UpdateFrameTime();
 #endif
   return frameTime;
-}
-
-unsigned int CTimeUtils::GetTimeMS()
-{
-  return timeGetTime();
 }
 
 CDateTime CTimeUtils::GetLocalTime(time_t time)

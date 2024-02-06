@@ -18,13 +18,13 @@
  *
  */
 
-#include "utils/log.h"
+#include "threads/SystemClock.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "pictures/Picture.h"
 #include "video/VideoInfoTag.h"
-#include "Util.h"
 #include "filesystem/StackDirectory.h"
+#include "utils/log.h"
 
 #include "DVDFileInfo.h"
 #include "DVDStreamInfo.h"
@@ -246,7 +246,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, const CStdString &str
       file.Close();
   }
 
-  int nTotalTime = CTimeUtils::GetTimeMS() - nTime;
+  int nTotalTime = XbmcThreads::SystemClockMillis() - nTime;
   CLog::Log(LOGDEBUG,"%s - measured %d ms to extract thumb from file <%s> ", __FUNCTION__, nTotalTime, strPath.c_str());
   return bOk;
 }

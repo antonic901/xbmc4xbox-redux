@@ -20,6 +20,7 @@
 
 #include <limits.h>
 
+#include "threads/SystemClock.h"
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
@@ -220,12 +221,12 @@ CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
   if(bTotalUptime)
   {
     //Total Uptime
-    iInputMinutes = g_sysinfo.GetTotalUptime() + ((int)(CTimeUtils::GetTimeMS() / 60000));
+    iInputMinutes = g_sysinfo.GetTotalUptime() + ((int)(XbmcThreads::SystemClockMillis() / 60000));
   }
   else
   {
     //Current UpTime
-    iInputMinutes = (int)(CTimeUtils::GetTimeMS() / 60000);
+    iInputMinutes = (int)(XbmcThreads::SystemClockMillis() / 60000);
   }
 
   SystemUpTime(iInputMinutes,iMinutes, iHours, iDays);

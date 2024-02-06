@@ -22,7 +22,7 @@
 #include "guilib/GUIProgressControl.h"
 #include "guilib/GUISliderControl.h"
 #include "threads/SingleLock.h"
-#include "utils/TimeUtils.h"
+#include "threads/SystemClock.h"
 
 #define CONTROL_LABELHEADER       30
 #define CONTROL_LABELTITLE        31
@@ -87,7 +87,7 @@ bool CGUIDialogExtendedProgressBar::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      m_iLastSwitchTime = CTimeUtils::GetTimeMS();
+      m_iLastSwitchTime = XbmcThreads::SystemClockMillis();
       CGUIDialog::OnMessage(message);
 
       UpdateState(0);
@@ -102,7 +102,7 @@ bool CGUIDialogExtendedProgressBar::OnMessage(CGUIMessage& message)
 void CGUIDialogExtendedProgressBar::Render()
 {
   if (m_bRunning)
-    UpdateState(CTimeUtils::GetTimeMS());
+    UpdateState(XbmcThreads::SystemClockMillis());
 
   CGUIDialog::Render();
 }

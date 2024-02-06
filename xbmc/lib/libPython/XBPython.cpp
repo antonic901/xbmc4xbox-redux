@@ -44,6 +44,7 @@ XBPython g_pythonParser;
 
 #define PYTHON_DLL "special://xbmc/system/python/python27.dll"
 
+#include "threads/SystemClock.h"
 #include "addons/Addon.h"
 #include "interfaces/AnnouncementManager.h"
 #include "xbmcmodule/PythonMonitor.h"
@@ -510,7 +511,7 @@ void XBPython::FinalizeScript()
     m_iDllScriptCounter--;
   else
     CLog::Log(LOGERROR, "Python script counter attempted to become negative");
-  m_endtime = CTimeUtils::GetTimeMS();
+  m_endtime = XbmcThreads::SystemClockMillis();
 }
 void XBPython::Finalize()
 {
@@ -589,7 +590,7 @@ void XBPython::Process()
       else ++it;
     }
 
-    if(m_iDllScriptCounter == 0 && m_endtime + 10000 < CTimeUtils::GetTimeMS())
+    if(m_iDllScriptCounter == 0 && m_endtime + 10000 < XbmcThreads::SystemClockMillis())
       Finalize();
   }
 }

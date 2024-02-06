@@ -18,19 +18,20 @@
  *
  */
 
-#include "utils/log.h" 
-
-#include "AutoPtrHandle.h"
+#include "threads/SystemClock.h"
+#include "utils/AutoPtrHandle.h"
 #include "FileCache.h"
 #include "threads/Thread.h"
 #include "File.h"
 #include "URL.h"
+
+#include "CircularCache.h"
+#include "threads/SingleLock.h"
+#include "utils/log.h" 
 #include "utils/TimeUtils.h"
 #include "settings/AdvancedSettings.h"
 
 #include "MemBufferCache.h"
-#include "CircularCache.h"
-#include "threads/SingleLock.h"
 
 using namespace AUTOPTR;
 using namespace XFILE;
@@ -42,20 +43,20 @@ class CWriteRate
 public:
   CWriteRate()
   {
-    m_stamp = CTimeUtils::GetTimeMS();
+    m_stamp = XbmcThreads::SystemClockMillis();
     m_pos   = 0;
     m_pause = 0;
   }
 
   void Reset(int64_t pos)
   {
-    m_stamp = CTimeUtils::GetTimeMS();
+    m_stamp = XbmcThreads::SystemClockMillis();
     m_pos   = pos;
   }
 
   unsigned Rate(int64_t pos, unsigned int time_bias = 0)
   {
-    const unsigned ts = CTimeUtils::GetTimeMS() + time_bias;
+    const unsigned ts = XbmcThreads::SystemClockMillis() + time_bias;
     if (ts == m_stamp)
       return 0;
     return (unsigned)(1000 * (pos - m_pos) / (ts - m_stamp));
@@ -63,12 +64,12 @@ public:
 
   void Pause()
   {
-    m_pause = CTimeUtils::GetTimeMS();
+    m_pause = XbmcThreads::SystemClockMillis();
   }
 
   void Resume()
   {
-    m_stamp += CTimeUtils::GetTimeMS() - m_pause;
+    m_stamp += XbmcThreads::SystemClockMillis() - m_pause;
     m_pause  = 0;
   }
 
