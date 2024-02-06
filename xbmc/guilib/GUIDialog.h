@@ -56,6 +56,8 @@ public:
   virtual bool IsAnimating(ANIMATION_TYPE animType);
 
   void SetAutoClose(unsigned int timeoutMs);
+  void ResetAutoClose(void);
+  bool IsAutoClosed(void) const { return m_bAutoClosed; };
   void SetSound(bool OnOff) { m_enableSound = OnOff; };
 
 protected:
@@ -76,4 +78,5 @@ protected:
   bool m_enableSound;
   unsigned int m_showStartTime;
   unsigned int m_showDuration;
+  bool m_bAutoClosed;
 };

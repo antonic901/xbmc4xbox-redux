@@ -45,7 +45,7 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
 {
   SetID(id);
   SetProperty("xmlfile", xmlFile);
-  m_idRange = 1;
+  m_idRange.push_back(id);
   m_saveLastControl = false;
   m_lastControlID = 0;
   m_overlayState = OVERLAY_STATE_PARENT_WINDOW;   // Use parent or previous window's state
@@ -946,4 +946,14 @@ void CGUIWindow::RunLoadActions()
 void CGUIWindow::RunUnloadActions()
 {
   m_unloadActions.ExecuteActions(GetID(), GetParentID());
+}
+
+bool CGUIWindow::HasID(int controlID) const
+{
+  for (std::vector<int>::const_iterator it = m_idRange.begin(); it != m_idRange.end() ; it++)
+  {
+    if (controlID == *it)
+      return true;
+  }
+  return false;
 }

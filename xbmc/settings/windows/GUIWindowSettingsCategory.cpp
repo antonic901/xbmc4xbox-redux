@@ -117,7 +117,15 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
   m_pOriginalImage = NULL;
   m_pOriginalEdit = NULL;
   // set the correct ID range...
-  m_idRange = 8;
+  m_idRange.clear();
+  m_idRange.push_back(WINDOW_SETTINGS_MYPICTURES);
+  m_idRange.push_back(WINDOW_SETTINGS_MYPROGRAMS);
+  m_idRange.push_back(WINDOW_SETTINGS_MYWEATHER);
+  m_idRange.push_back(WINDOW_SETTINGS_MYMUSIC);
+  m_idRange.push_back(WINDOW_SETTINGS_SYSTEM);
+  m_idRange.push_back(WINDOW_SETTINGS_MYVIDEOS);
+  m_idRange.push_back(WINDOW_SETTINGS_APPEARANCE);
+
   m_iScreen = 0;
   // set the network settings so that we don't reset them unnecessarily
   m_iNetworkAssignment = -1;

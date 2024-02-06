@@ -790,6 +790,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   int focusPosition = 0;
   int scrollTime = 200;
+  int timeBlocks = 36;
+  int rulerUnit = 12;
   bool useControlCoords = false;
   bool renderFocusedLast = false;
 
@@ -1010,6 +1012,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetAspectRatio(pControlNode, "aspectratio", aspect);
   XMLUtils::GetBoolean(pControlNode, "scroll", bScrollLabel);
   XMLUtils::GetBoolean(pControlNode,"pulseonselect", bPulse);
+  XMLUtils::GetInt(pControlNode, "timeblocks", timeBlocks);
+  XMLUtils::GetInt(pControlNode, "rulerunit", rulerUnit);
 
   GetInfoTexture(pControlNode, "imagepath", texture, texturePath, parentID);
 
@@ -1313,6 +1317,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       parentID, id, posX, posY, width, height,
       textureBackground, textureLeft, textureMid, textureRight,
       textureOverlay, bReveal);
+
     ((CGUIProgressControl *)control)->SetInfo(singleInfo);
   }
   else if (type == CGUIControl::GUICONTROL_IMAGE)
