@@ -3069,6 +3069,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\threads\Thread.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\threads\Timer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\Timer.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="view"
