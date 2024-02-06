@@ -3058,6 +3058,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\SingleLock.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\threads\SystemClock.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\SystemClock.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\threads\Thread.cpp">
 				</File>
 				<File
