@@ -280,6 +280,9 @@
 
 #define ACTION_FILTER                 233
 
+#define ACTION_SETTINGS_RESET         240
+#define ACTION_SETTINGS_LEVEL_CHANGE  241
+
 // Window ID defines to make the code a bit more readable
 #define WINDOW_INVALID                     9999
 #define WINDOW_HOME                       10000

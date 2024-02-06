@@ -189,7 +189,9 @@ static const ActionMapping actions[] =
         {"firstpage"         , ACTION_FIRST_PAGE},
         {"lastpage"          , ACTION_LAST_PAGE},
         {"increasepar"       , ACTION_INCREASE_PAR},
-        {"decreasepar"       , ACTION_DECREASE_PAR}};
+        {"decreasepar"       , ACTION_DECREASE_PAR},
+        {"settingsreset"      , ACTION_SETTINGS_RESET},
+        {"settingslevelchange", ACTION_SETTINGS_LEVEL_CHANGE}};
 
 static const ActionMapping windows[] =
        {{"home"                     , WINDOW_HOME},
