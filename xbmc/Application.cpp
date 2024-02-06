@@ -3331,7 +3331,7 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Remove(WINDOW_SETTINGS_MYMUSIC);
     g_windowManager.Remove(WINDOW_SETTINGS_SYSTEM);
     g_windowManager.Remove(WINDOW_SETTINGS_MYVIDEOS);
-    g_windowManager.Remove(WINDOW_SETTINGS_NETWORK);
+    g_windowManager.Remove(WINDOW_SETTINGS_SERVICE);
     g_windowManager.Remove(WINDOW_SETTINGS_APPEARANCE);
     g_windowManager.Remove(WINDOW_DIALOG_KAI_TOAST);
 
