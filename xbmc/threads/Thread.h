@@ -64,6 +64,7 @@ public:
   operator HANDLE() const;
   bool IsAutoDelete() const;
   virtual void StopThread(bool bWait = true);
+  bool IsRunning() const { return m_ThreadHandle != NULL; };
   float GetRelativeUsage();  // returns the relative cpu usage of this thread since last call
   bool IsCurrentThread() const;
   int GetMinPriority(void);
