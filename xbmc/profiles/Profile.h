@@ -66,6 +66,7 @@ public:
   bool canWriteDatabases() const { return m_bCanWrite; }
   bool hasSources() const { return m_bSources; }
   bool canWriteSources() const { return m_bCanWriteSources; }
+  bool hasAddons() const { return m_bAddons; }
   bool useAvpackSettings() const { return m_bUseAvpackSettings; }
   bool settingsLocked() const { return m_locks.settings; }
   bool addonmanagerLocked() const { return m_locks.addonManager; }
