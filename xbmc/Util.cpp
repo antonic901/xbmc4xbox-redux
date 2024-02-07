@@ -4188,6 +4188,12 @@ int CUtil::TranslateRomanNumeral(const char* roman_numeral)
   return decimal;
 }
 
+bool CUtil::CanBindPrivileged()
+{
+  // we can bind to any port on non-Unix systems
+  return true;
+}
+
 bool CUtil::ValidatePort(int port)
 {
   // check that it's a valid port
