@@ -49,7 +49,7 @@ public:
   };
 
   //FIXME remove this, kept for current repo handling
-  CSkinInfo(const ADDON::AddonProps &props, const RESOLUTION_INFO &res = RESOLUTION_INFO());
+  CSkinInfo(const AddonProps &props, const RESOLUTION_INFO &res = RESOLUTION_INFO());
   CSkinInfo(const cp_extension_t *ext);
   virtual ~CSkinInfo();
 
@@ -108,7 +108,7 @@ public:
   /*! \brief Retrieve the skin paths to search for skin XML files
    \param paths [out] vector of paths to search, in order.
    */
-  void GetSkinPaths(std::vector<CStdString> &paths) const;;
+  void GetSkinPaths(std::vector<CStdString> &paths) const;
 
   bool IsInUse() const;
 
@@ -126,6 +126,12 @@ public:
   static void SettingOptionsStartupWindowsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
 
 protected:
+  /*! \brief Given a resolution, retrieve the corresponding directory name
+   \param res RESOLUTION to translate
+   \return directory name for res
+   */
+  CStdString GetDirFromRes(RESOLUTION res) const;
+
   /*! \brief grab a resolution tag from a skin's configuration data
    \param props passed addoninfo structure to check for resolution
    \param tag name of the tag to look for
@@ -133,12 +139,6 @@ protected:
    \return true if we find a valid resolution, false otherwise
    */
   void GetDefaultResolution(const cp_extension_t *ext, const char *tag, RESOLUTION &res, const RESOLUTION &def) const;
-
-  /*! \brief Given a resolution, retrieve the corresponding directory name
-   \param res RESOLUTION to translate
-   \return directory name for res
-   */
-  CStdString GetDirFromRes(RESOLUTION res) const;
 
   bool LoadStartupWindows(const cp_extension_t *ext);
 

@@ -23,9 +23,9 @@
 #include "AddonManager.h"
 #include "LangInfo.h"
 #include "Util.h"
-#include "GUIWindowManager.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "guilib/Key.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -101,11 +101,6 @@ CSkinInfo::CSkinInfo(const cp_extension_t *ext)
 
 CSkinInfo::~CSkinInfo()
 {
-}
-
-bool CSkinInfo::HasSettings()
-{
-  return HasSkinFile("SkinSettings.xml");
 }
 
 struct closestRes
@@ -268,15 +263,15 @@ int CSkinInfo::GetFirstWindow() const
   return startWindow;
 }
 
-const INFO::CSkinVariableString* CSkinInfo::CreateSkinVariable(const CStdString& name, int context)
-{
-  return m_includes.CreateSkinVariable(name, context);
-}
-
 bool CSkinInfo::IsInUse() const
 {
   // Could extend this to prompt for reverting to the standard skin perhaps
   return CSettings::Get().GetString("lookandfeel.skin") == ID();
+}
+
+const INFO::CSkinVariableString* CSkinInfo::CreateSkinVariable(const CStdString& name, int context)
+{
+  return m_includes.CreateSkinVariable(name, context);
 }
 
 void CSkinInfo::SettingOptionsSkinColorsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
