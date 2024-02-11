@@ -26,6 +26,7 @@
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/Key.h"
+#include "settings/Setting.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"

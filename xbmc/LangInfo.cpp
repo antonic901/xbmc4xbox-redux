@@ -26,6 +26,7 @@
 #include "guilib/GUIFontManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Setting.h"
 #include "settings/Settings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"

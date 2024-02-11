@@ -23,11 +23,11 @@
 
 #include "settings/ISettingCallback.h"
 #include "settings/ISettingCreator.h"
-#include "settings/Setting.h"
 #include "threads/CriticalSection.h"
 
 #include "utils/StdString.h"
 
+class CSetting;
 class CSettingSection;
 class CSettingsManager;
 class TiXmlElement;
@@ -71,9 +71,6 @@ public:
 
   CSetting* GetSetting(const std::string &id) const;
   CSettingSection* GetSection(const std::string &section) const;
-  SettingDependencyMap GetDependencies(const std::string &id) const;
-  SettingDependencyMap GetDependencies(const CSetting *setting) const;
-  void* GetSettingOptionsFiller(const CSetting *setting);
 
   bool GetBool(const std::string &id) const;
   int GetInt(const std::string &id) const;

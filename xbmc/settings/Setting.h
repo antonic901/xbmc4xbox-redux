@@ -48,8 +48,18 @@ typedef enum {
   SettingLevelInternal
 } SettingLevel;
 
-typedef std::pair<int, int> SettingOption;
-typedef std::vector<SettingOption> SettingOptions;
+typedef enum {
+  SettingOptionsTypeNone = 0,
+  SettingOptionsTypeStatic,
+  SettingOptionsTypeDynamic
+} SettingOptionsType;
+
+typedef std::pair<int, int> StaticIntegerSettingOption;
+typedef std::vector<StaticIntegerSettingOption> StaticIntegerSettingOptions;
+typedef std::pair<std::string, int> DynamicIntegerSettingOption;
+typedef std::vector<DynamicIntegerSettingOption> DynamicIntegerSettingOptions;
+typedef std::pair<std::string, std::string> DynamicStringSettingOption;
+typedef std::vector<DynamicStringSettingOption> DynamicStringSettingOptions;
 
 class CSetting : public ISetting,
                  protected ISettingCallback
@@ -70,6 +80,7 @@ public:
 
   int GetLabel() const { return m_label; }
   int GetHelp() const { return m_help; }
+  bool IsEnabled() const;
   SettingLevel GetLevel() const { return m_level; }
   const CSettingControl& GetControl() const { return m_control; }
   const SettingDependencies& GetDependencies() const { return m_dependencies; }
@@ -82,6 +93,7 @@ protected:
   virtual void OnSettingChanged(const CSetting *setting);
   virtual void OnSettingAction(const CSetting *setting);
   virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
 
   void Copy(const CSetting &setting);
 
@@ -135,7 +147,7 @@ public:
   CSettingInt(const std::string &id, const CSettingInt &setting);
   CSettingInt(const std::string &id, int label, int value, int minimum, int step, int maximum, int format, int minimumLabel, CSettingsManager *settingsManager = NULL);
   CSettingInt(const std::string &id, int label, int value, int minimum, int step, int maximum, const std::string &format, CSettingsManager *settingsManager = NULL);
-  CSettingInt(const std::string &id, int label, int value, const SettingOptions &options, CSettingsManager *settingsManager = NULL);
+  CSettingInt(const std::string &id, int label, int value, const StaticIntegerSettingOptions &options, CSettingsManager *settingsManager = NULL);
   virtual ~CSettingInt() { }
 
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
@@ -160,8 +172,10 @@ public:
   int GetFormat() const { return m_format; }
   int GetMinimumLabel() const { return m_labelMin; }
   const std::string& GetFormatString() const { return m_strFormat; }
-  const SettingOptions& GetOptions() const { return m_options; }
+  SettingOptionsType GetOptionsType() const;
+  const StaticIntegerSettingOptions& GetOptions() const { return m_options; }
   const std::string& GetOptionsFiller() const { return m_optionsFiller; }
+  DynamicIntegerSettingOptions UpdateDynamicOptions();
 
 private:
   void copy(const CSettingInt &setting);
@@ -175,8 +189,9 @@ private:
   int m_format;
   int m_labelMin;
   std::string m_strFormat;
-  SettingOptions m_options;
+  StaticIntegerSettingOptions m_options;
   std::string m_optionsFiller;
+  DynamicIntegerSettingOptions m_dynamicOptions;
 };
 
 class CSettingNumber : public CSetting
@@ -241,8 +256,10 @@ public:
 
   virtual bool AllowEmpty() const { return m_allowEmpty; }
   virtual int GetHeading() const { return m_heading; }
-  
+
+  SettingOptionsType GetOptionsType() const;
   const std::string& GetOptionsFiller() const { return m_optionsFiller; }
+  DynamicStringSettingOptions UpdateDynamicOptions();
 
 protected:
   virtual void copy(const CSettingString &setting);
@@ -252,6 +269,7 @@ protected:
   bool m_allowEmpty;
   int m_heading;
   std::string m_optionsFiller;
+  DynamicStringSettingOptions m_dynamicOptions;
 };
 
 class CSettingAction : public CSetting

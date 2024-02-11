@@ -24,6 +24,7 @@
 #include "XBVideoConfig.h"
 #include "GUIAudioManager.h"
 #include "settings/DisplaySettings.h"
+#include "settings/Setting.h"
 #include "settings/Settings.h"
 #ifdef HAS_XBOX_D3D
  #include "xgraphics.h"
