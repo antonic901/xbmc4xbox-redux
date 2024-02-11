@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "SettingVisibility.h"
+#include "SettingRequirement.h"
 
 #define XML_SETTING     "setting"
 
@@ -42,9 +42,31 @@ public:
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
   const std::string& GetId() const { return m_id; }
-  bool IsVisible() const { return m_visible; }
-  void CheckVisible();
-  void SetVisible(bool visible) { m_visible = visible; }
+  /*!
+   \brief Whether the setting object is visible or hidden.
+   \return True if the setting object is visible, false otherwise
+   */
+  virtual bool IsVisible() const { return m_visible; }
+  /*!
+   \brief Sets the visibility state of the setting object.
+   \param visible Whether the setting object shall be visible or not
+   */
+  virtual void SetVisible(bool visible) { m_visible = visible; }
+
+  /*!
+   \brief Whether the setting object meets all necessary requirements.
+   \return True if the setting object meets all necessary requirements, false otherwise
+   */
+  virtual bool MeetsRequirements() const { return m_meetsRequirements; }
+  /*!
+   \brief Checks if the setting object meets all necessary requirements.
+   */
+  virtual void CheckRequirements();
+  /*!
+   \brief Sets whether the setting object meets all necessary requirements.
+   \param visible Whether the setting object meets all necessary requirements or not
+   */
+  virtual void SetRequirementsMet(bool requirementsMet) { m_meetsRequirements = requirementsMet; }
 
   static bool DeserializeIdentification(const TiXmlNode *node, std::string &identification);
 
@@ -54,5 +76,6 @@ protected:
 
 private:
   bool m_visible;
-  CSettingVisibility m_visibilityCondition;
+  bool m_meetsRequirements;
+  CSettingRequirement m_requirementCondition;
 };

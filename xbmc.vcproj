@@ -503,6 +503,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\SettingPath.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\SettingRequirement.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingRequirement.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\Settings.cpp">
 				</File>
 				<File
@@ -522,12 +528,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\SettingUpdate.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\SettingVisibility.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\SettingVisibility.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\SkinSettings.cpp">
@@ -2805,7 +2805,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.h">
 				</File>
-        <File
+				<File
 					RelativePath=".\xbmc\network\NetworkServices.cpp">
 				</File>
 				<File

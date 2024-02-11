@@ -556,8 +556,8 @@ void CSettings::InitializeVisibility()
   #if defined(TARGET_DARWIN)
   if (!g_sysinfo.IsAppleTV2() || GetIOSVersion() >= 4.3)
   {
-    timezonecountry->SetVisible(false);
-    timezone->SetVisible(false);
+    timezonecountry->SetRequirementsMet(false);
+    timezone->SetRequirementsMet(false);
   }
   #endif
 
