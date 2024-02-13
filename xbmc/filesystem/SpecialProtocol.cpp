@@ -24,9 +24,9 @@
 #include "URL.h"
 #include "Util.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
+#include "guilib/GraphicContext.h"
 
 #ifdef _LINUX
 #include <dirent.h>
@@ -110,7 +110,7 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName;
 
   if (RootDir.Equals("subtitles"))
-    URIUtils::AddFileToFolder(g_guiSettings.GetString("subtitles.custompath"), FileName, translatedPath);
+    URIUtils::AddFileToFolder(CSettings::Get().GetString("subtitles.custompath"), FileName, translatedPath);
   else if (RootDir.Equals("userdata"))
     URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), FileName, translatedPath);
   else if (RootDir.Equals("database"))
@@ -118,9 +118,9 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
   else if (RootDir.Equals("thumbnails"))
     URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), FileName, translatedPath);
   else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
-    URIUtils::AddFileToFolder(g_guiSettings.GetString("audiocds.recordingpath", false), FileName, translatedPath);
+    URIUtils::AddFileToFolder(CSettings::Get().GetString("audiocds.recordingpath"), FileName, translatedPath);
   else if (RootDir.Equals("screenshots"))
-    URIUtils::AddFileToFolder(g_guiSettings.GetString("debug.screenshotpath", false), FileName, translatedPath);
+    URIUtils::AddFileToFolder(CSettings::Get().GetString("debug.screenshotpath"), FileName, translatedPath);
   else if (RootDir.Equals("musicplaylists"))
     URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName, translatedPath);
   else if (RootDir.Equals("videoplaylists"))

@@ -49,8 +49,8 @@
 #include "music/Song.h"
 #include "URL.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
@@ -2285,7 +2285,7 @@ void CFileItemList::StackFiles()
         // item->m_bIsFolder = true;  // don't treat stacked files as folders
         // the label may be in a different char set from the filename (eg over smb
         // the label is converted from utf8, but the filename is not)
-        if (!g_guiSettings.GetBool("filelists.showextensions"))
+        if (!CSettings::Get().GetBool("filelists.showextensions"))
           URIUtils::RemoveExtension(stackName);
         CURL::Decode(stackName);
         item1->SetLabel(stackName);
@@ -2503,7 +2503,7 @@ CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */) co
     return fileThumb;
 
   // if a folder, check for folder.jpg
-  if (m_bIsFolder && !IsFileFolder() && (!IsRemote() || alwaysCheckRemote || g_guiSettings.GetBool("musicfiles.findremotethumbs")))
+  if (m_bIsFolder && !IsFileFolder() && (!IsRemote() || alwaysCheckRemote || CSettings::Get().GetBool("musicfiles.findremotethumbs")))
   {
     CStdStringArray thumbs;
     StringUtils::SplitString(g_advancedSettings.m_musicThumbs, "|", thumbs);
@@ -2518,7 +2518,7 @@ CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */) co
   }
   // this adds support for files which inherit a folder.jpg icon which has not been cached yet.
   // this occurs when queueing a top-level folder which has not been traversed yet.
-  else if (!IsRemote() || alwaysCheckRemote || g_guiSettings.GetBool("musicfiles.findremotethumbs"))
+  else if (!IsRemote() || alwaysCheckRemote || CSettings::Get().GetBool("musicfiles.findremotethumbs"))
   {
     CStdString strFolder, strFile;
     URIUtils::Split(m_strPath, strFolder, strFile);

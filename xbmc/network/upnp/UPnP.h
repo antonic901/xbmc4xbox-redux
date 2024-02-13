@@ -48,7 +48,7 @@ public:
     ~CUPnP();
 
     // server
-    void StartServer();
+    bool StartServer();
     void StopServer();
 
     // client
@@ -57,7 +57,7 @@ public:
     bool IsClientStarted() { return (m_MediaBrowser != NULL); }
 
     // renderer
-    void StartRenderer();
+    bool StartRenderer();
     void StopRenderer();
     void UpdateState();
 

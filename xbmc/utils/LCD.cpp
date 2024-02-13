@@ -20,7 +20,7 @@
 
 #include "LCD.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -30,9 +30,8 @@ using namespace std;
 
 void ILCD::StringToLCDCharSet(CStdString& strText)
 {
-
   //0 = HD44780, 1=KS0073
-  unsigned int iLCDContr = g_guiSettings.GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
+  unsigned int iLCDContr = CSettings::Get().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
   //the timeline is using blocks
   //a block is used at address 0xA0, smallBlocks at address 0xAC-0xAF
 

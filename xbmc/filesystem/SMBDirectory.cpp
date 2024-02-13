@@ -35,7 +35,6 @@
 #include "LocalizeStrings.h"
 #include "lib/libsmb/xbLibSmb.h"
 #include "GUIWindowManager.h"
-#include "settings/GUISettings.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "PasswordManager.h"

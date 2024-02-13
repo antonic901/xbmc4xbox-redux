@@ -104,7 +104,7 @@
 					<description>Gamesaves Button</description>
 					<textwidth>230</textwidth>
 					<include>ButtonCommonValues</include>
-					<label>20323</label>
+					<label>38779</label>
 					<onclick>ActivateWindow(35)</onclick>
 				</control>
 				<include>CommonNowPlaying_Controls</include>

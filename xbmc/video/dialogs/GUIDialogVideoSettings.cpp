@@ -24,7 +24,6 @@
 #include "GUIPassword.h"
 #include "Util.h"
 #include "utils/MathUtils.h"
-#include "settings/GUISettings.h"
 #include "LocalizeStrings.h"
 #include "Application.h"
 #ifdef HAS_VIDEO_PLAYBACK
@@ -75,7 +74,7 @@ void CGUIDialogVideoSettings::CreateSettings()
   // create our settings
   {
     const int entries[] = { 16018, 16019, 20131, 20130, 20129, 16022, 16021, 16020};
-    AddSpin(VIDEO_SETTINGS_INTERLACEMETHOD, 16023, (int*)&CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod, 8, entries);
+    AddSpin(VIDEO_SETTINGS_INTERLACEMETHOD, 38761, (int*)&CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod, 8, entries);
   }
   AddBool(VIDEO_SETTINGS_CROP, 644, &CMediaSettings::Get().GetCurrentVideoSettings().m_Crop);
   {
@@ -92,9 +91,9 @@ void CGUIDialogVideoSettings::CreateSettings()
 
   AddSeparator(8);
   AddButton(VIDEO_SETTINGS_MAKE_DEFAULT, 12376);
-  m_flickerFilter = g_guiSettings.GetInt("videoplayer.flicker");
+  m_flickerFilter = CSettings::Get().GetInt("videoplayer.flicker");
   AddSpin(VIDEO_SETTINGS_FLICKER, 13100, &m_flickerFilter, 0, 5, g_localizeStrings.Get(351).c_str());
-  m_soften = g_guiSettings.GetBool("videoplayer.soften");
+  m_soften = CSettings::Get().GetBool("videoplayer.soften");
   AddBool(VIDEO_SETTINGS_SOFTEN, 215, &m_soften);
   AddButton(VIDEO_SETTINGS_CALIBRATION, 214);
   if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
@@ -134,8 +133,8 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
   else if (setting.id == VIDEO_SETTINGS_FLICKER || setting.id == VIDEO_SETTINGS_SOFTEN)
   {
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    g_guiSettings.SetInt("videoplayer.flicker", m_flickerFilter);
-    g_guiSettings.SetBool("videoplayer.soften", m_soften);
+    CSettings::Get().SetInt("videoplayer.flicker", m_flickerFilter);
+    CSettings::Get().SetBool("videoplayer.soften", m_soften);
     g_graphicsContext.SetVideoResolution(res);
   }
   else if (setting.id == VIDEO_SETTINGS_CALIBRATION)
@@ -167,7 +166,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
       CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
       CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
       CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-      g_settings.Save();
+      CSettings::Get().Save();
     }
   }
 }

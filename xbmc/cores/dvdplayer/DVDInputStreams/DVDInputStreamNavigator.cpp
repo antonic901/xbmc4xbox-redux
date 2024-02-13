@@ -24,9 +24,11 @@
 #include "utils/LangCodeExpander.h"
 #include "DVDDemuxSPU.h"
 #include "DVDStateSerializer.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "filesystem/IFile.h"
 #include "LangInfo.h"
+
+#include "guilib/Geometry.h"
 
 #ifndef PRId64
 #ifdef _MSC_VER
@@ -96,7 +98,7 @@ bool CDVDInputStreamNavigator::Open(const char* strFile, const std::string& cont
   }
   free(strDVDFile);
 
-  int region = g_guiSettings.GetInt("dvds.playerregion");
+  int region = CSettings::Get().GetInt("dvds.playerregion");
   int mask = 0;
   if(region > 0)
     mask = 1 << (region-1);
@@ -171,7 +173,7 @@ bool CDVDInputStreamNavigator::Open(const char* strFile, const std::string& cont
   }
 
   // jump directly to title menu
-  if(g_guiSettings.GetBool("dvds.automenu"))
+  if(CSettings::Get().GetBool("dvds.automenu"))
   {
     int len, event;
     uint8_t buf[2048];

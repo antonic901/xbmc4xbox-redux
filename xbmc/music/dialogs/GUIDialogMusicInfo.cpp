@@ -39,6 +39,7 @@
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/Settings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 

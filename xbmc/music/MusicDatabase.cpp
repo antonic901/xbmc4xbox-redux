@@ -45,8 +45,9 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 #include "Application.h"
@@ -2408,7 +2409,7 @@ void CMusicDatabase::DeleteAlbumInfo()
 
 bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 {
-  if (!g_guiSettings.GetBool("audiocds.usecddb"))
+  if (!CSettings::Get().GetBool("audiocds.usecddb"))
     return false;
 
   // check network connectivity
@@ -2508,7 +2509,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
     } // if ( !cddb.queryCDinfo( pCdInfo ) )
     else
       pDialogProgress->Close();
-  } // if (pCdInfo->HasCDDBInfo() && g_settings.m_bUseCDDB)
+  }
 
   // Filling the file items with cddb info happens in CMusicInfoTagLoaderCDDA
 
@@ -4383,7 +4384,7 @@ bool CMusicDatabase::GetItems(const CStdString &strBaseDir, const CStdString &it
   else if (itemType.Equals("years"))
     return GetYearsNav(strBaseDir, items, filter);
   else if (itemType.Equals("artists"))
-    return GetArtistsNav(strBaseDir, items, !g_guiSettings.GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
+    return GetArtistsNav(strBaseDir, items, !CSettings::Get().GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
   else if (itemType.Equals("albums"))
     return GetAlbumsByWhere(strBaseDir, filter, items, sortDescription);
   else if (itemType.Equals("songs"))
@@ -4977,7 +4978,7 @@ bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription
       if (xsp.GetOrder() != SortByNone)
         sorting.sortBy = xsp.GetOrder();
       sorting.sortOrder = xsp.GetOrderAscending() ? SortOrderAscending : SortOrderDescending;
-      if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+      if (CSettings::Get().GetBool("filelists.ignorethewhensorting"))
         sorting.sortAttributes = SortAttributeIgnoreArticle;
     }
   }

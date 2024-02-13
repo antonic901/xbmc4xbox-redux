@@ -20,14 +20,15 @@
 
 #include "AudioDecoder.h"
 #include "CodecFactory.h"
-#include "settings/GUISettings.h"
+#include "Application.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
-#define INTERNAL_BUFFER_LENGTH  sizeof(float)*2*44100       // float samples, 2 channels, 44100 samples per sec = 1 second
+#include "defs_from_settings.h"
 
-ReplayGainSettings CAudioDecoder::m_replayGainSettings;
+#define INTERNAL_BUFFER_LENGTH  sizeof(float)*2*44100       // float samples, 2 channels, 44100 samples per sec = 1 second
 
 CAudioDecoder::CAudioDecoder()
 {
@@ -75,13 +76,13 @@ bool CAudioDecoder::Create(const CFileItem &file, __int64 seekOffset, unsigned i
   m_eof = false;
 
   // get correct cache size
-  unsigned int filecache = g_guiSettings.GetInt("cacheaudio.internet");
+  unsigned int filecache = CSettings::Get().GetInt("cacheaudio.internet");
   if ( file.IsHD() )
-    filecache = g_guiSettings.GetInt("cache.harddisk");
+    filecache = CSettings::Get().GetInt("cache.harddisk");
   else if ( file.IsOnDVD() )
-    filecache = g_guiSettings.GetInt("cacheaudio.dvdrom");
+    filecache = CSettings::Get().GetInt("cacheaudio.dvdrom");
   else if ( file.IsOnLAN() )
-    filecache = g_guiSettings.GetInt("cacheaudio.lan");
+    filecache = CSettings::Get().GetInt("cacheaudio.lan");
 
   // create our codec
   m_codec=CodecFactory::CreateCodecDemux(file.GetPath(), file.GetMimeType(), filecache * 1024);
@@ -256,7 +257,8 @@ int CAudioDecoder::ReadSamples(int numsamples)
 
 void CAudioDecoder::ProcessAudio(float *data, int numsamples)
 {
-  if (m_replayGainSettings.iType != REPLAY_GAIN_NONE)
+  const ReplayGainSettings &replayGainSettings = g_application.GetReplayGainSettings();
+  if (replayGainSettings.iType != REPLAY_GAIN_NONE)
   {
     float gainFactor = GetReplayGain();
     for (int i = 0; i < numsamples; i++)
@@ -272,39 +274,40 @@ void CAudioDecoder::ProcessAudio(float *data, int numsamples)
 float CAudioDecoder::GetReplayGain()
 {
 #define REPLAY_GAIN_DEFAULT_LEVEL 89.0f
+  const ReplayGainSettings &replayGainSettings = g_application.GetReplayGainSettings();
   // Compute amount of gain
-  float replaydB = (float)m_replayGainSettings.iNoGainPreAmp;
+  float replaydB = (float)replayGainSettings.iNoGainPreAmp;
   float peak = 0.0f;
-  if (m_replayGainSettings.iType == REPLAY_GAIN_ALBUM)
+  if (replayGainSettings.iType == REPLAY_GAIN_ALBUM)
   {
     if (m_codec->m_replayGain.iHasGainInfo & REPLAY_GAIN_HAS_ALBUM_INFO)
     {
-      replaydB = (float)m_replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iAlbumGain / 100.0f;
+      replaydB = (float)replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iAlbumGain / 100.0f;
       peak = m_codec->m_replayGain.fAlbumPeak;
     }
     else if (m_codec->m_replayGain.iHasGainInfo & REPLAY_GAIN_HAS_TRACK_INFO)
     {
-      replaydB = (float)m_replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iTrackGain / 100.0f;
+      replaydB = (float)replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iTrackGain / 100.0f;
       peak = m_codec->m_replayGain.fTrackPeak;
     }
   }
-  else if (m_replayGainSettings.iType == REPLAY_GAIN_TRACK)
+  else if (replayGainSettings.iType == REPLAY_GAIN_TRACK)
   {
     if (m_codec->m_replayGain.iHasGainInfo & REPLAY_GAIN_HAS_TRACK_INFO)
     {
-      replaydB = (float)m_replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iTrackGain / 100.0f;
+      replaydB = (float)replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iTrackGain / 100.0f;
       peak = m_codec->m_replayGain.fTrackPeak;
     }
     else if (m_codec->m_replayGain.iHasGainInfo & REPLAY_GAIN_HAS_ALBUM_INFO)
     {
-      replaydB = (float)m_replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iAlbumGain / 100.0f;
+      replaydB = (float)replayGainSettings.iPreAmp + (float)m_codec->m_replayGain.iAlbumGain / 100.0f;
       peak = m_codec->m_replayGain.fAlbumPeak;
     }
   }
   // convert to a gain type
   float replaygain = pow(10.0f, (replaydB - REPLAY_GAIN_DEFAULT_LEVEL)* 0.05f);
   // check peaks
-  if (m_replayGainSettings.bAvoidClipping)
+  if (replayGainSettings.bAvoidClipping)
   {
     if (fabs(peak * replaygain) > 1.0f)
       replaygain = 1.0f / fabs(peak);

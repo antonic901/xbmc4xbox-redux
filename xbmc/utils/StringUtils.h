@@ -31,10 +31,11 @@
 #ifndef __STRINGUTILS_H_
 #define __STRINGUTILS_H_
 
-#include "xbox/PlatformDefs.h"
-#include "DateTime.h"
-#include "utils/StdString.h"
 #include <vector>
+
+#include "xbox/PlatformDefs.h"
+#include "utils/StdString.h"
+#include "utils/StringUtils2.h"
 
 class StringUtils
 {

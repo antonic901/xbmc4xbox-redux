@@ -36,10 +36,9 @@
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
 #include "LocalizeStrings.h"
-#include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 
 #define CONTROL_BTNVIEWASICONS      2
@@ -136,8 +135,8 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SHUFFLE)
       {
-        g_guiSettings.ToggleBool("slideshow.shuffle");
-        g_settings.Save();
+        CSettings::Get().ToggleBool("slideshow.shuffle");
+        CSettings::Get().Save();
       }
       else if (m_viewControl.HasControl(iControl))  // list/thumb control
       {
@@ -148,7 +147,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         if (iAction == ACTION_DELETE_ITEM)
         {
           // is delete allowed?
-          if (g_guiSettings.GetBool("filelists.allowfiledeletion"))
+          if (CSettings::Get().GetBool("filelists.allowfiledeletion"))
             OnDeleteItem(iItem);
           else
             return false;
@@ -175,7 +174,7 @@ void CGUIWindowPictures::UpdateButtons()
   CGUIMediaWindow::UpdateButtons();
 
   // Update the shuffle button
-  if (g_guiSettings.GetBool("slideshow.shuffle"))
+  if (CSettings::Get().GetBool("slideshow.shuffle"))
   {
     CGUIMessage msg2(GUI_MSG_SELECTED, GetID(), CONTROL_SHUFFLE);
     g_windowManager.SendMessage(msg2);
@@ -218,7 +217,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
     if (items[i]->GetLabel().Equals("folder.jpg"))
       items.Remove(i);
 
-  if (items.GetFolderCount()==items.Size() || !g_guiSettings.GetBool("pictures.usetags"))
+  if (items.GetFolderCount()==items.Size() || !CSettings::Get().GetBool("pictures.usetags"))
     return;
 
   // Start the music info loader thread
@@ -271,7 +270,7 @@ bool CGUIWindowPictures::Update(const CStdString &strDirectory, bool updateFilte
     return false;
 
   m_vecItems->SetThumbnailImage("");
-  if (g_guiSettings.GetBool("pictures.generatethumbs"))
+  if (CSettings::Get().GetBool("pictures.generatethumbs"))
     m_thumbLoader.Load(*m_vecItems);
   m_vecItems->SetCachedPictureThumb();
 
@@ -399,7 +398,7 @@ void CGUIWindowPictures::OnSlideShowRecursive(const CStdString &strPicture)
 
     SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, true,
-                             g_guiSettings.GetBool("slideshow.shuffle"),false,
+                             CSettings::Get().GetBool("slideshow.shuffle"),false,
                              "", true,
                              sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
@@ -471,7 +470,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
 
         if (!m_thumbLoader.IsLoading())
           buttons.Add(CONTEXT_BUTTON_REFRESH_THUMBS, 13315);         // Create Thumbnails
-        if (g_guiSettings.GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
+        if (CSettings::Get().GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);

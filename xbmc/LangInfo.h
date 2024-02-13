@@ -19,22 +19,27 @@
  *
  */
 
+#include "settings/ISettingCallback.h"
 #include "utils/StdString.h"
 
 #include <map>
 
 class TiXmlNode;
 
-class CLangInfo
+class CLangInfo : public ISettingCallback
 {
 public:
   CLangInfo();
   virtual ~CLangInfo();
 
+  virtual void OnSettingChanged(const CSetting *setting);
+
   bool Load(const CStdString& strFileName);
 
   CStdString GetGuiCharSet() const;
   CStdString GetSubtitleCharSet() const;
+
+  bool SetLanguage(const std::string &strLanguage);
 
   const CStdString& GetDVDMenuLanguage() const;
   const CStdString& GetDVDAudioLanguage() const;
@@ -104,10 +109,19 @@ public:
   const CStdString& GetCurrentRegion() const;
 
   static void LoadTokens(const TiXmlNode* pTokens, std::vector<CStdString>& vecTokens);
+
+  static void SettingOptionsLanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsStreamLanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsRegionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+
 protected:
   void SetDefaults();
 
 protected:
+
+  static void SettingOptionsLanguagesFillerGeneral(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current,
+                                                   const std::vector<std::string> &languages = std::vector<std::string>(),
+                                                   const std::vector<std::string> &languageKeys = std::vector<std::string>());
 
   class CRegion
   {

@@ -684,7 +684,7 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
             CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone, MD5_Sign));
             CLog::Log(LOGINFO, "  Add this to BiosIDs.ini: (256)BiosNameHere = %hs",MD5_Sign);
             CLog::Log(LOGINFO, "---------------------------------------------------------");
-            strDetBiosNa = g_localizeStrings.Get(20306);
+            strDetBiosNa = g_localizeStrings.Get(38768);
             free(flash_copy);
             free(Listone);
             free(BIOS_Name);
@@ -702,7 +702,7 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
             CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone,MD5_Sign));
             CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (512)BiosNameHere = %hs",MD5_Sign);
             CLog::Log(LOGINFO, "---------------------------------------------------------");
-            strDetBiosNa = g_localizeStrings.Get(20306);
+            strDetBiosNa = g_localizeStrings.Get(38768);
             free(flash_copy);
             free(Listone);
             free(BIOS_Name);
@@ -718,7 +718,7 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
             CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone, MD5_Sign));
             CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (1MB)BiosNameHere = %hs",MD5_Sign);
             CLog::Log(LOGINFO, "---------------------------------------------------------");
-            strDetBiosNa = g_localizeStrings.Get(20306);
+            strDetBiosNa = g_localizeStrings.Get(38768);
             free(flash_copy);
             free(Listone);
             free(BIOS_Name);
@@ -1374,12 +1374,12 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
   strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s%s%s", 
-    bPad ? g_localizeStrings.Get(13163):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
-    bKeyb ? g_localizeStrings.Get(13164):"", bKeyb && bMouse ? ", ":"",
-    bMouse ? g_localizeStrings.Get(13165):"",bMouse && (bHeadSet || bMic) ? ", ":"",
-    bHeadSet || bMic ? g_localizeStrings.Get(13166):"", (bHeadSet || bMic) && bMem ? ", ":"",
-    bMem ? g_localizeStrings.Get(13167):"", bMem && bIR ? ", ":"",
-    bIR ? g_localizeStrings.Get(13168):""
+    bPad ? g_localizeStrings.Get(38730):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
+    bKeyb ? g_localizeStrings.Get(38731):"", bKeyb && bMouse ? ", ":"",
+    bMouse ? g_localizeStrings.Get(38732):"",bMouse && (bHeadSet || bMic) ? ", ":"",
+    bHeadSet || bMic ? g_localizeStrings.Get(38733):"", (bHeadSet || bMic) && bMem ? ", ":"",
+    bMem ? g_localizeStrings.Get(38734):"", bMem && bIR ? ", ":"",
+    bIR ? g_localizeStrings.Get(38735):""
     );
 
   return strReturn;
@@ -1518,18 +1518,18 @@ CStdString CSysInfo::GetModChipInfo()
   // Check if it is a SmartXX
   if (!SmartXX.Equals("None"))
   {
-    strModChipInfo.Format("%s %s", g_localizeStrings.Get(13291), SmartXX);
+    strModChipInfo.Format("%s %s", g_localizeStrings.Get(38741), SmartXX);
     CLog::Log(LOGDEBUG, "- Detected ModChip: %s",SmartXX.c_str());
   }
   else
   {
     if ( !ModChip.Equals("Unknown/Onboard TSOP (protected)"))
     {
-      strModChipInfo.Format("%s %s", g_localizeStrings.Get(13291), ModChip);
+      strModChipInfo.Format("%s %s", g_localizeStrings.Get(38741), ModChip);
     }
     else
     {
-      strModChipInfo.Format("%s %s", g_localizeStrings.Get(13291), g_localizeStrings.Get(20311));
+      strModChipInfo.Format("%s %s", g_localizeStrings.Get(38741), g_localizeStrings.Get(20311));
     }
   }
   return strModChipInfo;

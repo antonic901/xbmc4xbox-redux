@@ -35,7 +35,6 @@
 #include "filesystem/Directory.h"
 #include "FileItem.h"
 #include "FileOperationJob.h"
-#include "settings/GUISettings.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/FileUtils.h"
@@ -87,8 +86,7 @@ void CGUIWindowGameSaves::GoParentFolder()
   {
     Update(strParent);
   }
-  if (!g_guiSettings.GetBool("filelists.fulldirectoryhistory"))
-      m_history.RemoveSelectedItem(strOldPath); //Delete current path
+  m_history.RemoveSelectedItem(strOldPath); //Delete current path
 }
 
 bool CGUIWindowGameSaves::OnClick(int iItem)
@@ -335,7 +333,7 @@ bool CGUIWindowGameSaves::DownloadSaves(CFileItem item)
               CGUIDialogSelect *pDlg = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
               if (pDlg)
               {
-                pDlg->SetHeading(20320);
+                pDlg->SetHeading(38776);
                 pDlg->Reset();
                 pDlg->EnableButton(false);
                 std::vector<CStdString> vecSaveUrl;
@@ -361,11 +359,11 @@ bool CGUIWindowGameSaves::DownloadSaves(CFileItem item)
                     if (g_ZipManager.ExtractArchive("Z:\\gamesave.zip","E:\\"))
                     {
                       ::DeleteFile("E:\\gameid.ini");   // delete file E:\\gameid.ini artifcat continatin info about the save we got
-                      CGUIDialogOK::ShowAndGetInput(20317, 0, 20318, 0);
+                      CGUIDialogOK::ShowAndGetInput(38773, 0, 38774, 0);
                       return true;
                     }
                   }
-                  CGUIDialogOK::ShowAndGetInput(20317, 0, 20319, 0);  // Download Failed
+                  CGUIDialogOK::ShowAndGetInput(38773, 0, 38775, 0);  // Download Failed
                   CLog::Log(LOGINFO,"GSM: Failed to download: %s",  vecSaveUrl[iSelectedSave].c_str());
                   return true;
                 }
@@ -392,7 +390,7 @@ void CGUIWindowGameSaves::GetContextButtons(int itemNumber, CContextButtons &but
   // Only add if we are on E:/udata/
   // CStdString strFileName = URIUtils::GetFileName(m_vecItems->Get(iItem)->GetPath());
   // if (!strFileName.Equals("savemeta.xbx"))
-  //   buttons.Add(CONTEXT_BUTTON_DOWNLOAD, 20317);
+  //   buttons.Add(CONTEXT_BUTTON_DOWNLOAD, 38773);
 }
 
 bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
@@ -540,7 +538,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       {
         if (!CGUIWindowGameSaves::DownloadSaves(item))
         {
-          CGUIDialogOK::ShowAndGetInput(20317, 0, 20321, 0);  // No Saves found
+          CGUIDialogOK::ShowAndGetInput(38773, 0, 38777, 0);  // No Saves found
           CLog::Log(LOGINFO,"GSM: No saves available for game on internet: %s",  item->GetLabel().c_str());
         }
         else

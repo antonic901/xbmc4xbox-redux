@@ -26,7 +26,6 @@
 #include "addons/AddonManager.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
-#include "settings/GUISettings.h"
 #include "LangInfo.h"
 #include "Util.h"
 #include "utils/URIUtils.h"

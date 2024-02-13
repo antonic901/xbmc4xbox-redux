@@ -25,7 +25,7 @@
 #include "options.h"
 #if defined(_XBOX)
 #include "util.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #endif
 #include "ServerThread.h"
 #ifndef NOLAYERS
@@ -139,7 +139,7 @@ CTransferSocket::~CTransferSocket()
 }
 
 
-//Die folgenden Zeilen nicht bearbeiten. Sie werden vom Klassen-Assistenten benötigt.
+//Die folgenden Zeilen nicht bearbeiten. Sie werden vom Klassen-Assistenten benï¿½tigt.
 /*
 BEGIN_MESSAGE_MAP(CTransferSocket, CAsyncSocketEx)
 	//{{AFX_MSG_MAP(CTransferSocket)
@@ -498,7 +498,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			ASSERT(m_Filename!="");
 #if defined(_XBOX)
       // this to handle fat-x limitations
-      if (g_guiSettings.GetBool("services.ftpautofatx"))
+      if (CSettings::Get().GetBool("services.ftpautofatx"))
       {
         /*CUtil::ShortenFileName(m_Filename); // change! addme to new ports
         CStdString strFilename = URIUtils::GetFileName(m_Filename);

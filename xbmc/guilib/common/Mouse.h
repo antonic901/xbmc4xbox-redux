@@ -21,6 +21,7 @@
  *
  */
 
+#include "settings/ISettingCallback.h"
 #include "../Geometry.h"
 
 #define MOUSE_MINIMUM_MOVEMENT 2
@@ -53,12 +54,13 @@ public:
   virtual void ShowPointer(bool show)=0;
 };
 
-class CMouse
+class CMouse : public ISettingCallback
 {
 public:
-
   CMouse();
   virtual ~CMouse();
+
+  virtual void OnSettingChanged(const CSetting *setting);
 
   void Initialize(void *appData = NULL);
   void Update();

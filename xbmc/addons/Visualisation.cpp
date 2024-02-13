@@ -25,6 +25,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "settings/DisplaySettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

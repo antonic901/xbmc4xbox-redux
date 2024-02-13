@@ -292,6 +292,7 @@
 #define WINDOW_SYSTEM_INFORMATION         10007
 #define WINDOW_SCREEN_CALIBRATION          10011
 
+#define WINDOW_SETTINGS_START             10012
 #define WINDOW_SETTINGS_MYPICTURES        10012
 #define WINDOW_SETTINGS_MYPROGRAMS        10013
 #define WINDOW_SETTINGS_MYWEATHER         10014
@@ -302,6 +303,7 @@
 #define WINDOW_SETTINGS_APPEARANCE        10019
 
 #define WINDOW_SCRIPTS                    10020
+#define WINDOW_SETTINGS_MYPVR             10021
 
 #define WINDOW_VIDEO_FILES                10024
 #define WINDOW_VIDEO_NAV                  10025
@@ -309,7 +311,8 @@
 
 #define WINDOW_LOGIN_SCREEN               10029
 #define WINDOW_SETTINGS_PROFILES          10034
-#define WINDOW_GAMESAVES                  10035
+#define WINDOW_SKIN_SETTINGS              10035
+#define WINDOW_GAMESAVES                  10036
 
 #define WINDOW_ADDON_BROWSER              10040
 

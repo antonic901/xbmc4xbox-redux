@@ -21,7 +21,7 @@
 #include "pictures/Picture.h"
 #include "TextureManager.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
 #include "filesystem/CurlFile.h"
@@ -33,6 +33,7 @@
 #include "d3dx8.h"
 #include "XBTF.h"
 #include "utils/log.h"
+#include "guilib/GraphicContext.h"
 
 using namespace XFILE;
 
@@ -219,7 +220,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
     if (!ret)
     {
       if (!dll.Load()) return false;
-      if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, g_guiSettings.GetBool("pictures.useexifrotation")))
+      if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, CSettings::Get().GetBool("pictures.useexifrotation")))
       {
         CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
         return false;

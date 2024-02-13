@@ -35,11 +35,12 @@
 #include "addons/Skin.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "guilib/LocalizeStrings.h"
+
+#include "defs_from_settings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -87,11 +88,11 @@ void CGUIDialogAudioSubtitleSettings::CreateSettings()
   // only show stuff available in digital mode if we have digital output
   if(g_audioConfig.HasDigitalOutput())
   {
-    AddBool(AUDIO_SETTINGS_OUTPUT_TO_ALL_SPEAKERS, 252, &CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers, g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL);
+    AddBool(AUDIO_SETTINGS_OUTPUT_TO_ALL_SPEAKERS, 38621, &CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers, CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL);
 
-    int settings[2] = { 338, 339 }; //ANALOG, DIGITAL
-    m_outputmode = g_guiSettings.GetInt("audiooutput.mode");
-    AddSpin(AUDIO_SETTINGS_DIGITAL_ANALOG, 337, &m_outputmode, 2, settings);
+    int settings[2] = { 38630, 38631 }; //ANALOG, DIGITAL
+    m_outputmode = CSettings::Get().GetInt("audiooutput.mode");
+    AddSpin(AUDIO_SETTINGS_DIGITAL_ANALOG, 38629, &m_outputmode, 2, settings);
   }
 
   AddSeparator(7);
@@ -247,7 +248,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
         // update the screen setting...
         CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream = -1 - m_audioStream;
         // call monkeyh1's code here...
-        bool bAudioOnAllSpeakers = (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
+        bool bAudioOnAllSpeakers = (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
 #if defined(HAS_VIDEO_PLAYBACK) && defined(HAS_XBOX_HARDWARE)
         xbox_audio_switch_channel(m_audioStream, bAudioOnAllSpeakers);
 #endif
@@ -268,11 +269,11 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
   else if (setting.id == AUDIO_SETTINGS_DIGITAL_ANALOG)
   {
     if(m_outputmode == 0) // might be unneccesary (indexes match), but just for clearity
-      g_guiSettings.SetInt("audiooutput.mode", AUDIO_ANALOG);
+      CSettings::Get().SetInt("audiooutput.mode", AUDIO_ANALOG);
     else
-      g_guiSettings.SetInt("audiooutput.mode", AUDIO_DIGITAL);
+      CSettings::Get().SetInt("audiooutput.mode", AUDIO_DIGITAL);
 
-    EnableSettings(AUDIO_SETTINGS_OUTPUT_TO_ALL_SPEAKERS, g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL);
+    EnableSettings(AUDIO_SETTINGS_OUTPUT_TO_ALL_SPEAKERS, CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL);
     g_application.Restart();
   }
   else if (setting.id == SUBTITLE_SETTINGS_ENABLE)
@@ -309,15 +310,15 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
     if (g_application.GetCurrentPlayer() == EPC_DVDPLAYER)
       strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt";
     VECSOURCES shares(*CMediaSourceSettings::Get().GetSources("video"));
-    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !g_guiSettings.GetString("subtitles.custompath").IsEmpty())
+    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CSettings::Get().GetString("subtitles.custompath").empty())
     {
       CMediaSource share;
       std::vector<CStdString> paths;
       CStdString strPath1;
       URIUtils::GetDirectory(strPath,strPath1);
       paths.push_back(strPath1);
-      strPath1 = g_guiSettings.GetString("subtitles.custompath");
-      paths.push_back(g_guiSettings.GetString("subtitles.custompath"));
+      strPath1 = CSettings::Get().GetString("subtitles.custompath");
+      paths.push_back(CSettings::Get().GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
       // hack
       CMediaSourceSettings::Get().AddShare("video", share);
@@ -452,7 +453,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
       CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
       CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-      g_settings.Save();
+      CSettings::Get().Save();
     }
   }
 }

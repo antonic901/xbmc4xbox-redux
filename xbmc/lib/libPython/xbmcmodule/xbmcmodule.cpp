@@ -39,8 +39,8 @@
 #include "Util.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "TextureManager.h"
 #include "LangInfo.h"
 #include "SectionLoader.h"
@@ -375,7 +375,7 @@ namespace PYXBMC
 
   PyObject* XBMC_GetSkinDir(PyObject *self, PyObject *args)
   {
-    return PyString_FromString(g_guiSettings.GetString("lookandfeel.skin"));
+    return PyString_FromString(CSettings::Get().GetString("lookandfeel.skin").c_str());
   }
 
   // getLanguage() method
@@ -387,7 +387,7 @@ namespace PYXBMC
 
   PyObject* XBMC_GetLanguage(PyObject *self, PyObject *args)
   {
-    return PyString_FromString(g_guiSettings.GetString("locale.language"));
+    return PyString_FromString(CSettings::Get().GetString("locale.language").c_str());
   }
 
   // getIPAddress() method

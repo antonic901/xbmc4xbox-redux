@@ -40,8 +40,8 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "GUISliderControl.h"
 #include "settings/DisplaySettings.h"
-#include "settings/Settings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
@@ -555,7 +555,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       //  from HDD all the time.
       if (
         !g_application.CurrentFileItem().IsHD() &&
-        (g_guiSettings.GetInt("harddisk.remoteplayspindown") || g_guiSettings.GetInt("harddisk.spindowntime"))
+        (CSettings::Get().GetInt("harddisk.remoteplayspindown") || CSettings::Get().GetInt("harddisk.spindowntime"))
       )
       {
         g_audioManager.Enable(false);
@@ -587,12 +587,12 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         CSingleLock lock (m_fontLock);
 
         CStdString fontPath = "special://xbmc/media/Fonts/";
-        fontPath += g_guiSettings.GetString("subtitles.font");
+        fontPath += CSettings::Get().GetString("subtitles.font");
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
         RESOLUTION_INFO pal(720, 576, 0);
-        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[g_guiSettings.GetInt("subtitles.color")], 0, g_guiSettings.GetInt("subtitles.height"), g_guiSettings.GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
-        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, g_guiSettings.GetInt("subtitles.height"), g_guiSettings.GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CSettings::Get().GetInt("subtitles.color")], 0, CSettings::Get().GetInt("subtitles.height"), CSettings::Get().GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
+        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CSettings::Get().GetInt("subtitles.height"), CSettings::Get().GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
         if (!subFont || !borderFont)
           CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else
@@ -619,7 +619,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       CGUIWindow::OnMessage(message);
 
-      g_settings.Save();
+      CSettings::Get().Save();
 
       CSingleLock lock (g_graphicsContext);
       CUtil::RestoreBrightnessContrastGamma();
@@ -812,13 +812,13 @@ void CGUIWindowFullScreen::RenderFullScreen()
     {
       CStdString strStatus;
       strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
-      if (g_guiSettings.GetBool("videoplayer.soften"))
+      if (CSettings::Get().GetBool("videoplayer.soften"))
         strStatus += "  |  Soften";
       else
         strStatus += "  |  No Soften";
 
       CStdString strFilter;
-      strFilter.Format("  |  Flicker Filter: %i", g_guiSettings.GetInt("videoplayer.flicker"));
+      strFilter.Format("  |  Flicker Filter: %i", CSettings::Get().GetInt("videoplayer.flicker"));
       strStatus += strFilter;
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strStatus);

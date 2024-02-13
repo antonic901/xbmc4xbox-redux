@@ -39,6 +39,7 @@
 #include "common/Mouse.h"
 
 #include "utils/GlobalsHandling.h"
+#include "settings/ISettingCallback.h"
 
 /*!
  \ingroup graphics
@@ -114,6 +115,13 @@ public:
   }
 };
 
+enum AdjustRefreshRate
+{
+  ADJUST_REFRESHRATE_OFF          = 0,
+  ADJUST_REFRESHRATE_ALWAYS,
+  ADJUST_REFRESHRATE_ON_STARTSTOP
+};
+
 /*!
  \ingroup graphics
  \brief
@@ -123,6 +131,7 @@ class CGraphicContext : public CCriticalSection
 public:
   CGraphicContext(void);
   virtual ~CGraphicContext(void);
+
   LPDIRECT3DDEVICE8 Get3DDevice() { return m_pd3dDevice; }
   void SetD3DDevice(LPDIRECT3DDEVICE8 p3dDevice);
   //  void         GetD3DParameters(D3DPRESENT_PARAMETERS &params);

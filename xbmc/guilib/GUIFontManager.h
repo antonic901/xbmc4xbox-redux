@@ -35,6 +35,7 @@ class CGUIFont;
 class CGUIFontTTF;
 class CXBMCTinyXML;
 class TiXmlNode;
+class CSetting;
 
 struct OrigFontInfo
 {
@@ -75,6 +76,9 @@ public:
   bool GetFirstFontSetUnicode(CStdString& strFontSet);
 
   void ReloadTTFFonts(void);
+
+  static void SettingOptionsFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsSubtitleHeightsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
 
 protected:
   void RescaleFontSizeAndAspect(float *size, float *aspect, const RESOLUTION_INFO &sourceRes, bool preserveAspect) const;

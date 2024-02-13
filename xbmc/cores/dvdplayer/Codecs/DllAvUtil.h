@@ -116,7 +116,7 @@ public:
 class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
 {
 public:
-  DllAvUtilBase() : DllDynamic( g_settings.GetFFmpegDllFolder() + "avutil-52.dll") {}
+  DllAvUtilBase() : DllDynamic( CSettings::Get().GetFFmpegDllFolder() + "avutil-52.dll") {}
 
   LOAD_SYMBOLS()
 

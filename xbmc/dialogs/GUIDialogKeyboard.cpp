@@ -18,7 +18,6 @@
  *
  */
 
-#include "settings/GUISettings.h"
 #include "GUIDialogKeyboard.h"
 #include "GUILabelControl.h"
 #include "GUIButtonControl.h"
@@ -31,6 +30,7 @@
 #include "utils/md5.h"
 #include "utils/TimeUtils.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "xbox/XKGeneral.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
@@ -656,7 +656,7 @@ int CGUIDialogKeyboard::ShowAndVerifyPassword(CStdString& strPassword, const CSt
   if (1 > iRetries && strHeading.size())
     strHeadingTemp = strHeading;
   else
-    strHeadingTemp.Format("%s - %i %s", g_localizeStrings.Get(12326).c_str(), g_guiSettings.GetInt("masterlock.maxretries") - iRetries, g_localizeStrings.Get(12343).c_str());
+    strHeadingTemp.Format("%s - %i %s", g_localizeStrings.Get(12326).c_str(), CSettings::Get().GetInt("masterlock.maxretries") - iRetries, g_localizeStrings.Get(12343).c_str());
 
   CStdString strUserInput = "";
   if (!ShowAndGetInput(strUserInput, strHeadingTemp, false, true))  //bool hiddenInput = false/true ? TODO: GUI Setting to enable disable this feature y/n?

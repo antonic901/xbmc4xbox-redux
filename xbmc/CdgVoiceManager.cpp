@@ -20,7 +20,7 @@
 
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "Application.h"
 
 //CdgChatter
@@ -212,14 +212,14 @@ void CCdgChatter::LoadSettings()
 {
   // Get the Max volume
   CStdString strSetting = "karaoke.volume";
-  int iPercent = g_guiSettings.GetInt(strSetting);
+  int iPercent = CSettings::Get().GetInt(strSetting);
   if (iPercent < 0) iPercent = 0;
   if (iPercent > 100) iPercent = 100;
   float fHardwareVolume = ((float)iPercent) / 100.0f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM;
   m_lVolume = (long)fHardwareVolume;
   //Load the voice mask
   strSetting.Format("karaoke.port%ivoicemask", m_dwPort);
-  strSetting = g_guiSettings.GetString(strSetting);
+  strSetting = CSettings::Get().GetString(strSetting);
   if (strSetting.CompareNoCase("None") == 0)
   {
     if (m_pVoiceMask)

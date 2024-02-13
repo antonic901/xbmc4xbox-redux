@@ -38,7 +38,7 @@ to maintain a single distribution point for the source code.
 #include "Sntp.h"
 #include "network/DNSNameCache.h"
 #include "Application.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "AutoPtrHandle.h"
 #include "log.h"
 
@@ -741,7 +741,7 @@ void CSNTPClient::Process()
   while (nTries < 3 && !CThread::m_bStop)
   {
     NtpServerResponse response;
-    if (GetServerTime( g_guiSettings.GetString("locale.timeserveraddress"), response))
+    if (GetServerTime( CSettings::Get().GetString("locale.timeserveraddress").c_str(), response))
     {
       SYSTEMTIME st1 = response.m_OriginateTime;
       SYSTEMTIME st2 = response.m_ReceiveTime;

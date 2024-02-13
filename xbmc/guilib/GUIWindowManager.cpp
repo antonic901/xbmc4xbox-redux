@@ -27,7 +27,7 @@
 #include "GUIInfoManager.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "addons/Skin.h"
 #include "threads/SingleLock.h"
 #include "utils/Variant.h"
@@ -357,7 +357,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   // virtual music window which returns the last open music window (aka the music start window)
   if (iWindowID == WINDOW_MUSIC)
   {
-    iWindowID = g_guiSettings.GetInt("mymusic.startwindow");
+    iWindowID = CSettings::Get().GetInt("mymusic.startwindow");
     // ensure the music virtual window only returns music files and music library windows
     if (iWindowID != WINDOW_MUSIC_NAV)
       iWindowID = WINDOW_MUSIC_FILES;

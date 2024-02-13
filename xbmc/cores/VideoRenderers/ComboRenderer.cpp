@@ -21,10 +21,10 @@
 #include "utils/log.h"
 #include "ComboRenderer.h"
 #include "Application.h"
-#include "settings/GUISettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "threads/SingleLock.h"
 
 CComboRenderer::CComboRenderer(LPDIRECT3DDEVICE8 pDevice)
@@ -385,7 +385,7 @@ void CComboRenderer::CheckScreenSaver()
   if (g_application.IsInScreenSaver() && !m_bHasDimView)
   {
     D3DLOCKED_RECT lr;
-    float fAmount = (float)g_guiSettings.GetInt("screensaver.dimlevel") / 100.0f;
+    float fAmount = (float)CSettings::Get().GetInt("screensaver.dimlevel") / 100.0f;
     if ( D3D_OK == m_YUY2Texture[m_iYUY2RenderBuffer]->LockRect(0, &lr, NULL, 0 ))
     {
       // Drop brightness of current surface to 20%

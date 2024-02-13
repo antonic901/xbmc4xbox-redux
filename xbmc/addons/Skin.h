@@ -21,12 +21,15 @@
  *
  */
 
+#include <vector>
+
 #include "Addon.h"
 #include "guilib/GraphicContext.h" // needed for the RESOLUTION members
 #include "guilib/GUIIncludes.h"    // needed for the GUIInclude member
 #define CREDIT_LINE_LENGTH 50
 
 class TiXmlNode;
+class CSetting;
 
 namespace ADDON
 {
@@ -115,6 +118,13 @@ public:
   static double GetMinVersion();
   void LoadIncludes();
   const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name, int context);
+
+  static void SettingOptionsSkinColorsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsSkinFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsSkinSoundFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsSkinThemesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  static void SettingOptionsStartupWindowsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+
 protected:
   /*! \brief grab a resolution tag from a skin's configuration data
    \param props passed addoninfo structure to check for resolution

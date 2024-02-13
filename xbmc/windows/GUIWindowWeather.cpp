@@ -24,7 +24,6 @@
 #include "GUIWindowWeather.h"
 #include "guilib/GUIImage.h"
 #include "utils/Weather.h"
-#include "settings/GUISettings.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/URIUtils.h"
 #include "lib/libPython/XBPython.h"
@@ -32,6 +31,8 @@
 #include "utils/log.h"
 #include "utils/SystemInfo.h"
 #include "addons/AddonManager.h"
+#include "settings/Settings.h"
+#include "utils/StringUtils2.h"
 
 using namespace ADDON;
 
@@ -107,7 +108,7 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
       SetProperties();
       if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
       {
-        if (!g_guiSettings.GetString("weather.addon").IsEmpty())
+        if (!CSettings::Get().GetString("weather.addon").empty())
           m_scriptTimer.StartZero();
       }
       else
@@ -284,7 +285,7 @@ void CGUIWindowWeather::SetProperties()
   SetProperty("LocationIndex", iCurWeather);
   CStdString strSetting;
   strSetting.Format("weather.areacode%i", iCurWeather);
-  SetProperty("AreaCode", CWeather::GetAreaCode(g_guiSettings.GetString(strSetting)));
+  SetProperty("AreaCode", CWeather::GetAreaCode(CSettings::Get().GetString(strSetting)));
   SetProperty("Updated", g_weatherManager.GetLastUpdateTime());
   SetProperty("Current.ConditionIcon", g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
   SetProperty("Current.Condition", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_COND));
@@ -317,10 +318,10 @@ void CGUIWindowWeather::SetProperties()
 
 void CGUIWindowWeather::CallScript()
 {
-  if (!g_guiSettings.GetString("weather.addon").Equals(DEFAULT_WEATHER_ADDON))
+  if (!StringUtils2::EqualsNoCase(CSettings::Get().GetString("weather.addon"), DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
-    if (!ADDON::CAddonMgr::Get().GetAddon(g_guiSettings.GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
+    if (!ADDON::CAddonMgr::Get().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
       return;
 
     // initialize our sys.argv variables
@@ -341,7 +342,7 @@ void CGUIWindowWeather::CallScript()
     // get the current locations area code
     CStdString strSetting;
     strSetting.Format("weather.areacode%i", g_weatherManager.GetArea());
-    argv.push_back(CWeather::GetAreaCode(g_guiSettings.GetString(strSetting)));
+    argv.push_back(CWeather::GetAreaCode(CSettings::Get().GetString(strSetting)));
 
     // call our script, passing the areacode
     g_pythonParser.evalFile(argv[0], argv,addon);

@@ -43,18 +43,19 @@
 #include "addons/Addon.h" // for TranslateType, TranslateContent
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
+#include "network/NetworkServices.h"
 #include "LCD.h"
 #include "log.h"
 #include "storage/MediaManager.h"
 #include "utils/RssManager.h"
 #include "PartyModeManager.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/StringUtils.h"
+#include "utils/StringUtils2.h"
 #include "Util.h"
 #include "video/VideoDatabase.h"
 #include "music/MusicDatabase.h"
@@ -87,6 +88,7 @@
 
 #include <vector>
 #include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -236,8 +238,8 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("dashboard"))
   {
-    if (g_guiSettings.GetBool("myprograms.usedashpath"))
-      CUtil::RunXBE(g_guiSettings.GetString("myprograms.dashboard").c_str());
+    if (CSettings::Get().GetBool("myprograms.usedashpath"))
+      CUtil::RunXBE(CSettings::Get().GetString("myprograms.dashboard").c_str());
     else
       CUtil::BootToDash();
   }
@@ -409,7 +411,7 @@ int CBuiltins::Execute(const CStdString& execString)
       else if (item.IsXBE())
       {
         int iRegion;
-        if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+        if (CSettings::Get().GetBool("myprograms.gameautoregion"))
         {
           CXBE xbe;
           iRegion = xbe.ExtractGameRegion(params[0]);
@@ -684,7 +686,7 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if( g_application.IsPlaying() && g_application.m_pPlayer && g_application.m_pPlayer->CanRecord())
       {
-        if (m_pXbmcHttp && g_guiSettings.GetInt("services.httpapibroadcastlevel")>=1)
+        if (m_pXbmcHttp && CSettings::Get().GetInt("services.httpapibroadcastlevel")>=1)
           g_application.getApplicationMessenger().HttpApi(g_application.m_pPlayer->IsRecording()?"broadcastlevel; RecordStopping;1":"broadcastlevel; RecordStarting;1");
         g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
       }
@@ -730,11 +732,11 @@ int CBuiltins::Execute(const CStdString& execString)
       {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        g_settings.Save();
+        CSettings::Get().Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        g_settings.Save();
+        CSettings::Get().Save();
       }
 
       // send message
@@ -774,11 +776,11 @@ int CBuiltins::Execute(const CStdString& execString)
       {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        g_settings.Save();
+        CSettings::Get().Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        g_settings.Save();
+        CSettings::Get().Save();
       }
 
       // send messages so now playing window can get updated
@@ -925,7 +927,7 @@ int CBuiltins::Execute(const CStdString& execString)
   {
     int setting = CSkinSettings::Get().TranslateBool(parameter);
     CSkinSettings::Get().SetBool(setting, !CSkinSettings::Get().GetBool(setting));
-    g_settings.Save();
+    CSettings::Get().Save();
   }
   else if (execute.Equals("skin.setbool") && params.size())
   {
@@ -933,23 +935,23 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       int string = CSkinSettings::Get().TranslateBool(params[0]);
       CSkinSettings::Get().SetBool(string, params[1].CompareNoCase("true") == 0);
-      g_settings.Save();
+      CSettings::Get().Save();
       return 0;
     }
     // default is to set it to true
     int setting = CSkinSettings::Get().TranslateBool(params[0]);
     CSkinSettings::Get().SetBool(setting, true);
-    g_settings.Save();
+    CSettings::Get().Save();
   }
   else if (execute.Equals("skin.reset"))
   {
     CSkinSettings::Get().Reset(parameter);
-    g_settings.Save();
+    CSettings::Get().Save();
   }
   else if (execute.Equals("skin.resetsettings"))
   {
     CSkinSettings::Get().Reset();
-    g_settings.Save();
+    CSettings::Get().Save();
   }
   else if (execute.Equals("skin.theme"))
   {
@@ -959,12 +961,11 @@ int CBuiltins::Execute(const CStdString& execString)
 
     int iTheme = -1;
 
-    CStdString strTmpTheme;
     // find current theme
-    if (!g_guiSettings.GetString("lookandfeel.skintheme").Equals("skindefault"))
+    if (!StringUtils2::EqualsNoCase(CSettings::Get().GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
       for (unsigned int i=0;i<vecTheme.size();++i)
       {
-        strTmpTheme = g_guiSettings.GetString("lookandfeel.skintheme");
+        CStdString strTmpTheme(CSettings::Get().GetString("lookandfeel.skintheme"));
         URIUtils::RemoveExtension(strTmpTheme);
         if (vecTheme[i].Equals(strTmpTheme))
         {
@@ -983,19 +984,16 @@ int CBuiltins::Execute(const CStdString& execString)
     if (iTheme < -1)
       iTheme = vecTheme.size()-1;
 
-    CStdString strSkinTheme;
-    if (iTheme==-1)
-      g_guiSettings.SetString("lookandfeel.skintheme","skindefault");
-    else
-    {
-      strSkinTheme.Format("%s.xpr",vecTheme[iTheme]);
-      g_guiSettings.SetString("lookandfeel.skintheme",strSkinTheme);
-    }
+    CStdString strSkinTheme = "SKINDEFAULT";
+    if (iTheme != -1 && iTheme < (int)vecTheme.size())
+      strSkinTheme = vecTheme[iTheme];
+
+    CSettings::Get().SetString("lookandfeel.skintheme", strSkinTheme);
     // also set the default color theme
     CStdString colorTheme(URIUtils::ReplaceExtension(strSkinTheme, ".xml"));
-
-    g_guiSettings.SetString("lookandfeel.skincolors", colorTheme);
-
+    if (colorTheme.Equals("Textures.xml"))
+      colorTheme = "defaults.xml";
+    CSettings::Get().SetString("lookandfeel.skincolors", colorTheme);
     g_application.ReloadSkin();
   }
   else if (execute.Equals("skin.setstring") || execute.Equals("skin.setimage") || execute.Equals("skin.setfile") ||
@@ -1009,7 +1007,7 @@ int CBuiltins::Execute(const CStdString& execString)
       if (execute.Equals("skin.setstring"))
       {
         CSkinSettings::Get().SetString(string, params[1]);
-        g_settings.Save();
+        CSettings::Get().Save();
         return 0;
       }
     }
@@ -1085,7 +1083,7 @@ int CBuiltins::Execute(const CStdString& execString)
       if (CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, g_localizeStrings.Get(1031), value))
         CSkinSettings::Get().SetString(string, value);
     }
-    g_settings.Save();
+    CSettings::Get().Save();
   }
   else if (execute.Equals("skin.setaddon") && params.size() > 1)
   {
@@ -1101,7 +1099,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (types.size() > 0 && CGUIWindowAddonBrowser::SelectAddonID(types, result, true) == 1)
     {
       CSkinSettings::Get().SetString(string, result);
-      g_settings.Save();
+      CSettings::Get().Save();
     }
   }
   else if (execute.Equals("dialog.close") && params.size())
@@ -1454,8 +1452,8 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("toggledebug"))
   {
-    bool debug = g_guiSettings.GetBool("debug.showloginfo");
-    g_guiSettings.SetBool("debug.showloginfo", !debug);
+    bool debug = CSettings::Get().GetBool("debug.showloginfo");
+    CSettings::Get().SetBool("debug.showloginfo", !debug);
     g_advancedSettings.SetDebugMode(!debug);
   }
   else if (execute.Equals("weather.locationset"))

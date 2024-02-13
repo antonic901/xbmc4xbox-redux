@@ -23,9 +23,11 @@
 #include "GUIAudioManager.h"
 #include "IAudioDeviceChangedCallback.h"
 #include "settings/MediaSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "XBAudioConfig.h"
 #include "utils/log.h"
+
+#include "defs_from_settings.h"
 
 #ifndef _XBOX
 extern HWND g_hWnd;
@@ -130,9 +132,9 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
 
 #ifdef HAS_AUDIO
   DWORD spconfig = DSSPEAKER_USE_DEFAULT;
-  if (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    if (((g_guiSettings.GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
+    if (((CSettings::Get().GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
     {
       if( g_audioConfig.GetAC3Enabled() )
       {

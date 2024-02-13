@@ -25,13 +25,12 @@
 #include "Undocumented.h"
 #endif
 #include "Application.h"
-#include "filesystem/SmbFile.h"
-#include "settings/GUISettings.h"
-#include "GUIWindowManager.h"
 #include "ApplicationMessenger.h"
-#include "utils/RssManager.h"
-#include "utils/Weather.h"
+#include "network/NetworkServices.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
+
+#include "defs_from_settings.h"
 
 // Time to wait before we give up on network init
 #define WAIT_TIME 10000
@@ -398,12 +397,12 @@ bool CNetwork::SetupNetwork()
   {
     CLog::Log(LOGDEBUG, "%s - Setting up network...", __FUNCTION__);
     
-    Initialize(g_guiSettings.GetInt("network.assignment"),
-      g_guiSettings.GetString("network.ipaddress").c_str(),
-      g_guiSettings.GetString("network.subnet").c_str(),
-      g_guiSettings.GetString("network.gateway").c_str(),
-      g_guiSettings.GetString("network.dns").c_str(),
-      g_guiSettings.GetString("network.dns2").c_str());
+    Initialize(CSettings::Get().GetInt("network.assignment"),
+      CSettings::Get().GetString("network.ipaddress").c_str(),
+      CSettings::Get().GetString("network.subnet").c_str(),
+      CSettings::Get().GetString("network.gateway").c_str(),
+      CSettings::Get().GetString("network.dns").c_str(),
+      CSettings::Get().GetString("network.dns2").c_str());
       
     return true;
   }
@@ -601,30 +600,15 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
   switch( message )
   {
     case SERVICES_UP:
-    {
       CLog::Log(LOGDEBUG, "%s - Starting network services",__FUNCTION__);
-      g_application.StartTimeServer();
-      g_application.StartWebServer();
-      g_application.StartFtpServer();
-      g_application.StartUPnP();
-      g_application.StartEventServer();
-      CRssManager::Get().Start();
-      g_weatherManager.Refresh();
-    }
-    break;
+      CNetworkServices::Get().Start();
+      break;
     case SERVICES_DOWN:
-    {
       CLog::Log(LOGDEBUG, "%s - Stopping network services",__FUNCTION__);
-      g_application.StopTimeServer();
-      g_application.StopWebServer();
-      g_application.StopFtpServer();
-      g_application.StopUPnP();
-      g_application.StopEventServer();
-      // smb.Deinit(); if any file is open over samba this will break.
-
-      CRssManager::Get().Stop();
-    }
-    break;
+      CNetworkServices::Get().Stop(false); // tell network services to stop, but don't wait for them yet
+      CLog::Log(LOGDEBUG, "%s - Waiting for network services to stop",__FUNCTION__);
+      CNetworkServices::Get().Stop(true); // wait for network services to stop
+      break;
   }
 }
 

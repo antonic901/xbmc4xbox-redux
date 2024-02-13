@@ -11,7 +11,7 @@
 #endif
 #include "lib/liblzo/LZO1X.H"
 #include "addons/Skin.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "utils/URIUtils.h"
 #include "filesystem/SpecialProtocol.h"
 
@@ -113,7 +113,7 @@ bool CTextureBundle::OpenBundle()
   {
     // if we are the theme bundle, we only load if the user has chosen
     // a valid theme (or the skin has a default one)
-    CStdString themeXPR = g_guiSettings.GetString("lookandfeel.skintheme");
+    CStdString themeXPR = CSettings::Get().GetString("lookandfeel.skintheme");
     if (!themeXPR.IsEmpty() && themeXPR.CompareNoCase("SKINDEFAULT"))
     {
       strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");

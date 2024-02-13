@@ -19,7 +19,7 @@
  */
  
 #include "utils/log.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "audio.h"
 #include "IDirectSoundRenderer.h"
 #include "ASyncDirectSound.h"
@@ -29,6 +29,8 @@
 #include "MPlayer.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "threads/SingleLock.h"
+
+#include "defs_from_settings.h"
 
 static IDirectSoundRenderer* m_pAudioDecoder = NULL;
 static CCriticalSection m_critAudio;
@@ -176,7 +178,7 @@ static int audio_init(int rate, int channels, int format, int flags)
 
   // Check whether we are passing digital output direct through.
   // Anything with 48kHz 2 channel audio can be passed direct.
-  if (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
     // Check that we are allowed to pass through DD or DTS
     if (strstr(strAudioCodec, "SPDIF"))

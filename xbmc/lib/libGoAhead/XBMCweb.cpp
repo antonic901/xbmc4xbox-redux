@@ -27,7 +27,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "playlists/PlayList.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
@@ -159,7 +159,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     for (int i=0; i < (int) items.Size(); ++i)
       AddItemToPlayList(items[i]);
   }
-  else if (pItem->IsZIP() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
+  else if (pItem->IsZIP())
   {
     CStdString strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "zip", pItem->GetPath(), "");
@@ -172,7 +172,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     for (int i=0; i < (int) items.Size(); ++i)
       AddItemToPlayList(items[i]);
   }
-  else if (pItem->IsRAR() && g_guiSettings.GetBool("VideoFiles.HandleArchives"))
+  else if (pItem->IsRAR())
   {
     CStdString strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "rar", pItem->GetPath(), "");
@@ -975,7 +975,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
     musicdatabase.Close();
   }
 
-  if (!bFound && g_guiSettings.GetBool("musicfiles.usetags"))
+  if (!bFound && CSettings::Get().GetBool("musicfiles.usetags"))
   {
     //	...no, try to load the tag of the file.
     auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem.GetPath()));

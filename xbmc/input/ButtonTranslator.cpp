@@ -634,7 +634,7 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
   }
   if ((pDevice = pWindow->FirstChild("remote")) != NULL)
   { // map remote actions
-    bool bUseMCE = g_guiSettings.GetBool("system.mceremote");
+    bool bUseMCE = CSettings::Get().GetBool("system.mceremote");
     TiXmlElement *pRemote;
     CStdString remoteName;
     while (pDevice)

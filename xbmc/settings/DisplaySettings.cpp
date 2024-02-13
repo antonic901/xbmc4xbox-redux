@@ -19,12 +19,22 @@
  */
 
 #include "DisplaySettings.h"
+#include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GraphicContext.h"
 #include "guilib/gui3d.h"
-#include "settings/GUISettings.h"
+#include "guilib/LocalizeStrings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/XMLUtils.h"
+#include "XBVideoConfig.h"
+
+#include "defs_from_settings.h"
+
+// 0.1 second increments
+#define MAX_REFRESH_CHANGE_DELAY 200
 
 using namespace std;
 
@@ -157,20 +167,117 @@ void CDisplaySettings::Clear()
   m_pixelRatio = 1.0f;
 }
 
+bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+{
+  if (setting == NULL)
+    return false;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "videoscreen.resolution")
+  {
+    // check if this is the revert call for a failed OnSettingChanging
+    // in which case we don't want to ask the user again
+    if (m_ignoreSettingChanging.find(make_pair(settingId, true)) == m_ignoreSettingChanging.end())
+    {
+      RESOLUTION newRes = RES_AUTORES;
+      if (settingId == "videoscreen.resolution")
+        newRes = (RESOLUTION)((CSettingInt*)setting)->GetValue();
+
+      // We need to change and save videoscreen.resolution which will
+      // trigger another call to this OnSettingChanging() which should not
+      // trigger a user-input dialog which is already triggered by the callback
+      // of the changed setting
+      bool save = settingId != "videoscreen.resolution";
+      if (save)
+        m_ignoreSettingChanging.insert(make_pair("videoscreen.resolution", true));
+      SetCurrentResolution(newRes, save);
+      g_graphicsContext.SetVideoResolution(newRes);
+
+      // check if this setting is temporarily blocked from showing the dialog
+      if (m_ignoreSettingChanging.find(make_pair(settingId, false)) == m_ignoreSettingChanging.end())
+      {
+        bool cancelled = false;
+        if (!CGUIDialogYesNo::ShowAndGetInput(13110, 13111, 20022, 20022, -1, -1, cancelled, 10000))
+        {
+          // we need to ignore the next OnSettingChanging() call for
+          // the same setting which is executed to broadcast that
+          // changing the setting has failed
+          m_ignoreSettingChanging.insert(make_pair(settingId, false));
+          return false;
+        }
+      }
+      else
+        m_ignoreSettingChanging.erase(make_pair(settingId, false));
+    }
+    else
+      m_ignoreSettingChanging.erase(make_pair(settingId, true));
+  }
+  else if (settingId == "videoscreen.flickerfilter" || settingId == "videoscreen.soften")
+    g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+  else if (StringUtils2::StartsWith(settingId, "videooutput."))
+  {
+    if (settingId == "videooutput.aspect")
+    {
+      switch(((CSettingInt*)setting)->GetValue())
+      {
+      case VIDEO_NORMAL:
+        g_videoConfig.SetNormal();
+        break;
+      case VIDEO_LETTERBOX:
+        g_videoConfig.SetLetterbox(true);
+        break;
+      case VIDEO_WIDESCREEN:
+        g_videoConfig.SetWidescreen(true);
+        break;
+      }
+    }
+    else if (settingId == "videooutput.hd480p")
+      g_videoConfig.Set480p(((CSettingBool*)setting)->GetValue());
+    else if (settingId == "videooutput.hd720p")
+      g_videoConfig.Set720p(((CSettingBool*)setting)->GetValue());
+    else if (settingId == "videooutput.hd1080i")
+      g_videoConfig.Set1080i(((CSettingBool*)setting)->GetValue());
+
+    if (g_videoConfig.NeedsSave())
+      g_videoConfig.Save();
+  }
+
+  return true;
+}
+
+bool CDisplaySettings::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
+{
+  if (setting == NULL)
+    return false;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "videoscreen.resolution")
+  {
+    CSettingString *screenmodeSetting = (CSettingString*)setting;
+    std::string screenmode = screenmodeSetting->GetValue();
+    // in Eden there was no character ("i" or "p") indicating interlaced/progressive
+    // at the end so we just add a "p" and assume progressive
+    if (screenmode.size() == 20)
+      return screenmodeSetting->SetValue(screenmode + "p");
+  }
+
+  return false;
+}
+
 void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)
 {
   if (save)
-    g_guiSettings.SetInt("videoscreen.resolution", (int)resolution);
+    CSettings::Get().SetInt("videoscreen.resolution", (int)resolution);
 
   m_currentResolution = resolution;
 
   // SetChanged() is added in PVR pull request
-  g_settings.Save()/*g_guiSettings.SetChanged()*/;
+  CSettings::Get().Save()/*g_guiSettings.SetChanged()*/;
 }
 
 RESOLUTION CDisplaySettings::GetDisplayResolution() const
 {
-  return (RESOLUTION)g_guiSettings.GetInt("videoscreen.resolution");
+  return (RESOLUTION)CSettings::Get().GetInt("videoscreen.resolution");
 }
 
 const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index) const
@@ -293,4 +400,37 @@ void CDisplaySettings::UpdateCalibrations()
     if (!found)
       m_calibrations.push_back(m_resolutions[res]);
   }
+}
+
+void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  RESOLUTION res = RES_INVALID;
+
+  vector<RESOLUTION> resolutions;
+  g_graphicsContext.GetAllowedResolutions(resolutions, false);
+  for (vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); it++)
+  {
+    RESOLUTION resolution = *it;
+    RESOLUTION_INFO res1 = CDisplaySettings::Get().GetCurrentResolutionInfo();
+    RESOLUTION_INFO res2 = CDisplaySettings::Get().GetResolutionInfo(resolution);
+
+    list.push_back(make_pair(res2.strMode, resolution));
+
+    if (
+        res1.iWidth  == res2.iWidth &&
+        res1.iHeight == res2.iHeight &&
+        (res1.dwFlags & D3DPRESENTFLAG_INTERLACED) == (res2.dwFlags & D3DPRESENTFLAG_INTERLACED))
+      res = resolution;
+  }
+
+  if (res != RES_INVALID)
+    current = res;
+}
+
+void CDisplaySettings::SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  list.push_back(make_pair(g_localizeStrings.Get(13340), FRAME_RATE_LEAVE_AS_IS));
+  list.push_back(make_pair(g_videoConfig.HasPAL() ? g_localizeStrings.Get(38716) : g_localizeStrings.Get(38717), FRAME_RATE_CONVERT));
+  if (g_videoConfig.HasPAL() && g_videoConfig.HasPAL60())
+    list.push_back(make_pair(g_localizeStrings.Get(38718), FRAME_RATE_USE_PAL60));
 }

@@ -22,7 +22,7 @@
 #include "HTSPDirectory.h"
 #include "URL.h"
 #include "FileItem.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "LocalizeStrings.h"
 #include "cores/dvdplayer/DVDInputStreams/DVDInputStreamHTSP.h"
 #include "threads/SingleLock.h"
@@ -388,8 +388,8 @@ bool CHTSPDirectory::GetChannels( const CURL &base
   }
 
   items.AddSortMethod(SortByTrackNumber,   554, LABEL_MASKS("%K[ - %B]", "%Z", "%L", ""));
-  items.AddSortMethod(SortByAlbum,         558, LABEL_MASKS("%B", "%Z", "%L", ""), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
-  items.AddSortMethod(SortByLabel,         551, LABEL_MASKS("%Z", "%B", "%L", ""), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.AddSortMethod(SortByAlbum,         558, LABEL_MASKS("%B", "%Z", "%L", ""), CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.AddSortMethod(SortByLabel,         551, LABEL_MASKS("%Z", "%B", "%L", ""), CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   return !channels.empty();
 

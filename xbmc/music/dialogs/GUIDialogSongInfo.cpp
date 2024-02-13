@@ -34,7 +34,7 @@
 #include "filesystem/CurlFile.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
 #include "music/Album.h"

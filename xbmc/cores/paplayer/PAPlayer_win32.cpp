@@ -2,13 +2,14 @@
 
 #include "system.h"
 #include "utils/log.h"
-#include "paplayer.h"
+#include "PAPlayer.h"
 #include "CodecFactory.h"
 #include "GUIInfoManager.h"
 #include "AudioContext.h"
 #include "Application.h"
 #include "FileItem.h"
 #include "music/tags/MusicInfoTag.h"
+#include "settings/Settings.h"
 #ifdef HAS_KARAOKE
 #include "CdgParser.h"
 #endif
@@ -84,7 +85,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 {
   if (m_currentlyCrossFading) CloseFileInternal(false); //user seems to be in a hurry
 
-  m_crossFading = g_guiSettings.GetInt("musicplayer.crossfade");
+  m_crossFading = CSettings::Get().GetInt("musicplayer.crossfade");
   //no crossfading for cdda, cd-reading goes mad and no crossfading for last.fm doesn't like two connections
   if (file.IsCDDA() || file.IsShoutCast()) m_crossFading = 0;
   if (m_crossFading && IsPlaying())
@@ -155,7 +156,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
 void PAPlayer::UpdateCrossFadingTime(const CFileItem& file)
 {
-  if (m_crossFading = g_guiSettings.GetInt("musicplayer.crossfade"))
+  if (m_crossFading = CSettings::Get().GetInt("musicplayer.crossfade"))
   {
     if (
       m_crossFading &&
@@ -163,7 +164,7 @@ void PAPlayer::UpdateCrossFadingTime(const CFileItem& file)
         file.IsCDDA() ||
         file.IsShoutCast() ||
         (
-          file.HasMusicInfoTag() && !g_guiSettings.GetBool("musicplayer.crossfadealbumtracks") &&
+          file.HasMusicInfoTag() && !CSettings::Get().GetBool("musicplayer.crossfadealbumtracks") &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() != "") &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() == file.GetMusicInfoTag()->GetAlbum()) &&
           (m_currentFile->GetMusicInfoTag()->GetDiscNumber() == file.GetMusicInfoTag()->GetDiscNumber()) &&
@@ -361,7 +362,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   DSMIXBINVOLUMEPAIR dsmbvp8[8];
   int iMixBinCount;
 
-  if ((channels == 2) && (g_guiSettings.GetBool("musicplayer.outputtoallspeakers")))
+  if ((channels == 2) && (CSettings::Get().GetBool("musicplayer.outputtoallspeakers")))
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STEREOALL, channels);
   else
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STANDARD, channels);

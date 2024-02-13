@@ -37,7 +37,7 @@
 #include "filesystem/RarManager.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -144,7 +144,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
       if (item->IsXBE() || item->IsShortCut())
       {
         CStdString strLaunch = g_localizeStrings.Get(518); // Launch
-        if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+        if (CSettings::Get().GetBool("myprograms.gameautoregion"))
         {
           int iRegion = GetRegion(itemNumber);
           if (iRegion == VIDEO_NTSCM)
@@ -165,9 +165,9 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
         URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
   
         if (CDirectory::Exists(strGameSavepath))
-          buttons.Add(CONTEXT_BUTTON_GAMESAVES, 20322);         // Goto GameSaves
+          buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38778);         // Goto GameSaves
   
-        if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+        if (CSettings::Get().GetBool("myprograms.gameautoregion"))
           buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519); // launch in video mode
   
         if (g_passwordManager.IsMasterLockUnlocked(false) || CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
@@ -175,13 +175,13 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
           if (item->IsShortCut())
             buttons.Add(CONTEXT_BUTTON_RENAME, 16105); // rename
           else
-            buttons.Add(CONTEXT_BUTTON_RENAME, 520); // edit xbe title
+            buttons.Add(CONTEXT_BUTTON_RENAME, 38693); // edit xbe title
         }
   
         if (m_database.ItemHasTrainer(dwTitleId))
-          buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 12015); // trainer options
+          buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712); // trainer options
       }
-      buttons.Add(CONTEXT_BUTTON_SCAN_TRAINERS, 12012); // scan trainers
+      buttons.Add(CONTEXT_BUTTON_SCAN_TRAINERS, 38709); // scan trainers
 
       if (item->IsPlugin() || item->GetPath().Left(9).Equals("script://") || m_vecItems->IsPlugin())
         buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
@@ -404,7 +404,7 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem)
 
 int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
 {
-  if (!g_guiSettings.GetBool("myprograms.gameautoregion"))
+  if (!CSettings::Get().GetBool("myprograms.gameautoregion"))
     return 0;
 
   int iRegion;
@@ -421,7 +421,7 @@ int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
   }
   if (iRegion == -1)
   {
-    if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+    if (CSettings::Get().GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
       iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
@@ -449,11 +449,11 @@ void CGUIWindowPrograms::PopulateTrainersList()
   std::vector<CStdString> vecTrainerPath;
   m_database.GetAllTrainers(vecTrainerPath);
   CGUIDialogProgress* m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-  m_dlgProgress->SetLine(0,12023);
+  m_dlgProgress->SetLine(0,38715);
   m_dlgProgress->SetLine(1,"");
   m_dlgProgress->SetLine(2,"");
   m_dlgProgress->StartModal();
-  m_dlgProgress->SetHeading(12012);
+  m_dlgProgress->SetHeading(38709);
   m_dlgProgress->ShowProgressBar(true);
   m_dlgProgress->Progress();
 
@@ -466,11 +466,11 @@ void CGUIWindowPrograms::PopulateTrainersList()
   {
     m_dlgProgress->SetPercentage((int)((float)i/(float)vecTrainerPath.size()*100.f));
     CStdString strLine;
-    strLine.Format("%s %i / %i",g_localizeStrings.Get(12013).c_str(), i+1,vecTrainerPath.size());
+    strLine.Format("%s %i / %i",g_localizeStrings.Get(38710).c_str(), i+1,vecTrainerPath.size());
     m_dlgProgress->SetLine(1,strLine);
     m_dlgProgress->Progress();
-    if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(g_guiSettings.GetString("myprograms.trainerpath",false)) == -1)
-      m_database.RemoveTrainer(vecTrainerPath[i]);
+    //if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(CSettings::Get().GetString("myprograms.trainerpath",false)) == -1)
+    //  m_database.RemoveTrainer(vecTrainerPath[i]);
     if (m_dlgProgress->IsCanceled())
     {
       bBreak = true;
@@ -480,17 +480,17 @@ void CGUIWindowPrograms::PopulateTrainersList()
   }
   if (!bBreak)
   {
-    CLog::Log(LOGDEBUG,"trainerpath %s",g_guiSettings.GetString("myprograms.trainerpath",false).c_str());
-    directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm");
-    if (g_guiSettings.GetString("myprograms.trainerpath",false).IsEmpty())
-    {
-      m_database.RollbackTransaction();
-      m_dlgProgress->Close();
+    //CLog::Log(LOGDEBUG,"trainerpath %s",CSettings::Get().GetString("myprograms.trainerpath",false).c_str());
+    directory.GetDirectory(CSettings::Get().GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm");
+    //if (CSettings::Get().GetString("myprograms.trainerpath",false).IsEmpty())
+    //{
+    //  m_database.RollbackTransaction();
+    //  m_dlgProgress->Close();
 
-      return;
-    }
+    //  return;
+    //}
 
-    directory.GetDirectory(g_guiSettings.GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
+    directory.GetDirectory(CSettings::Get().GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
     for( int i=0;i<archives.Size();++i)
     {
       if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".rar") == 0)
@@ -543,7 +543,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
       CLog::Log(LOGDEBUG,"found trainer %s",trainers[i]->GetPath().c_str());
       m_dlgProgress->SetPercentage((int)((float)(i)/trainers.Size()*100.f));
       CStdString strLine;
-      strLine.Format("%s %i / %i",g_localizeStrings.Get(12013).c_str(), i+1,trainers.Size());
+      strLine.Format("%s %i / %i",g_localizeStrings.Get(38710).c_str(), i+1,trainers.Size());
       m_dlgProgress->SetLine(0,strLine);
       m_dlgProgress->SetLine(2,"");
       m_dlgProgress->Progress();

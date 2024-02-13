@@ -26,7 +26,7 @@
 #include "TextureManager.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "utils/Crc32.h"
 #include "LocalizeStrings.h"
 #include "utils/LegacyPathTranslation.h"
@@ -233,7 +233,7 @@ CStdString CVideoDatabaseDirectory::GetIcon(const CStdString &strDirectory)
   case NODE_TYPE_TITLE_MOVIES:
     if (path.Equals("videodb://movies/titles/"))
     {
-      if (g_guiSettings.GetBool("myvideos.flatten"))
+      if (CSettings::Get().GetBool("myvideos.flatten"))
         return "DefaultMovies.png";
       return "DefaultMovieTitle.png";
     }
@@ -241,7 +241,7 @@ CStdString CVideoDatabaseDirectory::GetIcon(const CStdString &strDirectory)
   case NODE_TYPE_TITLE_TVSHOWS:
     if (path.Equals("videodb://tvshows/titles/"))
     {
-      if (g_guiSettings.GetBool("myvideos.flatten"))
+      if (CSettings::Get().GetBool("myvideos.flatten"))
         return "DefaultTVShows.png";
       return "DefaultTVShowTitle.png";
     }
@@ -249,7 +249,7 @@ CStdString CVideoDatabaseDirectory::GetIcon(const CStdString &strDirectory)
   case NODE_TYPE_TITLE_MUSICVIDEOS:
     if (path.Equals("videodb://musicvideos/titles/"))
     {
-      if (g_guiSettings.GetBool("myvideos.flatten"))
+      if (CSettings::Get().GetBool("myvideos.flatten"))
         return "DefaultMusicVideos.png";
       return "DefaultMusicVideoTitle.png";
     }

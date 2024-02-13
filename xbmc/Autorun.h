@@ -30,6 +30,15 @@
 
 #include "filesystem/DirectoryFactory.h"
 
+class CSetting;
+
+enum AutoCDAction
+{
+  AUTOCD_NONE = 0,
+  AUTOCD_PLAY,
+  AUTOCD_RIP
+};
+
 namespace MEDIA_DETECT
 {
 class CAutorun
@@ -42,6 +51,10 @@ public:
   void Enable();
   void Disable();
   void HandleAutorun();
+
+  static void SettingOptionAudioCdActionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionAudioCdEncodersFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+
 protected:
   static void ExecuteXBE(const CStdString &xbeFile);
   static void ExecuteAutorun(bool bypassSettings = false, bool ignoreplaying=false);

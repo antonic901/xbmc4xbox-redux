@@ -23,8 +23,8 @@
 #include "GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
-#include "settings/GUISettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/Settings.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "GUIWindowManager.h"
 #include "Util.h"
@@ -246,7 +246,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     share1.strName = "SAP Streams";
     extraShares.push_back(share1);
 
-    if (g_guiSettings.GetString("audiocds.recordingpath",false) != "")
+    if (CSettings::Get().GetString("audiocds.recordingpath") != "")
     {
       share1.strPath = "special://recordings/";
       share1.strName = g_localizeStrings.Get(21883);
@@ -291,7 +291,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   {
     CMediaSource share1;
     share1.m_ignore = true;
-    if (g_guiSettings.GetString("debug.screenshotpath",false)!= "")
+    if (CSettings::Get().GetString("debug.screenshotpath") != "")
     {
       share1.strPath = "special://screenshots/";
       share1.strName = g_localizeStrings.Get(20008);

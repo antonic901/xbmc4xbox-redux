@@ -22,9 +22,9 @@
 #include "GUIBaseContainer.h"
 #include "FileItem.h"
 #include "view/ViewState.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/Settings.h"
 #include "filesystem/Directory.h"
 #include "filesystem/PluginDirectory.h"
 #include "Util.h"
@@ -72,7 +72,7 @@ CStdString CGUIViewStateWindowPictures::GetLockType()
 
 CStdString CGUIViewStateWindowPictures::GetExtensions()
 {
-  if (g_guiSettings.GetBool("pictures.showvideos"))
+  if (CSettings::Get().GetBool("pictures.showvideos"))
     return g_advancedSettings.m_pictureExtensions+"|"+g_advancedSettings.m_videoExtensions;
 
   return g_advancedSettings.m_pictureExtensions;

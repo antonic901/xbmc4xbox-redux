@@ -35,6 +35,16 @@
 //#define SMARTXX_PWM_LIGHT	    0xF701	 //PWM5: Display Port brightness control
 //#define SMARTXX_PWM_CONTRAST  0xF703	 //PWM6: Display Port contrast control
 
+//enum LedColours 
+//{
+//  LED_COLOUR_NO_CHANGE = 0,
+//  LED_COLOUR_GREEN,
+//  LED_COLOUR_ORANGE,
+//  LED_COLOUR_RED,
+//  LED_COLOUR_CYCLE,
+//  LED_COLOUR_OFF
+//};
+
 struct RGBVALUE
 {
 	unsigned short red;

@@ -28,6 +28,7 @@
 #endif
 
 #include "TextureManager.h"
+#include "LangInfo.h"
 #include "PlayListPlayer.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
@@ -37,10 +38,11 @@
 #include "xbox/network.h"
 #include "utils/log.h"
 #include "GUIWindowManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "GUIDialog.h"
+#include "guilib/Key.h"
 #include "SectionLoader.h"
 #include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
 #include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
@@ -421,7 +423,7 @@ case TMSG_POWERDOWN:
         {
           if(items.Size() == 0)
           {
-            g_guiSettings.SetString("screensaver.mode", "screensaver.xbmc.builtin.dim");
+            CSettings::Get().SetString("screensaver.mode", "screensaver.xbmc.builtin.dim");
             g_application.ActivateScreenSaver();
           }
           else

@@ -37,7 +37,6 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
 #include "utils/StringUtils2.h"
@@ -80,7 +79,7 @@ namespace VIDEO
 
       m_database.Open();
 
-      if (m_showDialog && !g_guiSettings.GetBool("videolibrary.backgroundupdate"))
+      if (m_showDialog && !CSettings::Get().GetBool("videolibrary.backgroundupdate"))
       {
         CGUIDialogExtendedProgressBar* dialog =
           (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
@@ -498,7 +497,7 @@ namespace VIDEO
       if (lResult < 0)
         return INFO_ERROR;
       GetArtwork(pItem.get(), info2->Content(), bDirNames, useLocal, pDlgProgress);
-      if (!fetchEpisodes && g_guiSettings.GetBool("videolibrary.seasonthumbs"))
+      if (!fetchEpisodes && CSettings::Get().GetBool("videolibrary.seasonthumbs"))
         FetchSeasonThumbs(lResult);
       if (fetchEpisodes)
       {
@@ -533,7 +532,7 @@ namespace VIDEO
         m_database.SetPathHash(pItem->GetPath(), pItem->GetProperty("hash").asString());
     }
     else
-      if (g_guiSettings.GetBool("videolibrary.seasonthumbs"))
+      if (CSettings::Get().GetBool("videolibrary.seasonthumbs"))
         FetchSeasonThumbs(lResult);
     return INFO_ADDED;
   }
@@ -1204,7 +1203,7 @@ namespace VIDEO
         DownloadImage(onlineThumb, cachedThumb, true, pDialog);
       }
     }
-    if (g_guiSettings.GetBool("videolibrary.actorthumbs"))
+    if (CSettings::Get().GetBool("videolibrary.actorthumbs"))
       FetchActorThumbs(movieDetails.m_cast, parentDir);
     if (bApplyToDir)
       ApplyThumbToFolder(parentDir, cachedThumb);
@@ -1378,7 +1377,7 @@ namespace VIDEO
                   file->cDate.GetAsLocalizedDate().c_str(), file->strTitle.c_str());
       }
     }
-    if (g_guiSettings.GetBool("videolibrary.seasonthumbs"))
+    if (CSettings::Get().GetBool("videolibrary.seasonthumbs"))
       FetchSeasonThumbs(idShow);
     return INFO_ADDED;
   }

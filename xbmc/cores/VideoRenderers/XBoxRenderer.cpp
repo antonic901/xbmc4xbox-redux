@@ -23,11 +23,14 @@
 #include "XBoxRenderer.h"
 #include "Application.h"
 #include "XBVideoConfig.h"
-#include "settings/GUISettings.h"
+#include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "threads/SingleLock.h"
+
+#include "defs_from_settings.h"
 
 // http://www.martinreddy.net/gfx/faqs/colorconv.faq
 
@@ -607,7 +610,7 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
 
   // Work out if the framerate suits PAL50 or PAL60
   bool bPal60 = false;
-  if (bUsingPAL && g_guiSettings.GetInt("videoplayer.framerateconversions") == FRAME_RATE_USE_PAL60 && g_videoConfig.HasPAL60())
+  if (bUsingPAL && CSettings::Get().GetInt("videoplayer.framerateconversions") == FRAME_RATE_USE_PAL60 && g_videoConfig.HasPAL60())
   {
     // yes we're in PAL
     // yes PAL60 is allowed
@@ -624,7 +627,7 @@ void CXBoxRenderer::ChooseBestResolution(float fps)
   // If the display resolution was specified by the user then use it, unless
   // it's a PAL setting, whereby we use the above setting to autoswitch to PAL60
   // if appropriate
-  RESOLUTION DisplayRes = (RESOLUTION) g_guiSettings.GetInt("videoplayer.displayresolution");
+  RESOLUTION DisplayRes = (RESOLUTION) CSettings::Get().GetInt("videoplayer.displayresolution");
   if ( DisplayRes != RES_AUTORES )
   {
     if (bPal60)
@@ -993,7 +996,7 @@ unsigned int CXBoxRenderer::PreInit()
 
   // setup the background colour
   m_clearColour = (g_advancedSettings.m_videoBlackBarColour & 0xff) * 0x010101;
-  m_aspecterror = g_guiSettings.GetFloat("videoplayer.errorinaspect") * 0.01f;
+  m_aspecterror = CSettings::Get().GetInt("videoplayer.errorinaspect") * 0.01f;
 
   // low memory pixel shader
   if (!m_hLowMemShader)
@@ -1502,3 +1505,10 @@ void CXBoxRenderer::TextureCallback(DWORD dwContext)
   SetEvent((HANDLE)dwContext);
 }
 
+void CXBoxRenderer::SettingOptionsRenderMethodsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  list.push_back(make_pair(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER));
+  list.push_back(make_pair(g_localizeStrings.Get(13356), RENDER_OVERLAYS));
+  list.push_back(make_pair(g_localizeStrings.Get(13357), RENDER_HQ_RGB_SHADER));
+  list.push_back(make_pair(g_localizeStrings.Get(21397), RENDER_HQ_RGB_SHADERV2));
+}

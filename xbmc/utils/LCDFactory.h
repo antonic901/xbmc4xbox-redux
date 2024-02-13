@@ -21,6 +21,7 @@
  */
 
 #include "LCD.h"
+
 class CLCDFactory
 {
 public:

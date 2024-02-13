@@ -23,7 +23,6 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "addons/GUIWindowAddonBrowser.h"
 
 #define CONTROL_VIS_BUTTON       500
@@ -54,8 +53,8 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
         CStdString addonID;
         if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_VIZ, addonID) == 1)
         {
-          g_guiSettings.SetString("musicplayer.visualisation", addonID);
-          g_settings.Save();
+          CSettings::Get().SetString("musicplayer.visualisation", addonID);
+          CSettings::Get().Save();
           g_windowManager.SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
         }
       }

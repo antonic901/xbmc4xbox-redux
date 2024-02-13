@@ -25,6 +25,7 @@
 #include "CdgVoiceManager.h" // Karaoke patch (114097)
 #include "threads/Thread.h"
 #include "filesystem/File.h"
+#include "settings/Setting.h"
 
 //////////////////////
 //////CdgLoader///////
@@ -185,6 +186,9 @@ public:
   void ProcessVoice();
   // ... Karaoke patch (114097)
   inline bool IsRunning() { return m_bIsRunning; }
+
+  void static SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+  void static FillInVoiceMaskValues(unsigned int port, CStdString strCurMask);
 
 protected:
   bool m_bIsRunning;

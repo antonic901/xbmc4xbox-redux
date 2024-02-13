@@ -36,17 +36,17 @@
 #include "utils/HttpHeader.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
-#include "settings/Settings.h"
 #include "URL.h"
 #include "GUIWindowManager.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
 #include "LocalizeStrings.h"
 #include "AutoPtrHandle.h"
+
+#include "defs_from_settings.h"
 
 #define PLAYERCOREFACTORY_XML "playercorefactory.xml"
 
@@ -91,7 +91,7 @@ template<typename T> void unique (T &con)
 
 IPlayer* CPlayerCoreFactory::CreatePlayer(const CStdString& strCore, IPlayerCallback& callback) const
 { 
-  return CreatePlayer( GetPlayerCore(strCore), callback ); 
+  return CreatePlayer(GetPlayerCore(strCore), callback );
 }
 
 IPlayer* CPlayerCoreFactory::CreatePlayer(const PLAYERCOREID eCore, IPlayerCallback& callback) const
@@ -108,8 +108,8 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName) co
   {
     // Dereference "*default*player" aliases
     CStdString strRealCoreName;
-    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = g_settings.GetDefaultAudioPlayerName();
-    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = g_settings.GetDefaultVideoPlayerName();
+    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CSettings::Get().GetDefaultAudioPlayerName();
+    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CSettings::Get().GetDefaultVideoPlayerName();
     else strRealCoreName = strCoreName;
 
     for(PLAYERCOREID i = 0; i < m_vecCoreConfigs.size(); i++)
@@ -185,7 +185,7 @@ void CPlayerCoreFactory::GetPlayers( const CFileItem& item, VECPLAYERCORES &vecC
 
     if (bAdd)
     {
-      if( g_guiSettings.GetInt("audiooutput.mode") == AUDIO_ANALOG )
+      if( CSettings::Get().GetInt("audiooutput.mode") == AUDIO_ANALOG )
       {
         CLog::Log(LOGDEBUG, "CPlayerCoreFactory::GetPlayers: adding PAPlayer (%d)", EPC_PAPLAYER);
         vecCores.push_back(EPC_PAPLAYER);

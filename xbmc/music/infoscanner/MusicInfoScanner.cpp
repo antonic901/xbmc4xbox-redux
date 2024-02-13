@@ -40,7 +40,7 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "pictures/Picture.h"
 #include "interfaces/AnnouncementManager.h"
@@ -77,7 +77,7 @@ void CMusicInfoScanner::Process()
 
     m_musicDatabase.Open();
 
-    if (m_showDialog && !g_guiSettings.GetBool("musiclibrary.backgroundupdate"))
+    if (m_showDialog && !CSettings::Get().GetBool("musiclibrary.backgroundupdate"))
     {
       CGUIDialogExtendedProgressBar* dialog =
         (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
@@ -583,7 +583,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(CFileItemList& items, const CStdString&
     {
       CStdString strArtist = m_musicDatabase.GetArtistById(*it);
       m_artistsScanned.push_back(*it);
-      if (!m_bStop && g_guiSettings.GetBool("musiclibrary.downloadinfo"))
+      if (!m_bStop && CSettings::Get().GetBool("musiclibrary.downloadinfo"))
       {
         CStdString strPath;
         strPath.Format("musicdb://artists/%u/", *it);
@@ -596,7 +596,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(CFileItemList& items, const CStdString&
     }
   }
 
-  if (g_guiSettings.GetBool("musiclibrary.downloadinfo"))
+  if (CSettings::Get().GetBool("musiclibrary.downloadinfo"))
   {
     for (set<long>::iterator it = albumsToScan.begin(); it != albumsToScan.end(); ++it)
     {
@@ -897,7 +897,7 @@ bool CMusicInfoScanner::DownloadAlbumInfo(const CStdString& strPath, const CStdS
       CLog::Log(LOGERROR,"Unable to find an url in nfo file: %s", strNfo.c_str());
   }
 
-  if (!scraper.CheckValidOrFallback(g_guiSettings.GetString("musiclibrary.albumscraper")))
+  if (!scraper.CheckValidOrFallback(CSettings::Get().GetString("musiclibrary.albumscraper")))
   { // the current scraper is invalid, as is the default - bail
     CLog::Log(LOGERROR, "%s - current and default scrapers are invalid.  Pick another one", __FUNCTION__);
     return false;

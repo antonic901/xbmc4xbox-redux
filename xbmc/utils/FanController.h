@@ -22,13 +22,16 @@
 
 #include "threads/Thread.h"
 #include "Temperature.h"
+#include "settings/ISettingCallback.h"
 
-class CFanController : public CThread
+class CFanController : public ISettingCallback, public CThread
 {
 public:
 
   void Start(int targetTemperature, int minFanspeed);
   void Stop();
+
+  virtual void OnSettingChanged(const CSetting *setting);
 
   int GetFanSpeed();
   void SetFanSpeed(const int fanspeed, const bool force = true);
@@ -41,6 +44,10 @@ public:
   static CFanController* Instance();
   static void RemoveInstance();
   virtual ~CFanController();
+
+  static void SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current); 
+  static void SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+
 private:
   enum SensorType {
     ST_GPU = 0,

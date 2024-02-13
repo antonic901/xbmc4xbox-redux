@@ -75,7 +75,7 @@ public:
 class DllSwResample : public DllDynamic, DllSwResampleInterface
 {
 public:
-  DllSwResample() : DllDynamic( g_settings.GetFFmpegDllFolder() + "swresample-0.dll") {}
+  DllSwResample() : DllDynamic( CSettings::Get().GetFFmpegDllFolder() + "swresample-0.dll") {}
 
   LOAD_SYMBOLS()
 

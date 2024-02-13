@@ -2,7 +2,7 @@
 #include "AutoPtrHandle.h"
 #include "xbeheader.h"
 #include "Util.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 
 using namespace AUTOPTR;
 
@@ -179,7 +179,7 @@ int CXBE::FilterRegion(int iRegion, bool bForceAllModes)
     iPreferred = 4;
   int iNTSCMode = 0;
   if (!bForceAllModes)
-    iNTSCMode = g_guiSettings.GetInt("myprograms.ntscmode");
+    iNTSCMode = CSettings::Get().GetInt("myprograms.ntscmode");
 
   if (iRegion == 0)
     iRegion = iVideoMode;

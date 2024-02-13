@@ -1,6 +1,6 @@
 #pragma once
 #include "threads/Thread.h"
-#include "utils/lcd.h"
+#include "utils/LCD.h"
 
 #define MAX_ROWS 20
 

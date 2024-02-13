@@ -24,7 +24,7 @@
 #include "windows/GUIWindowFileManager.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/Crc32.h"
 #include "utils/URIUtils.h"
@@ -514,7 +514,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     if (NULL == m_pDS.get()) return false;
 
     int iRegion = -1;
-    if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+    if (CSettings::Get().GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
       iRegion = xbe.ExtractGameRegion(item->GetPath());

@@ -21,6 +21,7 @@
 #include "system.h"
 #include "XBTimeZone.h"
 #include "LangInfo.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
@@ -959,4 +960,32 @@ void XBTimeZone::SetDST(BOOL bEnable)
 
   ExSaveNonVolatileSetting(XC_DST_SETTING, (PULONG) REG_DWORD, &flags, sizeof(flags));
 #endif
+}
+
+void XBTimeZone::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "locale.timezone" && g_timezone.GetTimeZoneIndex() != ((CSettingInt*)setting)->GetValue())
+    g_timezone.SetTimeZoneIndex(((CSettingInt*)setting)->GetValue());
+  else if (settingId == "locale.usedst" && g_timezone.GetDST() != ((CSettingBool*)setting)->GetValue())
+    g_timezone.SetDST(((CSettingBool*)setting)->GetValue());
+}
+
+void XBTimeZone::SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  current = ((const CSettingInt*)setting)->GetValue();
+  bool found = false;
+  for (unsigned int i = 0; i < g_timezone.GetNumberOfTimeZones(); i++)
+  {
+    if (!found && i == current)
+      found = true;
+
+    list.push_back(std::make_pair(g_timezone.GetTimeZoneString(i), i));
+  }
+
+  if (!found)
+    current = 0;
 }

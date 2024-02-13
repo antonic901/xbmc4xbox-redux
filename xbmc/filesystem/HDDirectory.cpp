@@ -28,7 +28,7 @@
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
 #include "URL.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "utils/CharsetConverter.h"
 #include "threads/CriticalSection.h"
@@ -138,7 +138,7 @@ bool CHDDirectory::Create(const char* strPath)
 
   // okey this is really evil, since the create will succeed
   // the caller will have no idea that a different directory was created
-  if (g_guiSettings.GetBool("services.ftpautofatx"))
+  if (CSettings::Get().GetBool("services.ftpautofatx"))
   {
     CStdString strPath2(strPath1);
     CUtil::GetFatXQualifiedPath(strPath1);

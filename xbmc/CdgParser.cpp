@@ -28,9 +28,11 @@
 #include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTag.h"
 #include "GUIWindowManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
+#include "utils/StringUtils.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
@@ -417,7 +419,7 @@ bool CCdgRenderer::InitGraphics()
 
   // set the colours
   m_bgAlpha = 0;
-  if (g_guiSettings.GetString("musicplayer.visualisation").Equals("None"))
+  if (CSettings::Get().GetString("musicplayer.visualisation") == "None")
     m_bgAlpha = 0xff000000;
   m_fgAlpha = 0xff000000;
 
@@ -553,7 +555,7 @@ bool CCdgParser::Start(CStdString strSongPath)
     g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
 
   // Karaoke patch (114097) ...
-  if ( g_guiSettings.GetBool("karaoke.voiceenabled") )
+  if ( CSettings::Get().GetBool("karaoke.voiceenabled") )
   {
     CDG_VOICE_MANAGER_CONFIG VoiceConfig;
     VoiceConfig.dwVoicePacketTime = 20;       // 20ms (can't be lower than this)
@@ -711,16 +713,141 @@ void CCdgParser::StopVoice()
   if (m_pVoiceManager)
     m_pVoiceManager->Shutdown();
 }
-void CCdgParser:: FreeVoice()
+void CCdgParser::FreeVoice()
 {
   CSingleLock lock (m_CritSection);
   if (m_pVoiceManager)
     SAFE_DELETE(m_pVoiceManager);
 }
-void CCdgParser:: ProcessVoice()
+void CCdgParser::ProcessVoice()
 {
   CSingleLock lock (m_CritSection);
   if (m_pVoiceManager)
     m_pVoiceManager->ProcessVoice();
 }
 // ... Karaoke patch (114097)
+
+void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
+{
+  std::string strDefaultMask = "None";
+  std::vector<std::string> vecMask;
+
+  // find masks in xml...
+  CXBMCTinyXML xmlDoc;
+  std::string fileName = "special://xbmc/system/voicemasks.xml";
+  if ( !xmlDoc.LoadFile(fileName) ) return ;
+  TiXmlElement* pRootElement = xmlDoc.RootElement();
+  std::string strValue = pRootElement->Value();
+  if ( strValue != "VoiceMasks") return ;
+  if (pRootElement)
+  {
+    const TiXmlNode *pChild = pRootElement->FirstChild("Name");
+    while (pChild)
+    {
+      if (pChild->FirstChild())
+      {
+        std::string strName = pChild->FirstChild()->Value();
+        vecMask.push_back(strName);
+      }
+      pChild = pChild->NextSibling("Name");
+    }
+  }
+  xmlDoc.Clear();
+
+  sort(vecMask.begin(), vecMask.end(), sortstringbyname());
+  vecMask.insert(vecMask.begin(), strDefaultMask);
+
+  bool found = false;
+  for (int i = 0; i < (int) vecMask.size(); ++i)
+  {
+    std::string strMask = vecMask[i];
+    list.push_back(make_pair(StringUtils2::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
+    if (strcmpi(strMask.c_str(), current.c_str()) == 0)
+      found = true;
+  }
+
+  if (!found)
+    current = strDefaultMask;
+}
+
+void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
+{
+    if (strCurMask.CompareNoCase("None") == 0 || strCurMask.CompareNoCase("Custom") == 0 )
+    {
+  #ifndef HAS_XBOX_AUDIO
+  #define XVOICE_MASK_PARAM_DISABLED (-1.0f)
+  #endif
+      VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+      karaokeVoiceMask.energy = XVOICE_MASK_PARAM_DISABLED;
+      karaokeVoiceMask.pitch = XVOICE_MASK_PARAM_DISABLED;
+      karaokeVoiceMask.whisper = XVOICE_MASK_PARAM_DISABLED;
+      karaokeVoiceMask.robotic = XVOICE_MASK_PARAM_DISABLED;
+      return;
+    }
+
+    //find mask values in xml...
+    CXBMCTinyXML xmlDoc;
+    CStdString fileName = "special://xbmc/system/voicemasks.xml";
+    if ( !xmlDoc.LoadFile( fileName ) ) return ;
+    TiXmlElement* pRootElement = xmlDoc.RootElement();
+    CStdString strValue = pRootElement->Value();
+    if ( strValue != "VoiceMasks") return ;
+    if (pRootElement)
+    {
+      const TiXmlNode *pChild = pRootElement->FirstChild("Name");
+      while (pChild)
+      {
+        CStdString strMask = pChild->FirstChild()->Value();
+        if (strMask.CompareNoCase(strCurMask) == 0)
+        {
+          for (int i = 0; i < 4;i++)
+          {
+            pChild = pChild->NextSibling();
+            if (pChild)
+            {
+              CStdString strValue = pChild->Value();
+              if (strValue.CompareNoCase("fSpecEnergyWeight") == 0)
+              {
+                if (pChild->FirstChild())
+                {
+                  CStdString strName = pChild->FirstChild()->Value();
+                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  karaokeVoiceMask.energy = (float) atof(strName.c_str());
+                }
+              }
+              else if (strValue.CompareNoCase("fPitchScale") == 0)
+              {
+                if (pChild->FirstChild())
+                {
+                  CStdString strName = pChild->FirstChild()->Value();
+                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  karaokeVoiceMask.pitch = (float) atof(strName.c_str());
+                }
+              }
+              else if (strValue.CompareNoCase("fWhisperValue") == 0)
+              {
+                if (pChild->FirstChild())
+                {
+                  CStdString strName = pChild->FirstChild()->Value();
+                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  karaokeVoiceMask.whisper = (float) atof(strName.c_str());
+                }
+              }
+              else if (strValue.CompareNoCase("fRoboticValue") == 0)
+              {
+                if (pChild->FirstChild())
+                {
+                  CStdString strName = pChild->FirstChild()->Value();
+                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  karaokeVoiceMask.robotic = (float) atof(strName.c_str());
+                }
+              }
+            }
+          }
+          break;
+        }
+        pChild = pChild->NextSibling("Name");
+      }
+    }
+    xmlDoc.Clear();
+}

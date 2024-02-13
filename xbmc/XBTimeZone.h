@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include "settings/ISettingCallback.h"
+
 #define XC_DISABLE_DST_FLAG  0x02
 #define XC_DST_SETTING       0x11
 #define XC_USER_SETTINGS     0xFF
@@ -63,7 +67,7 @@ typedef struct _EEPROM_USER_SETTINGS {
 
 extern const MINI_TZI g_TimeZoneInfo[];
 
-class XBTimeZone
+class XBTimeZone : public ISettingCallback
 {
 public:
   static const char * GetTimeZoneString(int index);
@@ -76,6 +80,10 @@ public:
   
   static bool GetDST();
   static void SetDST(BOOL bEnable);
+
+  virtual void OnSettingChanged(const CSetting *setting);
+
+  static void SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
 };
 
 extern XBTimeZone g_timezone;

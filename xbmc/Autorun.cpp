@@ -35,9 +35,12 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "playlists/PlayList.h"
+#include "guilib/LocalizeStrings.h"
+
+#include "defs_from_settings.h"
 
 using namespace std;
 using namespace XFILE;
@@ -66,7 +69,7 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying )
 
   if ( pInfo->IsAudio( 1 ) )
   {
-    if( !bypassSettings && !g_guiSettings.GetBool("autorun.cdda") )
+    if( !bypassSettings && !CSettings::Get().GetBool("autorun.cdda") )
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
@@ -92,7 +95,7 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying )
 void CAutorun::ExecuteXBE(const CStdString &xbeFile)
 {
   int iRegion;
-  if (g_guiSettings.GetBool("myprograms.gameautoregion"))
+  if (CSettings::Get().GetBool("myprograms.gameautoregion"))
   {
     CXBE xbe;
     iRegion = xbe.ExtractGameRegion(xbeFile);
@@ -125,7 +128,7 @@ void CAutorun::RunXboxCd(bool bypassSettings)
 {
   if ( CFile::Exists("D:\\default.xbe") )
   {
-    if (!g_guiSettings.GetBool("autorun.xbox") && !bypassSettings)
+    if (!CSettings::Get().GetBool("autorun.xbox") && !bypassSettings)
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
@@ -136,7 +139,7 @@ void CAutorun::RunXboxCd(bool bypassSettings)
     return;
   }
 
-  if ( !g_guiSettings.GetBool("autorun.dvd") && !g_guiSettings.GetBool("autorun.vcd") && !g_guiSettings.GetBool("autorun.video") && !g_guiSettings.GetBool("autorun.music") && !g_guiSettings.GetBool("autorun.pictures") )
+  if ( !CSettings::Get().GetBool("autorun.dvd") && !CSettings::Get().GetBool("autorun.vcd") && !CSettings::Get().GetBool("autorun.video") && !CSettings::Get().GetBool("autorun.music") && !CSettings::Get().GetBool("autorun.pictures") )
     return ;
 
   int nSize = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size();
@@ -219,14 +222,14 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
       if (pItem->m_bIsFolder && pItem->GetPath() != "." && pItem->GetPath() != "..")
       {
         if (pItem->GetPath().Find( "VIDEO_TS" ) != -1 && bAllowVideo
-        && (bypassSettings || g_guiSettings.GetBool("autorun.dvd")))
+        && (bypassSettings || CSettings::Get().GetBool("autorun.dvd")))
         {
           CUtil::PlayDVD();
           bPlaying = true;
           return true;
         }
         else if (pItem->GetPath().Find("MPEGAV") != -1 && bAllowVideo
-             && (bypassSettings || g_guiSettings.GetBool("autorun.vcd")))
+             && (bypassSettings || CSettings::Get().GetBool("autorun.vcd")))
         {
           CFileItemList items;
           CDirectory::GetDirectory(pItem->GetPath(), items, ".dat");
@@ -242,7 +245,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           }
         }
         else if (pItem->GetPath().Find("MPEG2") != -1 && bAllowVideo
-              && (bypassSettings || g_guiSettings.GetBool("autorun.vcd")))
+              && (bypassSettings || CSettings::Get().GetBool("autorun.vcd")))
         {
           CFileItemList items;
           CDirectory::GetDirectory(pItem->GetPath(), items, ".mpg");
@@ -258,7 +261,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           }
         }
         else if (pItem->GetPath().Find("PICTURES") != -1 && bAllowPictures
-              && (bypassSettings || g_guiSettings.GetBool("autorun.pictures")))
+              && (bypassSettings || CSettings::Get().GetBool("autorun.pictures")))
         {
           bPlaying = true;
           CStdString strExec;
@@ -271,12 +274,12 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
   }
 
   // check video first
-  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || g_guiSettings.GetBool("autorun.video")))
+  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CSettings::Get().GetBool("autorun.video")))
   {
     // stack video files
     CFileItemList tempItems;
     tempItems.Append(vecItems);
-    if (g_guiSettings.GetBool("myvideos.stackvideos"))
+    if (CSettings::Get().GetBool("myvideos.stackvideos"))
       tempItems.Stack();
     itemlist.Clear();
 
@@ -316,7 +319,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     }
   }
   // then music
-  if (!bPlaying && (bypassSettings || g_guiSettings.GetBool("autorun.music")) && bAllowMusic)
+  if (!bPlaying && (bypassSettings || CSettings::Get().GetBool("autorun.music")) && bAllowMusic)
   {
     for (int i = 0; i < vecItems.Size(); i++)
     {
@@ -329,7 +332,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     }
   }
   // and finally pictures
-  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || g_guiSettings.GetBool("autorun.pictures")) && bAllowPictures)
+  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CSettings::Get().GetBool("autorun.pictures")) && bAllowPictures)
   {
     for (int i = 0; i < vecItems.Size(); i++)
     {
@@ -399,5 +402,26 @@ bool CAutorun::PlayDisc()
 {
   ExecuteAutorun(true,true);
   return true;
+}
+
+void CAutorun::SettingOptionAudioCdActionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  list.push_back(make_pair(g_localizeStrings.Get(16018), AUTOCD_NONE));
+  list.push_back(make_pair(g_localizeStrings.Get(14098), AUTOCD_PLAY));
+#ifdef HAS_CDDA_RIPPER
+  list.push_back(make_pair(g_localizeStrings.Get(14096), AUTOCD_RIP));
+#endif
+}
+
+void CAutorun::SettingOptionAudioCdEncodersFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+#ifdef HAVE_LIBMP3LAME
+  list.push_back(make_pair(g_localizeStrings.Get(34000), CDDARIP_ENCODER_LAME));
+#endif
+#ifdef HAVE_LIBVORBISENC
+  list.push_back(make_pair(g_localizeStrings.Get(34001), CDDARIP_ENCODER_VORBIS));
+#endif
+  list.push_back(make_pair(g_localizeStrings.Get(34002), CDDARIP_ENCODER_WAV));
+  list.push_back(make_pair(g_localizeStrings.Get(34005), CDDARIP_ENCODER_FLAC));
 }
 

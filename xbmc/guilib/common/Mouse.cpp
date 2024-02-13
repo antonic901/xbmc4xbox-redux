@@ -30,6 +30,8 @@
 #include "../Key.h"
 #include "../GraphicContext.h"
 
+#include "settings/Setting.h"
+
 CMouse g_Mouse; // global
 
 CMouse::CMouse()
@@ -47,6 +49,16 @@ CMouse::CMouse()
 CMouse::~CMouse()
 {
   delete m_mouseDevice;
+}
+
+void CMouse::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "input.enablemouse")
+    SetEnabled(((CSettingBool*)setting)->GetValue());
 }
 
 void CMouse::Initialize(void *appData)

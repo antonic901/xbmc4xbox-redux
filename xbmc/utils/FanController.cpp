@@ -20,9 +20,12 @@
 
 #include <ConIo.h>
 #include "FanController.h"
+#include "guilib/LocalizeStrings.h"
 #include "xbox/Undocumented.h"
 #include "xbox/XKExports.h"
-#include "settings/GUISettings.h"
+#include "settings/Setting.h"
+#include "settings/Settings.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 
 #define PIC_ADDRESS      0x20
@@ -80,7 +83,7 @@ void CFanController::OnExit()
 
 void CFanController::Process()
 {
-  if (!g_guiSettings.GetBool("system.autotemperature")) return ;
+  if (!CSettings::Get().GetBool("system.autotemperature")) return ;
   int interval = 500;
   tooHotLoopCount = 0;
   tooColdLoopCount = 0;
@@ -149,6 +152,45 @@ void CFanController::Start(int targetTemperature, int minFanspeed)
   targetTemp = targetTemperature;
   SetMinFanSpeed(minFanspeed);
   Create();
+}
+
+void CFanController::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "system.autotemperature")
+  {
+    if (((CSettingBool*)setting)->GetValue())
+    {
+      CSettings::Get().SetBool("system.fanspeedcontrol", false);
+      CFanController::Instance()->Start(CSettings::Get().GetInt("system.targettemperature"), CSettings::Get().GetInt("system.minfanspeed") );
+    }
+    else
+      CFanController::Instance()->Stop();
+  }
+  else if (settingId == "system.fanspeed")
+  {
+    int iSpeed = ((CSettingInt*)setting)->GetValue();
+    CSettings::Get().SetInt("system.fanspeed", iSpeed);
+    CFanController::Instance()->SetFanSpeed(iSpeed);
+  }
+  else if (settingId == "system.fanspeedcontrol")
+  {
+    if (((CSettingBool*)setting)->GetValue())
+    {
+      CSettings::Get().SetBool("system.autotemperature", false);
+      CFanController::Instance()->Stop();
+      CFanController::Instance()->SetFanSpeed(CSettings::Get().GetInt("system.fanspeed"));
+    }
+    else
+      CFanController::Instance()->RestoreStartupSpeed();
+  }
+  else if (settingId == "system.minfanspeed")
+    CFanController::Instance()->SetMinFanSpeed(((CSettingInt*)setting)->GetValue());
+  else if (settingId == "system.targettemperature")
+    CFanController::Instance()->SetTargetTemperature(((CSettingInt*)setting)->GetValue());
 }
 
 void CFanController::Stop()
@@ -371,4 +413,21 @@ void CFanController::CalcSpeed(int targetTemp)
     calculatedFanSpeed = m_minFanspeed;
   } 
   if (calculatedFanSpeed > 50) {calculatedFanSpeed = 50;}
+}
+
+void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  for (int i=((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum(); i += ((CSettingInt*)setting)->GetStep())
+    list.push_back(std::make_pair(StringUtils2::Format(g_localizeStrings.Get(14047), i * 2), i));
+  if (current < 1 || current > 50)
+    current = Instance()->GetFanSpeed();
+}
+
+void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  for (int i = 40; i <= 68; ++i)
+  {
+    CTemperature temp = CTemperature::CreateFromCelsius(i);
+    list.push_back(std::make_pair(temp.ToString(), i));
+  }
 }

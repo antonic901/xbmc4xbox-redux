@@ -42,7 +42,6 @@
 #include "filesystem/RarManager.h"
 #include "filesystem/ZipManager.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
 #include "FileItem.h"
 
 using namespace XFILE;
@@ -114,12 +113,6 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     CStdString strUrl; 
     URIUtils::CreateArchivePath(strUrl, "zip", strPath, "");
 
-    if (!g_guiSettings.GetBool("filelists.unrollarchives"))
-    {
-      pItem->SetPath(strUrl);
-      return new CZipDirectory;
-    }
-
     CFileItemList items;
     CDirectory::GetDirectory(strUrl, items, strMask);
     if (items.Size() == 0) // no files
@@ -167,12 +160,6 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
           return NULL;
         }
       }
-    }
-    
-    if (!g_guiSettings.GetBool("filelists.unrollarchives"))
-    {
-      pItem->SetPath(strUrl);
-      return new CRarDirectory;
     }
 
     CFileItemList items;

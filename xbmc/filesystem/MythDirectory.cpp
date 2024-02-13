@@ -27,8 +27,8 @@
 #include "DllLibCMyth.h"
 #include "video/VideoInfoTag.h"
 #include "URL.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "DirectoryCache.h"
 #include "TimeUtils.h"
@@ -328,7 +328,7 @@ bool CMythDirectory::GetRecordings(const CStdString& base, CFileItemList &items,
    * the subtitle doesn't influence the sort order and they are sorted by date.
    */
   if (type != TV_SHOWS)
-    items.AddSortMethod(SortBySortTitle, 556 /* Name */, LABEL_MASKS("%K", "%J"), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+    items.AddSortMethod(SortBySortTitle, 556 /* Name */, LABEL_MASKS("%K", "%J"), CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
   items.AddSortMethod(SortByDate, 552 /* Date */, LABEL_MASKS("%K", "%J"));
 
   return true;
@@ -390,7 +390,7 @@ bool CMythDirectory::GetTvShowFolders(const CStdString& base, CFileItemList &ite
   }
   m_dll->ref_release(list);
 
-  items.AddSortMethod(SortByLabel, 551 /* Name */, LABEL_MASKS("", "", "%L", "%J"), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.AddSortMethod(SortByLabel, 551 /* Name */, LABEL_MASKS("", "", "%L", "%J"), CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
   items.AddSortMethod(SortByDate, 552 /* Date */, LABEL_MASKS("", "", "%L", "%J"));
 
   return true;
@@ -464,7 +464,7 @@ bool CMythDirectory::GetChannels(const CStdString& base, CFileItemList &items)
   /*
    * Video sort title is set to the channel number.
    */
-  items.AddSortMethod(SortBySortTitle, 556 /* Title */, LABEL_MASKS("%K", "%B"), g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.AddSortMethod(SortBySortTitle, 556 /* Title */, LABEL_MASKS("%K", "%B"), CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   return true;
 }

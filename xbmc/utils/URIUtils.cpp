@@ -32,6 +32,7 @@
 #include "Application.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSettings.h"
 #include "URL.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"

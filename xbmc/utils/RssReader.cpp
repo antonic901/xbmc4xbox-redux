@@ -23,7 +23,6 @@
 #include "RssReader.h"
 #include "utils/HTMLUtil.h"
 #include "Application.h"
-#include "settings/GUISettings.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
 #include "filesystem/File.h"

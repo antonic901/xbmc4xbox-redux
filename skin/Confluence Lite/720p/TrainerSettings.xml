@@ -30,7 +30,7 @@
 			<width>660</width>
 			<height>30</height>
 			<font>font13_title</font>
-			<label>$LOCALIZE[12015]</label>
+			<label>$LOCALIZE[38712]</label>
 			<align>center</align>
 			<aligny>center</aligny>
 			<textcolor>white</textcolor>
@@ -49,7 +49,7 @@
 			<posy>148</posy>
 			<width>660</width>
 			<align>center</align>
-			<label>$LOCALIZE[12016]</label>
+			<label>$LOCALIZE[38713]</label>
 			<font>font12</font>
 		</control>
 		

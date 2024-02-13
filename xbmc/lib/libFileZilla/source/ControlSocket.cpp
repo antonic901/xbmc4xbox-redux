@@ -35,7 +35,7 @@
 #include "Util.h"
 #include "interfaces/Builtins.h"
 #include "Utils/log.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "Application.h"
 #include "utils/MemoryUnitManager.h"
@@ -1590,7 +1590,7 @@ void CControlSocket::ParseCommand()
 				CStdString result;
 				int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_CREATENEW, result);
 #if defined(_XBOX)
-				if (g_guiSettings.GetBool("services.ftpautofatx"))
+				if (CSettings::Get().GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif
 				if (error)
@@ -1614,7 +1614,7 @@ void CControlSocket::ParseCommand()
 				CStdString result, logical;
 				int error = m_pOwner->m_pPermissions->GetDirName(m_status.user, args, m_CurrentDir, DOP_CREATE, result, logical);
 #if defined(_XBOX)
-				if (g_guiSettings.GetBool("services.ftpautofatx"))
+				if (CSettings::Get().GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif       
 				if (error)

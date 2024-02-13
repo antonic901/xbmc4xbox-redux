@@ -26,11 +26,16 @@
 #include "GUIFontTTF.h"
 #include "GUIFont.h"
 #include "utils/XMLUtils.h"
-#include "GuiControlFactory.h"
-#include "../xbmc/utils/URIUtils.h"
+#include "GUIControlFactory.h"
+#include "filesystem/Directory.h"
+#include "filesystem/File.h"
+#include "filesystem/SpecialProtocol.h"
+#include "settings/Settings.h"
+#include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
-#include "../xbmc/FileSystem/File.h"
-#include "../xbmc/FileSystem/SpecialProtocol.h"
+#include "FileItem.h"
+#include "URL.h"
+#include "Util.h"
 
 using namespace std;
 
@@ -531,4 +536,86 @@ bool GUIFontManager::IsFontSetUnicode(const CStdString& strFontSet)
   }
 
   return false;
+}
+
+void GUIFontManager::SettingOptionsFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
+{
+  CFileItemList items;
+  CFileItemList items2;
+
+  // find TTF fonts
+  XFILE::CDirectory::GetDirectory("special://home/media/Fonts/", items2);
+
+  if (XFILE::CDirectory::GetDirectory("special://xbmc/media/Fonts/", items))
+  {
+    items.Append(items2);
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      CFileItemPtr pItem = items[i];
+
+      if (!pItem->m_bIsFolder)
+      {
+        if (!URIUtils::GetExtension(pItem->GetLabel()).Equals(".ttf"))
+          continue;
+
+        list.push_back(make_pair(pItem->GetLabel(), pItem->GetLabel()));
+      }
+    }
+  }
+
+#ifdef _XBOX
+  // Find mplayer fonts...
+  XFILE::CDirectory::GetDirectory("special://xbmc/system/players/mplayer/font/", items);
+  for (int i = 0; i < items.Size(); ++i)
+  {
+    CFileItemPtr pItem = items[i];
+    if (pItem->m_bIsFolder)
+    {
+      if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
+      list.push_back(make_pair(pItem->GetLabel(), pItem->GetLabel()));
+    }
+  }
+#endif
+}
+
+void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  if (CUtil::IsUsingTTFSubtitles())
+  { // easy - just fill as per usual
+    CSettingInt* pSettingInt = ((CSettingInt*)setting);
+    for (int i = pSettingInt->GetMinimum(); i <= pSettingInt->GetMaximum(); i += pSettingInt->GetStep())
+      list.push_back(std::make_pair(StringUtils2::Format("%i", i), i));
+  }
+#ifdef _XBOX
+  else
+  {
+    if (CSettings::Get().GetString("subtitles.font").size())
+    {
+      //find font sizes...
+      CFileItemList items;
+      CStdString strPath = "special://xbmc/system/players/mplayer/font/";
+      strPath += CSettings::Get().GetString("subtitles.font");
+      strPath += "/";
+      XFILE::CDirectory::GetDirectory(strPath, items);
+      int iCurrentSize = 0;
+      
+      bool found = false;
+      for (int i = 0; i < items.Size(); ++i)
+      {
+        CFileItemPtr pItem = items[i];
+        if (pItem->m_bIsFolder)
+        {
+          if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
+          iCurrentSize = atoi(pItem->GetLabel().c_str());
+          if (iCurrentSize == current)
+            found = true;
+          list.push_back(std::make_pair(StringUtils2::Format("%i", iCurrentSize), iCurrentSize));
+        }
+      }
+      
+      if (!found)
+        current = iCurrentSize;
+    }
+  }
+#endif
 }

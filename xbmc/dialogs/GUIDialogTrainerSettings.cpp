@@ -74,7 +74,7 @@ void CGUIDialogTrainerSettings::SetupPage()
 {
   CGUIDialogSettings::SetupPage();
   // update our settings label
-  SET_CONTROL_LABEL(CONTROL_SETTINGS_LABEL, g_localizeStrings.Get(12015));
+  SET_CONTROL_LABEL(CONTROL_SETTINGS_LABEL, g_localizeStrings.Get(38712));
 }
 
 void CGUIDialogTrainerSettings::OnCancel()

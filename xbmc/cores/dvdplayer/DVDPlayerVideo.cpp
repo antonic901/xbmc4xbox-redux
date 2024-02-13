@@ -19,10 +19,11 @@
  */
  
 #include "system.h"
+#include "guilib/GraphicContext.h"
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Setting.h"
 #include "DVDPlayer.h"
 #include "DVDPlayerVideo.h"
 #include "DVDCodecs/DVDFactoryCodec.h"
@@ -82,8 +83,8 @@ CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
   m_iDroppedRequest = 0;
   m_fForcedAspectRatio = 0;
   m_iNrOfPicturesNotToSkip = 0;
-  m_messageQueue.SetMaxDataSize(g_guiSettings.GetInt("dvdplayercache.video") * 1024);
-  m_messageQueue.SetMaxTimeSize(g_guiSettings.GetInt("dvdplayercache.videotime"));
+  m_messageQueue.SetMaxDataSize(CSettings::Get().GetInt("dvdplayercache.video") * 1024);
+  m_messageQueue.SetMaxTimeSize(CSettings::Get().GetInt("dvdplayercache.videotime"));
   g_dvdPerformanceCounter.EnableVideoQueue(&m_messageQueue);
 
   m_iCurrentPts = DVD_NOPTS_VALUE;

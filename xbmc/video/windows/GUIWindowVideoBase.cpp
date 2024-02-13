@@ -55,7 +55,6 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
@@ -136,10 +135,10 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
       // save current window, unless the current window is the video playlist window
-      if (GetID() != WINDOW_VIDEO_PLAYLIST && g_guiSettings.GetInt("myvideos.startwindow") != GetID())
+      if (GetID() != WINDOW_VIDEO_PLAYLIST && CSettings::Get().GetInt("myvideos.startwindow") != GetID())
       {
-        g_guiSettings.SetInt("myvideos.startwindow", GetID());
-        g_settings.Save();
+        CSettings::Get().SetInt("myvideos.startwindow", GetID());
+        CSettings::Get().Save();
       }
 
       return CGUIMediaWindow::OnMessage(message);
@@ -151,8 +150,8 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_STACK)
       {
-        g_guiSettings.ToggleBool("myvideos.stackvideos");
-        g_settings.Save();
+        CSettings::Get().ToggleBool("myvideos.stackvideos");
+        CSettings::Get().Save();
         UpdateButtons();
         Update( m_vecItems->GetPath() );
       }
@@ -180,8 +179,8 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
 
         if (nNewWindow != GetID())
         {
-          g_guiSettings.SetInt("myvideos.startwindow", nNewWindow);
-          g_settings.Save();
+          CSettings::Get().SetInt("myvideos.startwindow", nNewWindow);
+          CSettings::Get().Save();
           g_windowManager.ChangeActiveWindow(nNewWindow);
           CGUIMessage msg2(GUI_MSG_SETFOCUS, nNewWindow, CONTROL_BTNTYPE);
           g_windowManager.SendMessage(msg2);
@@ -219,7 +218,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
               OnDeleteItem(iItem);
 
             // or be at the files window and have file deletion enabled
-            else if (GetID() == WINDOW_VIDEO_FILES && g_guiSettings.GetBool("filelists.allowfiledeletion"))
+            else if (GetID() == WINDOW_VIDEO_FILES && CSettings::Get().GetBool("filelists.allowfiledeletion"))
               OnDeleteItem(iItem);
 
             // or be at the video playlists location
@@ -255,14 +254,14 @@ void CGUIWindowVideoBase::UpdateButtons()
   g_windowManager.SendMessage(msg2);
 
   // Select the current window as default item
-  int nWindow = g_guiSettings.GetInt("myvideos.startwindow")-WINDOW_VIDEO_FILES;
+  int nWindow = CSettings::Get().GetInt("myvideos.startwindow")-WINDOW_VIDEO_FILES;
   CONTROL_SELECT_ITEM(CONTROL_BTNTYPE, nWindow);
 
   CONTROL_ENABLE(CONTROL_BTNSCAN);
   CONTROL_ENABLE(CONTROL_IMDB);
 
   SET_CONTROL_LABEL(CONTROL_STACK, 14000);  // Stack
-  SET_CONTROL_SELECTED(GetID(), CONTROL_STACK, g_guiSettings.GetBool("myvideos.stackvideos"));
+  SET_CONTROL_SELECTED(GetID(), CONTROL_STACK, CSettings::Get().GetBool("myvideos.stackvideos"));
   CONTROL_ENABLE_ON_CONDITION(CONTROL_STACK, m_stackingAvailable);
 
   CGUIMediaWindow::UpdateButtons();
@@ -937,7 +936,7 @@ bool CGUIWindowVideoBase::OnSelect(int iItem)
   CFileItemPtr item = m_vecItems->Get(iItem);
 
   if (!item->m_bIsFolder)
-    return OnFileAction(iItem, g_guiSettings.GetInt("myvideos.selectaction"));
+    return OnFileAction(iItem, CSettings::Get().GetInt("myvideos.selectaction"));
 
   return CGUIMediaWindow::OnSelect(iItem);
 }
@@ -1210,7 +1209,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
 void CGUIWindowVideoBase::GetNonContextButtons(int itemNumber, CContextButtons &buttons)
 {
   if (g_playlistPlayer.GetPlaylist(PLAYLIST_VIDEO).size() > 0)
-    buttons.Add(CONTEXT_BUTTON_NOW_PLAYING, 13350);
+    buttons.Add(CONTEXT_BUTTON_NOW_PLAYING, 38746);
 }
 
 bool CGUIWindowVideoBase::OnPlayStackPart(int iItem)
@@ -1699,7 +1698,7 @@ bool CGUIWindowVideoBase::GetDirectory(const CStdString &strDirectory, CFileItem
   if (info && info->Content() == CONTENT_TVSHOWS)
     m_stackingAvailable = false;
 
-  if (m_stackingAvailable && !items.IsStack() && g_guiSettings.GetBool("myvideos.stackvideos"))
+  if (m_stackingAvailable && !items.IsStack() && CSettings::Get().GetBool("myvideos.stackvideos"))
     items.Stack();
 
   return bResult;
@@ -1735,7 +1734,7 @@ void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
     VIDEODATABASEDIRECTORY::NODE_TYPE nodeType = CVideoDatabaseDirectory::GetDirectoryChildType(m_strFilterPath);
     if (items.GetContent().Equals("movies") && params.GetSetId() <= 0 &&
         nodeType == NODE_TYPE_TITLE_MOVIES &&
-       (g_guiSettings.GetBool("videolibrary.groupmoviesets") || (StringUtils2::EqualsNoCase(group, "sets") && mixed)))
+       (CSettings::Get().GetBool("videolibrary.groupmoviesets") || (StringUtils2::EqualsNoCase(group, "sets") && mixed)))
     {
       CFileItemList groupedItems;
       if (GroupUtils::Group(GroupBySet, m_strFilterPath, items, groupedItems, GroupAttributeIgnoreSingleItems))
@@ -1921,7 +1920,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
 
     Update(strParentPath);
 
-    if (pSelItem->IsVideoDb() && g_guiSettings.GetBool("myvideos.flatten"))
+    if (pSelItem->IsVideoDb() && CSettings::Get().GetBool("myvideos.flatten"))
       SetHistoryForPath("");
     else
       SetHistoryForPath(strParentPath);
@@ -1948,7 +1947,7 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
 
     Update(strPath);
 
-    if (pSelItem->IsVideoDb() && g_guiSettings.GetBool("myvideos.flatten"))
+    if (pSelItem->IsVideoDb() && CSettings::Get().GetBool("myvideos.flatten"))
       SetHistoryForPath("");
     else
       SetHistoryForPath(strPath);
@@ -1997,7 +1996,7 @@ void CGUIWindowVideoBase::AppendAndClearSearchItems(CFileItemList &searchItems, 
   if (!searchItems.Size())
     return;
 
-  searchItems.Sort(SortByLabel, SortOrderAscending, g_guiSettings.GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  searchItems.Sort(SortByLabel, SortOrderAscending, CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
   for (int i = 0; i < searchItems.Size(); i++)
     searchItems[i]->SetLabel(prependLabel + searchItems[i]->GetLabel());
   results.Append(searchItems);

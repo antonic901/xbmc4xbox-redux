@@ -21,7 +21,6 @@
 #include "utils/log.h"
 #include "network/DNSNameCache.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 
 CDNSNameCache g_DNSCache;
 
@@ -125,7 +124,7 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
     return true;
   }
 #else
-  CStdString suffix = g_guiSettings.GetString("network.dnssuffix");
+  CStdString suffix = CSettings::Get().GetString("network.dnssuffix");
   CStdString fqdn;
   if( suffix.length() > 0 && strHostName.Find(".") < 0)
     fqdn = strHostName + "." + suffix;

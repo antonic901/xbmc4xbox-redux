@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "EncoderLame.h"
 #include "music/tags/Id3Tag.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -92,11 +92,11 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   }
 
   // setup parmaters, see lame.h for possibilities
-  if (g_guiSettings.GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR)
+  if (CSettings::Get().GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR)
   {
     // use cbr and specified bitrate from settings
     CStdString strSettings;
-    strSettings.Format("%s%i", "--preset cbr ", g_guiSettings.GetInt("audiocds.bitrate"));
+    strSettings.Format("%s%i", "--preset cbr ", CSettings::Get().GetInt("audiocds.bitrate"));
     parse_args_from_string(m_pGlobalFlags, strSettings.c_str(), m_inPath, m_outPath);
     //lame_set_mode(pGlobalFlags, JOINT_STEREO);
     //lame_set_brate(pGlobalFlags, g_settings.m_iRipBitRate);
@@ -105,7 +105,7 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   {
     // use presets (VBR)
     CStdString strSettings;
-    switch (g_guiSettings.GetInt("audiocds.quality"))
+    switch (CSettings::Get().GetInt("audiocds.quality"))
     {
     case CDDARIP_QUALITY_MEDIUM: { strSettings = "--preset fast medium"; break;}  // 150-180kbps
     case CDDARIP_QUALITY_STANDARD: { strSettings = "--preset fast standard"; break;}  // 170-210kbps

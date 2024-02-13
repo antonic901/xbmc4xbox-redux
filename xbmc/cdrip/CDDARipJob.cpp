@@ -35,7 +35,6 @@
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "xbox/IoSupport.h"
-#include "settings/GUISettings.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;

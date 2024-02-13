@@ -21,17 +21,22 @@
  *
  */
 
+#include "settings/ISettingCallback.h"
 #include "threads/CriticalSection.h"
-#include "StdString.h"
 #include "utils/GlobalsHandling.h"
+#include "utils/StdString.h"
 #include "xbox/PlatformDefs.h"
 
 #include <vector>
 
-class CCharsetConverter
+class CSetting;
+
+class CCharsetConverter : public ISettingCallback
 {
 public:
   CCharsetConverter();
+
+  virtual void OnSettingChanged(const CSetting *setting);
 
   void reset();
 
@@ -78,6 +83,8 @@ public:
 
   void toW(const CStdStringA& source, CStdStringW& dest, const CStdStringA& enc);
   void fromW(const CStdStringW& source, CStdStringA& dest, const CStdStringA& enc);
+
+  static void SettingOptionsCharsetsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
 
   CStdString utf8Left(const CStdStringA &source, int num_chars);
 private:

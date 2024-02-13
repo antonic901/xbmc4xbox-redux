@@ -45,7 +45,6 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -460,7 +459,7 @@ void CXbmcHttp::SetCurrentMediaItem(CFileItem& newItem)
     newItem.GetMusicInfoTag()->SetSong(song);
     musicdatabase.Close();
   }
-  if (!bFound && g_guiSettings.GetBool("musicfiles.usetags"))
+  if (!bFound && CSettings::Get().GetBool("musicfiles.usetags"))
   {
     //  ...no, try to load the tag of the file.
     auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem.GetPath()));
@@ -1216,7 +1215,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     tag->SetLoaded(true);
   }
   else
-    if (g_guiSettings.GetBool("musicfiles.usetags"))
+    if (CSettings::Get().GetBool("musicfiles.usetags"))
     {
       // get correct tag parser
       auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(pItem->GetPath()));
@@ -2627,21 +2626,21 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
       switch (atoi(paras[0])) 
       {
         case 0:  //  int
-          tmp.Format("%i", g_guiSettings.GetInt(paras[1]));
+          tmp.Format("%i", CSettings::Get().GetInt(paras[1]));
           return SetResponse(openTag + tmp );
           break;
         case 1: // bool
-          if (g_guiSettings.GetBool(paras[1])==0)
+          if (CSettings::Get().GetBool(paras[1])==0)
             return SetResponse(openTag+"False");
           else
             return SetResponse(openTag+"True");
           break;
         case 2: // float
-          tmp.Format("%f", g_guiSettings.GetFloat(paras[1]));
+          tmp.Format("%f", CSettings::Get().GetNumber(paras[1]));
           return SetResponse(openTag + tmp);
           break;
         case 3: // string
-          tmp.Format("%s", g_guiSettings.GetString(paras[1]));
+          tmp.Format("%s", CSettings::Get().GetString(paras[1]));
           return SetResponse(openTag + tmp);
           break;
         default:
@@ -2653,19 +2652,19 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
       switch (atoi(paras[0])) 
       {
         case 0:  //  int
-          g_guiSettings.SetInt(paras[1], atoi(paras[2]));
+          CSettings::Get().SetInt(paras[1], atoi(paras[2]));
           return SetResponse(openTag+"OK");
           break;
         case 1: // bool
-          g_guiSettings.SetBool(paras[1], (paras[2].ToLower()=="true"));
+          CSettings::Get().SetBool(paras[1], (paras[2].ToLower()=="true"));
           return SetResponse(openTag+"OK");
           break;
         case 2: // float
-          g_guiSettings.SetFloat(paras[1], (float)atof(paras[2]));
+          CSettings::Get().SetNumber(paras[1], (double)atof(paras[2]));
           return SetResponse(openTag+"OK");
           break;
         case 3: // string
-          g_guiSettings.SetString(paras[1], paras[2]);
+          CSettings::Get().SetString(paras[1], paras[2]);
           return SetResponse(openTag+"OK");
           break;
         default:
@@ -2695,17 +2694,17 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp.Format("%i", watchMode);
       }
       else if (paras[i]=="mymusicstartwindow")
-        tmp.Format("%i",g_guiSettings.GetInt("mymusic.startwindow"));
+        tmp.Format("%i",CSettings::Get().GetInt("mymusic.startwindow"));
       else if (paras[i]=="videostartwindow")
-        tmp.Format("%i",g_guiSettings.GetInt("myvideos.startwindow"));
+        tmp.Format("%i",CSettings::Get().GetInt("myvideos.startwindow"));
       else if (paras[i]=="myvideostack")
-        tmp.Format("%i",g_guiSettings.GetBool("myvideos.stackvideos") ? 1 : 0);
+        tmp.Format("%i",CSettings::Get().GetBool("myvideos.stackvideos") ? 1 : 0);
       else if (paras[i]=="additionalsubtitledirectorychecked")
         tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
-        tmp.Format("%i",g_guiSettings.GetInt("services.httpapibroadcastport"));
+        tmp.Format("%i",CSettings::Get().GetInt("services.httpapibroadcastport"));
       else if (paras[i]=="httpapibroadcastlevel")
-        tmp.Format("%i",g_guiSettings.GetInt("services.httpapibroadcastlevel"));
+        tmp.Format("%i",CSettings::Get().GetInt("services.httpapibroadcastlevel"));
       else if (paras[i]=="volumelevel")
         tmp.Format("%i",g_application.GetVolume(false));
       else if (paras[i]=="dynamicrangecompressionlevel")
@@ -2715,7 +2714,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="mute")
         tmp = (g_application.IsMuted()==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")
-        tmp = (g_guiSettings.GetBool("myvideos.flatten")==0) ? "False" : "True";
+        tmp = (CSettings::Get().GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")
         tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
@@ -2890,13 +2889,13 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 
 bool CXbmcHttp::xbmcBroadcast(CStdString message, int level)
 {
-  if  (g_guiSettings.GetInt("services.httpapibroadcastlevel")>=level)
+  if  (CSettings::Get().GetInt("services.httpapibroadcastlevel")>=level)
   {
     if (!pUdpBroadcast)
       pUdpBroadcast = new CUdpBroadcast();
     CStdString msg;
     msg.Format(openBroadcast+message+";%i"+closeBroadcast, level);
-    return pUdpBroadcast->broadcast(msg, g_guiSettings.GetInt("services.httpapibroadcastport"));
+    return pUdpBroadcast->broadcast(msg, CSettings::Get().GetInt("services.httpapibroadcastport"));
   }
   else
     return true;
@@ -2912,7 +2911,7 @@ int CXbmcHttp::xbmcBroadcast(int numParas, CStdString paras[])
     if (numParas>1)
       succ=pUdpBroadcast->broadcast(paras[0], atoi(paras[1]));
     else
-      succ=pUdpBroadcast->broadcast(paras[0], g_guiSettings.GetInt("services.httpapibroadcastport"));
+      succ=pUdpBroadcast->broadcast(paras[0], CSettings::Get().GetInt("services.httpapibroadcastport"));
     if (succ)
       return SetResponse(openTag+"OK");
     else
@@ -2926,9 +2925,9 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 {
   if (numParas>0)
   {
-    g_guiSettings.SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
+    CSettings::Get().SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
     if (numParas>1)
-      g_guiSettings.SetInt("services.httpapibroadcastport", atoi(paras[1]));
+      CSettings::Get().SetInt("services.httpapibroadcastport", atoi(paras[1]));
     return SetResponse(openTag+"OK");
   }
   else
@@ -2938,7 +2937,7 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetBroadcast()
 {
   CStdString tmp;
-  tmp.Format("%i;%i", g_guiSettings.GetInt("services.httpapibroadcastlevel"),g_guiSettings.GetInt("services.httpapibroadcastport"));
+  tmp.Format("%i;%i", CSettings::Get().GetInt("services.httpapibroadcastlevel"),CSettings::Get().GetInt("services.httpapibroadcastport"));
   return SetResponse(openTag+tmp);
 }
 
@@ -3116,7 +3115,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
       return SetResponse(openTag+"Already on");
     else
     {
-      g_application.StartWebServer();
+      //g_application.StartWebServer();
       return SetResponse(openTag+"OK");
     }
   }
@@ -3126,7 +3125,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
         return SetResponse(openTag+"Already off");
       else
       {
-        g_application.StopWebServer();
+        //g_application.StopWebServer();
         return SetResponse(openTag+"OK");
       }
     else

@@ -22,7 +22,9 @@
 
 #include "threads/Thread.h"
 
-#include "GUILabelControl.h"  // for CInfoPortion
+#include "guilib/GUILabelControl.h"  // for CInfoPortion
+
+#include "defs_from_settings.h"
 
 class TiXmlNode;
 

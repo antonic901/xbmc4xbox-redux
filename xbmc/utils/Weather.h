@@ -22,6 +22,7 @@
 
 #include "InfoLoader.h"
 #include "StdString.h"
+#include "settings/ISettingCallback.h"
 #include "utils/GlobalsHandling.h"
 
 #include <map>
@@ -118,7 +119,8 @@ private:
   static bool m_imagesOkay;
 };
 
-class CWeather : public CInfoLoader
+class CWeather : public CInfoLoader,
+                 public ISettingCallback
 {
 public:
   CWeather(void);
@@ -142,6 +144,9 @@ protected:
   virtual CStdString TranslateInfo(int info) const;
   virtual CStdString BusyInfo(int info) const;
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
 
 private:
   CStdString m_location[MAX_LOCATION];

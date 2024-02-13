@@ -57,7 +57,7 @@
 					<posx>0</posx>
 					<posy>90</posy>
 					<include>ButtonCommonValues</include>
-					<label>20323</label>
+					<label>38779</label>
 					<onclick>ActivateWindow(35)</onclick>
 					<onleft>50</onleft>
 					<onright>50</onright>

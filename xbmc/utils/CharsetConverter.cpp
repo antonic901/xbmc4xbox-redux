@@ -22,8 +22,9 @@
 #include "CharsetConverter.h"
 #include "Util.h"
 #include "ArabicShaping.h"
-#include "settings/GUISettings.h"
 #include "LangInfo.h"
+#include "guilib/LocalizeStrings.h"
+#include "settings/Setting.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
@@ -274,6 +275,19 @@ CCharsetConverter::CCharsetConverter()
   m_vecBidiCharsets.push_back(FRIBIDI_CHAR_SET_CP1255);
   m_vecBidiCharsets.push_back(FRIBIDI_CHAR_SET_CP1256);
   m_vecBidiCharsets.push_back(FRIBIDI_CHAR_SET_CP1256);
+}
+
+void CCharsetConverter::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  // TODO: does this make any sense at all for subtitles and karaoke?
+  if (settingId == "subtitles.charset" ||
+      settingId == "karaoke.charset" ||
+      settingId == "locale.charset")
+    reset();
 }
 
 void CCharsetConverter::clear()
@@ -645,4 +659,14 @@ CStdStringA CCharsetConverter::utf8Left(const CStdStringA &source, int num_chars
   utf8ToW(source, wide);
   wToUTF8(wide.Left(num_chars), result);
   return result;
+}
+
+void CCharsetConverter::SettingOptionsCharsetsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
+{
+  vector<CStdString> vecCharsets = g_charsetConverter.getCharsetLabels();
+  sort(vecCharsets.begin(), vecCharsets.end(), sortstringbyname());
+
+  list.push_back(make_pair(g_localizeStrings.Get(13278), "DEFAULT")); // "Default"
+  for (int i = 0; i < (int) vecCharsets.size(); ++i)
+    list.push_back(make_pair(vecCharsets[i], g_charsetConverter.getCharsetNameByLabel(vecCharsets[i])));
 }

@@ -27,7 +27,7 @@
 #include "utils/LangCodeExpander.h"
 #include "LangInfo.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
@@ -43,11 +43,11 @@ void CAdvancedSettings::OnSettingsLoaded()
   Load();
 
   // default players?
-  CLog::Log(LOGNOTICE, "Default Video Player: %s", g_settings.GetDefaultVideoPlayerName().c_str());
-  CLog::Log(LOGNOTICE, "Default Audio Player: %s", g_settings.GetDefaultAudioPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Video Player: %s", CSettings::Get().GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Audio Player: %s", CSettings::Get().GetDefaultAudioPlayerName().c_str());
 
   // setup any logging...
-  if (g_guiSettings.GetBool("debug.showloginfo"))
+  if (CSettings::Get().GetBool("debug.showloginfo"))
   {
     m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
     CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", m_logLevel);
@@ -58,6 +58,16 @@ void CAdvancedSettings::OnSettingsLoaded()
     CLog::Log(LOGNOTICE, "Disabled debug logging due to GUI setting. Level %d.", m_logLevel);
   }
   CLog::SetLogLevel(m_logLevel);
+}
+
+void CAdvancedSettings::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "debug.showloginfo")
+    SetDebugMode(((CSettingBool*)setting)->GetValue());
 }
 
 CAdvancedSettings::CAdvancedSettings()
@@ -255,6 +265,8 @@ CAdvancedSettings::CAdvancedSettings()
   m_logFolder = "special://home/";              // log file location
 
   m_userAgent = g_sysinfo.GetUserAgent();
+
+  m_loaded = false;
 }
 
 bool CAdvancedSettings::Load()
@@ -271,6 +283,9 @@ bool CAdvancedSettings::Load()
 
 void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
 {
+  if (m_loaded)
+    return;
+
   CXBMCTinyXML advancedXML;
   if (!CFile::Exists(file))
   {
@@ -467,12 +482,12 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   { // read the loglevel setting, so set the setting advanced to hide it in GUI
     // as altering it will do nothing - we don't write to advancedsettings.xml
     XMLUtils::GetInt(pRootElement, "loglevel", m_logLevelHint, LOG_LEVEL_NONE, LOG_LEVEL_MAX);
-    CSettingBool *setting = (CSettingBool *)g_guiSettings.GetSetting("debug.showloginfo");
-    if (setting)
+    CSettingBool *setting = (CSettingBool *)CSettings::Get().GetSetting("debug.showloginfo");
+    if (setting != NULL)
     {
       const char* hide;
       if (!((hide = pElement->Attribute("hide")) && strnicmp("false", hide, 4) == 0))
-        setting->SetAdvanced();
+        setting->SetVisible(false);
     }
     g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevel, g_advancedSettings.m_logLevelHint);
     CLog::SetLogLevel(g_advancedSettings.m_logLevel);
@@ -700,8 +715,11 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   if (pElement)
     XMLUtils::GetBoolean(pElement, "keepinmemory", m_guiKeepInMemory);
 
-  // load in the GUISettings overrides:
-  g_guiSettings.LoadXML(pRootElement, true);  // true to hide the settings we read in
+  // must be done before calling CSettings::Load() to avoid an infinite loop
+  m_loaded = true;
+
+  // load in the settings overrides
+  CSettings::Get().Load(pRootElement, true);  // true to hide the settings we read in
 
   TiXmlElement* pDatabase = pRootElement->FirstChildElement("videodatabase");
   if (pDatabase)
@@ -745,6 +763,8 @@ void CAdvancedSettings::Clear()
 
   m_logFolder.clear();
   m_userAgent.clear();
+
+  m_loaded = false;
 }
 
 void CAdvancedSettings::GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings)

@@ -24,7 +24,6 @@
 #include "lib/libexif/libexif.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "filesystem/File.h"
 #include "JpegIO.h"
 #include "XBTF.h"
@@ -157,7 +156,7 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
       m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
 
     // fail on images with orientation (fall back to cximage)
-    if (g_guiSettings.GetBool("pictures.useexifrotation") && m_orientation > 1 )
+    if (CSettings::Get().GetBool("pictures.useexifrotation") && m_orientation > 1 )
     {
       CLog::Log(LOGDEBUG, "JpegIO::Read - Exif orientation > 1 so falling back to CXImage");
       return false;

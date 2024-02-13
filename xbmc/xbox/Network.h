@@ -20,6 +20,8 @@
  *
  */
 
+#include "settings/ISettingCallback.h"
+#include "utils/StdString.h"
 #include "threads/CriticalSection.h"
 
 struct network_info
@@ -32,7 +34,6 @@ struct network_info
   bool DHCP;
   char dhcpserver[32];
 };
-
 
 class CNetwork
 {

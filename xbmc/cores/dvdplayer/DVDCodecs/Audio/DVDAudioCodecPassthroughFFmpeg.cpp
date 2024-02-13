@@ -21,10 +21,11 @@
 #include "DVDAudioCodecPassthroughFFmpeg.h"
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDStreamInfo.h"
-#include "settings/GUISettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
+
+#include "defs_from_settings.h"
 
 //These values are forced to allow spdif out
 #define OUT_SAMPLESIZE 16
@@ -289,11 +290,11 @@ bool CDVDAudioCodecPassthroughFFmpeg::SupportsFormat(CDVDStreamInfo &hints)
 bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
   // TODO - move this stuff somewhere else
-  if (g_guiSettings.GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    m_bSupportsAC3Out = g_guiSettings.GetBool("audiooutput.ac3passthrough");
-    m_bSupportsDTSOut = g_guiSettings.GetBool("audiooutput.dtspassthrough");
-    m_bSupportsAACOut = g_guiSettings.GetBool("audiooutput.aacpassthrough");
+    m_bSupportsAC3Out = CSettings::Get().GetBool("audiooutput.ac3passthrough");
+    m_bSupportsDTSOut = CSettings::Get().GetBool("audiooutput.dtspassthrough");
+    m_bSupportsAACOut = CSettings::Get().GetBool("audiooutput.aacpassthrough");
   }
   else
     return false;

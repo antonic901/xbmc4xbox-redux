@@ -33,8 +33,9 @@
 #include "utils/Win32Exception.h"
 #include "lib/libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "threads/SingleLock.h"
+#include "utils/StringUtils2.h"
 
 
 using namespace XFILE;
@@ -98,7 +99,7 @@ void CSMB::Init()
     set_log_callback(xb_smbc_log);
 #endif
     // set workgroup for samba, after smbc_init it can be freed();
-    xb_setSambaWorkgroup((char*)g_guiSettings.GetString("smb.workgroup").c_str());
+    xb_setSambaWorkgroup((char*)CSettings::Get().GetString("smb.workgroup").c_str());
 
     // setup our context
     m_context = smbc_new_context();
@@ -120,9 +121,9 @@ void CSMB::Init()
       smbc_set_context(m_context);
 
       // if a wins-server is set, we have to change name resolve order to
-      if ( g_guiSettings.GetString("smb.winsserver").length() > 0 && !g_guiSettings.GetString("smb.winsserver").Equals("0.0.0.0") )
+      if ( CSettings::Get().GetString("smb.winsserver").length() > 0 && !StringUtils2::EqualsNoCase(CSettings::Get().GetString("smb.winsserver"), "0.0.0.0") )
       {
-        lp_do_parameter( -1, "wins server", g_guiSettings.GetString("smb.winsserver").c_str());
+        lp_do_parameter( -1, "wins server", CSettings::Get().GetString("smb.winsserver").c_str());
         lp_do_parameter( -1, "name resolve order", "bcast wins host");
       }
       else

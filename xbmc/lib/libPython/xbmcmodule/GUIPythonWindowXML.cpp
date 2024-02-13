@@ -31,7 +31,7 @@
 #include "filesystem/File.h"
 #include "TextureManager.h"
 #include "../XBPython.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
@@ -428,7 +428,7 @@ unsigned int CGUIPythonWindowXML::LoadScriptStrings()
   URIUtils::AddSlashAtEnd(pathToLanguageFile);
 
   // allocate a bunch of strings 
-  return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, g_guiSettings.GetString("locale.language"));
+  return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, CSettings::Get().GetString("locale.language"));
 }
 
 void CGUIPythonWindowXML::ClearScriptStrings()

@@ -34,7 +34,7 @@
 			<itemgap>5</itemgap>
 			<control type="label">
 				<include>WindowTitleCommons</include>
-				<label>$LOCALIZE[20315]</label>
+				<label>$LOCALIZE[38772]</label>
 			</control>
 			<control type="label">
 				<include>WindowTitleCommons</include>

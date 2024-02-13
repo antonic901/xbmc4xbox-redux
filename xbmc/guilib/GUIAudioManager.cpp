@@ -23,7 +23,6 @@
 #include "Key.h"
 #include "AudioContext.h"
 #include "GUISound.h"
-#include "settings/GUISettings.h"
 #include "input/ButtonTranslator.h"
 #include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
@@ -44,6 +43,19 @@ CGUIAudioManager::CGUIAudioManager()
 CGUIAudioManager::~CGUIAudioManager()
 {
 
+}
+
+void CGUIAudioManager::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "lookandfeel.soundskin")
+  {
+    Enable(true);
+    Load();
+  }
 }
 
 void CGUIAudioManager::Initialize(int iDevice)
@@ -261,15 +273,15 @@ bool CGUIAudioManager::Load()
   m_actionSoundMap.clear();
   m_windowSoundMap.clear();
 
-  if (g_guiSettings.GetString("lookandfeel.soundskin")=="OFF")
+  if (CSettings::Get().GetString("lookandfeel.soundskin")=="OFF")
     return true;
 
-  if (g_guiSettings.GetString("lookandfeel.soundskin")=="SKINDEFAULT")
+  if (CSettings::Get().GetString("lookandfeel.soundskin")=="SKINDEFAULT")
   {
     m_strMediaDir = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "sounds");
   }
   else
-    m_strMediaDir = URIUtils::AddFileToFolder("special://xbmc/sounds", g_guiSettings.GetString("lookandfeel.soundskin"));
+    m_strMediaDir = URIUtils::AddFileToFolder("special://xbmc/sounds", CSettings::Get().GetString("lookandfeel.soundskin"));
 
   CStdString strSoundsXml = URIUtils::AddFileToFolder(m_strMediaDir, "sounds.xml");
 
@@ -371,7 +383,7 @@ bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const CStdString&
 void CGUIAudioManager::Enable(bool bEnable)
 {
   // Enable/Disable has no effect if nav sounds are turned off
-  if (g_guiSettings.GetString("lookandfeel.soundskin")=="OFF")
+  if (CSettings::Get().GetString("lookandfeel.soundskin")=="OFF")
     return;
 
   m_bEnabled=bEnable;

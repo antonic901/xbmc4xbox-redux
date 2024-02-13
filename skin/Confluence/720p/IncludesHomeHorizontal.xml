@@ -751,7 +751,7 @@
 				</control>
 				<control type="button" id="90186">
 					<include>ButtonHomeSubCommonValues</include>
-					<label>20315</label>
+					<label>38772</label>
 					<onclick>ActivateWindow(GameSaves)</onclick>
 				</control>
 			</control>	

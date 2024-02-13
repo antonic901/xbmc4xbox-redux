@@ -24,6 +24,15 @@
 #include "threads/CriticalSection.h"
 #include "dialogs/GUIDialogSlider.h"
 
+enum SubtitleAlign
+{
+  SUBTITLE_ALIGN_MANUAL         = 0,
+  SUBTITLE_ALIGN_BOTTOM_INSIDE,
+  SUBTITLE_ALIGN_BOTTOM_OUTSIDE,
+  SUBTITLE_ALIGN_TOP_INSIDE,
+  SUBTITLE_ALIGN_TOP_OUTSIDE
+};
+
 class CGUITextLayout; // forward
 
 class CGUIWindowFullScreen :

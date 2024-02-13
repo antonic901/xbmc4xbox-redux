@@ -28,19 +28,24 @@
 #include "xbox/network.h"
 #include "Util.h"
 #include "Application.h"
-#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogKeyboard.h"
 #include "DateTime.h"
 #include "LangInfo.h"
 #include "LocalizeStrings.h"
 #include "filesystem/Directory.h"
 #include "StringUtils.h"
 #include "utils/CharsetConverter.h"
+#include "addons/GUIDialogAddonSettings.h"
 #include "utils/log.h"
+
+#include "addons/AddonManager.h"
+#include "addons/IAddon.h"
+using namespace ADDON;
 
 using namespace std;
 using namespace XFILE;
@@ -337,8 +342,8 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
 
       //From <dir eg NW> at <speed> km/h   g_localizeStrings.Get(407)
       //This is a bit untidy, but i'm fed up with localization and string formats :)
-      CStdString szWindFrom = g_localizeStrings.Get(407);
-      CStdString szWindAt = g_localizeStrings.Get(408);
+      CStdString szWindFrom = g_localizeStrings.Get(38632);
+      CStdString szWindAt = g_localizeStrings.Get(38633);
       CStdString szCalm = g_localizeStrings.Get(1410);
 
       if (iTmpStr ==  "CALM")
@@ -707,7 +712,7 @@ CStdString CWeather::GetLocation(int iLocation)
   {
     CStdString setting;
     setting.Format("weather.areacode%i", iLocation);
-    m_location[iLocation - 1] = GetAreaCity(g_guiSettings.GetString(setting));
+    m_location[iLocation - 1] = GetAreaCity(CSettings::Get().GetString(setting));
   }
   return m_location[iLocation - 1];
 }
@@ -738,8 +743,8 @@ const day_forecast &CWeather::GetForecast(int day) const
  */
 void CWeather::SetArea(int iLocation)
 {
-  g_guiSettings.SetInt("weather.currentlocation", iLocation);
-  g_settings.Save();
+  CSettings::Get().SetInt("weather.currentlocation", iLocation);
+  CSettings::Get().Save();
 }
 
 /*!
@@ -748,18 +753,59 @@ void CWeather::SetArea(int iLocation)
  */
 int CWeather::GetArea() const
 {
-  return g_guiSettings.GetInt("weather.currentlocation");
+  return CSettings::Get().GetInt("weather.currentlocation");
 }
 
 CJob *CWeather::GetJob() const
 {
   CStdString strSetting;
   strSetting.Format("weather.areacode%i", GetArea());
-  return new CWeatherJob(GetAreaCode(g_guiSettings.GetString(strSetting)));
+  return new CWeatherJob(GetAreaCode(CSettings::Get().GetString(strSetting)));
 }
 
 void CWeather::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
   m_info = ((CWeatherJob *)job)->GetInfo();
   CInfoLoader::OnJobComplete(jobID, success, job);
+}
+
+void CWeather::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string settingId = setting->GetId();
+  if (settingId == "weather.addon")
+    Refresh();
+}
+
+void CWeather::OnSettingAction(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string settingId = setting->GetId();
+  if (settingId == "weather.addonsettings")
+  {
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
+    { // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
+      CGUIDialogAddonSettings::ShowAndGetInput(addon);
+      Refresh();
+    }
+  }
+  else if (StringUtils2::StartsWith(settingId, "weather.areacode"))
+  {
+    CStdString strSearch;
+    if (CGUIDialogKeyboard::ShowAndGetInput(strSearch, g_localizeStrings.Get(14024), false))
+    {
+      strSearch.Replace(" ", "+");
+      CStdString strResult;
+      if (g_weatherManager.GetSearchResults(strSearch, strResult))
+      {
+        ((CSettingString *)setting)->SetValue(strResult);
+        g_weatherManager.Refresh();
+      }
+    }
+  }
 }

@@ -34,7 +34,7 @@
 #include "GUIUserMessages.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
 #include "threads/SingleLock.h"
@@ -709,7 +709,7 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      m_Resolution = (RESOLUTION) g_guiSettings.GetInt("pictures.displayresolution");
+      m_Resolution = (RESOLUTION) CSettings::Get().GetInt("pictures.displayresolution");
 
       if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution() && m_Resolution != RES_INVALID)
       {
@@ -855,7 +855,7 @@ void CGUIWindowSlideShow::Move(float fX, float fY)
 
 void CGUIWindowSlideShow::OnLoadPic(int iPic, int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, int iWidth, int iHeight, int iOriginalWidth, int iOriginalHeight, int iRotate, bool bFullSize)
 {
-  if (!g_guiSettings.GetBool("pictures.useexifrotation"))
+  if (!CSettings::Get().GetBool("pictures.useexifrotation"))
     iRotate = 1;
   if (pTexture)
   {
@@ -885,7 +885,7 @@ void CGUIWindowSlideShow::OnLoadPic(int iPic, int iSlideNumber, LPDIRECT3DTEXTUR
     else
     {
       if (m_bSlideShow)
-        m_Image[iPic].SetTexture(iSlideNumber, pTexture, iWidth, iHeight, iRotate, g_guiSettings.GetBool("slideshow.displayeffects") ? CSlideShowPic::EFFECT_RANDOM : CSlideShowPic::EFFECT_NONE);
+        m_Image[iPic].SetTexture(iSlideNumber, pTexture, iWidth, iHeight, iRotate, CSettings::Get().GetBool("slideshow.displayeffects") ? CSlideShowPic::EFFECT_RANDOM : CSlideShowPic::EFFECT_NONE);
       else
         m_Image[iPic].SetTexture(iSlideNumber, pTexture, iWidth, iHeight, iRotate, CSlideShowPic::EFFECT_NO_TIMEOUT);
       m_Image[iPic].SetOriginalSize(iOriginalWidth, iOriginalHeight, bFullSize);
@@ -971,7 +971,7 @@ void CGUIWindowSlideShow::RunSlideShow(const CStdString &strPath,
     bRandom = bNotRandom = false;
 
   // NotRandom overrides the window setting
-  if ((!bNotRandom && g_guiSettings.GetBool("slideshow.shuffle")) || bRandom)
+  if ((!bNotRandom && CSettings::Get().GetBool("slideshow.shuffle")) || bRandom)
     Shuffle();
 
   if (!beginSlidePath.IsEmpty())

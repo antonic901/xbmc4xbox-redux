@@ -26,9 +26,15 @@
 #ifdef _XBOX
 #define DEBUG_MOUSE
 #define DEBUG_KEYBOARD
+#ifndef _VSC
 #include <xtl.h>
 #include <xvoice.h>
 #include <xonline.h>
+#else
+#include "xdk/XTL.h"
+#include "xdk/xvoice.h"
+#include "xdk/xonline.h"
+#endif
 #define HAS_XBOX_D3D
 #define HAS_RAM_CONTROL
 #define HAS_XFONT
@@ -60,6 +66,8 @@
 #define HAS_PYTHON
 #define HAS_AUDIO
 #define HAS_EVENT_SERVER
+#define HAVE_LIBMP3LAME
+#define HAVE_LIBVORBISENC
 #define SPYCE_SUPPORT
 #undef HAS_NEW_KARAOKE
 #else

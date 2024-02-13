@@ -38,7 +38,6 @@
 #include "GUIWindowManager.h"
 #include "addons/AddonManager.h"
 #include "view/ViewState.h"
-#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "filesystem/AddonsDirectory.h"
@@ -263,7 +262,7 @@ void CGUIViewState::SetCurrentSortMethod(int method)
 {
   SortBy sortBy = (SortBy)method;
   SortAttribute sortAttributes = SortAttributeNone;
-  if (g_guiSettings.GetBool("filelists.ignorethewhensorting"))
+  if (CSettings::Get().GetBool("filelists.ignorethewhensorting"))
     sortAttributes = SortAttributeIgnoreArticle;
 
   if (sortBy < SortByNone || sortBy > SortByRandom)
@@ -308,18 +307,18 @@ SortDescription CGUIViewState::SetNextSortMethod(int direction /* = 1 */)
 
 bool CGUIViewState::HideExtensions()
 {
-  return !g_guiSettings.GetBool("filelists.showextensions");
+  return !CSettings::Get().GetBool("filelists.showextensions");
 }
 
 bool CGUIViewState::HideParentDirItems()
 {
-  return !g_guiSettings.GetBool("filelists.showparentdiritems");
+  return !CSettings::Get().GetBool("filelists.showparentdiritems");
 }
 
 bool CGUIViewState::DisableAddSourceButtons()
 {
   if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
-    return !g_guiSettings.GetBool("filelists.showaddsourcebuttons");
+    return !CSettings::Get().GetBool("filelists.showaddsourcebuttons");
 
   return true;
 }
@@ -414,7 +413,7 @@ void CGUIViewState::LoadViewState(const CStdString &path, int windowID)
   if (db.Open())
   {
     CViewState state;
-    if (db.GetViewState(path, windowID, state, g_guiSettings.GetString("lookandfeel.skin")) ||
+    if (db.GetViewState(path, windowID, state, CSettings::Get().GetString("lookandfeel.skin")) ||
         db.GetViewState(path, windowID, state, ""))
     {
       SetViewAsControl(state.m_viewMode);
@@ -434,10 +433,10 @@ void CGUIViewState::SaveViewToDb(const CStdString &path, int windowID, CViewStat
     CViewState state(m_currentViewAsControl, sorting.sortBy, m_sortOrder, sorting.sortAttributes);
     if (viewState)
       *viewState = state;
-    db.SetViewState(path, windowID, state, g_guiSettings.GetString("lookandfeel.skin"));
+    db.SetViewState(path, windowID, state, CSettings::Get().GetString("lookandfeel.skin"));
     db.Close();
     if (viewState)
-      g_settings.Save();
+      CSettings::Get().Save();
   }
 }
 

@@ -35,7 +35,6 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
-#include "settings/GUISettings.h"
 #include "guilib/LocalizeStrings.h"
 
 using namespace XFILE;
@@ -365,10 +364,12 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
         else
         {
           // create some new settings
-          CGUISettings localSettings;
           CStdString path = URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_strDirectory);
           path = URIUtils::AddFileToFolder(path, "guisettings.xml");
-          g_settings.SaveSettings(path, &localSettings);
+
+          CSettings settings;
+          settings.Initialize();
+          settings.Save(path);
         }
       }
 

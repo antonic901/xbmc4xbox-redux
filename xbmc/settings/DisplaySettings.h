@@ -19,16 +19,20 @@
  *
  */
 
+#include <set>
 #include <vector>
 
 // #include "guilib/Resolution.h" -> try to move RESOLUTION and RESOLUTION_INFO to Resolution.h
 #include "guilib/GraphicContext.h"
+#include "settings/ISettingCallback.h"
 #include "settings/ISubSettings.h"
 #include "threads/CriticalSection.h"
+#include "utils/Observer.h"
 
 class TiXmlNode;
 
-class CDisplaySettings : public ISubSettings
+class CDisplaySettings : public ISettingCallback, public ISubSettings,
+                         public Observable
 {
 public:
   static CDisplaySettings& Get();
@@ -36,6 +40,9 @@ public:
   virtual bool Load(const TiXmlNode *settings);
   virtual bool Save(TiXmlNode *settings) const;
   virtual void Clear();
+
+  virtual bool OnSettingChanging(const CSetting *setting);
+  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
   /*!
    \brief Returns the currently active resolution
@@ -73,6 +80,9 @@ public:
   float GetPixelRatio() const { return m_pixelRatio; }
   void SetPixelRatio(float pixelRatio) { m_pixelRatio = pixelRatio; }
 
+  static void SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+
 protected:
   CDisplaySettings();
   CDisplaySettings(const CDisplaySettings&);
@@ -89,5 +99,14 @@ private:
 
   float m_zoomAmount;         // current zoom amount
   float m_pixelRatio;         // current pixel ratio
+
+  /*!
+   \brief A set of pairs consisting of a setting identifier
+   and a boolean value which should be ignored in specific
+   situations. If the boolean value is "true" the whole
+   OnSettingChanging() logic must be skipped once. If it
+   is "false" only showing the GUI dialog must be skipped.
+   */
+  std::set< std::pair<std::string, bool> > m_ignoreSettingChanging;
   CCriticalSection m_critical;
 };

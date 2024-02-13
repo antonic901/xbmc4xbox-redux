@@ -44,9 +44,9 @@
 #include "Application.h"
 #include "DVDPerformanceCounter.h"
 #include "filesystem/File.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
 #include "utils/StreamDetails.h"
 #include "utils/StreamUtils.h"
@@ -506,7 +506,7 @@ bool CDVDPlayer::OpenInputStream()
   if (filename.Left(7) == "http://" && filename.Right(5) == ".m3u8")
   {
     // get the available bandwidth (as per user settings)
-    int maxrate = g_guiSettings.GetInt("network.bandwidth");
+    int maxrate = CSettings::Get().GetInt("network.bandwidth");
     if(maxrate <= 0)
       maxrate = INT_MAX;
 

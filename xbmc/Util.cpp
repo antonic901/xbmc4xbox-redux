@@ -96,12 +96,13 @@
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
+#include "settings/MediaSettings.h"
+#include "settings/Settings.h"
 #include "playlists/PlayList.h"
 #include "utils/Crc32.h"
 #include "utils/RssReader.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
-#include "settings/MediaSettings.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleTagSami.h"
@@ -110,6 +111,8 @@
 #include "utils/md5.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+
+#include "defs_from_settings.h"
 
 using namespace std;
 
@@ -402,7 +405,7 @@ CStdString CUtil::GetTitleFromPath(const CStdString& strFileNameAndPath, bool bI
     strFilename = URIUtils::GetFileName(url.GetHostName());
 
   // now remove the extension if needed
-  if (!g_guiSettings.GetBool("filelists.showextensions") && !bIsFolder)
+  if (!CSettings::Get().GetBool("filelists.showextensions") && !bIsFolder)
   {
     URIUtils::RemoveExtension(strFilename);
     return strFilename;
@@ -618,7 +621,7 @@ void CUtil::GetQualifiedFilename(const CStdString &strBasePath, CStdString &strF
     // This routine is only called from the playlist loaders,
     // where the filepath is in UTF-8 anyway, so we don't need
     // to do checking for FatX characters.
-    //if (g_guiSettings.GetBool("services.ftpautofatx") && (URIUtils::IsHD(strFilename)))
+    //if (CSettings::Get().GetBool("services.ftpautofatx") && (URIUtils::IsHD(strFilename)))
     //  CUtil::GetFatXQualifiedPath(strFilename);
   }
   else //Base is remote
@@ -1003,7 +1006,7 @@ cleanup:
       }
       ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(igk_main_toy));
 
-      if (g_guiSettings.GetInt("lcd.mode") > 0 && g_guiSettings.GetInt("lcd.type") == MODCHIP_SMARTXX)
+      if (CSettings::Get().GetInt("lcd.mode") > 0 && CSettings::Get().GetInt("lcd.type") == MODCHIP_SMARTXX)
       {
         memcpy(ourmemaddr, lcd_toy_xx, sizeof(lcd_toy_xx));
         _asm
@@ -1582,15 +1585,15 @@ void CUtil::RemoveTempFiles()
 
 void CUtil::DeleteGUISettings()
 {
-  // Load in master code first to ensure it's setting isn't reset
-  CXBMCTinyXML doc;
-  if (doc.LoadFile(CProfilesManager::Get().GetSettingsFile()))
-  {
-    g_guiSettings.LoadMasterLock(doc.RootElement());
-  }
-  // delete the settings file only
-  CLog::Log(LOGINFO, "  DeleteFile(%s)", CProfilesManager::Get().GetSettingsFile().c_str());
-  CFile::Delete(CProfilesManager::Get().GetSettingsFile());
+  // // Load in master code first to ensure it's setting isn't reset
+  // CXBMCTinyXML doc;
+  // if (doc.LoadFile(CProfilesManager::Get().GetSettingsFile()))
+  // {
+  //   g_guiSettings.LoadMasterLock(doc.RootElement());
+  // }
+  // // delete the settings file only
+  // CLog::Log(LOGINFO, "  DeleteFile(%s)", CProfilesManager::Get().GetSettingsFile().c_str());
+  // CFile::Delete(CProfilesManager::Get().GetSettingsFile());
 }
 
 void CUtil::RemoveIllegalChars( CStdString& strText)
@@ -1706,14 +1709,14 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   CStdString strFileNameNoExt(URIUtils::ReplaceExtension(strFileName, ""));
   strLookInPaths.push_back(strPath);
 
-  if (!CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() && !g_guiSettings.GetString("subtitles.custompath").IsEmpty()) // to avoid checking non-existent directories (network) every time..
+  if (!CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() && !CSettings::Get().GetString("subtitles.custompath").empty()) // to avoid checking non-existent directories (network) every time..
   {
-    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(g_guiSettings.GetString("subtitles.custompath")))
+    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(CSettings::Get().GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonaccessible");
       CMediaSettings::Get().SetAdditionalSubtitleDirectoryChecked(-1); // disabled
     }
-    else if (!CDirectory::Exists(g_guiSettings.GetString("subtitles.custompath")))
+    else if (!CDirectory::Exists(CSettings::Get().GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonexistant");
       CMediaSettings::Get().SetAdditionalSubtitleDirectoryChecked(-1); // disabled
@@ -1773,7 +1776,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   // this is last because we dont want to check any common subdirs or cd-dirs in the alternate <subtitles> dir.
   if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() == 1)
   {
-    strPath = g_guiSettings.GetString("subtitles.custompath");
+    strPath = CSettings::Get().GetString("subtitles.custompath");
     if (!URIUtils::HasSlashAtEnd(strPath))
       strPath += "/"; //Should work for both remote and local files
     strLookInPaths.push_back(strPath);
@@ -1804,7 +1807,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
         URIUtils::Split(items[j]->GetPath(), strPath, strItem);
 
         // is this a rar-file ..
-        if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && g_guiSettings.GetBool("subtitles.searchrars"))
+        if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && CSettings::Get().GetBool("subtitles.searchrars"))
         {
           CStdString strRar, strItemWithPath;
           URIUtils::AddFileToFolder(strLookInPaths[step],strFileNameNoExt+URIUtils::GetExtension(strItem),strRar);
@@ -1968,8 +1971,8 @@ void CUtil::PrepareSubtitleFonts()
   CStdString strFontPath = "special://xbmc/system/players/mplayer/font";
 
   if( IsUsingTTFSubtitles()
-    || g_guiSettings.GetInt("subtitles.height") == 0
-    || g_guiSettings.GetString("subtitles.font").size() == 0)
+    || CSettings::Get().GetInt("subtitles.height") == 0
+    || CSettings::Get().GetString("subtitles.font").size() == 0)
   {
     /* delete all files in the font dir, so mplayer doesn't try to load them */
 
@@ -1992,8 +1995,8 @@ void CUtil::PrepareSubtitleFonts()
     CStdString strPath;
     strPath.Format("%s\\%s\\%i",
                   strFontPath.c_str(),
-                  g_guiSettings.GetString("Subtitles.Font").c_str(),
-                  g_guiSettings.GetInt("Subtitles.Height"));
+                  CSettings::Get().GetString("Subtitles.Font").c_str(),
+                  CSettings::Get().GetInt("Subtitles.Height"));
 
     CStdString strSearchMask = strPath + "\\*.*";
     WIN32_FIND_DATA wfd;
@@ -2046,9 +2049,9 @@ bool CUtil::ThumbCached(const CStdString& strFileName)
 
 void CUtil::PlayDVD()
 {
-  if (g_guiSettings.GetBool("dvds.useexternaldvdplayer") && !g_guiSettings.GetString("dvds.externaldvdplayer").IsEmpty())
+  if (CSettings::Get().GetBool("dvds.useexternaldvdplayer") && !CSettings::Get().GetString("dvds.externaldvdplayer").empty())
   {
-    RunXBE(g_guiSettings.GetString("dvds.externaldvdplayer").c_str());
+    RunXBE(CSettings::Get().GetString("dvds.externaldvdplayer").c_str());
   }
   else
   {
@@ -2237,7 +2240,7 @@ void CUtil::TakeScreenshot()
 
   bool promptUser = false;
   // check to see if we have a screenshot folder yet
-  CStdString strDir = g_guiSettings.GetString("debug.screenshotpath", false);
+  CStdString strDir/* = CSettings::Get().GetString("debug.screenshotpath", false)*/;
   if (strDir.IsEmpty())
   {
     strDir = "special://temp/";
@@ -2261,7 +2264,7 @@ void CUtil::TakeScreenshot()
         screenShots.push_back(file);
       if (promptUser)
       { // grab the real directory
-        CStdString newDir = g_guiSettings.GetString("debug.screenshotpath");
+        CStdString newDir = CSettings::Get().GetString("debug.screenshotpath");
         if (!newDir.IsEmpty())
         {
           for (unsigned int i = 0; i < screenShots.size(); i++)
@@ -2526,7 +2529,7 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
 
 bool CUtil::IsUsingTTFSubtitles()
 {
-  return URIUtils::GetExtension(g_guiSettings.GetString("subtitles.font")).Equals(".ttf");
+  return URIUtils::GetExtension(CSettings::Get().GetString("subtitles.font")).Equals(".ttf");
 }
 
 void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function, vector<CStdString> &parameters)
@@ -2821,7 +2824,7 @@ CStdString CUtil::TranslateSpecialSource(const CStdString &strSpecial)
       URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7), strReturn);
     // this one will be removed post 2.0
     else if (strSpecial.Left(10).Equals("$PLAYLISTS"))
-      URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath",false), strSpecial.Mid(10), strReturn);
+      URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), strSpecial.Mid(10), strReturn);
   }
   return strReturn;
 }
@@ -2830,9 +2833,9 @@ CStdString CUtil::MusicPlaylistsLocation()
 {
   vector<CStdString> vec;
   CStdString strReturn;
-  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "music", strReturn);
+  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music", strReturn);
   vec.push_back(strReturn);
-  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "mixed", strReturn);
+  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed", strReturn);
   vec.push_back(strReturn);
   return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
 }
@@ -2841,9 +2844,9 @@ CStdString CUtil::VideoPlaylistsLocation()
 {
   vector<CStdString> vec;
   CStdString strReturn;
-  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "video", strReturn);
+  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "video", strReturn);
   vec.push_back(strReturn);
-  URIUtils::AddFileToFolder(g_guiSettings.GetString("system.playlistspath"), "mixed", strReturn);
+  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed", strReturn);
   vec.push_back(strReturn);
   return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
 }
@@ -2993,7 +2996,7 @@ int CUtil::GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew)
 bool CUtil::AutoDetection()
 {
   bool bReturn=false;
-  if (g_guiSettings.GetBool("autodetect.onoff"))
+  if (CSettings::Get().GetBool("autodetect.onoff"))
   {
     static DWORD pingTimer = 0;
     if( timeGetTime() - pingTimer < (DWORD)g_advancedSettings.m_autoDetectPingTime * 1000)
@@ -3002,9 +3005,9 @@ bool CUtil::AutoDetection()
 
   // send ping and request new client info
   if ( CUtil::AutoDetectionPing(
-    g_guiSettings.GetBool("Autodetect.senduserpw") ? g_guiSettings.GetString("services.ftpserveruser"):"anonymous",
-    g_guiSettings.GetBool("Autodetect.senduserpw") ? g_guiSettings.GetString("services.ftpserverpassword"):"anonymous",
-    g_guiSettings.GetString("autodetect.nickname"),21 /*Our FTP Port! TODO: Extract FTP from FTP Server settings!*/) )
+    CSettings::Get().GetBool("Autodetect.senduserpw") ? CSettings::Get().GetString("services.ftpserveruser"):"anonymous",
+    CSettings::Get().GetBool("Autodetect.senduserpw") ? CSettings::Get().GetString("services.ftpserverpassword"):"anonymous",
+    CSettings::Get().GetString("autodetect.nickname"),21 /*Our FTP Port! TODO: Extract FTP from FTP Server settings!*/) )
   {
     CStdString strFTPPath, strNickName, strFtpUserName, strFtpPassword, strFtpPort, strBoosMode;
     CStdStringArray arSplit;
@@ -3026,16 +3029,16 @@ bool CUtil::AutoDetection()
         //Do Notification for this Client
         CStdString strtemplbl;
         strtemplbl.Format("%s %s",strNickName, v_xboxclients.client_ip[i]);
-        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(1251), strtemplbl);
+        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(38703), strtemplbl);
 
         //Debug Log
-        CLog::Log(LOGDEBUG,"%s: %s FTP-Link: %s", g_localizeStrings.Get(1251).c_str(), strNickName.c_str(), strFTPPath.c_str());
+        CLog::Log(LOGDEBUG,"%s: %s FTP-Link: %s", g_localizeStrings.Get(38703).c_str(), strNickName.c_str(), strFTPPath.c_str());
 
         //set the client_informed to TRUE, to prevent loop Notification
         v_xboxclients.client_informed[i]=true;
 
         //YES NO PopUP: ask for connecting to the detected client via Filemanger!
-        if (g_guiSettings.GetBool("autodetect.popupinfo") && CGUIDialogYesNo::ShowAndGetInput(1251, 0, 1257, 0))
+        if (CSettings::Get().GetBool("autodetect.popupinfo") && CGUIDialogYesNo::ShowAndGetInput(38703, 0, 38708, 0))
         {
           g_windowManager.ActivateWindow(WINDOW_FILES, strFTPPath); //Open in MyFiles
         }
@@ -3407,7 +3410,7 @@ bool CUtil::SetFTPServerUserPassword(CStdString strFtpUserName, CStdString strFt
         if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
         {
           p_ftpUser->CommitChanges();
-          g_guiSettings.SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
+          CSettings::Get().SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
           return true;
         }
         break;
@@ -3892,7 +3895,7 @@ void CUtil::GetHomePath(CStdString& strPath)
 
 bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
 {
-  if (!g_guiSettings.GetBool("myprograms.autoffpatch"))
+  if (!CSettings::Get().GetBool("myprograms.autoffpatch"))
   {
     CLog::Log(LOGDEBUG, "%s - Auto Filter Flicker is off. Skipping Filter Flicker Patching.", __FUNCTION__);
     return false;
