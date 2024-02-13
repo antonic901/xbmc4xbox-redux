@@ -431,9 +431,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\DisplaySettings.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\settings\GUISettings.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\settings\ISetting.cpp">
 				</File>
 				<File
@@ -3380,9 +3377,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIPassword.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\GUISettings.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GuiUserMessages.h">

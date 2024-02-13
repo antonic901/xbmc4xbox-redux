@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,159 +18,957 @@
  *
  */
 
+#include "system.h"
+
 #include "Settings.h"
-#include "filesystem/File.h"
-#include "profiles/ProfilesManager.h"
-#include "settings/GUISettings.h"
-#include "threads/SingleLock.h"
-#include "utils/log.h"
-#include "utils/XBMCTinyXML.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "settings/MediaSettings.h" // for AVPack methods
-#include "filesystem/SpecialProtocol.h"
-#include "utils/MemoryUnitManager.h"
+#include "Application.h"
+#include "Autorun.h"
+#include "GUIPassword.h"
+#include "LangInfo.h"
 #include "Util.h"
-#include "xbox/IoSupport.h" // for CIoSupport
-#include "XBVideoConfig.h" // for AVPack methods
+#include "addons/AddonManager.h"
+#include "addons/Skin.h"
+#include "cores/playercorefactory/PlayerCoreFactory.h"
+#ifdef HAS_XBOX_D3D
+#include "cores/VideoRenderers/XBoxRenderer.h"
+#endif
+#include "filesystem/File.h"
+#include "guilib/GraphicContext.h"
+#include "guilib/GUIAudioManager.h"
+#include "guilib/GUIFontManager.h"
+#include "guilib/LocalizeStrings.h"
+#include "guilib/common/Mouse.h"
+#include "network/NetworkServices.h"
+#include "network/upnp/UPnPSettings.h"
+#include "profiles/ProfilesManager.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/DisplaySettings.h"
+#include "settings/MediaSettings.h"
+#include "settings/MediaSourceSettings.h"
+#include "settings/SettingAddon.h"
+#include "settings/SettingsManager.h"
+#include "settings/SettingPath.h"
+#include "settings/SkinSettings.h"
+#include "threads/SingleLock.h"
+#include "utils/CharsetConverter.h"
+#include "utils/log.h"
+#include "utils/RssManager.h"
+#include "utils/StringUtils2.h"
+#include "utils/SystemInfo.h"
+#include "utils/Weather.h"
+#include "utils/XBMCTinyXML.h"
+#include "view/ViewStateSettings.h"
+#ifdef _XBOX
+#include "utils/FanController.h"
+#include "CdgParser.h"
+#include "XBAudioConfig.h"
+#include "XBVideoConfig.h"
+#include "XBTimeZone.h"
 #endif
 
-using namespace std;
+#include "defs_from_settings.h"
+
+#define SETTINGS_XML_FOLDER "special://xbmc/system/settings/"
+#define SETTINGS_XML_ROOT   "settings"
+
 using namespace XFILE;
 
-class CSettings g_settings;
-
-extern CStdString g_LoadErrorStr;
-
-CSettings::CSettings(void)
+bool AddonHasSettings(const std::string &condition, const std::string &value, const std::string &settingId)
 {
-}
-
-void CSettings::RegisterSettingsHandler(ISettingsHandler *settingsHandler)
-{
-  if (settingsHandler == NULL)
-    return;
-
-  CSingleLock lock(m_critical);
-  m_settingsHandlers.insert(settingsHandler);
-}
-
-void CSettings::UnregisterSettingsHandler(ISettingsHandler *settingsHandler)
-{
-  if (settingsHandler == NULL)
-    return;
-
-  CSingleLock lock(m_critical);
-  m_settingsHandlers.erase(settingsHandler);
-}
-
-void CSettings::RegisterSubSettings(ISubSettings *subSettings)
-{
-  if (subSettings == NULL)
-    return;
-
-  CSingleLock lock(m_critical);
-  m_subSettings.insert(subSettings);
-}
-
-void CSettings::UnregisterSubSettings(ISubSettings *subSettings)
-{
-  if (subSettings == NULL)
-    return;
-
-  CSingleLock lock(m_critical);
-  m_subSettings.erase(subSettings);
-}
-
-CSettings::~CSettings(void)
-{
-  // first clear all registered settings handler and subsettings
-  // implementations because we can't be sure that they are still valid
-  m_settingsHandlers.clear();
-  m_subSettings.clear();
-
-  Clear();
-}
-
-void CSettings::Save() const
-{
-  if (!SaveSettings(CProfilesManager::Get().GetSettingsFile()))
-    CLog::Log(LOGERROR, "Unable to save settings to %s", CProfilesManager::Get().GetSettingsFile().c_str());
-}
-
-bool CSettings::Reset()
-{
-  CLog::Log(LOGINFO, "Resetting settings");
-  CFile::Delete(CProfilesManager::Get().GetSettingsFile());
-  Save();
-  return LoadSettings(CProfilesManager::Get().GetSettingsFile());
-}
-
-bool CSettings::Load()
-{
-  if (!OnSettingsLoading())
+  if (settingId.empty())
     return false;
 
-#ifdef _XBOX
-  char szDevicePath[1024];
-  CStdString strMnt = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetProfileUserDataFolder());
-  if (strMnt.Left(2).Equals("Q:"))
-  {
-    CUtil::GetHomePath(strMnt);
-    strMnt += CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetProfileUserDataFolder()).substr(2);
-  }
-  CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
-  strcat(szDevicePath,strMnt.c_str()+2);
-  CIoSupport::RemapDriveLetter('P', szDevicePath);
-#endif
-  CLog::Log(LOGNOTICE, "loading %s", CProfilesManager::Get().GetSettingsFile().c_str());
-  if (!LoadSettings(CProfilesManager::Get().GetSettingsFile()))
-  {
-    CLog::Log(LOGERROR, "Unable to load %s, creating new %s with default values", CProfilesManager::Get().GetSettingsFile().c_str(), CProfilesManager::Get().GetSettingsFile().c_str());
-    if (!Reset())
-      return false;
-  }
+  CSettingAddon *setting = (CSettingAddon*)CSettings::Get().GetSetting(settingId);
+  if (setting == NULL)
+    return false;
 
-  OnSettingsLoaded();
+  ADDON::AddonPtr addon;
+  if (!ADDON::CAddonMgr::Get().GetAddon(setting->GetValue(), addon, setting->GetAddonType()) || addon == NULL)
+    return false;
+
+  return addon->HasSettings();
+}
+
+bool CheckMasterLock(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return g_passwordManager.IsMasterLockUnlocked(StringUtils2::EqualsNoCase(value, "true"));
+}
+
+bool HasPeripherals(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return true;
+}
+
+bool IsFullscreen(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return true;
+}
+
+bool IsMasterUser(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return g_passwordManager.bMasterUser;
+}
+
+bool IsUsingTTFSubtitles(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CUtil::IsUsingTTFSubtitles();
+}
+
+bool ProfileCanWriteDatabase(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().canWriteDatabases();
+}
+
+bool ProfileCanWriteSources(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().canWriteSources();
+}
+
+bool ProfileHasAddons(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().hasAddons();
+}
+
+bool ProfileHasDatabase(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().hasDatabases();
+}
+
+bool ProfileHasSources(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().hasSources();
+}
+
+bool ProfileHasAddonManagerLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().addonmanagerLocked();
+}
+
+bool ProfileHasFilesLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().filesLocked();
+}
+
+bool ProfileHasMusicLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().musicLocked();
+}
+
+bool ProfileHasPicturesLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().picturesLocked();
+}
+
+bool ProfileHasProgramsLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().programsLocked();
+}
+
+bool ProfileHasSettingsLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().settingsLocked();
+}
+
+bool ProfileHasVideosLocked(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  return CProfilesManager::Get().GetCurrentProfile().videoLocked();
+}
+
+bool ProfileLockMode(const std::string &condition, const std::string &value, const std::string &settingId)
+{
+  char *tmp = NULL;
+  LockType lock = (LockType)strtol(value.c_str(), &tmp, 0);
+  if (tmp != NULL && *tmp != '\0')
+    return false;
+
+  return CProfilesManager::Get().GetCurrentProfile().getLockMode() == lock;
+}
+
+CSettings::CSettings()
+  : m_initialized(false)
+{
+  m_settingsManager = new CSettingsManager();
+}
+
+CSettings::~CSettings()
+{
+  Uninitialize();
+
+  delete m_settingsManager;
+}
+
+CSettings& CSettings::Get()
+{
+  static CSettings sSettings;
+  return sSettings;
+}
+
+CSetting* CSettings::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = NULL */) const
+{
+  if (StringUtils2::EqualsNoCase(settingType, "addon"))
+    return new CSettingAddon(settingId, settingsManager);
+  else if (StringUtils2::EqualsNoCase(settingType, "path"))
+    return new CSettingPath(settingId, settingsManager);
+
+  return NULL;
+}
+
+bool CSettings::Initialize()
+{
+  CSingleLock lock(m_critical);
+  if (m_initialized)
+    return false;
+
+  // register custom setting types
+  InitializeSettingTypes();
+
+  // option fillers and conditions need to be
+  // initialized before the setting definitions
+  InitializeOptionFillers();
+  InitializeConditions();
+
+  // load the settings definitions
+  if (!InitializeDefinitions())
+    return false;
+
+  InitializeVisibility();
+  InitializeDefaults();
+  m_settingsManager->SetInitialized();
+
+  InitializeISettingsHandlers();  
+  InitializeISubSettings();
+  InitializeISettingCallbacks();
+
+  m_initialized = true;
 
   return true;
 }
 
-bool CSettings::LoadSettings(const CStdString& strSettingsFile)
+bool CSettings::Load()
 {
-  // load the xml file
+  return Load(CProfilesManager::Get().GetSettingsFile());
+}
+
+bool CSettings::Load(const std::string &file)
+{
   CXBMCTinyXML xmlDoc;
-
-  if (!xmlDoc.LoadFile(strSettingsFile))
+  if (!xmlDoc.LoadFile(file))
   {
-    g_LoadErrorStr.Format("%s, Line %d\n%s", strSettingsFile.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
+    CLog::Log(LOGERROR, "CSettings: error loading settings from %s, Line %d\n%s", file.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
     return false;
   }
 
-  TiXmlElement *pRootElement = xmlDoc.RootElement();
-  if (strcmpi(pRootElement->Value(), "settings") != 0)
+  bool updated = false;
+  TiXmlElement *root = xmlDoc.RootElement();
+  if (!m_settingsManager->Load(root, updated))
   {
-    g_LoadErrorStr.Format("%s\nDoesn't contain <settings>", strSettingsFile.c_str());
+    CLog::Log(LOGERROR, "CSettingsManager: unable to load settings from %s, creating new default settings", file.c_str());
+    if (!Reset())
+      return false;
+
+    if (!Load(file))
+      return false;
+  }
+  // if the settings had to be updated, we need to save the changes
+  else if (updated)
+    return Save(file);
+
+  return true;
+}
+
+bool CSettings::Load(const TiXmlElement *root, bool hide /* = false */)
+{
+  if (root == NULL)
+    return false;
+
+  std::map<std::string, CSetting*> *loadedSettings = NULL;
+  if (hide)
+    loadedSettings = new std::map<std::string, CSetting*>();
+
+  bool updated;
+  // only trigger settings events if hiding is disabled
+  bool success = m_settingsManager->Load(root, updated, !hide, loadedSettings);
+  // if necessary hide all the loaded settings
+  if (success && hide && loadedSettings != NULL)
+  {
+    for(std::map<std::string, CSetting*>::const_iterator setting = loadedSettings->begin(); setting != loadedSettings->end(); setting++)
+      setting->second->SetVisible(false);
+
+    delete loadedSettings;
+  }
+
+  return success;
+}
+
+void CSettings::SetLoaded()
+{
+  m_settingsManager->SetLoaded();
+}
+
+bool CSettings::Save()
+{
+  return Save(CProfilesManager::Get().GetSettingsFile());
+}
+
+bool CSettings::Save(const std::string &file)
+{
+  CXBMCTinyXML xmlDoc;
+  TiXmlElement rootElement(SETTINGS_XML_ROOT);
+  TiXmlNode *root = xmlDoc.InsertEndChild(rootElement);
+  if (root == NULL)
+    return false;
+
+  if (!m_settingsManager->Save(root))
+    return false;
+
+  return xmlDoc.SaveFile(file);
+}
+
+void CSettings::Unload()
+{
+  CSingleLock lock(m_critical);
+  m_settingsManager->Unload();
+}
+
+void CSettings::Uninitialize()
+{
+  CSingleLock lock(m_critical);
+  if (!m_initialized)
+    return;
+
+  // unregister setting option fillers
+  m_settingsManager->UnregisterSettingOptionsFiller("audiocdactions");
+  m_settingsManager->UnregisterSettingOptionsFiller("audiocdencoders");
+  m_settingsManager->UnregisterSettingOptionsFiller("charsets");
+  m_settingsManager->UnregisterSettingOptionsFiller("fontheights");
+  m_settingsManager->UnregisterSettingOptionsFiller("fonts");
+  m_settingsManager->UnregisterSettingOptionsFiller("languages");
+  m_settingsManager->UnregisterSettingOptionsFiller("regions");
+  m_settingsManager->UnregisterSettingOptionsFiller("rendermethods");
+  m_settingsManager->UnregisterSettingOptionsFiller("resolutions");
+//   m_settingsManager->UnregisterSettingOptionsFiller("shutdownstates");
+  m_settingsManager->UnregisterSettingOptionsFiller("startupwindows");
+  m_settingsManager->UnregisterSettingOptionsFiller("streamlanguages");
+  m_settingsManager->UnregisterSettingOptionsFiller("skincolors");
+  m_settingsManager->UnregisterSettingOptionsFiller("skinfonts");
+  m_settingsManager->UnregisterSettingOptionsFiller("skinsounds");
+  m_settingsManager->UnregisterSettingOptionsFiller("skinthemes");
+  m_settingsManager->UnregisterSettingOptionsFiller("timezones");
+
+//   // unregister ISettingCallback implementations
+//   m_settingsManager->UnregisterCallback(&g_advancedSettings);
+//   m_settingsManager->UnregisterCallback(&CMediaSettings::Get());
+//   m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
+//   m_settingsManager->UnregisterCallback(&g_application);
+//   m_settingsManager->UnregisterCallback(&g_audioManager);
+//   m_settingsManager->UnregisterCallback(&g_charsetConverter);
+//   m_settingsManager->UnregisterCallback(&g_graphicsContext);
+//   m_settingsManager->UnregisterCallback(&g_langInfo);
+// #if defined(TARGET_WINDOWS) || defined(HAS_SDL_JOYSTICK)
+//   m_settingsManager->UnregisterCallback(&g_Joystick);
+// #endif
+//   m_settingsManager->UnregisterCallback(&g_Mouse);
+//   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
+//   m_settingsManager->UnregisterCallback(&g_passwordManager);
+//   m_settingsManager->UnregisterCallback(&CRssManager::Get());
+// #if defined(TARGET_LINUX)
+//   m_settingsManager->UnregisterCallback(&g_timezone);
+// #endif // defined(TARGET_LINUX)
+//   m_settingsManager->UnregisterCallback(&g_weatherManager);
+//   m_settingsManager->UnregisterCallback(&PERIPHERALS::CPeripherals::Get());
+
+//   // unregister ISubSettings implementations
+//   m_settingsManager->UnregisterSubSettings(&g_application);
+//   m_settingsManager->UnregisterSubSettings(&CDisplaySettings::Get());
+//   m_settingsManager->UnregisterSubSettings(&CMediaSettings::Get());
+//   m_settingsManager->UnregisterSubSettings(&CSkinSettings::Get());
+//   m_settingsManager->UnregisterSubSettings(&g_sysinfo);
+//   m_settingsManager->UnregisterSubSettings(&CViewStateSettings::Get());
+
+//   // unregister ISettingsHandler implementations
+//   m_settingsManager->UnregisterSettingsHandler(&g_advancedSettings);
+//   m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
+//   m_settingsManager->UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
+//   m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
+// #ifdef HAS_UPNP
+//   m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
+// #endif
+//   m_settingsManager->UnregisterSettingsHandler(&CProfilesManager::Get());
+//   m_settingsManager->UnregisterSettingsHandler(&g_application);
+
+  // cleanup the settings manager
+  m_settingsManager->Clear();
+
+  m_initialized = false;
+}
+
+void CSettings::RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList)
+{
+  m_settingsManager->RegisterCallback(callback, settingList);
+}
+
+void CSettings::UnregisterCallback(ISettingCallback *callback)
+{
+  m_settingsManager->UnregisterCallback(callback);
+}
+
+CSetting* CSettings::GetSetting(const std::string &id) const
+{
+  CSingleLock lock(m_critical);
+  if (id.empty())
+    return NULL;
+
+  return m_settingsManager->GetSetting(id);
+}
+
+CSettingSection* CSettings::GetSection(const std::string &section) const
+{
+  CSingleLock lock(m_critical);
+  if (section.empty())
+    return NULL;
+
+  return m_settingsManager->GetSection(section);
+}
+
+SettingDependencyMap CSettings::GetDependencies(const std::string &id) const
+{
+  return m_settingsManager->GetDependencies(id);
+}
+
+SettingDependencyMap CSettings::GetDependencies(const CSetting *setting) const
+{
+  return m_settingsManager->GetDependencies(setting);
+}
+
+void* CSettings::GetSettingOptionsFiller(const CSetting *setting)
+{
+  return m_settingsManager->GetSettingOptionsFiller(setting);
+}
+
+bool CSettings::GetBool(const std::string &id) const
+{
+  return m_settingsManager->GetBool(id);
+}
+
+bool CSettings::SetBool(const std::string &id, bool value)
+{
+  return m_settingsManager->SetBool(id, value);
+}
+
+bool CSettings::ToggleBool(const std::string &id)
+{
+  return m_settingsManager->ToggleBool(id);
+}
+
+int CSettings::GetInt(const std::string &id) const
+{
+  return m_settingsManager->GetInt(id);
+}
+
+bool CSettings::SetInt(const std::string &id, int value)
+{
+  return m_settingsManager->SetInt(id, value);
+}
+
+double CSettings::GetNumber(const std::string &id) const
+{
+  return m_settingsManager->GetNumber(id);
+}
+
+bool CSettings::SetNumber(const std::string &id, double value)
+{
+  return m_settingsManager->SetNumber(id, value);
+}
+
+std::string CSettings::GetString(const std::string &id) const
+{
+  return m_settingsManager->GetString(id);
+}
+
+bool CSettings::SetString(const std::string &id, const std::string &value)
+{
+  return m_settingsManager->SetString(id, value);
+}
+
+bool CSettings::LoadSetting(const TiXmlNode *node, const std::string &settingId)
+{
+  return m_settingsManager->LoadSetting(node, settingId);
+}
+
+bool CSettings::Initialize(const std::string &file)
+{
+  CXBMCTinyXML xmlDoc;
+  if (!xmlDoc.LoadFile(file.c_str()))
+  {
+    CLog::Log(LOGERROR, "CSettings: error loading settings definition from %s, Line %d\n%s", file.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
     return false;
   }
 
-  g_guiSettings.LoadXML(pRootElement);
-  
-  // Override settings with avpack settings
-  if (CProfilesManager::Get().GetCurrentProfile().useAvpackSettings())
+  TiXmlElement *root = xmlDoc.RootElement();
+  if (root == NULL)
+    return false;
+
+  return m_settingsManager->Initialize(root);
+}
+
+bool CSettings::InitializeDefinitions()
+{
+  if (!Initialize(SETTINGS_XML_FOLDER "settings.xml"))
   {
-    CLog::Log(LOGNOTICE, "Per AV pack settings are on");
-    LoadAvpackXML();
+    CLog::Log(LOGFATAL, "Unable to load settings definitions");
+    return false;
   }
+#if defined(TARGET_WINDOWS)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "win32.xml") && !Initialize(SETTINGS_XML_FOLDER "win32.xml"))
+    CLog::Log(LOGFATAL, "Unable to load win32-specific settings definitions");
+#elif defined(TARGET_LINUX)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
+    CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
+#if defined(TARGET_DARWIN)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin.xml"))
+    CLog::Log(LOGFATAL, "Unable to load darwin-specific settings definitions");
+#if defined(TARGET_DARWIN_OSX)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_osx.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_osx.xml"))
+    CLog::Log(LOGFATAL, "Unable to load osx-specific settings definitions");
+#elif defined(TARGET_DARWIN_IOS)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios.xml"))
+    CLog::Log(LOGFATAL, "Unable to load ios-specific settings definitions");
+#if defined(TARGET_DARWIN_IOS_ATV2)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios_atv2.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios_atv2.xml"))
+    CLog::Log(LOGFATAL, "Unable to load atv2-specific settings definitions");
+#endif
+#endif
+#elif defined(TARGET_ANDROID)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "android.xml") && !Initialize(SETTINGS_XML_FOLDER "android.xml"))
+    CLog::Log(LOGFATAL, "Unable to load android-specific settings definitions");
+#elif defined(TARGET_RASPBERRY_PI)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "rbp.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp.xml"))
+    CLog::Log(LOGFATAL, "Unable to load rbp-specific settings definitions");
+#elif defined(TARGET_FREEBSD)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") && !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
+    CLog::Log(LOGFATAL, "Unable to load freebsd-specific settings definitions");
+#endif
+#elif defined(_XBOX)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "xbox.xml") && !Initialize(SETTINGS_XML_FOLDER "xbox.xml"))
+    CLog::Log(LOGFATAL, "Unable to load xbox-specific settings definitions");
+#endif
+  if (CFile::Exists(SETTINGS_XML_FOLDER "appliance.xml") && !Initialize(SETTINGS_XML_FOLDER "appliance.xml"))
+    CLog::Log(LOGFATAL, "Unable to load appliance-specific settings definitions");
+
+  return true;
+}
+
+void CSettings::InitializeSettingTypes()
+{
+  // register "addon" and "path" setting types implemented by CSettingAddon
+  m_settingsManager->RegisterSettingType("addon", this);
+  m_settingsManager->RegisterSettingType("path", this);
+}
+
+void CSettings::InitializeVisibility()
+{
+  // hide some settings if necessary
+#if defined(TARGET_LINUX)
+  CSettingString* timezonecountry = (CSettingString*)m_settingsManager->GetSetting("locale.timezonecountry");
+  CSettingString* timezone = (CSettingString*)m_settingsManager->GetSetting("locale.timezone");
+  #if defined(TARGET_DARWIN)
+  if (!g_sysinfo.IsAppleTV2() || GetIOSVersion() >= 4.3)
+  {
+    timezonecountry->SetVisible(false);
+    timezone->SetVisible(false);
+  }
+  #endif
+
+  if (timezonecountry->IsVisible())
+    timezonecountry->SetDefault(g_timezone.GetCountryByTimezone(g_timezone.GetOSConfiguredTimezone()));
+  if (timezone->IsVisible())
+    timezone->SetDefault(g_timezone.GetOSConfiguredTimezone());
+#endif
+}
+
+void CSettings::InitializeDefaults()
+{
+  // set some default values if necessary
+#if defined(HAS_SKIN_TOUCHED) && defined(TARGET_DARWIN_IOS) && !defined(TARGET_DARWIN_IOS_ATV2)
+  ((CSettingAddon*)m_settingsManager->GetSetting("lookandfeel.skin"))->SetDefault("skin.touched");
+#endif
+
+#if defined(TARGET_WINDOWS) || defined(_XBOX)
+  #if defined(HAS_DX) || defined(HAS_XBOX_D3D)
+  ((CSettingString*)m_settingsManager->GetSetting("musicplayer.visualisation"))->SetDefault("visualization.milkdrop");
+  #endif
+
+  #if !defined(HAS_GL) && !defined(HAS_XBOX_D3D)
+  // We prefer a fake fullscreen mode (window covering the screen rather than dedicated fullscreen)
+  // as it works nicer with switching to other applications. However on some systems vsync is broken
+  // when we do this (eg non-Aero on ATI in particular) and on others (AppleTV) we can't get XBMC to
+  // the front
+  if (g_sysinfo.IsAeroDisabled())
+    ((CSettingBool*)m_settingsManager->GetSetting("videoscreen.fakefullscreen"))->SetDefault(false);
+  #endif
+#endif
+
+#if defined(HAS_WEB_SERVER)
+  if (CUtil::CanBindPrivileged())
+    ((CSettingInt*)m_settingsManager->GetSetting("services.webserverport"))->SetDefault(80);
+#endif
+
+#if defined(_XBOX)
+  // this defaults maybe could be moved to OnSettingsLoaded callback
+  CLog::Log(LOGNOTICE, "Getting hardware information now...");
+  if (((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
+    ((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->SetDefault(AUDIO_ANALOG);
+  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.ac3passthrough"))->SetDefault(g_audioConfig.GetAC3Enabled());
+  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.dtspassthrough"))->SetDefault(g_audioConfig.GetDTSEnabled());
+  CLog::Log(LOGINFO, "Using %s output", GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
+  CLog::Log(LOGINFO, "AC3 pass through is %s", GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "DTS pass through is %s", GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "AAC pass through is %s", GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
+
+  if (g_videoConfig.HasLetterbox())
+    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_LETTERBOX);
+  else if (g_videoConfig.HasWidescreen())
+    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_WIDESCREEN);
   else
-    CLog::Log(LOGNOTICE, "Per AV pack settings are off");
+    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_NORMAL);
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd480p"))->SetDefault(g_videoConfig.Has480p());
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd720p"))->SetDefault(g_videoConfig.Has720p());
 
-  // load any ISubSettings implementations
-  return Load(pRootElement);
+  ((CSettingInt*)m_settingsManager->GetSetting("locale.timezone"))->SetDefault(g_timezone.GetTimeZoneIndex());
+  ((CSettingBool*)m_settingsManager->GetSetting("locale.usedst"))->SetDefault(g_timezone.GetDST());
+#endif
+}
+
+void CSettings::InitializeOptionFillers()
+{
+  // register setting option fillers
+#ifdef HAS_DVD_DRIVE
+  m_settingsManager->RegisterSettingOptionsFiller("audiocdactions", MEDIA_DETECT::CAutorun::SettingOptionAudioCdActionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("audiocdencoders", MEDIA_DETECT::CAutorun::SettingOptionAudioCdEncodersFiller);
+#endif
+  m_settingsManager->RegisterSettingOptionsFiller("charsets", CCharsetConverter::SettingOptionsCharsetsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("fanspeeds", CFanController::SettingOptionsSpeedsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("fonts", GUIFontManager::SettingOptionsFontsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("fontheights", GUIFontManager::SettingOptionsSubtitleHeightsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("languages", CLangInfo::SettingOptionsLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("regions", CLangInfo::SettingOptionsRegionsFiller);
+#ifdef HAS_XBOX_D3D
+  m_settingsManager->RegisterSettingOptionsFiller("rendermethods", CXBoxRenderer::SettingOptionsRenderMethodsFiller);
+#else
+  m_settingsManager->RegisterSettingOptionsFiller("rendermethods", CBaseRenderer::SettingOptionsRenderMethodsFiller);
+#endif
+  m_settingsManager->RegisterSettingOptionsFiller("resolutions", CDisplaySettings::SettingOptionsResolutionsFiller);
+//   m_settingsManager->RegisterSettingOptionsFiller("shutdownstates", CPowerManager::SettingOptionsShutdownStatesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("streamlanguages", CLangInfo::SettingOptionsStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skincolors", ADDON::CSkinInfo::SettingOptionsSkinColorsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skinfonts", ADDON::CSkinInfo::SettingOptionsSkinFontsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skinsounds", ADDON::CSkinInfo::SettingOptionsSkinSoundFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skinthemes", ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("targettemperatures", CFanController::SettingOptionsTemperaturesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("timezones", XBTimeZone::SettingOptionsTimezonesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("voicemasks", CCdgParser::SettingOptionsVoiceMasksFiller);
+}
+
+void CSettings::InitializeConditions()
+{
+  // add basic conditions
+  m_settingsManager->AddCondition("true");
+#ifdef HAS_AIRPLAY
+  m_settingsManager->AddCondition("has_airplay");
+#endif
+#ifdef HAS_EVENT_SERVER
+  m_settingsManager->AddCondition("has_event_server");
+#endif
+#ifdef HAS_GL
+  m_settingsManager->AddCondition("has_gl");
+#endif
+#ifdef HAS_GLES
+  m_settingsManager->AddCondition("has_gles");
+#endif
+#if HAS_GLES == 2
+  m_settingsManager->AddCondition("has_glesv2");
+#endif
+#ifdef HAS_KARAOKE
+  m_settingsManager->AddCondition("has_karaoke");
+#endif
+#ifdef HAS_SDL_JOYSTICK
+  m_settingsManager->AddCondition("has_sdl_joystick");
+#endif
+#ifdef HAS_SKIN_TOUCHED
+  m_settingsManager->AddCondition("has_skin_touched");
+#endif
+#ifdef HAS_TIME_SERVER
+  m_settingsManager->AddCondition("has_time_server");
+#endif
+#ifdef HAS_WEB_SERVER
+  m_settingsManager->AddCondition("has_web_server");
+#endif
+#ifdef HAS_ZEROCONF
+  m_settingsManager->AddCondition("has_zeroconf");
+#endif
+#ifdef HAVE_LIBCRYSTALHD
+  m_settingsManager->AddCondition("have_libcrystalhd");
+  if (CCrystalHD::GetInstance()->DevicePresent())
+    m_settingsManager->AddCondition("hascrystalhddevice");
+#endif
+#ifdef HAVE_LIBOPENMAX
+  m_settingsManager->AddCondition("have_libopenmax");
+#endif
+#ifdef HAVE_LIBVA
+  m_settingsManager->AddCondition("have_libva");
+#endif
+#ifdef HAVE_LIBVDADECODER
+  m_settingsManager->AddCondition("have_libvdadecoder");
+  if (g_sysinfo.HasVDADecoder())
+    m_settingsManager->AddCondition("hasvdadecoder");
+#endif
+#ifdef HAVE_LIBVDPAU
+  m_settingsManager->AddCondition("have_libvdpau");
+#endif
+#ifdef HAVE_VIDEOTOOLBOXDECODER
+  m_settingsManager->AddCondition("have_videotoolboxdecoder");
+  if (g_sysinfo.HasVideoToolBoxDecoder())
+    m_settingsManager->AddCondition("hasvideotoolboxdecoder");
+#endif
+#ifdef TARGET_DARWIN_IOS_ATV
+  if (g_sysinfo.IsAppleTV2())
+    m_settingsManager->AddCondition("isappletv2");
+#endif
+#ifdef _XBOX
+  m_settingsManager->AddCondition("is_xbox");
+  if (g_videoConfig.HasNTSC() && g_videoConfig.HasHDPack())
+    m_settingsManager->AddCondition("has_hdtv");
+#endif
+#if defined(TARGET_WINDOWS) && defined(HAS_DX)
+  m_settingsManager->AddCondition("has_dx");
+  if (g_sysinfo.IsVistaOrHigher())
+    m_settingsManager->AddCondition("hasdxva2");
+#endif
+#if defined(_XBOX) && defined(HAS_XBOX_D3D)
+  m_settingsManager->AddCondition("has_dx8");
+#endif
+
+  // add more complex conditions
+  m_settingsManager->AddCondition("addonhassettings", AddonHasSettings);
+  m_settingsManager->AddCondition("checkmasterlock", CheckMasterLock);
+  m_settingsManager->AddCondition("hasperipherals", HasPeripherals);
+  m_settingsManager->AddCondition("isfullscreen", IsFullscreen);
+  m_settingsManager->AddCondition("ismasteruser", IsMasterUser);
+  m_settingsManager->AddCondition("isusingttfsubtitles", IsUsingTTFSubtitles);
+  m_settingsManager->AddCondition("profilecanwritedatabase", ProfileCanWriteDatabase);
+  m_settingsManager->AddCondition("profilecanwritesources", ProfileCanWriteSources);
+  m_settingsManager->AddCondition("profilehasaddons", ProfileHasAddons);
+  m_settingsManager->AddCondition("profilehasdatabase", ProfileHasDatabase);
+  m_settingsManager->AddCondition("profilehassources", ProfileHasSources);
+  m_settingsManager->AddCondition("profilehasaddonmanagerlocked", ProfileHasAddonManagerLocked);
+  m_settingsManager->AddCondition("profilehasfileslocked", ProfileHasFilesLocked);
+  m_settingsManager->AddCondition("profilehasmusiclocked", ProfileHasMusicLocked);
+  m_settingsManager->AddCondition("profilehaspictureslocked", ProfileHasPicturesLocked);
+  m_settingsManager->AddCondition("profilehasprogramslocked", ProfileHasProgramsLocked);
+  m_settingsManager->AddCondition("profilehassettingslocked", ProfileHasSettingsLocked);
+  m_settingsManager->AddCondition("profilehasvideoslocked", ProfileHasVideosLocked);
+  m_settingsManager->AddCondition("profilelockmode", ProfileLockMode);
+}
+
+void CSettings::InitializeISettingsHandlers()
+{
+  // register ISettingsHandler implementations
+  m_settingsManager->RegisterSettingsHandler(&g_application);
+  m_settingsManager->RegisterSettingsHandler(&CProfilesManager::Get());
+  m_settingsManager->RegisterSettingsHandler(&g_advancedSettings);
+  m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::Get());
+  m_settingsManager->RegisterSettingsHandler(&CPlayerCoreFactory::Get());
+  m_settingsManager->RegisterSettingsHandler(&CRssManager::Get());
+#ifdef HAS_UPNP
+  m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
+#endif
+}
+
+void CSettings::InitializeISubSettings()
+{
+  // register ISubSettings implementations
+  m_settingsManager->RegisterSubSettings(&g_application);
+  m_settingsManager->RegisterSubSettings(&CDisplaySettings::Get());
+  m_settingsManager->RegisterSubSettings(&CMediaSettings::Get());
+  m_settingsManager->RegisterSubSettings(&CSkinSettings::Get());
+  m_settingsManager->RegisterSubSettings(&g_sysinfo);
+  m_settingsManager->RegisterSubSettings(&CViewStateSettings::Get());
+}
+
+void CSettings::InitializeISettingCallbacks()
+{
+  // register any ISettingCallback implementations
+  std::set<std::string> settingSet;
+  settingSet.insert("debug.showloginfo");
+  m_settingsManager->RegisterCallback(&g_advancedSettings, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("karaoke.export");
+  settingSet.insert("karaoke.importcsv");
+  settingSet.insert("musiclibrary.cleanup");
+  settingSet.insert("musiclibrary.export");
+  settingSet.insert("musiclibrary.import");
+  settingSet.insert("musicfiles.trackformat");
+  settingSet.insert("musicfiles.trackformatright");
+  settingSet.insert("videolibrary.flattentvshows");
+  settingSet.insert("videolibrary.removeduplicates");
+  settingSet.insert("videolibrary.groupmoviesets");
+  settingSet.insert("videolibrary.cleanup");
+  settingSet.insert("videolibrary.import");
+  settingSet.insert("videolibrary.export");
+  m_settingsManager->RegisterCallback(&CMediaSettings::Get(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("videoscreen.resolution");
+  settingSet.insert("videoscreen.flickerfilter");
+  settingSet.insert("videoscreen.soften");
+  settingSet.insert("videooutput.aspect");
+  settingSet.insert("videooutput.hd480p");
+  settingSet.insert("videooutput.hd720p");
+  settingSet.insert("videooutput.hd1080i");
+  m_settingsManager->RegisterCallback(&CDisplaySettings::Get(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("audiooutput.channels");
+  settingSet.insert("audiooutput.guisoundmode");
+  settingSet.insert("audiooutput.ac3passthrough");
+  settingSet.insert("audiooutput.dtspassthrough");
+  settingSet.insert("audiooutput.aacpassthrough");
+  settingSet.insert("audiooutput.mp1passthrough");
+  settingSet.insert("audiooutput.mp2passthrough");
+  settingSet.insert("audiooutput.mp3passthrough");
+  settingSet.insert("harddisk.aamlevel");
+  settingSet.insert("harddisk.apmlevel");
+  settingSet.insert("karaoke.port0voicemask");
+  settingSet.insert("karaoke.port1voicemask");
+  settingSet.insert("karaoke.port2voicemask");
+  settingSet.insert("karaoke.port3voicemask");
+  settingSet.insert("lcd.backlight");
+  settingSet.insert("lcd.contrast");
+  settingSet.insert("lcd.modchip");
+  settingSet.insert("lcd.type");
+  settingSet.insert("lookandfeel.skin");
+  settingSet.insert("lookandfeel.skinsettings");
+  settingSet.insert("lookandfeel.font");
+  settingSet.insert("lookandfeel.skintheme");
+  settingSet.insert("lookandfeel.skincolors");
+  settingSet.insert("lookandfeel.skinzoom");
+  settingSet.insert("musicplayer.replaygainpreamp");
+  settingSet.insert("musicplayer.replaygainnogainpreamp");
+  settingSet.insert("musicplayer.replaygaintype");
+  settingSet.insert("musicplayer.replaygainavoidclipping");
+  settingSet.insert("scrapers.musicvideosdefault");
+  settingSet.insert("screensaver.mode");
+  settingSet.insert("screensaver.preview");
+  settingSet.insert("screensaver.settings");
+  settingSet.insert("system.ledcolour");
+  settingSet.insert("videoscreen.guicalibration");
+  m_settingsManager->RegisterCallback(&g_application, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("lookandfeel.soundskin");
+  m_settingsManager->RegisterCallback(&g_audioManager, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("subtitles.charset");
+  settingSet.insert("karaoke.charset");
+  settingSet.insert("locale.charset");
+  m_settingsManager->RegisterCallback(&g_charsetConverter, settingSet);
+
+#ifdef _XBOX
+  settingSet.clear();
+  settingSet.insert("system.autotemperature");
+  settingSet.insert("system.fanspeedcontrol");
+  settingSet.insert("system.fanspeed");
+  settingSet.insert("system.minfanspeed");
+  settingSet.insert("system.targettemperature");
+  m_settingsManager->RegisterCallback(CFanController::Instance(), settingSet);
+#endif
+
+  settingSet.clear();
+  settingSet.insert("locale.audiolanguage");
+  settingSet.insert("locale.subtitlelanguage");
+  settingSet.insert("locale.language");
+  settingSet.insert("locale.country");
+  m_settingsManager->RegisterCallback(&g_langInfo, settingSet);
+
+#if defined(HAS_SDL_JOYSTICK)
+  settingSet.clear();
+  settingSet.insert("input.enablejoystick");
+  m_settingsManager->RegisterCallback(&g_Joystick, settingSet);
+#endif
+
+  settingSet.clear();
+  settingSet.insert("input.enablemouse");
+  m_settingsManager->RegisterCallback(&g_Mouse, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("services.webserver");
+  settingSet.insert("services.webserverport");
+  settingSet.insert("services.webserverusername");
+  settingSet.insert("services.webserverpassword");
+  settingSet.insert("services.zeroconf");
+  settingSet.insert("services.airplay");
+  settingSet.insert("services.useairplaypassword");
+  settingSet.insert("services.airplaypassword");
+  settingSet.insert("services.upnpserver");
+  settingSet.insert("services.upnprenderer");
+  settingSet.insert("services.upnpcontroller");
+  settingSet.insert("services.esenabled");
+  settingSet.insert("services.esport");
+  settingSet.insert("services.esallinterfaces");
+  settingSet.insert("services.esinitialdelay");
+  settingSet.insert("services.escontinuousdelay");
+  settingSet.insert("smb.winsserver");
+  settingSet.insert("smb.workgroup");
+  m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("masterlock.lockcode");
+  m_settingsManager->RegisterCallback(&g_passwordManager, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("lookandfeel.rssedit");
+  m_settingsManager->RegisterCallback(&CRssManager::Get(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("locale.timezone");
+  settingSet.insert("locale.usedst");
+  m_settingsManager->RegisterCallback(&g_timezone, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("weather.addon");
+  settingSet.insert("weather.addonsettings");
+  settingSet.insert("weather.areacode1");
+  settingSet.insert("weather.areacode2");
+  settingSet.insert("weather.areacode3");
+  m_settingsManager->RegisterCallback(&g_weatherManager, settingSet);
+}
+
+bool CSettings::Reset()
+{
+  std::string settingsFile = CProfilesManager::Get().GetSettingsFile();
+  // try to delete the settings file
+  if (XFILE::CFile::Exists(settingsFile, false) && !XFILE::CFile::Delete(settingsFile))
+    CLog::Log(LOGWARNING, "Unable to delete old settings file at %s", settingsFile.c_str());
+  
+  // unload any loaded settings
+  Unload();
+
+  // try to save the default settings
+  if (!Save())
+  {
+    CLog::Log(LOGWARNING, "Failed to save the default settings to %s", settingsFile.c_str());
+    return false;
+  }
+
+  return true;
 }
 
 bool CSettings::LoadAvpackXML()
 {
-  return false;
   // TODO: move this to separate setting class and load it at the end
   // CStdString avpackSettingsXML;
   // avpackSettingsXML  = GetAvpackSettingsFile();
@@ -211,82 +1009,84 @@ bool CSettings::LoadAvpackXML()
 
   // // Load calibration
   // return LoadCalibration(pRoot, avpackSettingsXML);
+  return false;
 }
 
 // Save the avpack settings in the current 'avpacksettings.xml' file
 bool CSettings::SaveAvpackXML() const
 {
-  CStdString avpackSettingsXML;
-  avpackSettingsXML  = GetAvpackSettingsFile();
+  // CStdString avpackSettingsXML;
+  // avpackSettingsXML  = GetAvpackSettingsFile();
 
-  CLog::Log(LOGNOTICE, "Saving %s settings in %s",
-    g_videoConfig.GetAVPack().c_str(), avpackSettingsXML.c_str());
+  // CLog::Log(LOGNOTICE, "Saving %s settings in %s",
+  //   g_videoConfig.GetAVPack().c_str(), avpackSettingsXML.c_str());
 
-  // The file does not exist : Save defaults
-  if (!CFile::Exists(avpackSettingsXML))
-    return SaveNewAvpackXML();
+  // // The file does not exist : Save defaults
+  // if (!CFile::Exists(avpackSettingsXML))
+  //   return SaveNewAvpackXML();
 
-  // The file already exists :
-  // We need to preserve other avpack settings
+  // // The file already exists :
+  // // We need to preserve other avpack settings
 
-  // First load the previous settings
-  CXBMCTinyXML xmlDoc;
+  // // First load the previous settings
+  // CXBMCTinyXML xmlDoc;
 
-  if (!xmlDoc.LoadFile(avpackSettingsXML))
-  {
-    CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, Line %d\n%s\nCreating new file.",
-      avpackSettingsXML.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
-    return SaveNewAvpackXML();
-  }
+  // if (!xmlDoc.LoadFile(avpackSettingsXML))
+  // {
+  //   CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, Line %d\n%s\nCreating new file.",
+  //     avpackSettingsXML.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
+  //   return SaveNewAvpackXML();
+  // }
 
-  // Get the main element
-  TiXmlElement *pMainElement = xmlDoc.RootElement();
-  if (!pMainElement || strcmpi(pMainElement->Value(),"settings") != 0)
-  {
-    CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, no <settings> node.\nCreating new file.",
-      avpackSettingsXML.c_str());
-    return SaveNewAvpackXML();
-  }
+  // // Get the main element
+  // TiXmlElement *pMainElement = xmlDoc.RootElement();
+  // if (!pMainElement || strcmpi(pMainElement->Value(),"settings") != 0)
+  // {
+  //   CLog::Log(LOGERROR, "SaveAvpackSettings : Error loading %s, no <settings> node.\nCreating new file.",
+  //     avpackSettingsXML.c_str());
+  //   return SaveNewAvpackXML();
+  // }
 
-  // Delete the plugged avpack root if it exists, then recreate it
-  // TODO : to support custom avpack settings, the two XMLs should
-  // be synchronized, not just overwrite the old one
-  TiXmlNode *pRoot = pMainElement->FirstChild(g_videoConfig.GetAVPack());
-  if (pRoot)
-    pMainElement->RemoveChild(pRoot);
+  // // Delete the plugged avpack root if it exists, then recreate it
+  // // TODO : to support custom avpack settings, the two XMLs should
+  // // be synchronized, not just overwrite the old one
+  // TiXmlNode *pRoot = pMainElement->FirstChild(g_videoConfig.GetAVPack());
+  // if (pRoot)
+  //   pMainElement->RemoveChild(pRoot);
 
-  TiXmlElement pluggedNode(g_videoConfig.GetAVPack());
-  pRoot = pMainElement->InsertEndChild(pluggedNode);
-  if (!pRoot) return false;
+  // TiXmlElement pluggedNode(g_videoConfig.GetAVPack());
+  // pRoot = pMainElement->InsertEndChild(pluggedNode);
+  // if (!pRoot) return false;
 
-  if (!SaveAvpackSettings(pRoot))
-    return false;
+  // if (!SaveAvpackSettings(pRoot))
+  //   return false;
 
-  return xmlDoc.SaveFile(avpackSettingsXML);
+  // return xmlDoc.SaveFile(avpackSettingsXML);
+  return false;
 }
 
 // Create an 'avpacksettings.xml' file with in the current profile directory
 bool CSettings::SaveNewAvpackXML() const
 {
-  CXBMCTinyXML xmlDoc;
-  TiXmlElement xmlMainElement("settings");
-  TiXmlNode *pMain = xmlDoc.InsertEndChild(xmlMainElement);
-  if (!pMain) return false;
+  // CXBMCTinyXML xmlDoc;
+  // TiXmlElement xmlMainElement("settings");
+  // TiXmlNode *pMain = xmlDoc.InsertEndChild(xmlMainElement);
+  // if (!pMain) return false;
 
-  TiXmlElement pluggedNode(g_videoConfig.GetAVPack());
-  TiXmlNode *pRoot = pMain->InsertEndChild(pluggedNode);
-  if (!pRoot) return false;
+  // TiXmlElement pluggedNode(g_videoConfig.GetAVPack());
+  // TiXmlNode *pRoot = pMain->InsertEndChild(pluggedNode);
+  // if (!pRoot) return false;
 
-  if (!SaveAvpackSettings(pRoot))
-    return false;
+  // if (!SaveAvpackSettings(pRoot))
+  //   return false;
 
-  return xmlDoc.SaveFile(GetAvpackSettingsFile());
+  // return xmlDoc.SaveFile(GetAvpackSettingsFile());
+  return false;
 }
 
 // Save avpack settings in the provided xml node
 bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 {
-  return false;
   // TODO: move this to separate setting class and save it at the end
   // TiXmlElement programsNode("myprograms");
   // TiXmlNode *pNode = io_pRoot->InsertEndChild(programsNode);
@@ -340,149 +1140,54 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
   // XMLUtils::SetBoolean(pNode, "soften", g_guiSettings.GetBool("videoplayer.soften"));
 
   // return SaveCalibration(io_pRoot);
-}
-bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *localSettings /* = NULL */) const
-{
-  CXBMCTinyXML xmlDoc;
-  TiXmlElement xmlRootElement("settings");
-  TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
-  if (!pRoot) return false;
-  // write our tags one by one - just a big list for now (can be flashed up later)
-
-  if (!OnSettingsSaving())
-    return false;
-
-  if (localSettings) // local settings to save
-    localSettings->SaveXML(pRoot);
-  else // save the global settings
-    g_guiSettings.SaveXML(pRoot);
-
-  if (CProfilesManager::Get().GetCurrentProfile().useAvpackSettings())
-    SaveAvpackXML();
-
-  OnSettingsSaved();
-
-  if (!Save(pRoot))
-    return false;
-
-  // save the file
-  return xmlDoc.SaveFile(strSettingsFile);
-}
-
-void CSettings::Clear()
-{
-  OnSettingsCleared();
-
-  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
-    (*it)->Clear();
+  return false;
 }
 
 CStdString CSettings::GetFFmpegDllFolder() const
 {
-  CStdString folder = "Q:\\system\\players\\dvdplayer\\";
-  if (g_guiSettings.GetBool("videoplayer.allcodecs"))
-    folder += "full\\";
-  return folder;
+  // CStdString folder = "Q:\\system\\players\\dvdplayer\\";
+  // if (g_guiSettings.GetBool("videoplayer.allcodecs"))
+  //   folder += "full\\";
+  // return folder;
+  return "";
 }
 
 CStdString CSettings::GetPlayerName(const int& player) const
 {
-  CStdString strPlayer;
+  // CStdString strPlayer;
   
-  if (player == PLAYER_PAPLAYER)
-    strPlayer = "paplayer";
-  else
-  if (player == PLAYER_MPLAYER)
-    strPlayer = "mplayer";
-  else
-  if (player == PLAYER_DVDPLAYER)
-    strPlayer = "dvdplayer";
+  // if (player == PLAYER_PAPLAYER)
+  //   strPlayer = "paplayer";
+  // else
+  // if (player == PLAYER_MPLAYER)
+  //   strPlayer = "mplayer";
+  // else
+  // if (player == PLAYER_DVDPLAYER)
+  //   strPlayer = "dvdplayer";
 
-  return strPlayer;
+  // return strPlayer;
+  return "";
 }
 
 CStdString CSettings::GetDefaultVideoPlayerName() const
 {
-  return GetPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
+  // return GetPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
+  return "";
 }
 
 CStdString CSettings::GetDefaultAudioPlayerName() const
 {
-  return GetPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
+  // return GetPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
+  return "";
 }
 
 CStdString CSettings::GetAvpackSettingsFile() const
 {
-  CStdString  strAvpackSettingsFile;
-  if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
-    strAvpackSettingsFile = "T:\\avpacksettings.xml";
-  else
-    strAvpackSettingsFile = "P:\\avpacksettings.xml";
-  return strAvpackSettingsFile;
-}
-
-bool CSettings::OnSettingsLoading()
-{
-  CSingleLock lock(m_critical);
-  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
-  {
-    if (!(*it)->OnSettingsLoading())
-      return false;
-  }
-
-  return true;
-}
-
-void CSettings::OnSettingsLoaded()
-{
-  CSingleLock lock(m_critical);
-  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
-    (*it)->OnSettingsLoaded();
-}
-
-bool CSettings::OnSettingsSaving() const
-{
-  CSingleLock lock(m_critical);
-  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
-  {
-    if (!(*it)->OnSettingsSaving())
-      return false;
-  }
-
-  return true;
-}
-
-void CSettings::OnSettingsSaved() const
-{
-  CSingleLock lock(m_critical);
-  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
-    (*it)->OnSettingsSaved();
-}
-
-void CSettings::OnSettingsCleared()
-{
-  CSingleLock lock(m_critical);
-  for (SettingsHandlers::const_iterator it = m_settingsHandlers.begin(); it != m_settingsHandlers.end(); it++)
-    (*it)->OnSettingsCleared();
-}
-
-bool CSettings::Load(const TiXmlNode *settings)
-{
-  bool ok = true;
-  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
-    ok &= (*it)->Load(settings);
-
-  return ok;
-}
-
-bool CSettings::Save(TiXmlNode *settings) const
-{
-  CSingleLock lock(m_critical);
-  for (SubSettings::const_iterator it = m_subSettings.begin(); it != m_subSettings.end(); it++)
-  {
-    if (!(*it)->Save(settings))
-      return false;
-  }
-
-  return true;
+  // CStdString  strAvpackSettingsFile;
+  // if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
+  //   strAvpackSettingsFile = "T:\\avpacksettings.xml";
+  // else
+  //   strAvpackSettingsFile = "P:\\avpacksettings.xml";
+  // return strAvpackSettingsFile;
+  return "";
 }
