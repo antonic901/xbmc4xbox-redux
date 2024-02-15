@@ -219,14 +219,14 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
 
   const std::string &settingId = setting->GetId();
 #ifdef HAS_TIME_SERVER
-  if (settingId == "locale.timeserver")
+  if (settingId == "services.timeserver")
   {
     if (((CSettingBool*)setting)->GetValue())
       StartTimeServer();
     else
       StopTimeServer();
   }
-  else if (settingId == "locale.timeserveraddress")
+  else if (settingId == "services.timeserveraddress")
   {
     StopTimeServer();
     StartTimeServer();
@@ -298,7 +298,7 @@ bool CNetworkServices::StartTimeServer()
   if (!g_application.getNetwork().IsAvailable())
     return false;
 
-  if (!CSettings::Get().GetBool("locale.timeserver"))
+  if (!CSettings::Get().GetBool("services.timeserver"))
     return false;
 
   if(!IsTimeServerRunning())

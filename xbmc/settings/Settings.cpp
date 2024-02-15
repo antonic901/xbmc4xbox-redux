@@ -908,8 +908,8 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("services.ftpserver");
   settingSet.insert("services.ftpserveruser");
   settingSet.insert("services.ftpserverpassword");
-  settingSet.insert("locale.timeserver");
-  settingSet.insert("locale.timeserveraddress");
+  settingSet.insert("services.timeserver");
+  settingSet.insert("services.timeserveraddress");
   settingSet.insert("smb.winsserver");
   settingSet.insert("smb.workgroup");
   m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);

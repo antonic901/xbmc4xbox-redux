@@ -3,16 +3,16 @@
   <section id="services">
     <category id="sntp" label="38601" help="38602">
       <group id="1">
-        <setting id="locale.timeserver" type="boolean" label="38600" help="">
+        <setting id="services.timeserver" type="boolean" label="38600" help="">
           <level>1</level>
           <default>false</default>
         </setting>
-        <setting id="locale.timeserveraddress" type="string" label="38696" help="">
+        <setting id="services.timeserveraddress" type="string" label="38696" help="">
           <level>1</level>
           <default>pool.ntp.org</default>
           <control type="edit" format="string">
             <dependencies>
-              <dependency type="enable" setting="locale.timeserver">true</dependency>
+              <dependency type="enable" setting="services.timeserver">true</dependency>
             </dependencies>
           </control>
         </setting>
