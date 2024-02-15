@@ -3503,7 +3503,14 @@ msgctxt "#1235"
 msgid "Programs & pictures & video"
 msgstr ""
 
-#empty strings from id 1236 to 1270
+#empty strings from id 1236 to 1246
+
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#1247"
+msgid "Password has been set successfully"
+msgstr ""
+
+#empty strings from id 1248 to 1270
 
 #: system/settings/settings.xml
 msgctxt "#1271"

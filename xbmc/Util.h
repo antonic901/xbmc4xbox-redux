@@ -172,8 +172,6 @@ public:
 
   static bool SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute);
   static int GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew);
-  static bool GetFTPServerUserName(int iFTPUserID, CStdString &strFtpUser1, int &iUserMax );
-  static bool SetFTPServerUserPassword(CStdString strFtpUserName, CStdString strFtpUserPassword);
   static bool SetXBOXNickName(CStdString strXboxNickNameIn, CStdString &strXboxNickNameOut);
   static bool GetXBOXNickName(CStdString &strXboxNickNameOut);
   static bool AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, CStdString strNickName, int iFTPPort);

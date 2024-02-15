@@ -103,7 +103,6 @@
 #endif
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
-#include "network/upnp/UPnPSettings.h"
 #include "filesystem/UPnPDirectory.h"
 #endif
 #include "PartyModeManager.h"
@@ -117,13 +116,6 @@
 #include "GUIFontTTF.h"
 #include "utils/Win32Exception.h"
 #include "lib/libGoAhead/XBMChttp.h"
-#include "lib/libGoAhead/WebServer.h"
-#ifdef HAS_FTP_SERVER
-#include "lib/libfilezilla/xbfilezilla.h"
-#endif
-#ifdef HAS_TIME_SERVER
-#include "utils/Sntp.h"
-#endif
 #ifdef HAS_XFONT
 #include <xfont.h>  // for textout functions
 #endif
@@ -328,10 +320,8 @@ CApplication::CApplication(void)
   m_bSpinDown = false;
   m_bNetworkSpinDown = false;
   m_dwSpinDownTime = timeGetTime();
-  m_pWebServer = NULL;
   m_pXbmcHttp = NULL;
   m_prevMedia="";
-  m_pFileZilla = NULL;
   m_pPlayer = NULL;
 #ifdef HAS_XBOX_HARDWARE
   XSetProcessQuantumLength(5); //default=20msec
@@ -633,14 +623,10 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
   if (NetworkUp)
   {
 #ifdef HAS_FTP_SERVER
-    if (!m_pFileZilla)
-    {
-      // Start FTP with default settings
-      FEH_TextOut(pFont, iLine++, L"Starting FTP server...");
-      StartFtpEmergencyRecoveryMode();
-    }
-
-    FEH_TextOut(pFont, iLine++, L"FTP server running on port %d, login: xbox/xbox", m_pFileZilla->mSettings.GetServerPort());
+    // Start FTP with default settings
+    FEH_TextOut(pFont, iLine++, L"Starting FTP server...");
+    CNetworkServices::Get().StartFtpEmergencyRecoveryMode();
+    FEH_TextOut(pFont, iLine++, L"FTP server running on port %d, login: xbox/xbox", CNetworkServices::Get().GetFtpServerPort());
 #endif
     ++iLine;
   }
@@ -4467,7 +4453,7 @@ void CApplication::CheckShutdown()
     resetTimer = true;
 
 #ifdef HAS_FTP_SERVER
-  if (m_pFileZilla && m_pFileZilla->GetNoConnections() != 0) // is FTP active ?
+  if (CNetworkServices::Get().IsFtpServerRunning() && CNetworkServices::Get().FtpHasActiveConnections()) // is FTP active ?
     resetTimer = true;
 #endif
 
@@ -4987,8 +4973,8 @@ void CApplication::ProcessSlow()
 #endif
 #ifdef HAS_TIME_SERVER
   // check for any needed sntp update
-  if(m_psntpClient && m_psntpClient->UpdateNeeded())
-    m_psntpClient->Update();
+  if(CNetworkServices::Get().IsTimeServerRunning() && CNetworkServices::Get().IsTimeServerUpdateNeeded())
+    CNetworkServices::Get().UpdateTimeServer();
 #endif
 
   // LED - LCD SwitchOn On Paused! m_bIsPaused=TRUE -> LED/LCD is ON!
@@ -5578,59 +5564,6 @@ void CApplication::CheckForDebugButtonCombo()
 #ifdef _DEBUG
   g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
 #endif
-#endif
-}
-
-void CApplication::StartFtpEmergencyRecoveryMode()
-{
-#ifdef HAS_FTP_SERVER
-  m_pFileZilla = new CXBFileZilla(NULL);
-  m_pFileZilla->Start();
-
-  // Default settings
-  m_pFileZilla->mSettings.SetMaxUsers(0);
-  m_pFileZilla->mSettings.SetWelcomeMessage("XBMC emergency recovery console FTP.");
-
-  // default user
-  CXFUser* pUser;
-  m_pFileZilla->AddUser("xbox", pUser);
-  pUser->SetPassword("xbox");
-  pUser->SetShortcutsEnabled(false);
-  pUser->SetUseRelativePaths(false);
-  pUser->SetBypassUserLimit(false);
-  pUser->SetUserLimit(0);
-  pUser->SetIPLimit(0);
-  pUser->AddDirectory("/", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS | XBDIR_HOME);
-  pUser->AddDirectory("C:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  pUser->AddDirectory("D:\\", XBFILE_READ | XBDIR_LIST | XBDIR_SUBDIRS);
-  pUser->AddDirectory("E:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  pUser->AddDirectory("Q:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  //Add existing extended partitions
-  if (CIoSupport::DriveExists('F')){
-    pUser->AddDirectory("F:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('G')){
-    pUser->AddDirectory("G:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('R')){
-    pUser->AddDirectory("R:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('S')){
-    pUser->AddDirectory("S:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('V')){
-    pUser->AddDirectory("V:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('W')){
-    pUser->AddDirectory("W:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('A')){
-    pUser->AddDirectory("A:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  if (CIoSupport::DriveExists('B')){
-    pUser->AddDirectory("B:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  }
-  pUser->CommitChanges();
 #endif
 }
 

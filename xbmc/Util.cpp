@@ -3364,63 +3364,6 @@ void CUtil::AutoDetectionGetSource(VECSOURCES &shares)
   }
 }
 
-bool CUtil::GetFTPServerUserName(int iFTPUserID, CStdString &strFtpUser1, int &iUserMax )
-{
-#ifdef HAS_FTP_SERVER
-  if( !g_application.m_pFileZilla )
-    return false;
-
-  class CXFUser* m_pUser;
-  vector<CXFUser*> users;
-  g_application.m_pFileZilla->GetAllUsers(users);
-  iUserMax = users.size();
-  if (iUserMax > 0)
-  {
-    //for (int i = 1 ; i < iUserSize; i++){ delete users[i]; }
-    m_pUser = users[iFTPUserID];
-    strFtpUser1 = m_pUser->GetName();
-    if (strFtpUser1.size() != 0) return true;
-    else return false;
-  }
-  else
-#endif
-    return false;
-}
-bool CUtil::SetFTPServerUserPassword(CStdString strFtpUserName, CStdString strFtpUserPassword)
-{
-#ifdef HAS_FTP_SERVER
-  if( !g_application.m_pFileZilla )
-    return false;
-
-  CStdString strTempUserName;
-  class CXFUser* p_ftpUser;
-  vector<CXFUser*> v_ftpusers;
-  bool bFoundUser = false;
-  g_application.m_pFileZilla->GetAllUsers(v_ftpusers);
-  int iUserSize = v_ftpusers.size();
-  if (iUserSize > 0)
-  {
-    int i = 1 ;
-    while( i <= iUserSize)
-    {
-      p_ftpUser = v_ftpusers[i-1];
-      strTempUserName = p_ftpUser->GetName();
-      if (strTempUserName.Equals(strFtpUserName.c_str()) )
-      {
-        if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
-        {
-          p_ftpUser->CommitChanges();
-          CSettings::Get().SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
-          return true;
-        }
-        break;
-      }
-      i++;
-    }
-  }
-#endif
-  return false;
-}
 //strXboxNickNameIn: New NickName to write
 //strXboxNickNameOut: Same if it is in NICKNAME Cache
 bool CUtil::SetXBOXNickName(CStdString strXboxNickNameIn, CStdString &strXboxNickNameOut)

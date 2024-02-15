@@ -38,6 +38,7 @@
 #include "windows/GUIWindowFileManager.h"
 #include "filesystem/Directory.h"
 #include "filesystem/VirtualDirectory.h"
+#include "network/NetworkServices.h"
 #include "network/UdpClient.h"
 #include "xbox/XKHDD.h"
 #include "filesystem/Directory.h"
@@ -3104,14 +3105,14 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
 {
   if (numParas==0)
   {
-    if (g_application.m_pWebServer)
+    if (CNetworkServices::Get().IsWebserverRunning())
       return SetResponse(openTag+"On");
     else
       return SetResponse(openTag+"Off");
   }
   else if (paras[0].ToLower().Equals("on"))
   {
-    if (g_application.m_pWebServer)
+    if (CNetworkServices::Get().IsWebserverRunning())
       return SetResponse(openTag+"Already on");
     else
     {
@@ -3121,7 +3122,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
   }
   else
     if (paras[0].ToLower().Equals("off"))
-      if (!g_application.m_pWebServer)
+      if (!CNetworkServices::Get().IsWebserverRunning())
         return SetResponse(openTag+"Already off");
       else
       {

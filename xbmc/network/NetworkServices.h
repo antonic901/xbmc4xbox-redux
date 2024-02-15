@@ -22,18 +22,15 @@
 #include "system.h"
 #include "settings/ISettingCallback.h"
 
-// #ifdef HAS_WEB_SERVER
-// class CWebServer;
-// class CHTTPImageHandler;
-// class CHTTPVfsHandler;
-// #ifdef HAS_JSONRPC
-// class CHTTPJsonRpcHandler;
-// #endif // HAS_JSONRPC
-// #ifdef HAS_WEB_INTERFACE
-// class CHTTPWebinterfaceHandler;
-// class CHTTPWebinterfaceAddonsHandler;
-// #endif // HAS_WEB_INTERFACE
-// #endif // HAS_WEB_SERVER
+#ifdef HAS_TIME_SERVER
+class CSNTPClient;
+#endif
+#ifdef HAS_WEB_SERVER
+class CWebServer;
+#endif // HAS_WEB_SERVER
+#ifdef HAS_FTP_SERVER
+class CXBFileZilla;
+#endif
 
 class CNetworkServices : public ISettingCallback
 {
@@ -46,20 +43,23 @@ public:
   void Start();
   void Stop(bool bWait);
 
+  bool StartTimeServer();
+  bool IsTimeServerRunning();
+  bool StopTimeServer();
+  bool IsTimeServerUpdateNeeded();
+  void UpdateTimeServer();
+
   bool StartWebserver();
   bool IsWebserverRunning();
   bool StopWebserver();
 
-  bool StartAirPlayServer();
-  bool IsAirPlayServerRunning();
-  bool StopAirPlayServer(bool bWait);
-  bool StartAirTunesServer();
-  bool IsAirTunesServerRunning();
-  bool StopAirTunesServer(bool bWait);
-
-  bool StartJSONRPCServer();
-  bool IsJSONRPCServerRunning();
-  bool StopJSONRPCServer(bool bWait);
+  bool StartFtpServer();
+  bool StartFtpEmergencyRecoveryMode();
+  bool IsFtpServerRunning();
+  bool StopFtpServer();
+  bool SetFTPServerUserPass();
+  bool FtpHasActiveConnections();
+  int GetFtpServerPort();
 
   bool StartEventServer();
   bool IsEventServerRunning();
@@ -82,10 +82,6 @@ public:
   bool IsRssRunning();
   bool StopRss();
 
-  bool StartZeroconf();
-  bool IsZeroconfRunning();
-  bool StopZeroconf();
-
 private:
   CNetworkServices();
   CNetworkServices(const CNetworkServices&);
@@ -94,16 +90,13 @@ private:
 
   bool ValidatePort(int port);
 
-// #ifdef HAS_WEB_SERVER
-//   CWebServer& m_webserver;
-//   CHTTPImageHandler& m_httpImageHandler;
-//   CHTTPVfsHandler& m_httpVfsHandler;
-// #ifdef HAS_JSONRPC
-//   CHTTPJsonRpcHandler& m_httpJsonRpcHandler;
-// #endif
-// #ifdef HAS_WEB_INTERFACE
-//   CHTTPWebinterfaceHandler& m_httpWebinterfaceHandler;
-//   CHTTPWebinterfaceAddonsHandler& m_httpWebinterfaceAddonsHandler;
-// #endif
-// #endif
+#ifdef HAS_TIME_SERVER
+ CSNTPClient* m_sntpclient;
+#endif
+#ifdef HAS_WEB_SERVER
+  CWebServer* m_webserver;
+#endif
+#ifdef HAS_FTP_SERVER
+  CXBFileZilla* m_filezilla;
+#endif
 };

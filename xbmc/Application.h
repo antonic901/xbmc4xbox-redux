@@ -83,9 +83,6 @@ struct VOICE_MASK {
   float whisper;
 };
 
-class CWebServer;
-class CXBFileZilla;
-class CSNTPClient;
 class CCdgParser;
 class CApplicationMessenger;
 class CProfile;
@@ -220,9 +217,6 @@ public:
   MEDIA_DETECT::CAutorun m_Autorun;
   MEDIA_DETECT::CDetectDVDMedia m_DetectDVDType;
   CDelayController m_ctrDpad;
-  CSNTPClient *m_psntpClient;
-  CWebServer* m_pWebServer;
-  CXBFileZilla* m_pFileZilla;
   IPlayer* m_pPlayer;
 
   bool m_bSpinDown;
@@ -323,7 +317,6 @@ protected:
   bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
 
   void CheckForDebugButtonCombo();
-  void StartFtpEmergencyRecoveryMode();
   float NavigationIdleTime();
   void CheckForTitleChange();
   static bool AlwaysProcess(const CAction& action);

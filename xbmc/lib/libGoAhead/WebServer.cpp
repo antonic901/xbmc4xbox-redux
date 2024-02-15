@@ -12,9 +12,11 @@
 #include "system.h"
 #include "WebServer.h"
 #include "XBMCweb.h"
+#include "Application.h"
 #include "filesystem/SpecialProtocol.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "xbox/Network.h"
 #include "addons/AddonManager.h"
 
 #ifdef SPYCE_SUPPORT
@@ -122,8 +124,10 @@ DWORD CWebServer::ResumeThread()
   return res;
 }
 
-bool CWebServer::Start(const char *szLocalAddress, int port, const char_t* web, bool wait)
+bool CWebServer::Start(int port, bool wait)
 {
+  char *szLocalAddress = g_application.getNetwork().m_networkinfo.ip;
+
   m_bFinished = false;
   ResetEvent(m_hEvent);
 

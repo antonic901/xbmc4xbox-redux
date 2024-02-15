@@ -903,6 +903,9 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("services.esallinterfaces");
   settingSet.insert("services.esinitialdelay");
   settingSet.insert("services.escontinuousdelay");
+  settingSet.insert("services.ftpserver");
+  settingSet.insert("services.ftpserveruser");
+  settingSet.insert("services.ftpserverpassword");
   settingSet.insert("smb.winsserver");
   settingSet.insert("smb.workgroup");
   m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);

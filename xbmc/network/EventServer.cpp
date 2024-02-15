@@ -104,9 +104,9 @@ void CEventServer::StartServer()
   CThread::Create();
 }
 
-void CEventServer::StopServer()
+void CEventServer::StopServer(bool bWait)
 {
-  StopThread();
+  StopThread(bWait);
 }
 
 void CEventServer::Cleanup()
