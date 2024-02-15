@@ -231,15 +231,17 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
     StopTimeServer();
     StartTimeServer();
   }
+  else
 #endif
 #ifdef HAS_FTP_SERVER
-  else if (settingId == "services.ftpserver")
+  if (settingId == "services.ftpserver")
   {
     if (((CSettingBool*)setting)->GetValue())
       StartFtpServer();
     else
       StopFtpServer();
   }
+  else
 #endif
 #ifdef HAS_WEB_SERVER
   if (settingId == "services.webserverusername" ||
