@@ -596,16 +596,12 @@ void CSettings::InitializeDefaults()
 #endif
 
 #if defined(_XBOX)
-  // this defaults maybe could be moved to OnSettingsLoaded callback
+  // actual values are set inside OnSettingsLoaded() callback
   CLog::Log(LOGNOTICE, "Getting hardware information now...");
   if (((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
     ((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->SetDefault(AUDIO_ANALOG);
   ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.ac3passthrough"))->SetDefault(g_audioConfig.GetAC3Enabled());
   ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.dtspassthrough"))->SetDefault(g_audioConfig.GetDTSEnabled());
-  CLog::Log(LOGINFO, "Using %s output", GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
-  CLog::Log(LOGINFO, "AC3 pass through is %s", GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "DTS pass through is %s", GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "AAC pass through is %s", GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
 
   if (g_videoConfig.HasLetterbox())
     ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_LETTERBOX);
@@ -615,6 +611,7 @@ void CSettings::InitializeDefaults()
     ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_NORMAL);
   ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd480p"))->SetDefault(g_videoConfig.Has480p());
   ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd720p"))->SetDefault(g_videoConfig.Has720p());
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd1080i"))->SetDefault(g_videoConfig.Has1080i());
 
   ((CSettingInt*)m_settingsManager->GetSetting("locale.timezone"))->SetDefault(g_timezone.GetTimeZoneIndex());
   ((CSettingBool*)m_settingsManager->GetSetting("locale.usedst"))->SetDefault(g_timezone.GetDST());
@@ -766,6 +763,11 @@ void CSettings::InitializeISettingsHandlers()
 #ifdef HAS_UPNP
   m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
 #endif
+#ifdef _XBOX
+  m_settingsManager->RegisterSettingsHandler(&g_audioConfig);
+  m_settingsManager->RegisterSettingsHandler(&g_videoConfig);
+  m_settingsManager->RegisterSettingsHandler(&g_timezone);
+#endif
 }
 
 void CSettings::InitializeISubSettings()
@@ -906,6 +908,8 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("services.ftpserver");
   settingSet.insert("services.ftpserveruser");
   settingSet.insert("services.ftpserverpassword");
+  settingSet.insert("locale.timeserver");
+  settingSet.insert("locale.timeserveraddress");
   settingSet.insert("smb.winsserver");
   settingSet.insert("smb.workgroup");
   m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);

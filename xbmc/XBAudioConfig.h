@@ -19,13 +19,17 @@
  *
  */
 
+#include "settings/ISettingsHandler.h"
+
 #define XC_AUDIO_FLAGS 9
 
-class XBAudioConfig
+class XBAudioConfig : public ISettingsHandler
 {
 public:
   XBAudioConfig();
   ~XBAudioConfig();
+
+  virtual void OnSettingsLoaded();
 
   bool HasDigitalOutput();
 

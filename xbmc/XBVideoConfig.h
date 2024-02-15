@@ -20,14 +20,17 @@
  */
 
 #include "GraphicContext.h"
+#include "settings/ISettingsHandler.h"
 
 #define XC_VIDEO_FLAGS 8
 
-class XBVideoConfig
+class XBVideoConfig : public ISettingsHandler
 {
 public:
   XBVideoConfig();
   ~XBVideoConfig();
+
+  virtual void OnSettingsLoaded();
 
   bool HasPAL() const;
   bool HasPAL60() const;

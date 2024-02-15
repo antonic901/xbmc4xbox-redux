@@ -832,10 +832,10 @@ int XBTimeZone::GetTimeZoneIndex()
     if (!g_langInfo.GetTimeZone().IsEmpty())
     {
       int i=0;
-      while (i < g_timezone.GetNumberOfTimeZones() && !g_langInfo.GetTimeZone().Equals(g_timezone.GetTimeZoneName(i)))
+      while (i < GetNumberOfTimeZones() && !g_langInfo.GetTimeZone().Equals(GetTimeZoneName(i)))
         i++;
 
-      if (i < g_timezone.GetNumberOfTimeZones())
+      if (i < GetNumberOfTimeZones())
         return i;
     }
     else
@@ -963,28 +963,34 @@ void XBTimeZone::SetDST(BOOL bEnable)
 #endif
 }
 
+void XBTimeZone::OnSettingsLoaded()
+{
+  CSettings::Get().SetInt("locale.timezone", GetTimeZoneIndex());
+  CSettings::Get().SetBool("locale.usedst", GetDST());
+}
+
 void XBTimeZone::OnSettingChanged(const CSetting *setting)
 {
   if (setting == NULL)
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "locale.timezone" && g_timezone.GetTimeZoneIndex() != ((CSettingInt*)setting)->GetValue())
-    g_timezone.SetTimeZoneIndex(((CSettingInt*)setting)->GetValue());
-  else if (settingId == "locale.usedst" && g_timezone.GetDST() != ((CSettingBool*)setting)->GetValue())
-    g_timezone.SetDST(((CSettingBool*)setting)->GetValue());
+  if (settingId == "locale.timezone" && GetTimeZoneIndex() != ((CSettingInt*)setting)->GetValue())
+    SetTimeZoneIndex(((CSettingInt*)setting)->GetValue());
+  else if (settingId == "locale.usedst" && GetDST() != ((CSettingBool*)setting)->GetValue())
+    SetDST(((CSettingBool*)setting)->GetValue());
 }
 
 void XBTimeZone::SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
 {
   current = ((const CSettingInt*)setting)->GetValue();
   bool found = false;
-  for (unsigned int i = 0; i < g_timezone.GetNumberOfTimeZones(); i++)
+  for (unsigned int i = 0; i < GetNumberOfTimeZones(); i++)
   {
     if (!found && i == current)
       found = true;
 
-    list.push_back(std::make_pair(g_timezone.GetTimeZoneString(i), i));
+    list.push_back(std::make_pair(GetTimeZoneString(i), i));
   }
 
   if (!found)

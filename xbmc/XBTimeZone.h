@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "settings/ISettingCallback.h"
+#include "settings/ISettingsHandler.h"
 
 #define XC_DISABLE_DST_FLAG  0x02
 #define XC_DST_SETTING       0x11
@@ -67,7 +68,7 @@ typedef struct _EEPROM_USER_SETTINGS {
 
 extern const MINI_TZI g_TimeZoneInfo[];
 
-class XBTimeZone : public ISettingCallback
+class XBTimeZone : public ISettingCallback, public ISettingsHandler
 {
 public:
   static const char * GetTimeZoneString(int index);
@@ -80,6 +81,8 @@ public:
   
   static bool GetDST();
   static void SetDST(BOOL bEnable);
+
+  virtual void OnSettingsLoaded();
 
   virtual void OnSettingChanged(const CSetting *setting);
 

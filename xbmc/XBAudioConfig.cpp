@@ -20,10 +20,13 @@
 
 #include "system.h"
 #include "XBAudioConfig.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #endif
+
+#include "defs_from_settings.h"
 
 XBAudioConfig g_audioConfig;
 
@@ -38,6 +41,18 @@ XBAudioConfig::XBAudioConfig()
 
 XBAudioConfig::~XBAudioConfig()
 {
+}
+
+void XBAudioConfig::OnSettingsLoaded()
+{
+  if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL && !HasDigitalOutput())
+    CSettings::Get().SetInt("audiooutput.mode", AUDIO_ANALOG);
+  CSettings::Get().SetBool("audiooutput.ac3passthrough", GetAC3Enabled());
+  CSettings::Get().SetBool("audiooutput.dtspassthrough", GetDTSEnabled());
+  CLog::Log(LOGINFO, "Using %s output", CSettings::Get().GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
+  CLog::Log(LOGINFO, "AC3 pass through is %s", CSettings::Get().GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "DTS pass through is %s", CSettings::Get().GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "AAC pass through is %s", CSettings::Get().GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
 }
 
 bool XBAudioConfig::HasDigitalOutput()

@@ -20,10 +20,13 @@
 
 #include "system.h"
 #include "XBVideoConfig.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #endif
+
+#include "defs_from_settings.h"
 
 XBVideoConfig g_videoConfig;
 
@@ -40,6 +43,19 @@ XBVideoConfig::XBVideoConfig()
 
 XBVideoConfig::~XBVideoConfig()
 {}
+
+void XBVideoConfig::OnSettingsLoaded()
+{
+  if (HasLetterbox())
+    CSettings::Get().SetInt("videooutput.aspect", VIDEO_LETTERBOX);
+  else if (HasWidescreen())
+    CSettings::Get().SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
+  else
+    CSettings::Get().SetInt("videooutput.aspect", VIDEO_NORMAL);
+  CSettings::Get().SetBool("videooutput.hd480p", Has480p());
+  CSettings::Get().SetBool("videooutput.hd720p", Has720p());
+  CSettings::Get().SetBool("videooutput.hd1080i", Has1080i());
+}
 
 bool XBVideoConfig::HasPAL() const
 {
