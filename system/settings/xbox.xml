@@ -20,6 +20,61 @@
     </category>
   </section>
   <section id="system">
+    <category id="general">
+      <group id="6">
+        <setting id="myprograms.autoffpatch" type="boolean" label="38791" help="">
+          <level>1</level>
+          <default>false</default>
+        </setting>
+        <setting id="myprograms.gameautoregion" type="boolean" label="511" help="">
+          <level>1</level>
+          <default>false</default>
+        </setting>
+        <setting id="myprograms.ntscmode" type="integer" label="38766" help="">
+          <level>1</level>
+          <default>0</default> <!-- NTSC-M and NTSC-J -->
+          <constraints>
+            <options>
+              <option label="38762">0</option> <!-- NTSC-M and NTSC-J -->
+              <option label="38763">1</option> <!-- NTSC-M -->
+              <option label="38764">2</option> <!-- NTSC-J -->
+              <option label="38765">3</option> <!-- PAL-60 -->
+            </options>
+          </constraints>
+          <control type="spinner" format="string">
+            <dependencies>
+              <dependency type="enable" setting="myprograms.gameautoregion">true</dependency>
+            </dependencies>
+          </control>
+        </setting>
+      </group>
+      <group id="8">
+        <setting id="myprograms.trainerpath" type="path" label="20003" help="">
+          <level>1</level>
+          <default>select folder</default>
+          <heading>657</heading>
+          <constraints>
+            <writable>false</writable>
+          </constraints>
+          <control type="button" format="path" />
+        </setting>
+      </group>
+      <group id="9">
+        <setting id="myprograms.usedashpath" type="boolean" label="38720" help="">
+          <level>1</level>
+          <default>true</default>
+        </setting>
+        <setting id="myprograms.dashboard" type="string" label="38719" help="">
+          <level>1</level>
+          <default>C:\xboxdash.xbe</default>
+          <control type="edit" format="string">
+            <dependencies>
+              <dependency type="enable" setting="myprograms.usedashpath">true</dependency>
+            </dependencies>
+          </control>
+        </setting>
+      </group>
+    </category>
     <category id="lcd" label="38644" help="">
       <group id="1">
         <setting id="lcd.type" type="integer" label="38645" help="">

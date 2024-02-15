@@ -10238,7 +10238,15 @@ msgctxt "#38718"
 msgid "Play NTSC videos in PAL60"
 msgstr ""
 
-#empty strings from id 38719 to 38720
+#: system/settings/xbox.xml
+msgctxt "#38719"
+msgid "Dashboard"
+msgstr ""
+
+#: system/settings/xbox.xml
+msgctxt "#38720"
+msgid "Use custom dashboard path"
+msgstr ""
 
 #: xbmc/windows/GUIWindowSystemInfo.cpp
 msgctxt "#38721"
