@@ -5756,6 +5756,13 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     m_replayGainSettings.iNoGainPreAmp = ((CSettingInt*)setting)->GetValue();
   else if (StringUtils2::EqualsNoCase(settingId, "musicplayer.replaygainavoidclipping"))
     m_replayGainSettings.bAvoidClipping = ((CSettingBool*)setting)->GetValue();
+  else if (settingId == "network.assignment" || settingId == "network.ipaddress" ||
+           settingId == "network.subnet" || settingId == "network.gateway" ||
+           settingId == "network.dns" || settingId == "network.dns2")
+  {
+    m_network->NetworkMessage(CNetwork::SERVICES_DOWN,1);
+    m_network->SetupNetwork();
+  }
   else if (settingId == "system.ledcolour")
   {
     // Alter LED Colour immediately

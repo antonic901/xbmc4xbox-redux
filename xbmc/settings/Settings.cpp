@@ -843,6 +843,12 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("musicplayer.replaygainnogainpreamp");
   settingSet.insert("musicplayer.replaygaintype");
   settingSet.insert("musicplayer.replaygainavoidclipping");
+  settingSet.insert("network.assignment");
+  settingSet.insert("network.ipaddress");
+  settingSet.insert("network.subnet");
+  settingSet.insert("network.gateway");
+  settingSet.insert("network.dns");
+  settingSet.insert("network.dns2");
   settingSet.insert("scrapers.musicvideosdefault");
   settingSet.insert("screensaver.mode");
   settingSet.insert("screensaver.preview");
