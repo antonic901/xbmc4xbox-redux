@@ -54,20 +54,19 @@ public:
   void Unload();
   void Uninitialize();
 
+  bool LoadAvpackXML();
+  bool SaveAvpackXML() const;
+  bool SaveNewAvpackXML() const;
+  bool SaveAvpackSettings(TiXmlNode *io_pRoot) const;
+
   CStdString GetFFmpegDllFolder() const;
   CStdString GetPlayerName(const int& player) const;
   CStdString GetDefaultVideoPlayerName() const;
   CStdString GetDefaultAudioPlayerName() const;
-
   CStdString GetAvpackSettingsFile() const;
 
   void RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList);
   void UnregisterCallback(ISettingCallback *callback);
-
-  bool SaveAvpackXML() const;
-  bool SaveNewAvpackXML() const;
-  bool SaveAvpackSettings(TiXmlNode *io_pRoot) const;
-  bool LoadAvpackXML();
 
   CSetting* GetSetting(const std::string &id) const;
   CSettingSection* GetSection(const std::string &section) const;

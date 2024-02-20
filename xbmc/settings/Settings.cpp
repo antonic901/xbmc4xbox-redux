@@ -337,61 +337,70 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("audiocdactions");
   m_settingsManager->UnregisterSettingOptionsFiller("audiocdencoders");
   m_settingsManager->UnregisterSettingOptionsFiller("charsets");
+  m_settingsManager->UnregisterSettingOptionsFiller("fanspeeds");
   m_settingsManager->UnregisterSettingOptionsFiller("fontheights");
   m_settingsManager->UnregisterSettingOptionsFiller("fonts");
+  m_settingsManager->UnregisterSettingOptionsFiller("framerateconversions");
   m_settingsManager->UnregisterSettingOptionsFiller("languages");
   m_settingsManager->UnregisterSettingOptionsFiller("regions");
   m_settingsManager->UnregisterSettingOptionsFiller("rendermethods");
   m_settingsManager->UnregisterSettingOptionsFiller("resolutions");
-//   m_settingsManager->UnregisterSettingOptionsFiller("shutdownstates");
   m_settingsManager->UnregisterSettingOptionsFiller("startupwindows");
   m_settingsManager->UnregisterSettingOptionsFiller("streamlanguages");
   m_settingsManager->UnregisterSettingOptionsFiller("skincolors");
   m_settingsManager->UnregisterSettingOptionsFiller("skinfonts");
   m_settingsManager->UnregisterSettingOptionsFiller("skinsounds");
   m_settingsManager->UnregisterSettingOptionsFiller("skinthemes");
+  m_settingsManager->UnregisterSettingOptionsFiller("targettemperatures");
   m_settingsManager->UnregisterSettingOptionsFiller("timezones");
+  m_settingsManager->UnregisterSettingOptionsFiller("voicemasks");
 
-//   // unregister ISettingCallback implementations
-//   m_settingsManager->UnregisterCallback(&g_advancedSettings);
-//   m_settingsManager->UnregisterCallback(&CMediaSettings::Get());
-//   m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
-//   m_settingsManager->UnregisterCallback(&g_application);
-//   m_settingsManager->UnregisterCallback(&g_audioManager);
-//   m_settingsManager->UnregisterCallback(&g_charsetConverter);
-//   m_settingsManager->UnregisterCallback(&g_graphicsContext);
-//   m_settingsManager->UnregisterCallback(&g_langInfo);
-// #if defined(TARGET_WINDOWS) || defined(HAS_SDL_JOYSTICK)
-//   m_settingsManager->UnregisterCallback(&g_Joystick);
-// #endif
-//   m_settingsManager->UnregisterCallback(&g_Mouse);
-//   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
-//   m_settingsManager->UnregisterCallback(&g_passwordManager);
-//   m_settingsManager->UnregisterCallback(&CRssManager::Get());
-// #if defined(TARGET_LINUX)
-//   m_settingsManager->UnregisterCallback(&g_timezone);
-// #endif // defined(TARGET_LINUX)
-//   m_settingsManager->UnregisterCallback(&g_weatherManager);
-//   m_settingsManager->UnregisterCallback(&PERIPHERALS::CPeripherals::Get());
+  // unregister ISettingCallback implementations
+  m_settingsManager->UnregisterCallback(&g_advancedSettings);
+  m_settingsManager->UnregisterCallback(&CMediaSettings::Get());
+  m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
+  m_settingsManager->UnregisterCallback(&g_application);
+  m_settingsManager->UnregisterCallback(&g_audioManager);
+  m_settingsManager->UnregisterCallback(&g_charsetConverter);
+#ifdef _XBOX
+  m_settingsManager->UnregisterCallback(CFanController::Instance());
+#endif
+  m_settingsManager->UnregisterCallback(&g_langInfo);
+#if defined(TARGET_WINDOWS) || defined(HAS_SDL_JOYSTICK)
+  m_settingsManager->UnregisterCallback(&g_Joystick);
+#endif
+  m_settingsManager->UnregisterCallback(&g_Mouse);
+  m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
+  m_settingsManager->UnregisterCallback(&g_passwordManager);
+  m_settingsManager->UnregisterCallback(&CRssManager::Get());
+#if defined(TARGET_LINUX) || defined(_XBOX)
+  m_settingsManager->UnregisterCallback(&g_timezone);
+#endif // defined(TARGET_LINUX)
+  m_settingsManager->UnregisterCallback(&g_weatherManager);
 
-//   // unregister ISubSettings implementations
-//   m_settingsManager->UnregisterSubSettings(&g_application);
-//   m_settingsManager->UnregisterSubSettings(&CDisplaySettings::Get());
-//   m_settingsManager->UnregisterSubSettings(&CMediaSettings::Get());
-//   m_settingsManager->UnregisterSubSettings(&CSkinSettings::Get());
-//   m_settingsManager->UnregisterSubSettings(&g_sysinfo);
-//   m_settingsManager->UnregisterSubSettings(&CViewStateSettings::Get());
+  // unregister ISubSettings implementations
+  m_settingsManager->UnregisterSubSettings(&g_application);
+  m_settingsManager->UnregisterSubSettings(&CDisplaySettings::Get());
+  m_settingsManager->UnregisterSubSettings(&CMediaSettings::Get());
+  m_settingsManager->UnregisterSubSettings(&CSkinSettings::Get());
+  m_settingsManager->UnregisterSubSettings(&g_sysinfo);
+  m_settingsManager->UnregisterSubSettings(&CViewStateSettings::Get());
 
-//   // unregister ISettingsHandler implementations
-//   m_settingsManager->UnregisterSettingsHandler(&g_advancedSettings);
-//   m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
-//   m_settingsManager->UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
-//   m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
-// #ifdef HAS_UPNP
-//   m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
-// #endif
-//   m_settingsManager->UnregisterSettingsHandler(&CProfilesManager::Get());
-//   m_settingsManager->UnregisterSettingsHandler(&g_application);
+  // unregister ISettingsHandler implementations
+  m_settingsManager->UnregisterSettingsHandler(&g_advancedSettings);
+  m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
+#ifdef HAS_UPNP
+  m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
+#endif
+  m_settingsManager->UnregisterSettingsHandler(&CProfilesManager::Get());
+  m_settingsManager->UnregisterSettingsHandler(&g_application);
+#ifdef _XBOX
+  m_settingsManager->UnregisterSettingsHandler(&g_audioConfig);
+  m_settingsManager->UnregisterSettingsHandler(&g_videoConfig);
+  m_settingsManager->UnregisterSettingsHandler(&g_timezone);
+#endif
 
   // cleanup the settings manager
   m_settingsManager->Clear();
@@ -1140,49 +1149,44 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 
 CStdString CSettings::GetFFmpegDllFolder() const
 {
-  // CStdString folder = "Q:\\system\\players\\dvdplayer\\";
-  // if (g_guiSettings.GetBool("videoplayer.allcodecs"))
-  //   folder += "full\\";
-  // return folder;
-  return "";
+  CStdString folder = "Q:\\system\\players\\dvdplayer\\";
+  if (CSettings::Get().GetBool("videoplayer.allcodecs"))
+    folder += "full\\";
+  return folder;
 }
 
 CStdString CSettings::GetPlayerName(const int& player) const
 {
-  // CStdString strPlayer;
+  CStdString strPlayer;
   
-  // if (player == PLAYER_PAPLAYER)
-  //   strPlayer = "paplayer";
-  // else
-  // if (player == PLAYER_MPLAYER)
-  //   strPlayer = "mplayer";
-  // else
-  // if (player == PLAYER_DVDPLAYER)
-  //   strPlayer = "dvdplayer";
+  if (player == PLAYER_PAPLAYER)
+    strPlayer = "paplayer";
+  else
+  if (player == PLAYER_MPLAYER)
+    strPlayer = "mplayer";
+  else
+  if (player == PLAYER_DVDPLAYER)
+    strPlayer = "dvdplayer";
 
-  // return strPlayer;
-  return "";
+  return strPlayer;
 }
 
 CStdString CSettings::GetDefaultVideoPlayerName() const
 {
-  // return GetPlayerName(g_guiSettings.GetInt("videoplayer.defaultplayer"));
-  return "";
+  return GetPlayerName(CSettings::Get().GetInt("videoplayer.defaultplayer"));
 }
 
 CStdString CSettings::GetDefaultAudioPlayerName() const
 {
-  // return GetPlayerName(g_guiSettings.GetInt("musicplayer.defaultplayer"));
-  return "";
+  return GetPlayerName(CSettings::Get().GetInt("musicplayer.defaultplayer"));
 }
 
 CStdString CSettings::GetAvpackSettingsFile() const
 {
-  // CStdString  strAvpackSettingsFile;
-  // if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
-  //   strAvpackSettingsFile = "T:\\avpacksettings.xml";
-  // else
-  //   strAvpackSettingsFile = "P:\\avpacksettings.xml";
-  // return strAvpackSettingsFile;
-  return "";
+  CStdString  strAvpackSettingsFile;
+  if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
+    strAvpackSettingsFile = "T:\\avpacksettings.xml";
+  else
+    strAvpackSettingsFile = "P:\\avpacksettings.xml";
+  return strAvpackSettingsFile;
 }
