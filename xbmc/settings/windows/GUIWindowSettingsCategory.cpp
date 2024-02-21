@@ -579,7 +579,7 @@ void CGUIWindowSettingsCategory::CreateSettings()
     }
   }
 
-  if (settingMap.size() > 0)
+  if (!settingMap.empty())
     m_settings.RegisterCallback(this, settingMap);
   
   // update our settings (turns controls on/off as appropriate)
