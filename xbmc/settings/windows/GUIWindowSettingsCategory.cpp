@@ -372,7 +372,7 @@ void CGUIWindowSettingsCategory::Render()
     }
   }
   CGUIWindow::Render();
-  if (bAlphaFaded)
+  if (control && bAlphaFaded)
   {
     control->SetFocus(false);
     if (control->GetControlType() == CGUIControl::GUICONTROL_BUTTON)
