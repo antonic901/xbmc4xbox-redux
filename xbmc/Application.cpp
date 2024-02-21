@@ -999,6 +999,12 @@ HRESULT CApplication::Create(HWND hWnd)
     FatalErrorHandler(true, true, true);
   }
 
+  // set logging from debug add-on
+  AddonPtr addon;
+  CAddonMgr::Get().GetAddon("xbmc.debug", addon);
+  if (addon)
+    g_advancedSettings.SetExtraLogsFromAddon(addon.get());
+
   // Check for WHITE + Y for forced Error Handler (to recover if something screwy happens)
 #ifdef HAS_GAMEPAD
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_WHITE])

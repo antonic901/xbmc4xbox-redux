@@ -35,8 +35,13 @@
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
+#include "addons/IAddon.h"
+#include "addons/AddonManager.h"
+#include "addons/GUIDialogAddonSettings.h"
 
+using namespace ADDON;
 using namespace XFILE;
+using namespace std;
 
 void CAdvancedSettings::OnSettingsLoaded()
 {
@@ -69,6 +74,21 @@ void CAdvancedSettings::OnSettingChanged(const CSetting *setting)
   const std::string &settingId = setting->GetId();
   if (settingId == "debug.showloginfo")
     SetDebugMode(((CSettingBool*)setting)->GetValue());
+}
+
+void CAdvancedSettings::OnSettingAction(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string settingId = setting->GetId();
+  if (settingId == "debug.setextraloglevel")
+  {
+    AddonPtr addon;
+    CAddonMgr::Get().GetAddon("xbmc.debug", addon);
+    CGUIDialogAddonSettings::ShowAndGetInput(addon, true);
+    SetExtraLogsFromAddon(addon.get());
+  }
 }
 
 CAdvancedSettings::CAdvancedSettings()
@@ -262,6 +282,9 @@ CAdvancedSettings::CAdvancedSettings()
   m_videoExtensions = ".m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.rar|.001|.wpl|.zip|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.webm|.xmv|.bik|.sfd";
   // internal music extensions
   m_musicExtensions += "|.sidstream|.oggstream|.nsfstream|.asapstream|.cdda";
+
+  m_logLevelHint = m_logLevel = LOG_LEVEL_NORMAL;
+  m_extraLogLevels = 0;
 
   m_logFolder = "special://home/";              // log file location
 
@@ -895,4 +918,17 @@ void CAdvancedSettings::SetDebugMode(bool debug)
 void CAdvancedSettings::AddSettingsFile(const CStdString &filename)
 {
   m_settingsFiles.push_back(filename);
+}
+
+void CAdvancedSettings::SetExtraLogsFromAddon(ADDON::IAddon* addon)
+{
+  m_extraLogLevels = 0;
+  for (int i=LOGMASKBIT;i<31;++i)
+  {
+    CStdString str;
+    str.Format("bit%i", i-LOGMASKBIT+1);
+    if (addon->GetSetting(str) == "true")
+      m_extraLogLevels |= (1 << i);
+  }
+  CLog::SetExtraLogLevels(m_extraLogLevels);
 }

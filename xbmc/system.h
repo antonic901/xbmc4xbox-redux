@@ -39,6 +39,8 @@
 #define HAS_RAM_CONTROL
 #define HAS_XFONT
 #define HAS_FILESYSTEM
+#define HAS_FILESYSTEM_CDDA
+#define HAS_FILESYSTEM_SMB
 #define HAS_GAMEPAD
 #define HAS_IR_REMOTE
 #define HAS_DVD_DRIVE

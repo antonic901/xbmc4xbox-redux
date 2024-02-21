@@ -27,6 +27,10 @@
 #include "utils/GlobalsHandling.h"
 
 class TiXmlElement;
+namespace ADDON
+{
+  class IAddon;
+}
 
 class DatabaseSettings
 {
@@ -62,6 +66,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     virtual void OnSettingsLoaded();
 
     virtual void OnSettingChanged(const CSetting *setting);
+
+    virtual void OnSettingAction(const CSetting *setting);
 
     void AddSettingsFile(const CStdString &filename);
     bool Load();
@@ -136,6 +142,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_busyDialogDelay;
     int m_logLevel;
     int m_logLevelHint;
+    int m_extraLogLevels;
     CStdString m_cddbAddress;
     bool m_usePCDVDROM;
     bool m_fullScreenOnMovieStart;
@@ -245,6 +252,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_loaded;
 
     void SetDebugMode(bool debug);
+    void SetExtraLogsFromAddon(ADDON::IAddon* addon);
 
     DatabaseSettings m_databaseMusic; // advanced music database setup
     DatabaseSettings m_databaseVideo; // advanced video database setup

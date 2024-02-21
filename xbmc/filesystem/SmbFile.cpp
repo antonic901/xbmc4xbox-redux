@@ -103,7 +103,7 @@ void CSMB::Init()
 
     // setup our context
     m_context = smbc_new_context();
-    m_context->debug = g_advancedSettings.m_logLevel == LOG_LEVEL_DEBUG_SAMBA ? 10 : 0;
+    m_context->debug = (g_advancedSettings.m_extraLogLevels & LOGSAMBA?10:0);
     smbc_init(xb_smbc_auth, 0);
     m_context->callbacks.auth_fn = xb_smbc_auth;
     orig_cache = m_context->callbacks.get_cached_srv_fn;
