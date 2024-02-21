@@ -409,7 +409,7 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, 
 
   vector<RESOLUTION> resolutions;
   g_graphicsContext.GetAllowedResolutions(resolutions, false);
-  for (vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); it++)
+  for (vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); ++it)
   {
     RESOLUTION resolution = *it;
     RESOLUTION_INFO res1 = CDisplaySettings::Get().GetCurrentResolutionInfo();
