@@ -194,12 +194,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">1</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="dvdplayercache.videotime" type="integer" label="38751" help="">
           <level>3</level>
@@ -208,12 +209,13 @@
             <minimum>0</minimum>
             <step>1</step>
             <maximum>30</maximum>
-            <formatlabel>14045</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">1</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14045</formatlabel>
+          </control>
         </setting>
         <setting id="dvdplayercache.audio" type="integer" label="38752" help="">
           <level>3</level>
@@ -222,12 +224,13 @@
             <minimum label="351">0</minimum>
             <step>128</step>
             <maximum>4096</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">1</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="dvdplayercache.audiotime" type="integer" label="38753" help="">
           <level>3</level>
@@ -236,12 +239,13 @@
             <minimum>0</minimum>
             <step>1</step>
             <maximum>30</maximum>
-            <formatlabel>14045</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">1</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14045</formatlabel>
+          </control>
         </setting>
         <setting id="cache.harddisk" type="integer" label="14025" help="">
           <level>3</level>
@@ -250,12 +254,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>4096</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cachevideo.dvdrom" type="integer" label="14026" help="">
           <level>3</level>
@@ -264,12 +269,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cachevideo.lan" type="integer" label="14027" help="">
           <level>3</level>
@@ -278,12 +284,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cachevideo.internet" type="integer" label="14028" help="">
           <level>3</level>
@@ -292,12 +299,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cacheaudio.dvdrom" type="integer" label="14030" help="">
           <level>3</level>
@@ -306,12 +314,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>4096</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cacheaudio.lan" type="integer" label="14031" help="">
           <level>3</level>
@@ -320,12 +329,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>4096</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cacheaudio.internet" type="integer" label="14032" help="">
           <level>3</level>
@@ -334,12 +344,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>4096</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cachedvd.dvdrom" type="integer" label="14034" help="">
           <level>3</level>
@@ -348,12 +359,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cachedvd.lan" type="integer" label="14035" help="">
           <level>3</level>
@@ -362,12 +374,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
         <setting id="cacheunknown.internet" type="integer" label="14060" help="">
           <level>3</level>
@@ -376,12 +389,13 @@
             <minimum label="351">0</minimum>
             <step>256</step>
             <maximum>16384</maximum>
-            <formatlabel>14049</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="visible" setting="videoplayer.defaultplayer" operator="is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14049</formatlabel>
+          </control>
         </setting>
       </group>
     </category>
@@ -516,12 +530,13 @@
             <minimum>0</minimum>
             <step>1</step>
             <maximum>100</maximum>
-            <formatlabel>14047</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="enable" setting="karaoke.voiceenabled">true</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14047</formatlabel>
+          </control>
         </setting>
         <setting id="karaoke.port0voicemask" type="string" label="13382" help="">
           <level>2</level>
@@ -1199,9 +1214,10 @@
             <minimum label="351">0</minimum>
             <step>1</step>
             <maximum>60</maximum>
-            <formatlabel>14044</formatlabel>
           </constraints>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14044</formatlabel>
+          </control>
         </setting>
         <setting id="harddisk.remoteplayspindown" type="integer" label="13001" help="">
           <level>1</level>
@@ -1223,12 +1239,13 @@
             <minimum label="351">0</minimum>
             <step>1</step>
             <maximum>20</maximum>
-            <formatlabel>14044</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="enable" setting="harddisk.remoteplayspindown" operator="!is">0</dependency> <!-- SPIN_DOWN_NONE -->
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14044</formatlabel>
+          </control>
         </setting>
         <setting id="harddisk.remoteplayspindowndelay" type="integer" label="13003" help="">
           <level>1</level>
@@ -1237,12 +1254,13 @@
             <minimum>5</minimum>
             <step>5</step>
             <maximum>300</maximum>
-            <formatlabel>14045</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="enable" setting="harddisk.remoteplayspindown" operator="!is">0</dependency> <!-- SPIN_DOWN_NONE -->
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14045</formatlabel>
+          </control>
         </setting>
         <setting id="harddisk.aamlevel" type="integer" label="21386" help="">
           <level>1</level>
@@ -1307,12 +1325,13 @@
             <minimum>0</minimum>
             <step>5</step>
             <maximum>100</maximum>
-            <formatlabel>14047</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="enable" setting="lcd.type" operator="!is">0</dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14047</formatlabel>
+          </control>
         </setting>
         <setting id="lcd.contrast" type="integer" label="465" help="">
           <level>1</level>
@@ -1321,7 +1340,6 @@
             <minimum>0</minimum>
             <step>5</step>
             <maximum>100</maximum>
-            <formatlabel>14047</formatlabel>
           </constraints>
           <dependencies>
             <dependency type="enable">
@@ -1331,7 +1349,9 @@
               </and>
             </dependency>
           </dependencies>
-          <control type="spinner" format="string" />
+          <control type="spinner" format="string">
+            <formatlabel>14047</formatlabel>
+          </control>
         </setting>
       </group>
       <group id="2">
