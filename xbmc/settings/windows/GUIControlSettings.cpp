@@ -469,7 +469,8 @@ void CGUIControlButtonSetting::Update()
 
   CGUIControlBaseSetting::Update();
 
-  if (m_pSetting->GetType() == SettingTypeString)
+  if (m_pSetting->GetType() == SettingTypeString &&
+      !(m_pSetting->GetControl().GetAttributes() & SettingControlAttributeHideValue))
   {
     std::string strText = ((CSettingString *)m_pSetting)->GetValue();
     switch (m_pSetting->GetControl().GetFormat())
@@ -493,7 +494,7 @@ void CGUIControlButtonSetting::Update()
       }
 
       default:
-        return;
+        break;
     }
 
     m_pButton->SetLabel2(strText);
