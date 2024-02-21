@@ -786,11 +786,12 @@
           <constraints>
             <allowempty>true</allowempty>
           </constraints>
-          <heading>730</heading>
           <dependencies>
             <dependency type="enable" setting="services.ftpserver">true</dependency>
           </dependencies>
-          <control type="edit" format="string" attributes="hidden" />
+          <control type="edit" format="string" attributes="hidden">
+            <heading>730</heading>
+          </control>
         </setting>
         <setting id="services.ftpautofatx" type="boolean" label="38697" help="">
           <level>3</level>
@@ -985,11 +986,12 @@
         <setting id="myprograms.trainerpath" type="path" label="20003" help="">
           <level>1</level>
           <default>select folder</default>
-          <heading>657</heading>
           <constraints>
             <writable>false</writable>
           </constraints>
-          <control type="button" format="path" />
+          <control type="button" format="path">
+            <heading>657</heading>
+          </control>
         </setting>
       </group>
       <group id="9">
