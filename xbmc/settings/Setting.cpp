@@ -687,7 +687,7 @@ void CSettingInt::copy(const CSettingInt &setting)
   m_optionsFiller = setting.m_optionsFiller;
 }
 
-bool CSettingInt::fromString(const std::string &strValue, int &value) const
+bool CSettingInt::fromString(const std::string &strValue, int &value)
 {
   if (strValue.empty())
     return false;
@@ -852,7 +852,7 @@ void CSettingNumber::copy(const CSettingNumber &setting)
   m_max = setting.m_max;
 }
 
-bool CSettingNumber::fromString(const std::string &strValue, double &value) const
+bool CSettingNumber::fromString(const std::string &strValue, double &value)
 {
   if (strValue.empty())
     return false;
