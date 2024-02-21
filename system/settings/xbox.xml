@@ -783,7 +783,9 @@
         <setting id="services.ftpserverpassword" type="string" label="15052" help="">
           <level>3</level>
           <default>xbox</default>
-          <allowempty>true</allowempty>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
           <heading>730</heading>
           <dependencies>
             <dependency type="enable" setting="services.ftpserver">true</dependency>
