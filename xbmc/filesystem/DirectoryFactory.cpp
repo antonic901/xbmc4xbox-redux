@@ -77,6 +77,7 @@
 #include "FileItem.h"
 #include "URL.h"
 #include "RSSDirectory.h"
+#include "ResourceDirectory.h"
 
 using namespace XFILE;
 
@@ -146,6 +147,7 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
     if (url.IsProtocol("myth")) return new CMythDirectory();
     if (url.IsProtocol("cmyth")) return new CMythDirectory();
     if (url.IsProtocol("rss")) return new CRSSDirectory();
+    if (url.IsProtocol("resource")) return new CResourceDirectory();
   }
 
   CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );

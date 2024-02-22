@@ -2031,6 +2031,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\RarManager.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\ResourceDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ResourceDirectory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ResourceFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ResourceFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\RSSDirectory.cpp">
 				</File>
 				<File

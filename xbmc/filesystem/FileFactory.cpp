@@ -42,6 +42,7 @@
 #include "MusicDatabaseFile.h"
 #include "SpecialProtocolFile.h"
 #include "MultiPathFile.h"
+#include "ResourceFile.h"
 #include "Application.h"
 #include "TuxBoxFile.h"
 #include "HDHomeRunFile.h"
@@ -104,6 +105,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     else if (url.IsProtocol("rtv")) return new CRTVFile();
     else if (url.IsProtocol("daap")) return new CDAAPFile();
     else if (url.IsProtocol("upnp")) return new CUPnPFile();
+    else if (url.IsProtocol("resource")) return new CResourceFile();
 #endif
   }
 
