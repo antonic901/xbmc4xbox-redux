@@ -1983,6 +1983,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\OGGFileDirectory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\OverrideDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\OverrideDirectory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\OverrideFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\OverrideFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\PlaylistDirectory.cpp">
 				</File>
 				<File
