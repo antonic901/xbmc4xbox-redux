@@ -9235,7 +9235,12 @@ msgctxt "#24024"
 msgid "Add-on disabled"
 msgstr ""
 
-#empty strings from id 24025 to 24026
+#empty string with id 24025
+
+#: xbmc/addons/Addon.cpp
+msgctxt "#24026"
+msgid "Languages"
+msgstr ""
 
 #: xbmc/addons/addon.cpp
 msgctxt "#24027"
@@ -9550,7 +9555,14 @@ msgctxt "#24122"
 msgid "Update all"
 msgstr ""
 
-#empty strings from id 24123 to 24997
+#empty strings from id 24123 to 24131
+
+#: xbmc/addons/LanguageResource.cpp
+msgctxt "#24132"
+msgid "Would you like to switch to this language?"
+msgstr ""
+
+#empty strings from id 24133 to 24997
 
 msgctxt "#24998"
 msgid "My Add-ons"

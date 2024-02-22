@@ -2963,6 +2963,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\IAddon.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\LanguageResource.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\LanguageResource.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\PluginSource.cpp">
 				</File>
 				<File
@@ -2973,6 +2979,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Repository.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\Resource.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Scraper.cpp">
