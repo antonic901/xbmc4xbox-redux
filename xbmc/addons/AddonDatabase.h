@@ -34,7 +34,7 @@ public:
 
   int AddAddon(const ADDON::AddonPtr& item, int idRepo);
   bool GetAddon(const CStdString& addonID, ADDON::AddonPtr& addon);
-  bool GetAddons(ADDON::VECADDONS& addons);
+  bool GetAddons(ADDON::VECADDONS& addons, const ADDON::TYPE &type = ADDON::ADDON_UNKNOWN);
   bool GetAddon(int id, ADDON::AddonPtr& addon);
 
   /*! \brief Grab the repository from which a given addon came
