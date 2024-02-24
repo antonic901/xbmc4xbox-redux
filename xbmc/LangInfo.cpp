@@ -20,6 +20,7 @@
 
 #include "LangInfo.h"
 #include "Application.h"
+#include "ApplicationMessenger.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
@@ -53,6 +54,7 @@ CLangInfo::CRegion::CRegion(const CRegion& region)
   m_strDVDAudioLanguage=region.m_strDVDAudioLanguage;
   m_strDVDSubtitleLanguage=region.m_strDVDSubtitleLanguage;
   m_strLangLocaleName = region.m_strLangLocaleName;
+  m_strLangLocaleCodeTwoChar = region.m_strLangLocaleCodeTwoChar;
   m_strRegionLocaleName = region.m_strRegionLocaleName;
 
   m_strDateFormatShort=region.m_strDateFormatShort;
@@ -86,6 +88,7 @@ void CLangInfo::CRegion::SetDefaults()
   m_strDVDAudioLanguage="en";
   m_strDVDSubtitleLanguage="en";
   m_strLangLocaleName = "English";
+  m_strLangLocaleCodeTwoChar = "en";
 
   m_strDateFormatShort="DD/MM/YYYY";
   m_strDateFormatLong="DDDD, D MMMM YYYY";
@@ -148,6 +151,55 @@ void CLangInfo::CRegion::SetTimeZone(const CStdString& strTimeZone)
   m_strTimeZone = strTimeZone;
 }
 
+// set the locale associated with this region global. This affects string
+// sorting & transformations
+void CLangInfo::CRegion::SetGlobalLocale()
+{
+  CStdString strLocale;
+  if (m_strRegionLocaleName.length() > 0)
+  {
+    strLocale = m_strLangLocaleName + "_" + m_strRegionLocaleName;
+#ifdef TARGET_POSIX
+    strLocale += ".UTF-8";
+#endif
+  }
+
+  CLog::Log(LOGDEBUG, "trying to set locale to %s", strLocale.c_str());
+
+  // We need to set the locale to only change the collate. Otherwise,
+  // decimal separator is changed depending of the current language
+  // (ie. "," in French or Dutch instead of "."). This breaks atof() and
+  // others similar functions.
+#if defined(TARGET_FREEBSD) || defined(TARGET_DARWIN_OSX)
+  // on FreeBSD and darwin libstdc++ is compiled with "generic" locale support
+  if (setlocale(LC_COLLATE, strLocale.c_str()) == NULL
+  || setlocale(LC_CTYPE, strLocale.c_str()) == NULL)
+  {
+    strLocale = "C";
+    setlocale(LC_COLLATE, strLocale.c_str());
+    setlocale(LC_CTYPE, strLocale.c_str());
+  }
+#else
+  locale current_locale = locale::classic(); // C-Locale
+  try
+  {
+    locale lcl = locale(strLocale);
+    strLocale = lcl.name();
+    current_locale = current_locale.combine< collate<wchar_t> >(lcl);
+    current_locale = current_locale.combine< ctype<wchar_t> >(lcl);
+
+    assert(use_facet< numpunct<char> >(current_locale).decimal_point() == '.');
+
+  } catch(...) {
+    current_locale = locale::classic();
+    strLocale = "C";
+  }
+
+  locale::global(current_locale);
+#endif
+  CLog::Log(LOGINFO, "global locale set to %s", strLocale.c_str());
+}
+
 CLangInfo::CLangInfo()
 {
   SetDefaults();
@@ -163,11 +215,11 @@ void CLangInfo::OnSettingChanged(const CSetting *setting)
     return;
 
   const std::string &settingId = setting->GetId();
-  /*if (settingId == "locale.audiolanguage")
+  if (settingId == "locale.audiolanguage")
     SetAudioLanguage(((CSettingString*)setting)->GetValue());
   else if (settingId == "locale.subtitlelanguage")
     SetSubtitleLanguage(((CSettingString*)setting)->GetValue());
-  else */if (settingId == "locale.language")
+  else if (settingId == "locale.language")
   {
     if (!SetLanguage(((CSettingString*)setting)->GetValue()))
       ((CSettingString*)CSettings::Get().GetSetting("locale.language"))->Reset();
@@ -179,27 +231,50 @@ void CLangInfo::OnSettingChanged(const CSetting *setting)
   }
 }
 
-bool CLangInfo::Load(const CStdString& strFileName)
+bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= false*/)
 {
   SetDefaults();
 
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strFileName))
   {
-    CLog::Log(LOGERROR, "unable to load %s: %s at line %d", strFileName.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
+    CLog::Log(onlyCheckLanguage ? LOGDEBUG : LOGERROR, "unable to load %s: %s at line %d", strFileName.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
     return false;
   }
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  CStdString strValue = pRootElement->Value();
-  if (strValue != CStdString("language"))
+  if (pRootElement->ValueStr() != "language")
   {
-    CLog::Log(LOGERROR, "%s Doesn't contain <language>", strFileName.c_str());
+    CLog::Log(onlyCheckLanguage ? LOGDEBUG : LOGERROR, "%s Doesn't contain <language>", strFileName.c_str());
     return false;
   }
 
   if (pRootElement->Attribute("locale"))
     m_defaultRegion.m_strLangLocaleName = pRootElement->Attribute("locale");
+
+#if defined(TARGET_WINDOWS) || defined(_XBOX)
+  // Windows need 3 chars isolang code
+  if (m_defaultRegion.m_strLangLocaleName.length() == 2)
+  {
+    if (! g_LangCodeExpander.ConvertTwoToThreeCharCode(m_defaultRegion.m_strLangLocaleName, m_defaultRegion.m_strLangLocaleName, true))
+      m_defaultRegion.m_strLangLocaleName = "";
+  }
+
+  if (!g_LangCodeExpander.ConvertWindowsToGeneralCharCode(m_defaultRegion.m_strLangLocaleName, m_languageCodeGeneral))
+    m_languageCodeGeneral = "";
+#else
+  if (m_defaultRegion.m_strLangLocaleName.length() != 3)
+  {
+    if (!g_LangCodeExpander.ConvertToThreeCharCode(m_languageCodeGeneral, m_defaultRegion.m_strLangLocaleName, !onlyCheckLanguage))
+      m_languageCodeGeneral = "";
+  }
+  else
+    m_languageCodeGeneral = m_defaultRegion.m_strLangLocaleName;
+#endif
+
+  CStdString tmp;
+  if (g_LangCodeExpander.ConvertToTwoCharCode(tmp, m_defaultRegion.m_strLangLocaleName))
+    m_defaultRegion.m_strLangLocaleCodeTwoChar = tmp;
 
   const TiXmlNode *pCharSets = pRootElement->FirstChild("charsets");
   if (pCharSets && !pCharSets->NoChildren())
@@ -244,11 +319,20 @@ bool CLangInfo::Load(const CStdString& strFileName)
     {
       CRegion region(m_defaultRegion);
       region.m_strName=pRegion->Attribute("name");
-      if (region.m_strName.IsEmpty())
+      if (region.m_strName.empty())
         region.m_strName="N/A";
 
       if (pRegion->Attribute("locale"))
         region.m_strRegionLocaleName = pRegion->Attribute("locale");
+
+#if defined(TARGET_WINDOWS) || defined(_XBOX)
+      // Windows need 3 chars regions code
+      if (region.m_strRegionLocaleName.length() == 2)
+      {
+        if (! g_LangCodeExpander.ConvertLinuxToWindowsRegionCodes(region.m_strRegionLocaleName, region.m_strRegionLocaleName))
+          region.m_strRegionLocaleName = "";
+      }
+#endif
 
       const TiXmlNode *pDateLong=pRegion->FirstChild("datelong");
       if (pDateLong && !pDateLong->NoChildren())
@@ -283,13 +367,23 @@ bool CLangInfo::Load(const CStdString& strFileName)
       pRegion=pRegion->NextSiblingElement("region");
     }
 
-    const CStdString& strName=CSettings::Get().GetString("locale.country");
-    SetCurrentRegion(strName);
+    if (!onlyCheckLanguage)
+    {
+      const CStdString& strName = CSettings::Get().GetString("locale.country");
+      SetCurrentRegion(strName);
+    }
   }
 
-  LoadTokens(pRootElement->FirstChild("sorttokens"),g_advancedSettings.m_vecTokens);
+  if (!onlyCheckLanguage)
+    LoadTokens(pRootElement->FirstChild("sorttokens"), g_advancedSettings.m_vecTokens);
 
   return true;
+}
+
+bool CLangInfo::CheckLanguage(const std::string& language)
+{
+  CLangInfo li;
+  return li.Load("special://xbmc/language/" + language + "/langinfo.xml", true);
 }
 
 void CLangInfo::LoadTokens(const TiXmlNode* pTokens, vector<CStdString>& vecTokens)
@@ -304,11 +398,11 @@ void CLangInfo::LoadTokens(const TiXmlNode* pTokens, vector<CStdString>& vecToke
         strSep = pToken->Attribute("separators");
       if (pToken->FirstChild() && pToken->FirstChild()->Value())
       {
-        if (strSep.IsEmpty())
+        if (strSep.empty())
           vecTokens.push_back(pToken->FirstChild()->Value());
         else
-        for (unsigned int i=0;i<strSep.size();++i)
-          vecTokens.push_back(CStdString(pToken->FirstChild()->Value())+strSep[i]);
+          for (unsigned int i=0;i<strSep.size();++i)
+            vecTokens.push_back(CStdString(pToken->FirstChild()->Value())+strSep[i]);
       }
       pToken = pToken->NextSiblingElement();
     }
@@ -325,7 +419,9 @@ void CLangInfo::SetDefaults()
   // Set the default region, we may be unable to load langinfo.xml
   m_currentRegion=&m_defaultRegion;
 
-  m_systemLocale = locale::classic();
+  m_systemLocale = std::locale::classic();
+
+  m_languageCodeGeneral = "eng";
 }
 
 CStdString CLangInfo::GetGuiCharSet() const
@@ -350,7 +446,7 @@ CStdString CLangInfo::GetSubtitleCharSet() const
 bool CLangInfo::SetLanguage(const std::string &strLanguage)
 {
   string strLangInfoPath = StringUtils2::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
-  if (!g_langInfo.Load(strLangInfoPath))
+  if (!Load(strLangInfoPath))
     return false;
 
   if (ForceUnicodeFont() && !g_fontManager.IsFontSetUnicode())
@@ -368,47 +464,93 @@ bool CLangInfo::SetLanguage(const std::string &strLanguage)
 
   // also tell our weather and skin to reload as these are localized
   g_weatherManager.Refresh();
-  g_application.ReloadSkin();
+  g_application.getApplicationMessenger().ExecBuiltIn("ReloadSkin", false);
 
   return true;
 }
 
-// two character codes as defined in ISO639
-const CStdString& CLangInfo::GetDVDMenuLanguage() const
+bool CLangInfo::CheckLoadLanguage(const std::string &language)
 {
-  return m_currentRegion->m_strDVDMenuLanguage;
+  return Load("special://xbmc/language/" + language + "/langinfo.xml", true);
+}
+
+// three char language code (not win32 specific)
+const CStdString& CLangInfo::GetAudioLanguage() const
+{
+  if (!m_audioLanguage.empty())
+    return m_audioLanguage;
+
+  return m_languageCodeGeneral;
+}
+
+void CLangInfo::SetAudioLanguage(const std::string& language)
+{
+  if (language.empty()
+    || StringUtils2::EqualsNoCase(language, "default")
+    || StringUtils2::EqualsNoCase(language, "original")
+    || !g_LangCodeExpander.ConvertToThreeCharCode(m_audioLanguage, language))
+    m_audioLanguage.clear();
+}
+
+// three char language code (not win32 specific)
+const CStdString& CLangInfo::GetSubtitleLanguage() const
+{
+  if (!m_subtitleLanguage.empty())
+    return m_subtitleLanguage;
+
+  return m_languageCodeGeneral;
+}
+
+void CLangInfo::SetSubtitleLanguage(const std::string& language)
+{
+  if (language.empty()
+    || StringUtils2::EqualsNoCase(language, "default")
+    || StringUtils2::EqualsNoCase(language, "original")
+    || !g_LangCodeExpander.ConvertToThreeCharCode(m_subtitleLanguage, language))
+    m_subtitleLanguage.clear();
 }
 
 // two character codes as defined in ISO639
-const CStdString& CLangInfo::GetDVDAudioLanguage() const
+const std::string CLangInfo::GetDVDMenuLanguage() const
 {
-  return m_currentRegion->m_strDVDAudioLanguage;
+  CStdString code;
+  if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_currentRegion->m_strLangLocaleName))
+    code = m_currentRegion->m_strDVDMenuLanguage;
+  
+  return code;
 }
 
 // two character codes as defined in ISO639
-const CStdString& CLangInfo::GetDVDSubtitleLanguage() const
+const std::string CLangInfo::GetDVDAudioLanguage() const
 {
-  return m_currentRegion->m_strDVDSubtitleLanguage;
+  CStdString code;
+  if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_audioLanguage))
+    code = m_currentRegion->m_strDVDAudioLanguage;
+  
+  return code;
 }
 
-const CStdString& CLangInfo::GetLanguageLocale() const
+// two character codes as defined in ISO639
+const std::string CLangInfo::GetDVDSubtitleLanguage() const
 {
+  CStdString code;
+  if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_subtitleLanguage))
+    code = m_currentRegion->m_strDVDSubtitleLanguage;
+  
+  return code;
+}
+
+const std::string CLangInfo::GetLanguageLocale(bool twochar /* = false */) const
+{
+  if (twochar)
+    return m_currentRegion->m_strLangLocaleCodeTwoChar;
+
   return m_currentRegion->m_strLangLocaleName;
 }
 
 const CStdString& CLangInfo::GetRegionLocale() const
 {
   return m_currentRegion->m_strRegionLocaleName;
-}
-
-const CStdString CLangInfo::GetLocale() const
-{
-  const CStdString& langLocale = GetLanguageLocale();
-  const CStdString& regionLocale = GetRegionLocale();
-  if (regionLocale.length() > 0)
-    return langLocale + "_" + regionLocale;
-  else
-    return langLocale;
 }
 
 // Returns the format string for the date of the current language
@@ -460,6 +602,8 @@ void CLangInfo::SetCurrentRegion(const CStdString& strName)
     m_currentRegion=&m_regions.begin()->second;
   else
     m_currentRegion=&m_defaultRegion;
+
+  m_currentRegion->SetGlobalLocale();
 }
 
 // Returns the current region set for this language
@@ -535,6 +679,19 @@ void CLangInfo::SettingOptionsRegionsFiller(const CSetting *setting, std::vector
   g_langInfo.GetRegionNames(regions);
   sort(regions.begin(), regions.end(), sortstringbyname());
 
+  bool match = false;
   for (unsigned int i = 0; i < regions.size(); ++i)
-    list.push_back(make_pair(regions[i], regions[i]));
+  {
+    CStdString region = regions[i];
+    list.push_back(make_pair(region, region));
+
+    if (!match && region.Equals(((CSettingString*)setting)->GetValue().c_str()))
+    {
+      match = true;
+      current = region;
+    }
+  }
+
+  if (!match && regions.size() > 0)
+    current = regions[0];
 }
