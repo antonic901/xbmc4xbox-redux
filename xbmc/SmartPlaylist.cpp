@@ -208,7 +208,7 @@ bool CSmartPlaylistRule::Load(const TiXmlNode *node, const std::string &encoding
     if (encoding.empty()) // utf8
       utf8Parameter = parameter->ValueStr();
     else
-      g_charsetConverter.stringCharsetToUtf8(encoding, parameter->ValueStr(), utf8Parameter);
+      g_charsetConverter.ToUtf8(encoding, parameter->ValueStr(), utf8Parameter);
 
     if (!utf8Parameter.empty())
       m_parameter.push_back(utf8Parameter);
@@ -225,7 +225,7 @@ bool CSmartPlaylistRule::Load(const TiXmlNode *node, const std::string &encoding
         if (encoding.empty()) // utf8
           utf8Parameter = value->ValueStr();
         else
-          g_charsetConverter.stringCharsetToUtf8(encoding, value->ValueStr(), utf8Parameter);
+          g_charsetConverter.ToUtf8(encoding, value->ValueStr(), utf8Parameter);
 
         if (!utf8Parameter.empty())
           m_parameter.push_back(utf8Parameter);

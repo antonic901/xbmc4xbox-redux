@@ -21,8 +21,6 @@
 #include "utils/XMLUtils.h"
 #include "music/infoscanner/MusicInfoScraper.h"
 #include "settings/AdvancedSettings.h"
-#include "HTMLUtil.h"
-#include "HTMLTable.h"
 #include "Util.h"
 #include "ScraperParser.h"
 #include "utils/CharsetConverter.h"
@@ -30,7 +28,6 @@
 #include "utils/StringUtils.h"
 
 using namespace MUSIC_GRABBER;
-using namespace HTML;
 using namespace ADDON;
 using namespace std;
 

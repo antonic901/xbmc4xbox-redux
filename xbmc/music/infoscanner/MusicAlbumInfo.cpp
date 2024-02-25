@@ -22,8 +22,6 @@
 #include "ScraperParser.h"
 #include "addons/Scraper.h"
 #include "utils/XMLUtils.h"
-#include "HTMLTable.h"
-#include "HTMLUtil.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"

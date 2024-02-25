@@ -249,7 +249,7 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
         int poss = strDescription.find("Name=");
         if (poss == -1)
         {
-          char *chrtxt = new char[(int)newfile.GetLength()+2];
+          wchar_t *chrtxt = new wchar_t[(int)newfile.GetLength()+2];
           newfile.Seek(0);
           newfile.Read(chrtxt,newfile.GetLength());
           chrtxt[(int)newfile.GetLength()+1] = '\n';

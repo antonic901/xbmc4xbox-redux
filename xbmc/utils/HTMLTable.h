@@ -20,7 +20,7 @@
  *
  */
 
-#include "utils/StdString.h"
+#include "StdString.h"
 
 namespace HTML
 {

@@ -20,6 +20,8 @@
  *
  */
 
+#include "StdString.h"
+
 namespace HTML
 {
 class CHTMLUtil
