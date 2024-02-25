@@ -31,6 +31,7 @@
 
 #include "utils/Win32Exception.h"
 #include "URL.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 using namespace std;
@@ -88,20 +89,20 @@ bool CFile::Cache(const CStdString& strFileName, const CStdString& strDest, XFIL
     CFile newFile;
     if (URIUtils::IsHD(strDest)) // create possible missing dirs
     {
-      vector<CStdString> tokens;
+      vector<std::string> tokens;
       CStdString strDirectory;
       URIUtils::GetDirectory(strDest,strDirectory);
       URIUtils::RemoveSlashAtEnd(strDirectory);  // for the test below
       if (!(strDirectory.size() == 2 && strDirectory[1] == ':'))
       {
         CURL url(strDirectory);
-        CStdString pathsep;
+        std::string pathsep;
 #ifndef _LINUX
         pathsep = "\\";
 #else
         pathsep = "/";
 #endif
-        CUtil::Tokenize(url.GetFileName(),tokens,pathsep.c_str());
+        StringUtils2::Tokenize(url.GetFileName(),tokens,pathsep.c_str());
         CStdString strCurrPath;
         // Handle special
         if (!url.GetProtocol().IsEmpty()) {
@@ -110,7 +111,7 @@ bool CFile::Cache(const CStdString& strFileName, const CStdString& strDest, XFIL
         } // If the directory has a / at the beginning, don't forget it
         else if (strDirectory[0] == pathsep[0])
           strCurrPath += pathsep;
-        for (vector<CStdString>::iterator iter=tokens.begin();iter!=tokens.end();++iter)
+        for (vector<std::string>::iterator iter=tokens.begin();iter!=tokens.end();++iter)
         {
           strCurrPath += *iter+pathsep;
           CDirectory::Create(strCurrPath);

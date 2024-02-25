@@ -26,6 +26,7 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "guilib/GraphicContext.h"
 
 #ifdef _LINUX
@@ -166,15 +167,16 @@ CStdString CSpecialProtocol::TranslatePathConvertCase(const CStdString& path)
     return translatedPath;
 
   CStdString result;
-  vector<CStdString> tokens;
-  CUtil::Tokenize(translatedPath, tokens, "/");
+  std::vector<std::string> tokens;
+  StringUtils2::Tokenize(translatedPath, tokens, "/");
   CStdString file;
   DIR* dir;
   struct dirent* de;
 
   for (unsigned int i = 0; i < tokens.size(); i++)
   {
-    file = result + "/" + tokens[i];
+    file = result + "/";
+    file += tokens[i];
     if (stat(file.c_str(), &stat_buf) == 0)
     {
       result += "/" + tokens[i];
@@ -187,7 +189,7 @@ CStdString CSpecialProtocol::TranslatePathConvertCase(const CStdString& path)
         while ((de = readdir(dir)) != NULL)
         {
           // check if there's a file with same name but different case
-          if (strcasecmp(de->d_name, tokens[i]) == 0)
+          if (strcasecmp(de->d_name, tokens[i].c_str()) == 0)
           {
             result += "/";
             result += de->d_name;

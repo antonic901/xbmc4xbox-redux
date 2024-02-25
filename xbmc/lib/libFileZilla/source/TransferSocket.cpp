@@ -504,8 +504,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
         CStdString strFilename = URIUtils::GetFileName(m_Filename);
         CStdString strPath;
         URIUtils::GetDirectory(m_Filename,strPath);
-        vector<CStdString> tokens;
-        CUtil::Tokenize(strPath,tokens,"\\/");
+        std::vector<std::string> tokens;
+        StringUtils2::Tokenize(strPath,tokens,"\\/");
         strPath = tokens.front();
         for (vector<CStdString>::iterator iter=tokens.begin()+1; iter != tokens.end(); ++iter)
         {

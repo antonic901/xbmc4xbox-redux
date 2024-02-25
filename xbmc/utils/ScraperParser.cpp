@@ -28,6 +28,7 @@
 #include "Util.h"
 #include "log.h"
 #include "CharsetConverter.h"
+#include "utils/StringUtils.h"
 
 #include <sstream>
 #include <cstring>
@@ -491,8 +492,8 @@ void CScraperParser::GetBufferParams(bool* result, const char* attribute, bool d
     result[iBuf] = defvalue;;
   if (attribute)
   {
-    vector<CStdString> vecBufs;
-    CUtil::Tokenize(attribute,vecBufs,",");
+    vector<std::string> vecBufs;
+    StringUtils2::Tokenize(attribute,vecBufs,",");
     for (size_t nToken=0; nToken < vecBufs.size(); nToken++)
     {
       int index = atoi(vecBufs[nToken].c_str())-1;

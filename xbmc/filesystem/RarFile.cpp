@@ -30,6 +30,7 @@
 #include "RarManager.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
+#include "utils/StringUtils.h"
 
 #include <process.h>
 
@@ -524,18 +525,18 @@ void CRarFile::InitFromUrl(const CURL& url)
   m_strPassword = url.GetUserName();
   m_strPathInRar = url.GetFileName();  
 
-  vector<CStdString> options;
-  CUtil::Tokenize(url.GetOptions().Mid(1), options, "&");
+  vector<std::string> options;
+  StringUtils2::Tokenize(url.GetOptions().Mid(1), options, "&");
   
   m_bFileOptions = 0;
 
-  for( vector<CStdString>::iterator it = options.begin();it != options.end(); it++)
+  for( vector<std::string>::iterator it = options.begin();it != options.end(); it++)
   {
-    int iEqual = (*it).Find('=');
+    int iEqual = (*it).find('=');
     if( iEqual >= 0 )
     {
-      CStdString strOption = (*it).Left(iEqual);
-      CStdString strValue = (*it).Mid(iEqual+1);
+      CStdString strOption = StringUtils2::Left((*it), iEqual);
+      CStdString strValue = StringUtils2::Mid((*it), iEqual+1);
 
       if( strOption.Equals("flags") )
         m_bFileOptions = atoi(strValue.c_str());

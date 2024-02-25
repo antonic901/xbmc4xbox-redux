@@ -1732,9 +1732,9 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   // checking if any of the common subdirs exist ..
   CLog::Log(LOGDEBUG,"%s: Checking for common subdirs...", __FUNCTION__);
 
-  vector<CStdString> token;
-  Tokenize(strPath,token,"/\\");
-  if (token[token.size()-1].size() == 3 && token[token.size()-1].Mid(0,2).Equals("cd"))
+  vector<std::string> token;
+  StringUtils2::Tokenize(strPath,token,"/\\");
+  if (token[token.size()-1].size() == 3 && token[token.size()-1].substr(0,2) == "cd")
   {
     CStdString strPath2;
     URIUtils::GetParentPath(strPath,strPath2);
@@ -2129,27 +2129,6 @@ void CUtil::SetBrightnessContrastGamma(float Brightness, float Contrast, float G
   g_graphicsContext.Get3DDevice()->SetGammaRamp(bImmediate ? GAMMA_RAMP_FLAG : 0, &ramp);
   g_graphicsContext.Unlock();
 }
-
-
-void CUtil::Tokenize(const CStdString& path, vector<CStdString>& tokens, const string& delimiters)
-{
-  // Tokenize ripped from http://www.linuxselfhelp.com/HOWTO/C++Programming-HOWTO-7.html
-  // Skip delimiters at beginning.
-  string::size_type lastPos = path.find_first_not_of(delimiters, 0);
-  // Find first "non-delimiter".
-  string::size_type pos = path.find_first_of(delimiters, lastPos);
-
-  while (string::npos != pos || string::npos != lastPos)
-  {
-    // Found a token, add it to the vector.
-    tokens.push_back(path.substr(lastPos, pos - lastPos));
-    // Skip delimiters.  Note the "not_of"
-    lastPos = path.find_first_not_of(delimiters, pos);
-    // Find next "non-delimiter"
-    pos = path.find_first_of(delimiters, lastPos);
-  }
-}
-
 
 void CUtil::FlashScreen(bool bImmediate, bool bOn)
 {

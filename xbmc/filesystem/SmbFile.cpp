@@ -28,14 +28,14 @@
 #include "SmbFile.h"
 #include "PasswordManager.h"
 #include "SMBDirectory.h"
-#include "Util.h"
 #include "Application.h"
 #include "utils/Win32Exception.h"
 #include "lib/libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
-#include "utils/StringUtils2.h"
+#include "Util.h"
+#include "utils/StringUtils.h"
 
 
 using namespace XFILE;
@@ -195,9 +195,9 @@ CStdString CSMB::URLEncode(const CURL &url)
   flat += URLEncode(url.GetHostName());
 
   /* okey sadly since a slash is an invalid name we have to tokenize */
-  std::vector<CStdString> parts;
-  std::vector<CStdString>::iterator it;
-  CUtil::Tokenize(url.GetFileName(), parts, "/");
+  std::vector<std::string> parts;
+  std::vector<std::string>::iterator it;
+  StringUtils2::Tokenize(url.GetFileName(), parts, "/");
   for( it = parts.begin(); it != parts.end(); it++ )
   {
     flat += "/";

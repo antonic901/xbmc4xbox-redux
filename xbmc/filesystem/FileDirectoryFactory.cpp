@@ -43,6 +43,7 @@
 #include "filesystem/ZipManager.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
@@ -134,13 +135,13 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     CStdString strUrl; 
     URIUtils::CreateArchivePath(strUrl, "rar", strPath, "");
 
-    vector<CStdString> tokens;
-    CUtil::Tokenize(strPath,tokens,".");
+    vector<std::string> tokens;
+    StringUtils2::Tokenize(strPath,tokens,".");
     if (tokens.size() > 2)
     {
       if (strExtension.Equals(".001"))
       {
-        if (tokens[tokens.size()-2].Equals("ts")) // .ts.001 - treat as a movie file to scratch some users itch
+        if (StringUtils2::EqualsNoCase(tokens[tokens.size()-2], "ts")) // .ts.001 - treat as a movie file to scratch some users itch
           return NULL;
       }
       CStdString token = tokens[tokens.size()-2];

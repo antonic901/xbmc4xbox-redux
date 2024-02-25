@@ -22,6 +22,7 @@
 #include "Util.h"
 #include "utils/Variant.h"
 #include "utils/CharsetConverter.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 
@@ -575,8 +576,8 @@ void CPictureInfoTag::SetInfo(int info, const CStdString& value)
   {
   case SLIDE_RESOLUTION:
     {
-      vector<CStdString> dimension;
-      CUtil::Tokenize(value, dimension, ",");
+      vector<std::string> dimension;
+      StringUtils2::Tokenize(value, dimension, ",");
       if (dimension.size() == 2)
       {
         m_exifInfo.Width = atoi(dimension[0].c_str());
