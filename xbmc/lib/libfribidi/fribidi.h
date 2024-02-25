@@ -38,7 +38,7 @@ extern "C"
 #endif
 
   fribidi_boolean fribidi_log2vis (	/* input */
-				    FriBidiChar *str, FriBidiStrIndex len,
+				    const FriBidiChar *str, FriBidiStrIndex len,
 				    FriBidiCharType *pbase_dirs,
 				    /* output */
 				    FriBidiChar *visual_str,
