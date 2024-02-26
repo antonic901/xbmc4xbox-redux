@@ -137,8 +137,8 @@ namespace boost
 # ifndef UNDER_CE
                 __declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
                 __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
-                __declspec(dllimport) void* __stdcall GetCurrentThread();
-                __declspec(dllimport) void* __stdcall GetCurrentProcess();
+                //__declspec(dllimport) void* __stdcall GetCurrentThread();
+                //__declspec(dllimport) void* __stdcall GetCurrentProcess();
                 __declspec(dllimport) int __stdcall SetEvent(void*);
                 __declspec(dllimport) int __stdcall ResetEvent(void*);
 # else

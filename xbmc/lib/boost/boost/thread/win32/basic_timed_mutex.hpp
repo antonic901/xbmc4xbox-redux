@@ -43,7 +43,7 @@ namespace boost
 #pragma warning(push)
 #pragma warning(disable:4312)
 #endif
-                void* const old_event=BOOST_INTERLOCKED_EXCHANGE_POINTER(&event,0);
+                void* const old_event=NULL/*BOOST_INTERLOCKED_EXCHANGE_POINTER(&event,0)*/;
 #ifdef BOOST_MSVC
 #pragma warning(pop)
 #endif
@@ -180,7 +180,7 @@ namespace boost
 #pragma warning(disable:4311)
 #pragma warning(disable:4312)
 #endif
-                    void* const old_event=BOOST_INTERLOCKED_COMPARE_EXCHANGE_POINTER(&event,new_event,0);
+                    void* const old_event=NULL/*BOOST_INTERLOCKED_COMPARE_EXCHANGE_POINTER(&event,new_event,0)*/;
 #ifdef BOOST_MSVC
 #pragma warning(pop)
 #endif

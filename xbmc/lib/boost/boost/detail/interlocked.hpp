@@ -63,13 +63,13 @@ extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedExchange( long volatile *, l
 extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedExchangeAdd( long volatile *, long );
 
 #else
-
+#ifndef _XBOX
 extern "C" long __cdecl _InterlockedIncrement( long volatile * );
 extern "C" long __cdecl _InterlockedDecrement( long volatile * );
 extern "C" long __cdecl _InterlockedCompareExchange( long volatile *, long, long );
 extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 extern "C" long __cdecl _InterlockedExchangeAdd( long volatile *, long );
-
+#endif
 #endif
 
 # pragma intrinsic( _InterlockedIncrement )
