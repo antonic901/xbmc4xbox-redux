@@ -51,7 +51,7 @@ static XbmcThreads::ThreadLocal<CThread> currentThread;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CThread::CThread(const char* ThreadName) : m_StopEvent(true)
+CThread::CThread(const char* ThreadName) : m_StopEvent(true,true)
 {
   m_bStop = false;
 
@@ -68,7 +68,7 @@ CThread::CThread(const char* ThreadName) : m_StopEvent(true)
     m_ThreadName = ThreadName;
 }
 
-CThread::CThread(IRunnable* pRunnable, const char* ThreadName) : m_StopEvent(true)
+CThread::CThread(IRunnable* pRunnable, const char* ThreadName) : m_StopEvent(true,true)
 {
   m_bStop = false;
 
