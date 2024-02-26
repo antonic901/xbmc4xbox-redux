@@ -3037,6 +3037,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Atomics.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\threads\Condition.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\Condition.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\threads\CriticalSection.h">
 				</File>
 				<File
