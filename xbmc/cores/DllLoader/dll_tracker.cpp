@@ -18,8 +18,6 @@
  *
  */
 
-#include "system.h"
-#include "utils/log.h"
 #include "dll_tracker.h"
 #include "dll_tracker_library.h"
 #include "dll_tracker_memory.h"
@@ -28,6 +26,7 @@
 #include "dll_tracker_socket.h"
 #include "DllLoader.h"
 #include "threads/SingleLock.h"
+#include "utils/log.h"
 
 #ifdef _cplusplus
 extern "C"

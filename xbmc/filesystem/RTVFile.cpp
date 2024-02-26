@@ -26,6 +26,7 @@
 #include "SectionLoader.h"
 #include "URL.h"
 #include "utils/log.h"
+#include "xbox/PlatformDefs.h"
 
 #include <sys/stat.h>
 extern "C"

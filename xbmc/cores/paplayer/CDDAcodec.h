@@ -21,7 +21,6 @@
  */
 
 #include "CachingCodec.h"
-#include "filesystem/File.h"
 
 class CDDACodec : public CachingCodec
 {

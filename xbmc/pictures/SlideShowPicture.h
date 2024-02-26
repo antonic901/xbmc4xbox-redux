@@ -19,9 +19,9 @@
  *
  */
 
-#include "threads/SingleLock.h"
+#include "threads/CriticalSection.h"
+#include "guilib/gui3d.h"
 #include "utils/StdString.h"
-#include "gui3d.h"
 
 typedef uint32_t color_t;
 

@@ -26,6 +26,9 @@
  *
  */
 
+#ifdef _XBOX
+#include <xtl.h>
+#endif
 #include "boost/thread/recursive_mutex.hpp"
 
 /**

@@ -21,7 +21,7 @@
  */
 
 #include "ICodec.h"
-#include "../../FileSystem/File.h"
+#include "filesystem/File.h"
 
 class CachingCodec : public ICodec
 {

@@ -29,17 +29,19 @@
 * debugging is set to a max of 10 for release builds (see local.h)
 */
 
-#include "utils/log.h"
+#include "system.h"
+
 #include "SMBDirectory.h"
-#include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
-#include "lib/libsmb/xbLibSmb.h"
-#include "GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
+#include "Application.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
-#include "PasswordManager.h"
-#include "Application.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
 #include "threads/SingleLock.h"
+#include "PasswordManager.h"
+
+#include "lib/libsmb/xbLibSmb.h"
 
 struct CachedDirEntry
 {

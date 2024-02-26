@@ -20,8 +20,8 @@
  *
  */
 
-#include "xbox/PlatformDefs.h"
-#include "utils/StdString.h"
+#include "StdString.h"
+#include "system.h" // for SYSTEMTIME
 
 namespace XFILE
 {

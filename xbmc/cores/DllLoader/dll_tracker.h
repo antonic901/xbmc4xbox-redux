@@ -21,7 +21,11 @@
  *
  */
 
-#include "threads/SingleLock.h"
+#include "threads/CriticalSection.h"
+#include "PlatformDefs.h"
+#ifdef _WIN32
+#include "system.h" // for SOCKET
+#endif
 
 #include <list>
 #include <map>
