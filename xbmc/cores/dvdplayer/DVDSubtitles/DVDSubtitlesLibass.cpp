@@ -23,6 +23,7 @@
 #include "DVDSubtitlesLibass.h"
 #include "DVDClock.h"
 #include "filesystem/SpecialProtocol.h"
+#include "threads/Atomics.h"
 
 using namespace std;
 
@@ -142,13 +143,13 @@ bool CDVDSubtitlesLibass::ReadFile(const string& strFile)
 
 long CDVDSubtitlesLibass::Acquire()
 {
-  long count = InterlockedIncrement(&m_references);
+  long count = AtomicIncrement(&m_references);
   return count;
 }
 
 long CDVDSubtitlesLibass::Release()
 {
-  long count = InterlockedDecrement(&m_references);
+  long count = AtomicDecrement(&m_references);
   if (count == 0)
     delete this;
 

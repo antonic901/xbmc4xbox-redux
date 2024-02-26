@@ -85,13 +85,13 @@ CPythonMonitor::CPythonMonitor()
 
 void CPythonMonitor::Release()
 {
-  if(InterlockedDecrement(&m_refs) == 0)
+  if(AtomicDecrement(&m_refs) == 0)
     delete this;
 }
 
 void CPythonMonitor::Acquire()
 {
-  InterlockedIncrement(&m_refs);
+  AtomicIncrement(&m_refs);
 }
 
 CPythonMonitor::~CPythonMonitor(void)

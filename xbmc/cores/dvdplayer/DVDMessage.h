@@ -24,6 +24,7 @@
 // include as less is possible to prevent dependencies
 #include "DVDDemuxers/DVDDemux.h"
 #include "DVDMessageTracker.h"
+#include "threads/Atomics.h"
 
 #include <assert.h>
 
@@ -131,7 +132,7 @@ public:
    */
   CDVDMsg* Acquire()
   {
-    InterlockedIncrement(&m_references);
+    AtomicIncrement(&m_references);
     return this;
   }
   
@@ -140,7 +141,7 @@ public:
    */
   long Release()
   {
-    long count = InterlockedDecrement(&m_references);
+    long count = AtomicDecrement(&m_references);
     if (count == 0) delete this;
     return count;
   }
