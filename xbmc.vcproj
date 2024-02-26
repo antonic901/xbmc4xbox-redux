@@ -3040,9 +3040,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Atomics.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\threads\CriticalSection.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\threads\CriticalSection.h">
 				</File>
 				<File
@@ -3052,13 +3049,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Event.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\threads\SharedSection.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\threads\SharedSection.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\threads\SingleLock.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\SingleLock.h">
