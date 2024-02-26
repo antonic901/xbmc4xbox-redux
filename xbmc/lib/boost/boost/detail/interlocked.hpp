@@ -54,12 +54,22 @@ extern "C" long __cdecl InterlockedExchangeAdd( long*, long );
 
 #elif defined( BOOST_MSVC ) || defined( BOOST_INTEL_WIN )
 
-#ifndef _XBOX
+#if defined( __CLRCALL_PURE_OR_CDECL )
+
+extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedIncrement( long volatile * );
+extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedDecrement( long volatile * );
+extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedCompareExchange( long volatile *, long, long );
+extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedExchange( long volatile *, long );
+extern "C" long __CLRCALL_PURE_OR_CDECL _InterlockedExchangeAdd( long volatile *, long );
+
+#else
+
 extern "C" long __cdecl _InterlockedIncrement( long volatile * );
 extern "C" long __cdecl _InterlockedDecrement( long volatile * );
 extern "C" long __cdecl _InterlockedCompareExchange( long volatile *, long, long );
-extern "C" long __cdecl _InterlockedExchange( long volatile *, long);
-extern "C" long __cdecl _InterlockedExchangeAdd( long volatile *, long);
+extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
+extern "C" long __cdecl _InterlockedExchangeAdd( long volatile *, long );
+
 #endif
 
 # pragma intrinsic( _InterlockedIncrement )
@@ -94,7 +104,7 @@ extern "C" void* __cdecl _InterlockedExchangePointer( void* volatile *, void* );
 # define BOOST_INTERLOCKED_EXCHANGE _InterlockedExchange
 # define BOOST_INTERLOCKED_EXCHANGE_ADD _InterlockedExchangeAdd
 
-#elif defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ )
+#elif defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ ) || defined( __CYGWIN__ )
 
 namespace boost
 {
