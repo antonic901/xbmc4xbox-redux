@@ -1132,9 +1132,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\infoscanner\MusicInfoScraper.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\Mutex.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\NfoFile.cpp">
 				</File>
 				<File
@@ -3554,9 +3551,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWMA.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Mutex.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\NfoFile.h">
