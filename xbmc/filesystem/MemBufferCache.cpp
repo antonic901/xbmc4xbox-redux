@@ -81,7 +81,7 @@ int MemBufferCache::WriteToCache(const char *pBuffer, size_t iSize)
     nToWrite = 0;
   }
 
-  m_written.PulseEvent();
+  m_written.Set();
 
   return nToWrite;
 }
@@ -121,7 +121,7 @@ int MemBufferCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
   }
 
   if (nRead > 0)
-    m_space.PulseEvent();
+    m_space.Set();
 
   return nRead;
 }
@@ -167,7 +167,7 @@ int64_t MemBufferCache::Seek(int64_t iFilePosition)
     }
 
     m_nStartPosition = iFilePosition;
-    m_space.PulseEvent();
+    m_space.Set();
     return m_nStartPosition;
   }
 
@@ -193,7 +193,7 @@ int64_t MemBufferCache::Seek(int64_t iFilePosition)
       m_forwardBuffer.Copy(saveUnRead);
 
     m_nStartPosition = iFilePosition;
-    m_space.PulseEvent();
+    m_space.Set();
     return m_nStartPosition;
   }
 

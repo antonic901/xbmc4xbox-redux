@@ -30,27 +30,31 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#if defined(_WIN32)
 #ifdef _XBOX
 #include <xtl.h>
 #else
 #include <windows.h>
 #endif
+#else
+#include "PlatformInclude.h"
+#endif
 
 class CEvent
 {
 public:
-  void PulseEvent();
-  bool WaitMSec(DWORD dwMillSeconds);
+  bool WaitMSec(unsigned int milliSeconds);
   HANDLE GetHandle();
   void Reset();
   void Set();
   void Wait();
   CEvent(bool manual = false);
+  CEvent(const CEvent& event);
+  CEvent& operator=(const CEvent& src);
+
   virtual ~CEvent();
 
 protected:
-  CEvent(const CEvent& event);
-  CEvent& operator=(const CEvent& src);
   HANDLE m_hEvent;
 };
 

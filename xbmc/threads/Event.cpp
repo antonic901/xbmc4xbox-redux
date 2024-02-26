@@ -19,7 +19,7 @@
 */
 
 #include "Event.h"
-
+#include "utils/log.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -33,11 +33,42 @@ CEvent::CEvent(bool manual)
     m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
-
+CEvent::CEvent(const CEvent& src)
+{
+  if(DuplicateHandle( GetCurrentProcess()
+                    , src.m_hEvent
+                    , GetCurrentProcess()
+                    , &m_hEvent
+                    , 0
+                    , TRUE
+                    , DUPLICATE_SAME_ACCESS ))
+  {
+    CLog::Log(LOGERROR, "CEvent - failed to duplicate handle");
+    m_hEvent = INVALID_HANDLE_VALUE;
+  }
+}
 
 CEvent::~CEvent()
 {
   CloseHandle(m_hEvent);
+}
+
+CEvent& CEvent::operator=(const CEvent& src)
+{
+  CloseHandle(m_hEvent);
+
+  if(DuplicateHandle( GetCurrentProcess()
+                    , src.m_hEvent
+                    , GetCurrentProcess()
+                    , &m_hEvent
+                    , 0
+                    , TRUE
+                    , DUPLICATE_SAME_ACCESS ))
+  {
+    CLog::Log(LOGERROR, "CEvent - failed to duplicate handle");
+    m_hEvent = INVALID_HANDLE_VALUE;
+  }
+  return *this;
 }
 
 
@@ -65,18 +96,14 @@ HANDLE CEvent::GetHandle()
   return m_hEvent;
 }
 
-bool CEvent::WaitMSec(DWORD dwMillSeconds)
+bool CEvent::WaitMSec(unsigned int milliSeconds)
 {
 
   if (m_hEvent)
   {
-    DWORD dwResult = WaitForSingleObject(m_hEvent, dwMillSeconds);
+    DWORD dwResult = WaitForSingleObject(m_hEvent, milliSeconds);
     if (dwResult == WAIT_OBJECT_0) return true;
   }
   return false;
 }
 
-void CEvent::PulseEvent()
-{
-  ::PulseEvent(m_hEvent);
-}

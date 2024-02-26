@@ -29,8 +29,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "system.h" // for HANDLE
 #include <string>
+#ifdef _LINUX
+#include "PlatformInclude.h"
+#else
 #include "xbox/PlatformInclude.h"
+#endif
 #include "Event.h"
 
 class IRunnable
@@ -54,11 +59,16 @@ public:
   CThread(IRunnable* pRunnable, const char* ThreadName = NULL);
   virtual ~CThread();
   void Create(bool bAutoDelete = false, unsigned stacksize = 0);
-  bool WaitForThreadExit(DWORD dwMilliseconds);
-  DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
-  DWORD WaitForMultipleObjects(DWORD nCount, HANDLE *lpHandles, BOOL bWaitAll, DWORD dwMilliseconds);
-  void Sleep(DWORD dwMilliseconds);
+  bool WaitForThreadExit(unsigned int milliseconds);
+  DWORD WaitForSingleObject(HANDLE hHandle, unsigned int milliseconds);
+  DWORD WaitForMultipleObjects(DWORD nCount, HANDLE *lpHandles, BOOL bWaitAll, unsigned int milliseconds);
+  void Sleep(unsigned int milliseconds);
   bool SetPriority(const int iPriority);
+  void SetPrioritySched_RR(void);
+  int GetMinPriority(void);
+  int GetMaxPriority(void);
+  int GetNormalPriority(void);
+  void SetName( LPCTSTR szThreadName );
   HANDLE ThreadHandle();
   operator HANDLE();
   operator HANDLE() const;
@@ -67,16 +77,19 @@ public:
   bool IsRunning() const { return m_ThreadHandle != NULL; };
   float GetRelativeUsage();  // returns the relative cpu usage of this thread since last call
   bool IsCurrentThread() const;
-  int GetMinPriority(void);
-  int GetMaxPriority(void);
-  int GetNormalPriority(void);
 
   static bool IsCurrentThread(const ThreadIdentifier tid);
   static ThreadIdentifier GetCurrentThreadId();
 protected:
   virtual void OnStartup(){};
   virtual void OnExit(){};
-  virtual void Process(); 
+  virtual void OnException(){} // signal termination handler
+  virtual void Process();
+
+#ifdef _LINUX
+  static void term_handler (int signum);
+#endif
+
   volatile bool m_bStop;
   HANDLE m_ThreadHandle;
 
@@ -101,7 +114,11 @@ private:
   std::string m_ThreadName;
 
 private:
+#ifndef _WIN32
+  static int staticThread(void* data);
+#else
   static DWORD WINAPI staticThread(LPVOID* data);
+#endif
 };
 
 #endif // !defined(AFX_THREAD_H__ACFB7357_B961_4AC1_9FB2_779526219817__INCLUDED_)
