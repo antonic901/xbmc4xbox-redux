@@ -161,8 +161,8 @@ public:
   void SetScreenFilters(bool useFullScreenFilters);
   void ResetOverscan(RESOLUTION res, OVERSCAN &overscan);
   void ResetScreenParameters(RESOLUTION res);
-  void Lock() { EnterCriticalSection(*this); }
-  void Unlock() { LeaveCriticalSection(*this); }
+  void Lock() { lock(); }
+  void Unlock() { unlock(); }
   float GetPixelRatio(RESOLUTION iRes) const;
   void CaptureStateBlock();
   void ApplyStateBlock();

@@ -2118,7 +2118,8 @@ void CMPlayer::WaitOnCommand()
   if( IsCurrentThread() ) return;
 
   //If we hold graphiccontext, this may stall mplayer process
-  if( OwningCriticalSection(g_graphicsContext) ) return;
+  CSingleTryLock tryLock(g_graphicsContext);
+  if(tryLock.IsOwner()) return;
 
   if( m_bPaused )
   {

@@ -26,7 +26,6 @@
 #include <limits>
 
 using namespace XFILE;
-using namespace boost;
 using namespace std;
 
 CDVDInputStreamStack::CDVDInputStreamStack() : CDVDInputStream(DVDSTREAM_TYPE_FILE)

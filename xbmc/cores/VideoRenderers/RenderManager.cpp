@@ -66,9 +66,8 @@ CXBoxRenderManager::CXBoxRenderManager() : CThread("AsyncRenderer")
 
 CXBoxRenderManager::~CXBoxRenderManager()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   delete m_pRenderer;
   m_pRenderer = NULL;
@@ -76,12 +75,11 @@ CXBoxRenderManager::~CXBoxRenderManager()
 
 bool CXBoxRenderManager::Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CExclusiveLock lock(m_sharedSection);      
 
   if(!m_pRenderer) 
   {
-    RestoreCriticalSection(g_graphicsContext, locks);
     CLog::Log(LOGERROR, "%s called without a valid Renderer object", __FUNCTION__);
     return false;
   }
@@ -98,8 +96,7 @@ bool CXBoxRenderManager::Configure(unsigned int width, unsigned int height, unsi
     m_pRenderer->Update(false);
     m_bIsStarted = true;
   }
-  
-  RestoreCriticalSection(g_graphicsContext, locks);
+
   return result;
 }
 
@@ -112,9 +109,8 @@ bool CXBoxRenderManager::IsConfigured()
 
 void CXBoxRenderManager::Update(bool bPauseDrawing)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   m_bPauseDrawing = bPauseDrawing;
   if (m_pRenderer)
@@ -125,9 +121,8 @@ void CXBoxRenderManager::Update(bool bPauseDrawing)
 
 void CXBoxRenderManager::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CSharedLock lock(m_sharedSection); 
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   if (m_pRenderer)
     m_pRenderer->RenderUpdate(clear, flags, alpha);
@@ -135,9 +130,8 @@ void CXBoxRenderManager::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 
 unsigned int CXBoxRenderManager::PreInit()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   if(!g_eventVBlank)
   {
@@ -183,14 +177,13 @@ unsigned int CXBoxRenderManager::PreInit()
 
 void CXBoxRenderManager::UnInit()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
 
   m_bStop = true;
   m_eventFrame.Set();
   StopThread();
 
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   m_bIsStarted = false;
   if (m_pRenderer)
@@ -210,9 +203,8 @@ void CXBoxRenderManager::SetupScreenshot()
 
 void CXBoxRenderManager::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int width, unsigned int height)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  CSingleExit leaveIt(g_graphicsContext);
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
 
   if (m_pRenderer)
     m_pRenderer->CreateThumbnail(surface, width, height);
