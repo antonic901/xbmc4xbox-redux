@@ -19,91 +19,64 @@
 */
 
 #include "Event.h"
-#include "utils/log.h"
+#include "utils/TimeUtils.h"
+#include "xbox/PlatformDefs.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CEvent::CEvent(bool manual)
-{
-  if(manual)
-    m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  else
-    m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+void CEvent::Interrupt() 
+{ 
+  CSingleLock lock(mutex);
+  interrupted = true;
+  condVar.notifyAll(); 
 }
 
-CEvent::CEvent(const CEvent& src)
+bool CEvent::Wait()
 {
-  if(DuplicateHandle( GetCurrentProcess()
-                    , src.m_hEvent
-                    , GetCurrentProcess()
-                    , &m_hEvent
-                    , 0
-                    , TRUE
-                    , DUPLICATE_SAME_ACCESS ))
-  {
-    CLog::Log(LOGERROR, "CEvent - failed to duplicate handle");
-    m_hEvent = INVALID_HANDLE_VALUE;
-  }
-}
+  CSingleLock lock(mutex);
+  interrupted = false;
+  Guard g(interruptible ? this : NULL);
 
-CEvent::~CEvent()
-{
-  CloseHandle(m_hEvent);
-}
+  while (!setState && !interrupted)
+    condVar.wait(mutex);
 
-CEvent& CEvent::operator=(const CEvent& src)
-{
-  CloseHandle(m_hEvent);
+  bool ret = setState;
+  if (!manualReset)
+    setState = false;
 
-  if(DuplicateHandle( GetCurrentProcess()
-                    , src.m_hEvent
-                    , GetCurrentProcess()
-                    , &m_hEvent
-                    , 0
-                    , TRUE
-                    , DUPLICATE_SAME_ACCESS ))
-  {
-    CLog::Log(LOGERROR, "CEvent - failed to duplicate handle");
-    m_hEvent = INVALID_HANDLE_VALUE;
-  }
-  return *this;
-}
-
-
-void CEvent::Wait()
-{
-  if (m_hEvent)
-  {
-    WaitForSingleObject(m_hEvent, INFINITE);
-  }
-}
-
-void CEvent::Set()
-{
-  if (m_hEvent) SetEvent(m_hEvent);
-}
-
-void CEvent::Reset()
-{
-
-  if (m_hEvent) ResetEvent(m_hEvent);
-}
-
-HANDLE CEvent::GetHandle()
-{
-  return m_hEvent;
+  return ret;
 }
 
 bool CEvent::WaitMSec(unsigned int milliSeconds)
 {
+  CSingleLock lock(mutex);
+  interrupted = false;
+  Guard g(interruptible ? this : NULL);
 
-  if (m_hEvent)
+  unsigned int startTime = timeGetTime()/*XbmcThreads::SystemClockMillis()*/;
+  unsigned int remainingTime = milliSeconds;
+  while(!setState && !interrupted)
   {
-    DWORD dwResult = WaitForSingleObject(m_hEvent, milliSeconds);
-    if (dwResult == WAIT_OBJECT_0) return true;
-  }
-  return false;
-}
+    XbmcThreads::ConditionVariable::TimedWaitResponse resp = condVar.wait(mutex,remainingTime);
 
+    if (setState)
+      return true;
+
+    if (resp == XbmcThreads::ConditionVariable::TIMEDOUT)
+      return false;
+
+    unsigned int elapsedTimeMillis = timeGetTime() - startTime/*XbmcThreads::SystemClockMillis() - startTime*/;
+    if (elapsedTimeMillis > milliSeconds)
+      return false;
+
+    remainingTime = milliSeconds - elapsedTimeMillis;
+  }
+
+  bool ret = setState;
+  if (!manualReset)
+    setState = false;
+
+  return ret;
+}
