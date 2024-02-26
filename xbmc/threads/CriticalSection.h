@@ -92,6 +92,10 @@ public:
     for (unsigned int i = 0; i < restoreCount; i++) 
       lock();
   }
+
+  inline unsigned int getCount() { return count; }
+
+  inline L& getLockable() { return mutex; }
 };
 
 /**

@@ -87,6 +87,8 @@ protected:
   volatile bool m_bStop;
   HANDLE m_ThreadHandle;
 
+  inline CEvent* getStopEvent() { return &m_StopEvent; }
+
 private:
   std::string GetTypeName(void);
 

@@ -3037,9 +3037,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Atomics.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\threads\Condition.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\threads\Condition.h">
 				</File>
 				<File
@@ -3050,12 +3047,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\Event.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\threads\Interruptible.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\threads\Interruptible.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\SharedSection.h">

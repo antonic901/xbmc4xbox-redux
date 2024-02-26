@@ -44,7 +44,6 @@ using namespace __cxxabiv1;
 #include "Util.h"
 #endif
 #include "threads/ThreadLocal.h"
-#include "threads/Interruptible.h"
 
 static XbmcThreads::ThreadLocal<CThread> currentThread;
 
@@ -106,7 +105,6 @@ void CThread::term_handler (int signum)
   {
     curThread->m_bStop = TRUE;
     curThread->m_StopEvent.Set();
-    XbmcThreads::IInterruptible::InterruptThreadSpecific();
 
     curThread->OnException();
     if( curThread->IsAutoDelete() )
@@ -266,7 +264,6 @@ void CThread::StopThread(bool bWait /*= true*/)
 {
   m_bStop = true;
   m_StopEvent.Set();
-  XbmcThreads::IInterruptible::InterruptThreadSpecific();
   if (m_ThreadHandle && bWait)
   {
     WaitForThreadExit(INFINITE);
