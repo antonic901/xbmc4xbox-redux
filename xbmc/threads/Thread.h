@@ -33,8 +33,6 @@
 #include <string>
 #ifdef _LINUX
 #include "PlatformInclude.h"
-#else
-#include "xbox/PlatformInclude.h"
 #endif
 #include "Event.h"
 
@@ -72,7 +70,7 @@ public:
   operator HANDLE() const;
   bool IsAutoDelete() const;
   virtual void StopThread(bool bWait = true);
-  bool IsRunning() const { return m_ThreadHandle != NULL; };
+  bool IsRunning() const;
   float GetRelativeUsage();  // returns the relative cpu usage of this thread since last call
   bool IsCurrentThread() const;
 
@@ -87,7 +85,28 @@ protected:
   volatile bool m_bStop;
   HANDLE m_ThreadHandle;
 
-  inline CEvent* getStopEvent() { return &m_StopEvent; }
+  enum WaitResponse { WAIT_INTERRUPTED = -1, WAIT_SIGNALED = 0, WAIT_TIMEDOUT = 1 };
+
+  /**
+   * This call will wait on a CEvent in an interruptible way such that if
+   *  stop is called on the thread the wait will return with a respone
+   *  indicating what happened.
+   */
+  inline WaitResponse AbortableWait(CEvent& event, int timeoutMillis)
+  {
+    XbmcThreads::CEventGroup group(&event, &m_StopEvent, NULL);
+    CEvent* result = group.wait(timeoutMillis);
+    return  result == &event ? WAIT_SIGNALED : 
+      (result == NULL ? WAIT_TIMEDOUT : WAIT_INTERRUPTED);
+  }
+
+  inline WaitResponse AbortableWait(CEvent& event)
+  {
+    XbmcThreads::CEventGroup group(&event, &m_StopEvent, NULL);
+    CEvent* result = group.wait();
+    return  result == &event ? WAIT_SIGNALED : 
+      (result == NULL ? WAIT_TIMEDOUT : WAIT_INTERRUPTED);
+  }
 
 private:
   std::string GetTypeName(void);

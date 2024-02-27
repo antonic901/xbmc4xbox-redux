@@ -19,7 +19,10 @@
  *
  */
 
-#pragma once
+#include "threads/platform/platform.select"
 
-#include "threads/platform/ThreadLocal.h"
-
+#if (defined USE_PTHREADS_THREADING)
+#include "threads/platform/pthreads/Implementation.cpp"
+#elif (defined USE_WIN_THREADING)
+// win has no need of an Implementation.cpp
+#endif

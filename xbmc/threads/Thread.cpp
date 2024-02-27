@@ -18,6 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "threads/SystemClock.h"
 #include "Thread.h"
 #ifndef _LINUX
 #include <process.h>
@@ -27,7 +28,7 @@
 #endif
 typedef unsigned (WINAPI *PBEGINTHREADEX_THREADFUNC)(LPVOID lpThreadParameter);
 #else
-#include "PlatformInclude.h"
+#include "xbox/PlatformInclude.h"
 #include "XHandle.h"
 #include <signal.h>
 typedef int (*PBEGINTHREADEX_THREADFUNC)(LPVOID lpThreadParameter);
@@ -38,11 +39,9 @@ typedef int (*PBEGINTHREADEX_THREADFUNC)(LPVOID lpThreadParameter);
 using namespace __cxxabiv1;
 #endif
 
+#include "Util.h"
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
-#ifdef _XBOX
-#include "Util.h"
-#endif
 #include "threads/ThreadLocal.h"
 
 static XbmcThreads::ThreadLocal<CThread> currentThread;
@@ -239,7 +238,7 @@ void CThread::Create(bool bAutoDelete, unsigned stacksize)
   {
     throw 1; //ERROR should not b possible!!!
   }
-  m_iLastTime = (uint64_t)timeGetTime() * 10000/*XbmcThreads::SystemClockMillis() * 10000*/;
+  m_iLastTime = XbmcThreads::SystemClockMillis() * 10000;
   m_iLastUsage = 0;
   m_fLastUsage = 0.0f;
   m_bAutoDelete = bAutoDelete;
@@ -253,6 +252,11 @@ void CThread::Create(bool bAutoDelete, unsigned stacksize)
     // FIXME: WinAPI can truncate 64bit pthread ids
     pthread_detach(m_ThreadHandle->m_hThread);
 #endif
+}
+
+bool CThread::IsRunning() const
+{
+  return m_ThreadId ? true : false;
 }
 
 bool CThread::IsAutoDelete() const
@@ -483,7 +487,7 @@ void CThread::Process()
 
 float CThread::GetRelativeUsage()
 {
-  unsigned __int64 iTime = (uint64_t)timeGetTime()/*XbmcThreads::SystemClockMillis()*/;
+  unsigned __int64 iTime = XbmcThreads::SystemClockMillis();
   iTime *= 10000; // convert into 100ns tics
 
   // only update every 1 second
@@ -538,3 +542,5 @@ void CThread::Sleep(unsigned int milliseconds)
   else
     ::Sleep(milliseconds);
 }
+
+

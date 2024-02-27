@@ -48,17 +48,17 @@ namespace XbmcThreads
     inline EndTime() : startTime(0), totalWaitTime(0) {}
     inline EndTime(unsigned int millisecondsIntoTheFuture) : startTime(SystemClockMillis()), totalWaitTime(millisecondsIntoTheFuture) {}
 
-    inline void Set(unsigned int millisecondsIntoTheFuture) { startTime = SystemClockMillis(); totalWaitTime = millisecondsIntoTheFuture; }
+    inline void set(unsigned int millisecondsIntoTheFuture) { startTime = SystemClockMillis(); totalWaitTime = millisecondsIntoTheFuture; }
 
-    inline bool IsTimePast() { return totalWaitTime == 0 ? true : (SystemClockMillis() - startTime) >= totalWaitTime; }
+    inline bool isTimePast() { return totalWaitTime == 0 ? true : (SystemClockMillis() - startTime) >= totalWaitTime; }
 
-    inline unsigned int MillisLeft()
+    inline unsigned int millisLeft()
     {
       unsigned int timeWaitedAlready = (SystemClockMillis() - startTime);
       return (timeWaitedAlready >= totalWaitTime) ? 0 : (totalWaitTime - timeWaitedAlready);
     }
 
-    inline void SetExpired() { totalWaitTime = 0; }
-    inline void SetInfinite() { totalWaitTime = std::numeric_limits<unsigned int>::max(); }
+    inline void setExpired() { totalWaitTime = 0; }
+    inline void setInfinite() { totalWaitTime = (std::numeric_limits<unsigned int>::max)(); }
   };
 }

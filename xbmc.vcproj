@@ -3049,6 +3049,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\threads\Event.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\threads\Helpers.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\Lockables.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\LockFree.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\threads\LockFree.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\threads\SharedSection.h">
 				</File>
 				<File
@@ -3065,9 +3077,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\Thread.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\threads\ThreadLocal.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\threads\ThreadLocal.h">

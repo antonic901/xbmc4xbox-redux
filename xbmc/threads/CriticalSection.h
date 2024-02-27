@@ -1,11 +1,3 @@
-//////////////////////////////////////////////////////////////////////
-//
-// CriticalSection.h: interface for the CCriticalSection class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#pragma once
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -26,83 +18,6 @@
  *
  */
 
-#ifdef _XBOX
-#include <xtl.h>
-#endif
-#include "boost/thread/recursive_mutex.hpp"
+#pragma once
 
-/**
- * Because there are several different Lockable schemes we use, this 
- * template extends the boost behavior and adds some xbmc assumptions
- * mainly that a CriticalSection (or SharedSection) is "exitable." 
- *
- * "Exitable" specifially means that, no matter how deep the recursion
- * on the mutex/critical section, we can exit from it and then restore
- * the state.
- *
- * This requires us to extend boost so that we can keep track of the
- * number of locks that have been recursively acquired so that we can
- * undo it, and then restore that (See class CSingleExit).
- *
- * This implements boost's "Lockable concept" which simply means that 
- * it has the three methods:
- *
- *   lock();
- *   try_lock();
- *   unlock();
- */
-template<class L> class CountingLockable
-{
-protected:
-  L mutex;
-  unsigned int count;
-
-public:
-  inline CountingLockable() : count(0) {}
-
-  // boost::thread Lockable concept
-  inline void lock() { mutex.lock(); count++; }
-  inline bool try_lock() { return mutex.try_lock() ? count++, true : false; }
-  inline void unlock() { count--; mutex.unlock(); }
-
-  /**
-   * This implements the "exitable" behavior mentioned above.
-   */
-  inline unsigned int exit() 
-  { 
-    // it's possibe we don't actually own the lock
-    // so we will try it.
-    unsigned int ret = 0;
-    if (try_lock())
-    {
-      ret = count - 1;  // The -1 is because we don't want 
-                        //  to count the try_lock increment.
-      while (count > 0) // This will also unlock the try_lock.
-        unlock();
-    }
-
-    return ret; 
-  }
-
-  /**
-   * Restore a previous exit to the provided level.
-   */
-  inline void restore(unsigned int restoreCount)
-  {
-    for (unsigned int i = 0; i < restoreCount; i++) 
-      lock();
-  }
-
-  inline unsigned int getCount() { return count; }
-
-  inline L& getLockable() { return mutex; }
-};
-
-/**
- * A CCriticalSection is a CountingLockable whose implementation is a boost
- *  recursive_mutex.
- *
- * This is not a typedef because of a number of "class CCriticalSection;" 
- *  forward declarations in the code that break when it's done that way.
- */
-class CCriticalSection : public CountingLockable<boost::recursive_mutex> {};
+#include "threads/platform/CriticalSection.h"

@@ -21,5 +21,11 @@
 
 #pragma once
 
-#include "threads/platform/ThreadLocal.h"
+#include "threads/platform/platform.select"
+
+#if (defined USE_PTHREADS_THREADING)
+#include "threads/platform/pthreads/Condition.h"
+#elif (defined USE_WIN_THREADING)
+#include "threads/platform/win/Condition.h"
+#endif
 

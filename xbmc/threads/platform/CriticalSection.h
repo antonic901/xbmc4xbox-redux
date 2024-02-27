@@ -21,5 +21,10 @@
 
 #pragma once
 
-#include "threads/platform/ThreadLocal.h"
+#include "threads/platform/platform.select"
 
+#if (defined USE_PTHREADS_THREADING)
+#include "threads/platform/pthreads/CriticalSection.h"
+#elif (defined USE_WIN_THREADING)
+#include "threads/platform/win/CriticalSection.h"
+#endif

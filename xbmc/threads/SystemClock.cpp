@@ -20,15 +20,20 @@
 
 #include <stdint.h>
 
-#if   defined(TARGET_DARWIN)
+#ifdef __APPLE__
+#if defined(__ppc__) || defined(__arm__)
 #include <mach/mach_time.h>
 #include <CoreVideo/CVHostTime.h>
-#elif defined(TARGET_WINDOWS)
+#else
+#include <time.h>
+#include "posix-realtime-stub.h"
+#endif
+#elif defined(_LINUX)
+#include <time.h>
+#elif defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
 #elif defined(_XBOX)
 #include <xtl.h>
-#else
-#include <time.h>
 #endif
 
 namespace XbmcThreads
@@ -38,20 +43,22 @@ namespace XbmcThreads
     uint64_t now_time;
     static uint64_t start_time = 0;
     static bool start_time_set = false;
-#if defined(TARGET_DARWIN)
+#ifdef _LINUX
+#if defined(__APPLE__) && (defined(__ppc__) || defined(__arm__))
     now_time = CVGetCurrentHostTime() *  1000 / CVGetHostClockFrequency();
-#elif defined(TARGET_WINDOWS) || defined(_XBOX)
-    now_time = (uint64_t)timeGetTime();
 #else
     struct timespec ts = {};
     clock_gettime(CLOCK_MONOTONIC, &ts);
     now_time = (ts.tv_sec * 1000) + (ts.tv_nsec / 1000000);
+#endif
+#else
+    now_time = (uint64_t)timeGetTime();
 #endif
     if (!start_time_set)
     {
       start_time = now_time;
       start_time_set = true;
     }
-    return (unsigned int)(now_time - start_time);
+    return (now_time - start_time);
   }
 }

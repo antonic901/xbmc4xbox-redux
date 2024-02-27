@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "threads/Condition.h"
+#include "threads/SingleLock.h"
 
 // forward declare the CEventGroup
 namespace XbmcThreads
@@ -41,12 +42,13 @@ namespace XbmcThreads
  *
  * This class manages 'spurious returns' from the condition variable.
  */
-class CEvent
+class CEvent : public XbmcThreads::NonCopyable
 {
   bool manualReset;
-  bool signaled;
+  volatile bool signaled;
   unsigned int numWaits;
 
+  CCriticalSection groupListMutex; // lock for the groups list
   std::vector<XbmcThreads::CEventGroup*> * groups;
 
   /**
@@ -54,36 +56,29 @@ class CEvent
    *  predicate being monitored to include both the signaled and interrupted
    *  states.
    */
-  XbmcThreads::TightConditionVariable<CCriticalSection,bool&> condVar;
+  XbmcThreads::ConditionVariable actualCv;
+  XbmcThreads::TightConditionVariable<volatile bool&> condVar;
   CCriticalSection mutex;
 
   friend class XbmcThreads::CEventGroup;
 
-  void groupSet();
   void addGroup(XbmcThreads::CEventGroup* group);
   void removeGroup(XbmcThreads::CEventGroup* group);
 
   // helper for the two wait methods
   inline bool prepReturn() { bool ret = signaled; if (!manualReset && numWaits == 0) signaled = false; return ret; }
 
-  // block the ability to copy
-  inline CEvent& operator=(const CEvent& src) { return *this; }
-  inline CEvent(const CEvent& other): condVar(signaled) {}
-
 public:
   inline CEvent(bool manual = false, bool signaled_ = false) : 
-    manualReset(manual), signaled(signaled_), numWaits(0), groups(NULL), condVar(signaled) {}
+    manualReset(manual), signaled(signaled_), numWaits(0), groups(NULL), condVar(actualCv,signaled) {}
 
   inline void Reset() { CSingleLock lock(mutex); signaled = false; }
-  inline void Set() { CSingleLock lock(mutex); signaled = true; condVar.notifyAll(); groupSet(); }
+  void Set();
 
   /**
    * This will wait up to 'milliSeconds' milliseconds for the Event
    *  to be triggered. The method will return 'true' if the Event
-   *  was triggered. If it was either interrupted, or it timed out
-   *  it will return false. To determine if it was interrupted you can
-   *  use 'wasInterrupted()' call prior to any further call to a 
-   *  Wait* method.
+   *  was triggered. Otherwise it will return false.
    */
   inline bool WaitMSec(unsigned int milliSeconds) 
   { CSingleLock lock(mutex); numWaits++; condVar.wait(mutex,milliSeconds); numWaits--; return prepReturn(); }
@@ -91,11 +86,16 @@ public:
   /**
    * This will wait for the Event to be triggered. The method will return 
    * 'true' if the Event was triggered. If it was either interrupted
-   * it will return false. To determine if it was interrupted you can
-   * use 'wasInterrupted()' call prior to any further call to a Wait* method.
+   * it will return false. Otherwise it will return false.
    */
   inline bool Wait()
   { CSingleLock lock(mutex); numWaits++; condVar.wait(mutex); numWaits--; return prepReturn(); }
+
+  /**
+   * This is mostly for testing. It allows a thread to make sure there are 
+   *  the right amount of other threads waiting.
+   */
+  inline int getNumWaits() { CSingleLock lock(mutex); return numWaits; }
 
 };
 
@@ -103,23 +103,23 @@ namespace XbmcThreads
 {
   /**
    * CEventGroup is a means of grouping CEvents to wait on them together.
-   * It is equivalent to WaitOnMultipleObject with that returns when "any"
+   * It is equivalent to WaitOnMultipleObject that returns when "any" Event
    * in the group signaled.
    */
-  class CEventGroup
+  class CEventGroup : public NonCopyable
   {
     std::vector<CEvent*> events;
     CEvent* signaled;
-    XbmcThreads::TightConditionVariable<CCriticalSection,CEvent*&> condVar;
+    XbmcThreads::ConditionVariable actualCv;
+    XbmcThreads::TightConditionVariable<CEvent*&> condVar;
     CCriticalSection mutex;
 
     unsigned int numWaits;
 
-    inline void Set(CEvent* child) { CSingleLock lock(mutex); signaled = child; condVar.notifyAll(); }
+    // This is ONLY called from CEvent::Set.
+    inline void Set(CEvent* child) { CSingleLock l(mutex); signaled = child; condVar.notifyAll(); }
 
     friend class ::CEvent;
-
-    inline CEvent* prepReturn() { CEvent* ret = signaled; if (numWaits == 0) signaled = NULL; return ret; }
 
   public:
 
@@ -145,7 +145,7 @@ namespace XbmcThreads
      * signaled at which point a pointer to that CEvents will be 
      * returned.
      */
-    inline CEvent* wait() { CSingleLock lock(mutex); numWaits++; condVar.wait(mutex); numWaits--; return prepReturn(); }
+    CEvent* wait();
 
     /**
      * This will block until any one of the CEvents in the group are
@@ -153,6 +153,13 @@ namespace XbmcThreads
      * it will return a pointer to that CEvent, otherwise it will return
      * NULL.
      */
-    inline CEvent* wait(unsigned int milliseconds)  { CSingleLock lock(mutex); numWaits++; condVar.wait(mutex,milliseconds); numWaits--; return prepReturn(); }
+    CEvent* wait(unsigned int milliseconds);
+
+    /**
+     * This is mostly for testing. It allows a thread to make sure there are 
+     *  the right amount of other threads waiting.
+     */
+    inline int getNumWaits() { CSingleLock lock(mutex); return numWaits; }
+
   };
 }
