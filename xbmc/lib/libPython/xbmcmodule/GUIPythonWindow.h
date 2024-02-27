@@ -21,6 +21,7 @@
  */
 
 #include "GUIWindow.h"
+#include "threads/Event.h"
 #include "lib/libPython/python/Include/Python.h"
 
 class PyXBMCAction
@@ -59,5 +60,5 @@ public:
 protected:
   PyObject*        pCallbackWindow;
   PyThreadState*   m_threadState;
-  HANDLE           m_actionEvent;
+  CEvent           m_actionEvent;
 };

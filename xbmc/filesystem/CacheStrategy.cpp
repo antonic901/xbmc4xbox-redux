@@ -20,6 +20,7 @@
 
 
 #include "system.h"
+#include "threads/SystemClock.h"
 #include "CacheStrategy.h"
 #ifdef _LINUX
 #include "PlatformInclude.h"
@@ -72,7 +73,7 @@ int CSimpleFileCache::Open()
 {
   Close();
 
-  m_hDataAvailEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+  m_hDataAvailEvent = new CEvent;
 
   CStdString fileName = CSpecialProtocol::TranslatePath(CUtil::GetNextFilename("special://temp/filecache%03d.cache", 999));
   if(fileName.empty())
@@ -116,7 +117,7 @@ int CSimpleFileCache::Open()
 void CSimpleFileCache::Close()
 {
   if (m_hDataAvailEvent)
-    CloseHandle(m_hDataAvailEvent);
+    delete m_hDataAvailEvent;
 
   m_hDataAvailEvent = NULL;
 
@@ -142,7 +143,7 @@ int CSimpleFileCache::WriteToCache(const char *pBuffer, size_t iSize)
   }
 
   // when reader waits for data it will wait on the event.
-  SetEvent(m_hDataAvailEvent);
+  m_hDataAvailEvent->Set();
 
   m_nWritePosition += iWritten;
   return iWritten;
@@ -181,17 +182,16 @@ int64_t CSimpleFileCache::WaitForData(unsigned int iMinAvail, unsigned int iMill
   if( iMillis == 0 || IsEndOfInput() )
     return GetAvailableRead();
 
-  DWORD dwTimeout = GetTickCount() + iMillis;
-  DWORD dwTime;
-  while ( !IsEndOfInput() && (dwTime = GetTickCount()) < dwTimeout )
+  unsigned int timeout = XbmcThreads::SystemClockMillis() + iMillis;
+  unsigned int time;
+  while ( !IsEndOfInput() && (time = XbmcThreads::SystemClockMillis()) < timeout )
   {
     int64_t iAvail = GetAvailableRead();
     if (iAvail >= iMinAvail)
       return iAvail;
 
     // busy look (sleep max 1 sec each round)
-    DWORD dwRc = WaitForSingleObject(m_hDataAvailEvent, (dwTimeout - dwTime)>1000?(dwTimeout - dwTime):1000 );
-    if (dwRc == WAIT_FAILED || dwRc == WAIT_ABANDONED)
+    if (!m_hDataAvailEvent->WaitMSec((timeout - time)>1000?(timeout - time):1000 ))
       return CACHE_RC_ERROR;
   }
 
@@ -247,7 +247,7 @@ void CSimpleFileCache::Reset(int64_t iSourcePosition)
 void CSimpleFileCache::EndOfInput()
 {
   CCacheStrategy::EndOfInput();
-  SetEvent(m_hDataAvailEvent);
+  m_hDataAvailEvent->Set();
 }
 
 }

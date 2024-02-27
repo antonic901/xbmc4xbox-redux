@@ -39,17 +39,15 @@ PyXBMCAction::~PyXBMCAction() {
 }
 
 CGUIPythonWindow::CGUIPythonWindow(int id)
-: CGUIWindow(id, "")
+  : CGUIWindow(id, ""), m_actionEvent(true)
 {
   pCallbackWindow = NULL;
   m_threadState = NULL;
-  m_actionEvent = CreateEvent(NULL, true, false, NULL);
   m_loadType = LOAD_ON_GUI_INIT;
 }
 
 CGUIPythonWindow::~CGUIPythonWindow(void)
 {
-  CloseHandle(m_actionEvent);
 }
 
 bool CGUIPythonWindow::OnAction(const CAction &action)
@@ -156,12 +154,12 @@ void CGUIPythonWindow::SetCallbackWindow(PyThreadState *state, PyObject *object)
 void CGUIPythonWindow::WaitForActionEvent(unsigned int timeout)
 {
   g_pythonParser.WaitForEvent(m_actionEvent, timeout);
-  ResetEvent(m_actionEvent);
+  m_actionEvent.Reset();
 }
 
 void CGUIPythonWindow::PulseActionEvent()
 {
-  SetEvent(m_actionEvent);
+  m_actionEvent.Set();
 }
 
 /*

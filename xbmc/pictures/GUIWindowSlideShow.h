@@ -24,6 +24,7 @@
 #include "GUIWindow.h"
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
+#include "threads/Event.h"
 #include "pictures/SlideShowPicture.h"
 #include "pictures/DllImageLib.h"
 #include "utils/SortUtils.h"
@@ -50,7 +51,7 @@ private:
   int m_maxWidth;
   int m_maxHeight;
 
-  HANDLE m_loadPic;
+  CEvent m_loadPic;
   bool m_isLoading;
 
   CGUIWindowSlideShow *m_pCallback;

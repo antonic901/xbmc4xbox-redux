@@ -5,6 +5,8 @@ class CmdAdd;
 class Unpack;
 
 #include <process.h>
+#include "threads/Event.h"
+
 class CGUIDialogProgress;
 
 class ComprDataIO
@@ -83,11 +85,11 @@ class ComprDataIO
     int UnpackToMemorySize;
     
     // added stuff
-    HANDLE hBufferFilled;
-    HANDLE hBufferEmpty;
-    HANDLE hSeek;
-    HANDLE hSeekDone;
-    HANDLE hQuit;
+    CEvent* hBufferFilled;
+    CEvent* hBufferEmpty;
+    CEvent* hSeek;
+    CEvent* hSeekDone;
+    CEvent* hQuit;
     CGUIDialogProgress* m_pDlgProgress;
     bool bQuit;
     Int64 m_iSeekTo;

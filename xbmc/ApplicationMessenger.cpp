@@ -44,6 +44,7 @@
 #include "GUIDialog.h"
 #include "guilib/Key.h"
 #include "SectionLoader.h"
+#include "threads/SingleLock.h"
 #include "lib/libPython/xbmcmodule/GUIPythonWindowDialog.h"
 #include "lib/libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
@@ -67,7 +68,7 @@ void CApplicationMessenger::Cleanup()
     ThreadMessage* pMsg = m_vecMessages.front();
 
     if (pMsg->hWaitEvent)
-      SetEvent(pMsg->hWaitEvent);
+      pMsg->hWaitEvent->Set();
 
     delete pMsg;
     m_vecMessages.pop();
@@ -78,7 +79,7 @@ void CApplicationMessenger::Cleanup()
     ThreadMessage* pMsg = m_vecWindowMessages.front();
 
     if (pMsg->hWaitEvent)
-      SetEvent(pMsg->hWaitEvent);
+      pMsg->hWaitEvent->Set();
 
     delete pMsg;
     m_vecWindowMessages.pop();
@@ -92,7 +93,7 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
   { // check that we're not being called from our application thread, else we'll be waiting
     // forever!
     if (GetCurrentThreadId() != g_application.GetThreadId())
-      message.hWaitEvent = CreateEvent(NULL, true, false, NULL);
+      message.hWaitEvent = new CEvent(true);
     else
     {
       //OutputDebugString("Attempting to wait on a SendMessage() from our application thread will cause lockup!\n");
@@ -108,7 +109,7 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
   {
     if (message.hWaitEvent)
     {
-      CloseHandle(message.hWaitEvent);
+      delete message.hWaitEvent;
       message.hWaitEvent = NULL;
     }
     return;
@@ -132,8 +133,8 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
 
   if (message.hWaitEvent)
   {
-    WaitForSingleObject(message.hWaitEvent, INFINITE);
-    CloseHandle(message.hWaitEvent);
+    message.hWaitEvent->Wait();
+    delete message.hWaitEvent;
     message.hWaitEvent = NULL;
   }
 }
@@ -154,7 +155,7 @@ void CApplicationMessenger::ProcessMessages()
 
     ProcessMessage(pMsg);
     if (pMsg->hWaitEvent)
-      SetEvent(pMsg->hWaitEvent);
+      pMsg->hWaitEvent->Set();
     delete pMsg;
 
     //Reenter here again, to not ruin message vector
@@ -687,7 +688,7 @@ void CApplicationMessenger::ProcessWindowMessages()
 
     ProcessMessage(pMsg);
     if (pMsg->hWaitEvent)
-      SetEvent(pMsg->hWaitEvent);
+      pMsg->hWaitEvent->Set();
     delete pMsg;
 
     lock.Enter();

@@ -20,8 +20,9 @@
  *
  */
 
-#include "threads/SingleLock.h"
-#include "Key.h"
+#include "threads/CriticalSection.h"
+#include "guilib/Key.h"
+#include "threads/Event.h"
 
 #include <queue>
 
@@ -88,7 +89,7 @@ typedef struct
   DWORD dwParam2;
   CStdString strParam;
   std::vector<CStdString> params;
-  HANDLE hWaitEvent;
+  CEvent* hWaitEvent;
   LPVOID lpVoid;
 }
 ThreadMessage;
