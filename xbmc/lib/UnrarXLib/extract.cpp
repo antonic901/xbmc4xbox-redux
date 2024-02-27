@@ -869,7 +869,7 @@ void CmdExtract::UnstoreFile(ComprDataIO &DataIO,Int64 DestUnpSize)
            continue;
         DataIO.hBufferFilled->Reset();
         DataIO.hBufferEmpty->Set();
-        while (DataIO.hBufferFilled->WaitMSec(1))
+        while (! DataIO.hBufferFilled->WaitMSec(1))
           if (DataIO.hQuit->WaitMSec(1))
             return;
       }

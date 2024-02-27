@@ -87,7 +87,7 @@ void CRarFileExtractThread::OnExit()
 
 void CRarFileExtractThread::Process()
 {
-  while (hQuit.WaitMSec(1))
+  while (!hQuit.WaitMSec(1))
   {
     if (hRestart.WaitMSec(1))
     {
