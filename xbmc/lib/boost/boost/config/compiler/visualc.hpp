@@ -37,6 +37,9 @@
    //
 #endif
 
+/// Visual Studio has no fenv.h
+#define BOOST_NO_FENV_H
+
 #if (_MSC_VER <= 1300)  // 1300 == VC++ 7.0
 
 #  if !defined(_MSC_EXTENSIONS) && !defined(BOOST_NO_DEPENDENT_TYPES_IN_TEMPLATE_VALUE_PARAMETERS)      // VC7 bug with /Za
@@ -81,6 +84,8 @@
 #  define BOOST_NO_SWPRINTF
 // Our extern template tests also fail for this compiler:
 #  define BOOST_NO_EXTERN_TEMPLATE
+// Variadic macros do not exist for VC7.1 and lower
+#  define BOOST_NO_VARIADIC_MACROS
 #endif
 
 #if defined(UNDER_CE)
@@ -90,10 +95,6 @@
 
 #if _MSC_VER <= 1400  // 1400 == VC++ 8.0
 #  define BOOST_NO_MEMBER_TEMPLATE_FRIENDS
-#endif
-
-#if _MSC_VER <= 1600  // 1600 == VC++ 10.0
-#  define BOOST_NO_TWO_PHASE_NAME_LOOKUP
 #endif
 
 #if _MSC_VER == 1500  // 1500 == VC++ 9.0
@@ -128,9 +129,13 @@
 #endif
 
 #if defined(_WIN32_WCE) || defined(UNDER_CE)
-#  define BOOST_NO_THREADEX
-#  define BOOST_NO_GETSYSTEMTIMEASFILETIME
 #  define BOOST_NO_SWPRINTF
+#endif
+
+// we have ThreadEx or GetSystemTimeAsFileTime unless we're running WindowsCE
+#if !defined(_WIN32_WCE) && !defined(UNDER_CE)
+#  define BOOST_HAS_THREADEX
+#  define BOOST_HAS_GETSYSTEMTIMEASFILETIME
 #endif
 
 //   
@@ -178,7 +183,9 @@
 #define BOOST_NO_RVALUE_REFERENCES
 #define BOOST_NO_STATIC_ASSERT
 #define BOOST_NO_NULLPTR
+#define BOOST_NO_DECLTYPE
 #endif // _MSC_VER < 1600
+
 #if _MSC_VER >= 1600
 #define BOOST_HAS_STDINT_H
 #endif
@@ -186,20 +193,21 @@
 // C++0x features not supported by any versions
 #define BOOST_NO_CHAR16_T
 #define BOOST_NO_CHAR32_T
-#define BOOST_NO_CONCEPTS
 #define BOOST_NO_CONSTEXPR
 #define BOOST_NO_DEFAULTED_FUNCTIONS
-#define BOOST_NO_DECLTYPE
 #define BOOST_NO_DELETED_FUNCTIONS
 #define BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
 #define BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
 #define BOOST_NO_INITIALIZER_LISTS
+#define BOOST_NO_NOEXCEPT
 #define BOOST_NO_RAW_LITERALS
 #define BOOST_NO_SCOPED_ENUMS
-#define BOOST_NO_SFINAE_EXPR
 #define BOOST_NO_TEMPLATE_ALIASES
 #define BOOST_NO_UNICODE_LITERALS
 #define BOOST_NO_VARIADIC_TEMPLATES
+#define BOOST_NO_SFINAE_EXPR
+#define BOOST_NO_TWO_PHASE_NAME_LOOKUP
+#define BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX
 //
 // prefix and suffix headers:
 //
