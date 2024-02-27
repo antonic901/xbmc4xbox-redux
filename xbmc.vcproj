@@ -3691,6 +3691,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\Util.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\uXstrings.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\Weather.h">
 			</File>
 			<File

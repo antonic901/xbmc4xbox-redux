@@ -31,7 +31,7 @@
 #endif // HAVE_CONFIG_H
 
 #if !defined(HAVE_STD__U16STRING) || !defined(HAVE_STD__U32STRING) 
-#if defined(HAVE_STDINT_H)
+#if defined(HAVE_STDINT_H) || defined(_XBOX)
 #include <stdint.h>
 #elif defined(HAVE_INTTYPES_H)
 #include <inttypes.h>
