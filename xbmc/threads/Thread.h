@@ -111,6 +111,7 @@ private:
   ThreadIdentifier ThreadId() const;
   void SetThreadInfo();
   void TermHandler();
+  void Action();
 
   ThreadIdentifier m_ThreadId;
   ThreadOpaque m_ThreadOpaque;

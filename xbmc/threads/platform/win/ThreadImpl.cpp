@@ -24,6 +24,7 @@
 #else
 #include <windows.h>
 #endif
+#include "utils/Win32Exception.h"
 
 void CThread::Create(bool bAutoDelete, unsigned stacksize)
 {
@@ -208,3 +209,51 @@ int64_t CThread::GetCurrentThreadUsage()
   return time;
 }
 
+void CThread::Action()
+{
+  // install win32 exception translator
+  win32_exception::install_handler();
+
+  try
+  {
+    OnStartup();
+  }
+  catch (const access_violation &e)
+  {
+    e.writelog(__FUNCTION__);
+    if (IsAutoDelete())
+      return;
+  }
+  catch (const win32_exception &e)
+  {
+    e.writelog(__FUNCTION__);
+    if (IsAutoDelete())
+      return;
+  }
+
+  try
+  {
+    Process();
+  }
+  catch (const access_violation &e)
+  {
+    e.writelog(__FUNCTION__);
+  }
+  catch (const win32_exception &e)
+  {
+    e.writelog(__FUNCTION__);
+  }
+
+  try
+  {
+    OnExit();
+  }
+  catch (const access_violation &e)
+  {
+    e.writelog(__FUNCTION__);
+  }
+  catch (const win32_exception &e)
+  {
+    e.writelog(__FUNCTION__);
+  }
+}
