@@ -415,6 +415,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<File
 				RelativePath=".\xbmc\xbmc.cpp">
 			</File>
+			<File
+				RelativePath=".\xbmc\XbmcContext.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\XbmcContext.h">
+			</File>
 			<Filter
 				Name="Settings"
 				Filter="">
@@ -3203,6 +3209,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\storage\MediaManager.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="commons"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\commons\ilog.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\commons\ilog.h">
 				</File>
 			</Filter>
 		</Filter>

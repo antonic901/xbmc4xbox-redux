@@ -26,13 +26,17 @@
 //   - xbfilezilla : doesnt support section loading yet
 //
 
-#include "Application.h"
+#include "system.h"
 #include "settings/AdvancedSettings.h"
-
+#include "Application.h"
+#include "XbmcContext.h"
 
 CApplication g_application;
 void main()
 {
+  // set up some xbmc specific relationships
+  XBMC::Context context;
+
   g_application.Create(NULL);
   while (1)
   {
