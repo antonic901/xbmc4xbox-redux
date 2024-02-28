@@ -42,7 +42,7 @@ typedef struct _UNICODE_STRING {
   PWSTR  Buffer;
 } UNICODE_STRING, *PUNICODE_STRING;
 #endif
-#include "utils/Win32Exception.h"
+#include "commons/Exception.h"
 
 #ifdef min
 #undef min
@@ -772,11 +772,7 @@ bool DllLoader::Load()
 #endif
 
     }
-    catch(win32_exception &e)
-    {
-      e.writelog(__FUNCTION__);
-      return false;
-    }
+    XBMCCOMMONS_HANDLE_UNCHECKED
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception during DLL_PROCESS_ATTACH", __FUNCTION__);

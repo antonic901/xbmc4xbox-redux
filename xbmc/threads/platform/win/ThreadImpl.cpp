@@ -24,24 +24,10 @@
 #else
 #include <windows.h>
 #endif
-#include "utils/Win32Exception.h"
+#include "threads/platform/win/Win32Exception.h"
 
-void CThread::Create(bool bAutoDelete, unsigned stacksize)
+void CThread::SpawnThread(unsigned stacksize)
 {
-  if (m_ThreadId != 0)
-  {
-    if (logger) logger->Log(LOGERROR, "%s - fatal error creating thread- old thread id not null", __FUNCTION__);
-    exit(1);
-  }
-  m_iLastTime = XbmcThreads::SystemClockMillis() * 10000;
-  m_iLastUsage = 0;
-  m_fLastUsage = 0.0f;
-  m_bAutoDelete = bAutoDelete;
-  m_bStop = false;
-  m_StopEvent.Reset();
-  m_TermEvent.Reset();
-  m_StartEvent.Reset();
-
   m_ThreadOpaque.handle = CreateThread(NULL,stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this, 0, &m_ThreadId);
   if (m_ThreadOpaque.handle == NULL)
   {
@@ -195,65 +181,8 @@ float CThread::GetRelativeUsage()
   return m_fLastUsage;
 }
 
-int64_t CThread::GetCurrentThreadUsage()
-{
-  HANDLE h = GetCurrentThread();
-  
-  uint64_t time = 0;
-  FILETIME CreationTime, ExitTime, UserTime, KernelTime;
-  if( GetThreadTimes(h, &CreationTime, &ExitTime, &KernelTime, &UserTime ) )
-  {
-    time = (((uint64_t)UserTime.dwHighDateTime) << 32) + ((uint64_t)UserTime.dwLowDateTime);
-    time += (((uint64_t)KernelTime.dwHighDateTime) << 32) + ((uint64_t)KernelTime.dwLowDateTime);
-  }
-  return time;
-}
-
-void CThread::Action()
+void CThread::SetSignalHandlers()
 {
   // install win32 exception translator
   win32_exception::install_handler();
-
-  try
-  {
-    OnStartup();
-  }
-  catch (const access_violation &e)
-  {
-    e.writelog(__FUNCTION__);
-    if (IsAutoDelete())
-      return;
-  }
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-    if (IsAutoDelete())
-      return;
-  }
-
-  try
-  {
-    Process();
-  }
-  catch (const access_violation &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-
-  try
-  {
-    OnExit();
-  }
-  catch (const access_violation &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
 }

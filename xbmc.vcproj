@@ -1288,9 +1288,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Weather.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\Win32Exception.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\XBApplicationEx.cpp">
 				</File>
 				<File
@@ -3087,6 +3084,20 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\threads\Timer.h">
 				</File>
+				<Filter
+					Name="platform"
+					Filter="">
+					<Filter
+						Name="win"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\threads\platform\win\Win32Exception.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\threads\platform\win\Win32Exception.h">
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="view"
@@ -3214,6 +3225,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="commons"
 				Filter="">
+				<File
+					RelativePath=".\xbmc\commons\Exception.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\commons\Exception.h">
+				</File>
 				<File
 					RelativePath=".\xbmc\commons\ilog.cpp">
 				</File>
@@ -3711,9 +3728,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Weather.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Win32Exception.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\XBApplicationEx.h">

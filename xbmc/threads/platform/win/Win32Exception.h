@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2008 Team XBMC
+ *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,19 +15,21 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
+ *  along with XBMC; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
  *
  */
 
 #ifdef _XBOX
-#include "xtl.h"
+#include <xtl.h>
 #else
 #include <windows.h>
 #endif
 #include <exception>
+#include "commons/Exception.h"
 
-class win32_exception: public std::exception
+class win32_exception: public XbmcCommons::Exception
 {
 public:
     typedef const void* Address; // OK on Win32 platform
@@ -36,9 +38,9 @@ public:
     virtual const char* what() const { return mWhat; };
     Address where() const { return mWhere; };
     unsigned code() const { return mCode; };
-    virtual void writelog(const char *prefix) const;
+    virtual void LogThrowMessage(const char *prefix) const;
 protected:
-    win32_exception(const EXCEPTION_RECORD& info);
+    win32_exception(const EXCEPTION_RECORD& info, const char* classname = NULL);
     static void translate(unsigned code, EXCEPTION_POINTERS* info);
 private:
     const char* mWhat;
@@ -48,13 +50,21 @@ private:
 
 class access_violation: public win32_exception
 {
+  enum access_type
+  {
+    Invalid,
+    Read,
+    Write,
+    DEP
+  };
+
 public:
-    bool iswrite() const { return mIsWrite; };
-    Address address() const { return mBadAddress; };    
-    virtual void writelog(const char *prefix) const;
+    Address address() const { return mBadAddress; };
+    virtual void LogThrowMessage(const char *prefix) const;
+protected:
+    friend void win32_exception::translate(unsigned code, EXCEPTION_POINTERS* info);
 private:
-    bool mIsWrite;
+    access_type mAccessType;
     Address mBadAddress;
     access_violation(const EXCEPTION_RECORD& info);
-    friend void win32_exception::translate(unsigned code, EXCEPTION_POINTERS* info);
 };

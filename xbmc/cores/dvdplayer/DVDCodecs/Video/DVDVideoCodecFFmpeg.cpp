@@ -25,7 +25,6 @@
 #include "DVDStreamInfo.h"
 #include "DVDClock.h"
 #include "DVDCodecs/DVDCodecs.h"
-#include "utils/Win32Exception.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 

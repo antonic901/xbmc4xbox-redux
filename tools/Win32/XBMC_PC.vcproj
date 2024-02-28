@@ -1864,9 +1864,6 @@
 					RelativePath="..\..\xbmc\utils\Weather.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\Win32Exception.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\XBApplicationEx.cpp">
 				</File>
 				<File
@@ -3461,9 +3458,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\Weather.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\utils\Win32Exception.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\XBApplicationEx.h">

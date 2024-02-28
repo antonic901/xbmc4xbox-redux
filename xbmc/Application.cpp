@@ -114,7 +114,7 @@
 #endif
 #include "AudioContext.h"
 #include "GUIFontTTF.h"
-#include "utils/Win32Exception.h"
+#include "threads/platform/win/Win32Exception.h"
 #include "lib/libGoAhead/XBMChttp.h"
 #ifdef HAS_XFONT
 #include <xfont.h>  // for textout functions

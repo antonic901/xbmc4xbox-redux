@@ -29,14 +29,13 @@
 #include "PasswordManager.h"
 #include "SMBDirectory.h"
 #include "Application.h"
-#include "utils/Win32Exception.h"
 #include "lib/libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
-
+#include "commons/Exception.h"
 
 using namespace XFILE;
 
@@ -80,9 +79,10 @@ void CSMB::Deinit()
       smbc_set_context(NULL);
       smbc_free_context(m_context, 1);
     }
-    catch(win32_exception e)
+    XBMCCOMMONS_HANDLE_UNCHECKED
+    catch(...)
     {
-      e.writelog(__FUNCTION__);
+      CLog::Log(LOGERROR,"exception on CSMB::Deinit. errno: %d", errno);
     }
     m_context = NULL;
   }

@@ -25,7 +25,6 @@
 #include "DVDOverlayImage.h"
 #include "DVDStreamInfo.h"
 #include "DVDClock.h"
-#include "utils/Win32Exception.h"
 
 #if ! defined(INT64_C)
   #define INT64_C(val) val##i64
@@ -170,15 +169,7 @@ int CDVDOverlayCodecFFmpeg::Decode(DemuxPacket *pPacket)
   avpkt.pts = pPacket->pts == DVD_NOPTS_VALUE ? AV_NOPTS_VALUE : (int64_t)pPacket->pts;
   avpkt.dts = pPacket->dts == DVD_NOPTS_VALUE ? AV_NOPTS_VALUE : (int64_t)pPacket->dts;
 
-  try
-  {
-    len = m_dllAvCodec.avcodec_decode_subtitle2(m_pCodecContext, &m_Subtitle, &gotsub, &avpkt);
-  }
-  catch (win32_exception e)
-  {
-    e.writelog("avcodec_decode_subtitle");
-    return OC_ERROR;
-  }
+  len = m_dllAvCodec.avcodec_decode_subtitle2(m_pCodecContext, &m_Subtitle, &gotsub, &avpkt);
 
   if (len < 0)
   {
@@ -226,13 +217,7 @@ void CDVDOverlayCodecFFmpeg::Flush()
   FreeSubtitle(m_Subtitle);
   m_SubtitleIndex = -1;
 
-  try {
-
   m_dllAvCodec.avcodec_flush_buffers(m_pCodecContext);
-
-  } catch (win32_exception e) {
-    e.writelog(__FUNCTION__);
-  }
 }
 
 CDVDOverlay* CDVDOverlayCodecFFmpeg::GetOverlay()

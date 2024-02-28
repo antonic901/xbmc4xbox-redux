@@ -22,9 +22,7 @@
 #include "Directory.h"
 #include "DirectoryFactory.h"
 #include "FileDirectoryFactory.h"
-#ifndef _LINUX
-#include "utils/Win32Exception.h"
-#endif
+#include "commons/Exception.h"
 #include "FileItem.h"
 #include "DirectoryCache.h"
 #include "settings/Settings.h"
@@ -235,12 +233,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
 
     return true;
   }
-#ifndef _LINUX
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-#endif
+  XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
@@ -259,12 +252,7 @@ bool CDirectory::Create(const CStdString& strPath)
       if(pDirectory->Create(realPath.c_str()))
         return true;
   }
-#ifndef _LINUX
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-#endif
+  XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
@@ -291,12 +279,7 @@ bool CDirectory::Exists(const CStdString& strPath, bool bUseCache /* = true */)
     if (pDirectory.get())
       return pDirectory->Exists(realPath.c_str());
   }
-#ifndef _LINUX
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-#endif
+  XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
@@ -315,12 +298,7 @@ bool CDirectory::Remove(const CStdString& strPath)
       if(pDirectory->Remove(realPath.c_str()))
         return true;
   }
-#ifndef _LINUX
-  catch (const win32_exception &e)
-  {
-    e.writelog(__FUNCTION__);
-  }
-#endif
+  XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);

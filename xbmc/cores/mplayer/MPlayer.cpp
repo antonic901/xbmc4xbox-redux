@@ -12,8 +12,8 @@
 #include "video/VideoDatabase.h"
 #include "GUIInfoManager.h"
 #include "cores/VideoRenderers/RenderManager.h"
-#include "utils/win32exception.h"
 #include "cores/DllLoader/exports/emu_registry.h"
+#include "commons/Exception.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/MediaSettings.h"
@@ -1281,9 +1281,10 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     CloseFile();
     Unload();
   }
-  catch (win32_exception &e)
+  XBMCCOMMONS_HANDLE_UNCHECKED
+  catch (...)
   {
-    e.writelog(__FUNCTION__);
+    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
     iRet=-1;
     CloseFile();
     Unload();
@@ -1914,9 +1915,10 @@ void CMPlayer::SeekTime(__int64 iTime)
       iTime=m_Edl.RestoreCutTime(iTime);
       mplayer_setTimeMs(iTime);
     }
-    catch(win32_exception e)
+    XBMCCOMMONS_HANDLE_UNCHECKED
+    catch(...)
     {
-      e.writelog(__FUNCTION__);
+      CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
       CApplicationMessenger::Get().MediaStop();
     }
   }
@@ -1938,9 +1940,10 @@ __int64 CMPlayer::GetTime()
       else
         time = 100*m_iPTS;
     }
-    catch(win32_exception e)
+    XBMCCOMMONS_HANDLE_UNCHECKED
+    catch(...)
     {
-      e.writelog(__FUNCTION__);
+      CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
       CApplicationMessenger::Get().MediaStop();
     }
   }
@@ -1960,9 +1963,10 @@ int CMPlayer::GetTotalTime()
     {
       time = mplayer_getTime();
     }
-    catch(win32_exception e)
+    XBMCCOMMONS_HANDLE_UNCHECKED
+    catch(...)
     {
-      e.writelog(__FUNCTION__);
+      CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
       CApplicationMessenger::Get().MediaStop();
     }
   }
@@ -1977,14 +1981,7 @@ void CMPlayer::ToFFRW(int iSpeed)
 {
   if (m_bIsPlaying)
   {
-    try 
-    {
-      mplayer_ToFFRW( iSpeed);
-    }
-    catch(win32_exception e)
-    {
-      e.writelog(__FUNCTION__);
-    }
+    mplayer_ToFFRW( iSpeed);
   }
 }
 
@@ -2063,14 +2060,8 @@ bool CMPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
 {
   strSubtitle = "";
   subtitle* sub = NULL;
-  try 
-  {
-    sub = mplayer_GetCurrentSubtitle();
-  }
-  catch(win32_exception e)
-  {
-    e.writelog(__FUNCTION__);
-  }
+
+  sub = mplayer_GetCurrentSubtitle();
 
   if (sub)
   {
