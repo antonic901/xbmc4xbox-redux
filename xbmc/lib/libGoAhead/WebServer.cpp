@@ -113,12 +113,12 @@ CWebServer::~CWebServer()
 
 DWORD CWebServer::SuspendThread()
 {
-  return ::SuspendThread(m_ThreadHandle);
+  return ::SuspendThread(this);
 }
 
 DWORD CWebServer::ResumeThread()
 {
-  BOOL res=::ResumeThread(m_ThreadHandle);
+  BOOL res=::ResumeThread(this);
   if (res) WaitForSingleObject(m_hEvent, INFINITE);
   return res;
 }
@@ -150,7 +150,7 @@ bool CWebServer::Start(int port, bool wait)
     m_szRootWeb[end - 1] = '\0';
   m_port = port;
   Create(false, THREAD_MINSTACKSIZE);
-  if (m_ThreadHandle == NULL) return false;  
+  if (!IsRunning()) return false;  
 
   if( wait )
   {    

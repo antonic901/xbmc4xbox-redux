@@ -38,6 +38,8 @@ public:
   virtual ~IRunnable() {}
 };
 
+#undef GetCurrentThread
+
 // minimum as mandated by XTL
 #define THREAD_MINSTACKSIZE 0x10000
 
