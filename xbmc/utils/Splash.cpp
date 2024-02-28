@@ -26,7 +26,7 @@
 
 using namespace XFILE;
 
-CSplash::CSplash(const CStdString& imageName)
+CSplash::CSplash(const CStdString& imageName) : CThread("CSplash")
 {
   m_ImageName = imageName;
 }

@@ -49,7 +49,7 @@ CDetectDVDMedia* CDetectDVDMedia::m_pInstance = NULL;
 CStdString CDetectDVDMedia::m_diskLabel = "";
 CStdString CDetectDVDMedia::m_diskPath = "";
 
-CDetectDVDMedia::CDetectDVDMedia()
+CDetectDVDMedia::CDetectDVDMedia() : CThread("CDetectDVDMedia")
 {
   m_bAutorun = false;
   m_bStop = false;

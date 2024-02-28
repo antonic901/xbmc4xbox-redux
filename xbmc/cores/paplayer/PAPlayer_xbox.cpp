@@ -43,7 +43,7 @@ using namespace XFILE;
 // Supporting all open  audio codec standards.
 // First one being nullsoft's nsv audio decoder format
 
-PAPlayer::PAPlayer(IPlayerCallback& callback) : IPlayer(callback)
+PAPlayer::PAPlayer(IPlayerCallback& callback) : IPlayer(callback), CThread("PAPlayer")
 {
   m_bIsPlaying = false;
   m_bPaused = false;
@@ -158,7 +158,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
   *m_currentFile = file;
 
-  if (ThreadHandle() == NULL)
+  if (!IsRunning())
     Create();
 
   m_startEvent.Set();

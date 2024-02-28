@@ -45,7 +45,7 @@ using namespace std;
 
 #define SEEKTIMOUT 30000
 
-CRarFileExtractThread::CRarFileExtractThread() : hRunning(true), hQuit(true)
+CRarFileExtractThread::CRarFileExtractThread() : CThread("CFileRarExtractThread"), hRunning(true), hQuit(true)
 {
   m_pArc = NULL;
   m_pCmd = NULL;

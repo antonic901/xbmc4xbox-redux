@@ -582,7 +582,7 @@ BOOL CNtpSocket::IsReadible(BOOL& bReadible, DWORD dwTimeout)
 
 
 
-CSNTPClient::CSNTPClient()
+CSNTPClient::CSNTPClient() : CThread("CSNTPClient")
 {
 }
 

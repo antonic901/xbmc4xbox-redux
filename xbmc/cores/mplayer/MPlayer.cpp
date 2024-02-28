@@ -1268,7 +1268,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
 
     m_bIsPlaying = true;
-    if ( ThreadHandle() == NULL)
+    if ( !IsRunning() )
     {
       Create();
     }

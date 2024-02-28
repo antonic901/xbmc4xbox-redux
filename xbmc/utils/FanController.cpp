@@ -57,7 +57,7 @@ void CFanController::RemoveInstance()
   }
 }
 
-CFanController::CFanController()
+CFanController::CFanController() : CThread("CFanController")
 {
   inCustomMode = false;
   systemFanSpeed = GetFanSpeed();
@@ -204,7 +204,7 @@ void CFanController::Stop()
 
 int CFanController::GetFanSpeed()
 {
-  if (m_ThreadHandle == NULL)
+  if (!IsRunning())
   {
     GetFanSpeedInternal();
   }
@@ -240,7 +240,7 @@ void CFanController::SetFanSpeed(const int fanspeed, const bool force)
 
 const CTemperature& CFanController::GetGPUTemp()
 {
-  if (m_ThreadHandle == NULL)
+  if (!IsRunning())
   {
     GetGPUTempInternal();
   }
@@ -263,7 +263,7 @@ void CFanController::GetGPUTempInternal()
 
 const CTemperature& CFanController::GetCPUTemp()
 {
-  if (m_ThreadHandle == NULL)
+  if (!IsRunning())
   {
     GetCPUTempInternal();
   }

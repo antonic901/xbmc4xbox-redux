@@ -38,7 +38,7 @@ using namespace MUSIC_INFO;
 using namespace XFILE;
 
 //CdgLoader
-CCdgLoader::CCdgLoader()
+CCdgLoader::CCdgLoader() : CThread("CCdgLoader")
 {
   m_strFileName.Empty();
   m_CdgFileState = FILE_NOT_LOADED;
@@ -169,7 +169,7 @@ void CCdgLoader::OnExit()
     m_CdgFileState = FILE_LOADED;
 }
 //CdgReader
-CCdgReader::CCdgReader()
+CCdgReader::CCdgReader() : CThread("CCdgReader")
 {
   m_pLoader = NULL;
   m_fStartingTime = 0.0f;

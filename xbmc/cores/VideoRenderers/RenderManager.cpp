@@ -236,7 +236,7 @@ void CXBoxRenderManager::FlipPage(DWORD delay /* = 0LL*/, int source /*= -1*/, E
 
     m_pRenderer->FlipPage(source);
 
-    if( CThread::ThreadHandle() == NULL ) CThread::Create();
+    if( !IsRunning() ) CThread::Create();
     m_eventFrame.Set();
   }
   else

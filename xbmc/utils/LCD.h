@@ -60,6 +60,7 @@ public:
   void LoadSkin(const CStdString &xmlFile);
   void Reset();
   void Render(LCD_MODE mode);
+  ILCD() : CThread("ILCD") {}
 protected:
   virtual void Process() = 0;
   void StringToLCDCharSet(CStdString& strText);

@@ -35,7 +35,7 @@ bool CJob::ShouldCancel(unsigned int progress, unsigned int total) const
   return false;
 }
 
-CJobWorker::CJobWorker(CJobManager *manager)
+CJobWorker::CJobWorker(CJobManager *manager) : CThread("CJobWorker")
 {
   m_jobManager = manager;
   Create(true); // start work immediately, and kill ourselves when we're done

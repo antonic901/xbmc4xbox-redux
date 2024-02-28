@@ -21,27 +21,14 @@
 
 #pragma once
 
-#if (defined HAVE_CONFIG_H) && (!defined WIN32)
-  #include "config.h"
+#if (defined TARGET_POSIX)
+#include "threads/platform/pthreads/ThreadImpl.cpp"
+#if defined(TARGET_DARWIN_IOS)
+#include "threads/platform/darwin/ThreadSchedImpl.cpp"
 #else
-  #if defined(WIN32) || defined(_XBOX) 
-    #define USE_WIN_THREADING 1
-  #endif
+#include "threads/platform/linux/ThreadSchedImpl.cpp"
+#endif
+#elif (defined TARGET_WINDOWS) || (defined _XBOX)
+#include "threads/platform/win/ThreadImpl.cpp"
 #endif
 
-#ifdef USE_PTHREADS_THREADING
-  #define XBMC_THREADING_IMPL_SET 1
-#endif
-
-#ifdef USE_WIN_THREADING
-  #ifdef XBMC_THREADING_IMPL_SET
-    #error "Cannot define both USE_WIN_THREADING and another USE_*_THREADING"
-  #endif
-  #define XBMC_THREADING_IMPL_SET 1
-#endif
-
-#ifndef XBMC_THREADING_IMPL_SET
-  #error "No threading implementation selected."
-#endif
-
-#undef XBMC_THREADING_IMPL_SET

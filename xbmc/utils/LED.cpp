@@ -84,7 +84,7 @@ void ILED::CLEDControl(int ixLED)
   }
 }
 
-ILEDSmartxxRGB::ILEDSmartxxRGB()
+ILEDSmartxxRGB::ILEDSmartxxRGB() : CThread("LEDSmartxxRGB")
 {
 	strCurrentStatus = "NULL";
 	strLastStatus = "NULL";
@@ -231,7 +231,7 @@ void ILEDSmartxxRGB::Stop()
 }
 bool ILEDSmartxxRGB::IsRunning()
 {  
-  return (m_ThreadHandle != NULL);
+  return (IsRunning());
 }
 
 void ILEDSmartxxRGB::getRGBValues(const CStdString &strRGBa, const CStdString &strRGBb, const CStdString &strWhiteA, const CStdString &strWhiteB, RGBVALUES* s_rgb)

@@ -22,8 +22,7 @@
 #pragma once
 
 #if (defined TARGET_POSIX)
-#include "threads/platform/pthreads/Condition.h"
+#include "threads/platform/pthreads/ThreadImpl.h"
 #elif (defined TARGET_WINDOWS) || (defined _XBOX)
-#include "threads/platform/win/Condition.h"
+#include "threads/platform/win/ThreadImpl.h"
 #endif
-

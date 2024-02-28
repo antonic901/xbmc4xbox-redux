@@ -55,7 +55,7 @@ public:
   virtual bool    OnAction(const CAction &action);
   virtual bool    OnBack(int actionID);
   void             SetCallbackWindow(PyThreadState *state, PyObject *object);
-  void             WaitForActionEvent(unsigned int timeout);
+  void             WaitForActionEvent();
   void             PulseActionEvent();
 protected:
   PyObject*        pCallbackWindow;

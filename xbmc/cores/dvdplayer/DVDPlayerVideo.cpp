@@ -229,7 +229,7 @@ void CDVDPlayerVideo::OnStartup()
     m_output.inited = true;
   }
 #endif
-  g_dvdPerformanceCounter.EnableVideoDecodePerformance(ThreadHandle());
+  g_dvdPerformanceCounter.EnableVideoDecodePerformance(this);
 }
 
 void CDVDPlayerVideo::Process()

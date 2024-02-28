@@ -31,7 +31,7 @@ using namespace MUSIC_GRABBER;
 using namespace ADDON;
 using namespace std;
 
-CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr &scraper)
+CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr &scraper) : CThread("CMusicInfoScraper")
 {
   m_bSucceeded=false;
   m_bCanceled=false;

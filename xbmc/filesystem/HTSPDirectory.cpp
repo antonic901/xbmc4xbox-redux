@@ -73,7 +73,7 @@ static SSessions         g_sessions;
 static CCriticalSection  g_section;
 
 
-CHTSPDirectorySession::CHTSPDirectorySession()
+CHTSPDirectorySession::CHTSPDirectorySession() : CThread("CHTSPDirectorySession")
 {
 }
 

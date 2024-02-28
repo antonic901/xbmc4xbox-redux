@@ -85,7 +85,7 @@ void CGUILargeTextureManager::CLargeTexture::SetTexture(LPDIRECT3DTEXTURE8 textu
   m_orientation = orientation;
 };
 
-CGUILargeTextureManager::CGUILargeTextureManager()
+CGUILargeTextureManager::CGUILargeTextureManager() : CThread("CGUILargeTextureManager")
 {
   m_running = false;
 }

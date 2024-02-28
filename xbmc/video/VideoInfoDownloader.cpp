@@ -117,7 +117,7 @@ int CVideoInfoDownloader::FindMovie(const CStdString &strMovie,
     m_state = FIND_MOVIE;
     m_strMovie = strMovie;
     m_found = 0;
-    if (ThreadHandle())
+    if (IsRunning())
       StopThread();
     Create();
     while (m_state != DO_NOTHING)
@@ -161,7 +161,7 @@ bool CVideoInfoDownloader::GetDetails(const CScraperUrl &url,
   { // threaded version
     m_state = GET_DETAILS;
     m_found = 0;
-    if (ThreadHandle())
+    if (IsRunning())
       StopThread();
     Create();
     while (!m_found)
@@ -196,7 +196,7 @@ bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
   { // threaded version
     m_state = GET_EPISODE_DETAILS;
     m_found = 0;
-    if (ThreadHandle())
+    if (IsRunning())
       StopThread();
     Create();
     while (!m_found)
@@ -231,7 +231,7 @@ bool CVideoInfoDownloader::GetEpisodeList(const CScraperUrl& url,
   { // threaded version
     m_state = GET_EPISODE_LIST;
     m_found = 0;
-    if (ThreadHandle())
+    if (IsRunning())
       StopThread();
     Create();
     while (!m_found)

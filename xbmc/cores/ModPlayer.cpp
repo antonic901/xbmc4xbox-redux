@@ -70,7 +70,7 @@ void ModCallback(unsigned char* p, int s)
   }
 }
 
-ModPlayer::ModPlayer(IPlayerCallback& callback) : IPlayer(callback)
+ModPlayer::ModPlayer(IPlayerCallback& callback) : CThread("ModPlayer"), IPlayer(callback)
 {
   m_bIsPlaying = false;
   m_bPaused = false;
@@ -132,7 +132,7 @@ bool ModPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
   m_bPaused = false;
   m_bStopPlaying = false;
 
-  if ( ThreadHandle() == NULL)
+  if ( !IsRunning() )
   {
     Create();
   }

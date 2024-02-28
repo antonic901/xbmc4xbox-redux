@@ -151,9 +151,9 @@ void CGUIPythonWindow::SetCallbackWindow(PyThreadState *state, PyObject *object)
   m_threadState   = state;
 }
 
-void CGUIPythonWindow::WaitForActionEvent(unsigned int timeout)
+void CGUIPythonWindow::WaitForActionEvent()
 {
-  g_pythonParser.WaitForEvent(m_actionEvent, timeout);
+  g_pythonParser.WaitForEvent(m_actionEvent);
   m_actionEvent.Reset();
 }
 

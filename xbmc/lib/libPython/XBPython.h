@@ -72,7 +72,7 @@ public:
   void Process();
 
   void PulseGlobalEvent();
-  void WaitForEvent(CEvent& hEvent, unsigned int timeout);
+  void WaitForEvent(CEvent& hEvent);
 
   int ScriptsSize();
   int GetPythonScriptId(int scriptPosition);

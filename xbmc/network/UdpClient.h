@@ -23,6 +23,7 @@
 #include "utils/StdString.h"
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
+#include "system.h"
 
 class CUdpClient : CThread
 {
