@@ -184,6 +184,7 @@ public:
 
   bool HasSaveLastControl() const { return m_saveLastControl; };
 
+  virtual void OnDeinitWindow(int nextWindowID);
 protected:
   virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool LoadXML(const CStdString& strPath, const CStdString &strLowerPath);  ///< Loads from the given file
@@ -194,7 +195,6 @@ protected:
   virtual void OnWindowUnload() {}
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
-  virtual void OnDeinitWindow(int nextWindowID);
   bool OnMouseAction(const CAction &action);
   virtual bool RenderAnimation(unsigned int time);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
@@ -231,6 +231,7 @@ protected:
   LOAD_TYPE m_loadType;
   bool m_isDialog;      // true if we have a dialog, false otherwise.
   bool m_dynamicResourceAlloc;
+  bool m_active;        // true if window is active or dialog is running
   CGUIInfoColor m_clearBackground; // colour to clear the window
 
   int m_renderOrder;      // for render order of dialogs

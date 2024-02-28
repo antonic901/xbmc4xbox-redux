@@ -25,7 +25,7 @@
 #include "Exception.h"
 #include "AddonString.h"
 
-class CGUIDialogKeyboardGeneric;
+class CGUIDialogKeyboard;
 
 namespace XBMCAddon
 {
@@ -58,7 +58,7 @@ namespace XBMCAddon
       String strDefault;
       String strHeading;
       bool bHidden;
-      CGUIDialogKeyboardGeneric* dlg;
+      CGUIDialogKeyboard* dlg;
 
       Keyboard(const String& line = emptyString, const String& heading = emptyString, bool hidden = false);
       virtual ~Keyboard();

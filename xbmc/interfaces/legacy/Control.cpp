@@ -39,6 +39,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/GUIEditControl.h"
 #include "guilib/GUIControlFactory.h"
+#include "listproviders/StaticProvider.h"
 
 #include "utils/XBMCTinyXML.h"
 #include "utils/StringUtils.h"
@@ -104,7 +105,8 @@ namespace XBMCAddon
         label,
         true,
         0,
-        true);
+        true,
+        false);
 
       CGUIMessage msg(GUI_MSG_LABEL_RESET, iParentId, iControlId);
       pGUIControl->OnMessage(msg);
@@ -547,12 +549,14 @@ namespace XBMCAddon
 
     CGUIControl* ControlSlider::Create () throw (WindowException)
     {
-      pGUIControl = new CGUISliderControl(iParentId, iControlId,(float)dwPosX, (float)dwPosY,
-                                          (float)dwWidth,(float)dwHeight,
-                                          (CStdString)strTextureBack,(CStdString)strTexture,
-                                          (CStdString)strTextureFoc,0);   
+      // TODO: implement this in correct way (we have backports from Kodi 15+)
+      //pGUIControl = new CGUISliderControl(iParentId, iControlId,(float)dwPosX, (float)dwPosY,
+      //                                    (float)dwWidth,(float)dwHeight,
+      //                                    (CStdString)strTextureBack,(CStdString)strTexture,
+      //                                    (CStdString)strTextureFoc,0);   
     
-      return pGUIControl;
+      //return pGUIControl;
+      return NULL;
     }  
 
     // ============================================================
@@ -678,35 +682,37 @@ namespace XBMCAddon
 
     CGUIControl* ControlRadioButton::Create() throw (WindowException)
     {
-      CLabelInfo label;
-      label.font = g_fontManager.GetFont(strFont);
-      label.textColor = textColor;
-      label.disabledColor = disabledColor;
-      label.shadowColor = shadowColor;
-      label.focusedColor = focusedColor;
-      label.align = align;
-      label.offsetX = (float)textOffsetX;
-      label.offsetY = (float)textOffsetY;
-      label.angle = (float)-iAngle;
-      pGUIControl = new CGUIRadioButtonControl(
-        iParentId,
-        iControlId,
-        (float)dwPosX,
-        (float)dwPosY,
-        (float)dwWidth,
-        (float)dwHeight,
-        (CStdString)strTextureFocus,
-        (CStdString)strTextureNoFocus,
-        label,
-        (CStdString)strTextureRadioFocus,
-        (CStdString)strTextureRadioNoFocus);
+      // TODO: implement this in correct way (we have backports from Kodi 15+)
+      //CLabelInfo label;
+      //label.font = g_fontManager.GetFont(strFont);
+      //label.textColor = textColor;
+      //label.disabledColor = disabledColor;
+      //label.shadowColor = shadowColor;
+      //label.focusedColor = focusedColor;
+      //label.align = align;
+      //label.offsetX = (float)textOffsetX;
+      //label.offsetY = (float)textOffsetY;
+      //label.angle = (float)-iAngle;
+      //pGUIControl = new CGUIRadioButtonControl(
+      //  iParentId,
+      //  iControlId,
+      //  (float)dwPosX,
+      //  (float)dwPosY,
+      //  (float)dwWidth,
+      //  (float)dwHeight,
+      //  (CStdString)strTextureFocus,
+      //  (CStdString)strTextureNoFocus,
+      //  label,
+      //  (CStdString)strTextureRadioFocus,
+      //  (CStdString)strTextureRadioNoFocus);
 
-      CGUIRadioButtonControl* pGuiButtonControl =
-        (CGUIRadioButtonControl*)pGUIControl;
+      //CGUIRadioButtonControl* pGuiButtonControl =
+      //  (CGUIRadioButtonControl*)pGUIControl;
 
-      pGuiButtonControl->SetLabel(strText);
+      //pGuiButtonControl->SetLabel(strText);
 
-      return pGUIControl;
+      //return pGUIControl;
+      return NULL;
     }
 
     // ============================================================
@@ -797,7 +803,7 @@ namespace XBMCAddon
         pRoot->InsertEndChild(pNode);
       }
 
-      const CRect animRect((float)dwPosX, (float)dwPosY, (float)dwPosX + dwWidth, (float)dwPosY + dwHeight);
+      const FRECT animRect = { (float)dwPosX, (float)dwPosY, (float)dwWidth, (float)dwHeight };
       LOCKGUI;
       if (pGUIControl)
       {
@@ -1359,16 +1365,15 @@ namespace XBMCAddon
       {
         ListItem* pItem = vecItems[item];
 
-        // object is a listitem, and we set m_idpeth to 0 as this
-        // is used as the visibility condition for the item in the list
-        ListItem *listItem = (ListItem*)pItem;
-        listItem->item->m_idepth = 0;
-
-        items.push_back((CFileItemPtr &)listItem->item);
+        // NOTE: This code has likely not worked fully correctly for some time
+        //       In particular, the click behaviour won't be working.
+        CGUIStaticItemPtr newItem(new CGUIStaticItem(*pItem->item));
+        items.push_back(newItem);
       }
 
       // set static list
-      ((CGUIBaseContainer *)pGUIControl)->SetStaticContent(items);
+      //IListProvider *provider = new CStaticListProvider(items);
+      //((CGUIBaseContainer *)pGUIControl)->SetListProvider(provider);
     }
 
     // ============================================================

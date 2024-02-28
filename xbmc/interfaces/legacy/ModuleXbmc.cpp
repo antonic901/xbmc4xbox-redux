@@ -24,6 +24,8 @@
 #if (defined HAVE_CONFIG_H) && (!defined WIN32)
   #include "config.h"
 #endif
+#include "xbox/Network.h"
+#include "xbox/IoSupport.h"
 
 #include "ModuleXbmc.h"
 
@@ -35,11 +37,12 @@
 #endif
 #include "utils/URIUtils.h"
 #include "aojsonrpc.h"
-#ifndef TARGET_WINDOWS
+#ifndef _XBOX
 #include "XTimeUtils.h"
 #endif
 #include "guilib/LocalizeStrings.h"
-#include "settings/GUISettings.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "GUIInfoManager.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIWindowManager.h"
@@ -52,7 +55,6 @@
 #include "guilib/TextureManager.h"
 #include "Util.h"
 #include "URL.h"
-#include "cores/AudioEngine/AEFactory.h"
 #include "storage/MediaManager.h"
 #include "utils/FileUtils.h"
 
@@ -60,8 +62,6 @@
 #include "AddonUtils.h"
 
 #include "LanguageHook.h"
-
-#include "cores/VideoRenderers/RenderCapture.h"
 
 #include "threads/SystemClock.h"
 
@@ -176,10 +176,10 @@ namespace XBMCAddon
       TRACE;
 
       XbmcThreads::EndTime endTime(timemillis);
-      while (!endTime.IsTimePast())
+      while (!endTime.isTimePast())
       {
         DelayedCallGuard dcguard;
-        long nextSleep = endTime.MillisLeft();
+        long nextSleep = endTime.millisLeft();
         if (nextSleep > 100)
           nextSleep = 100; // only sleep for 100 millis
         ::Sleep(nextSleep);
@@ -203,18 +203,21 @@ namespace XBMCAddon
     String getSkinDir()
     {
       TRACE;
-      return g_guiSettings.GetString("lookandfeel.skin");
+      return CSettings::Get().GetString("lookandfeel.skin");
     }
 
     String getLanguage()
     {
       TRACE;
-      return g_guiSettings.GetString("locale.language");
+      return CSettings::Get().GetString("locale.language");
     }
 
     String getIPAddress()
     {
       TRACE;
+#ifdef _XBOX
+      return g_application.getNetwork().m_networkinfo.ip;
+#else
       char cTitleIP[32];
       sprintf(cTitleIP, "127.0.0.1");
       CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
@@ -222,21 +225,32 @@ namespace XBMCAddon
         return iface->GetCurrentIPAddress();
 
       return cTitleIP;
+#endif
     }
 
     long getDVDState()
     {
       TRACE;
+#ifdef _XBOX
+      return CIoSupport::GetTrayState();
+#else
       return g_mediaManager.GetDriveStatus();
+#endif
     }
 
     long getFreeMem()
     {
+#ifdef _XBOX
+    MEMORYSTATUS stat;
+    GlobalMemoryStatus(&stat);
+    return (long)(stat.dwAvailPhys / 1024);
+#else
       TRACE;
       MEMORYSTATUSEX stat;
       stat.dwLength = sizeof(MEMORYSTATUSEX);
       GlobalMemoryStatusEx(&stat);
       return (long)(stat.ullAvailPhys  / ( 1024 * 1024 ));
+#endif
     }
 
     // getCpuTemp() method
@@ -435,11 +449,11 @@ namespace XBMCAddon
       TRACE;
       String result;
       if (strcmpi(mediaType, "video") == 0)
-        result = g_settings.m_videoExtensions;
+        result = g_advancedSettings.m_videoExtensions;
       else if (strcmpi(mediaType, "music") == 0)
-        result = g_settings.m_musicExtensions;
+        result = g_advancedSettings.m_musicExtensions;
       else if (strcmpi(mediaType, "picture") == 0)
-        result = g_settings.m_pictureExtensions;
+        result = g_advancedSettings.m_pictureExtensions;
 
       // TODO:
       //    else
@@ -457,19 +471,20 @@ namespace XBMCAddon
 
     bool startServer(int iTyp, bool bStart, bool bWait)
     {
-      TRACE;
-      DelayedCallGuard dg;
-      return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
+      //TRACE;
+      //DelayedCallGuard dg;
+      //return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
+      return false;
     }
 
     void audioSuspend()
     {  
-      CAEFactory::Suspend();
+      //CAEFactory::Suspend();
     }
 
     void audioResume()
     { 
-      CAEFactory::Resume();
+      //CAEFactory::Resume();
     }
 
     int getSERVER_WEBSERVER() { return CApplication::ES_WEBSERVER; }
@@ -499,6 +514,7 @@ namespace XBMCAddon
     int getLOGFATAL() { return LOGFATAL; }
     int getLOGNONE() { return LOGNONE; }
 
+#ifndef _XBOX
     // render capture user states
     int getCAPTURE_STATE_WORKING() { return CAPTURESTATE_WORKING; }
     int getCAPTURE_STATE_DONE(){ return CAPTURESTATE_DONE; }
@@ -507,6 +523,7 @@ namespace XBMCAddon
     // render capture flags
     int getCAPTURE_FLAG_CONTINUOUS() { return (int)CAPTUREFLAG_CONTINUOUS; }
     int getCAPTURE_FLAG_IMMEDIATELY() { return (int)CAPTUREFLAG_IMMEDIATELY; }
+#endif
 
     const int lLOGNOTICE = LOGNOTICE;
 

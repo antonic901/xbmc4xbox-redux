@@ -23,7 +23,8 @@
 
 #include "WindowInterceptor.h"
 #include "guilib/GUIWindowManager.h"
-#include "settings/GUISettings.h"
+#include "guilib/TextureManager.h"
+#include "settings/Settings.h"
 #include "addons/Skin.h"
 #include "filesystem/File.h"
 #include "utils/URIUtils.h"
@@ -421,11 +422,19 @@ namespace XBMCAddon
       ref(window)->FreeResources(forceUnLoad);
     }
 
-    void WindowXML::Process(unsigned int currentTime, CDirtyRegionList &regions)
+    /*void WindowXML::Process(unsigned int currentTime, CDirtyRegionList &regions)
     {
       TRACE;
       g_TextureManager.AddTexturePath(m_mediaDir);
       ref(window)->Process(currentTime, regions);
+      g_TextureManager.RemoveTexturePath(m_mediaDir);
+    }*/
+
+    void WindowXML::Render()
+    {
+      TRACE;
+      g_TextureManager.AddTexturePath(m_mediaDir);
+      ref(window)->Render();
       g_TextureManager.RemoveTexturePath(m_mediaDir);
     }
 
@@ -505,7 +514,7 @@ namespace XBMCAddon
       URIUtils::AddSlashAtEnd(pathToLanguageFile);
 
       // allocate a bunch of strings
-      return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, g_guiSettings.GetString("locale.language"));
+      return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, CSettings::Get().GetString("locale.language"));
     }
 
     void WindowXML::ClearScriptStrings()

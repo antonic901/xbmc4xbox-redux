@@ -22,7 +22,7 @@
 #pragma once
 
 #include <string>
-#include "config.h"
+//#include "config.h"
 
 namespace XBMCAddon
 {

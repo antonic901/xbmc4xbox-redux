@@ -91,6 +91,18 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
                      public ISettingCallback, public ISettingsHandler, public ISubSettings
 {
 public:
+
+  enum ESERVERS
+  {
+    ES_WEBSERVER = 1,
+    ES_AIRPLAYSERVER,
+    ES_JSONRPCSERVER,
+    ES_UPNPRENDERER,
+    ES_UPNPSERVER,
+    ES_EVENTSERVER,
+    ES_ZEROCONF
+  };
+
   CApplication(void);
   virtual ~CApplication(void);
   virtual HRESULT Initialize();

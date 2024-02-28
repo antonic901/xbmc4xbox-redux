@@ -23,6 +23,7 @@
 #include "ListItem.h"
 #include "PlayList.h"
 #include "PlayListPlayer.h"
+#include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
@@ -66,7 +67,7 @@ namespace XBMCAddon
       if (!item.empty())
       {
         // set fullscreen or windowed
-        g_settings.m_bStartVideoWindowed = windowed;
+        CMediaSettings::Get().SetVideoStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;
@@ -93,7 +94,7 @@ namespace XBMCAddon
     {
       TRACE;
       // set fullscreen or windowed
-      g_settings.m_bStartVideoWindowed = windowed;
+      CMediaSettings::Get().SetVideoStartWindowed(windowed);
 
       // force a playercore before playing
       g_application.m_eForcedNextPlayer = playerCore;
@@ -110,7 +111,7 @@ namespace XBMCAddon
       if (playlist != NULL)
       {
         // set fullscreen or windowed
-        g_settings.m_bStartVideoWindowed = windowed;
+        CMediaSettings::Get().SetVideoStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;
@@ -336,7 +337,7 @@ namespace XBMCAddon
       TRACE;
       if (g_application.m_pPlayer)
       {
-        g_settings.m_currentVideoSettings.m_SubtitleOn = bVisible != 0;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = bVisible != 0;
         g_application.m_pPlayer->SetSubtitleVisible(bVisible != 0);
       }
     }
@@ -364,7 +365,7 @@ namespace XBMCAddon
       CLog::Log(LOGWARNING,"'xbmc.Player().disableSubtitles()' is deprecated and will be removed in future releases, please use 'xbmc.Player().showSubtitles(false)' instead");
       if (g_application.m_pPlayer)
       {
-        g_settings.m_currentVideoSettings.m_SubtitleOn = false;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = false;
         g_application.m_pPlayer->SetSubtitleVisible(false);
       }
     }
