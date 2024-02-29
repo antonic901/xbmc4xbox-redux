@@ -1810,7 +1810,7 @@ void CApplication::LoadSkin(const SkinPtr& skin)
   g_windowManager.AddMsgTarget(&g_infoManager);
   g_windowManager.SetCallback(*this);
   g_windowManager.Initialize();
-  g_audioManager.Initialize(CAudioContext::DEFAULT_DEVICE);
+  g_audioManager.Enable(true);
   g_audioManager.Load();
 
   if (g_SkinInfo->HasSkinFile("DialogFullScreenInfo.xml"))
@@ -1843,7 +1843,7 @@ void CApplication::LoadSkin(const SkinPtr& skin)
 
 void CApplication::UnloadSkin()
 {
-  g_audioManager.DeInitialize(CAudioContext::DEFAULT_DEVICE);
+  g_audioManager.Enable(false);
 
   g_windowManager.DeInitialize();
 

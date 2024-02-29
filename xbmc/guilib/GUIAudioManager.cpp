@@ -39,7 +39,6 @@ CGUIAudioManager g_audioManager;
 CGUIAudioManager::CGUIAudioManager()
 {
   m_actionSound=NULL;
-  m_bEnabled=true;
 }
 
 CGUIAudioManager::~CGUIAudioManager()
@@ -156,7 +155,7 @@ void CGUIAudioManager::FreeUnused()
 void CGUIAudioManager::PlayActionSound(const CAction& action)
 {
   // it's not possible to play gui sounds when passthrough is active
-  if (!m_bEnabled || g_audioContext.IsPassthroughActive())
+  if (g_audioContext.IsPassthroughActive())
     return;
 
   CSingleLock lock(m_cs);
@@ -187,7 +186,7 @@ void CGUIAudioManager::PlayActionSound(const CAction& action)
 void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
 {
   // it's not possible to play gui sounds when passthrough is active
-  if (!m_bEnabled || g_audioContext.IsPassthroughActive())
+  if (g_audioContext.IsPassthroughActive())
     return;
 
   CSingleLock lock(m_cs);
@@ -277,6 +276,8 @@ bool CGUIAudioManager::Load()
 
   if (CSettings::Get().GetString("lookandfeel.soundskin")=="OFF")
     return true;
+  else
+    Enable(true);
 
   CStdString soundSkin = CSettings::Get().GetString("lookandfeel.soundskin");
 
@@ -393,9 +394,12 @@ void CGUIAudioManager::Enable(bool bEnable)
 {
   // Enable/Disable has no effect if nav sounds are turned off
   if (CSettings::Get().GetString("lookandfeel.soundskin")=="OFF")
-    return;
+    bEnable = false;
 
-  m_bEnabled=bEnable;
+  if (bEnable)
+    Initialize(CAudioContext::DEFAULT_DEVICE);
+  else
+    DeInitialize(CAudioContext::DEFAULT_DEVICE);
 }
 
 // \brief Sets the volume of all playing sounds

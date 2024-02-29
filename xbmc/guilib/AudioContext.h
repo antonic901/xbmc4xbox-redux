@@ -25,9 +25,6 @@
  *
  */
 
-// forward definitions
-class IAudioDeviceChangedCallback;
-
 #define DSMIXBINTYPE_STANDARD 1
 #define DSMIXBINTYPE_DMO 2
 #define DSMIXBINTYPE_AAC 3

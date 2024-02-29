@@ -21,7 +21,6 @@
 #include "include.h"
 #include "AudioContext.h"
 #include "GUIAudioManager.h"
-#include "IAudioDeviceChangedCallback.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "XBAudioConfig.h"
@@ -53,7 +52,6 @@ CAudioContext::~CAudioContext()
 }
 
 // \brief Create a new device by type (DEFAULT_DEVICE, DIRECTSOUND_DEVICE, AC97_DEVICE)
-// Note: DEFAULT_DEVICE is created by the IAudioDeviceChangedCallback
 void CAudioContext::SetActiveDevice(int iDevice)
 {
   /* if device is the same, no need to bother */
