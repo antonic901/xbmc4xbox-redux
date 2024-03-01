@@ -44,8 +44,9 @@ CDirectoryTuxBox::~CDirectoryTuxBox(void)
 {
 }
 
-bool CDirectoryTuxBox::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CDirectoryTuxBox::GetDirectory(const CURL& url2, CFileItemList &items)
 {
+  const CStdString strPath = url2.Get();
   // so we know that we have enigma2
   static bool enigma2 = false;
   // Detect and delete slash at end

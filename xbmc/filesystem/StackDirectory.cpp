@@ -41,11 +41,12 @@ namespace XFILE
   {
   }
 
-  bool CStackDirectory::GetDirectory(const CStdString& strPath, CFileItemList& items)
+  bool CStackDirectory::GetDirectory(const CURL& url, CFileItemList& items)
   {
     items.Clear();
     CStdStringArray files;
-    if (!GetPaths(strPath, files))
+    const CStdString pathToUrl(url.Get());
+    if (!GetPaths(pathToUrl, files))
       return false;   // error in path
 
     for (unsigned int i = 0; i < files.size(); i++)
@@ -90,7 +91,8 @@ namespace XFILE
                     strStackTitle,
                     strCommonDir        = URIUtils::GetParentPath(strPath);
     
-    stack.GetDirectory(strPath, files);
+    const CURL pathToUrl(strPath);
+    stack.GetDirectory(pathToUrl, files);
 
     if (files.Size() > 1)
     {

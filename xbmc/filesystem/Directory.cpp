@@ -45,10 +45,10 @@ private:
 
   struct CResult
   {
-    CResult(const CStdString& dir, const CStdString& listDir) : m_event(true), m_dir(dir), m_listDir(listDir), m_result(false) {}
+    CResult(const CURL& dir, const CStdString& listDir) : m_event(true), m_dir(dir), m_listDir(listDir), m_result(false) {}
     CEvent        m_event;
     CFileItemList m_list;
-    CStdString    m_dir;
+    CURL          m_dir;
     CStdString    m_listDir;
     bool          m_result;
   };
@@ -76,7 +76,7 @@ private:
 
 public:
 
-  CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CStdString& dir, const CStdString& listDir)
+  CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CURL& dir, const CStdString& listDir)
     : m_result(new CResult(dir, listDir))
   {
     m_id = CJobManager::GetInstance().AddJob(new CGetJob(imp, m_result)
@@ -125,9 +125,11 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
 
 bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, const CHints &hints, bool allowThreads)
 {
+  CURL urlPath(strPath);
   try
   {
     CStdString realPath = URIUtils::SubstitutePath(strPath);
+    CURL       realURL(realPath);
     boost::shared_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (!pDirectory.get())
       return false;
@@ -151,7 +153,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
         {
           CSingleExit ex(g_graphicsContext);
 
-          CGetDirectory get(pDirectory, realPath, strPath);
+          CGetDirectory get(pDirectory, realURL, strPath);
           if(!get.Wait(TIME_TO_BUSY_DIALOG))
           {
             CGUIDialogBusy* dialog = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
@@ -184,21 +186,21 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
         else
         {
           items.SetPath(strPath);
-          result = pDirectory->GetDirectory(realPath, items);
+          result = pDirectory->GetDirectory(realURL, items);
         }
 
         if (!result)
         {
           if (!cancel && g_application.IsCurrentThread() && pDirectory->ProcessRequirements())
             continue;
-          CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, strPath.c_str());
+          CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, urlPath.GetRedacted().c_str());
           return false;
         }
       }
 
       // cache the directory, if necessary
       if (!(hints.flags & DIR_FLAG_BYPASS_CACHE))
-        g_directoryCache.SetDirectory(realPath, items, pDirectory->GetCacheType(strPath));
+        g_directoryCache.SetDirectory(realPath, items, pDirectory->GetCacheType(urlPath));
     }
 
     // now filter for allowed files
@@ -208,7 +210,7 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
       for (int i = 0; i < items.Size(); ++i)
       {
         CFileItemPtr item = items[i];
-        if (!item->m_bIsFolder && !pDirectory->IsAllowed(item->GetPath()))
+        if (!item->m_bIsFolder && !pDirectory->IsAllowed(item->GetURL()))
         {
           items.Remove(i);
           i--; // don't confuse loop
@@ -251,18 +253,20 @@ bool CDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items, c
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
-  CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, strPath.c_str());
+  CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, urlPath.GetRedacted().c_str());
   return false;
 }
 
 bool CDirectory::Create(const CStdString& strPath)
 {
+  CURL urlPath(strPath);
   try
   {
     CStdString realPath = URIUtils::SubstitutePath(strPath);
+    CURL       realURL(realPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      if(pDirectory->Create(realPath.c_str()))
+      if(pDirectory->Create(realURL))
         return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
@@ -270,15 +274,17 @@ bool CDirectory::Create(const CStdString& strPath)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
-  CLog::Log(LOGERROR, "%s - Error creating %s", __FUNCTION__, strPath.c_str());
+  CLog::Log(LOGERROR, "%s - Error creating %s", __FUNCTION__, urlPath.GetRedacted().c_str());
   return false;
 }
 
 bool CDirectory::Exists(const CStdString& strPath, bool bUseCache /* = true */)
 {
+  CURL urlPath(strPath);
   try
   {
     CStdString realPath = URIUtils::SubstitutePath(strPath);
+    CURL       realURL(realPath);
     if (bUseCache)
     {
       bool bPathInCache;
@@ -290,25 +296,27 @@ bool CDirectory::Exists(const CStdString& strPath, bool bUseCache /* = true */)
     }
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      return pDirectory->Exists(realPath.c_str());
+      return pDirectory->Exists(realURL);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
-  CLog::Log(LOGERROR, "%s - Error checking for %s", __FUNCTION__, strPath.c_str());
+  CLog::Log(LOGERROR, "%s - Error checking for %s", __FUNCTION__, urlPath.GetRedacted().c_str());
   return false;
 }
 
 bool CDirectory::Remove(const CStdString& strPath)
 {
+  CURL urlPath(strPath);
   try
   {
     CStdString realPath = URIUtils::SubstitutePath(strPath);
+    CURL       realURL(realPath);
     auto_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realPath));
     if (pDirectory.get())
-      if(pDirectory->Remove(realPath.c_str()))
+      if(pDirectory->Remove(realURL))
         return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
@@ -316,7 +324,7 @@ bool CDirectory::Remove(const CStdString& strPath)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
-  CLog::Log(LOGERROR, "%s - Error removing %s", __FUNCTION__, strPath.c_str());
+  CLog::Log(LOGERROR, "%s - Error removing %s", __FUNCTION__, urlPath.GetRedacted().c_str());
   return false;
 }
 

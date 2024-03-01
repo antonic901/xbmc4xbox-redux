@@ -55,18 +55,17 @@ CZipManager::~CZipManager()
 
 }
 
-bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items)
+bool CZipManager::GetZipList(const CURL& url, vector<SZipEntry>& items)
 {
-  CLog::Log(LOGDEBUG, "%s - Processing %s", __FUNCTION__, strPath.c_str());
-  
-  CURL url(strPath);
+  CLog::Log(LOGDEBUG, "%s - Processing %s", __FUNCTION__, url.GetRedacted().c_str());
+
   __stat64 m_StatData;
 
   CStdString strFile = url.GetHostName();
 
   if (CFile::Stat(strFile,&m_StatData))
   {
-    CLog::Log(LOGDEBUG,"CZipManager::GetZipList: failed to stat file %s", strPath.c_str());
+    CLog::Log(LOGDEBUG,"CZipManager::GetZipList: failed to stat file %s", url.GetRedacted().c_str());
     return false;
   }
 
@@ -218,17 +217,15 @@ bool CZipManager::GetZipList(const CStdString& strPath, vector<SZipEntry>& items
   return true;
 }
 
-bool CZipManager::GetZipEntry(const CStdString& strPath, SZipEntry& item)
+bool CZipManager::GetZipEntry(const CURL& url, SZipEntry& item)
 {
-  CURL url(strPath);
-
   CStdString strFile = url.GetHostName();
 
   map<CStdString,vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
   vector<SZipEntry> items;
   if (it == mZipMap.end()) // we need to list the zip
   {
-    GetZipList(strPath,items);
+    GetZipList(url,items);
   }
   else
   {
@@ -249,19 +246,24 @@ bool CZipManager::GetZipEntry(const CStdString& strPath, SZipEntry& item)
 
 bool CZipManager::ExtractArchive(const CStdString& strArchive, const CStdString& strPath)
 {
+  const CURL pathToUrl(strArchive);
+  return ExtractArchive(pathToUrl, strPath);
+}
+
+bool CZipManager::ExtractArchive(const CURL& archive, const CStdString& strPath)
+{
   vector<SZipEntry> entry;
-  CStdString strZipPath;
-  URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, "");
-  GetZipList(strZipPath,entry);
+  CURL url = URIUtils::CreateArchivePath("zip", archive);
+  GetZipList(url, entry);
   for (vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)
   {
     if (it->name[strlen(it->name)-1] == '/') // skip dirs
       continue;
     CStdString strFilePath(it->name);
 
-
-    URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, strFilePath);
-    if (!CFile::Cache(strZipPath.c_str(),(strPath+strFilePath).c_str()))
+    CURL zipPath = URIUtils::CreateArchivePath("zip", archive, strFilePath);
+    const CURL pathToUrl(strPath + strFilePath);
+    if (!CFile::Cache(zipPath, pathToUrl))
       return false;
   }
   return true;

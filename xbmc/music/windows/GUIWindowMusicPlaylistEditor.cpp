@@ -373,7 +373,8 @@ void CGUIWindowMusicPlaylistEditor::OnLoadPlaylist()
 
 void CGUIWindowMusicPlaylistEditor::LoadPlaylist(const CStdString &playlist)
 {
-  if (playlist.Equals("newplaylist://"))
+  const CURL pathToUrl(playlist);
+  if (pathToUrl.GetProtocol() == "newplaylist")
   {
     ClearPlaylist();
     m_strLoadedPlaylist.clear();
@@ -382,7 +383,7 @@ void CGUIWindowMusicPlaylistEditor::LoadPlaylist(const CStdString &playlist)
 
   XFILE::CPlaylistFileDirectory dir;
   CFileItemList items;
-  if (dir.GetDirectory(playlist, items))
+  if (dir.GetDirectory(pathToUrl, items))
   {
     ClearPlaylist();
     AppendToPlaylist(items);

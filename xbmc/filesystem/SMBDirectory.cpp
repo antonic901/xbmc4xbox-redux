@@ -60,7 +60,7 @@ CSMBDirectory::~CSMBDirectory(void)
 {
 }
 
-bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   // We accept smb://[[[domain;]user[:password@]]server[/share[/path[/file]]]]
 
@@ -69,11 +69,8 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
 
   smb.Init();
 
-  /* we need an url to do proper escaping */
-  CURL url(strPath);
-
   //Separate roots for the authentication and the containing items to allow browsing to work correctly
-  CStdString strRoot = strPath;
+  CStdString strRoot = url.Get();
   CStdString strAuth;
 
   lock.Leave(); // OpenDir is locked
@@ -290,7 +287,7 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
 #endif
       {
         if (m_flags & DIR_FLAG_ALLOW_PROMPT)
-          RequireAuthentication(urlIn.Get());
+          RequireAuthentication(urlIn);
         break;
       }
       else
@@ -328,13 +325,13 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
   return fd;
 }
 
-bool CSMBDirectory::Create(const char* strPath)
+bool CSMBDirectory::Create(const CURL& url2)
 {
   bool success = true;
   CSingleLock lock(smb);
   smb.Init();
 
-  CURL url(strPath);
+  CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
   CStdString strFileName = smb.URLEncode(url);
 
@@ -350,12 +347,12 @@ bool CSMBDirectory::Create(const char* strPath)
   return success;
 }
 
-bool CSMBDirectory::Remove(const char* strPath)
+bool CSMBDirectory::Remove(const CURL& url2)
 {
   CSingleLock lock(smb);
   smb.Init();
 
-  CURL url(strPath);
+  CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
   CStdString strFileName = smb.URLEncode(url);
 
@@ -374,12 +371,12 @@ bool CSMBDirectory::Remove(const char* strPath)
   return true;
 }
 
-bool CSMBDirectory::Exists(const char* strPath)
+bool CSMBDirectory::Exists(const CURL& url2)
 {
   CSingleLock lock(smb);
   smb.Init();
 
-  CURL url(strPath);
+  CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
   CStdString strFileName = smb.URLEncode(url);
 

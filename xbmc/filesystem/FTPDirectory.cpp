@@ -32,11 +32,11 @@ using namespace XFILE;
 CFTPDirectory::CFTPDirectory(void){}
 CFTPDirectory::~CFTPDirectory(void){}
 
-bool CFTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
 {
   CCurlFile reader;
 
-  CURL url(strPath);
+  CURL url(url2);
 
   CStdString path = url.GetFileName();
   if( !path.IsEmpty() && !path.Right(1).Equals("/") )
@@ -97,9 +97,14 @@ bool CFTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
   return true;
 }
 
-bool CFTPDirectory::Exists(const char* strPath)
+bool CFTPDirectory::Exists(const CURL& url)
 {
+  // make sure ftp dir ends with slash,
+  // curl need to known it's a dir to check ftp directory existence.
+  CStdString file = url.Get();
+  URIUtils::AddSlashAtEnd(file);
+
   CCurlFile ftp;
-  CURL url(strPath);
-  return ftp.Exists(url);
+  CURL url2(file);
+  return ftp.Exists(url2);
 }

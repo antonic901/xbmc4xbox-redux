@@ -103,7 +103,7 @@ bool CCDDARipper::RipCD()
   // get cd cdda contents
   CFileItemList vecItems;
   XFILE::CCDDADirectory directory;
-  directory.GetDirectory("cdda://local/", vecItems);
+  directory.GetDirectory(CURL("cdda://local/"), vecItems);
 
   // get cddb info
   for (int i = 0; i < vecItems.Size(); ++i)

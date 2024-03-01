@@ -62,8 +62,10 @@ public:
   char GetDirectorySeparator() const;
 
   CStdString Get() const;
-  CStdString GetWithoutUserDetails() const;
+  std::string GetWithoutUserDetails(bool redact = false) const;
   CStdString GetWithoutFilename() const;
+  std::string GetRedacted() const;
+  static std::string GetRedacted(const std::string& path);
   bool IsLocal() const;
   static bool IsFileOnly(const CStdString &url); ///< return true if there are no directories in the url.
   static bool IsFullPath(const CStdString &url); ///< return true if the url includes the full path

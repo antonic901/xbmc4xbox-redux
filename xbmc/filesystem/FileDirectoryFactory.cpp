@@ -44,6 +44,7 @@
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
 #include "utils/StringUtils.h"
+#include "URL.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
@@ -58,6 +59,7 @@ CFactoryFileDirectory::~CFactoryFileDirectory(void)
 // return NULL + set pItem->m_bIsFolder to remove it completely from list.
 IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileItem* pItem, const CStdString& strMask)
 {
+  const CURL url(strPath);
   CStdString strExtension=URIUtils::GetExtension(strPath);
   strExtension.MakeLower();
 
@@ -66,7 +68,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
   {
     IFileDirectory* pDir=new COGGFileDirectory;
     //  Has the ogg file more than one bitstream?
-    if (pDir->ContainsFiles(strPath))
+    if (pDir->ContainsFiles(url))
     {
       return pDir; // treat as directory
     }
@@ -78,7 +80,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
   {
     IFileDirectory* pDir=new CNSFFileDirectory;
     //  Has the nsf file more than one track?
-    if (pDir->ContainsFiles(strPath))
+    if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
 
     delete pDir;
@@ -88,7 +90,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
   {
     IFileDirectory* pDir=new CSIDFileDirectory;
     //  Has the sid file more than one track?
-    if (pDir->ContainsFiles(strPath))
+    if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
 
     delete pDir;
@@ -98,7 +100,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
   {
     IFileDirectory* pDir=new CASAPFileDirectory;
     //  Has the asap file more than one track?
-    if (pDir->ContainsFiles(strPath))
+    if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
 
     delete pDir;
@@ -198,7 +200,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CStdString& strPath, CFileIt
     // for links to http streams etc. 
     IFileDirectory *pDir = new CPlaylistFileDirectory();
     CFileItemList items;
-    if (pDir->GetDirectory(strPath, items))
+    if (pDir->GetDirectory(url, items))
     {
       if (items.Size() > 1)
         return pDir;

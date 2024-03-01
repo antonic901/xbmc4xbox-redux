@@ -1748,7 +1748,7 @@ int CXbmcHttp::xbmcAddToSlideshow(int numParas, CStdString paras[])
     IDirectory *pDirectory = CFactoryDirectory::Create(pItem->GetPath());
     if (!pDirectory)
       return SetResponse(openTag+"Error");  
-    bool bResult=pDirectory->Exists(pItem->GetPath());
+    bool bResult=pDirectory->Exists(CURL(pItem->GetPath()));
     pItem->m_bIsFolder=bResult;
   }
   AddItemToPlayList(pItem, -1, 0, mask, recursive); //add to slideshow

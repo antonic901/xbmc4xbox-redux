@@ -58,14 +58,12 @@ CDAAPDirectory::~CDAAPDirectory(void)
   CSectionLoader::Unload("LIBXDAAP");
 }
 
-bool CDAAPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CDAAPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   int c;
   //wchar_t wStrFile[1024]; // buffer for converting strings
 
-  CURL url(strPath);
-
-  CStdString strRoot = strPath;
+  CStdString strRoot = url.Get();
   URIUtils::AddSlashAtEnd(strRoot);
 
   CStdString host = url.GetHostName();

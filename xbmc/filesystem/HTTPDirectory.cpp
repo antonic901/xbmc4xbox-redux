@@ -36,10 +36,9 @@ using namespace XFILE;
 CHTTPDirectory::CHTTPDirectory(void){}
 CHTTPDirectory::~CHTTPDirectory(void){}
 
-bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   CCurlFile http;
-  CURL url(strPath);
 
   CStdString strName, strLink;
   CStdString strBasePath = url.GetFileName();
@@ -84,11 +83,23 @@ bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
         strLink = strLink.Mid(1);
 
       CStdString strNameTemp = strName.Trim();
-      CStdString strLinkTemp = strLink;
+      CStdString strLinkBase = strLink;
+      CStdString strLinkOptions;
+
+      // split link with url options
+      int pos = strLinkBase.Find('?');
+      if (pos != -1) {
+        strLinkOptions = strLinkBase.Mid(pos);
+        strLinkBase.erase(pos);
+      }
+      CStdString strLinkTemp = strLinkBase;
+
       URIUtils::RemoveSlashAtEnd(strLinkTemp);
       URIUtils::RemoveSlashAtEnd(strNameTemp);
       CURL::Decode(strLinkTemp);
 
+      // we detect http directory items by its display name and its stripped link
+      // if same, we consider it as a valid item.
       if (strNameTemp == strLinkTemp && strLinkTemp != "..")
       {
         CStdStringW wName, wLink, wConverted;
@@ -106,10 +117,12 @@ bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
 
         CFileItemPtr pItem(new CFileItem(strName));
         pItem->SetProperty("IsHTTPDirectory", true);
-        url.SetFileName(strBasePath + strLink);
-        pItem->SetPath(url.Get());
+        CURL url2(url);
+        url2.SetFileName(strBasePath + strLinkBase);
+        url2.SetOptions(strLinkOptions);
+        pItem->SetURL(url2);
 
-        if(URIUtils::HasSlashAtEnd(pItem->GetPath()))
+        if(URIUtils::HasSlashAtEnd(pItem->GetPath(), true))
           pItem->m_bIsFolder = true;
 
         CStdString day, month, year, hour, minute;
@@ -194,10 +207,9 @@ bool CHTTPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &item
   return true;
 }
 
-bool CHTTPDirectory::Exists(const char* strPath)
+bool CHTTPDirectory::Exists(const CURL &url)
 {
   CCurlFile http;
-  CURL url(strPath);
   struct __stat64 buffer;
 
   if( http.Stat(url, &buffer) != 0 )

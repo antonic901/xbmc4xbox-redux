@@ -39,11 +39,10 @@ CSourcesDirectory::~CSourcesDirectory(void)
 {
 }
 
-bool CSourcesDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CSourcesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   // break up our path
   // format is:  sources://<type>/
-  CURL url(strPath);
   CStdString type(url.GetFileName());
   URIUtils::RemoveSlashAtEnd(type);
 
@@ -110,7 +109,7 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
   return true;
 }
 
-bool CSourcesDirectory::Exists(const char* strPath)
+bool CSourcesDirectory::Exists(const CURL& url)
 {
   return true;
 }

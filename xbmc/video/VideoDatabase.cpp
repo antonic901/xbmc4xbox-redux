@@ -2331,7 +2331,8 @@ void CVideoDatabase::GetBookMarksForFile(const CStdString& strFilenameAndPath, V
     {
       CStackDirectory dir;
       CFileItemList fileList;
-      dir.GetDirectory(strFilenameAndPath, fileList);
+      const CURL pathToUrl(strFilenameAndPath);
+      dir.GetDirectory(pathToUrl, fileList);
       if (!bAppend)
         bookmarks.clear();
       for (int i = fileList.Size() - 1; i >= 0; i--) // put the bookmarks of the highest part first in the list
@@ -3090,7 +3091,8 @@ bool CVideoDatabase::GetResumePoint(CVideoInfoTag& tag)
     {
       CStackDirectory dir;
       CFileItemList fileList;
-      dir.GetDirectory(tag.m_strFileNameAndPath, fileList);
+      const CURL pathToUrl(tag.m_strFileNameAndPath);
+      dir.GetDirectory(pathToUrl, fileList);
       tag.m_resumePoint.Reset();
       for (int i = fileList.Size() - 1; i >= 0; i--)
       {
