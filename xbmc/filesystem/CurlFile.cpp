@@ -837,7 +837,8 @@ bool CCurlFile::Get(const CStdString& strURL, CStdString& strHTML)
 
 bool CCurlFile::Service(const CStdString& strURL, CStdString& strHTML)
 {
-  if (Open(strURL))
+  const CURL pathToUrl(strURL);
+  if (Open(pathToUrl))
   {
     if (ReadData(strHTML))
     {
@@ -896,11 +897,11 @@ bool CCurlFile::Download(const CStdString& strURL, const CStdString& strFileName
 // Detect whether we are "online" or not! Very simple and dirty!
 bool CCurlFile::IsInternet(bool checkDNS /* = true */)
 {
-  CStdString strURL = "http://www.google.com";
+  CURL url("http://www.google.com");
   if (!checkDNS)
-    strURL = "http://74.125.19.103"; // www.google.com ip
+    url = new CURL("http://74.125.19.103"); // www.google.com ip
 
-  bool found = Exists(strURL);
+  bool found = Exists(url);
   Close();
 
   return found;
