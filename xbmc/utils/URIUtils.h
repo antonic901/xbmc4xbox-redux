@@ -59,6 +59,7 @@ public:
   static bool IsHTSP(const CStdString& strFile);
   static bool IsInArchive(const CStdString& strFile);
   static bool IsInRAR(const CStdString& strFile);
+  static bool IsInternetStream(const std::string& path, bool bStrictCheck = false);
   static bool IsInternetStream(const CURL& url, bool bStrictCheck = false);
   static bool IsInZIP(const CStdString& strFile);
   static bool IsISO9660(const CStdString& strFile);

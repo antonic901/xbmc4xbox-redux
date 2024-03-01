@@ -655,6 +655,12 @@ bool URIUtils::IsDAV(const CStdString& strFile)
          strFile2.Left(5).Equals("davs:");
 }
 
+bool URIUtils::IsInternetStream(const std::string &path, bool bStrictCheck /* = false */)
+{
+  const CURL pathToUrl(path);
+  return IsInternetStream(pathToUrl, bStrictCheck);
+}
+
 bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */)
 {
   CStdString strProtocol = url.GetProtocol();
