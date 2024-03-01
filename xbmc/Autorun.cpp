@@ -172,7 +172,8 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   }
   else
   {
-    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( "D:\\" ) );
+  const CURL pathToUrl("D:\\");
+  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
     bPlaying = RunDisc(pDir.get(), "D:\\", nAddedToPlaylist, true, bypassSettings, restart);
   }
 #endif

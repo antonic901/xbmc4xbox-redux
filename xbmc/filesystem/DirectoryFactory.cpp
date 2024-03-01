@@ -85,12 +85,10 @@ using namespace XFILE;
  \return IDirectory object to access the directories on the share.
  \sa IDirectory
  */
-IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
+IDirectory* CFactoryDirectory::Create(const CURL& url)
 {
-  CURL url(strPath);
-
-  CFileItem item(strPath, false);
-  IFileDirectory* pDir=CFactoryFileDirectory::Create(strPath, &item);
+  CFileItem item(url.Get(), false);
+  IFileDirectory* pDir=CFileDirectoryFactory::Create(url, &item);
   if (pDir)
     return pDir;
 
@@ -121,7 +119,10 @@ IDirectory* CFactoryDirectory::Create(const CStdString& strPath)
   if (strProtocol == "library") return new CLibraryDirectory();
   if (strProtocol == "favourites") return new CFavouritesDirectory();
   if (strProtocol == "filereader") 
-    return CFactoryDirectory::Create(url.GetFileName());
+  {
+    CURL url2(url.GetFileName());
+    return CFactoryDirectory::Create(url2);
+  }
 #ifdef HAS_XBOX_HARDWARE
   if (strProtocol.Left(3) == "mem") return new CMemUnitDirectory();
 #endif

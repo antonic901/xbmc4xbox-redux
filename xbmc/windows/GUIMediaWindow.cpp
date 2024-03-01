@@ -960,7 +960,7 @@ bool CGUIMediaWindow::OnClick(int iItem)
   if (!pItem->m_bIsFolder && pItem->IsFileFolder())
   {
     XFILE::IFileDirectory *pFileDirectory = NULL;
-    pFileDirectory = XFILE::CFactoryFileDirectory::Create(pItem->GetPath(), pItem.get(), "");
+    pFileDirectory = XFILE::CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get(), "");
     if(pFileDirectory)
       pItem->m_bIsFolder = true;
     else if(pItem->m_bIsFolder)

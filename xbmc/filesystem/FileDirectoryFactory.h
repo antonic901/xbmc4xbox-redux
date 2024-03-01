@@ -30,6 +30,6 @@ class CFactoryFileDirectory
 public:
   CFactoryFileDirectory(void);
   virtual ~CFactoryFileDirectory(void);
-  static IFileDirectory* Create(const CStdString& strPath, CFileItem* pItem, const CStdString& strMask="");
+  static IFileDirectory* Create(const CURL& url, CFileItem* pItem, const CStdString& strMask="");
 };
 }
