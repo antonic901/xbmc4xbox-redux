@@ -71,6 +71,22 @@ CFileItem::CFileItem(const CSong& song)
   SetFromSong(song);
 }
 
+CFileItem::CFileItem(const CURL &url, const CAlbum& album)
+{
+  m_musicInfoTag = NULL;
+  m_videoInfoTag = NULL;
+  m_epgInfoTag = NULL;
+  m_pvrChannelInfoTag = NULL;
+  m_pvrRecordingInfoTag = NULL;
+  m_pvrTimerInfoTag = NULL;
+  m_pictureInfoTag = NULL;
+  Reset();
+
+  m_strPath = url.Get();
+  URIUtils::AddSlashAtEnd(m_strPath);
+  SetFromAlbum(album);
+}
+
 CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
 {
   m_musicInfoTag = NULL;
