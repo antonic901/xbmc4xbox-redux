@@ -33,7 +33,6 @@ using namespace XFILE;
 
 IDirectory::IDirectory(void)
 {
-  m_strFileMask = "";
   m_flags = DIR_FLAG_DEFAULTS;
 }
 
@@ -81,7 +80,7 @@ bool IDirectory::IsAllowed(const CStdString& strFile) const
  \endverbatim
  So only *.m4a, *.flac, *.aac files will be retrieved with GetDirectory().
  */
-void IDirectory::SetMask(const CStdString& strMask)
+void IDirectory::SetMask(const std::string& strMask)
 {
   m_strFileMask = strMask;
   // ensure it's completed with a | so that filtering is easy.
@@ -136,7 +135,7 @@ bool IDirectory::ProcessRequirements()
   return false;
 }
 
-bool IDirectory::GetKeyboardInput(const CVariant &heading, CStdString &input)
+bool IDirectory::GetKeyboardInput(const CVariant &heading, std::string &input)
 {
   if (!CStdString(m_requirements["input"].asString()).IsEmpty())
   {
