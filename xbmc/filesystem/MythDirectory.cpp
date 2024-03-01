@@ -607,10 +607,10 @@ bool CMythDirectory::IsMovie(const cmyth_proginfo_t program)
 
   const int iMovieLength = g_advancedSettings.m_iMythMovieLength; // Minutes
   if (iMovieLength > 0) // Use hack to identify movie based on length (used if EPG is dubious).
-    return GetValue(m_dll->proginfo_programid(program)).Left(2) == "MV"
+    return StringUtils2::StartsWith(GetValue(m_dll->proginfo_programid(program)), "MV")
         || m_dll->proginfo_length_sec(program) > iMovieLength * 60; // Minutes to seconds
   else
-    return GetValue(m_dll->proginfo_programid(program)).Left(2) == "MV";
+    return StringUtils2::StartsWith(GetValue(m_dll->proginfo_programid(program)), "MV");
 }
 
 bool CMythDirectory::IsTvShow(const cmyth_proginfo_t program)

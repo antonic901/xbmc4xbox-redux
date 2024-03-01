@@ -407,15 +407,15 @@ void CDAAPDirectory::AddToArtistAlbum(char *artist_s, char *album_s)
 
 int CDAAPDirectory::GetCurrLevel(const std::string &strPath)
 {
-  int intSPos;
-  int intEPos;
+  size_t intSPos;
+  size_t intEPos;
   int intLevel;
   int intCnt;
   CStdString strJustPath;
 
-  intSPos = strPath.Find("://");
-  if (intSPos > -1)
-    strJustPath = strPath.Right(strPath.size() - (intSPos + 3));
+  intSPos = strPath.find("://");
+  if (intSPos != std::string::npos)
+    strJustPath = strPath.substr(intSPos + 3);
   else
     strJustPath = strPath;
 
@@ -423,10 +423,10 @@ int CDAAPDirectory::GetCurrLevel(const std::string &strPath)
 
   intLevel = -1;
   intSPos = strPath.length();
-  while (intSPos > -1)
+  while (intSPos != std::string::npos)
   {
-    intSPos = strJustPath.ReverseFind("/", intSPos);
-    if (intSPos > -1) intLevel ++;
+    intSPos = strJustPath.rfind("/", intSPos);
+    if (intSPos != std::string::npos) intLevel++;
     intSPos -= 2;
   }
 
@@ -437,8 +437,8 @@ int CDAAPDirectory::GetCurrLevel(const std::string &strPath)
   intEPos = (strJustPath.length() - 1);
   while (intCnt >= 0)
   {
-    intSPos = strJustPath.ReverseFind("/", intEPos);
-    if (intSPos > -1)
+    intSPos = strJustPath.rfind("/", intEPos);
+    if (intSPos != std::string::npos)
     {
       if (intCnt == 2)  // album
       {

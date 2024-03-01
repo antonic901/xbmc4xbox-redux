@@ -20,7 +20,7 @@
  */
 #include <vector>
 #include <stdint.h>
-
+#include "utils/StringUtils.h"
 #include "MediaSource.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/custom_launch_params.h"

@@ -899,7 +899,7 @@ bool CCurlFile::IsInternet(bool checkDNS /* = true */)
 {
   CURL url("http://www.google.com");
   if (!checkDNS)
-    url = new CURL("http://74.125.19.103"); // www.google.com ip
+    url = CURL("http://74.125.19.103"); // www.google.com ip
 
   bool found = Exists(url);
   Close();
