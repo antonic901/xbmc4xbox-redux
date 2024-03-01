@@ -26,6 +26,7 @@
 #include "FileItem.h"
 #include "utils/StringUtils.h"
 #include "settings/AdvancedSettings.h"
+#include "URL.h"
 
 #define PRE_2_1_STACK_COMPATIBILITY
 
@@ -116,6 +117,12 @@ namespace XFILE
 
       File1 = URIUtils::GetFileName(files[0]->GetPath());
       File2 = URIUtils::GetFileName(files[1]->GetPath());
+      // Check if source path uses URL encoding
+      if (URIUtils::ProtocolHasEncodedFilename(CURL(strCommonDir).GetProtocol()))
+      {
+        CURL::Decode(File1);
+        CURL::Decode(File2);
+      }
 
       std::vector<CRegExp>::iterator itRegExp = RegExps.begin();
       int offset = 0;
@@ -145,7 +152,12 @@ namespace XFILE
                 if (Ignore1.Equals(Ignore2) && Extension1.Equals(Extension2))
                 {
                   // got it
-                  strStackTitle = Title1 + Ignore1 + Extension1;
+                  strStackTitle = Title1 + Ignore1;
+                  // Check if source path uses URL encoding
+                  if (URIUtils::ProtocolHasEncodedFilename(CURL(strCommonDir).GetProtocol()))
+                    CURL::Encode(strStackTitle);
+
+                  strStackTitle += Extension1;
                   itRegExp = RegExps.end();
                   break;
                 }

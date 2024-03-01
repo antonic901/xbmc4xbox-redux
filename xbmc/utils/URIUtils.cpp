@@ -210,6 +210,15 @@ void URIUtils::GetCommonPath(CStdString& strParent, const CStdString& strPath)
   }
 }
 
+bool URIUtils::ProtocolHasEncodedFilename(const CStdString& prot)
+{
+  CStdString prot2 = CURL::TranslateProtocol(prot);
+
+  // For now assume only (quasi) http internet streams use URL encoding
+  return prot2 == "http"  ||
+         prot2 == "https";
+}
+
 CStdString URIUtils::GetParentPath(const CStdString& strPath)
 {
   CStdString strReturn;
@@ -637,10 +646,8 @@ bool URIUtils::IsFTP(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
 
-  CURL url(strFile2);
-
-  return url.GetTranslatedProtocol() == "ftp"  ||
-         url.GetTranslatedProtocol() == "ftps";
+  return strFile2.Left(4).Equals("ftp:")  ||
+         strFile2.Left(5).Equals("ftps:");
 }
 
 
@@ -675,13 +682,18 @@ bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */
   CStdString strProtocol2 = url.GetTranslatedProtocol();
 
   // Special case these
-  if (strProtocol2 == "ftp" || strProtocol2 == "ftps" ||
-      strProtocol  == "dav" || strProtocol  == "davs")
+  if (strProtocol  == "ftp"   || strProtocol  == "ftps"   ||
+      strProtocol  == "dav"   || strProtocol  == "davs")
     return bStrictCheck;
 
-  if (strProtocol2 == "http" || strProtocol2 == "https" ||
-      strProtocol  == "rtp"  || strProtocol  == "udp"   ||
-      strProtocol  == "rtmp" || strProtocol  == "rtsp")
+  if (strProtocol2 == "http"  || strProtocol2 == "https"  ||
+      strProtocol2 == "tcp"   || strProtocol2 == "udp"    ||
+      strProtocol2 == "rtp"   || strProtocol2 == "sdp"    ||
+      strProtocol2 == "mms"   || strProtocol2 == "mmst"   ||
+      strProtocol2 == "mmsh"  || strProtocol2 == "rtsp"   ||
+      strProtocol2 == "rtmp"  || strProtocol2 == "rtmpt"  ||
+      strProtocol2 == "rtmpe" || strProtocol2 == "rtmpte" ||
+      strProtocol2 == "rtmps")
     return true;
 
   return false;

@@ -69,6 +69,7 @@ public:
   static bool IsFullPath(const CStdString &url); ///< return true if the url includes the full path
   static void Decode(CStdString& strURLData);
   static void Encode(CStdString& strURLData);
+  static CStdString TranslateProtocol(const CStdString& prot);
   static std::string Decode(const std::string& strURLData);
   static std::string Encode(const std::string& strURLData);
   
