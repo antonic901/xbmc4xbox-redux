@@ -78,7 +78,7 @@ namespace XFILE
 
   bool CPlaylistFileDirectory::Remove(const CURL& url)
   { 
-    return XFILE::CFile::Delete(url.Get());
+    return XFILE::CFile::Delete(url);
   }
 }
 
