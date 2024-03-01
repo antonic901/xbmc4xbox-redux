@@ -268,6 +268,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     CStdString m_pictureExtensions;
     CStdString m_musicExtensions;
     CStdString m_videoExtensions;
+    CStdString m_subtitlesExtensions;
 
     CStdString m_logFolder;
 

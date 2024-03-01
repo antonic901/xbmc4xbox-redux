@@ -107,7 +107,6 @@ public:
   bool IsPythonScript() const;
   bool IsXBE() const;
   bool IsPlugin() const;
-  bool IsPluginRoot() const;
   bool IsDefaultXBE() const;
   bool IsAddonsPath() const;
   bool IsSourcesPath() const;

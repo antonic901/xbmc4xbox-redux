@@ -781,11 +781,6 @@ bool CFileItem::IsPlugin() const
   return URIUtils::IsPlugin(m_strPath);
 }
 
-bool CFileItem::IsPluginRoot() const
-{
-  return URIUtils::IsPluginRoot(m_strPath);
-}
-
 bool CFileItem::IsAddonsPath() const
 {
   return URIUtils::IsAddonsPath(m_strPath);
@@ -1283,6 +1278,24 @@ void CFileItem::SetFromSong(const CSong &song)
   SetProperty("item_start", song.iStartOffset);
   m_lEndOffset = song.iEndOffset;
   m_strThumbnailImage = song.strThumb;
+}
+
+/*
+ TODO: Ideally this (and SetPath) would not be available outside of construction
+ for CFileItem objects, or at least restricted to essentially be equivalent
+ to construction. This would require re-formulating a bunch of CFileItem
+ construction, and also allowing CFileItemList to have it's own (public)
+ SetURL() function, so for now we give direct access.
+ */
+void CFileItem::SetURL(const CURL& url)
+{
+  m_strPath = url.Get();
+}
+
+const CURL CFileItem::GetURL() const
+{
+  CURL url(m_strPath);
+  return url;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
