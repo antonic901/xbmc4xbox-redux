@@ -92,9 +92,9 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   if (pDir)
     return pDir;
 
-  CStdString strProtocol = url.GetProtocol();
+  const CStdString &strProtocol = url.GetProtocol();
 
-  if (strProtocol.size() == 0 || strProtocol == "file") return new CHDDirectory();
+  if (strProtocol.empty() || strProtocol == "file") return new CHDDirectory();
   if (strProtocol == "special") return new CSpecialProtocolDirectory();
   if (strProtocol == "sources") return new CSourcesDirectory();
   if (strProtocol == "addons") return new CAddonsDirectory();
