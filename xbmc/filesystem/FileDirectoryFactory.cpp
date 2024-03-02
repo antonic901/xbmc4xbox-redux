@@ -57,16 +57,13 @@ CFactoryFileDirectory::~CFactoryFileDirectory(void)
 {}
 
 // return NULL + set pItem->m_bIsFolder to remove it completely from list.
-IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem, const CStdString& strMask)
+IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem, const std::string& strMask)
 {
-  if (url.GetProtocol() == "stack") // disqualify stack as we need to work with each of the parts instead
+  if (url.IsProtocol("stack")) // disqualify stack as we need to work with each of the parts instead
     return NULL;
 
-  CStdString strExtension=URIUtils::GetExtension(url);
-  strExtension.MakeLower();
-
 #ifdef HAS_FILESYSTEM
-  if ((strExtension.Equals(".ogg") || strExtension.Equals(".oga")) && CFile::Exists(url))
+  if ((url.IsFileType("ogg") || url.IsFileType("oga")) && CFile::Exists(url))
   {
     IFileDirectory* pDir=new COGGFileDirectory;
     //  Has the ogg file more than one bitstream?
@@ -78,7 +75,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     delete pDir;
     return NULL;
   }
-  if (strExtension.Equals(".nsf") && CFile::Exists(url))
+  if (url.IsFileType("nsf") && CFile::Exists(url))
   {
     IFileDirectory* pDir=new CNSFFileDirectory;
     //  Has the nsf file more than one track?
@@ -88,7 +85,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     delete pDir;
     return NULL;
   }
-  if (strExtension.Equals(".sid") && CFile::Exists(url))
+  if (url.IsFileType("sid") && CFile::Exists(url))
   {
     IFileDirectory* pDir=new CSIDFileDirectory;
     //  Has the sid file more than one track?
@@ -98,7 +95,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     delete pDir;
     return NULL;
   }
-  if (ASAPCodec::IsSupportedFormat(strExtension) && CFile::Exists(url))
+  if (ASAPCodec::IsSupportedFormat(url.GetFileType()) && CFile::Exists(url))
   {
     IFileDirectory* pDir=new CASAPFileDirectory;
     //  Has the asap file more than one track?
@@ -113,7 +110,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     return new CRSSDirectory();
 
 #endif
-  if (strExtension.Equals(".zip"))
+  if (url.IsFileType("zip"))
   {
     CURL zipURL = URIUtils::CreateArchivePath("zip", url);
 
@@ -133,29 +130,28 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     }
     return NULL;
   }
-  if (strExtension.Equals(".rar") || strExtension.Equals(".001"))
+  if (url.IsFileType("rar") || url.IsFileType("001"))
   {
     vector<std::string> tokens;
-    const CStdString strPath = url.Get();
+    const std::string strPath = url.Get();
     StringUtils2::Tokenize(strPath,tokens,".");
     if (tokens.size() > 2)
     {
-      if (strExtension.Equals(".001"))
+      if (url.IsFileType("001"))
       {
         if (StringUtils2::EqualsNoCase(tokens[tokens.size()-2], "ts")) // .ts.001 - treat as a movie file to scratch some users itch
           return NULL;
       }
-      CStdString token = tokens[tokens.size()-2];
-      if (token.Left(4).CompareNoCase("part") == 0) // only list '.part01.rar'
+      std::string token = tokens[tokens.size()-2];
+      if (StringUtils2::StartsWith(token, "part")) // only list '.part01.rar'
       {
         // need this crap to avoid making mistakes - yeyh for the new rar naming scheme :/
         __stat64 stat;
         int digits = token.size()-4;
-        CStdString strNumber, strFormat;
-        strFormat.Format("part%%0%ii",digits);
-        strNumber.Format(strFormat.c_str(),1);
-        CStdString strPath2=strPath;
-        strPath2.Replace(token,strNumber);
+        std::string strFormat = StringUtils2::Format("part%%0%ii", digits);
+        std::string strNumber = StringUtils2::Format(strFormat.c_str(), 1);
+        std::string strPath2 = strPath;
+        StringUtils2::Replace(strPath2,token,strNumber);
         if (atoi(token.substr(4).c_str()) > 1 && CFile::Stat(strPath2,&stat) == 0)
         {
           pItem->m_bIsFolder = true;
@@ -182,7 +178,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     }
     return NULL;
   }
-  if (strExtension.Equals(".xsp"))
+  if (url.IsFileType("xsp"))
   { // XBMC Smart playlist - just XML renamed to XSP
     // read the name of the playlist in
     CSmartPlaylist playlist;

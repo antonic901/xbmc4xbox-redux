@@ -18,6 +18,7 @@
  *
  */
 
+#include <stdlib.h>
 #include "xbox/Network.h"
 #include "system.h"
 #include "DirectoryFactory.h"
@@ -92,64 +93,62 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   if (pDir)
     return pDir;
 
-  const CStdString &strProtocol = url.GetProtocol();
-
-  if (strProtocol.empty() || strProtocol == "file") return new CHDDirectory();
-  if (strProtocol == "special") return new CSpecialProtocolDirectory();
-  if (strProtocol == "sources") return new CSourcesDirectory();
-  if (strProtocol == "addons") return new CAddonsDirectory();
+  if (url.GetProtocol().empty() || url.IsProtocol("file")) return new CHDDirectory();
+  if (url.IsProtocol("special")) return new CSpecialProtocolDirectory();
+  if (url.IsProtocol("sources")) return new CSourcesDirectory();
+  if (url.IsProtocol("addons")) return new CAddonsDirectory();
 #ifdef HAS_FILESYSTEM_CDDA
-  if (strProtocol == "cdda") return new CCDDADirectory();
+  if (url.IsProtocol("cdda")) return new CCDDADirectory();
 #endif
 #ifdef HAS_FILESYSTEM
-  if (strProtocol == "iso9660") return new CISO9660Directory();
-  if (strProtocol == "cdda") return new CCDDADirectory();
-  if (strProtocol == "soundtrack") return new CSndtrkDirectory();
+  if (url.IsProtocol("iso9660")) return new CISO9660Directory();
+  if (url.IsProtocol("soundtrack")) return new CSndtrkDirectory();
 #endif
-  if (strProtocol == "plugin") return new CPluginDirectory();
-  if (strProtocol == "zip") return new CZipDirectory();
-  if (strProtocol == "rar") return new CRarDirectory();
-  if (strProtocol == "multipath") return new CMultiPathDirectory();
-  if (strProtocol == "stack") return new CStackDirectory();
-  if (strProtocol == "playlistmusic") return new CPlaylistDirectory();
-  if (strProtocol == "playlistvideo") return new CPlaylistDirectory();
-  if (strProtocol == "musicdb") return new CMusicDatabaseDirectory();
-  if (strProtocol == "musicsearch") return new CMusicSearchDirectory();
-  if (strProtocol == "videodb") return new CVideoDatabaseDirectory();
-  if (strProtocol == "library") return new CLibraryDirectory();
-  if (strProtocol == "favourites") return new CFavouritesDirectory();
-  if (strProtocol == "filereader") 
+  if (url.IsProtocol("plugin")) return new CPluginDirectory();
+  if (url.IsProtocol("zip")) return new CZipDirectory();
+  if (url.IsProtocol("rar")) return new CRarDirectory();
+  if (url.IsProtocol("multipath")) return new CMultiPathDirectory();
+  if (url.IsProtocol("stack")) return new CStackDirectory();
+  if (url.IsProtocol("playlistmusic")) return new CPlaylistDirectory();
+  if (url.IsProtocol("playlistvideo")) return new CPlaylistDirectory();
+  if (url.IsProtocol("musicdb")) return new CMusicDatabaseDirectory();
+  if (url.IsProtocol("musicsearch")) return new CMusicSearchDirectory();
+  if (url.IsProtocol("videodb")) return new CVideoDatabaseDirectory();
+  if (url.IsProtocol("library")) return new CLibraryDirectory();
+  if (url.IsProtocol("favourites")) return new CFavouritesDirectory();
+  if (url.IsProtocol("filereader")) 
   {
     CURL url2(url.GetFileName());
     return CFactoryDirectory::Create(url2);
   }
 #ifdef HAS_XBOX_HARDWARE
-  if (strProtocol.Left(3) == "mem") return new CMemUnitDirectory();
+  // Is this same as url.IsProtocol("mem")?
+  if (StringUtils2::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
 #endif
 
   if( g_application.getNetwork().IsAvailable(true) )
   {
-    if (strProtocol == "tuxbox") return new CDirectoryTuxBox();
-    if (strProtocol == "ftp" ||  strProtocol == "ftpx" ||  strProtocol == "ftps") return new CFTPDirectory();
-    if (strProtocol == "http" || strProtocol == "https") return new CHTTPDirectory();
-    if (strProtocol == "dav" || strProtocol == "davs") return new CDAVDirectory();
+    if (url.IsProtocol("tuxbox")) return new CDirectoryTuxBox();
+    if (url.IsProtocol("ftp") ||  url.IsProtocol("ftpx") ||  url.IsProtocol("ftps")) return new CFTPDirectory();
+    if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
+    if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
 #ifdef HAS_FILESYSTEM
-    if (strProtocol == "smb") return new CSMBDirectory();
-    if (strProtocol == "daap") return new CDAAPDirectory();
-    if (strProtocol == "rtv") return new CRTVDirectory();
-    if (strProtocol == "htsp") return new CHTSPDirectory();
+    if (url.IsProtocol("smb")) return new CSMBDirectory();
+    if (url.IsProtocol("daap")) return new CDAAPDirectory();
+    if (url.IsProtocol("rtv")) return new CRTVDirectory();
+    if (url.IsProtocol("htsp")) return new CHTSPDirectory();
 #endif
 #ifdef HAS_UPNP
-    if (strProtocol == "upnp") return new CUPnPDirectory();
+    if (url.IsProtocol("upnp")) return new CUPnPDirectory();
 #endif
-    if (strProtocol == "hdhomerun") return new CHomeRunDirectory();
-    if (strProtocol == "sling") return new CSlingboxDirectory();
-    if (strProtocol == "myth") return new CMythDirectory();
-    if (strProtocol == "cmyth") return new CMythDirectory();
-    if (strProtocol == "rss") return new CRSSDirectory();
+    if (url.IsProtocol("hdhomerun")) return new CHomeRunDirectory();
+    if (url.IsProtocol("sling")) return new CSlingboxDirectory();
+    if (url.IsProtocol("myth")) return new CMythDirectory();
+    if (url.IsProtocol("cmyth")) return new CMythDirectory();
+    if (url.IsProtocol("rss")) return new CRSSDirectory();
   }
 
-  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, strProtocol.c_str(), url.Get().c_str() );
+  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );
   return NULL;
 }
 

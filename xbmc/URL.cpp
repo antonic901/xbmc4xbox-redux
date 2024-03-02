@@ -136,11 +136,11 @@ void CURL::Parse(const CStdString& strURL1)
   // they are all local protocols and have no server part, port number, special options, etc.
   // this removes the need for special handling below.
   if (
-    m_strProtocol.Equals("stack") ||
-    m_strProtocol.Equals("virtualpath") ||
-    m_strProtocol.Equals("multipath") ||
-    m_strProtocol.Equals("filereader") ||
-    m_strProtocol.Equals("special")
+    IsProtocol("stack") ||
+    IsProtocol("virtualpath") ||
+    IsProtocol("multipath") ||
+    IsProtocol("filereader") ||
+    IsProtocol("special")
     )
   {
     SetFileName(strURL.Mid(iPos));
@@ -155,21 +155,22 @@ void CURL::Parse(const CStdString& strURL1)
   int iEnd = strURL.length();
   const char* sep = NULL;
 
-  CStdString strProtocol2 = GetTranslatedProtocol();
-  if(m_strProtocol.Equals("rss") ||
-     m_strProtocol.Equals("videodb") ||
-     m_strProtocol.Equals("musicdb"))
+  std::string strProtocol2 = GetTranslatedProtocol();
+  if(IsProtocol("rss") ||
+     IsProtocol("addons") ||
+     IsProtocol("videodb") ||
+     IsProtocol("musicdb"))
     sep = "?";
   else
-  if(strProtocol2.Equals("http")
-    || strProtocol2.Equals("https")
-    || strProtocol2.Equals("plugin")
-    || strProtocol2.Equals("hdhomerun")
-    || strProtocol2.Equals("rtsp")
-    || strProtocol2.Equals("zip"))
+  if(  IsProtocolEqual(strProtocol2, "http")
+    || IsProtocolEqual(strProtocol2, "https")
+    || IsProtocolEqual(strProtocol2, "plugin")
+    || IsProtocolEqual(strProtocol2, "hdhomerun")
+    || IsProtocolEqual(strProtocol2, "rtsp")
+    || IsProtocolEqual(strProtocol2, "zip"))
     sep = "?;#|";
-  else if(strProtocol2.Equals("ftp")
-       || strProtocol2.Equals("ftps"))
+  else if(IsProtocolEqual(strProtocol2, "ftp")
+       || IsProtocolEqual(strProtocol2, "ftps"))
     sep = "?;";
 
   if(sep)
@@ -195,7 +196,7 @@ void CURL::Parse(const CStdString& strURL1)
   if(iSlash >= iEnd)
     iSlash = -1; // was an invalid slash as it was contained in options
 
-  if( !m_strProtocol.Equals("iso9660") )
+  if( !IsProtocol("iso9660") )
   {
     int iAlphaSign = strURL.Find("@", iPos);
     if (iAlphaSign >= 0 && iAlphaSign < iEnd && (iAlphaSign < iSlash || iSlash < 0))
@@ -204,7 +205,7 @@ void CURL::Parse(const CStdString& strURL1)
       CStdString strUserNamePassword = strURL.Mid(iPos, iAlphaSign - iPos);
 
       // first extract domain, if protocol is smb
-      if (m_strProtocol.Equals("smb"))
+      if (IsProtocol("smb"))
       {
         int iSemiColon = strUserNamePassword.Find(";");
 
@@ -284,11 +285,11 @@ void CURL::Parse(const CStdString& strURL1)
   }
 
   // iso9960 doesnt have an hostname;-)
-  if (m_strProtocol.CompareNoCase("iso9660") == 0
-    || m_strProtocol.CompareNoCase("musicdb") == 0
-    || m_strProtocol.CompareNoCase("videodb") == 0
-    || m_strProtocol.CompareNoCase("sources") == 0
-    || m_strProtocol.Left(3).CompareNoCase("mem") == 0)
+  if (IsProtocol("iso9660")
+   || IsProtocol("musicdb")
+   || IsProtocol("videodb")
+   || IsProtocol("sources")
+   || StringUtils2::StartsWith(m_strProtocol, "mem"))
   {
     if (m_strHostName != "" && m_strFileName != "")
     {
@@ -453,7 +454,9 @@ const CStdString& CURL::GetProtocolOptions() const
 const CStdString CURL::GetFileNameWithoutPath() const
 {
   // *.zip and *.rar store the actual zip/rar path in the hostname of the url
-  if ((m_strProtocol == "rar" || m_strProtocol == "zip") && m_strFileName.IsEmpty())
+  if ((IsProtocol("rar")  ||
+       IsProtocol("zip")) &&
+       m_strFileName.empty())
     return URIUtils::GetFileName(m_strHostName);
 
   // otherwise, we've already got the filepath, so just grab the filename portion
@@ -503,7 +506,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
 {
   std::string strURL;
 
-  if (m_strProtocol.Equals("stack"))
+  if (IsProtocol("stack"))
   {
     CFileItemList items;
     XFILE::CStackDirectory dir;
@@ -778,6 +781,19 @@ void CURL::RemoveOption(const CStdString &key)
 {
   m_options.RemoveOption(key);
   SetOptions(m_options.GetOptionsString(true));
+}
+
+bool CURL::IsProtocolEqual(const std::string &protocol, const char *type)
+{
+  /*
+   NOTE: We're currently using == here as m_strProtocol is assigned as lower-case in SetProtocol(),
+   and we've assumed all other callers are calling with protocol lower-case otherwise.
+   We possibly shouldn't do this (as CURL(foo).Get() != foo, though there are other reasons for this as well)
+   but it handles the requirements of RFC-1738 which allows the scheme to be case-insensitive.
+   */
+  if (type)
+    return protocol == type;
+  return false;
 }
 
 CStdString CURL::TranslateProtocol(const CStdString& prot)

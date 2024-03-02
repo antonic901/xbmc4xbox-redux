@@ -157,7 +157,6 @@ CFileItem::CFileItem(const CURL& path, bool bIsFolder)
   // tuxbox urls cannot have a / at end
   if (m_bIsFolder && !m_strPath.empty() && !IsFileFolder() && !URIUtils::IsTuxBox(m_strPath))
     URIUtils::AddSlashAtEnd(m_strPath);
-  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(const CStdString& strPath, bool bIsFolder)

@@ -49,6 +49,7 @@
 #include "MythFile.h"
 #include "URL.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 
@@ -68,46 +69,44 @@ IFile* CFileFactory::CreateLoader(const CStdString& strFileName)
 
 IFile* CFileFactory::CreateLoader(const CURL& url)
 {
-  CStdString strProtocol = url.GetProtocol();
-  strProtocol.MakeLower();
-
-  if (strProtocol == "zip") return new CZipFile();
-  else if (strProtocol == "rar") return new CRarFile();
-  else if (strProtocol == "musicdb") return new CMusicDatabaseFile();
-  else if (strProtocol == "videodb") return NULL;
-  else if (strProtocol == "library") return NULL;
-  else if (strProtocol == "special") return new CSpecialProtocolFile();
-  else if (strProtocol == "multipath") return new CMultiPathFile();
-  else if (strProtocol == "file" || strProtocol.IsEmpty()) return new CFileHD();
-  else if (strProtocol == "filereader") return new CFileFileReader();
+  if (url.IsProtocol("zip")) return new CZipFile();
+  else if (url.IsProtocol("rar")) return new CRarFile();
+  else if (url.IsProtocol("musicdb")) return new CMusicDatabaseFile();
+  else if (url.IsProtocol("videodb")) return NULL;
+  else if (url.IsProtocol("library")) return NULL;
+  else if (url.IsProtocol("special")) return new CSpecialProtocolFile();
+  else if (url.IsProtocol("multipath")) return new CMultiPathFile();
+  else if (url.IsProtocol("file") || url.GetProtocol().empty()) return new CFileHD();
+  else if (url.IsProtocol("filereader")) return new CFileFileReader();
 #ifdef HAS_FILESYSTEM
-  else if (strProtocol == "iso9660") return new CISOFile();
-  else if (strProtocol == "soundtrack") return new CSndtrkFile();
-  else if (strProtocol == "cdda") return new CCDDAFile();
-  else if (strProtocol.Left(3) == "mem") return new CMemUnitFile();
+  else if (url.IsProtocol("iso9660")) return new CISOFile();
+  else if (url.IsProtocol("soundtrack")) return new CSndtrkFile();
+  else if (url.IsProtocol("cdda")) return new CCDDAFile();
+  // Is this same as url.IsProtocol("mem")?
+  else if (StringUtils2::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitFile();
 #endif
   if( g_application.getNetwork().IsAvailable() )
   {
-    if (strProtocol == "ftp"
-    ||  strProtocol == "ftpx"
-    ||  strProtocol == "ftps"
-    ||  strProtocol == "rss") return new CCurlFile();
-    else if (strProtocol == "http" ||  strProtocol == "https") return new CHTTPFile();
-    else if (strProtocol == "dav" || strProtocol == "davs") return new CDAVFile();
-    else if (strProtocol == "shout") return new CShoutcastFile();
-    else if (strProtocol == "tuxbox") return new CTuxBoxFile();
-    else if (strProtocol == "hdhomerun") return new CHomeRunFile();
-    else if (strProtocol == "sling") return new CSlingboxFile();
-    else if (strProtocol == "myth") return new CMythFile();
-    else if (strProtocol == "cmyth") return new CMythFile();
+    if (url.IsProtocol("ftp")
+    ||  url.IsProtocol("ftpx")
+    ||  url.IsProtocol("ftps")
+    ||  url.IsProtocol("rss")) return new CCurlFile();
+    else if (url.IsProtocol("http") ||  url.IsProtocol("https")) return new CHTTPFile();
+    else if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVFile();
+    else if (url.IsProtocol("shout")) return new CShoutcastFile();
+    else if (url.IsProtocol("tuxbox")) return new CTuxBoxFile();
+    else if (url.IsProtocol("hdhomerun")) return new CHomeRunFile();
+    else if (url.IsProtocol("sling")) return new CSlingboxFile();
+    else if (url.IsProtocol("myth")) return new CMythFile();
+    else if (url.IsProtocol("cmyth")) return new CMythFile();
 #ifdef HAS_FILESYSTEM
-    else if (strProtocol == "smb") return new CSmbFile();
-    else if (strProtocol == "rtv") return new CRTVFile();
-    else if (strProtocol == "daap") return new CDAAPFile();
-    else if (strProtocol == "upnp") return new CUPnPFile();
+    else if (url.IsProtocol("smb")) return new CSmbFile();
+    else if (url.IsProtocol("rtv")) return new CRTVFile();
+    else if (url.IsProtocol("daap")) return new CDAAPFile();
+    else if (url.IsProtocol("upnp")) return new CUPnPFile();
 #endif
   }
 
-  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, strProtocol.c_str(), url.Get().c_str() );
+  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );
   return NULL;
 }
