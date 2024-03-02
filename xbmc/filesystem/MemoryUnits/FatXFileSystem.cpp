@@ -91,20 +91,22 @@ bool CFatXFileSystem::Rename(const CStdString &oldFile, const CStdString &newFil
 bool CFatXFileSystem::MakeDir(const CStdString &path)
 {
   CHDDirectory hdDir;
-  return hdDir.Create(GetLocal(path).c_str());
+  const CURL pathToUrl(GetLocal(path));
+  return hdDir.Create(pathToUrl);
 }
 
 bool CFatXFileSystem::RemoveDir(const CStdString &path)
 {
   CHDDirectory hdDir;
-  return hdDir.Remove(GetLocal(path).c_str());
+  const CURL pathToUrl(GetLocal(path));
+  return hdDir.Remove(pathToUrl);
 }
 
 bool CFatXFileSystem::GetDirectory(const CStdString &directory, CFileItemList &items)
 {
-  CStdString dirMask(GetLocal(directory));
   CHDDirectory hd;
-  if (hd.GetDirectory(dirMask, items))
+  const CURL pathToUrl(GetLocal(directory));
+  if (hd.GetDirectory(pathToUrl, items))
   { // replace our items with our nicer URL
     for (int i = 0; i < items.Size(); i++)
     {

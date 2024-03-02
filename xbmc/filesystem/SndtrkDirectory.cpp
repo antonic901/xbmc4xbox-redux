@@ -21,6 +21,7 @@
 #include "SndtrkDirectory.h"
 #include "xbox/IoSupport.h"
 #include "FileItem.h"
+#include "URL.h"
 
 SOUNDTRACK datastorage; //created a vector of the XSOUNDTRACK_DATA class to keep track of each album
 
@@ -33,9 +34,9 @@ CSndtrkDirectory::~CSndtrkDirectory(void)
 {}
 
 
-bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
-  CStdString strRoot = strPath;
+  std::string strRoot = url.Get();
   if (IsAlone(strRoot))
   {
     // Add each user provided soundtrack to the soundtrack vector
@@ -76,7 +77,7 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
   }
   else
   {
-    char *ptr = strstr(strRoot, "//");
+    char *ptr = strstr(strRoot.c_str(), "//");
     ptr += 2;
     int m_iconvert = atoi(ptr); //convert from char back to int to compare to data
 
@@ -95,7 +96,7 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
       {
         // Add it to the list
         CFileItemPtr pItem(new CFileItem(strSong));
-        CStdString strPath("E:\\TDATA\\fffe0000\\music\\");
+        std::string strPath("E:\\TDATA\\fffe0000\\music\\");
         char tmpvar[16];
         *tmpvar = NULL;
         sprintf(tmpvar, "%04x", stInfo.uSoundtrackId);
@@ -114,12 +115,12 @@ bool CSndtrkDirectory::GetDirectory(const CStdString& strPath, CFileItemList &it
   return true;
 }
 
-bool CSndtrkDirectory::IsAlone(const CStdString& strPath)
+bool CSndtrkDirectory::IsAlone(const std::string& strPath)
 {
-  return (strcmp("soundtrack://", strPath) == 0);
+  return (strcmp("soundtrack://", strPath.c_str()) == 0);
 }
 
-bool CSndtrkDirectory::FindTrackName(const CStdString& strPath, char *NameOfSong)
+bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSong)
 {
   char* ptr = strstr(strPath.c_str(), "E:\\TDATA\\fffe0000\\music\\");
   if (ptr == NULL) return false;

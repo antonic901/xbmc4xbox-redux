@@ -18,6 +18,7 @@
  *
  */
 
+#include "system.h"
 #include "PlaylistDirectory.h"
 #include "PlayListPlayer.h"
 #include "URL.h"

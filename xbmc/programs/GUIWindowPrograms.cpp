@@ -499,7 +499,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
         CHDDirectory dir;
         dir.SetMask(".xbtf|.etm");
         for (int j=0;j<inArchives.Size();++j)
-          if (dir.IsAllowed(inArchives[j]->GetPath()))
+          if (dir.IsAllowed(inArchives[j]->GetURL()))
           {
             CFileItemPtr item(new CFileItem(*inArchives[j]));
             CStdString strPathInArchive = item->GetPath();

@@ -40,7 +40,6 @@ CMusicFileDirectory::~CMusicFileDirectory(void)
 bool CMusicFileDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   CStdString strPath=url.Get();
-  CURL url(strPath);
 
   CStdString strFileName;
   strFileName = URIUtils::GetFileName(strPath);

@@ -22,10 +22,10 @@
 #include "ISO9660Directory.h"
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
+#include "FileItem.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
-#include "FileItem.h"
 
 using namespace XFILE;
 

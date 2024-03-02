@@ -20,6 +20,7 @@
  */
 
 #include <map>
+#include <xtl.h>
 
 #include "IDirectory.h"
 
@@ -48,8 +49,8 @@ class CSndtrkDirectory :
 public:
   CSndtrkDirectory(void);
   virtual ~CSndtrkDirectory(void);
-  virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
-  bool IsAlone(const CStdString& strPath);
-  bool FindTrackName(const CStdString& strPath, char* NameOfSong);
+  virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+  bool IsAlone(const std::string& strPath);
+  bool FindTrackName(const std::string& strPath, char* NameOfSong);
 };
 };

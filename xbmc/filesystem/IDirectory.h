@@ -168,7 +168,7 @@ protected:
    localized string.
    \param var the variant to localize.
    */
-  CStdString GetLocalized(const CVariant &var) const;
+  std::string GetLocalized(const CVariant &var) const;
 
   std::string m_strFileMask;  ///< Holds the file mask specified by SetMask()
 

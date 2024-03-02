@@ -120,8 +120,9 @@ void CAutorun::RunCdda()
 {
   CFileItemList vecItems;
 
-  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( "cdda://local/" ) );
-  if ( !pDir->GetDirectory( "cdda://local/", vecItems ) )
+  const CURL pathToUrl("cdda://local/");
+  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ) );
+  if ( !pDir->GetDirectory( pathToUrl, vecItems ) )
     return ;
 
   if ( vecItems.Size() <= 0 )
@@ -167,13 +168,14 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   bool bPlaying;
   if (pInfo->IsISOUDF(1) || pInfo->IsISOHFS(1) || pInfo->IsIso9660(1) || pInfo->IsIso9660Interactive(1))
   {
-    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( "iso9660://" ));
+    const CURL pathToUrl("iso9660://");
+    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
     bPlaying = RunDisc(pDir.get(), "iso9660://", nAddedToPlaylist, true, bypassSettings, restart);
   }
   else
   {
-  const CURL pathToUrl("D:\\");
-  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
+    const CURL pathToUrl("D:\\");
+    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
     bPlaying = RunDisc(pDir.get(), "D:\\", nAddedToPlaylist, true, bypassSettings, restart);
   }
 #endif

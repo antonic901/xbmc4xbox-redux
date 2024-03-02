@@ -176,7 +176,7 @@ bool CGUIWindowGameSaves::OnPlayMedia(int iItem)
 
 bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItemList& items)
 {
-  if (!m_rootDir.GetDirectory(strDirectory,items,false))
+  if (!m_rootDir.GetDirectory(CURL(strDirectory),items,false))
     return false;
 
   CLog::Log(LOGDEBUG,"CGUIWindowGameSaves::GetDirectory (%s)", strDirectory.c_str());
@@ -266,7 +266,7 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
           CLog::Log(LOGDEBUG, "Loading GameSave info from %s,  data is %s, located at %i to %i",  titlemetaXBX.c_str(),strDescription.c_str(),poss,pose);
           // check for subfolders with savemeta.xbx
           CFileItemList items2;
-          m_rootDir.GetDirectory(item->GetPath(),items2,false);
+          m_rootDir.GetDirectory(item->GetURL(),items2,false);
           int j;
           for (j=0;j<items2.Size();++j)
           {

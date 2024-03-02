@@ -33,6 +33,7 @@
 #include "dialogs/GUIDialogBusy.h"
 #include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
+#include "URL.h"
 
 using namespace std;
 using namespace XFILE;
@@ -363,7 +364,7 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const CStdString &m
     CFileItemPtr pItem=items[i];
     if ((!pItem->m_bIsFolder) && (!pItem->IsInternetStream()))
     {
-      auto_ptr<IFileDirectory> pDirectory(CFileDirectoryFactory::Create(pItem->GetURL(),pItem.get(),mask));
+      auto_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetURL(),pItem.get(),mask));
       if (pDirectory.get())
         pItem->m_bIsFolder = true;
       else

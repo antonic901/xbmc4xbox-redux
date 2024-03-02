@@ -150,7 +150,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
 
     CStdString strDirectory=pItem->GetPath();
     CFileItemList items;
-    directory->GetDirectory(strDirectory, items);
+    directory->GetDirectory(CURL(strDirectory), items);
 
     // sort the items before adding to playlist
     items.Sort(SortByLabel, SortOrderAscending);
@@ -163,7 +163,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     CStdString strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "zip", pItem->GetPath(), "");
     CFileItemList items;
-    directory->GetDirectory(strDirectory, items);
+    directory->GetDirectory(CURL(strDirectory), items);
 
     // sort the items before adding to playlist
     items.Sort(SortByLabel, SortOrderAscending);
@@ -176,7 +176,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     CStdString strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "rar", pItem->GetPath(), "");
     CFileItemList items;
-    directory->GetDirectory(strDirectory, items);
+    directory->GetDirectory(CURL(strDirectory), items);
 
     // sort the items before adding to playlist
     items.Sort(SortByLabel, SortOrderAscending);
@@ -350,7 +350,7 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
         }
 
         directory->SetSources(*shares);
-        directory->GetDirectory("",*webDirItems);
+        directory->GetDirectory(CURL(""),*webDirItems);
 
         //sort items
         webDirItems->Sort(SortByLabel, SortOrderAscending);
@@ -750,7 +750,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               pItem->m_bIsFolder=true;
               webDirItems->Add(pItem);
             }
-            directory->GetDirectory(strDirectory, *webDirItems);
+            directory->GetDirectory(CURL(strDirectory), *webDirItems);
             webDirItems->Sort(SortByLabel, SortOrderAscending);
           }
           else

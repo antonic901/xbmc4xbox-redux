@@ -88,7 +88,7 @@ using namespace XFILE;
 IDirectory* CFactoryDirectory::Create(const CURL& url)
 {
   CFileItem item(url.Get(), false);
-  IFileDirectory* pDir=CFileDirectoryFactory::Create(url, &item);
+  IFileDirectory* pDir=CFactoryFileDirectory::Create(url, &item);
   if (pDir)
     return pDir;
 

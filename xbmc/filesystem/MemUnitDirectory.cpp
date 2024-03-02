@@ -24,6 +24,7 @@
 #include "MemoryUnits/IFileSystem.h"
 #include "MemoryUnits/IDevice.h"
 #include "FileItem.h"
+#include "URL.h"
 
 using namespace XFILE;
 
@@ -33,8 +34,9 @@ CMemUnitDirectory::CMemUnitDirectory(void)
 CMemUnitDirectory::~CMemUnitDirectory(void)
 {}
 
-bool CMemUnitDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
+bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
+  CStdString strPath = url.Get();
   IFileSystem *fileSystem = GetFileSystem(strPath);
   if (!fileSystem) return false;
   
@@ -49,7 +51,7 @@ bool CMemUnitDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
   for (int i = 0; i < cacheItems.Size(); i++)
   {
     CFileItemPtr item = cacheItems[i];
-    if (item->m_bIsFolder || IsAllowed(item->GetPath()))
+    if (item->m_bIsFolder || IsAllowed(item->GetURL()))
       items.Add(item);
   }
 
@@ -57,24 +59,26 @@ bool CMemUnitDirectory::GetDirectory(const CStdString& strPath, CFileItemList &i
   return true;
 }
 
-bool CMemUnitDirectory::Create(const char* strPath)
+bool CMemUnitDirectory::Create(const CURL& url)
 {
+  std::string strPath = url.Get();
   IFileSystem *fileSystem = GetFileSystem(strPath);
   if (!fileSystem) return false;
-  return fileSystem->MakeDir(strPath + 7);
+  return fileSystem->MakeDir(strPath.c_str() + 7);
 }
 
-bool CMemUnitDirectory::Remove(const char* strPath)
+bool CMemUnitDirectory::Remove(const CURL& url)
 {
+  std::string strPath = url.Get();
   IFileSystem *fileSystem = GetFileSystem(strPath);
   if (!fileSystem) return false;
-  return fileSystem->RemoveDir(strPath + 7);
+  return fileSystem->RemoveDir(strPath.c_str() + 7);
 }
 
-bool CMemUnitDirectory::Exists(const char* strPath)
+bool CMemUnitDirectory::Exists(const CURL& url)
 {
   CFileItemList items;
-  if (GetDirectory(strPath, items))
+  if (GetDirectory(url, items))
     return true;
   return false;
 }

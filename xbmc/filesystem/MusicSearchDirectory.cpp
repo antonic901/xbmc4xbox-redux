@@ -18,12 +18,13 @@
  *
  */
 
-#include "utils/log.h"
+#include "threads/SystemClock.h"
 #include "MusicSearchDirectory.h"
 #include "music/MusicDatabase.h"
 #include "URL.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "utils/log.h"
+#include "guilib/LocalizeStrings.h"
 
 using namespace XFILE;
 using namespace XFILE;

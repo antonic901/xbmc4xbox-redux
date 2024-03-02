@@ -87,7 +87,7 @@ namespace XFILE
     for (std::vector<CStdString>::const_iterator virtualFolder = virtualFolders.begin(); virtualFolder != virtualFolders.end(); virtualFolder++)
     {
       CFileItemPtr pItem = CFileItemPtr(new CFileItem(*virtualFolder, true));
-      IFileDirectory *dir = CFileDirectoryFactory::Create(pItem->GetURL(), pItem.get());
+      IFileDirectory *dir = CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get());
 
       if (dir != NULL)
       {

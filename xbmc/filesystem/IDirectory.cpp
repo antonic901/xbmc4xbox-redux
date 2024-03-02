@@ -179,7 +179,7 @@ void IDirectory::RequireAuthentication(const CURL &url)
   m_requirements["url"] = url.Get();
 }
 
-CStdString IDirectory::GetLocalized(const CVariant &var) const
+std::string IDirectory::GetLocalized(const CVariant &var) const
 {
   if (var.isString())
     return var.asString();

@@ -20,6 +20,7 @@
  *
  */
 
+#include "utils/StdString.h"
 #include "IDirectory.h"
 
 class CFileItemList;

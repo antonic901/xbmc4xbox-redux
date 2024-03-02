@@ -275,7 +275,7 @@ void CZipManager::CleanUp(const CStdString& strArchive, const CStdString& strPat
   CStdString strZipPath;
   URIUtils::CreateArchivePath(strZipPath, "zip", strArchive, "");
 
-  GetZipList(strZipPath,entry);
+  GetZipList(CURL(strZipPath),entry);
   for (vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)
   {
     if (it->name[strlen(it->name)-1] == '/') // skip dirs

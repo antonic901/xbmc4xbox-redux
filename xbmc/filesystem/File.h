@@ -73,7 +73,6 @@ public:
 
   bool Open(const CURL& file, const unsigned int flags = 0);
   bool OpenForWrite(const CURL& file, bool bOverWrite = false);
-  unsigned int LoadFile(const CURL &file, auto_buffer& outputBuffer);
 
   bool Open(const CStdString& strFileName, const unsigned int flags = 0);
   bool OpenForWrite(const CStdString& strFileName, bool bOverWrite = false);

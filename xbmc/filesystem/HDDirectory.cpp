@@ -46,15 +46,14 @@ CHDDirectory::CHDDirectory(void)
 CHDDirectory::~CHDDirectory(void)
 {}
 
-bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items)
+bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   WIN32_FIND_DATA wfd;
 
-  CStdString strPath=strPath1;
+  CStdString strPath=url.Get();
   g_charsetConverter.utf8ToStringCharset(strPath);
 
   CStdString strRoot = strPath;
-  CURL url(strPath);
 
   memset(&wfd, 0, sizeof(wfd));
   URIUtils::AddSlashAtEnd(strRoot);
@@ -77,7 +76,7 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
   
   // on error, check if path exists at all, this will return true if empty folder
   if (!hFind.isValid())
-      return Exists(strPath1);
+    return Exists(url);
 
   if (hFind.isValid())
   {
@@ -130,9 +129,9 @@ bool CHDDirectory::GetDirectory(const CStdString& strPath1, CFileItemList &items
   return true;
 }
 
-bool CHDDirectory::Create(const char* strPath)
+bool CHDDirectory::Create(const CURL& url)
 {
-  CStdString strPath1 = strPath;
+  CStdString strPath1 = url.Get();
   g_charsetConverter.utf8ToStringCharset(strPath1);
   URIUtils::AddSlashAtEnd(strPath1);
 
@@ -154,18 +153,16 @@ bool CHDDirectory::Create(const char* strPath)
   return false;
 }
 
-bool CHDDirectory::Remove(const char* strPath)
+bool CHDDirectory::Remove(const CURL& url)
 {
-  CStdString strPath1 = strPath;
+  CStdString strPath1 = url.Get();
   g_charsetConverter.utf8ToStringCharset(strPath1);
   return (::RemoveDirectory(strPath1) || GetLastError() == ERROR_PATH_NOT_FOUND) ? true : false;
 }
 
-bool CHDDirectory::Exists(const char* strPath)
+bool CHDDirectory::Exists(const CURL& url)
 {
-  if (!strPath || !*strPath)
-    return false;
-  CStdString strReplaced=strPath;
+  CStdString strReplaced=url.Get();
   g_charsetConverter.utf8ToStringCharset(strReplaced);
   strReplaced.Replace("/","\\");
   CUtil::GetFatXQualifiedPath(strReplaced);

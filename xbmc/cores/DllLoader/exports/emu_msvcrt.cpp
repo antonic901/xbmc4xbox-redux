@@ -627,7 +627,6 @@ extern "C"
       return _findfirst(CUtil::ValidatePath(CSpecialProtocol::TranslatePath(str), true), data);
     }
     // non-local files. handle through IDirectory-class - only supports '*.bah' or '*.*'
-    CStdString strURL(file);
     CStdString strMask;
     if (url.GetFileName().Find("*.*") != string::npos)
     {
@@ -651,12 +650,12 @@ extern "C"
     }
     CStdString fName = url.GetFileName();
     url.SetFileName("");
-    strURL = url.Get();
+    CStdString strURL = url.Get();
     bVecDirsInited = true;
     vecDirsOpen[iDirSlot].items.Clear();
-    vecDirsOpen[iDirSlot].Directory = CFactoryDirectory::Create(strURL);
+    vecDirsOpen[iDirSlot].Directory = CFactoryDirectory::Create(url);
     vecDirsOpen[iDirSlot].Directory->SetMask(strMask);
-    vecDirsOpen[iDirSlot].Directory->GetDirectory(strURL+fName,vecDirsOpen[iDirSlot].items);
+    vecDirsOpen[iDirSlot].Directory->GetDirectory(CURL(strURL+fName),vecDirsOpen[iDirSlot].items);
     if (vecDirsOpen[iDirSlot].items.Size())
     {
       int size = sizeof(data->name);

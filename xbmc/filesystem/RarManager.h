@@ -24,7 +24,7 @@
  *
  */
 
-
+#include "utils/StdString.h"
 #include "threads/CriticalSection.h"
 #include <map>
 #include "lib/UnrarXLib/UnrarX.hpp"

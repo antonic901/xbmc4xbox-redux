@@ -1745,7 +1745,7 @@ int CXbmcHttp::xbmcAddToSlideshow(int numParas, CStdString paras[])
   // if its not a picture type, test to see if its a folder
   if (!pItem->IsPicture())
   {
-    IDirectory *pDirectory = CFactoryDirectory::Create(pItem->GetPath());
+    IDirectory *pDirectory = CFactoryDirectory::Create(pItem->GetURL());
     if (!pDirectory)
       return SetResponse(openTag+"Error");  
     bool bResult=pDirectory->Exists(CURL(pItem->GetPath()));
