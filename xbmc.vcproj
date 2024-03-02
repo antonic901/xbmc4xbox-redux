@@ -1297,6 +1297,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\XBInputEx.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\XBLocale.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XBLocale.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\XBMCTinyXML.cpp">
 				</File>
 				<File
