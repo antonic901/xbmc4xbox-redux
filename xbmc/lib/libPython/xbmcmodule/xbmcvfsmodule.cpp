@@ -92,7 +92,7 @@ extern "C" {
       if (!PyXBMCGetUnicodeString(strDestnation, d_line, 1)) return NULL;
 
       CPyThreadState pyState;
-      bResult = CFile::Cache(strSource, strDestnation);
+      bResult = CFile::Copy(strSource, strDestnation);
       pyState.Restore();
 
       return Py_BuildValue((char*)"b", bResult);

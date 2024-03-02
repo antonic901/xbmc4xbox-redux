@@ -762,7 +762,7 @@ void CMusicInfoScanner::UpdateFolderThumb(const VECSONGS &songs, const CStdStrin
     URIUtils::RemoveSlashAtEnd(folderPath1);
     CStdString folderCoverArt(CUtil::GetCachedMusicThumb(folderPath1));
     // copy as directory thumb as well
-    if (CFile::Cache(albumCoverArt, folderCoverArt))
+    if (CFile::Copy(albumCoverArt, folderCoverArt))
       CUtil::ThumbCacheAdd(folderCoverArt, true);
   }
 }

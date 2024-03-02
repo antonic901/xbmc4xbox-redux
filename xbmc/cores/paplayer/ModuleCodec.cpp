@@ -59,7 +59,7 @@ bool ModuleCodec::Init(const CStdString &strFile, unsigned int filecache)
 
   CStdString strLoadFile = "Z:\\cachedmod";
   if (!URIUtils::IsHD(strFile))
-    CFile::Cache(strFile,"Z:\\cachedmod");
+    CFile::Copy(strFile,"Z:\\cachedmod");
   else
     strLoadFile = strFile;
   

@@ -8284,14 +8284,14 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
         CStdString cachedThumb(GetCachedThumb(item));
         CStdString savedThumb(saveItem.GetTBNFile());
         if (!cachedThumb.IsEmpty() && (overwrite || !CFile::Exists(savedThumb, false)))
-          if (!CFile::Cache(cachedThumb, savedThumb))
+          if (!CFile::Copy(cachedThumb, savedThumb))
             CLog::Log(LOGERROR, "%s: Movie thumb export failed! ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
         
         CStdString cachedFanart(item.GetCachedFanart());
         CStdString savedFanart(URIUtils::ReplaceExtension(savedThumb, "-fanart.jpg"));
         
         if (CFile::Exists(cachedFanart, false) && (overwrite || !CFile::Exists(savedFanart, false)))
-          if (!CFile::Cache(cachedFanart, savedFanart))
+          if (!CFile::Copy(cachedFanart, savedFanart))
             CLog::Log(LOGERROR, "%s: Movie fanart export failed! ('%s' -> '%s')", __FUNCTION__, cachedFanart.c_str(), savedFanart.c_str());
         
         if (actorThumbs)
@@ -8374,7 +8374,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
         CStdString cachedThumb(GetCachedThumb(item));
         CStdString savedThumb(saveItem.GetTBNFile());
         if (!cachedThumb.IsEmpty() && (overwrite || !CFile::Exists(savedThumb, false)))
-          if (!CFile::Cache(cachedThumb, savedThumb))
+          if (!CFile::Copy(cachedThumb, savedThumb))
             CLog::Log(LOGERROR, "%s: Musicvideo thumb export failed! ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
       }
       m_pDS->next();
@@ -8455,13 +8455,13 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
         CStdString cachedThumb(GetCachedThumb(item));
         CStdString savedThumb(saveItem.GetFolderThumb());
         if (!cachedThumb.IsEmpty() && (overwrite || !CFile::Exists(savedThumb, false)))
-          if (!CFile::Cache(cachedThumb, savedThumb))
+          if (!CFile::Copy(cachedThumb, savedThumb))
             CLog::Log(LOGERROR, "%s: TVShow thumb export failed! ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
 
         CStdString cachedFanart(item.GetCachedFanart());
         CStdString savedFanart(saveItem.GetFolderThumb("fanart.jpg"));
         if (CFile::Exists(cachedFanart, false) && (overwrite || !CFile::Exists(savedFanart, false)))
-          if (!CFile::Cache(cachedFanart, savedFanart))
+          if (!CFile::Copy(cachedFanart, savedFanart))
             CLog::Log(LOGERROR, "%s: TVShow fanart export failed! ('%s' -> '%s')", __FUNCTION__, cachedFanart.c_str(), savedFanart.c_str());
 
         if (actorThumbs)
@@ -8516,7 +8516,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
           CStdString savedThumb(saveItem.GetFolderThumb(strSeasonThumb));
 
           if (CFile::Exists(cachedThumb, false) && (overwrite || !CFile::Exists(savedThumb, false)))
-            if (!CFile::Cache(cachedThumb, savedThumb))
+            if (!CFile::Copy(cachedThumb, savedThumb))
               CLog::Log(LOGERROR, "%s: TVShow season thumb export failed ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
         }
       }
@@ -8594,7 +8594,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
           CStdString cachedThumb(GetCachedThumb(item));
           CStdString savedThumb(saveItem.GetTBNFile());
           if (!cachedThumb.IsEmpty() && (overwrite || !CFile::Exists(savedThumb, false)))
-            if (!CFile::Cache(cachedThumb, savedThumb))
+            if (!CFile::Copy(cachedThumb, savedThumb))
               CLog::Log(LOGERROR, "%s: Episode thumb export failed! ('%s' -> '%s')", __FUNCTION__, cachedThumb.c_str(), savedThumb.c_str());
 
           if (actorThumbs)
@@ -8669,7 +8669,7 @@ void CVideoDatabase::ExportActorThumbs(const CStdString &strDir, const CVideoInf
     {
       CStdString thumbFile(GetSafeFile(strPath, iter->strName) + ".tbn");
       if (overwrite || !CFile::Exists(thumbFile))
-        if (!CFile::Cache(strThumb, thumbFile))
+        if (!CFile::Copy(strThumb, thumbFile))
           CLog::Log(LOGERROR, "%s: Actor thumb export failed! ('%s' -> '%s')", __FUNCTION__, strThumb.c_str(), thumbFile.c_str());
     }
   }
@@ -8793,8 +8793,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         scanner.AddVideo(&item, CONTENT_MOVIES, useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(moviesDir, info.m_strTitle));
-        CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
-        CFile::Cache(file + "-fanart.jpg", item.GetCachedFanart());
+        CFile::Copy(file + ".tbn", item.GetCachedVideoThumb());
+        CFile::Copy(file + "-fanart.jpg", item.GetCachedFanart());
         for (CVideoInfoTag::iCast i = info.m_cast.begin(); i != info.m_cast.end(); ++i)
           actors.insert(i->strName);
         current++;
@@ -8807,7 +8807,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         scanner.AddVideo(&item, CONTENT_MUSICVIDEOS, useFolders);
         SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
         CStdString file(GetSafeFile(musicvideosDir, StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle));
-        CFile::Cache(file + ".tbn", item.GetCachedVideoThumb());
+        CFile::Copy(file + ".tbn", item.GetCachedVideoThumb());
         current++;
       }
       else if (strnicmp(movie->Value(), "tvshow", 6) == 0)
@@ -8822,8 +8822,8 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         int showID = scanner.AddVideo(&item, CONTENT_TVSHOWS, useFolders);
         current++;
         CStdString showDir(GetSafeFile(tvshowsDir, info.m_strTitle));
-        CFile::Cache(URIUtils::AddFileToFolder(showDir, "folder.jpg"), item.GetCachedVideoThumb());
-        CFile::Cache(URIUtils::AddFileToFolder(showDir, "fanart.jpg"), item.GetCachedFanart());
+        CFile::Copy(URIUtils::AddFileToFolder(showDir, "folder.jpg"), item.GetCachedVideoThumb());
+        CFile::Copy(URIUtils::AddFileToFolder(showDir, "fanart.jpg"), item.GetCachedFanart());
         for (CVideoInfoTag::iCast i = info.m_cast.begin(); i != info.m_cast.end(); ++i)
           actors.insert(i->strName);
         // now load the episodes
@@ -8838,7 +8838,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
           SetPlayCount(item, info.m_playCount, info.m_lastPlayed);
           CStdString file;
           file.Format("s%02ie%02i.tbn", info.m_iSeason, info.m_iEpisode);
-          CFile::Cache(URIUtils::AddFileToFolder(showDir, file), item.GetCachedVideoThumb());
+          CFile::Copy(URIUtils::AddFileToFolder(showDir, file), item.GetCachedVideoThumb());
           for (CVideoInfoTag::iCast i = info.m_cast.begin(); i != info.m_cast.end(); ++i)
             actors.insert(i->strName);
           episode = episode->NextSiblingElement("episodedetails");
@@ -8867,7 +8867,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       item.SetLabel(*i);
       CStdString savedThumb(GetSafeFile(actorsDir, *i) + ".tbn");
       CStdString cachedThumb = item.GetCachedActorThumb();
-      CFile::Cache(savedThumb, cachedThumb);
+      CFile::Copy(savedThumb, cachedThumb);
     }
   }
   catch (...)

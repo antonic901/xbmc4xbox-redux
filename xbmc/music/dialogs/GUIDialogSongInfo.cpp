@@ -300,9 +300,9 @@ void CGUIDialogSongInfo::OnGetThumb()
     pic.CacheSkinImage("DefaultAlbumCover.png", cachedThumb);
   }
   else if (result == "thumb://allmusic.com")
-    CFile::Cache(thumbFromWeb, cachedThumb);
+    CFile::Copy(thumbFromWeb, cachedThumb);
   else if (result == "thumb://Local")
-    CFile::Cache(cachedLocalThumb, cachedThumb);
+    CFile::Copy(cachedLocalThumb, cachedThumb);
   else if (CFile::Exists(result))
   {
     CPicture pic;

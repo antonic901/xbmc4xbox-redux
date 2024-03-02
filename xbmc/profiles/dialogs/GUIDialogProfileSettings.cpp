@@ -357,7 +357,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
         // save new profile guisettings
         if (CGUIDialogYesNo::ShowAndGetInput(20058,20048,20102,20022,20044,20064))
         {
-          CFile::Cache(URIUtils::AddFileToFolder("special://masterprofile/","guisettings.xml"),
+          CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/","guisettings.xml"),
                        URIUtils::AddFileToFolder("special://masterprofile/",
                                               dialog->m_strDirectory+"/guisettings.xml"));
         }
@@ -384,7 +384,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool bDeta
         if ((dialog->m_iSourcesMode & 2) == 2)
           if (CGUIDialogYesNo::ShowAndGetInput(20058,20071,20102,20022,20044,20064))
           {
-            CFile::Cache(URIUtils::AddFileToFolder("special://masterprofile/","sources.xml"),
+            CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/","sources.xml"),
                          URIUtils::AddFileToFolder("special://masterprofile/",
                          dialog->m_strDirectory+"/sources.xml"));
           }

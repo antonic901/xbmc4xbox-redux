@@ -4501,7 +4501,7 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
         {
           CStdString strThumb;
           if (GetAlbumThumb(album.idAlbum,strThumb) && (overwrite || !CFile::Exists(URIUtils::AddFileToFolder(strPath,"folder.jpg"))))
-            CFile::Cache(strThumb,URIUtils::AddFileToFolder(strPath,"folder.jpg"));
+            CFile::Copy(strThumb,URIUtils::AddFileToFolder(strPath,"folder.jpg"));
         }
         xmlDoc.Clear();
         TiXmlDeclaration decl("1.0", "UTF-8", "yes");
@@ -4576,9 +4576,9 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
         {
           CFileItem item(artist);
           if (CFile::Exists(item.GetCachedArtistThumb()) && (overwrite || !CFile::Exists(URIUtils::AddFileToFolder(strPath,"folder.jpg"))))
-            CFile::Cache(item.GetCachedArtistThumb(),URIUtils::AddFileToFolder(strPath,"folder.jpg"));
+            CFile::Copy(item.GetCachedArtistThumb(),URIUtils::AddFileToFolder(strPath,"folder.jpg"));
           if (CFile::Exists(item.GetCachedFanart()) && (overwrite || !CFile::Exists(URIUtils::AddFileToFolder(strPath,"fanart.jpg"))))
-            CFile::Cache(item.GetCachedFanart(),URIUtils::AddFileToFolder(strPath,"fanart.jpg"));
+            CFile::Copy(item.GetCachedFanart(),URIUtils::AddFileToFolder(strPath,"fanart.jpg"));
         }
         xmlDoc.Clear();
         TiXmlDeclaration decl("1.0", "UTF-8", "yes");

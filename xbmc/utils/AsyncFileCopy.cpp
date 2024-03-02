@@ -100,7 +100,7 @@ void CAsyncFileCopy::Process()
 {
   try
   {
-    m_succeeded = XFILE::CFile::Cache(m_from, m_to, this);
+    m_succeeded = XFILE::CFile::Copy(m_from, m_to, this);
   }
   catch (...)
   {

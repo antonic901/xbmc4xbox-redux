@@ -441,7 +441,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           {
             CStdString strDest;
             URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
-            CFile::Cache(items2[j]->GetPath(),strDest);
+            CFile::Copy(items2[j]->GetPath(),strDest);
           }
         }
         URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()),path);
@@ -505,7 +505,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           {
             CStdString strDest;
             URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
-            CFile::Cache(items2[j]->GetPath(),strDest);
+            CFile::Copy(items2[j]->GetPath(),strDest);
           }
         }
 

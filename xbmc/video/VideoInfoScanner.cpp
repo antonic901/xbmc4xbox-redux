@@ -1547,7 +1547,7 @@ namespace VIDEO
     {
       CFileItem folderItem(folder, true);
       CStdString strThumb(folderItem.GetCachedVideoThumb());
-      CFile::Cache(imdbThumb.c_str(), strThumb.c_str(), NULL, NULL);
+      CFile::Copy(imdbThumb.c_str(), strThumb.c_str(), NULL, NULL);
     }
   }
 

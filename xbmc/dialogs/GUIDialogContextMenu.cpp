@@ -535,7 +535,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
           cachedThumb = item->GetCachedPictureThumb();
         else  // assume "programs"
           cachedThumb = item->GetCachedProgramThumb();
-        XFILE::CFile::Cache(strThumb, cachedThumb);
+        XFILE::CFile::Copy(strThumb, cachedThumb);
       }
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);

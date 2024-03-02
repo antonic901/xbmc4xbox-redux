@@ -238,7 +238,7 @@ bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFil
       return stream.Download(sourceUrl, destFile);
     }
     else
-      return CFile::Cache(sourceUrl, destFile);
+      return CFile::Copy(sourceUrl, destFile);
   }
   return true;
 }

@@ -160,7 +160,7 @@ LibraryLoader* DllLoaderContainer::FindModule(const char* sName, const char* sCu
     CURL url(sName);
     CStdString newName = "special://temp/";
     newName += url.GetFileName();
-    CFile::Cache(sName, newName);
+    CFile::Copy(sName, newName);
     return FindModule(newName, sCurrentDir, bLoadSymbols);
   }
 

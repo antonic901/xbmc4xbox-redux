@@ -506,7 +506,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
     if (CFile::Exists(thumb))
     {
       // NOTE: This could fail if the thumbloader was too slow and the user too impatient
-      CFile::Cache(thumb, cachedThumb);
+      CFile::Copy(thumb, cachedThumb);
     }
     else
       result = "thumb://None";
@@ -517,7 +517,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
     pic.CacheSkinImage("DefaultAlbumCover.png", cachedThumb);
   }
   else if (result == "thumb://Local")
-    CFile::Cache(cachedLocalThumb, cachedThumb);
+    CFile::Copy(cachedLocalThumb, cachedThumb);
   else if (CFile::Exists(result))
   {
     CPicture pic;

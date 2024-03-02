@@ -343,7 +343,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
           if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
               g_application.m_pPlayer->CloseFile(); // to conserve memory if unraring
               
-          if (CFile::Cache(strPath,"special://temp/subtitle"+strExt+".keep"))
+          if (CFile::Copy(strPath,"special://temp/subtitle"+strExt+".keep"))
           {
             CStdString strPath2;
             CStdString strPath3;
@@ -366,7 +366,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
               strPath3 = "special://temp/subtitle.idx.keep";
             }
             if (CFile::Exists(strPath2))
-              CFile::Cache(strPath2,strPath3);
+              CFile::Copy(strPath2,strPath3);
             else
             {
               CFileItemList items;
@@ -420,7 +420,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
         m_subtitleStream = g_application.m_pPlayer->GetSubtitleCount();
         CStdString strExt;
         URIUtils::GetExtension(strPath,strExt);
-        if (CFile::Cache(strPath,"special://temp/subtitle.browsed"+strExt))
+        if (CFile::Copy(strPath,"special://temp/subtitle.browsed"+strExt))
         {
           int id = g_application.m_pPlayer->AddSubtitle("special://temp/subtitle.browsed"+strExt);
           if(id >= 0)

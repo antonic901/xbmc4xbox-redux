@@ -116,7 +116,7 @@ bool CMusicInfoTagLoaderMod::Load(const CStdString& strFileName, CMusicInfoTag& 
 bool CMusicInfoTagLoaderMod::getFile(CStdString& strFile, const CStdString& strSource)
 {
 	if( !URIUtils::IsHD(strSource) ) {
-		if (!CFile::Cache(strSource.c_str(), "Z:\\cachedmod", NULL, NULL)) {
+		if (!CFile::Copy(strSource.c_str(), "Z:\\cachedmod", NULL, NULL)) {
 			::DeleteFile("Z:\\cachedmod");
 			CLog::Log(LOGERROR, "ModTagLoader: Unable to cache file %s\n", strSource.c_str());
 			strFile = "";

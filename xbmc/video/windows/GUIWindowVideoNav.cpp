@@ -1251,7 +1251,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         if (CFile::Exists(thumb))
         {
           // NOTE: This could fail if the thumbloader was too slow and the user too impatient
-          CFile::Cache(thumb, cachedThumb);
+          CFile::Copy(thumb, cachedThumb);
         }
         else
           result = "thumb://None";
@@ -1261,7 +1261,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         CFile::Delete(cachedThumb);
       }
       else
-        CFile::Cache(result,cachedThumb);
+        CFile::Copy(result,cachedThumb);
 
       CUtil::DeleteVideoDatabaseDirectoryCache();
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REFRESH_THUMBS);

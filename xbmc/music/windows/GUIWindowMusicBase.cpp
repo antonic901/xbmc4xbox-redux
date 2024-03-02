@@ -1230,7 +1230,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
     if (CMusicInfoScanner::HasSingleAlbum(songs, album, artist))
     { // can cache as the folder thumb
       CStdString folderThumb(CUtil::GetCachedMusicThumb(albumPath));
-      CFile::Cache(albumThumb, folderThumb);
+      CFile::Copy(albumThumb, folderThumb);
     }
   }
 

@@ -108,7 +108,7 @@ public:
   static bool Delete(const CURL& file);
   static int  Stat(const CURL& file, struct __stat64* buffer);
   static bool Rename(const CURL& file, const CURL& urlNew);
-  static bool Cache(const CURL& file, const CURL& dest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
+  static bool Copy(const CURL& file, const CURL& dest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
   static bool SetHidden(const CURL& file, bool hidden);
 
   // string interface
@@ -117,7 +117,7 @@ public:
   int Stat(struct __stat64 *buffer);
   static bool Delete(const CStdString& strFileName);
   static bool Rename(const CStdString& strFileName, const CStdString& strNewFileName);
-  static bool Cache(const CStdString& strFileName, const CStdString& strDest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
+  static bool Copy(const CStdString& strFileName, const CStdString& strDest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
   static bool SetHidden(const CStdString& fileName, bool hidden);
 
 private:

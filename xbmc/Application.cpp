@@ -794,7 +794,7 @@ HRESULT CApplication::Create(HWND hWnd)
       CFileItemList items;
       CUtil::GetRecursiveListing("special://xbmc/userdata",items,"");
       for (int i=0;i<items.Size();++i)
-          CFile::Cache(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
+          CFile::Copy(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
     }
     g_advancedSettings.m_logFolder = "special://masterprofile/";
   }

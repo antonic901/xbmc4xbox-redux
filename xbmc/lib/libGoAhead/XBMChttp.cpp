@@ -587,7 +587,7 @@ void CXbmcHttp::copyThumb(CStdString srcFn, CStdString destFn)
       {
         lastThumbFn=srcFn;
         if (CFile::Exists(srcFn))
-          CFile::Cache(srcFn, destFn);
+          CFile::Copy(srcFn, destFn);
 	    else
 	    {
 	      CPicture pic;
@@ -1853,7 +1853,7 @@ int CXbmcHttp::xbmcGetThumb(int numParas, CStdString paras[], bool bGetThumb)
   if (URIUtils::IsRemote(paras[0]))
   {
     CStdString strDest="special://temp/xbmcDownloadFile.tmp";
-    CFile::Cache(paras[0], strDest, NULL, NULL) ;
+    CFile::Copy(paras[0], strDest, NULL, NULL) ;
     if (CFile::Exists(strDest))
     {
       thumb+=encodeFileToBase64(strDest,linesize);
@@ -2477,7 +2477,7 @@ int CXbmcHttp::xbmcSetFile(int numParas, CStdString paras[])
       else if (paras[2].ToLower() == "last")
       {
         decodeBase64ToFile(paras[1], tmpFile, true);
-        CFile::Cache(tmpFile, paras[0].c_str(), NULL, NULL) ;
+        CFile::Copy(tmpFile, paras[0].c_str(), NULL, NULL) ;
         CFile::Delete(tmpFile);
       }
       else
@@ -2486,7 +2486,7 @@ int CXbmcHttp::xbmcSetFile(int numParas, CStdString paras[])
     else
     {
       decodeBase64ToFile(paras[1], tmpFile);
-      CFile::Cache(tmpFile, paras[0].c_str(), NULL, NULL) ;
+      CFile::Copy(tmpFile, paras[0].c_str(), NULL, NULL) ;
       CFile::Delete(tmpFile);
     }
     return SetResponse(openTag+"OK");
@@ -2503,7 +2503,7 @@ int CXbmcHttp::xbmcCopyFile(int numParas, CStdString paras[])
   {
     if (CFile::Exists(paras[0].c_str()))
     {
-      CFile::Cache(paras[0].c_str(), paras[1].c_str(), NULL, NULL) ;
+      CFile::Copy(paras[0].c_str(), paras[1].c_str(), NULL, NULL) ;
       return SetResponse(openTag+"OK");
     }
     else
