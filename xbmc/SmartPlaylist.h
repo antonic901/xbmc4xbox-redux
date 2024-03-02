@@ -27,6 +27,7 @@
 #include "utils/XBMCTinyXML.h"
 
 class CDatabase;
+class CURL;
 class CVariant;
 
 class ISmartPlaylistRule
@@ -162,6 +163,7 @@ public:
   CSmartPlaylist();
   virtual ~CSmartPlaylist() { }
 
+  bool Load(const CURL& url);
   bool Load(const CStdString &path);
   bool Load(const CVariant &obj);
   bool LoadFromXml(const CStdString &xml);
@@ -170,7 +172,7 @@ public:
   bool Save(CVariant &obj, bool full = true) const;
   bool SaveAsJson(CStdString &json, bool full = true) const;
 
-  bool OpenAndReadName(const CStdString &path);
+  bool OpenAndReadName(const CURL &url);
   bool LoadFromXML(const TiXmlNode *root, const CStdString &encoding = "UTF-8");
 
   void Reset();
@@ -227,7 +229,7 @@ private:
   friend class CGUIDialogMediaFilter;
 
   const TiXmlNode* readName(const TiXmlNode *root);
-  const TiXmlNode* readNameFromPath(const CStdString &path);
+  const TiXmlNode* readNameFromPath(const CURL &url);
   const TiXmlNode* readNameFromXml(const CStdString &xml);
   bool load(const TiXmlNode *root);
 

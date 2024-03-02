@@ -55,7 +55,7 @@ namespace XFILE
   {
     // Load in the SmartPlaylist and get the WHERE query
     CSmartPlaylist playlist;
-    if (!playlist.Load(url.Get()))
+    if (!playlist.Load(url))
       return false;
     bool result = GetDirectory(playlist, items);
     if (result)
@@ -333,17 +333,19 @@ namespace XFILE
     CFileItemList list;
     bool filesExist = false;
     if (CSmartPlaylist::IsMusicType(playlistType))
-      filesExist = CDirectory::GetDirectory("special://musicplaylists/", list, "*.xsp");
+      filesExist = CDirectory::GetDirectory("special://musicplaylists/", list, ".xsp", false);
     else // all others are video
-      filesExist = CDirectory::GetDirectory("special://videoplaylists/", list, "*.xsp");
+      filesExist = CDirectory::GetDirectory("special://videoplaylists/", list, ".xsp", false);
     if (filesExist)
     {
       for (int i = 0; i < list.Size(); i++)
       {
         CFileItemPtr item = list[i];
-        if (item->GetLabel().CompareNoCase(name) == 0)
-        { // found :)
-          return item->GetPath();
+        CSmartPlaylist playlist;
+        if (playlist.OpenAndReadName(item->GetURL()))
+        {
+          if (playlist.GetName().CompareNoCase(name) == 0)
+            return item->GetPath();
         } 
       }
     }
