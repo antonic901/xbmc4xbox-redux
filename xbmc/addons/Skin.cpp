@@ -389,50 +389,6 @@ void CSkinInfo::SettingOptionsSkinFontsFiller(const CSetting *setting, std::vect
     current = list[0].second;
 }
 
-void CSkinInfo::SettingOptionsSkinSoundFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
-{
-  CStdString settingValue = ((const CSettingString*)setting)->GetValue();
-  current = "SKINDEFAULT";
-
-  list.push_back(make_pair(g_localizeStrings.Get(474), "OFF"));
-
-  if (CDirectory::Exists(URIUtils::AddFileToFolder(g_SkinInfo->Path(), "sounds")))
-    list.push_back(make_pair(g_localizeStrings.Get(15106), "SKINDEFAULT"));
-
-  ADDON::VECADDONS addons;
-  if (ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_RESOURCE_UISOUNDS, addons))
-  {
-    for (size_t i = 0; i < addons.size(); i++)
-      list.push_back(make_pair(addons[i]->Name(), addons[i]->ID()));
-  }
-
-  //Add sounds from special directories
-  CFileItemList items;
-  CDirectory::GetDirectory("special://xbmc/sounds/", items);
-  CDirectory::GetDirectory("special://home/sounds/", items);
-  for (int i = 0; i < items.Size(); i++)
-  {
-    CFileItemPtr pItem = items[i];
-    if (pItem->m_bIsFolder)
-    {
-      if (StringUtils2::EqualsNoCase(pItem->GetLabel(), ".svn") ||
-          StringUtils2::EqualsNoCase(pItem->GetLabel(), "fonts") ||
-          StringUtils2::EqualsNoCase(pItem->GetLabel(), "media"))
-        continue;
-      list.push_back(make_pair(pItem->GetLabel(), pItem->GetLabel()));
-    }
-  }
-
-  sort(list.begin() + 2, list.end());
-
-  // try to find the best matching value
-  for (vector< pair<string, string> >::const_iterator it = list.begin(); it != list.end(); ++it)
-  {
-    if (StringUtils2::EqualsNoCase(it->second, settingValue))
-      current = settingValue;
-  }
-}
-
 void CSkinInfo::SettingOptionsSkinThemesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
 {
   // get the choosen theme and remove the extension from the current theme (backward compat)

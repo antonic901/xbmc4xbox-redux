@@ -1251,7 +1251,6 @@ HRESULT CApplication::Initialize()
 
   CDirectory::Create("special://home/addons");
   CDirectory::Create("special://home/addons/packages");
-  CDirectory::Create("special://home/sounds");
   CUtil::WipeDir("special://temp/");
   CDirectory::Create("special://temp/temp"); // temp directory for python and dllGetTempPathA
 
@@ -1720,7 +1719,7 @@ bool CApplication::LoadSkin(const CStdString& skinID)
   return false;
 }
 
-void CApplication::LoadSkin(const SkinPtr& skin)
+bool CApplication::LoadSkin(const SkinPtr& skin)
 {
   if (!skin)
     return false;
@@ -5721,17 +5720,6 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     {
       CSettings::Get().SetString("lookandfeel.font", "Default");
       return;
-    }
-
-    // Reset sounds setting if new skin doen't provide sounds
-    if (settingId == "lookandfeel.skin" && CSettings::Get().GetString("lookandfeel.soundskin") == "SKINDEFAULT")
-    {
-      ADDON::AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(((CSettingString*)setting)->GetValue(), addon, ADDON_SKIN))
-      {
-        if (!CDirectory::Exists(URIUtils::AddFileToFolder(addon->Path(), "sounds")))
-          CSettings::Get().GetSetting("lookandfeel.soundskin")->Reset();
-      }
     }
 
     std::string builtin("ReloadSkin");
