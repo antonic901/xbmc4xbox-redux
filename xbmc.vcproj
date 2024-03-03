@@ -3032,6 +3032,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\Skin.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\UISoundsResource.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\UISoundsResource.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\Visualisation.cpp">
 				</File>
 				<File

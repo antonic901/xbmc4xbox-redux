@@ -23,7 +23,6 @@
 #include <map>
 
 #include "settings/ISettingCallback.h"
-#include "IAudioDeviceChangedCallback.h"
 #include "threads/CriticalSection.h"
 
 // forward definitions
@@ -44,12 +43,13 @@ class CGUIAudioManager : public ISettingCallback
 
 public:
   CGUIAudioManager();
-  virtual ~CGUIAudioManager();
+          ~CGUIAudioManager();
 
   virtual void OnSettingChanged(const CSetting *setting);
+  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
-  virtual void Initialize(int iDevice);
-  virtual void DeInitialize(int iDevice);
+  void Initialize(int iDevice);
+  void DeInitialize(int iDevice);
 
   bool Load();
 
