@@ -251,9 +251,8 @@ protected:
   virtual void OnSettingAction(const CSetting *setting);
   virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
-  void LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
+  bool LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
 
-  bool m_skinReloading; // if true we disallow LoadSkin until ReloadSkin is called
   bool m_skinReverting;
 
   // screensaver
