@@ -334,6 +334,7 @@ CApplication::CApplication(void)
   m_nextPlaylistItem = -1;
   m_bPlaybackStarting = false;
   m_skinReloading = false;
+  m_skinReverting = false;
 
   //true while we in IsPaused mode! Workaround for OnPaused, which must be add. after v2.0
   m_bIsPaused = false;
@@ -1599,9 +1600,11 @@ void CApplication::StopServices()
 #endif  
 }
 
-void CApplication::ReloadSkin()
+void CApplication::ReloadSkin(bool confirm/*=false*/)
 {
   m_skinReloading = false;
+  std::string oldSkin = g_SkinInfo ? g_SkinInfo->ID() : "";
+
   CGUIMessage msg(GUI_MSG_LOAD_SKIN, -1, g_windowManager.GetActiveWindow());
   g_windowManager.SendMessage(msg);
 
@@ -1623,6 +1626,21 @@ void CApplication::ReloadSkin()
       pWindow->OnMessage(msg3);
     }
   }
+
+  if (!m_skinReverting && confirm)
+  {
+    bool cancelled;
+    if (!CGUIDialogYesNo::ShowAndGetInput(13123, 13111, -1, -1, -1, -1, cancelled, 10000))
+    {
+      m_skinReverting = true;
+      if (oldSkin.empty())
+        CSettings::Get().GetSetting("lookandfeel.skin")->Reset();
+      else
+        CSettings::Get().SetString("lookandfeel.skin", oldSkin);
+    }
+  }
+
+  m_skinReverting = false;
 }
 
 bool CApplication::OnSettingsSaving() const
@@ -5709,7 +5727,12 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     else if (settingId == "lookandfeel.skin" && CSettings::Get().GetString("lookandfeel.font") != "Default")
       CSettings::Get().SetString("lookandfeel.font", "Default");
     else
-      CApplicationMessenger::Get().ExecBuiltIn("ReloadSkin");
+    {
+      std::string builtin("ReloadSkin");
+      if (!m_skinReverting)
+        builtin += "(confirm)";
+      CApplicationMessenger::Get().ExecBuiltIn(builtin);
+    }
   }
   else if (settingId == "lookandfeel.skintheme")
   {

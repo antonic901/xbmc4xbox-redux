@@ -1028,7 +1028,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (colorTheme.Equals("Textures.xml"))
       colorTheme = "defaults.xml";
     CSettings::Get().SetString("lookandfeel.skincolors", colorTheme);
-    g_application.ReloadSkin();
+    g_application.ReloadSkin(!params.empty() && StringUtils2::EqualsNoCase(params[0], "confirm"));
   }
   else if (execute.Equals("skin.setstring") || execute.Equals("skin.setimage") || execute.Equals("skin.setfile") ||
            execute.Equals("skin.setpath") || execute.Equals("skin.setnumeric") || execute.Equals("skin.setlargeimage"))
