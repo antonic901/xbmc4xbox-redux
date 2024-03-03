@@ -333,6 +333,7 @@ CApplication::CApplication(void)
   m_strPlayListFile = "";
   m_nextPlaylistItem = -1;
   m_bPlaybackStarting = false;
+  m_skinReloading = false;
 
   //true while we in IsPaused mode! Workaround for OnPaused, which must be add. after v2.0
   m_bIsPaused = false;
@@ -1600,6 +1601,7 @@ void CApplication::StopServices()
 
 void CApplication::ReloadSkin()
 {
+  m_skinReloading = false;
   CGUIMessage msg(GUI_MSG_LOAD_SKIN, -1, g_windowManager.GetActiveWindow());
   g_windowManager.SendMessage(msg);
 
@@ -1695,6 +1697,9 @@ bool CApplication::Save(TiXmlNode *settings) const
 
 bool CApplication::LoadSkin(const CStdString& skinID)
 {
+  if (m_skinReloading)
+    return false;
+
   AddonPtr addon;
   if (CAddonMgr::Get().GetAddon(skinID, addon))
   {
@@ -1841,8 +1846,12 @@ void CApplication::LoadSkin(const SkinPtr& skin)
   }
 }
 
-void CApplication::UnloadSkin()
+void CApplication::UnloadSkin(bool forReload /* = false */)
 {
+  m_skinReloading = forReload;
+
+  CLog::Log(LOGINFO, "Unloading old skin %s...", forReload ? "for reload " : "");
+
   g_audioManager.Enable(false);
 
   g_windowManager.DeInitialize();

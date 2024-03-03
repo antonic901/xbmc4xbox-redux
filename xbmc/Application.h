@@ -115,7 +115,7 @@ public:
   void Stop(bool bLCDStop = true);
   void RestartApp();
   bool LoadSkin(const CStdString& skinID);
-  void UnloadSkin();
+  void UnloadSkin(bool forReload = false);
   bool LoadUserWindows();
   void ReloadSkin();
   const CStdString& CurrentFile();
@@ -252,6 +252,8 @@ protected:
   virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
   void LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
+
+  bool m_skinReloading; // if true we disallow LoadSkin until ReloadSkin is called
 
   // screensaver
   bool m_bScreenSave;
