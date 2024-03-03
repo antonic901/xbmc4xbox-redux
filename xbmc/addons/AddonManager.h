@@ -116,6 +116,14 @@ namespace ADDON
     /* libcpluff */
     CStdString GetExtValue(cp_cfg_element_t *base, const char *path);
 
+    /*! \brief Retrieve an element from a given configuration element
+     \param base the base configuration element.
+     \param path the path to the configuration element from the base element.
+     \param element [out] returned element.
+     \return true if the configuration element is present
+     */
+    cp_cfg_element_t *GetExtElement(cp_cfg_element_t *base, const char *path);
+
     /*! \brief Retrieve a vector of repeated elements from a given configuration element
      \param base the base configuration element.
      \param path the path to the configuration element from the base element.
@@ -172,7 +180,6 @@ namespace ADDON
                     std::map<CStdString, AddonPtr>& unresolved);
 
     /* libcpluff */
-    const cp_cfg_element_t *GetExtElement(cp_cfg_element_t *base, const char *path);
     cp_context_t *m_cp_context;
     DllLibCPluff *m_cpluff;
     VECADDONS    m_updateableAddons;
