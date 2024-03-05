@@ -32,7 +32,8 @@
 #include "PlayListPlayer.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "libPython/XBPython.h"
+#include "utils/Variant.h"
+#include "lib/libPython/XBPython.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "libGoAhead/XBMChttp.h"
 #include "xbox/network.h"
@@ -45,8 +46,6 @@
 #include "guilib/Key.h"
 #include "SectionLoader.h"
 #include "threads/SingleLock.h"
-#include "libPython/xbmcmodule/GUIPythonWindowDialog.h"
-#include "libPython/xbmcmodule/GUIPythonWindowXMLDialog.h"
 
 #include "playlists/PlayList.h"
 
@@ -634,13 +633,10 @@ case TMSG_POWERDOWN:
 
     case TMSG_GUI_PYTHON_DIALOG:
       {
-        if (pMsg->lpVoid)
-        { // TODO: This is ugly - really these python dialogs should just be normal XBMC dialogs
-          if (pMsg->dwParam1)
-            ((CGUIPythonWindowXMLDialog *)pMsg->lpVoid)->Show_Internal(pMsg->dwParam2 > 0);
-          else
-            ((CGUIPythonWindowDialog *)pMsg->lpVoid)->Show_Internal(pMsg->dwParam2 > 0);
-        }
+        // This hack is not much better but at least I don't need to make ApplicationMessenger
+        //  know about Addon (Python) specific classes.
+        CAction caction(pMsg->dwParam1);
+        ((CGUIWindow*)pMsg->lpVoid)->OnAction(caction);
       }
       break;
 
