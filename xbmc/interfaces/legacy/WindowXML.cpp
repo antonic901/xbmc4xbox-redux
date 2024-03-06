@@ -52,6 +52,7 @@ namespace XBMCAddon
 #define checkedb(methcall) ( window ? xwin-> methcall : false )
 #define checkedv(methcall) { if (window) xwin-> methcall ; }
 
+    // TODO: This should be done with template specialization
     class WindowXMLInterceptor : public InterceptorDialog<CGUIMediaWindow>
     {
       WindowXML* xwin;
@@ -290,7 +291,7 @@ namespace XBMCAddon
                                                  //  the CGUIMediaWindow::OnAction and calls directly to
                                                  //  CGUIWindow::OnAction
       AddonClass::Ref<Action> inf(new Action(action));
-      handleCallback(new CallbackFunction<WindowXML,AddonClass::Ref<Action> >(this,&WindowXML::onAction,inf.get()));
+      invokeCallback(new CallbackFunction<WindowXML,AddonClass::Ref<Action> >(this,&WindowXML::onAction,inf.get()));
       PulseActionEvent();
       return ret;
     }
@@ -313,7 +314,7 @@ namespace XBMCAddon
       case GUI_MSG_WINDOW_INIT:
         {
           ref(window)->OnMessage(message);
-          handleCallback(new CallbackFunction<WindowXML>(this,&WindowXML::onInit));
+          invokeCallback(new CallbackFunction<WindowXML>(this,&WindowXML::onInit));
           PulseActionEvent();
           return true;
         }
@@ -333,7 +334,7 @@ namespace XBMCAddon
           AddonClass::Ref<Control> inf(GetControlById(iControl));
           if (inf.isNotNull())
           {
-            handleCallback(new CallbackFunction<WindowXML,int>(this,&WindowXML::onFocus,iControl));
+            invokeCallback(new CallbackFunction<WindowXML,int>(this,&WindowXML::onFocus,iControl));
             PulseActionEvent();
           }
         }
@@ -376,7 +377,7 @@ namespace XBMCAddon
                 AddonClass::Ref<Control> inf(GetControlById(iControl));
                 if (inf.isNotNull())
                 {
-                  handleCallback(new CallbackFunction<WindowXML,int>(this,&WindowXML::onClick,iControl));
+                  invokeCallback(new CallbackFunction<WindowXML,int>(this,&WindowXML::onClick,iControl));
                   PulseActionEvent();
                 }
                 return true;
@@ -384,7 +385,7 @@ namespace XBMCAddon
               else if (controlClicked->IsContainer() && message.GetParam1() == ACTION_MOUSE_RIGHT_CLICK)
               {
                 AddonClass::Ref<Action> inf(new Action(CAction(ACTION_CONTEXT_MENU)));
-                handleCallback(new CallbackFunction<WindowXML,AddonClass::Ref<Action> >(this,&WindowXML::onAction,inf.get()));
+                invokeCallback(new CallbackFunction<WindowXML,AddonClass::Ref<Action> >(this,&WindowXML::onAction,inf.get()));
                 PulseActionEvent();
                 return true;
               }
