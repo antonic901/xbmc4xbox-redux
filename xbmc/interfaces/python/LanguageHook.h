@@ -55,6 +55,7 @@ namespace XBMCAddon
 
       virtual void delayedCallOpen();
       virtual void delayedCallClose();
+      virtual void makePendingCalls();
 
       /**
        * PythonCallbackHandler expects to be instantiated PER AddonClass instance
