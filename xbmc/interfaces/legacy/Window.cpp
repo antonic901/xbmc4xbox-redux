@@ -33,6 +33,8 @@
 
 #define ACTIVE_WINDOW g_windowManager.GetActiveWindow()
 
+#define A(x) interceptor->x
+
 namespace XBMCAddon
 {
   namespace xbmcgui
@@ -343,7 +345,7 @@ namespace XBMCAddon
     void Window::WaitForActionEvent()
     {
       TRACE;
-      DelayedCallGuard dcguard(languageHook);
+      // DO NOT MAKE THIS A DELAYED CALL!!!!
       if (languageHook)
         languageHook->waitForEvent(m_actionEvent);
       m_actionEvent.Reset();
@@ -370,6 +372,7 @@ namespace XBMCAddon
 
     bool Window::OnBack(int actionID)
     {
+      // we are always a Python window ... keep that in mind when reviewing the old code
       return true;
     }
 
@@ -635,6 +638,9 @@ namespace XBMCAddon
 //            Window_Close(self, NULL);
 //            break;
 //          }
+          {
+            DelayedCallGuard dcguard(languageHook); // MakePendingCalls
+          }
           WaitForActionEvent();
         }
       }
