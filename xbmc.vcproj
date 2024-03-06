@@ -3367,6 +3367,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\interfaces\python\preamble.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\interfaces\python\PyContext.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\PyContext.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\interfaces\python\pythreadstate.h">
 					</File>
 					<File

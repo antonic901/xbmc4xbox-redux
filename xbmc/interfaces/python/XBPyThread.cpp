@@ -54,7 +54,7 @@
 #include "interfaces/python/pythreadstate.h"
 #include "interfaces/python/swig.h"
 #include "utils/CharsetConverter.h"
-
+#include "PyContext.h"
 
 #if defined(_WIN32) && !defined(_XBOX)
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -274,6 +274,7 @@ void XBPyThread::Process()
           CLog::Log(LOGDEBUG,"Instantiating addon using automatically obtained id of \"%s\" dependent on version %s of the xbmc.python api",addon->ID().c_str(),version.c_str());
         }
         Py_DECREF(f);
+        XBMCAddon::Python::PyContext pycontext; // this is a guard class that marks this callstack as being in a python context
         PyRun_FileExFlags(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict,1,NULL);
       }
       else
