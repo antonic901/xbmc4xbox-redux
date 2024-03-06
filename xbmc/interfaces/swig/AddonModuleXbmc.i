@@ -110,6 +110,10 @@ using namespace xbmc;
     return Py_None;
   }
 
+%feature("python:nokwds") XBMCAddon::xbmc::Keyboard::Keyboard "true"
+%feature("python:nokwds") XBMCAddon::xbmc::Player::Player "true"
+%feature("python:nokwds") XBMCAddon::xbmc::PlayList::PlayList "true"
+
 %include "interfaces/legacy/Player.h"
 
 %include "interfaces/legacy/InfoTagMusic.h"
