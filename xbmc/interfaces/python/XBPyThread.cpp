@@ -106,13 +106,14 @@ XBPyThread::~XBPyThread()
 
 void XBPyThread::setSource(const CStdString &src)
 {
+  if (m_source) 
+    delete [] m_source;
 #ifdef TARGET_WINDOWS
   CStdString strsrc = src;
   g_charsetConverter.utf8ToSystem(strsrc);
   m_source  = new char[strsrc.GetLength()+1];
   strcpy(m_source, strsrc);
 #else
-  if (m_source) delete [] m_source;
   m_source  = new char[src.GetLength()+1];
   strcpy(m_source, src);
 #endif
