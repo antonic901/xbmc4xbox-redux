@@ -20,7 +20,7 @@
 
 #include "GUIDialogProfileSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "profiles/ProfilesManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "guilib/GUIImage.h"
@@ -177,7 +177,7 @@ void CGUIDialogProfileSettings::OnSettingChanged(SettingInfo &setting)
   // check and update anything that needs it
   if (setting.id == 1)
   {
-    if (CGUIDialogKeyboard::ShowAndGetInput(m_strName,g_localizeStrings.Get(20093),false))
+    if (CGUIKeyboardFactory::ShowAndGetInput(m_strName,g_localizeStrings.Get(20093),false))
     {
       m_bNeedSave = true;
       SET_CONTROL_LABEL(1000,m_strName);

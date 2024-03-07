@@ -40,7 +40,7 @@
 #include "GUIUserMessages.h"
 #include "windows/GUIWindowFileManager.h"
 #include "dialogs/GUIDialogOK.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "GUIEditControl.h"
 #include "filesystem/File.h"
@@ -168,7 +168,7 @@ bool CGUIWindowMusicNav::OnMessage(CGUIMessage& message)
           return true;
         }
         CStdString search(GetProperty("search").asString());
-        CGUIDialogKeyboard::ShowAndGetFilter(search, true);
+        CGUIKeyboardFactory::ShowAndGetFilter(search, true);
         SetProperty("search", search);
         return true;
       }
@@ -260,7 +260,7 @@ bool CGUIWindowMusicNav::OnClick(int iItem)
     else
     {
       CStdString search(GetProperty("search").asString());
-      CGUIDialogKeyboard::ShowAndGetFilter(search, true);
+      CGUIKeyboardFactory::ShowAndGetFilter(search, true);
       SetProperty("search", search);
     }
     return true;

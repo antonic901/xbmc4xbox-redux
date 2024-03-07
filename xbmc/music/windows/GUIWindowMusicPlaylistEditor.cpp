@@ -29,7 +29,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "playlists/PlayListM3U.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
@@ -397,7 +397,7 @@ void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
   CStdString name = URIUtils::GetFileName(m_strLoadedPlaylist);
   CStdString strExt = URIUtils::GetExtension(name);
   name = name.Mid(0,name.size()-strExt.size());
-  if (CGUIDialogKeyboard::ShowAndGetInput(name, g_localizeStrings.Get(16012), false))
+  if (CGUIKeyboardFactory::ShowAndGetInput(name, g_localizeStrings.Get(16012), false))
   { // save playlist as an .m3u
     PLAYLIST::CPlayListM3U playlist;
     playlist.Add(*m_playlist);

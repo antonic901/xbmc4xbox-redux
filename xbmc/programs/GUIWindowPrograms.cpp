@@ -31,7 +31,7 @@
 #include "Autorun.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/RarManager.h"
@@ -217,7 +217,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       else
         strDescription = item->GetLabel();
 
-      if (CGUIDialogKeyboard::ShowAndGetInput(strDescription, g_localizeStrings.Get(16008), false))
+      if (CGUIKeyboardFactory::ShowAndGetInput(strDescription, g_localizeStrings.Get(16008), false))
       {
         if (item->IsShortCut())
         {

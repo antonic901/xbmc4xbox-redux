@@ -171,7 +171,7 @@
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogTextViewer.h"
 
-#include "dialogs/GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -1288,7 +1288,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
   g_windowManager.Add(new CGUIDialogExtendedProgressBar);     // window id = 148
-  g_windowManager.Add(new CGUIDialogKeyboard);           // window id = 103
+  g_windowManager.Add(new CGUIDialogKeyboardGeneric);           // window id = 103
   g_windowManager.Add(new CGUIDialogVolumeBar);          // window id = 104
   g_windowManager.Add(new CGUIDialogSeekBar);            // window id = 115
   g_windowManager.Add(new CGUIDialogSubMenu);            // window id = 105

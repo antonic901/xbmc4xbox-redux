@@ -34,7 +34,7 @@
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "DateTime.h"
 #include "LangInfo.h"
 #include "LocalizeStrings.h"
@@ -798,7 +798,7 @@ void CWeather::OnSettingAction(const CSetting *setting)
   else if (StringUtils2::StartsWith(settingId, "weather.areacode"))
   {
     CStdString strSearch;
-    if (CGUIDialogKeyboard::ShowAndGetInput(strSearch, g_localizeStrings.Get(14024), false))
+    if (CGUIKeyboardFactory::ShowAndGetInput(strSearch, g_localizeStrings.Get(14024), false))
     {
       strSearch.Replace(" ", "+");
       CStdString strResult;

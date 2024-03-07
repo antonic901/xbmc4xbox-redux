@@ -56,7 +56,7 @@
 #include "utils/FileUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "video/VideoInfoScanner.h"
 
 using namespace XFILE;
@@ -1586,7 +1586,7 @@ bool CGUIWindowVideoNav::OnClick(int iItem)
 
     //Get the new title
     CStdString strTag;
-    if (!CGUIDialogKeyboard::ShowAndGetInput(strTag, g_localizeStrings.Get(20462), false))
+    if (!CGUIKeyboardFactory::ShowAndGetInput(strTag, g_localizeStrings.Get(20462), false))
       return true;
 
     CVideoDatabase videodb;
@@ -1869,7 +1869,7 @@ bool CGUIWindowVideoNav::GetSetForMovie(CFileItemPtr &movieItem, CFileItemPtr &s
   if (dialog->IsButtonPressed())
   { // creating new set
     CStdString newSetTitle;
-    if (!CGUIDialogKeyboard::ShowAndGetInput(newSetTitle, g_localizeStrings.Get(20468), false))
+    if (!CGUIKeyboardFactory::ShowAndGetInput(newSetTitle, g_localizeStrings.Get(20468), false))
       return false;
     int idSet = videodb.AddSet(newSetTitle);
     map<string, string> movieArt, setArt;

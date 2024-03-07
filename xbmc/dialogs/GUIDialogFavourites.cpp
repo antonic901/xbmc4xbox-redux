@@ -24,7 +24,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/FavouritesDirectory.h"
 #include "GUIWindowManager.h"
-#include "GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "LocalizeStrings.h"
@@ -181,7 +181,7 @@ void CGUIDialogFavourites::OnRename(int item)
     return;
 
   CStdString label((*m_favourites)[item]->GetLabel());
-  if (CGUIDialogKeyboard::ShowAndGetInput(label, g_localizeStrings.Get(16008), false))
+  if (CGUIKeyboardFactory::ShowAndGetInput(label, g_localizeStrings.Get(16008), false))
     (*m_favourites)[item]->SetLabel(label);
 
   CFavouritesDirectory::Save(*m_favourites);

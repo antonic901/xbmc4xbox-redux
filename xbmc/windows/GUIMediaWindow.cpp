@@ -57,7 +57,7 @@
 #include "filesystem/File.h"
 #include "filesystem/FileDirectoryFactory.h"
 #include "GUIEditControl.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "interfaces/Builtins.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaFilter.h"
@@ -1866,7 +1866,7 @@ bool CGUIMediaWindow::Filter(bool advanced /* = true */)
     if (GetProperty("filter").empty())
     {
       CStdString filter = GetProperty("filter").asString();
-      CGUIDialogKeyboard::ShowAndGetFilter(filter, false);
+      CGUIKeyboardFactory::ShowAndGetFilter(filter, false);
       SetProperty("filter", filter);
     }
     else

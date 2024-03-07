@@ -22,7 +22,7 @@
 #include "GUIEditControl.h"
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "LocalizeStrings.h"
 #include "DateTime.h"
@@ -297,10 +297,10 @@ void CGUIEditControl::OnClick()
       textChanged = CGUIDialogNumeric::ShowAndGetIPAddress(utf8, heading);
       break;
     case INPUT_TYPE_SEARCH:
-      CGUIDialogKeyboard::ShowAndGetFilter(utf8, true);
+      CGUIKeyboardFactory::ShowAndGetFilter(utf8, true);
       break;
     case INPUT_TYPE_FILTER:
-      CGUIDialogKeyboard::ShowAndGetFilter(utf8, false);
+      CGUIKeyboardFactory::ShowAndGetFilter(utf8, false);
       break;
     case INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW:
       textChanged = CGUIDialogNumeric::ShowAndVerifyNewPassword(utf8);
@@ -310,7 +310,7 @@ void CGUIEditControl::OnClick()
       // fallthrough
     case INPUT_TYPE_TEXT:
     default:
-      textChanged = CGUIDialogKeyboard::ShowAndGetInput(utf8, heading, true, m_inputType == INPUT_TYPE_PASSWORD || m_inputType == INPUT_TYPE_PASSWORD_MD5);
+      textChanged = CGUIKeyboardFactory::ShowAndGetInput(utf8, heading, true, m_inputType == INPUT_TYPE_PASSWORD || m_inputType == INPUT_TYPE_PASSWORD_MD5);
       break;
   }
   if (textChanged)

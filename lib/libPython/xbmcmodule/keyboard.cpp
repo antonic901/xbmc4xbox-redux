@@ -22,7 +22,7 @@
 #include "keyboard.h"
 #include "pyutil.h"
 #include "GUIWindowManager.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "ApplicationMessenger.h"
 
 using namespace std;
@@ -74,7 +74,7 @@ namespace PYXBMC
 
   PyObject* Keyboard_DoModal(Keyboard *self, PyObject *args)
   {
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load virtual keyboard");
@@ -118,7 +118,7 @@ namespace PYXBMC
     if (line && !PyXBMCGetUnicodeString(utf8Line, line, 1)) return NULL;
     self->strDefault = utf8Line;
 
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load keyboard");
@@ -146,7 +146,7 @@ namespace PYXBMC
     if (!PyArg_ParseTuple(args, (char*)"|b", &bHidden)) return NULL;
     self->bHidden = (0 != bHidden);
 
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load keyboard");
@@ -177,7 +177,7 @@ namespace PYXBMC
     if (line && !PyXBMCGetUnicodeString(utf8Line, line, 1)) return NULL;
     self->strHeading = utf8Line;
 
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load keyboard");
@@ -202,7 +202,7 @@ namespace PYXBMC
 
   PyObject* Keyboard_GetText(Keyboard *self, PyObject *args)
   {
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load keyboard");
@@ -221,7 +221,7 @@ namespace PYXBMC
 
   PyObject* Keyboard_IsConfirmed(Keyboard *self, PyObject *args)
   {
-    CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+    CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     if(!pKeyboard)
     {
       PyErr_SetString(PyExc_SystemError, "Unable to load keyboard");

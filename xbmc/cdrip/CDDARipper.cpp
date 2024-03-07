@@ -32,7 +32,6 @@
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
-#include "dialogs/GUIDialogKeyboard.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingPath.h"
 #include "settings/Settings.h"

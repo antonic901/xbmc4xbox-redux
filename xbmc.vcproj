@@ -1440,7 +1440,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogKeyboard.cpp">
+					RelativePath=".\xbmc\dialogs\GUIDialogKeyboardGeneric.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogKeyboardGeneric.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogMediaFilter.cpp">
@@ -3422,9 +3425,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogKaiToast.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\dialogs\GUIDialogKeyboard.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\music\dialogs\GUIDialogMusicInfo.h">

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2012 Team XBMC
+ *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,33 +13,29 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
+ *  along with XBMC; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
  *
  */
 
-#include "GUIDialogKeyboard.h"
-#include "GUILabelControl.h"
-#include "GUIButtonControl.h"
-#include "dialogs/GUIDialogNumeric.h"
-#include "dialogs/GUIDialogOK.h"
-#include "GUIWindowManager.h"
-#include "GUIUserMessages.h"
-#include "utils/RegExp.h"
-#include "GUIPassword.h"
-#include "utils/md5.h"
-#include "utils/TimeUtils.h"
-#include "ApplicationMessenger.h"
-#include "xbox/XKGeneral.h"
-#include "settings/Settings.h"
-#include "settings/AdvancedSettings.h"
-#include "guilib/LocalizeStrings.h"
 #include "interfaces/AnnouncementManager.h"
+#include "input/XBMC_vkeys.h"
+#include "guilib/GUILabelControl.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
+#include "GUIUserMessages.h"
+#include "GUIDialogNumeric.h"
+#include "GUIDialogOK.h"
+#include "GUIDialogKeyboardGeneric.h"
+#include "utils/TimeUtils.h"
+#include "utils/RegExp.h"
+#include "ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
+
 
 // Symbol mapping (based on MS virtual keyboard - may need improving)
 static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";
-#define NUM_SYMBOLS sizeof(symbol_map)
 
 #define CTL_BUTTON_DONE       300
 #define CTL_BUTTON_CANCEL     301
@@ -55,26 +51,26 @@ static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";
 
 #define CTL_BUTTON_BACKSPACE    8
 
+static char symbolButtons[] = "._-@/\\";
+#define NUM_SYMBOLS sizeof(symbolButtons) - 1
+
 #define SEARCH_DELAY         1000
 #define REMOTE_SMS_DELAY     1000
 
-CGUIDialogKeyboard::CGUIDialogKeyboard(void)
+CGUIDialogKeyboardGeneric::CGUIDialogKeyboardGeneric()
 : CGUIDialog(WINDOW_DIALOG_KEYBOARD, "DialogKeyboard.xml")
+, CGUIKeyboard()
+, m_pCharCallback(NULL)
 {
   m_bIsConfirmed = false;
   m_bShift = false;
   m_hiddenInput = false;
-  m_filtering = FILTERING_NONE;
   m_keyType = LOWER;
   m_strHeading = "";
   m_lastRemoteClickTime = 0;
-  m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogKeyboard::~CGUIDialogKeyboard(void)
-{}
-
-void CGUIDialogKeyboard::OnInitWindow()
+void CGUIDialogKeyboardGeneric::OnInitWindow()
 {
   CGUIDialog::OnInitWindow();
 
@@ -102,11 +98,12 @@ void CGUIDialogKeyboard::OnInitWindow()
 
   CVariant data;
   data["title"] = m_strHeading;
-  data["type"] = "keyboard";
+  data["type"] = !m_hiddenInput ? "keyboard" : "password";
+  data["value"] = GetText();
   ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Input, "xbmc", "OnInputRequested", data);
 }
 
-bool CGUIDialogKeyboard::OnAction(const CAction &action)
+bool CGUIDialogKeyboardGeneric::OnAction(const CAction &action)
 {
   bool handled(true);
   if (action.GetID() == ACTION_BACKSPACE)
@@ -145,50 +142,27 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
   else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_ASCII)
   { // input from the keyboard (vkey, not ascii)
     uint8_t b = action.GetID() & 0xFF;
-    if (b == 0x24) // home
+    if (b == XBMCVK_HOME)
     {
       MoveCursor(-GetCursorPos());
     }
-    else if (b == 0x23) // end
+    else if (b == XBMCVK_END)
     {
       MoveCursor(m_strEdit.GetLength() - GetCursorPos());
     }
-    else if (b == 0x25) // left
+    else if (b == XBMCVK_LEFT)
     {
-      if (g_advancedSettings.m_bNavVKeyboard)
-      {
-        return OnAction(CAction(ACTION_MOVE_LEFT));
-      }
-      else
-       MoveCursor( -1);
+      MoveCursor( -1);
     }
-    else if (b == 0x26 && g_advancedSettings.m_bNavVKeyboard)
+    else if (b == XBMCVK_RIGHT)
     {
-      return OnAction(CAction(ACTION_MOVE_UP));
+      MoveCursor(1);
     }
-    else if (b == 0x27) // right
+    else if (b == XBMCVK_RETURN || b == XBMCVK_NUMPADENTER)
     {
-      if (g_advancedSettings.m_bNavVKeyboard)
-      {
-        return OnAction(CAction(ACTION_MOVE_RIGHT));
-      }
-      else
-       MoveCursor(1);
+      OnOK();
     }
-    else if (b == 0x28 && g_advancedSettings.m_bNavVKeyboard)
-    {
-      return OnAction(CAction(ACTION_MOVE_DOWN));
-    }
-    else if (b == 0x0D) // enter
-    {
-      if (g_advancedSettings.m_bNavVKeyboard)
-      {
-        return OnAction(CAction(ACTION_SELECT_ITEM));
-      }
-      else
-        OnOK();
-    }
-    else if (b == 0x2E) // delete
+    else if (b == XBMCVK_DELETE)
     {
       if (GetCursorPos() < m_strEdit.GetLength())
       {
@@ -196,9 +170,8 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
         Backspace();
       }
     }
-    else if (b == 0x08) Backspace();    // backspace
-    else if (b == 0x1B) Close();        // escape
-    else if (b == 0x20) Character(b);   // space
+    else if (b == XBMCVK_BACK) Backspace();
+    else if (b == XBMCVK_ESCAPE) Close();
   }
   else if (action.GetID() >= KEY_ASCII)
   { // input from the keyboard
@@ -207,12 +180,7 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
     {
     case 13:  // enter
     case 10:  // enter
-      if (g_advancedSettings.m_bNavVKeyboard)
-      {
-        return OnAction(CAction(ACTION_SELECT_ITEM));
-      }
-      else
-        OnOK();
+      OnOK();
       break;
     case 8:   // backspace
       Backspace();
@@ -228,14 +196,14 @@ bool CGUIDialogKeyboard::OnAction(const CAction &action)
   else // unhandled by us - let's see if the baseclass wants it
     handled = CGUIDialog::OnAction(action);
 
-  if (handled && m_filtering == FILTERING_SEARCH)
+  if (handled && m_pCharCallback)
   { // we did _something_, so make sure our search message filter is reset
-    SendSearchMessage();
+    m_pCharCallback(this, GetText());
   }
   return handled;
 }
 
-bool CGUIDialogKeyboard::OnMessage(CGUIMessage& message)
+bool CGUIDialogKeyboardGeneric::OnMessage(CGUIMessage& message)
 {
   CGUIDialog::OnMessage(message);
 
@@ -303,7 +271,7 @@ bool CGUIDialogKeyboard::OnMessage(CGUIMessage& message)
   return true;
 }
 
-void CGUIDialogKeyboard::SetText(const CStdString& aTextString)
+void CGUIDialogKeyboardGeneric::SetText(const CStdString& aTextString)
 {
   m_strEdit.Empty();
   g_charsetConverter.utf8ToW(aTextString, m_strEdit);
@@ -311,14 +279,14 @@ void CGUIDialogKeyboard::SetText(const CStdString& aTextString)
   MoveCursor(m_strEdit.size());
 }
 
-CStdString CGUIDialogKeyboard::GetText() const
+CStdString CGUIDialogKeyboardGeneric::GetText() const
 {
   CStdString utf8String;
   g_charsetConverter.wToUTF8(m_strEdit, utf8String);
   return utf8String;
 }
 
-void CGUIDialogKeyboard::Character(WCHAR ch)
+void CGUIDialogKeyboardGeneric::Character(WCHAR ch)
 {
   if (!ch) return;
   // TODO: May have to make this routine take a WCHAR for the symbols?
@@ -327,7 +295,7 @@ void CGUIDialogKeyboard::Character(WCHAR ch)
   MoveCursor(1);
 }
 
-void CGUIDialogKeyboard::FrameMove()
+void CGUIDialogKeyboardGeneric::FrameMove()
 {
   // reset the hide state of the label when the remote
   // sms style input times out
@@ -339,7 +307,7 @@ void CGUIDialogKeyboard::FrameMove()
   CGUIDialog::FrameMove();
 }
 
-void CGUIDialogKeyboard::UpdateLabel()
+void CGUIDialogKeyboardGeneric::UpdateLabel() // FIXME seems to be called twice for one USB SDL keyboard action/character
 {
   CGUILabelControl* pEdit = ((CGUILabelControl*)GetControl(CTL_LABEL_EDIT));
   if (pEdit)
@@ -365,31 +333,13 @@ void CGUIDialogKeyboard::UpdateLabel()
     // don't send until the REMOTE_SMS_DELAY has passed
     if (m_lastRemoteClickTime && m_lastRemoteClickTime + REMOTE_SMS_DELAY >= now)
       return;
-    if (m_filtering == FILTERING_CURRENT)
-    { // send our filter message
-      CGUIMessage message(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_FILTER_ITEMS);
-      message.SetStringParam(utf8Edit);
-      g_windowManager.SendMessage(message);
-    }
 
-    if (m_filtering == FILTERING_SEARCH)
-      SendSearchMessage();
+    if (m_pCharCallback)
+      m_pCharCallback(this, utf8Edit);
   }
 }
 
-void CGUIDialogKeyboard::SendSearchMessage()
-{
-  CStdString utf8Edit;
-  g_charsetConverter.wToUTF8(m_strEdit, utf8Edit);
-  // send our search message (only the active window needs it)
-  CGUIMessage message(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_SEARCH_UPDATE);
-  message.SetStringParam(utf8Edit);
-  CGUIWindow *window = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
-  if (window)
-    window->OnMessage(message);
-}
-
-void CGUIDialogKeyboard::Backspace()
+void CGUIDialogKeyboardGeneric::Backspace()
 {
   int iPos = GetCursorPos();
   if (iPos > 0)
@@ -400,7 +350,7 @@ void CGUIDialogKeyboard::Backspace()
   }
 }
 
-void CGUIDialogKeyboard::OnClickButton(int iButtonControl)
+void CGUIDialogKeyboardGeneric::OnClickButton(int iButtonControl)
 {
   if (iButtonControl == CTL_BUTTON_BACKSPACE)
   {
@@ -410,7 +360,7 @@ void CGUIDialogKeyboard::OnClickButton(int iButtonControl)
     Character(GetCharacter(iButtonControl));
 }
 
-void CGUIDialogKeyboard::OnRemoteNumberClick(int key)
+void CGUIDialogKeyboardGeneric::OnRemoteNumberClick(int key)
 {
   unsigned int now = CTimeUtils::GetFrameTime();
 
@@ -452,7 +402,7 @@ void CGUIDialogKeyboard::OnRemoteNumberClick(int key)
   Character(ch);
 }
 
-char CGUIDialogKeyboard::GetCharacter(int iButton)
+char CGUIDialogKeyboardGeneric::GetCharacter(int iButton)
 {
   // First the numbers
   if (iButton >= 48 && iButton <= 57)
@@ -487,13 +437,13 @@ char CGUIDialogKeyboard::GetCharacter(int iButton)
   else
   { // check for symbols
     for (unsigned int i = 0; i < NUM_SYMBOLS; i++)
-      if (iButton == symbol_map[i])
+      if (iButton == symbolButtons[i])
         return (char)iButton;
   }
   return 0;
 }
 
-void CGUIDialogKeyboard::UpdateButtons()
+void CGUIDialogKeyboardGeneric::UpdateButtons()
 {
   if (m_bShift)
   { // show the button depressed
@@ -561,158 +511,23 @@ void CGUIDialogKeyboard::UpdateButtons()
   }
   for (unsigned int i = 0; i < NUM_SYMBOLS; i++)
   {
-    aLabel[0] = symbol_map[i];
-    SetControlLabel(symbol_map[i], aLabel);
+    aLabel[0] = symbolButtons[i];
+    SetControlLabel(symbolButtons[i], aLabel);
   }
 }
 
-// Show keyboard with initial value (aTextString) and replace with result string.
-// Returns: true  - successful display and input (empty result may return true or false depending on parameter)
-//          false - unsucessful display of the keyboard or cancelled editing
-bool CGUIDialogKeyboard::ShowAndGetInput(CStdString& aTextString, const CVariant &heading, bool allowEmptyResult, bool hiddenInput /* = false */)
+
+void CGUIDialogKeyboardGeneric::OnDeinitWindow(int nextWindowID)
 {
-  CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
-
-  if (!pKeyboard)
-    return false;
-
-  // setup keyboard
-  pKeyboard->Initialize();
-  pKeyboard->CenterWindow();
-  pKeyboard->SetHeading(heading);
-  pKeyboard->SetHiddenInput(hiddenInput);
-  pKeyboard->SetText(aTextString);
-  // do this using a thread message to avoid render() conflicts
-  ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_KEYBOARD, g_windowManager.GetActiveWindow()};
-  CApplicationMessenger::Get().SendMessage(tMsg, true);
-  pKeyboard->Close();
-
-  // If have text - update this.
-  if (pKeyboard->IsConfirmed())
-  {
-    aTextString = pKeyboard->GetText();
-    if (!allowEmptyResult && aTextString.IsEmpty())
-      return false;
-    return true;
-  }
-  else return false;
-}
-
-bool CGUIDialogKeyboard::ShowAndGetInput(CStdString& aTextString, bool allowEmptyResult)
-{
-  return ShowAndGetInput(aTextString, "", allowEmptyResult) != 0;
-}
-
-// Shows keyboard and prompts for a password.
-// Differs from ShowAndVerifyNewPassword() in that no second verification is necessary.
-bool CGUIDialogKeyboard::ShowAndGetNewPassword(CStdString& newPassword, const CVariant &heading, bool allowEmpty)
-{
-  return ShowAndGetInput(newPassword, heading, allowEmpty, true);
-}
-
-// Shows keyboard and prompts for a password.
-// Differs from ShowAndVerifyNewPassword() in that no second verification is necessary.
-bool CGUIDialogKeyboard::ShowAndGetNewPassword(CStdString& newPassword)
-{
-  return ShowAndGetNewPassword(newPassword, 12340, false);
-}
-
-// \brief Show keyboard twice to get and confirm a user-entered password string.
-// \param newPassword Overwritten with user input if return=true.
-// \param heading Heading to display
-// \param allowEmpty Whether a blank password is valid or not.
-// \return true if successful display and user input entry/re-entry. false if unsucessful display, no user input, or canceled editing.
-bool CGUIDialogKeyboard::ShowAndVerifyNewPassword(CStdString& newPassword, const CVariant &heading, bool allowEmpty)
-{
-  // Prompt user for password input
-  CStdString userInput = "";
-  if (!ShowAndGetInput(userInput, heading, allowEmpty, true))
-  { // user cancelled, or invalid input
-    return false;
-  }
-  // success - verify the password
-  CStdString checkInput = "";
-  if (!ShowAndGetInput(checkInput, 12341, allowEmpty, true))
-  { // user cancelled, or invalid input
-    return false;
-  }
-  // check the password
-  if (checkInput == userInput)
-  {
-    XBMC::XBMC_MD5 md5state;
-    md5state.append(userInput);
-    md5state.getDigest(newPassword);
-    newPassword.ToLower();
-    return true;
-  }
-  CGUIDialogOK::ShowAndGetInput(12341, 12344, 0, 0);
-  return false;
-}
-
-// \brief Show keyboard twice to get and confirm a user-entered password string.
-// \param strNewPassword Overwritten with user input if return=true.
-// \return true if successful display and user input entry/re-entry. false if unsucessful display, no user input, or canceled editing.
-bool CGUIDialogKeyboard::ShowAndVerifyNewPassword(CStdString& newPassword)
-{
-  CStdString heading = g_localizeStrings.Get(12340);
-  return ShowAndVerifyNewPassword(newPassword, heading, false);
-}
-
-// \brief Show keyboard and verify user input against strPassword.
-// \param strPassword Value to compare against user input.
-// \param dlgHeading String shown on dialog title. Converts to localized string if contains a positive integer.
-// \param iRetries If greater than 0, shows "Incorrect password, %d retries left" on dialog line 2, else line 2 is blank.
-// \return 0 if successful display and user input. 1 if unsucessful input. -1 if no user input or canceled editing.
-int CGUIDialogKeyboard::ShowAndVerifyPassword(CStdString& strPassword, const CStdString& strHeading, int iRetries)
-{
-  CStdString strHeadingTemp;
-  if (1 > iRetries && strHeading.size())
-    strHeadingTemp = strHeading;
-  else
-    strHeadingTemp.Format("%s - %i %s", g_localizeStrings.Get(12326).c_str(), CSettings::Get().GetInt("masterlock.maxretries") - iRetries, g_localizeStrings.Get(12343).c_str());
-
-  CStdString strUserInput = "";
-  if (!ShowAndGetInput(strUserInput, strHeadingTemp, false, true))  //bool hiddenInput = false/true ? TODO: GUI Setting to enable disable this feature y/n?
-    return -1; // user canceled out
-
-  if (!strPassword.IsEmpty())
-  {
-    if (strPassword == strUserInput)
-      return 0;
-
-    CStdString md5pword2;
-    XBMC::XBMC_MD5 md5state;
-    md5state.append(strUserInput);
-    md5state.getDigest(md5pword2);
-    if (strPassword.Equals(md5pword2))
-      return 0;     // user entered correct password
-    else return 1;  // user must have entered an incorrect password
-  }
-  else
-  {
-    if (!strUserInput.IsEmpty())
-    {
-      XBMC::XBMC_MD5 md5state;
-      md5state.append(strUserInput);
-      md5state.getDigest(strPassword);
-      strPassword.ToLower();
-      return 0; // user entered correct password
-    }
-    else return 1;
-  }
-}
-
-void CGUIDialogKeyboard::Close(bool forceClose)
-{
+  // call base class
+  CGUIDialog::OnDeinitWindow(nextWindowID);
   // reset the heading (we don't always have this)
   m_strHeading = "";
 
   ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Input, "xbmc", "OnInputFinished");
-  // call base class
-  CGUIDialog::Close(forceClose);
 }
 
-void CGUIDialogKeyboard::MoveCursor(int iAmount)
+void CGUIDialogKeyboardGeneric::MoveCursor(int iAmount)
 {
   CGUILabelControl* pEdit = ((CGUILabelControl*)GetControl(CTL_LABEL_EDIT));
   if (pEdit)
@@ -721,7 +536,7 @@ void CGUIDialogKeyboard::MoveCursor(int iAmount)
   }
 }
 
-int CGUIDialogKeyboard::GetCursorPos() const
+int CGUIDialogKeyboardGeneric::GetCursorPos() const
 {
   const CGUILabelControl* pEdit = (const CGUILabelControl*)GetControl(CTL_LABEL_EDIT);
   if (pEdit)
@@ -731,7 +546,7 @@ int CGUIDialogKeyboard::GetCursorPos() const
   return 0;
 }
 
-void CGUIDialogKeyboard::OnSymbols()
+void CGUIDialogKeyboardGeneric::OnSymbols()
 {
   if (m_keyType == SYMBOLS)
     m_keyType = LOWER;
@@ -740,13 +555,13 @@ void CGUIDialogKeyboard::OnSymbols()
   UpdateButtons();
 }
 
-void CGUIDialogKeyboard::OnShift()
+void CGUIDialogKeyboardGeneric::OnShift()
 {
   m_bShift = !m_bShift;
   UpdateButtons();
 }
 
-void CGUIDialogKeyboard::OnIPAddress()
+void CGUIDialogKeyboardGeneric::OnIPAddress()
 {
   // find any IP address in the current string if there is any
   // We match to #.#.#.#
@@ -775,16 +590,16 @@ void CGUIDialogKeyboard::OnIPAddress()
   }
 }
 
-void CGUIDialogKeyboard::ResetShiftAndSymbols()
+void CGUIDialogKeyboardGeneric::ResetShiftAndSymbols()
 {
   if (m_bShift) OnShift();
   if (m_keyType == SYMBOLS) OnSymbols();
   m_lastRemoteClickTime = 0;
 }
 
-const char* CGUIDialogKeyboard::s_charsSeries[10] = { " !@#$%^&*()[]{}<>/\\|0", ".,;:\'\"-+_=?`~1", "ABC2", "DEF3", "GHI4", "JKL5", "MNO6", "PQRS7", "TUV8", "WXYZ9" };
+const char* CGUIDialogKeyboardGeneric::s_charsSeries[10] = { " 0!@#$%^&*()[]{}<>/\\|", ".,1;:\'\"-+_=?`~", "ABC2", "DEF3", "GHI4", "JKL5", "MNO6", "PQRS7", "TUV8", "WXYZ9" };
 
-void CGUIDialogKeyboard::SetControlLabel(int id, const CStdString &label)
+void CGUIDialogKeyboardGeneric::SetControlLabel(int id, const CStdString &label)
 { // find all controls with this id, and set all their labels
   CGUIMessage message(GUI_MSG_LABEL_SET, GetID(), id);
   message.SetLabel(label);
@@ -795,29 +610,48 @@ void CGUIDialogKeyboard::SetControlLabel(int id, const CStdString &label)
   }
 }
 
-void CGUIDialogKeyboard::OnOK()
+void CGUIDialogKeyboardGeneric::OnOK()
 {
   m_bIsConfirmed = true;
   Close();
 }
 
-bool CGUIDialogKeyboard::ShowAndGetFilter(CStdString &filter, bool searching)
-{
-  CGUIDialogKeyboard *pKeyboard = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
-
-  if (!pKeyboard)
-    return false;
-
-  pKeyboard->m_filtering = searching ? FILTERING_SEARCH : FILTERING_CURRENT;
-  bool ret = ShowAndGetInput(filter, true);
-  pKeyboard->m_filtering = FILTERING_NONE;
-  return ret;
-}
-
-void CGUIDialogKeyboard::SetHeading(const CVariant &heading)
+void CGUIDialogKeyboardGeneric::SetHeading(const CVariant &heading)
 {
   if (heading.isString())
     m_strHeading = heading.asString();
   else if (heading.isInteger() && heading.asInteger())
-    m_strHeading = g_localizeStrings.Get(heading.asInteger());
+    m_strHeading = g_localizeStrings.Get((uint32_t)heading.asInteger());
+}
+
+int CGUIDialogKeyboardGeneric::GetWindowId() const
+{
+  return GetID();
+}
+
+bool CGUIDialogKeyboardGeneric::ShowAndGetInput(char_callback_t pCallback, const std::string &initialString, std::string &typedString, const std::string &heading, bool bHiddenInput)
+{
+  CGUIDialogKeyboardGeneric *pKeyboard = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+
+  if (!pKeyboard)
+    return false;
+
+  m_pCharCallback = pCallback;
+  // setup keyboard
+  pKeyboard->Initialize();
+  pKeyboard->SetHeading(heading);
+  pKeyboard->SetHiddenInput(bHiddenInput);
+  pKeyboard->SetText(initialString);
+  // do this using a thread message to avoid render() conflicts
+  ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_KEYBOARD, g_windowManager.GetActiveWindow()};
+  CApplicationMessenger::Get().SendMessage(tMsg, true);
+  pKeyboard->Close();
+
+  // If have text - update this.
+  if (pKeyboard->IsConfirmed())
+  {
+    typedString = pKeyboard->GetText();
+    return true;
+  }
+  else return false;
 }

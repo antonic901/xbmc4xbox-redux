@@ -290,6 +290,9 @@
 				RelativePath=".\GUIInfoTypes.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIKeyboardFactory.cpp">
+			</File>
+			<File
 				RelativePath=".\GUILabel.cpp">
 			</File>
 			<File
@@ -506,6 +509,12 @@
 			</File>
 			<File
 				RelativePath=".\GUIItem.h">
+			</File>
+			<File
+				RelativePath=".\GUIKeyboard.h">
+			</File>
+			<File
+				RelativePath=".\GUIKeyboardFactory.h">
 			</File>
 			<File
 				RelativePath=".\GUILabel.h">

@@ -31,7 +31,7 @@
 #include "addons/PluginSource.h"
 #include "StringUtils.h"
 #include "utils/URIUtils.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 
 using namespace ADDON;
 
@@ -98,7 +98,7 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   else if (path.GetHostName().Equals("search"))
   {
     CStdString search;
-    if (!CGUIDialogKeyboard::ShowAndGetInput(search, g_localizeStrings.Get(16017), false))
+    if (!CGUIKeyboardFactory::ShowAndGetInput(search, g_localizeStrings.Get(16017), false))
       return true;
 
     items.SetProperty("reponame",g_localizeStrings.Get(283));

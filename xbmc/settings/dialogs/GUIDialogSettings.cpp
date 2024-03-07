@@ -27,7 +27,7 @@
 #include "guilib/GUIControlGroupList.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 
 #define CONTROL_GROUP_LIST          5
 #define CONTROL_SETTINGS_LABEL      2
@@ -319,7 +319,7 @@ void CGUIDialogSettings::OnClick(int iID)
   }
   else if (setting.type == SettingInfo::STRING)
   {
-    CGUIDialogKeyboard::ShowAndGetInput(*(CStdString *) setting.data, true);
+    CGUIKeyboardFactory::ShowAndGetInput(*(CStdString *) setting.data, true);
     string strNewValue = string(*(CStdString *)setting.data);
     if (strNewValue.empty())
       strNewValue = "-";

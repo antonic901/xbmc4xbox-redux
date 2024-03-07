@@ -19,7 +19,7 @@
  */
 
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "GUIDialogKeyboard.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "Util.h"
 #include "utils/StringUtils2.h"
 #include "utils/URIUtils.h"
@@ -159,7 +159,7 @@ void CGUIDialogSmartPlaylistEditor::OnOK()
   {
     CStdString filename(m_playlist.m_playlistName);
     CStdString path;
-    if (CGUIDialogKeyboard::ShowAndGetInput(filename, g_localizeStrings.Get(16013), false))
+    if (CGUIKeyboardFactory::ShowAndGetInput(filename, g_localizeStrings.Get(16013), false))
     {
       path = URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"),m_playlist.GetSaveLocation());
       path = URIUtils::AddFileToFolder(path, filename);
