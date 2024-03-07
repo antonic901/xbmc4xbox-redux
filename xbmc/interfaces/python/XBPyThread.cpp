@@ -272,6 +272,7 @@ void XBPyThread::Process()
   xbp_chdir(scriptDir.c_str());
 #endif
 
+  bool failed = false;
   if (!stopping)
   {
     try
@@ -316,21 +317,27 @@ void XBPyThread::Process()
     catch (const XbmcCommons::Exception& e)
     {
       e.LogThrowMessage();
+      failed = true;
     }
     catch (...)
     {
       CLog::Log(LOGERROR, "failure in %s", m_source);
+      failed = true;
     }
   }
 
-  if (!PyErr_Occurred())
+  if (!failed && !PyErr_Occurred())
     CLog::Log(LOGINFO, "Scriptresult: Success");
   else if (PyErr_ExceptionMatches(PyExc_SystemExit))
     CLog::Log(LOGINFO, "Scriptresult: Aborted");
   else
   {
-    PythonBindings::PythonToCppException e;
-    e.LogThrowMessage();
+    // if it failed with an exception we already logged the details
+    if (!failed)
+    {
+      PythonBindings::PythonToCppException e;
+      e.LogThrowMessage();
+    }
 
     {
       CPyThreadState releaseGil;
@@ -362,6 +369,10 @@ void XBPyThread::Process()
       }
     }
   }
+
+  // no need to do anything else because the script has already stopped
+  if (failed)
+    return;
 
   PyObject *m = PyImport_AddModule((char*)"xbmc");
   if(!m || PyObject_SetAttrString(m, (char*)"abortRequested", PyBool_FromLong(1)))
