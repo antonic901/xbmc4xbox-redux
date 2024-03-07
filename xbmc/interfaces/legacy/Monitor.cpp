@@ -29,8 +29,8 @@ namespace XBMCAddon
     {
       if (languageHook)
       {
-        Id = languageHook->getAddonId();
-        languageHook->registerMonitorCallback(this);
+        Id = languageHook->GetAddonId();
+        languageHook->RegisterMonitorCallback(this);
       }
     }
 
@@ -40,7 +40,7 @@ namespace XBMCAddon
       DelayedCallGuard dg(languageHook);
       // we're shutting down so unregister me.
       if (languageHook)
-        languageHook->unregisterMonitorCallback(this);
+        languageHook->UnregisterMonitorCallback(this);
     }
   }
 }

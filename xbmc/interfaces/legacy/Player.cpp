@@ -49,7 +49,7 @@ namespace XBMCAddon
 
       // now that we're done, register hook me into the system
       if (languageHook)
-        languageHook->registerPlayerCallback(this);
+        languageHook->RegisterPlayerCallback(this);
     }
 
     Player::~Player()
@@ -58,7 +58,7 @@ namespace XBMCAddon
 
       // we're shutting down so unregister me.
       if (languageHook)
-        languageHook->unregisterPlayerCallback(this);
+        languageHook->UnregisterPlayerCallback(this);
     }
 
     void Player::playStream(const String& item, const xbmcgui::ListItem* plistitem, bool windowed)

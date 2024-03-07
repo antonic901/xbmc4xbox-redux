@@ -376,7 +376,7 @@ namespace XBMCAddon
     {
       TRACE;
       // DO NOT MAKE THIS A DELAYED CALL!!!!
-      bool ret = languageHook == NULL ? m_actionEvent.WaitMSec(milliseconds) : languageHook->waitForEvent(m_actionEvent,milliseconds);
+      bool ret = languageHook == NULL ? m_actionEvent.WaitMSec(milliseconds) : languageHook->WaitForEvent(m_actionEvent,milliseconds);
       m_actionEvent.Reset();
       return ret;
     }
@@ -669,7 +669,7 @@ namespace XBMCAddon
 //            Window_Close(self, NULL);
 //            break;
 //          }
-          languageHook->makePendingCalls(); // MakePendingCalls
+          languageHook->MakePendingCalls(); // MakePendingCalls
 
           bool stillWaiting;
           do
@@ -678,7 +678,7 @@ namespace XBMCAddon
               DelayedCallGuard dcguard(languageHook);            
               stillWaiting = WaitForActionEvent(10) ? false : true;
             }
-            languageHook->makePendingCalls();
+            languageHook->MakePendingCalls();
           } while (stillWaiting);
         }
       }
