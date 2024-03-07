@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 #include "threads/CriticalSection.h"
 #include "interfaces/IAnnouncer.h"
 #include "addons/IAddon.h"
-#include "boost/shared_ptr.hpp"
 
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
 typedef struct {
@@ -50,7 +50,7 @@ namespace XBMCAddon
 template <class T> struct LockableType : public T, public CCriticalSection 
 { bool hadSomethingRemoved; };
 
-typedef LockableType<std::vector<PVOID> > PlayerCallbackList;
+typedef LockableType<std::vector<void*> > PlayerCallbackList;
 typedef LockableType<std::vector<XBMCAddon::xbmc::Monitor*> > MonitorCallbackList;
 typedef LockableType<std::vector<PyElem> > PyList;
 typedef std::vector<LibraryLoader*> PythonExtensionLibraries;

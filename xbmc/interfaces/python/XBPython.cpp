@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  *
  */
 
-#if (defined HAVE_CONFIG_H) && (!defined WIN32)
+#if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
   #include "config.h"
 #endif
 
@@ -39,7 +39,6 @@
 #ifdef _XBOX
 #include "libPython/XBPythonDll.h"
 #endif
-#include "settings/Settings.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GraphicContext.h"
@@ -48,6 +47,10 @@
 #include "pythreadstate.h"
 #include "utils/TimeUtils.h"
 #include "Util.h"
+#include "guilib/GraphicContext.h"
+#ifdef TARGET_WINDOWS
+#include "utils/Environment.h"
+#endif
 
 #include "threads/SystemClock.h"
 #include "addons/Addon.h"
@@ -111,7 +114,7 @@ void XBPython::OnPlayBackEnded()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackEnded();
 }
@@ -146,7 +149,7 @@ void XBPython::OnPlayBackStarted()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackStarted();
 }
@@ -156,7 +159,7 @@ void XBPython::OnPlayBackPaused()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackPaused();
 }
@@ -166,7 +169,7 @@ void XBPython::OnPlayBackResumed()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackResumed();
 }
@@ -176,7 +179,7 @@ void XBPython::OnPlayBackStopped()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackStopped();
 }
@@ -186,7 +189,7 @@ void XBPython::OnPlayBackSpeedChanged(int iSpeed)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSpeedChanged(iSpeed);
 }
@@ -196,7 +199,7 @@ void XBPython::OnPlayBackSeek(int iTime, int seekOffset)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSeek(iTime, seekOffset);
 }
@@ -206,7 +209,7 @@ void XBPython::OnPlayBackSeekChapter(int iChapter)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSeekChapter(iChapter);
 }
@@ -216,7 +219,7 @@ void XBPython::OnQueueNextItem()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnQueueNextItem();
 }
@@ -241,7 +244,7 @@ void XBPython::UnregisterPythonPlayerCallBack(IPlayerCallback* pCallback)
       m_vecPlayerCallbackList.hadSomethingRemoved = true;
     }
     else
-      it++;
+      ++it;
   }
 }
 
@@ -265,7 +268,7 @@ void XBPython::UnregisterPythonMonitorCallBack(XBMCAddon::xbmc::Monitor* pCallba
       m_vecMonitorCallbackList.hadSomethingRemoved = true;
     }
     else
-      it++;
+      ++it;
   }
 }
 
@@ -273,7 +276,7 @@ void XBPython::OnSettingsChanged(const CStdString &ID)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)) && ((*it)->GetId() == ID))
       (*it)->OnSettingsChanged();
 }  
@@ -282,7 +285,7 @@ void XBPython::OnScreensaverActivated()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnScreensaverActivated();
 } 
@@ -291,7 +294,7 @@ void XBPython::OnScreensaverDeactivated()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnScreensaverDeactivated();
 } 
@@ -300,7 +303,7 @@ void XBPython::OnDatabaseUpdated(const std::string &database)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnDatabaseUpdated(database);
 } 
@@ -309,7 +312,7 @@ void XBPython::OnDatabaseScanStarted(const std::string &database)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnDatabaseScanStarted(database);
 }
@@ -318,7 +321,7 @@ void XBPython::OnAbortRequested(const CStdString &ID)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
-  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); it++)
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
     {
@@ -372,7 +375,7 @@ void XBPython::UnregisterExtensionLib(LibraryLoader *pLib)
       m_extensions.erase(iter);
       break;
     }
-    iter++;
+    ++iter;
   }
 }
 
@@ -384,7 +387,7 @@ void XBPython::UnloadExtensionLibs()
   while (iter != m_extensions.end())
   {
       DllLoaderContainer::ReleaseModule(*iter);
-      iter++;
+      ++iter;
   }
   m_extensions.clear();
 }
@@ -490,7 +493,7 @@ void XBPython::Initialize()
 #endif
 
       // first we check if all necessary files are installed
-#ifndef _LINUX
+#ifndef TARGET_POSIX
       if (!FileExist("special://xbmc/system/python/python27.zlib") ||
         !FileExist("special://xbmc/system/python/DLLs/_elementtree.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/_hashlib.pyd") ||
@@ -509,11 +512,15 @@ void XBPython::Initialize()
 #endif
 
 
+// Darwin packs .pyo files, we need PYTHONOPTIMIZE on in order to load them.
+#if defined(TARGET_DARWIN)
+   setenv("PYTHONOPTIMIZE", "1", 1);
+#endif
       // Info about interesting python envvars available
       // at http://docs.python.org/using/cmdline.html#environment-variables
 
 #ifndef _XBOX
-#if !defined(_WIN32) && !defined(TARGET_ANDROID)
+#if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID)
       /* PYTHONOPTIMIZE is set off intentionally when using external Python.
          Reason for this is because we cannot be sure what version of Python
          was used to compile the various Python object files (i.e. .pyo,
@@ -529,20 +536,18 @@ void XBPython::Initialize()
         CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
       }
       setenv("PYTHONCASEOK", "1", 1); //This line should really be removed
-#elif defined(_WIN32)
+#elif defined(TARGET_WINDOWS)
       // because the third party build of python is compiled with vs2008 we need
       // a hack to set the PYTHONPATH
-      // buf is corrupted after putenv and might need a strdup but it seems to
-      // work this way
       CStdString buf;
       buf = "PYTHONPATH=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/DLLs") + ";" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib");
-      pgwin32_putenv(buf.c_str());
+      CEnvironment::putenv(buf);
       buf = "PYTHONOPTIMIZE=1";
-      pgwin32_putenv(buf.c_str());
+      CEnvironment::putenv(buf);
       buf = "PYTHONHOME=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python");
-      pgwin32_putenv(buf.c_str());
+      CEnvironment::putenv(buf);
       buf = "OS=win32";
-      pgwin32_putenv(buf.c_str());
+      CEnvironment::putenv(buf);
 
 #elif defined(TARGET_ANDROID)
       CStdString apkPath = getenv("XBMC_ANDROID_APK");
@@ -592,6 +597,7 @@ void XBPython::FinalizeScript()
   m_endtime = XbmcThreads::SystemClockMillis();
 }
 
+
 // Always called with the lock held on m_critSection
 void XBPython::Finalize()
 {
@@ -614,15 +620,15 @@ void XBPython::Finalize()
       PyEval_ReleaseLock();
     }
 
-#if !(defined(TARGET_DARWIN) || defined(_WIN32)) || defined(_XBOX)
+#if !(defined(TARGET_DARWIN) || defined(TARGET_WINDOWS)) || defined(_XBOX)
     UnloadExtensionLibs();
 #endif
 
     // first free all dlls loaded by python, after that python27.dll (this is done by UnloadPythonDlls
-#if !(defined(TARGET_DARWIN) || defined(_WIN32)) || defined(_XBOX)
+#if !(defined(TARGET_DARWIN) || defined(TARGET_WINDOWS)) || defined(_XBOX)
     DllLoaderContainer::UnloadPythonDlls();
 #endif
-#if defined(_LINUX) && !defined(__APPLE__) && !defined(__FreeBSD__)
+#if defined(TARGET_POSIX) && !defined(TARGET_DARWIN) && !defined(TARGET_FREEBSD)
     // we can't release it on windows, as this is done in UnloadPythonDlls() for win32 (see above).
     // The implementation for linux needs looking at - UnloadPythonDlls() currently only searches for "python27.dll"
     // The implementation for osx can never unload the python dylib.
@@ -672,7 +678,7 @@ void XBPython::Process()
         m_vecPyList.hadSomethingRemoved = true;
       }
       else
-        it++;
+        ++it;
     }
     lock.Leave();
 
@@ -689,6 +695,7 @@ void XBPython::Process()
 
 bool XBPython::StopScript(const CStdString &path)
 {
+  TRACE;
   int id = getScriptId(path);
   if (id != -1)
   {
@@ -828,7 +835,7 @@ bool XBPython::isRunning(int scriptId)
 {
   CSingleLock lock(m_vecPyList);
 
-  for(PyList::iterator it = m_vecPyList.begin(); it != m_vecPyList.end(); it++)
+  for(PyList::iterator it = m_vecPyList.begin(); it != m_vecPyList.end(); ++it)
   {
     if (it->id == scriptId)
     {
