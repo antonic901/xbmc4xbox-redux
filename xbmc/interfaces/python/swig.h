@@ -25,6 +25,7 @@
 
 #include "utils/StdString.h"
 #include "interfaces/legacy/Exception.h"
+#include "interfaces/legacy/AddonClass.h"
 #include "threads/ThreadLocal.h"
 
 namespace PythonBindings
@@ -83,6 +84,10 @@ namespace PythonBindings
       throw XBMCAddon::WrongTypeException("Incorrect type passed to \"%s\", was expecting a \"%s\".",methodNameForErrorString,typenameForErrorString);
     return ((PyHolder*)pythonType)->pSelf;
   }
+
+  inline void prepareForReturn(XBMCAddon::AddonClass* c) { if(c) c->Acquire(); }
+
+  inline void cleanForDealloc(XBMCAddon::AddonClass* c) { if(c) c->Release(); }
 
   bool isParameterRightType(const char* passedType, const char* expectedType, const char* methodNamespacePrefix, bool tryReverse = true);
 

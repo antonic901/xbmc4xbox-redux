@@ -64,7 +64,7 @@ namespace XBMCAddon
     Window::Window(const char* classname) throw (WindowException): 
       AddonCallback(classname), window(NULL), iWindowId(-1),
       iOldWindowId(0), iCurrentControlId(3000), bModal(false), m_actionEvent(true),
-      canPulse(true)
+      canPulse(true), existingWindow(false), destroyAfterDeInit(false)
     {
       TRACE;
       CSingleLock lock(g_graphicsContext);
