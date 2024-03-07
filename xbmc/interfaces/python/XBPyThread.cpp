@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  *
  */
 
-#if (defined HAVE_CONFIG_H) && (!defined WIN32)
+#if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
   #include "config.h"
 #endif
 
@@ -57,7 +57,7 @@
 #include "utils/CharsetConverter.h"
 #include "PyContext.h"
 
-#if defined(_WIN32) && !defined(_XBOX)
+#ifdef TARGET_WINDOWS
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #else
 #define fopen_utf8 fopen
@@ -74,7 +74,7 @@ extern "C"
   char* dll_getenv(const char* szKey);
 }
 
-XBPyThread::XBPyThread(XBPython *pExecuter, int id) : CThread("XBPyThread")
+XBPyThread::XBPyThread(XBPython *pExecuter, int id) : CThread("XBPython")
 {
   CLog::Log(LOGDEBUG,"new python thread created. id=%d", id);
   m_pExecuter   = pExecuter;
@@ -162,7 +162,7 @@ static const CStdString getListOfAddonClassesAsString(XBMCAddon::AddonClass::Ref
   std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
   bool firstTime = true;
   for (std::set<XBMCAddon::AddonClass*>::iterator iter = acs.begin();
-       iter != acs.end(); iter++)
+       iter != acs.end(); ++iter)
   {
     if (!firstTime) message += ",";
     else firstTime = false;
@@ -426,7 +426,6 @@ void XBPyThread::Process()
   }
 
   PyEval_AcquireLock();
-  CLog::Log(LOGDEBUG,"**** acquired lock");
   PyThreadState_Swap(state);
 
   m_pExecuter->DeInitializeInterpreter();
@@ -454,7 +453,6 @@ void XBPyThread::Process()
   languageHook->UnregisterMe();
 
   PyEval_ReleaseLock();
-  CLog::Log(LOGDEBUG,"**** released lock");
 
 }
 
