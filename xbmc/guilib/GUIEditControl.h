@@ -29,6 +29,7 @@
  */
 
 #include "GUIButtonControl.h"
+#include "utils/Stopwatch.h"
 
 /*!
  \ingroup controls
@@ -84,8 +85,8 @@ protected:
   CStdStringW GetDisplayedText() const;
   void RecalcLabelPosition();
   void ValidateCursor();
+  void UpdateText(bool sendUpdate = true);
   void OnPasteClipboard();
-  void OnTextChanged();
   void DefaultConstructor();
 
   /*! \brief Clear out the current text input if it's an MD5 password.
@@ -109,5 +110,9 @@ protected:
   bool m_isMD5;
   
   CGUIAction m_textChangeActions;
+
+  CStopWatch   m_smsTimer;
+
+  static const unsigned int smsDelay;
 };
 #endif
