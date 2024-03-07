@@ -61,6 +61,8 @@ public:
   /// clears the maps
   void Clear();
 
+  static void GetActions(std::vector<std::string> &actionList);
+
   CAction GetAction(int window, const CKey &key);
 
   /*! \brief Translate between a window name and it's id

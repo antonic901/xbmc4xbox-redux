@@ -43,6 +43,7 @@ public:
 
   void SetHeading(const CStdString &strHeading);
   void SetMode(INPUT_MODE mode, void *initial);
+  void SetMode(INPUT_MODE mode, const CStdString &initial);
   void GetOutput(void *output);
 
   static bool ShowAndGetTime(SYSTEMTIME &time, const CStdString &heading);
@@ -52,6 +53,9 @@ public:
   static bool ShowAndGetSeconds(CStdString& timeString, const CStdString &heading);
 
 protected:
+  virtual void OnInitWindow();
+  virtual void OnDeinitWindow(int nextWindowID);
+
   void OnNumber(unsigned int num);
   void VerifyDate(bool checkYear);
   void OnNext();

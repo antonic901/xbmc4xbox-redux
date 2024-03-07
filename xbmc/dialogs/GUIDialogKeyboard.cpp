@@ -33,7 +33,8 @@
 #include "xbox/XKGeneral.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "interfaces/AnnouncementManager.h"
 #include "utils/CharsetConverter.h"
 
 // Symbol mapping (based on MS virtual keyboard - may need improving)
@@ -98,6 +99,11 @@ void CGUIDialogKeyboard::OnInitWindow()
   {
     SET_CONTROL_HIDDEN(CTL_LABEL_HEADING);
   }
+
+  CVariant data;
+  data["title"] = m_strHeading;
+  data["type"] = "keyboard";
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Input, "xbmc", "OnInputRequested", data);
 }
 
 bool CGUIDialogKeyboard::OnAction(const CAction &action)
@@ -283,6 +289,14 @@ bool CGUIDialogKeyboard::OnMessage(CGUIMessage& message)
         break;
       }
     }
+    break;
+
+  case GUI_MSG_SET_TEXT:
+    SetText(message.GetLabel());
+
+    // close the dialog if requested
+    if (message.GetParam1() > 0)
+      OnOK();
     break;
   }
 
@@ -692,6 +706,8 @@ void CGUIDialogKeyboard::Close(bool forceClose)
 {
   // reset the heading (we don't always have this)
   m_strHeading = "";
+
+  ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::Input, "xbmc", "OnInputFinished");
   // call base class
   CGUIDialog::Close(forceClose);
 }
