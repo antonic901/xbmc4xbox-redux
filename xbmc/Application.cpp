@@ -353,9 +353,6 @@ CApplication::CApplication(void)
 CApplication::~CApplication(void)
 {
   delete m_currentStack;
-
-  if (m_network != NULL)
-     delete m_network;
 }
 
 // text out routine for below
@@ -3378,6 +3375,10 @@ HRESULT CApplication::Cleanup()
     _CrtDumpMemoryLeaks();
     while(1); // execution ends
 #endif
+
+    delete m_network;
+    m_network = NULL;
+
     return S_OK;
   }
   catch (...)

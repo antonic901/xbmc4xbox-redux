@@ -49,13 +49,14 @@
 
 #include "playlists/PlayList.h"
 
+#include "utils/GlobalsHandling.h"
+
 using namespace std;
 
 extern HWND g_hWnd;
 
 CApplicationMessenger& CApplicationMessenger::Get()
 {
-  static CApplicationMessenger s_messenger;
   return s_messenger;
 }
 
