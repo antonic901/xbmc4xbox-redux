@@ -31,7 +31,7 @@ for file in "$swig_dir"/*.i; do
   swig -w401 -c++ -outdir "$python_generated_dir" -o "$python_generated_dir/$filename.xml" -xml -I"$base_dir/xbmc" -xmllang python "$swig_dir/$filename.i"
 
   # run groovy to generate the python bindings
-  java -cp "$groovy_dir/groovy-all-1.8.4.jar:$groovy_dir/commons-lang-2.6.jar:$generator_dir:$python_dir" groovy.ui.GroovyMain "$generator_dir/Generator.groovy" "$python_generated_dir/$filename.xml" "$python_dir/PythonSwig.cpp.template"  "$python_generated_dir/$filename.cpp" "$doxygen_dir"
+  java -cp "$groovy_dir/groovy-all-1.8.9.jar:$groovy_dir/commons-lang-2.6.jar:$generator_dir:$python_dir" groovy.ui.GroovyMain "$generator_dir/Generator.groovy" "$python_generated_dir/$filename.xml" "$python_dir/PythonSwig.cpp.template"  "$python_generated_dir/$filename.cpp" "$doxygen_dir"
 
   # go back to the initial directory
   cd "$cur_dir" || exit
