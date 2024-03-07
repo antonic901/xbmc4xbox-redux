@@ -35,7 +35,7 @@
 #include "GUIListContainer.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "GUIPassword.h"
-#include "interfaces/python/XBPython.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "playlists/PlayListFactory.h"
 #include "xbox/network.h"
@@ -596,7 +596,7 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem)
   }
   if (pItem->IsPythonScript())
   {
-    g_pythonParser.evalFile(pItem->GetPath().c_str(),ADDON::AddonPtr());
+    CScriptInvocationManager::Get().Execute(pItem->GetPath());
     return ;
   }
   if (pItem->IsXBE())

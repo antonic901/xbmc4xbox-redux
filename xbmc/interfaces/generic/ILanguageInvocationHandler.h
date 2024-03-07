@@ -1,8 +1,7 @@
 #pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2013 Team XBMC
+ *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,26 +19,20 @@
  *
  */
 
-#include "guilib/GUIWindow.h"
-#include "utils/Stopwatch.h"
+class ILanguageInvoker;
 
-class CGUIWindowWeather : public CGUIWindow
+class ILanguageInvocationHandler
 {
 public:
-  CGUIWindowWeather(void);
-  virtual ~CGUIWindowWeather(void);
-  virtual bool OnMessage(CGUIMessage& message);
-  virtual void FrameMove();
+  ILanguageInvocationHandler() { }
+  virtual ~ILanguageInvocationHandler() { }
 
-protected:
-  virtual void OnInitWindow();
+  virtual bool Initialize() { return true; }
+  virtual void Process() { }
+  virtual void Uninitialize() { }
 
-  void UpdateButtons();
-  void UpdateLocations();
-  void SetProperties();
-  void CallScript();
-  void SetLocation(int loc);
+  virtual void OnScriptStarted(ILanguageInvoker *invoker) { }
+  virtual void OnScriptEnded(ILanguageInvoker *invoker) { }
 
-  int iScriptId; // some hack to make current weather work with new way of launching scripts (not originally in XBMC)
-  CStopWatch m_scriptTimer;
+  virtual ILanguageInvoker* CreateInvoker() = 0;
 };

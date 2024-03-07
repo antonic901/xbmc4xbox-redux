@@ -26,7 +26,7 @@
 #include "utils/Weather.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/URIUtils.h"
-#include "interfaces/python/XBPython.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
 #include "LangInfo.h"
 #include "utils/log.h"
 #include "utils/SystemInfo.h"
@@ -67,6 +67,7 @@ CGUIWindowWeather::CGUIWindowWeather(void)
     : CGUIWindow(WINDOW_WEATHER, "MyWeather.xml")
 {
   m_loadType = KEEP_IN_MEMORY;
+  iScriptId = -1;
 }
 
 CGUIWindowWeather::~CGUIWindowWeather(void)
@@ -325,18 +326,18 @@ void CGUIWindowWeather::CallScript()
       return;
 
     // initialize our sys.argv variables
-    std::vector<CStdString> argv;
+    std::vector<std::string> argv;
     argv.push_back(addon->LibPath());
 
     // if script is running we wait for another timeout only when in weather window
     if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
     {
-      int id = g_pythonParser.getScriptId(argv[0]);
-      if (id != -1 && g_pythonParser.isRunning(id))
+      if (iScriptId != -1 && CScriptInvocationManager::Get().IsRunning(iScriptId))
       {
         m_scriptTimer.StartZero();
         return;
       }
+      iScriptId = -1;
     }
 
     // get the current locations area code
@@ -345,7 +346,7 @@ void CGUIWindowWeather::CallScript()
     argv.push_back(CWeather::GetAreaCode(CSettings::Get().GetString(strSetting)));
 
     // call our script, passing the areacode
-    g_pythonParser.evalFile(argv[0], argv,addon);
+    iScriptId = CScriptInvocationManager::Get().Execute(argv[0], addon, argv);
 
     CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0].c_str(), argv[1].c_str());
   }

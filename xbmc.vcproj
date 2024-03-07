@@ -3373,6 +3373,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\interfaces\python\PyContext.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\interfaces\python\PythonInvoker.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\PythonInvoker.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\interfaces\python\pythreadstate.h">
 					</File>
 					<File
@@ -3387,31 +3393,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\interfaces\python\XBPython.h">
 					</File>
+				</Filter>
+				<Filter
+					Name="generic"
+					Filter="">
 					<File
-						RelativePath=".\xbmc\interfaces\python\XBPyThread.cpp">
+						RelativePath=".\xbmc\interfaces\generic\ILanguageInvocationHandler.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\interfaces\python\XBPyThread.h">
+						RelativePath=".\xbmc\interfaces\generic\ILanguageInvoker.h">
 					</File>
-					<Filter
-						Name="generated"
-						Filter="">
-						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmc.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcaddon.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcgui.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcplugin.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcvfs.cpp">
-						</File>
-					</Filter>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\LanguageInvokerThread.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\LanguageInvokerThread.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\ScriptInvocationManager.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\ScriptInvocationManager.h">
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

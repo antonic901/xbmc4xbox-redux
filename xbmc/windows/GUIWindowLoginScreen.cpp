@@ -28,7 +28,6 @@
 #include "profiles/windows/GUIWindowSettingsProfile.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "GUIPassword.h"
-#include "interfaces/python/XBPython.h"
 #include "utils/Weather.h"
 #include "utils/FanController.h"
 #include "xbox/network.h"
@@ -293,7 +292,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   }
 
   g_weatherManager.Refresh();
-  g_pythonParser.m_bLogin = true;
+  g_application.SetLoggingIn(true);
 
   g_windowManager.ChangeActiveWindow(g_SkinInfo->GetFirstWindow());
 

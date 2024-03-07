@@ -19,7 +19,6 @@
  */
 
 #include "system.h"
-#include "interfaces/Builtins.h"
 #include "ApplicationMessenger.h"
 #include "Application.h"
 #ifdef _XBOX
@@ -33,9 +32,10 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "interfaces/python/XBPython.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "libGoAhead/XBMChttp.h"
+#include "interfaces/Builtins.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
 #include "xbox/network.h"
 #include "utils/log.h"
 #include "GUIWindowManager.h"
@@ -504,9 +504,7 @@ case TMSG_POWERDOWN:
     break;
 
     case TMSG_EXECUTE_SCRIPT:
-      {
-        g_pythonParser.evalFile(pMsg->strParam.c_str(),ADDON::AddonPtr());
-      }
+      CScriptInvocationManager::Get().Execute(pMsg->strParam);
       break;
 
     case TMSG_EXECUTE_BUILT_IN:

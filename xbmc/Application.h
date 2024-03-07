@@ -250,6 +250,8 @@ public:
 
   ReplayGainSettings& GetReplayGainSettings() { return m_replayGainSettings; }
 
+  void SetLoggingIn(bool loggingIn) { m_loggingIn = loggingIn; }
+
   bool SwitchToFullScreen();
 
   CSplash* GetSplash() { return m_splash; }
@@ -266,6 +268,8 @@ protected:
   bool LoadSkin(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
 
   bool m_skinReverting;
+
+  bool m_loggingIn;
 
   // screensaver
   bool m_bScreenSave;

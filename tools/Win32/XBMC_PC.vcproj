@@ -3490,12 +3490,6 @@
 				<File
 					RelativePath="..\..\lib\libPython\XBPythonDll.h">
 				</File>
-				<File
-					RelativePath="..\..\lib\libPython\XBPyThread.cpp">
-				</File>
-				<File
-					RelativePath="..\..\lib\libPython\XBPyThread.h">
-				</File>
 				<Filter
 					Name="python"
 					Filter="">

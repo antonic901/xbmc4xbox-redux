@@ -41,7 +41,6 @@
 #endif
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "guilib/GraphicContext.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/log.h"
 #include "pythreadstate.h"
@@ -58,6 +57,7 @@
 
 #include "interfaces/legacy/Monitor.h"
 #include "interfaces/legacy/AddonUtils.h"
+#include "interfaces/python/PythonInvoker.h"
 
 #ifdef _XBOX
 XBPython g_pythonParser;
@@ -80,8 +80,6 @@ using namespace PythonBindings;
 XBPython::XBPython()
 {
   m_bInitialized      = false;
-  m_bLogin            = false;
-  m_nextid            = 0;
   m_mainThreadState   = NULL;
   m_ThreadId          = CThread::GetCurrentThreadId();
   m_iDllScriptCounter = 0;
@@ -109,16 +107,6 @@ XBPython::~XBPython()
 #define CHECK_FOR_ENTRY(l,v) \
   (l.hadSomethingRemoved ? (std::find(l.begin(),l.end(),v) != l.end()) : true)
 
-// message all registered callbacks that xbmc stopped playing
-void XBPython::OnPlayBackEnded()
-{
-  TRACE;
-  LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
-  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
-    if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
-      ((IPlayerCallback*)(*it))->OnPlayBackEnded();
-}
-
 void XBPython::Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data)
 {
   if (flag & VideoLibrary)
@@ -138,7 +126,7 @@ void XBPython::Announce(AnnouncementFlag flag, const char *sender, const char *m
   else if (flag & GUI)
   {
    if (strcmp(message, "OnScreensaverDeactivated") == 0)
-     OnScreensaverDeactivated();   
+     OnScreensaverDeactivated();
    else if (strcmp(message, "OnScreensaverActivated") == 0)
      OnScreensaverActivated();
   }
@@ -150,8 +138,10 @@ void XBPython::OnPlayBackStarted()
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackStarted();
+  }
 }
 
 // message all registered callbacks that we paused playing
@@ -160,8 +150,10 @@ void XBPython::OnPlayBackPaused()
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackPaused();
+  }
 }
 
 // message all registered callbacks that we resumed playing
@@ -170,8 +162,22 @@ void XBPython::OnPlayBackResumed()
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackResumed();
+  }
+}
+
+// message all registered callbacks that xbmc stopped playing
+void XBPython::OnPlayBackEnded()
+{
+  TRACE;
+  LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
+  for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
+    if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
+      ((IPlayerCallback*)(*it))->OnPlayBackEnded();
+  }
 }
 
 // message all registered callbacks that user stopped playing
@@ -180,8 +186,10 @@ void XBPython::OnPlayBackStopped()
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackStopped();
+  }
 }
 
 // message all registered callbacks that playback speed changed (FF/RW)
@@ -190,8 +198,10 @@ void XBPython::OnPlayBackSpeedChanged(int iSpeed)
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSpeedChanged(iSpeed);
+  }
 }
 
 // message all registered callbacks that player is seeking
@@ -200,8 +210,10 @@ void XBPython::OnPlayBackSeek(int iTime, int seekOffset)
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSeek(iTime, seekOffset);
+  }
 }
 
 // message all registered callbacks that player chapter seeked
@@ -210,8 +222,10 @@ void XBPython::OnPlayBackSeekChapter(int iChapter)
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnPlayBackSeekChapter(iChapter);
+  }
 }
 
 // message all registered callbacks that next item has been queued
@@ -220,8 +234,10 @@ void XBPython::OnQueueNextItem()
   TRACE;
   LOCK_AND_COPY(std::vector<PVOID>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList,(*it)))
       ((IPlayerCallback*)(*it))->OnQueueNextItem();
+  }
 }
 
 void XBPython::RegisterPythonPlayerCallBack(IPlayerCallback* pCallback)
@@ -277,44 +293,54 @@ void XBPython::OnSettingsChanged(const CStdString &ID)
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)) && ((*it)->GetId() == ID))
       (*it)->OnSettingsChanged();
-}  
+  }
+}
 
 void XBPython::OnScreensaverActivated()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnScreensaverActivated();
-} 
+  }
+}
 
 void XBPython::OnScreensaverDeactivated()
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnScreensaverDeactivated();
-} 
+  }
+}
 
 void XBPython::OnDatabaseUpdated(const std::string &database)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnDatabaseUpdated(database);
-} 
+  }
+}
 
 void XBPython::OnDatabaseScanStarted(const std::string &database)
 {
   TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
       (*it)->OnDatabaseScanStarted(database);
+  }
 }
 
 void XBPython::OnAbortRequested(const CStdString &ID)
@@ -330,8 +356,8 @@ void XBPython::OnAbortRequested(const CStdString &ID)
       else if ((*it)->GetId() == ID)
         (*it)->OnAbortRequested();
     }
-  }  
-} 
+  }
+}
 
 /**
 * Check for file and print an error if needed
@@ -356,7 +382,7 @@ void XBPython::RegisterExtensionLib(LibraryLoader *pLib)
 
   CSingleLock lock(m_critSection);
 
-  CLog::Log(LOGDEBUG,"%s, adding %s (%p)", __FUNCTION__, pLib->GetName(), (void*)pLib);
+  CLog::Log(LOGDEBUG, "%s, adding %s (%p)", __FUNCTION__, pLib->GetName(), (void*)pLib);
   m_extensions.push_back(pLib);
 }
 
@@ -366,7 +392,7 @@ void XBPython::UnregisterExtensionLib(LibraryLoader *pLib)
     return;
 
   CSingleLock lock(m_critSection);
-  CLog::Log(LOGDEBUG,"%s, removing %s (0x%p)", __FUNCTION__, pLib->GetName(), (void *)pLib);
+  CLog::Log(LOGDEBUG, "%s, removing %s (0x%p)", __FUNCTION__, pLib->GetName(), (void *)pLib);
   PythonExtensionLibraries::iterator iter = m_extensions.begin();
   while (iter != m_extensions.end())
   {
@@ -381,7 +407,7 @@ void XBPython::UnregisterExtensionLib(LibraryLoader *pLib)
 
 void XBPython::UnloadExtensionLibs()
 {
-  CLog::Log(LOGDEBUG,"%s, clearing python extension libraries", __FUNCTION__);
+  CLog::Log(LOGDEBUG, "%s, clearing python extension libraries", __FUNCTION__);
   CSingleLock lock(m_critSection);
   PythonExtensionLibraries::iterator iter = m_extensions.begin();
   while (iter != m_extensions.end())
@@ -431,7 +457,7 @@ void XBPython::UnloadExtensionLibs()
         "os.chdir_orignal   = os.chdir\n" \
         "os.chdir           = chdir_xbmc\n" \
         ""
- 
+
 #define RUNSCRIPT_POSTSCRIPT \
         "print '-->Python Interpreter Initialized<--'\n" \
         ""
@@ -460,9 +486,7 @@ void XBPython::InitializeInterpreter(ADDON::AddonPtr addon)
 
   // redirecting default output to debug console
   if (PyRun_SimpleString(runscript) == -1)
-  {
     CLog::Log(LOGFATAL, "Python Initialize Error");
-  }
 }
 
 void XBPython::DeInitializeInterpreter()
@@ -473,10 +497,10 @@ void XBPython::DeInitializeInterpreter()
 /**
 * Should be called before executing a script
 */
-void XBPython::Initialize()
+bool XBPython::InitializeEngine()
 {
   TRACE;
-  CLog::Log(LOGINFO, "initializing python engine. ");
+  CLog::Log(LOGINFO, "initializing python engine.");
   CSingleLock lock(m_critSection);
   m_iDllScriptCounter++;
   if (!m_bInitialized)
@@ -488,7 +512,7 @@ void XBPython::Initialize()
       {
         CLog::Log(LOGFATAL, "Python: error loading python27.dll");
         Finalize();
-        return;
+        return false;
       }
 #endif
 
@@ -507,7 +531,7 @@ void XBPython::Initialize()
       {
         CLog::Log(LOGERROR, "Python: Missing files, unable to execute script");
         Finalize();
-        return;
+        return false;
       }
 #endif
 
@@ -580,6 +604,8 @@ void XBPython::Initialize()
 
       m_bInitialized = true;
   }
+
+  return m_bInitialized;
 }
 
 /**
@@ -596,7 +622,6 @@ void XBPython::FinalizeScript()
     CLog::Log(LOGERROR, "Python script counter attempted to become negative");
   m_endtime = XbmcThreads::SystemClockMillis();
 }
-
 
 // Always called with the lock held on m_critSection
 void XBPython::Finalize()
@@ -637,7 +662,7 @@ void XBPython::Finalize()
   }
 }
 
-void XBPython::FreeResources()
+void XBPython::Uninitialize()
 {
   LOCK_AND_COPY(std::vector<PyElem>,tmpvec,m_vecPyList);
   m_vecPyList.clear();
@@ -651,24 +676,10 @@ void XBPython::FreeResources()
 
 void XBPython::Process()
 {
-  if (m_bLogin)
-  {
-    m_bLogin = false;
-
-    // autoexec.py - profile
-    CStdString strAutoExecPy = CSpecialProtocol::TranslatePath("special://profile/autoexec.py");
-
-    if ( XFILE::CFile::Exists(strAutoExecPy) )
-      evalFile(strAutoExecPy,ADDON::AddonPtr());
-    else
-      CLog::Log(LOGDEBUG, "%s - no profile autoexec.py (%s) found, skipping", __FUNCTION__, strAutoExecPy.c_str());
-  }
-
-  CSingleLock lock(m_vecPyList);
-
   if (m_bInitialized)
   {
     PyList tmpvec;
+    CSingleLock lock(m_vecPyList);
     for (PyList::iterator it = m_vecPyList.begin(); it != m_vecPyList.end();)
     {
       if (it->bDone)
@@ -693,74 +704,31 @@ void XBPython::Process()
   }
 }
 
-bool XBPython::StopScript(const CStdString &path)
+void XBPython::OnScriptStarted(ILanguageInvoker *invoker)
 {
-  TRACE;
-  int id = getScriptId(path);
-  if (id != -1)
-  {
-    /* if we are here we already know that this script is running.
-     * But we will check it again to be sure :)
-     */
-    if (isRunning(id))
-    {
-      stopScript(id);
-      return true;
-    }
-  }
-  return false;
-}
+  if (invoker == NULL)
+    return;
 
-int XBPython::evalFile(const CStdString &src, ADDON::AddonPtr addon)
-{
-  std::vector<CStdString> argv;
-  return evalFile(src, argv, addon);
-}
-// execute script, returns -1 if script doesn't exist
-int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &argv, ADDON::AddonPtr addon)
-{
-  CSingleExit ex(g_graphicsContext);
-  // return if file doesn't exist
-  if (!XFILE::CFile::Exists(src))
-  {
-    CLog::Log(LOGERROR, "Python script \"%s\" does not exist", CSpecialProtocol::TranslatePath(src).c_str());
-    return -1;
-  }
+  if (!m_bInitialized)
+    return;
 
-  // check if locked
-  if (CProfilesManager::Get().GetCurrentProfile().programsLocked() && !g_passwordManager.IsMasterLockUnlocked(true))
-    return -1;
-
-  CSingleLock lock(m_vecPyList);
-  Initialize();
-
-  if (!m_bInitialized) return -1;
-
-  m_nextid++;
-  boost::shared_ptr<XBPyThread> pyThread = boost::shared_ptr<XBPyThread>(new XBPyThread(this, m_nextid));
-  pyThread->setArgv(argv);
-  pyThread->setAddon(addon);
-  pyThread->evalFile(src);
   PyElem inf;
-  inf.id        = m_nextid;
+  inf.id        = invoker->GetId();
   inf.bDone     = false;
-  inf.strFile   = src;
-  inf.pyThread  = pyThread;
-
+  inf.pyThread  = static_cast<CPythonInvoker*>(invoker);
+  CSingleLock lock(m_vecPyList);
   m_vecPyList.push_back(inf);
-
-  return m_nextid;
 }
 
-void XBPython::setDone(int id)
+void XBPython::OnScriptEnded(ILanguageInvoker *invoker)
 {
   CSingleLock lock(m_vecPyList);
   PyList::iterator it = m_vecPyList.begin();
   while (it != m_vecPyList.end())
   {
-    if (it->id == id)
+    if (it->id == invoker->GetId())
     {
-      if (it->pyThread->isStopping())
+      if (it->pyThread->IsStopping())
         CLog::Log(LOGINFO, "Python script interrupted by user");
       else
         CLog::Log(LOGINFO, "Python script stopped");
@@ -770,104 +738,9 @@ void XBPython::setDone(int id)
   }
 }
 
-void XBPython::stopScript(int id)
+ILanguageInvoker* XBPython::CreateInvoker()
 {
-  CSingleExit ex(g_graphicsContext);
-  CSingleLock lock(m_vecPyList);
-  PyList::iterator it = m_vecPyList.begin();
-  while (it != m_vecPyList.end())
-  {
-    if (it->id == id) {
-      CLog::Log(LOGINFO, "Stopping script with id: %i", id);
-      it->pyThread->stop();
-      return;
-    }
-    ++it;
-  }
-}
-
-void* XBPython::getMainThreadState()
-{
-  CSingleLock lock(m_critSection);
-  return m_mainThreadState;
-}
-
-int XBPython::ScriptsSize()
-{
-  CSingleLock lock(m_vecPyList);
-  return m_vecPyList.size();
-}
-
-const char* XBPython::getFileName(int scriptId)
-{
-  const char* cFileName = NULL;
-
-  CSingleLock lock(m_vecPyList);
-  PyList::iterator it = m_vecPyList.begin();
-  while (it != m_vecPyList.end())
-  {
-    if (it->id == scriptId)
-      cFileName = it->strFile.c_str();
-    ++it;
-  }
-
-  return cFileName;
-}
-
-int XBPython::getScriptId(const CStdString &strFile)
-{
-  int iId = -1;
-
-  CSingleLock lock(m_vecPyList);
-
-  PyList::iterator it = m_vecPyList.begin();
-  while (it != m_vecPyList.end())
-  {
-    if (it->strFile == strFile)
-      iId = it->id;
-    ++it;
-  }
-
-  return iId;
-}
-
-bool XBPython::isRunning(int scriptId)
-{
-  CSingleLock lock(m_vecPyList);
-
-  for(PyList::iterator it = m_vecPyList.begin(); it != m_vecPyList.end(); ++it)
-  {
-    if (it->id == scriptId)
-    {
-      if(it->bDone)
-        return false;
-      else
-        return true;
-    }
-  }
-  return false;
-}
-
-bool XBPython::isStopping(int scriptId)
-{
-  bool bStopping = false;
-
-  CSingleLock lock(m_vecPyList);
-  PyList::iterator it = m_vecPyList.begin();
-  while (it != m_vecPyList.end())
-  {
-    if (it->id == scriptId)
-      bStopping = it->pyThread->isStopping();
-    ++it;
-  }
-
-  return bStopping;
-}
-
-int XBPython::GetPythonScriptId(int scriptPosition)
-{
-  CSingleLock lock(m_vecPyList);
-  return (int)m_vecPyList[scriptPosition].id;
+  return new CPythonInvoker(this);
 }
 
 void XBPython::PulseGlobalEvent()
@@ -882,39 +755,5 @@ bool XBPython::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
   CEvent* ret = eventGroup.wait(milliseconds);
   if (ret)
     m_globalEvent.Reset();
-  return ret == NULL ? false : true;
-}
-
-// execute script, returns -1 if script doesn't exist
-int XBPython::evalString(const CStdString &src, const std::vector<CStdString> &argv)
-{
-  CLog::Log(LOGDEBUG, "XBPython::evalString (python)");
-  CSingleLock lock(m_critSection);
-
-  Initialize();
-
-  if (!m_bInitialized)
-  {
-    CLog::Log(LOGERROR, "XBPython::evalString, python not initialized (python)");
-    return -1;
-  }
-
-  // Previous implementation would create a new thread for every script
-  m_nextid++;
-  boost::shared_ptr<XBPyThread> pyThread = boost::shared_ptr<XBPyThread>(new XBPyThread(this, m_nextid));
-  pyThread->setArgv(argv);
-  pyThread->evalString(src);
-
-  PyElem inf;
-  inf.id        = m_nextid;
-  inf.bDone     = false;
-  inf.strFile   = "<string>";
-  inf.pyThread  = pyThread;
-
-  lock.Leave();
-  CSingleLock l2(m_vecPyList);
-
-  m_vecPyList.push_back(inf);
-
-  return m_nextid;
+  return ret != NULL;
 }

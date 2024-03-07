@@ -56,6 +56,7 @@
 #include "GUIColorManager.h"
 #include "GUITextLayout.h"
 #include "addons/Skin.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
 #include "input/ButtonTranslator.h"
 #include "GUIAudioManager.h"
@@ -334,6 +335,7 @@ CApplication::CApplication(void)
   m_nextPlaylistItem = -1;
   m_bPlaybackStarting = false;
   m_skinReverting = false;
+  m_loggingIn = false;
 
   //true while we in IsPaused mode! Workaround for OnPaused, which must be add. after v2.0
   m_bIsPaused = false;
@@ -980,6 +982,10 @@ HRESULT CApplication::Create(HWND hWnd)
   // initialize the addon database (must be before the addon manager is init'd)
   CDatabaseManager::Get().Initialize(true);
 
+#ifdef HAS_PYTHON
+  CScriptInvocationManager::Get().RegisterLanguageInvocationHandler(&g_pythonParser, ".py");
+#endif // HAS_PYTHON
+
   // start-up Addons Framework
   // currently bails out if either cpluff Dll is unavailable or system dir can not be scanned
   if (!CAddonMgr::Get().Init())
@@ -1379,9 +1385,7 @@ HRESULT CApplication::Initialize()
   if (!CProfilesManager::Get().UsingLoginScreen())
   {
     UpdateLibraries();
-#ifdef HAS_PYTHON
-  g_pythonParser.m_bLogin = true;
-#endif
+    SetLoggingIn(true);
   }
 
   m_slowTimer.StartZero();
@@ -3455,8 +3459,10 @@ void CApplication::Stop(bool bLCDStop)
     // Stop services before unloading Python
     CAddonMgr::Get().StopServices(false);
 
-    CLog::Log(LOGNOTICE, "stop python");
-    g_pythonParser.FreeResources();
+    // stop all remaining scripts; must be done after skin has been unloaded,
+    // not before some windows still need it when deinitializing during skin
+    // unloading
+    CScriptInvocationManager::Get().Uninitialize();
 
 #ifdef HAS_LCD
     if (g_lcd && bLCDStop)
@@ -4882,54 +4888,54 @@ bool CApplication::OnMessage(CGUIMessage& message)
 }
 
 bool CApplication::ExecuteXBMCAction(std::string actionStr)
-    {
-      // see if it is a user set string
-      CLog::Log(LOGDEBUG,"%s : Translating %s", __FUNCTION__, actionStr.c_str());
-      CGUIInfoLabel info(actionStr, "");
-      actionStr = info.GetLabel(0);
-      CLog::Log(LOGDEBUG,"%s : To %s", __FUNCTION__, actionStr.c_str());
+{
+  // see if it is a user set string
+  CLog::Log(LOGDEBUG,"%s : Translating %s", __FUNCTION__, actionStr.c_str());
+  CGUIInfoLabel info(actionStr, "");
+  actionStr = info.GetLabel(0);
+  CLog::Log(LOGDEBUG,"%s : To %s", __FUNCTION__, actionStr.c_str());
 
-      // user has asked for something to be executed
-      if (CBuiltins::HasCommand(actionStr))
-        CBuiltins::Execute(actionStr);
-      else
-      {
-        // try translating the action from our ButtonTranslator
-        int actionID;
-        if (CButtonTranslator::TranslateActionString(actionStr.c_str(), actionID))
-        {
-          OnAction(CAction(actionID));
-          return true;
-        }
-        CFileItem item(actionStr, false);
-        if (item.IsPythonScript())
-        { // a python script
-          g_pythonParser.evalFile(item.GetPath().c_str(),ADDON::AddonPtr());
-        }
-        else if (item.IsXBE())
-        { // an XBE
-          int iRegion;
-          if (CSettings::Get().GetBool("myprograms.gameautoregion"))
-          {
-            CXBE xbe;
-            iRegion = xbe.ExtractGameRegion(item.GetPath());
-            if (iRegion < 1 || iRegion > 7)
-              iRegion = 0;
-            iRegion = xbe.FilterRegion(iRegion);
-          }
-          else
-            iRegion = 0;
-          CUtil::RunXBE(item.GetPath().c_str(),NULL,F_VIDEO(iRegion));
-        }
-        else if (item.IsAudio() || item.IsVideo())
-        { // an audio or video file
-          PlayFile(item);
-        }
-        else
-          return false;
-      }
+  // user has asked for something to be executed
+  if (CBuiltins::HasCommand(actionStr))
+    CBuiltins::Execute(actionStr);
+  else
+  {
+    // try translating the action from our ButtonTranslator
+    int actionID;
+    if (CButtonTranslator::TranslateActionString(actionStr.c_str(), actionID))
+    {
+      OnAction(CAction(actionID));
       return true;
     }
+    CFileItem item(actionStr, false);
+    if (item.IsPythonScript())
+    { // a python script
+      CScriptInvocationManager::Get().Execute(item.GetPath());
+    }
+    else if (item.IsXBE())
+    { // an XBE
+      int iRegion;
+      if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+      {
+        CXBE xbe;
+        iRegion = xbe.ExtractGameRegion(item.GetPath());
+        if (iRegion < 1 || iRegion > 7)
+          iRegion = 0;
+        iRegion = xbe.FilterRegion(iRegion);
+      }
+      else
+        iRegion = 0;
+      CUtil::RunXBE(item.GetPath().c_str(),NULL,F_VIDEO(iRegion));
+    }
+    else if (item.IsAudio() || item.IsVideo())
+    { // an audio or video file
+      PlayFile(item);
+    }
+    else
+      return false;
+  }
+  return true;
+}
 
 void CApplication::Process()
 {
@@ -4940,8 +4946,21 @@ void CApplication::Process()
   // (this can only be done after g_windowManager.Render())
   CApplicationMessenger::Get().ProcessWindowMessages();
 
-  // process any Python scripts
-  g_pythonParser.Process();
+  if (m_loggingIn)
+  {
+    m_loggingIn = false;
+
+    // autoexec.py - profile
+    CStdString strAutoExecPy = CSpecialProtocol::TranslatePath("special://profile/autoexec.py");
+
+    if (XFILE::CFile::Exists(strAutoExecPy))
+      CScriptInvocationManager::Get().Execute(strAutoExecPy);
+    else
+      CLog::Log(LOGDEBUG, "no profile autoexec.py (%s) found, skipping", strAutoExecPy.c_str());
+  }
+
+  // handle any active scripts
+  CScriptInvocationManager::Get().Process();
 
   // process messages, even if a movie is playing
   CApplicationMessenger::Get().ProcessMessages();
