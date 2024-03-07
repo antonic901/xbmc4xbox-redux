@@ -55,6 +55,10 @@ class XBPython :
   public IPlayerCallback,
   public ANNOUNCEMENT::IAnnouncer
 {
+#ifdef _XBOX // becase of SpyceModuel.cpp
+public:
+#endif
+  void Finalize();
 public:
   XBPython();
   virtual ~XBPython();
@@ -79,7 +83,6 @@ public:
   void OnDatabaseUpdated(const std::string &database);
   void OnAbortRequested(const CStdString &ID="");
   void Initialize();
-  void Finalize();
   void FinalizeScript();
   void FreeResources();
   void Process();
