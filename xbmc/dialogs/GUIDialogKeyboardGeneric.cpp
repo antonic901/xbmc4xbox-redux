@@ -68,6 +68,7 @@ CGUIDialogKeyboardGeneric::CGUIDialogKeyboardGeneric()
   m_keyType = LOWER;
   m_strHeading = "";
   m_lastRemoteClickTime = 0;
+  m_loadType = KEEP_IN_MEMORY;
 }
 
 void CGUIDialogKeyboardGeneric::OnInitWindow()
@@ -627,6 +628,12 @@ void CGUIDialogKeyboardGeneric::SetHeading(const CVariant &heading)
 int CGUIDialogKeyboardGeneric::GetWindowId() const
 {
   return GetID();
+}
+
+void CGUIDialogKeyboardGeneric::Cancel()
+{
+  m_bIsConfirmed = false;
+  Close();
 }
 
 bool CGUIDialogKeyboardGeneric::ShowAndGetInput(char_callback_t pCallback, const std::string &initialString, std::string &typedString, const std::string &heading, bool bHiddenInput)
